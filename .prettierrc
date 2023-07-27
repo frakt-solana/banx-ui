@@ -5,6 +5,7 @@
   "semi": false,
   "singleQuote": true,
   "trailingComma": "all",
+  "plugins": ["@trivago/prettier-plugin-sort-imports"],
   "importOrder": [
     "^(react/(.*)$)|^(react$)",
     "<THIRD_PARTY_MODULES>",

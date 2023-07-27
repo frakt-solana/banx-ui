@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import moment, { Moment, Duration } from 'moment'
+
 import { padStart } from 'lodash'
+import moment, { Duration, Moment } from 'moment'
 
 export interface CountdownTime {
   days: string
