@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@frakt/*": ["src/*"]
+    },
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": true,
+    "module": "es6",
+    "target": "es5",
+    "allowJs": false,
+    "strict": true,
+    "jsx": "react-jsx",
+    "moduleResolution": "node",
+    "sourceMap": true
+  },
+  "include": ["src"]
+}
