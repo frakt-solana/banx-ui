@@ -18,8 +18,6 @@ export const DISCORD = {
 }
 
 export const SENTRY = {
-  ORG: 'fraktxyz',
-  PROJECT: 'frakt',
   APP_DSN: 'https://946a20307cb34391bfae250c7b2b590c@o1288412.ingest.sentry.io/6507934',
 }
 
