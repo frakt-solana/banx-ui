@@ -41,11 +41,6 @@ const config = {
     }),
     new Webpack.ProvidePlugin({ process: 'process/browser' }),
     new Webpack.DefinePlugin({ 'process.env': JSON.stringify(process.env) }),
-    sentryWebpackPlugin({
-      org: process.env.SENTRY_ORG,
-      project: process.env.SENTRY_PROJECT,
-      authToken: process.env.SENTRY_AUTH_TOKEN,
-    }),
   ],
   module: {
     rules: [
@@ -98,6 +93,14 @@ module.exports = () => {
     config.plugins.push(new MiniCssExtractPlugin())
 
     config.plugins.push(new WorkboxWebpackPlugin.GenerateSW())
+
+    config.plugins.push(
+      sentryWebpackPlugin({
+        org: process.env.SENTRY_ORG,
+        project: process.env.SENTRY_PROJECT,
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+      }),
+    )
   } else {
     config.mode = 'development'
   }
