@@ -18,7 +18,7 @@ export const DISCORD = {
 }
 
 export const SENTRY = {
-  APP_DSN: 'https://946a20307cb34391bfae250c7b2b590c@o1288412.ingest.sentry.io/6507934',
+  APP_DSN: 'https://cdf6f9ff65c94908b53c1dc8f071632e@o1288412.ingest.sentry.io/4505602108096512',
 }
 
 export const AUCTION_RECEIVER_PUBKEY = 'AYqVSa7zbAatGJ4MGbJsVQSrmLT2PqVMMihGyv6sRSXP'
