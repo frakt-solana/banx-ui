@@ -5,7 +5,7 @@ const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin')
-// const { sentryWebpackPlugin } = require('@sentry/webpack-plugin')
+const { sentryWebpackPlugin } = require('@sentry/webpack-plugin')
 
 const isProduction = process.env.NODE_ENV == 'production'
 
@@ -41,12 +41,11 @@ const config = {
     }),
     new Webpack.ProvidePlugin({ process: 'process/browser' }),
     new Webpack.DefinePlugin({ 'process.env': JSON.stringify(process.env) }),
-    //TODO: Create new project in sentry and provide correct keys
-    // sentryWebpackPlugin({
-    //   org: process.env.SENTRY_ORG,
-    //   project: process.env.SENTRY_PROJECT,
-    //   authToken: process.env.SENTRY_AUTH_TOKEN,
-    // }),
+    sentryWebpackPlugin({
+      org: process.env.SENTRY_ORG,
+      project: process.env.SENTRY_PROJECT,
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+    }),
   ],
   module: {
     rules: [
