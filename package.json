@@ -43,6 +43,7 @@
     "classnames": "^2.3.2",
     "fbonds-core": "^0.5.102",
     "lodash": "^4.17.21",
+    "moment": "^2.29.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "zustand": "^4.3.9"
@@ -50,6 +51,7 @@
   "devDependencies": {
     "@sentry/webpack-plugin": "^2.5.0",
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
+    "@types/lodash": "^4.14.196",
     "@types/react": "^18.2.17",
     "@types/react-dom": "^18.2.7",
     "@webpack-cli/generators": "^3.0.7",
