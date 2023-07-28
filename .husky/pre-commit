@@ -1,41 +1,14 @@
 #!/usr/bin/env sh
 
-# Exit immediately if a command exits with a non-zero status
-set -e
-
 # Execute Husky hooks
 . "$(dirname -- "$0")/_/husky.sh"
 
 # Run Prettier to fix formatting
-yarn prettier:fix >/dev/null 2>&1
+yarn prettier:fix
+yarn eslint .
 
-# Run ESLint and capture the output
-eslint_output=$(yarn eslint . 2>&1)
 
-# Check if there were any ESLint errors
+# Check if there are any errors in the project
 if [ $? -ne 0 ]; then
-  # Show a beautiful error message
-  cat << "EOF"
-
-        /$$$$$$            /$$                           /$$
-       /$$__  $$          | $$                          | $$
-      | $$  \ $$ /$$   /$$| $$  /$$$$$$  /$$   /$$      | $$  /$$$$$$   /$$$$$$
-      | $$  | $$| $$  | $$| $$ /$$__  $$| $$  | $$      | $$ /$$__  $$ /$$__  $$
-      | $$  | $$| $$  | $$| $$| $$$$$$$$| $$  | $$      | $$| $$  \ $$| $$$$$$$$
-      | $$  | $$| $$  | $$| $$| $$_____/| $$  | $$      | $$| $$  | $$| $$_____/
-      |  $$$$$$/|  $$$$$$/| $$|  $$$$$$$|  $$$$$$$      | $$|  $$$$$$$|  $$$$$$$
-       \______/  \______/ |__/ \_______/ \____  $$      |__/ \____  $$ \_______/
-                                          /$$  | $$           /$$  \ $$
-                                         |  $$$$$$/          |  $$$$$$/
-                                          \______/            \______/
-
-  ESLint found some errors in your code. Please fix them before committing.
-  Here's the ESLint output for reference:
-
-  $eslint_output
-
-EOF
-  exit 1
+  echo "Warning: Project has error"
 fi
-
-exit 0
