@@ -5,8 +5,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import { RPC_ENDPOINTS, WALLETS } from '@frakt/constants'
 import { useBestWorkingRPC } from '@frakt/hooks'
-import { DialectProvider } from '@frakt/utils'
+import { DialectProvider, initSentry } from '@frakt/utils'
 
+initSentry()
 const queryClient = new QueryClient()
 
 const SolanaConnectionWalletProvider: FC<PropsWithChildren> = ({ children }) => {

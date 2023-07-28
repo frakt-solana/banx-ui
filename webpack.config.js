@@ -7,7 +7,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 
-// const { sentryWebpackPlugin } = require('@sentry/webpack-plugin')
+const { sentryWebpackPlugin } = require('@sentry/webpack-plugin')
 
 const isProduction = process.env.NODE_ENV == 'production'
 
@@ -53,12 +53,6 @@ const config = {
         },
       ],
     }),
-    //TODO: Create new project in sentry and provide correct keys
-    // sentryWebpackPlugin({
-    //   org: process.env.SENTRY_ORG,
-    //   project: process.env.SENTRY_PROJECT,
-    //   authToken: process.env.SENTRY_AUTH_TOKEN,
-    // }),
   ],
   module: {
     rules: [
@@ -111,6 +105,14 @@ module.exports = () => {
     config.plugins.push(new MiniCssExtractPlugin())
 
     config.plugins.push(new WorkboxWebpackPlugin.GenerateSW())
+
+    config.plugins.push(
+      sentryWebpackPlugin({
+        org: process.env.SENTRY_ORG,
+        project: process.env.SENTRY_PROJECT,
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+      }),
+    )
   } else {
     config.mode = 'development'
   }
