@@ -15,6 +15,7 @@ display_warning() {
 
 # Run Prettier to fix formatting
 yarn prettier:fix
+yarn eslint .
 
 # Check if there were any errors during the process
 if [ $? -ne 0 ]; then
