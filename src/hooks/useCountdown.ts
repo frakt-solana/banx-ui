@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { padStart } from 'lodash'
 import moment, { Duration, Moment } from 'moment'
@@ -23,11 +23,11 @@ export const useCountdown: UseCountdown = (endTimeUnix: number) => {
     return moment.duration(endTimeMoment.diff(currentTime))
   }
 
-  const updateTimeDifference = () => {
+  const updateTimeDifference = useCallback(() => {
     const endTimeMoment = moment.unix(endTimeUnix)
     const currentTime = moment.unix(currentTimeUnix! + timePassedInSeconds)
     return calculateTimeDifference(endTimeMoment, currentTime)
-  }
+  }, [currentTimeUnix, endTimeUnix, timePassedInSeconds])
 
   useEffect(() => {
     setCurrentTimeUnix(moment().unix())
@@ -45,7 +45,7 @@ export const useCountdown: UseCountdown = (endTimeUnix: number) => {
     if (timeDifference.asSeconds() < 0) {
       clearInterval(intervalRef.current!)
     }
-  }, [currentTimeUnix, timePassedInSeconds, endTimeUnix])
+  }, [currentTimeUnix, timePassedInSeconds, endTimeUnix, updateTimeDifference])
 
   const timeDifference = updateTimeDifference()
   const isExpired = timeDifference.asSeconds() < 0
