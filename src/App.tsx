@@ -4,9 +4,9 @@ import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import { RPC_ENDPOINTS, WALLETS } from '@frakt/constants'
+import { useBestWorkingRPC } from '@frakt/hooks'
 import { DialectProvider, initSentry } from '@frakt/utils'
 
-import { useBestWorkingRPC } from '@frakt/hooks'
 initSentry()
 const queryClient = new QueryClient()
 
