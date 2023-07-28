@@ -4,16 +4,17 @@
 
 yarn prettier:fix
 
-# Check for lint warnings using ESLint and store the output in a variable
 lint_output=$(yarn eslint . 2>&1)
 
 # Print the contents of lint_output for debugging
 echo "lint_output: >>>$lint_output<<<"
 
-# No lint warnings? Code is a masterpiece!
-if [ -z "$lint_output" ]; then
-  echo "🎉 Your code is a work of art! No lint warnings found."
-else
+# Check if there are any lint warnings or errors
+if echo "$lint_output" | grep -q "warning\|error"; then
+  # Print the lint warnings and errors
   echo "⚠️ Oops! There are ESLint warnings:"
   echo "$lint_output"
+else
+  # No lint warnings or errors found
+  echo "🎉 Your code is a work of art! No lint warnings found."
 fi
