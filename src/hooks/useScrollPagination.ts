@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { FetchNextPageOptions, InfiniteQueryObserverResult } from '@tanstack/react-query'
 
@@ -22,17 +22,16 @@ export const useScrollPagination = <T>({
   isFetchingNextPage,
   fetchNextPage,
   enable,
-}: UseScrollPaginationOptions<T>) => {
+}: UseScrollPaginationOptions<T>): { isLoading: boolean } => {
   const scrollContainerRef = useRef<HTMLElement | null>(null)
 
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleScroll = () => {
+  const handleScroll = useCallback(() => {
     const scrollContainer = scrollContainerRef.current
     if (scrollContainer) {
       const { scrollHeight, scrollTop, clientHeight } = scrollContainer
       const isScrollEnd = scrollHeight - scrollTop - MARGIN_ROOT_PX < clientHeight
-
       const canFetchNextPage = hasNextPage && !isFetchingNextPage
 
       if (isScrollEnd && canFetchNextPage) {
@@ -42,7 +41,7 @@ export const useScrollPagination = <T>({
         })
       }
     }
-  }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage])
 
   useEffect(() => {
     if (scrollContainer && enable) {

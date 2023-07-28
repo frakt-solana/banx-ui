@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useState } from 'react'
 
 type SetValue<T> = Dispatch<SetStateAction<T>>
 
-export const useLocalStorage = <T,>(key: string, initialValue: T): [T, SetValue<T>] => {
+export const useLocalStorage = <T>(key: string, initialValue: T): [T, SetValue<T>] => {
   const [storedValue, setStoredValue] = useState<T>(() => {
     if (typeof window === 'undefined') {
       return initialValue
@@ -11,7 +11,7 @@ export const useLocalStorage = <T,>(key: string, initialValue: T): [T, SetValue<
       const item = window.localStorage.getItem(key)
       return item ? JSON.parse(item) : initialValue
     } catch (error) {
-      console.log(error)
+      console.error(error)
       return initialValue
     }
   })
@@ -26,7 +26,7 @@ export const useLocalStorage = <T,>(key: string, initialValue: T): [T, SetValue<
         window.localStorage.setItem(key, JSON.stringify(valueToStore))
       }
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 

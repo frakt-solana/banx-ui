@@ -32,7 +32,6 @@ const getBestWorkingEndpoint = async ({
   )
 
   if (logErrors) {
-    // eslint-disable-next-line no-console
     results.forEach(({ error }) => !!error && console.warn(error))
   }
 
@@ -48,11 +47,11 @@ type UseBestWorkingRPC = ({
   isLoading: boolean
 }
 
-export const useBestWorkingRPC = ({
+export const useBestWorkingRPC: UseBestWorkingRPC = ({
   endpoints,
   fallbackEndpoint = clusterApiUrl('mainnet-beta'),
   logErrors,
-}: GetBestWorkingEndpointProps) => {
+}) => {
   const { data: endpoint, isLoading } = useQuery(
     ['bestWorkingRPC'],
     () =>
@@ -66,7 +65,7 @@ export const useBestWorkingRPC = ({
       refetchOnWindowFocus: false,
     },
   )
-  return { endpoint, isLoading }
+  return { endpoint: endpoint ?? null, isLoading }
 }
 
 export const useBestWorkingRPCPure: UseBestWorkingRPC = ({
