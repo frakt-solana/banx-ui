@@ -8,12 +8,8 @@
     "build": "webpack --mode=production --node-env=production",
     "test": "echo \"Error: no test specified\" && exit 1",
     "predeploy": "eslint . --max-warnings=0",
-    "prettier:fix": "prettier --write ."
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run prettier:fix"
-    }
+    "prettier:fix": "prettier --write .",
+    "prepare": "husky install"
   },
   "browserslist": {
     "production": [
