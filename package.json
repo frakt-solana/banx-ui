@@ -53,7 +53,6 @@
     "classnames": "^2.3.2",
     "fbonds-core": "^0.5.102",
     "firebase": "^10.1.0",
-    "husky": "^8.0.3",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "react": "^18.2.0",

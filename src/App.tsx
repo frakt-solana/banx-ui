@@ -2,8 +2,8 @@ import { FC, PropsWithChildren } from 'react'
 
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { RPC_ENDPOINTS, WALLETS } from '@frakt/constants'
 
+import { RPC_ENDPOINTS, WALLETS } from '@frakt/constants'
 import { useBestWorkingRPC } from '@frakt/hooks'
 import { DialectProvider, initSentry } from '@frakt/utils'
 
