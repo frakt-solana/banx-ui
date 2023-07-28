@@ -7,13 +7,15 @@
     "start": "webpack serve",
     "build": "webpack --mode=production --node-env=production",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "predeploy": "eslint . --max-warnings=0"
+    "predeploy": "eslint . --max-warnings=0",
+    "prettier:fix": "prettier --write ."
   },
   "husky": {
     "hooks": {
-      "pre-commit": "pretty-quick --staged"
+      "pre-commit": "npm run prettier:fix"
     }
   },
+
   "browserslist": {
     "production": [
       ">0.2%",
