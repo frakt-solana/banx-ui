@@ -1,4 +1,23 @@
 #!/usr/bin/env sh
+
+# Function to display the warning message
+display_warning() {
+  local message=$1
+  local bold=$(tput bold)
+  local red=$(tput setaf 1)
+  local reset=$(tput sgr0)
+
+  echo "${bold}${red}${message}${reset}"
+}
+
+# Execute Husky hooks
 . "$(dirname -- "$0")/_/husky.sh"
 
-npm prettier:fix
+# Run Prettier to fix formatting
+yarn prettier:fix
+
+# Check if there were any errors during the process
+if [ $? -ne 0 ]; then
+  # Display the warning message
+  display_warning "Your project has errors and won't be deployed"
+fi
