@@ -4,8 +4,7 @@
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:react/recommended",
-    "plugin:react-hooks/recommended",
-    "plugin:unused-imports"
+    "plugin:react-hooks/recommended"
   ],
   "rules": {
     "eqeqeq": 1,
@@ -13,7 +12,7 @@
     "react/react-in-jsx-scope": 0,
     "react-hooks/rules-of-hooks": "warn",
     "react-hooks/exhaustive-deps": "warn",
-    "no-console": ["warn", { "allow": ["error"] }],
+    "no-console": ["warn", { "allow": ["error", "warn"] }],
     "no-debugger": "warn",
     "require-await": "error",
     "no-undef": "error",

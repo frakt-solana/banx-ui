@@ -5,6 +5,8 @@ const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+
 const { sentryWebpackPlugin } = require('@sentry/webpack-plugin')
 
 const isProduction = process.env.NODE_ENV == 'production'
@@ -93,6 +95,19 @@ module.exports = () => {
     config.plugins.push(new MiniCssExtractPlugin())
 
     config.plugins.push(new WorkboxWebpackPlugin.GenerateSW())
+
+    config.plugins.push(
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: 'public',
+            globOptions: {
+              ignore: ['**/*.html', '**/*.ico'],
+            },
+          },
+        ],
+      }),
+    )
 
     config.plugins.push(
       sentryWebpackPlugin({
