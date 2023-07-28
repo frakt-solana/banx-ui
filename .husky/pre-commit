@@ -7,10 +7,9 @@
 
 # Beautify your code with Prettier
 yarn prettier:fix
-yarn eslint .
 
 # Check for lint warnings using ESLint
-lint_output=$(yarn eslint .)
+lint_output=$(yarn eslint . 2>&1)
 
 # No lint warnings? Code is a masterpiece!
 if [ -z "$lint_output" ]; then
@@ -64,4 +63,5 @@ else
   $lint_output
 
 EOF
+  echo "$lint_output"
 fi
