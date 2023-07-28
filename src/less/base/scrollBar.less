@@ -1,0 +1,23 @@
+@import '../abstracts/variables.less';
+
+::-webkit-scrollbar {
+  width: 0;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--black-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--white-color);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--white-color);
+}
+
+@media screen and (max-width: 1024px) {
+  ::-webkit-scrollbar {
+    width: 0;
+  }
+}
