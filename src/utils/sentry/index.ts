@@ -3,16 +3,18 @@ import { Dictionary } from 'lodash'
 
 import { SENTRY } from '@frakt/constants'
 
+const IGNORE_ERRORS = [
+  'Registration failed - push service error',
+  'We are unable to register the default service worker',
+  'The notification permission was not granted and blocked instead',
+  'The string did not match the expected pattern',
+  'User rejected the request',
+]
+
 export const initSentry = () => {
   Sentry.init({
     dsn: SENTRY.APP_DSN,
-    ignoreErrors: [
-      'Registration failed - push service error',
-      'We are unable to register the default service worker',
-      'The notification permission was not granted and blocked instead',
-      'The string did not match the expected pattern',
-      'User rejected the request',
-    ],
+    ignoreErrors: IGNORE_ERRORS,
     defaultIntegrations: false,
     tracesSampleRate: 0.05,
   })
