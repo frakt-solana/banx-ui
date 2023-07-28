@@ -43,16 +43,6 @@ const config = {
     }),
     new Webpack.ProvidePlugin({ process: 'process/browser' }),
     new Webpack.DefinePlugin({ 'process.env': JSON.stringify(process.env) }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: 'public',
-          globOptions: {
-            ignore: ['**/*.html', '**/*.ico'],
-          },
-        },
-      ],
-    }),
   ],
   module: {
     rules: [
@@ -105,6 +95,19 @@ module.exports = () => {
     config.plugins.push(new MiniCssExtractPlugin())
 
     config.plugins.push(new WorkboxWebpackPlugin.GenerateSW())
+
+    config.plugins.push(
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: 'public',
+            globOptions: {
+              ignore: ['**/*.html', '**/*.ico'],
+            },
+          },
+        ],
+      }),
+    )
 
     config.plugins.push(
       sentryWebpackPlugin({
