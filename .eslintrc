@@ -4,8 +4,7 @@
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:react/recommended",
-    "plugin:react-hooks/recommended",
-    "plugin:unused-imports"
+    "plugin:react-hooks/recommended"
   ],
   "rules": {
     "eqeqeq": 1,

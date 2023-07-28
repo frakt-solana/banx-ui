@@ -23,7 +23,10 @@ const useVisibleMarketsStore = create<VisibleMarketsStore>((set) => {
   }
 })
 
-export const useVisibleMarketURLControl = () => {
+export const useVisibleMarketURLControl = (): {
+  visibleCards: string[]
+  toggleVisibleCard: (collectionName: string) => void
+} => {
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -38,7 +41,7 @@ export const useVisibleMarketURLControl = () => {
     }
 
     navigate({ search: params.toString() })
-  }, [visibleCards, history])
+  }, [visibleCards, location.search, navigate])
 
   return { visibleCards, toggleVisibleCard }
 }

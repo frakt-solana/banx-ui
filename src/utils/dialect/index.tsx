@@ -1,11 +1,28 @@
-import { useState, useMemo, useEffect, FC, PropsWithChildren } from 'react'
+import { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react'
+
 import { ConfigProps, DialectNoBlockchainSdk } from '@dialectlabs/react-sdk'
 import {
+  DialectSolanaSdk,
   DialectSolanaWalletAdapter,
   SolanaConfigProps,
-  DialectSolanaSdk,
 } from '@dialectlabs/react-sdk-blockchain-solana'
 import { WalletContextState, useWallet } from '@solana/wallet-adapter-react'
+
+const solanaWalletToDialectWallet = (
+  wallet: WalletContextState,
+): DialectSolanaWalletAdapter | null => {
+  if (!wallet.connected || wallet.connecting || wallet.disconnecting || !wallet.publicKey) {
+    return null
+  }
+
+  return {
+    publicKey: wallet.publicKey,
+    signMessage: wallet.signMessage,
+    signTransaction: wallet.signTransaction,
+    signAllTransactions: wallet.signAllTransactions,
+    diffieHellman: undefined,
+  }
+}
 
 export const DialectProvider: FC<PropsWithChildren> = (props) => {
   const solanaWallet = useWallet()
@@ -50,20 +67,4 @@ export const DialectProvider: FC<PropsWithChildren> = (props) => {
   }
 
   return <DialectNoBlockchainSdk>{props.children}</DialectNoBlockchainSdk>
-}
-
-const solanaWalletToDialectWallet = (
-  wallet: WalletContextState,
-): DialectSolanaWalletAdapter | null => {
-  if (!wallet.connected || wallet.connecting || wallet.disconnecting || !wallet.publicKey) {
-    return null
-  }
-
-  return {
-    publicKey: wallet.publicKey,
-    signMessage: wallet.signMessage,
-    signTransaction: wallet.signTransaction,
-    signAllTransactions: wallet.signAllTransactions,
-    diffieHellman: undefined,
-  }
 }

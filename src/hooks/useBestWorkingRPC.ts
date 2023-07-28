@@ -1,58 +1,17 @@
 import { useEffect, useState } from 'react'
+
 import { Connection, clusterApiUrl } from '@solana/web3.js'
 import { useQuery } from '@tanstack/react-query'
 
-export const useBestWorkingRPC = ({
-  endpoints,
-  fallbackEndpoint = clusterApiUrl('mainnet-beta'),
-  logErrors,
-}: GetBestWorkingEndpointProps) => {
-  const { data: endpoint, isLoading } = useQuery(
-    ['bestWorkingRPC'],
-    () =>
-      getBestWorkingEndpoint({
-        endpoints,
-        fallbackEndpoint,
-        logErrors,
-      }),
-    {
-      staleTime: Infinity,
-      refetchOnWindowFocus: false,
-    },
-  )
-  return { endpoint, isLoading }
+interface CheckEndpointResult {
+  endpoint: string | null
+  error: string | null
 }
 
-export const useBestWorkingRPCPure = ({
-  endpoints,
-  fallbackEndpoint = clusterApiUrl('mainnet-beta'),
-  logErrors,
-}: GetBestWorkingEndpointProps) => {
-  const [endpoint, setEndpoint] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState<boolean>(true)
-
-  useEffect(() => {
-    const setWorkingEndpoint = async () => {
-      try {
-        const endpoint = await getBestWorkingEndpoint({
-          endpoints,
-          fallbackEndpoint,
-          logErrors,
-        })
-        setEndpoint(endpoint)
-      } catch (error) {
-        console.error(error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    if (!endpoint) {
-      setWorkingEndpoint()
-    }
-  }, [endpoints, fallbackEndpoint, logErrors, endpoint])
-
-  return { endpoint, isLoading }
+interface GetBestWorkingEndpointProps {
+  endpoints: Array<string>
+  fallbackEndpoint?: string
+  logErrors?: boolean
 }
 
 const getBestWorkingEndpoint = async ({
@@ -80,13 +39,64 @@ const getBestWorkingEndpoint = async ({
   return results.find(({ endpoint }) => !!endpoint)?.endpoint ?? fallbackEndpoint
 }
 
-interface CheckEndpointResult {
+type UseBestWorkingRPC = ({
+  endpoints,
+  fallbackEndpoint,
+  logErrors,
+}: GetBestWorkingEndpointProps) => {
   endpoint: string | null
-  error: string | null
+  isLoading: boolean
 }
 
-interface GetBestWorkingEndpointProps {
-  endpoints: Array<string>
-  fallbackEndpoint?: string
-  logErrors?: boolean
+export const useBestWorkingRPC = ({
+  endpoints,
+  fallbackEndpoint = clusterApiUrl('mainnet-beta'),
+  logErrors,
+}: GetBestWorkingEndpointProps) => {
+  const { data: endpoint, isLoading } = useQuery(
+    ['bestWorkingRPC'],
+    () =>
+      getBestWorkingEndpoint({
+        endpoints,
+        fallbackEndpoint,
+        logErrors,
+      }),
+    {
+      staleTime: Infinity,
+      refetchOnWindowFocus: false,
+    },
+  )
+  return { endpoint, isLoading }
+}
+
+export const useBestWorkingRPCPure: UseBestWorkingRPC = ({
+  endpoints,
+  fallbackEndpoint = clusterApiUrl('mainnet-beta'),
+  logErrors,
+}) => {
+  const [endpoint, setEndpoint] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+
+  useEffect(() => {
+    const setWorkingEndpoint = async () => {
+      try {
+        const endpoint = await getBestWorkingEndpoint({
+          endpoints,
+          fallbackEndpoint,
+          logErrors,
+        })
+        setEndpoint(endpoint)
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    if (!endpoint) {
+      setWorkingEndpoint()
+    }
+  }, [endpoints, fallbackEndpoint, logErrors, endpoint])
+
+  return { endpoint, isLoading }
 }

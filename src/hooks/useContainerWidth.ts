@@ -1,7 +1,13 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { MutableRefObject, useEffect, useLayoutEffect, useRef, useState } from 'react'
+
 import { throttle } from 'lodash'
 
-export const useContainerWidth = (stopWidth = 0) => {
+type UseContainerWidth = (stopWidth: number) => {
+  containerWidth: number
+  containerRef: MutableRefObject<HTMLDivElement | null>
+}
+
+export const useContainerWidth: UseContainerWidth = (stopWidth = 0) => {
   const containerRef = useRef<HTMLDivElement | null>(null)
 
   const [containerWidth, setContainerWidth] = useState<number>(0)

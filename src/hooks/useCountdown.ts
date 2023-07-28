@@ -15,7 +15,7 @@ type UseCountdown = (endTimeUnix: number) => {
 }
 
 export const useCountdown: UseCountdown = (endTimeUnix: number) => {
-  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const [currentTimeUnix, setCurrentTimeUnix] = useState<number | null>(null)
   const [timePassedInSeconds, setTimePassedInSeconds] = useState<number>(0)
 

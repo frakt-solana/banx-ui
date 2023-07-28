@@ -55,7 +55,7 @@ export const useFirebaseNotifications = (): void => {
   const { publicKey } = useWallet()
 
   useEffect(() => {
-    ;(async () => {
+    (async () => {
       if (publicKey && 'serviceWorker' in navigator) {
         try {
           const token = await getFirebaseToken()
