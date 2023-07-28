@@ -16,7 +16,7 @@ const SolanaConnectionWalletProvider: FC<PropsWithChildren> = ({ children }) => 
     logErrors: true,
   })
 
-  // if (isLoading || !endpoint) return <></>
+  if (isLoading || !endpoint) return <></>
 
   return (
     <ConnectionProvider endpoint={endpoint}>
