@@ -1,15 +1,14 @@
 #!/usr/bin/env sh
-
-# 🌌🌠🚀 Explore the Universe of Code 🚀🌠🌌
-
 # Execute Husky hooks
 . "$(dirname -- "$0")/_/husky.sh"
 
-# Beautify your code with Prettier
 yarn prettier:fix
 
-# Check for lint warnings using ESLint
+# Check for lint warnings using ESLint and store the output in a variable
 lint_output=$(yarn eslint . 2>&1)
+
+# Print the contents of lint_output for debugging
+echo "lint_output: >>>$lint_output<<<"
 
 # No lint warnings? Code is a masterpiece!
 if [ -z "$lint_output" ]; then
@@ -19,9 +18,6 @@ else
   cat << "EOF"
 
   🎨 Your code is almost perfect! Just a few brushstrokes needed. 🎨
-
-
-
 
 ██╗██╗██████╗░██████╗░░█████╗░░░░  ██╗░░░██╗░█████╗░██╗░░░██╗██╗██████╗░███████╗
 ╚█║╚█║██╔══██╗██╔══██╗██╔══██╗░░░  ╚██╗░██╔╝██╔══██╗██║░░░██║╚█║██╔══██╗██╔════╝
@@ -59,9 +55,7 @@ else
 ╚═════╝░╚══════╝  ╚═════╝░╚══════╝╚═╝░░░░░╚══════╝░╚════╝░░░░╚═╝░░░╚══════╝╚═════╝░░░░░░░
 
   ESLint found some gentle suggestions for your code. Consider refining it before committing.
-  Here's the ESLint output for reference:
-  $lint_output
-
+  
 EOF
   echo "$lint_output"
 fi
