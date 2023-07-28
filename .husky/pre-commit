@@ -5,10 +5,13 @@
 
 # Run Prettier to fix formatting
 yarn prettier:fix
-yarn eslint .
+# yarn eslint .
 
 
-# Check if there are any errors in the project
-if [ $? -ne 0 ]; then
+# Check for lint warnings using ESLint
+lint_output=$(yarn eslint .)
+
+# Check if there are any lint warnings in the output
+if echo "$lint_output" | grep -q "warning"; then
   echo "Warning: Project has error"
 fi
