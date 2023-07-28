@@ -5,6 +5,8 @@ const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+
 // const { sentryWebpackPlugin } = require('@sentry/webpack-plugin')
 
 const isProduction = process.env.NODE_ENV == 'production'
@@ -41,6 +43,16 @@ const config = {
     }),
     new Webpack.ProvidePlugin({ process: 'process/browser' }),
     new Webpack.DefinePlugin({ 'process.env': JSON.stringify(process.env) }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'public',
+          globOptions: {
+            ignore: ['**/*.html', '**/*.ico'],
+          },
+        },
+      ],
+    }),
     //TODO: Create new project in sentry and provide correct keys
     // sentryWebpackPlugin({
     //   org: process.env.SENTRY_ORG,
