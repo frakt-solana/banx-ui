@@ -11,7 +11,7 @@ const IGNORE_ERRORS = [
   'User rejected the request',
 ]
 
-export const initSentry = () => {
+export const initSentry = (): void => {
   Sentry.init({
     dsn: SENTRY.APP_DSN,
     ignoreErrors: IGNORE_ERRORS,
