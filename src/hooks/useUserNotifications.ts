@@ -17,6 +17,7 @@ type UseUserNotifications = () => {
   markRead: (notificationIds: string[]) => Promise<void>
   clearAll: () => Promise<void>
 }
+
 export const useUserNotifications: UseUserNotifications = () => {
   const { connected, publicKey } = useWallet()
 
