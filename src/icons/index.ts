@@ -1,2 +1,5 @@
-export * from './Logo'
-export * from './LogoFull'
+export { Borrow, BorrowDark } from './Borrow'
+export { Dashboard, DashboardDark } from './Dashboard'
+export { Lend, LendDark } from './Lend'
+export { Logo } from './Logo'
+export { LogoFull } from './LogoFull'
