@@ -1,6 +1,6 @@
-import React from 'react'
+import { FC } from 'react'
 
-const RootPage = () => {
+const RootPage: FC = () => {
   return <div>RootPage</div>
 }
 

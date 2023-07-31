@@ -15,14 +15,13 @@ export const ConnectButton: FC = () => {
   const { publicKey, connected } = useWallet()
 
   return (
-    <Button
-      type="secondary"
-      size="large"
-      onClick={toggleVisibility}
-      className={styles.container}
-      icon={<ChevronDown />}
-    >
-      {connected && <>{shortenAddress(publicKey?.toBase58() || '')}</>}
+    <Button type="secondary" onClick={toggleVisibility} className={styles.container}>
+      {connected && (
+        <>
+          {shortenAddress(publicKey?.toBase58() || '')}
+          <ChevronDown />
+        </>
+      )}
       {!connected && 'Connect Wallet'}
     </Button>
   )
