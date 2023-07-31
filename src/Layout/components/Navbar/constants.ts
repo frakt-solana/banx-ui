@@ -4,7 +4,6 @@ import { Borrow, BorrowDark, Dashboard, DashboardDark, Lend, LendDark } from '@f
 export const NAVIGATION_LINKS = [
   {
     pathname: PATHS.ROOT,
-    to: PATHS.ROOT,
     label: 'Dashboard',
     icon: Dashboard,
     iconDark: DashboardDark,
@@ -12,7 +11,6 @@ export const NAVIGATION_LINKS = [
   },
   {
     pathname: PATHS.BORROW_ROOT,
-    to: PATHS.BORROW_LITE,
     label: 'Borrow',
     icon: Borrow,
     iconDark: BorrowDark,
@@ -20,12 +18,10 @@ export const NAVIGATION_LINKS = [
   },
   {
     pathname: PATHS.LOANS,
-    to: PATHS.LOANS,
     label: 'My loans',
   },
   {
     pathname: PATHS.BONDS_LITE,
-    to: PATHS.BONDS_LITE,
     label: 'Lend',
     icon: Lend,
     iconDark: LendDark,
@@ -36,23 +32,35 @@ export const NAVIGATION_LINKS = [
 export const SECONDARY_NAVIGATION_LINKS = [
   {
     pathname: PATHS.ADVENTURES,
-    to: PATHS.ADVENTURES,
     label: 'Banx',
     // icon: BanxFilled,
     // iconDark: BanxFilledDark,
   },
   {
     pathname: PATHS.LIQUIDATIONS,
-    to: PATHS.LIQUIDATIONS,
     label: 'Raffles',
     // icon: Raffles,
     // iconDark: RafflesDark,
   },
   {
     pathname: PATHS.AUCTIONS,
-    to: PATHS.AUCTIONS,
     label: 'Auctions',
     // icon: Auction,
     // iconDark: AuctionDark,
+  },
+]
+
+export const DOCUMENTATIONS_LINKS = [
+  {
+    label: 'Docs',
+    href: 'https://docs.frakt.xyz/frakt/',
+  },
+  {
+    label: 'Medium',
+    href: 'https://medium.com/@frakt_HQ',
+  },
+  {
+    label: 'GitHub',
+    href: 'https://github.com/frakt-solana',
   },
 ]

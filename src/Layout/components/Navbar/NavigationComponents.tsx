@@ -18,22 +18,21 @@ export const createNavigationLink = ({
   icon,
   label,
   className,
-  to,
   isActive,
-  param,
+  pathname,
   primary,
 }: {
   icon: any
   label: string
   className: string
-  to: any
+  pathname: any
   isActive: boolean
   param?: string
   primary?: boolean
 }) => {
   return (
     <a
-      href={param ? to(param) : to}
+      href={pathname}
       className={classNames(styles.link, className, {
         [styles.active]: isActive,
         [styles.primary]: primary,
