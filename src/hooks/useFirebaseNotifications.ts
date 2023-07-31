@@ -55,7 +55,8 @@ export const useFirebaseNotifications = (): void => {
   const { publicKey } = useWallet()
 
   useEffect(() => {
-    (async () => {
+    // eslint-disable-next-line no-extra-semi
+    ;(async () => {
       if (publicKey && 'serviceWorker' in navigator) {
         try {
           const token = await getFirebaseToken()

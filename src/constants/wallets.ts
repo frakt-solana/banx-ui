@@ -1,16 +1,16 @@
-import {
-  LedgerWalletAdapter,
-  SolflareWalletAdapter,
-  SlopeWalletAdapter,
-  GlowWalletAdapter,
-  CoinbaseWalletAdapter,
-  TorusWalletAdapter,
-  MathWalletAdapter,
-  SolletWalletAdapter,
-  ExodusWalletAdapter,
-} from '@solana/wallet-adapter-wallets'
 import { SentreWalletAdapter } from '@sentre/connector'
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base'
+import {
+  CoinbaseWalletAdapter,
+  ExodusWalletAdapter,
+  GlowWalletAdapter,
+  LedgerWalletAdapter,
+  MathWalletAdapter,
+  SlopeWalletAdapter,
+  SolflareWalletAdapter,
+  SolletWalletAdapter,
+  TorusWalletAdapter,
+} from '@solana/wallet-adapter-wallets'
 
 export const WALLETS = [
   new SolflareWalletAdapter(),
