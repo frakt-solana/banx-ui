@@ -33,20 +33,14 @@ export const SECONDARY_NAVIGATION_LINKS = [
   {
     pathname: PATHS.ADVENTURES,
     label: 'Banx',
-    // icon: BanxFilled,
-    // iconDark: BanxFilledDark,
   },
   {
     pathname: PATHS.LIQUIDATIONS,
     label: 'Raffles',
-    // icon: Raffles,
-    // iconDark: RafflesDark,
   },
   {
     pathname: PATHS.AUCTIONS,
     label: 'Auctions',
-    // icon: Auction,
-    // iconDark: AuctionDark,
   },
 ]
 

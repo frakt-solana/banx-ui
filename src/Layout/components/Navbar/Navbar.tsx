@@ -11,10 +11,9 @@ import styles from './Navbar.module.less'
 interface MenuItem {
   label: string
   icon?: any
-  iconDark?: any
+  iconDark?: FC
   className?: string
   pathname?: string
-  props?: any
   href?: string
   primary?: boolean
 }

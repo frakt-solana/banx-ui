@@ -25,12 +25,16 @@
   background: #f9f9f9;
   border-right: 1px solid var(--primary-border);
 
+  position: fixed;
+  left: 0;
+
   display: flex;
   flex-direction: column;
 
   padding-bottom: 32px;
   overflow-y: scroll;
-  width: 192px;
+  min-width: 192px;
+  max-width: 192px;
   height: 100vh;
 
   @media (max-height: 700px) {

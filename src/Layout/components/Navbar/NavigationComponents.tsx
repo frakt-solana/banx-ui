@@ -1,6 +1,6 @@
 import classNames from 'classnames'
+import { NavLink } from 'react-router-dom'
 
-// import { NavLink } from 'react-router-dom'
 import { MenuItem } from './Navbar'
 import { Navigation } from './types'
 
@@ -25,14 +25,14 @@ export const createNavigationLink = ({
   icon: any
   label: string
   className: string
-  pathname: any
+  pathname: string
   isActive: boolean
   param?: string
   primary?: boolean
 }) => {
   return (
-    <a
-      href={pathname}
+    <NavLink
+      to={pathname}
       className={classNames(styles.link, className, {
         [styles.active]: isActive,
         [styles.primary]: primary,
@@ -41,6 +41,6 @@ export const createNavigationLink = ({
     >
       {icon && icon()}
       {label && <span className={styles.label}>{label}</span>}
-    </a>
+    </NavLink>
   )
 }
