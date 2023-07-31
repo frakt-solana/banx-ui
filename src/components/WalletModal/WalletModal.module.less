@@ -1,0 +1,94 @@
+.modal {
+  width: 370px;
+  border: 1px solid var(--bg-border-color);
+
+  position: absolute;
+  top: 80px;
+  right: 15px;
+  background-color: var(--bg-primary-color);
+  padding: 16px;
+  box-shadow:
+    rgb(0 0 0 / 1%) 0px 0px 0px,
+    var(--secondary-border) 4px 4px 0px 0px;
+
+  @media (max-width: 767px) {
+    position: fixed;
+    top: 72px;
+    left: 0;
+    right: 0;
+    max-width: unset;
+    width: 100%;
+    box-shadow: unset;
+    border: 0;
+    border-bottom: 1px solid var(--bg-border-color);
+  }
+}
+
+.walletItems {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  row-gap: 32px;
+}
+
+.walletItem {
+  cursor: pointer;
+  transition: background-color 0.1s ease-in;
+  position: relative;
+  z-index: 2;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+
+  &:hover {
+    background-color: var(--color-dark);
+  }
+
+  img {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.walletIcon path {
+  fill: var(--content-primary);
+}
+
+//? UserInfo component styling
+
+.userInfo {
+  background-color: var(--primary-background);
+  width: 100%;
+}
+
+.buttonsWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 37.5px;
+  margin-top: 24px;
+
+  @media (max-width: 960px) {
+    justify-content: space-between;
+    max-width: 550px;
+    margin: 24px auto;
+    padding: 0 65px;
+  }
+}
+
+.button {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--secondary-border);
+  font: var(--font-btn-middle);
+}
+
+.button svg path {
+  fill: var(--content-primary);
+}

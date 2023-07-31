@@ -1,0 +1,40 @@
+.root {
+  background: transparent;
+  cursor: pointer;
+
+  padding: 8px 15px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+
+  &:disabled {
+    pointer-events: none;
+  }
+}
+.large {
+  height: 40px;
+}
+.medium {
+  height: 32px;
+}
+.small {
+  padding: 2px 7px;
+  height: 24px;
+}
+
+.secondary {
+  border: 1px solid var(--accent-primary);
+  background-color: var(--bg-primary-color);
+  color: var(--content-primary);
+
+  &:hover {
+    background-color: var(--accent-secondary);
+  }
+
+  &:disabled {
+    border: 1px solid var(--bg-border-color);
+    background-color: var(--bg-primary-color);
+  }
+}
