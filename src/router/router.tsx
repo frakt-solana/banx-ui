@@ -3,8 +3,8 @@ import { FC, PropsWithChildren } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 import { AppLayout } from '@frakt/Layout'
-import { routes } from '@frakt/constants/routes'
 import { useFirebaseNotifications } from '@frakt/hooks'
+import { routes } from '@frakt/router/routes'
 
 const InitialCalls: FC<PropsWithChildren> = ({ children }) => {
   useFirebaseNotifications()

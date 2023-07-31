@@ -1,5 +1,4 @@
 export * from './config'
 export * from './endpoints'
-export * from './paths'
 export * from './wallets'
 export * from './config'

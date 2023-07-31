@@ -4,7 +4,7 @@ import classNames from 'classnames'
 
 import { Theme, useTheme } from '@frakt/hooks'
 
-import { MenuItem } from '../Navbar'
+import { MenuItem } from '../Navbar/NavigationComponents'
 import { NAVIGATION_LINKS, SECONDARY_NAVIGATION_LINKS } from '../Navbar/constants'
 import { useBurgerMenu } from './hooks'
 

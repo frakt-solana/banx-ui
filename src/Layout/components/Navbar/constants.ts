@@ -1,31 +1,34 @@
-import { PATHS } from '@frakt/constants'
 import { Borrow, BorrowDark, Dashboard, DashboardDark, Lend, LendDark } from '@frakt/icons'
+import { PATHS } from '@frakt/router'
 
 export const NAVIGATION_LINKS = [
   {
     pathname: PATHS.ROOT,
     label: 'Dashboard',
-    icon: Dashboard,
-    iconDark: DashboardDark,
-    primary: true,
+    icons: {
+      light: Dashboard,
+      dark: DashboardDark,
+    },
   },
   {
-    pathname: PATHS.BORROW_ROOT,
+    pathname: PATHS.BORROW,
     label: 'Borrow',
-    icon: Borrow,
-    iconDark: BorrowDark,
-    primary: true,
+    icons: {
+      light: Borrow,
+      dark: BorrowDark,
+    },
   },
   {
     pathname: PATHS.LOANS,
     label: 'My loans',
   },
   {
-    pathname: PATHS.BONDS_LITE,
+    pathname: PATHS.LEND,
     label: 'Lend',
-    icon: Lend,
-    iconDark: LendDark,
-    primary: true,
+    icons: {
+      light: Lend,
+      dark: LendDark,
+    },
   },
 ]
 
