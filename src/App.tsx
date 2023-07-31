@@ -7,6 +7,8 @@ import { RPC_ENDPOINTS, WALLETS } from '@frakt/constants'
 import { useBestWorkingRPC } from '@frakt/hooks'
 import { DialectProvider, initSentry } from '@frakt/utils'
 
+import { AppLayout } from './Layout'
+
 initSentry()
 const queryClient = new QueryClient()
 
@@ -33,7 +35,9 @@ const App: FC = () => {
     <QueryClientProvider client={queryClient}>
       <SolanaConnectionWalletProvider>
         <DialectProvider>
-          <div>Banx here</div>
+          <AppLayout>
+            <div>Banx here</div>
+          </AppLayout>
           {/* <Router /> */}
         </DialectProvider>
         {/* <VerifyWalletModal /> */}

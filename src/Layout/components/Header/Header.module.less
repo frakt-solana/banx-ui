@@ -1,0 +1,29 @@
+.header {
+  flex-grow: 1;
+  background: #f9f9f9;
+
+  border-bottom: 0.5px solid #dddddd;
+
+  height: 72px;
+  width: 100%;
+  padding: 16px 24px;
+}
+
+.logoWrapper {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 40px;
+  @media screen and (max-width: 600px) {
+    display: none;
+  }
+}
+
+.logoBasic {
+  display: none;
+  @media screen and (max-width: 600px) {
+    display: block;
+  }
+}
