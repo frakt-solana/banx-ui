@@ -2,6 +2,8 @@ import { FC } from 'react'
 
 import classNames from 'classnames'
 
+import { Theme, useTheme } from '@frakt/hooks'
+
 import { MenuItem } from '../Navbar'
 import { NAVIGATION_LINKS, SECONDARY_NAVIGATION_LINKS } from '../Navbar/constants'
 import { useBurgerMenu } from './hooks'
@@ -10,6 +12,10 @@ import styles from './BurgerMenu.module.less'
 
 const BurgerMenu: FC = () => {
   const { isVisible, toggleVisibility } = useBurgerMenu()
+
+  const { theme } = useTheme()
+
+  const isDark = theme === Theme.DARK
 
   return (
     <>

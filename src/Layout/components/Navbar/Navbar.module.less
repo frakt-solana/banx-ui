@@ -1,6 +1,5 @@
 .listItem {
-  background-color: transparent;
-
+  font: var(--menu-tab-sm);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -15,15 +14,16 @@
 }
 
 .listItem.primary {
-  font-weight: 700;
+  font: var(--menu-tab-md);
 }
+
 .listItem.secondary {
   padding: 8px 5px 8px 35px;
 }
 
 .container {
-  background: #f9f9f9;
-  border-right: 1px solid var(--primary-border);
+  background: var(--bg-secondary-color);
+  border-right: 0.5px solid var(--bg-border-color);
 
   position: fixed;
   left: 0;
