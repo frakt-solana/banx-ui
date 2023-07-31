@@ -8,6 +8,8 @@ import { copyToClipboard, shortenAddress } from '@frakt/utils'
 
 import Checkbox from '../Checkbox'
 import { UserAvatar } from '../UserAvatar'
+import { getUserRewardsValue } from './helpers'
+import { useFetchUserRewards } from './hooks'
 
 import styles from './WalletModal.module.less'
 
@@ -23,6 +25,7 @@ export const UserInfo: FC<UserInfoProps> = ({ setChangeWallet }) => {
   return (
     <div className={styles.userInfo}>
       <UserGeneralInfo />
+      <UserBalance />
 
       <div className={styles.buttonsWrapper}>
         <div className={styles.button} onClick={() => setChangeWallet(true)}>
@@ -57,6 +60,26 @@ const UserGeneralInfo: FC = () => {
         checked={isLedger}
         className={styles.ledgerCheckbox}
       />
+    </div>
+  )
+}
+
+const UserBalance: FC = () => {
+  const { publicKey: walletPublicKey } = useWallet()
+
+  // const { data } = useFetchUserRewards({ walletPublicKey })
+  // const userRewardsValue = getUserRewardsValue(data)
+
+  return (
+    <div className={styles.userBalance}>
+      <div className={styles.userBalanceColumn}>
+        <p>Balance</p>
+        {/* <p>{solUserValue}◎</p> */}
+      </div>
+      <div className={styles.userBalanceColumn}>
+        <p>Rewards</p>
+        <p>{/* {userRewardsValue || '--'} <FRKT /> */}</p>
+      </div>
     </div>
   )
 }

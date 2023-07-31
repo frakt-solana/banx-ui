@@ -1,1 +1,1 @@
-export { useIsLedger } from './useIsLedger';
+export { useIsLedger } from './useIsLedger'
