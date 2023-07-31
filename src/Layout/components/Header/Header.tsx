@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import { Logo, LogoFull } from '@frakt/icons'
 
-import BurgerMenu from '../BurgerMenu'
+import { BurgerIcon } from '../BurgerMenu'
 
 import styles from './Header.module.less'
 
@@ -15,7 +15,7 @@ export const Header: FC = () => {
           <Logo className={styles.logoBasic} />
         </a>
         <div className={styles.widgetContainer}>widget</div>
-        <BurgerMenu />
+        <BurgerIcon />
       </div>
     </div>
   )

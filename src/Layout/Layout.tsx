@@ -1,5 +1,6 @@
 import { FC, PropsWithChildren } from 'react'
 
+import BurgerMenu from './components/BurgerMenu'
 import { Header } from './components/Header'
 import { Navbar } from './components/Navbar'
 
@@ -11,6 +12,7 @@ const Layout: FC<PropsWithChildren> = ({ children }) => {
       <Header />
       <div className={styles.wrapper}>
         <Navbar />
+        <BurgerMenu />
         <div className={styles.container}>{children}</div>
       </div>
     </div>

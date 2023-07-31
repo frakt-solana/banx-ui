@@ -2,7 +2,7 @@ import { FC, PropsWithChildren } from 'react'
 
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
-import { AppLayout } from '@frakt/Layout'
+import { AppLayout } from '@frakt/layout'
 import { useFirebaseNotifications } from '@frakt/hooks'
 import { routes } from '@frakt/router/routes'
 

@@ -20,12 +20,6 @@ const BurgerMenu: FC = () => {
   return (
     <>
       <div
-        className={classNames(styles.burgerIcon, { [styles.active]: isVisible })}
-        onClick={toggleVisibility}
-      >
-        <div className={styles.centerIconLine} />
-      </div>
-      <div
         className={classNames(styles.wrapper, { [styles.hidden]: !isVisible })}
         onClick={toggleVisibility}
       >
@@ -60,3 +54,16 @@ const BurgerMenu: FC = () => {
 }
 
 export default BurgerMenu
+
+export const BurgerIcon = () => {
+  const { isVisible, toggleVisibility } = useBurgerMenu()
+
+  return (
+    <div
+      className={classNames(styles.burgerIcon, { [styles.active]: isVisible })}
+      onClick={toggleVisibility}
+    >
+      <div className={styles.centerIconLine} />
+    </div>
+  )
+}
