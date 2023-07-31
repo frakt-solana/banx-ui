@@ -6,17 +6,13 @@ import { Navbar } from './components/Navbar'
 
 import styles from './Layout.module.less'
 
-const Layout: FC<PropsWithChildren> = ({ children }) => {
-  return (
-    <div id="app-content">
-      <Header />
-      <div className={styles.wrapper}>
-        <Navbar />
-        <BurgerMenu />
-        <div className={styles.container}>{children}</div>
-      </div>
+export const AppLayout: FC<PropsWithChildren> = ({ children }) => (
+  <div id="app-content">
+    <Header />
+    <div className={styles.container}>
+      <Navbar />
+      <BurgerMenu />
+      <div className={styles.content}>{children}</div>
     </div>
-  )
-}
-
-export const AppLayout: FC<PropsWithChildren> = ({ children }) => <Layout>{children}</Layout>
+  </div>
+)
