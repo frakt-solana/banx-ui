@@ -10,7 +10,7 @@
   display: flex;
   flex-direction: column;
 
-  padding: 24px 0;
+  padding: 12px 0;
   min-width: @sidebar-width;
   max-width: @sidebar-width;
   overflow-y: scroll;
@@ -49,11 +49,15 @@
   background: var(--additional-green-secondary);
   pointer-events: none;
 }
+.link.small {
+  font: var(--menu-tab-sm);
+}
 
 .navigation {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  padding: 12px 0;
 
   border-bottom: 0.5px solid var(--bg-border-color);
   width: 100%;

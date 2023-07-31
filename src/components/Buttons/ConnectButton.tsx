@@ -2,13 +2,12 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
-import { ArrowDown, ChevronDown } from '@frakt/icons'
+import { ChevronDown } from '@frakt/icons'
+import { shortenAddress } from '@frakt/utils'
 
 import { useWalletModal } from '../WalletModal'
 import { Button } from './Button'
 
-// import { useWalletModal } from '@frakt/components/WalletModal'
-// import { shortenAddress } from '@frakt/utils/solanaUtils'
 import styles from './Buttons.module.less'
 
 export const ConnectButton: FC = () => {
@@ -18,17 +17,12 @@ export const ConnectButton: FC = () => {
   return (
     <Button
       type="secondary"
-      className={styles.container}
       size="large"
+      onClick={toggleVisibility}
+      className={styles.container}
       icon={<ChevronDown />}
-      onClick={() => toggleVisibility()}
     >
-      {connected && (
-        <>
-          Bt9v...1Se8
-          {/* {shortenAddress(walletPubKey?.toString())} */}
-        </>
-      )}
+      {connected && <>{shortenAddress(publicKey?.toBase58() || '')}</>}
       {!connected && 'Connect Wallet'}
     </Button>
   )

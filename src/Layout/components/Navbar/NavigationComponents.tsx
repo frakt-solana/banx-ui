@@ -30,7 +30,7 @@ const NavigationLink: FC<NavigationLinkProps> = ({ className, href, icon, label 
   return (
     <a
       href={href}
-      className={classNames(styles.link, className)}
+      className={classNames(styles.link, styles.small, className)}
       rel="noopener noreferrer"
       target="_blank"
     >

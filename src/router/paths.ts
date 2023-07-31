@@ -7,4 +7,5 @@ export const PATHS = {
   AUCTIONS: '/auctions',
   LEND: '/lend',
   LOANS: '/loans',
+  OFFERS: '/offers',
 }
