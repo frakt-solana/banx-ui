@@ -3,6 +3,7 @@ import { ConnectButton } from '@frakt/components/Buttons'
 import { Logo, LogoFull } from '@frakt/icons'
 
 import { BurgerIcon } from '../BurgerMenu/components'
+import ThemeSwitcher from '../ThemeSwitcher'
 
 import styles from './Header.module.less'
 
@@ -14,6 +15,7 @@ export const Header = () => {
         <Logo className={styles.logoBasic} />
       </a>
       <div className={styles.widgetContainer}>
+        <ThemeSwitcher />
         <ConnectButton />
       </div>
       <BurgerIcon />

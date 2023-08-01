@@ -6,7 +6,7 @@ import { getSizeClassName } from './helpers'
 
 import styles from './Buttons.module.less'
 
-interface ButtonProps {
+interface CircleButtonProps {
   className?: string
   disabled?: boolean
   onClick: (args: MouseEvent<HTMLButtonElement>) => void
@@ -15,7 +15,7 @@ interface ButtonProps {
   icon?: ReactNode
 }
 
-export const Button: FC<PropsWithChildren<ButtonProps>> = ({
+export const CircleButton: FC<PropsWithChildren<CircleButtonProps>> = ({
   className,
   disabled = false,
   onClick,
@@ -29,7 +29,7 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={classNames([styles.standard, styles[type], getSizeClassName(size), className])}
+      className={classNames([styles.circle, styles[type], getSizeClassName(size), className])}
     >
       {icon && <span className={styles.icon}>{icon}</span>}
       {children}
