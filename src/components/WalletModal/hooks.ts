@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query'
-import { web3 } from 'fbonds-core'
 import { create } from 'zustand'
 
 import { fetchUserRewards } from '@frakt/api/user'
@@ -16,7 +15,7 @@ export const useWalletModal = create<WalletModalState>((set) => ({
   setVisible: (nextValue) => set((state) => ({ ...state, visible: nextValue })),
 }))
 
-export const useFetchUserRewards = (walletPublicKey: web3.PublicKey) => {
+export const useFetchUserRewards = (walletPublicKey: string) => {
   const { data, isLoading, isFetching } = useQuery(
     ['fetchUserRewards', walletPublicKey],
     () => fetchUserRewards({ publicKey: walletPublicKey }),

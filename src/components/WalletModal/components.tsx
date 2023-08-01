@@ -2,11 +2,13 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
-import { ChangeWallet, Copy, Ledger, MathWallet, SignOut, WalletAvatar } from '@frakt/icons'
+import { ChangeWallet, Copy, FRKT, Ledger, MathWallet, SignOut, WalletAvatar } from '@frakt/icons'
 import { useIsLedger } from '@frakt/store'
-import { copyToClipboard, shortenAddress } from '@frakt/utils'
+import { copyToClipboard, shortenAddress, useSolanaBalance } from '@frakt/utils'
 
 import Checkbox from '../Checkbox'
+import { formatBalance, getUserRewardsValue } from './helpers'
+import { useFetchUserRewards } from './hooks'
 
 import styles from './WalletModal.module.less'
 
@@ -14,6 +16,21 @@ const UserAvatar: FC<{ imageUrl?: string }> = ({ imageUrl }) => {
   const avatar = imageUrl ? <img src={imageUrl} alt="user avatar" /> : <WalletAvatar />
 
   return <div className={styles.avatar}>{avatar}</div>
+}
+
+const BalanceInfo: FC<{ label: string; value: string; icon?: FC }> = ({
+  value,
+  label,
+  icon: Icon,
+}) => {
+  return (
+    <div className={styles.userBalanceInfo}>
+      <span className={styles.userBalanceLabel}>{label}</span>
+      <p className={styles.userBalanceValue}>
+        {value} {Icon && <Icon />}
+      </p>
+    </div>
+  )
 }
 
 const UserGeneralInfo = () => {
@@ -36,12 +53,30 @@ const UserGeneralInfo = () => {
   )
 }
 
+const UserBalance = () => {
+  const { publicKey } = useWallet()
+  const solanaBalance = useSolanaBalance()
+
+  const publicKeyString = publicKey?.toBase58() || ''
+
+  const { data } = useFetchUserRewards(publicKeyString)
+  const rewardsValue = getUserRewardsValue(data)
+
+  return (
+    <div className={styles.userBalanceContainer}>
+      <BalanceInfo label="Balance" value={`${formatBalance(solanaBalance)} ◎`} />
+      <BalanceInfo label="Rewards" value={`${formatBalance(rewardsValue)}`} icon={FRKT} />
+    </div>
+  )
+}
+
 export const UserInfo: FC<{ onChangeWallet: () => void; disconnect: () => Promise<void> }> = ({
   onChangeWallet,
   disconnect,
 }) => (
   <div className={styles.userInfoContainer}>
     <UserGeneralInfo />
+    <UserBalance />
     <div className={styles.buttonsWrapper}>
       <div className={styles.changeWalletButton} onClick={onChangeWallet}>
         <ChangeWallet />

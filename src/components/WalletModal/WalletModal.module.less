@@ -95,7 +95,7 @@
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 
   svg path {
     fill: var(--content-primary);
@@ -113,27 +113,27 @@
   font: var(--btn-text-sm);
 }
 
-.userBalance {
+.userBalanceContainer {
   display: flex;
   flex-direction: column;
-  row-gap: 8px;
+  gap: 16px;
+  padding-top: 16px;
 }
 
-.userBalanceColumn {
+.userBalanceInfo {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font: var(--font-text-8);
-
-  p:first-child {
-    color: var(--secondary-text);
-    font: var(--font-text-6);
-    text-transform: uppercase;
-  }
-
-  p:last-child {
-    display: flex;
-    align-items: center;
-    gap: 3px;
-  }
+}
+.userBalanceLabel {
+  color: var(--content-secondary);
+  font: var(--table-header-md);
+  text-transform: uppercase;
+}
+.userBalanceValue {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--content-primary);
+  font: var(--body-text-md);
 }
