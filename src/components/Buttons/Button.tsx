@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, ReactNode } from 'react'
+import { FC, MouseEvent, PropsWithChildren, ReactNode } from 'react'
 
 import classNames from 'classnames'
 
@@ -9,7 +9,7 @@ import styles from './Buttons.module.less'
 interface ButtonProps {
   className?: string
   disabled?: boolean
-  onClick?: (args: any) => any
+  onClick: (args: MouseEvent<HTMLButtonElement>) => void
   type?: 'primary' | 'secondary' | 'link'
   size?: 'small' | 'medium' | 'large'
   icon?: ReactNode
@@ -18,7 +18,7 @@ interface ButtonProps {
 export const Button: FC<PropsWithChildren<ButtonProps>> = ({
   className,
   disabled = false,
-  onClick = () => {},
+  onClick,
   type = 'primary',
   children,
   size = 'large',

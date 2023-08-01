@@ -1,21 +1,9 @@
 import { FC } from 'react'
 
-export interface Navigation {
-  pathname?: string
-  href?: string
-
-  label: string
-
-  icon?: FC
-  iconDark?: FC
-
-  primary?: boolean
-}
-
 export interface AppNavigationLinkProps {
   pathname: string
   label: string
-  icon?: any
+  icon?: FC
   primary?: boolean
   className?: string
 }
@@ -23,13 +11,12 @@ export interface AppNavigationLinkProps {
 export interface NavigationLinkProps {
   href: string
   label: string
-  icon: any
+  icon?: FC
   className?: string
 }
 
 export interface MenuItemProps {
   label: string
-
   icons?: { light: FC; dark: FC }
   className?: string
   pathname?: string

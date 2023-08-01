@@ -22,7 +22,7 @@ export const WalletItem: FC<WalletItemProps> = ({ onClick, image, name }) => {
 
   return (
     <div className={styles.walletItem} onClick={onClick}>
-      {hasCustomIcon ? <CustomIcon name={name} /> : <img alt={name} src={image} />}
+      {hasCustomIcon ? <CustomIcon name={name} /> : <img src={image} alt={name} />}
       {name}
     </div>
   )

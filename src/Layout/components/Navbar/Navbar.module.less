@@ -1,18 +1,15 @@
-@sidebar-width: 192px;
-
 .container {
-  background: var(--bg-secondary-color);
-  border-right: 0.5px solid var(--bg-border-color);
+  background: var(--bg-secondary);
+  border-right: var(--border-primary);
 
   position: fixed;
   left: 0;
 
   display: flex;
   flex-direction: column;
-
   padding: 12px 0;
-  min-width: @sidebar-width;
-  max-width: @sidebar-width;
+  min-width: var(--navbar-width);
+  max-width: var(--navbar-width);
   overflow-y: scroll;
   height: 100vh;
 
@@ -53,12 +50,10 @@
 }
 
 .navigation {
+  border-bottom: var(--border-primary);
   display: flex;
   flex-direction: column;
-  gap: 2px;
   padding: 12px 0;
-
-  border-bottom: 0.5px solid var(--bg-border-color);
   width: 100%;
 }
 .navigation:last-child {

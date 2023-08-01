@@ -38,7 +38,7 @@ export const UserInfo: FC<UserInfoProps> = ({ setChangeWallet }) => {
   )
 }
 
-const UserGeneralInfo: FC = () => {
+const UserGeneralInfo = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 

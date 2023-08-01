@@ -15,22 +15,7 @@ import { useBurgerMenu } from './hooks'
 
 import styles from './BurgerMenu.module.less'
 
-const LinkList: FC<{ links: { icons: { dark: FC; light: FC }; href: string }[] }> = ({ links }) => {
-  const { theme } = useTheme()
-  const isDark = theme === Theme.DARK
-
-  return (
-    <div className={styles.icons}>
-      {links.map(({ icons, href }, idx) => (
-        <a key={idx} target="_blank" rel="noopener noreferrer" href={href}>
-          {isDark ? icons.dark({}) : icons.light({})}
-        </a>
-      ))}
-    </div>
-  )
-}
-
-const BurgerMenu: FC = () => {
+const BurgerMenu = () => {
   const { isVisible, toggleVisibility } = useBurgerMenu()
 
   return (
@@ -58,6 +43,21 @@ const BurgerMenu: FC = () => {
 }
 
 export default BurgerMenu
+
+const LinkList: FC<{ links: { icons: { dark: FC; light: FC }; href: string }[] }> = ({ links }) => {
+  const { theme } = useTheme()
+  const isDark = theme === Theme.DARK
+
+  return (
+    <div className={styles.icons}>
+      {links.map(({ icons, href }, idx) => (
+        <a key={idx} target="_blank" rel="noopener noreferrer" href={href}>
+          {isDark ? icons.dark({}) : icons.light({})}
+        </a>
+      ))}
+    </div>
+  )
+}
 
 export const BurgerIcon = () => {
   const { isVisible, toggleVisibility } = useBurgerMenu()

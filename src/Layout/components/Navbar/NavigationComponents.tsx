@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom'
 
 import { Theme, useTheme } from '@frakt/hooks'
 
-import { AppNavigationLinkProps, MenuItemProps, Navigation, NavigationLinkProps } from './types'
+import { AppNavigationLinkProps, MenuItemProps, NavigationLinkProps } from './types'
 
 import styles from './Navbar.module.less'
 
@@ -27,7 +27,7 @@ const AppNavigationLink: FC<AppNavigationLinkProps> = ({
         [styles.secondary]: !icon,
       })}
     >
-      {icon && icon()}
+      {icon && icon({})}
       {label && <span>{label}</span>}
     </NavLink>
   )
@@ -41,7 +41,7 @@ const NavigationLink: FC<NavigationLinkProps> = ({ className, href, icon, label 
       rel="noopener noreferrer"
       target="_blank"
     >
-      {icon && icon()}
+      {icon && icon({})}
       {label && <span>{label}</span>}
     </a>
   )
@@ -68,7 +68,7 @@ export const MenuItem: FC<MenuItemProps> = (props) => {
   )
 }
 
-export const createNavigationsLinks = ({ options = [] }: { options: Navigation[] }) => (
+export const createNavigationsLinks = ({ options = [] }: { options: MenuItemProps[] }) => (
   <div className={styles.navigation}>
     {options.map((option) => (
       <MenuItem key={option.label} {...option} />
