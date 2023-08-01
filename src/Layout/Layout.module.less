@@ -1,17 +1,16 @@
-.container {
-  padding-top: var(--header-height);
-
-  position: relative;
-  left: var(--navbar-width);
+#app-content {
+  display: flex;
+  flex-direction: column;
   height: 100vh;
-  width: calc(100vw - var(--navbar-width));
+}
 
-  @media (max-width: 960px) {
-    left: 0;
-    width: 100vw;
-  }
+.container {
+  display: flex;
+  position: relative;
 }
 
 .content {
-  overflow-y: auto;
+  flex: 1;
+  overflow: auto;
+  height: 100vh;
 }

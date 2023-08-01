@@ -1,6 +1,7 @@
 export { ArrowDown } from './ArrowDown'
 export { Auction, AuctionDark } from './Auction'
 export { Borrow, BorrowDark } from './Borrow'
+export { BurgerClose, Burger } from './BurgerMenu'
 export { BanxFilled, BanxFilledDark } from './BanxFilled'
 export { ChangeWallet } from './ChangeWallet'
 export { ChevronDown } from './ChevronDown'

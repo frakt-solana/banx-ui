@@ -1,8 +1,7 @@
 :root {
   //? Commons
-  --header-height: 72px;
-  --navbar-width: 192px;
-  --border-primary: 0.5px solid var(--bg-border);
+  --border-less-primary: 0.5px solid var(--bg-border);
+  --border-primary: 1px solid var(--bg-border);
 
   //? Colors - Light Theme (Default)
   --bg-primary: #ffffff;
@@ -57,11 +56,6 @@
   --body-text-md: 400 16px var(--font-family-chakra);
   --body-text-sm: 400 14px var(--font-family-chakra);
   --body-text-xs: 400 12px var(--font-family-chakra);
-
-  //? Media queries
-  @media (max-width: 960px) {
-    --header-height: 56px;
-  }
 }
 
 :root[data-theme='dark'] {

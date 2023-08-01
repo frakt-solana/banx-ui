@@ -1,15 +1,13 @@
+@navbar-width: 192px;
+
 .navbar {
   background: var(--bg-secondary);
-  border-right: var(--border-primary);
-
-  position: fixed;
-  left: 0;
+  border-right: var(--border-less-primary);
 
   display: flex;
   flex-direction: column;
   padding: 12px 0;
-  min-width: var(--navbar-width);
-  max-width: var(--navbar-width);
+  width: @navbar-width;
   overflow-y: scroll;
   height: 100vh;
 
@@ -50,7 +48,7 @@
 }
 
 .navigationLinksWrapper {
-  border-bottom: var(--border-primary);
+  border-bottom: var(--border-less-primary);
   display: flex;
   flex-direction: column;
   padding: 12px 0;
