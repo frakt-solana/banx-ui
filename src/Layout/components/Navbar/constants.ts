@@ -29,6 +29,7 @@ export const NAVIGATION_LINKS = [
   {
     pathname: PATHS.ROOT,
     label: 'Dashboard',
+    primary: true,
     icons: {
       light: Dashboard,
       dark: DashboardDark,
@@ -37,6 +38,7 @@ export const NAVIGATION_LINKS = [
   {
     pathname: PATHS.BORROW,
     label: 'Borrow',
+    primary: true,
     icons: {
       light: Borrow,
       dark: BorrowDark,
@@ -49,6 +51,7 @@ export const NAVIGATION_LINKS = [
   {
     pathname: PATHS.LEND,
     label: 'Lend',
+    primary: true,
     icons: {
       light: Lend,
       dark: LendDark,

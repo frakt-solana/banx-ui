@@ -5,8 +5,4 @@ export const shortenAddress = (address: string, chars = 4): string => {
 
 export const copyToClipboard = (value: string): void => {
   navigator.clipboard.writeText(value)
-  // notify({
-  //   message: 'Copied to clipboard',
-  //   type: NotifyType.SUCCESS,
-  // })
 }

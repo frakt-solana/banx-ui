@@ -1,4 +1,8 @@
 :root[data-theme='light'] {
+  //? Commons
+  --header-height: 72px;
+
+  //? Colors
   --bg-primary-color: #ffffff;
   --bg-secondary-color: ##f9f9f9;
   --bg-border-color: #dddddd;
@@ -22,9 +26,18 @@
 
   --btn-text-md: 600 16px var(--font-family-chakra);
   --btn-text-sm: 600 14px var(--font-family-chakra);
+
+  //? Media queries
+  @media (max-width: 960px) {
+    --header-height: 56px;
+  }
 }
 
 :root[data-theme='dark'] {
+  //? Commons
+  --header-height: 72px;
+
+  //? Colors
   --bg-primary-color: #141415;
   --bg-secondary-color: #111112;
   --bg-border-color: #1a1a1c;
@@ -45,4 +58,9 @@
 
   --menu-tab-md: 700 12px var(--font-family-syne);
   --menu-tab-sm: 400 12px var(--font-family-syne);
+
+  //? Media queries
+  @media (max-width: 960px) {
+    --header-height: 56px;
+  }
 }

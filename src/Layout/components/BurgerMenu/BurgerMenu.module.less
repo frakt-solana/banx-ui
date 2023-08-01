@@ -20,8 +20,8 @@
 }
 
 .subtitle {
-  color: var(--secondary-text);
-  font: var(--font-subtitle-2);
+  color: var(--content-primary);
+  font: var(--btn-text-md);
   text-transform: uppercase;
 }
 
@@ -175,9 +175,13 @@
   gap: 40px;
 
   a {
-    font-size: 32px;
-    font-family: var(--font-family-syne);
-    color: var(--primary-text);
+    font-size: 32px !important;
+    font-family: var(--font-family-syne) !important;
+    font-weight: 400 !important;
+  }
+
+  svg {
+    display: none;
   }
 
   @media screen and (max-width: 900px) {

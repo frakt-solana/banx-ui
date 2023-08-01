@@ -9,7 +9,13 @@ import { AppNavigationLinkProps, MenuItemProps, Navigation, NavigationLinkProps 
 
 import styles from './Navbar.module.less'
 
-const AppNavigationLink: FC<AppNavigationLinkProps> = ({ icon, label, className, pathname }) => {
+const AppNavigationLink: FC<AppNavigationLinkProps> = ({
+  icon,
+  label,
+  className,
+  pathname,
+  primary,
+}) => {
   const isActive = location.pathname.split('/')[1] === pathname?.split('/')[1]
 
   return (
@@ -17,6 +23,7 @@ const AppNavigationLink: FC<AppNavigationLinkProps> = ({ icon, label, className,
       to={pathname as string}
       className={classNames(styles.link, className, {
         [styles.active]: isActive,
+        [styles.primary]: primary,
         [styles.secondary]: !icon,
       })}
     >
@@ -41,7 +48,7 @@ const NavigationLink: FC<NavigationLinkProps> = ({ className, href, icon, label 
 }
 
 export const MenuItem: FC<MenuItemProps> = (props) => {
-  const { icons, href, pathname, label, className } = props || {}
+  const { icons, href, pathname, label, className, primary } = props || {}
   const { theme } = useTheme()
 
   const icon = theme === Theme.LIGHT ? icons?.light : icons?.dark
@@ -56,6 +63,7 @@ export const MenuItem: FC<MenuItemProps> = (props) => {
       label={label}
       icon={icon}
       className={className}
+      primary={primary}
     />
   )
 }
