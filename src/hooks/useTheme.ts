@@ -24,7 +24,7 @@ const getTheme = () => {
 }
 
 export const useThemeState = create<ThemeState>((set) => ({
-  theme: Theme.LIGHT,
+  theme: getTheme(),
   setTheme: (nextValue) => set((state) => ({ ...state, theme: nextValue })),
   toggleTheme: () =>
     set((state) => ({

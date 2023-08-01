@@ -1,23 +1,17 @@
-.layout {
-  height: 100vh;
-}
-
-.content {
-  overflow-y: auto;
-}
-
 .container {
-  display: flex;
-  flex-grow: 1;
   padding-top: var(--header-height);
-  height: 100vh;
 
   position: relative;
   left: var(--navbar-width);
+  height: 100vh;
   width: calc(100vw - var(--navbar-width));
 
   @media (max-width: 960px) {
     left: 0;
     width: 100vw;
   }
+}
+
+.content {
+  overflow-y: auto;
 }

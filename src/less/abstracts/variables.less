@@ -1,12 +1,12 @@
-:root[data-theme='light'] {
+:root {
   //? Commons
   --header-height: 72px;
   --navbar-width: 192px;
   --border-primary: 0.5px solid var(--bg-border);
 
-  //? Colors
+  //? Colors - Light Theme (Default)
   --bg-primary: #ffffff;
-  --bg-secondary: ##f9f9f9;
+  --bg-secondary: #f9f9f9;
   --bg-border: #dddddd;
 
   --content-primary: #000000;
@@ -15,6 +15,30 @@
   --accent-primary: #98ec2d;
   --accent-secondary: #8fda23;
 
+  --additional-red-primary-deep: #cf1322;
+  --additional-red-primary: #f5222d;
+  --additional-red-secondary: #fff1f0;
+
+  --additional-lava-primary-deep: #d4380d;
+  --additional-lava-primary: #fa541c;
+  --additional-lava-secondary: #fff2e8;
+
+  --additional-orange-primary-deep: #d46b08;
+  --additional-orange-primary: #fa8c16;
+  --additional-orange-secondary: #fff7e6;
+
+  --additional-gold-primary-deep: #d48806;
+  --additional-gold-primary: #faad14;
+  --additional-gold-secondary: #fffbe6;
+
+  --additional-yellow-primary-deep: #d4b106;
+  --additional-yellow-primary: #fadb14;
+  --additional-yellow-secondary: #feffe6;
+
+  --additional-lime-primary-deep: #7cb305;
+  --additional-lime-primary: #a0d911;
+  --additional-lime-secondary: #fcffe6;
+
   --additional-green-primary-deep: #389e0d;
   --additional-green-primary: #52c41a;
   --additional-green-secondary: #f6ffed;
@@ -22,12 +46,8 @@
   //? Fonts
   --font-family-syne: 'Syne', sans-serif;
   --font-family-chakra: 'Chakra Petch', sans-serif;
-
   --menu-tab-md: 700 12px var(--font-family-syne);
   --menu-tab-sm: 400 12px var(--font-family-syne);
-
-  --btn-text-md: 600 16px var(--font-family-chakra);
-  --btn-text-sm: 600 14px var(--font-family-chakra);
 
   //? Media queries
   @media (max-width: 960px) {
@@ -36,12 +56,7 @@
 }
 
 :root[data-theme='dark'] {
-  //? Commons
-  --header-height: 72px;
-  --navbar-width: 192px;
-  --border-primary: 0.5px solid var(--bg-border);
-
-  //? Colors
+  //? Colors - Dark Theme
   --bg-primary: #141415;
   --bg-secondary: #111112;
   --bg-border: #1a1a1c;
@@ -49,22 +64,31 @@
   --content-primary: #ebebeb;
   --content-secondary: #282828;
 
-  --accent-primary: #98ec2d;
-  --accent-secondary: #8fda23;
+  --additional-red-primary-deep: #e84749;
+  --additional-red-primary: #d32029;
+  --additional-red-secondary: #2a1215;
+
+  --additional-lava-primary-deep: #e87040;
+  --additional-lava-primary: #d84a1b;
+  --additional-lava-secondary: #2b1611;
+
+  --additional-orange-primary-deep: #e89a3c;
+  --additional-orange-primary: #d87a16;
+  --additional-orange-secondary: #2b1d11;
+
+  --additional-gold-primary-deep: #e8b339;
+  --additional-gold-primary: #d89614;
+  --additional-gold-secondary: #2b2111;
+
+  --additional-yellow-primary-deep: #e8d639;
+  --additional-yellow-primary: #d8bd14;
+  --additional-yellow-secondary: #2b2611;
+
+  --additional-lime-primary-deep: #a9d134;
+  --additional-lime-primary: #8bbb11;
+  --additional-lime-secondary: #1f2611;
 
   --additional-green-primary-deep: #6abe39;
   --additional-green-primary: #49aa19;
   --additional-green-secondary: #162312;
-
-  //? Fonts
-  --font-family-syne: 'Syne', sans-serif;
-  --font-family-chakra: 'Chakra Petch', sans-serif;
-
-  --menu-tab-md: 700 12px var(--font-family-syne);
-  --menu-tab-sm: 400 12px var(--font-family-syne);
-
-  //? Media queries
-  @media (max-width: 960px) {
-    --header-height: 56px;
-  }
 }
