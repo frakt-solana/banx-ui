@@ -5,71 +5,48 @@ import { NavLink } from 'react-router-dom'
 
 import { Theme, useTheme } from '@frakt/hooks'
 
-import { AppNavigationLinkProps, MenuItemProps, NavigationLinkProps } from './types'
+import { isActivePath } from './helpers'
+import { LinkProps, MenuItemProps } from './types'
 
 import styles from './Navbar.module.less'
 
-const AppNavigationLink: FC<AppNavigationLinkProps> = ({
-  icon,
-  label,
-  className,
-  pathname,
-  primary,
-}) => {
-  const isActive = location.pathname.split('/')[1] === pathname?.split('/')[1]
+const Link: FC<LinkProps> = ({ href, pathname = '', icon: Icon, label, className, primary }) => {
+  const linkProps = {
+    className: classNames(styles.link, className, {
+      [styles.active]: isActivePath(pathname),
+      [styles.primary]: primary,
+      [styles.secondary]: !Icon,
+    }),
+  }
+
+  if (href) {
+    return (
+      <a href={href} rel="noopener noreferrer" target="_blank" {...linkProps}>
+        {Icon && <Icon />}
+        {label && <span>{label}</span>}
+      </a>
+    )
+  }
 
   return (
-    <NavLink
-      to={pathname as string}
-      className={classNames(styles.link, className, {
-        [styles.active]: isActive,
-        [styles.primary]: primary,
-        [styles.secondary]: !icon,
-      })}
-    >
-      {icon && icon({})}
+    <NavLink to={pathname} {...linkProps}>
+      {Icon && <Icon />}
       {label && <span>{label}</span>}
     </NavLink>
   )
 }
 
-const NavigationLink: FC<NavigationLinkProps> = ({ className, href, icon, label }) => {
-  return (
-    <a
-      href={href}
-      className={classNames(styles.link, styles.small, className)}
-      rel="noopener noreferrer"
-      target="_blank"
-    >
-      {icon && icon({})}
-      {label && <span>{label}</span>}
-    </a>
-  )
-}
-
 export const MenuItem: FC<MenuItemProps> = (props) => {
-  const { icons, href, pathname, label, className, primary } = props || {}
   const { theme } = useTheme()
+  const { icons } = props || {}
 
-  const icon = theme === Theme.LIGHT ? icons?.light : icons?.dark
+  const Icon = theme === Theme.LIGHT ? icons?.light : icons?.dark
 
-  if (href) {
-    return <NavigationLink label={label} href={href} icon={icon} className={className} />
-  }
-
-  return (
-    <AppNavigationLink
-      pathname={pathname as string}
-      label={label}
-      icon={icon}
-      className={className}
-      primary={primary}
-    />
-  )
+  return <Link {...props} icon={Icon} />
 }
 
-export const createNavigationsLinks = ({ options = [] }: { options: MenuItemProps[] }) => (
-  <div className={styles.navigation}>
+export const NavigationsLinks: FC<{ options: MenuItemProps[] }> = ({ options = [] }) => (
+  <div className={styles.navigationLinksWrapper}>
     {options.map((option) => (
       <MenuItem key={option.label} {...option} />
     ))}

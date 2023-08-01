@@ -1,6 +1,4 @@
-import { FC } from 'react'
-
-import { createNavigationsLinks } from './NavigationComponents'
+import { NavigationsLinks } from './NavigationComponents'
 import {
   COMMUNITY_LINKS,
   DOCUMENTATIONS_LINKS,
@@ -10,13 +8,13 @@ import {
 
 import styles from './Navbar.module.less'
 
-export const Navbar: FC = () => {
+export const Navbar = () => {
   return (
-    <div className={styles.container}>
-      {createNavigationsLinks({ options: NAVIGATION_LINKS })}
-      {createNavigationsLinks({ options: SECONDARY_NAVIGATION_LINKS })}
-      {createNavigationsLinks({ options: COMMUNITY_LINKS })}
-      {createNavigationsLinks({ options: DOCUMENTATIONS_LINKS })}
+    <div className={styles.navbar}>
+      <NavigationsLinks options={NAVIGATION_LINKS} />
+      <NavigationsLinks options={SECONDARY_NAVIGATION_LINKS} />
+      <NavigationsLinks options={COMMUNITY_LINKS} />
+      <NavigationsLinks options={DOCUMENTATIONS_LINKS} />
     </div>
   )
 }

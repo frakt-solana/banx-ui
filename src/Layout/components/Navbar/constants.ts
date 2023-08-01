@@ -1,4 +1,4 @@
-import { DISCORD } from '@frakt/constants'
+import { DISCORD, DOCS_URL, GITHUB_URL, MEDIUM_URL, TWITTER_URL } from '@frakt/constants'
 import {
   Auction,
   AuctionDark,
@@ -93,7 +93,7 @@ export const SECONDARY_NAVIGATION_LINKS = [
 export const DOCUMENTATIONS_LINKS = [
   {
     label: 'Docs',
-    href: 'https://docs.frakt.xyz/frakt/',
+    href: DOCS_URL,
     icons: {
       light: Docs,
       dark: DocsDark,
@@ -101,7 +101,7 @@ export const DOCUMENTATIONS_LINKS = [
   },
   {
     label: 'Medium',
-    href: 'https://medium.com/@frakt_HQ',
+    href: MEDIUM_URL,
     icons: {
       light: Medium,
       dark: MediumDark,
@@ -109,7 +109,7 @@ export const DOCUMENTATIONS_LINKS = [
   },
   {
     label: 'GitHub',
-    href: 'https://github.com/frakt-solana',
+    href: GITHUB_URL,
     icons: {
       light: Github,
       dark: GithubDark,
@@ -128,7 +128,7 @@ export const COMMUNITY_LINKS = [
   },
   {
     label: 'Twitter',
-    href: 'https://twitter.com/FRAKT_HQ',
+    href: TWITTER_URL,
     icons: {
       light: Twitter,
       dark: TwitterDark,
