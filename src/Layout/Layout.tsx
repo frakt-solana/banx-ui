@@ -5,6 +5,7 @@ import { WalletModal, useWalletModal } from '@frakt/components/WalletModal'
 import BurgerMenu from './components/BurgerMenu'
 import { Header } from './components/Header'
 import { Navbar } from './components/Navbar'
+import TopNotification from './components/TopNotification'
 
 import styles from './Layout.module.less'
 
@@ -13,6 +14,7 @@ export const AppLayout: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <div id="app-content">
+      <TopNotification />
       <Header />
       <div className={styles.container}>
         {visible && <WalletModal />}
