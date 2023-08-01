@@ -5,14 +5,13 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 import { useOnClickOutside } from '@frakt/hooks'
 
-import { UserInfo } from './UserInfo'
-import { WalletItem } from './WalletItem'
+import { UserInfo, WalletItem } from './components'
 import { useWalletModal } from './hooks'
 
 import styles from './WalletModal.module.less'
 
 export const WalletModal = () => {
-  const { connected, wallets, select } = useWallet()
+  const { connected, wallets, select, disconnect } = useWallet()
   const { setVisible } = useWalletModal()
 
   const [changeWallet, setChangeWallet] = useState(false)
@@ -28,9 +27,15 @@ export const WalletModal = () => {
     setVisible(false)
   }
 
+  const handleChangeWallet = () => {
+    setChangeWallet(true)
+  }
+
   return (
     <div ref={modalRef} className={styles.modal}>
-      {shouldShowUserInfo && <UserInfo setChangeWallet={setChangeWallet} />}
+      {shouldShowUserInfo && (
+        <UserInfo onChangeWallet={handleChangeWallet} disconnect={disconnect} />
+      )}
       {shouldShowWalletItems && (
         <div className={styles.walletItems}>
           {wallets.map(({ adapter }, idx) => (

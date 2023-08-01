@@ -1,12 +1,12 @@
 .modal {
-  border: 1px solid var(--bg-border);
+  border: var(--border-primary);
   background-color: var(--bg-primary);
 
   position: absolute;
   top: 8px;
   right: 24px;
   padding: 16px;
-  width: 370px;
+  width: 304px;
 
   @media (max-width: 767px) {
     border: 0;
@@ -22,7 +22,7 @@
 .walletItems {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  row-gap: 32px;
+  row-gap: 16px;
 }
 
 .walletItem {
@@ -30,18 +30,19 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 15px;
 
   font: var(--btn-text-sm);
+  text-align: center;
 
   &:hover {
     background-color: var(--color-dark);
   }
-
-  img {
-    width: 24px;
-    height: 24px;
-  }
+}
+.walletItem svg,
+.walletItem img {
+  width: 32px;
+  height: 32px;
 }
 
 .walletIcon path {
@@ -57,17 +58,9 @@
 
 .buttonsWrapper {
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
-  gap: 38px;
-  margin-top: 24px;
-
-  @media (max-width: 960px) {
-    justify-content: space-between;
-    max-width: 550px;
-    margin: 24px auto;
-    padding: 0 65px;
-  }
+  padding-top: 16px;
 }
 
 .changeWalletButton,
@@ -77,8 +70,7 @@
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  color: var(--secondary-border);
-  font: var(--font-btn-middle);
+  font: var(--btn-text-sm);
 
   svg path {
     fill: var(--content-primary);
@@ -88,40 +80,37 @@
 /* UserGeneralInfo Styles */
 
 .userGeneralInfoContainer {
-  display: grid;
-  grid-template: 1fr 1fr / auto 1fr;
-  margin-bottom: 20px;
+  display: flex;
   align-items: center;
-  column-gap: 16px;
+  gap: 16px;
 }
 
-.avatarIcon {
-  width: 72px;
-  grid-row: 1 / -1;
+.userGeneralInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .userAddressSection {
   cursor: pointer;
   display: flex;
-  grid-row: 1;
   align-items: center;
-  padding-bottom: 6px;
-  gap: 6px;
-  width: 100%;
+  gap: 10px;
 
   svg path {
-    fill: var(--black-color);
+    fill: var(--content-primary);
   }
 }
 
-.addressText {
-  color: var(--black-color);
-  font: var(--font-text-8);
-  font-weight: 700;
+.avatar,
+.avatar svg {
+  height: 84px;
+  width: 84px;
 }
 
-.ledgerCheckbox {
-  grid-row: 2;
+.addressText {
+  color: var(--content-primary);
+  font: var(--btn-text-sm);
 }
 
 .userBalance {
