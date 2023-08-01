@@ -1,7 +1,7 @@
-import { FC } from 'react'
+import { FC, SVGProps } from 'react'
 
-export const LogoFull: FC<{ className?: string }> = ({ className }) => (
-  <svg width="145" height="44" viewBox="0 0 145 44" fill="none" className={className}>
+export const LogoFull: FC<SVGProps<SVGSVGElement>> = (props) => (
+  <svg width="145" height="44" viewBox="0 0 145 44" fill="none" {...props}>
     <path
       fillRule="evenodd"
       clipRule="evenodd"

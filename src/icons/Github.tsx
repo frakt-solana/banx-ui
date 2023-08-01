@@ -1,7 +1,7 @@
-import { FC } from 'react'
+import { FC, SVGProps } from 'react'
 
-export const Github: FC = () => (
-  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+export const Github: FC<SVGProps<SVGSVGElement>> = (props) => (
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" {...props}>
     <path
       fillRule="evenodd"
       clipRule="evenodd"
@@ -11,8 +11,8 @@ export const Github: FC = () => (
   </svg>
 )
 
-export const GithubDark: FC = () => (
-  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+export const GithubDark: FC<SVGProps<SVGSVGElement>> = (props) => (
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" {...props}>
     <g clipPath="url(#clip0_52389_36903)">
       <path
         fillRule="evenodd"

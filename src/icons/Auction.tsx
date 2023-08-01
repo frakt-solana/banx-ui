@@ -1,7 +1,7 @@
-import { FC } from 'react'
+import { FC, SVGProps } from 'react'
 
-export const Auction: FC = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+export const Auction: FC<SVGProps<SVGSVGElement>> = (props) => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" {...props}>
     <path
       fillRule="evenodd"
       clipRule="evenodd"
@@ -17,8 +17,8 @@ export const Auction: FC = () => (
   </svg>
 )
 
-export const AuctionDark: FC = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+export const AuctionDark: FC<SVGProps<SVGSVGElement>> = (props) => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" {...props}>
     <path
       fillRule="evenodd"
       clipRule="evenodd"

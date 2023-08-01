@@ -1,7 +1,7 @@
-import { FC } from 'react'
+import { FC, SVGProps } from 'react'
 
-export const MathWallet: FC<{ className?: string }> = ({ className }) => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className={className || ''}>
+export const MathWallet: FC<SVGProps<SVGSVGElement>> = (props) => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" {...props}>
     <path
       fillRule="evenodd"
       clipRule="evenodd"

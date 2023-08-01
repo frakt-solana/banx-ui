@@ -1,1 +1,1 @@
-export { TopNotification as default } from './TopNotification';
+export { TopNotification as default } from './TopNotification'

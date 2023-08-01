@@ -1,7 +1,7 @@
-import { FC } from 'react'
+import { FC, SVGProps } from 'react'
 
-export const Ledger: FC<{ className?: string }> = ({ className }) => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className={className || ''}>
+export const Ledger: FC<SVGProps<SVGSVGElement>> = (props) => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" {...props}>
     <path
       d="M9.13798 0H20.1063C22.2302 0 23.9395 1.7093 23.9395 3.83311V14.8015H9.13798V0Z"
       fill="#1D2028"
