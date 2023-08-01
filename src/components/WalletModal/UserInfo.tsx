@@ -21,15 +21,14 @@ export const UserInfo: FC<UserInfoProps> = ({ setChangeWallet }) => {
   if (!publicKey) return null
 
   return (
-    <div className={styles.userInfo}>
+    <div className={styles.userInfoContainer}>
       <UserGeneralInfo />
-
       <div className={styles.buttonsWrapper}>
-        <div className={styles.button} onClick={() => setChangeWallet(true)}>
+        <div className={styles.changeWalletButton} onClick={() => setChangeWallet(true)}>
           <ChangeWallet />
           Change wallet
         </div>
-        <div className={styles.button} onClick={disconnect}>
+        <div className={styles.signOutButton} onClick={disconnect}>
           <SignOut />
           Sign out
         </div>
@@ -45,10 +44,10 @@ const UserGeneralInfo = () => {
   const { isLedger, setIsLedger } = useIsLedger()
 
   return (
-    <div className={styles.userGeneralInfo}>
-      <UserAvatar className={styles.avatar} />
-      <div className={styles.userAddress} onClick={() => copyToClipboard(publicKeyString)}>
-        <p>{shortenAddress(publicKeyString)}</p>
+    <div className={styles.userGeneralInfoContainer}>
+      <UserAvatar className={styles.avatarIcon} />
+      <div className={styles.userAddressSection} onClick={() => copyToClipboard(publicKeyString)}>
+        <p className={styles.addressText}>{shortenAddress(publicKeyString)}</p>
         <Copy />
       </div>
       <Checkbox

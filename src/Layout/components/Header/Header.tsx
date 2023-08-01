@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import { ConnectButton } from '@frakt/components/Buttons'
 import { WalletModal, useWalletModal } from '@frakt/components/WalletModal'
 
@@ -9,7 +7,7 @@ import { BurgerIcon } from '../BurgerMenu'
 
 import styles from './Header.module.less'
 
-export const Header: FC = () => {
+export const Header = () => {
   const { visible } = useWalletModal()
 
   return (

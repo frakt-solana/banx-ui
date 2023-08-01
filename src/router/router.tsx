@@ -12,7 +12,7 @@ const InitialCalls: FC<PropsWithChildren> = ({ children }) => {
   return <>{children}</>
 }
 
-export const Router = (): JSX.Element => {
+export const Router = () => {
   return (
     <BrowserRouter>
       <InitialCalls>

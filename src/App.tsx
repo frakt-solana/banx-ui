@@ -29,7 +29,7 @@ const SolanaConnectionWalletProvider: FC<PropsWithChildren> = ({ children }) => 
   )
 }
 
-const App: FC = () => {
+const App = () => {
   return (
     // <ErrorBoundary>
     <QueryClientProvider client={queryClient}>

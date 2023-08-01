@@ -31,8 +31,8 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({
       disabled={disabled}
       className={classNames([styles.root, styles[type], getSizeClassName(size), className])}
     >
-      {children}
       {icon && <span className={styles.icon}>{icon}</span>}
+      {children}
     </button>
   )
 }

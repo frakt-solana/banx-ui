@@ -6,7 +6,6 @@
   top: 80px;
   right: 15px;
   padding: 16px;
-
   width: 370px;
 
   @media (max-width: 767px) {
@@ -52,9 +51,9 @@
   fill: var(--content-primary);
 }
 
-//? UserInfo component styling
+/* UserInfo Styles */
 
-.userInfo {
+.userInfoContainer {
   background-color: var(--primary-background);
   width: 100%;
 }
@@ -74,7 +73,8 @@
   }
 }
 
-.button {
+.changeWalletButton,
+.signOutButton {
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -82,13 +82,15 @@
   gap: 8px;
   color: var(--secondary-border);
   font: var(--font-btn-middle);
+
+  svg path {
+    fill: var(--content-primary);
+  }
 }
 
-.button svg path {
-  fill: var(--content-primary);
-}
+/* UserGeneralInfo Styles */
 
-.userGeneralInfo {
+.userGeneralInfoContainer {
   display: grid;
   grid-template: 1fr 1fr / auto 1fr;
   margin-bottom: 20px;
@@ -96,30 +98,29 @@
   column-gap: 16px;
 }
 
-.userAddress {
-  width: 100%;
-  grid-row: 1;
+.avatarIcon {
+  width: 72px;
+  grid-row: 1 / -1;
+}
 
+.userAddressSection {
   cursor: pointer;
   display: flex;
+  grid-row: 1;
   align-items: center;
   padding-bottom: 6px;
   gap: 6px;
-
-  p {
-    color: var(--black-color);
-    font: var(--font-text-8);
-    font-weight: 700;
-  }
+  width: 100%;
 
   svg path {
     fill: var(--black-color);
   }
 }
 
-.avatar {
-  width: 72px;
-  grid-row: 1 / -1;
+.addressText {
+  color: var(--black-color);
+  font: var(--font-text-8);
+  font-weight: 700;
 }
 
 .ledgerCheckbox {

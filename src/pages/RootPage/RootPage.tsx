@@ -1,6 +1,4 @@
-import { FC } from 'react'
-
-const RootPage: FC = () => {
+const RootPage = () => {
   return <div>RootPage</div>
 }
 
