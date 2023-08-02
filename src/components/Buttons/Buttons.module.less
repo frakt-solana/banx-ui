@@ -21,7 +21,7 @@
 
 // standard buttons styles
 .standard {
-  padding: 8px 15px;
+  padding: 8px 16px;
 
   &.large {
     height: 40px;
@@ -33,6 +33,19 @@
     padding: 2px 7px;
     height: 24px;
   }
+
+  &:disabled {
+    border: 1px solid var(--bg-border);
+    background-color: var(--bg-primary);
+  }
+}
+
+.standard.primary {
+  background-color: var(--accent-primary);
+
+  &:hover {
+    background-color: var(--accent-secondary);
+  }
 }
 
 .standard.secondary {
@@ -41,11 +54,6 @@
 
   &:hover {
     background-color: var(--accent-secondary);
-  }
-
-  &:disabled {
-    border: 1px solid var(--bg-border);
-    background-color: var(--bg-primary);
   }
 }
 
@@ -89,4 +97,8 @@
   &:hover {
     border-color: var(--content-primary);
   }
+}
+
+.walletConnectButton {
+  width: 176px;
 }

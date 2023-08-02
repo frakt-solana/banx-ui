@@ -1,4 +1,4 @@
-import { ConnectButton } from '@frakt/components/Buttons'
+import { WalletConnectButton } from '@frakt/components/Buttons'
 
 import { Logo, LogoFull } from '@frakt/icons'
 
@@ -16,7 +16,7 @@ export const Header = () => {
       </a>
       <div className={styles.widgetContainer}>
         <ThemeSwitcher />
-        <ConnectButton />
+        <WalletConnectButton />
       </div>
       <BurgerIcon />
     </div>

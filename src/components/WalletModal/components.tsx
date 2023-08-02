@@ -2,21 +2,16 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
-import { ChangeWallet, Copy, FRKT, Ledger, MathWallet, SignOut, WalletAvatar } from '@frakt/icons'
+import { ChangeWallet, Copy, FRKT, Ledger, MathWallet, SignOut } from '@frakt/icons'
 import { useIsLedger } from '@frakt/store'
 import { copyToClipboard, shortenAddress, useSolanaBalance } from '@frakt/utils'
 
 import Checkbox from '../Checkbox'
+import UserAvatar from '../UserAvatar'
 import { formatBalance, getUserRewardsValue } from './helpers'
 import { useFetchUserRewards } from './hooks'
 
 import styles from './WalletModal.module.less'
-
-const UserAvatar: FC<{ imageUrl?: string }> = ({ imageUrl }) => {
-  const avatar = imageUrl ? <img src={imageUrl} alt="user avatar" /> : <WalletAvatar />
-
-  return <div className={styles.avatar}>{avatar}</div>
-}
 
 const BalanceInfo: FC<{ label: string; value: string; icon?: FC }> = ({
   value,
@@ -41,7 +36,7 @@ const UserGeneralInfo = () => {
 
   return (
     <div className={styles.userGeneralInfoContainer}>
-      <UserAvatar />
+      <UserAvatar className={styles.avatar} />
       <div className={styles.userGeneralInfo}>
         <div className={styles.userAddressSection} onClick={() => copyToClipboard(publicKeyString)}>
           <p className={styles.addressText}>{shortenAddress(publicKeyString)}</p>
