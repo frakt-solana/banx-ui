@@ -1,0 +1,139 @@
+.modal {
+  border: var(--border-primary);
+  background-color: var(--bg-primary);
+
+  position: absolute;
+  top: 8px;
+  right: 24px;
+  padding: 16px;
+  width: 304px;
+
+  @media (max-width: 767px) {
+    border: 0;
+    border-bottom: var(--border-primary);
+
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+  }
+}
+
+.avatar,
+.avatar svg {
+  height: 84px;
+  width: 84px;
+}
+
+.walletItems {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  row-gap: 16px;
+}
+
+.walletItem {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+
+  font: var(--btn-text-sm);
+  text-align: center;
+
+  &:hover {
+    background-color: var(--color-dark);
+  }
+}
+.walletItem svg,
+.walletItem img {
+  width: 32px;
+  height: 32px;
+}
+
+.walletIcon path {
+  fill: var(--content-primary);
+}
+
+/* UserInfo Styles */
+
+.userInfoContainer {
+  background-color: var(--primary-background);
+  width: 100%;
+}
+
+.buttonsWrapper {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding-top: 16px;
+}
+
+.changeWalletButton,
+.signOutButton {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font: var(--btn-text-sm);
+
+  svg path {
+    fill: var(--content-primary);
+  }
+}
+
+/* UserGeneralInfo Styles */
+
+.userGeneralInfoContainer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.userGeneralInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.userAddressSection {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  svg path {
+    fill: var(--content-primary);
+  }
+}
+
+.addressText {
+  color: var(--content-primary);
+  font: var(--btn-text-sm);
+}
+
+.userBalanceContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 16px;
+}
+
+.userBalanceInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.userBalanceLabel {
+  color: var(--content-secondary);
+  font: var(--table-header-md);
+  text-transform: uppercase;
+}
+.userBalanceValue {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--content-primary);
+  font: var(--body-text-md);
+}

@@ -1,0 +1,86 @@
+/* Common styles for checkbox and label */
+.checkbox,
+label {
+  color: var(--bg-border);
+  cursor: pointer;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  padding-left: 26px;
+  font: var(--body-text-sm);
+}
+
+.checkbox input {
+  position: absolute;
+  opacity: 0;
+  height: 0;
+  width: 0;
+}
+
+/* Shared checkboxInput styles */
+.checkboxInput {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--bg-border);
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.checkboxInput::after {
+  content: '';
+  position: absolute;
+  display: none;
+  left: 5px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid #000;
+  border-width: 0 1px 1px 0;
+  transform: rotate(45deg);
+}
+
+/* Checkbox styles */
+.checkbox input:checked ~ .checkboxInput {
+  background-color: var(--accent-primary);
+  border-color: #000;
+}
+
+.checkbox input:checked ~ .checkboxInput::after {
+  display: block;
+}
+
+.checkboxInput:hover {
+  border-color: var(--content-primary);
+}
+
+/* Label styles */
+
+input:checked ~ p {
+  color: var(--content-primary);
+}
+
+label {
+  color: var(--content-primary);
+}
+
+label:hover .checkboxInput {
+  border-color: var(--content-primary);
+}
+
+label:hover {
+  color: var(--content-primary);
+}
+
+/* Additional media query */
+@media (max-width: 960px) {
+  .checkbox {
+    white-space: nowrap;
+  }
+}

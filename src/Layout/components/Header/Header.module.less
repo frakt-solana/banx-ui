@@ -1,0 +1,45 @@
+.header {
+  background: var(--bg-secondary);
+  border-bottom: var(--border-less-primary);
+
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+}
+
+.widgetContainer {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  @media (max-width: 960px) {
+    gap: 8px;
+  }
+}
+
+.logoWrapper {
+  display: flex;
+  align-items: center;
+}
+.logoWrapper svg path {
+  fill: var(--content-primary);
+}
+
+.logo {
+  height: 40px;
+}
+
+.logoBasic {
+  display: none;
+}
+
+@media screen and (max-width: 768px) {
+  .logo {
+    display: none;
+  }
+
+  .logoBasic {
+    display: block;
+  }
+}

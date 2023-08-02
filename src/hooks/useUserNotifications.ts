@@ -8,7 +8,7 @@ import {
   deleteNotifications,
   getUserNotifications,
   markNotificationsAsRead,
-} from '@frakt/api/notifications'
+} from '@banx/api/notifications'
 
 type UseUserNotifications = () => {
   notifications: ReadonlyArray<Notification> | null

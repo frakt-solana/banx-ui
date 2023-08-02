@@ -2,7 +2,7 @@ import axios from 'axios'
 import { web3 } from 'fbonds-core'
 import { Dictionary } from 'lodash'
 
-import { BACKEND_DOMAIN } from '@frakt/constants'
+import { BACKEND_DOMAIN } from '@banx/constants'
 
 type DeleteNotifications = (props: {
   publicKey: web3.PublicKey

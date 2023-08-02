@@ -1,0 +1,109 @@
+// root styles for all buttons
+.root {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: var(--content-primary);
+  font: var(--btn-text-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  &:disabled {
+    pointer-events: none;
+  }
+}
+
+// standard buttons styles
+.standard {
+  padding: 8px 16px;
+
+  &.large {
+    height: 40px;
+  }
+  &.medium {
+    height: 32px;
+  }
+  &.small {
+    padding: 2px 7px;
+    height: 24px;
+  }
+
+  &:disabled {
+    border: 1px solid var(--bg-border);
+    background-color: var(--bg-primary);
+  }
+}
+
+.standard.primary {
+  color: #000000;
+  background-color: var(--accent-primary);
+
+  &:hover {
+    background-color: var(--accent-secondary);
+  }
+}
+
+.standard.secondary {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--accent-primary);
+
+  &:hover {
+    border: 1px solid var(--accent-secondary);
+  }
+}
+
+// Circle button styles
+.circle.primary,
+.circle.secondary {
+  border-radius: 100%;
+  padding: 8px;
+
+  &:disabled {
+    border: 1px solid var(--bg-border);
+    background-color: var(--bg-primary);
+  }
+
+  &.large {
+    width: 40px;
+    height: 40px;
+  }
+  &.medium {
+    height: 32px;
+    height: 32px;
+  }
+  &.small {
+    height: 24px;
+    height: 24px;
+  }
+
+  svg path {
+    fill: var(--content-primary);
+  }
+}
+
+.circle.primary {
+  background-color: var(--accent-primary);
+
+  &:hover {
+    background-color: var(--accent-secondary);
+  }
+}
+
+.circle.secondary {
+  border: 1px solid var(--bg-border);
+  background-color: var(--bg-primary);
+
+  &:hover {
+    border-color: var(--content-primary);
+  }
+}
+
+.walletConnectButton {
+  width: 176px;
+}
+
+.primaryIcon path {
+  fill: var(--content-primary);
+}
