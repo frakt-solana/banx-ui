@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import { useWallet } from '@solana/wallet-adapter-react'
 
 import { ChevronDown, Wallet } from '@frakt/icons'
