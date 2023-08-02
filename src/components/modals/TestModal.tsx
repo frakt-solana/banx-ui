@@ -1,8 +1,8 @@
 import { FC } from 'react'
 
-import { Modal } from 'antd'
-
 import { useModal } from '@banx/store'
+
+import { Modal } from './BaseModal'
 
 export interface TestModalProps {
   customText?: string
