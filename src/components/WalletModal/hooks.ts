@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { create } from 'zustand'
 
-import { fetchUserRewards } from '@frakt/api/user'
+import { fetchUserRewards } from '@banx/api/user'
 
 interface WalletModalState {
   visible: boolean

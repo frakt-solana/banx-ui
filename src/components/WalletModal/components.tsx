@@ -2,12 +2,13 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
-import { ChangeWallet, Copy, FRKT, Ledger, MathWallet, SignOut } from '@frakt/icons'
-import { useIsLedger } from '@frakt/store'
-import { copyToClipboard, shortenAddress, useSolanaBalance } from '@frakt/utils'
+import { ChangeWallet, Copy, FRKT, SignOut } from '@banx/icons'
+import { useIsLedger } from '@banx/store'
+import { copyToClipboard, shortenAddress, useSolanaBalance } from '@banx/utils'
 
 import Checkbox from '../Checkbox'
 import UserAvatar from '../UserAvatar'
+import { iconComponents } from './constants'
 import { formatBalance, getUserRewardsValue } from './helpers'
 import { useFetchUserRewards } from './hooks'
 
@@ -65,10 +66,12 @@ const UserBalance = () => {
   )
 }
 
-export const UserInfo: FC<{ onChangeWallet: () => void; disconnect: () => Promise<void> }> = ({
-  onChangeWallet,
-  disconnect,
-}) => (
+interface UserInfoProps {
+  onChangeWallet: () => void
+  disconnect: () => Promise<void>
+}
+
+export const UserInfo: FC<UserInfoProps> = ({ onChangeWallet, disconnect }) => (
   <div className={styles.userInfoContainer}>
     <UserGeneralInfo />
     <UserBalance />
@@ -91,16 +94,17 @@ interface WalletItemProps {
   name: string
 }
 
+// To prevent same background for white icons
 const CustomIcon: FC<{ name: string }> = ({ name }) => {
-  if (name === 'Ledger') return <Ledger className={styles.walletIcon} />
-  if (name === 'MathWallet') return <MathWallet className={styles.walletIcon} />
-  return null
+  const IconComponent = iconComponents[name]
+  return IconComponent ? <IconComponent className={styles.walletIcon} /> : null
 }
 
 export const WalletItem: FC<WalletItemProps> = ({ onClick, image, name }) => {
-  // To prevent same background for white icons
-  const hasCustomIcon = name === 'Ledger' || name === 'MathWallet'
-  const shortWalletName = name.split(' ').at(0)
+  const customIconNames = Object.keys(iconComponents)
+  const hasCustomIcon = customIconNames.includes(name)
+
+  const shortWalletName = name.split(' ')[0]
 
   return (
     <div className={styles.walletItem} onClick={onClick}>

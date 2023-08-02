@@ -1,7 +1,7 @@
 import { FC } from 'react'
 
-import { Theme, useTheme } from '@frakt/hooks'
-import { Burger, BurgerClose } from '@frakt/icons'
+import { Theme, useTheme } from '@banx/hooks'
+import { Burger, BurgerClose } from '@banx/icons'
 
 import { useBurgerMenu } from './hooks'
 

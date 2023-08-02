@@ -1,4 +1,4 @@
-import { DISCORD, DOCS_URL, GITHUB_URL, MEDIUM_URL, TWITTER_URL } from '@frakt/constants'
+import { DISCORD, DOCS_URL, GITHUB_URL, MEDIUM_URL, TWITTER_URL } from '@banx/constants'
 import {
   Auction,
   AuctionDark,
@@ -22,8 +22,8 @@ import {
   RafflesDark,
   Twitter,
   TwitterDark,
-} from '@frakt/icons'
-import { PATHS } from '@frakt/router'
+} from '@banx/icons'
+import { PATHS } from '@banx/router'
 
 export const NAVIGATION_LINKS = [
   {

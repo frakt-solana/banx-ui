@@ -68,7 +68,7 @@ const config = {
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js', '...'],
     alias: {
-      '@frakt': path.resolve(__dirname, 'src/'),
+      '@banx': path.resolve(__dirname, 'src/'),
     },
     fallback: {
       assert: require.resolve('assert'),

@@ -5,5 +5,5 @@ export const SOLANAFM_URL = 'https://solana.fm/'
 
 export const TWITTER_URL = 'https://twitter.com/FRAKT_HQ'
 export const GITHUB_URL = 'https://github.com/frakt-solana'
-export const MEDIUM_URL = 'https://medium.com/@frakt_HQ'
+export const MEDIUM_URL = 'https://medium.com/@banx_HQ'
 export const DOCS_URL = 'https://docs.frakt.xyz/frakt/'

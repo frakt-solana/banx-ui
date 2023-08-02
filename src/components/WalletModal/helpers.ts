@@ -1,6 +1,6 @@
 import { sumBy } from 'lodash'
 
-import { UserRewards } from '@frakt/api/user/types'
+import { UserRewards } from '@banx/api/user/types'
 
 export const getUserRewardsValue = (usersRewards?: UserRewards) => {
   if (!usersRewards) return null

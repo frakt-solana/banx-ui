@@ -1,4 +1,4 @@
-import { NavigationsLinks } from './NavigationComponents'
+import { NavigationsLinks } from './components'
 import {
   COMMUNITY_LINKS,
   DOCUMENTATIONS_LINKS,

@@ -1,6 +1,6 @@
 import { FC, PropsWithChildren } from 'react'
 
-import { WalletModal, useWalletModal } from '@frakt/components/WalletModal'
+import { WalletModal, useWalletModal } from '@banx/components/WalletModal'
 
 import BurgerMenu from './components/BurgerMenu'
 import { Header } from './components/Header'

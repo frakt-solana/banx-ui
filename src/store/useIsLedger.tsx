@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-const FRAKT_IS_LEDGER_LS_KEY = '@frakt.isLedger'
+const FRAKT_IS_LEDGER_LS_KEY = '@banx.isLedger'
 
 interface IsLedgerState {
   isLedger: boolean

@@ -1,6 +1,6 @@
-import { WalletConnectButton } from '@frakt/components/Buttons'
+import { WalletConnectButton } from '@banx/components/Buttons'
 
-import { Logo, LogoFull } from '@frakt/icons'
+import { Logo, LogoFull } from '@banx/icons'
 
 import { BurgerIcon } from '../BurgerMenu/components'
 import ThemeSwitcher from '../ThemeSwitcher'

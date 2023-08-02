@@ -9,8 +9,8 @@
   "importOrder": [
     "^(react/(.*)$)|^(react$)",
     "<THIRD_PARTY_MODULES>",
-    "^@frakt/components(.*)$",
-    "^@frakt/(.*)$",
+    "^@banx/components(.*)$",
+    "^@banx/(.*)$",
     "^[./].*(?<!\\.(c|le|sc)ss)$",
     "\\.(c|le|sc)ss$"
   ],

@@ -3,7 +3,7 @@ import { FC } from 'react'
 import classNames from 'classnames'
 import { NavLink } from 'react-router-dom'
 
-import { Theme, useTheme } from '@frakt/hooks'
+import { Theme, useTheme } from '@banx/hooks'
 
 import { isActivePath } from './helpers'
 import { LinkProps, MenuItemProps } from './types'

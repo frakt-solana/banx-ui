@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import { BACKEND_DOMAIN } from '@frakt/constants'
+import { BACKEND_DOMAIN } from '@banx/constants'
 
 interface NotificationContent {
   html: string

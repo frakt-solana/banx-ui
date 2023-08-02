@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import RootPage from '@frakt/pages/RootPage/RootPage'
+import RootPage from '@banx/pages/RootPage/RootPage'
 
 import { PATHS } from './paths'
 

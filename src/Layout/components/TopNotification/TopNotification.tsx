@@ -3,8 +3,8 @@ import { useRef, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import classNames from 'classnames'
 
-import { fetchTopBarNotification } from '@frakt/api/common'
-import { CloseModal } from '@frakt/icons'
+import { fetchTopBarNotification } from '@banx/api/common'
+import { CloseModal } from '@banx/icons'
 
 import styles from './TopNotification.module.less'
 

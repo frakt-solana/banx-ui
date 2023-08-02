@@ -3,7 +3,7 @@ import { useRef, useState } from 'react'
 import { WalletName } from '@solana/wallet-adapter-base'
 import { useWallet } from '@solana/wallet-adapter-react'
 
-import { useOnClickOutside } from '@frakt/hooks'
+import { useOnClickOutside } from '@banx/hooks'
 
 import { UserInfo, WalletItem } from './components'
 import { useWalletModal } from './hooks'

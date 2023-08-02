@@ -1,7 +1,7 @@
-import { Button } from '@frakt/components/Buttons'
+import { Button } from '@banx/components/Buttons'
 
-import { Theme, useTheme } from '@frakt/hooks'
-import { Moon, Sun } from '@frakt/icons'
+import { Theme, useTheme } from '@banx/hooks'
+import { Moon, Sun } from '@banx/icons'
 
 const ThemeSwitcher = () => {
   const { theme, toggleTheme } = useTheme()

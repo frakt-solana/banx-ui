@@ -1,7 +1,7 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 
-import { ChevronDown, Wallet } from '@frakt/icons'
-import { shortenAddress } from '@frakt/utils'
+import { ChevronDown, Wallet } from '@banx/icons'
+import { shortenAddress } from '@banx/utils'
 
 import UserAvatar from '../UserAvatar'
 import { useWalletModal } from '../WalletModal'

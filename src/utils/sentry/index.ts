@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/browser'
 import { Dictionary } from 'lodash'
 
-import { SENTRY } from '@frakt/constants'
+import { SENTRY } from '@banx/constants'
 
 const IGNORE_ERRORS = [
   'Registration failed - push service error',

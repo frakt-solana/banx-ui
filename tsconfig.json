@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "@frakt/*": ["src/*"]
+      "@banx/*": ["src/*"]
     },
     "allowSyntheticDefaultImports": true,
     "noImplicitAny": true,

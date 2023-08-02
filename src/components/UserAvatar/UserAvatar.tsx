@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import classNames from 'classnames'
 
-import { WalletAvatar } from '@frakt/icons'
+import { WalletAvatar } from '@banx/icons'
 
 import styles from './UserAvatar.module.less'
 

@@ -6,7 +6,7 @@ import { web3 } from 'fbonds-core'
 import { initializeApp } from 'firebase/app'
 import { getMessaging, getToken } from 'firebase/messaging'
 
-import { BACKEND_DOMAIN, FCM } from '@frakt/constants'
+import { BACKEND_DOMAIN, FCM } from '@banx/constants'
 
 const firebaseConfig = {
   apiKey: FCM.API_KEY,

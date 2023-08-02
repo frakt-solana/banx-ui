@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 
-import { MenuItem } from '../Navbar/NavigationComponents'
+import { MenuItem } from '../Navbar/components'
 import { CommunityLinks } from './components'
 import { communityLinks, navigationsLinks } from './constants'
 import { useBurgerMenu } from './hooks'

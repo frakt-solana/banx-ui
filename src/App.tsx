@@ -3,11 +3,10 @@ import { FC, PropsWithChildren } from 'react'
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-import { RPC_ENDPOINTS, WALLETS } from '@frakt/constants'
-import { useBestWorkingRPC } from '@frakt/hooks'
-import { DialectProvider, initSentry } from '@frakt/utils'
-
-import { Router } from './router/router'
+import { RPC_ENDPOINTS, WALLETS } from '@banx/constants'
+import { useBestWorkingRPC } from '@banx/hooks'
+import { Router } from '@banx/router'
+import { DialectProvider, initSentry } from '@banx/utils'
 
 initSentry()
 const queryClient = new QueryClient()
