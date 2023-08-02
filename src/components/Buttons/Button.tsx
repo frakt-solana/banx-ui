@@ -1,4 +1,4 @@
-import { FC, MouseEvent, PropsWithChildren, ReactNode } from 'react'
+import { FC, MouseEvent, PropsWithChildren } from 'react'
 
 import classNames from 'classnames'
 
@@ -10,28 +10,30 @@ interface ButtonProps {
   className?: string
   disabled?: boolean
   onClick: (args: MouseEvent<HTMLButtonElement>) => void
-  type?: 'primary' | 'secondary' | 'link'
+  type?: 'standard' | 'circle' | 'square'
+  variant?: 'primary' | 'secondary' | 'link'
   size?: 'small' | 'medium' | 'large'
-  icon?: ReactNode
 }
 
 export const Button: FC<PropsWithChildren<ButtonProps>> = ({
   className,
   disabled = false,
   onClick,
-  type = 'primary',
-  children,
+  type = 'standard',
+  variant = 'primary',
   size = 'large',
-  icon,
+  children,
 }) => {
+  const combinedClassName = classNames(
+    styles.root,
+    styles[type],
+    styles[variant],
+    getSizeClassName(size),
+    className,
+  )
+
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className={classNames([styles.standard, styles[type], getSizeClassName(size), className])}
-    >
-      {icon && <span className={styles.icon}>{icon}</span>}
+    <button type="button" onClick={onClick} disabled={disabled} className={combinedClassName}>
       {children}
     </button>
   )

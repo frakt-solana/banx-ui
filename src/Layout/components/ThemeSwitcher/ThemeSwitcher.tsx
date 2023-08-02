@@ -1,4 +1,4 @@
-import { CircleButton } from '@frakt/components/Buttons'
+import { Button } from '@frakt/components/Buttons'
 
 import { Theme, useTheme } from '@frakt/hooks'
 import { Moon, Sun } from '@frakt/icons'
@@ -9,9 +9,9 @@ const ThemeSwitcher = () => {
   const Icon = theme === Theme.LIGHT ? Sun : Moon
 
   return (
-    <CircleButton type="secondary" onClick={toggleTheme}>
+    <Button type="circle" variant="secondary" onClick={toggleTheme}>
       <Icon />
-    </CircleButton>
+    </Button>
   )
 }
 
