@@ -1,6 +1,7 @@
 import { FC, PropsWithChildren } from 'react'
 
 import { WalletModal, useWalletModal } from '@banx/components/WalletModal'
+import { ModalPortal } from '@banx/components/modals'
 
 import BurgerMenu from './components/BurgerMenu'
 import { Header } from './components/Header'
@@ -20,6 +21,8 @@ export const AppLayout: FC<PropsWithChildren> = ({ children }) => {
         {visible && <WalletModal />}
         <Navbar />
         <BurgerMenu />
+        <ModalPortal />
+
         <div className={styles.content}>{children}</div>
       </div>
     </div>
