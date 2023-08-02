@@ -13,10 +13,6 @@
   &:disabled {
     pointer-events: none;
   }
-
-  svg path {
-    fill: var(--content-primary);
-  }
 }
 
 // standard buttons styles
@@ -41,6 +37,7 @@
 }
 
 .standard.primary {
+  color: #000000;
   background-color: var(--accent-primary);
 
   &:hover {
@@ -49,11 +46,11 @@
 }
 
 .standard.secondary {
-  border: 1px solid var(--accent-primary);
   background-color: var(--bg-primary);
+  border: 1px solid var(--accent-primary);
 
   &:hover {
-    background-color: var(--accent-secondary);
+    border: 1px solid var(--accent-secondary);
   }
 }
 
@@ -80,6 +77,10 @@
     height: 24px;
     height: 24px;
   }
+
+  svg path {
+    fill: var(--content-primary);
+  }
 }
 
 .circle.primary {
@@ -101,4 +102,8 @@
 
 .walletConnectButton {
   width: 176px;
+}
+
+.primaryIcon path {
+  fill: var(--content-primary);
 }

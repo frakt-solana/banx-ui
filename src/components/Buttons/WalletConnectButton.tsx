@@ -5,7 +5,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { ChevronDown, Wallet } from '@frakt/icons'
 import { shortenAddress } from '@frakt/utils'
 
-import UserAvatar from '../UserAvatar/UserAvatar'
+import UserAvatar from '../UserAvatar'
 import { useWalletModal } from '../WalletModal'
 import { Button } from './Button'
 
@@ -19,7 +19,7 @@ export const WalletConnectButton = () => {
     <>
       <UserAvatar />
       <span>{shortenAddress(publicKey?.toBase58() || '')}</span>
-      <ChevronDown />
+      <ChevronDown className={styles.primaryIcon} />
     </>
   )
 
