@@ -10,10 +10,10 @@ export interface MenuItemProps {
 }
 
 export interface LinkProps {
+  label: string
   href?: string
   pathname?: string
   icon?: FC
-  label?: string
   className?: string
   primary?: boolean
 }
