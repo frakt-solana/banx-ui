@@ -1,5 +1,18 @@
+import Table, { useTable } from '@banx/components/Table'
+
+import { getTableList } from './columns'
+import { mockData } from './constants'
+
 const RootPage = () => {
-  return <div>RootPage</div>
+  const columns = getTableList()
+
+  const { table } = useTable({
+    data: mockData,
+    columns,
+    defaultField: 'activeBondsAmount',
+  })
+
+  return <Table {...table} />
 }
 
 export default RootPage

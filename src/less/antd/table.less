@@ -1,0 +1,40 @@
+.rootTableClassName {
+  .ant-table {
+    background: var(--bg-primary);
+    border: 0;
+    border-radius: 0;
+    color: var(--content-primary);
+  }
+
+  .ant-table-tbody > tr > td {
+    border: 0;
+  }
+
+  .ant-table-thead > tr > th {
+    background: var(--bg-primary);
+    border-bottom: var(--border-less-primary);
+    color: var(--content-secondary);
+    font: var(--table-header-md);
+    text-transform: uppercase;
+    transition: none;
+    white-space: nowrap;
+  }
+
+  //? Remove separete line between cells
+  .ant-table-cell::before {
+    display: none;
+  }
+
+  .ant-table-row:hover > td {
+    background: none !important;
+  }
+
+  .ant-table-thead th.ant-table-column-sort,
+  .ant-table-thead th.ant-table-column-has-sorters:hover {
+    background: none !important;
+  }
+
+  .ant-table-cell-row-hover {
+    background: none !important;
+  }
+}
