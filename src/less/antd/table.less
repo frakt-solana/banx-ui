@@ -8,6 +8,21 @@
 
   .ant-table-tbody > tr > td {
     border: 0;
+    font: var(--body-text-md);
+    vertical-align: middle;
+  }
+
+  .ant-table-tbody > tr > td,
+  .ant-table-thead > tr > th {
+    padding: 8px;
+    transition: unset;
+    text-align: right;
+  }
+
+  .ant-table-thead > tr > th:first-child,
+  .ant-table-tbody > tr > td:first-child {
+    padding-left: 0;
+    text-align: left;
   }
 
   .ant-table-thead > tr > th {

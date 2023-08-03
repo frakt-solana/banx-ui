@@ -1,17 +1,19 @@
 import { FC } from 'react'
 
-import styles from './TableCells.module.less'
+import Tooltip from '../Tooltip'
 
 interface HeaderCellProps {
   label: string
   columns?: any
   value: string
+  tooltipText?: string
 }
 
-export const HeaderCell: FC<HeaderCellProps> = ({ label }) => {
+export const HeaderCell: FC<HeaderCellProps> = ({ label, tooltipText }) => {
   return (
-    <div className={styles.rowCell}>
+    <div>
       <span>{label}</span>
+      {!!tooltipText && <Tooltip placement="top" overlay={tooltipText} />}
     </div>
   )
 }

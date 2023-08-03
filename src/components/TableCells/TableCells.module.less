@@ -1,10 +1,20 @@
-.rowCell {
+.nftInfo {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  gap: 8px;
+}
+.nftImage {
+  width: 40px;
+  height: 40px;
+}
+.nftNames {
+  display: flex;
+  flex-direction: column;
   gap: 4px;
 }
-
-.rowCell .rowCell:first-child {
-  justify-content: flex-start;
+.nftCollectionName {
+  font: var(--card-header-md);
+}
+.nftNumber {
+  font: var(--body-text-xs);
 }

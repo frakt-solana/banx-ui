@@ -1,6 +1,6 @@
 import { ColumnsType } from 'antd/es/table'
 
-import { HeaderCell } from '@banx/components/TableCells'
+import { CollaterallCell, HeaderCell } from '@banx/components/TableCells'
 
 export const getTableList = () => {
   const COLUMNS: ColumnsType | any = [
@@ -8,46 +8,54 @@ export const getTableList = () => {
       key: 'collectionName',
       dataIndex: 'collectionName',
       title: () => <HeaderCell label="Collection Name" value="collectionName" />,
-      render: (value: any) => <span>{value}</span>,
-      width: 150,
+      render: (_: any, market: any) => (
+        <CollaterallCell collateralName={market.nftName} collateralImage={market.nftImage} />
+      ),
     },
     {
-      key: 'activeBondsAmount',
-      dataIndex: 'activeBondsAmount',
+      key: 'loanValue',
+      dataIndex: 'loanValue',
       title: (column: any) => (
-        <HeaderCell columns={column?.sortColumns} label="Active loans" value="activeBondsAmount" />
+        <HeaderCell columns={column?.sortColumns} label="Active loans" value="loanValue" />
       ),
       render: (value: any) => <span>{value}</span>,
       showSorterTooltip: false,
     },
     {
-      key: 'bestOffer',
-      dataIndex: 'bestOffer',
+      key: 'repayValue',
+      dataIndex: 'repayValue',
       title: (column: any) => (
-        <HeaderCell columns={column?.sortColumns} label="Best offer" value="bestOffer" />
+        <HeaderCell
+          columns={column?.sortColumns}
+          label="Best offer"
+          value="repayValue"
+          tooltipText="Total liquidity currently available in active offers"
+        />
       ),
       render: (value: any) => <span>{value}</span>,
       sort: true,
     },
     {
-      key: 'apy',
-      dataIndex: 'apy',
-      title: (column: any) => <HeaderCell columns={column?.sortColumns} label="APY" value="apy" />,
-      render: (value: any) => <span>{value}</span>,
-    },
-    {
-      key: 'offerTVL',
-      dataIndex: 'offerTVL',
+      key: 'status',
+      dataIndex: 'status',
       title: (column: any) => (
-        <HeaderCell columns={column?.sortColumns} label="Offer TVL" value="offerTVL" />
+        <HeaderCell columns={column?.sortColumns} label="APY" value="status" />
       ),
       render: (value: any) => <span>{value}</span>,
     },
     {
-      key: 'duration',
-      dataIndex: 'duration',
+      key: 'when',
+      dataIndex: 'when',
       title: (column: any) => (
-        <HeaderCell columns={column?.sortColumns} label="Duration" value="duration" />
+        <HeaderCell columns={column?.sortColumns} label="Offer TVL" value="when" />
+      ),
+      render: (value: any) => <span>{value}</span>,
+    },
+    {
+      key: 'loanType',
+      dataIndex: 'loanType',
+      title: (column: any) => (
+        <HeaderCell columns={column?.sortColumns} label="Duration" value="loanType" />
       ),
       render: (value: any) => <span>{value}</span>,
     },

@@ -6,13 +6,8 @@ const Table = ({
   onRowClick,
   rowKeyField = 'id',
   loading = false,
-  className,
   breakpoints,
-  viewParams,
-  cardClassName,
 }: any): JSX.Element => {
-  const showCard = viewParams?.showCard
-
   return (
     <TableView
       className="rootTableClassName"
@@ -20,7 +15,6 @@ const Table = ({
       columns={columns}
       onRowClick={onRowClick}
       rowKeyField={rowKeyField}
-      // className={showCard ? cardClassName : className}
       breakpoints={breakpoints}
       loading={loading}
     />
