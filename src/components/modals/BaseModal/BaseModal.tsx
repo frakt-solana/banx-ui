@@ -18,6 +18,10 @@ export const Modal: FC<PropsWithChildren<ModalProps>> = ({ children, className, 
       className={classNames(styles.modal, className)}
       wrapClassName={styles.wrap}
       closeIcon={<CloseConfirmModal className={styles.closeIcon} />}
+      maskTransitionName="" //? Disable the animation for the modal backdrop (mask) appearance
+      transitionName="" //? Disable the default animation for modal appearance
+      footer={false}
+      centered
     >
       {children}
     </ModalAnt>

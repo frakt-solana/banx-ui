@@ -3,6 +3,8 @@ import { FC } from 'react'
 import produce from 'immer'
 import { create } from 'zustand'
 
+type EmptyObject = Record<string, never>
+
 interface UseModalState<P> {
   props: P | object | null
   ModalComponent: FC<P> | null
@@ -10,9 +12,7 @@ interface UseModalState<P> {
   closeModal: () => void
 }
 
-//? Only for usage inside ModalPortal
-// eslint-disable-next-line @typescript-eslint/ban-types
-export const useModalState = create<UseModalState<{}>>((set) => ({
+export const useModalState = create<UseModalState<EmptyObject>>((set) => ({
   props: null,
   ModalComponent: null,
   openModal: (Component, props = null) =>

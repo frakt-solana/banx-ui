@@ -1,0 +1,45 @@
+.wrap {
+  backdrop-filter: blur(5px);
+}
+
+.modal :global {
+  padding-bottom: 0;
+
+  .ant-modal-content {
+    background: var(--bg-primary);
+    border: var(--border-less-primary);
+    border-radius: 0;
+    box-shadow: none;
+    color: var(--content-primary);
+    padding: 24px;
+  }
+
+  /* Styles for the close icon */
+  .ant-modal-close {
+    top: -64px;
+    inset-inline-end: 0;
+  }
+
+  .ant-modal-close:hover {
+    background: unset;
+
+    /* Styling border in close icon on hover */
+    svg rect:last-child {
+      stroke: var(--content-primary);
+    }
+  }
+
+  .ant-modal-close,
+  .ant-modal-close svg {
+    height: 40px;
+    width: 40px;
+  }
+
+  .ant-modal-close svg path {
+    stroke: var(--content-primary);
+  }
+
+  .ant-modal-close svg rect:first-child {
+    fill: var(--bg-primary);
+  }
+}
