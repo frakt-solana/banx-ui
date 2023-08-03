@@ -1,6 +1,11 @@
 import { ColumnsType } from 'antd/es/table'
 
-import { CollaterallCell, HeaderCell } from '@banx/components/TableCells'
+import {
+  CollaterallCell,
+  HeaderCell,
+  createSolValueJSX,
+  createTimeValueJSX,
+} from '@banx/components/TableCells'
 
 export const getTableList = () => {
   const COLUMNS: ColumnsType | any = [
@@ -18,7 +23,7 @@ export const getTableList = () => {
       title: (column: any) => (
         <HeaderCell columns={column?.sortColumns} label="Active loans" value="loanValue" />
       ),
-      render: (value: any) => <span>{value}</span>,
+      render: (value: number) => createSolValueJSX(value, 1e9),
       showSorterTooltip: false,
     },
     {
@@ -32,8 +37,7 @@ export const getTableList = () => {
           tooltipText="Total liquidity currently available in active offers"
         />
       ),
-      render: (value: any) => <span>{value}</span>,
-      sort: true,
+      render: (value: number) => createSolValueJSX(value, 1e9),
     },
     {
       key: 'status',
@@ -49,7 +53,7 @@ export const getTableList = () => {
       title: (column: any) => (
         <HeaderCell columns={column?.sortColumns} label="Offer TVL" value="when" />
       ),
-      render: (value: any) => <span>{value}</span>,
+      render: (value: any) => <span>{createTimeValueJSX(value)}</span>,
     },
     {
       key: 'loanType',
