@@ -1,2 +1,2 @@
-export { Table as default } from './Table'
+export { default } from './Table'
 export * from './types'

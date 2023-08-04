@@ -9,8 +9,6 @@ const RootPage = () => {
   const table = {
     data: mockData,
     columns,
-    onRowClick: null,
-    rowKeyField: 'id',
   }
 
   return (
