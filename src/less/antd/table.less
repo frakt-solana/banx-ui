@@ -21,35 +21,36 @@
 
   .ant-table-thead > tr > th:first-child,
   .ant-table-tbody > tr > td:first-child {
-    padding-left: 0;
     text-align: left;
   }
 
+  /* Styling for table header cells */
   .ant-table-thead > tr > th {
     background: var(--bg-primary);
     border-bottom: var(--border-less-primary);
     color: var(--content-secondary);
     font: var(--table-header-md);
     text-transform: uppercase;
-    transition: none;
     white-space: nowrap;
+
+    /* Styling for table header cells with tooltip */
+    & > div {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
   }
 
-  //? Remove separete line between cells
+  /* Remove separating line between cells */
   .ant-table-cell::before {
     display: none;
   }
 
-  .ant-table-row:hover > td {
-    background: none !important;
-  }
-
+  /* Remove background on cell hover */
+  .ant-table-row:hover > td,
   .ant-table-thead th.ant-table-column-sort,
-  .ant-table-thead th.ant-table-column-has-sorters:hover {
-    background: none !important;
-  }
-
+  .ant-table-thead th.ant-table-column-has-sorters:hover,
   .ant-table-cell-row-hover {
-    background: none !important;
+    background: var(--bg-action) !important;
   }
 }
