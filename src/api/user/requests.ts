@@ -6,7 +6,7 @@ import { UserRewards } from './types'
 
 type FetchUserRewards = (props: { publicKey: string }) => Promise<UserRewards>
 export const fetchUserRewards: FetchUserRewards = async ({ publicKey }) => {
-  const { data } = await axios.get<UserRewards>(`${BACKEND_BASE_URL}stats/rewards/${publicKey}`)
+  const { data } = await axios.get<UserRewards>(`${BACKEND_BASE_URL}/stats/rewards/${publicKey}`)
 
   return data
 }

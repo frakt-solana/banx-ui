@@ -33,7 +33,7 @@ const getFirebaseToken = async (): Promise<string> => {
 
 const sendFirebaseTokenToBackend = async (token: string, publicKey: web3.PublicKey) => {
   try {
-    await axios.post(`${BACKEND_BASE_URL}web`, {
+    await axios.post(`${BACKEND_BASE_URL}/web`, {
       token,
       user: publicKey?.toBase58(),
       type: 'all',

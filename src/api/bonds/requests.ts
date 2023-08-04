@@ -15,7 +15,7 @@ export const fetchMarketsPreview: FetchMarketsPreview = async ({ walletPubkey })
     if (walletPubkey) queryParams.append('wallet', walletPubkey?.toBase58())
 
     const { data } = await axios.get<MarketPreview[]>(
-      `${BACKEND_BASE_URL}bonds/preview?${queryParams.toString()}`,
+      `${BACKEND_BASE_URL}/bonds/preview?${queryParams.toString()}`,
     )
 
     await MarketPreviewSchema.array().parseAsync(data)
