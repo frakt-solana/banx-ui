@@ -8,14 +8,14 @@ interface NotificationContent {
 
 type FetchModalNotification = () => Promise<string>
 export const fetchModalNotification: FetchModalNotification = async () => {
-  const { data } = await axios.get<NotificationContent>(`${BACKEND_BASE_URL}web/modal`)
+  const { data } = await axios.get<NotificationContent>(`${BACKEND_BASE_URL}/web/modal`)
 
   return data?.html || ''
 }
 
 type FetchTopBarNotification = () => Promise<string>
 export const fetchTopBarNotification: FetchTopBarNotification = async () => {
-  const { data } = await axios.get<NotificationContent>(`${BACKEND_BASE_URL}web/topbar`)
+  const { data } = await axios.get<NotificationContent>(`${BACKEND_BASE_URL}/web/topbar`)
 
   return data?.html || ''
 }

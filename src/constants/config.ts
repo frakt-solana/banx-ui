@@ -1,4 +1,4 @@
-export const BACKEND_BASE_URL = 'http://a72a6e0600d4cfccc.awsglobalaccelerator.com/'
+export const BACKEND_BASE_URL = 'http://a72a6e0600d4cfccc.awsglobalaccelerator.com'
 
 export const FCM = {
   AUTH_DOMAIN: 'frakt-ee9cc.firebaseapp.com',
