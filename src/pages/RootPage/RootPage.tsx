@@ -45,13 +45,24 @@ const RootPage = () => {
     onChange: setSelectedOptions,
   }
 
+  const defaultSortOption = {
+    label: 'Borrow',
+    value: 'maxLoanValue_desc',
+  }
+
   const { tabs, value, setValue } = useTabs({ tabs: POOLS_TABS })
+
+  const [sortOption, setSortOption] = useState<any>(defaultSortOption)
 
   return (
     <>
       <Tabs tabs={tabs} value={value} setValue={setValue} />
       <div style={{ padding: 20 }}>
-        <Table {...table} searchSelectParams={searchSelectParams} />
+        <Table
+          {...table}
+          searchSelectParams={searchSelectParams}
+          sortParams={{ option: sortOption, onChange: setSortOption }}
+        />
       </div>
     </>
   )

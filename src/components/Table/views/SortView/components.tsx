@@ -2,7 +2,8 @@ import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
 
-import { switchButtonConfigurations } from './constants'
+import { ViewState } from '../../hooks'
+import { buttonConfigurations } from './constants'
 
 import styles from './SortView.module.less'
 
@@ -10,11 +11,11 @@ export const SwitchModeButtons = ({
   viewState,
   onChange,
 }: {
-  viewState: string
-  onChange: (value: string) => void
+  viewState: ViewState
+  onChange: (value: ViewState) => void
 }) => (
   <div className={styles.switchButtons}>
-    {switchButtonConfigurations.map(({ state, icon }) => (
+    {buttonConfigurations.map(({ state, icon }) => (
       <Button
         key={state}
         type="circle"

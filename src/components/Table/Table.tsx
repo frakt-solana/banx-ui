@@ -13,6 +13,7 @@ interface TableProps<T> {
   breakpoints?: PartialBreakpoints
 
   searchSelectParams: any
+  sortParams: any
 }
 
 const Table = <T extends object>({
@@ -23,10 +24,11 @@ const Table = <T extends object>({
   loading = false,
   breakpoints,
   searchSelectParams,
+  sortParams,
 }: TableProps<T>): JSX.Element => {
   return (
     <>
-      <SortView columns={columns} searchSelectParams={searchSelectParams}></SortView>
+      <SortView columns={columns} searchSelectParams={searchSelectParams} sortParams={sortParams} />
       <TableView
         className="rootTableClassName"
         data={data}

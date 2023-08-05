@@ -11,7 +11,7 @@ interface ButtonProps {
   disabled?: boolean
   onClick: (args: MouseEvent<HTMLButtonElement>) => void
   type?: 'standard' | 'circle' | 'square'
-  variant?: 'primary' | 'secondary' | 'link'
+  variant?: 'primary' | 'secondary' | 'link' | 'text'
   size?: 'small' | 'medium' | 'large'
 }
 

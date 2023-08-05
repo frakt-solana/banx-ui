@@ -25,6 +25,7 @@ export const getTableList = () => {
       ),
       render: (value: number) => createSolValueJSX(value, 1e9),
       showSorterTooltip: false,
+      sorter: true,
     },
     {
       key: 'repayValue',
@@ -38,6 +39,7 @@ export const getTableList = () => {
         />
       ),
       render: (value: number) => createSolValueJSX(value, 1e9),
+      sorter: true,
     },
     {
       key: 'status',
@@ -46,6 +48,7 @@ export const getTableList = () => {
         <HeaderCell columns={column?.sortColumns} label="APY" value="status" />
       ),
       render: (value: any) => <span>{value}</span>,
+      sorter: true,
     },
     {
       key: 'when',
@@ -54,6 +57,7 @@ export const getTableList = () => {
         <HeaderCell columns={column?.sortColumns} label="Offer TVL" value="when" />
       ),
       render: (value: any) => <span>{createTimeValueJSX(value)}</span>,
+      sorter: true,
     },
     {
       key: 'loanType',
@@ -62,6 +66,7 @@ export const getTableList = () => {
         <HeaderCell columns={column?.sortColumns} label="Duration" value="loanType" />
       ),
       render: (value: any) => <span>{value}</span>,
+      sorter: true,
     },
   ]
 
