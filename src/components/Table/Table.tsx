@@ -2,6 +2,7 @@ import { ColumnsType } from 'antd/es/table'
 
 import { PartialBreakpoints } from './types'
 import { TableView } from './views'
+import SortView from './views/SortView/SortView'
 
 interface TableProps<T> {
   data: ReadonlyArray<T>
@@ -10,6 +11,8 @@ interface TableProps<T> {
   rowKeyField?: string
   onRowClick?: (dataItem: T) => void
   breakpoints?: PartialBreakpoints
+
+  searchSelectParams: any
 }
 
 const Table = <T extends object>({
@@ -19,17 +22,21 @@ const Table = <T extends object>({
   rowKeyField = 'id',
   loading = false,
   breakpoints,
+  searchSelectParams,
 }: TableProps<T>): JSX.Element => {
   return (
-    <TableView
-      className="rootTableClassName"
-      data={data}
-      columns={columns}
-      onRowClick={onRowClick}
-      rowKeyField={rowKeyField}
-      breakpoints={breakpoints}
-      loading={loading}
-    />
+    <>
+      <SortView columns={columns} searchSelectParams={searchSelectParams}></SortView>
+      <TableView
+        className="rootTableClassName"
+        data={data}
+        columns={columns}
+        onRowClick={onRowClick}
+        rowKeyField={rowKeyField}
+        breakpoints={breakpoints}
+        loading={loading}
+      />
+    </>
   )
 }
 

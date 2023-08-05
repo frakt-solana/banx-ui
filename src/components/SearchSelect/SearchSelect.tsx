@@ -28,7 +28,7 @@ export const SearchSelect = <T extends DefaultOptionType>({
   labels,
   className,
   ...props
-}: SearchSelectProps<T>) => {
+}: any) => {
   return (
     <div className={classNames(styles.selectWrapper, className)}>
       <PrefixInput />

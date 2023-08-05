@@ -1,6 +1,5 @@
 import { useState } from 'react'
 
-import { SearchSelect } from '@banx/components/SearchSelect'
 import Table from '@banx/components/Table'
 import { Tabs, useTabs } from '@banx/components/Tabs'
 
@@ -51,9 +50,8 @@ const RootPage = () => {
   return (
     <>
       <Tabs tabs={tabs} value={value} setValue={setValue} />
-      <SearchSelect {...searchSelectParams} />
       <div style={{ padding: 20 }}>
-        <Table {...table} />
+        <Table {...table} searchSelectParams={searchSelectParams} />
       </div>
     </>
   )

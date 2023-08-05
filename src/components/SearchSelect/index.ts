@@ -1,1 +1,1 @@
-export * from './SearchSelect';
+export * from './SearchSelect'
