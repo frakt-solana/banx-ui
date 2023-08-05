@@ -1,0 +1,113 @@
+.rootSelectClassName {
+  .ant-select-selector,
+  .ant-select-selection-item {
+    box-shadow: none !important;
+    border: 0 !important;
+    margin-inline-end: 8px;
+    padding-inline-end: 8px;
+    margin-bottom: -1px !important;
+    align-items: center;
+
+    .ant-select {
+      width: -webkit-fill-available;
+    }
+  }
+
+  ::-webkit-scrollbar {
+    height: 0px;
+  }
+
+  background-color: var(--bg-primary);
+  color: var(--content-primary);
+  margin-left: 32px;
+  width: calc(100% - 32px);
+
+  .ant-select-selection-item {
+    border-radius: 100px;
+    background-color: var(--accent-primary) !important;
+  }
+
+  .ant-select-selection-item-remove svg {
+    fill: var(--black-color);
+  }
+
+  .ant-select-clear {
+    opacity: 1 !important;
+    background: none;
+    right: 25px !important;
+
+    svg {
+      width: 8px;
+      path {
+        fill: var(--content-primary);
+      }
+    }
+  }
+
+  .ant-select-selection-placeholder {
+    color: var(--black-color);
+    font: var(--font-text-8);
+    font-size: 14px;
+  }
+
+  .ant-select-selection-item-content {
+    display: flex !important;
+
+    & > div > div {
+      color: var(--button-text) !important;
+      gap: 0 !important;
+    }
+
+    #relativeImageContainer {
+      display: none;
+    }
+
+    & > div > p {
+      display: none;
+    }
+  }
+
+  .ant-select-selection-item-content img {
+    display: none;
+  }
+
+  .ant-select-selection-overflow {
+    flex-wrap: nowrap !important;
+    overflow: auto !important;
+  }
+}
+
+.rootSelectPopupClassName {
+  background: var(--bg-primary);
+  border: var(--border-primary) !important;
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--content-primary);
+
+  font: var(--card-header-sm) !important;
+
+  top: 32px !important;
+  left: -32px !important;
+
+  padding: 0;
+  min-width: 330px !important;
+  width: calc(100% + 32px) !important;
+
+  .ant-select-item {
+    color: var(--content-primary);
+    padding: 8px;
+  }
+
+  .ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+    background: var(--bg-action) !important;
+  }
+
+  .ant-select-item-option-selected {
+    background: var(--bg-primary) !important;
+    font-weight: 400 !important;
+  }
+
+  .ant-select-item-option-state {
+    display: none;
+  }
+}

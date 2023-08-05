@@ -1,2 +1,2 @@
-export * from './Tabs';
-export * from './hooks';
+export * from './Tabs'
+export * from './hooks'

@@ -90,3 +90,18 @@ export const mockData = [
     loanType: 'bond',
   },
 ]
+
+export const mockOptions = [
+  {
+    collectionName: 'Banx',
+    collectionImage: 'https://banxnft.s3.amazonaws.com/images/6906.png',
+  },
+  {
+    collectionName: 'ABC',
+    collectionImage: 'https://banxnft.s3.amazonaws.com/images/19542.png',
+  },
+  {
+    collectionName: 'Tensorian',
+    collectionImage: 'https://banxnft.s3.amazonaws.com/images/18952.png',
+  },
+]
