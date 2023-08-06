@@ -7,14 +7,16 @@ import {
   createTimeValueJSX,
 } from '@banx/components/TableCells'
 
+import { Loan } from '@banx/api/loans'
+
 export const getTableColumns = () => {
-  const COLUMNS: ColumnsType = [
+  const COLUMNS: ColumnsType<Loan> = [
     {
       key: 'collateral',
       dataIndex: 'collateral',
       title: () => <HeaderCell label="Collateral" value="collateral" />,
-      render: (_, market: any) => (
-        <CollaterallCell collateralName={market.nftName} collateralImage={market.nftImage} />
+      render: (_, loan) => (
+        <CollaterallCell collateralName={loan.nft.name} collateralImage={loan.nft.imageUrl} />
       ),
     },
     {
@@ -43,9 +45,9 @@ export const getTableColumns = () => {
       title: (column) => (
         <HeaderCell columns={column?.sortColumns} label="Duration" value="duration" />
       ),
-      render: (value) => createTimeValueJSX(value),
-      sorter: true,
+      render: (_, loan) => createTimeValueJSX((loan.bondParams as any).expiredAt),
       showSorterTooltip: false,
+      sorter: true,
     },
   ]
 

@@ -11,7 +11,7 @@ interface TableProps<T> {
   searchSelectParams: any
   sortParams?: SortParams
   toggleParams?: ToggleParams
-  
+
   rowKeyField?: string
   onRowClick?: (dataItem: T) => void
   breakpoints?: PartialBreakpoints

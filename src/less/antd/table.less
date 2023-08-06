@@ -4,6 +4,17 @@
     border: 0;
     border-radius: 0;
     color: var(--content-primary);
+    overflow: auto;
+  }
+
+  .ant-table table {
+    table-layout: auto !important;
+  }
+
+  .ant-table-thead {
+    position: sticky;
+    top: -1px;
+    z-index: 3;
   }
 
   .ant-table-tbody > tr > td {
@@ -30,6 +41,7 @@
     border-bottom: var(--border-less-primary);
     color: var(--content-secondary);
     font: var(--table-header-md);
+    pointer-events: none;
     text-transform: uppercase;
     white-space: nowrap;
 
@@ -39,6 +51,11 @@
       align-items: center;
       gap: 4px;
     }
+  }
+
+  /* Remove sort arrows */
+  .ant-table-column-sorter {
+    display: none;
   }
 
   /* Remove separating line between cells */
