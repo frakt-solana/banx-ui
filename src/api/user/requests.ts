@@ -1,14 +1,12 @@
 import axios from 'axios'
 
-import { BACKEND_DOMAIN } from '@banx/constants'
+import { BACKEND_BASE_URL } from '@banx/constants'
 
 import { UserRewards } from './types'
 
 type FetchUserRewards = (props: { publicKey: string }) => Promise<UserRewards>
 export const fetchUserRewards: FetchUserRewards = async ({ publicKey }) => {
-  const { data } = await axios.get<UserRewards>(
-    `https://${BACKEND_DOMAIN}/stats/rewards/${publicKey}`,
-  )
+  const { data } = await axios.get<UserRewards>(`${BACKEND_BASE_URL}/stats/rewards/${publicKey}`)
 
   return data
 }

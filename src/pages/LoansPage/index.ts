@@ -1,1 +1,1 @@
-export {}
+export { LoansPage } from './LoansPage'

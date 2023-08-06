@@ -1,1 +1,1 @@
-export { default } from './RootPage'
+export { RootPage } from './RootPage'

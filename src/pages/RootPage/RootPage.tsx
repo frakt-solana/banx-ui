@@ -1,5 +1,3 @@
-const RootPage = () => {
-  return <>RootPage</>
+export const RootPage = () => {
+  return <div>RootPage</div>
 }
-
-export default RootPage

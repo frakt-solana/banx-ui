@@ -7070,10 +7070,10 @@ faye-websocket@0.11.4, faye-websocket@^0.11.3:
   dependencies:
     websocket-driver ">=0.5.1"
 
-fbonds-core@^0.5.102:
-  version "0.5.102"
-  resolved "https://registry.yarnpkg.com/fbonds-core/-/fbonds-core-0.5.102.tgz#f9ea79f880a68f64ad7b6781d87d2535d06875af"
-  integrity sha512-BebgvOvv6HaKMaDayWQuh/f/dKxN3aiE+8IUCodVcYtMKywK8DyGYUslV6FiNiEcSZEys2DnVNCLjV+wm/MCsA==
+fbonds-core@0.5.106:
+  version "0.5.106"
+  resolved "https://registry.yarnpkg.com/fbonds-core/-/fbonds-core-0.5.106.tgz#d71c45f4c725b31b04b191f1c04ac0d7f6f7b620"
+  integrity sha512-SUR0nvdvY1DaeGvck00AByyrK1nJkZwE2ZE4giJs4BvWM3nIF/3ibRwyQmB+m334huFSm50/SX5ruczZwdeISQ==
   dependencies:
     "@metaplex-foundation/mpl-token-metadata" "^2.8.1"
     "@project-serum/anchor" "^0.26.0"
@@ -13498,6 +13498,11 @@ yocto-queue@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
+
+zod@^3.21.4:
+  version "3.21.4"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.21.4.tgz#10882231d992519f0a10b5dd58a38c9dabbb64db"
+  integrity sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==
 
 zustand@^4.3.2, zustand@^4.3.9:
   version "4.3.9"

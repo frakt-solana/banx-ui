@@ -46,13 +46,14 @@
     "antd": "^5.7.3",
     "axios": "^1.4.0",
     "classnames": "^2.3.2",
-    "fbonds-core": "^0.5.102",
+    "fbonds-core": "0.5.106",
     "firebase": "^10.1.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.14.2",
+    "zod": "^3.21.4",
     "zustand": "^4.3.9"
   },
   "devDependencies": {

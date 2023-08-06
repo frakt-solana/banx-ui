@@ -1,4 +1,4 @@
-export const BACKEND_DOMAIN = 'api.frakt.xyz'
+export const BACKEND_BASE_URL = 'http://a72a6e0600d4cfccc.awsglobalaccelerator.com'
 
 export const FCM = {
   AUTH_DOMAIN: 'frakt-ee9cc.firebaseapp.com',
@@ -38,3 +38,5 @@ export const BANX_STAKING = {
   WHITELIST_ENTRY_PUBKEY: '6GBJtSCQBRTwU9XmH3gxsfUvvGE9QBMrMTvB4kcEGiya',
   HADO_REGISTRY_PUBKEY: 'ALZCGCWi7rv1oyJiLmdcpUExMqiHdREURLjM698n5gZD',
 }
+
+export const IS_PRIVATE_MARKETS = process.env.IS_PRIVATE_MARKETS === 'true'

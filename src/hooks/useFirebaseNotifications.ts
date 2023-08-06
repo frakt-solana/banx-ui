@@ -6,7 +6,7 @@ import { web3 } from 'fbonds-core'
 import { initializeApp } from 'firebase/app'
 import { getMessaging, getToken } from 'firebase/messaging'
 
-import { BACKEND_DOMAIN, FCM } from '@banx/constants'
+import { BACKEND_BASE_URL, FCM } from '@banx/constants'
 
 const firebaseConfig = {
   apiKey: FCM.API_KEY,
@@ -33,7 +33,7 @@ const getFirebaseToken = async (): Promise<string> => {
 
 const sendFirebaseTokenToBackend = async (token: string, publicKey: web3.PublicKey) => {
   try {
-    await axios.post(`https://${BACKEND_DOMAIN}/web`, {
+    await axios.post(`${BACKEND_BASE_URL}/web`, {
       token,
       user: publicKey?.toBase58(),
       type: 'all',
