@@ -2,7 +2,7 @@ import { Table as AntdTable } from 'antd'
 
 import { TableProps } from '../../Table'
 
-type TableViewProps<T> = Omit<TableProps<T>, 'sortViewParams'>
+type TableViewProps<T> = Omit<TableProps<T, null>, 'sortViewParams'>
 
 const TableView = <T extends object>({
   data,

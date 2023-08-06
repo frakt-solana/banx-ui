@@ -8,8 +8,8 @@ import { OptionKeys } from './types'
 
 import styles from './SearchSelect.module.less'
 
-export interface SearchSelectProps<T> {
-  options: T[]
+export interface SearchSelectProps<P> {
+  options: P[]
   optionKeys: OptionKeys
   selectedOptions: string[]
   onChange?: (selectedOptions: string[]) => void
@@ -19,7 +19,7 @@ export interface SearchSelectProps<T> {
   className?: string
 }
 
-export const SearchSelect = <T extends object>({
+export const SearchSelect = <P extends object>({
   options = [],
   optionKeys,
   placeholder = 'Search',
@@ -28,7 +28,7 @@ export const SearchSelect = <T extends object>({
   labels,
   className,
   ...props
-}: SearchSelectProps<T>) => {
+}: SearchSelectProps<P>) => {
   return (
     <div className={classNames(styles.selectWrapper, className)}>
       <PrefixInput />

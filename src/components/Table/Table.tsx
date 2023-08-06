@@ -15,7 +15,7 @@ export interface TableProps<T, P> {
   breakpoints?: PartialBreakpoints
 }
 
-const Table = <T, P extends object>({
+const Table = <T extends object, P extends object>({
   data,
   columns,
   sortViewParams,
@@ -23,7 +23,7 @@ const Table = <T, P extends object>({
 }: TableProps<T, P>): JSX.Element => {
   return (
     <>
-      <SortView columns={columns as ColumnsType<object>} {...sortViewParams} />
+      <SortView columns={columns} {...sortViewParams} />
       <TableView data={data} columns={columns} {...props} />
     </>
   )

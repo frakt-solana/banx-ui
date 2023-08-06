@@ -12,19 +12,19 @@ import { parseTableColumn } from './helpers'
 
 import styles from './SortView.module.less'
 
-interface SortViewProps<T> {
+interface SortViewProps<T, P> {
   columns: ColumnsType<T>
-  searchSelectParams: SearchSelectProps<T>
+  searchSelectParams: SearchSelectProps<P>
   sortParams?: SortParams
   toggleParams?: ToggleParams
 }
 
-const SortView = <T extends object>({
+const SortView = <T extends object, P extends object>({
   columns,
   searchSelectParams,
   sortParams,
   toggleParams,
-}: SortViewProps<T>) => {
+}: SortViewProps<T, P>) => {
   const { viewState, setViewState } = useTableView()
 
   const sortableColumns = columns.filter(({ sorter }) => !!sorter)
