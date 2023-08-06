@@ -34,6 +34,7 @@ const TableView = <T extends object>({
       sortDirections={['descend', 'ascend']}
       style={onRowClick && { cursor: 'pointer' }}
       onRow={onRowClick ? (rowData) => ({ onClick: () => handleRowClick(rowData) }) : undefined}
+      pagination={false}
     />
   )
 }

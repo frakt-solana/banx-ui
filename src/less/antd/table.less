@@ -41,7 +41,6 @@
     border-bottom: var(--border-less-primary);
     color: var(--content-secondary);
     font: var(--table-header-md);
-    pointer-events: none;
     text-transform: uppercase;
     white-space: nowrap;
 
@@ -63,6 +62,11 @@
     display: none;
   }
 
+  .ant-table-thead th.ant-table-column-has-sorters {
+    pointer-events: none;
+    transition: unset;
+  }
+
   /* Remove background on cell hover */
   .ant-table-row:hover > td,
   .ant-table-thead th.ant-table-column-sort,
@@ -71,7 +75,7 @@
     background: var(--bg-action) !important;
   }
 
-  .ant-empty {
+  .ant-table-empty .ant-table-tbody > tr.ant-table-placeholder {
     display: none;
   }
 }

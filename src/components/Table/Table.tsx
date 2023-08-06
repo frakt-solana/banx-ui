@@ -2,7 +2,7 @@ import { ColumnsType } from 'antd/es/table'
 
 import { PartialBreakpoints, SortViewParams } from './types'
 import { TableView } from './views'
-import SortView from './views/SortView/SortView'
+import SortView from './views/SortView'
 
 export interface TableProps<T, P> {
   data: ReadonlyArray<T>

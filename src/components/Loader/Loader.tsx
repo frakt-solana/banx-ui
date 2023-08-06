@@ -1,7 +1,8 @@
 import { FC } from 'react'
 
-import { LoaderCircle } from '@banx/icons'
 import classNames from 'classnames'
+
+import { LoaderCircle } from '@banx/icons'
 
 import styles from './styles.module.less'
 

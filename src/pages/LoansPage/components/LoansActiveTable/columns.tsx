@@ -1,5 +1,6 @@
 import { ColumnsType } from 'antd/es/table'
 
+import Checkbox from '@banx/components/Checkbox'
 import {
   HeaderCell,
   NftInfoCell,
@@ -9,15 +10,33 @@ import {
 
 import { Loan } from '@banx/api/loans'
 
-export const getTableColumns = () => {
+import styles from './LoansTable.module.less'
+
+export const getTableColumns = ({
+  onSelectAll,
+  findLoanInSelection,
+  toggleLoanInSelection,
+  hasSelectedLoan,
+}: {
+  onSelectAll: () => void
+  findLoanInSelection: (loanPubkey: string) => Loan | null
+  toggleLoanInSelection: (loan: Loan) => void
+  hasSelectedLoan: boolean
+}) => {
   const COLUMNS: ColumnsType<Loan> = [
     {
       key: 'collateral',
       dataIndex: 'collateral',
-      title: () => <HeaderCell label="Collateral" value="collateral" />,
+      title: () => (
+        <div className={styles.headerTitleRow}>
+          <Checkbox className={styles.checkbox} onChange={onSelectAll} checked={hasSelectedLoan} />
+          <HeaderCell label="Collateral" value="collateral" />
+        </div>
+      ),
       render: (_, loan) => (
         <NftInfoCell
-          onChangeCheckbox={() => null}
+          selected={!!findLoanInSelection(loan.pubkey)}
+          onChangeCheckbox={() => toggleLoanInSelection(loan)}
           nftName={loan.nft.name}
           nftImage={loan.nft.imageUrl}
         />
