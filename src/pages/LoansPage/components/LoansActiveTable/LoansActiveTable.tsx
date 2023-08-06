@@ -1,31 +1,28 @@
-import { FC } from 'react'
+import Table, { TableProps } from '@banx/components/Table'
 
-import { SearchSelectProps } from '@banx/components/SearchSelect'
-import Table, { SortParams } from '@banx/components/Table'
+import { Loan } from '@banx/api/loans'
 
 import { getTableColumns } from './columns'
 
-export interface LoansActiveTableProps {
-  data: ReadonlyArray<any>
-  loading?: boolean
-  className?: string
-  searchSelectParams: SearchSelectProps<any>
-  sortParams: SortParams
-}
+type TableViewProps<T> = Omit<TableProps<T>, 'columns' | 'onRowClick'>
 
-export const LoansActiveTable: FC<LoansActiveTableProps> = ({
+export const LoansActiveTable = ({
   data,
-  sortParams,
-  searchSelectParams,
-}) => {
-  const columns = getTableColumns() as any
+  sortViewParams,
+  breakpoints,
+  className,
+  loading,
+}: TableViewProps<Loan>) => {
+  const columns = getTableColumns()
 
   return (
     <Table
       data={data}
       columns={columns}
-      sortParams={sortParams}
-      searchSelectParams={searchSelectParams}
+      sortViewParams={sortViewParams}
+      breakpoints={breakpoints}
+      className={className}
+      loading={loading}
     />
   )
 }

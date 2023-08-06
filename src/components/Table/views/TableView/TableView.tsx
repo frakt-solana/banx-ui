@@ -1,25 +1,22 @@
+import { useId } from 'react'
+
 import { Table as AntdTable } from 'antd'
-import { ColumnsType } from 'antd/es/table'
 
-import { PartialBreakpoints } from '../../types'
+import { TableProps } from '../../Table'
 
-interface TableViewProps<T> {
-  data: any
-  className?: string
-  rowKeyField?: string
-  columns: ColumnsType<any>
-  onRowClick?: (dataItem: T) => void
-  breakpoints?: PartialBreakpoints
-}
+type TableViewProps<T> = Omit<TableProps<T>, 'sortViewParams'>
 
 const TableView = <T extends object>({
   data,
   className,
-  rowKeyField = 'id',
   columns,
   onRowClick,
+  loading,
 }: TableViewProps<T>) => {
-  const handleRowClick = (rowData: any) => {
+  if (loading) return <>Loading ...</>
+  if (!loading && !data?.length) return <>Not found items</>
+
+  const handleRowClick = (rowData: T) => {
     if (onRowClick) {
       onRowClick(rowData)
     }
@@ -27,13 +24,13 @@ const TableView = <T extends object>({
 
   return (
     <AntdTable
-      className={className}
-      columns={columns as any}
+      rowKey={useId()}
       dataSource={data.slice()}
-      pagination={false}
+      columns={columns}
+      className={className}
+      rootClassName="rootTableClassName"
       sortDirections={['descend', 'ascend']}
       style={onRowClick && { cursor: 'pointer' }}
-      rowKey={(data) => data[rowKeyField]}
       onRow={onRowClick ? (rowData) => ({ onClick: () => handleRowClick(rowData) }) : undefined}
     />
   )

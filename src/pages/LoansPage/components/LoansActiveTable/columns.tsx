@@ -1,8 +1,8 @@
 import { ColumnsType } from 'antd/es/table'
 
 import {
-  CollaterallCell,
   HeaderCell,
+  NftInfoCell,
   createSolValueJSX,
   createTimeValueJSX,
 } from '@banx/components/TableCells'
@@ -16,7 +16,11 @@ export const getTableColumns = () => {
       dataIndex: 'collateral',
       title: () => <HeaderCell label="Collateral" value="collateral" />,
       render: (_, loan) => (
-        <CollaterallCell collateralName={loan.nft.name} collateralImage={loan.nft.imageUrl} />
+        <NftInfoCell
+          onChangeCheckbox={() => {}}
+          nftName={loan.nft.name}
+          nftImage={loan.nft.imageUrl}
+        />
       ),
     },
     {

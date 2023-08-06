@@ -1,18 +1,16 @@
 import { ColumnsType } from 'antd/es/table'
 
-import { PartialBreakpoints, SortParams, ToggleParams } from './types'
+import { PartialBreakpoints, SortViewParams } from './types'
 import { TableView } from './views'
 import SortView from './views/SortView/SortView'
 
-interface TableProps<T> {
+export interface TableProps<T> {
   data: ReadonlyArray<T>
   columns: ColumnsType<T>
+  sortViewParams: SortViewParams
+  loading: boolean
 
-  searchSelectParams: any
-  sortParams?: SortParams
-  toggleParams?: ToggleParams
-
-  rowKeyField?: string
+  className?: string
   onRowClick?: (dataItem: T) => void
   breakpoints?: PartialBreakpoints
 }
@@ -20,20 +18,13 @@ interface TableProps<T> {
 const Table = <T extends object>({
   data,
   columns,
-  searchSelectParams,
-  sortParams,
-  toggleParams,
+  sortViewParams,
   ...props
 }: TableProps<T>): JSX.Element => {
   return (
     <>
-      <SortView
-        columns={columns}
-        searchSelectParams={searchSelectParams}
-        sortParams={sortParams}
-        toggleParams={toggleParams}
-      />
-      <TableView className="rootTableClassName" data={data} columns={columns} {...props} />
+      <SortView columns={columns} {...sortViewParams} />
+      <TableView data={data} columns={columns} {...props} />
     </>
   )
 }

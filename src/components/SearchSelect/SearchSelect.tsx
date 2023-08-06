@@ -22,7 +22,7 @@ export interface SearchSelectProps<T extends SelectProps<T>> {
 export const SearchSelect = <T extends object>({
   options = [],
   optionKeys,
-  placeholder,
+  placeholder = 'Search',
   onChange,
   selectedOptions,
   labels,
