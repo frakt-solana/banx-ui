@@ -5,7 +5,7 @@ import { Loan } from '@banx/api/loans'
 import { SearchSelectOption } from '../LoansActiveTab/hooks'
 import { getTableColumns } from './columns'
 
-type TableViewProps<T> = Omit<TableProps<T, SearchSelectOption>, 'columns' | 'onRowClick'>
+type TableViewProps<T, P> = Omit<TableProps<T, P>, 'columns' | 'onRowClick'>
 
 export const LoansActiveTable = ({
   data,
@@ -13,7 +13,7 @@ export const LoansActiveTable = ({
   breakpoints,
   className,
   loading,
-}: TableViewProps<Loan>) => {
+}: TableViewProps<Loan, SearchSelectOption>) => {
   const columns = getTableColumns()
 
   return (

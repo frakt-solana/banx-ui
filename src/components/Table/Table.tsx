@@ -20,7 +20,7 @@ const Table = <T extends object, P extends object>({
   columns,
   sortViewParams,
   ...props
-}: TableProps<T, P>): JSX.Element => {
+}: TableProps<T, P>) => {
   return (
     <>
       <SortView columns={columns} {...sortViewParams} />

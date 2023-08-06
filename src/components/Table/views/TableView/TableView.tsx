@@ -1,5 +1,7 @@
 import { Table as AntdTable } from 'antd'
 
+import { Loader } from '@banx/components/Loader'
+
 import { TableProps } from '../../Table'
 
 type TableViewProps<T> = Omit<TableProps<T, null>, 'sortViewParams'>
@@ -11,7 +13,9 @@ const TableView = <T extends object>({
   onRowClick,
   loading,
 }: TableViewProps<T>) => {
-  if (loading) return <>Loading ...</>
+  if (loading) return <Loader />
+
+  //TODO: Implement empty list component (waiting for design)
   if (!loading && !data?.length) return <>Not found items</>
 
   const handleRowClick = (rowData: T) => {
