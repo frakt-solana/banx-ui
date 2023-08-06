@@ -1,5 +1,3 @@
-import { useId } from 'react'
-
 import { Table as AntdTable } from 'antd'
 
 import { TableProps } from '../../Table'
@@ -24,7 +22,7 @@ const TableView = <T extends object>({
 
   return (
     <AntdTable
-      rowKey={useId()}
+      rowKey=""
       dataSource={data.slice()}
       columns={columns}
       className={className}

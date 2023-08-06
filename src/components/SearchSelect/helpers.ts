@@ -8,6 +8,11 @@ export const filterOption = (input: string, option?: DefaultOptionType): boolean
   return false
 }
 
-export const getPopupContainer = (triggerNode: any) => {
-  return triggerNode.parentNode
+type RenderDOMFunc = (triggerNode: HTMLElement) => HTMLElement
+
+export const getPopupContainer: RenderDOMFunc = (triggerNode) => {
+  if (triggerNode.parentNode instanceof HTMLElement) {
+    return triggerNode.parentNode
+  }
+  return document.body
 }

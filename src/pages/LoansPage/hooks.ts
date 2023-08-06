@@ -1,20 +1,16 @@
 import { useQuery } from '@tanstack/react-query'
-import { web3 } from 'fbonds-core'
 
 import { Loan, fetchWalletLoans } from '@banx/api/loans'
 
-type UseWalletLoans = (walletPublicKey: web3.PublicKey) => {
+type UseWalletLoans = (walletPublicKey: string) => {
   loans: Loan[]
   isLoading: boolean
 }
 
 export const useWalletLoans: UseWalletLoans = (walletPublicKey) => {
   const { data, isLoading } = useQuery(
-    ['walletLoans', walletPublicKey?.toBase58()],
-    () =>
-      fetchWalletLoans({
-        publicKey: new web3.PublicKey(walletPublicKey),
-      }),
+    ['walletLoans', walletPublicKey],
+    () => fetchWalletLoans({ walletPublicKey }),
     {
       enabled: !!walletPublicKey,
       staleTime: 5 * 1000,

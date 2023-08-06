@@ -12,7 +12,9 @@ import { useSortedLoans } from './useSortedLoans'
 
 export const useLoansActiveTab = () => {
   const { publicKey } = useWallet()
-  const { loans, isLoading } = useWalletLoans(publicKey as any)
+  const publicKeyString = publicKey?.toBase58() || ''
+
+  const { loans, isLoading } = useWalletLoans(publicKeyString)
 
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
 

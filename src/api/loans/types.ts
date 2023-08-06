@@ -23,7 +23,7 @@ export interface Loan {
     imageUrl: string
   }
 
-  bondParams?: {
+  bondParams: {
     marketPubkey: string
     bondTokenMint: string
     banxStake?: string
