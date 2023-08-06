@@ -1,21 +1,21 @@
 import { MinusOutlined } from '@ant-design/icons'
-import { Select as AntdSelect, SelectProps } from 'antd'
+import { Select as AntdSelect } from 'antd'
 import classNames from 'classnames'
 
-import { OptionKeys, renderOption } from './Option'
-import { PrefixInput, SelectLabels } from './components'
+import { PrefixInput, SelectLabels, renderOption } from './components'
 import { filterOption, getPopupContainer } from './helpers'
+import { OptionKeys } from './types'
 
 import styles from './SearchSelect.module.less'
 
-export interface SearchSelectProps<T extends SelectProps<T>> {
-  options?: any[]
-  loading?: boolean
+export interface SearchSelectProps<T> {
+  options: T[]
   optionKeys: OptionKeys
-  placeholder?: string
-  onChange?: any
   selectedOptions: string[]
+  onChange?: (selectedOptions: string[]) => void
+
   labels?: string[]
+  placeholder?: string
   className?: string
 }
 
@@ -34,8 +34,8 @@ export const SearchSelect = <T extends object>({
       <PrefixInput />
       <AntdSelect
         mode="multiple"
-        value={selectedOptions as any}
-        onChange={onChange as any}
+        value={selectedOptions}
+        onChange={onChange}
         allowClear
         showSearch
         filterOption={filterOption}
@@ -54,7 +54,7 @@ export const SearchSelect = <T extends object>({
         )}
         {...props}
       >
-        {options.map((option: any) => renderOption({ option, optionKeys, selectedOptions }))}
+        {options.map((option) => renderOption({ option, optionKeys, selectedOptions }))}
       </AntdSelect>
     </div>
   )

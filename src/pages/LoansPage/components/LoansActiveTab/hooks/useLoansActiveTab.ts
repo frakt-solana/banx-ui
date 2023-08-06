@@ -10,6 +10,11 @@ import { useWalletLoans } from '@banx/pages/LoansPage/hooks'
 import { useFilteredLoans } from './useFilteredLoans'
 import { useSortedLoans } from './useSortedLoans'
 
+export type SearchSelectOption = {
+  collectionName: string
+  collectionImage: string
+}
+
 export const useLoansActiveTab = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''

@@ -1,7 +1,7 @@
 import { ColumnsType } from 'antd/es/table'
 import { isEmpty } from 'lodash'
 
-import { SearchSelect } from '@banx/components/SearchSelect'
+import { SearchSelect, SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortDropdown } from '@banx/components/SortDropdown'
 import { Toggle } from '@banx/components/Toggle'
 
@@ -14,7 +14,7 @@ import styles from './SortView.module.less'
 
 interface SortViewProps<T> {
   columns: ColumnsType<T>
-  searchSelectParams?: any
+  searchSelectParams: SearchSelectProps<T>
   sortParams?: SortParams
   toggleParams?: ToggleParams
 }
