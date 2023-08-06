@@ -15,7 +15,7 @@ export const NftInfoCell: FC<NftInfoCellCellProps> = ({
   nftName,
   nftImage,
   onChangeCheckbox,
-  selected,
+  selected = false,
 }) => {
   const [nftCollectionName, nftNumber] = nftName.split('#')
   const displayNftNumber = nftNumber ? `#${nftNumber}` : ''
@@ -23,11 +23,7 @@ export const NftInfoCell: FC<NftInfoCellCellProps> = ({
   return (
     <div className={styles.nftInfo}>
       {onChangeCheckbox && (
-        <Checkbox
-          className={styles.checkbox}
-          onChange={onChangeCheckbox}
-          checked={selected ?? false}
-        />
+        <Checkbox className={styles.checkbox} onChange={onChangeCheckbox} checked={selected} />
       )}
       <img src={nftImage} className={styles.nftImage} />
       <div className={styles.nftNames}>

@@ -1,3 +1,5 @@
+import { FC } from 'react'
+
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
@@ -7,13 +9,12 @@ import { buttonConfigurations } from './constants'
 
 import styles from './SortView.module.less'
 
-export const SwitchModeButtons = ({
-  viewState,
-  onChange,
-}: {
+interface SwitchModeButtonsProps {
   viewState: ViewState
   onChange: (value: ViewState) => void
-}) => (
+}
+
+export const SwitchModeButtons: FC<SwitchModeButtonsProps> = ({ viewState, onChange }) => (
   <div className={styles.switchButtons}>
     {buttonConfigurations.map(({ state, icon }) => (
       <Button

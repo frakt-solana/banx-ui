@@ -13,8 +13,6 @@ export type ToggleParams = ToggleProps
 export type SearchSelectParams<T> = SearchSelectProps<T>
 
 export type SortViewParams<T> = {
-  //TODO: Add filter params, types searchSelectParams
-
   searchSelectParams: SearchSelectParams<T>
   sortParams?: SortParams
   toggleParams?: ToggleParams

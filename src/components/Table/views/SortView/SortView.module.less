@@ -1,36 +1,21 @@
-.rowGap {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-
-  @media (max-width: 550px) {
-    gap: 8px;
-  }
-}
-
 .sortWrapper {
   position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding-bottom: 16px;
+}
 
-  position: relative;
-
-  @media screen and (max-width: 960px) {
-    align-items: unset;
-    gap: 8px;
-  }
+.rowGap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 .searchWrapper {
   display: flex;
   align-items: center;
   gap: 8px;
-
-  @media screen and (max-width: 960px) {
-    gap: 4px;
-  }
 }
 
 .switchButtons {
@@ -44,42 +29,8 @@
   width: 32px;
 }
 .switchViewButton.active {
-  border-color: var(--secondary-border);
+  border-color: var(--content-primary);
 }
 .switchViewButton svg path {
-  fill: var(--secondary-border);
-}
-
-.sortingButton {
-  width: 80px;
-  height: 32px;
-}
-
-.searchInput {
-  max-width: 173px;
-  width: unset;
-
-  @media screen and (max-width: 550px) {
-    max-width: 150px;
-  }
-}
-
-.checkbox {
-  height: 16px;
-}
-.checkboxInnerContent::after {
-  border-width: 0.75px;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  height: 0.75px;
-  width: 6.75px;
-}
-
-.searchSelect {
-  :global {
-    .ant-select {
-      width: -webkit-fill-available;
-    }
-  }
+  fill: var(--content-primary);
 }

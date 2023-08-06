@@ -36,7 +36,7 @@ const SortView = <T extends object, P extends object>({
 
   return (
     <div className={styles.sortWrapper}>
-      <SearchSelect className={styles.searchSelect} {...searchSelectParams} />
+      <SearchSelect {...searchSelectParams} />
       <div className={styles.rowGap}>
         <SwitchModeButtons viewState={viewState} onChange={handleViewStateChange} />
         {!isEmpty(toggleParams) && <Toggle {...toggleParams} />}

@@ -59,7 +59,7 @@ interface SecondValueProps {
   value: string
 }
 
-const SecondValue = ({ secondLabel, value }: SecondValueProps) => {
+const SecondValue: FC<SecondValueProps> = ({ secondLabel, value }) => {
   if (!value) return <p>--</p>
 
   const formattedValue = secondLabel?.format ? secondLabel.format(value) : value

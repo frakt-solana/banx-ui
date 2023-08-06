@@ -4,6 +4,7 @@ export enum LoanType {
   BOND = 'bond',
 }
 
+// TODO: this is an old interface, need to replace it with another one
 export interface Loan {
   pubkey: string
   loanType: LoanType
