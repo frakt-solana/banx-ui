@@ -15,7 +15,5 @@ export const parseTableColumn = <T>(column: ColumnType<T>): ParsedTableColumn =>
     ? (title({}) as ReactElement<{ label: string }>).props.label
     : (title as string)
 
-  const value = String(key)
-
-  return { value, label }
+  return { value: key as string, label }
 }

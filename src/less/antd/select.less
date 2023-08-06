@@ -1,40 +1,40 @@
 .rootSelectClassName {
-  .ant-select-selector,
-  .ant-select-selection-item {
-    box-shadow: none !important;
-    border: 0 !important;
-    margin-inline-end: 8px;
-    padding-inline-end: 8px;
-    margin-bottom: -1px !important;
-    align-items: center;
-
-    .ant-select {
-      width: -webkit-fill-available;
-    }
-  }
-
-  ::-webkit-scrollbar {
-    height: 0px;
-  }
-
   background-color: var(--bg-primary);
   color: var(--content-primary);
   margin-left: 32px;
   width: calc(100% - 32px);
 
-  .ant-select-selection-item {
-    border-radius: 100px;
-    background-color: var(--accent-primary) !important;
+  .ant-select-selector {
+    background: var(--bg-primary) !important;
+    box-shadow: none !important;
+    border: 0 !important;
   }
 
-  .ant-select-selection-item-remove svg {
-    fill: var(--black-color);
+  .ant-select-selection-item {
+    background: var(--additional-lime-secondary);
+    border: 1px solid var(--accent-primary);
+    border-radius: 100px;
+    font: var(--card-header-sm);
+
+    padding-inline-start: 8px;
+    padding-inline-end: 8px;
+
+    .ant-select-selection-item-content img,
+    .searchSelectImageContainer {
+      border-radius: 100px;
+      height: 16px;
+      width: 16px;
+    }
+
+    .searchSelectImageContainer > div {
+      display: none;
+    }
   }
 
   .ant-select-clear {
-    opacity: 1 !important;
+    opacity: 1;
     background: none;
-    right: 25px !important;
+    right: 25px;
 
     svg {
       width: 8px;
@@ -45,30 +45,16 @@
   }
 
   .ant-select-selection-placeholder {
-    color: var(--black-color);
-    font: var(--font-text-8);
-    font-size: 14px;
+    color: var(--content-secondary);
+    font: var(--body-text-sm);
   }
 
   .ant-select-selection-item-content {
     display: flex !important;
 
-    & > div > div {
-      color: var(--button-text) !important;
-      gap: 0 !important;
-    }
-
-    #relativeImageContainer {
-      display: none;
-    }
-
     & > div > p {
       display: none;
     }
-  }
-
-  .ant-select-selection-item-content img {
-    display: none;
   }
 
   .ant-select-selection-overflow {

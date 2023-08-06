@@ -4,7 +4,8 @@ import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
 
-import { ViewState } from '../../hooks'
+import { ViewState } from '@banx/store'
+
 import { buttonConfigurations } from './constants'
 
 import styles from './SortView.module.less'

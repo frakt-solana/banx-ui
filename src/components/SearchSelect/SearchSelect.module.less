@@ -17,21 +17,24 @@
 }
 
 .prefix {
-  position: absolute;
-  z-index: 1;
-  width: 32px;
-  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
 
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+
+  padding-left: 12px;
+
   svg {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
   }
 
   svg path {
-    fill: var(--black-color);
+    fill: var(--content-secondary);
   }
 }
 

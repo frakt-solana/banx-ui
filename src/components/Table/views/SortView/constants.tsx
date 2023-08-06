@@ -1,6 +1,5 @@
 import { CardView, TableView } from '@banx/icons'
-
-import { ViewState } from '../../hooks'
+import { ViewState } from '@banx/store'
 
 export const buttonConfigurations = [
   { state: ViewState.CARD, icon: <CardView /> },

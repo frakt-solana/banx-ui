@@ -2,6 +2,7 @@ import { FC } from 'react'
 
 import { SearchOutlined } from '@ant-design/icons'
 import Select, { BaseOptionType } from 'antd/lib/select'
+import classNames from 'classnames'
 
 import { OptionKeys } from './types'
 
@@ -42,7 +43,7 @@ export const renderOption: FC<OptionProps> = ({ option, optionKeys, selectedOpti
     <Select.Option key={value} value={label}>
       <div className={styles.optionWrapper}>
         <div className={styles.flexRow}>
-          <div className={styles.relativeImageContainer} id="relativeImageContainer">
+          <div className={classNames('searchSelectImageContainer', styles.relativeImageContainer)}>
             {image && <img className={styles.image} src={image} />}
             {isOptionSelected && <div className={styles.selected} />}
           </div>
