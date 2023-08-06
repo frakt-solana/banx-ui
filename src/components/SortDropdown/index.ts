@@ -1,2 +1,2 @@
-export * from './hooks';
-export * from './SortDropdown';
+export * from './hooks'
+export * from './SortDropdown'

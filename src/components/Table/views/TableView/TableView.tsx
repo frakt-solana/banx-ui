@@ -1,6 +1,24 @@
 import { Table as AntdTable } from 'antd'
+import { ColumnsType } from 'antd/es/table'
 
-const TableView = ({ data, className, rowKeyField, loading, columns, onRowClick }: any) => {
+import { PartialBreakpoints } from '../../types'
+
+interface TableViewProps<T> {
+  data: any
+  className?: string
+  rowKeyField?: string
+  columns: ColumnsType<any>
+  onRowClick?: (dataItem: T) => void
+  breakpoints?: PartialBreakpoints
+}
+
+const TableView = <T extends object>({
+  data,
+  className,
+  rowKeyField = 'id',
+  columns,
+  onRowClick,
+}: TableViewProps<T>) => {
   const handleRowClick = (rowData: any) => {
     if (onRowClick) {
       onRowClick(rowData)

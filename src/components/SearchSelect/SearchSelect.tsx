@@ -1,6 +1,5 @@
 import { MinusOutlined } from '@ant-design/icons'
 import { Select as AntdSelect, SelectProps } from 'antd'
-import { DefaultOptionType } from 'antd/es/select'
 import classNames from 'classnames'
 
 import { OptionKeys, renderOption } from './Option'
@@ -9,7 +8,7 @@ import { filterOption, getPopupContainer } from './helpers'
 
 import styles from './SearchSelect.module.less'
 
-export interface SearchSelectProps<T extends DefaultOptionType> extends SelectProps<T> {
+export interface SearchSelectProps<T extends SelectProps<T>> {
   options?: any[]
   loading?: boolean
   optionKeys: OptionKeys
@@ -17,9 +16,10 @@ export interface SearchSelectProps<T extends DefaultOptionType> extends SelectPr
   onChange?: any
   selectedOptions: string[]
   labels?: string[]
+  className?: string
 }
 
-export const SearchSelect = <T extends DefaultOptionType>({
+export const SearchSelect = <T extends object>({
   options = [],
   optionKeys,
   placeholder,
@@ -28,7 +28,7 @@ export const SearchSelect = <T extends DefaultOptionType>({
   labels,
   className,
   ...props
-}: any) => {
+}: SearchSelectProps<T>) => {
   return (
     <div className={classNames(styles.selectWrapper, className)}>
       <PrefixInput />
@@ -52,7 +52,6 @@ export const SearchSelect = <T extends DefaultOptionType>({
             {menu}
           </>
         )}
-        open
         {...props}
       >
         {options.map((option: any) => renderOption({ option, optionKeys, selectedOptions }))}
