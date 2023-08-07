@@ -13,8 +13,15 @@ export type SortParams = Omit<SortDropdownProps, 'options'>
 export type SearchSelectParams<T> = SearchSelectProps<T>
 export type ToggleParams = ToggleProps
 
-export type SortViewParams<T> = {
+export interface SortViewParams<T> {
   searchSelectParams: SearchSelectParams<T>
   sortParams?: SortParams
   toggleParams?: ToggleParams
+}
+
+export interface ActiveRowParams {
+  field: string
+  value: boolean
+  className: string
+  cardClassName?: string
 }

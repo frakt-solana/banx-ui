@@ -12,12 +12,12 @@ export const getTableColumns = ({
   onSelectAll,
   findLoanInSelection,
   toggleLoanInSelection,
-  hasSelectedLoan,
+  hasSelectedLoans,
 }: {
   onSelectAll: () => void
   findLoanInSelection: (loanPubkey: string) => Loan | null
   toggleLoanInSelection: (loan: Loan) => void
-  hasSelectedLoan: boolean
+  hasSelectedLoans: boolean
 }) => {
   const COLUMNS: ColumnsType<Loan> = [
     {
@@ -25,7 +25,7 @@ export const getTableColumns = ({
       dataIndex: 'collateral',
       title: () => (
         <div className={styles.headerTitleRow}>
-          <Checkbox className={styles.checkbox} onChange={onSelectAll} checked={hasSelectedLoan} />
+          <Checkbox className={styles.checkbox} onChange={onSelectAll} checked={hasSelectedLoans} />
           <HeaderCell label="Collateral" value="collateral" />
         </div>
       ),

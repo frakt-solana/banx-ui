@@ -1,30 +1,43 @@
 import { ColumnsType } from 'antd/es/table'
 
-import { PartialBreakpoints, SortViewParams } from './types'
-import { SortView, TableView } from './views'
+import { ViewState, useTableView } from '@banx/store'
+
+import { ActiveRowParams, PartialBreakpoints, SortViewParams } from './types'
+import { CardView, SortView, TableView } from './views'
+
+import styles from './Table.module.less'
 
 export interface TableProps<T, P> {
   data: ReadonlyArray<T>
   columns: ColumnsType<T>
-  sortViewParams: SortViewParams<P>
   loading: boolean
 
-  className?: string
+  sortViewParams?: SortViewParams<P>
+  activeRowParams?: ActiveRowParams
+
+  showCard?: boolean
   onRowClick?: (dataItem: T) => void
   breakpoints?: PartialBreakpoints
+  className?: string
 }
 
 const Table = <T extends object, P extends object>({
   data,
   columns,
   sortViewParams,
+  activeRowParams,
+  showCard,
   ...props
 }: TableProps<T, P>) => {
+  const { viewState } = useTableView()
+
+  const ViewComponent = showCard && ViewState.CARD === viewState ? CardView : TableView
+
   return (
-    <>
-      <SortView columns={columns} {...sortViewParams} />
-      <TableView data={data} columns={columns} {...props} />
-    </>
+    <div className={styles.container}>
+      {sortViewParams && <SortView columns={columns} showCard={showCard} {...sortViewParams} />}
+      <ViewComponent data={data} columns={columns} activeRowParams={activeRowParams} {...props} />
+    </div>
   )
 }
 

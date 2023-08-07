@@ -14,8 +14,6 @@ export interface Loan {
 
   startedAt: number //? unix timestamp
 
-  isGracePeriod?: boolean //? appeared after local mapping
-
   nft: {
     mint: string
     name: string

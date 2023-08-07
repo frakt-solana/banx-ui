@@ -6,6 +6,8 @@ import { useSelectedLoans } from '../../loansState'
 import { SearchSelectOption } from '../LoansActiveTab'
 import { getTableColumns } from './columns'
 
+import styles from './LoansTable.module.less'
+
 type TableViewProps<T, P> = Omit<TableProps<T, P>, 'columns' | 'onRowClick'>
 
 export const LoansActiveTable = ({
@@ -18,10 +20,10 @@ export const LoansActiveTable = ({
   const { selection, toggleLoanInSelection, findLoanInSelection, clearSelection, setSelection } =
     useSelectedLoans()
 
-  const hasSelectedLoan = !!selection?.length
+  const hasSelectedLoans = !!selection?.length
 
   const onSelectAll = (): void => {
-    if (hasSelectedLoan) {
+    if (hasSelectedLoans) {
       clearSelection()
     } else {
       setSelection(data as Loan[])
@@ -32,7 +34,7 @@ export const LoansActiveTable = ({
     onSelectAll,
     findLoanInSelection,
     toggleLoanInSelection,
-    hasSelectedLoan,
+    hasSelectedLoans,
   })
 
   return (
@@ -44,6 +46,12 @@ export const LoansActiveTable = ({
       breakpoints={breakpoints}
       className={className}
       loading={loading}
+      showCard
+      activeRowParams={{
+        field: 'gracePeiod', //! This field doesn't exist, it needs to be added to the backend
+        value: true,
+        className: styles.gracePeriod,
+      }}
     />
   )
 }

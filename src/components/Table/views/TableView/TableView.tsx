@@ -3,6 +3,7 @@ import { Table as AntdTable } from 'antd'
 import { Loader } from '@banx/components/Loader'
 
 import { TableProps } from '../../Table'
+import { getCardOrRowClassName } from '../../helpers'
 
 type TableViewProps<T> = Omit<TableProps<T, null>, 'sortViewParams'>
 
@@ -12,6 +13,7 @@ const TableView = <T extends object>({
   columns,
   onRowClick,
   loading,
+  activeRowParams,
 }: TableViewProps<T>) => {
   if (loading) return <Loader />
 
@@ -30,6 +32,7 @@ const TableView = <T extends object>({
       dataSource={data.slice()}
       columns={columns}
       className={className}
+      rowClassName={(record) => getCardOrRowClassName(record, activeRowParams)}
       rootClassName="rootTableClassName"
       sortDirections={['descend', 'ascend']}
       style={onRowClick && { cursor: 'pointer' }}

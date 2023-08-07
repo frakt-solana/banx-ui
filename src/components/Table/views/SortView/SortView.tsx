@@ -17,6 +17,7 @@ interface SortViewProps<T, P> {
   searchSelectParams: SearchSelectParams<P>
   sortParams?: SortParams
   toggleParams?: ToggleParams
+  showCard?: boolean
 }
 
 const SortView = <T extends object, P extends object>({
@@ -24,6 +25,7 @@ const SortView = <T extends object, P extends object>({
   searchSelectParams,
   sortParams,
   toggleParams,
+  showCard,
 }: SortViewProps<T, P>) => {
   const { viewState, setViewState } = useTableView()
 
@@ -38,7 +40,7 @@ const SortView = <T extends object, P extends object>({
     <div className={styles.sortWrapper}>
       <SearchSelect {...searchSelectParams} />
       <div className={styles.rowGap}>
-        <SwitchModeButtons viewState={viewState} onChange={handleViewStateChange} />
+        {showCard && <SwitchModeButtons viewState={viewState} onChange={handleViewStateChange} />}
         {toggleParams && <Toggle {...toggleParams} />}
         {sortParams && <SortDropdown {...sortParams} options={sortDropdownOptions} />}
       </div>
