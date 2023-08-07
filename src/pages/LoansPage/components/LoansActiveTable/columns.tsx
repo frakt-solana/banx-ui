@@ -1,12 +1,8 @@
 import { ColumnsType } from 'antd/es/table'
 
 import Checkbox from '@banx/components/Checkbox'
-import {
-  HeaderCell,
-  NftInfoCell,
-  createSolValueJSX,
-  createTimeValueJSX,
-} from '@banx/components/TableCells'
+import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableCells'
+import Timer from '@banx/components/Timer'
 
 import { Loan } from '@banx/api/loans'
 
@@ -62,7 +58,7 @@ export const getTableColumns = ({
       key: 'duration',
       dataIndex: 'duration',
       title: () => <HeaderCell label="Duration" value="duration" />,
-      render: (_, loan) => createTimeValueJSX(loan.bondParams.expiredAt),
+      render: (_, loan) => <Timer expiredAt={loan.bondParams.expiredAt} />,
       showSorterTooltip: false,
       sorter: true,
     },
