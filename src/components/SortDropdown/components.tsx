@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import classNames from 'classnames'
 
-import { ArrowDown, ChevronDown } from '@banx/icons'
+import { ArrowDown } from '@banx/icons'
 
 import { Button } from '../Buttons'
 import { SortOption } from './SortDropdown'

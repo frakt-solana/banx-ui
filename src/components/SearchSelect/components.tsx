@@ -4,6 +4,8 @@ import { SearchOutlined } from '@ant-design/icons'
 import Select, { BaseOptionType } from 'antd/lib/select'
 import classNames from 'classnames'
 
+import { ChevronDown } from '@banx/icons'
+
 import { OptionKeys } from './types'
 
 import styles from './SearchSelect.module.less'
@@ -12,6 +14,10 @@ export const PrefixInput = () => (
   <div className={styles.prefix}>
     <SearchOutlined />
   </div>
+)
+
+export const SuffixIcon = ({ isPopupOpen }: { isPopupOpen: boolean }) => (
+  <ChevronDown className={isPopupOpen ? styles.rotate : ''} />
 )
 
 export const SelectLabels = ({ labels = [] }: { labels?: string[] }) => (

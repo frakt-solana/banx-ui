@@ -1,8 +1,11 @@
-import { MinusOutlined } from '@ant-design/icons'
+import { useState } from 'react'
+
 import { Select as AntdSelect } from 'antd'
 import classNames from 'classnames'
 
-import { PrefixInput, SelectLabels, renderOption } from './components'
+import { CloseModal } from '@banx/icons'
+
+import { PrefixInput, SelectLabels, SuffixIcon, renderOption } from './components'
 import { filterOption, getPopupContainer } from './helpers'
 import { OptionKeys } from './types'
 
@@ -29,6 +32,12 @@ export const SearchSelect = <P extends object>({
   className,
   ...props
 }: SearchSelectProps<P>) => {
+  const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false)
+
+  const handleDropdownVisibleChange = (visible: boolean) => {
+    setIsPopupOpen(visible)
+  }
+
   return (
     <div className={classNames(styles.selectWrapper, className)}>
       <PrefixInput />
@@ -44,8 +53,9 @@ export const SearchSelect = <P extends object>({
         rootClassName="rootSelectClassName"
         popupClassName="rootSelectPopupClassName"
         getPopupContainer={getPopupContainer}
-        removeIcon={<MinusOutlined />}
-        clearIcon={<MinusOutlined />}
+        clearIcon={<CloseModal />}
+        suffixIcon={!selectedOptions?.length && <SuffixIcon isPopupOpen={isPopupOpen} />}
+        onDropdownVisibleChange={handleDropdownVisibleChange}
         dropdownRender={(menu) => (
           <>
             <SelectLabels labels={labels} />
