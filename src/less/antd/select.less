@@ -9,6 +9,7 @@
     box-shadow: none !important;
     border: 0 !important;
     padding: 5px 0px;
+    padding-inline-end: 40px !important;
     transition: none !important;
   }
 
@@ -47,8 +48,12 @@
   }
 
   .ant-select-selection-overflow {
-    flex-wrap: nowrap !important;
-    overflow: auto !important;
+    flex-wrap: nowrap;
+    overflow: auto;
+  }
+
+  ::-webkit-scrollbar {
+    height: 0px;
   }
 }
 
