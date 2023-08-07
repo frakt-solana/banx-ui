@@ -12,21 +12,13 @@ import styles from './SortDropdown.module.less'
 
 interface DropdownButtonProps {
   sortOption: SortOption
-  isDropdownOpen: boolean
   toggleDropdown: () => void
 }
 
-export const DropdownButton: FC<DropdownButtonProps> = ({
-  sortOption,
-  isDropdownOpen,
-  toggleDropdown,
-}) => (
+export const DropdownButton: FC<DropdownButtonProps> = ({ sortOption, toggleDropdown }) => (
   <Button type="circle" variant="text" className={styles.dropdownButton} onClick={toggleDropdown}>
-    <span className={styles.dropdownButtonText}>
-      Sort: {sortOption?.label}
-      <ArrowDown className={getSortOrderClassName(sortOption.value)} />
-    </span>
-    <ChevronDown className={isDropdownOpen ? styles.rotate : ''} />
+    <span className={styles.dropdownButtonText}>Sort: {sortOption?.label}</span>
+    <ArrowDown className={getSortOrderClassName(sortOption.value)} />
   </Button>
 )
 

@@ -44,11 +44,7 @@ export const SortDropdown: FC<SortDropdownProps> = ({
 
   return (
     <div ref={dropdownRef} className={classNames(styles.sortDropdownWrapper, className)}>
-      <DropdownButton
-        sortOption={option}
-        isDropdownOpen={isDropdownOpen}
-        toggleDropdown={toggleDropdown}
-      />
+      <DropdownButton sortOption={option} toggleDropdown={toggleDropdown} />
       {isDropdownOpen && (
         <div className={classNames(styles.dropdown, dropdownClassName)}>
           <SortOptions sortOption={option} options={options} onChange={handleChangeSort} />

@@ -1,7 +1,9 @@
 import { ColumnsType } from 'antd/es/table'
+import { isEmpty } from 'lodash'
 
 import { ViewState, useTableView } from '@banx/store'
 
+import { Loader } from '../Loader'
 import { ActiveRowParams, PartialBreakpoints, SortViewParams } from './types'
 import { CardView, SortView, TableView } from './views'
 
@@ -28,16 +30,26 @@ const Table = <T extends object, P extends object>({
   sortViewParams,
   activeRowParams,
   showCard,
+  loading,
   ...props
 }: TableProps<T, P>) => {
   const { viewState } = useTableView()
 
   const ViewComponent = showCard && ViewState.CARD === viewState ? CardView : TableView
 
+  const noData = isEmpty(data) && !loading
+  const hasData = !isEmpty(data)
+
   return (
     <div className={styles.container}>
       {sortViewParams && <SortView columns={columns} showCard={showCard} {...sortViewParams} />}
-      <ViewComponent data={data} columns={columns} activeRowParams={activeRowParams} {...props} />
+
+      {loading && <Loader />}
+      {noData && <>Not found items</>}
+
+      {hasData && (
+        <ViewComponent data={data} columns={columns} activeRowParams={activeRowParams} {...props} />
+      )}
     </div>
   )
 }
