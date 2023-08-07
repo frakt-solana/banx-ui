@@ -1,1 +1,1 @@
-export { default } from './ExpandableCardContent';
+export { default } from './ExpandableCardContent'

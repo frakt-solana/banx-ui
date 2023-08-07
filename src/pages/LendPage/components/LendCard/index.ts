@@ -1,1 +1,1 @@
-export { default } from './LendCard';
+export { default } from './LendCard'

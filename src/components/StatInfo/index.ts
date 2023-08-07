@@ -1,2 +1,2 @@
-export * from './StatInfo';
-export * from './constants';
+export * from './StatInfo'
+export * from './constants'

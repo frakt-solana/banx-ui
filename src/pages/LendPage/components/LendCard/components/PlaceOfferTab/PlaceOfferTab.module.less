@@ -1,0 +1,92 @@
+.content {
+  padding: 24px;
+  padding-right: 0;
+}
+
+.flexRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  height: 32px;
+}
+
+.radiobuttonsWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.title {
+  font: var(--font-text-5);
+  font-size: 16px;
+}
+
+.radio {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.radioButton {
+  & > div {
+    width: 112px;
+    height: 32px;
+  }
+
+  label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px !important;
+  }
+
+  input:checked + label {
+    background: none !important;
+    border: 1px solid var(--black-color);
+    color: var(--primary-text);
+  }
+}
+
+.offerSummary {
+  border: 1px dotted var(--primary-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  margin: 32px 0 16px;
+}
+
+.fields {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.rightLabel {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.buttonsWrapper {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.button {
+  height: 40px;
+  width: 100%;
+}
+
+.deleteOfferButton {
+  color: var(--red-color);
+  border-color: var(--red-color);
+  background-color: var(--light-red-color);
+
+  &:hover {
+    background-color: var(--light-red-color-hover);
+  }
+}
