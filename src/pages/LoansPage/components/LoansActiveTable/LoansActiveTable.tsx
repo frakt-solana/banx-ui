@@ -8,7 +8,7 @@ import { getTableColumns } from './columns'
 
 import styles from './LoansTable.module.less'
 
-type TableViewProps<T, P> = Omit<TableProps<T, P>, 'columns' | 'onRowClick'>
+type TableViewProps<T, P> = Omit<TableProps<T, P>, 'columns' | 'onRowClick' | 'rowKeyField'>
 
 export const LoansActiveTable = ({
   data,
@@ -45,6 +45,7 @@ export const LoansActiveTable = ({
       sortViewParams={sortViewParams}
       breakpoints={breakpoints}
       className={className}
+      rowKeyField="pubkey"
       loading={loading}
       showCard
       activeRowParams={{

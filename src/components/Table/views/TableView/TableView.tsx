@@ -14,6 +14,7 @@ const TableView = <T extends object>({
   onRowClick,
   loading,
   activeRowParams,
+  rowKeyField,
 }: TableViewProps<T>) => {
   if (loading) return <Loader />
 
@@ -28,7 +29,7 @@ const TableView = <T extends object>({
 
   return (
     <AntdTable
-      rowKey=""
+      rowKey={(record) => record[rowKeyField] as string}
       dataSource={data.slice()}
       columns={columns}
       className={className}

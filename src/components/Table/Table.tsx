@@ -10,6 +10,7 @@ import styles from './Table.module.less'
 export interface TableProps<T, P> {
   data: ReadonlyArray<T>
   columns: ColumnsType<T>
+  rowKeyField: keyof T
   loading: boolean
 
   sortViewParams?: SortViewParams<P>
