@@ -9,7 +9,7 @@ import styles from './Buttons.module.less'
 interface ButtonProps {
   className?: string
   disabled?: boolean
-  onClick: (args: MouseEvent<HTMLButtonElement>) => void
+  onClick?: (args: MouseEvent<HTMLButtonElement>) => void
   type?: 'standard' | 'circle' | 'square'
   variant?: 'primary' | 'secondary' | 'link' | 'text'
   size?: 'small' | 'medium' | 'large'

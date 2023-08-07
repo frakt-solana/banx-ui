@@ -25,3 +25,12 @@ export const MarketPreviewSchema = z.object({
 
 export type MarketPreviewUser = z.infer<typeof MarketPreviewUserSchema>
 export type MarketPreview = z.infer<typeof MarketPreviewSchema>
+
+export interface MarketPreviewResponse {
+  data: MarketPreview[]
+  meta: {
+    skip: number
+    limit: number
+    totalCount: number
+  }
+}

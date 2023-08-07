@@ -1,13 +1,5 @@
-import { useMarketsPreview } from './hooks'
+import LendPageContent from './components/LendPageContent'
 
 export const LendPage = () => {
-  const { marketsPreview } = useMarketsPreview()
-
-  return (
-    <div>
-      {marketsPreview.map((_, key) => (
-        <p key={key}>market</p>
-      ))}
-    </div>
-  )
+  return <LendPageContent />
 }

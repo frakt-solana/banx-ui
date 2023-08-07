@@ -1,0 +1,50 @@
+.card {
+  border: 1px solid var(--primary-border);
+  background-color: var(--primary-background);
+  cursor: pointer;
+  width: 100%;
+}
+.card:hover {
+  border-color: var(--secondary-border);
+}
+.card.active {
+  &:hover {
+    border: 1px solid var(--primary-border);
+  }
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.cardBody {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  padding: 16px;
+  width: 100%;
+}
+
+.chevronButton {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translate(0, -50%);
+}
+.chevronButton svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.chevronButton.active svg {
+  transform: translate(-50%, -50%) rotate(180deg);
+}
+
+.label {
+  line-height: 18px;
+}

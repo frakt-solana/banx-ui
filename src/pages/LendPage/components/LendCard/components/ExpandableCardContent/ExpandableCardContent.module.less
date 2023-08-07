@@ -1,0 +1,34 @@
+.content {
+  cursor: default;
+  display: flex;
+  gap: 24px;
+  width: 100%;
+
+  & > * {
+    width: 50%;
+    flex: 1;
+  }
+}
+
+.tableContainer {
+  padding-right: 0;
+}
+
+.tabContent {
+  height: 455px;
+  overflow: hidden;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+
+  margin-right: 24px;
+  max-width: 280px;
+  min-width: 280px;
+  width: 100%;
+
+  @media (max-width: 960px) {
+    display: none;
+  }
+}
