@@ -25,10 +25,9 @@ export const RadioButtonField = <T extends object>({
   onOptionChange,
   tooltipText,
   label,
-  classNameInner,
 }: RadioButtonFieldProps<T>): JSX.Element => {
   return (
-    <div className={classNames(styles.radio, className)}>
+    <div className={classNames(styles.field, className)}>
       <div className={styles.radioTitle}>
         <h6 className={styles.subtitle}>{label}</h6>
         {!!tooltipText && <Tooltip placement="bottom" overlay={tooltipText} />}
@@ -38,7 +37,6 @@ export const RadioButtonField = <T extends object>({
         disabled={disabled}
         onOptionChange={onOptionChange}
         options={options}
-        className={classNameInner}
       />
     </div>
   )

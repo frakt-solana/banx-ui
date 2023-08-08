@@ -60,7 +60,7 @@ interface InputCounterProps extends NumericInputProps {
   label: string
 }
 
-const InputCounter: FC<InputCounterProps> = ({
+export const InputCounter: FC<InputCounterProps> = ({
   value,
   onChange,
   placeholder = '0',
@@ -91,5 +91,3 @@ const InputCounter: FC<InputCounterProps> = ({
     </div>
   )
 }
-
-export default InputCounter

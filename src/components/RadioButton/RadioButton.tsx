@@ -23,23 +23,27 @@ export const RadioButton = <T extends object>({
   disabled,
 }: RadioButtonProps<T>) => {
   return (
-    <div className={classNames(styles.radioButton, className)}>
+    <div className={classNames(styles.radioButtons, className)}>
       {options.map((option) => {
         const stringValue = option.value.toString()
+        const checked = option.value === currentOption.value
+
         return (
           <div
-            className={classNames(styles.btn, {
-              [styles.disabledButton]: disabled,
-            })}
             key={option.label}
+            className={classNames(styles.radioButton, {
+              [styles.disabledButton]: disabled,
+              [styles.active]: checked,
+            })}
           >
             <input
               type="radio"
               id={stringValue}
               name={stringValue}
               value={stringValue}
-              checked={option.value === currentOption.value}
+              checked={checked}
               onChange={() => onOptionChange(option)}
+              disabled={disabled}
             />
             <label htmlFor={stringValue}>{option.label}</label>
           </div>

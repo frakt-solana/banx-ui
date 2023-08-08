@@ -1,20 +1,5 @@
 .content {
   padding: 24px;
-  padding-right: 0;
-}
-
-.flexRow {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
-  height: 32px;
-}
-
-.radiobuttonsWrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
 }
 
 .title {
@@ -22,35 +7,8 @@
   font-size: 16px;
 }
 
-.radio {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-}
-
-.radioButton {
-  & > div {
-    width: 112px;
-    height: 32px;
-  }
-
-  label {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px !important;
-  }
-
-  input:checked + label {
-    background: none !important;
-    border: 1px solid var(--black-color);
-    color: var(--primary-text);
-  }
-}
-
 .offerSummary {
-  border: 1px dotted var(--primary-border);
+  border: 1px dotted var(--bg-border);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -62,12 +20,11 @@
   display: flex;
   align-items: center;
   gap: 24px;
+  width: 100%;
 }
 
-.rightLabel {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+.numericField {
+  width: 100%;
 }
 
 .buttonsWrapper {
