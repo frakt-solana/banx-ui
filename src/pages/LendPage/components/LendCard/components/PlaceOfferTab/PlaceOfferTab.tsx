@@ -1,3 +1,5 @@
+import { FC } from 'react'
+
 import { RadioButtonField } from '@banx/components/RadioButton'
 import { InputCounter, NumericInputField } from '@banx/components/inputs'
 
@@ -7,19 +9,21 @@ import { usePlaceOfferTab } from './hooks'
 
 import styles from './PlaceOfferTab.module.less'
 
-const PlaceOfferTab = () => {
+const PlaceOfferTab: FC<{ marketPubkey: string }> = ({ marketPubkey }) => {
   const {
+    isEdit,
+    goToPlaceOffer,
     bondFeature,
     onBondFeatureChange,
     loansAmountInput,
     onLoanAmountChange,
     loanValueInput,
     onLoanValueChange,
-  } = usePlaceOfferTab()
+  } = usePlaceOfferTab(marketPubkey)
 
   return (
     <div className={styles.content}>
-      <OfferHeader />
+      <OfferHeader isEdit={isEdit} goToPlaceOffer={goToPlaceOffer} />
       <RadioButtonField
         tooltipText="When funding full loans, lenders have the option to get defaulted NFTs instead of the SOL recovered from the liquidation"
         label="If full loan liquidated"

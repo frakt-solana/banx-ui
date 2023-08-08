@@ -1,3 +1,5 @@
+import { FC } from 'react'
+
 import { Tabs } from '@banx/components/Tabs'
 
 import OrderBook from '../OrderBook'
@@ -15,11 +17,11 @@ interface TabsComponents {
   [key: string]: JSX.Element
 }
 
-const ExpandableCardContent = () => {
+const ExpandableCardContent: FC<{ marketPubkey: string }> = ({ marketPubkey }) => {
   const { tabsParams } = useExpandableCardContent()
 
   const tabsComponents: TabsComponents = {
-    [TabsNames.OFFER]: <PlaceOfferTab />,
+    [TabsNames.OFFER]: <PlaceOfferTab marketPubkey={marketPubkey} />,
   }
 
   return (
@@ -28,7 +30,7 @@ const ExpandableCardContent = () => {
         <Tabs {...tabsParams} />
         <div className={styles.tabContent}>{tabsComponents[tabsParams.value]}</div>
       </div>
-      <OrderBook />
+      <OrderBook marketPubkey={marketPubkey} />
     </div>
   )
 }

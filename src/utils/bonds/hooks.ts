@@ -3,7 +3,24 @@ import { web3 } from 'fbonds-core'
 import produce from 'immer'
 import { create } from 'zustand'
 
-import { fetchAllMarkets, fetchMarketPairs } from '@banx/api/bonds'
+import { fetchAllMarkets, fetchCertainMarket, fetchMarketPairs } from '@banx/api/bonds'
+
+export const useMarket = ({ marketPubkey }: { marketPubkey: string }) => {
+  const { data, isLoading } = useQuery(
+    ['market', marketPubkey],
+    () => fetchCertainMarket({ marketPubkey: new web3.PublicKey(marketPubkey) }),
+    {
+      enabled: !!marketPubkey,
+      staleTime: 5 * 60 * 1000,
+      refetchOnWindowFocus: false,
+    },
+  )
+
+  return {
+    market: data || null,
+    isLoading,
+  }
+}
 
 export const useMarkets = () => {
   const { data, isLoading } = useQuery(['markets'], () => fetchAllMarkets(), {

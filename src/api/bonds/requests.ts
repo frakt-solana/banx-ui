@@ -60,15 +60,32 @@ export const fetchAllMarkets: FetchAllMarkets = async () => {
   }
 }
 
+type FetchCertainMarket = (props: { marketPubkey: web3.PublicKey }) => Promise<Market>
+export const fetchCertainMarket: FetchCertainMarket = async ({ marketPubkey }) => {
+  const { data } = await axios.get<Market>(`${BACKEND_BASE_URL}/markets/${marketPubkey.toBase58()}`)
+
+  try {
+    await MarketSchema.array().parseAsync(data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
+  }
+
+  return data
+}
+
 type FetchMarketPairs = (props: { marketPubkey?: web3.PublicKey }) => Promise<Pair[]>
 export const fetchMarketPairs: FetchMarketPairs = async ({ marketPubkey }) => {
   try {
     const queryParams = new URLSearchParams({
+      order: 'asc',
+      skip: '0',
+      limit: '10',
+      getAll: 'false',
       isPrivate: String(IS_PRIVATE_MARKETS),
     })
 
     const { data } = await axios.get<Pair[]>(
-      `${BACKEND_BASE_URL}/bond-offers?${marketPubkey?.toBase58() || ''}${queryParams.toString()}`,
+      `${BACKEND_BASE_URL}/bond-offers/${marketPubkey?.toBase58() || ''}?${queryParams.toString()}`,
     )
 
     try {

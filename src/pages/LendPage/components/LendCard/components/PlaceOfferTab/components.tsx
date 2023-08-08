@@ -1,3 +1,5 @@
+import { FC } from 'react'
+
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 
@@ -13,10 +15,18 @@ export const OfferSummary = () => (
   </div>
 )
 
-export const OfferHeader = () => {
+interface OfferHeaderProps {
+  isEdit: boolean
+  goToPlaceOffer: () => void
+}
+
+export const OfferHeader: FC<OfferHeaderProps> = ({ isEdit, goToPlaceOffer }) => {
+  const title = isEdit ? 'Offer editing' : 'Offer creation'
+
   return (
     <div className={styles.flexRow}>
-      <h4 className={styles.title}>Offer creation</h4>
+      <h4 className={styles.title}>{title}</h4>
+      {isEdit && <Button onClick={goToPlaceOffer}>Exit edit mode</Button>}
     </div>
   )
 }
