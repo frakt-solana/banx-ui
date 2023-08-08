@@ -2,7 +2,7 @@ import axios from 'axios'
 
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
-import { MarketPreview, MarketPreviewResponse } from './types'
+import { MarketPreview, MarketPreviewResponse, MarketPreviewSchema } from './types'
 
 type FetchMarketsPreview = () => Promise<MarketPreview[]>
 export const fetchMarketsPreview: FetchMarketsPreview = async () => {
@@ -15,7 +15,11 @@ export const fetchMarketsPreview: FetchMarketsPreview = async () => {
       `${BACKEND_BASE_URL}/bonds/preview?${queryParams.toString()}`,
     )
 
-    // await MarketPreviewSchema.array().parseAsync(data.data)
+    try {
+      await MarketPreviewSchema.array().parseAsync(data.data)
+    } catch (validationError) {
+      console.error('Schema validation error:', validationError)
+    }
 
     return data.data
   } catch (error) {

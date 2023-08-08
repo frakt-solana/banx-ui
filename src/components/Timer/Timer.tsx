@@ -19,17 +19,13 @@ const Timer: FC<TimerProps> = ({ expiredAt, detailedTimeFormat = false }) => {
     </>
   )
 
-  return (
+  return detailedTimeFormat ? (
     <>
-      {detailedTimeFormat ? (
-        <>
-          {formatTime(hours, 'h')} {formatTime(minutes, 'm')} {seconds}s
-        </>
-      ) : (
-        <>
-          {formatTime(days, 'd')} {formatTime(hours, 'h')} {minutes}m
-        </>
-      )}
+      {formatTime(hours, 'h')} {formatTime(minutes, 'm')} {seconds}s
+    </>
+  ) : (
+    <>
+      {formatTime(days, 'd')} {formatTime(hours, 'h')} {minutes}m
     </>
   )
 }

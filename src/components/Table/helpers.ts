@@ -2,7 +2,7 @@ import { get } from 'lodash'
 
 import { ActiveRowParams } from './types'
 
-//TODO: Refactor this code
+//TODO: Need to simplify this function
 export const getCardOrRowClassName = <T>(
   record: T,
   params?: ActiveRowParams,

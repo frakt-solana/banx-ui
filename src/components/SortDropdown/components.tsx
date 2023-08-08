@@ -47,6 +47,7 @@ interface SortOptionsProps {
   onChange: (sortOrder: string, label: string) => void
 }
 
+//TODO: Need to refactor this code, try getting rid of ${value}_${order}
 export const SortOptions: FC<SortOptionsProps> = ({ sortOption, options, onChange }) => (
   <>
     {options.map(({ label, value }) => (
