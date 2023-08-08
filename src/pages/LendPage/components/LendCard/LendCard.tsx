@@ -28,7 +28,6 @@ const LendCard: FC<LendCardProps> = ({ isVisible, onCardClick, market }) => {
           <MarketAdditionalInfo market={market} />
           <Button
             type="circle"
-            size="medium"
             className={classNames(styles.chevronButton, { [styles.active]: isVisible })}
           >
             <ChevronDown />

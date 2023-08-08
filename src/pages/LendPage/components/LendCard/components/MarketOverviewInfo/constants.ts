@@ -1,7 +1,8 @@
 import { VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { MarketPreview } from '@banx/api/bonds'
-import { convertAprToApy } from '@banx/utils'
+import { colorByPercentHealth } from '@banx/constants'
+import { convertAprToApy, getColorByPercent } from '@banx/utils'
 
 export const ADDITIONAL_MARKET_INFO = [
   {
@@ -9,6 +10,7 @@ export const ADDITIONAL_MARKET_INFO = [
     label: 'In offers',
     tooltipText: 'Total liquidity currently available in active offers',
     secondValue: (market: MarketPreview) => `in ${market?.activeOfferAmount || 0} offers`,
+    divider: 1e9,
   },
   {
     key: 'loansTVL',
@@ -21,9 +23,12 @@ export const ADDITIONAL_MARKET_INFO = [
     key: 'apy',
     label: 'Apy',
     tooltipText: 'Interest (in %) for the duration of this loan',
-    valueRenderer: (apr: number) => convertAprToApy(apr / 10000),
+    valueRenderer: (apr: number) => convertAprToApy(apr / 1e4),
     valueType: VALUES_TYPES.percent,
-    valueStyles: { fontWeight: 600 },
+    valueStyles: (market: MarketPreview) => ({
+      color: getColorByPercent(market.apy / 100, colorByPercentHealth),
+      font: 'var(--important-text-md)',
+    }),
   },
 ]
 

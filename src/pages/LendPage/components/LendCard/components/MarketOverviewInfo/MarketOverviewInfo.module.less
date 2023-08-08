@@ -23,14 +23,20 @@
   display: flex;
   align-items: center;
   gap: 8px;
+
+  & > div {
+    min-width: 80px;
+  }
 }
 
 .additionalInfoStats {
   display: flex;
   align-items: flex-start;
   gap: 16px;
+  width: 100%;
 
   & > div {
-    min-width: 128px;
+    align-items: flex-end;
+    width: 100%;
   }
 }
