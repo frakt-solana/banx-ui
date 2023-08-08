@@ -13,23 +13,21 @@ const TableView = <T extends object>({
   activeRowParams,
   rowKeyField,
 }: TableViewProps<T>) => {
-  const handleRowClick = (rowData: T) => {
-    if (onRowClick) {
-      onRowClick(rowData)
-    }
-  }
+  const rowProps = (rowData: T) => ({
+    onClick: onRowClick ? () => onRowClick(rowData) : undefined,
+    style: onRowClick && { cursor: 'pointer' },
+  })
 
   return (
     <AntdTable
       rowKey={(record) => record[rowKeyField] as string}
-      dataSource={data.slice()}
+      dataSource={[...data]}
       columns={columns}
       className={className}
       rowClassName={(record) => getCardOrRowClassName(record, activeRowParams)}
       rootClassName="rootTableClassName"
       sortDirections={['descend', 'ascend']}
-      style={onRowClick && { cursor: 'pointer' }}
-      onRow={onRowClick ? (rowData) => ({ onClick: () => handleRowClick(rowData) }) : undefined}
+      onRow={rowProps}
       pagination={false}
     />
   )

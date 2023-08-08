@@ -26,30 +26,17 @@ export const OfferActionButtons = () => {
 
   const { connected } = useWallet()
 
-  const deleteButtonProps = {
-    className: classNames(styles.button, styles.deleteOfferButton),
-    children: 'Delete offer',
-  }
-
-  const updateButtonProps = {
-    className: styles.button,
-    children: 'Update offer',
-  }
-
-  const placeButtonProps = {
-    className: styles.button,
-    children: !connected ? 'Connect wallet' : 'Place',
-  }
-
   return (
     <div className={styles.buttonsWrapper}>
       {isEdit ? (
         <>
-          <Button {...deleteButtonProps} />
-          <Button {...updateButtonProps} />
+          <Button className={classNames(styles.button, styles.deleteOfferButton)}>
+            Delete offer
+          </Button>
+          <Button className={styles.button}>Update offer</Button>
         </>
       ) : (
-        <Button {...placeButtonProps} />
+        <Button className={styles.button}>{!connected ? 'Connect wallet' : 'Place'}</Button>
       )}
     </div>
   )
