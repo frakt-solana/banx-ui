@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { web3 } from 'fbonds-core'
 
 import { useOfferStore } from '../ExpandableCardContent/hooks'
 import { useMarketOrders } from './useMarketOrders'
@@ -12,10 +11,9 @@ export const useOrderBook = (marketPubkey: string) => {
 
   const orderBookParams = useMemo(() => {
     return {
-      marketPubkey: marketPubkey && new web3.PublicKey(marketPubkey),
-      size: syntheticParams?.offerSize,
+      marketPubkey,
       loanValue: syntheticParams?.loanValue,
-      loanAmount: syntheticParams?.loanAmount,
+      loansAmount: syntheticParams?.loansAmount,
       pairPubkey,
     }
   }, [marketPubkey, syntheticParams])

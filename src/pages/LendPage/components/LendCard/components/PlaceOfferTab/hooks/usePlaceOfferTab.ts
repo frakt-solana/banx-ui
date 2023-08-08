@@ -2,33 +2,28 @@ import { useEffect, useState } from 'react'
 
 import { RBOption } from '@banx/components/RadioButton'
 
-import { useMarket, useMarketPairs } from '@banx/utils/bonds'
-
 import { useOfferStore } from '../../ExpandableCardContent/hooks'
 import { DEFAULT_BOND_FEATURE } from '../constants'
+import { useOfferTransactions } from './useOfferTransactions'
 
 export const usePlaceOfferTab = (marketPubkey: string) => {
-  const { pairPubkey, setPairPubkey, setSyntheticParams, syntheticParams } = useOfferStore()
+  const { pairPubkey, setPairPubkey, setSyntheticParams } = useOfferStore()
 
-  const [loanValueInput, setLoanValueInput] = useState<string>('0')
-  const [loansAmountInput, setLoansAmountInput] = useState<string>('1')
+  const [loanValue, setLoanValue] = useState<string>('0')
+  const [loansAmount, setLoansAmount] = useState<string>('1')
   const [bondFeature, setBondFeature] = useState<string>(DEFAULT_BOND_FEATURE)
-
-  const { market, isLoading: marketLoading } = useMarket({ marketPubkey })
-  const { pairs, isLoading: pairLoading } = useMarketPairs({ marketPubkey })
 
   const isEdit = !!pairPubkey
 
-  console.log(pairPubkey, 'pairPubkey')
   const onBondFeatureChange = (nextValue: RBOption) => {
     setBondFeature(nextValue.value)
   }
   const onLoanValueChange = (nextValue: string) => {
-    setLoanValueInput(nextValue)
+    setLoanValue(nextValue)
   }
 
   const onLoanAmountChange = (nextValue: string) => {
-    setLoansAmountInput(nextValue)
+    setLoansAmount(nextValue)
   }
 
   const goToPlaceOffer = () => {
@@ -36,18 +31,19 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
   }
 
   useEffect(() => {
-    const loanValue = parseFloat(loanValueInput)
-    const loanAmount = parseFloat(loansAmountInput)
-    const offerSizeLamports = loanValue * loanAmount
-
     if (loanValue) {
       setSyntheticParams({
-        loanValue,
-        loanAmount,
-        offerSize: offerSizeLamports,
+        loanValue: parseFloat(loanValue),
+        loansAmount: parseFloat(loansAmount),
       })
     }
-  }, [loanValueInput, loansAmountInput, setSyntheticParams])
+  }, [loanValue, loansAmount])
+
+  const { onCreateOffer } = useOfferTransactions({
+    marketPubkey,
+    loanValue: parseFloat(loanValue),
+    loansAmount: parseFloat(loansAmount),
+  })
 
   return {
     isEdit,
@@ -57,8 +53,9 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
     bondFeature,
     onBondFeatureChange,
     onLoanValueChange,
-    loanValueInput,
+    loanValue,
     onLoanAmountChange,
-    loansAmountInput,
+    loansAmount,
+    onCreateOffer,
   }
 }

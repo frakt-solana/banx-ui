@@ -15,10 +15,11 @@ const PlaceOfferTab: FC<{ marketPubkey: string }> = ({ marketPubkey }) => {
     goToPlaceOffer,
     bondFeature,
     onBondFeatureChange,
-    loansAmountInput,
+    loansAmount,
     onLoanAmountChange,
-    loanValueInput,
+    loanValue,
     onLoanValueChange,
+    onCreateOffer,
   } = usePlaceOfferTab(marketPubkey)
 
   return (
@@ -37,18 +38,14 @@ const PlaceOfferTab: FC<{ marketPubkey: string }> = ({ marketPubkey }) => {
       <div className={styles.fields}>
         <NumericInputField
           label="Offer"
-          value={loanValueInput}
+          value={loanValue}
           onChange={onLoanValueChange}
           className={styles.numericField}
         />
-        <InputCounter
-          label="Number of loans"
-          onChange={onLoanAmountChange}
-          value={loansAmountInput}
-        />
+        <InputCounter label="Number of loans" onChange={onLoanAmountChange} value={loansAmount} />
       </div>
       <OfferSummary />
-      <OfferActionButtons />
+      <OfferActionButtons isEdit={isEdit} onCreateOffer={onCreateOffer} />
     </div>
   )
 }

@@ -31,8 +31,7 @@ export const OfferHeader: FC<OfferHeaderProps> = ({ isEdit, goToPlaceOffer }) =>
   )
 }
 
-export const OfferActionButtons = () => {
-  const isEdit = false // TODO: remove it
+export const OfferActionButtons = ({ isEdit, onCreateOffer }: any) => {
 
   const { connected } = useWallet()
 
@@ -46,7 +45,9 @@ export const OfferActionButtons = () => {
           <Button className={styles.button}>Update offer</Button>
         </>
       ) : (
-        <Button className={styles.button}>{!connected ? 'Connect wallet' : 'Place'}</Button>
+        <Button onClick={onCreateOffer} className={styles.button}>
+          {!connected ? 'Connect wallet' : 'Place'}
+        </Button>
       )}
     </div>
   )

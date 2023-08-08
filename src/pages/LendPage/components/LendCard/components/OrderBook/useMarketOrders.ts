@@ -1,38 +1,33 @@
 import { useMemo } from 'react'
 
-import { useWallet } from '@solana/wallet-adapter-react'
 import { web3 } from 'fbonds-core'
+import { BondFeatures } from 'fbonds-core/lib/fbond-protocol/types'
 import { getTopOrderSize } from 'fbonds-core/lib/fbond-protocol/utils/cartManagerV2'
 
 import { Pair } from '@banx/api/bonds'
 import { useMarketPairs } from '@banx/utils/bonds'
 
+import { parseMarketOrder } from './helpers'
+import { MarketOrder } from './types'
+
 type UseMarketOrders = (props: {
-  marketPubkey: web3.PublicKey
-  walletOwned?: boolean
-  size: number //? lamports
+  marketPubkey: string
   loanValue: number
-  loanAmount: number
+  loansAmount: number
   pairPubkey: string
 }) => {
-  offers: any[]
+  offers: MarketOrder[]
   isLoading: boolean
   hidePair: (pairPubkey: string) => void
 }
 
 export const useMarketOrders: UseMarketOrders = ({
   marketPubkey,
-  walletOwned,
-  size,
   loanValue,
-  loanAmount,
+  loansAmount,
   pairPubkey,
 }) => {
-  const { publicKey } = useWallet()
-
-  const { pairs, isLoading, hidePair } = useMarketPairs({
-    marketPubkey: marketPubkey?.toBase58(),
-  })
+  const { pairs, isLoading, hidePair } = useMarketPairs({ marketPubkey })
 
   const offers = useMemo(() => {
     if (!pairs) return []
@@ -41,15 +36,13 @@ export const useMarketOrders: UseMarketOrders = ({
     const editOfferPubkey = editOffer?.publicKey
 
     const myOffer = {
-      size: size / 1e9,
+      size: loanValue * loansAmount,
       loanValue,
-      loanAmount,
+      loansAmount,
       synthetic: true,
       rawData: {
         publicKey: '',
         assetReceiver: '',
-        edgeSettlement: 0,
-        authorityAdapter: '',
       },
     }
 
@@ -61,36 +54,18 @@ export const useMarketOrders: UseMarketOrders = ({
         )
       : []
 
-    if (loanAmount && !editOffer?.publicKey) {
-      parsedOffers.push(myOffer)
+    if (loansAmount && !editOffer?.publicKey) {
+      parsedOffers.push(myOffer as any)
     }
 
     const offers = editOfferPubkey ? parsedEditableOffers : parsedOffers
 
     return offers
-  }, [pairs, walletOwned, publicKey, size])
+  }, [pairs, loanValue, loansAmount, pairPubkey])
 
   return {
     offers,
     isLoading,
     hidePair,
-  }
-}
-
-const parseMarketOrder = (pair: any): any => {
-  return {
-    loanValue: pair.fundsSolOrTokenBalance / 1e9,
-    size: (pair ? getTopOrderSize(pair) * pair?.currentSpotPrice : 0) / 1e9,
-    loanAmount: pair?.buyOrdersQuantity,
-    rawData: {
-      publicKey: pair?.publicKey || '',
-      assetReceiver: pair?.assetReceiver || '',
-      edgeSettlement: pair ? getTopOrderSize(pair) : 0,
-      authorityAdapter: '',
-      bondFeature: pair?.validation?.bondFeatures,
-      maxReturnAmountFilter: pair?.validation?.maxReturnAmountFilter,
-      fundsSolOrTokenBalance: pair?.fundsSolOrTokenBalance,
-      loanToValueFilter: pair?.validation?.loanToValueFilter,
-    },
   }
 }
