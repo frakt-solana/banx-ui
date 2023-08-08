@@ -1,4 +1,4 @@
-import { CSSProperties, FC } from 'react'
+import { FC } from 'react'
 
 import { isFunction } from 'lodash'
 
@@ -11,7 +11,6 @@ import { ADDITIONAL_MARKET_INFO, MAIN_MARKET_INFO } from './constants'
 import styles from './MarketOverviewInfo.module.less'
 
 export const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
-  console.log(market)
   return (
     <div className={styles.mainInfoContainer}>
       <img src={market.collectionImage} className={styles.collectionImage} />
