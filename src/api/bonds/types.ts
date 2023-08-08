@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { Meta } from '@banx/types'
+
 export const MarketPreviewSchema = z.object({
   marketPubkey: z.string(),
   collectionName: z.string(),
@@ -19,9 +21,5 @@ export type MarketPreview = z.infer<typeof MarketPreviewSchema>
 
 export interface MarketPreviewResponse {
   data: MarketPreview[]
-  meta: {
-    skip: number
-    limit: number
-    totalCount: number
-  }
+  meta: Meta
 }
