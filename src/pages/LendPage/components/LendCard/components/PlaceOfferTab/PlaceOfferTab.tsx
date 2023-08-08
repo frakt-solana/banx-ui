@@ -24,10 +24,10 @@ const PlaceOfferTab = () => {
         tooltipText="When funding full loans, lenders have the option to get defaulted NFTs instead of the SOL recovered from the liquidation"
         label="If full loan liquidated"
         currentOption={{
-          label: `${bondFeature}`,
-          value: bondFeature as any,
+          label: bondFeature,
+          value: bondFeature,
         }}
-        onOptionChange={onBondFeatureChange as any}
+        onOptionChange={onBondFeatureChange}
         options={DEFAULTS_OPTIONS}
       />
       <div className={styles.fields}>

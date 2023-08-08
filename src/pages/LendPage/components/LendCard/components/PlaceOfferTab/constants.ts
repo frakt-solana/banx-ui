@@ -2,7 +2,7 @@ import { BondFeatures } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { RBOption } from '@banx/components/RadioButton'
 
-export const DEFAULTS_OPTIONS: RBOption<string>[] = [
+export const DEFAULTS_OPTIONS: RBOption[] = [
   {
     label: 'Receive NFT',
     value: BondFeatures.AutoReceiveAndReceiveNft,

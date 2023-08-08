@@ -1,43 +1,32 @@
+import { FC } from 'react'
+
 import classNames from 'classnames'
 
 import Tooltip from '@banx/components/Tooltip'
 
-import { RBOption, RadioButton } from './RadioButton'
+import { RadioButton, RadioButtonProps } from './RadioButton'
 
 import styles from './RadioButton.module.less'
 
-interface RadioButtonFieldProps<T> {
-  className?: string
+interface RadioButtonFieldProps extends RadioButtonProps {
   classNameInner?: string
-  currentOption: RBOption<T>
-  options: RBOption<T>[]
-  disabled?: boolean
-  onOptionChange: (nextOption: RBOption<T>) => void
   tooltipText?: string
   label?: string
 }
 
-export const RadioButtonField = <T extends object>({
+export const RadioButtonField: FC<RadioButtonFieldProps> = ({
   className,
-  currentOption,
-  options,
-  disabled,
-  onOptionChange,
   tooltipText,
   label,
-}: RadioButtonFieldProps<T>): JSX.Element => {
+  ...props
+}) => {
   return (
     <div className={classNames(styles.field, className)}>
       <div className={styles.radioTitle}>
         <h6 className={styles.subtitle}>{label}</h6>
         {!!tooltipText && <Tooltip placement="bottom" overlay={tooltipText} />}
       </div>
-      <RadioButton
-        currentOption={currentOption}
-        disabled={disabled}
-        onOptionChange={onOptionChange}
-        options={options}
-      />
+      <RadioButton {...props} />
     </div>
   )
 }

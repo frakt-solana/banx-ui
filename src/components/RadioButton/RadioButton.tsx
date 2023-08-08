@@ -1,32 +1,34 @@
+import { FC } from 'react'
+
 import classNames from 'classnames'
 
 import styles from './RadioButton.module.less'
 
-export interface RBOption<T> {
+export interface RBOption {
   label: string
-  value: T
+  value: string
 }
 
-interface RadioButtonProps<T> {
-  currentOption: RBOption<T>
-  onOptionChange: (nextOption: RBOption<T>) => void
-  options: RBOption<T>[]
+export interface RadioButtonProps {
+  currentOption: RBOption
+  onOptionChange: (nextOption: RBOption) => void
+  options: RBOption[]
   className?: string
   disabled?: boolean
 }
 
-export const RadioButton = <T extends object>({
+export const RadioButton: FC<RadioButtonProps> = ({
   currentOption,
   options,
   onOptionChange,
   className,
   disabled,
-}: RadioButtonProps<T>) => {
+}) => {
   return (
     <div className={classNames(styles.radioButtons, className)}>
       {options.map((option) => {
-        const stringValue = option.value.toString()
-        const checked = option.value === currentOption.value
+        const value = option.value
+        const checked = value === currentOption.value
 
         return (
           <div
@@ -38,14 +40,14 @@ export const RadioButton = <T extends object>({
           >
             <input
               type="radio"
-              id={stringValue}
-              name={stringValue}
-              value={stringValue}
+              id={value}
+              name={value}
+              value={value}
               checked={checked}
               onChange={() => onOptionChange(option)}
               disabled={disabled}
             />
-            <label htmlFor={stringValue}>{option.label}</label>
+            <label htmlFor={value}>{option.label}</label>
           </div>
         )
       })}

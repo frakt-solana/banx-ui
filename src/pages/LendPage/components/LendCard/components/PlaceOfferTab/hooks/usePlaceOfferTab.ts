@@ -1,7 +1,5 @@
 import { useState } from 'react'
 
-import { BondFeatures } from 'fbonds-core/lib/fbond-protocol/types'
-
 import { RBOption } from '@banx/components/RadioButton'
 
 import { DEFAULT_BOND_FEATURE } from '../constants'
@@ -9,9 +7,9 @@ import { DEFAULT_BOND_FEATURE } from '../constants'
 export const usePlaceOfferTab = () => {
   const [loanValueInput, setLoanValueInput] = useState<string>('0')
   const [loansAmountInput, setLoansAmountInput] = useState<string>('1')
-  const [bondFeature, setBondFeature] = useState<BondFeatures>(DEFAULT_BOND_FEATURE)
+  const [bondFeature, setBondFeature] = useState<string>(DEFAULT_BOND_FEATURE)
 
-  const onBondFeatureChange = (nextValue: RBOption<BondFeatures>) => {
+  const onBondFeatureChange = (nextValue: RBOption) => {
     setBondFeature(nextValue.value)
   }
   const onLoanValueChange = (nextValue: string) => {
