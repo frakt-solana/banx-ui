@@ -1,0 +1,36 @@
+.sortWrapper {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+}
+
+.rowGap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.searchWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.switchButtons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.switchViewButton {
+  padding: 0;
+  height: 32px;
+  width: 32px;
+}
+.switchViewButton.active {
+  border-color: var(--content-primary);
+}
+.switchViewButton svg path {
+  fill: var(--content-primary);
+}

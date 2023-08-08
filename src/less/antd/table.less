@@ -1,0 +1,81 @@
+.rootTableClassName {
+  .ant-table {
+    background: var(--bg-primary);
+    border: 0;
+    border-radius: 0;
+    color: var(--content-primary);
+    overflow: auto;
+  }
+
+  .ant-table table {
+    table-layout: auto !important;
+  }
+
+  .ant-table-thead {
+    position: sticky;
+    top: -1px;
+    z-index: 3;
+  }
+
+  .ant-table-tbody > tr > td {
+    border: 0;
+    font: var(--body-text-md);
+    vertical-align: middle;
+  }
+
+  .ant-table-tbody > tr > td,
+  .ant-table-thead > tr > th {
+    padding: 8px;
+    transition: unset;
+    text-align: right;
+  }
+
+  .ant-table-thead > tr > th:first-child,
+  .ant-table-tbody > tr > td:first-child {
+    text-align: left;
+  }
+
+  /* Styling for table header cells */
+  .ant-table-thead > tr > th {
+    background: var(--bg-primary);
+    border-bottom: var(--border-less-primary);
+    color: var(--content-secondary);
+    font: var(--table-header-md);
+    text-transform: uppercase;
+    white-space: nowrap;
+
+    /* Styling for table header cells with tooltip */
+    & > div {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+  }
+
+  /* Remove sort arrows */
+  .ant-table-column-sorter {
+    display: none;
+  }
+
+  /* Remove separating line between cells */
+  .ant-table-cell::before {
+    display: none;
+  }
+
+  .ant-table-thead th.ant-table-column-has-sorters {
+    pointer-events: none;
+    transition: unset;
+  }
+
+  /* Remove background on cell hover */
+  .ant-table-row:hover > td,
+  .ant-table-thead th.ant-table-column-sort,
+  .ant-table-thead th.ant-table-column-has-sorters:hover,
+  .ant-table-cell-row-hover {
+    background: var(--bg-action) !important;
+  }
+
+  .ant-table-empty .ant-table-tbody > tr.ant-table-placeholder {
+    display: none;
+  }
+}

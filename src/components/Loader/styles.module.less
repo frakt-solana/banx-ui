@@ -1,0 +1,44 @@
+.loader {
+  width: 48px;
+  height: 48px;
+  margin: auto;
+  display: block;
+  animation: rotate 1s infinite linear;
+}
+
+.large {
+  width: 64px;
+  height: 64px;
+}
+
+.small {
+  width: 32px;
+  height: 32px;
+}
+
+.load {
+  min-width: 26px;
+  min-height: 26px;
+
+  max-width: 26px;
+  max-height: 26px;
+  border: solid 2px #007aff;
+  border-radius: 50%;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+
+  transition: all 0.5s ease-in;
+  animation-name: rotate;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

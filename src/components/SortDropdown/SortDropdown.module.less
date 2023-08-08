@@ -1,0 +1,79 @@
+.sortDropdownWrapper {
+  position: relative;
+}
+
+.dropdown {
+  background: var(--bg-primary);
+  border: var(--border-primary);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  gap: 16px;
+
+  position: absolute;
+  top: 45px;
+  right: 0;
+  z-index: 4;
+
+  @media screen and (max-width: 960px) {
+    border: 0;
+    border-top: var(--border-primary);
+    padding: 24px;
+
+    position: fixed;
+    top: unset;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+  }
+}
+
+.dropdownButton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 190px;
+  width: 100%;
+}
+.dropdownButtonText {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.dropdownButton,
+.sortButton {
+  svg > path {
+    fill: var(--content-primary);
+  }
+}
+
+.sortButtons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.sortButton {
+  border-color: var(--bg-border);
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.sortButton.active {
+  background-color: var(--accent-primary);
+  color: var(--black-color);
+
+  svg path {
+    fill: var(--black-color);
+  }
+}
+
+.rotate {
+  transform: rotate(180deg);
+}

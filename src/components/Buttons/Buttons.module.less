@@ -55,31 +55,30 @@
 }
 
 // Circle button styles
-.circle.primary,
-.circle.secondary {
-  border-radius: 100%;
-  padding: 8px;
+.circle {
+  border-radius: 100px;
 
   &:disabled {
     border: 1px solid var(--bg-border);
     background-color: var(--bg-primary);
   }
+}
+
+.circle.primary,
+.circle.secondary {
+  padding: 8px;
 
   &.large {
-    width: 40px;
     height: 40px;
+    width: 40px;
   }
   &.medium {
     height: 32px;
-    height: 32px;
+    width: 32px;
   }
   &.small {
     height: 24px;
-    height: 24px;
-  }
-
-  svg path {
-    fill: var(--content-primary);
+    width: 24px;
   }
 }
 
@@ -89,11 +88,29 @@
   &:hover {
     background-color: var(--accent-secondary);
   }
+
+  svg path {
+    fill: var(--black-color);
+  }
 }
 
 .circle.secondary {
   border: 1px solid var(--bg-border);
   background-color: var(--bg-primary);
+
+  &:hover {
+    border-color: var(--content-primary);
+  }
+
+  svg path {
+    fill: var(--content-primary);
+  }
+}
+
+.circle.text {
+  border: 1px solid var(--bg-border);
+  background-color: var(--bg-primary);
+  padding: 7px 14px;
 
   &:hover {
     border-color: var(--content-primary);

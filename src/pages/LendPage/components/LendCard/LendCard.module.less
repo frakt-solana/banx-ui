@@ -1,0 +1,32 @@
+.card {
+  border-bottom: var(--border-primary);
+  background-color: var(-bg-primary);
+  cursor: pointer;
+  width: 100%;
+}
+.card.active {
+  border: 0;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+}
+
+.cardBody {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  padding: 16px;
+  width: 100%;
+}
+
+.chevronButton {
+  display: flex;
+}
+.chevronButton.active svg {
+  transform: rotate(180deg);
+}

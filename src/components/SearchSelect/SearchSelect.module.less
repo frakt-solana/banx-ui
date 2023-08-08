@@ -1,0 +1,94 @@
+.labels {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 12px;
+  color: var(--content-secondary);
+  font: var(--table-header-sm);
+  text-transform: uppercase;
+}
+
+.selectWrapper {
+  border: var(--border-primary);
+  position: relative;
+  height: 40px;
+  width: 100%;
+}
+
+.prefix {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+
+  padding-left: 12px;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  svg path {
+    fill: var(--content-secondary);
+  }
+}
+
+//? Options styles
+.optionWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.relativeImageContainer {
+  position: relative;
+  height: 32px;
+  width: 32px;
+}
+
+.image {
+  height: 32px;
+  width: 32px;
+  position: relative;
+}
+
+.relativeImageContainer .selected {
+  background-color: var(--accent-primary);
+  border: 1px solid var(--black-color);
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 32px;
+  width: 32px;
+
+  &:after {
+    content: '';
+    display: block;
+    background: var(--black-color);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 1px;
+    width: 11px;
+  }
+}
+
+.flexRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.secondValue {
+  font: var(--font-text-8);
+  font-size: 14px;
+}
+
+.rotate {
+  transform: rotate(180deg);
+}

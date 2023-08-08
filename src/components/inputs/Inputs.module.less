@@ -1,0 +1,99 @@
+body .input {
+  background: var(--bg-action);
+  border-radius: 0;
+  color: var(--content-primary);
+  font: var(--body-text-md);
+  outline: none;
+  transition: none;
+  padding: 8px 12px;
+  height: 40px;
+
+  &,
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    border: none;
+  }
+
+  &,
+  &:global(.ant-input:focus),
+  &:global(.ant-input-focused) {
+    box-shadow: unset;
+  }
+
+  &::placeholder {
+    color: var(--content-secondary);
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.label {
+  color: var(--content-secondary);
+  font: var(--table-header-md);
+  text-transform: uppercase;
+}
+
+/* Input counter styles */
+.inputCounterWrapper {
+  border: var(--border-primary);
+  display: flex;
+  justify-content: flex-end;
+  text-align: center;
+  width: 100%;
+}
+.inputCounter {
+  flex-grow: 1;
+  padding-left: 24px;
+  text-align: center;
+}
+.counterButton {
+  cursor: pointer;
+  background: var(--bg-action);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+
+  &:first-child {
+    border-right: var(--border-primary);
+  }
+
+  &:last-child {
+    border-left: var(--border-primary);
+  }
+}
+.counterButton svg path {
+  fill: var(--content-primary);
+}
+.counterButton.disabled {
+  pointer-events: none;
+  svg path {
+    fill: var(--content-secondary);
+  }
+}
+
+/* Number input styles */
+.numericInputWrapper {
+  border: var(--border-primary);
+
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+
+  input {
+    border: 0;
+  }
+}
+
+.selectTokenBtn {
+  background: var(--bg-action);
+  padding: 0 12px 0 20px;
+  display: flex;
+  align-items: center;
+}
