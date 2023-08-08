@@ -52,7 +52,7 @@ export const StatInfo: FC<StatsInfoProps> = ({
     <div className={containerClasses}>
       <div className={styles.labelWrapper}>
         <span className={labelClasses}>{label}</span>
-        {tooltipText && <Tooltip overlay={tooltipText} />}
+        {tooltipText && <Tooltip title={tooltipText} />}
       </div>
       <span className={valueClasses} style={valueStyles}>
         {formattedValue}

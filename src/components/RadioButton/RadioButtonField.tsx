@@ -23,7 +23,7 @@ export const RadioButtonField: FC<RadioButtonFieldProps> = ({
     <div className={classNames(styles.field, className)}>
       <div className={styles.radioTitle}>
         <h6 className={styles.subtitle}>{label}</h6>
-        {!!tooltipText && <Tooltip placement="bottom" overlay={tooltipText} />}
+        {!!tooltipText && <Tooltip placement="bottom" title={tooltipText} />}
       </div>
       <RadioButton {...props} />
     </div>

@@ -12,7 +12,7 @@ export const HeaderCell: FC<HeaderCellProps> = ({ label, tooltipText }) => {
   return (
     <>
       <span>{label}</span>
-      {!!tooltipText && <Tooltip placement="top" overlay={tooltipText} />}
+      {!!tooltipText && <Tooltip placement="top" title={tooltipText} />}
     </>
   )
 }
