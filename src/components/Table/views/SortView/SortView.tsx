@@ -1,12 +1,12 @@
 import { ColumnsType } from 'antd/es/table'
 
-import { SearchSelect } from '@banx/components/SearchSelect'
+import { SearchSelect, SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortDropdown } from '@banx/components/SortDropdown'
-import { Toggle } from '@banx/components/Toggle'
+import { Toggle, ToggleProps } from '@banx/components/Toggle'
 
 import { ViewState, useTableView } from '@banx/store'
 
-import { SearchSelectParams, SortParams, ToggleParams } from '../../types'
+import { SortParams } from '../../types'
 import { SwitchModeButtons } from './components'
 import { parseTableColumn } from './helpers'
 
@@ -14,9 +14,9 @@ import styles from './SortView.module.less'
 
 interface SortViewProps<T, P> {
   columns: ColumnsType<T>
-  searchSelectParams: SearchSelectParams<P>
+  searchSelectParams: SearchSelectProps<P>
   sortParams?: SortParams
-  toggleParams?: ToggleParams
+  toggleParams?: ToggleProps
   showCard?: boolean
 }
 

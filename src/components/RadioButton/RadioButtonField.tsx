@@ -9,7 +9,6 @@ import { RadioButton, RadioButtonProps } from './RadioButton'
 import styles from './RadioButton.module.less'
 
 interface RadioButtonFieldProps extends RadioButtonProps {
-  classNameInner?: string
   tooltipText?: string
   label?: string
 }

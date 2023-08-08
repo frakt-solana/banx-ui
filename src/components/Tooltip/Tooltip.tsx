@@ -19,11 +19,7 @@ const Tooltip: FC<TooltipProps> = ({ children, overlayClassName, innerClassName,
     overlayClassName={classNames(overlayClassName, styles['rcTooltipInner'])}
     getTooltipContainer={(triggerNode) => (triggerNode as HTMLElement).parentNode as HTMLElement}
   >
-    {children ? (
-      children
-    ) : (
-      <InfoCircleOutlined className={classNames(styles.icon, innerClassName)} />
-    )}
+    {children || <InfoCircleOutlined className={classNames(styles.icon, innerClassName)} />}
   </RcTooltip>
 )
 

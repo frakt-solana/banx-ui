@@ -4,8 +4,6 @@ import { formatNumbersWithCommas } from '@banx/utils'
 
 import { VALUES_TYPES } from './constants'
 
-import styles from './StatInfo.module.less'
-
 export const formatValue = (
   value: number | string | JSX.Element,
   type: VALUES_TYPES,
@@ -16,12 +14,12 @@ export const formatValue = (
     return value
   }
 
-  if (type === VALUES_TYPES.percent) {
+  if (type === VALUES_TYPES.PERCENT) {
     const formattedValue = isNumber(value) ? value?.toFixed(0) : value
     return formattedValue
   }
 
-  if (type === VALUES_TYPES.solPrice) {
+  if (type === VALUES_TYPES.SOLPRICE) {
     const formattedValue = isString(value) ? parseFloat(value) || 0 : value
     const roundedValue = (formattedValue / divider)?.toFixed(decimalPlaces)
 
@@ -29,13 +27,4 @@ export const formatValue = (
   }
 
   return value
-}
-
-export const getFlexStyle = (flexType?: 'row' | 'column'): string => {
-  const flexStyles = {
-    row: styles.rowFlex,
-    column: styles.columnFlex,
-  }
-
-  return flexType ? flexStyles[flexType] : ''
 }

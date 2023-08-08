@@ -1,12 +1,12 @@
-import OfferLite from '../Offer'
+import Offer from '../Offer'
 
 import styles from './OrderBook.module.less'
 
 export const OrderBookList = () => {
-  const offers = ['1', '2', '3']
+  const offers = ['1', '2', '3', '4']
 
   const renderOffer = () => {
-    return <OfferLite />
+    return <Offer />
   }
 
   return <ul className={styles.list}>{offers.map(renderOffer)}</ul>

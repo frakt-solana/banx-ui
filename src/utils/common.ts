@@ -1,5 +1,3 @@
-import { ColorBreakpoints } from '@banx/constants'
-
 // shorten the checksummed version of the input address to have 4 characters at start and end
 export const shortenAddress = (address: string, chars = 4): string => {
   return `${address?.slice(0, chars)}...${address?.slice(-chars)}`
@@ -18,13 +16,3 @@ export const convertAprToApy = (apr: number) => {
 
 export const formatNumbersWithCommas = (value: number | string) =>
   value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-
-export const getColorByPercent = (value: number, colorBreakpoints: ColorBreakpoints): string => {
-  const limit = Object.keys(colorBreakpoints).find((limit) => value <= parseInt(limit))
-
-  if (limit !== undefined) {
-    return colorBreakpoints[parseInt(limit)] || colorBreakpoints[10]
-  }
-
-  return colorBreakpoints[10]
-}

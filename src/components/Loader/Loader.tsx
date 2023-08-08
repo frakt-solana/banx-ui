@@ -15,10 +15,10 @@ export const Loader: FC<LoaderProps> = ({ size = 'default', className }) => {
   return (
     <LoaderCircle
       className={classNames([
-        className,
         styles.loader,
         { [styles.small]: size === 'small' },
         { [styles.large]: size === 'large' },
+        className,
       ])}
     />
   )

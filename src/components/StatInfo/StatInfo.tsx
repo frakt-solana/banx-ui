@@ -4,7 +4,7 @@ import classNames from 'classnames'
 
 import Tooltip from '../Tooltip'
 import { DIMENSION_BY_VALUE_TYPE, VALUES_TYPES } from './constants'
-import { formatValue, getFlexStyle } from './helpers'
+import { formatValue } from './helpers'
 
 import styles from './StatInfo.module.less'
 
@@ -33,7 +33,7 @@ export const StatInfo: FC<StatsInfoProps> = ({
   value,
   tooltipText,
   secondValue,
-  valueType = VALUES_TYPES.solPrice,
+  valueType = VALUES_TYPES.SOLPRICE,
   decimalPlaces = 2,
   divider,
   flexType = 'column',
@@ -42,7 +42,7 @@ export const StatInfo: FC<StatsInfoProps> = ({
 }) => {
   const formattedValue = formatValue(value, valueType, decimalPlaces, divider)
   const dimension = DIMENSION_BY_VALUE_TYPE[valueType]
-  const flexStyle = getFlexStyle(flexType)
+  const flexStyle = flexType === 'row' ? styles.rowFlex : styles.columnFlex
 
   const containerClasses = classNames(flexStyle, classNamesProps?.container)
   const labelClasses = classNames(styles.label, classNamesProps?.label)

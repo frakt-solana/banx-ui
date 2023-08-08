@@ -10,13 +10,11 @@ interface Breakpoints {
 export type PartialBreakpoints = Partial<Breakpoints>
 
 export type SortParams = Omit<SortDropdownProps, 'options'>
-export type SearchSelectParams<T> = SearchSelectProps<T>
-export type ToggleParams = ToggleProps
 
 export interface SortViewParams<T> {
-  searchSelectParams: SearchSelectParams<T>
+  searchSelectParams: SearchSelectProps<T>
   sortParams?: SortParams
-  toggleParams?: ToggleParams
+  toggleParams?: ToggleProps
 }
 
 export interface ActiveRowParams {

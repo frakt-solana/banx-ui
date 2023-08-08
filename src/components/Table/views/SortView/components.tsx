@@ -6,7 +6,7 @@ import { Button } from '@banx/components/Buttons'
 
 import { ViewState } from '@banx/store'
 
-import { buttonConfigurations } from './constants'
+import { ButtonConfigurations } from './constants'
 
 import styles from './SortView.module.less'
 
@@ -17,7 +17,7 @@ interface SwitchModeButtonsProps {
 
 export const SwitchModeButtons: FC<SwitchModeButtonsProps> = ({ viewState, onChange }) => (
   <div className={styles.switchButtons}>
-    {buttonConfigurations.map(({ state, icon }) => (
+    {ButtonConfigurations.map(({ state, icon }) => (
       <Button
         key={state}
         type="circle"

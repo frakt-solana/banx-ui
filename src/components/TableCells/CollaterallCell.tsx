@@ -4,17 +4,17 @@ import Checkbox from '../Checkbox'
 
 import styles from './TableCells.module.less'
 
-interface NftInfoCellCellProps {
+interface NftInfoCellProps {
   nftName: string
   nftImage: string
   selected?: boolean
-  onChangeCheckbox?: () => void
+  onCheckboxClick?: () => void
 }
 
-export const NftInfoCell: FC<NftInfoCellCellProps> = ({
+export const NftInfoCell: FC<NftInfoCellProps> = ({
   nftName,
   nftImage,
-  onChangeCheckbox,
+  onCheckboxClick,
   selected = false,
 }) => {
   const [nftCollectionName, nftNumber] = nftName.split('#')
@@ -22,8 +22,8 @@ export const NftInfoCell: FC<NftInfoCellCellProps> = ({
 
   return (
     <div className={styles.nftInfo}>
-      {onChangeCheckbox && (
-        <Checkbox className={styles.checkbox} onChange={onChangeCheckbox} checked={selected} />
+      {onCheckboxClick && (
+        <Checkbox className={styles.checkbox} onChange={onCheckboxClick} checked={selected} />
       )}
       <img src={nftImage} className={styles.nftImage} />
       <div className={styles.nftNames}>

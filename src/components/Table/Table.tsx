@@ -13,7 +13,7 @@ export interface TableProps<T, P> {
   data: ReadonlyArray<T>
   columns: ColumnsType<T>
   rowKeyField: keyof T
-  loading: boolean
+  loading?: boolean
 
   sortViewParams?: SortViewParams<P>
   activeRowParams?: ActiveRowParams
@@ -45,7 +45,7 @@ const Table = <T extends object, P extends object>({
       {sortViewParams && <SortView columns={columns} showCard={showCard} {...sortViewParams} />}
 
       {loading && <Loader />}
-      {noData && <>Not found items</>}
+      {noData && <>Items not found</>}
 
       {hasData && (
         <ViewComponent data={data} columns={columns} activeRowParams={activeRowParams} {...props} />

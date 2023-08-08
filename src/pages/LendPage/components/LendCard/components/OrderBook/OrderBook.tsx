@@ -4,7 +4,7 @@ import { OrderBookLabel, OrderBookList } from './components'
 
 import styles from './OrderBook.module.less'
 
-const OrderBookLite = () => {
+const OrderBook = () => {
   return (
     <div className={styles.orderBook}>
       <h5 className={styles.title}>Offers</h5>
@@ -16,4 +16,4 @@ const OrderBookLite = () => {
   )
 }
 
-export default OrderBookLite
+export default OrderBook

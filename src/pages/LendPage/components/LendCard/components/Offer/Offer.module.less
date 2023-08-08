@@ -1,96 +1,58 @@
 .listItem {
-  cursor: default;
   position: relative;
-  padding: 15px 45px 15px 8px;
-
+  padding: 8px 48px 8px 8px;
+  background: var(--bg-action);
+  border-bottom: var(--border-primary);
   display: flex;
-  justify-content: space-between;
   align-items: center;
-
   height: 48px;
   width: 100%;
-
-  &::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: 0px;
-    width: 100%;
-    height: 1px;
-    background: var(--primary-border-2);
-  }
-
-  background: linear-gradient(
-    90deg,
-    rgba(156, 255, 31, 0.1) 0%,
-    rgba(156, 255, 31, 0.1) 11%,
-    rgba(197, 255, 31, 0.1) 11%,
-    rgba(197, 255, 31, 0.1) 22%,
-    rgba(224, 255, 31, 0.1) 22%,
-    rgba(224, 255, 31, 0.1) 33%,
-    rgba(251, 255, 31, 0.1) 33%,
-    rgba(251, 255, 31, 0.1) 44%,
-    rgba(255, 233, 31, 0.1) 44%,
-    rgba(255, 233, 31, 0.1) 55%,
-    rgba(255, 206, 31, 0.1) 55%,
-    rgba(255, 206, 31, 0.1) 66%,
-    rgba(255, 165, 31, 0.1) 66%,
-    rgba(255, 165, 31, 0.1) 76%,
-    rgba(255, 112, 31, 0.1) 76%,
-    rgba(255, 112, 31, 0.1) 88%,
-    rgba(255, 31, 71, 0.1) 88%,
-    rgba(255, 31, 71, 0.1) 100%
-  );
 }
 
 .highlightBest,
 .highlightYourOffer {
   position: relative;
-  outline-offset: -3px;
 
   font: var(--table-header-md);
   color: var(--content-primary);
   text-align: center;
 
+  &::after,
   &::before {
+    content: '';
     position: absolute;
     left: 0;
     bottom: 0;
-    z-index: 9;
+  }
 
+  &::before {
     padding: 1px 8px;
+  }
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  &::after {
+    height: 4px;
+    width: 100%;
   }
 }
 
 .highlightBest {
-  outline: 3px solid var(--additional-yellow-primary);
-
   &::before {
     content: 'Best';
+    background: var(--additional-yellow-primary);
+  }
+  &::after {
     background: var(--additional-yellow-primary);
   }
 }
 
 .highlightYourOffer {
-  outline: 3px solid var(--accent-primary);
-
   &::before {
     content: 'Your offer';
     background: var(--accent-primary);
   }
-}
-
-.line {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 1px;
-  height: 100%;
-  border: 1px dashed var(--additional-yellow-primary);
+  &::after {
+    background: var(--accent-primary);
+  }
 }
 
 .loanValue {
@@ -112,21 +74,19 @@
   text-transform: uppercase;
   color: #fff;
 
+  min-width: 110px;
+
   span {
     font: var(--font-text-9);
     font-weight: 600;
   }
 }
 
-.loanValue {
-  min-width: 110px;
-}
-
 .valueWrapper {
-  width: 100%;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .value {
@@ -138,42 +98,11 @@
   overflow: auto;
   white-space: nowrap;
   max-width: 200px;
-
-  &::-webkit-scrollbar {
-    height: 0px;
-  }
-}
-
-.sizeValue {
-  max-width: 140px;
 }
 
 .editButton {
-  background-color: var(--bg-primary);
-  border: var(--border-primary);
-  border-radius: 50%;
-
-  cursor: pointer;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  flex-shrink: 0;
-
   position: absolute;
   top: 50%;
   right: 8px;
   transform: translateY(-50%);
-
-  width: 32px;
-  height: 32px;
-
-  svg path {
-    fill: var(--content-primary);
-  }
-
-  &:hover {
-    border-color: var(--secondary-border);
-  }
 }

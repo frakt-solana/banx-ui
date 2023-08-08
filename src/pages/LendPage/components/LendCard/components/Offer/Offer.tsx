@@ -1,34 +1,21 @@
-import { FC } from 'react'
-
 import classNames from 'classnames'
 
-import { colorByPercentOffers } from '@banx/constants'
-import { Pencil } from '@banx/icons'
-import { getColorByPercent } from '@banx/utils'
+import { Button } from '@banx/components/Buttons'
 
-import { calculateLeftPosition, calculateLineLeftPosition } from './helpers'
+import { Pencil } from '@banx/icons'
 
 import styles from './Offer.module.less'
 
 const MOCK_LOAN_AMOUNT = 10
-const MOCK_LOAN_VALUE = 10
-const MOCK_FLOOR_VALUE = 10
-const MOCK_SIZE_VALUE = 10
-const MOCK_IS_OWN_ORDER = false
-const MOCK_EDIT_OFFER = false
+const MOCK_IS_OWN_ORDER = true
+const MOCK_EDIT_OFFER = true
 
-const OfferLite: FC = () => {
+const Offer = () => {
   const loanAmount = MOCK_LOAN_AMOUNT
-  const loanValue = MOCK_LOAN_VALUE
-  const marketFloor = MOCK_FLOOR_VALUE
   const isOwnOrder = MOCK_IS_OWN_ORDER
-  const size = MOCK_SIZE_VALUE
   const editOrder = MOCK_EDIT_OFFER
 
-  const maxLoanValue = Math.min((loanValue / marketFloor) * 100, 100)
-
   const displayLoanAmount = loanAmount < 1 ? '< 1' : loanAmount || 0
-  const displaySize = isOwnOrder ? `/ size ${size?.toFixed(2)}◎` : ''
 
   const listItemClassName = classNames(styles.listItem, {
     [styles.highlightBest]: false,
@@ -37,52 +24,17 @@ const OfferLite: FC = () => {
 
   return (
     <li className={listItemClassName}>
-      <ValueDisplay label="Offer" displayValue={loanValue} maxLoanValue={maxLoanValue} />
       <div className={styles.valueWrapper}>
-        <p className={styles.value}>
-          {displayLoanAmount} {displaySize}
-        </p>
+        <p className={styles.value}>{displayLoanAmount}</p>
+        <p className={styles.value}>{displayLoanAmount}</p>
       </div>
       {isOwnOrder && editOrder && (
-        <div className={styles.editButton} onClick={editOrder}>
+        <Button type="circle" variant="secondary" size="medium" className={styles.editButton}>
           <Pencil />
-        </div>
+        </Button>
       )}
     </li>
   )
 }
 
-export default OfferLite
-
-const ValueDisplay = ({
-  displayValue,
-  maxLoanValue,
-  label,
-}: {
-  displayValue: number
-  maxLoanValue: number
-  label: string
-}) => {
-  const colorValue = getColorByPercent(maxLoanValue, colorByPercentOffers)
-
-  const valueStyle = {
-    background: colorValue,
-    left: calculateLeftPosition(maxLoanValue),
-  }
-
-  const lineStyle = {
-    borderColor: colorValue,
-    left: calculateLineLeftPosition(maxLoanValue),
-  }
-
-  const formattedValue = (displayValue || 0)?.toFixed(2)
-
-  return (
-    <>
-      <div className={styles.loanValue} style={valueStyle}>
-        {label}:<span>{formattedValue}◎</span>
-      </div>
-      <div className={styles.line} style={lineStyle} />
-    </>
-  )
-}
+export default Offer

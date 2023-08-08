@@ -2,7 +2,7 @@ export type ColorBreakpoints = {
   [key: number]: string
 }
 
-export const colorByPercentOffers: ColorBreakpoints = {
+export const ColorByPercentOffers: ColorBreakpoints = {
   11: '#7DCC19',
   22: '#9ECC19',
   33: '#B3CC19',
@@ -14,7 +14,7 @@ export const colorByPercentOffers: ColorBreakpoints = {
   100: '#CC1939',
 }
 
-export const colorByPercentHealth: ColorBreakpoints = {
+export const ColorByPercentHealth: ColorBreakpoints = {
   0: '#CC1939',
   22: '#CC5A19',
   33: '#CC8419',
@@ -26,7 +26,7 @@ export const colorByPercentHealth: ColorBreakpoints = {
   100: '#7DCC19',
 }
 
-export const colorByPercentSlider: ColorBreakpoints = {
+export const ColorByPercentSlider: ColorBreakpoints = {
   11: '#9CFF1F',
   22: '#C5FF1F',
   33: '#E0FF1F',
@@ -36,4 +36,14 @@ export const colorByPercentSlider: ColorBreakpoints = {
   77: '#FFA51F',
   89: '#FF701F',
   100: '#FF1F47',
+}
+
+export const getColorByPercent = (value: number, colorBreakpoints: ColorBreakpoints): string => {
+  const limit = Object.keys(colorBreakpoints).find((limit) => value <= parseInt(limit))
+
+  if (limit !== undefined) {
+    return colorBreakpoints[parseInt(limit)] || colorBreakpoints[10]
+  }
+
+  return colorBreakpoints[10]
 }

@@ -32,7 +32,7 @@ export const getTableColumns = ({
       render: (_, loan) => (
         <NftInfoCell
           selected={!!findLoanInSelection(loan.pubkey)}
-          onChangeCheckbox={() => toggleLoanInSelection(loan)}
+          onCheckboxClick={() => toggleLoanInSelection(loan)}
           nftName={loan.nft.name}
           nftImage={loan.nft.imageUrl}
         />

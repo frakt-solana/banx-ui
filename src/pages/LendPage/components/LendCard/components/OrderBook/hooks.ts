@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-export const useOrderBookLite = () => {
+export const useOrderBook = () => {
   const [openOffersMobile, setOpenOffersMobile] = useState<boolean>(true)
 
   const toggleOffers = () => {

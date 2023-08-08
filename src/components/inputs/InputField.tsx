@@ -14,7 +14,6 @@ interface NumericInputFieldProps {
   className?: string
   showIcon?: boolean
   integerOnly?: boolean
-  positiveOnly?: boolean
   hasError?: boolean
 }
 

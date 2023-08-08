@@ -1,8 +1,7 @@
 import { VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { MarketPreview } from '@banx/api/bonds'
-import { colorByPercentHealth } from '@banx/constants'
-import { convertAprToApy, getColorByPercent } from '@banx/utils'
+import { ColorByPercentHealth, convertAprToApy, getColorByPercent } from '@banx/utils'
 
 export const ADDITIONAL_MARKET_INFO = [
   {
@@ -24,9 +23,9 @@ export const ADDITIONAL_MARKET_INFO = [
     label: 'Apy',
     tooltipText: 'Interest (in %) for the duration of this loan',
     valueRenderer: (apr: number) => convertAprToApy(apr / 1e4),
-    valueType: VALUES_TYPES.percent,
+    valueType: VALUES_TYPES.PERCENT,
     valueStyles: (market: MarketPreview) => ({
-      color: getColorByPercent(market.apy / 100, colorByPercentHealth),
+      color: getColorByPercent(market.apy / 100, ColorByPercentHealth),
       font: 'var(--important-text-md)',
     }),
   },
@@ -44,7 +43,7 @@ export const MAIN_MARKET_INFO = [
     key: 'bestLTV',
     label: 'Ltv',
     divider: 1e9,
-    valueType: VALUES_TYPES.percent,
+    valueType: VALUES_TYPES.PERCENT,
     tooltipText: 'Current biggest offer for a loan',
   },
 ]
