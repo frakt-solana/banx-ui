@@ -1,0 +1,53 @@
+import { useQuery } from '@tanstack/react-query'
+import { web3 } from 'fbonds-core'
+import produce from 'immer'
+import { create } from 'zustand'
+
+import { fetchAllMarkets, fetchMarketPairs } from '@banx/api/bonds'
+
+export const useMarkets = () => {
+  const { data, isLoading } = useQuery(['markets'], () => fetchAllMarkets(), {
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  })
+
+  return {
+    markets: data || null,
+    isLoading,
+  }
+}
+
+interface HiddenPairsPubkeysState {
+  hiddenPairsPubkeys: string[]
+  hidePair: (pairPubkey: string) => void
+}
+const useHiddenPairsPubkeys = create<HiddenPairsPubkeysState>((set) => ({
+  hiddenPairsPubkeys: [],
+  hidePair: (pairPubkey) =>
+    set(
+      produce((state: HiddenPairsPubkeysState) => {
+        state.hiddenPairsPubkeys = [...state.hiddenPairsPubkeys, pairPubkey]
+      }),
+    ),
+}))
+
+export const useMarketPairs = ({ marketPubkey }: { marketPubkey?: string }) => {
+  const { hiddenPairsPubkeys, hidePair } = useHiddenPairsPubkeys()
+
+  const { data, isLoading, refetch } = useQuery(
+    ['marketPairs', marketPubkey],
+    () => fetchMarketPairs({ marketPubkey: new web3.PublicKey(marketPubkey as any) }),
+    {
+      enabled: !!marketPubkey,
+      staleTime: 30 * 1000, //? 30sec
+      refetchOnWindowFocus: false,
+    },
+  )
+
+  return {
+    pairs: data?.filter(({ publicKey }) => !hiddenPairsPubkeys.includes(publicKey)) || [],
+    isLoading,
+    hidePair,
+    refetch,
+  }
+}

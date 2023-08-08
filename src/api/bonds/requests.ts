@@ -60,15 +60,15 @@ export const fetchAllMarkets: FetchAllMarkets = async () => {
   }
 }
 
-type FetchMarketPairs = (props: { marketPubkey: web3.PublicKey }) => Promise<Pair[]>
-export const fetchMarketPairs: FetchMarketPairs = async () => {
+type FetchMarketPairs = (props: { marketPubkey?: web3.PublicKey }) => Promise<Pair[]>
+export const fetchMarketPairs: FetchMarketPairs = async ({ marketPubkey }) => {
   try {
     const queryParams = new URLSearchParams({
       isPrivate: String(IS_PRIVATE_MARKETS),
     })
 
     const { data } = await axios.get<Pair[]>(
-      `${BACKEND_BASE_URL}/bond-offers?${queryParams.toString()}`,
+      `${BACKEND_BASE_URL}/bond-offers?${marketPubkey?.toBase58() || ''}${queryParams.toString()}`,
     )
 
     try {
