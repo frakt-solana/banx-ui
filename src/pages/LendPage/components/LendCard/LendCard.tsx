@@ -21,7 +21,7 @@ interface LendCardProps {
 
 const LendCard: FC<LendCardProps> = ({ isVisible, onCardClick, market }) => {
   return (
-    <div className={styles.card}>
+    <div className={classNames(styles.card, { [styles.active]: isVisible })}>
       <div className={styles.cardBody} onClick={onCardClick}>
         <MarketMainInfo market={market} />
         <div className={styles.row}>

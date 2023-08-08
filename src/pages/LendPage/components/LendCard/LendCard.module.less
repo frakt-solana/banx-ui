@@ -1,16 +1,11 @@
 .card {
-  border: 1px solid var(--primary-border);
-  background-color: var(--primary-background);
+  border-bottom: var(--border-primary);
+  background-color: var(-bg-primary);
   cursor: pointer;
   width: 100%;
 }
-.card:hover {
-  border-color: var(--secondary-border);
-}
 .card.active {
-  &:hover {
-    border: 1px solid var(--primary-border);
-  }
+  border: 0;
 }
 
 .row {

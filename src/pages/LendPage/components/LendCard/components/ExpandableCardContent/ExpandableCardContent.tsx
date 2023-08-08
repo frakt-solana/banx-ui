@@ -1,5 +1,6 @@
 import { Tabs } from '@banx/components/Tabs'
 
+import OrderBook from '../OrderBook'
 import PlaceOfferTab from '../PlaceOfferTab'
 import { useExpandableCardContent } from './hooks'
 
@@ -23,10 +24,11 @@ const ExpandableCardContent = () => {
 
   return (
     <div className={styles.content}>
-      <div>
+      <div className={styles.tabsContentWrapper}>
         <Tabs {...tabsParams} />
         <div className={styles.tabContent}>{tabsComponents[tabsParams.value]}</div>
       </div>
+      <OrderBook />
     </div>
   )
 }
