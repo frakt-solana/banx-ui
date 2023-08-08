@@ -1,12 +1,5 @@
 import { z } from 'zod'
 
-const MarketPreviewUserSchema = z.object({
-  offerAmount: z.number(),
-  bondsAmount: z.number(),
-  loansTVL: z.number(),
-  offerTVL: z.number(),
-})
-
 export const MarketPreviewSchema = z.object({
   marketPubkey: z.string(),
   collectionName: z.string(),
@@ -20,10 +13,8 @@ export const MarketPreviewSchema = z.object({
   activeOfferAmount: z.number(),
   fee: z.number(),
   loansTVL: z.number(),
-  user: MarketPreviewUserSchema.optional(),
 })
 
-export type MarketPreviewUser = z.infer<typeof MarketPreviewUserSchema>
 export type MarketPreview = z.infer<typeof MarketPreviewSchema>
 
 export interface MarketPreviewResponse {

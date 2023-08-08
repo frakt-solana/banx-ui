@@ -21,5 +21,10 @@ export const formatNumbersWithCommas = (value: number | string) =>
 
 export const getColorByPercent = (value: number, colorBreakpoints: ColorBreakpoints): string => {
   const limit = Object.keys(colorBreakpoints).find((limit) => value <= parseInt(limit))
-  return colorBreakpoints[limit as any] || colorBreakpoints[10]
+
+  if (limit !== undefined) {
+    return colorBreakpoints[parseInt(limit)] || colorBreakpoints[10]
+  }
+
+  return colorBreakpoints[10]
 }
