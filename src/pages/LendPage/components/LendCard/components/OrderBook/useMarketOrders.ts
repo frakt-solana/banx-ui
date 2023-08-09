@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 
 import { Pair } from '@banx/api/bonds'
-import { useMarketPairs } from '@banx/utils/bonds'
+import { useMarketPairs } from '@banx/pages/LendPage/hooks'
 
 import { parseMarketOrder } from './helpers'
 import { MarketOrder } from './types'
@@ -45,7 +45,7 @@ export const useMarketOrders: UseMarketOrders = ({
     const parsedOffers = pairs.map(parseMarketOrder)
 
     const parsedEditableOffers = editOfferPubkey
-      ? parsedOffers.map((offer) =>
+      ? parsedOffers.map((offer: MarketOrder) =>
           offer?.rawData?.publicKey === editOfferPubkey ? { ...myOffer, ...offer } : offer,
         )
       : []
