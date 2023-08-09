@@ -51,7 +51,7 @@ export const useMarketOrders: UseMarketOrders = ({
       : []
 
     if (loansAmount && !editOffer?.publicKey) {
-      parsedOffers.push(myOffer as any)
+      parsedOffers.push(myOffer)
     }
 
     const offers = editOfferPubkey ? parsedEditableOffers : parsedOffers

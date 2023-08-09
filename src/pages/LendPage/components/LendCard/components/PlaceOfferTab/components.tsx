@@ -31,7 +31,17 @@ export const OfferHeader: FC<OfferHeaderProps> = ({ isEdit, goToPlaceOffer }) =>
   )
 }
 
-export const OfferActionButtons = ({ isEdit, onCreateOffer, onRemoveOffer }: any) => {
+interface OfferActionButtonsProps {
+  isEdit: boolean
+  onCreateOffer: () => void
+  onRemoveOffer: () => void
+}
+
+export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
+  isEdit,
+  onCreateOffer,
+  onRemoveOffer,
+}) => {
   const { connected } = useWallet()
 
   return (

@@ -6,14 +6,16 @@ import { Button } from '@banx/components/Buttons'
 
 import { Pencil } from '@banx/icons'
 
+import { MarketOrder } from '../OrderBook'
+
 import styles from './Offer.module.less'
 
 interface OfferProps {
-  offer: any
+  offer: MarketOrder
   loanAmount: number
   loanValue: number
-  isOwnOrder: boolean
   editOffer: () => void
+  isOwnOrder: boolean
 }
 
 const Offer: FC<OfferProps> = ({ loanAmount, loanValue, editOffer, offer, isOwnOrder }) => {
@@ -30,7 +32,7 @@ const Offer: FC<OfferProps> = ({ loanAmount, loanValue, editOffer, offer, isOwnO
         <p className={styles.value}>{loanValue}</p>
         <p className={styles.value}>{displayLoanAmount}</p>
       </div>
-      {editOffer && (
+      {isOwnOrder && editOffer && (
         <Button
           onClick={editOffer}
           type="circle"

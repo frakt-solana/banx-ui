@@ -22,7 +22,7 @@ export const makeRemovePerpetualOfferTransaction: MakeRemovePerpetualOfferTransa
   const { instructions, signers } = await removePerpetualOffer({
     accounts: {
       bondOfferV2: new web3.PublicKey(pairPubkey),
-      userPubkey: wallet.publicKey as any,
+      userPubkey: wallet.publicKey as web3.PublicKey,
     },
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     connection,

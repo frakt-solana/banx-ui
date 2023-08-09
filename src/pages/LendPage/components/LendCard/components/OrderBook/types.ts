@@ -1,18 +1,17 @@
-import { BondFeatures } from 'fbonds-core/lib/fbond-protocol/types'
-
 export interface SyntheticParams {
   loanValue: number
   loansAmount: number
 }
 
 export interface MarketOrder {
-  loanValue: number //? normal sol value
   size: number //? normal sol value
+  loanValue: number //? normal sol value
   loansAmount: number
+  synthetic?: boolean
   rawData: {
     publicKey: string
     assetReceiver: string
-    bondFeature: BondFeatures
-    loanToValueFilter: number
+    bondFeature?: string
+    loanToValueFilter?: number
   }
 }

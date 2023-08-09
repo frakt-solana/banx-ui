@@ -5,7 +5,13 @@ import { MarketOrder } from './types'
 
 import styles from './OrderBook.module.less'
 
-export const OrderBookList: FC<{ orderBookParams: any }> = ({ orderBookParams }) => {
+interface OrderBookListProps {
+  offers: MarketOrder[]
+  goToEditOffer: (publicKey: string) => void
+  isOwnOrder: (offer: MarketOrder) => boolean
+}
+
+export const OrderBookList: FC<{ orderBookParams: OrderBookListProps }> = ({ orderBookParams }) => {
   const { offers, goToEditOffer, isOwnOrder } = orderBookParams || {}
 
   const renderOffer = (offer: MarketOrder) => {
@@ -14,8 +20,8 @@ export const OrderBookList: FC<{ orderBookParams: any }> = ({ orderBookParams })
         offer={offer}
         loanValue={offer.loanValue}
         loanAmount={offer.loansAmount}
-        isOwnOrder={isOwnOrder(offer)}
         editOffer={() => goToEditOffer(offer?.rawData?.publicKey)}
+        isOwnOrder={isOwnOrder(offer)}
       />
     )
   }

@@ -36,7 +36,7 @@ export const makeCreatePerpetualOfferTransaction: MakeCreatePerpetualOfferTransa
   } = await createPerpetualBondOffer({
     accounts: {
       hadoMarket: new web3.PublicKey(marketPubkey),
-      userPubkey: wallet.publicKey as any,
+      userPubkey: wallet.publicKey as web3.PublicKey,
     },
     args: {
       amountOfSolToDeposit: amountOfSolToDeposit * 1e9,

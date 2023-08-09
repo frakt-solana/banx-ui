@@ -53,7 +53,7 @@ export const useMarketPairs = ({ marketPubkey }: { marketPubkey?: string }) => {
 
   const { data, isLoading, refetch } = useQuery(
     ['marketPairs', marketPubkey],
-    () => fetchMarketPairs({ marketPubkey: new web3.PublicKey(marketPubkey as any) }),
+    () => fetchMarketPairs({ marketPubkey: new web3.PublicKey(marketPubkey as string) }),
     {
       enabled: !!marketPubkey,
       staleTime: 30 * 1000, //? 30sec
