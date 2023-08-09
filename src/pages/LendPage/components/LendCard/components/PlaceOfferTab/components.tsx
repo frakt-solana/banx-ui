@@ -31,15 +31,17 @@ export const OfferHeader: FC<OfferHeaderProps> = ({ isEdit, goToPlaceOffer }) =>
   )
 }
 
-export const OfferActionButtons = ({ isEdit, onCreateOffer }: any) => {
-
+export const OfferActionButtons = ({ isEdit, onCreateOffer, onRemoveOffer }: any) => {
   const { connected } = useWallet()
 
   return (
     <div className={styles.buttonsWrapper}>
       {isEdit ? (
         <>
-          <Button className={classNames(styles.button, styles.deleteOfferButton)}>
+          <Button
+            onClick={onRemoveOffer}
+            className={classNames(styles.button, styles.deleteOfferButton)}
+          >
             Delete offer
           </Button>
           <Button className={styles.button}>Update offer</Button>

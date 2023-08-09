@@ -3,6 +3,7 @@ import { useMemo } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 
 import { useOfferStore } from '../ExpandableCardContent/hooks'
+import { MarketOrder } from './types'
 import { useMarketOrders } from './useMarketOrders'
 
 export const useOrderBook = (marketPubkey: string) => {
@@ -12,15 +13,15 @@ export const useOrderBook = (marketPubkey: string) => {
   const orderBookParams = useMemo(() => {
     return {
       marketPubkey,
-      loanValue: syntheticParams?.loanValue,
-      loansAmount: syntheticParams?.loansAmount,
+      loanValue: syntheticParams?.loanValue || 0,
+      loansAmount: syntheticParams?.loansAmount || 0,
       pairPubkey,
     }
-  }, [marketPubkey, syntheticParams])
+  }, [marketPubkey, syntheticParams, pairPubkey])
 
-  const { offers } = useMarketOrders(orderBookParams as any)
+  const { offers } = useMarketOrders(orderBookParams)
 
-  const isOwnOrder = (order: any): boolean => {
+  const isOwnOrder = (order: MarketOrder) => {
     return order?.rawData?.assetReceiver === wallet?.publicKey?.toBase58()
   }
 

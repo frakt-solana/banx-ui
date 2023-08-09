@@ -5,19 +5,23 @@ import { BondFeatures } from 'fbonds-core/lib/fbond-protocol/types'
 import { signAndConfirmTransaction } from '@banx/utils'
 import {
   MakeCreatePerpetualOfferTransaction,
+  MakeRemovePerpetualOfferTransaction,
   makeCreatePerpetualOfferTransaction,
+  makeRemovePerpetualOfferTransaction,
 } from '@banx/utils/bonds'
 
-export type WalletAndConnect = 'wallet' | 'connect'
+type WalletAndConnect = 'connection' | 'wallet'
 
 export const useOfferTransactions = ({
   marketPubkey,
   loansAmount,
   loanValue,
+  pairPubkey,
 }: {
   marketPubkey: string
   loansAmount: number
   loanValue: number
+  pairPubkey: string
 }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
@@ -58,8 +62,6 @@ export const useOfferTransactions = ({
     }
   }
 
-  type WalletAndConnect = 'connection' | 'wallet'
-
   type CreateOfferTransactionParams = Omit<
     Parameters<MakeCreatePerpetualOfferTransaction>[0],
     WalletAndConnect
@@ -81,5 +83,23 @@ export const useOfferTransactions = ({
     }
   }
 
-  return { onCreateOffer }
+  type RemoveOfferTransactionParams = Omit<
+    Parameters<MakeRemovePerpetualOfferTransaction>[0],
+    WalletAndConnect
+  >
+
+  const onRemoveOffer = async (): Promise<void> => {
+    if (wallet.publicKey) {
+      const transactionParams: RemoveOfferTransactionParams = {
+        pairPubkey,
+      }
+
+      await buildAndExecuteTransaction({
+        makeTransactionFn: makeRemovePerpetualOfferTransaction,
+        transactionParams,
+      })
+    }
+  }
+
+  return { onCreateOffer, onRemoveOffer }
 }

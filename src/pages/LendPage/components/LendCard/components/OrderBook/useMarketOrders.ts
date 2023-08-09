@@ -1,9 +1,5 @@
 import { useMemo } from 'react'
 
-import { web3 } from 'fbonds-core'
-import { BondFeatures } from 'fbonds-core/lib/fbond-protocol/types'
-import { getTopOrderSize } from 'fbonds-core/lib/fbond-protocol/utils/cartManagerV2'
-
 import { Pair } from '@banx/api/bonds'
 import { useMarketPairs } from '@banx/utils/bonds'
 

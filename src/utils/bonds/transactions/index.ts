@@ -1,1 +1,2 @@
-export * from './makeCreatePairTransaction'
+export * from './makeCreateOfferTransaction'
+export * from './makeRemoveOfferTransaction'
