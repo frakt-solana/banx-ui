@@ -73,14 +73,26 @@ export const fetchCertainMarket: FetchCertainMarket = async ({ marketPubkey }) =
   return data
 }
 
-type FetchMarketPairs = (props: { marketPubkey?: web3.PublicKey }) => Promise<Pair[]>
-export const fetchMarketPairs: FetchMarketPairs = async ({ marketPubkey }) => {
+type FetchMarketPairs = (props: {
+  marketPubkey?: web3.PublicKey | null
+  order?: string
+  skip?: number
+  limit?: number
+  getAll?: boolean
+}) => Promise<Pair[]>
+export const fetchMarketPairs: FetchMarketPairs = async ({
+  marketPubkey,
+  order = 'asc',
+  skip = 0,
+  limit = 10,
+  getAll = false,
+}) => {
   try {
     const queryParams = new URLSearchParams({
-      order: 'asc',
-      skip: '0',
-      limit: '10',
-      getAll: 'false',
+      order,
+      skip: String(skip),
+      limit: String(limit),
+      getAll: String(getAll),
       isPrivate: String(IS_PRIVATE_MARKETS),
     })
 

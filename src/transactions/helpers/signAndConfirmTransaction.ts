@@ -1,5 +1,3 @@
-//eslint-disable-next-line
-//@ts-nocheck
 import { WalletContextState } from '@solana/wallet-adapter-react'
 import { web3 } from 'fbonds-core'
 
@@ -28,17 +26,22 @@ export const signAndConfirmTransaction: SignAndConfirmTransaction = async ({
   const { blockhash } = await connection.getLatestBlockhash()
 
   transaction.recentBlockhash = blockhash
-  transaction.feePayer = wallet.publicKey
+
+  if (wallet.publicKey) {
+    transaction.feePayer = wallet.publicKey
+  }
 
   if (signers.length) {
     transaction.sign(...signers)
   }
 
-  const signedTransaction = await wallet.signTransaction(transaction)
-  await connection.sendRawTransaction(signedTransaction.serialize(), {
-    skipPreflight: false,
-    preflightCommitment: 'processed',
-  })
+  if (wallet.signTransaction) {
+    const signedTransaction = await wallet.signTransaction(transaction)
+    await connection.sendRawTransaction(signedTransaction.serialize(), {
+      skipPreflight: false,
+      preflightCommitment: 'processed',
+    })
+  }
 
   onAfterSend?.()
 
