@@ -26,7 +26,7 @@ const executeTransaction = async (props: {
   connection: Connection
 }) => {
   try {
-    await signAndConfirmTransaction({ ...props })
+    return await signAndConfirmTransaction({ ...props })
   } catch (error) {
     const txnError = error as TxnError
     captureSentryTxnError({ error: txnError })
@@ -51,9 +51,17 @@ export const buildAndExecuteTransaction = async <T, R>({
       wallet,
     })
 
-    await executeTransaction({ transaction, signers, commitment, wallet, connection })
+    const result = await executeTransaction({
+      transaction,
+      signers,
+      commitment,
+      wallet,
+      connection,
+    })
 
-    return { transaction, signers, ...rest } as R
+    if (result) {
+      return { transaction, signers, ...rest } as R
+    }
   } catch (error) {
     console.error(error)
   }

@@ -1,6 +1,5 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BondFeatures, BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
-import { has } from 'lodash'
 
 import { Offer } from '@banx/api/bonds'
 import { useOptimisticOfferStore } from '@banx/pages/LendPage/hooks'
@@ -26,10 +25,12 @@ type CreateOfferTransactionReturnType = ReturnType<MakeCreatePerpetualOfferTrans
 type RemoveOfferTransactionReturnType = ReturnType<MakeRemovePerpetualOfferTransaction>
 type UpdateOfferTransactionReturnType = ReturnType<MakeUpdatePerpetualOfferTransaction>
 
-const hasOptimisticResult = <R>(
-  result: unknown,
-): result is { optimisticResult: { bondOffer: R } } =>
-  typeof result === 'object' && result !== null && has(result, 'optimisticResult')
+type OptimisticResult = {
+  optimisticResult: { bondOffer: BondOfferV2 }
+}
+
+const hasOptimisticResult = (result: unknown): result is OptimisticResult =>
+  result !== null && typeof result === 'object' && 'optimisticResult' in result
 
 export const useOfferTransactions = ({
   marketPubkey,
@@ -47,7 +48,7 @@ export const useOfferTransactions = ({
   const wallet = useWallet()
   const { connection } = useConnection()
 
-  const { toggleOptimisticOffer, removeOptimisticOffer } = useOptimisticOfferStore()
+  const { updateOrAddOptimisticOffer, removeOptimisticOffer } = useOptimisticOfferStore()
 
   const optimisticOffer = offers.find((offer) => offer.publicKey === offerPubkey)
 
@@ -64,7 +65,7 @@ export const useOfferTransactions = ({
     })
 
     if (hasOptimisticResult(result)) {
-      optimisticAction(result.optimisticResult.bondOffer as BondOfferV2)
+      optimisticAction(result.optimisticResult.bondOffer)
     }
   }
 
@@ -77,7 +78,7 @@ export const useOfferTransactions = ({
         loansAmount,
         loanValue,
       },
-      toggleOptimisticOffer,
+      updateOrAddOptimisticOffer,
     )
   }
 
@@ -98,7 +99,7 @@ export const useOfferTransactions = ({
         optimisticOffer,
         loansAmount,
       },
-      toggleOptimisticOffer,
+      updateOrAddOptimisticOffer,
     )
   }
 

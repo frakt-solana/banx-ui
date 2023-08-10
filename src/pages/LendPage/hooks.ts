@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { web3 } from 'fbonds-core'
 import { produce } from 'immer'
+import { chain, maxBy } from 'lodash'
 import { create } from 'zustand'
 
 import {
@@ -63,7 +64,7 @@ interface OptimisticOfferStore {
   addOptimisticOffer: (offer: Offer) => void
   findOptimisticOffer: (offerPubkey: string) => Offer | null
   removeOptimisticOffer: (offer: Offer) => void
-  toggleOptimisticOffer: (offer: Offer) => void
+  updateOrAddOptimisticOffer: (offer: Offer) => void
 }
 
 export const useOptimisticOfferStore = create<OptimisticOfferStore>((set, get) => ({
@@ -88,15 +89,16 @@ export const useOptimisticOfferStore = create<OptimisticOfferStore>((set, get) =
       }),
     )
   },
-  toggleOptimisticOffer: (offer: Offer) => {
+  updateOrAddOptimisticOffer: (offer: Offer) => {
     const { findOptimisticOffer, addOptimisticOffer } = get()
 
-    const offerExist = !!findOptimisticOffer(offer.publicKey)
-    offerExist
+    const existingOffer = !!findOptimisticOffer(offer.publicKey)
+
+    existingOffer
       ? set(
           produce((state: OptimisticOfferStore) => {
-            state.optimisticOffers = state.optimisticOffers.map((o) =>
-              o.publicKey === offer.publicKey ? offer : o,
+            state.optimisticOffers = state.optimisticOffers.map((existingOffer) =>
+              existingOffer.publicKey === offer.publicKey ? offer : existingOffer,
             )
           }),
         )
@@ -117,22 +119,13 @@ export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => 
     },
   )
 
-  const allOffers = [...optimisticOffers, ...(data || [])] as Offer[]
-
-  const uniqueOffersMap: Record<string, Offer> = {}
-
-  allOffers.forEach((offer) => {
-    const existingOffer = uniqueOffersMap[offer.publicKey]
-
-    if (!existingOffer || offer.lastTransactedAt > existingOffer.lastTransactedAt) {
-      uniqueOffersMap[offer.publicKey] = offer
-    }
-  })
-
-  const uniqueOffers = Object.values(uniqueOffersMap)
+  const offers = chain([...optimisticOffers, ...(data || [])])
+    .groupBy('publicKey')
+    .map((offers) => maxBy(offers, 'lastTransactedAt'))
+    .value()
 
   return {
-    offers: uniqueOffers,
+    offers: offers as Offer[],
     addOptimisticOffer,
     isLoading,
     refetch,

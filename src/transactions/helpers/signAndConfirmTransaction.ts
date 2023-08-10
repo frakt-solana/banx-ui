@@ -11,7 +11,7 @@ interface SignAndConfirmTransactionProps {
   onBeforeApprove?: () => void
 }
 
-type SignAndConfirmTransaction = (props: SignAndConfirmTransactionProps) => Promise<void>
+type SignAndConfirmTransaction = (props: SignAndConfirmTransactionProps) => Promise<boolean>
 
 export const signAndConfirmTransaction: SignAndConfirmTransaction = async ({
   transaction,
@@ -21,29 +21,33 @@ export const signAndConfirmTransaction: SignAndConfirmTransaction = async ({
   onAfterSend,
   onBeforeApprove,
 }) => {
-  onBeforeApprove?.()
+  try {
+    onBeforeApprove?.()
 
-  const { blockhash } = await connection.getLatestBlockhash()
+    const { blockhash } = await connection.getLatestBlockhash()
 
-  transaction.recentBlockhash = blockhash
+    transaction.recentBlockhash = blockhash
 
-  if (wallet.publicKey) {
-    transaction.feePayer = wallet.publicKey
+    if (wallet.publicKey) {
+      transaction.feePayer = wallet.publicKey
+    }
+
+    if (signers.length) {
+      transaction.sign(...signers)
+    }
+
+    if (wallet.signTransaction) {
+      const signedTransaction = await wallet.signTransaction(transaction)
+      await connection.sendRawTransaction(signedTransaction.serialize(), {
+        skipPreflight: false,
+        preflightCommitment: 'processed',
+      })
+    }
+
+    onAfterSend?.()
+
+    return true
+  } catch (error) {
+    return false
   }
-
-  if (signers.length) {
-    transaction.sign(...signers)
-  }
-
-  if (wallet.signTransaction) {
-    const signedTransaction = await wallet.signTransaction(transaction)
-    await connection.sendRawTransaction(signedTransaction.serialize(), {
-      skipPreflight: false,
-      preflightCommitment: 'processed',
-    })
-  }
-
-  onAfterSend?.()
-
-  await Promise.resolve()
 }
