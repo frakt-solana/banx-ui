@@ -118,4 +118,4 @@ export const PairSchema = z.object({
   validation: ValidationPairSchema,
 })
 
-export type BondOffer = z.infer<typeof PairSchema>
+export type Offer = z.infer<typeof PairSchema>

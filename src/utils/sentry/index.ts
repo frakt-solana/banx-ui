@@ -20,7 +20,7 @@ export const initSentry = (): void => {
   })
 }
 
-interface TxnError extends Error {
+export interface TxnError extends Error {
   logs?: Array<string>
 }
 

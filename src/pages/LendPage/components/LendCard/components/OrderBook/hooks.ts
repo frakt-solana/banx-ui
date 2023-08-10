@@ -8,31 +8,31 @@ import { useMarketOrders } from './useMarketOrders'
 
 export const useOrderBook = (marketPubkey: string) => {
   const wallet = useWallet()
-  const { pairPubkey, setPairPubkey, syntheticParams } = useOfferStore()
+  const { offerPubkey, setOfferPubkey, syntheticParams } = useOfferStore()
 
   const orderBookParams = useMemo(() => {
     return {
       marketPubkey,
       loanValue: syntheticParams?.loanValue || 0,
       loansAmount: syntheticParams?.loansAmount || 0,
-      pairPubkey,
+      offerPubkey,
     }
-  }, [marketPubkey, syntheticParams, pairPubkey])
+  }, [marketPubkey, syntheticParams, offerPubkey])
 
-  const { offers } = useMarketOrders(orderBookParams)
+  const { orders } = useMarketOrders(orderBookParams)
 
   const isOwnOrder = (order: Order) => {
     return order?.rawData?.assetReceiver === wallet?.publicKey?.toBase58()
   }
 
-  const goToEditOffer = (orderPubkey: string) => {
-    setPairPubkey(orderPubkey)
+  const goToEditOrder = (orderPubkey: string) => {
+    setOfferPubkey(orderPubkey)
   }
 
   return {
     orderBookParams: {
-      offers,
-      goToEditOffer,
+      orders,
+      goToEditOrder,
       isOwnOrder,
     },
   }

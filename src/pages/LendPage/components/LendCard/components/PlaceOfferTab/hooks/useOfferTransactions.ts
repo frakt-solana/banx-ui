@@ -15,12 +15,12 @@ export const useOfferTransactions = ({
   marketPubkey,
   loansAmount,
   loanValue,
-  pairPubkey,
+  offerPubkey,
 }: {
   marketPubkey: string
   loansAmount: number
   loanValue: number
-  pairPubkey: string
+  offerPubkey: string
 }) => {
   const { buildAndExecuteTransaction } = useTransactionExecutor()
 
@@ -39,7 +39,7 @@ export const useOfferTransactions = ({
   const onRemoveOffer = async () => {
     await buildAndExecuteTransaction<RemoveOfferTransactionParams>({
       makeTransactionFn: makeRemovePerpetualOfferTransaction,
-      transactionParams: { pairPubkey },
+      transactionParams: { offerPubkey },
     })
   }
 

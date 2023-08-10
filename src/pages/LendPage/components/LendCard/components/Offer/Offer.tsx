@@ -11,19 +11,19 @@ import { Order } from '../OrderBook'
 import styles from './Offer.module.less'
 
 interface OfferProps {
-  offer: Order
+  order: Order
   loanAmount: number
   loanValue: number
   editOffer: () => void
   isOwnOrder: boolean
 }
 
-const Offer: FC<OfferProps> = ({ loanAmount, loanValue, editOffer, offer, isOwnOrder }) => {
+const Offer: FC<OfferProps> = ({ loanAmount, loanValue, editOffer, order, isOwnOrder }) => {
   const displayLoanAmount = loanAmount < 1 ? '< 1' : loanAmount || 0
 
   const listItemClassName = classNames(styles.listItem, {
     [styles.highlightBest]: false,
-    [styles.highlightYourOffer]: offer.synthetic,
+    [styles.highlightYourOffer]: order.synthetic,
   })
 
   return (
