@@ -4,12 +4,15 @@ import { TransactionParams, useTransactionExecutor } from '@banx/transactions'
 import {
   MakeCreatePerpetualOfferTransaction,
   MakeRemovePerpetualOfferTransaction,
+  MakeUpdatePerpetualOfferTransaction,
   makeCreatePerpetualOfferTransaction,
   makeRemovePerpetualOfferTransaction,
+  makeUpdatePerpetualOfferTransaction,
 } from '@banx/transactions/bonds'
 
 type CreateOfferTransactionParams = TransactionParams<MakeCreatePerpetualOfferTransaction>
 type RemoveOfferTransactionParams = TransactionParams<MakeRemovePerpetualOfferTransaction>
+type UpdateOfferTransactionParams = TransactionParams<MakeUpdatePerpetualOfferTransaction>
 
 export const useOfferTransactions = ({
   marketPubkey,
@@ -43,5 +46,12 @@ export const useOfferTransactions = ({
     })
   }
 
-  return { onCreateOffer, onRemoveOffer }
+  const onUpdateOffer = async () => {
+    await buildAndExecuteTransaction<UpdateOfferTransactionParams>({
+      makeTransactionFn: makeUpdatePerpetualOfferTransaction,
+      transactionParams: { loanValue, loansAmount, offerPubkey },
+    })
+  }
+
+  return { onCreateOffer, onRemoveOffer, onUpdateOffer }
 }

@@ -35,12 +35,14 @@ interface OfferActionButtonsProps {
   isEdit: boolean
   onCreateOffer: () => void
   onRemoveOffer: () => void
+  onUpdateOffer: () => void
 }
 
 export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
   isEdit,
   onCreateOffer,
   onRemoveOffer,
+  onUpdateOffer,
 }) => {
   const { connected } = useWallet()
 
@@ -54,7 +56,9 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
           >
             Delete offer
           </Button>
-          <Button className={styles.button}>Update offer</Button>
+          <Button onClick={onUpdateOffer} className={styles.button}>
+            Update offer
+          </Button>
         </>
       ) : (
         <Button onClick={onCreateOffer} className={styles.button}>

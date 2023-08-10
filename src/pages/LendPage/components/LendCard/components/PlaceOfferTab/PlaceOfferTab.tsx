@@ -25,6 +25,7 @@ const PlaceOfferTab: FC<PlaceOfferTab> = ({ marketPubkey }) => {
     onLoanValueChange,
     onCreateOffer,
     onRemoveOffer,
+    onUpdateOffer,
   } = usePlaceOfferTab(marketPubkey)
 
   return (
@@ -54,6 +55,7 @@ const PlaceOfferTab: FC<PlaceOfferTab> = ({ marketPubkey }) => {
         isEdit={isEdit}
         onCreateOffer={onCreateOffer}
         onRemoveOffer={onRemoveOffer}
+        onUpdateOffer={onUpdateOffer}
       />
     </div>
   )

@@ -39,7 +39,7 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
     }
   }, [loanValue, loansAmount, setSyntheticParams])
 
-  const { onCreateOffer, onRemoveOffer } = useOfferTransactions({
+  const { onCreateOffer, onRemoveOffer, onUpdateOffer } = useOfferTransactions({
     marketPubkey,
     offerPubkey,
     loanValue: parseFloat(loanValue),
@@ -60,5 +60,6 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
 
     onCreateOffer,
     onRemoveOffer,
+    onUpdateOffer,
   }
 }
