@@ -8,9 +8,13 @@ import { StatInfo } from '@banx/components/StatInfo'
 
 import styles from './PlaceOfferTab.module.less'
 
-export const OfferSummary = () => (
+interface OfferSummaryProps {
+  offerSize: number
+}
+
+export const OfferSummary: FC<OfferSummaryProps> = ({ offerSize }) => (
   <div className={styles.offerSummary}>
-    <StatInfo label="Offer size" value="10" flexType="row" />
+    <StatInfo label="Offer size" value={offerSize} flexType="row" />
     <StatInfo label="Estimated interest" value="1" flexType="row" />
   </div>
 )
