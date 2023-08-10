@@ -17,14 +17,6 @@ import {
   makeUpdatePerpetualOfferTransaction,
 } from '@banx/transactions/bonds'
 
-type CreateOfferTransactionParams = TransactionParams<MakeCreatePerpetualOfferTransaction>
-type RemoveOfferTransactionParams = TransactionParams<MakeRemovePerpetualOfferTransaction>
-type UpdateOfferTransactionParams = TransactionParams<MakeUpdatePerpetualOfferTransaction>
-
-type CreateOfferTransactionReturnType = ReturnType<MakeCreatePerpetualOfferTransaction>
-type RemoveOfferTransactionReturnType = ReturnType<MakeRemovePerpetualOfferTransaction>
-type UpdateOfferTransactionReturnType = ReturnType<MakeUpdatePerpetualOfferTransaction>
-
 type OptimisticResult = {
   optimisticResult: { bondOffer: BondOfferV2 }
 }
@@ -52,12 +44,15 @@ export const useOfferTransactions = ({
 
   const optimisticOffer = offers.find((offer) => offer.publicKey === offerPubkey)
 
-  const executeOfferTransaction = async <T, R>(
-    makeTransactionFn: MakeTransactionFn<T>,
-    transactionParams: T,
+  const executeOfferTransaction = async <T extends object>(
+    makeTransactionFn: MakeTransactionFn<TransactionParams<T>>,
+    transactionParams: TransactionParams<T>,
     optimisticAction: (offer: Offer) => void,
   ) => {
-    const result = await buildAndExecuteTransaction<T, R>({
+    const result = await buildAndExecuteTransaction<
+      TransactionParams<T>,
+      ReturnType<MakeTransactionFn<TransactionParams<T>>>
+    >({
       makeTransactionFn,
       transactionParams,
       wallet,
@@ -70,7 +65,7 @@ export const useOfferTransactions = ({
   }
 
   const onCreateOffer = async () => {
-    await executeOfferTransaction<CreateOfferTransactionParams, CreateOfferTransactionReturnType>(
+    await executeOfferTransaction<MakeCreatePerpetualOfferTransaction>(
       makeCreatePerpetualOfferTransaction,
       {
         marketPubkey,
@@ -83,7 +78,7 @@ export const useOfferTransactions = ({
   }
 
   const onRemoveOffer = async () => {
-    await executeOfferTransaction<RemoveOfferTransactionParams, RemoveOfferTransactionReturnType>(
+    await executeOfferTransaction<MakeRemovePerpetualOfferTransaction>(
       makeRemovePerpetualOfferTransaction,
       { offerPubkey, optimisticOffer },
       removeOptimisticOffer,
@@ -91,7 +86,7 @@ export const useOfferTransactions = ({
   }
 
   const onUpdateOffer = async () => {
-    await executeOfferTransaction<UpdateOfferTransactionParams, UpdateOfferTransactionReturnType>(
+    await executeOfferTransaction<MakeUpdatePerpetualOfferTransaction>(
       makeUpdatePerpetualOfferTransaction,
       {
         loanValue,
