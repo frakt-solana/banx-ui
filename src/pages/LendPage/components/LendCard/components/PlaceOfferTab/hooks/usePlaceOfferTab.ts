@@ -55,11 +55,14 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
     }
   }, [loanValue, loansAmount, setSyntheticParams])
 
+  console.log(loansAmount, 'loansAmountInput')
+
   const { onCreateOffer, onRemoveOffer, onUpdateOffer } = useOfferTransactions({
     marketPubkey,
     offerPubkey,
     loanValue: parseFloat(loanValue),
     loansAmount: parseFloat(loansAmount),
+    offers,
   })
 
   const offerSize = parseFloat(loanValue) * parseFloat(loansAmount) || 0

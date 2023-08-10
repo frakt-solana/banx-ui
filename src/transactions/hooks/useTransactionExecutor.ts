@@ -39,20 +39,22 @@ export const useTransactionExecutor = () => {
     }
   }
 
-  const buildAndExecuteTransaction = async <T>({
+  const buildAndExecuteTransaction = async <T, R>({
     makeTransactionFn,
     transactionParams,
     commitment = 'confirmed',
-  }: TransactionOptions<T>) => {
+  }: TransactionOptions<T>): Promise<R | undefined> => {
     if (wallet.publicKey) {
       try {
-        const { transaction, signers } = await makeTransactionFn({
+        const { transaction, signers, ...rest } = await makeTransactionFn({
           ...transactionParams,
           connection,
           wallet,
         })
 
         await executeTransaction(transaction, signers, commitment)
+
+        return { transaction, signers, ...rest } as R
       } catch (error) {
         console.error(error)
       }

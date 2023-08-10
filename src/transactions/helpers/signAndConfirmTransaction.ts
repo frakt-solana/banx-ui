@@ -20,11 +20,10 @@ export const signAndConfirmTransaction: SignAndConfirmTransaction = async ({
   wallet,
   onAfterSend,
   onBeforeApprove,
-  commitment = 'confirmed',
 }) => {
   onBeforeApprove?.()
 
-  const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash()
+  const { blockhash } = await connection.getLatestBlockhash()
 
   transaction.recentBlockhash = blockhash
 
@@ -38,20 +37,13 @@ export const signAndConfirmTransaction: SignAndConfirmTransaction = async ({
 
   if (wallet.signTransaction) {
     const signedTransaction = await wallet.signTransaction(transaction)
-    const txid = await connection.sendRawTransaction(signedTransaction.serialize(), {
+    await connection.sendRawTransaction(signedTransaction.serialize(), {
       skipPreflight: false,
       preflightCommitment: 'processed',
     })
-
-    onAfterSend?.()
-
-    await connection.confirmTransaction(
-      {
-        signature: txid,
-        blockhash,
-        lastValidBlockHeight,
-      },
-      commitment,
-    )
   }
+
+  onAfterSend?.()
+
+  await Promise.resolve()
 }

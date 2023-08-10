@@ -1,11 +1,12 @@
 import { useQuery } from '@tanstack/react-query'
 import { web3 } from 'fbonds-core'
-import produce from 'immer'
+import { produce } from 'immer'
 import { create } from 'zustand'
 
 import {
   FetchMarketOffers,
   MarketPreview,
+  Offer,
   fetchAllMarkets,
   fetchCertainMarket,
   fetchMarketsPreview,
@@ -57,22 +58,54 @@ export const useMarkets = () => {
   }
 }
 
-interface HiddenOffersPubkeysState {
-  hiddenOffersPubkeys: string[]
-  hideOffer: (offerPubkey: string) => void
+interface OptimisticOfferStore {
+  optimisticOffers: Offer[]
+  addOptimisticOffer: (offer: Offer) => void
+  findOptimisticOffer: (offerPubkey: string) => Offer | null
+  removOptimisticOffer: (offerPubkey: string) => void
+  toggleOptimisticOffer: (offer: Offer) => void
 }
-const useHiddenOffersPubkeys = create<HiddenOffersPubkeysState>((set) => ({
-  hiddenOffersPubkeys: [],
-  hideOffer: (offerPubkey) =>
+
+export const useOptimisticOfferStore = create<OptimisticOfferStore>((set, get) => ({
+  optimisticOffers: [],
+  findOptimisticOffer: (offerPubkey) => {
+    const { optimisticOffers } = get()
+    return optimisticOffers.find(({ publicKey }) => publicKey === offerPubkey) ?? null
+  },
+  addOptimisticOffer: (offer) => {
     set(
-      produce((state: HiddenOffersPubkeysState) => {
-        state.hiddenOffersPubkeys = [...state.hiddenOffersPubkeys, offerPubkey]
+      produce((state: OptimisticOfferStore) => {
+        state.optimisticOffers.push(offer)
       }),
-    ),
+    )
+  },
+  removOptimisticOffer: (offerPubkey) => {
+    set(
+      produce((state: OptimisticOfferStore) => {
+        state.optimisticOffers = state.optimisticOffers.filter(
+          ({ publicKey }) => publicKey !== offerPubkey,
+        )
+      }),
+    )
+  },
+  toggleOptimisticOffer: (offer: Offer) => {
+    const { findOptimisticOffer, addOptimisticOffer } = get()
+
+    const offerExist = !!findOptimisticOffer(offer.publicKey)
+    offerExist
+      ? set(
+          produce((state: OptimisticOfferStore) => {
+            state.optimisticOffers = state.optimisticOffers.map((o) =>
+              o.publicKey === offer.publicKey ? offer : o,
+            )
+          }),
+        )
+      : addOptimisticOffer(offer)
+  },
 }))
 
 export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => {
-  const { hiddenOffersPubkeys, hideOffer } = useHiddenOffersPubkeys()
+  const { optimisticOffers, addOptimisticOffer } = useOptimisticOfferStore()
 
   const { data, isLoading, refetch } = useQuery(
     ['marketPairs', marketPubkey],
@@ -84,10 +117,24 @@ export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => 
     },
   )
 
+  const allOffers = [...optimisticOffers, ...(data || [])] as Offer[]
+
+  const uniqueOffersMap: Record<string, Offer> = {}
+
+  allOffers.forEach((offer) => {
+    const existingOffer = uniqueOffersMap[offer.publicKey]
+
+    if (!existingOffer || offer.lastTransactedAt > existingOffer.lastTransactedAt) {
+      uniqueOffersMap[offer.publicKey] = offer
+    }
+  })
+
+  const uniqueOffers = Object.values(uniqueOffersMap)
+
   return {
-    offers: data?.filter(({ publicKey }) => !hiddenOffersPubkeys.includes(publicKey)) || [],
+    offers: uniqueOffers,
+    addOptimisticOffer,
     isLoading,
-    hideOffer,
     refetch,
   }
 }
