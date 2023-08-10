@@ -1,14 +1,39 @@
-import { useState } from 'react'
+import { useMemo } from 'react'
 
-export const useOrderBook = () => {
-  const [openOffersMobile, setOpenOffersMobile] = useState<boolean>(true)
+import { useWallet } from '@solana/wallet-adapter-react'
 
-  const toggleOffers = () => {
-    setOpenOffersMobile((prev) => !prev)
+import { useOfferStore } from '../ExpandableCardContent/hooks'
+import { Order } from './types'
+import { useMarketOrders } from './useMarketOrders'
+
+export const useOrderBook = (marketPubkey: string) => {
+  const wallet = useWallet()
+  const { pairPubkey, setPairPubkey, syntheticParams } = useOfferStore()
+
+  const orderBookParams = useMemo(() => {
+    return {
+      marketPubkey,
+      loanValue: syntheticParams?.loanValue || 0,
+      loansAmount: syntheticParams?.loansAmount || 0,
+      pairPubkey,
+    }
+  }, [marketPubkey, syntheticParams, pairPubkey])
+
+  const { offers } = useMarketOrders(orderBookParams)
+
+  const isOwnOrder = (order: Order) => {
+    return order?.rawData?.assetReceiver === wallet?.publicKey?.toBase58()
+  }
+
+  const goToEditOffer = (orderPubkey: string) => {
+    setPairPubkey(orderPubkey)
   }
 
   return {
-    openOffersMobile,
-    toggleOffers,
+    orderBookParams: {
+      offers,
+      goToEditOffer,
+      isOwnOrder,
+    },
   }
 }

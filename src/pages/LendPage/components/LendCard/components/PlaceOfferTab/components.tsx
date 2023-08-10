@@ -1,3 +1,5 @@
+import { FC } from 'react'
+
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 
@@ -13,30 +15,51 @@ export const OfferSummary = () => (
   </div>
 )
 
-export const OfferHeader = () => {
+interface OfferHeaderProps {
+  isEdit: boolean
+  goToPlaceOffer: () => void
+}
+
+export const OfferHeader: FC<OfferHeaderProps> = ({ isEdit, goToPlaceOffer }) => {
+  const title = isEdit ? 'Offer editing' : 'Offer creation'
+
   return (
     <div className={styles.flexRow}>
-      <h4 className={styles.title}>Offer creation</h4>
+      <h4 className={styles.title}>{title}</h4>
+      {isEdit && <Button onClick={goToPlaceOffer}>Exit edit mode</Button>}
     </div>
   )
 }
 
-export const OfferActionButtons = () => {
-  const isEdit = false // TODO: remove it
+interface OfferActionButtonsProps {
+  isEdit: boolean
+  onCreateOffer: () => void
+  onRemoveOffer: () => void
+}
 
+export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
+  isEdit,
+  onCreateOffer,
+  onRemoveOffer,
+}) => {
   const { connected } = useWallet()
 
   return (
     <div className={styles.buttonsWrapper}>
       {isEdit ? (
         <>
-          <Button className={classNames(styles.button, styles.deleteOfferButton)}>
+          <Button
+            onClick={onRemoveOffer}
+            className={classNames(styles.button, styles.deleteOfferButton)}
+          >
             Delete offer
           </Button>
           <Button className={styles.button}>Update offer</Button>
         </>
       ) : (
-        <Button className={styles.button}>{!connected ? 'Connect wallet' : 'Place'}</Button>
+        <Button onClick={onCreateOffer} className={styles.button}>
+          {!connected ? 'Connect wallet' : 'Place'}
+        </Button>
       )}
     </div>
   )

@@ -1,12 +1,29 @@
+import { FC } from 'react'
+
 import Offer from '../Offer'
+import { Order } from './types'
 
 import styles from './OrderBook.module.less'
 
-export const OrderBookList = () => {
-  const offers = ['1', '2', '3', '4']
+interface OrderBookListProps {
+  offers: Order[]
+  goToEditOffer: (publicKey: string) => void
+  isOwnOrder: (offer: Order) => boolean
+}
 
-  const renderOffer = () => {
-    return <Offer />
+export const OrderBookList: FC<{ orderBookParams: OrderBookListProps }> = ({ orderBookParams }) => {
+  const { offers, goToEditOffer, isOwnOrder } = orderBookParams || {}
+
+  const renderOffer = (offer: Order) => {
+    return (
+      <Offer
+        offer={offer}
+        loanValue={offer.loanValue}
+        loanAmount={offer.loansAmount}
+        editOffer={() => goToEditOffer(offer?.rawData?.publicKey)}
+        isOwnOrder={isOwnOrder(offer)}
+      />
+    )
   }
 
   return <ul className={styles.list}>{offers.map(renderOffer)}</ul>

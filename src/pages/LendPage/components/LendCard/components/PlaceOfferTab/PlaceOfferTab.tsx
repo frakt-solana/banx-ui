@@ -1,3 +1,5 @@
+import { FC } from 'react'
+
 import { RadioButtonField } from '@banx/components/RadioButton'
 import { InputCounter, NumericInputField } from '@banx/components/inputs'
 
@@ -7,19 +9,27 @@ import { usePlaceOfferTab } from './hooks'
 
 import styles from './PlaceOfferTab.module.less'
 
-const PlaceOfferTab = () => {
+interface PlaceOfferTab {
+  marketPubkey: string
+}
+
+const PlaceOfferTab: FC<PlaceOfferTab> = ({ marketPubkey }) => {
   const {
+    isEdit,
+    goToPlaceOffer,
     bondFeature,
     onBondFeatureChange,
-    loansAmountInput,
+    loansAmount,
     onLoanAmountChange,
-    loanValueInput,
+    loanValue,
     onLoanValueChange,
-  } = usePlaceOfferTab()
+    onCreateOffer,
+    onRemoveOffer,
+  } = usePlaceOfferTab(marketPubkey)
 
   return (
     <div className={styles.content}>
-      <OfferHeader />
+      <OfferHeader isEdit={isEdit} goToPlaceOffer={goToPlaceOffer} />
       <RadioButtonField
         tooltipText="When funding full loans, lenders have the option to get defaulted NFTs instead of the SOL recovered from the liquidation"
         label="If full loan liquidated"
@@ -33,18 +43,18 @@ const PlaceOfferTab = () => {
       <div className={styles.fields}>
         <NumericInputField
           label="Offer"
-          value={loanValueInput}
+          value={loanValue}
           onChange={onLoanValueChange}
           className={styles.numericField}
         />
-        <InputCounter
-          label="Number of loans"
-          onChange={onLoanAmountChange}
-          value={loansAmountInput}
-        />
+        <InputCounter label="Number of loans" onChange={onLoanAmountChange} value={loansAmount} />
       </div>
       <OfferSummary />
-      <OfferActionButtons />
+      <OfferActionButtons
+        isEdit={isEdit}
+        onCreateOffer={onCreateOffer}
+        onRemoveOffer={onRemoveOffer}
+      />
     </div>
   )
 }

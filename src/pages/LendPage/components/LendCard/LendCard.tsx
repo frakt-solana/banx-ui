@@ -34,7 +34,7 @@ const LendCard: FC<LendCardProps> = ({ isVisible, onCardClick, market }) => {
           </Button>
         </div>
       </div>
-      {isVisible && <ExpandableCardContent />}
+      {isVisible && <ExpandableCardContent marketPubkey={market.marketPubkey} />}
     </div>
   )
 }

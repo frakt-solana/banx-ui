@@ -16,3 +16,6 @@ export const convertAprToApy = (apr: number) => {
 
 export const formatNumbersWithCommas = (value: number | string) =>
   value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+
+//? Placeholder for sendTxn callback in SDK methods
+export const sendTxnPlaceHolder = async (): Promise<void> => await Promise.resolve()
