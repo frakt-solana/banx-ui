@@ -2,6 +2,8 @@ import { WalletContextState, useConnection, useWallet } from '@solana/wallet-ada
 import { Connection } from '@solana/web3.js'
 import { web3 } from 'fbonds-core'
 
+import { TxnError, captureSentryTxnError } from '@banx/utils'
+
 import { signAndConfirmTransaction } from '../helpers'
 
 type MakeTransactionFn<T> = (
@@ -32,7 +34,8 @@ export const useTransactionExecutor = () => {
         commitment,
       })
     } catch (error) {
-      console.error(error)
+      const txnError = error as TxnError
+      captureSentryTxnError({ error: txnError })
     }
   }
 

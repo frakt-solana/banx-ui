@@ -4,10 +4,10 @@ import produce from 'immer'
 import { create } from 'zustand'
 
 import {
+  FetchMarketOffers,
   MarketPreview,
   fetchAllMarkets,
   fetchCertainMarket,
-  fetchMarketPairs,
   fetchMarketsPreview,
 } from '@banx/api/bonds'
 
@@ -57,26 +57,26 @@ export const useMarkets = () => {
   }
 }
 
-interface HiddenPairsPubkeysState {
-  hiddenPairsPubkeys: string[]
-  hidePair: (pairPubkey: string) => void
+interface HiddenOffersPubkeysState {
+  hiddenOffersPubkeys: string[]
+  hideOffer: (offerPubkey: string) => void
 }
-const useHiddenPairsPubkeys = create<HiddenPairsPubkeysState>((set) => ({
-  hiddenPairsPubkeys: [],
-  hidePair: (pairPubkey) =>
+const useHiddenOffersPubkeys = create<HiddenOffersPubkeysState>((set) => ({
+  hiddenOffersPubkeys: [],
+  hideOffer: (offerPubkey) =>
     set(
-      produce((state: HiddenPairsPubkeysState) => {
-        state.hiddenPairsPubkeys = [...state.hiddenPairsPubkeys, pairPubkey]
+      produce((state: HiddenOffersPubkeysState) => {
+        state.hiddenOffersPubkeys = [...state.hiddenOffersPubkeys, offerPubkey]
       }),
     ),
 }))
 
-export const useMarketPairs = ({ marketPubkey }: { marketPubkey?: string }) => {
-  const { hiddenPairsPubkeys, hidePair } = useHiddenPairsPubkeys()
+export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => {
+  const { hiddenOffersPubkeys, hideOffer } = useHiddenOffersPubkeys()
 
   const { data, isLoading, refetch } = useQuery(
     ['marketPairs', marketPubkey],
-    () => fetchMarketPairs({ marketPubkey: new web3.PublicKey(marketPubkey as string) }),
+    () => FetchMarketOffers({ marketPubkey: new web3.PublicKey(marketPubkey as string) }),
     {
       enabled: !!marketPubkey,
       staleTime: 30 * 1000, //? 30sec
@@ -85,9 +85,9 @@ export const useMarketPairs = ({ marketPubkey }: { marketPubkey?: string }) => {
   )
 
   return {
-    pairs: data?.filter(({ publicKey }) => !hiddenPairsPubkeys.includes(publicKey)) || [],
+    offers: data?.filter(({ publicKey }) => !hiddenOffersPubkeys.includes(publicKey)) || [],
     isLoading,
-    hidePair,
+    hideOffer,
     refetch,
   }
 }

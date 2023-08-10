@@ -25,15 +25,15 @@ export const useExpandableCardContent = () => {
 }
 
 interface OfferStore {
-  pairPubkey: string
+  offerPubkey: string
   syntheticParams: SyntheticParams | null
-  setPairPubkey: (pairPubkey: string) => void
+  setOfferPubkey: (offerPubkey: string) => void
   setSyntheticParams: (params: SyntheticParams | null) => void
 }
 
 export const useOfferStore = create<OfferStore>((set) => ({
-  pairPubkey: '',
+  offerPubkey: '',
   syntheticParams: null,
-  setPairPubkey: (pairPubkey) => set({ pairPubkey }),
+  setOfferPubkey: (offerPubkey) => set({ offerPubkey }),
   setSyntheticParams: (params) => set({ syntheticParams: params }),
 }))

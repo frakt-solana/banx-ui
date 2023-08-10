@@ -6,7 +6,7 @@ import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type MakeRemovePerpetualOfferTransaction = (params: {
-  pairPubkey: string
+  offerPubkey: string
   connection: web3.Connection
   wallet: WalletContextState
 }) => Promise<{
@@ -15,13 +15,13 @@ export type MakeRemovePerpetualOfferTransaction = (params: {
 }>
 
 export const makeRemovePerpetualOfferTransaction: MakeRemovePerpetualOfferTransaction = async ({
-  pairPubkey,
+  offerPubkey,
   connection,
   wallet,
 }) => {
   const { instructions, signers } = await removePerpetualOffer({
     accounts: {
-      bondOfferV2: new web3.PublicKey(pairPubkey),
+      bondOfferV2: new web3.PublicKey(offerPubkey),
       userPubkey: wallet.publicKey as web3.PublicKey,
     },
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),

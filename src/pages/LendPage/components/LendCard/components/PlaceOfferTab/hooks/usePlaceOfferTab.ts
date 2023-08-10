@@ -7,13 +7,13 @@ import { DEFAULT_BOND_FEATURE } from '../constants'
 import { useOfferTransactions } from './useOfferTransactions'
 
 export const usePlaceOfferTab = (marketPubkey: string) => {
-  const { pairPubkey, setPairPubkey, setSyntheticParams } = useOfferStore()
+  const { offerPubkey, setOfferPubkey, setSyntheticParams } = useOfferStore()
 
   const [loanValue, setLoanValue] = useState<string>('0')
   const [loansAmount, setLoansAmount] = useState<string>('1')
   const [bondFeature, setBondFeature] = useState<string>(DEFAULT_BOND_FEATURE)
 
-  const isEdit = !!pairPubkey
+  const isEdit = !!offerPubkey
 
   const onBondFeatureChange = (nextValue: RBOption) => {
     setBondFeature(nextValue.value)
@@ -27,7 +27,7 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
   }
 
   const goToPlaceOffer = () => {
-    setPairPubkey('')
+    setOfferPubkey('')
   }
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
 
   const { onCreateOffer, onRemoveOffer } = useOfferTransactions({
     marketPubkey,
-    pairPubkey,
+    offerPubkey,
     loanValue: parseFloat(loanValue),
     loansAmount: parseFloat(loansAmount),
   })

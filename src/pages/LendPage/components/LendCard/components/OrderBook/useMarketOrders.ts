@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 
-import { BondOffer } from '@banx/api/bonds'
-import { useMarketPairs } from '@banx/pages/LendPage/hooks'
+import { Offer } from '@banx/api/bonds'
+import { useMarketOffers } from '@banx/pages/LendPage/hooks'
 
 import { parseMarketOrder } from './helpers'
 import { Order } from './types'
@@ -10,28 +10,28 @@ type UseMarketOrders = (props: {
   marketPubkey: string
   loanValue: number
   loansAmount: number
-  pairPubkey: string
+  offerPubkey: string
 }) => {
-  offers: Order[]
+  orders: Order[]
   isLoading: boolean
-  hidePair: (pairPubkey: string) => void
+  hideOffer: (offerPubkey: string) => void
 }
 
 export const useMarketOrders: UseMarketOrders = ({
   marketPubkey,
   loanValue,
   loansAmount,
-  pairPubkey,
+  offerPubkey,
 }) => {
-  const { pairs, isLoading, hidePair } = useMarketPairs({ marketPubkey })
+  const { offers, isLoading, hideOffer } = useMarketOffers({ marketPubkey })
 
-  const offers = useMemo(() => {
-    if (!pairs) return []
+  const orders = useMemo(() => {
+    if (!offers) return []
 
-    const editOffer = pairs.find((pair: BondOffer) => pair?.publicKey === pairPubkey)
+    const editOffer = offers.find((offer: Offer) => offer?.publicKey === offerPubkey)
     const editOfferPubkey = editOffer?.publicKey
 
-    const myOffer = {
+    const myOrder = {
       size: loanValue * loansAmount,
       loanValue,
       loansAmount,
@@ -42,26 +42,26 @@ export const useMarketOrders: UseMarketOrders = ({
       },
     }
 
-    const parsedOffers = pairs.map(parseMarketOrder)
+    const parsedOrders = offers.map(parseMarketOrder)
 
-    const parsedEditableOffers = editOfferPubkey
-      ? parsedOffers.map((offer: Order) =>
-          offer?.rawData?.publicKey === editOfferPubkey ? { ...myOffer, ...offer } : offer,
+    const parsedEditableOrders = editOfferPubkey
+      ? parsedOrders.map((offer: Order) =>
+          offer?.rawData?.publicKey === editOfferPubkey ? { ...myOrder, ...offer } : offer,
         )
       : []
 
     if (loansAmount && !editOffer?.publicKey) {
-      parsedOffers.push(myOffer)
+      parsedOrders.push(myOrder)
     }
 
-    const offers = editOfferPubkey ? parsedEditableOffers : parsedOffers
+    const orders = editOfferPubkey ? parsedEditableOrders : parsedOrders
 
-    return offers
-  }, [pairs, loanValue, loansAmount, pairPubkey])
+    return orders
+  }, [offers, loanValue, loansAmount, offerPubkey])
 
   return {
-    offers,
+    orders,
     isLoading,
-    hidePair,
+    hideOffer,
   }
 }
