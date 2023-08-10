@@ -16,7 +16,7 @@ export type MakeUpdatePerpetualOfferTransaction = (params: {
   loansAmount: number
   connection: web3.Connection
   wallet: WalletContextState
-  optimisticOffer?: Offer | null
+  optimisticOffer: Offer | undefined
 }) => Promise<{
   transaction: web3.Transaction
   signers: web3.Signer[]
@@ -34,24 +34,19 @@ export const makeUpdatePerpetualOfferTransaction: MakeUpdatePerpetualOfferTransa
   const bondOfferV2 = new web3.PublicKey(offerPubkey)
   const userPubkey = wallet.publicKey as web3.PublicKey
 
-  console.log({
-    programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-    accounts: { bondOfferV2, userPubkey },
-    args: { loanValue: loanValue * 1e9, amountOfLoans: loansAmount },
-    optimistic: { bondOffer: optimisticOffer as BondOfferV2 },
-    connection,
-    sendTxn: sendTxnPlaceHolder,
-  })
   const { instructions, signers, optimisticResult } = await updatePerpetualOffer({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: { bondOfferV2, userPubkey },
-    args: { loanValue: loanValue * 1e9, amountOfLoans: loansAmount },
-    optimistic: { bondOffer: optimisticOffer as BondOfferV2 },
+    args: {
+      loanValue: loanValue * 1e9,
+      amountOfLoans: loansAmount,
+    },
+    optimistic: {
+      bondOffer: optimisticOffer as BondOfferV2,
+    },
     connection,
     sendTxn: sendTxnPlaceHolder,
   })
-
-  console.log(optimisticResult, 'optimisticResult')
 
   return {
     transaction: new web3.Transaction().add(...instructions),

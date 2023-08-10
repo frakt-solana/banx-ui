@@ -62,7 +62,7 @@ interface OptimisticOfferStore {
   optimisticOffers: Offer[]
   addOptimisticOffer: (offer: Offer) => void
   findOptimisticOffer: (offerPubkey: string) => Offer | null
-  removOptimisticOffer: (offerPubkey: string) => void
+  removeOptimisticOffer: (offer: Offer) => void
   toggleOptimisticOffer: (offer: Offer) => void
 }
 
@@ -79,11 +79,11 @@ export const useOptimisticOfferStore = create<OptimisticOfferStore>((set, get) =
       }),
     )
   },
-  removOptimisticOffer: (offerPubkey) => {
+  removeOptimisticOffer: (offer) => {
     set(
       produce((state: OptimisticOfferStore) => {
         state.optimisticOffers = state.optimisticOffers.filter(
-          ({ publicKey }) => publicKey !== offerPubkey,
+          ({ publicKey }) => publicKey !== offer.publicKey,
         )
       }),
     )

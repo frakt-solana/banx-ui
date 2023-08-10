@@ -55,8 +55,6 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
     }
   }, [loanValue, loansAmount, setSyntheticParams])
 
-  console.log(loansAmount, 'loansAmountInput')
-
   const { onCreateOffer, onRemoveOffer, onUpdateOffer } = useOfferTransactions({
     marketPubkey,
     offerPubkey,
