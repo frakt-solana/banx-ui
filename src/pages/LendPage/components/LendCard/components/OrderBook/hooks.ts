@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 
 import { useOfferStore } from '../ExpandableCardContent/hooks'
-import { MarketOrder } from './types'
+import { Order } from './types'
 import { useMarketOrders } from './useMarketOrders'
 
 export const useOrderBook = (marketPubkey: string) => {
@@ -21,7 +21,7 @@ export const useOrderBook = (marketPubkey: string) => {
 
   const { offers } = useMarketOrders(orderBookParams)
 
-  const isOwnOrder = (order: MarketOrder) => {
+  const isOwnOrder = (order: Order) => {
     return order?.rawData?.assetReceiver === wallet?.publicKey?.toBase58()
   }
 

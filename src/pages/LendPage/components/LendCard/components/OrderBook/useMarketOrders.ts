@@ -1,10 +1,10 @@
 import { useMemo } from 'react'
 
-import { Pair } from '@banx/api/bonds'
+import { BondOffer } from '@banx/api/bonds'
 import { useMarketPairs } from '@banx/pages/LendPage/hooks'
 
 import { parseMarketOrder } from './helpers'
-import { MarketOrder } from './types'
+import { Order } from './types'
 
 type UseMarketOrders = (props: {
   marketPubkey: string
@@ -12,7 +12,7 @@ type UseMarketOrders = (props: {
   loansAmount: number
   pairPubkey: string
 }) => {
-  offers: MarketOrder[]
+  offers: Order[]
   isLoading: boolean
   hidePair: (pairPubkey: string) => void
 }
@@ -28,7 +28,7 @@ export const useMarketOrders: UseMarketOrders = ({
   const offers = useMemo(() => {
     if (!pairs) return []
 
-    const editOffer = pairs.find((pair: Pair) => pair?.publicKey === pairPubkey)
+    const editOffer = pairs.find((pair: BondOffer) => pair?.publicKey === pairPubkey)
     const editOfferPubkey = editOffer?.publicKey
 
     const myOffer = {
@@ -45,7 +45,7 @@ export const useMarketOrders: UseMarketOrders = ({
     const parsedOffers = pairs.map(parseMarketOrder)
 
     const parsedEditableOffers = editOfferPubkey
-      ? parsedOffers.map((offer: MarketOrder) =>
+      ? parsedOffers.map((offer: Order) =>
           offer?.rawData?.publicKey === editOfferPubkey ? { ...myOffer, ...offer } : offer,
         )
       : []

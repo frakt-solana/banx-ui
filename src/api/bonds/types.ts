@@ -108,17 +108,14 @@ export const PairSchema = z.object({
   bondingCurve: BondingCurveSchema,
   buyOrdersQuantity: z.number(),
   concentrationIndex: z.number(),
-  createdAt: z.string(),
   currentSpotPrice: z.number(),
   edgeSettlement: z.number(),
   fundsSolOrTokenBalance: z.number(),
   hadoMarket: z.string(),
-  isRemoved: z.boolean(),
   lastTransactedAt: z.number(),
   mathCounter: z.number(),
   pairState: z.string(),
-  updatedAt: z.string(),
   validation: ValidationPairSchema,
 })
 
-export type Pair = z.infer<typeof PairSchema>
+export type BondOffer = z.infer<typeof PairSchema>

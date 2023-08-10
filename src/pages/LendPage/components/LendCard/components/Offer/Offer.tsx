@@ -6,12 +6,12 @@ import { Button } from '@banx/components/Buttons'
 
 import { Pencil } from '@banx/icons'
 
-import { MarketOrder } from '../OrderBook'
+import { Order } from '../OrderBook'
 
 import styles from './Offer.module.less'
 
 interface OfferProps {
-  offer: MarketOrder
+  offer: Order
   loanAmount: number
   loanValue: number
   editOffer: () => void

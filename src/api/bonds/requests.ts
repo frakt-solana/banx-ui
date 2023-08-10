@@ -4,12 +4,12 @@ import { web3 } from 'fbonds-core'
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import {
+  BondOffer,
   Market,
   MarketPreview,
   MarketPreviewResponse,
   MarketPreviewSchema,
   MarketSchema,
-  Pair,
 } from './types'
 
 type FetchMarketsPreview = () => Promise<MarketPreview[]>
@@ -79,7 +79,7 @@ type FetchMarketPairs = (props: {
   skip?: number
   limit?: number
   getAll?: boolean
-}) => Promise<Pair[]>
+}) => Promise<BondOffer[]>
 export const fetchMarketPairs: FetchMarketPairs = async ({
   marketPubkey,
   order = 'asc',
@@ -96,7 +96,7 @@ export const fetchMarketPairs: FetchMarketPairs = async ({
       isPrivate: String(IS_PRIVATE_MARKETS),
     })
 
-    const { data } = await axios.get<Pair[]>(
+    const { data } = await axios.get<BondOffer[]>(
       `${BACKEND_BASE_URL}/bond-offers/${marketPubkey?.toBase58() || ''}?${queryParams.toString()}`,
     )
 

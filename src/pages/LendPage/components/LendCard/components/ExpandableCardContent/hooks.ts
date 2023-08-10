@@ -24,14 +24,14 @@ export const useExpandableCardContent = () => {
   }
 }
 
-interface OfferState {
+interface OfferStore {
   pairPubkey: string
   syntheticParams: SyntheticParams | null
   setPairPubkey: (pairPubkey: string) => void
   setSyntheticParams: (params: SyntheticParams | null) => void
 }
 
-export const useOfferStore = create<OfferState>((set) => ({
+export const useOfferStore = create<OfferStore>((set) => ({
   pairPubkey: '',
   syntheticParams: null,
   setPairPubkey: (pairPubkey) => set({ pairPubkey }),

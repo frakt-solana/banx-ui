@@ -3,7 +3,7 @@ export interface SyntheticParams {
   loansAmount: number
 }
 
-export interface MarketOrder {
+export interface Order {
   size: number //? normal sol value
   loanValue: number //? normal sol value
   loansAmount: number

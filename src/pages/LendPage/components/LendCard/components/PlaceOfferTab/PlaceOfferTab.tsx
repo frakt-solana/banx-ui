@@ -9,7 +9,11 @@ import { usePlaceOfferTab } from './hooks'
 
 import styles from './PlaceOfferTab.module.less'
 
-const PlaceOfferTab: FC<{ marketPubkey: string }> = ({ marketPubkey }) => {
+interface PlaceOfferTab {
+  marketPubkey: string
+}
+
+const PlaceOfferTab: FC<PlaceOfferTab> = ({ marketPubkey }) => {
   const {
     isEdit,
     goToPlaceOffer,

@@ -1,20 +1,20 @@
 import { FC } from 'react'
 
 import Offer from '../Offer'
-import { MarketOrder } from './types'
+import { Order } from './types'
 
 import styles from './OrderBook.module.less'
 
 interface OrderBookListProps {
-  offers: MarketOrder[]
+  offers: Order[]
   goToEditOffer: (publicKey: string) => void
-  isOwnOrder: (offer: MarketOrder) => boolean
+  isOwnOrder: (offer: Order) => boolean
 }
 
 export const OrderBookList: FC<{ orderBookParams: OrderBookListProps }> = ({ orderBookParams }) => {
   const { offers, goToEditOffer, isOwnOrder } = orderBookParams || {}
 
-  const renderOffer = (offer: MarketOrder) => {
+  const renderOffer = (offer: Order) => {
     return (
       <Offer
         offer={offer}

@@ -3,7 +3,6 @@ import { Connection } from '@solana/web3.js'
 import { web3 } from 'fbonds-core'
 
 import { signAndConfirmTransaction } from '../helpers'
-import { CommitmentType } from '../types'
 
 type MakeTransactionFn<T> = (
   params: T & { connection: Connection; wallet: WalletContextState },
@@ -12,7 +11,7 @@ type MakeTransactionFn<T> = (
 export type TransactionOptions<T> = {
   makeTransactionFn: MakeTransactionFn<T>
   transactionParams: T
-  commitment?: CommitmentType
+  commitment?: web3.Commitment
 }
 
 export const useTransactionExecutor = () => {
