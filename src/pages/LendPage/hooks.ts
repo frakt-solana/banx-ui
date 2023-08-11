@@ -92,9 +92,9 @@ const useOptimisticOfferStore = create<OptimisticOfferStore>((set, get) => ({
   },
   updateOffer: (offer: Offer) => {
     const { findOffer } = get()
-    const existingOffer = !!findOffer(offer.publicKey)
+    const offerExists = !!findOffer(offer.publicKey)
 
-    existingOffer &&
+    offerExists &&
       set(
         produce((state: OptimisticOfferStore) => {
           state.offers = state.offers.map((existingOffer) =>
@@ -136,9 +136,9 @@ export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => 
   }, [optimisticOffers, data])
 
   const updateOrAddOffer = (offer: Offer) => {
-    const existingOffer = !!findOffer(offer.publicKey)
+    const offerExists = !!findOffer(offer.publicKey)
 
-    return existingOffer ? updateOffer(offer) : addOffer(offer)
+    return offerExists ? updateOffer(offer) : addOffer(offer)
   }
 
   return {
