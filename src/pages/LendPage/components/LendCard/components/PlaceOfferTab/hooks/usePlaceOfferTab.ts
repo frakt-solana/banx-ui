@@ -7,6 +7,7 @@ import { useMarketOffers } from '@banx/pages/LendPage/hooks'
 import { useOfferStore } from '../../ExpandableCardContent/hooks'
 import { parseMarketOrder } from '../../OrderBook/helpers'
 import { DEFAULT_BOND_FEATURE } from '../constants'
+import { useMarketsPreview } from './../../../../../hooks'
 import { useOfferTransactions } from './useOfferTransactions'
 
 export const usePlaceOfferTab = (marketPubkey: string) => {
@@ -17,6 +18,8 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
   const [bondFeature, setBondFeature] = useState<string>(DEFAULT_BOND_FEATURE)
 
   const { offers, removeOffer, updateOrAddOffer } = useMarketOffers({ marketPubkey })
+  const { marketsPreview } = useMarketsPreview()
+  const marketPreview = marketsPreview.find((market) => market.marketPubkey === marketPubkey)
 
   const offer = offers.find((offer) => offer.publicKey === offerPubkey)
   const initialOrderValues = offer ? parseMarketOrder(offer) : null
@@ -79,6 +82,7 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
     onLoanAmountChange,
     loansAmount,
     offerSize,
+    marketAPR: marketPreview?.marketAPR || 0,
 
     onCreateOffer,
     onRemoveOffer,

@@ -27,6 +27,7 @@ const PlaceOfferTab: FC<PlaceOfferTab> = ({ marketPubkey }) => {
     onRemoveOffer,
     onUpdateOffer,
     offerSize,
+    marketAPR,
   } = usePlaceOfferTab(marketPubkey)
 
   return (
@@ -51,7 +52,7 @@ const PlaceOfferTab: FC<PlaceOfferTab> = ({ marketPubkey }) => {
         />
         <InputCounter label="Number of loans" onChange={onLoanAmountChange} value={loansAmount} />
       </div>
-      <OfferSummary offerSize={offerSize} />
+      <OfferSummary offerSize={offerSize} marketAPR={marketAPR} />
       <OfferActionButtons
         isEdit={isEdit}
         onCreateOffer={onCreateOffer}

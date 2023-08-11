@@ -4,20 +4,30 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
-import { StatInfo } from '@banx/components/StatInfo'
+import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
 import styles from './PlaceOfferTab.module.less'
 
 interface OfferSummaryProps {
   offerSize: number
+  marketAPR: number
 }
 
-export const OfferSummary: FC<OfferSummaryProps> = ({ offerSize }) => (
-  <div className={styles.offerSummary}>
-    <StatInfo label="Offer size" value={offerSize} flexType="row" />
-    <StatInfo label="Estimated interest" value="1" flexType="row" />
-  </div>
-)
+export const OfferSummary: FC<OfferSummaryProps> = ({ offerSize, marketAPR }) => {
+  const interest = marketAPR / 100 / 52
+
+  return (
+    <div className={styles.offerSummary}>
+      <StatInfo label="Offer size" value={offerSize} flexType="row" />
+      <StatInfo
+        label="Estimated interest"
+        valueType={VALUES_TYPES.PERCENT}
+        value={interest}
+        flexType="row"
+      />
+    </div>
+  )
+}
 
 interface OfferHeaderProps {
   isEdit: boolean
