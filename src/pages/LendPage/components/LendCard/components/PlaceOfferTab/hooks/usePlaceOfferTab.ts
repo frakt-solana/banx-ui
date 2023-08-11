@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+
+import { isEqual, pick } from 'lodash'
 
 import { RBOption } from '@banx/components/RadioButton'
 
@@ -10,22 +12,17 @@ import { DEFAULT_BOND_FEATURE } from '../constants'
 import { useMarketsPreview } from './../../../../../hooks'
 import { useOfferTransactions } from './useOfferTransactions'
 
-export const usePlaceOfferTab = (marketPubkey: string) => {
-  const { offerPubkey, setOfferPubkey, setSyntheticParams } = useOfferStore()
-
-  const [loanValue, setLoanValue] = useState<string>('0')
-  const [loansAmount, setLoansAmount] = useState<string>('1')
+const useOfferFormController = (initialLoanValue: number = 0, initialLoansAmount: number = 1) => {
+  const [loanValue, setLoanValue] = useState(String(initialLoanValue))
+  const [loansAmount, setLoansAmount] = useState(String(initialLoansAmount))
   const [bondFeature, setBondFeature] = useState<string>(DEFAULT_BOND_FEATURE)
 
-  const { offers, removeOffer, updateOrAddOffer } = useMarketOffers({ marketPubkey })
-  const { marketsPreview } = useMarketsPreview()
-  const marketPreview = marketsPreview.find((market) => market.marketPubkey === marketPubkey)
-
-  const offer = offers.find((offer) => offer.publicKey === offerPubkey)
-  const initialOrderValues = offer ? parseMarketOrder(offer) : null
-  const { loanValue: initialLoanValue, loansAmount: initialLoansAmount } = initialOrderValues || {}
-
-  const isEdit = !!offerPubkey
+  useEffect(() => {
+    if (initialLoanValue || initialLoansAmount) {
+      setLoanValue(String(initialLoanValue))
+      setLoansAmount(String(initialLoansAmount))
+    }
+  }, [initialLoanValue, initialLoansAmount])
 
   const onBondFeatureChange = (nextValue: RBOption) => {
     setBondFeature(nextValue.value)
@@ -38,16 +35,62 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
     setLoansAmount(nextValue)
   }
 
-  const goToPlaceOffer = () => {
-    setOfferPubkey('')
+  const resetFormValues = () => {
+    setLoanValue(String(initialLoanValue))
+    setLoansAmount(String(initialLoansAmount))
+    setBondFeature(DEFAULT_BOND_FEATURE)
   }
 
-  useEffect(() => {
-    if (initialLoanValue || initialLoansAmount) {
-      setLoansAmount(String(initialLoansAmount || 0))
-      setLoanValue(String(initialLoanValue || 0))
-    }
-  }, [initialLoanValue, initialLoansAmount])
+  const currentFormValues = { loansAmount, loanValue }
+  const initialFormValues = {
+    loansAmount: String(initialLoansAmount),
+    loanValue: String(initialLoanValue),
+  }
+
+  const hasFormChanges =
+    (initialLoanValue || initialLoansAmount) &&
+    !isEqual(pick(currentFormValues, Object.keys(initialFormValues)), initialFormValues)
+
+  return {
+    loanValue,
+    loansAmount,
+    bondFeature,
+    onLoanValueChange,
+    onLoanAmountChange,
+    onBondFeatureChange,
+    hasFormChanges: Boolean(hasFormChanges),
+    resetFormValues,
+  }
+}
+
+export const usePlaceOfferTab = (marketPubkey: string) => {
+  const { offerPubkey, setOfferPubkey, setSyntheticParams } = useOfferStore()
+
+  const { offers, removeOffer, updateOrAddOffer } = useMarketOffers({ marketPubkey })
+  const { marketsPreview } = useMarketsPreview()
+
+  const marketPreview = marketsPreview.find((market) => market.marketPubkey === marketPubkey)
+
+  const offer = useMemo(
+    () => offers.find((offer) => offer.publicKey === offerPubkey),
+    [offers, offerPubkey],
+  )
+
+  const initialOrderValues = offer ? parseMarketOrder(offer) : null
+  const { loanValue: initialLoanValue, loansAmount: initialLoansAmount } = initialOrderValues || {}
+
+  const isEdit = !!offerPubkey
+
+  const {
+    loanValue,
+    loansAmount,
+    onLoanValueChange,
+    onLoanAmountChange,
+    bondFeature,
+    onBondFeatureChange,
+    hasFormChanges,
+    resetFormValues,
+  } = useOfferFormController(initialLoanValue, initialLoansAmount)
 
   useEffect(() => {
     if (loanValue) {
@@ -58,6 +101,10 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
     }
   }, [loanValue, loansAmount, setSyntheticParams])
 
+  const goToPlaceOffer = () => {
+    setOfferPubkey('')
+  }
+
   const { onCreateOffer, onRemoveOffer, onUpdateOffer } = useOfferTransactions({
     marketPubkey,
     offerPubkey,
@@ -66,26 +113,30 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
     offers,
     removeOffer,
     updateOrAddOffer,
+    resetFormValues,
+    goToPlaceOffer,
   })
 
   const offerSize = parseFloat(loanValue) * parseFloat(loansAmount) || 0
 
   return {
     isEdit,
-
-    goToPlaceOffer,
-
-    bondFeature,
-    onBondFeatureChange,
-    onLoanValueChange,
-    loanValue,
-    onLoanAmountChange,
-    loansAmount,
     offerSize,
     marketAPR: marketPreview?.marketAPR || 0,
+    bondFeature,
+    loanValue,
+    loansAmount,
+    hasFormChanges,
 
-    onCreateOffer,
-    onRemoveOffer,
-    onUpdateOffer,
+    goToPlaceOffer,
+    onBondFeatureChange,
+    onLoanValueChange,
+    onLoanAmountChange,
+
+    offerTransactions: {
+      onCreateOffer,
+      onRemoveOffer,
+      onUpdateOffer,
+    },
   }
 }

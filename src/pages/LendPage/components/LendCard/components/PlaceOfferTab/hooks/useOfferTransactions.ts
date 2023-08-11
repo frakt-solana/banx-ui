@@ -33,6 +33,8 @@ export const useOfferTransactions = ({
   offers,
   removeOffer,
   updateOrAddOffer,
+  resetFormValues,
+  goToPlaceOffer,
 }: {
   marketPubkey: string
   loansAmount: number
@@ -41,6 +43,8 @@ export const useOfferTransactions = ({
   offers: Offer[]
   removeOffer: (offer: Offer) => void
   updateOrAddOffer: (offer: Offer) => void
+  resetFormValues: () => void
+  goToPlaceOffer: () => void
 }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
@@ -53,6 +57,7 @@ export const useOfferTransactions = ({
     makeTransactionFn: MakeTransactionFn<TransactionParams<T>>,
     transactionParams: TransactionParams<T>,
     optimisticAction: (offer: Offer) => void,
+    onAfterSuccess?: () => void,
   ) => {
     const result = await buildAndExecuteTransaction<
       TransactionParams<T>,
@@ -64,9 +69,13 @@ export const useOfferTransactions = ({
       connection,
     })
 
+    if (!result) return
+
     if (hasOptimisticResult(result)) {
       optimisticAction(result.optimisticResult.bondOffer)
     }
+
+    onAfterSuccess?.()
   }
 
   const onCreateOffer = async () => {
@@ -79,6 +88,7 @@ export const useOfferTransactions = ({
         loanValue,
       },
       updateOrAddOffer,
+      resetFormValues,
     )
   }
 
@@ -89,6 +99,7 @@ export const useOfferTransactions = ({
       makeRemovePerpetualOfferTransaction,
       { offerPubkey, optimisticOffer },
       removeOffer,
+      goToPlaceOffer,
     )
   }
 
