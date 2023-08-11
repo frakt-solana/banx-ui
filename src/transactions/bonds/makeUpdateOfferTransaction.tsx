@@ -50,7 +50,7 @@ export const makeUpdatePerpetualOfferTransaction: MakeUpdatePerpetualOfferTransa
 
   return {
     transaction: new web3.Transaction().add(...instructions),
-    signers: [...signers],
+    signers,
     optimisticResult,
   }
 }
