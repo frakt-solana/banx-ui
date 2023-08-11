@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { web3 } from 'fbonds-core'
+import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { produce } from 'immer'
 import { chain, maxBy } from 'lodash'
 import { create } from 'zustand'
@@ -122,6 +123,7 @@ export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => 
   const offers = chain([...optimisticOffers, ...(data || [])])
     .groupBy('publicKey')
     .map((offers) => maxBy(offers, 'lastTransactedAt'))
+    .filter((offer) => offer?.pairState !== PairState.PerpetualClosed)
     .value()
 
   return {
