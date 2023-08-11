@@ -14,7 +14,6 @@ type UseMarketOrders = (props: {
 }) => {
   orders: Order[]
   isLoading: boolean
-  hideOffer: (offerPubkey: string) => void
 }
 
 export const useMarketOrders: UseMarketOrders = ({
@@ -23,7 +22,7 @@ export const useMarketOrders: UseMarketOrders = ({
   loansAmount,
   offerPubkey,
 }) => {
-  const { offers, isLoading, hideOffer } = useMarketOffers({ marketPubkey })
+  const { offers, isLoading } = useMarketOffers({ marketPubkey })
 
   const orders = useMemo(() => {
     if (!offers) return []
@@ -62,6 +61,5 @@ export const useMarketOrders: UseMarketOrders = ({
   return {
     orders,
     isLoading,
-    hideOffer,
   }
 }

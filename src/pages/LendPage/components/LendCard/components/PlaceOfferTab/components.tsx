@@ -8,9 +8,13 @@ import { StatInfo } from '@banx/components/StatInfo'
 
 import styles from './PlaceOfferTab.module.less'
 
-export const OfferSummary = () => (
+interface OfferSummaryProps {
+  offerSize: number
+}
+
+export const OfferSummary: FC<OfferSummaryProps> = ({ offerSize }) => (
   <div className={styles.offerSummary}>
-    <StatInfo label="Offer size" value="10" flexType="row" />
+    <StatInfo label="Offer size" value={offerSize} flexType="row" />
     <StatInfo label="Estimated interest" value="1" flexType="row" />
   </div>
 )
@@ -35,12 +39,14 @@ interface OfferActionButtonsProps {
   isEdit: boolean
   onCreateOffer: () => void
   onRemoveOffer: () => void
+  onUpdateOffer: () => void
 }
 
 export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
   isEdit,
   onCreateOffer,
   onRemoveOffer,
+  onUpdateOffer,
 }) => {
   const { connected } = useWallet()
 
@@ -54,7 +60,9 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
           >
             Delete offer
           </Button>
-          <Button className={styles.button}>Update offer</Button>
+          <Button onClick={onUpdateOffer} className={styles.button}>
+            Update offer
+          </Button>
         </>
       ) : (
         <Button onClick={onCreateOffer} className={styles.button}>

@@ -2,7 +2,7 @@ import { WalletContextState } from '@solana/wallet-adapter-react'
 import { web3 } from 'fbonds-core'
 import {
   BondOfferOptimistic,
-  removePerpetualOffer,
+  updatePerpetualOffer,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
 
@@ -10,8 +10,10 @@ import { Offer } from '@banx/api/bonds'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
-export type MakeRemovePerpetualOfferTransaction = (params: {
+export type MakeUpdatePerpetualOfferTransaction = (params: {
   offerPubkey: string
+  loanValue: number
+  loansAmount: number
   connection: web3.Connection
   wallet: WalletContextState
   optimisticOffer: Offer
@@ -21,17 +23,23 @@ export type MakeRemovePerpetualOfferTransaction = (params: {
   optimisticResult: BondOfferOptimistic | undefined
 }>
 
-export const makeRemovePerpetualOfferTransaction: MakeRemovePerpetualOfferTransaction = async ({
+export const makeUpdatePerpetualOfferTransaction: MakeUpdatePerpetualOfferTransaction = async ({
+  loanValue,
+  loansAmount,
   offerPubkey,
   connection,
-  wallet,
   optimisticOffer,
+  wallet,
 }) => {
-  const { instructions, signers, optimisticResult } = await removePerpetualOffer({
+  const bondOfferV2 = new web3.PublicKey(offerPubkey)
+  const userPubkey = wallet.publicKey as web3.PublicKey
+
+  const { instructions, signers, optimisticResult } = await updatePerpetualOffer({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-    accounts: {
-      bondOfferV2: new web3.PublicKey(offerPubkey),
-      userPubkey: wallet.publicKey as web3.PublicKey,
+    accounts: { bondOfferV2, userPubkey },
+    args: {
+      loanValue: loanValue * 1e9,
+      amountOfLoans: loansAmount,
     },
     optimistic: {
       bondOffer: optimisticOffer as BondOfferV2,
