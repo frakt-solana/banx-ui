@@ -1,8 +1,9 @@
+import { useMemo } from 'react'
+
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BondFeatures, BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Offer } from '@banx/api/bonds'
-import { useOptimisticOfferStore } from '@banx/pages/LendPage/hooks'
 import {
   MakeTransactionFn,
   TransactionParams,
@@ -30,19 +31,23 @@ export const useOfferTransactions = ({
   loanValue,
   offerPubkey,
   offers,
+  removeOffer,
+  updateOrAddOffer,
 }: {
   marketPubkey: string
   loansAmount: number
   loanValue: number
   offerPubkey: string
   offers: Offer[]
+  removeOffer: (offer: Offer) => void
+  updateOrAddOffer: (offer: Offer) => void
 }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
 
-  const { updateOrAddOptimisticOffer, removeOptimisticOffer } = useOptimisticOfferStore()
-
-  const optimisticOffer = offers.find((offer) => offer.publicKey === offerPubkey)
+  const optimisticOffer = useMemo(() => {
+    return offers.find((offer) => offer.publicKey === offerPubkey)
+  }, [offers, offerPubkey])
 
   const executeOfferTransaction = async <T extends object>(
     makeTransactionFn: MakeTransactionFn<TransactionParams<T>>,
@@ -73,19 +78,23 @@ export const useOfferTransactions = ({
         loansAmount,
         loanValue,
       },
-      updateOrAddOptimisticOffer,
+      updateOrAddOffer,
     )
   }
 
   const onRemoveOffer = async () => {
+    if (!optimisticOffer) return
+
     await executeOfferTransaction<MakeRemovePerpetualOfferTransaction>(
       makeRemovePerpetualOfferTransaction,
       { offerPubkey, optimisticOffer },
-      removeOptimisticOffer,
+      removeOffer,
     )
   }
 
   const onUpdateOffer = async () => {
+    if (!optimisticOffer) return
+
     await executeOfferTransaction<MakeUpdatePerpetualOfferTransaction>(
       makeUpdatePerpetualOfferTransaction,
       {
@@ -94,7 +103,7 @@ export const useOfferTransactions = ({
         optimisticOffer,
         loansAmount,
       },
-      updateOrAddOptimisticOffer,
+      updateOrAddOffer,
     )
   }
 

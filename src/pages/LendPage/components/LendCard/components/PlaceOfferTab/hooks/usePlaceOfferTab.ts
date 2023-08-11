@@ -16,7 +16,7 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
   const [loansAmount, setLoansAmount] = useState<string>('1')
   const [bondFeature, setBondFeature] = useState<string>(DEFAULT_BOND_FEATURE)
 
-  const { offers } = useMarketOffers({ marketPubkey })
+  const { offers, removeOffer, updateOrAddOffer } = useMarketOffers({ marketPubkey })
 
   const offer = offers.find((offer) => offer.publicKey === offerPubkey)
   const initialOrderValues = offer ? parseMarketOrder(offer) : null
@@ -61,6 +61,8 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
     loanValue: parseFloat(loanValue),
     loansAmount: parseFloat(loansAmount),
     offers,
+    removeOffer,
+    updateOrAddOffer,
   })
 
   const offerSize = parseFloat(loanValue) * parseFloat(loansAmount) || 0

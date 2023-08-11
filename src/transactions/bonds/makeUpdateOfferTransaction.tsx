@@ -16,7 +16,7 @@ export type MakeUpdatePerpetualOfferTransaction = (params: {
   loansAmount: number
   connection: web3.Connection
   wallet: WalletContextState
-  optimisticOffer: Offer | undefined
+  optimisticOffer: Offer
 }) => Promise<{
   transaction: web3.Transaction
   signers: web3.Signer[]

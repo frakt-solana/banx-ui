@@ -1,3 +1,5 @@
+import { useMemo } from 'react'
+
 import { useQuery } from '@tanstack/react-query'
 import { web3 } from 'fbonds-core'
 import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
@@ -61,54 +63,56 @@ export const useMarkets = () => {
 }
 
 interface OptimisticOfferStore {
-  optimisticOffers: Offer[]
-  addOptimisticOffer: (offer: Offer) => void
-  findOptimisticOffer: (offerPubkey: string) => Offer | null
-  removeOptimisticOffer: (offer: Offer) => void
-  updateOrAddOptimisticOffer: (offer: Offer) => void
+  offers: Offer[]
+  addOffer: (offer: Offer) => void
+  findOffer: (offerPubkey: string) => Offer | null
+  removeOffer: (offer: Offer) => void
+  updateOffer: (offer: Offer) => void
 }
 
-export const useOptimisticOfferStore = create<OptimisticOfferStore>((set, get) => ({
-  optimisticOffers: [],
-  findOptimisticOffer: (offerPubkey) => {
-    const { optimisticOffers } = get()
-    return optimisticOffers.find(({ publicKey }) => publicKey === offerPubkey) ?? null
+const useOptimisticOfferStore = create<OptimisticOfferStore>((set, get) => ({
+  offers: [],
+  findOffer: (offerPubkey) => {
+    const { offers } = get()
+    return offers.find(({ publicKey }) => publicKey === offerPubkey) ?? null
   },
-  addOptimisticOffer: (offer) => {
+  addOffer: (offer) => {
     set(
       produce((state: OptimisticOfferStore) => {
-        state.optimisticOffers.push(offer)
+        state.offers.push(offer)
       }),
     )
   },
-  removeOptimisticOffer: (offer) => {
+  removeOffer: (offer) => {
     set(
       produce((state: OptimisticOfferStore) => {
-        state.optimisticOffers = state.optimisticOffers.filter(
-          ({ publicKey }) => publicKey !== offer.publicKey,
-        )
+        state.offers = state.offers.filter(({ publicKey }) => publicKey !== offer.publicKey)
       }),
     )
   },
-  updateOrAddOptimisticOffer: (offer: Offer) => {
-    const { findOptimisticOffer, addOptimisticOffer } = get()
+  updateOffer: (offer: Offer) => {
+    const { findOffer } = get()
+    const existingOffer = !!findOffer(offer.publicKey)
 
-    const existingOffer = !!findOptimisticOffer(offer.publicKey)
-
-    existingOffer
-      ? set(
-          produce((state: OptimisticOfferStore) => {
-            state.optimisticOffers = state.optimisticOffers.map((existingOffer) =>
-              existingOffer.publicKey === offer.publicKey ? offer : existingOffer,
-            )
-          }),
-        )
-      : addOptimisticOffer(offer)
+    existingOffer &&
+      set(
+        produce((state: OptimisticOfferStore) => {
+          state.offers = state.offers.map((existingOffer) =>
+            existingOffer.publicKey === offer.publicKey ? offer : existingOffer,
+          )
+        }),
+      )
   },
 }))
 
 export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => {
-  const { optimisticOffers, addOptimisticOffer } = useOptimisticOfferStore()
+  const {
+    offers: optimisticOffers,
+    addOffer,
+    removeOffer,
+    updateOffer,
+    findOffer,
+  } = useOptimisticOfferStore()
 
   const { data, isLoading, refetch } = useQuery(
     ['marketPairs', marketPubkey],
@@ -120,15 +124,27 @@ export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => 
     },
   )
 
-  const offers = chain([...optimisticOffers, ...(data || [])])
-    .groupBy('publicKey')
-    .map((offers) => maxBy(offers, 'lastTransactedAt'))
-    .filter((offer) => offer?.pairState !== PairState.PerpetualClosed)
-    .value()
+  const offers = useMemo(() => {
+    const combinedOffers = [...optimisticOffers, ...(data ?? [])]
+
+    return chain(combinedOffers)
+      .groupBy('publicKey')
+      .map((offers) => maxBy(offers, 'lastTransactedAt'))
+      .filter((offer) => offer?.pairState !== PairState.PerpetualClosed)
+      .compact()
+      .value()
+  }, [optimisticOffers, data])
+
+  const updateOrAddOffer = (offer: Offer) => {
+    const existingOffer = !!findOffer(offer.publicKey)
+
+    return existingOffer ? updateOffer(offer) : addOffer(offer)
+  }
 
   return {
-    offers: offers as Offer[],
-    addOptimisticOffer,
+    offers,
+    removeOffer,
+    updateOrAddOffer,
     isLoading,
     refetch,
   }
