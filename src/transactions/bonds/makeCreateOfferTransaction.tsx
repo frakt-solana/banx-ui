@@ -4,7 +4,6 @@ import {
   BondOfferOptimistic,
   createPerpetualBondOffer,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondFeatures } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
@@ -13,7 +12,6 @@ export type MakeCreatePerpetualOfferTransaction = (params: {
   marketPubkey: string
   loanValue: number
   loansAmount: number
-  bondFeature: BondFeatures
   connection: web3.Connection
   wallet: WalletContextState
 }) => Promise<{
@@ -27,7 +25,6 @@ export type MakeCreatePerpetualOfferTransaction = (params: {
 
 export const makeCreatePerpetualOfferTransaction: MakeCreatePerpetualOfferTransaction = async ({
   marketPubkey,
-  bondFeature = BondFeatures.AutoreceiveSol,
   connection,
   loanValue,
   loansAmount,
@@ -46,7 +43,6 @@ export const makeCreatePerpetualOfferTransaction: MakeCreatePerpetualOfferTransa
     args: {
       loanValue: loanValue * 1e9,
       amountOfLoans: loansAmount,
-      bondFeatures: bondFeature,
     },
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     connection,

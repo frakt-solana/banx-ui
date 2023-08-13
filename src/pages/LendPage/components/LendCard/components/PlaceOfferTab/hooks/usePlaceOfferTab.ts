@@ -2,20 +2,16 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { isEqual, pick } from 'lodash'
 
-import { RBOption } from '@banx/components/RadioButton'
-
 import { useMarketOffers } from '@banx/pages/LendPage/hooks'
 
 import { useOfferStore } from '../../ExpandableCardContent/hooks'
 import { parseMarketOrder } from '../../OrderBook/helpers'
-import { DEFAULT_BOND_FEATURE } from '../constants'
 import { useMarketsPreview } from './../../../../../hooks'
 import { useOfferTransactions } from './useOfferTransactions'
 
 const useOfferFormController = (initialLoanValue: number = 0, initialLoansAmount: number = 1) => {
   const [loanValue, setLoanValue] = useState(String(initialLoanValue))
   const [loansAmount, setLoansAmount] = useState(String(initialLoansAmount))
-  const [bondFeature, setBondFeature] = useState<string>(DEFAULT_BOND_FEATURE)
 
   useEffect(() => {
     if (initialLoanValue || initialLoansAmount) {
@@ -24,9 +20,6 @@ const useOfferFormController = (initialLoanValue: number = 0, initialLoansAmount
     }
   }, [initialLoanValue, initialLoansAmount])
 
-  const onBondFeatureChange = (nextValue: RBOption) => {
-    setBondFeature(nextValue.value)
-  }
   const onLoanValueChange = (nextValue: string) => {
     setLoanValue(nextValue)
   }
@@ -38,7 +31,6 @@ const useOfferFormController = (initialLoanValue: number = 0, initialLoansAmount
   const resetFormValues = () => {
     setLoanValue(String(initialLoanValue))
     setLoansAmount(String(initialLoansAmount))
-    setBondFeature(DEFAULT_BOND_FEATURE)
   }
 
   const currentFormValues = { loansAmount, loanValue }
@@ -54,10 +46,8 @@ const useOfferFormController = (initialLoanValue: number = 0, initialLoansAmount
   return {
     loanValue,
     loansAmount,
-    bondFeature,
     onLoanValueChange,
     onLoanAmountChange,
-    onBondFeatureChange,
     hasFormChanges: Boolean(hasFormChanges),
     resetFormValues,
   }
@@ -86,8 +76,6 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
     loansAmount,
     onLoanValueChange,
     onLoanAmountChange,
-    bondFeature,
-    onBondFeatureChange,
     hasFormChanges,
     resetFormValues,
   } = useOfferFormController(initialLoanValue, initialLoansAmount)
@@ -123,13 +111,11 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
     isEdit,
     offerSize,
     marketAPR: marketPreview?.marketAPR || 0,
-    bondFeature,
     loanValue,
     loansAmount,
     hasFormChanges,
 
     goToPlaceOffer,
-    onBondFeatureChange,
     onLoanValueChange,
     onLoanAmountChange,
 
