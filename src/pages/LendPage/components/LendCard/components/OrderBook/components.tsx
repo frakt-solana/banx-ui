@@ -47,7 +47,7 @@ export const NoActiveOffers = () => (
   </div>
 )
 
-export const ChevronMobileButton = ({ onToggleVisible }: { onToggleVisible: any }) => (
+export const ChevronMobileButton = ({ onToggleVisible }: { onToggleVisible: () => void }) => (
   <Button
     type="circle"
     variant="secondary"

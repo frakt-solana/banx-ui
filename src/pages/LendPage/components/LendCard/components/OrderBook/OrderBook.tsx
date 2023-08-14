@@ -10,38 +10,45 @@ import {
   OrderBookLabel,
   OrderBookList,
 } from './components'
-import { useOrderBook } from './hooks'
+import { OrderBookParams, useOrderBook } from './hooks'
 
 import styles from './OrderBook.module.less'
 
-const OrderBookDesktop: FC<{ orderBookParams: any }> = ({ orderBookParams }) => (
+const OrderBookDesktop: FC<{ orderBookParams: OrderBookParams }> = ({ orderBookParams }) => (
   <div className={styles.orderBook}>
     <h5 className={styles.title}>Offers</h5>
     <OrderBookLabel />
-    <div className={classNames(styles.content, { [styles.visible]: !orderBookParams?.offers })}>
+    <div className={classNames(styles.content, { [styles.visible]: !orderBookParams?.orders })}>
       <OrderBookList orderBookParams={orderBookParams} />
     </div>
   </div>
 )
 
-export const OrderBookMobile: FC<{
+interface OrderBookMobileProps {
   marketPreview?: MarketPreview
-  orderBookParams: any
-}> = ({ marketPreview, orderBookParams }) => {
-  const [open, setOpen] = useState(false)
+  orderBookParams: OrderBookParams
+}
+
+const OrderBookMobile: FC<OrderBookMobileProps> = ({ marketPreview, orderBookParams }) => {
+  const [isOrderBookOpen, setOrderBookOpen] = useState<boolean>(false)
+
+  const toggleOrderBook = () => {
+    setOrderBookOpen(!isOrderBookOpen)
+  }
+
+  const { collectionImage: marketImage, collectionName: marketName } = marketPreview || {}
 
   return (
-    <div className={classNames(styles.orderBookMobile, { [styles.open]: open })}>
-      <div className={styles.collapsedContentWrappper}>
-        <CollapsedMobileContent
-          collectionImage={marketPreview?.collectionImage}
-          collectionName={marketPreview?.collectionName}
-        />
-        <ChevronMobileButton onToggleVisible={() => setOpen(!open)} />
+    <div className={classNames(styles.orderBookMobile, { [styles.open]: isOrderBookOpen })}>
+      <div className={styles.collapsedContentWrapper}>
+        <CollapsedMobileContent collectionImage={marketImage} collectionName={marketName} />
+        <ChevronMobileButton onToggleVisible={toggleOrderBook} />
       </div>
-      <div className={styles.mobileContent}>
-        <OrderBookList orderBookParams={orderBookParams} />
-      </div>
+      {isOrderBookOpen && (
+        <div className={styles.mobileContent}>
+          <OrderBookList orderBookParams={orderBookParams} />
+        </div>
+      )}
     </div>
   )
 }

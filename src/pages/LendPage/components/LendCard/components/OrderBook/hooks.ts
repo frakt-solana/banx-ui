@@ -8,6 +8,12 @@ import { useOfferStore } from '../ExpandableCardContent/hooks'
 import { Order } from './types'
 import { useMarketOrders } from './useMarketOrders'
 
+export interface OrderBookParams {
+  orders: Order[]
+  goToEditOrder: (orderPubkey: string) => void
+  isOwnOrder: (order: Order) => boolean
+}
+
 export const useOrderBook = (marketPubkey: string) => {
   const wallet = useWallet()
   const { offerPubkey, setOfferPubkey, syntheticParams } = useOfferStore()
