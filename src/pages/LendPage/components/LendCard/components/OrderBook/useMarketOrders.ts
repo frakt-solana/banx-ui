@@ -1,5 +1,7 @@
 import { useMemo } from 'react'
 
+import { sortBy } from 'lodash'
+
 import { Offer } from '@banx/api/bonds'
 import { useMarketOffers } from '@banx/pages/LendPage/hooks'
 
@@ -14,6 +16,7 @@ type UseMarketOrders = (props: {
 }) => {
   orders: Order[]
   isLoading: boolean
+  bestOrder: Order
 }
 
 export const useMarketOrders: UseMarketOrders = ({
@@ -58,8 +61,14 @@ export const useMarketOrders: UseMarketOrders = ({
     return orders
   }, [offers, loanValue, loansAmount, offerPubkey])
 
+  const bestOrder = useMemo(() => {
+    const sorted = sortBy(orders, 'loanValue').reverse()
+    return sorted[0]?.synthetic ? sorted[1] : sorted[0]
+  }, [orders])
+
   return {
     orders,
     isLoading,
+    bestOrder,
   }
 }

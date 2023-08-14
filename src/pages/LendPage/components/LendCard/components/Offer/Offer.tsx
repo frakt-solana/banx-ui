@@ -16,13 +16,23 @@ interface OfferProps {
   loanValue: number
   editOffer: () => void
   isOwnOrder: boolean
+  bestOrder: Order
 }
 
-const Offer: FC<OfferProps> = ({ loanAmount, loanValue, editOffer, order, isOwnOrder }) => {
+const Offer: FC<OfferProps> = ({
+  loanAmount,
+  loanValue,
+  editOffer,
+  order,
+  isOwnOrder,
+  bestOrder,
+}) => {
+  const isBestOrder = order.rawData.publicKey === bestOrder?.rawData.publicKey
+
   const displayLoanAmount = loanAmount < 1 ? 1 : loanAmount || 0
 
   const listItemClassName = classNames(styles.listItem, {
-    [styles.highlightBest]: false,
+    [styles.highlightBest]: isBestOrder,
     [styles.highlightYourOffer]: order.synthetic,
   })
 

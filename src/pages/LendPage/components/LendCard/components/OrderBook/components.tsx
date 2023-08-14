@@ -5,18 +5,13 @@ import { Button } from '@banx/components/Buttons'
 import { ChevronDown } from '@banx/icons'
 
 import Offer from '../Offer'
+import { OrderBookParams } from './hooks'
 import { Order } from './types'
 
 import styles from './OrderBook.module.less'
 
-interface OrderBookListProps {
-  orders: Order[]
-  goToEditOrder: (orderPubkey: string) => void
-  isOwnOrder: (offer: Order) => boolean
-}
-
-export const OrderBookList: FC<{ orderBookParams: OrderBookListProps }> = ({ orderBookParams }) => {
-  const { orders, goToEditOrder, isOwnOrder } = orderBookParams || {}
+export const OrderBookList: FC<{ orderBookParams: OrderBookParams }> = ({ orderBookParams }) => {
+  const { orders, goToEditOrder, isOwnOrder, bestOrder } = orderBookParams || {}
 
   const renderOrder = (order: Order) => {
     return (
@@ -26,6 +21,7 @@ export const OrderBookList: FC<{ orderBookParams: OrderBookListProps }> = ({ ord
         loanAmount={order.loansAmount}
         editOffer={() => goToEditOrder(order?.rawData?.publicKey)}
         isOwnOrder={isOwnOrder(order)}
+        bestOrder={bestOrder}
       />
     )
   }

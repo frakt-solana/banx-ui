@@ -12,6 +12,7 @@ export interface OrderBookParams {
   orders: Order[]
   goToEditOrder: (orderPubkey: string) => void
   isOwnOrder: (order: Order) => boolean
+  bestOrder: Order
 }
 
 export const useOrderBook = (marketPubkey: string) => {
@@ -32,7 +33,7 @@ export const useOrderBook = (marketPubkey: string) => {
     }
   }, [marketPubkey, syntheticParams, offerPubkey])
 
-  const { orders } = useMarketOrders(orderBookParams)
+  const { orders, bestOrder } = useMarketOrders(orderBookParams)
 
   const isOwnOrder = (order: Order) => {
     return order?.rawData?.assetReceiver === wallet?.publicKey?.toBase58()
@@ -47,6 +48,7 @@ export const useOrderBook = (marketPubkey: string) => {
       orders,
       goToEditOrder,
       isOwnOrder,
+      bestOrder,
     },
     selectedMarketPreview,
   }

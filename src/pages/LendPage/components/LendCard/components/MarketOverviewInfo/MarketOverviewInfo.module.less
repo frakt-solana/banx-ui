@@ -41,11 +41,17 @@
   }
 
   @media (max-width: 960px) {
-    gap: 0;
     justify-content: space-between;
+    gap: 0;
 
     & > div {
       align-items: center;
+    }
+    & > div:first-child {
+      align-items: flex-start;
+    }
+    & > div:last-child {
+      align-items: flex-end;
     }
   }
 }

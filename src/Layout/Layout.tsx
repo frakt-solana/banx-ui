@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren } from 'react'
+import { FC, PropsWithChildren, useEffect, useState } from 'react'
 
 import { WalletModal, useWalletModal } from '@banx/components/WalletModal'
 import { ModalPortal } from '@banx/components/modals'
@@ -12,6 +12,7 @@ import styles from './Layout.module.less'
 
 export const AppLayout: FC<PropsWithChildren> = ({ children }) => {
   const { visible } = useWalletModal()
+  const headerHeight = useHeaderHeight()
 
   return (
     <div id="app-content">
@@ -23,8 +24,25 @@ export const AppLayout: FC<PropsWithChildren> = ({ children }) => {
         <BurgerMenu />
         <ModalPortal />
 
-        <div className={styles.content}>{children}</div>
+        <div className={styles.content} style={{ height: `calc(100vh - ${headerHeight}px)` }}>
+          {children}
+        </div>
       </div>
     </div>
   )
+}
+
+const useHeaderHeight = () => {
+  const [headerHeight, setHeaderHeight] = useState<number | undefined>(0)
+
+  useEffect(() => {
+    const headerElement = document.getElementById('header')
+    if (headerElement) {
+      const computedStyles = getComputedStyle(headerElement)
+      const newHeaderHeight = parseFloat(computedStyles.height)
+      setHeaderHeight(newHeaderHeight)
+    }
+  }, [])
+
+  return headerHeight
 }

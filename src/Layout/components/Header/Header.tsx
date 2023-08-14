@@ -9,7 +9,7 @@ import styles from './Header.module.less'
 
 export const Header = () => {
   return (
-    <div className={styles.header}>
+    <div className={styles.header} id="header">
       <a href="/" className={styles.logoWrapper}>
         <LogoFull className={styles.logo} />
         <Logo className={styles.logoBasic} />
