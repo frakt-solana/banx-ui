@@ -4,7 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
-import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
+import { StatInfo } from '@banx/components/StatInfo'
 
 import styles from './PlaceOfferTab.module.less'
 
@@ -14,17 +14,13 @@ interface OfferSummaryProps {
 }
 
 export const OfferSummary: FC<OfferSummaryProps> = ({ offerSize, marketAPR }) => {
-  const interest = marketAPR / 100 / 52
+  const weeklyAprPercentage = marketAPR / 100 / 52
+  const estimatedInterest = (offerSize * weeklyAprPercentage) / 100
 
   return (
     <div className={styles.offerSummary}>
       <StatInfo label="Offer size" value={offerSize} flexType="row" />
-      <StatInfo
-        label="Estimated interest"
-        valueType={VALUES_TYPES.PERCENT}
-        value={interest}
-        flexType="row"
-      />
+      <StatInfo label="Estimated interest" value={estimatedInterest} flexType="row" />
     </div>
   )
 }
