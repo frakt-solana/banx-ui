@@ -16,7 +16,7 @@ const FilterSection = <T extends object>({
 }: FilterSectionProps<T>) => {
   return (
     <div className={styles.container}>
-      <SearchSelect {...searchSelectParams} />
+      <SearchSelect className={styles.searchSelect} {...searchSelectParams} />
       <SortDropdown {...sortParams} />
     </div>
   )

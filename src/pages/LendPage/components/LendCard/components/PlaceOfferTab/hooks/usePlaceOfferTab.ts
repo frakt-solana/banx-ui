@@ -2,11 +2,10 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { isEqual, pick } from 'lodash'
 
-import { useMarketOffers } from '@banx/pages/LendPage/hooks'
+import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
 
 import { useOfferStore } from '../../ExpandableCardContent/hooks'
 import { parseMarketOrder } from '../../OrderBook/helpers'
-import { useMarketsPreview } from './../../../../../hooks'
 import { useOfferTransactions } from './useOfferTransactions'
 
 const useOfferFormController = (initialLoanValue: number = 0, initialLoansAmount: number = 1) => {
