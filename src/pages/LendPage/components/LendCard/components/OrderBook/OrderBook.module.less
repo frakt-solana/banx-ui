@@ -23,6 +23,7 @@
 
   max-width: 300px;
   min-width: 300px;
+  height: 340px;
 
   @media (max-width: 960px) {
     display: none;
@@ -30,23 +31,20 @@
 }
 
 .content {
-  position: relative;
-
   display: flex;
   flex-direction: column;
-
   gap: 24px;
+  position: relative;
   height: 100%;
 }
 
 .list {
-  margin-top: 8px;
   overflow-y: scroll;
   overflow-x: hidden;
 
   display: flex;
   flex-direction: column;
-  height: auto;
+  height: 100%;
 }
 
 .noData {
@@ -84,6 +82,7 @@
   z-index: 3;
 
   padding: 32px 24px;
+
   gap: 8px;
   height: 108px;
   width: 100%;
@@ -103,7 +102,8 @@
   }
 
   .mobileContent {
-    height: calc(100vh - 115px);
+    padding-bottom: 32px;
+    height: 100%;
   }
 
   .collectionMobileInfo {

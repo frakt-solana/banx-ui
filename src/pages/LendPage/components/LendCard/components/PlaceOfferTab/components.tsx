@@ -34,9 +34,13 @@ export const OfferHeader: FC<OfferHeaderProps> = ({ isEdit, goToPlaceOffer }) =>
   const title = isEdit ? 'Offer editing' : 'Offer creation'
 
   return (
-    <div className={styles.flexRow}>
+    <div className={styles.offerHeaderContent}>
       <h4 className={styles.title}>{title}</h4>
-      {isEdit && <Button onClick={goToPlaceOffer}>Exit edit mode</Button>}
+      {isEdit && (
+        <Button type="circle" variant="text" onClick={goToPlaceOffer}>
+          Exit
+        </Button>
+      )}
     </div>
   )
 }
@@ -63,6 +67,7 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
       {isEdit ? (
         <>
           <Button
+            variant="secondary"
             onClick={onRemoveOffer}
             className={classNames(styles.button, styles.deleteOfferButton)}
           >

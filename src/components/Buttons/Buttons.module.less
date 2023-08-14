@@ -16,25 +16,6 @@
 }
 
 // standard buttons styles
-.standard {
-  padding: 8px 16px;
-
-  &.large {
-    height: 40px;
-  }
-  &.medium {
-    height: 32px;
-  }
-  &.small {
-    padding: 2px 7px;
-    height: 24px;
-  }
-
-  &:disabled {
-    border: 1px solid var(--bg-border);
-    background-color: var(--bg-primary);
-  }
-}
 
 .standard.primary {
   color: #000000;
@@ -51,6 +32,27 @@
 
   &:hover {
     border: 1px solid var(--accent-secondary);
+  }
+}
+
+.standard {
+  padding: 8px 16px;
+
+  &.large {
+    height: 40px;
+  }
+  &.medium {
+    height: 32px;
+  }
+  &.small {
+    padding: 2px 7px;
+    height: 24px;
+  }
+
+  &:disabled {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--bg-border);
+    color: var(--content-secondary);
   }
 }
 
