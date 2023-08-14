@@ -61,13 +61,16 @@ export const useMarketOrders: UseMarketOrders = ({
     return orders
   }, [offers, loanValue, loansAmount, offerPubkey])
 
-  const bestOrder = useMemo(() => {
-    const sorted = sortBy(orders, 'loanValue').reverse()
-    return sorted[0]?.synthetic ? sorted[1] : sorted[0]
+  const sortedOrders = useMemo(() => {
+    return sortBy(orders, 'loanValue').reverse()
   }, [orders])
 
+  const bestOrder = useMemo(() => {
+    return sortedOrders[0]?.synthetic ? sortedOrders[1] : sortedOrders[0]
+  }, [sortedOrders])
+
   return {
-    orders,
+    orders: sortedOrders,
     isLoading,
     bestOrder,
   }

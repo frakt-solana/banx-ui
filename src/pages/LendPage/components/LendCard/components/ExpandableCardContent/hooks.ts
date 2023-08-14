@@ -12,7 +12,7 @@ export const useExpandableCardContent = () => {
     setValue: setTabValue,
   } = useTabs({
     tabs: BONDS_TABS,
-    defaultValue: BONDS_TABS[0].value,
+    defaultValue: BONDS_TABS[1].value,
   })
 
   return {
