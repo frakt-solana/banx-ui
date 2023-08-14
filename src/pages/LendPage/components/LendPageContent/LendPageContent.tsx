@@ -12,7 +12,7 @@ import styles from './LendPageContent.module.less'
 
 const LendPageContent = () => {
   const { marketsPreview, isLoading, searchSelectParams, sortParams } = useFilteredMarkets()
-const { visibleCards, toggleVisibleCard } = useVisibleMarketURLControl()
+  const { visibleCards, toggleVisibleCard } = useVisibleMarketURLControl()
 
   return (
     <div className={styles.content}>

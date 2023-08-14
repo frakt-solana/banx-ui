@@ -19,7 +19,7 @@ interface OfferProps {
 }
 
 const Offer: FC<OfferProps> = ({ loanAmount, loanValue, editOffer, order, isOwnOrder }) => {
-  const displayLoanAmount = loanAmount < 1 ? '< 1' : loanAmount || 0
+  const displayLoanAmount = loanAmount < 1 ? 1 : loanAmount || 0
 
   const listItemClassName = classNames(styles.listItem, {
     [styles.highlightBest]: false,

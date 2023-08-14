@@ -23,6 +23,10 @@
 
   max-width: 300px;
   min-width: 300px;
+
+  @media (max-width: 960px) {
+    display: none;
+  }
 }
 
 .content {
@@ -64,4 +68,66 @@
   margin-top: 8px;
   font: var(--font-text-4);
   text-align: center;
+}
+
+// Mobile orderbook styles
+.orderBookMobile {
+  display: none;
+
+  background: var(--bg-primary);
+  border-top: var(--border-less-primary);
+
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+
+  padding: 32px 24px;
+  gap: 8px;
+  height: 108px;
+  width: 100%;
+
+  &.open {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+  }
+
+  @media (max-width: 960px) {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .mobileContent {
+    height: calc(100vh - 115px);
+  }
+
+  .collectionMobileInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .collapsedContentWrappper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .collapsedMobileContent {
+    display: flex;
+    gap: 8px;
+  }
+  .collapsedMobileImage {
+    width: 40px;
+    height: 40px;
+  }
+  .collectionMobileTitle {
+    font: var(--card-header-md);
+  }
+  .collectionMobileSubtitle {
+    font: var(--body-text-md);
+  }
 }

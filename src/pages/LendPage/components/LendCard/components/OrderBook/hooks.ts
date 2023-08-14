@@ -2,6 +2,8 @@ import { useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
+import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
+
 import { useOfferStore } from '../ExpandableCardContent/hooks'
 import { Order } from './types'
 import { useMarketOrders } from './useMarketOrders'
@@ -9,6 +11,11 @@ import { useMarketOrders } from './useMarketOrders'
 export const useOrderBook = (marketPubkey: string) => {
   const wallet = useWallet()
   const { offerPubkey, setOfferPubkey, syntheticParams } = useOfferStore()
+  const { marketsPreview } = useMarketsPreview()
+
+  const selectedMarketPreview = marketsPreview.find(
+    (market) => market.marketPubkey === marketPubkey,
+  )
 
   const orderBookParams = useMemo(() => {
     return {
@@ -35,5 +42,6 @@ export const useOrderBook = (marketPubkey: string) => {
       goToEditOrder,
       isOwnOrder,
     },
+    selectedMarketPreview,
   }
 }

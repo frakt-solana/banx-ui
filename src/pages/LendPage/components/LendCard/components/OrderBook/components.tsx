@@ -1,5 +1,9 @@
 import { FC } from 'react'
 
+import { Button } from '@banx/components/Buttons'
+
+import { ChevronDown } from '@banx/icons'
+
 import Offer from '../Offer'
 import { Order } from './types'
 
@@ -40,5 +44,32 @@ export const NoActiveOffers = () => (
   <div className={styles.noData}>
     <div className={styles.noDataTitle}>No active offers at the moment</div>
     <div className={styles.noDataSubtitle}>Good chance to be first!</div>
+  </div>
+)
+
+export const ChevronMobileButton = ({ onToggleVisible }: { onToggleVisible: any }) => (
+  <Button
+    type="circle"
+    variant="secondary"
+    onClick={onToggleVisible}
+    className={styles.chevronButton}
+  >
+    <ChevronDown />
+  </Button>
+)
+
+export const CollapsedMobileContent = ({
+  collectionName = '',
+  collectionImage = '',
+}: {
+  collectionName?: string
+  collectionImage?: string
+}) => (
+  <div className={styles.collapsedMobileContent}>
+    <img className={styles.collapsedMobileImage} src={collectionImage} />
+    <div className={styles.collectionMobileInfo}>
+      <p className={styles.collectionMobileTitle}>{collectionName}</p>
+      <p className={styles.collectionMobileSubtitle}>Mine: 23</p>
+    </div>
   </div>
 )
