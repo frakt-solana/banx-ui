@@ -5,6 +5,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { Button } from '@banx/components/Buttons'
 
 import { Loan } from '@banx/api/loans'
+import { useWalletLoans } from '@banx/pages/LoansPage/hooks'
 import {
   MakeTransactionFn,
   TransactionParams,
@@ -32,24 +33,27 @@ const useLoanTransactions = (loan: Loan) => {
   const wallet = useWallet()
   const { connection } = useConnection()
 
-  const executeLoanTransaction = async <T extends object>(
-    makeTransactionFn: MakeTransactionFn<TransactionParams<T>>,
-    transactionParams: TransactionParams<T>,
-  ) => {
-    const result = await buildAndExecuteTransaction<
-      TransactionParams<T>,
-      ReturnType<MakeTransactionFn<TransactionParams<T>>>
-    >({
-      makeTransactionFn,
-      transactionParams,
+  const publicKeyString = wallet.publicKey?.toBase58() || ''
+  const { hideLoan } = useWalletLoans(publicKeyString)
+
+  const executeLoanTransaction = async <T extends object>(props: {
+    makeTransactionFn: MakeTransactionFn<TransactionParams<T>>
+    transactionParams: TransactionParams<T>
+    onAfterSuccess: () => void
+  }) => {
+    await buildAndExecuteTransaction({
       wallet,
       connection,
+      ...props,
     })
-    return result
   }
 
   const onRepayLoan = async () => {
-    await executeLoanTransaction<MakeRepayLoanTransaction>(makeRepayLoanTransaction, { loan })
+    await executeLoanTransaction<MakeRepayLoanTransaction>({
+      makeTransactionFn: makeRepayLoanTransaction,
+      transactionParams: { loan },
+      onAfterSuccess: () => hideLoan(loan.publicKey),
+    })
   }
 
   return { onRepayLoan }

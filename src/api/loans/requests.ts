@@ -13,7 +13,7 @@ type FetchWalletLoans = (props: {
 }) => Promise<Loan[]>
 
 export const fetchWalletLoans: FetchWalletLoans = async ({
-  // walletPublicKey,
+  walletPublicKey,
   order = 'asc',
   skip = 0,
   limit = 10,
@@ -29,7 +29,7 @@ export const fetchWalletLoans: FetchWalletLoans = async ({
     })
 
     const { data } = await axios.get<WalletLoansResponse>(
-      `${BACKEND_BASE_URL}/loans/6CnQUFVk2d8TRvQa2Lr7KDvx9zK12Q4jkA7mmDtzj71e?${queryParams.toString()}`,
+      `${BACKEND_BASE_URL}/loans/${walletPublicKey}?${queryParams.toString()}`,
     )
 
     return data.data
