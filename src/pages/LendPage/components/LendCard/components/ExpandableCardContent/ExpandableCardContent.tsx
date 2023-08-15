@@ -2,6 +2,7 @@ import { FC } from 'react'
 
 import { Tabs } from '@banx/components/Tabs'
 
+import ActivityTab from '../ActivityTab'
 import OrderBook from '../OrderBook'
 import PlaceOfferTab from '../PlaceOfferTab'
 import { useExpandableCardContent } from './hooks'
@@ -10,7 +11,7 @@ import styles from './ExpandableCardContent.module.less'
 
 enum TabsNames {
   OFFER = 'offer',
-  Activity = 'activity',
+  ACTIVITY = 'activity',
 }
 
 interface TabsComponents {
@@ -22,6 +23,7 @@ const ExpandableCardContent: FC<{ marketPubkey: string }> = ({ marketPubkey }) =
 
   const tabsComponents: TabsComponents = {
     [TabsNames.OFFER]: <PlaceOfferTab marketPubkey={marketPubkey} />,
+    [TabsNames.ACTIVITY]: <ActivityTab marketPubkey={marketPubkey} />,
   }
 
   return (
