@@ -20,12 +20,12 @@ export const initSentry = (): void => {
   })
 }
 
-export interface TxnError extends Error {
+interface TxnError extends Error {
   logs?: Array<string>
 }
 
 type CaptureSentryTxnError = (props: {
-  error: TxnError
+  error: TxnError | unknown
   walletPubkey?: string
   transactionName?: string
   params?: Dictionary<unknown>
@@ -37,21 +37,28 @@ export const captureSentryTxnError: CaptureSentryTxnError = ({
   transactionName = 'Unknown transaction',
   params = {},
 }) => {
-  Sentry.captureException(error, (scope) => {
-    scope.clear()
+  if (error instanceof Error) {
+    Sentry.captureException(error, (scope) => {
+      scope.clear()
 
-    scope.setTransactionName(transactionName)
+      scope.setTransactionName(transactionName)
 
-    if (walletPubkey) {
-      scope.setUser({ id: walletPubkey })
-      scope.setTag('wallet', walletPubkey)
-    }
+      if (walletPubkey) {
+        scope.setUser({ id: walletPubkey })
+        scope.setTag('wallet', walletPubkey)
+      }
 
-    scope.setTag('transaction', transactionName)
+      scope.setTag('transaction', transactionName)
 
-    scope.setExtra('Transaction params', JSON.stringify(params, null, ' '))
-    error?.logs && scope.setExtra('Transaction logs: ', error.logs.join('\n'))
+      scope.setExtra('Transaction params', JSON.stringify(params, null, ' '))
 
-    return scope
-  })
+      if ('logs' in error && Array.isArray(error.logs)) {
+        scope.setExtra('Transaction logs: ', error.logs.join('\n'))
+      }
+
+      return scope
+    })
+  } else {
+    console.error(error)
+  }
 }

@@ -46,7 +46,7 @@
     "antd": "^5.7.3",
     "axios": "^1.4.0",
     "classnames": "^2.3.2",
-    "fbonds-core": "0.5.124",
+    "fbonds-core": "0.5.129",
     "firebase": "^10.1.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",

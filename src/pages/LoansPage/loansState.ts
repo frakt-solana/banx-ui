@@ -24,7 +24,7 @@ export const useSelectedLoans = create<SelectedLoansState>((set, get) => ({
   },
   findLoanInSelection: (loanPubkey) => {
     const { selection } = get()
-    return selection.find(({ pubkey }) => pubkey === loanPubkey) ?? null
+    return selection.find(({ publicKey }) => publicKey === loanPubkey) ?? null
   },
   addLoanToSelection: (loan) => {
     set(
@@ -36,7 +36,7 @@ export const useSelectedLoans = create<SelectedLoansState>((set, get) => ({
   removeLoanFromSelection: (loanPubkey) => {
     set(
       produce((state: SelectedLoansState) => {
-        state.selection = state.selection.filter(({ pubkey }) => pubkey !== loanPubkey)
+        state.selection = state.selection.filter(({ publicKey }) => publicKey !== loanPubkey)
       }),
     )
   },
@@ -49,8 +49,8 @@ export const useSelectedLoans = create<SelectedLoansState>((set, get) => ({
   },
   toggleLoanInSelection: (loan: Loan) => {
     const { findLoanInSelection, addLoanToSelection, removeLoanFromSelection } = get()
-    const isLoanInSelection = !!findLoanInSelection(loan.pubkey)
-    isLoanInSelection ? removeLoanFromSelection(loan.pubkey) : addLoanToSelection(loan)
+    const isLoanInSelection = !!findLoanInSelection(loan.publicKey)
+    isLoanInSelection ? removeLoanFromSelection(loan.publicKey) : addLoanToSelection(loan)
   },
 }))
 
