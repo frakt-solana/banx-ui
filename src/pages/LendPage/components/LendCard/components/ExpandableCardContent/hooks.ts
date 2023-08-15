@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+
 import { create } from 'zustand'
 
 import { useTabs } from '@banx/components/Tabs'
@@ -6,6 +8,8 @@ import { SyntheticParams } from '../OrderBook'
 import { BONDS_TABS } from './constants'
 
 export const useExpandableCardContent = () => {
+  const { offerPubkey } = useOfferStore()
+
   const {
     tabs: bondTabs,
     value: tabValue,
@@ -14,6 +18,12 @@ export const useExpandableCardContent = () => {
     tabs: BONDS_TABS,
     defaultValue: BONDS_TABS[1].value,
   })
+
+  useEffect(() => {
+    if (offerPubkey) {
+      setTabValue(BONDS_TABS[1].value)
+    }
+  }, [offerPubkey, setTabValue])
 
   return {
     tabsParams: {

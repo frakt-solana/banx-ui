@@ -106,13 +106,7 @@ const useOptimisticOfferStore = create<OptimisticOfferStore>((set, get) => ({
 }))
 
 export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => {
-  const {
-    offers: optimisticOffers,
-    addOffer,
-    removeOffer,
-    updateOffer,
-    findOffer,
-  } = useOptimisticOfferStore()
+  const { offers: optimisticOffers, addOffer, updateOffer, findOffer } = useOptimisticOfferStore()
 
   const { data, isLoading, refetch } = useQuery(
     ['marketPairs', marketPubkey],
@@ -143,7 +137,6 @@ export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => 
 
   return {
     offers,
-    removeOffer,
     updateOrAddOffer,
     isLoading,
     refetch,

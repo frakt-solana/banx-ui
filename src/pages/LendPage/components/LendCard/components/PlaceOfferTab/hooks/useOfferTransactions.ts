@@ -31,7 +31,6 @@ export const useOfferTransactions = ({
   loanValue,
   offerPubkey,
   offers,
-  removeOffer,
   updateOrAddOffer,
   resetFormValues,
   goToPlaceOffer,
@@ -41,7 +40,6 @@ export const useOfferTransactions = ({
   loanValue: number
   offerPubkey: string
   offers: Offer[]
-  removeOffer: (offer: Offer) => void
   updateOrAddOffer: (offer: Offer) => void
   resetFormValues: () => void
   goToPlaceOffer: () => void
@@ -97,7 +95,7 @@ export const useOfferTransactions = ({
     await executeOfferTransaction<MakeRemovePerpetualOfferTransaction>(
       makeRemovePerpetualOfferTransaction,
       { offerPubkey, optimisticOffer },
-      removeOffer,
+      updateOrAddOffer,
       goToPlaceOffer,
     )
   }

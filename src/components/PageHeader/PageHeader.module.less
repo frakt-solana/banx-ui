@@ -21,12 +21,25 @@
 
 .title {
   font: var(--title-lg);
+  text-transform: uppercase;
+
+  @media (max-width: 960px) {
+    font: var(--title-md);
+  }
+
+  @media (max-width: 768px) {
+    font: var(--title-sm);
+  }
 }
 
 .content {
   display: flex;
   align-items: center;
   gap: 16px;
+
+  @media (max-width: 768px) {
+    gap: 8px;
+  }
 }
 
 .mainContainer,
@@ -40,11 +53,19 @@
 
 .mainValue {
   font: var(--important-text-lg);
+
+  @media (max-width: 768px) {
+    font: var(--important-text-md);
+  }
 }
 
 .mainLabel {
   color: var(--content-primary);
   font: var(--table-header-md);
+
+  @media (max-width: 768px) {
+    font: var(--table-header-sm);
+  }
 }
 
 .additionalValue {
@@ -52,11 +73,23 @@
   align-items: center;
   gap: 4px;
   font: var(--body-text-md);
+
+  @media (max-width: 768px) {
+    font: var(--body-text-xs);
+  }
 }
 
 .additionalLabel {
   font: var(--table-header-lg);
   text-transform: uppercase;
+
+  @media (max-width: 960px) {
+    font: var(--table-header-md);
+  }
+
+  @media (max-width: 768px) {
+    font: var(--table-header-sm);
+  }
 }
 
 .separateLine {

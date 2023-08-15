@@ -55,7 +55,7 @@ const useOfferFormController = (initialLoanValue: number = 0, initialLoansAmount
 export const usePlaceOfferTab = (marketPubkey: string) => {
   const { offerPubkey, setOfferPubkey, setSyntheticParams } = useOfferStore()
 
-  const { offers, removeOffer, updateOrAddOffer } = useMarketOffers({ marketPubkey })
+  const { offers, updateOrAddOffer } = useMarketOffers({ marketPubkey })
   const { marketsPreview } = useMarketsPreview()
 
   const marketPreview = marketsPreview.find((market) => market.marketPubkey === marketPubkey)
@@ -98,7 +98,6 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
     loanValue: parseFloat(loanValue),
     loansAmount: parseFloat(loansAmount),
     offers,
-    removeOffer,
     updateOrAddOffer,
     resetFormValues,
     goToPlaceOffer,
