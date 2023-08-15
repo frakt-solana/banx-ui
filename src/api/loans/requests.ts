@@ -2,7 +2,7 @@ import axios from 'axios'
 
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
-import { Loan, WalletLoansResponse } from './types'
+import { Loan, LoanSchema, WalletLoansResponse } from './types'
 
 type FetchWalletLoans = (props: {
   walletPublicKey: string
@@ -31,6 +31,12 @@ export const fetchWalletLoans: FetchWalletLoans = async ({
     const { data } = await axios.get<WalletLoansResponse>(
       `${BACKEND_BASE_URL}/loans/${walletPublicKey}?${queryParams.toString()}`,
     )
+
+    try {
+      await LoanSchema.array().parseAsync(data.data)
+    } catch (validationError) {
+      console.error('Schema validation error:', validationError)
+    }
 
     return data.data
   } catch (error) {

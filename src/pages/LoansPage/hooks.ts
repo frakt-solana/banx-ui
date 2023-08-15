@@ -1,3 +1,5 @@
+import { useMemo } from 'react'
+
 import { useQuery } from '@tanstack/react-query'
 import { produce } from 'immer'
 import { create } from 'zustand'
@@ -24,8 +26,15 @@ export const useWalletLoans: UseWalletLoans = (walletPublicKey) => {
     },
   )
 
+  const loans = useMemo(() => {
+    if (!data) {
+      return []
+    }
+    return data.filter(({ publicKey }) => !hiddenLoansPubkeys.includes(publicKey))
+  }, [data, hiddenLoansPubkeys])
+
   return {
-    loans: data?.filter(({ publicKey }) => !hiddenLoansPubkeys.includes(publicKey)) || [],
+    loans,
     isLoading,
     hideLoan,
   }

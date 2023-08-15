@@ -14,7 +14,7 @@ import {
 import { MakeRepayLoanTransaction, makeRepayLoanTransaction } from '@banx/transactions/loans'
 
 export const RepayCell: FC<{ loan: Loan }> = ({ loan }) => {
-  const { onRepayLoan } = useLoanTransactions(loan)
+  const onRepayLoan = useRepayLoan(loan)
 
   return (
     <Button
@@ -29,7 +29,7 @@ export const RepayCell: FC<{ loan: Loan }> = ({ loan }) => {
   )
 }
 
-const useLoanTransactions = (loan: Loan) => {
+const useRepayLoan = (loan: Loan) => {
   const wallet = useWallet()
   const { connection } = useConnection()
 
@@ -39,7 +39,7 @@ const useLoanTransactions = (loan: Loan) => {
   const executeLoanTransaction = async <T extends object>(props: {
     makeTransactionFn: MakeTransactionFn<TransactionParams<T>>
     transactionParams: TransactionParams<T>
-    onAfterSuccess: () => void
+    onSuccess: () => void
   }) => {
     await buildAndExecuteTransaction({
       wallet,
@@ -48,13 +48,13 @@ const useLoanTransactions = (loan: Loan) => {
     })
   }
 
-  const onRepayLoan = async () => {
+  const repayLoan = async () => {
     await executeLoanTransaction<MakeRepayLoanTransaction>({
       makeTransactionFn: makeRepayLoanTransaction,
       transactionParams: { loan },
-      onAfterSuccess: () => hideLoan(loan.publicKey),
+      onSuccess: () => hideLoan(loan.publicKey),
     })
   }
 
-  return { onRepayLoan }
+  return repayLoan
 }

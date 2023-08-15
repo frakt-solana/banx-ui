@@ -17,8 +17,8 @@ enum LoanStatus {
 export const StatusCell: FC<{ loan: Loan }> = ({ loan }) => {
   const { bondTradeTransaction } = loan
 
-  const statusText = statusMap[bondTradeTransaction.bondTradeTransactionState] || ''
-  const statusColor = statusColorMap[statusText] || ''
+  const statusText = STATUS_MAP[bondTradeTransaction.bondTradeTransactionState] || ''
+  const statusColor = STATUS_COLOR_MAP[statusText] || ''
 
   const timeInfo = calculateTimeInfo(loan, statusText)
 
@@ -49,15 +49,14 @@ const calculateTimeInfo = (loan: Loan, status: string) => {
 
   return ''
 }
-
-const statusMap: Record<string, string> = {
+const STATUS_MAP: Record<string, string> = {
   [BondTradeTransactionV2State.PerpetualActive]: LoanStatus.Active,
   [BondTradeTransactionV2State.PerpetualManualTerminating]: LoanStatus.Terminating,
 }
 
-const statusColorMap: Record<string, string> = {
-  active: 'var(--additional-green-primary-deep)',
-  terminating: 'var(--additional-lava-primary-deep',
+const STATUS_COLOR_MAP: Record<string, string> = {
+  ACTIVE: 'var(--additional-green-primary-deep)',
+  TERMINATING: 'var(--additional-lava-primary-deep)',
 }
 
 const formatTimeDuration = (seconds: number) => {

@@ -20,7 +20,15 @@ export const initSentry = (): void => {
   })
 }
 
-export interface TxnError extends Error {
+export const handleCaptureSentryTxnError = (error: unknown) => {
+  if (error instanceof Error) {
+    captureSentryTxnError({ error })
+  } else {
+    console.error(error)
+  }
+}
+
+interface TxnError extends Error {
   logs?: Array<string>
 }
 
