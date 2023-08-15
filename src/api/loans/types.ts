@@ -1,35 +1,25 @@
-import { BondTradeTransactionV2 } from 'fbonds-core/lib/fbond-protocol/types'
+import { BondTradeTransactionV2, FraktBond } from 'fbonds-core/lib/fbond-protocol/types'
 
-export enum LoanType {
-  BOND = 'bond',
-}
+import { Meta } from '@banx/types'
 
-// TODO: this is an old interface, need to replace it with another one
 export interface Loan {
-  pubkey: string
-  loanType: LoanType
-
-  loanValue: number //? Lamports
-  repayValue: number //? Lamports
-
-  startedAt: number //? unix timestamp
+  publicKey: string
+  fraktBond: FraktBond
+  bondTradeTransaction: BondTradeTransactionV2
 
   nft: {
     mint: string
-    name: string
-    collectionName: string
-    collectionImage: string
-    imageUrl: string
+    meta: {
+      collectionSlug: string
+      imageUrl: string
+      name: string
+      collectionName: string
+      collectionImage: string
+    }
   }
+}
 
-  bondParams: {
-    marketPubkey: string
-    bondTokenMint: string
-    banxStake?: string
-
-    collateralOrSolReceiver: string
-    collateralTokenAccount: string
-    expiredAt: number //? unix timestamp
-    activeTrades: BondTradeTransactionV2[]
-  }
+export interface WalletLoansResponse {
+  data: Loan[]
+  meta: Meta
 }

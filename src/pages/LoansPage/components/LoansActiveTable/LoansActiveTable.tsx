@@ -45,7 +45,7 @@ export const LoansActiveTable = ({
       sortViewParams={sortViewParams}
       breakpoints={breakpoints}
       className={className}
-      rowKeyField="pubkey"
+      rowKeyField="publicKey"
       loading={loading}
       showCard
       activeRowParams={{

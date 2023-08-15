@@ -1,12 +1,40 @@
 import axios from 'axios'
 
-import { Loan } from './types'
+import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
-type FetchWalletLoans = (props: { walletPublicKey: string }) => Promise<Loan[]>
+import { Loan, WalletLoansResponse } from './types'
 
-export const fetchWalletLoans: FetchWalletLoans = async ({ walletPublicKey }) => {
-  //TODO: Replace to BACKEND_BASE_URL
-  const { data } = await axios.get<Loan[]>(`https://api.frakt.xyz/loan/all/${walletPublicKey}`)
+type FetchWalletLoans = (props: {
+  walletPublicKey: string
+  order?: string
+  skip?: number
+  limit?: number
+  getAll?: boolean
+}) => Promise<Loan[]>
 
-  return data ?? []
+export const fetchWalletLoans: FetchWalletLoans = async ({
+  // walletPublicKey,
+  order = 'asc',
+  skip = 0,
+  limit = 10,
+  getAll = false,
+}) => {
+  try {
+    const queryParams = new URLSearchParams({
+      order,
+      skip: String(skip),
+      limit: String(limit),
+      getAll: String(getAll),
+      isPrivate: String(IS_PRIVATE_MARKETS),
+    })
+
+    const { data } = await axios.get<WalletLoansResponse>(
+      `${BACKEND_BASE_URL}/loans/6CnQUFVk2d8TRvQa2Lr7KDvx9zK12Q4jkA7mmDtzj71e?${queryParams.toString()}`,
+    )
+
+    return data.data
+  } catch (error) {
+    console.error(error)
+    return []
+  }
 }
