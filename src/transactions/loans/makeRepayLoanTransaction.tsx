@@ -1,6 +1,9 @@
 import { WalletContextState } from '@solana/wallet-adapter-react'
 import { web3 } from 'fbonds-core'
-import { repayPerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import {
+  BondAndTransactionOptimistic,
+  repayPerpetualLoan,
+} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 
 import { Loan } from '@banx/api/loans'
 import { BONDS } from '@banx/constants'
@@ -37,7 +40,7 @@ export const makeRepayLoanTransaction: MakeRepayLoanTransaction = async ({
           optimistic: {
             fraktBond,
             bondTradeTransaction,
-          },
+          } as BondAndTransactionOptimistic,
         },
       ],
     },

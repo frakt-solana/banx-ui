@@ -2,7 +2,7 @@ import { WalletContextState } from '@solana/wallet-adapter-react'
 import { Connection } from '@solana/web3.js'
 import { web3 } from 'fbonds-core'
 
-import { handleCaptureSentryTxnError } from '@banx/utils'
+import { captureSentryTxnError } from '@banx/utils'
 
 import { signAndConfirmTransaction } from './helpers'
 
@@ -51,6 +51,6 @@ export const buildAndExecuteTransaction = async <T, R>({
       return { transaction, signers, ...rest } as R
     }
   } catch (error) {
-    handleCaptureSentryTxnError(error)
+    captureSentryTxnError({ error })
   }
 }
