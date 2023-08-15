@@ -16,27 +16,26 @@
 }
 
 // standard buttons styles
-
-.standard.primary {
-  color: #000000;
-  background-color: var(--accent-primary);
-
-  &:hover {
-    background-color: var(--accent-secondary);
-  }
-}
-
-.standard.secondary {
-  background-color: var(--bg-primary);
-  border: 1px solid var(--accent-primary);
-
-  &:hover {
-    border: 1px solid var(--accent-secondary);
-  }
-}
-
 .standard {
   padding: 8px 16px;
+
+  &.primary {
+    color: var(--black-color);
+    background-color: var(--accent-primary);
+
+    &:hover {
+      background-color: var(--accent-secondary);
+    }
+  }
+
+  &.secondary {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--accent-primary);
+
+    &:hover {
+      border: 1px solid var(--accent-secondary);
+    }
+  }
 
   &.large {
     height: 40px;
