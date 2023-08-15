@@ -34,7 +34,7 @@ export const SearchSelect = <P extends object>({
 }: SearchSelectProps<P>) => {
   const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false)
   const [inputValue, setInputValue] = useState<string>('')
-  
+
   const handleDropdownVisibleChange = (visible: boolean) => {
     setIsPopupOpen(visible)
   }
