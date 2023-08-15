@@ -1,10 +1,7 @@
 import { ColumnsType } from 'antd/es/table'
-import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import moment from 'moment'
 
 import Checkbox from '@banx/components/Checkbox'
 import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableCells'
-import Timer from '@banx/components/Timer'
 
 import { Loan } from '@banx/api/loans'
 
@@ -83,4 +80,3 @@ export const getTableColumns = ({
 
   return COLUMNS
 }
-
