@@ -45,13 +45,13 @@ export const LoansActiveTable = ({
       sortViewParams={sortViewParams}
       breakpoints={breakpoints}
       className={className}
-      rowKeyField="pubkey"
+      rowKeyField="publicKey"
       loading={loading}
       showCard
       activeRowParams={{
-        field: 'gracePeiod', //! This field doesn't exist, it needs to be added to the backend
+        field: 'fraktBond.terminatedCounter',
         value: true,
-        className: styles.gracePeriod,
+        className: styles.termitated,
       }}
     />
   )
