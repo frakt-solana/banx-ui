@@ -10,14 +10,14 @@ import { Loan } from '@banx/api/loans'
 export const RepayValueCell: FC<{ loan: Loan }> = ({ loan }) => {
   const { solAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction || {}
 
-  const calculateddInterest = calculateCurrentInterestSolPure({
+  const calculatedInterest = calculateCurrentInterestSolPure({
     loanValue: solAmount,
     startTime: soldAt,
     currentTime: moment().unix(),
     rateBasePoints: amountOfBonds,
   })
 
-  const repayValue = solAmount + calculateddInterest
+  const repayValue = solAmount + calculatedInterest
 
   return createSolValueJSX(repayValue, 1e9)
 }
