@@ -1,10 +1,10 @@
 import { z } from 'zod'
 
-import { PAGINATION_META } from '@banx/types'
+import { PaginationMeta } from '@banx/types'
 
 export interface WalletLoansResponse {
   data: Loan[]
-  meta: PAGINATION_META
+  meta: PaginationMeta
 }
 
 const NFTSchema = z.object({

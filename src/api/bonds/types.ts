@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { PAGINATION_META } from '@banx/types'
+import { PaginationMeta } from '@banx/types'
 
 export const MarketPreviewSchema = z.object({
   marketPubkey: z.string(),
@@ -21,7 +21,7 @@ export type MarketPreview = z.infer<typeof MarketPreviewSchema>
 
 export interface MarketPreviewResponse {
   data: MarketPreview[]
-  meta: PAGINATION_META
+  meta: PaginationMeta
 }
 
 const fraktMarketSchema = z.object({
