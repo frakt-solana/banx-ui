@@ -1,4 +1,6 @@
 import { ColumnsType } from 'antd/es/table'
+import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import moment from 'moment'
 
 import Checkbox from '@banx/components/Checkbox'
 import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableCells'
@@ -6,7 +8,8 @@ import Timer from '@banx/components/Timer'
 
 import { Loan } from '@banx/api/loans'
 
-import { RepayCell } from './TableCells'
+import { RepayCell, StatusCell } from './TableCells'
+import { RepayValueCell } from './TableCells/RepayValueCell'
 
 import styles from './LoansTable.module.less'
 
@@ -52,7 +55,7 @@ export const getTableColumns = ({
       key: 'repayValue',
       dataIndex: 'repayValue',
       title: () => <HeaderCell label="Debt" />,
-      render: (_, loan) => createSolValueJSX(loan.fraktBond.amountToReturn, 1e9),
+      render: (_, loan) => <RepayValueCell loan={loan} />,
       showSorterTooltip: false,
       sorter: true,
     },
@@ -68,7 +71,7 @@ export const getTableColumns = ({
       key: 'status',
       dataIndex: 'status',
       title: () => <HeaderCell label="Loan status" />,
-      render: (_, loan) => <Timer expiredAt={loan.fraktBond.activatedAt} />,
+      render: (_, loan) => <StatusCell loan={loan} />,
       showSorterTooltip: false,
       sorter: true,
     },
@@ -80,3 +83,4 @@ export const getTableColumns = ({
 
   return COLUMNS
 }
+
