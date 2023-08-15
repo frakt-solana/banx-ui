@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import { isEmpty } from 'lodash'
 
 import { Loader } from '@banx/components/Loader'
@@ -15,7 +16,11 @@ const LendPageContent = () => {
   const { visibleCards, toggleVisibleCard } = useVisibleMarketURLControl()
 
   return (
-    <div className={styles.content}>
+    <div
+      className={classNames(styles.content, {
+        [styles.selected]: !!visibleCards?.length,
+      })}
+    >
       <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
       {isLoading && isEmpty(marketsPreview) ? (
         <Loader />
