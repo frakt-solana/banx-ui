@@ -80,10 +80,13 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
   } = useOfferFormController(initialLoanValue, initialLoansAmount)
 
   useEffect(() => {
-    if (loanValue) {
+    const loansAmountNumber = parseFloat(loansAmount)
+    const loanValueNumber = parseFloat(loanValue)
+
+    if (loansAmountNumber || loanValueNumber) {
       setSyntheticParams({
-        loanValue: parseFloat(loanValue),
-        loansAmount: parseFloat(loansAmount),
+        loanValue: loanValueNumber,
+        loansAmount: loansAmountNumber,
       })
     }
   }, [loanValue, loansAmount, setSyntheticParams])

@@ -13,10 +13,19 @@
 .collectionImage {
   height: 72px;
   width: 72px;
+
+  @media (max-width: 768px) {
+    height: 64px;
+    width: 64px;
+  }
 }
 
 .collectionName {
-  font: var(card-header-lg);
+  font: var(--card-header-lg);
+
+  @media (max-width: 768px) {
+    font: var(--card-header-md);
+  }
 }
 
 .mainInfoStats {
@@ -26,6 +35,10 @@
 
   & > div {
     min-width: 80px;
+
+    @media (max-width: 768px) {
+      min-width: 65px;
+    }
   }
 }
 
