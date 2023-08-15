@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { BondFeatures, BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
+import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Offer } from '@banx/api/bonds'
 import {
@@ -74,7 +74,6 @@ export const useOfferTransactions = ({
       makeCreatePerpetualOfferTransaction,
       {
         marketPubkey,
-        bondFeature: BondFeatures.AutoCompoundAndReceiveNft,
         loansAmount,
         loanValue,
       },

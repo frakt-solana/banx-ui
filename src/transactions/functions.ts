@@ -2,7 +2,7 @@ import { WalletContextState } from '@solana/wallet-adapter-react'
 import { Connection } from '@solana/web3.js'
 import { web3 } from 'fbonds-core'
 
-import { TxnError, captureSentryTxnError } from '@banx/utils'
+import { captureSentryTxnError } from '@banx/utils'
 
 import { signAndConfirmTransaction } from './helpers'
 
@@ -16,21 +16,7 @@ export type TransactionOptions<T> = {
   commitment?: web3.Commitment
   connection: Connection
   wallet: WalletContextState
-}
-
-const executeTransaction = async (props: {
-  transaction: web3.Transaction
-  signers: web3.Signer[]
-  commitment: web3.Commitment
-  wallet: WalletContextState
-  connection: Connection
-}) => {
-  try {
-    return await signAndConfirmTransaction({ ...props })
-  } catch (error) {
-    const txnError = error as TxnError
-    captureSentryTxnError({ error: txnError })
-  }
+  onAfterSuccess?: () => void
 }
 
 export const buildAndExecuteTransaction = async <T, R>({
@@ -39,6 +25,7 @@ export const buildAndExecuteTransaction = async <T, R>({
   commitment = 'confirmed',
   wallet,
   connection,
+  onAfterSuccess,
 }: TransactionOptions<T>): Promise<R | undefined> => {
   if (!wallet.publicKey) {
     return undefined
@@ -51,7 +38,7 @@ export const buildAndExecuteTransaction = async <T, R>({
       wallet,
     })
 
-    const result = await executeTransaction({
+    const result = await signAndConfirmTransaction({
       transaction,
       signers,
       commitment,
@@ -60,9 +47,10 @@ export const buildAndExecuteTransaction = async <T, R>({
     })
 
     if (result) {
+      onAfterSuccess?.()
       return { transaction, signers, ...rest } as R
     }
   } catch (error) {
-    console.error(error)
+    captureSentryTxnError({ error })
   }
 }

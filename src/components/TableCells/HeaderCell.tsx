@@ -4,7 +4,7 @@ import Tooltip from '../Tooltip'
 
 interface HeaderCellProps {
   label: string
-  value: string
+  value?: string
   tooltipText?: string
 }
 
