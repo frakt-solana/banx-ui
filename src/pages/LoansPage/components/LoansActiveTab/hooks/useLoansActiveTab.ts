@@ -10,6 +10,8 @@ import { useWalletLoans } from '@banx/pages/LoansPage/hooks'
 import { useFilteredLoans } from './useFilteredLoans'
 import { useSortedLoans } from './useSortedLoans'
 
+import styles from '../LoansActiveTable.module.less'
+
 export type SearchSelectOption = {
   collectionName: string
   collectionImage: string
@@ -40,6 +42,7 @@ export const useLoansActiveTab = () => {
           imageKey: 'collectionImage',
           secondLabel: { key: 'nftsCount' },
         },
+        className: styles.searchSelect,
         selectedOptions,
         labels: ['Collections', 'Nfts'],
         onChange: setSelectedOptions,
