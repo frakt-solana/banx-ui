@@ -14,6 +14,16 @@ enum LoanStatus {
   Terminating = 'terminating',
 }
 
+const STATUS_MAP: Record<string, string> = {
+  [BondTradeTransactionV2State.PerpetualActive]: LoanStatus.Active,
+  [BondTradeTransactionV2State.PerpetualManualTerminating]: LoanStatus.Terminating,
+}
+
+const STATUS_COLOR_MAP: Record<string, string> = {
+  [LoanStatus.Active]: 'var(--additional-green-primary-deep)',
+  [LoanStatus.Terminating]: 'var(--additional-lava-primary-deep)',
+}
+
 export const StatusCell: FC<{ loan: Loan }> = ({ loan }) => {
   const { bondTradeTransaction } = loan
 
@@ -39,7 +49,7 @@ const calculateTimeInfo = (loan: Loan, status: string) => {
   const timeSinceActivationInSeconds = currentTimeInSeconds - fraktBond.activatedAt
 
   if (status === LoanStatus.Active) {
-    return formatTimeDuration(timeSinceActivationInSeconds)
+    return calculateTimeFromNow(timeSinceActivationInSeconds)
   }
 
   if (status === LoanStatus.Terminating) {
@@ -49,16 +59,7 @@ const calculateTimeInfo = (loan: Loan, status: string) => {
 
   return ''
 }
-const STATUS_MAP: Record<string, string> = {
-  [BondTradeTransactionV2State.PerpetualActive]: LoanStatus.Active,
-  [BondTradeTransactionV2State.PerpetualManualTerminating]: LoanStatus.Terminating,
-}
 
-const STATUS_COLOR_MAP: Record<string, string> = {
-  ACTIVE: 'var(--additional-green-primary-deep)',
-  TERMINATING: 'var(--additional-lava-primary-deep)',
-}
-
-const formatTimeDuration = (seconds: number) => {
+const calculateTimeFromNow = (seconds: number) => {
   return moment.unix(moment().unix() + seconds).toNow(true)
 }
