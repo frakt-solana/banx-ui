@@ -14,19 +14,20 @@ interface OrderBookListProps {
 export const OrderBookList: FC<{ orderBookParams: OrderBookListProps }> = ({ orderBookParams }) => {
   const { orders, goToEditOrder, isOwnOrder } = orderBookParams || {}
 
-  const renderOrder = (order: Order) => {
-    return (
-      <Offer
-        order={order}
-        loanValue={order.loanValue}
-        loanAmount={order.loansAmount}
-        editOffer={() => goToEditOrder(order?.rawData?.publicKey)}
-        isOwnOrder={isOwnOrder(order)}
-      />
-    )
-  }
-
-  return <ul className={styles.list}>{orders.map(renderOrder)}</ul>
+  return (
+    <ul className={styles.list}>
+      {orders.map((order, idx) => (
+        <Offer
+          key={idx}
+          order={order}
+          loanValue={order.loanValue}
+          loanAmount={order.loansAmount}
+          editOffer={() => goToEditOrder(order?.rawData?.publicKey)}
+          isOwnOrder={isOwnOrder(order)}
+        />
+      ))}
+    </ul>
+  )
 }
 
 export const OrderBookLabel = () => (

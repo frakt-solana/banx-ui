@@ -2,6 +2,7 @@ import * as Sentry from '@sentry/browser'
 import { Dictionary } from 'lodash'
 
 import { SENTRY } from '@banx/constants'
+import { TxnError } from '@banx/transactions'
 
 const IGNORE_ERRORS = [
   'Registration failed - push service error',
@@ -18,10 +19,6 @@ export const initSentry = (): void => {
     defaultIntegrations: false,
     tracesSampleRate: 0.05,
   })
-}
-
-interface TxnError extends Error {
-  logs?: Array<string>
 }
 
 type CaptureSentryTxnError = (props: {
@@ -58,7 +55,5 @@ export const captureSentryTxnError: CaptureSentryTxnError = ({
 
       return scope
     })
-  } else {
-    console.error(error)
   }
 }
