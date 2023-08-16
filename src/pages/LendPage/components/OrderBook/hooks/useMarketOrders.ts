@@ -27,13 +27,49 @@ export const useMarketOrders: UseMarketOrders = ({
 }) => {
   const { offers, isLoading } = useMarketOffers({ marketPubkey })
 
-  const orders = useMemo(() => {
+  const orders = useProcessedOrders({
+    offers,
+    loanValue,
+    loansAmount,
+    offerPubkey,
+  })
+
+  const sortedOrders = useMemo(() => {
+    return [...orders].sort((orderA, orderB) => orderB.loanValue - orderA.loanValue)
+  }, [orders])
+
+  const bestOrder = useMemo(() => {
+    const [firstOrder, secondOrder] = sortedOrders
+    return firstOrder?.synthetic ? secondOrder : firstOrder
+  }, [sortedOrders])
+
+  return {
+    orders: sortedOrders,
+    isLoading,
+    bestOrder,
+  }
+}
+
+type UseProcessedOrders = (props: {
+  offers: Offer[]
+  loanValue: number
+  loansAmount: number
+  offerPubkey: string
+}) => Order[]
+
+const useProcessedOrders: UseProcessedOrders = ({
+  offers,
+  loanValue,
+  loansAmount,
+  offerPubkey,
+}) => {
+  return useMemo(() => {
     if (!offers) return []
 
-    const editOffer = offers.find((offer: Offer) => offer?.publicKey === offerPubkey)
+    const editOffer = offers.find((offer: Offer) => offer.publicKey === offerPubkey)
     const editOfferPubkey = editOffer?.publicKey
 
-    const myOrder = {
+    const syntheticOrder = {
       size: loanValue * loansAmount,
       loanValue,
       loansAmount,
@@ -46,32 +82,17 @@ export const useMarketOrders: UseMarketOrders = ({
 
     const parsedOrders = offers.map(parseMarketOrder)
 
-    const parsedEditableOrders = editOfferPubkey
-      ? parsedOrders.map((offer: Order) =>
-          offer?.rawData?.publicKey === editOfferPubkey ? { ...myOrder, ...offer } : offer,
-        )
-      : []
+    const processedEditableOrders = parsedOrders.map((order: Order) => {
+      const shouldReplace = editOfferPubkey && order.rawData.publicKey === editOfferPubkey
+      return shouldReplace ? { ...syntheticOrder, ...order } : order
+    })
 
-    if (loansAmount && !editOffer?.publicKey) {
-      parsedOrders.push(myOrder)
+    if (loansAmount && !editOfferPubkey) {
+      parsedOrders.push(syntheticOrder)
     }
 
-    const orders = editOfferPubkey ? parsedEditableOrders : parsedOrders
+    const orders = editOfferPubkey ? processedEditableOrders : parsedOrders
 
     return orders
   }, [offers, loanValue, loansAmount, offerPubkey])
-
-  const sortedOrders = useMemo(() => {
-    return sortBy(orders, 'loanValue').reverse()
-  }, [orders])
-
-  const bestOrder = useMemo(() => {
-    return sortedOrders[0]?.synthetic ? sortedOrders[1] : sortedOrders[0]
-  }, [sortedOrders])
-
-  return {
-    orders: sortedOrders,
-    isLoading,
-    bestOrder,
-  }
 }
