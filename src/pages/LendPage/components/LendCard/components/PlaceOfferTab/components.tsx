@@ -48,7 +48,7 @@ export const OfferHeader: FC<OfferHeaderProps> = ({ isEditMode, goToPlaceOffer }
 
 interface OfferActionButtonsProps {
   isEditMode: boolean
-  hasFormChanges: boolean
+  disableUpdateOffer: boolean
   onCreateOffer: () => void
   onRemoveOffer: () => void
   onUpdateOffer: () => void
@@ -56,7 +56,7 @@ interface OfferActionButtonsProps {
 
 export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
   isEditMode,
-  hasFormChanges,
+  disableUpdateOffer,
   onCreateOffer,
   onRemoveOffer,
   onUpdateOffer,
@@ -77,7 +77,7 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
           >
             Delete offer
           </Button>
-          <Button onClick={onUpdateOffer} className={styles.button} disabled={!hasFormChanges}>
+          <Button onClick={onUpdateOffer} className={styles.button} disabled={disableUpdateOffer}>
             Update offer
           </Button>
         </>

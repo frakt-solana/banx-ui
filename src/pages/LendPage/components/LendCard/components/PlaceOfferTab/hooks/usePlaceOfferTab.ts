@@ -1,9 +1,11 @@
 import { useEffect, useMemo } from 'react'
 
 import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
+import { useSolanaBalance } from '@banx/utils'
 
 import { useOfferStore } from '../../ExpandableCardContent/hooks'
 import { parseMarketOrder } from '../../OrderBook/helpers'
+import { shouldShowDepositError } from '../helpers'
 import { useOfferFormController } from './useOfferFormController'
 import { useOfferTransactions } from './useOfferTransactions'
 
@@ -12,6 +14,7 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
 
   const { offers, updateOrAddOffer } = useMarketOffers({ marketPubkey })
   const { marketsPreview } = useMarketsPreview()
+  const solanaBalance = useSolanaBalance()
 
   const marketPreview = marketsPreview.find((market) => market.marketPubkey === marketPubkey)
 
@@ -63,17 +66,27 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
 
   const offerSize = loanValueNumber * loansAmountNumber || 0
 
+  const showDepositError = shouldShowDepositError({
+    initialLoansAmount,
+    initialLoanValue,
+    solanaBalance,
+    offerSize,
+  })
+
   return {
     isEditMode,
     offerSize,
     marketAPR: marketPreview?.marketAPR || 0,
     loanValue,
     loansAmount,
-    hasFormChanges,
 
     goToPlaceOffer,
     onLoanValueChange,
     onLoanAmountChange,
+
+    showDepositError,
+
+    disableUpdateOffer: !hasFormChanges || showDepositError,
 
     offerTransactions: {
       onCreateOffer,

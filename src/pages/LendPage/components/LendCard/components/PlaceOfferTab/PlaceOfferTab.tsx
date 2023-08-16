@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import { InputCounter, NumericInputField } from '@banx/components/inputs'
+import { InputCounter, InputErrorMessage, NumericInputField } from '@banx/components/inputs'
 
 import { OfferActionButtons, OfferHeader, OfferSummary } from './components'
 import { usePlaceOfferTab } from './hooks'
@@ -22,7 +22,8 @@ const PlaceOfferTab: FC<PlaceOfferTab> = ({ marketPubkey }) => {
     offerTransactions,
     offerSize,
     marketAPR,
-    hasFormChanges,
+    showDepositError,
+    disableUpdateOffer,
   } = usePlaceOfferTab(marketPubkey)
 
   return (
@@ -34,13 +35,15 @@ const PlaceOfferTab: FC<PlaceOfferTab> = ({ marketPubkey }) => {
           value={loanValue}
           onChange={onLoanValueChange}
           className={styles.numericField}
+          hasError
         />
         <InputCounter label="Number of loans" onChange={onLoanAmountChange} value={loansAmount} />
       </div>
+      <InputErrorMessage hasError={showDepositError} message="Not enough SOL" />
       <OfferSummary offerSize={offerSize} marketAPR={marketAPR} />
       <OfferActionButtons
         isEditMode={isEditMode}
-        hasFormChanges={hasFormChanges}
+        disableUpdateOffer={disableUpdateOffer}
         {...offerTransactions}
       />
     </div>
