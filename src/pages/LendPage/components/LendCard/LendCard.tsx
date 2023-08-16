@@ -7,8 +7,8 @@ import { Button } from '@banx/components/Buttons'
 import { MarketPreview } from '@banx/api/bonds'
 import { ChevronDown } from '@banx/icons'
 
-import ExpandableCardContent from './components/ExpandableCardContent'
-import { MarketAdditionalInfo, MarketMainInfo } from './components/MarketOverviewInfo'
+import ExpandableCardContent from '../ExpandableCardContent'
+import { MarketAdditionalInfo, MarketMainInfo } from '../MarketOverviewInfo'
 
 import styles from './LendCard.module.less'
 

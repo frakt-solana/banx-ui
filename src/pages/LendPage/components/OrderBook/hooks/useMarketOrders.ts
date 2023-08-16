@@ -5,8 +5,8 @@ import { sortBy } from 'lodash'
 import { Offer } from '@banx/api/bonds'
 import { useMarketOffers } from '@banx/pages/LendPage/hooks'
 
-import { parseMarketOrder } from './helpers'
-import { Order } from './types'
+import { parseMarketOrder } from '../helpers'
+import { Order } from '../types'
 
 type UseMarketOrders = (props: {
   marketPubkey: string

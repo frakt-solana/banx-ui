@@ -4,8 +4,8 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 
-import { useOfferStore } from '../ExpandableCardContent/hooks'
-import { Order } from './types'
+import { useOfferStore } from '../../ExpandableCardContent/hooks'
+import { Order } from '../types'
 import { useMarketOrders } from './useMarketOrders'
 
 export interface OrderBookParams {
