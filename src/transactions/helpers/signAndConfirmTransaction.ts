@@ -28,10 +28,7 @@ export const signAndConfirmTransaction: SignAndConfirmTransaction = async ({
   const { blockhash } = await connection.getLatestBlockhash()
 
   transaction.recentBlockhash = blockhash
-
-  if (wallet.publicKey) {
-    transaction.feePayer = wallet.publicKey
-  }
+  transaction.feePayer = wallet.publicKey
 
   if (signers.length) {
     transaction.sign(...signers)
