@@ -12,6 +12,5 @@ export const enqueueTxnErrorSnackbar = (error: TxnError | Error | unknown) => {
   return enqueueSnackbar({
     message: errorDefinition.humanMessage,
     type: errorDefinition.type,
-    persist: true,
   })
 }
