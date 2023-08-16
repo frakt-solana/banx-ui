@@ -6,21 +6,18 @@ import { Loader } from '@banx/components/Loader'
 import { useVisibleMarketURLControl } from '@banx/store/useVisibleMarkets'
 
 import FilterSection from '../FilterSection'
-import { MarketsList } from './components'
-import { useFilteredMarkets } from './hooks'
+import { EmptyList, MarketsList } from './components'
+import { useLendPageContent } from './hooks'
 
 import styles from './LendPageContent.module.less'
 
 const LendPageContent = () => {
-  const { marketsPreview, isLoading, searchSelectParams, sortParams } = useFilteredMarkets()
   const { visibleCards, toggleVisibleCard } = useVisibleMarketURLControl()
+  const { marketsPreview, isLoading, searchSelectParams, sortParams, showEmptyList } =
+    useLendPageContent()
 
   return (
-    <div
-      className={classNames(styles.content, {
-        [styles.selected]: !!visibleCards?.length,
-      })}
-    >
+    <div className={classNames(styles.content, { [styles.selected]: !!visibleCards?.length })}>
       <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
       {isLoading && isEmpty(marketsPreview) ? (
         <Loader />
@@ -31,6 +28,7 @@ const LendPageContent = () => {
           toggleVisibleCard={toggleVisibleCard}
         />
       )}
+      {showEmptyList && <EmptyList />}
     </div>
   )
 }

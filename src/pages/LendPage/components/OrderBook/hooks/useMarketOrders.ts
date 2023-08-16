@@ -1,7 +1,5 @@
 import { useMemo } from 'react'
 
-import { sortBy } from 'lodash'
-
 import { Offer } from '@banx/api/bonds'
 import { useMarketOffers } from '@banx/pages/LendPage/hooks'
 

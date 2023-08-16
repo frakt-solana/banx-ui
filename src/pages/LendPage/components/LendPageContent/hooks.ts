@@ -7,7 +7,7 @@ import { convertAprToApy } from '@banx/utils'
 import { useMarketsPreview } from '../../hooks'
 import { defaultSortOption, sortOptions } from './constants'
 
-export const useFilteredMarkets = () => {
+export const useLendPageContent = () => {
   const { marketsPreview, isLoading } = useMarketsPreview()
 
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])

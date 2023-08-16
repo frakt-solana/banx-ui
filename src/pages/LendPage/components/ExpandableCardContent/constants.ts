@@ -8,3 +8,5 @@ export const BONDS_TABS = [
     value: 'offer',
   },
 ]
+
+export const DEFAULT_TAB = BONDS_TABS[1].value
