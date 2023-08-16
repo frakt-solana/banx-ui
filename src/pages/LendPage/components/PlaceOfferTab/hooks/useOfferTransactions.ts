@@ -55,7 +55,7 @@ export const useOfferTransactions = ({
     makeTransactionFn: MakeTransactionFn<TransactionParams<T>>,
     transactionParams: TransactionParams<T>,
     optimisticAction: (offer: Offer) => void,
-    onAfterSuccess?: () => void,
+    onSuccess?: () => void,
   ) => {
     const result = await buildAndExecuteTransaction<
       TransactionParams<T>,
@@ -65,15 +65,12 @@ export const useOfferTransactions = ({
       transactionParams,
       wallet,
       connection,
+      onSuccess,
     })
-
-    if (!result) return
 
     if (hasOptimisticResult(result)) {
       optimisticAction(result.optimisticResult.bondOffer)
     }
-
-    onAfterSuccess?.()
   }
 
   const onCreateOffer = async () => {

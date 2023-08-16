@@ -87,6 +87,7 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
     showDepositError,
 
     disableUpdateOffer: !hasFormChanges || showDepositError,
+    disablePlaceOffer: showDepositError,
 
     offerTransactions: {
       onCreateOffer,

@@ -49,6 +49,7 @@ export const OfferHeader: FC<OfferHeaderProps> = ({ isEditMode, goToPlaceOffer }
 interface OfferActionButtonsProps {
   isEditMode: boolean
   disableUpdateOffer: boolean
+  disablePlaceOffer: boolean
   onCreateOffer: () => void
   onRemoveOffer: () => void
   onUpdateOffer: () => void
@@ -57,6 +58,7 @@ interface OfferActionButtonsProps {
 export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
   isEditMode,
   disableUpdateOffer,
+  disablePlaceOffer,
   onCreateOffer,
   onRemoveOffer,
   onUpdateOffer,
@@ -82,7 +84,11 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
           </Button>
         </>
       ) : (
-        <Button onClick={connected ? onCreateOffer : onToggleWalletModal} className={styles.button}>
+        <Button
+          onClick={connected ? onCreateOffer : onToggleWalletModal}
+          className={styles.button}
+          disabled={disablePlaceOffer}
+        >
           {connected ? 'Place' : 'Connect wallet'}
         </Button>
       )}

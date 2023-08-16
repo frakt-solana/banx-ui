@@ -16,7 +16,7 @@ export type TransactionOptions<T> = {
   commitment?: web3.Commitment
   connection: Connection
   wallet: WalletContextState
-  onAfterSuccess?: () => void
+  onSuccess?: () => void
 }
 
 export const buildAndExecuteTransaction = async <T, R>({
@@ -25,7 +25,7 @@ export const buildAndExecuteTransaction = async <T, R>({
   commitment = 'confirmed',
   wallet,
   connection,
-  onAfterSuccess,
+  onSuccess,
 }: TransactionOptions<T>): Promise<R | undefined> => {
   if (!wallet.publicKey) {
     return undefined
@@ -46,10 +46,11 @@ export const buildAndExecuteTransaction = async <T, R>({
       connection,
     })
 
-    if (result) {
-      onAfterSuccess?.()
-      return { transaction, signers, ...rest } as R
-    }
+    if (!result) return
+
+    onSuccess?.()
+
+    return { transaction, signers, ...rest } as R
   } catch (error) {
     captureSentryTxnError({ error })
   }

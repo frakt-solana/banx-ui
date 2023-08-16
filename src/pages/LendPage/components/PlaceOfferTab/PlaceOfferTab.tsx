@@ -24,6 +24,7 @@ const PlaceOfferTab: FC<PlaceOfferTab> = ({ marketPubkey }) => {
     marketAPR,
     showDepositError,
     disableUpdateOffer,
+    disablePlaceOffer,
   } = usePlaceOfferTab(marketPubkey)
 
   return (
@@ -44,6 +45,7 @@ const PlaceOfferTab: FC<PlaceOfferTab> = ({ marketPubkey }) => {
       <OfferActionButtons
         isEditMode={isEditMode}
         disableUpdateOffer={disableUpdateOffer}
+        disablePlaceOffer={disablePlaceOffer}
         {...offerTransactions}
       />
     </div>
