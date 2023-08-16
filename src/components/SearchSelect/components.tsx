@@ -63,7 +63,7 @@ export const renderOption: FC<OptionProps> = ({ option, optionKeys, selectedOpti
 
 interface SecondValueProps {
   secondLabel?: OptionKeys['secondLabel']
-  value: string
+  value: number
 }
 
 const SecondValue: FC<SecondValueProps> = ({ secondLabel, value }) => {
