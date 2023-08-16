@@ -56,6 +56,4 @@ export const captureSentryTxnError: CaptureSentryTxnError = ({
       return scope
     })
   }
-
-  console.error({ error })
 }
