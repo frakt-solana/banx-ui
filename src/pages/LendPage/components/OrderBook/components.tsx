@@ -6,27 +6,27 @@ import { ChevronDown } from '@banx/icons'
 
 import Offer from '../Offer'
 import { OrderBookParams } from './hooks'
-import { Order } from './types'
 
 import styles from './OrderBook.module.less'
 
 export const OrderBookList: FC<{ orderBookParams: OrderBookParams }> = ({ orderBookParams }) => {
   const { orders, goToEditOrder, isOwnOrder, bestOrder } = orderBookParams || {}
 
-  const renderOrder = (order: Order) => {
-    return (
-      <Offer
-        order={order}
-        loanValue={order.loanValue}
-        loanAmount={order.loansAmount}
-        editOffer={() => goToEditOrder(order?.rawData?.publicKey)}
-        isOwnOrder={isOwnOrder(order)}
-        bestOrder={bestOrder}
-      />
-    )
-  }
-
-  return <ul className={styles.list}>{orders.map(renderOrder)}</ul>
+  return (
+    <ul className={styles.list}>
+      {orders.map((order, idx) => (
+        <Offer
+          key={idx}
+          order={order}
+          loanValue={order.loanValue}
+          loanAmount={order.loansAmount}
+          editOffer={() => goToEditOrder(order?.rawData?.publicKey)}
+          isOwnOrder={isOwnOrder(order)}
+          bestOrder={bestOrder}
+        />
+      ))}
+    </ul>
+  )
 }
 
 export const OrderBookLabel = () => (
