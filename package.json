@@ -57,6 +57,7 @@
     "zustand": "^4.3.9"
   },
   "devDependencies": {
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.11",
     "@sentry/webpack-plugin": "^2.5.0",
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "@types/lodash": "^4.14.196",
@@ -87,6 +88,7 @@
     "prettier": "^3.0.0",
     "prettier-eslint": "^15.0.1",
     "prettier-eslint-cli": "^7.1.0",
+    "react-refresh": "^0.14.0",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
     "style-loader": "^3.3.3",

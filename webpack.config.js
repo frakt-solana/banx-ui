@@ -7,6 +7,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
+
 const { sentryWebpackPlugin } = require('@sentry/webpack-plugin')
 
 const isProduction = process.env.NODE_ENV == 'production'
@@ -118,6 +120,8 @@ module.exports = () => {
     )
   } else {
     config.mode = 'development'
+
+    config.plugins.push(new ReactRefreshWebpackPlugin())
   }
   return config
 }
