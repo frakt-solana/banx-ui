@@ -5,6 +5,7 @@ import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
 import { StatInfo } from '@banx/components/StatInfo'
+import { useWalletModal } from '@banx/components/WalletModal'
 
 import styles from './PlaceOfferTab.module.less'
 
@@ -26,17 +27,17 @@ export const OfferSummary: FC<OfferSummaryProps> = ({ offerSize, marketAPR }) =>
 }
 
 interface OfferHeaderProps {
-  isEdit: boolean
+  isEditMode: boolean
   goToPlaceOffer: () => void
 }
 
-export const OfferHeader: FC<OfferHeaderProps> = ({ isEdit, goToPlaceOffer }) => {
-  const title = isEdit ? 'Offer editing' : 'Offer creation'
+export const OfferHeader: FC<OfferHeaderProps> = ({ isEditMode, goToPlaceOffer }) => {
+  const title = isEditMode ? 'Offer editing' : 'Offer creation'
 
   return (
     <div className={styles.offerHeaderContent}>
       <h4 className={styles.title}>{title}</h4>
-      {isEdit && (
+      {isEditMode && (
         <Button type="circle" variant="text" onClick={goToPlaceOffer}>
           Exit
         </Button>
@@ -46,7 +47,7 @@ export const OfferHeader: FC<OfferHeaderProps> = ({ isEdit, goToPlaceOffer }) =>
 }
 
 interface OfferActionButtonsProps {
-  isEdit: boolean
+  isEditMode: boolean
   hasFormChanges: boolean
   onCreateOffer: () => void
   onRemoveOffer: () => void
@@ -54,17 +55,20 @@ interface OfferActionButtonsProps {
 }
 
 export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
-  isEdit,
+  isEditMode,
   hasFormChanges,
   onCreateOffer,
   onRemoveOffer,
   onUpdateOffer,
 }) => {
   const { connected } = useWallet()
+  const { toggleVisibility } = useWalletModal()
+
+  const onToggleWalletModal = () => toggleVisibility()
 
   return (
     <div className={styles.buttonsWrapper}>
-      {isEdit ? (
+      {isEditMode ? (
         <>
           <Button
             variant="secondary"
@@ -78,8 +82,8 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
           </Button>
         </>
       ) : (
-        <Button onClick={onCreateOffer} className={styles.button}>
-          {!connected ? 'Connect wallet' : 'Place'}
+        <Button onClick={connected ? onCreateOffer : onToggleWalletModal} className={styles.button}>
+          {connected ? 'Place' : 'Connect wallet'}
         </Button>
       )}
     </div>

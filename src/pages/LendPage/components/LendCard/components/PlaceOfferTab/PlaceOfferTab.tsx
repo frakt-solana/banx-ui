@@ -13,7 +13,7 @@ interface PlaceOfferTab {
 
 const PlaceOfferTab: FC<PlaceOfferTab> = ({ marketPubkey }) => {
   const {
-    isEdit,
+    isEditMode,
     goToPlaceOffer,
     loansAmount,
     onLoanAmountChange,
@@ -27,7 +27,7 @@ const PlaceOfferTab: FC<PlaceOfferTab> = ({ marketPubkey }) => {
 
   return (
     <div className={styles.content}>
-      <OfferHeader isEdit={isEdit} goToPlaceOffer={goToPlaceOffer} />
+      <OfferHeader isEditMode={isEditMode} goToPlaceOffer={goToPlaceOffer} />
       <div className={styles.fields}>
         <NumericInputField
           label="Offer"
@@ -38,7 +38,11 @@ const PlaceOfferTab: FC<PlaceOfferTab> = ({ marketPubkey }) => {
         <InputCounter label="Number of loans" onChange={onLoanAmountChange} value={loansAmount} />
       </div>
       <OfferSummary offerSize={offerSize} marketAPR={marketAPR} />
-      <OfferActionButtons isEdit={isEdit} hasFormChanges={hasFormChanges} {...offerTransactions} />
+      <OfferActionButtons
+        isEditMode={isEditMode}
+        hasFormChanges={hasFormChanges}
+        {...offerTransactions}
+      />
     </div>
   )
 }

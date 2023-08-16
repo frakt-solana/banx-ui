@@ -1,5 +1,6 @@
-import { FC, useState } from 'react'
+import { FC, useMemo, useState } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 
 import { MarketPreview } from '@banx/api/bonds'
@@ -30,18 +31,28 @@ interface OrderBookMobileProps {
 }
 
 const OrderBookMobile: FC<OrderBookMobileProps> = ({ marketPreview, orderBookParams }) => {
+  const { publicKey } = useWallet()
   const [isOrderBookOpen, setOrderBookOpen] = useState<boolean>(false)
 
   const toggleOrderBook = () => {
     setOrderBookOpen(!isOrderBookOpen)
   }
 
-  const { collectionImage: marketImage, collectionName: marketName } = marketPreview || {}
+  const { collectionImage, collectionName } = marketPreview || {}
+  const { orders } = orderBookParams || {}
+
+  const userOrders = useMemo(() => {
+    return orders.filter((order) => order.rawData.assetReceiver === publicKey?.toBase58())
+  }, [orders, publicKey])
 
   return (
     <div className={classNames(styles.orderBookMobile, { [styles.open]: isOrderBookOpen })}>
       <div className={styles.collapsedContentWrapper}>
-        <CollapsedMobileContent collectionImage={marketImage} collectionName={marketName} />
+        <CollapsedMobileContent
+          collectionImage={collectionImage}
+          collectionName={collectionName}
+          totalUserOffers={userOrders.length}
+        />
         <ChevronMobileButton onToggleVisible={toggleOrderBook} />
       </div>
       {isOrderBookOpen && (

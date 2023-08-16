@@ -54,18 +54,22 @@ export const ChevronMobileButton = ({ onToggleVisible }: { onToggleVisible: () =
   </Button>
 )
 
-export const CollapsedMobileContent = ({
-  collectionName = '',
-  collectionImage = '',
-}: {
+interface CollapsedMobileContentProps {
   collectionName?: string
   collectionImage?: string
+  totalUserOffers?: number
+}
+
+export const CollapsedMobileContent: FC<CollapsedMobileContentProps> = ({
+  collectionName = '',
+  collectionImage = '',
+  totalUserOffers = 0,
 }) => (
   <div className={styles.collapsedMobileContent}>
     <img className={styles.collapsedMobileImage} src={collectionImage} />
     <div className={styles.collectionMobileInfo}>
       <p className={styles.collectionMobileTitle}>{collectionName}</p>
-      <p className={styles.collectionMobileSubtitle}>Mine: 23</p>
+      <p className={styles.collectionMobileSubtitle}>Mine: {totalUserOffers}</p>
     </div>
   </div>
 )

@@ -1,56 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
-
-import { isEqual, pick } from 'lodash'
+import { useEffect, useMemo } from 'react'
 
 import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
 
 import { useOfferStore } from '../../ExpandableCardContent/hooks'
 import { parseMarketOrder } from '../../OrderBook/helpers'
+import { useOfferFormController } from './useOfferFormController'
 import { useOfferTransactions } from './useOfferTransactions'
-
-const useOfferFormController = (initialLoanValue: number = 0, initialLoansAmount: number = 1) => {
-  const [loanValue, setLoanValue] = useState(String(initialLoanValue))
-  const [loansAmount, setLoansAmount] = useState(String(initialLoansAmount))
-
-  useEffect(() => {
-    if (initialLoanValue || initialLoansAmount) {
-      setLoanValue(String(initialLoanValue))
-      setLoansAmount(String(initialLoansAmount))
-    }
-  }, [initialLoanValue, initialLoansAmount])
-
-  const onLoanValueChange = (nextValue: string) => {
-    setLoanValue(nextValue)
-  }
-
-  const onLoanAmountChange = (nextValue: string) => {
-    setLoansAmount(nextValue)
-  }
-
-  const resetFormValues = () => {
-    setLoanValue(String(initialLoanValue))
-    setLoansAmount(String(initialLoansAmount))
-  }
-
-  const currentFormValues = { loansAmount, loanValue }
-  const initialFormValues = {
-    loansAmount: String(initialLoansAmount),
-    loanValue: String(initialLoanValue),
-  }
-
-  const hasFormChanges =
-    (initialLoanValue || initialLoansAmount) &&
-    !isEqual(pick(currentFormValues, Object.keys(initialFormValues)), initialFormValues)
-
-  return {
-    loanValue,
-    loansAmount,
-    onLoanValueChange,
-    onLoanAmountChange,
-    hasFormChanges: Boolean(hasFormChanges),
-    resetFormValues,
-  }
-}
 
 export const usePlaceOfferTab = (marketPubkey: string) => {
   const { offerPubkey, setOfferPubkey, setSyntheticParams } = useOfferStore()
@@ -60,15 +15,15 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
 
   const marketPreview = marketsPreview.find((market) => market.marketPubkey === marketPubkey)
 
-  const offer = useMemo(
+  const selectedOffer = useMemo(
     () => offers.find((offer) => offer.publicKey === offerPubkey),
     [offers, offerPubkey],
   )
 
-  const initialOrderValues = offer ? parseMarketOrder(offer) : null
-  const { loanValue: initialLoanValue, loansAmount: initialLoansAmount } = initialOrderValues || {}
+  const initialOrderData = selectedOffer ? parseMarketOrder(selectedOffer) : null
+  const { loanValue: initialLoanValue, loansAmount: initialLoansAmount } = initialOrderData || {}
 
-  const isEdit = !!offerPubkey
+  const isEditMode = !!offerPubkey
 
   const {
     loanValue,
@@ -79,17 +34,17 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
     resetFormValues,
   } = useOfferFormController(initialLoanValue, initialLoansAmount)
 
-  useEffect(() => {
-    const loansAmountNumber = parseFloat(loansAmount)
-    const loanValueNumber = parseFloat(loanValue)
+  const loansAmountNumber = parseFloat(loansAmount)
+  const loanValueNumber = parseFloat(loanValue)
 
+  useEffect(() => {
     if (loansAmountNumber || loanValueNumber) {
       setSyntheticParams({
         loanValue: loanValueNumber,
         loansAmount: loansAmountNumber,
       })
     }
-  }, [loanValue, loansAmount, setSyntheticParams])
+  }, [loansAmountNumber, loanValueNumber, setSyntheticParams])
 
   const goToPlaceOffer = () => {
     setOfferPubkey('')
@@ -98,18 +53,18 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
   const { onCreateOffer, onRemoveOffer, onUpdateOffer } = useOfferTransactions({
     marketPubkey,
     offerPubkey,
-    loanValue: parseFloat(loanValue),
-    loansAmount: parseFloat(loansAmount),
+    loanValue: loanValueNumber,
+    loansAmount: loansAmountNumber,
     offers,
     updateOrAddOffer,
     resetFormValues,
     goToPlaceOffer,
   })
 
-  const offerSize = parseFloat(loanValue) * parseFloat(loansAmount) || 0
+  const offerSize = loanValueNumber * loansAmountNumber || 0
 
   return {
-    isEdit,
+    isEditMode,
     offerSize,
     marketAPR: marketPreview?.marketAPR || 0,
     loanValue,
