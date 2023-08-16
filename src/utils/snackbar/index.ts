@@ -11,7 +11,7 @@ export enum NotificationTypes {
   ERROR = 'error',
 }
 
-export interface NotifyOject {
+export interface SnackbarProps {
   message: string
   description?: string | ReactNode
   type?: NotificationTypes
@@ -22,7 +22,7 @@ export interface NotifyOject {
   className?: string
 }
 
-type EnqueueSnackbar = (value: NotifyOject) => Key
+type EnqueueSnackbar = (props: SnackbarProps) => Key
 export const enqueueSnackbar: EnqueueSnackbar = ({
   message = '',
   description = null,
