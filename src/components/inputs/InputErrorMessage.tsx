@@ -14,9 +14,5 @@ export const InputErrorMessage: FC<InputErrorMessageProps> = ({ className, messa
   const containerClassName = classNames(styles.errors, className)
   const errorMessage = hasError ? message : ''
 
-  return (
-    <div className={containerClassName}>
-      <p>{errorMessage}</p>
-    </div>
-  )
+  return <div className={containerClassName}>{errorMessage}</div>
 }
