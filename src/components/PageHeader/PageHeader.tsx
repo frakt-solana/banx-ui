@@ -8,14 +8,12 @@ interface PageHeaderProps {
   title: string
 }
 
-export const PageHeaderBackdrop: FC<PropsWithChildren<PageHeaderProps>> = ({ title, children }) => {
-  return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>{title}</h2>
-      <div className={styles.content}>{children}</div>
-    </div>
-  )
-}
+export const PageHeaderBackdrop: FC<PropsWithChildren<PageHeaderProps>> = ({ title, children }) => (
+  <div className={styles.container}>
+    <h2 className={styles.title}>{title}</h2>
+    <div className={styles.content}>{children}</div>
+  </div>
+)
 
 export const MainStat: FC<StatsInfoProps> = (props) => (
   <StatInfo
