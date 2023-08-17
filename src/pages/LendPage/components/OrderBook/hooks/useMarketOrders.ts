@@ -89,8 +89,6 @@ const useProcessedOrders: UseProcessedOrders = ({
       parsedOrders.push(syntheticOrder)
     }
 
-    const orders = editOfferPubkey ? processedEditableOrders : parsedOrders
-
-    return orders
+    return editOfferPubkey ? processedEditableOrders : parsedOrders
   }, [offers, loanValue, loansAmount, offerPubkey])
 }

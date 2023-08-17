@@ -38,8 +38,8 @@ export const OrderBookLabel = () => (
 
 export const NoActiveOffers = () => (
   <div className={styles.noData}>
-    <div className={styles.noDataTitle}>No active offers at the moment</div>
-    <div className={styles.noDataSubtitle}>Good chance to be first!</div>
+    <p className={styles.noDataTitle}>No active offers at the moment</p>
+    <p className={styles.noDataSubtitle}>Good chance to be first!</p>
   </div>
 )
 

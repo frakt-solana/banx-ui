@@ -2,10 +2,7 @@ import { useEffect, useState } from 'react'
 
 import { isEqual, pick } from 'lodash'
 
-export const useOfferFormController = (
-  initialLoanValue: number = 0,
-  initialLoansAmount: number = 1,
-) => {
+export const useOfferFormController = (initialLoanValue = 0, initialLoansAmount = 1) => {
   const [loanValue, setLoanValue] = useState(String(initialLoanValue))
   const [loansAmount, setLoansAmount] = useState(String(initialLoansAmount))
 

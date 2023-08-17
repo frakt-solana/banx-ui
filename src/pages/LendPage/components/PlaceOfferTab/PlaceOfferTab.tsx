@@ -40,7 +40,7 @@ const PlaceOfferTab: FC<PlaceOfferTab> = ({ marketPubkey }) => {
         />
         <InputCounter label="Number of loans" onChange={onLoanAmountChange} value={loansAmount} />
       </div>
-      <InputErrorMessage hasError={showDepositError} message="Not enough SOL" />
+      <InputErrorMessage message={showDepositError ? 'Not enough SOL' : ''} />
       <OfferSummary offerSize={offerSize} marketAPR={marketAPR} />
       <OfferActionButtons
         isEditMode={isEditMode}

@@ -10,7 +10,7 @@ import { useOfferStore } from './hooks'
 
 import styles from './ExpandableCardContent.module.less'
 
-enum TabsNames {
+enum TabName {
   OFFER = 'offer',
   ACTIVITY = 'activity',
 }
@@ -21,12 +21,12 @@ interface TabsComponents {
 
 interface ExpandableCardContentProps {
   marketPubkey: string
-  visibleOrderBook: boolean
+  isOrderBookVisible: boolean
 }
 
 const ExpandableCardContent: FC<ExpandableCardContentProps> = ({
   marketPubkey,
-  visibleOrderBook,
+  isOrderBookVisible,
 }) => {
   const { offerPubkey } = useOfferStore()
 
@@ -42,18 +42,18 @@ const ExpandableCardContent: FC<ExpandableCardContentProps> = ({
     }
   }, [offerPubkey, setTabValue])
 
-  const tabsComponents: TabsComponents = {
-    [TabsNames.OFFER]: <PlaceOfferTab marketPubkey={marketPubkey} />,
-    [TabsNames.ACTIVITY]: <ActivityTab marketPubkey={marketPubkey} />,
+  const TABS_COMPONENTS: TabsComponents = {
+    [TabName.OFFER]: <PlaceOfferTab marketPubkey={marketPubkey} />,
+    [TabName.ACTIVITY]: <ActivityTab marketPubkey={marketPubkey} />,
   }
 
   return (
     <div className={styles.content}>
       <div className={styles.tabsContentWrapper}>
         <Tabs tabs={bondTabs} value={tabValue} setValue={setTabValue} />
-        <div className={styles.tabContent}>{tabsComponents[tabValue]}</div>
+        <div className={styles.tabContent}>{TABS_COMPONENTS[tabValue]}</div>
       </div>
-      {visibleOrderBook && <OrderBook marketPubkey={marketPubkey} />}
+      {isOrderBookVisible && <OrderBook marketPubkey={marketPubkey} />}
     </div>
   )
 }

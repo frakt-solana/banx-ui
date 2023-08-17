@@ -14,8 +14,10 @@ interface OfferSummaryProps {
   marketAPR: number
 }
 
+const WEEKS_IN_YEAR = 52
+
 export const OfferSummary: FC<OfferSummaryProps> = ({ offerSize, marketAPR }) => {
-  const weeklyAprPercentage = marketAPR / 100 / 52
+  const weeklyAprPercentage = marketAPR / 100 / WEEKS_IN_YEAR
   const estimatedInterest = (offerSize * weeklyAprPercentage) / 100
 
   return (

@@ -14,30 +14,30 @@ import styles from './LendCard.module.less'
 
 interface LendCardProps {
   market: MarketPreview
-  cardIsOpen: boolean
-  visibleOrderBook: boolean
+  isCardOpen: boolean
+  isOrderBookVisible: boolean
   onCardClick: () => void
 }
 
-const LendCard: FC<LendCardProps> = ({ cardIsOpen, onCardClick, market, visibleOrderBook }) => {
+const LendCard: FC<LendCardProps> = ({ isCardOpen, onCardClick, market, isOrderBookVisible }) => {
   return (
-    <div className={classNames(styles.card, { [styles.active]: cardIsOpen })}>
+    <div className={classNames(styles.card, { [styles.active]: isCardOpen })}>
       <div className={styles.cardBody} onClick={onCardClick}>
         <MarketMainInfo market={market} />
         <div className={styles.row}>
           <MarketAdditionalInfo market={market} />
           <Button
             type="circle"
-            className={classNames(styles.chevronButton, { [styles.active]: cardIsOpen })}
+            className={classNames(styles.chevronButton, { [styles.active]: isCardOpen })}
           >
             <ChevronDown />
           </Button>
         </div>
       </div>
-      {cardIsOpen && (
+      {isCardOpen && (
         <ExpandableCardContent
           marketPubkey={market.marketPubkey}
-          visibleOrderBook={visibleOrderBook}
+          isOrderBookVisible={isOrderBookVisible}
         />
       )}
     </div>

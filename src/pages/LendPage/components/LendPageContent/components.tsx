@@ -29,16 +29,16 @@ export const MarketsList: FC<MarketsListProps> = ({ markets, visibleCards, toggl
       {markets.map((market: MarketPreview) => {
         const { collectionName, marketPubkey } = market
 
-        const cardIsOpen = visibleCards.includes(collectionName)
-        const visibleOrderBook = isMobile ? visibleCards.at(-1) === collectionName : cardIsOpen
+        const isCardOpen = visibleCards.includes(collectionName)
+        const isOrderBookVisible = isMobile ? visibleCards.at(-1) === collectionName : isCardOpen
 
         return (
           <LendCard
             key={marketPubkey}
             market={market}
             onCardClick={() => toggleVisibleCard(collectionName)}
-            visibleOrderBook={visibleOrderBook}
-            cardIsOpen={cardIsOpen}
+            isOrderBookVisible={isOrderBookVisible}
+            isCardOpen={isCardOpen}
           />
         )
       })}

@@ -6,7 +6,7 @@ import { SortOption } from '@banx/components/SortDropdown'
 
 import { MarketPreview } from '@banx/api/bonds'
 
-import { defaultSortOption, sortOptions } from '../constants'
+import { DEFAULT_SORT_OPTION, SORT_OPTIONS } from '../constants'
 
 enum SortField {
   OFFER_TVL = 'offerTVL',
@@ -16,7 +16,7 @@ enum SortField {
 }
 
 export const useSortMarkets = (markets: MarketPreview[]) => {
-  const [sortOption, setSortOption] = useState<SortOption>(defaultSortOption)
+  const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
 
   const sortOptionValue = sortOption?.value
 
@@ -47,7 +47,7 @@ export const useSortMarkets = (markets: MarketPreview[]) => {
     sortParams: {
       option: sortOption,
       onChange: setSortOption,
-      options: sortOptions,
+      options: SORT_OPTIONS,
     },
   }
 }
