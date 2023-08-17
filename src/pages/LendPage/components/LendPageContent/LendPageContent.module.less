@@ -1,37 +1,19 @@
 .content {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  border: 1px solid var(--primary-border);
-  background-color: var(--primary-background);
+  padding-bottom: 24px;
 }
 
 .content.selected {
   @media (max-width: 960px) {
-    padding-bottom: 108px;
+    padding-bottom: 132px;
   }
 }
 
 .emptyList {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  padding: 175px 0;
-  gap: 16px;
-
-  @media (max-width: 960px) {
-    padding: 120px 0;
-  }
+  justify-content: center;
 }
+
 .emptyListTitle {
-  font: var(--font-text-4);
-  font-size: 24px;
-}
-.emptyListButton {
-  height: 48px;
-  width: 200px;
-
-  @media (max-width: 960px) {
-    height: 40px;
-  }
+  font: var(--body-text-md);
 }

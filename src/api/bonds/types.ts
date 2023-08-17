@@ -8,12 +8,11 @@ export const MarketPreviewSchema = z.object({
   collectionImage: z.string(),
   collectionFloor: z.number(),
   offerTVL: z.number(),
-  apy: z.number(), //? %
   bestOffer: z.number(), //? lamports
   bestLTV: z.number(),
   activeBondsAmount: z.number(),
   activeOfferAmount: z.number(),
-  fee: z.number(),
+  marketAPR: z.number(),
   loansTVL: z.number(),
 })
 

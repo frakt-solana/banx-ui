@@ -1,0 +1,70 @@
+.mainInfoContainer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.mainInfoContent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.collectionImage {
+  height: 72px;
+  width: 72px;
+
+  @media (max-width: 768px) {
+    height: 64px;
+    width: 64px;
+  }
+}
+
+.collectionName {
+  font: var(--card-header-lg);
+
+  @media (max-width: 768px) {
+    font: var(--card-header-md);
+  }
+}
+
+.mainInfoStats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  & > div {
+    min-width: 80px;
+
+    @media (max-width: 768px) {
+      min-width: 65px;
+    }
+  }
+}
+
+.additionalInfoStats {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
+
+  & > div {
+    align-items: flex-end;
+    width: 100%;
+  }
+
+  @media (max-width: 960px) {
+    justify-content: space-between;
+    gap: 0;
+
+    & > div {
+      align-items: center;
+    }
+    & > div:first-child {
+      align-items: flex-start;
+    }
+    & > div:last-child {
+      align-items: flex-end;
+    }
+  }
+}

@@ -7,34 +7,39 @@ import { Button } from '@banx/components/Buttons'
 import { MarketPreview } from '@banx/api/bonds'
 import { ChevronDown } from '@banx/icons'
 
-import ExpandableCardContent from './components/ExpandableCardContent'
-import { MarketAdditionalInfo, MarketMainInfo } from './components/MarketOverviewInfo'
+import ExpandableCardContent from '../ExpandableCardContent'
+import { MarketAdditionalInfo, MarketMainInfo } from '../MarketOverviewInfo'
 
 import styles from './LendCard.module.less'
 
 interface LendCardProps {
   market: MarketPreview
-  isVisible: boolean
-  visibleOrderBook: boolean
+  isCardOpen: boolean
+  isOrderBookVisible: boolean
   onCardClick: () => void
 }
 
-const LendCard: FC<LendCardProps> = ({ isVisible, onCardClick, market }) => {
+const LendCard: FC<LendCardProps> = ({ isCardOpen, onCardClick, market, isOrderBookVisible }) => {
   return (
-    <div className={classNames(styles.card, { [styles.active]: isVisible })}>
+    <div className={classNames(styles.card, { [styles.active]: isCardOpen })}>
       <div className={styles.cardBody} onClick={onCardClick}>
         <MarketMainInfo market={market} />
         <div className={styles.row}>
           <MarketAdditionalInfo market={market} />
           <Button
             type="circle"
-            className={classNames(styles.chevronButton, { [styles.active]: isVisible })}
+            className={classNames(styles.chevronButton, { [styles.active]: isCardOpen })}
           >
             <ChevronDown />
           </Button>
         </div>
       </div>
-      {isVisible && <ExpandableCardContent marketPubkey={market.marketPubkey} />}
+      {isCardOpen && (
+        <ExpandableCardContent
+          marketPubkey={market.marketPubkey}
+          isOrderBookVisible={isOrderBookVisible}
+        />
+      )}
     </div>
   )
 }

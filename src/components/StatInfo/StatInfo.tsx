@@ -14,7 +14,7 @@ interface ClassNamesProps {
   value: string
 }
 
-interface StatsInfoProps {
+export interface StatsInfoProps {
   value: number | string | JSX.Element
 
   label?: string
