@@ -19,6 +19,24 @@
 .standard {
   padding: 8px 16px;
 
+  &.primary {
+    color: var(--black-color);
+    background-color: var(--accent-primary);
+
+    &:hover {
+      background-color: var(--accent-secondary);
+    }
+  }
+
+  &.secondary {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--accent-primary);
+
+    &:hover {
+      border: 1px solid var(--accent-secondary);
+    }
+  }
+
   &.large {
     height: 40px;
   }
@@ -31,26 +49,9 @@
   }
 
   &:disabled {
+    background-color: var(--bg-secondary);
     border: 1px solid var(--bg-border);
-    background-color: var(--bg-primary);
-  }
-}
-
-.standard.primary {
-  color: #000000;
-  background-color: var(--accent-primary);
-
-  &:hover {
-    background-color: var(--accent-secondary);
-  }
-}
-
-.standard.secondary {
-  background-color: var(--bg-primary);
-  border: 1px solid var(--accent-primary);
-
-  &:hover {
-    border: 1px solid var(--accent-secondary);
+    color: var(--content-secondary);
   }
 }
 
@@ -71,6 +72,11 @@
   &.large {
     height: 40px;
     width: 40px;
+
+    @media (max-width: 768px) {
+      height: 32px;
+      width: 32px;
+    }
   }
   &.medium {
     height: 32px;

@@ -4,7 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
-import { defaultSortOption } from '@banx/pages/LoansPage/constants'
+import { DEFAULT_SORT_OPTION } from '@banx/pages/LoansPage/constants'
 import { useWalletLoans } from '@banx/pages/LoansPage/hooks'
 
 import { useFilteredLoans } from './useFilteredLoans'
@@ -25,7 +25,7 @@ export const useLoansActiveTab = () => {
 
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
 
-  const [sortOption, setSortOption] = useState<SortOption>(defaultSortOption)
+  const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
 
   const filteredLoans = useFilteredLoans(loans, selectedOptions)
   const sortedLoans = useSortedLoans(filteredLoans, sortOption.value)

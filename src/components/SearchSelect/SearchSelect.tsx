@@ -33,10 +33,16 @@ export const SearchSelect = <P extends object>({
   ...props
 }: SearchSelectProps<P>) => {
   const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false)
+  const [inputValue, setInputValue] = useState<string>('')
 
   const handleDropdownVisibleChange = (visible: boolean) => {
     setIsPopupOpen(visible)
   }
+  const handleInputChange = (value: string) => {
+    setInputValue(value)
+  }
+
+  const showSufixIcon = !selectedOptions?.length && !inputValue
 
   return (
     <div className={classNames(styles.selectWrapper, className)}>
@@ -54,7 +60,8 @@ export const SearchSelect = <P extends object>({
         popupClassName="rootSelectPopupClassName"
         getPopupContainer={getPopupContainer}
         clearIcon={<CloseModal />}
-        suffixIcon={!selectedOptions?.length && <SuffixIcon isPopupOpen={isPopupOpen} />}
+        suffixIcon={showSufixIcon && <SuffixIcon isPopupOpen={isPopupOpen} />}
+        onSearch={handleInputChange}
         onDropdownVisibleChange={handleDropdownVisibleChange}
         dropdownRender={(menu) => (
           <>
