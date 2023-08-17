@@ -4,7 +4,7 @@ import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
 
-import { MarketPreview } from '@banx/api/bonds'
+import { MarketPreview } from '@banx/api/core'
 import { ChevronDown } from '@banx/icons'
 
 import ExpandableCardContent from '../ExpandableCardContent'

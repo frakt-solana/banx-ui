@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-import { Offer } from '@banx/api/bonds'
+import { Offer } from '@banx/api/core'
 import { useMarketOffers } from '@banx/pages/LendPage/hooks'
 
 import { parseMarketOrder } from '../helpers'

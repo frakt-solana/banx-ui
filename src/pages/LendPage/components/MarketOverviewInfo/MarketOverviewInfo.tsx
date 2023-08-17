@@ -4,7 +4,7 @@ import { isFunction } from 'lodash'
 
 import { StatInfo } from '@banx/components/StatInfo'
 
-import { MarketPreview } from '@banx/api/bonds'
+import { MarketPreview } from '@banx/api/core'
 
 import { ADDITIONAL_MARKET_INFO, MAIN_MARKET_INFO } from './constants'
 

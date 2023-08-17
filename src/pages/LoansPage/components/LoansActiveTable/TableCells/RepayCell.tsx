@@ -4,7 +4,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 
 import { Button } from '@banx/components/Buttons'
 
-import { Loan } from '@banx/api/loans'
+import { Loan } from '@banx/api/core'
 import { useWalletLoans } from '@banx/pages/LoansPage/hooks'
 import {
   MakeTransactionFn,

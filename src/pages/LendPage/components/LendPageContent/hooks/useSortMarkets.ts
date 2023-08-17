@@ -4,7 +4,7 @@ import { get, sortBy } from 'lodash'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
-import { MarketPreview } from '@banx/api/bonds'
+import { MarketPreview } from '@banx/api/core'
 
 import { DEFAULT_SORT_OPTION, SORT_OPTIONS } from '../constants'
 
