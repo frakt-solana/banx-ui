@@ -5,7 +5,7 @@ import moment from 'moment'
 
 import Timer from '@banx/components/Timer'
 
-import { Loan } from '@banx/api/loans'
+import { Loan } from '@banx/api/core'
 
 import styles from '../LoansTable.module.less'
 

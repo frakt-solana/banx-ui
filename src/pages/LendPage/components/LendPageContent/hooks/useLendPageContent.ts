@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 
-import { MarketPreview } from '@banx/api/bonds'
+import { MarketPreview } from '@banx/api/core'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { convertAprToApy } from '@banx/utils'
 

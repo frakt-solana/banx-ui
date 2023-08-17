@@ -5,7 +5,7 @@ import {
   repayPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 
-import { Loan } from '@banx/api/loans'
+import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 

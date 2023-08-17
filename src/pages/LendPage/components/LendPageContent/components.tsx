@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import { MarketPreview } from '@banx/api/bonds'
+import { MarketPreview } from '@banx/api/core'
 import { TABLET_WIDTH } from '@banx/constants'
 import { useWindowSize } from '@banx/hooks'
 

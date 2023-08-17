@@ -1,7 +1,7 @@
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
 import { getTopOrderSize } from 'fbonds-core/lib/fbond-protocol/utils/cartManagerV2'
 
-import { Offer } from '@banx/api/bonds'
+import { Offer } from '@banx/api/core'
 
 import { Order } from './types'
 

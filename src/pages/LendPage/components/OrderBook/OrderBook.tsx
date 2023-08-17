@@ -3,7 +3,7 @@ import { FC, useMemo, useState } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 
-import { MarketPreview } from '@banx/api/bonds'
+import { MarketPreview } from '@banx/api/core'
 
 import {
   ChevronMobileButton,
