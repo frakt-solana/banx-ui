@@ -4,6 +4,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 
 import { Button } from '@banx/components/Buttons'
 
+import { Offer } from '@banx/api/core'
 import {
   MakeTransactionFn,
   TransactionParams,
@@ -15,7 +16,7 @@ import {
 } from '@banx/transactions/borrow'
 
 import { useCartState } from '../../cartState'
-import { SimpleOffer } from '../../types'
+import { useBorrowNftsAndSimpleOffers } from '../../hooks'
 import { TableNftData } from './BorrowTable'
 
 export const BorrowCell: FC<{ nft: TableNftData; disabled?: boolean }> = ({
@@ -25,6 +26,7 @@ export const BorrowCell: FC<{ nft: TableNftData; disabled?: boolean }> = ({
   const borrow = useBorrow()
 
   const { findBestOffer } = useCartState()
+  const { rawOffers } = useBorrowNftsAndSimpleOffers()
 
   return (
     <Button
@@ -32,11 +34,16 @@ export const BorrowCell: FC<{ nft: TableNftData; disabled?: boolean }> = ({
       disabled={disabled}
       onClick={(event) => {
         const offer = findBestOffer({ marketPubkey: nft.nft.loan.marketPubkey })
-        offer &&
+        const rawOffer = rawOffers[nft.nft.loan.marketPubkey].find(
+          ({ publicKey }) => publicKey === offer?.publicKey,
+        )
+        if (offer && rawOffer) {
           borrow({
             mint: nft.mint,
-            offer,
+            loanValue: offer.loanValue,
+            offer: rawOffer,
           })
+        }
 
         event.stopPropagation()
       }}
@@ -62,13 +69,20 @@ const useBorrow = () => {
     })
   }
 
-  const borrow = async ({ mint, offer }: { mint: string; offer: SimpleOffer }) => {
+  const borrow = async ({
+    mint,
+    offer,
+    loanValue,
+  }: {
+    mint: string
+    offer: Offer
+    loanValue: number
+  }) => {
     await executeLoanTransaction<MakeBorrowPerpetualTransaction>({
       makeTransactionFn: makeBorrowPerpetualTransaction,
       transactionParams: {
-        loanValue: offer.loanValue,
-        offerPubkey: offer.publicKey,
-        marketPubkey: offer.hadoMarket,
+        loanValue: loanValue,
+        offer,
         mint,
       },
       onSuccess: () => {

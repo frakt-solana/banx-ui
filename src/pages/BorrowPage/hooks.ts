@@ -47,6 +47,7 @@ export const useBorrowNftsAndSimpleOffers = () => {
 
   return {
     nfts: data?.nfts || [],
+    rawOffers: data?.offers || {},
     isLoading,
   }
 }
