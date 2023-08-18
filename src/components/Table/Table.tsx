@@ -41,7 +41,7 @@ const Table = <T extends object, P extends object>({
   const hasData = !isEmpty(data)
 
   return (
-    <div className={styles.container}>
+    <>
       {sortViewParams && <SortView columns={columns} showCard={showCard} {...sortViewParams} />}
 
       {loading && <Loader />}
@@ -50,7 +50,7 @@ const Table = <T extends object, P extends object>({
       {hasData && (
         <ViewComponent data={data} columns={columns} activeRowParams={activeRowParams} {...props} />
       )}
-    </div>
+    </>
   )
 }
 
