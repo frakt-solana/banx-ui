@@ -50,6 +50,7 @@ export const buildAndExecuteTransaction = async <T, R>({
 
     return { transaction, signers, ...rest } as R
   } catch (error) {
+    console.error(error)
     captureSentryTxnError({ error })
     enqueueTxnErrorSnackbar(error)
   }
