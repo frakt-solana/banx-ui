@@ -13,4 +13,9 @@ export const TXN_ERROR_DEFINITIONS: Array<TxnErrorDefinition> = [
     keyphrases: ['insufficient lamports'],
     type: NotificationTypes.ERROR,
   },
+  {
+    humanMessage: TxnErrorHumanName.TOKEN_IS_LOCKED,
+    keyphrases: ['Token is locked'],
+    type: NotificationTypes.ERROR,
+  },
 ]
