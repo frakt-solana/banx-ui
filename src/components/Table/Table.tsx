@@ -7,8 +7,6 @@ import { Loader } from '../Loader'
 import { ActiveRowParams, PartialBreakpoints, SortViewParams } from './types'
 import { CardView, SortView, TableView } from './views'
 
-import styles from './Table.module.less'
-
 export interface TableProps<T, P> {
   data: ReadonlyArray<T>
   columns: ColumnsType<T>

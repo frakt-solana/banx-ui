@@ -1,7 +1,12 @@
-import { ColumnsType } from 'antd/es/table'
+import { ColumnType } from 'antd/es/table'
 
 import Checkbox from '@banx/components/Checkbox'
-import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableCells'
+import {
+  HeaderCell,
+  NftInfoCell,
+  createColumn,
+  createSolValueJSX,
+} from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/loans'
 
@@ -21,11 +26,10 @@ export const getTableColumns = ({
   toggleLoanInSelection: (loan: Loan) => void
   hasSelectedLoans: boolean
 }) => {
-  const COLUMNS: ColumnsType<Loan> = [
+  const columnConfigs: ColumnType<Loan>[] = [
     {
       key: 'collateral',
-      dataIndex: 'collateral',
-      title: () => (
+      title: (
         <div className={styles.headerTitleRow}>
           <Checkbox className={styles.checkbox} onChange={onSelectAll} checked={hasSelectedLoans} />
           <HeaderCell label="Collateral" />
@@ -42,41 +46,34 @@ export const getTableColumns = ({
     },
     {
       key: 'loanValue',
-      dataIndex: 'loanValue',
-      title: () => <HeaderCell label="Borrowed" />,
+      title: <HeaderCell label="Borrowed" />,
       render: (_, loan) => createSolValueJSX(loan.fraktBond.borrowedAmount, 1e9),
-      showSorterTooltip: false,
       sorter: true,
     },
     {
       key: 'repayValue',
-      dataIndex: 'repayValue',
-      title: () => <HeaderCell label="Debt" />,
+      title: <HeaderCell label="Debt" />,
       render: (_, loan) => <RepayValueCell loan={loan} />,
-      showSorterTooltip: false,
       sorter: true,
     },
     {
       key: 'health',
-      dataIndex: 'health',
-      title: () => <HeaderCell label="Est. health" />,
+      title: <HeaderCell label="Est. health" />,
       render: (_, loan) => createSolValueJSX(loan.fraktBond.amountToReturn, 1e9),
-      showSorterTooltip: false,
       sorter: true,
     },
     {
       key: 'status',
-      dataIndex: 'status',
-      title: () => <HeaderCell label="Loan status" />,
+      title: <HeaderCell label="Loan status" />,
       render: (_, loan) => <StatusCell loan={loan} />,
-      showSorterTooltip: false,
       sorter: true,
     },
     {
-      title: () => <HeaderCell label="Repay" />,
+      key: 'repay',
+      title: <HeaderCell label="Repay" />,
       render: (_, loan) => <RepayCell loan={loan} />,
     },
   ]
 
-  return COLUMNS
+  return columnConfigs.map((config) => createColumn(config))
 }

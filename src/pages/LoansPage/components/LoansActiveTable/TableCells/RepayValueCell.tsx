@@ -3,7 +3,7 @@ import { FC } from 'react'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import moment from 'moment'
 
-import { createSolValueJSX } from '@banx/components/TableCells'
+import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/loans'
 
