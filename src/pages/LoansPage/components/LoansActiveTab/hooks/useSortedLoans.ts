@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 
 import { get, sortBy } from 'lodash'
 
-import { Loan } from '@banx/api/loans'
+import { Loan } from '@banx/api/core'
 
 enum SortField {
   BORROWED = 'loanValue',

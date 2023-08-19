@@ -1,6 +1,6 @@
 import Table, { TableProps } from '@banx/components/Table'
 
-import { Loan } from '@banx/api/loans'
+import { Loan } from '@banx/api/core'
 
 import { useSelectedLoans } from '../../loansState'
 import { SearchSelectOption } from '../LoansActiveTab'

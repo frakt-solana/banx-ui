@@ -8,7 +8,7 @@ import {
   createSolValueJSX,
 } from '@banx/components/TableComponents'
 
-import { Loan } from '@banx/api/loans'
+import { Loan } from '@banx/api/core'
 
 import { RepayCell, StatusCell } from './TableCells'
 import { RepayValueCell } from './TableCells/RepayValueCell'

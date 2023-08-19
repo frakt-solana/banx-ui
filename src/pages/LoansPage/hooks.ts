@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { produce } from 'immer'
 import { create } from 'zustand'
 
-import { Loan, fetchWalletLoans } from '@banx/api/loans'
+import { Loan, fetchWalletLoans } from '@banx/api/core'
 
 type UseWalletLoans = (walletPublicKey: string) => {
   loans: Loan[]

@@ -5,7 +5,7 @@ import moment from 'moment'
 
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
-import { Loan } from '@banx/api/loans'
+import { Loan } from '@banx/api/core'
 
 export const RepayValueCell: FC<{ loan: Loan }> = ({ loan }) => {
   const { solAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction || {}

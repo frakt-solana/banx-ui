@@ -50,6 +50,11 @@ export const buildAndExecuteTransaction = async <T, R>({
 
     return { transaction, signers, ...rest } as R
   } catch (error) {
+    if (error instanceof Error && 'logs' in error && Array.isArray(error.logs)) {
+      console.error(error)
+      console.error(error.logs.join('\n'))
+    }
+
     captureSentryTxnError({ error })
     enqueueTxnErrorSnackbar(error)
   }
