@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-import { filter, get, groupBy, includes, isEmpty, sortBy } from 'lodash'
+import { filter, first, get, groupBy, includes, isEmpty, map, sortBy } from 'lodash'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
@@ -16,16 +16,18 @@ export const useBorrowTable = () => {
   const { nfts, isLoading } = useBorrowNfts()
   const { offerByMint, addNft, removeNft, findOfferInCart, findBestOffer } = useCartState()
 
-  const tableNftData: TableNftData[] = nfts.map((nft) => {
-    const offer = findOfferInCart({ mint: nft.mint })
+  const tableNftData: TableNftData[] = useMemo(() => {
+    return nfts.map((nft) => {
+      const offer = findOfferInCart({ mint: nft.mint })
 
-    const loanValue =
-      offer?.loanValue || findBestOffer({ marketPubkey: nft.loan.marketPubkey })?.loanValue || 0
+      const loanValue =
+        offer?.loanValue || findBestOffer({ marketPubkey: nft.loan.marketPubkey })?.loanValue || 0
 
-    const selected = !!offer
+      const selected = !!offer
 
-    return { mint: nft.mint, nft, loanValue, selected }
-  })
+      return { mint: nft.mint, nft, loanValue, selected }
+    })
+  }, [nfts, findBestOffer, findOfferInCart])
 
   const onSelectAll = () => {
     return
@@ -57,16 +59,20 @@ export const useBorrowTable = () => {
   const filteredNfts = useFilteredNfts(tableNftData, selectedOptions)
   const sortedNfts = useSortedNfts(filteredNfts, sortOption.value)
 
-  const searchSelectOptions = Object.values(
-    groupBy(tableNftData, ({ nft }) => nft.nft.meta.collectionName),
-  ).map((nfts) => {
-    const firstNftFromCollection = nfts.at(0)?.nft.nft.meta ?? null
-    return {
-      collectionName: firstNftFromCollection?.collectionName ?? '',
-      collectionImage: firstNftFromCollection?.collectionImage ?? '',
-      nftsCount: nfts.length,
-    }
-  })
+  const searchSelectOptions = useMemo(() => {
+    const nftsGroupedByCollection = groupBy(nfts, (nft) => nft.nft.meta.collectionName)
+    return map(nftsGroupedByCollection, (groupedNfts) => {
+      const firstNftInGroup = first(groupedNfts)
+      const { collectionName = '', collectionImage = '' } = firstNftInGroup?.nft.meta || {}
+      const numberOfNFTs = groupedNfts.length
+
+      return {
+        collectionName,
+        collectionImage,
+        numberOfNFTs,
+      }
+    })
+  }, [nfts])
 
   return {
     tableNftData: sortedNfts,
@@ -80,7 +86,7 @@ export const useBorrowTable = () => {
           labelKey: 'collectionName',
           valueKey: 'collectionName',
           imageKey: 'collectionImage',
-          secondLabel: { key: 'nftsCount' },
+          secondLabel: { key: 'numberOfNFTs' },
         },
         className: styles.searchSelect,
         selectedOptions,
