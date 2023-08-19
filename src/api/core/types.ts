@@ -122,12 +122,12 @@ export type Offer = z.infer<typeof PairSchema>
 const NFTSchema = z.object({
   mint: z.string(),
   meta: z.object({
-    // collectionSlug: z.string(),
     imageUrl: z.string(),
     name: z.string(),
     collectionName: z.string(),
     collectionImage: z.string(),
   }),
+  collectionFloor: z.number(),
 })
 
 const BondTradeTransactionSchema = z.object({
@@ -186,8 +186,9 @@ const BorrowNftSchema = z.object({
   mint: z.string(),
   loan: z.object({
     marketPubkey: z.string(),
+    fraktMarket: z.string(),
+    marketApr: z.number(),
     banxStake: z.string().optional(),
-    valuation: z.number(), // lamports
   }),
   nft: NFTSchema,
 })
