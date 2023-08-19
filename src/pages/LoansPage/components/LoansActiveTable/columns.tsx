@@ -10,8 +10,7 @@ import {
 
 import { Loan } from '@banx/api/core'
 
-import { RepayCell, StatusCell } from './TableCells'
-import { RepayValueCell } from './TableCells/RepayValueCell'
+import { DebtCell, RepayCell, StatusCell } from './TableCells'
 
 import styles from './LoansTable.module.less'
 
@@ -57,7 +56,7 @@ export const getTableColumns = ({
     {
       key: 'repayValue',
       title: <HeaderCell label="Debt" />,
-      render: (_, loan) => <RepayValueCell loan={loan} />,
+      render: (_, loan) => <DebtCell loan={loan} />,
       sorter: true,
     },
     {

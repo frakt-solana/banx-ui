@@ -15,7 +15,7 @@ import { useWalletLoans } from '../../hooks'
 const LoansHeader: FC = () => {
   const { loans } = useWalletLoans()
 
-  const numberOfLoans = loans?.length
+  const numberOfLoans = loans.length
   const totalBorrowed = sumBy(loans, ({ fraktBond }) => fraktBond.borrowedAmount)
 
   return (
