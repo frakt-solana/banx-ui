@@ -37,11 +37,11 @@ export const useCartState = create<CartState>((set, get) => ({
         state.offerByMint[mint] = offer
 
         //? Remove offer from offersByMarket
+
+        const { hadoMarket: marketPubkey } = offer
         state.offersByMarket = {
           ...state.offersByMarket,
-          [offer.hadoMarket]: state.offersByMarket[offer.hadoMarket].filter(
-            ({ id }) => id !== offer.id,
-          ),
+          [marketPubkey]: state.offersByMarket[marketPubkey].filter(({ id }) => id !== offer.id),
         }
       }),
     )
@@ -57,12 +57,10 @@ export const useCartState = create<CartState>((set, get) => ({
         delete state.offerByMint[mint]
 
         //? Put offer from CartNft back to offersByMarket
+        const { hadoMarket: marketPubkey } = offerInCart
         state.offersByMarket = {
           ...state.offersByMarket,
-          [offerInCart.hadoMarket]: [
-            ...state.offersByMarket[offerInCart.hadoMarket],
-            offerInCart,
-          ].sort((a, b) => {
+          [marketPubkey]: [...state.offersByMarket[marketPubkey], offerInCart].sort((a, b) => {
             return b.loanValue - a.loanValue
           }),
         }
