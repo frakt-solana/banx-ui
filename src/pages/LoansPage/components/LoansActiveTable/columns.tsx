@@ -69,7 +69,6 @@ export const getTableColumns = ({
       sorter: true,
     },
     {
-      key: 'repay',
       title: <HeaderCell label="Repay" />,
       render: (_, loan) => <RepayCell loan={loan} />,
     },
