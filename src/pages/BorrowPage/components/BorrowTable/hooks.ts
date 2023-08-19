@@ -16,18 +16,16 @@ export const useBorrowTable = () => {
   const { nfts, isLoading } = useBorrowNfts()
   const { offerByMint, addNft, removeNft, findOfferInCart, findBestOffer } = useCartState()
 
-  const tableNftData: TableNftData[] = useMemo(() => {
-    return nfts.map((nft) => {
-      const offer = findOfferInCart({ mint: nft.mint })
+  const tableNftData: TableNftData[] = nfts.map((nft) => {
+    const offer = findOfferInCart({ mint: nft.mint })
 
-      const loanValue =
-        offer?.loanValue || findBestOffer({ marketPubkey: nft.loan.marketPubkey })?.loanValue || 0
+    const loanValue =
+      offer?.loanValue || findBestOffer({ marketPubkey: nft.loan.marketPubkey })?.loanValue || 0
 
-      const selected = !!offer
+    const selected = !!offer
 
-      return { mint: nft.mint, nft, loanValue, selected }
-    })
-  }, [nfts, findBestOffer, findOfferInCart])
+    return { mint: nft.mint, nft, loanValue, selected }
+  })
 
   const onSelectAll = () => {
     return
