@@ -161,7 +161,7 @@ export const fetchWalletLoans: FetchWalletLoans = async ({
 }
 
 type FetchBorrowNftsAndOffers = (props: {
-  walletPubkey: web3.PublicKey
+  walletPubkey: string
   order?: string
   getAll?: boolean
   skip?: number
@@ -184,7 +184,7 @@ export const fetchBorrowNftsAndOffers: FetchBorrowNftsAndOffers = async ({
     })
 
     const { data } = await axios.get<BorrowNftsAndOffersResponse>(
-      `${BACKEND_BASE_URL}/nfts/borrow/${walletPubkey?.toBase58()}?${queryParams.toString()}`,
+      `${BACKEND_BASE_URL}/nfts/borrow/${walletPubkey}?${queryParams.toString()}`,
     )
 
     //TODO: Remove it when BE satisfyies schema
@@ -194,7 +194,7 @@ export const fetchBorrowNftsAndOffers: FetchBorrowNftsAndOffers = async ({
       console.error('Schema validation error:', validationError)
     }
 
-    return data.data
+    return data.data || { nfts: [], offers: {} }
   } catch (error) {
     console.error(error)
     return { nfts: [], offers: {} }
