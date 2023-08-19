@@ -10,7 +10,7 @@ import { Loan, fetchWalletLoans } from '@banx/api/core'
 type UseWalletLoans = () => {
   loans: Loan[]
   isLoading: boolean
-  hideLoan: (publicKey: string) => void
+  hideLoan: (publicKey: string[]) => void
 }
 
 export const useWalletLoans: UseWalletLoans = () => {
@@ -46,14 +46,15 @@ export const useWalletLoans: UseWalletLoans = () => {
 
 interface HiddenLoansPubkeysState {
   hiddenLoansPubkeys: string[]
-  hideLoan: (publicKey: string) => void
+  hideLoan: (publicKeys: string[]) => void
 }
+
 const useHiddenNFTsMint = create<HiddenLoansPubkeysState>((set) => ({
   hiddenLoansPubkeys: [],
-  hideLoan: (publicKey: string) =>
+  hideLoan: (publicKeys: string[]) =>
     set(
       produce((state: HiddenLoansPubkeysState) => {
-        state.hiddenLoansPubkeys = [...state.hiddenLoansPubkeys, publicKey]
+        state.hiddenLoansPubkeys.push(...publicKeys)
       }),
     ),
 }))

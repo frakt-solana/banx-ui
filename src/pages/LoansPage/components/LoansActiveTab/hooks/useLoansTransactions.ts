@@ -21,7 +21,7 @@ export const useLoansTransactions = () => {
       connection,
       makeTransactionFn: makeRepayLoanTransaction,
       transactionParams: { loans: [loan] },
-      onSuccess: () => hideLoan(loan.publicKey),
+      onSuccess: () => hideLoan([loan.publicKey]),
     })
   }
 
@@ -46,6 +46,7 @@ export const useLoansTransactions = () => {
       transactionsAndSigners,
       connection,
       wallet,
+      onSuccess: () => hideLoan(selectedLoans.map((loan) => loan.publicKey)),
     })
   }
 

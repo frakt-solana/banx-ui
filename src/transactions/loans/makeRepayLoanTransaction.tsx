@@ -23,15 +23,12 @@ export const makeRepayLoanTransaction: MakeRepayLoanTransaction = async ({
   wallet,
   loans,
 }) => {
-  const repayAccounts = loans.map((loan) => ({
-    bondTradeTransaction: new web3.PublicKey(loan.bondTradeTransaction.publicKey),
-    lender: new web3.PublicKey(loan.bondTradeTransaction.user),
-    fbond: new web3.PublicKey(loan.fraktBond.publicKey),
-    collateralTokenMint: new web3.PublicKey(loan.fraktBond.fbondTokenMint),
-    optimistic: {
-      fraktBond: loan.fraktBond,
-      bondTradeTransaction: loan.bondTradeTransaction,
-    } as BondAndTransactionOptimistic,
+  const repayAccounts = loans.map(({ fraktBond, bondTradeTransaction }) => ({
+    bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
+    lender: new web3.PublicKey(bondTradeTransaction.user),
+    fbond: new web3.PublicKey(fraktBond.publicKey),
+    collateralTokenMint: new web3.PublicKey(fraktBond.fbondTokenMint),
+    optimistic: { fraktBond, bondTradeTransaction } as BondAndTransactionOptimistic,
   }))
 
   const { instructions, signers } = await repayPerpetualLoan({
