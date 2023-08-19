@@ -19,11 +19,8 @@ export const useBorrowTable = () => {
   const tableNftData: TableNftData[] = nfts.map((nft) => {
     const offer = findOfferInCart({ mint: nft.mint })
 
-    const loanValue = (() => {
-      if (offer) return offer.loanValue
-      const bestOffer = findBestOffer({ marketPubkey: nft.loan.marketPubkey })
-      return bestOffer?.loanValue ?? 0
-    })()
+    const loanValue =
+      offer?.loanValue || findBestOffer({ marketPubkey: nft.loan.marketPubkey })?.loanValue || 0
 
     const selected = !!offer
 
