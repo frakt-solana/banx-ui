@@ -4,7 +4,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 
 import { Button } from '@banx/components/Buttons'
 
-import { Offer } from '@banx/api/core'
+import { BorrowNft, Offer } from '@banx/api/core'
 import {
   MakeTransactionFn,
   TransactionParams,
@@ -39,7 +39,7 @@ export const BorrowCell: FC<{ nft: TableNftData; disabled?: boolean }> = ({
         )
         if (offer && rawOffer) {
           borrow({
-            mint: nft.mint,
+            nft: nft.nft,
             loanValue: offer.loanValue,
             offer: rawOffer,
           })
@@ -70,20 +70,20 @@ const useBorrow = () => {
   }
 
   const borrow = async ({
-    mint,
+    nft,
     offer,
     loanValue,
   }: {
-    mint: string
+    nft: BorrowNft
     offer: Offer
     loanValue: number
   }) => {
     await executeLoanTransaction<MakeBorrowPerpetualTransaction>({
       makeTransactionFn: makeBorrowPerpetualTransaction,
       transactionParams: {
-        loanValue: loanValue,
+        loanValue,
         offer,
-        mint,
+        nft,
       },
       onSuccess: () => {
         return

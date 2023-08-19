@@ -3,14 +3,14 @@ import { web3 } from 'fbonds-core'
 import { borrowPerpetual } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { Offer } from '@banx/api/core'
+import { BorrowNft, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type MakeBorrowPerpetualTransaction = (params: {
   connection: web3.Connection
   wallet: WalletContextState
-  mint: string
+  nft: BorrowNft
   loanValue: number
   offer: Offer
 }) => Promise<{
@@ -21,7 +21,7 @@ export type MakeBorrowPerpetualTransaction = (params: {
 export const makeBorrowPerpetualTransaction: MakeBorrowPerpetualTransaction = async ({
   connection,
   wallet,
-  mint,
+  nft,
   loanValue,
   offer,
 }) => {
@@ -36,12 +36,12 @@ export const makeBorrowPerpetualTransaction: MakeBorrowPerpetualTransaction = as
         {
           amountOfSolToGet: loanValue,
           minAmountToGet: loanValue,
-          tokenMint: new web3.PublicKey(mint),
+          tokenMint: new web3.PublicKey(nft.mint),
           bondOfferV2: new web3.PublicKey(offer.publicKey),
           hadoMarket: new web3.PublicKey(offer.hadoMarket),
           optimistic: {
-            fraktMarket: 'HrsMreAqj4ss19WDemwFCVnxnhgJ5tTNjt4k8cKzTmko',
-            minMarketFee: 10400,
+            fraktMarket: nft.loan.fraktMarket,
+            minMarketFee: nft.loan.marketApr,
             bondOffer: offer as BondOfferV2,
           },
         },
