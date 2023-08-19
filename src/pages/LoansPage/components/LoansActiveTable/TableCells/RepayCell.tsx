@@ -13,12 +13,17 @@ import {
 } from '@banx/transactions'
 import { MakeRepayLoanTransaction, makeRepayLoanTransaction } from '@banx/transactions/loans'
 
-export const RepayCell: FC<{ loan: Loan }> = ({ loan }) => {
+interface RepayCellProps {
+  loan: Loan
+  isCardView: boolean
+}
+
+export const RepayCell: FC<RepayCellProps> = ({ loan, isCardView }) => {
   const onRepayLoan = useRepayLoan(loan)
 
   return (
     <Button
-      size="small"
+      size={isCardView ? 'large' : 'small'}
       onClick={(event) => {
         onRepayLoan()
         event.stopPropagation()
@@ -33,8 +38,7 @@ const useRepayLoan = (loan: Loan) => {
   const wallet = useWallet()
   const { connection } = useConnection()
 
-  const publicKeyString = wallet.publicKey?.toBase58() || ''
-  const { hideLoan } = useWalletLoans(publicKeyString)
+  const { hideLoan } = useWalletLoans()
 
   const executeLoanTransaction = async <T extends object>(props: {
     makeTransactionFn: MakeTransactionFn<TransactionParams<T>>

@@ -1,25 +1,29 @@
 import { useMemo } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 import { produce } from 'immer'
 import { create } from 'zustand'
 
 import { Loan, fetchWalletLoans } from '@banx/api/core'
 
-type UseWalletLoans = (walletPublicKey: string) => {
+type UseWalletLoans = () => {
   loans: Loan[]
   isLoading: boolean
   hideLoan: (publicKey: string) => void
 }
 
-export const useWalletLoans: UseWalletLoans = (walletPublicKey) => {
+export const useWalletLoans: UseWalletLoans = () => {
+  const { publicKey } = useWallet()
+  const publicKeyString = publicKey?.toBase58() || ''
+
   const { hideLoan, hiddenLoansPubkeys } = useHiddenNFTsMint()
 
   const { data, isLoading } = useQuery(
-    ['walletLoans', walletPublicKey],
-    () => fetchWalletLoans({ walletPublicKey }),
+    ['walletLoans', publicKeyString],
+    () => fetchWalletLoans({ walletPublicKey: publicKeyString }),
     {
-      enabled: !!walletPublicKey,
+      enabled: !!publicKey,
       staleTime: 5 * 1000,
       refetchOnWindowFocus: false,
       refetchInterval: 15 * 1000,

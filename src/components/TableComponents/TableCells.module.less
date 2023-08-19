@@ -3,9 +3,35 @@
   align-items: center;
   gap: 8px;
 }
-.nftImage {
+.nftImageWrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.nftImage,
+.selectedCollectionOverlay {
   width: 40px;
   height: 40px;
+}
+
+.selectedCollectionOverlay {
+  background-color: var(--accent-primary);
+  border: 1px solid var(--black-color);
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  &:after {
+    content: '';
+    display: block;
+    background: var(--black-color);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 1px;
+    width: 11px;
+  }
 }
 .nftNames {
   display: flex;

@@ -15,18 +15,22 @@ import { RepayValueCell } from './TableCells/RepayValueCell'
 
 import styles from './LoansTable.module.less'
 
+interface GetTableColumnsProps {
+  onSelectAll: () => void
+  findLoanInSelection: (loanPubkey: string) => Loan | null
+  toggleLoanInSelection: (loan: Loan) => void
+  hasSelectedLoans: boolean
+  isCardView: boolean
+}
+
 export const getTableColumns = ({
   onSelectAll,
   findLoanInSelection,
   toggleLoanInSelection,
   hasSelectedLoans,
-}: {
-  onSelectAll: () => void
-  findLoanInSelection: (loanPubkey: string) => Loan | null
-  toggleLoanInSelection: (loan: Loan) => void
-  hasSelectedLoans: boolean
-}) => {
-  const columnConfigs: ColumnType<Loan>[] = [
+  isCardView,
+}: GetTableColumnsProps) => {
+  const columns: ColumnType<Loan>[] = [
     {
       key: 'collateral',
       title: (
@@ -47,7 +51,7 @@ export const getTableColumns = ({
     {
       key: 'loanValue',
       title: <HeaderCell label="Borrowed" />,
-      render: (_, loan) => createSolValueJSX(loan.fraktBond.borrowedAmount, 1e9),
+      render: (_, { fraktBond }) => createSolValueJSX(fraktBond.borrowedAmount, 1e9),
       sorter: true,
     },
     {
@@ -59,7 +63,7 @@ export const getTableColumns = ({
     {
       key: 'health',
       title: <HeaderCell label="Est. health" />,
-      render: (_, loan) => createSolValueJSX(loan.fraktBond.amountToReturn, 1e9),
+      render: (_, { fraktBond }) => createSolValueJSX(fraktBond.amountToReturn, 1e9),
       sorter: true,
     },
     {
@@ -70,9 +74,9 @@ export const getTableColumns = ({
     },
     {
       title: <HeaderCell label="Repay" />,
-      render: (_, loan) => <RepayCell loan={loan} />,
+      render: (_, loan) => <RepayCell loan={loan} isCardView={isCardView} />,
     },
   ]
 
-  return columnConfigs.map((config) => createColumn(config))
+  return columns.map((column) => createColumn(column))
 }

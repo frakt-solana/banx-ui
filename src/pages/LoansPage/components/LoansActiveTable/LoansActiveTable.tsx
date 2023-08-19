@@ -1,6 +1,7 @@
 import Table, { TableProps } from '@banx/components/Table'
 
 import { Loan } from '@banx/api/core'
+import { ViewState, useTableView } from '@banx/store'
 
 import { useSelectedLoans } from '../../loansState'
 import { SearchSelectOption } from '../LoansActiveTab'
@@ -22,6 +23,8 @@ export const LoansActiveTable = ({
 
   const hasSelectedLoans = !!selection?.length
 
+  const { viewState } = useTableView()
+
   const onSelectAll = (): void => {
     if (hasSelectedLoans) {
       clearSelection()
@@ -35,6 +38,7 @@ export const LoansActiveTable = ({
     findLoanInSelection,
     toggleLoanInSelection,
     hasSelectedLoans,
+    isCardView: viewState === ViewState.CARD,
   })
 
   return (

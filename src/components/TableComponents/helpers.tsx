@@ -8,12 +8,13 @@ export const createColumn = <T extends object>({
   render,
   dataIndex,
   sorter = false,
-}: ColumnType<T>) => ({
-  key,
-  dataIndex: dataIndex || key,
-  title: () => title as ReactNode,
-  render: (value: keyof T, data: T, rowIndex: number) =>
-    render ? render(value, data, rowIndex) : null,
-  showSorterTooltip: sorter ? false : undefined,
-  sorter,
-})
+}: ColumnType<T>) => {
+  return {
+    key,
+    dataIndex: dataIndex || key,
+    title: () => title as ReactNode,
+    render: (value: keyof T, data: T, rowIndex: number) => render?.(value, data, rowIndex),
+    showSorterTooltip: sorter ? false : undefined,
+    sorter,
+  }
+}
