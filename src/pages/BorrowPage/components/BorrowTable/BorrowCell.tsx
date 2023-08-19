@@ -29,10 +29,10 @@ export const BorrowCell: FC<{ nft: TableNftData; disabled?: boolean }> = ({
   const { rawOffers } = useBorrowNfts()
 
   const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    const offer = findBestOffer({ marketPubkey: nft.nft.loan.marketPubkey })
-    const rawOffer = rawOffers[nft.nft.loan.marketPubkey].find(
-      ({ publicKey }) => publicKey === offer?.publicKey,
-    )
+    const { marketPubkey } = nft.nft.loan
+
+    const offer = findBestOffer({ marketPubkey })
+    const rawOffer = rawOffers[marketPubkey].find(({ publicKey }) => publicKey === offer?.publicKey)
 
     if (offer && rawOffer) {
       borrow({
