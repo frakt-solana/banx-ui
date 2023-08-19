@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import React, { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 
@@ -17,50 +17,48 @@ import {
 
 import { useCartState } from '../../cartState'
 import { useBorrowNfts } from '../../hooks'
-import { TableNftData } from './BorrowTable'
+import { TableNftData } from './types'
 
 export const BorrowCell: FC<{ nft: TableNftData; disabled?: boolean }> = ({
   nft,
   disabled = false,
 }) => {
-  const borrow = useBorrow()
+  const borrow = useBorrowTxn()
 
   const { findBestOffer } = useCartState()
   const { rawOffers } = useBorrowNfts()
 
-  return (
-    <Button
-      size="small"
-      disabled={disabled}
-      onClick={(event) => {
-        const offer = findBestOffer({ marketPubkey: nft.nft.loan.marketPubkey })
-        const rawOffer = rawOffers[nft.nft.loan.marketPubkey].find(
-          ({ publicKey }) => publicKey === offer?.publicKey,
-        )
-        if (offer && rawOffer) {
-          borrow({
-            nft: nft.nft,
-            loanValue: offer.loanValue,
-            offer: rawOffer,
-          })
-        }
+  const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const offer = findBestOffer({ marketPubkey: nft.nft.loan.marketPubkey })
+    const rawOffer = rawOffers[nft.nft.loan.marketPubkey].find(
+      ({ publicKey }) => publicKey === offer?.publicKey,
+    )
 
-        event.stopPropagation()
-      }}
-    >
+    if (offer && rawOffer) {
+      borrow({
+        nft: nft.nft,
+        loanValue: offer.loanValue,
+        offer: rawOffer,
+      })
+    }
+
+    event.stopPropagation()
+  }
+
+  return (
+    <Button size="small" disabled={disabled} onClick={onClickHandler}>
       Borrow
     </Button>
   )
 }
 
-const useBorrow = () => {
+const useBorrowTxn = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
 
-  const executeLoanTransaction = async <T extends object>(props: {
+  const executeBorrowTransaction = async <T extends object>(props: {
     makeTransactionFn: MakeTransactionFn<TransactionParams<T>>
     transactionParams: TransactionParams<T>
-    onSuccess: () => void
   }) => {
     await buildAndExecuteTransaction({
       wallet,
@@ -78,15 +76,12 @@ const useBorrow = () => {
     offer: Offer
     loanValue: number
   }) => {
-    await executeLoanTransaction<MakeBorrowPerpetualTransaction>({
+    await executeBorrowTransaction<MakeBorrowPerpetualTransaction>({
       makeTransactionFn: makeBorrowPerpetualTransaction,
       transactionParams: {
         loanValue,
         offer,
         nft,
-      },
-      onSuccess: () => {
-        return
       },
     })
   }
