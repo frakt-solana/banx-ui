@@ -16,7 +16,7 @@ import {
 } from '@banx/transactions/borrow'
 
 import { useCartState } from '../../cartState'
-import { useBorrowNftsAndSimpleOffers } from '../../hooks'
+import { useBorrowNfts } from '../../hooks'
 import { TableNftData } from './BorrowTable'
 
 export const BorrowCell: FC<{ nft: TableNftData; disabled?: boolean }> = ({
@@ -26,7 +26,7 @@ export const BorrowCell: FC<{ nft: TableNftData; disabled?: boolean }> = ({
   const borrow = useBorrow()
 
   const { findBestOffer } = useCartState()
-  const { rawOffers } = useBorrowNftsAndSimpleOffers()
+  const { rawOffers } = useBorrowNfts()
 
   return (
     <Button

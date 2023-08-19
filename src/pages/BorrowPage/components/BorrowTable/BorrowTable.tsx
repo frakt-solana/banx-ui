@@ -8,9 +8,7 @@ import Table from '@banx/components/Table'
 import { BorrowNft } from '@banx/api/core'
 
 import { useCartState } from '../../cartState'
-import { useBorrowNftsAndSimpleOffers } from '../../hooks'
-// import { useSelectedLoans } from '../../loansState'
-// import { SearchSelectOption } from '../LoansActiveTab'
+import { useBorrowNfts } from '../../hooks'
 import { getTableColumns } from './columns'
 
 import styles from './BorrowTable.module.less'
@@ -25,7 +23,7 @@ export interface TableNftData {
 }
 
 const BorrowTable = () => {
-  const { nfts } = useBorrowNftsAndSimpleOffers()
+  const { nfts } = useBorrowNfts()
   const { offerByMint, addNft, removeNft, findOfferInCart, findBestOffer } = useCartState()
 
   const tableNftData: TableNftData[] = nfts.map((nft) => {

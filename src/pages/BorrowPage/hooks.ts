@@ -9,7 +9,7 @@ import { Offer, fetchBorrowNftsAndOffers } from '@banx/api/core'
 import { useCartState } from './cartState'
 import { SimpleOffer } from './types'
 
-export const useBorrowNftsAndSimpleOffers = () => {
+export const useBorrowNfts = () => {
   const { setCart } = useCartState()
 
   const { publicKey: walletPublicKey } = useWallet()

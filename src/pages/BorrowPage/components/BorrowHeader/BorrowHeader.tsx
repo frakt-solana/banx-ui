@@ -6,10 +6,10 @@ import {
 } from '@banx/components/PageHeader'
 import { VALUES_TYPES } from '@banx/components/StatInfo'
 
-import { useBorrowNftsAndSimpleOffers } from '../../hooks'
+import { useBorrowNfts } from '../../hooks'
 
 const Header = () => {
-  const { nfts, isLoading } = useBorrowNftsAndSimpleOffers()
+  const { nfts, isLoading } = useBorrowNfts()
 
   const maxBorrow = 333.33 //TODO: calc maxBorrow here or get from BE
 
