@@ -45,8 +45,13 @@ export const useBorrowNfts = () => {
     }
   }, [setCart, offers])
 
+  //TODO: Remove when borrow staked nfts support appears
+  const notStakedNfts = useMemo(() => {
+    return (data?.nfts || []).filter((nft) => !nft.loan.banxStake)
+  }, [data])
+
   return {
-    nfts: data?.nfts || [],
+    nfts: notStakedNfts || [],
     rawOffers: data?.offers || {},
     isLoading,
   }
