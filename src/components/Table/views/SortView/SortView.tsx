@@ -30,7 +30,7 @@ const SortView = <T extends object, P extends object>({
   showCard,
 }: SortViewProps<T, P>) => {
   const { viewState, setViewState } = useTableView()
-  const [collapsed, setCollapsed] = useState(true)
+  const [searchSelectCollapsed, setSearchSelectCollapsed] = useState(true)
 
   const sortableColumns = columns.filter((column) => !!column.sorter)
   const sortDropdownOptions = sortableColumns.map(parseTableColumn)
@@ -43,10 +43,10 @@ const SortView = <T extends object, P extends object>({
     <div className={styles.sortWrapper}>
       <SearchSelect
         {...searchSelectParams}
-        collapsed={collapsed}
-        onChangeCollapsed={setCollapsed}
+        collapsed={searchSelectCollapsed}
+        onChangeCollapsed={setSearchSelectCollapsed}
       />
-      {collapsed && (
+      {searchSelectCollapsed && (
         <div className={styles.rowGap}>
           {showCard && <SwitchModeButtons viewState={viewState} onChange={handleViewStateChange} />}
           {toggleParams && <Toggle {...toggleParams} />}

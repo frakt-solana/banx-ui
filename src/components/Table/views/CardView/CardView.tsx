@@ -53,7 +53,7 @@ const CardRow = <T extends object>({ column, dataRow }: CardRowProps<T>) => {
 
   const columnKey = key as keyof T
   const renderedTitle = title && columnKey ? (title as () => ReactNode)() : null
-  const renderedValue = render ? render(dataRow[columnKey], dataRow, columnKey as number) : null
+  const renderedValue = render?.(dataRow[columnKey], dataRow, columnKey as number)
 
   return (
     <div className={styles.cardRow}>
