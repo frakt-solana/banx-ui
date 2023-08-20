@@ -82,7 +82,7 @@ interface CollapsedContentProps {
 export const CollapsedContent: FC<CollapsedContentProps> = ({ onClick, selectedOptions }) => (
   <div className={styles.collapsedContent}>
     <Button type="circle" variant="secondary" onClick={onClick}>
-      {!!selectedOptions?.length && <div className={styles.tip}>{selectedOptions?.length}</div>}
+      {!!selectedOptions?.length && <div className={styles.tip}>{selectedOptions.length}</div>}
       <SearchOutlined />
     </Button>
   </div>

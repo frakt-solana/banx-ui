@@ -23,7 +23,7 @@ export const useWalletLoans: UseWalletLoans = () => {
     ['walletLoans', publicKeyString],
     () => fetchWalletLoans({ walletPublicKey: publicKeyString }),
     {
-      enabled: !!publicKey,
+      enabled: !!publicKeyString,
       staleTime: 5 * 1000,
       refetchOnWindowFocus: false,
       refetchInterval: 15 * 1000,

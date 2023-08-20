@@ -13,7 +13,6 @@ import styles from './SearchSelect.module.less'
 export interface SearchSelectProps<P> {
   options: P[]
   optionKeys: OptionKeys
-  loading?: boolean
   selectedOptions: string[]
   onChange?: (selectedOptions: string[]) => void
   onChangeCollapsed?: (value: boolean) => void
