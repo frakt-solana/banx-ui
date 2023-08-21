@@ -13,7 +13,7 @@ export const useLoansTransactions = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
 
-  const { hideLoan } = useWalletLoans()
+  const { hideLoans } = useWalletLoans()
 
   const repayLoan = async (loan: Loan) => {
     await buildAndExecuteTransaction({
@@ -21,7 +21,7 @@ export const useLoansTransactions = () => {
       connection,
       makeTransactionFn: makeRepayLoanTransaction,
       transactionParams: { loans: [loan] },
-      onSuccess: () => hideLoan([loan.publicKey]),
+      onSuccess: () => hideLoans([loan.publicKey]),
     })
   }
 
@@ -46,7 +46,7 @@ export const useLoansTransactions = () => {
       transactionsAndSigners,
       connection,
       wallet,
-      onSuccess: () => hideLoan(selectedLoans.map((loan) => loan.publicKey)),
+      onSuccess: () => hideLoans(selectedLoans.map((loan) => loan.publicKey)),
     })
   }
 
