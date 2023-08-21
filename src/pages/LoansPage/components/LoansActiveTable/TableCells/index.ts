@@ -1,3 +1,3 @@
 export * from './RepayCell'
-export * from './RepayValueCell'
+export * from './DebtCell'
 export * from './StatusCell'

@@ -5,12 +5,13 @@
     border-radius: 0;
     color: var(--content-primary);
     overflow: auto;
+
+    table {
+      table-layout: auto !important;
+    }
   }
 
-  .ant-table table {
-    table-layout: auto !important;
-  }
-
+  /* Sticky table header */
   .ant-table-thead {
     position: sticky;
     top: -1px;
@@ -23,22 +24,32 @@
     vertical-align: middle;
   }
 
+  .ant-table-tbody > tr:nth-child(even) {
+    background: var(--bg-primary-deep);
+  }
+
   .ant-table-tbody > tr > td,
   .ant-table-thead > tr > th {
     padding: 8px;
-    transition: unset;
     text-align: right;
+    transition: unset;
   }
 
   .ant-table-thead > tr > th:first-child,
   .ant-table-tbody > tr > td:first-child {
+    padding-left: 24px;
     text-align: left;
+  }
+
+  .ant-table-thead > tr > th:last-child,
+  .ant-table-tbody > tr > td:last-child {
+    padding-right: 24px;
   }
 
   /* Styling for table header cells */
   .ant-table-thead > tr > th {
     background: var(--bg-primary);
-    border-bottom: var(--border-less-primary);
+    border-bottom: 0;
     color: var(--content-secondary);
     font: var(--table-header-md);
     text-transform: uppercase;
@@ -62,6 +73,7 @@
     display: none;
   }
 
+  /* Disable events and unset transition for table header cells with sorters */
   .ant-table-thead th.ant-table-column-has-sorters {
     pointer-events: none;
     transition: unset;
@@ -75,6 +87,7 @@
     background: var(--bg-action) !important;
   }
 
+  /* Hide the default empty content when the table is empty */
   .ant-table-empty .ant-table-tbody > tr.ant-table-placeholder {
     display: none;
   }

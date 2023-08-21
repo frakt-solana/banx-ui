@@ -58,7 +58,6 @@
 
 .relativeImageContainer .selected {
   background-color: var(--accent-primary);
-  border: 1px solid var(--black-color);
   position: absolute;
   top: 0;
   left: 0;
@@ -68,12 +67,12 @@
   &:after {
     content: '';
     display: block;
-    background: var(--black-color);
+    background: var(--content-primary);
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    height: 1px;
+    height: 2px;
     width: 11px;
   }
 }
@@ -90,4 +89,24 @@
 
 .rotate {
   transform: rotate(180deg);
+}
+
+.collapsedContent {
+  display: flex;
+  position: relative;
+}
+
+.tip {
+  background-color: var(--accent-primary);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: absolute;
+  top: -8px;
+  right: -1px;
+
+  width: 14px;
+  height: 14px;
 }

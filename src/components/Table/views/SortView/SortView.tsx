@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import { ColumnsType } from 'antd/es/table'
 
 import { SearchSelect, SearchSelectProps } from '@banx/components/SearchSelect'
@@ -28,6 +30,7 @@ const SortView = <T extends object, P extends object>({
   showCard,
 }: SortViewProps<T, P>) => {
   const { viewState, setViewState } = useTableView()
+  const [searchSelectCollapsed, setSearchSelectCollapsed] = useState(true)
 
   const sortableColumns = columns.filter((column) => !!column.sorter)
   const sortDropdownOptions = sortableColumns.map(parseTableColumn)
@@ -38,12 +41,18 @@ const SortView = <T extends object, P extends object>({
 
   return (
     <div className={styles.sortWrapper}>
-      <SearchSelect {...searchSelectParams} />
-      <div className={styles.rowGap}>
-        {showCard && <SwitchModeButtons viewState={viewState} onChange={handleViewStateChange} />}
-        {toggleParams && <Toggle {...toggleParams} />}
-        {sortParams && <SortDropdown {...sortParams} options={sortDropdownOptions} />}
-      </div>
+      <SearchSelect
+        {...searchSelectParams}
+        collapsed={searchSelectCollapsed}
+        onChangeCollapsed={setSearchSelectCollapsed}
+      />
+      {searchSelectCollapsed && (
+        <div className={styles.rowGap}>
+          {showCard && <SwitchModeButtons viewState={viewState} onChange={handleViewStateChange} />}
+          {toggleParams && <Toggle {...toggleParams} />}
+          {sortParams && <SortDropdown {...sortParams} options={sortDropdownOptions} />}
+        </div>
+      )}
     </div>
   )
 }

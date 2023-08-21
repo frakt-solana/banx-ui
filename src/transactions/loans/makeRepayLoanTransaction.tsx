@@ -12,7 +12,7 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 export type MakeRepayLoanTransaction = (params: {
   connection: web3.Connection
   wallet: WalletContextState
-  loan: Loan
+  loans: Loan[]
 }) => Promise<{
   transaction: web3.Transaction
   signers: web3.Signer[]
@@ -21,9 +21,15 @@ export type MakeRepayLoanTransaction = (params: {
 export const makeRepayLoanTransaction: MakeRepayLoanTransaction = async ({
   connection,
   wallet,
-  loan,
+  loans,
 }) => {
-  const { bondTradeTransaction, fraktBond } = loan || {}
+  const repayAccounts = loans.map(({ fraktBond, bondTradeTransaction }) => ({
+    bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
+    lender: new web3.PublicKey(bondTradeTransaction.user),
+    fbond: new web3.PublicKey(fraktBond.publicKey),
+    collateralTokenMint: new web3.PublicKey(fraktBond.fbondTokenMint),
+    optimistic: { fraktBond, bondTradeTransaction } as BondAndTransactionOptimistic,
+  }))
 
   const { instructions, signers } = await repayPerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
@@ -31,18 +37,7 @@ export const makeRepayLoanTransaction: MakeRepayLoanTransaction = async ({
       userPubkey: wallet.publicKey as web3.PublicKey,
     },
     args: {
-      repayAccounts: [
-        {
-          bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
-          lender: new web3.PublicKey(bondTradeTransaction.user),
-          fbond: new web3.PublicKey(fraktBond.publicKey),
-          collateralTokenMint: new web3.PublicKey(fraktBond.fbondTokenMint),
-          optimistic: {
-            fraktBond,
-            bondTradeTransaction,
-          } as BondAndTransactionOptimistic,
-        },
-      ],
+      repayAccounts,
     },
     connection,
     sendTxn: sendTxnPlaceHolder,

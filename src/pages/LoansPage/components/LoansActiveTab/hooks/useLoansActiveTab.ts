@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
-import { useWallet } from '@solana/wallet-adapter-react'
+import { first, groupBy, map } from 'lodash'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
@@ -18,10 +18,7 @@ export type SearchSelectOption = {
 }
 
 export const useLoansActiveTab = () => {
-  const { publicKey } = useWallet()
-  const publicKeyString = publicKey?.toBase58() || ''
-
-  const { loans, isLoading } = useWalletLoans(publicKeyString)
+  const { loans, isLoading } = useWalletLoans()
 
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
 
@@ -30,39 +27,42 @@ export const useLoansActiveTab = () => {
   const filteredLoans = useFilteredLoans(loans, selectedOptions)
   const sortedLoans = useSortedLoans(filteredLoans, sortOption.value)
 
+  const searchSelectOptions = useMemo(() => {
+    const loansGroupedByCollection = groupBy(loans, (loan) => loan.nft.meta.collectionName)
+
+    return map(loansGroupedByCollection, (groupedLoan) => {
+      const firstLoanInGroup = first(groupedLoan)
+      const { collectionName = '', collectionImage = '' } = firstLoanInGroup?.nft.meta || {}
+      const numberOfNFTs = groupedLoan.length
+
+      return {
+        collectionName,
+        collectionImage,
+        numberOfNFTs,
+      }
+    })
+  }, [loans])
+
+  const searchSelectParams = {
+    onChange: setSelectedOptions,
+    options: searchSelectOptions,
+    selectedOptions,
+    optionKeys: {
+      labelKey: 'collectionName',
+      valueKey: 'collectionName',
+      imageKey: 'collectionImage',
+      secondLabel: { key: 'numberOfNFTs' },
+    },
+    labels: ['Collections', 'Nfts'],
+    className: styles.searchSelect,
+  }
+
   return {
     loans: sortedLoans,
     loading: isLoading,
     sortViewParams: {
-      searchSelectParams: {
-        options: mockOptions,
-        optionKeys: {
-          labelKey: 'collectionName',
-          valueKey: 'collectionName',
-          imageKey: 'collectionImage',
-          secondLabel: { key: 'nftsCount' },
-        },
-        className: styles.searchSelect,
-        selectedOptions,
-        labels: ['Collections', 'Nfts'],
-        onChange: setSelectedOptions,
-      },
+      searchSelectParams,
       sortParams: { option: sortOption, onChange: setSortOption },
     },
   }
 }
-
-const mockOptions = [
-  {
-    collectionName: 'Banx',
-    collectionImage: 'https://banxnft.s3.amazonaws.com/images/6906.png',
-  },
-  {
-    collectionName: 'ABC',
-    collectionImage: 'https://banxnft.s3.amazonaws.com/images/19542.png',
-  },
-  {
-    collectionName: 'Tensorian',
-    collectionImage: 'https://banxnft.s3.amazonaws.com/images/18952.png',
-  },
-]
