@@ -4,6 +4,6 @@ export interface OptionKeys {
   imageKey: string
   secondLabel?: {
     key: string
-    format?: (value: number | string) => string
+    format?: (value: number) => string
   }
 }

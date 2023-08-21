@@ -1,8 +1,6 @@
 import { FC } from 'react'
 
-import { Button } from '@banx/components/Buttons'
-
-import { MarketPreview } from '@banx/api/bonds'
+import { MarketPreview } from '@banx/api/core'
 import { TABLET_WIDTH } from '@banx/constants'
 import { useWindowSize } from '@banx/hooks'
 
@@ -10,12 +8,9 @@ import LendCard from '../LendCard'
 
 import styles from './LendPageContent.module.less'
 
-export const EmptyList = ({ onClick }: { onClick: () => void }) => (
+export const EmptyList = () => (
   <div className={styles.emptyList}>
-    <h4 className={styles.emptyListTitle}>You don’t have any deposits</h4>
-    <Button type="standard" onClick={onClick} className={styles.emptyListButton}>
-      View collections
-    </Button>
+    <h4 className={styles.emptyListTitle}>No active markets yet</h4>
   </div>
 )
 
@@ -31,22 +26,19 @@ export const MarketsList: FC<MarketsListProps> = ({ markets, visibleCards, toggl
 
   return (
     <>
-      {markets.map((market: MarketPreview, id: number) => {
+      {markets.map((market: MarketPreview) => {
         const { collectionName, marketPubkey } = market
 
-        const cardIsOpen = visibleCards.includes(collectionName)
-
-        const shouldVisibleOrderBook = isMobile
-          ? visibleCards.at(-1) === collectionName
-          : cardIsOpen
+        const isCardOpen = visibleCards.includes(collectionName)
+        const isOrderBookVisible = isMobile ? visibleCards.at(-1) === collectionName : isCardOpen
 
         return (
           <LendCard
-            key={`${marketPubkey}_${id}`}
+            key={marketPubkey}
             market={market}
             onCardClick={() => toggleVisibleCard(collectionName)}
-            visibleOrderBook={shouldVisibleOrderBook}
-            isVisible={cardIsOpen}
+            isOrderBookVisible={isOrderBookVisible}
+            isCardOpen={isCardOpen}
           />
         )
       })}

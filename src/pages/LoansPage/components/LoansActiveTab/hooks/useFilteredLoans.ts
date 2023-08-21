@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 
 import { filter, includes } from 'lodash'
 
-import { Loan } from '@banx/api/loans'
+import { Loan } from '@banx/api/core'
 
 export const useFilteredLoans = (loans: Loan[], selectedOptions: string[]) => {
   const filteredLoans = useMemo(() => {

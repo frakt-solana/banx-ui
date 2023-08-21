@@ -3,7 +3,7 @@ import { ColumnsType } from 'antd/es/table'
 import Checkbox from '@banx/components/Checkbox'
 import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableCells'
 
-import { Loan } from '@banx/api/loans'
+import { Loan } from '@banx/api/core'
 
 import { RepayCell, StatusCell } from './TableCells'
 import { RepayValueCell } from './TableCells/RepayValueCell'

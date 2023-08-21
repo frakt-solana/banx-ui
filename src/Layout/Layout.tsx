@@ -14,7 +14,7 @@ export const AppLayout: FC<PropsWithChildren> = ({ children }) => {
   const { visible } = useWalletModal()
 
   return (
-    <div id="app-content">
+    <div className={styles.layout}>
       <TopNotification />
       <Header />
       <div className={styles.container}>
@@ -22,7 +22,6 @@ export const AppLayout: FC<PropsWithChildren> = ({ children }) => {
         <Navbar />
         <BurgerMenu />
         <ModalPortal />
-
         <div className={styles.content}>{children}</div>
       </div>
     </div>

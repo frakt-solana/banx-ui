@@ -1,7 +1,7 @@
 import produce from 'immer'
 import { create } from 'zustand'
 
-import { Loan } from '@banx/api/loans'
+import { Loan } from '@banx/api/core'
 
 interface SelectedLoansState {
   selection: Loan[]
