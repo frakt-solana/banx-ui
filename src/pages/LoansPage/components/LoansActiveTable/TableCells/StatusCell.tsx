@@ -19,7 +19,7 @@ const STATUS_MAP: Record<string, string> = {
   [BondTradeTransactionV2State.PerpetualManualTerminating]: LoanStatus.Terminating,
 }
 
-const STATUS_COLOR_MAP: Record<string, string> = {
+const STATUS_COLOR_MAP: Record<LoanStatus, string> = {
   [LoanStatus.Active]: 'var(--additional-green-primary-deep)',
   [LoanStatus.Terminating]: 'var(--additional-lava-primary-deep)',
 }
@@ -28,7 +28,7 @@ export const StatusCell: FC<{ loan: Loan }> = ({ loan }) => {
   const { bondTradeTransaction } = loan
 
   const statusText = STATUS_MAP[bondTradeTransaction.bondTradeTransactionState] || ''
-  const statusColor = STATUS_COLOR_MAP[statusText] || ''
+  const statusColor = STATUS_COLOR_MAP[statusText as LoanStatus] || ''
 
   const timeInfo = calculateTimeInfo(loan, statusText)
 
