@@ -1,7 +1,7 @@
 .headerTitleRow {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: 16px !important;
 }
 
 .checkbox {
@@ -13,18 +13,24 @@
   background: var(--additional-lava-secondary);
 }
 
-.statusInfo {
+.statusInfo,
+.debtInfo {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 4px;
 }
 
-.statusInfoTitle {
+.statusInfoTitle,
+.debtInfoTitle {
   font: var(--body-text-md);
 }
 
 .statusInfoSubtitle {
   font: var(--body-text-sm);
   text-transform: capitalize;
+}
+
+.debtInfoSubtitle {
+  font: var(--body-text-sm);
 }
