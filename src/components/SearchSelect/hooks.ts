@@ -25,9 +25,6 @@ export const useSearchSelect = ({
   const handleDropdownVisibleChange = (visible: boolean) => {
     setIsPopupOpen(visible)
   }
-  const handleInputChange = (value: string) => {
-    setInputValue(value)
-  }
 
   const showSufixIcon = !selectedOptions?.length && !inputValue
   const showCollapsedContent = collapsed && isMobile && onChangeCollapsed
@@ -39,7 +36,7 @@ export const useSearchSelect = ({
     isPopupOpen,
     defaultOpen,
 
-    handleInputChange,
+    handleInputChange: setInputValue,
     handleDropdownVisibleChange,
 
     showSufixIcon,
