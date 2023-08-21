@@ -17,7 +17,13 @@ export const useSearchSelect = ({
   const { width } = useWindowSize()
   const isMobile = width <= TABLET_WIDTH
 
-  useOnClickOutside(containerRef, onChangeCollapsed ? () => onChangeCollapsed(true) : () => null)
+  const handleClickOutside = () => {
+    if (onChangeCollapsed) {
+      onChangeCollapsed(true)
+    }
+  }
+
+  useOnClickOutside(containerRef, handleClickOutside)
 
   const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false)
   const [inputValue, setInputValue] = useState<string>('')
