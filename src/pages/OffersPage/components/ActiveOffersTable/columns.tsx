@@ -1,11 +1,6 @@
 import { ColumnsType } from 'antd/es/table'
 
-import {
-  HeaderCell,
-  NftInfoCell,
-  createColumn,
-  createPercentValueJSX,
-} from '@banx/components/TableComponents'
+import { HeaderCell, NftInfoCell, createColumn } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
 

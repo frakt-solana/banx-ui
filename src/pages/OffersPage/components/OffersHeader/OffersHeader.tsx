@@ -5,8 +5,6 @@ import {
   SeparateStatsLine,
 } from '@banx/components/PageHeader'
 
-// import styles from './OffersHeader.module.less'
-
 const OffersHeader = () => {
   return (
     <PageHeaderBackdrop title="My offers">
