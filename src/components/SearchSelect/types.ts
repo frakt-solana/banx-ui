@@ -5,6 +5,6 @@ export interface OptionKeys {
   imageKey: string
   secondLabel?: {
     key: string
-    format?: (value: number) => string
+    format?: (value: number) => number | string | JSX.Element
   }
 }

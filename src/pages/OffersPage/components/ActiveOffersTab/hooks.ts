@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
+import { first, groupBy, map, sumBy } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
+import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { fetchLenderLoans } from '@banx/api/core'
 
@@ -42,12 +44,28 @@ export const useActiveOffersTab = () => {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
 
+  const searchSelectOptions = useMemo(() => {
+    const loansGroupedByCollection = groupBy(loans, ({ nft }) => nft.meta.collectionName)
+
+    return map(loansGroupedByCollection, (groupedLoan) => {
+      const firstLoanInGroup = first(groupedLoan)
+      const { collectionName = '', collectionImage = '' } = firstLoanInGroup?.nft.meta || {}
+      const taken = sumBy(groupedLoan, (nft) => nft.bondTradeTransaction.solAmount)
+
+      return { collectionName, collectionImage, taken }
+    })
+  }, [loans])
+
   const searchSelectParams: SearchSelectProps<SearchSelectOption> = {
-    options: mockOptions,
+    options: searchSelectOptions,
     optionKeys: {
       labelKey: 'collectionName',
       valueKey: 'collectionName',
       imageKey: 'collectionImage',
+      secondLabel: {
+        key: 'taken',
+        format: (value: number) => createSolValueJSX(value, 1e9),
+      },
     },
     selectedOptions,
     labels: ['Collection', 'Taken'],
@@ -68,10 +86,3 @@ export const useActiveOffersTab = () => {
     },
   }
 }
-
-const mockOptions = [
-  {
-    collectionName: 'Banx',
-    collectionImage: 'https://banxnft.s3.amazonaws.com/images/6906.png',
-  },
-]

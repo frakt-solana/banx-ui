@@ -4,10 +4,15 @@ import { useActiveOffersTab } from './hooks'
 import styles from './ActiveOffersTab.module.less'
 
 const ActiveOffersTab = () => {
-  const { loans, sortViewParams } = useActiveOffersTab()
+  const { loans, sortViewParams, loading } = useActiveOffersTab()
 
   return (
-    <ActiveOffersTable className={styles.rootTable} data={loans} sortViewParams={sortViewParams} />
+    <ActiveOffersTable
+      data={loans}
+      loading={loading}
+      sortViewParams={sortViewParams}
+      className={styles.rootTable}
+    />
   )
 }
 
