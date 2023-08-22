@@ -4,6 +4,7 @@ import {
   HeaderCell,
   NftInfoCell,
   createColumn,
+  createPercentValueJSX,
   createSolValueJSX,
 } from '@banx/components/TableComponents'
 
@@ -28,19 +29,19 @@ export const getTableColumns = () => {
     },
     {
       key: 'interest',
-      title: <HeaderCell label="CRT. Interest" />,
+      title: <HeaderCell label="CRT. Interest" tooltipText="CRT. Interest" />,
       render: (_, loan) => createSolValueJSX(loan.bondTradeTransaction.solAmount, 1e9),
       sorter: true,
     },
     {
       key: 'apr',
-      title: <HeaderCell label="APR" />,
-      render: (_, loan) => createSolValueJSX(loan.bondTradeTransaction.solAmount, 1e9),
+      title: <HeaderCell label="APR" tooltipText="APR" />,
+      render: (_, loan) => createPercentValueJSX(loan.bondTradeTransaction.amountOfBonds / 1e2),
       sorter: true,
     },
     {
       key: 'status',
-      title: <HeaderCell label="Loan status" />,
+      title: <HeaderCell label="Loan status" tooltipText="Loan status" />,
       render: (_, loan) => <StatusCell loan={loan} />,
       sorter: true,
     },
