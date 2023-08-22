@@ -9,22 +9,22 @@ type TableViewProps<T, P> = Omit<TableProps<T, P>, 'columns' | 'onRowClick' | 'r
 export const PendingOfferTable = ({
   data,
   sortViewParams,
-  breakpoints,
   className,
   loading,
 }: TableViewProps<any, any>) => {
-  const columns = getTableColumns() as any
+  const columns = getTableColumns()
 
   return (
     <Table
-      data={data}
+      data={MOCK_DATA}
       columns={columns}
       sortViewParams={sortViewParams}
-      breakpoints={breakpoints}
       className={className}
-      rowKeyField="publicKey"
+      rowKeyField="name"
       loading={loading}
       showCard
     />
   )
 }
+
+const MOCK_DATA = [{ name: 'Solana Monkey Business', offer: 120 * 1e9, loans: 5, size: 60 * 1e9 }]

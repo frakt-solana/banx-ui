@@ -1,27 +1,49 @@
 import { ColumnsType } from 'antd/es/table'
 
-import { HeaderCell, NftInfoCell } from '@banx/components/TableCells'
+import {
+  HeaderCell,
+  NftInfoCell,
+  createColumn,
+  createSolValueJSX,
+} from '@banx/components/TableComponents'
+
+import { ActionsCell } from './TableCells'
 
 export const getTableColumns = () => {
-  const COLUMNS: ColumnsType<any> = [
+  const columns: ColumnsType<any> = [
     {
       key: 'collateral',
-      dataIndex: 'collateral',
-      title: () => <HeaderCell label="Collection" />,
-      render: () => <NftInfoCell nftName="" nftImage="" />,
+      title: <HeaderCell label="Collection" />,
+      render: (_, offer) => <NftInfoCell nftName={offer.name} nftImage="" />,
     },
     {
-      key: 'loanValue',
-      dataIndex: 'loanValue',
-      title: () => <HeaderCell label="Borrow" />,
-      // render: (_, nft) => createSolValueJSX(nft.loanValue, 1e9),
-      showSorterTooltip: false,
+      key: 'offer',
+      title: <HeaderCell label="Offer" />,
+      render: (_, offer) => createSolValueJSX(offer.offer, 1e9),
       sorter: true,
     },
     {
-      title: () => <HeaderCell label="" />,
+      key: 'loans',
+      title: <HeaderCell label="Loans" />,
+      render: (_, offer) => <>{offer.loans}</>,
+      sorter: true,
+    },
+    {
+      key: 'size',
+      title: <HeaderCell label="Size" />,
+      render: (_, offer) => createSolValueJSX(offer.offer, 1e9),
+      sorter: true,
+    },
+    {
+      key: 'interest',
+      title: <HeaderCell label="Est. Daily interest" />,
+      render: (_, offer) => createSolValueJSX(offer.offer, 1e9),
+      sorter: true,
+    },
+    {
+      render: () => <ActionsCell />,
     },
   ]
 
-  return COLUMNS
+  return columns.map((column) => createColumn(column))
 }
