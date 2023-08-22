@@ -23,7 +23,7 @@ export type MakeBorrowAction = MakeActionFn<
   BondAndTransactionAndOfferOptimistic[]
 >
 
-export const LOANS_PER_TXN = 1
+export const LOANS_PER_TXN = 3
 
 export const makeBorrowAction: MakeBorrowAction = async (ixnParams, { connection, wallet }) => {
   if (ixnParams.length > LOANS_PER_TXN)
