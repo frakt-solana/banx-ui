@@ -10,9 +10,13 @@ import {
 
 import { Loan } from '@banx/api/core'
 
-import { ActionsCell, LentCell, StatusCell } from './TableCells'
+import { ActionsCell, InterestCell, LentCell, StatusCell } from './TableCells'
 
-export const getTableColumns = () => {
+interface GetTableColumns {
+  isCardView: boolean
+}
+
+export const getTableColumns = ({ isCardView }: GetTableColumns) => {
   const columns: ColumnsType<Loan> = [
     {
       key: 'collateral',
@@ -30,7 +34,7 @@ export const getTableColumns = () => {
     {
       key: 'interest',
       title: <HeaderCell label="CRT. Interest" tooltipText="CRT. Interest" />,
-      render: (_, loan) => createSolValueJSX(loan.bondTradeTransaction.solAmount, 1e9),
+      render: (_, loan) => <InterestCell loan={loan} />,
       sorter: true,
     },
     {
@@ -47,7 +51,7 @@ export const getTableColumns = () => {
     },
     {
       title: <HeaderCell label="Termination" />,
-      render: () => <ActionsCell />,
+      render: () => <ActionsCell isCardView={isCardView} />,
     },
   ]
 

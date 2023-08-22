@@ -11,12 +11,16 @@ interface LentCellProps {
 }
 
 export const LentCell: FC<LentCellProps> = ({ loan }) => {
-  const lentValue = 10
-  const LTV = 10
+  const { solAmount, feeAmount } = loan.bondTradeTransaction || {}
+
+  const collectionFloor = loan.nft.collectionFloor
+
+  const lentValue = solAmount + feeAmount
+  const LTV = (lentValue / collectionFloor) * 100
 
   return (
     <div className={styles.lentInfo}>
-      <span>{createSolValueJSX(lentValue)}</span>
+      <span>{createSolValueJSX(lentValue, 1e9)}</span>
       <span>{createPercentValueJSX(LTV)}</span>
     </div>
   )

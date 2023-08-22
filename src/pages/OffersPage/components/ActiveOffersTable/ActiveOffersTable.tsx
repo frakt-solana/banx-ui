@@ -1,6 +1,7 @@
 import Table, { TableProps } from '@banx/components/Table'
 
 import { Loan } from '@banx/api/core'
+import { ViewState, useTableView } from '@banx/store'
 
 import { getTableColumns } from './columns'
 
@@ -12,7 +13,10 @@ const ActiveOffersTable = ({
   className,
   loading,
 }: TableViewProps<Loan, any>) => {
-  const columns = getTableColumns()
+  const { viewState } = useTableView()
+  const isCardView = viewState === ViewState.CARD
+
+  const columns = getTableColumns({ isCardView })
 
   return (
     <Table
