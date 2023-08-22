@@ -117,7 +117,13 @@ export const PairSchema = z.object({
   validation: ValidationPairSchema,
 })
 
+const UserPairSchema = PairSchema.extend({
+  collectionName: z.string(),
+  collectionImage: z.string(),
+})
+
 export type Offer = z.infer<typeof PairSchema>
+export type UserOffer = z.infer<typeof UserPairSchema>
 
 const NFTSchema = z.object({
   mint: z.string(),

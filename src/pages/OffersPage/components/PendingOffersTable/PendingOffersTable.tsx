@@ -1,5 +1,7 @@
 import Table, { TableProps } from '@banx/components/Table'
 
+import { UserOffer } from '@banx/api/core'
+
 import { getTableColumns } from './columns'
 
 type TableViewProps<T, P> = Omit<TableProps<T, P>, 'columns' | 'onRowClick' | 'rowKeyField'>
@@ -9,7 +11,7 @@ export const PendingOfferTable = ({
   sortViewParams,
   className,
   loading,
-}: TableViewProps<object, object>) => {
+}: TableViewProps<UserOffer, object>) => {
   const columns = getTableColumns()
 
   return (
@@ -18,7 +20,7 @@ export const PendingOfferTable = ({
       columns={columns}
       sortViewParams={sortViewParams}
       className={className}
-      rowKeyField="name"
+      rowKeyField="publicKey"
       loading={loading}
       showCard
     />
