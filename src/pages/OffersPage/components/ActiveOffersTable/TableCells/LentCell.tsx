@@ -21,7 +21,7 @@ export const LentCell: FC<LentCellProps> = ({ loan }) => {
   return (
     <div className={styles.lentInfo}>
       <span>{createSolValueJSX(lentValue, 1e9)}</span>
-      <span>{createPercentValueJSX(LTV)}</span>
+      <span>{createPercentValueJSX(LTV)} LTV</span>
     </div>
   )
 }

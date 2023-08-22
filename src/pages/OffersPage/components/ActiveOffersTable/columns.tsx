@@ -9,7 +9,7 @@ import {
 
 import { Loan } from '@banx/api/core'
 
-import { ActionsCell, InterestCell, LentCell, StatusCell } from './TableCells'
+import { APRCell, ActionsCell, InterestCell, LentCell, StatusCell } from './TableCells'
 
 interface GetTableColumns {
   isCardView: boolean
@@ -39,7 +39,7 @@ export const getTableColumns = ({ isCardView }: GetTableColumns) => {
     {
       key: 'apr',
       title: <HeaderCell label="APR" tooltipText="APR" />,
-      render: (_, loan) => createPercentValueJSX(loan.bondTradeTransaction.amountOfBonds / 1e2),
+      render: (_, loan) => <APRCell loan={loan} />,
       sorter: true,
     },
     {
@@ -50,7 +50,7 @@ export const getTableColumns = ({ isCardView }: GetTableColumns) => {
     },
     {
       title: <HeaderCell label="Termination" />,
-      render: () => <ActionsCell isCardView={isCardView} />,
+      render: (_, loan) => <ActionsCell loan={loan} isCardView={isCardView} />,
     },
   ]
 
