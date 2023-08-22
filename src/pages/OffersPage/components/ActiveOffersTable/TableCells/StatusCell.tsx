@@ -8,11 +8,16 @@ import Timer from '@banx/components/Timer'
 import { Loan } from '@banx/api/core'
 import { calculateTimeFromNow } from '@banx/utils'
 
-import styles from '../LoansTable.module.less'
+import styles from '../ActiveOffersTable.module.less'
+
+interface StatusCellProps {
+  loan: Loan
+}
 
 enum LoanStatus {
   Active = 'active',
   Terminating = 'terminating',
+  Liquidated = 'liquidated',
 }
 
 const STATUS_MAP: Record<string, string> = {
@@ -23,9 +28,10 @@ const STATUS_MAP: Record<string, string> = {
 const STATUS_COLOR_MAP: Record<LoanStatus, string> = {
   [LoanStatus.Active]: 'var(--additional-green-primary-deep)',
   [LoanStatus.Terminating]: 'var(--additional-lava-primary-deep)',
+  [LoanStatus.Liquidated]: 'var(--additional-red-primary-deep)',
 }
 
-export const StatusCell: FC<{ loan: Loan }> = ({ loan }) => {
+export const StatusCell: FC<StatusCellProps> = ({ loan }) => {
   const { bondTradeTransaction } = loan
 
   const statusText = STATUS_MAP[bondTradeTransaction.bondTradeTransactionState] || ''

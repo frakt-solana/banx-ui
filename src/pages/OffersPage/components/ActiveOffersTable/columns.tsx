@@ -9,7 +9,7 @@ import {
 
 import { Loan } from '@banx/api/core'
 
-import { ActionsCell } from './TableCells'
+import { ActionsCell, LentCell, StatusCell } from './TableCells'
 
 export const getTableColumns = () => {
   const columns: ColumnsType<Loan> = [
@@ -21,28 +21,27 @@ export const getTableColumns = () => {
       ),
     },
     {
-      key: 'offer',
-      title: <HeaderCell label="Lend" />,
-      render: (_, loan) => createSolValueJSX(loan.bondTradeTransaction.solAmount, 1e9),
+      key: 'lent',
+      title: <HeaderCell label="Lent" />,
+      render: (_, loan) => <LentCell loan={loan} />,
       sorter: true,
     },
     {
       key: 'interest',
-      title: <HeaderCell label="crt. interest" />,
+      title: <HeaderCell label="CRT. Interest" />,
       render: (_, loan) => createSolValueJSX(loan.bondTradeTransaction.solAmount, 1e9),
-
       sorter: true,
     },
     {
       key: 'apr',
-      title: <HeaderCell label="apr" />,
+      title: <HeaderCell label="APR" />,
       render: (_, loan) => createSolValueJSX(loan.bondTradeTransaction.solAmount, 1e9),
       sorter: true,
     },
     {
       key: 'status',
       title: <HeaderCell label="Loan status" />,
-      render: (_, loan) => createSolValueJSX(loan.bondTradeTransaction.solAmount, 1e9),
+      render: (_, loan) => <StatusCell loan={loan} />,
       sorter: true,
     },
     {
