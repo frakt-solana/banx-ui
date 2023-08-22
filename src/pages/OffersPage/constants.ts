@@ -1,4 +1,3 @@
-import { SortOption } from '@banx/components/SortDropdown'
 import { Tab } from '@banx/components/Tabs'
 
 export enum OffersTabName {
@@ -22,8 +21,3 @@ export const OFFERS_TABS: Tab[] = [
     disabled: true,
   },
 ]
-
-export const DEFAULT_SORT_OPTION: SortOption = {
-  label: 'Apr',
-  value: 'apr_asc',
-}

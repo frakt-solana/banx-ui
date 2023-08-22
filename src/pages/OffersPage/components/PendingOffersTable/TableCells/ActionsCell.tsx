@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import { Button } from '@banx/components/Buttons'
 
-import styles from '../PendingOfferTable.module.less'
+import styles from '../PendingOffersTable.module.less'
 
 interface ActionsCellProps {}
 

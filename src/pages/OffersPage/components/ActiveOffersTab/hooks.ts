@@ -3,11 +3,12 @@ import { useState } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 
+import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
 
 import { fetchLenderLoans } from '@banx/api/core'
 
-import { DEFAULT_SORT_OPTION } from '../../constants'
+import { DEFAULT_SORT_OPTION } from './constants'
 
 export const useLenderLoans = () => {
   const { publicKey } = useWallet()
@@ -26,18 +27,22 @@ export const useLenderLoans = () => {
 
   return {
     loans: data ?? [],
-    isLoading,
+    loading: isLoading,
   }
 }
 
+interface SearchSelectOption {
+  collectionName: string
+  collectionImage: string
+}
+
 export const useActiveOffersTab = () => {
-  const { loans } = useLenderLoans()
+  const { loans, loading } = useLenderLoans()
 
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
-
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
 
-  const searchSelectParams = {
+  const searchSelectParams: SearchSelectProps<SearchSelectOption> = {
     options: mockOptions,
     optionKeys: {
       labelKey: 'collectionName',
@@ -49,11 +54,17 @@ export const useActiveOffersTab = () => {
     onChange: setSelectedOptions,
   }
 
+  const sortParams = {
+    option: sortOption,
+    onChange: setSortOption,
+  }
+
   return {
     loans,
+    loading,
     sortViewParams: {
       searchSelectParams,
-      sortParams: { option: sortOption, onChange: setSortOption },
+      sortParams,
     },
   }
 }

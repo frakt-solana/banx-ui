@@ -1,4 +1,4 @@
-import { PendingOfferTable } from '../PendingOfferTable'
+import { PendingOfferTable } from '../PendingOffersTable'
 import { usePendingOfferTab } from './hooks'
 
 const PendingOffersTab = () => {
