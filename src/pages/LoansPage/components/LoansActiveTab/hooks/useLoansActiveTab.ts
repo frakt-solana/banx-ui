@@ -13,7 +13,7 @@ import { useSortedLoans } from './useSortedLoans'
 
 import styles from '../LoansActiveTable.module.less'
 
-interface SearchSelectOption {
+export interface SearchSelectOption {
   collectionName: string
   collectionImage: string
   numberOfNFTs: number

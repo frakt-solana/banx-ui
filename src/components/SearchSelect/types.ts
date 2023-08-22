@@ -1,10 +1,10 @@
-//TODO: Need remove string type
-export interface OptionKeys<P> {
-  labelKey: keyof P | string
-  valueKey: keyof P | string
-  imageKey: keyof P | string
+//TODO: Need to add P key instead of string
+export interface OptionKeys {
+  labelKey: string
+  valueKey: string
+  imageKey: string
   secondLabel?: {
-    key: keyof P | string
+    key: string
     format?: (value: number) => string
   }
 }
