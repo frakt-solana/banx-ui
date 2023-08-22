@@ -5,7 +5,6 @@ import {
   NftInfoCell,
   createColumn,
   createPercentValueJSX,
-  createSolValueJSX,
 } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'

@@ -12,7 +12,7 @@ const ActiveOffersTable = ({
   sortViewParams,
   className,
   loading,
-}: TableViewProps<Loan, any>) => {
+}: TableViewProps<Loan, object>) => {
   const { viewState } = useTableView()
   const isCardView = viewState === ViewState.CARD
 

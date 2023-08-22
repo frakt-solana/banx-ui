@@ -41,7 +41,7 @@ export const getTableColumns = () => {
       sorter: true,
     },
     {
-      render: () => <ActionsCell />,
+      render: (_, offer) => <ActionsCell offer={offer} />,
     },
   ]
 

@@ -4,9 +4,11 @@ import { Button } from '@banx/components/Buttons'
 
 import styles from '../PendingOffersTable.module.less'
 
-interface ActionsCellProps {}
+interface ActionsCellProps {
+  offer: object
+}
 
-export const ActionsCell: FC = () => {
+export const ActionsCell: FC<ActionsCellProps> = () => {
   return (
     <div className={styles.actionsButtons}>
       <Button variant="secondary" size="small">
