@@ -4,41 +4,45 @@ import {
   HeaderCell,
   NftInfoCell,
   createColumn,
-  createPercentValueJSX,
   createSolValueJSX,
 } from '@banx/components/TableComponents'
+
+import { Loan } from '@banx/api/core'
 
 import { ActionsCell } from './TableCells'
 
 export const getTableColumns = () => {
-  const columns: ColumnsType<any> = [
+  const columns: ColumnsType<Loan> = [
     {
       key: 'collateral',
       title: <HeaderCell label="Collateral" />,
-      render: (_, offer) => <NftInfoCell nftName={offer.name} nftImage="" />,
+      render: (_, loan) => (
+        <NftInfoCell nftName={loan.nft.meta.name} nftImage={loan.nft.meta.imageUrl} />
+      ),
     },
     {
       key: 'offer',
       title: <HeaderCell label="Lend" />,
-      render: (_, offer) => createSolValueJSX(offer.offer, 1e9),
+      render: (_, loan) => createSolValueJSX(loan.bondTradeTransaction.solAmount, 1e9),
       sorter: true,
     },
     {
       key: 'interest',
       title: <HeaderCell label="crt. interest" />,
-      render: (_, offer) => <>{offer.loans}</>,
+      render: (_, loan) => createSolValueJSX(loan.bondTradeTransaction.solAmount, 1e9),
+
       sorter: true,
     },
     {
       key: 'apr',
       title: <HeaderCell label="apr" />,
-      render: (_, offer) => createPercentValueJSX(offer.offer / 1e9),
+      render: (_, loan) => createSolValueJSX(loan.bondTradeTransaction.solAmount, 1e9),
       sorter: true,
     },
     {
       key: 'status',
       title: <HeaderCell label="Loan status" />,
-      render: (_, offer) => createSolValueJSX(offer.offer, 1e9),
+      render: (_, loan) => createSolValueJSX(loan.bondTradeTransaction.solAmount, 1e9),
       sorter: true,
     },
     {

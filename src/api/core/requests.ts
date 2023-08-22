@@ -160,6 +160,47 @@ export const fetchWalletLoans: FetchWalletLoans = async ({
   }
 }
 
+type FetchLenderLoans = (props: {
+  walletPublicKey: string
+  order?: 'asc' | 'desc'
+  skip?: number
+  limit?: number
+  getAll?: boolean
+}) => Promise<Loan[]>
+
+export const fetchLenderLoans: FetchLenderLoans = async ({
+  walletPublicKey,
+  order = 'desc',
+  skip = 0,
+  limit = 10,
+  getAll = true, //TODO Remove when normal pagination added
+}) => {
+  try {
+    const queryParams = new URLSearchParams({
+      order,
+      skip: String(skip),
+      limit: String(limit),
+      getAll: String(getAll),
+      isPrivate: String(IS_PRIVATE_MARKETS),
+    })
+
+    const { data } = await axios.get<WalletLoansResponse>(
+      `${BACKEND_BASE_URL}/loans/lender/${walletPublicKey}?${queryParams.toString()}`,
+    )
+
+    try {
+      await LoanSchema.array().parseAsync(data.data)
+    } catch (validationError) {
+      console.error('Schema validation error:', validationError)
+    }
+
+    return data.data
+  } catch (error) {
+    console.error(error)
+    return []
+  }
+}
+
 type FetchBorrowNftsAndOffers = (props: {
   walletPubkey: string
   order?: string
