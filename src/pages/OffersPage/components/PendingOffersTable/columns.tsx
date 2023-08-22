@@ -7,41 +7,40 @@ import {
   createSolValueJSX,
 } from '@banx/components/TableComponents'
 
-import { UserOffer } from '@banx/api/core'
-
 import { ActionsCell } from './TableCells'
+import { TableUserOfferData } from './helpers'
 
 export const getTableColumns = () => {
-  const columns: ColumnsType<UserOffer> = [
+  const columns: ColumnsType<TableUserOfferData> = [
     {
       key: 'collateral',
       title: <HeaderCell label="Collection" />,
-      render: (_, offer) => (
-        <NftInfoCell nftName={offer.collectionName} nftImage={offer.collectionImage} />
+      render: (_, { collectionImage, collectionName }) => (
+        <NftInfoCell nftName={collectionName} nftImage={collectionImage} />
       ),
     },
     {
       key: 'offer',
       title: <HeaderCell label="Offer" />,
-      render: (_, offer) => createSolValueJSX(offer.fundsSolOrTokenBalance, 1e9),
+      render: (_, { loanValue }) => createSolValueJSX(loanValue, 1e9),
       sorter: true,
     },
     {
       key: 'loans',
       title: <HeaderCell label="Loans" />,
-      render: (_, offer) => createSolValueJSX(offer.fundsSolOrTokenBalance, 1e9),
+      render: (_, { loansAmount }) => <>{loansAmount}</>,
       sorter: true,
     },
     {
       key: 'size',
       title: <HeaderCell label="Size" />,
-      render: (_, offer) => createSolValueJSX(offer.fundsSolOrTokenBalance, 1e9),
+      render: (_, { size }) => createSolValueJSX(size, 1e9),
       sorter: true,
     },
     {
       key: 'interest',
       title: <HeaderCell label="Est. Daily interest" />,
-      render: (_, offer) => createSolValueJSX(offer.fundsSolOrTokenBalance, 1e9),
+      render: (_, offer) => createSolValueJSX(offer.size, 1e9),
       sorter: true,
     },
     {
