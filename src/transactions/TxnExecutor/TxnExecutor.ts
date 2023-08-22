@@ -76,8 +76,6 @@ export class TxnExecutor<TParams, TResult> {
           if (options.rejectQueueOnFirstPfError) return
         }
       }
-
-      //* Finish sending logic
     } catch (error) {
       this.eventHandlers?.pfError(error as TxnError)
     }
