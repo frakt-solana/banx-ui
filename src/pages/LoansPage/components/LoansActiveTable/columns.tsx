@@ -1,31 +1,38 @@
-import { ColumnsType } from 'antd/es/table'
+import { ColumnType } from 'antd/es/table'
 
 import Checkbox from '@banx/components/Checkbox'
-import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableCells'
+import {
+  HeaderCell,
+  NftInfoCell,
+  createColumn,
+  createSolValueJSX,
+} from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
 
-import { RepayCell, StatusCell } from './TableCells'
-import { RepayValueCell } from './TableCells/RepayValueCell'
+import { DebtCell, RepayCell, StatusCell } from './TableCells'
 
 import styles from './LoansTable.module.less'
+
+interface GetTableColumnsProps {
+  onSelectAll: () => void
+  findLoanInSelection: (loanPubkey: string) => Loan | null
+  toggleLoanInSelection: (loan: Loan) => void
+  hasSelectedLoans: boolean
+  isCardView: boolean
+}
 
 export const getTableColumns = ({
   onSelectAll,
   findLoanInSelection,
   toggleLoanInSelection,
   hasSelectedLoans,
-}: {
-  onSelectAll: () => void
-  findLoanInSelection: (loanPubkey: string) => Loan | null
-  toggleLoanInSelection: (loan: Loan) => void
-  hasSelectedLoans: boolean
-}) => {
-  const COLUMNS: ColumnsType<Loan> = [
+  isCardView,
+}: GetTableColumnsProps) => {
+  const columns: ColumnType<Loan>[] = [
     {
       key: 'collateral',
-      dataIndex: 'collateral',
-      title: () => (
+      title: (
         <div className={styles.headerTitleRow}>
           <Checkbox className={styles.checkbox} onChange={onSelectAll} checked={hasSelectedLoans} />
           <HeaderCell label="Collateral" />
@@ -42,41 +49,33 @@ export const getTableColumns = ({
     },
     {
       key: 'loanValue',
-      dataIndex: 'loanValue',
-      title: () => <HeaderCell label="Borrowed" />,
-      render: (_, loan) => createSolValueJSX(loan.fraktBond.borrowedAmount, 1e9),
-      showSorterTooltip: false,
+      title: <HeaderCell label="Borrowed" />,
+      render: (_, { fraktBond }) => createSolValueJSX(fraktBond.borrowedAmount, 1e9),
       sorter: true,
     },
     {
       key: 'repayValue',
-      dataIndex: 'repayValue',
-      title: () => <HeaderCell label="Debt" />,
-      render: (_, loan) => <RepayValueCell loan={loan} />,
-      showSorterTooltip: false,
+      title: <HeaderCell label="Debt" />,
+      render: (_, loan) => <DebtCell loan={loan} />,
       sorter: true,
     },
     {
       key: 'health',
-      dataIndex: 'health',
-      title: () => <HeaderCell label="Est. health" />,
-      render: (_, loan) => createSolValueJSX(loan.fraktBond.amountToReturn, 1e9),
-      showSorterTooltip: false,
+      title: <HeaderCell label="Est. health" />,
+      render: (_, { fraktBond }) => createSolValueJSX(fraktBond.amountToReturn, 1e9),
       sorter: true,
     },
     {
       key: 'status',
-      dataIndex: 'status',
-      title: () => <HeaderCell label="Loan status" />,
+      title: <HeaderCell label="Loan status" />,
       render: (_, loan) => <StatusCell loan={loan} />,
-      showSorterTooltip: false,
       sorter: true,
     },
     {
-      title: () => <HeaderCell label="Repay" />,
-      render: (_, loan) => <RepayCell loan={loan} />,
+      title: <HeaderCell label="Repay" />,
+      render: (_, loan) => <RepayCell loan={loan} isCardView={isCardView} />,
     },
   ]
 
-  return COLUMNS
+  return columns.map((column) => createColumn(column))
 }

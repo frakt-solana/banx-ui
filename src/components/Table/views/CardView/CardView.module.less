@@ -1,0 +1,47 @@
+.cardList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(282px, 2fr));
+  padding: 24px;
+  gap: 16px;
+
+  @media (max-width: 960px) {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 2fr));
+  }
+}
+
+.card {
+  background: var(--bg-primary);
+  border: var(--border-primary);
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 8px;
+}
+
+.cardRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 32px;
+
+  &:first-child {
+    justify-content: flex-start;
+  }
+}
+
+.cardRowTitle {
+  color: var(--content-secondary);
+  font: var(--table-header-md);
+  text-transform: uppercase;
+}
+
+.cardRow:first-child .cardRowTitle {
+  display: none;
+}
+
+.cardRow button {
+  padding: 9px !important;
+  width: 100%;
+}

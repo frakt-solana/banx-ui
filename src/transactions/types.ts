@@ -1,3 +1,5 @@
+import { web3 } from 'fbonds-core'
+
 import { NotificationTypes } from '@banx/utils'
 
 export interface TxnError extends Error {
@@ -18,4 +20,9 @@ export interface TxnErrorDefinition {
   humanMessage: TxnErrorHumanName
   keyphrases: Array<string>
   type: NotificationTypes
+}
+
+export interface TxnsAndSigners {
+  transaction: web3.Transaction
+  signers?: web3.Signer[]
 }

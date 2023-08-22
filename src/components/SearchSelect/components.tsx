@@ -6,6 +6,7 @@ import classNames from 'classnames'
 
 import { ChevronDown } from '@banx/icons'
 
+import { Button } from '../Buttons'
 import { OptionKeys } from './types'
 
 import styles from './SearchSelect.module.less'
@@ -73,3 +74,16 @@ const SecondValue: FC<SecondValueProps> = ({ secondLabel, value }) => {
 
   return <p className={styles.secondValue}>{formattedValue}</p>
 }
+
+interface CollapsedContentProps {
+  onClick: () => void
+  selectedOptions: string[]
+}
+export const CollapsedContent: FC<CollapsedContentProps> = ({ onClick, selectedOptions }) => (
+  <div className={styles.collapsedContent}>
+    <Button type="circle" variant="secondary" onClick={onClick}>
+      {!!selectedOptions?.length && <div className={styles.tip}>{selectedOptions.length}</div>}
+      <SearchOutlined />
+    </Button>
+  </div>
+)

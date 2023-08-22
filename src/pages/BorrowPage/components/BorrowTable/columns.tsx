@@ -1,7 +1,7 @@
 import { ColumnsType } from 'antd/es/table'
 
 import Checkbox from '@banx/components/Checkbox'
-import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableCells'
+import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { BorrowCell } from './BorrowCell'
 import { TableNftData } from './types'
