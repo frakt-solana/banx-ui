@@ -23,13 +23,15 @@ export type MakeBorrowAction = MakeActionFn<
   BondAndTransactionAndOfferOptimistic[]
 >
 
-export const LOANS_PER_TXN = 3
+export const LOANS_PER_TXN = 2
 
 export const makeBorrowAction: MakeBorrowAction = async (ixnParams, { connection, wallet }) => {
   if (ixnParams.length > LOANS_PER_TXN)
     throw new Error(`Maximum borrow per txn is ${LOANS_PER_TXN}`)
   const { instructions, signers, optimisticResults } = await borrowPerpetual({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
+    addComputeUnits: true,
+
     accounts: {
       userPubkey: wallet.publicKey as web3.PublicKey,
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
