@@ -24,7 +24,9 @@ export const LentCell: FC<LentCellProps> = ({ loan }) => {
   return (
     <div className={styles.lentInfo}>
       <span>{createSolValueJSX(lentValue, 1e9)}</span>
-      <span style={{ color: colorLTV }}>{createPercentValueJSX(LTV)} LTV</span>
+      <span className={styles.lentInfoSubtitle} style={{ color: colorLTV }}>
+        {createPercentValueJSX(LTV)} LTV
+      </span>
     </div>
   )
 }
