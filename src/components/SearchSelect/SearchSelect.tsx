@@ -1,12 +1,11 @@
-import { useState } from 'react'
-
 import { Select as AntdSelect } from 'antd'
 import classNames from 'classnames'
 
 import { CloseModal } from '@banx/icons'
 
-import { PrefixInput, SelectLabels, SuffixIcon, renderOption } from './components'
+import { CollapsedContent, PrefixInput, SelectLabels, SuffixIcon, renderOption } from './components'
 import { filterOption, getPopupContainer } from './helpers'
+import { useSearchSelect } from './hooks'
 import { OptionKeys } from './types'
 
 import styles from './SearchSelect.module.less'
@@ -16,7 +15,9 @@ export interface SearchSelectProps<P> {
   optionKeys: OptionKeys
   selectedOptions: string[]
   onChange?: (selectedOptions: string[]) => void
+  onChangeCollapsed?: (value: boolean) => void
 
+  collapsed?: boolean
   labels?: string[]
   placeholder?: string
   className?: string
@@ -30,22 +31,30 @@ export const SearchSelect = <P extends object>({
   selectedOptions,
   labels,
   className,
+  collapsed,
+  onChangeCollapsed,
   ...props
 }: SearchSelectProps<P>) => {
-  const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false)
-  const [inputValue, setInputValue] = useState<string>('')
+  const {
+    containerRef,
+    isPopupOpen,
+    defaultOpen,
+    handleDropdownVisibleChange,
+    handleInputChange,
+    showSufixIcon,
+    showCollapsedContent,
+  } = useSearchSelect({ onChangeCollapsed, selectedOptions, collapsed })
 
-  const handleDropdownVisibleChange = (visible: boolean) => {
-    setIsPopupOpen(visible)
-  }
-  const handleInputChange = (value: string) => {
-    setInputValue(value)
-  }
-
-  const showSufixIcon = !selectedOptions?.length && !inputValue
+  if (showCollapsedContent)
+    return (
+      <CollapsedContent
+        selectedOptions={selectedOptions}
+        onClick={() => onChangeCollapsed?.(!collapsed)}
+      />
+    )
 
   return (
-    <div className={classNames(styles.selectWrapper, className)}>
+    <div ref={containerRef} className={classNames(styles.selectWrapper, className)}>
       <PrefixInput />
       <AntdSelect
         mode="multiple"
@@ -63,6 +72,7 @@ export const SearchSelect = <P extends object>({
         suffixIcon={showSufixIcon && <SuffixIcon isPopupOpen={isPopupOpen} />}
         onSearch={handleInputChange}
         onDropdownVisibleChange={handleDropdownVisibleChange}
+        defaultOpen={defaultOpen}
         dropdownRender={(menu) => (
           <>
             <SelectLabels labels={labels} />

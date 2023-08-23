@@ -19,6 +19,6 @@ export const LOANS_TABS: Tab[] = [
 ]
 
 export const DEFAULT_SORT_OPTION: SortOption = {
-  label: 'Duration',
-  value: 'duration_asc',
+  label: 'Loan status',
+  value: 'status_asc',
 }

@@ -1,5 +1,7 @@
 import { FC } from 'react'
 
+import { ViewState, useTableView } from '@banx/store'
+
 import Checkbox from '../Checkbox'
 
 import styles from './TableCells.module.less'
@@ -17,15 +19,21 @@ export const NftInfoCell: FC<NftInfoCellProps> = ({
   onCheckboxClick,
   selected = false,
 }) => {
+  const { viewState } = useTableView()
+  const isCardView = viewState === ViewState.CARD
+
   const [nftCollectionName, nftNumber] = nftName.split('#')
   const displayNftNumber = nftNumber ? `#${nftNumber}` : ''
 
   return (
     <div className={styles.nftInfo}>
-      {onCheckboxClick && (
+      {onCheckboxClick && !isCardView && (
         <Checkbox className={styles.checkbox} onChange={onCheckboxClick} checked={selected} />
       )}
-      <img src={nftImage} className={styles.nftImage} />
+      <div className={styles.nftImageWrapper}>
+        <img src={nftImage} className={styles.nftImage} />
+        {selected && <div className={styles.selectedCollectionOverlay} />}
+      </div>
       <div className={styles.nftNames}>
         <p className={styles.nftCollectionName}>{nftCollectionName}</p>
         <p className={styles.nftNumber}>{displayNftNumber}</p>
