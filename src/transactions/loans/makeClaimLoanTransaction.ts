@@ -27,10 +27,10 @@ export const makeClaimLoanTransaction: MakeClaimLoanTransaction = async ({
 
   const { instructions, signers } = await claimPerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
+    addComputeUnits: true,
     accounts: {
       fbond: new web3.PublicKey(fraktBond.publicKey),
       collateralTokenMint: new web3.PublicKey(fraktBond.fbondTokenMint),
-      collateralTokenAccount: new web3.PublicKey(fraktBond.currentPerpetualBorrowed),
       collateralOwner: new web3.PublicKey(fraktBond.fbondIssuer),
       bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
       userPubkey: wallet.publicKey as web3.PublicKey,

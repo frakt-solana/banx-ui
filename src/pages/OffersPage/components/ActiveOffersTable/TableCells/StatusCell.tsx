@@ -33,8 +33,8 @@ const STATUS_COLOR_MAP: Record<LoanStatus, string> = {
 
 export const StatusCell: FC<StatusCellProps> = ({ loan }) => {
   const { bondTradeTransaction } = loan
-
   const statusText = STATUS_MAP[bondTradeTransaction.bondTradeTransactionState] || ''
+
   const statusColor = STATUS_COLOR_MAP[statusText as LoanStatus] || ''
 
   const timeInfo = calculateTimeInfo(loan, statusText)
@@ -50,7 +50,7 @@ export const StatusCell: FC<StatusCellProps> = ({ loan }) => {
 }
 
 const calculateTimeInfo = (loan: Loan, status: string) => {
-  const { bondTradeTransaction, fraktBond } = loan
+  const { fraktBond } = loan
 
   const currentTimeInSeconds = moment().unix()
   const timeSinceActivationInSeconds = currentTimeInSeconds - fraktBond.activatedAt
@@ -60,8 +60,8 @@ const calculateTimeInfo = (loan: Loan, status: string) => {
   }
 
   if (status === LoanStatus.Terminating) {
-    const expiredAt = bondTradeTransaction.redeemedAt + 24 * 60 * 60
-    return <Timer expiredAt={expiredAt} detailedTimeFormat />
+    const expiredAt = fraktBond.refinanceAuctionStartedAt + 72 * 60 * 60
+    return <Timer expiredAt={expiredAt} />
   }
 
   return ''
