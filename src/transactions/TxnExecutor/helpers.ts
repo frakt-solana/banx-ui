@@ -35,10 +35,10 @@ export const signAndSendTxns = async <TResult>({
 
   eventHandlers?.beforeApproveEveryChunk()
 
-  await wallet.signAllTransactions(txns)
+  const signedTxns = await wallet.signAllTransactions(txns)
 
   const results = await Promise.all(
-    txns.map(
+    signedTxns.map(
       async (txn) =>
         await connection.sendRawTransaction(txn.serialize(), {
           skipPreflight: options.skipPreflight,
