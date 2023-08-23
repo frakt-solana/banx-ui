@@ -119,6 +119,11 @@ export const PairSchema = z.object({
 
 export type Offer = z.infer<typeof PairSchema>
 
+export interface FetchMarketOffersResponse {
+  data: Offer[]
+  meta: PaginationMeta
+}
+
 const NFTSchema = z.object({
   mint: z.string(),
   meta: z.object({
