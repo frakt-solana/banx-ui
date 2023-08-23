@@ -1,4 +1,5 @@
 import produce from 'immer'
+import { groupBy } from 'lodash'
 import { create } from 'zustand'
 
 import { SimpleOffer, SimpleOffersByMarket } from './types'
@@ -14,7 +15,7 @@ interface CartState {
   findBestOffer: (props: { marketPubkey: string }) => SimpleOffer | null
 
   setCart: (props: { offersByMarket: SimpleOffersByMarket }) => void
-  clearCart: () => void
+  resetCart: () => void
 }
 
 export const useCartState = create<CartState>((set, get) => ({
@@ -54,15 +55,43 @@ export const useCartState = create<CartState>((set, get) => ({
 
         if (!offerInCart) return
 
+        const { hadoMarket: marketPubkey } = offerInCart
+
         delete state.offerByMint[mint]
 
-        //? Put offer from CartNft back to offersByMarket
-        const { hadoMarket: marketPubkey } = offerInCart
-        state.offersByMarket = {
-          ...state.offersByMarket,
-          [marketPubkey]: [...state.offersByMarket[marketPubkey], offerInCart].sort((a, b) => {
-            return b.loanValue - a.loanValue
-          }),
+        const allOffers = Object.values(state.offerByMint).flat()
+        const allOffersWithSameMarketSorted = allOffers
+          .filter((offer) => offer.hadoMarket === marketPubkey)
+          .sort(simpleOffersSorter)
+
+        const worstOfferWithSameMarket = allOffersWithSameMarketSorted.at(-1)
+
+        if (
+          worstOfferWithSameMarket &&
+          offerInCart.loanValue > worstOfferWithSameMarket.loanValue
+        ) {
+          //? swap
+          const nftMintWithWorstOffer =
+            Object.entries(state.offerByMint).find(
+              ([, offer]) => offer.publicKey === worstOfferWithSameMarket.publicKey,
+            )?.[0] || ''
+
+          state.offerByMint[nftMintWithWorstOffer] = offerInCart
+
+          state.offersByMarket = {
+            ...state.offersByMarket,
+            [marketPubkey]: [...state.offersByMarket[marketPubkey], worstOfferWithSameMarket].sort(
+              simpleOffersSorter,
+            ),
+          }
+        } else {
+          //? Put offer from CartNft back to offersByMarket
+          state.offersByMarket = {
+            ...state.offersByMarket,
+            [marketPubkey]: [...state.offersByMarket[marketPubkey], offerInCart].sort(
+              simpleOffersSorter,
+            ),
+          }
         }
       }),
     )
@@ -76,11 +105,23 @@ export const useCartState = create<CartState>((set, get) => ({
       }),
     )
   },
-  clearCart: () =>
+  resetCart: () =>
     set(
       produce((state: CartState) => {
+        const offersInUse = Object.values(state.offerByMint)
+        const offersAvailable = Object.values(state.offersByMarket).flat()
+        const offers = [...offersInUse, ...offersAvailable]
+
+        const offersByMarket = Object.fromEntries(
+          Object.entries(groupBy(offers, ({ hadoMarket }) => hadoMarket)).map(
+            ([marketPubkey, offers]) => [marketPubkey, [...offers].sort(simpleOffersSorter)],
+          ),
+        )
+
         state.offerByMint = {}
-        state.offersByMarket = {}
+        state.offersByMarket = offersByMarket
       }),
     ),
 }))
+
+const simpleOffersSorter = (a: SimpleOffer, b: SimpleOffer) => b.loanValue - a.loanValue
