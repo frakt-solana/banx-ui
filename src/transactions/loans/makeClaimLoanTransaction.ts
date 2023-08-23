@@ -1,5 +1,5 @@
-import { WalletContextState } from '@solana/wallet-adapter-react'
 import { web3 } from 'fbonds-core'
+import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   BondAndTransactionOptimistic,
   claimPerpetualLoan,
@@ -9,23 +9,18 @@ import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
-export type MakeClaimLoanTransaction = (params: {
-  connection: web3.Connection
-  wallet: WalletContextState
+import { MakeActionFn } from '../TxnExecutor'
+
+export type MakeClaimActionParams = {
   loan: Loan
-}) => Promise<{
-  transaction: web3.Transaction
-  signers: web3.Signer[]
-}>
+}
 
-export const makeClaimLoanTransaction: MakeClaimLoanTransaction = async ({
-  connection,
-  wallet,
-  loan,
-}) => {
-  const { bondTradeTransaction, fraktBond } = loan || {}
+export type MakeClaimAction = MakeActionFn<MakeClaimActionParams, BondAndTransactionOptimistic>
 
-  const { instructions, signers } = await claimPerpetualLoan({
+export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, wallet }) => {
+  const { bondTradeTransaction, fraktBond } = ixnParams.loan || {}
+
+  const { instructions, signers, optimisticResult } = await claimPerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     addComputeUnits: true,
     accounts: {
@@ -44,7 +39,9 @@ export const makeClaimLoanTransaction: MakeClaimLoanTransaction = async ({
   })
 
   return {
-    transaction: new web3.Transaction().add(...instructions),
+    instructions,
     signers,
+    additionalResult: optimisticResult,
+    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }

@@ -6,8 +6,12 @@ import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/type
 import { Button } from '@banx/components/Buttons'
 
 import { Loan } from '@banx/api/core'
-import { buildAndExecuteTransaction } from '@banx/transactions'
-import { makeClaimLoanTransaction, makeTerminateLoanTransaction } from '@banx/transactions/loans'
+import { TxnExecutor } from '@banx/transactions/TxnExecutor'
+import {
+  makeClaimAction,
+  makeInstantRefinanceAction,
+  makeTerminateAction,
+} from '@banx/transactions/loans'
 
 import styles from '../ActiveOffersTable.module.less'
 
@@ -17,32 +21,40 @@ interface ActionsCellProps {
 }
 
 export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
-  const { terminateLoan, claimLoan } = useLendLoansTransactions()
+  const { bondTradeTransactionState } = loan.bondTradeTransaction
+
+  const { terminateLoan, claimLoan, instantLoan } = useLendLoansTransactions()
   const buttonSize = isCardView ? 'large' : 'small'
 
-  const isActiveLoan =
-    loan.bondTradeTransaction.bondTradeTransactionState ===
-    BondTradeTransactionV2State.PerpetualActive
+  const isActiveLoan = bondTradeTransactionState === BondTradeTransactionV2State.PerpetualActive
+  const isTerminatingLoan =
+    bondTradeTransactionState === BondTradeTransactionV2State.PerpetualManualTerminating
 
   return (
     <div className={styles.actionsButtons}>
-      {isActiveLoan && (
+      {isActiveLoan || isTerminatingLoan ? (
         <>
           <Button
             onClick={() => terminateLoan(loan)}
             className={styles.terminateButton}
+            disabled={isTerminatingLoan}
             variant="secondary"
             size={buttonSize}
           >
             Terminate
           </Button>
-          <Button size={buttonSize} className={styles.instantButton} variant="secondary">
+          <Button
+            onClick={() => instantLoan(loan)}
+            className={styles.instantButton}
+            disabled={isTerminatingLoan}
+            variant="secondary"
+            size={buttonSize}
+          >
             Instant
           </Button>
         </>
-      )}
-      {!isActiveLoan && (
-        <Button onClick={() => claimLoan(loan)} size={buttonSize} className={styles.instantButton}>
+      ) : (
+        <Button onClick={() => claimLoan(loan)} className={styles.instantButton} size={buttonSize}>
           Claim NFT
         </Button>
       )}
@@ -56,23 +68,19 @@ export const useLendLoansTransactions = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
 
-  const terminateLoan = async (loan: Loan) => {
-    await buildAndExecuteTransaction({
-      wallet,
-      connection,
-      makeTransactionFn: makeTerminateLoanTransaction,
-      transactionParams: { loan },
-    })
+  const terminateLoan = (loan: Loan) => {
+    new TxnExecutor(makeTerminateAction, { wallet, connection }).addTxnParams({ loan }).execute()
   }
 
-  const claimLoan = async (loan: Loan) => {
-    await buildAndExecuteTransaction({
-      wallet,
-      connection,
-      makeTransactionFn: makeClaimLoanTransaction,
-      transactionParams: { loan },
-    })
+  const claimLoan = (loan: Loan) => {
+    new TxnExecutor(makeClaimAction, { wallet, connection }).addTxnParams({ loan }).execute()
   }
 
-  return { terminateLoan, claimLoan }
+  const instantLoan = (loan: Loan) => {
+    new TxnExecutor(makeInstantRefinanceAction, { wallet, connection })
+      .addTxnParams({ loan })
+      .execute()
+  }
+
+  return { terminateLoan, claimLoan, instantLoan }
 }

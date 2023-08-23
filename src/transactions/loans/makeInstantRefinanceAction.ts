@@ -1,30 +1,28 @@
-import { WalletContextState } from '@solana/wallet-adapter-react'
 import { web3 } from 'fbonds-core'
+import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { instantRefinancePerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
-export type MakeInstantRefinanceTransaction = (params: {
-  connection: web3.Connection
-  wallet: WalletContextState
-  loan: Loan
-}) => Promise<{
-  transaction: web3.Transaction
-  signers: web3.Signer[]
-}>
+import { MakeActionFn } from '../TxnExecutor'
 
-export const makeInstantRefinanceTransaction: MakeInstantRefinanceTransaction = async ({
-  connection,
-  wallet,
-  loan,
-}) => {
-  const { bondTradeTransaction, fraktBond } = loan || {}
+export type MakeInstantRefinanceActionParams = {
+  loan: Loan
+}
+
+export type MakeInstantRefinanceAction = MakeActionFn<MakeInstantRefinanceActionParams, any>
+
+export const makeInstantRefinanceAction: MakeInstantRefinanceAction = async (
+  ixnParams,
+  { connection, wallet },
+) => {
+  const { bondTradeTransaction, fraktBond } = ixnParams.loan || {}
 
   //? bondOffer => get biggest order by market. Check if less then repay
 
-  const { instructions, signers } = await instantRefinancePerpetualLoan({
+  const { instructions, signers, optimisticResult } = await instantRefinancePerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     addComputeUnits: true,
     accounts: {
@@ -46,7 +44,9 @@ export const makeInstantRefinanceTransaction: MakeInstantRefinanceTransaction = 
   })
 
   return {
-    transaction: new web3.Transaction().add(...instructions),
+    instructions,
     signers,
+    additionalResult: optimisticResult,
+    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }

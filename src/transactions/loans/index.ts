@@ -1,3 +1,4 @@
 export * from './makeClaimLoanTransaction'
+export * from './makeInstantRefinanceAction'
 export * from './makeRepayLoanTransaction'
-export * from './makeTerminateLoanTransaction'
+export * from './makeTerminateAction'
