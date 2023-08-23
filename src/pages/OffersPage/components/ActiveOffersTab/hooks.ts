@@ -17,7 +17,7 @@ export const useLenderLoans = () => {
   const publicKeyString = publicKey?.toBase58() || ''
 
   const { data, isLoading } = useQuery(
-    ['walletLoans', publicKeyString],
+    ['lenderLoans', publicKeyString],
     () => fetchLenderLoans({ walletPublicKey: publicKeyString }),
     {
       enabled: !!publicKeyString,

@@ -9,12 +9,12 @@ import { SortOption } from '@banx/components/SortDropdown'
 import { fetchUserOffers } from '@banx/api/core'
 import { DEFAULT_SORT_OPTION } from '@banx/pages/LoansPage/constants'
 
-export const useLenderLoans = () => {
+export const useUserOffers = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
   const { data, isLoading } = useQuery(
-    ['walletLoans', publicKeyString],
+    ['userOffers', publicKeyString],
     () => fetchUserOffers({ walletPublicKey: publicKeyString }),
     {
       enabled: !!publicKeyString,
@@ -36,7 +36,7 @@ interface SearchSelectOption {
 }
 
 export const usePendingOfferTab = () => {
-  const { offers, loading } = useLenderLoans()
+  const { offers, loading } = useUserOffers()
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
 
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)

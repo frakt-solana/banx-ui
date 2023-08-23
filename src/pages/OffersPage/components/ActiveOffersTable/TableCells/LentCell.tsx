@@ -3,6 +3,7 @@ import { FC } from 'react'
 import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
+import { ColorByPercentHealth, getColorByPercent } from '@banx/utils'
 
 import styles from '../ActiveOffersTable.module.less'
 
@@ -18,10 +19,12 @@ export const LentCell: FC<LentCellProps> = ({ loan }) => {
   const lentValue = solAmount + feeAmount
   const LTV = (lentValue / collectionFloor) * 100
 
+  const colorLTV = getColorByPercent(LTV, ColorByPercentHealth)
+
   return (
     <div className={styles.lentInfo}>
       <span>{createSolValueJSX(lentValue, 1e9)}</span>
-      <span>{createPercentValueJSX(LTV)} LTV</span>
+      <span style={{ color: colorLTV }}>{createPercentValueJSX(LTV)} LTV</span>
     </div>
   )
 }

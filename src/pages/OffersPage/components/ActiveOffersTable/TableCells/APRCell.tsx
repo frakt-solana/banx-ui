@@ -14,10 +14,10 @@ export const APRCell: FC<APRCellProps> = ({ loan }) => {
 
   const aprPercent = amountOfBonds / 1e2
 
-  const colorLTV = getColorByPercent(aprPercent, ColorByPercentHealth)
+  const colorAPR = getColorByPercent(aprPercent, ColorByPercentHealth)
 
   return (
-    <span style={{ color: colorLTV }} className={styles.aprValue}>
+    <span style={{ color: colorAPR }} className={styles.aprValue}>
       {aprPercent}%
     </span>
   )
