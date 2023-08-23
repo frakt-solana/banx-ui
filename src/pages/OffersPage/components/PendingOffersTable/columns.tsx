@@ -7,7 +7,7 @@ import {
   createSolValueJSX,
 } from '@banx/components/TableComponents'
 
-import { ActionsCell } from './TableCells'
+import { ActionsCell, InterestCell } from './TableCells'
 import { TableUserOfferData } from './helpers'
 
 export const getTableColumns = () => {
@@ -40,7 +40,7 @@ export const getTableColumns = () => {
     {
       key: 'interest',
       title: <HeaderCell label="Est. Daily interest" />,
-      render: (_, offer) => createSolValueJSX(offer.size, 1e9),
+      render: (_, offer) => <InterestCell offer={offer} />,
       sorter: true,
     },
     {

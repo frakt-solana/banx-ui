@@ -28,7 +28,7 @@ const STATUS_COLOR_MAP: Record<LoanStatus, string> = {
 export const StatusCell: FC<{ loan: Loan }> = ({ loan }) => {
   const { bondTradeTransaction } = loan
 
-  const statusText = STATUS_MAP[bondTradeTransaction.bondTradeTransactionState] || ''
+  const statusText = STATUS_MAP[bondTradeTransaction?.bondTradeTransactionState] || ''
   const statusColor = STATUS_COLOR_MAP[statusText as LoanStatus] || ''
 
   const timeInfo = calculateTimeInfo(loan, statusText)

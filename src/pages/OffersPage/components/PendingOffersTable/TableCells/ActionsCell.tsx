@@ -2,10 +2,12 @@ import { FC } from 'react'
 
 import { Button } from '@banx/components/Buttons'
 
+import { TableUserOfferData } from '../helpers'
+
 import styles from '../PendingOffersTable.module.less'
 
 interface ActionsCellProps {
-  offer: object
+  offer: TableUserOfferData
 }
 
 export const ActionsCell: FC<ActionsCellProps> = () => {
@@ -20,5 +22,3 @@ export const ActionsCell: FC<ActionsCellProps> = () => {
     </div>
   )
 }
-
-export default ActionsCell
