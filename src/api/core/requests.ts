@@ -7,6 +7,7 @@ import {
   BorrowNftsAndOffers,
   BorrowNftsAndOffersResponse,
   BorrowNftsAndOffersSchema,
+  FetchMarketOffersResponse,
   Loan,
   LoanSchema,
   Market,
@@ -103,7 +104,7 @@ export const fetchMarketOffers: FetchMarketOffers = async ({
       isPrivate: String(IS_PRIVATE_MARKETS),
     })
 
-    const { data } = await axios.get<{ data: Offer[] }>(
+    const { data } = await axios.get<FetchMarketOffersResponse>(
       `${BACKEND_BASE_URL}/bond-offers/${marketPubkey?.toBase58() || ''}?${queryParams.toString()}`,
     )
 
