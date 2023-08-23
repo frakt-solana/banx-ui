@@ -44,6 +44,7 @@ export const getTableColumns = () => {
       sorter: true,
     },
     {
+      title: <HeaderCell label="" />,
       render: (_, offer) => <ActionsCell offer={offer} />,
     },
   ]

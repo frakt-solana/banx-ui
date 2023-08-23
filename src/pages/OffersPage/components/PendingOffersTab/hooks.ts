@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
+import { first, groupBy, map } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
+import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { fetchUserOffers } from '@banx/api/core'
 import { DEFAULT_SORT_OPTION } from '@banx/pages/LoansPage/constants'
@@ -41,12 +43,30 @@ export const usePendingOfferTab = () => {
 
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
 
+  const searchSelectOptions = useMemo(() => {
+    const offersGroupedByCollection = groupBy(offers, (offer) => offer.collectionName)
+
+    return map(offersGroupedByCollection, (groupedOffer) => {
+      const firstLoanInGroup = first(groupedOffer)
+      const { collectionName = '', collectionImage = '' } = firstLoanInGroup || {}
+
+      // TODO: need calc best offer
+      const bestOffer = firstLoanInGroup?.fundsSolOrTokenBalance
+
+      return { collectionName, collectionImage, bestOffer }
+    })
+  }, [offers])
+
   const searchSelectParams: SearchSelectProps<SearchSelectOption> = {
-    options: mockOptions,
+    options: searchSelectOptions,
     optionKeys: {
       labelKey: 'collectionName',
       valueKey: 'collectionName',
       imageKey: 'collectionImage',
+      secondLabel: {
+        key: 'bestOffer',
+        format: (value: number) => createSolValueJSX(value, 1e9),
+      },
     },
     selectedOptions,
     labels: ['Collection', 'Best offer'],
@@ -67,10 +87,3 @@ export const usePendingOfferTab = () => {
     },
   }
 }
-
-const mockOptions = [
-  {
-    collectionName: 'Banx',
-    collectionImage: 'https://banxnft.s3.amazonaws.com/images/6906.png',
-  },
-]
