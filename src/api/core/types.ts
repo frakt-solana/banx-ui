@@ -217,3 +217,15 @@ export interface BorrowNftsAndOffersResponse {
   data: BorrowNftsAndOffers
   meta: PaginationMeta
 }
+
+export const LendNftsAndOffersSchema = z.object({
+  nfts: LoanSchema.array(),
+  offers: z.record(PairSchema.array()),
+})
+
+export type LendLoansAndOffers = z.infer<typeof LendNftsAndOffersSchema>
+
+export interface LendLoansAndOffersResponse {
+  data: LendLoansAndOffers
+  meta: PaginationMeta
+}

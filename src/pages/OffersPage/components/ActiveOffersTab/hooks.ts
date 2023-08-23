@@ -8,17 +8,17 @@ import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
-import { fetchLenderLoans } from '@banx/api/core'
+import { fetchLenderLoansAndOffers } from '@banx/api/core'
 
 import { DEFAULT_SORT_OPTION } from './constants'
 
-export const useLenderLoans = () => {
+export const useLenderLoansAndOffers = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
   const { data, isLoading } = useQuery(
     ['lenderLoans', publicKeyString],
-    () => fetchLenderLoans({ walletPublicKey: publicKeyString }),
+    () => fetchLenderLoansAndOffers({ walletPublicKey: publicKeyString }),
     {
       enabled: !!publicKeyString,
       staleTime: 5 * 1000,
@@ -28,7 +28,7 @@ export const useLenderLoans = () => {
   )
 
   return {
-    loans: data ?? [],
+    loans: data?.nfts ?? [],
     loading: isLoading,
   }
 }
@@ -39,7 +39,7 @@ interface SearchSelectOption {
 }
 
 export const useActiveOffersTab = () => {
-  const { loans, loading } = useLenderLoans()
+  const { loans, loading } = useLenderLoansAndOffers()
 
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)

@@ -8,6 +8,7 @@ import {
   BorrowNftsAndOffersResponse,
   BorrowNftsAndOffersSchema,
   FetchMarketOffersResponse,
+  LendLoansAndOffersResponse,
   Loan,
   LoanSchema,
   Market,
@@ -202,15 +203,15 @@ export const fetchWalletLoans: FetchWalletLoans = async ({
   }
 }
 
-type FetchLenderLoans = (props: {
+type FetchLenderLoansAndOffers = (props: {
   walletPublicKey: string
   order?: 'asc' | 'desc'
   skip?: number
   limit?: number
   getAll?: boolean
-}) => Promise<Loan[]>
+}) => Promise<LendLoansAndOffersResponse['data']>
 
-export const fetchLenderLoans: FetchLenderLoans = async ({
+export const fetchLenderLoansAndOffers: FetchLenderLoansAndOffers = async ({
   walletPublicKey,
   order = 'desc',
   skip = 0,
@@ -226,20 +227,20 @@ export const fetchLenderLoans: FetchLenderLoans = async ({
       isPrivate: String(IS_PRIVATE_MARKETS),
     })
 
-    const { data } = await axios.get<WalletLoansResponse>(
+    const { data } = await axios.get<LendLoansAndOffersResponse>(
       `${BACKEND_BASE_URL}/loans/lender/${walletPublicKey}?${queryParams.toString()}`,
     )
 
     try {
-      await LoanSchema.array().parseAsync(data.data)
+      await LoanSchema.array().parseAsync(data.data.nfts)
     } catch (validationError) {
       console.error('Schema validation error:', validationError)
     }
 
-    return data.data
+    return data.data || { nfts: [], offers: {} }
   } catch (error) {
     console.error(error)
-    return []
+    return { nfts: [], offers: {} }
   }
 }
 
