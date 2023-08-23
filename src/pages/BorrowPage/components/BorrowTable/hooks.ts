@@ -1,11 +1,19 @@
 import { useMemo, useState } from 'react'
 
-import { filter, first, get, groupBy, includes, isEmpty, map, sortBy } from 'lodash'
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { chunk, filter, first, get, groupBy, includes, isEmpty, map, sortBy } from 'lodash'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
+import { BorrowNft, Offer } from '@banx/api/core'
+import { enqueueTxnErrorSnackbar } from '@banx/transactions'
+import { TxnExecutor } from '@banx/transactions/TxnExecutor'
+import { LOANS_PER_TXN, MakeBorrowActionParams, makeBorrowAction } from '@banx/transactions/borrow'
+import { captureSentryTxnError } from '@banx/utils'
+
 import { useCartState } from '../../cartState'
 import { useBorrowNfts } from '../../hooks'
+import { SimpleOffer } from '../../types'
 import { getTableColumns } from './columns'
 import { DEFAULT_TABLE_SORT } from './constants'
 import { SortField, TableNftData } from './types'
@@ -13,7 +21,10 @@ import { SortField, TableNftData } from './types'
 import styles from './BorrowTable.module.less'
 
 export const useBorrowTable = () => {
-  const { nfts, isLoading } = useBorrowNfts()
+  const wallet = useWallet()
+  const { connection } = useConnection()
+
+  const { nfts, isLoading, rawOffers } = useBorrowNfts()
   const { offerByMint, addNft, removeNft, findOfferInCart, findBestOffer } = useCartState()
 
   const tableNftData: TableNftData[] = nfts.map((nft) => {
@@ -26,6 +37,61 @@ export const useBorrowTable = () => {
 
     return { mint: nft.mint, nft, loanValue, selected }
   })
+
+  const borrow = (nft: TableNftData) => {
+    const { marketPubkey } = nft.nft.loan
+
+    const offer = findBestOffer({ marketPubkey })
+    const rawOffer = rawOffers[marketPubkey].find(({ publicKey }) => publicKey === offer?.publicKey)
+
+    if (!offer || !rawOffer) return
+
+    new TxnExecutor(
+      makeBorrowAction,
+      { wallet, connection },
+      { signAllChunks: 40, rejectQueueOnFirstPfError: false },
+    )
+      .addTxnParam([
+        {
+          loanValue: nft.loanValue,
+          nft: nft.nft,
+          offer: rawOffer,
+        },
+      ])
+      // eslint-disable-next-line no-console
+      .on('pfSuccessEvery', (result) => console.log(result))
+      .on('pfError', (error) => {
+        if (error instanceof Error && 'logs' in error && Array.isArray(error.logs)) {
+          console.error(error)
+          console.error(error.logs.join('\n'))
+        }
+        captureSentryTxnError({ error })
+        enqueueTxnErrorSnackbar(error)
+      })
+      .execute()
+  }
+
+  const borrowAll = () => {
+    const txnParams = createBorrowParams(offerByMint, nfts, rawOffers)
+
+    new TxnExecutor(
+      makeBorrowAction,
+      { wallet, connection },
+      { signAllChunks: 40, rejectQueueOnFirstPfError: false },
+    )
+      .addTxnParams(txnParams)
+      // eslint-disable-next-line no-console
+      .on('pfSuccessEvery', (result) => console.log(result))
+      .on('pfError', (error) => {
+        if (error instanceof Error && 'logs' in error && Array.isArray(error.logs)) {
+          console.error(error)
+          console.error(error.logs.join('\n'))
+        }
+        captureSentryTxnError({ error })
+        enqueueTxnErrorSnackbar(error)
+      })
+      .execute()
+  }
 
   const onSelectAll = () => {
     return
@@ -93,7 +159,33 @@ export const useBorrowTable = () => {
       },
       sortParams: { option: sortOption, onChange: setSortOption },
     },
+    borrow,
+    borrowAll,
   }
+}
+
+const createBorrowParams = (
+  offerByMint: Record<string, SimpleOffer>,
+  nfts: BorrowNft[],
+  rawOffers: Record<string, Offer[]>,
+) => {
+  const borrowIxnParams = Object.entries(offerByMint)
+    .map(([mint, sOffer]) => {
+      const nft = nfts.find(({ nft }) => nft.mint === mint)
+      const marketPubkey = nft?.loan.marketPubkey || ''
+      const offer = rawOffers[marketPubkey].find(({ publicKey }) => publicKey === sOffer?.publicKey)
+
+      if (!nft || !offer) return null
+
+      return {
+        nft: nft as BorrowNft,
+        loanValue: sOffer.loanValue,
+        offer: offer as Offer,
+      }
+    })
+    .filter(Boolean) as MakeBorrowActionParams
+
+  return chunk(borrowIxnParams, LOANS_PER_TXN)
 }
 
 const useFilteredNfts = (nfts: TableNftData[], selectedOptions: string[]) => {
