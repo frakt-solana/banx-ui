@@ -2,11 +2,9 @@ import produce from 'immer'
 import { cloneDeep, groupBy } from 'lodash'
 import { create } from 'zustand'
 
-import { BorrowNft } from '@banx/api/core'
+import { MintsByMarket, SimpleOffer, SimpleOffersByMarket } from './types'
 
-import { SimpleOffer, SimpleOffersByMarket } from './types'
-
-interface CartState {
+export interface CartState {
   offerByMint: Record<string, SimpleOffer>
   offersByMarket: SimpleOffersByMarket
 
@@ -16,11 +14,13 @@ interface CartState {
   findOfferInCart: (props: { mint: string }) => SimpleOffer | null
   findBestOffer: (props: { marketPubkey: string }) => SimpleOffer | null
 
-  addNftsAuto: (nfts: BorrowNft[]) => void
+  addNftsAuto: (props: { mintsByMarket: MintsByMarket }) => void
 
   setCart: (props: { offersByMarket: SimpleOffersByMarket }) => void
   resetCart: () => void
 }
+
+const offersSorter = (a: SimpleOffer, b: SimpleOffer) => b.loanValue - a.loanValue
 
 export const useCartState = create<CartState>((set, get) => ({
   offerByMint: {},
@@ -67,7 +67,7 @@ export const useCartState = create<CartState>((set, get) => ({
         const allOffers = Object.values(state.offerByMint).flat()
         const allOffersWithSameMarketSorted = allOffers
           .filter((offer) => offer.hadoMarket === marketPubkey)
-          .sort(simpleOffersSorter)
+          .sort(offersSorter)
         const worstOfferWithSameMarket = allOffersWithSameMarketSorted.at(-1)
 
         if (
@@ -86,41 +86,37 @@ export const useCartState = create<CartState>((set, get) => ({
           state.offersByMarket = {
             ...state.offersByMarket,
             [marketPubkey]: [...state.offersByMarket[marketPubkey], worstOfferWithSameMarket].sort(
-              simpleOffersSorter,
+              offersSorter,
             ),
           }
         } else {
           //? Put offer from CartNft back to offersByMarket
           state.offersByMarket = {
             ...state.offersByMarket,
-            [marketPubkey]: [...state.offersByMarket[marketPubkey], offerInCart].sort(
-              simpleOffersSorter,
-            ),
+            [marketPubkey]: [...state.offersByMarket[marketPubkey], offerInCart].sort(offersSorter),
           }
         }
       }),
     )
   },
 
-  addNftsAuto: (nfts) => {
+  addNftsAuto: ({ mintsByMarket }) => {
     const { resetCart } = get()
     resetCart()
     set(
       produce((state: CartState) => {
-        const nftsByMarket = groupBy(nfts, ({ loan }) => loan.marketPubkey)
-
         const offersByMarketSnapshot = cloneDeep(state.offersByMarket) || {}
 
         const offerByMint = Object.fromEntries(
-          Object.entries(nftsByMarket)
-            .map(([marketPubkey, nfts]) => {
+          Object.entries(mintsByMarket)
+            .map(([marketPubkey, mints]) => {
               const offers = offersByMarketSnapshot[marketPubkey] || []
               const mintAddOfferArr: Array<[string, SimpleOffer]> = []
-              for (let i = 0; i < Math.min(offers.length, nfts.length); ++i) {
-                const nft = nfts[i]
+              for (let i = 0; i < Math.min(offers.length, mints.length); ++i) {
+                const mint = mints[i]
                 const offer = offers[i]
-                if (nft && offer) {
-                  mintAddOfferArr.push([nft.mint, offer])
+                if (mint && offer) {
+                  mintAddOfferArr.push([mint, offer])
                   state.offersByMarket[marketPubkey] = state.offersByMarket[marketPubkey].filter(
                     ({ publicKey }) => publicKey !== offer.publicKey,
                   )
@@ -154,7 +150,7 @@ export const useCartState = create<CartState>((set, get) => ({
 
         const offersByMarket = Object.fromEntries(
           Object.entries(groupBy(offers, ({ hadoMarket }) => hadoMarket)).map(
-            ([marketPubkey, offers]) => [marketPubkey, [...offers].sort(simpleOffersSorter)],
+            ([marketPubkey, offers]) => [marketPubkey, [...offers].sort(offersSorter)],
           ),
         )
 
@@ -163,5 +159,3 @@ export const useCartState = create<CartState>((set, get) => ({
       }),
     ),
 }))
-
-const simpleOffersSorter = (a: SimpleOffer, b: SimpleOffer) => b.loanValue - a.loanValue

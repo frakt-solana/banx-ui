@@ -11,7 +11,7 @@ import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { LOANS_PER_TXN, MakeBorrowActionParams, makeBorrowAction } from '@banx/transactions/borrow'
 import { captureSentryTxnError } from '@banx/utils'
 
-import { useCartState } from '../../cartState'
+import { CartState, useCartState } from '../../cartState'
 import { useBorrowNfts } from '../../hooks'
 import { SimpleOffer } from '../../types'
 import { getTableColumns } from './columns'
@@ -20,15 +20,16 @@ import { SortField, TableNftData } from './types'
 
 import styles from './BorrowTable.module.less'
 
-export const useBorrowTable = () => {
-  const wallet = useWallet()
-  const { connection } = useConnection()
-
-  const { nfts, isLoading, rawOffers } = useBorrowNfts()
-  const { offerByMint, addNft, removeNft, findOfferInCart, findBestOffer, addNftsAuto, resetCart } =
-    useCartState()
-
-  const tableNftData: TableNftData[] = nfts.map((nft) => {
+const createTableNftData = ({
+  nfts,
+  findOfferInCart,
+  findBestOffer,
+}: {
+  nfts: BorrowNft[]
+  findOfferInCart: CartState['findOfferInCart']
+  findBestOffer: CartState['findBestOffer']
+}) => {
+  return nfts.map((nft) => {
     const offer = findOfferInCart({ mint: nft.mint })
 
     const loanValue =
@@ -38,6 +39,22 @@ export const useBorrowTable = () => {
 
     return { mint: nft.mint, nft, loanValue, selected }
   })
+}
+
+export const useBorrowTable = () => {
+  const wallet = useWallet()
+  const { connection } = useConnection()
+
+  const { nfts, isLoading, rawOffers } = useBorrowNfts()
+  const { offerByMint, addNft, removeNft, findOfferInCart, findBestOffer, addNftsAuto, resetCart } =
+    useCartState()
+
+  const tableNftsData: TableNftData[] = useMemo(
+    () => createTableNftData({ nfts, findBestOffer, findOfferInCart }),
+    //? Because we need to recalc tableNftData each time offerByMint
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [nfts, findBestOffer, findOfferInCart, createTableNftData, offerByMint],
+  )
 
   const borrow = (nft: TableNftData) => {
     const { marketPubkey } = nft.nft.loan
@@ -96,7 +113,12 @@ export const useBorrowTable = () => {
 
   const onSelectAll = () => {
     if (isEmpty(offerByMint)) {
-      addNftsAuto(nfts)
+      const mintsByMarket = Object.fromEntries(
+        Object.entries(groupBy(nfts, ({ loan }) => loan.marketPubkey)).map(
+          ([marketPubkey, nfts]) => [marketPubkey, nfts.map(({ mint }) => mint)],
+        ),
+      )
+      addNftsAuto({ mintsByMarket })
     } else {
       resetCart()
     }
@@ -125,7 +147,7 @@ export const useBorrowTable = () => {
 
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_TABLE_SORT)
 
-  const filteredNfts = useFilteredNfts(tableNftData, selectedOptions)
+  const filteredNfts = useFilteredNfts(tableNftsData, selectedOptions)
   const sortedNfts = useSortedNfts(filteredNfts, sortOption.value)
 
   const searchSelectOptions = useMemo(() => {
@@ -222,7 +244,7 @@ const useSortedNfts = (nfts: TableNftData[], sortOptionValue: string) => {
       return get(nft, sortValue)
     })
 
-    return order === 'desc' ? sorted.reverse() : sorted
+    return order === 'desc' ? sorted : sorted.reverse()
   }, [sortOptionValue, nfts])
 
   return sortedLoans
