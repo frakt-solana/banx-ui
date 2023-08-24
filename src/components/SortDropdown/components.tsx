@@ -52,7 +52,7 @@ export const SortOptions: FC<SortOptionsProps> = ({ sortOption, options, onChang
   <>
     {options.map(({ label, value }) => (
       <div className={styles.sortButtons} key={label}>
-        {['asc', 'desc'].map((order) => {
+        {['desc', 'asc'].map((order) => {
           const sortOrder = `${value}_${order}`
           const isActive = sortOption?.value === sortOrder
 
