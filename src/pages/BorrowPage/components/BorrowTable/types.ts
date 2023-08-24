@@ -10,6 +10,5 @@ export interface TableNftData {
 }
 
 export enum SortField {
-  BORROW = 'Borrow',
-  NAME = 'Name',
+  BORROW = 'loanValue',
 }

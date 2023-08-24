@@ -44,7 +44,12 @@ export class TxnExecutor<TParams, TResult> {
     }
   }
 
-  public addTxnParams(params: TParams | TParams[]) {
+  public addTxnParam(param: TParams) {
+    this.txnsParams = [...this.txnsParams, param]
+    return this
+  }
+
+  public addTxnParams(params: TParams[]) {
     const paramsArr = params instanceof Array ? params : [params]
     this.txnsParams = [...this.txnsParams, ...paramsArr]
     return this

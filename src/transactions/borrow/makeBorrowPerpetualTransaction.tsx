@@ -27,6 +27,7 @@ export const makeBorrowPerpetualTransaction: MakeBorrowPerpetualTransaction = as
 }) => {
   const { instructions, signers } = await borrowPerpetual({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
+    addComputeUnits: true,
     accounts: {
       userPubkey: wallet.publicKey as web3.PublicKey,
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),

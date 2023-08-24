@@ -6,3 +6,5 @@ export interface SimpleOffer {
 }
 
 export type SimpleOffersByMarket = Record<string, SimpleOffer[]>
+
+export type MintsByMarket = Record<string, string[]>
