@@ -45,7 +45,6 @@ export const getTableColumns = ({
       dataIndex: 'loanValue',
       title: () => <HeaderCell label="Borrow" />,
       render: (_, nft) => createSolValueJSX(nft.loanValue, 1e9),
-      showSorterTooltip: false,
       sorter: true,
     },
     {

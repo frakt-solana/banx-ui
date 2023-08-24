@@ -239,7 +239,6 @@ const useSortedNfts = (nfts: TableNftData[], sortOptionValue: string) => {
 
     const sortValueMapping: Record<SortField, string> = {
       [SortField.BORROW]: 'nft.loanValue',
-      [SortField.NAME]: 'nft.nft.nft.meta.name',
     }
 
     const sorted = sortBy(nfts, (nft) => {
