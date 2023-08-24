@@ -118,6 +118,7 @@ export const PairSchema = z.object({
 })
 
 const UserPairSchema = PairSchema.extend({
+  marketApr: z.number(),
   collectionName: z.string(),
   collectionImage: z.string(),
 })
