@@ -1,6 +1,8 @@
 import produce from 'immer'
-import { groupBy } from 'lodash'
+import { cloneDeep, groupBy } from 'lodash'
 import { create } from 'zustand'
+
+import { BorrowNft } from '@banx/api/core'
 
 import { SimpleOffer, SimpleOffersByMarket } from './types'
 
@@ -13,6 +15,8 @@ interface CartState {
 
   findOfferInCart: (props: { mint: string }) => SimpleOffer | null
   findBestOffer: (props: { marketPubkey: string }) => SimpleOffer | null
+
+  addNftsAuto: (nfts: BorrowNft[]) => void
 
   setCart: (props: { offersByMarket: SimpleOffersByMarket }) => void
   resetCart: () => void
@@ -98,6 +102,40 @@ export const useCartState = create<CartState>((set, get) => ({
     )
   },
 
+  addNftsAuto: (nfts) => {
+    const { resetCart } = get()
+    resetCart()
+    set(
+      produce((state: CartState) => {
+        const nftsByMarket = groupBy(nfts, ({ loan }) => loan.marketPubkey)
+
+        const offersByMarketSnapshot = cloneDeep(state.offersByMarket) || {}
+
+        const offerByMint = Object.fromEntries(
+          Object.entries(nftsByMarket)
+            .map(([marketPubkey, nfts]) => {
+              const offers = offersByMarketSnapshot[marketPubkey] || []
+              const mintAddOfferArr: Array<[string, SimpleOffer]> = []
+              for (let i = 0; i < Math.min(offers.length, nfts.length); ++i) {
+                const nft = nfts[i]
+                const offer = offers[i]
+                if (nft && offer) {
+                  mintAddOfferArr.push([nft.mint, offer])
+                  state.offersByMarket[marketPubkey] = state.offersByMarket[marketPubkey].filter(
+                    ({ publicKey }) => publicKey !== offer.publicKey,
+                  )
+                }
+              }
+              return mintAddOfferArr
+            })
+            .flat(),
+        )
+
+        state.offerByMint = offerByMint
+      }),
+    )
+  },
+
   setCart: ({ offersByMarket }) => {
     set(
       produce((state: CartState) => {
@@ -110,6 +148,7 @@ export const useCartState = create<CartState>((set, get) => ({
     set(
       produce((state: CartState) => {
         const offersInUse = Object.values(state.offerByMint)
+
         const offersAvailable = Object.values(state.offersByMarket).flat()
         const offers = [...offersInUse, ...offersAvailable]
 

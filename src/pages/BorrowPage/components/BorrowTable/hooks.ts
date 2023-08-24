@@ -25,7 +25,8 @@ export const useBorrowTable = () => {
   const { connection } = useConnection()
 
   const { nfts, isLoading, rawOffers } = useBorrowNfts()
-  const { offerByMint, addNft, removeNft, findOfferInCart, findBestOffer } = useCartState()
+  const { offerByMint, addNft, removeNft, findOfferInCart, findBestOffer, addNftsAuto, resetCart } =
+    useCartState()
 
   const tableNftData: TableNftData[] = nfts.map((nft) => {
     const offer = findOfferInCart({ mint: nft.mint })
@@ -94,7 +95,11 @@ export const useBorrowTable = () => {
   }
 
   const onSelectAll = () => {
-    return
+    if (isEmpty(offerByMint)) {
+      addNftsAuto(nfts)
+    } else {
+      resetCart()
+    }
   }
 
   const onNftSelect = (nft: TableNftData) => {
