@@ -2,6 +2,7 @@ import { UserOffer } from '@banx/api/core'
 
 export interface TableUserOfferData {
   publicKey: string
+  hadoMarket: string
 
   collectionImage: string
   collectionName: string
@@ -21,6 +22,7 @@ export const parseUserOffers = (offers: UserOffer[]): TableUserOfferData[] => {
       currentSpotPrice,
       collectionImage,
       collectionName,
+      hadoMarket,
     } = offer
 
     const loansAmount = fundsSolOrTokenBalance / currentSpotPrice
@@ -30,6 +32,7 @@ export const parseUserOffers = (offers: UserOffer[]): TableUserOfferData[] => {
 
     return {
       publicKey,
+      hadoMarket,
       collectionImage,
       collectionName,
       loansAmount,

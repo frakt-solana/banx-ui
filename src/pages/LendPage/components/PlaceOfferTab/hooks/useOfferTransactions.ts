@@ -9,12 +9,12 @@ import {
   TransactionParams,
   buildAndExecuteTransaction,
 } from '@banx/transactions'
+import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import {
   MakeCreatePerpetualOfferTransaction,
-  MakeRemovePerpetualOfferTransaction,
   MakeUpdatePerpetualOfferTransaction,
   makeCreatePerpetualOfferTransaction,
-  makeRemovePerpetualOfferTransaction,
+  makeRemoveOfferAction,
   makeUpdatePerpetualOfferTransaction,
 } from '@banx/transactions/bonds'
 
@@ -86,15 +86,16 @@ export const useOfferTransactions = ({
     )
   }
 
-  const onRemoveOffer = async () => {
+  const onRemoveOffer = () => {
     if (!optimisticOffer) return
 
-    await executeOfferTransaction<MakeRemovePerpetualOfferTransaction>(
-      makeRemovePerpetualOfferTransaction,
-      { offerPubkey, optimisticOffer },
-      updateOrAddOffer,
-      goToPlaceOffer,
-    )
+    new TxnExecutor(makeRemoveOfferAction, { wallet, connection })
+      .addTxnParam({ offerPubkey, optimisticOffer })
+      .on('pfSuccess', () => {
+        updateOrAddOffer(optimisticOffer)
+        goToPlaceOffer()
+      })
+      .execute()
   }
 
   const onUpdateOffer = async () => {
