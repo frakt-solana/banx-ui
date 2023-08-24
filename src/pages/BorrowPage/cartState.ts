@@ -59,18 +59,18 @@ export const useCartState = create<CartState>((set, get) => ({
 
         delete state.offerByMint[mint]
 
+        //? Find worstOffer with same market. If order of removable nft is better, then swap is needed
         const allOffers = Object.values(state.offerByMint).flat()
         const allOffersWithSameMarketSorted = allOffers
           .filter((offer) => offer.hadoMarket === marketPubkey)
           .sort(simpleOffersSorter)
-
         const worstOfferWithSameMarket = allOffersWithSameMarketSorted.at(-1)
 
         if (
           worstOfferWithSameMarket &&
           offerInCart.loanValue > worstOfferWithSameMarket.loanValue
         ) {
-          //? swap
+          //? set removable order
           const nftMintWithWorstOffer =
             Object.entries(state.offerByMint).find(
               ([, offer]) => offer.publicKey === worstOfferWithSameMarket.publicKey,
@@ -78,6 +78,7 @@ export const useCartState = create<CartState>((set, get) => ({
 
           state.offerByMint[nftMintWithWorstOffer] = offerInCart
 
+          //? Put worst order back to offersByMarket
           state.offersByMarket = {
             ...state.offersByMarket,
             [marketPubkey]: [...state.offersByMarket[marketPubkey], worstOfferWithSameMarket].sort(
