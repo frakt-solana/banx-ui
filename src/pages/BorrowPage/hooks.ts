@@ -3,13 +3,13 @@ import { useEffect, useMemo } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 import { produce } from 'immer'
-import { isEmpty, uniqueId } from 'lodash'
+import { countBy, isEmpty, sumBy, uniqueId } from 'lodash'
 import { create } from 'zustand'
 
-import { Offer, fetchBorrowNftsAndOffers } from '@banx/api/core'
+import { BorrowNft, Offer, fetchBorrowNftsAndOffers } from '@banx/api/core'
 
 import { useCartState } from './cartState'
-import { SimpleOffer } from './types'
+import { SimpleOffer, SimpleOffersByMarket } from './types'
 
 export const useBorrowNfts = () => {
   const { setCart } = useCartState()
@@ -60,11 +60,29 @@ export const useBorrowNfts = () => {
     return nfts.filter((nft) => !nft.loan.banxStake)
   }, [nfts])
 
+  const maxBorrow = useMemo(() => {
+    return calcMaxBorrow(notStakedNfts, offers)
+  }, [notStakedNfts, offers])
+
   return {
     nfts: notStakedNfts || [],
     rawOffers: data?.offers || {},
+    maxBorrow,
     isLoading,
   }
+}
+
+const calcMaxBorrow = (nfts: BorrowNft[], offers: SimpleOffersByMarket) => {
+  const nftsAmountByMarket = countBy(nfts, ({ loan }) => loan.marketPubkey)
+
+  return Object.entries(nftsAmountByMarket).reduce((maxBorrow, [marketPubkey, nftsAmount]) => {
+    const maxBorrowMarket = sumBy(
+      offers[marketPubkey].slice(0, nftsAmount),
+      ({ loanValue }) => loanValue,
+    )
+
+    return maxBorrow + maxBorrowMarket
+  }, 0)
 }
 
 const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
