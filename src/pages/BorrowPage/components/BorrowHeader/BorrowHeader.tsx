@@ -9,9 +9,7 @@ import { VALUES_TYPES } from '@banx/components/StatInfo'
 import { useBorrowNfts } from '../../hooks'
 
 const Header = () => {
-  const { nfts, isLoading } = useBorrowNfts()
-
-  const maxBorrow = 333.33 //TODO: calc maxBorrow here or get from BE
+  const { nfts, isLoading, maxBorrow } = useBorrowNfts()
 
   const nftsAmount = nfts.length
 
@@ -21,7 +19,7 @@ const Header = () => {
         <>
           <AdditionalStat label="Your NFTs" value={nftsAmount} valueType={VALUES_TYPES.STRING} />
           <SeparateStatsLine />
-          <MainStat label="Max borrow" value={`${maxBorrow}◎`} />
+          <MainStat label="Max borrow" value={`${(maxBorrow / 1e9).toFixed(2)}◎`} />
         </>
       )}
     </PageHeaderBackdrop>

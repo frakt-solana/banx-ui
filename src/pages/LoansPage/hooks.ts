@@ -3,9 +3,11 @@ import { useMemo } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 import { produce } from 'immer'
+import { uniqBy } from 'lodash'
 import { create } from 'zustand'
 
 import { Loan, fetchWalletLoans } from '@banx/api/core'
+import { useOptimisticLoans } from '@banx/store'
 
 type UseWalletLoans = () => {
   loans: Loan[]
@@ -18,6 +20,7 @@ export const useWalletLoans: UseWalletLoans = () => {
   const publicKeyString = publicKey?.toBase58() || ''
 
   const { hideLoans, hiddenLoansPubkeys } = useHiddenNFTsMint()
+  const { loans: optimisticLoans } = useOptimisticLoans()
 
   const { data, isLoading } = useQuery(
     ['walletLoans', publicKeyString],
@@ -30,12 +33,16 @@ export const useWalletLoans: UseWalletLoans = () => {
     },
   )
 
-  const loans = useMemo(() => {
+  const loansWithOptimistics = useMemo(() => {
     if (!data) {
       return []
     }
-    return data.filter(({ publicKey }) => !hiddenLoansPubkeys.includes(publicKey))
-  }, [data, hiddenLoansPubkeys])
+    return uniqBy([...data, ...optimisticLoans], ({ publicKey }) => publicKey)
+  }, [data, optimisticLoans])
+
+  const loans = useMemo(() => {
+    return loansWithOptimistics.filter(({ publicKey }) => !hiddenLoansPubkeys.includes(publicKey))
+  }, [loansWithOptimistics, hiddenLoansPubkeys])
 
   return {
     loans,

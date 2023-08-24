@@ -30,7 +30,8 @@ export type EventHanlders = Record<HandlerType, EventHandler>
 
 export type HandlerType =
   | 'beforeFirstApprove'
-  | 'pfSuccess'
+  | 'pfSuccessAll'
+  | 'pfSuccessAny'
+  | 'pfSuccessEvery'
   | 'pfError'
   | 'beforeApproveEveryChunk'
-  | 'pfSuccessEvery'
