@@ -69,16 +69,16 @@ export const useLendLoansTransactions = () => {
   const { connection } = useConnection()
 
   const terminateLoan = (loan: Loan) => {
-    new TxnExecutor(makeTerminateAction, { wallet, connection }).addTxnParams({ loan }).execute()
+    new TxnExecutor(makeTerminateAction, { wallet, connection }).addTxnParam({ loan }).execute()
   }
 
   const claimLoan = (loan: Loan) => {
-    new TxnExecutor(makeClaimAction, { wallet, connection }).addTxnParams({ loan }).execute()
+    new TxnExecutor(makeClaimAction, { wallet, connection }).addTxnParam({ loan }).execute()
   }
 
   const instantLoan = (loan: Loan) => {
     new TxnExecutor(makeInstantRefinanceAction, { wallet, connection })
-      .addTxnParams({ loan })
+      .addTxnParam({ loan })
       .execute()
   }
 
