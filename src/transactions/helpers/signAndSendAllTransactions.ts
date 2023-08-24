@@ -1,10 +1,8 @@
 import { WalletContextState } from '@solana/wallet-adapter-react'
 import { web3 } from 'fbonds-core'
 
-import { captureSentryTxnError } from '@banx/utils'
-
 import { TxnsAndSigners } from '../types'
-import { enqueueTxnErrorSnackbar } from './enqueueTxnErrorSnackbar'
+import { defaultTxnErrorHandler } from './defaultTxnErrorHandler'
 
 interface SignAndSendAllTransactionsProps {
   transactionsAndSigners: TxnsAndSigners[]
@@ -57,7 +55,6 @@ export const signAndSendAllTransactions: SignAndSendAllTransactions = async ({
 
     return true
   } catch (error) {
-    captureSentryTxnError({ error })
-    enqueueTxnErrorSnackbar(error)
+    defaultTxnErrorHandler(error)
   }
 }

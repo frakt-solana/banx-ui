@@ -1,12 +1,9 @@
 import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
-import {
-  BondAndTransactionAndOfferOptimistic,
-  borrowPerpetual,
-} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { borrowPerpetual } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { BorrowNft, Offer } from '@banx/api/core'
+import { BorrowNft, Loan, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
@@ -18,10 +15,9 @@ export type MakeBorrowActionParams = {
   offer: Offer
 }[]
 
-export type MakeBorrowAction = MakeActionFn<
-  MakeBorrowActionParams,
-  BondAndTransactionAndOfferOptimistic[]
->
+export type MakeBorrowActionResult = Loan[]
+
+export type MakeBorrowAction = MakeActionFn<MakeBorrowActionParams, MakeBorrowActionResult>
 
 export const LOANS_PER_TXN = 2
 
@@ -54,10 +50,17 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, { connection
     sendTxn: sendTxnPlaceHolder,
   })
 
+  const loans: Loan[] = optimisticResults.map((optimistic, idx) => ({
+    publicKey: optimistic.fraktBond.publicKey,
+    fraktBond: optimistic.fraktBond,
+    bondTradeTransaction: optimistic.bondTradeTransaction,
+    nft: ixnParams[idx].nft.nft,
+  }))
+
   return {
     instructions,
     signers,
-    additionalResult: optimisticResults,
+    additionalResult: loans,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }

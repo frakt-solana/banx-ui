@@ -11,7 +11,8 @@ const handlerPlaceholder = () => {}
 
 export const DEFAULT_HANDLERS: EventHanlders = {
   ['beforeFirstApprove']: handlerPlaceholder,
-  ['pfSuccess']: handlerPlaceholder,
+  ['pfSuccessAll']: handlerPlaceholder,
+  ['pfSuccessAny']: handlerPlaceholder,
   ['pfError']: handlerPlaceholder,
   ['beforeApproveEveryChunk']: handlerPlaceholder,
   ['pfSuccessEvery']: handlerPlaceholder,
@@ -73,14 +74,29 @@ export class TxnExecutor<TParams, TResult> {
 
       const txnChunks = chunk(txnsData, options.signAllChunks)
 
+      const signAndSendTxnsResults: string[] = []
       for (const chunk of txnChunks) {
         try {
-          await signAndSendTxns({ txnsData: chunk, walletAndConnection, eventHandlers, options })
+          const result = await signAndSendTxns({
+            txnsData: chunk,
+            walletAndConnection,
+            eventHandlers,
+            options,
+          })
+          result && signAndSendTxnsResults.push(...result)
         } catch (error) {
           eventHandlers?.pfError(error as TxnError)
           if (options.rejectQueueOnFirstPfError) return
         }
       }
+
+      if (signAndSendTxnsResults.length === txnChunks.length) {
+        eventHandlers?.pfSuccessAll()
+      } else if (signAndSendTxnsResults.length) {
+        eventHandlers?.pfSuccessAny()
+      }
+
+      return signAndSendTxnsResults
     } catch (error) {
       this.eventHandlers?.pfError(error as TxnError)
     }
