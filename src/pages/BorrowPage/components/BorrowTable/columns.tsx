@@ -11,12 +11,14 @@ import styles from './BorrowTable.module.less'
 interface GetTableColumnsProps {
   onSelectAll: () => void
   onNftSelect: (nft: TableNftData) => void
+  onBorrow: (nft: TableNftData) => void
   isCartEmpty: boolean
 }
 
 export const getTableColumns = ({
   onSelectAll,
   onNftSelect,
+  onBorrow,
   isCartEmpty,
 }: GetTableColumnsProps) => {
   const COLUMNS: ColumnsType<TableNftData> = [
@@ -48,7 +50,7 @@ export const getTableColumns = ({
     },
     {
       title: () => <HeaderCell label="" />,
-      render: (_, nft) => <BorrowCell nft={nft} disabled={!isCartEmpty} />,
+      render: (_, nft) => <BorrowCell disabled={!isCartEmpty} onBorrow={() => onBorrow(nft)} />,
     },
   ]
 

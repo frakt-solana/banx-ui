@@ -50,7 +50,9 @@ export const useBorrowTable = () => {
     useCartState()
 
   const tableNftsData: TableNftData[] = useMemo(
-    () => createTableNftData({ nfts, findBestOffer, findOfferInCart }),
+    () => {
+      return createTableNftData({ nfts, findBestOffer, findOfferInCart })
+    },
     //? Because we need to recalc tableNftData each time offerByMint
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [nfts, findBestOffer, findOfferInCart, createTableNftData, offerByMint],
@@ -141,6 +143,7 @@ export const useBorrowTable = () => {
     onSelectAll,
     onNftSelect,
     isCartEmpty: isEmpty(offerByMint),
+    onBorrow: borrow,
   })
 
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])

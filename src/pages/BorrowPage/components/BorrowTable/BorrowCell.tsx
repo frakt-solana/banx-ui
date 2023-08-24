@@ -2,17 +2,12 @@ import React, { FC } from 'react'
 
 import { Button } from '@banx/components/Buttons'
 
-import { useBorrowTable } from './hooks'
-import { TableNftData } from './types'
-
-export const BorrowCell: FC<{ nft: TableNftData; disabled?: boolean }> = ({
-  nft,
+export const BorrowCell: FC<{ onBorrow: () => void; disabled?: boolean }> = ({
+  onBorrow,
   disabled = false,
 }) => {
-  const { borrow } = useBorrowTable()
-
   const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    borrow(nft)
+    onBorrow()
     event.stopPropagation()
   }
 

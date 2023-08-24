@@ -16,7 +16,6 @@ const BorrowTable = () => {
         columns={columns}
         onRowClick={onRowClick}
         sortViewParams={sortViewParams}
-        // sortViewParams={sortViewParams}
         // breakpoints={breakpoints}
         // className={className}
         rowKeyField="mint"
