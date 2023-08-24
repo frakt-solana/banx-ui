@@ -2,15 +2,18 @@ import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
-import { isEmpty, uniqueId } from 'lodash'
+import { produce } from 'immer'
+import { countBy, isEmpty, sumBy, uniqueId } from 'lodash'
+import { create } from 'zustand'
 
-import { Offer, fetchBorrowNftsAndOffers } from '@banx/api/core'
+import { BorrowNft, Offer, fetchBorrowNftsAndOffers } from '@banx/api/core'
 
 import { useCartState } from './cartState'
-import { SimpleOffer } from './types'
+import { SimpleOffer, SimpleOffersByMarket } from './types'
 
 export const useBorrowNfts = () => {
   const { setCart } = useCartState()
+  const { mints: hiddenMints } = useHiddenNftsMints()
 
   const { publicKey: walletPublicKey } = useWallet()
 
@@ -45,16 +48,41 @@ export const useBorrowNfts = () => {
     }
   }, [setCart, offers])
 
+  const nfts = useMemo(() => {
+    if (!data) {
+      return []
+    }
+    return data.nfts.filter(({ mint }) => !hiddenMints.includes(mint))
+  }, [data, hiddenMints])
+
   //TODO: Remove when borrow staked nfts support appears
   const notStakedNfts = useMemo(() => {
-    return (data?.nfts || []).filter((nft) => !nft.loan.banxStake)
-  }, [data])
+    return nfts.filter((nft) => !nft.loan.banxStake)
+  }, [nfts])
+
+  const maxBorrow = useMemo(() => {
+    return calcMaxBorrow(notStakedNfts, offers)
+  }, [notStakedNfts, offers])
 
   return {
     nfts: notStakedNfts || [],
     rawOffers: data?.offers || {},
+    maxBorrow,
     isLoading,
   }
+}
+
+const calcMaxBorrow = (nfts: BorrowNft[], offers: SimpleOffersByMarket) => {
+  const nftsAmountByMarket = countBy(nfts, ({ loan }) => loan.marketPubkey)
+
+  return Object.entries(nftsAmountByMarket).reduce((maxBorrow, [marketPubkey, nftsAmount]) => {
+    const maxBorrowMarket = sumBy(
+      offers[marketPubkey].slice(0, nftsAmount),
+      ({ loanValue }) => loanValue,
+    )
+
+    return maxBorrow + maxBorrowMarket
+  }, 0)
 }
 
 const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
@@ -85,3 +113,19 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
 
   return offers
 }
+
+interface HiddenNftsMintsState {
+  mints: string[]
+  add: (...mints: string[]) => void
+}
+
+export const useHiddenNftsMints = create<HiddenNftsMintsState>((set) => ({
+  mints: [],
+  add: (...mints) => {
+    set(
+      produce((state: HiddenNftsMintsState) => {
+        state.mints.push(...mints)
+      }),
+    )
+  },
+}))
