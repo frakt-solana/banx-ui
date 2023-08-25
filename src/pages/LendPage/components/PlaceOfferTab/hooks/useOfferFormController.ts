@@ -1,17 +1,22 @@
 import { useEffect, useState } from 'react'
 
-import { isEqual, pick } from 'lodash'
+import { isEqual, isInteger, pick } from 'lodash'
 
 export const useOfferFormController = (initialLoanValue = 0, initialLoansAmount = 1) => {
-  const [loanValue, setLoanValue] = useState(String(initialLoanValue))
-  const [loansAmount, setLoansAmount] = useState(String(initialLoansAmount))
+  const initialFixedLoanValue = initialLoanValue?.toFixed(2)
+  const initialFixedLoansAmount = isInteger(initialLoansAmount)
+    ? String(initialLoansAmount)
+    : initialLoansAmount?.toFixed(2)
+
+  const [loanValue, setLoanValue] = useState(initialFixedLoanValue)
+  const [loansAmount, setLoansAmount] = useState(initialFixedLoansAmount)
 
   useEffect(() => {
-    if (initialLoanValue || initialLoansAmount) {
-      setLoanValue(String(initialLoanValue))
-      setLoansAmount(String(initialLoansAmount))
+    if (initialFixedLoanValue || initialFixedLoansAmount) {
+      setLoanValue(initialFixedLoanValue)
+      setLoansAmount(initialFixedLoansAmount)
     }
-  }, [initialLoanValue, initialLoansAmount])
+  }, [initialFixedLoanValue, initialFixedLoansAmount])
 
   const onLoanValueChange = (nextValue: string) => {
     setLoanValue(nextValue)
@@ -22,14 +27,14 @@ export const useOfferFormController = (initialLoanValue = 0, initialLoansAmount 
   }
 
   const resetFormValues = () => {
-    setLoanValue(String(initialLoanValue))
-    setLoansAmount(String(initialLoansAmount))
+    setLoanValue(initialFixedLoanValue)
+    setLoansAmount(initialFixedLoansAmount)
   }
 
   const currentFormValues = { loansAmount, loanValue }
   const initialFormValues = {
-    loansAmount: String(initialLoansAmount),
-    loanValue: String(initialLoanValue),
+    loansAmount: initialFixedLoansAmount,
+    loanValue: initialFixedLoanValue,
   }
 
   const hasFormChanges =

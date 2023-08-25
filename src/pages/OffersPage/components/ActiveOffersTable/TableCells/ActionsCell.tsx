@@ -41,7 +41,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
       offersByMarket,
       (offer) =>
         !hiddenOffers.includes(offer.publicKey) &&
-        offer.fundsSolOrTokenBalance > fraktBond.currentPerpetualBorrowed,
+        calculateLoanValue(offer) > fraktBond.currentPerpetualBorrowed,
     )
 
     const sortedOffers = sortBy(filteredOffers, 'fundsSolOrTokenBalance')
@@ -95,6 +95,13 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
 }
 
 export default ActionsCell
+
+const calculateLoanValue = (offer: Offer) => {
+  const { fundsSolOrTokenBalance, currentSpotPrice } = offer
+  const fullOffersAmount = Math.floor(fundsSolOrTokenBalance / currentSpotPrice)
+  const loanValue = currentSpotPrice * Math.min(fullOffersAmount, 1)
+  return loanValue
+}
 
 export const useLendLoansTransactions = ({
   loan,
