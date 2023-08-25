@@ -29,6 +29,7 @@ export const useLenderLoansAndOffers = () => {
 
   return {
     loans: data?.nfts ?? [],
+    offers: data?.offers ?? {},
     loading: isLoading,
   }
 }

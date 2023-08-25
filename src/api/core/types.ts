@@ -165,6 +165,7 @@ const FraktBondSchema = z.object({
   borrowedAmount: z.number(),
   banxStake: z.string(),
   fraktMarket: z.string(),
+  hadoMarket: z.any(),
   amountToReturn: z.number(),
   actualReturnedAmount: z.number(),
   terminatedCounter: z.number(),

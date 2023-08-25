@@ -91,7 +91,7 @@ export const useOfferTransactions = ({
 
     new TxnExecutor(makeRemoveOfferAction, { wallet, connection })
       .addTxnParam({ offerPubkey, optimisticOffer })
-      .on('pfSuccess', () => {
+      .on('pfSuccessAll', () => {
         updateOrAddOffer(optimisticOffer)
         goToPlaceOffer()
       })
