@@ -15,7 +15,7 @@ import {
   makeTerminateAction,
 } from '@banx/transactions/loans'
 
-import { useLenderLoansAndOffers } from '../../ActiveOffersTab/hooks'
+import { useHiddenNftsAndOffers, useLenderLoansAndOffers } from '../../ActiveOffersTab/hooks'
 
 import styles from '../ActiveOffersTable.module.less'
 
@@ -32,6 +32,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
   const { bondTradeTransactionState } = bondTradeTransaction
   const { publicKey } = useWallet()
 
+  const { offers: hiddenOffers, addOffers, addMints } = useHiddenNftsAndOffers()
   const { offers } = useLenderLoansAndOffers()
 
   const bestOffer = useMemo(() => {
@@ -40,6 +41,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
     const filteredOffers = filter(
       offersByMarket,
       (offer) =>
+        !hiddenOffers.includes(offer.publicKey) &&
         offer.assetReceiver !== publicKey?.toBase58() &&
         offer.fundsSolOrTokenBalance > fraktBond.currentPerpetualBorrowed,
     )
@@ -47,9 +49,14 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
     const sortedOffers = sortBy(filteredOffers, 'fundsSolOrTokenBalance')
 
     return first(sortedOffers) as Offer
-  }, [offers, fraktBond, publicKey])
+  }, [offers, fraktBond, publicKey, hiddenOffers])
 
-  const { terminateLoan, claimLoan, instantLoan } = useLendLoansTransactions({ loan, bestOffer })
+  const { terminateLoan, claimLoan, instantLoan } = useLendLoansTransactions({
+    loan,
+    bestOffer,
+    addOffers,
+    addMints,
+  })
 
   const isActiveLoan = bondTradeTransactionState === isPerpetualActive
   const isTerminatingLoan = bondTradeTransactionState === isPerpetualTerminating
@@ -91,7 +98,17 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
 
 export default ActionsCell
 
-export const useLendLoansTransactions = ({ loan, bestOffer }: { loan: Loan; bestOffer: Offer }) => {
+export const useLendLoansTransactions = ({
+  loan,
+  bestOffer,
+  addOffers,
+  addMints,
+}: {
+  loan: Loan
+  bestOffer: Offer
+  addOffers: (...offers: string[]) => void
+  addMints: (...mints: string[]) => void
+}) => {
   const wallet = useWallet()
   const { connection } = useConnection()
 
@@ -106,6 +123,10 @@ export const useLendLoansTransactions = ({ loan, bestOffer }: { loan: Loan; best
   const instantLoan = () => {
     new TxnExecutor(makeInstantRefinanceAction, { wallet, connection })
       .addTxnParam({ loan, bestOffer })
+      .on('pfSuccessAll', () => {
+        addOffers(bestOffer.publicKey)
+        addMints(loan.nft.mint)
+      })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error)
       })

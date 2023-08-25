@@ -2,7 +2,9 @@ import { useMemo, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
+import { produce } from 'immer'
 import { first, groupBy, map, sumBy } from 'lodash'
+import { create } from 'zustand'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
@@ -12,9 +14,37 @@ import { fetchLenderLoansAndOffers } from '@banx/api/core'
 
 import { DEFAULT_SORT_OPTION } from './constants'
 
+interface HiddenNftsAndOffersState {
+  mints: string[]
+  offers: string[]
+  addMints: (...mints: string[]) => void
+  addOffers: (...offers: string[]) => void
+}
+
+export const useHiddenNftsAndOffers = create<HiddenNftsAndOffersState>((set) => ({
+  mints: [],
+  offers: [],
+  addMints: (...mints) => {
+    set(
+      produce((state: HiddenNftsAndOffersState) => {
+        state.mints.push(...mints)
+      }),
+    )
+  },
+  addOffers: (...offers) => {
+    set(
+      produce((state: HiddenNftsAndOffersState) => {
+        state.offers.push(...offers)
+      }),
+    )
+  },
+}))
+
 export const useLenderLoansAndOffers = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
+
+  const { mints } = useHiddenNftsAndOffers()
 
   const { data, isLoading } = useQuery(
     ['lenderLoans', publicKeyString],
@@ -27,8 +57,15 @@ export const useLenderLoansAndOffers = () => {
     },
   )
 
+  const loans = useMemo(() => {
+    if (!data?.nfts) {
+      return []
+    }
+    return data.nfts.filter(({ nft }) => !mints.includes(nft.mint))
+  }, [data, mints])
+
   return {
-    loans: data?.nfts ?? [],
+    loans,
     offers: data?.offers ?? {},
     loading: isLoading,
   }
