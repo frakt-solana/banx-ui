@@ -30,7 +30,6 @@ const isPerpetualTerminating = BondTradeTransactionV2State.PerpetualManualTermin
 export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
   const { bondTradeTransaction, fraktBond } = loan
   const { bondTradeTransactionState } = bondTradeTransaction
-  const { publicKey } = useWallet()
 
   const { offers: hiddenOffers, addOffers, addMints } = useHiddenNftsAndOffers()
   const { offers } = useLenderLoansAndOffers()
@@ -42,14 +41,13 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
       offersByMarket,
       (offer) =>
         !hiddenOffers.includes(offer.publicKey) &&
-        offer.assetReceiver !== publicKey?.toBase58() &&
         offer.fundsSolOrTokenBalance > fraktBond.currentPerpetualBorrowed,
     )
 
     const sortedOffers = sortBy(filteredOffers, 'fundsSolOrTokenBalance')
 
     return first(sortedOffers) as Offer
-  }, [offers, fraktBond, publicKey, hiddenOffers])
+  }, [offers, fraktBond, hiddenOffers])
 
   const { terminateLoan, claimLoan, instantLoan } = useLendLoansTransactions({
     loan,
