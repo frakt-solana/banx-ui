@@ -2,7 +2,7 @@ import { FC, useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
-import { filter, first, isEmpty, sortBy } from 'lodash'
+import { chain, first, isEmpty, maxBy, sortBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 
@@ -10,6 +10,7 @@ import { Loan, Offer } from '@banx/api/core'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import {
+  InstantRefinanceOptimisticResult,
   makeClaimAction,
   makeInstantRefinanceAction,
   makeTerminateAction,
@@ -31,28 +32,42 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
   const { bondTradeTransaction, fraktBond } = loan
   const { bondTradeTransactionState } = bondTradeTransaction
 
-  const { offers: hiddenOffers, addOffers, addMints } = useHiddenNftsAndOffers()
+  const {
+    offers: optimisticOffers,
+    findOffer,
+    updateOffer,
+    addOffer,
+    addMints,
+  } = useHiddenNftsAndOffers()
   const { offers } = useLenderLoansAndOffers()
+
+  const updateOrAddOffer = (offer: Offer) => {
+    const offerExists = !!findOffer(offer.publicKey)
+
+    return offerExists ? updateOffer(offer) : addOffer(offer)
+  }
 
   const bestOffer = useMemo(() => {
     const offersByMarket = offers[fraktBond.hadoMarket]
 
-    const filteredOffers = filter(
-      offersByMarket,
-      (offer) =>
-        !hiddenOffers.includes(offer.publicKey) &&
-        calculateLoanValue(offer) > fraktBond.currentPerpetualBorrowed,
-    )
+    const combinedOffers = [...optimisticOffers, ...(offersByMarket ?? [])]
+
+    const filteredOffers = chain(combinedOffers)
+      .groupBy('publicKey')
+      .map((offers) => maxBy(offers, 'lastTransactedAt'))
+      .compact()
+      .filter((offer) => calculateLoanValue(offer) > fraktBond.currentPerpetualBorrowed)
+      .value()
 
     const sortedOffers = sortBy(filteredOffers, 'fundsSolOrTokenBalance')
 
     return first(sortedOffers) as Offer
-  }, [offers, fraktBond, hiddenOffers])
+  }, [offers, fraktBond, optimisticOffers])
 
   const { terminateLoan, claimLoan, instantLoan } = useLendLoansTransactions({
     loan,
     bestOffer,
-    addOffers,
+    updateOrAddOffer,
     addMints,
   })
 
@@ -106,12 +121,12 @@ const calculateLoanValue = (offer: Offer) => {
 export const useLendLoansTransactions = ({
   loan,
   bestOffer,
-  addOffers,
+  updateOrAddOffer,
   addMints,
 }: {
   loan: Loan
   bestOffer: Offer
-  addOffers: (...offers: string[]) => void
+  updateOrAddOffer: (offers: Offer) => void
   addMints: (...mints: string[]) => void
 }) => {
   const wallet = useWallet()
@@ -128,8 +143,8 @@ export const useLendLoansTransactions = ({
   const instantLoan = () => {
     new TxnExecutor(makeInstantRefinanceAction, { wallet, connection })
       .addTxnParam({ loan, bestOffer })
-      .on('pfSuccessAll', () => {
-        addOffers(bestOffer.publicKey)
+      .on('pfSuccessEvery', (additionalResult: InstantRefinanceOptimisticResult[]) => {
+        updateOrAddOffer(additionalResult[0].bondOffer)
         addMints(loan.nft.mint)
       })
       .on('pfError', (error) => {

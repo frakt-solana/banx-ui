@@ -10,18 +10,22 @@ import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
-import { fetchLenderLoansAndOffers } from '@banx/api/core'
+import { Offer, fetchLenderLoansAndOffers } from '@banx/api/core'
 
 import { DEFAULT_SORT_OPTION } from './constants'
 
 interface HiddenNftsAndOffersState {
   mints: string[]
-  offers: string[]
   addMints: (...mints: string[]) => void
-  addOffers: (...offers: string[]) => void
+
+  offers: Offer[]
+  addOffer: (offer: Offer) => void
+  findOffer: (offerPubkey: string) => Offer | null
+  removeOffer: (offer: Offer) => void
+  updateOffer: (offer: Offer) => void
 }
 
-export const useHiddenNftsAndOffers = create<HiddenNftsAndOffersState>((set) => ({
+export const useHiddenNftsAndOffers = create<HiddenNftsAndOffersState>((set, get) => ({
   mints: [],
   offers: [],
   addMints: (...mints) => {
@@ -31,12 +35,36 @@ export const useHiddenNftsAndOffers = create<HiddenNftsAndOffersState>((set) => 
       }),
     )
   },
-  addOffers: (...offers) => {
+  addOffer: (offer) => {
     set(
       produce((state: HiddenNftsAndOffersState) => {
-        state.offers.push(...offers)
+        state.offers.push(offer)
       }),
     )
+  },
+  findOffer: (offerPubkey) => {
+    const { offers } = get()
+    return offers.find(({ publicKey }) => publicKey === offerPubkey) ?? null
+  },
+  removeOffer: (offer) => {
+    set(
+      produce((state: HiddenNftsAndOffersState) => {
+        state.offers = state.offers.filter(({ publicKey }) => publicKey !== offer.publicKey)
+      }),
+    )
+  },
+  updateOffer: (offer: Offer) => {
+    const { findOffer } = get()
+    const offerExists = !!findOffer(offer.publicKey)
+
+    offerExists &&
+      set(
+        produce((state: HiddenNftsAndOffersState) => {
+          state.offers = state.offers.map((existingOffer) =>
+            existingOffer.publicKey === offer.publicKey ? offer : existingOffer,
+          )
+        }),
+      )
   },
 }))
 

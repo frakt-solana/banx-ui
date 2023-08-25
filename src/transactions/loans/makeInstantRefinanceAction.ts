@@ -13,7 +13,7 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { MakeActionFn } from '../TxnExecutor'
 
-interface OptimisticResult {
+export interface InstantRefinanceOptimisticResult {
   bondOffer: BondOfferV2
   newBondTradeTransaction: BondTradeTransactionV2
   fraktBond: FraktBond
@@ -27,7 +27,7 @@ export type MakeInstantRefinanceActionParams = {
 
 export type MakeInstantRefinanceAction = MakeActionFn<
   MakeInstantRefinanceActionParams,
-  OptimisticResult
+  InstantRefinanceOptimisticResult
 >
 
 export const makeInstantRefinanceAction: MakeInstantRefinanceAction = async (
