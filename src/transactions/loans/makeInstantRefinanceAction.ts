@@ -52,7 +52,7 @@ export const makeInstantRefinanceAction: MakeInstantRefinanceAction = async (
       oldBondTradeTransaction: bondTradeTransaction as BondTradeTransactionV2,
       bondOffer: bestOffer as BondOfferV2,
       fraktBond: fraktBond as FraktBond,
-      minMarketFee: 100000,
+      minMarketFee: 100000, //TODO: Need take from BE
     },
     connection,
     sendTxn: sendTxnPlaceHolder,

@@ -17,6 +17,7 @@ import {
   MarketPreviewSchema,
   MarketSchema,
   Offer,
+  PairSchema,
   UserOffer,
   WalletLoansResponse,
 } from './types'
@@ -233,6 +234,7 @@ export const fetchLenderLoansAndOffers: FetchLenderLoansAndOffers = async ({
 
     try {
       await LoanSchema.array().parseAsync(data.data.nfts)
+      await PairSchema.array().parseAsync(data.data.offers)
     } catch (validationError) {
       console.error('Schema validation error:', validationError)
     }

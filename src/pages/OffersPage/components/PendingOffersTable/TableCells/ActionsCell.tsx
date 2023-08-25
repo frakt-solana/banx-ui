@@ -5,6 +5,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { Button } from '@banx/components/Buttons'
 
 import { Offer } from '@banx/api/core'
+import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeRemoveOfferAction } from '@banx/transactions/bonds'
 
@@ -51,6 +52,9 @@ const useActionsCell = (offer: TableUserOfferData) => {
   const removeOffer = () => {
     new TxnExecutor(makeRemoveOfferAction, { wallet, connection })
       .addTxnParam({ offerPubkey: offer.publicKey, optimisticOffer: optimisticOffer as Offer })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error)
+      })
       .execute()
   }
 

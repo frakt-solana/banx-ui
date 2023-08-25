@@ -41,7 +41,7 @@ export const makeRemoveOfferAction: MakeRemoveOfferAction = async (
   return {
     instructions,
     signers,
-    optimisticResult,
+    additionalResult: optimisticResult,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }

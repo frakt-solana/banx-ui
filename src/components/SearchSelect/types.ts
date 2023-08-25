@@ -1,4 +1,4 @@
-//TODO: Need to add P key instead of string
+//TODO: Need to add generic type instead of string
 export interface OptionKeys {
   labelKey: string
   valueKey: string

@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { BondOfferOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Offer } from '@banx/api/core'
@@ -91,8 +92,8 @@ export const useOfferTransactions = ({
 
     new TxnExecutor(makeRemoveOfferAction, { wallet, connection })
       .addTxnParam({ offerPubkey, optimisticOffer })
-      .on('pfSuccessAll', () => {
-        updateOrAddOffer(optimisticOffer)
+      .on('pfSuccessEvery', (additionalResult: BondOfferOptimistic[]) => {
+        updateOrAddOffer(additionalResult[0].bondOffer)
         goToPlaceOffer()
       })
       .execute()
