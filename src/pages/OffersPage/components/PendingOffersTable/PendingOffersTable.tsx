@@ -1,8 +1,8 @@
 import Table from '@banx/components/Table'
 
 import { getTableColumns } from './columns'
-import { TableUserOfferData, parseUserOffers } from './helpers'
-import { SearchSelectOption, usePendingOfferTable } from './hooks'
+import { parseUserOffers } from './helpers'
+import { usePendingOfferTable } from './hooks'
 
 export const PendingOfferTable = () => {
   const { offers, loading, sortViewParams } = usePendingOfferTable()
@@ -11,7 +11,7 @@ export const PendingOfferTable = () => {
   const parsedUserOffers = parseUserOffers(offers)
 
   return (
-    <Table<TableUserOfferData, SearchSelectOption>
+    <Table
       data={parsedUserOffers}
       columns={columns}
       rowKeyField="publicKey"

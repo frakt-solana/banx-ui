@@ -12,6 +12,7 @@ import { useLenderLoansAndOffers } from './useLenderLoansAndOffers'
 interface SearchSelectOption {
   collectionName: string
   collectionImage: string
+  taken: number
 }
 
 export const useActiveOffersTable = () => {
