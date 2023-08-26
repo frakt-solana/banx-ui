@@ -10,6 +10,7 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { fetchUserOffers } from '@banx/api/core'
 import { DEFAULT_SORT_OPTION } from '@banx/pages/LoansPage/constants'
+import { calculateLoanValue } from '@banx/utils'
 
 export const useUserOffers = () => {
   const { publicKey } = useWallet()
@@ -50,10 +51,13 @@ export const usePendingOfferTab = () => {
       const firstLoanInGroup = first(groupedOffer)
       const { collectionName = '', collectionImage = '' } = firstLoanInGroup || {}
 
-      // TODO: need calc best offer
-      const bestOffer = firstLoanInGroup?.fundsSolOrTokenBalance
+      const sortedOffers = groupedOffer.sort((offerA, offerB) => {
+        return calculateLoanValue(offerB) - calculateLoanValue(offerA)
+      })
 
-      return { collectionName, collectionImage, bestOffer }
+      const bestOfferLoanValue = calculateLoanValue(sortedOffers[0])
+
+      return { collectionName, collectionImage, bestOffer: bestOfferLoanValue }
     })
   }, [offers])
 
