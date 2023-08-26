@@ -19,7 +19,7 @@ export const OrderBookList: FC<{ orderBookParams: OrderBookParams }> = ({ orderB
           key={idx}
           order={order}
           loanValue={order.loanValue}
-          loansAmount={order.loansAmount}
+          loanAmount={order.loansAmount}
           editOffer={() => goToEditOrder(order?.rawData?.publicKey)}
           isOwnOrder={isOwnOrder(order)}
           bestOrder={bestOrder}
