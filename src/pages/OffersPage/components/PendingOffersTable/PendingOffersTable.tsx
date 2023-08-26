@@ -1,5 +1,7 @@
 import Table from '@banx/components/Table'
 
+import { ViewState, useTableView } from '@banx/store'
+
 import { getTableColumns } from './columns'
 import { parseUserOffers } from './helpers'
 import { usePendingOfferTable } from './hooks'
@@ -7,7 +9,10 @@ import { usePendingOfferTable } from './hooks'
 export const PendingOfferTable = () => {
   const { offers, loading, sortViewParams } = usePendingOfferTable()
 
-  const columns = getTableColumns()
+  const { viewState } = useTableView()
+  const isCardView = viewState === ViewState.CARD
+
+  const columns = getTableColumns({ isCardView })
   const parsedUserOffers = parseUserOffers(offers)
 
   return (

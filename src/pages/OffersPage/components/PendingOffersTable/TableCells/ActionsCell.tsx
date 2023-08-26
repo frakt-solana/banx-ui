@@ -16,21 +16,24 @@ import styles from '../PendingOffersTable.module.less'
 
 interface ActionsCellProps {
   offer: TableUserOfferData
+  isCardView: boolean
 }
 
-export const ActionsCell: FC<ActionsCellProps> = ({ offer }) => {
+export const ActionsCell: FC<ActionsCellProps> = ({ offer, isCardView }) => {
   const { removeOffer } = useActionsCell(offer)
+
+  const buttonSize = isCardView ? 'large' : 'small'
 
   return (
     <div className={styles.actionsButtons}>
-      <Button variant="secondary" size="small">
+      <Button variant="secondary" size={buttonSize}>
         Edit
       </Button>
       <Button
         onClick={removeOffer}
         className={styles.removeButton}
         variant="secondary"
-        size="small"
+        size={buttonSize}
       >
         Remove
       </Button>

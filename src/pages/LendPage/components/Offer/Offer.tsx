@@ -1,6 +1,7 @@
 import { FC } from 'react'
 
 import classNames from 'classnames'
+import { isInteger } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 
@@ -12,7 +13,7 @@ import styles from './Offer.module.less'
 
 interface OfferProps {
   order: Order
-  loanAmount: number
+  loansAmount: number
   loanValue: number
   editOffer: () => void
   isOwnOrder: boolean
@@ -20,7 +21,7 @@ interface OfferProps {
 }
 
 const Offer: FC<OfferProps> = ({
-  loanAmount,
+  loansAmount,
   loanValue,
   editOffer,
   order,
@@ -29,7 +30,8 @@ const Offer: FC<OfferProps> = ({
 }) => {
   const isBestOrder = order.rawData.publicKey === bestOrder?.rawData.publicKey
 
-  const displayLoanAmount = loanAmount < 1 ? 1 : loanAmount || 0
+  const minLoansAmount = Math.min(loansAmount, 1)
+  const displayLoansAmount = isInteger(minLoansAmount) ? minLoansAmount : minLoansAmount?.toFixed(2)
 
   const listItemClassName = classNames(styles.listItem, {
     [styles.highlightBest]: isBestOrder,
@@ -39,8 +41,8 @@ const Offer: FC<OfferProps> = ({
   return (
     <li className={listItemClassName}>
       <div className={styles.valueWrapper}>
-        <p className={styles.value}>{loanValue}</p>
-        <p className={styles.value}>{displayLoanAmount}</p>
+        <p className={styles.value}>{loanValue?.toFixed(2)}</p>
+        <p className={styles.value}>{displayLoansAmount}</p>
       </div>
       {isOwnOrder && editOffer && (
         <Button

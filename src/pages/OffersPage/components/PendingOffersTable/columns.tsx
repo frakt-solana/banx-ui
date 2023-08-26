@@ -1,4 +1,5 @@
 import { ColumnsType } from 'antd/es/table'
+import { isInteger } from 'lodash'
 
 import {
   HeaderCell,
@@ -10,7 +11,7 @@ import {
 import { APRCell, ActionsCell, InterestCell } from './TableCells'
 import { TableUserOfferData } from './helpers'
 
-export const getTableColumns = () => {
+export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
   const columns: ColumnsType<TableUserOfferData> = [
     {
       key: 'collateral',
@@ -28,7 +29,9 @@ export const getTableColumns = () => {
     {
       key: 'loans',
       title: <HeaderCell label="Loans" />,
-      render: (_, { loansAmount }) => <>{loansAmount}</>,
+      render: (_, { loansAmount }) => (
+        <span>{isInteger(loansAmount) ? loansAmount : loansAmount?.toFixed(2)}</span>
+      ),
       sorter: true,
     },
     {
@@ -51,7 +54,7 @@ export const getTableColumns = () => {
     },
     {
       title: <HeaderCell label="" />,
-      render: (_, offer) => <ActionsCell offer={offer} />,
+      render: (_, offer) => <ActionsCell isCardView={isCardView} offer={offer} />,
     },
   ]
 
