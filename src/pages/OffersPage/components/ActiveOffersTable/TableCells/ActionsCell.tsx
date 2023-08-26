@@ -1,22 +1,14 @@
 import { FC, useMemo } from 'react'
 
-import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, first, isEmpty, maxBy, sortBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 
 import { Loan, Offer } from '@banx/api/core'
-import { defaultTxnErrorHandler } from '@banx/transactions'
-import { TxnExecutor } from '@banx/transactions/TxnExecutor'
-import {
-  InstantRefinanceOptimisticResult,
-  makeClaimAction,
-  makeInstantRefinanceAction,
-  makeTerminateAction,
-} from '@banx/transactions/loans'
+import { calculateLoanValue } from '@banx/utils/'
 
-import { useHiddenNftsAndOffers, useLenderLoansAndOffers } from '../../ActiveOffersTab/hooks'
+import { useHiddenNftsAndOffers, useLendLoansTransactions, useLenderLoansAndOffers } from '../hooks'
 
 import styles from '../ActiveOffersTable.module.less'
 
@@ -110,48 +102,3 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
 }
 
 export default ActionsCell
-
-const calculateLoanValue = (offer: Offer) => {
-  const { fundsSolOrTokenBalance, currentSpotPrice } = offer
-  const fullOffersAmount = Math.floor(fundsSolOrTokenBalance / currentSpotPrice)
-  const loanValue = currentSpotPrice * Math.min(fullOffersAmount, 1)
-  return loanValue
-}
-
-export const useLendLoansTransactions = ({
-  loan,
-  bestOffer,
-  updateOrAddOffer,
-  addMints,
-}: {
-  loan: Loan
-  bestOffer: Offer
-  updateOrAddOffer: (offers: Offer) => void
-  addMints: (...mints: string[]) => void
-}) => {
-  const wallet = useWallet()
-  const { connection } = useConnection()
-
-  const terminateLoan = () => {
-    new TxnExecutor(makeTerminateAction, { wallet, connection }).addTxnParam({ loan }).execute()
-  }
-
-  const claimLoan = () => {
-    new TxnExecutor(makeClaimAction, { wallet, connection }).addTxnParam({ loan }).execute()
-  }
-
-  const instantLoan = () => {
-    new TxnExecutor(makeInstantRefinanceAction, { wallet, connection })
-      .addTxnParam({ loan, bestOffer })
-      .on('pfSuccessEvery', (additionalResult: InstantRefinanceOptimisticResult[]) => {
-        updateOrAddOffer(additionalResult[0].bondOffer)
-        addMints(loan.nft.mint)
-      })
-      .on('pfError', (error) => {
-        defaultTxnErrorHandler(error)
-      })
-      .execute()
-  }
-
-  return { terminateLoan, claimLoan, instantLoan }
-}

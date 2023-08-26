@@ -1,18 +1,15 @@
-import Table, { TableProps } from '@banx/components/Table'
+import Table from '@banx/components/Table'
 
-import { Loan } from '@banx/api/core'
 import { ViewState, useTableView } from '@banx/store'
 
 import { getTableColumns } from './columns'
+import { useActiveOffersTable } from './hooks'
 
-type TableViewProps<T, P> = Omit<TableProps<T, P>, 'columns' | 'onRowClick' | 'rowKeyField'>
+import styles from './ActiveOffersTable.module.less'
 
-const ActiveOffersTable = ({
-  data,
-  sortViewParams,
-  className,
-  loading,
-}: TableViewProps<Loan, object>) => {
+const ActiveOffersTable = () => {
+  const { loans, sortViewParams, loading } = useActiveOffersTable()
+
   const { viewState } = useTableView()
   const isCardView = viewState === ViewState.CARD
 
@@ -20,10 +17,10 @@ const ActiveOffersTable = ({
 
   return (
     <Table
-      data={data}
+      data={loans}
       columns={columns}
       sortViewParams={sortViewParams}
-      className={className}
+      className={styles.rootTable}
       rowKeyField="publicKey"
       loading={loading}
       showCard
