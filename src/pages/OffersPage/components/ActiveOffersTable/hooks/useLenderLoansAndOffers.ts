@@ -7,10 +7,23 @@ import { create } from 'zustand'
 
 import { Offer, fetchLenderLoansAndOffers } from '@banx/api/core'
 
-interface HiddenNftsAndOffersState {
+interface HiddenNftsMintsState {
   mints: string[]
   addMints: (...mints: string[]) => void
+}
 
+export const useHiddenNftsMints = create<HiddenNftsMintsState>((set) => ({
+  mints: [],
+  addMints: (...mints) => {
+    set(
+      produce((state: HiddenNftsMintsState) => {
+        state.mints.push(...mints)
+      }),
+    )
+  },
+}))
+
+interface OptimisticOffersState {
   offers: Offer[]
   addOffer: (offer: Offer) => void
   findOffer: (offerPubkey: string) => Offer | null
@@ -18,19 +31,11 @@ interface HiddenNftsAndOffersState {
   updateOffer: (offer: Offer) => void
 }
 
-export const useHiddenNftsAndOffers = create<HiddenNftsAndOffersState>((set, get) => ({
-  mints: [],
+const useOptimisticOffers = create<OptimisticOffersState>((set, get) => ({
   offers: [],
-  addMints: (...mints) => {
-    set(
-      produce((state: HiddenNftsAndOffersState) => {
-        state.mints.push(...mints)
-      }),
-    )
-  },
   addOffer: (offer) => {
     set(
-      produce((state: HiddenNftsAndOffersState) => {
+      produce((state: OptimisticOffersState) => {
         state.offers.push(offer)
       }),
     )
@@ -41,7 +46,7 @@ export const useHiddenNftsAndOffers = create<HiddenNftsAndOffersState>((set, get
   },
   removeOffer: (offer) => {
     set(
-      produce((state: HiddenNftsAndOffersState) => {
+      produce((state: OptimisticOffersState) => {
         state.offers = state.offers.filter(({ publicKey }) => publicKey !== offer.publicKey)
       }),
     )
@@ -52,7 +57,7 @@ export const useHiddenNftsAndOffers = create<HiddenNftsAndOffersState>((set, get
 
     offerExists &&
       set(
-        produce((state: HiddenNftsAndOffersState) => {
+        produce((state: OptimisticOffersState) => {
           state.offers = state.offers.map((existingOffer) =>
             existingOffer.publicKey === offer.publicKey ? offer : existingOffer,
           )
@@ -65,7 +70,8 @@ export const useLenderLoansAndOffers = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
-  const { mints } = useHiddenNftsAndOffers()
+  const { offers: optimisticOffers, findOffer, updateOffer, addOffer } = useOptimisticOffers()
+  const { mints, addMints } = useHiddenNftsMints()
 
   const { data, isLoading } = useQuery(
     ['lenderLoans', publicKeyString],
@@ -85,9 +91,18 @@ export const useLenderLoansAndOffers = () => {
     return data.nfts.filter(({ nft }) => !mints.includes(nft.mint))
   }, [data, mints])
 
+  const updateOrAddOffer = (offer: Offer) => {
+    const offerExists = !!findOffer(offer.publicKey)
+    return offerExists ? updateOffer(offer) : addOffer(offer)
+  }
+
   return {
     loans,
     offers: data?.offers ?? {},
     loading: isLoading,
+
+    updateOrAddOffer,
+    optimisticOffers,
+    addMints,
   }
 }

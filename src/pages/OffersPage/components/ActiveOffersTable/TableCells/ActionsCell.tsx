@@ -1,14 +1,14 @@
 import { FC, useMemo } from 'react'
 
 import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
-import { chain, first, isEmpty, maxBy, sortBy } from 'lodash'
+import { chain, isEmpty, maxBy, sortBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 
-import { Loan, Offer } from '@banx/api/core'
-import { calculateLoanValue } from '@banx/utils/'
+import { Loan } from '@banx/api/core'
+import { calculateLoanValue } from '@banx/utils'
 
-import { useHiddenNftsAndOffers, useLendLoansTransactions, useLenderLoansAndOffers } from '../hooks'
+import { useLendLoansTransactions, useLenderLoansAndOffers } from '../hooks'
 
 import styles from '../ActiveOffersTable.module.less'
 
@@ -24,20 +24,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
   const { bondTradeTransaction, fraktBond } = loan
   const { bondTradeTransactionState } = bondTradeTransaction
 
-  const {
-    offers: optimisticOffers,
-    findOffer,
-    updateOffer,
-    addOffer,
-    addMints,
-  } = useHiddenNftsAndOffers()
-  const { offers } = useLenderLoansAndOffers()
-
-  const updateOrAddOffer = (offer: Offer) => {
-    const offerExists = !!findOffer(offer.publicKey)
-
-    return offerExists ? updateOffer(offer) : addOffer(offer)
-  }
+  const { offers, optimisticOffers, addMints, updateOrAddOffer } = useLenderLoansAndOffers()
 
   const bestOffer = useMemo(() => {
     const offersByMarket = offers[fraktBond.hadoMarket]
@@ -53,7 +40,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
 
     const sortedOffers = sortBy(filteredOffers, 'fundsSolOrTokenBalance')
 
-    return first(sortedOffers) as Offer
+    return sortedOffers[0]
   }, [offers, fraktBond, optimisticOffers])
 
   const { terminateLoan, claimLoan, instantLoan } = useLendLoansTransactions({
