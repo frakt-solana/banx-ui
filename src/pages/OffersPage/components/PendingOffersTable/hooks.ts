@@ -33,12 +33,13 @@ export const useUserOffers = () => {
   }
 }
 
-interface SearchSelectOption {
+export interface SearchSelectOption {
   collectionName: string
   collectionImage: string
+  bestOffer: number
 }
 
-export const usePendingOfferTab = () => {
+export const usePendingOfferTable = () => {
   const { offers, loading } = useUserOffers()
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
 

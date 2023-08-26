@@ -1,23 +1,23 @@
-import Table, { TableProps } from '@banx/components/Table'
-
-import { UserOffer } from '@banx/api/core'
+import Table from '@banx/components/Table'
 
 import { getTableColumns } from './columns'
 import { TableUserOfferData, parseUserOffers } from './helpers'
+import { SearchSelectOption, usePendingOfferTable } from './hooks'
 
-type TableViewProps<T, P> = Omit<TableProps<T, P>, 'columns' | 'onRowClick' | 'rowKeyField'>
+export const PendingOfferTable = () => {
+  const { offers, loading, sortViewParams } = usePendingOfferTable()
 
-export const PendingOfferTable = ({ data, ...props }: TableViewProps<UserOffer, object>) => {
   const columns = getTableColumns()
-  const parsedUserOffers = parseUserOffers(data)
+  const parsedUserOffers = parseUserOffers(offers)
 
   return (
-    <Table<TableUserOfferData, object>
+    <Table<TableUserOfferData, SearchSelectOption>
       data={parsedUserOffers}
       columns={columns}
       rowKeyField="publicKey"
+      sortViewParams={sortViewParams}
+      loading={loading}
       showCard
-      {...props}
     />
   )
 }

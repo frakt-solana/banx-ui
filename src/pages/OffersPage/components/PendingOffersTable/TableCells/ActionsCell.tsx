@@ -9,8 +9,8 @@ import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeRemoveOfferAction } from '@banx/transactions/bonds'
 
-import { useUserOffers } from '../../PendingOffersTab/hooks'
 import { TableUserOfferData } from '../helpers'
+import { useUserOffers } from '../hooks'
 
 import styles from '../PendingOffersTable.module.less'
 

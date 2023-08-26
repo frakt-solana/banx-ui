@@ -2,7 +2,7 @@ import { Tabs, useTabs } from '@banx/components/Tabs'
 
 import { OFFERS_TABS, OffersTabName } from '../../constants'
 import ActiveOffersTable from '../ActiveOffersTable'
-import PendingOffersTab from '../PendingOffersTab'
+import { PendingOfferTable } from '../PendingOffersTable'
 
 import styles from './OffersPageContent.module.less'
 
@@ -17,7 +17,7 @@ const OffersPageContent = () => {
     <div className={styles.content}>
       <Tabs className={styles.tabs} tabs={offersTabs} value={tabValue} setValue={setTabValue} />
       <div className={styles.tabContent}>
-        {tabValue === OffersTabName.PENDING && <PendingOffersTab />}
+        {tabValue === OffersTabName.PENDING && <PendingOfferTable />}
         {tabValue === OffersTabName.ACTIVE && <ActiveOffersTable />}
       </div>
     </div>
