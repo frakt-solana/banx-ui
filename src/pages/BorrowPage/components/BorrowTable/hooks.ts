@@ -1,9 +1,7 @@
 import { useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { chunk, filter, first, get, groupBy, includes, isEmpty, map, sortBy } from 'lodash'
-import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
 
 import { SortOption } from '@banx/components/SortDropdown'
@@ -20,6 +18,7 @@ import { useBorrowNfts, useHiddenNftsMints } from '../../hooks'
 import { SimpleOffer } from '../../types'
 import { getTableColumns } from './columns'
 import { DEFAULT_TABLE_SORT } from './constants'
+import { calcInterest } from './helpers'
 import { SortField, TableNftData } from './types'
 
 import styles from './BorrowTable.module.less'
@@ -42,13 +41,11 @@ const createTableNftData = ({
     const selected = !!offer
 
     const ONE_WEEK_IN_SECONDS = 7 * 24 * 60 * 60
-    const currentTimeUnix = moment().unix()
 
-    const interest = calculateCurrentInterestSolPure({
+    const interest = calcInterest({
+      timeInterval: ONE_WEEK_IN_SECONDS,
       loanValue,
-      startTime: currentTimeUnix - ONE_WEEK_IN_SECONDS,
-      currentTime: currentTimeUnix,
-      rateBasePoints: nft.loan.marketApr,
+      apr: nft.loan.marketApr,
     })
 
     return { mint: nft.mint, nft, loanValue, selected, interest }
