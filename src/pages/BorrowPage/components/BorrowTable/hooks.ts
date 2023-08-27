@@ -40,8 +40,6 @@ const createTableNftData = ({
 
     const selected = !!offer
 
-    const ONE_WEEK_IN_SECONDS = 7 * 24 * 60 * 60
-
     const interest = calcInterest({
       timeInterval: ONE_WEEK_IN_SECONDS,
       loanValue,
