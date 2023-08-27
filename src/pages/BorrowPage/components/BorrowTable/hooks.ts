@@ -1,14 +1,16 @@
 import { useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { chunk, filter, first, get, groupBy, includes, isEmpty, map, sortBy } from 'lodash'
+import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
 import { PATHS } from '@banx/router'
-import { useIsLedger, useOptimisticLoans } from '@banx/store'
+import { ViewState, useIsLedger, useOptimisticLoans, useTableView } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { LOANS_PER_TXN, MakeBorrowActionParams, makeBorrowAction } from '@banx/transactions/borrow'
@@ -39,7 +41,17 @@ const createTableNftData = ({
 
     const selected = !!offer
 
-    return { mint: nft.mint, nft, loanValue, selected }
+    const ONE_WEEK_IN_SECONDS = 7 * 24 * 60 * 60
+    const currentTimeUnix = moment().unix()
+
+    const interest = calculateCurrentInterestSolPure({
+      loanValue,
+      startTime: currentTimeUnix - ONE_WEEK_IN_SECONDS,
+      currentTime: currentTimeUnix,
+      rateBasePoints: nft.loan.marketApr,
+    })
+
+    return { mint: nft.mint, nft, loanValue, selected, interest }
   })
 }
 
@@ -149,11 +161,14 @@ export const useBorrowTable = () => {
     }
   }
 
+  const { viewState } = useTableView()
+
   const columns = getTableColumns({
     onSelectAll,
     onNftSelect,
     isCartEmpty: isEmpty(offerByMint),
     onBorrow: borrow,
+    isCardView: viewState === ViewState.CARD,
   })
 
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])

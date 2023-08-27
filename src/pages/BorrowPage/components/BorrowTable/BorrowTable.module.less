@@ -1,3 +1,9 @@
+.borrowTable :global {
+  .ant-table-tbody > tr > td:last-child {
+    text-align: -webkit-right;
+  }
+}
+
 .headerTitleRow {
   display: flex;
   align-items: baseline;
@@ -11,4 +17,20 @@
 
 .searchSelect {
   max-width: 750px;
+}
+
+.feeCell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.feeCellTitle {
+  font: var(--body-text-md);
+}
+
+.feeCellSubtitle {
+  font: var(--body-text-sm);
+  text-transform: capitalize;
 }

@@ -3,6 +3,8 @@ import Table from '@banx/components/Table'
 
 import { useBorrowTable } from './hooks'
 
+import styles from './BorrowTable.module.less'
+
 const BorrowTable = () => {
   const { tableNftData, columns, onRowClick, sortViewParams, isLoading, borrowAll } =
     useBorrowTable()
@@ -17,7 +19,7 @@ const BorrowTable = () => {
         onRowClick={onRowClick}
         sortViewParams={sortViewParams}
         // breakpoints={breakpoints}
-        // className={className}
+        className={styles.borrowTable}
         rowKeyField="mint"
         loading={isLoading}
         showCard
