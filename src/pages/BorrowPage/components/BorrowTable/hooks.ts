@@ -17,7 +17,7 @@ import { CartState, useCartState } from '../../cartState'
 import { useBorrowNfts, useHiddenNftsMints } from '../../hooks'
 import { SimpleOffer } from '../../types'
 import { getTableColumns } from './columns'
-import { DEFAULT_TABLE_SORT } from './constants'
+import { DEFAULT_TABLE_SORT, ONE_WEEK_IN_SECONDS } from './constants'
 import { calcInterest } from './helpers'
 import { SortField, TableNftData } from './types'
 
@@ -159,7 +159,6 @@ export const useBorrowTable = () => {
   const { viewState } = useTableView()
 
   const columns = getTableColumns({
-    onSelectAll,
     onNftSelect,
     isCartEmpty: isEmpty(offerByMint),
     onBorrow: borrow,
@@ -188,6 +187,11 @@ export const useBorrowTable = () => {
     })
   }, [nfts])
 
+  const nftsInCart = useMemo(() => {
+    const mints = Object.keys(offerByMint)
+    return tableNftsData.filter(({ mint }) => mints.includes(mint))
+  }, [offerByMint, tableNftsData])
+
   return {
     tableNftData: sortedNfts,
     columns,
@@ -211,6 +215,8 @@ export const useBorrowTable = () => {
     },
     borrow,
     borrowAll,
+    selectAll: onSelectAll,
+    nftsInCart,
   }
 }
 

@@ -1,16 +1,12 @@
 import { ColumnsType } from 'antd/es/table'
 
-import Checkbox from '@banx/components/Checkbox'
 import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { BorrowCell } from './BorrowCell'
 import { FeeCell } from './FeeCell'
 import { TableNftData } from './types'
 
-import styles from './BorrowTable.module.less'
-
 interface GetTableColumnsProps {
-  onSelectAll: () => void
   onNftSelect: (nft: TableNftData) => void
   onBorrow: (nft: TableNftData) => void
   isCartEmpty: boolean
@@ -18,7 +14,6 @@ interface GetTableColumnsProps {
 }
 
 export const getTableColumns = ({
-  onSelectAll,
   onNftSelect,
   onBorrow,
   isCartEmpty,
@@ -28,12 +23,7 @@ export const getTableColumns = ({
     {
       key: 'collateral',
       dataIndex: 'collateral',
-      title: () => (
-        <div className={styles.headerTitleRow}>
-          <Checkbox className={styles.checkbox} onChange={onSelectAll} checked={!isCartEmpty} />
-          <HeaderCell label="Collateral" />
-        </div>
-      ),
+      title: () => <HeaderCell label="Collateral" />,
       render: (_, nft) => (
         <NftInfoCell
           selected={nft.selected}
