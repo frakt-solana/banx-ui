@@ -8,6 +8,8 @@ import Timer from '@banx/components/Timer'
 import { Loan } from '@banx/api/core'
 import { calculateTimeFromNow } from '@banx/utils'
 
+import { SECONDS_IN_72_HOURS } from '../constants'
+
 import styles from '../ActiveOffersTable.module.less'
 
 interface StatusCellProps {
@@ -60,7 +62,7 @@ const calculateTimeInfo = (loan: Loan, status: string) => {
   }
 
   if (status === LoanStatus.Terminating) {
-    const expiredAt = fraktBond.refinanceAuctionStartedAt + 72 * 60 * 60
+    const expiredAt = fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS
     return <Timer expiredAt={expiredAt} />
   }
 

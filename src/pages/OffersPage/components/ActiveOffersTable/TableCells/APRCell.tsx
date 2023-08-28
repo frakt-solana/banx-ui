@@ -12,7 +12,7 @@ interface APRCellProps {
 export const APRCell: FC<APRCellProps> = ({ loan }) => {
   const { amountOfBonds } = loan.bondTradeTransaction || {}
 
-  const aprPercent = amountOfBonds / 1e2
+  const aprPercent = amountOfBonds / 100
 
   const colorAPR = getColorByPercent(aprPercent, ColorByPercentHealth)
 
