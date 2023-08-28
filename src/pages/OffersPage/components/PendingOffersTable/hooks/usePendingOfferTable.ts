@@ -26,11 +26,11 @@ export const usePendingOfferTable = () => {
   const searchSelectOptions = useMemo(() => {
     const offersGroupedByCollection = groupBy(offers, (offer) => offer.collectionName)
 
-    return map(offersGroupedByCollection, (groupedOffer) => {
-      const firstLoanInGroup = first(groupedOffer)
+    return map(offersGroupedByCollection, (groupedOffers) => {
+      const firstLoanInGroup = first(groupedOffers)
       const { collectionName = '', collectionImage = '' } = firstLoanInGroup || {}
 
-      const sortedOffers = groupedOffer.sort((offerA, offerB) => {
+      const sortedOffers = groupedOffers.sort((offerA, offerB) => {
         return calculateLoanValue(offerB) - calculateLoanValue(offerA)
       })
 
