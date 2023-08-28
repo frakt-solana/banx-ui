@@ -8,7 +8,7 @@ import { SortOption } from '@banx/components/SortDropdown'
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
 import { PATHS } from '@banx/router'
-import { useIsLedger, useOptimisticLoans } from '@banx/store'
+import { ViewState, useIsLedger, useOptimisticLoans, useTableView } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { LOANS_PER_TXN, MakeBorrowActionParams, makeBorrowAction } from '@banx/transactions/borrow'
@@ -17,7 +17,8 @@ import { CartState, useCartState } from '../../cartState'
 import { useBorrowNfts, useHiddenNftsMints } from '../../hooks'
 import { SimpleOffer } from '../../types'
 import { getTableColumns } from './columns'
-import { DEFAULT_TABLE_SORT } from './constants'
+import { DEFAULT_TABLE_SORT, ONE_WEEK_IN_SECONDS } from './constants'
+import { calcInterest } from './helpers'
 import { SortField, TableNftData } from './types'
 
 import styles from './BorrowTable.module.less'
@@ -39,7 +40,13 @@ const createTableNftData = ({
 
     const selected = !!offer
 
-    return { mint: nft.mint, nft, loanValue, selected }
+    const interest = calcInterest({
+      timeInterval: ONE_WEEK_IN_SECONDS,
+      loanValue,
+      apr: nft.loan.marketApr,
+    })
+
+    return { mint: nft.mint, nft, loanValue, selected, interest }
   })
 }
 
@@ -149,11 +156,13 @@ export const useBorrowTable = () => {
     }
   }
 
+  const { viewState } = useTableView()
+
   const columns = getTableColumns({
-    onSelectAll,
     onNftSelect,
     isCartEmpty: isEmpty(offerByMint),
     onBorrow: borrow,
+    isCardView: viewState === ViewState.CARD,
   })
 
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
@@ -178,6 +187,11 @@ export const useBorrowTable = () => {
     })
   }, [nfts])
 
+  const nftsInCart = useMemo(() => {
+    const mints = Object.keys(offerByMint)
+    return tableNftsData.filter(({ mint }) => mints.includes(mint))
+  }, [offerByMint, tableNftsData])
+
   return {
     tableNftData: sortedNfts,
     columns,
@@ -201,6 +215,8 @@ export const useBorrowTable = () => {
     },
     borrow,
     borrowAll,
+    selectAll: onSelectAll,
+    nftsInCart,
   }
 }
 

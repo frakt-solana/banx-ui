@@ -5,8 +5,7 @@ export interface TableNftData {
   nft: BorrowNft
   loanValue: number
   selected: boolean
-  // fee: number
-  // apr: number
+  interest: number //? 1 week interest
 }
 
 export enum SortField {
