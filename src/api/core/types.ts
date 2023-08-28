@@ -117,7 +117,14 @@ export const PairSchema = z.object({
   validation: ValidationPairSchema,
 })
 
+const UserPairSchema = PairSchema.extend({
+  marketApr: z.number(),
+  collectionName: z.string(),
+  collectionImage: z.string(),
+})
+
 export type Offer = z.infer<typeof PairSchema>
+export type UserOffer = z.infer<typeof UserPairSchema>
 
 export interface FetchMarketOffersResponse {
   data: Offer[]
@@ -158,6 +165,7 @@ const FraktBondSchema = z.object({
   borrowedAmount: z.number(),
   banxStake: z.string(),
   fraktMarket: z.string(),
+  hadoMarket: z.string().optional(),
   amountToReturn: z.number(),
   actualReturnedAmount: z.number(),
   terminatedCounter: z.number(),
@@ -209,5 +217,17 @@ export type BorrowNftsAndOffers = z.infer<typeof BorrowNftsAndOffersSchema>
 
 export interface BorrowNftsAndOffersResponse {
   data: BorrowNftsAndOffers
+  meta: PaginationMeta
+}
+
+export const LendNftsAndOffersSchema = z.object({
+  nfts: LoanSchema.array(),
+  offers: z.record(PairSchema.array()),
+})
+
+export type LendLoansAndOffers = z.infer<typeof LendNftsAndOffersSchema>
+
+export interface LendLoansAndOffersResponse {
+  data: LendLoansAndOffers
   meta: PaginationMeta
 }
