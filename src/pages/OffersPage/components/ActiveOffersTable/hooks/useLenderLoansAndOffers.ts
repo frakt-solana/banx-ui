@@ -12,7 +12,7 @@ interface HiddenNftsMintsState {
   addMints: (...mints: string[]) => void
 }
 
-export const useHiddenNftsMints = create<HiddenNftsMintsState>((set) => ({
+const useHiddenNftsMints = create<HiddenNftsMintsState>((set) => ({
   mints: [],
   addMints: (...mints) => {
     set(
