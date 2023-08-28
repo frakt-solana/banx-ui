@@ -35,7 +35,7 @@ export const makeRefinanceAction: MakeRefinanceAction = async (
 ) => {
   const { loan } = ixnParams || {}
   const { bondTradeTransaction, fraktBond } = loan
-
+  fraktBond.refinanceAuctionStartedAt
   const { instructions, signers, optimisticResult } = await refinancePerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
@@ -44,7 +44,7 @@ export const makeRefinanceAction: MakeRefinanceAction = async (
       hadoMarket: new web3.PublicKey(fraktBond.publicKey),
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
       previousBondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
-      previousLender: new web3.PublicKey(fraktBond.fbondIssuer),
+      previousLender: new web3.PublicKey(bondTradeTransaction.user),
     },
     optimistic: {
       fraktBond,

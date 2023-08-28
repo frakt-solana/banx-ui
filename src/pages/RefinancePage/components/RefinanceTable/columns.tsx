@@ -67,3 +67,12 @@ export const getTableColumns = ({ isCardView }: GetTableColumnsProps) => {
 
   return columns.map((column) => createColumn(column))
 }
+
+//? Ends in 72 hours
+
+//? NEXT Apr INCREASE => 1 hour
+
+//? startedTime => refinanceAuctionStartedAt + increase to 1% every hour
+//? APR => bondTradeTransaction.amountOfBonds + N
+
+//? Debt => look at DebtCell
