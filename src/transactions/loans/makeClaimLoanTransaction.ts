@@ -29,6 +29,9 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       collateralOwner: new web3.PublicKey(fraktBond.fbondIssuer),
       bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
       userPubkey: wallet.publicKey as web3.PublicKey,
+      banxStake: new web3.PublicKey(fraktBond.banxStake),
+      subscriptionsAndAdventures: []
+
     },
     optimistic: {
       fraktBond,
