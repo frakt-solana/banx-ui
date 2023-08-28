@@ -1,28 +1,27 @@
-import { Button } from '@banx/components/Buttons'
 import Table from '@banx/components/Table'
 
+import { Summary } from './Summary'
 import { useBorrowTable } from './hooks'
 
+import styles from './BorrowTable.module.less'
+
 const BorrowTable = () => {
-  const { tableNftData, columns, onRowClick, sortViewParams, isLoading, borrowAll } =
-    useBorrowTable()
+  const { tableNftData, columns, onRowClick, sortViewParams, isLoading } = useBorrowTable()
 
   return (
-    <>
-      <Button onClick={borrowAll}>Borrow bulk</Button>
-
+    <div className={styles.tableRoot}>
+      <Summary />
       <Table
         data={tableNftData}
         columns={columns}
         onRowClick={onRowClick}
         sortViewParams={sortViewParams}
-        // breakpoints={breakpoints}
-        // className={className}
+        className={styles.borrowTable}
         rowKeyField="mint"
         loading={isLoading}
         showCard
       />
-    </>
+    </div>
   )
 }
 

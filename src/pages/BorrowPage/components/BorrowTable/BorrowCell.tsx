@@ -2,9 +2,10 @@ import React, { FC } from 'react'
 
 import { Button } from '@banx/components/Buttons'
 
-export const BorrowCell: FC<{ onBorrow: () => void; disabled?: boolean }> = ({
+export const BorrowCell: FC<{ onBorrow: () => void; disabled?: boolean; isCardView?: boolean }> = ({
   onBorrow,
   disabled = false,
+  isCardView = false,
 }) => {
   const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     onBorrow()
@@ -12,7 +13,7 @@ export const BorrowCell: FC<{ onBorrow: () => void; disabled?: boolean }> = ({
   }
 
   return (
-    <Button size="small" disabled={disabled} onClick={onClickHandler}>
+    <Button size={isCardView ? 'large' : 'small'} disabled={disabled} onClick={onClickHandler}>
       Borrow
     </Button>
   )

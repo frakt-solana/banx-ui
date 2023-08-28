@@ -3,11 +3,6 @@ import { useEffect, useState } from 'react'
 import { Connection, clusterApiUrl } from '@solana/web3.js'
 import { useQuery } from '@tanstack/react-query'
 
-interface CheckEndpointResult {
-  endpoint: string | null
-  error: string | null
-}
-
 interface GetBestWorkingEndpointProps {
   endpoints: Array<string>
   fallbackEndpoint?: string
@@ -19,23 +14,20 @@ const getBestWorkingEndpoint = async ({
   fallbackEndpoint = clusterApiUrl('mainnet-beta'),
   logErrors = false,
 }: GetBestWorkingEndpointProps) => {
-  const results: Array<CheckEndpointResult> = await Promise.all(
-    endpoints.map((endpoint) =>
-      new Connection(endpoint, { disableRetryOnRateLimit: true })
-        .getLatestBlockhash()
-        .then(() => ({ endpoint, error: null }))
-        .catch(() => ({
-          endpoint: null,
-          error: `RPC endpoint doesnt work\n${endpoint}`,
-        })),
-    ),
-  )
-
-  if (logErrors) {
-    results.forEach(({ error }) => !!error && console.warn(error))
+  for (const endpoint of endpoints) {
+    try {
+      await new Connection(endpoint, {
+        disableRetryOnRateLimit: true,
+      }).getLatestBlockhash()
+      return endpoint
+    } catch (error) {
+      if (logErrors) {
+        console.warn(`RPC endpoint doesnt work\n${endpoint}`)
+      }
+    }
   }
 
-  return results.find(({ endpoint }) => !!endpoint)?.endpoint ?? fallbackEndpoint
+  return fallbackEndpoint
 }
 
 type UseBestWorkingRPC = ({
