@@ -1,0 +1,44 @@
+.rootTable :global {
+  .ant-table-tbody > tr > td {
+    width: 210px;
+  }
+  .ant-table-tbody > tr > td:last-child {
+    width: 180px;
+  }
+}
+
+.actionsButtons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 100%;
+}
+
+.terminateButton,
+.instantButton {
+  width: 100%;
+}
+
+.lentInfo,
+.statusInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.statusInfoTitle {
+  font: var(--body-text-sm);
+}
+.statusInfoSubtitle {
+  font: var(--body-text-sm);
+  text-transform: capitalize;
+}
+
+.lentInfoSubtitle {
+  font: var(--body-text-sm);
+}
+
+.aprValue {
+  font: var(--important-text-md);
+}
