@@ -1,3 +1,10 @@
+import RefinanceHeader from './components/RefinanceHeader'
+
 export const RefinancePage = () => {
-  return <div>RefinancePage</div>
+  return (
+    <>
+      <RefinanceHeader />
+      {/* <RefinancePageContent /> */}
+    </>
+  )
 }
