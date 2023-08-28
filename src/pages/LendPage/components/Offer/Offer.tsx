@@ -30,8 +30,7 @@ const Offer: FC<OfferProps> = ({
 }) => {
   const isBestOrder = order.rawData.publicKey === bestOrder?.rawData.publicKey
 
-  const minLoansAmount = Math.min(loansAmount, 1)
-  const displayLoansAmount = isInteger(minLoansAmount) ? minLoansAmount : minLoansAmount?.toFixed(2)
+  const displayLoansAmount = isInteger(loansAmount) ? loansAmount : loansAmount?.toFixed(2)
 
   const listItemClassName = classNames(styles.listItem, {
     [styles.highlightBest]: isBestOrder,
