@@ -5,8 +5,6 @@ import { ViewState, useTableView } from '@banx/store'
 import { getTableColumns } from './columns'
 import { useRefinanceTable } from './hooks'
 
-import styles from './LoansTable.module.less'
-
 export const RefinanceTable = () => {
   const { loans, sortViewParams, loading } = useRefinanceTable()
 

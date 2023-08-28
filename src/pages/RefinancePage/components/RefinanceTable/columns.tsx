@@ -9,7 +9,7 @@ import {
 
 import { Loan } from '@banx/api/core'
 
-import styles from './LoansTable.module.less'
+import { RefinanceCell } from './TableCells/RefinanceCell'
 
 interface GetTableColumnsProps {
   isCardView: boolean
@@ -58,6 +58,10 @@ export const getTableColumns = ({ isCardView }: GetTableColumnsProps) => {
       key: 'duration',
       title: <HeaderCell label="Ends in" />,
       render: (_, { fraktBond }) => createSolValueJSX(fraktBond.amountToReturn, 1e9),
+    },
+    {
+      title: <HeaderCell label="" />,
+      render: (_, loan) => <RefinanceCell loan={loan} isCardView={isCardView} />,
     },
   ]
 
