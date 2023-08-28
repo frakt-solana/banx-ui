@@ -1,5 +1,6 @@
 import { WalletContextState } from '@solana/wallet-adapter-react'
 import { web3 } from 'fbonds-core'
+import { EMPTY_PUBKEY } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   BondAndTransactionOptimistic,
   repayPerpetualLoan,
@@ -9,7 +10,6 @@ import {
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
-import { EMPTY_PUBKEY } from 'fbonds-core/lib/fbond-protocol/constants'
 
 export type MakeRepayLoanTransaction = (params: {
   connection: web3.Connection
