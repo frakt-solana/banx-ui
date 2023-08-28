@@ -165,7 +165,7 @@ const FraktBondSchema = z.object({
   borrowedAmount: z.number(),
   banxStake: z.string(),
   fraktMarket: z.string(),
-  hadoMarket: z.any(), //? Any type is used to prevent errors with the BondOffer type from SDK. Need add hadoMarket to sdk
+  hadoMarket: z.string().optional(),
   amountToReturn: z.number(),
   actualReturnedAmount: z.number(),
   terminatedCounter: z.number(),

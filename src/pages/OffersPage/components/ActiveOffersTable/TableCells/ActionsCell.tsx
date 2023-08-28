@@ -27,7 +27,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
   const { offers, optimisticOffers, addMints, updateOrAddOffer } = useLenderLoansAndOffers()
 
   const bestOffer = useMemo(() => {
-    const offersByMarket = offers[fraktBond.hadoMarket]
+    const offersByMarket = offers[fraktBond.hadoMarket || '']
 
     const combinedOffers = [...optimisticOffers, ...(offersByMarket ?? [])]
 
