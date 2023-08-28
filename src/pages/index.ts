@@ -1,4 +1,5 @@
-export { LendPage } from './LendPage'
-export { RootPage } from './RootPage'
-export { LoansPage } from './LoansPage'
 export { BorrowPage } from './BorrowPage'
+export { LendPage } from './LendPage'
+export { LoansPage } from './LoansPage'
+export { RefinancePage } from './RefinancePage'
+export { RootPage } from './RootPage'

@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import { BorrowPage, LendPage, LoansPage, RootPage } from '@banx/pages'
+import { BorrowPage, LendPage, LoansPage, RefinancePage, RootPage } from '@banx/pages'
 
 import { PATHS } from './paths'
 
@@ -35,8 +35,8 @@ export const routes: Route[] = [
     component: RootPage,
   },
   {
-    path: PATHS.AUCTIONS,
-    component: RootPage,
+    path: PATHS.REFINANCE,
+    component: RefinancePage,
   },
   {
     path: PATHS.PAGE_404,
