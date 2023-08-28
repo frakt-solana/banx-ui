@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { BondOfferOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Offer } from '@banx/api/core'
@@ -9,12 +10,12 @@ import {
   TransactionParams,
   buildAndExecuteTransaction,
 } from '@banx/transactions'
+import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import {
   MakeCreatePerpetualOfferTransaction,
-  MakeRemovePerpetualOfferTransaction,
   MakeUpdatePerpetualOfferTransaction,
   makeCreatePerpetualOfferTransaction,
-  makeRemovePerpetualOfferTransaction,
+  makeRemoveOfferAction,
   makeUpdatePerpetualOfferTransaction,
 } from '@banx/transactions/bonds'
 
@@ -86,15 +87,16 @@ export const useOfferTransactions = ({
     )
   }
 
-  const onRemoveOffer = async () => {
+  const onRemoveOffer = () => {
     if (!optimisticOffer) return
 
-    await executeOfferTransaction<MakeRemovePerpetualOfferTransaction>(
-      makeRemovePerpetualOfferTransaction,
-      { offerPubkey, optimisticOffer },
-      updateOrAddOffer,
-      goToPlaceOffer,
-    )
+    new TxnExecutor(makeRemoveOfferAction, { wallet, connection })
+      .addTxnParam({ offerPubkey, optimisticOffer })
+      .on('pfSuccessEvery', (additionalResult: BondOfferOptimistic[]) => {
+        updateOrAddOffer(additionalResult[0].bondOffer)
+        goToPlaceOffer()
+      })
+      .execute()
   }
 
   const onUpdateOffer = async () => {
