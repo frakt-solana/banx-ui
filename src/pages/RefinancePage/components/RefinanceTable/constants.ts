@@ -1,2 +1,4 @@
 export const SECONDS_PER_HOUR = 60 * 60
 export const SECONDS_IN_72_HOURS = 72 * SECONDS_PER_HOUR
+
+export const INCREASE_PERCENT_APR_PER_HOUR = 1

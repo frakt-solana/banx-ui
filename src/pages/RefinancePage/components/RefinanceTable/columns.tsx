@@ -10,8 +10,8 @@ import Timer from '@banx/components/Timer/Timer'
 
 import { Loan } from '@banx/api/core'
 
-import { APRCell, APRIncreaseCell, RefinanceCell } from './TableCells'
-import { SECONDS_IN_72_HOURS } from './constants'
+import { APRCell, APRIncreaseCell, DebtCell, RefinanceCell } from './TableCells'
+import { INCREASE_PERCENT_APR_PER_HOUR, SECONDS_IN_72_HOURS } from './constants'
 
 interface GetTableColumnsProps {
   isCardView: boolean
@@ -35,7 +35,7 @@ export const getTableColumns = ({ isCardView }: GetTableColumnsProps) => {
     {
       key: 'repayValue',
       title: <HeaderCell label="Debt" />,
-      render: (_, loan) => createSolValueJSX(loan.nft.collectionFloor, 1e9),
+      render: (_, loan) => <DebtCell loan={loan} />,
       sorter: true,
     },
     {
@@ -47,7 +47,7 @@ export const getTableColumns = ({ isCardView }: GetTableColumnsProps) => {
     {
       key: 'aprIncrease',
       title: <HeaderCell label="APR increase" />,
-      render: () => <span>+1%</span>,
+      render: () => <span>+{INCREASE_PERCENT_APR_PER_HOUR}%</span>,
     },
     {
       key: 'nextAprIncrease',
