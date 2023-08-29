@@ -8,7 +8,7 @@ import { ActiveRowParams, PartialBreakpoints, SortViewParams } from './types'
 import { CardView, SortView, TableView } from './views'
 
 export interface TableProps<T, P> {
-  data: ReadonlyArray<T>
+  data: Array<T>
   columns: ColumnsType<T>
   rowKeyField: keyof T
   loading?: boolean

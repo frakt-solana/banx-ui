@@ -1,5 +1,6 @@
 export { BorrowPage } from './BorrowPage'
 export { LendPage } from './LendPage'
 export { LoansPage } from './LoansPage'
+export { OffersPage } from './OffersPage'
 export { RefinancePage } from './RefinancePage'
 export { RootPage } from './RootPage'

@@ -1,5 +1,5 @@
-import { WalletContextState } from '@solana/wallet-adapter-react'
 import { web3 } from 'fbonds-core'
+import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   BondOfferOptimistic,
   removePerpetualOffer,
@@ -10,23 +10,21 @@ import { Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
-export type MakeRemovePerpetualOfferTransaction = (params: {
-  offerPubkey: string
-  connection: web3.Connection
-  wallet: WalletContextState
-  optimisticOffer: Offer
-}) => Promise<{
-  transaction: web3.Transaction
-  signers: web3.Signer[]
-  optimisticResult: BondOfferOptimistic | undefined
-}>
+import { MakeActionFn } from '../TxnExecutor'
 
-export const makeRemovePerpetualOfferTransaction: MakeRemovePerpetualOfferTransaction = async ({
-  offerPubkey,
-  connection,
-  wallet,
-  optimisticOffer,
-}) => {
+export type MakeClaimActionParams = {
+  offerPubkey: string
+  optimisticOffer: Offer
+}
+
+export type MakeRemoveOfferAction = MakeActionFn<MakeClaimActionParams, BondOfferOptimistic>
+
+export const makeRemoveOfferAction: MakeRemoveOfferAction = async (
+  ixnParams,
+  { connection, wallet },
+) => {
+  const { offerPubkey, optimisticOffer } = ixnParams
+
   const { instructions, signers, optimisticResult } = await removePerpetualOffer({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
@@ -41,8 +39,9 @@ export const makeRemovePerpetualOfferTransaction: MakeRemovePerpetualOfferTransa
   })
 
   return {
-    transaction: new web3.Transaction().add(...instructions),
+    instructions,
     signers,
-    optimisticResult,
+    additionalResult: optimisticResult,
+    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }
