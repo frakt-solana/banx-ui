@@ -231,3 +231,8 @@ export interface LendLoansAndOffersResponse {
   data: LendLoansAndOffers
   meta: PaginationMeta
 }
+
+export interface AuctionsLoansResponse {
+  data: Loan[]
+  meta: PaginationMeta
+}
