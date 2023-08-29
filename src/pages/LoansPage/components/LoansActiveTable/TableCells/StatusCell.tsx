@@ -6,6 +6,7 @@ import moment from 'moment'
 import Timer from '@banx/components/Timer'
 
 import { Loan } from '@banx/api/core'
+import { calculateTimeFromNow } from '@banx/utils'
 
 import styles from '../LoansTable.module.less'
 
@@ -58,8 +59,4 @@ const calculateTimeInfo = (loan: Loan, status: string) => {
   }
 
   return ''
-}
-
-const calculateTimeFromNow = (seconds: number) => {
-  return moment.unix(moment().unix() + seconds).toNow(true)
 }
