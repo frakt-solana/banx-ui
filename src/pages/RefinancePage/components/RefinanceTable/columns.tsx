@@ -44,7 +44,7 @@ export const getTableColumns = ({ isCardView }: GetTableColumnsProps) => {
     {
       key: 'aprIncrease',
       title: <HeaderCell label="APR increase" />,
-      render: () => <span>+{INCREASE_PERCENT_APR_PER_HOUR}%</span>,
+      render: () => <span>+{INCREASE_PERCENT_APR_PER_HOUR} %</span>,
     },
     {
       key: 'nextAprIncrease',

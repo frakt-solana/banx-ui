@@ -35,13 +35,13 @@ export const makeRefinanceAction: MakeRefinanceAction = async (
 ) => {
   const { loan } = ixnParams || {}
   const { bondTradeTransaction, fraktBond } = loan
-  fraktBond.refinanceAuctionStartedAt
+
   const { instructions, signers, optimisticResult } = await refinancePerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
-      fbond: new web3.PublicKey(loan.fraktBond.publicKey),
+      fbond: new web3.PublicKey(fraktBond.publicKey),
       userPubkey: wallet.publicKey as web3.PublicKey,
-      hadoMarket: new web3.PublicKey(fraktBond.publicKey),
+      hadoMarket: new web3.PublicKey(fraktBond.hadoMarket || ''),
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
       previousBondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
       previousLender: new web3.PublicKey(bondTradeTransaction.user),

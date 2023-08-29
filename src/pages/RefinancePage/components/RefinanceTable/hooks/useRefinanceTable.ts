@@ -5,13 +5,13 @@ import { first, groupBy, map } from 'lodash'
 import { SortOption } from '@banx/components/SortDropdown'
 
 import { DEFAULT_SORT_OPTION } from '@banx/pages/LoansPage/constants'
-import { useWalletLoans } from '@banx/pages/LoansPage/hooks'
+import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
 
 import { useFilteredLoans } from './useFilteredLoans'
 import { useSortedLoans } from './useSortedLoans'
 
 export const useRefinanceTable = () => {
-  const { loans, isLoading } = useWalletLoans()
+  const { loans, isLoading } = useAuctionsLoans()
 
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
 
