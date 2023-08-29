@@ -6,7 +6,7 @@ import { getSizeClassName } from './helpers'
 
 import styles from './Buttons.module.less'
 
-interface ButtonProps {
+export interface ButtonProps {
   className?: string
   disabled?: boolean
   onClick?: (args: MouseEvent<HTMLButtonElement>) => void
