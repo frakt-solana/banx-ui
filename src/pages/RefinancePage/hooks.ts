@@ -36,7 +36,7 @@ export const useAuctionsLoans = () => {
       return []
     }
 
-    return data.filter(({ publicKey }) => !mints.includes(publicKey))
+    return data.filter(({ nft }) => !mints.includes(nft.mint))
   }, [data, mints])
 
   return {
