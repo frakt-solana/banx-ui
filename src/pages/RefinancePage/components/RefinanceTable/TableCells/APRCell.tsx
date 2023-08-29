@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react'
+import { FC, useEffect, useRef, useState } from 'react'
 
 import moment from 'moment'
 
@@ -17,18 +17,24 @@ export const APRCell: FC<APRCellProps> = ({ loan }) => {
 
   const [currentAPR, setCurrentAPR] = useState<number>(0)
 
+  const prevHoursSinceStartRef = useRef<number | null>(null)
+
   useEffect(() => {
     const calculateUpdatedAPR = () => {
       const currentTime = moment()
       const auctionStartTime = moment.unix(refinanceAuctionStartedAt)
       const hoursSinceStart = currentTime.diff(auctionStartTime, 'hours')
 
-      const updatedAPR = amountOfBonds / 100 + hoursSinceStart
-      setCurrentAPR(updatedAPR)
+      if (hoursSinceStart !== prevHoursSinceStartRef.current) {
+        const updatedAPR = amountOfBonds / 100 + hoursSinceStart
+        setCurrentAPR(updatedAPR)
+
+        prevHoursSinceStartRef.current = hoursSinceStart
+      }
     }
 
     calculateUpdatedAPR()
-    const interval = setInterval(calculateUpdatedAPR, 60000)
+    const interval = setInterval(calculateUpdatedAPR, 1000)
 
     return () => {
       clearInterval(interval)
