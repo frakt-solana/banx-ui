@@ -7,12 +7,18 @@ import { SortOption } from '@banx/components/SortDropdown'
 import { DEFAULT_SORT_OPTION } from '@banx/pages/LoansPage/constants'
 import { useWalletLoans } from '@banx/pages/LoansPage/hooks'
 
+import { useFilteredLoans } from './useFilteredLoans'
+import { useSortedLoans } from './useSortedLoans'
+
 export const useRefinanceTable = () => {
   const { loans, isLoading } = useWalletLoans()
 
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
 
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
+
+  const filteredLoans = useFilteredLoans(loans, selectedOptions)
+  const sortedLoans = useSortedLoans(filteredLoans, sortOption.value)
 
   const searchSelectOptions = useMemo(() => {
     const loansGroupedByCollection = groupBy(loans, (loan) => loan.nft.meta.collectionName)
@@ -40,11 +46,11 @@ export const useRefinanceTable = () => {
       imageKey: 'collectionImage',
       secondLabel: { key: 'numberOfNFTs' },
     },
-    labels: ['Collections', 'Nfts'],
+    labels: ['Collection', 'Available'],
   }
 
   return {
-    loans,
+    loans: sortedLoans,
     loading: isLoading,
     sortViewParams: {
       searchSelectParams,
