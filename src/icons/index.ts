@@ -30,3 +30,6 @@ export { TableView } from './TableView'
 export { Twitter, TwitterDark } from './Twitter'
 export { Wallet } from './Wallet'
 export { WalletAvatar } from './WalletAvatar'
+
+//? Raster icons
+export { default as SolanaFM } from './SolanaFM.png'

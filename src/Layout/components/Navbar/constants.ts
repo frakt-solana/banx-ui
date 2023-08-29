@@ -1,7 +1,5 @@
 import { DISCORD, DOCS_URL, GITHUB_URL, MEDIUM_URL, TWITTER_URL } from '@banx/constants'
 import {
-  Auction,
-  AuctionDark,
   BanxFilled,
   BanxFilledDark,
   Borrow,
@@ -61,6 +59,10 @@ export const NAVIGATION_LINKS = [
     pathname: PATHS.OFFERS,
     label: 'My offers',
   },
+  {
+    pathname: PATHS.REFINANCE,
+    label: 'Refinance',
+  },
 ]
 
 export const SECONDARY_NAVIGATION_LINKS = [
@@ -78,14 +80,6 @@ export const SECONDARY_NAVIGATION_LINKS = [
     icons: {
       light: Raffles,
       dark: RafflesDark,
-    },
-  },
-  {
-    pathname: PATHS.AUCTIONS,
-    label: 'Auctions',
-    icons: {
-      light: Auction,
-      dark: AuctionDark,
     },
   },
 ]
