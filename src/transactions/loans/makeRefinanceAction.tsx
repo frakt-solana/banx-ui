@@ -17,7 +17,7 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 import { MakeActionFn } from '../TxnExecutor'
 
 export interface RefinanceOptimisticResult {
-  fadeTransaction: BondTradeTransactionV2
+  oldBondTradeTransaction: BondTradeTransactionV2
   fraktBond: FraktBond
   newBondOffer: BondOfferV2
   newBondTradeTransaction: BondTradeTransactionV2

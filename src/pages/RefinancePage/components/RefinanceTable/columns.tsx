@@ -6,10 +6,12 @@ import {
   createColumn,
   createSolValueJSX,
 } from '@banx/components/TableComponents'
+import Timer from '@banx/components/Timer/Timer'
 
 import { Loan } from '@banx/api/core'
 
-import { RefinanceCell } from './TableCells/RefinanceCell'
+import { APRCell, APRIncreaseCell, RefinanceCell } from './TableCells'
+import { SECONDS_IN_72_HOURS } from './constants'
 
 interface GetTableColumnsProps {
   isCardView: boolean
@@ -39,25 +41,25 @@ export const getTableColumns = ({ isCardView }: GetTableColumnsProps) => {
     {
       key: 'apr',
       title: <HeaderCell label="APR" />,
-      render: (_, { fraktBond }) => createSolValueJSX(fraktBond.amountToReturn, 1e9),
+      render: (_, loan) => <APRCell loan={loan} />,
       sorter: true,
     },
     {
       key: 'aprIncrease',
       title: <HeaderCell label="APR increase" />,
-      render: (_, { fraktBond }) => createSolValueJSX(fraktBond.amountToReturn, 1e9),
-      sorter: true,
+      render: () => <span>+1%</span>,
     },
     {
       key: 'nextAprIncrease',
       title: <HeaderCell label="Next APR increase" />,
-      render: (_, { fraktBond }) => createSolValueJSX(fraktBond.amountToReturn, 1e9),
-      sorter: true,
+      render: (_, loan) => <APRIncreaseCell loan={loan} />,
     },
     {
       key: 'duration',
       title: <HeaderCell label="Ends in" />,
-      render: (_, { fraktBond }) => createSolValueJSX(fraktBond.amountToReturn, 1e9),
+      render: (_, { fraktBond }) => (
+        <Timer expiredAt={fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS} />
+      ),
     },
     {
       title: <HeaderCell label="" />,
@@ -67,12 +69,3 @@ export const getTableColumns = ({ isCardView }: GetTableColumnsProps) => {
 
   return columns.map((column) => createColumn(column))
 }
-
-//? Ends in 72 hours
-
-//? NEXT Apr INCREASE => 1 hour
-
-//? startedTime => refinanceAuctionStartedAt + increase to 1% every hour
-//? APR => bondTradeTransaction.amountOfBonds + N
-
-//? Debt => look at DebtCell
