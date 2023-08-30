@@ -1,27 +1,46 @@
-import { Button } from '@banx/components/Buttons'
+import { CSVDownloadButton } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
+
+import { ColorByPercentHealth, getColorByPercent } from '@banx/utils'
 
 import styles from './HistoryOffersTable.module.less'
 
 export const Summary = () => {
-  const totalFloor = 10
-  const totalBorrow = 10
-  const nftsInCart = 10
+  //TODO: Need take values from BE
+  const totalOffers = 25
+  const totalLent = 25
+  const totalInterest = 25
+  const totalReceived = 105
+
+  const weightedAPR = 104
+
+  const colorAPR = getColorByPercent(weightedAPR, ColorByPercentHealth)
+
+  const csvData = 'name,email\nJohn,Doe\nJane,Smith'
 
   return (
     <div className={styles.summary}>
-      <div className={styles.collaterals}>
-        <p className={styles.collateralsTitle}>{nftsInCart}</p>
-        <p className={styles.collateralsSubtitle}>Collaterals selected</p>
+      <div className={styles.totalOffers}>
+        <p className={styles.totalOffersValue}>{totalOffers}</p>
+        <div className={styles.totalOffersInfo}>
+          <p className={styles.totalOffersInfoTitle}>Total offers</p>
+          <p className={styles.totalOffersInfoSubtitle}>All time</p>
+        </div>
       </div>
       <div className={styles.statsContainer}>
-        <StatInfo label="Total Lent" value={totalFloor} />
-        <StatInfo label="Total interest" value={totalBorrow} />
-        <StatInfo label="Weighted APR" value={105} valueType={VALUES_TYPES.PERCENT} />
-        <StatInfo label="Total received" value={105} />
+        <StatInfo label="Total Lent" value={totalLent} />
+        <StatInfo label="Total interest" value={totalInterest} />
+        <StatInfo
+          label="Weighted APR"
+          value={weightedAPR}
+          valueType={VALUES_TYPES.PERCENT}
+          valueStyles={{ color: colorAPR }}
+          classNamesProps={{ value: styles.aprValue }}
+        />
+        <StatInfo label="Total received" value={totalReceived} />
       </div>
       <div className={styles.summaryBtns}>
-        <Button>Download .CSV</Button>
+        <CSVDownloadButton data={csvData} filename="frakt.csv" />
       </div>
     </div>
   )

@@ -42,9 +42,9 @@ export const StatusCell: FC<StatusCellProps> = ({ loan }) => {
   const timeInfo = calculateTimeInfo(loan, statusText)
 
   return (
-    <div className={styles.statusInfo}>
-      <span className={styles.statusInfoTitle}>{timeInfo}</span>
-      <span style={{ color: statusColor }} className={styles.statusInfoSubtitle}>
+    <div className={styles.statusCell}>
+      <span className={styles.statusCellTitle}>{timeInfo}</span>
+      <span style={{ color: statusColor }} className={styles.statusCellSubtitle}>
         {statusText}
       </span>
     </div>
@@ -66,5 +66,5 @@ const calculateTimeInfo = (loan: Loan, status: string) => {
     return <Timer expiredAt={expiredAt} />
   }
 
-  return ''
+  return '--'
 }

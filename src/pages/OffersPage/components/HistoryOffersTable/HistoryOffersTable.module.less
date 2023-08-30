@@ -28,10 +28,38 @@
   }
 }
 
+.totalOffers {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.totalOffersValue {
+  font: var(--important-text-xll);
+}
+
+.totalOffersInfo {
+  display: flex;
+  flex-direction: column;
+}
+.totalOffersInfoTitle {
+  color: var(--content-secondary);
+  font: var(--table-header-md);
+  text-transform: uppercase;
+}
+
+.totalOffersInfoSubtitle {
+  font: var(--body-text-md);
+}
+
 .statsContainer {
   display: flex;
   justify-content: space-around;
   flex-grow: 1;
+
+  & > div {
+    align-items: end;
+  }
 
   @media (max-width: 960px) {
     width: 100%;
@@ -52,4 +80,22 @@
     grid-template-columns: repeat(1, 1fr);
     width: 100%;
   }
+}
+
+.statusCell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.statusCellTitle {
+  font: var(--body-text-md);
+}
+.statusCellSubtitle {
+  font: var(--body-text-sm);
+  text-transform: capitalize;
+}
+
+.aprValue {
+  font: var(--important-text-md);
 }
