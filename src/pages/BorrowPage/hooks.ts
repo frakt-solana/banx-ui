@@ -78,7 +78,7 @@ const calcMaxBorrow = (nfts: BorrowNft[], offers: SimpleOffersByMarket) => {
 
   return Object.entries(nftsAmountByMarket).reduce((maxBorrow, [marketPubkey, nftsAmount]) => {
     const maxBorrowMarket = sumBy(
-      offers[marketPubkey].slice(0, nftsAmount),
+      (offers[marketPubkey] || []).slice(0, nftsAmount),
       ({ loanValue }) => loanValue,
     )
 
