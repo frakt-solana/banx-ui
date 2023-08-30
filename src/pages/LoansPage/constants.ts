@@ -14,9 +14,10 @@ export const LOANS_TABS: Tab[] = [
   {
     label: 'History',
     value: 'history',
-    disabled: true,
   },
 ]
+
+export const DEFAULT_TAB_VALUE = LOANS_TABS[0].value
 
 export const DEFAULT_SORT_OPTION: SortOption = {
   label: 'Loan status',
