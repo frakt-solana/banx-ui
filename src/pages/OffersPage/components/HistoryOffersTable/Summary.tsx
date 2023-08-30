@@ -16,7 +16,7 @@ export const Summary = () => {
 
   const colorAPR = getColorByPercent(weightedAPR, ColorByPercentHealth)
 
-  const csvData = 'name,email\nJohn,Doe\nJane,Smith'
+  const csvData = 'Collateral,Lent\n#5905,0.32\n#12305,12.06'
 
   return (
     <div className={styles.summary}>
