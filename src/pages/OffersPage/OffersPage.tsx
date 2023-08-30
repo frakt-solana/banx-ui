@@ -1,13 +1,28 @@
+import { Tabs, useTabs } from '@banx/components/Tabs'
+
+import ActiveOffersTable from './components/ActiveOffersTable'
+import { HistoryOffersTable } from './components/HistoryOffersTable'
 import OffersHeader from './components/OffersHeader'
-import OffersPageContent from './components/OffersPageContent'
+import { PendingOfferTable } from './components/PendingOffersTable'
+import { DEFAULT_TAB_VALUE, OFFERS_TABS, OffersTabName } from './constants'
 
 import styles from './OffersPage.module.less'
 
 export const OffersPage = () => {
+  const { value: currentTabValue, ...tabsProps } = useTabs({
+    tabs: OFFERS_TABS,
+    defaultValue: DEFAULT_TAB_VALUE,
+  })
+
   return (
     <div className={styles.pageWrapper}>
       <OffersHeader />
-      <OffersPageContent />
+      <>
+        <Tabs value={currentTabValue} {...tabsProps} />
+        {currentTabValue === OffersTabName.PENDING && <PendingOfferTable />}
+        {currentTabValue === OffersTabName.ACTIVE && <ActiveOffersTable />}
+        {currentTabValue === OffersTabName.HISTORY && <HistoryOffersTable />}
+      </>
     </div>
   )
 }

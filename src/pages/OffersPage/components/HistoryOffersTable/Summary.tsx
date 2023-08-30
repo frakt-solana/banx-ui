@@ -1,12 +1,11 @@
 import { Button } from '@banx/components/Buttons'
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
 import styles from './HistoryOffersTable.module.less'
 
 export const Summary = () => {
   const totalFloor = 10
   const totalBorrow = 10
-  const totalWeeklyFee = 10
   const nftsInCart = 10
 
   return (
@@ -16,18 +15,10 @@ export const Summary = () => {
         <p className={styles.collateralsSubtitle}>Collaterals selected</p>
       </div>
       <div className={styles.statsContainer}>
-        <div className={styles.stats}>
-          <p>Total floor</p>
-          <p>{createSolValueJSX(totalFloor, 1e9, '0◎')}</p>
-        </div>
-        <div className={styles.stats}>
-          <p>Total borrow</p>
-          <p>{createSolValueJSX(totalBorrow, 1e9, '0◎')}</p>
-        </div>
-        <div className={styles.stats}>
-          <p>Total weekly fee</p>
-          <p>{createSolValueJSX(totalWeeklyFee, 1e9, '0◎')}</p>
-        </div>
+        <StatInfo label="Total Lent" value={totalFloor} />
+        <StatInfo label="Total interest" value={totalBorrow} />
+        <StatInfo label="Weighted APR" value={105} valueType={VALUES_TYPES.PERCENT} />
+        <StatInfo label="Total received" value={105} />
       </div>
       <div className={styles.summaryBtns}>
         <Button>Download .CSV</Button>

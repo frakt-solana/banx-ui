@@ -20,3 +20,5 @@ export const OFFERS_TABS: Tab[] = [
     value: 'history',
   },
 ]
+
+export const DEFAULT_TAB_VALUE = OFFERS_TABS[0].value

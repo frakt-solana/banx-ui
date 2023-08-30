@@ -43,42 +43,13 @@
   }
 }
 
-.stats {
-  p:first-child {
-    color: var(--content-secondary);
-    font: var(--table-header-md);
-    text-transform: uppercase;
-  }
-
-  p:last-child {
-    color: var(--content-primary);
-    font: var(--body-text-md);
-  }
-
-  @media (max-width: 960px) {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  @media (max-width: 768px) {
-    p:first-child {
-      font: var(--table-header-sm);
-    }
-
-    p:last-child {
-      font: var(--body-text-sm);
-    }
-  }
-}
-
 .summaryBtns {
   display: flex;
   gap: 8px;
 
   @media (max-width: 960px) {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(1, 1fr);
     width: 100%;
   }
 }
