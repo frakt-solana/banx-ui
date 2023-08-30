@@ -57,7 +57,8 @@ export const useBorrowNfts = () => {
 
   //TODO: Remove when borrow staked nfts support appears
   const notStakedNfts = useMemo(() => {
-    return nfts.filter((nft) => !nft.loan.banxStake)
+    // return nfts.filter((nft) => !nft.loan.banxStake)
+    return nfts
   }, [nfts])
 
   const maxBorrow = useMemo(() => {
