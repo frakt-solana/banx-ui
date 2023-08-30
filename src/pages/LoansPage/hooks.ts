@@ -8,7 +8,6 @@ import { create } from 'zustand'
 
 import { Loan, fetchWalletLoans } from '@banx/api/core'
 import { useOptimisticLoans } from '@banx/store'
-import { calcLoanValueWithProtocolFee } from '@banx/utils'
 
 type UseWalletLoans = () => {
   loans: Loan[]
@@ -38,13 +37,7 @@ export const useWalletLoans: UseWalletLoans = () => {
     if (!data) {
       return []
     }
-    return uniqBy([...data, ...optimisticLoans], ({ publicKey }) => publicKey).map((loan) => ({
-      ...loan,
-      fraktBond: {
-        ...loan.fraktBond,
-        borrowedAmount: calcLoanValueWithProtocolFee(loan.fraktBond.borrowedAmount),
-      },
-    }))
+    return uniqBy([...data, ...optimisticLoans], ({ publicKey }) => publicKey)
   }, [data, optimisticLoans])
 
   const loans = useMemo(() => {
