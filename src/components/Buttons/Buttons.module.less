@@ -13,6 +13,11 @@
   &:disabled {
     pointer-events: none;
   }
+
+  svg,
+  svg path {
+    fill: var(--content-primary);
+  }
 }
 
 // standard buttons styles
@@ -93,10 +98,6 @@
   &:hover {
     background-color: var(--accent-secondary);
   }
-
-  svg path {
-    fill: var(--content-primary);
-  }
 }
 
 .circle.secondary {
@@ -105,10 +106,6 @@
 
   &:hover {
     border-color: var(--content-primary);
-  }
-
-  svg path {
-    fill: var(--content-primary);
   }
 }
 
@@ -124,8 +121,4 @@
 
 .walletConnectButton {
   width: 176px;
-}
-
-.primaryIcon path {
-  fill: var(--content-primary);
 }
