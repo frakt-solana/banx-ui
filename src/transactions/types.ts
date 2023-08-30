@@ -1,6 +1,6 @@
 import { web3 } from 'fbonds-core'
 
-import { NotificationTypes } from '@banx/utils'
+import { SnackbarType } from '@banx/utils'
 
 export interface TxnError extends Error {
   logs?: Array<string>
@@ -19,7 +19,7 @@ export enum TxnErrorHumanName {
 export interface TxnErrorDefinition {
   humanMessage: TxnErrorHumanName
   keyphrases: Array<string>
-  type: NotificationTypes
+  type: SnackbarType
 }
 
 export interface TxnsAndSigners {

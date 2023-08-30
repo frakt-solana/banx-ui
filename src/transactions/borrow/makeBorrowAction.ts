@@ -44,7 +44,7 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, { connection
             tokenMint: new web3.PublicKey(nft.mint),
             bondOfferV2: new web3.PublicKey(offer.publicKey),
             hadoMarket: new web3.PublicKey(offer.hadoMarket),
-            banxStake: new web3.PublicKey(nft.loan.banxStake as any),
+            banxStake: new web3.PublicKey(nft.loan.banxStake || ''),
             optimistic: {
               fraktMarket: nft.loan.fraktMarket,
               minMarketFee: nft.loan.marketApr,
