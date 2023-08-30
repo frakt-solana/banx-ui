@@ -6,8 +6,8 @@ import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
-import { useLenderLoansAndOffers } from '../../ActiveOffersTable/hooks'
 import { DEFAULT_SORT_OPTION } from '../constants'
+import { useLenderActivity } from './useLenderActivity'
 
 interface SearchSelectOption {
   collectionName: string
@@ -16,7 +16,7 @@ interface SearchSelectOption {
 }
 
 export const useHistoryOffersTable = () => {
-  const { loans, loading } = useLenderLoansAndOffers()
+  const { loans, isLoading } = useLenderActivity()
 
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
@@ -56,7 +56,7 @@ export const useHistoryOffersTable = () => {
 
   return {
     loans,
-    loading,
+    loading: isLoading,
     sortViewParams: {
       searchSelectParams,
       sortParams,

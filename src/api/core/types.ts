@@ -236,3 +236,8 @@ export interface AuctionsLoansResponse {
   data: Loan[]
   meta: PaginationMeta
 }
+
+export interface LenderActivityResponse {
+  data: Loan[]
+  meta: PaginationMeta
+}

@@ -10,6 +10,7 @@ import {
   BorrowNftsAndOffersSchema,
   FetchMarketOffersResponse,
   LendLoansAndOffersResponse,
+  LenderActivityResponse,
   Loan,
   LoanSchema,
   Market,
@@ -296,6 +297,46 @@ export const fetchAuctionsLoans = async () => {
 
     const { data } = await axios.get<AuctionsLoansResponse>(
       `${BACKEND_BASE_URL}/auctions/?${queryParams.toString()}`,
+    )
+
+    try {
+      await LoanSchema.array().parseAsync(data.data)
+    } catch (validationError) {
+      console.error('Schema validation error:', validationError)
+    }
+
+    return data.data
+  } catch (error) {
+    console.error(error)
+    return []
+  }
+}
+
+type FetchLenderActivity = (props: {
+  walletPubkey: string
+  order?: string
+  getAll?: boolean
+  skip?: number
+  limit?: number
+}) => Promise<LenderActivityResponse['data']>
+export const fetchLenderActivity: FetchLenderActivity = async ({
+  walletPubkey,
+  getAll = true, //TODO Remove when normal pagination added
+  order = 'desc',
+  skip = 0,
+  limit = 10,
+}) => {
+  try {
+    const queryParams = new URLSearchParams({
+      order,
+      skip: String(skip),
+      limit: String(limit),
+      getAll: String(getAll),
+      isPrivate: String(IS_PRIVATE_MARKETS),
+    })
+
+    const { data } = await axios.get<LenderActivityResponse>(
+      `${BACKEND_BASE_URL}/activity/lender/${walletPubkey}?${queryParams.toString()}`,
     )
 
     try {
