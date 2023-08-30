@@ -4,8 +4,6 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
 
-import styles from '../HistoryOffersTable.module.less'
-
 interface LentCellProps {
   loan: Loan
 }

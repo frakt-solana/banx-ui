@@ -7,11 +7,7 @@ import { calculateTimeFromNow } from '@banx/utils'
 
 import { APRCell, InterestCell, LentCell, StatusCell } from './TableCells'
 
-interface GetTableColumns {
-  isCardView: boolean
-}
-
-export const getTableColumns = ({ isCardView }: GetTableColumns) => {
+export const getTableColumns = () => {
   const columns: ColumnsType<Loan> = [
     {
       key: 'collateral',
