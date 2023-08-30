@@ -18,6 +18,5 @@ export const OFFERS_TABS: Tab[] = [
   {
     label: 'History',
     value: 'history',
-    disabled: true,
   },
 ]
