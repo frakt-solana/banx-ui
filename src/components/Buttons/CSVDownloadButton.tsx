@@ -7,7 +7,7 @@ interface CSVDownloadProps extends ButtonProps {
   filename: string
 }
 
-export const CSVDownloadButton: FC<CSVDownloadProps> = ({ data, filename }) => {
+export const CSVDownloadButton: FC<CSVDownloadProps> = ({ data, filename, ...props }) => {
   const handleDownload = () => {
     const csvData = new Blob([data], { type: 'text/csv' })
     const csvURL = window.URL.createObjectURL(csvData)
@@ -20,5 +20,9 @@ export const CSVDownloadButton: FC<CSVDownloadProps> = ({ data, filename }) => {
     window.URL.revokeObjectURL(csvURL)
   }
 
-  return <Button onClick={handleDownload}>Download .CSV</Button>
+  return (
+    <Button onClick={handleDownload} {...props}>
+      Download .CSV
+    </Button>
+  )
 }

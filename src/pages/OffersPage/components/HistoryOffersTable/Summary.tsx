@@ -39,9 +39,7 @@ export const Summary = () => {
         />
         <StatInfo label="Total received" value={totalReceived} />
       </div>
-      <div className={styles.summaryBtns}>
-        <CSVDownloadButton data={csvData} filename="frakt.csv" />
-      </div>
+      <CSVDownloadButton className={styles.summaryButton} data={csvData} filename="frakt.csv" />
     </div>
   )
 }
