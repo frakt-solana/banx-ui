@@ -2,6 +2,7 @@ import Table from '@banx/components/Table'
 
 import { ViewState, useTableView } from '@banx/store'
 
+import { Summary } from './Summary'
 import { getTableColumns } from './columns'
 import { useHistoryOffersTable } from './hooks'
 
@@ -16,14 +17,19 @@ export const HistoryOffersTable = () => {
   const columns = getTableColumns({ isCardView })
 
   return (
-    <Table
-      data={loans}
-      columns={columns}
-      sortViewParams={sortViewParams}
-      className={styles.rootTable}
-      rowKeyField="publicKey"
-      loading={loading}
-      showCard
-    />
+    <div className={styles.tableRoot}>
+      <div className={styles.tableWrapper}>
+        <Table
+          data={loans}
+          columns={columns}
+          sortViewParams={sortViewParams}
+          className={styles.rootTable}
+          rowKeyField="publicKey"
+          loading={loading}
+          showCard
+        />
+      </div>
+      <Summary />
+    </div>
   )
 }

@@ -12,7 +12,6 @@ import { SECONDS_IN_72_HOURS } from '../constants'
 
 import styles from '../HistoryOffersTable.module.less'
 
-
 interface StatusCellProps {
   loan: Loan
 }

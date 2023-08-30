@@ -5,8 +5,6 @@ import ActiveOffersTable from '../ActiveOffersTable'
 import { HistoryOffersTable } from '../HistoryOffersTable'
 import { PendingOfferTable } from '../PendingOffersTable'
 
-import styles from './OffersPageContent.module.less'
-
 const OffersPageContent = () => {
   const {
     tabs: offersTabs,
@@ -15,14 +13,14 @@ const OffersPageContent = () => {
   } = useTabs({ tabs: OFFERS_TABS, defaultValue: OFFERS_TABS[0].value })
 
   return (
-    <div className={styles.content}>
-      <Tabs className={styles.tabs} tabs={offersTabs} value={tabValue} setValue={setTabValue} />
-      <div className={styles.tabContent}>
+    <>
+      <Tabs tabs={offersTabs} value={tabValue} setValue={setTabValue} />
+      <>
         {tabValue === OffersTabName.PENDING && <PendingOfferTable />}
         {tabValue === OffersTabName.ACTIVE && <ActiveOffersTable />}
         {tabValue === OffersTabName.HISTORY && <HistoryOffersTable />}
-      </div>
-    </div>
+      </>
+    </>
   )
 }
 
