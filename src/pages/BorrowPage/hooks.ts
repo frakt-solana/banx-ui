@@ -7,6 +7,7 @@ import { countBy, isEmpty, sumBy, uniqueId } from 'lodash'
 import { create } from 'zustand'
 
 import { BorrowNft, Offer, fetchBorrowNftsAndOffers } from '@banx/api/core'
+import { calcLoanValueWithProtocolFee } from '@banx/utils'
 
 import { useCartState } from './cartState'
 import { SimpleOffer, SimpleOffersByMarket } from './types'
@@ -95,7 +96,7 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
     .fill(currentSpotPrice)
     .map((loanValue) => ({
       id: uniqueId(),
-      loanValue,
+      loanValue: calcLoanValueWithProtocolFee(loanValue),
       hadoMarket: offer.hadoMarket,
       publicKey: offer.publicKey,
     }))
@@ -106,7 +107,7 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
   if (decimalLoanValue && decimalLoanValue > 0) {
     offers.push({
       id: uniqueId(),
-      loanValue: decimalLoanValue,
+      loanValue: calcLoanValueWithProtocolFee(decimalLoanValue),
       hadoMarket: offer.hadoMarket,
       publicKey: offer.publicKey,
     })
