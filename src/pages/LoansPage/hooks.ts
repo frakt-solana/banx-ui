@@ -8,7 +8,7 @@ import { create } from 'zustand'
 
 import { Loan, fetchWalletLoans } from '@banx/api/core'
 import { useOptimisticLoans } from '@banx/store'
-import { calcLoanValueWitProtocolFee } from '@banx/utils'
+import { calcLoanValueWithProtocolFee } from '@banx/utils'
 
 type UseWalletLoans = () => {
   loans: Loan[]
@@ -42,7 +42,7 @@ export const useWalletLoans: UseWalletLoans = () => {
       ...loan,
       fraktBond: {
         ...loan.fraktBond,
-        borrowedAmount: calcLoanValueWitProtocolFee(loan.fraktBond.borrowedAmount),
+        borrowedAmount: calcLoanValueWithProtocolFee(loan.fraktBond.borrowedAmount),
       },
     }))
   }, [data, optimisticLoans])
