@@ -26,25 +26,25 @@ const useHiddenNftsMints = create<HiddenNftsMintsState>((set) => ({
 
 interface OptimisticLenderLoansState {
   loans: Loan[]
-  add: (loan: Loan) => void
-  find: (loanPubkey: string) => Loan | null
-  update: (loan: Loan) => void
+  addLoans: (loan: Loan) => void
+  findLoans: (loanPubkey: string) => Loan | null
+  updateLoans: (loan: Loan) => void
 }
 
 const useLenderLoansOptimistic = create<OptimisticLenderLoansState>((set, get) => ({
   loans: [],
-  add: (loan) => {
+  addLoans: (loan) => {
     set(
       produce((state: OptimisticLenderLoansState) => {
         state.loans.push(loan)
       }),
     )
   },
-  find: (loanPubkey) => {
+  findLoans: (loanPubkey) => {
     return get().loans.find(({ publicKey }) => publicKey === loanPubkey) ?? null
   },
-  update: (loan) => {
-    const loanExists = !!get().find(loan.publicKey)
+  updateLoans: (loan) => {
+    const loanExists = !!get().findLoans(loan.publicKey)
 
     loanExists &&
       set(
@@ -98,7 +98,7 @@ export const useLenderLoansAndOffers = () => {
 
   const { mints, addMints } = useHiddenNftsMints()
 
-  const { loans: optimisticLoans, add, find, update } = useLenderLoansOptimistic()
+  const { loans: optimisticLoans, addLoans, findLoans, updateLoans } = useLenderLoansOptimistic()
   const { offers: optimisticOffers, findOffer, updateOffer, addOffer } = useOptimisticOffers()
 
   const { data, isLoading } = useQuery(
@@ -129,8 +129,8 @@ export const useLenderLoansAndOffers = () => {
   }, [data, mints, optimisticLoans])
 
   const updateOrAddLoan = (loan: Loan) => {
-    const loanExists = !!find(loan.publicKey)
-    return loanExists ? update(loan) : add(loan)
+    const loanExists = !!findLoans(loan.publicKey)
+    return loanExists ? updateLoans(loan) : addLoans(loan)
   }
 
   const updateOrAddOffer = (offer: Offer) => {
