@@ -57,6 +57,41 @@ const useLenderLoansOptimistic = create<OptimisticLenderLoansState>((set, get) =
   },
 }))
 
+interface OptimisticOffersState {
+  offers: Offer[]
+  addOffer: (offer: Offer) => void
+  findOffer: (offerPubkey: string) => Offer | null
+  updateOffer: (offer: Offer) => void
+}
+
+const useOffersOptimistic = create<OptimisticOffersState>((set, get) => ({
+  offers: [],
+  addOffer: (offer) => {
+    set(
+      produce((state: OptimisticOffersState) => {
+        state.offers.push(offer)
+      }),
+    )
+  },
+  findOffer: (offerPubkey) => {
+    const { offers } = get()
+    return offers.find(({ publicKey }) => publicKey === offerPubkey) ?? null
+  },
+  updateOffer: (offer: Offer) => {
+    const { findOffer } = get()
+    const offerExists = !!findOffer(offer.publicKey)
+
+    offerExists &&
+      set(
+        produce((state: OptimisticOffersState) => {
+          state.offers = state.offers.map((existingOffer) =>
+            existingOffer.publicKey === offer.publicKey ? offer : existingOffer,
+          )
+        }),
+      )
+  },
+}))
+
 export const useLenderLoansAndOffers = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
@@ -82,7 +117,7 @@ export const useLenderLoansAndOffers = () => {
       return []
     }
 
-    const combinedLoans = [...optimisticLoans, ...data.nfts]
+    const combinedLoans = [...data.nfts, ...optimisticLoans]
 
     const filteredLoans = chain(combinedLoans)
       .groupBy('publicKey')
@@ -113,38 +148,3 @@ export const useLenderLoansAndOffers = () => {
     addMints,
   }
 }
-
-interface OptimisticOffersState {
-  offers: Offer[]
-  addOffer: (offer: Offer) => void
-  findOffer: (offerPubkey: string) => Offer | null
-  updateOffer: (offer: Offer) => void
-}
-
-export const useOffersOptimistic = create<OptimisticOffersState>((set, get) => ({
-  offers: [],
-  addOffer: (offer) => {
-    set(
-      produce((state: OptimisticOffersState) => {
-        state.offers.push(offer)
-      }),
-    )
-  },
-  findOffer: (offerPubkey) => {
-    const { offers } = get()
-    return offers.find(({ publicKey }) => publicKey === offerPubkey) ?? null
-  },
-  updateOffer: (offer: Offer) => {
-    const { findOffer } = get()
-    const offerExists = !!findOffer(offer.publicKey)
-
-    offerExists &&
-      set(
-        produce((state: OptimisticOffersState) => {
-          state.offers = state.offers.map((existingOffer) =>
-            existingOffer.publicKey === offer.publicKey ? offer : existingOffer,
-          )
-        }),
-      )
-  },
-}))
