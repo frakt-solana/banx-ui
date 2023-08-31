@@ -1,36 +1,25 @@
 import { FC } from 'react'
 
-import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
 import moment from 'moment'
 
 import Timer from '@banx/components/Timer'
 
 import { Loan } from '@banx/api/core'
 import { SECONDS_IN_72_HOURS } from '@banx/pages/LoansPage/constants'
-import { calculateTimeFromNow } from '@banx/utils'
+import {
+  LoanStatus,
+  STATUS_LOANS_COLOR_MAP,
+  STATUS_LOANS_MAP,
+  calculateTimeFromNow,
+} from '@banx/utils'
 
 import styles from '../LoansTable.module.less'
-
-enum LoanStatus {
-  Active = 'active',
-  Terminating = 'terminating',
-}
-
-const STATUS_MAP: Record<string, string> = {
-  [BondTradeTransactionV2State.PerpetualActive]: LoanStatus.Active,
-  [BondTradeTransactionV2State.PerpetualManualTerminating]: LoanStatus.Terminating,
-}
-
-const STATUS_COLOR_MAP: Record<LoanStatus, string> = {
-  [LoanStatus.Active]: 'var(--additional-green-primary-deep)',
-  [LoanStatus.Terminating]: 'var(--additional-lava-primary-deep)',
-}
 
 export const StatusCell: FC<{ loan: Loan }> = ({ loan }) => {
   const { bondTradeTransaction } = loan
 
-  const statusText = STATUS_MAP[bondTradeTransaction.bondTradeTransactionState] || ''
-  const statusColor = STATUS_COLOR_MAP[statusText as LoanStatus] || ''
+  const statusText = STATUS_LOANS_MAP[bondTradeTransaction.bondTradeTransactionState] || ''
+  const statusColor = STATUS_LOANS_COLOR_MAP[statusText as LoanStatus] || ''
 
   const timeInfo = calculateTimeInfo(loan, statusText)
 
