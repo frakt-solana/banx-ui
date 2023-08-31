@@ -56,7 +56,7 @@ const calculateTimeInfo = (loan: Loan, status: string) => {
 
   if (status === LoanStatus.Terminating) {
     const expiredAt = fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS
-    return <Timer expiredAt={expiredAt} detailedTimeFormat />
+    return <Timer expiredAt={expiredAt} />
   }
 
   return ''
