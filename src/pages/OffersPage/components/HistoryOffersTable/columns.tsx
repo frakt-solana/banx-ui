@@ -34,7 +34,6 @@ export const getTableColumns = () => {
       key: 'apr',
       title: <HeaderCell label="APR" />,
       render: (_, loan) => <APRCell loan={loan} />,
-
       sorter: true,
     },
     {
