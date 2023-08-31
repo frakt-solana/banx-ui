@@ -31,7 +31,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
   const bestOffer = useMemo(() => {
     const offersByMarket = offers[fraktBond.hadoMarket || '']
 
-    const combinedOffers = [...optimisticOffers, ...offersByMarket]
+    const combinedOffers = [...optimisticOffers, ...(offersByMarket ?? [])]
 
     const filteredOffers = chain(combinedOffers)
       .groupBy('publicKey')
@@ -55,8 +55,6 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
 
   const isActiveLoan = bondTradeTransactionState === isPerpetualActive
   const isTerminatingLoan = bondTradeTransactionState === isPerpetualTerminating
-  const isActiveOrTerminateStatus = isActiveLoan || isTerminatingLoan
-
   const availableToRefinance = isActiveLoan && !isEmpty(bestOffer)
   const isExpiredLoan = isLoanExpired(loan)
 
@@ -64,7 +62,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
 
   return (
     <div className={styles.actionsButtons}>
-      {isActiveOrTerminateStatus && !isExpiredLoan ? (
+      {isActiveLoan || (isTerminatingLoan && !isExpiredLoan) ? (
         <>
           <Button
             onClick={terminateLoan}

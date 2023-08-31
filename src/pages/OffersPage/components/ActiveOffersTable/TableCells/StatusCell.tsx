@@ -35,7 +35,7 @@ interface StatusCellProps {
 }
 
 export const StatusCell: FC<StatusCellProps> = ({ loan }) => {
-  const loanStatus = getLoanStatus(loan)
+  const loanStatus = determineLoanStatus(loan)
 
   const statusColor = LOAN_STATUS_COLOR_MAP[loanStatus as LoanStatus] || ''
   const timeInfo = calculateTimeInfo(loan, loanStatus)
@@ -70,13 +70,14 @@ const calculateTimeInfo = (loan: Loan, status: string) => {
   return ''
 }
 
-const getLoanStatus = (loan: Loan) => {
+const determineLoanStatus = (loan: Loan) => {
   const { bondTradeTransactionState } = loan.bondTradeTransaction
-  const isExpiredLoan = isLoanExpired(loan)
 
-  if (isExpiredLoan) {
+  const mappedStatus = LOAN_STATUS_MAP[bondTradeTransactionState]
+
+  if (mappedStatus !== LoanStatus.Active && isLoanExpired(loan)) {
     return LoanStatus.Liquidated
   }
 
-  return LOAN_STATUS_MAP[bondTradeTransactionState] || ''
+  return mappedStatus
 }

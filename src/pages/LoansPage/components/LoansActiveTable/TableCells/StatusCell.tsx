@@ -6,6 +6,7 @@ import moment from 'moment'
 import Timer from '@banx/components/Timer'
 
 import { Loan } from '@banx/api/core'
+import { SECONDS_IN_72_HOURS } from '@banx/pages/LoansPage/constants'
 import { calculateTimeFromNow } from '@banx/utils'
 
 import styles from '../LoansTable.module.less'
@@ -44,7 +45,7 @@ export const StatusCell: FC<{ loan: Loan }> = ({ loan }) => {
 }
 
 const calculateTimeInfo = (loan: Loan, status: string) => {
-  const { bondTradeTransaction, fraktBond } = loan
+  const { fraktBond } = loan
 
   const currentTimeInSeconds = moment().unix()
   const timeSinceActivationInSeconds = currentTimeInSeconds - fraktBond.activatedAt
@@ -54,7 +55,7 @@ const calculateTimeInfo = (loan: Loan, status: string) => {
   }
 
   if (status === LoanStatus.Terminating) {
-    const expiredAt = bondTradeTransaction.redeemedAt + 24 * 60 * 60
+    const expiredAt = fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS
     return <Timer expiredAt={expiredAt} detailedTimeFormat />
   }
 
