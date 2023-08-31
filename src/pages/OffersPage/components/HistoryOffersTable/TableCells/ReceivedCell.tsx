@@ -1,5 +1,7 @@
 import { FC } from 'react'
 
+import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
+
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { LenderActivity } from '@banx/api/core'
@@ -9,5 +11,11 @@ interface ReceivedCellProps {
 }
 
 export const ReceivedCell: FC<ReceivedCellProps> = ({ loan }) => {
-  return createSolValueJSX(loan.received, 1e9)
+  const { received, status } = loan
+
+  if (status === BondTradeTransactionV2State.PerpetualLiquidatedByClaim) {
+    return <>Collateral</>
+  }
+
+  return createSolValueJSX(received, 1e9)
 }
