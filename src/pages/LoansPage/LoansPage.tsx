@@ -16,11 +16,9 @@ export const LoansPage = () => {
   return (
     <div className={styles.pageWrapper}>
       <LoansHeader />
-      <>
-        <Tabs value={currentTabValue} {...tabProps} />
-        {currentTabValue === LoansTabsNames.ACTIVE && <LoansActiveTab />}
-        {currentTabValue === LoansTabsNames.HISTORY && <LoansHistoryTable />}
-      </>
+      <Tabs value={currentTabValue} {...tabProps} />
+      {currentTabValue === LoansTabsNames.ACTIVE && <LoansActiveTab />}
+      {currentTabValue === LoansTabsNames.HISTORY && <LoansHistoryTable />}
     </div>
   )
 }

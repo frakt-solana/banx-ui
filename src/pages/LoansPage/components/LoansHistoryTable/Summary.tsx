@@ -15,7 +15,7 @@ interface SummaryProps {
 }
 
 export const Summary: FC<SummaryProps> = ({ loans }) => {
-  //TODO: Need take values from BE
+  //TODO: Need take values from BE (waiting for endpoint from backend),
   const totalLoans = 25
   const totalBorrowed = 25
   const totalDebt = 25
