@@ -17,12 +17,10 @@ export const OffersPage = () => {
   return (
     <div className={styles.pageWrapper}>
       <OffersHeader />
-      <>
-        <Tabs value={currentTabValue} {...tabsProps} />
-        {currentTabValue === OffersTabName.PENDING && <PendingOfferTable />}
-        {currentTabValue === OffersTabName.ACTIVE && <ActiveOffersTable />}
-        {currentTabValue === OffersTabName.HISTORY && <HistoryOffersTable />}
-      </>
+      <Tabs value={currentTabValue} {...tabsProps} />
+      {currentTabValue === OffersTabName.PENDING && <PendingOfferTable />}
+      {currentTabValue === OffersTabName.ACTIVE && <ActiveOffersTable />}
+      {currentTabValue === OffersTabName.HISTORY && <HistoryOffersTable />}
     </div>
   )
 }
