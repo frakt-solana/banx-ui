@@ -8,6 +8,7 @@ import { Button } from '@banx/components/Buttons'
 import { Loan } from '@banx/api/core'
 import { calculateLoanValue } from '@banx/utils'
 
+import { isLoanExpired } from '../helpers'
 import { useLendLoansTransactions, useLenderLoansAndOffers } from '../hooks'
 
 import styles from '../ActiveOffersTable.module.less'
@@ -24,7 +25,8 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
   const { bondTradeTransaction, fraktBond } = loan
   const { bondTradeTransactionState } = bondTradeTransaction
 
-  const { offers, optimisticOffers, addMints, updateOrAddOffer } = useLenderLoansAndOffers()
+  const { offers, addMints, updateOrAddLoan, updateOrAddOffer, optimisticOffers } =
+    useLenderLoansAndOffers()
 
   const bestOffer = useMemo(() => {
     const offersByMarket = offers[fraktBond.hadoMarket || '']
@@ -46,6 +48,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
   const { terminateLoan, claimLoan, instantLoan } = useLendLoansTransactions({
     loan,
     bestOffer,
+    updateOrAddLoan,
     updateOrAddOffer,
     addMints,
   })
@@ -53,12 +56,14 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
   const isActiveLoan = bondTradeTransactionState === isPerpetualActive
   const isTerminatingLoan = bondTradeTransactionState === isPerpetualTerminating
   const availableToRefinance = isActiveLoan && !isEmpty(bestOffer)
+  const isActiveOrTerminatingLoan = isActiveLoan || isTerminatingLoan
+  const isExpiredLoan = isLoanExpired(loan)
 
   const buttonSize = isCardView ? 'large' : 'small'
 
   return (
     <div className={styles.actionsButtons}>
-      {isActiveLoan || isTerminatingLoan ? (
+      {isActiveOrTerminatingLoan && !isExpiredLoan ? (
         <>
           <Button
             onClick={terminateLoan}
