@@ -6,6 +6,8 @@ import { StatInfo } from '@banx/components/StatInfo'
 import { BorrowerActivity } from '@banx/api/core'
 import { generateCSVContent } from '@banx/utils'
 
+import { ACTIVITY_CSV_FILENAME } from './constants'
+
 import styles from './LoansHistoryTable.module.less'
 
 interface SummaryProps {
@@ -35,7 +37,11 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
         <StatInfo label="Total debt" value={totalDebt} />
         <StatInfo label="Total repaid" value={totalRepaid} />
       </div>
-      <CSVDownloadButton className={styles.summaryButton} data={csvContent} filename="frakt.csv" />
+      <CSVDownloadButton
+        className={styles.summaryButton}
+        data={csvContent}
+        filename={ACTIVITY_CSV_FILENAME}
+      />
     </div>
   )
 }
