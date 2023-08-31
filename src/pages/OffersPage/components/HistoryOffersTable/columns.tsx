@@ -1,5 +1,4 @@
 import { ColumnsType } from 'antd/es/table'
-import moment from 'moment'
 
 import {
   HeaderCell,
@@ -11,8 +10,6 @@ import {
 import { LenderActivity } from '@banx/api/core'
 
 import { APRCell, ReceivedCell, StatusCell } from './TableCells'
-
-import styles from './HistoryOffersTable.module.less'
 
 export const getTableColumns = () => {
   const columns: ColumnsType<LenderActivity> = [
@@ -49,14 +46,6 @@ export const getTableColumns = () => {
       key: 'received',
       title: <HeaderCell label="Received" />,
       render: (_, loan) => <ReceivedCell loan={loan} />,
-      sorter: true,
-    },
-    {
-      key: 'When',
-      title: <HeaderCell label="When" />,
-      render: (_, { timestamp }) => (
-        <span className={styles.time}>{moment.unix(timestamp).fromNow()}</span>
-      ),
       sorter: true,
     },
   ]
