@@ -237,7 +237,7 @@ export interface AuctionsLoansResponse {
   meta: PaginationMeta
 }
 
-const LenderActivitySchema = z.object({
+export const LenderActivitySchema = z.object({
   status: z.string(),
   publicKey: z.string(),
   apr: z.number(),

@@ -11,6 +11,7 @@ import {
   FetchMarketOffersResponse,
   LendLoansAndOffersResponse,
   LenderActivityResponse,
+  LenderActivitySchema,
   Loan,
   LoanSchema,
   Market,
@@ -340,7 +341,7 @@ export const fetchLenderActivity: FetchLenderActivity = async ({
     )
 
     try {
-      await LoanSchema.array().parseAsync(data.data)
+      await LenderActivitySchema.array().parseAsync(data.data)
     } catch (validationError) {
       console.error('Schema validation error:', validationError)
     }
