@@ -6,6 +6,8 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { LenderActivity } from '@banx/api/core'
 import { ColorByPercentHealth, generateCSVContent, getColorByPercent } from '@banx/utils'
 
+import { ACTIVITY_CSV_FILENAME } from './constants'
+
 import styles from './HistoryOffersTable.module.less'
 
 interface SummaryProps {
@@ -44,7 +46,11 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
         />
         <StatInfo label="Total received" value={totalReceived} />
       </div>
-      <CSVDownloadButton className={styles.summaryButton} data={csvContent} filename="frakt.csv" />
+      <CSVDownloadButton
+        className={styles.summaryButton}
+        data={csvContent}
+        filename={ACTIVITY_CSV_FILENAME}
+      />
     </div>
   )
 }
