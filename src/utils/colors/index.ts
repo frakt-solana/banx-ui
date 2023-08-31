@@ -22,4 +22,3 @@ export const getColorByPercent = (value: number, colorBreakpoints: ColorBreakpoi
 
   return colorBreakpoints[100]
 }
-
