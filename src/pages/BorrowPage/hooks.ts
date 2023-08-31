@@ -7,6 +7,7 @@ import { countBy, isEmpty, sumBy, uniqueId } from 'lodash'
 import { create } from 'zustand'
 
 import { BorrowNft, Offer, fetchBorrowNftsAndOffers } from '@banx/api/core'
+import { calcLoanValueWithProtocolFee } from '@banx/utils'
 
 import { useCartState } from './cartState'
 import { SimpleOffer, SimpleOffersByMarket } from './types'
@@ -57,7 +58,8 @@ export const useBorrowNfts = () => {
 
   //TODO: Remove when borrow staked nfts support appears
   const notStakedNfts = useMemo(() => {
-    return nfts.filter((nft) => !nft.loan.banxStake)
+    // return nfts.filter((nft) => !nft.loan.banxStake)
+    return nfts
   }, [nfts])
 
   const maxBorrow = useMemo(() => {
@@ -77,7 +79,7 @@ const calcMaxBorrow = (nfts: BorrowNft[], offers: SimpleOffersByMarket) => {
 
   return Object.entries(nftsAmountByMarket).reduce((maxBorrow, [marketPubkey, nftsAmount]) => {
     const maxBorrowMarket = sumBy(
-      offers[marketPubkey].slice(0, nftsAmount),
+      (offers[marketPubkey] || []).slice(0, nftsAmount),
       ({ loanValue }) => loanValue,
     )
 
@@ -94,7 +96,7 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
     .fill(currentSpotPrice)
     .map((loanValue) => ({
       id: uniqueId(),
-      loanValue,
+      loanValue: calcLoanValueWithProtocolFee(loanValue),
       hadoMarket: offer.hadoMarket,
       publicKey: offer.publicKey,
     }))
@@ -105,7 +107,7 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
   if (decimalLoanValue && decimalLoanValue > 0) {
     offers.push({
       id: uniqueId(),
-      loanValue: decimalLoanValue,
+      loanValue: calcLoanValueWithProtocolFee(decimalLoanValue),
       hadoMarket: offer.hadoMarket,
       publicKey: offer.publicKey,
     })

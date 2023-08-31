@@ -44,7 +44,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ offer, isCardView }) => {
 const useActionsCell = (offer: TableUserOfferData) => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { offers } = useUserOffers()
+  const { offers, hideOffers } = useUserOffers()
 
   const offerPubkey = offer.publicKey
 
@@ -55,6 +55,9 @@ const useActionsCell = (offer: TableUserOfferData) => {
   const removeOffer = () => {
     new TxnExecutor(makeRemoveOfferAction, { wallet, connection })
       .addTxnParam({ offerPubkey: offer.publicKey, optimisticOffer: optimisticOffer as Offer })
+      .on('pfSuccessAll', () => {
+        hideOffers(offerPubkey)
+      })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error)
       })

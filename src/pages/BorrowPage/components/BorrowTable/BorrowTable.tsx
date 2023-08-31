@@ -11,16 +11,18 @@ const BorrowTable = () => {
   return (
     <div className={styles.tableRoot}>
       <Summary />
-      <Table
-        data={tableNftData}
-        columns={columns}
-        onRowClick={onRowClick}
-        sortViewParams={sortViewParams}
-        className={styles.borrowTable}
-        rowKeyField="mint"
-        loading={isLoading}
-        showCard
-      />
+      <div className={styles.tableWrapper}>
+        <Table
+          data={tableNftData}
+          columns={columns}
+          onRowClick={onRowClick}
+          sortViewParams={sortViewParams}
+          className={styles.borrowTable}
+          rowKeyField="mint"
+          loading={isLoading}
+          showCard
+        />
+      </div>
     </div>
   )
 }

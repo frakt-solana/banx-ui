@@ -55,11 +55,46 @@ const config = {
       },
       {
         test: /\.less$/i,
-        use: [stylesHandler, 'css-loader', 'postcss-loader', 'less-loader'],
+        use: [
+          {
+            loader: stylesHandler,
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              modules: {
+                auto: /\.module\.\w+$/i,
+                localIdentName: '[name]__[local]--[hash:base64:5]',
+              },
+            },
+          },
+          {
+            loader: 'postcss-loader',
+          },
+          {
+            loader: 'less-loader',
+          },
+        ],
       },
       {
         test: /\.css$/i,
-        use: [stylesHandler, 'css-loader', 'postcss-loader'],
+        use: [
+          {
+            loader: stylesHandler,
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              modules: {
+                auto: /\.module\.\w+$/i,
+                localIdentName: '[name]__[local]--[hash:base64:5]',
+              },
+            },
+          },
+          {
+            loader: 'postcss-loader',
+          },
+        ],
       },
       {
         test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,

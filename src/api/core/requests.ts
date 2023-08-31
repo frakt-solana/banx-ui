@@ -4,6 +4,7 @@ import { web3 } from 'fbonds-core'
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import {
+  AuctionsLoansResponse,
   BorrowNftsAndOffers,
   BorrowNftsAndOffersResponse,
   BorrowNftsAndOffersSchema,
@@ -284,5 +285,28 @@ export const fetchBorrowNftsAndOffers: FetchBorrowNftsAndOffers = async ({
   } catch (error) {
     console.error(error)
     return { nfts: [], offers: {} }
+  }
+}
+
+export const fetchAuctionsLoans = async () => {
+  try {
+    const queryParams = new URLSearchParams({
+      isPrivate: String(IS_PRIVATE_MARKETS),
+    })
+
+    const { data } = await axios.get<AuctionsLoansResponse>(
+      `${BACKEND_BASE_URL}/auctions/?${queryParams.toString()}`,
+    )
+
+    try {
+      await LoanSchema.array().parseAsync(data.data)
+    } catch (validationError) {
+      console.error('Schema validation error:', validationError)
+    }
+
+    return data.data
+  } catch (error) {
+    console.error(error)
+    return []
   }
 }
