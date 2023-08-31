@@ -1,15 +1,18 @@
+import { FC } from 'react'
+
 import { CSVDownloadButton } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
+import { LenderActivity } from '@banx/api/core'
 import { ColorByPercentHealth, generateCSVContent, getColorByPercent } from '@banx/utils'
-
-import { useLenderActivity } from './hooks/useLenderActivity'
 
 import styles from './HistoryOffersTable.module.less'
 
-export const Summary = () => {
-  const { loans } = useLenderActivity()
+interface SummaryProps {
+  loans: LenderActivity[]
+}
 
+export const Summary: FC<SummaryProps> = ({ loans }) => {
   //TODO: Need take values from BE
   const totalOffers = 25
   const totalLent = 25

@@ -24,7 +24,7 @@ export const HistoryOffersTable = () => {
           showCard
         />
       </div>
-      <Summary />
+      <Summary loans={loans} />
     </div>
   )
 }
