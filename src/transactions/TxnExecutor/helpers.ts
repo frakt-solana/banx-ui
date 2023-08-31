@@ -14,7 +14,7 @@ export const signAndSendTxns = async <TResult>({
   walletAndConnection: WalletAndConnection
   eventHandlers: EventHanlders<TResult>
   options: ExecutorOptions
-}): Promise<SendTxnsResult<TResult> | undefined> => {
+}): Promise<SendTxnsResult<TResult>> => {
   const { connection, wallet } = walletAndConnection
 
   const { blockhash } = await connection.getLatestBlockhash()
@@ -31,7 +31,9 @@ export const signAndSendTxns = async <TResult>({
     )
   ).filter(Boolean) as web3.VersionedTransaction[]
 
-  if (!wallet.signAllTransactions) return
+  if (!wallet.signAllTransactions) {
+    throw new Error("Wallet is not connected. Or doesn't support signAllTransactions method")
+  }
 
   eventHandlers?.beforeApproveEveryChunk?.()
 

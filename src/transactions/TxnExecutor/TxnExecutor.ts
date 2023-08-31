@@ -73,7 +73,7 @@ export class TxnExecutor<TParams, TResult> {
             eventHandlers,
             options,
           })
-          result && signAndSendTxnsResults.push(...result)
+          signAndSendTxnsResults.push(...result)
         } catch (error) {
           eventHandlers?.pfError?.(error as TxnError)
           if (options.rejectQueueOnFirstPfError) return
