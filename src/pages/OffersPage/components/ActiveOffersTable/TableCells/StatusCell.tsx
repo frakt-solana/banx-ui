@@ -57,13 +57,18 @@ const calculateTimeInfo = (loan: Loan, status: string) => {
   const currentTimeInSeconds = moment().unix()
   const timeSinceActivationInSeconds = currentTimeInSeconds - fraktBond.activatedAt
 
+  const expiredAt = fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS
+
   if (status === LoanStatus.Active) {
     return calculateTimeFromNow(timeSinceActivationInSeconds)
   }
 
-  if (status === LoanStatus.Terminating) {
-    const expiredAt = fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS
+  if (status === LoanStatus.Terminating && currentTimeInSeconds < expiredAt) {
     return <Timer expiredAt={expiredAt} />
+  }
+
+  if (currentTimeInSeconds > expiredAt) {
+    return calculateTimeFromNow(timeSinceActivationInSeconds)
   }
 
   return ''

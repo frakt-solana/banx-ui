@@ -25,11 +25,24 @@ export const useLendLoansTransactions = ({
   const { connection } = useConnection()
 
   const terminateLoan = () => {
-    new TxnExecutor(makeTerminateAction, { wallet, connection }).addTxnParam({ loan }).execute()
+    new TxnExecutor(makeTerminateAction, { wallet, connection })
+      .addTxnParam({ loan })
+      .on('pfSuccessEvery', (additionalResult: InstantRefinanceOptimisticResult[]) => {
+        updateOrAddOffer(additionalResult[0].bondOffer)
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error)
+      })
+      .execute()
   }
 
   const claimLoan = () => {
-    new TxnExecutor(makeClaimAction, { wallet, connection }).addTxnParam({ loan }).execute()
+    new TxnExecutor(makeClaimAction, { wallet, connection })
+      .addTxnParam({ loan })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error)
+      })
+      .execute()
   }
 
   const instantLoan = () => {

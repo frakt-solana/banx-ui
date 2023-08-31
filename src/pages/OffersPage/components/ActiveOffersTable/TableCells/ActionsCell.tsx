@@ -2,12 +2,14 @@ import { FC, useMemo } from 'react'
 
 import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, isEmpty, maxBy, sortBy } from 'lodash'
+import moment from 'moment'
 
 import { Button } from '@banx/components/Buttons'
 
 import { Loan } from '@banx/api/core'
 import { calculateLoanValue } from '@banx/utils'
 
+import { SECONDS_IN_72_HOURS } from '../constants'
 import { useLendLoansTransactions, useLenderLoansAndOffers } from '../hooks'
 
 import styles from '../ActiveOffersTable.module.less'
@@ -29,7 +31,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
   const bestOffer = useMemo(() => {
     const offersByMarket = offers[fraktBond.hadoMarket || '']
 
-    const combinedOffers = [...optimisticOffers, ...(offersByMarket ?? [])]
+    const combinedOffers = [...optimisticOffers, ...offersByMarket]
 
     const filteredOffers = chain(combinedOffers)
       .groupBy('publicKey')
@@ -50,15 +52,20 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
     addMints,
   })
 
+  const currentTimeInSeconds = moment().unix()
+  const expiredAt = fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS
+
   const isActiveLoan = bondTradeTransactionState === isPerpetualActive
   const isTerminatingLoan = bondTradeTransactionState === isPerpetualTerminating
   const availableToRefinance = isActiveLoan && !isEmpty(bestOffer)
+
+  const isExpiredLoan = currentTimeInSeconds > expiredAt
 
   const buttonSize = isCardView ? 'large' : 'small'
 
   return (
     <div className={styles.actionsButtons}>
-      {isActiveLoan || isTerminatingLoan ? (
+      {(isActiveLoan || isTerminatingLoan) && !isExpiredLoan ? (
         <>
           <Button
             onClick={terminateLoan}

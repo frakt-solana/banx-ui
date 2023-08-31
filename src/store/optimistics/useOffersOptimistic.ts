@@ -1,40 +1,47 @@
 import produce from 'immer'
-import { uniqBy } from 'lodash'
 import { create } from 'zustand'
 
 import { Offer } from '@banx/api/core'
 
-interface OffersOptimisticStore {
+interface OptimisticOffersState {
   offers: Offer[]
-  find: (publicKey: string) => Offer | undefined
-  add: (...offers: Offer[]) => void
-  remove: (...publicKeys: string[]) => void
-  update: (...offers: Offer[]) => void
+  addOffer: (offer: Offer) => void
+  findOffer: (offerPubkey: string) => Offer | null
+  removeOffer: (offer: Offer) => void
+  updateOffer: (offer: Offer) => void
 }
 
-export const useOffersOptimistic = create<OffersOptimisticStore>((set, get) => ({
+export const useOffersOptimistic = create<OptimisticOffersState>((set, get) => ({
   offers: [],
-  find: (publicKey) => {
-    return get().offers.find((offer) => offer.publicKey === publicKey)
-  },
-  add: (...offers) => {
+  addOffer: (offer) => {
     set(
-      produce((state: OffersOptimisticStore) => {
-        state.offers = uniqBy([...state.offers, ...offers], ({ publicKey }) => publicKey)
+      produce((state: OptimisticOffersState) => {
+        state.offers.push(offer)
       }),
     )
   },
-  remove: (...publicKeys) => {
+  findOffer: (offerPubkey) => {
+    const { offers } = get()
+    return offers.find(({ publicKey }) => publicKey === offerPubkey) ?? null
+  },
+  removeOffer: (offer) => {
     set(
-      produce((state: OffersOptimisticStore) => {
-        state.offers.filter(({ publicKey }) => !publicKeys.includes(publicKey))
+      produce((state: OptimisticOffersState) => {
+        state.offers = state.offers.filter(({ publicKey }) => publicKey !== offer.publicKey)
       }),
     )
   },
-  update: (...offers) => {
-    const { add, remove } = get()
-    const publicKeys = offers.map(({ publicKey }) => publicKey)
-    remove(...publicKeys)
-    add(...offers)
+  updateOffer: (offer: Offer) => {
+    const { findOffer } = get()
+    const offerExists = !!findOffer(offer.publicKey)
+
+    offerExists &&
+      set(
+        produce((state: OptimisticOffersState) => {
+          state.offers = state.offers.map((existingOffer) =>
+            existingOffer.publicKey === offer.publicKey ? offer : existingOffer,
+          )
+        }),
+      )
   },
 }))
