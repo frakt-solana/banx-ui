@@ -1,17 +1,16 @@
 import { ColumnsType } from 'antd/es/table'
+import moment from 'moment'
 
 import {
   HeaderCell,
   NftInfoCell,
   createColumn,
-  createPercentValueJSX,
   createSolValueJSX,
 } from '@banx/components/TableComponents'
 
 import { LenderActivity } from '@banx/api/core'
-import { calculateTimeFromNow } from '@banx/utils'
 
-import { APRCell } from './TableCells'
+import { APRCell, ReceivedCell, StatusCell } from './TableCells'
 
 export const getTableColumns = () => {
   const columns: ColumnsType<LenderActivity> = [
@@ -42,18 +41,18 @@ export const getTableColumns = () => {
     {
       key: 'status',
       title: <HeaderCell label="Loan status" tooltipText="Loan status" />,
-      render: (_, loan) => <>{loan.status}</>,
+      render: (_, loan) => <StatusCell loan={loan} />,
     },
     {
       key: 'received',
       title: <HeaderCell label="Received" />,
-      render: (_, loan) => createSolValueJSX(loan.received),
+      render: (_, loan) => <ReceivedCell loan={loan} />,
       sorter: true,
     },
     {
       key: 'When',
       title: <HeaderCell label="When" />,
-      render: (_, loan) => calculateTimeFromNow(loan.timestamp),
+      render: (_, { timestamp }) => moment.unix(timestamp).fromNow(),
       sorter: true,
     },
   ]

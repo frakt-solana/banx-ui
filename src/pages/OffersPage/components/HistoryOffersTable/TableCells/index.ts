@@ -1,4 +1,4 @@
 export * from './APRCell'
-export * from './InterestCell'
+export * from './ReceivedCell'
 export * from './LentCell'
 export * from './StatusCell'

@@ -5,7 +5,7 @@ import moment from 'moment'
 
 import Timer from '@banx/components/Timer'
 
-import { Loan } from '@banx/api/core'
+import { LenderActivity, Loan } from '@banx/api/core'
 import { calculateTimeFromNow } from '@banx/utils'
 
 import { SECONDS_IN_72_HOURS } from '../constants'
@@ -13,39 +13,43 @@ import { SECONDS_IN_72_HOURS } from '../constants'
 import styles from '../HistoryOffersTable.module.less'
 
 interface StatusCellProps {
-  loan: Loan
+  loan: LenderActivity
 }
 
 enum LoanStatus {
   Active = 'active',
   Terminating = 'terminating',
   Liquidated = 'liquidated',
+  Repaid = 'repaid',
 }
 
-const STATUS_MAP: Record<string, string> = {
+const STATUS_LOANS_MAP: Record<string, string> = {
   [BondTradeTransactionV2State.PerpetualActive]: LoanStatus.Active,
   [BondTradeTransactionV2State.PerpetualManualTerminating]: LoanStatus.Terminating,
+  [BondTradeTransactionV2State.PerpetualRepaid]: LoanStatus.Repaid,
 }
 
 const STATUS_COLOR_MAP: Record<LoanStatus, string> = {
   [LoanStatus.Active]: 'var(--additional-green-primary-deep)',
   [LoanStatus.Terminating]: 'var(--additional-lava-primary-deep)',
   [LoanStatus.Liquidated]: 'var(--additional-red-primary-deep)',
+  [LoanStatus.Repaid]: 'var(--additional-green-primary-deep)',
 }
 
 export const StatusCell: FC<StatusCellProps> = ({ loan }) => {
-  const { bondTradeTransaction } = loan
-  const statusText = STATUS_MAP[bondTradeTransaction.bondTradeTransactionState] || ''
+  const loanStatus = STATUS_LOANS_MAP[loan.status] || ''
 
-  const statusColor = STATUS_COLOR_MAP[statusText as LoanStatus] || ''
+  console.log(loan.status)
 
-  const timeInfo = calculateTimeInfo(loan, statusText)
+  const statusColor = STATUS_COLOR_MAP[loanStatus as LoanStatus] || ''
+
+  // const timeInfo = calculateTimeInfo(loan, statusText)
 
   return (
     <div className={styles.statusCell}>
-      <span className={styles.statusCellTitle}>{timeInfo}</span>
+      {/* <span className={styles.statusCellTitle}>{timeInfo}</span> */}
       <span style={{ color: statusColor }} className={styles.statusCellSubtitle}>
-        {statusText}
+        {loanStatus}
       </span>
     </div>
   )

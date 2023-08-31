@@ -1,22 +1,24 @@
 import { CSVDownloadButton } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
-import { ColorByPercentHealth, getColorByPercent } from '@banx/utils'
+import { ColorByPercentHealth, generateCSVContent, getColorByPercent } from '@banx/utils'
+
+import { useLenderActivity } from './hooks/useLenderActivity'
 
 import styles from './HistoryOffersTable.module.less'
 
 export const Summary = () => {
+  const { loans } = useLenderActivity()
+
   //TODO: Need take values from BE
   const totalOffers = 25
   const totalLent = 25
   const totalInterest = 25
   const totalReceived = 105
-
   const weightedAPR = 104
 
   const colorAPR = getColorByPercent(weightedAPR, ColorByPercentHealth)
-
-  const csvData = 'Collateral,Lent\n#5905,0.32\n#12305,12.06'
+  const csvContent = generateCSVContent(loans)
 
   return (
     <div className={styles.summary}>
@@ -39,7 +41,7 @@ export const Summary = () => {
         />
         <StatInfo label="Total received" value={totalReceived} />
       </div>
-      <CSVDownloadButton className={styles.summaryButton} data={csvData} filename="frakt.csv" />
+      <CSVDownloadButton className={styles.summaryButton} data={csvContent} filename="frakt.csv" />
     </div>
   )
 }
