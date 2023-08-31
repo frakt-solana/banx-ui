@@ -64,7 +64,7 @@ interface OptimisticOffersState {
   updateOffer: (offer: Offer) => void
 }
 
-const useOffersOptimistic = create<OptimisticOffersState>((set, get) => ({
+const useOptimisticOffers = create<OptimisticOffersState>((set, get) => ({
   offers: [],
   addOffer: (offer) => {
     set(
@@ -99,7 +99,7 @@ export const useLenderLoansAndOffers = () => {
   const { mints, addMints } = useHiddenNftsMints()
 
   const { loans: optimisticLoans, add, find, update } = useLenderLoansOptimistic()
-  const { offers: optimisticOffers, findOffer, updateOffer, addOffer } = useOffersOptimistic()
+  const { offers: optimisticOffers, findOffer, updateOffer, addOffer } = useOptimisticOffers()
 
   const { data, isLoading } = useQuery(
     ['lenderLoans', publicKeyString],
