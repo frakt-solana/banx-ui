@@ -1,14 +1,20 @@
 import { ColumnsType } from 'antd/es/table'
 
-import { HeaderCell, NftInfoCell, createColumn } from '@banx/components/TableComponents'
+import {
+  HeaderCell,
+  NftInfoCell,
+  createColumn,
+  createPercentValueJSX,
+  createSolValueJSX,
+} from '@banx/components/TableComponents'
 
-import { Loan } from '@banx/api/core'
+import { LenderActivity } from '@banx/api/core'
 import { calculateTimeFromNow } from '@banx/utils'
 
-import { APRCell, InterestCell, LentCell, StatusCell } from './TableCells'
+import { APRCell } from './TableCells'
 
 export const getTableColumns = () => {
-  const columns: ColumnsType<Loan> = [
+  const columns: ColumnsType<LenderActivity> = [
     {
       key: 'collateral',
       title: <HeaderCell label="Collateral" />,
@@ -19,34 +25,35 @@ export const getTableColumns = () => {
     {
       key: 'lent',
       title: <HeaderCell label="Lent" />,
-      render: (_, loan) => <LentCell loan={loan} />,
+      render: (_, loan) => createSolValueJSX(loan.lent, 1e9),
     },
     {
       key: 'interest',
       title: <HeaderCell label="Interest" />,
-      render: (_, loan) => <InterestCell loan={loan} />,
+      render: (_, loan) => createSolValueJSX(loan.interest, 1e9),
     },
     {
       key: 'apr',
       title: <HeaderCell label="APR" />,
       render: (_, loan) => <APRCell loan={loan} />,
+
       sorter: true,
     },
     {
       key: 'status',
       title: <HeaderCell label="Loan status" tooltipText="Loan status" />,
-      render: (_, loan) => <StatusCell loan={loan} />,
+      render: (_, loan) => <>{loan.status}</>,
     },
     {
       key: 'received',
       title: <HeaderCell label="Received" />,
-      render: (_, loan) => <InterestCell loan={loan} />,
+      render: (_, loan) => createSolValueJSX(loan.received),
       sorter: true,
     },
     {
       key: 'When',
       title: <HeaderCell label="When" />,
-      render: (_, loan) => calculateTimeFromNow(loan.fraktBond.activatedAt),
+      render: (_, loan) => calculateTimeFromNow(loan.timestamp),
       sorter: true,
     },
   ]

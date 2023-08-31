@@ -27,7 +27,7 @@ export const useHistoryOffersTable = () => {
     return map(loansGroupedByCollection, (groupedLoan) => {
       const firstLoanInGroup = first(groupedLoan)
       const { collectionName = '', collectionImage = '' } = firstLoanInGroup?.nft.meta || {}
-      const received = sumBy(groupedLoan, (nft) => nft.bondTradeTransaction.solAmount)
+      const received = sumBy(groupedLoan, (nft) => nft.received)
 
       return { collectionName, collectionImage, received }
     })
