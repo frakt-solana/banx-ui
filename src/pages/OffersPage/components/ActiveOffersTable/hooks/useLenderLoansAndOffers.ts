@@ -123,7 +123,7 @@ export const useLenderLoansAndOffers = () => {
       .groupBy('publicKey')
       .map((offers) => maxBy(offers, 'fraktBond.lastTransactedAt'))
       .compact()
-      .value() as Loan[]
+      .value()
 
     return filteredLoans.filter(({ nft }) => !mints.includes(nft.mint))
   }, [data, mints, optimisticLoans])
