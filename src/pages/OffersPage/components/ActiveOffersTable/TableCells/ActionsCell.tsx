@@ -26,7 +26,8 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
   const { bondTradeTransaction, fraktBond } = loan
   const { bondTradeTransactionState } = bondTradeTransaction
 
-  const { offers, optimisticOffers, addMints, updateOrAddOffer } = useLenderLoansAndOffers()
+  const { offers, addMints, updateOrAddLoan, updateOrAddOffer, optimisticOffers } =
+    useLenderLoansAndOffers()
 
   const bestOffer = useMemo(() => {
     const offersByMarket = offers[fraktBond.hadoMarket || '']
@@ -48,6 +49,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
   const { terminateLoan, claimLoan, instantLoan } = useLendLoansTransactions({
     loan,
     bestOffer,
+    updateOrAddLoan,
     updateOrAddOffer,
     addMints,
   })
