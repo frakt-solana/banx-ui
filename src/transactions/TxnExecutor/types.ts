@@ -2,6 +2,8 @@ import { web3 } from 'fbonds-core'
 
 import { WalletAndConnection } from '@banx/types'
 
+import { TxnError } from '../types'
+
 export type TxnData<TResult> = {
   instructions: web3.TransactionInstruction[]
   signers?: web3.Signer[]
@@ -23,15 +25,16 @@ export type ExecutorOptions = {
   //TODO: Add webscoket result handling in future
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type EventHandler = (params?: any) => void
+export type EventHanlders<TResult> = Partial<{
+  beforeFirstApprove: () => void
+  beforeApproveEveryChunk: () => void
+  pfSuccessAll: (result: SendTxnsResult<TResult>) => void
+  pfSuccessSome: (result: SendTxnsResult<TResult>) => void
+  pfSuccessEach: (result: SendTxnsResult<TResult>) => void
+  pfError: (error: TxnError) => void
+}>
 
-export type EventHanlders = Record<HandlerType, EventHandler>
-
-export type HandlerType =
-  | 'beforeFirstApprove'
-  | 'pfSuccessAll'
-  | 'pfSuccessAny'
-  | 'pfSuccessEvery'
-  | 'pfError'
-  | 'beforeApproveEveryChunk'
+export type SendTxnsResult<TResult> = Array<{
+  txnHash: string
+  result: TResult | undefined
+}>
