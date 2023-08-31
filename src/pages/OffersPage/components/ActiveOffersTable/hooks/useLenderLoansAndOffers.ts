@@ -3,9 +3,10 @@ import { useMemo } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 import { produce } from 'immer'
+import { chain, maxBy } from 'lodash'
 import { create } from 'zustand'
 
-import { Offer, fetchLenderLoansAndOffers } from '@banx/api/core'
+import { Loan, Offer, fetchLenderLoansAndOffers } from '@banx/api/core'
 
 interface HiddenNftsMintsState {
   mints: string[]
@@ -23,11 +24,43 @@ const useHiddenNftsMints = create<HiddenNftsMintsState>((set) => ({
   },
 }))
 
+interface OptimisticLenderLoansState {
+  loans: Loan[]
+  addLoans: (loan: Loan) => void
+  findLoans: (loanPubkey: string) => Loan | null
+  updateLoans: (loan: Loan) => void
+}
+
+const useLenderLoansOptimistic = create<OptimisticLenderLoansState>((set, get) => ({
+  loans: [],
+  addLoans: (loan) => {
+    set(
+      produce((state: OptimisticLenderLoansState) => {
+        state.loans.push(loan)
+      }),
+    )
+  },
+  findLoans: (loanPubkey) => {
+    return get().loans.find(({ publicKey }) => publicKey === loanPubkey) ?? null
+  },
+  updateLoans: (loan) => {
+    const loanExists = !!get().findLoans(loan.publicKey)
+
+    loanExists &&
+      set(
+        produce((state: OptimisticLenderLoansState) => {
+          state.loans = state.loans.map((existingLoan) =>
+            existingLoan.publicKey === loan.publicKey ? loan : existingLoan,
+          )
+        }),
+      )
+  },
+}))
+
 interface OptimisticOffersState {
   offers: Offer[]
   addOffer: (offer: Offer) => void
   findOffer: (offerPubkey: string) => Offer | null
-  removeOffer: (offer: Offer) => void
   updateOffer: (offer: Offer) => void
 }
 
@@ -43,13 +76,6 @@ const useOptimisticOffers = create<OptimisticOffersState>((set, get) => ({
   findOffer: (offerPubkey) => {
     const { offers } = get()
     return offers.find(({ publicKey }) => publicKey === offerPubkey) ?? null
-  },
-  removeOffer: (offer) => {
-    set(
-      produce((state: OptimisticOffersState) => {
-        state.offers = state.offers.filter(({ publicKey }) => publicKey !== offer.publicKey)
-      }),
-    )
   },
   updateOffer: (offer: Offer) => {
     const { findOffer } = get()
@@ -70,8 +96,10 @@ export const useLenderLoansAndOffers = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
-  const { offers: optimisticOffers, findOffer, updateOffer, addOffer } = useOptimisticOffers()
   const { mints, addMints } = useHiddenNftsMints()
+
+  const { loans: optimisticLoans, addLoans, findLoans, updateLoans } = useLenderLoansOptimistic()
+  const { offers: optimisticOffers, findOffer, updateOffer, addOffer } = useOptimisticOffers()
 
   const { data, isLoading } = useQuery(
     ['lenderLoans', publicKeyString],
@@ -88,21 +116,35 @@ export const useLenderLoansAndOffers = () => {
     if (!data?.nfts) {
       return []
     }
-    return data.nfts.filter(({ nft }) => !mints.includes(nft.mint))
-  }, [data, mints])
+
+    const combinedLoans = [...data.nfts, ...optimisticLoans]
+
+    const filteredLoans = chain(combinedLoans)
+      .groupBy('publicKey')
+      .map((offers) => maxBy(offers, 'fraktBond.lastTransactedAt'))
+      .compact()
+      .value()
+
+    return filteredLoans.filter(({ nft }) => !mints.includes(nft.mint))
+  }, [data, mints, optimisticLoans])
+
+  const updateOrAddLoan = (loan: Loan) => {
+    const loanExists = !!findLoans(loan.publicKey)
+    return loanExists ? updateLoans(loan) : addLoans(loan)
+  }
 
   const updateOrAddOffer = (offer: Offer) => {
-    const offerExists = !!findOffer(offer.publicKey)
-    return offerExists ? updateOffer(offer) : addOffer(offer)
+    const loanExists = !!findOffer(offer.publicKey)
+    return loanExists ? updateOffer(offer) : addOffer(offer)
   }
 
   return {
     loans,
     offers: data?.offers ?? {},
     loading: isLoading,
-
-    updateOrAddOffer,
     optimisticOffers,
+    updateOrAddOffer,
+    updateOrAddLoan,
     addMints,
   }
 }
