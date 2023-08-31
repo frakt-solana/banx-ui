@@ -56,6 +56,7 @@ export const useLendLoansTransactions = ({
       .addTxnParam({ loan, bestOffer })
       .on('pfSuccessEvery', (additionalResult: InstantRefinanceOptimisticResult[]) => {
         updateOrAddOffer(additionalResult[0].bondOffer)
+        addMints(loan.nft.mint)
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error)
