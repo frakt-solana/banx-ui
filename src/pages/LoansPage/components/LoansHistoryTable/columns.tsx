@@ -9,6 +9,8 @@ import {
 
 import { BorrowerActivity } from '@banx/api/core'
 
+import { DebtCell, RepaidCell, StatusCell } from './TableCells'
+
 export const getTableColumns = () => {
   const columns: ColumnsType<BorrowerActivity> = [
     {
@@ -27,18 +29,18 @@ export const getTableColumns = () => {
     {
       key: 'debt',
       title: <HeaderCell label="Debt" />,
-      render: (_, { repaid }) => createSolValueJSX(repaid, 1e9),
+      render: (_, loan) => <DebtCell loan={loan} />,
       sorter: true,
     },
     {
       key: 'status',
       title: <HeaderCell label="Loan status" />,
-      render: (_, { repaid }) => createSolValueJSX(repaid, 1e9),
+      render: (_, loan) => <StatusCell loan={loan} />,
     },
     {
       key: 'repaidBy',
       title: <HeaderCell label="Repaid by" />,
-      render: (_, { repaid }) => createSolValueJSX(repaid, 1e9),
+      render: (_, loan) => <RepaidCell loan={loan} />,
       sorter: true,
     },
   ]
