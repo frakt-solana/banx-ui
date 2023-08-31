@@ -56,13 +56,14 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
   const isActiveLoan = bondTradeTransactionState === isPerpetualActive
   const isTerminatingLoan = bondTradeTransactionState === isPerpetualTerminating
   const availableToRefinance = isActiveLoan && !isEmpty(bestOffer)
+  const isActiveOrTerminatingLoan = isActiveLoan || isTerminatingLoan
   const isExpiredLoan = isLoanExpired(loan)
 
   const buttonSize = isCardView ? 'large' : 'small'
 
   return (
     <div className={styles.actionsButtons}>
-      {isActiveLoan || (isTerminatingLoan && !isExpiredLoan) ? (
+      {isActiveOrTerminatingLoan && !isExpiredLoan ? (
         <>
           <Button
             onClick={terminateLoan}

@@ -7,6 +7,8 @@ import { SECONDS_IN_72_HOURS } from './constants'
 export const isLoanExpired = (loan: Loan) => {
   const { fraktBond } = loan
 
+  if (!fraktBond.refinanceAuctionStartedAt) return false
+
   const currentTimeInSeconds = moment().unix()
 
   const expiredAt = fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS
