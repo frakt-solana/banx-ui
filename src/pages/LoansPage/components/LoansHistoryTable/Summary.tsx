@@ -1,15 +1,25 @@
+import { FC } from 'react'
+
+import { CSVDownloadButton } from '@banx/components/Buttons'
 import { StatInfo } from '@banx/components/StatInfo'
+
+import { BorrowerActivity } from '@banx/api/core'
+import { generateCSVContent } from '@banx/utils'
 
 import styles from './LoansHistoryTable.module.less'
 
-export const Summary = () => {
+interface SummaryProps {
+  loans: BorrowerActivity[]
+}
+
+export const Summary: FC<SummaryProps> = ({ loans }) => {
   //TODO: Need take values from BE
   const totalLoans = 25
   const totalBorrowed = 25
   const totalDebt = 25
   const totalRepaid = 105
 
-  //   const csvData = 'Collateral,Lent\n#5905,0.32\n#12305,12.06'
+  const csvContent = generateCSVContent(loans)
 
   return (
     <div className={styles.summary}>
@@ -25,7 +35,7 @@ export const Summary = () => {
         <StatInfo label="Total debt" value={totalDebt} />
         <StatInfo label="Total repaid" value={totalRepaid} />
       </div>
-      {/* <CSVDownloadButton className={styles.summaryButton} data={csvData} filename="frakt.csv" /> */}
+      <CSVDownloadButton className={styles.summaryButton} data={csvContent} filename="frakt.csv" />
     </div>
   )
 }

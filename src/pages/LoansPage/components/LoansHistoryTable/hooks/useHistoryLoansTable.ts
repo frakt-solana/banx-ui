@@ -1,13 +1,14 @@
 import { useMemo, useState } from 'react'
 
-import { first, groupBy, map } from 'lodash'
+import { first, groupBy, map, sumBy } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { DEFAULT_SORT_OPTION } from '@banx/pages/LoansPage/constants'
-import { useUserOffers } from '@banx/pages/OffersPage/components/PendingOffersTable/hooks'
+
+import { useBorrowerActivity } from './useBorrowerActivity'
 
 interface SearchSelectOption {
   collectionName: string
@@ -16,27 +17,22 @@ interface SearchSelectOption {
 }
 
 export const useHistoryLoansTable = () => {
-  const { offers, loading } = useUserOffers()
+  const { loans, isLoading } = useBorrowerActivity()
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
 
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
 
   const searchSelectOptions = useMemo(() => {
-    const offersGroupedByCollection = groupBy(offers, (offer) => offer.collectionName)
+    const loansGroupedByCollection = groupBy(loans, (loans) => loans.nft.meta.collectionName)
 
-    return map(offersGroupedByCollection, (groupedOffers) => {
-      const firstLoanInGroup = first(groupedOffers)
-      const {
-        collectionName = '',
-        collectionImage = '',
-        fundsSolOrTokenBalance = 0,
-      } = firstLoanInGroup || {}
-
-      const borrowed = fundsSolOrTokenBalance
+    return map(loansGroupedByCollection, (groupedLoans) => {
+      const firstLoanInGroup = first(groupedLoans)
+      const { collectionName = '', collectionImage = '' } = firstLoanInGroup?.nft.meta || {}
+      const borrowed = sumBy(groupedLoans, (nft) => nft.borrowed)
 
       return { collectionName, collectionImage, borrowed }
     })
-  }, [offers])
+  }, [loans])
 
   const searchSelectParams: SearchSelectProps<SearchSelectOption> = {
     options: searchSelectOptions,
@@ -60,8 +56,8 @@ export const useHistoryLoansTable = () => {
   }
 
   return {
-    offers,
-    loading,
+    loans,
+    loading: isLoading,
     sortViewParams: {
       searchSelectParams,
       sortParams,

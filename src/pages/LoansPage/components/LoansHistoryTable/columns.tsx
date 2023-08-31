@@ -7,37 +7,38 @@ import {
   createSolValueJSX,
 } from '@banx/components/TableComponents'
 
+import { BorrowerActivity } from '@banx/api/core'
+
 export const getTableColumns = () => {
-  const columns: ColumnsType<any> = [
+  const columns: ColumnsType<BorrowerActivity> = [
     {
       key: 'collateral',
       title: <HeaderCell label="Collection" />,
-      render: (_, { collectionImage, collectionName }) => (
-        <NftInfoCell nftName={collectionName} nftImage={collectionImage} />
+      render: (_, { nftName, nftImageUrl }) => (
+        <NftInfoCell nftName={nftName} nftImage={nftImageUrl} />
       ),
     },
     {
       key: 'borrowed',
       title: <HeaderCell label="Borrowed" />,
-      render: (_, { loanValue }) => createSolValueJSX(loanValue, 1e9),
+      render: (_, { borrowed }) => createSolValueJSX(borrowed, 1e9),
       sorter: true,
     },
     {
       key: 'debt',
       title: <HeaderCell label="Debt" />,
-      render: (_, { loanValue }) => createSolValueJSX(loanValue, 1e9),
+      render: (_, { repaid }) => createSolValueJSX(repaid, 1e9),
       sorter: true,
     },
     {
       key: 'status',
       title: <HeaderCell label="Loan status" />,
-      render: (_, { loanValue }) => createSolValueJSX(loanValue, 1e9),
-      sorter: true,
+      render: (_, { repaid }) => createSolValueJSX(repaid, 1e9),
     },
     {
       key: 'repaidBy',
       title: <HeaderCell label="Repaid by" />,
-      render: (_, { loanValue }) => createSolValueJSX(loanValue, 1e9),
+      render: (_, { repaid }) => createSolValueJSX(repaid, 1e9),
       sorter: true,
     },
   ]
