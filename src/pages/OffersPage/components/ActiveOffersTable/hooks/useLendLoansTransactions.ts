@@ -1,4 +1,5 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { BondAndTransactionOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 
 import { Loan, Offer } from '@banx/api/core'
 import { defaultTxnErrorHandler } from '@banx/transactions'
@@ -13,23 +14,41 @@ import {
 export const useLendLoansTransactions = ({
   loan,
   bestOffer,
+  updateOrAddLoan,
   updateOrAddOffer,
   addMints,
 }: {
   loan: Loan
   bestOffer: Offer
-  updateOrAddOffer: (offers: Offer) => void
+  updateOrAddLoan: (loan: Loan) => void
+  updateOrAddOffer: (offer: Offer) => void
   addMints: (...mints: string[]) => void
 }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
 
   const terminateLoan = () => {
-    new TxnExecutor(makeTerminateAction, { wallet, connection }).addTxnParam({ loan }).execute()
+    new TxnExecutor(makeTerminateAction, { wallet, connection })
+      .addTxnParam({ loan })
+      .on('pfSuccessEvery', (additionalResult: BondAndTransactionOptimistic[]) => {
+        updateOrAddLoan({ ...loan, ...additionalResult[0] })
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error)
+      })
+      .execute()
   }
 
   const claimLoan = () => {
-    new TxnExecutor(makeClaimAction, { wallet, connection }).addTxnParam({ loan }).execute()
+    new TxnExecutor(makeClaimAction, { wallet, connection })
+      .addTxnParam({ loan })
+      .on('pfSuccessAll', () => {
+        addMints(loan.nft.mint)
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error)
+      })
+      .execute()
   }
 
   const instantLoan = () => {

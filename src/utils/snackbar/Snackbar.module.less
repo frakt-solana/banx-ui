@@ -1,0 +1,125 @@
+.snack {
+  user-select: none;
+  padding: 16px !important;
+  background: var(--bg-primary) !important;
+  border: 1px solid;
+  border-radius: 0 !important;
+
+  :global {
+    .ant-notification-notice-icon {
+      font-size: 18px !important;
+      top: 19px !important;
+    }
+
+    .ant-notification-notice-message {
+      color: var(--content-primary) !important;
+      font: var(--body-text-lg) !important;
+      margin-bottom: 0 !important;
+      margin-left: 28px !important;
+      margin-right: 42px !important;
+      padding-inline-end: 0 !important;
+    }
+
+    .ant-notification-notice-description {
+      color: var(--content-primary) !important;
+      margin-left: -16px !important;
+      margin-right: -16px !important;
+    }
+
+    .ant-notification-notice-close {
+      top: 16px !important;
+
+      &:hover {
+        color: inherit !important;
+        background-color: inherit !important;
+      }
+    }
+  }
+
+  &__info,
+  &__loading {
+    border-color: var(--additional-blue-primary-deep);
+  }
+
+  &__success {
+    border-color: var(--additional-green-primary-deep);
+  }
+
+  &__warning {
+    border-color: var(--additional-gold-primary-deep);
+  }
+
+  &__error {
+    border-color: var(--additional-red-primary-deep);
+  }
+}
+
+.snackMessageWrapper {
+  position: relative;
+  padding-right: 32px;
+}
+
+.snackDescriptionWrapper {
+  margin-top: 16px;
+  padding: 8px 8px 8px 44px;
+  font: var(--important-text-sm);
+
+  &__info,
+  &__loading {
+    color: var(--additional-blue-primary-deep);
+    background-color: var(--additional-blue-secondary);
+  }
+
+  &__success {
+    color: var(--additional-green-primary-deep);
+    background-color: var(--additional-green-secondary);
+  }
+
+  &__warning {
+    color: var(--additional-gold-primary-deep);
+    background-color: var(--additional-gold-secondary);
+  }
+
+  &__error {
+    color: var(--additional-red-primary-deep);
+    background-color: var(--additional-red-secondary);
+  }
+}
+
+.solanaFMBtn {
+  height: 22px !important;
+  width: 22px !important;
+  padding: 2px !important;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.closeIcon {
+  width: 18px;
+  height: 18px;
+
+  rect {
+    fill: var(--content-primary);
+  }
+}
+
+.loadingIcon {
+  width: 18px;
+  height: 18px;
+
+  transition: all 0.5s ease-in;
+  animation-name: rotate;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

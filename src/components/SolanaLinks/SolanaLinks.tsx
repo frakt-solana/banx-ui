@@ -1,18 +1,19 @@
 import { FC } from 'react'
 
+import { SOLANAFM_URL } from '@banx/constants'
 import { SolanaFM } from '@banx/icons'
 
 import { Button, ButtonProps } from '../Buttons'
 
 import styles from './SolanaLinks.module.less'
 
-interface SolanaNftButtonLinkProps extends ButtonProps {
-  nftMint: string
+interface SolanaFMLink extends ButtonProps {
+  path: string
 }
 
-export const SolanaNftButtonLink: FC<SolanaNftButtonLinkProps> = ({ nftMint, ...props }) => {
+export const SolanaFMLink: FC<SolanaFMLink> = ({ path, ...props }) => {
   return (
-    <a target="_blank" rel="noopener noreferrer" href={`https://solana.fm/address/${nftMint}`}>
+    <a target="_blank" rel="noopener noreferrer" href={`${SOLANAFM_URL}${path}`}>
       <Button type="circle" variant="secondary" {...props}>
         <img className={styles.solanaFMIcon} src={SolanaFM} />
       </Button>
