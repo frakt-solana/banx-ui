@@ -12,6 +12,8 @@ import { LenderActivity } from '@banx/api/core'
 
 import { APRCell, ReceivedCell, StatusCell } from './TableCells'
 
+import styles from './HistoryOffersTable.module.less'
+
 export const getTableColumns = () => {
   const columns: ColumnsType<LenderActivity> = [
     {
@@ -52,7 +54,9 @@ export const getTableColumns = () => {
     {
       key: 'When',
       title: <HeaderCell label="When" />,
-      render: (_, { timestamp }) => moment.unix(timestamp).fromNow(),
+      render: (_, { timestamp }) => (
+        <span className={styles.time}>{moment.unix(timestamp).fromNow()}</span>
+      ),
       sorter: true,
     },
   ]
