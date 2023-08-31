@@ -26,12 +26,12 @@ export type ExecutorOptions = {
 }
 
 export type EventHanlders<TResult> = Partial<{
-  beforeFirstApprove: () => void
-  beforeApproveEveryChunk: () => void
-  pfSuccessAll: (result: SendTxnsResult<TResult>) => void
-  pfSuccessSome: (result: SendTxnsResult<TResult>) => void
-  pfSuccessEach: (result: SendTxnsResult<TResult>) => void
-  pfError: (error: TxnError) => void
+  beforeFirstApprove: () => void //? Triggers before first chunk approve
+  beforeApproveEveryChunk: () => void //? Triggers after beforeFirstApprove and before each chunk approve
+  pfSuccessAll: (result: SendTxnsResult<TResult>) => void //? Triggers if all chunks were successfully sended
+  pfSuccessSome: (result: SendTxnsResult<TResult>) => void //? Triggers if at lease one chunk was successfully sended
+  pfSuccessEach: (result: SendTxnsResult<TResult>) => void //? Triggers after successfull send of each chunk
+  pfError: (error: TxnError) => void //? Trigger on any error
 }>
 
 export type SendTxnsResult<TResult> = Array<{
