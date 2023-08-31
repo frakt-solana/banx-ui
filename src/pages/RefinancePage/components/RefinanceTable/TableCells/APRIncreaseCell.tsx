@@ -6,7 +6,7 @@ import Timer from '@banx/components/Timer/Timer'
 
 import { Loan } from '@banx/api/core'
 
-import { SECONDS_PER_HOUR } from '../constants'
+import { SECONDS_IN_HOUR } from '../constants'
 
 interface APRIncreaseCellProps {
   loan: Loan
@@ -35,7 +35,7 @@ export const APRIncreaseCell: FC<APRIncreaseCellProps> = ({ loan }) => {
   }, [])
 
   const secondsSinceStart = currentTime.diff(auctionStartTime, 'seconds')
-  const elapsedHours = Math.floor(secondsSinceStart / SECONDS_PER_HOUR)
+  const elapsedHours = Math.floor(secondsSinceStart / SECONDS_IN_HOUR)
 
   const shouldRestartTimer = currentTime >= moment.unix(nextRoundStartTime)
 

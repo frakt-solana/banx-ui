@@ -23,5 +23,5 @@ export const DEFAULT_SORT_OPTION: SortOption = {
   value: 'status_asc',
 }
 
-const SECONDS_PER_HOUR = 60 * 60
-export const SECONDS_IN_72_HOURS = 72 * SECONDS_PER_HOUR
+const SECONDS_IN_HOUR = 60 * 60
+export const SECONDS_IN_72_HOURS = 72 * SECONDS_IN_HOUR
