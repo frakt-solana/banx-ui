@@ -5,6 +5,7 @@ import { web3 } from 'fbonds-core'
 import { captureSentryTxnError } from '@banx/utils'
 
 import { enqueueTxnErrorSnackbar, signAndConfirmTransaction } from './helpers'
+import { TxnError } from './types'
 
 export type MakeTransactionFn<T> = (
   params: T & { connection: Connection; wallet: WalletContextState },
@@ -56,6 +57,6 @@ export const buildAndExecuteTransaction = async <T, R>({
     }
 
     captureSentryTxnError({ error })
-    enqueueTxnErrorSnackbar(error)
+    enqueueTxnErrorSnackbar(error as TxnError)
   }
 }
