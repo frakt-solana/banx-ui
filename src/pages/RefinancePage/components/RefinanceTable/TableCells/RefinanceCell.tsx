@@ -4,7 +4,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
-import { SolanaNftButtonLink } from '@banx/components/SolanaLinks'
+import { SolanaFMLink } from '@banx/components/SolanaLinks'
 
 import { Loan } from '@banx/api/core'
 import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
@@ -28,9 +28,9 @@ export const RefinanceCell: FC<RefinanceCellProps> = ({ loan, isCardView = false
       <Button onClick={refinance} size={buttonSize}>
         Refinance
       </Button>
-      <SolanaNftButtonLink
+      <SolanaFMLink
         className={classNames(styles.solanaNftButton, { [styles.isCardView]: isCardView })}
-        nftMint={loan.nft.mint}
+        path={`address/${loan.nft.mint}`}
         size={buttonSize}
       />
     </div>

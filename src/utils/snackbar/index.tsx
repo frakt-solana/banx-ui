@@ -5,6 +5,8 @@ import { NotificationPlacement } from 'antd/es/notification/interface'
 import classNames from 'classnames'
 import { uniqueId } from 'lodash'
 
+import { SolanaFMLink } from '@banx/components/SolanaLinks'
+
 import { CloseModal, LoaderCircle } from '@banx/icons'
 
 import styles from './Snackbar.module.less'
@@ -21,6 +23,7 @@ export interface SnackbarProps {
   customKey?: Key
   placement?: NotificationPlacement
   className?: string
+  solanaExlorerPath?: string
 }
 
 type EnqueueSnackbar = (props: SnackbarProps) => Key
@@ -34,6 +37,7 @@ export const enqueueSnackbar: EnqueueSnackbar = ({
   customKey,
   placement = 'bottomRight',
   className,
+  solanaExlorerPath,
 }) => {
   const key = customKey || uniqueId()
 
@@ -41,7 +45,14 @@ export const enqueueSnackbar: EnqueueSnackbar = ({
     type: type === 'loading' ? 'info' : type,
     className: classNames(styles.snack, styles[`snack__${type}`], className),
     closeIcon: closable ? <CloseModal className={styles.closeIcon} /> : false,
-    message,
+    message: (
+      <div className={styles.snackMessageWrapper}>
+        {solanaExlorerPath && (
+          <SolanaFMLink className={styles.solanaFMBtn} size="small" path={solanaExlorerPath} />
+        )}
+        {message}
+      </div>
+    ),
     description: description ? (
       <div
         className={classNames(
