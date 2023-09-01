@@ -12,6 +12,7 @@ import { ViewState, useIsLedger, useOptimisticLoans, useTableView } from '@banx/
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { LOANS_PER_TXN, MakeBorrowActionParams, makeBorrowAction } from '@banx/transactions/borrow'
+import { enqueueSnackbar } from '@banx/utils'
 
 import { CartState, useCartState } from '../../cartState'
 import { useBorrowNfts, useHiddenNftsMints } from '../../hooks'
@@ -91,8 +92,17 @@ export const useBorrowTable = () => {
           offer: rawOffer,
         },
       ])
-      .on('pfSuccessEvery', (loans: Loan[][]) => {
-        const loansFlat = loans.flat()
+      .on('pfSuccessEach', (results) => {
+        const loansFlat = results
+          .map(({ txnHash, result }) => {
+            enqueueSnackbar({
+              message: 'Transaction Executed',
+              solanaExlorerPath: `tx/${txnHash}`,
+            })
+            return result
+          })
+          .flat()
+          .filter(Boolean) as Loan[]
         addLoansOptimistic(...loansFlat)
         hideNftMints(...loansFlat.map(({ nft }) => nft.mint))
       })
@@ -115,8 +125,17 @@ export const useBorrowTable = () => {
       { signAllChunks: isLedger ? 1 : 40, rejectQueueOnFirstPfError: true },
     )
       .addTxnParams(txnParams)
-      .on('pfSuccessEvery', (loans: Loan[][]) => {
-        const loansFlat = loans.flat()
+      .on('pfSuccessEach', (results) => {
+        const loansFlat = results
+          .map(({ txnHash, result }) => {
+            enqueueSnackbar({
+              message: 'Transaction Executed',
+              solanaExlorerPath: `tx/${txnHash}`,
+            })
+            return result
+          })
+          .flat()
+          .filter(Boolean) as Loan[]
         addLoansOptimistic(...loansFlat)
         hideNftMints(...loansFlat.map(({ nft }) => nft.mint))
       })
