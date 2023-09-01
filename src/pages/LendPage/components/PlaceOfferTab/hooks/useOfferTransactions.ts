@@ -8,6 +8,7 @@ import {
   MakeTransactionFn,
   TransactionParams,
   buildAndExecuteTransaction,
+  defaultTxnErrorHandler,
 } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import {
@@ -17,6 +18,7 @@ import {
   makeRemoveOfferAction,
   makeUpdatePerpetualOfferTransaction,
 } from '@banx/transactions/bonds'
+import { enqueueSnackbar } from '@banx/utils'
 
 type OptimisticResult = {
   optimisticResult: { bondOffer: BondOfferV2 }
@@ -92,9 +94,16 @@ export const useOfferTransactions = ({
     new TxnExecutor(makeRemoveOfferAction, { wallet, connection })
       .addTxnParam({ offerPubkey, optimisticOffer })
       .on('pfSuccessEach', (results) => {
-        const bondOffer = results[0].result?.bondOffer
-        bondOffer && updateOrAddOffer(bondOffer)
+        const { result, txnHash } = results[0]
+        result?.bondOffer && updateOrAddOffer(result.bondOffer)
+        enqueueSnackbar({
+          message: 'Transaction Executed',
+          solanaExplorerPath: `tx/${txnHash}`,
+        })
         goToPlaceOffer()
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error)
       })
       .execute()
   }
