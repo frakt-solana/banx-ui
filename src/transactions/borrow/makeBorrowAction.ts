@@ -35,7 +35,7 @@ export enum BorrowType {
 export const LOANS_PER_TXN = {
   [BorrowType.StakedBanx]: 1,
   [BorrowType.CNft]: 1,
-  [BorrowType.Default]: 2,
+  [BorrowType.Default]: 1,
 }
 
 export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndConnection) => {
