@@ -1,14 +1,19 @@
 import { FC } from 'react'
 
-import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
 import moment from 'moment'
 
 import Timer from '@banx/components/Timer'
 
 import { Loan } from '@banx/api/core'
-import { calculateTimeFromNow } from '@banx/utils'
+import {
+  LoanStatus,
+  STATUS_LOANS_COLOR_MAP,
+  STATUS_LOANS_MAP,
+  calculateTimeFromNow,
+} from '@banx/utils'
 
 import { SECONDS_IN_72_HOURS } from '../constants'
+import { isLoanExpired } from '../helpers'
 
 import styles from '../ActiveOffersTable.module.less'
 
@@ -16,36 +21,17 @@ interface StatusCellProps {
   loan: Loan
 }
 
-enum LoanStatus {
-  Active = 'active',
-  Terminating = 'terminating',
-  Liquidated = 'liquidated',
-}
-
-const STATUS_MAP: Record<string, string> = {
-  [BondTradeTransactionV2State.PerpetualActive]: LoanStatus.Active,
-  [BondTradeTransactionV2State.PerpetualManualTerminating]: LoanStatus.Terminating,
-}
-
-const STATUS_COLOR_MAP: Record<LoanStatus, string> = {
-  [LoanStatus.Active]: 'var(--additional-green-primary-deep)',
-  [LoanStatus.Terminating]: 'var(--additional-lava-primary-deep)',
-  [LoanStatus.Liquidated]: 'var(--additional-red-primary-deep)',
-}
-
 export const StatusCell: FC<StatusCellProps> = ({ loan }) => {
-  const { bondTradeTransaction } = loan
-  const statusText = STATUS_MAP[bondTradeTransaction.bondTradeTransactionState] || ''
+  const loanStatus = determineLoanStatus(loan)
 
-  const statusColor = STATUS_COLOR_MAP[statusText as LoanStatus] || ''
-
-  const timeInfo = calculateTimeInfo(loan, statusText)
+  const statusColor = STATUS_LOANS_COLOR_MAP[loanStatus as LoanStatus] || ''
+  const timeInfo = calculateTimeInfo(loan, loanStatus)
 
   return (
     <div className={styles.statusInfo}>
       <span className={styles.statusInfoTitle}>{timeInfo}</span>
       <span style={{ color: statusColor }} className={styles.statusInfoSubtitle}>
-        {statusText}
+        {loanStatus}
       </span>
     </div>
   )
@@ -56,15 +42,29 @@ const calculateTimeInfo = (loan: Loan, status: string) => {
 
   const currentTimeInSeconds = moment().unix()
   const timeSinceActivationInSeconds = currentTimeInSeconds - fraktBond.activatedAt
+  const expiredAt = fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS
 
-  if (status === LoanStatus.Active) {
-    return calculateTimeFromNow(timeSinceActivationInSeconds)
-  }
+  const isExpiredLoan = isLoanExpired(loan)
 
-  if (status === LoanStatus.Terminating) {
-    const expiredAt = fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS
+  if (status === LoanStatus.Terminating && !isExpiredLoan) {
     return <Timer expiredAt={expiredAt} />
   }
 
+  if (status === LoanStatus.Active || isExpiredLoan) {
+    return calculateTimeFromNow(timeSinceActivationInSeconds)
+  }
+
   return ''
+}
+
+const determineLoanStatus = (loan: Loan) => {
+  const { bondTradeTransactionState } = loan.bondTradeTransaction
+
+  const mappedStatus = STATUS_LOANS_MAP[bondTradeTransactionState]
+
+  if (mappedStatus !== LoanStatus.Active && isLoanExpired(loan)) {
+    return LoanStatus.Liquidated
+  }
+
+  return mappedStatus
 }

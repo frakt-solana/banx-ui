@@ -1,0 +1,85 @@
+.tableRoot {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.tableWrapper {
+  flex-grow: 1;
+  overflow-y: scroll;
+}
+
+.summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid var(--bg-border);
+
+  @media (max-width: 960px) {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  @media (max-width: 768px) {
+    gap: 16px;
+  }
+}
+
+.totalOffers {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.totalOffersValue {
+  font: var(--important-text-xll);
+}
+
+.totalOffersInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.totalOffersInfoTitle {
+  color: var(--content-secondary);
+  font: var(--table-header-md);
+  text-transform: uppercase;
+}
+
+.totalOffersInfoSubtitle {
+  font: var(--body-text-md);
+}
+
+.statsContainer {
+  display: flex;
+  justify-content: space-around;
+  flex-grow: 1;
+
+  & > div {
+    align-items: end;
+  }
+
+  @media (max-width: 960px) {
+    width: 100%;
+    align-items: space-between;
+  }
+
+  @media (max-width: 768px) {
+    gap: 8px 8px;
+  }
+}
+
+.debtCell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.debtCellTitle {
+  font: var(--body-text-md);
+}
+.debtCellSubtitle {
+  font: var(--body-text-sm);
+}

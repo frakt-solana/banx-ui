@@ -1,4 +1,4 @@
-import { Key, ReactNode } from 'react'
+import { Key } from 'react'
 
 import { notification } from 'antd'
 import { NotificationPlacement } from 'antd/es/notification/interface'
@@ -7,14 +7,18 @@ import { uniqueId } from 'lodash'
 
 import { CloseModal, LoaderCircle } from '@banx/icons'
 
+import {
+  SnackDescription,
+  SnackDescriptionProps,
+  SnackMessage,
+  SnackMessageProps,
+} from './components'
+
 import styles from './Snackbar.module.less'
 
 export type SnackbarType = 'info' | 'success' | 'warning' | 'error' | 'loading'
 
-export interface SnackbarProps {
-  message: string
-  description?: string | ReactNode
-  type?: SnackbarType
+export interface SnackbarProps extends SnackMessageProps, Partial<SnackDescriptionProps> {
   autoHideDuration?: number
   closable?: boolean //? Show or hide close btn
   persist?: boolean
@@ -34,6 +38,8 @@ export const enqueueSnackbar: EnqueueSnackbar = ({
   customKey,
   placement = 'bottomRight',
   className,
+  solanaExplorerPath,
+  copyButtonProps,
 }) => {
   const key = customKey || uniqueId()
 
@@ -41,17 +47,11 @@ export const enqueueSnackbar: EnqueueSnackbar = ({
     type: type === 'loading' ? 'info' : type,
     className: classNames(styles.snack, styles[`snack__${type}`], className),
     closeIcon: closable ? <CloseModal className={styles.closeIcon} /> : false,
-    message,
-    description: description ? (
-      <div
-        className={classNames(
-          styles.snackDescriptionWrapper,
-          styles[`snackDescriptionWrapper__${type}`],
-        )}
-      >
-        {description}
-      </div>
-    ) : undefined,
+    message: <SnackMessage message={message} solanaExplorerPath={solanaExplorerPath} />,
+    description:
+      description || copyButtonProps ? (
+        <SnackDescription description={description} type={type} copyButtonProps={copyButtonProps} />
+      ) : undefined,
     placement,
     duration: persist ? 0 : autoHideDuration,
     icon:
@@ -63,5 +63,3 @@ export const enqueueSnackbar: EnqueueSnackbar = ({
 
   return key
 }
-
-export const closeSnackbar = (key?: string) => notification.destroy(key)

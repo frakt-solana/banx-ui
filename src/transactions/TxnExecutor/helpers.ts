@@ -2,7 +2,7 @@ import { web3 } from 'fbonds-core'
 
 import { WalletAndConnection } from '@banx/types'
 
-import { EventHanlders, ExecutorOptions, TxnData } from './types'
+import { EventHanlders, ExecutorOptions, SendTxnsResult, TxnData } from './types'
 
 export const signAndSendTxns = async <TResult>({
   txnsData,
@@ -12,9 +12,9 @@ export const signAndSendTxns = async <TResult>({
 }: {
   txnsData: TxnData<TResult>[]
   walletAndConnection: WalletAndConnection
-  eventHandlers: EventHanlders
+  eventHandlers: EventHanlders<TResult>
   options: ExecutorOptions
-}) => {
+}): Promise<SendTxnsResult<TResult>> => {
   const { connection, wallet } = walletAndConnection
 
   const { blockhash } = await connection.getLatestBlockhash()
@@ -31,13 +31,15 @@ export const signAndSendTxns = async <TResult>({
     )
   ).filter(Boolean) as web3.VersionedTransaction[]
 
-  if (!wallet.signAllTransactions) return
+  if (!wallet.signAllTransactions) {
+    throw new Error("Wallet is not connected. Or doesn't support signAllTransactions method")
+  }
 
-  eventHandlers?.beforeApproveEveryChunk()
+  eventHandlers?.beforeApproveEveryChunk?.()
 
   const signedTxns = await wallet.signAllTransactions(txns)
 
-  const results = await Promise.all(
+  const txnHashes = await Promise.all(
     signedTxns.map(
       async (txn) =>
         await connection.sendRawTransaction(txn.serialize(), {
@@ -47,7 +49,12 @@ export const signAndSendTxns = async <TResult>({
     ),
   )
 
-  eventHandlers?.pfSuccessEvery(txnsData.map(({ additionalResult }) => additionalResult))
+  const results = txnHashes.map((txnHash, idx) => ({
+    txnHash,
+    result: txnsData?.[idx]?.additionalResult,
+  }))
+
+  eventHandlers?.pfSuccessEach?.(results)
 
   return results
 }

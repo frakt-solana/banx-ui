@@ -1,30 +1,16 @@
 import { useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { BondOfferOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Offer } from '@banx/api/core'
-import {
-  MakeTransactionFn,
-  TransactionParams,
-  buildAndExecuteTransaction,
-} from '@banx/transactions'
+import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import {
-  MakeCreatePerpetualOfferTransaction,
-  MakeUpdatePerpetualOfferTransaction,
-  makeCreatePerpetualOfferTransaction,
+  makeCreateOfferAction,
   makeRemoveOfferAction,
-  makeUpdatePerpetualOfferTransaction,
+  makeUpdateOfferAction,
 } from '@banx/transactions/bonds'
-
-type OptimisticResult = {
-  optimisticResult: { bondOffer: BondOfferV2 }
-}
-
-const hasOptimisticResult = (result: unknown): result is OptimisticResult =>
-  result !== null && typeof result === 'object' && 'optimisticResult' in result
+import { enqueueSnackbar } from '@banx/utils'
 
 export const useOfferTransactions = ({
   marketPubkey,
@@ -52,39 +38,22 @@ export const useOfferTransactions = ({
     return offers.find((offer) => offer.publicKey === offerPubkey)
   }, [offers, offerPubkey])
 
-  const executeOfferTransaction = async <T extends object>(
-    makeTransactionFn: MakeTransactionFn<TransactionParams<T>>,
-    transactionParams: TransactionParams<T>,
-    optimisticAction: (offer: Offer) => void,
-    onSuccess?: () => void,
-  ) => {
-    const result = await buildAndExecuteTransaction<
-      TransactionParams<T>,
-      ReturnType<MakeTransactionFn<TransactionParams<T>>>
-    >({
-      makeTransactionFn,
-      transactionParams,
-      wallet,
-      connection,
-      onSuccess,
-    })
-
-    if (hasOptimisticResult(result)) {
-      optimisticAction(result.optimisticResult.bondOffer)
-    }
-  }
-
   const onCreateOffer = async () => {
-    await executeOfferTransaction<MakeCreatePerpetualOfferTransaction>(
-      makeCreatePerpetualOfferTransaction,
-      {
-        marketPubkey,
-        loansAmount,
-        loanValue,
-      },
-      updateOrAddOffer,
-      resetFormValues,
-    )
+    await new TxnExecutor(makeCreateOfferAction, { wallet, connection })
+      .addTxnParam({ marketPubkey, loansAmount, loanValue })
+      .on('pfSuccessEach', (results) => {
+        const { result, txnHash } = results[0]
+        result?.bondOffer && updateOrAddOffer(result.bondOffer)
+        resetFormValues()
+        enqueueSnackbar({
+          message: 'Transaction Executed',
+          solanaExplorerPath: `tx/${txnHash}`,
+        })
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error)
+      })
+      .execute()
   }
 
   const onRemoveOffer = () => {
@@ -92,9 +61,17 @@ export const useOfferTransactions = ({
 
     new TxnExecutor(makeRemoveOfferAction, { wallet, connection })
       .addTxnParam({ offerPubkey, optimisticOffer })
-      .on('pfSuccessEvery', (additionalResult: BondOfferOptimistic[]) => {
-        updateOrAddOffer(additionalResult[0].bondOffer)
+      .on('pfSuccessEach', (results) => {
+        const { result, txnHash } = results[0]
+        result?.bondOffer && updateOrAddOffer(result.bondOffer)
+        enqueueSnackbar({
+          message: 'Transaction Executed',
+          solanaExplorerPath: `tx/${txnHash}`,
+        })
         goToPlaceOffer()
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error)
       })
       .execute()
   }
@@ -102,16 +79,20 @@ export const useOfferTransactions = ({
   const onUpdateOffer = async () => {
     if (!optimisticOffer) return
 
-    await executeOfferTransaction<MakeUpdatePerpetualOfferTransaction>(
-      makeUpdatePerpetualOfferTransaction,
-      {
-        loanValue,
-        offerPubkey,
-        optimisticOffer,
-        loansAmount,
-      },
-      updateOrAddOffer,
-    )
+    await new TxnExecutor(makeUpdateOfferAction, { wallet, connection })
+      .addTxnParam({ loanValue, offerPubkey, optimisticOffer, loansAmount })
+      .on('pfSuccessEach', (results) => {
+        const { result, txnHash } = results[0]
+        result?.bondOffer && updateOrAddOffer(result.bondOffer)
+        enqueueSnackbar({
+          message: 'Transaction Executed',
+          solanaExplorerPath: `tx/${txnHash}`,
+        })
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error)
+      })
+      .execute()
   }
 
   return { onCreateOffer, onRemoveOffer, onUpdateOffer }

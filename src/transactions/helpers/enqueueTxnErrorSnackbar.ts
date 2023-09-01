@@ -3,14 +3,20 @@ import { enqueueSnackbar } from '@banx/utils'
 import { TxnError } from '../types'
 import { getTxnErrorDefinition } from './getTxnErrorDefinition'
 
-export const enqueueTxnErrorSnackbar = (error: TxnError | Error | unknown) => {
+export const enqueueTxnErrorSnackbar = (error: TxnError) => {
   const errorDefinition = getTxnErrorDefinition(error)
-  if (!errorDefinition) return null
 
-  //TODO Add mapping with custom content (copy to clipboard and etc.)
+  const copyButtonProps = error?.logs
+    ? {
+        label: 'Copy logs',
+        textToCopy: `${error.message}\n${error?.logs?.join('\n')}`,
+      }
+    : undefined
 
   return enqueueSnackbar({
-    message: errorDefinition.humanMessage,
-    type: errorDefinition.type,
+    message: errorDefinition?.humanMessage ?? 'Something went wrong',
+    description: !errorDefinition?.humanMessage ? error.message : undefined,
+    copyButtonProps,
+    type: errorDefinition?.type ?? 'error',
   })
 }

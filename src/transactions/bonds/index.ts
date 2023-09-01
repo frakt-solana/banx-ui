@@ -1,3 +1,5 @@
 export * from './makeCreateOfferTransaction'
 export * from './makeRemoveOfferAction'
 export * from './makeUpdateOfferTransaction'
+export * from './makeCreateOfferAction'
+export * from './makeUpdateOfferAction'

@@ -4,19 +4,7 @@ import { WalletAndConnection } from '@banx/types'
 
 import { TxnError } from '../types'
 import { signAndSendTxns } from './helpers'
-import { EventHandler, EventHanlders, ExecutorOptions, HandlerType, MakeActionFn } from './types'
-
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-const handlerPlaceholder = () => {}
-
-export const DEFAULT_HANDLERS: EventHanlders = {
-  ['beforeFirstApprove']: handlerPlaceholder,
-  ['pfSuccessAll']: handlerPlaceholder,
-  ['pfSuccessAny']: handlerPlaceholder,
-  ['pfError']: handlerPlaceholder,
-  ['beforeApproveEveryChunk']: handlerPlaceholder,
-  ['pfSuccessEvery']: handlerPlaceholder,
-}
+import { EventHanlders, ExecutorOptions, MakeActionFn } from './types'
 
 export const DEFAULT_EXECUTOR_OPTIONS: ExecutorOptions = {
   commitment: 'confirmed',
@@ -31,7 +19,7 @@ export class TxnExecutor<TParams, TResult> {
   private txnsParams: TParams[] = []
   private options: ExecutorOptions = DEFAULT_EXECUTOR_OPTIONS
   private walletAndConnection: WalletAndConnection
-  private eventHandlers: Record<HandlerType, EventHandler> = DEFAULT_HANDLERS
+  private eventHandlers: EventHanlders<TResult> = {}
   constructor(
     makeIxnFn: MakeActionFn<TParams, TResult>,
     walletAndConnection: WalletAndConnection,
@@ -56,9 +44,11 @@ export class TxnExecutor<TParams, TResult> {
     return this
   }
 
-  //TODO: Add normal types for handlers: success, error
-  public on(type: HandlerType, handler: EventHandler) {
-    this.eventHandlers[type] = handler
+  public on<K extends keyof EventHanlders<TResult>>(type: K, handler: EventHanlders<TResult>[K]) {
+    this.eventHandlers = {
+      ...this.eventHandlers,
+      [type]: handler,
+    }
     return this
   }
 
@@ -70,11 +60,11 @@ export class TxnExecutor<TParams, TResult> {
         txnsParams.map((params) => makeIxnsFn(params, { ...walletAndConnection })),
       )
 
-      eventHandlers?.beforeFirstApprove()
+      eventHandlers?.beforeFirstApprove?.()
 
       const txnChunks = chunk(txnsData, options.signAllChunks)
 
-      const signAndSendTxnsResults: string[] = []
+      const signAndSendTxnsResults = []
       for (const chunk of txnChunks) {
         try {
           const result = await signAndSendTxns({
@@ -83,22 +73,22 @@ export class TxnExecutor<TParams, TResult> {
             eventHandlers,
             options,
           })
-          result && signAndSendTxnsResults.push(...result)
+          signAndSendTxnsResults.push(...result)
         } catch (error) {
-          eventHandlers?.pfError(error as TxnError)
+          eventHandlers?.pfError?.(error as TxnError)
           if (options.rejectQueueOnFirstPfError) return
         }
       }
 
       if (signAndSendTxnsResults.length === txnChunks.length) {
-        eventHandlers?.pfSuccessAll()
+        eventHandlers?.pfSuccessAll?.(signAndSendTxnsResults)
       } else if (signAndSendTxnsResults.length) {
-        eventHandlers?.pfSuccessAny()
+        eventHandlers?.pfSuccessSome?.(signAndSendTxnsResults)
       }
 
       return signAndSendTxnsResults
     } catch (error) {
-      this.eventHandlers?.pfError(error as TxnError)
+      this.eventHandlers?.pfError?.(error as TxnError)
     }
   }
 }

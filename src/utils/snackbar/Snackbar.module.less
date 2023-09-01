@@ -16,6 +16,8 @@
       font: var(--body-text-lg) !important;
       margin-bottom: 0 !important;
       margin-left: 28px !important;
+      margin-right: 42px !important;
+      padding-inline-end: 0 !important;
     }
 
     .ant-notification-notice-description {
@@ -52,10 +54,19 @@
   }
 }
 
+.snackMessageWrapper {
+  position: relative;
+  padding-right: 32px;
+}
+
 .snackDescriptionWrapper {
   margin-top: 16px;
   padding: 8px 8px 8px 44px;
   font: var(--important-text-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
 
   &__info,
   &__loading {
@@ -77,6 +88,15 @@
     color: var(--additional-red-primary-deep);
     background-color: var(--additional-red-secondary);
   }
+}
+
+.solanaFMBtn {
+  height: 22px !important;
+  width: 22px !important;
+  padding: 2px !important;
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 
 .closeIcon {

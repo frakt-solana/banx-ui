@@ -8,6 +8,7 @@ import { Offer } from '@banx/api/core'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeRemoveOfferAction } from '@banx/transactions/bonds'
+import { enqueueSnackbar } from '@banx/utils'
 
 import { TableUserOfferData } from '../helpers'
 import { useUserOffers } from '../hooks'
@@ -44,7 +45,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ offer, isCardView }) => {
 const useActionsCell = (offer: TableUserOfferData) => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { offers } = useUserOffers()
+  const { offers, hideOffers } = useUserOffers()
 
   const offerPubkey = offer.publicKey
 
@@ -55,6 +56,14 @@ const useActionsCell = (offer: TableUserOfferData) => {
   const removeOffer = () => {
     new TxnExecutor(makeRemoveOfferAction, { wallet, connection })
       .addTxnParam({ offerPubkey: offer.publicKey, optimisticOffer: optimisticOffer as Offer })
+      .on('pfSuccessEach', (results) => {
+        const { txnHash } = results[0]
+        hideOffers(offerPubkey)
+        enqueueSnackbar({
+          message: 'Transaction Executed',
+          solanaExplorerPath: `tx/${txnHash}`,
+        })
+      })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error)
       })

@@ -1,3 +1,5 @@
+import { flatMap, map, uniq } from 'lodash'
+
 import { BONDS } from '@banx/constants'
 
 // shorten the checksummed version of the input address to have 4 characters at start and end
@@ -21,6 +23,19 @@ export const formatNumbersWithCommas = (value: number | string) =>
 
 //? Placeholder for sendTxn callback in SDK methods
 export const sendTxnPlaceHolder = async (): Promise<void> => await Promise.resolve()
+
+export const generateCSVContent = <T extends object>(dataList: T[]): string => {
+  const allKeys = flatMap(dataList, (data) => Object.keys(data))
+  const csvHeaders = uniq(allKeys)
+
+  const csvRows = dataList.map((data) => {
+    const rowValues = map(csvHeaders, (header) => data[header as keyof T])
+    return rowValues.join(',')
+  })
+
+  const csvContent = [csvHeaders.join(','), ...csvRows].join('\n')
+  return csvContent
+}
 
 export const calcLoanValueWithProtocolFee = (loanValue: number) =>
   Math.floor(loanValue * (1 - BONDS.PROTOCOL_FEE_PERCENT / 1e4))
