@@ -2,17 +2,16 @@ import { FC } from 'react'
 
 import moment from 'moment'
 
-import { LenderActivity } from '@banx/api/core'
 import { SOLANAFM_URL } from '@banx/constants'
 
-import styles from '../HistoryOffersTable.module.less'
+import styles from './TableCells.module.less'
 
 interface DurationCellProps {
-  loan: LenderActivity
+  publicKey: string
+  timestamp: number
 }
 
-export const DurationCell: FC<DurationCellProps> = ({ loan }) => {
-  const { timestamp, publicKey } = loan
+export const DurationCell: FC<DurationCellProps> = ({ timestamp, publicKey }) => {
   const timeSinceActivity = moment.unix(timestamp).fromNow()
 
   return (
@@ -20,7 +19,7 @@ export const DurationCell: FC<DurationCellProps> = ({ loan }) => {
       target="_blank"
       rel="noopener noreferrer"
       href={`${SOLANAFM_URL}/address/${publicKey}`}
-      className={styles.time}
+      className={styles.activityTime}
     >
       {timeSinceActivity}
     </a>

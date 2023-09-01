@@ -1,6 +1,7 @@
 import { ColumnsType } from 'antd/es/table'
 
 import {
+  DurationCell,
   HeaderCell,
   NftInfoCell,
   createColumn,
@@ -9,7 +10,7 @@ import {
 
 import { LenderActivity } from '@banx/api/core'
 
-import { APRCell, DurationCell, ReceivedCell, StatusCell } from './TableCells'
+import { APRCell, ReceivedCell, StatusCell } from './TableCells'
 
 export const getTableColumns = () => {
   const columns: ColumnsType<LenderActivity> = [
@@ -52,7 +53,9 @@ export const getTableColumns = () => {
     {
       key: 'duration',
       title: <HeaderCell label="When" />,
-      render: (_, loan) => <DurationCell loan={loan} />,
+      render: (_, { publicKey, timestamp }) => (
+        <DurationCell publicKey={publicKey} timestamp={timestamp} />
+      ),
       sorter: true,
     },
   ]
