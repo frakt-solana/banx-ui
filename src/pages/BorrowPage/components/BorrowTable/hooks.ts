@@ -97,7 +97,7 @@ export const useBorrowTable = () => {
           .map(({ txnHash, result }) => {
             enqueueSnackbar({
               message: 'Transaction Executed',
-              solanaExlorerPath: `tx/${txnHash}`,
+              solanaExplorerPath: `tx/${txnHash}`,
             })
             return result
           })
@@ -130,7 +130,7 @@ export const useBorrowTable = () => {
           .map(({ txnHash, result }) => {
             enqueueSnackbar({
               message: 'Transaction Executed',
-              solanaExlorerPath: `tx/${txnHash}`,
+              solanaExplorerPath: `tx/${txnHash}`,
             })
             return result
           })
