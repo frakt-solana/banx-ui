@@ -4,10 +4,10 @@ import { chunk } from 'lodash'
 import { Loan } from '@banx/api/core'
 import { useWalletLoans } from '@banx/pages/LoansPage/hooks'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
-import { buildAndExecuteTransaction, signAndSendAllTransactions } from '@banx/transactions'
-import { makeRepayLoanTransaction } from '@banx/transactions/loans'
-
-const LOAN_REPAYMENT_CHUNK_SIZE = 1
+import { defaultTxnErrorHandler } from '@banx/transactions'
+import { TxnExecutor } from '@banx/transactions/TxnExecutor'
+import { LOANS_PER_TXN, makeRepayLoansAction } from '@banx/transactions/loans'
+import { enqueueSnackbar } from '@banx/utils'
 
 export const useLoansTransactions = () => {
   const wallet = useWallet()
@@ -16,38 +16,43 @@ export const useLoansTransactions = () => {
   const { hideLoans } = useWalletLoans()
 
   const repayLoan = async (loan: Loan) => {
-    await buildAndExecuteTransaction({
-      wallet,
-      connection,
-      makeTransactionFn: makeRepayLoanTransaction,
-      transactionParams: { loans: [loan] },
-      onSuccess: () => hideLoans([loan.publicKey]),
-    })
+    await new TxnExecutor(makeRepayLoansAction, { wallet, connection })
+      .addTxnParam([loan])
+      .on('pfSuccessAll', (results) => {
+        const { txnHash } = results[0]
+        hideLoans([loan.publicKey])
+        enqueueSnackbar({
+          message: 'Transaction Executed',
+          solanaExplorerPath: `tx/${txnHash}`,
+        })
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error)
+      })
+      .execute()
   }
 
   const { selection: selectedLoans } = useSelectedLoans()
 
   const repayBulkLoan = async () => {
-    const loansChunks = chunk(selectedLoans, LOAN_REPAYMENT_CHUNK_SIZE)
+    const loansChunks = chunk(selectedLoans, LOANS_PER_TXN)
 
-    const transactionsAndSigners = []
-
-    for (const loans of loansChunks) {
-      const { transaction, signers } = await makeRepayLoanTransaction({
-        loans,
-        wallet,
-        connection,
+    await new TxnExecutor(makeRepayLoansAction, { wallet, connection })
+      .addTxnParams(loansChunks)
+      .on('pfSuccessEach', (results) => {
+        const { txnHash } = results[0]
+        enqueueSnackbar({
+          message: 'Transaction Executed',
+          solanaExplorerPath: `tx/${txnHash}`,
+        })
       })
-
-      transactionsAndSigners.push({ transaction, signers })
-    }
-
-    return await signAndSendAllTransactions({
-      transactionsAndSigners,
-      connection,
-      wallet,
-      onSuccess: () => hideLoans(selectedLoans.map((loan) => loan.publicKey)),
-    })
+      .on('pfSuccessSome', () => {
+        hideLoans(selectedLoans.map((loan) => loan.publicKey))
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error)
+      })
+      .execute()
   }
 
   return {
