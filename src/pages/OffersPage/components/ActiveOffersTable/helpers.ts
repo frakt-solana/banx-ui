@@ -27,5 +27,5 @@ export const calculateLoanRepayValue = (loan: Loan) => {
     rateBasePoints: amountOfBonds,
   })
 
-  return solAmount + calculatedInterest
+  return solAmount + feeAmount + calculatedInterest
 }
