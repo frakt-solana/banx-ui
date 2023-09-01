@@ -10,7 +10,6 @@ const BorrowTable = () => {
 
   return (
     <div className={styles.tableRoot}>
-      <Summary />
       <div className={styles.tableWrapper}>
         <Table
           data={tableNftData}
@@ -23,6 +22,7 @@ const BorrowTable = () => {
           showCard
         />
       </div>
+      <Summary />
     </div>
   )
 }
