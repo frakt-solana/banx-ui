@@ -1,9 +1,11 @@
 import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
+  borrowCnftPerpetual,
   borrowPerpetual,
   borrowStakedBanxPerpetual,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
@@ -28,7 +30,9 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, { connection
   if (ixnParams.length > LOANS_PER_TXN)
     throw new Error(`Maximum borrow per txn is ${LOANS_PER_TXN}`)
 
-  const { instructions, signers, optimisticResults } = ixnParams[0].nft.loan.banxStake
+  const targetParam = ixnParams[0]
+
+  const { instructions, signers, optimisticResults } = targetParam.nft.loan.banxStake
     ? await borrowStakedBanxPerpetual({
         programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
         addComputeUnits: true,
@@ -51,6 +55,34 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, { connection
               bondOffer: offer as BondOfferV2,
             },
           })),
+        },
+        connection,
+        sendTxn: sendTxnPlaceHolder,
+      })
+    : targetParam.nft.nft.compression
+    ? await borrowCnftPerpetual({
+        programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
+        addComputeUnits: true,
+
+        accounts: {
+          userPubkey: wallet.publicKey as web3.PublicKey,
+          protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
+          nftMint: new web3.PublicKey(targetParam.nft.mint),
+          bondOfferV2: new web3.PublicKey(targetParam.offer.publicKey),
+          hadoMarket: new web3.PublicKey(targetParam.offer.hadoMarket),
+          tree: new web3.PublicKey(targetParam.nft.nft.compression.tree),
+        },
+        args: {
+          proof: await getAssetProof(targetParam.nft.mint, connection.rpcEndpoint),
+          cnftParams: targetParam.nft.nft.compression,
+          amountOfSolToGet: targetParam.loanValue,
+          minAmountToGet: targetParam.loanValue,
+
+          optimistic: {
+            fraktMarket: targetParam.nft.loan.fraktMarket,
+            minMarketFee: targetParam.nft.loan.marketApr,
+            bondOffer: targetParam.offer as BondOfferV2,
+          },
         },
         connection,
         sendTxn: sendTxnPlaceHolder,
