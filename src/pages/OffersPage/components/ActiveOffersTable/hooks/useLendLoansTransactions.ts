@@ -8,6 +8,7 @@ import {
   makeInstantRefinanceAction,
   makeTerminateAction,
 } from '@banx/transactions/loans'
+import { enqueueSnackbar } from '@banx/utils'
 
 export const useLendLoansTransactions = ({
   loan,
@@ -29,7 +30,12 @@ export const useLendLoansTransactions = ({
     new TxnExecutor(makeTerminateAction, { wallet, connection })
       .addTxnParam({ loan })
       .on('pfSuccessEach', (results) => {
-        updateOrAddLoan({ ...loan, ...results[0] })
+        const { result, txnHash } = results[0]
+        updateOrAddLoan({ ...loan, ...result })
+        enqueueSnackbar({
+          message: 'Transaction Executed',
+          solanaExplorerPath: `tx/${txnHash}`,
+        })
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error)
@@ -40,8 +46,12 @@ export const useLendLoansTransactions = ({
   const claimLoan = () => {
     new TxnExecutor(makeClaimAction, { wallet, connection })
       .addTxnParam({ loan })
-      .on('pfSuccessAll', () => {
+      .on('pfSuccessEach', (results) => {
         addMints(loan.nft.mint)
+        enqueueSnackbar({
+          message: 'Transaction Executed',
+          solanaExplorerPath: `tx/${results[0].txnHash}`,
+        })
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error)
@@ -53,9 +63,13 @@ export const useLendLoansTransactions = ({
     new TxnExecutor(makeInstantRefinanceAction, { wallet, connection })
       .addTxnParam({ loan, bestOffer })
       .on('pfSuccessEach', (results) => {
-        const bondOffer = results?.[0]?.result?.bondOffer
-        bondOffer && updateOrAddOffer(bondOffer)
+        const { result, txnHash } = results[0]
+        result?.bondOffer && updateOrAddOffer(result.bondOffer)
         addMints(loan.nft.mint)
+        enqueueSnackbar({
+          message: 'Transaction Executed',
+          solanaExplorerPath: `tx/${txnHash}`,
+        })
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error)
