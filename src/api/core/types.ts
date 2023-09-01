@@ -139,6 +139,14 @@ const NFTSchema = z.object({
     collectionName: z.string(),
     collectionImage: z.string(),
   }),
+  compression: z
+    .object({
+      dataHash: z.string(),
+      creatorHash: z.string(),
+      leafId: z.number(),
+      tree: z.string(),
+    })
+    .optional(),
   collectionFloor: z.number(),
 })
 
