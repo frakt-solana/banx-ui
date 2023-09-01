@@ -4,7 +4,7 @@ import { create } from 'zustand'
 
 import { Loan } from '@banx/api/core'
 
-interface LoansOptimisticStore {
+export interface LoansOptimisticStore {
   loans: Loan[]
   find: (publicKey: string) => Loan | undefined
   add: (...loans: Loan[]) => void

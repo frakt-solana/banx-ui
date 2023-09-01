@@ -116,7 +116,7 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
   return offers
 }
 
-interface HiddenNftsMintsState {
+export interface HiddenNftsMintsState {
   mints: string[]
   add: (...mints: string[]) => void
 }
