@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { web3 } from 'fbonds-core'
 
+import { LenderActivity } from '@banx/api/core'
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import {
@@ -8,6 +9,9 @@ import {
   BorrowNftsAndOffers,
   BorrowNftsAndOffersResponse,
   BorrowNftsAndOffersSchema,
+  BorrowedActivityResponse,
+  BorrowerActivity,
+  BorrowerActivitySchema,
   FetchMarketOffersResponse,
   LendLoansAndOffersResponse,
   LenderActivityResponse,
@@ -319,7 +323,7 @@ type FetchLenderActivity = (props: {
   getAll?: boolean
   skip?: number
   limit?: number
-}) => Promise<LenderActivityResponse['data']>
+}) => Promise<LenderActivity[]>
 export const fetchLenderActivity: FetchLenderActivity = async ({
   walletPubkey,
   getAll = true, //TODO Remove when normal pagination added
@@ -342,6 +346,46 @@ export const fetchLenderActivity: FetchLenderActivity = async ({
 
     try {
       await LenderActivitySchema.array().parseAsync(data.data)
+    } catch (validationError) {
+      console.error('Schema validation error:', validationError)
+    }
+
+    return data.data
+  } catch (error) {
+    console.error(error)
+    return []
+  }
+}
+
+type FetchBorrowerActivity = (props: {
+  walletPubkey: string
+  order?: string
+  getAll?: boolean
+  skip?: number
+  limit?: number
+}) => Promise<BorrowerActivity[]>
+export const fetchBorrowerActivity: FetchBorrowerActivity = async ({
+  walletPubkey,
+  getAll = true, //TODO Remove when normal pagination added
+  order = 'desc',
+  skip = 0,
+  limit = 10,
+}) => {
+  try {
+    const queryParams = new URLSearchParams({
+      order,
+      skip: String(skip),
+      limit: String(limit),
+      getAll: String(getAll),
+      isPrivate: String(IS_PRIVATE_MARKETS),
+    })
+
+    const { data } = await axios.get<BorrowedActivityResponse>(
+      `${BACKEND_BASE_URL}/activity/borrower/${walletPubkey}?${queryParams.toString()}`,
+    )
+
+    try {
+      await BorrowerActivitySchema.array().parseAsync(data.data)
     } catch (validationError) {
       console.error('Schema validation error:', validationError)
     }

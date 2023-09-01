@@ -267,3 +267,26 @@ export interface LenderActivityResponse {
   data: LenderActivity[]
   meta: PaginationMeta
 }
+
+export const BorrowerActivitySchema = z.object({
+  status: z.string(),
+  publicKey: z.string(),
+  apr: z.number(),
+  borrowed: z.number(),
+  duration: z.number(),
+  interest: z.number(),
+  nftImageUrl: z.string(),
+  nftMint: z.string(),
+  nftName: z.string(),
+  repaid: z.number(),
+  timestamp: z.number(),
+  user: z.string(),
+  nft: NFTSchema,
+})
+
+export type BorrowerActivity = z.infer<typeof BorrowerActivitySchema>
+
+export interface BorrowedActivityResponse {
+  data: BorrowerActivity[]
+  meta: PaginationMeta
+}
