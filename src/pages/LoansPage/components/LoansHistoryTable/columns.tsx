@@ -1,6 +1,7 @@
 import { ColumnsType } from 'antd/es/table'
 
 import {
+  DurationCell,
   HeaderCell,
   NftInfoCell,
   createColumn,
@@ -41,6 +42,14 @@ export const getTableColumns = () => {
       key: 'repaidBy',
       title: <HeaderCell label="Repaid by" />,
       render: (_, loan) => <RepaidCell loan={loan} />,
+      sorter: true,
+    },
+    {
+      key: 'duration',
+      title: <HeaderCell label="When" />,
+      render: (_, { publicKey, timestamp }) => (
+        <DurationCell publicKey={publicKey} timestamp={timestamp} />
+      ),
       sorter: true,
     },
   ]
