@@ -29,7 +29,7 @@ export const useLendLoansTransactions = ({
     new TxnExecutor(makeTerminateAction, { wallet, connection })
       .addTxnParam({ loan })
       .on('pfSuccessEach', (results) => {
-        updateOrAddLoan({ ...loan, ...results[0] })
+        updateOrAddLoan({ ...loan, ...results[0].result })
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error)
