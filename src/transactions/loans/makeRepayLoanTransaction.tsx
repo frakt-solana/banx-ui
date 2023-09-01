@@ -7,11 +7,11 @@ import {
   repayPerpetualLoan,
   repayStakedBanxPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
-import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 
 export type MakeRepayLoanTransaction = (params: {
   connection: web3.Connection
@@ -70,12 +70,12 @@ export const makeRepayLoanTransaction: MakeRepayLoanTransaction = async ({
         tree: new web3.PublicKey(targetLoan.nft.compression.tree),
       },
       args: {
-        proof: await getAssetProof(
-          targetLoan.nft.mint,
-          connection.rpcEndpoint,
-        ),
+        proof: await getAssetProof(targetLoan.nft.mint, connection.rpcEndpoint),
         cnftParams: targetLoan.nft.compression,
-        optimistic: { fraktBond: targetLoan.fraktBond, bondTradeTransaction: targetLoan.bondTradeTransaction } as BondAndTransactionOptimistic,
+        optimistic: {
+          fraktBond: targetLoan.fraktBond,
+          bondTradeTransaction: targetLoan.bondTradeTransaction,
+        } as BondAndTransactionOptimistic,
       },
       connection,
       sendTxn: sendTxnPlaceHolder,

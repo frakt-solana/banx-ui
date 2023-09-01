@@ -5,13 +5,13 @@ import {
   claimCnftPerpetualLoan,
   claimPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { MakeActionFn } from '../TxnExecutor'
-import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 
 export type MakeClaimActionParams = {
   loan: Loan
@@ -31,13 +31,9 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
         userPubkey: wallet.publicKey as web3.PublicKey,
         tree: new web3.PublicKey(ixnParams.loan.nft.compression.tree),
         bondTradeTransactionV2: new web3.PublicKey(bondTradeTransaction.publicKey),
-
       },
       args: {
-        proof: await getAssetProof(
-          ixnParams.loan.nft.mint,
-          connection.rpcEndpoint,
-        ),
+        proof: await getAssetProof(ixnParams.loan.nft.mint, connection.rpcEndpoint),
         cnftParams: ixnParams.loan.nft.compression,
         optimistic: {
           fraktBond,
