@@ -34,33 +34,33 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, { connection
 
   const { instructions, signers, optimisticResults } = targetParam.nft.loan.banxStake
     ? await borrowStakedBanxPerpetual({
-        programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-        addComputeUnits: true,
+      programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
+      addComputeUnits: true,
 
-        accounts: {
-          userPubkey: wallet.publicKey as web3.PublicKey,
-          protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
-        },
-        args: {
-          perpetualBorrowParamsAndAccounts: ixnParams.map(({ nft, offer, loanValue }) => ({
-            amountOfSolToGet: loanValue,
-            minAmountToGet: loanValue,
-            tokenMint: new web3.PublicKey(nft.mint),
-            bondOfferV2: new web3.PublicKey(offer.publicKey),
-            hadoMarket: new web3.PublicKey(offer.hadoMarket),
-            banxStake: new web3.PublicKey(nft.loan.banxStake || ''),
-            optimistic: {
-              fraktMarket: nft.loan.fraktMarket,
-              minMarketFee: nft.loan.marketApr,
-              bondOffer: offer as BondOfferV2,
-            },
-          })),
-        },
-        connection,
-        sendTxn: sendTxnPlaceHolder,
-      })
+      accounts: {
+        userPubkey: wallet.publicKey as web3.PublicKey,
+        protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
+      },
+      args: {
+        perpetualBorrowParamsAndAccounts: ixnParams.map(({ nft, offer, loanValue }) => ({
+          amountOfSolToGet: loanValue,
+          minAmountToGet: Math.floor(Math.random() * 10000),
+          tokenMint: new web3.PublicKey(nft.mint),
+          bondOfferV2: new web3.PublicKey(offer.publicKey),
+          hadoMarket: new web3.PublicKey(offer.hadoMarket),
+          banxStake: new web3.PublicKey(nft.loan.banxStake || ''),
+          optimistic: {
+            fraktMarket: nft.loan.fraktMarket,
+            minMarketFee: nft.loan.marketApr,
+            bondOffer: offer as BondOfferV2,
+          },
+        })),
+      },
+      connection,
+      sendTxn: sendTxnPlaceHolder,
+    })
     : targetParam.nft.nft.compression
-    ? await borrowCnftPerpetual({
+      ? await borrowCnftPerpetual({
         programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
         addComputeUnits: true,
 
@@ -76,7 +76,7 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, { connection
           proof: await getAssetProof(targetParam.nft.mint, connection.rpcEndpoint),
           cnftParams: targetParam.nft.nft.compression,
           amountOfSolToGet: targetParam.loanValue,
-          minAmountToGet: targetParam.loanValue,
+          minAmountToGet: Math.floor(Math.random() * 10000),
 
           optimistic: {
             fraktMarket: targetParam.nft.loan.fraktMarket,
@@ -87,7 +87,7 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, { connection
         connection,
         sendTxn: sendTxnPlaceHolder,
       })
-    : await borrowPerpetual({
+      : await borrowPerpetual({
         programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
         addComputeUnits: true,
 
@@ -98,7 +98,7 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, { connection
         args: {
           perpetualBorrowParamsAndAccounts: ixnParams.map(({ nft, offer, loanValue }) => ({
             amountOfSolToGet: loanValue,
-            minAmountToGet: loanValue,
+            minAmountToGet: Math.floor(Math.random() * 10000),
             tokenMint: new web3.PublicKey(nft.mint),
             bondOfferV2: new web3.PublicKey(offer.publicKey),
             hadoMarket: new web3.PublicKey(offer.hadoMarket),
