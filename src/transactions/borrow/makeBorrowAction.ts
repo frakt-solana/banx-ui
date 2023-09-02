@@ -45,7 +45,7 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndCon
     throw new Error(`Maximum borrow per txn is ${LOANS_PER_TXN[borrowType]}`)
   }
 
-  const { instructions, signers, optimisticResults } = await getIxnsSignersAndByBorrowType({
+  const { instructions, signers, optimisticResults } = await getIxnsAndSignersByBorrowType({
     ixnParams,
     type: borrowType,
     walletAndConnection,
@@ -66,7 +66,7 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndCon
   }
 }
 
-const getIxnsSignersAndByBorrowType = async ({
+const getIxnsAndSignersByBorrowType = async ({
   ixnParams,
   type = BorrowType.Default,
   walletAndConnection,
