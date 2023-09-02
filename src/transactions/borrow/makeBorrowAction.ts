@@ -82,7 +82,6 @@ const getIxnsAndSignersByBorrowType = async ({
       args: {
         perpetualBorrowParamsAndAccounts: ixnParams.map(({ nft, offer, loanValue }) => ({
           amountOfSolToGet: loanValue,
-          minAmountToGet: loanValue,
           tokenMint: new web3.PublicKey(nft.mint),
           bondOfferV2: new web3.PublicKey(offer.publicKey),
           hadoMarket: new web3.PublicKey(offer.hadoMarket),
@@ -124,7 +123,6 @@ const getIxnsAndSignersByBorrowType = async ({
         proof,
         cnftParams: params.nft.nft.compression,
         amountOfSolToGet: params.loanValue,
-        minAmountToGet: params.loanValue,
 
         optimistic: {
           fraktMarket: params.nft.loan.fraktMarket,
@@ -150,7 +148,6 @@ const getIxnsAndSignersByBorrowType = async ({
     args: {
       perpetualBorrowParamsAndAccounts: ixnParams.map(({ nft, offer, loanValue }) => ({
         amountOfSolToGet: loanValue,
-        minAmountToGet: loanValue,
         tokenMint: new web3.PublicKey(nft.mint),
         bondOfferV2: new web3.PublicKey(offer.publicKey),
         hadoMarket: new web3.PublicKey(offer.hadoMarket),
