@@ -1,7 +1,10 @@
 import { FC, PropsWithChildren } from 'react'
 
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
+import { QueryClient } from '@tanstack/react-query'
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
+import { compress, decompress } from 'lz-string'
 
 import { RPC_ENDPOINTS, WALLETS } from '@banx/constants'
 import { useBestWorkingRPC } from '@banx/hooks'
@@ -9,7 +12,19 @@ import { Router } from '@banx/router'
 import { DialectProvider, initSentry } from '@banx/utils'
 
 initSentry()
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      cacheTime: 10 * 60 * 1000, //? 10 minutes
+    },
+  },
+})
+
+const persister = createSyncStoragePersister({
+  storage: window.localStorage,
+  serialize: (data) => compress(JSON.stringify(data)),
+  deserialize: (data) => JSON.parse(decompress(data)),
+})
 
 const SolanaConnectionWalletProvider: FC<PropsWithChildren> = ({ children }) => {
   const { endpoint, isLoading } = useBestWorkingRPC({
@@ -31,7 +46,7 @@ const SolanaConnectionWalletProvider: FC<PropsWithChildren> = ({ children }) => 
 const App = () => {
   return (
     // <ErrorBoundary>
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
       <SolanaConnectionWalletProvider>
         <DialectProvider>
           <Router />
@@ -40,7 +55,7 @@ const App = () => {
         {/* <NotificationModal /> */}
         {/* <Confetti /> */}
       </SolanaConnectionWalletProvider>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
     // </ErrorBoundary>
   )
 }
