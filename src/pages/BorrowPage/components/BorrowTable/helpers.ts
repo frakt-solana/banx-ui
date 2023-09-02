@@ -4,11 +4,10 @@ import moment from 'moment'
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
 import { LoansOptimisticStore } from '@banx/store'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { BorrowType, defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import {
-  BorrowType,
-  LOANS_PER_TXN,
+  BORROW_NFT_PER_TXN,
   MakeBorrowActionParams,
   getNftBorrowType,
   makeBorrowAction,
@@ -119,7 +118,7 @@ export const createBorrowAllParams = (
 const chunkBorrowIxnsParams = (borrowIxnParams: MakeBorrowActionParams) => {
   const ixnsByBorrowType = groupBy(borrowIxnParams, ({ nft }) => getNftBorrowType(nft))
   return Object.entries(ixnsByBorrowType)
-    .map(([type, ixns]) => chunk(ixns, LOANS_PER_TXN[type as BorrowType]))
+    .map(([type, ixns]) => chunk(ixns, BORROW_NFT_PER_TXN[type as BorrowType]))
     .flat()
 }
 

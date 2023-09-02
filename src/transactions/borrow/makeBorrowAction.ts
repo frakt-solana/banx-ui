@@ -15,6 +15,7 @@ import { WalletAndConnection } from '@banx/types'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { MakeActionFn } from '../TxnExecutor'
+import { BorrowType } from '../constants'
 
 export type MakeBorrowActionParams = {
   nft: BorrowNft
@@ -26,23 +27,11 @@ export type MakeBorrowActionResult = Loan[]
 
 export type MakeBorrowAction = MakeActionFn<MakeBorrowActionParams, MakeBorrowActionResult>
 
-export enum BorrowType {
-  StakedBanx = 'StakedBanx',
-  CNft = 'CNft',
-  Default = 'Default',
-}
-
-export const LOANS_PER_TXN = {
-  [BorrowType.StakedBanx]: 1,
-  [BorrowType.CNft]: 1,
-  [BorrowType.Default]: 1,
-}
-
 export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndConnection) => {
   const borrowType = getChunkBorrowType(ixnParams.map(({ nft }) => nft))
 
-  if (ixnParams.length > LOANS_PER_TXN[borrowType]) {
-    throw new Error(`Maximum borrow per txn is ${LOANS_PER_TXN[borrowType]}`)
+  if (ixnParams.length > BORROW_NFT_PER_TXN[borrowType]) {
+    throw new Error(`Maximum borrow per txn is ${BORROW_NFT_PER_TXN[borrowType]}`)
   }
 
   const { instructions, signers, optimisticResults } = await getIxnsAndSignersByBorrowType({
@@ -193,4 +182,10 @@ export const getNftBorrowType = (nft: BorrowNft) => {
   if (nft.loan.banxStake) return BorrowType.StakedBanx
   if (nft.nft.compression) return BorrowType.CNft
   return BorrowType.Default
+}
+
+export const BORROW_NFT_PER_TXN = {
+  [BorrowType.StakedBanx]: 1,
+  [BorrowType.CNft]: 1,
+  [BorrowType.Default]: 1,
 }
