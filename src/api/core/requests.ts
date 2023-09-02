@@ -319,17 +319,21 @@ export const fetchAuctionsLoans = async () => {
 
 type FetchLenderActivity = (props: {
   walletPubkey: string
-  order?: string
+  order: string
+  sortBy: string
   getAll?: boolean
   skip?: number
   limit?: number
+  collection?: string[]
 }) => Promise<LenderActivity[]>
 export const fetchLenderActivity: FetchLenderActivity = async ({
   walletPubkey,
   getAll = true, //TODO Remove when normal pagination added
   order = 'desc',
+  sortBy,
   skip = 0,
   limit = 10,
+  collection,
 }) => {
   try {
     const queryParams = new URLSearchParams({
@@ -337,12 +341,16 @@ export const fetchLenderActivity: FetchLenderActivity = async ({
       skip: String(skip),
       limit: String(limit),
       getAll: String(getAll),
+      sortBy: String(sortBy),
+      collection: String(collection),
       isPrivate: String(IS_PRIVATE_MARKETS),
     })
 
     const { data } = await axios.get<LenderActivityResponse>(
       `${BACKEND_BASE_URL}/activity/lender/${walletPubkey}?${queryParams.toString()}`,
     )
+
+    console.log(data, 'data')
 
     try {
       await LenderActivitySchema.array().parseAsync(data.data)
