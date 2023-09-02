@@ -1,3 +1,4 @@
+import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import moment from 'moment'
 
 import { Loan } from '@banx/api/core'
@@ -14,4 +15,17 @@ export const isLoanExpired = (loan: Loan) => {
   const expiredAt = fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS
 
   return currentTimeInSeconds > expiredAt
+}
+
+export const calculateLoanRepayValue = (loan: Loan) => {
+  const { solAmount, feeAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction || {}
+
+  const calculatedInterest = calculateCurrentInterestSolPure({
+    loanValue: solAmount + feeAmount,
+    startTime: soldAt,
+    currentTime: moment().unix(),
+    rateBasePoints: amountOfBonds,
+  })
+
+  return solAmount + feeAmount + calculatedInterest
 }

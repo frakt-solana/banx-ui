@@ -10,10 +10,10 @@ import { Loan } from '@banx/api/core'
 import styles from '../LoansTable.module.less'
 
 export const DebtCell: FC<{ loan: Loan }> = ({ loan }) => {
-  const { solAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction || {}
+  const { solAmount, feeAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction || {}
 
   const calculatedInterest = calculateCurrentInterestSolPure({
-    loanValue: solAmount,
+    loanValue: solAmount + feeAmount,
     startTime: soldAt,
     currentTime: moment().unix(),
     rateBasePoints: amountOfBonds,
