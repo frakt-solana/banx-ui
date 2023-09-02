@@ -1,12 +1,17 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { chunk } from 'lodash'
+import { chunk, groupBy } from 'lodash'
 
 import { Loan } from '@banx/api/core'
 import { useWalletLoans } from '@banx/pages/LoansPage/hooks'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { BorrowType, defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
-import { LOANS_PER_TXN, makeRepayLoansAction } from '@banx/transactions/loans'
+import {
+  MakeRepayLoansActionParams,
+  REPAY_NFT_PER_TXN,
+  getLoanBorrowType,
+  makeRepayLoansAction,
+} from '@banx/transactions/loans'
 import { enqueueSnackbar } from '@banx/utils'
 
 export const useLoansTransactions = () => {
@@ -35,7 +40,7 @@ export const useLoansTransactions = () => {
   const { selection: selectedLoans } = useSelectedLoans()
 
   const repayBulkLoan = async () => {
-    const loansChunks = chunk(selectedLoans, LOANS_PER_TXN)
+    const loansChunks = chunkRepayIxnsParams(selectedLoans)
 
     await new TxnExecutor(makeRepayLoansAction, { wallet, connection })
       .addTxnParams(loansChunks)
@@ -59,4 +64,11 @@ export const useLoansTransactions = () => {
     repayLoan,
     repayBulkLoan,
   }
+}
+
+const chunkRepayIxnsParams = (borrowIxnParams: MakeRepayLoansActionParams) => {
+  const ixnsByBorrowType = groupBy(borrowIxnParams, (loan) => getLoanBorrowType(loan))
+  return Object.entries(ixnsByBorrowType)
+    .map(([type, ixns]) => chunk(ixns, REPAY_NFT_PER_TXN[type as BorrowType]))
+    .flat()
 }
