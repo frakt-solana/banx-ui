@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
-import { fetchLenderActivity } from '@banx/api/core'
+import { fetchLenderActivity } from '@banx/api/activity'
 
 import { DEFAULT_SORT_OPTION } from '../constants'
 

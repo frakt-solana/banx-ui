@@ -40,6 +40,6 @@ export const BANX_STAKING = {
   HADO_REGISTRY_PUBKEY: 'ALZCGCWi7rv1oyJiLmdcpUExMqiHdREURLjM698n5gZD',
 }
 
-export const BANX_FRAKT_MARKET = "HrsMreAqj4ss19WDemwFCVnxnhgJ5tTNjt4k8cKzTmko"
+export const BANX_FRAKT_MARKET = 'HrsMreAqj4ss19WDemwFCVnxnhgJ5tTNjt4k8cKzTmko'
 
 export const IS_PRIVATE_MARKETS = process.env.IS_PRIVATE_MARKETS === 'true'

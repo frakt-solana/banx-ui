@@ -1,7 +1,7 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 
-import { fetchBorrowerActivity } from '@banx/api/core'
+import { fetchBorrowerActivity } from '@banx/api/activity'
 
 export const useBorrowerActivity = () => {
   const { publicKey } = useWallet()

@@ -3,7 +3,7 @@ import { FC } from 'react'
 import { CSVDownloadButton } from '@banx/components/Buttons'
 import { StatInfo } from '@banx/components/StatInfo'
 
-import { BorrowerActivity } from '@banx/api/core'
+import { BorrowerActivity } from '@banx/api/activity'
 import { generateCSVContent } from '@banx/utils'
 
 import { ACTIVITY_CSV_FILENAME } from './constants'

@@ -3,7 +3,7 @@ import { FC } from 'react'
 import { CSVDownloadButton } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
-import { LenderActivity } from '@banx/api/core'
+import { LenderActivity } from '@banx/api/activity'
 import { ColorByPercentHealth, generateCSVContent, getColorByPercent } from '@banx/utils'
 
 import { ACTIVITY_CSV_FILENAME } from './constants'

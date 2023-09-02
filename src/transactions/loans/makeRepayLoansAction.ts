@@ -53,7 +53,10 @@ export const makeRepayLoansAction: MakeRepayLoansAction = async (
       signers,
       lookupTables: [],
     }
-  } else if (targetLoan.fraktBond.banxStake !== EMPTY_PUBKEY.toBase58() && targetLoan.fraktBond.fraktMarket === BANX_FRAKT_MARKET) {
+  } else if (
+    targetLoan.fraktBond.banxStake !== EMPTY_PUBKEY.toBase58() &&
+    targetLoan.fraktBond.fraktMarket === BANX_FRAKT_MARKET
+  ) {
     const { instructions, signers } = await repayStakedBanxPerpetualLoan({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {

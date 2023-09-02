@@ -4,7 +4,7 @@ import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/type
 
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
-import { BorrowerActivity } from '@banx/api/core'
+import { BorrowerActivity } from '@banx/api/activity'
 
 interface RepaidCellProps {
   loan: BorrowerActivity
