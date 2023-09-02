@@ -36,7 +36,7 @@ export const makeBorrowPerpetualTransaction: MakeBorrowPerpetualTransaction = as
       perpetualBorrowParamsAndAccounts: [
         {
           amountOfSolToGet: loanValue,
-          minAmountToGet: loanValue,
+          minAmountToGet: Math.floor(Math.random() * 10000),
           tokenMint: new web3.PublicKey(nft.mint),
           bondOfferV2: new web3.PublicKey(offer.publicKey),
           hadoMarket: new web3.PublicKey(offer.hadoMarket),
