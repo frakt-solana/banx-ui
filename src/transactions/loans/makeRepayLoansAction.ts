@@ -9,7 +9,7 @@ import {
 import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 
 import { Loan } from '@banx/api/core'
-import { BANX_FRAKT_MARKET, BONDS } from '@banx/constants'
+import { BANX_STAKING, BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { MakeActionFn } from '../TxnExecutor'
@@ -53,7 +53,10 @@ export const makeRepayLoansAction: MakeRepayLoansAction = async (
       signers,
       lookupTables: [],
     }
-  } else if (targetLoan.fraktBond.banxStake !== EMPTY_PUBKEY.toBase58() && targetLoan.fraktBond.fraktMarket === BANX_FRAKT_MARKET) {
+  } else if (
+    targetLoan.fraktBond.banxStake !== EMPTY_PUBKEY.toBase58() &&
+    targetLoan.fraktBond.fraktMarket === BANX_STAKING.FRAKT_MARKET
+  ) {
     const { instructions, signers } = await repayStakedBanxPerpetualLoan({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
