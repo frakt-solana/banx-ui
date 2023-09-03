@@ -244,4 +244,3 @@ export interface AuctionsLoansResponse {
   data: Loan[]
   meta: PaginationMeta
 }
-

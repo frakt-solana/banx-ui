@@ -51,8 +51,10 @@ export const fetchBorrowerActivity: FetchBorrowerActivity = async ({
   walletPubkey,
   getAll = true, //TODO Remove when normal pagination added
   order = 'asc',
+  sortBy,
   skip = 0,
   limit = 10,
+  collection,
 }) => {
   try {
     const queryParams = new URLSearchParams({
@@ -60,6 +62,8 @@ export const fetchBorrowerActivity: FetchBorrowerActivity = async ({
       skip: String(skip),
       limit: String(limit),
       getAll: String(getAll),
+      sortBy: String(sortBy),
+      collection: String(collection),
       isPrivate: String(IS_PRIVATE_MARKETS),
     })
 

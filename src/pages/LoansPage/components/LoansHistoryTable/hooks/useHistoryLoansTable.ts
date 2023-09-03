@@ -1,12 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 
 import { first, groupBy, map, sumBy } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
-import { SortOption } from '@banx/components/SortDropdown'
 import { createSolValueJSX } from '@banx/components/TableComponents'
-
-import { DEFAULT_SORT_OPTION } from '@banx/pages/LoansPage/constants'
 
 import { useBorrowerActivity } from './useBorrowerActivity'
 
@@ -17,10 +14,8 @@ interface SearchSelectOption {
 }
 
 export const useHistoryLoansTable = () => {
-  const { loans, isLoading } = useBorrowerActivity()
-  const [selectedOptions, setSelectedOptions] = useState<string[]>([])
-
-  const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
+  const { loans, isLoading, sortParams, selectedCollections, setSelectedCollections } =
+    useBorrowerActivity()
 
   const searchSelectOptions = useMemo(() => {
     const loansGroupedByCollection = groupBy(loans, (loans) => loans.nft.meta.collectionName)
@@ -45,14 +40,9 @@ export const useHistoryLoansTable = () => {
         format: (value: number) => createSolValueJSX(value, 1e9),
       },
     },
-    selectedOptions,
+    selectedOptions: selectedCollections,
     labels: ['Collection', 'Borrowed'],
-    onChange: setSelectedOptions,
-  }
-
-  const sortParams = {
-    option: sortOption,
-    onChange: setSortOption,
+    onChange: setSelectedCollections,
   }
 
   return {

@@ -45,7 +45,7 @@ export const getTableColumns = () => {
       sorter: true,
     },
     {
-      key: 'duration',
+      key: 'timestamp',
       title: <HeaderCell label="When" />,
       render: (_, { publicKey, timestamp }) => (
         <DurationCell publicKey={publicKey} timestamp={timestamp} />
