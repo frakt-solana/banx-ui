@@ -31,7 +31,6 @@ export const getTableColumns = () => {
       key: 'debt',
       title: <HeaderCell label="Debt" />,
       render: (_, loan) => <DebtCell loan={loan} />,
-      sorter: true,
     },
     {
       key: 'status',
@@ -39,7 +38,7 @@ export const getTableColumns = () => {
       render: (_, loan) => <StatusCell loan={loan} />,
     },
     {
-      key: 'repaidBy',
+      key: 'repaid',
       title: <HeaderCell label="Repaid by" />,
       render: (_, loan) => <RepaidCell loan={loan} />,
       sorter: true,

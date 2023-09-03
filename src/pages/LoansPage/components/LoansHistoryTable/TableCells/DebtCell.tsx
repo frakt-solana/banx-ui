@@ -1,5 +1,7 @@
 import { FC } from 'react'
 
+import classNames from 'classnames'
+
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { BorrowerActivity } from '@banx/api/activity'
@@ -18,7 +20,9 @@ export const DebtCell: FC<DebtCellrops> = ({ loan }) => {
   return (
     <div className={styles.debtCell}>
       <span className={styles.debtCellTitle}>{createSolValueJSX(repayValue, 1e9, '0◎')}</span>
-      <span className={styles.debtCellSubtitle}>{createSolValueJSX(interest, 1e9, '0◎')} fee</span>
+      <span className={classNames(styles.debtCellSubtitle, { [styles.negative]: interest > 0 })}>
+        {createSolValueJSX(interest, 1e9, '0◎')} fee
+      </span>
     </div>
   )
 }
