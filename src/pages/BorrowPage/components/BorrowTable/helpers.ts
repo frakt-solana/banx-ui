@@ -1,12 +1,17 @@
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { chunk } from 'lodash'
+import { chunk, groupBy } from 'lodash'
 import moment from 'moment'
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
 import { LoansOptimisticStore } from '@banx/store'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { BorrowType, defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
-import { LOANS_PER_TXN, MakeBorrowActionParams, makeBorrowAction } from '@banx/transactions/borrow'
+import {
+  BORROW_NFT_PER_TXN,
+  MakeBorrowActionParams,
+  getNftBorrowType,
+  makeBorrowAction,
+} from '@banx/transactions/borrow'
 import { WalletAndConnection } from '@banx/types'
 import { enqueueSnackbar } from '@banx/utils'
 
@@ -107,7 +112,14 @@ export const createBorrowAllParams = (
     })
     .filter(Boolean) as MakeBorrowActionParams
 
-  return chunk(borrowIxnParams, LOANS_PER_TXN)
+  return chunkBorrowIxnsParams(borrowIxnParams)
+}
+
+const chunkBorrowIxnsParams = (borrowIxnParams: MakeBorrowActionParams) => {
+  const ixnsByBorrowType = groupBy(borrowIxnParams, ({ nft }) => getNftBorrowType(nft))
+  return Object.entries(ixnsByBorrowType)
+    .map(([type, ixns]) => chunk(ixns, BORROW_NFT_PER_TXN[type as BorrowType]))
+    .flat()
 }
 
 type CalcInterest = (props: { loanValue: number; timeInterval: number; apr: number }) => number

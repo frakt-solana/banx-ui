@@ -38,8 +38,7 @@ export const DIALECT = {
 export const BANX_STAKING = {
   WHITELIST_ENTRY_PUBKEY: '6GBJtSCQBRTwU9XmH3gxsfUvvGE9QBMrMTvB4kcEGiya',
   HADO_REGISTRY_PUBKEY: 'ALZCGCWi7rv1oyJiLmdcpUExMqiHdREURLjM698n5gZD',
+  FRAKT_MARKET: 'HrsMreAqj4ss19WDemwFCVnxnhgJ5tTNjt4k8cKzTmko',
 }
-
-export const BANX_FRAKT_MARKET = 'HrsMreAqj4ss19WDemwFCVnxnhgJ5tTNjt4k8cKzTmko'
 
 export const IS_PRIVATE_MARKETS = process.env.IS_PRIVATE_MARKETS === 'true'
