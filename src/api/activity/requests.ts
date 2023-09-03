@@ -2,9 +2,15 @@ import axios from 'axios'
 
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
-import { BorrowerActivitySchema, LenderActivitySchema } from './schemas'
 import {
+  ActivityCollectionsListSchema,
+  BorrowerActivitySchema,
+  LenderActivitySchema,
+} from './schemas'
+import {
+  ActivityCollectionsList,
   BorrowedActivityResponse,
+  FetchActivityCollectionsList,
   FetchBorrowerActivity,
   FetchLenderActivity,
   LenderActivityResponse,
@@ -81,5 +87,31 @@ export const fetchBorrowerActivity: FetchBorrowerActivity = async ({
   } catch (error) {
     console.error(error)
     return []
+  }
+}
+
+export const fetchActivityCollectionsList: FetchActivityCollectionsList = async ({
+  walletPubkey,
+  userType,
+}) => {
+  try {
+    const queryParams = new URLSearchParams({
+      userType: String(userType),
+    })
+
+    const { data } = await axios.get<{ data: ActivityCollectionsList }>(
+      `${BACKEND_BASE_URL}/activity/collections-list/${walletPubkey}?${queryParams.toString()}`,
+    )
+
+    try {
+      await ActivityCollectionsListSchema.parseAsync(data.data)
+    } catch (validationError) {
+      console.error('Schema validation error:', validationError)
+    }
+
+    return data.data
+  } catch (error) {
+    console.error(error)
+    return { collections: [] }
   }
 }

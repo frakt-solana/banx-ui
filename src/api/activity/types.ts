@@ -2,7 +2,11 @@ import { z } from 'zod'
 
 import { BasePaginationRequest, PaginationMeta } from '@banx/types'
 
-import { BorrowerActivitySchema, LenderActivitySchema } from './schemas'
+import {
+  ActivityCollectionsListSchema,
+  BorrowerActivitySchema,
+  LenderActivitySchema,
+} from './schemas'
 
 export type LenderActivity = z.infer<typeof LenderActivitySchema>
 
@@ -31,3 +35,10 @@ export interface BorrowedActivityResponse {
   data: BorrowerActivity[]
   meta: PaginationMeta
 }
+
+export type ActivityCollectionsList = z.infer<typeof ActivityCollectionsListSchema>
+
+export type FetchActivityCollectionsList = (props: {
+  walletPubkey: string
+  userType: 'borrower' | 'lender'
+}) => Promise<ActivityCollectionsList>

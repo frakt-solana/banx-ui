@@ -33,3 +33,7 @@ export const BorrowerActivitySchema = z.object({
   user: z.string(),
   nft: NFTSchema,
 })
+
+export const ActivityCollectionsListSchema = z.object({
+  collections: z.array(z.string()),
+})
