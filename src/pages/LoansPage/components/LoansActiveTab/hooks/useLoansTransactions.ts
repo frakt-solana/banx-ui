@@ -2,8 +2,8 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { chunk, groupBy } from 'lodash'
 
 import { Loan } from '@banx/api/core'
-import { useWalletLoans } from '@banx/pages/LoansPage/hooks'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
+import { useOptimisticLoans } from '@banx/store'
 import { BorrowType, defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import {
@@ -18,18 +18,20 @@ export const useLoansTransactions = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
 
-  const { hideLoans } = useWalletLoans()
+  const { update: updateLoansOptimistic } = useOptimisticLoans()
 
   const repayLoan = async (loan: Loan) => {
     await new TxnExecutor(makeRepayLoansAction, { wallet, connection })
       .addTxnParam([loan])
       .on('pfSuccessAll', (results) => {
-        const { txnHash } = results[0]
-        hideLoans([loan.publicKey])
-        enqueueSnackbar({
-          message: 'Transaction Executed',
-          solanaExplorerPath: `tx/${txnHash}`,
-        })
+        const { txnHash, result } = results[0]
+        if (result) {
+          enqueueSnackbar({
+            message: 'Transaction Executed',
+            solanaExplorerPath: `tx/${txnHash}`,
+          })
+          updateLoansOptimistic(...result)
+        }
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error)
@@ -45,14 +47,15 @@ export const useLoansTransactions = () => {
     await new TxnExecutor(makeRepayLoansAction, { wallet, connection })
       .addTxnParams(loansChunks)
       .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
-        enqueueSnackbar({
-          message: 'Transaction Executed',
-          solanaExplorerPath: `tx/${txnHash}`,
+        results.forEach(({ txnHash, result }) => {
+          if (result) {
+            enqueueSnackbar({
+              message: 'Transaction Executed',
+              solanaExplorerPath: `tx/${txnHash}`,
+            })
+            updateLoansOptimistic(...result)
+          }
         })
-      })
-      .on('pfSuccessSome', () => {
-        hideLoans(selectedLoans.map((loan) => loan.publicKey))
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error)

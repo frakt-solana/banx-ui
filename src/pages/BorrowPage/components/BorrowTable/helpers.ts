@@ -3,7 +3,7 @@ import { chunk, groupBy } from 'lodash'
 import moment from 'moment'
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
-import { LoansOptimisticStore } from '@banx/store'
+import { UseOptimisticLoansValues } from '@banx/store'
 import { BorrowType, defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import {
@@ -16,7 +16,6 @@ import { WalletAndConnection } from '@banx/types'
 import { enqueueSnackbar } from '@banx/utils'
 
 import { CartState } from '../../cartState'
-import { HiddenNftsMintsState } from '../../hooks'
 import { SimpleOffer } from '../../types'
 import { ONE_WEEK_IN_SECONDS } from './constants'
 
@@ -51,16 +50,9 @@ export const executeBorrow = async (props: {
   isLedger?: boolean
   txnParams: MakeBorrowActionParams[]
   walletAndConnection: WalletAndConnection
-  addLoansOptimistic: LoansOptimisticStore['add']
-  hideNftMints: HiddenNftsMintsState['add']
+  addLoansOptimistic: UseOptimisticLoansValues['add']
 }) => {
-  const {
-    isLedger = false,
-    txnParams,
-    walletAndConnection,
-    addLoansOptimistic,
-    hideNftMints,
-  } = props
+  const { isLedger = false, txnParams, walletAndConnection, addLoansOptimistic } = props
   const { wallet, connection } = walletAndConnection
 
   const txnsResults = await new TxnExecutor(
@@ -81,7 +73,6 @@ export const executeBorrow = async (props: {
         .flat()
         .filter(Boolean) as Loan[]
       addLoansOptimistic(...loansFlat)
-      hideNftMints(...loansFlat.map(({ nft }) => nft.mint))
     })
     .on('pfError', (error) => {
       defaultTxnErrorHandler(error)

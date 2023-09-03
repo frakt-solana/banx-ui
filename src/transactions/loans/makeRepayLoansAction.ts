@@ -19,7 +19,9 @@ import { BorrowType } from '../constants'
 
 export type MakeRepayLoansActionParams = Loan[]
 
-export type MakeRepayLoansAction = MakeActionFn<MakeRepayLoansActionParams, undefined>
+export type MakeRepayActionResult = Loan[]
+
+export type MakeRepayLoansAction = MakeActionFn<MakeRepayLoansActionParams, MakeRepayActionResult>
 
 export const LOANS_PER_TXN = 1
 
@@ -33,16 +35,25 @@ export const makeRepayLoansAction: MakeRepayLoansAction = async (
     throw new Error(`Maximum borrow per txn is ${REPAY_NFT_PER_TXN[borrowType]}`)
   }
 
-  const { instructions, signers, lookupTables } = await getIxnsAndSignersByBorrowType({
-    ixnParams,
-    type: borrowType,
-    walletAndConnection,
-  })
+  const { instructions, signers, optimisticResults, lookupTables } =
+    await getIxnsAndSignersByBorrowType({
+      ixnParams,
+      type: borrowType,
+      walletAndConnection,
+    })
+
+  const loans: Loan[] = optimisticResults.map((optimistic, idx) => ({
+    publicKey: optimistic.fraktBond.publicKey,
+    fraktBond: optimistic.fraktBond,
+    bondTradeTransaction: optimistic.bondTradeTransaction,
+    nft: ixnParams[idx].nft,
+  }))
 
   return {
     instructions,
     signers,
     lookupTables,
+    additionalResult: loans,
   }
 }
 
@@ -67,7 +78,7 @@ const getIxnsAndSignersByBorrowType = async ({
     ) {
       throw new Error(`Not BanxStaked NFT`)
     }
-    const { instructions, signers } = await repayStakedBanxPerpetualLoan({
+    const { instructions, signers, optimisticResults } = await repayStakedBanxPerpetualLoan({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         userPubkey: wallet.publicKey as web3.PublicKey,
@@ -84,7 +95,7 @@ const getIxnsAndSignersByBorrowType = async ({
       connection,
       sendTxn: sendTxnPlaceHolder,
     })
-    return { instructions, signers, lookupTables: [] }
+    return { instructions, signers, optimisticResults, lookupTables: [] }
   }
 
   if (type === BorrowType.CNft) {
@@ -95,7 +106,7 @@ const getIxnsAndSignersByBorrowType = async ({
 
     const proof = await getAssetProof(loan.nft.mint, connection.rpcEndpoint)
 
-    const { instructions, signers } = await repayCnftPerpetualLoan({
+    const { instructions, signers, optimisticResults } = await repayCnftPerpetualLoan({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         userPubkey: wallet.publicKey as web3.PublicKey,
@@ -116,10 +127,10 @@ const getIxnsAndSignersByBorrowType = async ({
       sendTxn: sendTxnPlaceHolder,
     })
 
-    return { instructions, signers, lookupTables: [] }
+    return { instructions, signers, optimisticResults, lookupTables: [] }
   }
 
-  const { instructions, signers } = await repayPerpetualLoan({
+  const { instructions, signers, optimisticResults } = await repayPerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       userPubkey: wallet.publicKey as web3.PublicKey,
@@ -137,7 +148,7 @@ const getIxnsAndSignersByBorrowType = async ({
     sendTxn: sendTxnPlaceHolder,
   })
 
-  return { instructions, signers, lookupTables: [] }
+  return { instructions, signers, optimisticResults, lookupTables: [] }
 }
 
 const getChunkBorrowType = (loans: Loan[]) => {

@@ -2,24 +2,29 @@ import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
+import { FraktBondState } from 'fbonds-core/lib/fbond-protocol/types'
 import { produce } from 'immer'
-import { countBy, isEmpty, sumBy, uniqueId } from 'lodash'
+import { countBy, isEmpty, sumBy, uniqBy, uniqueId } from 'lodash'
 import { create } from 'zustand'
 
 import { BorrowNft, Offer, fetchBorrowNftsAndOffers } from '@banx/api/core'
+import { useOptimisticLoans } from '@banx/store'
+import { convertLoanToBorrowNft } from '@banx/transactions'
 import { calcLoanValueWithProtocolFee } from '@banx/utils'
 
 import { useCartState } from './cartState'
 import { SimpleOffer, SimpleOffersByMarket } from './types'
 
+export const USE_BORROW_NFTS_QUERY_KEY = 'walletBorrowNfts'
+
 export const useBorrowNfts = () => {
   const { setCart } = useCartState()
-  const { mints: hiddenMints } = useHiddenNftsMints()
+  const { loans: optimisticLoans } = useOptimisticLoans()
 
   const { publicKey: walletPublicKey } = useWallet()
 
   const { data, isLoading } = useQuery(
-    ['walletBorrowNfts', walletPublicKey?.toBase58()],
+    [USE_BORROW_NFTS_QUERY_KEY, walletPublicKey?.toBase58()],
     () => fetchBorrowNftsAndOffers({ walletPubkey: walletPublicKey?.toBase58() || '' }),
     {
       enabled: !!walletPublicKey,
@@ -53,21 +58,26 @@ export const useBorrowNfts = () => {
     if (!data) {
       return []
     }
-    return data.nfts.filter(({ mint }) => !hiddenMints.includes(mint))
-  }, [data, hiddenMints])
 
-  //TODO: Remove when borrow staked nfts support appears
-  const notStakedNfts = useMemo(() => {
-    // return nfts.filter((nft) => !nft.loan.banxStake)
-    return nfts
-  }, [nfts])
+    const borrowNftsFromRepaid = optimisticLoans
+      .filter(({ fraktBond }) => fraktBond.fraktBondState === FraktBondState.PerpetualRepaid)
+      .map(convertLoanToBorrowNft)
+
+    const optimisticLoansActiveMints = optimisticLoans
+      .filter(({ fraktBond }) => fraktBond.fraktBondState === FraktBondState.PerpetualActive)
+      .map(({ nft }) => nft.mint)
+
+    const filteredNfts = data.nfts.filter(({ mint }) => !optimisticLoansActiveMints.includes(mint))
+
+    return uniqBy([...borrowNftsFromRepaid, ...filteredNfts], ({ mint }) => mint)
+  }, [data, optimisticLoans])
 
   const maxBorrow = useMemo(() => {
-    return calcMaxBorrow(notStakedNfts, offers)
-  }, [notStakedNfts, offers])
+    return calcMaxBorrow(nfts, offers)
+  }, [nfts, offers])
 
   return {
-    nfts: notStakedNfts || [],
+    nfts: nfts || [],
     rawOffers: data?.offers || {},
     maxBorrow,
     isLoading,
