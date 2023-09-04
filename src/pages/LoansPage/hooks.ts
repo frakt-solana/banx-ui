@@ -21,7 +21,7 @@ export const useWalletLoans: UseWalletLoans = () => {
 
   const { loans: optimisticLoans, remove: removeOptimisticLoans } = useOptimisticLoans()
 
-  const { data, isLoading, isFetched } = useQuery(
+  const { data, isLoading, isFetched, isFetching } = useQuery(
     [USE_WALLET_LOANS_QUERY_KEY, publicKeyString],
     () => fetchWalletLoans({ walletPublicKey: publicKeyString }),
     {
@@ -39,7 +39,7 @@ export const useWalletLoans: UseWalletLoans = () => {
 
   //? Check same active loans (duplicated with BE) and purge them
   useEffect(() => {
-    if (!data || !isFetched || !publicKey) return
+    if (!data || isFetching || !isFetched || !publicKey) return
 
     const expiredLoans = walletOptimisticLoans.filter((loan) =>
       isExpired(loan, publicKey.toBase58()),
@@ -58,7 +58,7 @@ export const useWalletLoans: UseWalletLoans = () => {
         publicKey.toBase58(),
       )
     }
-  }, [data, isFetched, publicKey, walletOptimisticLoans, removeOptimisticLoans])
+  }, [data, isFetched, publicKey, walletOptimisticLoans, removeOptimisticLoans, isFetching])
 
   const loans = useMemo(() => {
     if (!data) {

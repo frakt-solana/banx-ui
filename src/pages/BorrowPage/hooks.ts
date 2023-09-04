@@ -25,7 +25,7 @@ export const useBorrowNfts = () => {
 
   const walletPubkeyString = walletPublicKey?.toBase58() || ''
 
-  const { data, isLoading, isFetched } = useQuery(
+  const { data, isLoading, isFetched, isFetching } = useQuery(
     [USE_BORROW_NFTS_QUERY_KEY, walletPubkeyString],
     () => fetchBorrowNftsAndOffers({ walletPubkey: walletPubkeyString }),
     {
@@ -75,7 +75,7 @@ export const useBorrowNfts = () => {
 
   //? Check expiredLoans or Repaid(duplicated from BE) and purge them
   useEffect(() => {
-    if (!data || !isFetched || !walletPublicKey) return
+    if (!data || isFetching || !isFetched || !walletPublicKey) return
 
     const expiredLoans = walletOptimisticLoans.filter((loan) =>
       isExpired(loan, walletPublicKey.toBase58()),
@@ -100,6 +100,7 @@ export const useBorrowNfts = () => {
     removeOptimisticLoans,
     optimisticLoansRepaid,
     walletPublicKey,
+    isFetching,
   ])
 
   //? Merge BE nfts with optimisticLoans

@@ -1,3 +1,4 @@
+import { FraktBondState } from 'fbonds-core/lib/fbond-protocol/types'
 import { map, uniqBy } from 'lodash'
 import moment from 'moment'
 import { create } from 'zustand'
@@ -5,7 +6,9 @@ import { create } from 'zustand'
 import { Loan } from '@banx/api/core'
 
 const BANX_LOANS_OPTIMISTICS_LS_KEY = '@banx.loansOptimistics'
-const LOANS_CACHE_TIME_UNIX = 10 * 60 //? 10 minutes
+//TODO Reduce cache time for repaid loans
+const ACTIVE_LOANS_CACHE_TIME_UNIX = 24 * 60 * 60 //? 24 hours
+const REPAID_LOANS_CACHE_TIME_UNIX = 10 * 60 //? 10 minutes
 
 export interface LoanOptimistic {
   loan: Loan
@@ -93,11 +96,17 @@ const setOptimisticLoansLS = (loans: LoanOptimistic[]) => {
   localStorage.setItem(BANX_LOANS_OPTIMISTICS_LS_KEY, JSON.stringify(loans))
 }
 
-const convertLoanToOptimistic = (loan: Loan, walletPublicKey: string) => ({
-  loan,
-  wallet: walletPublicKey,
-  expiredAt: moment().unix() + LOANS_CACHE_TIME_UNIX,
-})
+const convertLoanToOptimistic = (loan: Loan, walletPublicKey: string) => {
+  const isRepaidLoan = loan.fraktBond.fraktBondState === FraktBondState.PerpetualRepaid
+
+  return {
+    loan,
+    wallet: walletPublicKey,
+    expiredAt:
+      moment().unix() +
+      (isRepaidLoan ? REPAID_LOANS_CACHE_TIME_UNIX : ACTIVE_LOANS_CACHE_TIME_UNIX),
+  }
+}
 
 const getOptimisticLoansLS = () => {
   const optimisticLoans = localStorage.getItem(BANX_LOANS_OPTIMISTICS_LS_KEY)
