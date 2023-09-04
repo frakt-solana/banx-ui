@@ -1,69 +1,84 @@
-import { uniqBy } from 'lodash'
+import { map, uniqBy } from 'lodash'
 import moment from 'moment'
 import { create } from 'zustand'
 
 import { Loan } from '@banx/api/core'
 
 const BANX_LOANS_OPTIMISTICS_LS_KEY = '@banx.loansOptimistics'
-const LOANS_CACHE_TIME_UNIX = 60 //? 60 seconds
+const LOANS_CACHE_TIME_UNIX = 10 * 60 //? 10 minutes
+
+export interface LoanOptimistic {
+  loan: Loan
+  wallet: string
+  expiredAt: number
+}
 
 interface LoansOptimisticStore {
-  loans: Loan[]
-  setLoans: (...loans: Loan[]) => void
+  optimisticLoans: LoanOptimistic[]
+  setLoans: (...loans: LoanOptimistic[]) => void
 }
 
 const useOptimisticLoansStore = create<LoansOptimisticStore>((set) => ({
-  loans: [],
+  optimisticLoans: [],
   setLoans: (...loans) => {
-    set((state) => ({ ...state, loans }))
+    set((state) => ({ ...state, optimisticLoans: loans }))
   },
 }))
 
 export interface UseOptimisticLoansValues {
-  loans: Loan[]
-  find: (publicKey: string) => Loan | undefined
-  add: (...loans: Loan[]) => void
-  remove: (...publicKeys: string[]) => void
-  update: (...loans: Loan[]) => void
+  loans: LoanOptimistic[]
+  find: (publicKey: string, walletPublicKey: string) => LoanOptimistic | undefined
+  add: (loans: Loan[], walletPublicKey: string) => void
+  remove: (publicKeys: string[], walletPublicKey: string) => void
+  update: (loans: Loan[], walletPublicKey: string) => void
 }
 export const useOptimisticLoans = (): UseOptimisticLoansValues => {
-  const { loans: optimisticLoans, setLoans: setOptimisticLoans } = useOptimisticLoansStore(
-    (state: LoansOptimisticStore) => {
+  const { optimisticLoans: optimisticLoans, setLoans: setOptimisticLoans } =
+    useOptimisticLoansStore((state: LoansOptimisticStore) => {
       try {
         const optimisticLoans = getOptimisticLoansLS()
-        const loans = optimisticLoans.filter((l) => !isExpired(l)).map(({ loan }) => loan)
-        if (loans.length < optimisticLoans.length) {
-          setOptimisticLoansLS(loans)
-        }
+        setOptimisticLoansLS(optimisticLoans)
+
         return {
           ...state,
-          loans,
+          optimisticLoans: optimisticLoans,
         }
       } catch (error) {
         console.error(error)
-        return state
-      }
-    },
-  )
+        setOptimisticLoansLS([])
 
-  const add = (...loans: Loan[]) => {
-    const nextLoans = addLoans(optimisticLoans, loans)
+        return {
+          ...state,
+          optimisticLoans: [],
+        }
+      }
+    })
+
+  const add: UseOptimisticLoansValues['add'] = (loans, walletPublicKey) => {
+    if (!walletPublicKey) return
+    const nextLoans = addLoans(
+      optimisticLoans,
+      map(loans, (loan) => convertLoanToOptimistic(loan, walletPublicKey)),
+    )
     setOptimisticLoansLS(nextLoans)
     setOptimisticLoans(...nextLoans)
   }
 
-  const remove = (...publicKeys: string[]) => {
+  const remove: UseOptimisticLoansValues['remove'] = (publicKeys) => {
     const nextLoans = removeLoans(optimisticLoans, publicKeys)
     setOptimisticLoansLS(nextLoans)
     setOptimisticLoans(...nextLoans)
   }
 
-  const find = (publicKey: string) => {
-    return findLoan(optimisticLoans, publicKey)
+  const find: UseOptimisticLoansValues['find'] = (publicKey, walletPublicKey) => {
+    return findLoan(optimisticLoans, publicKey, walletPublicKey)
   }
 
-  const update = (...loans: Loan[]) => {
-    const nextLoans = updateLoans(optimisticLoans, loans)
+  const update: UseOptimisticLoansValues['update'] = (loans: Loan[], walletPublicKey) => {
+    const nextLoans = updateLoans(
+      optimisticLoans,
+      map(loans, (loan) => convertLoanToOptimistic(loan, walletPublicKey)),
+    )
     setOptimisticLoansLS(nextLoans)
     setOptimisticLoans(...nextLoans)
   }
@@ -71,36 +86,40 @@ export const useOptimisticLoans = (): UseOptimisticLoansValues => {
   return { loans: optimisticLoans, add, remove, find, update }
 }
 
-interface LoanWithExpiration {
-  loan: Loan
-  expiredAt: number
+export const isExpired = (loan: LoanOptimistic, walletPublicKey: string) =>
+  loan.expiredAt < moment().unix() && loan.wallet === walletPublicKey
+
+const setOptimisticLoansLS = (loans: LoanOptimistic[]) => {
+  localStorage.setItem(BANX_LOANS_OPTIMISTICS_LS_KEY, JSON.stringify(loans))
 }
 
-const isExpired = (loanWithExpiration: LoanWithExpiration) =>
-  loanWithExpiration.expiredAt < moment().unix()
-
-const setOptimisticLoansLS = (loans: Loan[]) => {
-  const expiredAt = moment().unix() + LOANS_CACHE_TIME_UNIX
-  const loansWithExpiration: LoanWithExpiration[] = loans.map((loan) => ({ loan, expiredAt }))
-  localStorage.setItem(BANX_LOANS_OPTIMISTICS_LS_KEY, JSON.stringify(loansWithExpiration))
-}
+const convertLoanToOptimistic = (loan: Loan, walletPublicKey: string) => ({
+  loan,
+  wallet: walletPublicKey,
+  expiredAt: moment().unix() + LOANS_CACHE_TIME_UNIX,
+})
 
 const getOptimisticLoansLS = () => {
   const optimisticLoans = localStorage.getItem(BANX_LOANS_OPTIMISTICS_LS_KEY)
-  return (optimisticLoans ? JSON.parse(optimisticLoans) : []) as LoanWithExpiration[]
+  return (optimisticLoans ? JSON.parse(optimisticLoans) : []) as LoanOptimistic[]
 }
 
-const addLoans = (loansState: Loan[], loansToAdd: Loan[]) =>
-  uniqBy([...loansState, ...loansToAdd], ({ publicKey }) => publicKey)
+const addLoans = (loansState: LoanOptimistic[], loansToAdd: LoanOptimistic[]) =>
+  uniqBy([...loansState, ...loansToAdd], ({ loan }) => loan.publicKey)
 
-const removeLoans = (loansState: Loan[], loansPubkeysToRemove: string[]) =>
-  loansState.filter(({ publicKey }) => !loansPubkeysToRemove.includes(publicKey))
+const removeLoans = (loansState: LoanOptimistic[], loansPubkeysToRemove: string[]) =>
+  loansState.filter(({ loan }) => !loansPubkeysToRemove.includes(loan.publicKey))
 
-const findLoan = (loansState: Loan[], loanPublicKey: string) =>
-  loansState.find((l) => l.publicKey === loanPublicKey)
+const findLoan = (loansState: LoanOptimistic[], loanPublicKey: string, walletPublicKey: string) =>
+  loansState.find(
+    ({ loan, wallet }) => loan.publicKey === loanPublicKey && wallet === walletPublicKey,
+  )
 
-const updateLoans = (loansState: Loan[], loansToAddOrUpdate: Loan[]) => {
-  const publicKeys = loansToAddOrUpdate.map(({ publicKey }) => publicKey)
+const updateLoans = (loansState: LoanOptimistic[], loansToAddOrUpdate: LoanOptimistic[]) => {
+  const publicKeys = loansToAddOrUpdate.map(({ loan }) => loan.publicKey)
   const sameLoansRemoved = removeLoans(loansState, publicKeys)
   return addLoans(sameLoansRemoved, loansToAddOrUpdate)
 }
+
+export const isLoanNewer = (loanA: Loan, loanB: Loan) =>
+  loanA.fraktBond.lastTransactedAt >= loanB.fraktBond.lastTransactedAt

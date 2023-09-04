@@ -72,7 +72,9 @@ export const executeBorrow = async (props: {
         })
         .flat()
         .filter(Boolean) as Loan[]
-      addLoansOptimistic(...loansFlat)
+      if (wallet.publicKey) {
+        addLoansOptimistic(loansFlat, wallet.publicKey?.toBase58())
+      }
     })
     .on('pfError', (error) => {
       defaultTxnErrorHandler(error)

@@ -25,12 +25,12 @@ export const useLoansTransactions = () => {
       .addTxnParam([loan])
       .on('pfSuccessAll', (results) => {
         const { txnHash, result } = results[0]
-        if (result) {
+        if (result && wallet.publicKey) {
           enqueueSnackbar({
             message: 'Transaction Executed',
             solanaExplorerPath: `tx/${txnHash}`,
           })
-          updateLoansOptimistic(...result)
+          updateLoansOptimistic(result, wallet.publicKey.toBase58())
         }
       })
       .on('pfError', (error) => {
@@ -48,12 +48,12 @@ export const useLoansTransactions = () => {
       .addTxnParams(loansChunks)
       .on('pfSuccessEach', (results) => {
         results.forEach(({ txnHash, result }) => {
-          if (result) {
+          if (result && wallet.publicKey) {
             enqueueSnackbar({
               message: 'Transaction Executed',
               solanaExplorerPath: `tx/${txnHash}`,
             })
-            updateLoansOptimistic(...result)
+            updateLoansOptimistic(result, wallet.publicKey.toBase58())
           }
         })
       })
