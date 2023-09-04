@@ -54,7 +54,7 @@ export const LoansActiveTable = () => {
           }}
         />
       </div>
-      <Summary />
+      <Summary loans={loans} />
     </div>
   )
 }

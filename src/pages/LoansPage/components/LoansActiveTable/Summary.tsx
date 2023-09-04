@@ -1,35 +1,56 @@
 import { FC } from 'react'
 
-import { StatInfo } from '@banx/components/StatInfo'
+import { sumBy } from 'lodash'
 
-import { BorrowerActivity } from '@banx/api/core'
+import { Button } from '@banx/components/Buttons'
+import { StatInfo } from '@banx/components/StatInfo'
+import { createSolValueJSX } from '@banx/components/TableComponents'
+
+import { Loan } from '@banx/api/core'
+import { calculateLoanRepayValue } from '@banx/utils'
+
+import { useSelectedLoans } from '../../loansState'
 
 import styles from './LoansActiveTable.module.less'
 
 interface SummaryProps {
-  loans?: BorrowerActivity[]
+  loans: Loan[]
 }
 
 export const Summary: FC<SummaryProps> = ({ loans }) => {
-  //TODO: Need take values from BE (waiting for endpoint from backend),
-  const totalLoans = 25
-  const totalBorrowed = 25
-  const totalDebt = 25
-  const totalRepaid = 105
+  const { selection, setSelection, clearSelection } = useSelectedLoans()
+
+  const totalLoans = selection?.length
+  const totalBorrowed = sumBy(selection, ({ fraktBond }) => fraktBond.borrowedAmount)
+  const totalDebt = sumBy(selection, (loan) => calculateLoanRepayValue(loan))
+
+  const selectAll = () => {
+    if (!selection.length) {
+      setSelection(loans)
+    } else {
+      clearSelection()
+    }
+  }
+
+  const selectAllBtnText = !selection?.length ? 'Select all' : 'Deselect all'
 
   return (
     <div className={styles.summary}>
-      <div className={styles.totalOffers}>
-        <p className={styles.totalOffersValue}>{totalLoans}</p>
-        <div className={styles.totalOffersInfo}>
-          <p className={styles.totalOffersInfoTitle}>Total loans</p>
-          <p className={styles.totalOffersInfoSubtitle}>All time</p>
-        </div>
+      <div className={styles.collaterals}>
+        <p className={styles.collateralsTitle}>{totalLoans}</p>
+        <p className={styles.collateralsSubtitle}>Collaterals selected</p>
       </div>
       <div className={styles.statsContainer}>
-        <StatInfo label="Total borrowed" value={totalBorrowed} />
-        <StatInfo label="Total debt" value={totalDebt} />
-        <StatInfo label="Total repaid" value={totalRepaid} />
+        <StatInfo label="Total borrowed" value={totalBorrowed} divider={1e9} />
+        <StatInfo label="Total debt" value={totalDebt} divider={1e9} />
+      </div>
+      <div className={styles.summaryBtns}>
+        <Button variant="secondary" onClick={selectAll}>
+          {selectAllBtnText}
+        </Button>
+        <Button onClick={selectAll} disabled={!selection.length}>
+          Repay {createSolValueJSX(totalBorrowed, 1e9, '0◎')}
+        </Button>
       </div>
     </div>
   )
