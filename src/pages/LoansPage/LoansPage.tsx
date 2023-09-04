@@ -17,10 +17,8 @@ export const LoansPage = () => {
     <div className={styles.pageWrapper}>
       <LoansHeader />
       <Tabs value={currentTabValue} {...tabProps} />
-      <div className={styles.tableRoot}>
-        {currentTabValue === LoansTabsNames.ACTIVE && <LoansActiveTable />}
-        {currentTabValue === LoansTabsNames.HISTORY && <LoansHistoryTable />}
-      </div>
+      {currentTabValue === LoansTabsNames.ACTIVE && <LoansActiveTable />}
+      {currentTabValue === LoansTabsNames.HISTORY && <LoansHistoryTable />}
     </div>
   )
 }

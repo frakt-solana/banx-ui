@@ -1,6 +1,5 @@
 import Table from '@banx/components/Table'
 
-import { Loan } from '@banx/api/core'
 import { ViewState, useTableView } from '@banx/store'
 
 import { useSelectedLoans } from '../../loansState'
@@ -24,7 +23,7 @@ export const LoansActiveTable = () => {
     if (hasSelectedLoans) {
       clearSelection()
     } else {
-      setSelection(loans as Loan[])
+      setSelection(loans)
     }
   }
 
@@ -37,7 +36,7 @@ export const LoansActiveTable = () => {
   })
 
   return (
-    <>
+    <div className={styles.tableRoot}>
       <div className={styles.tableWrapper}>
         <Table
           data={loans}
@@ -55,6 +54,6 @@ export const LoansActiveTable = () => {
         />
       </div>
       <Summary loans={loans} />
-    </>
+    </div>
   )
 }

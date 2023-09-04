@@ -23,7 +23,7 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
 
   const { repayBulkLoan } = useLoansTransactions()
 
-  const totalLoans = selection?.length
+  const totalLoans = selection.length
   const totalBorrowed = sumBy(selection, ({ fraktBond }) => fraktBond.borrowedAmount)
   const totalDebt = sumBy(selection, (loan) => calculateLoanRepayValue(loan))
 
