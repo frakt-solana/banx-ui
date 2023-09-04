@@ -12,7 +12,7 @@ export const LoansHistoryTable = () => {
   const columns = getTableColumns()
 
   return (
-    <div className={styles.tableRoot}>
+    <>
       <div className={styles.tableWrapper}>
         <Table
           data={loans}
@@ -24,6 +24,6 @@ export const LoansHistoryTable = () => {
         />
       </div>
       <Summary loans={loans} />
-    </div>
+    </>
   )
 }

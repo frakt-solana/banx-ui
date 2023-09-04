@@ -4,7 +4,7 @@ import { first, groupBy, map } from 'lodash'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
-import { DEFAULT_SORT_OPTION } from '@banx/pages/LoansPage/constants'
+import { DEFAULT_SORT_OPTION } from '@banx/pages/LendPage/components/LendPageContent/constants'
 import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
 
 import { useFilteredLoans } from './useFilteredLoans'

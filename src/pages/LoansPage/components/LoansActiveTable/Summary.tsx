@@ -10,6 +10,7 @@ import { Loan } from '@banx/api/core'
 import { calculateLoanRepayValue } from '@banx/utils'
 
 import { useSelectedLoans } from '../../loansState'
+import { useLoansTransactions } from './hooks'
 
 import styles from './LoansActiveTable.module.less'
 
@@ -19,6 +20,8 @@ interface SummaryProps {
 
 export const Summary: FC<SummaryProps> = ({ loans }) => {
   const { selection, setSelection, clearSelection } = useSelectedLoans()
+
+  const { repayBulkLoan } = useLoansTransactions()
 
   const totalLoans = selection?.length
   const totalBorrowed = sumBy(selection, ({ fraktBond }) => fraktBond.borrowedAmount)
@@ -48,7 +51,7 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
         <Button variant="secondary" onClick={selectAll}>
           {selectAllBtnText}
         </Button>
-        <Button onClick={selectAll} disabled={!selection.length}>
+        <Button onClick={repayBulkLoan} disabled={!selection.length}>
           Repay {createSolValueJSX(totalBorrowed, 1e9, '0◎')}
         </Button>
       </div>

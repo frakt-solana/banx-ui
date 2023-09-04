@@ -6,12 +6,12 @@ import { ViewState, useTableView } from '@banx/store'
 import { useSelectedLoans } from '../../loansState'
 import { Summary } from './Summary'
 import { getTableColumns } from './columns'
-import { useLoansActiveTab } from './hooks'
+import { useLoansActiveTable } from './hooks'
 
 import styles from './LoansActiveTable.module.less'
 
 export const LoansActiveTable = () => {
-  const { sortViewParams, loans, loading } = useLoansActiveTab()
+  const { sortViewParams, loans, loading } = useLoansActiveTable()
 
   const { selection, toggleLoanInSelection, findLoanInSelection, clearSelection, setSelection } =
     useSelectedLoans()
@@ -37,7 +37,7 @@ export const LoansActiveTable = () => {
   })
 
   return (
-    <div className={styles.tableRoot}>
+    <>
       <div className={styles.tableWrapper}>
         <Table
           data={loans}
@@ -55,6 +55,6 @@ export const LoansActiveTable = () => {
         />
       </div>
       <Summary loans={loans} />
-    </div>
+    </>
   )
 }

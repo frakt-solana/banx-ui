@@ -6,8 +6,7 @@ import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
-import { DEFAULT_SORT_OPTION } from '@banx/pages/LoansPage/constants'
-
+import { DEFAULT_SORT_OPTION } from '../../LoansActiveTable/constants'
 import { useBorrowerActivity } from './useBorrowerActivity'
 
 interface SearchSelectOption {
