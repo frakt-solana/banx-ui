@@ -13,7 +13,7 @@ import {
   calculateTimeFromNow,
 } from '@banx/utils'
 
-import styles from '../LoansTable.module.less'
+import styles from '../LoansActiveTable.module.less'
 
 export const StatusCell: FC<{ loan: Loan }> = ({ loan }) => {
   const { bondTradeTransaction } = loan

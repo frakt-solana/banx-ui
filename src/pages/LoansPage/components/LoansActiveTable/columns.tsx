@@ -12,7 +12,7 @@ import { Loan } from '@banx/api/core'
 
 import { DebtCell, RepayCell, StatusCell } from './TableCells'
 
-import styles from './LoansTable.module.less'
+import styles from './LoansActiveTable.module.less'
 
 interface GetTableColumnsProps {
   onSelectAll: () => void

@@ -7,7 +7,7 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
 
-import styles from '../LoansTable.module.less'
+import styles from '../LoansActiveTable.module.less'
 
 export const DebtCell: FC<{ loan: Loan }> = ({ loan }) => {
   const { solAmount, feeAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction || {}

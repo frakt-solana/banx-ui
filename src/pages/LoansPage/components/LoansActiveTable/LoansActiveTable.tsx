@@ -1,23 +1,18 @@
-import Table, { TableProps } from '@banx/components/Table'
+import Table from '@banx/components/Table'
 
 import { Loan } from '@banx/api/core'
 import { ViewState, useTableView } from '@banx/store'
 
 import { useSelectedLoans } from '../../loansState'
-import { SearchSelectOption } from '../LoansActiveTab'
+import { Summary } from './Summary'
 import { getTableColumns } from './columns'
+import { useLoansActiveTab } from './hooks'
 
-import styles from './LoansTable.module.less'
+import styles from './LoansActiveTable.module.less'
 
-type TableViewProps<T, P> = Omit<TableProps<T, P>, 'columns' | 'onRowClick' | 'rowKeyField'>
+export const LoansActiveTable = () => {
+  const { sortViewParams, loans, loading } = useLoansActiveTab()
 
-export const LoansActiveTable = ({
-  data,
-  sortViewParams,
-  breakpoints,
-  className,
-  loading,
-}: TableViewProps<Loan, SearchSelectOption>) => {
   const { selection, toggleLoanInSelection, findLoanInSelection, clearSelection, setSelection } =
     useSelectedLoans()
 
@@ -29,7 +24,7 @@ export const LoansActiveTable = ({
     if (hasSelectedLoans) {
       clearSelection()
     } else {
-      setSelection(data as Loan[])
+      setSelection(loans as Loan[])
     }
   }
 
@@ -42,21 +37,24 @@ export const LoansActiveTable = ({
   })
 
   return (
-    <Table
-      data={data}
-      columns={columns}
-      onRowClick={toggleLoanInSelection}
-      sortViewParams={sortViewParams}
-      breakpoints={breakpoints}
-      className={className}
-      rowKeyField="publicKey"
-      loading={loading}
-      showCard
-      activeRowParams={{
-        field: 'fraktBond.terminatedCounter',
-        value: true,
-        className: styles.termitated,
-      }}
-    />
+    <div className={styles.tableRoot}>
+      <div className={styles.tableWrapper}>
+        <Table
+          data={loans}
+          columns={columns}
+          onRowClick={toggleLoanInSelection}
+          sortViewParams={sortViewParams}
+          rowKeyField="publicKey"
+          loading={loading}
+          showCard
+          activeRowParams={{
+            field: 'fraktBond.terminatedCounter',
+            value: true,
+            className: styles.termitated,
+          }}
+        />
+      </div>
+      <Summary />
+    </div>
   )
 }
