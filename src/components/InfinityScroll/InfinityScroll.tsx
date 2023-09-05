@@ -12,17 +12,15 @@ interface InfinityScrollProps {
   emptyMessageClassName?: string
   isLoading?: boolean
   children: JSX.Element[]
-  scrollableTargetId?: string
 }
 
 const InfinityScroll = ({
-  itemsToShow = 20,
+  itemsToShow = 15,
   next,
   wrapperClassName,
   isLoading = false,
   children,
   infinityScrollProps,
-  scrollableTargetId = 'app-content',
 }: InfinityScrollProps): JSX.Element => {
   if (isLoading) {
     return <Loader size={'large'} />
@@ -30,12 +28,10 @@ const InfinityScroll = ({
 
   return (
     <InfiniteScrollComponent
-      scrollableTarget={scrollableTargetId}
-      next={next}
       dataLength={itemsToShow}
+      next={next}
       hasMore={true}
       loader={false}
-      style={{ overflow: 'initial' }}
       {...infinityScrollProps}
     >
       <div className={classNames(wrapperClassName)}>

@@ -1,2 +1,2 @@
-export { default } from './InfinityScroll';
-export * from './hooks';
+export { default } from './InfinityScroll'
+export * from './useFakeInfinityScroll'

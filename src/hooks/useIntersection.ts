@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react'
 
 type UseIntersection = (props?: { isSingle?: boolean }) => {
-  ref: any
+  ref: Dispatch<SetStateAction<Element | null>>
   inView: boolean
 }
 
