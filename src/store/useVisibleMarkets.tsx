@@ -8,19 +8,37 @@ type MarketVisibilityStore = {
   toggleMarketVisibility: (marketName: string) => void
 }
 
-const useMarketVisibilityStore = create<MarketVisibilityStore>((set) => {
-  return {
-    visibleMarkets: [],
-    toggleMarketVisibility: (marketName) =>
-      set((state) => {
-        const isMarketVisible = state.visibleMarkets.includes(marketName)
-        const updatedMarkets = isMarketVisible
-          ? state.visibleMarkets.filter((name) => name !== marketName)
-          : [...state.visibleMarkets, marketName]
+const LOCAL_STORAGE_KEY = '@frakt.visibleMarkets'
 
-        return { visibleMarkets: updatedMarkets }
-      }),
+const useMarketVisibilityStore = create<MarketVisibilityStore>((set) => {
+  const getUpdatedMarkets = (state: MarketVisibilityStore, marketName: string) => {
+    const isMarketVisible = state.visibleMarkets.includes(marketName)
+    const updatedMarkets = isMarketVisible
+      ? state.visibleMarkets.filter((name) => name !== marketName)
+      : [...state.visibleMarkets, marketName]
+
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ visibleMarkets: updatedMarkets }))
+
+    return { visibleMarkets: updatedMarkets }
   }
+
+  const initialState: MarketVisibilityStore = {
+    visibleMarkets: [],
+    toggleMarketVisibility: (marketName) => set((state) => getUpdatedMarkets(state, marketName)),
+  }
+
+  const savedState = localStorage.getItem(LOCAL_STORAGE_KEY)
+
+  if (savedState) {
+    try {
+      const parsedState = JSON.parse(savedState)
+      initialState.visibleMarkets = parsedState.visibleMarkets || []
+    } catch (error) {
+      console.error('Error parsing saved state:', error)
+    }
+  }
+
+  return initialState
 })
 
 export const useMarketURLControl = () => {
@@ -30,12 +48,14 @@ export const useMarketURLControl = () => {
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search)
-
     queryParams.delete('visibleMarkets')
 
     if (visibleMarkets.length > 0) {
       queryParams.append('visibleMarkets', visibleMarkets.join(','))
     }
+
+    const updatedLocalStorage = JSON.stringify({ visibleMarkets })
+    localStorage.setItem(LOCAL_STORAGE_KEY, updatedLocalStorage)
 
     navigate({ search: queryParams.toString() })
   }, [visibleMarkets, navigate, location.search])
