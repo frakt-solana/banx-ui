@@ -23,6 +23,7 @@
 // standard buttons styles
 .standard {
   padding: 8px 16px;
+  border: 1px solid transparent;
 
   &.primary {
     background-color: var(--accent-primary);
@@ -34,7 +35,7 @@
 
   &.secondary {
     background-color: var(--bg-primary);
-    border: 1px solid var(--accent-primary);
+    border-color: 1px solid var(--accent-primary);
 
     &:hover {
       border: 1px solid var(--accent-secondary);
@@ -54,7 +55,7 @@
 
   &:disabled {
     background-color: var(--bg-secondary);
-    border: 1px solid var(--bg-border);
+    border-color: 1px solid var(--bg-border);
     color: var(--content-secondary);
   }
 }
