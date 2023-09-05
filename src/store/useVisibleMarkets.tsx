@@ -3,42 +3,42 @@ import { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { create } from 'zustand'
 
-type VisibleMarketsStore = {
-  visibleCards: string[]
-  toggleVisibleCard: (collectionName: string) => void
+type MarketVisibilityStore = {
+  visibleMarkets: string[]
+  toggleMarketVisibility: (marketName: string) => void
 }
 
-const useVisibleMarketsStore = create<VisibleMarketsStore>((set) => {
+const useMarketVisibilityStore = create<MarketVisibilityStore>((set) => {
   return {
-    visibleCards: [],
-    toggleVisibleCard: (collectionName) =>
+    visibleMarkets: [],
+    toggleMarketVisibility: (marketName) =>
       set((state) => {
-        const isVisible = state.visibleCards.includes(collectionName)
-        const updatedCards = isVisible
-          ? state.visibleCards.filter((name) => name !== collectionName)
-          : [...state.visibleCards, collectionName]
+        const isMarketVisible = state.visibleMarkets.includes(marketName)
+        const updatedMarkets = isMarketVisible
+          ? state.visibleMarkets.filter((name) => name !== marketName)
+          : [...state.visibleMarkets, marketName]
 
-        return { visibleCards: updatedCards }
+        return { visibleMarkets: updatedMarkets }
       }),
   }
 })
 
-export const useVisibleMarketURLControl = () => {
+export const useMarketURLControl = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const { visibleCards, toggleVisibleCard } = useVisibleMarketsStore()
+  const { visibleMarkets, toggleMarketVisibility } = useMarketVisibilityStore()
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search)
+    const queryParams = new URLSearchParams(location.search)
 
-    params.delete('opened')
+    queryParams.delete('visibleMarkets')
 
-    if (visibleCards.length > 0) {
-      params.append('opened', visibleCards.join(','))
+    if (visibleMarkets.length > 0) {
+      queryParams.append('visibleMarkets', visibleMarkets.join(','))
     }
 
-    navigate({ search: params.toString() })
-  }, [visibleCards, navigate, location.search])
+    navigate({ search: queryParams.toString() })
+  }, [visibleMarkets, navigate, location.search])
 
-  return { visibleCards, toggleVisibleCard }
+  return { visibleMarkets, toggleMarketVisibility }
 }
