@@ -1,3 +1,4 @@
+import { useFakeInfinityScroll } from '@banx/components/InfinityScroll'
 import Table from '@banx/components/Table'
 
 import { ViewState, useTableView } from '@banx/store'
@@ -35,11 +36,13 @@ export const LoansActiveTable = () => {
     isCardView: viewState === ViewState.CARD,
   })
 
+  const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: loans })
+
   return (
     <div className={styles.tableRoot}>
       <div className={styles.tableWrapper}>
         <Table
-          data={loans}
+          data={data}
           columns={columns}
           onRowClick={toggleLoanInSelection}
           sortViewParams={sortViewParams}
@@ -52,6 +55,7 @@ export const LoansActiveTable = () => {
             className: styles.termitated,
           }}
         />
+        <div ref={fetchMoreTrigger} />
       </div>
       <Summary loans={loans} />
     </div>
