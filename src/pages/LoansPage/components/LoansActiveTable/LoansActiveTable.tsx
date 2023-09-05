@@ -43,6 +43,7 @@ export const LoansActiveTable = () => {
           columns={columns}
           onRowClick={toggleLoanInSelection}
           sortViewParams={sortViewParams}
+          className={styles.table}
           rowKeyField="publicKey"
           loading={loading}
           showCard
