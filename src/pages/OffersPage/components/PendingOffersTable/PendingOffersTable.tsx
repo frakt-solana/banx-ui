@@ -6,6 +6,8 @@ import { getTableColumns } from './columns'
 import { parseUserOffers } from './helpers'
 import { usePendingOfferTable } from './hooks'
 
+import styles from './PendingOffersTable.module.less'
+
 export const PendingOfferTable = () => {
   const { offers, loading, sortViewParams } = usePendingOfferTable()
 
@@ -19,6 +21,7 @@ export const PendingOfferTable = () => {
     <Table
       data={parsedUserOffers}
       columns={columns}
+      className={styles.table}
       rowKeyField="publicKey"
       sortViewParams={sortViewParams}
       loading={loading}
