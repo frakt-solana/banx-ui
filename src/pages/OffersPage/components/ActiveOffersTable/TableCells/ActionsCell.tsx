@@ -6,9 +6,9 @@ import { chain, isEmpty, maxBy, sortBy } from 'lodash'
 import { Button } from '@banx/components/Buttons'
 
 import { Loan } from '@banx/api/core'
-import { calculateLoanValue } from '@banx/utils'
+import { calculateLoanRepayValue, calculateLoanValue } from '@banx/utils'
 
-import { calculateLoanRepayValue, isLoanExpired } from '../helpers'
+import { isLoanExpired } from '../helpers'
 import { useLendLoansTransactions, useLenderLoansAndOffers } from '../hooks'
 
 import styles from '../ActiveOffersTable.module.less'

@@ -4,7 +4,7 @@ import { Button } from '@banx/components/Buttons'
 
 import { Loan } from '@banx/api/core'
 
-import { useLoansTransactions } from '../../LoansActiveTab/hooks'
+import { useLoansTransactions } from '../hooks'
 
 interface RepayCellProps {
   loan: Loan

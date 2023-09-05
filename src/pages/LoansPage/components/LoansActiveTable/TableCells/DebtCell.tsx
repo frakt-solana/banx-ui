@@ -1,25 +1,14 @@
 import { FC } from 'react'
 
-import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import moment from 'moment'
-
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
+import { calculateLoanRepayValue } from '@banx/utils'
 
-import styles from '../LoansTable.module.less'
+import styles from '../LoansActiveTable.module.less'
 
 export const DebtCell: FC<{ loan: Loan }> = ({ loan }) => {
-  const { solAmount, feeAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction || {}
-
-  const calculatedInterest = calculateCurrentInterestSolPure({
-    loanValue: solAmount + feeAmount,
-    startTime: soldAt,
-    currentTime: moment().unix(),
-    rateBasePoints: amountOfBonds,
-  })
-
-  const repayValue = solAmount + calculatedInterest
+  const repayValue = calculateLoanRepayValue(loan)
 
   const borrowedValue = loan.fraktBond.borrowedAmount
   const fee = repayValue - borrowedValue
