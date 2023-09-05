@@ -1,3 +1,4 @@
+import { useFakeInfinityScroll } from '@banx/components/InfinityScroll'
 import Table from '@banx/components/Table'
 
 import { ViewState, useTableView } from '@banx/store'
@@ -10,18 +11,23 @@ export const RefinanceTable = () => {
 
   const { viewState } = useTableView()
 
+  const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: loans })
+
   const columns = getTableColumns({
     isCardView: viewState === ViewState.CARD,
   })
 
   return (
-    <Table
-      data={loans}
-      columns={columns}
-      sortViewParams={sortViewParams}
-      rowKeyField="publicKey"
-      loading={loading}
-      showCard
-    />
+    <>
+      <Table
+        data={data}
+        columns={columns}
+        sortViewParams={sortViewParams}
+        rowKeyField="publicKey"
+        loading={loading}
+        showCard
+      />
+      <div ref={fetchMoreTrigger} />
+    </>
   )
 }
