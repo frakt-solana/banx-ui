@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  justify-content: center;
+  width: 100%;
 
   input {
     display: none;
@@ -34,9 +34,12 @@
   border-radius: 100px;
   cursor: pointer;
   font: var(--tab-text-md);
-  padding: 8px 16px;
   white-space: nowrap;
-  width: 100%;
+
+  label {
+    padding: 7px 16px;
+    text-align: center;
+  }
 
   &:hover {
     border: 1px solid var(--bg-border-active);
@@ -48,6 +51,8 @@
   }
 
   &.active {
-    border: 1px solid var(--content-primary);
+    border-color: transparent;
+    background: var(--accent-primary);
+    pointer-events: none;
   }
 }

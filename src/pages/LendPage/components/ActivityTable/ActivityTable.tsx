@@ -4,6 +4,7 @@ import Table from '@banx/components/Table'
 
 import { useLenderActivity } from '@banx/pages/OffersPage/components/HistoryOffersTable/hooks/useLenderActivity'
 
+import { FilterTableSection } from './FilterTableSection'
 import { getTableColumns } from './columns'
 
 import styles from './ActivityTable.module.less'
@@ -19,6 +20,7 @@ const ActivityTable: FC<ActivityTableProps> = () => {
 
   return (
     <>
+      <FilterTableSection />
       <Table
         data={loans}
         columns={columns}
