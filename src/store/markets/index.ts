@@ -1,2 +1,1 @@
-export * from './useMarketURLControl'
-export * from './useSearchMarketsURLControl'
+export * from './useMarketsURLControl'

@@ -7,7 +7,7 @@ import { Button } from '@banx/components/Buttons'
 
 import { Offer } from '@banx/api/core'
 import { PATHS } from '@banx/router'
-import { useMarketVisibilityStore, useSelectedMarkets } from '@banx/store'
+import { useMarketsURLControl } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeRemoveOfferAction } from '@banx/transactions/bonds'
@@ -25,8 +25,8 @@ interface ActionsCellProps {
 
 export const ActionsCell: FC<ActionsCellProps> = ({ offer, isCardView }) => {
   const navigate = useNavigate()
-  const { toggleMarketVisibility } = useMarketVisibilityStore()
-  const { setSelectedMarkets } = useSelectedMarkets()
+
+  const { setSelectedMarkets, toggleMarketVisibility } = useMarketsURLControl()
   const { removeOffer } = useActionsCell(offer)
 
   const buttonSize = isCardView ? 'large' : 'small'
@@ -36,6 +36,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ offer, isCardView }) => {
 
     toggleMarketVisibility(collectionName)
     setSelectedMarkets([collectionName])
+
     return navigate({
       pathname: PATHS.LEND,
       search: `?opened=${collectionName}&collections=${collectionName}`,

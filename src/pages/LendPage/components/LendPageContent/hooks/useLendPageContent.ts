@@ -4,7 +4,7 @@ import { SearchSelectProps } from '@banx/components/SearchSelect'
 
 import { MarketPreview } from '@banx/api/core'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
-import { useSearchMarketsURLControl } from '@banx/store'
+import { useMarketsURLControl } from '@banx/store'
 import { convertAprToApy } from '@banx/utils'
 
 import { useSortMarkets } from './useSortMarkets'
@@ -12,7 +12,7 @@ import { useSortMarkets } from './useSortMarkets'
 export const useLendPageContent = () => {
   const { marketsPreview, isLoading } = useMarketsPreview()
 
-  const { selectedMarkets, setSelectedMarkets } = useSearchMarketsURLControl()
+  const { selectedMarkets, setSelectedMarkets } = useMarketsURLControl()
 
   const showEmptyList = !isLoading && !marketsPreview?.length
 
