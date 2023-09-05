@@ -25,7 +25,7 @@ const LendPageContent = () => {
         <MarketsList
           markets={marketsPreview}
           visibleCards={visibleMarkets}
-          toggleVisibleCard={toggleMarketVisibility}
+          toggleMarketVisibility={toggleMarketVisibility}
         />
       )}
       {showEmptyList && <EmptyList />}

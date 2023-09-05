@@ -17,10 +17,14 @@ export const EmptyList = () => (
 interface MarketsListProps {
   markets: MarketPreview[]
   visibleCards: string[]
-  toggleVisibleCard: (collectionName: string) => void
+  toggleMarketVisibility: (collectionName: string) => void
 }
 
-export const MarketsList: FC<MarketsListProps> = ({ markets, visibleCards, toggleVisibleCard }) => {
+export const MarketsList: FC<MarketsListProps> = ({
+  markets,
+  visibleCards,
+  toggleMarketVisibility,
+}) => {
   const { width } = useWindowSize()
   const isMobile = width < TABLET_WIDTH
 
@@ -36,7 +40,7 @@ export const MarketsList: FC<MarketsListProps> = ({ markets, visibleCards, toggl
           <LendCard
             key={marketPubkey}
             market={market}
-            onCardClick={() => toggleVisibleCard(collectionName)}
+            onCardClick={() => toggleMarketVisibility(collectionName)}
             isOrderBookVisible={isOrderBookVisible}
             isCardOpen={isCardOpen}
           />
