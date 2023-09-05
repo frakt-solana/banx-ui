@@ -16,4 +16,3 @@ export const RADIO_BUTTONS_OPTIONS = [
     value: 'liquidated',
   },
 ]
-
