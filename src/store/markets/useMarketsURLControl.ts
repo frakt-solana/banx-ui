@@ -15,6 +15,7 @@ export const useMarketsURLControl = () => {
   const { selectedMarkets, setSelectedMarkets } = useSearchSelectedMarkets()
 
   useEffect(() => {
+    //? Markets query parameters should only be on the LendPage.
     if (location.pathname === PATHS.LEND) {
       const queryParams = new URLSearchParams(location.search)
       queryParams.delete('opened')
