@@ -7,7 +7,7 @@ type SelectedMarketsStore = {
   setSelectedMarkets: (value: string[]) => void
 }
 
-const LOCAL_STORAGE_KEY = '@frakt.selectedMarketsState'
+const LOCAL_STORAGE_KEY = '@frakt.selectedMarkets'
 
 const useSelectedMarkets = create<SelectedMarketsStore>((set) => {
   const initialState: SelectedMarketsStore = {
@@ -21,6 +21,7 @@ const useSelectedMarkets = create<SelectedMarketsStore>((set) => {
   }
 
   const savedState = localStorage.getItem(LOCAL_STORAGE_KEY)
+
   if (savedState) {
     try {
       const parsedState = JSON.parse(savedState)
@@ -36,7 +37,7 @@ const useSelectedMarkets = create<SelectedMarketsStore>((set) => {
 export const useSearchMarketsURLControl = () => {
   const { selectedMarkets, setSelectedMarkets } = useSelectedMarkets()
 
-  useURLControl({ key: 'selectedMarkets', data: selectedMarkets, storageKey: LOCAL_STORAGE_KEY })
+  useURLControl({ key: 'collections', data: selectedMarkets, storageKey: LOCAL_STORAGE_KEY })
 
   return { selectedMarkets, setSelectedMarkets }
 }

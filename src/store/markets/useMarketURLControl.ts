@@ -43,7 +43,7 @@ const useMarketVisibilityStore = create<MarketVisibilityStore>((set) => {
 export const useMarketURLControl = () => {
   const { visibleMarkets, toggleMarketVisibility } = useMarketVisibilityStore()
 
-  useURLControl({ key: 'visibleMarkets', data: visibleMarkets, storageKey: LOCAL_STORAGE_KEY })
+  useURLControl({ key: 'opened', data: visibleMarkets, storageKey: LOCAL_STORAGE_KEY })
 
   return { visibleMarkets, toggleMarketVisibility }
 }
