@@ -8,7 +8,7 @@ type MarketVisibilityStore = {
   toggleMarketVisibility: (marketName: string) => void
 }
 
-const useMarketVisibilityStore = create<MarketVisibilityStore>((set) => {
+export const useMarketVisibilityStore = create<MarketVisibilityStore>((set) => {
   const getUpdatedMarkets = (state: MarketVisibilityStore, marketName: string) => {
     const isMarketVisible = state.visibleMarkets.includes(marketName)
     const updatedMarkets = isMarketVisible
@@ -24,7 +24,7 @@ const useMarketVisibilityStore = create<MarketVisibilityStore>((set) => {
   }
 
   const queryParams = new URLSearchParams(window.location.search)
-  const visibleMarketsParam = queryParams.get('visibleMarkets')
+  const visibleMarketsParam = queryParams.get('opened')
 
   if (visibleMarketsParam) {
     const visibleMarkets = visibleMarketsParam.split(',')
@@ -41,13 +41,13 @@ export const useMarketURLControl = () => {
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search)
-    queryParams.delete('visibleMarkets')
 
+    queryParams.delete('opened')
     if (visibleMarkets.length > 0) {
-      queryParams.append('visibleMarkets', visibleMarkets.join(','))
+      queryParams.append('opened', visibleMarkets.join(','))
     }
 
-    navigate({ search: queryParams.toString() })
+    navigate({ search: queryParams.toString() }, { replace: true })
   }, [visibleMarkets, navigate, location.search])
 
   return { visibleMarkets, toggleMarketVisibility }

@@ -8,7 +8,7 @@ type SelectedMarketsStore = {
   setSelectedMarkets: (value: string[]) => void
 }
 
-const useSelectedMarkets = create<SelectedMarketsStore>((set) => {
+export const useSelectedMarkets = create<SelectedMarketsStore>((set) => {
   const initialState: SelectedMarketsStore = {
     selectedMarkets: [],
     setSelectedMarkets: (value) => {
@@ -19,7 +19,7 @@ const useSelectedMarkets = create<SelectedMarketsStore>((set) => {
   }
 
   const queryParams = new URLSearchParams(window.location.search)
-  const selectedMarketsParam = queryParams.get('selectedMarkets')
+  const selectedMarketsParam = queryParams.get('collections')
 
   if (selectedMarketsParam) {
     const selectedMarkets = selectedMarketsParam.split(',')
@@ -37,10 +37,10 @@ export const useSearchMarketsURLControl = () => {
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search)
-    queryParams.delete('selectedMarkets')
+    queryParams.delete('collections')
 
     if (selectedMarkets.length > 0) {
-      queryParams.append('selectedMarkets', selectedMarkets.join(','))
+      queryParams.append('collections', selectedMarkets.join(','))
     }
 
     navigate({ search: queryParams.toString() })
