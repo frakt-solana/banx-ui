@@ -7,6 +7,7 @@ import { uniqBy } from 'lodash'
 import { create } from 'zustand'
 
 import { Loan, fetchWalletLoans } from '@banx/api/core'
+import { fetchUserLoansStats } from '@banx/api/stats'
 import { useOptimisticLoans } from '@banx/store'
 
 type UseWalletLoans = () => {
@@ -65,3 +66,24 @@ const useHiddenNFTsMint = create<HiddenLoansPubkeysState>((set) => ({
       }),
     ),
 }))
+
+export const useUserLoansStats = () => {
+  const { publicKey } = useWallet()
+  const publicKeyString = publicKey?.toBase58() || ''
+
+  const { data, isLoading } = useQuery(
+    ['userLoansStats', publicKeyString],
+    () => fetchUserLoansStats(publicKeyString),
+    {
+      enabled: !!publicKeyString,
+      staleTime: 5 * 1000,
+      refetchOnWindowFocus: false,
+      refetchInterval: 15 * 1000,
+    },
+  )
+
+  return {
+    data,
+    isLoading,
+  }
+}
