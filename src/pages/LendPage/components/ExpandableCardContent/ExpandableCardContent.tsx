@@ -2,7 +2,7 @@ import { FC, useEffect } from 'react'
 
 import { Tabs, useTabs } from '@banx/components/Tabs'
 
-import ActivityTab from '../ActivityTab'
+import ActivityTable from '../ActivityTable'
 import OrderBook from '../OrderBook'
 import PlaceOfferTab from '../PlaceOfferTab'
 import { BONDS_TABS, DEFAULT_TAB } from './constants'
@@ -44,7 +44,7 @@ const ExpandableCardContent: FC<ExpandableCardContentProps> = ({
 
   const TABS_COMPONENTS: TabsComponents = {
     [TabName.OFFER]: <PlaceOfferTab marketPubkey={marketPubkey} />,
-    [TabName.ACTIVITY]: <ActivityTab marketPubkey={marketPubkey} />,
+    [TabName.ACTIVITY]: <ActivityTable marketPubkey={marketPubkey} />,
   }
 
   return (
