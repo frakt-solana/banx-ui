@@ -61,7 +61,7 @@ export const getTableColumns = ({
     },
     {
       key: 'health',
-      title: <HeaderCell label="Est. health" />,
+      title: <HeaderCell label="Est. Health" />,
       render: (_, { fraktBond }) => createSolValueJSX(fraktBond.amountToReturn, 1e9),
       sorter: true,
     },
@@ -72,7 +72,7 @@ export const getTableColumns = ({
       sorter: true,
     },
     {
-      title: <HeaderCell label="Repay" />,
+      title: <HeaderCell label="" />,
       render: (_, loan) => <RepayCell loan={loan} isCardView={isCardView} />,
     },
   ]
