@@ -56,7 +56,7 @@ export const getTableColumns = ({
     {
       key: 'repayValue',
       title: <HeaderCell label="Debt" />,
-      render: (_, loan) => <DebtCell loan={loan} />,
+      render: (_, loan) => <DebtCell loan={loan} isCardView={isCardView} />,
       sorter: true,
     },
     {
