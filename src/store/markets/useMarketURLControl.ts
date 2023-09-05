@@ -1,7 +1,6 @@
-import { useEffect } from 'react'
-
-import { useLocation, useNavigate } from 'react-router-dom'
 import { create } from 'zustand'
+
+import { useURLControl } from './helpers'
 
 type MarketVisibilityStore = {
   visibleMarkets: string[]
@@ -42,23 +41,9 @@ const useMarketVisibilityStore = create<MarketVisibilityStore>((set) => {
 })
 
 export const useMarketURLControl = () => {
-  const navigate = useNavigate()
-  const location = useLocation()
   const { visibleMarkets, toggleMarketVisibility } = useMarketVisibilityStore()
 
-  useEffect(() => {
-    const queryParams = new URLSearchParams(location.search)
-    queryParams.delete('visibleMarkets')
-
-    if (visibleMarkets.length > 0) {
-      queryParams.append('visibleMarkets', visibleMarkets.join(','))
-    }
-
-    const updatedLocalStorage = JSON.stringify({ visibleMarkets })
-    localStorage.setItem(LOCAL_STORAGE_KEY, updatedLocalStorage)
-
-    navigate({ search: queryParams.toString() })
-  }, [visibleMarkets, navigate, location.search])
+  useURLControl({ key: 'visibleMarkets', data: visibleMarkets, storageKey: LOCAL_STORAGE_KEY })
 
   return { visibleMarkets, toggleMarketVisibility }
 }
