@@ -3,7 +3,7 @@ import { isEmpty } from 'lodash'
 
 import { Loader } from '@banx/components/Loader'
 
-import { useMarketURLControl } from '@banx/store/useVisibleMarkets'
+import { useMarketURLControl } from '@banx/store'
 
 import FilterSection from '../FilterSection'
 import { EmptyList, MarketsList } from './components'
