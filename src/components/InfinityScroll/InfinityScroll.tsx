@@ -1,41 +1,33 @@
-import classNames from 'classnames'
+import { Fragment } from 'react'
+
 import InfiniteScrollComponent, { Props } from 'react-infinite-scroll-component'
 
 import { Loader } from '../Loader'
 
-interface InfinityScrollProps {
+interface InfinityScrollProps extends Props {
   itemsToShow?: number
-  next: () => void
-  infinityScrollProps?: Omit<Props, 'dataLength' | 'next' | 'hasMore' | 'children'>
   wrapperClassName?: string
-  emptyMessage?: string
-  emptyMessageClassName?: string
   isLoading?: boolean
   children: JSX.Element[]
 }
 
 const InfinityScroll = ({
   itemsToShow = 15,
-  next,
   wrapperClassName,
   isLoading = false,
   children,
-  infinityScrollProps,
+  ...restProps
 }: InfinityScrollProps): JSX.Element => {
   if (isLoading) {
-    return <Loader size={'large'} />
+    return <Loader />
   }
 
   return (
-    <InfiniteScrollComponent
-      dataLength={itemsToShow}
-      next={next}
-      hasMore={true}
-      loader={false}
-      {...infinityScrollProps}
-    >
-      <div className={classNames(wrapperClassName)}>
-        {children?.slice(0, itemsToShow).map((child) => child)}
+    <InfiniteScrollComponent {...restProps} dataLength={itemsToShow} hasMore={true} loader={false}>
+      <div className={wrapperClassName}>
+        {children
+          ?.slice(0, itemsToShow)
+          .map((child, index) => <Fragment key={index}>{child}</Fragment>)}
       </div>
     </InfiniteScrollComponent>
   )
