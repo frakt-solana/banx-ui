@@ -1,7 +1,9 @@
 import { WalletContextState } from '@solana/wallet-adapter-react'
 import { Connection } from '@solana/web3.js'
 import { web3 } from 'fbonds-core'
+import { EMPTY_PUBKEY } from 'fbonds-core/lib/fbond-protocol/constants'
 
+import { BorrowNft, Loan } from '@banx/api/core'
 import { captureSentryTxnError } from '@banx/utils'
 
 import { enqueueTxnErrorSnackbar, signAndConfirmTransaction } from './helpers'
@@ -59,4 +61,21 @@ export const buildAndExecuteTransaction = async <T, R>({
     captureSentryTxnError({ error })
     enqueueTxnErrorSnackbar(error as TxnError)
   }
+}
+
+export const convertLoanToBorrowNft = (loan: Loan): BorrowNft => {
+  const { nft, fraktBond, bondTradeTransaction } = loan
+
+  const borrowNft = {
+    mint: nft.mint,
+    loan: {
+      marketPubkey: fraktBond.hadoMarket || EMPTY_PUBKEY.toBase58(),
+      fraktMarket: fraktBond.fraktMarket,
+      marketApr: bondTradeTransaction.amountOfBonds,
+      banxStake: fraktBond.banxStake || EMPTY_PUBKEY.toBase58(),
+    },
+    nft,
+  }
+
+  return borrowNft
 }
