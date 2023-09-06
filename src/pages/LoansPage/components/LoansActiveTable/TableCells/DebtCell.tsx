@@ -1,33 +1,34 @@
 import { FC } from 'react'
 
-import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import moment from 'moment'
-
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
+import { calculateLoanRepayValue } from '@banx/utils'
 
-import styles from '../LoansTable.module.less'
+import styles from '../LoansActiveTable.module.less'
 
-export const DebtCell: FC<{ loan: Loan }> = ({ loan }) => {
-  const { solAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction || {}
+interface DebtCellProps {
+  loan: Loan
+  isCardView: boolean
+}
 
-  const calculatedInterest = calculateCurrentInterestSolPure({
-    loanValue: solAmount,
-    startTime: soldAt,
-    currentTime: moment().unix(),
-    rateBasePoints: amountOfBonds,
-  })
-
-  const repayValue = solAmount + calculatedInterest
+export const DebtCell: FC<DebtCellProps> = ({ loan, isCardView }) => {
+  const repayValue = calculateLoanRepayValue(loan)
 
   const borrowedValue = loan.fraktBond.borrowedAmount
   const fee = repayValue - borrowedValue
 
-  return (
+  const formattedRepayValue = createSolValueJSX(repayValue, 1e9, '0◎')
+  const formattedFeeValue = createSolValueJSX(fee, 1e9, '0◎')
+
+  return !isCardView ? (
     <div className={styles.debtInfo}>
-      <span className={styles.debtInfoTitle}>{createSolValueJSX(repayValue, 1e9)}</span>
-      <span className={styles.debtInfoSubtitle}>{createSolValueJSX(fee, 1e9)} fee</span>
+      <span className={styles.debtInfoTitle}>{formattedRepayValue}</span>
+      <span className={styles.debtInfoSubtitle}>{formattedFeeValue} fee</span>
     </div>
+  ) : (
+    <span>
+      {formattedRepayValue} ({formattedFeeValue} fee)
+    </span>
   )
 }

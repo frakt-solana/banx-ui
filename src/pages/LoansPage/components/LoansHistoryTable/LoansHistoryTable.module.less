@@ -65,10 +65,20 @@
   @media (max-width: 960px) {
     width: 100%;
     align-items: space-between;
+
+    & > div {
+      align-items: center;
+    }
   }
 
   @media (max-width: 768px) {
     gap: 8px 8px;
+  }
+}
+
+.summaryButton {
+  @media (max-width: 960px) {
+    width: 100%;
   }
 }
 
@@ -82,4 +92,13 @@
 }
 .debtCellSubtitle {
   font: var(--body-text-sm);
+}
+
+.statusCellTitle {
+  font: var(--body-text-sm);
+  text-transform: capitalize;
+}
+
+.searchSelect {
+  max-width: 750px;
 }

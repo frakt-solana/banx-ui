@@ -17,3 +17,9 @@ export const TXN_ERROR_DEFINITIONS: Array<TxnErrorDefinition> = [
     type: 'error',
   },
 ]
+
+export enum BorrowType {
+  StakedBanx = 'StakedBanx',
+  CNft = 'CNft',
+  Default = 'Default',
+}

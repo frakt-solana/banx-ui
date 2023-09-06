@@ -6,7 +6,7 @@ import { chain, isEmpty, maxBy, sortBy } from 'lodash'
 import { Button } from '@banx/components/Buttons'
 
 import { Loan } from '@banx/api/core'
-import { calculateLoanValue } from '@banx/utils'
+import { calculateLoanRepayValue, calculateLoanValue } from '@banx/utils'
 
 import { isLoanExpired } from '../helpers'
 import { useLendLoansTransactions, useLenderLoansAndOffers } from '../hooks'
@@ -37,13 +37,13 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
       .groupBy('publicKey')
       .map((offers) => maxBy(offers, 'lastTransactedAt'))
       .compact()
-      .filter((offer) => calculateLoanValue(offer) > fraktBond.currentPerpetualBorrowed)
+      .filter((offer) => calculateLoanValue(offer) > calculateLoanRepayValue(loan))
       .value()
 
     const sortedOffers = sortBy(filteredOffers, 'fundsSolOrTokenBalance')
 
     return sortedOffers[0]
-  }, [offers, fraktBond, optimisticOffers])
+  }, [offers, fraktBond, optimisticOffers, loan])
 
   const { terminateLoan, claimLoan, instantLoan } = useLendLoansTransactions({
     loan,

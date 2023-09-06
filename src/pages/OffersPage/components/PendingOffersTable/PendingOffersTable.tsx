@@ -1,10 +1,13 @@
 import Table from '@banx/components/Table'
 
+import { useFakeInfinityScroll } from '@banx/hooks'
 import { ViewState, useTableView } from '@banx/store'
 
 import { getTableColumns } from './columns'
 import { parseUserOffers } from './helpers'
 import { usePendingOfferTable } from './hooks'
+
+import styles from './PendingOffersTable.module.less'
 
 export const PendingOfferTable = () => {
   const { offers, loading, sortViewParams } = usePendingOfferTable()
@@ -15,14 +18,20 @@ export const PendingOfferTable = () => {
   const columns = getTableColumns({ isCardView })
   const parsedUserOffers = parseUserOffers(offers)
 
+  const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: parsedUserOffers })
+
   return (
-    <Table
-      data={parsedUserOffers}
-      columns={columns}
-      rowKeyField="publicKey"
-      sortViewParams={sortViewParams}
-      loading={loading}
-      showCard
-    />
+    <>
+      <Table
+        data={data}
+        columns={columns}
+        rowKeyField="publicKey"
+        className={styles.table}
+        sortViewParams={sortViewParams}
+        loading={loading}
+        showCard
+      />
+      <div ref={fetchMoreTrigger} />
+    </>
   )
 }

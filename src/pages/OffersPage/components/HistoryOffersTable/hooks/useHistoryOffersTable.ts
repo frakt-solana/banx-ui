@@ -9,6 +9,8 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 import { DEFAULT_SORT_OPTION } from '../constants'
 import { useLenderActivity } from './useLenderActivity'
 
+import styles from '../HistoryOffersTable.module.less'
+
 interface SearchSelectOption {
   collectionName: string
   collectionImage: string
@@ -47,6 +49,7 @@ export const useHistoryOffersTable = () => {
     selectedOptions,
     labels: ['Collection', 'Received'],
     onChange: setSelectedOptions,
+    className: styles.searchSelect,
   }
 
   const sortParams = {

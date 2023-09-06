@@ -6,6 +6,7 @@ import { StatInfo } from '@banx/components/StatInfo'
 import { BorrowerActivity } from '@banx/api/core'
 import { generateCSVContent } from '@banx/utils'
 
+import { useUserLoansStats } from '../../hooks'
 import { ACTIVITY_CSV_FILENAME } from './constants'
 
 import styles from './LoansHistoryTable.module.less'
@@ -15,11 +16,8 @@ interface SummaryProps {
 }
 
 export const Summary: FC<SummaryProps> = ({ loans }) => {
-  //TODO: Need take values from BE (waiting for endpoint from backend),
-  const totalLoans = 25
-  const totalBorrowed = 25
-  const totalDebt = 25
-  const totalRepaid = 105
+  const { data } = useUserLoansStats()
+  const { totalLoans = 0, totalBorrowed = 0, totalDebt = 0, totalRepaid = 0 } = data || {}
 
   const csvContent = generateCSVContent(loans)
 
@@ -33,9 +31,9 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
         </div>
       </div>
       <div className={styles.statsContainer}>
-        <StatInfo label="Total borrowed" value={totalBorrowed} />
-        <StatInfo label="Total debt" value={totalDebt} />
-        <StatInfo label="Total repaid" value={totalRepaid} />
+        <StatInfo label="Total borrowed" value={totalBorrowed} divider={1e9} />
+        <StatInfo label="Total debt" value={totalDebt} divider={1e9} />
+        <StatInfo label="Total repaid" value={totalRepaid} divider={1e9} />
       </div>
       <CSVDownloadButton
         className={styles.summaryButton}

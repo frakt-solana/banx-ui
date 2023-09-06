@@ -1,6 +1,7 @@
 import { ColumnsType } from 'antd/es/table'
 
 import {
+  DurationCell,
   HeaderCell,
   NftInfoCell,
   createColumn,
@@ -24,11 +25,13 @@ export const getTableColumns = () => {
       key: 'lent',
       title: <HeaderCell label="Lent" />,
       render: (_, loan) => createSolValueJSX(loan.lent, 1e9),
+      sorter: true,
     },
     {
       key: 'interest',
       title: <HeaderCell label="Interest" />,
       render: (_, loan) => createSolValueJSX(loan.interest, 1e9),
+      sorter: true,
     },
     {
       key: 'apr',
@@ -45,6 +48,14 @@ export const getTableColumns = () => {
       key: 'received',
       title: <HeaderCell label="Received" />,
       render: (_, loan) => <ReceivedCell loan={loan} />,
+      sorter: true,
+    },
+    {
+      key: 'duration',
+      title: <HeaderCell label="When" />,
+      render: (_, { publicKey, timestamp }) => (
+        <DurationCell publicKey={publicKey} timestamp={timestamp} />
+      ),
       sorter: true,
     },
   ]
