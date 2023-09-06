@@ -11,6 +11,7 @@ import {
   REPAY_NFT_PER_TXN,
   getLoanBorrowType,
   makeRepayLoansAction,
+  makeRepayPartialLoanAction,
 } from '@banx/transactions/loans'
 import { enqueueSnackbar } from '@banx/utils'
 
@@ -23,6 +24,25 @@ export const useLoansTransactions = () => {
   const repayLoan = async (loan: Loan) => {
     await new TxnExecutor(makeRepayLoansAction, { wallet, connection })
       .addTxnParam([loan])
+      .on('pfSuccessAll', (results) => {
+        const { txnHash, result } = results[0]
+        if (result && wallet.publicKey) {
+          enqueueSnackbar({
+            message: 'Transaction Executed',
+            solanaExplorerPath: `tx/${txnHash}`,
+          })
+          updateLoansOptimistic(result, wallet.publicKey.toBase58())
+        }
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error)
+      })
+      .execute()
+  }
+
+  const repayPartialLoan = async (loan: Loan, fractionToRepay: number) => {
+    await new TxnExecutor(makeRepayPartialLoanAction, { wallet, connection })
+      .addTxnParam({ loan, fractionToRepay })
       .on('pfSuccessAll', (results) => {
         const { txnHash, result } = results[0]
         if (result && wallet.publicKey) {
@@ -66,6 +86,7 @@ export const useLoansTransactions = () => {
   return {
     repayLoan,
     repayBulkLoan,
+    repayPartialLoan,
   }
 }
 
