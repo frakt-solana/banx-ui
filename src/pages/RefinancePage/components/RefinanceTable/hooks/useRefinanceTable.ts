@@ -10,6 +10,8 @@ import { DEFAULT_SORT_OPTION } from '../constants'
 import { useFilteredLoans } from './useFilteredLoans'
 import { useSortedLoans } from './useSortedLoans'
 
+import styles from '../RefinanceTable.module.less'
+
 export const useRefinanceTable = () => {
   const { loans, isLoading } = useAuctionsLoans()
 
@@ -47,6 +49,7 @@ export const useRefinanceTable = () => {
       secondLabel: { key: 'numberOfNFTs' },
     },
     labels: ['Collection', 'Available'],
+    className: styles.searchSelect,
   }
 
   return {
