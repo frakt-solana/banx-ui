@@ -7,7 +7,7 @@ import { map } from 'lodash'
 
 import { Loan, fetchWalletLoans } from '@banx/api/core'
 import { fetchUserLoansStats } from '@banx/api/stats'
-import { isExpired, isLoanNewer, useOptimisticLoans } from '@banx/store'
+import { isOptimisticLoanExpired, isLoanNewer, useOptimisticLoans } from '@banx/store'
 
 type UseWalletLoans = () => {
   loans: Loan[]
@@ -43,7 +43,7 @@ export const useWalletLoans: UseWalletLoans = () => {
     if (!data || isFetching || !isFetched || !publicKey) return
 
     const expiredLoans = walletOptimisticLoans.filter((loan) =>
-      isExpired(loan, publicKey.toBase58()),
+      isOptimisticLoanExpired(loan, publicKey.toBase58()),
     )
 
     const optimisticsToRemove = walletOptimisticLoans.filter(({ loan }) => {

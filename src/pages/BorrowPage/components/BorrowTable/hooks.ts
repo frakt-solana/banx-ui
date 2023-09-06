@@ -7,7 +7,13 @@ import { useNavigate } from 'react-router-dom'
 import { SortOption } from '@banx/components/SortDropdown'
 
 import { PATHS } from '@banx/router'
-import { ViewState, useIsLedger, useOptimisticLoans, useTableView } from '@banx/store'
+import {
+  ViewState,
+  useIsLedger,
+  useOptimisticLoans,
+  useOptimisticOffers,
+  useTableView,
+} from '@banx/store'
 
 import { useCartState } from '../../cartState'
 import { useBorrowNfts } from '../../hooks'
@@ -28,6 +34,7 @@ export const useBorrowTable = () => {
   const { offerByMint, addNft, removeNft, findOfferInCart, findBestOffer, addNftsAuto, resetCart } =
     useCartState()
   const { add: addLoansOptimistic } = useOptimisticLoans()
+  const { update: updateOffersOptimistic } = useOptimisticOffers()
 
   const tableNftsData: TableNftData[] = useMemo(
     () => {
@@ -67,6 +74,7 @@ export const useBorrowTable = () => {
         ],
       ],
       addLoansOptimistic,
+      updateOffersOptimistic,
       isLedger,
     })
 
@@ -85,6 +93,7 @@ export const useBorrowTable = () => {
       },
       txnParams,
       addLoansOptimistic,
+      updateOffersOptimistic,
       isLedger,
     })
 

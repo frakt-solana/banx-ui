@@ -86,7 +86,7 @@ export const useOptimisticLoans = (): UseOptimisticLoansValues => {
   return { loans: optimisticLoans, add, remove, find, update }
 }
 
-export const isExpired = (loan: LoanOptimistic, walletPublicKey: string) =>
+export const isOptimisticLoanExpired = (loan: LoanOptimistic, walletPublicKey: string) =>
   loan.expiredAt < moment().unix() && loan.wallet === walletPublicKey
 
 const setOptimisticLoansLS = (loans: LoanOptimistic[]) => {

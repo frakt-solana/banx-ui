@@ -1,9 +1,10 @@
+import { CONSTANT_BID_CAP } from 'fbonds-core/lib/fbond-protocol/constants'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { chunk, groupBy } from 'lodash'
+import { chunk, cloneDeep, first, groupBy } from 'lodash'
 import moment from 'moment'
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
-import { UseOptimisticLoansValues } from '@banx/store'
+import { UseOptimisticLoansValues, UseOptimisticOffersValues } from '@banx/store'
 import { BorrowType, defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import {
@@ -18,6 +19,7 @@ import { enqueueSnackbar } from '@banx/utils'
 import { CartState } from '../../cartState'
 import { SimpleOffer } from '../../types'
 import { ONE_WEEK_IN_SECONDS } from './constants'
+import { OfferWithLoanValue } from './types'
 
 export const createTableNftData = ({
   nfts,
@@ -51,8 +53,15 @@ export const executeBorrow = async (props: {
   txnParams: MakeBorrowActionParams[]
   walletAndConnection: WalletAndConnection
   addLoansOptimistic: UseOptimisticLoansValues['add']
+  updateOffersOptimistic: UseOptimisticOffersValues['update']
 }) => {
-  const { isLedger = false, txnParams, walletAndConnection, addLoansOptimistic } = props
+  const {
+    isLedger = false,
+    txnParams,
+    walletAndConnection,
+    addLoansOptimistic,
+    updateOffersOptimistic,
+  } = props
   const { wallet, connection } = walletAndConnection
 
   const txnsResults = await new TxnExecutor(
@@ -68,13 +77,32 @@ export const executeBorrow = async (props: {
             message: 'Transaction Executed',
             solanaExplorerPath: `tx/${txnHash}`,
           })
-          return result
+          return result?.map(({ loan }) => loan)
         })
         .flat()
         .filter(Boolean) as Loan[]
       if (wallet.publicKey) {
         addLoansOptimistic(loansFlat, wallet.publicKey?.toBase58())
       }
+    })
+    .on('pfSuccessAll', (results) => {
+      const optimisticOffers: OfferWithLoanValue[] = results
+        ?.map(
+          (result) =>
+            result.result?.map(({ offer, loan }) => ({
+              offer,
+              loanValue: loan.bondTradeTransaction.solAmount + loan.bondTradeTransaction.feeAmount,
+            })) || [],
+        )
+        .flat()
+
+      const optimisticByPubkey = groupBy(optimisticOffers, ({ offer }) => offer.publicKey)
+
+      const optimisticsToAdd = Object.values(optimisticByPubkey).map((offers) => {
+        return mergeOffersWithLoanValue(offers)
+      }) as Offer[]
+
+      updateOffersOptimistic(optimisticsToAdd)
     })
     .on('pfError', (error) => {
       defaultTxnErrorHandler(error)
@@ -125,4 +153,25 @@ export const calcInterest: CalcInterest = ({ loanValue, timeInterval, apr }) => 
     currentTime: currentTimeUnix,
     rateBasePoints: apr,
   })
+}
+
+export const optimisticWithdrawFromBondOffer = (
+  bondOffer: Offer,
+  amountOfSolToWithdraw: number,
+): Offer => {
+  const newFundsSolOrTokenBalance = bondOffer.fundsSolOrTokenBalance - amountOfSolToWithdraw
+  return {
+    ...bondOffer,
+    fundsSolOrTokenBalance: newFundsSolOrTokenBalance,
+    edgeSettlement: newFundsSolOrTokenBalance,
+    bidSettlement: CONSTANT_BID_CAP * -1 + newFundsSolOrTokenBalance,
+  }
+}
+
+const mergeOffersWithLoanValue = (offers: OfferWithLoanValue[]): Offer | null => {
+  const offer = cloneDeep(first(offers))
+  if (!offer) return null
+  const totalLoanValues = (offers.length - 1) * (offer?.loanValue || 0)
+
+  return optimisticWithdrawFromBondOffer(offer.offer, totalLoanValues)
 }

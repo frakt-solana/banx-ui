@@ -23,7 +23,7 @@ export type MakeBorrowActionParams = {
   offer: Offer
 }[]
 
-export type MakeBorrowActionResult = Loan[]
+export type MakeBorrowActionResult = { loan: Loan; offer: Offer }[]
 
 export type MakeBorrowAction = MakeActionFn<MakeBorrowActionParams, MakeBorrowActionResult>
 
@@ -40,17 +40,21 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndCon
     walletAndConnection,
   })
 
-  const loans: Loan[] = optimisticResults.map((optimistic, idx) => ({
-    publicKey: optimistic.fraktBond.publicKey,
-    fraktBond: optimistic.fraktBond,
-    bondTradeTransaction: optimistic.bondTradeTransaction,
-    nft: ixnParams[idx].nft.nft,
-  }))
+  const loansAndOffers = optimisticResults.map((optimistic, idx) => {
+    const loan = {
+      publicKey: optimistic.fraktBond.publicKey,
+      fraktBond: optimistic.fraktBond,
+      bondTradeTransaction: optimistic.bondTradeTransaction,
+      nft: ixnParams[idx].nft.nft,
+    }
+
+    return { loan, offer: optimistic.bondOffer }
+  })
 
   return {
     instructions,
     signers,
-    additionalResult: loans,
+    additionalResult: loansAndOffers,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }
