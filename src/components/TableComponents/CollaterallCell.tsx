@@ -32,7 +32,7 @@ export const NftInfoCell: FC<NftInfoCellProps> = ({
       )}
       <div className={styles.nftImageWrapper}>
         <img src={nftImage} className={styles.nftImage} />
-        {selected && <div className={styles.selectedCollectionOverlay} />}
+        {selected && isCardView && <div className={styles.selectedCollectionOverlay} />}
       </div>
       <div className={styles.nftNames}>
         <p className={styles.nftCollectionName}>{nftCollectionName}</p>

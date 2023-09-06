@@ -1,3 +1,10 @@
+.box-dimensions(@min, @max) {
+  min-height: @min;
+  min-width: @min;
+  max-height: @max;
+  max-width: @max;
+}
+
 // root styles for all buttons
 .root {
   background: transparent;
@@ -9,6 +16,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+  white-space: nowrap;
 
   &:disabled {
     pointer-events: none;
@@ -23,6 +31,7 @@
 // standard buttons styles
 .standard {
   padding: 8px 16px;
+  border: 1px solid transparent;
 
   &.primary {
     background-color: var(--accent-primary);
@@ -34,7 +43,7 @@
 
   &.secondary {
     background-color: var(--bg-primary);
-    border: 1px solid var(--accent-primary);
+    border-color: var(--accent-primary);
 
     &:hover {
       border: 1px solid var(--accent-secondary);
@@ -48,13 +57,13 @@
     height: 32px;
   }
   &.small {
-    padding: 2px 7px;
+    padding: 2px 12px;
     height: 24px;
   }
 
   &:disabled {
     background-color: var(--bg-secondary);
-    border: 1px solid var(--bg-border);
+    border-color: 1px solid var(--bg-border);
     color: var(--content-secondary);
   }
 }
@@ -71,20 +80,15 @@
 
 .circle.primary,
 .circle.secondary {
-  padding: 8px;
-
   &.large {
-    height: 40px;
-    width: 40px;
+    .box-dimensions(40px, 40px);
 
     @media (max-width: 768px) {
-      height: 32px;
-      width: 32px;
+      .box-dimensions(32px, 32px);
     }
   }
   &.medium {
-    height: 32px;
-    width: 32px;
+    .box-dimensions(32px, 32px);
   }
   &.small {
     height: 24px;

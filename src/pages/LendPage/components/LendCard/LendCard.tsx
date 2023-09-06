@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useEffect, useRef } from 'react'
 
 import classNames from 'classnames'
 
@@ -20,8 +20,16 @@ interface LendCardProps {
 }
 
 const LendCard: FC<LendCardProps> = ({ isCardOpen, onCardClick, market, isOrderBookVisible }) => {
+  const cardRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (isCardOpen && cardRef.current) {
+      cardRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    }
+  }, [isCardOpen])
+
   return (
-    <div className={classNames(styles.card, { [styles.active]: isCardOpen })}>
+    <div ref={cardRef} className={classNames(styles.card, { [styles.active]: isCardOpen })}>
       <div className={styles.cardBody} onClick={onCardClick}>
         <MarketMainInfo market={market} />
         <div className={styles.row}>

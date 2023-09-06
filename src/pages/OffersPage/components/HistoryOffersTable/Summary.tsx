@@ -6,6 +6,7 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { LenderActivity } from '@banx/api/core'
 import { ColorByPercentHealth, generateCSVContent, getColorByPercent } from '@banx/utils'
 
+import { useUserOffersStats } from '../../hooks'
 import { ACTIVITY_CSV_FILENAME } from './constants'
 
 import styles from './HistoryOffersTable.module.less'
@@ -15,14 +16,19 @@ interface SummaryProps {
 }
 
 export const Summary: FC<SummaryProps> = ({ loans }) => {
-  //TODO: Need take values from BE
-  const totalOffers = 25
-  const totalLent = 25
-  const totalInterest = 25
-  const totalReceived = 105
-  const weightedAPR = 104
+  const { data } = useUserOffersStats()
 
-  const colorAPR = getColorByPercent(weightedAPR, ColorByPercentHealth)
+  const {
+    totalOffers = 0,
+    totalLent = 0,
+    totalInterest = 0,
+    totalReceived = 0,
+    weightedApr = 0,
+  } = data || {}
+
+  const weightedAprPercent = weightedApr / 100
+
+  const colorAPR = getColorByPercent(weightedAprPercent, ColorByPercentHealth)
   const csvContent = generateCSVContent(loans)
 
   return (
@@ -35,16 +41,17 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
         </div>
       </div>
       <div className={styles.statsContainer}>
-        <StatInfo label="Total Lent" value={totalLent} />
-        <StatInfo label="Total interest" value={totalInterest} />
+        <StatInfo label="Total Lent" value={totalLent} divider={1e9} />
+        <StatInfo label="Total interest" value={totalInterest} divider={1e9} />
         <StatInfo
           label="Weighted APR"
-          value={weightedAPR}
+          value={weightedAprPercent}
           valueType={VALUES_TYPES.PERCENT}
           valueStyles={{ color: colorAPR }}
           classNamesProps={{ value: styles.aprValue }}
         />
-        <StatInfo label="Total received" value={totalReceived} />
+
+        <StatInfo label="Total received" value={totalReceived} divider={1e9} />
       </div>
       <CSVDownloadButton
         className={styles.summaryButton}

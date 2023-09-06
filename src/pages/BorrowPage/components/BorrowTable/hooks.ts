@@ -171,7 +171,7 @@ export const useBorrowTable = () => {
         },
         className: styles.searchSelect,
         selectedOptions,
-        labels: ['Collections', 'Nfts'],
+        labels: ['Collection', 'Nfts'],
         onChange: setSelectedOptions,
       },
       sortParams: { option: sortOption, onChange: setSortOption },

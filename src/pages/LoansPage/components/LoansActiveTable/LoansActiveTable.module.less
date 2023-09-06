@@ -11,19 +11,23 @@
   overflow-y: scroll;
 }
 
-.borrowTable :global {
+.table :global {
   .ant-table-tbody > tr > td {
-    width: 285px;
+    width: 230px;
   }
   .ant-table-tbody > tr > td:last-child {
-    width: 144px;
+    width: 84px;
   }
+}
+
+.searchSelect {
+  max-width: 750px;
 }
 
 .headerTitleRow {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: 16px !important;
 }
 
 .checkbox {
@@ -31,8 +35,30 @@
   padding-left: 18px;
 }
 
-.searchSelect {
-  max-width: 750px;
+.termitated {
+  background: var(--additional-lava-secondary);
+}
+
+.statusInfo,
+.debtInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.statusInfoTitle,
+.debtInfoTitle {
+  font: var(--body-text-md);
+}
+
+.statusInfoSubtitle {
+  font: var(--body-text-sm);
+  text-transform: capitalize;
+}
+
+.debtInfoSubtitle {
+  font: var(--body-text-sm);
 }
 
 .summary {
@@ -49,6 +75,40 @@
 
   @media (max-width: 768px) {
     gap: 16px;
+  }
+}
+
+.statsContainer {
+  display: flex;
+  justify-content: space-around;
+  flex-grow: 1;
+
+  & > div {
+    align-items: end;
+  }
+
+  @media (max-width: 960px) {
+    width: 100%;
+    align-items: space-between;
+
+    & > div {
+      align-items: center;
+    }
+  }
+
+  @media (max-width: 768px) {
+    gap: 8px 8px;
+  }
+}
+
+.summaryBtns {
+  display: flex;
+  gap: 8px;
+
+  @media (max-width: 960px) {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    width: 100%;
   }
 }
 
@@ -86,64 +146,4 @@
     font: var(--table-header-sm);
     width: 86px;
   }
-}
-
-.statsContainer {
-  display: flex;
-  justify-content: space-around;
-  flex-grow: 1;
-
-  @media (max-width: 960px) {
-    width: 100%;
-    align-items: space-between;
-  }
-
-  @media (max-width: 768px) {
-    gap: 8px 8px;
-  }
-}
-
-.stats {
-  p:first-child {
-    color: var(--content-secondary);
-    font: var(--table-header-md);
-    text-transform: uppercase;
-  }
-
-  p:last-child {
-    color: var(--content-primary);
-    font: var(--body-text-md);
-    text-align: right;
-  }
-
-  @media (max-width: 960px) {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  @media (max-width: 768px) {
-    p:first-child {
-      font: var(--table-header-sm);
-    }
-
-    p:last-child {
-      font: var(--body-text-sm);
-    }
-  }
-}
-
-.summaryBtns {
-  display: flex;
-  gap: 8px;
-
-  @media (max-width: 960px) {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    width: 100%;
-  }
-}
-
-.borrowButton {
-  width: 128px;
 }

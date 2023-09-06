@@ -5,9 +5,9 @@ import { first, groupBy, map } from 'lodash'
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
 
-import { DEFAULT_SORT_OPTION } from '@banx/pages/LoansPage/constants'
 import { useWalletLoans } from '@banx/pages/LoansPage/hooks'
 
+import { DEFAULT_SORT_OPTION } from '../constants'
 import { useFilteredLoans } from './useFilteredLoans'
 import { useSortedLoans } from './useSortedLoans'
 
@@ -19,7 +19,7 @@ export interface SearchSelectOption {
   numberOfNFTs: number
 }
 
-export const useLoansActiveTab = () => {
+export const useLoansActiveTable = () => {
   const { loans, isLoading } = useWalletLoans()
 
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
@@ -50,7 +50,7 @@ export const useLoansActiveTab = () => {
       imageKey: 'collectionImage',
       secondLabel: { key: 'numberOfNFTs' },
     },
-    labels: ['Collections', 'Nfts'],
+    labels: ['Collection', 'Nfts'],
     className: styles.searchSelect,
   }
 

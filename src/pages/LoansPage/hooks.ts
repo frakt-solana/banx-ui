@@ -6,6 +6,7 @@ import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/type
 import { map } from 'lodash'
 
 import { Loan, fetchWalletLoans } from '@banx/api/core'
+import { fetchUserLoansStats } from '@banx/api/stats'
 import { isExpired, isLoanNewer, useOptimisticLoans } from '@banx/store'
 
 type UseWalletLoans = () => {
@@ -78,6 +79,27 @@ export const useWalletLoans: UseWalletLoans = () => {
 
   return {
     loans,
+    isLoading,
+  }
+}
+
+export const useUserLoansStats = () => {
+  const { publicKey } = useWallet()
+  const publicKeyString = publicKey?.toBase58() || ''
+
+  const { data, isLoading } = useQuery(
+    ['userLoansStats', publicKeyString],
+    () => fetchUserLoansStats(publicKeyString),
+    {
+      enabled: !!publicKeyString,
+      staleTime: 5 * 1000,
+      refetchOnWindowFocus: false,
+      refetchInterval: 15 * 1000,
+    },
+  )
+
+  return {
+    data,
     isLoading,
   }
 }
