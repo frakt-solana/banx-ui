@@ -12,8 +12,11 @@
 }
 
 .borrowTable :global {
+  .ant-table-tbody > tr > td {
+    width: 285px;
+  }
   .ant-table-tbody > tr > td:last-child {
-    text-align: -webkit-right;
+    width: 144px;
   }
 }
 
@@ -30,22 +33,6 @@
 
 .searchSelect {
   max-width: 750px;
-}
-
-.feeCell {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-}
-
-.feeCellTitle {
-  font: var(--body-text-md);
-}
-
-.feeCellSubtitle {
-  font: var(--body-text-sm);
-  text-transform: capitalize;
 }
 
 .summary {
@@ -126,6 +113,7 @@
   p:last-child {
     color: var(--content-primary);
     font: var(--body-text-md);
+    text-align: right;
   }
 
   @media (max-width: 960px) {
@@ -154,4 +142,8 @@
     grid-template-columns: repeat(2, 1fr);
     width: 100%;
   }
+}
+
+.borrowButton {
+  width: 128px;
 }

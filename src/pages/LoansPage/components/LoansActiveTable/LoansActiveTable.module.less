@@ -11,6 +11,15 @@
   overflow-y: scroll;
 }
 
+.table :global {
+  .ant-table-tbody > tr > td {
+    width: 230px;
+  }
+  .ant-table-tbody > tr > td:last-child {
+    width: 84px;
+  }
+}
+
 .searchSelect {
   max-width: 750px;
 }
@@ -81,6 +90,10 @@
   @media (max-width: 960px) {
     width: 100%;
     align-items: space-between;
+
+    & > div {
+      align-items: center;
+    }
   }
 
   @media (max-width: 768px) {

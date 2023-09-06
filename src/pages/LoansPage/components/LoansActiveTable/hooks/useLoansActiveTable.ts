@@ -50,7 +50,7 @@ export const useLoansActiveTable = () => {
       imageKey: 'collectionImage',
       secondLabel: { key: 'numberOfNFTs' },
     },
-    labels: ['Collections', 'Nfts'],
+    labels: ['Collection', 'Nfts'],
     className: styles.searchSelect,
   }
 

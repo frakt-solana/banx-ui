@@ -11,6 +11,8 @@ import { calculateLoanValue } from '@banx/utils'
 import { DEFAULT_SORT_OPTION } from '../constants'
 import { useUserOffers } from './useUserOffers'
 
+import styles from '../PendingOffersTable.module.less'
+
 interface SearchSelectOption {
   collectionName: string
   collectionImage: string
@@ -54,6 +56,7 @@ export const usePendingOfferTable = () => {
     selectedOptions,
     labels: ['Collection', 'Best offer'],
     onChange: setSelectedOptions,
+    className: styles.searchSelect,
   }
 
   const sortParams = {

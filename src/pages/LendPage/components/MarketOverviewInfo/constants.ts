@@ -5,17 +5,17 @@ import { ColorByPercentHealth, convertAprToApy, getColorByPercent } from '@banx/
 
 export const ADDITIONAL_MARKET_INFO = [
   {
+    key: 'loansTVL',
+    label: 'In loans',
+    tooltipText: 'Liquidity that is locked in active loans',
+    secondValue: (market: MarketPreview) => `in ${market?.activeBondsAmount || 0} loans`,
+    divider: 1e9,
+  },
+  {
     key: 'offerTVL',
     label: 'In offers',
     tooltipText: 'Total liquidity currently available in active offers',
     secondValue: (market: MarketPreview) => `in ${market?.activeOfferAmount || 0} offers`,
-    divider: 1e9,
-  },
-  {
-    key: 'loansTVL',
-    label: 'Taken',
-    tooltipText: 'Liquidity that is locked in active loans',
-    secondValue: (market: MarketPreview) => `in ${market?.activeBondsAmount || 0} loans`,
     divider: 1e9,
   },
   {

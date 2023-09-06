@@ -32,7 +32,7 @@ export const useLendPageContent = () => {
     options: marketsPreview,
     selectedOptions: selectedMarkets,
     placeholder: 'Select a collection',
-    labels: ['Collections', 'APY'],
+    labels: ['Collection', 'APY'],
     optionKeys: {
       labelKey: 'collectionName',
       valueKey: 'marketPubkey',
