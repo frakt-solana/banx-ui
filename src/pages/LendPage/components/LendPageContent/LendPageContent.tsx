@@ -3,8 +3,8 @@ import { isEmpty } from 'lodash'
 
 import { Loader } from '@banx/components/Loader'
 
-import { useMarketsURLControl } from '@banx/store'
 import { useFakeInfinityScroll } from '@banx/hooks'
+import { useMarketsURLControl } from '@banx/store'
 
 import FilterSection from '../FilterSection'
 import { EmptyList, MarketsList } from './components'
@@ -28,8 +28,8 @@ const LendPageContent = () => {
         <>
           <MarketsList
             markets={markets}
-            visibleCards={visibleCards}
-            toggleVisibleCard={toggleVisibleCard}
+            visibleCards={visibleMarkets}
+            toggleMarketVisibility={toggleMarketVisibility}
           />
           <div ref={fetchMoreTrigger} />
         </>
