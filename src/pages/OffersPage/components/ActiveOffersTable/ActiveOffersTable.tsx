@@ -1,5 +1,6 @@
 import Table from '@banx/components/Table'
 
+import { useFakeInfinityScroll } from '@banx/hooks'
 import { ViewState, useTableView } from '@banx/store'
 
 import { getTableColumns } from './columns'
@@ -15,16 +16,21 @@ const ActiveOffersTable = () => {
 
   const columns = getTableColumns({ isCardView })
 
+  const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: loans })
+
   return (
-    <Table
-      data={loans}
-      columns={columns}
-      sortViewParams={sortViewParams}
-      className={styles.rootTable}
-      rowKeyField="publicKey"
-      loading={loading}
-      showCard
-    />
+    <>
+      <Table
+        data={data}
+        columns={columns}
+        sortViewParams={sortViewParams}
+        className={styles.rootTable}
+        rowKeyField="publicKey"
+        loading={loading}
+        showCard
+      />
+      <div ref={fetchMoreTrigger} />
+    </>
   )
 }
 

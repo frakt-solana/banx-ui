@@ -3,6 +3,7 @@ import { isEmpty } from 'lodash'
 
 import { Loader } from '@banx/components/Loader'
 
+import { useFakeInfinityScroll } from '@banx/hooks'
 import { useVisibleMarketURLControl } from '@banx/store/useVisibleMarkets'
 
 import FilterSection from '../FilterSection'
@@ -16,17 +17,22 @@ const LendPageContent = () => {
   const { marketsPreview, isLoading, searchSelectParams, sortParams, showEmptyList } =
     useLendPageContent()
 
+  const { data: markets, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: marketsPreview })
+
   return (
     <div className={classNames(styles.content, { [styles.selected]: !!visibleCards?.length })}>
       <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
       {isLoading && isEmpty(marketsPreview) ? (
         <Loader />
       ) : (
-        <MarketsList
-          markets={marketsPreview}
-          visibleCards={visibleCards}
-          toggleVisibleCard={toggleVisibleCard}
-        />
+        <>
+          <MarketsList
+            markets={markets}
+            visibleCards={visibleCards}
+            toggleVisibleCard={toggleVisibleCard}
+          />
+          <div ref={fetchMoreTrigger} />
+        </>
       )}
       {showEmptyList && <EmptyList />}
     </div>
