@@ -9,6 +9,8 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 import { DEFAULT_SORT_OPTION } from '../../LoansActiveTable/constants'
 import { useBorrowerActivity } from './useBorrowerActivity'
 
+import styles from '../LoansHistoryTable.module.less'
+
 interface SearchSelectOption {
   collectionName: string
   collectionImage: string
@@ -47,6 +49,7 @@ export const useHistoryLoansTable = () => {
     selectedOptions,
     labels: ['Collection', 'Borrowed'],
     onChange: setSelectedOptions,
+    className: styles.searchSelect,
   }
 
   const sortParams = {
