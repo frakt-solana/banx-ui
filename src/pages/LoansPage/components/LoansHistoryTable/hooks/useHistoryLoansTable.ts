@@ -1,9 +1,11 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 
 import { first, groupBy, map, sumBy } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { createSolValueJSX } from '@banx/components/TableComponents'
+
+import { useIntersection } from '@banx/hooks'
 
 import { useBorrowerActivity } from './useBorrowerActivity'
 
@@ -16,8 +18,23 @@ interface SearchSelectOption {
 }
 
 export const useHistoryLoansTable = () => {
-  const { loans, isLoading, sortParams, selectedCollections, setSelectedCollections } =
-    useBorrowerActivity()
+  const { ref: fetchMoreTrigger, inView } = useIntersection()
+
+  const {
+    loans,
+    isLoading,
+    sortParams,
+    selectedCollections,
+    setSelectedCollections,
+    fetchNextPage,
+    hasNextPage,
+  } = useBorrowerActivity()
+
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage()
+    }
+  }, [inView, fetchNextPage, hasNextPage])
 
   const searchSelectOptions = useMemo(() => {
     const loansGroupedByCollection = groupBy(loans, (loans) => loans.nft.meta.collectionName)
@@ -55,5 +72,6 @@ export const useHistoryLoansTable = () => {
       searchSelectParams,
       sortParams,
     },
+    fetchMoreTrigger,
   }
 }

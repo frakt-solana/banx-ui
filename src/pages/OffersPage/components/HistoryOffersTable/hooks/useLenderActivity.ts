@@ -20,7 +20,7 @@ export const useLenderActivity = () => {
 
   const [sortBy, order] = sortOption.value.split('_')
 
-  const fetchData = async ({ pageParam }: { pageParam: number }) => {
+  const fetchData = async (pageParam: number) => {
     const data = await fetchLenderActivity({
       skip: LIMIT * pageParam,
       limit: LIMIT,
@@ -35,7 +35,7 @@ export const useLenderActivity = () => {
 
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage, isLoading } = useInfiniteQuery({
     queryKey: ['lenderActivity', publicKey, sortOption],
-    queryFn: ({ pageParam = 0 }) => fetchData({ pageParam }),
+    queryFn: ({ pageParam = 0 }) => fetchData(pageParam),
     getPreviousPageParam: (firstPage) => {
       return firstPage.pageParam - 1 ?? undefined
     },
