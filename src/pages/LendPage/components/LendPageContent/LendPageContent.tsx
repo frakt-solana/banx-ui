@@ -13,7 +13,7 @@ import { useLendPageContent } from './hooks'
 import styles from './LendPageContent.module.less'
 
 const LendPageContent = () => {
-  const { visibleMarkets, toggleMarketVisibility } = useMarketsURLControl()
+  const { visibleMarkets, toggleMarketVisibility } = useMarketsURLControl(true)
   const { marketsPreview, isLoading, searchSelectParams, sortParams, showEmptyList } =
     useLendPageContent()
 

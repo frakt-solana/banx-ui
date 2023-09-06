@@ -2,12 +2,10 @@ import { useEffect } from 'react'
 
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import { PATHS } from '@banx/router'
-
 import { useMarketVisibility } from './useMarketVisibilityState'
 import { useSearchSelectedMarkets } from './useSearchMarketsURLControl'
 
-export const useMarketsURLControl = () => {
+export const useMarketsURLControl = (shouldControlQueryParams?: boolean) => {
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -15,8 +13,8 @@ export const useMarketsURLControl = () => {
   const { selectedMarkets, setSelectedMarkets } = useSearchSelectedMarkets()
 
   useEffect(() => {
-    //? Markets query parameters should only be on the LendPage.
-    if (location.pathname === PATHS.LEND) {
+    //? Markets query parameters should only be on certain pages.
+    if (shouldControlQueryParams) {
       const queryParams = new URLSearchParams(location.search)
       queryParams.delete('opened')
       queryParams.delete('collections')
@@ -31,7 +29,14 @@ export const useMarketsURLControl = () => {
 
       navigate({ search: queryParams.toString() })
     }
-  }, [visibleMarkets, selectedMarkets, navigate, location.search, location.pathname])
+  }, [
+    visibleMarkets,
+    selectedMarkets,
+    navigate,
+    location.search,
+    location.pathname,
+    shouldControlQueryParams,
+  ])
 
   return { visibleMarkets, toggleMarketVisibility, selectedMarkets, setSelectedMarkets }
 }
