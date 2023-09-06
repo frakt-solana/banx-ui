@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 
 import { MarketPreview } from '@banx/api/core'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
+import { useMarketsURLControl } from '@banx/store'
 import { convertAprToApy } from '@banx/utils'
 
 import { useSortMarkets } from './useSortMarkets'
@@ -11,7 +12,7 @@ import { useSortMarkets } from './useSortMarkets'
 export const useLendPageContent = () => {
   const { marketsPreview, isLoading } = useMarketsPreview()
 
-  const [selectedMarkets, setSelectedMarkets] = useState<string[]>([])
+  const { selectedMarkets, setSelectedMarkets } = useMarketsURLControl()
 
   const showEmptyList = !isLoading && !marketsPreview?.length
 
