@@ -3,17 +3,15 @@ import axios from 'axios'
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import {
-  ActivityCollectionsListSchema,
-  BorrowerActivitySchema,
-  LenderActivitySchema,
-} from './schemas'
-import {
   ActivityCollectionsList,
+  ActivityCollectionsListSchema,
   BorrowedActivityResponse,
+  BorrowerActivitySchema,
   FetchActivityCollectionsList,
   FetchBorrowerActivity,
   FetchLenderActivity,
   LenderActivityResponse,
+  LenderActivitySchema,
 } from './types'
 
 export const fetchLenderActivity: FetchLenderActivity = async ({

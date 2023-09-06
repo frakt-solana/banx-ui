@@ -2,11 +2,23 @@ import { z } from 'zod'
 
 import { BasePaginationRequest, PaginationMeta } from '@banx/types'
 
-import {
-  ActivityCollectionsListSchema,
-  BorrowerActivitySchema,
-  LenderActivitySchema,
-} from './schemas'
+import { NFTSchema } from '../core'
+
+export const LenderActivitySchema = z.object({
+  status: z.string(),
+  publicKey: z.string(),
+  apr: z.number(),
+  duration: z.number(),
+  interest: z.number(),
+  lent: z.number(),
+  nftImageUrl: z.string(),
+  nftMint: z.string(),
+  nftName: z.string(),
+  received: z.number(),
+  timestamp: z.number(),
+  user: z.string(),
+  nft: NFTSchema,
+})
 
 export type LenderActivity = z.infer<typeof LenderActivitySchema>
 
@@ -22,6 +34,22 @@ export interface LenderActivityResponse {
   meta: PaginationMeta
 }
 
+export const BorrowerActivitySchema = z.object({
+  status: z.string(),
+  publicKey: z.string(),
+  apr: z.number(),
+  borrowed: z.number(),
+  duration: z.number(),
+  interest: z.number(),
+  nftImageUrl: z.string(),
+  nftMint: z.string(),
+  nftName: z.string(),
+  repaid: z.number(),
+  timestamp: z.number(),
+  user: z.string(),
+  nft: NFTSchema,
+})
+
 export type BorrowerActivity = z.infer<typeof BorrowerActivitySchema>
 
 interface BorrowerActivityRequest extends BasePaginationRequest {
@@ -35,6 +63,10 @@ export interface BorrowedActivityResponse {
   data: BorrowerActivity[]
   meta: PaginationMeta
 }
+
+export const ActivityCollectionsListSchema = z.object({
+  collections: z.array(z.string()),
+})
 
 export type ActivityCollectionsList = z.infer<typeof ActivityCollectionsListSchema>
 
