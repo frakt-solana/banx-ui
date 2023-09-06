@@ -2,25 +2,32 @@ import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
+import { FraktBondState } from 'fbonds-core/lib/fbond-protocol/types'
 import { produce } from 'immer'
-import { countBy, isEmpty, sumBy, uniqueId } from 'lodash'
+import { countBy, filter, isEmpty, map, sumBy, uniqBy, uniqueId } from 'lodash'
 import { create } from 'zustand'
 
 import { BorrowNft, Offer, fetchBorrowNftsAndOffers } from '@banx/api/core'
+import { isExpired, useOptimisticLoans } from '@banx/store'
+import { convertLoanToBorrowNft } from '@banx/transactions'
 import { calcLoanValueWithProtocolFee } from '@banx/utils'
 
 import { useCartState } from './cartState'
 import { SimpleOffer, SimpleOffersByMarket } from './types'
 
+export const USE_BORROW_NFTS_QUERY_KEY = 'walletBorrowNfts'
+
 export const useBorrowNfts = () => {
   const { setCart } = useCartState()
-  const { mints: hiddenMints } = useHiddenNftsMints()
+  const { loans: optimisticLoans, remove: removeOptimisticLoans } = useOptimisticLoans()
 
   const { publicKey: walletPublicKey } = useWallet()
 
-  const { data, isLoading } = useQuery(
-    ['walletBorrowNfts', walletPublicKey?.toBase58()],
-    () => fetchBorrowNftsAndOffers({ walletPubkey: walletPublicKey?.toBase58() || '' }),
+  const walletPubkeyString = walletPublicKey?.toBase58() || ''
+
+  const { data, isLoading, isFetched, isFetching } = useQuery(
+    [USE_BORROW_NFTS_QUERY_KEY, walletPubkeyString],
+    () => fetchBorrowNftsAndOffers({ walletPubkey: walletPubkeyString }),
     {
       enabled: !!walletPublicKey,
       staleTime: 5 * 1000,
@@ -49,25 +56,76 @@ export const useBorrowNfts = () => {
     }
   }, [setCart, offers])
 
+  const walletOptimisticLoans = useMemo(() => {
+    if (!walletPublicKey) return []
+    return optimisticLoans.filter(({ wallet }) => wallet === walletPublicKey?.toBase58())
+  }, [optimisticLoans, walletPublicKey])
+
+  const optimisticLoansActive = useMemo(() => {
+    return walletOptimisticLoans.filter(
+      ({ loan }) => loan.fraktBond.fraktBondState === FraktBondState.PerpetualActive,
+    )
+  }, [walletOptimisticLoans])
+
+  const optimisticLoansRepaid = useMemo(() => {
+    return walletOptimisticLoans.filter(
+      ({ loan }) => loan.fraktBond.fraktBondState === FraktBondState.PerpetualRepaid,
+    )
+  }, [walletOptimisticLoans])
+
+  //? Check expiredLoans or Repaid(duplicated from BE) and purge them
+  useEffect(() => {
+    if (!data || isFetching || !isFetched || !walletPublicKey) return
+
+    const expiredLoans = walletOptimisticLoans.filter((loan) =>
+      isExpired(loan, walletPublicKey.toBase58()),
+    )
+
+    const nftMintsFromBE = map(data.nfts, ({ mint }) => mint)
+
+    const optimisticsToRemove = filter(optimisticLoansRepaid, ({ loan }) =>
+      nftMintsFromBE.includes(loan.nft.mint),
+    )
+
+    if (optimisticsToRemove.length || expiredLoans.length) {
+      removeOptimisticLoans(
+        map([...expiredLoans, ...optimisticsToRemove], ({ loan }) => loan.publicKey),
+        walletPublicKey.toBase58(),
+      )
+    }
+  }, [
+    data,
+    isFetched,
+    walletOptimisticLoans,
+    removeOptimisticLoans,
+    optimisticLoansRepaid,
+    walletPublicKey,
+    isFetching,
+  ])
+
+  //? Merge BE nfts with optimisticLoans
   const nfts = useMemo(() => {
-    if (!data) {
+    if (!data || !walletPublicKey) {
       return []
     }
-    return data.nfts.filter(({ mint }) => !hiddenMints.includes(mint))
-  }, [data, hiddenMints])
 
-  //TODO: Remove when borrow staked nfts support appears
-  const notStakedNfts = useMemo(() => {
-    // return nfts.filter((nft) => !nft.loan.banxStake)
-    return nfts
-  }, [nfts])
+    const borrowNftsFromRepaid = walletOptimisticLoans
+      .filter(({ loan }) => loan.fraktBond.fraktBondState === FraktBondState.PerpetualRepaid)
+      .map(({ loan }) => convertLoanToBorrowNft(loan))
+
+    const optimisticLoansActiveMints = optimisticLoansActive.map(({ loan }) => loan.nft.mint)
+
+    const filteredNfts = data.nfts.filter(({ mint }) => !optimisticLoansActiveMints.includes(mint))
+
+    return uniqBy([...borrowNftsFromRepaid, ...filteredNfts], ({ mint }) => mint)
+  }, [data, walletPublicKey, walletOptimisticLoans, optimisticLoansActive])
 
   const maxBorrow = useMemo(() => {
-    return calcMaxBorrow(notStakedNfts, offers)
-  }, [notStakedNfts, offers])
+    return calcMaxBorrow(nfts, offers)
+  }, [nfts, offers])
 
   return {
-    nfts: notStakedNfts || [],
+    nfts: nfts || [],
     rawOffers: data?.offers || {},
     maxBorrow,
     isLoading,

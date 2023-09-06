@@ -1,5 +1,5 @@
 import { web3 } from 'fbonds-core'
-import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
+import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   borrowCnftPerpetual,
   borrowPerpetual,
@@ -176,7 +176,8 @@ const getChunkBorrowType = (nfts: BorrowNft[]) => {
 }
 
 export const getNftBorrowType = (nft: BorrowNft) => {
-  if (nft.loan.banxStake) return BorrowType.StakedBanx
+  if (nft.loan.banxStake && nft.loan.banxStake !== EMPTY_PUBKEY.toBase58())
+    return BorrowType.StakedBanx
   if (nft.nft.compression) return BorrowType.CNft
   return BorrowType.Default
 }
