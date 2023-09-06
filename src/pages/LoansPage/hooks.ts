@@ -7,7 +7,7 @@ import { map } from 'lodash'
 
 import { Loan, fetchWalletLoans } from '@banx/api/core'
 import { fetchUserLoansStats } from '@banx/api/stats'
-import { isOptimisticLoanExpired, isLoanNewer, useOptimisticLoans } from '@banx/store'
+import { isLoanNewer, isOptimisticLoanExpired, useOptimisticLoans } from '@banx/store'
 
 type UseWalletLoans = () => {
   loans: Loan[]
