@@ -1,6 +1,6 @@
-import { useFakeInfinityScroll } from '@banx/components/InfinityScroll'
 import Table from '@banx/components/Table'
 
+import { useFakeInfinityScroll } from '@banx/hooks'
 import { ViewState, useTableView } from '@banx/store'
 
 import { useSelectedLoans } from '../../loansState'

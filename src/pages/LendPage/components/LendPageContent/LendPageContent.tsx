@@ -1,9 +1,9 @@
 import classNames from 'classnames'
 import { isEmpty } from 'lodash'
 
-import { useFakeInfinityScroll } from '@banx/components/InfinityScroll'
 import { Loader } from '@banx/components/Loader'
 
+import { useFakeInfinityScroll } from '@banx/hooks'
 import { useVisibleMarketURLControl } from '@banx/store/useVisibleMarkets'
 
 import FilterSection from '../FilterSection'

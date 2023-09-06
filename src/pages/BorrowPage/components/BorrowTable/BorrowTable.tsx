@@ -1,5 +1,6 @@
-import { useFakeInfinityScroll } from '@banx/components/InfinityScroll'
 import Table from '@banx/components/Table'
+
+import { useFakeInfinityScroll } from '@banx/hooks'
 
 import { Summary } from './Summary'
 import { useBorrowTable } from './hooks'
