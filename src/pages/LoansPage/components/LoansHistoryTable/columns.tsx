@@ -12,7 +12,7 @@ import { BorrowerActivity } from '@banx/api/activity'
 
 import { DebtCell, RepaidCell, StatusCell } from './TableCells'
 
-export const getTableColumns = () => {
+export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
   const columns: ColumnsType<BorrowerActivity> = [
     {
       key: 'collateral',
@@ -30,7 +30,8 @@ export const getTableColumns = () => {
     {
       key: 'debt',
       title: <HeaderCell label="Debt" />,
-      render: (_, loan) => <DebtCell loan={loan} />,
+      render: (_, loan) => <DebtCell loan={loan} isCardView={isCardView} />,
+      sorter: true,
     },
     {
       key: 'status',

@@ -1,9 +1,13 @@
 import { ColumnsType } from 'antd/es/table'
 
-import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
+import {
+  HeaderCell,
+  NftInfoCell,
+  createColumn,
+  createSolValueJSX,
+} from '@banx/components/TableComponents'
 
 import { BorrowCell } from './BorrowCell'
-import { FeeCell } from './FeeCell'
 import { TableNftData } from './types'
 
 interface GetTableColumnsProps {
@@ -19,11 +23,10 @@ export const getTableColumns = ({
   isCartEmpty,
   isCardView,
 }: GetTableColumnsProps) => {
-  const COLUMNS: ColumnsType<TableNftData> = [
+  const columns: ColumnsType<TableNftData> = [
     {
       key: 'collateral',
-      dataIndex: 'collateral',
-      title: () => <HeaderCell label="Collateral" />,
+      title: <HeaderCell label="Collateral" />,
       render: (_, nft) => (
         <NftInfoCell
           selected={nft.selected}
@@ -35,23 +38,20 @@ export const getTableColumns = ({
     },
     {
       key: 'floorPrice',
-      dataIndex: 'floorPrice',
-      title: () => <HeaderCell label="Floor" />,
+      title: <HeaderCell label="Floor" />,
       render: (_, nft) => createSolValueJSX(nft.nft.nft.collectionFloor, 1e9),
       sorter: true,
     },
     {
       key: 'loanValue',
-      dataIndex: 'loanValue',
-      title: () => <HeaderCell label="Borrow" />,
+      title: <HeaderCell label="Borrow" />,
       render: (_, nft) => createSolValueJSX(nft.loanValue, 1e9),
       sorter: true,
     },
     {
       key: 'weeklyFee',
-      dataIndex: 'weeklyFee',
-      title: () => <HeaderCell label="Weekly Fee" />,
-      render: (_, nft) => <FeeCell nft={nft} />,
+      title: <HeaderCell label="Weekly Fee" />,
+      render: (_, nft) => createSolValueJSX(nft.interest, 1e9),
       sorter: true,
     },
     {
@@ -66,5 +66,5 @@ export const getTableColumns = ({
     },
   ]
 
-  return COLUMNS
+  return columns.map((column) => createColumn(column))
 }

@@ -7,6 +7,8 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { useLenderActivity } from './useLenderActivity'
 
+import styles from '../HistoryOffersTable.module.less'
+
 interface SearchSelectOption {
   collectionName: string
   collectionImage: string
@@ -43,6 +45,7 @@ export const useHistoryOffersTable = () => {
     selectedOptions: selectedCollections,
     labels: ['Collection', 'Received'],
     onChange: setSelectedCollections,
+    className: styles.searchSelect,
   }
 
   return {

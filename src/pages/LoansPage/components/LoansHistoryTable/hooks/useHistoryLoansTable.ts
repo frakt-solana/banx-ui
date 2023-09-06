@@ -7,6 +7,8 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { useBorrowerActivity } from './useBorrowerActivity'
 
+import styles from '../LoansHistoryTable.module.less'
+
 interface SearchSelectOption {
   collectionName: string
   collectionImage: string
@@ -43,6 +45,7 @@ export const useHistoryLoansTable = () => {
     selectedOptions: selectedCollections,
     labels: ['Collection', 'Borrowed'],
     onChange: setSelectedCollections,
+    className: styles.searchSelect,
   }
 
   return {

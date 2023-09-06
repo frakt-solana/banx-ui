@@ -1,10 +1,13 @@
 import { FC, useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { useNavigate } from 'react-router-dom'
 
 import { Button } from '@banx/components/Buttons'
 
 import { Offer } from '@banx/api/core'
+import { PATHS } from '@banx/router'
+import { useMarketsURLControl } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeRemoveOfferAction } from '@banx/transactions/bonds'
@@ -21,13 +24,28 @@ interface ActionsCellProps {
 }
 
 export const ActionsCell: FC<ActionsCellProps> = ({ offer, isCardView }) => {
+  const navigate = useNavigate()
+
+  const { setSelectedMarkets, toggleMarketVisibility } = useMarketsURLControl()
   const { removeOffer } = useActionsCell(offer)
 
   const buttonSize = isCardView ? 'large' : 'small'
 
+  const goToEditOffer = () => {
+    const collectionName = offer.collectionName
+
+    toggleMarketVisibility(collectionName)
+    setSelectedMarkets([collectionName])
+
+    return navigate({
+      pathname: PATHS.LEND,
+      search: `?opened=${collectionName}&collections=${collectionName}`,
+    })
+  }
+
   return (
     <div className={styles.actionsButtons}>
-      <Button variant="secondary" size={buttonSize}>
+      <Button onClick={goToEditOffer} variant="secondary" size={buttonSize}>
         Edit
       </Button>
       <Button

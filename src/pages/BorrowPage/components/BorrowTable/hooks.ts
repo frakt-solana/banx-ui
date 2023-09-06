@@ -10,7 +10,7 @@ import { PATHS } from '@banx/router'
 import { ViewState, useIsLedger, useOptimisticLoans, useTableView } from '@banx/store'
 
 import { useCartState } from '../../cartState'
-import { useBorrowNfts, useHiddenNftsMints } from '../../hooks'
+import { useBorrowNfts } from '../../hooks'
 import { getTableColumns } from './columns'
 import { DEFAULT_TABLE_SORT } from './constants'
 import { createBorrowAllParams, createTableNftData, executeBorrow } from './helpers'
@@ -28,7 +28,6 @@ export const useBorrowTable = () => {
   const { offerByMint, addNft, removeNft, findOfferInCart, findBestOffer, addNftsAuto, resetCart } =
     useCartState()
   const { add: addLoansOptimistic } = useOptimisticLoans()
-  const { add: hideNftMints } = useHiddenNftsMints()
 
   const tableNftsData: TableNftData[] = useMemo(
     () => {
@@ -47,7 +46,9 @@ export const useBorrowTable = () => {
     const { marketPubkey } = nft.nft.loan
 
     const offer = findBestOffer({ marketPubkey })
-    const rawOffer = rawOffers[marketPubkey].find(({ publicKey }) => publicKey === offer?.publicKey)
+    const rawOffer = rawOffers[marketPubkey]?.find(
+      ({ publicKey }) => publicKey === offer?.publicKey,
+    )
 
     if (!offer || !rawOffer) return
 
@@ -66,7 +67,6 @@ export const useBorrowTable = () => {
         ],
       ],
       addLoansOptimistic,
-      hideNftMints,
       isLedger,
     })
 
@@ -85,7 +85,6 @@ export const useBorrowTable = () => {
       },
       txnParams,
       addLoansOptimistic,
-      hideNftMints,
       isLedger,
     })
 
@@ -172,7 +171,7 @@ export const useBorrowTable = () => {
         },
         className: styles.searchSelect,
         selectedOptions,
-        labels: ['Collections', 'Nfts'],
+        labels: ['Collection', 'Nfts'],
         onChange: setSelectedOptions,
       },
       sortParams: { option: sortOption, onChange: setSortOption },
