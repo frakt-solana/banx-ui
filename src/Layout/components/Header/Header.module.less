@@ -5,6 +5,14 @@
   display: flex;
   align-items: center;
   padding: 16px 24px;
+
+  @media (max-width: 960px) {
+    padding: 8px 24px;
+  }
+
+  @media (max-width: 640px) {
+    padding: 8px 16px;
+  }
 }
 
 .widgetContainer {
@@ -13,7 +21,7 @@
   align-items: center;
   gap: 16px;
 
-  @media (max-width: 960px) {
+  @media (max-width: 640px) {
     gap: 8px;
   }
 }
@@ -34,12 +42,12 @@
   display: none;
 }
 
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 960px) {
   .logo {
     display: none;
   }
 
   .logoBasic {
-    display: block;
+    display: flex;
   }
 }
