@@ -40,7 +40,7 @@ export const createTableNftData = ({
 
     const interest = calcInterest({
       timeInterval: ONE_WEEK_IN_SECONDS,
-      loanValue,
+      loanValue: loanValue,
       apr: nft.loan.marketApr,
     })
 
