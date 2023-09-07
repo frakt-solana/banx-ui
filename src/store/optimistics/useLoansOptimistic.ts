@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+
 import { map, uniqBy } from 'lodash'
 import moment from 'moment'
 import { create } from 'zustand'
@@ -19,6 +21,7 @@ export interface LoansOptimisticStore {
   add: (loans: Loan[], walletPublicKey: string) => void
   remove: (publicKeys: string[], walletPublicKey: string) => void
   update: (loans: Loan[], walletPublicKey: string) => void
+  setState: (optimisticLoans: LoanOptimistic[]) => void
 }
 
 const useOptimisticLoansStore = create<LoansOptimisticStore>((set, get) => ({
@@ -58,6 +61,10 @@ const useOptimisticLoansStore = create<LoansOptimisticStore>((set, get) => ({
       return { ...state, optimisticLoans: nextLoans }
     })
   },
+  setState: (optimisticLoans) =>
+    set((state) => {
+      return { ...state, optimisticLoans }
+    }),
 }))
 
 export const useLoansOptimistic = () => {
@@ -67,25 +74,20 @@ export const useLoansOptimistic = () => {
     update,
     remove,
     find,
-  } = useOptimisticLoansStore((state: LoansOptimisticStore) => {
+    setState,
+  } = useOptimisticLoansStore()
+
+  useEffect(() => {
     try {
       const optimisticLoans = getOptimisticLoansLS()
       setOptimisticLoansLS(optimisticLoans)
-
-      return {
-        ...state,
-        optimisticLoans: optimisticLoans,
-      }
+      setState(optimisticLoans)
     } catch (error) {
       console.error(error)
       setOptimisticLoansLS([])
-
-      return {
-        ...state,
-        optimisticLoans: [],
-      }
+      setState([])
     }
-  })
+  }, [setState])
 
   return { loans: optimisticLoans, add, remove, find, update }
 }

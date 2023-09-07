@@ -86,9 +86,7 @@ export const useBorrowNfts = () => {
         return [marketPubkey, [...nextOffers, ...optimisticsWithSameMarket]]
       }),
     )
-    //? Prevent memory leak
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, walletPublicKey])
+  }, [data, optimisticOffers, walletPublicKey])
 
   const simpleOffers = useMemo(() => {
     return Object.fromEntries(

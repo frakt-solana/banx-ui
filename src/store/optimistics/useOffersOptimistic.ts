@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+
 import { map, uniqBy } from 'lodash'
 import moment from 'moment'
 import { create } from 'zustand'
@@ -18,6 +20,7 @@ export interface OffersOptimisticStore {
   add: (offers: Offer[]) => void
   remove: (publicKeys: string[]) => void
   update: (offers: Offer[]) => void
+  setState: (optimisticOffers: OfferOptimistic[]) => void
 }
 
 const useOptimisticOffersStore = create<OffersOptimisticStore>((set, get) => ({
@@ -50,30 +53,26 @@ const useOptimisticOffersStore = create<OffersOptimisticStore>((set, get) => ({
       setOptimisticOffersLS(nextOffers)
       return { ...state, optimisticOffers: nextOffers }
     }),
+  setState: (optimisticOffers) =>
+    set((state) => {
+      return { ...state, optimisticOffers }
+    }),
 }))
 
 export const useOffersOptimistic = () => {
-  const { optimisticOffers, add, remove, find, update } = useOptimisticOffersStore(
-    (state: OffersOptimisticStore) => {
-      try {
-        const optimisticOffers = getOptimisticOffersLS()
-        setOptimisticOffersLS(optimisticOffers)
+  const { optimisticOffers, add, remove, find, update, setState } = useOptimisticOffersStore()
 
-        return {
-          ...state,
-          optimisticOffers,
-        }
-      } catch (error) {
-        console.error(error)
-        setOptimisticOffersLS([])
-
-        return {
-          ...state,
-          optimisticOffers: [],
-        }
-      }
-    },
-  )
+  useEffect(() => {
+    try {
+      const optimisticOffers = getOptimisticOffersLS()
+      setOptimisticOffersLS(optimisticOffers)
+      setState(optimisticOffers)
+    } catch (error) {
+      console.error(error)
+      setOptimisticOffersLS([])
+      setState([])
+    }
+  }, [setState])
 
   return { optimisticOffers, add, remove, find, update }
 }
