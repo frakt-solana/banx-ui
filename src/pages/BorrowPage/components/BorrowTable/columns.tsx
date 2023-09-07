@@ -7,6 +7,8 @@ import {
   createSolValueJSX,
 } from '@banx/components/TableComponents'
 
+import { calcLoanValueWithProtocolFee } from '@banx/utils'
+
 import { BorrowCell } from './BorrowCell'
 import { TableNftData } from './types'
 
@@ -45,7 +47,7 @@ export const getTableColumns = ({
     {
       key: 'loanValue',
       title: <HeaderCell label="Borrow" />,
-      render: (_, nft) => createSolValueJSX(nft.loanValue, 1e9),
+      render: (_, nft) => createSolValueJSX(calcLoanValueWithProtocolFee(nft.loanValue), 1e9),
       sorter: true,
     },
     {
