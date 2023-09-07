@@ -16,7 +16,6 @@ import {
   useOffersOptimistic,
 } from '@banx/store'
 import { convertLoanToBorrowNft } from '@banx/transactions'
-import { calcLoanValueWithProtocolFee } from '@banx/utils'
 
 import { useCartState } from './cartState'
 import { SimpleOffer, SimpleOffersByMarket } from './types'
@@ -208,7 +207,7 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
     .fill(currentSpotPrice)
     .map((loanValue) => ({
       id: uniqueId(),
-      loanValue: calcLoanValueWithProtocolFee(loanValue),
+      loanValue: loanValue,
       hadoMarket: offer.hadoMarket,
       publicKey: offer.publicKey,
     }))
@@ -219,7 +218,7 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
   if (decimalLoanValue && decimalLoanValue > 0) {
     offers.push({
       id: uniqueId(),
-      loanValue: calcLoanValueWithProtocolFee(decimalLoanValue),
+      loanValue: decimalLoanValue,
       hadoMarket: offer.hadoMarket,
       publicKey: offer.publicKey,
     })

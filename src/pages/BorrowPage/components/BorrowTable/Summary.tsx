@@ -5,6 +5,8 @@ import { sumBy } from 'lodash'
 import { Button } from '@banx/components/Buttons'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
+import { calcLoanValueWithProtocolFee } from '@banx/utils'
+
 import { ONE_WEEK_IN_SECONDS } from './constants'
 import { calcInterest } from './helpers'
 import { TableNftData } from './types'
@@ -21,11 +23,11 @@ export const Summary: FC<SummaryProps> = ({ nftsInCart, selectAll, borrowAll }) 
   const selectAllBtnText = !nftsInCart.length ? 'Select all' : 'Deselect all'
 
   const totalFloor = sumBy(nftsInCart, ({ nft }) => nft.nft.collectionFloor)
-  const totalBorrow = sumBy(nftsInCart, ({ loanValue }) => loanValue)
+  const totalBorrow = calcLoanValueWithProtocolFee(sumBy(nftsInCart, ({ loanValue }) => loanValue))
   const totalWeeklyFee = sumBy(nftsInCart, ({ nft, loanValue }) =>
     calcInterest({
       timeInterval: ONE_WEEK_IN_SECONDS,
-      loanValue,
+      loanValue: calcLoanValueWithProtocolFee(loanValue),
       apr: nft.loan.marketApr,
     }),
   )
