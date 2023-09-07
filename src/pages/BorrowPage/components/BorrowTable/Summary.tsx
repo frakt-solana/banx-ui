@@ -27,7 +27,7 @@ export const Summary: FC<SummaryProps> = ({ nftsInCart, selectAll, borrowAll }) 
   const totalWeeklyFee = sumBy(nftsInCart, ({ nft, loanValue }) =>
     calcInterest({
       timeInterval: ONE_WEEK_IN_SECONDS,
-      loanValue: calcLoanValueWithProtocolFee(loanValue),
+      loanValue,
       apr: nft.loan.marketApr,
     }),
   )

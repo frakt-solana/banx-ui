@@ -14,7 +14,7 @@ import {
   makeBorrowAction,
 } from '@banx/transactions/borrow'
 import { WalletAndConnection } from '@banx/types'
-import { calcLoanValueWithProtocolFee, enqueueSnackbar } from '@banx/utils'
+import { enqueueSnackbar } from '@banx/utils'
 
 import { CartState } from '../../cartState'
 import { SimpleOffer } from '../../types'
@@ -40,7 +40,7 @@ export const createTableNftData = ({
 
     const interest = calcInterest({
       timeInterval: ONE_WEEK_IN_SECONDS,
-      loanValue: calcLoanValueWithProtocolFee(loanValue),
+      loanValue: loanValue,
       apr: nft.loan.marketApr,
     })
 
