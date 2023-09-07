@@ -20,6 +20,7 @@ export interface TableProps<T, P> {
   onRowClick?: (dataItem: T) => void
   breakpoints?: PartialBreakpoints
   className?: string
+  scrollX?: number
 }
 
 const Table = <T extends object, P extends object>({

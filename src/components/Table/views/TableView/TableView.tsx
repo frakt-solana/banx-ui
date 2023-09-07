@@ -12,6 +12,7 @@ const TableView = <T extends object>({
   onRowClick,
   activeRowParams,
   rowKeyField,
+  scrollX = 768,
 }: TableViewProps<T>) => {
   const rowProps = (rowData: T) => ({
     onClick: onRowClick ? () => onRowClick(rowData) : undefined,
@@ -29,6 +30,7 @@ const TableView = <T extends object>({
       sortDirections={['descend', 'ascend']}
       onRow={rowProps}
       pagination={false}
+      scroll={{ x: scrollX }}
     />
   )
 }
