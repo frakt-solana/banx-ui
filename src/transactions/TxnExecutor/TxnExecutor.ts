@@ -80,7 +80,7 @@ export class TxnExecutor<TParams, TResult> {
         }
       }
 
-      if (signAndSendTxnsResults.length === txnChunks.length) {
+      if (signAndSendTxnsResults.length === txnChunks.flat().length) {
         eventHandlers?.pfSuccessAll?.(signAndSendTxnsResults)
       } else if (signAndSendTxnsResults.length) {
         eventHandlers?.pfSuccessSome?.(signAndSendTxnsResults)

@@ -37,6 +37,7 @@ export const useBorrowNfts = () => {
     {
       enabled: !!walletPublicKey,
       staleTime: 5 * 1000,
+      refetchInterval: 15 * 1000,
       refetchOnWindowFocus: false,
     },
   )
@@ -51,7 +52,7 @@ export const useBorrowNfts = () => {
       const sameOfferFromBE = data.offers[offer.hadoMarket]?.find(
         ({ publicKey }) => publicKey === offer.publicKey,
       )
-      if (!sameOfferFromBE) return false
+      if (!sameOfferFromBE) return true
       const isBEOfferNewer = isOfferNewer(sameOfferFromBE, offer)
       return isBEOfferNewer
     })
