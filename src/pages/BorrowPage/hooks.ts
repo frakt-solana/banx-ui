@@ -37,6 +37,7 @@ export const useBorrowNfts = () => {
     {
       enabled: !!walletPublicKey,
       staleTime: 5 * 1000,
+      refetchInterval: 15 * 1000,
       refetchOnWindowFocus: false,
     },
   )
