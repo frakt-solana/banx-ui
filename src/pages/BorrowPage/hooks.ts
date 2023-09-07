@@ -51,7 +51,7 @@ export const useBorrowNfts = () => {
       const sameOfferFromBE = data.offers[offer.hadoMarket]?.find(
         ({ publicKey }) => publicKey === offer.publicKey,
       )
-      if (!sameOfferFromBE) return false
+      if (!sameOfferFromBE) return true
       const isBEOfferNewer = isOfferNewer(sameOfferFromBE, offer)
       return isBEOfferNewer
     })
