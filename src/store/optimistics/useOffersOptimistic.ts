@@ -12,27 +12,48 @@ export interface OfferOptimistic {
   expiredAt: number
 }
 
-interface OffersOptimisticStore {
+export interface OffersOptimisticStore {
   optimisticOffers: OfferOptimistic[]
-  setOffers: (...offers: OfferOptimistic[]) => void
-}
-
-const useOptimisticOffersStore = create<OffersOptimisticStore>((set) => ({
-  optimisticOffers: [],
-  setOffers: (...offers) => {
-    set((state) => ({ ...state, optimisticOffers: offers }))
-  },
-}))
-
-export interface UseOptimisticOffersValues {
-  offers: OfferOptimistic[]
   find: (publicKey: string) => OfferOptimistic | undefined
   add: (offers: Offer[]) => void
   remove: (publicKeys: string[]) => void
   update: (offers: Offer[]) => void
 }
-export const useOptimisticOffers = (): UseOptimisticOffersValues => {
-  const { optimisticOffers, setOffers: setOptimisticOffers } = useOptimisticOffersStore(
+
+const useOptimisticOffersStore = create<OffersOptimisticStore>((set, get) => ({
+  optimisticOffers: [],
+  add: (offers) =>
+    set((state) => {
+      const nextOffers = addOffers(
+        state.optimisticOffers,
+        map(offers, (offer) => convertOfferToOptimistic(offer)),
+      )
+      setOptimisticOffersLS(nextOffers)
+      return { ...state, optimisticOffers: nextOffers }
+    }),
+  remove: (publicKeys) =>
+    set((state) => {
+      const nextOffers = removeOffers(state.optimisticOffers, publicKeys)
+      setOptimisticOffersLS(nextOffers)
+      return { ...state, optimisticOffers: nextOffers }
+    }),
+  find: (publicKey) => {
+    const { optimisticOffers } = get()
+    return findOffer(optimisticOffers, publicKey)
+  },
+  update: (offers: Offer[]) =>
+    set((state) => {
+      const nextOffers = updateOffers(
+        state.optimisticOffers,
+        map(offers, (offer) => convertOfferToOptimistic(offer)),
+      )
+      setOptimisticOffersLS(nextOffers)
+      return { ...state, optimisticOffers: nextOffers }
+    }),
+}))
+
+export const useOffersOptimistic = () => {
+  const { optimisticOffers, add, remove, find, update } = useOptimisticOffersStore(
     (state: OffersOptimisticStore) => {
       try {
         const optimisticOffers = getOptimisticOffersLS()
@@ -54,35 +75,7 @@ export const useOptimisticOffers = (): UseOptimisticOffersValues => {
     },
   )
 
-  const add: UseOptimisticOffersValues['add'] = (offers) => {
-    const nextOffers = addOffers(
-      optimisticOffers,
-      map(offers, (offer) => convertOfferToOptimistic(offer)),
-    )
-    setOptimisticOffersLS(nextOffers)
-    setOptimisticOffers(...nextOffers)
-  }
-
-  const remove: UseOptimisticOffersValues['remove'] = (publicKeys) => {
-    const nextOffers = removeOffers(optimisticOffers, publicKeys)
-    setOptimisticOffersLS(nextOffers)
-    setOptimisticOffers(...nextOffers)
-  }
-
-  const find: UseOptimisticOffersValues['find'] = (publicKey) => {
-    return findOffer(optimisticOffers, publicKey)
-  }
-
-  const update: UseOptimisticOffersValues['update'] = (offers: Offer[]) => {
-    const nextOffers = updateOffers(
-      optimisticOffers,
-      map(offers, (offer) => convertOfferToOptimistic(offer)),
-    )
-    setOptimisticOffersLS(nextOffers)
-    setOptimisticOffers(...nextOffers)
-  }
-
-  return { offers: optimisticOffers, add, remove, find, update }
+  return { optimisticOffers, add, remove, find, update }
 }
 
 export const isOptimisticOfferExpired = (loan: OfferOptimistic) => loan.expiredAt < moment().unix()

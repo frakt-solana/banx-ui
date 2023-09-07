@@ -6,17 +6,17 @@ import { useNavigate } from 'react-router-dom'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
+import { BorrowNft, Offer } from '@banx/api/core'
 import { PATHS } from '@banx/router'
 import {
   ViewState,
   useIsLedger,
-  useOptimisticLoans,
-  useOptimisticOffers,
+  useLoansOptimistic,
+  useOffersOptimistic,
   useTableView,
 } from '@banx/store'
 
 import { useCartState } from '../../cartState'
-import { useBorrowNfts } from '../../hooks'
 import { getTableColumns } from './columns'
 import { DEFAULT_TABLE_SORT } from './constants'
 import { createBorrowAllParams, createTableNftData, executeBorrow } from './helpers'
@@ -24,17 +24,21 @@ import { SortField, TableNftData } from './types'
 
 import styles from './BorrowTable.module.less'
 
-export const useBorrowTable = () => {
+export interface UseBorrowTableProps {
+  nfts: BorrowNft[]
+  rawOffers: Record<string, Offer[]>
+}
+
+export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
   const wallet = useWallet()
   const { connection } = useConnection()
   const navigate = useNavigate()
   const { isLedger } = useIsLedger()
 
-  const { nfts, isLoading, rawOffers } = useBorrowNfts()
   const { offerByMint, addNft, removeNft, findOfferInCart, findBestOffer, addNftsAuto, resetCart } =
     useCartState()
-  const { add: addLoansOptimistic } = useOptimisticLoans()
-  const { update: updateOffersOptimistic } = useOptimisticOffers()
+  const { add: addLoansOptimistic } = useLoansOptimistic()
+  const { update: updateOffersOptimistic } = useOffersOptimistic()
 
   const tableNftsData: TableNftData[] = useMemo(
     () => {
@@ -168,7 +172,6 @@ export const useBorrowTable = () => {
     tableNftData: sortedNfts,
     columns,
     onRowClick: onNftSelect,
-    isLoading,
     sortViewParams: {
       searchSelectParams: {
         options: searchSelectOptions,

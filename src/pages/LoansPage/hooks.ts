@@ -7,7 +7,7 @@ import { map } from 'lodash'
 
 import { Loan, fetchWalletLoans } from '@banx/api/core'
 import { fetchUserLoansStats } from '@banx/api/stats'
-import { isLoanNewer, isOptimisticLoanExpired, useOptimisticLoans } from '@banx/store'
+import { isLoanNewer, isOptimisticLoanExpired, useLoansOptimistic } from '@banx/store'
 
 type UseWalletLoans = () => {
   loans: Loan[]
@@ -20,7 +20,7 @@ export const useWalletLoans: UseWalletLoans = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
-  const { loans: optimisticLoans, remove: removeOptimisticLoans } = useOptimisticLoans()
+  const { loans: optimisticLoans, remove: removeOptimisticLoans } = useLoansOptimistic()
 
   const { data, isLoading, isFetched, isFetching } = useQuery(
     [USE_WALLET_LOANS_QUERY_KEY, publicKeyString],

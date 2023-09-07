@@ -12,8 +12,8 @@ import {
   isOfferNewer,
   isOptimisticLoanExpired,
   isOptimisticOfferExpired,
-  useOptimisticLoans,
-  useOptimisticOffers,
+  useLoansOptimistic,
+  useOffersOptimistic,
 } from '@banx/store'
 import { convertLoanToBorrowNft } from '@banx/transactions'
 import { calcLoanValueWithProtocolFee } from '@banx/utils'
@@ -25,9 +25,8 @@ export const USE_BORROW_NFTS_QUERY_KEY = 'walletBorrowNfts'
 
 export const useBorrowNfts = () => {
   const { setCart } = useCartState()
-  const { loans: optimisticLoans, remove: removeOptimisticLoans } = useOptimisticLoans()
-  const { offers: optimisticOffers, remove: removeOptimisticOffers } = useOptimisticOffers()
-
+  const { loans: optimisticLoans, remove: removeOptimisticLoans } = useLoansOptimistic()
+  const { optimisticOffers, remove: removeOptimisticOffers } = useOffersOptimistic()
   const { publicKey: walletPublicKey } = useWallet()
 
   const walletPubkeyString = walletPublicKey?.toBase58() || ''
@@ -87,6 +86,7 @@ export const useBorrowNfts = () => {
         return [marketPubkey, [...nextOffers, ...optimisticsWithSameMarket]]
       }),
     )
+    //? Prevent memory leak
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, walletPublicKey])
 

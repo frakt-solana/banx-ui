@@ -3,7 +3,7 @@ import { chunk, groupBy } from 'lodash'
 
 import { Loan } from '@banx/api/core'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
-import { useOptimisticLoans } from '@banx/store'
+import { useLoansOptimistic } from '@banx/store'
 import { BorrowType, defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import {
@@ -18,7 +18,7 @@ export const useLoansTransactions = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
 
-  const { update: updateLoansOptimistic } = useOptimisticLoans()
+  const { update: updateLoansOptimistic } = useLoansOptimistic()
 
   const repayLoan = async (loan: Loan) => {
     await new TxnExecutor(makeRepayLoansAction, { wallet, connection })

@@ -4,7 +4,7 @@ import { chunk, cloneDeep, first, groupBy } from 'lodash'
 import moment from 'moment'
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
-import { UseOptimisticLoansValues, UseOptimisticOffersValues } from '@banx/store'
+import { LoansOptimisticStore, OffersOptimisticStore } from '@banx/store'
 import { BorrowType, defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import {
@@ -52,8 +52,8 @@ export const executeBorrow = async (props: {
   isLedger?: boolean
   txnParams: MakeBorrowActionParams[]
   walletAndConnection: WalletAndConnection
-  addLoansOptimistic: UseOptimisticLoansValues['add']
-  updateOffersOptimistic: UseOptimisticOffersValues['update']
+  addLoansOptimistic: LoansOptimisticStore['add']
+  updateOffersOptimistic: OffersOptimisticStore['update']
 }) => {
   const {
     isLedger = false,

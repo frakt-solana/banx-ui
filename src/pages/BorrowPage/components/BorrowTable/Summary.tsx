@@ -1,3 +1,5 @@
+import { FC } from 'react'
+
 import { sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
@@ -5,13 +7,17 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { ONE_WEEK_IN_SECONDS } from './constants'
 import { calcInterest } from './helpers'
-import { useBorrowTable } from './hooks'
+import { TableNftData } from './types'
 
 import styles from './BorrowTable.module.less'
 
-export const Summary = () => {
-  const { borrowAll, selectAll, nftsInCart } = useBorrowTable()
+interface SummaryProps {
+  nftsInCart: TableNftData[]
+  selectAll: () => void
+  borrowAll: () => Promise<void>
+}
 
+export const Summary: FC<SummaryProps> = ({ nftsInCart, selectAll, borrowAll }) => {
   const selectAllBtnText = !nftsInCart.length ? 'Select all' : 'Deselect all'
 
   const totalFloor = sumBy(nftsInCart, ({ nft }) => nft.nft.collectionFloor)
