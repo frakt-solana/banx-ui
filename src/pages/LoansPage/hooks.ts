@@ -7,7 +7,12 @@ import { map } from 'lodash'
 
 import { Loan, fetchWalletLoans } from '@banx/api/core'
 import { fetchUserLoansStats } from '@banx/api/stats'
-import { isLoanNewer, isOptimisticLoanExpired, useLoansOptimistic } from '@banx/store'
+import {
+  isLoanNewer,
+  isOptimisticLoanExpired,
+  purgeLoansWithSameMintByFreshness,
+  useLoansOptimistic,
+} from '@banx/store'
 
 type UseWalletLoans = () => {
   loans: Loan[]
@@ -70,11 +75,18 @@ export const useWalletLoans: UseWalletLoans = () => {
 
     const dataFiltered = data.filter(({ publicKey }) => !optimisticLoansPubkeys.includes(publicKey))
 
-    return [...dataFiltered, ...map(walletOptimisticLoans, ({ loan }) => loan)].filter(
+    const purgedSameMint = purgeLoansWithSameMintByFreshness(
+      [...dataFiltered, ...map(walletOptimisticLoans, ({ loan }) => loan)],
+      (loan) => loan,
+    )
+
+    const loans = purgedSameMint.filter(
       (loan) =>
         loan.bondTradeTransaction.bondTradeTransactionState !==
         BondTradeTransactionV2State.PerpetualRepaid,
     )
+
+    return loans
   }, [data, walletOptimisticLoans])
 
   return {
