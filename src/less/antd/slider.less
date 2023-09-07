@@ -1,0 +1,65 @@
+.rootSliderClassName {
+  .ant-slider {
+    margin: 0;
+  }
+
+  .ant-slider-rail,
+  .ant-slider:hover .ant-slider-rail {
+    background: var(--bg-secondary);
+    height: 4px;
+  }
+
+  .ant-slider-track,
+  .ant-slider:hover .ant-slider-track {
+    background: var(--accent-primary);
+    border: 2px solid var(--accent-primary);
+  }
+
+  .ant-slider-dot,
+  .ant-slider:hover .ant-slider-dot {
+    background: var(--bg-primary);
+    border: 2px solid var(--bg-secondary) !important;
+    height: 8px;
+    width: 8px;
+  }
+
+  .ant-slider-dot-active,
+  .ant-slider:hover .ant-slider-dot-active {
+    background: var(--bg-primary);
+    border: 2px solid var(--accent-primary) !important;
+  }
+
+  .ant-slider-mark {
+    top: 14px;
+  }
+
+  .ant-slider-mark-text {
+    color: var(--content-secondary);
+    font: var(--body-text-sm);
+  }
+
+  .ant-slider-mark-text-active {
+    color: var(--content-primary);
+  }
+
+  .ant-slider-handle,
+  .ant-slider-handle:after,
+  .ant-slider-handle:hover::after {
+    background: var(--bg-primary);
+    border: 2px solid var(--accent-primary);
+    box-shadow: unset !important;
+  }
+
+  .ant-slider-handle {
+    border-radius: 100%;
+    position: relative;
+    margin-top: -7px;
+    height: 14px;
+    width: 14px;
+
+    &:focus,
+    &:hover {
+      box-shadow: unset;
+    }
+  }
+}
