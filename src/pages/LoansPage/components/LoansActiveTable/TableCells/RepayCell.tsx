@@ -1,12 +1,15 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 
 import { Button } from '@banx/components/Buttons'
+import { Slider } from '@banx/components/Slider'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan } from '@banx/api/core'
 import { useModal } from '@banx/store'
 
 import { useLoansTransactions } from '../hooks'
+
+import styles from '../LoansActiveTable.module.less'
 
 interface RepayCellProps {
   loan: Loan
@@ -46,9 +49,18 @@ const RepayModal: FC<RepayModalProps> = ({ loan }) => {
 
   const onSubmit = () => {}
 
+  const [partialPercent, setPartialPercent] = useState(100)
+
+  const onPartialPercentChange = (nextValue: number) => {
+    setPartialPercent(nextValue)
+  }
+
   return (
     <Modal open onCancel={close}>
-      <Button onClick={onSubmit}>Repay</Button>
+      <Slider value={partialPercent} onChange={onPartialPercentChange} />
+      <Button className={styles.repayButton} onClick={onSubmit}>
+        Repay
+      </Button>
     </Modal>
   )
 }
