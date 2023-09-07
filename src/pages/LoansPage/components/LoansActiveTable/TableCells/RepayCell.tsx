@@ -27,17 +27,15 @@ export const RepayCell: FC<RepayCellProps> = ({ loan, isCardView }) => {
   }
 
   return (
-    <>
-      <Button
-        size={isCardView ? 'large' : 'small'}
-        onClick={(event) => {
-          openModal()
-          event.stopPropagation()
-        }}
-      >
-        Repay
-      </Button>
-    </>
+    <Button
+      size={isCardView ? 'large' : 'small'}
+      onClick={(event) => {
+        openModal()
+        event.stopPropagation()
+      }}
+    >
+      Repay
+    </Button>
   )
 }
 

@@ -11,7 +11,11 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { MakeActionFn } from '../TxnExecutor'
 
-export type MakeRepayPartialLoanActionParams = { loan: Loan; fractionToRepay: number }
+export type MakeRepayPartialLoanActionParams = {
+  loan: Loan
+  fractionToRepay: number //? F.E 50% => 5000
+}
+
 export type MakeRepayPartialActionResult = Loan[]
 
 export type MakeRepayPartialLoanAction = MakeActionFn<
