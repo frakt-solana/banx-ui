@@ -16,7 +16,7 @@ export type MakeRepayPartialLoanActionParams = {
   fractionToRepay: number //? F.E 50% => 5000
 }
 
-export type MakeRepayPartialActionResult = Loan[]
+export type MakeRepayPartialActionResult = Loan
 
 export type MakeRepayPartialLoanAction = MakeActionFn<
   MakeRepayPartialLoanActionParams,
@@ -48,17 +48,17 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const loans: Loan[] = optimisticResults.map((optimistic) => ({
+  const optimisticResult = optimisticResults.map((optimistic) => ({
     publicKey: optimistic.fraktBond.publicKey,
     fraktBond: optimistic.fraktBond,
     bondTradeTransaction: optimistic.bondTradeTransaction,
     nft,
-  }))
+  }))[0]
 
   return {
     instructions,
     signers,
     lookupTables: [],
-    additionalResult: loans,
+    additionalResult: optimisticResult,
   }
 }

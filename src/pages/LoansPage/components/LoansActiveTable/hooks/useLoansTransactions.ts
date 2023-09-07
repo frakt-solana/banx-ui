@@ -50,7 +50,7 @@ export const useLoansTransactions = () => {
             message: 'Transaction Executed',
             solanaExplorerPath: `tx/${txnHash}`,
           })
-          updateLoansOptimistic(result, wallet.publicKey.toBase58())
+          updateLoansOptimistic([result], wallet.publicKey.toBase58())
         }
       })
       .on('pfError', (error) => {
