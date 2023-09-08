@@ -1,5 +1,5 @@
+import { getPerpetualOfferSize } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
-import { getTopOrderSize } from 'fbonds-core/lib/fbond-protocol/utils/cartManagerV2'
 
 import { Offer } from '@banx/api/core'
 
@@ -13,7 +13,7 @@ export const parseMarketOrder = (offer: Offer): Order => {
 
   return {
     loanValue: loanValue / 1e9,
-    size: (offer ? getTopOrderSize(offer as BondOfferV2) * currentSpotPrice : 0) / 1e9,
+    size: (offer ? getPerpetualOfferSize(offer as BondOfferV2) * currentSpotPrice : 0) / 1e9,
     loansAmount,
     rawData: {
       publicKey,
