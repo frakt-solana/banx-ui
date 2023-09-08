@@ -13,9 +13,10 @@
 .highlightYourOffer {
   position: relative;
 
-  font: var(--table-header-md);
+  font: var(--table-header-sm);
   color: var(--content-primary);
   text-align: center;
+  text-transform: uppercase;
 
   &::after,
   &::before {
@@ -23,6 +24,7 @@
     position: absolute;
     left: 0;
     bottom: 0;
+    z-index: 2;
   }
 
   &::before {
@@ -32,6 +34,7 @@
   &::after {
     height: 4px;
     width: 100%;
+    z-index: 1;
   }
 }
 
