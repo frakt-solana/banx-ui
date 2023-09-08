@@ -1,7 +1,7 @@
 import { VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { MarketPreview } from '@banx/api/core'
-import { ColorByPercentHealth, convertAprToApy, getColorByPercent } from '@banx/utils'
+import { ColorByPercentHealth, getColorByPercent } from '@banx/utils'
 
 export const ADDITIONAL_MARKET_INFO = [
   {

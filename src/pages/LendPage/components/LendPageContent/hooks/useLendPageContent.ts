@@ -5,7 +5,6 @@ import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { MarketPreview } from '@banx/api/core'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { useMarketsURLControl } from '@banx/store'
-import { convertAprToApy } from '@banx/utils'
 
 import { useSortMarkets } from './useSortMarkets'
 
