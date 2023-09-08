@@ -17,9 +17,10 @@ import styles from '../LoansActiveTable.module.less'
 interface RepayCellProps {
   loan: Loan
   isCardView: boolean
+  disabled: boolean
 }
 
-export const RepayCell: FC<RepayCellProps> = ({ loan, isCardView }) => {
+export const RepayCell: FC<RepayCellProps> = ({ loan, isCardView, disabled }) => {
   const { open } = useModal()
 
   const openModal = () => {
@@ -29,6 +30,7 @@ export const RepayCell: FC<RepayCellProps> = ({ loan, isCardView }) => {
   return (
     <Button
       size={isCardView ? 'large' : 'small'}
+      disabled={disabled}
       onClick={(event) => {
         openModal()
         event.stopPropagation()

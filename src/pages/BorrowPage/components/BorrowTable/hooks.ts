@@ -136,9 +136,9 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
 
   const columns = getTableColumns({
     onNftSelect,
-    isCartEmpty: isEmpty(offerByMint),
     onBorrow: borrow,
     isCardView: viewState === ViewState.CARD,
+    findOfferInCart,
   })
 
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
@@ -192,6 +192,7 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
     borrowAll,
     selectAll: onSelectAll,
     nftsInCart,
+    findOfferInCart,
   }
 }
 

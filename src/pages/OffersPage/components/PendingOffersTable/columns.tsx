@@ -42,7 +42,7 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
     },
     {
       key: 'interest',
-      title: <HeaderCell label="Est. Daily interest" />,
+      title: <HeaderCell label="Est. Weekly interest" />,
       render: (_, offer) => <InterestCell offer={offer} />,
       sorter: true,
     },

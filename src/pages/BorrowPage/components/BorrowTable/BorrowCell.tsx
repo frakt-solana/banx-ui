@@ -4,7 +4,13 @@ import { Button } from '@banx/components/Buttons'
 
 import styles from './BorrowTable.module.less'
 
-export const BorrowCell: FC<{ onBorrow: () => void; disabled?: boolean; isCardView?: boolean }> = ({
+interface BorrowCellProps {
+  onBorrow: () => void
+  disabled?: boolean
+  isCardView?: boolean
+}
+
+export const BorrowCell: FC<BorrowCellProps> = ({
   onBorrow,
   disabled = false,
   isCardView = false,

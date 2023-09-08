@@ -2,21 +2,23 @@ import { useEffect, useState } from 'react'
 
 import { isEqual, isInteger, pick } from 'lodash'
 
-export const useOfferFormController = (initialLoanValue = 0, initialLoansAmount = 1) => {
-  const initialFixedLoanValue = initialLoanValue?.toFixed(2)
-  const initialFixedLoansAmount = isInteger(initialLoansAmount)
-    ? String(initialLoansAmount)
-    : initialLoansAmount?.toFixed(2)
+const formatInitialLoansAmount = (loansAmount = 0) => {
+  return isInteger(loansAmount) ? String(loansAmount) : loansAmount?.toFixed(2)
+}
 
-  const [loanValue, setLoanValue] = useState(initialFixedLoanValue)
-  const [loansAmount, setLoansAmount] = useState(initialFixedLoansAmount)
+export const useOfferFormController = (editLoanValue = 0, editLoansAmount = 0) => {
+  const initialLoanValue = editLoanValue ? editLoanValue.toFixed(2) : '0'
+  const initiaLoansAmount = editLoansAmount ? formatInitialLoansAmount(editLoansAmount) : '1'
+
+  const [loanValue, setLoanValue] = useState(initialLoanValue)
+  const [loansAmount, setLoansAmount] = useState(initiaLoansAmount)
 
   useEffect(() => {
-    if (initialFixedLoanValue || initialFixedLoansAmount) {
-      setLoanValue(initialFixedLoanValue)
-      setLoansAmount(initialFixedLoansAmount)
+    if (initialLoanValue || initiaLoansAmount) {
+      setLoanValue(initialLoanValue)
+      setLoansAmount(initiaLoansAmount)
     }
-  }, [initialFixedLoanValue, initialFixedLoansAmount])
+  }, [initialLoanValue, initiaLoansAmount])
 
   const onLoanValueChange = (nextValue: string) => {
     setLoanValue(nextValue)
@@ -33,18 +35,18 @@ export const useOfferFormController = (initialLoanValue = 0, initialLoansAmount 
   }
 
   const resetFormValues = () => {
-    setLoanValue(initialFixedLoanValue)
-    setLoansAmount(initialFixedLoansAmount)
+    setLoanValue(initialLoanValue)
+    setLoansAmount(initiaLoansAmount)
   }
 
   const currentFormValues = { loansAmount, loanValue }
   const initialFormValues = {
-    loansAmount: initialFixedLoansAmount,
-    loanValue: initialFixedLoanValue,
+    loansAmount: initiaLoansAmount,
+    loanValue: initialLoanValue,
   }
 
   const hasFormChanges =
-    (initialLoanValue || initialLoansAmount) &&
+    (editLoanValue || editLoansAmount) &&
     !isEqual(pick(currentFormValues, Object.keys(initialFormValues)), initialFormValues)
 
   return {

@@ -4,6 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
 import { map } from 'lodash'
+import moment from 'moment'
 
 import { Loan, fetchWalletLoans } from '@banx/api/core'
 import { fetchUserLoansStats } from '@banx/api/stats'
@@ -13,6 +14,8 @@ import {
   purgeLoansWithSameMintByFreshness,
   useLoansOptimistic,
 } from '@banx/store'
+
+import { SECONDS_IN_72_HOURS } from './constants'
 
 type UseWalletLoans = () => {
   loans: Loan[]
@@ -89,8 +92,26 @@ export const useWalletLoans: UseWalletLoans = () => {
     return loans
   }, [data, walletOptimisticLoans])
 
+  const filteredLiquidatedLoans = useMemo(() => {
+    return loans.filter((loan) => {
+      const { bondTradeTransaction, fraktBond } = loan
+
+      const isTerminatingStatus =
+        bondTradeTransaction.bondTradeTransactionState ===
+        BondTradeTransactionV2State.PerpetualManualTerminating
+
+      if (isTerminatingStatus) {
+        const currentTimeInSeconds = moment().unix()
+        const expiredAt = fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS
+        return currentTimeInSeconds < expiredAt
+      }
+
+      return loan
+    })
+  }, [loans])
+
   return {
-    loans,
+    loans: filteredLiquidatedLoans,
     isLoading,
   }
 }
