@@ -77,7 +77,7 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
     offerSize,
   })
 
-  const disablePlaceOffer = connected ? showDepositError : false
+  const disablePlaceOffer = connected ? showDepositError || !offerSize : false
   const disableUpdateOffer = !hasFormChanges || showDepositError
 
   return {
