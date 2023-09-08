@@ -42,10 +42,11 @@ export const makeUpdateOfferAction: MakeUpdateOfferAction = async (
     connection,
     sendTxn: sendTxnPlaceHolder,
   })
+
   return {
     instructions,
     signers,
-    optimisticResult,
+    additionalResult: optimisticResult,
     lookupTables: [],
   }
 }
