@@ -1,5 +1,7 @@
 import { useEffect, useMemo } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
+
 import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { useSolanaBalance } from '@banx/utils'
 
@@ -15,6 +17,8 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
   const { offers, updateOrAddOffer } = useMarketOffers({ marketPubkey })
   const { marketsPreview } = useMarketsPreview()
   const solanaBalance = useSolanaBalance()
+
+  const { connected } = useWallet()
 
   const marketPreview = marketsPreview.find((market) => market.marketPubkey === marketPubkey)
 
@@ -84,7 +88,7 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
     onLoanValueChange,
     onLoanAmountChange,
 
-    showDepositError,
+    showDepositError: showDepositError && connected,
 
     disableUpdateOffer: !hasFormChanges || showDepositError,
     disablePlaceOffer: showDepositError,
