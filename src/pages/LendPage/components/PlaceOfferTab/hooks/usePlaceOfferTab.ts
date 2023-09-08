@@ -77,6 +77,9 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
     offerSize,
   })
 
+  const disablePlaceOffer = connected ? showDepositError : false
+  const disableUpdateOffer = !hasFormChanges || showDepositError
+
   return {
     isEditMode,
     offerSize,
@@ -90,8 +93,8 @@ export const usePlaceOfferTab = (marketPubkey: string) => {
 
     showDepositError: showDepositError && connected,
 
-    disableUpdateOffer: !hasFormChanges || showDepositError,
-    disablePlaceOffer: showDepositError,
+    disableUpdateOffer,
+    disablePlaceOffer,
 
     offerTransactions: {
       onCreateOffer,
