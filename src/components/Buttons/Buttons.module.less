@@ -95,8 +95,7 @@
     .box-dimensions(32px, 32px);
   }
   &.small {
-    height: 24px;
-    width: 24px;
+    .box-dimensions(24px, 24px);
   }
 }
 
@@ -124,6 +123,11 @@
 
   &:hover {
     border-color: var(--content-primary);
+  }
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+    padding: 6px 10px;
   }
 }
 
