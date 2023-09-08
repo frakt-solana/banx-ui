@@ -15,8 +15,7 @@ interface DebtCellProps {
 export const DebtCell: FC<DebtCellProps> = ({ loan, isCardView }) => {
   const repayValue = calculateLoanRepayValue(loan)
 
-  const borrowedValue = loan.fraktBond.borrowedAmount
-  const fee = repayValue - borrowedValue
+  const fee = repayValue - loan.bondTradeTransaction.solAmount
 
   const formattedRepayValue = createSolValueJSX(repayValue, 1e9, '0◎')
   const formattedFeeValue = createSolValueJSX(fee, 1e9, '0◎')
