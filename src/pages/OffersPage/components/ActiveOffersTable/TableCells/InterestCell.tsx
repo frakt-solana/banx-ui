@@ -23,5 +23,5 @@ export const InterestCell: FC<InterestCellProps> = ({ loan }) => {
     rateBasePoints: amountOfBonds,
   })
 
-  return createSolValueJSX(calculatedInterest, 1e9)
+  return createSolValueJSX(calculatedInterest + feeAmount, 1e9)
 }

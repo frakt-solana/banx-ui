@@ -10,7 +10,7 @@ import {
 
 import { Loan } from '@banx/api/core'
 
-import { DebtCell, RepayCell, StatusCell } from './TableCells'
+import { DebtCell, HealthCell, RepayCell, StatusCell } from './TableCells'
 
 import styles from './LoansActiveTable.module.less'
 
@@ -62,7 +62,7 @@ export const getTableColumns = ({
     {
       key: 'health',
       title: <HeaderCell label="Est. Health" />,
-      render: (_, { fraktBond }) => createSolValueJSX(fraktBond.amountToReturn, 1e9),
+      render: (_, loan) => <HealthCell loan={loan} />,
       sorter: true,
     },
     {
