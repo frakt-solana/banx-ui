@@ -32,14 +32,14 @@ export const useLendPageContent = () => {
     options: marketsPreview,
     selectedOptions: selectedMarkets,
     placeholder: 'Select a collection',
-    labels: ['Collection', 'APY'],
+    labels: ['Collection', 'APR'],
     optionKeys: {
       labelKey: 'collectionName',
       valueKey: 'marketPubkey',
       imageKey: 'collectionImage',
       secondLabel: {
         key: 'marketAPR',
-        format: (value: number) => `${convertAprToApy(value / 1e4)?.toFixed(0)} %`,
+        format: (value: number) => `${value / 1e2} %`,
       },
     },
     onChange: handleFilterChange,
