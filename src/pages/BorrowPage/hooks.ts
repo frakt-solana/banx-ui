@@ -16,6 +16,7 @@ import {
   useOffersOptimistic,
 } from '@banx/store'
 import { convertLoanToBorrowNft } from '@banx/transactions'
+import { calcLoanValueWithProtocolFee } from '@banx/utils'
 
 import { useCartState } from './cartState'
 import { SimpleOffer, SimpleOffersByMarket } from './types'
@@ -188,14 +189,19 @@ export const useBorrowNfts = () => {
 const calcMaxBorrow = (nfts: BorrowNft[], offers: SimpleOffersByMarket) => {
   const nftsAmountByMarket = countBy(nfts, ({ loan }) => loan.marketPubkey)
 
-  return Object.entries(nftsAmountByMarket).reduce((maxBorrow, [marketPubkey, nftsAmount]) => {
-    const maxBorrowMarket = sumBy(
-      (offers[marketPubkey] || []).slice(0, nftsAmount),
-      ({ loanValue }) => loanValue,
-    )
+  const maxBorrow = Object.entries(nftsAmountByMarket).reduce(
+    (maxBorrow, [marketPubkey, nftsAmount]) => {
+      const maxBorrowMarket = sumBy(
+        (offers[marketPubkey] || []).slice(0, nftsAmount),
+        ({ loanValue }) => loanValue,
+      )
 
-    return maxBorrow + maxBorrowMarket
-  }, 0)
+      return maxBorrow + maxBorrowMarket
+    },
+    0,
+  )
+
+  return calcLoanValueWithProtocolFee(maxBorrow)
 }
 
 const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
