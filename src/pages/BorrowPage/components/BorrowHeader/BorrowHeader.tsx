@@ -18,6 +18,7 @@ const Header = () => {
       {!isLoading && (
         <>
           <AdditionalStat label="Your NFTs" value={nftsAmount} valueType={VALUES_TYPES.STRING} />
+          <AdditionalStat label="Duration" value="Perpetual, 72h" valueType={VALUES_TYPES.STRING} />
           <SeparateStatsLine />
           <MainStat label="Max borrow" value={`${(maxBorrow / 1e9).toFixed(2)}◎`} />
         </>
