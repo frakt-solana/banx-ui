@@ -5,14 +5,14 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { useSolanaBalance } from '@banx/utils'
 
-import { useOfferStore } from '../../ExpandableCardContent/hooks'
+import { PlaceOfferParams } from '../../ExpandableCardContent'
 import { parseMarketOrder } from '../../OrderBook/helpers'
 import { shouldShowDepositError } from '../helpers'
 import { useOfferFormController } from './useOfferFormController'
 import { useOfferTransactions } from './useOfferTransactions'
 
-export const usePlaceOfferTab = (marketPubkey: string) => {
-  const { offerPubkey, setOfferPubkey, setSyntheticParams } = useOfferStore()
+export const usePlaceOfferTab = (props: PlaceOfferParams) => {
+  const { marketPubkey, offerPubkey, setOfferPubkey, setSyntheticParams } = props
 
   const { offers, updateOrAddOffer } = useMarketOffers({ marketPubkey })
   const { marketsPreview } = useMarketsPreview()
