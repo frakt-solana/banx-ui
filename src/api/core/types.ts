@@ -92,7 +92,7 @@ const BondingCurveSchema = z.object({
 })
 
 const ValidationPairSchema = z.object({
-  loanToValueFilter: z.number() || z.null(),
+  loanToValueFilter: z.number().optional(),
   durationFilter: z.number(),
   maxReturnAmountFilter: z.number(),
   bondFeatures: z.string(),
