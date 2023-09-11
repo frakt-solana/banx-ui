@@ -4,7 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 
-import { useOfferStore } from '../../ExpandableCardContent/hooks'
+import { PlaceOfferParams } from '../../ExpandableCardContent'
 import { Order } from '../types'
 import { useMarketOrders } from './useMarketOrders'
 
@@ -15,9 +15,9 @@ export interface OrderBookParams {
   bestOrder: Order
 }
 
-export const useOrderBook = (marketPubkey: string) => {
+export const useOrderBook = (props: PlaceOfferParams) => {
   const wallet = useWallet()
-  const { offerPubkey, setOfferPubkey, syntheticParams } = useOfferStore()
+  const { offerPubkey, setOfferPubkey, syntheticParams, marketPubkey } = props
   const { marketsPreview } = useMarketsPreview()
 
   const selectedMarketPreview = marketsPreview.find(
