@@ -46,7 +46,7 @@ export const useBorrowNfts = () => {
   useEffect(() => {
     if (!data || isFetching || !isFetched || !walletPublicKey) return
 
-    const expiredOffersByTime = optimisticOffers.filter((offer) => isOptimisticOfferExpired(offer))
+    const expiredOffersByTime = filter(optimisticOffers, (offer) => isOptimisticOfferExpired(offer))
 
     const optimisticsToRemove = chain(optimisticOffers)
       //? Filter closed offers from LS optimistics
@@ -55,6 +55,8 @@ export const useBorrowNfts = () => {
         const sameOfferFromBE = data.offers[offer.hadoMarket]?.find(
           ({ publicKey }) => publicKey === offer.publicKey,
         )
+        //TODO Offer may exist from Lend page. Prevent purging
+        if (!sameOfferFromBE && offer.assetReceiver === walletPublicKey.toBase58()) return false
         if (!sameOfferFromBE) return true
         const isBEOfferNewer = isOfferNewer(sameOfferFromBE, offer)
         return isBEOfferNewer
@@ -73,22 +75,24 @@ export const useBorrowNfts = () => {
       return {}
     }
 
-    const optimisticsByMarket = groupBy(optimisticOffers, ({ offer }) => offer.hadoMarket)
+    const optimisticsFiltered = chain(optimisticOffers)
+      //? Filter closed offers from LS optimistics
+      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualClosed)
+      //? Filter own offers from LS optimistics
+      .filter(({ offer }) => offer?.assetReceiver !== walletPublicKey?.toBase58())
+      .value()
+
+    const optimisticsByMarket = groupBy(optimisticsFiltered, ({ offer }) => offer.hadoMarket)
 
     return Object.fromEntries(
       Object.entries(data.offers).map(([marketPubkey, offers]) => {
-        const nextOffers = offers
-          //? Filter closed offers from LS optimistics
-          .filter((offer) => offer?.pairState !== PairState.PerpetualClosed)
-          //? Filter own offers from LS optimistics
-          .filter((offer) => offer?.assetReceiver !== walletPublicKey?.toBase58())
-          .filter((offer) => {
-            const sameOptimistic = optimisticsByMarket[offer.hadoMarket]?.find(
-              ({ offer: optimisticOffer }) => optimisticOffer.publicKey === offer.publicKey,
-            )
-            if (!sameOptimistic) return true
-            return isOfferNewer(offer, sameOptimistic.offer)
-          })
+        const nextOffers = offers.filter((offer) => {
+          const sameOptimistic = optimisticsByMarket[offer.hadoMarket]?.find(
+            ({ offer: optimisticOffer }) => optimisticOffer.publicKey === offer.publicKey,
+          )
+          if (!sameOptimistic) return true
+          return isOfferNewer(offer, sameOptimistic.offer)
+        })
 
         const optimisticsWithSameMarket =
           optimisticsByMarket[marketPubkey]?.map(({ offer }) => offer) || []
