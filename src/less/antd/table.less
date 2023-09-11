@@ -39,11 +39,19 @@
   .ant-table-tbody > tr > td:first-child {
     padding-left: 24px;
     text-align: left;
+
+    @media (max-width: 640px) {
+      padding-left: 16px;
+    }
   }
 
   .ant-table-thead > tr > th:last-child,
   .ant-table-tbody > tr > td:last-child {
     padding-right: 24px;
+
+    @media (max-width: 640px) {
+      padding-right: 16px;
+    }
   }
 
   /* Styling for table header cells */
