@@ -1,20 +1,18 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 
 import { useQuery } from '@tanstack/react-query'
 import { web3 } from 'fbonds-core'
 import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
-import { produce } from 'immer'
-import { chain, maxBy } from 'lodash'
-import { create } from 'zustand'
+import { chain, map, maxBy } from 'lodash'
 
 import {
   MarketPreview,
   Offer,
-  fetchAllMarkets,
   fetchCertainMarket,
   fetchMarketOffers,
   fetchMarketsPreview,
 } from '@banx/api/core'
+import { isOfferNewer, isOptimisticOfferExpired, useOffersOptimistic } from '@banx/store'
 
 type UseMarketsPreview = () => {
   marketsPreview: MarketPreview[]
@@ -50,65 +48,10 @@ export const useMarket = ({ marketPubkey }: { marketPubkey: string }) => {
   }
 }
 
-export const useMarkets = () => {
-  const { data, isLoading } = useQuery(['markets'], () => fetchAllMarkets(), {
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
-  })
-
-  return {
-    markets: data || null,
-    isLoading,
-  }
-}
-
-interface OptimisticOfferStore {
-  offers: Offer[]
-  addOffer: (offer: Offer) => void
-  findOffer: (offerPubkey: string) => Offer | null
-  removeOffer: (offer: Offer) => void
-  updateOffer: (offer: Offer) => void
-}
-
-const useOptimisticOfferStore = create<OptimisticOfferStore>((set, get) => ({
-  offers: [],
-  findOffer: (offerPubkey) => {
-    const { offers } = get()
-    return offers.find(({ publicKey }) => publicKey === offerPubkey) ?? null
-  },
-  addOffer: (offer) => {
-    set(
-      produce((state: OptimisticOfferStore) => {
-        state.offers.push(offer)
-      }),
-    )
-  },
-  removeOffer: (offer) => {
-    set(
-      produce((state: OptimisticOfferStore) => {
-        state.offers = state.offers.filter(({ publicKey }) => publicKey !== offer.publicKey)
-      }),
-    )
-  },
-  updateOffer: (offer: Offer) => {
-    const { findOffer } = get()
-    const offerExists = !!findOffer(offer.publicKey)
-
-    offerExists &&
-      set(
-        produce((state: OptimisticOfferStore) => {
-          state.offers = state.offers.map((existingOffer) =>
-            existingOffer.publicKey === offer.publicKey ? offer : existingOffer,
-          )
-        }),
-      )
-  },
-}))
-
 export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => {
-  const { offers: optimisticOffers, addOffer, updateOffer, findOffer } = useOptimisticOfferStore()
+  const { optimisticOffers, update: updateOffer, remove: removeOffers } = useOffersOptimistic()
 
-  const { data, isLoading, refetch } = useQuery(
+  const { data, isLoading, isFetching, isFetched } = useQuery(
     ['marketPairs', marketPubkey],
     () => fetchMarketOffers({ marketPubkey: new web3.PublicKey(marketPubkey as string) }),
     {
@@ -118,10 +61,33 @@ export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => 
     },
   )
 
+  //? Check expiredOffers and and purge them
+  useEffect(() => {
+    if (!data || isFetching || !isFetched) return
+
+    const expiredOffersByTime = optimisticOffers.filter((offer) => isOptimisticOfferExpired(offer))
+
+    const optimisticsToRemove = chain(optimisticOffers)
+      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualClosed)
+      .filter(({ offer }) => {
+        const sameOfferFromBE = data?.find(({ publicKey }) => publicKey === offer.publicKey)
+        if (!sameOfferFromBE) return false
+        const isBEOfferNewer = isOfferNewer(sameOfferFromBE, offer)
+        return isBEOfferNewer
+      })
+      .value()
+
+    if (optimisticsToRemove.length || expiredOffersByTime.length) {
+      removeOffers(
+        map([...expiredOffersByTime, ...optimisticsToRemove], ({ offer }) => offer.publicKey),
+      )
+    }
+  }, [data, isFetched, isFetching, optimisticOffers, removeOffers])
+
   const offers = useMemo(() => {
-    const filteredOptimisticOffers = optimisticOffers.filter(
-      (offer) => offer.hadoMarket === marketPubkey,
-    )
+    const filteredOptimisticOffers = optimisticOffers
+      .filter(({ offer }) => offer.hadoMarket === marketPubkey)
+      .map(({ offer }) => offer)
 
     const combinedOffers = [...filteredOptimisticOffers, ...(data ?? [])]
 
@@ -134,15 +100,12 @@ export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => 
   }, [optimisticOffers, data, marketPubkey])
 
   const updateOrAddOffer = (offer: Offer) => {
-    const offerExists = !!findOffer(offer.publicKey)
-
-    return offerExists ? updateOffer(offer) : addOffer(offer)
+    updateOffer([offer])
   }
 
   return {
     offers,
     updateOrAddOffer,
     isLoading,
-    refetch,
   }
 }
