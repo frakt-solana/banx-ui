@@ -1,7 +1,9 @@
 import Table from '@banx/components/Table'
 
+import { Loan } from '@banx/api/core'
 import { useFakeInfinityScroll } from '@banx/hooks'
 import { ViewState, useTableView } from '@banx/store'
+import { LoanStatus, determineLoanStatus } from '@banx/utils'
 
 import { useSelectedLoans } from '../../loansState'
 import { Summary } from './Summary'
@@ -51,8 +53,7 @@ export const LoansActiveTable = () => {
           loading={loading}
           showCard
           activeRowParams={{
-            field: 'fraktBond.terminatedCounter',
-            value: true,
+            condition: checkIsTerminationLoan,
             className: styles.termitated,
           }}
         />
@@ -61,4 +62,9 @@ export const LoansActiveTable = () => {
       <Summary loans={loans} />
     </div>
   )
+}
+
+const checkIsTerminationLoan = (loan: Loan) => {
+  const loanStatus = determineLoanStatus(loan)
+  return loanStatus === LoanStatus.Terminating
 }
