@@ -7,7 +7,7 @@ import { create } from 'zustand'
 import { Offer } from '@banx/api/core'
 
 const BANX_OFFERS_OPTIMISTICS_LS_KEY = '@banx.offersOptimistics'
-const OFFERS_CACHE_TIME_UNIX = 15 * 60 //? 15 minutes
+const OFFERS_CACHE_TIME_UNIX = 5 * 60 //? 5 minutes
 
 export interface OfferOptimistic {
   offer: Offer
