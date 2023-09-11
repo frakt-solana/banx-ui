@@ -54,7 +54,7 @@ const OrderBookMobile: FC<OrderBookMobileProps> = ({ marketPreview, orderBookPar
           collectionName={collectionName}
           totalUserOrders={userOrders.length}
         />
-        <ChevronMobileButton onToggleVisible={toggleOrderBook} />
+        <ChevronMobileButton isOrderBookOpen={isOrderBookOpen} onToggleVisible={toggleOrderBook} />
       </div>
       {isOrderBookOpen && (
         <div className={styles.mobileContent}>

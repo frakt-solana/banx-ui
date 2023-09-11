@@ -1,5 +1,7 @@
 import { FC } from 'react'
 
+import classNames from 'classnames'
+
 import { Button } from '@banx/components/Buttons'
 
 import { ChevronDown } from '@banx/icons'
@@ -43,12 +45,20 @@ export const NoActiveOffers = () => (
   </div>
 )
 
-export const ChevronMobileButton = ({ onToggleVisible }: { onToggleVisible: () => void }) => (
+interface ChevronMobileButtonProps {
+  isOrderBookOpen: boolean
+  onToggleVisible: () => void
+}
+
+export const ChevronMobileButton: FC<ChevronMobileButtonProps> = ({
+  isOrderBookOpen,
+  onToggleVisible,
+}) => (
   <Button
     type="circle"
     variant="secondary"
     onClick={onToggleVisible}
-    className={styles.chevronButton}
+    className={classNames(styles.chevronButton, { [styles.active]: isOrderBookOpen })}
   >
     <ChevronDown />
   </Button>
