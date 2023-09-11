@@ -52,7 +52,7 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
           {selectAllBtnText}
         </Button>
         <Button onClick={repayBulkLoan} disabled={!selection.length}>
-          Repay {createSolValueJSX(totalBorrowed, 1e9, '0◎')}
+          Repay {createSolValueJSX(totalDebt, 1e9, '0◎')}
         </Button>
       </div>
     </div>

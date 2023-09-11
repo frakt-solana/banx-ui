@@ -5,6 +5,7 @@ import classNames from 'classnames'
 
 import { MarketPreview } from '@banx/api/core'
 
+import { PlaceOfferParams } from '../ExpandableCardContent'
 import {
   ChevronMobileButton,
   CollapsedMobileContent,
@@ -64,8 +65,8 @@ const OrderBookMobile: FC<OrderBookMobileProps> = ({ marketPreview, orderBookPar
   )
 }
 
-const OrderBook: FC<{ marketPubkey: string }> = ({ marketPubkey }) => {
-  const { orderBookParams, selectedMarketPreview } = useOrderBook(marketPubkey)
+const OrderBook: FC<PlaceOfferParams> = (props) => {
+  const { orderBookParams, selectedMarketPreview } = useOrderBook(props)
 
   return (
     <>

@@ -2,16 +2,13 @@ import { FC } from 'react'
 
 import { InputCounter, InputErrorMessage, NumericInputField } from '@banx/components/inputs'
 
+import { PlaceOfferParams } from '../ExpandableCardContent'
 import { OfferActionButtons, OfferHeader, OfferSummary } from './components'
 import { usePlaceOfferTab } from './hooks'
 
 import styles from './PlaceOfferTab.module.less'
 
-interface PlaceOfferTab {
-  marketPubkey: string
-}
-
-const PlaceOfferTab: FC<PlaceOfferTab> = ({ marketPubkey }) => {
+const PlaceOfferTab: FC<PlaceOfferParams> = (props) => {
   const {
     isEditMode,
     goToPlaceOffer,
@@ -25,7 +22,7 @@ const PlaceOfferTab: FC<PlaceOfferTab> = ({ marketPubkey }) => {
     showDepositError,
     disableUpdateOffer,
     disablePlaceOffer,
-  } = usePlaceOfferTab(marketPubkey)
+  } = usePlaceOfferTab({ ...props })
 
   return (
     <div className={styles.content}>

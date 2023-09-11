@@ -119,7 +119,11 @@ export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => 
   )
 
   const offers = useMemo(() => {
-    const combinedOffers = [...optimisticOffers, ...(data ?? [])]
+    const filteredOptimisticOffers = optimisticOffers.filter(
+      (offer) => offer.hadoMarket === marketPubkey,
+    )
+
+    const combinedOffers = [...filteredOptimisticOffers, ...(data ?? [])]
 
     return chain(combinedOffers)
       .groupBy('publicKey')
@@ -127,7 +131,7 @@ export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => 
       .filter((offer) => offer?.pairState !== PairState.PerpetualClosed)
       .compact()
       .value()
-  }, [optimisticOffers, data])
+  }, [optimisticOffers, data, marketPubkey])
 
   const updateOrAddOffer = (offer: Offer) => {
     const offerExists = !!findOffer(offer.publicKey)

@@ -1,7 +1,7 @@
 import { VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { MarketPreview } from '@banx/api/core'
-import { ColorByPercentHealth, convertAprToApy, getColorByPercent } from '@banx/utils'
+import { ColorByPercentHealth, getColorByPercent } from '@banx/utils'
 
 export const ADDITIONAL_MARKET_INFO = [
   {
@@ -20,9 +20,9 @@ export const ADDITIONAL_MARKET_INFO = [
   },
   {
     key: 'marketAPR',
-    label: 'Apy',
+    label: 'Apr',
     tooltipText: 'Interest (in %) for the duration of this loan',
-    valueRenderer: (apr: number) => convertAprToApy(apr / 1e4),
+    valueRenderer: (apr: number) => apr / 1e2,
     valueType: VALUES_TYPES.PERCENT,
     valueStyles: (market: MarketPreview) => ({
       color: getColorByPercent(market.marketAPR / 100, ColorByPercentHealth),

@@ -9,20 +9,21 @@ import {
 
 import { calcLoanValueWithProtocolFee } from '@banx/utils'
 
+import { SimpleOffer } from '../../types'
 import { BorrowCell } from './BorrowCell'
 import { TableNftData } from './types'
 
 interface GetTableColumnsProps {
   onNftSelect: (nft: TableNftData) => void
   onBorrow: (nft: TableNftData) => void
-  isCartEmpty: boolean
+  findOfferInCart: (nft: TableNftData) => SimpleOffer | null
   isCardView: boolean
 }
 
 export const getTableColumns = ({
+  findOfferInCart,
   onNftSelect,
   onBorrow,
-  isCartEmpty,
   isCardView,
 }: GetTableColumnsProps) => {
   const columns: ColumnsType<TableNftData> = [
@@ -61,7 +62,7 @@ export const getTableColumns = ({
       render: (_, nft) => (
         <BorrowCell
           isCardView={isCardView}
-          disabled={!isCartEmpty}
+          disabled={!!findOfferInCart(nft)}
           onBorrow={() => onBorrow(nft)}
         />
       ),

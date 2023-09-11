@@ -20,6 +20,7 @@ export const useLoansTransactions = () => {
   const { connection } = useConnection()
 
   const { update: updateLoansOptimistic } = useLoansOptimistic()
+  const { clearSelection } = useSelectedLoans()
 
   const repayLoan = async (loan: Loan) => {
     await new TxnExecutor(makeRepayLoansAction, { wallet, connection })
@@ -33,6 +34,7 @@ export const useLoansTransactions = () => {
           })
           updateLoansOptimistic(result, wallet.publicKey.toBase58())
         }
+        clearSelection()
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error)
@@ -52,6 +54,7 @@ export const useLoansTransactions = () => {
           })
           updateLoansOptimistic([result], wallet.publicKey.toBase58())
         }
+        clearSelection()
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error)
@@ -76,6 +79,7 @@ export const useLoansTransactions = () => {
             updateLoansOptimistic(result, wallet.publicKey.toBase58())
           }
         })
+        clearSelection()
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error)
