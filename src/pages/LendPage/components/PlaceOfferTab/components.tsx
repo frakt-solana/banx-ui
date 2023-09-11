@@ -79,10 +79,10 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
             onClick={onRemoveOffer}
             className={classNames(styles.button, styles.deleteOfferButton)}
           >
-            Delete offer
+            Remove
           </Button>
           <Button onClick={onUpdateOffer} className={styles.button} disabled={disableUpdateOffer}>
-            Update offer
+            Apply changes
           </Button>
         </>
       ) : (

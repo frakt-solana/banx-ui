@@ -37,6 +37,7 @@ export const useBorrowNfts = () => {
     {
       enabled: !!walletPublicKey,
       staleTime: 5 * 1000,
+      refetchInterval: 15 * 1000,
       refetchOnWindowFocus: false,
     },
   )
@@ -51,7 +52,7 @@ export const useBorrowNfts = () => {
       const sameOfferFromBE = data.offers[offer.hadoMarket]?.find(
         ({ publicKey }) => publicKey === offer.publicKey,
       )
-      if (!sameOfferFromBE) return false
+      if (!sameOfferFromBE) return true
       const isBEOfferNewer = isOfferNewer(sameOfferFromBE, offer)
       return isBEOfferNewer
     })
@@ -188,14 +189,19 @@ export const useBorrowNfts = () => {
 const calcMaxBorrow = (nfts: BorrowNft[], offers: SimpleOffersByMarket) => {
   const nftsAmountByMarket = countBy(nfts, ({ loan }) => loan.marketPubkey)
 
-  return Object.entries(nftsAmountByMarket).reduce((maxBorrow, [marketPubkey, nftsAmount]) => {
-    const maxBorrowMarket = sumBy(
-      (offers[marketPubkey] || []).slice(0, nftsAmount),
-      ({ loanValue }) => loanValue,
-    )
+  const maxBorrow = Object.entries(nftsAmountByMarket).reduce(
+    (maxBorrow, [marketPubkey, nftsAmount]) => {
+      const maxBorrowMarket = sumBy(
+        (offers[marketPubkey] || []).slice(0, nftsAmount),
+        ({ loanValue }) => loanValue,
+      )
 
-    return maxBorrow + maxBorrowMarket
-  }, 0)
+      return maxBorrow + maxBorrowMarket
+    },
+    0,
+  )
+
+  return calcLoanValueWithProtocolFee(maxBorrow)
 }
 
 const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
@@ -207,7 +213,7 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
     .fill(currentSpotPrice)
     .map((loanValue) => ({
       id: uniqueId(),
-      loanValue: calcLoanValueWithProtocolFee(loanValue),
+      loanValue: loanValue,
       hadoMarket: offer.hadoMarket,
       publicKey: offer.publicKey,
     }))
@@ -218,7 +224,7 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
   if (decimalLoanValue && decimalLoanValue > 0) {
     offers.push({
       id: uniqueId(),
-      loanValue: calcLoanValueWithProtocolFee(decimalLoanValue),
+      loanValue: decimalLoanValue,
       hadoMarket: offer.hadoMarket,
       publicKey: offer.publicKey,
     })

@@ -10,6 +10,8 @@ import {
 } from '@banx/components/PageHeader'
 import { VALUES_TYPES } from '@banx/components/StatInfo'
 
+import { calculateLoanRepayValue } from '@banx/utils'
+
 import { useWalletLoans } from '../../hooks'
 
 const LoansHeader: FC = () => {
@@ -17,13 +19,14 @@ const LoansHeader: FC = () => {
 
   const numberOfLoans = loans.length
   const totalBorrowed = sumBy(loans, ({ fraktBond }) => fraktBond.borrowedAmount)
+  const totalDebt = sumBy(loans, (loan) => calculateLoanRepayValue(loan))
 
   return (
     <PageHeaderBackdrop title="My loans">
       <AdditionalStat label="Loans" value={numberOfLoans} valueType={VALUES_TYPES.STRING} />
       <AdditionalStat label="Total borrowed" value={totalBorrowed} divider={1e9} />
       <SeparateStatsLine />
-      <MainStat label="Total debt" value="120" />
+      <MainStat label="Total debt" value={totalDebt} divider={1e9} />
     </PageHeaderBackdrop>
   )
 }

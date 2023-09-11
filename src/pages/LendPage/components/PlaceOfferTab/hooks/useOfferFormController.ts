@@ -1,22 +1,24 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
-import { isEqual, isInteger, pick } from 'lodash'
+import { isInteger } from 'lodash'
 
-export const useOfferFormController = (initialLoanValue = 0, initialLoansAmount = 1) => {
-  const initialFixedLoanValue = initialLoanValue?.toFixed(2)
-  const initialFixedLoansAmount = isInteger(initialLoansAmount)
-    ? String(initialLoansAmount)
-    : initialLoansAmount?.toFixed(2)
+const formatInitialLoansAmount = (loansAmount = 0) => {
+  return isInteger(loansAmount) ? String(loansAmount) : loansAmount?.toFixed(2)
+}
 
-  const [loanValue, setLoanValue] = useState(initialFixedLoanValue)
-  const [loansAmount, setLoansAmount] = useState(initialFixedLoansAmount)
+export const useOfferFormController = (editLoanValue = 0, editLoansAmount = 0) => {
+  const initialLoanValue = editLoanValue ? editLoanValue.toFixed(2) : '0'
+  const initialLoansAmount = editLoansAmount ? formatInitialLoansAmount(editLoansAmount) : '1'
+
+  const [loanValue, setLoanValue] = useState(initialLoanValue)
+  const [loansAmount, setLoansAmount] = useState(initialLoansAmount)
 
   useEffect(() => {
-    if (initialFixedLoanValue || initialFixedLoansAmount) {
-      setLoanValue(initialFixedLoanValue)
-      setLoansAmount(initialFixedLoansAmount)
+    if (initialLoanValue || initialLoansAmount) {
+      setLoanValue(initialLoanValue)
+      setLoansAmount(initialLoansAmount)
     }
-  }, [initialFixedLoanValue, initialFixedLoansAmount])
+  }, [initialLoanValue, initialLoansAmount])
 
   const onLoanValueChange = (nextValue: string) => {
     setLoanValue(nextValue)
@@ -33,19 +35,16 @@ export const useOfferFormController = (initialLoanValue = 0, initialLoansAmount 
   }
 
   const resetFormValues = () => {
-    setLoanValue(initialFixedLoanValue)
-    setLoansAmount(initialFixedLoansAmount)
+    setLoanValue(initialLoanValue)
+    setLoansAmount(initialLoansAmount)
   }
 
-  const currentFormValues = { loansAmount, loanValue }
-  const initialFormValues = {
-    loansAmount: initialFixedLoansAmount,
-    loanValue: initialFixedLoanValue,
-  }
+  const hasFormChanges = useMemo(() => {
+    const isLoansAmountChanged = editLoansAmount && loansAmount !== initialLoansAmount
+    const isLoanValueChanged = editLoanValue && loanValue !== initialLoanValue
 
-  const hasFormChanges =
-    (initialLoanValue || initialLoansAmount) &&
-    !isEqual(pick(currentFormValues, Object.keys(initialFormValues)), initialFormValues)
+    return isLoansAmountChanged || isLoanValueChanged
+  }, [initialLoansAmount, initialLoanValue, loansAmount, loanValue, editLoanValue, editLoansAmount])
 
   return {
     loanValue,

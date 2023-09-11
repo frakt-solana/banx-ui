@@ -38,10 +38,10 @@ export const StatusCell: FC<StatusCellProps> = ({ loan }) => {
 }
 
 const calculateTimeInfo = (loan: Loan, status: string) => {
-  const { fraktBond } = loan
+  const { fraktBond, bondTradeTransaction } = loan
 
   const currentTimeInSeconds = moment().unix()
-  const timeSinceActivationInSeconds = currentTimeInSeconds - fraktBond.activatedAt
+  const timeSinceActivationInSeconds = currentTimeInSeconds - bondTradeTransaction.soldAt
   const expiredAt = fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS
 
   const isLiquidatedLoan = isLoanLiquidated(loan)

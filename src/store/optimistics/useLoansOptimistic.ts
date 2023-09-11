@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import { map, uniqBy } from 'lodash'
+import { groupBy, map, maxBy, uniqBy } from 'lodash'
 import moment from 'moment'
 import { create } from 'zustand'
 
@@ -112,8 +112,11 @@ const getOptimisticLoansLS = () => {
   return (optimisticLoans ? JSON.parse(optimisticLoans) : []) as LoanOptimistic[]
 }
 
-const addLoans = (loansState: LoanOptimistic[], loansToAdd: LoanOptimistic[]) =>
-  uniqBy([...loansState, ...loansToAdd], ({ loan }) => loan.publicKey)
+const addLoans = (loansState: LoanOptimistic[], loansToAdd: LoanOptimistic[]) => {
+  const sameLoansRemoved = uniqBy([...loansState, ...loansToAdd], ({ loan }) => loan.publicKey)
+
+  return purgeLoansWithSameMintByFreshness(sameLoansRemoved, ({ loan }) => loan)
+}
 
 const removeLoans = (loansState: LoanOptimistic[], loansPubkeysToRemove: string[]) =>
   loansState.filter(({ loan }) => !loansPubkeysToRemove.includes(loan.publicKey))
@@ -131,3 +134,14 @@ const updateLoans = (loansState: LoanOptimistic[], loansToAddOrUpdate: LoanOptim
 
 export const isLoanNewer = (loanA: Loan, loanB: Loan) =>
   loanA.fraktBond.lastTransactedAt >= loanB.fraktBond.lastTransactedAt
+
+//? Remove loans with same mint by priority of lastTransactedAt
+export const purgeLoansWithSameMintByFreshness = <L>(loans: L[], getLoan: (loan: L) => Loan) => {
+  const loansByMint = groupBy(loans, (loan) => getLoan(loan).nft.mint)
+
+  return Object.values(loansByMint)
+    .map((loansWithSameMint) =>
+      maxBy(loansWithSameMint, (loan) => getLoan(loan).fraktBond.lastTransactedAt),
+    )
+    .flat() as L[]
+}

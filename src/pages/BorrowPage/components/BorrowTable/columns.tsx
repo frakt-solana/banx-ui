@@ -7,20 +7,23 @@ import {
   createSolValueJSX,
 } from '@banx/components/TableComponents'
 
+import { calcLoanValueWithProtocolFee } from '@banx/utils'
+
+import { SimpleOffer } from '../../types'
 import { BorrowCell } from './BorrowCell'
 import { TableNftData } from './types'
 
 interface GetTableColumnsProps {
   onNftSelect: (nft: TableNftData) => void
   onBorrow: (nft: TableNftData) => void
-  isCartEmpty: boolean
+  findOfferInCart: (nft: TableNftData) => SimpleOffer | null
   isCardView: boolean
 }
 
 export const getTableColumns = ({
+  findOfferInCart,
   onNftSelect,
   onBorrow,
-  isCartEmpty,
   isCardView,
 }: GetTableColumnsProps) => {
   const columns: ColumnsType<TableNftData> = [
@@ -45,7 +48,7 @@ export const getTableColumns = ({
     {
       key: 'loanValue',
       title: <HeaderCell label="Borrow" />,
-      render: (_, nft) => createSolValueJSX(nft.loanValue, 1e9),
+      render: (_, nft) => createSolValueJSX(calcLoanValueWithProtocolFee(nft.loanValue), 1e9),
       sorter: true,
     },
     {
@@ -59,7 +62,7 @@ export const getTableColumns = ({
       render: (_, nft) => (
         <BorrowCell
           isCardView={isCardView}
-          disabled={!isCartEmpty}
+          disabled={!!findOfferInCart(nft)}
           onBorrow={() => onBorrow(nft)}
         />
       ),
