@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import { SearchSelect, SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortDropdown, SortDropdownProps } from '@banx/components/SortDropdown'
 
@@ -12,10 +14,17 @@ const FilterSection = <T extends object>({
   searchSelectParams,
   sortParams,
 }: FilterSectionProps<T>) => {
+  const [searchSelectCollapsed, setSearchSelectCollapsed] = useState(true)
+
   return (
     <div className={styles.container}>
-      <SearchSelect className={styles.searchSelect} {...searchSelectParams} />
-      <SortDropdown {...sortParams} />
+      <SearchSelect
+        {...searchSelectParams}
+        className={styles.searchSelect}
+        collapsed={searchSelectCollapsed}
+        onChangeCollapsed={setSearchSelectCollapsed}
+      />
+      {searchSelectCollapsed && <SortDropdown {...sortParams} />}
     </div>
   )
 }

@@ -28,6 +28,10 @@
     bottom: 0;
     width: 100%;
   }
+
+  @media screen and (max-width: 640px) {
+    padding: 16px;
+  }
 }
 
 .dropdownButton {
@@ -47,6 +51,13 @@
 .sortButton {
   svg > path {
     fill: var(--content-primary);
+  }
+
+  @media screen and (max-width: 640px) {
+    svg {
+      height: 18px;
+      width: 18px;
+    }
   }
 }
 

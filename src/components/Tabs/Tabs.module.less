@@ -27,6 +27,10 @@
     color: var(--content-secondary);
     pointer-events: none;
   }
+
+  @media (max-width: 640px) {
+    height: 40px;
+  }
 }
 
 .primary {
@@ -39,6 +43,10 @@
 
   &:hover {
     background: var(--primary-background);
+  }
+
+  @media (max-width: 640px) {
+    font: var(--tab-text-md);
   }
 }
 .primary:first-child {
