@@ -38,13 +38,16 @@
   gap: 16px;
 
   @media (max-width: 640px) {
+    overflow: auto;
     gap: 8px;
+    width: 100%;
   }
 }
 
 .mainContainer,
 .additionalContainer {
   flex-direction: column-reverse;
+  white-space: nowrap;
 }
 
 .mainContainer {
