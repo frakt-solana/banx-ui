@@ -24,6 +24,10 @@ body .input {
   &::placeholder {
     color: var(--content-secondary);
   }
+
+  @media (max-width: 640px) {
+    height: 32px;
+  }
 }
 
 .field {
@@ -37,6 +41,10 @@ body .input {
   color: var(--content-secondary);
   font: var(--table-header-md);
   text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--table-header-sm);
+  }
 }
 
 /* Input counter styles */

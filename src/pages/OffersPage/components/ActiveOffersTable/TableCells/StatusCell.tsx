@@ -8,12 +8,12 @@ import { Loan } from '@banx/api/core'
 import {
   LoanStatus,
   STATUS_LOANS_COLOR_MAP,
-  STATUS_LOANS_MAP,
   calculateTimeFromNow,
+  determineLoanStatus,
+  isLoanLiquidated,
 } from '@banx/utils'
 
 import { SECONDS_IN_72_HOURS } from '../constants'
-import { isLoanExpired } from '../helpers'
 
 import styles from '../ActiveOffersTable.module.less'
 
@@ -44,27 +44,15 @@ const calculateTimeInfo = (loan: Loan, status: string) => {
   const timeSinceActivationInSeconds = currentTimeInSeconds - bondTradeTransaction.soldAt
   const expiredAt = fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS
 
-  const isExpiredLoan = isLoanExpired(loan)
+  const isLiquidatedLoan = isLoanLiquidated(loan)
 
-  if (status === LoanStatus.Terminating && !isExpiredLoan) {
+  if (status === LoanStatus.Terminating && !isLiquidatedLoan) {
     return <Timer expiredAt={expiredAt} />
   }
 
-  if (status === LoanStatus.Active || isExpiredLoan) {
+  if (status === LoanStatus.Active || isLiquidatedLoan) {
     return calculateTimeFromNow(timeSinceActivationInSeconds)
   }
 
   return ''
-}
-
-const determineLoanStatus = (loan: Loan) => {
-  const { bondTradeTransactionState } = loan.bondTradeTransaction
-
-  const mappedStatus = STATUS_LOANS_MAP[bondTradeTransactionState]
-
-  if (mappedStatus !== LoanStatus.Active && isLoanExpired(loan)) {
-    return LoanStatus.Liquidated
-  }
-
-  return mappedStatus
 }

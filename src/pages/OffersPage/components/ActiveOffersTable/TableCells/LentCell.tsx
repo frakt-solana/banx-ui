@@ -9,24 +9,37 @@ import styles from '../ActiveOffersTable.module.less'
 
 interface LentCellProps {
   loan: Loan
+  isCardView: boolean
 }
 
-export const LentCell: FC<LentCellProps> = ({ loan }) => {
+export const LentCell: FC<LentCellProps> = ({ loan, isCardView }) => {
   const { solAmount, feeAmount } = loan.bondTradeTransaction || {}
 
   const collectionFloor = loan.nft.collectionFloor
 
   const lentValue = solAmount + feeAmount
-  const LTV = (lentValue / collectionFloor) * 100
+  const ltv = (lentValue / collectionFloor) * 100
 
-  const colorLTV = getColorByPercent(LTV, ColorByPercentHealth)
+  const formattedLentValue = createSolValueJSX(lentValue, 1e9, '0◎')
+
+  return !isCardView ? (
+    <div className={styles.lentInfo}>
+      <span>{formattedLentValue}</span>
+      {createLtvValueJSX(ltv)}
+    </div>
+  ) : (
+    <span>
+      {formattedLentValue} ({createLtvValueJSX(ltv)})
+    </span>
+  )
+}
+
+const createLtvValueJSX = (ltv: number) => {
+  const colorLTV = getColorByPercent(ltv, ColorByPercentHealth)
 
   return (
-    <div className={styles.lentInfo}>
-      <span>{createSolValueJSX(lentValue, 1e9)}</span>
-      <span className={styles.lentInfoSubtitle} style={{ color: colorLTV }}>
-        {createPercentValueJSX(LTV)} LTV
-      </span>
-    </div>
+    <span className={styles.lentInfoSubtitle} style={{ color: colorLTV }}>
+      {createPercentValueJSX(ltv)} LTV
+    </span>
   )
 }

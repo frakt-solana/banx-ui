@@ -17,9 +17,9 @@ export interface SortViewParams<T> {
   toggleParams?: ToggleProps
 }
 
-export interface ActiveRowParams {
-  field: string
-  value: boolean
-  className: string
+export interface ActiveRowParams<T> {
+  field?: string
+  condition: (record: T) => boolean
   cardClassName?: string
+  className?: string
 }

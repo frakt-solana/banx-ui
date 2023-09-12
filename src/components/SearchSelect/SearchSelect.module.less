@@ -13,6 +13,14 @@
   position: relative;
   height: 40px;
   width: 100%;
+
+  @media (max-width: 960px) {
+    max-width: unset !important;
+  }
+
+  @media (max-width: 640px) {
+    height: 32px;
+  }
 }
 
 .prefix {
@@ -44,16 +52,16 @@
   justify-content: space-between;
 }
 
-.relativeImageContainer {
-  position: relative;
-  height: 40px;
-  width: 40px;
-}
-
+.relativeImageContainer,
 .image {
+  position: relative;
   height: 40px;
   width: 40px;
-  position: relative;
+
+  @media (max-width: 640px) {
+    height: 32px;
+    width: 32px;
+  }
 }
 
 .relativeImageContainer .selected {
@@ -74,6 +82,11 @@
     transform: translate(-50%, -50%);
     height: 2px;
     width: 11px;
+  }
+
+  @media (max-width: 640px) {
+    height: 32px;
+    width: 32px;
   }
 }
 

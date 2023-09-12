@@ -14,12 +14,13 @@ export interface TableProps<T, P> {
   loading?: boolean
 
   sortViewParams?: SortViewParams<P>
-  activeRowParams?: ActiveRowParams
+  activeRowParams?: ActiveRowParams<T>
 
   showCard?: boolean
   onRowClick?: (dataItem: T) => void
   breakpoints?: PartialBreakpoints
   className?: string
+  scrollX?: number
 }
 
 const Table = <T extends object, P extends object>({

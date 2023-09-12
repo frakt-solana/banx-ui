@@ -2,6 +2,10 @@
   display: flex;
   align-items: center;
   gap: 16px;
+
+  @media (max-width: 640px) {
+    gap: 8px;
+  }
 }
 
 .mainInfoContent {
@@ -14,7 +18,7 @@
   height: 72px;
   width: 72px;
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     height: 64px;
     width: 64px;
   }
@@ -23,7 +27,7 @@
 .collectionName {
   font: var(--card-header-lg);
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     font: var(--card-header-md);
   }
 }
@@ -36,8 +40,20 @@
   & > div {
     min-width: 80px;
 
-    @media (max-width: 768px) {
+    span:first-child {
+      line-height: 16px;
+    }
+
+    span:last-child {
+      line-height: 21px;
+    }
+
+    @media (max-width: 640px) {
       min-width: 65px;
+
+      span:last-child {
+        line-height: 18px;
+      }
     }
   }
 }
@@ -65,6 +81,12 @@
     }
     & > div:last-child {
       align-items: flex-end;
+    }
+  }
+
+  &.hidden {
+    @media (max-width: 640px) {
+      display: none;
     }
   }
 }

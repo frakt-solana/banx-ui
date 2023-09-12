@@ -3,6 +3,7 @@ import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/type
 import moment from 'moment'
 
 import { Loan } from '@banx/api/core'
+import { SECONDS_IN_72_HOURS } from '@banx/constants'
 
 export enum LoanStatus {
   Active = 'active',
@@ -23,6 +24,30 @@ export const STATUS_LOANS_COLOR_MAP: Record<LoanStatus, string> = {
   [LoanStatus.Repaid]: 'var(--additional-green-primary-deep)',
   [LoanStatus.Terminating]: 'var(--additional-lava-primary-deep)',
   [LoanStatus.Liquidated]: 'var(--additional-red-primary-deep)',
+}
+
+export const isLoanLiquidated = (loan: Loan) => {
+  const { fraktBond } = loan
+
+  if (!fraktBond.refinanceAuctionStartedAt) return false
+
+  const currentTimeInSeconds = moment().unix()
+
+  const expiredAt = fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS
+
+  return currentTimeInSeconds > expiredAt
+}
+
+export const determineLoanStatus = (loan: Loan) => {
+  const { bondTradeTransactionState } = loan.bondTradeTransaction
+
+  const mappedStatus = STATUS_LOANS_MAP[bondTradeTransactionState]
+
+  if (mappedStatus !== LoanStatus.Active && isLoanLiquidated(loan)) {
+    return LoanStatus.Liquidated
+  }
+
+  return mappedStatus
 }
 
 export const calculateLoanRepayValue = (loan: Loan) => {

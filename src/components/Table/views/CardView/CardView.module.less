@@ -1,11 +1,15 @@
 .cardList {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(282px, 2fr));
-  padding: 24px;
+  padding: 8px 24px;
   gap: 16px;
 
   @media (max-width: 960px) {
     grid-template-columns: repeat(auto-fill, minmax(220px, 2fr));
+  }
+
+  @media (max-width: 640px) {
+    padding: 8px 16px;
   }
 }
 

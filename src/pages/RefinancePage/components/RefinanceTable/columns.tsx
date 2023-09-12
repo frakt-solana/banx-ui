@@ -28,7 +28,7 @@ export const getTableColumns = ({ isCardView }: GetTableColumnsProps) => {
     },
     {
       key: 'floorPrice',
-      title: <HeaderCell label="Floor price" />,
+      title: <HeaderCell label="Floor" />,
       render: (_, loan) => createSolValueJSX(loan.nft.collectionFloor, 1e9),
     },
     {
