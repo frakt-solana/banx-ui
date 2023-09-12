@@ -40,8 +40,20 @@
   & > div {
     min-width: 80px;
 
+    span:first-child {
+      line-height: 16px;
+    }
+
+    span:last-child {
+      line-height: 21px;
+    }
+
     @media (max-width: 640px) {
       min-width: 65px;
+
+      span:last-child {
+        line-height: 18px;
+      }
     }
   }
 }
