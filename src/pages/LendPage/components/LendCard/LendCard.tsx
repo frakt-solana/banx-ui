@@ -2,7 +2,7 @@ import { FC, useEffect, useRef } from 'react'
 
 import classNames from 'classnames'
 
-// import { Button } from '@banx/components/Buttons'
+import { Button } from '@banx/components/Buttons'
 
 import { MarketPreview } from '@banx/api/core'
 import { ChevronDown } from '@banx/icons'
@@ -37,12 +37,12 @@ const LendCard: FC<LendCardProps> = ({ isCardOpen, onCardClick, market, isOrderB
         <MarketMainInfo market={market} />
         <div className={styles.row}>
           <MarketAdditionalInfo market={market} isCardOpen={isCardOpen} />
-          {/* <Button
+          <Button
             type="circle"
             className={classNames(styles.chevronButton, { [styles.active]: isCardOpen })}
-          > */}
-          <ChevronDown />
-          {/* </Button> */}
+          >
+            <ChevronDown />
+          </Button>
         </div>
       </div>
       {isCardOpen && (
