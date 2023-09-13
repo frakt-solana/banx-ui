@@ -40,7 +40,9 @@ const BorrowTable: FC<BorrowTableProps> = ({ nfts, isLoading, rawOffers }) => {
         />
         <div ref={fetchMoreTrigger} />
       </div>
-      <Summary nftsInCart={nftsInCart} selectAll={selectAll} borrowAll={borrowAll} />
+      {!nfts.length && !isLoading && (
+        <Summary nftsInCart={nftsInCart} selectAll={selectAll} borrowAll={borrowAll} />
+      )}
     </div>
   )
 }

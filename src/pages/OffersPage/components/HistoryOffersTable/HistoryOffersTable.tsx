@@ -27,7 +27,7 @@ export const HistoryOffersTable = () => {
           showCard
         />
       </div>
-      <Summary loans={loans} />
+      {!loans.length && !loading && <Summary loans={loans} />}
     </div>
   )
 }

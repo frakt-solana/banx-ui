@@ -62,7 +62,7 @@ export const LoansActiveTable = () => {
         />
         <div ref={fetchMoreTrigger} />
       </div>
-      <Summary loans={loans} />
+      {!loans.length && !loading && <Summary loans={loans} />}
     </div>
   )
 }
