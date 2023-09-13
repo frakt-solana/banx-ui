@@ -25,7 +25,7 @@ export const ADDITIONAL_MARKET_INFO = [
     valueRenderer: (apr: number) => apr / 1e2,
     valueType: VALUES_TYPES.PERCENT,
     valueStyles: (market: MarketPreview) => ({
-      color: getColorByPercent(market.marketAPR / 100, ColorByPercentHealth),
+      color: getColorByPercent(market.marketApr / 100, ColorByPercentHealth),
       font: 'var(--important-text-md)',
     }),
   },
