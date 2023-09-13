@@ -1,10 +1,14 @@
 import { useMemo, useState } from 'react'
 
+import { get, sortBy } from 'lodash'
+
 import { SearchSelectProps } from '@banx/components/SearchSelect'
+import { SortOption } from '@banx/components/SortDropdown'
 
 import { MarketPreview } from '@banx/api/core'
-import { useSortMarkets } from '@banx/pages/LendPage/components/LendPageContent/hooks/useSortMarkets'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
+
+import { DEFAULT_SORT_OPTION } from './constants'
 
 export const useNotConnectedBorrow = () => {
   const { marketsPreview, isLoading } = useMarketsPreview()
@@ -29,7 +33,7 @@ export const useNotConnectedBorrow = () => {
     options: marketsPreview,
     selectedOptions: selectedMarkets,
     placeholder: 'Select a collection',
-    labels: ['Collection', 'APR'],
+    labels: ['Collection', 'Liquidity'],
     optionKeys: {
       labelKey: 'collectionName',
       valueKey: 'marketPubkey',
@@ -45,11 +49,48 @@ export const useNotConnectedBorrow = () => {
   return {
     marketsPreview: sortedMarkets,
     isLoading,
+    sortViewParams: { searchSelectParams, sortParams },
     showEmptyList,
+  }
+}
 
-    sortViewParams: {
-      searchSelectParams,
-      sortParams,
+enum SortField {
+  LIQUIDITY = 'liquidity',
+  BORROW = 'borrow',
+  FLOOR = 'floor',
+}
+
+const useSortMarkets = (markets: MarketPreview[]) => {
+  const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
+
+  const sortOptionValue = sortOption?.value
+
+  const sortedMarkets = useMemo(() => {
+    if (!sortOptionValue) {
+      return markets
+    }
+
+    const [name, order] = sortOptionValue.split('_')
+
+    const sortValueMapping: Record<SortField, string> = {
+      [SortField.LIQUIDITY]: 'liquidity',
+      [SortField.BORROW]: 'borrow',
+      [SortField.FLOOR]: 'floor',
+    }
+
+    const sorted = sortBy(markets, (loan) => {
+      const sortValue = sortValueMapping[name as SortField]
+      return get(loan, sortValue)
+    })
+
+    return order === 'desc' ? sorted.reverse() : sorted
+  }, [sortOptionValue, markets])
+
+  return {
+    sortedMarkets,
+    sortParams: {
+      option: sortOption,
+      onChange: setSortOption,
     },
   }
 }
