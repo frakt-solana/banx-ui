@@ -1,3 +1,5 @@
+import { useWallet } from '@solana/wallet-adapter-react'
+
 import {
   AdditionalStat,
   MainStat,
@@ -9,19 +11,34 @@ import { VALUES_TYPES } from '@banx/components/StatInfo'
 import { useBorrowNfts } from '../../hooks'
 
 const Header = () => {
-  const { nfts, isLoading, maxBorrow } = useBorrowNfts()
+  const { connected } = useWallet()
+  const { nfts, maxBorrow } = useBorrowNfts()
 
   const nftsAmount = nfts.length
 
+  //? Waiting for BE
+  const collectionsWhitelisted = 10
+  const totalLiquidity = 28323169
+
   return (
     <PageHeaderBackdrop title="Borrow SOL">
-      {!isLoading && (
-        <>
-          <AdditionalStat label="Your NFTs" value={nftsAmount} valueType={VALUES_TYPES.STRING} />
-          <AdditionalStat label="Duration" value="Perpetual, 72h" valueType={VALUES_TYPES.STRING} />
-          <SeparateStatsLine />
-          <MainStat label="Max borrow" value={`${(maxBorrow / 1e9).toFixed(2)}◎`} />
-        </>
+      {connected ? (
+        <AdditionalStat label="Your NFTs" value={nftsAmount} valueType={VALUES_TYPES.STRING} />
+      ) : (
+        <AdditionalStat
+          label="Collections whitelisted"
+          value={collectionsWhitelisted}
+          valueType={VALUES_TYPES.STRING}
+        />
+      )}
+
+      <AdditionalStat label="Duration" value="Perpetual, 72h" valueType={VALUES_TYPES.STRING} />
+      <SeparateStatsLine />
+
+      {connected ? (
+        <MainStat label="Max borrow" value={maxBorrow} divider={1e9} />
+      ) : (
+        <MainStat label="Total liquidity" value={totalLiquidity} decimalPlaces={0} />
       )}
     </PageHeaderBackdrop>
   )
