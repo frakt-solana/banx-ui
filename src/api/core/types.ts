@@ -18,6 +18,7 @@ export const MarketPreviewSchema = z
     activeBondsAmount: z.number(),
     activeOfferAmount: z.number(),
     loansTVL: z.number(),
+    marketAPR: z.number().optional(), //TODO Fix model on BE
   })
   .merge(MarketMetaSchema)
 
