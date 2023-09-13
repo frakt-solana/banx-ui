@@ -4,9 +4,10 @@ import { isEmpty } from 'lodash'
 import { ViewState, useTableView } from '@banx/store'
 
 import { Loader } from '../Loader'
-import EmptyList from './EmptyList'
 import { ActiveRowParams, PartialBreakpoints, SortViewParams } from './types'
 import { CardView, SortView, TableView } from './views'
+
+import styles from './Table.module.less'
 
 export interface TableProps<T, P> {
   data: Array<T>
@@ -46,7 +47,7 @@ const Table = <T extends object, P extends object>({
       {sortViewParams && <SortView columns={columns} showCard={showCard} {...sortViewParams} />}
 
       {loading && <Loader />}
-      {emptyMessage && !loading && <EmptyList message={emptyMessage} />}
+      {emptyMessage && !loading && <div className={styles.emptyList}>{emptyMessage}</div>}
 
       {hasData && (
         <ViewComponent data={data} columns={columns} activeRowParams={activeRowParams} {...props} />
