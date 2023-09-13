@@ -8,7 +8,7 @@ import { getTableColumns } from './columns'
 import { EMPTY_MESSAGE } from './constants'
 import { useNotConnectedBorrow } from './hooks'
 
-const NotConnected = () => {
+const NotConnectedTable = () => {
   const { connected } = useWallet()
   const { marketsPreview, sortViewParams, isLoading } = useNotConnectedBorrow()
 
@@ -32,4 +32,4 @@ const NotConnected = () => {
   )
 }
 
-export default NotConnected
+export default NotConnectedTable

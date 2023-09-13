@@ -8,6 +8,7 @@ import {
 } from '@banx/components/TableComponents'
 
 import { MarketPreview } from '@banx/api/core'
+import { DAYS_IN_YEAR } from '@banx/constants'
 
 import styles from './NotConnectedTable.module.less'
 
@@ -26,11 +27,18 @@ export const getTableColumns = () => {
       render: (_, market) => createSolValueJSX(market.collectionFloor, 1e9),
       sorter: true,
     },
+
     {
       key: 'borrow',
       title: <HeaderCell label="Borrow" />,
       render: (_, market) => createSolValueJSX(market.bestOffer, 1e9),
       sorter: true,
+    },
+    {
+      key: 'fee',
+      title: <HeaderCell label="Daily fee" tooltipText="Daily fee" />,
+      render: (_, { marketAPR, collectionFloor }) =>
+        createSolValueJSX(((marketAPR / 1e4 / DAYS_IN_YEAR) * collectionFloor) / 1e9),
     },
     {
       key: 'liquidity',
