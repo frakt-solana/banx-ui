@@ -1,10 +1,9 @@
-import React from 'react'
-
 import Table from '@banx/components/Table'
 
 import { useFakeInfinityScroll } from '@banx/hooks'
 
 import { getTableColumns } from './columns'
+import { EMPTY_MESSAGE } from './constants'
 import { useNotConnectedBorrow } from './hooks'
 
 const NotConnected = () => {
@@ -13,6 +12,7 @@ const NotConnected = () => {
   const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: marketsPreview })
 
   const columns = getTableColumns()
+
   return (
     <>
       <Table
@@ -21,6 +21,7 @@ const NotConnected = () => {
         sortViewParams={sortViewParams}
         rowKeyField="marketPubkey"
         loading={isLoading}
+        emptyMessage={EMPTY_MESSAGE}
         showCard
       />
       <div ref={fetchMoreTrigger} />

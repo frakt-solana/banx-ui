@@ -4,6 +4,7 @@ import { isEmpty } from 'lodash'
 import { ViewState, useTableView } from '@banx/store'
 
 import { Loader } from '../Loader'
+import EmptyList from './EmptyList'
 import { ActiveRowParams, PartialBreakpoints, SortViewParams } from './types'
 import { CardView, SortView, TableView } from './views'
 
@@ -21,6 +22,7 @@ export interface TableProps<T, P> {
   breakpoints?: PartialBreakpoints
   className?: string
   scrollX?: number
+  emptyMessage?: string
 }
 
 const Table = <T extends object, P extends object>({
@@ -30,13 +32,13 @@ const Table = <T extends object, P extends object>({
   activeRowParams,
   showCard,
   loading,
+  emptyMessage,
   ...props
 }: TableProps<T, P>) => {
   const { viewState } = useTableView()
 
   const ViewComponent = showCard && ViewState.CARD === viewState ? CardView : TableView
 
-  const noData = isEmpty(data) && !loading
   const hasData = !isEmpty(data)
 
   return (
@@ -44,7 +46,7 @@ const Table = <T extends object, P extends object>({
       {sortViewParams && <SortView columns={columns} showCard={showCard} {...sortViewParams} />}
 
       {loading && <Loader />}
-      {noData && <>Items not found</>}
+      {emptyMessage && !loading && <EmptyList message={emptyMessage} />}
 
       {hasData && (
         <ViewComponent data={data} columns={columns} activeRowParams={activeRowParams} {...props} />

@@ -12,10 +12,12 @@ export const BorrowPage = () => {
 
   const { nfts, isLoading, rawOffers } = useBorrowNfts()
 
+  const showEmptyList = !nfts?.length && !isLoading
+
   return (
     <div className={styles.pageWrapper}>
       <BorrowHeader />
-      {connected ? (
+      {connected && !showEmptyList ? (
         <BorrowTable nfts={nfts} isLoading={isLoading} rawOffers={rawOffers} />
       ) : (
         <NotConnected />
