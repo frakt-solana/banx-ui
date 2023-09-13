@@ -21,6 +21,7 @@ interface SummaryProps {
 
 export const Summary: FC<SummaryProps> = ({ nftsInCart, selectAll, borrowAll }) => {
   const selectAllBtnText = !nftsInCart.length ? 'Select all' : 'Deselect all'
+  const selectMobileBtnText = !nftsInCart.length ? `Select all` : `Deselect ${nftsInCart.length}`
 
   const totalFloor = sumBy(nftsInCart, ({ nft }) => nft.nft.collectionFloor)
   const totalBorrow = calcLoanValueWithProtocolFee(sumBy(nftsInCart, ({ loanValue }) => loanValue))
@@ -54,9 +55,14 @@ export const Summary: FC<SummaryProps> = ({ nftsInCart, selectAll, borrowAll }) 
       </div>
       <div className={styles.summaryBtns}>
         <Button variant="secondary" onClick={selectAll}>
-          {selectAllBtnText}
+          <span className={styles.selectButtonText}>{selectAllBtnText}</span>
+          <span className={styles.selectButtonMobileText}>{selectMobileBtnText}</span>
         </Button>
-        <Button onClick={borrowAll} disabled={!nftsInCart.length}>
+        <Button
+          onClick={borrowAll}
+          disabled={!nftsInCart.length}
+          className={styles.borrowBulkButton}
+        >
           Borrow {createSolValueJSX(totalBorrow, 1e9, '0◎')}
         </Button>
       </div>
