@@ -1,3 +1,5 @@
+import { useWallet } from '@solana/wallet-adapter-react'
+
 import Table from '@banx/components/Table'
 
 import { useFakeInfinityScroll } from '@banx/hooks'
@@ -7,6 +9,7 @@ import { EMPTY_MESSAGE } from './constants'
 import { useNotConnectedBorrow } from './hooks'
 
 const NotConnected = () => {
+  const { connected } = useWallet()
   const { marketsPreview, sortViewParams, isLoading } = useNotConnectedBorrow()
 
   const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: marketsPreview })
@@ -21,7 +24,7 @@ const NotConnected = () => {
         sortViewParams={sortViewParams}
         rowKeyField="marketPubkey"
         loading={isLoading}
-        emptyMessage={EMPTY_MESSAGE}
+        emptyMessage={connected ? EMPTY_MESSAGE : ''}
         showCard
       />
       <div ref={fetchMoreTrigger} />

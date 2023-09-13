@@ -2,7 +2,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 import BorrowHeader from './components/BorrowHeader'
 import BorrowTable from './components/BorrowTable'
-import NotConnected from './components/NotConneted'
+import NotConnectedTable from './components/NotConnectedTable'
 import { useBorrowNfts } from './hooks'
 
 import styles from './BorrowPage.module.less'
@@ -20,7 +20,7 @@ export const BorrowPage = () => {
       {connected && !showEmptyList ? (
         <BorrowTable nfts={nfts} isLoading={isLoading} rawOffers={rawOffers} />
       ) : (
-        <NotConnected />
+        <NotConnectedTable />
       )}
     </div>
   )

@@ -9,7 +9,7 @@ import {
 
 import { MarketPreview } from '@banx/api/core'
 
-import styles from './NotConnected.module.less'
+import styles from './NotConnectedTable.module.less'
 
 export const getTableColumns = () => {
   const columns: ColumnsType<MarketPreview> = [
