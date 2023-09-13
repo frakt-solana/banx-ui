@@ -1,4 +1,5 @@
 import { useWallet } from '@solana/wallet-adapter-react'
+import { sumBy } from 'lodash'
 
 import {
   AdditionalStat,
@@ -8,17 +9,20 @@ import {
 } from '@banx/components/PageHeader'
 import { VALUES_TYPES } from '@banx/components/StatInfo'
 
+import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
+
 import { useBorrowNfts } from '../../hooks'
 
 const Header = () => {
   const { connected } = useWallet()
+
   const { nfts, maxBorrow } = useBorrowNfts()
+  const { marketsPreview } = useMarketsPreview()
 
   const nftsAmount = nfts.length
 
-  //? Waiting for BE
-  const collectionsWhitelisted = 10
-  const totalLiquidity = 28323169
+  const collectionsWhitelisted = marketsPreview?.length
+  const totalLiquidity = sumBy(marketsPreview, 'offerTVL')
 
   return (
     <PageHeaderBackdrop title="Borrow SOL">
@@ -38,7 +42,7 @@ const Header = () => {
       {connected ? (
         <MainStat label="Max borrow" value={maxBorrow} divider={1e9} />
       ) : (
-        <MainStat label="Total liquidity" value={totalLiquidity} decimalPlaces={0} />
+        <MainStat label="Total liquidity" value={totalLiquidity} divider={1e9} decimalPlaces={0} />
       )}
     </PageHeaderBackdrop>
   )
