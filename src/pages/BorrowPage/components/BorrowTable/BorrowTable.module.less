@@ -56,6 +56,11 @@
   display: flex;
   gap: 8px;
   align-items: center;
+  min-width: 220px;
+
+  @media (max-width: 1240px) {
+    display: none;
+  }
 }
 
 .collateralsTitle {
@@ -111,7 +116,7 @@
     text-align: right;
   }
 
-  @media (max-width: 960px) {
+  @media (max-width: 1240px) {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -132,6 +137,10 @@
   display: flex;
   gap: 8px;
 
+  button {
+    min-width: 170px;
+  }
+
   @media (max-width: 960px) {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -141,4 +150,16 @@
 
 .borrowButton {
   width: 128px;
+}
+
+.selectButtonText {
+  @media (max-width: 1240px) {
+    display: none;
+  }
+}
+
+.selectButtonMobileText {
+  @media (min-width: 1241px) {
+    display: none;
+  }
 }
