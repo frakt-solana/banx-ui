@@ -12,12 +12,25 @@
     box-shadow: none;
     color: var(--content-primary);
     padding: 24px;
+
+    @media (max-width: 640px) {
+      padding: 16px;
+    }
   }
 
   /* Styles for the close icon */
   .ant-modal-close {
     top: -64px;
     inset-inline-end: 0;
+
+    @media (max-width: 960px) {
+      right: 24px;
+    }
+
+    @media (max-width: 640px) {
+      top: -48px;
+      right: 16px;
+    }
   }
 
   .ant-modal-close:hover {
@@ -33,6 +46,11 @@
   .ant-modal-close svg {
     height: 40px;
     width: 40px;
+
+    @media (max-width: 640px) {
+      height: 32px;
+      width: 32px;
+    }
   }
 
   .ant-modal-close svg path {
@@ -41,5 +59,16 @@
 
   .ant-modal-close svg rect:first-child {
     fill: var(--bg-primary);
+  }
+
+  @media (max-width: 960px) {
+    position: absolute;
+    top: unset !important;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+    max-width: unset;
+    width: 100% !important;
   }
 }

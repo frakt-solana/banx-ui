@@ -78,7 +78,7 @@ export const CollapsedMobileContent: FC<CollapsedMobileContentProps> = ({
   <div className={styles.collapsedMobileContent}>
     <img className={styles.collapsedMobileImage} src={collectionImage} />
     <div className={styles.collectionMobileInfo}>
-      <p className={styles.collectionMobileTitle}>{collectionName}</p>
+      <p className={styles.collectionMobileTitle}>{collectionName} offers</p>
       <p className={styles.collectionMobileSubtitle}>Mine: {totalUserOrders}</p>
     </div>
   </div>
