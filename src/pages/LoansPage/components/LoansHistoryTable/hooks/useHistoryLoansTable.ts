@@ -7,6 +7,8 @@ import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
+import { PATHS } from '@banx/router'
+
 import { DEFAULT_SORT_OPTION } from '../../LoansActiveTable/constants'
 import { EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
 import { useBorrowerActivity } from './useBorrowerActivity'
@@ -62,13 +64,18 @@ export const useHistoryLoansTable = () => {
   }
 
   const showEmptyList = (!loans?.length && !isLoading) || !connected
-  const emptyMessage = connected ? EMPTY_MESSAGE : NOT_CONNECTED_MESSAGE
+
+  const emptyListParams = {
+    message: connected ? EMPTY_MESSAGE : NOT_CONNECTED_MESSAGE,
+    buttonText: connected ? 'Borrow $SOL' : '',
+    path: connected ? PATHS.BORROW : '',
+  }
 
   return {
     loans,
     loading: isLoading,
     showEmptyList,
-    emptyMessage,
+    emptyListParams,
     sortViewParams: {
       searchSelectParams,
       sortParams,

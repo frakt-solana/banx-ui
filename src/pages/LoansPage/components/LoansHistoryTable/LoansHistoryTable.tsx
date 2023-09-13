@@ -1,7 +1,6 @@
 import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 
-import { PATHS } from '@banx/router'
 import { ViewState, useTableView } from '@banx/store'
 
 import { Summary } from './Summary'
@@ -11,14 +10,13 @@ import { useHistoryLoansTable } from './hooks'
 import styles from './LoansHistoryTable.module.less'
 
 export const LoansHistoryTable = () => {
-  const { loans, loading, sortViewParams, showEmptyList, emptyMessage } = useHistoryLoansTable()
+  const { loans, loading, sortViewParams, showEmptyList, emptyListParams } = useHistoryLoansTable()
 
   const { viewState } = useTableView()
 
   const columns = getTableColumns({ isCardView: viewState === ViewState.CARD })
 
-  if (showEmptyList)
-    return <EmptyList message={emptyMessage} buttonText="Borrow $SOL" path={PATHS.BORROW} />
+  if (showEmptyList) return <EmptyList {...emptyListParams} />
 
   return (
     <div className={styles.tableRoot}>

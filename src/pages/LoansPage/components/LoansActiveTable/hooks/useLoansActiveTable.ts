@@ -7,6 +7,7 @@ import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
 
 import { useWalletLoans } from '@banx/pages/LoansPage/hooks'
+import { PATHS } from '@banx/router'
 
 import { DEFAULT_SORT_OPTION, EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
 import { useFilteredLoans } from './useFilteredLoans'
@@ -62,13 +63,18 @@ export const useLoansActiveTable = () => {
   }
 
   const showEmptyList = (!loans?.length && !isLoading) || !connected
-  const emptyMessage = connected ? EMPTY_MESSAGE : NOT_CONNECTED_MESSAGE
+
+  const emptyListParams = {
+    message: connected ? EMPTY_MESSAGE : NOT_CONNECTED_MESSAGE,
+    buttonText: connected ? 'Borrow $SOL' : '',
+    path: connected ? PATHS.BORROW : '',
+  }
 
   return {
     loans: sortedLoans,
     loading: isLoading,
     showEmptyList,
-    emptyMessage,
+    emptyListParams,
     sortViewParams: {
       searchSelectParams,
       sortParams,
