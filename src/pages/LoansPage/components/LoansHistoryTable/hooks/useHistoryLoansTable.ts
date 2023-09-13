@@ -8,7 +8,7 @@ import { SortOption } from '@banx/components/SortDropdown'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { DEFAULT_SORT_OPTION } from '../../LoansActiveTable/constants'
-import { EMPTY_MESSAGE, NOT_CONNECTED_EMPTY_MESSAGE } from '../constants'
+import { EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
 import { useBorrowerActivity } from './useBorrowerActivity'
 
 import styles from '../LoansHistoryTable.module.less'
@@ -62,7 +62,7 @@ export const useHistoryLoansTable = () => {
   }
 
   const showEmptyList = (!loans?.length && !isLoading) || !connected
-  const emptyMessage = connected ? EMPTY_MESSAGE : NOT_CONNECTED_EMPTY_MESSAGE
+  const emptyMessage = connected ? EMPTY_MESSAGE : NOT_CONNECTED_MESSAGE
 
   return {
     loans,

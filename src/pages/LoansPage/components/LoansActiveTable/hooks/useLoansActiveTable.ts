@@ -8,7 +8,7 @@ import { SortOption } from '@banx/components/SortDropdown'
 
 import { useWalletLoans } from '@banx/pages/LoansPage/hooks'
 
-import { DEFAULT_SORT_OPTION, EMPTY_MESSAGE, NOT_CONNECTED_EMPTY_MESSAGE } from '../constants'
+import { DEFAULT_SORT_OPTION, EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
 import { useFilteredLoans } from './useFilteredLoans'
 import { useSortedLoans } from './useSortedLoans'
 
@@ -62,7 +62,7 @@ export const useLoansActiveTable = () => {
   }
 
   const showEmptyList = (!loans?.length && !isLoading) || !connected
-  const emptyMessage = connected ? EMPTY_MESSAGE : NOT_CONNECTED_EMPTY_MESSAGE
+  const emptyMessage = connected ? EMPTY_MESSAGE : NOT_CONNECTED_MESSAGE
 
   return {
     loans: sortedLoans,
