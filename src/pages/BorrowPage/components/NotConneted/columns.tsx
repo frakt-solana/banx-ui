@@ -9,6 +9,8 @@ import {
 
 import { MarketPreview } from '@banx/api/core'
 
+import styles from './NotConnected.module.less'
+
 export const getTableColumns = () => {
   const columns: ColumnsType<MarketPreview> = [
     {
@@ -31,15 +33,13 @@ export const getTableColumns = () => {
       sorter: true,
     },
     {
-      key: 'fee',
-      title: <HeaderCell label="Fee" />,
-      render: (_, market) => createSolValueJSX(market.collectionFloor, 1e9),
-      sorter: true,
-    },
-    {
       key: 'liquidity',
       title: <HeaderCell label="Liquidity" />,
-      render: (_, market) => createSolValueJSX(market.offerTVL, 1e9),
+      render: (_, { offerTVL }) => (
+        <span className={offerTVL ? styles.liquidityCell : ''}>
+          {createSolValueJSX(offerTVL, 1e9)}
+        </span>
+      ),
       sorter: true,
     },
   ]
