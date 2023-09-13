@@ -1,3 +1,10 @@
+.box-dimensions(@min, @max) {
+  min-height: @min;
+  min-width: @min;
+  max-height: @max;
+  max-width: @max;
+}
+
 // root styles for all buttons
 .root {
   background: transparent;
@@ -8,8 +15,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  // gap: 8px;
-  // white-space: nowrap;
+  gap: 8px;
+  white-space: nowrap;
 
   &:disabled {
     pointer-events: none;
@@ -78,23 +85,18 @@
 .circle.primary,
 .circle.secondary {
   padding: 0;
-
   &.large {
-    height: 40px;
-    width: 40px;
+    .box-dimensions(40px, 40px);
 
     @media (max-width: 640px) {
-      height: 32px;
-      width: 32px;
+      .box-dimensions(32px, 32px);
     }
   }
   &.medium {
-    height: 32px;
-    width: 32px;
+    .box-dimensions(32px, 32px);
   }
   &.small {
-    height: 24px;
-    width: 24px;
+    .box-dimensions(24px, 24px);
   }
 }
 
