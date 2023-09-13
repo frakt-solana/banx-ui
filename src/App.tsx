@@ -9,11 +9,12 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 // import { compress, decompress } from 'lz-string'
 import { RPC_ENDPOINTS, WALLETS } from '@banx/constants'
 import { useBestWorkingRPC } from '@banx/hooks'
+import { USE_BORROW_NFTS_QUERY_KEY } from '@banx/pages/BorrowPage/hooks'
+import { USE_MARKETS_PREVIEW_QUERY_KEY } from '@banx/pages/LendPage/hooks'
+import { USE_WALLET_LOANS_QUERY_KEY } from '@banx/pages/LoansPage/hooks'
+import { USE_USER_OFFERS_QUERY_KEY } from '@banx/pages/OffersPage/hooks'
 import { Router } from '@banx/router'
 import { DialectProvider, initSentry } from '@banx/utils'
-
-import { USE_BORROW_NFTS_QUERY_KEY } from './pages/BorrowPage/hooks'
-import { USE_WALLET_LOANS_QUERY_KEY } from './pages/LoansPage/hooks'
 
 initSentry()
 const queryClient = new QueryClient({
@@ -62,9 +63,12 @@ const App = () => {
             const queryIsReadyForPersistance = query.state.status === 'success'
             if (queryIsReadyForPersistance) {
               const { queryKey } = query
-              const persist = !![USE_BORROW_NFTS_QUERY_KEY, USE_WALLET_LOANS_QUERY_KEY].find(
-                (key) => queryKey.includes(key),
-              )
+              const persist = !![
+                USE_BORROW_NFTS_QUERY_KEY,
+                USE_WALLET_LOANS_QUERY_KEY,
+                USE_MARKETS_PREVIEW_QUERY_KEY,
+                USE_USER_OFFERS_QUERY_KEY,
+              ].find((key) => queryKey.includes(key))
               return persist
             }
             return false
