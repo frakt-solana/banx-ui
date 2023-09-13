@@ -4,6 +4,7 @@ import { get, sortBy } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
+import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { MarketPreview } from '@banx/api/core'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
@@ -39,8 +40,8 @@ export const useNotConnectedBorrow = () => {
       valueKey: 'marketPubkey',
       imageKey: 'collectionImage',
       secondLabel: {
-        key: 'marketAPR',
-        format: (value: number) => `${value / 1e2} %`,
+        key: 'offerTVL',
+        format: (value: number) => createSolValueJSX(value, 1e9),
       },
     },
     onChange: handleFilterChange,
@@ -55,9 +56,9 @@ export const useNotConnectedBorrow = () => {
 }
 
 enum SortField {
-  LIQUIDITY = 'liquidity',
-  BORROW = 'borrow',
-  FLOOR = 'floor',
+  LIQUIDITY = 'offerTVL',
+  BORROW = 'bestOffer',
+  FLOOR = 'collectionFloor',
 }
 
 const useSortMarkets = (markets: MarketPreview[]) => {
@@ -73,9 +74,9 @@ const useSortMarkets = (markets: MarketPreview[]) => {
     const [name, order] = sortOptionValue.split('_')
 
     const sortValueMapping: Record<SortField, string> = {
-      [SortField.LIQUIDITY]: 'liquidity',
-      [SortField.BORROW]: 'borrow',
-      [SortField.FLOOR]: 'floor',
+      [SortField.LIQUIDITY]: 'offerTVL',
+      [SortField.BORROW]: 'bestOffer',
+      [SortField.FLOOR]: 'borrow',
     }
 
     const sorted = sortBy(markets, (loan) => {
