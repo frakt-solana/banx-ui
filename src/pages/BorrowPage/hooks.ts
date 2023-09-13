@@ -2,9 +2,9 @@ import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
-import { FraktBondState } from 'fbonds-core/lib/fbond-protocol/types'
+import { FraktBondState, PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { produce } from 'immer'
-import { countBy, filter, groupBy, isEmpty, map, sumBy, uniqBy, uniqueId } from 'lodash'
+import { chain, countBy, filter, groupBy, isEmpty, map, sumBy, uniqBy, uniqueId } from 'lodash'
 import { create } from 'zustand'
 
 import { BorrowNft, Offer, fetchBorrowNftsAndOffers } from '@banx/api/core'
@@ -46,16 +46,22 @@ export const useBorrowNfts = () => {
   useEffect(() => {
     if (!data || isFetching || !isFetched || !walletPublicKey) return
 
-    const expiredOffersByTime = optimisticOffers.filter((offer) => isOptimisticOfferExpired(offer))
+    const expiredOffersByTime = filter(optimisticOffers, (offer) => isOptimisticOfferExpired(offer))
 
-    const optimisticsToRemove = optimisticOffers.filter(({ offer }) => {
-      const sameOfferFromBE = data.offers[offer.hadoMarket]?.find(
-        ({ publicKey }) => publicKey === offer.publicKey,
-      )
-      if (!sameOfferFromBE) return true
-      const isBEOfferNewer = isOfferNewer(sameOfferFromBE, offer)
-      return isBEOfferNewer
-    })
+    const optimisticsToRemove = chain(optimisticOffers)
+      //? Filter closed offers from LS optimistics
+      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualClosed)
+      .filter(({ offer }) => {
+        const sameOfferFromBE = data.offers[offer.hadoMarket]?.find(
+          ({ publicKey }) => publicKey === offer.publicKey,
+        )
+        //TODO Offer may exist from Lend page. Prevent purging
+        if (!sameOfferFromBE && offer.assetReceiver === walletPublicKey.toBase58()) return false
+        if (!sameOfferFromBE) return true
+        const isBEOfferNewer = isOfferNewer(sameOfferFromBE, offer)
+        return isBEOfferNewer
+      })
+      .value()
 
     if (optimisticsToRemove.length || expiredOffersByTime.length) {
       removeOptimisticOffers(
@@ -69,7 +75,14 @@ export const useBorrowNfts = () => {
       return {}
     }
 
-    const optimisticsByMarket = groupBy(optimisticOffers, ({ offer }) => offer.hadoMarket)
+    const optimisticsFiltered = chain(optimisticOffers)
+      //? Filter closed offers from LS optimistics
+      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualClosed)
+      //? Filter own offers from LS optimistics
+      .filter(({ offer }) => offer?.assetReceiver !== walletPublicKey?.toBase58())
+      .value()
+
+    const optimisticsByMarket = groupBy(optimisticsFiltered, ({ offer }) => offer.hadoMarket)
 
     return Object.fromEntries(
       Object.entries(data.offers).map(([marketPubkey, offers]) => {

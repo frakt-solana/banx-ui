@@ -6,7 +6,7 @@ import { Offer } from '@banx/api/core'
 import { Order } from './types'
 
 export const parseMarketOrder = (offer: Offer): Order => {
-  const { fundsSolOrTokenBalance, currentSpotPrice, publicKey, assetReceiver, validation } = offer
+  const { fundsSolOrTokenBalance, currentSpotPrice, publicKey, assetReceiver } = offer
 
   const loansAmount = fundsSolOrTokenBalance / currentSpotPrice
   const loanValue = currentSpotPrice * Math.min(loansAmount, 1)
@@ -18,8 +18,6 @@ export const parseMarketOrder = (offer: Offer): Order => {
     rawData: {
       publicKey,
       assetReceiver,
-      bondFeature: validation?.bondFeatures,
-      loanToValueFilter: validation?.loanToValueFilter,
     },
   }
 }
