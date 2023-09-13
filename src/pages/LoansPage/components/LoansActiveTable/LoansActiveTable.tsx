@@ -1,7 +1,9 @@
+import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 
 import { Loan } from '@banx/api/core'
 import { useFakeInfinityScroll } from '@banx/hooks'
+import { PATHS } from '@banx/router'
 import { ViewState, useTableView } from '@banx/store'
 import { LoanStatus, determineLoanStatus } from '@banx/utils'
 
@@ -13,7 +15,7 @@ import { useLoansActiveTable } from './hooks'
 import styles from './LoansActiveTable.module.less'
 
 export const LoansActiveTable = () => {
-  const { sortViewParams, loans, loading } = useLoansActiveTable()
+  const { sortViewParams, loans, loading, showEmptyList, emptyMessage } = useLoansActiveTable()
 
   const { selection, toggleLoanInSelection, findLoanInSelection, clearSelection, setSelection } =
     useSelectedLoans()
@@ -39,6 +41,9 @@ export const LoansActiveTable = () => {
   })
 
   const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: loans })
+
+  if (showEmptyList)
+    return <EmptyList message={emptyMessage} buttonText="Borrow $SOL" path={PATHS.BORROW} />
 
   return (
     <div className={styles.tableRoot}>
