@@ -1,10 +1,3 @@
-.box-dimensions(@min, @max) {
-  min-width: @min;
-  min-height: @min;
-  // max-height: @max;
-  // max-width: @max;
-}
-
 // root styles for all buttons
 .root {
   background: transparent;
@@ -85,17 +78,21 @@
 .circle.primary,
 .circle.secondary {
   &.large {
-    .box-dimensions(40px, 40px);
+    height: 40px;
+    width: 40px;
 
     @media (max-width: 640px) {
-      .box-dimensions(32px, 32px);
+      height: 32px;
+      width: 32px;
     }
   }
   &.medium {
-    .box-dimensions(32px, 32px);
+    height: 32px;
+    width: 32px;
   }
   &.small {
-    .box-dimensions(24px, 24px);
+    height: 24px;
+    width: 24px;
   }
 }
 
