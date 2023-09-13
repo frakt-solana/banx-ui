@@ -11,7 +11,5 @@ export interface Order {
   rawData: {
     publicKey: string
     assetReceiver: string
-    bondFeature?: string
-    loanToValueFilter?: number
   }
 }
