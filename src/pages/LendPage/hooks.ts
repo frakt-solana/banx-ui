@@ -25,7 +25,7 @@ export const useMarketsPreview = () => {
     marketsPreview:
       data?.map((marketPreview) => ({
         ...marketPreview,
-        marketApr: marketPreview.marketApr || marketPreview?.marketAPR, //TODO Fix model on BE
+        marketApr: marketPreview.marketApr || marketPreview?.marketAPR || 0, //TODO Fix model on BE
       })) || [],
     isLoading,
   }
