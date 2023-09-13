@@ -9,7 +9,8 @@
   }
 
   @media (max-width: 640px) {
-    padding: 8px 16px;
+    grid-template-columns: unset;
+    padding: 8px 0;
   }
 }
 
@@ -22,6 +23,11 @@
   flex-direction: column;
   padding: 16px;
   gap: 8px;
+
+  @media (max-width: 640px) {
+    border-left: 0;
+    border-right: 0;
+  }
 }
 
 .cardRow {
