@@ -6,10 +6,10 @@ import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
+import { useUserOffers } from '@banx/pages/OffersPage/hooks'
 import { calculateLoanValue } from '@banx/utils'
 
 import { DEFAULT_SORT_OPTION } from '../constants'
-import { useUserOffers } from './useUserOffers'
 
 import styles from '../PendingOffersTable.module.less'
 
