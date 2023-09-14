@@ -1,7 +1,7 @@
 import { SortOption } from '@banx/components/SortDropdown'
 
 export const DEFAULT_SORT_OPTION: SortOption = {
-  label: 'Apr',
+  label: 'APR',
   value: 'apr_desc',
 }
 
