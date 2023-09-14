@@ -48,7 +48,11 @@ const Header = () => {
         valueType={VALUES_TYPES.STRING}
       />
       <SeparateStatsLine />
-      <MainStat label="Total interest" value="0" />
+      <MainStat
+        label="Whitelisted"
+        value={marketsPreview?.length}
+        valueType={VALUES_TYPES.STRING}
+      />
     </PageHeaderBackdrop>
   )
 }

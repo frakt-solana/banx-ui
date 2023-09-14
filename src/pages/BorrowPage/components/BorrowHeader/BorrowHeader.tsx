@@ -30,7 +30,7 @@ const Header = () => {
         <AdditionalStat label="Your NFTs" value={nftsAmount} valueType={VALUES_TYPES.STRING} />
       ) : (
         <AdditionalStat
-          label="Collections whitelisted"
+          label="Whitelisted"
           value={collectionsWhitelisted}
           valueType={VALUES_TYPES.STRING}
         />
