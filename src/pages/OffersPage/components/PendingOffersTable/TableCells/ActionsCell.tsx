@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from '@banx/components/Buttons'
 
 import { Offer } from '@banx/api/core'
+import { useUserOffers } from '@banx/pages/OffersPage/hooks'
 import { PATHS } from '@banx/router'
 import { useMarketsURLControl } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
@@ -14,7 +15,6 @@ import { makeRemoveOfferAction } from '@banx/transactions/bonds'
 import { enqueueSnackbar } from '@banx/utils'
 
 import { TableUserOfferData } from '../helpers'
-import { useUserOffers } from '../hooks'
 
 import styles from '../PendingOffersTable.module.less'
 
@@ -63,7 +63,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ offer, isCardView }) => {
 const useActionsCell = (offer: TableUserOfferData) => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { offers, hideOffers } = useUserOffers()
+  const { offers, updateOrAddOffer } = useUserOffers()
 
   const offerPubkey = offer.publicKey
 
@@ -75,8 +75,8 @@ const useActionsCell = (offer: TableUserOfferData) => {
     new TxnExecutor(makeRemoveOfferAction, { wallet, connection })
       .addTxnParam({ offerPubkey: offer.publicKey, optimisticOffer: optimisticOffer as Offer })
       .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
-        hideOffers(offerPubkey)
+        const { txnHash, result } = results[0]
+        result?.bondOffer && updateOrAddOffer([result.bondOffer])
         enqueueSnackbar({
           message: 'Transaction Executed',
           solanaExplorerPath: `tx/${txnHash}`,
