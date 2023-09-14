@@ -42,7 +42,7 @@ const Header = () => {
       {connected ? (
         <MainStat label="Max borrow" value={maxBorrow} divider={1e9} />
       ) : (
-        <MainStat label="Total liquidity" value={totalLiquidity} divider={1e9} decimalPlaces={0} />
+        <MainStat label="Total liquidity" value={totalLiquidity} divider={1e9} />
       )}
     </PageHeaderBackdrop>
   )
