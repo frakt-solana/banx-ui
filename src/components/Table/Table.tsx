@@ -7,6 +7,8 @@ import { Loader } from '../Loader'
 import { ActiveRowParams, PartialBreakpoints, SortViewParams } from './types'
 import { CardView, SortView, TableView } from './views'
 
+import styles from './Table.module.less'
+
 export interface TableProps<T, P> {
   data: Array<T>
   columns: ColumnsType<T>
@@ -21,6 +23,7 @@ export interface TableProps<T, P> {
   breakpoints?: PartialBreakpoints
   className?: string
   scrollX?: number
+  emptyMessage?: string
 }
 
 const Table = <T extends object, P extends object>({
@@ -30,13 +33,13 @@ const Table = <T extends object, P extends object>({
   activeRowParams,
   showCard,
   loading,
+  emptyMessage,
   ...props
 }: TableProps<T, P>) => {
   const { viewState } = useTableView()
 
   const ViewComponent = showCard && ViewState.CARD === viewState ? CardView : TableView
 
-  const noData = isEmpty(data) && !loading
   const hasData = !isEmpty(data)
 
   return (
@@ -44,7 +47,7 @@ const Table = <T extends object, P extends object>({
       {sortViewParams && <SortView columns={columns} showCard={showCard} {...sortViewParams} />}
 
       {loading && <Loader />}
-      {noData && <>Items not found</>}
+      {emptyMessage && !loading && <div className={styles.emptyList}>{emptyMessage}</div>}
 
       {hasData && (
         <ViewComponent data={data} columns={columns} activeRowParams={activeRowParams} {...props} />
