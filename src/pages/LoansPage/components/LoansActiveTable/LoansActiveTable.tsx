@@ -56,10 +56,12 @@ export const LoansActiveTable = () => {
           rowKeyField="publicKey"
           loading={loading}
           showCard
-          activeRowParams={{
-            condition: checkIsTerminationLoan,
-            className: styles.termitated,
-          }}
+          activeRowParams={[
+            {
+              condition: checkIsTerminationLoan,
+              className: styles.terminated,
+            },
+          ]}
         />
         <div ref={fetchMoreTrigger} />
       </div>
