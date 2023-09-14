@@ -37,8 +37,8 @@ export const getTableColumns = () => {
     {
       key: 'fee',
       title: <HeaderCell label="Daily fee" tooltipText="Daily fee" />,
-      render: (_, { marketAPR, collectionFloor }) =>
-        createSolValueJSX((marketAPR / 1e4 / DAYS_IN_YEAR) * collectionFloor, 1e9),
+      render: (_, { marketApr, collectionFloor }) =>
+        createSolValueJSX((marketApr / 1e4 / DAYS_IN_YEAR) * collectionFloor, 1e9),
     },
     {
       key: 'liquidity',
