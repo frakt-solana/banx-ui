@@ -1,5 +1,7 @@
 import { FC } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
+
 import { InputCounter, InputErrorMessage, NumericInputField } from '@banx/components/inputs'
 
 import { PlaceOfferParams } from '../ExpandableCardContent'
@@ -9,6 +11,7 @@ import { usePlaceOfferTab } from './hooks'
 import styles from './PlaceOfferTab.module.less'
 
 const PlaceOfferTab: FC<PlaceOfferParams> = (props) => {
+  const { connected } = useWallet()
   const {
     isEditMode,
     goToPlaceOffer,
@@ -33,9 +36,15 @@ const PlaceOfferTab: FC<PlaceOfferParams> = (props) => {
           value={loanValue}
           onChange={onLoanValueChange}
           className={styles.numericField}
+          disabled={!connected}
           hasError
         />
-        <InputCounter label="Number of loans" onChange={onLoanAmountChange} value={loansAmount} />
+        <InputCounter
+          label="Number of loans"
+          onChange={onLoanAmountChange}
+          value={loansAmount}
+          disabled={!connected}
+        />
       </div>
       <InputErrorMessage message={showDepositError ? 'Not enough SOL' : ''} />
       <OfferSummary offerSize={offerSize} marketAPR={marketAPR} />
