@@ -34,10 +34,10 @@ export const routes: Route[] = [
     path: PATHS.ADVENTURES,
     component: RootPage,
   },
-  {
-    path: PATHS.LIQUIDATIONS,
-    component: RootPage,
-  },
+  // {
+  //   path: PATHS.LIQUIDATIONS,
+  //   component: RootPage,
+  // },
   {
     path: PATHS.REFINANCE,
     component: RefinancePage,
