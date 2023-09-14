@@ -8,7 +8,9 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { calculateLoanValue } from '@banx/utils'
 
-import { DEFAULT_SORT_OPTION } from '../constants'
+import { DEFAULT_SORT_OPTION, SORT_OPTIONS } from '../constants'
+import { parseUserOffers } from '../helpers'
+import { useSortedOffers } from './useSortedOffers'
 import { useUserOffers } from './useUserOffers'
 
 import styles from '../PendingOffersTable.module.less'
@@ -59,13 +61,17 @@ export const usePendingOfferTable = () => {
     className: styles.searchSelect,
   }
 
+  const parsedUserOffers = parseUserOffers(offers)
+  const sortedOffers = useSortedOffers(parsedUserOffers, sortOption.value)
+
   const sortParams = {
     option: sortOption,
     onChange: setSortOption,
+    options: SORT_OPTIONS,
   }
 
   return {
-    offers,
+    offers: sortedOffers,
     loading,
     sortViewParams: {
       searchSelectParams,

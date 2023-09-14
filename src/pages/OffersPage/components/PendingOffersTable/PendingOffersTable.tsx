@@ -4,7 +4,6 @@ import { useFakeInfinityScroll } from '@banx/hooks'
 import { ViewState, useTableView } from '@banx/store'
 
 import { getTableColumns } from './columns'
-import { parseUserOffers } from './helpers'
 import { usePendingOfferTable } from './hooks'
 
 import styles from './PendingOffersTable.module.less'
@@ -16,9 +15,8 @@ export const PendingOfferTable = () => {
   const isCardView = viewState === ViewState.CARD
 
   const columns = getTableColumns({ isCardView })
-  const parsedUserOffers = parseUserOffers(offers)
 
-  const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: parsedUserOffers })
+  const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: offers })
 
   return (
     <>
