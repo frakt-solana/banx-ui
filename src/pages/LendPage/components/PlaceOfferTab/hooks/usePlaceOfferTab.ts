@@ -83,7 +83,7 @@ export const usePlaceOfferTab = (props: PlaceOfferParams) => {
   return {
     isEditMode,
     offerSize,
-    marketAPR: marketPreview?.marketAPR || 0,
+    marketApr: marketPreview?.marketApr || 0,
     loanValue,
     loansAmount,
 

@@ -7,11 +7,11 @@ import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
+import { useUserOffers } from '@banx/pages/OffersPage/hooks'
 import { PATHS } from '@banx/router'
 import { calculateLoanValue } from '@banx/utils'
 
 import { DEFAULT_SORT_OPTION, EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
-import { useUserOffers } from './useUserOffers'
 
 import styles from '../PendingOffersTable.module.less'
 
