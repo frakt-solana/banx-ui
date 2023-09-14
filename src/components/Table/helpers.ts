@@ -1,22 +1,18 @@
-import { get } from 'lodash'
-
 import { ActiveRowParams } from './types'
 
 export const getCardOrRowClassName = <T>(
   record: T,
-  params?: ActiveRowParams<T>,
+  params?: ActiveRowParams<T>[],
   isCard = false,
 ): string => {
-  if (!params) return ''
+  if (!params || params.length === 0) return ''
 
-  const { field, condition, cardClassName, className } = params
+  const matchedParams = params.find(({ condition }) => condition && condition(record))
 
-  const fieldValue = field ? get(record, field) : record
-
-  const meetsCondition = condition(fieldValue)
-
-  if (meetsCondition && isCard) return cardClassName || ''
-  if (meetsCondition) return className || ''
+  if (matchedParams) {
+    const { className, cardClassName } = matchedParams
+    return isCard ? cardClassName || '' : className || ''
+  }
 
   return ''
 }
