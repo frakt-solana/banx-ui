@@ -15,9 +15,8 @@ import {
   Lend,
   LendDark,
   Medium,
-  MediumDark,
-  Raffles,
-  RafflesDark,
+  MediumDark, // Raffles,
+  // RafflesDark,
   Twitter,
   TwitterDark,
 } from '@banx/icons'
@@ -74,14 +73,14 @@ export const SECONDARY_NAVIGATION_LINKS = [
       dark: BanxFilledDark,
     },
   },
-  {
-    pathname: PATHS.LIQUIDATIONS,
-    label: 'Raffles',
-    icons: {
-      light: Raffles,
-      dark: RafflesDark,
-    },
-  },
+  // {
+  //   pathname: PATHS.LIQUIDATIONS,
+  //   label: 'Raffles',
+  //   icons: {
+  //     light: Raffles,
+  //     dark: RafflesDark,
+  //   },
+  // },
 ]
 
 export const DOCUMENTATIONS_LINKS = [
