@@ -35,10 +35,12 @@ const ActiveOffersTable = () => {
           {
             condition: checkIsTerminationLoan,
             className: styles.terminated,
+            cardClassName: styles.terminated,
           },
           {
             condition: checkIsLiquidatedLoan,
             className: styles.liquidated,
+            cardClassName: styles.liquidated,
           },
         ]}
         loading={loading}

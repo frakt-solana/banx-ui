@@ -60,6 +60,7 @@ export const LoansActiveTable = () => {
             {
               condition: checkIsTerminationLoan,
               className: styles.terminated,
+              cardClassName: styles.terminated,
             },
           ]}
         />
