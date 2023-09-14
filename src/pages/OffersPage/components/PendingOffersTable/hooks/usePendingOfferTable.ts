@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
 import { first, groupBy, map } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
@@ -7,9 +8,10 @@ import { SortOption } from '@banx/components/SortDropdown'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { useUserOffers } from '@banx/pages/OffersPage/hooks'
+import { PATHS } from '@banx/router'
 import { calculateLoanValue } from '@banx/utils'
 
-import { DEFAULT_SORT_OPTION } from '../constants'
+import { DEFAULT_SORT_OPTION, EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
 
 import styles from '../PendingOffersTable.module.less'
 
@@ -21,6 +23,8 @@ interface SearchSelectOption {
 
 export const usePendingOfferTable = () => {
   const { offers, loading } = useUserOffers()
+  const { connected } = useWallet()
+
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
 
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
@@ -64,9 +68,19 @@ export const usePendingOfferTable = () => {
     onChange: setSortOption,
   }
 
+  const showEmptyList = (!offers?.length && !loading) || !connected
+
+  const emptyListParams = {
+    message: connected ? EMPTY_MESSAGE : NOT_CONNECTED_MESSAGE,
+    buttonText: connected ? 'Lend $SOL' : '',
+    path: connected ? PATHS.LEND : '',
+  }
+
   return {
     offers,
     loading,
+    showEmptyList,
+    emptyListParams,
     sortViewParams: {
       searchSelectParams,
       sortParams,
