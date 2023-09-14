@@ -63,6 +63,7 @@ export const useLoansActiveTable = () => {
   }
 
   const showEmptyList = (!loans?.length && !isLoading) || !connected
+  const showSummary = !loans.length && !isLoading
 
   const emptyListParams = {
     message: connected ? EMPTY_MESSAGE : NOT_CONNECTED_MESSAGE,
@@ -74,6 +75,7 @@ export const useLoansActiveTable = () => {
     loans: sortedLoans,
     loading: isLoading,
     showEmptyList,
+    showSummary,
     emptyListParams,
     sortViewParams: {
       searchSelectParams,

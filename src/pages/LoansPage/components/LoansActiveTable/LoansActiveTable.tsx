@@ -14,7 +14,8 @@ import { useLoansActiveTable } from './hooks'
 import styles from './LoansActiveTable.module.less'
 
 export const LoansActiveTable = () => {
-  const { sortViewParams, loans, loading, showEmptyList, emptyListParams } = useLoansActiveTable()
+  const { sortViewParams, loans, loading, showEmptyList, emptyListParams, showSummary } =
+    useLoansActiveTable()
 
   const { selection, toggleLoanInSelection, findLoanInSelection, clearSelection, setSelection } =
     useSelectedLoans()
@@ -62,7 +63,7 @@ export const LoansActiveTable = () => {
         />
         <div ref={fetchMoreTrigger} />
       </div>
-      {!loans.length && !loading && <Summary loans={loans} />}
+      {showSummary && <Summary loans={loans} />}
     </div>
   )
 }

@@ -8,7 +8,8 @@ import { useHistoryOffersTable } from './hooks'
 import styles from './HistoryOffersTable.module.less'
 
 export const HistoryOffersTable = () => {
-  const { loans, sortViewParams, loading, showEmptyList, emptyListParams } = useHistoryOffersTable()
+  const { loans, sortViewParams, loading, showEmptyList, emptyListParams, showSummary } =
+    useHistoryOffersTable()
 
   const columns = getTableColumns()
 
@@ -27,7 +28,7 @@ export const HistoryOffersTable = () => {
           showCard
         />
       </div>
-      {!loans.length && !loading && <Summary loans={loans} />}
+      {showSummary && <Summary loans={loans} />}
     </div>
   )
 }
