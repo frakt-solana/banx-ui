@@ -1,3 +1,4 @@
+import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 
 import { useFakeInfinityScroll } from '@banx/hooks'
@@ -9,7 +10,7 @@ import { usePendingOfferTable } from './hooks'
 import styles from './PendingOffersTable.module.less'
 
 export const PendingOfferTable = () => {
-  const { offers, loading, sortViewParams } = usePendingOfferTable()
+  const { offers, loading, sortViewParams, emptyListParams, showEmptyList } = usePendingOfferTable()
 
   const { viewState } = useTableView()
   const isCardView = viewState === ViewState.CARD
@@ -17,6 +18,8 @@ export const PendingOfferTable = () => {
   const columns = getTableColumns({ isCardView })
 
   const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: offers })
+
+  if (showEmptyList) return <EmptyList {...emptyListParams} />
 
   return (
     <>

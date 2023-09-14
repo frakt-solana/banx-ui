@@ -12,3 +12,6 @@ export const DEFAULT_SORT_OPTION: SortOption = {
   label: 'APR',
   value: 'apr_desc',
 }
+
+export const EMPTY_MESSAGE = 'Lend $SOL to view your pending offers'
+export const NOT_CONNECTED_MESSAGE = 'Connect wallet to view your pending offers'

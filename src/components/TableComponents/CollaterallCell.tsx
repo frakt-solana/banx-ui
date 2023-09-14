@@ -36,7 +36,7 @@ export const NftInfoCell: FC<NftInfoCellProps> = ({
       </div>
       <div className={styles.nftNames}>
         <p className={styles.nftCollectionName}>{nftCollectionName}</p>
-        <p className={styles.nftNumber}>{displayNftNumber}</p>
+        {displayNftNumber && <p className={styles.nftNumber}>{displayNftNumber}</p>}
       </div>
     </div>
   )

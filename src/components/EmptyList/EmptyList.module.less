@@ -1,0 +1,37 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 24px;
+
+  @media (max-width: 960px) {
+    margin: 24px 16px;
+  }
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+.emptyList {
+  background: var(--additional-blue-secondary);
+  border: 1px solid var(--additional-blue-primary);
+
+  padding: 8px 16px;
+  min-height: 40px;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    text-align: center;
+  }
+}
+
+.emptyListMessage {
+  font: var(--body-text-md);
+}
+
+.emptyListButton {
+  text-decoration: none;
+}

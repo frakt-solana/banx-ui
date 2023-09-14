@@ -2,19 +2,25 @@ import { z } from 'zod'
 
 import { PaginationMeta } from '@banx/types'
 
-export const MarketPreviewSchema = z.object({
-  marketPubkey: z.string(),
+const MarketMetaSchema = z.object({
+  marketApr: z.number(),
   collectionName: z.string(),
   collectionImage: z.string(),
-  collectionFloor: z.number(),
-  offerTVL: z.number(),
-  bestOffer: z.number(), //? lamports
-  bestLTV: z.number(),
-  activeBondsAmount: z.number(),
-  activeOfferAmount: z.number(),
-  marketAPR: z.number(),
-  loansTVL: z.number(),
 })
+
+export const MarketPreviewSchema = z
+  .object({
+    marketPubkey: z.string(),
+    collectionFloor: z.number(),
+    offerTVL: z.number(),
+    bestOffer: z.number(), //? lamports
+    bestLTV: z.number(),
+    activeBondsAmount: z.number(),
+    activeOfferAmount: z.number(),
+    loansTVL: z.number(),
+    marketAPR: z.number().optional(), //TODO Fix model on BE
+  })
+  .merge(MarketMetaSchema)
 
 export type MarketPreview = z.infer<typeof MarketPreviewSchema>
 
@@ -56,33 +62,33 @@ const OracleFloorSchema = z.object({
   updatedAt: z.string(),
 })
 
-export const MarketSchema = z.object({
-  marketPubkey: z.string(),
-  collectionName: z.string(),
-  collectionImage: z.string(),
-  createdAt: z.string(),
-  isPrivate: z.boolean(),
-  isRemoved: z.boolean(),
-  marketAuthority: z.string(),
-  marketState: z.string(),
-  marketTrustType: z.string(),
-  minBidCap: z.number(),
-  minMarketFee: z.number(),
-  pairTokenMint: z.string(),
-  pairTokenType: z.string(),
-  pairValidationType: z.string(),
-  updatedAt: z.string(),
-  validationAdapterProgram: z.string(),
-  collectionSlug: z.string(),
-  imageUrl: z.string(),
-  name: z.string(),
-  fraktMarket: FraktMarketSchema,
-  whitelistType: z.string(),
-  whitelistedAddress: z.string(),
-  bestOffer: z.number(),
-  whitelistEntry: WhitelistEntrySchema,
-  oracleFloor: OracleFloorSchema,
-})
+export const MarketSchema = z
+  .object({
+    marketPubkey: z.string(),
+    createdAt: z.string(),
+    isPrivate: z.boolean(),
+    isRemoved: z.boolean(),
+    marketAuthority: z.string(),
+    marketState: z.string(),
+    marketTrustType: z.string(),
+    minBidCap: z.number(),
+    minMarketFee: z.number(),
+    pairTokenMint: z.string(),
+    pairTokenType: z.string(),
+    pairValidationType: z.string(),
+    updatedAt: z.string(),
+    validationAdapterProgram: z.string(),
+    collectionSlug: z.string(),
+    imageUrl: z.string(),
+    name: z.string(),
+    fraktMarket: FraktMarketSchema,
+    whitelistType: z.string(),
+    whitelistedAddress: z.string(),
+    bestOffer: z.number(),
+    whitelistEntry: WhitelistEntrySchema,
+    oracleFloor: OracleFloorSchema,
+  })
+  .merge(MarketMetaSchema)
 
 export type Market = z.infer<typeof MarketSchema>
 
@@ -117,11 +123,7 @@ export const PairSchema = z.object({
   validation: ValidationPairSchema,
 })
 
-const UserPairSchema = PairSchema.extend({
-  marketApr: z.number(),
-  collectionName: z.string(),
-  collectionImage: z.string(),
-})
+const UserPairSchema = PairSchema.merge(MarketMetaSchema)
 
 export type Offer = z.infer<typeof PairSchema>
 export type UserOffer = z.infer<typeof UserPairSchema>

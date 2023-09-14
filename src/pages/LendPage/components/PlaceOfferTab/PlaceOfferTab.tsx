@@ -21,7 +21,7 @@ const PlaceOfferTab: FC<PlaceOfferParams> = (props) => {
     onLoanValueChange,
     offerTransactions,
     offerSize,
-    marketAPR,
+    marketApr,
     showDepositError,
     disableUpdateOffer,
     disablePlaceOffer,
@@ -47,7 +47,7 @@ const PlaceOfferTab: FC<PlaceOfferParams> = (props) => {
         />
       </div>
       <InputErrorMessage message={showDepositError ? 'Not enough SOL' : ''} />
-      <OfferSummary offerSize={offerSize} marketAPR={marketAPR} />
+      <OfferSummary offerSize={offerSize} marketAPR={marketApr} />
       <OfferActionButtons
         isEditMode={isEditMode}
         disableUpdateOffer={disableUpdateOffer}
