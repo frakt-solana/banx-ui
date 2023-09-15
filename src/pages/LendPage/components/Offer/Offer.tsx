@@ -29,13 +29,15 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, isOwnOffer, bestOffer }) => {
 
   const listItemClassName = classNames(styles.listItem, {
     [styles.highlightBest]: isBestOffer,
-    [styles.highlightYourOffer]: offer.publicKey === PUBKEY_PLACEHOLDER,
+    [styles.highlightYourOffer]: offer.publicKey === PUBKEY_PLACEHOLDER || offer.isEdit,
   })
+
+  const displayLoanValue = ((loanValue || 0) / 1e9)?.toFixed(2)
 
   return (
     <li className={listItemClassName}>
       <div className={styles.valueWrapper}>
-        <p className={styles.value}>{(loanValue / 1e9)?.toFixed(2)}</p>
+        <p className={styles.value}>{displayLoanValue}</p>
         <p className={styles.value}>{displayLoansAmount}</p>
       </div>
       {isOwnOffer && !isNewOffer && editOffer && (

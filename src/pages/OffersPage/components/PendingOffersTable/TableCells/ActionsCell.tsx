@@ -52,7 +52,7 @@ const useActionsCell = (offer: TableUserOfferData) => {
 
   const navigate = useNavigate()
 
-  const { setSelectedMarkets, toggleMarketVisibility } = useMarketsURLControl()
+  const { setSelectedMarkets, setMarketVisibility } = useMarketsURLControl()
 
   const { setOffer: setSyntheticOffer, removeOffer: removeSyntheticOffer } = useSyntheticOffers()
 
@@ -74,7 +74,7 @@ const useActionsCell = (offer: TableUserOfferData) => {
 
     const collectionName = offer.collectionName
 
-    toggleMarketVisibility(collectionName)
+    setMarketVisibility(collectionName, true)
     setSelectedMarkets([collectionName])
 
     return navigate({

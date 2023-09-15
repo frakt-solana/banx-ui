@@ -85,7 +85,7 @@ export const usePlaceOfferTab = (props: OrderBookMarketParams) => {
   })
 
   const disablePlaceOffer = connected ? showDepositError || !offerSize : false
-  const disableUpdateOffer = !hasFormChanges || showDepositError
+  const disableUpdateOffer = !hasFormChanges || showDepositError || !offerSize
 
   return {
     isEditMode: syntheticOffer.isEdit,
