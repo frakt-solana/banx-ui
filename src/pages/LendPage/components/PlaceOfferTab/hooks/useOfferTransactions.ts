@@ -20,7 +20,7 @@ export const useOfferTransactions = ({
   offers,
   updateOrAddOffer,
   resetFormValues,
-  goToPlaceOffer,
+  exitEditMode,
 }: {
   marketPubkey: string
   loansAmount: number
@@ -29,7 +29,7 @@ export const useOfferTransactions = ({
   offers: Offer[]
   updateOrAddOffer: (offer: Offer) => void
   resetFormValues: () => void
-  goToPlaceOffer: () => void
+  exitEditMode: () => void
 }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
@@ -68,7 +68,7 @@ export const useOfferTransactions = ({
           message: 'Transaction Executed',
           solanaExplorerPath: `tx/${txnHash}`,
         })
-        goToPlaceOffer()
+        exitEditMode()
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error)
