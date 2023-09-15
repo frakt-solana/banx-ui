@@ -1,3 +1,5 @@
+import { useMemo } from 'react'
+
 import { sumBy } from 'lodash'
 
 import {
@@ -16,13 +18,21 @@ import styles from './LendHeader.module.less'
 const Header = () => {
   const { marketsPreview } = useMarketsPreview()
 
-  const loansTVL = sumBy(marketsPreview, 'loansTVL')
-  const offersTVL = sumBy(marketsPreview, 'offerTVL')
-  const totalLoans = sumBy(marketsPreview, 'activeBondsAmount')
-  const totalOffers = sumBy(marketsPreview, 'activeOfferAmount')
+  const { totalLoans, totalOffers, formattedLoansTVL, formattedOffersTVL } = useMemo(() => {
+    const loansTVL = sumBy(marketsPreview, 'loansTVL')
+    const offersTVL = sumBy(marketsPreview, 'offerTVL')
+    const totalLoans = sumBy(marketsPreview, 'activeBondsAmount')
+    const totalOffers = sumBy(marketsPreview, 'activeOfferAmount')
 
-  const formattedLoansTVL = createSolValueJSX(loansTVL, 1e9)
-  const formattedOffersTVL = createSolValueJSX(offersTVL, 1e9)
+    return {
+      loansTVL,
+      offersTVL,
+      totalLoans,
+      totalOffers,
+      formattedLoansTVL: createSolValueJSX(loansTVL, 1e9),
+      formattedOffersTVL: createSolValueJSX(offersTVL, 1e9),
+    }
+  }, [marketsPreview])
 
   return (
     <PageHeaderBackdrop title="Lend">
