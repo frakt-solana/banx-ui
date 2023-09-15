@@ -186,7 +186,11 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
         labels: ['Collection', 'Nfts'],
         onChange: setSelectedOptions,
       },
-      sortParams: { option: sortOption, onChange: setSortOption },
+      sortParams: {
+        option: sortOption,
+        onChange: setSortOption,
+        className: styles.sortDropdown,
+      },
     },
     borrow,
     borrowAll,

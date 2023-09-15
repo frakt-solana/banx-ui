@@ -1,4 +1,4 @@
-import { CSSProperties, FC } from 'react'
+import { CSSProperties, FC, SVGProps } from 'react'
 
 import classNames from 'classnames'
 
@@ -17,7 +17,7 @@ interface ClassNamesProps {
 export interface StatsInfoProps {
   value: number | string | JSX.Element
 
-  icon?: FC
+  icon?: FC<SVGProps<SVGSVGElement>>
   label?: string
   secondValue?: string
   tooltipText?: string
@@ -59,7 +59,7 @@ export const StatInfo: FC<StatsInfoProps> = ({
       <span className={valueClasses} style={valueStyles}>
         {formattedValue}
         {dimension}
-        {Icon && <Icon />}
+        {Icon && <Icon className={styles.valueIcon} />}
       </span>
       {renderSecondValue(flexType, secondValue)}
     </div>

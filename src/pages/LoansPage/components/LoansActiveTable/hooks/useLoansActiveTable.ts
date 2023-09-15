@@ -60,6 +60,7 @@ export const useLoansActiveTable = () => {
   const sortParams = {
     option: sortOption,
     onChange: setSortOption,
+    className: styles.sortDropdown,
   }
 
   const showEmptyList = (!loans?.length && !isLoading) || !connected

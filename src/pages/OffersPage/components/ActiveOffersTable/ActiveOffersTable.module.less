@@ -54,3 +54,13 @@
 .liquidated {
   background: var(--additional-red-secondary) !important;
 }
+
+.sortDropdown {
+  & > button {
+    min-width: 230px;
+
+    @media (max-width: 640px) {
+      min-width: 190px;
+    }
+  }
+}

@@ -59,6 +59,7 @@ export const useHistoryOffersTable = () => {
   const sortParams = {
     option: sortOption,
     onChange: setSortOption,
+    className: styles.sortDropdown,
   }
 
   const showEmptyList = (!loans?.length && !isLoading) || !connected
