@@ -9,6 +9,7 @@ import {
 } from '@banx/components/PageHeader'
 import { VALUES_TYPES } from '@banx/components/StatInfo'
 
+import { Snowflake } from '@banx/icons'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 
 import { useBorrowNfts } from '../../hooks'
@@ -36,7 +37,14 @@ const Header = () => {
         />
       )}
 
-      <AdditionalStat label="Duration" value="Perpetual, 72h" valueType={VALUES_TYPES.STRING} />
+      <AdditionalStat
+        label="Duration"
+        value="Perpetual, 72h"
+        valueType={VALUES_TYPES.STRING}
+        tooltipText="Perpetual"
+        icon={Snowflake}
+      />
+
       <SeparateStatsLine />
 
       {connected ? (
