@@ -1,5 +1,7 @@
 import { useMemo } from 'react'
 
+import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
+
 import { Offer } from '@banx/api/core'
 import { useMarketOffers } from '@banx/pages/LendPage/hooks'
 import { SyntheticOffer, convertToSynthetic, useSyntheticOffers } from '@banx/store'
@@ -24,8 +26,9 @@ export const useMarketOrders: UseMarketOrders = ({ marketPubkey, offerPubkey }) 
   }, [processedOffers])
 
   const bestOffer = useMemo(() => {
-    const [firstOrder] = sortedOffers
-    return firstOrder
+    const [firstOrder, secondOrder] = sortedOffers
+    const isFirstOrderEditable = firstOrder?.publicKey === PUBKEY_PLACEHOLDER || firstOrder?.isEdit
+    return isFirstOrderEditable ? secondOrder : firstOrder
   }, [sortedOffers])
 
   return {
