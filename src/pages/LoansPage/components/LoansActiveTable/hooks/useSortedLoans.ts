@@ -12,6 +12,8 @@ enum SortField {
   STATUS = 'status',
 }
 
+type SortValueGetter = (loan: Loan) => number
+
 export const useSortedLoans = (loans: Loan[], sortOptionValue: string) => {
   const sortedLoans = useMemo(() => {
     if (!sortOptionValue) {
@@ -19,8 +21,6 @@ export const useSortedLoans = (loans: Loan[], sortOptionValue: string) => {
     }
 
     const [name, order] = sortOptionValue.split('_')
-
-    type SortValueGetter = (loan: Loan) => number
 
     const sortValueMapping: Record<SortField, string | SortValueGetter> = {
       [SortField.BORROWED]: 'fraktBond.borrowedAmount',
