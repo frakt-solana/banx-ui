@@ -58,8 +58,8 @@ export const useNotConnectedBorrow = () => {
 }
 
 enum SortField {
-  LIQUIDITY = 'offerTVL',
-  BORROW = 'bestOffer',
+  LIQUIDITY = 'liquidity',
+  BORROW = 'borrow',
   FLOOR = 'collectionFloor',
 }
 
@@ -78,7 +78,7 @@ const useSortMarkets = (markets: MarketPreview[]) => {
     const sortValueMapping: Record<SortField, string> = {
       [SortField.LIQUIDITY]: 'offerTVL',
       [SortField.BORROW]: 'bestOffer',
-      [SortField.FLOOR]: 'borrow',
+      [SortField.FLOOR]: 'collectionFloor',
     }
 
     const sorted = sortBy(markets, (loan) => {
