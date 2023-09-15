@@ -1,8 +1,8 @@
 import { SortOption } from '@banx/components/SortDropdown'
 
 export const DEFAULT_SORT_OPTION: SortOption = {
-  label: 'APR',
-  value: 'apr_desc',
+  label: 'Loan status',
+  value: 'status_asc',
 }
 
 const SECONDS_IN_HOUR = 60 * 60

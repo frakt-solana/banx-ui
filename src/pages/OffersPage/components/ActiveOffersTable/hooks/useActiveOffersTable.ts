@@ -11,6 +11,7 @@ import { PATHS } from '@banx/router'
 
 import { DEFAULT_SORT_OPTION, EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
 import { useLenderLoansAndOffers } from './useLenderLoansAndOffers'
+import { useSortedLenderLoans } from './useSortedOffers'
 
 import styles from '../ActiveOffersTable.module.less'
 
@@ -61,6 +62,8 @@ export const useActiveOffersTable = () => {
     onChange: setSortOption,
   }
 
+  const sortedLoans = useSortedLenderLoans(loans, sortOption.value)
+
   const showEmptyList = (!loans?.length && !loading) || !connected
 
   const emptyListParams = {
@@ -70,7 +73,7 @@ export const useActiveOffersTable = () => {
   }
 
   return {
-    loans,
+    loans: sortedLoans,
     loading,
     showEmptyList,
     emptyListParams,
