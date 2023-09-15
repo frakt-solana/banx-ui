@@ -17,6 +17,7 @@ interface ClassNamesProps {
 export interface StatsInfoProps {
   value: number | string | JSX.Element
 
+  icon?: FC
   label?: string
   secondValue?: string
   tooltipText?: string
@@ -39,6 +40,7 @@ export const StatInfo: FC<StatsInfoProps> = ({
   flexType = 'column',
   classNamesProps,
   valueStyles,
+  icon: Icon,
 }) => {
   const formattedValue = formatValue(value, valueType, decimalPlaces, divider)
   const dimension = DIMENSION_BY_VALUE_TYPE[valueType]
@@ -57,6 +59,7 @@ export const StatInfo: FC<StatsInfoProps> = ({
       <span className={valueClasses} style={valueStyles}>
         {formattedValue}
         {dimension}
+        {Icon && <Icon />}
       </span>
       {renderSecondValue(flexType, secondValue)}
     </div>
