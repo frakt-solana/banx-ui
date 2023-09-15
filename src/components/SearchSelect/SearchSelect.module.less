@@ -9,6 +9,7 @@
 }
 
 .selectWrapper {
+  background: var(--bg-action);
   border: var(--border-primary);
   position: relative;
   height: 40px;
@@ -111,15 +112,17 @@
 
 .tip {
   background-color: var(--accent-primary);
-
+  border-radius: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
 
-  position: absolute;
-  top: -8px;
-  right: -1px;
+  font: var(--body-text-sm);
 
-  width: 14px;
-  height: 14px;
+  position: absolute;
+  top: 0;
+  right: -10px;
+
+  width: 20px;
+  height: 20px;
 }

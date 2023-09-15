@@ -14,6 +14,7 @@ export interface NumericInputProps {
   className?: string
   error?: boolean
   onBlur?: () => void
+  disabled?: boolean
 }
 
 const NumericInput: FC<NumericInputProps> = ({

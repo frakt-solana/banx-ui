@@ -1,8 +1,10 @@
 import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 
+import { Loan } from '@banx/api/core'
 import { useFakeInfinityScroll } from '@banx/hooks'
 import { ViewState, useTableView } from '@banx/store'
+import { LoanStatus, determineLoanStatus } from '@banx/utils'
 
 import { getTableColumns } from './columns'
 import { useActiveOffersTable } from './hooks'
@@ -29,6 +31,18 @@ const ActiveOffersTable = () => {
         sortViewParams={sortViewParams}
         className={styles.rootTable}
         rowKeyField="publicKey"
+        activeRowParams={[
+          {
+            condition: checkIsTerminationLoan,
+            className: styles.terminated,
+            cardClassName: styles.terminated,
+          },
+          {
+            condition: checkIsLiquidatedLoan,
+            className: styles.liquidated,
+            cardClassName: styles.liquidated,
+          },
+        ]}
         loading={loading}
         showCard
       />
@@ -38,3 +52,13 @@ const ActiveOffersTable = () => {
 }
 
 export default ActiveOffersTable
+
+const checkIsTerminationLoan = (loan: Loan) => {
+  const loanStatus = determineLoanStatus(loan)
+  return loanStatus === LoanStatus.Terminating
+}
+
+const checkIsLiquidatedLoan = (loan: Loan) => {
+  const loanStatus = determineLoanStatus(loan)
+  return loanStatus === LoanStatus.Liquidated
+}

@@ -91,22 +91,27 @@
     @media (max-width: 640px) {
       .box-dimensions(32px, 32px);
     }
+
+    svg {
+      height: 24px;
+      width: 24px;
+
+      @media (max-width: 640px) {
+        height: 16px;
+        width: 16px;
+      }
+    }
   }
   &.medium {
     .box-dimensions(32px, 32px);
-  }
-  &.small {
-    .box-dimensions(24px, 24px);
-  }
 
-  svg {
-    height: 24px;
-    width: 24px;
-
-    @media (max-width: 640px) {
+    svg {
       height: 16px;
       width: 16px;
     }
+  }
+  &.small {
+    .box-dimensions(24px, 24px);
   }
 }
 

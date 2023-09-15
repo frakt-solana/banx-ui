@@ -65,6 +65,7 @@ export const InputCounter: FC<InputCounterProps> = ({
   onChange,
   placeholder = '0',
   label,
+  disabled,
   className,
 }) => {
   const { increaseValue, decreaseValue, isValueGreaterThanOne } = useInputCounter(value, onChange)
@@ -74,7 +75,7 @@ export const InputCounter: FC<InputCounterProps> = ({
       <span className={styles.label}>{label}</span>
       <div className={styles.inputCounterWrapper}>
         <CounterButton
-          disabled={!isValueGreaterThanOne}
+          disabled={!isValueGreaterThanOne || disabled}
           onClick={decreaseValue}
           icon={MinusOutlined}
         />
@@ -82,11 +83,12 @@ export const InputCounter: FC<InputCounterProps> = ({
           className={styles.inputCounter}
           placeholder={placeholder}
           onChange={onChange}
+          disabled={disabled}
           value={value}
           positiveOnly
           integerOnly
         />
-        <CounterButton onClick={increaseValue} icon={PlusOutlined} />
+        <CounterButton onClick={increaseValue} icon={PlusOutlined} disabled={disabled} />
       </div>
     </div>
   )

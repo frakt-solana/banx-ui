@@ -186,7 +186,11 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
         labels: ['Collection', 'Nfts'],
         onChange: setSelectedOptions,
       },
-      sortParams: { option: sortOption, onChange: setSortOption },
+      sortParams: {
+        option: sortOption,
+        onChange: setSortOption,
+        className: styles.sortDropdown,
+      },
     },
     borrow,
     borrowAll,
@@ -217,6 +221,8 @@ const useSortedNfts = (nfts: TableNftData[], sortOptionValue: string) => {
 
     const sortValueMapping: Record<SortField, string> = {
       [SortField.BORROW]: 'nft.loanValue',
+      [SortField.FLOOR]: 'nft.nft.collectionFloor',
+      [SortField.FEE]: 'nft.interest',
     }
 
     const sorted = sortBy(nfts, (nft) => {

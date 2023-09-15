@@ -11,6 +11,8 @@ import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 
 import { DEFAULT_SORT_OPTION } from './constants'
 
+import styles from './NotConnectedTable.module.less'
+
 export const useNotConnectedBorrow = () => {
   const { marketsPreview, isLoading } = useMarketsPreview()
 
@@ -56,8 +58,8 @@ export const useNotConnectedBorrow = () => {
 }
 
 enum SortField {
-  LIQUIDITY = 'offerTVL',
-  BORROW = 'bestOffer',
+  LIQUIDITY = 'liquidity',
+  BORROW = 'borrow',
   FLOOR = 'collectionFloor',
 }
 
@@ -76,7 +78,7 @@ const useSortMarkets = (markets: MarketPreview[]) => {
     const sortValueMapping: Record<SortField, string> = {
       [SortField.LIQUIDITY]: 'offerTVL',
       [SortField.BORROW]: 'bestOffer',
-      [SortField.FLOOR]: 'borrow',
+      [SortField.FLOOR]: 'collectionFloor',
     }
 
     const sorted = sortBy(markets, (loan) => {
@@ -92,6 +94,7 @@ const useSortMarkets = (markets: MarketPreview[]) => {
     sortParams: {
       option: sortOption,
       onChange: setSortOption,
+      className: styles.sortDropdown,
     },
   }
 }

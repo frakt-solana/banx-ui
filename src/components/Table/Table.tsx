@@ -16,7 +16,7 @@ export interface TableProps<T, P> {
   loading?: boolean
 
   sortViewParams?: SortViewParams<P>
-  activeRowParams?: ActiveRowParams<T>
+  activeRowParams?: ActiveRowParams<T>[]
 
   showCard?: boolean
   onRowClick?: (dataItem: T) => void
