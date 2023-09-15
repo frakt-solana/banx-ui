@@ -5,7 +5,7 @@ import Table from '@banx/components/Table'
 import { useFakeInfinityScroll } from '@banx/hooks'
 
 import { getTableColumns } from './columns'
-import { EMPTY_MESSAGE } from './constants'
+import { EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from './constants'
 import { useNotConnectedBorrow } from './hooks'
 
 const NotConnectedTable = () => {
@@ -16,6 +16,8 @@ const NotConnectedTable = () => {
 
   const columns = getTableColumns()
 
+  const emptyMessage = connected ? EMPTY_MESSAGE : NOT_CONNECTED_MESSAGE
+
   return (
     <>
       <Table
@@ -24,7 +26,7 @@ const NotConnectedTable = () => {
         sortViewParams={sortViewParams}
         rowKeyField="marketPubkey"
         loading={isLoading}
-        emptyMessage={connected ? EMPTY_MESSAGE : ''}
+        emptyMessage={emptyMessage}
         showCard
       />
       <div ref={fetchMoreTrigger} />

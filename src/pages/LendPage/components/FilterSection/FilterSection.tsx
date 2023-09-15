@@ -24,7 +24,7 @@ const FilterSection = <T extends object>({
         collapsed={searchSelectCollapsed}
         onChangeCollapsed={setSearchSelectCollapsed}
       />
-      {searchSelectCollapsed && <SortDropdown {...sortParams} />}
+      {searchSelectCollapsed && <SortDropdown {...sortParams} className={styles.sortDropdown} />}
     </div>
   )
 }

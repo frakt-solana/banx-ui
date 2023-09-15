@@ -11,7 +11,14 @@ import { useUserOffers } from '@banx/pages/OffersPage/hooks'
 import { PATHS } from '@banx/router'
 import { calculateLoanValue } from '@banx/utils'
 
-import { DEFAULT_SORT_OPTION, EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
+import {
+  DEFAULT_SORT_OPTION,
+  EMPTY_MESSAGE,
+  NOT_CONNECTED_MESSAGE,
+  SORT_OPTIONS,
+} from '../constants'
+import { parseUserOffers } from '../helpers'
+import { useSortedOffers } from './useSortedOffers'
 
 import styles from '../PendingOffersTable.module.less'
 
@@ -63,9 +70,13 @@ export const usePendingOfferTable = () => {
     className: styles.searchSelect,
   }
 
+  const parsedUserOffers = parseUserOffers(offers)
+  const sortedOffers = useSortedOffers(parsedUserOffers, sortOption.value)
+
   const sortParams = {
     option: sortOption,
     onChange: setSortOption,
+    options: SORT_OPTIONS,
   }
 
   const showEmptyList = (!offers?.length && !loading) || !connected
@@ -77,7 +88,7 @@ export const usePendingOfferTable = () => {
   }
 
   return {
-    offers,
+    offers: sortedOffers,
     loading,
     showEmptyList,
     emptyListParams,

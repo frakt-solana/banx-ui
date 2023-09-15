@@ -3,18 +3,17 @@ import { useMemo } from 'react'
 import { get, isFunction, sortBy } from 'lodash'
 
 import { Loan } from '@banx/api/core'
-import { LoanStatus, calculateLoanRepayValue, determineLoanStatus } from '@banx/utils'
+import { LoanStatus, determineLoanStatus } from '@banx/utils'
 
 enum SortField {
-  BORROWED = 'loanValue',
-  DEBT = 'repayValue',
-  HEALTH = 'health',
+  LENT = 'lent',
+  APR = 'apr',
   STATUS = 'status',
 }
 
 type SortValueGetter = (loan: Loan) => number
 
-export const useSortedLoans = (loans: Loan[], sortOptionValue: string) => {
+export const useSortedLenderLoans = (loans: Loan[], sortOptionValue: string) => {
   const sortedLoans = useMemo(() => {
     if (!sortOptionValue) {
       return loans
@@ -23,16 +22,11 @@ export const useSortedLoans = (loans: Loan[], sortOptionValue: string) => {
     const [name, order] = sortOptionValue.split('_')
 
     const sortValueMapping: Record<SortField, string | SortValueGetter> = {
-      [SortField.BORROWED]: 'fraktBond.borrowedAmount',
-      [SortField.DEBT]: (loan) => {
-        return calculateLoanRepayValue(loan)
+      [SortField.LENT]: (loan) => {
+        const { solAmount, feeAmount } = loan.bondTradeTransaction || {}
+        return solAmount + feeAmount
       },
-      [SortField.HEALTH]: (loan) => {
-        const collectionFloor = loan.nft.collectionFloor
-        const repayValue = calculateLoanRepayValue(loan)
-
-        return repayValue / collectionFloor
-      },
+      [SortField.APR]: 'bondTradeTransaction.amountOfBonds',
       [SortField.STATUS]: (loan) => {
         const loanStatus = determineLoanStatus(loan)
         const statusToNumber = {

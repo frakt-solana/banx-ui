@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import classNames from 'classnames'
 
-import { ArrowDown } from '@banx/icons'
+import { ArrowDown, ChevronDown } from '@banx/icons'
 
 import { Button } from '../Buttons'
 import { SortOption } from './SortDropdown'
@@ -12,13 +12,20 @@ import styles from './SortDropdown.module.less'
 
 interface DropdownButtonProps {
   sortOption: SortOption
+  isDropdownOpen: boolean
   toggleDropdown: () => void
 }
 
-export const DropdownButton: FC<DropdownButtonProps> = ({ sortOption, toggleDropdown }) => (
+export const DropdownButton: FC<DropdownButtonProps> = ({
+  sortOption,
+  isDropdownOpen,
+  toggleDropdown,
+}) => (
   <Button type="circle" variant="text" className={styles.dropdownButton} onClick={toggleDropdown}>
-    <span className={styles.dropdownButtonText}>Sort: {sortOption?.label}</span>
+    <span className={styles.dropdownButtonText}>Sort:</span>
     <ArrowDown className={getSortOrderClassName(sortOption.value)} />
+    <span className={styles.dropdownButtonText}>{sortOption?.label}</span>
+    <ChevronDown className={isDropdownOpen ? styles.rotate : ''} />
   </Button>
 )
 
