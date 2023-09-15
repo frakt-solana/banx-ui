@@ -37,12 +37,12 @@ export const StatusCell: FC<StatusCellProps> = ({ loan, isCardView }) => {
 
   return !isCardView ? (
     <div className={styles.statusInfo}>
-      {statusInfoTitle}
       {statusInfoSubtitle}
+      {statusInfoTitle}
     </div>
   ) : (
     <span>
-      {statusInfoTitle} ({statusInfoSubtitle})
+      {statusInfoSubtitle} ({statusInfoTitle})
     </span>
   )
 }
