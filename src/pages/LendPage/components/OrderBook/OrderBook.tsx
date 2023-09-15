@@ -42,7 +42,7 @@ const OrderBookMobile: FC<OrderBookMobileProps> = ({ marketPreview, orderBookPar
   const { collectionImage, collectionName } = marketPreview || {}
   const { offers } = orderBookParams || {}
 
-  const userOrders = useMemo(() => {
+  const userOffers = useMemo(() => {
     return offers.filter((offer) => offer.assetReceiver === publicKey?.toBase58())
   }, [offers, publicKey])
 
@@ -52,7 +52,7 @@ const OrderBookMobile: FC<OrderBookMobileProps> = ({ marketPreview, orderBookPar
         <CollapsedMobileContent
           collectionImage={collectionImage}
           collectionName={collectionName}
-          totalUserOrders={userOrders.length}
+          totalUserOffers={userOffers.length}
         />
         <ChevronMobileButton isOrderBookOpen={isOrderBookOpen} onToggleVisible={toggleOrderBook} />
       </div>

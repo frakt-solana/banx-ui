@@ -26,9 +26,9 @@ export const useMarketOrders: UseMarketOrders = ({ marketPubkey, offerPubkey }) 
   }, [processedOffers])
 
   const bestOffer = useMemo(() => {
-    const [firstOrder, secondOrder] = sortedOffers
-    const isFirstOrderEditable = firstOrder?.publicKey === PUBKEY_PLACEHOLDER || firstOrder?.isEdit
-    return isFirstOrderEditable ? secondOrder : firstOrder
+    const [firstOffer, secondOffer] = sortedOffers
+    const isFirstOfferEditable = firstOffer?.publicKey === PUBKEY_PLACEHOLDER || firstOffer?.isEdit
+    return isFirstOfferEditable ? secondOffer : firstOffer
   }, [sortedOffers])
 
   return {
@@ -54,15 +54,15 @@ const useProcessedOffers: UseProcessedOffers = ({ marketPubkey, offers, editable
 
     const offersConvertedToSynthetic = offers.map((offer) => convertToSynthetic(offer))
 
-    const processedEditableOrders = offersConvertedToSynthetic.filter(
+    const processedEditableOffers = offersConvertedToSynthetic.filter(
       (offer) => offer.publicKey !== editableOfferPubkey,
     )
 
     if (syntheticOffer) {
-      processedEditableOrders.push(syntheticOffer)
+      processedEditableOffers.push(syntheticOffer)
     }
 
-    return processedEditableOrders
+    return processedEditableOffers
   }, [offerByMarketPubkey, marketPubkey, offers, editableOfferPubkey])
 
   return processedOffers
