@@ -4,7 +4,7 @@ import classNames from 'classnames'
 import { CloseModal } from '@banx/icons'
 
 import { CollapsedContent, PrefixInput, SelectLabels, SuffixIcon, renderOption } from './components'
-import { filterOption, getPopupContainer } from './helpers'
+import { getPopupContainer } from './helpers'
 import { useSearchSelect } from './hooks'
 import { OptionKeys } from './types'
 
@@ -62,7 +62,6 @@ export const SearchSelect = <P extends object>({
         onChange={onChange}
         allowClear
         showSearch
-        filterOption={filterOption}
         placeholder={placeholder}
         notFoundContent={null}
         rootClassName="rootSelectClassName"
