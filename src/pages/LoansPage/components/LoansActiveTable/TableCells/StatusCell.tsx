@@ -15,7 +15,12 @@ import {
 
 import styles from '../LoansActiveTable.module.less'
 
-export const StatusCell: FC<{ loan: Loan }> = ({ loan }) => {
+interface StatusCellProps {
+  loan: Loan
+  isCardView: boolean
+}
+
+export const StatusCell: FC<StatusCellProps> = ({ loan, isCardView }) => {
   const { bondTradeTransaction } = loan
 
   const statusText = STATUS_LOANS_MAP[bondTradeTransaction.bondTradeTransactionState] || ''
@@ -23,13 +28,22 @@ export const StatusCell: FC<{ loan: Loan }> = ({ loan }) => {
 
   const timeInfo = calculateTimeInfo(loan, statusText)
 
-  return (
+  const statusInfoTitle = <span className={styles.statusInfoTitle}>{timeInfo}</span>
+  const statusInfoSubtitle = (
+    <span style={{ color: statusColor }} className={styles.statusInfoSubtitle}>
+      {statusText}
+    </span>
+  )
+
+  return !isCardView ? (
     <div className={styles.statusInfo}>
-      <span className={styles.statusInfoTitle}>{timeInfo}</span>
-      <span style={{ color: statusColor }} className={styles.statusInfoSubtitle}>
-        {statusText}
-      </span>
+      {statusInfoTitle}
+      {statusInfoSubtitle}
     </div>
+  ) : (
+    <span>
+      {statusInfoTitle} ({statusInfoSubtitle})
+    </span>
   )
 }
 

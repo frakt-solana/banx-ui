@@ -40,7 +40,7 @@ export const getTableColumns = ({ isCardView }: GetTableColumns) => {
     {
       key: 'status',
       title: <HeaderCell label="Loan status" tooltipText="Loan status" />,
-      render: (_, loan) => <StatusCell loan={loan} />,
+      render: (_, loan) => <StatusCell loan={loan} isCardView={isCardView} />,
       sorter: true,
     },
     {
