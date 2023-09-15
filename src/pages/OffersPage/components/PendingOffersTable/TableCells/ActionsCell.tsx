@@ -8,7 +8,7 @@ import { Button } from '@banx/components/Buttons'
 import { Offer } from '@banx/api/core'
 import { useUserOffers } from '@banx/pages/OffersPage/hooks'
 import { PATHS } from '@banx/router'
-import { useMarketsURLControl } from '@banx/store'
+import { useMarketsURLControl, useSyntheticOffers } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeRemoveOfferAction } from '@banx/transactions/bonds'
@@ -24,24 +24,9 @@ interface ActionsCellProps {
 }
 
 export const ActionsCell: FC<ActionsCellProps> = ({ offer, isCardView }) => {
-  const navigate = useNavigate()
-
-  const { setSelectedMarkets, toggleMarketVisibility } = useMarketsURLControl()
-  const { removeOffer } = useActionsCell(offer)
+  const { removeOffer, goToEditOffer } = useActionsCell(offer)
 
   const buttonSize = isCardView ? 'large' : 'small'
-
-  const goToEditOffer = () => {
-    const collectionName = offer.collectionName
-
-    toggleMarketVisibility(collectionName)
-    setSelectedMarkets([collectionName])
-
-    return navigate({
-      pathname: PATHS.LEND,
-      search: `?opened=${collectionName}&collections=${collectionName}`,
-    })
-  }
 
   return (
     <div className={styles.actionsButtons}>
@@ -65,18 +50,48 @@ const useActionsCell = (offer: TableUserOfferData) => {
   const { connection } = useConnection()
   const { offers, updateOrAddOffer } = useUserOffers()
 
+  const navigate = useNavigate()
+
+  const { setSelectedMarkets, setMarketVisibility } = useMarketsURLControl()
+
+  const { setOffer: setSyntheticOffer, removeOffer: removeSyntheticOffer } = useSyntheticOffers()
+
   const offerPubkey = offer.publicKey
 
   const optimisticOffer = useMemo(() => {
     return offers.find((offer) => offer.publicKey === offerPubkey)
   }, [offers, offerPubkey])
 
+  const goToEditOffer = () => {
+    setSyntheticOffer({
+      isEdit: true,
+      publicKey: offer.publicKey,
+      loanValue: offer.loanValue,
+      loansAmount: offer.loansAmount,
+      assetReceiver: offer.assetReceiver,
+      marketPubkey: offer.hadoMarket,
+    })
+
+    const collectionName = offer.collectionName
+
+    setMarketVisibility(collectionName, true)
+    setSelectedMarkets([collectionName])
+
+    return navigate({
+      pathname: PATHS.LEND,
+      search: `?opened=${collectionName}&collections=${collectionName}`,
+    })
+  }
+
   const removeOffer = () => {
     new TxnExecutor(makeRemoveOfferAction, { wallet, connection })
       .addTxnParam({ offerPubkey: offer.publicKey, optimisticOffer: optimisticOffer as Offer })
       .on('pfSuccessEach', (results) => {
         const { txnHash, result } = results[0]
-        result?.bondOffer && updateOrAddOffer([result.bondOffer])
+        if (result?.bondOffer) {
+          updateOrAddOffer([result.bondOffer])
+          removeSyntheticOffer(result?.bondOffer.hadoMarket)
+        }
         enqueueSnackbar({
           message: 'Transaction Executed',
           solanaExplorerPath: `tx/${txnHash}`,
@@ -88,5 +103,5 @@ const useActionsCell = (offer: TableUserOfferData) => {
       .execute()
   }
 
-  return { removeOffer }
+  return { removeOffer, goToEditOffer }
 }

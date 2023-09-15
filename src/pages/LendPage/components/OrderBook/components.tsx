@@ -12,19 +12,19 @@ import { OrderBookParams } from './hooks'
 import styles from './OrderBook.module.less'
 
 export const OrderBookList: FC<{ orderBookParams: OrderBookParams }> = ({ orderBookParams }) => {
-  const { orders, goToEditOrder, isOwnOrder, bestOrder } = orderBookParams || {}
+  const { offers, goToEditOffer, isOwnOffer, bestOffer } = orderBookParams || {}
 
   return (
     <ul className={styles.list}>
-      {orders.map((order, idx) => (
+      {offers.map((offer, idx) => (
         <Offer
           key={idx}
-          order={order}
-          loanValue={order.loanValue}
-          loansAmount={order.loansAmount}
-          editOffer={() => goToEditOrder(order?.rawData?.publicKey)}
-          isOwnOrder={isOwnOrder(order)}
-          bestOrder={bestOrder}
+          offer={offer}
+          editOffer={() => {
+            goToEditOffer(offer)
+          }}
+          isOwnOffer={isOwnOffer(offer)}
+          bestOffer={bestOffer}
         />
       ))}
     </ul>
@@ -67,19 +67,19 @@ export const ChevronMobileButton: FC<ChevronMobileButtonProps> = ({
 interface CollapsedMobileContentProps {
   collectionName?: string
   collectionImage?: string
-  totalUserOrders?: number
+  totalUserOffers?: number
 }
 
 export const CollapsedMobileContent: FC<CollapsedMobileContentProps> = ({
   collectionName = '',
   collectionImage = '',
-  totalUserOrders = 0,
+  totalUserOffers = 0,
 }) => (
   <div className={styles.collapsedMobileContent}>
     <img className={styles.collapsedMobileImage} src={collectionImage} />
     <div className={styles.collectionMobileInfo}>
       <p className={styles.collectionMobileTitle}>{collectionName} offers</p>
-      <p className={styles.collectionMobileSubtitle}>Mine: {totalUserOrders}</p>
+      <p className={styles.collectionMobileSubtitle}>Mine: {totalUserOffers}</p>
     </div>
   </div>
 )

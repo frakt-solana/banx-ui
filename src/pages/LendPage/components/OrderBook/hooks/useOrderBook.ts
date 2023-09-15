@@ -1,54 +1,56 @@
-import { useMemo } from 'react'
-
 import { useWallet } from '@solana/wallet-adapter-react'
 
+import { MarketPreview } from '@banx/api/core'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
+import { SyntheticOffer, useSyntheticOffers } from '@banx/store'
 
-import { PlaceOfferParams } from '../../ExpandableCardContent'
-import { Order } from '../types'
+import { OrderBookMarketParams } from '../../ExpandableCardContent'
 import { useMarketOrders } from './useMarketOrders'
 
 export interface OrderBookParams {
-  orders: Order[]
-  goToEditOrder: (orderPubkey: string) => void
-  isOwnOrder: (order: Order) => boolean
-  bestOrder: Order
+  offers: SyntheticOffer[]
+  goToEditOffer: (offer: SyntheticOffer) => void
+  isOwnOffer: (offer: SyntheticOffer) => boolean
+  bestOffer: SyntheticOffer
 }
 
-export const useOrderBook = (props: PlaceOfferParams) => {
+type UseOrderBook = (props: OrderBookMarketParams) => {
+  orderBookParams: OrderBookParams
+  selectedMarketPreview: MarketPreview | undefined
+}
+export const useOrderBook: UseOrderBook = (props) => {
+  const { setOffer: setSyntheticOffer } = useSyntheticOffers()
+  const { offerPubkey, setOfferPubkey, marketPubkey } = props
   const wallet = useWallet()
-  const { offerPubkey, setOfferPubkey, syntheticParams, marketPubkey } = props
   const { marketsPreview } = useMarketsPreview()
 
   const selectedMarketPreview = marketsPreview.find(
     (market) => market.marketPubkey === marketPubkey,
   )
 
-  const orderBookParams = useMemo(() => {
-    return {
-      marketPubkey,
-      loanValue: syntheticParams?.loanValue || 0,
-      loansAmount: syntheticParams?.loansAmount || 0,
-      offerPubkey,
-    }
-  }, [marketPubkey, syntheticParams, offerPubkey])
+  const { offers, bestOffer } = useMarketOrders({
+    marketPubkey,
+    offerPubkey,
+  })
 
-  const { orders, bestOrder } = useMarketOrders(orderBookParams)
-
-  const isOwnOrder = (order: Order) => {
-    return order?.rawData?.assetReceiver === wallet?.publicKey?.toBase58()
+  const isOwnOffer = (offer: SyntheticOffer) => {
+    return offer?.assetReceiver === wallet?.publicKey?.toBase58()
   }
 
-  const goToEditOrder = (orderPubkey: string) => {
-    setOfferPubkey(orderPubkey)
+  const goToEditOffer = (offer: SyntheticOffer) => {
+    setSyntheticOffer({
+      ...offer,
+      isEdit: true,
+    })
+    setOfferPubkey(offer.publicKey)
   }
 
   return {
     orderBookParams: {
-      orders,
-      goToEditOrder,
-      isOwnOrder,
-      bestOrder,
+      offers,
+      goToEditOffer,
+      isOwnOffer,
+      bestOffer,
     },
     selectedMarketPreview,
   }
