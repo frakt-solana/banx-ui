@@ -63,7 +63,7 @@ export const useHistoryOffersTable = () => {
   }
 
   const showEmptyList = (!loans?.length && !isLoading) || !connected
-  const showSummary = loans.length && !isLoading
+  const showSummary = !!loans.length && !isLoading
 
   const emptyListParams = {
     message: connected ? EMPTY_MESSAGE : NOT_CONNECTED_MESSAGE,
