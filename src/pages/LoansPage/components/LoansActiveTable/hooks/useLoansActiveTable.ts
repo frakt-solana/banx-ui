@@ -68,7 +68,7 @@ export const useLoansActiveTable = () => {
 
   const emptyListParams = {
     message: connected ? EMPTY_MESSAGE : NOT_CONNECTED_MESSAGE,
-    buttonText: connected ? 'Borrow $SOL' : '',
+    buttonText: connected ? 'Borrow SOL' : '',
     path: connected ? PATHS.BORROW : '',
   }
 

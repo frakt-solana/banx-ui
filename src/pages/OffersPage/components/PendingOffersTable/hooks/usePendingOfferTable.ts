@@ -83,7 +83,7 @@ export const usePendingOfferTable = () => {
 
   const emptyListParams = {
     message: connected ? EMPTY_MESSAGE : NOT_CONNECTED_MESSAGE,
-    buttonText: connected ? 'Lend $SOL' : '',
+    buttonText: connected ? 'Lend SOL' : '',
     path: connected ? PATHS.LEND : '',
   }
 

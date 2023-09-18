@@ -21,7 +21,7 @@ export const RefinanceTable = () => {
   })
 
   if (showEmptyList)
-    return <EmptyList message={EMPTY_MESSAGE} buttonText="Lend $SOL" path={PATHS.LEND} />
+    return <EmptyList message={EMPTY_MESSAGE} buttonText="Lend SOL" path={PATHS.LEND} />
 
   return (
     <>
