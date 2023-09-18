@@ -146,13 +146,15 @@ module.exports = () => {
       }),
     )
 
-    config.plugins.push(
-      sentryWebpackPlugin({
-        org: process.env.SENTRY_ORG,
-        project: process.env.SENTRY_PROJECT,
-        authToken: process.env.SENTRY_AUTH_TOKEN,
-      }),
-    )
+    if (process.env.SENTRY_DEPLOY_SOURCEMAP === 'true') {
+      config.plugins.push(
+        sentryWebpackPlugin({
+          org: process.env.SENTRY_ORG,
+          project: process.env.SENTRY_PROJECT,
+          authToken: process.env.SENTRY_AUTH_TOKEN,
+        }),
+      )
+    }
   } else {
     config.mode = 'development'
 
