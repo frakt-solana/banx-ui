@@ -48,10 +48,16 @@ const Table = <T extends object, P extends object>({
 
       {loading && <Loader />}
       {emptyMessage && !loading && <div className={styles.emptyList}>{emptyMessage}</div>}
-
-      {hasData && (
-        <ViewComponent data={data} columns={columns} activeRowParams={activeRowParams} {...props} />
-      )}
+      <div className={styles.tableWrapper}>
+        {hasData && (
+          <ViewComponent
+            data={data}
+            columns={columns}
+            activeRowParams={activeRowParams}
+            {...props}
+          />
+        )}
+      </div>
     </>
   )
 }

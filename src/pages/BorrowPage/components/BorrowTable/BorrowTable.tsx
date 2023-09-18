@@ -27,19 +27,17 @@ const BorrowTable: FC<BorrowTableProps> = ({ nfts, isLoading, rawOffers }) => {
 
   return (
     <div className={styles.tableRoot}>
-      <div className={styles.tableWrapper}>
-        <Table
-          data={data}
-          columns={columns}
-          onRowClick={onRowClick}
-          sortViewParams={sortViewParams}
-          className={styles.borrowTable}
-          rowKeyField="mint"
-          loading={isLoading}
-          showCard
-        />
-        <div ref={fetchMoreTrigger} />
-      </div>
+      <Table
+        data={data}
+        columns={columns}
+        onRowClick={onRowClick}
+        sortViewParams={sortViewParams}
+        className={styles.borrowTable}
+        rowKeyField="mint"
+        loading={isLoading}
+        showCard
+      />
+      <div ref={fetchMoreTrigger} />
       <Summary nftsInCart={nftsInCart} selectAll={selectAll} borrowAll={borrowAll} />
     </div>
   )
