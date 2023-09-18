@@ -1,7 +1,7 @@
 import { VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { MarketPreview } from '@banx/api/core'
-import { ColorByPercentHealth, getColorByPercent } from '@banx/utils'
+import { HealthColorDecreasing, getColorByPercent } from '@banx/utils'
 
 export const ADDITIONAL_MARKET_INFO = [
   {
@@ -25,7 +25,7 @@ export const ADDITIONAL_MARKET_INFO = [
     valueRenderer: (apr: number) => apr / 1e2,
     valueType: VALUES_TYPES.PERCENT,
     valueStyles: (market: MarketPreview) => ({
-      color: getColorByPercent(market.marketApr / 100, ColorByPercentHealth),
+      color: getColorByPercent(market.marketApr / 100, HealthColorDecreasing),
       font: 'var(--important-text-md)',
     }),
   },

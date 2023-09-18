@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import { ColorByPercentHealth, getColorByPercent } from '@banx/utils'
+import { HealthColorDecreasing, getColorByPercent } from '@banx/utils'
 
 import { TableUserOfferData } from '../helpers'
 
@@ -11,7 +11,7 @@ interface APRCellProps {
 }
 
 export const APRCell: FC<APRCellProps> = ({ offer }) => {
-  const colorAPR = getColorByPercent(offer.apr, ColorByPercentHealth)
+  const colorAPR = getColorByPercent(offer.apr, HealthColorDecreasing)
 
   return (
     <span style={{ color: colorAPR }} className={styles.aprValue}>

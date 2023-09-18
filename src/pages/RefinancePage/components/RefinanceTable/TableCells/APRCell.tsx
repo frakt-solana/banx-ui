@@ -3,7 +3,7 @@ import { FC, useEffect, useRef, useState } from 'react'
 import moment from 'moment'
 
 import { Loan } from '@banx/api/core'
-import { ColorByPercentHealth, getColorByPercent } from '@banx/utils'
+import { HealthColorDecreasing, getColorByPercent } from '@banx/utils'
 
 import styles from '../RefinanceTable.module.less'
 
@@ -41,7 +41,7 @@ export const APRCell: FC<APRCellProps> = ({ loan }) => {
     }
   }, [refinanceAuctionStartedAt, amountOfBonds])
 
-  const colorAPR = getColorByPercent(currentAPR, ColorByPercentHealth)
+  const colorAPR = getColorByPercent(currentAPR, HealthColorDecreasing)
 
   return (
     <span style={{ color: colorAPR }} className={styles.aprCellValue}>

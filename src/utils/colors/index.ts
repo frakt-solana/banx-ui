@@ -2,7 +2,7 @@ export type ColorBreakpoints = {
   [key: number]: string
 }
 
-export const ColorByPercentHealth: ColorBreakpoints = {
+export const HealthColorDecreasing: ColorBreakpoints = {
   0: '#CF1322',
   15: '#D4380D',
   30: '#D46B08',
@@ -11,6 +11,17 @@ export const ColorByPercentHealth: ColorBreakpoints = {
   75: '#7CB305',
   90: '#389E0D',
   100: '#389E0D',
+}
+
+export const HealthColorIncreasing: ColorBreakpoints = {
+  0: '#389E0D',
+  15: '#389E0D',
+  30: '#7CB305',
+  45: '#D4B106',
+  60: '#D48806',
+  75: '#D46B08',
+  90: '#D4380D',
+  100: '#CF1322',
 }
 
 export const getColorByPercent = (value: number, colorBreakpoints: ColorBreakpoints): string => {
