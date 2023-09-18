@@ -7,7 +7,7 @@ import { LoanStatus, determineLoanStatus } from '@banx/utils'
 
 enum SortField {
   LENT = 'lent',
-  APR = 'apr',
+  APY = 'apy',
   STATUS = 'status',
 }
 
@@ -26,7 +26,7 @@ export const useSortedLenderLoans = (loans: Loan[], sortOptionValue: string) => 
         const { solAmount, feeAmount } = loan.bondTradeTransaction || {}
         return solAmount + feeAmount
       },
-      [SortField.APR]: 'bondTradeTransaction.amountOfBonds',
+      [SortField.APY]: 'bondTradeTransaction.amountOfBonds',
       [SortField.STATUS]: (loan) => {
         const loanStatus = determineLoanStatus(loan)
         const statusToNumber = {

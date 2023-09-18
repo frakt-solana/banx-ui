@@ -5,12 +5,12 @@ export const SORT_OPTIONS = [
   { label: 'Loans', value: 'loans' },
   { label: 'Size', value: 'size' },
   { label: 'Interest', value: 'interest' },
-  { label: 'APR', value: 'apr' },
+  { label: 'APY', value: 'apy' },
 ]
 
 export const DEFAULT_SORT_OPTION: SortOption = {
-  label: 'APR',
-  value: 'apr_desc',
+  label: 'APY',
+  value: 'apy_desc',
 }
 
 export const EMPTY_MESSAGE = 'Lend SOL to view your pending offers'

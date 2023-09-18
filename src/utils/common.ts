@@ -1,6 +1,6 @@
 import { flatMap, map, uniq } from 'lodash'
 
-import { BONDS } from '@banx/constants'
+import { BONDS, WEEKS_IN_YEAR } from '@banx/constants'
 
 // shorten the checksummed version of the input address to have 4 characters at start and end
 export const shortenAddress = (address: string, chars = 4): string => {
@@ -12,10 +12,10 @@ export const copyToClipboard = (value: string): void => {
 }
 
 export const convertAprToApy = (apr: number) => {
-  const weekInYear = 52
-  const compoundedInterest = 1 + apr / weekInYear
-  const apy = Math.pow(compoundedInterest, weekInYear) - 1
-  return apy * 100
+  const compoundedInterest = 1 + apr / WEEKS_IN_YEAR
+  const apy = Math.pow(compoundedInterest, WEEKS_IN_YEAR) - 1
+
+  return Math.round(apy * 100)
 }
 
 export const formatNumbersWithCommas = (value: number | string) =>

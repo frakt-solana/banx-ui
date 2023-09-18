@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import { HealthColorDecreasing, getColorByPercent } from '@banx/utils'
+import { HealthColorDecreasing, convertAprToApy, getColorByPercent } from '@banx/utils'
 
 import { TableUserOfferData } from '../helpers'
 
@@ -15,7 +15,7 @@ export const APRCell: FC<APRCellProps> = ({ offer }) => {
 
   return (
     <span style={{ color: colorAPR }} className={styles.aprValue}>
-      {offer.apr}%
+      {convertAprToApy(offer.apr / 100)}%
     </span>
   )
 }

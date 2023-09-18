@@ -4,7 +4,12 @@ import { CSVDownloadButton } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { LenderActivity } from '@banx/api/core'
-import { HealthColorDecreasing, generateCSVContent, getColorByPercent } from '@banx/utils'
+import {
+  HealthColorDecreasing,
+  convertAprToApy,
+  generateCSVContent,
+  getColorByPercent,
+} from '@banx/utils'
 
 import { useUserOffersStats } from '../../hooks'
 import { ACTIVITY_CSV_FILENAME } from './constants'
@@ -26,9 +31,9 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
     weightedApr = 0,
   } = data || {}
 
-  const weightedAprPercent = weightedApr / 100
+  const weightedApyPercent = convertAprToApy(weightedApr / 1e4)
 
-  const colorAPR = getColorByPercent(weightedAprPercent, HealthColorDecreasing)
+  const colorAPR = getColorByPercent(weightedApyPercent, HealthColorDecreasing)
   const csvContent = generateCSVContent(loans)
 
   return (
@@ -44,8 +49,8 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
         <StatInfo label="Total Lent" value={totalLent} divider={1e9} />
         <StatInfo label="Total interest" value={totalInterest} divider={1e9} />
         <StatInfo
-          label="Weighted APR"
-          value={weightedAprPercent}
+          label="Weighted APY"
+          value={weightedApyPercent}
           valueType={VALUES_TYPES.PERCENT}
           valueStyles={{ color: colorAPR }}
           classNamesProps={{ value: styles.aprValue }}
