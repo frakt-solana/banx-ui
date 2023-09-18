@@ -18,7 +18,7 @@ import {
 
 import { useCartState } from '../../cartState'
 import { getTableColumns } from './columns'
-import { DEFAULT_TABLE_SORT } from './constants'
+import { DEFAULT_TABLE_SORT, SORT_OPTIONS } from './constants'
 import { createBorrowAllParams, createTableNftData, executeBorrow } from './helpers'
 import { SortField, TableNftData } from './types'
 
@@ -190,6 +190,7 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
         option: sortOption,
         onChange: setSortOption,
         className: styles.sortDropdown,
+        options: SORT_OPTIONS,
       },
     },
     borrow,
@@ -230,7 +231,7 @@ const useSortedNfts = (nfts: TableNftData[], sortOptionValue: string) => {
       return get(nft, sortValue)
     })
 
-    return order === 'desc' ? sorted : sorted.reverse()
+    return order === 'desc' ? sorted.reverse() : sorted
   }, [sortOptionValue, nfts])
 
   return sortedLoans
