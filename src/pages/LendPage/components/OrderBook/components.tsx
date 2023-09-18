@@ -11,7 +11,12 @@ import { OrderBookParams } from './hooks'
 
 import styles from './OrderBook.module.less'
 
-export const OrderBookList: FC<{ orderBookParams: OrderBookParams }> = ({ orderBookParams }) => {
+interface OrderBookListProps {
+  orderBookParams: OrderBookParams
+  closeOrderBook?: () => void
+}
+
+export const OrderBookList: FC<OrderBookListProps> = ({ orderBookParams, closeOrderBook }) => {
   const { offers, goToEditOffer, isOwnOffer, bestOffer } = orderBookParams || {}
 
   return (
@@ -22,6 +27,7 @@ export const OrderBookList: FC<{ orderBookParams: OrderBookParams }> = ({ orderB
           offer={offer}
           editOffer={() => {
             goToEditOffer(offer)
+            closeOrderBook?.()
           }}
           isOwnOffer={isOwnOffer(offer)}
           bestOffer={bestOffer}
