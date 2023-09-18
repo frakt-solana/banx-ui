@@ -1,5 +1,6 @@
 import { FC } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 import { isInteger } from 'lodash'
@@ -19,6 +20,7 @@ interface OfferProps {
 }
 
 const Offer: FC<OfferProps> = ({ editOffer, offer, isOwnOffer, bestOffer }) => {
+  const { connected } = useWallet()
   const isBestOffer = offer.publicKey === bestOffer?.publicKey
 
   const isNewOffer = offer.publicKey === PUBKEY_PLACEHOLDER
@@ -29,7 +31,8 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, isOwnOffer, bestOffer }) => {
 
   const listItemClassName = classNames(styles.listItem, {
     [styles.highlightBest]: isBestOffer,
-    [styles.highlightYourOffer]: offer.publicKey === PUBKEY_PLACEHOLDER || offer.isEdit,
+    [styles.highlightYourOffer]:
+      connected && (offer.publicKey === PUBKEY_PLACEHOLDER || offer.isEdit),
   })
 
   const displayLoanValue = ((loanValue || 0) / 1e9)?.toFixed(2)
