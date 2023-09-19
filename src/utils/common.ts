@@ -11,6 +11,7 @@ export const copyToClipboard = (value: string): void => {
   navigator.clipboard.writeText(value)
 }
 
+//? takes and return the value in normal percent, F.e 30 => 30%
 export const convertAprToApy = (apr: number) => {
   const compoundedInterest = 1 + apr / WEEKS_IN_YEAR
   const apy = Math.pow(compoundedInterest, WEEKS_IN_YEAR) - 1
