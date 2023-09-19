@@ -99,7 +99,7 @@ export const fetchActivityCollectionsList: FetchActivityCollectionsList = async 
       userType: String(userType),
     })
 
-    const { data } = await axios.get<{ data: ActivityCollectionsList }>(
+    const { data } = await axios.get<{ data: { collections: ActivityCollectionsList[] } }>(
       `${BACKEND_BASE_URL}/activity/collections-list/${walletPubkey}?${queryParams.toString()}`,
     )
 
@@ -112,6 +112,6 @@ export const fetchActivityCollectionsList: FetchActivityCollectionsList = async 
     return data.data.collections
   } catch (error) {
     console.error(error)
-    return null
+    return []
   }
 }
