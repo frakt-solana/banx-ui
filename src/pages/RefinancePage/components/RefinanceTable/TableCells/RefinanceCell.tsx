@@ -13,6 +13,8 @@ import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeRefinanceAction } from '@banx/transactions/loans'
 import { enqueueSnackbar } from '@banx/utils'
 
+import { useRefinanceTable } from '../hooks'
+
 import styles from '../RefinanceTable.module.less'
 
 interface RefinanceCellProps {
@@ -48,6 +50,7 @@ const useRefinanceTransaction = (loan: Loan) => {
   const wallet = useWallet()
   const { connection } = useConnection()
   const { addMints } = useAuctionsLoans()
+  const { deselectLoan } = useRefinanceTable()
 
   const refinance = () => {
     new TxnExecutor(makeRefinanceAction, { wallet, connection })
@@ -55,6 +58,7 @@ const useRefinanceTransaction = (loan: Loan) => {
       .on('pfSuccessEach', (results) => {
         const { txnHash } = results[0]
         addMints(loan.nft.mint)
+        deselectLoan(loan.publicKey)
         enqueueSnackbar({
           message: 'Transaction Executed',
           solanaExplorerPath: `tx/${txnHash}`,

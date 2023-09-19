@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { filter, find, first, groupBy, map } from 'lodash'
 
@@ -57,31 +57,28 @@ export const useRefinanceTable = () => {
 
   const [selectedLoans, setSelectedLoans] = useState<Loan[]>([])
 
-  const findSelectedLoan = useCallback(
-    (loanPubkey: string) => find(selectedLoans, ({ publicKey }) => publicKey === loanPubkey),
-    [selectedLoans],
-  )
+  // console.log({selectedLoans2: selectedLoans})
 
-  const onSelectLoan = useCallback(
-    (loan: Loan) => {
-      const isLoanInCart = !!findSelectedLoan(loan.publicKey)
-      if (isLoanInCart) {
-        return setSelectedLoans((prev) =>
-          filter(prev, ({ publicKey }) => publicKey !== loan.publicKey),
-        )
-      }
-      return setSelectedLoans((prev) => [...prev, loan])
-    },
-    [findSelectedLoan],
-  )
+  const findSelectedLoan = (loanPubkey: string) =>
+    find(selectedLoans, ({ publicKey }) => publicKey === loanPubkey)
 
-  const onSelectAllLoans = useCallback(() => {
-    setSelectedLoans([...loans])
-  }, [loans])
+  const onSelectLoan = (loan: Loan) => {
+    const isLoanInCart = !!findSelectedLoan(loan.publicKey)
+    if (isLoanInCart) {
+      return setSelectedLoans((prev) =>
+        filter(prev, ({ publicKey }) => publicKey !== loan.publicKey),
+      )
+    }
+    return setSelectedLoans((prev) => [...prev, loan])
+  }
 
-  const onDeselectAllLoans = useCallback(() => {
-    setSelectedLoans([])
-  }, [])
+  const onSelectAllLoans = () => setSelectedLoans([...loans])
+
+  const onDeselectAllLoans = () => setSelectedLoans([])
+
+  const deselectLoan = (loanPubkey: string) => {
+    return setSelectedLoans((prev) => filter(prev, ({ publicKey }) => publicKey !== loanPubkey))
+  }
 
   return {
     loans: sortedLoans,
@@ -92,6 +89,7 @@ export const useRefinanceTable = () => {
     onSelectAllLoans,
     onDeselectAllLoans,
     findSelectedLoan,
+    deselectLoan,
     sortViewParams: {
       searchSelectParams,
       sortParams: { option: sortOption, onChange: setSortOption },

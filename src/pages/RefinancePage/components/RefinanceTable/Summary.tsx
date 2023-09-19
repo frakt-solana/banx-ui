@@ -6,7 +6,7 @@ import { sumBy } from 'lodash'
 import moment from 'moment'
 
 import { Button } from '@banx/components/Buttons'
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
 import { defaultTxnErrorHandler } from '@banx/transactions'
@@ -84,7 +84,7 @@ export const Summary: FC<SummaryProps> = ({
         {/* //TODO Calc weighted apy  */}
         <div className={styles.stats}>
           <p>Weighted apy</p>
-          <p>{createSolValueJSX(10000, 1e9, '0◎')}</p>
+          <p>{createPercentValueJSX(100)}</p>
         </div>
       </div>
       <div className={styles.summaryBtns}>
