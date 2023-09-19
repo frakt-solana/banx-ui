@@ -99,12 +99,17 @@
 
 .statsContainer {
   display: flex;
-  justify-content: space-around;
+  justify-content: flex-end;
+  gap: 112px;
+  padding-right: 16px;
   flex-grow: 1;
 
   @media (max-width: 960px) {
     width: 100%;
     align-items: space-between;
+    justify-content: space-around;
+    gap: unset;
+    padding-right: unset;
   }
 
   @media (max-width: 640px) {
