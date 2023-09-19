@@ -43,9 +43,9 @@ export const getTableColumns = () => {
     {
       key: 'liquidity',
       title: <HeaderCell label="Liquidity" />,
-      render: (_, { offerTVL }) => (
-        <span className={offerTVL ? styles.liquidityCell : ''}>
-          {createSolValueJSX(offerTVL, 1e9)}
+      render: (_, { offerTvl }) => (
+        <span className={offerTvl ? styles.liquidityCell : ''}>
+          {createSolValueJSX(offerTvl, 1e9)}
         </span>
       ),
       sorter: true,
