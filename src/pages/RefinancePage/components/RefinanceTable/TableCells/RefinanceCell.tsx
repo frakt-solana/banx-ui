@@ -26,7 +26,13 @@ export const RefinanceCell: FC<RefinanceCellProps> = ({ loan, isCardView }) => {
 
   return (
     <div className={classNames(styles.refinanceCell, { [styles.cardView]: isCardView })}>
-      <Button onClick={refinance} size={buttonSize}>
+      <Button
+        onClick={(event) => {
+          refinance()
+          event.stopPropagation()
+        }}
+        size={buttonSize}
+      >
         Refinance
       </Button>
       <SolanaFMLink
