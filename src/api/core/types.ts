@@ -12,12 +12,12 @@ export const MarketPreviewSchema = z
   .object({
     marketPubkey: z.string(),
     collectionFloor: z.number(),
-    offerTVL: z.number(),
+    offerTvl: z.number(),
     bestOffer: z.number(), //? lamports
-    bestLTV: z.number(),
+    bestLtv: z.number(),
     activeBondsAmount: z.number(),
     activeOfferAmount: z.number(),
-    loansTVL: z.number(),
+    loansTvl: z.number(),
   })
   .merge(MarketMetaSchema)
 
