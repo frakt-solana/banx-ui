@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
-import { first, groupBy, map } from 'lodash'
+import { filter, find, first, groupBy, map } from 'lodash'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
+import { Loan } from '@banx/api/core'
 import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
 
 import { DEFAULT_SORT_OPTION } from '../constants'
@@ -54,10 +55,43 @@ export const useRefinanceTable = () => {
     className: styles.searchSelect,
   }
 
+  const [selectedLoans, setSelectedLoans] = useState<Loan[]>([])
+
+  const findSelectedLoan = useCallback(
+    (loanPubkey: string) => find(selectedLoans, ({ publicKey }) => publicKey === loanPubkey),
+    [selectedLoans],
+  )
+
+  const onSelectLoan = useCallback(
+    (loan: Loan) => {
+      const isLoanInCart = !!findSelectedLoan(loan.publicKey)
+      if (isLoanInCart) {
+        return setSelectedLoans((prev) =>
+          filter(prev, ({ publicKey }) => publicKey !== loan.publicKey),
+        )
+      }
+      return setSelectedLoans((prev) => [...prev, loan])
+    },
+    [findSelectedLoan],
+  )
+
+  const onSelectAllLoans = useCallback(() => {
+    setSelectedLoans([...loans])
+  }, [loans])
+
+  const onDeselectAllLoans = useCallback(() => {
+    setSelectedLoans([])
+  }, [])
+
   return {
     loans: sortedLoans,
     loading: isLoading,
     showEmptyList,
+    selectedLoans,
+    onSelectLoan,
+    onSelectAllLoans,
+    onDeselectAllLoans,
+    findSelectedLoan,
     sortViewParams: {
       searchSelectParams,
       sortParams: { option: sortOption, onChange: setSortOption },
