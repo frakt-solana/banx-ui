@@ -21,16 +21,14 @@ export const LoansHistoryTable = () => {
 
   return (
     <div className={styles.tableRoot}>
-      <div className={styles.tableWrapper}>
-        <Table
-          data={loans}
-          columns={columns}
-          rowKeyField="publicKey"
-          sortViewParams={sortViewParams}
-          loading={loading}
-          showCard
-        />
-      </div>
+      <Table
+        data={loans}
+        columns={columns}
+        rowKeyField="publicKey"
+        sortViewParams={sortViewParams}
+        loading={loading}
+        showCard
+      />
       {showSummary && <Summary loans={loans} />}
     </div>
   )

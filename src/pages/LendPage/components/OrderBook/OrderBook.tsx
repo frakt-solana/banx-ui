@@ -58,7 +58,10 @@ const OrderBookMobile: FC<OrderBookMobileProps> = ({ marketPreview, orderBookPar
       </div>
       {isOrderBookOpen && (
         <div className={styles.mobileContent}>
-          <OrderBookList orderBookParams={orderBookParams} />
+          <OrderBookList
+            orderBookParams={orderBookParams}
+            closeOrderBook={() => setOrderBookOpen(false)}
+          />
         </div>
       )}
     </div>

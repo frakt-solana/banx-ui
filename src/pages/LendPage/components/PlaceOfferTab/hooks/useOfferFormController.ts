@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { isInteger } from 'lodash'
 
@@ -20,11 +20,11 @@ export const useOfferFormController = (editLoanValue = 0, editLoansAmount = 0) =
     }
   }, [initialLoanValue, initialLoansAmount])
 
-  const onLoanValueChange = (nextValue: string) => {
+  const onLoanValueChange = useCallback((nextValue: string) => {
     setLoanValue(nextValue)
-  }
+  }, [])
 
-  const onLoanAmountChange = (nextValue: string) => {
+  const onLoanAmountChange = useCallback((nextValue: string) => {
     const nextValueNumber = parseFloat(nextValue) || 0
 
     if (!isInteger(nextValueNumber)) {
@@ -32,7 +32,7 @@ export const useOfferFormController = (editLoanValue = 0, editLoansAmount = 0) =
     } else {
       setLoansAmount(nextValue)
     }
-  }
+  }, [])
 
   const resetFormValues = () => {
     setLoanValue(initialLoanValue)

@@ -31,8 +31,8 @@ export const getTableColumns = ({ isCardView }: GetTableColumns) => {
       render: (_, loan) => <InterestCell loan={loan} />,
     },
     {
-      key: 'apr',
-      title: <HeaderCell label="APR" tooltipText="APR" />,
+      key: 'apy',
+      title: <HeaderCell label="APY" tooltipText="APY" />,
       render: (_, loan) => <APRCell loan={loan} />,
       sorter: true,
     },

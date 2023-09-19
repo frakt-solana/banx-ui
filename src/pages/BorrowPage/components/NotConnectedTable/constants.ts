@@ -6,4 +6,4 @@ export const DEFAULT_SORT_OPTION: SortOption = {
 }
 
 export const EMPTY_MESSAGE = "You don't have any whitelisted collections"
-export const NOT_CONNECTED_MESSAGE = 'Connect wallet to borrow $SOL against your NFTs'
+export const NOT_CONNECTED_MESSAGE = 'Connect wallet to borrow SOL against your NFTs'

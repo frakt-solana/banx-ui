@@ -5,6 +5,7 @@ import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { MarketPreview } from '@banx/api/core'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { useMarketsURLControl } from '@banx/store'
+import { convertAprToApy } from '@banx/utils'
 
 import { useSortMarkets } from './useSortMarkets'
 
@@ -31,14 +32,14 @@ export const useLendPageContent = () => {
     options: marketsPreview,
     selectedOptions: selectedMarkets,
     placeholder: 'Select a collection',
-    labels: ['Collection', 'APR'],
+    labels: ['Collection', 'APY'],
     optionKeys: {
       labelKey: 'collectionName',
       valueKey: 'marketPubkey',
       imageKey: 'collectionImage',
       secondLabel: {
-        key: 'marketAPR',
-        format: (value: number) => `${value / 1e2} %`,
+        key: 'marketApr',
+        format: (value: number) => `${convertAprToApy(value / 1e4)} %`,
       },
     },
     onChange: handleFilterChange,

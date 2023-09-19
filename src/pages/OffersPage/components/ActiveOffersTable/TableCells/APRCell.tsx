@@ -1,7 +1,7 @@
 import { FC } from 'react'
 
 import { Loan } from '@banx/api/core'
-import { ColorByPercentHealth, getColorByPercent } from '@banx/utils'
+import { HealthColorDecreasing, convertAprToApy, getColorByPercent } from '@banx/utils'
 
 import styles from '../ActiveOffersTable.module.less'
 
@@ -14,11 +14,11 @@ export const APRCell: FC<APRCellProps> = ({ loan }) => {
 
   const aprPercent = amountOfBonds / 100
 
-  const colorAPR = getColorByPercent(aprPercent, ColorByPercentHealth)
+  const colorAPR = getColorByPercent(aprPercent, HealthColorDecreasing)
 
   return (
     <span style={{ color: colorAPR }} className={styles.aprValue}>
-      {aprPercent}%
+      {convertAprToApy(aprPercent / 100)}%
     </span>
   )
 }

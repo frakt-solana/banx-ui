@@ -43,19 +43,16 @@ export const getTableColumns = ({
       key: 'floorPrice',
       title: <HeaderCell label="Floor" />,
       render: (_, nft) => createSolValueJSX(nft.nft.nft.collectionFloor, 1e9),
-      sorter: true,
     },
     {
       key: 'loanValue',
       title: <HeaderCell label="Borrow" />,
       render: (_, nft) => createSolValueJSX(calcLoanValueWithProtocolFee(nft.loanValue), 1e9),
-      sorter: true,
     },
     {
       key: 'weeklyFee',
       title: <HeaderCell label="Weekly Fee" />,
       render: (_, nft) => createSolValueJSX(nft.interest, 1e9),
-      sorter: true,
     },
     {
       title: <HeaderCell label="" />,

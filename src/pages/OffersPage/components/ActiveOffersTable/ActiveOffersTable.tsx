@@ -26,30 +26,28 @@ const ActiveOffersTable = () => {
 
   return (
     <div className={styles.tableRoot}>
-      <div className={styles.tableWrapper}>
-        <Table
-          data={data}
-          columns={columns}
-          sortViewParams={sortViewParams}
-          className={styles.rootTable}
-          rowKeyField="publicKey"
-          activeRowParams={[
-            {
-              condition: checkIsTerminationLoan,
-              className: styles.terminated,
-              cardClassName: styles.terminated,
-            },
-            {
-              condition: checkIsLiquidatedLoan,
-              className: styles.liquidated,
-              cardClassName: styles.liquidated,
-            },
-          ]}
-          loading={loading}
-          showCard
-        />
-        <div ref={fetchMoreTrigger} />
-      </div>
+      <Table
+        data={data}
+        columns={columns}
+        sortViewParams={sortViewParams}
+        className={styles.rootTable}
+        rowKeyField="publicKey"
+        activeRowParams={[
+          {
+            condition: checkIsTerminationLoan,
+            className: styles.terminated,
+            cardClassName: styles.terminated,
+          },
+          {
+            condition: checkIsLiquidatedLoan,
+            className: styles.liquidated,
+            cardClassName: styles.liquidated,
+          },
+        ]}
+        loading={loading}
+        showCard
+      />
+      <div ref={fetchMoreTrigger} />
       {showSummary(loans) && <Summary loans={loans} />}
     </div>
   )
