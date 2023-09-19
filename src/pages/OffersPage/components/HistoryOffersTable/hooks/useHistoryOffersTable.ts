@@ -1,9 +1,7 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { first, groupBy, map, sumBy } from 'lodash'
 
-import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { useIntersection } from '@banx/hooks'
@@ -11,18 +9,15 @@ import { PATHS } from '@banx/router'
 
 import { EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
 import { useLenderActivity } from './useLenderActivity'
+import { useLenderActivityCollectionsList } from './useLenderActivityCollectionsList'
 
 import styles from '../HistoryOffersTable.module.less'
-
-interface SearchSelectOption {
-  collectionName: string
-  collectionImage: string
-  received: number
-}
 
 export const useHistoryOffersTable = () => {
   const { ref: fetchMoreTrigger, inView } = useIntersection()
   const { connected } = useWallet()
+
+  const { data: collectionsList } = useLenderActivityCollectionsList()
 
   const {
     loans,
@@ -40,20 +35,8 @@ export const useHistoryOffersTable = () => {
     }
   }, [inView, fetchNextPage, hasNextPage])
 
-  const searchSelectOptions = useMemo(() => {
-    const loansGroupedByCollection = groupBy(loans, ({ nft }) => nft.meta.collectionName)
-
-    return map(loansGroupedByCollection, (groupedLoan) => {
-      const firstLoanInGroup = first(groupedLoan)
-      const { collectionName = '', collectionImage = '' } = firstLoanInGroup?.nft.meta || {}
-      const received = sumBy(groupedLoan, (nft) => nft.received)
-
-      return { collectionName, collectionImage, received }
-    })
-  }, [loans])
-
-  const searchSelectParams: SearchSelectProps<SearchSelectOption> = {
-    options: searchSelectOptions,
+  const searchSelectParams = {
+    options: collectionsList,
     optionKeys: {
       labelKey: 'collectionName',
       valueKey: 'collectionName',

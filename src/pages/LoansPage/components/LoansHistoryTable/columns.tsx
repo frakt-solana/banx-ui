@@ -31,7 +31,6 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
       key: 'debt',
       title: <HeaderCell label="Debt" />,
       render: (_, loan) => <DebtCell loan={loan} isCardView={isCardView} />,
-      sorter: true,
     },
     {
       key: 'status',

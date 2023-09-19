@@ -36,7 +36,7 @@ export const useLenderActivity = () => {
   }
 
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage, isLoading } = useInfiniteQuery({
-    queryKey: ['lenderActivity', publicKey, sortOption],
+    queryKey: ['lenderActivity', publicKey, sortOption, selectedCollections],
     queryFn: ({ pageParam = 0 }) => fetchData(pageParam),
     getPreviousPageParam: (firstPage) => {
       return firstPage.pageParam - 1 ?? undefined

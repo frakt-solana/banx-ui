@@ -19,7 +19,7 @@ export const useLenderActivityCollectionsList = () => {
   )
 
   return {
-    data,
+    data: data ?? [],
     isLoading,
   }
 }

@@ -36,7 +36,7 @@ export const useBorrowerActivity = () => {
   }
 
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage, isLoading } = useInfiniteQuery({
-    queryKey: ['borrowerActivity', publicKey, sortOption],
+    queryKey: ['borrowerActivity', publicKey, sortOption, selectedCollections],
     queryFn: ({ pageParam = 0 }) => fetchData(pageParam),
     getPreviousPageParam: (firstPage) => {
       return firstPage.pageParam - 1 ?? undefined
