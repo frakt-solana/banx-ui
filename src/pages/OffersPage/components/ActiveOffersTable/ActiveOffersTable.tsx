@@ -6,6 +6,7 @@ import { useFakeInfinityScroll } from '@banx/hooks'
 import { ViewState, useTableView } from '@banx/store'
 import { LoanStatus, determineLoanStatus } from '@banx/utils'
 
+import { Summary, showSummary } from './Summary'
 import { getTableColumns } from './columns'
 import { useActiveOffersTable } from './hooks'
 
@@ -24,30 +25,33 @@ const ActiveOffersTable = () => {
   if (showEmptyList) return <EmptyList {...emptyListParams} />
 
   return (
-    <>
-      <Table
-        data={data}
-        columns={columns}
-        sortViewParams={sortViewParams}
-        className={styles.rootTable}
-        rowKeyField="publicKey"
-        activeRowParams={[
-          {
-            condition: checkIsTerminationLoan,
-            className: styles.terminated,
-            cardClassName: styles.terminated,
-          },
-          {
-            condition: checkIsLiquidatedLoan,
-            className: styles.liquidated,
-            cardClassName: styles.liquidated,
-          },
-        ]}
-        loading={loading}
-        showCard
-      />
-      <div ref={fetchMoreTrigger} />
-    </>
+    <div className={styles.tableRoot}>
+      <div className={styles.tableWrapper}>
+        <Table
+          data={data}
+          columns={columns}
+          sortViewParams={sortViewParams}
+          className={styles.rootTable}
+          rowKeyField="publicKey"
+          activeRowParams={[
+            {
+              condition: checkIsTerminationLoan,
+              className: styles.terminated,
+              cardClassName: styles.terminated,
+            },
+            {
+              condition: checkIsLiquidatedLoan,
+              className: styles.liquidated,
+              cardClassName: styles.liquidated,
+            },
+          ]}
+          loading={loading}
+          showCard
+        />
+        <div ref={fetchMoreTrigger} />
+      </div>
+      {showSummary(loans) && <Summary loans={loans} />}
+    </div>
   )
 }
 
