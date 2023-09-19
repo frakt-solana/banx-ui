@@ -9,7 +9,7 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 import { useIntersection } from '@banx/hooks'
 import { PATHS } from '@banx/router'
 
-import { DEFAULT_SORT_OPTION, EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
+import { EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
 import { useLenderActivity } from './useLenderActivity'
 
 import styles from '../HistoryOffersTable.module.less'
