@@ -8,8 +8,15 @@ import { useHistoryOffersTable } from './hooks'
 import styles from './HistoryOffersTable.module.less'
 
 export const HistoryOffersTable = () => {
-  const { loans, sortViewParams, loading, showEmptyList, emptyListParams, showSummary } =
-    useHistoryOffersTable()
+  const {
+    loans,
+    sortViewParams,
+    loading,
+    showEmptyList,
+    emptyListParams,
+    showSummary,
+    fetchMoreTrigger,
+  } = useHistoryOffersTable()
 
   const columns = getTableColumns()
 
@@ -23,6 +30,7 @@ export const HistoryOffersTable = () => {
         sortViewParams={sortViewParams}
         className={styles.rootTable}
         rowKeyField="publicKey"
+        fetchMoreTrigger={fetchMoreTrigger}
         loading={loading}
         showCard
       />

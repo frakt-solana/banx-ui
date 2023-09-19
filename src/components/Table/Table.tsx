@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from 'react'
+
 import { ColumnsType } from 'antd/es/table'
 import { isEmpty } from 'lodash'
 
@@ -18,6 +20,7 @@ export interface TableProps<T, P> {
   sortViewParams?: SortViewParams<P>
   activeRowParams?: ActiveRowParams<T>[]
 
+  fetchMoreTrigger?: Dispatch<SetStateAction<Element | null>>
   showCard?: boolean
   onRowClick?: (dataItem: T) => void
   breakpoints?: PartialBreakpoints
@@ -34,6 +37,7 @@ const Table = <T extends object, P extends object>({
   showCard,
   loading,
   emptyMessage,
+  fetchMoreTrigger,
   ...props
 }: TableProps<T, P>) => {
   const { viewState } = useTableView()
@@ -50,13 +54,16 @@ const Table = <T extends object, P extends object>({
       {emptyMessage && !loading && <div className={styles.emptyList}>{emptyMessage}</div>}
       <div className={styles.tableWrapper}>
         {hasData && (
-          <ViewComponent
-            data={data}
-            columns={columns}
-            activeRowParams={activeRowParams}
-            {...props}
-          />
+          <>
+            <ViewComponent
+              data={data}
+              columns={columns}
+              activeRowParams={activeRowParams}
+              {...props}
+            />
+          </>
         )}
+        {fetchMoreTrigger && <div ref={fetchMoreTrigger} />}
       </div>
     </>
   )

@@ -10,8 +10,15 @@ import { useHistoryLoansTable } from './hooks'
 import styles from './LoansHistoryTable.module.less'
 
 export const LoansHistoryTable = () => {
-  const { loans, loading, sortViewParams, showEmptyList, emptyListParams, showSummary } =
-    useHistoryLoansTable()
+  const {
+    loans,
+    loading,
+    sortViewParams,
+    showEmptyList,
+    emptyListParams,
+    showSummary,
+    fetchMoreTrigger,
+  } = useHistoryLoansTable()
 
   const { viewState } = useTableView()
 
@@ -20,16 +27,19 @@ export const LoansHistoryTable = () => {
   if (showEmptyList) return <EmptyList {...emptyListParams} />
 
   return (
-    <div className={styles.tableRoot}>
-      <Table
-        data={loans}
-        columns={columns}
-        rowKeyField="publicKey"
-        sortViewParams={sortViewParams}
-        loading={loading}
-        showCard
-      />
-      {showSummary && <Summary loans={loans} />}
-    </div>
+    <>
+      <div className={styles.tableRoot}>
+        <Table
+          data={loans}
+          columns={columns}
+          rowKeyField="publicKey"
+          sortViewParams={sortViewParams}
+          fetchMoreTrigger={fetchMoreTrigger}
+          loading={loading}
+          showCard
+        />
+        {showSummary && <Summary loans={loans} />}
+      </div>
+    </>
   )
 }
