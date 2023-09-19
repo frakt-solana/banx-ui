@@ -27,19 +27,17 @@ export const LoansHistoryTable = () => {
   if (showEmptyList) return <EmptyList {...emptyListParams} />
 
   return (
-    <>
-      <div className={styles.tableRoot}>
-        <Table
-          data={loans}
-          columns={columns}
-          rowKeyField="publicKey"
-          sortViewParams={sortViewParams}
-          fetchMoreTrigger={fetchMoreTrigger}
-          loading={loading}
-          showCard
-        />
-        {showSummary && <Summary loans={loans} />}
-      </div>
-    </>
+    <div className={styles.tableRoot}>
+      <Table
+        data={loans}
+        columns={columns}
+        rowKeyField="publicKey"
+        sortViewParams={sortViewParams}
+        fetchMoreTrigger={fetchMoreTrigger}
+        loading={loading}
+        showCard
+      />
+      {showSummary && <Summary loans={loans} />}
+    </div>
   )
 }

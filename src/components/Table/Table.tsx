@@ -55,14 +55,12 @@ const Table = <T extends object, P extends object>({
       {emptyMessage && !loading && <div className={styles.emptyList}>{emptyMessage}</div>}
       <div className={styles.tableWrapper}>
         {hasData && (
-          <>
-            <ViewComponent
-              data={data}
-              columns={columns}
-              activeRowParams={activeRowParams}
-              {...props}
-            />
-          </>
+          <ViewComponent
+            data={data}
+            columns={columns}
+            activeRowParams={activeRowParams}
+            {...props}
+          />
         )}
         {fetchMoreTrigger && (
           <div style={{ height: SCROLL_THRESHOLD_HEIGHT }} ref={fetchMoreTrigger} />
