@@ -6,6 +6,7 @@ import { isEmpty } from 'lodash'
 import { ViewState, useTableView } from '@banx/store'
 
 import { Loader } from '../Loader'
+import { SCROLL_THRESHOLD_HEIGHT } from './constants'
 import { ActiveRowParams, PartialBreakpoints, SortViewParams } from './types'
 import { CardView, SortView, TableView } from './views'
 
@@ -63,7 +64,9 @@ const Table = <T extends object, P extends object>({
             />
           </>
         )}
-        {fetchMoreTrigger && <div ref={fetchMoreTrigger} />}
+        {fetchMoreTrigger && (
+          <div style={{ height: SCROLL_THRESHOLD_HEIGHT }} ref={fetchMoreTrigger} />
+        )}
       </div>
     </>
   )
