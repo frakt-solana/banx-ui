@@ -6,9 +6,8 @@ import { chain, isEmpty, maxBy, sortBy } from 'lodash'
 import { Button } from '@banx/components/Buttons'
 
 import { Loan } from '@banx/api/core'
-import { calculateLoanValue } from '@banx/utils'
+import { calculateLoanRepayValue, calculateLoanValue, isLoanLiquidated } from '@banx/utils'
 
-import { calculateLoanRepayValue, isLoanExpired } from '../helpers'
 import { useLendLoansTransactions, useLenderLoansAndOffers } from '../hooks'
 
 import styles from '../ActiveOffersTable.module.less'
@@ -57,7 +56,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
   const isTerminatingLoan = bondTradeTransactionState === isPerpetualTerminating
   const availableToRefinance = isActiveLoan && !isEmpty(bestOffer)
   const isActiveOrTerminatingLoan = isActiveLoan || isTerminatingLoan
-  const isExpiredLoan = isLoanExpired(loan)
+  const isExpiredLoan = isLoanLiquidated(loan)
 
   const buttonSize = isCardView ? 'large' : 'small'
 

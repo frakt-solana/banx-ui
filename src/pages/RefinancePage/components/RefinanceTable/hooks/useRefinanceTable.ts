@@ -4,11 +4,13 @@ import { first, groupBy, map } from 'lodash'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
-import { DEFAULT_SORT_OPTION } from '@banx/pages/LoansPage/constants'
 import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
 
+import { DEFAULT_SORT_OPTION } from '../constants'
 import { useFilteredLoans } from './useFilteredLoans'
 import { useSortedLoans } from './useSortedLoans'
+
+import styles from '../RefinanceTable.module.less'
 
 export const useRefinanceTable = () => {
   const { loans, isLoading } = useAuctionsLoans()
@@ -36,6 +38,8 @@ export const useRefinanceTable = () => {
     })
   }, [loans])
 
+  const showEmptyList = !loans?.length && !isLoading
+
   const searchSelectParams = {
     onChange: setSelectedOptions,
     options: searchSelectOptions,
@@ -47,11 +51,13 @@ export const useRefinanceTable = () => {
       secondLabel: { key: 'numberOfNFTs' },
     },
     labels: ['Collection', 'Available'],
+    className: styles.searchSelect,
   }
 
   return {
     loans: sortedLoans,
     loading: isLoading,
+    showEmptyList,
     sortViewParams: {
       searchSelectParams,
       sortParams: { option: sortOption, onChange: setSortOption },

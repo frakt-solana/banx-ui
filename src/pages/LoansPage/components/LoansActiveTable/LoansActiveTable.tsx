@@ -1,23 +1,22 @@
-import Table, { TableProps } from '@banx/components/Table'
+import EmptyList from '@banx/components/EmptyList'
+import Table from '@banx/components/Table'
 
 import { Loan } from '@banx/api/core'
+import { useFakeInfinityScroll } from '@banx/hooks'
 import { ViewState, useTableView } from '@banx/store'
+import { LoanStatus, determineLoanStatus } from '@banx/utils'
 
 import { useSelectedLoans } from '../../loansState'
-import { SearchSelectOption } from '../LoansActiveTab'
+import { Summary } from './Summary'
 import { getTableColumns } from './columns'
+import { useLoansActiveTable } from './hooks'
 
-import styles from './LoansTable.module.less'
+import styles from './LoansActiveTable.module.less'
 
-type TableViewProps<T, P> = Omit<TableProps<T, P>, 'columns' | 'onRowClick' | 'rowKeyField'>
+export const LoansActiveTable = () => {
+  const { sortViewParams, loans, loading, showEmptyList, emptyListParams, showSummary } =
+    useLoansActiveTable()
 
-export const LoansActiveTable = ({
-  data,
-  sortViewParams,
-  breakpoints,
-  className,
-  loading,
-}: TableViewProps<Loan, SearchSelectOption>) => {
   const { selection, toggleLoanInSelection, findLoanInSelection, clearSelection, setSelection } =
     useSelectedLoans()
 
@@ -29,7 +28,7 @@ export const LoansActiveTable = ({
     if (hasSelectedLoans) {
       clearSelection()
     } else {
-      setSelection(data as Loan[])
+      setSelection(loans)
     }
   }
 
@@ -41,22 +40,36 @@ export const LoansActiveTable = ({
     isCardView: viewState === ViewState.CARD,
   })
 
+  const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: loans })
+
+  if (showEmptyList) return <EmptyList {...emptyListParams} />
+
   return (
-    <Table
-      data={data}
-      columns={columns}
-      onRowClick={toggleLoanInSelection}
-      sortViewParams={sortViewParams}
-      breakpoints={breakpoints}
-      className={className}
-      rowKeyField="publicKey"
-      loading={loading}
-      showCard
-      activeRowParams={{
-        field: 'fraktBond.terminatedCounter',
-        value: true,
-        className: styles.termitated,
-      }}
-    />
+    <div className={styles.tableRoot}>
+      <Table
+        data={data}
+        columns={columns}
+        onRowClick={toggleLoanInSelection}
+        sortViewParams={sortViewParams}
+        className={styles.table}
+        rowKeyField="publicKey"
+        loading={loading}
+        showCard
+        activeRowParams={[
+          {
+            condition: checkIsTerminationLoan,
+            className: styles.terminated,
+            cardClassName: styles.terminated,
+          },
+        ]}
+      />
+      <div ref={fetchMoreTrigger} />
+      {showSummary && <Summary loans={loans} />}
+    </div>
   )
+}
+
+const checkIsTerminationLoan = (loan: Loan) => {
+  const loanStatus = determineLoanStatus(loan)
+  return loanStatus === LoanStatus.Terminating
 }

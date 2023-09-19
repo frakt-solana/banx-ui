@@ -43,5 +43,5 @@ export const APRIncreaseCell: FC<APRIncreaseCellProps> = ({ loan }) => {
     setNextRoundStartTime(auctionStartTime.add(elapsedHours + 1, 'hours').unix())
   }
 
-  return <Timer expiredAt={nextRoundStartTime} detailedTimeFormat />
+  return <Timer expiredAt={nextRoundStartTime} />
 }

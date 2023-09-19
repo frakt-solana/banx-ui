@@ -10,9 +10,9 @@ import {
 
 import { Loan } from '@banx/api/core'
 
-import { DebtCell, RepayCell, StatusCell } from './TableCells'
+import { DebtCell, HealthCell, RepayCell, StatusCell } from './TableCells'
 
-import styles from './LoansTable.module.less'
+import styles from './LoansActiveTable.module.less'
 
 interface GetTableColumnsProps {
   onSelectAll: () => void
@@ -56,24 +56,30 @@ export const getTableColumns = ({
     {
       key: 'repayValue',
       title: <HeaderCell label="Debt" />,
-      render: (_, loan) => <DebtCell loan={loan} />,
+      render: (_, loan) => <DebtCell loan={loan} isCardView={isCardView} />,
       sorter: true,
     },
     {
       key: 'health',
-      title: <HeaderCell label="Est. health" />,
-      render: (_, { fraktBond }) => createSolValueJSX(fraktBond.amountToReturn, 1e9),
+      title: <HeaderCell label="Est. Health" />,
+      render: (_, loan) => <HealthCell loan={loan} />,
       sorter: true,
     },
     {
       key: 'status',
       title: <HeaderCell label="Loan status" />,
-      render: (_, loan) => <StatusCell loan={loan} />,
+      render: (_, loan) => <StatusCell loan={loan} isCardView={isCardView} />,
       sorter: true,
     },
     {
-      title: <HeaderCell label="Repay" />,
-      render: (_, loan) => <RepayCell loan={loan} isCardView={isCardView} />,
+      title: <HeaderCell label="" />,
+      render: (_, loan) => (
+        <RepayCell
+          loan={loan}
+          isCardView={isCardView}
+          disabled={!!findLoanInSelection(loan.publicKey)}
+        />
+      ),
     },
   ]
 

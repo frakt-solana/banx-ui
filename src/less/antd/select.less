@@ -1,16 +1,20 @@
 .rootSelectClassName {
-  background-color: var(--bg-primary);
+  background: var(--bg-action);
   color: var(--content-primary);
   margin-left: 32px;
   width: calc(100% - 32px);
 
   .ant-select-selector {
-    background: var(--bg-primary) !important;
+    background: var(--bg-action) !important;
     box-shadow: none !important;
     border: 0 !important;
     padding: 5px 0px;
     padding-inline-end: 40px !important;
     transition: none !important;
+
+    @media (max-width: 640px) {
+      padding: 1px 0px;
+    }
   }
 
   .ant-select-selection-item {
@@ -21,6 +25,7 @@
 
     padding-inline-start: 8px;
     padding-inline-end: 8px;
+    margin-inline-start: 8px;
 
     .ant-select-selection-item-content img,
     .searchSelectImageContainer {
@@ -36,7 +41,7 @@
 
   .ant-select-selection-placeholder {
     color: var(--content-secondary);
-    font: var(--body-text-sm);
+    font: var(--body-text-md);
   }
 
   .ant-select-selection-item-content {
@@ -66,9 +71,22 @@
 
   .ant-select-clear {
     background: none;
+    cursor: pointer;
     opacity: 1;
-    width: 12px;
     right: 16px;
+
+    padding-bottom: 10px;
+    padding-top: 10px;
+
+    margin-right: -16px;
+    margin-top: -16px;
+
+    height: 32px;
+    width: 50px;
+
+    svg {
+      width: 12px;
+    }
   }
 }
 
@@ -88,6 +106,10 @@
   padding: 0;
   min-width: 330px !important;
   width: calc(100% + 34px) !important;
+
+  @media (max-width: 640px) {
+    top: 31px !important;
+  }
 
   .ant-select-item {
     border-radius: 0;

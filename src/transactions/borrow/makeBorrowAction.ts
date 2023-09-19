@@ -1,5 +1,5 @@
 import { web3 } from 'fbonds-core'
-import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
+import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   borrowCnftPerpetual,
   borrowPerpetual,
@@ -23,7 +23,7 @@ export type MakeBorrowActionParams = {
   offer: Offer
 }[]
 
-export type MakeBorrowActionResult = Loan[]
+export type MakeBorrowActionResult = { loan: Loan; offer: Offer }[]
 
 export type MakeBorrowAction = MakeActionFn<MakeBorrowActionParams, MakeBorrowActionResult>
 
@@ -40,17 +40,21 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndCon
     walletAndConnection,
   })
 
-  const loans: Loan[] = optimisticResults.map((optimistic, idx) => ({
-    publicKey: optimistic.fraktBond.publicKey,
-    fraktBond: optimistic.fraktBond,
-    bondTradeTransaction: optimistic.bondTradeTransaction,
-    nft: ixnParams[idx].nft.nft,
-  }))
+  const loansAndOffers = optimisticResults.map((optimistic, idx) => {
+    const loan = {
+      publicKey: optimistic.fraktBond.publicKey,
+      fraktBond: optimistic.fraktBond,
+      bondTradeTransaction: optimistic.bondTradeTransaction,
+      nft: ixnParams[idx].nft.nft,
+    }
+
+    return { loan, offer: optimistic.bondOffer }
+  })
 
   return {
     instructions,
     signers,
-    additionalResult: loans,
+    additionalResult: loansAndOffers,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }
@@ -176,7 +180,8 @@ const getChunkBorrowType = (nfts: BorrowNft[]) => {
 }
 
 export const getNftBorrowType = (nft: BorrowNft) => {
-  if (nft.loan.banxStake) return BorrowType.StakedBanx
+  if (nft.loan.banxStake && nft.loan.banxStake !== EMPTY_PUBKEY.toBase58())
+    return BorrowType.StakedBanx
   if (nft.nft.compression) return BorrowType.CNft
   return BorrowType.Default
 }

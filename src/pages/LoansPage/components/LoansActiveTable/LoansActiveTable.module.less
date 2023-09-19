@@ -1,0 +1,188 @@
+.tableRoot {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.table :global {
+  .ant-table-tbody > tr > td {
+    width: 230px;
+  }
+  .ant-table-tbody > tr > td:last-child {
+    width: 84px;
+  }
+}
+
+.searchSelect {
+  max-width: 750px;
+}
+
+.headerTitleRow {
+  display: flex;
+  align-items: baseline;
+  gap: 16px !important;
+}
+
+.checkbox {
+  height: 18px;
+  padding-left: 18px;
+}
+
+.terminated {
+  background: var(--additional-lava-secondary) !important;
+}
+
+.statusInfo,
+.debtInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.statusInfoTitle,
+.debtInfoTitle {
+  font: var(--body-text-md);
+}
+
+.statusInfoSubtitle {
+  font: var(--body-text-sm);
+  text-transform: capitalize;
+}
+
+.debtInfoSubtitle {
+  font: var(--body-text-sm);
+}
+
+.summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid var(--bg-border);
+
+  @media (max-width: 960px) {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  @media (max-width: 640px) {
+    gap: 16px;
+  }
+}
+
+.statsContainer {
+  display: flex;
+  justify-content: space-around;
+  flex-grow: 1;
+
+  & > div {
+    align-items: end;
+  }
+
+  @media (max-width: 1240px) {
+    width: 100%;
+    align-items: space-between;
+
+    & > div {
+      align-items: center;
+    }
+  }
+
+  @media (max-width: 640px) {
+    gap: 8px 8px;
+  }
+}
+
+.summaryBtns {
+  display: flex;
+  gap: 8px;
+
+  button {
+    min-width: 170px;
+  }
+
+  @media (max-width: 960px) {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    width: 100%;
+
+    button {
+      min-width: unset;
+    }
+  }
+}
+
+.selectButtonText {
+  @media (max-width: 1240px) {
+    display: none;
+  }
+}
+
+.selectButtonMobileText {
+  @media (min-width: 1241px) {
+    display: none;
+  }
+}
+
+.collaterals {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 220px;
+
+  @media (max-width: 1240px) {
+    display: none;
+  }
+}
+
+.collateralsTitle {
+  font: var(--important-text-xll);
+  color: var(--content-primary);
+
+  @media (max-width: 640px) {
+    font: var(--important-text-xl);
+  }
+}
+
+.collateralsSubtitle {
+  font: var(--table-header-md);
+  color: var(--content-secondary);
+  text-transform: uppercase;
+  max-width: 150px;
+
+  @media (max-width: 960px) {
+    max-width: unset;
+  }
+
+  @media (max-width: 640px) {
+    font: var(--table-header-sm);
+    width: 86px;
+  }
+}
+
+.additionalRepayInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0 8px;
+}
+.mainRepayInfo {
+  display: flex;
+  justify-content: flex-start;
+}
+.repayButton {
+  width: 100%;
+}
+
+.sortDropdown {
+  & > button {
+    min-width: 230px;
+
+    @media (max-width: 640px) {
+      min-width: 190px;
+    }
+  }
+}

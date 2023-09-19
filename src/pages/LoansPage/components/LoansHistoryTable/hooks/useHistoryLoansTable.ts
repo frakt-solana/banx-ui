@@ -1,14 +1,19 @@
 import { useMemo, useState } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
 import { first, groupBy, map, sumBy } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
-import { DEFAULT_SORT_OPTION } from '@banx/pages/LoansPage/constants'
+import { PATHS } from '@banx/router'
 
+import { DEFAULT_SORT_OPTION } from '../../LoansActiveTable/constants'
+import { EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
 import { useBorrowerActivity } from './useBorrowerActivity'
+
+import styles from '../LoansHistoryTable.module.less'
 
 interface SearchSelectOption {
   collectionName: string
@@ -18,6 +23,8 @@ interface SearchSelectOption {
 
 export const useHistoryLoansTable = () => {
   const { loans, isLoading } = useBorrowerActivity()
+  const { connected } = useWallet()
+
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
 
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
@@ -48,16 +55,30 @@ export const useHistoryLoansTable = () => {
     selectedOptions,
     labels: ['Collection', 'Borrowed'],
     onChange: setSelectedOptions,
+    className: styles.searchSelect,
   }
 
   const sortParams = {
     option: sortOption,
     onChange: setSortOption,
+    className: styles.sortDropdown,
+  }
+
+  const showEmptyList = (!loans?.length && !isLoading) || !connected
+  const showSummary = !!loans.length && !isLoading
+
+  const emptyListParams = {
+    message: connected ? EMPTY_MESSAGE : NOT_CONNECTED_MESSAGE,
+    buttonText: connected ? 'Borrow' : '',
+    path: connected ? PATHS.BORROW : '',
   }
 
   return {
     loans,
     loading: isLoading,
+    showSummary,
+    showEmptyList,
+    emptyListParams,
     sortViewParams: {
       searchSelectParams,
       sortParams,

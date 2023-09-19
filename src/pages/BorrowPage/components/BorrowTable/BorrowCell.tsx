@@ -2,7 +2,15 @@ import React, { FC } from 'react'
 
 import { Button } from '@banx/components/Buttons'
 
-export const BorrowCell: FC<{ onBorrow: () => void; disabled?: boolean; isCardView?: boolean }> = ({
+import styles from './BorrowTable.module.less'
+
+interface BorrowCellProps {
+  onBorrow: () => void
+  disabled?: boolean
+  isCardView?: boolean
+}
+
+export const BorrowCell: FC<BorrowCellProps> = ({
   onBorrow,
   disabled = false,
   isCardView = false,
@@ -13,7 +21,12 @@ export const BorrowCell: FC<{ onBorrow: () => void; disabled?: boolean; isCardVi
   }
 
   return (
-    <Button size={isCardView ? 'large' : 'small'} disabled={disabled} onClick={onClickHandler}>
+    <Button
+      className={styles.borrowButton}
+      size={isCardView ? 'large' : 'small'}
+      disabled={disabled}
+      onClick={onClickHandler}
+    >
       Borrow
     </Button>
   )

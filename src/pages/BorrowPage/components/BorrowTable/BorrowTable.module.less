@@ -6,14 +6,12 @@
   overflow: hidden;
 }
 
-.tableWrapper {
-  flex-grow: 1;
-  overflow-y: scroll;
-}
-
 .borrowTable :global {
+  .ant-table-tbody > tr > td {
+    width: 285px;
+  }
   .ant-table-tbody > tr > td:last-child {
-    text-align: -webkit-right;
+    width: 144px;
   }
 }
 
@@ -32,22 +30,6 @@
   max-width: 750px;
 }
 
-.feeCell {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-}
-
-.feeCellTitle {
-  font: var(--body-text-md);
-}
-
-.feeCellSubtitle {
-  font: var(--body-text-sm);
-  text-transform: capitalize;
-}
-
 .summary {
   display: flex;
   justify-content: space-between;
@@ -60,7 +42,7 @@
     gap: 24px;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     gap: 16px;
   }
 }
@@ -69,10 +51,10 @@
   display: flex;
   gap: 8px;
   align-items: center;
+  min-width: 220px;
 
-  @media (max-width: 960px) {
-    justify-content: center;
-    width: 100%;
+  @media (max-width: 1240px) {
+    display: none;
   }
 }
 
@@ -80,7 +62,7 @@
   font: var(--important-text-xll);
   color: var(--content-primary);
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     font: var(--important-text-xl);
   }
 }
@@ -95,7 +77,7 @@
     max-width: unset;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     font: var(--table-header-sm);
     width: 86px;
   }
@@ -111,7 +93,7 @@
     align-items: space-between;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     gap: 8px 8px;
   }
 }
@@ -126,15 +108,16 @@
   p:last-child {
     color: var(--content-primary);
     font: var(--body-text-md);
+    text-align: right;
   }
 
-  @media (max-width: 960px) {
+  @media (max-width: 1240px) {
     display: flex;
     flex-direction: column;
     align-items: center;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     p:first-child {
       font: var(--table-header-sm);
     }
@@ -149,9 +132,43 @@
   display: flex;
   gap: 8px;
 
+  button {
+    min-width: 170px;
+  }
+
   @media (max-width: 960px) {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     width: 100%;
+
+    button {
+      min-width: unset;
+    }
+  }
+}
+
+.borrowButton {
+  width: 128px;
+}
+
+.selectButtonText {
+  @media (max-width: 1240px) {
+    display: none;
+  }
+}
+
+.selectButtonMobileText {
+  @media (min-width: 1241px) {
+    display: none;
+  }
+}
+
+.sortDropdown {
+  & > button {
+    min-width: 225px;
+
+    @media (max-width: 640px) {
+      min-width: 185px;
+    }
   }
 }

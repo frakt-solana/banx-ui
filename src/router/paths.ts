@@ -3,7 +3,7 @@ export const PATHS = {
   PAGE_404: '/404',
   BORROW: '/borrow',
   ADVENTURES: '/adventures',
-  LIQUIDATIONS: '/liquidations',
+  // LIQUIDATIONS: '/liquidations',
   REFINANCE: '/refinance',
   LEND: '/lend',
   LOANS: '/loans',

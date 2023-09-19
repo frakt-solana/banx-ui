@@ -8,63 +8,61 @@ import { Loan } from '@banx/api/core'
 import {
   LoanStatus,
   STATUS_LOANS_COLOR_MAP,
-  STATUS_LOANS_MAP,
   calculateTimeFromNow,
+  determineLoanStatus,
+  isLoanLiquidated,
 } from '@banx/utils'
 
 import { SECONDS_IN_72_HOURS } from '../constants'
-import { isLoanExpired } from '../helpers'
 
 import styles from '../ActiveOffersTable.module.less'
 
 interface StatusCellProps {
   loan: Loan
+  isCardView: boolean
 }
 
-export const StatusCell: FC<StatusCellProps> = ({ loan }) => {
+export const StatusCell: FC<StatusCellProps> = ({ loan, isCardView }) => {
   const loanStatus = determineLoanStatus(loan)
 
   const statusColor = STATUS_LOANS_COLOR_MAP[loanStatus as LoanStatus] || ''
   const timeInfo = calculateTimeInfo(loan, loanStatus)
 
-  return (
+  const statusInfoTitle = <span className={styles.statusInfoTitle}>{timeInfo}</span>
+  const statusInfoSubtitle = (
+    <span style={{ color: statusColor }} className={styles.statusInfoSubtitle}>
+      {loanStatus}
+    </span>
+  )
+
+  return !isCardView ? (
     <div className={styles.statusInfo}>
-      <span className={styles.statusInfoTitle}>{timeInfo}</span>
-      <span style={{ color: statusColor }} className={styles.statusInfoSubtitle}>
-        {loanStatus}
-      </span>
+      {statusInfoSubtitle}
+      {statusInfoTitle}
     </div>
+  ) : (
+    <span>
+      {statusInfoSubtitle} ({statusInfoTitle})
+    </span>
   )
 }
 
 const calculateTimeInfo = (loan: Loan, status: string) => {
-  const { fraktBond } = loan
+  const { fraktBond, bondTradeTransaction } = loan
 
   const currentTimeInSeconds = moment().unix()
-  const timeSinceActivationInSeconds = currentTimeInSeconds - fraktBond.activatedAt
+  const timeSinceActivationInSeconds = currentTimeInSeconds - bondTradeTransaction.soldAt
   const expiredAt = fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS
 
-  const isExpiredLoan = isLoanExpired(loan)
+  const isLiquidatedLoan = isLoanLiquidated(loan)
 
-  if (status === LoanStatus.Terminating && !isExpiredLoan) {
+  if (status === LoanStatus.Terminating && !isLiquidatedLoan) {
     return <Timer expiredAt={expiredAt} />
   }
 
-  if (status === LoanStatus.Active || isExpiredLoan) {
+  if (status === LoanStatus.Active || isLiquidatedLoan) {
     return calculateTimeFromNow(timeSinceActivationInSeconds)
   }
 
   return ''
-}
-
-const determineLoanStatus = (loan: Loan) => {
-  const { bondTradeTransactionState } = loan.bondTradeTransaction
-
-  const mappedStatus = STATUS_LOANS_MAP[bondTradeTransactionState]
-
-  if (mappedStatus !== LoanStatus.Active && isLoanExpired(loan)) {
-    return LoanStatus.Liquidated
-  }
-
-  return mappedStatus
 }

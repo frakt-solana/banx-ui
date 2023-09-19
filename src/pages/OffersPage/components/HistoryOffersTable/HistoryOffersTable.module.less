@@ -6,11 +6,6 @@
   overflow: hidden;
 }
 
-.tableWrapper {
-  flex-grow: 1;
-  overflow-y: scroll;
-}
-
 .summary {
   border-top: 1px solid var(--bg-border);
   display: flex;
@@ -24,7 +19,7 @@
     gap: 24px;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     gap: 16px;
   }
 }
@@ -63,11 +58,17 @@
   }
 
   @media (max-width: 960px) {
+    justify-content: unset;
+    white-space: nowrap;
+    overflow: auto;
     width: 100%;
-    align-items: space-between;
+
+    & > div {
+      align-items: center;
+    }
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     gap: 8px 8px;
   }
 }
@@ -85,4 +86,18 @@
 
 .aprValue {
   font: var(--important-text-md);
+}
+
+.searchSelect {
+  max-width: 750px;
+}
+
+.sortDropdown {
+  & > button {
+    min-width: 210px;
+
+    @media (max-width: 640px) {
+      min-width: 170px;
+    }
+  }
 }

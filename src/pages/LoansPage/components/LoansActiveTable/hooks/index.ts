@@ -1,2 +1,2 @@
-export * from './useLoansActiveTab'
+export * from './useLoansActiveTable'
 export * from './useLoansTransactions'

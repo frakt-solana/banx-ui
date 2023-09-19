@@ -1,15 +1,26 @@
 import { useMemo, useState } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
 import { first, groupBy, map } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
-import { DEFAULT_SORT_OPTION } from '@banx/pages/LoansPage/constants'
+import { useUserOffers } from '@banx/pages/OffersPage/hooks'
+import { PATHS } from '@banx/router'
 import { calculateLoanValue } from '@banx/utils'
 
-import { useUserOffers } from './useUserOffers'
+import {
+  DEFAULT_SORT_OPTION,
+  EMPTY_MESSAGE,
+  NOT_CONNECTED_MESSAGE,
+  SORT_OPTIONS,
+} from '../constants'
+import { parseUserOffers } from '../helpers'
+import { useSortedOffers } from './useSortedOffers'
+
+import styles from '../PendingOffersTable.module.less'
 
 interface SearchSelectOption {
   collectionName: string
@@ -19,6 +30,8 @@ interface SearchSelectOption {
 
 export const usePendingOfferTable = () => {
   const { offers, loading } = useUserOffers()
+  const { connected } = useWallet()
+
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
 
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
@@ -54,16 +67,31 @@ export const usePendingOfferTable = () => {
     selectedOptions,
     labels: ['Collection', 'Best offer'],
     onChange: setSelectedOptions,
+    className: styles.searchSelect,
   }
+
+  const parsedUserOffers = parseUserOffers(offers)
+  const sortedOffers = useSortedOffers(parsedUserOffers, sortOption.value)
 
   const sortParams = {
     option: sortOption,
     onChange: setSortOption,
+    options: SORT_OPTIONS,
+  }
+
+  const showEmptyList = (!offers?.length && !loading) || !connected
+
+  const emptyListParams = {
+    message: connected ? EMPTY_MESSAGE : NOT_CONNECTED_MESSAGE,
+    buttonText: connected ? 'Lend' : '',
+    path: connected ? PATHS.LEND : '',
   }
 
   return {
-    offers,
+    offers: sortedOffers,
     loading,
+    showEmptyList,
+    emptyListParams,
     sortViewParams: {
       searchSelectParams,
       sortParams,

@@ -30,17 +30,17 @@ export const OfferSummary: FC<OfferSummaryProps> = ({ offerSize, marketAPR }) =>
 
 interface OfferHeaderProps {
   isEditMode: boolean
-  goToPlaceOffer: () => void
+  exitEditMode: () => void
 }
 
-export const OfferHeader: FC<OfferHeaderProps> = ({ isEditMode, goToPlaceOffer }) => {
+export const OfferHeader: FC<OfferHeaderProps> = ({ isEditMode, exitEditMode }) => {
   const title = isEditMode ? 'Offer editing' : 'Offer creation'
 
   return (
     <div className={styles.offerHeaderContent}>
       <h4 className={styles.title}>{title}</h4>
       {isEditMode && (
-        <Button type="circle" variant="text" onClick={goToPlaceOffer}>
+        <Button type="circle" variant="text" onClick={exitEditMode}>
           Exit
         </Button>
       )}
@@ -79,10 +79,10 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
             onClick={onRemoveOffer}
             className={classNames(styles.button, styles.deleteOfferButton)}
           >
-            Delete offer
+            Remove
           </Button>
           <Button onClick={onUpdateOffer} className={styles.button} disabled={disableUpdateOffer}>
-            Update offer
+            Apply changes
           </Button>
         </>
       ) : (

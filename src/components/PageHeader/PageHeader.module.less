@@ -14,8 +14,8 @@
     gap: 16px;
   }
 
-  @media (max-width: 768px) {
-    padding: 32px 24px;
+  @media (max-width: 640px) {
+    padding: 24px 16px;
   }
 }
 
@@ -27,7 +27,7 @@
     font: var(--title-md);
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     font: var(--title-sm);
   }
 }
@@ -37,14 +37,18 @@
   align-items: center;
   gap: 16px;
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
+    overflow-x: auto;
+    overflow-y: hidden;
     gap: 8px;
+    width: 100%;
   }
 }
 
 .mainContainer,
 .additionalContainer {
   flex-direction: column-reverse;
+  white-space: nowrap;
 }
 
 .mainContainer {
@@ -53,20 +57,13 @@
 }
 
 .mainValue {
-  font: var(--important-text-lg);
-
-  @media (max-width: 768px) {
-    font: var(--important-text-md);
-  }
+  font: var(--important-text-md);
+  line-height: 24px;
 }
 
 .mainLabel {
   color: var(--content-primary);
   font: var(--table-header-md);
-
-  @media (max-width: 768px) {
-    font: var(--table-header-sm);
-  }
 }
 
 .additionalValue {
@@ -74,23 +71,12 @@
   align-items: center;
   gap: 4px;
   font: var(--body-text-md);
-
-  @media (max-width: 768px) {
-    font: var(--body-text-xs);
-  }
+  line-height: 21px;
 }
 
 .additionalLabel {
-  font: var(--table-header-lg);
+  font: var(--table-header-md);
   text-transform: uppercase;
-
-  @media (max-width: 960px) {
-    font: var(--table-header-md);
-  }
-
-  @media (max-width: 768px) {
-    font: var(--table-header-sm);
-  }
 }
 
 .separateLine {

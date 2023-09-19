@@ -50,7 +50,7 @@ const SortView = <T extends object, P extends object>({
         <div className={styles.rowGap}>
           {showCard && <SwitchModeButtons viewState={viewState} onChange={handleViewStateChange} />}
           {toggleParams && <Toggle {...toggleParams} />}
-          {sortParams && <SortDropdown {...sortParams} options={sortDropdownOptions} />}
+          {sortParams && <SortDropdown options={sortDropdownOptions} {...sortParams} />}
         </div>
       )}
     </div>

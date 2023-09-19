@@ -6,28 +6,39 @@ import styles from './Timer.module.less'
 
 interface TimerProps {
   expiredAt: number //? unix timestamp
-  detailedTimeFormat?: boolean
 }
 
-const Timer: FC<TimerProps> = ({ expiredAt, detailedTimeFormat = false }) => {
+const Timer: FC<TimerProps> = ({ expiredAt }) => {
   const { timeLeft } = useCountdown(expiredAt)
 
   const { days, hours, minutes, seconds } = timeLeft
 
-  const formatTime = (time: string, unit: string) => (
+  const formatTimeUnit = (value: string, unit: string) => (
     <>
-      {time}
-      {unit} <span>:</span>
+      {value}
+      {unit} :
     </>
   )
 
-  return detailedTimeFormat ? (
+  if (!parseFloat(days) && !parseFloat(hours)) {
+    return (
+      <span className={styles.timer}>
+        {formatTimeUnit(minutes, 'm')} {seconds}s
+      </span>
+    )
+  }
+
+  if (!parseFloat(days)) {
+    return (
+      <span className={styles.timer}>
+        {formatTimeUnit(hours, 'h')} {formatTimeUnit(minutes, 'm')} {seconds}s
+      </span>
+    )
+  }
+
+  return (
     <span className={styles.timer}>
-      {formatTime(hours, 'h')} {formatTime(minutes, 'm')} {seconds}s
-    </span>
-  ) : (
-    <span className={styles.timer}>
-      {formatTime(days, 'd')} {formatTime(hours, 'h')} {minutes}m
+      {formatTimeUnit(days, 'd')} {formatTimeUnit(hours, 'h')} {minutes}m
     </span>
   )
 }

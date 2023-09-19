@@ -5,6 +5,7 @@ import classNames from 'classnames'
 
 import { MarketPreview } from '@banx/api/core'
 
+import { OrderBookMarketParams } from '../ExpandableCardContent'
 import {
   ChevronMobileButton,
   CollapsedMobileContent,
@@ -19,7 +20,7 @@ const OrderBookDesktop: FC<{ orderBookParams: OrderBookParams }> = ({ orderBookP
   <div className={styles.orderBook}>
     <h5 className={styles.title}>Offers</h5>
     <OrderBookLabel />
-    <div className={classNames(styles.content, { [styles.visible]: !orderBookParams?.orders })}>
+    <div className={classNames(styles.content, { [styles.visible]: !orderBookParams?.offers })}>
       <OrderBookList orderBookParams={orderBookParams} />
     </div>
   </div>
@@ -39,11 +40,11 @@ const OrderBookMobile: FC<OrderBookMobileProps> = ({ marketPreview, orderBookPar
   }
 
   const { collectionImage, collectionName } = marketPreview || {}
-  const { orders } = orderBookParams || {}
+  const { offers } = orderBookParams || {}
 
-  const userOrders = useMemo(() => {
-    return orders.filter((order) => order.rawData.assetReceiver === publicKey?.toBase58())
-  }, [orders, publicKey])
+  const userOffers = useMemo(() => {
+    return offers.filter((offer) => offer.assetReceiver === publicKey?.toBase58())
+  }, [offers, publicKey])
 
   return (
     <div className={classNames(styles.orderBookMobile, { [styles.open]: isOrderBookOpen })}>
@@ -51,21 +52,24 @@ const OrderBookMobile: FC<OrderBookMobileProps> = ({ marketPreview, orderBookPar
         <CollapsedMobileContent
           collectionImage={collectionImage}
           collectionName={collectionName}
-          totalUserOrders={userOrders.length}
+          totalUserOffers={userOffers.length}
         />
-        <ChevronMobileButton onToggleVisible={toggleOrderBook} />
+        <ChevronMobileButton isOrderBookOpen={isOrderBookOpen} onToggleVisible={toggleOrderBook} />
       </div>
       {isOrderBookOpen && (
         <div className={styles.mobileContent}>
-          <OrderBookList orderBookParams={orderBookParams} />
+          <OrderBookList
+            orderBookParams={orderBookParams}
+            closeOrderBook={() => setOrderBookOpen(false)}
+          />
         </div>
       )}
     </div>
   )
 }
 
-const OrderBook: FC<{ marketPubkey: string }> = ({ marketPubkey }) => {
-  const { orderBookParams, selectedMarketPreview } = useOrderBook(marketPubkey)
+const OrderBook: FC<OrderBookMarketParams> = (props) => {
+  const { orderBookParams, selectedMarketPreview } = useOrderBook(props)
 
   return (
     <>

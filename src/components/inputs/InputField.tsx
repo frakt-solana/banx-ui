@@ -15,6 +15,7 @@ interface NumericInputFieldProps {
   showIcon?: boolean
   integerOnly?: boolean
   hasError?: boolean
+  disabled?: boolean
 }
 
 export const NumericInputField: FC<NumericInputFieldProps> = ({
@@ -25,6 +26,7 @@ export const NumericInputField: FC<NumericInputFieldProps> = ({
   className,
   showIcon = true,
   integerOnly = false,
+  disabled,
   hasError,
 }) => {
   return (
@@ -36,6 +38,7 @@ export const NumericInputField: FC<NumericInputFieldProps> = ({
           integerOnly={integerOnly}
           onChange={onChange}
           placeholder={placeholder}
+          disabled={disabled}
           positiveOnly
         />
         {showIcon && <div className={styles.selectTokenBtn}>◎</div>}

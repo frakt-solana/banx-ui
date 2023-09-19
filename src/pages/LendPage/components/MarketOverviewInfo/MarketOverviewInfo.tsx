@@ -1,5 +1,6 @@
 import { FC } from 'react'
 
+import classNames from 'classnames'
 import { isFunction } from 'lodash'
 
 import { StatInfo } from '@banx/components/StatInfo'
@@ -29,8 +30,13 @@ export const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
   )
 }
 
-export const MarketAdditionalInfo: FC<{ market: MarketPreview }> = ({ market }) => (
-  <div className={styles.additionalInfoStats}>
+interface MarketAdditionalInfoProps {
+  market: MarketPreview
+  isCardOpen: boolean
+}
+
+export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isCardOpen }) => (
+  <div className={classNames(styles.additionalInfoStats, { [styles.hidden]: isCardOpen })}>
     {ADDITIONAL_MARKET_INFO.map((statInfo) => {
       const { key, secondValue, valueRenderer, valueStyles, ...rest } = statInfo
       const value = market[key as keyof MarketPreview] as number

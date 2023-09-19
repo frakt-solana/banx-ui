@@ -1,21 +1,30 @@
+import { FC } from 'react'
+
 import { sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
+import { calcLoanValueWithProtocolFee } from '@banx/utils'
+
 import { ONE_WEEK_IN_SECONDS } from './constants'
 import { calcInterest } from './helpers'
-import { useBorrowTable } from './hooks'
+import { TableNftData } from './types'
 
 import styles from './BorrowTable.module.less'
 
-export const Summary = () => {
-  const { borrowAll, selectAll, nftsInCart } = useBorrowTable()
+interface SummaryProps {
+  nftsInCart: TableNftData[]
+  selectAll: () => void
+  borrowAll: () => Promise<void>
+}
 
+export const Summary: FC<SummaryProps> = ({ nftsInCart, selectAll, borrowAll }) => {
   const selectAllBtnText = !nftsInCart.length ? 'Select all' : 'Deselect all'
+  const selectMobileBtnText = !nftsInCart.length ? `Select all` : `Deselect ${nftsInCart.length}`
 
   const totalFloor = sumBy(nftsInCart, ({ nft }) => nft.nft.collectionFloor)
-  const totalBorrow = sumBy(nftsInCart, ({ loanValue }) => loanValue)
+  const totalBorrow = calcLoanValueWithProtocolFee(sumBy(nftsInCart, ({ loanValue }) => loanValue))
   const totalWeeklyFee = sumBy(nftsInCart, ({ nft, loanValue }) =>
     calcInterest({
       timeInterval: ONE_WEEK_IN_SECONDS,
@@ -46,9 +55,14 @@ export const Summary = () => {
       </div>
       <div className={styles.summaryBtns}>
         <Button variant="secondary" onClick={selectAll}>
-          {selectAllBtnText}
+          <span className={styles.selectButtonText}>{selectAllBtnText}</span>
+          <span className={styles.selectButtonMobileText}>{selectMobileBtnText}</span>
         </Button>
-        <Button onClick={borrowAll} disabled={!nftsInCart.length}>
+        <Button
+          onClick={borrowAll}
+          disabled={!nftsInCart.length}
+          className={styles.borrowBulkButton}
+        >
           Borrow {createSolValueJSX(totalBorrow, 1e9, '0◎')}
         </Button>
       </div>

@@ -1,17 +1,48 @@
-import { create } from 'zustand'
+import { useEffect, useMemo, useState } from 'react'
 
-import { SyntheticParams } from '../OrderBook'
+import { useTabs } from '@banx/components/Tabs'
 
-interface OfferStore {
+import { useSyntheticOffers } from '@banx/store'
+
+import { BONDS_TABS, DEFAULT_TAB } from './constants'
+
+export interface OrderBookMarketParams {
+  marketPubkey: string
   offerPubkey: string
-  syntheticParams: SyntheticParams | null
   setOfferPubkey: (offerPubkey: string) => void
-  setSyntheticParams: (params: SyntheticParams | null) => void
 }
 
-export const useOfferStore = create<OfferStore>((set) => ({
-  offerPubkey: '',
-  syntheticParams: null,
-  setOfferPubkey: (offerPubkey) => set({ offerPubkey }),
-  setSyntheticParams: (params) => set({ syntheticParams: params }),
-}))
+export const useExpandableCardContent = (marketPubkey: string) => {
+  const { findOffer } = useSyntheticOffers()
+
+  const syntheticOffer = useMemo(() => {
+    return findOffer(marketPubkey)
+  }, [findOffer, marketPubkey])
+
+  const [offerPubkey, setOfferPubkey] = useState(syntheticOffer?.publicKey || '')
+
+  const {
+    tabs: bondTabs,
+    value: tabValue,
+    setValue: setTabValue,
+  } = useTabs({ tabs: BONDS_TABS, defaultValue: DEFAULT_TAB })
+
+  useEffect(() => {
+    if (offerPubkey) {
+      setTabValue(DEFAULT_TAB)
+    }
+  }, [offerPubkey, setTabValue])
+
+  return {
+    marketParams: {
+      marketPubkey,
+      offerPubkey,
+      setOfferPubkey,
+    },
+    tabsParams: {
+      tabs: bondTabs,
+      value: tabValue,
+      setValue: setTabValue,
+    },
+  }
+}

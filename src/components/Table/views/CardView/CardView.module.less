@@ -1,11 +1,13 @@
 .cardList {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(282px, 2fr));
-  padding: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(348px, 2fr));
+  padding: 8px 24px;
   gap: 16px;
 
-  @media (max-width: 960px) {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 2fr));
+  @media (max-width: 767px) {
+    grid-template-columns: unset;
+    padding: 8px 0;
+    gap: 0;
   }
 }
 
@@ -18,12 +20,22 @@
   flex-direction: column;
   padding: 16px;
   gap: 8px;
+
+  @media (max-width: 767px) {
+    border-left: 0;
+    border-right: 0;
+
+    &:not(:last-child) {
+      border-bottom: 0;
+    }
+  }
 }
 
 .cardRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  min-height: 24px;
 
   &:first-child {
     justify-content: flex-start;

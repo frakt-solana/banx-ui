@@ -6,11 +6,6 @@
   overflow: hidden;
 }
 
-.tableWrapper {
-  flex-grow: 1;
-  overflow-y: scroll;
-}
-
 .summary {
   display: flex;
   justify-content: space-between;
@@ -23,7 +18,7 @@
     gap: 24px;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     gap: 16px;
   }
 }
@@ -65,10 +60,20 @@
   @media (max-width: 960px) {
     width: 100%;
     align-items: space-between;
+
+    & > div {
+      align-items: center;
+    }
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     gap: 8px 8px;
+  }
+}
+
+.summaryButton {
+  @media (max-width: 960px) {
+    width: 100%;
   }
 }
 
@@ -87,4 +92,18 @@
 .statusCellTitle {
   font: var(--body-text-sm);
   text-transform: capitalize;
+}
+
+.searchSelect {
+  max-width: 750px;
+}
+
+.sortDropdown {
+  & > button {
+    min-width: 230px;
+
+    @media (max-width: 640px) {
+      min-width: 190px;
+    }
+  }
 }

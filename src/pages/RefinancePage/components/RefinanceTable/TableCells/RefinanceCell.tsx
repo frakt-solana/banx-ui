@@ -17,15 +17,15 @@ import styles from '../RefinanceTable.module.less'
 
 interface RefinanceCellProps {
   loan: Loan
-  isCardView?: boolean
+  isCardView: boolean
 }
 
-export const RefinanceCell: FC<RefinanceCellProps> = ({ loan, isCardView = false }) => {
+export const RefinanceCell: FC<RefinanceCellProps> = ({ loan, isCardView }) => {
   const refinance = useRefinanceTransaction(loan)
   const buttonSize = isCardView ? 'large' : 'small'
 
   return (
-    <div className={styles.refinanceCell}>
+    <div className={classNames(styles.refinanceCell, { [styles.cardView]: isCardView })}>
       <Button onClick={refinance} size={buttonSize}>
         Refinance
       </Button>

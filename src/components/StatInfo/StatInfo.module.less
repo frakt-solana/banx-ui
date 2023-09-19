@@ -22,7 +22,7 @@
   font: var(--table-header-md);
   text-transform: uppercase;
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     font: var(--table-header-sm);
   }
 }
@@ -30,7 +30,7 @@
 .value {
   font: var(--body-text-md);
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     font: var(--body-text-sm);
   }
 }
@@ -38,7 +38,12 @@
 .secondValue {
   font: var(--body-text-sm);
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     font: var(--body-text-xs);
   }
+}
+
+.valueIcon,
+.valueIcon path {
+  fill: var(--content-primary);
 }
