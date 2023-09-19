@@ -14,16 +14,27 @@ import { APRCell, APRIncreaseCell, DebtCell, RefinanceCell } from './TableCells'
 import { INCREASE_PERCENT_APR_PER_HOUR, SECONDS_IN_72_HOURS } from './constants'
 
 interface GetTableColumnsProps {
+  onSelectLoan: (loan: Loan) => void
+  findSelectedLoan: (loanPubkey: string) => Loan | undefined
   isCardView: boolean
 }
 
-export const getTableColumns = ({ isCardView }: GetTableColumnsProps) => {
+export const getTableColumns = ({
+  isCardView,
+  onSelectLoan,
+  findSelectedLoan,
+}: GetTableColumnsProps) => {
   const columns: ColumnType<Loan>[] = [
     {
       key: 'collateral',
       title: <HeaderCell label="Collateral" />,
       render: (_, loan) => (
-        <NftInfoCell nftName={loan.nft.meta.name} nftImage={loan.nft.meta.imageUrl} />
+        <NftInfoCell
+          selected={!!findSelectedLoan(loan.publicKey)}
+          onCheckboxClick={() => onSelectLoan(loan)}
+          nftName={loan.nft.meta.name}
+          nftImage={loan.nft.meta.imageUrl}
+        />
       ),
     },
     {
