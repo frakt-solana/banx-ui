@@ -65,7 +65,14 @@ export interface BorrowedActivityResponse {
 }
 
 export const ActivityCollectionsListSchema = z.object({
-  collections: z.array(z.string()),
+  collections: z.array(
+    z.object({
+      collectionName: z.string(),
+      collectionImage: z.string(),
+      received: z.number().optional(),
+      borrowed: z.number().optional(),
+    }),
+  ),
 })
 
 export type ActivityCollectionsList = z.infer<typeof ActivityCollectionsListSchema>
@@ -73,4 +80,4 @@ export type ActivityCollectionsList = z.infer<typeof ActivityCollectionsListSche
 export type FetchActivityCollectionsList = (props: {
   walletPubkey: string
   userType: 'borrower' | 'lender'
-}) => Promise<ActivityCollectionsList>
+}) => Promise<ActivityCollectionsList['collections'] | null>

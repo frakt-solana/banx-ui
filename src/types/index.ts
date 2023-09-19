@@ -8,14 +8,14 @@ export interface PaginationMeta {
 }
 
 interface SortingOptions {
-  sortBy?: string
-  order?: string
+  sortBy: string
+  order: string
 }
 
 interface PaginationOptions {
   limit?: number
   skip?: number
-  getAll?: boolean
+  state?: string
 }
 
 export type BasePaginationRequest = SortingOptions & PaginationOptions

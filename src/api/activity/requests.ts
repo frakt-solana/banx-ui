@@ -16,8 +16,8 @@ import {
 
 export const fetchLenderActivity: FetchLenderActivity = async ({
   walletPubkey,
-  getAll = true, //TODO Remove when normal pagination added
   order = 'asc',
+  state = 'all',
   sortBy,
   skip = 0,
   limit = 10,
@@ -28,11 +28,12 @@ export const fetchLenderActivity: FetchLenderActivity = async ({
       order,
       skip: String(skip),
       limit: String(limit),
-      getAll: String(getAll),
-      sortBy: String(sortBy),
-      collection: String(collection),
+      sortBy,
+      state,
       isPrivate: String(IS_PRIVATE_MARKETS),
     })
+
+    if (collection?.length) queryParams.append('collection', String(collection))
 
     const { data } = await axios.get<LenderActivityResponse>(
       `${BACKEND_BASE_URL}/activity/lender/${walletPubkey}?${queryParams.toString()}`,
@@ -53,9 +54,9 @@ export const fetchLenderActivity: FetchLenderActivity = async ({
 
 export const fetchBorrowerActivity: FetchBorrowerActivity = async ({
   walletPubkey,
-  getAll = true, //TODO Remove when normal pagination added
   order = 'asc',
   sortBy,
+  state = 'all',
   skip = 0,
   limit = 10,
   collection,
@@ -65,11 +66,12 @@ export const fetchBorrowerActivity: FetchBorrowerActivity = async ({
       order,
       skip: String(skip),
       limit: String(limit),
-      getAll: String(getAll),
-      sortBy: String(sortBy),
-      collection: String(collection),
+      sortBy,
       isPrivate: String(IS_PRIVATE_MARKETS),
+      state,
     })
+
+    if (collection?.length) queryParams.append('collection', String(collection))
 
     const { data } = await axios.get<BorrowedActivityResponse>(
       `${BACKEND_BASE_URL}/activity/borrower/${walletPubkey}?${queryParams.toString()}`,
@@ -102,14 +104,14 @@ export const fetchActivityCollectionsList: FetchActivityCollectionsList = async 
     )
 
     try {
-      await ActivityCollectionsListSchema.parseAsync(data.data)
+      await ActivityCollectionsListSchema.array().parseAsync(data.data.collections)
     } catch (validationError) {
       console.error('Schema validation error:', validationError)
     }
 
-    return data.data
+    return data.data.collections
   } catch (error) {
     console.error(error)
-    return { collections: [] }
+    return null
   }
 }
