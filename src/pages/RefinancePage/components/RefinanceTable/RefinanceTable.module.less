@@ -1,3 +1,20 @@
+.tableRoot {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.refinanceTable :global {
+  .ant-table-tbody > tr > td {
+    width: 285px;
+  }
+  .ant-table-tbody > tr > td:last-child {
+    width: 144px;
+  }
+}
+
 .refinanceCell {
   display: flex;
   align-items: center;

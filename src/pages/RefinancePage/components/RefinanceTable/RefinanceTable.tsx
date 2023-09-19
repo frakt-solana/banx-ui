@@ -24,7 +24,7 @@ export const RefinanceTable = () => {
     return <EmptyList message={EMPTY_MESSAGE} buttonText="Lend SOL" path={PATHS.LEND} />
 
   return (
-    <>
+    <div className={styles.tableRoot}>
       <Table
         data={data}
         columns={columns}
@@ -34,6 +34,5 @@ export const RefinanceTable = () => {
         showCard
       />
       <div ref={fetchMoreTrigger} />
-    </>
-  )
+    </div>
 }
