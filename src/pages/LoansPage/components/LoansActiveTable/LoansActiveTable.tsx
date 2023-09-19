@@ -46,26 +46,24 @@ export const LoansActiveTable = () => {
 
   return (
     <div className={styles.tableRoot}>
-      <div className={styles.tableWrapper}>
-        <Table
-          data={data}
-          columns={columns}
-          onRowClick={toggleLoanInSelection}
-          sortViewParams={sortViewParams}
-          className={styles.table}
-          rowKeyField="publicKey"
-          loading={loading}
-          showCard
-          activeRowParams={[
-            {
-              condition: checkIsTerminationLoan,
-              className: styles.terminated,
-              cardClassName: styles.terminated,
-            },
-          ]}
-        />
-        <div ref={fetchMoreTrigger} />
-      </div>
+      <Table
+        data={data}
+        columns={columns}
+        onRowClick={toggleLoanInSelection}
+        sortViewParams={sortViewParams}
+        className={styles.table}
+        rowKeyField="publicKey"
+        loading={loading}
+        showCard
+        activeRowParams={[
+          {
+            condition: checkIsTerminationLoan,
+            className: styles.terminated,
+            cardClassName: styles.terminated,
+          },
+        ]}
+      />
+      <div ref={fetchMoreTrigger} />
       {showSummary && <Summary loans={loans} />}
     </div>
   )

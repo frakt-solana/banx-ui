@@ -4,10 +4,9 @@ import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
 import { QueryClient } from '@tanstack/react-query'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
+import { compress, decompress } from 'lz-string'
 
-//TODO Use compression on production
-// import { compress, decompress } from 'lz-string'
-import { RPC_ENDPOINTS, WALLETS } from '@banx/constants'
+import { COMPRESS_QUERY_PERSISTER, RPC_ENDPOINTS, WALLETS } from '@banx/constants'
 import { useBestWorkingRPC } from '@banx/hooks'
 import { USE_BORROW_NFTS_QUERY_KEY } from '@banx/pages/BorrowPage/hooks'
 import { USE_MARKETS_PREVIEW_QUERY_KEY } from '@banx/pages/LendPage/hooks'
@@ -27,11 +26,11 @@ const queryClient = new QueryClient({
 
 const persister = createSyncStoragePersister({
   storage: window.localStorage,
-  serialize: (data) => JSON.stringify(data),
-  deserialize: (data) => JSON.parse(data),
   key: '@banx.queryData',
-  // serialize: (data) => compress(JSON.stringify(data)),
-  // deserialize: (data) => JSON.parse(decompress(data)),
+  serialize: (data) =>
+    COMPRESS_QUERY_PERSISTER ? compress(JSON.stringify(data)) : JSON.stringify(data),
+  deserialize: (data) =>
+    COMPRESS_QUERY_PERSISTER ? JSON.parse(decompress(data)) : JSON.parse(data),
 })
 
 const SolanaConnectionWalletProvider: FC<PropsWithChildren> = ({ children }) => {

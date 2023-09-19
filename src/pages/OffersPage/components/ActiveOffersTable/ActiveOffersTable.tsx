@@ -6,6 +6,7 @@ import { useFakeInfinityScroll } from '@banx/hooks'
 import { ViewState, useTableView } from '@banx/store'
 import { LoanStatus, determineLoanStatus } from '@banx/utils'
 
+import { Summary, showSummary } from './Summary'
 import { getTableColumns } from './columns'
 import { useActiveOffersTable } from './hooks'
 
@@ -24,7 +25,7 @@ const ActiveOffersTable = () => {
   if (showEmptyList) return <EmptyList {...emptyListParams} />
 
   return (
-    <>
+    <div className={styles.tableRoot}>
       <Table
         data={data}
         columns={columns}
@@ -47,7 +48,8 @@ const ActiveOffersTable = () => {
         showCard
       />
       <div ref={fetchMoreTrigger} />
-    </>
+      {showSummary(loans) && <Summary loans={loans} />}
+    </div>
   )
 }
 

@@ -1,13 +1,14 @@
 import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import { isEmpty } from 'lodash'
 
 import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { createEmptySyntheticOffer, useSyntheticOffers } from '@banx/store'
 import { useSolanaBalance } from '@banx/utils'
 
 import { OrderBookMarketParams } from '../../ExpandableCardContent'
-import { shouldShowDepositError } from '../helpers'
+import { calculateBestLoanValue, shouldShowDepositError } from '../helpers'
 import { useOfferFormController } from './useOfferFormController'
 import { useOfferTransactions } from './useOfferTransactions'
 
@@ -17,6 +18,7 @@ export const usePlaceOfferTab = (props: OrderBookMarketParams) => {
   const { offers, updateOrAddOffer } = useMarketOffers({ marketPubkey })
   const { marketsPreview } = useMarketsPreview()
   const solanaBalance = useSolanaBalance()
+
   const {
     findOfferByPubkey: findSyntheticOfferByPubkey,
     setOffer: setSyntheticOffer,
@@ -46,6 +48,17 @@ export const usePlaceOfferTab = (props: OrderBookMarketParams) => {
 
   const loanValueNumber = parseFloat(loanValue)
   const loansAmountNumber = parseFloat(loansAmount)
+
+  useEffect(() => {
+    const hasSolanaBalance = !!solanaBalance
+    const isNotEditMode = !syntheticOffer.isEdit
+
+    if (hasSolanaBalance && isNotEditMode && connected && !isEmpty(marketPreview)) {
+      const bestLoanValue = calculateBestLoanValue(solanaBalance, marketPreview.bestOffer)
+
+      onLoanValueChange(bestLoanValue)
+    }
+  }, [marketPreview, connected, solanaBalance, syntheticOffer, onLoanValueChange])
 
   useEffect(() => {
     if (loansAmountNumber || loanValueNumber) {

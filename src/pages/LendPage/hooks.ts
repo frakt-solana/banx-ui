@@ -5,7 +5,7 @@ import { web3 } from 'fbonds-core'
 import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, map, maxBy } from 'lodash'
 
-import { Offer, fetchCertainMarket, fetchMarketOffers, fetchMarketsPreview } from '@banx/api/core'
+import { Offer, fetchMarketOffers, fetchMarketsPreview } from '@banx/api/core'
 import { isOfferNewer, isOptimisticOfferExpired, useOffersOptimistic } from '@banx/store'
 
 export const USE_MARKETS_PREVIEW_QUERY_KEY = 'marketsPreview'
@@ -22,28 +22,7 @@ export const useMarketsPreview = () => {
   )
 
   return {
-    marketsPreview:
-      data?.map((marketPreview) => ({
-        ...marketPreview,
-        marketApr: marketPreview.marketApr || marketPreview?.marketAPR || 0, //TODO Fix model on BE
-      })) || [],
-    isLoading,
-  }
-}
-
-export const useMarket = ({ marketPubkey }: { marketPubkey: string }) => {
-  const { data, isLoading } = useQuery(
-    ['market', marketPubkey],
-    () => fetchCertainMarket({ marketPubkey: new web3.PublicKey(marketPubkey) }),
-    {
-      enabled: !!marketPubkey,
-      staleTime: 5 * 60 * 1000,
-      refetchOnWindowFocus: false,
-    },
-  )
-
-  return {
-    market: data || null,
+    marketsPreview: data || [],
     isLoading,
   }
 }

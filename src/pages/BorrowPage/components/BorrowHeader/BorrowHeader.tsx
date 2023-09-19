@@ -26,7 +26,7 @@ const Header = () => {
   const totalLiquidity = sumBy(marketsPreview, 'offerTVL')
 
   return (
-    <PageHeaderBackdrop title="Borrow SOL">
+    <PageHeaderBackdrop title="Borrow">
       {connected ? (
         <AdditionalStat label="Your NFTs" value={nftsAmount} valueType={VALUES_TYPES.STRING} />
       ) : (
