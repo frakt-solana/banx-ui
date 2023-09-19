@@ -24,7 +24,6 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
       key: 'offer',
       title: <HeaderCell label="Offer" />,
       render: (_, { loanValue }) => createSolValueJSX(loanValue, 1e9),
-      sorter: true,
     },
     {
       key: 'loans',
@@ -32,25 +31,21 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
       render: (_, { loansAmount }) => (
         <span>{isInteger(loansAmount) ? loansAmount : loansAmount?.toFixed(2)}</span>
       ),
-      sorter: true,
     },
     {
       key: 'size',
       title: <HeaderCell label="Size" />,
       render: (_, { size }) => createSolValueJSX(size, 1e9),
-      sorter: true,
     },
     {
       key: 'interest',
-      title: <HeaderCell label="Est. Daily interest" />,
+      title: <HeaderCell label="Est. Weekly interest" />,
       render: (_, offer) => <InterestCell offer={offer} />,
-      sorter: true,
     },
     {
-      key: 'apr',
-      title: <HeaderCell label="APR" />,
+      key: 'apy',
+      title: <HeaderCell label="APY" />,
       render: (_, offer) => <APRCell offer={offer} />,
-      sorter: true,
     },
     {
       title: <HeaderCell label="" />,

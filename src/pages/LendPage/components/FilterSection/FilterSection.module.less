@@ -5,8 +5,23 @@
   padding: 24px;
   gap: 16px;
   width: 100%;
+
+  @media (max-width: 960px) {
+    max-height: 64px;
+    padding: 16px;
+  }
 }
 
 .searchSelect {
   max-width: 750px;
+}
+
+.sortDropdown {
+  & > button {
+    min-width: 230px;
+
+    @media (max-width: 640px) {
+      min-width: 190px;
+    }
+  }
 }

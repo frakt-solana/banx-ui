@@ -1,12 +1,15 @@
 import { useEffect, useMemo } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
 import { first, groupBy, map, sumBy } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { useIntersection } from '@banx/hooks'
+import { PATHS } from '@banx/router'
 
+import { DEFAULT_SORT_OPTION, EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
 import { useLenderActivity } from './useLenderActivity'
 
 import styles from '../HistoryOffersTable.module.less'
@@ -19,6 +22,7 @@ interface SearchSelectOption {
 
 export const useHistoryOffersTable = () => {
   const { ref: fetchMoreTrigger, inView } = useIntersection()
+  const { connected } = useWallet()
 
   const {
     loans,
@@ -65,9 +69,21 @@ export const useHistoryOffersTable = () => {
     className: styles.searchSelect,
   }
 
+  const showEmptyList = (!loans?.length && !isLoading) || !connected
+  const showSummary = !!loans.length && !isLoading
+
+  const emptyListParams = {
+    message: connected ? EMPTY_MESSAGE : NOT_CONNECTED_MESSAGE,
+    buttonText: connected ? 'Lend' : '',
+    path: connected ? PATHS.LEND : '',
+  }
+
   return {
     loans,
     loading: isLoading,
+    showEmptyList,
+    showSummary,
+    emptyListParams,
     sortViewParams: {
       searchSelectParams,
       sortParams,

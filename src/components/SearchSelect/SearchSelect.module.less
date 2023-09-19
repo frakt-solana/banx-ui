@@ -9,10 +9,19 @@
 }
 
 .selectWrapper {
+  background: var(--bg-action);
   border: var(--border-primary);
   position: relative;
   height: 40px;
   width: 100%;
+
+  @media (max-width: 960px) {
+    max-width: unset !important;
+  }
+
+  @media (max-width: 640px) {
+    height: 32px;
+  }
 }
 
 .prefix {
@@ -44,16 +53,16 @@
   justify-content: space-between;
 }
 
-.relativeImageContainer {
-  position: relative;
-  height: 40px;
-  width: 40px;
-}
-
+.relativeImageContainer,
 .image {
+  position: relative;
   height: 40px;
   width: 40px;
-  position: relative;
+
+  @media (max-width: 640px) {
+    height: 32px;
+    width: 32px;
+  }
 }
 
 .relativeImageContainer .selected {
@@ -74,6 +83,11 @@
     transform: translate(-50%, -50%);
     height: 2px;
     width: 11px;
+  }
+
+  @media (max-width: 640px) {
+    height: 32px;
+    width: 32px;
   }
 }
 
@@ -98,15 +112,17 @@
 
 .tip {
   background-color: var(--accent-primary);
-
+  border-radius: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
 
-  position: absolute;
-  top: -8px;
-  right: -1px;
+  font: var(--body-text-sm);
 
-  width: 14px;
-  height: 14px;
+  position: absolute;
+  top: 0;
+  right: -10px;
+
+  width: 20px;
+  height: 20px;
 }

@@ -28,7 +28,7 @@ export const getTableColumns = ({ isCardView }: GetTableColumnsProps) => {
     },
     {
       key: 'floorPrice',
-      title: <HeaderCell label="Floor price" />,
+      title: <HeaderCell label="Floor" />,
       render: (_, loan) => createSolValueJSX(loan.nft.collectionFloor, 1e9),
     },
     {
@@ -37,8 +37,8 @@ export const getTableColumns = ({ isCardView }: GetTableColumnsProps) => {
       render: (_, loan) => <DebtCell loan={loan} />,
     },
     {
-      key: 'apr',
-      title: <HeaderCell label="APR" />,
+      key: 'apy',
+      title: <HeaderCell label="APY" />,
       render: (_, loan) => <APRCell loan={loan} />,
     },
     {

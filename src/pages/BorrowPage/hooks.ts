@@ -2,13 +2,19 @@ import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
-import { FraktBondState } from 'fbonds-core/lib/fbond-protocol/types'
+import { FraktBondState, PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { produce } from 'immer'
-import { countBy, filter, isEmpty, map, sumBy, uniqBy, uniqueId } from 'lodash'
+import { chain, countBy, filter, groupBy, isEmpty, map, sumBy, uniqBy, uniqueId } from 'lodash'
 import { create } from 'zustand'
 
 import { BorrowNft, Offer, fetchBorrowNftsAndOffers } from '@banx/api/core'
-import { isExpired, useOptimisticLoans } from '@banx/store'
+import {
+  isOfferNewer,
+  isOptimisticLoanExpired,
+  isOptimisticOfferExpired,
+  useLoansOptimistic,
+  useOffersOptimistic,
+} from '@banx/store'
 import { convertLoanToBorrowNft } from '@banx/transactions'
 import { calcLoanValueWithProtocolFee } from '@banx/utils'
 
@@ -19,8 +25,8 @@ export const USE_BORROW_NFTS_QUERY_KEY = 'walletBorrowNfts'
 
 export const useBorrowNfts = () => {
   const { setCart } = useCartState()
-  const { loans: optimisticLoans, remove: removeOptimisticLoans } = useOptimisticLoans()
-
+  const { loans: optimisticLoans, remove: removeOptimisticLoans } = useLoansOptimistic()
+  const { optimisticOffers, remove: removeOptimisticOffers } = useOffersOptimistic()
   const { publicKey: walletPublicKey } = useWallet()
 
   const walletPubkeyString = walletPublicKey?.toBase58() || ''
@@ -31,13 +37,74 @@ export const useBorrowNfts = () => {
     {
       enabled: !!walletPublicKey,
       staleTime: 5 * 1000,
+      refetchInterval: 15 * 1000,
       refetchOnWindowFocus: false,
     },
   )
 
-  const offers = useMemo(() => {
+  //? Check expiredOffers and and purge them
+  useEffect(() => {
+    if (!data || isFetching || !isFetched || !walletPublicKey) return
+
+    const expiredOffersByTime = filter(optimisticOffers, (offer) => isOptimisticOfferExpired(offer))
+
+    const optimisticsToRemove = chain(optimisticOffers)
+      //? Filter closed offers from LS optimistics
+      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualClosed)
+      .filter(({ offer }) => {
+        const sameOfferFromBE = data.offers[offer.hadoMarket]?.find(
+          ({ publicKey }) => publicKey === offer.publicKey,
+        )
+        //TODO Offer may exist from Lend page. Prevent purging
+        if (!sameOfferFromBE && offer.assetReceiver === walletPublicKey.toBase58()) return false
+        if (!sameOfferFromBE) return true
+        const isBEOfferNewer = isOfferNewer(sameOfferFromBE, offer)
+        return isBEOfferNewer
+      })
+      .value()
+
+    if (optimisticsToRemove.length || expiredOffersByTime.length) {
+      removeOptimisticOffers(
+        map([...expiredOffersByTime, ...optimisticsToRemove], ({ offer }) => offer.publicKey),
+      )
+    }
+  }, [data, isFetched, optimisticOffers, isFetching, walletPublicKey, removeOptimisticOffers])
+
+  const mergedRawOffers = useMemo(() => {
+    if (!data || !walletPublicKey) {
+      return {}
+    }
+
+    const optimisticsFiltered = chain(optimisticOffers)
+      //? Filter closed offers from LS optimistics
+      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualClosed)
+      //? Filter own offers from LS optimistics
+      .filter(({ offer }) => offer?.assetReceiver !== walletPublicKey?.toBase58())
+      .value()
+
+    const optimisticsByMarket = groupBy(optimisticsFiltered, ({ offer }) => offer.hadoMarket)
+
     return Object.fromEntries(
-      Object.entries(data?.offers || {}).map(([marketPubkey, offers]) => {
+      Object.entries(data.offers).map(([marketPubkey, offers]) => {
+        const nextOffers = offers.filter((offer) => {
+          const sameOptimistic = optimisticsByMarket[offer.hadoMarket]?.find(
+            ({ offer: optimisticOffer }) => optimisticOffer.publicKey === offer.publicKey,
+          )
+          if (!sameOptimistic) return true
+          return isOfferNewer(offer, sameOptimistic.offer)
+        })
+
+        const optimisticsWithSameMarket =
+          optimisticsByMarket[marketPubkey]?.map(({ offer }) => offer) || []
+
+        return [marketPubkey, [...nextOffers, ...optimisticsWithSameMarket]]
+      }),
+    )
+  }, [data, optimisticOffers, walletPublicKey])
+
+  const simpleOffers = useMemo(() => {
+    return Object.fromEntries(
+      Object.entries(mergedRawOffers || {}).map(([marketPubkey, offers]) => {
         const simpleOffers = offers
           .map(spreadToSimpleOffers)
           .flat()
@@ -47,14 +114,14 @@ export const useBorrowNfts = () => {
         return [marketPubkey, simpleOffers]
       }),
     )
-  }, [data])
+  }, [mergedRawOffers])
 
   //? Set offers in cartState
   useEffect(() => {
-    if (!isEmpty(offers)) {
-      setCart({ offersByMarket: offers })
+    if (!isEmpty(simpleOffers)) {
+      setCart({ offersByMarket: simpleOffers })
     }
-  }, [setCart, offers])
+  }, [setCart, simpleOffers])
 
   const walletOptimisticLoans = useMemo(() => {
     if (!walletPublicKey) return []
@@ -78,7 +145,7 @@ export const useBorrowNfts = () => {
     if (!data || isFetching || !isFetched || !walletPublicKey) return
 
     const expiredLoans = walletOptimisticLoans.filter((loan) =>
-      isExpired(loan, walletPublicKey.toBase58()),
+      isOptimisticLoanExpired(loan, walletPublicKey.toBase58()),
     )
 
     const nftMintsFromBE = map(data.nfts, ({ mint }) => mint)
@@ -121,12 +188,12 @@ export const useBorrowNfts = () => {
   }, [data, walletPublicKey, walletOptimisticLoans, optimisticLoansActive])
 
   const maxBorrow = useMemo(() => {
-    return calcMaxBorrow(nfts, offers)
-  }, [nfts, offers])
+    return calcMaxBorrow(nfts, simpleOffers)
+  }, [nfts, simpleOffers])
 
   return {
     nfts: nfts || [],
-    rawOffers: data?.offers || {},
+    rawOffers: mergedRawOffers || {},
     maxBorrow,
     isLoading,
   }
@@ -135,14 +202,19 @@ export const useBorrowNfts = () => {
 const calcMaxBorrow = (nfts: BorrowNft[], offers: SimpleOffersByMarket) => {
   const nftsAmountByMarket = countBy(nfts, ({ loan }) => loan.marketPubkey)
 
-  return Object.entries(nftsAmountByMarket).reduce((maxBorrow, [marketPubkey, nftsAmount]) => {
-    const maxBorrowMarket = sumBy(
-      (offers[marketPubkey] || []).slice(0, nftsAmount),
-      ({ loanValue }) => loanValue,
-    )
+  const maxBorrow = Object.entries(nftsAmountByMarket).reduce(
+    (maxBorrow, [marketPubkey, nftsAmount]) => {
+      const maxBorrowMarket = sumBy(
+        (offers[marketPubkey] || []).slice(0, nftsAmount),
+        ({ loanValue }) => loanValue,
+      )
 
-    return maxBorrow + maxBorrowMarket
-  }, 0)
+      return maxBorrow + maxBorrowMarket
+    },
+    0,
+  )
+
+  return calcLoanValueWithProtocolFee(maxBorrow)
 }
 
 const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
@@ -154,7 +226,7 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
     .fill(currentSpotPrice)
     .map((loanValue) => ({
       id: uniqueId(),
-      loanValue: calcLoanValueWithProtocolFee(loanValue),
+      loanValue: loanValue,
       hadoMarket: offer.hadoMarket,
       publicKey: offer.publicKey,
     }))
@@ -165,7 +237,7 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
   if (decimalLoanValue && decimalLoanValue > 0) {
     offers.push({
       id: uniqueId(),
-      loanValue: calcLoanValueWithProtocolFee(decimalLoanValue),
+      loanValue: decimalLoanValue,
       hadoMarket: offer.hadoMarket,
       publicKey: offer.publicKey,
     })

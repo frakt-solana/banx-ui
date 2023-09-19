@@ -31,6 +31,7 @@ const CardView = <T extends object>({
           key={String(dataRow[rowKeyField])}
           onClick={() => handleRowClick(dataRow)}
           className={classNames(styles.card, getCardOrRowClassName(dataRow, activeRowParams, true))}
+          style={{ cursor: onRowClick ? 'pointer' : 'default' }}
         >
           {columns.map((column) => (
             <CardRow key={column.key} column={column} dataRow={dataRow} />

@@ -1,3 +1,5 @@
+export const IS_DEVELOPMENT = process.env.NODE_ENV !== 'production'
+
 export const BACKEND_BASE_URL = 'https://api.banx.gg'
 
 export const FCM = {
@@ -42,3 +44,6 @@ export const BANX_STAKING = {
 }
 
 export const IS_PRIVATE_MARKETS = process.env.IS_PRIVATE_MARKETS === 'true'
+
+export const COMPRESS_QUERY_PERSISTER =
+  !IS_DEVELOPMENT && process.env.COMPRESS_QUERY_PERSISTER_ON_BUILD === 'true'

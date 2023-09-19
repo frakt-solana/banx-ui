@@ -9,6 +9,8 @@ import { fetchBorrowerActivity } from '@banx/api/activity'
 
 import { DEFAULT_SORT_OPTION } from '../constants'
 
+import styles from '../LoansHistoryTable.module.less'
+
 const LIMIT = 15
 
 export const useBorrowerActivity = () => {
@@ -62,6 +64,7 @@ export const useBorrowerActivity = () => {
     sortParams: {
       option: sortOption,
       onChange: setSortOption,
+      className: styles.sortDropdown,
     },
     selectedCollections,
     setSelectedCollections,

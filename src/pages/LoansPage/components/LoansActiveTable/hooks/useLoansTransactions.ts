@@ -3,7 +3,7 @@ import { chunk, groupBy } from 'lodash'
 
 import { Loan } from '@banx/api/core'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
-import { useOptimisticLoans } from '@banx/store'
+import { useLoansOptimistic } from '@banx/store'
 import { BorrowType, defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import {
@@ -11,6 +11,7 @@ import {
   REPAY_NFT_PER_TXN,
   getLoanBorrowType,
   makeRepayLoansAction,
+  makeRepayPartialLoanAction,
 } from '@banx/transactions/loans'
 import { enqueueSnackbar } from '@banx/utils'
 
@@ -18,7 +19,8 @@ export const useLoansTransactions = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
 
-  const { update: updateLoansOptimistic } = useOptimisticLoans()
+  const { update: updateLoansOptimistic } = useLoansOptimistic()
+  const { clearSelection } = useSelectedLoans()
 
   const repayLoan = async (loan: Loan) => {
     await new TxnExecutor(makeRepayLoansAction, { wallet, connection })
@@ -32,6 +34,27 @@ export const useLoansTransactions = () => {
           })
           updateLoansOptimistic(result, wallet.publicKey.toBase58())
         }
+        clearSelection()
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error)
+      })
+      .execute()
+  }
+
+  const repayPartialLoan = async (loan: Loan, fractionToRepay: number) => {
+    await new TxnExecutor(makeRepayPartialLoanAction, { wallet, connection })
+      .addTxnParam({ loan, fractionToRepay })
+      .on('pfSuccessAll', (results) => {
+        const { txnHash, result } = results[0]
+        if (result && wallet.publicKey) {
+          enqueueSnackbar({
+            message: 'Transaction Executed',
+            solanaExplorerPath: `tx/${txnHash}`,
+          })
+          updateLoansOptimistic([result], wallet.publicKey.toBase58())
+        }
+        clearSelection()
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error)
@@ -56,6 +79,7 @@ export const useLoansTransactions = () => {
             updateLoansOptimistic(result, wallet.publicKey.toBase58())
           }
         })
+        clearSelection()
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error)
@@ -66,6 +90,7 @@ export const useLoansTransactions = () => {
   return {
     repayLoan,
     repayBulkLoan,
+    repayPartialLoan,
   }
 }
 

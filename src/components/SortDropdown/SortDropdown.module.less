@@ -28,14 +28,23 @@
     bottom: 0;
     width: 100%;
   }
+
+  @media screen and (max-width: 640px) {
+    padding: 16px;
+    gap: 8px;
+  }
 }
 
 .dropdownButton {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-width: 190px;
+  min-width: 200px;
   width: 100%;
+
+  @media screen and (max-width: 640px) {
+    min-width: 180px;
+  }
 }
 .dropdownButtonText {
   display: flex;
@@ -47,6 +56,13 @@
 .sortButton {
   svg > path {
     fill: var(--content-primary);
+  }
+
+  @media screen and (max-width: 640px) {
+    svg {
+      height: 18px;
+      width: 18px;
+    }
   }
 }
 

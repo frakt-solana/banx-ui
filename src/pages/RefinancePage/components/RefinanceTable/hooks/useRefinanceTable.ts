@@ -38,6 +38,8 @@ export const useRefinanceTable = () => {
     })
   }, [loans])
 
+  const showEmptyList = !loans?.length && !isLoading
+
   const searchSelectParams = {
     onChange: setSelectedOptions,
     options: searchSelectOptions,
@@ -55,6 +57,7 @@ export const useRefinanceTable = () => {
   return {
     loans: sortedLoans,
     loading: isLoading,
+    showEmptyList,
     sortViewParams: {
       searchSelectParams,
       sortParams: { option: sortOption, onChange: setSortOption },

@@ -38,8 +38,8 @@ export const useLendPageContent = () => {
       valueKey: 'marketPubkey',
       imageKey: 'collectionImage',
       secondLabel: {
-        key: 'marketAPR',
-        format: (value: number) => `${convertAprToApy(value / 1e4)?.toFixed(0)} %`,
+        key: 'marketApr',
+        format: (value: number) => `${convertAprToApy(value / 1e4)} %`,
       },
     },
     onChange: handleFilterChange,

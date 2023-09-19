@@ -6,10 +6,10 @@ import { useMarketVisibility } from './useMarketVisibilityState'
 import { useSearchSelectedMarkets } from './useSearchMarketsURLControl'
 
 export const useMarketsURLControl = (shouldControlQueryParams?: boolean) => {
-  const navigate = useNavigate()
   const location = useLocation()
+  const navigate = useNavigate()
 
-  const { visibleMarkets, toggleMarketVisibility } = useMarketVisibility()
+  const { visibleMarkets, toggleMarketVisibility, setMarketVisibility } = useMarketVisibility()
   const { selectedMarkets, setSelectedMarkets } = useSearchSelectedMarkets()
 
   useEffect(() => {
@@ -27,16 +27,22 @@ export const useMarketsURLControl = (shouldControlQueryParams?: boolean) => {
         queryParams.append('collections', selectedMarkets.join(','))
       }
 
-      navigate({ search: queryParams.toString() })
+      navigate({ search: queryParams.toString() }, { replace: true })
     }
   }, [
+    navigate,
     visibleMarkets,
     selectedMarkets,
-    navigate,
     location.search,
     location.pathname,
     shouldControlQueryParams,
   ])
 
-  return { visibleMarkets, toggleMarketVisibility, selectedMarkets, setSelectedMarkets }
+  return {
+    visibleMarkets,
+    toggleMarketVisibility,
+    selectedMarkets,
+    setSelectedMarkets,
+    setMarketVisibility,
+  }
 }

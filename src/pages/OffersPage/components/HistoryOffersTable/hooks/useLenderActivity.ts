@@ -9,6 +9,8 @@ import { fetchLenderActivity } from '@banx/api/activity'
 
 import { DEFAULT_SORT_OPTION } from '../constants'
 
+import styles from '../HistoryOffersTable.module.less'
+
 const LIMIT = 15
 
 export const useLenderActivity = () => {
@@ -62,6 +64,7 @@ export const useLenderActivity = () => {
     sortParams: {
       option: sortOption,
       onChange: setSortOption,
+      className: styles.sortDropdown,
     },
     selectedCollections,
     setSelectedCollections,

@@ -1,4 +1,4 @@
-import { BorrowNft } from '@banx/api/core'
+import { BorrowNft, Offer } from '@banx/api/core'
 
 export interface TableNftData {
   mint: string
@@ -10,4 +10,11 @@ export interface TableNftData {
 
 export enum SortField {
   BORROW = 'loanValue',
+  FLOOR = 'floorPrice',
+  FEE = 'weeklyFee',
+}
+
+export interface OfferWithLoanValue {
+  offer: Offer
+  loanValue: number
 }

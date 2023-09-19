@@ -1,5 +1,9 @@
 .content {
   padding: 24px;
+
+  @media (max-width: 640px) {
+    padding: 16px;
+  }
 }
 
 .offerHeaderContent {
@@ -7,12 +11,21 @@
   align-items: center;
   gap: 16px;
   margin-bottom: 8px;
+
+  @media (max-width: 640px) {
+    margin-bottom: 0;
+  }
 }
 
 .title {
   font: var(--title-sm);
   text-transform: uppercase;
   line-height: 38px;
+
+  @media (max-width: 640px) {
+    font: var(--title-xs);
+    line-height: 32px;
+  }
 }
 
 .offerSummary {
@@ -22,6 +35,11 @@
   gap: 8px;
   padding: 16px;
   margin: 8px 0 24px;
+
+  @media (max-width: 640px) {
+    gap: 4px;
+    margin: 0 0 16px;
+  }
 }
 
 .fields {
@@ -29,6 +47,10 @@
   align-items: center;
   gap: 24px;
   width: 100%;
+
+  @media (max-width: 640px) {
+    gap: 16px;
+  }
 }
 
 .numericField {

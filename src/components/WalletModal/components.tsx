@@ -82,7 +82,7 @@ export const UserInfo: FC<UserInfoProps> = ({ onChangeWallet, disconnect }) => (
       </div>
       <div className={styles.signOutButton} onClick={disconnect}>
         <SignOut />
-        Sign out
+        Disconnect
       </div>
     </div>
   </div>

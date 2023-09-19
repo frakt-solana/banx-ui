@@ -52,6 +52,10 @@
 
   &.large {
     height: 40px;
+
+    @media (max-width: 640px) {
+      height: 32px;
+    }
   }
   &.medium {
     height: 32px;
@@ -80,19 +84,34 @@
 
 .circle.primary,
 .circle.secondary {
+  padding: 0;
   &.large {
     .box-dimensions(40px, 40px);
 
-    @media (max-width: 768px) {
+    @media (max-width: 640px) {
       .box-dimensions(32px, 32px);
+    }
+
+    svg {
+      height: 24px;
+      width: 24px;
+
+      @media (max-width: 640px) {
+        height: 16px;
+        width: 16px;
+      }
     }
   }
   &.medium {
     .box-dimensions(32px, 32px);
+
+    svg {
+      height: 16px;
+      width: 16px;
+    }
   }
   &.small {
-    height: 24px;
-    width: 24px;
+    .box-dimensions(24px, 24px);
   }
 }
 
@@ -120,6 +139,11 @@
 
   &:hover {
     border-color: var(--content-primary);
+  }
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+    padding: 6px 10px;
   }
 }
 

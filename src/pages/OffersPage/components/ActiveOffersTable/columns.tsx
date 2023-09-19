@@ -22,25 +22,24 @@ export const getTableColumns = ({ isCardView }: GetTableColumns) => {
     {
       key: 'lent',
       title: <HeaderCell label="Lent" />,
-      render: (_, loan) => <LentCell loan={loan} />,
+      render: (_, loan) => <LentCell loan={loan} isCardView={isCardView} />,
       sorter: true,
     },
     {
       key: 'interest',
       title: <HeaderCell label="CRT. Interest" tooltipText="CRT. Interest" />,
       render: (_, loan) => <InterestCell loan={loan} />,
-      sorter: true,
     },
     {
-      key: 'apr',
-      title: <HeaderCell label="APR" tooltipText="APR" />,
+      key: 'apy',
+      title: <HeaderCell label="APY" tooltipText="APY" />,
       render: (_, loan) => <APRCell loan={loan} />,
       sorter: true,
     },
     {
       key: 'status',
       title: <HeaderCell label="Loan status" tooltipText="Loan status" />,
-      render: (_, loan) => <StatusCell loan={loan} />,
+      render: (_, loan) => <StatusCell loan={loan} isCardView={isCardView} />,
       sorter: true,
     },
     {

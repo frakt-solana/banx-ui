@@ -6,11 +6,6 @@
   overflow: hidden;
 }
 
-.tableWrapper {
-  flex-grow: 1;
-  overflow-y: scroll;
-}
-
 .table :global {
   .ant-table-tbody > tr > td {
     width: 230px;
@@ -35,8 +30,8 @@
   padding-left: 18px;
 }
 
-.termitated {
-  background: var(--additional-lava-secondary);
+.terminated {
+  background: var(--additional-lava-secondary) !important;
 }
 
 .statusInfo,
@@ -73,7 +68,7 @@
     gap: 24px;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     gap: 16px;
   }
 }
@@ -87,7 +82,7 @@
     align-items: end;
   }
 
-  @media (max-width: 960px) {
+  @media (max-width: 1240px) {
     width: 100%;
     align-items: space-between;
 
@@ -96,7 +91,7 @@
     }
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     gap: 8px 8px;
   }
 }
@@ -105,10 +100,30 @@
   display: flex;
   gap: 8px;
 
+  button {
+    min-width: 170px;
+  }
+
   @media (max-width: 960px) {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     width: 100%;
+
+    button {
+      min-width: unset;
+    }
+  }
+}
+
+.selectButtonText {
+  @media (max-width: 1240px) {
+    display: none;
+  }
+}
+
+.selectButtonMobileText {
+  @media (min-width: 1241px) {
+    display: none;
   }
 }
 
@@ -116,10 +131,10 @@
   display: flex;
   gap: 8px;
   align-items: center;
+  min-width: 220px;
 
-  @media (max-width: 960px) {
-    justify-content: center;
-    width: 100%;
+  @media (max-width: 1240px) {
+    display: none;
   }
 }
 
@@ -127,7 +142,7 @@
   font: var(--important-text-xll);
   color: var(--content-primary);
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     font: var(--important-text-xl);
   }
 }
@@ -142,8 +157,32 @@
     max-width: unset;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     font: var(--table-header-sm);
     width: 86px;
+  }
+}
+
+.additionalRepayInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0 8px;
+}
+.mainRepayInfo {
+  display: flex;
+  justify-content: flex-start;
+}
+.repayButton {
+  width: 100%;
+}
+
+.sortDropdown {
+  & > button {
+    min-width: 230px;
+
+    @media (max-width: 640px) {
+      min-width: 190px;
+    }
   }
 }

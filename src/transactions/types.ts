@@ -12,7 +12,7 @@ export type TransactionParams<T> = T extends (arg: infer Arg) => void
 
 export enum TxnErrorHumanName {
   TRANSACTION_REJECTED = 'Transaction rejected',
-  INSUFFICIENT_LAMPORTS = 'No money, bro',
+  INSUFFICIENT_LAMPORTS = 'Not enough funds',
   TOKEN_IS_LOCKED = 'Token is locked',
 }
 

@@ -6,28 +6,39 @@ import { useNavigate } from 'react-router-dom'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
+import { BorrowNft, Offer } from '@banx/api/core'
 import { PATHS } from '@banx/router'
-import { ViewState, useIsLedger, useOptimisticLoans, useTableView } from '@banx/store'
+import {
+  ViewState,
+  useIsLedger,
+  useLoansOptimistic,
+  useOffersOptimistic,
+  useTableView,
+} from '@banx/store'
 
 import { useCartState } from '../../cartState'
-import { useBorrowNfts } from '../../hooks'
 import { getTableColumns } from './columns'
-import { DEFAULT_TABLE_SORT } from './constants'
+import { DEFAULT_TABLE_SORT, SORT_OPTIONS } from './constants'
 import { createBorrowAllParams, createTableNftData, executeBorrow } from './helpers'
 import { SortField, TableNftData } from './types'
 
 import styles from './BorrowTable.module.less'
 
-export const useBorrowTable = () => {
+export interface UseBorrowTableProps {
+  nfts: BorrowNft[]
+  rawOffers: Record<string, Offer[]>
+}
+
+export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
   const wallet = useWallet()
   const { connection } = useConnection()
   const navigate = useNavigate()
   const { isLedger } = useIsLedger()
 
-  const { nfts, isLoading, rawOffers } = useBorrowNfts()
   const { offerByMint, addNft, removeNft, findOfferInCart, findBestOffer, addNftsAuto, resetCart } =
     useCartState()
-  const { add: addLoansOptimistic } = useOptimisticLoans()
+  const { add: addLoansOptimistic } = useLoansOptimistic()
+  const { update: updateOffersOptimistic } = useOffersOptimistic()
 
   const tableNftsData: TableNftData[] = useMemo(
     () => {
@@ -67,6 +78,7 @@ export const useBorrowTable = () => {
         ],
       ],
       addLoansOptimistic,
+      updateOffersOptimistic,
       isLedger,
     })
 
@@ -85,6 +97,7 @@ export const useBorrowTable = () => {
       },
       txnParams,
       addLoansOptimistic,
+      updateOffersOptimistic,
       isLedger,
     })
 
@@ -123,9 +136,9 @@ export const useBorrowTable = () => {
 
   const columns = getTableColumns({
     onNftSelect,
-    isCartEmpty: isEmpty(offerByMint),
     onBorrow: borrow,
     isCardView: viewState === ViewState.CARD,
+    findOfferInCart,
   })
 
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
@@ -159,7 +172,6 @@ export const useBorrowTable = () => {
     tableNftData: sortedNfts,
     columns,
     onRowClick: onNftSelect,
-    isLoading,
     sortViewParams: {
       searchSelectParams: {
         options: searchSelectOptions,
@@ -174,12 +186,18 @@ export const useBorrowTable = () => {
         labels: ['Collection', 'Nfts'],
         onChange: setSelectedOptions,
       },
-      sortParams: { option: sortOption, onChange: setSortOption },
+      sortParams: {
+        option: sortOption,
+        onChange: setSortOption,
+        className: styles.sortDropdown,
+        options: SORT_OPTIONS,
+      },
     },
     borrow,
     borrowAll,
     selectAll: onSelectAll,
     nftsInCart,
+    findOfferInCart,
   }
 }
 
@@ -204,6 +222,8 @@ const useSortedNfts = (nfts: TableNftData[], sortOptionValue: string) => {
 
     const sortValueMapping: Record<SortField, string> = {
       [SortField.BORROW]: 'nft.loanValue',
+      [SortField.FLOOR]: 'nft.nft.collectionFloor',
+      [SortField.FEE]: 'nft.interest',
     }
 
     const sorted = sortBy(nfts, (nft) => {
@@ -211,7 +231,7 @@ const useSortedNfts = (nfts: TableNftData[], sortOptionValue: string) => {
       return get(nft, sortValue)
     })
 
-    return order === 'desc' ? sorted : sorted.reverse()
+    return order === 'desc' ? sorted.reverse() : sorted
   }, [sortOptionValue, nfts])
 
   return sortedLoans

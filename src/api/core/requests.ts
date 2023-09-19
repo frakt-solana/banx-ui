@@ -10,16 +10,16 @@ import {
   BorrowNftsAndOffersSchema,
   FetchMarketOffersResponse,
   LendLoansAndOffersResponse,
+  LendNftsAndOffersSchema,
   Loan,
   LoanSchema,
-  Market,
   MarketPreview,
   MarketPreviewResponse,
   MarketPreviewSchema,
-  MarketSchema,
   Offer,
   PairSchema,
   UserOffer,
+  UserPairSchema,
   WalletLoansResponse,
 } from './types'
 
@@ -45,43 +45,6 @@ export const fetchMarketsPreview: FetchMarketsPreview = async () => {
     console.error(error)
     return []
   }
-}
-
-type FetchAllMarkets = () => Promise<Market[]>
-export const fetchAllMarkets: FetchAllMarkets = async () => {
-  try {
-    const queryParams = new URLSearchParams({
-      isPrivate: String(IS_PRIVATE_MARKETS),
-    })
-
-    const { data } = await axios.get<Market[]>(
-      `${BACKEND_BASE_URL}/markets?${queryParams.toString()}`,
-    )
-
-    try {
-      await MarketSchema.array().parseAsync(data)
-    } catch (validationError) {
-      console.error('Schema validation error:', validationError)
-    }
-
-    return data
-  } catch (error) {
-    console.error(error)
-    return []
-  }
-}
-
-type FetchCertainMarket = (props: { marketPubkey: web3.PublicKey }) => Promise<Market>
-export const fetchCertainMarket: FetchCertainMarket = async ({ marketPubkey }) => {
-  const { data } = await axios.get<Market>(`${BACKEND_BASE_URL}/markets/${marketPubkey.toBase58()}`)
-
-  try {
-    await MarketSchema.array().parseAsync(data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
-
-  return data
 }
 
 type FetchMarketOffers = (props: {
@@ -112,7 +75,7 @@ export const fetchMarketOffers: FetchMarketOffers = async ({
     )
 
     try {
-      await MarketSchema.array().parseAsync(data?.data)
+      await PairSchema.array().parseAsync(data?.data)
     } catch (validationError) {
       console.error('Schema validation error:', validationError)
     }
@@ -152,7 +115,7 @@ export const fetchUserOffers: FetchUserOffers = async ({
     )
 
     try {
-      await MarketSchema.array().parseAsync(data.data)
+      await UserPairSchema.array().parseAsync(data.data)
     } catch (validationError) {
       console.error('Schema validation error:', validationError)
     }
@@ -234,8 +197,7 @@ export const fetchLenderLoansAndOffers: FetchLenderLoansAndOffers = async ({
     )
 
     try {
-      await LoanSchema.array().parseAsync(data.data.nfts)
-      await PairSchema.array().parseAsync(data.data.offers)
+      await LendNftsAndOffersSchema.parseAsync(data.data)
     } catch (validationError) {
       console.error('Schema validation error:', validationError)
     }

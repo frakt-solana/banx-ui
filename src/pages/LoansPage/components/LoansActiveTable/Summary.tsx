@@ -36,6 +36,7 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
   }
 
   const selectAllBtnText = !selection?.length ? 'Select all' : 'Deselect all'
+  const selectMobileBtnText = !selection.length ? `Select all` : `Deselect ${selection.length}`
 
   return (
     <div className={styles.summary}>
@@ -49,10 +50,11 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
       </div>
       <div className={styles.summaryBtns}>
         <Button variant="secondary" onClick={selectAll}>
-          {selectAllBtnText}
+          <span className={styles.selectButtonText}>{selectAllBtnText}</span>
+          <span className={styles.selectButtonMobileText}>{selectMobileBtnText}</span>
         </Button>
         <Button onClick={repayBulkLoan} disabled={!selection.length}>
-          Repay {createSolValueJSX(totalBorrowed, 1e9, '0◎')}
+          Repay {createSolValueJSX(totalDebt, 1e9, '0◎')}
         </Button>
       </div>
     </div>

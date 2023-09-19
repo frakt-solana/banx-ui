@@ -1,5 +1,5 @@
 import { web3 } from 'fbonds-core'
-import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
+import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   BondAndTransactionOptimistic,
   claimCnftPerpetualLoan,
@@ -61,7 +61,11 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
         collateralOwner: new web3.PublicKey(fraktBond.fbondIssuer),
         bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
         userPubkey: wallet.publicKey as web3.PublicKey,
-        banxStake: new web3.PublicKey(fraktBond.banxStake),
+        banxStake: new web3.PublicKey(
+          fraktBond.banxStake !== EMPTY_PUBKEY.toBase58()
+            ? fraktBond.banxStake
+            : fraktBond.fraktMarket,
+        ),
         subscriptionsAndAdventures: [],
       },
       optimistic: {
