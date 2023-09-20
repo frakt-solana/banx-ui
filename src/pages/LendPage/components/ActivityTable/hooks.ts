@@ -5,7 +5,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 
 import { RBOption } from '@banx/components/RadioButton'
 
-import { fetchLenderActivity } from '@banx/api/core'
+import { fetchLenderActivity } from '@banx/api/activity'
 
 import { RADIO_BUTTONS_OPTIONS } from './constants'
 
