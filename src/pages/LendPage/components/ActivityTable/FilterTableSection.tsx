@@ -27,6 +27,7 @@ export const FilterTableSection: FC<FilterTableSectionProps> = ({
   return (
     <div className={styles.filterTableSection}>
       <RadioButton
+        className={styles.radioButton}
         options={RADIO_BUTTONS_OPTIONS}
         currentOption={currentOption}
         onOptionChange={onOptionChange}
