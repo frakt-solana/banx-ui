@@ -1,5 +1,4 @@
 import { Table as AntdTable } from 'antd'
-import { uniqueId } from 'lodash'
 
 import { TableProps } from '../../Table'
 import { getCardOrRowClassName } from '../../helpers'
@@ -22,7 +21,7 @@ const TableView = <T extends object>({
 
   return (
     <AntdTable
-      rowKey={(record) => `${record[rowKeyField]}${uniqueId()}`}
+      rowKey={(record) => record[rowKeyField] as string}
       dataSource={[...data]}
       columns={columns}
       className={className}
