@@ -34,6 +34,7 @@ const ActivityTable: FC<ActivityTableProps> = () => {
         data={loans}
         columns={columns}
         rowKeyField="publicKey"
+        className={styles.tableRoot}
         classNameTableWrapper={styles.tableWrapper}
         fetchMoreTrigger={fetchMoreTrigger}
         loading={isLoading}
