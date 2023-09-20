@@ -41,10 +41,8 @@ export const useAllLenderActivity = () => {
       return lastPage.data?.length ? lastPage.pageParam + 1 : undefined
     },
     staleTime: 60 * 1000,
-    cacheTime: 100_000,
     networkMode: 'offlineFirst',
     refetchOnWindowFocus: false,
-    enabled: !!publicKeyString,
   })
 
   const loans = useMemo(() => {
