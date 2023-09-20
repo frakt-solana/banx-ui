@@ -9,7 +9,7 @@ import { fetchLenderActivity } from '@banx/api/activity'
 
 import { RADIO_BUTTONS_OPTIONS } from './constants'
 
-const LIMIT = 15
+const PAGINATION_LIMIT = 15
 
 export const useAllLenderActivity = () => {
   const { publicKey } = useWallet()
@@ -20,8 +20,8 @@ export const useAllLenderActivity = () => {
 
   const fetchData = async (pageParam: number) => {
     const data = await fetchLenderActivity({
-      skip: LIMIT * pageParam,
-      limit: LIMIT,
+      skip: PAGINATION_LIMIT * pageParam,
+      limit: PAGINATION_LIMIT,
       state: currentOption.value,
       sortBy: 'timestamp',
       order: 'desc',
