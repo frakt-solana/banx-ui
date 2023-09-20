@@ -45,7 +45,7 @@ export const useBorrowerActivity = () => {
       return lastPage.data?.length ? lastPage.pageParam + 1 : undefined
     },
     staleTime: 60 * 1000,
-    cacheTime: 100_000,
+    cacheTime: 1_000_000,
     networkMode: 'offlineFirst',
     refetchOnWindowFocus: false,
     enabled: !!publicKeyString,
