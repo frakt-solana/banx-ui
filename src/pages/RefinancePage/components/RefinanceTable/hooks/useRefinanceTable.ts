@@ -57,8 +57,6 @@ export const useRefinanceTable = () => {
 
   const [selectedLoans, setSelectedLoans] = useState<Loan[]>([])
 
-  // console.log({selectedLoans2: selectedLoans})
-
   const findSelectedLoan = (loanPubkey: string) =>
     find(selectedLoans, ({ publicKey }) => publicKey === loanPubkey)
 
