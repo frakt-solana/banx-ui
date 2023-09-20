@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react'
 
-import { first, groupBy, map } from 'lodash'
+import { filter, find, first, groupBy, map } from 'lodash'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
+import { Loan } from '@banx/api/core'
 import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
 
 import { DEFAULT_SORT_OPTION } from '../constants'
@@ -54,10 +55,39 @@ export const useRefinanceTable = () => {
     className: styles.searchSelect,
   }
 
+  const [selectedLoans, setSelectedLoans] = useState<Loan[]>([])
+
+  const findSelectedLoan = (loanPubkey: string) =>
+    find(selectedLoans, ({ publicKey }) => publicKey === loanPubkey)
+
+  const onSelectLoan = (loan: Loan) => {
+    const isLoanInCart = !!findSelectedLoan(loan.publicKey)
+    if (isLoanInCart) {
+      return setSelectedLoans((prev) =>
+        filter(prev, ({ publicKey }) => publicKey !== loan.publicKey),
+      )
+    }
+    return setSelectedLoans((prev) => [...prev, loan])
+  }
+
+  const onSelectAllLoans = () => setSelectedLoans([...loans])
+
+  const onDeselectAllLoans = () => setSelectedLoans([])
+
+  const deselectLoan = (loanPubkey: string) => {
+    return setSelectedLoans((prev) => filter(prev, ({ publicKey }) => publicKey !== loanPubkey))
+  }
+
   return {
     loans: sortedLoans,
     loading: isLoading,
     showEmptyList,
+    selectedLoans,
+    onSelectLoan,
+    onSelectAllLoans,
+    onDeselectAllLoans,
+    findSelectedLoan,
+    deselectLoan,
     sortViewParams: {
       searchSelectParams,
       sortParams: { option: sortOption, onChange: setSortOption },

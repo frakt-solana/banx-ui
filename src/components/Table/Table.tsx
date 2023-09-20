@@ -22,12 +22,12 @@ export interface TableProps<T, P> {
   sortViewParams?: SortViewParams<P>
   activeRowParams?: ActiveRowParams<T>[]
 
+  fetchMoreTrigger?: Dispatch<SetStateAction<Element | null>>
   showCard?: boolean
   onRowClick?: (dataItem: T) => void
   breakpoints?: PartialBreakpoints
   className?: string
   classNameTableWrapper?: string
-  fetchMoreTrigger?: Dispatch<SetStateAction<Element | null>>
   scrollX?: number
   emptyMessage?: string
 }

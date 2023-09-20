@@ -1,8 +1,8 @@
 import { SortOption } from '@banx/components/SortDropdown'
 
 export const DEFAULT_SORT_OPTION: SortOption = {
-  label: 'APY',
-  value: 'apy_desc',
+  label: 'When',
+  value: 'timestamp_desc',
 }
 
 const SECONDS_IN_HOUR = 60 * 60

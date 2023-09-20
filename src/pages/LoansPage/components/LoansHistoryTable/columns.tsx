@@ -8,7 +8,7 @@ import {
   createSolValueJSX,
 } from '@banx/components/TableComponents'
 
-import { BorrowerActivity } from '@banx/api/core'
+import { BorrowerActivity } from '@banx/api/activity'
 
 import { DebtCell, RepaidCell, StatusCell } from './TableCells'
 
@@ -31,7 +31,6 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
       key: 'debt',
       title: <HeaderCell label="Debt" />,
       render: (_, loan) => <DebtCell loan={loan} isCardView={isCardView} />,
-      sorter: true,
     },
     {
       key: 'status',
@@ -39,13 +38,13 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
       render: (_, loan) => <StatusCell loan={loan} />,
     },
     {
-      key: 'repaidBy',
+      key: 'repaid',
       title: <HeaderCell label="Repaid by" />,
       render: (_, loan) => <RepaidCell loan={loan} />,
       sorter: true,
     },
     {
-      key: 'duration',
+      key: 'timestamp',
       title: <HeaderCell label="When" />,
       render: (_, { publicKey, timestamp }) => (
         <DurationCell publicKey={publicKey} timestamp={timestamp} />

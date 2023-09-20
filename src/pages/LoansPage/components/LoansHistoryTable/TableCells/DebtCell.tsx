@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
-import { BorrowerActivity } from '@banx/api/core'
+import { BorrowerActivity } from '@banx/api/activity'
 
 import styles from '../LoansHistoryTable.module.less'
 

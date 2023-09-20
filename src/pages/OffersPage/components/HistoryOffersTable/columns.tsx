@@ -8,7 +8,7 @@ import {
   createSolValueJSX,
 } from '@banx/components/TableComponents'
 
-import { LenderActivity } from '@banx/api/core'
+import { LenderActivity } from '@banx/api/activity'
 
 import { APRCell, ReceivedCell, StatusCell } from './TableCells'
 
@@ -34,7 +34,7 @@ export const getTableColumns = () => {
       sorter: true,
     },
     {
-      key: 'apy',
+      key: 'apr',
       title: <HeaderCell label="APY" />,
       render: (_, loan) => <APRCell loan={loan} />,
       sorter: true,
@@ -51,7 +51,7 @@ export const getTableColumns = () => {
       sorter: true,
     },
     {
-      key: 'duration',
+      key: 'timestamp',
       title: <HeaderCell label="When" />,
       render: (_, { publicKey, timestamp }) => (
         <DurationCell publicKey={publicKey} timestamp={timestamp} />

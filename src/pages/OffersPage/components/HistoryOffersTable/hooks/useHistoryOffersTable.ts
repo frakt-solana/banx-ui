@@ -1,46 +1,42 @@
-import { useMemo, useState } from 'react'
+import { useEffect } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { first, groupBy, map, sumBy } from 'lodash'
 
-import { SearchSelectProps } from '@banx/components/SearchSelect'
-import { SortOption } from '@banx/components/SortDropdown'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
+import { useIntersection } from '@banx/hooks'
 import { PATHS } from '@banx/router'
 
-import { DEFAULT_SORT_OPTION, EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
+import { EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
 import { useLenderActivity } from './useLenderActivity'
+import { useLenderActivityCollectionsList } from './useLenderActivityCollectionsList'
 
 import styles from '../HistoryOffersTable.module.less'
 
-interface SearchSelectOption {
-  collectionName: string
-  collectionImage: string
-  received: number
-}
-
 export const useHistoryOffersTable = () => {
-  const { loans, isLoading } = useLenderActivity()
+  const { ref: fetchMoreTrigger, inView } = useIntersection()
   const { connected } = useWallet()
 
-  const [selectedOptions, setSelectedOptions] = useState<string[]>([])
-  const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
+  const { data: collectionsList } = useLenderActivityCollectionsList()
 
-  const searchSelectOptions = useMemo(() => {
-    const loansGroupedByCollection = groupBy(loans, ({ nft }) => nft.meta.collectionName)
+  const {
+    loans,
+    isLoading,
+    sortParams,
+    selectedCollections,
+    setSelectedCollections,
+    fetchNextPage,
+    hasNextPage,
+  } = useLenderActivity()
 
-    return map(loansGroupedByCollection, (groupedLoan) => {
-      const firstLoanInGroup = first(groupedLoan)
-      const { collectionName = '', collectionImage = '' } = firstLoanInGroup?.nft.meta || {}
-      const received = sumBy(groupedLoan, (nft) => nft.received)
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage()
+    }
+  }, [inView, fetchNextPage, hasNextPage])
 
-      return { collectionName, collectionImage, received }
-    })
-  }, [loans])
-
-  const searchSelectParams: SearchSelectProps<SearchSelectOption> = {
-    options: searchSelectOptions,
+  const searchSelectParams = {
+    options: collectionsList,
     optionKeys: {
       labelKey: 'collectionName',
       valueKey: 'collectionName',
@@ -50,16 +46,10 @@ export const useHistoryOffersTable = () => {
         format: (value: number) => createSolValueJSX(value, 1e9),
       },
     },
-    selectedOptions,
+    selectedOptions: selectedCollections,
     labels: ['Collection', 'Received'],
-    onChange: setSelectedOptions,
+    onChange: setSelectedCollections,
     className: styles.searchSelect,
-  }
-
-  const sortParams = {
-    option: sortOption,
-    onChange: setSortOption,
-    className: styles.sortDropdown,
   }
 
   const showEmptyList = (!loans?.length && !isLoading) || !connected
@@ -81,5 +71,6 @@ export const useHistoryOffersTable = () => {
       searchSelectParams,
       sortParams,
     },
+    fetchMoreTrigger,
   }
 }
