@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from 'react'
 
 import { ColumnsType } from 'antd/es/table'
+import classNames from 'classnames'
 import { isEmpty } from 'lodash'
 
 import { ViewState, useTableView } from '@banx/store'
@@ -26,6 +27,7 @@ export interface TableProps<T, P> {
   onRowClick?: (dataItem: T) => void
   breakpoints?: PartialBreakpoints
   className?: string
+  classNameTableWrapper?: string
   scrollX?: number
   emptyMessage?: string
 }
@@ -38,6 +40,7 @@ const Table = <T extends object, P extends object>({
   showCard,
   loading,
   emptyMessage,
+  classNameTableWrapper,
   fetchMoreTrigger,
   ...props
 }: TableProps<T, P>) => {
@@ -53,7 +56,7 @@ const Table = <T extends object, P extends object>({
 
       {loading && <Loader />}
       {emptyMessage && !loading && <div className={styles.emptyList}>{emptyMessage}</div>}
-      <div className={styles.tableWrapper}>
+      <div className={classNames(styles.tableWrapper, classNameTableWrapper)}>
         {hasData && (
           <ViewComponent
             data={data}

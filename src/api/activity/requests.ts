@@ -16,7 +16,7 @@ import {
 
 export const fetchLenderActivity: FetchLenderActivity = async ({
   walletPubkey,
-  order = 'asc',
+  order,
   state = 'all',
   sortBy,
   skip = 0,
@@ -54,7 +54,7 @@ export const fetchLenderActivity: FetchLenderActivity = async ({
 
 export const fetchBorrowerActivity: FetchBorrowerActivity = async ({
   walletPubkey,
-  order = 'asc',
+  order,
   sortBy,
   state = 'all',
   skip = 0,
