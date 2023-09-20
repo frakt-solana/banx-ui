@@ -8,21 +8,26 @@ import { RBOption } from '@banx/components/RadioButton'
 import { fetchLenderActivity } from '@banx/api/activity'
 
 import { RADIO_BUTTONS_OPTIONS } from './constants'
+import { appendIdToOptionValue } from './helpers'
 
 const PAGINATION_LIMIT = 15
 
-export const useAllLenderActivity = () => {
+export const useAllLenderActivity = (marketPubkey: string) => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
+  const options = appendIdToOptionValue(RADIO_BUTTONS_OPTIONS, marketPubkey)
+
   const [checked, setChecked] = useState<boolean>(false)
-  const [currentOption, setCurrentOption] = useState<RBOption>(RADIO_BUTTONS_OPTIONS[0])
+  const [currentOption, setCurrentOption] = useState<RBOption>(options[0])
+
+  const eventType = currentOption.value.split('_')[0]
 
   const fetchData = async (pageParam: number) => {
     const data = await fetchLenderActivity({
       skip: PAGINATION_LIMIT * pageParam,
       limit: PAGINATION_LIMIT,
-      state: currentOption.value,
+      state: eventType,
       sortBy: 'timestamp',
       order: 'desc',
       walletPubkey: checked ? publicKeyString : '',
@@ -60,6 +65,7 @@ export const useAllLenderActivity = () => {
       onToggleChecked: () => setChecked(!checked),
       currentOption,
       onOptionChange: setCurrentOption,
+      options,
     },
   }
 }

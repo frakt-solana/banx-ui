@@ -14,10 +14,11 @@ interface ActivityTableProps {
   marketPubkey: string
 }
 
-const ActivityTable: FC<ActivityTableProps> = () => {
+const ActivityTable: FC<ActivityTableProps> = ({ marketPubkey }) => {
   const { ref: fetchMoreTrigger, inView } = useIntersection()
 
-  const { loans, isLoading, fetchNextPage, hasNextPage, filterParams } = useAllLenderActivity()
+  const { loans, isLoading, fetchNextPage, hasNextPage, filterParams } =
+    useAllLenderActivity(marketPubkey)
 
   useEffect(() => {
     if (inView && hasNextPage) {
