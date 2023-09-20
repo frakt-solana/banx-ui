@@ -11,7 +11,7 @@ import { DEFAULT_SORT_OPTION } from '../constants'
 
 import styles from '../HistoryOffersTable.module.less'
 
-const LIMIT = 15
+const PAGINATION_LIMIT = 15
 
 export const useLenderActivity = () => {
   const { publicKey } = useWallet()
@@ -24,8 +24,8 @@ export const useLenderActivity = () => {
 
   const fetchData = async (pageParam: number) => {
     const data = await fetchLenderActivity({
-      skip: LIMIT * pageParam,
-      limit: LIMIT,
+      skip: PAGINATION_LIMIT * pageParam,
+      limit: PAGINATION_LIMIT,
       sortBy,
       order,
       walletPubkey: publicKeyString,

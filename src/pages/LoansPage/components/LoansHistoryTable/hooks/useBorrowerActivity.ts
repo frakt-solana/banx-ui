@@ -11,7 +11,7 @@ import { DEFAULT_SORT_OPTION } from '../constants'
 
 import styles from '../LoansHistoryTable.module.less'
 
-const LIMIT = 15
+const PAGINATION_LIMIT = 15
 
 export const useBorrowerActivity = () => {
   const { publicKey } = useWallet()
@@ -24,8 +24,8 @@ export const useBorrowerActivity = () => {
 
   const fetchData = async (pageParam: number) => {
     const data = await fetchBorrowerActivity({
-      skip: LIMIT * pageParam,
-      limit: LIMIT,
+      skip: PAGINATION_LIMIT * pageParam,
+      limit: PAGINATION_LIMIT,
       sortBy,
       order,
       walletPubkey: publicKeyString,
