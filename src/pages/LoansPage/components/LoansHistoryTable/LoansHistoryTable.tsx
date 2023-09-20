@@ -31,7 +31,7 @@ export const LoansHistoryTable = () => {
       <Table
         data={loans}
         columns={columns}
-        rowKeyField="publicKey"
+        rowKeyField="id"
         sortViewParams={sortViewParams}
         fetchMoreTrigger={fetchMoreTrigger}
         loading={loading}

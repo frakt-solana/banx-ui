@@ -29,7 +29,7 @@ export const HistoryOffersTable = () => {
         columns={columns}
         sortViewParams={sortViewParams}
         className={styles.rootTable}
-        rowKeyField="publicKey"
+        rowKeyField="id"
         fetchMoreTrigger={fetchMoreTrigger}
         loading={loading}
         showCard
