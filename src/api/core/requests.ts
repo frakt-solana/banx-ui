@@ -282,23 +282,26 @@ export const fetchAuctionsLoans = async () => {
 type FetchLenderActivity = (props: {
   walletPubkey: string
   order?: string
-  getAll?: boolean
+  state?: string
+  sortBy?: string
   skip?: number
   limit?: number
 }) => Promise<LenderActivity[]>
 export const fetchLenderActivity: FetchLenderActivity = async ({
   walletPubkey,
-  getAll = true, //TODO Remove when normal pagination added
   order = 'desc',
+  state = 'all',
+  sortBy = 'timestamp',
   skip = 0,
-  limit = 10,
+  limit = 100,
 }) => {
   try {
     const queryParams = new URLSearchParams({
       order,
+      sortBy,
       skip: String(skip),
       limit: String(limit),
-      getAll: String(getAll),
+      state,
       isPrivate: String(IS_PRIVATE_MARKETS),
     })
 

@@ -1,11 +1,12 @@
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 
 import Table from '@banx/components/Table'
 
-import { useLenderActivity } from '@banx/pages/OffersPage/components/HistoryOffersTable/hooks/useLenderActivity'
+import { useIntersection } from '@banx/hooks'
 
 import { FilterTableSection } from './FilterTableSection'
 import { getTableColumns } from './columns'
+import { useAllLenderActivity } from './hooks'
 
 import styles from './ActivityTable.module.less'
 
@@ -14,18 +15,27 @@ interface ActivityTableProps {
 }
 
 const ActivityTable: FC<ActivityTableProps> = () => {
-  const { loans, isLoading } = useLenderActivity()
+  const { ref: fetchMoreTrigger, inView } = useIntersection()
+
+  const { loans, isLoading, fetchNextPage, hasNextPage, filterParams } = useAllLenderActivity()
+
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage()
+    }
+  }, [inView, hasNextPage, fetchNextPage])
 
   const columns = getTableColumns()
 
   return (
     <>
-      <FilterTableSection />
+      <FilterTableSection {...filterParams} />
       <Table
         data={loans}
         columns={columns}
-        className={styles.rootTable}
         rowKeyField="publicKey"
+        classNameTableWrapper={styles.tableWrapper}
+        fetchMoreTrigger={fetchMoreTrigger}
         loading={isLoading}
       />
     </>
