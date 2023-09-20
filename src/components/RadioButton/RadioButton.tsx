@@ -33,6 +33,7 @@ export const RadioButton: FC<RadioButtonProps> = ({
         return (
           <div
             key={option.label}
+            onChange={() => onOptionChange(option)}
             className={classNames(styles.radioButton, {
               [styles.disabledButton]: disabled,
               [styles.active]: checked,
@@ -44,7 +45,6 @@ export const RadioButton: FC<RadioButtonProps> = ({
               name={value}
               value={value}
               checked={checked}
-              onChange={() => onOptionChange(option)}
               disabled={disabled}
             />
             <label htmlFor={value}>{option.label}</label>

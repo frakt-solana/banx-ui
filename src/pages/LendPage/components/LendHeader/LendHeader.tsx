@@ -19,8 +19,8 @@ const Header = () => {
   const { marketsPreview } = useMarketsPreview()
 
   const { totalLoans, totalOffers, formattedLoansTVL, formattedOffersTVL } = useMemo(() => {
-    const loansTVL = sumBy(marketsPreview, 'loansTVL')
-    const offersTVL = sumBy(marketsPreview, 'offerTVL')
+    const loansTVL = sumBy(marketsPreview, 'loansTvl')
+    const offersTVL = sumBy(marketsPreview, 'offerTvl')
     const totalLoans = sumBy(marketsPreview, 'activeBondsAmount')
     const totalOffers = sumBy(marketsPreview, 'activeOfferAmount')
 

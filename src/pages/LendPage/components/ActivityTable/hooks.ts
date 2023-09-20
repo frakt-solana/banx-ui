@@ -3,40 +3,36 @@ import { useMemo, useState } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
-import { SortOption } from '@banx/components/SortDropdown'
+import { RBOption } from '@banx/components/RadioButton'
 
-import { fetchBorrowerActivity } from '@banx/api/activity'
+import { fetchLenderActivity } from '@banx/api/activity'
 
-import { DEFAULT_SORT_OPTION } from '../constants'
-
-import styles from '../LoansHistoryTable.module.less'
+import { RADIO_BUTTONS_OPTIONS } from './constants'
 
 const PAGINATION_LIMIT = 15
 
-export const useBorrowerActivity = () => {
+export const useAllLenderActivity = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
-  const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
-  const [selectedCollections, setSelectedCollections] = useState<string[]>([])
-
-  const [sortBy, order] = sortOption.value.split('_')
+  const [checked, setChecked] = useState<boolean>(false)
+  const [currentOption, setCurrentOption] = useState<RBOption>(RADIO_BUTTONS_OPTIONS[0])
 
   const fetchData = async (pageParam: number) => {
-    const data = await fetchBorrowerActivity({
+    const data = await fetchLenderActivity({
       skip: PAGINATION_LIMIT * pageParam,
       limit: PAGINATION_LIMIT,
-      sortBy,
-      order,
-      walletPubkey: publicKeyString,
-      collection: selectedCollections,
+      state: currentOption.value,
+      sortBy: 'timestamp',
+      order: 'desc',
+      walletPubkey: checked ? publicKeyString : '',
     })
 
     return { pageParam, data }
   }
 
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage, isLoading } = useInfiniteQuery({
-    queryKey: ['borrowerActivity', publicKey, sortOption, selectedCollections],
+    queryKey: ['allLenderActivity', publicKey, checked, currentOption],
     queryFn: ({ pageParam = 0 }) => fetchData(pageParam),
     getPreviousPageParam: (firstPage) => {
       return firstPage.pageParam - 1 ?? undefined
@@ -47,7 +43,6 @@ export const useBorrowerActivity = () => {
     staleTime: 60 * 1000,
     networkMode: 'offlineFirst',
     refetchOnWindowFocus: false,
-    enabled: !!publicKeyString,
   })
 
   const loans = useMemo(() => {
@@ -60,12 +55,11 @@ export const useBorrowerActivity = () => {
     isFetchingNextPage,
     hasNextPage,
     isLoading,
-    sortParams: {
-      option: sortOption,
-      onChange: setSortOption,
-      className: styles.sortDropdown,
+    filterParams: {
+      checked,
+      onToggleChecked: () => setChecked(!checked),
+      currentOption,
+      onOptionChange: setCurrentOption,
     },
-    selectedCollections,
-    setSelectedCollections,
   }
 }

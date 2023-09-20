@@ -7,6 +7,19 @@ export interface PaginationMeta {
   totalCount: number
 }
 
+interface SortingOptions {
+  sortBy: string
+  order: string
+}
+
+interface PaginationOptions {
+  limit?: number
+  skip?: number
+  state?: string
+}
+
+export type BasePaginationRequest = SortingOptions & PaginationOptions
+
 export interface WalletAndConnection {
   wallet: WalletContextState
   connection: web3.Connection

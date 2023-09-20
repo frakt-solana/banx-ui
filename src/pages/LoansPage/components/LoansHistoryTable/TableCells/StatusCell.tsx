@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import { BorrowerActivity } from '@banx/api/core'
+import { BorrowerActivity } from '@banx/api/activity'
 import { LoanStatus, STATUS_LOANS_COLOR_MAP, STATUS_LOANS_MAP } from '@banx/utils'
 
 import styles from '../LoansHistoryTable.module.less'

@@ -10,7 +10,7 @@ import {
 
 import { LenderActivity } from '@banx/api/activity'
 
-import { APRCell, ReceivedCell, StatusCell } from './TableCells'
+import { ReceivedCell, StatusCell } from './TableCells'
 
 export const getTableColumns = () => {
   const columns: ColumnsType<LenderActivity> = [
@@ -31,12 +31,6 @@ export const getTableColumns = () => {
       key: 'interest',
       title: <HeaderCell label="Interest" />,
       render: (_, loan) => createSolValueJSX(loan.interest, 1e9),
-      sorter: true,
-    },
-    {
-      key: 'apr',
-      title: <HeaderCell label="APY" />,
-      render: (_, loan) => <APRCell loan={loan} />,
       sorter: true,
     },
     {

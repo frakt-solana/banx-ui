@@ -3,7 +3,7 @@ import { FC } from 'react'
 import { LenderActivity } from '@banx/api/activity'
 import { LoanStatus, STATUS_LOANS_COLOR_MAP, STATUS_LOANS_MAP } from '@banx/utils'
 
-import styles from '../HistoryOffersTable.module.less'
+import styles from '../ActivityTable.module.less'
 
 interface StatusCellProps {
   loan: LenderActivity

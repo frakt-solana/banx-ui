@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import { LenderActivity } from '@banx/api/core'
+import { LenderActivity } from '@banx/api/activity'
 import { HealthColorDecreasing, convertAprToApy, getColorByPercent } from '@banx/utils'
 
 import styles from '../HistoryOffersTable.module.less'

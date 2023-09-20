@@ -1,7 +1,7 @@
 export const BONDS_TABS = [
   {
     label: 'Activity',
-    value: 'history',
+    value: 'activity',
   },
   {
     label: 'Place offer',
