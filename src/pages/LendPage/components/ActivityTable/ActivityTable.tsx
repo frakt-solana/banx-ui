@@ -34,7 +34,7 @@ const ActivityTable: FC<ActivityTableProps> = ({ marketPubkey }) => {
       <Table
         data={loans}
         columns={columns}
-        rowKeyField="publicKey"
+        rowKeyField="id"
         className={styles.tableRoot}
         classNameTableWrapper={styles.tableWrapper}
         fetchMoreTrigger={fetchMoreTrigger}
