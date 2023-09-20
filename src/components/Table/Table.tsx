@@ -1,9 +1,12 @@
+import { Dispatch, SetStateAction } from 'react'
+
 import { ColumnsType } from 'antd/es/table'
 import { isEmpty } from 'lodash'
 
 import { ViewState, useTableView } from '@banx/store'
 
 import { Loader } from '../Loader'
+import { SCROLL_THRESHOLD_HEIGHT } from './constants'
 import { ActiveRowParams, PartialBreakpoints, SortViewParams } from './types'
 import { CardView, SortView, TableView } from './views'
 
@@ -18,6 +21,7 @@ export interface TableProps<T, P> {
   sortViewParams?: SortViewParams<P>
   activeRowParams?: ActiveRowParams<T>[]
 
+  fetchMoreTrigger?: Dispatch<SetStateAction<Element | null>>
   showCard?: boolean
   onRowClick?: (dataItem: T) => void
   breakpoints?: PartialBreakpoints
@@ -34,6 +38,7 @@ const Table = <T extends object, P extends object>({
   showCard,
   loading,
   emptyMessage,
+  fetchMoreTrigger,
   ...props
 }: TableProps<T, P>) => {
   const { viewState } = useTableView()
@@ -56,6 +61,9 @@ const Table = <T extends object, P extends object>({
             activeRowParams={activeRowParams}
             {...props}
           />
+        )}
+        {fetchMoreTrigger && (
+          <div style={{ height: SCROLL_THRESHOLD_HEIGHT }} ref={fetchMoreTrigger} />
         )}
       </div>
     </>

@@ -3,7 +3,7 @@ import { FC } from 'react'
 import { CSVDownloadButton } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
-import { LenderActivity } from '@banx/api/core'
+import { LenderActivity } from '@banx/api/activity'
 import {
   HealthColorDecreasing,
   convertAprToApy,
