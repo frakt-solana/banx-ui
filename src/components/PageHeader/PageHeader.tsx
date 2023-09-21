@@ -17,17 +17,19 @@ export const PageHeaderBackdrop: FC<PropsWithChildren<PageHeaderProps>> = ({ tit
 
 export const MainStat: FC<StatsInfoProps> = (props) => {
   const { classNamesProps, ...rest } = props
-  return (
-    <StatInfo
-      {...rest}
-      classNamesProps={{
-        container: styles.mainContainer,
-        value: styles.mainValue,
-        label: styles.mainLabel,
-        ...classNamesProps,
-      }}
-    />
-  )
+
+  const defaultClassNames = {
+    container: styles.mainContainer,
+    value: styles.mainValue,
+    label: styles.mainLabel,
+  }
+
+  const mergedClassNames = {
+    ...defaultClassNames,
+    ...classNamesProps,
+  }
+
+  return <StatInfo {...rest} classNamesProps={mergedClassNames} />
 }
 
 export const AdditionalStat: FC<StatsInfoProps> = (props) => (

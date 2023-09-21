@@ -11,10 +11,10 @@ const RefinanceHeader = () => {
   return (
     <PageHeaderBackdrop title="Refinance">
       <MainStat
+        classNamesProps={{ value: styles.mainValue }}
         label="Available"
         value={loans.length}
         valueType={VALUES_TYPES.STRING}
-        classNamesProps={{ value: styles.mainValue }}
       />
     </PageHeaderBackdrop>
   )
