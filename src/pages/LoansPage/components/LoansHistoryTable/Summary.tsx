@@ -31,9 +31,9 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
         </div>
       </div>
       <div className={styles.statsContainer}>
-        <StatInfo label="Total borrowed" value={totalBorrowed} divider={1e9} />
-        <StatInfo label="Total debt" value={totalDebt} divider={1e9} />
-        <StatInfo label="Total repaid" value={totalRepaid} divider={1e9} />
+        <StatInfo label="Borrowed" value={totalBorrowed} divider={1e9} />
+        <StatInfo label="Debt" value={totalDebt} divider={1e9} />
+        <StatInfo label="Repaid" value={totalRepaid} divider={1e9} />
       </div>
       <CSVDownloadButton
         className={styles.summaryButton}
