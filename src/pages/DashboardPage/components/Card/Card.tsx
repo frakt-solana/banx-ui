@@ -1,5 +1,7 @@
 import { FC, PropsWithChildren } from 'react'
 
+import classNames from 'classnames'
+
 import ImageWithPreload from '@banx/components/ImageWithPreload'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createSolValueJSX } from '@banx/components/TableComponents'
@@ -15,8 +17,20 @@ interface CardProps {
   badgeJSX?: JSX.Element
 }
 
-const CardBackdrop: FC<PropsWithChildren<CardProps>> = ({ onClick, image, badgeJSX, children }) => (
-  <div className={styles.card} onClick={onClick}>
+const CardBackdrop: FC<PropsWithChildren<CardProps>> = ({
+  onClick,
+  image,
+  badgeJSX,
+  className,
+  children,
+}) => (
+  <div
+    onClick={onClick}
+    className={classNames(styles.card, {
+      [styles.clicable]: onClick,
+      className,
+    })}
+  >
     {badgeJSX && <div className={styles.badge}>{badgeJSX}</div>}
     <ImageWithPreload src={image} className={styles.nftImage} square />
     {children}
@@ -26,13 +40,13 @@ const CardBackdrop: FC<PropsWithChildren<CardProps>> = ({ onClick, image, badgeJ
 interface LendCardProps extends CardProps {
   amountOfLoans: number
   offerTvl: number
-  apy?: number
+  apy?: number //? rateBasePoints
 }
 
-export const LendCard: FC<LendCardProps> = ({ image, amountOfLoans, offerTvl, apy }) => {
+export const LendCard: FC<LendCardProps> = ({ amountOfLoans, offerTvl, apy, ...props }) => {
   const BadgeContentJSX = apy ? (
     <div className={styles.lendCardBadge}>
-      <span>{apy}%</span>
+      <span>{apy / 100}%</span>
       <span>APY</span>
     </div>
   ) : (
@@ -40,9 +54,9 @@ export const LendCard: FC<LendCardProps> = ({ image, amountOfLoans, offerTvl, ap
   )
 
   return (
-    <CardBackdrop image={image} badgeJSX={BadgeContentJSX}>
+    <CardBackdrop {...props} badgeJSX={BadgeContentJSX}>
       <div className={styles.lendCardFooter}>
-        <span>{createSolValueJSX(offerTvl)}</span>
+        <span>{createSolValueJSX(offerTvl, 1e9)}</span>
         <span>in {amountOfLoans} loans</span>
       </div>
     </CardBackdrop>
@@ -54,7 +68,7 @@ interface BorrowCardProps extends CardProps {
   maxAvailableToBorrow?: number
 }
 
-export const BorrowCard: FC<BorrowCardProps> = ({ image, dailyFee, maxAvailableToBorrow }) => {
+export const BorrowCard: FC<BorrowCardProps> = ({ dailyFee, maxAvailableToBorrow, ...props }) => {
   const statClassNames = {
     container: styles.borrowCardStatContainer,
     value: styles.borrowCardStatValue,
@@ -63,7 +77,7 @@ export const BorrowCard: FC<BorrowCardProps> = ({ image, dailyFee, maxAvailableT
   const BadgeContentJSX = <>+{createSolValueJSX(maxAvailableToBorrow)}</>
 
   return (
-    <CardBackdrop image={image} badgeJSX={BadgeContentJSX}>
+    <CardBackdrop {...props} badgeJSX={BadgeContentJSX}>
       <div className={styles.borrowCardFooter}>
         <StatInfo
           label="Pepetual"

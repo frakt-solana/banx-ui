@@ -2,9 +2,14 @@
   border: var(--border-primary);
   display: flex;
   flex-direction: column;
-
   position: relative;
-  width: 180px;
+}
+.card.clicable {
+  cursor: pointer;
+
+  &:hover {
+    border: 1px solid var(--bg-border-active);
+  }
 }
 
 .badge {
