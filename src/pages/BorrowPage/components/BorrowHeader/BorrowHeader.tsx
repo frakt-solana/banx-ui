@@ -23,7 +23,7 @@ const Header = () => {
   const nftsAmount = nfts.length
 
   const collectionsWhitelisted = marketsPreview?.length
-  const totalLiquidity = sumBy(marketsPreview, 'offerTVL')
+  const totalLiquidity = sumBy(marketsPreview, 'offerTvl')
 
   return (
     <PageHeaderBackdrop title="Borrow">
