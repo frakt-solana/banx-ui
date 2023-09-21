@@ -17,12 +17,11 @@ export const makeUnstakeNftAction: MakeUnstakeNftAction = async (nft, { connecti
       banxStake: new web3.PublicKey(nft?.banxStake?.publicKey || PUBKEY_PLACEHOLDER),
       userPubkey: wallet.publicKey as web3.PublicKey,
       tokenMint: new web3.PublicKey(nft.mint),
-      subscriptionsAndAdventures: nft.subscriptions
-        .filter(isSubscriptionActive)
-        .map(({ publicKey, adventure }) => ({
+      subscriptionsAndAdventures:
+        nft?.subscriptions?.filter(isSubscriptionActive).map(({ publicKey, adventure }) => ({
           adventure: new web3.PublicKey(adventure),
           adventureSubscription: new web3.PublicKey(publicKey),
-        })),
+        })) ?? [],
     },
     addComputeUnits: true,
     connection,
