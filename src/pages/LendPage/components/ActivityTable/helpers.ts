@@ -1,6 +1,6 @@
 import { RBOption } from '@banx/components/RadioButton'
 
-export const appendIdToOptionValue = (options: RBOption[], id: string) => {
+export const appendIdToOptions = (options: RBOption[], id: string) => {
   return options.map((option) => {
     return {
       ...option,

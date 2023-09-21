@@ -9,7 +9,7 @@ import { fetchLenderActivity } from '@banx/api/activity'
 
 import { useMarketsPreview } from '../../hooks'
 import { RADIO_BUTTONS_OPTIONS } from './constants'
-import { appendIdToOptionValue } from './helpers'
+import { appendIdToOptions } from './helpers'
 
 const PAGINATION_LIMIT = 15
 
@@ -19,7 +19,7 @@ export const useAllLenderActivity = (marketPubkey: string) => {
 
   const { marketsPreview } = useMarketsPreview()
 
-  const options = appendIdToOptionValue(RADIO_BUTTONS_OPTIONS, marketPubkey)
+  const options = appendIdToOptions(RADIO_BUTTONS_OPTIONS, marketPubkey)
 
   const [checked, setChecked] = useState<boolean>(false)
   const [currentOption, setCurrentOption] = useState<RBOption>(options[0])
