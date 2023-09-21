@@ -1,3 +1,9 @@
+import DashboardHeader from './components/DashboardHeader'
+
 export const DashboardPage = () => {
-  return <div>DashboardPage</div>
+  return (
+    <>
+      <DashboardHeader />
+    </>
+  )
 }
