@@ -1,14 +1,11 @@
-import React from 'react'
+import { useWallet } from '@solana/wallet-adapter-react'
 
-import { BorrowCard, LendCard } from '../Card'
+import NotConnectedContent from './components/NotConnectedContent'
 
 const DashboardLendTab = () => {
-  return (
-    <div>
-      <LendCard image="" amountOfLoans={1211} offerTvl={2133} apy={10} />
-      <BorrowCard image="" dailyFee={0.05} maxAvailableToBorrow={10} />
-    </div>
-  )
+  const { connected } = useWallet()
+
+  return <>{connected && <NotConnectedContent />}</>
 }
 
 export default DashboardLendTab
