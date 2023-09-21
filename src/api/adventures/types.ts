@@ -93,15 +93,15 @@ export const AdventureNftSchema = z.object({
     partnerPoints: z.number(),
     playerPoints: z.number(),
   }),
-  banxStake: BanxStakeSchema.optional(),
-  subscriptions: AdventureSubscriptionSchema.array(),
+  banxStake: BanxStakeSchema.nullable(),
+  subscriptions: AdventureSubscriptionSchema.array().nullable(),
 })
 export type AdventureNft = z.infer<typeof AdventureNftSchema>
 
 //? adventures/?userPubkey
 export const AdventuresInfoSchema = z.object({
   adventures: AdventureSchema.array(),
-  banxUser: BanxUserSchema.optional(), //? if userPubkey exists
+  banxUserPDA: BanxUserSchema.optional(), //? if userPubkey exists
   nfts: AdventureNftSchema.array().optional(), //? if userPubkey exists
 })
 export type AdventuresInfo = z.infer<typeof AdventuresInfoSchema>
