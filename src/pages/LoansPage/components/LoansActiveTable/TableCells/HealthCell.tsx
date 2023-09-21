@@ -14,7 +14,7 @@ export const HealthCell: FC<HealthCellProps> = ({ loan }) => {
 
   const repayValue = calculateLoanRepayValue(loan)
 
-  const health = (repayValue / collectionFloor) * 100
+  const health = 100 - (repayValue / collectionFloor) * 100
 
   return createPercentValueJSX(health)
 }
