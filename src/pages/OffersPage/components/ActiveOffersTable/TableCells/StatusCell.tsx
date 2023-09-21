@@ -1,5 +1,6 @@
 import { FC } from 'react'
 
+import { capitalize } from 'lodash'
 import moment from 'moment'
 
 import Timer from '@banx/components/Timer'
@@ -31,7 +32,7 @@ export const StatusCell: FC<StatusCellProps> = ({ loan, isCardView }) => {
   const statusInfoTitle = <span className={styles.statusInfoTitle}>{timeInfo}</span>
   const statusInfoSubtitle = (
     <span style={{ color: statusColor }} className={styles.statusInfoSubtitle}>
-      {loanStatus}
+      {capitalize(loanStatus)}
     </span>
   )
 
