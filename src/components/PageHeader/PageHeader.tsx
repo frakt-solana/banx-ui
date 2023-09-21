@@ -15,16 +15,20 @@ export const PageHeaderBackdrop: FC<PropsWithChildren<PageHeaderProps>> = ({ tit
   </div>
 )
 
-export const MainStat: FC<StatsInfoProps> = (props) => (
-  <StatInfo
-    classNamesProps={{
-      container: styles.mainContainer,
-      value: styles.mainValue,
-      label: styles.mainLabel,
-    }}
-    {...props}
-  />
-)
+export const MainStat: FC<StatsInfoProps> = (props) => {
+  const { classNamesProps, ...rest } = props
+  return (
+    <StatInfo
+      {...rest}
+      classNamesProps={{
+        container: styles.mainContainer,
+        value: styles.mainValue,
+        label: styles.mainLabel,
+        ...classNamesProps,
+      }}
+    />
+  )
+}
 
 export const AdditionalStat: FC<StatsInfoProps> = (props) => (
   <StatInfo
