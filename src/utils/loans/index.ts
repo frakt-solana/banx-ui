@@ -15,6 +15,7 @@ export enum LoanStatus {
 export const STATUS_LOANS_MAP: Record<string, string> = {
   [BondTradeTransactionV2State.PerpetualActive]: LoanStatus.Active,
   [BondTradeTransactionV2State.PerpetualRepaid]: LoanStatus.Repaid,
+  [BondTradeTransactionV2State.PerpetualPartialRepaid]: LoanStatus.Repaid,
   [BondTradeTransactionV2State.PerpetualLiquidatedByClaim]: LoanStatus.Liquidated,
   [BondTradeTransactionV2State.PerpetualManualTerminating]: LoanStatus.Terminating,
 }
