@@ -45,8 +45,8 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
         <p className={styles.collateralsSubtitle}>Collaterals selected</p>
       </div>
       <div className={styles.statsContainer}>
-        <StatInfo label="Total borrowed" value={totalBorrowed} divider={1e9} />
-        <StatInfo label="Total debt" value={totalDebt} divider={1e9} />
+        <StatInfo label="Borrowed" value={totalBorrowed} divider={1e9} />
+        <StatInfo label="Debt" value={totalDebt} divider={1e9} />
       </div>
       <div className={styles.summaryBtns}>
         <Button variant="secondary" onClick={selectAll}>

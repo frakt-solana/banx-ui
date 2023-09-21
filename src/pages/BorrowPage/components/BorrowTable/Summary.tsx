@@ -45,11 +45,11 @@ export const Summary: FC<SummaryProps> = ({ nftsInCart, selectAll, borrowAll }) 
           <p>{createSolValueJSX(totalFloor, 1e9, '0◎')}</p>
         </div>
         <div className={styles.stats}>
-          <p>Total borrow</p>
+          <p>To borrow</p>
           <p>{createSolValueJSX(totalBorrow, 1e9, '0◎')}</p>
         </div>
         <div className={styles.stats}>
-          <p>Total weekly fee</p>
+          <p>Weekly fee</p>
           <p>{createSolValueJSX(totalWeeklyFee, 1e9, '0◎')}</p>
         </div>
       </div>

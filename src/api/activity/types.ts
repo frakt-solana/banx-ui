@@ -5,6 +5,7 @@ import { BasePaginationRequest, PaginationMeta } from '@banx/types'
 import { NFTSchema } from '../core'
 
 export const LenderActivitySchema = z.object({
+  id: z.string(),
   status: z.string(),
   publicKey: z.string(),
   apr: z.number(),
@@ -35,6 +36,7 @@ export interface LenderActivityResponse {
 }
 
 export const BorrowerActivitySchema = z.object({
+  id: z.string(),
   status: z.string(),
   publicKey: z.string(),
   apr: z.number(),

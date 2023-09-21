@@ -2,6 +2,7 @@ import { FC, useMemo, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 
 import { MarketPreview } from '@banx/api/core'
 
@@ -43,7 +44,10 @@ const OrderBookMobile: FC<OrderBookMobileProps> = ({ marketPreview, orderBookPar
   const { offers } = orderBookParams || {}
 
   const userOffers = useMemo(() => {
-    return offers.filter((offer) => offer.assetReceiver === publicKey?.toBase58())
+    return offers.filter(
+      (offer) =>
+        offer.assetReceiver === publicKey?.toBase58() && offer.publicKey !== PUBKEY_PLACEHOLDER,
+    )
   }, [offers, publicKey])
 
   return (

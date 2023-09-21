@@ -5,8 +5,6 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { RBOption, RadioButton } from '@banx/components/RadioButton'
 import { Toggle } from '@banx/components/Toggle'
 
-import { RADIO_BUTTONS_OPTIONS } from './constants'
-
 import styles from './ActivityTable.module.less'
 
 interface FilterTableSectionProps {
@@ -14,6 +12,7 @@ interface FilterTableSectionProps {
   onToggleChecked: () => void
   currentOption: RBOption
   onOptionChange: (value: RBOption) => void
+  options: RBOption[]
 }
 
 export const FilterTableSection: FC<FilterTableSectionProps> = ({
@@ -21,6 +20,7 @@ export const FilterTableSection: FC<FilterTableSectionProps> = ({
   onToggleChecked,
   currentOption,
   onOptionChange,
+  options,
 }) => {
   const { connected } = useWallet()
 
@@ -28,7 +28,7 @@ export const FilterTableSection: FC<FilterTableSectionProps> = ({
     <div className={styles.filterTableSection}>
       <RadioButton
         className={styles.radioButton}
-        options={RADIO_BUTTONS_OPTIONS}
+        options={options}
         currentOption={currentOption}
         onOptionChange={onOptionChange}
       />
