@@ -9,33 +9,13 @@ import { useAdventuresInfo } from './hooks'
 
 import styles from './AdventuresPage.module.less'
 
-export enum AdventuresTabsNames {
-  ADVENTURES = 'adventures',
-  HISTORY = 'history',
-}
-
-export const ADVENTURES_TABS: Tab[] = [
-  {
-    label: 'Adventures',
-    value: 'adventures',
-  },
-  {
-    label: 'History',
-    value: 'history',
-  },
-]
-
-export const DEFAULT_TAB_VALUE = ADVENTURES_TABS[0].value
-
 export const AdventuresPage: FC = () => {
   const { adventuresInfo, isLoading } = useAdventuresInfo()
 
   const { value: currentTabValue, ...tabProps } = useTabs({
     tabs: ADVENTURES_TABS,
-    defaultValue: DEFAULT_TAB_VALUE,
+    defaultValue: ADVENTURES_TABS[0].value,
   })
-
-  // const walletInfoExists = !!adventuresInfo?.nfts
 
   return (
     <div className={styles.pageWrapper}>
@@ -59,3 +39,19 @@ export const AdventuresPage: FC = () => {
     </div>
   )
 }
+
+enum AdventuresTabsNames {
+  ADVENTURES = 'adventures',
+  HISTORY = 'history',
+}
+
+const ADVENTURES_TABS: Tab[] = [
+  {
+    label: 'Adventures',
+    value: 'adventures',
+  },
+  {
+    label: 'History',
+    value: 'history',
+  },
+]
