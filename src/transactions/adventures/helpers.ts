@@ -32,3 +32,11 @@ export const isSubscriptionActive = (subscription: AdventureSubscription) =>
 export const isNftParticipating = (nft: AdventureNft, adventurePubkey: string) => {
   return !!nft?.subscriptions?.find((subscription) => subscription.adventure === adventurePubkey)
 }
+
+export const isNftLoaned = (nft: AdventureNft) => {
+  return !!nft?.banxStake?.isLoaned
+}
+
+export const calcNftsPartnerPoints = (nfts: AdventureNft[] = []) => {
+  return nfts.reduce((acc, { meta }) => acc + Number(meta.partnerPoints), 0)
+}
