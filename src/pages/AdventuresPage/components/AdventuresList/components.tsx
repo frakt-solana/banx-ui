@@ -10,6 +10,7 @@ import { Button } from '@banx/components/Buttons'
 import { AdventureNft, AdventureStatus } from '@banx/api/adventures'
 import { useCountdown } from '@banx/hooks'
 import { Alert, CircleCheck, MoneyBill, Timer } from '@banx/icons'
+import { useIsLedger } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import {
@@ -45,6 +46,7 @@ export const AdventureSubscribeButton: FC<AdventuresComponentsProps> = ({
 
   const { connection } = useConnection()
   const wallet = useWallet()
+  const { isLedger } = useIsLedger()
 
   const { refetch } = useAdventuresInfo()
 
@@ -63,7 +65,11 @@ export const AdventureSubscribeButton: FC<AdventuresComponentsProps> = ({
     const nftsToSubscribe = stakedNfts.filter(({ mint }) => !subscribedNftsMints.includes(mint))
     const nftsChunks = chunk(nftsToSubscribe, NFTS_TO_SUBSCRIBE_PER_TXN)
 
-    new TxnExecutor(makeSubscribeNftsAction, { wallet, connection })
+    new TxnExecutor(
+      makeSubscribeNftsAction,
+      { wallet, connection },
+      { signAllChunks: isLedger ? 5 : 40 },
+    )
       .addTxnParams(
         nftsChunks.map((nftChunk) => ({
           nfts: nftChunk,
@@ -84,7 +90,7 @@ export const AdventureSubscribeButton: FC<AdventuresComponentsProps> = ({
         defaultTxnErrorHandler(error)
       })
       .execute()
-  }, [refetch, connection, wallet, adventure, stakedNfts, subscribedNfts])
+  }, [refetch, connection, wallet, adventure, stakedNfts, subscribedNfts, isLedger])
 
   const isParticipating = !!subscribedNfts.length
 
