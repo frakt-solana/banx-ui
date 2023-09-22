@@ -88,15 +88,22 @@ export const AdventuresList: FC<AdventuresListProps> = ({
 }) => {
   const { connected } = useWallet()
 
-  const filteredAdventures = useMemo(
-    () =>
-      adventuresInfo.adventures.filter((adventure) => {
-        const adventureStatus = getAdventureStatus(adventure)
-        const isEnded = adventureStatus === AdventureStatus.ENDED
-        return historyMode ? isEnded : !isEnded
-      }),
-    [adventuresInfo, historyMode],
-  )
+  const filteredAdventures = useMemo(() => {
+    const filteredAdventures = adventuresInfo.adventures.filter((adventure) => {
+      const adventureStatus = getAdventureStatus(adventure)
+      const isEnded = adventureStatus === AdventureStatus.ENDED
+      return historyMode ? isEnded : !isEnded
+    })
+
+    return historyMode
+      ? filteredAdventures.sort((adventureA, adventureB) => {
+          return (
+            staking.helpers.adventureTimestampToWeeks(adventureB.periodStartedAt) -
+            staking.helpers.adventureTimestampToWeeks(adventureA.periodStartedAt)
+          )
+        })
+      : filteredAdventures
+  }, [adventuresInfo, historyMode])
 
   return (
     <ul className={classNames(styles.list, className)}>
