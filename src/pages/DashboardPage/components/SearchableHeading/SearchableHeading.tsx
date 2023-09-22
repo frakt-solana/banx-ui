@@ -1,16 +1,20 @@
-import { FC } from 'react'
+import { SearchSelect, SearchSelectProps } from '@banx/components/SearchSelect'
 
 import styles from './SearchableHeading.module.less'
 
-interface SearchableHeadingProps {
+interface SearchableHeadingProps<T> {
   title: string
+  searchSelectParams: SearchSelectProps<T>
 }
 
-const SearchableHeading: FC<SearchableHeadingProps> = ({ title }) => {
+const SearchableHeading = <T extends SearchableHeadingProps<T>>({
+  title,
+  searchSelectParams,
+}: SearchableHeadingProps<T>) => {
   return (
     <div className={styles.wrapper}>
       <h4 className={styles.heading}>{title}</h4>
-      {/* <SearchSelect /> */}
+      <SearchSelect {...searchSelectParams} />
     </div>
   )
 }
