@@ -1,1 +1,1 @@
-export * from './SearchableHeading.module.less'
+export { default } from './SearchableHeading'
