@@ -7,8 +7,10 @@ import { Adventure, BanxUser } from 'fbonds-core/lib/fbond-protocol/types'
 import { capitalize } from 'lodash'
 
 import { AdventureNft, AdventureStatus, AdventuresInfo } from '@banx/api/adventures'
+import { useModal } from '@banx/store'
 import { getAdventureStatus, isNftParticipating } from '@banx/transactions/adventures'
 
+import { AdventuresModal } from '../AdventuresModal'
 import {
   AdventureStatusLine,
   AdventureSubscribeButton,
@@ -76,17 +78,16 @@ const AdventuresCard: FC<AdventuresCardProps> = (props) => {
 interface AdventuresListProps {
   adventuresInfo: AdventuresInfo
   historyMode?: boolean
-  setNftsModalOpen: (nextValue: boolean) => void
   className?: string
 }
 
 export const AdventuresList: FC<AdventuresListProps> = ({
   adventuresInfo,
   historyMode,
-  setNftsModalOpen,
   className,
 }) => {
   const { connected } = useWallet()
+  const { open } = useModal()
 
   const filteredAdventures = useMemo(() => {
     const filteredAdventures = adventuresInfo.adventures.filter((adventure) => {
@@ -114,7 +115,7 @@ export const AdventuresList: FC<AdventuresListProps> = ({
           banxUser={adventuresInfo?.banxUserPDA}
           walletConnected={connected}
           nfts={adventuresInfo?.nfts}
-          setNftsModalOpen={setNftsModalOpen}
+          setNftsModalOpen={() => open(AdventuresModal, { adventuresInfo })}
         />
       ))}
     </ul>

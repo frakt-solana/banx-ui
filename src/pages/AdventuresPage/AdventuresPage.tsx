@@ -28,7 +28,6 @@ export const AdventuresPage: FC = () => {
               className={styles.adventuresList}
               adventuresInfo={adventuresInfo}
               historyMode={currentTabValue === AdventuresTabsNames.HISTORY}
-              setNftsModalOpen={() => null}
             />
           </>
         )}

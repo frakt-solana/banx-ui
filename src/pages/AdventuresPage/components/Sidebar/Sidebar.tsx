@@ -7,8 +7,10 @@ import { Button } from '@banx/components/Buttons'
 
 import { AdventuresInfo } from '@banx/api/adventures'
 import { Gamepad } from '@banx/icons'
+import { useModal } from '@banx/store'
 
 import { calcNftsPartnerPoints, isNftStaked } from '../../helpers'
+import { AdventuresModal } from '../AdventuresModal'
 
 import styles from './Sidebar.module.less'
 
@@ -19,6 +21,7 @@ interface SidebarProps {
 
 export const Sidebar: FC<SidebarProps> = ({ adventuresInfo, className }) => {
   const { nfts } = adventuresInfo
+  const { open } = useModal()
 
   const stakedNfts = useMemo(() => {
     return (nfts || [])?.filter(isNftStaked)
@@ -37,8 +40,7 @@ export const Sidebar: FC<SidebarProps> = ({ adventuresInfo, className }) => {
           button={{
             text: 'Manage',
             type: 'primary',
-            onClick: () => null,
-            // onClick: () => setNftsModalOpen(true),
+            onClick: () => open(AdventuresModal, { adventuresInfo }),
           }}
         />
 
