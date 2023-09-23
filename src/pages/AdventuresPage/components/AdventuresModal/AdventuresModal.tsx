@@ -14,7 +14,7 @@ import {
   AdventuresInfo,
   BanxStakeState,
 } from '@banx/api/adventures'
-import { CloseModal, TensorFilled } from '@banx/icons'
+import { TensorFilled } from '@banx/icons'
 import { useIsLedger, useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
@@ -71,20 +71,7 @@ export const AdventuresModal: FC<AdventuresModalProps> = ({ adventuresInfo }) =>
   }, [adventuresInfo])
 
   return (
-    <Modal
-      className={styles.modal}
-      open
-      closable={false}
-      onCancel={close}
-      footer={false}
-      width={768}
-      centered
-    >
-      <div className={styles.closeModalSection}>
-        <div className={styles.closeModalIcon} onClick={close}>
-          <CloseModal className={styles.closeIcon} />
-        </div>
-      </div>
+    <Modal className={styles.modal} open onCancel={close} footer={false} width={768} centered>
       <Tabs className={styles.tabs} tabs={tabs} value={tabValue} setValue={setTabValue} />
       {tabValue === modalTabs[0].value && (
         <StakeContent
@@ -227,6 +214,7 @@ const UnstakeContent: FC<UnstakeContent> = ({ nfts = [] }) => {
   const wallet = useWallet()
   const { refetch } = useAdventuresInfo()
   const { isLedger } = useIsLedger()
+  const { close } = useModal()
 
   const [selectedNfts, setSelectedNfts] = useState<AdventureNft[]>([])
 

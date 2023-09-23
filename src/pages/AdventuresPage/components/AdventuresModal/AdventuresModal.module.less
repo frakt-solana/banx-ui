@@ -4,80 +4,18 @@
 
     .ant-modal-body {
       padding: 0 !important;
-      margin: -1px;
+      // margin: -1px;
     }
-  }
-  &::before {
-    content: '';
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    border: 1px solid var(--primary-text);
-    background-color: var(--primary-text);
-    top: 4px;
-    left: 4px;
-  }
-}
 
-.closeModalSection {
-  height: 40px;
-  display: flex;
-  align-items: center;
-  background: var(--primary-background);
-  border-radius: 30px;
-  position: absolute;
-  top: -64px;
-  right: 0;
-
-  @media screen and (max-width: 1024px) {
-    top: -60px;
-  }
-
-  @media screen and (max-width: 550px) {
-    top: -55px;
-    height: 35px;
-  }
-}
-
-.closeModalIcon {
-  height: 40px;
-  width: 40px;
-  border: 1px solid var(--primary-border);
-  background: var(--primary-background);
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-right: -1px;
-  cursor: pointer;
-
-  @media screen and (max-width: 550px) {
-    font-size: 18px;
-    height: 35px;
-    width: 35px;
-  }
-
-  &:hover {
-    border-color: var(--secondary-border);
-  }
-}
-
-.closeIcon {
-  width: 12px;
-
-  stroke: var(--secondary-border);
-
-  rect {
-    fill: var(--secondary-border);
-  }
-  @media screen and (max-width: 470px) {
-    width: 15px;
+    .ant-modal-content {
+      padding: 0;
+    }
   }
 }
 
 .content {
   padding: 32px;
-  color: var(--black-color);
+  color: var(--content-primary);
   min-height: 498px;
 
   @media screen and (max-width: 960px) {
@@ -99,14 +37,14 @@
   justify-content: flex-end;
 
   p:first-child {
-    font: 700 32px var(--font-family-chakra);
+    font: var(--important-text-xl);
     @media screen and (max-width: 960px) {
       font-size: 24px;
     }
   }
 
   p:last-child {
-    font: 700 12px var(--font-family-syne);
+    font: var(--table-header-md);
     text-transform: uppercase;
     @media screen and (max-width: 960px) {
       font-size: 8px;
@@ -134,7 +72,7 @@
 
   p {
     text-align: center;
-    font: 400 24px var(--font-family-chakra);
+    font: 400 24px var(--body-text-lg);
   }
 }
 .tensorBtn {
@@ -150,11 +88,11 @@
 
 .nft {
   user-select: none;
-  border: 1px solid var(--primary-border);
+  border: 1px solid var(--bg-border);
 
   p {
     text-align: center;
-    font: 400 14px var(--font-family-chakra);
+    font: var(--body-text-md);
     padding: 8px 0;
   }
 }
@@ -168,7 +106,7 @@
 
 .image {
   position: relative;
-  background: #faf4fe;
+  background: lightgray 50%;
 
   &::after {
     content: '';
@@ -214,7 +152,7 @@
   align-items: center;
   background: #000000b0;
   color: #fff;
-  font: 700 20px var(--font-family-chakra);
+  font: var(--title-md);
   text-align: center;
 }
 
@@ -224,8 +162,8 @@
   bottom: 0;
   width: 100%;
   padding: 24px;
-  background-color: var(--primary-background);
-  border-top: 1px solid var(--secondary-border);
+  background-color: var(--bg-primary);
+  border-top: 1px solid var(--bg-border);
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 24px;
