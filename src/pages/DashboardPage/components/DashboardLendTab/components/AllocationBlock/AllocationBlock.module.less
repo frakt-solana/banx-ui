@@ -1,9 +1,10 @@
 .allocationHeading {
-  font: var(--title-sm);
-  text-transform: uppercase;
   display: flex;
   align-items: center;
   height: 40px;
+
+  font: var(--title-sm);
+  text-transform: uppercase;
 }
 
 .allocationContent {
@@ -28,10 +29,6 @@
   gap: 16px;
 }
 
-.manageOffersButton {
-  width: 100%;
-}
-
 .allocationChartStats {
   display: flex;
   flex-direction: column;
@@ -39,4 +36,8 @@
   & > div:nth-child(odd) {
     background: var(--bg-primary-deep);
   }
+}
+
+.manageOffersButton {
+  width: 100%;
 }

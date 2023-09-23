@@ -9,3 +9,9 @@ export const ALLOCATION_COLOR_MAP: Record<AllocationStatus, string> = {
   [AllocationStatus.UnderWaterLoans]: 'var(--additional-lava-primary)',
   [AllocationStatus.PendingOffers]: 'var(--additional-blue-primary)',
 }
+
+export const ALLOCATION_DISPLAY_NAMES: Record<AllocationStatus, string> = {
+  [AllocationStatus.ActiveLoans]: 'Active Loans',
+  [AllocationStatus.UnderWaterLoans]: 'Underwater Loans',
+  [AllocationStatus.PendingOffers]: 'Pending Offers',
+}

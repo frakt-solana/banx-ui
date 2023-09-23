@@ -3,7 +3,7 @@ import { VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { ChartPie } from '../../../ChartPie'
 import { ChartStatInfo, DashboardStatInfo } from '../../../DashboardStatInfo'
-import { ALLOCATION_COLOR_MAP, AllocationStatus } from './constants'
+import { ALLOCATION_COLOR_MAP, ALLOCATION_DISPLAY_NAMES, AllocationStatus } from './constants'
 
 import styles from './AllocationBlock.module.less'
 
@@ -15,7 +15,7 @@ const AllocationBlock = () => {
   }
 
   const allocationData = Object.entries(statusValueMap).map(([status, value]) => ({
-    name: status,
+    name: ALLOCATION_DISPLAY_NAMES[status as AllocationStatus],
     key: status,
     value,
   }))
