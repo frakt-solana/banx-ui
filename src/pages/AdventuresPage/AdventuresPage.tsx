@@ -1,5 +1,6 @@
 import { FC } from 'react'
 
+import { Loader } from '@banx/components/Loader'
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
 import { AdventuresList } from './components/AdventuresList'
@@ -21,6 +22,7 @@ export const AdventuresPage: FC = () => {
     <div className={styles.pageWrapper}>
       <div className={styles.content}>
         <Header />
+        {isLoading && <Loader className={styles.loader} />}
         {!isLoading && !!adventuresInfo && (
           <>
             <Tabs value={currentTabValue} {...tabProps} />
