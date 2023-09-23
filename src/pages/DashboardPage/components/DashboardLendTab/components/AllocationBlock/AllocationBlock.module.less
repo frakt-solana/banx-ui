@@ -3,7 +3,6 @@
   text-transform: uppercase;
   display: flex;
   align-items: center;
-  margin: 24px 12px;
   height: 40px;
 }
 
@@ -11,6 +10,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin: 24px 0 16px;
   gap: 24px;
   width: 100%;
 }
@@ -29,17 +29,14 @@
 }
 
 .manageOffersButton {
-  margin-top: 16px;
   width: 100%;
 }
 
 .allocationChartStats {
   display: flex;
   flex-direction: column;
-}
-.chart {
-  border-radius: 100%;
-  background: red;
-  min-height: 144px;
-  min-width: 144px;
+
+  & > div:nth-child(odd) {
+    background: var(--bg-primary-deep);
+  }
 }

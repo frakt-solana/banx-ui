@@ -1,12 +1,25 @@
 import { Button } from '@banx/components/Buttons'
 import { VALUES_TYPES } from '@banx/components/StatInfo'
 
+import { ChartPie } from '../../../ChartPie'
 import { ChartStatInfo, DashboardStatInfo } from '../../../DashboardStatInfo'
 import { ALLOCATION_COLOR_MAP, AllocationStatus } from './constants'
 
 import styles from './AllocationBlock.module.less'
 
 const AllocationBlock = () => {
+  const statusValueMap = {
+    [AllocationStatus.ActiveLoans]: 10,
+    [AllocationStatus.UnderWaterLoans]: 20,
+    [AllocationStatus.PendingOffers]: 30,
+  }
+
+  const allocationData = Object.entries(statusValueMap).map(([status, value]) => ({
+    name: status,
+    key: status,
+    value,
+  }))
+
   return (
     <>
       <h4 className={styles.allocationHeading}>Allocation</h4>
@@ -22,24 +35,22 @@ const AllocationBlock = () => {
             />
           </div>
           <div className={styles.allocationChartStats}>
-            <ChartStatInfo
-              label="Active loans"
-              value="10"
-              indicatorColor={ALLOCATION_COLOR_MAP[AllocationStatus.ActiveLoans]}
-            />
-            <ChartStatInfo
-              label="Under water loans"
-              value="10"
-              indicatorColor={ALLOCATION_COLOR_MAP[AllocationStatus.UnderWaterLoans]}
-            />
-            <ChartStatInfo
-              label="Pending offers"
-              value="10"
-              indicatorColor={ALLOCATION_COLOR_MAP[AllocationStatus.PendingOffers]}
-            />
+            {allocationData.map(({ key, name, value }) => (
+              <ChartStatInfo
+                key={key}
+                label={name}
+                value={value}
+                indicatorColor={ALLOCATION_COLOR_MAP[key as AllocationStatus]}
+              />
+            ))}
           </div>
         </div>
-        <div className={styles.chart}></div>
+        <ChartPie
+          data={allocationData}
+          colors={Object.values(ALLOCATION_COLOR_MAP)}
+          label="Total funds"
+          value={27}
+        />
       </div>
       <Button className={styles.manageOffersButton}>Manage my offers</Button>
     </>

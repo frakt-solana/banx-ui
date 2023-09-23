@@ -1,7 +1,7 @@
 export enum AllocationStatus {
-  ActiveLoans = 'Active loans',
-  UnderWaterLoans = 'Under water loans',
-  PendingOffers = 'Pending offers',
+  ActiveLoans = 'activeLoans',
+  UnderWaterLoans = 'underWaterLoans',
+  PendingOffers = 'pendingOffers',
 }
 
 export const ALLOCATION_COLOR_MAP: Record<AllocationStatus, string> = {
