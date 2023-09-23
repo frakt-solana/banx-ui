@@ -23,7 +23,7 @@ export const DashboardStatInfo: FC<StatsInfoProps> = (props) => {
 
 interface ChartStatInfoProps {
   label: string
-  value: string
+  value: string | number | JSX.Element
   indicatorColor: string
 }
 
