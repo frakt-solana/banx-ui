@@ -4,7 +4,7 @@ import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { PATHS } from '@banx/router'
 import { useMarketsURLControl } from '@banx/store'
 
-import { LendCard } from '../../Card'
+import { LendCard } from '../../../Card'
 
 import styles from './NotConnectedContent.module.less'
 
