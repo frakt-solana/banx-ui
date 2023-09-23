@@ -8,8 +8,12 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 import { MarketPreview } from '@banx/api/core'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 
+import { LendCard } from '../Card'
 import SearchableHeading from '../SearchableHeading'
+import AllocationBlock from './components/AllocationBlock/AllocationBlock'
 import NotConnectedContent from './components/NotConnectedContent'
+
+import styles from './DashboardLendTab.module.less'
 
 const DashboardLendTab = () => {
   const { connected } = useWallet()
@@ -32,11 +36,32 @@ const DashboardLendTab = () => {
 
   return (
     <>
-      {connected && (
+      {!connected && (
         <>
           <SearchableHeading title="Collections" searchSelectParams={searchSelectParams as any} />
           <NotConnectedContent />
         </>
+      )}
+      {connected && (
+        <div className={styles.container}>
+          <div className={styles.leftSide}>
+            <SearchableHeading title="Collections" searchSelectParams={searchSelectParams as any} />
+            <div className={styles.cardList}>
+              {marketsPreview.map((market) => (
+                <LendCard
+                  key={market.marketPubkey}
+                  image={market.collectionImage}
+                  amountOfLoans={market.activeBondsAmount}
+                  offerTvl={market.offerTvl}
+                  apy={market.marketApr}
+                />
+              ))}
+            </div>
+          </div>
+          <div className={styles.rightSide}>
+            <AllocationBlock />
+          </div>
+        </div>
       )}
     </>
   )
