@@ -1,27 +1,38 @@
+import { map } from 'lodash'
+import { useNavigate } from 'react-router-dom'
+
 import { Button } from '@banx/components/Buttons'
+import { Doughnut } from '@banx/components/Charts'
 import { VALUES_TYPES } from '@banx/components/StatInfo'
 
-import { ChartPie } from '../../../ChartPie'
+import { PATHS } from '@banx/router'
+
 import { ChartStatInfo, DashboardStatInfo } from '../../../DashboardStatInfo'
 import { ALLOCATION_COLOR_MAP, ALLOCATION_DISPLAY_NAMES, AllocationStatus } from './constants'
 
 import styles from './AllocationBlock.module.less'
 
 const AllocationBlock = () => {
-  const statusValueMap = {
+  const navigate = useNavigate()
+
+  const allocationStatusValueMap = {
     [AllocationStatus.ActiveLoans]: 10,
     [AllocationStatus.UnderWaterLoans]: 20,
     [AllocationStatus.PendingOffers]: 30,
   }
 
-  const allocationData = Object.entries(statusValueMap).map(([status, value]) => ({
+  const allocationData = Object.entries(allocationStatusValueMap).map(([status, value]) => ({
     name: ALLOCATION_DISPLAY_NAMES[status as AllocationStatus],
     key: status,
     value,
   }))
 
+  const goToOffersPage = () => {
+    navigate(PATHS.OFFERS)
+  }
+
   return (
-    <>
+    <div className={styles.allocationContainer}>
       <h4 className={styles.allocationHeading}>Allocation</h4>
       <div className={styles.allocationContent}>
         <div className={styles.allocationStatsContainer}>
@@ -45,15 +56,17 @@ const AllocationBlock = () => {
             ))}
           </div>
         </div>
-        <ChartPie
-          data={allocationData}
+        <Doughnut
+          data={map(allocationData, 'value')}
           colors={Object.values(ALLOCATION_COLOR_MAP)}
-          label="Total funds"
-          value={27}
+          statLabel="Total funds"
+          statValue={27}
         />
       </div>
-      <Button className={styles.manageOffersButton}>Manage my offers</Button>
-    </>
+      <Button onClick={goToOffersPage} className={styles.manageOffersButton}>
+        Manage my offers
+      </Button>
+    </div>
   )
 }
 

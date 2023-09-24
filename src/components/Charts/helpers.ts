@@ -1,4 +1,4 @@
-const getCssVariableValue = (cssVar: string) => {
+export const getCssVariableValue = (cssVar: string) => {
   // Remove the 'var(' and ')' from the css variable
   const varName = cssVar.slice(4, -1)
 

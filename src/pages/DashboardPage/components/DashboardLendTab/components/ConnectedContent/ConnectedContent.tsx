@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { createSolValueJSX } from '@banx/components/TableComponents'
@@ -8,6 +8,7 @@ import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 
 import { LendCard } from '../../../Card'
 import SearchableHeading from '../../../SearchableHeading'
+import AllTimeBlock from '../AllTimeBlock'
 import AllocationBlock from '../AllocationBlock'
 
 import styles from './ConnectedContent.module.less'
@@ -32,9 +33,9 @@ const ConnectedContent = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.leftSide}>
+      <div className={styles.collectionsSection}>
         <SearchableHeading title="Collections" searchSelectParams={searchSelectParams as any} />
-        <div className={styles.cardList}>
+        <div className={styles.collectionsCardList}>
           {marketsPreview.map((market) => (
             <LendCard
               key={market.marketPubkey}
@@ -46,8 +47,9 @@ const ConnectedContent = () => {
           ))}
         </div>
       </div>
-      <div className={styles.rightSide}>
+      <div className={styles.additionalContentSection}>
         <AllocationBlock />
+        <AllTimeBlock />
       </div>
     </div>
   )

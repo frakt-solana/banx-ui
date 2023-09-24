@@ -1,10 +1,10 @@
-.chartWrapper {
+.doughnutChartWrapper {
   position: relative;
   width: 144px;
   height: 144px;
 }
 
-.innerContent {
+.doughnutInnerContent {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -18,5 +18,15 @@
     white-space: nowrap;
     align-items: center;
     flex-direction: column-reverse;
+  }
+}
+
+.barChartWrapper {
+  width: 144px;
+  height: 188px;
+
+  canvas {
+    width: 144px !important;
+    height: 188px !important;
   }
 }
