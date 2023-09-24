@@ -7,16 +7,14 @@ interface SearchableHeadingProps<T> {
   searchSelectParams: SearchSelectProps<T>
 }
 
-const SearchableHeading = <T extends SearchableHeadingProps<T>>({
+export const SearchableHeading = <T extends SearchableHeadingProps<T>>({
   title,
   searchSelectParams,
 }: SearchableHeadingProps<T>) => {
   return (
     <div className={styles.wrapper}>
-      <h4 className={styles.heading}>{title}</h4>
+      <h4 className={styles.searchableHeading}>{title}</h4>
       <SearchSelect {...searchSelectParams} />
     </div>
   )
 }
-
-export default SearchableHeading

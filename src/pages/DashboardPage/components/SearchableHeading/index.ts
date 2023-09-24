@@ -1,1 +1,1 @@
-export { default } from './SearchableHeading'
+export * from './SearchableHeading'

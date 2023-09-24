@@ -6,7 +6,7 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 
-import SearchableHeading from '../SearchableHeading'
+import { SearchableHeading } from '../SearchableHeading'
 import AllTimeBlock from './components/AllTimeBlock'
 import AllocationBlock from './components/AllocationBlock'
 import { CollectionsCardList } from './components/components'
