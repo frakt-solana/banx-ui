@@ -1,53 +1,38 @@
 import { useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import classNames from 'classnames'
 
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 
 import { SearchableHeading } from '../components'
-import AllTimeBlock from './components/AllTimeBlock'
-import AllocationBlock from './components/AllocationBlock'
-import { CollectionsCardList } from './components/components'
+import { AllTimeBlock, AllocationBlock, CollectionsCardList } from './components'
 
 import styles from './DashboardLendTab.module.less'
 
 const DashboardLendTab = () => {
   const { connected } = useWallet()
-
-  return connected ? <ConnectedContent /> : <NotConnectedContent />
-}
-
-export default DashboardLendTab
-
-const ConnectedContent = () => {
   const searchSelectParams = useSearchSelectParams()
 
   return (
-    <div className={styles.connectedContainer}>
-      <div className={styles.collectionsSection}>
+    <>
+      <div className={classNames(styles.collectionsSection, { [styles.fullWidth]: !connected })}>
         <SearchableHeading title="Collections" searchSelectParams={searchSelectParams as any} />
         <CollectionsCardList />
       </div>
-      <div className={styles.additionalContentSection}>
-        <AllocationBlock />
-        <AllTimeBlock />
-      </div>
-    </div>
+      {connected && (
+        <div className={styles.additionalContentSection}>
+          <AllocationBlock />
+          <AllTimeBlock />
+        </div>
+      )}
+    </>
   )
 }
 
-const NotConnectedContent = () => {
-  const searchSelectParams = useSearchSelectParams()
-
-  return (
-    <div className={styles.notConnectedContainer}>
-      <SearchableHeading title="Collections" searchSelectParams={searchSelectParams as any} />
-      <CollectionsCardList />
-    </div>
-  )
-}
+export default DashboardLendTab
 
 const useSearchSelectParams = () => {
   const { marketsPreview } = useMarketsPreview()

@@ -21,7 +21,7 @@ const DashboardBorrowTab = () => {
   } = useDashboardBorrowTab()
 
   const createNFTCard = (nft: BorrowNft) => (
-    <BorrowCard key={nft.mint} image={nft.nft.meta.imageUrl} dailyFee={nft.loan.marketApr} />
+    <BorrowCard key={nft.mint} image={nft.nft.meta.imageUrl} dailyFee={10} />
   )
 
   const createMarketCard = (market: MarketPreview) => (
@@ -34,7 +34,7 @@ const DashboardBorrowTab = () => {
   )
 
   return (
-    <div className={styles.container}>
+    <>
       <div className={styles.nftsSection}>
         <SearchableHeading title={headingText} searchSelectParams={searchSelectParams as any} />
         <div className={styles.cardsList}>
@@ -45,7 +45,7 @@ const DashboardBorrowTab = () => {
         <AvailableToBorrow {...marketsTotalStats} {...nftsTotalStats} />
         {showMyLoans && <MyLoans />}
       </div>
-    </div>
+    </>
   )
 }
 

@@ -4,7 +4,7 @@ import classNames from 'classnames'
 
 import ImageWithPreload from '@banx/components/ImageWithPreload'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Snowflake } from '@banx/icons'
 
@@ -14,13 +14,13 @@ interface CardProps {
   image: string
   onClick?: () => void
   className?: string
-  badgeJSX?: JSX.Element
+  badgeElement?: JSX.Element | null
 }
 
 const CardBackdrop: FC<PropsWithChildren<CardProps>> = ({
   onClick,
   image,
-  badgeJSX,
+  badgeElement,
   className,
   children,
 }) => (
@@ -31,7 +31,7 @@ const CardBackdrop: FC<PropsWithChildren<CardProps>> = ({
       className,
     })}
   >
-    {badgeJSX && <div className={styles.badge}>{badgeJSX}</div>}
+    {badgeElement && <div className={styles.badge}>{badgeElement}</div>}
     <ImageWithPreload src={image} className={styles.nftImage} square />
     {children}
   </div>
@@ -44,17 +44,15 @@ interface LendCardProps extends CardProps {
 }
 
 export const LendCard: FC<LendCardProps> = ({ amountOfLoans, offerTvl, apy, ...props }) => {
-  const BadgeContentJSX = apy ? (
+  const BadgeContentElement = apy ? (
     <div className={styles.lendCardBadge}>
-      <span>{apy / 100}%</span>
+      <span>{createPercentValueJSX(apy / 100)}</span>
       <span>APY</span>
     </div>
-  ) : (
-    <></>
-  )
+  ) : null
 
   return (
-    <CardBackdrop {...props} badgeJSX={BadgeContentJSX}>
+    <CardBackdrop {...props} badgeElement={BadgeContentElement}>
       <div className={styles.lendCardFooter}>
         <span>{createSolValueJSX(offerTvl, 1e9)}</span>
         <span>in {amountOfLoans} loans</span>
@@ -74,10 +72,10 @@ export const BorrowCard: FC<BorrowCardProps> = ({ dailyFee, maxAvailableToBorrow
     value: styles.borrowCardStatValue,
   }
 
-  const BadgeContentJSX = <>+{createSolValueJSX(maxAvailableToBorrow, 1e9)}</>
+  const BadgeContentElement = <>+{createSolValueJSX(maxAvailableToBorrow, 1e9)}</>
 
   return (
-    <CardBackdrop {...props} badgeJSX={BadgeContentJSX}>
+    <CardBackdrop {...props} badgeElement={BadgeContentElement}>
       <div className={styles.borrowCardFooter}>
         <StatInfo
           label="Pepetual"

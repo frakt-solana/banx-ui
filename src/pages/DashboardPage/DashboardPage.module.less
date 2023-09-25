@@ -9,6 +9,20 @@
   flex-grow: 1;
   overflow-y: scroll;
   height: 100vh;
+
+  display: flex;
+  padding: 0 24px;
+  gap: 24px;
+  width: 100%;
+
+  @media (max-width: 1240px) {
+    flex-direction: column;
+  }
+
+  @media (max-width: 640px) {
+    padding: 0 16px;
+    gap: 16px;
+  }
 }
 
 .searchableHeadingWrapper {
