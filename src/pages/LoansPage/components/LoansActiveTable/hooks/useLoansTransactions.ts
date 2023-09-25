@@ -37,7 +37,11 @@ export const useLoansTransactions = () => {
         clearSelection()
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error, loan)
+        defaultTxnErrorHandler(error, {
+          additionalData: loan,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'Repay',
+        })
       })
       .execute()
   }
@@ -59,7 +63,11 @@ export const useLoansTransactions = () => {
         clearSelection()
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error, txnParam)
+        defaultTxnErrorHandler(error, {
+          additionalData: txnParam,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'RepayPartial',
+        })
       })
       .execute()
   }
@@ -84,7 +92,11 @@ export const useLoansTransactions = () => {
         clearSelection()
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error, loansChunks)
+        defaultTxnErrorHandler(error, {
+          additionalData: loansChunks,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'RepayBulk',
+        })
       })
       .execute()
   }

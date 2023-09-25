@@ -105,7 +105,11 @@ export const executeBorrow = async (props: {
       updateOffersOptimistic(optimisticsToAdd)
     })
     .on('pfError', (error) => {
-      defaultTxnErrorHandler(error, txnParams)
+      defaultTxnErrorHandler(error, {
+        additionalData: txnParams,
+        walletPubkey: wallet?.publicKey?.toBase58(),
+        transactionName: 'Borrow',
+      })
     })
     .execute()
 

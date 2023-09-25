@@ -50,7 +50,11 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
         addMints(...loansToClaim.map(({ nft }) => nft.mint))
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error, txnParams)
+        defaultTxnErrorHandler(error, {
+          additionalData: txnParams,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'Claim',
+        })
       })
       .execute()
   }

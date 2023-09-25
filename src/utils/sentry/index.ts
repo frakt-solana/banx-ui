@@ -5,12 +5,13 @@ import { SENTRY } from '@banx/constants'
 import { TxnError } from '@banx/transactions'
 
 const IGNORE_ERRORS = [
-  'Registration failed - push service error',
+  '/Registration failed - push service error',
   'We are unable to register the default service worker',
   'The notification permission was not granted and blocked instead',
   'The string did not match the expected pattern',
   'User rejected the request',
   'WalletSignTransactionError',
+  'Transaction rejected',
 ]
 
 export const initSentry = (): void => {
@@ -50,7 +51,7 @@ export const captureSentryTxnError: CaptureSentryTxnError = ({
       scope.setTag('transaction', transactionName)
 
       if (additionalData) {
-        scope.setExtra('Additional data: ', JSON.stringify(additionalData, null, ' '))
+        scope.setExtra('data', JSON.stringify(additionalData))
       }
 
       if ('logs' in error && Array.isArray(error.logs)) {

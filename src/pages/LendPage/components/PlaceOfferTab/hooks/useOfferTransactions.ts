@@ -53,7 +53,11 @@ export const useOfferTransactions = ({
         })
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error, txnParam)
+        defaultTxnErrorHandler(error, {
+          additionalData: txnParam,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'CreateOffer',
+        })
       })
       .execute()
   }
@@ -75,7 +79,11 @@ export const useOfferTransactions = ({
         exitEditMode()
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error, txnParam)
+        defaultTxnErrorHandler(error, {
+          additionalData: txnParam,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'RemoveOffer',
+        })
       })
       .execute()
   }
@@ -96,7 +104,11 @@ export const useOfferTransactions = ({
         })
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error, txnParam)
+        defaultTxnErrorHandler(error, {
+          additionalData: txnParam,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'UpdateOffer',
+        })
       })
       .execute()
   }

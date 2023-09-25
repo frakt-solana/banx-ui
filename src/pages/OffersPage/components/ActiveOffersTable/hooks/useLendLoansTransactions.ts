@@ -38,7 +38,11 @@ export const useLendLoansTransactions = ({
         })
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error, loan)
+        defaultTxnErrorHandler(error, {
+          additionalData: loan,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'Terminate',
+        })
       })
       .execute()
   }
@@ -54,7 +58,11 @@ export const useLendLoansTransactions = ({
         })
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error, loan)
+        defaultTxnErrorHandler(error, {
+          additionalData: loan,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'Claim',
+        })
       })
       .execute()
   }
@@ -72,7 +80,11 @@ export const useLendLoansTransactions = ({
         })
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error, loan)
+        defaultTxnErrorHandler(error, {
+          additionalData: loan,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'RefinanceInstant',
+        })
       })
       .execute()
   }

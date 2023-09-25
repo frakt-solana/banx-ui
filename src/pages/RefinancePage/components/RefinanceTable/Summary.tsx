@@ -59,7 +59,11 @@ export const Summary: FC<SummaryProps> = ({
         addMints(...selectedLoans.map(({ nft }) => nft.mint))
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error, txnParams)
+        defaultTxnErrorHandler(error, {
+          additionalData: txnParams,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'Refinance',
+        })
       })
       .execute()
   }

@@ -100,7 +100,11 @@ const useActionsCell = (offer: TableUserOfferData) => {
         })
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error, txnParam)
+        defaultTxnErrorHandler(error, {
+          additionalData: txnParam,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'RemoveOffer',
+        })
       })
       .execute()
   }
