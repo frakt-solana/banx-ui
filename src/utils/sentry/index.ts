@@ -10,6 +10,7 @@ const IGNORE_ERRORS = [
   'The notification permission was not granted and blocked instead',
   'The string did not match the expected pattern',
   'User rejected the request',
+  'WalletSignTransactionError',
 ]
 
 export const initSentry = (): void => {
@@ -23,6 +24,7 @@ export const initSentry = (): void => {
 
 type CaptureSentryTxnError = (props: {
   error: TxnError | unknown
+  additionalData?: unknown
   walletPubkey?: string
   transactionName?: string
   params?: Dictionary<unknown>
@@ -30,9 +32,9 @@ type CaptureSentryTxnError = (props: {
 
 export const captureSentryTxnError: CaptureSentryTxnError = ({
   error,
+  additionalData,
   walletPubkey = '',
   transactionName = 'Unknown transaction',
-  params = {},
 }) => {
   if (error instanceof Error) {
     Sentry.captureException(error, (scope) => {
@@ -47,7 +49,9 @@ export const captureSentryTxnError: CaptureSentryTxnError = ({
 
       scope.setTag('transaction', transactionName)
 
-      scope.setExtra('Transaction params', JSON.stringify(params, null, ' '))
+      if (additionalData) {
+        scope.setExtra('Additional data: ', JSON.stringify(additionalData, null, ' '))
+      }
 
       if ('logs' in error && Array.isArray(error.logs)) {
         scope.setExtra('Transaction logs: ', error.logs.join('\n'))
