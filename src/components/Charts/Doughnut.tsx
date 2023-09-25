@@ -1,9 +1,10 @@
 import { FC } from 'react'
 
 import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js'
+import classNames from 'classnames'
 import { Doughnut as DoughnutChart } from 'react-chartjs-2'
 
-import { StatInfo } from '@banx/components/StatInfo'
+import { StatInfo, StatsInfoProps } from '@banx/components/StatInfo'
 
 import { convertCssVariablesToColors } from './helpers'
 
@@ -17,28 +18,19 @@ type ColorList = string[] // CSS variables
 interface DoughnutChartProps {
   data: ChartData
   colors: ColorList
-  statLabel?: string
-  statValue?: number
+  statInfoProps: StatsInfoProps
   className?: string
 }
 
-export const Doughnut: FC<DoughnutChartProps> = ({
-  data,
-  colors,
-  statLabel,
-  statValue,
-  className,
-}) => {
+export const Doughnut: FC<DoughnutChartProps> = ({ data, colors, statInfoProps, className }) => {
   const options = generateOptions()
   const chartData = generateData(data, colors)
 
   return (
-    <div className={styles.doughnutChartWrapper}>
-      <DoughnutChart data={chartData} options={options} className={className} />
+    <div className={classNames(styles.doughnutChartWrapper, className)}>
+      <DoughnutChart data={chartData} options={options} />
       <div className={styles.doughnutInnerContent}>
-        {statLabel && statValue ? (
-          <StatInfo value={statValue} label={statLabel} decimalPlaces={0} />
-        ) : null}
+        {statInfoProps ? <StatInfo {...statInfoProps} /> : null}
       </div>
     </div>
   )

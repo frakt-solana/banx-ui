@@ -74,7 +74,7 @@ export const BorrowCard: FC<BorrowCardProps> = ({ dailyFee, maxAvailableToBorrow
     value: styles.borrowCardStatValue,
   }
 
-  const BadgeContentJSX = <>+{createSolValueJSX(maxAvailableToBorrow)}</>
+  const BadgeContentJSX = <>+{createSolValueJSX(maxAvailableToBorrow, 1e9)}</>
 
   return (
     <CardBackdrop {...props} badgeJSX={BadgeContentJSX}>

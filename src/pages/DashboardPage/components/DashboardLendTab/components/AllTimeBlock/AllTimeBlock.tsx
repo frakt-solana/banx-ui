@@ -1,6 +1,6 @@
 import { SingleBar } from '@banx/components/Charts'
 
-import { ChartStatInfo, DashboardStatInfo } from '../../../DashboardStatInfo'
+import { ChartStatInfo, DashboardStatInfo } from '../../../components'
 import { ALL_TIME_COLOR_MAP, ALL_TIME_DISPLAY_NAMES, AllTimeStatus } from './constants'
 
 import styles from './AllTimeBlock.module.less'

@@ -10,3 +10,87 @@
   overflow-y: scroll;
   height: 100vh;
 }
+
+.searchableHeadingWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 0 12px;
+  gap: 24px;
+  width: 100%;
+}
+
+.searchSelect :global {
+  height: 32px;
+
+  .rootSelectClassName {
+    .ant-select-selector {
+      padding: 1px 0px;
+    }
+  }
+
+  .rootSelectPopupClassName {
+    top: 31px !important;
+  }
+}
+
+.searchableHeading {
+  font: var(--title-sm);
+  text-transform: uppercase;
+  min-width: 294px;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  padding: 24px 0 12px;
+  font: var(--title-sm);
+  text-transform: uppercase;
+  line-height: 32px;
+}
+
+.mainContainer {
+  flex-direction: column-reverse;
+  gap: unset;
+}
+
+.mainValue {
+  font: var(--important-text-lg);
+  line-height: 26px;
+}
+
+.mainLabel {
+  font: var(--table-header-md);
+  line-height: 16px;
+}
+
+.chartStatInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+}
+
+.chartStatInfoValue {
+  font: var(--body-text-md);
+  line-height: 21px;
+}
+
+.chartStatInfoLabelWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chartStatInfoLabel {
+  color: var(--content-secondary);
+  font: var(--table-header-md);
+  text-transform: uppercase;
+}
+
+.chartStatInfoIndicator {
+  border-radius: 100px;
+  display: flex;
+  height: 8px;
+  width: 8px;
+}
