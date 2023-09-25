@@ -1,0 +1,166 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+}
+.card {
+  padding: 16px;
+  border: 1px solid var(--bg-border);
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 48px;
+}
+.title {
+  font: var(--card-header-lg);
+}
+.titleEnded {
+  color: var(--content-secondary);
+}
+.status {
+  font: var(--body-text-md);
+  display: flex;
+  align-items: center;
+  color: var(--content-secondary);
+
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    background: var(--content-secondary);
+  }
+
+  &__live {
+    color: var(--content-primary);
+    &::before {
+      background: var(--additional-green-primary-deep);
+    }
+  }
+
+  &__upcoming {
+    &::before {
+      background: var(--additional-blue-primary-deep);
+    }
+  }
+}
+
+.info {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+}
+
+.timerWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 14px;
+  min-width: 304px;
+}
+
+.timerIcon {
+  background: var(--bg-secondary);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  svg {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+.timerSvg {
+  path {
+    fill: var(--content-primary);
+  }
+}
+
+.timer {
+  font: var(--important-text-xl);
+}
+.timerText {
+  text-transform: uppercase;
+  font: var(--table-header-md);
+}
+
+.stats {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  column-gap: 24px;
+}
+
+.statsCol {
+  font: var(--body-text-md);
+  text-align: left;
+
+  h5 {
+    color: var(--content-secondary);
+    font: var(--table-header-md);
+    text-transform: uppercase;
+  }
+
+  &:first-of-type {
+    text-align: right;
+  }
+}
+.statsColWarn {
+  background: var(--additional-gold-secondary);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 12px;
+  font: var(--btn-text-md);
+  border: 1px dashed var(--content-secondary);
+}
+
+.statusAndBtnWrapper {
+  display: flex;
+  flex-direction: column;
+  row-gap: 12px;
+  width: 100%;
+}
+
+.statusLine {
+  width: 100%;
+  background: var(--bg-secondary);
+  font: var(--btn-text-md);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  column-gap: 10px;
+  padding: 8px;
+}
+
+.statusLineIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.statusLineIconTimer {
+  path {
+    fill: var(--content-primary);
+  }
+}
+
+.subscribeBtn {
+  width: 100%;
+}
