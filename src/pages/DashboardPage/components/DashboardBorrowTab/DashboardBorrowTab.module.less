@@ -3,11 +3,24 @@
   padding: 0 24px;
   gap: 24px;
   width: 100%;
+
+  @media (max-width: 1240px) {
+    flex-direction: column;
+  }
+
+  @media (max-width: 640px) {
+    padding: 0 16px;
+    gap: 16px;
+  }
 }
 
 .nftsSection,
 .additionalContentSection {
   width: 50%;
+
+  @media (max-width: 1240px) {
+    width: 100%;
+  }
 }
 
 .cardsList {
@@ -17,6 +30,15 @@
   padding-top: 12px;
   max-height: 480px;
   overflow: auto;
+
+  @media (max-width: 1240px) {
+    display: flex;
+  }
+
+  @media (max-width: 640px) {
+    padding-top: 8px;
+    gap: 16px;
+  }
 }
 
 .availableToBorrow {
@@ -34,6 +56,15 @@
       align-items: center;
       height: 64px;
       width: 100%;
+    }
+
+    @media (max-width: 640px) {
+      margin: 8px 0 16px;
+      min-height: unset;
+
+      & > div {
+        height: unset;
+      }
     }
   }
 
@@ -89,6 +120,10 @@
   .manageLoansButton {
     margin-bottom: 24px;
     width: 100%;
+
+    @media (max-width: 640px) {
+      margin-bottom: 16px;
+    }
   }
 
   .doughnutChart {

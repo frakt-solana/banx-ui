@@ -3,11 +3,24 @@
   padding: 0 24px;
   gap: 24px;
   width: 100%;
+
+  @media (max-width: 1240px) {
+    flex-direction: column;
+  }
+
+  @media (max-width: 640px) {
+    padding: 0 16px;
+    gap: 16px;
+  }
 }
 
 .collectionsSection,
 .additionalContentSection {
   width: 50%;
+
+  @media (max-width: 1240px) {
+    width: 100%;
+  }
 }
 
 .collectionsCardList {
@@ -15,6 +28,15 @@
   grid-template-columns: repeat(auto-fill, minmax(162px, 2fr));
   padding-top: 12px;
   gap: 24px;
+
+  @media (max-width: 1240px) {
+    display: flex;
+  }
+
+  @media (max-width: 640px) {
+    padding-top: 8px;
+    gap: 16px;
+  }
 }
 
 .notConnectedContainer {
