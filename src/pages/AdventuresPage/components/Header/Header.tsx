@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import { useWallet } from '@solana/wallet-adapter-react'
 
 import { Button } from '@banx/components/Buttons'
@@ -9,7 +7,7 @@ import BanxImg from '@banx/assets/BanxUrban.png'
 
 import styles from './Header.module.less'
 
-export const Header: FC = () => {
+export const Header = () => {
   const { connected } = useWallet()
   const { setVisible } = useWalletModal()
 
