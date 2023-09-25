@@ -39,8 +39,10 @@ export const useOfferTransactions = ({
   }, [offers, offerPubkey])
 
   const onCreateOffer = async () => {
+    const txnParam = { marketPubkey, loansAmount, loanValue }
+
     await new TxnExecutor(makeCreateOfferAction, { wallet, connection })
-      .addTxnParam({ marketPubkey, loansAmount, loanValue })
+      .addTxnParam(txnParam)
       .on('pfSuccessEach', (results) => {
         const { result, txnHash } = results[0]
         result?.bondOffer && updateOrAddOffer(result.bondOffer)
@@ -51,7 +53,7 @@ export const useOfferTransactions = ({
         })
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error)
+        defaultTxnErrorHandler(error, txnParam)
       })
       .execute()
   }
@@ -59,8 +61,10 @@ export const useOfferTransactions = ({
   const onRemoveOffer = () => {
     if (!optimisticOffer) return
 
+    const txnParam = { offerPubkey, optimisticOffer }
+
     new TxnExecutor(makeRemoveOfferAction, { wallet, connection })
-      .addTxnParam({ offerPubkey, optimisticOffer })
+      .addTxnParam(txnParam)
       .on('pfSuccessEach', (results) => {
         const { result, txnHash } = results[0]
         result?.bondOffer && updateOrAddOffer(result.bondOffer)
@@ -71,7 +75,7 @@ export const useOfferTransactions = ({
         exitEditMode()
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error)
+        defaultTxnErrorHandler(error, txnParam)
       })
       .execute()
   }
@@ -79,8 +83,10 @@ export const useOfferTransactions = ({
   const onUpdateOffer = async () => {
     if (!optimisticOffer) return
 
+    const txnParam = { loanValue, offerPubkey, optimisticOffer, loansAmount }
+
     await new TxnExecutor(makeUpdateOfferAction, { wallet, connection })
-      .addTxnParam({ loanValue, offerPubkey, optimisticOffer, loansAmount })
+      .addTxnParam(txnParam)
       .on('pfSuccessEach', (results) => {
         const { result, txnHash } = results[0]
         result?.bondOffer && updateOrAddOffer(result.bondOffer)
@@ -90,7 +96,7 @@ export const useOfferTransactions = ({
         })
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error)
+        defaultTxnErrorHandler(error, txnParam)
       })
       .execute()
   }

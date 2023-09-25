@@ -36,8 +36,10 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
   }, [loansToClaim])
 
   const claimLoans = () => {
+    const txnParams = loansToClaim.map((loan) => ({ loan }))
+
     new TxnExecutor(makeClaimAction, { wallet, connection })
-      .addTxnParams(loansToClaim.map((loan) => ({ loan })))
+      .addTxnParams(txnParams)
       .on('pfSuccessEach', (results) => {
         enqueueSnackbar({
           message: 'Transaction Executed',
@@ -48,7 +50,7 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
         addMints(...loansToClaim.map(({ nft }) => nft.mint))
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error)
+        defaultTxnErrorHandler(error, txnParams)
       })
       .execute()
   }

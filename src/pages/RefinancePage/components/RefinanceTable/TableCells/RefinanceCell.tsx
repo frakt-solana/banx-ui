@@ -65,7 +65,7 @@ const useRefinanceTransaction = (loan: Loan) => {
         })
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error)
+        defaultTxnErrorHandler(error, loan)
       })
       .execute()
   }

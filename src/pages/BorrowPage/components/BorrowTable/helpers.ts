@@ -105,7 +105,7 @@ export const executeBorrow = async (props: {
       updateOffersOptimistic(optimisticsToAdd)
     })
     .on('pfError', (error) => {
-      defaultTxnErrorHandler(error)
+      defaultTxnErrorHandler(error, txnParams)
     })
     .execute()
 

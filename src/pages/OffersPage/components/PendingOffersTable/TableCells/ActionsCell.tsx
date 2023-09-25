@@ -84,8 +84,10 @@ const useActionsCell = (offer: TableUserOfferData) => {
   }
 
   const removeOffer = () => {
+    const txnParam = { offerPubkey: offer.publicKey, optimisticOffer: optimisticOffer as Offer }
+
     new TxnExecutor(makeRemoveOfferAction, { wallet, connection })
-      .addTxnParam({ offerPubkey: offer.publicKey, optimisticOffer: optimisticOffer as Offer })
+      .addTxnParam(txnParam)
       .on('pfSuccessEach', (results) => {
         const { txnHash, result } = results[0]
         if (result?.bondOffer) {
@@ -98,7 +100,7 @@ const useActionsCell = (offer: TableUserOfferData) => {
         })
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error)
+        defaultTxnErrorHandler(error, txnParam)
       })
       .execute()
   }

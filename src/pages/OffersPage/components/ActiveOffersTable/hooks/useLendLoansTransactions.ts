@@ -38,7 +38,7 @@ export const useLendLoansTransactions = ({
         })
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error)
+        defaultTxnErrorHandler(error, loan)
       })
       .execute()
   }
@@ -54,7 +54,7 @@ export const useLendLoansTransactions = ({
         })
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error)
+        defaultTxnErrorHandler(error, loan)
       })
       .execute()
   }
@@ -72,7 +72,7 @@ export const useLendLoansTransactions = ({
         })
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error)
+        defaultTxnErrorHandler(error, loan)
       })
       .execute()
   }
