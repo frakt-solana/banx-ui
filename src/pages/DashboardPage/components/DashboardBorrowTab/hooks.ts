@@ -11,6 +11,8 @@ import { executeBorrow } from '@banx/pages/BorrowPage/components/BorrowTable/hel
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { PATHS } from '@banx/router'
+import { useLoansOptimistic, useOffersOptimistic } from '@banx/store'
+import { calculateLoanValue } from '@banx/utils'
 
 import { useBorrowerStats } from '../../hooks'
 
@@ -20,6 +22,8 @@ export const useDashboardBorrowTab = () => {
   const navigate = useNavigate()
 
   const { data: borrowerStats } = useBorrowerStats()
+  const { add: addLoansOptimistic } = useLoansOptimistic()
+  const { update: updateOffersOptimistic } = useOffersOptimistic()
 
   const { marketsPreview } = useMarketsPreview()
   const { nfts, rawOffers } = useBorrowNfts()
@@ -45,9 +49,9 @@ export const useDashboardBorrowTab = () => {
         wallet,
         connection,
       },
-      txnParams: [[{ nft, offer: rawOffer, loanValue: 10 }]],
-      addLoansOptimistic: () => null,
-      updateOffersOptimistic: () => null,
+      txnParams: [[{ nft, offer: rawOffer, loanValue: calculateLoanValue(offer) }]],
+      addLoansOptimistic,
+      updateOffersOptimistic,
     })
 
     if (txnResults?.length) {
