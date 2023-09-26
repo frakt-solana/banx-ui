@@ -11,6 +11,9 @@
     border: 1px solid var(--bg-border-active);
   }
 }
+.card:hover .borrowButton {
+  background-color: var(--accent-secondary);
+}
 
 .badge {
   background: var(--accent-primary);
@@ -35,10 +38,15 @@
   align-items: center;
   justify-content: space-between;
   padding: 8px;
+  height: 54px;
 
   & > div:last-child {
     align-items: flex-end;
   }
+}
+.borrowCardFooter.fullHeight {
+  align-items: flex-end;
+  height: 70px;
 }
 .borrowCardStatContainer {
   gap: unset;
@@ -47,6 +55,12 @@
   display: flex;
   align-items: center;
   line-height: 21px;
+}
+.borrowButton {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 52px;
 }
 
 .lendCardFooter {

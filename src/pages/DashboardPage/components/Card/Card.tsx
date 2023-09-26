@@ -1,7 +1,9 @@
 import { FC, PropsWithChildren } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 
+import { Button } from '@banx/components/Buttons'
 import ImageWithPreload from '@banx/components/ImageWithPreload'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
@@ -67,16 +69,20 @@ interface BorrowCardProps extends CardProps {
 }
 
 export const BorrowCard: FC<BorrowCardProps> = ({ dailyFee, maxAvailableToBorrow, ...props }) => {
+  const { connected } = useWallet()
+
   const statClassNames = {
     container: styles.borrowCardStatContainer,
     value: styles.borrowCardStatValue,
   }
 
-  const BadgeContentElement = <>+{createSolValueJSX(maxAvailableToBorrow, 1e9)}</>
+  const BadgeContentElement = !connected ? (
+    <>+{createSolValueJSX(maxAvailableToBorrow, 1e9)}</>
+  ) : null
 
   return (
     <CardBackdrop {...props} badgeElement={BadgeContentElement}>
-      <div className={styles.borrowCardFooter}>
+      <div className={classNames(styles.borrowCardFooter, { [styles.fullHeight]: connected })}>
         <StatInfo
           label="Pepetual"
           value="72h"
@@ -86,6 +92,11 @@ export const BorrowCard: FC<BorrowCardProps> = ({ dailyFee, maxAvailableToBorrow
         />
         <StatInfo label="Daily fee" value={dailyFee} classNamesProps={statClassNames} />
       </div>
+      {connected && (
+        <Button className={styles.borrowButton}>
+          Get {createSolValueJSX(maxAvailableToBorrow, 1e9)}
+        </Button>
+      )}
     </CardBackdrop>
   )
 }
