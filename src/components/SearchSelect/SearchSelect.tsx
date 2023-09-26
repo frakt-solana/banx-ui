@@ -72,6 +72,7 @@ export const SearchSelect = <P extends object>({
         onSearch={handleInputChange}
         onDropdownVisibleChange={handleDropdownVisibleChange}
         defaultOpen={defaultOpen}
+        maxTagCount="responsive"
         dropdownRender={(menu) => (
           <>
             <SelectLabels labels={labels} />
