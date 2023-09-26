@@ -1,7 +1,7 @@
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { map } from 'lodash'
+import { map, sumBy } from 'lodash'
 import { NavLink, useNavigate } from 'react-router-dom'
 
 import { Button } from '@banx/components/Buttons'
@@ -10,6 +10,8 @@ import { VALUES_TYPES } from '@banx/components/StatInfo'
 import { useWalletModal } from '@banx/components/WalletModal'
 
 import { TotalBorrowerStats } from '@banx/api/stats'
+import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
+import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { PATHS } from '@banx/router'
 
 import { ChartStatInfo, DashboardStatInfo, Heading } from '../components'
@@ -17,19 +19,21 @@ import { LOANS_COLOR_MAP, LOANS_DISPLAY_NAMES, LoansStatus } from './constants'
 
 import styles from './DashboardBorrowTab.module.less'
 
-interface AvailableToBorrowProps {
-  totalMarkets: number
-  totalLiquidity: number
-  userNFTs: number
-}
-
-export const AvailableToBorrow: FC<AvailableToBorrowProps> = ({
-  totalMarkets,
-  totalLiquidity,
-  userNFTs,
-}) => {
+export const AvailableToBorrow = () => {
   const { connected } = useWallet()
   const { toggleVisibility } = useWalletModal()
+
+  const { marketsPreview } = useMarketsPreview()
+  const { nfts } = useBorrowNfts()
+
+  const { totalMarkets, totalLiquidity, userNFTs, maxBorrow } = useMemo(() => {
+    return {
+      totalMarkets: marketsPreview.length,
+      totalLiquidity: sumBy(marketsPreview, 'offerTvl'),
+      userNFTs: nfts.length,
+      maxBorrow: 124, //TODO: need calc max borrow
+    }
+  }, [marketsPreview, nfts])
 
   const headingText = connected ? 'Borrow in bulk' : 'Available to borrow'
   const buttonText = connected ? 'Borrow $SOL in bulk' : 'Connect wallet to borrow $SOL'
@@ -37,11 +41,10 @@ export const AvailableToBorrow: FC<AvailableToBorrowProps> = ({
   return (
     <div className={styles.availableToBorrow}>
       <Heading title={headingText} />
-
       <div className={styles.stats}>
         {connected ? (
           <>
-            <DashboardStatInfo label="Borrow up to" value={124} />
+            <DashboardStatInfo label="Borrow up to" value={maxBorrow} />
             <DashboardStatInfo
               label="From your"
               value={`${userNFTs} NFTS`}
@@ -64,7 +67,6 @@ export const AvailableToBorrow: FC<AvailableToBorrowProps> = ({
           </>
         )}
       </div>
-
       {connected ? (
         <NavLink className={styles.button} to={PATHS.BORROW}>
           <Button className={styles.button}>{buttonText}</Button>
@@ -103,7 +105,7 @@ export const MyLoans: FC<MyLoansProps> = ({ stats }) => {
 
   return (
     <div className={styles.loansContainer}>
-      <h4 className={styles.loansHeading}>My loans</h4>
+      <Heading title="My loans" />
       <div className={styles.loansContent}>
         <div className={styles.loansStatsContainer}>
           <div className={styles.loansStats}>

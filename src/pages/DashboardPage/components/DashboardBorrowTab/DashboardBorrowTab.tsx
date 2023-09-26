@@ -1,3 +1,4 @@
+import { useWallet } from '@solana/wallet-adapter-react'
 import { find } from 'lodash'
 
 import { BorrowNft, MarketPreview } from '@banx/api/core'
@@ -11,17 +12,13 @@ import { useDashboardBorrowTab } from './hooks'
 import styles from './DashboardBorrowTab.module.less'
 
 const DashboardBorrowTab = () => {
-  const {
-    marketsPreview,
-    nfts,
-    headingText,
-    connected,
-    showMyLoans,
-    marketsTotalStats,
-    nftsTotalStats,
-    searchSelectParams,
-    borrowerStats,
-  } = useDashboardBorrowTab()
+  const { connected } = useWallet()
+
+  const { marketsPreview, nfts, searchSelectParams, borrowerStats, borrow } =
+    useDashboardBorrowTab()
+
+  const showMyLoans = connected && !!borrowerStats?.activeLoans
+  const headingText = connected ? 'Click to borrow' : '1 click loan'
 
   const createNFTCard = (borrowNft: BorrowNft) => {
     const { mint, nft, loan } = borrowNft
@@ -32,10 +29,10 @@ const DashboardBorrowTab = () => {
     return (
       <BorrowCard
         key={mint}
-        onClick={() => {}}
+        onClick={() => borrow(borrowNft)}
         image={nft.meta.imageUrl}
         dailyFee={dailyFee}
-        maxAvailableToBorrow={currentMarket?.bestOffer}
+        maxBorrow={currentMarket?.bestOffer}
       />
     )
   }
@@ -44,7 +41,7 @@ const DashboardBorrowTab = () => {
     <BorrowCard
       key={market.marketPubkey}
       image={market.collectionImage}
-      maxAvailableToBorrow={market.bestOffer}
+      maxBorrow={market.bestOffer}
       dailyFee={calcDailyInterestFee(market.marketApr, market.collectionFloor)}
     />
   )
@@ -58,8 +55,8 @@ const DashboardBorrowTab = () => {
         </div>
       </div>
       <div className={styles.additionalContentSection}>
-        <AvailableToBorrow {...marketsTotalStats} {...nftsTotalStats} />
-        {showMyLoans && borrowerStats && <MyLoans stats={borrowerStats} />}
+        <AvailableToBorrow />
+        {showMyLoans && <MyLoans stats={borrowerStats} />}
       </div>
     </>
   )

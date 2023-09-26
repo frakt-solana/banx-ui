@@ -20,18 +20,15 @@ interface CardProps {
 }
 
 const CardBackdrop: FC<PropsWithChildren<CardProps>> = ({
-  onClick,
   image,
+  onClick,
   badgeElement,
   className,
   children,
 }) => (
   <div
     onClick={onClick}
-    className={classNames(styles.card, {
-      [styles.clicable]: onClick,
-      className,
-    })}
+    className={classNames(styles.card, { [styles.clicable]: onClick, className })}
   >
     {badgeElement && <div className={styles.badge}>{badgeElement}</div>}
     <ImageWithPreload src={image} className={styles.nftImage} square />
@@ -48,7 +45,7 @@ interface LendCardProps extends CardProps {
 export const LendCard: FC<LendCardProps> = ({ amountOfLoans, offerTvl, apy, ...props }) => {
   const BadgeContentElement = apy ? (
     <div className={styles.lendCardBadge}>
-      <span>{createPercentValueJSX(apy / 100)}</span>
+      {createPercentValueJSX(apy / 100)}
       <span>APY</span>
     </div>
   ) : null
@@ -56,7 +53,7 @@ export const LendCard: FC<LendCardProps> = ({ amountOfLoans, offerTvl, apy, ...p
   return (
     <CardBackdrop {...props} badgeElement={BadgeContentElement}>
       <div className={styles.lendCardFooter}>
-        <span>{createSolValueJSX(offerTvl, 1e9)}</span>
+        {createSolValueJSX(offerTvl, 1e9)}
         <span>in {amountOfLoans} loans</span>
       </div>
     </CardBackdrop>
@@ -65,10 +62,10 @@ export const LendCard: FC<LendCardProps> = ({ amountOfLoans, offerTvl, apy, ...p
 
 interface BorrowCardProps extends CardProps {
   dailyFee: number
-  maxAvailableToBorrow?: number
+  maxBorrow?: number
 }
 
-export const BorrowCard: FC<BorrowCardProps> = ({ dailyFee, maxAvailableToBorrow, ...props }) => {
+export const BorrowCard: FC<BorrowCardProps> = ({ dailyFee, maxBorrow, ...props }) => {
   const { connected } = useWallet()
 
   const statClassNames = {
@@ -76,9 +73,7 @@ export const BorrowCard: FC<BorrowCardProps> = ({ dailyFee, maxAvailableToBorrow
     value: styles.borrowCardStatValue,
   }
 
-  const BadgeContentElement = !connected ? (
-    <>+{createSolValueJSX(maxAvailableToBorrow, 1e9)}</>
-  ) : null
+  const BadgeContentElement = !connected ? <>+{createSolValueJSX(maxBorrow, 1e9)}</> : null
 
   return (
     <CardBackdrop {...props} badgeElement={BadgeContentElement}>
@@ -93,9 +88,7 @@ export const BorrowCard: FC<BorrowCardProps> = ({ dailyFee, maxAvailableToBorrow
         <StatInfo label="Daily fee" value={dailyFee} classNamesProps={statClassNames} />
       </div>
       {connected && (
-        <Button className={styles.borrowButton}>
-          Get {createSolValueJSX(maxAvailableToBorrow, 1e9)}
-        </Button>
+        <Button className={styles.borrowButton}>Get {createSolValueJSX(maxBorrow, 1e9)}</Button>
       )}
     </CardBackdrop>
   )

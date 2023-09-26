@@ -67,13 +67,8 @@
 }
 
 .loansContainer {
-  .loansHeading {
-    display: flex;
-    align-items: center;
-    padding: 24px 0 12px;
-    font: var(--title-sm);
-    text-transform: uppercase;
-    line-height: 32px;
+  @media (max-width: 640px) {
+    margin-top: 16px;
   }
 
   .loansContent {
