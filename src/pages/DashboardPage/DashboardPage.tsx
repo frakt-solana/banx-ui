@@ -1,16 +1,20 @@
-import { Tabs, useTabs } from '@banx/components/Tabs'
+import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
 import DashboardBorrowTab from './components/DashboardBorrowTab'
 import DashboardHeader from './components/DashboardHeader'
 import DashboardLendTab from './components/DashboardLendTab'
-import { DASHBOARD_TABS, DEFAULT_TAB_VALUE, DashboardTabName } from './constants'
 
 import styles from './DashboardPage.module.less'
+
+enum DashboardTabName {
+  BORROW = 'borrow',
+  LEND = 'lend',
+}
 
 export const DashboardPage = () => {
   const { value: currentTabValue, ...tabsProps } = useTabs({
     tabs: DASHBOARD_TABS,
-    defaultValue: DEFAULT_TAB_VALUE,
+    defaultValue: DASHBOARD_TABS[0].value,
   })
 
   return (
@@ -24,3 +28,14 @@ export const DashboardPage = () => {
     </div>
   )
 }
+
+const DASHBOARD_TABS: Tab[] = [
+  {
+    label: 'Borrow',
+    value: 'borrow',
+  },
+  {
+    label: 'Lend',
+    value: 'lend',
+  },
+]
