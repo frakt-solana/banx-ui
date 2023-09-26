@@ -37,14 +37,20 @@ export const useLoansTransactions = () => {
         clearSelection()
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error)
+        defaultTxnErrorHandler(error, {
+          additionalData: loan,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'Repay',
+        })
       })
       .execute()
   }
 
   const repayPartialLoan = async (loan: Loan, fractionToRepay: number) => {
+    const txnParam = { loan, fractionToRepay }
+
     await new TxnExecutor(makeRepayPartialLoanAction, { wallet, connection })
-      .addTxnParam({ loan, fractionToRepay })
+      .addTxnParam(txnParam)
       .on('pfSuccessAll', (results) => {
         const { txnHash, result } = results[0]
         if (result && wallet.publicKey) {
@@ -57,7 +63,11 @@ export const useLoansTransactions = () => {
         clearSelection()
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error)
+        defaultTxnErrorHandler(error, {
+          additionalData: txnParam,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'RepayPartial',
+        })
       })
       .execute()
   }
@@ -82,7 +92,11 @@ export const useLoansTransactions = () => {
         clearSelection()
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error)
+        defaultTxnErrorHandler(error, {
+          additionalData: loansChunks,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'RepayBulk',
+        })
       })
       .execute()
   }

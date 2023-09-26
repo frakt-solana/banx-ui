@@ -65,7 +65,11 @@ const useRefinanceTransaction = (loan: Loan) => {
         })
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error)
+        defaultTxnErrorHandler(error, {
+          additionalData: loan,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'Refinance',
+        })
       })
       .execute()
   }

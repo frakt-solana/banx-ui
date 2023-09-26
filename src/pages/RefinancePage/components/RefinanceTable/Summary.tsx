@@ -42,8 +42,10 @@ export const Summary: FC<SummaryProps> = ({
   const totalDebt = sumBy(selectedLoans, (loan) => calcLoanDebt(loan))
 
   const refinanceAll = () => {
+    const txnParams = selectedLoans.map((loan) => ({ loan }))
+
     new TxnExecutor(makeRefinanceAction, { wallet, connection })
-      .addTxnParams(selectedLoans.map((loan) => ({ loan })))
+      .addTxnParams(txnParams)
       .on('pfSuccessEach', (results) => {
         const { txnHash } = results[0]
 
@@ -57,7 +59,11 @@ export const Summary: FC<SummaryProps> = ({
         addMints(...selectedLoans.map(({ nft }) => nft.mint))
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error)
+        defaultTxnErrorHandler(error, {
+          additionalData: txnParams,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'Refinance',
+        })
       })
       .execute()
   }
