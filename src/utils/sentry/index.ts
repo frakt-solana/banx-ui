@@ -5,7 +5,7 @@ import { SENTRY } from '@banx/constants'
 import { TxnError } from '@banx/transactions'
 
 const IGNORE_ERRORS = [
-  '/Registration failed - push service error',
+  'Registration failed - push service error',
   'We are unable to register the default service worker',
   'The notification permission was not granted and blocked instead',
   'The string did not match the expected pattern',
