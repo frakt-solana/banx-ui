@@ -1,3 +1,4 @@
+export { AdventuresPage } from './AdventuresPage'
 export { BorrowPage } from './BorrowPage'
 export { DashboardPage } from './DashboardPage'
 export { LendPage } from './LendPage'

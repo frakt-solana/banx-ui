@@ -1,5 +1,7 @@
 import { FC } from 'react'
 
+import { capitalize } from 'lodash'
+
 import { BorrowerActivity } from '@banx/api/activity'
 import { LoanStatus, STATUS_LOANS_COLOR_MAP, STATUS_LOANS_MAP } from '@banx/utils'
 
@@ -15,7 +17,7 @@ export const StatusCell: FC<StatusCellProps> = ({ loan }) => {
 
   return (
     <span style={{ color: statusColor }} className={styles.statusCellTitle}>
-      {loanStatus}
+      {capitalize(loanStatus)}
     </span>
   )
 }
