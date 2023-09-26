@@ -6,7 +6,7 @@ import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/type
 import { map } from 'lodash'
 import moment from 'moment'
 
-import { Loan, fetchWalletLoans } from '@banx/api/core'
+import { Loan, fetchWalletLoansAndOffers } from '@banx/api/core'
 import { fetchUserLoansStats } from '@banx/api/stats'
 import {
   isLoanNewer,
@@ -22,17 +22,17 @@ type UseWalletLoans = () => {
   isLoading: boolean
 }
 
-export const USE_WALLET_LOANS_QUERY_KEY = 'walletLoans'
+export const USE_WALLET_LOANS_AND_OFFERS_QUERY_KEY = 'walletLoansAndOffers'
 
-export const useWalletLoans: UseWalletLoans = () => {
+export const useWalletLoansAndOffers: UseWalletLoans = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
   const { loans: optimisticLoans, remove: removeOptimisticLoans } = useLoansOptimistic()
 
   const { data, isLoading, isFetched, isFetching } = useQuery(
-    [USE_WALLET_LOANS_QUERY_KEY, publicKeyString],
-    () => fetchWalletLoans({ walletPublicKey: publicKeyString }),
+    [USE_WALLET_LOANS_AND_OFFERS_QUERY_KEY, publicKeyString],
+    () => fetchWalletLoansAndOffers({ walletPublicKey: publicKeyString }),
     {
       enabled: !!publicKeyString,
       staleTime: 5 * 1000,
@@ -55,7 +55,9 @@ export const useWalletLoans: UseWalletLoans = () => {
     )
 
     const optimisticsToRemove = walletOptimisticLoans.filter(({ loan }) => {
-      const sameLoanFromBE = data.find(({ publicKey }) => publicKey === loan.publicKey)
+      const sameLoanFromBE = (data?.nfts || []).find(
+        ({ publicKey }) => publicKey === loan.publicKey,
+      )
       if (!sameLoanFromBE) return false
       const isBELoanNewer = isLoanNewer(sameLoanFromBE, loan)
       return isBELoanNewer
@@ -76,7 +78,9 @@ export const useWalletLoans: UseWalletLoans = () => {
 
     const optimisticLoansPubkeys = walletOptimisticLoans.map(({ loan }) => loan.publicKey)
 
-    const dataFiltered = data.filter(({ publicKey }) => !optimisticLoansPubkeys.includes(publicKey))
+    const dataFiltered = (data?.nfts || []).filter(
+      ({ publicKey }) => !optimisticLoansPubkeys.includes(publicKey),
+    )
 
     const purgedSameMint = purgeLoansWithSameMintByFreshness(
       [...dataFiltered, ...map(walletOptimisticLoans, ({ loan }) => loan)],
@@ -112,6 +116,7 @@ export const useWalletLoans: UseWalletLoans = () => {
 
   return {
     loans: filteredLiquidatedLoans,
+    offers: data?.offers ?? {},
     isLoading,
   }
 }

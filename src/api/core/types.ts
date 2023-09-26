@@ -136,8 +136,15 @@ export const LoanSchema = z.object({
 
 export type Loan = z.infer<typeof LoanSchema>
 
-export interface WalletLoansResponse {
-  data: Loan[]
+export const WalletLoansAndOffersShema = z.object({
+  nfts: LoanSchema.array(),
+  offers: z.record(PairSchema.array()),
+})
+
+export type WalletLoansAndOffers = z.infer<typeof WalletLoansAndOffersShema>
+
+export interface WalletLoansAndOffersResponse {
+  data: WalletLoansAndOffers
   meta: PaginationMeta
 }
 

@@ -12,10 +12,10 @@ import { VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { calculateLoanRepayValue } from '@banx/utils'
 
-import { useWalletLoans } from '../../hooks'
+import { useWalletLoansAndOffers } from '../../hooks'
 
 const LoansHeader: FC = () => {
-  const { loans } = useWalletLoans()
+  const { loans } = useWalletLoansAndOffers()
 
   const numberOfLoans = loans.length
   const totalBorrowed = sumBy(loans, ({ fraktBond }) => fraktBond.borrowedAmount)
