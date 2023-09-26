@@ -24,14 +24,13 @@ export const AvailableToBorrow = () => {
   const { toggleVisibility } = useWalletModal()
 
   const { marketsPreview } = useMarketsPreview()
-  const { nfts } = useBorrowNfts()
+  const { nfts, maxBorrow } = useBorrowNfts()
 
-  const { totalMarkets, totalLiquidity, userNFTs, maxBorrow } = useMemo(() => {
+  const { totalMarkets, totalLiquidity, userNFTs } = useMemo(() => {
     return {
       totalMarkets: marketsPreview.length,
       totalLiquidity: sumBy(marketsPreview, 'offerTvl'),
       userNFTs: nfts.length,
-      maxBorrow: 124, //TODO: need calc max borrow
     }
   }, [marketsPreview, nfts])
 
@@ -44,7 +43,7 @@ export const AvailableToBorrow = () => {
       <div className={styles.stats}>
         {connected ? (
           <>
-            <DashboardStatInfo label="Borrow up to" value={maxBorrow} />
+            <DashboardStatInfo label="Borrow up to" value={maxBorrow} divider={1e9} />
             <DashboardStatInfo
               label="From your"
               value={`${userNFTs} NFTS`}
@@ -103,6 +102,15 @@ export const MyLoans: FC<MyLoansProps> = ({ stats }) => {
     navigate(PATHS.LOANS)
   }
 
+  const DoughnutChart = (
+    <Doughnut
+      className={styles.doughnutChart}
+      data={map(loansData, 'value')}
+      colors={Object.values(LOANS_COLOR_MAP)}
+      statInfoProps={{ label: 'Total loans', value: liquidationLoans }}
+    />
+  )
+
   return (
     <div className={styles.loansContainer}>
       <Heading title="My loans" />
@@ -112,6 +120,7 @@ export const MyLoans: FC<MyLoansProps> = ({ stats }) => {
             <DashboardStatInfo label="Total borrowed" value={totalBorrowed} divider={1e9} />
             <DashboardStatInfo label="Total debt" value={totalDebt} divider={1e9} />
           </div>
+          <div className={styles.mobileChartContainer}>{DoughnutChart}</div>
           <div className={styles.loansChartStats}>
             {loansData.map(({ key, name, value }) => (
               <ChartStatInfo
@@ -123,12 +132,7 @@ export const MyLoans: FC<MyLoansProps> = ({ stats }) => {
             ))}
           </div>
         </div>
-        <Doughnut
-          className={styles.doughnutChart}
-          data={map(loansData, 'value')}
-          colors={Object.values(LOANS_COLOR_MAP)}
-          statInfoProps={{ label: 'Total loans', value: liquidationLoans }}
-        />
+        <div className={styles.chartContainer}>{DoughnutChart}</div>
       </div>
       <Button onClick={goToLoansPage} className={styles.manageLoansButton}>
         Manage my loans
