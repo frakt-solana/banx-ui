@@ -36,15 +36,15 @@ export const fetchBanxStats: FetchBanxStats = async () => {
   }
 
   try {
-    const { data } = await axios.get<BanxStats>(`${BACKEND_BASE_URL}/stats/banx`)
+    const { data } = await axios.get<{ data: BanxStats }>(`${BACKEND_BASE_URL}/stats/banx`)
 
     try {
-      await BanxStatsSchema.parseAsync(data)
+      await BanxStatsSchema.parseAsync(data.data)
     } catch (validationError) {
       console.error('Schema validation error:', validationError)
     }
 
-    return data ?? DEFAULT_DATA
+    return data.data ?? DEFAULT_DATA
   } catch (error) {
     return DEFAULT_DATA
   }
