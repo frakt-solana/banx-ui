@@ -59,9 +59,12 @@ export const TotalLenderStatsSchema = z.object({
 export type TotalLenderStats = z.infer<typeof TotalLenderStatsSchema>
 
 export const TotalBorrowerStatsSchema = z.object({
-  activeLoans: z.number(),
-  terminatingLoans: z.number(),
-  liquidationLoans: z.number(),
+  activeLoansCount: z.number(),
+  activeLoansAmount: z.number(),
+  terminatingLoansCount: z.number(),
+  terminatingLoansAmount: z.number(),
+  liquidationLoansCount: z.number(),
+  liquidationLoansAmount: z.number(),
   totalBorrowed: z.number(),
   totalDebt: z.number(),
 })

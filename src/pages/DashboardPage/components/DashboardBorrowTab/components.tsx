@@ -84,12 +84,20 @@ interface MyLoansProps {
 }
 export const MyLoans: FC<MyLoansProps> = ({ stats }) => {
   const navigate = useNavigate()
-  const { activeLoans, terminatingLoans, liquidationLoans, totalBorrowed, totalDebt } = stats
+  const {
+    activeLoansCount,
+    terminatingLoansCount,
+    liquidationLoansCount,
+    totalBorrowed,
+    totalDebt,
+  } = stats
+
+  const totalLoans = activeLoansCount + terminatingLoansCount + liquidationLoansCount
 
   const loansStatusValueMap = {
-    [LoansStatus.Active]: activeLoans,
-    [LoansStatus.Terminating]: terminatingLoans,
-    [LoansStatus.Liquidation]: liquidationLoans,
+    [LoansStatus.Active]: activeLoansCount,
+    [LoansStatus.Terminating]: terminatingLoansCount,
+    [LoansStatus.Liquidation]: liquidationLoansCount,
   }
 
   const loansData = Object.entries(loansStatusValueMap).map(([status, value]) => ({
@@ -108,7 +116,7 @@ export const MyLoans: FC<MyLoansProps> = ({ stats }) => {
       className={styles.doughnutChart}
       data={map(loansData, 'value')}
       colors={Object.values(LOANS_COLOR_MAP)}
-      statInfoProps={{ label: 'Total loans', value: liquidationLoans }}
+      statInfoProps={{ label: 'Total loans', value: totalLoans, valueType: VALUES_TYPES.STRING }}
     />
   )
 
