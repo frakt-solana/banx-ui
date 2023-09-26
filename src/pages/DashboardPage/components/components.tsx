@@ -1,5 +1,7 @@
 import { FC } from 'react'
 
+import classNames from 'classnames'
+
 import { SearchSelect, SearchSelectProps } from '@banx/components/SearchSelect'
 import { StatInfo, StatsInfoProps } from '@banx/components/StatInfo'
 
@@ -26,10 +28,16 @@ interface ChartStatInfoProps {
   label: string
   value: string | number | JSX.Element
   indicatorColor: string
+  className?: string
 }
 
-export const ChartStatInfo: FC<ChartStatInfoProps> = ({ value, label, indicatorColor }) => (
-  <div className={styles.chartStatInfo}>
+export const ChartStatInfo: FC<ChartStatInfoProps> = ({
+  value,
+  label,
+  className,
+  indicatorColor,
+}) => (
+  <div className={classNames(styles.chartStatInfo, className)}>
     <span className={styles.chartStatInfoValue}>{value}</span>
     <div className={styles.chartStatInfoLabelWrapper}>
       <span className={styles.chartStatInfoLabel}>{label}</span>

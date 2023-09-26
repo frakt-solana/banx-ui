@@ -93,9 +93,10 @@ export const MyLoans: FC<MyLoansProps> = ({ stats }) => {
   }
 
   const loansData = Object.entries(loansStatusValueMap).map(([status, value]) => ({
-    name: LOANS_DISPLAY_NAMES[status as LoansStatus],
+    label: LOANS_DISPLAY_NAMES[status as LoansStatus],
     key: status,
     value,
+    className: value && status === LoansStatus.Liquidation ? styles.highlightLiquidation : '',
   }))
 
   const goToLoansPage = () => {
@@ -122,12 +123,11 @@ export const MyLoans: FC<MyLoansProps> = ({ stats }) => {
           </div>
           <div className={styles.mobileChartContainer}>{DoughnutChart}</div>
           <div className={styles.loansChartStats}>
-            {loansData.map(({ key, name, value }) => (
+            {loansData.map(({ key, ...props }) => (
               <ChartStatInfo
                 key={key}
-                label={name}
-                value={value}
                 indicatorColor={LOANS_COLOR_MAP[key as LoansStatus]}
+                {...props}
               />
             ))}
           </div>

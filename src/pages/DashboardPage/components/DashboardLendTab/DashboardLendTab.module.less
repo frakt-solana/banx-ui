@@ -1,12 +1,15 @@
-.collectionsSection.fullWidth {
-  width: 100%;
+.collectionsSection {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+
+  &.fullWidth {
+    width: 100%;
+  }
 }
 
 .collectionsSection,
 .additionalContentSection {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
   width: 50%;
 
   @media (max-width: 1240px) {
@@ -41,6 +44,11 @@
   }
 }
 
+.allTimeContainer {
+  @media (max-width: 640px) {
+    margin-top: 16px;
+  }
+}
 .allTimeContent {
   display: flex;
   align-items: center;
@@ -56,6 +64,10 @@
   min-height: 188px;
   height: 100%;
   width: 100%;
+
+  @media (max-width: 640px) {
+    margin-top: 8px;
+  }
 }
 .allTimeStats {
   display: flex;
@@ -84,6 +96,10 @@
   min-height: 160px;
   height: 100%;
   width: 100%;
+
+  @media (max-width: 640px) {
+    margin-top: 8px;
+  }
 }
 .allocationStats {
   display: flex;
