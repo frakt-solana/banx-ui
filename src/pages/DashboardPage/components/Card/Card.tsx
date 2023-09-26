@@ -17,6 +17,7 @@ interface CardProps {
   onClick?: () => void
   className?: string
   badgeElement?: JSX.Element | null
+  disabled?: boolean
 }
 
 const CardBackdrop: FC<PropsWithChildren<CardProps>> = ({
@@ -24,11 +25,17 @@ const CardBackdrop: FC<PropsWithChildren<CardProps>> = ({
   onClick,
   badgeElement,
   className,
+  disabled,
   children,
 }) => (
   <div
     onClick={onClick}
-    className={classNames(styles.card, { [styles.clicable]: onClick, className })}
+    className={classNames(
+      styles.card,
+      { [styles.clicable]: onClick },
+      { [styles.disabled]: disabled },
+      className,
+    )}
   >
     {badgeElement && <div className={styles.badge}>{badgeElement}</div>}
     <ImageWithPreload src={image} className={styles.nftImage} square />
@@ -76,7 +83,7 @@ export const BorrowCard: FC<BorrowCardProps> = ({ dailyFee, maxBorrow, ...props 
   const BadgeContentElement = !connected ? <>+{createSolValueJSX(maxBorrow, 1e9)}</> : null
 
   return (
-    <CardBackdrop {...props} badgeElement={BadgeContentElement}>
+    <CardBackdrop {...props} badgeElement={BadgeContentElement} disabled={!maxBorrow}>
       <div className={classNames(styles.borrowCardFooter, { [styles.fullHeight]: connected })}>
         <StatInfo
           label="Pepetual"
@@ -88,7 +95,9 @@ export const BorrowCard: FC<BorrowCardProps> = ({ dailyFee, maxBorrow, ...props 
         <StatInfo label="Daily fee" value={dailyFee} classNamesProps={statClassNames} />
       </div>
       {connected && (
-        <Button className={styles.borrowButton}>Get {createSolValueJSX(maxBorrow, 1e9)}</Button>
+        <Button className={styles.borrowButton} disabled={!maxBorrow}>
+          {maxBorrow ? <>Get {createSolValueJSX(maxBorrow, 1e9)}</> : 'No offers'}
+        </Button>
       )}
     </CardBackdrop>
   )
