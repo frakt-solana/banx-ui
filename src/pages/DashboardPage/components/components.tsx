@@ -18,7 +18,7 @@ export const SearchableHeading = <T extends object>({
 }: SearchableHeadingProps<T>) => (
   <div className={styles.searchableHeadingWrapper}>
     <h4 className={styles.searchableHeading}>{title}</h4>
-    <SearchSelect className={styles.searchSelect} {...searchSelectParams} />
+    <SearchSelect collapsed={true} className={styles.searchSelect} {...searchSelectParams} />
   </div>
 )
 

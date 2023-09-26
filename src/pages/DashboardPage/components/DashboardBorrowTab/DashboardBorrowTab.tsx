@@ -1,8 +1,8 @@
 import { useWallet } from '@solana/wallet-adapter-react'
-import { find } from 'lodash'
 
 import { BorrowNft, MarketPreview } from '@banx/api/core'
 import { DAYS_IN_YEAR } from '@banx/constants'
+import { calculateLoanValue } from '@banx/utils'
 
 import { BorrowCard } from '../Card'
 import { SearchableHeading } from '../components'
@@ -14,17 +14,24 @@ import styles from './DashboardBorrowTab.module.less'
 const DashboardBorrowTab = () => {
   const { connected } = useWallet()
 
-  const { marketsPreview, nfts, searchSelectParams, borrowerStats, borrow } =
+  const { marketsPreview, nfts, searchSelectParams, borrowerStats, borrow, findBestOffer } =
     useDashboardBorrowTab()
 
-  const showMyLoans = connected && !!borrowerStats?.activeLoans
+  const hasAnyLoans =
+    !!borrowerStats?.activeLoansCount ||
+    !!borrowerStats?.liquidationLoansCount ||
+    !!borrowerStats?.terminatingLoansCount
+
+  const showMyLoans = connected && hasAnyLoans
   const headingText = connected ? 'Click to borrow' : '1 click loan'
 
   const createNFTCard = (borrowNft: BorrowNft) => {
     const { mint, nft, loan } = borrowNft
 
-    const currentMarket = find(marketsPreview, ['marketPubkey', loan.marketPubkey])
     const dailyFee = calcDailyInterestFee(loan.marketApr, nft.collectionFloor)
+
+    const bestOffer = findBestOffer(loan.marketPubkey)
+    const bestLoanValue = bestOffer ? calculateLoanValue(bestOffer) : 0
 
     return (
       <BorrowCard
@@ -32,7 +39,7 @@ const DashboardBorrowTab = () => {
         onClick={() => borrow(borrowNft)}
         image={nft.meta.imageUrl}
         dailyFee={dailyFee}
-        maxBorrow={currentMarket?.bestOffer}
+        maxBorrow={bestLoanValue}
       />
     )
   }

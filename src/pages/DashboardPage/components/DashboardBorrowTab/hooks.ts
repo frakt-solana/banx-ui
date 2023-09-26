@@ -34,10 +34,14 @@ export const useDashboardBorrowTab = () => {
     navigate(PATHS.LOANS)
   }
 
+  const findBestOffer = (marketPubkey: string) => {
+    return rawOffers[marketPubkey]?.at(0) ?? null
+  }
+
   const borrow = async (nft: BorrowNft) => {
     const { marketPubkey } = nft.loan
 
-    const offer = rawOffers[marketPubkey]?.at(0) ?? null
+    const offer = findBestOffer(marketPubkey)
     const rawOffer = rawOffers[marketPubkey]?.find(
       ({ publicKey }) => publicKey === offer?.publicKey,
     )
@@ -64,6 +68,7 @@ export const useDashboardBorrowTab = () => {
     borrowerStats,
     marketsPreview: filteredMarkets,
     searchSelectParams,
+    findBestOffer,
     nfts,
   }
 }
