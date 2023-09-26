@@ -3,9 +3,10 @@ import { useState } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
+import { convertAprToApy } from '@banx/utils'
 
 import { SearchableHeading } from '../components'
 import { AllTimeBlock, AllocationBlock, CollectionsCardList } from './components'
@@ -14,7 +15,25 @@ import styles from './DashboardLendTab.module.less'
 
 const DashboardLendTab = () => {
   const { connected } = useWallet()
-  const searchSelectParams = useSearchSelectParams()
+
+  const { marketsPreview } = useMarketsPreview()
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([])
+
+  const searchSelectParams = {
+    onChange: setSelectedOptions,
+    options: marketsPreview,
+    selectedOptions,
+    optionKeys: {
+      labelKey: 'collectionName',
+      valueKey: 'collectionName',
+      imageKey: 'collectionImage',
+      secondLabel: {
+        key: 'marketApr',
+        format: (apr: number) => createPercentValueJSX(convertAprToApy(apr / 1e4)),
+      },
+    },
+    labels: ['Collection', 'APY'],
+  }
 
   return (
     <>
@@ -33,21 +52,3 @@ const DashboardLendTab = () => {
 }
 
 export default DashboardLendTab
-
-const useSearchSelectParams = () => {
-  const { marketsPreview } = useMarketsPreview()
-  const [selectedOptions, setSelectedOptions] = useState<string[]>([])
-
-  return {
-    onChange: setSelectedOptions,
-    options: marketsPreview,
-    selectedOptions,
-    optionKeys: {
-      labelKey: 'collectionName',
-      valueKey: 'collectionName',
-      imageKey: 'collectionImage',
-      secondLabel: { key: 'offerTvl', format: (value: number) => createSolValueJSX(value, 1e9) },
-    },
-    labels: ['Collection', 'Offer Tvl'],
-  }
-}

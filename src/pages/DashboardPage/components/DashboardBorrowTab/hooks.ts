@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { sumBy } from 'lodash'
+import { find, sumBy } from 'lodash'
 
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
@@ -11,10 +11,23 @@ import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 export const useDashboardBorrowTab = () => {
   const { connected } = useWallet()
 
-  const searchSelectParams = useSearchSelectParams()
-
   const { marketsPreview } = useMarketsPreview()
   const { nfts } = useBorrowNfts()
+
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([])
+
+  const searchSelectParams = {
+    onChange: setSelectedOptions,
+    options: marketsPreview,
+    selectedOptions,
+    optionKeys: {
+      labelKey: 'collectionName',
+      imageKey: 'collectionImage',
+      valueKey: 'collectionName',
+    },
+    secondLabel: { key: 'offerTvl', format: (value: number) => createSolValueJSX(value, 1e9) },
+    labels: ['Collection', 'Liquidity'],
+  }
 
   const headingText = connected ? 'Click to borrow' : '1 click loan'
 
@@ -42,23 +55,5 @@ export const useDashboardBorrowTab = () => {
     marketsTotalStats,
     nftsTotalStats,
     connected,
-  }
-}
-
-export const useSearchSelectParams = () => {
-  const { marketsPreview } = useMarketsPreview()
-  const [selectedOptions, setSelectedOptions] = useState<string[]>([])
-
-  return {
-    onChange: setSelectedOptions,
-    options: marketsPreview,
-    selectedOptions,
-    optionKeys: {
-      labelKey: 'collectionName',
-      imageKey: 'collectionImage',
-      valueKey: 'collectionName',
-    },
-    secondLabel: { key: 'offerTvl', format: (value: number) => createSolValueJSX(value, 1e9) },
-    labels: ['Collection', 'Offer Tvl'],
   }
 }
