@@ -8,6 +8,7 @@ import { createPercentValueJSX } from '@banx/components/TableComponents'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { convertAprToApy } from '@banx/utils'
 
+import { useLenderStats } from '../../hooks'
 import { SearchableHeading } from '../components'
 import { AllTimeBlock, AllocationBlock, CollectionsCardList } from './components'
 
@@ -18,6 +19,8 @@ const DashboardLendTab = () => {
 
   const { marketsPreview } = useMarketsPreview()
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
+
+  const { data } = useLenderStats()
 
   const searchSelectParams = {
     onChange: setSelectedOptions,
@@ -43,8 +46,8 @@ const DashboardLendTab = () => {
       </div>
       {connected && (
         <div className={styles.additionalContentSection}>
-          <AllocationBlock />
-          <AllTimeBlock />
+          {data && <AllocationBlock stats={data?.allocation} />}
+          {data && <AllTimeBlock stats={data?.allTime} />}
         </div>
       )}
     </>

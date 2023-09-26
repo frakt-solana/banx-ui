@@ -20,6 +20,7 @@ const DashboardBorrowTab = () => {
     marketsTotalStats,
     nftsTotalStats,
     searchSelectParams,
+    borrowerStats,
   } = useDashboardBorrowTab()
 
   const createNFTCard = (borrowNft: BorrowNft) => {
@@ -58,7 +59,7 @@ const DashboardBorrowTab = () => {
       </div>
       <div className={styles.additionalContentSection}>
         <AvailableToBorrow {...marketsTotalStats} {...nftsTotalStats} />
-        {showMyLoans && <MyLoans />}
+        {showMyLoans && borrowerStats && <MyLoans stats={borrowerStats} />}
       </div>
     </>
   )

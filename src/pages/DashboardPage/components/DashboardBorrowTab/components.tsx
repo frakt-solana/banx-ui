@@ -7,9 +7,9 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { Button } from '@banx/components/Buttons'
 import { Doughnut } from '@banx/components/Charts'
 import { VALUES_TYPES } from '@banx/components/StatInfo'
-import { createSolValueJSX } from '@banx/components/TableComponents'
 import { useWalletModal } from '@banx/components/WalletModal'
 
+import { TotalBorrowerStats } from '@banx/api/stats'
 import { PATHS } from '@banx/router'
 
 import { ChartStatInfo, DashboardStatInfo, Heading } from '../components'
@@ -78,16 +78,12 @@ export const AvailableToBorrow: FC<AvailableToBorrowProps> = ({
   )
 }
 
-//? MOCK DATA
-const activeLoans = 10
-const terminatingLoans = 10
-const liquidationLoans = 10
-const totalLoans = activeLoans + terminatingLoans + liquidationLoans
-const totalBorrowed = 15.5
-const totalDebt = 130
-
-export const MyLoans = () => {
+interface MyLoansProps {
+  stats: TotalBorrowerStats
+}
+export const MyLoans: FC<MyLoansProps> = ({ stats }) => {
   const navigate = useNavigate()
+  const { activeLoans, terminatingLoans, liquidationLoans, totalBorrowed, totalDebt } = stats
 
   const loansStatusValueMap = {
     [LoansStatus.Active]: activeLoans,
@@ -111,15 +107,15 @@ export const MyLoans = () => {
       <div className={styles.loansContent}>
         <div className={styles.loansStatsContainer}>
           <div className={styles.loansStats}>
-            <DashboardStatInfo label="Total borrowed" value={totalBorrowed} />
-            <DashboardStatInfo label="Total debt" value={totalDebt} />
+            <DashboardStatInfo label="Total borrowed" value={totalBorrowed} divider={1e9} />
+            <DashboardStatInfo label="Total debt" value={totalDebt} divider={1e9} />
           </div>
           <div className={styles.loansChartStats}>
             {loansData.map(({ key, name, value }) => (
               <ChartStatInfo
                 key={key}
                 label={name}
-                value={createSolValueJSX(value)}
+                value={value}
                 indicatorColor={LOANS_COLOR_MAP[key as LoansStatus]}
               />
             ))}
@@ -129,7 +125,7 @@ export const MyLoans = () => {
           className={styles.doughnutChart}
           data={map(loansData, 'value')}
           colors={Object.values(LOANS_COLOR_MAP)}
-          statInfoProps={{ label: 'Total loans', value: totalLoans }}
+          statInfoProps={{ label: 'Total loans', value: liquidationLoans }}
         />
       </div>
       <Button onClick={goToLoansPage} className={styles.manageLoansButton}>

@@ -1,3 +1,5 @@
+import { FC } from 'react'
+
 import { map } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
@@ -6,6 +8,7 @@ import { Doughnut, SingleBar } from '@banx/components/Charts'
 import { VALUES_TYPES } from '@banx/components/StatInfo'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
+import { TotalLenderStats } from '@banx/api/stats'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { PATHS } from '@banx/router'
 import { useMarketsURLControl } from '@banx/store'
@@ -55,10 +58,15 @@ export const CollectionsCardList = () => {
   )
 }
 
-export const AllTimeBlock = () => {
+interface AllTimeBlockProps {
+  stats: TotalLenderStats['allTime']
+}
+export const AllTimeBlock: FC<AllTimeBlockProps> = ({ stats }) => {
+  const { totalRepaid, totalInterestEarned, totalLent, totalDefaulted } = stats
+
   const allTimeStatusValueMap = {
-    [AllTimeStatus.Repaid]: 10,
-    [AllTimeStatus.Interest]: 20,
+    [AllTimeStatus.Repaid]: totalRepaid,
+    [AllTimeStatus.Defaulted]: totalDefaulted,
   }
 
   const allTimeData = Object.entries(allTimeStatusValueMap).map(([status, value]) => ({
@@ -74,8 +82,17 @@ export const AllTimeBlock = () => {
       <div className={styles.allTimeContent}>
         <div className={styles.allTimeStatsContainer}>
           <div className={styles.allTimeStats}>
-            <DashboardStatInfo label="Total lent" value={15.5} tooltipText="Weekly interest" />
-            <DashboardStatInfo label="Total interest earned" value={130} />
+            <DashboardStatInfo
+              label="Total lent"
+              value={totalLent}
+              tooltipText="Weekly interest"
+              divider={1e9}
+            />
+            <DashboardStatInfo
+              label="Total interest earned"
+              value={totalInterestEarned}
+              divider={1e9}
+            />
           </div>
           <div className={styles.allTimeChartStats}>
             {allTimeData.map(({ key, label, value }) => (
@@ -94,13 +111,13 @@ export const AllTimeBlock = () => {
   )
 }
 
-export const AllocationBlock = () => {
-  //? MOCK DATA
-  const weightedApy = 130
-  const weeklyInterest = 130
-  const activeLoans = 10
-  const underWaterLoans = 20
-  const pendingOffers = 30
+interface AllocationBlockProps {
+  stats: TotalLenderStats['allocation']
+}
+
+export const AllocationBlock: FC<AllocationBlockProps> = ({ stats }) => {
+  const { weightedApy, weeklyInterest, activeLoans, underWaterLoans, pendingOffers } = stats
+
   const totalFunds = activeLoans + underWaterLoans + pendingOffers
 
   const navigate = useNavigate()
@@ -131,10 +148,11 @@ export const AllocationBlock = () => {
               label="Weekly interest"
               value={weeklyInterest}
               tooltipText="Weekly interest"
+              divider={1e9}
             />
             <DashboardStatInfo
               label="Weighted apy"
-              value={weightedApy}
+              value={weightedApy / 100}
               tooltipText="Weighted apy"
               valueType={VALUES_TYPES.PERCENT}
             />
@@ -144,7 +162,7 @@ export const AllocationBlock = () => {
               <ChartStatInfo
                 key={key}
                 label={name}
-                value={createSolValueJSX(value)}
+                value={createSolValueJSX(value, 1e9)}
                 indicatorColor={ALLOCATION_COLOR_MAP[key as AllocationStatus]}
               />
             ))}
@@ -153,7 +171,11 @@ export const AllocationBlock = () => {
         <Doughnut
           data={map(allocationData, 'value')}
           colors={Object.values(ALLOCATION_COLOR_MAP)}
-          statInfoProps={{ label: 'Total funds', value: totalFunds, decimalPlaces: 0 }}
+          statInfoProps={{
+            label: 'Total funds',
+            value: totalFunds,
+            divider: 1e9,
+          }}
           className={styles.doughnutChart}
         />
       </div>

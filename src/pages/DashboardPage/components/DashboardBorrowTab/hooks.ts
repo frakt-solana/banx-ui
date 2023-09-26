@@ -1,15 +1,19 @@
 import { useMemo, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { find, sumBy } from 'lodash'
+import { find, isEmpty, sumBy } from 'lodash'
 
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 
+import { useBorrowerStats } from '../../hooks'
+
 export const useDashboardBorrowTab = () => {
   const { connected } = useWallet()
+
+  const { data: borrowerStats } = useBorrowerStats()
 
   const { marketsPreview } = useMarketsPreview()
   const { nfts } = useBorrowNfts()
@@ -44,9 +48,10 @@ export const useDashboardBorrowTab = () => {
     return { userNFTs }
   }, [nfts])
 
-  const showMyLoans = connected
+  const showMyLoans = connected && !!borrowerStats?.activeLoans
 
   return {
+    borrowerStats,
     marketsPreview,
     searchSelectParams,
     nfts,
