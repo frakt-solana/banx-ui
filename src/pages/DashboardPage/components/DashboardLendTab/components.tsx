@@ -59,10 +59,15 @@ export const CollectionsCardList = () => {
 }
 
 interface AllTimeBlockProps {
-  stats: TotalLenderStats['allTime']
+  stats?: TotalLenderStats['allTime']
 }
 export const AllTimeBlock: FC<AllTimeBlockProps> = ({ stats }) => {
-  const { totalRepaid, totalInterestEarned, totalLent, totalDefaulted } = stats
+  const {
+    totalRepaid = 0,
+    totalInterestEarned = 0,
+    totalLent = 0,
+    totalDefaulted = 0,
+  } = stats || {}
 
   const allTimeStatusValueMap = {
     [AllTimeStatus.Repaid]: totalRepaid,
@@ -94,29 +99,40 @@ export const AllTimeBlock: FC<AllTimeBlockProps> = ({ stats }) => {
               divider={1e9}
             />
           </div>
+          <div className={styles.mobileChartContainer}>
+            <SingleBar data={allTimeData} />
+          </div>
           <div className={styles.allTimeChartStats}>
             {allTimeData.map(({ key, label, value }) => (
               <ChartStatInfo
                 key={key}
                 label={label}
-                value={value}
+                value={createSolValueJSX(value, 1e9, '0◎')}
                 indicatorColor={ALL_TIME_COLOR_MAP[key as AllTimeStatus]}
               />
             ))}
           </div>
         </div>
-        <SingleBar data={allTimeData} />
+        <div className={styles.chartContainer}>
+          <SingleBar data={allTimeData} />
+        </div>
       </div>
     </div>
   )
 }
 
 interface AllocationBlockProps {
-  stats: TotalLenderStats['allocation']
+  stats?: TotalLenderStats['allocation']
 }
 
 export const AllocationBlock: FC<AllocationBlockProps> = ({ stats }) => {
-  const { weightedApy, weeklyInterest, activeLoans, underWaterLoans, pendingOffers } = stats
+  const {
+    weightedApy = 0,
+    weeklyInterest = 0,
+    activeLoans = 0,
+    underWaterLoans = 0,
+    pendingOffers = 0,
+  } = stats || {}
 
   const totalFunds = activeLoans + underWaterLoans + pendingOffers
 
@@ -138,6 +154,19 @@ export const AllocationBlock: FC<AllocationBlockProps> = ({ stats }) => {
     navigate(PATHS.OFFERS)
   }
 
+  const DoughnutChart = (
+    <Doughnut
+      data={map(allocationData, 'value')}
+      colors={Object.values(ALLOCATION_COLOR_MAP)}
+      statInfoProps={{
+        label: 'Total funds',
+        value: totalFunds,
+        divider: 1e9,
+      }}
+      className={styles.doughnutChart}
+    />
+  )
+
   return (
     <div className={styles.allocationContainer}>
       <Heading title="Allocation" />
@@ -157,27 +186,19 @@ export const AllocationBlock: FC<AllocationBlockProps> = ({ stats }) => {
               valueType={VALUES_TYPES.PERCENT}
             />
           </div>
+          <div className={styles.mobileChartContainer}>{DoughnutChart}</div>
           <div className={styles.allocationChartStats}>
             {allocationData.map(({ key, name, value }) => (
               <ChartStatInfo
                 key={key}
                 label={name}
-                value={createSolValueJSX(value, 1e9)}
+                value={createSolValueJSX(value, 1e9, '0◎')}
                 indicatorColor={ALLOCATION_COLOR_MAP[key as AllocationStatus]}
               />
             ))}
           </div>
         </div>
-        <Doughnut
-          data={map(allocationData, 'value')}
-          colors={Object.values(ALLOCATION_COLOR_MAP)}
-          statInfoProps={{
-            label: 'Total funds',
-            value: totalFunds,
-            divider: 1e9,
-          }}
-          className={styles.doughnutChart}
-        />
+        <div className={styles.chartContainer}>{DoughnutChart}</div>
       </div>
       <Button onClick={goToOffersPage} className={styles.manageOffersButton}>
         Manage my offers

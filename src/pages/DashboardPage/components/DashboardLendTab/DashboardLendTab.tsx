@@ -45,8 +45,8 @@ const DashboardLendTab = () => {
       </div>
       {connected && (
         <div className={styles.additionalContentSection}>
-          {lenderStats && <AllocationBlock stats={lenderStats.allocation} />}
-          {lenderStats && <AllTimeBlock stats={lenderStats.allTime} />}
+          <AllocationBlock stats={lenderStats?.allocation} />
+          <AllTimeBlock stats={lenderStats?.allTime} />
         </div>
       )}
     </>

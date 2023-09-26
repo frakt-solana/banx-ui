@@ -23,8 +23,20 @@ interface DoughnutChartProps {
 }
 
 export const Doughnut: FC<DoughnutChartProps> = ({ data, colors, statInfoProps, className }) => {
-  const options = generateOptions()
-  const chartData = generateData(data, colors)
+  const options = {
+    maintainAspectRatio: false,
+    cutout: 55,
+  }
+
+  const chartData = {
+    datasets: [
+      {
+        backgroundColor: convertCssVariablesToColors(colors) ?? [],
+        borderWidth: 0,
+        data,
+      },
+    ],
+  }
 
   return (
     <div className={classNames(styles.doughnutChartWrapper, className)}>
@@ -35,18 +47,3 @@ export const Doughnut: FC<DoughnutChartProps> = ({ data, colors, statInfoProps, 
     </div>
   )
 }
-
-const generateOptions = () => ({
-  maintainAspectRatio: false,
-  cutout: 55,
-})
-
-const generateData = (data: ChartData, colors: ColorList) => ({
-  datasets: [
-    {
-      backgroundColor: convertCssVariablesToColors(colors) ?? [],
-      borderWidth: 0,
-      data,
-    },
-  ],
-})

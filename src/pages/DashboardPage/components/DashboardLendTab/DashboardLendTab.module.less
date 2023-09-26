@@ -14,8 +14,10 @@
 .collectionsCardList {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 2fr));
-  padding-top: 12px;
+  margin-top: 12px;
   gap: 24px;
+  max-height: 480px;
+  overflow: auto;
 
   @media (max-width: 1240px) {
     display: flex;
@@ -101,4 +103,19 @@
 .manageOffersButton {
   margin-top: 16px;
   width: 100%;
+}
+
+.chartContainer {
+  @media (max-width: 640px) {
+    display: none;
+  }
+}
+
+.mobileChartContainer {
+  display: none;
+
+  @media (max-width: 640px) {
+    display: flex;
+    justify-content: center;
+  }
 }
