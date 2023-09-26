@@ -49,7 +49,7 @@ const DashboardBorrowTab = () => {
   return (
     <>
       <div className={styles.nftsSection}>
-        <SearchableHeading title={headingText} searchSelectParams={searchSelectParams as any} />
+        <SearchableHeading title={headingText} searchSelectParams={searchSelectParams} />
         <div className={styles.cardsList}>
           {connected ? nfts.map(createNFTCard) : marketsPreview.map(createMarketCard)}
         </div>

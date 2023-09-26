@@ -10,7 +10,7 @@ interface SearchableHeadingProps<T> {
   searchSelectParams: SearchSelectProps<T>
 }
 
-export const SearchableHeading = <T extends SearchableHeadingProps<T>>({
+export const SearchableHeading = <T extends object>({
   title,
   searchSelectParams,
 }: SearchableHeadingProps<T>) => (

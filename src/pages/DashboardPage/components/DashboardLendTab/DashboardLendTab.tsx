@@ -19,8 +19,7 @@ const DashboardLendTab = () => {
 
   const { marketsPreview } = useMarketsPreview()
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
-
-  const { data } = useLenderStats()
+  const { data: lenderStats } = useLenderStats()
 
   const searchSelectParams = {
     onChange: setSelectedOptions,
@@ -41,13 +40,13 @@ const DashboardLendTab = () => {
   return (
     <>
       <div className={classNames(styles.collectionsSection, { [styles.fullWidth]: !connected })}>
-        <SearchableHeading title="Collections" searchSelectParams={searchSelectParams as any} />
+        <SearchableHeading title="Collections" searchSelectParams={searchSelectParams} />
         <CollectionsCardList />
       </div>
       {connected && (
         <div className={styles.additionalContentSection}>
-          {data && <AllocationBlock stats={data?.allocation} />}
-          {data && <AllTimeBlock stats={data?.allTime} />}
+          {lenderStats && <AllocationBlock stats={lenderStats.allocation} />}
+          {lenderStats && <AllTimeBlock stats={lenderStats.allTime} />}
         </div>
       )}
     </>
