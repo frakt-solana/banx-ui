@@ -10,7 +10,7 @@ import {
 
 import { Loan } from '@banx/api/core'
 
-import { DebtCell, HealthCell, RepayCell, StatusCell } from './TableCells'
+import { ActionsCell, DebtCell, HealthCell, StatusCell } from './TableCells'
 
 import styles from './LoansActiveTable.module.less'
 
@@ -74,10 +74,10 @@ export const getTableColumns = ({
     {
       title: <HeaderCell label="" />,
       render: (_, loan) => (
-        <RepayCell
+        <ActionsCell
           loan={loan}
           isCardView={isCardView}
-          disabled={!!findLoanInSelection(loan.publicKey)}
+          disableActions={!!findLoanInSelection(loan.publicKey)}
         />
       ),
     },
