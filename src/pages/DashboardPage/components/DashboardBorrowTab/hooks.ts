@@ -34,6 +34,10 @@ export const useDashboardBorrowTab = () => {
     navigate(PATHS.LOANS)
   }
 
+  const goToBorrowPage = () => {
+    navigate(PATHS.BORROW)
+  }
+
   const findBestOffer = (marketPubkey: string) => {
     return rawOffers[marketPubkey]?.at(0) ?? null
   }
@@ -70,6 +74,7 @@ export const useDashboardBorrowTab = () => {
     searchSelectParams,
     findBestOffer,
     nfts,
+    goToBorrowPage,
   }
 }
 

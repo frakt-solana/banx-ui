@@ -80,10 +80,12 @@ export const BorrowCard: FC<BorrowCardProps> = ({ dailyFee, maxBorrow, ...props 
     value: styles.borrowCardStatValue,
   }
 
-  const BadgeContentElement = !connected ? <>+{createSolValueJSX(maxBorrow, 1e9)}</> : null
+  const BadgeContentElement = !connected ? <>+{createSolValueJSX(maxBorrow, 1e9, '0◎')}</> : null
+
+  const disabledBorrow = connected && !maxBorrow
 
   return (
-    <CardBackdrop {...props} badgeElement={BadgeContentElement} disabled={!maxBorrow}>
+    <CardBackdrop {...props} badgeElement={BadgeContentElement} disabled={disabledBorrow}>
       <div className={classNames(styles.borrowCardFooter, { [styles.fullHeight]: connected })}>
         <StatInfo
           label="Pepetual"
@@ -96,7 +98,7 @@ export const BorrowCard: FC<BorrowCardProps> = ({ dailyFee, maxBorrow, ...props 
       </div>
       {connected && (
         <Button className={styles.borrowButton} disabled={!maxBorrow}>
-          {maxBorrow ? <>Get {createSolValueJSX(maxBorrow, 1e9)}</> : 'No offers'}
+          {disabledBorrow ? 'No offers' : <>Get {createSolValueJSX(maxBorrow, 1e9, '0◎')}</>}
         </Button>
       )}
     </CardBackdrop>

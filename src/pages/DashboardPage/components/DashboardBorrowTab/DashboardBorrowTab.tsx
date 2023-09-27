@@ -14,8 +14,15 @@ import styles from './DashboardBorrowTab.module.less'
 const DashboardBorrowTab = () => {
   const { connected } = useWallet()
 
-  const { marketsPreview, nfts, searchSelectParams, borrowerStats, borrow, findBestOffer } =
-    useDashboardBorrowTab()
+  const {
+    marketsPreview,
+    nfts,
+    searchSelectParams,
+    borrowerStats,
+    borrow,
+    findBestOffer,
+    goToBorrowPage,
+  } = useDashboardBorrowTab()
 
   const hasAnyLoans =
     !!borrowerStats?.activeLoansCount ||
@@ -49,6 +56,7 @@ const DashboardBorrowTab = () => {
       key={market.marketPubkey}
       image={market.collectionImage}
       maxBorrow={market.bestOffer}
+      onClick={goToBorrowPage}
       dailyFee={calcDailyInterestFee(market.marketApr, market.collectionFloor)}
     />
   )
