@@ -50,7 +50,8 @@ export const Summary: FC<SummaryProps> = ({
         const { txnHash } = results[0]
 
         enqueueSnackbar({
-          message: 'Transaction Executed',
+          message: 'Loan successfully refinanced',
+          type: 'success',
           solanaExplorerPath: `tx/${txnHash}`,
         })
       })

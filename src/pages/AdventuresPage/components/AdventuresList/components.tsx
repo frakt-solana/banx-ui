@@ -79,7 +79,7 @@ export const AdventureSubscribeButton: FC<AdventuresComponentsProps> = ({
       .on('pfSuccessEach', (results) => {
         const { txnHash } = results[0]
         enqueueSnackbar({
-          message: 'Transaction Executed',
+          message: 'Subscribed successfully',
           solanaExplorerPath: `tx/${txnHash}`,
         })
       })

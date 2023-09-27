@@ -48,7 +48,8 @@ export const useOfferTransactions = ({
         result?.bondOffer && updateOrAddOffer(result.bondOffer)
         resetFormValues()
         enqueueSnackbar({
-          message: 'Transaction Executed',
+          message: 'Offer successfully placed',
+          type: 'success',
           solanaExplorerPath: `tx/${txnHash}`,
         })
       })
@@ -73,7 +74,8 @@ export const useOfferTransactions = ({
         const { result, txnHash } = results[0]
         result?.bondOffer && updateOrAddOffer(result.bondOffer)
         enqueueSnackbar({
-          message: 'Transaction Executed',
+          message: 'Offer successfully removed',
+          type: 'success',
           solanaExplorerPath: `tx/${txnHash}`,
         })
         exitEditMode()
@@ -99,7 +101,8 @@ export const useOfferTransactions = ({
         const { result, txnHash } = results[0]
         result?.bondOffer && updateOrAddOffer(result.bondOffer)
         enqueueSnackbar({
-          message: 'Transaction Executed',
+          message: 'Changes successfully applied',
+          type: 'success',
           solanaExplorerPath: `tx/${txnHash}`,
         })
       })

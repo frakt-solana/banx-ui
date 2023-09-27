@@ -33,7 +33,8 @@ export const useLendLoansTransactions = ({
         const { result, txnHash } = results[0]
         updateOrAddLoan({ ...loan, ...result })
         enqueueSnackbar({
-          message: 'Transaction Executed',
+          message: 'Offer termination successfully initialized',
+          type: 'success',
           solanaExplorerPath: `tx/${txnHash}`,
         })
       })
@@ -53,7 +54,8 @@ export const useLendLoansTransactions = ({
       .on('pfSuccessEach', (results) => {
         addMints(loan.nft.mint)
         enqueueSnackbar({
-          message: 'Transaction Executed',
+          message: 'Collateral successfully claimed',
+          type: 'success',
           solanaExplorerPath: `tx/${results[0].txnHash}`,
         })
       })
@@ -75,7 +77,8 @@ export const useLendLoansTransactions = ({
         result?.bondOffer && updateOrAddOffer(result.bondOffer)
         addMints(loan.nft.mint)
         enqueueSnackbar({
-          message: 'Transaction Executed',
+          message: 'Offer successfully sold',
+          type: 'success',
           solanaExplorerPath: `tx/${txnHash}`,
         })
       })

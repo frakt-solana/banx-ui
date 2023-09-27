@@ -149,7 +149,8 @@ const StakeContent: FC<StakeContent> = ({ nfts = [], adventures = [] }) => {
         .on('pfSuccessEach', (results) => {
           const { txnHash } = results[0]
           enqueueSnackbar({
-            message: 'Transaction Executed',
+            message: 'Staked successfully',
+            type: 'success',
             solanaExplorerPath: `tx/${txnHash}`,
           })
         })
@@ -252,7 +253,8 @@ const UnstakeContent: FC<UnstakeContent> = ({ nfts = [] }) => {
         .on('pfSuccessEach', (results) => {
           const { txnHash } = results[0]
           enqueueSnackbar({
-            message: 'Transaction Executed',
+            message: 'Unstaked successfully',
+            type: 'success',
             solanaExplorerPath: `tx/${txnHash}`,
           })
         })
