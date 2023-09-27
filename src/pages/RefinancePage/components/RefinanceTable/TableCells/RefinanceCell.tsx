@@ -60,7 +60,8 @@ const useRefinanceTransaction = (loan: Loan) => {
         addMints(loan.nft.mint)
         deselectLoan(loan.publicKey)
         enqueueSnackbar({
-          message: 'Transaction Executed',
+          message: 'Loan successfully refinanced',
+          type: 'success',
           solanaExplorerPath: `tx/${txnHash}`,
         })
       })

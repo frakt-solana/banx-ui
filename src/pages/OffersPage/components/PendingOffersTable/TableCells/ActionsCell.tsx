@@ -95,7 +95,8 @@ const useActionsCell = (offer: TableUserOfferData) => {
           removeSyntheticOffer(result?.bondOffer.hadoMarket)
         }
         enqueueSnackbar({
-          message: 'Transaction Executed',
+          message: 'Offer successfully removed',
+          type: 'success',
           solanaExplorerPath: `tx/${txnHash}`,
         })
       })

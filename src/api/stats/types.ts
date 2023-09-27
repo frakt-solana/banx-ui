@@ -30,3 +30,43 @@ export type UserLoansStats = z.infer<typeof UserLoansStatsSchema>
 export interface UserLoansStatsResponse {
   data: UserLoansStats
 }
+
+export const AllTotalStatsSchema = z.object({
+  dailyVolume: z.number(),
+  activeLoans: z.number(),
+  totalValueLocked: z.number(),
+  loansVolumeAllTime: z.number(),
+})
+
+export type AllTotalStats = z.infer<typeof AllTotalStatsSchema>
+
+export const TotalLenderStatsSchema = z.object({
+  allocation: z.object({
+    activeLoans: z.number(),
+    underWaterLoans: z.number(),
+    pendingOffers: z.number(),
+    weeklyInterest: z.number(),
+    weightedApy: z.number(),
+  }),
+  allTime: z.object({
+    totalLent: z.number(),
+    totalInterestEarned: z.number(),
+    totalRepaid: z.number(),
+    totalDefaulted: z.number(),
+  }),
+})
+
+export type TotalLenderStats = z.infer<typeof TotalLenderStatsSchema>
+
+export const TotalBorrowerStatsSchema = z.object({
+  activeLoansCount: z.number(),
+  activeLoansAmount: z.number(),
+  terminatingLoansCount: z.number(),
+  terminatingLoansAmount: z.number(),
+  liquidationLoansCount: z.number(),
+  liquidationLoansAmount: z.number(),
+  totalBorrowed: z.number(),
+  totalDebt: z.number(),
+})
+
+export type TotalBorrowerStats = z.infer<typeof TotalBorrowerStatsSchema>

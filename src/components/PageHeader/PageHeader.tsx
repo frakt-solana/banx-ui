@@ -1,15 +1,22 @@
 import { FC, PropsWithChildren } from 'react'
 
+import classNames from 'classnames'
+
 import { StatInfo, StatsInfoProps } from '../StatInfo'
 
 import styles from './PageHeader.module.less'
 
 interface PageHeaderProps {
   title: string
+  className?: string
 }
 
-export const PageHeaderBackdrop: FC<PropsWithChildren<PageHeaderProps>> = ({ title, children }) => (
-  <div className={styles.container}>
+export const PageHeaderBackdrop: FC<PropsWithChildren<PageHeaderProps>> = ({
+  title,
+  className,
+  children,
+}) => (
+  <div className={classNames(styles.container, className)}>
     <h2 className={styles.title}>{title}</h2>
     <div className={styles.content}>{children}</div>
   </div>

@@ -1,0 +1,21 @@
+.doughnutChartWrapper,
+.barChartWrapper {
+  position: relative;
+}
+
+.doughnutInnerContent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+
+  & > div {
+    white-space: nowrap;
+    align-items: center;
+    flex-direction: column-reverse;
+  }
+}
