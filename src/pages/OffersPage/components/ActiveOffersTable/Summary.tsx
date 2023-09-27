@@ -42,7 +42,8 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
       .addTxnParams(txnParams)
       .on('pfSuccessEach', (results) => {
         enqueueSnackbar({
-          message: 'Transaction Executed',
+          message: 'Collateral successfully claimed',
+          type: 'success',
           solanaExplorerPath: `tx/${results[0].txnHash}`,
         })
       })
