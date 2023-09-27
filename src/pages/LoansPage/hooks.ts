@@ -2,31 +2,29 @@ import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
-import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
-import { map } from 'lodash'
+import { BondTradeTransactionV2State, PairState } from 'fbonds-core/lib/fbond-protocol/types'
+import { chain, filter, groupBy, map } from 'lodash'
 import moment from 'moment'
 
-import { Loan, fetchWalletLoansAndOffers } from '@banx/api/core'
+import { fetchWalletLoansAndOffers } from '@banx/api/core'
 import { fetchUserLoansStats } from '@banx/api/stats'
 import {
   isLoanNewer,
+  isOfferNewer,
   isOptimisticLoanExpired,
+  isOptimisticOfferExpired,
   purgeLoansWithSameMintByFreshness,
   useLoansOptimistic,
+  useOffersOptimistic,
 } from '@banx/store'
 
 import { SECONDS_IN_72_HOURS } from './constants'
 
-type UseWalletLoans = () => {
-  loans: Loan[]
-  isLoading: boolean
-}
-
 export const USE_WALLET_LOANS_AND_OFFERS_QUERY_KEY = 'walletLoansAndOffers'
 
-export const useWalletLoansAndOffers: UseWalletLoans = () => {
-  const { publicKey } = useWallet()
-  const publicKeyString = publicKey?.toBase58() || ''
+export const useWalletLoansAndOffers = () => {
+  const { publicKey: walletPublicKey } = useWallet()
+  const publicKeyString = walletPublicKey?.toBase58() || ''
 
   const { loans: optimisticLoans, remove: removeOptimisticLoans } = useLoansOptimistic()
 
@@ -42,16 +40,16 @@ export const useWalletLoansAndOffers: UseWalletLoans = () => {
   )
 
   const walletOptimisticLoans = useMemo(() => {
-    if (!publicKey) return []
-    return optimisticLoans.filter(({ wallet }) => wallet === publicKey?.toBase58())
-  }, [optimisticLoans, publicKey])
+    if (!walletPublicKey) return []
+    return optimisticLoans.filter(({ wallet }) => wallet === walletPublicKey?.toBase58())
+  }, [optimisticLoans, walletPublicKey])
 
   //? Check same active loans (duplicated with BE) and purge them
   useEffect(() => {
-    if (!data || isFetching || !isFetched || !publicKey) return
+    if (!data || isFetching || !isFetched || !walletPublicKey) return
 
     const expiredLoans = walletOptimisticLoans.filter((loan) =>
-      isOptimisticLoanExpired(loan, publicKey.toBase58()),
+      isOptimisticLoanExpired(loan, walletPublicKey.toBase58()),
     )
 
     const optimisticsToRemove = walletOptimisticLoans.filter(({ loan }) => {
@@ -66,10 +64,10 @@ export const useWalletLoansAndOffers: UseWalletLoans = () => {
     if (optimisticsToRemove.length || expiredLoans.length) {
       removeOptimisticLoans(
         map([...expiredLoans, ...optimisticsToRemove], ({ loan }) => loan.publicKey),
-        publicKey.toBase58(),
+        walletPublicKey.toBase58(),
       )
     }
-  }, [data, isFetched, publicKey, walletOptimisticLoans, removeOptimisticLoans, isFetching])
+  }, [data, isFetched, walletPublicKey, walletOptimisticLoans, removeOptimisticLoans, isFetching])
 
   const loans = useMemo(() => {
     if (!data) {
@@ -114,9 +112,77 @@ export const useWalletLoansAndOffers: UseWalletLoans = () => {
     })
   }, [loans])
 
+  const {
+    optimisticOffers,
+    remove: removeOptimisticOffers,
+    update: updateOptimisticOffers,
+  } = useOffersOptimistic()
+
+  //? Check expiredOffers and and purge them
+  useEffect(() => {
+    if (!data || isFetching || !isFetched || !walletPublicKey) return
+
+    const expiredOffersByTime = filter(optimisticOffers, (offer) => isOptimisticOfferExpired(offer))
+
+    const optimisticsToRemove = chain(optimisticOffers)
+      //? Filter closed offers from LS optimistics
+      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualClosed)
+      .filter(({ offer }) => {
+        const sameOfferFromBE = data.offers[offer.hadoMarket]?.find(
+          ({ publicKey }) => publicKey === offer.publicKey,
+        )
+        //TODO Offer may exist from Lend page. Prevent purging
+        if (!sameOfferFromBE && offer.assetReceiver === walletPublicKey.toBase58()) return false
+        if (!sameOfferFromBE) return true
+        const isBEOfferNewer = isOfferNewer(sameOfferFromBE, offer)
+        return isBEOfferNewer
+      })
+      .value()
+
+    if (optimisticsToRemove.length || expiredOffersByTime.length) {
+      removeOptimisticOffers(
+        map([...expiredOffersByTime, ...optimisticsToRemove], ({ offer }) => offer.publicKey),
+      )
+    }
+  }, [data, isFetched, optimisticOffers, isFetching, walletPublicKey, removeOptimisticOffers])
+
+  const mergedRawOffers = useMemo(() => {
+    if (!data || !walletPublicKey) {
+      return {}
+    }
+
+    const optimisticsFiltered = chain(optimisticOffers)
+      //? Filter closed offers from LS optimistics
+      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualClosed)
+      //? Filter own offers from LS optimistics
+      .filter(({ offer }) => offer?.assetReceiver !== walletPublicKey?.toBase58())
+      .value()
+
+    const optimisticsByMarket = groupBy(optimisticsFiltered, ({ offer }) => offer.hadoMarket)
+
+    return Object.fromEntries(
+      Object.entries(data.offers).map(([marketPubkey, offers]) => {
+        const nextOffers = offers.filter((offer) => {
+          const sameOptimistic = optimisticsByMarket[offer.hadoMarket]?.find(
+            ({ offer: optimisticOffer }) => optimisticOffer.publicKey === offer.publicKey,
+          )
+          if (!sameOptimistic) return true
+          return isOfferNewer(offer, sameOptimistic.offer)
+        })
+
+        const optimisticsWithSameMarket =
+          optimisticsByMarket[marketPubkey]?.map(({ offer }) => offer) || []
+
+        return [marketPubkey, [...nextOffers, ...optimisticsWithSameMarket]]
+      }),
+    )
+  }, [data, optimisticOffers, walletPublicKey])
+
   return {
     loans: filteredLiquidatedLoans,
-    offers: data?.offers ?? {},
+    offers: mergedRawOffers,
+    updateOptimisticOffers,
+    removeOptimisticOffers,
     isLoading,
   }
 }
