@@ -1,16 +1,19 @@
-.nftsSection {
+.nftsSection,
+.additionalContentSection {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-}
-
-.nftsSection,
-.additionalContentSection {
   width: 50%;
 
   @media (max-width: 1240px) {
     flex-grow: unset;
     width: 100%;
+  }
+}
+
+.additionalContentSection.fixedHeight {
+  & > div {
+    flex-grow: unset;
   }
 }
 
@@ -39,6 +42,12 @@
     }
   }
 }
+.availableToBorrow,
+.loansContainer {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
 
 .availableToBorrow {
   @media (max-width: 640px) {
@@ -48,6 +57,7 @@
   .stats {
     display: flex;
     align-items: center;
+    flex-grow: 1;
     gap: 16px;
     min-height: 148px;
     margin: 12px 0 16px;
@@ -93,7 +103,7 @@
 .loansContainer {
   .loansContent {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: space-between;
     margin-bottom: 16px;
     gap: 24px;
@@ -105,7 +115,9 @@
   .loansStatsContainer {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     gap: 8px;
+    height: 100%;
     width: 100%;
   }
 

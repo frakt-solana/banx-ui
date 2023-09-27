@@ -1,3 +1,5 @@
+import classNames from 'classnames'
+
 import { Loader } from '@banx/components/Loader'
 
 import { BorrowNft, MarketPreview } from '@banx/api/core'
@@ -76,7 +78,11 @@ const DashboardBorrowTab = () => {
         )}
         <div ref={fetchMoreTrigger} />
       </div>
-      <div className={styles.additionalContentSection}>
+      <div
+        className={classNames(styles.additionalContentSection, {
+          [styles.fixedHeight]: !isConnected,
+        })}
+      >
         <AvailableToBorrow />
         {isConnected && <MyLoans stats={borrowerStats} />}
       </div>
