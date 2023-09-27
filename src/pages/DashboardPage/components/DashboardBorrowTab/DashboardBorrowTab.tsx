@@ -1,19 +1,18 @@
-import { useWallet } from '@solana/wallet-adapter-react'
+import { Loader } from '@banx/components/Loader'
 
 import { BorrowNft, MarketPreview } from '@banx/api/core'
-import { DAYS_IN_YEAR } from '@banx/constants'
+import { useFakeInfinityScroll } from '@banx/hooks'
 import { calculateLoanValue } from '@banx/utils'
 
 import { BorrowCard } from '../Card'
 import { SearchableHeading } from '../components'
 import { AvailableToBorrow, MyLoans } from './components'
+import { calcDailyInterestFee } from './helpers'
 import { useDashboardBorrowTab } from './hooks'
 
 import styles from './DashboardBorrowTab.module.less'
 
 const DashboardBorrowTab = () => {
-  const { connected } = useWallet()
-
   const {
     marketsPreview,
     nfts,
@@ -22,20 +21,21 @@ const DashboardBorrowTab = () => {
     borrow,
     findBestOffer,
     goToBorrowPage,
+    headingText,
+    showMyLoans,
+    isConnected,
+    loading,
   } = useDashboardBorrowTab()
 
-  const hasAnyLoans =
-    !!borrowerStats?.activeLoansCount ||
-    !!borrowerStats?.liquidationLoansCount ||
-    !!borrowerStats?.terminatingLoansCount
-
-  const showMyLoans = connected && hasAnyLoans
-  const headingText = connected ? 'Click to borrow' : '1 click loan'
+  const { data: nftsData, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: nfts })
 
   const createNFTCard = (borrowNft: BorrowNft) => {
     const { mint, nft, loan } = borrowNft
 
-    const dailyFee = calcDailyInterestFee(loan.marketApr, nft.collectionFloor)
+    const dailyFee = calcDailyInterestFee({
+      apr: loan.marketApr,
+      collectionFloor: nft.collectionFloor,
+    })
 
     const bestOffer = findBestOffer(loan.marketPubkey)
     const bestLoanValue = bestOffer ? calculateLoanValue(bestOffer) : 0
@@ -57,7 +57,10 @@ const DashboardBorrowTab = () => {
       image={market.collectionImage}
       maxBorrow={market.bestOffer}
       onClick={goToBorrowPage}
-      dailyFee={calcDailyInterestFee(market.marketApr, market.collectionFloor)}
+      dailyFee={calcDailyInterestFee({
+        apr: market.marketApr,
+        collectionFloor: market.collectionFloor,
+      })}
     />
   )
 
@@ -65,24 +68,19 @@ const DashboardBorrowTab = () => {
     <>
       <div className={styles.nftsSection}>
         <SearchableHeading title={headingText} searchSelectParams={searchSelectParams} />
+
         <div className={styles.cardsList}>
-          {connected ? nfts.map(createNFTCard) : marketsPreview.map(createMarketCard)}
+          {loading && <Loader />}
+          {isConnected ? nftsData.map(createNFTCard) : marketsPreview.map(createMarketCard)}
         </div>
+        <div ref={fetchMoreTrigger} />
       </div>
       <div className={styles.additionalContentSection}>
         <AvailableToBorrow />
-        {showMyLoans && <MyLoans stats={borrowerStats} />}
+        {showMyLoans && borrowerStats && <MyLoans stats={borrowerStats} />}
       </div>
     </>
   )
 }
 
 export default DashboardBorrowTab
-
-const calcDailyInterestFee = (marketApr: number, collectionFloor: number) => {
-  const aprInDecimal = marketApr / 1e4
-  const dailyRate = aprInDecimal / DAYS_IN_YEAR
-  const dailyFee = (dailyRate * collectionFloor) / 1e9
-
-  return dailyFee
-}
