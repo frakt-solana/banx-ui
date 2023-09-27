@@ -17,29 +17,51 @@ import { calculateLoanValue } from '@banx/utils'
 import { useBorrowerStats } from '../../hooks'
 
 export const useDashboardBorrowTab = () => {
+  const { connected } = useWallet()
+  const navigate = useNavigate()
+
+  const { borrow, nfts, isLoading: isLoadingNFTs, findBestOffer } = useSingleBorrow()
+
+  const { data: borrowerStats } = useBorrowerStats()
+  const { marketsPreview, isLoading: isLoadingMarkets } = useMarketsPreview()
+
+  const { filteredMarkets, searchSelectParams } = useFilteredMarkets(marketsPreview)
+
+  const hasAnyLoans = borrowerStats ? Object.values(borrowerStats).some((value) => !!value) : false
+  const headingText = connected ? 'Click to borrow' : '1 click loan'
+  const showMyLoans = connected && hasAnyLoans
+
+  return {
+    marketsPreview: filteredMarkets,
+    nfts,
+    borrow,
+    findBestOffer,
+    borrowerStats,
+    headingText,
+    hasAnyLoans,
+    showMyLoans,
+    searchSelectParams,
+    isConnected: connected,
+    loading: connected ? isLoadingNFTs : isLoadingMarkets,
+    goToBorrowPage: () => navigate(PATHS.BORROW),
+  }
+}
+
+export const useSingleBorrow = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
   const navigate = useNavigate()
 
-  const { data: borrowerStats } = useBorrowerStats()
-  const { add: addLoansOptimistic } = useLoansOptimistic()
   const { update: updateOffersOptimistic } = useOffersOptimistic()
-
-  const { marketsPreview } = useMarketsPreview()
-  const { nfts, rawOffers } = useBorrowNfts()
-
-  const { filteredMarkets, searchSelectParams } = useFilteredMarkets(marketsPreview)
-
-  const goToLoansPage = () => {
-    navigate(PATHS.LOANS)
-  }
-
-  const goToBorrowPage = () => {
-    navigate(PATHS.BORROW)
-  }
+  const { add: addLoansOptimistic } = useLoansOptimistic()
+  const { nfts, rawOffers, isLoading } = useBorrowNfts()
 
   const findBestOffer = (marketPubkey: string) => {
     return rawOffers[marketPubkey]?.at(0) ?? null
+  }
+
+  const goToLoansPage = () => {
+    navigate(PATHS.LOANS)
   }
 
   const borrow = async (nft: BorrowNft) => {
@@ -53,10 +75,7 @@ export const useDashboardBorrowTab = () => {
     if (!offer || !rawOffer) return
 
     const txnResults = await executeBorrow({
-      walletAndConnection: {
-        wallet,
-        connection,
-      },
+      walletAndConnection: { wallet, connection },
       txnParams: [[{ nft, offer: rawOffer, loanValue: calculateLoanValue(offer) }]],
       addLoansOptimistic,
       updateOffersOptimistic,
@@ -67,15 +86,7 @@ export const useDashboardBorrowTab = () => {
     }
   }
 
-  return {
-    borrow,
-    borrowerStats,
-    marketsPreview: filteredMarkets,
-    searchSelectParams,
-    findBestOffer,
-    nfts,
-    goToBorrowPage,
-  }
+  return { borrow, nfts, isLoading, findBestOffer }
 }
 
 const useFilteredMarkets = (marketsPreview: MarketPreview[]) => {
