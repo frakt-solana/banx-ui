@@ -8,6 +8,8 @@ import { VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { useAllTotalStats } from '../../hooks'
 
+import styles from './DashboardHeader.module.less'
+
 const Header = () => {
   const { data } = useAllTotalStats()
 
@@ -19,7 +21,7 @@ const Header = () => {
   } = data || {}
 
   return (
-    <PageHeaderBackdrop title="Dashboard">
+    <PageHeaderBackdrop className={styles.container} title="Dashboard">
       <AdditionalStat label="Daily volume" value={dailyVolume} divider={1e9} decimalPlaces={0} />
       <AdditionalStat label="Active loans" value={activeLoans} valueType={VALUES_TYPES.STRING} />
       <AdditionalStat
