@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import { map } from 'lodash'
+import { every, map } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
 import { Button } from '@banx/components/Buttons'
@@ -22,6 +22,8 @@ import {
   ALL_TIME_DISPLAY_NAMES,
   AllTimeStatus,
   AllocationStatus,
+  EMPTY_DOUGHNUT_CHART_DATA,
+  EMPTY_SINGLE_BAR_CHART_DATA,
 } from './constants'
 
 import styles from './DashboardLendTab.module.less'
@@ -81,6 +83,8 @@ export const AllTimeBlock: FC<AllTimeBlockProps> = ({ stats }) => {
     value,
   }))
 
+  const isDataEmpty = every(map(allTimeData, 'value'), (value) => value === 0)
+
   return (
     <div className={styles.allTimeContainer}>
       <Heading title="All time" />
@@ -110,7 +114,10 @@ export const AllTimeBlock: FC<AllTimeBlockProps> = ({ stats }) => {
             ))}
           </div>
         </div>
-        <SingleBar data={allTimeData} className={styles.singleBarChart} />
+        <SingleBar
+          data={isDataEmpty ? [EMPTY_SINGLE_BAR_CHART_DATA] : allTimeData}
+          className={styles.singleBarChart}
+        />
       </div>
     </div>
   )
@@ -149,18 +156,28 @@ export const AllocationBlock: FC<AllocationBlockProps> = ({ stats }) => {
     navigate(PATHS.OFFERS)
   }
 
-  const DoughnutChart = (
-    <Doughnut
-      data={map(allocationData, 'value')}
-      colors={Object.values(ALLOCATION_COLOR_MAP)}
-      statInfoProps={{
-        label: 'Total funds',
-        value: totalFunds,
-        divider: 1e9,
-      }}
-      className={styles.doughnutChart}
-    />
-  )
+  const DoughnutChart = () => {
+    const allocationValues = map(allocationData, 'value')
+    const isDataEmpty = every(allocationValues, (value) => value === 0)
+
+    const chartData = isDataEmpty ? EMPTY_DOUGHNUT_CHART_DATA.value : allocationValues
+    const chartColors = isDataEmpty
+      ? EMPTY_DOUGHNUT_CHART_DATA.colors
+      : Object.values(ALLOCATION_COLOR_MAP)
+
+    return (
+      <Doughnut
+        data={chartData}
+        colors={chartColors}
+        statInfoProps={{
+          label: 'Total funds',
+          value: totalFunds,
+          divider: 1e9,
+        }}
+        className={styles.doughnutChart}
+      />
+    )
+  }
 
   return (
     <div className={styles.allocationContainer}>
@@ -181,7 +198,7 @@ export const AllocationBlock: FC<AllocationBlockProps> = ({ stats }) => {
               valueType={VALUES_TYPES.PERCENT}
             />
           </div>
-          <div className={styles.mobileChartContainer}>{DoughnutChart}</div>
+          <div className={styles.mobileChartContainer}>{DoughnutChart()}</div>
           <div className={styles.allocationChartStats}>
             {allocationData.map(({ key, name, value }) => (
               <ChartStatInfo
@@ -193,7 +210,7 @@ export const AllocationBlock: FC<AllocationBlockProps> = ({ stats }) => {
             ))}
           </div>
         </div>
-        <div className={styles.chartContainer}>{DoughnutChart}</div>
+        <div className={styles.chartContainer}>{DoughnutChart()}</div>
       </div>
       <Button onClick={goToOffersPage} className={styles.manageOffersButton}>
         Manage my offers

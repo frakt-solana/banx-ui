@@ -30,3 +30,15 @@ export const ALLOCATION_DISPLAY_NAMES: Record<AllocationStatus, string> = {
   [AllocationStatus.UnderWaterLoans]: 'Underwater Loans',
   [AllocationStatus.PendingOffers]: 'Pending Offers',
 }
+
+export const EMPTY_DOUGHNUT_CHART_DATA = {
+  value: [100],
+  colors: ['var(--bg-secondary)'],
+}
+
+export const EMPTY_SINGLE_BAR_CHART_DATA = {
+  key: 'empty',
+  label: 'Empty',
+  value: 100,
+  color: 'var(--bg-secondary)',
+}

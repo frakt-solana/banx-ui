@@ -60,7 +60,7 @@ export const LendCard: FC<LendCardProps> = ({ amountOfLoans, offerTvl, apy, ...p
   return (
     <CardBackdrop {...props} badgeElement={BadgeContentElement}>
       <div className={styles.lendCardFooter}>
-        {createSolValueJSX(offerTvl, 1e9)}
+        {createSolValueJSX(offerTvl, 1e9, '0◎')}
         <span>in {amountOfLoans} loans</span>
       </div>
     </CardBackdrop>
