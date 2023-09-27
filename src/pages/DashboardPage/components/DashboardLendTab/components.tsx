@@ -99,9 +99,6 @@ export const AllTimeBlock: FC<AllTimeBlockProps> = ({ stats }) => {
               divider={1e9}
             />
           </div>
-          <div className={styles.mobileChartContainer}>
-            <SingleBar data={allTimeData} />
-          </div>
           <div className={styles.allTimeChartStats}>
             {allTimeData.map(({ key, label, value }) => (
               <ChartStatInfo
@@ -113,9 +110,7 @@ export const AllTimeBlock: FC<AllTimeBlockProps> = ({ stats }) => {
             ))}
           </div>
         </div>
-        <div className={styles.chartContainer}>
-          <SingleBar data={allTimeData} />
-        </div>
+        <SingleBar data={allTimeData} className={styles.singleBarChart} />
       </div>
     </div>
   )

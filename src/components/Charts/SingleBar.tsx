@@ -9,6 +9,7 @@ import {
   Title,
   Tooltip,
 } from 'chart.js'
+import classNames from 'classnames'
 import { Bar as ChartBar } from 'react-chartjs-2'
 
 import { getCssVariableValue } from './helpers'
@@ -27,9 +28,10 @@ type ChartData = Array<{
 
 interface SingleBarProps {
   data: ChartData
+  className: string
 }
 
-export const SingleBar: FC<SingleBarProps> = ({ data }) => {
+export const SingleBar: FC<SingleBarProps> = ({ data, className }) => {
   const chartData = {
     labels: ['SingleBar'],
     datasets: data.map(({ label, value, color }) => {
@@ -42,7 +44,7 @@ export const SingleBar: FC<SingleBarProps> = ({ data }) => {
   }
 
   return (
-    <div className={styles.barChartWrapper}>
+    <div className={classNames(styles.barChartWrapper, className)}>
       <ChartBar options={singleBaroptions} data={chartData} />
     </div>
   )
