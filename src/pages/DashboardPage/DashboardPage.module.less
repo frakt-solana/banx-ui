@@ -1,0 +1,137 @@
+.pageWrapper {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  height: 100%;
+}
+
+.content {
+  flex-grow: 1;
+  overflow-y: scroll;
+  height: 100vh;
+
+  display: flex;
+  padding: 0 24px;
+  gap: 24px;
+  width: 100%;
+
+  @media (max-width: 1240px) {
+    flex-direction: column;
+    gap: unset;
+  }
+
+  @media (max-width: 640px) {
+    padding: 0 16px;
+  }
+}
+
+.searchableHeadingWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 0 12px;
+  gap: 24px;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    padding: 16px 0 8px;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+.searchableHeading {
+  font: var(--title-sm);
+  text-transform: uppercase;
+  min-width: 294px;
+
+  @media (max-width: 640px) {
+    font: var(--title-xs);
+    line-height: 20px;
+  }
+}
+.searchSelect :global {
+  height: 32px;
+
+  .rootSelectClassName {
+    .ant-select-selector {
+      padding: 1px 0px;
+    }
+  }
+
+  .rootSelectPopupClassName {
+    top: 31px !important;
+  }
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  padding: 24px 0 12px;
+  font: var(--title-sm);
+  text-transform: uppercase;
+  line-height: 32px;
+
+  @media (max-width: 640px) {
+    padding: 8px 0;
+    font: var(--title-xs);
+    line-height: 20px;
+  }
+}
+
+.mainContainer {
+  flex-direction: column-reverse;
+  gap: unset;
+}
+
+.mainValue {
+  font: var(--important-text-lg);
+  line-height: 26px;
+
+  @media (max-width: 640px) {
+    font: var(--important-text-md);
+    line-height: 24px;
+  }
+}
+
+.mainLabel {
+  color: var(--content-primary);
+  font: var(--table-header-md);
+  line-height: 16px;
+
+  @media (max-width: 640px) {
+    font: var(--table-header-sm);
+    line-height: 14px;
+  }
+}
+
+.chartStatInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+}
+
+.chartStatInfoValue {
+  font: var(--body-text-md);
+  line-height: 21px;
+}
+
+.chartStatInfoLabelWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chartStatInfoLabel {
+  color: var(--content-secondary);
+  font: var(--table-header-md);
+  text-transform: uppercase;
+}
+
+.chartStatInfoIndicator {
+  border-radius: 100px;
+  display: flex;
+  height: 8px;
+  width: 8px;
+}

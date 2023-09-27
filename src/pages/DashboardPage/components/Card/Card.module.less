@@ -1,0 +1,87 @@
+.card {
+  border: var(--border-primary);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.card.clicable {
+  cursor: pointer;
+
+  &:hover {
+    border: 1px solid var(--bg-border-active);
+  }
+}
+.card.disabled {
+  pointer-events: none;
+}
+.card:hover .borrowButton {
+  background-color: var(--accent-secondary);
+}
+
+.badge {
+  background: var(--additional-green-secondary);
+  color: var(--additional-green-primary-deep);
+  border: 1px solid var(--additional-green-primary-deep);
+  border-top: 0;
+  font: var(--body-text-sm);
+  position: absolute;
+  top: 0;
+  left: 8px;
+  padding: 1px 8px;
+  z-index: 1;
+}
+
+.nftImage {
+  object-fit: cover;
+  width: 100%;
+
+  @media (max-width: 960px) {
+    height: 100%;
+  }
+}
+
+.borrowCardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px;
+  height: 54px;
+
+  & > div:last-child {
+    align-items: flex-end;
+  }
+}
+.borrowCardFooter.fullHeight {
+  align-items: flex-end;
+  height: 70px;
+}
+.borrowCardStatContainer {
+  gap: unset;
+}
+.borrowCardStatValue {
+  display: flex;
+  align-items: center;
+  line-height: 21px;
+}
+.borrowButton {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 52px;
+}
+
+.lendCardFooter {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+
+  & > div:last-child {
+    line-height: 21px;
+  }
+}
+.lendCardBadge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font: var(--body-text-sm);
+}
