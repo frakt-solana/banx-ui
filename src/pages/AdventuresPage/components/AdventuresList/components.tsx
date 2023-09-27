@@ -80,6 +80,7 @@ export const AdventureSubscribeButton: FC<AdventuresComponentsProps> = ({
         const { txnHash } = results[0]
         enqueueSnackbar({
           message: 'Subscribed successfully',
+          type: 'success',
           solanaExplorerPath: `tx/${txnHash}`,
         })
       })
