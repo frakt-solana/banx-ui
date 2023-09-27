@@ -93,12 +93,7 @@ export const AllTimeBlock: FC<AllTimeBlockProps> = ({ stats }) => {
       <div className={styles.allTimeContent}>
         <div className={styles.allTimeStatsContainer}>
           <div className={styles.allTimeStats}>
-            <DashboardStatInfo
-              label="Total lent"
-              value={totalLent}
-              tooltipText="Weekly interest"
-              divider={1e9}
-            />
+            <DashboardStatInfo label="Total lent" value={totalLent} divider={1e9} />
             <DashboardStatInfo
               label="Total interest earned"
               value={totalInterestEarned}
