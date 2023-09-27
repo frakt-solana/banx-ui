@@ -156,12 +156,12 @@ export const AllocationBlock: FC<AllocationBlockProps> = ({ stats }) => {
     navigate(PATHS.OFFERS)
   }
 
-  const DoughnutChart = () => {
-    const allocationValues = map(allocationData, 'value')
-    const isDataEmpty = every(allocationValues, (value) => value === 0)
+  const allocationValues = map(allocationData, 'value')
+  const isAllocationDataEmpty = every(allocationValues, (value) => value === 0)
 
-    const chartData = isDataEmpty ? EMPTY_DOUGHNUT_CHART_DATA.value : allocationValues
-    const chartColors = isDataEmpty
+  const DoughnutChart = () => {
+    const chartData = isAllocationDataEmpty ? EMPTY_DOUGHNUT_CHART_DATA.value : allocationValues
+    const chartColors = isAllocationDataEmpty
       ? EMPTY_DOUGHNUT_CHART_DATA.colors
       : Object.values(ALLOCATION_COLOR_MAP)
 
@@ -213,7 +213,7 @@ export const AllocationBlock: FC<AllocationBlockProps> = ({ stats }) => {
         <div className={styles.chartContainer}>{DoughnutChart()}</div>
       </div>
       <Button onClick={goToOffersPage} className={styles.manageOffersButton}>
-        Manage my offers
+        {isAllocationDataEmpty ? 'Lend SOL' : 'Manage my offers'}
       </Button>
     </div>
   )

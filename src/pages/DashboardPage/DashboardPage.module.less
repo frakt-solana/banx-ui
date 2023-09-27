@@ -87,11 +87,19 @@
 .mainValue {
   font: var(--important-text-lg);
   line-height: 26px;
+
+  @media (max-width: 640px) {
+    font: var(--important-text-md);
+  }
 }
 
 .mainLabel {
   font: var(--table-header-md);
   line-height: 16px;
+
+  @media (max-width: 640px) {
+    font: var(--table-header-sm);
+  }
 }
 
 .chartStatInfo {

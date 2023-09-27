@@ -27,9 +27,7 @@ export const useDashboardBorrowTab = () => {
 
   const { filteredMarkets, searchSelectParams } = useFilteredMarkets(marketsPreview)
 
-  const hasAnyLoans = borrowerStats ? Object.values(borrowerStats).some((value) => !!value) : false
   const headingText = connected ? 'Click to borrow' : '1 click loan'
-  const showMyLoans = connected && hasAnyLoans
 
   return {
     marketsPreview: filteredMarkets,
@@ -38,8 +36,6 @@ export const useDashboardBorrowTab = () => {
     findBestOffer,
     borrowerStats,
     headingText,
-    hasAnyLoans,
-    showMyLoans,
     searchSelectParams,
     isConnected: connected,
     loading: connected ? isLoadingNFTs : isLoadingMarkets,

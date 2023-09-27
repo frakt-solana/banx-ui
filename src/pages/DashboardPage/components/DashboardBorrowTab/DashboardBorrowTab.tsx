@@ -22,7 +22,6 @@ const DashboardBorrowTab = () => {
     findBestOffer,
     goToBorrowPage,
     headingText,
-    showMyLoans,
     isConnected,
     loading,
   } = useDashboardBorrowTab()
@@ -79,7 +78,7 @@ const DashboardBorrowTab = () => {
       </div>
       <div className={styles.additionalContentSection}>
         <AvailableToBorrow />
-        {showMyLoans && borrowerStats && <MyLoans stats={borrowerStats} />}
+        {isConnected && <MyLoans stats={borrowerStats} />}
       </div>
     </>
   )

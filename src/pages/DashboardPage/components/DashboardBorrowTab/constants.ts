@@ -15,3 +15,8 @@ export const LOANS_DISPLAY_NAMES: Record<LoansStatus, string> = {
   [LoansStatus.Terminating]: 'Terminating Loans',
   [LoansStatus.Liquidation]: 'Liquidation during 24h',
 }
+
+export const EMPTY_DOUGHNUT_CHART_DATA = {
+  value: [100],
+  colors: ['var(--bg-secondary)'],
+}

@@ -1,7 +1,7 @@
 import { FC, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { map, sumBy } from 'lodash'
+import { every, map, sumBy } from 'lodash'
 import { NavLink, useNavigate } from 'react-router-dom'
 
 import { Button } from '@banx/components/Buttons'
@@ -15,7 +15,12 @@ import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { PATHS } from '@banx/router'
 
 import { ChartStatInfo, DashboardStatInfo, Heading } from '../components'
-import { LOANS_COLOR_MAP, LOANS_DISPLAY_NAMES, LoansStatus } from './constants'
+import {
+  EMPTY_DOUGHNUT_CHART_DATA,
+  LOANS_COLOR_MAP,
+  LOANS_DISPLAY_NAMES,
+  LoansStatus,
+} from './constants'
 
 import styles from './DashboardBorrowTab.module.less'
 
@@ -80,17 +85,17 @@ export const AvailableToBorrow = () => {
 }
 
 interface MyLoansProps {
-  stats: TotalBorrowerStats
+  stats?: TotalBorrowerStats | null
 }
 export const MyLoans: FC<MyLoansProps> = ({ stats }) => {
   const navigate = useNavigate()
   const {
-    activeLoansCount,
-    terminatingLoansCount,
-    liquidationLoansCount,
-    totalBorrowed,
-    totalDebt,
-  } = stats
+    activeLoansCount = 0,
+    terminatingLoansCount = 0,
+    liquidationLoansCount = 0,
+    totalBorrowed = 0,
+    totalDebt = 0,
+  } = stats || {}
 
   const totalLoans = activeLoansCount + terminatingLoansCount + liquidationLoansCount
 
@@ -111,14 +116,24 @@ export const MyLoans: FC<MyLoansProps> = ({ stats }) => {
     navigate(PATHS.LOANS)
   }
 
-  const DoughnutChart = (
-    <Doughnut
-      className={styles.doughnutChart}
-      data={map(loansData, 'value')}
-      colors={Object.values(LOANS_COLOR_MAP)}
-      statInfoProps={{ label: 'Total loans', value: totalLoans, valueType: VALUES_TYPES.STRING }}
-    />
-  )
+  const loansValues = map(loansData, 'value')
+  const isLoansDataEmpty = every(loansValues, (value) => value === 0)
+
+  const DoughnutChart = () => {
+    const chartData = isLoansDataEmpty ? EMPTY_DOUGHNUT_CHART_DATA.value : loansValues
+    const chartColors = isLoansDataEmpty
+      ? EMPTY_DOUGHNUT_CHART_DATA.colors
+      : Object.values(LOANS_COLOR_MAP)
+
+    return (
+      <Doughnut
+        data={chartData}
+        colors={chartColors}
+        statInfoProps={{ label: 'Total loans', value: totalLoans, valueType: VALUES_TYPES.STRING }}
+        className={styles.doughnutChart}
+      />
+    )
+  }
 
   return (
     <div className={styles.loansContainer}>
@@ -129,7 +144,7 @@ export const MyLoans: FC<MyLoansProps> = ({ stats }) => {
             <DashboardStatInfo label="Total borrowed" value={totalBorrowed} divider={1e9} />
             <DashboardStatInfo label="Total debt" value={totalDebt} divider={1e9} />
           </div>
-          <div className={styles.mobileChartContainer}>{DoughnutChart}</div>
+          <div className={styles.mobileChartContainer}>{DoughnutChart()}</div>
           <div className={styles.loansChartStats}>
             {loansData.map(({ key, ...props }) => (
               <ChartStatInfo
@@ -140,9 +155,13 @@ export const MyLoans: FC<MyLoansProps> = ({ stats }) => {
             ))}
           </div>
         </div>
-        <div className={styles.chartContainer}>{DoughnutChart}</div>
+        <div className={styles.chartContainer}>{DoughnutChart()}</div>
       </div>
-      <Button onClick={goToLoansPage} className={styles.manageLoansButton}>
+      <Button
+        onClick={goToLoansPage}
+        className={styles.manageLoansButton}
+        disabled={isLoansDataEmpty}
+      >
         Manage my loans
       </Button>
     </div>
