@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useEffect, useState } from 'react'
 
 import {
   BarElement,
@@ -11,6 +11,8 @@ import {
 } from 'chart.js'
 import classNames from 'classnames'
 import { Bar as ChartBar } from 'react-chartjs-2'
+
+import { useTheme } from '@banx/hooks'
 
 import { getCssVariableValue } from './helpers'
 import { singleBaroptions } from './options'
@@ -32,13 +34,20 @@ interface SingleBarProps {
 }
 
 export const SingleBar: FC<SingleBarProps> = ({ data, className }) => {
+  const { theme } = useTheme()
+  const [bgColors, setBgColors] = useState<string[]>([])
+
+  useEffect(() => {
+    setBgColors(data.map(({ color }) => getCssVariableValue(color)))
+  }, [theme, data])
+
   const chartData = {
-    labels: ['SingleBar'],
-    datasets: data.map(({ label, value, color }) => {
+    labels: [''],
+    datasets: data.map(({ label, value }, index) => {
       return {
         label,
         data: [value],
-        backgroundColor: getCssVariableValue(color),
+        backgroundColor: bgColors[index],
       }
     }),
   }

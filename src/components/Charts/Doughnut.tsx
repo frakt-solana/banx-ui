@@ -1,10 +1,12 @@
-import { FC } from 'react'
+import { FC, useEffect, useState } from 'react'
 
 import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js'
 import classNames from 'classnames'
 import { Doughnut as DoughnutChart } from 'react-chartjs-2'
 
 import { StatInfo, StatsInfoProps } from '@banx/components/StatInfo'
+
+import { useTheme } from '@banx/hooks'
 
 import { convertCssVariablesToColors } from './helpers'
 
@@ -23,15 +25,25 @@ interface DoughnutChartProps {
 }
 
 export const Doughnut: FC<DoughnutChartProps> = ({ data, colors, statInfoProps, className }) => {
+  const { theme } = useTheme()
+
+  const [bgColors, setBgColors] = useState<string[]>([])
+
   const options = {
     maintainAspectRatio: false,
     cutout: 55,
   }
 
+  useEffect(() => {
+    if (!colors?.length) return
+    const convertedColors = convertCssVariablesToColors(colors)
+    setBgColors(convertedColors)
+  }, [theme, colors])
+
   const chartData = {
     datasets: [
       {
-        backgroundColor: convertCssVariablesToColors(colors) ?? [],
+        backgroundColor: bgColors ?? [],
         borderWidth: 0,
         data,
       },
