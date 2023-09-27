@@ -110,7 +110,7 @@ export const AllTimeBlock: FC<AllTimeBlockProps> = ({ stats }) => {
               <ChartStatInfo
                 key={key}
                 label={label}
-                value={createSolValueJSX(value, 1e9, '0◎')}
+                value={value}
                 indicatorColor={ALL_TIME_COLOR_MAP[key as AllTimeStatus]}
               />
             ))}
@@ -156,6 +156,10 @@ export const AllocationBlock: FC<AllocationBlockProps> = ({ stats }) => {
 
   const goToOffersPage = () => {
     navigate(PATHS.OFFERS)
+  }
+
+  const goToLendPage = () => {
+    navigate(PATHS.LEND)
   }
 
   const allocationValues = map(allocationData, 'value')
@@ -214,7 +218,10 @@ export const AllocationBlock: FC<AllocationBlockProps> = ({ stats }) => {
         </div>
         <div className={styles.chartContainer}>{DoughnutChart()}</div>
       </div>
-      <Button onClick={goToOffersPage} className={styles.manageOffersButton}>
+      <Button
+        onClick={isAllocationDataEmpty ? goToLendPage : goToOffersPage}
+        className={styles.manageOffersButton}
+      >
         {isAllocationDataEmpty ? 'Lend SOL' : 'Manage my offers'}
       </Button>
     </div>
