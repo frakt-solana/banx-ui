@@ -12,7 +12,7 @@ const defaulSingleBarAxisOptions = {
   },
 }
 
-export const singleBaroptions = {
+export const singleBarOptions = {
   plugins: {
     legend: {
       display: false,

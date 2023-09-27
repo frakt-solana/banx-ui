@@ -15,7 +15,7 @@ import { Bar as ChartBar } from 'react-chartjs-2'
 import { useTheme } from '@banx/hooks'
 
 import { getCssVariableValue } from './helpers'
-import { singleBaroptions } from './options'
+import { singleBarOptions } from './options'
 
 import styles from './Charts.module.less'
 
@@ -54,7 +54,7 @@ export const SingleBar: FC<SingleBarProps> = ({ data, className }) => {
 
   return (
     <div className={classNames(styles.barChartWrapper, className)}>
-      <ChartBar options={singleBaroptions} data={chartData} />
+      <ChartBar options={singleBarOptions} data={chartData} />
     </div>
   )
 }

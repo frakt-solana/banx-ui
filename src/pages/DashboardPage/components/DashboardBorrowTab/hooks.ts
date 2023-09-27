@@ -32,6 +32,10 @@ export const useDashboardBorrowTab = () => {
 
   const headingText = connected ? 'Click to borrow' : '1 click loan'
 
+  const goToBorrowPage = () => {
+    navigate(PATHS.BORROW)
+  }
+
   return {
     marketsPreview: filteredMarkets,
     nfts: filteredNFTs,
@@ -42,7 +46,7 @@ export const useDashboardBorrowTab = () => {
     searchSelectParams,
     isConnected: connected,
     loading: connected ? isLoadingNFTs : isLoadingMarkets,
-    goToBorrowPage: () => navigate(PATHS.BORROW),
+    goToBorrowPage,
   }
 }
 

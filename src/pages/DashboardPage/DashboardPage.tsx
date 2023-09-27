@@ -32,10 +32,10 @@ export const DashboardPage = () => {
 const DASHBOARD_TABS: Tab[] = [
   {
     label: 'Borrow',
-    value: 'borrow',
+    value: DashboardTabName.BORROW,
   },
   {
     label: 'Lend',
-    value: 'lend',
+    value: DashboardTabName.LEND,
   },
 ]

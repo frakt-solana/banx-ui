@@ -3,18 +3,14 @@ import { useQuery } from '@tanstack/react-query'
 
 import { fetchAllTotalStats, fetchBorrowerStats, fetchLenderStats } from '@banx/api/stats'
 
-const DEFAULT_QUERY_OPTIONS = {
+const QUERY_OPTIONS = {
   staleTime: 60 * 1000, // 60 seconds
   refetchOnWindowFocus: false,
   refetchInterval: 30 * 1000, // 30 seconds
 }
 
 export const useAllTotalStats = () => {
-  const { data, isLoading } = useQuery(
-    ['allTotalStats'],
-    () => fetchAllTotalStats(),
-    DEFAULT_QUERY_OPTIONS,
-  )
+  const { data, isLoading } = useQuery(['allTotalStats'], () => fetchAllTotalStats(), QUERY_OPTIONS)
 
   return { data, isLoading }
 }
@@ -28,7 +24,7 @@ export const useLenderStats = () => {
     () => fetchLenderStats(publicKeyString),
     {
       enabled: !!publicKey,
-      ...DEFAULT_QUERY_OPTIONS,
+      ...QUERY_OPTIONS,
     },
   )
 
@@ -43,7 +39,7 @@ export const useBorrowerStats = () => {
     () => fetchBorrowerStats(publicKeyString),
     {
       enabled: !!publicKey,
-      ...DEFAULT_QUERY_OPTIONS,
+      ...QUERY_OPTIONS,
     },
   )
 
