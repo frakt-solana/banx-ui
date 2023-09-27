@@ -54,7 +54,7 @@ export const CollectionsCardList: FC<CollectionsCardListProps> = ({ marketsPrevi
           image={market.collectionImage}
           amountOfLoans={market.activeBondsAmount}
           offerTvl={market.offerTvl}
-          apy={market.marketApr}
+          apr={market.marketApr}
           onClick={() => goToSelectedMarket(market.collectionName)}
         />
       ))}

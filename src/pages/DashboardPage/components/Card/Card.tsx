@@ -9,6 +9,7 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Snowflake } from '@banx/icons'
+import { convertAprToApy } from '@banx/utils'
 
 import styles from './Card.module.less'
 
@@ -46,13 +47,13 @@ const CardBackdrop: FC<PropsWithChildren<CardProps>> = ({
 interface LendCardProps extends CardProps {
   amountOfLoans: number
   offerTvl: number
-  apy?: number //? rateBasePoints
+  apr?: number //? rateBasePoints
 }
 
-export const LendCard: FC<LendCardProps> = ({ amountOfLoans, offerTvl, apy, ...props }) => {
-  const BadgeContentElement = apy ? (
+export const LendCard: FC<LendCardProps> = ({ amountOfLoans, offerTvl, apr, ...props }) => {
+  const BadgeContentElement = apr ? (
     <div className={styles.lendCardBadge}>
-      {createPercentValueJSX(apy / 100)}
+      {createPercentValueJSX(convertAprToApy(apr / 1e4))}
       <span>APY</span>
     </div>
   ) : null
