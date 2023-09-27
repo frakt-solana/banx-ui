@@ -1,47 +1,25 @@
-import { useState } from 'react'
-
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-
-import { createPercentValueJSX } from '@banx/components/TableComponents'
-
-import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
-import { convertAprToApy } from '@banx/utils'
 
 import { useLenderStats } from '../../hooks'
 import { SearchableHeading } from '../components'
 import { AllTimeBlock, AllocationBlock, CollectionsCardList } from './components'
+import { useDashboardLendTab } from './hooks'
 
 import styles from './DashboardLendTab.module.less'
 
 const DashboardLendTab = () => {
   const { connected } = useWallet()
 
-  const { marketsPreview } = useMarketsPreview()
-  const [selectedOptions, setSelectedOptions] = useState<string[]>([])
   const { data: lenderStats } = useLenderStats()
 
-  const searchSelectParams = {
-    onChange: setSelectedOptions,
-    options: marketsPreview,
-    selectedOptions,
-    optionKeys: {
-      labelKey: 'collectionName',
-      valueKey: 'collectionName',
-      imageKey: 'collectionImage',
-      secondLabel: {
-        key: 'marketApr',
-        format: (apr: number) => createPercentValueJSX(convertAprToApy(apr / 1e4)),
-      },
-    },
-    labels: ['Collection', 'APY'],
-  }
+  const { marketsPreview, searchSelectParams } = useDashboardLendTab()
 
   return (
     <>
       <div className={classNames(styles.collectionsSection, { [styles.fullWidth]: !connected })}>
         <SearchableHeading title="Collections" searchSelectParams={searchSelectParams} />
-        <CollectionsCardList />
+        <CollectionsCardList marketsPreview={marketsPreview} />
       </div>
       {connected && (
         <div className={styles.additionalContentSection}>

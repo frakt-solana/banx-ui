@@ -8,8 +8,8 @@ import { Doughnut, SingleBar } from '@banx/components/Charts'
 import { VALUES_TYPES } from '@banx/components/StatInfo'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
+import { MarketPreview } from '@banx/api/core'
 import { TotalLenderStats } from '@banx/api/stats'
-import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { PATHS } from '@banx/router'
 import { useMarketsURLControl } from '@banx/store'
 
@@ -28,8 +28,10 @@ import {
 
 import styles from './DashboardLendTab.module.less'
 
-export const CollectionsCardList = () => {
-  const { marketsPreview } = useMarketsPreview()
+interface CollectionsCardListProps {
+  marketsPreview: MarketPreview[]
+}
+export const CollectionsCardList: FC<CollectionsCardListProps> = ({ marketsPreview }) => {
   const { setSelectedMarkets, setMarketVisibility } = useMarketsURLControl()
 
   const navigate = useNavigate()
