@@ -50,8 +50,13 @@ export const AvailableToBorrow = () => {
           <>
             <DashboardStatInfo label="Borrow up to" value={maxBorrow} divider={1e9} />
             <DashboardStatInfo
+              classNamesProps={{ value: styles.userNFTsValue }}
               label="From your"
-              value={`${userNFTs} NFTS`}
+              value={
+                <>
+                  {userNFTs} <span>NFTS</span>
+                </>
+              }
               valueType={VALUES_TYPES.STRING}
             />
           </>
@@ -109,7 +114,7 @@ export const MyLoans: FC<MyLoansProps> = ({ stats }) => {
     label: LOANS_DISPLAY_NAMES[status as LoansStatus],
     key: status,
     value,
-    className: value && status === LoansStatus.Liquidation ? styles.highlightLiquidation : '',
+    className: status === LoansStatus.Liquidation ? styles.highlightLiquidation : '',
   }))
 
   const goToLoansPage = () => {
