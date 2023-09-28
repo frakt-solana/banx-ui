@@ -23,14 +23,14 @@
 
 .content {
   flex-grow: 1;
-  color: #000000;
+  color: var(--content-primary);
 }
 
 .closeIcon {
   min-height: 32px;
   min-width: 32px;
-  border: var(--border-primary);
-  background: var(--content-primary);
+  border: var(--border-less-primary);
+  background: var(--bg-primary);
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -41,10 +41,10 @@
   svg {
     width: 12px;
 
-    stroke: var(--bg-border);
+    stroke: var(--content-primary);
 
     rect {
-      fill: var(--bg-border);
+      fill: var(--content-primary);
     }
   }
 }
