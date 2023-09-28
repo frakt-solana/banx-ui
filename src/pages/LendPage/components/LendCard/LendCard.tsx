@@ -29,7 +29,7 @@ const LendCard: FC<LendCardProps> = ({ isCardOpen, onCardClick, market, isOrderB
   }, [isCardOpen])
 
   return (
-    <div ref={cardRef} className={classNames(styles.card, { [styles.active]: isCardOpen })}>
+    <div ref={cardRef} className={styles.card}>
       <div
         className={classNames(styles.cardBody, { [styles.active]: isCardOpen })}
         onClick={onCardClick}
