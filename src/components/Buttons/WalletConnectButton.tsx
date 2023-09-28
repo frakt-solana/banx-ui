@@ -15,7 +15,7 @@ export const WalletConnectButton = () => {
 
   const ConnectedContent = () => (
     <>
-      <UserAvatar />
+      <UserAvatar className={styles.avatar} />
       <span>{shortenAddress(publicKey?.toBase58() || '')}</span>
       <ChevronDown />
     </>
