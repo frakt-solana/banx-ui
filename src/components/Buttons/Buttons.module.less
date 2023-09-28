@@ -35,6 +35,7 @@
 
   &.primary {
     background-color: var(--accent-primary);
+    color: var(--pure-black);
 
     &:hover {
       background-color: var(--accent-secondary);
@@ -121,6 +122,11 @@
   &:hover {
     background-color: var(--accent-secondary);
   }
+
+  svg,
+  svg path {
+    fill: var(--pure-black);
+  }
 }
 
 .circle.secondary {
@@ -149,4 +155,12 @@
 
 .walletConnectButton {
   width: 176px;
+
+  svg path {
+    fill: var(--pure-black);
+  }
+
+  .avatar path {
+    fill: #888888;
+  }
 }
