@@ -29,7 +29,7 @@ export const MarketsList: FC<MarketsListProps> = ({
   const isMobile = width < TABLET_WIDTH
 
   return (
-    <>
+    <div className={styles.marketsList}>
       {markets.map((market: MarketPreview) => {
         const { collectionName, marketPubkey } = market
 
@@ -46,6 +46,6 @@ export const MarketsList: FC<MarketsListProps> = ({
           />
         )
       })}
-    </>
+    </div>
   )
 }
