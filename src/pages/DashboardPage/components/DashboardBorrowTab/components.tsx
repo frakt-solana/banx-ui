@@ -40,7 +40,7 @@ export const AvailableToBorrow = () => {
   }, [marketsPreview, nfts])
 
   const headingText = connected ? 'Borrow in bulk' : 'Available to borrow'
-  const buttonText = connected ? 'Borrow $SOL in bulk' : 'Connect wallet to borrow $SOL'
+  const buttonText = connected ? 'Borrow SOL in bulk' : 'Connect wallet to borrow SOL'
 
   return (
     <div className={styles.availableToBorrow}>
