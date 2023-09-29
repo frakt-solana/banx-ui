@@ -14,6 +14,7 @@ import {
   AdventuresInfo,
   BanxStakeState,
 } from '@banx/api/adventures'
+import { TENSOR_BANX_MARKET_URL } from '@banx/constants'
 import { TensorFilled } from '@banx/icons'
 import { useIsLedger, useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
@@ -323,14 +324,12 @@ const UnstakeContent: FC<UnstakeContent> = ({ nfts = [] }) => {
 }
 
 const NoNftsPlaceholder = () => {
-  const TENSOR_LINK = process.env.TENSOR_BANX_MARKET_URL || '/'
-
   return (
     <div className={styles.noNfts}>
       <p>{`You don't have suitable NFTs or your Banx are listed`}</p>
 
       <Button variant="secondary" className={styles.tensorBtn}>
-        <a href={TENSOR_LINK} target="_blank" rel="noopener noreferrer" />
+        <a href={TENSOR_BANX_MARKET_URL} target="_blank" rel="noopener noreferrer" />
         <TensorFilled />
         Buy banx on tensor
       </Button>
