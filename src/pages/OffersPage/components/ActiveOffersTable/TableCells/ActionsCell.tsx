@@ -54,15 +54,15 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
 
   const buttonSize = isCardView ? 'large' : 'small'
 
-  const isActiveLoan = bondTradeTransactionState === isPerpetualActive
-  const isTerminatingLoan = bondTradeTransactionState === isPerpetualTerminating
-  const isLoadExpired = isLoanLiquidated(loan)
+  const isLoanActive = bondTradeTransactionState === isPerpetualActive
+  const isLoanTerminating = bondTradeTransactionState === isPerpetualTerminating
+  const isLoanExpired = isLoanLiquidated(loan)
 
   const hasRefinanceOffers = !isEmpty(bestOffer)
-  const canRefinance = hasRefinanceOffers && isActiveLoan
+  const canRefinance = hasRefinanceOffers && isLoanActive
 
-  const showTerminateButton = (!canRefinance || isTerminatingLoan) && !isLoadExpired
-  const showInstantButton = canRefinance && !isLoadExpired
+  const showTerminateButton = (!canRefinance || isLoanTerminating) && !isLoanExpired
+  const showInstantButton = canRefinance && !isLoanExpired
 
   return (
     <div className={styles.actionsButtons}>
@@ -70,7 +70,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
         <Button
           className={styles.terminateButton}
           onClick={terminateLoan}
-          disabled={isTerminatingLoan}
+          disabled={isLoanTerminating}
           variant="secondary"
           size={buttonSize}
         >
@@ -88,7 +88,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
           Instant
         </Button>
       )}
-      {isLoadExpired && (
+      {isLoanExpired && (
         <Button onClick={claimLoan} className={styles.instantButton} size={buttonSize}>
           Claim NFT
         </Button>
