@@ -52,38 +52,43 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
     addMints,
   })
 
+  const buttonSize = isCardView ? 'large' : 'small'
+
   const isActiveLoan = bondTradeTransactionState === isPerpetualActive
   const isTerminatingLoan = bondTradeTransactionState === isPerpetualTerminating
-  const availableToRefinance = isActiveLoan && !isEmpty(bestOffer)
-  const isActiveOrTerminatingLoan = isActiveLoan || isTerminatingLoan
-  const isExpiredLoan = isLoanLiquidated(loan)
+  const isLiquidatedLoan = isLoanLiquidated(loan)
 
-  const buttonSize = isCardView ? 'large' : 'small'
+  const hasRefinanceOffers = !isEmpty(bestOffer)
+  const canRefinance = hasRefinanceOffers && isActiveLoan
+
+  const showTerminateButton = (!canRefinance || isTerminatingLoan) && !isLiquidatedLoan
+  const showInstantButton = canRefinance && !isLiquidatedLoan
 
   return (
     <div className={styles.actionsButtons}>
-      {isActiveOrTerminatingLoan && !isExpiredLoan ? (
-        <>
-          <Button
-            onClick={terminateLoan}
-            className={styles.terminateButton}
-            disabled={isTerminatingLoan}
-            variant="secondary"
-            size={buttonSize}
-          >
-            Terminate
-          </Button>
-          <Button
-            onClick={instantLoan}
-            className={styles.instantButton}
-            disabled={!availableToRefinance}
-            variant="secondary"
-            size={buttonSize}
-          >
-            Instant
-          </Button>
-        </>
-      ) : (
+      {showTerminateButton && (
+        <Button
+          className={styles.terminateButton}
+          onClick={terminateLoan}
+          disabled={isTerminatingLoan}
+          variant="secondary"
+          size={buttonSize}
+        >
+          Terminate
+        </Button>
+      )}
+
+      {showInstantButton && (
+        <Button
+          onClick={instantLoan}
+          className={styles.instantButton}
+          variant="secondary"
+          size={buttonSize}
+        >
+          Instant
+        </Button>
+      )}
+      {isLiquidatedLoan && (
         <Button onClick={claimLoan} className={styles.instantButton} size={buttonSize}>
           Claim NFT
         </Button>
