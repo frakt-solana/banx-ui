@@ -1,0 +1,59 @@
+.allTimeContainer {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100%;
+
+  @media (max-width: 640px) {
+    margin-top: 16px;
+  }
+}
+
+.allTimeContent {
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 24px;
+  gap: 16px;
+  width: 100%;
+  height: 100%;
+}
+
+.allTimeStatsContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 188px;
+  height: 100%;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    margin-top: 8px;
+  }
+}
+
+.allTimeStats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.allTimeChartStats {
+  display: flex;
+  flex-direction: column;
+
+  & > div:nth-child(odd) {
+    background: var(--bg-primary-deep);
+  }
+}
+
+.singleBarChart {
+  width: 144px;
+  min-height: 188px;
+  max-height: 188px;
+  height: 100%;
+
+  @media (max-width: 640px) {
+    width: 48px;
+  }
+}
