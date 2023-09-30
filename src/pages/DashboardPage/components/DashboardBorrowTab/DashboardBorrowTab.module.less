@@ -1,5 +1,5 @@
 .nftsSection,
-.additionalContentSection {
+.additionalSection {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -11,10 +11,8 @@
   }
 }
 
-.additionalContentSection.fixedHeight {
-  & > div {
-    flex-grow: unset;
-  }
+.additionalSection.fixedHeight > div {
+  flex-grow: unset;
 }
 
 .cardsList {
