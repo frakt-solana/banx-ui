@@ -51,7 +51,7 @@ export const useAllocationBlock = (stats?: AllocationStats) => {
     navigate(path)
   }
 
-  const navigateButtonProps = {
+  const buttonProps = {
     onClick: isDataEmpty ? goToPage(PATHS.LEND) : goToPage(PATHS.OFFERS),
     text: isDataEmpty ? 'Lend SOL' : 'Manage my offers',
   }
@@ -59,6 +59,6 @@ export const useAllocationBlock = (stats?: AllocationStats) => {
   return {
     allocationData,
     chartData,
-    navigateButtonProps,
+    buttonProps,
   }
 }

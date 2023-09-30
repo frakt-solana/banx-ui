@@ -8,7 +8,8 @@ import { calculateLoanValue } from '@banx/utils'
 
 import { BorrowCard } from '../Card'
 import { SearchableHeading } from '../components'
-import { AvailableToBorrow, MyLoans } from './components'
+import { MyLoans } from './components'
+import AvailableToBorrow from './components/AvailableToBorrow'
 import { calcDailyInterestFee } from './helpers'
 import { useDashboardBorrowTab } from './hooks'
 

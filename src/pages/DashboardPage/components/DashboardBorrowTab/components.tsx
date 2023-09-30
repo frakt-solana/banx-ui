@@ -1,17 +1,13 @@
-import { FC, useMemo } from 'react'
+import { FC } from 'react'
 
-import { useWallet } from '@solana/wallet-adapter-react'
-import { every, map, sumBy } from 'lodash'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { every, map } from 'lodash'
+import { useNavigate } from 'react-router-dom'
 
 import { Button } from '@banx/components/Buttons'
 import { Doughnut } from '@banx/components/Charts'
 import { VALUES_TYPES } from '@banx/components/StatInfo'
-import { useWalletModal } from '@banx/components/WalletModal'
 
 import { TotalBorrowerStats } from '@banx/api/stats'
-import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
-import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { PATHS } from '@banx/router'
 
 import { ChartStatInfo, DashboardStatInfo, Heading } from '../components'
@@ -23,71 +19,6 @@ import {
 } from './constants'
 
 import styles from './DashboardBorrowTab.module.less'
-
-export const AvailableToBorrow = () => {
-  const { connected } = useWallet()
-  const { toggleVisibility } = useWalletModal()
-
-  const { marketsPreview } = useMarketsPreview()
-  const { nfts, maxBorrow } = useBorrowNfts()
-
-  const { totalMarkets, totalLiquidity, userNFTs } = useMemo(() => {
-    return {
-      totalMarkets: marketsPreview.length,
-      totalLiquidity: sumBy(marketsPreview, 'offerTvl'),
-      userNFTs: nfts.length,
-    }
-  }, [marketsPreview, nfts])
-
-  const headingText = connected ? 'Borrow in bulk' : 'Available to borrow'
-  const buttonText = connected ? 'Borrow $SOL in bulk' : 'Connect wallet to borrow $SOL'
-
-  return (
-    <div className={styles.availableToBorrow}>
-      <Heading title={headingText} />
-      <div className={styles.stats}>
-        {connected ? (
-          <>
-            <DashboardStatInfo label="Borrow up to" value={maxBorrow} divider={1e9} />
-            <DashboardStatInfo
-              classNamesProps={{ value: styles.userNFTsValue }}
-              label="From your"
-              value={
-                <>
-                  {userNFTs} <span>NFTS</span>
-                </>
-              }
-              valueType={VALUES_TYPES.STRING}
-            />
-          </>
-        ) : (
-          <>
-            <DashboardStatInfo
-              label="Collections whitelisted"
-              value={totalMarkets}
-              valueType={VALUES_TYPES.STRING}
-            />
-            <DashboardStatInfo
-              label="Total liquidity"
-              value={totalLiquidity}
-              decimalPlaces={0}
-              divider={1e9}
-            />
-          </>
-        )}
-      </div>
-      {connected ? (
-        <NavLink className={styles.button} to={PATHS.BORROW}>
-          <Button className={styles.button}>{buttonText}</Button>
-        </NavLink>
-      ) : (
-        <Button onClick={toggleVisibility} className={styles.button}>
-          {buttonText}
-        </Button>
-      )}
-    </div>
-  )
-}
 
 interface MyLoansProps {
   stats?: TotalBorrowerStats | null

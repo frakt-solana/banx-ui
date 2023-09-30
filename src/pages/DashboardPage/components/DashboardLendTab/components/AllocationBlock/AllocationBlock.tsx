@@ -18,7 +18,7 @@ interface AllocationBlockProps {
 const AllocationBlock: FC<AllocationBlockProps> = ({ stats }) => {
   const { weightedApy = 0, weeklyInterest = 0 } = stats || {}
 
-  const { allocationData, chartData, navigateButtonProps } = useAllocationBlock(stats)
+  const { allocationData, chartData, buttonProps } = useAllocationBlock(stats)
 
   return (
     <div className={styles.allocationContainer}>
@@ -57,8 +57,8 @@ const AllocationBlock: FC<AllocationBlockProps> = ({ stats }) => {
           <Doughnut {...chartData} className={styles.doughnutChart} />
         </div>
       </div>
-      <Button onClick={navigateButtonProps.onClick} className={styles.manageOffersButton}>
-        {navigateButtonProps.text}
+      <Button onClick={buttonProps.onClick} className={styles.manageOffersButton}>
+        {buttonProps.text}
       </Button>
     </div>
   )
