@@ -10,7 +10,7 @@ import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { PATHS } from '@banx/router'
 
-import styles from '../AvailableToBorrow.module.less'
+import styles from './AvailableToBorrow.module.less'
 
 export const useAvailableToBorrow = () => {
   const { connected } = useWallet()
