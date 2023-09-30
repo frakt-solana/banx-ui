@@ -2,12 +2,7 @@ import { every, map } from 'lodash'
 
 import { TotalLenderStats } from '@banx/api/stats'
 
-import {
-  STATUS_COLOR_MAP,
-  STATUS_DISPLAY_NAMES,
-  AllTimeStatus,
-  NO_DATA_CHART,
-} from './constants'
+import { AllTimeStatus, NO_DATA_CHART, STATUS_COLOR_MAP, STATUS_DISPLAY_NAMES } from './constants'
 
 export type AllTimeStats = TotalLenderStats['allTime']
 
