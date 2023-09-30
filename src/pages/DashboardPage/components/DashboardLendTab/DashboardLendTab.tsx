@@ -3,7 +3,8 @@ import classNames from 'classnames'
 
 import { useLenderStats } from '../../hooks'
 import { SearchableHeading } from '../components'
-import { AllTimeBlock, AllocationBlock, CollectionsCardList } from './components'
+import { AllTimeBlock, CollectionsCardList } from './components'
+import AllocationBlock from './components/AllocationBlock'
 import { useDashboardLendTab } from './hooks'
 
 import styles from './DashboardLendTab.module.less'

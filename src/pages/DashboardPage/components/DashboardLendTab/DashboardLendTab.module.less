@@ -42,8 +42,7 @@
     }
   }
 }
-.allTimeContainer,
-.allocationContainer {
+.allTimeContainer {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -82,39 +81,6 @@
   gap: 16px;
 }
 .allTimeChartStats {
-  display: flex;
-  flex-direction: column;
-
-  & > div:nth-child(odd) {
-    background: var(--bg-primary-deep);
-  }
-}
-
-.allocationContent {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  flex-grow: 1;
-  gap: 24px;
-}
-.allocationStatsContainer {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 160px;
-  height: 100%;
-  width: 100%;
-
-  @media (max-width: 640px) {
-    margin-top: 8px;
-  }
-}
-.allocationStats {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.allocationChartStats {
   display: flex;
   flex-direction: column;
 
