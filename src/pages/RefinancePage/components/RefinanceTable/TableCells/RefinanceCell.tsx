@@ -13,7 +13,7 @@ import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeRefinanceAction } from '@banx/transactions/loans'
 import { enqueueSnackbar } from '@banx/utils'
 
-import { useRefinanceTable } from '../hooks'
+import { useLoansState } from '../hooks'
 
 import styles from '../RefinanceTable.module.less'
 
@@ -50,7 +50,7 @@ const useRefinanceTransaction = (loan: Loan) => {
   const wallet = useWallet()
   const { connection } = useConnection()
   const { addMints } = useAuctionsLoans()
-  const { deselectLoan } = useRefinanceTable()
+  const { deselectLoan } = useLoansState()
 
   const refinance = () => {
     new TxnExecutor(makeRefinanceAction, { wallet, connection })
