@@ -1,3 +1,4 @@
+import { BanxNotificationsButton } from '@banx/components/BanxNotifications'
 import { WalletConnectButton } from '@banx/components/Buttons'
 
 import { Logo, LogoFull } from '@banx/icons'
@@ -16,6 +17,7 @@ export const Header = () => {
       </a>
       <div className={styles.widgetContainer}>
         <ThemeSwitcher />
+        <BanxNotificationsButton />
         <WalletConnectButton />
       </div>
       <BurgerIcon />

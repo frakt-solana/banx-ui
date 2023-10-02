@@ -1,0 +1,133 @@
+//? Global sider styles
+.sider {
+  background-color: var(--bg-primary);
+  right: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.siderHidden {
+  display: none;
+}
+
+//? Sider header styles
+.header {
+  padding: 12px 24px;
+  border-bottom: 0.5px solid var(--bg-border);
+}
+
+.headerTitleContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.headerTitle {
+  color: var(--content-secondary);
+  font: var(--title-sm);
+  text-transform: uppercase;
+}
+
+.clearNotificationsBtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  color: var(--content-primary);
+  font: var(--btn-text-sm);
+  background: unset;
+  border: unset;
+  cursor: pointer;
+  padding: 0;
+
+  svg {
+    path {
+      fill: var(--content-primary);
+    }
+  }
+}
+
+.content {
+  padding: 12px 24px;
+  flex-grow: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.contentCentered {
+  justify-content: center;
+  align-items: center;
+}
+
+.noNotificationsText {
+  padding-top: 6px;
+}
+
+.contentTitle {
+  font: var(--title-sm);
+  text-transform: uppercase;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 24px;
+}
+.contentTitleSign {
+  margin-bottom: 8px;
+}
+
+.contentTitleOffsetTop {
+  padding-top: 32px;
+}
+
+.signMessageSubtitle {
+  margin-bottom: 8px;
+}
+
+.ledgerCheckbox {
+  margin-bottom: 8px;
+}
+
+//? Notifications list
+.notficationsList {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  row-gap: 16px;
+}
+
+.notificationCard {
+  width: 100%;
+  padding: 16px;
+  border: 1px solid var(--bg-border);
+}
+
+.notificationCardInfo {
+  display: flex;
+  column-gap: 8px;
+  font: var(--body-text-sm);
+  margin-bottom: 8px;
+  position: relative;
+}
+.notificationCardUnread {
+  &::after {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: -6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--additional-green-primary);
+  }
+}
+
+.notificationCardImg {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+}
+
+.notificationCardDate {
+  color: var(--content-secondary);
+  font: var(--body-text-xs);
+}
