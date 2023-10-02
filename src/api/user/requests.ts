@@ -83,29 +83,29 @@ export const deleteBanxNotifications: DeleteBanxNotifications = async ({
   })
 }
 
-type GetBanxUserNotificationsSettings = (props: {
-  publicKey: web3.PublicKey
-}) => Promise<Record<string, boolean>>
-export const getBanxUserNotificationsSettings: GetBanxUserNotificationsSettings = async ({
-  publicKey,
-}) => {
-  const { data } = await axios.get<{ data: Record<string, boolean> }>(
-    `${BACKEND_BASE_URL}/settings/${publicKey.toBase58()}`,
-  )
+// type GetBanxUserNotificationsSettings = (props: {
+//   publicKey: web3.PublicKey
+// }) => Promise<Record<string, boolean>>
+// export const getBanxUserNotificationsSettings: GetBanxUserNotificationsSettings = async ({
+//   publicKey,
+// }) => {
+//   const { data } = await axios.get<{ data: Record<string, boolean> }>(
+//     `${BACKEND_BASE_URL}/settings/${publicKey.toBase58()}`,
+//   )
 
-  return data?.data || {}
-}
+//   return data?.data || {}
+// }
 
-type SetBanxUserNotificationsSettings = (props: {
-  publicKey: web3.PublicKey
-  settings: Record<string, boolean>
-}) => Promise<void>
-export const setBanxUserNotificationsSettings: SetBanxUserNotificationsSettings = async ({
-  publicKey,
-  settings,
-}) => {
-  await axios.post(`${BACKEND_BASE_URL}/settings/${publicKey.toBase58()}`, settings)
-}
+// type SetBanxUserNotificationsSettings = (props: {
+//   publicKey: web3.PublicKey
+//   settings: Record<string, boolean>
+// }) => Promise<void>
+// export const setBanxUserNotificationsSettings: SetBanxUserNotificationsSettings = async ({
+//   publicKey,
+//   settings,
+// }) => {
+//   await axios.post(`${BACKEND_BASE_URL}/settings/${publicKey.toBase58()}`, settings)
+// }
 
 type BanxSignIn = (params: {
   publicKey: web3.PublicKey
