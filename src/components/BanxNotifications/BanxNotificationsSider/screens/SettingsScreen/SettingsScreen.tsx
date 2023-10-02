@@ -3,9 +3,9 @@ import { FC } from 'react'
 import classNames from 'classnames'
 
 import { LoadingScreen } from '../LoadingScreen'
-// import { DiscordSettings } from './DiscordSettings'
+import { DiscordSettings } from './DiscordSettings'
+import { EventsSettings } from './EventsSettings'
 // import { EmailSettings } from './EmailSettings'
-// import { EventsSettings } from './EventsSettings'
 // import { SmsSettings } from './SmsSettings'
 // import { TelegramSettings } from './TelegramSettings'
 import { useDialectSettingsLoading } from './hooks'
@@ -23,14 +23,14 @@ export const SettingsScreen: FC = () => {
     <div className={classNames(styles.content)}>
       <h2 className={styles.contentTitle}>Channels</h2>
       <div className={styles.channels}>
-        {/* <DiscordSettings />
-        <EmailSettings />
+        <DiscordSettings />
+        {/* <EmailSettings />
         <SmsSettings />
         <TelegramSettings /> */}
       </div>
 
       <h2 className={classNames(styles.contentTitle, styles.contentTitleOffsetTop)}>Events</h2>
-      {/* <EventsSettings /> */}
+      <EventsSettings />
     </div>
   )
 }
