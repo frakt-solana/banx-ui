@@ -1,8 +1,9 @@
-import { FC } from 'react'
+import { FC, useEffect, useState } from 'react'
 
 import { sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
+import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo } from '@banx/components/StatInfo'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
@@ -19,29 +20,25 @@ interface SummaryProps {
 }
 
 export const Summary: FC<SummaryProps> = ({ loans }) => {
-  const { selection, setSelection, clearSelection } = useSelectedLoans()
+  const { selection, setSelection } = useSelectedLoans()
 
   const { repayBulkLoan } = useLoansTransactions()
 
-  const totalLoans = selection.length
+  const selectedLoans = selection.length
   const totalBorrowed = sumBy(selection, ({ fraktBond }) => fraktBond.borrowedAmount)
   const totalDebt = sumBy(selection, (loan) => calculateLoanRepayValue(loan))
 
-  const selectAll = () => {
-    if (!selection.length) {
-      setSelection(loans)
-    } else {
-      clearSelection()
-    }
-  }
+  const [sliderValue, setSliderValue] = useState(0)
 
-  const selectAllBtnText = !selection?.length ? 'Select all' : 'Deselect all'
-  const selectMobileBtnText = !selection.length ? `Select all` : `Deselect ${selection.length}`
+  useEffect(() => {
+    const loansToSelect = loans.slice(0, sliderValue)
+    setSelection(loansToSelect)
+  }, [sliderValue, loans, setSelection])
 
   return (
     <div className={styles.summary}>
       <div className={styles.collaterals}>
-        <p className={styles.collateralsTitle}>{totalLoans}</p>
+        <p className={styles.collateralsTitle}>{selectedLoans}</p>
         <p className={styles.collateralsSubtitle}>Collaterals selected</p>
       </div>
       <div className={styles.statsContainer}>
@@ -49,11 +46,12 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
         <StatInfo label="Debt" value={totalDebt} divider={1e9} />
       </div>
       <div className={styles.summaryBtns}>
-        <Button variant="secondary" onClick={selectAll}>
-          <span className={styles.selectButtonText}>{selectAllBtnText}</span>
-          <span className={styles.selectButtonMobileText}>{selectMobileBtnText}</span>
-        </Button>
-        <Button onClick={repayBulkLoan} disabled={!selection.length}>
+        <CounterSlider
+          value={selectedLoans}
+          onChange={(value) => setSliderValue(value)}
+          max={loans.length}
+        />
+        <Button onClick={repayBulkLoan} disabled={!selectedLoans}>
           Repay {createSolValueJSX(totalDebt, 1e9, '0◎')}
         </Button>
       </div>
