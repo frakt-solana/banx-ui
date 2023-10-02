@@ -46,7 +46,7 @@ export const AddressInputBottomContent: FC<AddressInputBottomContentProps> = ({
       {isEditing && (
         <div className={styles.addressInputDescription}>
           <p className={styles.addressInputDescriptionText}>{updateWarningMessage}</p>
-          <Button onClick={onUpdateCancel} className={styles.addressInputDescriptionBtn}>
+          <Button onClick={onUpdateCancel} size="small">
             Cancel
           </Button>
         </div>
