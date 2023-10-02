@@ -1,10 +1,11 @@
-import { FC } from 'react'
+import React, { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
 import { SolanaFMLink } from '@banx/components/SolanaLinks'
+import { useWalletModal } from '@banx/components/WalletModal'
 
 import { Loan } from '@banx/api/core'
 import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
@@ -23,18 +24,24 @@ interface RefinanceCellProps {
 }
 
 export const RefinanceCell: FC<RefinanceCellProps> = ({ loan, isCardView }) => {
+  const { connected } = useWallet()
+  const { toggleVisibility } = useWalletModal()
+
   const refinance = useRefinanceTransaction(loan)
   const buttonSize = isCardView ? 'large' : 'small'
 
+  const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (connected) {
+      refinance()
+    } else {
+      toggleVisibility()
+    }
+    event.stopPropagation()
+  }
+
   return (
     <div className={classNames(styles.refinanceCell, { [styles.cardView]: isCardView })}>
-      <Button
-        onClick={(event) => {
-          refinance()
-          event.stopPropagation()
-        }}
-        size={buttonSize}
-      >
+      <Button onClick={onClickHandler} size={buttonSize}>
         Refinance
       </Button>
       <SolanaFMLink
