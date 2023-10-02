@@ -4,10 +4,9 @@ import classNames from 'classnames'
 
 import { LoadingScreen } from '../LoadingScreen'
 import { DiscordSettings } from './DiscordSettings'
+import { EmailSettings } from './EmailSettings'
 import { EventsSettings } from './EventsSettings'
-// import { EmailSettings } from './EmailSettings'
-// import { SmsSettings } from './SmsSettings'
-// import { TelegramSettings } from './TelegramSettings'
+import { TelegramSettings } from './TelegramSettings'
 import { useDialectSettingsLoading } from './hooks'
 
 import styles from '../../BanxNotificationsSider.module.less'
@@ -24,9 +23,8 @@ export const SettingsScreen: FC = () => {
       <h2 className={styles.contentTitle}>Channels</h2>
       <div className={styles.channels}>
         <DiscordSettings />
-        {/* <EmailSettings />
-        <SmsSettings />
-        <TelegramSettings /> */}
+        <EmailSettings />
+        <TelegramSettings />
       </div>
 
       <h2 className={classNames(styles.contentTitle, styles.contentTitleOffsetTop)}>Events</h2>

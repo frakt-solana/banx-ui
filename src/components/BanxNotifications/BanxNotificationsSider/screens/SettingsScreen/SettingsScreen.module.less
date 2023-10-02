@@ -5,11 +5,13 @@
   font: var(--table-header-md);
 }
 
-//? Discord
-.discordSettings {
+.discordSettings,
+.emailSettings,
+.telegramSettings {
   width: 100%;
 }
 
+//? Discord
 .discordSettingsWrapper {
   display: flex;
   align-items: center;
@@ -67,4 +69,112 @@
   font: var(--body-text-lg);
   display: flex;
   justify-content: space-between;
+}
+
+//? AddressInput
+.addressInputWrapper {
+  background: var(--bg-primary);
+  height: 32px;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 4px 8px;
+
+  border: 1px solid var(--bg-border);
+  background: var(--bg-action);
+
+  // &__error {
+
+  // }
+}
+
+.addressInput {
+  height: 100%;
+  color: var(--content-primary);
+  font: var(--body-text-sm);
+  flex-grow: 1;
+  background: transparent;
+
+  &,
+  &:focus,
+  &:focus-visible,
+  &:hover {
+    border: unset;
+    outline: unset;
+  }
+}
+
+.addressInputLoader {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  animation: rotate 1s infinite linear reverse;
+
+  background: conic-gradient(
+    from 180deg at 50% 52.27%,
+    #aeaeb2 0deg,
+    rgba(174, 174, 178, 0) 360deg
+  );
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &::after {
+    content: '';
+    background: var(--bg-action);
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.addressErrorText {
+  color: var(--additional-red-primary);
+  font: var(--body-text-xs);
+  margin-bottom: 0;
+}
+
+.addressInputDescription {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  column-gap: 8px;
+  padding-top: 6px;
+}
+.addressInputDescriptionText {
+  color: var(--content-primary);
+  font: var(--body-text-xs);
+  flex-grow: 1;
+  margin-bottom: 0;
+  a {
+    cursor: pointer;
+
+    &,
+    &:hover,
+    &:focus,
+    &:focus-visible,
+    &:visited {
+      color: var(--additional-blue-primary);
+      border: unset;
+      border-bottom: 1px solid var(--additional-blue-primary);
+    }
+  }
+}
+
+.addressInputToggle {
+  padding-top: 8px;
+
+  input {
+    position: absolute;
+  }
 }
