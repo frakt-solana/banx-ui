@@ -1,3 +1,5 @@
+import { useWallet } from '@solana/wallet-adapter-react'
+
 import { BanxNotificationsButton } from '@banx/components/BanxNotifications'
 import { WalletConnectButton } from '@banx/components/Buttons'
 
@@ -9,6 +11,8 @@ import ThemeSwitcher from '../ThemeSwitcher'
 import styles from './Header.module.less'
 
 export const Header = () => {
+  const { connected } = useWallet()
+
   return (
     <div className={styles.header}>
       <a href="/" className={styles.logoWrapper}>
@@ -17,7 +21,7 @@ export const Header = () => {
       </a>
       <div className={styles.widgetContainer}>
         <ThemeSwitcher />
-        <BanxNotificationsButton />
+        {connected && <BanxNotificationsButton />}
         <WalletConnectButton />
       </div>
       <BurgerIcon />
