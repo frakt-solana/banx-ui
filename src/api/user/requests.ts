@@ -4,13 +4,13 @@ import { web3 } from 'fbonds-core'
 import { BACKEND_BASE_URL } from '@banx/constants'
 import { getDiscordAvatarUrl } from '@banx/utils'
 
-import { DiscordUserInfo, DiscordUserInfoRaw, UserRewards } from './types'
+import { BanxNotification, DiscordUserInfo, DiscordUserInfoRaw, UserRewards } from './types'
 
 type FetchDiscordUser = (props: { publicKey: web3.PublicKey }) => Promise<DiscordUserInfo | null>
 export const fetchDiscordUser: FetchDiscordUser = async ({ publicKey }) => {
   try {
     const { data } = await axios.get<DiscordUserInfoRaw>(
-      `${BACKEND_BASE_URL}/user/${publicKey.toBase58()}`,
+      `${BACKEND_BASE_URL}/discord/${publicKey.toBase58()}`,
     )
 
     if (!data) return null
@@ -36,7 +36,7 @@ export const fetchDiscordUser: FetchDiscordUser = async ({ publicKey }) => {
 type RemoveDiscordUser = (props: { publicKey: web3.PublicKey }) => Promise<void>
 export const removeDiscordUser: RemoveDiscordUser = async ({ publicKey }) => {
   try {
-    await axios.get(`${BACKEND_BASE_URL}/user/${publicKey.toBase58()}/delete`)
+    await axios.get(`${BACKEND_BASE_URL}/discord/${publicKey.toBase58()}/delete`)
   } catch (error) {
     return
   }
@@ -44,14 +44,14 @@ export const removeDiscordUser: RemoveDiscordUser = async ({ publicKey }) => {
 
 type GetBanxUserNotifications = (props: {
   publicKey: web3.PublicKey
-}) => Promise<ReadonlyArray<Notification>>
+}) => Promise<ReadonlyArray<BanxNotification>>
 export const getBanxUserNotifications: GetBanxUserNotifications = async ({ publicKey }) => {
   try {
-    const { data } = await axios.get<ReadonlyArray<Notification>>(
+    const { data } = await axios.get<{ data: ReadonlyArray<BanxNotification> }>(
       `${BACKEND_BASE_URL}/history/${publicKey.toBase58()}`,
     )
 
-    return data ?? []
+    return data?.data ?? []
   } catch (error) {
     return []
   }
@@ -89,11 +89,11 @@ type GetBanxUserNotificationsSettings = (props: {
 export const getBanxUserNotificationsSettings: GetBanxUserNotificationsSettings = async ({
   publicKey,
 }) => {
-  const { data } = await axios.get<Record<string, boolean>>(
+  const { data } = await axios.get<{ data: Record<string, boolean> }>(
     `${BACKEND_BASE_URL}/settings/${publicKey.toBase58()}`,
   )
 
-  return data
+  return data?.data || {}
 }
 
 type SetBanxUserNotificationsSettings = (props: {
