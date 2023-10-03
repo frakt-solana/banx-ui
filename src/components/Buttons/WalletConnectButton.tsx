@@ -15,7 +15,7 @@ export const WalletConnectButton = () => {
 
   const ConnectedContent = () => (
     <>
-      <UserAvatar className={styles.avatar} />
+      <UserAvatar className={styles.avatarIcon} />
       <span>{shortenAddress(publicKey?.toBase58() || '')}</span>
       <ChevronDown />
     </>
@@ -23,7 +23,7 @@ export const WalletConnectButton = () => {
 
   const DisconnectedContent = () => (
     <>
-      <Wallet />
+      <Wallet className={styles.walletIcon} />
       <span>Connect wallet</span>
     </>
   )
