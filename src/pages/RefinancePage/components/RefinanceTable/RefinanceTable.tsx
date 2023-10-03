@@ -8,22 +8,15 @@ import { ViewState, useTableView } from '@banx/store'
 import { Summary } from './Summary'
 import { getTableColumns } from './columns'
 import { EMPTY_MESSAGE } from './constants'
-import { useRefinanceTable } from './hooks'
+import { useLoansState, useRefinanceTable } from './hooks'
 
 import styles from './RefinanceTable.module.less'
 
 export const RefinanceTable = () => {
-  const {
-    loans,
-    sortViewParams,
-    loading,
-    showEmptyList,
-    selectedLoans,
-    onSelectLoan,
-    onSelectAllLoans,
-    onDeselectAllLoans,
-    findSelectedLoan,
-  } = useRefinanceTable()
+  const { loans, sortViewParams, loading, showEmptyList } = useRefinanceTable()
+
+  const { selectedLoans, onSelectLoan, findSelectedLoan, onSelectAllLoans, onDeselectAllLoans } =
+    useLoansState()
 
   const { viewState } = useTableView()
 
@@ -53,7 +46,7 @@ export const RefinanceTable = () => {
       <div ref={fetchMoreTrigger} />
       <Summary
         selectedLoans={selectedLoans}
-        onSelectAllLoans={onSelectAllLoans}
+        onSelectAllLoans={() => onSelectAllLoans(loans)}
         onDeselectAllLoans={onDeselectAllLoans}
       />
     </div>
