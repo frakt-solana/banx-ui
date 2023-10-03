@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 
 import { BorrowNft, MarketPreview, Offer } from '@banx/api/core'
 import { useFakeInfinityScroll } from '@banx/hooks'
@@ -49,7 +49,10 @@ const NFTCard: FC<NFTCardProps> = ({ borrowNft, borrow, findBestOffer }) => {
     collectionFloor: nft.collectionFloor,
   })
 
-  const bestOffer = findBestOffer(loan.marketPubkey)
+  const bestOffer = useMemo(
+    () => findBestOffer(loan.marketPubkey),
+    [findBestOffer, loan.marketPubkey],
+  )
   const bestLoanValue = bestOffer ? calculateLoanValue(bestOffer) : 0
 
   return (
