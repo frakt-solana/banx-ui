@@ -80,7 +80,6 @@ const App = () => {
           <Router />
         </DialectProvider>
         {/* <VerifyWalletModal /> */}
-        {/* <NotificationModal /> */}
         {/* <Confetti /> */}
       </SolanaConnectionWalletProvider>
     </PersistQueryClientProvider>

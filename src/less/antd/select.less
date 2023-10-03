@@ -101,7 +101,6 @@
   border-top: 0;
   border-radius: 0;
   box-shadow: none;
-  color: var(--content-primary);
 
   font: var(--card-header-sm);
 
@@ -120,6 +119,10 @@
     color: var(--content-primary);
     padding: 8px;
     transition: none;
+  }
+
+  .ant-select-item:nth-child(odd) {
+    background: var(--bg-primary-deep);
   }
 
   .ant-select-item-option-active:not(.ant-select-item-option-disabled) {

@@ -59,7 +59,7 @@ export const getTableColumns = ({
       render: (_, nft) => (
         <BorrowCell
           isCardView={isCardView}
-          disabled={!!findOfferInCart(nft)}
+          disabled={!!findOfferInCart(nft) || !nft.loanValue}
           onBorrow={() => onBorrow(nft)}
         />
       ),
