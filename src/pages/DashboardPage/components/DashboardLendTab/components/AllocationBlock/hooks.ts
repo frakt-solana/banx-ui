@@ -8,7 +8,7 @@ import { PATHS } from '@banx/router'
 
 import {
   AllocationStatus,
-  NO_DATA_CHART,
+  NO_DATA_CHART_DATA,
   STATUS_COLOR_MAP,
   STATUS_DISPLAY_NAMES,
 } from './constants'
@@ -38,8 +38,8 @@ export const useAllocationBlock = (stats?: AllocationStats) => {
   const isDataEmpty = every(allocationValues, (value) => value === 0)
 
   const chartData: DoughnutChartProps = {
-    data: isDataEmpty ? NO_DATA_CHART.value : allocationValues,
-    colors: isDataEmpty ? NO_DATA_CHART.colors : Object.values(STATUS_COLOR_MAP),
+    data: isDataEmpty ? NO_DATA_CHART_DATA.value : allocationValues,
+    colors: isDataEmpty ? NO_DATA_CHART_DATA.colors : Object.values(STATUS_COLOR_MAP),
     statInfoProps: {
       label: 'Total funds',
       value: totalFunds,

@@ -13,7 +13,7 @@ export const STATUS_DISPLAY_NAMES: Record<AllTimeStatus, string> = {
   [AllTimeStatus.Defaulted]: 'Total defaulted',
 }
 
-export const NO_DATA_CHART = {
+export const NO_DATA_CHART_DATA = {
   key: 'empty',
   label: 'Empty',
   value: 100,

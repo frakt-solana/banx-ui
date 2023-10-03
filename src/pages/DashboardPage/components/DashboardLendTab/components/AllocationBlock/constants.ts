@@ -16,7 +16,7 @@ export const STATUS_DISPLAY_NAMES: Record<AllocationStatus, string> = {
   [AllocationStatus.PendingOffers]: 'Pending Offers',
 }
 
-export const NO_DATA_CHART = {
+export const NO_DATA_CHART_DATA = {
   value: [100],
   colors: ['var(--bg-secondary)'],
 }

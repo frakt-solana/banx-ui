@@ -7,7 +7,12 @@ import { VALUES_TYPES } from '@banx/components/StatInfo'
 import { TotalBorrowerStats } from '@banx/api/stats'
 import { PATHS } from '@banx/router'
 
-import { LoansStatus, NO_DATA_CHART, STATUS_COLOR_MAP, STATUS_DISPLAY_NAMES } from './constants'
+import {
+  LoansStatus,
+  NO_DATA_CHART_DATA,
+  STATUS_COLOR_MAP,
+  STATUS_DISPLAY_NAMES,
+} from './constants'
 
 import styles from './MyLoans.module.less'
 
@@ -35,8 +40,8 @@ export const useMyLoans = (stats?: TotalBorrowerStats) => {
   const isDataEmpty = every(loansValues, (value) => value === 0)
 
   const chartData: DoughnutChartProps = {
-    data: isDataEmpty ? NO_DATA_CHART.value : loansValues,
-    colors: isDataEmpty ? NO_DATA_CHART.colors : Object.values(STATUS_COLOR_MAP),
+    data: isDataEmpty ? NO_DATA_CHART_DATA.value : loansValues,
+    colors: isDataEmpty ? NO_DATA_CHART_DATA.colors : Object.values(STATUS_COLOR_MAP),
     className: styles.doughnutChart,
     statInfoProps: {
       label: 'Total loans',
