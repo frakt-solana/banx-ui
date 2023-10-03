@@ -21,7 +21,7 @@ const AvailableToBorrow = () => {
     <div className={styles.availableToBorrow}>
       <Heading title={headingText} />
       <div className={styles.stats}>
-        {isConnected ? (
+        {isConnected && (
           <>
             <DashboardStatInfo label="Borrow up to" value={maxBorrow} divider={1e9} />
             <DashboardStatInfo
@@ -35,7 +35,9 @@ const AvailableToBorrow = () => {
               valueType={VALUES_TYPES.STRING}
             />
           </>
-        ) : (
+        )}
+
+        {!isConnected && (
           <>
             <DashboardStatInfo
               label="Collections whitelisted"

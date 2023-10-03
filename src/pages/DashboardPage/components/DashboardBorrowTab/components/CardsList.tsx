@@ -10,7 +10,7 @@ import { useDashboardBorrowTab } from '../hooks'
 
 import styles from '../DashboardBorrowTab.module.less'
 
-const CardList = () => {
+const CardsList = () => {
   const { marketsPreview, nfts, borrow, findBestOffer, goToBorrowPage, isConnected } =
     useDashboardBorrowTab()
 
@@ -19,27 +19,22 @@ const CardList = () => {
   return (
     <>
       <div className={styles.cardsList}>
-        {isConnected
-          ? nftsData.map((nft) => (
-              <NFTCard
-                key={nft.mint}
-                borrowNft={nft}
-                borrow={borrow}
-                findBestOffer={findBestOffer}
-              />
-            ))
-          : marketsPreview.map((market) => (
-              <MarketCard
-                key={market.marketPubkey}
-                market={market}
-                goToBorrowPage={goToBorrowPage}
-              />
-            ))}
+        {isConnected &&
+          nftsData.map((nft) => (
+            <NFTCard key={nft.mint} borrowNft={nft} borrow={borrow} findBestOffer={findBestOffer} />
+          ))}
+
+        {!isConnected &&
+          marketsPreview.map((market) => (
+            <MarketCard key={market.marketPubkey} market={market} goToBorrowPage={goToBorrowPage} />
+          ))}
       </div>
       <div ref={fetchMoreTrigger} />
     </>
   )
 }
+
+export default CardsList
 
 interface NFTCardProps {
   borrowNft: BorrowNft
@@ -84,5 +79,3 @@ const MarketCard: FC<MarketCardProps> = ({ market, goToBorrowPage }) => (
     })}
   />
 )
-
-export default CardList

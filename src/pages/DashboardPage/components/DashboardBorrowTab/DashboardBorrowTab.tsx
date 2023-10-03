@@ -4,7 +4,7 @@ import { Loader } from '@banx/components/Loader'
 
 import { SearchableHeading } from '../components'
 import AvailableToBorrow from './components/AvailableToBorrow'
-import CardList from './components/CardList'
+import CardsList from './components/CardsList'
 import MyLoans from './components/MyLoans'
 import { useDashboardBorrowTab } from './hooks'
 
@@ -18,7 +18,7 @@ const DashboardBorrowTab = () => {
     <>
       <div className={styles.nftsSection}>
         <SearchableHeading title={headingText} searchSelectParams={searchSelectParams} />
-        {loading ? <Loader /> : <CardList />}
+        {loading ? <Loader /> : <CardsList />}
       </div>
       <div className={classNames(styles.additionalSection, { [styles.fixedHeight]: !isConnected })}>
         <AvailableToBorrow />
