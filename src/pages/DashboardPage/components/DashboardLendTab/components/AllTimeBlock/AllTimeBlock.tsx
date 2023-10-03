@@ -1,12 +1,22 @@
 import { FC } from 'react'
 
+import { every, map } from 'lodash'
+
 import { SingleBar } from '@banx/components/Charts'
 
+import { TotalLenderStats } from '@banx/api/stats'
+
 import { ChartStatInfo, DashboardStatInfo, Heading } from '../../../components'
-import { AllTimeStatus, STATUS_COLOR_MAP } from './constants'
-import { AllTimeStats, useAllTimeBlock } from './hooks'
+import {
+  AllTimeStatus,
+  NO_DATA_CHART_DATA,
+  STATUS_COLOR_MAP,
+  STATUS_DISPLAY_NAMES,
+} from './constants'
 
 import styles from './AllTimeBlock.module.less'
+
+type AllTimeStats = TotalLenderStats['allTime']
 
 interface AllTimeBlockProps {
   stats?: AllTimeStats
@@ -15,7 +25,7 @@ interface AllTimeBlockProps {
 const AllTimeBlock: FC<AllTimeBlockProps> = ({ stats }) => {
   const { totalInterestEarned = 0, totalLent = 0 } = stats || {}
 
-  const { allTimeData, chartData } = useAllTimeBlock(stats)
+  const { allTimeData, chartData } = getAllTimeStatsData(stats)
 
   return (
     <div className={styles.allTimeContainer}>
@@ -48,3 +58,28 @@ const AllTimeBlock: FC<AllTimeBlockProps> = ({ stats }) => {
 }
 
 export default AllTimeBlock
+
+const getAllTimeStatsData = (stats?: AllTimeStats) => {
+  const { totalRepaid = 0, totalDefaulted = 0 } = stats || {}
+
+  const allTimeStatusValueMap = {
+    [AllTimeStatus.Repaid]: totalRepaid,
+    [AllTimeStatus.Defaulted]: totalDefaulted,
+  }
+
+  const allTimeData = map(allTimeStatusValueMap, (value, status) => ({
+    label: STATUS_DISPLAY_NAMES[status as AllTimeStatus],
+    color: STATUS_COLOR_MAP[status as AllTimeStatus],
+    key: status,
+    value,
+  }))
+
+  const isDataEmpty = every(map(allTimeData, 'value'), (value) => value === 0)
+
+  const chartData = isDataEmpty ? [NO_DATA_CHART_DATA] : allTimeData
+
+  return {
+    allTimeData,
+    chartData,
+  }
+}
