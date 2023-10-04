@@ -1,19 +1,23 @@
 import React, { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { sumBy } from 'lodash'
+import { map, sumBy } from 'lodash'
 import moment from 'moment'
 
 import { Button } from '@banx/components/Buttons'
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 import { useWalletModal } from '@banx/components/WalletModal'
 
 import { Loan } from '@banx/api/core'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeRefinanceAction } from '@banx/transactions/loans'
-import { enqueueSnackbar } from '@banx/utils'
+import {
+  calcWeightedAverage,
+  calculateLoanRepayValue,
+  convertAprToApy,
+  enqueueSnackbar,
+} from '@banx/utils'
 
 import { useAuctionsLoans } from '../../hooks'
 
@@ -41,7 +45,23 @@ export const Summary: FC<SummaryProps> = ({
     : `Deselect ${selectedLoans.length}`
 
   const totalFloor = sumBy(selectedLoans, ({ nft }) => nft.collectionFloor)
-  const totalDebt = sumBy(selectedLoans, (loan) => calcLoanDebt(loan))
+  const totalDebt = sumBy(selectedLoans, (loan) => calculateLoanRepayValue(loan))
+  const totalLoanValue = map(selectedLoans, (loan) => loan.fraktBond.borrowedAmount)
+
+  const totalApy = map(selectedLoans, (loan) => {
+    const { refinanceAuctionStartedAt } = loan.fraktBond
+    const { amountOfBonds } = loan.bondTradeTransaction
+
+    const currentTime = moment()
+    const auctionStartTime = moment.unix(refinanceAuctionStartedAt)
+    const hoursSinceStart = currentTime.diff(auctionStartTime, 'hours')
+
+    const updatedAPR = amountOfBonds / 1e4 + hoursSinceStart
+
+    return convertAprToApy(updatedAPR)
+  })
+
+  const weightedApy = calcWeightedAverage(totalApy, totalLoanValue)
 
   const refinanceAll = () => {
     const txnParams = selectedLoans.map((loan) => ({ loan }))
@@ -99,11 +119,10 @@ export const Summary: FC<SummaryProps> = ({
           <p>Total debt</p>
           <p>{createSolValueJSX(totalDebt, 1e9, '0◎')}</p>
         </div>
-        {/* //TODO Calc weighted apy  */}
-        {/* <div className={styles.stats}>
+        <div className={styles.stats}>
           <p>Weighted apy</p>
-          <p>{createPercentValueJSX(100)}</p>
-        </div> */}
+          <p>{createPercentValueJSX(weightedApy)}</p>
+        </div>
       </div>
       <div className={styles.summaryBtns}>
         <Button variant="secondary" onClick={onSelectAllBtnClick}>
@@ -116,17 +135,4 @@ export const Summary: FC<SummaryProps> = ({
       </div>
     </div>
   )
-}
-
-export const calcLoanDebt = (loan: Loan) => {
-  const { solAmount, soldAt, feeAmount, amountOfBonds } = loan.bondTradeTransaction || {}
-
-  const calculatedInterest = calculateCurrentInterestSolPure({
-    loanValue: solAmount + feeAmount,
-    startTime: soldAt,
-    currentTime: moment().unix(),
-    rateBasePoints: amountOfBonds,
-  })
-
-  return solAmount + calculatedInterest + feeAmount
 }

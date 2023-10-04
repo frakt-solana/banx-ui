@@ -1,4 +1,4 @@
-import { flatMap, map, uniq } from 'lodash'
+import { flatMap, map, reduce, uniq } from 'lodash'
 
 import { BONDS, WEEKS_IN_YEAR } from '@banx/constants'
 
@@ -40,3 +40,18 @@ export const generateCSVContent = <T extends object>(dataList: T[]): string => {
 
 export const calcLoanValueWithProtocolFee = (loanValue: number) =>
   Math.floor(loanValue * (1 - BONDS.PROTOCOL_FEE_PERCENT / 1e4))
+
+export const calcWeightedAverage = (nums: number[], weights: number[]) => {
+  const [sum, weightSum] = reduce(
+    weights,
+    (acc, weight, i) => {
+      acc[0] += nums[i] * weight
+      acc[1] += weight
+      return acc
+    },
+    [0, 0],
+  )
+
+  const weightedAverage = sum / weightSum
+  return weightedAverage || 0
+}
