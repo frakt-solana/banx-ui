@@ -13,10 +13,12 @@ import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeRefinanceAction } from '@banx/transactions/loans'
 import {
+  HealthColorDecreasing,
   calcWeightedAverage,
   calculateLoanRepayValue,
   convertAprToApy,
   enqueueSnackbar,
+  getColorByPercent,
 } from '@banx/utils'
 
 import { useAuctionsLoans } from '../../hooks'
@@ -62,6 +64,7 @@ export const Summary: FC<SummaryProps> = ({
   })
 
   const weightedApy = calcWeightedAverage(totalApy, totalLoanValue)
+  const colorApy = getColorByPercent(weightedApy, HealthColorDecreasing)
 
   const refinanceAll = () => {
     const txnParams = selectedLoans.map((loan) => ({ loan }))
@@ -121,7 +124,9 @@ export const Summary: FC<SummaryProps> = ({
         </div>
         <div className={styles.stats}>
           <p>Weighted apy</p>
-          <p>{createPercentValueJSX(weightedApy)}</p>
+          <p style={{ color: weightedApy ? colorApy : '' }} className={styles.aprValue}>
+            {createPercentValueJSX(weightedApy, '0%')}
+          </p>
         </div>
       </div>
       <div className={styles.summaryBtns}>
