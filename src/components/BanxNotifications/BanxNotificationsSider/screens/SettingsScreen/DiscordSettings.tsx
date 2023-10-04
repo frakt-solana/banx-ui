@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import { useWallet } from '@solana/wallet-adapter-react'
 
 import { Button } from '@banx/components/Buttons'
@@ -12,7 +10,7 @@ import { getDiscordUri, shortenAddress } from '@banx/utils'
 
 import styles from './SettingsScreen.module.less'
 
-export const DiscordSettings: FC = () => {
+export const DiscordSettings = () => {
   const { publicKey } = useWallet()
   const { data, isDiscordConnected, removeUserInfo } = useDiscordUser()
 

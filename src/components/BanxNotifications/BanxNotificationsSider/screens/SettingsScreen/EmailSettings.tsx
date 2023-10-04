@@ -1,4 +1,4 @@
-import { FC, FocusEvent, FormEvent } from 'react'
+import { FocusEvent, FormEvent } from 'react'
 
 import { AddressType } from '@dialectlabs/react-sdk'
 
@@ -9,7 +9,13 @@ import { useAddressSettings } from './hooks'
 
 import styles from './SettingsScreen.module.less'
 
-export const EmailSettings: FC = () => {
+const UPDATE_WARNING_MESSAGE =
+  "Updating your email here will update it across all dapps you've subscribed to."
+
+const DELETE_WARNING_MESSAGE =
+  "Deleting your email here will delete it for all dapps you've subscribed to."
+
+export const EmailSettings = () => {
   const ADDRESS_TYPE = AddressType.Email
 
   const {
@@ -93,10 +99,8 @@ export const EmailSettings: FC = () => {
       )}
       <AddressInputBottomContent
         {...{
-          updateWarningMessage:
-            "Updating your email here will update it across all dapps you've subscribed to.",
-          deleteWarningMessage:
-            "Deleting your email here will delete it for all dapps you've subscribed to.",
+          updateWarningMessage: UPDATE_WARNING_MESSAGE,
+          deleteWarningMessage: DELETE_WARNING_MESSAGE,
           error,
           isLoading,
           isEditing,

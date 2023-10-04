@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import {
   WalletNotificationSubscription,
   useNotificationSubscriptions,
@@ -43,7 +41,7 @@ const useEventsSettings = () => {
   }
 }
 
-export const EventsSettings: FC = () => {
+export const EventsSettings = () => {
   const { notificationSubscriptions, updateSettings } = useEventsSettings()
 
   return (

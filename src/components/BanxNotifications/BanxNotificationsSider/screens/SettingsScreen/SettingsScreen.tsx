@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import classNames from 'classnames'
 
 import { LoadingScreen } from '../LoadingScreen'
@@ -11,7 +9,7 @@ import { useDialectSettingsLoading } from './hooks'
 
 import styles from '../../BanxNotificationsSider.module.less'
 
-export const SettingsScreen: FC = () => {
+export const SettingsScreen = () => {
   const isLoading = useDialectSettingsLoading()
 
   if (isLoading) {

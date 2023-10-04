@@ -11,7 +11,7 @@ import { LoadingScreen } from './LoadingScreen'
 
 import styles from '../BanxNotificationsSider.module.less'
 
-export const NotificationsScreen: FC = () => {
+export const NotificationsScreen = () => {
   const { notifications, isLoading, markRead } = useUserNotifications()
 
   if (isLoading) {
@@ -37,7 +37,7 @@ export const NotificationsScreen: FC = () => {
   )
 }
 
-const NoNotificationsContent: FC = () => {
+const NoNotificationsContent = () => {
   return (
     <div className={classNames(styles.content, styles.contentCentered)}>
       <BellSlash />

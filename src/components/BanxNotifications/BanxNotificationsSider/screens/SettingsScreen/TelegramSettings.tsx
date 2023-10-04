@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import { AddressType } from '@dialectlabs/react-sdk'
 
 import { Button } from '@banx/components/Buttons'
@@ -11,7 +9,13 @@ import { useAddressSettings, useDialectTelegramBotURL } from './hooks'
 
 import styles from './SettingsScreen.module.less'
 
-export const TelegramSettings: FC = () => {
+const UPDATE_WARNING_MESSAGE =
+  "Updating your telegram handle here will update it across all dapps you've signed up."
+
+const DELETE_WARNING_MESSAGE =
+  "Deleting your telegram handle here will delete it across all dapps you've signed up."
+
+export const TelegramSettings = () => {
   const ADDRESS_TYPE = AddressType.Telegram
 
   const {
@@ -92,10 +96,8 @@ export const TelegramSettings: FC = () => {
       )}
       <AddressInputBottomContent
         {...{
-          updateWarningMessage:
-            "Updating your telegram handle here will update it across all dapps you've signed up.",
-          deleteWarningMessage:
-            "Deleting your telegram handle here will delete it across all dapps you've signed up.",
+          updateWarningMessage: UPDATE_WARNING_MESSAGE,
+          deleteWarningMessage: DELETE_WARNING_MESSAGE,
           error,
           isLoading,
           isEditing,

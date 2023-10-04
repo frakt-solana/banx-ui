@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react'
+import { useEffect } from 'react'
 
 import { useDialectWallet } from '@dialectlabs/react-sdk'
 import classNames from 'classnames'
@@ -12,7 +12,7 @@ import { useBanxNotificationsSider } from '../../hooks'
 
 import styles from '../BanxNotificationsSider.module.less'
 
-export const SignMessageScreen: FC = () => {
+export const SignMessageScreen = () => {
   const { authorize } = useBanxNotificationsSider()
 
   const { isLedger, setIsLedger } = useIsLedger()
@@ -27,12 +27,13 @@ export const SignMessageScreen: FC = () => {
 
   return (
     <div className={classNames(styles.content, styles.contentCentered)}>
-      <h3 className={styles.contentTitle} style={{ marginBottom: 8 }}>
+      <h3
+        className={classNames(styles.contentTitle, styles.contentTitleSign)}
+        style={{ marginBottom: 8 }}
+      >
         Please sign message
       </h3>
-      <p className={classNames(styles.signMessageSubtitle, styles.contentTitleSign)}>
-        to set up notifications
-      </p>
+      <p className={styles.signMessageSubtitle}>to set up notifications</p>
       <Checkbox
         onChange={() => setIsLedger(!isLedger)}
         label="I use ledger"
