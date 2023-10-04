@@ -43,6 +43,10 @@ export const enqueueSnackbar: EnqueueSnackbar = ({
 }) => {
   const key = customKey || uniqueId()
 
+  notification.config({
+    maxCount: 5, //? Max Notification show, drop oldest if exceed limit
+  })
+
   notification.open({
     type: type === 'loading' ? 'info' : type,
     className: classNames(styles.snack, styles[`snack__${type}`], className),
