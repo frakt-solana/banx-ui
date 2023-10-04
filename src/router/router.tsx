@@ -3,11 +3,12 @@ import { FC, PropsWithChildren } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 import { AppLayout } from '@banx/Layout'
-import { useFirebaseNotifications } from '@banx/hooks'
+import { useFirebaseNotifications, useNotificationModal } from '@banx/hooks'
 import { routes } from '@banx/router/routes'
 
 const InitialCalls: FC<PropsWithChildren> = ({ children }) => {
   useFirebaseNotifications()
+  useNotificationModal()
 
   return <>{children}</>
 }

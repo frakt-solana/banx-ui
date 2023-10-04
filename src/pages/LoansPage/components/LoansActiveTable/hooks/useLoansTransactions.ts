@@ -29,7 +29,8 @@ export const useLoansTransactions = () => {
         const { txnHash, result } = results[0]
         if (result && wallet.publicKey) {
           enqueueSnackbar({
-            message: 'Transaction Executed',
+            message: 'Repaid successfully',
+            type: 'success',
             solanaExplorerPath: `tx/${txnHash}`,
           })
           updateLoansOptimistic(result, wallet.publicKey.toBase58())
@@ -55,7 +56,8 @@ export const useLoansTransactions = () => {
         const { txnHash, result } = results[0]
         if (result && wallet.publicKey) {
           enqueueSnackbar({
-            message: 'Transaction Executed',
+            message: 'Repaid successfully',
+            type: 'success',
             solanaExplorerPath: `tx/${txnHash}`,
           })
           updateLoansOptimistic([result], wallet.publicKey.toBase58())
@@ -83,7 +85,8 @@ export const useLoansTransactions = () => {
         results.forEach(({ txnHash, result }) => {
           if (result && wallet.publicKey) {
             enqueueSnackbar({
-              message: 'Transaction Executed',
+              message: 'Repaid successfully',
+              type: 'success',
               solanaExplorerPath: `tx/${txnHash}`,
             })
             updateLoansOptimistic(result, wallet.publicKey.toBase58())

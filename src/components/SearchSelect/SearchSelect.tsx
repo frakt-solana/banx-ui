@@ -54,7 +54,10 @@ export const SearchSelect = <P extends object>({
     )
 
   return (
-    <div ref={containerRef} className={classNames(styles.selectWrapper, className)}>
+    <div
+      ref={containerRef}
+      className={classNames(styles.selectWrapper, { [styles.active]: isPopupOpen }, className)}
+    >
       <PrefixInput />
       <AntdSelect
         mode="multiple"
@@ -72,6 +75,7 @@ export const SearchSelect = <P extends object>({
         onSearch={handleInputChange}
         onDropdownVisibleChange={handleDropdownVisibleChange}
         defaultOpen={defaultOpen}
+        maxTagCount="responsive"
         dropdownRender={(menu) => (
           <>
             <SelectLabels labels={labels} />

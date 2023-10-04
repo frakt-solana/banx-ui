@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 
-import { filter, find, first, groupBy, map } from 'lodash'
+import { first, groupBy, map } from 'lodash'
+import { create } from 'zustand'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
@@ -55,42 +56,46 @@ export const useRefinanceTable = () => {
     className: styles.searchSelect,
   }
 
-  const [selectedLoans, setSelectedLoans] = useState<Loan[]>([])
-
-  const findSelectedLoan = (loanPubkey: string) =>
-    find(selectedLoans, ({ publicKey }) => publicKey === loanPubkey)
-
-  const onSelectLoan = (loan: Loan) => {
-    const isLoanInCart = !!findSelectedLoan(loan.publicKey)
-    if (isLoanInCart) {
-      return setSelectedLoans((prev) =>
-        filter(prev, ({ publicKey }) => publicKey !== loan.publicKey),
-      )
-    }
-    return setSelectedLoans((prev) => [...prev, loan])
-  }
-
-  const onSelectAllLoans = () => setSelectedLoans([...loans])
-
-  const onDeselectAllLoans = () => setSelectedLoans([])
-
-  const deselectLoan = (loanPubkey: string) => {
-    return setSelectedLoans((prev) => filter(prev, ({ publicKey }) => publicKey !== loanPubkey))
-  }
-
   return {
     loans: sortedLoans,
     loading: isLoading,
     showEmptyList,
-    selectedLoans,
-    onSelectLoan,
-    onSelectAllLoans,
-    onDeselectAllLoans,
-    findSelectedLoan,
-    deselectLoan,
     sortViewParams: {
       searchSelectParams,
       sortParams: { option: sortOption, onChange: setSortOption },
     },
   }
 }
+
+type LoansState = {
+  selectedLoans: Loan[]
+  findSelectedLoan: (loanPubkey: string) => Loan | undefined
+  onSelectLoan: (loan: Loan) => void
+  onSelectAllLoans: (loans: Loan[]) => void
+  onDeselectAllLoans: () => void
+  deselectLoan: (loanPubkey: string) => void
+}
+
+export const useLoansState = create<LoansState>((set, get) => ({
+  selectedLoans: [],
+  findSelectedLoan: (loanPubkey) =>
+    get().selectedLoans.find(({ publicKey }) => publicKey === loanPubkey),
+  onSelectLoan: (loan) =>
+    set((state) => {
+      const isLoanInCart = !!state.findSelectedLoan(loan.publicKey)
+      if (isLoanInCart) {
+        return {
+          selectedLoans: state.selectedLoans.filter(
+            ({ publicKey }) => publicKey !== loan.publicKey,
+          ),
+        }
+      }
+      return { selectedLoans: [...state.selectedLoans, loan] }
+    }),
+  onSelectAllLoans: (loans) => set({ selectedLoans: [...loans] }),
+  onDeselectAllLoans: () => set({ selectedLoans: [] }),
+  deselectLoan: (loanPubkey) =>
+    set((state) => ({
+      selectedLoans: state.selectedLoans.filter(({ publicKey }) => publicKey !== loanPubkey),
+    })),
+}))

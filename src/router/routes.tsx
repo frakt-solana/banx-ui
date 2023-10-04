@@ -3,6 +3,7 @@ import { FC } from 'react'
 import {
   AdventuresPage,
   BorrowPage,
+  DashboardPage,
   LendPage,
   LoansPage,
   OffersPage,
@@ -20,7 +21,7 @@ interface Route {
 export const routes: Route[] = [
   {
     path: PATHS.ROOT,
-    component: RootPage,
+    component: DashboardPage,
   },
   {
     path: PATHS.BORROW,

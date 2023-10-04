@@ -74,7 +74,8 @@ export const executeBorrow = async (props: {
       const loansFlat = results
         .map(({ txnHash, result }) => {
           enqueueSnackbar({
-            message: 'Transaction Executed',
+            message: 'Borrowed successfully',
+            type: 'success',
             solanaExplorerPath: `tx/${txnHash}`,
           })
           return result?.map(({ loan }) => loan)

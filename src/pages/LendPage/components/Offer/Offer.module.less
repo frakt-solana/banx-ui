@@ -10,11 +10,12 @@
 }
 
 .highlightBest,
-.highlightYourOffer {
+.highlightYour,
+.highlightEditing {
   position: relative;
 
   font: var(--table-header-sm);
-  color: var(--content-primary);
+  color: var(--pure-black);
   text-align: center;
   text-transform: uppercase;
 
@@ -48,13 +49,23 @@
   }
 }
 
-.highlightYourOffer {
+.highlightYour {
   &::before {
-    content: 'Your offer';
+    content: 'Your';
     background: var(--accent-primary);
   }
   &::after {
     background: var(--accent-primary);
+  }
+}
+
+.highlightEditing {
+  &::before {
+    content: 'Editing';
+    background: var(--additional-blue-primary);
+  }
+  &::after {
+    background: var(--additional-blue-primary);
   }
 }
 
