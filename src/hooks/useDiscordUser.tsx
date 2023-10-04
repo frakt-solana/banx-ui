@@ -18,7 +18,7 @@ export const useDiscordUser = () => {
     () => fetchDiscordUser({ publicKey: publicKey as web3.PublicKey }),
     {
       enabled: connected,
-      staleTime: 5000,
+      staleTime: 60 * 1000,
     },
   )
 
