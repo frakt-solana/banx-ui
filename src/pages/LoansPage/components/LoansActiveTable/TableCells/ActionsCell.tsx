@@ -54,8 +54,8 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView, disableAct
       .sortBy(offersByMarket, 'fundsSolOrTokenBalance')
       .reverse()
       .value()
-      .find((offer) => calculateLoanValue(offer) > calculateLoanRepayValue(loan))
-  }, [offers, fraktBond, loan])
+      .at(0)
+  }, [offers, fraktBond])
 
   const refinance = () => {
     if (!offerToRefinance) return

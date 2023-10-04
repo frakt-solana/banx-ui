@@ -37,7 +37,7 @@ export const makeBorrowRefinanceAction: MakeBorrowRefinanceAction = async (
 
   const { instructions, signers, optimisticResult } = await borrowerRefinance({
     args: {
-      solToRefinance: offer.fundsSolOrTokenBalance,
+      solToRefinance: offer.currentSpotPrice,
     },
     accounts: {
       fbond: new web3.PublicKey(fraktBond.publicKey),
