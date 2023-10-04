@@ -7,3 +7,5 @@ export const TWITTER_URL = 'https://twitter.com/FRAKT_HQ'
 export const GITHUB_URL = 'https://github.com/frakt-solana'
 export const MEDIUM_URL = 'https://medium.com/@banx_HQ'
 export const DOCS_URL = 'https://docs.frakt.xyz/frakt/'
+
+export const DISCORD_AVATARS_URL = 'https://cdn.discordapp.com/avatars'

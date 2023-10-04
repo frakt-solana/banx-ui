@@ -4,34 +4,24 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 
 import {
-  Notification,
-  deleteNotifications,
-  getUserNotifications,
-  markNotificationsAsRead,
-} from '@banx/api/notifications'
+  deleteBanxNotifications,
+  getBanxUserNotifications,
+  markBanxNotificationsAsRead,
+} from '@banx/api/user'
 
-type UseUserNotifications = () => {
-  notifications: ReadonlyArray<Notification> | null
-  isLoading: boolean
-  hasUnread: boolean
-  markRead: (notificationIds: string[]) => Promise<void>
-  clearAll: () => Promise<void>
-}
-
-export const useUserNotifications: UseUserNotifications = () => {
+export const useUserNotifications = () => {
   const { connected, publicKey } = useWallet()
 
   const {
     data: notifications,
     isLoading: isNotificationsLoading,
     refetch: refetchNotifications,
-  } = useQuery<ReadonlyArray<Notification>>(
+  } = useQuery(
     ['userNotifications'],
     async () => {
       if (!publicKey) return []
 
-      const notifications = await getUserNotifications({ publicKey })
-      return notifications as unknown as ReadonlyArray<Notification>
+      return await getBanxUserNotifications({ publicKey })
     },
     {
       enabled: connected,
@@ -43,7 +33,7 @@ export const useUserNotifications: UseUserNotifications = () => {
   const markRead = useCallback(
     async (notificationIds: string[] = []) => {
       if (publicKey) {
-        await markNotificationsAsRead({ publicKey, notificationIds })
+        await markBanxNotificationsAsRead({ publicKey, notificationIds })
         refetchNotifications()
       }
     },
@@ -52,7 +42,7 @@ export const useUserNotifications: UseUserNotifications = () => {
 
   const clearAll = useCallback(async () => {
     if (publicKey && notifications?.length) {
-      await deleteNotifications({
+      await deleteBanxNotifications({
         publicKey,
         notificationIds: notifications.map((notify) => notify.id) || [],
       })
