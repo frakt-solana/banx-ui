@@ -17,6 +17,7 @@ import {
   useLoansOptimistic,
   useOffersOptimistic,
 } from '@banx/store'
+import { isLoanRepaid } from '@banx/utils'
 
 import { SECONDS_IN_72_HOURS } from './constants'
 
@@ -85,11 +86,7 @@ export const useWalletLoansAndOffers = () => {
       (loan) => loan,
     )
 
-    const loans = purgedSameMint.filter(
-      (loan) =>
-        loan.bondTradeTransaction.bondTradeTransactionState !==
-        BondTradeTransactionV2State.PerpetualRepaid,
-    )
+    const loans = purgedSameMint.filter((loan) => !isLoanRepaid(loan))
 
     return loans
   }, [data, walletOptimisticLoans])

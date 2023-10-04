@@ -17,7 +17,7 @@ import { useLoansOptimistic, useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeBorrowRefinanceAction } from '@banx/transactions/loans'
-import { calculateLoanRepayValue, calculateLoanValue, enqueueSnackbar } from '@banx/utils'
+import { calculateLoanRepayValue, enqueueSnackbar } from '@banx/utils'
 
 import { useLoansTransactions } from '../hooks'
 
@@ -67,8 +67,8 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView, disableAct
       .on('pfSuccessEach', (results) => {
         const { result, txnHash } = results[0]
         result?.offer && updateOptimisticOffers([result.offer])
-        if (result?.loan && result?.oldLoan) {
-          updateLoansOptimistic([result.oldLoan, result.loan], wallet.publicKey?.toBase58() || '')
+        if (result?.loan) {
+          updateLoansOptimistic([result.loan], wallet.publicKey?.toBase58() || '')
         }
         clearSelection()
         enqueueSnackbar({

@@ -11,7 +11,7 @@ import { Loan } from '@banx/api/core'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeClaimAction } from '@banx/transactions/loans'
-import { enqueueSnackbar, isLoanLiquidated } from '@banx/utils'
+import { enqueueSnackbar, isLoanActive, isLoanLiquidated } from '@banx/utils'
 
 import { useLenderLoansAndOffers } from './hooks'
 
@@ -90,10 +90,10 @@ type IsLoanAbleToClaim = (loan: Loan) => boolean
 export const isLoanAbleToClaim: IsLoanAbleToClaim = (loan) => {
   const { bondTradeTransactionState } = loan.bondTradeTransaction
 
-  const isLoanActive = bondTradeTransactionState === BondTradeTransactionV2State.PerpetualActive
+  const loanActive = isLoanActive(loan)
   const isLoanTerminating =
     bondTradeTransactionState === BondTradeTransactionV2State.PerpetualManualTerminating
-  const isLoanActiveOrTerminating = isLoanActive || isLoanTerminating
+  const isLoanActiveOrTerminating = loanActive || isLoanTerminating
   const isLoanExpired = isLoanLiquidated(loan)
 
   return !isLoanActiveOrTerminating || isLoanExpired

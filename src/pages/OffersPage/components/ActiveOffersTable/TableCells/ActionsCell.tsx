@@ -6,7 +6,12 @@ import { chain, isEmpty, maxBy, sortBy } from 'lodash'
 import { Button } from '@banx/components/Buttons'
 
 import { Loan } from '@banx/api/core'
-import { calculateLoanRepayValue, calculateLoanValue, isLoanLiquidated } from '@banx/utils'
+import {
+  calculateLoanRepayValue,
+  calculateLoanValue,
+  isLoanActive,
+  isLoanLiquidated,
+} from '@banx/utils'
 
 import { useLendLoansTransactions, useLenderLoansAndOffers } from '../hooks'
 
@@ -17,7 +22,6 @@ interface ActionsCellProps {
   isCardView: boolean
 }
 
-const isPerpetualActive = BondTradeTransactionV2State.PerpetualActive
 const isPerpetualTerminating = BondTradeTransactionV2State.PerpetualManualTerminating
 
 export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
@@ -54,12 +58,12 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
 
   const buttonSize = isCardView ? 'large' : 'small'
 
-  const isLoanActive = bondTradeTransactionState === isPerpetualActive
+  const loanActive = isLoanActive(loan)
   const isLoanTerminating = bondTradeTransactionState === isPerpetualTerminating
   const isLoanExpired = isLoanLiquidated(loan)
 
   const hasRefinanceOffers = !isEmpty(bestOffer)
-  const canRefinance = hasRefinanceOffers && isLoanActive
+  const canRefinance = hasRefinanceOffers && loanActive
 
   const showTerminateButton = (!canRefinance || isLoanTerminating) && !isLoanExpired
   const showInstantButton = canRefinance && !isLoanExpired

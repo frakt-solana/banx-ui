@@ -3,7 +3,12 @@ import { useMemo } from 'react'
 import { get, isFunction, sortBy } from 'lodash'
 
 import { Loan } from '@banx/api/core'
-import { LoanStatus, calculateLoanRepayValue, determineLoanStatus } from '@banx/utils'
+import {
+  LoanStatus,
+  calcLoanBorrowedAmount,
+  calculateLoanRepayValue,
+  determineLoanStatus,
+} from '@banx/utils'
 
 enum SortField {
   BORROWED = 'loanValue',
@@ -23,7 +28,7 @@ export const useSortedLoans = (loans: Loan[], sortOptionValue: string) => {
     const [name, order] = sortOptionValue.split('_')
 
     const sortValueMapping: Record<SortField, string | SortValueGetter> = {
-      [SortField.BORROWED]: 'fraktBond.borrowedAmount',
+      [SortField.BORROWED]: (loan) => calcLoanBorrowedAmount(loan),
       [SortField.DEBT]: (loan) => {
         return calculateLoanRepayValue(loan)
       },

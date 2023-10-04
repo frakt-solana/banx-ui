@@ -7,7 +7,7 @@ import { StatInfo } from '@banx/components/StatInfo'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import { calculateLoanRepayValue } from '@banx/utils'
+import { calcLoanBorrowedAmount, calculateLoanRepayValue } from '@banx/utils'
 
 import { useSelectedLoans } from '../../loansState'
 import { useLoansTransactions } from './hooks'
@@ -24,7 +24,7 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
   const { repayBulkLoan } = useLoansTransactions()
 
   const totalLoans = selection.length
-  const totalBorrowed = sumBy(selection, ({ fraktBond }) => fraktBond.borrowedAmount)
+  const totalBorrowed = sumBy(selection, (loan) => calcLoanBorrowedAmount(loan))
   const totalDebt = sumBy(selection, (loan) => calculateLoanRepayValue(loan))
 
   const selectAll = () => {
