@@ -36,8 +36,8 @@ export const VerificationInput: FC<VerificationInputProps> = ({
       await verifyCode({ code: verificationCode })
       setCurrentError(null)
       setVerificationCode('')
-    } catch (e) {
-      setCurrentError(e as Error)
+    } catch (error) {
+      setCurrentError(error as Error)
     }
   }
 
@@ -45,8 +45,8 @@ export const VerificationInput: FC<VerificationInputProps> = ({
     try {
       await resend()
       setCurrentError(null)
-    } catch (e) {
-      setCurrentError(e as Error)
+    } catch (error) {
+      setCurrentError(error as Error)
     }
   }
 
@@ -78,7 +78,7 @@ export const VerificationInput: FC<VerificationInputProps> = ({
         placeholder="Enter verification code"
         type="text"
         value={verificationCode}
-        onChange={(e) => setVerificationCode(e.target.value)}
+        onChange={(event) => setVerificationCode(event.target.value)}
         isError={!!currentError}
         onBlur={onBlur}
         onInvalid={onInvalid}
