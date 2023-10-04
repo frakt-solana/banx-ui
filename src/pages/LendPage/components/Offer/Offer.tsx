@@ -31,8 +31,8 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, isOwnOffer, bestOffer }) => {
 
   const listItemClassName = classNames(styles.listItem, {
     [styles.highlightBest]: isBestOffer,
-    [styles.highlightYourOffer]:
-      connected && (offer.publicKey === PUBKEY_PLACEHOLDER || offer.isEdit),
+    [styles.highlightEditing]: offer.isEdit,
+    [styles.highlightYour]: connected && offer.publicKey === PUBKEY_PLACEHOLDER,
   })
 
   const displayLoanValue = ((loanValue || 0) / 1e9)?.toFixed(2)

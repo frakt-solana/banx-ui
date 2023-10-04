@@ -7,14 +7,14 @@ import { Button } from '@banx/components/Buttons'
 import { StatInfo } from '@banx/components/StatInfo'
 import { useWalletModal } from '@banx/components/WalletModal'
 
+import { WEEKS_IN_YEAR } from '@banx/constants'
+
 import styles from './PlaceOfferTab.module.less'
 
 interface OfferSummaryProps {
   offerSize: number
   marketAPR: number
 }
-
-const WEEKS_IN_YEAR = 52
 
 export const OfferSummary: FC<OfferSummaryProps> = ({ offerSize, marketAPR }) => {
   const weeklyAprPercentage = marketAPR / 100 / WEEKS_IN_YEAR
@@ -23,7 +23,7 @@ export const OfferSummary: FC<OfferSummaryProps> = ({ offerSize, marketAPR }) =>
   return (
     <div className={styles.offerSummary}>
       <StatInfo label="Offer size" value={offerSize} flexType="row" />
-      <StatInfo label="Estimated interest" value={estimatedInterest} flexType="row" />
+      <StatInfo label="Weekly interest" value={estimatedInterest} flexType="row" />
     </div>
   )
 }

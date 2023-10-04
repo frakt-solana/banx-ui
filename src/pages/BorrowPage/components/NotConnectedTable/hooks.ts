@@ -42,7 +42,7 @@ export const useNotConnectedBorrow = () => {
       valueKey: 'marketPubkey',
       imageKey: 'collectionImage',
       secondLabel: {
-        key: 'offerTVL',
+        key: 'offerTvl',
         format: (value: number) => createSolValueJSX(value, 1e9),
       },
     },

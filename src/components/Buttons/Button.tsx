@@ -7,6 +7,7 @@ import { getSizeClassName } from './helpers'
 import styles from './Buttons.module.less'
 
 export interface ButtonProps {
+  id?: string
   className?: string
   disabled?: boolean
   onClick?: (args: MouseEvent<HTMLButtonElement>) => void
@@ -16,6 +17,7 @@ export interface ButtonProps {
 }
 
 export const Button: FC<PropsWithChildren<ButtonProps>> = ({
+  id,
   className,
   disabled = false,
   onClick,
@@ -33,7 +35,13 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({
   )
 
   return (
-    <button type="button" onClick={onClick} disabled={disabled} className={combinedClassName}>
+    <button
+      id={id}
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={combinedClassName}
+    >
       {children}
     </button>
   )

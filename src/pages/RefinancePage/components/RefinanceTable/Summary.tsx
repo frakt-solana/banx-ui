@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import React, { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
@@ -7,6 +7,7 @@ import moment from 'moment'
 
 import { Button } from '@banx/components/Buttons'
 import { createSolValueJSX } from '@banx/components/TableComponents'
+import { useWalletModal } from '@banx/components/WalletModal'
 
 import { Loan } from '@banx/api/core'
 import { defaultTxnErrorHandler } from '@banx/transactions'
@@ -32,6 +33,7 @@ export const Summary: FC<SummaryProps> = ({
   const wallet = useWallet()
   const { connection } = useConnection()
   const { addMints } = useAuctionsLoans()
+  const { toggleVisibility } = useWalletModal()
 
   const selectAllBtnText = !selectedLoans.length ? 'Select all' : 'Deselect all'
   const selectMobileBtnText = !selectedLoans.length
@@ -73,6 +75,15 @@ export const Summary: FC<SummaryProps> = ({
     !selectedLoans.length ? onSelectAllLoans() : onDeselectAllLoans()
   }
 
+  const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (wallet.connected) {
+      refinanceAll()
+    } else {
+      toggleVisibility()
+    }
+    event.stopPropagation()
+  }
+
   return (
     <div className={styles.summary}>
       <div className={styles.collaterals}>
@@ -99,7 +110,7 @@ export const Summary: FC<SummaryProps> = ({
           <span className={styles.selectButtonText}>{selectAllBtnText}</span>
           <span className={styles.selectButtonMobileText}>{selectMobileBtnText}</span>
         </Button>
-        <Button onClick={refinanceAll} disabled={!selectedLoans.length}>
+        <Button onClick={onClickHandler} disabled={!selectedLoans.length}>
           Refinance {createSolValueJSX(totalDebt, 1e9, '0◎')}
         </Button>
       </div>
