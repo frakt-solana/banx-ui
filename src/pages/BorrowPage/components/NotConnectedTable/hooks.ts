@@ -76,7 +76,7 @@ const useSortMarkets = (markets: MarketPreview[]) => {
     const [name, order] = sortOptionValue.split('_')
 
     const sortValueMapping: Record<SortField, string> = {
-      [SortField.LIQUIDITY]: 'offerTVL',
+      [SortField.LIQUIDITY]: 'offerTvl',
       [SortField.BORROW]: 'bestOffer',
       [SortField.FLOOR]: 'collectionFloor',
     }
