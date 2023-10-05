@@ -50,11 +50,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView, disableAct
 
   const offerToRefinance = useMemo(() => {
     const offersByMarket = offers[fraktBond.hadoMarket || '']
-    return chain(offersByMarket)
-      .sortBy(offersByMarket, 'fundsSolOrTokenBalance')
-      .reverse()
-      .value()
-      .at(0)
+    return chain(offersByMarket).sortBy(offersByMarket, 'currentSpotPrice').reverse().value().at(0)
   }, [offers, fraktBond])
 
   const refinance = () => {
