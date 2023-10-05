@@ -1,5 +1,5 @@
 .nftsSection,
-.additionalContentSection {
+.additionalSection {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -11,10 +11,8 @@
   }
 }
 
-.additionalContentSection.fixedHeight {
-  & > div {
-    flex-grow: unset;
-  }
+.additionalSection.fixedHeight > div {
+  flex-grow: unset;
 }
 
 .cardsList {
@@ -43,140 +41,4 @@
       min-width: 154px;
     }
   }
-}
-.availableToBorrow,
-.loansContainer {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-}
-
-.availableToBorrow {
-  @media (max-width: 640px) {
-    margin-bottom: 16px;
-  }
-
-  .stats {
-    display: flex;
-    align-items: center;
-    flex-grow: 1;
-    gap: 16px;
-    min-height: 148px;
-    margin: 12px 0 16px;
-    width: 100%;
-
-    & > div {
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
-      height: 64px;
-      width: 100%;
-    }
-
-    @media (max-width: 640px) {
-      margin: 8px 0 16px;
-      min-height: unset;
-
-      & > div {
-        height: unset;
-      }
-    }
-  }
-
-  .userNFTsValue {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-
-    color: var(--content-secondary);
-    font: var(--important-text-lg);
-
-    span {
-      font: var(--table-header-md);
-    }
-
-    @media (max-width: 640px) {
-      font: var(--important-text-md);
-    }
-  }
-
-  .button {
-    text-decoration: none;
-    width: 100%;
-  }
-}
-
-.loansContainer {
-  .loansContent {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    margin-bottom: 16px;
-    gap: 24px;
-    min-height: 136px;
-    height: 100%;
-    width: 100%;
-  }
-
-  .loansStatsContainer {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 8px;
-    height: 100%;
-    width: 100%;
-  }
-
-  .loansStats {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-
-    @media (max-width: 640px) {
-      margin-top: 8px;
-    }
-  }
-
-  .chartContainer {
-    @media (max-width: 640px) {
-      display: none;
-    }
-  }
-
-  .mobileChartContainer {
-    display: none;
-
-    @media (max-width: 640px) {
-      display: flex;
-      justify-content: center;
-    }
-  }
-
-  .loansChartStats {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-
-    & > div:nth-child(odd) {
-      background: var(--bg-primary-deep);
-    }
-  }
-
-  .manageLoansButton {
-    margin-bottom: 24px;
-    width: 100%;
-
-    @media (max-width: 640px) {
-      margin-bottom: 16px;
-    }
-  }
-
-  .doughnutChart {
-    width: 136px;
-    height: 136px;
-  }
-}
-
-.highlightLiquidation {
-  background: var(--additional-red-secondary) !important;
 }
