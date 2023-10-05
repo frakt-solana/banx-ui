@@ -58,13 +58,12 @@ export const Summary: FC<SummaryProps> = ({
     const auctionStartTime = moment.unix(refinanceAuctionStartedAt)
     const hoursSinceStart = currentTime.diff(auctionStartTime, 'hours')
 
-    const updatedAPR = amountOfBonds / 1e4 + hoursSinceStart
-
-    return convertAprToApy(updatedAPR)
+    const updatedAPR = amountOfBonds / 1e2 + hoursSinceStart
+    return updatedAPR
   })
 
-  const weightedApy = calcWeightedAverage(totalApy, totalLoanValue)
-  const colorApy = getColorByPercent(weightedApy, HealthColorDecreasing)
+  const weightedApr = calcWeightedAverage(totalApy, totalLoanValue)
+  const colorApr = getColorByPercent(weightedApr, HealthColorDecreasing)
 
   const refinanceAll = () => {
     const txnParams = selectedLoans.map((loan) => ({ loan }))
@@ -124,8 +123,8 @@ export const Summary: FC<SummaryProps> = ({
         </div>
         <div className={styles.stats}>
           <p>Weighted apy</p>
-          <p style={{ color: weightedApy ? colorApy : '' }} className={styles.aprValue}>
-            {createPercentValueJSX(weightedApy, '0%')}
+          <p style={{ color: weightedApr ? colorApr : '' }} className={styles.aprValue}>
+            {createPercentValueJSX(convertAprToApy(weightedApr / 1e2), '0%')}
           </p>
         </div>
       </div>
