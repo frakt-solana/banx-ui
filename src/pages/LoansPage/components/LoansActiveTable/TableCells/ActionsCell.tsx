@@ -1,7 +1,6 @@
 import { FC, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
@@ -17,7 +16,7 @@ import { useLoansOptimistic, useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeBorrowRefinanceAction } from '@banx/transactions/loans'
-import { calculateLoanRepayValue, enqueueSnackbar } from '@banx/utils'
+import { calculateLoanRepayValue, enqueueSnackbar, isLoanTerminating } from '@banx/utils'
 
 import { useLoansTransactions } from '../hooks'
 
@@ -44,9 +43,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView, disableAct
   const { update: updateLoansOptimistic } = useLoansOptimistic()
   const { clearSelection } = useSelectedLoans()
 
-  const isLoanTerminating =
-    loan.bondTradeTransaction.bondTradeTransactionState ===
-    BondTradeTransactionV2State.PerpetualManualTerminating
+  const isTerminatingStatus = isLoanTerminating(loan)
 
   const offerToRefinance = useMemo(() => {
     const offersByMarket = offers[fraktBond.hadoMarket || '']
@@ -94,7 +91,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView, disableAct
           event.stopPropagation()
         }}
       >
-        {isLoanTerminating ? 'Extend' : 'Reborrow'}
+        {isTerminatingStatus ? 'Extend' : 'Reborrow'}
       </Button>
       <Button
         size={isCardView ? 'large' : 'small'}

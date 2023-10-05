@@ -1,6 +1,5 @@
 import { FC, useMemo } from 'react'
 
-import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, isEmpty, maxBy, sortBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
@@ -11,6 +10,7 @@ import {
   calculateLoanValue,
   isLoanActive,
   isLoanLiquidated,
+  isLoanTerminating,
 } from '@banx/utils'
 
 import { useLendLoansTransactions, useLenderLoansAndOffers } from '../hooks'
@@ -22,11 +22,8 @@ interface ActionsCellProps {
   isCardView: boolean
 }
 
-const isPerpetualTerminating = BondTradeTransactionV2State.PerpetualManualTerminating
-
 export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
-  const { bondTradeTransaction, fraktBond } = loan
-  const { bondTradeTransactionState } = bondTradeTransaction
+  const { fraktBond } = loan
 
   const { offers, addMints, updateOrAddLoan, updateOrAddOffer, optimisticOffers } =
     useLenderLoansAndOffers()
@@ -59,13 +56,13 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
   const buttonSize = isCardView ? 'large' : 'small'
 
   const loanActive = isLoanActive(loan)
-  const isLoanTerminating = bondTradeTransactionState === isPerpetualTerminating
+  const isTerminatingStatus = isLoanTerminating(loan)
   const isLoanExpired = isLoanLiquidated(loan)
 
   const hasRefinanceOffers = !isEmpty(bestOffer)
   const canRefinance = hasRefinanceOffers && loanActive
 
-  const showTerminateButton = (!canRefinance || isLoanTerminating) && !isLoanExpired
+  const showTerminateButton = (!canRefinance || isTerminatingStatus) && !isLoanExpired
   const showInstantButton = canRefinance && !isLoanExpired
 
   return (
@@ -74,7 +71,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
         <Button
           className={styles.terminateButton}
           onClick={terminateLoan}
-          disabled={isLoanTerminating}
+          disabled={isTerminatingStatus}
           variant="secondary"
           size={buttonSize}
         >

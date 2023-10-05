@@ -1,7 +1,6 @@
 import { FC, useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
 import { filter, find, sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
@@ -11,7 +10,7 @@ import { Loan } from '@banx/api/core'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeClaimAction } from '@banx/transactions/loans'
-import { enqueueSnackbar, isLoanActive, isLoanLiquidated } from '@banx/utils'
+import { enqueueSnackbar, isLoanActive, isLoanLiquidated, isLoanTerminating } from '@banx/utils'
 
 import { useLenderLoansAndOffers } from './hooks'
 
@@ -88,12 +87,9 @@ export const showSummary: ShowSummary = (loans = []) => {
 
 type IsLoanAbleToClaim = (loan: Loan) => boolean
 export const isLoanAbleToClaim: IsLoanAbleToClaim = (loan) => {
-  const { bondTradeTransactionState } = loan.bondTradeTransaction
-
   const loanActive = isLoanActive(loan)
-  const isLoanTerminating =
-    bondTradeTransactionState === BondTradeTransactionV2State.PerpetualManualTerminating
-  const isLoanActiveOrTerminating = loanActive || isLoanTerminating
+  const isTerminatingStatus = isLoanTerminating(loan)
+  const isLoanActiveOrTerminating = loanActive || isTerminatingStatus
   const isLoanExpired = isLoanLiquidated(loan)
 
   return !isLoanActiveOrTerminating || isLoanExpired

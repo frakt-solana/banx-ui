@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
-import { BondTradeTransactionV2State, PairState } from 'fbonds-core/lib/fbond-protocol/types'
+import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, filter, groupBy, map } from 'lodash'
 import moment from 'moment'
 
@@ -17,7 +17,7 @@ import {
   useLoansOptimistic,
   useOffersOptimistic,
 } from '@banx/store'
-import { isLoanRepaid } from '@banx/utils'
+import { isLoanRepaid, isLoanTerminating } from '@banx/utils'
 
 import { SECONDS_IN_72_HOURS } from './constants'
 
@@ -93,11 +93,9 @@ export const useWalletLoansAndOffers = () => {
 
   const filteredLiquidatedLoans = useMemo(() => {
     return loans.filter((loan) => {
-      const { bondTradeTransaction, fraktBond } = loan
+      const { fraktBond } = loan
 
-      const isTerminatingStatus =
-        bondTradeTransaction.bondTradeTransactionState ===
-        BondTradeTransactionV2State.PerpetualManualTerminating
+      const isTerminatingStatus = isLoanTerminating(loan)
 
       if (isTerminatingStatus) {
         const currentTimeInSeconds = moment().unix()

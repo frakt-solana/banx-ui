@@ -84,3 +84,8 @@ export const isLoanRepaid = (loan: Loan) => {
   const status = determineLoanStatus(loan)
   return status === LoanStatus.Repaid
 }
+
+export const isLoanTerminating = (loan: Loan) => {
+  const status = determineLoanStatus(loan)
+  return status === LoanStatus.Terminating
+}
