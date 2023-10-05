@@ -9,7 +9,6 @@ export enum LoanStatus {
   Active = 'active',
   Refinanced = 'refinanced',
   Repaid = 'repaid',
-  // RefinanceRepaid = 'Refinance repaid',
   PartialRepaid = 'partial repaid',
   Liquidated = 'liquidated',
   Terminating = 'terminating',
@@ -17,9 +16,9 @@ export enum LoanStatus {
 
 export const STATUS_LOANS_MAP: Record<string, string> = {
   [BondTradeTransactionV2State.PerpetualActive]: LoanStatus.Active,
-  [BondTradeTransactionV2State.PerpetualRefinancedActive]: LoanStatus.Refinanced,
+  [BondTradeTransactionV2State.PerpetualRefinancedActive]: LoanStatus.Active,
   [BondTradeTransactionV2State.PerpetualRepaid]: LoanStatus.Repaid,
-  [BondTradeTransactionV2State.PerpetualRefinanceRepaid]: LoanStatus.Repaid,
+  [BondTradeTransactionV2State.PerpetualRefinanceRepaid]: LoanStatus.Refinanced,
   [BondTradeTransactionV2State.PerpetualPartialRepaid]: LoanStatus.PartialRepaid,
   [BondTradeTransactionV2State.PerpetualLiquidatedByClaim]: LoanStatus.Liquidated,
   [BondTradeTransactionV2State.PerpetualManualTerminating]: LoanStatus.Terminating,
@@ -85,8 +84,10 @@ export const isLoanActive = (loan: Loan) => {
 }
 
 export const isLoanActiveOrRefinanced = (loan: Loan) => {
-  const status = determineLoanStatus(loan)
-  return status === LoanStatus.Active || status === LoanStatus.Refinanced
+  //? Add RefinancedActive in future
+  return isLoanActive(loan)
+  // const status = determineLoanStatus(loan)
+  // return status === LoanStatus.Active || status === LoanStatus.Refinanced
 }
 
 export const isLoanRepaid = (loan: Loan) => {
