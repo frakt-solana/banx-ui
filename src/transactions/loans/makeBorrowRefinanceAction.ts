@@ -46,6 +46,7 @@ export const makeBorrowRefinanceAction: MakeBorrowRefinanceAction = async (
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
       previousBondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
       bondOffer: new web3.PublicKey(offer.publicKey),
+      previousLender: new web3.PublicKey(bondTradeTransaction.user),
     },
     optimistic: {
       oldBondTradeTransaction: loan.bondTradeTransaction as BondTradeTransactionV2,
