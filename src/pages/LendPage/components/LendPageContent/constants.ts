@@ -1,4 +1,4 @@
-export const DEFAULT_SORT_OPTION = { label: 'Loans Tvl', value: 'loansTvl_desc' }
+export const DEFAULT_SORT_OPTION = { label: 'Loans TVL', value: 'loansTvl_desc' }
 
 export const SORT_OPTIONS = [
   { label: 'Offer TVL', value: 'offerTvl' },
