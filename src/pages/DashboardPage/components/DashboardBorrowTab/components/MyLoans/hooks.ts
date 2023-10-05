@@ -16,7 +16,7 @@ import {
 
 import styles from './MyLoans.module.less'
 
-export const useMyLoans = (stats?: TotalBorrowerStats) => {
+export const useMyLoans = (stats?: TotalBorrowerStats | null) => {
   const navigate = useNavigate()
 
   const { activeLoansCount = 0, terminatingLoansCount = 0, liquidationLoansCount = 0 } = stats || {}

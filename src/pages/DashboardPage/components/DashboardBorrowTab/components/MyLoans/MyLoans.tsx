@@ -16,7 +16,7 @@ interface MyLoansProps {
 }
 
 const MyLoans: FC<MyLoansProps> = ({ stats }) => {
-  const { loansData, chartData, buttonProps } = useMyLoans()
+  const { loansData, chartData, buttonProps } = useMyLoans(stats)
 
   const { totalBorrowed = 0, totalDebt = 0 } = stats || {}
 
