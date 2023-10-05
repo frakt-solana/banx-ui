@@ -2,7 +2,7 @@ import { SortOption } from '@banx/components/SortDropdown'
 
 export const DEFAULT_SORT_OPTION: SortOption = {
   label: 'Loan status',
-  value: 'status_asc',
+  value: 'status_desc',
 }
 
 export const EMPTY_MESSAGE = 'Borrow SOL against your NFTs'
