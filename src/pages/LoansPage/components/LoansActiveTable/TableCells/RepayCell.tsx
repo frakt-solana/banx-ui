@@ -8,7 +8,7 @@ import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan } from '@banx/api/core'
 import { useModal } from '@banx/store'
-import { calculateLoanRepayValue } from '@banx/utils'
+import { calculateLoanRepayValue, useSolanaBalance } from '@banx/utils'
 
 import { useLoansTransactions } from '../hooks'
 
@@ -22,21 +22,25 @@ interface RepayCellProps {
 
 export const RepayCell: FC<RepayCellProps> = ({ loan, isCardView, disabled }) => {
   const { open } = useModal()
+  const solanaBalance = useSolanaBalance()
 
   const openModal = () => {
     open(RepayModal, { loan })
   }
 
+  const repayValueInSol = calculateLoanRepayValue(loan) / 1e9
+  const notEnoughSol = repayValueInSol > solanaBalance
+
   return (
     <Button
       size={isCardView ? 'large' : 'small'}
-      disabled={disabled}
+      disabled={disabled || notEnoughSol}
       onClick={(event) => {
         openModal()
         event.stopPropagation()
       }}
     >
-      Repay
+      {notEnoughSol ? 'No SOL' : 'Repay'}
     </Button>
   )
 }

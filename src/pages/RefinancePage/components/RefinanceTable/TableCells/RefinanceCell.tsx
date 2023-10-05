@@ -12,7 +12,7 @@ import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeRefinanceAction } from '@banx/transactions/loans'
-import { enqueueSnackbar } from '@banx/utils'
+import { calculateLoanRepayValue, enqueueSnackbar, useSolanaBalance } from '@banx/utils'
 
 import { useLoansState } from '../hooks'
 
@@ -26,9 +26,13 @@ interface RefinanceCellProps {
 export const RefinanceCell: FC<RefinanceCellProps> = ({ loan, isCardView }) => {
   const { connected } = useWallet()
   const { toggleVisibility } = useWalletModal()
+  const solanaBalance = useSolanaBalance()
 
   const refinance = useRefinanceTransaction(loan)
   const buttonSize = isCardView ? 'large' : 'small'
+
+  const repayValueInSol = calculateLoanRepayValue(loan) / 1e9
+  const notEnoughSol = repayValueInSol > solanaBalance
 
   const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (connected) {
@@ -41,8 +45,8 @@ export const RefinanceCell: FC<RefinanceCellProps> = ({ loan, isCardView }) => {
 
   return (
     <div className={classNames(styles.refinanceCell, { [styles.cardView]: isCardView })}>
-      <Button onClick={onClickHandler} size={buttonSize}>
-        Refinance
+      <Button onClick={onClickHandler} size={buttonSize} disabled={notEnoughSol}>
+        {notEnoughSol ? 'No SOL' : 'Refinance'}
       </Button>
       <SolanaFMLink
         className={classNames(styles.solanaNftButton, { [styles.isCardView]: isCardView })}
