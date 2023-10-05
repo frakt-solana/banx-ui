@@ -27,7 +27,7 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, isOwnOffer, bestOffer }) => {
 
   const { loanValue, loansAmount } = offer
 
-  const displayLoansAmount = isInteger(loansAmount) ? loansAmount : loansAmount?.toFixed(2)
+  const displayLoansAmount = formatLoansAmount(loansAmount)
 
   const listItemClassName = classNames(styles.listItem, {
     [styles.highlightBest]: isBestOffer,
@@ -59,3 +59,15 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, isOwnOffer, bestOffer }) => {
 }
 
 export default Offer
+
+export const formatLoansAmount = (loansAmount = 0) => {
+  if (loansAmount < 1) {
+    return '1'
+  }
+
+  if (isInteger(loansAmount)) {
+    return String(loansAmount)
+  }
+
+  return loansAmount.toFixed(2)
+}
