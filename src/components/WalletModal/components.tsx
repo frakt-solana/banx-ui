@@ -2,6 +2,7 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
+import { useDiscordUser } from '@banx/hooks'
 import { ChangeWallet, Copy, FRKT, SignOut } from '@banx/icons'
 import { useIsLedger } from '@banx/store'
 import { copyToClipboard, shortenAddress, useSolanaBalance } from '@banx/utils'
@@ -32,12 +33,13 @@ const BalanceInfo: FC<{ label: string; value: string; icon?: FC }> = ({
 const UserGeneralInfo = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
+  const { data: discordUserData } = useDiscordUser()
 
   const { isLedger, setIsLedger } = useIsLedger()
 
   return (
     <div className={styles.userGeneralInfoContainer}>
-      <UserAvatar className={styles.avatar} />
+      <UserAvatar className={styles.avatar} imageUrl={discordUserData?.avatarUrl ?? undefined} />
       <div className={styles.userGeneralInfo}>
         <div className={styles.userAddressSection} onClick={() => copyToClipboard(publicKeyString)}>
           <p className={styles.addressText}>{shortenAddress(publicKeyString)}</p>
