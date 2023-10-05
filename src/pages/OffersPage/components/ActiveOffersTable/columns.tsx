@@ -27,7 +27,7 @@ export const getTableColumns = ({ isCardView }: GetTableColumns) => {
     },
     {
       key: 'interest',
-      title: <HeaderCell label="CRT. Interest" tooltipText="CRT. Interest" />,
+      title: <HeaderCell label="Interest" tooltipText="Interest" />,
       render: (_, loan) => <InterestCell loan={loan} />,
     },
     {
