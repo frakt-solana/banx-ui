@@ -14,14 +14,14 @@ interface InterestCellProps {
 export const InterestCell: FC<InterestCellProps> = ({ loan }) => {
   const { solAmount, feeAmount, amountOfBonds, soldAt } = loan.bondTradeTransaction || {}
 
-  const loanValue = solAmount + feeAmount
+  const loanValueWithFee = solAmount + feeAmount
 
   const calculatedInterest = calculateCurrentInterestSolPure({
-    loanValue,
+    loanValue: loanValueWithFee,
     startTime: soldAt,
     currentTime: moment().unix(),
     rateBasePoints: amountOfBonds,
   })
 
-  return createSolValueJSX(calculatedInterest + feeAmount, 1e9)
+  return createSolValueJSX(calculatedInterest + loanValueWithFee, 1e9)
 }
