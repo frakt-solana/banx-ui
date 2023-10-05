@@ -16,7 +16,7 @@ import {
   useOffersOptimistic,
 } from '@banx/store'
 import { convertLoanToBorrowNft } from '@banx/transactions'
-import { calcLoanValueWithProtocolFee, isLoanActive, isLoanRepaid } from '@banx/utils'
+import { calcLoanValueWithProtocolFee, isLoanActiveOrRefinanced, isLoanRepaid } from '@banx/utils'
 
 import { useCartState } from './cartState'
 import { SimpleOffer, SimpleOffersByMarket } from './types'
@@ -129,7 +129,7 @@ export const useBorrowNfts = () => {
   }, [optimisticLoans, walletPublicKey])
 
   const optimisticLoansActive = useMemo(() => {
-    return walletOptimisticLoans.filter(({ loan }) => isLoanActive(loan))
+    return walletOptimisticLoans.filter(({ loan }) => isLoanActiveOrRefinanced(loan))
   }, [walletOptimisticLoans])
 
   const optimisticLoansRepaid = useMemo(() => {

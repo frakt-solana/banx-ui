@@ -8,7 +8,7 @@ import { Loan } from '@banx/api/core'
 import {
   calculateLoanRepayValue,
   calculateLoanValue,
-  isLoanActive,
+  isLoanActiveOrRefinanced,
   isLoanLiquidated,
   isLoanTerminating,
 } from '@banx/utils'
@@ -55,12 +55,12 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
 
   const buttonSize = isCardView ? 'large' : 'small'
 
-  const loanActive = isLoanActive(loan)
+  const loanActiveOrRefinanced = isLoanActiveOrRefinanced(loan)
   const isTerminatingStatus = isLoanTerminating(loan)
   const isLoanExpired = isLoanLiquidated(loan)
 
   const hasRefinanceOffers = !isEmpty(bestOffer)
-  const canRefinance = hasRefinanceOffers && loanActive
+  const canRefinance = hasRefinanceOffers && loanActiveOrRefinanced
 
   const showTerminateButton = (!canRefinance || isTerminatingStatus) && !isLoanExpired
   const showInstantButton = canRefinance && !isLoanExpired
