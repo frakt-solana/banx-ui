@@ -1,5 +1,6 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 
+import { useDiscordUser } from '@banx/hooks'
 import { ChevronDown, Wallet } from '@banx/icons'
 import { shortenAddress } from '@banx/utils'
 
@@ -12,10 +13,14 @@ import styles from './Buttons.module.less'
 export const WalletConnectButton = () => {
   const { toggleVisibility } = useWalletModal()
   const { publicKey, connected } = useWallet()
+  const { data: discordUserData } = useDiscordUser()
 
   const ConnectedContent = () => (
     <>
-      <UserAvatar className={styles.avatarIcon} />
+      <UserAvatar
+        className={styles.avatarIcon}
+        imageUrl={discordUserData?.avatarUrl ?? undefined}
+      />
       <span>{shortenAddress(publicKey?.toBase58() || '')}</span>
       <ChevronDown />
     </>

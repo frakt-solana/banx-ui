@@ -44,7 +44,7 @@ export const APRCell: FC<APRCellProps> = ({ loan }) => {
   const colorAPR = getColorByPercent(currentAPR, HealthColorDecreasing)
 
   return (
-    <span style={{ color: colorAPR }} className={styles.aprCellValue}>
+    <span style={{ color: colorAPR }} className={styles.aprValue}>
       {convertAprToApy(currentAPR / 100)}%
     </span>
   )

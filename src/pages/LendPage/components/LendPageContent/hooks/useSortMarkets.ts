@@ -9,8 +9,8 @@ import { MarketPreview } from '@banx/api/core'
 import { DEFAULT_SORT_OPTION, SORT_OPTIONS } from '../constants'
 
 enum SortField {
-  OFFER_TVL = 'offerTVL',
-  LOANS_TVL = 'loansTVL',
+  OFFER_TVL = 'offerTvl',
+  LOANS_TVL = 'loansTvl',
   ACTIVE_LOANS = 'activeLoans',
   APY = 'apy',
 }
@@ -28,10 +28,10 @@ export const useSortMarkets = (markets: MarketPreview[]) => {
     const [name, order] = sortOptionValue.split('_')
 
     const sortValueMapping: Record<SortField, string> = {
-      [SortField.OFFER_TVL]: 'offerTVL',
-      [SortField.LOANS_TVL]: 'loansTVL',
+      [SortField.OFFER_TVL]: 'offerTvl',
+      [SortField.LOANS_TVL]: 'loansTvl',
       [SortField.ACTIVE_LOANS]: 'activeBondsAmount',
-      [SortField.APY]: 'apy',
+      [SortField.APY]: 'marketApr',
     }
 
     const sorted = sortBy(markets, (loan) => {

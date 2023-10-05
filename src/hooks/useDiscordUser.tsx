@@ -7,18 +7,18 @@ import { web3 } from 'fbonds-core'
 import { fetchDiscordUser, removeDiscordUser } from '@banx/api/user'
 
 export const useDiscordUser = () => {
-  const { connected, publicKey } = useWallet()
+  const { publicKey } = useWallet()
 
   const {
     isLoading,
     data,
     refetch: refetchUserInfo,
   } = useQuery(
-    ['discordUser'],
+    ['discordUser', publicKey?.toBase58()],
     () => fetchDiscordUser({ publicKey: publicKey as web3.PublicKey }),
     {
-      enabled: connected,
-      staleTime: 5000,
+      enabled: !!publicKey,
+      staleTime: 60 * 1000,
     },
   )
 
