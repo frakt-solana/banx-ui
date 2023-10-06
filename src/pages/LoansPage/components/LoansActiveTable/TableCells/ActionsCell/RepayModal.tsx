@@ -10,42 +10,15 @@ import { Loan } from '@banx/api/core'
 import { useModal } from '@banx/store'
 import { calculateLoanRepayValue } from '@banx/utils'
 
-import { useLoansTransactions } from '../hooks'
+import { useLoansTransactions } from '../../hooks'
 
-import styles from '../LoansActiveTable.module.less'
-
-interface RepayCellProps {
-  loan: Loan
-  isCardView: boolean
-  disabled: boolean
-}
-
-export const RepayCell: FC<RepayCellProps> = ({ loan, isCardView, disabled }) => {
-  const { open } = useModal()
-
-  const openModal = () => {
-    open(RepayModal, { loan })
-  }
-
-  return (
-    <Button
-      size={isCardView ? 'large' : 'small'}
-      disabled={disabled}
-      onClick={(event) => {
-        openModal()
-        event.stopPropagation()
-      }}
-    >
-      Repay
-    </Button>
-  )
-}
+import styles from './ActionsCell.module.less'
 
 interface RepayModalProps {
   loan: Loan
 }
 
-const RepayModal: FC<RepayModalProps> = ({ loan }) => {
+export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
   const { close } = useModal()
 
   const { repayLoan, repayPartialLoan } = useLoansTransactions()
@@ -83,14 +56,14 @@ const RepayModal: FC<RepayModalProps> = ({ loan }) => {
         label="Debt:"
         value={initialRepayValue}
         divider={1e9}
-        classNamesProps={{ container: styles.mainRepayInfo }}
+        classNamesProps={{ container: styles.repayModalInfo }}
       />
       <Slider value={partialPercent} onChange={onPartialPercentChange} />
-      <div className={styles.additionalRepayInfo}>
+      <div className={styles.repayModalAdditionalInfo}>
         <StatInfo flexType="row" label="Repay value" value={paybackValue} divider={1e9} />
         <StatInfo flexType="row" label="Remaining debt" value={remainingValue} divider={1e9} />
       </div>
-      <Button className={styles.repayButton} onClick={onSubmit} disabled={!partialPercent}>
+      <Button className={styles.repayModalButton} onClick={onSubmit} disabled={!partialPercent}>
         Repay {createSolValueJSX(paybackValue, 1e9, '0◎')}
       </Button>
     </Modal>

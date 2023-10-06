@@ -9,8 +9,9 @@ import {
 } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
+import { calcLoanBorrowedAmount } from '@banx/utils'
 
-import { DebtCell, HealthCell, RepayCell, StatusCell } from './TableCells'
+import { ActionsCell, DebtCell, HealthCell, StatusCell } from './TableCells'
 
 import styles from './LoansActiveTable.module.less'
 
@@ -50,7 +51,7 @@ export const getTableColumns = ({
     {
       key: 'loanValue',
       title: <HeaderCell label="Borrowed" />,
-      render: (_, { fraktBond }) => createSolValueJSX(fraktBond.borrowedAmount, 1e9),
+      render: (_, loan) => createSolValueJSX(calcLoanBorrowedAmount(loan), 1e9),
       sorter: true,
     },
     {
@@ -74,10 +75,10 @@ export const getTableColumns = ({
     {
       title: <HeaderCell label="" />,
       render: (_, loan) => (
-        <RepayCell
+        <ActionsCell
           loan={loan}
           isCardView={isCardView}
-          disabled={!!findLoanInSelection(loan.publicKey)}
+          disableActions={!!findLoanInSelection(loan.publicKey)}
         />
       ),
     },
