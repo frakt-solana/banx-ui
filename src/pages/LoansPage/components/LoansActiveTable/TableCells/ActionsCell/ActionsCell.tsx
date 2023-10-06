@@ -1,0 +1,63 @@
+import { FC, useMemo } from 'react'
+
+import { chain } from 'lodash'
+
+import { Button } from '@banx/components/Buttons'
+
+import { Loan } from '@banx/api/core'
+import { useWalletLoansAndOffers } from '@banx/pages/LoansPage/hooks'
+import { useModal } from '@banx/store'
+import { isLoanTerminating } from '@banx/utils'
+
+import { RefinanceModal } from './RefinanceModal'
+import { RepayModal } from './RepayModal'
+
+import styles from './ActionsCell.module.less'
+
+interface ActionsCellProps {
+  loan: Loan
+  isCardView: boolean
+  disableActions: boolean
+}
+
+export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView, disableActions }) => {
+  const { fraktBond } = loan
+
+  const { open } = useModal()
+
+  const { offers } = useWalletLoansAndOffers()
+
+  const isTerminatingStatus = isLoanTerminating(loan)
+
+  const offerToRefinance = useMemo(() => {
+    const offersByMarket = offers[fraktBond.hadoMarket || '']
+    return chain(offersByMarket).sortBy(offersByMarket, 'currentSpotPrice').reverse().value().at(0)
+  }, [offers, fraktBond])
+
+  return (
+    <div className={styles.actionsButtons}>
+      <Button
+        className={styles.refinanceBtn}
+        size={isCardView ? 'large' : 'small'}
+        variant="secondary"
+        disabled={disableActions || !offerToRefinance}
+        onClick={(event) => {
+          open(RefinanceModal, { loan, offer: offerToRefinance })
+          event.stopPropagation()
+        }}
+      >
+        {isTerminatingStatus ? 'Extend' : 'Reborrow'}
+      </Button>
+      <Button
+        size={isCardView ? 'large' : 'small'}
+        disabled={disableActions}
+        onClick={(event) => {
+          open(RepayModal, { loan })
+          event.stopPropagation()
+        }}
+      >
+        Repay
+      </Button>
+    </div>
+  )
+}
