@@ -22,6 +22,7 @@ import {
 } from '@banx/utils'
 
 import { useAuctionsLoans } from '../../hooks'
+import { calcWeeklyInterestFee } from './columns'
 
 import styles from './RefinanceTable.module.less'
 
@@ -46,9 +47,9 @@ export const Summary: FC<SummaryProps> = ({
     ? `Select all`
     : `Deselect ${selectedLoans.length}`
 
-  const totalFloor = sumBy(selectedLoans, ({ nft }) => nft.collectionFloor)
   const totalDebt = sumBy(selectedLoans, (loan) => calculateLoanRepayValue(loan))
   const totalLoanValue = map(selectedLoans, (loan) => loan.fraktBond.borrowedAmount)
+  const totalWeeklyInterest = sumBy(selectedLoans, (loan) => calcWeeklyInterestFee(loan))
 
   const totalApy = map(selectedLoans, (loan) => {
     const { refinanceAuctionStartedAt } = loan.fraktBond
@@ -114,12 +115,12 @@ export const Summary: FC<SummaryProps> = ({
       </div>
       <div className={styles.statsContainer}>
         <div className={styles.stats}>
-          <p>Total floor</p>
-          <p>{createSolValueJSX(totalFloor, 1e9, '0◎')}</p>
-        </div>
-        <div className={styles.stats}>
           <p>Total debt</p>
           <p>{createSolValueJSX(totalDebt, 1e9, '0◎')}</p>
+        </div>
+        <div className={styles.stats}>
+          <p>Total weekly interest</p>
+          <p>{createSolValueJSX(totalWeeklyInterest, 1, '0◎')}</p>
         </div>
         <div className={styles.stats}>
           <p>Weighted apy</p>

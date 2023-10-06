@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { isInteger } from 'lodash'
 
-import { formatLoansAmount } from '../../Offer'
+import { formatLoansAmount } from '@banx/utils'
 
 export const useOfferFormController = (editLoanValue = 0, editLoansAmount = 0) => {
   const initialLoanValue = editLoanValue ? editLoanValue.toFixed(2) : '0'

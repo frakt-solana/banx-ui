@@ -5,6 +5,8 @@ import moment from 'moment'
 import { Loan } from '@banx/api/core'
 import { HealthColorDecreasing, convertAprToApy, getColorByPercent } from '@banx/utils'
 
+import { INCREASE_PERCENT_APR_PER_HOUR } from '../constants'
+
 import styles from '../RefinanceTable.module.less'
 
 interface APRCellProps {
@@ -45,7 +47,7 @@ export const APRCell: FC<APRCellProps> = ({ loan }) => {
 
   return (
     <span style={{ color: colorAPR }} className={styles.aprValue}>
-      {convertAprToApy(currentAPR / 100)}%
+      {convertAprToApy(currentAPR / 100)}% (+{INCREASE_PERCENT_APR_PER_HOUR}%)
     </span>
   )
 }

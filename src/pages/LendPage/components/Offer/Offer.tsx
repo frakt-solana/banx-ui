@@ -3,12 +3,12 @@ import { FC } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
-import { isInteger } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 
 import { Pencil } from '@banx/icons'
 import { SyntheticOffer } from '@banx/store'
+import { formatLoansAmount } from '@banx/utils'
 
 import styles from './Offer.module.less'
 
@@ -59,15 +59,3 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, isOwnOffer, bestOffer }) => {
 }
 
 export default Offer
-
-export const formatLoansAmount = (loansAmount = 0) => {
-  if (loansAmount < 1) {
-    return '1'
-  }
-
-  if (isInteger(loansAmount)) {
-    return String(loansAmount)
-  }
-
-  return loansAmount.toFixed(2)
-}

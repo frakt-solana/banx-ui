@@ -9,9 +9,11 @@ import {
 import Timer from '@banx/components/Timer/Timer'
 
 import { Loan } from '@banx/api/core'
+import { WEEKS_IN_YEAR } from '@banx/constants'
+import { calculateLoanRepayValue } from '@banx/utils'
 
 import { APRCell, APRIncreaseCell, DebtCell, RefinanceCell } from './TableCells'
-import { INCREASE_PERCENT_APR_PER_HOUR, SECONDS_IN_72_HOURS } from './constants'
+import { SECONDS_IN_72_HOURS } from './constants'
 
 interface GetTableColumnsProps {
   onSelectLoan: (loan: Loan) => void
@@ -48,18 +50,19 @@ export const getTableColumns = ({
       render: (_, loan) => <DebtCell loan={loan} />,
     },
     {
+      key: 'interest',
+      title: <HeaderCell label="Weekly interest" />,
+      render: (_, loan) => createSolValueJSX(calcWeeklyInterestFee(loan)),
+    },
+    {
       key: 'apy',
       title: <HeaderCell label="APY" />,
       render: (_, loan) => <APRCell loan={loan} />,
     },
-    {
-      key: 'aprIncrease',
-      title: <HeaderCell label="APR increase" />,
-      render: () => <span>+{INCREASE_PERCENT_APR_PER_HOUR} %</span>,
-    },
+
     {
       key: 'nextAprIncrease',
-      title: <HeaderCell label="Next APR increase" />,
+      title: <HeaderCell label="Next APY increase" />,
       render: (_, loan) => <APRIncreaseCell loan={loan} />,
     },
     {
@@ -77,4 +80,15 @@ export const getTableColumns = ({
   ]
 
   return columns.map((column) => createColumn(column))
+}
+
+type CalcWeeklyInterestFee = (Loan: Loan) => number
+export const calcWeeklyInterestFee: CalcWeeklyInterestFee = (loan) => {
+  const apr = loan.bondTradeTransaction.amountOfBonds
+  const repayValue = calculateLoanRepayValue(loan)
+
+  const weeklyAprPercentage = apr / 1e4 / WEEKS_IN_YEAR
+  const weeklyFee = (weeklyAprPercentage * repayValue) / 1e9
+
+  return weeklyFee
 }
