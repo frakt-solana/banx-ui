@@ -1,11 +1,14 @@
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
+import Header from './components/Header'
+
 import styles from './LeaderboardPage.module.less'
 
 export enum LeaderboardTabName {
   REWARDS = 'rewards',
   LEADERBOARD = 'leaderboard',
   EARN = 'earn',
+  BAND_REWARDS = 'banxRewards',
 }
 
 export const LeaderboardPage = () => {
@@ -16,6 +19,7 @@ export const LeaderboardPage = () => {
 
   return (
     <div className={styles.pageWrapper}>
+      <Header />
       <Tabs value={currentTabValue} {...tabsProps} />
       {currentTabValue === LeaderboardTabName.REWARDS && <></>}
       {currentTabValue === LeaderboardTabName.LEADERBOARD && <></>}
@@ -39,6 +43,6 @@ export const LEADERBOARD_TABS: Tab[] = [
   },
   {
     label: 'Banx rewards',
-    value: LeaderboardTabName.EARN,
+    value: LeaderboardTabName.BAND_REWARDS,
   },
 ]
