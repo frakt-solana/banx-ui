@@ -83,7 +83,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
   const currentLoanDebt = calculateLoanRepayValue(loan)
 
   const newLoanBorrowedAmount = offer?.currentSpotPrice || 0
-  const newtLoanDailyFee = calculateCurrentInterestSolPure({
+  const newLoanDailyFee = calculateCurrentInterestSolPure({
     loanValue: offer?.currentSpotPrice || 0,
     startTime: moment().unix(),
     currentTime: moment().unix() + 24 * SECONDS_IN_HOUR,
@@ -106,7 +106,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
       <LoanInfo
         title="New loan"
         borrowedAmount={newLoanBorrowedAmount}
-        dailyFee={newtLoanDailyFee}
+        dailyFee={newLoanDailyFee}
         debt={newLoanDebt}
         className={styles.newLoanInfo}
       />
