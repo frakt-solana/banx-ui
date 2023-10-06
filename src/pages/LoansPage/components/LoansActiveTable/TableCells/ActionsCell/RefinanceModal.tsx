@@ -14,7 +14,12 @@ import { useLoansOptimistic, useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeBorrowRefinanceAction } from '@banx/transactions/loans'
-import { enqueueSnackbar, isLoanTerminating } from '@banx/utils'
+import {
+  calcLoanBorrowedAmount,
+  calcLoanValueWithProtocolFee,
+  enqueueSnackbar,
+  isLoanTerminating,
+} from '@banx/utils'
 
 import styles from './ActionsCell.module.less'
 
@@ -65,25 +70,35 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
 
   const isTerminatingStatus = isLoanTerminating(loan)
 
+  const currentLoanBorrowedAmount = calcLoanBorrowedAmount(loan)
+  const currentLoanDailyFee = 0.18 * 1e9 //TODO Calc
+  const currentLoanDebt = 14.91 * 1e9 //TODO Calc
+
+  const newLoanBorrowedAmount = calcLoanValueWithProtocolFee(offer?.currentSpotPrice ?? 0)
+  const newtLoanDailyFee = 0.18 * 1e9 //TODO Calc
+  const newLoanDebt = 14.91 * 1e9 //TODO Calc
+
+  const differenceToPay = -0.13 * 1e9 //TODO Calc
+
   return (
     <Modal open onCancel={close}>
       <LoanInfo
         title="Current loan"
-        borrowedAmount={13.65 * 1e9}
-        dailyFee={0.18 * 1e9}
-        debt={14.91 * 1e9}
+        borrowedAmount={currentLoanBorrowedAmount}
+        dailyFee={currentLoanDailyFee}
+        debt={currentLoanDebt}
         faded
         className={styles.currentLoanInfo}
       />
       <LoanInfo
         title="New loan"
-        borrowedAmount={13.65 * 1e9}
-        dailyFee={0.18 * 1e9}
-        debt={14.91 * 1e9}
+        borrowedAmount={newLoanBorrowedAmount}
+        dailyFee={newtLoanDailyFee}
+        debt={newLoanDebt}
         className={styles.newLoanInfo}
       />
 
-      <LoanDifference difference={0.13 * 1e9} className={styles.difference} />
+      <LoanDifference difference={differenceToPay} className={styles.difference} />
 
       <Button className={styles.refinanceModalButton} onClick={refinance} disabled={!offer}>
         {isTerminatingStatus ? 'Extend' : 'Reborrow'}
