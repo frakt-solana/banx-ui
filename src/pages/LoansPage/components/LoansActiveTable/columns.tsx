@@ -62,13 +62,23 @@ export const getTableColumns = ({
     },
     {
       key: 'health',
-      title: <HeaderCell label="Est. Health" tooltipText="Health = 1 - (debt / floor)" />,
+      title: (
+        <HeaderCell
+          label="Est. Health"
+          tooltipText="Estimated  health of loans using a formula: 1 - (debt / floor)"
+        />
+      ),
       render: (_, loan) => <HealthCell loan={loan} />,
       sorter: true,
     },
     {
       key: 'status',
-      title: <HeaderCell label="Loan status" />,
+      title: (
+        <HeaderCell
+          label="Loan status"
+          tooltipText="Current status and remaining duration of a loan"
+        />
+      ),
       render: (_, loan) => <StatusCell loan={loan} isCardView={isCardView} />,
       sorter: true,
     },

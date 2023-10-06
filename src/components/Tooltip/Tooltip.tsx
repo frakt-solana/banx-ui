@@ -6,11 +6,7 @@ import { Tooltip as AntdTooltip, TooltipProps as AntdTooltipProps } from 'antd'
 import styles from './Tooltip.module.less'
 
 const Tooltip: FC<PropsWithChildren<AntdTooltipProps>> = ({ children, ...props }) => (
-  <AntdTooltip
-    {...props}
-    arrowContent={null}
-    getTooltipContainer={(triggerNode) => (triggerNode as HTMLElement).parentNode as HTMLElement}
-  >
+  <AntdTooltip {...props} arrowContent={null} placement="bottom">
     {children || <InfoCircleOutlined className={styles.icon} />}
   </AntdTooltip>
 )
