@@ -1,5 +1,4 @@
 import { ColumnsType } from 'antd/es/table'
-import { isInteger } from 'lodash'
 
 import {
   HeaderCell,
@@ -7,6 +6,8 @@ import {
   createColumn,
   createSolValueJSX,
 } from '@banx/components/TableComponents'
+
+import { formatLoansAmount } from '@banx/utils'
 
 import { APRCell, ActionsCell, InterestCell } from './TableCells'
 import { TableUserOfferData } from './helpers'
@@ -28,9 +29,7 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
     {
       key: 'loans',
       title: <HeaderCell label="Loans" />,
-      render: (_, { loansAmount }) => (
-        <span>{isInteger(loansAmount) ? loansAmount : loansAmount?.toFixed(2)}</span>
-      ),
+      render: (_, { loansAmount }) => <>{formatLoansAmount(loansAmount)}</>,
     },
     {
       key: 'size',

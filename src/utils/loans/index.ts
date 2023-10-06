@@ -1,5 +1,6 @@
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
+import { isInteger } from 'lodash'
 import moment from 'moment'
 
 import { Loan } from '@banx/api/core'
@@ -66,4 +67,16 @@ export const calculateLoanRepayValue = (loan: Loan) => {
   })
 
   return loanValueWithFee + calculatedInterest
+}
+
+export const formatLoansAmount = (loansAmount = 0) => {
+  if (loansAmount < 1) {
+    return '1'
+  }
+
+  if (isInteger(loansAmount)) {
+    return String(loansAmount)
+  }
+
+  return loansAmount.toFixed(2)
 }
