@@ -24,33 +24,53 @@ const useHiddenNftsMints = create<HiddenNftsMintsState>((set) => ({
   },
 }))
 
+const convertLoanToOptimistic = (loan: Loan, walletPublicKey: string) => {
+  return {
+    loan,
+    wallet: walletPublicKey,
+  }
+}
+
+export interface LoanOptimistic {
+  loan: Loan
+  wallet: string
+}
+
 interface OptimisticLenderLoansState {
-  loans: Loan[]
-  addLoans: (loan: Loan) => void
-  findLoans: (loanPubkey: string) => Loan | null
-  updateLoans: (loan: Loan) => void
+  loans: LoanOptimistic[]
+  addLoans: (loan: Loan, walletPublicKey: string) => void
+  findLoans: (loanPubkey: string, walletPublicKey: string) => LoanOptimistic | null
+  updateLoans: (loan: Loan, walletPublicKey: string) => void
 }
 
 const useLenderLoansOptimistic = create<OptimisticLenderLoansState>((set, get) => ({
   loans: [],
-  addLoans: (loan) => {
-    set(
+  addLoans: (loan, walletPublicKey) => {
+    if (!walletPublicKey) return
+
+    return set(
       produce((state: OptimisticLenderLoansState) => {
-        state.loans.push(loan)
+        state.loans.push(convertLoanToOptimistic(loan, walletPublicKey))
       }),
     )
   },
-  findLoans: (loanPubkey) => {
-    return get().loans.find(({ publicKey }) => publicKey === loanPubkey) ?? null
+  findLoans: (loanPubkey, walletPublicKey) => {
+    if (!walletPublicKey) return null
+
+    return get().loans.find(({ loan }) => loan.publicKey === loanPubkey) ?? null
   },
-  updateLoans: (loan) => {
-    const loanExists = !!get().findLoans(loan.publicKey)
+  updateLoans: (loan, walletPublicKey) => {
+    if (!walletPublicKey) return
+
+    const loanExists = !!get().findLoans(loan.publicKey, walletPublicKey)
 
     loanExists &&
       set(
         produce((state: OptimisticLenderLoansState) => {
           state.loans = state.loans.map((existingLoan) =>
-            existingLoan.publicKey === loan.publicKey ? loan : existingLoan,
+            existingLoan.loan.publicKey === loan.publicKey
+              ? convertLoanToOptimistic(loan, walletPublicKey)
+              : existingLoan,
           )
         }),
       )
@@ -112,12 +132,17 @@ export const useLenderLoansAndOffers = () => {
     },
   )
 
+  const walletOptimisticLoans = useMemo(() => {
+    if (!publicKeyString) return []
+    return optimisticLoans.filter(({ wallet }) => wallet === publicKeyString)
+  }, [optimisticLoans, publicKeyString])
+
   const loans = useMemo(() => {
     if (!data?.nfts) {
       return []
     }
 
-    const combinedLoans = [...data.nfts, ...optimisticLoans]
+    const combinedLoans = [...data.nfts, ...walletOptimisticLoans] as Loan[]
 
     const filteredLoans = chain(combinedLoans)
       .groupBy('publicKey')
@@ -125,12 +150,12 @@ export const useLenderLoansAndOffers = () => {
       .compact()
       .value()
 
-    return filteredLoans.filter(({ nft }) => !mints.includes(nft.mint))
-  }, [data, mints, optimisticLoans])
+    return filteredLoans.filter((loan) => !mints.includes(loan.nft.mint))
+  }, [data, mints, walletOptimisticLoans])
 
   const updateOrAddLoan = (loan: Loan) => {
-    const loanExists = !!findLoans(loan.publicKey)
-    return loanExists ? updateLoans(loan) : addLoans(loan)
+    const loanExists = !!findLoans(loan.publicKey, publicKeyString)
+    return loanExists ? updateLoans(loan, publicKeyString) : addLoans(loan, publicKeyString)
   }
 
   const updateOrAddOffer = (offer: Offer) => {
