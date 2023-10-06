@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
-import { FraktBondState, PairState } from 'fbonds-core/lib/fbond-protocol/types'
+import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { produce } from 'immer'
 import { chain, countBy, filter, groupBy, isEmpty, map, sumBy, uniqBy, uniqueId } from 'lodash'
 import { create } from 'zustand'
@@ -16,7 +16,7 @@ import {
   useOffersOptimistic,
 } from '@banx/store'
 import { convertLoanToBorrowNft } from '@banx/transactions'
-import { calcLoanValueWithProtocolFee } from '@banx/utils'
+import { calcLoanValueWithProtocolFee, isLoanActiveOrRefinanced, isLoanRepaid } from '@banx/utils'
 
 import { useCartState } from './cartState'
 import { SimpleOffer, SimpleOffersByMarket } from './types'
@@ -129,15 +129,11 @@ export const useBorrowNfts = () => {
   }, [optimisticLoans, walletPublicKey])
 
   const optimisticLoansActive = useMemo(() => {
-    return walletOptimisticLoans.filter(
-      ({ loan }) => loan.fraktBond.fraktBondState === FraktBondState.PerpetualActive,
-    )
+    return walletOptimisticLoans.filter(({ loan }) => isLoanActiveOrRefinanced(loan))
   }, [walletOptimisticLoans])
 
   const optimisticLoansRepaid = useMemo(() => {
-    return walletOptimisticLoans.filter(
-      ({ loan }) => loan.fraktBond.fraktBondState === FraktBondState.PerpetualRepaid,
-    )
+    return walletOptimisticLoans.filter(({ loan }) => isLoanRepaid(loan))
   }, [walletOptimisticLoans])
 
   //? Check expiredLoans or Repaid(duplicated from BE) and purge them
@@ -177,7 +173,7 @@ export const useBorrowNfts = () => {
     }
 
     const borrowNftsFromRepaid = walletOptimisticLoans
-      .filter(({ loan }) => loan.fraktBond.fraktBondState === FraktBondState.PerpetualRepaid)
+      .filter(({ loan }) => isLoanRepaid(loan))
       .map(({ loan }) => convertLoanToBorrowNft(loan))
 
     const optimisticLoansActiveMints = optimisticLoansActive.map(({ loan }) => loan.nft.mint)
