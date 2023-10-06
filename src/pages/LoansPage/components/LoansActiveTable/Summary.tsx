@@ -42,7 +42,7 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
     <div className={styles.summary}>
       <div className={styles.collaterals}>
         <p className={styles.collateralsTitle}>{totalLoans}</p>
-        <p className={styles.collateralsSubtitle}>Collaterals selected</p>
+        <p className={styles.collateralsSubtitle}>Nfts selected</p>
       </div>
       <div className={styles.statsContainer}>
         <StatInfo label="Borrowed" value={totalBorrowed} divider={1e9} />

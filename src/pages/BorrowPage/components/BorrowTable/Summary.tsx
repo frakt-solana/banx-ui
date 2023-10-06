@@ -23,7 +23,6 @@ export const Summary: FC<SummaryProps> = ({ nftsInCart, selectAll, borrowAll }) 
   const selectAllBtnText = !nftsInCart.length ? 'Select all' : 'Deselect all'
   const selectMobileBtnText = !nftsInCart.length ? `Select all` : `Deselect ${nftsInCart.length}`
 
-  const totalFloor = sumBy(nftsInCart, ({ nft }) => nft.nft.collectionFloor)
   const totalBorrow = calcLoanValueWithProtocolFee(sumBy(nftsInCart, ({ loanValue }) => loanValue))
   const totalWeeklyFee = sumBy(nftsInCart, ({ nft, loanValue }) =>
     calcInterest({
@@ -37,13 +36,9 @@ export const Summary: FC<SummaryProps> = ({ nftsInCart, selectAll, borrowAll }) 
     <div className={styles.summary}>
       <div className={styles.collaterals}>
         <p className={styles.collateralsTitle}>{nftsInCart.length}</p>
-        <p className={styles.collateralsSubtitle}>Collaterals selected</p>
+        <p className={styles.collateralsSubtitle}>Nfts selected</p>
       </div>
       <div className={styles.statsContainer}>
-        <div className={styles.stats}>
-          <p>Total floor</p>
-          <p>{createSolValueJSX(totalFloor, 1e9, '0◎')}</p>
-        </div>
         <div className={styles.stats}>
           <p>To borrow</p>
           <p>{createSolValueJSX(totalBorrow, 1e9, '0◎')}</p>
