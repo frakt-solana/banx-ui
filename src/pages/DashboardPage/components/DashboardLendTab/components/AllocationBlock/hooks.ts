@@ -34,7 +34,7 @@ export const useAllocationBlock = (stats?: AllocationStats) => {
     value,
   }))
 
-  const allocationValues = map(allocationData, 'value')
+  const allocationValues = map(allocationData, ({ value }) => value / 1e9)
   const isDataEmpty = every(allocationValues, (value) => value === 0)
 
   const chartData: DoughnutChartProps = {

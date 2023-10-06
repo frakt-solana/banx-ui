@@ -10,7 +10,7 @@ import { COMPRESS_QUERY_PERSISTER, RPC_ENDPOINTS, WALLETS } from '@banx/constant
 import { useBestWorkingRPC } from '@banx/hooks'
 import { USE_BORROW_NFTS_QUERY_KEY } from '@banx/pages/BorrowPage/hooks'
 import { USE_MARKETS_PREVIEW_QUERY_KEY } from '@banx/pages/LendPage/hooks'
-import { USE_WALLET_LOANS_QUERY_KEY } from '@banx/pages/LoansPage/hooks'
+import { USE_WALLET_LOANS_AND_OFFERS_QUERY_KEY } from '@banx/pages/LoansPage/hooks'
 import { USE_USER_OFFERS_QUERY_KEY } from '@banx/pages/OffersPage/hooks'
 import { Router } from '@banx/router'
 import { DialectProvider, initSentry } from '@banx/utils'
@@ -64,7 +64,7 @@ const App = () => {
               const { queryKey } = query
               const persist = !![
                 USE_BORROW_NFTS_QUERY_KEY,
-                USE_WALLET_LOANS_QUERY_KEY,
+                USE_WALLET_LOANS_AND_OFFERS_QUERY_KEY,
                 USE_MARKETS_PREVIEW_QUERY_KEY,
                 USE_USER_OFFERS_QUERY_KEY,
               ].find((key) => queryKey.includes(key))

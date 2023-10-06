@@ -9,8 +9,9 @@ import {
 } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
+import { calcLoanBorrowedAmount } from '@banx/utils'
 
-import { DebtCell, HealthCell, RepayCell, StatusCell } from './TableCells'
+import { ActionsCell, DebtCell, HealthCell, StatusCell } from './TableCells'
 
 import styles from './LoansActiveTable.module.less'
 
@@ -50,7 +51,7 @@ export const getTableColumns = ({
     {
       key: 'loanValue',
       title: <HeaderCell label="Borrowed" />,
-      render: (_, { fraktBond }) => createSolValueJSX(fraktBond.borrowedAmount, 1e9),
+      render: (_, loan) => createSolValueJSX(calcLoanBorrowedAmount(loan), 1e9),
       sorter: true,
     },
     {
@@ -61,23 +62,33 @@ export const getTableColumns = ({
     },
     {
       key: 'health',
-      title: <HeaderCell label="Est. Health" tooltipText="Health = 1 - (debt / floor)" />,
+      title: (
+        <HeaderCell
+          label="Est. Health"
+          tooltipText="Estimated  health of loans using a formula: 1 - (debt / floor)"
+        />
+      ),
       render: (_, loan) => <HealthCell loan={loan} />,
       sorter: true,
     },
     {
       key: 'status',
-      title: <HeaderCell label="Loan status" />,
+      title: (
+        <HeaderCell
+          label="Loan status"
+          tooltipText="Current status and remaining duration of a loan"
+        />
+      ),
       render: (_, loan) => <StatusCell loan={loan} isCardView={isCardView} />,
       sorter: true,
     },
     {
       title: <HeaderCell label="" />,
       render: (_, loan) => (
-        <RepayCell
+        <ActionsCell
           loan={loan}
           isCardView={isCardView}
-          disabled={!!findLoanInSelection(loan.publicKey)}
+          disableActions={!!findLoanInSelection(loan.publicKey)}
         />
       ),
     },
