@@ -142,7 +142,7 @@ export const useLenderLoansAndOffers = () => {
       return []
     }
 
-    const combinedLoans = [...data.nfts, ...walletOptimisticLoans] as Loan[]
+    const combinedLoans = [...data.nfts, ...walletOptimisticLoans.map(({ loan }) => loan)]
 
     const filteredLoans = chain(combinedLoans)
       .groupBy('publicKey')
