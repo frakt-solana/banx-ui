@@ -5,6 +5,7 @@ export const PATHS = {
   ADVENTURES: '/adventures',
   // LIQUIDATIONS: '/liquidations',
   REFINANCE: '/refinance',
+  LEADERBOARD: '/leaderboard',
   LEND: '/lend',
   LOANS: '/loans',
   OFFERS: '/offers',

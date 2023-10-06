@@ -10,6 +10,7 @@ import {
   RefinancePage,
   RootPage,
 } from '@banx/pages'
+import { LeaderboardPage } from '@banx/pages/LeaderboardPage'
 
 import { PATHS } from './paths'
 
@@ -46,6 +47,10 @@ export const routes: Route[] = [
   {
     path: PATHS.REFINANCE,
     component: RefinancePage,
+  },
+  {
+    path: PATHS.LEADERBOARD,
+    component: LeaderboardPage,
   },
   {
     path: PATHS.PAGE_404,
