@@ -2,12 +2,15 @@ import { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import moment from 'moment'
 
 import { Button } from '@banx/components/Buttons'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan, Offer } from '@banx/api/core'
+import { SECONDS_IN_HOUR } from '@banx/constants'
 import { useWalletLoansAndOffers } from '@banx/pages/LoansPage/hooks'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
 import { useLoansOptimistic, useModal } from '@banx/store'
@@ -16,7 +19,7 @@ import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeBorrowRefinanceAction } from '@banx/transactions/loans'
 import {
   calcLoanBorrowedAmount,
-  calcLoanValueWithProtocolFee,
+  calculateLoanRepayValue,
   enqueueSnackbar,
   isLoanTerminating,
 } from '@banx/utils'
@@ -71,14 +74,24 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
   const isTerminatingStatus = isLoanTerminating(loan)
 
   const currentLoanBorrowedAmount = calcLoanBorrowedAmount(loan)
-  const currentLoanDailyFee = 0.18 * 1e9 //TODO Calc
-  const currentLoanDebt = 14.91 * 1e9 //TODO Calc
+  const currentLoanDailyFee = calculateCurrentInterestSolPure({
+    loanValue: currentLoanBorrowedAmount,
+    startTime: loan.bondTradeTransaction.soldAt,
+    currentTime: moment().unix(),
+    rateBasePoints: loan.bondTradeTransaction.amountOfBonds,
+  })
+  const currentLoanDebt = calculateLoanRepayValue(loan)
 
-  const newLoanBorrowedAmount = calcLoanValueWithProtocolFee(offer?.currentSpotPrice ?? 0)
-  const newtLoanDailyFee = 0.18 * 1e9 //TODO Calc
-  const newLoanDebt = 14.91 * 1e9 //TODO Calc
+  const newLoanBorrowedAmount = offer?.currentSpotPrice || 0
+  const newtLoanDailyFee = calculateCurrentInterestSolPure({
+    loanValue: offer?.currentSpotPrice || 0,
+    startTime: moment().unix(),
+    currentTime: moment().unix() + 24 * SECONDS_IN_HOUR,
+    rateBasePoints: offer?.marketApr || 0,
+  })
+  const newLoanDebt = offer?.currentSpotPrice || 0
 
-  const differenceToPay = -0.13 * 1e9 //TODO Calc
+  const differenceToPay = newLoanDebt - currentLoanDebt
 
   return (
     <Modal open onCancel={close}>
@@ -153,6 +166,8 @@ interface LoanDifferenceProps {
 const LoanDifference: FC<LoanDifferenceProps> = ({ className, difference }) => {
   const isDifferenceNegative = difference < 0
 
+  const subtitle = isDifferenceNegative ? 'Difference you will pay' : 'Difference you will receive'
+
   return (
     <div className={classNames(styles.loanDifference, className)}>
       <p
@@ -163,7 +178,7 @@ const LoanDifference: FC<LoanDifferenceProps> = ({ className, difference }) => {
       >
         {createSolValueJSX(difference, 1e9, '0◎')}
       </p>
-      <p className={styles.loanDifferenceSubtitle}>Difference you will pay</p>
+      <p className={styles.loanDifferenceSubtitle}>{subtitle}</p>
     </div>
   )
 }

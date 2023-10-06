@@ -54,6 +54,7 @@ export const PairSchema = z.object({
   fundsSolOrTokenBalance: z.number(),
   hadoMarket: z.string(),
   lastTransactedAt: z.number(),
+  marketApr: z.number().optional(), //TODO Make marketApr required
   mathCounter: z.number(),
   pairState: z.string(),
   validation: ValidationPairSchema,
