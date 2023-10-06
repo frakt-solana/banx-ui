@@ -8,4 +8,5 @@ export const PATHS = {
   LEND: '/lend',
   LOANS: '/loans',
   OFFERS: '/offers',
+  GOVERNANCE: '/governance',
 }
