@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, SVGProps } from 'react'
 
 import { NavLink } from 'react-router-dom'
 
@@ -7,7 +7,12 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import Tooltip from '@banx/components/Tooltip'
 
 import { PATHS } from '@banx/router'
-import { formatNumbersWithCommas, shortenAddress } from '@banx/utils'
+import {
+  HealthColorDecreasing,
+  formatNumbersWithCommas,
+  getColorByPercent,
+  shortenAddress,
+} from '@banx/utils'
 
 import styles from './Header.module.less'
 
@@ -59,6 +64,7 @@ export const LoyaltyBlock: FC<LoyaltyInfoProps> = ({ multiplier }) => (
         </Button>
       </NavLink>
     </div>
+    <SemiCircleProgress percentage={70} />
   </div>
 )
 
@@ -78,3 +84,50 @@ const LoyaltyInfo: FC<LoyaltyInfoProps> = ({ multiplier }) => (
 export const NoConnectedWalletInfo = () => (
   <span className={styles.notConnectedTitle}>Unknown Banx</span>
 )
+
+interface SemiCircleProgressBarProps {
+  percentage: number
+}
+
+const SemiCircleProgress: FC<SemiCircleProgressBarProps> = ({ percentage }) => {
+  const halfPercentage = percentage / 2
+
+  const strokeWidth = 4
+  const radius = 50 - strokeWidth / 2
+  const circumference = 2 * Math.PI * radius
+  const dashOffset = (1 - halfPercentage / 100) * circumference
+
+  const commonPathProps: SVGProps<SVGPathElement> = {
+    d: `M${50 - radius},50 A${radius},${radius} 0 0 1 ${50 + radius},50`,
+    fill: 'transparent',
+    strokeWidth,
+    strokeLinecap: 'round',
+  }
+
+  const loyaltyColor = getColorByPercent(percentage, HealthColorDecreasing)
+
+  return (
+    <div className={styles.progressContainer}>
+      <svg viewBox="0 0 100 140">
+        <path {...commonPathProps} stroke="#efefef" />
+        <path
+          {...commonPathProps}
+          stroke={loyaltyColor}
+          strokeDasharray={circumference}
+          strokeDashoffset={dashOffset}
+          d={`M${50 - radius},50 A${radius},${radius} 0 ${halfPercentage > 80 ? 1 : 0} 1 ${
+            50 + radius
+          },50`}
+        />
+      </svg>
+      <StatInfo
+        classNamesProps={{ container: styles.textContainer, value: styles.value }}
+        valueStyles={{ color: loyaltyColor }}
+        label="Loyalty"
+        value={percentage}
+        valueType={VALUES_TYPES.PERCENT}
+        tooltipText="Loyalty tracks % of your loans on Banx vs other protocols. Loyalty impacts the amount of rewards; if you're more loyal you'll get much more rewards"
+      />
+    </div>
+  )
+}

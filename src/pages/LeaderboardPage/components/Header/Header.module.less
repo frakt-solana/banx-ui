@@ -127,3 +127,24 @@
     width: 100%;
   }
 }
+
+.progressContainer {
+  position: relative;
+  width: 116px;
+  height: 74px;
+}
+
+.textContainer {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 0%);
+
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 0;
+
+  .value {
+    font: var(--important-text-xl);
+  }
+}
