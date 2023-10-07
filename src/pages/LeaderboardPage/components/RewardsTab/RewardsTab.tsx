@@ -2,13 +2,14 @@ import { FC } from 'react'
 
 import { Button } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
+import Timer from '@banx/components/Timer'
 
 import { Borrow, Lend, MoneyBill } from '@banx/icons'
 
 import styles from './RewardsTab.module.less'
 
 const MOCK_TOTAL_CLAIMED = 350
-const MOCK_NEXT_WEEKLY_REWARDS = '06d : 23h : 15m'
+const MOCK_NEXT_WEEKLY_REWARDS = 1697194509
 const MOCK_AVAILABLE_TO_CLAIM = 10
 
 const RewardsTab = () => {
@@ -28,7 +29,7 @@ export default RewardsTab
 
 interface ClaimRewardsBlockProps {
   totalClaimed: number
-  nextWeeklyRewards: string
+  nextWeeklyRewards: number
   availableToClaim: number
 }
 
@@ -42,7 +43,7 @@ const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({
       <StatInfo label="Total claimed" value={totalClaimed} flexType="row" />
       <StatInfo
         label="Next weekly rewards in"
-        value={nextWeeklyRewards}
+        value={<Timer expiredAt={nextWeeklyRewards} />}
         valueType={VALUES_TYPES.STRING}
         flexType="row"
       />
