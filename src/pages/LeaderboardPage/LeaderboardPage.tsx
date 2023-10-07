@@ -1,5 +1,6 @@
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
+import EarnTab from './components/EarnTab'
 import Header from './components/Header'
 import RewardsTab from './components/RewardsTab'
 
@@ -24,7 +25,7 @@ export const LeaderboardPage = () => {
       <Tabs value={currentTabValue} {...tabsProps} />
       {currentTabValue === LeaderboardTabName.REWARDS && <RewardsTab />}
       {currentTabValue === LeaderboardTabName.LEADERBOARD && <></>}
-      {currentTabValue === LeaderboardTabName.EARN && <></>}
+      {currentTabValue === LeaderboardTabName.EARN && <EarnTab />}
     </div>
   )
 }
