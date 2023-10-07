@@ -29,9 +29,25 @@
 .logoWrapper {
   display: flex;
   align-items: center;
+  gap: 24px;
+
+  a {
+    text-decoration: none;
+  }
 }
 .logoWrapper svg path {
   fill: var(--content-primary);
+}
+
+.rewardsButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  svg,
+  svg path {
+    fill: var(--additional-yellow-primary);
+  }
 }
 
 .logo {
