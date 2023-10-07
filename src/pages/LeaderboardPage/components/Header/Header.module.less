@@ -11,7 +11,26 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  position: relative;
 }
+
+.notConnectedTitle {
+  font: var(--title-lg);
+  text-transform: uppercase;
+}
+
+.participantsInfo {
+  flex-direction: column-reverse;
+  align-items: flex-end;
+}
+.participantsValue {
+  font: var(--important-text-md);
+}
+.participantsLable {
+  color: var(--content-primary);
+  font: var(--table-header-md);
+}
+
 .walletInfo {
   display: flex;
   flex-direction: column;
@@ -19,9 +38,36 @@
   gap: 8px;
   max-width: 256px;
   width: 100%;
+
+  @media (max-width: 1280px) {
+    display: none;
+  }
 }
+.walletInfoMobile {
+  @media (min-width: 1281px) {
+    display: none;
+  }
+}
+
+.walletInfoMobileBadge {
+  background: var(--additional-green-secondary);
+  border: 0.5px solid var(--additional-green-primary-deep);
+  border-radius: 100px;
+  color: var(--additional-green-primary-deep);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: absolute;
+  bottom: 0;
+  left: 8px;
+  width: 72px;
+}
+
 .walletAddress {
   font: var(--title-lg);
+  line-height: 42px;
   text-transform: uppercase;
 }
 .connectWalletButton {
@@ -29,9 +75,13 @@
 }
 
 .avatar {
-  border-radius: 100%;
-  height: 88px;
-  width: 88px;
+  &,
+  svg,
+  img {
+    border-radius: 100%;
+    height: 88px;
+    width: 88px;
+  }
 }
 
 // Loyalty block styles
@@ -60,6 +110,9 @@
   font: var(--important-text-xll);
 }
 .loyaltyTitle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   color: var(--content-secondary);
   font: var(--table-header-md);
   text-transform: uppercase;
@@ -68,5 +121,9 @@
   font: var(--important-text-md);
 }
 .stakeBanxButton {
-  width: 100%;
+  &,
+  button {
+    text-decoration: none;
+    width: 100%;
+  }
 }

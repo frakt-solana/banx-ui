@@ -40,11 +40,17 @@ const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({
 }) => {
   return (
     <div className={styles.claimRewardsBlock}>
-      <StatInfo label="Total claimed" value={totalClaimed} flexType="row" />
+      <StatInfo
+        label="Total claimed"
+        value={totalClaimed}
+        classNamesProps={{ label: styles.claimRewardsStatLable }}
+        flexType="row"
+      />
       <StatInfo
         label="Next weekly rewards in"
         value={<Timer expiredAt={nextWeeklyRewards} />}
         valueType={VALUES_TYPES.STRING}
+        classNamesProps={{ label: styles.claimRewardsStatLable }}
         flexType="row"
       />
       <div className={styles.avaiableToClaimInfo}>
