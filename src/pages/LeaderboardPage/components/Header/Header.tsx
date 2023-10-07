@@ -69,7 +69,8 @@ const LoyaltyInfo = ({ multiplier }: { multiplier: number }) => (
     <span className={styles.loyaltyMultiplier}>{multiplier}x</span>
     <div className={styles.loyaltyDetails}>
       <span className={styles.loyaltyTitle}>
-        Boost <Tooltip title="Boost" />
+        Boost
+        <Tooltip title="Rewards are boosted by staking Banx NFTs, the more player points staked the higher the boost" />
       </span>
       <span className={styles.loyaltySubtitle}>Want to increase your boost?</span>
     </div>
