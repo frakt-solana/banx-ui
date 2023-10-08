@@ -51,7 +51,7 @@ export const Sidebar: FC<SidebarProps> = ({ adventuresInfo, className }) => {
         <div className={styles.warns}>
           <p>
             <ExclamationCircleOutlined />
-            As your Banx stay in your wallet when used as collateral for a loan on Frakt they can be
+            As your Banx stay in your wallet when used as collateral for a loan on Banx they can be
             sent in Adventures in parallel
           </p>
         </div>
