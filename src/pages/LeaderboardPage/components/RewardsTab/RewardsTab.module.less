@@ -2,9 +2,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: auto 0;
   padding: 24px;
   gap: 24px;
-  height: 100%;
   width: 100%;
 
   @media (max-width: 960px) {
@@ -19,8 +19,8 @@
   display: flex;
   flex-direction: column;
   padding: 16px;
+  height: 100%;
   width: 100%;
-  min-height: 218px;
 }
 
 .claimRewardsStatLable {
@@ -84,4 +84,8 @@
   svg path {
     stroke: var(--content-primary);
   }
+}
+
+.emptyList {
+  margin: 0;
 }

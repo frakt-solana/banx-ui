@@ -1,6 +1,9 @@
 import { FC } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
+
 import { Button } from '@banx/components/Buttons'
+import EmptyList from '@banx/components/EmptyList/EmptyList'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import Timer from '@banx/components/Timer'
 
@@ -38,6 +41,8 @@ const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({
   nextWeeklyRewards,
   availableToClaim,
 }) => {
+  const { connected } = useWallet()
+
   return (
     <div className={styles.claimRewardsBlock}>
       <StatInfo
@@ -67,7 +72,11 @@ const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({
           }}
         />
       </div>
-      <Button className={styles.claimRewardsButton}>Claim</Button>
+      {connected ? (
+        <Button className={styles.claimRewardsButton}>Claim</Button>
+      ) : (
+        <EmptyList className={styles.emptyList} message="Connect wallet to see your rewards" />
+      )}
     </div>
   )
 }

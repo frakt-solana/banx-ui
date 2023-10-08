@@ -1,5 +1,6 @@
 import { FC } from 'react'
 
+import classNames from 'classnames'
 import { NavLink } from 'react-router-dom'
 
 import { Button } from '../Buttons'
@@ -10,11 +11,12 @@ interface EmptyListProps {
   message: string
   buttonText?: string
   path?: string
+  className?: string
 }
 
-const EmptyList: FC<EmptyListProps> = ({ message, buttonText, path }) => {
+const EmptyList: FC<EmptyListProps> = ({ message, buttonText, path, className }) => {
   return (
-    <div className={styles.wrapper}>
+    <div className={classNames(styles.wrapper, className)}>
       <div className={styles.emptyList}>
         <span className={styles.emptyListMessage}>{message}</span>
       </div>

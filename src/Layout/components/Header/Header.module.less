@@ -31,6 +31,10 @@
   align-items: center;
   gap: 24px;
 
+  @media (max-width: 640px) {
+    gap: 16px;
+  }
+
   a {
     text-decoration: none;
   }
@@ -46,7 +50,17 @@
 
   svg,
   svg path {
-    fill: var(--additional-yellow-primary);
+    fill: var(--additional-gold-primary);
+  }
+
+  @media (max-width: 640px) {
+    padding: 6px !important;
+    width: 32px;
+    height: 32px;
+
+    span {
+      display: none;
+    }
   }
 }
 

@@ -24,7 +24,7 @@ export const Header = () => {
         </NavLink>
         <NavLink to={PATHS.LEADERBOARD}>
           <Button className={styles.rewardsButton} type="circle" variant="text">
-            <Cup /> Rewards
+            <Cup /> <span>Rewards</span>
           </Button>
         </NavLink>
       </div>
