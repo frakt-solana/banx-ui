@@ -14,7 +14,7 @@ import {
   shortenAddress,
 } from '@banx/utils'
 
-import styles from './Header.module.less'
+import styles from './LeaderboardHeader.module.less'
 
 interface ParticipantsInfoProps {
   participants: number

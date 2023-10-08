@@ -4,7 +4,7 @@ import UserAvatar from '@banx/components/UserAvatar'
 
 import { LoyaltyBlock, NoConnectedWalletInfo, ParticipantsInfo, WalletInfo } from './components'
 
-import styles from './Header.module.less'
+import styles from './LeaderboardHeader.module.less'
 
 const MOCK_AVATAR_URL = 'https://pbs.twimg.com/media/FuaAl7sXoAIm_jk?format=png&name=small'
 const MOCK_MULTIPLIER = 57

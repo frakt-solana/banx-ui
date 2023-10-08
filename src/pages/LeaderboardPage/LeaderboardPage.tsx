@@ -1,7 +1,7 @@
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
 import EarnTab from './components/EarnTab'
-import Header from './components/Header'
+import Header from './components/LeaderboardHeader'
 import LeaderboardTab from './components/LeaderboardTab'
 import RewardsTab from './components/RewardsTab'
 
