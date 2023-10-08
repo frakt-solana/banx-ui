@@ -21,7 +21,7 @@ export const ADDITIONAL_MARKET_INFO = [
   {
     key: 'marketApr',
     label: 'Apy',
-    tooltipText: 'Interest (in %) for the duration of this loan',
+    tooltipText: 'Annual compounded interest rate',
     valueRenderer: (apr: number) => convertAprToApy(apr / 1e4),
     valueType: VALUES_TYPES.PERCENT,
     valueStyles: (market: MarketPreview) => ({
@@ -37,13 +37,13 @@ export const MAIN_MARKET_INFO = [
     key: 'bestOffer',
     label: 'Best',
     divider: 1e9,
-    tooltipText: 'Current biggest offer for a loan',
+    tooltipText: 'Highest current offer',
   },
   {
     key: 'bestLtv',
     label: 'Ltv',
     divider: 1e9,
     valueType: VALUES_TYPES.PERCENT,
-    tooltipText: 'Current biggest offer for a loan',
+    tooltipText: 'Best offer expressed as a % of floor price',
   },
 ]
