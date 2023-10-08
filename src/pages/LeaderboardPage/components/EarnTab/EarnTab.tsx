@@ -31,7 +31,7 @@ const EarnTab = () => {
 export default EarnTab
 
 interface ContentBlockProps {
-  title: string
+  title: 'Lend' | 'Borrow'
   InfoBlock: JSX.Element
 }
 const ContentBlock: FC<ContentBlockProps> = ({ title, InfoBlock }) => {
@@ -53,7 +53,7 @@ interface InfoBlockProps {
   path: string
 }
 const InfoBlock: FC<InfoBlockProps> = ({ infoTexts, path }) => {
-  const action = path === PATHS.LEND ? 'Start lending' : 'Start borrowing'
+  const actionText = path === PATHS.LEND ? 'Start lending' : 'Start borrowing'
 
   return (
     <div className={styles.infoBlock}>
@@ -64,7 +64,7 @@ const InfoBlock: FC<InfoBlockProps> = ({ infoTexts, path }) => {
         </div>
       ))}
       <NavLink className={styles.actionButton} to={path}>
-        <Button>{action}</Button>
+        <Button>{actionText}</Button>
       </NavLink>
     </div>
   )

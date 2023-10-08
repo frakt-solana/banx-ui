@@ -48,32 +48,19 @@ const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({
       <StatInfo
         label="Total claimed"
         value={totalClaimed}
-        classNamesProps={{ label: styles.claimRewardsStatLable }}
+        classNamesProps={{ label: styles.label }}
         flexType="row"
       />
       <StatInfo
         label="Next weekly rewards in"
         value={<Timer expiredAt={nextWeeklyRewards} />}
         valueType={VALUES_TYPES.STRING}
-        classNamesProps={{ label: styles.claimRewardsStatLable }}
+        classNamesProps={{ label: styles.label }}
         flexType="row"
       />
-      <div className={styles.avaiableToClaimInfo}>
-        <div className={styles.moneyBillIconWrapper}>
-          <MoneyBill />
-        </div>
-        <StatInfo
-          value={availableToClaim}
-          label="Available to claim"
-          classNamesProps={{
-            container: styles.stat,
-            value: styles.value,
-            label: styles.label,
-          }}
-        />
-      </div>
+      <AvailableToClaim availableToClaim={availableToClaim} />
       {connected ? (
-        <Button className={styles.claimRewardsButton}>Claim</Button>
+        <Button className={styles.button}>Claim</Button>
       ) : (
         <EmptyList className={styles.emptyList} message="Connect wallet to see your rewards" />
       )}
@@ -81,22 +68,40 @@ const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({
   )
 }
 
-const RewardsInfoBlock = () => {
-  return (
-    <div className={styles.rewardsInfoBlock}>
-      <div className={styles.rewardsInfo}>
-        <span className={styles.rewardsInfoTitle}>
-          <Lend /> Lender
-        </span>
-        <span>earn SOL APY while your offers are pending in offer book</span>
-        <span>earn extra SOL APY for your active loans</span>
-      </div>
-      <div className={styles.rewardsInfo}>
-        <span className={styles.rewardsInfoTitle}>
-          <Borrow /> Borrowers
-        </span>
-        <span>earn SOL cashbacks for each loan you take</span>
-      </div>
-    </div>
-  )
+interface AvailableToClaimProps {
+  availableToClaim: number
 }
+const AvailableToClaim: FC<AvailableToClaimProps> = ({ availableToClaim }) => (
+  <div className={styles.avaiableToClaimInfo}>
+    <div className={styles.moneyBillIconWrapper}>
+      <MoneyBill />
+    </div>
+    <StatInfo
+      value={availableToClaim}
+      label="Available to claim"
+      classNamesProps={{
+        container: styles.stat,
+        value: styles.value,
+        label: styles.label,
+      }}
+    />
+  </div>
+)
+
+const RewardsInfoBlock = () => (
+  <div className={styles.rewardsInfoBlock}>
+    <div className={styles.rewardsInfo}>
+      <span className={styles.rewardsInfoTitle}>
+        <Lend /> Lender
+      </span>
+      <span>earn SOL APY while your offers are pending in offer book</span>
+      <span>earn extra SOL APY for your active loans</span>
+    </div>
+    <div className={styles.rewardsInfo}>
+      <span className={styles.rewardsInfoTitle}>
+        <Borrow /> Borrowers
+      </span>
+      <span>earn SOL cashbacks for each loan you take</span>
+    </div>
+  </div>
+)
