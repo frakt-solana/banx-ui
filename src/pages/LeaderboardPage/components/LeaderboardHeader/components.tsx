@@ -6,6 +6,7 @@ import { Button } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import Tooltip from '@banx/components/Tooltip'
 
+import { Link as LinkIcon } from '@banx/icons'
 import { PATHS } from '@banx/router'
 import {
   HealthColorDecreasing,
@@ -44,8 +45,8 @@ export const WalletInfo: FC<WalletInfoProps> = ({ walletPublicKey }) => {
           Link wallets
         </Button>
       </div>
-      <div className={styles.walletInfoMobile}>
-        <div className={styles.walletInfoMobileBadge}>{walletPublicKey.slice(0, 4)}</div>
+      <div className={styles.walletInfoMobileBadge}>
+        {walletPublicKey.slice(0, 4)} <LinkIcon />
       </div>
     </>
   )

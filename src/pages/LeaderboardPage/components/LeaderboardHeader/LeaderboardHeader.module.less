@@ -5,6 +5,10 @@
   justify-content: space-between;
   padding: 16px 24px;
   width: 100%;
+
+  @media (max-width: 640px) {
+    padding: 16px;
+  }
 }
 
 .walletInfoContainer {
@@ -43,26 +47,37 @@
     display: none;
   }
 }
-.walletInfoMobile {
+
+.walletInfoMobileBadge {
   @media (min-width: 1281px) {
     display: none;
   }
-}
 
-.walletInfoMobileBadge {
   background: var(--additional-green-secondary);
   border: 0.5px solid var(--additional-green-primary-deep);
   border-radius: 100px;
   color: var(--additional-green-primary-deep);
+  cursor: pointer;
+
+  font: var(--body-text-sm);
 
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 1px 8px;
+  gap: 4px;
 
   position: absolute;
   bottom: 0;
   left: 8px;
-  width: 72px;
+  right: 8px;
+
+  @media (max-width: 640px) {
+    font: var(--body-text-xs);
+    padding: 1px 6px;
+    left: 2px;
+    right: 2px;
+  }
 }
 
 .walletAddress {

@@ -8,13 +8,21 @@ import { Button } from '@banx/components/Buttons'
 import EmptyList from '@banx/components/EmptyList/EmptyList'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
-import { BanxRewards as BanxRewardsIcon, CircleCheck as CircleCheckIcon } from '@banx/icons'
+import { Theme, useTheme } from '@banx/hooks'
+import {
+  BanxRewardsDark as BanxRewardsDarkIcon,
+  BanxRewards as BanxRewardsIcon,
+  CircleCheck as CircleCheckIcon,
+} from '@banx/icons'
 import { PATHS } from '@banx/router'
 
 import styles from './BanxRewardsTab.module.less'
 
 const BanxRewardsTab = () => {
   const { connected } = useWallet()
+
+  const { theme } = useTheme()
+  const Icon = theme === Theme.DARK ? BanxRewardsDarkIcon : BanxRewardsIcon
 
   return (
     <div className={styles.container}>
@@ -25,7 +33,7 @@ const BanxRewardsTab = () => {
         )}
         <InfoBlock />
       </div>
-      <BanxRewardsIcon className={styles.banxRewardsIcon} />
+      <Icon className={styles.banxRewardsIcon} />
     </div>
   )
 }
