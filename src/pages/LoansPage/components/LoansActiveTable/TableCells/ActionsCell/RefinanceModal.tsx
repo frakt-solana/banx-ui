@@ -10,7 +10,7 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan, Offer } from '@banx/api/core'
-import { SECONDS_IN_HOUR } from '@banx/constants'
+import { BONDS, SECONDS_IN_HOUR } from '@banx/constants'
 import { useWalletLoansAndOffers } from '@banx/pages/LoansPage/hooks'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
 import { useLoansOptimistic, useModal } from '@banx/store'
@@ -82,15 +82,18 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
   })
   const currentLoanDebt = calculateLoanRepayValue(loan)
 
-  const newLoanBorrowedAmount = offer?.currentSpotPrice || 0
+  const currentSpotPrice = offer?.currentSpotPrice || 0
+
+  const newLoanBorrowedAmount =
+    currentSpotPrice - currentSpotPrice * (BONDS.PROTOCOL_FEE_PERCENT / 1e4) || 0
+
   const newLoanDailyFee = calculateCurrentInterestSolPure({
-    loanValue: offer?.currentSpotPrice || 0,
+    loanValue: currentSpotPrice,
     startTime: moment().unix(),
     currentTime: moment().unix() + 24 * SECONDS_IN_HOUR,
     rateBasePoints: offer?.marketApr || 0,
   })
-  const newLoanDebt = offer?.currentSpotPrice || 0
-
+  const newLoanDebt = currentSpotPrice
   const differenceToPay = newLoanDebt - currentLoanDebt
 
   return (
