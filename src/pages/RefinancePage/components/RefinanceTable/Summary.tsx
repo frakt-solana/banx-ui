@@ -115,7 +115,7 @@ export const Summary: FC<SummaryProps> = ({
       </div>
       <div className={styles.statsContainer}>
         <div className={styles.stats}>
-          <p>Total debt</p>
+          <p>Total to lend</p>
           <p>{createSolValueJSX(totalDebt, 1e9, '0◎')}</p>
         </div>
         <div className={styles.stats}>
