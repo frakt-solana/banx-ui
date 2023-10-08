@@ -108,7 +108,7 @@ const SemiCircleProgress: FC<SemiCircleProgressBarProps> = ({ percentage }) => {
 
   return (
     <div className={styles.progressContainer}>
-      <svg viewBox="0 0 100 140">
+      <svg viewBox="0 0 100 70">
         <path {...commonPathProps} stroke="#efefef" />
         <path
           {...commonPathProps}

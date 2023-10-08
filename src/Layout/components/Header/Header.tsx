@@ -17,19 +17,16 @@ export const Header = () => {
 
   return (
     <div className={styles.header}>
-      <div className={styles.logoWrapper}>
-        <NavLink to={PATHS.ROOT}>
-          <LogoFull className={styles.logo} />
-          <Logo className={styles.logoBasic} />
-        </NavLink>
+      <NavLink className={styles.logoWrapper} to={PATHS.ROOT}>
+        <LogoFull className={styles.logo} />
+        <Logo className={styles.logoBasic} />
+      </NavLink>
+      <div className={styles.widgetContainer}>
         <NavLink to={PATHS.LEADERBOARD}>
           <Button className={styles.rewardsButton} type="circle" variant="text">
             <Cup /> <span>Rewards</span>
           </Button>
         </NavLink>
-      </div>
-
-      <div className={styles.widgetContainer}>
         <ThemeSwitcher />
         {connected && <BanxNotificationsButton />}
         <WalletConnectButton />
