@@ -1,5 +1,9 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
+import { findIndex } from 'lodash'
+
+import EmptyList from '@banx/components/EmptyList'
 import { RBOption, RadioButton } from '@banx/components/RadioButton'
 import Table from '@banx/components/Table'
 
@@ -11,8 +15,22 @@ import styles from './LeaderboardTab.module.less'
 
 const LeaderboardTab = () => {
   const columns = getTableColumns()
+  const { publicKey, connected } = useWallet()
 
-  const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: usersData })
+  const updatedUsersData = useMemo(() => {
+    if (!publicKey) return usersData
+
+    const userIndex = findIndex(usersData, { userAddress: publicKey?.toBase58() })
+
+    if (userIndex !== -1) {
+      const movedUser = usersData.splice(userIndex, 1)[0]
+      usersData.unshift(movedUser)
+    }
+
+    return usersData
+  }, [publicKey])
+
+  const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: updatedUsersData })
 
   const [currentOption, setCurrentOption] = useState<RBOption>(options[0])
 
@@ -24,8 +42,22 @@ const LeaderboardTab = () => {
         currentOption={currentOption}
         onOptionChange={setCurrentOption}
       />
+      {!connected && (
+        <EmptyList className={styles.emptyList} message="Connect wallet to see your position" />
+      )}
       <>
-        <Table data={data} columns={columns} rowKeyField="userAddress" />
+        <Table
+          data={data}
+          columns={columns}
+          rowKeyField="userAddress"
+          className={styles.tableRoot}
+          activeRowParams={[
+            {
+              condition: (userStats) => userStats.userAddress === publicKey?.toBase58(),
+              className: styles.highlightUser,
+            },
+          ]}
+        />
         <div ref={fetchMoreTrigger} />
       </>
     </>
@@ -91,6 +123,13 @@ const usersData: LeaderboardUserData[] = [
     userAddress: '3h0t3m4a5p6t7o8l9a0k1e2y3o4u5r6d7e8s9s0',
     points: 128670,
     loyalty: 32,
+  },
+  {
+    rank: 562,
+    userAvatar: 'https://pbs.twimg.com/media/FuaAl7sXoAIm_jk?format=png&name=small',
+    userAddress: '6JgexLq1STiDE3MvjvnsZqdevnoHMTeaM7FrJRNt2Mrg',
+    points: 1670,
+    loyalty: 12,
   },
 ]
 
