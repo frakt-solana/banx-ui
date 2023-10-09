@@ -1,6 +1,11 @@
 import { FC } from 'react'
 
-import { HealthColorDecreasing, getColorByPercent, shortenAddress } from '@banx/utils'
+import {
+  HealthColorDecreasing,
+  formatNumbersWithCommas,
+  getColorByPercent,
+  shortenAddress,
+} from '@banx/utils'
 
 import styles from './LeaderboardTab.module.less'
 
@@ -28,4 +33,10 @@ export const LoyaltyCell: FC<{ loyalty: number }> = ({ loyalty }) => {
       {loyalty}%
     </span>
   )
+}
+
+export const PointsCell: FC<{ points: number }> = ({ points }) => {
+  const formattedPoints = formatNumbersWithCommas(points)
+
+  return <span className={styles.pointsTitleCell}>{formattedPoints}</span>
 }

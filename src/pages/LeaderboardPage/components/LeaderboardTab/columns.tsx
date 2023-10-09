@@ -2,10 +2,8 @@ import { ColumnsType } from 'antd/es/table'
 
 import { HeaderCell, createColumn } from '@banx/components/TableComponents'
 
-import { formatNumbersWithCommas } from '@banx/utils'
-
 import { LeaderboardUserData } from './LeaderboardTab'
-import { LoyaltyCell, UserInfoCell } from './components'
+import { LoyaltyCell, PointsCell, UserInfoCell } from './components'
 
 export const getTableColumns = () => {
   const columns: ColumnsType<LeaderboardUserData> = [
@@ -17,7 +15,7 @@ export const getTableColumns = () => {
     {
       key: 'points',
       title: <HeaderCell label="Points" tooltipText="See <<Earn points>>" />,
-      render: (_, { points }) => <>{formatNumbersWithCommas(points)}</>,
+      render: (_, { points }) => <PointsCell points={points} />,
     },
     {
       key: 'loyalty',

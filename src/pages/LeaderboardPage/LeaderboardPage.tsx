@@ -24,7 +24,7 @@ export const LeaderboardPage = () => {
   return (
     <div className={styles.pageWrapper}>
       <Header />
-      <Tabs value={currentTabValue} {...tabsProps} />
+      <Tabs className={styles.tabs} value={currentTabValue} {...tabsProps} />
       {currentTabValue === LeaderboardTabName.REWARDS && <RewardsTab />}
       {currentTabValue === LeaderboardTabName.LEADERBOARD && <LeaderboardTab />}
       {currentTabValue === LeaderboardTabName.EARN && <EarnTab />}

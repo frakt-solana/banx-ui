@@ -1,30 +1,66 @@
+.tableRoot :global {
+  .ant-table table {
+    width: unset !important;
+  }
+}
+
 .userInfoCell {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
+.pointsTitleCell {
+  font: var(--body-text-md);
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
+}
+
 .userRank {
   font: var(--important-text-sm);
   min-width: 30px;
   text-align: right;
+
+  @media (max-width: 640px) {
+    font: var(--important-text-xs);
+    min-width: 26px;
+  }
 }
 
 .userAvatar {
-  width: 40px;
   height: 40px;
+  width: 40px;
+
+  @media (max-width: 640px) {
+    height: 32px;
+    width: 32px;
+  }
 }
 
 .userWalletAddress {
   font: var(--card-header-md);
+
+  @media (max-width: 640px) {
+    font: var(--card-header-sm);
+  }
 }
 
 .loyaltyTitleCell {
   font: var(--important-text-md);
+
+  @media (max-width: 640px) {
+    font: var(--important-text-sm);
+  }
 }
 
 .radioButton {
-  padding: 24px 24px 12px 24px;
+  padding: 24px 24px 12px;
+
+  @media (max-width: 640px) {
+    padding: 16px 16px 12px;
+  }
 }
 
 .highlightUser {

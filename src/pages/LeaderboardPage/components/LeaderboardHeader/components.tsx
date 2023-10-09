@@ -22,13 +22,13 @@ interface ParticipantsInfoProps {
 }
 export const ParticipantsInfo: FC<ParticipantsInfoProps> = ({ participants }) => (
   <StatInfo
-    label="Total participants"
+    label="Participants"
     value={formatNumbersWithCommas(participants)}
     valueType={VALUES_TYPES.STRING}
     classNamesProps={{
       container: styles.participantsInfo,
       value: styles.participantsValue,
-      label: styles.participantsLable,
+      label: styles.participantsLabel,
     }}
   />
 )

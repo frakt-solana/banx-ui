@@ -13,7 +13,10 @@ import styles from './EarnTab.module.less'
 const EarnTab = () => {
   return (
     <>
-      <EmptyList message="No exact formula is specified, but here are some tips:" />
+      <EmptyList
+        className={styles.emptyList}
+        message="No exact formula is specified, but here are some tips:"
+      />
       <div className={styles.earnTabContent}>
         <ContentBlock
           title="Lend"
