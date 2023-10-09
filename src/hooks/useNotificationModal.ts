@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 
 import { useQuery } from '@tanstack/react-query'
 
-import { NotificationModal } from '@banx/components/NotificationModal'
+import { NotificationModal } from '@banx/components/modals'
 
 import { fetchModalNotification } from '@banx/api/common'
 import { useModal } from '@banx/store'
