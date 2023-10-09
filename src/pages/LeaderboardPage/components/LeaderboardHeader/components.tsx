@@ -65,7 +65,7 @@ export const LoyaltyBlock: FC<LoyaltyInfoProps> = ({ multiplier }) => (
         </Button>
       </NavLink>
     </div>
-    <SemiCircleProgress percentage={70} />
+    <LoyaltyProgressBar percentage={70} />
   </div>
 )
 
@@ -86,11 +86,11 @@ export const NoConnectedWalletInfo = () => (
   <span className={styles.notConnectedTitle}>Unknown Banx</span>
 )
 
-interface SemiCircleProgressBarProps {
+interface LoyaltyProgressBarProps {
   percentage: number
 }
 
-const SemiCircleProgress: FC<SemiCircleProgressBarProps> = ({ percentage }) => {
+const LoyaltyProgressBar: FC<LoyaltyProgressBarProps> = ({ percentage }) => {
   const halfPercentage = percentage / 2
 
   const strokeWidth = 4
@@ -116,9 +116,7 @@ const SemiCircleProgress: FC<SemiCircleProgressBarProps> = ({ percentage }) => {
           stroke={loyaltyColor}
           strokeDasharray={circumference}
           strokeDashoffset={dashOffset}
-          d={`M${50 - radius},50 A${radius},${radius} 0 ${halfPercentage > 80 ? 1 : 0} 1 ${
-            50 + radius
-          },50`}
+          d={`M${50 - radius},50 A${radius},${radius} 0 0 1 ${50 + radius},50`}
         />
       </svg>
       <StatInfo

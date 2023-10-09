@@ -2,11 +2,11 @@ import { ColumnsType } from 'antd/es/table'
 
 import { HeaderCell, createColumn } from '@banx/components/TableComponents'
 
-import { LeaderboardUserData } from './LeaderboardTab'
+import { LeaderboardData } from './LeaderboardTab'
 import { LoyaltyCell, PointsCell, UserInfoCell } from './components'
 
 export const getTableColumns = () => {
-  const columns: ColumnsType<LeaderboardUserData> = [
+  const columns: ColumnsType<LeaderboardData> = [
     {
       key: 'collateral',
       title: <HeaderCell label="Rank, Profile" />,

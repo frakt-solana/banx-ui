@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { findIndex } from 'lodash'
 
 import EmptyList from '@banx/components/EmptyList'
 import { RBOption, RadioButton } from '@banx/components/RadioButton'
@@ -14,21 +13,16 @@ import { getTableColumns } from './columns'
 import styles from './LeaderboardTab.module.less'
 
 const LeaderboardTab = () => {
+  const { publicKey: walletPublicKey, connected } = useWallet()
+  const walletPublicKeyString = walletPublicKey?.toBase58() || ''
+
   const columns = getTableColumns()
-  const { publicKey, connected } = useWallet()
 
   const updatedUsersData = useMemo(() => {
-    if (!publicKey) return usersData
+    if (!walletPublicKeyString) return usersData
 
-    const userIndex = findIndex(usersData, { userAddress: publicKey?.toBase58() })
-
-    if (userIndex !== -1) {
-      const movedUser = usersData.splice(userIndex, 1)[0]
-      usersData.unshift(movedUser)
-    }
-
-    return usersData
-  }, [publicKey])
+    return moveUserToTopList(usersData, walletPublicKeyString)
+  }, [walletPublicKeyString])
 
   const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: updatedUsersData })
 
@@ -42,9 +36,11 @@ const LeaderboardTab = () => {
         currentOption={currentOption}
         onOptionChange={setCurrentOption}
       />
+
       {!connected && (
         <EmptyList className={styles.emptyList} message="Connect wallet to see your position" />
       )}
+
       <>
         <Table
           data={data}
@@ -53,7 +49,7 @@ const LeaderboardTab = () => {
           className={styles.tableRoot}
           activeRowParams={[
             {
-              condition: (userStats) => userStats.userAddress === publicKey?.toBase58(),
+              condition: ({ userAddress }) => userAddress === walletPublicKeyString,
               className: styles.highlightUser,
             },
           ]}
@@ -66,7 +62,19 @@ const LeaderboardTab = () => {
 
 export default LeaderboardTab
 
-export interface LeaderboardUserData {
+const moveUserToTopList = (usersData: LeaderboardData[], publicKey: string) => {
+  const clonedUsersData = [...usersData]
+  const userIndex = clonedUsersData.findIndex((user) => user.userAddress === publicKey)
+
+  if (userIndex !== -1) {
+    const movedUser = clonedUsersData.splice(userIndex, 1)[0]
+    clonedUsersData.unshift(movedUser)
+  }
+
+  return clonedUsersData
+}
+
+export interface LeaderboardData {
   rank: number
   userAvatar: string
   userAddress: string
@@ -74,7 +82,7 @@ export interface LeaderboardUserData {
   loyalty: number
 }
 
-const usersData: LeaderboardUserData[] = [
+const usersData: LeaderboardData[] = [
   {
     rank: 1,
     userAvatar: 'https://pbs.twimg.com/media/FuaAl7sXoAIm_jk?format=png&name=small',

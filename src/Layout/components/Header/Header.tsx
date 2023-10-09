@@ -17,10 +17,10 @@ export const Header = () => {
 
   return (
     <div className={styles.header}>
-      <NavLink className={styles.logoWrapper} to={PATHS.ROOT}>
+      <a href="/" className={styles.logoWrapper}>
         <LogoFull className={styles.logo} />
         <Logo className={styles.logoBasic} />
-      </NavLink>
+      </a>
       <div className={styles.widgetContainer}>
         <NavLink to={PATHS.LEADERBOARD}>
           <Button className={styles.rewardsButton} type="circle" variant="text">
