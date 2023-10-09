@@ -5,6 +5,14 @@
   height: 100%;
 }
 
-.tabs button:nth-child(2) {
-  border-right: var(--border-less-primary);
+.tabs {
+  button:nth-child(2) {
+    border-right: var(--border-less-primary);
+  }
+
+  @media (max-width: 640px) {
+    button {
+      font: var(--body-text-xs);
+    }
+  }
 }

@@ -94,7 +94,7 @@ const RewardsInfoBlock = () => (
       <span className={styles.rewardsInfoTitle}>
         <Lend /> Lender
       </span>
-      <span>earn SOL APY while your offers are pending in offer book</span>
+      <span>earn SOL APY while your competitive offers are pending in the orders books</span>
       <span>earn extra SOL APY for your active loans</span>
     </div>
     <div className={styles.rewardsInfo}>
