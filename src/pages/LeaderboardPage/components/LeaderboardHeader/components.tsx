@@ -116,7 +116,6 @@ const LoyaltyProgressBar: FC<LoyaltyProgressBarProps> = ({ percentage }) => {
           stroke={loyaltyColor}
           strokeDasharray={circumference}
           strokeDashoffset={dashOffset}
-          d={`M${50 - radius},50 A${radius},${radius} 0 0 1 ${50 + radius},50`}
         />
       </svg>
       <StatInfo

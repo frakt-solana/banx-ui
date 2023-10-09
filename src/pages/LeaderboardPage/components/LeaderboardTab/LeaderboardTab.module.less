@@ -2,6 +2,10 @@
   .ant-table table {
     width: unset !important;
   }
+
+  .ant-table-tbody > tr > td:first-child {
+    padding-left: 16px !important;
+  }
 }
 
 .userInfoCell {
@@ -16,6 +20,13 @@
   @media (max-width: 640px) {
     font: var(--body-text-sm);
   }
+}
+
+.indicator {
+  display: flex;
+  border-radius: 100px;
+  height: 8px;
+  width: 8px;
 }
 
 .userRank {

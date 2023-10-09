@@ -15,6 +15,7 @@ import {
   CircleCheck as CircleCheckIcon,
 } from '@banx/icons'
 import { PATHS } from '@banx/router'
+import { formatNumbersWithCommas } from '@banx/utils'
 
 import styles from './BanxRewardsTab.module.less'
 
@@ -56,11 +57,12 @@ const StatsBlock: FC<StatsBlockProps> = ({
     value: styles.statValue,
     label: styles.statLabel,
   }
+
   return (
     <div className={styles.stats}>
       <StatInfo
         label="Early incentives"
-        value={`${earlyIncentives} $BANX`}
+        value={`${formatNumbersWithCommas(earlyIncentives)} $BANX`}
         classNamesProps={statClassNames}
         valueType={VALUES_TYPES.STRING}
         tooltipText=""
@@ -68,14 +70,14 @@ const StatsBlock: FC<StatsBlockProps> = ({
       <PlusOutlined />
       <StatInfo
         label="Leaderboard s1"
-        value={`${firstSeasonRewards} $BANX`}
+        value={`${formatNumbersWithCommas(firstSeasonRewards)} $BANX`}
         classNamesProps={statClassNames}
         valueType={VALUES_TYPES.STRING}
       />
       <PlusOutlined />
       <StatInfo
         label="Leaderboard s2"
-        value={`${secondSeasonRewards} $BANX`}
+        value={`${formatNumbersWithCommas(secondSeasonRewards)} $BANX`}
         classNamesProps={statClassNames}
         valueType={VALUES_TYPES.STRING}
       />
