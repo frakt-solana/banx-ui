@@ -68,3 +68,15 @@ export const DialectProvider: FC<PropsWithChildren> = (props) => {
 
   return <DialectNoBlockchainSdk>{props.children}</DialectNoBlockchainSdk>
 }
+
+//? Check if wallet already signed a message to log in for dialect
+export const getDialectAccessToken = (walletPubkey?: string): string | null => {
+  if (!walletPubkey) return null
+  try {
+    const item = window.localStorage.getItem(`dialect-auth-token-${walletPubkey}`)
+    return item ?? null
+  } catch (error) {
+    console.error(error)
+    return null
+  }
+}
