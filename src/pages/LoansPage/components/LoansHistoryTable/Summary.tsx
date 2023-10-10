@@ -8,6 +8,7 @@ import { generateCSVContent } from '@banx/utils'
 
 import { useUserLoansStats } from '../../hooks'
 import { ACTIVITY_CSV_FILENAME } from './constants'
+import { formatLoanData } from './helpers'
 
 import styles from './LoansHistoryTable.module.less'
 
@@ -19,7 +20,8 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
   const { data } = useUserLoansStats()
   const { totalLoans = 0, totalBorrowed = 0, totalDebt = 0, totalRepaid = 0 } = data || {}
 
-  const csvContent = generateCSVContent(loans)
+  const formattedLoans = loans.map(formatLoanData)
+  const csvContent = generateCSVContent(formattedLoans)
 
   return (
     <div className={styles.summary}>
