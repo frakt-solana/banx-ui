@@ -17,10 +17,15 @@ import {
 import { PATHS } from '@banx/router'
 import { formatNumbersWithCommas } from '@banx/utils'
 
+import { useSeasonUserRewards } from '../../hooks'
+
 import styles from './BanxRewardsTab.module.less'
 
 const BanxRewardsTab = () => {
   const { connected } = useWallet()
+
+  const { data } = useSeasonUserRewards()
+  const { earlyIncentives = 0, firstSeasonRewards = 0, secondSeasonRewards = 0 } = data || {}
 
   const { theme } = useTheme()
   const Icon = theme === Theme.DARK ? BanxRewardsDarkIcon : BanxRewardsIcon
@@ -28,7 +33,11 @@ const BanxRewardsTab = () => {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        <StatsBlock earlyIncentives={0} firstSeasonRewards={0} secondSeasonRewards={0} />
+        <StatsBlock
+          earlyIncentives={earlyIncentives}
+          firstSeasonRewards={firstSeasonRewards}
+          secondSeasonRewards={secondSeasonRewards}
+        />
         {!connected && (
           <EmptyList className={styles.emptyList} message="Connect wallet to see your rewards" />
         )}
@@ -65,7 +74,7 @@ const StatsBlock: FC<StatsBlockProps> = ({
         value={`${formatNumbersWithCommas(earlyIncentives)} $BANX`}
         classNamesProps={statClassNames}
         valueType={VALUES_TYPES.STRING}
-        tooltipText=""
+        tooltipText="We converted the locked $FRKT rewards you received from past marketing campaigns to their equivalent amount of $BANX tokens"
       />
       <PlusOutlined />
       <StatInfo
