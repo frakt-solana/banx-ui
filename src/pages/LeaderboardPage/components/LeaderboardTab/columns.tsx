@@ -2,7 +2,8 @@ import { ColumnsType } from 'antd/es/table'
 
 import { HeaderCell, createColumn } from '@banx/components/TableComponents'
 
-import { LeaderboardData } from './LeaderboardTab'
+import { LeaderboardData } from '@banx/api/user'
+
 import { LoyaltyCell, PointsCell, UserInfoCell } from './components'
 
 export const getTableColumns = () => {

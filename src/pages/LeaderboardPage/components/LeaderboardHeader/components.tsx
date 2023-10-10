@@ -52,22 +52,31 @@ export const WalletInfo: FC<WalletInfoProps> = ({ walletPublicKey }) => {
   )
 }
 
+interface LoyaltyBlockProps {
+  multiplier: number
+  loyalty: number
+}
+export const LoyaltyBlock: FC<LoyaltyBlockProps> = ({ multiplier, loyalty }) => {
+  const formattedLoyalty = Math.max((loyalty - 1) * 100, 0)
+
+  return (
+    <div className={styles.loyaltyContainer}>
+      <div className={styles.loyaltyInfoWrapper}>
+        <LoyaltyInfo multiplier={multiplier} />
+        <NavLink className={styles.stakeBanxButton} to={PATHS.ADVENTURES}>
+          <Button variant="secondary" size="small">
+            Stake Banx
+          </Button>
+        </NavLink>
+      </div>
+      <LoyaltyProgressBar percentage={formattedLoyalty} />
+    </div>
+  )
+}
+
 interface LoyaltyInfoProps {
   multiplier: number
 }
-export const LoyaltyBlock: FC<LoyaltyInfoProps> = ({ multiplier }) => (
-  <div className={styles.loyaltyContainer}>
-    <div className={styles.loyaltyInfoWrapper}>
-      <LoyaltyInfo multiplier={multiplier} />
-      <NavLink className={styles.stakeBanxButton} to={PATHS.ADVENTURES}>
-        <Button variant="secondary" size="small">
-          Stake Banx
-        </Button>
-      </NavLink>
-    </div>
-    <LoyaltyProgressBar percentage={70} />
-  </div>
-)
 
 const LoyaltyInfo: FC<LoyaltyInfoProps> = ({ multiplier }) => (
   <div className={styles.loyaltyInfo}>
@@ -110,7 +119,7 @@ const LoyaltyProgressBar: FC<LoyaltyProgressBarProps> = ({ percentage }) => {
   return (
     <div className={styles.progressContainer}>
       <svg viewBox="0 0 100 70">
-        <path {...commonPathProps} stroke="#efefef" />
+        <path {...commonPathProps} />
         <path
           {...commonPathProps}
           stroke={loyaltyColor}
