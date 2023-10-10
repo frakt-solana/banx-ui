@@ -3911,6 +3911,11 @@
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.5.tgz#1001cc5e6a3704b83c236027e77f2f58ea010f40"
   integrity sha512-Klz949h02Gz2uZCMGwDUSDS1YBlTdDDgbWHi+81l29tQALUtvz4rAYi5uoVhE5Lagoq6DeqAUlbrHvW/mXDgdQ==
 
+"@types/mixpanel-browser@^2.47.3":
+  version "2.47.3"
+  resolved "https://registry.yarnpkg.com/@types/mixpanel-browser/-/mixpanel-browser-2.47.3.tgz#1c4c96c946aac102e8a4ed941a9ebaae9ff04f8a"
+  integrity sha512-lum9ZdfLihJ89XoCrBjB8le/Vg6ohYSR2/3AdfLWGZdhUBEgftncDO9+0uW08FSN6SLqy2s9zCf55YV5sNLNYA==
+
 "@types/ms@*":
   version "0.7.31"
   resolved "https://registry.yarnpkg.com/@types/ms/-/ms-0.7.31.tgz#31b7ca6407128a3d2bbc27fe2d21b345397f6197"
@@ -9374,6 +9379,11 @@ minizlib@^2.0.0, minizlib@^2.1.1, minizlib@^2.1.2:
   dependencies:
     minipass "^3.0.0"
     yallist "^4.0.0"
+
+mixpanel-browser@^2.47.0:
+  version "2.47.0"
+  resolved "https://registry.yarnpkg.com/mixpanel-browser/-/mixpanel-browser-2.47.0.tgz#4e7fd3bb660c6f63443efbd169d1cd327db71ed4"
+  integrity sha512-Ldrva0fRBEIFWmEibBQO1PulfpJVF3pf28Guk09lDirDaSQqqU/xs9zQLwN2rL5VwVtsP1aD3JaCgaa98EjojQ==
 
 mkdirp-infer-owner@^2.0.0:
   version "2.0.0"
