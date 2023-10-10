@@ -1,10 +1,10 @@
-import { FC, useEffect, useState } from 'react'
+import { FC } from 'react'
 
+import { useImagePreload } from '@banx/hooks'
 import {
   HealthColorDecreasing,
   formatNumbersWithCommas,
   getColorByPercent,
-  isImageUrl,
   shortenAddress,
 } from '@banx/utils'
 
@@ -26,25 +26,13 @@ interface UserInfoCellProps {
 
 export const UserInfoCell: FC<UserInfoCellProps> = ({ rank, user, avatar }) => {
   const rankIndicatorColor = RANK_COLOR_MAP[rank]
-  const [isImageLoaded, setImageLoaded] = useState(false)
-
-  useEffect(() => {
-    const checkImage = async () => {
-      const result = await isImageUrl(avatar)
-      setImageLoaded(result)
-    }
-    checkImage()
-  }, [avatar])
+  const imageLoaded = useImagePreload(avatar)
 
   return (
     <div className={styles.userInfoCell}>
       <div style={{ background: rankIndicatorColor }} className={styles.indicator} />
       <span className={styles.userRank}>{rank}</span>
-      <img
-        className={styles.userAvatar}
-        src={isImageLoaded ? avatar : PLACEHOLDER_BANX_IMAGE}
-        onError={() => setImageLoaded(false)}
-      />
+      <img className={styles.userAvatar} src={imageLoaded ? avatar : PLACEHOLDER_BANX_IMAGE} />
       <span className={styles.userWalletAddress}>{shortenAddress(user)}</span>
     </div>
   )
