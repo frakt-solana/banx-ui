@@ -5,6 +5,7 @@ import { DoughnutChartProps } from '@banx/components/Charts'
 
 import { TotalLenderStats } from '@banx/api/stats'
 import { PATHS } from '@banx/router'
+import { trackPageEvent } from '@banx/utils'
 
 import {
   AllocationStatus,
@@ -47,12 +48,17 @@ export const useAllocationBlock = (stats?: AllocationStats) => {
     },
   }
 
-  const goToPage = (path: string) => () => {
-    navigate(path)
+  const goToLendPage = () => {
+    trackPageEvent('dashboard', 'lendtab-lend')
+    navigate(PATHS.LEND)
+  }
+  const goToOffersPage = () => {
+    trackPageEvent('dashboard', 'lendtab-manage')
+    navigate(PATHS.OFFERS)
   }
 
   const buttonProps = {
-    onClick: isDataEmpty ? goToPage(PATHS.LEND) : goToPage(PATHS.OFFERS),
+    onClick: isDataEmpty ? goToLendPage : goToOffersPage,
     text: isDataEmpty ? 'Lend SOL' : 'Manage my offers',
   }
 

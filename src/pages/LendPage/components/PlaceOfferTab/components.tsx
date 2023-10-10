@@ -8,6 +8,7 @@ import { StatInfo } from '@banx/components/StatInfo'
 import { useWalletModal } from '@banx/components/WalletModal'
 
 import { WEEKS_IN_YEAR } from '@banx/constants'
+import { trackPageEvent } from '@banx/utils'
 
 import styles from './PlaceOfferTab.module.less'
 
@@ -70,6 +71,14 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
 
   const onToggleWalletModal = () => toggleVisibility()
 
+  const onMainActionBtnClick = () => {
+    if (connected) {
+      return onCreateOffer()
+    }
+    trackPageEvent('lend', `connectwallet`)
+    onToggleWalletModal()
+  }
+
   return (
     <div className={styles.buttonsWrapper}>
       {isEditMode ? (
@@ -87,7 +96,7 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
         </>
       ) : (
         <Button
-          onClick={connected ? onCreateOffer : onToggleWalletModal}
+          onClick={onMainActionBtnClick}
           className={styles.button}
           disabled={disablePlaceOffer}
         >

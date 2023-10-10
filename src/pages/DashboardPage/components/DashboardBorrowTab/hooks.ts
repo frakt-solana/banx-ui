@@ -12,7 +12,7 @@ import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { PATHS } from '@banx/router'
 import { useLoansOptimistic, useOffersOptimistic } from '@banx/store'
-import { calculateLoanValue } from '@banx/utils'
+import { calculateLoanValue, trackPageEvent } from '@banx/utils'
 
 import { useBorrowerStats } from '../../hooks'
 
@@ -34,12 +34,18 @@ export const useDashboardBorrowTab = () => {
 
   const goToBorrowPage = () => {
     navigate(PATHS.BORROW)
+    trackPageEvent('dashboard', 'borrowtab-collection')
+  }
+
+  const onBorrow = (nft: BorrowNft) => {
+    borrow(nft)
+    trackPageEvent('dashboard', 'borrowtab-borrow')
   }
 
   return {
     marketsPreview: filteredMarkets,
     nfts: filteredNFTs,
-    borrow,
+    borrow: onBorrow,
     findBestOffer,
     borrowerStats,
     headingText,

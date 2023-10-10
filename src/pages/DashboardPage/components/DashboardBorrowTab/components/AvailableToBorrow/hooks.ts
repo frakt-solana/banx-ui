@@ -9,6 +9,7 @@ import { useWalletModal } from '@banx/components/WalletModal'
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { PATHS } from '@banx/router'
+import { trackPageEvent } from '@banx/utils'
 
 import styles from './AvailableToBorrow.module.less'
 
@@ -32,9 +33,14 @@ export const useAvailableToBorrow = () => {
     navigate(PATHS.BORROW)
   }
 
+  const connectWalletHandler = () => {
+    trackPageEvent('dashboard', 'connectwallet')
+    toggleVisibility()
+  }
+
   const buttonProps = {
     className: styles.button,
-    onClick: connected ? goToBorrowPage : toggleVisibility,
+    onClick: connected ? goToBorrowPage : connectWalletHandler,
     text: connected ? 'Borrow SOL in bulk' : 'Connect wallet to borrow SOL',
   }
 

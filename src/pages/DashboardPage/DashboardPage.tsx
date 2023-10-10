@@ -1,5 +1,7 @@
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
+import { toLowerCaseNoSpaces, trackPageEvent, useMixpanelLocationTrack } from '@banx/utils'
+
 import DashboardBorrowTab from './components/DashboardBorrowTab'
 import DashboardHeader from './components/DashboardHeader'
 import DashboardLendTab from './components/DashboardLendTab'
@@ -12,6 +14,12 @@ enum DashboardTabName {
 }
 
 export const DashboardPage = () => {
+  useMixpanelLocationTrack('dashboard')
+
+  const onTabClick = (tabProps: Tab) => {
+    trackPageEvent('dashboard', `${toLowerCaseNoSpaces(tabProps.label)}tab`)
+  }
+
   const { value: currentTabValue, ...tabsProps } = useTabs({
     tabs: DASHBOARD_TABS,
     defaultValue: DASHBOARD_TABS[0].value,
@@ -20,7 +28,7 @@ export const DashboardPage = () => {
   return (
     <div className={styles.pageWrapper}>
       <DashboardHeader />
-      <Tabs value={currentTabValue} {...tabsProps} />
+      <Tabs value={currentTabValue} {...tabsProps} onTabClick={onTabClick} />
       <div className={styles.content}>
         {currentTabValue === DashboardTabName.BORROW && <DashboardBorrowTab />}
         {currentTabValue === DashboardTabName.LEND && <DashboardLendTab />}
