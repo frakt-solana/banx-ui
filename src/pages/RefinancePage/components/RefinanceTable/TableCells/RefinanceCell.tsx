@@ -69,7 +69,7 @@ const useRefinanceTransaction = (loan: Loan) => {
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
   const onSuccess = () => {
-    if (!getDialectAccessToken()) {
+    if (!getDialectAccessToken(wallet.publicKey?.toBase58())) {
       open(SubscribeNotificationsModal, {
         title: createRefinanceSubscribeNotificationsTitle(1),
         message: createRefinanceSubscribeNotificationsContent(),

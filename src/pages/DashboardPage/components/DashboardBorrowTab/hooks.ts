@@ -76,7 +76,7 @@ export const useSingleBorrow = () => {
   }
 
   const onBorrowSuccess = () => {
-    if (!getDialectAccessToken()) {
+    if (!getDialectAccessToken(wallet.publicKey?.toBase58())) {
       open(SubscribeNotificationsModal, {
         title: createLoanSubscribeNotificationsTitle(1),
         message: createLoanSubscribeNotificationsContent(),

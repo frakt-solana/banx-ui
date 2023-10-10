@@ -64,7 +64,7 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
   }
 
   const onBorrowSuccess = (loansAmount = 1) => {
-    if (!getDialectAccessToken()) {
+    if (!getDialectAccessToken(wallet.publicKey?.toBase58())) {
       open(SubscribeNotificationsModal, {
         title: createLoanSubscribeNotificationsTitle(loansAmount),
         message: createLoanSubscribeNotificationsContent(),

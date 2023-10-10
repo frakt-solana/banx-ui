@@ -80,7 +80,7 @@ export const Summary: FC<SummaryProps> = ({
     const txnParams = selectedLoans.map((loan) => ({ loan }))
 
     const onSuccess = () => {
-      if (!getDialectAccessToken()) {
+      if (!getDialectAccessToken(wallet.publicKey?.toBase58())) {
         open(SubscribeNotificationsModal, {
           title: createRefinanceSubscribeNotificationsTitle(selectedLoans.length),
           message: createRefinanceSubscribeNotificationsContent(),
