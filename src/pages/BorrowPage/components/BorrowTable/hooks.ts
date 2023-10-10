@@ -22,7 +22,7 @@ import {
   useOffersOptimistic,
   useTableView,
 } from '@banx/store'
-import { getDialectAccessToken } from '@banx/utils'
+import { getDialectAccessToken, trackPageEvent } from '@banx/utils'
 
 import { useCartState } from '../../cartState'
 import { getTableColumns } from './columns'
@@ -210,7 +210,10 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
         className: styles.searchSelect,
         selectedOptions,
         labels: ['Collection', 'Nfts'],
-        onChange: setSelectedOptions,
+        onChange: (value: string[]) => {
+          trackPageEvent('borrow', `filter`)
+          setSelectedOptions(value)
+        },
       },
       sortParams: {
         option: sortOption,

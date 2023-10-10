@@ -8,7 +8,7 @@ import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan } from '@banx/api/core'
 import { useModal } from '@banx/store'
-import { calculateLoanRepayValue } from '@banx/utils'
+import { calculateLoanRepayValue, trackPageEvent } from '@banx/utils'
 
 import { useLoansTransactions } from '../../hooks'
 
@@ -37,6 +37,7 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
 
   const onSubmit = async () => {
     try {
+      trackPageEvent('myloans', `repay`)
       if (partialPercent === 100) {
         await repayLoan(loan)
       } else {

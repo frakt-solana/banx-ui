@@ -11,6 +11,7 @@ import {
   isLoanActiveOrRefinanced,
   isLoanLiquidated,
   isLoanTerminating,
+  trackPageEvent,
 } from '@banx/utils'
 
 import { useLendLoansTransactions, useLenderLoansAndOffers } from '../hooks'
@@ -53,6 +54,21 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
     addMints,
   })
 
+  const onTerminate = () => {
+    trackPageEvent('myoffers', 'activetab-terminate')
+    terminateLoan()
+  }
+
+  const onInstant = () => {
+    trackPageEvent('myoffers', 'activetab-instantrefinance')
+    instantLoan()
+  }
+
+  const onClaim = () => {
+    trackPageEvent('myoffers', 'activetab-claim')
+    claimLoan()
+  }
+
   const buttonSize = isCardView ? 'large' : 'small'
 
   const loanActiveOrRefinanced = isLoanActiveOrRefinanced(loan)
@@ -70,7 +86,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
       {showTerminateButton && (
         <Button
           className={styles.terminateButton}
-          onClick={terminateLoan}
+          onClick={onTerminate}
           disabled={isTerminatingStatus}
           variant="secondary"
           size={buttonSize}
@@ -81,7 +97,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
 
       {showInstantButton && (
         <Button
-          onClick={instantLoan}
+          onClick={onInstant}
           className={styles.instantButton}
           variant="secondary"
           size={buttonSize}
@@ -90,7 +106,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
         </Button>
       )}
       {isLoanExpired && (
-        <Button onClick={claimLoan} className={styles.instantButton} size={buttonSize}>
+        <Button onClick={onClaim} className={styles.instantButton} size={buttonSize}>
           Claim NFT
         </Button>
       )}

@@ -19,7 +19,7 @@ import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeRefinanceAction } from '@banx/transactions/loans'
-import { enqueueSnackbar, getDialectAccessToken } from '@banx/utils'
+import { enqueueSnackbar, getDialectAccessToken, trackPageEvent } from '@banx/utils'
 
 import { useLoansState } from '../hooks'
 
@@ -39,6 +39,7 @@ export const RefinanceCell: FC<RefinanceCellProps> = ({ loan, isCardView }) => {
 
   const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (connected) {
+      trackPageEvent('refinance', `refinance-lateral`)
       refinance()
     } else {
       toggleVisibility()

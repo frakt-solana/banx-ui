@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { MarketPreview } from '@banx/api/core'
 import { PATHS } from '@banx/router'
 import { useMarketsURLControl } from '@banx/store'
+import { trackPageEvent } from '@banx/utils'
 
 import { LendCard } from '../../Card'
 
@@ -20,6 +21,7 @@ const CollectionsCardList: FC<CollectionsCardListProps> = ({ marketsPreview }) =
   const navigate = useNavigate()
 
   const goToSelectedMarket = (collectionName: string) => {
+    trackPageEvent('dashboard', 'lendtab-collection')
     setMarketVisibility(collectionName, true)
     setSelectedMarkets([collectionName])
 
