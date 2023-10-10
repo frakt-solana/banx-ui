@@ -13,6 +13,7 @@ import {
 
 import { useUserOffersStats } from '../../hooks'
 import { ACTIVITY_CSV_FILENAME } from './constants'
+import { formatLoanData } from './helpers'
 
 import styles from './HistoryOffersTable.module.less'
 
@@ -34,7 +35,9 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
   const weightedApyPercent = convertAprToApy(weightedApr / 1e4)
 
   const colorAPR = getColorByPercent(weightedApyPercent, HealthColorDecreasing)
-  const csvContent = generateCSVContent(loans)
+
+  const formattedLoans = loans.map(formatLoanData)
+  const csvContent = generateCSVContent(formattedLoans)
 
   return (
     <div className={styles.summary}>
