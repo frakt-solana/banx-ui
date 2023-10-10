@@ -9,7 +9,7 @@ import { useIntersection } from '@banx/hooks'
 
 import { getTableColumns } from './columns'
 import { useLeaderboardData } from './hooks'
-import sadPepeImg from './sad_pepe.png'
+import moneyPepeImg from './moneyPepe.png'
 
 import styles from './LeaderboardTab.module.less'
 
@@ -59,7 +59,7 @@ export default LeaderboardTab
 
 const Plug = () => (
   <div className={styles.plugContainer}>
-    <img className={styles.plugImage} src={sadPepeImg} alt="Money Pepe" />
+    <img className={styles.plugImage} src={moneyPepeImg} alt="Money Pepe" />
     <div className={styles.plugTextContainer}>
       <span>🔥 Points for leaderboard S2 are already accumulating in the background</span>
       <span>

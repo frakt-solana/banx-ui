@@ -8,9 +8,9 @@ import {
   shortenAddress,
 } from '@banx/utils'
 
-import styles from './LeaderboardTab.module.less'
+import placeholderBanxImg from './placeholderBanx.png'
 
-const PLACEHOLDER_BANX_IMAGE = 'https://banxnft.s3.amazonaws.com/images/custom.png'
+import styles from './LeaderboardTab.module.less'
 
 export const RANK_COLOR_MAP: Record<number, string> = {
   [1]: 'var(--additional-gold-primary)',
@@ -32,7 +32,7 @@ export const UserInfoCell: FC<UserInfoCellProps> = ({ rank, user, avatar }) => {
     <div className={styles.userInfoCell}>
       <div style={{ background: rankIndicatorColor }} className={styles.indicator} />
       <span className={styles.userRank}>{rank}</span>
-      <img className={styles.userAvatar} src={imageLoaded ? avatar : PLACEHOLDER_BANX_IMAGE} />
+      <img className={styles.userAvatar} src={imageLoaded ? avatar : placeholderBanxImg} />
       <span className={styles.userWalletAddress}>{shortenAddress(user)}</span>
     </div>
   )
