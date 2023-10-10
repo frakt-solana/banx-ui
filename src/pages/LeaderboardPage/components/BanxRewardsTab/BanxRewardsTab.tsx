@@ -112,5 +112,5 @@ const INFO_TEXTS = [
   'You can boost your rewards by staking Banx NFTs',
   'More player points staked = higher boost',
   '$banx IDO will happen at the end of leaderboard S2',
-  'At IDO, $banx rewards" will start to unlock linearly over a year period',
+  'At IDO, $banx rewards will start to unlock linearly over a year period',
 ]
