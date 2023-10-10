@@ -4,13 +4,13 @@ import {
   AdventuresPage,
   BorrowPage,
   DashboardPage,
+  LeaderboardPage,
   LendPage,
   LoansPage,
   OffersPage,
   RefinancePage,
   RootPage,
 } from '@banx/pages'
-import { LeaderboardPage } from '@banx/pages/LeaderboardPage'
 
 import { PATHS } from './paths'
 

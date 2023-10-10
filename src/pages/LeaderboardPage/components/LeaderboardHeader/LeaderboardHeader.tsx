@@ -9,14 +9,12 @@ import { LoyaltyBlock, NoConnectedWalletInfo, ParticipantsInfo, WalletInfo } fro
 
 import styles from './LeaderboardHeader.module.less'
 
-const MOCK_TOTAL_PARTICIPANTS = 1200
-
 const Header = () => {
   const { publicKey: walletPublicKey } = useWallet()
   const walletPublicKeyString = walletPublicKey?.toBase58() || ''
 
   const { data } = useSeasonUserRewards()
-  const { loyalty = 0, playerPoints = 0 } = data || {}
+  const { loyalty = 0, playerPoints = 0, totalParticipants = 0 } = data || {}
 
   const { data: discordUserData } = useDiscordUser()
 
@@ -35,7 +33,7 @@ const Header = () => {
       {walletPublicKey ? (
         <LoyaltyBlock multiplier={playerPoints} loyalty={loyalty} />
       ) : (
-        <ParticipantsInfo participants={MOCK_TOTAL_PARTICIPANTS} />
+        <ParticipantsInfo participants={totalParticipants} />
       )}
     </div>
   )

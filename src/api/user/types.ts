@@ -49,6 +49,7 @@ export const SeasonUserRewardsSchema = z.object({
   earlyIncentives: z.number(),
   firstSeasonRewards: z.number(),
   secondSeasonRewards: z.number(),
+  totalParticipants: z.number(),
 })
 
 export type SeasonUserRewards = z.infer<typeof SeasonUserRewardsSchema>
@@ -58,7 +59,7 @@ export const LeaderboardDataSchema = z.object({
   avatar: z.string(),
   user: z.string(),
   points: z.number(),
-  loyalty: z.number(), //? percentage
+  loyalty: z.number(), //? F.e 1 => 0 percentage, 2 => 100 percentage
 })
 
 export type LeaderboardData = z.infer<typeof LeaderboardDataSchema>
