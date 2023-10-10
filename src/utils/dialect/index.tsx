@@ -74,7 +74,7 @@ export const getDialectAccessToken = (walletPubkey?: string): string | null => {
   if (!walletPubkey) return null
   try {
     const item = window.localStorage.getItem(`dialect-auth-token-${walletPubkey}`)
-    return item ? JSON.parse(item) : null
+    return item ?? null
   } catch (error) {
     console.error(error)
     return null
