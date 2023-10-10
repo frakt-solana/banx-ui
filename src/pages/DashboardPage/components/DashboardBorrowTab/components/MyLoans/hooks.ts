@@ -6,6 +6,7 @@ import { VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { TotalBorrowerStats } from '@banx/api/stats'
 import { PATHS } from '@banx/router'
+import { trackPageEvent } from '@banx/utils'
 
 import {
   LoansStatus,
@@ -51,6 +52,7 @@ export const useMyLoans = (stats?: TotalBorrowerStats | null) => {
   }
 
   const goToLoansPage = () => {
+    trackPageEvent('dashboard', 'borrowtab-manage')
     navigate(PATHS.LOANS)
   }
 

@@ -4,7 +4,16 @@ import { web3 } from 'fbonds-core'
 import { BACKEND_BASE_URL } from '@banx/constants'
 import { getDiscordAvatarUrl } from '@banx/utils'
 
-import { BanxNotification, DiscordUserInfo, DiscordUserInfoRaw, UserRewards } from './types'
+import {
+  BanxNotification,
+  DiscordUserInfo,
+  DiscordUserInfoRaw,
+  LeaderboardData,
+  LeaderboardDataSchema,
+  SeasonUserRewards,
+  SeasonUserRewardsSchema,
+  UserRewards,
+} from './types'
 
 type FetchDiscordUser = (props: { publicKey: web3.PublicKey }) => Promise<DiscordUserInfo | null>
 export const fetchDiscordUser: FetchDiscordUser = async ({ publicKey }) => {
@@ -138,4 +147,54 @@ export const fetchUserRewards: FetchUserRewards = async ({ publicKey }) => {
   const { data } = await axios.get<UserRewards>(`${BACKEND_BASE_URL}/stats/rewards/${publicKey}`)
 
   return data
+}
+
+type FetchSeasonUserRewards = (props: { walletPubkey: string }) => Promise<SeasonUserRewards | null>
+export const fetchSeasonUserRewards: FetchSeasonUserRewards = async ({ walletPubkey }) => {
+  try {
+    const { data } = await axios.get<{ data: SeasonUserRewards }>(
+      `${BACKEND_BASE_URL}/leaderboard/user-rewards/${walletPubkey}`,
+    )
+
+    try {
+      await SeasonUserRewardsSchema.parseAsync(data?.data)
+    } catch (validationError) {
+      console.error('Schema validation error:', validationError)
+    }
+
+    return data?.data
+  } catch (error) {
+    return null
+  }
+}
+
+type FetchLeaderboardData = (props: {
+  walletPubkey: string
+  userType: string
+  order?: string
+  skip: number
+  limit: number
+}) => Promise<LeaderboardData[]>
+export const fetchLeaderboardData: FetchLeaderboardData = async ({
+  walletPubkey,
+  order = 'asc',
+  userType,
+  skip,
+  limit,
+}) => {
+  try {
+    const { data } = await axios.get<{ data: LeaderboardData[] }>(
+      `${BACKEND_BASE_URL}/leaderboard/${walletPubkey}?order=${order}&skip=${skip}&limit=${limit}&userType=${userType}`,
+    )
+
+    try {
+      await LeaderboardDataSchema.array().parseAsync(data.data)
+    } catch (validationError) {
+      console.error('Schema validation error:', validationError)
+    }
+
+    return data?.data
+  } catch (error) {
+    return []
+  }
 }

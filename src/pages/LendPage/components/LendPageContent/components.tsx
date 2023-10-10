@@ -3,6 +3,7 @@ import { FC } from 'react'
 import { MarketPreview } from '@banx/api/core'
 import { TABLET_WIDTH } from '@banx/constants'
 import { useWindowSize } from '@banx/hooks'
+import { trackPageEvent } from '@banx/utils'
 
 import LendCard from '../LendCard'
 
@@ -28,6 +29,11 @@ export const MarketsList: FC<MarketsListProps> = ({
   const { width } = useWindowSize()
   const isMobile = width < TABLET_WIDTH
 
+  const onLendCardClick = (market: MarketPreview) => {
+    toggleMarketVisibility(market.collectionName)
+    trackPageEvent('lend', `collection`)
+  }
+
   return (
     <div className={styles.marketsList}>
       {markets.map((market: MarketPreview) => {
@@ -40,7 +46,7 @@ export const MarketsList: FC<MarketsListProps> = ({
           <LendCard
             key={marketPubkey}
             market={market}
-            onCardClick={() => toggleMarketVisibility(collectionName)}
+            onCardClick={() => onLendCardClick(market)}
             isOrderBookVisible={isOrderBookVisible}
             isCardOpen={isCardOpen}
           />

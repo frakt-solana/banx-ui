@@ -27,6 +27,7 @@ import {
   enqueueSnackbar,
   getColorByPercent,
   getDialectAccessToken,
+  trackPageEvent,
 } from '@banx/utils'
 
 import { useAuctionsLoans } from '../../hooks'
@@ -125,6 +126,7 @@ export const Summary: FC<SummaryProps> = ({
 
   const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (wallet.connected) {
+      trackPageEvent('refinance', `refinance-bottom`)
       refinanceAll()
     } else {
       toggleVisibility()

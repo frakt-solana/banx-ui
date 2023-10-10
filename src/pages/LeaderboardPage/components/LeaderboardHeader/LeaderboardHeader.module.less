@@ -1,0 +1,226 @@
+.header {
+  border-bottom: var(--border-less-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    padding: 16px;
+  }
+}
+
+.walletInfoContainer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+
+  @media (max-width: 640px) {
+    gap: 8px;
+  }
+}
+
+.notConnectedTitle {
+  font: var(--title-lg);
+  text-transform: uppercase;
+
+  @media (max-width: 960px) {
+    font: var(--title-md);
+  }
+
+  @media (max-width: 640px) {
+    font: var(--title-xs);
+    max-width: 150px;
+  }
+}
+
+.participantsInfo {
+  flex-direction: column-reverse;
+  align-items: flex-end;
+}
+.participantsValue {
+  font: var(--important-text-md);
+}
+.participantsLabel {
+  color: var(--content-primary);
+  font: var(--table-header-md);
+}
+
+.walletInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  max-width: 256px;
+  width: 100%;
+
+  @media (max-width: 1280px) {
+    display: none;
+  }
+}
+
+.walletInfoMobileBadge {
+  @media (min-width: 1281px) {
+    display: none;
+  }
+
+  // background: var(--additional-green-secondary);
+  // border: 0.5px solid var(--additional-green-primary-deep);
+  // color: var(--additional-green-primary-deep);
+  // cursor: pointer;
+
+  background: var(--bg-secondary);
+  border: 0.5px solid var(--bg-border);
+  border-radius: 100px;
+  color: var(--content-secondary);
+
+  font: var(--body-text-sm);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 8px;
+  gap: 4px;
+
+  position: absolute;
+  bottom: 0;
+  left: 8px;
+  right: 8px;
+
+  svg path {
+    fill: var(--content-secondary);
+  }
+
+  @media (max-width: 640px) {
+    font: var(--body-text-xs);
+    padding: 1px 6px;
+    left: 2px;
+    right: 2px;
+  }
+}
+
+.walletAddress {
+  font: var(--title-lg);
+  line-height: 42px;
+  text-transform: uppercase;
+}
+.connectWalletButton {
+  width: 100%;
+}
+
+.avatar {
+  &,
+  svg,
+  img {
+    border-radius: 100%;
+    height: 88px;
+    width: 88px;
+
+    @media (max-width: 640px) {
+      height: 64px;
+      width: 64px;
+    }
+  }
+}
+
+// Loyalty block styles
+.loyaltyContainer {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  @media (max-width: 640px) {
+    gap: 8px;
+  }
+}
+.loyaltyInfoWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  @media (max-width: 640px) {
+    gap: 4px;
+  }
+}
+.loyaltyInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.loyaltyDetails {
+  display: flex;
+  flex-direction: column;
+}
+.loyaltyMultiplier {
+  color: var(--pure-purple);
+  font: var(--important-text-xll);
+
+  @media (max-width: 640px) {
+    font: var(--important-text-xl);
+  }
+}
+.loyaltyTitle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--content-secondary);
+  font: var(--table-header-md);
+  text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--table-header-sm);
+  }
+}
+.loyaltySubtitle {
+  font: var(--important-text-md);
+
+  @media (max-width: 640px) {
+    font: var(--important-text-xs);
+  }
+}
+.stakeBanxButton {
+  &,
+  button {
+    text-decoration: none;
+    width: 100%;
+  }
+}
+
+.progressContainer {
+  position: relative;
+  height: 74px;
+  width: 116px;
+
+  svg path:first-child {
+    stroke: var(--bg-secondary);
+  }
+
+  @media (max-width: 640px) {
+    height: 60px;
+    width: 72px;
+  }
+}
+
+.textContainer {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 0%);
+
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 0;
+
+  @media (max-width: 640px) {
+    transform: translate(-50%, -30%);
+  }
+
+  .value {
+    font: var(--important-text-xl);
+
+    @media (max-width: 640px) {
+      font: var(--important-text-sm);
+    }
+  }
+}

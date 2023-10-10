@@ -1,3 +1,5 @@
+import { z } from 'zod'
+
 export interface DiscordUserInfoRaw {
   avatar: string
   discordId: string
@@ -38,3 +40,26 @@ export interface UserRewards {
   lenders: Rewards[]
   borrowers: Rewards[]
 }
+
+export const SeasonUserRewardsSchema = z.object({
+  totalClaimed: z.number(),
+  availableToClaim: z.number(),
+  playerPoints: z.number(),
+  loyalty: z.number(), //? F.e 1 => 0 percentage, 2 => 100 percentage
+  earlyIncentives: z.number(),
+  firstSeasonRewards: z.number(),
+  secondSeasonRewards: z.number(),
+  totalParticipants: z.number(),
+})
+
+export type SeasonUserRewards = z.infer<typeof SeasonUserRewardsSchema>
+
+export const LeaderboardDataSchema = z.object({
+  rank: z.number(),
+  avatar: z.string().nullable(),
+  user: z.string(),
+  points: z.number(),
+  loyalty: z.number(), //? F.e 1 => 0 percentage, 2 => 100 percentage
+})
+
+export type LeaderboardData = z.infer<typeof LeaderboardDataSchema>
