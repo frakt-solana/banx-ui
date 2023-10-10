@@ -54,6 +54,7 @@ export const executeBorrow = async (props: {
   walletAndConnection: WalletAndConnection
   addLoansOptimistic: LoansOptimisticStore['add']
   updateOffersOptimistic: OffersOptimisticStore['update']
+  onSuccessAll?: () => void
 }) => {
   const {
     isLedger = false,
@@ -61,6 +62,7 @@ export const executeBorrow = async (props: {
     walletAndConnection,
     addLoansOptimistic,
     updateOffersOptimistic,
+    onSuccessAll,
   } = props
   const { wallet, connection } = walletAndConnection
 
@@ -104,6 +106,8 @@ export const executeBorrow = async (props: {
       }) as Offer[]
 
       updateOffersOptimistic(optimisticsToAdd)
+
+      onSuccessAll?.()
     })
     .on('pfError', (error) => {
       defaultTxnErrorHandler(error, {

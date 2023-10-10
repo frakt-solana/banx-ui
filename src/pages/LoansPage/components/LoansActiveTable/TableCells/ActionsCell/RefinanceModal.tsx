@@ -56,7 +56,8 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
         }
         clearSelection()
         enqueueSnackbar({
-          message: 'Transaction Executed',
+          message: 'Loan successfully refinanced',
+          type: 'success',
           solanaExplorerPath: `tx/${txnHash}`,
         })
         close()

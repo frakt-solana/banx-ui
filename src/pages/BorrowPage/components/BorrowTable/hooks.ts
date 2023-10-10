@@ -1,10 +1,16 @@
 import { useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { filter, first, get, groupBy, includes, isEmpty, map, sortBy } from 'lodash'
+import { filter, first, get, groupBy, includes, isEmpty, map, sortBy, sumBy } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
+import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
 import { SortOption } from '@banx/components/SortDropdown'
+import {
+  SubscribeNotificationsModal,
+  createLoanSubscribeNotificationsContent,
+  createLoanSubscribeNotificationsTitle,
+} from '@banx/components/modals'
 
 import { BorrowNft, Offer } from '@banx/api/core'
 import { PATHS } from '@banx/router'
@@ -12,9 +18,11 @@ import {
   ViewState,
   useIsLedger,
   useLoansOptimistic,
+  useModal,
   useOffersOptimistic,
   useTableView,
 } from '@banx/store'
+import { getDialectAccessToken } from '@banx/utils'
 
 import { useCartState } from '../../cartState'
 import { getTableColumns } from './columns'
@@ -34,6 +42,8 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
   const { connection } = useConnection()
   const navigate = useNavigate()
   const { isLedger } = useIsLedger()
+  const { open, close } = useModal()
+  const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
   const { offerByMint, addNft, removeNft, findOfferInCart, findBestOffer, addNftsAuto, resetCart } =
     useCartState()
@@ -51,6 +61,20 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
 
   const goToLoansPage = () => {
     navigate(PATHS.LOANS)
+  }
+
+  const onBorrowSuccess = (loansAmount = 1) => {
+    if (!getDialectAccessToken(wallet.publicKey?.toBase58())) {
+      open(SubscribeNotificationsModal, {
+        title: createLoanSubscribeNotificationsTitle(loansAmount),
+        message: createLoanSubscribeNotificationsContent(),
+        onActionClick: () => {
+          close()
+          setBanxNotificationsSiderVisibility(true)
+        },
+        onCancel: close,
+      })
+    }
   }
 
   const borrow = async (nft: TableNftData) => {
@@ -79,6 +103,7 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
       ],
       addLoansOptimistic,
       updateOffersOptimistic,
+      onSuccessAll: () => onBorrowSuccess(1),
       isLedger,
     })
 
@@ -98,6 +123,7 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
       txnParams,
       addLoansOptimistic,
       updateOffersOptimistic,
+      onSuccessAll: () => onBorrowSuccess(sumBy(txnParams, (param) => param.length)),
       isLedger,
     })
 
