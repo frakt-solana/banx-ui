@@ -1,6 +1,6 @@
-import { Tabs, useTabs } from '@banx/components/Tabs'
+import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
-import { useMixpanelLocationTrack } from '@banx/utils'
+import { toLowerCaseNoSpaces, trackPageEvent, useMixpanelLocationTrack } from '@banx/utils'
 
 import ActiveOffersTable from './components/ActiveOffersTable'
 import { HistoryOffersTable } from './components/HistoryOffersTable'
@@ -18,10 +18,14 @@ export const OffersPage = () => {
     defaultValue: DEFAULT_TAB_VALUE,
   })
 
+  const onTabClick = (tabProps: Tab) => {
+    trackPageEvent('myoffers', `${toLowerCaseNoSpaces(tabProps.label)}tab`)
+  }
+
   return (
     <div className={styles.pageWrapper}>
       <OffersHeader />
-      <Tabs value={currentTabValue} {...tabsProps} />
+      <Tabs value={currentTabValue} {...tabsProps} onTabClick={onTabClick} />
       {currentTabValue === OffersTabName.PENDING && <PendingOfferTable />}
       {currentTabValue === OffersTabName.ACTIVE && <ActiveOffersTable />}
       {currentTabValue === OffersTabName.HISTORY && <HistoryOffersTable />}
