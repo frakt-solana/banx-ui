@@ -22,11 +22,7 @@ export const Header = () => {
         <Logo className={styles.logoBasic} />
       </a>
       <div className={styles.widgetContainer}>
-        <NavLink to={PATHS.LEADERBOARD}>
-          <Button className={styles.rewardsButton} type="circle" variant="text">
-            <Cup /> <span>Rewards</span>
-          </Button>
-        </NavLink>
+        <RewardsButton />
         <ThemeSwitcher />
         {connected && <BanxNotificationsButton />}
         <WalletConnectButton />
@@ -35,3 +31,11 @@ export const Header = () => {
     </div>
   )
 }
+
+const RewardsButton = () => (
+  <NavLink to={PATHS.LEADERBOARD}>
+    <Button className={styles.rewardsButton} type="circle" variant="text">
+      <Cup /> <span>Rewards</span>
+    </Button>
+  </NavLink>
+)
