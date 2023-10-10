@@ -11,7 +11,9 @@ export const getTableColumns = () => {
     {
       key: 'collateral',
       title: <HeaderCell label="Rank, Profile" />,
-      render: (_, stats) => <UserInfoCell {...stats} />,
+      render: (_, { user, rank, avatar }) => (
+        <UserInfoCell user={user} rank={rank} avatar={avatar ?? ''} />
+      ),
     },
     {
       key: 'points',

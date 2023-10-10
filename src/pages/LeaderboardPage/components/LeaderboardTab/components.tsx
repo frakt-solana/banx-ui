@@ -1,14 +1,16 @@
-import { FC } from 'react'
+import { FC, useEffect, useState } from 'react'
 
-import { LeaderboardData } from '@banx/api/user'
 import {
   HealthColorDecreasing,
   formatNumbersWithCommas,
   getColorByPercent,
+  isImageUrl,
   shortenAddress,
 } from '@banx/utils'
 
 import styles from './LeaderboardTab.module.less'
+
+const PLACEHOLDER_BANX_IMAGE = 'https://banxnft.s3.amazonaws.com/images/custom.png'
 
 export const RANK_COLOR_MAP: Record<number, string> = {
   [1]: 'var(--additional-gold-primary)',
@@ -16,14 +18,33 @@ export const RANK_COLOR_MAP: Record<number, string> = {
   [3]: 'var(--additional-bronze-primary)',
 }
 
-export const UserInfoCell: FC<LeaderboardData> = ({ rank, user, avatar }) => {
+interface UserInfoCellProps {
+  rank: number
+  user: string
+  avatar: string
+}
+
+export const UserInfoCell: FC<UserInfoCellProps> = ({ rank, user, avatar }) => {
   const rankIndicatorColor = RANK_COLOR_MAP[rank]
+  const [isImageLoaded, setImageLoaded] = useState(false)
+
+  useEffect(() => {
+    const checkImage = async () => {
+      const result = await isImageUrl(avatar)
+      setImageLoaded(result)
+    }
+    checkImage()
+  }, [avatar])
 
   return (
     <div className={styles.userInfoCell}>
       <div style={{ background: rankIndicatorColor }} className={styles.indicator} />
       <span className={styles.userRank}>{rank}</span>
-      <img className={styles.userAvatar} src={avatar} />
+      <img
+        className={styles.userAvatar}
+        src={isImageLoaded ? avatar : PLACEHOLDER_BANX_IMAGE}
+        onError={() => setImageLoaded(false)}
+      />
       <span className={styles.userWalletAddress}>{shortenAddress(user)}</span>
     </div>
   )
@@ -41,7 +62,7 @@ export const LoyaltyCell: FC<{ loyalty: number }> = ({ loyalty }) => {
 }
 
 export const PointsCell: FC<{ points: number }> = ({ points = 0 }) => {
-  const formattedPoints = formatNumbersWithCommas(points?.toFixed(2))
+  const formattedPoints = formatNumbersWithCommas(points?.toFixed(0))
 
   return <span className={styles.pointsTitleCell}>{formattedPoints}</span>
 }

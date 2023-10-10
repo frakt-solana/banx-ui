@@ -21,7 +21,7 @@ const LeaderboardTab = () => {
 
   const { ref: fetchMoreTrigger, inView } = useIntersection()
 
-  const { data, hasNextPage, fetchNextPage, filterParams } = useLeaderboardData()
+  const { data, hasNextPage, fetchNextPage, filterParams, isLoading } = useLeaderboardData()
 
   useEffect(() => {
     if (inView && hasNextPage) {
@@ -32,7 +32,6 @@ const LeaderboardTab = () => {
   return (
     <>
       <RadioButton className={styles.radioButton} {...filterParams} />
-
       {!connected && (
         <EmptyList className={styles.emptyList} message="Connect wallet to see your position" />
       )}
@@ -40,6 +39,7 @@ const LeaderboardTab = () => {
       <Table
         data={data}
         columns={columns}
+        loading={isLoading}
         rowKeyField="user"
         className={styles.tableRoot}
         fetchMoreTrigger={fetchMoreTrigger}

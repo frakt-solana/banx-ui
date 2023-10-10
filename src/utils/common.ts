@@ -55,3 +55,12 @@ export const calcWeightedAverage = (nums: number[], weights: number[]) => {
   const weightedAverage = sum / weightSum
   return weightedAverage || 0
 }
+
+export const isImageUrl = (url: string): Promise<boolean> => {
+  return new Promise((resolve) => {
+    const image = new Image()
+    image.onload = () => resolve(true)
+    image.onerror = () => resolve(false)
+    image.src = url
+  })
+}
