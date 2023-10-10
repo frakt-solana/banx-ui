@@ -14,12 +14,19 @@ const IGNORE_ERRORS = [
   'Transaction rejected',
 ]
 
-export const initSentry = (): void => {
+export const initSentry = () => {
   Sentry.init({
     dsn: SENTRY.APP_DSN,
     ignoreErrors: IGNORE_ERRORS,
     defaultIntegrations: false,
     tracesSampleRate: 0.05,
+    beforeSend: (event) => {
+      const ignore = !!event.exception?.values?.find(({ type, value }) => {
+        if (!type || !value) return false
+        if (IGNORE_ERRORS.includes(type) || IGNORE_ERRORS.includes(value)) return true
+      })
+      return !ignore ? event : null
+    },
   })
 }
 
