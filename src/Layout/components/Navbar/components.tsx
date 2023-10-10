@@ -4,6 +4,7 @@ import classNames from 'classnames'
 import { NavLink } from 'react-router-dom'
 
 import { Theme, useTheme } from '@banx/hooks'
+import { toLowerCaseNoSpaces, trackNavigationEvent } from '@banx/utils'
 
 import { isActivePath } from './helpers'
 import { LinkProps, MenuItemProps } from './types'
@@ -19,9 +20,19 @@ const Link: FC<LinkProps> = ({ href, pathname = '', icon: Icon, label, className
     }),
   }
 
+  const onLinkClickHandler = () => {
+    trackNavigationEvent(toLowerCaseNoSpaces(label))
+  }
+
   if (href) {
     return (
-      <a href={href} rel="noopener noreferrer" target="_blank" {...linkProps}>
+      <a
+        href={href}
+        rel="noopener noreferrer"
+        target="_blank"
+        {...linkProps}
+        onClick={onLinkClickHandler}
+      >
         {Icon && <Icon />}
         {label && <span>{label}</span>}
       </a>
@@ -29,7 +40,7 @@ const Link: FC<LinkProps> = ({ href, pathname = '', icon: Icon, label, className
   }
 
   return (
-    <NavLink to={pathname} {...linkProps}>
+    <NavLink to={pathname} {...linkProps} onClick={onLinkClickHandler}>
       {Icon && <Icon />}
       {label && <span>{label}</span>}
     </NavLink>
