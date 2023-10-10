@@ -47,3 +47,5 @@ export const IS_PRIVATE_MARKETS = process.env.IS_PRIVATE_MARKETS === 'true'
 
 export const COMPRESS_QUERY_PERSISTER =
   !IS_DEVELOPMENT && process.env.COMPRESS_QUERY_PERSISTER_ON_BUILD === 'true'
+
+export const MIXPANEL_ACCESS_TOKEN = '04b79b621a9f54b14c415aea91ba8e5b'
