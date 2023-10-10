@@ -1,3 +1,8 @@
+.container {
+  position: relative;
+  overflow: hidden;
+}
+
 .tableRoot :global {
   .ant-table table {
     width: unset !important;
@@ -82,4 +87,42 @@
 .emptyList {
   margin: 16px 24px 12px;
   text-align: left;
+}
+
+.plugContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  backdrop-filter: blur(5px);
+  z-index: 5;
+}
+
+.plugImage {
+  width: 200px;
+  height: 200px;
+
+  @media (max-width: 640px) {
+    width: 144px;
+    height: 144px;
+  }
+}
+
+.plugTextContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font: var(--important-text-md);
+  text-align: center;
+
+  @media (max-width: 640px) {
+    font: var(--important-text-sm);
+  }
 }
