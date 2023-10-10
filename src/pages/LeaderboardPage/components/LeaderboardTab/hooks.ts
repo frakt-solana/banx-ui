@@ -7,7 +7,7 @@ import { RBOption } from '@banx/components/RadioButton'
 
 import { fetchLeaderboardData } from '@banx/api/user'
 
-const PAGINATION_LIMIT = 5
+const PAGINATION_LIMIT = 15
 
 export const useLeaderboardData = () => {
   const { publicKey } = useWallet()

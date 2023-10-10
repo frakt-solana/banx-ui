@@ -1,6 +1,7 @@
 import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import moment from 'moment'
 
 import { Button } from '@banx/components/Buttons'
 import EmptyList from '@banx/components/EmptyList'
@@ -11,9 +12,9 @@ import { Borrow, Lend, MoneyBill } from '@banx/icons'
 
 import styles from './RewardsTab.module.less'
 
-const MOCK_TOTAL_CLAIMED = 350
-const MOCK_NEXT_WEEKLY_REWARDS = 1697194509
-const MOCK_AVAILABLE_TO_CLAIM = 10
+const MOCK_TOTAL_CLAIMED = 0
+const MOCK_NEXT_WEEKLY_REWARDS = 1697400000
+const MOCK_AVAILABLE_TO_CLAIM = 0
 
 const RewardsTab = () => {
   return (
@@ -43,6 +44,8 @@ const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({
 }) => {
   const { connected } = useWallet()
 
+  const disableClaimRewards = moment().unix() < nextWeeklyRewards
+
   return (
     <div className={styles.claimRewardsBlock}>
       <StatInfo
@@ -60,7 +63,9 @@ const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({
       />
       <AvailableToClaim availableToClaim={availableToClaim} />
       {connected ? (
-        <Button className={styles.claimRewardsButton}>Claim</Button>
+        <Button disabled={disableClaimRewards} className={styles.claimRewardsButton}>
+          Claim
+        </Button>
       ) : (
         <EmptyList className={styles.emptyList} message="Connect wallet to see your rewards" />
       )}

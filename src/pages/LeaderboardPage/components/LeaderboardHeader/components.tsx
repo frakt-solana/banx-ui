@@ -41,9 +41,9 @@ export const WalletInfo: FC<WalletInfoProps> = ({ walletPublicKey }) => {
     <>
       <div className={styles.walletInfo}>
         <span className={styles.walletAddress}>{shortenAddress(walletPublicKey)}</span>
-        <Button className={styles.connectWalletButton} variant="secondary" size="small">
+        {/* <Button className={styles.connectWalletButton} variant="secondary" size="small">
           Link wallets
-        </Button>
+        </Button> */}
       </div>
       <div className={styles.walletInfoMobileBadge}>
         {walletPublicKey.slice(0, 4)} <LinkIcon />

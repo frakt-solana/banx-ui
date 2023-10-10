@@ -28,7 +28,7 @@ const BanxRewardsTab = () => {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        <StatsBlock earlyIncentives={12986} firstSeasonRewards={758} secondSeasonRewards={3695} />
+        <StatsBlock earlyIncentives={0} firstSeasonRewards={0} secondSeasonRewards={0} />
         {!connected && (
           <EmptyList className={styles.emptyList} message="Connect wallet to see your rewards" />
         )}

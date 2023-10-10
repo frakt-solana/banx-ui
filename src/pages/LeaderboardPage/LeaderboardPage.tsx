@@ -41,6 +41,7 @@ export const LEADERBOARD_TABS: Tab[] = [
   {
     label: 'Leaderboard',
     value: LeaderboardTabName.LEADERBOARD,
+    disabled: true,
   },
   {
     label: 'Earn points',
