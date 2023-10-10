@@ -35,7 +35,6 @@ export const useLeaderboardData = () => {
     getNextPageParam: (lastPage) => {
       return lastPage.data?.length ? lastPage.pageParam + 1 : undefined
     },
-    staleTime: 60 * 1000,
     networkMode: 'offlineFirst',
     refetchOnWindowFocus: false,
   })
