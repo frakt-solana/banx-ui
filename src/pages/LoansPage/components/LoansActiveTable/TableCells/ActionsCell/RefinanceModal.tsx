@@ -22,6 +22,7 @@ import {
   calculateLoanRepayValue,
   enqueueSnackbar,
   isLoanTerminating,
+  trackPageEvent,
 } from '@banx/utils'
 
 import styles from './ActionsCell.module.less'
@@ -41,8 +42,34 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
 
   const { updateOptimisticOffers } = useWalletLoansAndOffers()
 
+  const isTerminatingStatus = isLoanTerminating(loan)
+
+  const currentLoanBorrowedAmount = calcLoanBorrowedAmount(loan)
+  const currentLoanDailyFee = calculateCurrentInterestSolPure({
+    loanValue: currentLoanBorrowedAmount,
+    startTime: loan.bondTradeTransaction.soldAt,
+    currentTime: moment().unix(),
+    rateBasePoints: loan.bondTradeTransaction.amountOfBonds,
+  })
+  const currentLoanDebt = calculateLoanRepayValue(loan)
+
+  const currentSpotPrice = offer?.currentSpotPrice || 0
+
+  const newLoanBorrowedAmount =
+    currentSpotPrice - currentSpotPrice * (BONDS.PROTOCOL_FEE_PERCENT / 1e4) || 0
+
+  const newLoanDailyFee = calculateCurrentInterestSolPure({
+    loanValue: currentSpotPrice,
+    startTime: moment().unix(),
+    currentTime: moment().unix() + 24 * SECONDS_IN_HOUR,
+    rateBasePoints: offer?.marketApr || 0,
+  })
+  const newLoanDebt = currentSpotPrice
+  const differenceToPay = newLoanDebt - currentLoanDebt
+
   const refinance = () => {
     if (!offer) return
+    trackPageEvent('myloans', isTerminatingStatus ? 'refinance' : 'reborrow')
     new TxnExecutor(makeBorrowRefinanceAction, { connection, wallet })
       .addTxnParam({
         loan,
@@ -71,31 +98,6 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
       })
       .execute()
   }
-
-  const isTerminatingStatus = isLoanTerminating(loan)
-
-  const currentLoanBorrowedAmount = calcLoanBorrowedAmount(loan)
-  const currentLoanDailyFee = calculateCurrentInterestSolPure({
-    loanValue: currentLoanBorrowedAmount,
-    startTime: loan.bondTradeTransaction.soldAt,
-    currentTime: moment().unix(),
-    rateBasePoints: loan.bondTradeTransaction.amountOfBonds,
-  })
-  const currentLoanDebt = calculateLoanRepayValue(loan)
-
-  const currentSpotPrice = offer?.currentSpotPrice || 0
-
-  const newLoanBorrowedAmount =
-    currentSpotPrice - currentSpotPrice * (BONDS.PROTOCOL_FEE_PERCENT / 1e4) || 0
-
-  const newLoanDailyFee = calculateCurrentInterestSolPure({
-    loanValue: currentSpotPrice,
-    startTime: moment().unix(),
-    currentTime: moment().unix() + 24 * SECONDS_IN_HOUR,
-    rateBasePoints: offer?.marketApr || 0,
-  })
-  const newLoanDebt = currentSpotPrice
-  const differenceToPay = newLoanDebt - currentLoanDebt
 
   return (
     <Modal open onCancel={close}>

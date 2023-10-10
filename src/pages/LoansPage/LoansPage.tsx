@@ -1,6 +1,6 @@
-import { Tabs, useTabs } from '@banx/components/Tabs'
+import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
-import { useMixpanelLocationTrack } from '@banx/utils'
+import { toLowerCaseNoSpaces, trackPageEvent, useMixpanelLocationTrack } from '@banx/utils'
 
 import { LoansActiveTable } from './components/LoansActiveTable'
 import LoansHeader from './components/LoansHeader'
@@ -17,10 +17,14 @@ export const LoansPage = () => {
     defaultValue: DEFAULT_TAB_VALUE,
   })
 
+  const onTabClick = (tabProps: Tab) => {
+    trackPageEvent('myloans', `${toLowerCaseNoSpaces(tabProps.label)}tab`)
+  }
+
   return (
     <div className={styles.pageWrapper}>
       <LoansHeader />
-      <Tabs value={currentTabValue} {...tabProps} />
+      <Tabs value={currentTabValue} {...tabProps} onTabClick={onTabClick} />
       {currentTabValue === LoansTabsNames.ACTIVE && <LoansActiveTable />}
       {currentTabValue === LoansTabsNames.HISTORY && <LoansHistoryTable />}
     </div>
