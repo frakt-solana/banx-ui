@@ -1,5 +1,6 @@
 import { FC } from 'react'
 
+import placeholderBanxImg from '@banx/assets/PlaceholderBanx.png'
 import { useImagePreload } from '@banx/hooks'
 import {
   HealthColorDecreasing,
@@ -7,8 +8,6 @@ import {
   getColorByPercent,
   shortenAddress,
 } from '@banx/utils'
-
-import placeholderBanxImg from './placeholderBanx.png'
 
 import styles from './LeaderboardTab.module.less'
 

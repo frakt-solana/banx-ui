@@ -5,11 +5,11 @@ import EmptyList from '@banx/components/EmptyList'
 import { RadioButton } from '@banx/components/RadioButton'
 import Table from '@banx/components/Table'
 
+import moneyPepeImg from '@banx/assets/MoneyPepe.png'
 import { useIntersection } from '@banx/hooks'
 
 import { getTableColumns } from './columns'
 import { useLeaderboardData } from './hooks'
-import moneyPepeImg from './moneyPepe.png'
 
 import styles from './LeaderboardTab.module.less'
 
