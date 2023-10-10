@@ -4,6 +4,7 @@ import {
   AdventuresPage,
   BorrowPage,
   DashboardPage,
+  LeaderboardPage,
   LendPage,
   LoansPage,
   OffersPage,
@@ -46,6 +47,10 @@ export const routes: Route[] = [
   {
     path: PATHS.REFINANCE,
     component: RefinancePage,
+  },
+  {
+    path: PATHS.LEADERBOARD,
+    component: LeaderboardPage,
   },
   {
     path: PATHS.PAGE_404,
