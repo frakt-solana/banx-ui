@@ -9,6 +9,12 @@ if (MIXPANEL_ACCESS_TOKEN) {
   mixpanel.set_config({ persistence: 'localStorage' })
 }
 
+export const setMixpanelUser = (walletPubkey?: string) => {
+  if (MIXPANEL_ACCESS_TOKEN) {
+    mixpanel.identify(walletPubkey ?? undefined)
+  }
+}
+
 export const trackEvent = (eventName: string, eventProps?: Record<string, unknown>) => {
   if (MIXPANEL_ACCESS_TOKEN) mixpanel.track(eventName, eventProps ?? undefined)
 }
