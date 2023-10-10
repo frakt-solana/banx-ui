@@ -2,6 +2,8 @@ import React, { FC } from 'react'
 
 import { Button } from '@banx/components/Buttons'
 
+import { trackPageEvent } from '@banx/utils'
+
 import styles from './BorrowTable.module.less'
 
 interface BorrowCellProps {
@@ -17,6 +19,7 @@ export const BorrowCell: FC<BorrowCellProps> = ({
 }) => {
   const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     onBorrow()
+    trackPageEvent('borrow', `borrow-lateral`)
     event.stopPropagation()
   }
 

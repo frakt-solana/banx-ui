@@ -5,7 +5,7 @@ import { sumBy } from 'lodash'
 import { Button } from '@banx/components/Buttons'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
-import { calcLoanValueWithProtocolFee } from '@banx/utils'
+import { calcLoanValueWithProtocolFee, trackPageEvent } from '@banx/utils'
 
 import { ONE_WEEK_IN_SECONDS } from './constants'
 import { calcInterest } from './helpers'
@@ -32,6 +32,11 @@ export const Summary: FC<SummaryProps> = ({ nftsInCart, selectAll, borrowAll }) 
     }),
   )
 
+  const onBorrow = () => {
+    trackPageEvent('borrow', `borrow-bottom`)
+    borrowAll()
+  }
+
   return (
     <div className={styles.summary}>
       <div className={styles.collaterals}>
@@ -54,7 +59,7 @@ export const Summary: FC<SummaryProps> = ({ nftsInCart, selectAll, borrowAll }) 
           <span className={styles.selectButtonMobileText}>{selectMobileBtnText}</span>
         </Button>
         <Button
-          onClick={borrowAll}
+          onClick={onBorrow}
           disabled={!nftsInCart.length}
           className={styles.borrowBulkButton}
         >
