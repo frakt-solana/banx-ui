@@ -11,7 +11,6 @@ export const useSeasonUserRewards = () => {
     ['seasonUserRewards', publicKeyString],
     () => fetchSeasonUserRewards({ walletPubkey: publicKeyString }),
     {
-      enabled: !!publicKeyString,
       refetchOnWindowFocus: false,
       staleTime: 30 * 60 * 1000, //? 30 mins
     },

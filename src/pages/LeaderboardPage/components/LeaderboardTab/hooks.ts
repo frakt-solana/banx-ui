@@ -19,6 +19,7 @@ export const useLeaderboardData = () => {
     const data = await fetchLeaderboardData({
       skip: PAGINATION_LIMIT * pageParam,
       limit: PAGINATION_LIMIT,
+      userType: currentOption.value,
       walletPubkey: publicKeyString,
     })
 
@@ -26,7 +27,7 @@ export const useLeaderboardData = () => {
   }
 
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage, isLoading } = useInfiniteQuery({
-    queryKey: ['leaderboardData', publicKey],
+    queryKey: ['leaderboardData', publicKey, currentOption],
     queryFn: ({ pageParam = 0 }) => fetchData(pageParam),
     getPreviousPageParam: (firstPage) => {
       return firstPage.pageParam - 1 ?? undefined

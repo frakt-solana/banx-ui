@@ -170,6 +170,7 @@ export const fetchSeasonUserRewards: FetchSeasonUserRewards = async ({ walletPub
 
 type FetchLeaderboardData = (props: {
   walletPubkey: string
+  userType: string
   order?: string
   skip: number
   limit: number
@@ -177,12 +178,13 @@ type FetchLeaderboardData = (props: {
 export const fetchLeaderboardData: FetchLeaderboardData = async ({
   walletPubkey,
   order = 'asc',
+  userType,
   skip,
   limit,
 }) => {
   try {
     const { data } = await axios.get<{ data: LeaderboardData[] }>(
-      `${BACKEND_BASE_URL}/leaderboard/${walletPubkey}?order=${order}&skip=${skip}&limit=${limit}`,
+      `${BACKEND_BASE_URL}/leaderboard/${walletPubkey}?order=${order}&skip=${skip}&limit=${limit}&userType=${userType}`,
     )
 
     try {
