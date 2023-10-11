@@ -36,6 +36,17 @@ export const useDashboardBorrowTab = () => {
     nfts,
   )
 
+  const sortedNFTsByLoanValue = useMemo(() => {
+    const nftsWithLoanValue = filteredNFTs.map((nft) => {
+      const offer = findBestOffer(nft.loan.marketPubkey)
+      const loanValue = offer ? calculateLoanValue(offer) : 0
+
+      return { ...nft, loanValue }
+    })
+
+    return [...nftsWithLoanValue].sort((nftA, nftB) => nftB.loanValue - nftA?.loanValue)
+  }, [filteredNFTs, findBestOffer])
+
   const headingText = connected ? 'Click to borrow' : '1 click loan'
 
   const goToBorrowPage = () => {
@@ -54,7 +65,7 @@ export const useDashboardBorrowTab = () => {
 
   return {
     marketsPreview: sortedMarketsByOfferTvl,
-    nfts: filteredNFTs,
+    nfts: sortedNFTsByLoanValue,
     borrow: onBorrow,
     findBestOffer,
     borrowerStats,
