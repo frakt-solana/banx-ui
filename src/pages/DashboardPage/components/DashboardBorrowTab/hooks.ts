@@ -48,8 +48,12 @@ export const useDashboardBorrowTab = () => {
     trackPageEvent('dashboard', 'borrowtab-borrow')
   }
 
+  const sortedMarketsByOfferTvl = useMemo(() => {
+    return [...filteredMarkets].sort((marketA, marketB) => marketB?.offerTvl - marketA?.offerTvl)
+  }, [filteredMarkets])
+
   return {
-    marketsPreview: filteredMarkets,
+    marketsPreview: sortedMarketsByOfferTvl,
     nfts: filteredNFTs,
     borrow: onBorrow,
     findBestOffer,
