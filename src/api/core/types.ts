@@ -84,6 +84,7 @@ export const NFTSchema = z.object({
       creatorHash: z.string(),
       leafId: z.number(),
       tree: z.string(),
+      whitelistEntry: z.string(),
     })
     .optional(),
   collectionFloor: z.number(),
