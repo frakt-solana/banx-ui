@@ -12,7 +12,11 @@ export const useDashboardLendTab = () => {
   const { marketsPreview } = useMarketsPreview()
   const { filteredMarkets, searchSelectParams } = useFilteredMarkets(marketsPreview)
 
-  return { marketsPreview: filteredMarkets, searchSelectParams }
+  const sortedMarketsByOfferTvl = useMemo(() => {
+    return [...filteredMarkets].sort((marketA, marketB) => marketB?.offerTvl - marketA?.offerTvl)
+  }, [filteredMarkets])
+
+  return { marketsPreview: sortedMarketsByOfferTvl, searchSelectParams }
 }
 
 const useFilteredMarkets = (marketsPreview: MarketPreview[]) => {
