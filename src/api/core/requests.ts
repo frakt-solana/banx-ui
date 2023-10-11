@@ -29,6 +29,7 @@ export const fetchMarketsPreview: FetchMarketsPreview = async () => {
   try {
     const queryParams = new URLSearchParams({
       isPrivate: String(IS_PRIVATE_MARKETS),
+      getAll: String(true),
     })
 
     const { data } = await axios.get<MarketPreviewResponse>(
