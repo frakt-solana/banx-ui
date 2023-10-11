@@ -122,6 +122,8 @@ const getIxnsAndSignersByBorrowType = async ({
         bondOfferV2: new web3.PublicKey(params.offer.publicKey),
         hadoMarket: new web3.PublicKey(params.offer.hadoMarket),
         tree: new web3.PublicKey(params.nft.nft.compression.tree),
+        whitelistEntry: new web3.PublicKey(params.nft.nft.compression.whitelistEntry),
+
       },
       args: {
         proof,
