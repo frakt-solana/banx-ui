@@ -35,8 +35,8 @@
   "homepage": "https://github.com/frakt-solana/banx-ui#readme",
   "dependencies": {
     "@dialectlabs/blockchain-sdk-solana": "1.0.0-beta.4",
-    "@dialectlabs/react-sdk": "1.1.0-beta.10",
-    "@dialectlabs/react-sdk-blockchain-solana": "1.0.0-beta.4",
+    "@dialectlabs/react-sdk": "1.2.0",
+    "@dialectlabs/react-sdk-blockchain-solana": "1.1.0",
     "@sentre/connector": "^0.1.2",
     "@sentry/react": "^7.73.0",
     "@sentry/tracing": "^7.73.0",
