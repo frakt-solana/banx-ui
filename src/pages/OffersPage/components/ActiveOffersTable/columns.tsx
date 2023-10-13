@@ -27,7 +27,12 @@ export const getTableColumns = ({ isCardView }: GetTableColumns) => {
     },
     {
       key: 'interest',
-      title: <HeaderCell label="Total claim" tooltipText="Sum of lent amount and accrued interest to date" />,
+      title: (
+        <HeaderCell
+          label="Total claim"
+          tooltipText="Sum of lent amount and accrued interest to date"
+        />
+      ),
       render: (_, loan) => <InterestCell loan={loan} />,
     },
     {
