@@ -2,6 +2,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  overflow-x: hidden;
 }
 .nftImageWrapper {
   display: flex;
@@ -41,10 +42,18 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  overflow: hidden;
 }
 .nftCollectionName {
   font: var(--card-header-md);
 }
+.nftCollectionNameEllipsis {
+  max-width: 180px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 .nftNumber {
   font: var(--body-text-xs);
 }
