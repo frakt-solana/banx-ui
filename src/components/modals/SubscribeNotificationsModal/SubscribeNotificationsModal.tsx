@@ -31,10 +31,10 @@ export const SubscribeNotificationsModal: FC<SubscribeNotificationsModalProps> =
 
 export const createLoanSubscribeNotificationsTitle = (loansAmount = 1) => {
   if (loansAmount > 1) {
-    return `You have successfully took ${loansAmount} loans`
+    return `You have successfully taken ${loansAmount} loans`
   }
 
-  return `You have successfully took the loan`
+  return `You have successfully taken the loan`
 }
 
 export const createLoanSubscribeNotificationsContent = () =>
