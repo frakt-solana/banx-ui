@@ -1,5 +1,7 @@
 import { FC } from 'react'
 
+import classNames from 'classnames'
+
 import { ViewState, useTableView } from '@banx/store'
 
 import Checkbox from '../Checkbox'
@@ -35,7 +37,13 @@ export const NftInfoCell: FC<NftInfoCellProps> = ({
         {selected && isCardView && <div className={styles.selectedCollectionOverlay} />}
       </div>
       <div className={styles.nftNames}>
-        <p className={styles.nftCollectionName}>{nftCollectionName}</p>
+        <p
+          className={classNames(styles.nftCollectionName, {
+            [styles.nftCollectionNameEllipsis]: !isCardView,
+          })}
+        >
+          {nftCollectionName}
+        </p>
         {displayNftNumber && <p className={styles.nftNumber}>{displayNftNumber}</p>}
       </div>
     </div>
