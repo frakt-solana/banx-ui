@@ -52,7 +52,9 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
 
   const tableNftsData: TableNftData[] = useMemo(
     () => {
-      return createTableNftData({ nfts, findBestOffer, findOfferInCart })
+      return createTableNftData({ nfts, findBestOffer, findOfferInCart }).sort((nftA, nftB) =>
+        nftB.nft.nft.meta.name.localeCompare(nftA.nft.nft.meta.name),
+      )
     },
     //? Because we need to recalc tableNftData each time offerByMint
     // eslint-disable-next-line react-hooks/exhaustive-deps
