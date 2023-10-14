@@ -1,12 +1,13 @@
-import { FC } from 'react'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 import { CSVDownloadButton } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
-import { LenderActivity } from '@banx/api/activity'
+import { fetchLenderActivity } from '@banx/api/activity'
 import {
   HealthColorDecreasing,
   convertAprToApy,
+  createDownloadLink,
   generateCSVContent,
   getColorByPercent,
 } from '@banx/utils'
@@ -17,12 +18,9 @@ import { formatLoanData } from './helpers'
 
 import styles from './HistoryOffersTable.module.less'
 
-interface SummaryProps {
-  loans: LenderActivity[]
-}
-
-export const Summary: FC<SummaryProps> = ({ loans }) => {
+export const Summary = () => {
   const { data } = useUserOffersStats()
+  const { publicKey } = useWallet()
 
   const {
     totalOffers = 0,
@@ -36,8 +34,24 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
 
   const colorAPR = getColorByPercent(weightedApyPercent, HealthColorDecreasing)
 
-  const formattedLoans = loans.map(formatLoanData)
-  const csvContent = generateCSVContent(formattedLoans)
+  const download = async () => {
+    try {
+      const data = await fetchLenderActivity({
+        order: 'desc',
+        sortBy: 'timestamp',
+        walletPubkey: publicKey?.toBase58() || '',
+        getAll: true,
+      })
+
+      const formattedLoans = data.map(formatLoanData)
+      const csvContent = generateCSVContent(formattedLoans)
+
+      createDownloadLink(csvContent, ACTIVITY_CSV_FILENAME)
+      return data
+    } catch (error) {
+      console.error('Error downloading data:', error)
+    }
+  }
 
   return (
     <div className={styles.summary}>
@@ -61,11 +75,7 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
 
         <StatInfo label="Total received" value={totalReceived} divider={1e9} />
       </div>
-      <CSVDownloadButton
-        className={styles.summaryButton}
-        data={csvContent}
-        filename={ACTIVITY_CSV_FILENAME}
-      />
+      <CSVDownloadButton onClick={download} className={styles.summaryButton} />
     </div>
   )
 }
