@@ -6,6 +6,8 @@ import { QueryClient } from '@tanstack/react-query'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 import { compress, decompress } from 'lz-string'
 
+import { ErrorBoundary } from '@banx/components/ErrorBoundary'
+
 import { COMPRESS_QUERY_PERSISTER, RPC_ENDPOINTS, WALLETS } from '@banx/constants'
 import { useBestWorkingRPC } from '@banx/hooks'
 import { USE_BORROW_NFTS_QUERY_KEY } from '@banx/pages/BorrowPage/hooks'
@@ -52,38 +54,38 @@ const SolanaConnectionWalletProvider: FC<PropsWithChildren> = ({ children }) => 
 
 const App = () => {
   return (
-    // <ErrorBoundary>
-    <PersistQueryClientProvider
-      client={queryClient}
-      persistOptions={{
-        persister,
-        dehydrateOptions: {
-          shouldDehydrateQuery: (query) => {
-            const queryIsReadyForPersistance = query.state.status === 'success'
-            if (queryIsReadyForPersistance) {
-              const { queryKey } = query
-              const persist = !![
-                USE_BORROW_NFTS_QUERY_KEY,
-                USE_WALLET_LOANS_AND_OFFERS_QUERY_KEY,
-                USE_MARKETS_PREVIEW_QUERY_KEY,
-                USE_USER_OFFERS_QUERY_KEY,
-              ].find((key) => queryKey.includes(key))
-              return persist
-            }
-            return false
+    <ErrorBoundary>
+      <PersistQueryClientProvider
+        client={queryClient}
+        persistOptions={{
+          persister,
+          dehydrateOptions: {
+            shouldDehydrateQuery: (query) => {
+              const queryIsReadyForPersistance = query.state.status === 'success'
+              if (queryIsReadyForPersistance) {
+                const { queryKey } = query
+                const persist = !![
+                  USE_BORROW_NFTS_QUERY_KEY,
+                  USE_WALLET_LOANS_AND_OFFERS_QUERY_KEY,
+                  USE_MARKETS_PREVIEW_QUERY_KEY,
+                  USE_USER_OFFERS_QUERY_KEY,
+                ].find((key) => queryKey.includes(key))
+                return persist
+              }
+              return false
+            },
           },
-        },
-      }}
-    >
-      <SolanaConnectionWalletProvider>
-        <DialectProvider>
-          <Router />
-        </DialectProvider>
-        {/* <VerifyWalletModal /> */}
-        {/* <Confetti /> */}
-      </SolanaConnectionWalletProvider>
-    </PersistQueryClientProvider>
-    // </ErrorBoundary>
+        }}
+      >
+        <SolanaConnectionWalletProvider>
+          <DialectProvider>
+            <Router />
+          </DialectProvider>
+          {/* <VerifyWalletModal /> */}
+          {/* <Confetti /> */}
+        </SolanaConnectionWalletProvider>
+      </PersistQueryClientProvider>
+    </ErrorBoundary>
   )
 }
 

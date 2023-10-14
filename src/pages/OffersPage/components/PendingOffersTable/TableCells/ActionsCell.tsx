@@ -12,7 +12,7 @@ import { useMarketsURLControl, useSyntheticOffers } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeRemoveOfferAction } from '@banx/transactions/bonds'
-import { enqueueSnackbar } from '@banx/utils'
+import { enqueueSnackbar, trackPageEvent } from '@banx/utils'
 
 import { TableUserOfferData } from '../helpers'
 
@@ -28,13 +28,23 @@ export const ActionsCell: FC<ActionsCellProps> = ({ offer, isCardView }) => {
 
   const buttonSize = isCardView ? 'large' : 'small'
 
+  const onEdit = () => {
+    goToEditOffer()
+    trackPageEvent('myoffers', 'pendingtab-edit')
+  }
+
+  const onRemove = () => {
+    removeOffer()
+    trackPageEvent('myoffers', 'pendingtab-remove')
+  }
+
   return (
     <div className={styles.actionsButtons}>
-      <Button onClick={goToEditOffer} variant="secondary" size={buttonSize}>
+      <Button onClick={onEdit} variant="secondary" size={buttonSize}>
         Edit
       </Button>
       <Button
-        onClick={removeOffer}
+        onClick={onRemove}
         className={styles.removeButton}
         variant="secondary"
         size={buttonSize}

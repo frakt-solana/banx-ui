@@ -89,7 +89,7 @@ export const BorrowCard: FC<BorrowCardProps> = ({ dailyFee, maxBorrow, ...props 
     <CardBackdrop {...props} badgeElement={BadgeContentElement} disabled={disabledBorrow}>
       <div className={classNames(styles.borrowCardFooter, { [styles.fullHeight]: connected })}>
         <StatInfo
-          label="Pepetual"
+          label="Perpetual"
           value="72h"
           icon={Snowflake}
           valueType={VALUES_TYPES.STRING}

@@ -4,11 +4,18 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { map, sumBy } from 'lodash'
 import moment from 'moment'
 
+import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
 import { Button } from '@banx/components/Buttons'
 import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 import { useWalletModal } from '@banx/components/WalletModal'
+import {
+  SubscribeNotificationsModal,
+  createRefinanceSubscribeNotificationsContent,
+  createRefinanceSubscribeNotificationsTitle,
+} from '@banx/components/modals'
 
 import { Loan } from '@banx/api/core'
+import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeRefinanceAction } from '@banx/transactions/loans'
@@ -19,6 +26,8 @@ import {
   convertAprToApy,
   enqueueSnackbar,
   getColorByPercent,
+  getDialectAccessToken,
+  trackPageEvent,
 } from '@banx/utils'
 
 import { useAuctionsLoans } from '../../hooks'
@@ -41,6 +50,8 @@ export const Summary: FC<SummaryProps> = ({
   const { connection } = useConnection()
   const { addMints } = useAuctionsLoans()
   const { toggleVisibility } = useWalletModal()
+  const { open, close } = useModal()
+  const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
   const selectAllBtnText = !selectedLoans.length ? 'Select all' : 'Deselect all'
   const selectMobileBtnText = !selectedLoans.length
@@ -69,6 +80,20 @@ export const Summary: FC<SummaryProps> = ({
   const refinanceAll = () => {
     const txnParams = selectedLoans.map((loan) => ({ loan }))
 
+    const onSuccess = () => {
+      if (!getDialectAccessToken(wallet.publicKey?.toBase58())) {
+        open(SubscribeNotificationsModal, {
+          title: createRefinanceSubscribeNotificationsTitle(selectedLoans.length),
+          message: createRefinanceSubscribeNotificationsContent(),
+          onActionClick: () => {
+            close()
+            setBanxNotificationsSiderVisibility(true)
+          },
+          onCancel: close,
+        })
+      }
+    }
+
     new TxnExecutor(makeRefinanceAction, { wallet, connection })
       .addTxnParams(txnParams)
       .on('pfSuccessEach', (results) => {
@@ -83,6 +108,7 @@ export const Summary: FC<SummaryProps> = ({
       .on('pfSuccessAll', () => {
         onDeselectAllLoans()
         addMints(...selectedLoans.map(({ nft }) => nft.mint))
+        onSuccess()
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error, {
@@ -100,6 +126,7 @@ export const Summary: FC<SummaryProps> = ({
 
   const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (wallet.connected) {
+      trackPageEvent('refinance', `refinance-bottom`)
       refinanceAll()
     } else {
       toggleVisibility()

@@ -1,9 +1,11 @@
 import { useWallet } from '@solana/wallet-adapter-react'
+import { NavLink } from 'react-router-dom'
 
 import { BanxNotificationsButton } from '@banx/components/BanxNotifications'
-import { WalletConnectButton } from '@banx/components/Buttons'
+import { Button, WalletConnectButton } from '@banx/components/Buttons'
 
-import { Logo, LogoFull } from '@banx/icons'
+import { Cup, Logo, LogoFull } from '@banx/icons'
+import { PATHS } from '@banx/router'
 
 import { BurgerIcon } from '../BurgerMenu/components'
 import ThemeSwitcher from '../ThemeSwitcher'
@@ -20,6 +22,7 @@ export const Header = () => {
         <Logo className={styles.logoBasic} />
       </a>
       <div className={styles.widgetContainer}>
+        <RewardsButton />
         <ThemeSwitcher />
         {connected && <BanxNotificationsButton />}
         <WalletConnectButton />
@@ -28,3 +31,11 @@ export const Header = () => {
     </div>
   )
 }
+
+const RewardsButton = () => (
+  <NavLink to={PATHS.LEADERBOARD}>
+    <Button className={styles.rewardsButton} type="circle" variant="text">
+      <Cup /> <span>Rewards</span>
+    </Button>
+  </NavLink>
+)
