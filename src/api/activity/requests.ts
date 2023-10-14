@@ -22,6 +22,7 @@ export const fetchLenderActivity: FetchLenderActivity = async ({
   skip = 0,
   limit = 10,
   collection,
+  getAll = false,
 }) => {
   try {
     const queryParams = new URLSearchParams({
@@ -30,6 +31,7 @@ export const fetchLenderActivity: FetchLenderActivity = async ({
       limit: String(limit),
       sortBy,
       state,
+      getAll: String(getAll),
       isPrivate: String(IS_PRIVATE_MARKETS),
     })
 
@@ -59,6 +61,7 @@ export const fetchBorrowerActivity: FetchBorrowerActivity = async ({
   state = 'all',
   skip = 0,
   limit = 10,
+  getAll = false,
   collection,
 }) => {
   try {
@@ -68,6 +71,7 @@ export const fetchBorrowerActivity: FetchBorrowerActivity = async ({
       limit: String(limit),
       sortBy,
       isPrivate: String(IS_PRIVATE_MARKETS),
+      getAll: String(getAll),
       state,
     })
 
