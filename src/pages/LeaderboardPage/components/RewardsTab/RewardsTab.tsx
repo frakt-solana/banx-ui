@@ -14,7 +14,7 @@ import styles from './RewardsTab.module.less'
 
 // TODO: need to remove it after it is added to BE
 const MOCK_TOTAL_CLAIMED = 0
-const MOCK_NEXT_WEEKLY_REWARDS = 1697400000
+const MOCK_NEXT_WEEKLY_REWARDS = 1697400000 + 86400
 const MOCK_AVAILABLE_TO_CLAIM = 0
 
 const RewardsTab = () => {
