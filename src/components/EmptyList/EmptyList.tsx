@@ -23,7 +23,7 @@ const EmptyList: FC<EmptyListProps> = ({ message, className, buttonProps }) => {
       <div className={styles.emptyList}>
         <span className={styles.emptyListMessage}>{message}</span>
       </div>
-      {onClick && (
+      {buttonProps && (
         <Button onClick={onClick} className={styles.emptyListButton}>
           {text}
         </Button>
