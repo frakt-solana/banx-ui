@@ -1,5 +1,6 @@
 import { FC, useEffect } from 'react'
 
+import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 
 import { useIntersection } from '@banx/hooks'
@@ -12,12 +13,13 @@ import styles from './ActivityTable.module.less'
 
 interface ActivityTableProps {
   marketPubkey: string
+  goToPlaceOfferTab: () => void
 }
 
-const ActivityTable: FC<ActivityTableProps> = ({ marketPubkey }) => {
+const ActivityTable: FC<ActivityTableProps> = ({ marketPubkey, goToPlaceOfferTab }) => {
   const { ref: fetchMoreTrigger, inView } = useIntersection()
 
-  const { loans, isLoading, fetchNextPage, hasNextPage, filterParams } =
+  const { loans, isLoading, fetchNextPage, hasNextPage, filterParams, showEmptyList } =
     useAllLenderActivity(marketPubkey)
 
   useEffect(() => {
@@ -31,15 +33,23 @@ const ActivityTable: FC<ActivityTableProps> = ({ marketPubkey }) => {
   return (
     <>
       <FilterTableSection {...filterParams} />
-      <Table
-        data={loans}
-        columns={columns}
-        rowKeyField="id"
-        className={styles.tableRoot}
-        classNameTableWrapper={styles.tableWrapper}
-        fetchMoreTrigger={fetchMoreTrigger}
-        loading={isLoading}
-      />
+      {!showEmptyList ? (
+        <Table
+          data={loans}
+          columns={columns}
+          rowKeyField="id"
+          className={styles.tableRoot}
+          classNameTableWrapper={styles.tableWrapper}
+          fetchMoreTrigger={fetchMoreTrigger}
+          loading={isLoading}
+        />
+      ) : (
+        <EmptyList
+          message="Offers activity should be displayed here, but it's empty yet. Be first lender"
+          onClick={goToPlaceOfferTab}
+          buttonText="Lend SOL"
+        />
+      )}
     </>
   )
 }

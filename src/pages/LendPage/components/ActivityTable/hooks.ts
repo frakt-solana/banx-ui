@@ -59,12 +59,15 @@ export const useAllLenderActivity = (marketPubkey: string) => {
     return data?.pages?.map((page) => page.data).flat() || []
   }, [data])
 
+  const showEmptyList = checked && !loans?.length && !isLoading
+
   return {
     loans,
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
     isLoading,
+    showEmptyList,
     filterParams: {
       checked,
       onToggleChecked: () => setChecked(!checked),

@@ -28,6 +28,10 @@ export const useExpandableCardContent = (marketPubkey: string) => {
     setValue: setTabValue,
   } = useTabs({ tabs: BONDS_TABS, defaultValue: DEFAULT_TAB })
 
+  const goToPlaceOfferTab = () => {
+    setTabValue(BONDS_TABS[1].value)
+  }
+
   useEffect(() => {
     if (offerPubkey) {
       setTabValue(DEFAULT_TAB)
@@ -39,6 +43,7 @@ export const useExpandableCardContent = (marketPubkey: string) => {
   }
 
   return {
+    goToPlaceOfferTab,
     marketParams: {
       marketPubkey,
       offerPubkey,
