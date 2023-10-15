@@ -17,7 +17,7 @@ interface EmptyListProps {
 
 const EmptyList: FC<EmptyListProps> = ({ message, buttonText, path = '', className, onClick }) => {
   const button = (
-    <Button onClick={onClick ? onClick : undefined} className={styles.emptyListButton}>
+    <Button onClick={onClick} className={styles.emptyListButton}>
       {buttonText}
     </Button>
   )
