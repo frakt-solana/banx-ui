@@ -1,6 +1,6 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 
-import { CSVDownloadButton } from '@banx/components/Buttons'
+import { Button } from '@banx/components/Buttons'
 import { StatInfo } from '@banx/components/StatInfo'
 
 import { fetchBorrowerActivity } from '@banx/api/activity'
@@ -51,7 +51,9 @@ export const Summary = () => {
         <StatInfo label="Debt" value={totalDebt} divider={1e9} />
         <StatInfo label="Repaid" value={totalRepaid} divider={1e9} />
       </div>
-      <CSVDownloadButton onClick={download} className={styles.summaryButton} />
+      <Button onClick={download} className={styles.summaryButton}>
+        Download .CSV
+      </Button>
     </div>
   )
 }
