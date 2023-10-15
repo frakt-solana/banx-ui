@@ -59,7 +59,7 @@ export const useAllLenderActivity = (marketPubkey: string) => {
     return data?.pages?.map((page) => page.data).flat() || []
   }, [data])
 
-  const showEmptyList = checked && !loans?.length && !isLoading
+  const showEmptyList = !loans?.length && !isLoading
 
   return {
     loans,
