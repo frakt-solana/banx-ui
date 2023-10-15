@@ -46,8 +46,10 @@ const ActivityTable: FC<ActivityTableProps> = ({ marketPubkey, goToPlaceOfferTab
       ) : (
         <EmptyList
           message="Offers activity should be displayed here, but it's empty yet. Be first lender"
-          onClick={goToPlaceOfferTab}
-          buttonText="Lend SOL"
+          buttonProps={{
+            onClick: goToPlaceOfferTab,
+            text: 'Lend SOL',
+          }}
         />
       )}
     </>

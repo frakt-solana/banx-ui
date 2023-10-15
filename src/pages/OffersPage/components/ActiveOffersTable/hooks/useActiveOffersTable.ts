@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { first, groupBy, map, sumBy } from 'lodash'
+import { useNavigate } from 'react-router-dom'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
@@ -24,6 +25,7 @@ interface SearchSelectOption {
 export const useActiveOffersTable = () => {
   const { loans, loading } = useLenderLoansAndOffers()
   const { connected } = useWallet()
+  const navigate = useNavigate()
 
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
@@ -67,10 +69,16 @@ export const useActiveOffersTable = () => {
 
   const showEmptyList = (!loans?.length && !loading) || !connected
 
+  const goToLendPage = () => {
+    navigate(PATHS.LEND)
+  }
+
   const emptyListParams = {
     message: connected ? EMPTY_MESSAGE : NOT_CONNECTED_MESSAGE,
-    buttonText: connected ? 'Lend' : '',
-    path: connected ? PATHS.LEND : '',
+    buttonProps: {
+      text: connected ? 'Lend' : '',
+      onClick: connected ? goToLendPage : undefined,
+    },
   }
 
   return {

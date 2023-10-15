@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import { useNavigate } from 'react-router-dom'
 
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
@@ -16,6 +17,7 @@ import styles from '../HistoryOffersTable.module.less'
 export const useHistoryOffersTable = () => {
   const { ref: fetchMoreTrigger, inView } = useIntersection()
   const { connected } = useWallet()
+  const navigate = useNavigate()
 
   const { data: collectionsList } = useLenderActivityCollectionsList()
 
@@ -55,10 +57,16 @@ export const useHistoryOffersTable = () => {
   const showEmptyList = (!loans?.length && !isLoading) || !connected
   const showSummary = !!loans.length && !isLoading
 
+  const goToLendPage = () => {
+    navigate(PATHS.LEND)
+  }
+
   const emptyListParams = {
     message: connected ? EMPTY_MESSAGE : NOT_CONNECTED_MESSAGE,
-    buttonText: connected ? 'Lend' : '',
-    path: connected ? PATHS.LEND : '',
+    buttonProps: {
+      text: connected ? 'Lend' : '',
+      onClick: connected ? goToLendPage : undefined,
+    },
   }
 
   return {

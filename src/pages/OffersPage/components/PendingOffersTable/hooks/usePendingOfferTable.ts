@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { first, groupBy, map } from 'lodash'
+import { useNavigate } from 'react-router-dom'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
@@ -31,6 +32,7 @@ interface SearchSelectOption {
 export const usePendingOfferTable = () => {
   const { offers, loading } = useUserOffers()
   const { connected } = useWallet()
+  const navigate = useNavigate()
 
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
 
@@ -81,10 +83,16 @@ export const usePendingOfferTable = () => {
 
   const showEmptyList = (!offers?.length && !loading) || !connected
 
+  const goToLendPage = () => {
+    navigate(PATHS.LEND)
+  }
+
   const emptyListParams = {
     message: connected ? EMPTY_MESSAGE : NOT_CONNECTED_MESSAGE,
-    buttonText: connected ? 'Lend' : '',
-    path: connected ? PATHS.LEND : '',
+    buttonProps: {
+      text: connected ? 'Lend' : '',
+      onClick: connected ? goToLendPage : undefined,
+    },
   }
 
   return {
