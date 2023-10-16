@@ -1,21 +1,18 @@
 import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import moment from 'moment'
 
-import { Button } from '@banx/components/Buttons'
 import EmptyList from '@banx/components/EmptyList'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import Timer from '@banx/components/Timer'
 
-import { Borrow, Lend, MoneyBill } from '@banx/icons'
+import { Borrow, Lend } from '@banx/icons'
 
 import styles from './RewardsTab.module.less'
 
 // TODO: need to remove it after it is added to BE
 const MOCK_TOTAL_CLAIMED = 0
-const MOCK_NEXT_WEEKLY_REWARDS = 1697400000 + 86400
-const MOCK_AVAILABLE_TO_CLAIM = 0
+const MOCK_NEXT_WEEKLY_REWARDS = 1697846400
 
 const RewardsTab = () => {
   return (
@@ -23,7 +20,6 @@ const RewardsTab = () => {
       <ClaimRewardsBlock
         totalClaimed={MOCK_TOTAL_CLAIMED}
         nextWeeklyRewards={MOCK_NEXT_WEEKLY_REWARDS}
-        availableToClaim={MOCK_AVAILABLE_TO_CLAIM}
       />
       <RewardsInfoBlock />
     </div>
@@ -35,17 +31,10 @@ export default RewardsTab
 interface ClaimRewardsBlockProps {
   totalClaimed: number
   nextWeeklyRewards: number
-  availableToClaim: number
 }
 
-const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({
-  totalClaimed,
-  nextWeeklyRewards,
-  availableToClaim,
-}) => {
+const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({ totalClaimed, nextWeeklyRewards }) => {
   const { connected } = useWallet()
-
-  const disableClaimRewards = moment().unix() < nextWeeklyRewards
 
   return (
     <div className={styles.claimRewardsBlock}>
@@ -62,37 +51,12 @@ const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({
         classNamesProps={{ label: styles.claimRewardsLabel }}
         flexType="row"
       />
-      <AvailableToClaim availableToClaim={availableToClaim} />
-      {connected ? (
-        <Button disabled={disableClaimRewards} className={styles.claimRewardsButton}>
-          Claim
-        </Button>
-      ) : (
+      {!connected && (
         <EmptyList className={styles.emptyList} message="Connect wallet to see your rewards" />
       )}
     </div>
   )
 }
-
-interface AvailableToClaimProps {
-  availableToClaim: number
-}
-const AvailableToClaim: FC<AvailableToClaimProps> = ({ availableToClaim }) => (
-  <div className={styles.avaiableToClaimInfo}>
-    <div className={styles.moneyBillIconWrapper}>
-      <MoneyBill />
-    </div>
-    <StatInfo
-      value={availableToClaim}
-      label="Available to claim"
-      classNamesProps={{
-        container: styles.stat,
-        value: styles.value,
-        label: styles.label,
-      }}
-    />
-  </div>
-)
 
 const RewardsInfoBlock = () => (
   <div className={styles.rewardsInfoBlock}>
