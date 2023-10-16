@@ -34,6 +34,19 @@
       width: 16px;
     }
 
+    .ant-select-selection-item-remove {
+      &::before {
+        content: '';
+        background: var(--content-primary);
+        display: flex;
+        height: 1px;
+        width: 10px;
+      }
+      span {
+        display: none;
+      }
+    }
+
     .searchSelectImageContainer > div {
       display: none;
     }
