@@ -73,10 +73,7 @@ export const createTxn = async <TResult>({
   const { lookupTables } = txnData
 
   const lookupTableAccounts = await Promise.all(
-    lookupTables.map(
-      async (lt) =>
-        (await connection.getAddressLookupTable(lt)).value as web3.AddressLookupTableAccount,
-    ),
+    lookupTables.map((lt) => fetchLookupTableAccount(lt, connection)),
   )
 
   const txnMessageV0 = new web3.VersionedTransaction(
@@ -84,11 +81,29 @@ export const createTxn = async <TResult>({
       payerKey: wallet.publicKey as web3.PublicKey,
       recentBlockhash: blockhash,
       instructions: txnData.instructions,
-    }).compileToV0Message(lookupTableAccounts),
+    }).compileToV0Message(
+      lookupTableAccounts.map(({ value }) => value as web3.AddressLookupTableAccount),
+    ),
   )
   if (txnData.signers) {
     txnMessageV0.sign(txnData.signers)
   }
 
   return txnMessageV0
+}
+
+const lookupTablesCache = new Map<
+  string,
+  Promise<web3.RpcResponseAndContext<web3.AddressLookupTableAccount | null>>
+>()
+const fetchLookupTableAccount = (lookupTable: web3.PublicKey, connection: web3.Connection) => {
+  const lookupTableAddressStr = lookupTable.toBase58()
+
+  if (!lookupTablesCache.has(lookupTableAddressStr)) {
+    const lookupTableAccountPromise = connection.getAddressLookupTable(lookupTable)
+
+    lookupTablesCache.set(lookupTableAddressStr, lookupTableAccountPromise)
+  }
+
+  return lookupTablesCache.get(lookupTableAddressStr)!
 }
