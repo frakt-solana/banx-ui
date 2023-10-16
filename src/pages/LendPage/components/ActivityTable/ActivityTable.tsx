@@ -19,8 +19,15 @@ interface ActivityTableProps {
 const ActivityTable: FC<ActivityTableProps> = ({ marketPubkey, goToPlaceOfferTab }) => {
   const { ref: fetchMoreTrigger, inView } = useIntersection()
 
-  const { loans, isLoading, fetchNextPage, hasNextPage, filterParams, showEmptyList } =
-    useAllLenderActivity(marketPubkey)
+  const {
+    loans,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    filterParams,
+    showEmptyList,
+    disabledRadioButtons,
+  } = useAllLenderActivity(marketPubkey)
 
   useEffect(() => {
     if (inView && hasNextPage) {
@@ -32,7 +39,11 @@ const ActivityTable: FC<ActivityTableProps> = ({ marketPubkey, goToPlaceOfferTab
 
   return (
     <>
-      <FilterTableSection {...filterParams} />
+      <FilterTableSection
+        {...filterParams}
+        disabledRadioButtons={disabledRadioButtons}
+        disabled={showEmptyList}
+      />
       {!showEmptyList ? (
         <Table
           data={loans}

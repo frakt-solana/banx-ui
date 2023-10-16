@@ -8,7 +8,7 @@ import { RBOption } from '@banx/components/RadioButton'
 import { fetchLenderActivity } from '@banx/api/activity'
 
 import { useMarketsPreview } from '../../hooks'
-import { RADIO_BUTTONS_OPTIONS } from './constants'
+import { ActivityEvent, RADIO_BUTTONS_OPTIONS } from './constants'
 import { appendIdToOptions } from './helpers'
 
 const PAGINATION_LIMIT = 15
@@ -61,6 +61,8 @@ export const useAllLenderActivity = (marketPubkey: string) => {
 
   const showEmptyList = !loans?.length && !isLoading
 
+  const disabledRadioButtons = showEmptyList && eventType === ActivityEvent.ALL
+
   return {
     loans,
     fetchNextPage,
@@ -68,6 +70,7 @@ export const useAllLenderActivity = (marketPubkey: string) => {
     hasNextPage,
     isLoading,
     showEmptyList,
+    disabledRadioButtons,
     filterParams: {
       checked,
       onToggleChecked: () => setChecked(!checked),
