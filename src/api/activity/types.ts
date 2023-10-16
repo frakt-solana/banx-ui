@@ -26,6 +26,7 @@ export type LenderActivity = z.infer<typeof LenderActivitySchema>
 interface LenderActivityRequest extends BasePaginationRequest {
   walletPubkey: string
   collection?: string[]
+  getAll?: boolean
 }
 
 export type FetchLenderActivity = (props: LenderActivityRequest) => Promise<LenderActivity[]>
@@ -57,6 +58,7 @@ export type BorrowerActivity = z.infer<typeof BorrowerActivitySchema>
 interface BorrowerActivityRequest extends BasePaginationRequest {
   walletPubkey: string
   collection?: string[]
+  getAll?: boolean
 }
 
 export type FetchBorrowerActivity = (props: BorrowerActivityRequest) => Promise<BorrowerActivity[]>
