@@ -11,7 +11,7 @@ interface EmptyListProps {
   className?: string
   buttonProps?: {
     text: string
-    onClick?: () => void
+    onClick: () => void
   }
 }
 

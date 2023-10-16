@@ -74,10 +74,7 @@ export const useLoansActiveTable = () => {
 
   const emptyListParams = {
     message: connected ? EMPTY_MESSAGE : NOT_CONNECTED_MESSAGE,
-    buttonProps: {
-      text: connected ? 'Borrow' : '',
-      onClick: connected ? goToBorrowPage : undefined,
-    },
+    buttonProps: connected ? { text: 'Borrow', onClick: goToBorrowPage } : undefined,
   }
 
   return {

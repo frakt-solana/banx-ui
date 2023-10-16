@@ -75,10 +75,7 @@ export const useActiveOffersTable = () => {
 
   const emptyListParams = {
     message: connected ? EMPTY_MESSAGE : NOT_CONNECTED_MESSAGE,
-    buttonProps: {
-      text: connected ? 'Lend' : '',
-      onClick: connected ? goToLendPage : undefined,
-    },
+    buttonProps: connected ? { text: 'Lend', onClick: goToLendPage } : undefined,
   }
 
   return {
