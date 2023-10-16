@@ -55,3 +55,16 @@ export const calcWeightedAverage = (nums: number[], weights: number[]) => {
   const weightedAverage = sum / weightSum
   return weightedAverage || 0
 }
+
+export const createDownloadLink = (data: string, filename: string, type?: string) => {
+  const blobType = type || 'text/csv'
+  const blob = new Blob([data], { type: blobType })
+  const blobURL = window.URL.createObjectURL(blob)
+
+  const tempLink = document.createElement('a')
+  tempLink.href = blobURL
+  tempLink.download = filename
+  tempLink.click()
+
+  window.URL.revokeObjectURL(blobURL)
+}

@@ -1,6 +1,6 @@
 import { SortOption } from '@banx/components/SortDropdown'
 
-export const ACTIVITY_CSV_FILENAME = 'frakt_activity.csv'
+export const ACTIVITY_CSV_FILENAME = 'banx_borrower_activity.csv'
 
 export const DEFAULT_SORT_OPTION: SortOption = {
   label: 'When',

@@ -45,7 +45,4 @@ export const BANX_STAKING = {
 
 export const IS_PRIVATE_MARKETS = process.env.IS_PRIVATE_MARKETS === 'true'
 
-export const COMPRESS_QUERY_PERSISTER =
-  !IS_DEVELOPMENT && process.env.COMPRESS_QUERY_PERSISTER_ON_BUILD === 'true'
-
 export const MIXPANEL_ACCESS_TOKEN = process.env.MIXPANEL_ACCESS_TOKEN
