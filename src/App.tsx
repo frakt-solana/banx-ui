@@ -10,6 +10,7 @@ import { Router } from '@banx/router'
 import { DialectProvider, QueryProvider, initSentry } from '@banx/utils'
 
 initSentry()
+localStorage.removeItem('@banx.queryData') //TODO Remove after a while. Just to make sure that there is no garbage in LS
 
 const SolanaConnectionWalletProvider: FC<PropsWithChildren> = ({ children }) => {
   const { endpoint, isLoading } = useBestWorkingRPC({
