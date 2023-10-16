@@ -61,7 +61,8 @@ export const useAllLenderActivity = (marketPubkey: string) => {
 
   const showEmptyList = !loans?.length && !isLoading
 
-  const disabledRadioButtons = showEmptyList && eventType === ActivityEvent.ALL
+  const isRadioButtonDisabled = showEmptyList && eventType === ActivityEvent.ALL
+  const isToggleDisabled = !checked && showEmptyList
 
   return {
     loans,
@@ -70,7 +71,8 @@ export const useAllLenderActivity = (marketPubkey: string) => {
     hasNextPage,
     isLoading,
     showEmptyList,
-    disabledRadioButtons,
+    isRadioButtonDisabled,
+    isToggleDisabled,
     filterParams: {
       checked,
       onToggleChecked: () => setChecked(!checked),

@@ -26,7 +26,8 @@ const ActivityTable: FC<ActivityTableProps> = ({ marketPubkey, goToPlaceOfferTab
     hasNextPage,
     filterParams,
     showEmptyList,
-    disabledRadioButtons,
+    isRadioButtonDisabled,
+    isToggleDisabled,
   } = useAllLenderActivity(marketPubkey)
 
   useEffect(() => {
@@ -41,8 +42,8 @@ const ActivityTable: FC<ActivityTableProps> = ({ marketPubkey, goToPlaceOfferTab
     <>
       <FilterTableSection
         {...filterParams}
-        disabledRadioButtons={disabledRadioButtons}
-        disabled={showEmptyList}
+        isRadioButtonDisabled={isRadioButtonDisabled}
+        isToggleDisabled={isToggleDisabled}
       />
       {!showEmptyList ? (
         <Table
