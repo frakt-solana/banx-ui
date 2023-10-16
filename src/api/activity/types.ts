@@ -51,6 +51,10 @@ export const BorrowerActivitySchema = z.object({
   timestamp: z.number(),
   user: z.string(),
   nft: NFTSchema,
+
+  currentRemainingLentAmount: z.number(),
+  currentLentAmount: z.number(),
+  bondTradeTransaction: z.string(),
 })
 
 export type BorrowerActivity = z.infer<typeof BorrowerActivitySchema>
