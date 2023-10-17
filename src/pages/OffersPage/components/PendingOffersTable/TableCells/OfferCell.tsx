@@ -10,19 +10,34 @@ import styles from '../PendingOffersTable.module.less'
 
 interface OfferCellProps {
   offer: TableUserOfferData
+  isCardView: boolean
 }
 
-export const OfferCell: FC<OfferCellProps> = ({ offer }) => {
+export const OfferCell: FC<OfferCellProps> = ({ offer, isCardView }) => {
   const { loanValue, collectionFloor } = offer
 
   const ltv = (loanValue / collectionFloor) * 100
 
+  const formattedLoanValue = createSolValueJSX(loanValue, 1e9)
+
+  return !isCardView ? (
+    <div className={styles.offerCell}>
+      <span>{formattedLoanValue}</span>
+      {createLtvValueJSX(ltv)}
+    </div>
+  ) : (
+    <span>
+      {formattedLoanValue} ({createLtvValueJSX(ltv)})
+    </span>
+  )
+}
+
+const createLtvValueJSX = (ltv: number) => {
   const colorLTV = getColorByPercent(ltv, HealthColorDecreasing)
 
   return (
-    <div className={styles.offerCell}>
-      <span>{createSolValueJSX(loanValue, 1e9)}</span>
-      <span style={{ color: colorLTV }}>{createPercentValueJSX(ltv)} LTV</span>
-    </div>
+    <span className={styles.offerCellSubtitle} style={{ color: colorLTV }}>
+      {createPercentValueJSX(ltv)} LTV
+    </span>
   )
 }
