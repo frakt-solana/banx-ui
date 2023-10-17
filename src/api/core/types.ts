@@ -87,6 +87,12 @@ export const NFTSchema = z.object({
       whitelistEntry: z.string(),
     })
     .optional(),
+  pnft: z
+    .object({
+      ruleSet: z.string().optional(),
+      delegate: z.string().optional(),
+    })
+    .optional(),
   collectionFloor: z.number(),
 })
 

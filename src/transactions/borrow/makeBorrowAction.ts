@@ -153,6 +153,8 @@ const getIxnsAndSignersByBorrowType = async ({
     args: {
       perpetualBorrowParamsAndAccounts: ixnParams.map(({ nft, offer, loanValue }) => ({
         amountOfSolToGet: loanValue,
+        delegate: nft.nft.pnft?.delegate ? new web3.PublicKey(nft.nft.pnft.delegate) : undefined,
+        ruleSet: nft.nft.pnft?.ruleSet ? new web3.PublicKey(nft.nft.pnft.ruleSet) : undefined,
         tokenMint: new web3.PublicKey(nft.mint),
         bondOfferV2: new web3.PublicKey(offer.publicKey),
         hadoMarket: new web3.PublicKey(offer.hadoMarket),
