@@ -26,7 +26,7 @@ export const parseUserOffers = (offers: UserOffer[]): TableUserOfferData[] => {
       collectionName,
       hadoMarket,
       assetReceiver,
-      collectionFloor = 0,
+      collectionFloor,
     } = offer
 
     const loansAmount = fundsSolOrTokenBalance / currentSpotPrice
