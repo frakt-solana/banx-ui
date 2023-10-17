@@ -37,7 +37,7 @@ export const signAndSendTxns = async <TResult>({
 
   eventHandlers?.beforeApproveEveryChunk?.()
 
-  const signedTxns = await wallet.signAllTransactions(txns)
+  const signedTxns = txns.length > 0 ? await wallet.signAllTransactions(txns) : []
 
   const txnHashes = await Promise.all(
     signedTxns.map(
