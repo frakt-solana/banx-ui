@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import { useWallet } from '@solana/wallet-adapter-react'
 
 import { Button } from '@banx/components/Buttons'
@@ -18,8 +20,10 @@ export const Summary = () => {
   const { data } = useUserLoansStats()
   const { totalLoans = 0, totalBorrowed = 0, totalDebt = 0, totalRepaid = 0 } = data || {}
 
+  const [isDownloading, setIsDownloading] = useState(false)
   const download = async () => {
     try {
+      setIsDownloading(true)
       const data = await fetchBorrowerActivity({
         order: 'desc',
         sortBy: 'timestamp',
@@ -34,6 +38,8 @@ export const Summary = () => {
       return data
     } catch (error) {
       console.error('Error downloading data:', error)
+    } finally {
+      setIsDownloading(false)
     }
   }
 
@@ -51,7 +57,7 @@ export const Summary = () => {
         <StatInfo label="Debt" value={totalDebt} divider={1e9} />
         <StatInfo label="Repaid" value={totalRepaid} divider={1e9} />
       </div>
-      <Button onClick={download} className={styles.summaryButton}>
+      <Button onClick={download} className={styles.summaryButton} loading={isDownloading}>
         Download .CSV
       </Button>
     </div>
