@@ -32,7 +32,7 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndCon
     .filter(
       (param) => param.nft.loan.fraktMarket === 'BBDTWocoEELhwmRBECcudJ2yfCDX1fteYj9uFQAsCDtr',
     )
-    .slice(0, 250)
+    .slice(0, 30)
 
   const borrowType = getChunkBorrowType(ixnParams.map(({ nft }) => nft))
 
