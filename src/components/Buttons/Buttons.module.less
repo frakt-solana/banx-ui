@@ -22,9 +22,11 @@
     pointer-events: none;
   }
 
-  svg,
-  svg path {
-    fill: var(--content-primary);
+  &:not(&.loading) {
+    svg,
+    svg path {
+      fill: var(--content-primary);
+    }
   }
 }
 
@@ -54,6 +56,11 @@
   &.large {
     height: 40px;
 
+    .loader {
+      width: 24px;
+      height: 24px;
+    }
+
     @media (max-width: 640px) {
       height: 32px;
     }
@@ -66,10 +73,28 @@
     height: 24px;
   }
 
+  &.loading,
   &:disabled {
     background-color: var(--bg-secondary);
     border-color: 1px solid var(--bg-border);
     color: var(--content-secondary);
+    pointer-events: none;
+  }
+}
+.loader {
+  width: 16px;
+  height: 16px;
+  display: block;
+
+  animation: rotate 1s infinite linear;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 
