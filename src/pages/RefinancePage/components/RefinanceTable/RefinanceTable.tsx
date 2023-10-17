@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router-dom'
+
 import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 
@@ -14,6 +16,7 @@ import styles from './RefinanceTable.module.less'
 
 export const RefinanceTable = () => {
   const { loans, sortViewParams, loading, showEmptyList } = useRefinanceTable()
+  const navigate = useNavigate()
 
   const { selectedLoans, onSelectLoan, findSelectedLoan, onSelectAllLoans, onDeselectAllLoans } =
     useLoansState()
@@ -28,8 +31,17 @@ export const RefinanceTable = () => {
     findSelectedLoan,
   })
 
+  const goToLendPage = () => {
+    navigate(PATHS.LEND)
+  }
+
   if (showEmptyList)
-    return <EmptyList message={EMPTY_MESSAGE} buttonText="Lend SOL" path={PATHS.LEND} />
+    return (
+      <EmptyList
+        message={EMPTY_MESSAGE}
+        buttonProps={{ text: 'Lend SOL', onClick: goToLendPage }}
+      />
+    )
 
   return (
     <div className={styles.tableRoot}>

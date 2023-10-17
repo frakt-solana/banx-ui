@@ -35,7 +35,7 @@ export const RadioButton: FC<RadioButtonProps> = ({
             key={option.label}
             onChange={() => onOptionChange(option)}
             className={classNames(styles.radioButton, {
-              [styles.disabledButton]: disabled,
+              [styles.disabled]: disabled,
               [styles.active]: checked,
             })}
           >
