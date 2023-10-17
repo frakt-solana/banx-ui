@@ -12,9 +12,10 @@ interface DebtCellrops {
 }
 
 export const DebtCell: FC<DebtCellrops> = ({ loan, isCardView }) => {
-  const { borrowed, interest } = loan
+  const { borrowed, interest, currentRemainingLentAmount } = loan || {}
 
-  const repayValue = borrowed + interest
+  const lentAmount = currentRemainingLentAmount || borrowed
+  const repayValue = lentAmount + interest
 
   const formattedRepayValue = createSolValueJSX(repayValue, 1e9, '0◎')
   const formattedFeeValue = createSolValueJSX(interest, 1e9, '0◎')

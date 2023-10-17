@@ -14,13 +14,13 @@ interface LentCellProps {
 
 export const LentCell: FC<LentCellProps> = ({ loan, isCardView }) => {
   const { solAmount, feeAmount } = loan.bondTradeTransaction || {}
+  const { currentPerpetualBorrowed } = loan.fraktBond || {}
 
   const collectionFloor = loan.nft.collectionFloor
 
-  const lentValue = solAmount + feeAmount
-  const ltv = (lentValue / collectionFloor) * 100
+  const ltv = ((solAmount + feeAmount) / collectionFloor) * 100
 
-  const formattedLentValue = createSolValueJSX(lentValue, 1e9, '0◎')
+  const formattedLentValue = createSolValueJSX(currentPerpetualBorrowed, 1e9, '0◎')
 
   return !isCardView ? (
     <div className={styles.lentInfo}>
