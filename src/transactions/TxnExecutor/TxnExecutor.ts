@@ -8,7 +8,7 @@ import { EventHanlders, ExecutorOptions, MakeActionFn } from './types'
 
 export const DEFAULT_EXECUTOR_OPTIONS: ExecutorOptions = {
   commitment: 'confirmed',
-  signAllChunks: 40, //? Set different for ledger
+  signAllChunks: 20, //? Set different for ledger
   skipPreflight: false,
   preflightCommitment: 'processed',
   rejectQueueOnFirstPfError: false,

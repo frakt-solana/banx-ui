@@ -28,6 +28,10 @@ export type MakeBorrowActionResult = { loan: Loan; offer: Offer }[]
 export type MakeBorrowAction = MakeActionFn<MakeBorrowActionParams, MakeBorrowActionResult>
 
 export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndConnection) => {
+  ixnParams = ixnParams.filter(
+    (param) => param.nft.loan.fraktMarket === 'BBDTWocoEELhwmRBECcudJ2yfCDX1fteYj9uFQAsCDtr',
+  )
+
   const borrowType = getChunkBorrowType(ixnParams.map(({ nft }) => nft))
 
   if (ixnParams.length > BORROW_NFT_PER_TXN[borrowType]) {

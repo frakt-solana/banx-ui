@@ -69,7 +69,7 @@ export const executeBorrow = async (props: {
   const txnsResults = await new TxnExecutor(
     makeBorrowAction,
     { wallet, connection },
-    { signAllChunks: isLedger ? 1 : 40, rejectQueueOnFirstPfError: isLedger },
+    { signAllChunks: isLedger ? 1 : 20, rejectQueueOnFirstPfError: isLedger },
   )
     .addTxnParams(txnParams)
     .on('pfSuccessEach', (results) => {
