@@ -6,6 +6,18 @@
   width: fit-content;
 }
 
+.disabled {
+  cursor: default;
+
+  .label {
+    color: var(--content-secondary);
+  }
+
+  .slider::before {
+    background: var(--content-secondary);
+  }
+}
+
 .input {
   opacity: 0;
   width: 0;
@@ -18,12 +30,12 @@
   width: 44px;
   height: 22px;
   position: relative;
-  background: var(--bg-action);
+  background: var(--bg-secondary);
   border-radius: 16px;
 
   &::before {
     content: '';
-    background: var(--bg-primary);
+    background: var(--pure-white);
     border-radius: 50%;
     box-shadow: 0px 2px 4px 0px #00230b33;
 

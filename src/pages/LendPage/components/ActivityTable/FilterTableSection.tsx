@@ -13,6 +13,8 @@ interface FilterTableSectionProps {
   currentOption: RBOption
   onOptionChange: (value: RBOption) => void
   options: RBOption[]
+  isRadioButtonDisabled: boolean
+  isToggleDisabled: boolean
 }
 
 export const FilterTableSection: FC<FilterTableSectionProps> = ({
@@ -21,6 +23,8 @@ export const FilterTableSection: FC<FilterTableSectionProps> = ({
   currentOption,
   onOptionChange,
   options,
+  isRadioButtonDisabled,
+  isToggleDisabled,
 }) => {
   const { connected } = useWallet()
 
@@ -31,8 +35,16 @@ export const FilterTableSection: FC<FilterTableSectionProps> = ({
         options={options}
         currentOption={currentOption}
         onOptionChange={onOptionChange}
+        disabled={isRadioButtonDisabled}
       />
-      {connected && <Toggle label="Mine" checked={checked} onChange={onToggleChecked} />}
+      {connected && (
+        <Toggle
+          label="Mine"
+          checked={checked}
+          onChange={onToggleChecked}
+          disabled={isToggleDisabled}
+        />
+      )}
     </div>
   )
 }
