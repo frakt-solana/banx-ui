@@ -21,13 +21,6 @@
   &:disabled {
     pointer-events: none;
   }
-
-  &:not(&.loading) {
-    svg,
-    svg path {
-      fill: var(--content-primary);
-    }
-  }
 }
 
 // standard buttons styles
@@ -85,7 +78,6 @@
   width: 16px;
   height: 16px;
   display: block;
-
   animation: rotate 1s infinite linear;
 }
 
@@ -101,6 +93,10 @@
 // Circle button styles
 .circle {
   border-radius: 100px;
+
+  path {
+    fill: var(--content-primary);
+  }
 
   &:disabled {
     border: 1px solid var(--bg-border);
