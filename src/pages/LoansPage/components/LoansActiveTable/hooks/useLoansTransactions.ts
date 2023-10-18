@@ -79,7 +79,11 @@ export const useLoansTransactions = () => {
   const repayBulkLoan = async () => {
     const loansChunks = chunkRepayIxnsParams(selectedLoans)
 
-    await new TxnExecutor(makeRepayLoansAction, { wallet, connection })
+    await new TxnExecutor(
+      makeRepayLoansAction,
+      { wallet, connection },
+      { rejectQueueOnFirstPfError: true },
+    )
       .addTxnParams(loansChunks)
       .on('pfSuccessEach', (results) => {
         results.forEach(({ txnHash, result }) => {
