@@ -5,7 +5,7 @@ import moment from 'moment'
 import { Loan } from '@banx/api/core'
 import { HealthColorDecreasing, convertAprToApy, getColorByPercent } from '@banx/utils'
 
-import { INCREASE_PERCENT_APR_PER_HOUR, MAX_INCREASE_PERCENT } from '../constants'
+import { INCREASE_PERCENT_APR_PER_HOUR, MAX_APY_INCREASE_PERCENT } from '../constants'
 
 import styles from '../RefinanceTable.module.less'
 
@@ -45,13 +45,13 @@ export const APRCell: FC<APRCellProps> = ({ loan }) => {
 
   const colorAPR = getColorByPercent(currentAPR, HealthColorDecreasing)
 
-  const apy = Math.min(convertAprToApy(currentAPR / 100), MAX_INCREASE_PERCENT)
+  const apy = Math.min(convertAprToApy(currentAPR / 100), MAX_APY_INCREASE_PERCENT)
 
-  const shouldShowIncreaseInApy = apy < MAX_INCREASE_PERCENT
+  const isApyIncreaseRateVisible = apy < MAX_APY_INCREASE_PERCENT
 
   return (
     <span style={{ color: colorAPR }} className={styles.aprValue}>
-      {apy}% {shouldShowIncreaseInApy ? `(+${INCREASE_PERCENT_APR_PER_HOUR}%)` : null}
+      {apy}% {isApyIncreaseRateVisible ? `(+${INCREASE_PERCENT_APR_PER_HOUR}%)` : null}
     </span>
   )
 }
