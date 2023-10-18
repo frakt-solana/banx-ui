@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 
-import { HealthColorDecreasing, getColorByPercent } from '@banx/utils'
+import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
 
 import { TableUserOfferData } from '../helpers'
 
@@ -33,7 +33,7 @@ export const OfferCell: FC<OfferCellProps> = ({ offer, isCardView }) => {
 }
 
 const createLtvValueJSX = (ltv: number) => {
-  const colorLTV = getColorByPercent(ltv, HealthColorDecreasing)
+  const colorLTV = getColorByPercent(ltv, HealthColorIncreasing)
 
   return (
     <span className={styles.offerCellSubtitle} style={{ color: colorLTV }}>
