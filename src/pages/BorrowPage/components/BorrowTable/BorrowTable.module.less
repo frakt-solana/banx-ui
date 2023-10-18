@@ -133,7 +133,13 @@
   gap: 8px;
 
   button {
-    min-width: 170px;
+    &:first-child {
+      min-width: 170px;
+    }
+
+    &:last-child {
+      min-width: 192px;
+    }
   }
 
   @media (max-width: 960px) {
