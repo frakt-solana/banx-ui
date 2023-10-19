@@ -48,7 +48,7 @@ const Header = () => {
       />
 
       <AdditionalStat
-        label="Offers volume"
+        label="Offers TVL"
         value={
           <>
             {formattedOffersTVL}

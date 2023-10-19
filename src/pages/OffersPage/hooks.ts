@@ -72,6 +72,7 @@ export const useUserOffers = () => {
         return {
           ...offer,
           marketApr: marketPreview?.marketApr || 0,
+          collectionFloor: marketPreview?.collectionFloor || 0,
           collectionImage: marketPreview?.collectionImage || '',
           collectionName: marketPreview?.collectionName || '',
         }

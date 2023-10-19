@@ -15,7 +15,7 @@ import { TableNftData } from './types'
 
 interface GetTableColumnsProps {
   onNftSelect: (nft: TableNftData) => void
-  onBorrow: (nft: TableNftData) => void
+  onBorrow: (nft: TableNftData) => Promise<void>
   findOfferInCart: (nft: TableNftData) => SimpleOffer | null
   isCardView: boolean
 }
@@ -60,7 +60,7 @@ export const getTableColumns = ({
         <BorrowCell
           isCardView={isCardView}
           disabled={!!findOfferInCart(nft) || !nft.loanValue}
-          onBorrow={() => onBorrow(nft)}
+          onBorrow={async () => await onBorrow(nft)}
         />
       ),
     },
