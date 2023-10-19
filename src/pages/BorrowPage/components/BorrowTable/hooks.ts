@@ -137,9 +137,12 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
   const onSelectAll = () => {
     if (isEmpty(offerByMint)) {
       const mintsByMarket = Object.fromEntries(
-        Object.entries(groupBy(nfts, ({ loan }) => loan.marketPubkey)).map(
-          ([marketPubkey, nfts]) => [marketPubkey, nfts.map(({ mint }) => mint)],
-        ),
+        Object.entries(
+          groupBy(
+            map(filteredNfts, ({ nft }) => nft),
+            ({ loan }) => loan.marketPubkey,
+          ),
+        ).map(([marketPubkey, nfts]) => [marketPubkey, nfts.map(({ mint }) => mint)]),
       )
       addNftsAuto({ mintsByMarket })
     } else {
