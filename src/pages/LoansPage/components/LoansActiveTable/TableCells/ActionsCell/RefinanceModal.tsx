@@ -65,7 +65,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
     rateBasePoints: offer?.marketApr || 0,
   })
   const newLoanDebt = currentSpotPrice
-  const differenceToPay = newLoanDebt - currentLoanDebt
+  const differenceToPay = newLoanBorrowedAmount - currentLoanDebt
 
   const refinance = () => {
     if (!offer) return
