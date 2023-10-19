@@ -40,7 +40,8 @@ const Header = () => {
         label="Loans volume"
         value={
           <>
-            {formattedLoansTVL}◎<span className={styles.value}>in {totalLoans} loans</span>
+            {formattedLoansTVL}◎
+            <span className={styles.value}>in {formatNumbersWithCommas(totalLoans)} loans</span>
           </>
         }
         valueType={VALUES_TYPES.STRING}
@@ -50,7 +51,8 @@ const Header = () => {
         label="Offers TVL"
         value={
           <>
-            {formattedOffersTVL}◎<span className={styles.value}>in {totalOffers} offers</span>
+            {formattedOffersTVL}◎
+            <span className={styles.value}>in {formatNumbersWithCommas(totalOffers)} offers</span>
           </>
         }
         valueType={VALUES_TYPES.STRING}
