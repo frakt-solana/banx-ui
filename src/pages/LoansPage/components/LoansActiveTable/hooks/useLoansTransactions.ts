@@ -82,7 +82,7 @@ export const useLoansTransactions = () => {
     await new TxnExecutor(
       makeRepayLoansAction,
       { wallet, connection },
-      { rejectQueueOnFirstPfError: true },
+      { rejectQueueOnFirstPfError: false },
     )
       .addTxnParams(loansChunks)
       .on('pfSuccessEach', (results) => {
