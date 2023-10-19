@@ -21,11 +21,6 @@
   &:disabled {
     pointer-events: none;
   }
-
-  svg,
-  svg path {
-    fill: var(--content-primary);
-  }
 }
 
 // standard buttons styles
@@ -54,6 +49,11 @@
   &.large {
     height: 40px;
 
+    .loader {
+      width: 24px;
+      height: 24px;
+    }
+
     @media (max-width: 640px) {
       height: 32px;
     }
@@ -66,16 +66,38 @@
     height: 24px;
   }
 
+  &.loading,
+  &.loading:hover,
   &:disabled {
     background-color: var(--bg-secondary);
     border-color: 1px solid var(--bg-border);
     color: var(--content-secondary);
+    pointer-events: none;
+  }
+}
+.loader {
+  width: 16px;
+  height: 16px;
+  display: block;
+  animation: rotate 1s infinite linear;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 
 // Circle button styles
 .circle {
   border-radius: 100px;
+
+  path {
+    fill: var(--content-primary);
+  }
 
   &:disabled {
     border: 1px solid var(--bg-border);

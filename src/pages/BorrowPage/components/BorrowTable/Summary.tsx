@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 
 import { sumBy } from 'lodash'
 
@@ -32,9 +32,12 @@ export const Summary: FC<SummaryProps> = ({ nftsInCart, selectAll, borrowAll }) 
     }),
   )
 
-  const onBorrow = () => {
+  const [isBorrowing, setIsBorrowing] = useState(false)
+  const onBorrow = async () => {
+    setIsBorrowing(true)
     trackPageEvent('borrow', `borrow-bottom`)
-    borrowAll()
+    await borrowAll()
+    setIsBorrowing(false)
   }
 
   return (
@@ -58,11 +61,7 @@ export const Summary: FC<SummaryProps> = ({ nftsInCart, selectAll, borrowAll }) 
           <span className={styles.selectButtonText}>{selectAllBtnText}</span>
           <span className={styles.selectButtonMobileText}>{selectMobileBtnText}</span>
         </Button>
-        <Button
-          onClick={onBorrow}
-          disabled={!nftsInCart.length}
-          className={styles.borrowBulkButton}
-        >
+        <Button onClick={onBorrow} disabled={!nftsInCart.length} loading={isBorrowing} size="large">
           Borrow {createSolValueJSX(totalBorrow, 1e9, '0◎')}
         </Button>
       </div>
