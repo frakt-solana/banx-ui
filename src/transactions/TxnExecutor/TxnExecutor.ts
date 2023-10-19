@@ -3,7 +3,7 @@ import { chunk } from 'lodash'
 import { WalletAndConnection } from '@banx/types'
 
 import { TxnError } from '../types'
-import { signAndSendTxns } from './helpers'
+import { hasUserRejectedTxnApprove, signAndSendTxns } from './helpers'
 import { EventHanlders, ExecutorOptions, MakeActionFn } from './types'
 
 export const DEFAULT_EXECUTOR_OPTIONS: ExecutorOptions = {
@@ -83,7 +83,9 @@ export class TxnExecutor<TParams, TResult> {
           signAndSendTxnsResults.push(...result)
         } catch (error) {
           eventHandlers?.pfError?.(error as TxnError)
-          if (options.rejectQueueOnFirstPfError) return
+          const userRejectedTxn = hasUserRejectedTxnApprove(error as TxnError)
+          if (userRejectedTxn) return
+          if (!userRejectedTxn && options.rejectQueueOnFirstPfError) return
         }
       }
 
@@ -124,7 +126,9 @@ export class TxnExecutor<TParams, TResult> {
           signAndSendTxnsResults.push(...result)
         } catch (error) {
           eventHandlers?.pfError?.(error as TxnError)
-          if (options.rejectQueueOnFirstPfError) return
+          const userRejectedTxn = hasUserRejectedTxnApprove(error as TxnError)
+          if (userRejectedTxn) return
+          if (!userRejectedTxn && options.rejectQueueOnFirstPfError) return
         }
       }
 
