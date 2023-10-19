@@ -5,6 +5,7 @@ export interface TableUserOfferData {
   hadoMarket: string
   assetReceiver: string
 
+  collectionFloor: number
   collectionImage: string
   collectionName: string
 
@@ -25,6 +26,7 @@ export const parseUserOffers = (offers: UserOffer[]): TableUserOfferData[] => {
       collectionName,
       hadoMarket,
       assetReceiver,
+      collectionFloor,
     } = offer
 
     const loansAmount = fundsSolOrTokenBalance / currentSpotPrice
@@ -36,6 +38,7 @@ export const parseUserOffers = (offers: UserOffer[]): TableUserOfferData[] => {
       publicKey,
       hadoMarket,
       assetReceiver,
+      collectionFloor,
       collectionImage,
       collectionName,
       loansAmount,

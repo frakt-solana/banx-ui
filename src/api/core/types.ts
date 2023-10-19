@@ -60,7 +60,9 @@ export const PairSchema = z.object({
   validation: ValidationPairSchema,
 })
 
-export const UserPairSchema = PairSchema.merge(MarketMetaSchema)
+export const UserPairSchema = PairSchema.merge(MarketMetaSchema).merge(
+  z.object({ collectionFloor: z.number() }),
+)
 
 export type Offer = z.infer<typeof PairSchema>
 export type UserOffer = z.infer<typeof UserPairSchema>
