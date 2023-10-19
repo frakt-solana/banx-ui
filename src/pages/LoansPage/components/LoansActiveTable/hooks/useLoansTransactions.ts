@@ -3,7 +3,7 @@ import { chunk, groupBy } from 'lodash'
 
 import { Loan } from '@banx/api/core'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
-import { useLoansOptimistic } from '@banx/store'
+import { useIsLedger, useLoansOptimistic } from '@banx/store'
 import { BorrowType, defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import {
@@ -18,6 +18,7 @@ import { enqueueSnackbar } from '@banx/utils'
 export const useLoansTransactions = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
+  const { isLedger } = useIsLedger()
 
   const { update: updateLoansOptimistic } = useLoansOptimistic()
   const { clearSelection } = useSelectedLoans()
@@ -82,7 +83,7 @@ export const useLoansTransactions = () => {
     await new TxnExecutor(
       makeRepayLoansAction,
       { wallet, connection },
-      { rejectQueueOnFirstPfError: false },
+      { signAllChunks: isLedger ? 1 : 40, rejectQueueOnFirstPfError: false },
     )
       .addTxnParams(loansChunks)
       .on('pfSuccessEach', (results) => {
