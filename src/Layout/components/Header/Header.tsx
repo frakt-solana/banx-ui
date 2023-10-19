@@ -34,18 +34,16 @@ export const Header = () => {
   )
 }
 
-const RewardsButton = () => {
-  return (
-    <NavLink to={PATHS.LEADERBOARD}>
-      <Button
-        type="circle"
-        variant="text"
-        className={classNames(styles.rewardsButton, {
-          [styles.active]: isActivePath(PATHS.LEADERBOARD),
-        })}
-      >
-        <Cup /> <span>Rewards</span>
-      </Button>
-    </NavLink>
-  )
-}
+const RewardsButton = () => (
+  <NavLink to={PATHS.LEADERBOARD}>
+    <Button
+      type="circle"
+      variant="text"
+      className={classNames(styles.rewardsButton, {
+        [styles.active]: isActivePath(PATHS.LEADERBOARD),
+      })}
+    >
+      <Cup /> <span>Rewards</span>
+    </Button>
+  </NavLink>
+)
