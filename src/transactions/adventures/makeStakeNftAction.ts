@@ -1,4 +1,5 @@
 import { web3 } from 'fbonds-core'
+import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { staking } from 'fbonds-core/lib/fbond-protocol/functions/'
 
 import { Adventure } from '@banx/api/adventures'
@@ -39,6 +40,6 @@ export const makeStakeNftAction: MakeStakeNftAction = async (ixnParams, { connec
     instructions,
     signers,
     additionalResult: null,
-    lookupTables: [],
+    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }
