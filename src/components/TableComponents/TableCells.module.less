@@ -10,13 +10,24 @@
   position: relative;
 }
 .nftImage,
-.selectedCollectionOverlay {
+.selectedCollectionOverlay,
+.nftPlaceholderIcon {
   height: 40px;
   width: 40px;
 
   @media (max-width: 640px) {
     height: 32px;
     width: 32px;
+  }
+}
+
+.nftPlaceholderIcon {
+  rect {
+    fill: var(--bg-secondary);
+    stroke: var(--bg-border);
+  }
+  path {
+    fill: var(--bg-border);
   }
 }
 

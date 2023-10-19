@@ -1,5 +1,5 @@
 import { web3 } from 'fbonds-core'
-import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
+import { LOOKUP_TABLE, PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 import { staking } from 'fbonds-core/lib/fbond-protocol/functions/'
 
 import { AdventureNft } from '@banx/api/adventures'
@@ -33,6 +33,6 @@ export const makeUnstakeNftAction: MakeUnstakeNftAction = async (nft, { connecti
     instructions,
     signers,
     additionalResult: null,
-    lookupTables: [],
+    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }

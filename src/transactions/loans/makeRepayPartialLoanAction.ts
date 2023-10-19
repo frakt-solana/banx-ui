@@ -1,5 +1,5 @@
 import { web3 } from 'fbonds-core'
-import { EMPTY_PUBKEY } from 'fbonds-core/lib/fbond-protocol/constants'
+import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   BondAndTransactionOptimistic,
   repayPartialPerpetualLoan,
@@ -58,7 +58,7 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
   return {
     instructions,
     signers,
-    lookupTables: [],
+    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
     additionalResult: optimisticResult,
   }
 }
