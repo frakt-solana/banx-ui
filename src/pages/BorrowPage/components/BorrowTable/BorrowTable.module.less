@@ -148,7 +148,10 @@
     width: 100%;
 
     button {
-      min-width: unset;
+      &:first-child,
+      &:last-child {
+        min-width: unset;
+      }
     }
   }
 }
