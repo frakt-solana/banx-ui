@@ -9,7 +9,9 @@ import {
   SeparateStatsLine,
 } from '@banx/components/PageHeader'
 import { VALUES_TYPES } from '@banx/components/StatInfo'
-import { createSolValueJSX } from '@banx/components/TableComponents'
+
+import { MarketPreview } from '@banx/api/core'
+import { formatNumbersWithCommas } from '@banx/utils'
 
 import { useMarketsPreview } from '../../hooks'
 
@@ -18,21 +20,19 @@ import styles from './LendHeader.module.less'
 const Header = () => {
   const { marketsPreview } = useMarketsPreview()
 
-  const { totalLoans, totalOffers, formattedLoansTVL, formattedOffersTVL } = useMemo(() => {
-    const loansTVL = sumBy(marketsPreview, 'loansTvl')
-    const offersTVL = sumBy(marketsPreview, 'offerTvl')
-    const totalLoans = sumBy(marketsPreview, 'activeBondsAmount')
-    const totalOffers = sumBy(marketsPreview, 'activeOfferAmount')
+  const { loansTVL, offersTVL, totalLoans, totalOffers } = useMemo(() => {
+    const sumByKey = (key: keyof MarketPreview) => sumBy(marketsPreview, key)
 
     return {
-      loansTVL,
-      offersTVL,
-      totalLoans,
-      totalOffers,
-      formattedLoansTVL: createSolValueJSX(loansTVL, 1e9),
-      formattedOffersTVL: createSolValueJSX(offersTVL, 1e9),
+      loansTVL: sumByKey('loansTvl'),
+      offersTVL: sumByKey('offerTvl'),
+      totalLoans: sumByKey('activeBondsAmount'),
+      totalOffers: sumByKey('activeOfferAmount'),
     }
   }, [marketsPreview])
+
+  const formattedLoansTVL = formatNumbersWithCommas((loansTVL / 1e9)?.toFixed(0))
+  const formattedOffersTVL = formatNumbersWithCommas((offersTVL / 1e9)?.toFixed(0))
 
   return (
     <PageHeaderBackdrop title="Lend">
@@ -40,19 +40,19 @@ const Header = () => {
         label="Loans volume"
         value={
           <>
-            {formattedLoansTVL}
-            <span className={styles.value}>in {totalLoans} loans</span>
+            {formattedLoansTVL}◎
+            <span className={styles.value}>in {formatNumbersWithCommas(totalLoans)} loans</span>
           </>
         }
         valueType={VALUES_TYPES.STRING}
       />
 
       <AdditionalStat
-        label="Offers volume"
+        label="Offers TVL"
         value={
           <>
-            {formattedOffersTVL}
-            <span className={styles.value}>in {totalOffers} offers</span>
+            {formattedOffersTVL}◎
+            <span className={styles.value}>in {formatNumbersWithCommas(totalOffers)} offers</span>
           </>
         }
         valueType={VALUES_TYPES.STRING}

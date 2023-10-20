@@ -1,5 +1,5 @@
 import { web3 } from 'fbonds-core'
-import { EMPTY_PUBKEY } from 'fbonds-core/lib/fbond-protocol/constants'
+import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   BondAndTransactionOptimistic,
   repayCnftPerpetualLoan,
@@ -95,7 +95,12 @@ const getIxnsAndSignersByBorrowType = async ({
       connection,
       sendTxn: sendTxnPlaceHolder,
     })
-    return { instructions, signers, optimisticResults, lookupTables: [] }
+    return {
+      instructions,
+      signers,
+      optimisticResults,
+      lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    }
   }
 
   if (type === BorrowType.CNft) {
@@ -127,7 +132,12 @@ const getIxnsAndSignersByBorrowType = async ({
       sendTxn: sendTxnPlaceHolder,
     })
 
-    return { instructions, signers, optimisticResults, lookupTables: [] }
+    return {
+      instructions,
+      signers,
+      optimisticResults,
+      lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    }
   }
 
   const { instructions, signers, optimisticResults } = await repayPerpetualLoan({
@@ -148,7 +158,12 @@ const getIxnsAndSignersByBorrowType = async ({
     sendTxn: sendTxnPlaceHolder,
   })
 
-  return { instructions, signers, optimisticResults, lookupTables: [] }
+  return {
+    instructions,
+    signers,
+    optimisticResults,
+    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+  }
 }
 
 const getChunkBorrowType = (loans: Loan[]) => {

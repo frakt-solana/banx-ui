@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import { useWallet } from '@solana/wallet-adapter-react'
 
 import { Button } from '@banx/components/Buttons'
@@ -34,8 +36,10 @@ export const Summary = () => {
 
   const colorAPR = getColorByPercent(weightedApyPercent, HealthColorDecreasing)
 
+  const [isDownloading, setIsDownloading] = useState(false)
   const download = async () => {
     try {
+      setIsDownloading(true)
       const data = await fetchLenderActivity({
         order: 'desc',
         sortBy: 'timestamp',
@@ -50,6 +54,8 @@ export const Summary = () => {
       return data
     } catch (error) {
       console.error('Error downloading data:', error)
+    } finally {
+      setIsDownloading(false)
     }
   }
 
@@ -75,7 +81,7 @@ export const Summary = () => {
 
         <StatInfo label="Total received" value={totalReceived} divider={1e9} />
       </div>
-      <Button onClick={download} className={styles.summaryButton}>
+      <Button onClick={download} className={styles.summaryButton} loading={isDownloading}>
         Download .CSV
       </Button>
     </div>

@@ -2,6 +2,8 @@ import { web3 } from 'fbonds-core'
 
 import { WalletAndConnection } from '@banx/types'
 
+import { TxnError } from '../types'
+import { USER_REJECTED_TXN_ERR_MESSAGES } from './constants'
 import { EventHanlders, ExecutorOptions, SendTxnsResult, TxnData } from './types'
 
 export const signAndSendTxns = async <TResult>({
@@ -106,4 +108,12 @@ const fetchLookupTableAccount = (lookupTable: web3.PublicKey, connection: web3.C
   }
 
   return lookupTablesCache.get(lookupTableAddressStr)!
+}
+
+export const hasUserRejectedTxnApprove = (error: TxnError) => {
+  const { message } = error
+  if (USER_REJECTED_TXN_ERR_MESSAGES.includes(message)) {
+    return true
+  }
+  return false
 }

@@ -78,8 +78,9 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
   const hasRefinanceOffers = !isEmpty(bestOffer)
   const canRefinance = hasRefinanceOffers && loanActiveOrRefinanced
 
-  const showTerminateButton = (!canRefinance || isTerminatingStatus) && !isLoanExpired
-  const showInstantButton = canRefinance && !isLoanExpired
+  const showClaimButton = isLoanExpired && isTerminatingStatus
+  const showTerminateButton = (!canRefinance || isTerminatingStatus) && !showClaimButton
+  const showInstantButton = canRefinance && !showClaimButton
 
   return (
     <div className={styles.actionsButtons}>
@@ -105,7 +106,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
           Instant
         </Button>
       )}
-      {isLoanExpired && (
+      {showClaimButton && (
         <Button onClick={onClaim} className={styles.instantButton} size={buttonSize}>
           Claim NFT
         </Button>

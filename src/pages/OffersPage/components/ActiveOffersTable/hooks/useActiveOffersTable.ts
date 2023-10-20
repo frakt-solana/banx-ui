@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { first, groupBy, map, sumBy } from 'lodash'
+import { filter, first, groupBy, includes, map, sumBy } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
@@ -65,7 +65,14 @@ export const useActiveOffersTable = () => {
     className: styles.sortDropdown,
   }
 
-  const sortedLoans = useSortedLenderLoans(loans, sortOption.value)
+  const filteredLoans = useMemo(() => {
+    if (selectedOptions.length) {
+      return filter(loans, ({ nft }) => includes(selectedOptions, nft.meta.collectionName))
+    }
+    return loans
+  }, [loans, selectedOptions])
+
+  const sortedLoans = useSortedLenderLoans(filteredLoans, sortOption.value)
 
   const showEmptyList = (!loans?.length && !loading) || !connected
 

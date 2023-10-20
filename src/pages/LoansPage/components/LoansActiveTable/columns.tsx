@@ -9,7 +9,6 @@ import {
 } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import { calcLoanBorrowedAmount } from '@banx/utils'
 
 import { ActionsCell, DebtCell, HealthCell, StatusCell } from './TableCells'
 
@@ -51,7 +50,7 @@ export const getTableColumns = ({
     {
       key: 'loanValue',
       title: <HeaderCell label="Borrowed" />,
-      render: (_, loan) => createSolValueJSX(calcLoanBorrowedAmount(loan), 1e9),
+      render: (_, { fraktBond }) => createSolValueJSX(fraktBond.borrowedAmount, 1e9),
       sorter: true,
     },
     {

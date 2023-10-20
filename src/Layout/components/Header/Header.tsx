@@ -1,4 +1,5 @@
 import { useWallet } from '@solana/wallet-adapter-react'
+import classNames from 'classnames'
 import { NavLink } from 'react-router-dom'
 
 import { BanxNotificationsButton } from '@banx/components/BanxNotifications'
@@ -8,6 +9,7 @@ import { Cup, Logo, LogoFull } from '@banx/icons'
 import { PATHS } from '@banx/router'
 
 import { BurgerIcon } from '../BurgerMenu/components'
+import { isActivePath } from '../Navbar/helpers'
 import ThemeSwitcher from '../ThemeSwitcher'
 
 import styles from './Header.module.less'
@@ -34,7 +36,13 @@ export const Header = () => {
 
 const RewardsButton = () => (
   <NavLink to={PATHS.LEADERBOARD}>
-    <Button className={styles.rewardsButton} type="circle" variant="text">
+    <Button
+      type="circle"
+      variant="text"
+      className={classNames(styles.rewardsButton, {
+        [styles.active]: isActivePath(PATHS.LEADERBOARD),
+      })}
+    >
       <Cup /> <span>Rewards</span>
     </Button>
   </NavLink>
