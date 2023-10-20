@@ -91,7 +91,6 @@ export const NFTSchema = z.object({
     .optional(),
   pnft: z
     .object({
-      ruleSet: z.string().optional(),
       delegate: z.string().optional(),
     })
     .optional(),
