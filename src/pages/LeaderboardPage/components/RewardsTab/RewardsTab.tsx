@@ -6,7 +6,7 @@ import EmptyList from '@banx/components/EmptyList'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import Timer from '@banx/components/Timer'
 
-import { Borrow, Lend } from '@banx/icons'
+import { Borrow, CircleCheck, Lend } from '@banx/icons'
 
 import styles from './RewardsTab.module.less'
 
@@ -64,14 +64,23 @@ const RewardsInfoBlock = () => (
       <span className={styles.rewardsInfoTitle}>
         <Lend /> Lender
       </span>
-      <span>earn SOL APY while your competitive offers are pending in the orders books</span>
-      <span>earn extra SOL APY for your active loans</span>
+      <div className={styles.infoRow}>
+        <CircleCheck />
+        <span> earn SOL APY while your competitive offers are pending in the orders books</span>
+      </div>
+      <div className={styles.infoRow}>
+        <CircleCheck />
+        <span>earn extra SOL APY for your active loans</span>
+      </div>
     </div>
     <div className={styles.rewardsInfo}>
       <span className={styles.rewardsInfoTitle}>
         <Borrow /> Borrowers
       </span>
-      <span>earn SOL cashbacks for each loan you take</span>
+      <div className={styles.infoRow}>
+        <CircleCheck />
+        <span>earn SOL cashbacks for each loan you take</span>
+      </div>
     </div>
   </div>
 )
