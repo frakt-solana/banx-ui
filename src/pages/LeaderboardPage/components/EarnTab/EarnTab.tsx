@@ -76,13 +76,13 @@ const InfoBlock: FC<InfoBlockProps> = ({ infoTexts, path }) => {
 const LEND_INFO_TEXTS = [
   'Only lending on Banx.gg counts',
   'The more you lend, the more you earn',
-  'Time matters: longer a loan is a active — more points',
+  'Time matters: the longer a loan is active, the more points',
   'Loyalty matters: higher loyalty — more points',
 ]
 
 const BORROW_INFO_TEXTS = [
   'Only borrowing on Banx.gg counts',
   'The more you borrow, the more you earn',
-  'Time matters: longer a loan is a active — more points',
+  'Time matters: the longer a loan is active, the more points',
   'Loyalty matters: higher loyalty — more points',
 ]

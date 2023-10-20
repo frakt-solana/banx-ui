@@ -17,7 +17,7 @@ export const getTableColumns = () => {
     },
     {
       key: 'points',
-      title: <HeaderCell label="Points" tooltipText={`See "Earn points"`} />,
+      title: <HeaderCell label="Points" />,
       render: (_, { points }) => <PointsCell points={points} />,
     },
     {

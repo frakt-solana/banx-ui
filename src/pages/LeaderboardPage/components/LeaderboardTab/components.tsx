@@ -3,7 +3,7 @@ import { FC } from 'react'
 import placeholderBanxImg from '@banx/assets/PlaceholderBanx.png'
 import { useImagePreload } from '@banx/hooks'
 import {
-  HealthColorDecreasing,
+  HealthColorIncreasing,
   formatNumbersWithCommas,
   getColorByPercent,
   shortenAddress,
@@ -39,7 +39,7 @@ export const UserInfoCell: FC<UserInfoCellProps> = ({ rank, user, avatar }) => {
 
 export const LoyaltyCell: FC<{ loyalty: number }> = ({ loyalty }) => {
   const formattedLoyalty = Math.max((loyalty - 1) * 100, 0)
-  const loyaltyColor = getColorByPercent(loyalty, HealthColorDecreasing)
+  const loyaltyColor = getColorByPercent(loyalty, HealthColorIncreasing)
 
   return (
     <span style={{ color: loyaltyColor }} className={styles.loyaltyTitleCell}>
