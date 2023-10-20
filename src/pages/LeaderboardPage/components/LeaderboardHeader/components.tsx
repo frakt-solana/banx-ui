@@ -84,7 +84,7 @@ const LoyaltyInfo: FC<LoyaltyInfoProps> = ({ multiplier }) => (
     <div className={styles.loyaltyDetails}>
       <span className={styles.loyaltyTitle}>
         Boost
-        <Tooltip title="Rewards are boosted by staking Banx NFTs, the more player points staked the higher the boost" />
+        <Tooltip title="Only $BANX rewards are boosted by staking Banx NFTs, the more player points staked the higher the boost" />
       </span>
       <span className={styles.loyaltySubtitle}>Want to increase your boost?</span>
     </div>
