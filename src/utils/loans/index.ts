@@ -109,6 +109,8 @@ export const isLoanRepaid = (loan: Loan) => {
 }
 
 export const isLoanTerminating = (loan: Loan) => {
-  const status = determineLoanStatus(loan)
-  return status === LoanStatus.Terminating
+  const { bondTradeTransactionState } = loan.bondTradeTransaction || {}
+
+  const mappedStatus = STATUS_LOANS_MAP[bondTradeTransactionState] || ''
+  return mappedStatus === LoanStatus.Terminating
 }
