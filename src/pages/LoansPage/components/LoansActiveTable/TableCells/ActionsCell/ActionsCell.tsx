@@ -42,7 +42,6 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView, disableAct
   return (
     <div className={styles.actionsButtons}>
       <Button
-        className={styles.refinanceBtn}
         size={isCardView ? 'large' : 'small'}
         variant="secondary"
         disabled={disableActions || !offerToRefinance}
