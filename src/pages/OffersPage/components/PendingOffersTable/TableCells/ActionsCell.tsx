@@ -26,7 +26,7 @@ interface ActionsCellProps {
 export const ActionsCell: FC<ActionsCellProps> = ({ offer, isCardView }) => {
   const { removeOffer, goToEditOffer } = useActionsCell(offer)
 
-  const buttonSize = isCardView ? 'large' : 'small'
+  const buttonSize = isCardView ? 'medium' : 'small'
 
   const onEdit = () => {
     goToEditOffer()

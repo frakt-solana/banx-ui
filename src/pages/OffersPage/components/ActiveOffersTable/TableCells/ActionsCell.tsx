@@ -69,7 +69,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
     claimLoan()
   }
 
-  const buttonSize = isCardView ? 'large' : 'small'
+  const buttonSize = isCardView ? 'medium' : 'small'
 
   const loanActiveOrRefinanced = isLoanActiveOrRefinanced(loan)
   const isTerminatingStatus = isLoanTerminating(loan)
