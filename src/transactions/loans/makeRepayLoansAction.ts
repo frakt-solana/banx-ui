@@ -155,7 +155,6 @@ const getIxnsAndSignersByBorrowType = async ({
     args: {
       repayAccounts: ixnParams.map(({ fraktBond, bondTradeTransaction }, idx) => ({
         bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
-        delegate: new web3.PublicKey(BONDS.DELEGATE_VAULT),
         ruleSet: ruleSets[idx],
         lender: new web3.PublicKey(bondTradeTransaction.user),
         fbond: new web3.PublicKey(fraktBond.publicKey),
