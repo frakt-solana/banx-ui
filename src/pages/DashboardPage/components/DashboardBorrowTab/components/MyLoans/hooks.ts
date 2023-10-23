@@ -31,7 +31,7 @@ export const useMyLoans = (stats?: TotalBorrowerStats | null) => {
   }
 
   const loansData = map(loansStatusToValueMap, (value, status) => ({
-    className: status === LoansStatus.Liquidation && styles.highlightLiquidation,
+    className: liquidationLoansCount && styles.highlightLiquidation,
     label: STATUS_DISPLAY_NAMES[status as LoansStatus],
     key: status,
     value,
