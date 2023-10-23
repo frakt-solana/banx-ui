@@ -12,6 +12,7 @@ import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { MakeActionFn } from '../TxnExecutor'
+import { fetchRuleset } from '../functions'
 
 export type MakeClaimActionParams = {
   loan: Loan
@@ -59,6 +60,11 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
         fbond: new web3.PublicKey(fraktBond.publicKey),
         collateralTokenMint: new web3.PublicKey(fraktBond.fbondTokenMint),
         collateralOwner: new web3.PublicKey(fraktBond.fbondIssuer),
+        ruleSet: await fetchRuleset({
+          nftMint: ixnParams.loan.nft.mint,
+          connection,
+          marketPubkey: fraktBond.hadoMarket,
+        }),
         bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
         userPubkey: wallet.publicKey as web3.PublicKey,
         banxStake: new web3.PublicKey(
