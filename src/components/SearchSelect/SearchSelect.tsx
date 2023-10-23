@@ -43,6 +43,7 @@ export const SearchSelect = <P extends object>({
     handleInputChange,
     showSufixIcon,
     showCollapsedContent,
+    inputValue,
   } = useSearchSelect({ onChangeCollapsed, selectedOptions, collapsed })
 
   if (showCollapsedContent)
@@ -61,6 +62,7 @@ export const SearchSelect = <P extends object>({
       <PrefixInput />
       <AntdSelect
         mode="multiple"
+        inputValue={inputValue}
         value={selectedOptions}
         onChange={onChange}
         allowClear

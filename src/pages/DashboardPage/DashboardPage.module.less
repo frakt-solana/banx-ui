@@ -33,7 +33,7 @@
   gap: 24px;
   width: 100%;
 
-  @media (max-width: 640px) {
+  @media (max-width: 1440px) {
     padding: 16px 0 8px;
     align-items: flex-start;
     flex-direction: column;
@@ -43,13 +43,23 @@
 .searchableHeading {
   font: var(--title-sm);
   text-transform: uppercase;
-  min-width: 294px;
+  white-space: nowrap;
+  width: 50%;
 
   @media (max-width: 640px) {
     font: var(--title-xs);
     line-height: 20px;
   }
 }
+
+.searchSelect {
+  width: 50%;
+
+  @media (max-width: 1440px) {
+    width: 100%;
+  }
+}
+
 .searchSelect :global {
   height: 32px;
 
