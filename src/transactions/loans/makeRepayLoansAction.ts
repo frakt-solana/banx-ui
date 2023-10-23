@@ -16,6 +16,7 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { MakeActionFn } from '../TxnExecutor'
 import { BorrowType } from '../constants'
+import { fetchRuleset } from '../functions'
 
 export type MakeRepayLoansActionParams = Loan[]
 
@@ -140,14 +141,21 @@ const getIxnsAndSignersByBorrowType = async ({
     }
   }
 
+  const ruleSets = await Promise.all(
+    ixnParams.map(({ nft, fraktBond }) =>
+      fetchRuleset({ nftMint: nft.mint, connection, marketPubkey: fraktBond.hadoMarket }),
+    ),
+  )
+
   const { instructions, signers, optimisticResults } = await repayPerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       userPubkey: wallet.publicKey as web3.PublicKey,
     },
     args: {
-      repayAccounts: ixnParams.map(({ fraktBond, bondTradeTransaction }) => ({
+      repayAccounts: ixnParams.map(({ fraktBond, bondTradeTransaction }, idx) => ({
         bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
+        ruleSet: ruleSets[idx],
         lender: new web3.PublicKey(bondTradeTransaction.user),
         fbond: new web3.PublicKey(fraktBond.publicKey),
         collateralTokenMint: new web3.PublicKey(fraktBond.fbondTokenMint),
