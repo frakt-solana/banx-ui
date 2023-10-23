@@ -16,6 +16,7 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { MakeActionFn } from '../TxnExecutor'
 import { BorrowType } from '../constants'
+import { fetchRuleset } from '../functions'
 
 export type MakeBorrowActionParams = {
   nft: BorrowNft
@@ -142,6 +143,12 @@ const getIxnsAndSignersByBorrowType = async ({
     return { instructions, signers, optimisticResults }
   }
 
+  const ruleSets = await Promise.all(
+    ixnParams.map(({ nft }) =>
+      fetchRuleset({ nftMint: nft.mint, connection, marketPubkey: nft.loan.marketPubkey }),
+    ),
+  )
+
   const { instructions, signers, optimisticResults } = await borrowPerpetual({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     addComputeUnits: true,
@@ -151,10 +158,9 @@ const getIxnsAndSignersByBorrowType = async ({
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
     },
     args: {
-      perpetualBorrowParamsAndAccounts: ixnParams.map(({ nft, offer, loanValue }) => ({
+      perpetualBorrowParamsAndAccounts: ixnParams.map(({ nft, offer, loanValue }, idx) => ({
         amountOfSolToGet: loanValue,
-        delegate: undefined,
-        ruleSet: undefined,
+        ruleSet: ruleSets[idx],
         tokenMint: new web3.PublicKey(nft.mint),
         bondOfferV2: new web3.PublicKey(offer.publicKey),
         hadoMarket: new web3.PublicKey(offer.hadoMarket),
