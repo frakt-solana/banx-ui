@@ -39,9 +39,10 @@ const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({ totalClaimed, nextWeekl
   return (
     <div className={styles.claimRewardsBlock}>
       <StatInfo
-        label="Total claimed"
+        label="Total received"
         value={totalClaimed}
         classNamesProps={{ label: styles.claimRewardsLabel }}
+        tooltipText="Your weekly SOL rewards will be airdropped to your wallet on a random time each Friday"
         flexType="row"
       />
       <StatInfo
@@ -64,10 +65,10 @@ const RewardsInfoBlock = () => (
       <span className={styles.rewardsInfoTitle}>
         <Lend /> Lender
       </span>
-      <div className={styles.infoRow}>
+      {/* <div className={styles.infoRow}>
         <CircleCheck />
         <span> earn SOL APY while your competitive offers are pending in the orders books</span>
-      </div>
+      </div> */}
       <div className={styles.infoRow}>
         <CircleCheck />
         <span>earn extra SOL APY for your active loans</span>

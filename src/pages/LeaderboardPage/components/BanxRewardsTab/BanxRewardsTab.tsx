@@ -1,5 +1,4 @@
-import { FC } from 'react'
-
+// import { FC } from 'react'
 import { PlusOutlined } from '@ant-design/icons'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { NavLink } from 'react-router-dom'
@@ -15,17 +14,16 @@ import {
   CircleCheck as CircleCheckIcon,
 } from '@banx/icons'
 import { PATHS } from '@banx/router'
-import { formatNumbersWithCommas } from '@banx/utils'
 
-import { useSeasonUserRewards } from '../../hooks'
-
+// import { formatNumbersWithCommas } from '@banx/utils'
+// import { useSeasonUserRewards } from '../../hooks'
 import styles from './BanxRewardsTab.module.less'
 
 const BanxRewardsTab = () => {
   const { connected } = useWallet()
 
-  const { data } = useSeasonUserRewards()
-  const { earlyIncentives = 0, firstSeasonRewards = 0, secondSeasonRewards = 0 } = data || {}
+  // const { data } = useSeasonUserRewards()
+  // const { earlyIncentives = 0, firstSeasonRewards = 0, secondSeasonRewards = 0 } = data || {}
 
   const { theme } = useTheme()
   const Icon = theme === Theme.DARK ? BanxRewardsDarkIcon : BanxRewardsIcon
@@ -34,9 +32,9 @@ const BanxRewardsTab = () => {
     <div className={styles.container}>
       <div className={styles.content}>
         <StatsBlock
-          earlyIncentives={earlyIncentives}
-          firstSeasonRewards={firstSeasonRewards}
-          secondSeasonRewards={secondSeasonRewards}
+        // earlyIncentives={earlyIncentives}
+        // firstSeasonRewards={firstSeasonRewards}
+        // secondSeasonRewards={secondSeasonRewards}
         />
         {!connected && (
           <EmptyList className={styles.emptyList} message="Connect wallet to see your rewards" />
@@ -50,17 +48,17 @@ const BanxRewardsTab = () => {
 
 export default BanxRewardsTab
 
-interface StatsBlockProps {
-  earlyIncentives: number
-  firstSeasonRewards: number
-  secondSeasonRewards: number
-}
+// interface StatsBlockProps {
+//   earlyIncentives: number
+//   firstSeasonRewards: number
+//   secondSeasonRewards: number
+// }
 
-const StatsBlock: FC<StatsBlockProps> = ({
+const StatsBlock /* : FC<StatsBlockProps> */ = (/*{
   earlyIncentives,
   firstSeasonRewards,
   secondSeasonRewards,
-}) => {
+}*/) => {
   const statClassNames = {
     container: styles.statContainer,
     value: styles.statValue,
@@ -71,7 +69,8 @@ const StatsBlock: FC<StatsBlockProps> = ({
     <div className={styles.stats}>
       <StatInfo
         label="Early incentives"
-        value={`${formatNumbersWithCommas(earlyIncentives)} $BANX`}
+        value="? $BANX"
+        // value={`${formatNumbersWithCommas(earlyIncentives)} $BANX`}
         classNamesProps={statClassNames}
         valueType={VALUES_TYPES.STRING}
         tooltipText="We converted the locked $FRKT rewards you received from past marketing campaigns to their equivalent amount of $BANX tokens"
@@ -79,14 +78,16 @@ const StatsBlock: FC<StatsBlockProps> = ({
       <PlusOutlined />
       <StatInfo
         label="Leaderboard s1"
-        value={`${formatNumbersWithCommas(firstSeasonRewards)} $BANX`}
+        value="? $BANX"
+        // value={`${formatNumbersWithCommas(firstSeasonRewards)} $BANX`}
         classNamesProps={statClassNames}
         valueType={VALUES_TYPES.STRING}
       />
       <PlusOutlined />
       <StatInfo
         label="Leaderboard s2"
-        value={`${formatNumbersWithCommas(secondSeasonRewards)} $BANX`}
+        value="? $BANX"
+        // value={`${formatNumbersWithCommas(secondSeasonRewards)} $BANX`}
         classNamesProps={statClassNames}
         valueType={VALUES_TYPES.STRING}
       />
