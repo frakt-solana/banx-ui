@@ -96,7 +96,7 @@ export const usePlaceOfferTab = (props: OrderBookMarketParams) => {
 
   const showDepositError = shouldShowDepositError({
     initialLoansAmount: syntheticOffer.loansAmount,
-    initialLoanValue: syntheticOffer.loanValue,
+    initialLoanValue: syntheticOffer.loanValue / 1e9,
     solanaBalance,
     offerSize,
   })
