@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
@@ -8,17 +8,31 @@ import Timer from '@banx/components/Timer'
 
 import { Borrow, CircleCheck, Lend } from '@banx/icons'
 
+import { useLeaderboardUserStats } from '../../hooks'
+
 import styles from './RewardsTab.module.less'
 
 // TODO: need to remove it after it is added to BE
-const MOCK_TOTAL_CLAIMED = 0
-const MOCK_NEXT_WEEKLY_REWARDS = 1698105600
+const MOCK_NEXT_WEEKLY_REWARDS = 1698710400
 
 const RewardsTab = () => {
+  const { publicKey: walletPublicKey } = useWallet()
+  const walletPublicKeyString = walletPublicKey?.toBase58() || ''
+
+  const { data: userStats } = useLeaderboardUserStats()
+
+  const userTotalClaimed = useMemo(() => {
+    const currentUser = userStats?.find((user) => user.user === walletPublicKeyString)
+
+    if (currentUser) return parseFloat(currentUser.Sol)
+
+    return 0
+  }, [userStats, walletPublicKeyString])
+
   return (
     <div className={styles.container}>
       <ClaimRewardsBlock
-        totalClaimed={MOCK_TOTAL_CLAIMED}
+        totalClaimed={userTotalClaimed}
         nextWeeklyRewards={MOCK_NEXT_WEEKLY_REWARDS}
       />
       <RewardsInfoBlock />
