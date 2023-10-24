@@ -14,8 +14,8 @@ const OffersHeader = () => {
 
   return (
     <PageHeaderBackdrop title="My offers">
-      <AdditionalStat label="Loans volume" value={loansVolume} divider={1e9} />
-      <AdditionalStat label="Offers volume" value={offersVolume} divider={1e9} />
+      <AdditionalStat label="Loan TVL" value={loansVolume} divider={1e9} />
+      <AdditionalStat label="Offer TVL" value={offersVolume} divider={1e9} />
       <SeparateStatsLine />
       <MainStat label="Earned" value={earned} divider={1e9} />
     </PageHeaderBackdrop>

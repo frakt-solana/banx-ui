@@ -69,7 +69,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
     claimLoan()
   }
 
-  const buttonSize = isCardView ? 'large' : 'small'
+  const buttonSize = isCardView ? 'medium' : 'small'
 
   const loanActiveOrRefinanced = isLoanActiveOrRefinanced(loan)
   const isTerminatingStatus = isLoanTerminating(loan)
@@ -86,7 +86,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
     <div className={styles.actionsButtons}>
       {showTerminateButton && (
         <Button
-          className={styles.terminateButton}
+          className={styles.actionButton}
           onClick={onTerminate}
           disabled={isTerminatingStatus}
           variant="secondary"
@@ -98,8 +98,8 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
 
       {showInstantButton && (
         <Button
+          className={styles.actionButton}
           onClick={onInstant}
-          className={styles.instantButton}
           variant="secondary"
           size={buttonSize}
         >
@@ -107,7 +107,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
         </Button>
       )}
       {showClaimButton && (
-        <Button onClick={onClaim} className={styles.instantButton} size={buttonSize}>
+        <Button className={styles.actionButton} onClick={onClaim} size={buttonSize}>
           Claim NFT
         </Button>
       )}
