@@ -10,6 +10,7 @@ import {
   DiscordUserInfoRaw,
   LeaderboardData,
   LeaderboardDataSchema,
+  LeaderboardUsersStats,
   SeasonUserRewards,
   SeasonUserRewardsSchema,
   UserRewards,
@@ -194,6 +195,20 @@ export const fetchLeaderboardData: FetchLeaderboardData = async ({
     }
 
     return data?.data
+  } catch (error) {
+    return []
+  }
+}
+
+const LEADERBOARD_USERS_STATS_URL =
+  'https://gist.githubusercontent.com/Timikcool/5e8f09ffaf6e957753c6d8bb79e0dd97/raw/20681155535ac6c90b0656a098eec0038809967e/leaderboard.json'
+
+type FetchLeaderboardUsersStats = () => Promise<LeaderboardUsersStats[]>
+export const fetchLeaderboardUsersStats: FetchLeaderboardUsersStats = async () => {
+  try {
+    const { data } = await axios.get<LeaderboardUsersStats[]>(LEADERBOARD_USERS_STATS_URL)
+
+    return data ?? []
   } catch (error) {
     return []
   }

@@ -63,3 +63,11 @@ export const LeaderboardDataSchema = z.object({
 })
 
 export type LeaderboardData = z.infer<typeof LeaderboardDataSchema>
+
+// TODO: need to rename "Sol" to "totalReceived"
+export const LeaderboardUsersStatsSchema = z.object({
+  user: z.string(),
+  Sol: z.string(),
+})
+
+export type LeaderboardUsersStats = z.infer<typeof LeaderboardUsersStatsSchema>
