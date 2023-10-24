@@ -29,13 +29,24 @@ export const SelectLabels = ({ labels = [] }: { labels?: string[] }) => (
   </div>
 )
 
+export type OptionClassNameProps = {
+  label?: string
+  value?: string
+}
+
 interface OptionProps {
   option: BaseOptionType
   optionKeys: OptionKeys
   selectedOptions?: string[]
+  optionClassNameProps?: OptionClassNameProps
 }
 
-export const renderOption: FC<OptionProps> = ({ option, optionKeys, selectedOptions = [] }) => {
+export const renderOption: FC<OptionProps> = ({
+  option,
+  optionKeys,
+  selectedOptions = [],
+  optionClassNameProps,
+}) => {
   const { labelKey, secondLabel, valueKey, imageKey } = optionKeys
 
   const value = option[valueKey]
@@ -54,7 +65,7 @@ export const renderOption: FC<OptionProps> = ({ option, optionKeys, selectedOpti
             {image && <img className={styles.image} src={image} />}
             {isOptionSelected && <div className={styles.selected} />}
           </div>
-          <p className={styles.label}>{label}</p>
+          <p className={classNames(styles.label, optionClassNameProps?.label)}>{label}</p>
         </div>
         <SecondValue secondLabel={secondLabel} value={secondValue} />
       </div>

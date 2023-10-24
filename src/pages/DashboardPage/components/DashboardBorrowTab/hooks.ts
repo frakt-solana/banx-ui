@@ -44,7 +44,7 @@ export const useDashboardBorrowTab = () => {
       return { ...nft, loanValue }
     })
 
-    return [...nftsWithLoanValue].sort((nftA, nftB) => nftB.loanValue - nftA?.loanValue)
+    return [...nftsWithLoanValue].sort((nftA, nftB) => nftB.loanValue - nftA.loanValue)
   }, [filteredNFTs, findBestOffer])
 
   const headingText = connected ? 'Click to borrow' : '1 click loan'

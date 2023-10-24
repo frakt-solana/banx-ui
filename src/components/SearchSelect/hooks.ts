@@ -1,7 +1,9 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { TABLET_WIDTH } from '@banx/constants'
 import { useOnClickOutside, useWindowSize } from '@banx/hooks'
+
+const MAX_TAG_TEXT_LENGTH = 15
 
 export const useSearchSelect = ({
   selectedOptions,
@@ -28,6 +30,15 @@ export const useSearchSelect = ({
   const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false)
   const [inputValue, setInputValue] = useState<string>('')
 
+  useEffect(() => {
+    setInputValue('')
+  }, [selectedOptions])
+
+  const handleInputChange = (value: string) => {
+    const limitedValue = value.slice(0, MAX_TAG_TEXT_LENGTH)
+    setInputValue(limitedValue)
+  }
+
   const handleDropdownVisibleChange = (visible: boolean) => {
     setIsPopupOpen(visible)
   }
@@ -42,7 +53,8 @@ export const useSearchSelect = ({
     isPopupOpen,
     defaultOpen,
 
-    handleInputChange: setInputValue,
+    inputValue,
+    handleInputChange,
     handleDropdownVisibleChange,
 
     showSufixIcon,
