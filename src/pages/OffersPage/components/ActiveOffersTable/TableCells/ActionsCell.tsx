@@ -86,6 +86,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
     <div className={styles.actionsButtons}>
       {showTerminateButton && (
         <Button
+          className={styles.actionButton}
           onClick={onTerminate}
           disabled={isTerminatingStatus}
           variant="secondary"
@@ -96,12 +97,17 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
       )}
 
       {showInstantButton && (
-        <Button onClick={onInstant} variant="secondary" size={buttonSize}>
+        <Button
+          className={styles.actionButton}
+          onClick={onInstant}
+          variant="secondary"
+          size={buttonSize}
+        >
           Instant
         </Button>
       )}
       {showClaimButton && (
-        <Button onClick={onClaim} size={buttonSize}>
+        <Button className={styles.actionButton} onClick={onClaim} size={buttonSize}>
           Claim NFT
         </Button>
       )}

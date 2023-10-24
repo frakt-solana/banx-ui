@@ -40,12 +40,17 @@ export const ActionsCell: FC<ActionsCellProps> = ({ offer, isCardView }) => {
 
   return (
     <div className={styles.actionsButtons}>
-      <Button onClick={onEdit} variant="secondary" size={buttonSize}>
+      <Button
+        className={styles.actionButton}
+        onClick={onEdit}
+        variant="secondary"
+        size={buttonSize}
+      >
         Edit
       </Button>
       <Button
-        onClick={onRemove}
         className={styles.removeButton}
+        onClick={onRemove}
         variant="secondary"
         size={buttonSize}
       >
