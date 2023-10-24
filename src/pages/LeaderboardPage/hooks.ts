@@ -23,11 +23,8 @@ export const useSeasonUserRewards = () => {
 }
 
 export const useLeaderboardUserStats = () => {
-  const { publicKey } = useWallet()
-  const publicKeyString = publicKey?.toBase58() || ''
-
   const { data, isLoading } = useQuery(
-    ['leaderboardUserStats', publicKeyString],
+    ['leaderboardUserStats'],
     () => fetchLeaderboardUsersStats(),
     {
       refetchOnWindowFocus: false,
