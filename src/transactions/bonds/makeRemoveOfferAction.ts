@@ -1,5 +1,4 @@
 import { web3 } from 'fbonds-core'
-import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   BondOfferOptimistic,
   removePerpetualOffer,
@@ -42,6 +41,6 @@ export const makeRemoveOfferAction: MakeRemoveOfferAction = async (
     instructions,
     signers,
     additionalResult: optimisticResult,
-    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    lookupTables: [],
   }
 }
