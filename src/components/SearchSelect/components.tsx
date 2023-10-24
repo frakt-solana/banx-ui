@@ -33,9 +33,15 @@ interface OptionProps {
   option: BaseOptionType
   optionKeys: OptionKeys
   selectedOptions?: string[]
+  index: number
 }
 
-export const renderOption: FC<OptionProps> = ({ option, optionKeys, selectedOptions = [] }) => {
+export const renderOption: FC<OptionProps> = ({
+  option,
+  optionKeys,
+  selectedOptions = [],
+  index,
+}) => {
   const { labelKey, secondLabel, valueKey, imageKey } = optionKeys
 
   const value = option[valueKey]
@@ -47,7 +53,7 @@ export const renderOption: FC<OptionProps> = ({ option, optionKeys, selectedOpti
   const isOptionSelected = selectedOptions.includes(label)
 
   return (
-    <Select.Option key={value} value={label}>
+    <Select.Option className={index % 2 === 0 ? styles.evenOption : ''} key={value} value={label}>
       <div className={styles.optionWrapper}>
         <div className={styles.flexRow}>
           <div className={classNames('searchSelectImageContainer', styles.relativeImageContainer)}>
