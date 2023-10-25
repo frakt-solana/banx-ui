@@ -95,7 +95,7 @@ export const SearchSelect = <P extends object>({
         )}
         {...props}
       >
-        {options.map((option) =>
+        {options.map((option, index) =>
           renderOption({ option, optionKeys, selectedOptions, index, optionClassNameProps }),
         )}
       </AntdSelect>
