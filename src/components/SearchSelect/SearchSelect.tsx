@@ -3,7 +3,14 @@ import classNames from 'classnames'
 
 import { CloseModal } from '@banx/icons'
 
-import { CollapsedContent, PrefixInput, SelectLabels, SuffixIcon, renderOption } from './components'
+import {
+  CollapsedContent,
+  OptionClassNameProps,
+  PrefixInput,
+  SelectLabels,
+  SuffixIcon,
+  renderOption,
+} from './components'
 import { getPopupContainer } from './helpers'
 import { useSearchSelect } from './hooks'
 import { OptionKeys } from './types'
@@ -17,6 +24,7 @@ export interface SearchSelectProps<P> {
   onChange?: (selectedOptions: string[]) => void
   onChangeCollapsed?: (value: boolean) => void
 
+  optionClassNameProps?: OptionClassNameProps
   collapsed?: boolean
   labels?: string[]
   placeholder?: string
@@ -33,6 +41,7 @@ export const SearchSelect = <P extends object>({
   className,
   collapsed,
   onChangeCollapsed,
+  optionClassNameProps,
   ...props
 }: SearchSelectProps<P>) => {
   const {
@@ -43,6 +52,7 @@ export const SearchSelect = <P extends object>({
     handleInputChange,
     showSufixIcon,
     showCollapsedContent,
+    inputValue,
   } = useSearchSelect({ onChangeCollapsed, selectedOptions, collapsed })
 
   if (showCollapsedContent)
@@ -61,6 +71,7 @@ export const SearchSelect = <P extends object>({
       <PrefixInput />
       <AntdSelect
         mode="multiple"
+        inputValue={inputValue}
         value={selectedOptions}
         onChange={onChange}
         allowClear
@@ -84,8 +95,8 @@ export const SearchSelect = <P extends object>({
         )}
         {...props}
       >
-        {options.map((option, index) =>
-          renderOption({ option, optionKeys, selectedOptions, index }),
+        {options.map((option) =>
+          renderOption({ option, optionKeys, selectedOptions, index, optionClassNameProps }),
         )}
       </AntdSelect>
     </div>

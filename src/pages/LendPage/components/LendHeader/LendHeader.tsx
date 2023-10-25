@@ -37,7 +37,7 @@ const Header = () => {
   return (
     <PageHeaderBackdrop title="Lend">
       <AdditionalStat
-        label="Loans volume"
+        label="Loan TVL"
         value={
           <>
             {formattedLoansTVL}◎
@@ -48,7 +48,7 @@ const Header = () => {
       />
 
       <AdditionalStat
-        label="Offers TVL"
+        label="Offer TVL"
         value={
           <>
             {formattedOffersTVL}◎

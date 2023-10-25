@@ -42,8 +42,8 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView, disableAct
   return (
     <div className={styles.actionsButtons}>
       <Button
-        className={styles.refinanceBtn}
-        size={isCardView ? 'large' : 'small'}
+        className={styles.refinanceButton}
+        size={isCardView ? 'medium' : 'small'}
         variant="secondary"
         disabled={disableActions || !offerToRefinance}
         onClick={(event) => {
@@ -54,7 +54,8 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView, disableAct
         {isTerminatingStatus ? 'Extend' : 'Reborrow'}
       </Button>
       <Button
-        size={isCardView ? 'large' : 'small'}
+        className={styles.repayButton}
+        size={isCardView ? 'medium' : 'small'}
         disabled={disableActions}
         onClick={(event) => {
           open(RepayModal, { loan })
