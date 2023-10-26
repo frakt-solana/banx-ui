@@ -23,8 +23,10 @@ export const DropdownButton: FC<DropdownButtonProps> = ({
 }) => (
   <Button type="circle" variant="text" className={styles.dropdownButton} onClick={toggleDropdown}>
     <span className={styles.dropdownButtonText}>Sort:</span>
-    <ArrowDown className={getSortOrderClassName(sortOption.value)} />
-    <span className={styles.dropdownButtonText}>{sortOption?.label}</span>
+    <div className={styles.dropdownButtonTextContainer}>
+      <ArrowDown className={getSortOrderClassName(sortOption.value)} />
+      <span className={styles.dropdownButtonText}>{sortOption?.label}</span>
+    </div>
     <ChevronDown className={isDropdownOpen ? styles.rotate : ''} />
   </Button>
 )

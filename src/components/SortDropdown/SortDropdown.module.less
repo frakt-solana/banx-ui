@@ -46,6 +46,10 @@
     min-width: 180px;
   }
 }
+.dropdownButtonTextContainer {
+  display: flex;
+  align-items: center;
+}
 .dropdownButtonText {
   display: flex;
   align-items: center;
@@ -58,10 +62,15 @@
     fill: var(--content-primary);
   }
 
-  @media screen and (max-width: 640px) {
+  svg {
+    height: 18px;
+    width: 18px;
+  }
+
+  @media (max-width: 640px) {
     svg {
-      height: 18px;
-      width: 18px;
+      height: 16px;
+      width: 16px;
     }
   }
 }
