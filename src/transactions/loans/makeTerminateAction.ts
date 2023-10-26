@@ -15,10 +15,7 @@ export type MakeTerminateActionParams = {
   loan: Loan
 }
 
-export type MakeTerminateAction = MakeActionFn<
-  MakeTerminateActionParams,
-  BondAndTransactionOptimistic
->
+export type MakeTerminateAction = MakeActionFn<MakeTerminateActionParams, Loan>
 
 export const makeTerminateAction: MakeTerminateAction = async (
   ixnParams,
@@ -41,10 +38,15 @@ export const makeTerminateAction: MakeTerminateAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
+  const loanOptimisticResult = {
+    ...ixnParams.loan,
+    ...optimisticResult,
+  }
+
   return {
     instructions,
     signers,
-    additionalResult: optimisticResult,
+    additionalResult: loanOptimisticResult,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }
