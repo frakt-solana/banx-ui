@@ -1,5 +1,5 @@
 import { web3 } from 'fbonds-core'
-import { EMPTY_PUBKEY } from 'fbonds-core/lib/fbond-protocol/constants'
+import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   BondAndTransactionOptimistic,
   repayCnftPerpetualLoan,
@@ -16,6 +16,7 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { MakeActionFn } from '../TxnExecutor'
 import { BorrowType } from '../constants'
+import { fetchRuleset } from '../functions'
 
 export type MakeRepayLoansActionParams = Loan[]
 
@@ -95,7 +96,12 @@ const getIxnsAndSignersByBorrowType = async ({
       connection,
       sendTxn: sendTxnPlaceHolder,
     })
-    return { instructions, signers, optimisticResults, lookupTables: [] }
+    return {
+      instructions,
+      signers,
+      optimisticResults,
+      lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    }
   }
 
   if (type === BorrowType.CNft) {
@@ -127,8 +133,19 @@ const getIxnsAndSignersByBorrowType = async ({
       sendTxn: sendTxnPlaceHolder,
     })
 
-    return { instructions, signers, optimisticResults, lookupTables: [] }
+    return {
+      instructions,
+      signers,
+      optimisticResults,
+      lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    }
   }
+
+  const ruleSets = await Promise.all(
+    ixnParams.map(({ nft, fraktBond }) =>
+      fetchRuleset({ nftMint: nft.mint, connection, marketPubkey: fraktBond.hadoMarket }),
+    ),
+  )
 
   const { instructions, signers, optimisticResults } = await repayPerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
@@ -136,8 +153,9 @@ const getIxnsAndSignersByBorrowType = async ({
       userPubkey: wallet.publicKey as web3.PublicKey,
     },
     args: {
-      repayAccounts: ixnParams.map(({ fraktBond, bondTradeTransaction }) => ({
+      repayAccounts: ixnParams.map(({ fraktBond, bondTradeTransaction }, idx) => ({
         bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
+        ruleSet: ruleSets[idx],
         lender: new web3.PublicKey(bondTradeTransaction.user),
         fbond: new web3.PublicKey(fraktBond.publicKey),
         collateralTokenMint: new web3.PublicKey(fraktBond.fbondTokenMint),
@@ -148,7 +166,12 @@ const getIxnsAndSignersByBorrowType = async ({
     sendTxn: sendTxnPlaceHolder,
   })
 
-  return { instructions, signers, optimisticResults, lookupTables: [] }
+  return {
+    instructions,
+    signers,
+    optimisticResults,
+    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+  }
 }
 
 const getChunkBorrowType = (loans: Loan[]) => {

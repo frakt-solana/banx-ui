@@ -2,6 +2,7 @@ import { WalletContextState } from '@solana/wallet-adapter-react'
 import { Connection } from '@solana/web3.js'
 import { web3 } from 'fbonds-core'
 import { EMPTY_PUBKEY } from 'fbonds-core/lib/fbond-protocol/constants'
+import { getRuleset } from 'fbonds-core/lib/fbond-protocol/helpers'
 
 import { BorrowNft, Loan } from '@banx/api/core'
 import { captureSentryTxnError } from '@banx/utils'
@@ -78,4 +79,22 @@ export const convertLoanToBorrowNft = (loan: Loan): BorrowNft => {
   }
 
   return borrowNft
+}
+
+type FetchRuleset = (props: {
+  nftMint: string
+  marketPubkey?: string
+  connection: web3.Connection
+}) => Promise<web3.PublicKey | undefined>
+const rulesetsCache = new Map<string, Promise<web3.PublicKey | undefined>>()
+export const fetchRuleset: FetchRuleset = ({ nftMint, marketPubkey, connection }) => {
+  if (!marketPubkey) return new Promise(() => undefined)
+
+  if (!rulesetsCache.has(marketPubkey)) {
+    const rulesetPromise = getRuleset(nftMint, connection)
+
+    rulesetsCache.set(marketPubkey, rulesetPromise)
+  }
+
+  return rulesetsCache.get(marketPubkey)!
 }

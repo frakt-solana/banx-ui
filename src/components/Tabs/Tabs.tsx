@@ -16,11 +16,20 @@ export interface TabsProps {
   setValue: (value: string) => void
   className?: string
   type?: 'primary' | 'secondary'
+  onTabClick?: (tabProps: Tab) => void
 }
 
-export const Tabs: FC<TabsProps> = ({ tabs, value, setValue, className, type = 'primary' }) => {
-  const handleTabClick = (tabValue: string) => {
-    setValue(tabValue)
+export const Tabs: FC<TabsProps> = ({
+  tabs,
+  value,
+  setValue,
+  className,
+  type = 'primary',
+  onTabClick,
+}) => {
+  const handleTabClick = (tabProps: Tab) => {
+    onTabClick?.(tabProps)
+    setValue(tabProps.value)
   }
 
   return (
@@ -34,7 +43,7 @@ export const Tabs: FC<TabsProps> = ({ tabs, value, setValue, className, type = '
             key={tabValue}
             className={tabClasses}
             name={tabValue}
-            onClick={() => handleTabClick(tabValue)}
+            onClick={() => handleTabClick({ label, value: tabValue, disabled })}
             disabled={disabled}
           >
             {label}

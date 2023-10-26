@@ -2,10 +2,10 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
-import { InputCounter, InputErrorMessage, NumericInputField } from '@banx/components/inputs'
+import { InputCounter, NumericInputField } from '@banx/components/inputs'
 
 import { OrderBookMarketParams } from '../ExpandableCardContent'
-import { OfferActionButtons, OfferHeader, OfferSummary } from './components'
+import { OfferActionButtons, OfferHeader, OfferMessages, OfferSummary } from './components'
 import { usePlaceOfferTab } from './hooks'
 
 import styles from './PlaceOfferTab.module.less'
@@ -24,8 +24,10 @@ const PlaceOfferTab: FC<OrderBookMarketParams> = (props) => {
     offerSize,
     marketApr,
     showDepositError,
+    showBorrowerMessage,
     disableUpdateOffer,
     disablePlaceOffer,
+    loanToValuePercent,
   } = usePlaceOfferTab({ ...props })
 
   return (
@@ -47,8 +49,16 @@ const PlaceOfferTab: FC<OrderBookMarketParams> = (props) => {
           disabled={!connected}
         />
       </div>
-      <InputErrorMessage message={showDepositError ? 'Not enough SOL' : ''} />
-      <OfferSummary offerSize={offerSize} marketAPR={marketApr} />
+      <OfferMessages
+        showDepositErrorMessage={showDepositError}
+        showBorrowerMessage={showBorrowerMessage}
+        loanValue={loanValue}
+      />
+      <OfferSummary
+        offerSize={offerSize}
+        marketAPR={marketApr}
+        loanToValuePercent={loanToValuePercent}
+      />
       <OfferActionButtons
         isEditMode={isEditMode}
         disableUpdateOffer={disableUpdateOffer}

@@ -2,13 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { isInteger } from 'lodash'
 
-const formatInitialLoansAmount = (loansAmount = 0) => {
-  return isInteger(loansAmount) ? String(loansAmount) : loansAmount?.toFixed(2)
-}
+import { formatLoansAmount } from '@banx/utils'
 
 export const useOfferFormController = (editLoanValue = 0, editLoansAmount = 0) => {
   const initialLoanValue = editLoanValue ? editLoanValue.toFixed(2) : '0'
-  const initialLoansAmount = editLoansAmount ? formatInitialLoansAmount(editLoansAmount) : '1'
+  const initialLoansAmount = editLoansAmount ? formatLoansAmount(editLoansAmount) : '1'
 
   const [loanValue, setLoanValue] = useState(initialLoanValue)
   const [loansAmount, setLoansAmount] = useState(initialLoansAmount)

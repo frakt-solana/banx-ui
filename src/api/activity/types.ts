@@ -26,6 +26,7 @@ export type LenderActivity = z.infer<typeof LenderActivitySchema>
 interface LenderActivityRequest extends BasePaginationRequest {
   walletPubkey: string
   collection?: string[]
+  getAll?: boolean
 }
 
 export type FetchLenderActivity = (props: LenderActivityRequest) => Promise<LenderActivity[]>
@@ -50,6 +51,10 @@ export const BorrowerActivitySchema = z.object({
   timestamp: z.number(),
   user: z.string(),
   nft: NFTSchema,
+
+  currentRemainingLentAmount: z.number(),
+  currentLentAmount: z.number(),
+  bondTradeTransaction: z.string(),
 })
 
 export type BorrowerActivity = z.infer<typeof BorrowerActivitySchema>
@@ -57,6 +62,7 @@ export type BorrowerActivity = z.infer<typeof BorrowerActivitySchema>
 interface BorrowerActivityRequest extends BasePaginationRequest {
   walletPubkey: string
   collection?: string[]
+  getAll?: boolean
 }
 
 export type FetchBorrowerActivity = (props: BorrowerActivityRequest) => Promise<BorrowerActivity[]>

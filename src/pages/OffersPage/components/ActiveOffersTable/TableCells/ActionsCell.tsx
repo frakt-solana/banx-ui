@@ -1,12 +1,18 @@
 import { FC, useMemo } from 'react'
 
-import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, isEmpty, maxBy, sortBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 
 import { Loan } from '@banx/api/core'
-import { calculateLoanRepayValue, calculateLoanValue, isLoanLiquidated } from '@banx/utils'
+import {
+  calculateLoanRepayValue,
+  calculateLoanValue,
+  isLoanActiveOrRefinanced,
+  isLoanLiquidated,
+  isLoanTerminating,
+  trackPageEvent,
+} from '@banx/utils'
 
 import { useLendLoansTransactions, useLenderLoansAndOffers } from '../hooks'
 
@@ -17,12 +23,8 @@ interface ActionsCellProps {
   isCardView: boolean
 }
 
-const isPerpetualActive = BondTradeTransactionV2State.PerpetualActive
-const isPerpetualTerminating = BondTradeTransactionV2State.PerpetualManualTerminating
-
 export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
-  const { bondTradeTransaction, fraktBond } = loan
-  const { bondTradeTransactionState } = bondTradeTransaction
+  const { fraktBond } = loan
 
   const { offers, addMints, updateOrAddLoan, updateOrAddOffer, optimisticOffers } =
     useLenderLoansAndOffers()
@@ -52,39 +54,60 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
     addMints,
   })
 
-  const isActiveLoan = bondTradeTransactionState === isPerpetualActive
-  const isTerminatingLoan = bondTradeTransactionState === isPerpetualTerminating
-  const availableToRefinance = isActiveLoan && !isEmpty(bestOffer)
-  const isActiveOrTerminatingLoan = isActiveLoan || isTerminatingLoan
-  const isExpiredLoan = isLoanLiquidated(loan)
+  const onTerminate = () => {
+    trackPageEvent('myoffers', 'activetab-terminate')
+    terminateLoan()
+  }
 
-  const buttonSize = isCardView ? 'large' : 'small'
+  const onInstant = () => {
+    trackPageEvent('myoffers', 'activetab-instantrefinance')
+    instantLoan()
+  }
+
+  const onClaim = () => {
+    trackPageEvent('myoffers', 'activetab-claim')
+    claimLoan()
+  }
+
+  const buttonSize = isCardView ? 'medium' : 'small'
+
+  const loanActiveOrRefinanced = isLoanActiveOrRefinanced(loan)
+  const isTerminatingStatus = isLoanTerminating(loan)
+  const isLoanExpired = isLoanLiquidated(loan)
+
+  const hasRefinanceOffers = !isEmpty(bestOffer)
+  const canRefinance = hasRefinanceOffers && loanActiveOrRefinanced
+
+  const showClaimButton = isLoanExpired && isTerminatingStatus
+  const showTerminateButton = (!canRefinance || isTerminatingStatus) && !showClaimButton
+  const showInstantButton = canRefinance && !showClaimButton
 
   return (
     <div className={styles.actionsButtons}>
-      {isActiveOrTerminatingLoan && !isExpiredLoan ? (
-        <>
-          <Button
-            onClick={terminateLoan}
-            className={styles.terminateButton}
-            disabled={isTerminatingLoan}
-            variant="secondary"
-            size={buttonSize}
-          >
-            Terminate
-          </Button>
-          <Button
-            onClick={instantLoan}
-            className={styles.instantButton}
-            disabled={!availableToRefinance}
-            variant="secondary"
-            size={buttonSize}
-          >
-            Instant
-          </Button>
-        </>
-      ) : (
-        <Button onClick={claimLoan} className={styles.instantButton} size={buttonSize}>
+      {showTerminateButton && (
+        <Button
+          className={styles.actionButton}
+          onClick={onTerminate}
+          disabled={isTerminatingStatus}
+          variant="secondary"
+          size={buttonSize}
+        >
+          Terminate
+        </Button>
+      )}
+
+      {showInstantButton && (
+        <Button
+          className={styles.actionButton}
+          onClick={onInstant}
+          variant="secondary"
+          size={buttonSize}
+        >
+          Instant
+        </Button>
+      )}
+      {showClaimButton && (
+        <Button className={styles.actionButton} onClick={onClaim} size={buttonSize}>
           Claim NFT
         </Button>
       )}

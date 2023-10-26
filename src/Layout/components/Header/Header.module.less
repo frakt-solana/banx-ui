@@ -24,6 +24,10 @@
   @media (max-width: 640px) {
     gap: 8px;
   }
+
+  a {
+    text-decoration: none;
+  }
 }
 
 .logoWrapper {
@@ -32,6 +36,31 @@
 }
 .logoWrapper svg path {
   fill: var(--content-primary);
+}
+
+.rewardsButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  svg,
+  svg path {
+    fill: var(--additional-gold-primary);
+  }
+
+  @media (max-width: 640px) {
+    padding: 6px !important;
+    width: 32px;
+    height: 32px;
+
+    span {
+      display: none;
+    }
+  }
+
+  &.active {
+    border: 1px solid var(--content-primary);
+  }
 }
 
 .logo {

@@ -22,6 +22,10 @@
   @media (max-width: 640px) {
     height: 32px;
   }
+
+  &.active {
+    border-bottom: 1px solid transparent;
+  }
 }
 
 .prefix {
@@ -51,6 +55,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.evenOption {
+  background: var(--bg-primary-deep);
 }
 
 .relativeImageContainer,
@@ -113,6 +121,7 @@
 .tip {
   background-color: var(--accent-primary);
   border-radius: 100px;
+  color: var(--pure-black);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -1,19 +1,27 @@
-import { FC } from 'react'
+import React, { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 
+import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
 import { Button } from '@banx/components/Buttons'
 import { SolanaFMLink } from '@banx/components/SolanaLinks'
+import { useWalletModal } from '@banx/components/WalletModal'
+import {
+  SubscribeNotificationsModal,
+  createRefinanceSubscribeNotificationsContent,
+  createRefinanceSubscribeNotificationsTitle,
+} from '@banx/components/modals'
 
 import { Loan } from '@banx/api/core'
 import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
+import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeRefinanceAction } from '@banx/transactions/loans'
-import { enqueueSnackbar } from '@banx/utils'
+import { enqueueSnackbar, getDialectAccessToken, trackPageEvent } from '@banx/utils'
 
-import { useRefinanceTable } from '../hooks'
+import { useLoansState } from '../hooks'
 
 import styles from '../RefinanceTable.module.less'
 
@@ -23,18 +31,25 @@ interface RefinanceCellProps {
 }
 
 export const RefinanceCell: FC<RefinanceCellProps> = ({ loan, isCardView }) => {
+  const { connected } = useWallet()
+  const { toggleVisibility } = useWalletModal()
+
   const refinance = useRefinanceTransaction(loan)
-  const buttonSize = isCardView ? 'large' : 'small'
+  const buttonSize = isCardView ? 'medium' : 'small'
+
+  const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (connected) {
+      trackPageEvent('refinance', `refinance-lateral`)
+      refinance()
+    } else {
+      toggleVisibility()
+    }
+    event.stopPropagation()
+  }
 
   return (
     <div className={classNames(styles.refinanceCell, { [styles.cardView]: isCardView })}>
-      <Button
-        onClick={(event) => {
-          refinance()
-          event.stopPropagation()
-        }}
-        size={buttonSize}
-      >
+      <Button onClick={onClickHandler} size={buttonSize}>
         Refinance
       </Button>
       <SolanaFMLink
@@ -50,7 +65,23 @@ const useRefinanceTransaction = (loan: Loan) => {
   const wallet = useWallet()
   const { connection } = useConnection()
   const { addMints } = useAuctionsLoans()
-  const { deselectLoan } = useRefinanceTable()
+  const { deselectLoan } = useLoansState()
+  const { open, close } = useModal()
+  const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
+
+  const onSuccess = () => {
+    if (!getDialectAccessToken(wallet.publicKey?.toBase58())) {
+      open(SubscribeNotificationsModal, {
+        title: createRefinanceSubscribeNotificationsTitle(1),
+        message: createRefinanceSubscribeNotificationsContent(),
+        onActionClick: () => {
+          close()
+          setBanxNotificationsSiderVisibility(true)
+        },
+        onCancel: close,
+      })
+    }
+  }
 
   const refinance = () => {
     new TxnExecutor(makeRefinanceAction, { wallet, connection })
@@ -64,6 +95,7 @@ const useRefinanceTransaction = (loan: Loan) => {
           type: 'success',
           solanaExplorerPath: `tx/${txnHash}`,
         })
+        onSuccess()
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error, {

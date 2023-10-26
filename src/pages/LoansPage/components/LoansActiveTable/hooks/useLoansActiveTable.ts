@@ -2,11 +2,12 @@ import { useMemo, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { first, groupBy, map } from 'lodash'
+import { useNavigate } from 'react-router-dom'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
 
-import { useWalletLoans } from '@banx/pages/LoansPage/hooks'
+import { useWalletLoansAndOffers } from '@banx/pages/LoansPage/hooks'
 import { PATHS } from '@banx/router'
 
 import { DEFAULT_SORT_OPTION, EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
@@ -22,8 +23,9 @@ export interface SearchSelectOption {
 }
 
 export const useLoansActiveTable = () => {
-  const { loans, isLoading } = useWalletLoans()
+  const { loans, isLoading } = useWalletLoansAndOffers()
   const { connected } = useWallet()
+  const navigate = useNavigate()
 
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
@@ -66,10 +68,13 @@ export const useLoansActiveTable = () => {
   const showEmptyList = (!loans?.length && !isLoading) || !connected
   const showSummary = !!loans.length && !isLoading
 
+  const goToBorrowPage = () => {
+    navigate(PATHS.BORROW)
+  }
+
   const emptyListParams = {
     message: connected ? EMPTY_MESSAGE : NOT_CONNECTED_MESSAGE,
-    buttonText: connected ? 'Borrow' : '',
-    path: connected ? PATHS.BORROW : '',
+    buttonProps: connected ? { text: 'Borrow', onClick: goToBorrowPage } : undefined,
   }
 
   return {

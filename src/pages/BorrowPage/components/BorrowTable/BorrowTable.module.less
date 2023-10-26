@@ -71,7 +71,7 @@
   font: var(--table-header-md);
   color: var(--content-secondary);
   text-transform: uppercase;
-  max-width: 150px;
+  max-width: 100px;
 
   @media (max-width: 960px) {
     max-width: unset;
@@ -133,7 +133,13 @@
   gap: 8px;
 
   button {
-    min-width: 170px;
+    &:first-child {
+      min-width: 170px;
+    }
+
+    &:last-child {
+      min-width: 192px;
+    }
   }
 
   @media (max-width: 960px) {
@@ -142,13 +148,16 @@
     width: 100%;
 
     button {
-      min-width: unset;
+      &:first-child,
+      &:last-child {
+        min-width: unset;
+      }
     }
   }
 }
 
 .borrowButton {
-  width: 128px;
+  width: 104px;
 }
 
 .selectButtonText {

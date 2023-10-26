@@ -4,26 +4,43 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
-import { StatInfo } from '@banx/components/StatInfo'
+import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
+import { createSolValueJSX } from '@banx/components/TableComponents'
 import { useWalletModal } from '@banx/components/WalletModal'
+import { InputErrorMessage } from '@banx/components/inputs'
+
+import { BONDS, WEEKS_IN_YEAR } from '@banx/constants'
+import { HealthColorIncreasing, getColorByPercent, trackPageEvent } from '@banx/utils'
 
 import styles from './PlaceOfferTab.module.less'
 
 interface OfferSummaryProps {
   offerSize: number
   marketAPR: number
+  loanToValuePercent: number
 }
 
-const WEEKS_IN_YEAR = 52
-
-export const OfferSummary: FC<OfferSummaryProps> = ({ offerSize, marketAPR }) => {
+export const OfferSummary: FC<OfferSummaryProps> = ({
+  offerSize,
+  marketAPR,
+  loanToValuePercent,
+}) => {
   const weeklyAprPercentage = marketAPR / 100 / WEEKS_IN_YEAR
   const estimatedInterest = (offerSize * weeklyAprPercentage) / 100
 
+  const colorLTV = getColorByPercent(loanToValuePercent, HealthColorIncreasing)
+
   return (
     <div className={styles.offerSummary}>
+      <StatInfo
+        label="LTV"
+        value={loanToValuePercent}
+        valueStyles={{ color: colorLTV }}
+        flexType="row"
+        valueType={VALUES_TYPES.PERCENT}
+      />
       <StatInfo label="Offer size" value={offerSize} flexType="row" />
-      <StatInfo label="Estimated interest" value={estimatedInterest} flexType="row" />
+      <StatInfo label="Weekly interest" value={estimatedInterest} flexType="row" />
     </div>
   )
 }
@@ -70,6 +87,14 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
 
   const onToggleWalletModal = () => toggleVisibility()
 
+  const onMainActionBtnClick = () => {
+    if (connected) {
+      return onCreateOffer()
+    }
+    trackPageEvent('lend', `connectwallet`)
+    onToggleWalletModal()
+  }
+
   return (
     <div className={styles.buttonsWrapper}>
       {isEditMode ? (
@@ -87,13 +112,40 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
         </>
       ) : (
         <Button
-          onClick={connected ? onCreateOffer : onToggleWalletModal}
+          onClick={onMainActionBtnClick}
           className={styles.button}
           disabled={disablePlaceOffer}
         >
           {connected ? 'Place' : 'Connect wallet'}
         </Button>
       )}
+    </div>
+  )
+}
+
+interface OfferMessages {
+  showDepositErrorMessage: boolean
+  showBorrowerMessage: boolean
+  loanValue: string
+}
+
+export const OfferMessages: FC<OfferMessages> = ({
+  showDepositErrorMessage,
+  showBorrowerMessage,
+  loanValue,
+}) => {
+  const loanValueToNumber = parseFloat(loanValue) || 0
+  const loanValueWithProtocolFee =
+    loanValueToNumber - loanValueToNumber * (BONDS.PROTOCOL_FEE_PERCENT / 1e4)
+
+  return (
+    <div className={styles.messageContainer}>
+      {showBorrowerMessage && (
+        <p className={styles.borrowerMessage}>
+          Borrower sees: {createSolValueJSX(loanValueWithProtocolFee)}
+        </p>
+      )}
+      {showDepositErrorMessage && <InputErrorMessage message="Not enough SOL" />}
     </div>
   )
 }

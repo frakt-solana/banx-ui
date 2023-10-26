@@ -6,6 +6,8 @@ import {
 } from '@banx/components/PageHeader'
 import { VALUES_TYPES } from '@banx/components/StatInfo'
 
+import { formatNumbersWithCommas } from '@banx/utils'
+
 import { useAllTotalStats } from '../../hooks'
 
 import styles from './DashboardHeader.module.less'
@@ -23,7 +25,11 @@ const Header = () => {
   return (
     <PageHeaderBackdrop className={styles.container} title="Dashboard">
       <AdditionalStat label="Daily volume" value={dailyVolume} divider={1e9} decimalPlaces={0} />
-      <AdditionalStat label="Active loans" value={activeLoans} valueType={VALUES_TYPES.STRING} />
+      <AdditionalStat
+        label="Active loans"
+        value={formatNumbersWithCommas(activeLoans)}
+        valueType={VALUES_TYPES.STRING}
+      />
       <AdditionalStat
         label="Total value locked"
         value={totalValueLocked}

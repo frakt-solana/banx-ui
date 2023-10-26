@@ -3,12 +3,12 @@ import { FC } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
-import { isInteger } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 
 import { Pencil } from '@banx/icons'
 import { SyntheticOffer } from '@banx/store'
+import { formatLoansAmount } from '@banx/utils'
 
 import styles from './Offer.module.less'
 
@@ -27,12 +27,12 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, isOwnOffer, bestOffer }) => {
 
   const { loanValue, loansAmount } = offer
 
-  const displayLoansAmount = isInteger(loansAmount) ? loansAmount : loansAmount?.toFixed(2)
+  const displayLoansAmount = formatLoansAmount(loansAmount)
 
   const listItemClassName = classNames(styles.listItem, {
     [styles.highlightBest]: isBestOffer,
-    [styles.highlightYourOffer]:
-      connected && (offer.publicKey === PUBKEY_PLACEHOLDER || offer.isEdit),
+    [styles.highlightEditing]: offer.isEdit,
+    [styles.highlightYour]: connected && offer.publicKey === PUBKEY_PLACEHOLDER,
   })
 
   const displayLoanValue = ((loanValue || 0) / 1e9)?.toFixed(2)

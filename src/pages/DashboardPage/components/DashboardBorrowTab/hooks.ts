@@ -4,15 +4,21 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { filter, first, groupBy, includes, map } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
+import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
 import { createSolValueJSX } from '@banx/components/TableComponents'
+import {
+  SubscribeNotificationsModal,
+  createLoanSubscribeNotificationsContent,
+  createLoanSubscribeNotificationsTitle,
+} from '@banx/components/modals'
 
 import { BorrowNft, MarketPreview } from '@banx/api/core'
 import { executeBorrow } from '@banx/pages/BorrowPage/components/BorrowTable/helpers'
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { PATHS } from '@banx/router'
-import { useLoansOptimistic, useOffersOptimistic } from '@banx/store'
-import { calculateLoanValue } from '@banx/utils'
+import { useLoansOptimistic, useModal, useOffersOptimistic } from '@banx/store'
+import { calculateLoanValue, getDialectAccessToken, trackPageEvent } from '@banx/utils'
 
 import { useBorrowerStats } from '../../hooks'
 
@@ -30,16 +36,37 @@ export const useDashboardBorrowTab = () => {
     nfts,
   )
 
+  const sortedNFTsByLoanValue = useMemo(() => {
+    const nftsWithLoanValue = filteredNFTs.map((nft) => {
+      const offer = findBestOffer(nft.loan.marketPubkey)
+      const loanValue = offer ? calculateLoanValue(offer) : 0
+
+      return { ...nft, loanValue }
+    })
+
+    return [...nftsWithLoanValue].sort((nftA, nftB) => nftB.loanValue - nftA.loanValue)
+  }, [filteredNFTs, findBestOffer])
+
   const headingText = connected ? 'Click to borrow' : '1 click loan'
 
   const goToBorrowPage = () => {
     navigate(PATHS.BORROW)
+    trackPageEvent('dashboard', 'borrowtab-collection')
   }
 
+  const onBorrow = (nft: BorrowNft) => {
+    borrow(nft)
+    trackPageEvent('dashboard', 'borrowtab-borrow')
+  }
+
+  const sortedMarketsByOfferTvl = useMemo(() => {
+    return [...filteredMarkets].sort((marketA, marketB) => marketB?.offerTvl - marketA?.offerTvl)
+  }, [filteredMarkets])
+
   return {
-    marketsPreview: filteredMarkets,
-    nfts: filteredNFTs,
-    borrow,
+    marketsPreview: sortedMarketsByOfferTvl,
+    nfts: sortedNFTsByLoanValue,
+    borrow: onBorrow,
     findBestOffer,
     borrowerStats,
     headingText,
@@ -54,6 +81,8 @@ export const useSingleBorrow = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
   const navigate = useNavigate()
+  const { open, close } = useModal()
+  const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
   const { update: updateOffersOptimistic } = useOffersOptimistic()
   const { add: addLoansOptimistic } = useLoansOptimistic()
@@ -65,6 +94,20 @@ export const useSingleBorrow = () => {
 
   const goToLoansPage = () => {
     navigate(PATHS.LOANS)
+  }
+
+  const onBorrowSuccess = () => {
+    if (!getDialectAccessToken(wallet.publicKey?.toBase58())) {
+      open(SubscribeNotificationsModal, {
+        title: createLoanSubscribeNotificationsTitle(1),
+        message: createLoanSubscribeNotificationsContent(),
+        onActionClick: () => {
+          close()
+          setBanxNotificationsSiderVisibility(true)
+        },
+        onCancel: close,
+      })
+    }
   }
 
   const borrow = async (nft: BorrowNft) => {
@@ -82,6 +125,7 @@ export const useSingleBorrow = () => {
       txnParams: [[{ nft, offer: rawOffer, loanValue: calculateLoanValue(offer) }]],
       addLoansOptimistic,
       updateOffersOptimistic,
+      onSuccessAll: onBorrowSuccess,
     })
 
     if (txnResults?.length) {

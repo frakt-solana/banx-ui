@@ -11,7 +11,6 @@ import {
   FetchMarketOffersResponse,
   LendLoansAndOffersResponse,
   LendNftsAndOffersSchema,
-  Loan,
   LoanSchema,
   MarketPreview,
   MarketPreviewResponse,
@@ -20,7 +19,9 @@ import {
   PairSchema,
   UserOffer,
   UserPairSchema,
-  WalletLoansResponse,
+  WalletLoansAndOffers,
+  WalletLoansAndOffersResponse,
+  WalletLoansAndOffersShema,
 } from './types'
 
 type FetchMarketsPreview = () => Promise<MarketPreview[]>
@@ -28,6 +29,7 @@ export const fetchMarketsPreview: FetchMarketsPreview = async () => {
   try {
     const queryParams = new URLSearchParams({
       isPrivate: String(IS_PRIVATE_MARKETS),
+      getAll: String(true),
     })
 
     const { data } = await axios.get<MarketPreviewResponse>(
@@ -127,15 +129,15 @@ export const fetchUserOffers: FetchUserOffers = async ({
   }
 }
 
-type FetchWalletLoans = (props: {
+type FetchWalletLoansAndOffers = (props: {
   walletPublicKey: string
   order?: 'asc' | 'desc'
   skip?: number
   limit?: number
   getAll?: boolean
-}) => Promise<Loan[]>
+}) => Promise<WalletLoansAndOffers>
 
-export const fetchWalletLoans: FetchWalletLoans = async ({
+export const fetchWalletLoansAndOffers: FetchWalletLoansAndOffers = async ({
   walletPublicKey,
   order = 'desc',
   skip = 0,
@@ -151,20 +153,20 @@ export const fetchWalletLoans: FetchWalletLoans = async ({
       isPrivate: String(IS_PRIVATE_MARKETS),
     })
 
-    const { data } = await axios.get<WalletLoansResponse>(
-      `${BACKEND_BASE_URL}/loans/${walletPublicKey}?${queryParams.toString()}`,
+    const { data } = await axios.get<WalletLoansAndOffersResponse>(
+      `${BACKEND_BASE_URL}/loans/v2/${walletPublicKey}?${queryParams.toString()}`,
     )
 
     try {
-      await LoanSchema.array().parseAsync(data.data)
+      await WalletLoansAndOffersShema.parseAsync(data.data)
     } catch (validationError) {
       console.error('Schema validation error:', validationError)
     }
 
-    return data.data
+    return data.data || { nfts: [], offers: {} }
   } catch (error) {
     console.error(error)
-    return []
+    return { nfts: [], offers: {} }
   }
 }
 

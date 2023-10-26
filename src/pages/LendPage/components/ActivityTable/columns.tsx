@@ -35,7 +35,12 @@ export const getTableColumns = () => {
     },
     {
       key: 'status',
-      title: <HeaderCell label="Loan status" tooltipText="Loan status" />,
+      title: (
+        <HeaderCell
+          label="Loan status"
+          tooltipText="Current status and remaining duration of a loan"
+        />
+      ),
       render: (_, loan) => <StatusCell loan={loan} />,
     },
     {

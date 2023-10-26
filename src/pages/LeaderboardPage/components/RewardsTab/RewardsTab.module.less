@@ -1,0 +1,71 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto 0;
+  padding: 24px;
+  gap: 24px;
+  width: 100%;
+
+  @media (max-width: 960px) {
+    flex-direction: column;
+  }
+
+  @media (max-width: 640px) {
+    padding: 16px;
+    gap: 16px;
+  }
+}
+
+.claimRewardsBlock,
+.rewardsInfoBlock {
+  border: var(--border-less-primary);
+  border-style: dashed;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  height: 100%;
+  width: 100%;
+}
+
+.claimRewardsBlock {
+  justify-content: center;
+  gap: 16px;
+}
+.claimRewardsLabel {
+  color: var(--content-primary);
+}
+
+.emptyList {
+  margin: 0;
+}
+
+.rewardsInfoBlock {
+  gap: 24px;
+}
+.rewardsInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.rewardsInfoTitle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font: var(--title-xs);
+  text-transform: uppercase;
+
+  svg path {
+    stroke: var(--content-primary);
+  }
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  svg {
+    min-width: 24px;
+  }
+}

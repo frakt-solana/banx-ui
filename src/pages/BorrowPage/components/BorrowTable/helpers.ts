@@ -54,6 +54,7 @@ export const executeBorrow = async (props: {
   walletAndConnection: WalletAndConnection
   addLoansOptimistic: LoansOptimisticStore['add']
   updateOffersOptimistic: OffersOptimisticStore['update']
+  onSuccessAll?: () => void
 }) => {
   const {
     isLedger = false,
@@ -61,13 +62,14 @@ export const executeBorrow = async (props: {
     walletAndConnection,
     addLoansOptimistic,
     updateOffersOptimistic,
+    onSuccessAll,
   } = props
   const { wallet, connection } = walletAndConnection
 
   const txnsResults = await new TxnExecutor(
     makeBorrowAction,
     { wallet, connection },
-    { signAllChunks: isLedger ? 1 : 40, rejectQueueOnFirstPfError: isLedger },
+    { signAllChunks: isLedger ? 1 : 40, rejectQueueOnFirstPfError: false },
   )
     .addTxnParams(txnParams)
     .on('pfSuccessEach', (results) => {
@@ -104,6 +106,8 @@ export const executeBorrow = async (props: {
       }) as Offer[]
 
       updateOffersOptimistic(optimisticsToAdd)
+
+      onSuccessAll?.()
     })
     .on('pfError', (error) => {
       defaultTxnErrorHandler(error, {

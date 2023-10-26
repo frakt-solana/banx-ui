@@ -54,12 +54,15 @@ export const PairSchema = z.object({
   fundsSolOrTokenBalance: z.number(),
   hadoMarket: z.string(),
   lastTransactedAt: z.number(),
+  marketApr: z.number().optional(), //TODO Make marketApr required
   mathCounter: z.number(),
   pairState: z.string(),
   validation: ValidationPairSchema,
 })
 
-export const UserPairSchema = PairSchema.merge(MarketMetaSchema)
+export const UserPairSchema = PairSchema.merge(MarketMetaSchema).merge(
+  z.object({ collectionFloor: z.number() }),
+)
 
 export type Offer = z.infer<typeof PairSchema>
 export type UserOffer = z.infer<typeof UserPairSchema>
@@ -83,6 +86,7 @@ export const NFTSchema = z.object({
       creatorHash: z.string(),
       leafId: z.number(),
       tree: z.string(),
+      whitelistEntry: z.string(),
     })
     .optional(),
   collectionFloor: z.number(),
@@ -136,8 +140,15 @@ export const LoanSchema = z.object({
 
 export type Loan = z.infer<typeof LoanSchema>
 
-export interface WalletLoansResponse {
-  data: Loan[]
+export const WalletLoansAndOffersShema = z.object({
+  nfts: LoanSchema.array(),
+  offers: z.record(PairSchema.array()),
+})
+
+export type WalletLoansAndOffers = z.infer<typeof WalletLoansAndOffersShema>
+
+export interface WalletLoansAndOffersResponse {
+  data: WalletLoansAndOffers
   meta: PaginationMeta
 }
 

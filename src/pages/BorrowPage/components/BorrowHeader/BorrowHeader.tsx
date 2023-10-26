@@ -41,7 +41,7 @@ const Header = () => {
         label="Duration"
         value="Perpetual, 72h"
         valueType={VALUES_TYPES.STRING}
-        tooltipText="Perpetual"
+        tooltipText="As long as the borrower and lender are happy, the loan has no expiration. New loans benefit from a 72hr safety duration"
         icon={Snowflake}
       />
 

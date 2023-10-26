@@ -1,20 +1,37 @@
-import { FC } from 'react'
+import React, { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { sumBy } from 'lodash'
+import { map, sumBy } from 'lodash'
 import moment from 'moment'
 
+import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
 import { Button } from '@banx/components/Buttons'
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
+import { useWalletModal } from '@banx/components/WalletModal'
+import {
+  SubscribeNotificationsModal,
+  createRefinanceSubscribeNotificationsContent,
+  createRefinanceSubscribeNotificationsTitle,
+} from '@banx/components/modals'
 
 import { Loan } from '@banx/api/core'
+import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeRefinanceAction } from '@banx/transactions/loans'
-import { enqueueSnackbar } from '@banx/utils'
+import {
+  HealthColorDecreasing,
+  calcWeightedAverage,
+  calculateLoanRepayValue,
+  convertAprToApy,
+  enqueueSnackbar,
+  getColorByPercent,
+  getDialectAccessToken,
+  trackPageEvent,
+} from '@banx/utils'
 
 import { useAuctionsLoans } from '../../hooks'
+import { calcWeeklyInterestFee } from './columns'
 
 import styles from './RefinanceTable.module.less'
 
@@ -32,17 +49,50 @@ export const Summary: FC<SummaryProps> = ({
   const wallet = useWallet()
   const { connection } = useConnection()
   const { addMints } = useAuctionsLoans()
+  const { toggleVisibility } = useWalletModal()
+  const { open, close } = useModal()
+  const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
   const selectAllBtnText = !selectedLoans.length ? 'Select all' : 'Deselect all'
   const selectMobileBtnText = !selectedLoans.length
     ? `Select all`
     : `Deselect ${selectedLoans.length}`
 
-  const totalFloor = sumBy(selectedLoans, ({ nft }) => nft.collectionFloor)
-  const totalDebt = sumBy(selectedLoans, (loan) => calcLoanDebt(loan))
+  const totalDebt = sumBy(selectedLoans, (loan) => calculateLoanRepayValue(loan))
+  const totalLoanValue = map(selectedLoans, (loan) => loan.fraktBond.borrowedAmount)
+  const totalWeeklyInterest = sumBy(selectedLoans, (loan) => calcWeeklyInterestFee(loan))
+
+  const totalApy = map(selectedLoans, (loan) => {
+    const { refinanceAuctionStartedAt } = loan.fraktBond
+    const { amountOfBonds } = loan.bondTradeTransaction
+
+    const currentTime = moment()
+    const auctionStartTime = moment.unix(refinanceAuctionStartedAt)
+    const hoursSinceStart = currentTime.diff(auctionStartTime, 'hours')
+
+    const updatedAPR = amountOfBonds / 1e2 + hoursSinceStart
+    return updatedAPR
+  })
+
+  const weightedApr = calcWeightedAverage(totalApy, totalLoanValue)
+  const colorApr = getColorByPercent(weightedApr, HealthColorDecreasing)
 
   const refinanceAll = () => {
     const txnParams = selectedLoans.map((loan) => ({ loan }))
+
+    const onSuccess = () => {
+      if (!getDialectAccessToken(wallet.publicKey?.toBase58())) {
+        open(SubscribeNotificationsModal, {
+          title: createRefinanceSubscribeNotificationsTitle(selectedLoans.length),
+          message: createRefinanceSubscribeNotificationsContent(),
+          onActionClick: () => {
+            close()
+            setBanxNotificationsSiderVisibility(true)
+          },
+          onCancel: close,
+        })
+      }
+    }
 
     new TxnExecutor(makeRefinanceAction, { wallet, connection })
       .addTxnParams(txnParams)
@@ -58,6 +108,7 @@ export const Summary: FC<SummaryProps> = ({
       .on('pfSuccessAll', () => {
         onDeselectAllLoans()
         addMints(...selectedLoans.map(({ nft }) => nft.mint))
+        onSuccess()
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error, {
@@ -73,6 +124,16 @@ export const Summary: FC<SummaryProps> = ({
     !selectedLoans.length ? onSelectAllLoans() : onDeselectAllLoans()
   }
 
+  const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (wallet.connected) {
+      trackPageEvent('refinance', `refinance-bottom`)
+      refinanceAll()
+    } else {
+      toggleVisibility()
+    }
+    event.stopPropagation()
+  }
+
   return (
     <div className={styles.summary}>
       <div className={styles.collaterals}>
@@ -81,41 +142,29 @@ export const Summary: FC<SummaryProps> = ({
       </div>
       <div className={styles.statsContainer}>
         <div className={styles.stats}>
-          <p>Total floor</p>
-          <p>{createSolValueJSX(totalFloor, 1e9, '0◎')}</p>
-        </div>
-        <div className={styles.stats}>
-          <p>Total debt</p>
+          <p>Total to lend</p>
           <p>{createSolValueJSX(totalDebt, 1e9, '0◎')}</p>
         </div>
-        {/* //TODO Calc weighted apy  */}
-        {/* <div className={styles.stats}>
+        <div className={styles.stats}>
+          <p>Total weekly interest</p>
+          <p>{createSolValueJSX(totalWeeklyInterest, 1, '0◎')}</p>
+        </div>
+        <div className={styles.stats}>
           <p>Weighted apy</p>
-          <p>{createPercentValueJSX(100)}</p>
-        </div> */}
+          <p style={{ color: weightedApr ? colorApr : '' }} className={styles.aprValue}>
+            {createPercentValueJSX(convertAprToApy(weightedApr / 1e2), '0%')}
+          </p>
+        </div>
       </div>
       <div className={styles.summaryBtns}>
         <Button variant="secondary" onClick={onSelectAllBtnClick}>
           <span className={styles.selectButtonText}>{selectAllBtnText}</span>
           <span className={styles.selectButtonMobileText}>{selectMobileBtnText}</span>
         </Button>
-        <Button onClick={refinanceAll} disabled={!selectedLoans.length}>
+        <Button onClick={onClickHandler} disabled={!selectedLoans.length}>
           Refinance {createSolValueJSX(totalDebt, 1e9, '0◎')}
         </Button>
       </div>
     </div>
   )
-}
-
-export const calcLoanDebt = (loan: Loan) => {
-  const { solAmount, soldAt, feeAmount, amountOfBonds } = loan.bondTradeTransaction || {}
-
-  const calculatedInterest = calculateCurrentInterestSolPure({
-    loanValue: solAmount + feeAmount,
-    startTime: soldAt,
-    currentTime: moment().unix(),
-    rateBasePoints: amountOfBonds,
-  })
-
-  return solAmount + calculatedInterest + feeAmount
 }

@@ -27,11 +27,13 @@ const ExpandableCardContent: FC<ExpandableCardContentProps> = ({
   marketPubkey,
   isOrderBookVisible,
 }) => {
-  const { marketParams, tabsParams } = useExpandableCardContent(marketPubkey)
+  const { marketParams, tabsParams, goToPlaceOfferTab } = useExpandableCardContent(marketPubkey)
 
   const TABS_COMPONENTS: TabsComponents = {
     [TabName.OFFER]: <PlaceOfferTab {...marketParams} />,
-    [TabName.ACTIVITY]: <ActivityTable marketPubkey={marketPubkey} />,
+    [TabName.ACTIVITY]: (
+      <ActivityTable marketPubkey={marketPubkey} goToPlaceOfferTab={goToPlaceOfferTab} />
+    ),
   }
 
   return (

@@ -17,7 +17,7 @@ ChartJS.register(ArcElement, Tooltip, Legend)
 type ChartData = Array<number>
 type ColorList = string[] // CSS variables
 
-interface DoughnutChartProps {
+export interface DoughnutChartProps {
   data: ChartData
   colors: ColorList
   statInfoProps: StatsInfoProps

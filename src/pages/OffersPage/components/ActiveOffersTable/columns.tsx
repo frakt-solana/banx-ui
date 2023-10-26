@@ -27,18 +27,28 @@ export const getTableColumns = ({ isCardView }: GetTableColumns) => {
     },
     {
       key: 'interest',
-      title: <HeaderCell label="CRT. Interest" tooltipText="CRT. Interest" />,
+      title: (
+        <HeaderCell
+          label="Total claim"
+          tooltipText="Sum of lent amount and accrued interest to date"
+        />
+      ),
       render: (_, loan) => <InterestCell loan={loan} />,
     },
     {
       key: 'apy',
-      title: <HeaderCell label="APY" tooltipText="APY" />,
+      title: <HeaderCell label="APY" />,
       render: (_, loan) => <APRCell loan={loan} />,
       sorter: true,
     },
     {
       key: 'status',
-      title: <HeaderCell label="Loan status" tooltipText="Loan status" />,
+      title: (
+        <HeaderCell
+          label="Loan status"
+          tooltipText="Current status and remaining duration of a loan"
+        />
+      ),
       render: (_, loan) => <StatusCell loan={loan} isCardView={isCardView} />,
       sorter: true,
     },

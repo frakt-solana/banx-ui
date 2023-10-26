@@ -2,6 +2,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  overflow-x: hidden;
 }
 .nftImageWrapper {
   display: flex;
@@ -9,13 +10,24 @@
   position: relative;
 }
 .nftImage,
-.selectedCollectionOverlay {
+.selectedCollectionOverlay,
+.nftPlaceholderIcon {
   height: 40px;
   width: 40px;
 
   @media (max-width: 640px) {
     height: 32px;
     width: 32px;
+  }
+}
+
+.nftPlaceholderIcon {
+  rect {
+    fill: var(--bg-secondary);
+    stroke: var(--bg-border);
+  }
+  path {
+    fill: var(--bg-border);
   }
 }
 
@@ -28,7 +40,7 @@
   &:after {
     content: '';
     display: block;
-    background: var(--content-primary);
+    background: var(--pure-black);
     position: absolute;
     top: 50%;
     left: 50%;
@@ -41,10 +53,18 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  overflow: hidden;
 }
 .nftCollectionName {
   font: var(--card-header-md);
 }
+.nftCollectionNameEllipsis {
+  max-width: 180px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 .nftNumber {
   font: var(--body-text-xs);
 }

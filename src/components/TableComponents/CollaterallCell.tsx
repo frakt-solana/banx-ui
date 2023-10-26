@@ -1,5 +1,9 @@
 import { FC } from 'react'
 
+import classNames from 'classnames'
+
+import { useImagePreload } from '@banx/hooks'
+import { PlaceholderPFP } from '@banx/icons'
 import { ViewState, useTableView } from '@banx/store'
 
 import Checkbox from '../Checkbox'
@@ -31,13 +35,33 @@ export const NftInfoCell: FC<NftInfoCellProps> = ({
         <Checkbox className={styles.checkbox} onChange={onCheckboxClick} checked={selected} />
       )}
       <div className={styles.nftImageWrapper}>
-        <img src={nftImage} className={styles.nftImage} />
+        <NftImage nftImage={nftImage} />
         {selected && isCardView && <div className={styles.selectedCollectionOverlay} />}
       </div>
       <div className={styles.nftNames}>
-        <p className={styles.nftCollectionName}>{nftCollectionName}</p>
+        <p
+          className={classNames(styles.nftCollectionName, {
+            [styles.nftCollectionNameEllipsis]: !isCardView,
+          })}
+        >
+          {nftCollectionName}
+        </p>
         {displayNftNumber && <p className={styles.nftNumber}>{displayNftNumber}</p>}
       </div>
     </div>
+  )
+}
+
+interface NftImageProps {
+  nftImage: string
+}
+
+const NftImage: FC<NftImageProps> = ({ nftImage }) => {
+  const imageLoaded = useImagePreload(nftImage)
+
+  return imageLoaded ? (
+    <img src={nftImage} className={styles.nftImage} />
+  ) : (
+    <PlaceholderPFP className={styles.nftPlaceholderIcon} />
   )
 }

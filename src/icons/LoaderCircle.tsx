@@ -1,11 +1,13 @@
 import { FC, SVGProps } from 'react'
 
+import { omit } from 'lodash'
+
 interface LoaderCircleProps extends SVGProps<SVGSVGElement> {
   gradientColor?: string
 }
 
 export const LoaderCircle: FC<LoaderCircleProps> = (props) => {
-  const gradientColor = props.gradientColor || '#9CFF1F'
+  const gradientColor = props?.gradientColor || '#9CFF1F'
 
   return (
     <svg
@@ -14,7 +16,7 @@ export const LoaderCircle: FC<LoaderCircleProps> = (props) => {
       viewBox="0 0 65 65"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      {...props}
+      {...omit(props, ['gradientColor'])}
     >
       <path
         d="M64.6748 32.675C64.6748 50.3482 50.3479 64.675 32.6748 64.675C15.0017 64.675 0.674805 50.3482 0.674805 32.675C0.674805 15.0019 15.0017 0.675049 32.6748 0.675049C50.3479 0.675049 64.6748 15.0019 64.6748 32.675ZM7.0748 32.675C7.0748 46.8135 18.5363 58.275 32.6748 58.275C46.8133 58.275 58.2748 46.8135 58.2748 32.675C58.2748 18.5366 46.8133 7.07505 32.6748 7.07505C18.5363 7.07505 7.0748 18.5366 7.0748 32.675Z"

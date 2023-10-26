@@ -2,13 +2,15 @@ import { FC, MouseEvent, PropsWithChildren } from 'react'
 
 import classNames from 'classnames'
 
-import { getSizeClassName } from './helpers'
+import { LoaderCircle } from '@banx/icons'
 
 import styles from './Buttons.module.less'
 
 export interface ButtonProps {
+  id?: string
   className?: string
   disabled?: boolean
+  loading?: boolean //? Applies only for standard buttons
   onClick?: (args: MouseEvent<HTMLButtonElement>) => void
   type?: 'standard' | 'circle' | 'square'
   variant?: 'primary' | 'secondary' | 'link' | 'text'
@@ -16,24 +18,36 @@ export interface ButtonProps {
 }
 
 export const Button: FC<PropsWithChildren<ButtonProps>> = ({
+  id,
   className,
   disabled = false,
+  loading = false,
   onClick,
   type = 'standard',
   variant = 'primary',
   size = 'large',
   children,
 }) => {
+  const applyLoadingStyle = type === 'standard' && loading
+
   const combinedClassName = classNames(
     styles.root,
     styles[type],
     styles[variant],
-    getSizeClassName(size),
+    styles[size] || styles.medium,
+    { [styles.loading]: applyLoadingStyle },
     className,
   )
 
   return (
-    <button type="button" onClick={onClick} disabled={disabled} className={combinedClassName}>
+    <button
+      id={id}
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={combinedClassName}
+    >
+      {applyLoadingStyle && <LoaderCircle className={styles.loader} gradientColor="#AEAEB2" />}
       {children}
     </button>
   )

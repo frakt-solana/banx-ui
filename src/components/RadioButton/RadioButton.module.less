@@ -49,9 +49,13 @@
     border: 1px solid var(--bg-border-active);
   }
 
-  .disabled {
-    color: var(--content-secondary);
+  &.disabled {
+    background: var(--bg-secondary);
     pointer-events: none;
+
+    label {
+      color: var(--content-secondary);
+    }
   }
 
   &.active {

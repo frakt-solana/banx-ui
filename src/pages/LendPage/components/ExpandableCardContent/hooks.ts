@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 
-import { useTabs } from '@banx/components/Tabs'
+import { Tab, useTabs } from '@banx/components/Tabs'
 
 import { useSyntheticOffers } from '@banx/store'
+import { toLowerCaseNoSpaces, trackPageEvent } from '@banx/utils'
 
 import { BONDS_TABS, DEFAULT_TAB } from './constants'
 
@@ -27,13 +28,22 @@ export const useExpandableCardContent = (marketPubkey: string) => {
     setValue: setTabValue,
   } = useTabs({ tabs: BONDS_TABS, defaultValue: DEFAULT_TAB })
 
+  const goToPlaceOfferTab = () => {
+    setTabValue(BONDS_TABS[1].value)
+  }
+
   useEffect(() => {
     if (offerPubkey) {
       setTabValue(DEFAULT_TAB)
     }
   }, [offerPubkey, setTabValue])
 
+  const onTabClick = (tabProps: Tab) => {
+    trackPageEvent('lend', `${toLowerCaseNoSpaces(tabProps.label)}tab`)
+  }
+
   return {
+    goToPlaceOfferTab,
     marketParams: {
       marketPubkey,
       offerPubkey,
@@ -43,6 +53,7 @@ export const useExpandableCardContent = (marketPubkey: string) => {
       tabs: bondTabs,
       value: tabValue,
       setValue: setTabValue,
+      onTabClick,
     },
   }
 }
