@@ -1,7 +1,7 @@
 import { FC, useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { filter, find, sumBy } from 'lodash'
+import { find, sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 import { StatInfo } from '@banx/components/StatInfo'
@@ -9,8 +9,8 @@ import { StatInfo } from '@banx/components/StatInfo'
 import { Loan } from '@banx/api/core'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
-import { makeClaimAction } from '@banx/transactions/loans'
-import { enqueueSnackbar, isLoanLiquidated, isLoanTerminating } from '@banx/utils'
+import { makeClaimAction, makeTerminateAction } from '@banx/transactions/loans'
+import { enqueueSnackbar, isLoanActive, isLoanLiquidated, isLoanTerminating } from '@banx/utils'
 
 import { useLenderLoansAndOffers } from './hooks'
 
@@ -18,16 +18,23 @@ import styles from './ActiveOffersTable.module.less'
 
 interface SummaryProps {
   loans: Loan[]
+  updateOrAddLoan: (loan: Loan) => void
 }
 
-export const Summary: FC<SummaryProps> = ({ loans }) => {
+export const Summary: FC<SummaryProps> = ({ loans, updateOrAddLoan }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
 
   const { addMints } = useLenderLoansAndOffers()
 
-  const loansToClaim = useMemo(() => {
-    return loans.length ? filter(loans, isLoanAbleToClaim) : []
+  const { loansToClaim, loansToTerminate } = useMemo(() => {
+    const filterLoans = (predicate: (loan: Loan) => boolean) =>
+      loans.length ? loans.filter(predicate) : []
+
+    const loansToClaim = filterLoans(isLoanAbleToClaim)
+    const loansToTerminate = filterLoans(isLoanAbleToTerminate)
+
+    return { loansToClaim, loansToTerminate }
   }, [loans])
 
   const totalClaimableFloor = useMemo(() => {
@@ -59,6 +66,34 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
       .execute()
   }
 
+  const terminateLoans = () => {
+    const txnParams = loansToTerminate.map((loan) => ({ loan }))
+
+    new TxnExecutor(makeTerminateAction, { wallet, connection })
+      .addTxnParams(txnParams)
+      .on('pfSuccessEach', (results) => {
+        results.forEach(({ txnHash, result }) => {
+          enqueueSnackbar({
+            message: 'Collateral successfully terminated',
+            type: 'success',
+            solanaExplorerPath: `tx/${txnHash}`,
+          })
+
+          if (result) {
+            updateOrAddLoan(result)
+          }
+        })
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error, {
+          additionalData: txnParams,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'Terminate',
+        })
+      })
+      .execute()
+  }
+
   return (
     <div className={styles.summary}>
       <div className={styles.totalLoans}>
@@ -72,6 +107,9 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
         <StatInfo label="Total claimable floor" value={totalClaimableFloor} divider={1e9} />
       </div>
       <div className={styles.summaryBtns}>
+        <Button onClick={terminateLoans} disabled={!loansToTerminate.length}>
+          Terminate loans
+        </Button>
         <Button onClick={claimLoans} disabled={!loansToClaim.length}>
           Claim all NFTs
         </Button>
@@ -80,9 +118,13 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
   )
 }
 
+// TODO: Need to add isUnderWaterLoan
 type ShowSummary = (loans: Loan[]) => boolean
 export const showSummary: ShowSummary = (loans = []) => {
-  return !!find(loans, isLoanAbleToClaim)
+  const canClaim = !!find(loans, isLoanAbleToClaim)
+  const canTerminate = !!find(loans, isLoanAbleToTerminate)
+
+  return canClaim || canTerminate
 }
 
 type IsLoanAbleToClaim = (loan: Loan) => boolean
@@ -91,4 +133,10 @@ export const isLoanAbleToClaim: IsLoanAbleToClaim = (loan) => {
   const isLoanExpired = isLoanLiquidated(loan)
 
   return isLoanExpired && isTerminatingStatus
+}
+
+// TODO: Need to add isUnderWaterLoan
+type IsLoanAbleToTerminate = (loan: Loan) => boolean
+export const isLoanAbleToTerminate: IsLoanAbleToTerminate = (loan) => {
+  return isLoanActive(loan)
 }

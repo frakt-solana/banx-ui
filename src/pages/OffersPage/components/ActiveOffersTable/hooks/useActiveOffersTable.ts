@@ -23,7 +23,7 @@ interface SearchSelectOption {
 }
 
 export const useActiveOffersTable = () => {
-  const { loans, loading } = useLenderLoansAndOffers()
+  const { loans, loading, updateOrAddLoan } = useLenderLoansAndOffers()
   const { connected } = useWallet()
   const navigate = useNavigate()
 
@@ -90,6 +90,7 @@ export const useActiveOffersTable = () => {
     loading,
     showEmptyList,
     emptyListParams,
+    updateOrAddLoan,
     sortViewParams: {
       searchSelectParams,
       sortParams,

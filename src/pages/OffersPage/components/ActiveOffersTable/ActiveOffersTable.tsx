@@ -13,7 +13,8 @@ import { useActiveOffersTable } from './hooks'
 import styles from './ActiveOffersTable.module.less'
 
 const ActiveOffersTable = () => {
-  const { loans, sortViewParams, loading, showEmptyList, emptyListParams } = useActiveOffersTable()
+  const { loans, sortViewParams, loading, showEmptyList, emptyListParams, updateOrAddLoan } =
+    useActiveOffersTable()
 
   const { viewState } = useTableView()
   const isCardView = viewState === ViewState.CARD
@@ -48,7 +49,7 @@ const ActiveOffersTable = () => {
         showCard
       />
       <div ref={fetchMoreTrigger} />
-      {showSummary(loans) && <Summary loans={loans} />}
+      {showSummary(loans) && <Summary loans={loans} updateOrAddLoan={updateOrAddLoan} />}
     </div>
   )
 }
