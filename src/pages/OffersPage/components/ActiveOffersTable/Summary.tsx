@@ -1,7 +1,7 @@
 import { FC, useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { find, sumBy } from 'lodash'
+import { sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 import { StatInfo } from '@banx/components/StatInfo'
@@ -10,61 +10,29 @@ import { Loan } from '@banx/api/core'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeClaimAction, makeTerminateAction } from '@banx/transactions/loans'
-import { enqueueSnackbar, isLoanActive, isLoanLiquidated, isLoanTerminating } from '@banx/utils'
-
-import { useLenderLoansAndOffers } from './hooks'
+import { enqueueSnackbar } from '@banx/utils'
 
 import styles from './ActiveOffersTable.module.less'
 
 interface SummaryProps {
-  loans: Loan[]
   updateOrAddLoan: (loan: Loan) => void
+  addMints: (...mints: string[]) => void
+  loansToClaim: Loan[]
+  loansToTerminate: Loan[]
 }
 
-export const Summary: FC<SummaryProps> = ({ loans, updateOrAddLoan }) => {
+export const Summary: FC<SummaryProps> = ({
+  updateOrAddLoan,
+  loansToTerminate,
+  loansToClaim,
+  addMints,
+}) => {
   const wallet = useWallet()
   const { connection } = useConnection()
-
-  const { addMints } = useLenderLoansAndOffers()
-
-  const { loansToClaim, loansToTerminate } = useMemo(() => {
-    const filterLoans = (predicate: (loan: Loan) => boolean) =>
-      loans.length ? loans.filter(predicate) : []
-
-    const loansToClaim = filterLoans(isLoanAbleToClaim)
-    const loansToTerminate = filterLoans(isLoanAbleToTerminate)
-
-    return { loansToClaim, loansToTerminate }
-  }, [loans])
 
   const totalClaimableFloor = useMemo(() => {
     return sumBy(loansToClaim, ({ nft }) => nft.collectionFloor)
   }, [loansToClaim])
-
-  const claimLoans = () => {
-    const txnParams = loansToClaim.map((loan) => ({ loan }))
-
-    new TxnExecutor(makeClaimAction, { wallet, connection })
-      .addTxnParams(txnParams)
-      .on('pfSuccessEach', (results) => {
-        enqueueSnackbar({
-          message: 'Collateral successfully claimed',
-          type: 'success',
-          solanaExplorerPath: `tx/${results[0].txnHash}`,
-        })
-      })
-      .on('pfSuccessAll', () => {
-        addMints(...loansToClaim.map(({ nft }) => nft.mint))
-      })
-      .on('pfError', (error) => {
-        defaultTxnErrorHandler(error, {
-          additionalData: txnParams,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'Claim',
-        })
-      })
-      .execute()
-  }
 
   const terminateLoans = () => {
     const txnParams = loansToTerminate.map((loan) => ({ loan }))
@@ -94,6 +62,31 @@ export const Summary: FC<SummaryProps> = ({ loans, updateOrAddLoan }) => {
       .execute()
   }
 
+  const claimLoans = () => {
+    const txnParams = loansToClaim.map((loan) => ({ loan }))
+
+    new TxnExecutor(makeClaimAction, { wallet, connection })
+      .addTxnParams(txnParams)
+      .on('pfSuccessEach', (results) => {
+        enqueueSnackbar({
+          message: 'Collateral successfully claimed',
+          type: 'success',
+          solanaExplorerPath: `tx/${results[0].txnHash}`,
+        })
+      })
+      .on('pfSuccessAll', () => {
+        addMints(...loansToClaim.map(({ nft }) => nft.mint))
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error, {
+          additionalData: txnParams,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'Claim',
+        })
+      })
+      .execute()
+  }
+
   return (
     <div className={styles.summary}>
       <div className={styles.totalLoans}>
@@ -116,27 +109,4 @@ export const Summary: FC<SummaryProps> = ({ loans, updateOrAddLoan }) => {
       </div>
     </div>
   )
-}
-
-// TODO: Need to add isUnderWaterLoan
-type ShowSummary = (loans: Loan[]) => boolean
-export const showSummary: ShowSummary = (loans = []) => {
-  const canClaim = !!find(loans, isLoanAbleToClaim)
-  const canTerminate = !!find(loans, isLoanAbleToTerminate)
-
-  return canClaim || canTerminate
-}
-
-type IsLoanAbleToClaim = (loan: Loan) => boolean
-export const isLoanAbleToClaim: IsLoanAbleToClaim = (loan) => {
-  const isTerminatingStatus = isLoanTerminating(loan)
-  const isLoanExpired = isLoanLiquidated(loan)
-
-  return isLoanExpired && isTerminatingStatus
-}
-
-// TODO: Need to add isUnderWaterLoan
-type IsLoanAbleToTerminate = (loan: Loan) => boolean
-export const isLoanAbleToTerminate: IsLoanAbleToTerminate = (loan) => {
-  return isLoanActive(loan)
 }

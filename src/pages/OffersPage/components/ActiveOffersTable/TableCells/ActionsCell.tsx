@@ -1,19 +1,18 @@
 import { FC, useMemo } from 'react'
 
-import { chain, isEmpty, maxBy, sortBy } from 'lodash'
+import { isEmpty } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 
 import { Loan } from '@banx/api/core'
 import {
-  calculateLoanRepayValue,
-  calculateLoanValue,
   isLoanActiveOrRefinanced,
   isLoanLiquidated,
   isLoanTerminating,
   trackPageEvent,
 } from '@banx/utils'
 
+import { findBestOffer } from '../helpers'
 import { useLendLoansTransactions, useLenderLoansAndOffers } from '../hooks'
 
 import styles from '../ActiveOffersTable.module.less'
@@ -24,27 +23,12 @@ interface ActionsCellProps {
 }
 
 export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
-  const { fraktBond } = loan
-
   const { offers, addMints, updateOrAddLoan, updateOrAddOffer, optimisticOffers } =
     useLenderLoansAndOffers()
 
   const bestOffer = useMemo(() => {
-    const offersByMarket = offers[fraktBond.hadoMarket || '']
-
-    const combinedOffers = [...optimisticOffers, ...(offersByMarket ?? [])]
-
-    const filteredOffers = chain(combinedOffers)
-      .groupBy('publicKey')
-      .map((offers) => maxBy(offers, 'lastTransactedAt'))
-      .compact()
-      .filter((offer) => calculateLoanValue(offer) > calculateLoanRepayValue(loan))
-      .value()
-
-    const sortedOffers = sortBy(filteredOffers, 'fundsSolOrTokenBalance')
-
-    return sortedOffers[0]
-  }, [offers, fraktBond, optimisticOffers, loan])
+    return findBestOffer({ loan, offers, optimisticOffers })
+  }, [offers, optimisticOffers, loan])
 
   const { terminateLoan, claimLoan, instantLoan } = useLendLoansTransactions({
     loan,
