@@ -100,7 +100,7 @@ export const useActiveOffersTable = () => {
     return { loansToClaim, loansToTerminate }
   }, [loans, offers, optimisticOffers])
 
-  const showSummary = loansToClaim.length || loansToTerminate?.length
+  const showSummary = !!loansToClaim.length || !!loansToTerminate?.length
 
   return {
     loans: sortedLoans,
