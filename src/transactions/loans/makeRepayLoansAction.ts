@@ -73,7 +73,8 @@ const getIxnsAndSignersByBorrowType = async ({
     const loan = ixnParams[0]
     if (
       !(
-        loan.fraktBond.banxStake !== EMPTY_PUBKEY.toBase58() &&
+        loan.fraktBond.banxStake !== EMPTY_PUBKEY.toBase58()
+        &&
         loan.fraktBond.fraktMarket === BANX_STAKING.FRAKT_MARKET
       )
     ) {
