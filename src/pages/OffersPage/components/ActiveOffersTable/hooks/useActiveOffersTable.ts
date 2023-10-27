@@ -62,7 +62,6 @@ export const useActiveOffersTable = () => {
   const sortParams = {
     option: sortOption,
     onChange: setSortOption,
-    className: styles.sortDropdown,
   }
 
   const filteredLoans = useMemo(() => {
