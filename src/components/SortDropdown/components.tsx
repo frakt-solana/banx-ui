@@ -44,8 +44,8 @@ const SortButton: FC<SortButtonProps> = ({ option, sortOrder, isActive, onClick 
     variant="text"
     onClick={onClick}
   >
-    {option.label}
     <ArrowDown className={getSortOrderClassName(sortOrder)} />
+    {option.label}
   </Button>
 )
 
