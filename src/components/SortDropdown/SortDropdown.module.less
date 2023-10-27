@@ -39,11 +39,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-width: 200px;
+  min-width: 170px;
   width: 100%;
 
   @media screen and (max-width: 640px) {
-    min-width: 180px;
+    min-width: 150px;
   }
 }
 .dropdownButtonTextContainer {
@@ -54,6 +54,11 @@
   display: flex;
   align-items: center;
   white-space: nowrap;
+  font: var(--btn-text-md);
+
+  @media screen and (max-width: 640px) {
+    font: var(--btn-text-sm);
+  }
 }
 
 .dropdownButton,
@@ -63,8 +68,8 @@
   }
 
   svg {
-    height: 18px;
-    width: 18px;
+    height: 20px;
+    width: 20px;
   }
 
   @media (max-width: 640px) {
