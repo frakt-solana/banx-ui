@@ -10,7 +10,12 @@ import { useWalletModal } from '@banx/components/WalletModal'
 import { InputErrorMessage } from '@banx/components/inputs'
 
 import { BONDS, WEEKS_IN_YEAR } from '@banx/constants'
-import { HealthColorIncreasing, getColorByPercent, trackPageEvent } from '@banx/utils'
+import {
+  HealthColorIncreasing,
+  getColorByPercent,
+  getDecimalPlaces,
+  trackPageEvent,
+} from '@banx/utils'
 
 import styles from './PlaceOfferTab.module.less'
 
@@ -39,7 +44,12 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
         flexType="row"
         valueType={VALUES_TYPES.PERCENT}
       />
-      <StatInfo label="Offer size" value={offerSize} flexType="row" />
+      <StatInfo
+        label="Offer size"
+        value={offerSize}
+        flexType="row"
+        decimalPlaces={getDecimalPlaces(offerSize)}
+      />
       <StatInfo label="Weekly interest" value={estimatedInterest} flexType="row" />
     </div>
   )
