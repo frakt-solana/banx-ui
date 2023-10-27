@@ -19,6 +19,10 @@ export const convertAprToApy = (apr: number) => {
   return Math.round(apy * 100)
 }
 
+export const formatDecimal = (value: number) => {
+  return value < 0.1 ? value.toFixed(3) : value?.toFixed(2)
+}
+
 export const formatNumbersWithCommas = (value: number | string) =>
   value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 
