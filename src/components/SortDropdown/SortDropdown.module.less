@@ -39,17 +39,27 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-width: 200px;
+  min-width: 170px;
   width: 100%;
 
   @media screen and (max-width: 640px) {
-    min-width: 180px;
+    min-width: 150px;
   }
+}
+.dropdownButtonTextContainer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 .dropdownButtonText {
   display: flex;
   align-items: center;
   white-space: nowrap;
+  font: var(--btn-text-md);
+
+  @media screen and (max-width: 640px) {
+    font: var(--btn-text-sm);
+  }
 }
 
 .dropdownButton,
@@ -58,10 +68,15 @@
     fill: var(--content-primary);
   }
 
-  @media screen and (max-width: 640px) {
+  svg {
+    height: 20px;
+    width: 20px;
+  }
+
+  @media (max-width: 640px) {
     svg {
-      height: 18px;
-      width: 18px;
+      height: 16px;
+      width: 16px;
     }
   }
 }
@@ -78,7 +93,12 @@
   border-color: var(--bg-border);
   display: flex;
   align-items: center;
+
+  font: var(--tab-text-md);
+  gap: 4px;
+
   white-space: nowrap;
+  height: 32px;
 }
 
 .sortButton.active {
