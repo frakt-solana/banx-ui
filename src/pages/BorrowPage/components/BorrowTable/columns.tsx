@@ -53,7 +53,7 @@ export const getTableColumns = ({
     {
       key: 'weeklyFee',
       title: <HeaderCell label="Weekly Fee" />,
-      render: (_, nft) => createSolValueJSX(nft.interest, 1e9),
+      render: (_, nft) => createSolValueJSX(nft.interest, 1e9, '--', formatDecimal),
     },
     {
       title: <HeaderCell label="" />,

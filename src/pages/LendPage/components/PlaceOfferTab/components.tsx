@@ -12,8 +12,8 @@ import { InputErrorMessage } from '@banx/components/inputs'
 import { BONDS, WEEKS_IN_YEAR } from '@banx/constants'
 import {
   HealthColorIncreasing,
+  formatDecimal,
   getColorByPercent,
-  getDecimalPlaces,
   trackPageEvent,
 } from '@banx/utils'
 
@@ -35,6 +35,9 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
 
   const colorLTV = getColorByPercent(loanToValuePercent, HealthColorIncreasing)
 
+  const displayEstimatedInterest = estimatedInterest ? formatDecimal(estimatedInterest) : 0
+  const displayOfferSize = offerSize ? formatDecimal(offerSize) : 0
+
   return (
     <div className={styles.offerSummary}>
       <StatInfo
@@ -46,11 +49,16 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
       />
       <StatInfo
         label="Offer size"
-        value={offerSize}
+        value={`${displayOfferSize}◎`}
         flexType="row"
-        decimalPlaces={getDecimalPlaces(offerSize)}
+        valueType={VALUES_TYPES.STRING}
       />
-      <StatInfo label="Weekly interest" value={estimatedInterest} flexType="row" />
+      <StatInfo
+        label="Weekly interest"
+        value={`${displayEstimatedInterest}◎`}
+        valueType={VALUES_TYPES.STRING}
+        flexType="row"
+      />
     </div>
   )
 }

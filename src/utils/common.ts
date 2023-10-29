@@ -3,6 +3,7 @@ import { flatMap, map, reduce, uniq } from 'lodash'
 import {
   BONDS,
   DECIMAL_THRESHOLD,
+  MIN_DISPLAY_VALUE,
   THREE_DECIMAL_PLACES,
   TWO_DECIMAL_PLACES,
   WEEKS_IN_YEAR,
@@ -35,6 +36,9 @@ export const getDecimalPlaces = (value: number | string) => {
 
 export const formatDecimal = (value: number) => {
   const numericValue = typeof value === 'string' ? parseFloat(value) : value
+
+  if (numericValue < MIN_DISPLAY_VALUE) return `<${MIN_DISPLAY_VALUE}`
+
   const decimalPlaces = getDecimalPlaces(numericValue)
   return numericValue.toFixed(decimalPlaces)
 }

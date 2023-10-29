@@ -18,7 +18,7 @@ export const DebtCell: FC<DebtCellProps> = ({ loan, isCardView }) => {
   const fee = repayValue - loan.bondTradeTransaction.solAmount
 
   const formattedRepayValue = createSolValueJSX(repayValue, 1e9, '0◎', formatDecimal)
-  const formattedFeeValue = createSolValueJSX(fee, 1e9, '0◎')
+  const formattedFeeValue = createSolValueJSX(fee, 1e9, '0◎', formatDecimal)
 
   return !isCardView ? (
     <div className={styles.debtInfo}>
