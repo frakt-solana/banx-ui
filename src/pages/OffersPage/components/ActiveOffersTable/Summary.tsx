@@ -38,6 +38,10 @@ export const Summary: FC<SummaryProps> = ({
     return sumBy(loansToClaim, ({ nft }) => nft.collectionFloor)
   }, [loansToClaim])
 
+  const totalTerminateLent = useMemo(() => {
+    return sumBy(loansToTerminate, ({ fraktBond }) => fraktBond.currentPerpetualBorrowed)
+  }, [loansToTerminate])
+
   const terminateLoans = () => {
     const txnParams = loansToTerminate.map((loan) => ({ loan }))
 
@@ -116,7 +120,7 @@ export const Summary: FC<SummaryProps> = ({
           <div className={styles.loansInfoContainer}>
             <StatInfo
               label={isMobile ? 'Underwater loans value' : 'Underwater loans'}
-              value={totalClaimableFloor}
+              value={totalTerminateLent}
               classNamesProps={{ value: styles.value }}
               divider={1e9}
             />

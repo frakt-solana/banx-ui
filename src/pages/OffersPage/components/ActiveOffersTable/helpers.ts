@@ -6,6 +6,7 @@ import {
   calculateLoanValue,
   isLoanLiquidated,
   isLoanTerminating,
+  isUnderWaterLoan,
 } from '@banx/utils'
 
 type IsLoanAbleToClaim = (loan: Loan) => boolean
@@ -16,7 +17,6 @@ export const isLoanAbleToClaim: IsLoanAbleToClaim = (loan) => {
   return isLoanExpired && isTerminatingStatus
 }
 
-// TODO: Need to add isUnderWaterLoan
 type IsLoanAbleToTerminate = (props: {
   loan: Loan
   offers: Record<string, Offer[]>
@@ -30,8 +30,9 @@ export const isLoanAbleToTerminate: IsLoanAbleToTerminate = ({
   const isLoanExpired = isLoanLiquidated(loan)
   const isTerminatingStatus = isLoanTerminating(loan)
   const hasRefinanceOffers = findBestOffer({ loan, offers, optimisticOffers })
+  const isLoanUnderWater = isUnderWaterLoan(loan)
 
-  return !isLoanExpired && !isTerminatingStatus && !hasRefinanceOffers
+  return !isLoanExpired && !isTerminatingStatus && !hasRefinanceOffers && isLoanUnderWater
 }
 
 type FindBestOffer = (props: {
