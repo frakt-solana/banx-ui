@@ -2,7 +2,6 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  overflow-x: hidden;
 }
 .nftImageWrapper {
   display: flex;
@@ -66,7 +65,7 @@
 }
 
 .nftNumber {
-  font: var(--body-text-xs);
+  font: var(--body-text-sm);
 }
 
 .checkbox {
@@ -90,4 +89,18 @@
     color: var(--content-primary);
     text-decoration: none;
   }
+}
+
+.badge {
+  background: var(--additional-green-secondary);
+  border: 0.5px solid var(--additional-green-primary-deep);
+  border-radius: 100px;
+  color: var(--additional-green-primary-deep);
+  font: var(--body-text-xs);
+  padding: 0 6px;
+  position: absolute;
+  left: -8px;
+  top: -8px;
+  white-space: nowrap;
+  z-index: 10;
 }

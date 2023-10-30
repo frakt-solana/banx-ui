@@ -1,6 +1,13 @@
 import { flatMap, map, reduce, uniq } from 'lodash'
 
-import { BONDS, WEEKS_IN_YEAR } from '@banx/constants'
+import {
+  BONDS,
+  DECIMAL_THRESHOLD,
+  MIN_DISPLAY_VALUE,
+  THREE_DECIMAL_PLACES,
+  TWO_DECIMAL_PLACES,
+  WEEKS_IN_YEAR,
+} from '@banx/constants'
 
 // shorten the checksummed version of the input address to have 4 characters at start and end
 export const shortenAddress = (address: string, chars = 4): string => {
@@ -17,6 +24,23 @@ export const convertAprToApy = (apr: number) => {
   const apy = Math.pow(compoundedInterest, WEEKS_IN_YEAR) - 1
 
   return Math.round(apy * 100)
+}
+
+export const getDecimalPlaces = (value: number | string) => {
+  const numericValue = typeof value === 'string' ? parseFloat(value) : value
+
+  if (!numericValue) return TWO_DECIMAL_PLACES
+
+  return numericValue < DECIMAL_THRESHOLD ? THREE_DECIMAL_PLACES : TWO_DECIMAL_PLACES
+}
+
+export const formatDecimal = (value: number) => {
+  const numericValue = typeof value === 'string' ? parseFloat(value) : value
+
+  if (numericValue < MIN_DISPLAY_VALUE) return `<${MIN_DISPLAY_VALUE}`
+
+  const decimalPlaces = getDecimalPlaces(numericValue)
+  return numericValue.toFixed(decimalPlaces)
 }
 
 export const formatNumbersWithCommas = (value: number | string) =>

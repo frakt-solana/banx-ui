@@ -9,6 +9,7 @@ import {
 } from '@banx/components/TableComponents'
 
 import { BorrowerActivity } from '@banx/api/activity'
+import { formatDecimal } from '@banx/utils'
 
 import { DebtCell, RepaidCell, StatusCell } from './TableCells'
 
@@ -24,7 +25,7 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
     {
       key: 'borrowed',
       title: <HeaderCell label="Borrowed" />,
-      render: (_, { borrowed }) => createSolValueJSX(borrowed, 1e9),
+      render: (_, { borrowed }) => createSolValueJSX(borrowed, 1e9, '--', formatDecimal),
       sorter: true,
     },
     {

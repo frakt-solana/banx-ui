@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 
-import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
+import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
 
 import { TableUserOfferData } from '../helpers'
 
@@ -18,7 +18,7 @@ export const OfferCell: FC<OfferCellProps> = ({ offer, isCardView }) => {
 
   const ltv = (loanValue / collectionFloor) * 100
 
-  const formattedLoanValue = createSolValueJSX(loanValue, 1e9)
+  const formattedLoanValue = createSolValueJSX(loanValue, 1e9, '--', formatDecimal)
 
   return !isCardView ? (
     <div className={styles.offerCell}>

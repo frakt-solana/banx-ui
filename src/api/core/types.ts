@@ -79,6 +79,8 @@ export const NFTSchema = z.object({
     name: z.string(),
     collectionName: z.string(),
     collectionImage: z.string(),
+    partnerPoints: z.number().optional(),
+    playerPoints: z.number().optional(),
   }),
   compression: z
     .object({

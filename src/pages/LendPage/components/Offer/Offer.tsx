@@ -8,7 +8,7 @@ import { Button } from '@banx/components/Buttons'
 
 import { Pencil } from '@banx/icons'
 import { SyntheticOffer } from '@banx/store'
-import { formatLoansAmount } from '@banx/utils'
+import { formatDecimal, formatLoansAmount } from '@banx/utils'
 
 import styles from './Offer.module.less'
 
@@ -35,7 +35,7 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, isOwnOffer, bestOffer }) => {
     [styles.highlightYour]: connected && offer.publicKey === PUBKEY_PLACEHOLDER,
   })
 
-  const displayLoanValue = ((loanValue || 0) / 1e9)?.toFixed(2)
+  const displayLoanValue = formatDecimal((loanValue || 0) / 1e9)
 
   return (
     <li className={listItemClassName}>
