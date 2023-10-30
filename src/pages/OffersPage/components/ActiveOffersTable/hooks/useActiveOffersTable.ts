@@ -99,8 +99,6 @@ export const useActiveOffersTable = () => {
     return { loansToClaim, loansToTerminate }
   }, [loans, offers, optimisticOffers])
 
-  const showSummary = !!loansToClaim.length || !!loansToTerminate?.length
-
   return {
     loans: sortedLoans,
     loading,
@@ -112,7 +110,6 @@ export const useActiveOffersTable = () => {
       searchSelectParams,
       sortParams,
     },
-    showSummary,
     loansToClaim,
     loansToTerminate,
   }

@@ -20,7 +20,6 @@ const ActiveOffersTable = () => {
     showEmptyList,
     emptyListParams,
     updateOrAddLoan,
-    showSummary,
     loansToClaim,
     loansToTerminate,
     addMints,
@@ -59,14 +58,12 @@ const ActiveOffersTable = () => {
         showCard
       />
       <div ref={fetchMoreTrigger} />
-      {showSummary && (
-        <Summary
-          loansToClaim={loansToClaim}
-          loansToTerminate={loansToTerminate}
-          updateOrAddLoan={updateOrAddLoan}
-          addMints={addMints}
-        />
-      )}
+      <Summary
+        loansToClaim={loansToClaim}
+        loansToTerminate={loansToTerminate}
+        updateOrAddLoan={updateOrAddLoan}
+        addMints={addMints}
+      />
     </div>
   )
 }
