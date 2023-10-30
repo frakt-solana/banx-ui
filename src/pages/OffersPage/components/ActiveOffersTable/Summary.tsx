@@ -93,7 +93,12 @@ export const Summary: FC<SummaryProps> = ({
         <div className={styles.loansContainer}>
           <p className={styles.loansValueText}>{loansToClaim.length}</p>
           <div className={styles.loansInfoContainer}>
-            <StatInfo label="Collateral" value={totalClaimableFloor} divider={1e9} />
+            <StatInfo
+              label="Collateral"
+              value={totalClaimableFloor}
+              classNamesProps={{ value: styles.value }}
+              divider={1e9}
+            />
           </div>
         </div>
         <Button className={styles.claimButton} onClick={claimLoans} disabled={!loansToClaim.length}>
@@ -105,7 +110,12 @@ export const Summary: FC<SummaryProps> = ({
         <div className={styles.loansContainer}>
           <p className={styles.loansValueText}>{loansToClaim.length}</p>
           <div className={styles.loansInfoContainer}>
-            <StatInfo label="Underwater loans" value={totalClaimableFloor} divider={1e9} />
+            <StatInfo
+              label="Underwater loans"
+              value={totalClaimableFloor}
+              classNamesProps={{ value: styles.value }}
+              divider={1e9}
+            />
           </div>
         </div>
         <Button
