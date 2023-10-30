@@ -7,6 +7,7 @@ import { PlaceholderPFP } from '@banx/icons'
 import { ViewState, useTableView } from '@banx/store'
 
 import Checkbox from '../Checkbox'
+import Tooltip from '../Tooltip/Tooltip'
 
 import styles from './TableCells.module.less'
 
@@ -82,8 +83,10 @@ interface PointsBanxBadgeProps {
 
 const PointsBanxBadge: FC<PointsBanxBadgeProps> = ({ playerPoints, partnerPoints }) => {
   return (
-    <div className={styles.badge}>
-      {partnerPoints}/{playerPoints}
-    </div>
+    <Tooltip title="Partner Points / Player Points">
+      <div className={styles.badge}>
+        {partnerPoints}/{playerPoints}
+      </div>
+    </Tooltip>
   )
 }
