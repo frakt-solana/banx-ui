@@ -52,7 +52,7 @@ export const getTableColumns = ({
     {
       key: 'interest',
       title: <HeaderCell label="Weekly interest" />,
-      render: (_, loan) => createSolValueJSX(calcWeeklyInterestFee(loan)),
+      render: (_, loan) => createSolValueJSX(calcWeeklyInterestFee(loan), 1, '--', formatDecimal),
     },
     {
       key: 'apy',
