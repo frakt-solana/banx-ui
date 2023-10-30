@@ -39,7 +39,7 @@ export const useActiveOffersTable = () => {
     return map(loansGroupedByCollection, (groupedLoan) => {
       const firstLoanInGroup = first(groupedLoan)
       const { collectionName = '', collectionImage = '' } = firstLoanInGroup?.nft.meta || {}
-      const taken = sumBy(groupedLoan, (nft) => nft.bondTradeTransaction.solAmount)
+      const taken = sumBy(groupedLoan, (nft) => nft.fraktBond.currentPerpetualBorrowed)
 
       return { collectionName, collectionImage, taken }
     })
@@ -65,7 +65,6 @@ export const useActiveOffersTable = () => {
   const sortParams = {
     option: sortOption,
     onChange: setSortOption,
-    className: styles.sortDropdown,
   }
 
   const filteredLoans = useMemo(() => {

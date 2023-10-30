@@ -11,8 +11,6 @@ import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 
 import { DEFAULT_SORT_OPTION } from './constants'
 
-import styles from './NotConnectedTable.module.less'
-
 export const useNotConnectedBorrow = () => {
   const { marketsPreview, isLoading } = useMarketsPreview()
 
@@ -94,7 +92,6 @@ const useSortMarkets = (markets: MarketPreview[]) => {
     sortParams: {
       option: sortOption,
       onChange: setSortOption,
-      className: styles.sortDropdown,
     },
   }
 }

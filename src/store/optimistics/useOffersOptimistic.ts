@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 
+import { get, set } from 'idb-keyval'
 import { map, uniqBy } from 'lodash'
 import moment from 'moment'
 import { create } from 'zustand'
@@ -31,13 +32,13 @@ const useOptimisticOffersStore = create<OffersOptimisticStore>((set, get) => ({
         state.optimisticOffers,
         map(offers, (offer) => convertOfferToOptimistic(offer)),
       )
-      setOptimisticOffersLS(nextOffers)
+      setOptimisticOffersIdb(nextOffers)
       return { ...state, optimisticOffers: nextOffers }
     }),
   remove: (publicKeys) =>
     set((state) => {
       const nextOffers = removeOffers(state.optimisticOffers, publicKeys)
-      setOptimisticOffersLS(nextOffers)
+      setOptimisticOffersIdb(nextOffers)
       return { ...state, optimisticOffers: nextOffers }
     }),
   find: (publicKey) => {
@@ -50,7 +51,7 @@ const useOptimisticOffersStore = create<OffersOptimisticStore>((set, get) => ({
         state.optimisticOffers,
         map(offers, (offer) => convertOfferToOptimistic(offer)),
       )
-      setOptimisticOffersLS(nextOffers)
+      setOptimisticOffersIdb(nextOffers)
       return { ...state, optimisticOffers: nextOffers }
     }),
   setState: (optimisticOffers) =>
@@ -63,15 +64,18 @@ export const useOffersOptimistic = () => {
   const { optimisticOffers, add, remove, find, update, setState } = useOptimisticOffersStore()
 
   useEffect(() => {
-    try {
-      const optimisticOffers = getOptimisticOffersLS()
-      setOptimisticOffersLS(optimisticOffers)
-      setState(optimisticOffers)
-    } catch (error) {
-      console.error(error)
-      setOptimisticOffersLS([])
-      setState([])
+    const setInitialState = async () => {
+      try {
+        const optimisticOffers = await getOptimisticOffersIdb()
+        await setOptimisticOffersIdb(optimisticOffers)
+        setState(optimisticOffers)
+      } catch (error) {
+        console.error(error)
+        await setOptimisticOffersIdb([])
+        setState([])
+      }
     }
+    setInitialState()
   }, [setState])
 
   return { optimisticOffers, add, remove, find, update }
@@ -79,8 +83,12 @@ export const useOffersOptimistic = () => {
 
 export const isOptimisticOfferExpired = (loan: OfferOptimistic) => loan.expiredAt < moment().unix()
 
-const setOptimisticOffersLS = (Offers: OfferOptimistic[]) => {
-  localStorage.setItem(BANX_OFFERS_OPTIMISTICS_LS_KEY, JSON.stringify(Offers))
+const setOptimisticOffersIdb = async (offers: OfferOptimistic[]) => {
+  try {
+    await set(BANX_OFFERS_OPTIMISTICS_LS_KEY, offers)
+  } catch {
+    return
+  }
 }
 
 const convertOfferToOptimistic = (offer: Offer) => {
@@ -90,9 +98,12 @@ const convertOfferToOptimistic = (offer: Offer) => {
   }
 }
 
-const getOptimisticOffersLS = () => {
-  const optimisticOffers = localStorage.getItem(BANX_OFFERS_OPTIMISTICS_LS_KEY)
-  return (optimisticOffers ? JSON.parse(optimisticOffers) : []) as OfferOptimistic[]
+const getOptimisticOffersIdb = async () => {
+  try {
+    return ((await get(BANX_OFFERS_OPTIMISTICS_LS_KEY)) || []) as OfferOptimistic[]
+  } catch {
+    return []
+  }
 }
 
 const addOffers = (offersState: OfferOptimistic[], offersToAdd: OfferOptimistic[]) =>

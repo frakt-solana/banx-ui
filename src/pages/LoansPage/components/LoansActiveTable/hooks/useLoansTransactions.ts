@@ -97,6 +97,8 @@ export const useLoansTransactions = () => {
             updateLoansOptimistic(result, wallet.publicKey.toBase58())
           }
         })
+      })
+      .on('pfSuccessAll', () => {
         clearSelection()
       })
       .on('pfError', (error) => {
