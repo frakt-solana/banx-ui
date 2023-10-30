@@ -17,7 +17,7 @@
 
 .counterInputContainer {
   border: var(--border-primary) !important;
-  max-width: 64px;
+  max-width: 80px;
   position: relative;
 
   input {
@@ -28,7 +28,6 @@
 
 .customCounterControls {
   border-left: var(--border-primary);
-  cursor: pointer;
 
   display: flex;
   align-items: center;
@@ -48,6 +47,22 @@
   width: 100%;
 }
 
-.rotate {
-  transform: rotate(180deg);
+.arrow {
+  cursor: pointer;
+
+  path {
+    fill: var(--content-primary);
+  }
+
+  &.rotate {
+    transform: rotate(180deg);
+  }
+
+  &.disabled {
+    cursor: default;
+
+    path {
+      fill: var(--content-secondary);
+    }
+  }
 }

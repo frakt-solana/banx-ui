@@ -1,5 +1,7 @@
 import { FC } from 'react'
 
+import classNames from 'classnames'
+
 import { InputArrowUp } from '@banx/icons/InputArrowUp'
 
 import NumericInput from '../inputs/NumericInput'
@@ -8,14 +10,17 @@ import { Slider, SliderProps } from './Slider'
 import styles from './Slider.module.less'
 
 export const CounterSlider: FC<SliderProps> = ({ value, onChange, max = 0 }) => {
+  const canIncrement = value < max
+  const canDecrement = value > 0
+
   const incrementValue = () => {
-    if (value < max) {
+    if (canIncrement) {
       onChange(value + 1)
     }
   }
 
   const decrementValue = () => {
-    if (value > 0) {
+    if (canDecrement) {
       onChange(value - 1)
     }
   }
@@ -38,9 +43,19 @@ export const CounterSlider: FC<SliderProps> = ({ value, onChange, max = 0 }) => 
           integerOnly
         />
         <div className={styles.customCounterControls}>
-          <InputArrowUp onClick={incrementValue} />
+          <InputArrowUp
+            className={classNames(styles.arrow, { [styles.disabled]: !canIncrement })}
+            onClick={incrementValue}
+          />
           <div className={styles.separatorLine} />
-          <InputArrowUp onClick={decrementValue} className={styles.rotate} />
+          <InputArrowUp
+            onClick={decrementValue}
+            className={classNames(
+              styles.arrow,
+              { [styles.disabled]: !canDecrement },
+              { [styles.rotate]: true },
+            )}
+          />
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react'
+import { FC } from 'react'
 
 import { sumBy } from 'lodash'
 
@@ -29,12 +29,9 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
   const totalBorrowed = sumBy(selection, (loan) => calcLoanBorrowedAmount(loan))
   const totalDebt = sumBy(selection, (loan) => calculateLoanRepayValue(loan))
 
-  const [sliderValue, setSliderValue] = useState(0)
-
-  useEffect(() => {
-    const loansToSelect = loans.slice(0, sliderValue)
-    setSelection(loansToSelect)
-  }, [sliderValue, loans, setSelection])
+  const handleLoanSelection = (value = 0) => {
+    setSelection(loans.slice(0, value))
+  }
 
   return (
     <div className={styles.summary}>
@@ -49,7 +46,7 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
       <div className={styles.summaryBtns}>
         <CounterSlider
           value={selectedLoans}
-          onChange={(value) => setSliderValue(value)}
+          onChange={(value) => handleLoanSelection(value)}
           max={loans.length}
         />
         <Button onClick={repayBulkLoan} disabled={!selectedLoans}>
