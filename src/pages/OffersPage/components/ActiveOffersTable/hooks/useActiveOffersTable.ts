@@ -11,6 +11,7 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 import { PATHS } from '@banx/router'
 
 import { DEFAULT_SORT_OPTION, EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
+import { isLoanAbleToClaim, isLoanAbleToTerminate } from '../helpers'
 import { useLenderLoansAndOffers } from './useLenderLoansAndOffers'
 import { useSortedLenderLoans } from './useSortedOffers'
 
@@ -23,7 +24,9 @@ interface SearchSelectOption {
 }
 
 export const useActiveOffersTable = () => {
-  const { loans, loading } = useLenderLoansAndOffers()
+  const { loans, loading, offers, optimisticOffers, updateOrAddLoan, addMints } =
+    useLenderLoansAndOffers()
+
   const { connected } = useWallet()
   const navigate = useNavigate()
 
@@ -84,14 +87,30 @@ export const useActiveOffersTable = () => {
     buttonProps: connected ? { text: 'Lend', onClick: goToLendPage } : undefined,
   }
 
+  const { loansToClaim, loansToTerminate } = useMemo(() => {
+    if (!loans.length) return { loansToClaim: [], loansToTerminate: [] }
+
+    const loansToClaim = loans.filter(isLoanAbleToClaim)
+
+    const loansToTerminate = loans.filter((loan) =>
+      isLoanAbleToTerminate({ loan, offers, optimisticOffers }),
+    )
+
+    return { loansToClaim, loansToTerminate }
+  }, [loans, offers, optimisticOffers])
+
   return {
     loans: sortedLoans,
     loading,
     showEmptyList,
     emptyListParams,
+    updateOrAddLoan,
+    addMints,
     sortViewParams: {
       searchSelectParams,
       sortParams,
     },
+    loansToClaim,
+    loansToTerminate,
   }
 }
