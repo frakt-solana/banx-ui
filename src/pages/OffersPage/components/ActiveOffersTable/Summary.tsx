@@ -7,6 +7,8 @@ import { Button } from '@banx/components/Buttons'
 import { StatInfo } from '@banx/components/StatInfo'
 
 import { Loan } from '@banx/api/core'
+import { TABLET_WIDTH } from '@banx/constants'
+import { useWindowSize } from '@banx/hooks'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeClaimAction, makeTerminateAction } from '@banx/transactions/loans'
@@ -29,6 +31,8 @@ export const Summary: FC<SummaryProps> = ({
 }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
+  const { width } = useWindowSize()
+  const isMobile = width < TABLET_WIDTH
 
   const totalClaimableFloor = useMemo(() => {
     return sumBy(loansToClaim, ({ nft }) => nft.collectionFloor)
@@ -94,7 +98,7 @@ export const Summary: FC<SummaryProps> = ({
           <p className={styles.loansValueText}>{loansToClaim.length}</p>
           <div className={styles.loansInfoContainer}>
             <StatInfo
-              label="Collateral"
+              label={isMobile ? 'Total Claimable floor' : 'Claimable Nfts'}
               value={totalClaimableFloor}
               classNamesProps={{ value: styles.value }}
               divider={1e9}
@@ -102,7 +106,7 @@ export const Summary: FC<SummaryProps> = ({
           </div>
         </div>
         <Button className={styles.claimButton} onClick={claimLoans} disabled={!loansToClaim.length}>
-          Claim all NFTs
+          {isMobile ? `Claim ${loansToClaim?.length} nfts` : 'Claim all'}
         </Button>
       </div>
 
@@ -111,7 +115,7 @@ export const Summary: FC<SummaryProps> = ({
           <p className={styles.loansValueText}>{loansToClaim.length}</p>
           <div className={styles.loansInfoContainer}>
             <StatInfo
-              label="Underwater loans"
+              label={isMobile ? 'Underwater loans value' : 'Underwater loans'}
               value={totalClaimableFloor}
               classNamesProps={{ value: styles.value }}
               divider={1e9}
@@ -122,8 +126,9 @@ export const Summary: FC<SummaryProps> = ({
           className={styles.terminateButton}
           onClick={terminateLoans}
           disabled={!loansToTerminate.length}
+          variant="secondary"
         >
-          Terminate all
+          {isMobile ? `Terminate ${loansToTerminate?.length} loans` : 'Terminate all'}
         </Button>
       </div>
     </div>
