@@ -88,23 +88,32 @@ export const Summary: FC<SummaryProps> = ({
   }
 
   return (
-    <div className={styles.summary}>
-      <div className={styles.totalLoans}>
-        <p className={styles.totalLoansValue}>{loansToClaim.length}</p>
-        <div className={styles.totalLoansInfo}>
-          <p>Collaterals</p>
-          <p>to claim</p>
+    <div className={styles.summaryContainer}>
+      <div className={styles.infoRow}>
+        <div className={styles.loansContainer}>
+          <p className={styles.loansValueText}>{loansToClaim.length}</p>
+          <div className={styles.loansInfoContainer}>
+            <StatInfo label="Collateral" value={totalClaimableFloor} divider={1e9} />
+          </div>
         </div>
-      </div>
-      <div className={styles.statsContainer}>
-        <StatInfo label="Total claimable floor" value={totalClaimableFloor} divider={1e9} />
-      </div>
-      <div className={styles.summaryBtns}>
-        <Button onClick={terminateLoans} disabled={!loansToTerminate.length}>
-          Terminate loans
-        </Button>
-        <Button onClick={claimLoans} disabled={!loansToClaim.length}>
+        <Button className={styles.claimButton} onClick={claimLoans} disabled={!loansToClaim.length}>
           Claim all NFTs
+        </Button>
+      </div>
+
+      <div className={styles.infoRow}>
+        <div className={styles.loansContainer}>
+          <p className={styles.loansValueText}>{loansToClaim.length}</p>
+          <div className={styles.loansInfoContainer}>
+            <StatInfo label="Underwater loans" value={totalClaimableFloor} divider={1e9} />
+          </div>
+        </div>
+        <Button
+          className={styles.terminateButton}
+          onClick={terminateLoans}
+          disabled={!loansToTerminate.length}
+        >
+          Terminate all
         </Button>
       </div>
     </div>
