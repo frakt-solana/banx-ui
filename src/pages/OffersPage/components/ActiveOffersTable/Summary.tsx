@@ -116,7 +116,7 @@ export const Summary: FC<SummaryProps> = ({
 
       <div className={styles.infoRow}>
         <div className={styles.loansContainer}>
-          <p className={styles.loansValueText}>{loansToClaim.length}</p>
+          <p className={styles.loansValueText}>{loansToTerminate.length}</p>
           <div className={styles.loansInfoContainer}>
             <StatInfo
               label={isMobile ? 'Underwater loans value' : 'Underwater loans'}
