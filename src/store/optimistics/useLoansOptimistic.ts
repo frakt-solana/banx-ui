@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 
+import { get, set } from 'idb-keyval'
 import { groupBy, map, maxBy, uniqBy } from 'lodash'
 import moment from 'moment'
 import { create } from 'zustand'
@@ -33,14 +34,14 @@ const useOptimisticLoansStore = create<LoansOptimisticStore>((set, get) => ({
         state.optimisticLoans,
         map(loans, (loan) => convertLoanToOptimistic(loan, walletPublicKey)),
       )
-      setOptimisticLoansLS(nextLoans)
+      setOptimisticLoansIdb(nextLoans)
       return { ...state, optimisticLoans: nextLoans }
     })
   },
   remove: (publicKeys) =>
     set((state) => {
       const nextLoans = removeLoans(state.optimisticLoans, publicKeys)
-      setOptimisticLoansLS(nextLoans)
+      setOptimisticLoansIdb(nextLoans)
       return { ...state, optimisticLoans: nextLoans }
     }),
 
@@ -57,7 +58,7 @@ const useOptimisticLoansStore = create<LoansOptimisticStore>((set, get) => ({
         state.optimisticLoans,
         map(loans, (loan) => convertLoanToOptimistic(loan, walletPublicKey)),
       )
-      setOptimisticLoansLS(nextLoans)
+      setOptimisticLoansIdb(nextLoans)
       return { ...state, optimisticLoans: nextLoans }
     })
   },
@@ -78,15 +79,18 @@ export const useLoansOptimistic = () => {
   } = useOptimisticLoansStore()
 
   useEffect(() => {
-    try {
-      const optimisticLoans = getOptimisticLoansLS()
-      setOptimisticLoansLS(optimisticLoans)
-      setState(optimisticLoans)
-    } catch (error) {
-      console.error(error)
-      setOptimisticLoansLS([])
-      setState([])
+    const setInitialState = async () => {
+      try {
+        const optimisticLoans = await getOptimisticLoansIdb()
+        await setOptimisticLoansIdb(optimisticLoans)
+        setState(optimisticLoans)
+      } catch (error) {
+        console.error(error)
+        await setOptimisticLoansIdb([])
+        setState([])
+      }
     }
+    setInitialState()
   }, [setState])
 
   return { loans: optimisticLoans, add, remove, find, update }
@@ -95,8 +99,12 @@ export const useLoansOptimistic = () => {
 export const isOptimisticLoanExpired = (loan: LoanOptimistic, walletPublicKey: string) =>
   loan.expiredAt < moment().unix() && loan.wallet === walletPublicKey
 
-const setOptimisticLoansLS = (loans: LoanOptimistic[]) => {
-  localStorage.setItem(BANX_LOANS_OPTIMISTICS_LS_KEY, JSON.stringify(loans))
+const setOptimisticLoansIdb = async (loans: LoanOptimistic[]) => {
+  try {
+    await set(BANX_LOANS_OPTIMISTICS_LS_KEY, loans)
+  } catch {
+    return
+  }
 }
 
 const convertLoanToOptimistic = (loan: Loan, walletPublicKey: string) => {
@@ -107,9 +115,12 @@ const convertLoanToOptimistic = (loan: Loan, walletPublicKey: string) => {
   }
 }
 
-const getOptimisticLoansLS = () => {
-  const optimisticLoans = localStorage.getItem(BANX_LOANS_OPTIMISTICS_LS_KEY)
-  return (optimisticLoans ? JSON.parse(optimisticLoans) : []) as LoanOptimistic[]
+const getOptimisticLoansIdb = async () => {
+  try {
+    return ((await get(BANX_LOANS_OPTIMISTICS_LS_KEY)) || []) as LoanOptimistic[]
+  } catch {
+    return []
+  }
 }
 
 const addLoans = (loansState: LoanOptimistic[], loansToAdd: LoanOptimistic[]) => {

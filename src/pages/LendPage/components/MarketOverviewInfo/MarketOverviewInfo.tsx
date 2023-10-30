@@ -6,6 +6,7 @@ import { isFunction } from 'lodash'
 import { StatInfo } from '@banx/components/StatInfo'
 
 import { MarketPreview } from '@banx/api/core'
+import { getDecimalPlaces } from '@banx/utils'
 
 import { ADDITIONAL_MARKET_INFO, MAIN_MARKET_INFO } from './constants'
 
@@ -21,8 +22,9 @@ export const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
           {MAIN_MARKET_INFO.map((statInfo) => {
             const { key, ...rest } = statInfo
             const value = market[key as keyof MarketPreview] as string
+            const decimalPlaces = getDecimalPlaces(parseFloat(value) / 1e9)
 
-            return <StatInfo key={key} value={value} {...rest} />
+            return <StatInfo key={key} value={value} {...rest} decimalPlaces={decimalPlaces} />
           })}
         </div>
       </div>

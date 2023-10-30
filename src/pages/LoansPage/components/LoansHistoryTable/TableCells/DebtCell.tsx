@@ -3,6 +3,7 @@ import { FC } from 'react'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { BorrowerActivity } from '@banx/api/activity'
+import { formatDecimal } from '@banx/utils'
 
 import styles from '../LoansHistoryTable.module.less'
 
@@ -17,7 +18,7 @@ export const DebtCell: FC<DebtCellrops> = ({ loan, isCardView }) => {
   const lentAmount = currentRemainingLentAmount || borrowed
   const repayValue = lentAmount + interest
 
-  const formattedRepayValue = createSolValueJSX(repayValue, 1e9, '0◎')
+  const formattedRepayValue = createSolValueJSX(repayValue, 1e9, '0◎', formatDecimal)
   const formattedFeeValue = createSolValueJSX(interest, 1e9, '0◎')
 
   return !isCardView ? (

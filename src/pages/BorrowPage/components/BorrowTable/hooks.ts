@@ -223,7 +223,6 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
       sortParams: {
         option: sortOption,
         onChange: setSortOption,
-        className: styles.sortDropdown,
         options: SORT_OPTIONS,
       },
     },
