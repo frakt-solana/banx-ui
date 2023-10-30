@@ -114,3 +114,13 @@ export const isLoanTerminating = (loan: Loan) => {
   const mappedStatus = STATUS_LOANS_MAP[bondTradeTransactionState] || ''
   return mappedStatus === LoanStatus.Terminating
 }
+
+export const isUnderWaterLoan = (loan: Loan) => {
+  const {
+    fraktBond,
+    nft: { collectionFloor },
+  } = loan
+  const lentValue = fraktBond.currentPerpetualBorrowed
+
+  return lentValue > collectionFloor
+}
