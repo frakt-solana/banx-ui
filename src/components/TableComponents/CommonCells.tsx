@@ -11,9 +11,19 @@ const formatDisplayValue = (
   return initialValue ? `${formattedValue}${unit}` : zeroPlaceholder
 }
 
-export const createSolValueJSX = (initialValue = 0, divider = 1, zeroPlaceholder = '--') => {
-  const formattedValue = (initialValue / divider).toFixed(2)
-  const displayValue = formatDisplayValue(initialValue, formattedValue, '◎', zeroPlaceholder)
+export const createSolValueJSX = (
+  value: number = 0,
+  divider: number = 1,
+  zeroPlaceholder: string = '--',
+  formatValueFunction?: (value: number) => string,
+) => {
+  const valueToFormat = value / divider
+
+  const formattedValue = formatValueFunction
+    ? formatValueFunction(valueToFormat)
+    : valueToFormat.toFixed(2)
+
+  const displayValue = formatDisplayValue(value, formattedValue, '◎', zeroPlaceholder)
 
   return <span className={styles.value}>{displayValue}</span>
 }

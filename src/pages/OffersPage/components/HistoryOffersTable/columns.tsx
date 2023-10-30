@@ -9,6 +9,7 @@ import {
 } from '@banx/components/TableComponents'
 
 import { LenderActivity } from '@banx/api/activity'
+import { formatDecimal } from '@banx/utils'
 
 import { APRCell, ReceivedCell, StatusCell } from './TableCells'
 
@@ -24,13 +25,13 @@ export const getTableColumns = () => {
     {
       key: 'lent',
       title: <HeaderCell label="Lent" />,
-      render: (_, loan) => createSolValueJSX(loan.lent, 1e9),
+      render: (_, loan) => createSolValueJSX(loan.lent, 1e9, '--', formatDecimal),
       sorter: true,
     },
     {
       key: 'interest',
       title: <HeaderCell label="Interest" />,
-      render: (_, loan) => createSolValueJSX(loan.interest, 1e9),
+      render: (_, loan) => createSolValueJSX(loan.interest, 1e9, '--', formatDecimal),
       sorter: true,
     },
     {

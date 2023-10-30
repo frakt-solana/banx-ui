@@ -7,7 +7,7 @@ import {
   createSolValueJSX,
 } from '@banx/components/TableComponents'
 
-import { formatLoansAmount } from '@banx/utils'
+import { formatDecimal, formatLoansAmount } from '@banx/utils'
 
 import { APRCell, ActionsCell, InterestCell, OfferCell } from './TableCells'
 import { TableUserOfferData } from './helpers'
@@ -34,7 +34,7 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
     {
       key: 'size',
       title: <HeaderCell label="Size" />,
-      render: (_, { size }) => createSolValueJSX(size, 1e9),
+      render: (_, { size }) => createSolValueJSX(size, 1e9, '--', formatDecimal),
     },
     {
       key: 'interest',

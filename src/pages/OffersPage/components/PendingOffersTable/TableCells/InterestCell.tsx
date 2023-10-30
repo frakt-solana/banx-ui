@@ -2,6 +2,8 @@ import { FC } from 'react'
 
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
+import { formatDecimal } from '@banx/utils'
+
 import { TableUserOfferData } from '../helpers'
 
 interface InterestCellProps {
@@ -16,5 +18,5 @@ export const InterestCell: FC<InterestCellProps> = ({ offer }) => {
   const weeklyAprPercentage = apr / WEEKS_IN_YEAR
   const estimatedInterest = (size * weeklyAprPercentage) / 100
 
-  return createSolValueJSX(estimatedInterest, 1e9)
+  return createSolValueJSX(estimatedInterest, 1e9, '--', formatDecimal)
 }

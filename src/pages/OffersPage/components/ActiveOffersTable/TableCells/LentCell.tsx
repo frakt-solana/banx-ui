@@ -3,7 +3,7 @@ import { FC } from 'react'
 import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
+import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
 
 import styles from '../ActiveOffersTable.module.less'
 
@@ -20,7 +20,7 @@ export const LentCell: FC<LentCellProps> = ({ loan, isCardView }) => {
 
   const ltv = ((solAmount + feeAmount) / collectionFloor) * 100
 
-  const formattedLentValue = createSolValueJSX(currentPerpetualBorrowed, 1e9, '0◎')
+  const formattedLentValue = createSolValueJSX(currentPerpetualBorrowed, 1e9, '0◎', formatDecimal)
 
   return !isCardView ? (
     <div className={styles.lentInfo}>

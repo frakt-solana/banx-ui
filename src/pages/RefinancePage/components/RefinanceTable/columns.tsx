@@ -10,7 +10,7 @@ import Timer from '@banx/components/Timer/Timer'
 
 import { Loan } from '@banx/api/core'
 import { WEEKS_IN_YEAR } from '@banx/constants'
-import { calculateLoanRepayValue } from '@banx/utils'
+import { calculateLoanRepayValue, formatDecimal } from '@banx/utils'
 
 import { APRCell, APRIncreaseCell, DebtCell, RefinanceCell } from './TableCells'
 import { SECONDS_IN_72_HOURS } from './constants'
@@ -46,7 +46,7 @@ export const getTableColumns = ({
     {
       key: 'floorPrice',
       title: <HeaderCell label="Floor" />,
-      render: (_, loan) => createSolValueJSX(loan.nft.collectionFloor, 1e9),
+      render: (_, loan) => createSolValueJSX(loan.nft.collectionFloor, 1e9, '--', formatDecimal),
     },
     {
       key: 'repayValue',
@@ -56,7 +56,7 @@ export const getTableColumns = ({
     {
       key: 'interest',
       title: <HeaderCell label="Weekly interest" />,
-      render: (_, loan) => createSolValueJSX(calcWeeklyInterestFee(loan)),
+      render: (_, loan) => createSolValueJSX(calcWeeklyInterestFee(loan), 1, '--', formatDecimal),
     },
     {
       key: 'apy',
