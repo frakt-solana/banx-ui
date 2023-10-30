@@ -4,7 +4,7 @@ import { isInteger } from 'lodash'
 import moment from 'moment'
 
 import { Loan } from '@banx/api/core'
-import { SECONDS_IN_72_HOURS } from '@banx/constants'
+import { BONDS, SECONDS_IN_72_HOURS } from '@banx/constants'
 
 export enum LoanStatus {
   Active = 'active',
@@ -59,8 +59,10 @@ export const determineLoanStatus = (loan: Loan) => {
   return mappedStatus
 }
 
-export const calculateLoanRepayValue = (loan: Loan) => {
+export const calculateLoanRepayValue = (loan: Loan, includeProtocolFee = false) => {
   const { solAmount, feeAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction || {}
+
+  const protocolFee = includeProtocolFee ? BONDS.PROTOCOL_REPAY_FEE : 0
 
   const loanValueWithFee = solAmount + feeAmount
 
@@ -68,7 +70,7 @@ export const calculateLoanRepayValue = (loan: Loan) => {
     loanValue: loanValueWithFee,
     startTime: soldAt,
     currentTime: moment().unix(),
-    rateBasePoints: amountOfBonds,
+    rateBasePoints: amountOfBonds + protocolFee,
   })
 
   return loanValueWithFee + calculatedInterest
