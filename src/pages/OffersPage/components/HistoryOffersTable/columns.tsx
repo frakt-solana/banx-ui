@@ -31,7 +31,7 @@ export const getTableColumns = () => {
     {
       key: 'interest',
       title: <HeaderCell label="Interest" />,
-      render: (_, loan) => createSolValueJSX(loan.interest, 1e9),
+      render: (_, loan) => createSolValueJSX(loan.interest, 1e9, '--', formatDecimal),
       sorter: true,
     },
     {
