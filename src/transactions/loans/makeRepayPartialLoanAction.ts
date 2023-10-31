@@ -43,6 +43,7 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
       oldBondTradeTransactionV2: new web3.PublicKey(bondTradeTransaction.publicKey),
       fbond: new web3.PublicKey(fraktBond.publicKey),
       userPubkey: new web3.PublicKey(wallet.publicKey || EMPTY_PUBKEY),
+      protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
     },
     connection,
     sendTxn: sendTxnPlaceHolder,

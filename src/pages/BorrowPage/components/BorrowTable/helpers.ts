@@ -4,6 +4,7 @@ import { chunk, cloneDeep, first, groupBy } from 'lodash'
 import moment from 'moment'
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
+import { BONDS } from '@banx/constants'
 import { LoansOptimisticStore, OffersOptimisticStore } from '@banx/store'
 import { BorrowType, defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
@@ -41,7 +42,7 @@ export const createTableNftData = ({
     const interest = calcInterest({
       timeInterval: ONE_WEEK_IN_SECONDS,
       loanValue: loanValue,
-      apr: nft.loan.marketApr,
+      apr: nft.loan.marketApr + BONDS.PROTOCOL_REPAY_FEE,
     })
 
     return { mint: nft.mint, nft, loanValue, selected, interest }
