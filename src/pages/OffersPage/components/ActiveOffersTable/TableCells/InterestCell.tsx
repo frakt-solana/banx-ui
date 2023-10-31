@@ -6,6 +6,7 @@ import moment from 'moment'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
+import { BONDS } from '@banx/constants'
 import { formatDecimal } from '@banx/utils'
 
 interface InterestCellProps {
@@ -21,7 +22,7 @@ export const InterestCell: FC<InterestCellProps> = ({ loan }) => {
     loanValue: loanValueWithFee,
     startTime: soldAt,
     currentTime: moment().unix(),
-    rateBasePoints: amountOfBonds,
+    rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
   })
 
   return createSolValueJSX(calculatedInterest + loanValueWithFee, 1e9, '--', formatDecimal)
