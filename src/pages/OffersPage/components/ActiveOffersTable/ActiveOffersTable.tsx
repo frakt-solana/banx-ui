@@ -6,14 +6,24 @@ import { useFakeInfinityScroll } from '@banx/hooks'
 import { ViewState, useTableView } from '@banx/store'
 import { LoanStatus, determineLoanStatus } from '@banx/utils'
 
-import { Summary, showSummary } from './Summary'
+import { Summary } from './Summary'
 import { getTableColumns } from './columns'
 import { useActiveOffersTable } from './hooks'
 
 import styles from './ActiveOffersTable.module.less'
 
 const ActiveOffersTable = () => {
-  const { loans, sortViewParams, loading, showEmptyList, emptyListParams } = useActiveOffersTable()
+  const {
+    loans,
+    sortViewParams,
+    loading,
+    showEmptyList,
+    emptyListParams,
+    updateOrAddLoan,
+    loansToClaim,
+    loansToTerminate,
+    addMints,
+  } = useActiveOffersTable()
 
   const { viewState } = useTableView()
   const isCardView = viewState === ViewState.CARD
@@ -48,7 +58,12 @@ const ActiveOffersTable = () => {
         showCard
       />
       <div ref={fetchMoreTrigger} />
-      {showSummary(loans) && <Summary loans={loans} />}
+      <Summary
+        loansToClaim={loansToClaim}
+        loansToTerminate={loansToTerminate}
+        updateOrAddLoan={updateOrAddLoan}
+        addMints={addMints}
+      />
     </div>
   )
 }
