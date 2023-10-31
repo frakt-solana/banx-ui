@@ -77,7 +77,7 @@ export const getTableColumns = ({
       title: (
         <HeaderCell
           label="Loan status"
-          tooltipText="Current status and remaining duration of a loan"
+          tooltipText="Current status and duration of the loan that has been passed"
         />
       ),
       render: (_, loan) => <StatusCell loan={loan} isCardView={isCardView} />,
