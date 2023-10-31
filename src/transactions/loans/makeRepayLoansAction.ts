@@ -83,6 +83,7 @@ const getIxnsAndSignersByBorrowType = async ({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         userPubkey: wallet.publicKey as web3.PublicKey,
+        protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
       },
       args: {
         repayAccounts: ixnParams.map(({ fraktBond, bondTradeTransaction }) => ({
@@ -120,6 +121,7 @@ const getIxnsAndSignersByBorrowType = async ({
         lender: new web3.PublicKey(loan.bondTradeTransaction.user),
         fbond: new web3.PublicKey(loan.fraktBond.publicKey),
         tree: new web3.PublicKey(loan.nft.compression.tree),
+        protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
       },
       args: {
         proof,
@@ -151,6 +153,7 @@ const getIxnsAndSignersByBorrowType = async ({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       userPubkey: wallet.publicKey as web3.PublicKey,
+      protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
     },
     args: {
       repayAccounts: ixnParams.map(({ fraktBond, bondTradeTransaction }, idx) => ({
