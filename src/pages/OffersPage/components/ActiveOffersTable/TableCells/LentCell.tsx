@@ -7,7 +7,6 @@ import { formatDecimal } from '@banx/utils'
 
 interface LentCellProps {
   loan: Loan
-  isCardView: boolean
 }
 
 export const LentCell: FC<LentCellProps> = ({ loan }) => {
