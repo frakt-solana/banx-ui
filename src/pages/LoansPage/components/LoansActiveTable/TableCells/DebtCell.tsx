@@ -13,7 +13,7 @@ interface DebtCellProps {
 }
 
 export const DebtCell: FC<DebtCellProps> = ({ loan, isCardView }) => {
-  const repayValue = calculateLoanRepayValue(loan, true)
+  const repayValue = calculateLoanRepayValue(loan)
 
   const fee = repayValue - loan.bondTradeTransaction.solAmount
 
