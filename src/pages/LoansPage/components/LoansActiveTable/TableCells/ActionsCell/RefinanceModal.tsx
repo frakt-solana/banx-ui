@@ -51,7 +51,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
     currentTime: moment().unix(),
     rateBasePoints: loan.bondTradeTransaction.amountOfBonds,
   })
-  const currentLoanDebt = calculateLoanRepayValue(loan, true)
+  const currentLoanDebt = calculateLoanRepayValue(loan)
 
   const currentSpotPrice = offer?.currentSpotPrice || 0
 

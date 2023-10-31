@@ -59,10 +59,8 @@ export const determineLoanStatus = (loan: Loan) => {
   return mappedStatus
 }
 
-export const calculateLoanRepayValue = (loan: Loan, includeProtocolFee = false) => {
+export const calculateLoanRepayValue = (loan: Loan) => {
   const { solAmount, feeAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction || {}
-
-  const protocolFee = includeProtocolFee ? BONDS.PROTOCOL_REPAY_FEE : 0
 
   const loanValueWithFee = solAmount + feeAmount
 
@@ -70,7 +68,7 @@ export const calculateLoanRepayValue = (loan: Loan, includeProtocolFee = false) 
     loanValue: loanValueWithFee,
     startTime: soldAt,
     currentTime: moment().unix(),
-    rateBasePoints: amountOfBonds + protocolFee,
+    rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
   })
 
   return loanValueWithFee + calculatedInterest
