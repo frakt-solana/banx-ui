@@ -23,7 +23,7 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
 
   const { repayLoan, repayPartialLoan } = useLoansTransactions()
 
-  const initialRepayValue = calculateLoanRepayValue(loan, true)
+  const initialRepayValue = calculateLoanRepayValue(loan)
 
   const [partialPercent, setPartialPercent] = useState<number>(100)
   const [paybackValue, setPaybackValue] = useState<number>(initialRepayValue)

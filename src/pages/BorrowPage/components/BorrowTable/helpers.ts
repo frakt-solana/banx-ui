@@ -42,7 +42,7 @@ export const createTableNftData = ({
     const interest = calcInterest({
       timeInterval: ONE_WEEK_IN_SECONDS,
       loanValue: loanValue,
-      apr: nft.loan.marketApr + BONDS.PROTOCOL_REPAY_FEE,
+      apr: nft.loan.marketApr,
     })
 
     return { mint: nft.mint, nft, loanValue, selected, interest }
@@ -161,7 +161,7 @@ export const calcInterest: CalcInterest = ({ loanValue, timeInterval, apr }) => 
     loanValue,
     startTime: currentTimeUnix - timeInterval,
     currentTime: currentTimeUnix,
-    rateBasePoints: apr,
+    rateBasePoints: apr + BONDS.PROTOCOL_REPAY_FEE,
   })
 }
 
