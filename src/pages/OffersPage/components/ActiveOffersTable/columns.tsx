@@ -33,7 +33,7 @@ export const getTableColumns = ({ isCardView }: GetTableColumns) => {
           tooltipText="Sum of lent amount and accrued interest to date"
         />
       ),
-      render: (_, loan) => <InterestCell loan={loan} />,
+      render: (_, loan) => <InterestCell loan={loan} isCardView={isCardView} />,
     },
     {
       key: 'apy',
