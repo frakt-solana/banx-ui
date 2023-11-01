@@ -21,7 +21,8 @@ const PlaceProOffer: FC<OrderBookMarketParams> = (props) => {
     onLoanAmountChange,
     onDeltaValueChange,
     onLoanValueChange,
-  } = usePlaceOfferTab({ ...props })
+    offerTransactions,
+  } = usePlaceOfferTab(props)
 
   return (
     <>
@@ -52,9 +53,7 @@ const PlaceProOffer: FC<OrderBookMarketParams> = (props) => {
         isEditMode={false}
         disableUpdateOffer={false}
         disablePlaceOffer={false}
-        onCreateOffer={() => null}
-        onRemoveOffer={() => null}
-        onUpdateOffer={() => null}
+        {...offerTransactions}
       />
     </>
   )
