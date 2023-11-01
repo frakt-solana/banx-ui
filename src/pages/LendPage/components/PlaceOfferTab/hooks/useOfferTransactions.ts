@@ -7,8 +7,10 @@ import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import {
   makeCreateBondingOfferAction,
+  makeCreateOfferAction,
   makeRemoveOfferAction,
   makeUpdateBondingOfferAction,
+  makeUpdateOfferAction,
 } from '@banx/transactions/bonds'
 import { enqueueSnackbar } from '@banx/utils'
 
@@ -16,7 +18,7 @@ export const useOfferTransactions = ({
   marketPubkey,
   loansAmount,
   loanValue,
-  deltaValue,
+  deltaValue = 0,
   offerPubkey,
   offers,
   updateOrAddOffer,
@@ -26,7 +28,7 @@ export const useOfferTransactions = ({
   marketPubkey: string
   loansAmount: number
   loanValue: number
-  deltaValue: number
+  deltaValue?: number
   offerPubkey: string
   offers: Offer[]
   updateOrAddOffer: (offer: Offer) => void
@@ -40,10 +42,55 @@ export const useOfferTransactions = ({
     return offers.find((offer) => offer.publicKey === offerPubkey)
   }, [offers, offerPubkey])
 
-  const onCreateOffer = async () => {
+  const onCreateBondingOffer = async () => {
     const txnParam = { marketPubkey, loansAmount, loanValue, deltaValue }
 
     await new TxnExecutor(makeCreateBondingOfferAction, { wallet, connection })
+      .addTxnParam(txnParam)
+      .on('pfSuccessEach', (results) => {
+        const { result, txnHash } = results[0]
+        result?.bondOffer && updateOrAddOffer(result.bondOffer)
+
+        showSuccessSnackbar({ message: 'Offer successfully placed', txnHash })
+        resetFormValues()
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error, {
+          additionalData: txnParam,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'CreateBondingOffer',
+        })
+      })
+      .execute()
+  }
+
+  const onUpdateBondingOffer = async () => {
+    if (!optimisticOffer) return
+
+    const txnParam = { loanValue, offerPubkey, optimisticOffer, loansAmount, deltaValue }
+
+    await new TxnExecutor(makeUpdateBondingOfferAction, { wallet, connection })
+      .addTxnParam(txnParam)
+      .on('pfSuccessEach', (results) => {
+        const { result, txnHash } = results[0]
+        result?.bondOffer && updateOrAddOffer(result.bondOffer)
+
+        showSuccessSnackbar({ message: 'Changes successfully applied', txnHash })
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error, {
+          additionalData: txnParam,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'UpdateBondingOffer',
+        })
+      })
+      .execute()
+  }
+
+  const onCreateOffer = async () => {
+    const txnParam = { marketPubkey, loansAmount, loanValue }
+
+    await new TxnExecutor(makeCreateOfferAction, { wallet, connection })
       .addTxnParam(txnParam)
       .on('pfSuccessEach', (results) => {
         const { result, txnHash } = results[0]
@@ -59,7 +106,7 @@ export const useOfferTransactions = ({
         defaultTxnErrorHandler(error, {
           additionalData: txnParam,
           walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'CreateBondingOffer',
+          transactionName: 'CreateOffer',
         })
       })
       .execute()
@@ -68,9 +115,9 @@ export const useOfferTransactions = ({
   const onUpdateOffer = async () => {
     if (!optimisticOffer) return
 
-    const txnParam = { loanValue, offerPubkey, optimisticOffer, loansAmount, deltaValue }
+    const txnParam = { loanValue, offerPubkey, optimisticOffer, loansAmount }
 
-    await new TxnExecutor(makeUpdateBondingOfferAction, { wallet, connection })
+    await new TxnExecutor(makeUpdateOfferAction, { wallet, connection })
       .addTxnParam(txnParam)
       .on('pfSuccessEach', (results) => {
         const { result, txnHash } = results[0]
@@ -85,7 +132,7 @@ export const useOfferTransactions = ({
         defaultTxnErrorHandler(error, {
           additionalData: txnParam,
           walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'UpdateBondingOffer',
+          transactionName: 'UpdateOffer',
         })
       })
       .execute()
@@ -101,11 +148,8 @@ export const useOfferTransactions = ({
       .on('pfSuccessEach', (results) => {
         const { result, txnHash } = results[0]
         result?.bondOffer && updateOrAddOffer(result.bondOffer)
-        enqueueSnackbar({
-          message: 'Offer successfully removed',
-          type: 'success',
-          solanaExplorerPath: `tx/${txnHash}`,
-        })
+
+        showSuccessSnackbar({ message: 'Offer successfully removed', txnHash })
         exitEditMode()
       })
       .on('pfError', (error) => {
@@ -118,5 +162,13 @@ export const useOfferTransactions = ({
       .execute()
   }
 
-  return { onCreateOffer, onRemoveOffer, onUpdateOffer }
+  return { onCreateBondingOffer, onUpdateBondingOffer, onRemoveOffer, onCreateOffer, onUpdateOffer }
+}
+
+const showSuccessSnackbar = ({ message, txnHash }: { message: string; txnHash: string }) => {
+  enqueueSnackbar({
+    message,
+    type: 'success',
+    solanaExplorerPath: `tx/${txnHash}`,
+  })
 }

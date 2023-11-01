@@ -2,42 +2,27 @@ import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
-import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
-import { createEmptySyntheticOffer, useSyntheticOffers } from '@banx/store'
+import { useMarketOffers } from '@banx/pages/LendPage/hooks'
 import { useSolanaBalance } from '@banx/utils'
 
-import { OrderBookMarketParams } from '../../../ExpandableCardContent'
 import { shouldShowDepositError } from '../../PlaceLiteOffer/helpers'
+import { OfferParams } from '../../PlaceOfferTab'
+import { useOfferTransactions } from '../../hooks/useOfferTransactions'
 import { calculateOfferSize } from '../helpers'
 import { useOfferFormController } from './useOfferFormController'
-import { useOfferTransactions } from './useOfferTransactions'
 
 export const usePlaceOfferTab = ({
-  marketPubkey,
   offerPubkey,
-  setOfferPubkey,
-}: OrderBookMarketParams) => {
-  const { publicKey: walletPubkey } = useWallet()
+  exitEditMode,
+  syntheticOffer,
+  marketPreview,
+  setSyntheticOffer,
+}: OfferParams) => {
   const { connected } = useWallet()
+  const marketPubkey = marketPreview?.marketPubkey || ''
 
   const { offers, updateOrAddOffer } = useMarketOffers({ marketPubkey })
-  const { marketsPreview } = useMarketsPreview()
   const solanaBalance = useSolanaBalance()
-
-  const marketPreview = marketsPreview.find((market) => market.marketPubkey === marketPubkey)
-
-  const {
-    findOfferByPubkey: findSyntheticOfferByPubkey,
-    setOffer: setSyntheticOffer,
-    removeOffer: removeSyntheticOffer,
-  } = useSyntheticOffers()
-
-  const syntheticOffer = useMemo(() => {
-    return (
-      findSyntheticOfferByPubkey(offerPubkey) ||
-      createEmptySyntheticOffer({ marketPubkey, walletPubkey: walletPubkey?.toBase58() || '' })
-    )
-  }, [findSyntheticOfferByPubkey, marketPubkey, walletPubkey, offerPubkey])
 
   const {
     loanValue,
@@ -54,12 +39,7 @@ export const usePlaceOfferTab = ({
   const loansAmountNumber = parseFloat(loansAmount)
   const deltaValueNumber = parseFloat(deltaValue)
 
-  const exitEditMode = () => {
-    setOfferPubkey('')
-    removeSyntheticOffer(syntheticOffer.marketPubkey)
-  }
-
-  const { onCreateOffer, onRemoveOffer, onUpdateOffer } = useOfferTransactions({
+  const { onCreateBondingOffer, onUpdateBondingOffer, onRemoveOffer } = useOfferTransactions({
     marketPubkey,
     offerPubkey,
     loanValue: loanValueNumber,
@@ -123,9 +103,9 @@ export const usePlaceOfferTab = ({
     showDepositError,
 
     offerTransactions: {
-      onCreateOffer,
+      onCreateOffer: onCreateBondingOffer,
+      onUpdateOffer: onUpdateBondingOffer,
       onRemoveOffer,
-      onUpdateOffer,
     },
   }
 }

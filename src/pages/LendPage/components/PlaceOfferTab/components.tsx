@@ -23,7 +23,7 @@ export const OfferHeader: FC<OfferHeaderProps> = ({ isEditMode, exitEditMode }) 
 
   return (
     <div className={styles.offerHeaderContent}>
-      <h4 className={styles.title}>{title}</h4>
+      <h4 className={styles.offerHeaderTitle}>{title}</h4>
       {isEditMode && (
         <Button type="circle" variant="text" onClick={exitEditMode}>
           Exit
@@ -64,24 +64,28 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
   }
 
   return (
-    <div className={styles.buttonsWrapper}>
+    <div className={styles.actionsButtonsWrapper}>
       {isEditMode ? (
         <>
           <Button
             variant="secondary"
             onClick={onRemoveOffer}
-            className={classNames(styles.button, styles.deleteOfferButton)}
+            className={classNames(styles.actionButton, styles.deleteOfferButton)}
           >
             Remove
           </Button>
-          <Button onClick={onUpdateOffer} className={styles.button} disabled={disableUpdateOffer}>
+          <Button
+            onClick={onUpdateOffer}
+            className={styles.actionButton}
+            disabled={disableUpdateOffer}
+          >
             Apply changes
           </Button>
         </>
       ) : (
         <Button
           onClick={onMainActionBtnClick}
-          className={styles.button}
+          className={styles.actionButton}
           disabled={disablePlaceOffer}
         >
           {connected ? 'Place' : 'Connect wallet'}

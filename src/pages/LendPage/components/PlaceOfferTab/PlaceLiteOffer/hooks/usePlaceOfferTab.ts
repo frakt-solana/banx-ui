@@ -8,13 +8,13 @@ import { createEmptySyntheticOffer, useSyntheticOffers } from '@banx/store'
 import { useSolanaBalance } from '@banx/utils'
 
 import { OrderBookMarketParams } from '../../../ExpandableCardContent'
+import { useOfferTransactions } from '../../hooks/useOfferTransactions'
 import {
   calcLoanToValuePercentage,
   calculateBestLoanValue,
   shouldShowDepositError,
 } from '../helpers'
 import { useOfferFormController } from './useOfferFormController'
-import { useOfferTransactions } from './useOfferTransactions'
 
 export const usePlaceOfferTab = (props: OrderBookMarketParams) => {
   const { marketPubkey, offerPubkey, setOfferPubkey } = props

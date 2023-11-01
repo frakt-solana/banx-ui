@@ -4,14 +4,14 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 import { InputCounter, NumericInputField } from '@banx/components/inputs'
 
-import { OrderBookMarketParams } from '../../ExpandableCardContent'
+import { OfferParams } from '../PlaceOfferTab'
 import { OfferActionButtons } from '../components'
 import { OfferMessages, OfferSummary } from './components'
 import { usePlaceOfferTab } from './hooks'
 
 import styles from './PlaceProOffer.module.less'
 
-const PlaceProOffer: FC<OrderBookMarketParams> = (props) => {
+const PlaceProOffer: FC<OfferParams> = (offerParams) => {
   const { connected } = useWallet()
 
   const {
@@ -29,7 +29,7 @@ const PlaceProOffer: FC<OrderBookMarketParams> = (props) => {
     disableUpdateOffer,
     showBorrowerMessage,
     showDepositError,
-  } = usePlaceOfferTab(props)
+  } = usePlaceOfferTab(offerParams)
 
   return (
     <>
