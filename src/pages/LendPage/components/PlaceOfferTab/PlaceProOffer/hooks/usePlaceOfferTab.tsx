@@ -6,6 +6,7 @@ import { useMarketOffers } from '@banx/pages/LendPage/hooks'
 import { createEmptySyntheticOffer, useSyntheticOffers } from '@banx/store'
 
 import { OrderBookMarketParams } from '../../../ExpandableCardContent'
+import { calculateOfferSize } from '../helpers'
 import { useOfferFormController } from './useOfferFormController'
 import { useOfferTransactions } from './useOfferTransactions'
 
@@ -14,6 +15,8 @@ export const usePlaceOfferTab = ({
   offerPubkey,
   setOfferPubkey,
 }: OrderBookMarketParams) => {
+  const { publicKey: walletPubkey } = useWallet()
+
   const { offers, updateOrAddOffer } = useMarketOffers({ marketPubkey })
 
   const {
@@ -21,8 +24,6 @@ export const usePlaceOfferTab = ({
     setOffer: setSyntheticOffer,
     removeOffer: removeSyntheticOffer,
   } = useSyntheticOffers()
-
-  const { publicKey: walletPubkey } = useWallet()
 
   const syntheticOffer = useMemo(() => {
     return (
@@ -62,6 +63,14 @@ export const usePlaceOfferTab = ({
     exitEditMode,
   })
 
+  const offerSize = useMemo(() => {
+    return calculateOfferSize({
+      loanValue: loanValueNumber,
+      deltaValue: deltaValueNumber,
+      amountOfOrders: loansAmountNumber,
+    })
+  }, [deltaValueNumber, loanValueNumber, loansAmountNumber])
+
   useEffect(() => {
     if (loansAmountNumber || loanValueNumber) {
       if (!syntheticOffer) return
@@ -76,6 +85,8 @@ export const usePlaceOfferTab = ({
 
   return {
     isEditMode: syntheticOffer.isEdit,
+
+    offerSize,
 
     loanValue,
     loansAmount,

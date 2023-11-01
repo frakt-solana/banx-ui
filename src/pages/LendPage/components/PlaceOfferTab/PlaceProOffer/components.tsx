@@ -6,11 +6,12 @@ import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
 
 import styles from './PlaceProOffer.module.less'
 
-interface OfferSummaryProps {}
+interface OfferSummaryProps {
+  offerSize: number
+}
 
-export const OfferSummary: FC<OfferSummaryProps> = () => {
+export const OfferSummary: FC<OfferSummaryProps> = ({ offerSize }) => {
   const weightedLtv = 50
-  const offerSize = 210
   const weightedWeeklyInterest = 4.42
 
   const colorLTV = getColorByPercent(weightedLtv, HealthColorIncreasing)
@@ -25,7 +26,7 @@ export const OfferSummary: FC<OfferSummaryProps> = () => {
         tooltipText="Weighted LTV"
         valueType={VALUES_TYPES.PERCENT}
       />
-      <StatInfo label="Offer size" value={offerSize} flexType="row" />
+      <StatInfo label="Offer size" value={offerSize} flexType="row" divider={1e9} />
       <StatInfo label="Weighted weekly interest" value={weightedWeeklyInterest} flexType="row" />
     </div>
   )
