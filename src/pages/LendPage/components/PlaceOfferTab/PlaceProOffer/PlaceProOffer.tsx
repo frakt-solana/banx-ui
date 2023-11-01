@@ -24,6 +24,7 @@ const PlaceProOffer: FC<OrderBookMarketParams> = (props) => {
     onLoanValueChange,
     offerTransactions,
     offerSize,
+    marketApr,
     disablePlaceOffer,
     disableUpdateOffer,
   } = usePlaceOfferTab(props)
@@ -52,7 +53,7 @@ const PlaceProOffer: FC<OrderBookMarketParams> = (props) => {
           disabled={!connected}
         />
       </div>
-      <OfferSummary offerSize={offerSize} />
+      <OfferSummary offerSize={offerSize} marketApr={marketApr} />
       <OfferActionButtons
         isEditMode={isEditMode}
         disableUpdateOffer={disableUpdateOffer}

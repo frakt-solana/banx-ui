@@ -2,17 +2,21 @@ import { FC } from 'react'
 
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
+import { WEEKS_IN_YEAR } from '@banx/constants'
 import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
 
 import styles from './PlaceProOffer.module.less'
 
 interface OfferSummaryProps {
   offerSize: number
+  marketApr: number //? rateBasePoints
 }
 
-export const OfferSummary: FC<OfferSummaryProps> = ({ offerSize }) => {
+export const OfferSummary: FC<OfferSummaryProps> = ({ offerSize, marketApr }) => {
   const weightedLtv = 50
-  const weightedWeeklyInterest = 4.42
+
+  const weeklyAprPercentage = marketApr / 100 / WEEKS_IN_YEAR
+  const weightedWeeklyInterest = (offerSize * weeklyAprPercentage) / 100
 
   const colorLTV = getColorByPercent(weightedLtv, HealthColorIncreasing)
 
@@ -26,8 +30,13 @@ export const OfferSummary: FC<OfferSummaryProps> = ({ offerSize }) => {
         tooltipText="Weighted LTV"
         valueType={VALUES_TYPES.PERCENT}
       />
-      <StatInfo label="Offer size" value={offerSize} flexType="row" divider={1e9} />
-      <StatInfo label="Weighted weekly interest" value={weightedWeeklyInterest} flexType="row" />
+      <StatInfo flexType="row" label="Offer size" value={offerSize} divider={1e9} />
+      <StatInfo
+        flexType="row"
+        label="Weighted weekly interest"
+        value={weightedWeeklyInterest}
+        divider={1e9}
+      />
     </div>
   )
 }

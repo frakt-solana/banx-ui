@@ -1,21 +1,11 @@
 import { FC } from 'react'
 
-import { useWallet } from '@solana/wallet-adapter-react'
-import classNames from 'classnames'
-
-import { Button } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createSolValueJSX } from '@banx/components/TableComponents'
-import { useWalletModal } from '@banx/components/WalletModal'
 import { InputErrorMessage } from '@banx/components/inputs'
 
 import { BONDS, WEEKS_IN_YEAR } from '@banx/constants'
-import {
-  HealthColorIncreasing,
-  formatDecimal,
-  getColorByPercent,
-  trackPageEvent,
-} from '@banx/utils'
+import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
 
 import styles from './PlaceLiteOffer.module.less'
 
@@ -59,64 +49,6 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
         valueType={VALUES_TYPES.STRING}
         flexType="row"
       />
-    </div>
-  )
-}
-
-interface OfferActionButtonsProps {
-  isEditMode: boolean
-  disableUpdateOffer: boolean
-  disablePlaceOffer: boolean
-  onCreateOffer: () => void
-  onRemoveOffer: () => void
-  onUpdateOffer: () => void
-}
-
-export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
-  isEditMode,
-  disableUpdateOffer,
-  disablePlaceOffer,
-  onCreateOffer,
-  onRemoveOffer,
-  onUpdateOffer,
-}) => {
-  const { connected } = useWallet()
-  const { toggleVisibility } = useWalletModal()
-
-  const onToggleWalletModal = () => toggleVisibility()
-
-  const onMainActionBtnClick = () => {
-    if (connected) {
-      return onCreateOffer()
-    }
-    trackPageEvent('lend', `connectwallet`)
-    onToggleWalletModal()
-  }
-
-  return (
-    <div className={styles.buttonsWrapper}>
-      {isEditMode ? (
-        <>
-          <Button
-            variant="secondary"
-            onClick={onRemoveOffer}
-            className={classNames(styles.button, styles.deleteOfferButton)}
-          >
-            Remove
-          </Button>
-          <Button onClick={onUpdateOffer} className={styles.button} disabled={disableUpdateOffer}>
-            Apply changes
-          </Button>
-        </>
-      ) : (
-        <Button
-          onClick={onMainActionBtnClick}
-          className={styles.button}
-          disabled={disablePlaceOffer}
-        >
-          {connected ? 'Place' : 'Connect wallet'}
-        </Button>
-      )}
     </div>
   )
 }

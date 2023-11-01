@@ -5,7 +5,8 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { InputCounter, NumericInputField } from '@banx/components/inputs'
 
 import { OrderBookMarketParams } from '../../ExpandableCardContent'
-import { OfferActionButtons, OfferMessages, OfferSummary } from './components'
+import { OfferActionButtons } from '../components'
+import { OfferMessages, OfferSummary } from './components'
 import { usePlaceOfferTab } from './hooks'
 
 import styles from './PlaceLiteOffer.module.less'

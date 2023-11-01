@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
-import { useMarketOffers } from '@banx/pages/LendPage/hooks'
+import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { createEmptySyntheticOffer, useSyntheticOffers } from '@banx/store'
 
 import { OrderBookMarketParams } from '../../../ExpandableCardContent'
@@ -19,6 +19,9 @@ export const usePlaceOfferTab = ({
   const { connected } = useWallet()
 
   const { offers, updateOrAddOffer } = useMarketOffers({ marketPubkey })
+  const { marketsPreview } = useMarketsPreview()
+
+  const marketPreview = marketsPreview.find((market) => market.marketPubkey === marketPubkey)
 
   const {
     findOfferByPubkey: findSyntheticOfferByPubkey,
@@ -92,6 +95,7 @@ export const usePlaceOfferTab = ({
     isEditMode: syntheticOffer.isEdit,
 
     offerSize,
+    marketApr: marketPreview?.marketApr || 0,
 
     loanValue,
     loansAmount,
