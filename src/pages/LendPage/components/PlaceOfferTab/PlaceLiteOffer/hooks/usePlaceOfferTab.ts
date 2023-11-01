@@ -7,7 +7,7 @@ import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { createEmptySyntheticOffer, useSyntheticOffers } from '@banx/store'
 import { useSolanaBalance } from '@banx/utils'
 
-import { OrderBookMarketParams } from '../../ExpandableCardContent'
+import { OrderBookMarketParams } from '../../../ExpandableCardContent'
 import {
   calcLoanToValuePercentage,
   calculateBestLoanValue,
@@ -116,7 +116,6 @@ export const usePlaceOfferTab = (props: OrderBookMarketParams) => {
     loanValue,
     loansAmount,
 
-    exitEditMode,
     onLoanValueChange,
     onLoanAmountChange,
 
