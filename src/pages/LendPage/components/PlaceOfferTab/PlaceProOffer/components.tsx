@@ -1,8 +1,10 @@
 import { FC } from 'react'
 
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
+import { createSolValueJSX } from '@banx/components/TableComponents'
+import { InputErrorMessage } from '@banx/components/inputs'
 
-import { WEEKS_IN_YEAR } from '@banx/constants'
+import { BONDS, WEEKS_IN_YEAR } from '@banx/constants'
 import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
 
 import styles from './PlaceProOffer.module.less'
@@ -37,6 +39,33 @@ export const OfferSummary: FC<OfferSummaryProps> = ({ offerSize, marketApr }) =>
         value={weightedWeeklyInterest}
         divider={1e9}
       />
+    </div>
+  )
+}
+
+interface OfferMessages {
+  showDepositErrorMessage: boolean
+  showBorrowerMessage: boolean
+  loanValue: string
+}
+
+export const OfferMessages: FC<OfferMessages> = ({
+  showDepositErrorMessage,
+  showBorrowerMessage,
+  loanValue,
+}) => {
+  const loanValueToNumber = parseFloat(loanValue) || 0
+  const loanValueWithProtocolFee =
+    loanValueToNumber - loanValueToNumber * (BONDS.PROTOCOL_FEE_PERCENT / 1e4)
+
+  return (
+    <div className={styles.messageContainer}>
+      {showBorrowerMessage && (
+        <p className={styles.borrowerMessage}>
+          Borrower sees: {createSolValueJSX(loanValueWithProtocolFee)}
+        </p>
+      )}
+      {showDepositErrorMessage && <InputErrorMessage message="Not enough SOL" />}
     </div>
   )
 }

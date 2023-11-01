@@ -6,7 +6,7 @@ import { InputCounter, NumericInputField } from '@banx/components/inputs'
 
 import { OrderBookMarketParams } from '../../ExpandableCardContent'
 import { OfferActionButtons } from '../components'
-import { OfferSummary } from './components'
+import { OfferMessages, OfferSummary } from './components'
 import { usePlaceOfferTab } from './hooks'
 
 import styles from './PlaceProOffer.module.less'
@@ -27,6 +27,8 @@ const PlaceProOffer: FC<OrderBookMarketParams> = (props) => {
     marketApr,
     disablePlaceOffer,
     disableUpdateOffer,
+    showBorrowerMessage,
+    showDepositError,
   } = usePlaceOfferTab(props)
 
   return (
@@ -53,6 +55,11 @@ const PlaceProOffer: FC<OrderBookMarketParams> = (props) => {
           disabled={!connected}
         />
       </div>
+      <OfferMessages
+        loanValue={loanValue}
+        showBorrowerMessage={showBorrowerMessage}
+        showDepositErrorMessage={showDepositError}
+      />
       <OfferSummary offerSize={offerSize} marketApr={marketApr} />
       <OfferActionButtons
         isEditMode={isEditMode}

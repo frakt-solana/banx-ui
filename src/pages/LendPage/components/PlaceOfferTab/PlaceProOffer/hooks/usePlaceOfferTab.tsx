@@ -4,8 +4,10 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { createEmptySyntheticOffer, useSyntheticOffers } from '@banx/store'
+import { useSolanaBalance } from '@banx/utils'
 
 import { OrderBookMarketParams } from '../../../ExpandableCardContent'
+import { shouldShowDepositError } from '../../PlaceLiteOffer/helpers'
 import { calculateOfferSize } from '../helpers'
 import { useOfferFormController } from './useOfferFormController'
 import { useOfferTransactions } from './useOfferTransactions'
@@ -20,6 +22,7 @@ export const usePlaceOfferTab = ({
 
   const { offers, updateOrAddOffer } = useMarketOffers({ marketPubkey })
   const { marketsPreview } = useMarketsPreview()
+  const solanaBalance = useSolanaBalance()
 
   const marketPreview = marketsPreview.find((market) => market.marketPubkey === marketPubkey)
 
@@ -88,6 +91,15 @@ export const usePlaceOfferTab = ({
     }
   }, [loansAmountNumber, loanValueNumber, syntheticOffer, setSyntheticOffer])
 
+  const showDepositError = shouldShowDepositError({
+    initialLoansAmount: syntheticOffer.loansAmount,
+    initialLoanValue: syntheticOffer.loanValue / 1e9,
+    solanaBalance,
+    offerSize: offerSize / 1e9,
+  })
+
+  const showBorrowerMessage = !showDepositError && !!offerSize
+
   const disablePlaceOffer = connected ? !offerSize : false
   const disableUpdateOffer = !hasFormChanges || !offerSize
 
@@ -107,6 +119,8 @@ export const usePlaceOfferTab = ({
 
     disablePlaceOffer,
     disableUpdateOffer,
+    showBorrowerMessage,
+    showDepositError,
 
     offerTransactions: {
       onCreateOffer,
