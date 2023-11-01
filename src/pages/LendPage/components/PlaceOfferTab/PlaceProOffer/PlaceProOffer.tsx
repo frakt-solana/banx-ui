@@ -13,7 +13,15 @@ import styles from './PlaceProOffer.module.less'
 const PlaceProOffer: FC<OrderBookMarketParams> = (props) => {
   const { connected } = useWallet()
 
-  const { loansAmount, onLoanAmountChange, loanValue, onLoanValueChange } = usePlaceOfferTab({
+  const {
+    loansAmount,
+    loanValue,
+    deltaValue,
+
+    onLoanAmountChange,
+    onDeltaValueChange,
+    onLoanValueChange,
+  } = usePlaceOfferTab({
     ...props,
   })
 
@@ -27,6 +35,12 @@ const PlaceProOffer: FC<OrderBookMarketParams> = (props) => {
           className={styles.numericField}
           disabled={!connected}
           hasError
+        />
+        <NumericInputField
+          label="Delta"
+          onChange={onDeltaValueChange}
+          value={deltaValue}
+          disabled={!connected}
         />
         <InputCounter
           label="Number of loans"

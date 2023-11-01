@@ -4,22 +4,37 @@ import { isInteger } from 'lodash'
 
 import { formatLoansAmount } from '@banx/utils'
 
-export const useOfferFormController = (editLoanValue = 0, editLoansAmount = 0) => {
-  const initialLoanValue = editLoanValue ? editLoanValue.toFixed(2) : '0'
-  const initialLoansAmount = editLoansAmount ? formatLoansAmount(editLoansAmount) : '1'
+export const useOfferFormController = (
+  editLoanValue = 0,
+  editLoansAmount = 0,
+  editDeltaValue = 0,
+) => {
+  const initialValues = useMemo(() => {
+    return {
+      loanValue: formatNumber(editLoanValue, '0'),
+      loansAmount: formatLoansAmount(editLoansAmount),
+      deltaValue: formatNumber(editDeltaValue, '1'),
+    }
+  }, [editLoanValue, editLoansAmount, editDeltaValue])
 
-  const [loanValue, setLoanValue] = useState(initialLoanValue)
-  const [loansAmount, setLoansAmount] = useState(initialLoansAmount)
+  const [loanValue, setLoanValue] = useState(initialValues.loanValue)
+  const [loansAmount, setLoansAmount] = useState(initialValues.loansAmount)
+  const [deltaValue, setDeltaValue] = useState(initialValues.deltaValue)
 
   useEffect(() => {
-    if (initialLoanValue || initialLoansAmount) {
-      setLoanValue(initialLoanValue)
-      setLoansAmount(initialLoansAmount)
-    }
-  }, [initialLoanValue, initialLoansAmount])
+    const { loanValue, loansAmount, deltaValue } = initialValues
+
+    setLoanValue(loanValue)
+    setLoansAmount(loansAmount)
+    setDeltaValue(deltaValue)
+  }, [initialValues])
 
   const onLoanValueChange = useCallback((nextValue: string) => {
     setLoanValue(nextValue)
+  }, [])
+
+  const onDeltaValueChange = useCallback((nextValue: string) => {
+    setDeltaValue(nextValue)
   }, [])
 
   const onLoanAmountChange = useCallback((nextValue: string) => {
@@ -33,23 +48,32 @@ export const useOfferFormController = (editLoanValue = 0, editLoansAmount = 0) =
   }, [])
 
   const resetFormValues = () => {
-    setLoanValue(initialLoanValue)
-    setLoansAmount(initialLoansAmount)
+    setLoanValue(initialValues.loanValue)
+    setLoansAmount(initialValues.loansAmount)
+    setDeltaValue(initialValues.deltaValue)
   }
 
   const hasFormChanges = useMemo(() => {
-    const isLoansAmountChanged = editLoansAmount && loansAmount !== initialLoansAmount
-    const isLoanValueChanged = editLoanValue && loanValue !== initialLoanValue
-
-    return isLoansAmountChanged || isLoanValueChanged
-  }, [initialLoansAmount, initialLoanValue, loansAmount, loanValue, editLoanValue, editLoansAmount])
+    return (
+      (editLoansAmount && loansAmount !== initialValues.loansAmount) ||
+      (editLoanValue && loanValue !== initialValues.loanValue) ||
+      (editLoansAmount && deltaValue !== initialValues.deltaValue)
+    )
+  }, [initialValues, loansAmount, loanValue, deltaValue, editLoanValue, editLoansAmount])
 
   return {
     loanValue,
     loansAmount,
+    deltaValue,
+
     onLoanValueChange,
     onLoanAmountChange,
+    onDeltaValueChange,
+
     hasFormChanges: Boolean(hasFormChanges),
     resetFormValues,
   }
 }
+
+const formatNumber = (value: number, defaultValue: string) =>
+  value ? value.toFixed(2) : defaultValue

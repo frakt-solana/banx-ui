@@ -22,10 +22,14 @@ export const usePlaceOfferTab = (props: OrderBookMarketParams) => {
     )
   }, [findSyntheticOfferByPubkey, marketPubkey, walletPubkey, offerPubkey])
 
-  const { loanValue, loansAmount, onLoanValueChange, onLoanAmountChange } = useOfferFormController(
-    syntheticOffer?.loanValue / 1e9,
-    syntheticOffer?.loansAmount,
-  )
+  const {
+    loanValue,
+    loansAmount,
+    deltaValue,
+    onDeltaValueChange,
+    onLoanValueChange,
+    onLoanAmountChange,
+  } = useOfferFormController(syntheticOffer?.loanValue / 1e9, syntheticOffer?.loansAmount)
 
   const loanValueNumber = parseFloat(loanValue)
   const loansAmountNumber = parseFloat(loansAmount)
@@ -47,7 +51,9 @@ export const usePlaceOfferTab = (props: OrderBookMarketParams) => {
 
     loanValue,
     loansAmount,
+    deltaValue,
 
+    onDeltaValueChange,
     onLoanValueChange,
     onLoanAmountChange,
   }
