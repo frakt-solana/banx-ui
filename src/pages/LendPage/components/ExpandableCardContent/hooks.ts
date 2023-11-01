@@ -7,14 +7,22 @@ import { toLowerCaseNoSpaces, trackPageEvent } from '@banx/utils'
 
 import { BONDS_TABS, DEFAULT_TAB } from './constants'
 
+export enum OFFER_MODE {
+  LITE = 'lite',
+  PRO = 'pro',
+}
+
 export interface OrderBookMarketParams {
   marketPubkey: string
   offerPubkey: string
   setOfferPubkey: (offerPubkey: string) => void
+  offerMode: OFFER_MODE
+  onChangeOfferMode: (value: OFFER_MODE) => void
 }
 
 export const useExpandableCardContent = (marketPubkey: string) => {
   const { findOffer } = useSyntheticOffers()
+  const [offerMode, setOfferMode] = useState<OFFER_MODE>(OFFER_MODE.LITE)
 
   const syntheticOffer = useMemo(() => {
     return findOffer(marketPubkey)
@@ -48,6 +56,8 @@ export const useExpandableCardContent = (marketPubkey: string) => {
       marketPubkey,
       offerPubkey,
       setOfferPubkey,
+      offerMode,
+      onChangeOfferMode: setOfferMode,
     },
     tabsParams: {
       tabs: bondTabs,

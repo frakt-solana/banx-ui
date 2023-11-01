@@ -2,11 +2,14 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { capitalize } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 import { useWalletModal } from '@banx/components/WalletModal'
 
 import { trackPageEvent } from '@banx/utils'
+
+import { OFFER_MODE } from '../ExpandableCardContent'
 
 import styles from './PlaceOfferTab.module.less'
 
@@ -84,6 +87,31 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
           {connected ? 'Place' : 'Connect wallet'}
         </Button>
       )}
+    </div>
+  )
+}
+
+interface SwitchModeButtonsProps {
+  mode: OFFER_MODE
+  onChange: (value: OFFER_MODE) => void
+}
+
+export const SwitchModeButtons: FC<SwitchModeButtonsProps> = ({ mode, onChange }) => {
+  const modes = [OFFER_MODE.LITE, OFFER_MODE.PRO]
+
+  return (
+    <div className={styles.switchModeButtons}>
+      {modes.map((buttonMode) => (
+        <Button
+          key={buttonMode}
+          type="circle"
+          variant="text"
+          onClick={() => onChange(buttonMode)}
+          className={classNames(styles.switchButton, { [styles.active]: mode === buttonMode })}
+        >
+          {capitalize(buttonMode)}
+        </Button>
+      ))}
     </div>
   )
 }

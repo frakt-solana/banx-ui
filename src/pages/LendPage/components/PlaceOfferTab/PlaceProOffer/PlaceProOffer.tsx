@@ -5,6 +5,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { InputCounter, NumericInputField } from '@banx/components/inputs'
 
 import { OrderBookMarketParams } from '../../ExpandableCardContent'
+import { OfferActionButtons } from '../components'
 import { OfferSummary } from './components'
 import { usePlaceOfferTab } from './hooks'
 
@@ -26,7 +27,7 @@ const PlaceProOffer: FC<OrderBookMarketParams> = (props) => {
     <>
       <div className={styles.fields}>
         <NumericInputField
-          label="Offer"
+          label="Initial offer"
           value={loanValue}
           onChange={onLoanValueChange}
           className={styles.numericField}
@@ -47,6 +48,14 @@ const PlaceProOffer: FC<OrderBookMarketParams> = (props) => {
         />
       </div>
       <OfferSummary />
+      <OfferActionButtons
+        isEditMode={false}
+        disableUpdateOffer={false}
+        disablePlaceOffer={false}
+        onCreateOffer={() => null}
+        onRemoveOffer={() => null}
+        onUpdateOffer={() => null}
+      />
     </>
   )
 }

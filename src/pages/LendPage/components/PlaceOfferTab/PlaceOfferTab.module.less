@@ -83,3 +83,17 @@
 .borrowerMessage {
   font: var(--body-text-sm);
 }
+
+.switchModeButtons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.switchButton {
+  padding: 1px 16px !important;
+
+  &.active {
+    color: var(--pure-black);
+    background: var(--accent-primary);
+  }
+}
