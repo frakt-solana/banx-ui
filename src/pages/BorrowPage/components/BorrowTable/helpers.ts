@@ -4,6 +4,7 @@ import { chunk, cloneDeep, first, groupBy } from 'lodash'
 import moment from 'moment'
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
+import { BONDS } from '@banx/constants'
 import { LoansOptimisticStore, OffersOptimisticStore } from '@banx/store'
 import { BorrowType, defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
@@ -160,7 +161,7 @@ export const calcInterest: CalcInterest = ({ loanValue, timeInterval, apr }) => 
     loanValue,
     startTime: currentTimeUnix - timeInterval,
     currentTime: currentTimeUnix,
-    rateBasePoints: apr,
+    rateBasePoints: apr + BONDS.PROTOCOL_REPAY_FEE,
   })
 }
 

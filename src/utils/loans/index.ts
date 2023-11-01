@@ -4,7 +4,7 @@ import { isInteger } from 'lodash'
 import moment from 'moment'
 
 import { Loan } from '@banx/api/core'
-import { SECONDS_IN_72_HOURS } from '@banx/constants'
+import { BONDS, SECONDS_IN_72_HOURS } from '@banx/constants'
 
 export enum LoanStatus {
   Active = 'active',
@@ -68,7 +68,7 @@ export const calculateLoanRepayValue = (loan: Loan) => {
     loanValue: loanValueWithFee,
     startTime: soldAt,
     currentTime: moment().unix(),
-    rateBasePoints: amountOfBonds,
+    rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
   })
 
   return loanValueWithFee + calculatedInterest

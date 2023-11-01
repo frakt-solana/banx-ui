@@ -31,6 +31,7 @@ export const BONDS = {
   PROGRAM_PUBKEY: '4tdmkuY6EStxbS6Y8s5ueznL3VPMSugrvQuDeAHGZhSt',
   ADMIN_PUBKEY: '9J4yDqU6wBkdhP5bmJhukhsEzBkaAXiBmii52kTdxpQq',
   PROTOCOL_FEE_PERCENT: 50, //? Base points
+  PROTOCOL_REPAY_FEE: 1600, //? Base points
 }
 
 export const DIALECT = {

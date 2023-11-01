@@ -6,6 +6,7 @@ import moment from 'moment'
 import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
+import { BONDS } from '@banx/constants'
 import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
 
 import styles from '../ActiveOffersTable.module.less'
@@ -25,7 +26,7 @@ export const InterestCell: FC<InterestCellProps> = ({ loan, isCardView }) => {
     loanValue: totalLoanValue,
     startTime: soldAt,
     currentTime: moment().unix(),
-    rateBasePoints: amountOfBonds,
+    rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
   }
 
   const currentInterest = calculateCurrentInterestSolPure(interestParameters)
