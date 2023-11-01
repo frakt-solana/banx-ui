@@ -8,12 +8,9 @@ import { createEmptySyntheticOffer, useSyntheticOffers } from '@banx/store'
 import { useSolanaBalance } from '@banx/utils'
 
 import { OrderBookMarketParams } from '../../../ExpandableCardContent'
+import { shouldShowDepositError } from '../../helpers'
 import { useOfferTransactions } from '../../hooks/useOfferTransactions'
-import {
-  calcLoanToValuePercentage,
-  calculateBestLoanValue,
-  shouldShowDepositError,
-} from '../helpers'
+import { calcLoanToValuePercentage, calculateBestLoanValue } from '../helpers'
 import { useOfferFormController } from './useOfferFormController'
 
 export const usePlaceOfferTab = (props: OrderBookMarketParams) => {
@@ -96,9 +93,9 @@ export const usePlaceOfferTab = (props: OrderBookMarketParams) => {
 
   const showDepositError = shouldShowDepositError({
     initialLoansAmount: syntheticOffer.loansAmount,
-    initialLoanValue: syntheticOffer.loanValue / 1e9,
+    initialLoanValue: syntheticOffer.loanValue,
+    offerSize: offerSize * 1e9,
     solanaBalance,
-    offerSize,
   })
 
   const showBorrowerMessage = !showDepositError && !!offerSize

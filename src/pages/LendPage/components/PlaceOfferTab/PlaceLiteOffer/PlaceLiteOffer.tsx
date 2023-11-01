@@ -2,11 +2,11 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
-import { InputCounter, NumericInputField } from '@banx/components/inputs'
+import { InputCounter, InputErrorMessage, NumericInputField } from '@banx/components/inputs'
 
 import { OrderBookMarketParams } from '../../ExpandableCardContent'
-import { OfferActionButtons } from '../components'
-import { OfferMessages, OfferSummary } from './components'
+import { BorrowerMessage, OfferActionButtons } from '../components'
+import { OfferSummary } from './components'
 import { usePlaceOfferTab } from './hooks'
 
 import styles from './PlaceLiteOffer.module.less'
@@ -48,11 +48,10 @@ const PlaceLiteOfferTab: FC<OrderBookMarketParams> = (props) => {
           disabled={!connected}
         />
       </div>
-      <OfferMessages
-        showDepositErrorMessage={showDepositError}
-        showBorrowerMessage={showBorrowerMessage}
-        loanValue={loanValue}
-      />
+      <div className={styles.messageContainer}>
+        {showDepositError && <InputErrorMessage message="Not enough SOL" />}
+        {showBorrowerMessage && <BorrowerMessage loanValue={loanValue} />}
+      </div>
       <OfferSummary
         offerSize={offerSize}
         marketAPR={marketApr}

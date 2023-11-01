@@ -1,23 +1,5 @@
 import { MarketPreview } from '@banx/api/core'
 
-export const shouldShowDepositError = ({
-  initialLoanValue = 0,
-  initialLoansAmount = 0,
-  solanaBalance,
-  offerSize,
-}: {
-  initialLoanValue?: number
-  initialLoansAmount?: number
-  solanaBalance: number
-  offerSize: number
-}) => {
-  const initialOfferSize = initialLoansAmount * initialLoanValue
-  const totalAvailableFunds = initialOfferSize + solanaBalance
-
-  const isDepositErrorVisible = totalAvailableFunds < offerSize
-  return isDepositErrorVisible
-}
-
 const TRANSACTION_FEE = 0.01
 
 export const calculateBestLoanValue = (solanaBalance: number, bestOffer: number) => {

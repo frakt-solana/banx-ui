@@ -2,12 +2,12 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
-import { InputCounter, NumericInputField } from '@banx/components/inputs'
+import { InputCounter, InputErrorMessage, NumericInputField } from '@banx/components/inputs'
 
-import { OfferParams } from '../PlaceOfferTab'
-import { OfferActionButtons } from '../components'
-import { OfferMessages, OfferSummary } from './components'
-import { usePlaceOfferTab } from './hooks'
+import { BorrowerMessage, OfferActionButtons } from '../components'
+import { OfferParams } from '../hooks'
+import { OfferSummary } from './components'
+import { usePlaceProOffer } from './hooks'
 
 import styles from './PlaceProOffer.module.less'
 
@@ -16,20 +16,20 @@ const PlaceProOffer: FC<OfferParams> = (offerParams) => {
 
   const {
     isEditMode,
+    offerSize,
+    marketApr,
     loansAmount,
     loanValue,
     deltaValue,
     onLoanAmountChange,
     onDeltaValueChange,
     onLoanValueChange,
-    offerTransactions,
-    offerSize,
-    marketApr,
     disablePlaceOffer,
     disableUpdateOffer,
     showBorrowerMessage,
     showDepositError,
-  } = usePlaceOfferTab(offerParams)
+    offerTransactions,
+  } = usePlaceProOffer(offerParams)
 
   return (
     <>
@@ -40,7 +40,6 @@ const PlaceProOffer: FC<OfferParams> = (offerParams) => {
           onChange={onLoanValueChange}
           className={styles.numericField}
           disabled={!connected}
-          hasError
         />
         <NumericInputField
           label="Delta"
@@ -55,11 +54,10 @@ const PlaceProOffer: FC<OfferParams> = (offerParams) => {
           disabled={!connected}
         />
       </div>
-      <OfferMessages
-        loanValue={loanValue}
-        showBorrowerMessage={showBorrowerMessage}
-        showDepositErrorMessage={showDepositError}
-      />
+      <div className={styles.messageContainer}>
+        {showDepositError && <InputErrorMessage message="Not enough SOL" />}
+        {showBorrowerMessage && <BorrowerMessage loanValue={loanValue} />}
+      </div>
       <OfferSummary offerSize={offerSize} marketApr={marketApr} />
       <OfferActionButtons
         isEditMode={isEditMode}

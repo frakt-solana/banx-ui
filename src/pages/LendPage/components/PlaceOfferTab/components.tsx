@@ -5,8 +5,10 @@ import classNames from 'classnames'
 import { capitalize } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
+import { createSolValueJSX } from '@banx/components/TableComponents'
 import { useWalletModal } from '@banx/components/WalletModal'
 
+import { BONDS } from '@banx/constants'
 import { trackPageEvent } from '@banx/utils'
 
 import { OFFER_MODE } from '../ExpandableCardContent'
@@ -117,5 +119,21 @@ export const SwitchModeButtons: FC<SwitchModeButtonsProps> = ({ mode, onChange }
         </Button>
       ))}
     </div>
+  )
+}
+
+interface BorrowerMessageProps {
+  loanValue: string
+}
+
+export const BorrowerMessage: FC<BorrowerMessageProps> = ({ loanValue }) => {
+  const loanValueToNumber = parseFloat(loanValue) || 0
+  const loanValueWithProtocolFee =
+    loanValueToNumber - loanValueToNumber * (BONDS.PROTOCOL_FEE_PERCENT / 1e4)
+
+  return (
+    <p className={styles.borrowerMessage}>
+      Borrower sees: {createSolValueJSX(loanValueWithProtocolFee)}
+    </p>
   )
 }
