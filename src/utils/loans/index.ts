@@ -116,11 +116,10 @@ export const isLoanTerminating = (loan: Loan) => {
 }
 
 export const isUnderWaterLoan = (loan: Loan) => {
-  const {
-    fraktBond,
-    nft: { collectionFloor },
-  } = loan
-  const lentValue = fraktBond.currentPerpetualBorrowed
+  const { solAmount, feeAmount } = loan.bondTradeTransaction || {}
 
-  return lentValue > collectionFloor
+  const collectionFloor = loan.nft.collectionFloor
+  const totalLentValue = solAmount + feeAmount
+
+  return totalLentValue > collectionFloor
 }
