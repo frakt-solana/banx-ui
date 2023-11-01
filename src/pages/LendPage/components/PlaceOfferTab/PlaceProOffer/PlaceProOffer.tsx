@@ -15,6 +15,7 @@ const PlaceProOffer: FC<OrderBookMarketParams> = (props) => {
   const { connected } = useWallet()
 
   const {
+    isEditMode,
     loansAmount,
     loanValue,
     deltaValue,
@@ -22,8 +23,9 @@ const PlaceProOffer: FC<OrderBookMarketParams> = (props) => {
     onDeltaValueChange,
     onLoanValueChange,
     offerTransactions,
-
     offerSize,
+    disablePlaceOffer,
+    disableUpdateOffer,
   } = usePlaceOfferTab(props)
 
   return (
@@ -52,9 +54,9 @@ const PlaceProOffer: FC<OrderBookMarketParams> = (props) => {
       </div>
       <OfferSummary offerSize={offerSize} />
       <OfferActionButtons
-        isEditMode={false}
-        disableUpdateOffer={false}
-        disablePlaceOffer={false}
+        isEditMode={isEditMode}
+        disableUpdateOffer={disableUpdateOffer}
+        disablePlaceOffer={disablePlaceOffer}
         {...offerTransactions}
       />
     </>

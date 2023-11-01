@@ -16,6 +16,7 @@ export const usePlaceOfferTab = ({
   setOfferPubkey,
 }: OrderBookMarketParams) => {
   const { publicKey: walletPubkey } = useWallet()
+  const { connected } = useWallet()
 
   const { offers, updateOrAddOffer } = useMarketOffers({ marketPubkey })
 
@@ -40,6 +41,7 @@ export const usePlaceOfferTab = ({
     onLoanValueChange,
     onLoanAmountChange,
     resetFormValues,
+    hasFormChanges,
   } = useOfferFormController(syntheticOffer?.loanValue / 1e9, syntheticOffer?.loansAmount)
 
   const loanValueNumber = parseFloat(loanValue)
@@ -83,6 +85,9 @@ export const usePlaceOfferTab = ({
     }
   }, [loansAmountNumber, loanValueNumber, syntheticOffer, setSyntheticOffer])
 
+  const disablePlaceOffer = connected ? !offerSize : false
+  const disableUpdateOffer = !hasFormChanges || !offerSize
+
   return {
     isEditMode: syntheticOffer.isEdit,
 
@@ -95,6 +100,9 @@ export const usePlaceOfferTab = ({
     onDeltaValueChange,
     onLoanValueChange,
     onLoanAmountChange,
+
+    disablePlaceOffer,
+    disableUpdateOffer,
 
     offerTransactions: {
       onCreateOffer,
