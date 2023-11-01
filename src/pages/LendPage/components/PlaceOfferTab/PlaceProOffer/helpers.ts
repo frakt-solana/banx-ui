@@ -18,6 +18,7 @@ export const calculateOfferSize: CalculateOfferSize = ({
   const deltaValueInLamports = deltaValue * 1e9
   const loanValueInLamports = loanValue * 1e9
 
+  //TODO: Use counter from offer object if it edit mode
   const newBaseSpotPrice = calculateNextSpotPrice({
     orderType: OrderType.Sell,
     bondingCurveType: BondingCurveType.Linear,

@@ -4,14 +4,14 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 import { InputCounter, InputErrorMessage, NumericInputField } from '@banx/components/inputs'
 
-import { OrderBookMarketParams } from '../../ExpandableCardContent'
 import { BorrowerMessage, OfferActionButtons } from '../components'
+import { OfferParams } from '../hooks'
 import { OfferSummary } from './components'
-import { usePlaceOfferTab } from './hooks'
+import { usePlaceLiteOffer } from './hooks'
 
 import styles from './PlaceLiteOffer.module.less'
 
-const PlaceLiteOfferTab: FC<OrderBookMarketParams> = (props) => {
+const PlaceLiteOfferTab: FC<OfferParams> = (offersParams) => {
   const { connected } = useWallet()
 
   const {
@@ -28,7 +28,7 @@ const PlaceLiteOfferTab: FC<OrderBookMarketParams> = (props) => {
     disableUpdateOffer,
     disablePlaceOffer,
     loanToValuePercent,
-  } = usePlaceOfferTab({ ...props })
+  } = usePlaceLiteOffer(offersParams)
 
   return (
     <>

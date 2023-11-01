@@ -1,5 +1,3 @@
-import { useMemo } from 'react'
-
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 
 import { Offer } from '@banx/api/core'
@@ -20,7 +18,7 @@ export const useOfferTransactions = ({
   loanValue,
   deltaValue = 0,
   offerPubkey,
-  offers,
+  optimisticOffer,
   updateOrAddOffer,
   resetFormValues,
   exitEditMode,
@@ -30,17 +28,13 @@ export const useOfferTransactions = ({
   loanValue: number
   deltaValue?: number
   offerPubkey: string
-  offers: Offer[]
+  optimisticOffer?: Offer
   updateOrAddOffer: (offer: Offer) => void
   resetFormValues: () => void
   exitEditMode: () => void
 }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
-
-  const optimisticOffer = useMemo(() => {
-    return offers.find((offer) => offer.publicKey === offerPubkey)
-  }, [offers, offerPubkey])
 
   const onCreateBondingOffer = async () => {
     const txnParam = { marketPubkey, loansAmount, loanValue, deltaValue }
@@ -96,11 +90,8 @@ export const useOfferTransactions = ({
         const { result, txnHash } = results[0]
         result?.bondOffer && updateOrAddOffer(result.bondOffer)
         resetFormValues()
-        enqueueSnackbar({
-          message: 'Offer successfully placed',
-          type: 'success',
-          solanaExplorerPath: `tx/${txnHash}`,
-        })
+
+        showSuccessSnackbar({ message: 'Offer successfully placed', txnHash })
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error, {
@@ -122,11 +113,7 @@ export const useOfferTransactions = ({
       .on('pfSuccessEach', (results) => {
         const { result, txnHash } = results[0]
         result?.bondOffer && updateOrAddOffer(result.bondOffer)
-        enqueueSnackbar({
-          message: 'Changes successfully applied',
-          type: 'success',
-          solanaExplorerPath: `tx/${txnHash}`,
-        })
+        showSuccessSnackbar({ message: 'Changes successfully applied', txnHash })
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error, {

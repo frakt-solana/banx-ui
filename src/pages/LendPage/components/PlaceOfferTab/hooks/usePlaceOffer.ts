@@ -2,8 +2,8 @@ import { useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
-import { MarketPreview } from '@banx/api/core'
-import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
+import { MarketPreview, Offer } from '@banx/api/core'
+import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { SyntheticOffer, createEmptySyntheticOffer, useSyntheticOffers } from '@banx/store'
 
 import { OFFER_MODE, OrderBookMarketParams } from '../../ExpandableCardContent'
@@ -11,9 +11,11 @@ import { OFFER_MODE, OrderBookMarketParams } from '../../ExpandableCardContent'
 export interface OfferParams {
   offerPubkey: string
   marketPreview: MarketPreview | undefined
+  optimisticOffer: Offer | undefined
   syntheticOffer: SyntheticOffer
 
   exitEditMode: () => void
+  updateOrAddOffer: (offer: Offer) => void
   onChangeOfferMode: (value: OFFER_MODE) => void
   setSyntheticOffer: (offer: SyntheticOffer) => void
 }
@@ -48,6 +50,11 @@ export const usePlaceOffer: UsePlaceOffer = (props) => {
     return marketsPreview.find((market) => market.marketPubkey === marketPubkey)
   }, [marketPubkey, marketsPreview])
 
+  const { offers, updateOrAddOffer } = useMarketOffers({ marketPubkey })
+  const optimisticOffer = useMemo(() => {
+    return offers.find((offer) => offer.publicKey === offerPubkey)
+  }, [offers, offerPubkey])
+
   return {
     offerMode,
 
@@ -56,6 +63,8 @@ export const usePlaceOffer: UsePlaceOffer = (props) => {
 
     syntheticOffer,
     setSyntheticOffer,
+    optimisticOffer,
+    updateOrAddOffer,
 
     exitEditMode,
     onChangeOfferMode,

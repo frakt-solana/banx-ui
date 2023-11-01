@@ -1,1 +1,1 @@
-export * from './usePlaceOfferTab'
+export * from './usePlaceLiteOffer'

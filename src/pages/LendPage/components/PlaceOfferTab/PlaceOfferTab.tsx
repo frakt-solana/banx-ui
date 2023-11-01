@@ -19,7 +19,7 @@ const PlaceOfferTab: FC<OrderBookMarketParams> = (props) => {
     <div className={styles.content}>
       <OfferHeader isEditMode={isEditMode} exitEditMode={exitEditMode} />
       <SwitchModeButtons mode={offerMode} onChange={onChangeOfferMode} />
-      {offerMode === OFFER_MODE.LITE && <PlaceLiteOffer {...props} />}
+      {offerMode === OFFER_MODE.LITE && <PlaceLiteOffer {...offerParams} />}
       {offerMode === OFFER_MODE.PRO && <PlaceProOffer {...offerParams} />}
     </div>
   )
