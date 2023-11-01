@@ -17,13 +17,10 @@ const PlaceProOffer: FC<OrderBookMarketParams> = (props) => {
     loansAmount,
     loanValue,
     deltaValue,
-
     onLoanAmountChange,
     onDeltaValueChange,
     onLoanValueChange,
-  } = usePlaceOfferTab({
-    ...props,
-  })
+  } = usePlaceOfferTab({ ...props })
 
   return (
     <>
@@ -49,7 +46,6 @@ const PlaceProOffer: FC<OrderBookMarketParams> = (props) => {
           disabled={!connected}
         />
       </div>
-
       <OfferSummary />
     </>
   )
