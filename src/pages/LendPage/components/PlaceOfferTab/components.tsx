@@ -11,7 +11,7 @@ import { useWalletModal } from '@banx/components/WalletModal'
 import { BONDS } from '@banx/constants'
 import { trackPageEvent } from '@banx/utils'
 
-import { OFFER_MODE } from '../ExpandableCardContent'
+import { OfferMode } from '../ExpandableCardContent'
 
 import styles from './PlaceOfferTab.module.less'
 
@@ -98,12 +98,12 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
 }
 
 interface SwitchModeButtonsProps {
-  mode: OFFER_MODE
-  onChange: (value: OFFER_MODE) => void
+  mode: OfferMode
+  onChange: (value: OfferMode) => void
 }
 
 export const SwitchModeButtons: FC<SwitchModeButtonsProps> = ({ mode, onChange }) => {
-  const modes = [OFFER_MODE.LITE, OFFER_MODE.PRO]
+  const modes = [OfferMode.Lite, OfferMode.Pro]
 
   return (
     <div className={styles.switchModeButtons}>

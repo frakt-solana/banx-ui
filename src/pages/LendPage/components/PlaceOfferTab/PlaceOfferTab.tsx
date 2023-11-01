@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import { OFFER_MODE, OrderBookMarketParams } from '../ExpandableCardContent'
+import { OfferMode, OrderBookMarketParams } from '../ExpandableCardContent'
 import PlaceLiteOffer from './PlaceLiteOffer'
 import PlaceProOffer from './PlaceProOffer'
 import { OfferHeader, SwitchModeButtons } from './components'
@@ -19,8 +19,8 @@ const PlaceOfferTab: FC<OrderBookMarketParams> = (props) => {
     <div className={styles.content}>
       <OfferHeader isEditMode={isEditMode} exitEditMode={exitEditMode} />
       <SwitchModeButtons mode={offerMode} onChange={onChangeOfferMode} />
-      {offerMode === OFFER_MODE.LITE && <PlaceLiteOffer {...offerParams} />}
-      {offerMode === OFFER_MODE.PRO && <PlaceProOffer {...offerParams} />}
+      {offerMode === OfferMode.Lite && <PlaceLiteOffer {...offerParams} />}
+      {offerMode === OfferMode.Pro && <PlaceProOffer {...offerParams} />}
     </div>
   )
 }

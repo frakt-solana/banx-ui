@@ -6,7 +6,7 @@ import { MarketPreview, Offer } from '@banx/api/core'
 import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { SyntheticOffer, createEmptySyntheticOffer, useSyntheticOffers } from '@banx/store'
 
-import { OFFER_MODE, OrderBookMarketParams } from '../../ExpandableCardContent'
+import { OfferMode, OrderBookMarketParams } from '../../ExpandableCardContent'
 
 export interface OfferParams {
   offerPubkey: string
@@ -16,11 +16,11 @@ export interface OfferParams {
 
   exitEditMode: () => void
   updateOrAddOffer: (offer: Offer) => void
-  onChangeOfferMode: (value: OFFER_MODE) => void
+  onChangeOfferMode: (value: OfferMode) => void
   setSyntheticOffer: (offer: SyntheticOffer) => void
 }
 
-type UsePlaceOffer = (props: OrderBookMarketParams) => OfferParams & { offerMode: OFFER_MODE }
+type UsePlaceOffer = (props: OrderBookMarketParams) => OfferParams & { offerMode: OfferMode }
 
 export const usePlaceOffer: UsePlaceOffer = (props) => {
   const { publicKey: walletPubkey } = useWallet()
