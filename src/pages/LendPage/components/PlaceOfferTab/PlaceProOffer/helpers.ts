@@ -8,23 +8,26 @@ type CalculateOfferSize = (props: {
   loanValue: number //? value in SOL
   deltaValue: number //? value in SOL
   amountOfOrders: number
+  mathCounter?: number
 }) => number
 
 export const calculateOfferSize: CalculateOfferSize = ({
   loanValue,
   deltaValue,
   amountOfOrders,
+  mathCounter,
 }) => {
   const deltaValueInLamports = deltaValue * 1e9
   const loanValueInLamports = loanValue * 1e9
 
-  //TODO: Use counter from offer object if it edit mode
+  const counter = mathCounter ?? 0
+
   const newBaseSpotPrice = calculateNextSpotPrice({
     orderType: OrderType.Sell,
     bondingCurveType: BondingCurveType.Linear,
     spotPrice: loanValueInLamports,
     delta: deltaValueInLamports,
-    counter: 0 * -1 + 1,
+    counter: counter * -1 + 1,
   })
 
   const newBuyOrdersSize = getSumOfOrdersSeries({
@@ -33,7 +36,7 @@ export const calculateOfferSize: CalculateOfferSize = ({
     amountOfOrders,
     delta: deltaValueInLamports,
     spotPrice: newBaseSpotPrice,
-    counter: 0,
+    counter,
   })
 
   return newBuyOrdersSize

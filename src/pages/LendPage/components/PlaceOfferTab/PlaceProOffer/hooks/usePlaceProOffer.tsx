@@ -56,8 +56,9 @@ export const usePlaceProOffer = ({
       loanValue: loanValueNumber,
       deltaValue: deltaValueNumber,
       amountOfOrders: loansAmountNumber,
+      mathCounter: syntheticOffer?.mathCounter,
     })
-  }, [deltaValueNumber, loanValueNumber, loansAmountNumber])
+  }, [syntheticOffer, deltaValueNumber, loanValueNumber, loansAmountNumber])
 
   useEffect(() => {
     if (loansAmountNumber || loanValueNumber || deltaValueNumber) {

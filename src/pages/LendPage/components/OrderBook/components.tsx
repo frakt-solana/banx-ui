@@ -17,7 +17,7 @@ interface OrderBookListProps {
 }
 
 export const OrderBookList: FC<OrderBookListProps> = ({ orderBookParams, closeOrderBook }) => {
-  const { offers, goToEditOffer, isOwnOffer, bestOffer } = orderBookParams || {}
+  const { offers, goToEditOffer, isOwnOffer, bestOffer, offerMode } = orderBookParams || {}
 
   return (
     <ul className={styles.list}>
@@ -29,6 +29,7 @@ export const OrderBookList: FC<OrderBookListProps> = ({ orderBookParams, closeOr
             goToEditOffer(offer)
             closeOrderBook?.()
           }}
+          offerMode={offerMode}
           isOwnOffer={isOwnOffer(offer)}
           bestOffer={bestOffer}
         />

@@ -1,5 +1,7 @@
 import { FC } from 'react'
 
+import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
+
 import { OfferMode, OrderBookMarketParams } from '../ExpandableCardContent'
 import PlaceLiteOffer from './PlaceLiteOffer'
 import PlaceProOffer from './PlaceProOffer'
@@ -13,7 +15,7 @@ const PlaceOfferTab: FC<OrderBookMarketParams> = (props) => {
 
   const { offerPubkey, onChangeOfferMode, exitEditMode, offerMode } = offerParams
 
-  const isEditMode = !!offerPubkey
+  const isEditMode = !!offerPubkey && offerPubkey !== PUBKEY_PLACEHOLDER
 
   return (
     <div className={styles.content}>
