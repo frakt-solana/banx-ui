@@ -13,6 +13,7 @@ interface OfferSummaryProps {
 }
 
 export const OfferSummary: FC<OfferSummaryProps> = ({ offerSize, marketApr }) => {
+  //TODO: Need tp calc weighted ltv or calcl as started ltv
   const weightedLtv = 50
 
   const formattedOfferSize = offerSize / 1e9 || 0

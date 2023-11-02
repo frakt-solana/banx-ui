@@ -11,7 +11,7 @@ import { usePlaceLiteOffer } from './hooks'
 
 import styles from './PlaceLiteOffer.module.less'
 
-const PlaceLiteOfferTab: FC<OfferParams> = (offersParams) => {
+const PlaceLiteOffer: FC<OfferParams> = (offersParams) => {
   const { connected } = useWallet()
 
   const {
@@ -67,4 +67,4 @@ const PlaceLiteOfferTab: FC<OfferParams> = (offersParams) => {
   )
 }
 
-export default PlaceLiteOfferTab
+export default PlaceLiteOffer

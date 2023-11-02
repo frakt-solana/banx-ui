@@ -15,19 +15,17 @@ export const calculateOfferSize: CalculateOfferSize = ({
   loanValue,
   deltaValue,
   amountOfOrders,
-  mathCounter,
+  mathCounter = 0,
 }) => {
   const deltaValueInLamports = deltaValue * 1e9
   const loanValueInLamports = loanValue * 1e9
-
-  const counter = mathCounter ?? 0
 
   const newBaseSpotPrice = calculateNextSpotPrice({
     orderType: OrderType.Sell,
     bondingCurveType: BondingCurveType.Linear,
     spotPrice: loanValueInLamports,
     delta: deltaValueInLamports,
-    counter: counter * -1 + 1,
+    counter: mathCounter * -1 + 1,
   })
 
   const newBuyOrdersSize = getSumOfOrdersSeries({
@@ -36,7 +34,7 @@ export const calculateOfferSize: CalculateOfferSize = ({
     amountOfOrders,
     delta: deltaValueInLamports,
     spotPrice: newBaseSpotPrice,
-    counter,
+    counter: mathCounter,
   })
 
   return newBuyOrdersSize
