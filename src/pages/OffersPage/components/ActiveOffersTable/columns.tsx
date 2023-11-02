@@ -22,7 +22,7 @@ export const getTableColumns = ({ isCardView }: GetTableColumns) => {
     {
       key: 'lent',
       title: <HeaderCell label="Lent" />,
-      render: (_, loan) => <LentCell loan={loan} isCardView={isCardView} />,
+      render: (_, loan) => <LentCell loan={loan} />,
       sorter: true,
     },
     {
@@ -33,7 +33,7 @@ export const getTableColumns = ({ isCardView }: GetTableColumns) => {
           tooltipText="Sum of lent amount and accrued interest to date"
         />
       ),
-      render: (_, loan) => <InterestCell loan={loan} />,
+      render: (_, loan) => <InterestCell loan={loan} isCardView={isCardView} />,
     },
     {
       key: 'apy',
@@ -46,7 +46,7 @@ export const getTableColumns = ({ isCardView }: GetTableColumns) => {
       title: (
         <HeaderCell
           label="Loan status"
-          tooltipText="Current status and remaining duration of a loan"
+          tooltipText="Current status and duration of the loan that has been passed"
         />
       ),
       render: (_, loan) => <StatusCell loan={loan} isCardView={isCardView} />,
