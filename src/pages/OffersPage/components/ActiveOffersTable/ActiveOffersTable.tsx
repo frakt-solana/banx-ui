@@ -56,8 +56,8 @@ const ActiveOffersTable = () => {
         ]}
         loading={loading}
         showCard
+        fetchMoreTrigger={fetchMoreTrigger}
       />
-      <div ref={fetchMoreTrigger} />
       <Summary
         loansToClaim={loansToClaim}
         loansToTerminate={loansToTerminate}

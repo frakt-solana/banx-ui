@@ -54,8 +54,8 @@ export const RefinanceTable = () => {
         rowKeyField="publicKey"
         loading={loading}
         showCard
+        fetchMoreTrigger={fetchMoreTrigger}
       />
-      <div ref={fetchMoreTrigger} />
       <Summary
         selectedLoans={selectedLoans}
         onSelectAllLoans={() => onSelectAllLoans(loans)}

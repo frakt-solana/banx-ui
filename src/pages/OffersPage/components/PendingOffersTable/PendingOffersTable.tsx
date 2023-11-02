@@ -22,17 +22,15 @@ export const PendingOfferTable = () => {
   if (showEmptyList) return <EmptyList {...emptyListParams} />
 
   return (
-    <>
-      <Table
-        data={data}
-        columns={columns}
-        rowKeyField="publicKey"
-        className={styles.table}
-        sortViewParams={sortViewParams}
-        loading={loading}
-        showCard
-      />
-      <div ref={fetchMoreTrigger} />
-    </>
+    <Table
+      data={data}
+      columns={columns}
+      rowKeyField="publicKey"
+      className={styles.table}
+      sortViewParams={sortViewParams}
+      loading={loading}
+      showCard
+      fetchMoreTrigger={fetchMoreTrigger}
+    />
   )
 }

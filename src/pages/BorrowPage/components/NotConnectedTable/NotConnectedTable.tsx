@@ -19,18 +19,16 @@ const NotConnectedTable = () => {
   const emptyMessage = connected ? EMPTY_MESSAGE : NOT_CONNECTED_MESSAGE
 
   return (
-    <>
-      <Table
-        data={data}
-        columns={columns}
-        sortViewParams={sortViewParams}
-        rowKeyField="marketPubkey"
-        loading={isLoading}
-        emptyMessage={emptyMessage}
-        showCard
-      />
-      <div ref={fetchMoreTrigger} />
-    </>
+    <Table
+      data={data}
+      columns={columns}
+      sortViewParams={sortViewParams}
+      rowKeyField="marketPubkey"
+      loading={isLoading}
+      emptyMessage={emptyMessage}
+      showCard
+      fetchMoreTrigger={fetchMoreTrigger}
+    />
   )
 }
 
