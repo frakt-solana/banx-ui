@@ -42,7 +42,11 @@
   gap: 8px;
 }
 .switchButton {
-  padding: 1px 16px !important;
+  height: 40px;
+
+  @media (max-width: 640px) {
+    height: 32px;
+  }
 
   &.active {
     color: var(--pure-black);

@@ -1,7 +1,8 @@
 import { web3 } from 'fbonds-core'
-import { BondOfferOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-//TODO: Update imports in SDK
-import { updatePerpetualOfferBonding } from 'fbonds-core/lib/fbond-protocol/functions/perpetual/offer/updatePerpetualOfferBonding'
+import {
+  BondOfferOptimistic,
+  updatePerpetualOfferBonding,
+} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Offer } from '@banx/api/core'
