@@ -12,7 +12,7 @@ export const shouldShowDepositError: ShouldShowDepositError = ({
   offerSize,
 }) => {
   const initialOfferSize = initialLoansAmount * initialLoanValue
-  const totalAvailableFunds = initialOfferSize + solanaBalance
+  const totalAvailableFunds = initialOfferSize + solanaBalance * 1e9
 
   return totalAvailableFunds < offerSize
 }

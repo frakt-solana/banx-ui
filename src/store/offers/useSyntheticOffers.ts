@@ -9,6 +9,7 @@ export interface SyntheticOffer {
   publicKey: string //? PUBKEY_PLACEHOLDER for offers to create
   loanValue: number
   loansAmount: number
+  deltaValue?: number //? exist only in pro mode
   assetReceiver: string
   marketPubkey: string
 }

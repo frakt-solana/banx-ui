@@ -25,7 +25,7 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, isOwnOffer, bestOffer }) => {
 
   const isNewOffer = offer.publicKey === PUBKEY_PLACEHOLDER
 
-  const { loanValue, loansAmount } = offer
+  const { loanValue, loansAmount, deltaValue } = offer
 
   const displayLoansAmount = formatLoansAmount(loansAmount)
 
@@ -36,11 +36,14 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, isOwnOffer, bestOffer }) => {
   })
 
   const displayLoanValue = formatDecimal((loanValue || 0) / 1e9)
+  const displayDeltaValue = deltaValue ? `- Δ${deltaValue}◎` : ''
 
   return (
     <li className={listItemClassName}>
       <div className={styles.valueWrapper}>
-        <p className={styles.value}>{displayLoanValue}</p>
+        <p className={styles.value}>
+          {displayLoanValue} {displayDeltaValue}
+        </p>
         <p className={styles.value}>{displayLoansAmount}</p>
       </div>
       {isOwnOffer && !isNewOffer && editOffer && (

@@ -13,7 +13,7 @@ export const useOfferFormController = (
     return {
       loanValue: formatNumber(editLoanValue, '0'),
       loansAmount: formatLoansAmount(editLoansAmount),
-      deltaValue: formatNumber(editDeltaValue, '1'),
+      deltaValue: formatNumber(editDeltaValue, '0.1'),
     }
   }, [editLoanValue, editLoansAmount, editDeltaValue])
 

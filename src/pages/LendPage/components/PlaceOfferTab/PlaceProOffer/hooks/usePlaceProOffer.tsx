@@ -60,7 +60,7 @@ export const usePlaceProOffer = ({
   }, [deltaValueNumber, loanValueNumber, loansAmountNumber])
 
   useEffect(() => {
-    if (loansAmountNumber || loanValueNumber) {
+    if (loansAmountNumber || loanValueNumber || deltaValueNumber) {
       if (!syntheticOffer) return
       const formattedLoanValue = loanValueNumber * 1e9
 
@@ -68,9 +68,10 @@ export const usePlaceProOffer = ({
         ...syntheticOffer,
         loanValue: formattedLoanValue,
         loansAmount: loansAmountNumber,
+        deltaValue: deltaValueNumber,
       })
     }
-  }, [loansAmountNumber, loanValueNumber, syntheticOffer, setSyntheticOffer])
+  }, [loansAmountNumber, deltaValueNumber, loanValueNumber, syntheticOffer, setSyntheticOffer])
 
   const showDepositError = shouldShowDepositError({
     initialLoansAmount: syntheticOffer.loansAmount,
@@ -80,8 +81,8 @@ export const usePlaceProOffer = ({
   })
 
   const showBorrowerMessage = !showDepositError && !!offerSize
-  const disablePlaceOffer = connected ? !offerSize : false
-  const disableUpdateOffer = !hasFormChanges || !offerSize
+  const disablePlaceOffer = connected ? showDepositError || !offerSize : false
+  const disableUpdateOffer = !hasFormChanges || showDepositError || !offerSize
 
   return {
     isEditMode: syntheticOffer.isEdit,
