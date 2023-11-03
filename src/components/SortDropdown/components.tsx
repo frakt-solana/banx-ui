@@ -21,7 +21,12 @@ export const DropdownButton: FC<DropdownButtonProps> = ({
   isDropdownOpen,
   toggleDropdown,
 }) => (
-  <Button type="circle" variant="text" className={styles.dropdownButton} onClick={toggleDropdown}>
+  <Button
+    type="circle"
+    variant="text"
+    className={classNames(styles.dropdownButton, { [styles.isOpen]: isDropdownOpen })}
+    onClick={toggleDropdown}
+  >
     <div className={styles.dropdownButtonTextContainer}>
       <ArrowDown className={getSortOrderClassName(sortOption.value)} />
       <span className={styles.dropdownButtonText}>{sortOption?.label}</span>
