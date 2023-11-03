@@ -1,5 +1,6 @@
 import { FC } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
 import { sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
@@ -10,33 +11,36 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 import { Loan } from '@banx/api/core'
 import { calcLoanBorrowedAmount, calculateLoanRepayValue } from '@banx/utils'
 
-import { useSelectedLoans } from '../../loansState'
+import { LoanOptimistic } from '../../loansState'
 import { useLoansTransactions } from './hooks'
 
 import styles from './LoansActiveTable.module.less'
 
 interface SummaryProps {
   loans: Loan[]
+  selectedLoans: LoanOptimistic[]
+  setSelection: (loans: Loan[], walletPublicKey: string) => void
 }
 
-export const Summary: FC<SummaryProps> = ({ loans }) => {
-  const { selection, setSelection } = useSelectedLoans()
+export const Summary: FC<SummaryProps> = ({ loans, selectedLoans, setSelection }) => {
+  const { publicKey: walletPublicKey } = useWallet()
+  const walletPublicKeyString = walletPublicKey?.toBase58() || ''
 
   const { repayBulkLoan } = useLoansTransactions()
 
-  const selectedLoans = selection.length
+  const totalSelectedLoans = selectedLoans.length
 
-  const totalBorrowed = sumBy(selection, (loan) => calcLoanBorrowedAmount(loan))
-  const totalDebt = sumBy(selection, (loan) => calculateLoanRepayValue(loan))
+  const totalBorrowed = sumBy(selectedLoans, ({ loan }) => calcLoanBorrowedAmount(loan))
+  const totalDebt = sumBy(selectedLoans, ({ loan }) => calculateLoanRepayValue(loan))
 
   const handleLoanSelection = (value = 0) => {
-    setSelection(loans.slice(0, value))
+    setSelection(loans.slice(0, value), walletPublicKeyString)
   }
 
   return (
     <div className={styles.summary}>
       <div className={styles.collaterals}>
-        <p className={styles.collateralsTitle}>{selectedLoans}</p>
+        <p className={styles.collateralsTitle}>{totalSelectedLoans}</p>
         <p className={styles.collateralsSubtitle}>Nfts selected</p>
       </div>
       <div className={styles.statsContainer}>
@@ -45,11 +49,11 @@ export const Summary: FC<SummaryProps> = ({ loans }) => {
       </div>
       <div className={styles.summaryBtns}>
         <CounterSlider
-          value={selectedLoans}
+          value={totalSelectedLoans}
           onChange={(value) => handleLoanSelection(value)}
           max={loans.length}
         />
-        <Button onClick={repayBulkLoan} disabled={!selectedLoans}>
+        <Button onClick={repayBulkLoan} disabled={!totalSelectedLoans}>
           Repay {createSolValueJSX(totalDebt, 1e9, '0◎')}
         </Button>
       </div>

@@ -11,13 +11,14 @@ import {
 import { Loan } from '@banx/api/core'
 import { formatDecimal } from '@banx/utils'
 
+import { LoanOptimistic } from '../../loansState'
 import { ActionsCell, DebtCell, HealthCell, StatusCell } from './TableCells'
 
 import styles from './LoansActiveTable.module.less'
 
 interface GetTableColumnsProps {
   onSelectAll: () => void
-  findLoanInSelection: (loanPubkey: string) => Loan | null
+  findLoanInSelection: (loanPubkey: string) => LoanOptimistic | null
   toggleLoanInSelection: (loan: Loan) => void
   hasSelectedLoans: boolean
   isCardView: boolean
