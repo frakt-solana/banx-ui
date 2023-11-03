@@ -80,6 +80,7 @@ export const LoansActiveTable = () => {
         rowKeyField="publicKey"
         loading={loading}
         showCard
+        fetchMoreTrigger={fetchMoreTrigger}
         activeRowParams={[
           {
             condition: checkIsTerminationLoan,
@@ -88,7 +89,6 @@ export const LoansActiveTable = () => {
           },
         ]}
       />
-      <div ref={fetchMoreTrigger} />
       {showSummary && (
         <Summary loans={loans} selectedLoans={walletSelectedLoans} setSelection={setSelection} />
       )}
