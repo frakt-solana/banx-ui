@@ -38,7 +38,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
   const { connection } = useConnection()
 
   const { update: updateLoansOptimistic } = useLoansOptimistic()
-  const { clearSelection } = useSelectedLoans()
+  const { clear: clearSelection } = useSelectedLoans()
 
   const { updateOptimisticOffers } = useWalletLoansAndOffers()
 

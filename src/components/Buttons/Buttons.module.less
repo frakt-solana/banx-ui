@@ -38,7 +38,7 @@
   }
 
   &.secondary {
-    background-color: var(--bg-primary);
+    background-color: var(--additional-green-secondary);
     border-color: var(--accent-primary);
 
     &:hover {
@@ -175,27 +175,46 @@
   }
 }
 
-.walletConnectButton {
-  width: 176px;
+.connectedButton {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.connectedWalletInfo {
+  display: flex;
+  flex-direction: column;
+}
+.connectedWalletAddress {
+  font: var(--btn-text-md);
 
+  @media (max-width: 640px) {
+    font: var(--btn-text-sm);
+  }
+}
+.connectedWalletLoyalty {
+  font: var(--important-text-sm);
+}
+.connectedWalletChevron {
+  path {
+    fill: var(--content-primary);
+  }
+
+  &.active {
+    transform: rotate(180deg);
+  }
+
+  @media (max-width: 640px) {
+    display: none;
+  }
+}
+
+.disconnectedButton {
   svg path {
     fill: var(--content-primary);
   }
 
   .walletIcon path {
     fill: var(--pure-black);
-  }
-
-  .avatarIcon path {
-    fill: #888888;
-  }
-
-  @media (max-width: 640px) {
-    width: 136px;
-
-    .avatarIcon,
-    .walletIcon {
-      display: none;
-    }
   }
 }
