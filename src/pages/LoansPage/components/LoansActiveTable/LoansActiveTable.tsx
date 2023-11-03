@@ -1,3 +1,7 @@
+import { useMemo } from 'react'
+
+import { useWallet } from '@solana/wallet-adapter-react'
+
 import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 
@@ -14,13 +18,26 @@ import { useLoansActiveTable } from './hooks'
 import styles from './LoansActiveTable.module.less'
 
 export const LoansActiveTable = () => {
+  const { publicKey: walletPublicKey } = useWallet()
+  const walletPublicKeyString = walletPublicKey?.toBase58() || ''
+
   const { sortViewParams, loans, loading, showEmptyList, emptyListParams, showSummary } =
     useLoansActiveTable()
 
-  const { selection, toggleLoanInSelection, findLoanInSelection, clearSelection, setSelection } =
-    useSelectedLoans()
+  const {
+    selection,
+    toggle: toggleLoanInSelection,
+    find,
+    clear: clearSelection,
+    set: setSelection,
+  } = useSelectedLoans()
 
-  const hasSelectedLoans = !!selection?.length
+  const walletSelectedLoans = useMemo(() => {
+    if (!walletPublicKeyString) return []
+    return selection.filter(({ wallet }) => wallet === walletPublicKeyString)
+  }, [selection, walletPublicKeyString])
+
+  const hasSelectedLoans = !!walletSelectedLoans?.length
 
   const { viewState } = useTableView()
 
@@ -28,14 +45,22 @@ export const LoansActiveTable = () => {
     if (hasSelectedLoans) {
       clearSelection()
     } else {
-      setSelection(loans)
+      setSelection(loans, walletPublicKeyString)
     }
+  }
+
+  const findLoanInSelection = (loanPubkey: string) => {
+    return find(loanPubkey, walletPublicKeyString)
+  }
+
+  const onRowClick = (loan: Loan) => {
+    toggleLoanInSelection(loan, walletPublicKeyString)
   }
 
   const columns = getTableColumns({
     onSelectAll,
     findLoanInSelection,
-    toggleLoanInSelection,
+    toggleLoanInSelection: onRowClick,
     hasSelectedLoans,
     isCardView: viewState === ViewState.CARD,
   })
@@ -49,7 +74,7 @@ export const LoansActiveTable = () => {
       <Table
         data={data}
         columns={columns}
-        onRowClick={toggleLoanInSelection}
+        onRowClick={onRowClick}
         sortViewParams={sortViewParams}
         className={styles.table}
         rowKeyField="publicKey"
@@ -64,7 +89,9 @@ export const LoansActiveTable = () => {
           },
         ]}
       />
-      {showSummary && <Summary loans={loans} />}
+      {showSummary && (
+        <Summary loans={loans} selectedLoans={walletSelectedLoans} setSelection={setSelection} />
+      )}
     </div>
   )
 }

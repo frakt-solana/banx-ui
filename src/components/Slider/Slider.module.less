@@ -1,3 +1,68 @@
 .slider {
   padding: 8px 0;
 }
+
+.couterSliderContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 200px;
+  width: 100%;
+}
+
+.counterSlider {
+  padding: 0;
+  width: 100%;
+}
+
+.counterInputContainer {
+  border: var(--border-primary) !important;
+  max-width: 80px;
+  position: relative;
+
+  input {
+    padding-right: 24px;
+    height: 38px;
+  }
+}
+
+.customCounterControls {
+  border-left: var(--border-primary);
+
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-evenly;
+
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 22px;
+}
+
+.separatorLine {
+  background: var(--bg-border);
+  height: 1px;
+  width: 100%;
+}
+
+.arrow {
+  cursor: pointer;
+
+  path {
+    fill: var(--content-primary);
+  }
+
+  &.rotate {
+    transform: rotate(180deg);
+  }
+
+  &.disabled {
+    cursor: default;
+
+    path {
+      fill: var(--content-secondary);
+    }
+  }
+}

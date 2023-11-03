@@ -13,11 +13,12 @@ const DEFAULT_SLIDER_MARKS = {
   100: '100%',
 }
 
-interface SliderProps {
+export interface SliderProps {
   value: number
   onChange: (nextValue: number) => void
   marks?: { [key: number]: string | JSX.Element }
   step?: number
+  max?: number
   className?: string
   disabled?: boolean
 }
