@@ -1,6 +1,7 @@
-import { FC, useMemo } from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import moment from 'moment'
 
 import EmptyList from '@banx/components/EmptyList'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
@@ -9,11 +10,9 @@ import Timer from '@banx/components/Timer'
 import { Borrow, CircleCheck, Lend } from '@banx/icons'
 
 import { useLeaderboardUserStats } from '../../hooks'
+import { calculateNextTuesdayAtUTC, isTuesdayAndMidnight } from './helpers'
 
 import styles from './RewardsTab.module.less'
-
-// TODO: need to remove it after it is added to BE
-const MOCK_NEXT_WEEKLY_REWARDS = 1698710400
 
 const RewardsTab = () => {
   const { publicKey: walletPublicKey } = useWallet()
@@ -31,10 +30,7 @@ const RewardsTab = () => {
 
   return (
     <div className={styles.container}>
-      <ClaimRewardsBlock
-        totalClaimed={userTotalClaimed}
-        nextWeeklyRewards={MOCK_NEXT_WEEKLY_REWARDS}
-      />
+      <ClaimRewardsBlock totalClaimed={userTotalClaimed} />
       <RewardsInfoBlock />
     </div>
   )
@@ -44,11 +40,28 @@ export default RewardsTab
 
 interface ClaimRewardsBlockProps {
   totalClaimed: number
-  nextWeeklyRewards: number
 }
 
-const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({ totalClaimed, nextWeeklyRewards }) => {
+const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({ totalClaimed }) => {
   const { connected } = useWallet()
+
+  const [nextWeeklyRewards, setNextWeeklyRewards] = useState(calculateNextTuesdayAtUTC())
+
+  const updateNextWeeklyRewards = () => {
+    const newNextRewards = calculateNextTuesdayAtUTC()
+    setNextWeeklyRewards(newNextRewards)
+  }
+
+  useEffect(() => {
+    const timerInterval = setInterval(() => {
+      const now = moment.utc()
+      if (isTuesdayAndMidnight(now)) {
+        updateNextWeeklyRewards()
+      }
+    }, 1000)
+
+    return () => clearInterval(timerInterval)
+  }, [])
 
   return (
     <div className={styles.claimRewardsBlock}>
@@ -61,7 +74,7 @@ const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({ totalClaimed, nextWeekl
       />
       <StatInfo
         label="Next weekly rewards in"
-        value={<Timer expiredAt={nextWeeklyRewards} />}
+        value={<Timer expiredAt={nextWeeklyRewards.unix()} />}
         valueType={VALUES_TYPES.STRING}
         classNamesProps={{ label: styles.claimRewardsLabel }}
         flexType="row"
