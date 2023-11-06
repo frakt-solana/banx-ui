@@ -69,7 +69,7 @@ const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({ totalClaimed }) => {
         label="Total received"
         value={totalClaimed}
         classNamesProps={{ label: styles.claimRewardsLabel }}
-        tooltipText="Your weekly SOL rewards will be airdropped to your wallet on a random time each Friday"
+        tooltipText="Your weekly SOL rewards will be airdropped to your wallet on a random time each Monday"
         flexType="row"
       />
       <StatInfo
