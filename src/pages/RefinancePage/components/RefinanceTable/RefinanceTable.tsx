@@ -57,8 +57,9 @@ export const RefinanceTable = () => {
         fetchMoreTrigger={fetchMoreTrigger}
       />
       <Summary
+        loans={loans}
         selectedLoans={selectedLoans}
-        onSelectAllLoans={() => onSelectAllLoans(loans)}
+        onSelectLoans={onSelectAllLoans}
         onDeselectAllLoans={onDeselectAllLoans}
       />
     </div>

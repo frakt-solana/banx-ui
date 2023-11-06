@@ -86,7 +86,7 @@
   font: var(--table-header-md);
   color: var(--content-secondary);
   text-transform: uppercase;
-  max-width: 120px;
+  max-width: 100px;
 
   @media (max-width: 960px) {
     max-width: unset;
@@ -100,17 +100,20 @@
 
 .statsContainer {
   display: flex;
-  justify-content: flex-end;
-  gap: 112px;
-  padding-right: 16px;
+  justify-content: space-around;
   flex-grow: 1;
 
-  @media (max-width: 960px) {
+  & > div {
+    align-items: end;
+  }
+
+  @media (max-width: 1240px) {
     width: 100%;
     align-items: space-between;
-    justify-content: space-around;
-    gap: unset;
-    padding-right: unset;
+
+    & > div {
+      align-items: center;
+    }
   }
 
   @media (max-width: 640px) {
@@ -118,42 +121,13 @@
   }
 }
 
-.stats {
-  p:first-child {
-    color: var(--content-secondary);
-    font: var(--table-header-md);
-    text-transform: uppercase;
-  }
-
-  p:last-child {
-    color: var(--content-primary);
-    font: var(--body-text-md);
-    text-align: right;
-  }
-
-  @media (max-width: 1240px) {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  @media (max-width: 640px) {
-    p:first-child {
-      font: var(--table-header-sm);
-    }
-
-    p:last-child {
-      font: var(--body-text-sm);
-    }
-  }
-}
-
 .summaryBtns {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 16px;
 
   button {
-    min-width: 170px;
+    min-width: 190px;
   }
 
   @media (max-width: 960px) {
@@ -164,21 +138,5 @@
     button {
       min-width: unset;
     }
-  }
-}
-
-.borrowButton {
-  width: 104px;
-}
-
-.selectButtonText {
-  @media (max-width: 1240px) {
-    display: none;
-  }
-}
-
-.selectButtonMobileText {
-  @media (min-width: 1241px) {
-    display: none;
   }
 }

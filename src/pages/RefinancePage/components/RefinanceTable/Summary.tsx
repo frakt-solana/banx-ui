@@ -6,7 +6,9 @@ import moment from 'moment'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
 import { Button } from '@banx/components/Buttons'
-import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
+import { CounterSlider } from '@banx/components/Slider'
+import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
+import { createSolValueJSX } from '@banx/components/TableComponents'
 import { useWalletModal } from '@banx/components/WalletModal'
 import {
   SubscribeNotificationsModal,
@@ -36,14 +38,16 @@ import { calcWeeklyInterestFee } from './columns'
 import styles from './RefinanceTable.module.less'
 
 interface SummaryProps {
+  loans: Loan[]
   selectedLoans: Loan[]
-  onSelectAllLoans: () => void
+  onSelectLoans: (loans: Loan[]) => void
   onDeselectAllLoans: () => void
 }
 
 export const Summary: FC<SummaryProps> = ({
+  loans,
   selectedLoans,
-  onSelectAllLoans,
+  onSelectLoans,
   onDeselectAllLoans,
 }) => {
   const wallet = useWallet()
@@ -52,11 +56,6 @@ export const Summary: FC<SummaryProps> = ({
   const { toggleVisibility } = useWalletModal()
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
-
-  const selectAllBtnText = !selectedLoans.length ? 'Select all' : 'Deselect all'
-  const selectMobileBtnText = !selectedLoans.length
-    ? `Select all`
-    : `Deselect ${selectedLoans.length}`
 
   const totalDebt = sumBy(selectedLoans, (loan) => calculateLoanRepayValue(loan))
   const totalLoanValue = map(selectedLoans, (loan) => loan.fraktBond.borrowedAmount)
@@ -120,10 +119,6 @@ export const Summary: FC<SummaryProps> = ({
       .execute()
   }
 
-  const onSelectAllBtnClick = () => {
-    !selectedLoans.length ? onSelectAllLoans() : onDeselectAllLoans()
-  }
-
   const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (wallet.connected) {
       trackPageEvent('refinance', `refinance-bottom`)
@@ -134,6 +129,10 @@ export const Summary: FC<SummaryProps> = ({
     event.stopPropagation()
   }
 
+  const handleLoanSelection = (value = 0) => {
+    onSelectLoans(loans.slice(0, value))
+  }
+
   return (
     <div className={styles.summary}>
       <div className={styles.collaterals}>
@@ -141,26 +140,22 @@ export const Summary: FC<SummaryProps> = ({
         <p className={styles.collateralsSubtitle}>Loans selected</p>
       </div>
       <div className={styles.statsContainer}>
-        <div className={styles.stats}>
-          <p>Total to lend</p>
-          <p>{createSolValueJSX(totalDebt, 1e9, '0◎')}</p>
-        </div>
-        <div className={styles.stats}>
-          <p>Total weekly interest</p>
-          <p>{createSolValueJSX(totalWeeklyInterest, 1, '0◎')}</p>
-        </div>
-        <div className={styles.stats}>
-          <p>Weighted apy</p>
-          <p style={{ color: weightedApr ? colorApr : '' }} className={styles.aprValue}>
-            {createPercentValueJSX(convertAprToApy(weightedApr / 1e2), '0%')}
-          </p>
-        </div>
+        <StatInfo label="Total to lend" value={totalDebt} divider={1e9} />
+        <StatInfo label="Weekly interest" value={totalWeeklyInterest} />
+        <StatInfo
+          label="Weighted apy"
+          value={convertAprToApy(weightedApr / 1e2)}
+          valueStyles={{ color: weightedApr ? colorApr : '' }}
+          classNamesProps={{ value: styles.aprValue }}
+          valueType={VALUES_TYPES.PERCENT}
+        />
       </div>
       <div className={styles.summaryBtns}>
-        <Button variant="secondary" onClick={onSelectAllBtnClick}>
-          <span className={styles.selectButtonText}>{selectAllBtnText}</span>
-          <span className={styles.selectButtonMobileText}>{selectMobileBtnText}</span>
-        </Button>
+        <CounterSlider
+          value={selectedLoans.length}
+          onChange={(value) => handleLoanSelection(value)}
+          max={loans.length}
+        />
         <Button onClick={onClickHandler} disabled={!selectedLoans.length}>
           Refinance {createSolValueJSX(totalDebt, 1e9, '0◎')}
         </Button>
