@@ -11,7 +11,7 @@
 
   .ant-slider-track,
   .ant-slider:hover .ant-slider-track {
-    background: var(--accent-primary);
+    background: var(--accent-primary) !important;
     border: 2px solid var(--accent-primary);
   }
 
@@ -42,12 +42,15 @@
     color: var(--content-primary);
   }
 
-  .ant-slider-handle,
-  .ant-slider-handle:after,
-  .ant-slider-handle:hover::after {
+  .ant-slider-handle {
     background: var(--bg-primary);
     border: 2px solid var(--accent-primary);
     box-shadow: unset !important;
+  }
+
+  .ant-slider-handle:after,
+  .ant-slider-handle::before {
+    display: none;
   }
 
   .ant-slider-handle {

@@ -200,7 +200,8 @@ export const fetchLeaderboardData: FetchLeaderboardData = async ({
   }
 }
 
-const LEADERBOARD_USERS_STATS_URL = 'https://gist.githubusercontent.com/Timikcool/5e8f09ffaf6e957753c6d8bb79e0dd97/raw/leaderboard.json'
+const LEADERBOARD_USERS_STATS_URL =
+  'https://gist.githubusercontent.com/Timikcool/5e8f09ffaf6e957753c6d8bb79e0dd97/raw/leaderboard.json'
 
 type FetchLeaderboardUsersStats = () => Promise<LeaderboardUsersStats[]>
 export const fetchLeaderboardUsersStats: FetchLeaderboardUsersStats = async () => {

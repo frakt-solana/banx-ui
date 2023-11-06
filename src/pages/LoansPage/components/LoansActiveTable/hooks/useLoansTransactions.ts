@@ -21,7 +21,7 @@ export const useLoansTransactions = () => {
   const { isLedger } = useIsLedger()
 
   const { update: updateLoansOptimistic } = useLoansOptimistic()
-  const { clearSelection } = useSelectedLoans()
+  const { clear: clearSelection } = useSelectedLoans()
 
   const repayLoan = async (loan: Loan) => {
     await new TxnExecutor(makeRepayLoansAction, { wallet, connection })
@@ -75,9 +75,10 @@ export const useLoansTransactions = () => {
       .execute()
   }
 
-  const { selection: selectedLoans } = useSelectedLoans()
+  const { selection } = useSelectedLoans()
 
   const repayBulkLoan = async () => {
+    const selectedLoans = selection.map((loan) => loan.loan)
     const loansChunks = chunkRepayIxnsParams(selectedLoans)
 
     await new TxnExecutor(
