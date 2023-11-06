@@ -71,7 +71,7 @@ type LoansState = {
   selectedLoans: Loan[]
   findSelectedLoan: (loanPubkey: string) => Loan | undefined
   onSelectLoan: (loan: Loan) => void
-  onSelectAllLoans: (loans: Loan[]) => void
+  onSelectLoans: (loans: Loan[]) => void
   onDeselectAllLoans: () => void
   deselectLoan: (loanPubkey: string) => void
 }
@@ -92,7 +92,7 @@ export const useLoansState = create<LoansState>((set, get) => ({
       }
       return { selectedLoans: [...state.selectedLoans, loan] }
     }),
-  onSelectAllLoans: (loans) => set({ selectedLoans: [...loans] }),
+  onSelectLoans: (loans) => set({ selectedLoans: [...loans] }),
   onDeselectAllLoans: () => set({ selectedLoans: [] }),
   deselectLoan: (loanPubkey) =>
     set((state) => ({
