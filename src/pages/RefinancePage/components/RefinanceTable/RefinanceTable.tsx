@@ -18,7 +18,7 @@ export const RefinanceTable = () => {
   const { loans, sortViewParams, loading, showEmptyList } = useRefinanceTable()
   const navigate = useNavigate()
 
-  const { selectedLoans, onSelectLoan, findSelectedLoan, onSelectAllLoans, onDeselectAllLoans } =
+  const { selectedLoans, onSelectLoan, findSelectedLoan, onSelectLoans, onDeselectAllLoans } =
     useLoansState()
 
   const { viewState } = useTableView()
@@ -57,8 +57,9 @@ export const RefinanceTable = () => {
         fetchMoreTrigger={fetchMoreTrigger}
       />
       <Summary
+        loans={loans}
         selectedLoans={selectedLoans}
-        onSelectAllLoans={() => onSelectAllLoans(loans)}
+        onSelectLoans={onSelectLoans}
         onDeselectAllLoans={onDeselectAllLoans}
       />
     </div>
