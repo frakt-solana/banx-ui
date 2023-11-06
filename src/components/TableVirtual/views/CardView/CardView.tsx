@@ -40,7 +40,7 @@ const CardView = <T extends object>({
           style={{ cursor: onRowClick ? 'pointer' : 'default' }}
         >
           {columns.map((column) => (
-            <CardRow key={column.key} column={column} dataRow={data[index]} />
+            <CardRow key={`${column.key}-${index}`} column={column} dataRow={data[index]} />
           ))}
         </div>
       )}

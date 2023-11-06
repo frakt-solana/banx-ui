@@ -43,7 +43,7 @@ const TableView = <T extends object>({
           {columns.map(({ key, render }) => {
             return (
               <td
-                key={key}
+                key={`${key}-${index}`}
                 onClick={() => rowProps.onClick(data[index])}
                 style={rowProps.style}
                 align="right"
