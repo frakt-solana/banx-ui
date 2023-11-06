@@ -79,6 +79,7 @@ export const getTableColumns = ({
       sorter: true,
     },
     {
+      key: 'actionsCell',
       title: <HeaderCell label="" />,
       render: (loan) => (
         <ActionsCell
