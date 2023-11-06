@@ -5,6 +5,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import EmptyList from '@banx/components/EmptyList'
 import { RadioButton } from '@banx/components/RadioButton'
 import Table from '@banx/components/Table'
+import { Toggle } from '@banx/components/Toggle'
 
 import { useIntersection } from '@banx/hooks'
 
@@ -21,7 +22,8 @@ const LeaderboardTab = () => {
 
   const { ref: fetchMoreTrigger, inView } = useIntersection()
 
-  const { data, hasNextPage, fetchNextPage, filterParams, isLoading } = useLeaderboardData()
+  const { data, hasNextPage, fetchNextPage, filterParams, onToggleChecked, isLoading } =
+    useLeaderboardData()
 
   useEffect(() => {
     if (inView && hasNextPage) {
@@ -31,7 +33,10 @@ const LeaderboardTab = () => {
 
   return (
     <>
-      <RadioButton className={styles.radioButton} {...filterParams} />
+      <div className={styles.filtersContainer}>
+        <RadioButton {...filterParams} />
+        <Toggle label="Week" onChange={onToggleChecked} />
+      </div>
       {!connected && (
         <EmptyList className={styles.emptyList} message="Connect wallet to see your position" />
       )}
