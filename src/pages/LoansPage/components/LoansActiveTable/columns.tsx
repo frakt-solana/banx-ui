@@ -46,6 +46,10 @@ export const getTableColumns = ({
           onCheckboxClick={() => toggleLoanInSelection(loan)}
           nftName={loan.nft.meta.name}
           nftImage={loan.nft.meta.imageUrl}
+          banxPoints={{
+            partnerPoints: loan.nft.meta.partnerPoints || 0,
+            playerPoints: loan.nft.meta.playerPoints || 0,
+          }}
         />
       ),
     },
