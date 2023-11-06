@@ -28,9 +28,10 @@ import styles from '../RefinanceTable.module.less'
 interface RefinanceCellProps {
   loan: Loan
   isCardView: boolean
+  disabledAction: boolean
 }
 
-export const RefinanceCell: FC<RefinanceCellProps> = ({ loan, isCardView }) => {
+export const RefinanceCell: FC<RefinanceCellProps> = ({ loan, isCardView, disabledAction }) => {
   const { connected } = useWallet()
   const { toggleVisibility } = useWalletModal()
 
@@ -49,7 +50,7 @@ export const RefinanceCell: FC<RefinanceCellProps> = ({ loan, isCardView }) => {
 
   return (
     <div className={classNames(styles.refinanceCell, { [styles.cardView]: isCardView })}>
-      <Button onClick={onClickHandler} size={buttonSize}>
+      <Button onClick={onClickHandler} size={buttonSize} disabled={disabledAction}>
         Refinance
       </Button>
       <SolanaFMLink

@@ -79,7 +79,13 @@ export const getTableColumns = ({
     },
     {
       title: <HeaderCell label="" />,
-      render: (_, loan) => <RefinanceCell loan={loan} isCardView={isCardView} />,
+      render: (_, loan) => (
+        <RefinanceCell
+          loan={loan}
+          isCardView={isCardView}
+          disabledAction={!!findSelectedLoan(loan.publicKey)}
+        />
+      ),
     },
   ]
 
