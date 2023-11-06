@@ -1,9 +1,8 @@
 import { FC } from 'react'
 
-import Table from '@banx/components/Table'
+import Table from '@banx/components/TableVirtual'
 
 import { BorrowNft, Offer } from '@banx/api/core'
-import { useFakeInfinityScroll } from '@banx/hooks'
 
 import { Summary } from './Summary'
 import { useBorrowTable } from './hooks'
@@ -23,12 +22,10 @@ const BorrowTable: FC<BorrowTableProps> = ({ nfts, isLoading, rawOffers }) => {
       rawOffers,
     })
 
-  const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: tableNftData })
-
   return (
     <div className={styles.tableRoot}>
       <Table
-        data={data}
+        data={tableNftData}
         columns={columns}
         onRowClick={onRowClick}
         sortViewParams={sortViewParams}
@@ -36,7 +33,6 @@ const BorrowTable: FC<BorrowTableProps> = ({ nfts, isLoading, rawOffers }) => {
         rowKeyField="mint"
         loading={isLoading}
         showCard
-        fetchMoreTrigger={fetchMoreTrigger}
       />
       <Summary nftsInCart={nftsInCart} selectAll={selectAll} borrowAll={borrowAll} />
     </div>
