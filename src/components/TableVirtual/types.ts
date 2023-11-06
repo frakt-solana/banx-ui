@@ -27,7 +27,7 @@ export interface ActiveRowParams<T> {
 }
 
 export interface ColumnType<T> {
-  key?: string | React.Key
+  key: string | React.Key
   dataIndex?: React.Key
   title?: string | ReactNode
   render: (record: T, index: number) => ReactNode
