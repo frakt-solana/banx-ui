@@ -34,6 +34,7 @@ import {
 
 import { useAuctionsLoans } from '../../hooks'
 import { calcWeeklyInterestFee } from './columns'
+import { MAX_APY_INCREASE_PERCENT } from './constants'
 
 import styles from './RefinanceTable.module.less'
 
@@ -75,6 +76,10 @@ export const Summary: FC<SummaryProps> = ({
 
   const weightedApr = calcWeightedAverage(totalApy, totalLoanValue)
   const colorApr = getColorByPercent(weightedApr, HealthColorDecreasing)
+  const formattedWeightedApy = Math.min(
+    convertAprToApy(weightedApr / 1e2),
+    MAX_APY_INCREASE_PERCENT,
+  )
 
   const refinanceAll = () => {
     const txnParams = selectedLoans.map((loan) => ({ loan }))
@@ -144,7 +149,7 @@ export const Summary: FC<SummaryProps> = ({
         <StatInfo label="Weekly interest" value={totalWeeklyInterest} />
         <StatInfo
           label="Weighted apy"
-          value={convertAprToApy(weightedApr / 1e2)}
+          value={formattedWeightedApy}
           valueStyles={{ color: weightedApr ? colorApr : '' }}
           classNamesProps={{ value: styles.aprValue }}
           valueType={VALUES_TYPES.PERCENT}
