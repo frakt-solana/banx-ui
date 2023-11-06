@@ -15,6 +15,7 @@ const TableView = <T extends object>({
   className,
   columns,
   onRowClick, // activeRowParams, //TODO Implement
+  loadMore,
 }: TableViewProps<T>) => {
   const rowProps = {
     onClick: onRowClick ? (rowData: T) => onRowClick(rowData) : () => null,
@@ -24,8 +25,8 @@ const TableView = <T extends object>({
   return (
     <TableVirtuoso
       data={data}
-      totalCount={data.length}
       overscan={200}
+      endReached={loadMore}
       className={classNames(styles.tableWrapper, className)}
       fixedHeaderContent={() => (
         <tr>

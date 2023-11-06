@@ -1,5 +1,3 @@
-import { Dispatch, SetStateAction } from 'react'
-
 import classNames from 'classnames'
 import { isEmpty } from 'lodash'
 
@@ -14,13 +12,12 @@ import styles from './Table.module.less'
 export interface TableProps<T, P> {
   data: Array<T>
   columns: ColumnType<T>[]
-  rowKeyField: keyof T
   loading?: boolean
+  loadMore?: () => void
 
   sortViewParams?: SortViewParams<P>
   activeRowParams?: ActiveRowParams<T>[]
 
-  fetchMoreTrigger?: Dispatch<SetStateAction<Element | null>>
   showCard?: boolean
   onRowClick?: (dataItem: T) => void
   breakpoints?: PartialBreakpoints
@@ -39,7 +36,6 @@ const Table = <T extends object, P extends object>({
   loading,
   emptyMessage,
   classNameTableWrapper,
-  fetchMoreTrigger,
   ...props
 }: TableProps<T, P>) => {
   const { viewState } = useTableView()

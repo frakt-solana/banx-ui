@@ -1,11 +1,5 @@
-import { ColumnsType } from 'antd/es/table'
-
-import {
-  HeaderCell,
-  NftInfoCell,
-  createColumn,
-  createSolValueJSX,
-} from '@banx/components/TableComponents'
+import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
+import { ColumnType, createColumn } from '@banx/components/TableVirtual'
 
 import { MarketPreview } from '@banx/api/core'
 import { DAYS_IN_YEAR } from '@banx/constants'
@@ -13,37 +7,37 @@ import { DAYS_IN_YEAR } from '@banx/constants'
 import styles from './NotConnectedTable.module.less'
 
 export const getTableColumns = () => {
-  const columns: ColumnsType<MarketPreview> = [
+  const columns: ColumnType<MarketPreview>[] = [
     {
       key: 'collection',
       title: <HeaderCell label="Collection" />,
-      render: (_, market) => (
+      render: (market) => (
         <NftInfoCell nftName={market.collectionName} nftImage={market.collectionImage} />
       ),
     },
     {
       key: 'floorPrice',
       title: <HeaderCell label="Floor" />,
-      render: (_, market) => createSolValueJSX(market.collectionFloor, 1e9),
+      render: (market) => createSolValueJSX(market.collectionFloor, 1e9),
       sorter: true,
     },
 
     {
       key: 'borrow',
       title: <HeaderCell label="Borrow" />,
-      render: (_, market) => createSolValueJSX(market.bestOffer, 1e9),
+      render: (market) => createSolValueJSX(market.bestOffer, 1e9),
       sorter: true,
     },
     {
       key: 'fee',
       title: <HeaderCell label="Daily fee" tooltipText="Daily fee" />,
-      render: (_, { marketApr, collectionFloor }) =>
+      render: ({ marketApr, collectionFloor }) =>
         createSolValueJSX((marketApr / 1e4 / DAYS_IN_YEAR) * collectionFloor, 1e9),
     },
     {
       key: 'liquidity',
       title: <HeaderCell label="Liquidity" />,
-      render: (_, { offerTvl }) => (
+      render: ({ offerTvl }) => (
         <span className={offerTvl ? styles.liquidityCell : ''}>
           {createSolValueJSX(offerTvl, 1e9)}
         </span>

@@ -1,11 +1,5 @@
-import { ColumnType } from 'antd/es/table'
-
-import {
-  HeaderCell,
-  NftInfoCell,
-  createColumn,
-  createSolValueJSX,
-} from '@banx/components/TableComponents'
+import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
+import { ColumnType, createColumn } from '@banx/components/TableVirtual'
 import Timer from '@banx/components/Timer/Timer'
 
 import { Loan } from '@banx/api/core'
@@ -30,7 +24,7 @@ export const getTableColumns = ({
     {
       key: 'collateral',
       title: <HeaderCell label="Collateral" />,
-      render: (_, loan) => (
+      render: (loan) => (
         <NftInfoCell
           selected={!!findSelectedLoan(loan.publicKey)}
           onCheckboxClick={() => onSelectLoan(loan)}
@@ -46,40 +40,41 @@ export const getTableColumns = ({
     {
       key: 'floorPrice',
       title: <HeaderCell label="Floor" />,
-      render: (_, loan) => createSolValueJSX(loan.nft.collectionFloor, 1e9, '--', formatDecimal),
+      render: (loan) => createSolValueJSX(loan.nft.collectionFloor, 1e9, '--', formatDecimal),
     },
     {
       key: 'repayValue',
       title: <HeaderCell label="Debt" />,
-      render: (_, loan) => <DebtCell loan={loan} />,
+      render: (loan) => <DebtCell loan={loan} />,
     },
     {
       key: 'interest',
       title: <HeaderCell label="Weekly interest" />,
-      render: (_, loan) => createSolValueJSX(calcWeeklyInterestFee(loan), 1, '--', formatDecimal),
+      render: (loan) => createSolValueJSX(calcWeeklyInterestFee(loan), 1, '--', formatDecimal),
     },
     {
       key: 'apy',
       title: <HeaderCell label="APY" />,
-      render: (_, loan) => <APRCell loan={loan} />,
+      render: (loan) => <APRCell loan={loan} />,
     },
 
     {
       key: 'nextAprIncrease',
       title: <HeaderCell label="Next APY increase" />,
-      render: (_, loan) => <APRIncreaseCell loan={loan} />,
+      render: (loan) => <APRIncreaseCell loan={loan} />,
     },
     {
       key: 'duration',
       title: <HeaderCell label="Ends in" />,
-      render: (_, { fraktBond }) => (
+      render: ({ fraktBond }) => (
         <Timer expiredAt={fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS} />
       ),
       sorter: true,
     },
     {
+      key: 'refinanceCell',
       title: <HeaderCell label="" />,
-      render: (_, loan) => <RefinanceCell loan={loan} isCardView={isCardView} />,
+      render: (loan) => <RefinanceCell loan={loan} isCardView={isCardView} />,
     },
   ]
 

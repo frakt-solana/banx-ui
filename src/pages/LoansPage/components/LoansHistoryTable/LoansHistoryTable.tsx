@@ -1,5 +1,5 @@
 import EmptyList from '@banx/components/EmptyList'
-import Table from '@banx/components/Table'
+import Table from '@banx/components/TableVirtual'
 
 import { ViewState, useTableView } from '@banx/store'
 
@@ -10,15 +10,8 @@ import { useHistoryLoansTable } from './hooks'
 import styles from './LoansHistoryTable.module.less'
 
 export const LoansHistoryTable = () => {
-  const {
-    loans,
-    loading,
-    sortViewParams,
-    showEmptyList,
-    emptyListParams,
-    showSummary,
-    fetchMoreTrigger,
-  } = useHistoryLoansTable()
+  const { loans, loading, sortViewParams, showEmptyList, emptyListParams, showSummary, loadMore } =
+    useHistoryLoansTable()
 
   const { viewState } = useTableView()
 
@@ -31,9 +24,8 @@ export const LoansHistoryTable = () => {
       <Table
         data={loans}
         columns={columns}
-        rowKeyField="id"
         sortViewParams={sortViewParams}
-        fetchMoreTrigger={fetchMoreTrigger}
+        loadMore={loadMore}
         loading={loading}
         showCard
       />

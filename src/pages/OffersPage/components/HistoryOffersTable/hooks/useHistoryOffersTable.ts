@@ -1,11 +1,8 @@
-import { useEffect } from 'react'
-
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useNavigate } from 'react-router-dom'
 
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
-import { useIntersection } from '@banx/hooks'
 import { PATHS } from '@banx/router'
 
 import { EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
@@ -15,7 +12,6 @@ import { useLenderActivityCollectionsList } from './useLenderActivityCollections
 import styles from '../HistoryOffersTable.module.less'
 
 export const useHistoryOffersTable = () => {
-  const { ref: fetchMoreTrigger, inView } = useIntersection()
   const { connected } = useWallet()
   const navigate = useNavigate()
 
@@ -31,11 +27,11 @@ export const useHistoryOffersTable = () => {
     hasNextPage,
   } = useLenderActivity()
 
-  useEffect(() => {
-    if (inView && hasNextPage) {
+  const loadMore = () => {
+    if (hasNextPage) {
       fetchNextPage()
     }
-  }, [inView, fetchNextPage, hasNextPage])
+  }
 
   const searchSelectParams = {
     options: collectionsList,
@@ -76,6 +72,6 @@ export const useHistoryOffersTable = () => {
       searchSelectParams,
       sortParams,
     },
-    fetchMoreTrigger,
+    loadMore,
   }
 }

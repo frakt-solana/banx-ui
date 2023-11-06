@@ -30,7 +30,6 @@ const BorrowTable: FC<BorrowTableProps> = ({ nfts, isLoading, rawOffers }) => {
         onRowClick={onRowClick}
         sortViewParams={sortViewParams}
         className={styles.borrowTable}
-        rowKeyField="mint"
         loading={isLoading}
         showCard
       />

@@ -1,9 +1,7 @@
-import { FC, useEffect } from 'react'
+import { FC } from 'react'
 
 import EmptyList from '@banx/components/EmptyList'
-import Table from '@banx/components/Table'
-
-import { useIntersection } from '@banx/hooks'
+import Table from '@banx/components/TableVirtual'
 
 import { FilterTableSection } from './FilterTableSection'
 import { getTableColumns } from './columns'
@@ -17,8 +15,6 @@ interface ActivityTableProps {
 }
 
 const ActivityTable: FC<ActivityTableProps> = ({ marketPubkey, goToPlaceOfferTab }) => {
-  const { ref: fetchMoreTrigger, inView } = useIntersection()
-
   const {
     loans,
     isLoading,
@@ -29,12 +25,6 @@ const ActivityTable: FC<ActivityTableProps> = ({ marketPubkey, goToPlaceOfferTab
     isRadioButtonDisabled,
     isToggleDisabled,
   } = useAllLenderActivity(marketPubkey)
-
-  useEffect(() => {
-    if (inView && hasNextPage) {
-      fetchNextPage()
-    }
-  }, [inView, hasNextPage, fetchNextPage])
 
   const columns = getTableColumns()
 
@@ -49,10 +39,9 @@ const ActivityTable: FC<ActivityTableProps> = ({ marketPubkey, goToPlaceOfferTab
         <Table
           data={loans}
           columns={columns}
-          rowKeyField="id"
           className={styles.tableRoot}
           classNameTableWrapper={styles.tableWrapper}
-          fetchMoreTrigger={fetchMoreTrigger}
+          loadMore={hasNextPage ? fetchNextPage : undefined}
           loading={isLoading}
         />
       ) : (

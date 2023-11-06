@@ -23,12 +23,10 @@ export const createColumn = <T extends object>({
   key,
   title,
   render,
-  dataIndex,
   sorter = false,
 }: ColumnType<T>) => {
   return {
     key,
-    dataIndex: dataIndex || key,
     title: title as ReactNode,
     render: (record: T, index: number) => render?.(record, index),
     showSorterTooltip: sorter ? false : undefined,

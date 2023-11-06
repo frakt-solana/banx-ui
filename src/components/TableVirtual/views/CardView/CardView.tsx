@@ -17,6 +17,7 @@ const CardView = <T extends object>({
   columns,
   onRowClick,
   activeRowParams,
+  loadMore,
 }: CardViewProps<T>) => {
   const handleRowClick = (dataRow: T) => {
     if (onRowClick) {
@@ -26,8 +27,9 @@ const CardView = <T extends object>({
 
   return (
     <VirtuosoGrid
-      totalCount={data.length}
+      data={data}
       overscan={200}
+      endReached={loadMore}
       listClassName={classNames(styles.cardList, className)}
       itemContent={(index) => (
         <div

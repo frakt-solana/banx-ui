@@ -74,7 +74,6 @@ export const LoansActiveTable = () => {
         onRowClick={onRowClick}
         sortViewParams={sortViewParams}
         className={styles.table}
-        rowKeyField="publicKey"
         loading={loading}
         showCard
         activeRowParams={[
