@@ -1,12 +1,6 @@
-import { ColumnType } from 'antd/es/table'
-
 import Checkbox from '@banx/components/Checkbox'
-import {
-  HeaderCell,
-  NftInfoCell,
-  createColumn,
-  createSolValueJSX,
-} from '@banx/components/TableComponents'
+import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
+import { ColumnType, createColumn } from '@banx/components/TableVirtual'
 
 import { Loan } from '@banx/api/core'
 import { formatDecimal } from '@banx/utils'
@@ -29,7 +23,7 @@ export const getTableColumns = ({
   toggleLoanInSelection,
   hasSelectedLoans,
   isCardView,
-}: GetTableColumnsProps) => {
+}: GetTableColumnsProps): ColumnType<Loan>[] => {
   const columns: ColumnType<Loan>[] = [
     {
       key: 'collateral',
@@ -39,7 +33,7 @@ export const getTableColumns = ({
           <HeaderCell label="Collateral" />
         </div>
       ),
-      render: (_, loan) => (
+      render: (loan) => (
         <NftInfoCell
           selected={!!findLoanInSelection(loan.publicKey)}
           onCheckboxClick={() => toggleLoanInSelection(loan)}
@@ -51,14 +45,14 @@ export const getTableColumns = ({
     {
       key: 'loanValue',
       title: <HeaderCell label="Borrowed" />,
-      render: (_, { fraktBond }) =>
+      render: ({ fraktBond }) =>
         createSolValueJSX(fraktBond.borrowedAmount, 1e9, '--', formatDecimal),
       sorter: true,
     },
     {
       key: 'repayValue',
       title: <HeaderCell label="Debt" />,
-      render: (_, loan) => <DebtCell loan={loan} isCardView={isCardView} />,
+      render: (loan) => <DebtCell loan={loan} isCardView={isCardView} />,
       sorter: true,
     },
     {
@@ -69,7 +63,7 @@ export const getTableColumns = ({
           tooltipText="Estimated  health of loans using a formula: 1 - (debt / floor)"
         />
       ),
-      render: (_, loan) => <HealthCell loan={loan} />,
+      render: (loan) => <HealthCell loan={loan} />,
       sorter: true,
     },
     {
@@ -80,12 +74,12 @@ export const getTableColumns = ({
           tooltipText="Current status and duration of the loan that has been passed"
         />
       ),
-      render: (_, loan) => <StatusCell loan={loan} isCardView={isCardView} />,
+      render: (loan) => <StatusCell loan={loan} isCardView={isCardView} />,
       sorter: true,
     },
     {
       title: <HeaderCell label="" />,
-      render: (_, loan) => (
+      render: (loan) => (
         <ActionsCell
           loan={loan}
           isCardView={isCardView}

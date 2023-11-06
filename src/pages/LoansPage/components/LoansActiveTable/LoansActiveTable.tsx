@@ -1,8 +1,7 @@
 import EmptyList from '@banx/components/EmptyList'
-import Table from '@banx/components/Table'
+import Table from '@banx/components/TableVirtual'
 
 import { Loan } from '@banx/api/core'
-import { useFakeInfinityScroll } from '@banx/hooks'
 import { ViewState, useTableView } from '@banx/store'
 import { LoanStatus, determineLoanStatus } from '@banx/utils'
 
@@ -40,14 +39,12 @@ export const LoansActiveTable = () => {
     isCardView: viewState === ViewState.CARD,
   })
 
-  const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: loans })
-
   if (showEmptyList) return <EmptyList {...emptyListParams} />
 
   return (
     <div className={styles.tableRoot}>
       <Table
-        data={data}
+        data={loans}
         columns={columns}
         onRowClick={toggleLoanInSelection}
         sortViewParams={sortViewParams}
@@ -63,7 +60,6 @@ export const LoansActiveTable = () => {
           },
         ]}
       />
-      <div ref={fetchMoreTrigger} />
       {showSummary && <Summary loans={loans} />}
     </div>
   )
