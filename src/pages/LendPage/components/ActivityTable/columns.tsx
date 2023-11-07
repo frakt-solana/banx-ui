@@ -1,10 +1,10 @@
+import { ColumnType } from '@banx/components/Table'
 import {
   DurationCell,
   HeaderCell,
   NftInfoCell,
   createSolValueJSX,
 } from '@banx/components/TableComponents'
-import { ColumnType } from '@banx/components/Table'
 
 import { LenderActivity } from '@banx/api/activity'
 
@@ -14,7 +14,7 @@ export const getTableColumns = () => {
   const columns: ColumnType<LenderActivity>[] = [
     {
       key: 'collateral',
-      title: <HeaderCell label="Collateral" />,
+      title: <HeaderCell label="Collateral" align="left" />,
       render: (loan) => (
         <NftInfoCell nftName={loan.nft.meta.name} nftImage={loan.nft.meta.imageUrl} />
       ),

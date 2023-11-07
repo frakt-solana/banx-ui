@@ -1,10 +1,10 @@
+import { ColumnType } from '@banx/components/Table'
 import {
   DurationCell,
   HeaderCell,
   NftInfoCell,
   createSolValueJSX,
 } from '@banx/components/TableComponents'
-import { ColumnType } from '@banx/components/Table'
 
 import { BorrowerActivity } from '@banx/api/activity'
 import { formatDecimal } from '@banx/utils'

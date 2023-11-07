@@ -1,5 +1,5 @@
-import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
 import { ColumnType } from '@banx/components/Table'
+import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { formatDecimal, formatLoansAmount } from '@banx/utils'
 
@@ -10,7 +10,7 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
   const columns: ColumnType<TableUserOfferData>[] = [
     {
       key: 'collateral',
-      title: <HeaderCell label="Collection" />,
+      title: <HeaderCell label="Collection" align="left" />,
       render: ({ collectionImage, collectionName }) => (
         <NftInfoCell nftName={collectionName} nftImage={collectionImage} />
       ),

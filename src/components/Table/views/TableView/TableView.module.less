@@ -1,9 +1,89 @@
 .tableWrapper {
-  thead {
-    background: var(--bg-primary);
-  }
-
   table {
     width: 100%;
+    background: var(--bg-primary);
+    border: 0;
+    border-radius: 0;
+    color: var(--content-primary);
+  }
+
+  thead,
+  tbody {
+    tr {
+      td,
+      th {
+        padding: 8px;
+        text-align: -webkit-right;
+        transition: unset;
+      }
+    }
+  }
+
+  thead {
+    background: var(--bg-primary);
+
+    tr {
+      th {
+        background: var(--bg-primary);
+        border-bottom: 0;
+        color: var(--content-secondary);
+        font: var(--table-header-md);
+        text-transform: uppercase;
+        white-space: nowrap;
+        vertical-align: middle;
+
+        &::first-child {
+          padding-left: 24px;
+          text-align: left;
+
+          @media (max-width: 640px) {
+            padding-left: 16px;
+          }
+        }
+
+        &:last-child {
+          padding-right: 24px;
+
+          @media (max-width: 640px) {
+            padding-right: 16px;
+          }
+        }
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      &:hover {
+        background: var(--bg-action);
+      }
+
+      &:nth-child(even) {
+        background: var(--bg-primary-deep);
+      }
+
+      td {
+        border: 0;
+        font: var(--body-text-md);
+        vertical-align: middle;
+
+        &::first-child {
+          padding-left: 24px;
+          text-align: left;
+
+          @media (max-width: 640px) {
+            padding-left: 16px;
+          }
+        }
+
+        &::last-child {
+          padding-right: 24px;
+
+          @media (max-width: 640px) {
+            padding-right: 16px;
+          }
+        }
+      }
+    }
   }
 }

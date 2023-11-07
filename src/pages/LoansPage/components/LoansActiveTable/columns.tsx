@@ -1,6 +1,6 @@
 import Checkbox from '@banx/components/Checkbox'
-import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
 import { ColumnType } from '@banx/components/Table'
+import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan, Offer } from '@banx/api/core'
 import { formatDecimal } from '@banx/utils'

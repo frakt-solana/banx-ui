@@ -1,5 +1,5 @@
-import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
 import { ColumnType } from '@banx/components/Table'
+import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
 import Timer from '@banx/components/Timer/Timer'
 
 import { Loan } from '@banx/api/core'
@@ -23,7 +23,7 @@ export const getTableColumns = ({
   const columns: ColumnType<Loan>[] = [
     {
       key: 'collateral',
-      title: <HeaderCell label="Collateral" />,
+      title: <HeaderCell label="Collateral" align="left" />,
       render: (loan) => (
         <NftInfoCell
           selected={!!findSelectedLoan(loan.publicKey)}

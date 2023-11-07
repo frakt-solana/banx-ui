@@ -1,5 +1,5 @@
-import { HeaderCell, NftInfoCell } from '@banx/components/TableComponents'
 import { ColumnType } from '@banx/components/Table'
+import { HeaderCell, NftInfoCell } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
 
@@ -13,7 +13,7 @@ export const getTableColumns = ({ isCardView }: GetTableColumns) => {
   const columns: ColumnType<Loan>[] = [
     {
       key: 'collateral',
-      title: <HeaderCell label="Collateral" />,
+      title: <HeaderCell label="Collateral" align="left" />,
       render: (loan) => (
         <NftInfoCell nftName={loan.nft.meta.name} nftImage={loan.nft.meta.imageUrl} />
       ),

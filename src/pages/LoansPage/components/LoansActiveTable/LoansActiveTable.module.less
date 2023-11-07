@@ -6,12 +6,18 @@
   overflow: hidden;
 }
 
-.table :global {
-  .ant-table-tbody > tr > td {
-    width: 230px;
-  }
-  .ant-table-tbody > tr > td:last-child {
-    width: 84px;
+.table {
+  table {
+    tr {
+      th,
+      td {
+        width: 230px;
+      }
+
+      &:last-child {
+        width: 84px;
+      }
+    }
   }
 }
 
@@ -21,7 +27,7 @@
 
 .headerTitleRow {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 16px !important;
 }
 

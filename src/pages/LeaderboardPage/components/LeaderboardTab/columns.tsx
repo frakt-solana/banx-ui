@@ -1,5 +1,5 @@
-import { HeaderCell } from '@banx/components/TableComponents'
 import { ColumnType } from '@banx/components/Table'
+import { HeaderCell } from '@banx/components/TableComponents'
 
 import { LeaderboardData } from '@banx/api/user'
 
@@ -9,7 +9,7 @@ export const getTableColumns = () => {
   const columns: ColumnType<LeaderboardData>[] = [
     {
       key: 'collateral',
-      title: <HeaderCell label="Rank, Profile" />,
+      title: <HeaderCell label="Rank, Profile" align="left" />,
       render: ({ user, rank, avatar }) => (
         <UserInfoCell user={user} rank={rank} avatar={avatar ?? ''} />
       ),

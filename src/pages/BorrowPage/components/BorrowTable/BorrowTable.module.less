@@ -6,18 +6,24 @@
   overflow: hidden;
 }
 
-.borrowTable :global {
-  .ant-table-tbody > tr > td {
-    width: 285px;
-  }
-  .ant-table-tbody > tr > td:last-child {
-    width: 144px;
+.borrowTable {
+  table {
+    tr {
+      th,
+      td {
+        width: 285px;
+      }
+
+      &:last-child {
+        width: 144px;
+      }
+    }
   }
 }
 
 .headerTitleRow {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   margin-left: 34px;
 }
 
