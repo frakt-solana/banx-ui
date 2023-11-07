@@ -6,25 +6,10 @@ import { isEmpty } from 'lodash'
 import { ViewState, useTableView } from '@banx/store'
 
 import { Loader } from '../Loader'
-import { ColumnType, SortViewParams, TableRowParams } from './types'
+import { TableProps } from './types'
 import { CardView, SortView, TableView } from './views'
 
 import styles from './Table.module.less'
-
-export interface TableProps<T, P> {
-  data: Array<T>
-  columns: ColumnType<T>[]
-  loading?: boolean
-  loadMore?: () => void
-
-  sortViewParams?: SortViewParams<P>
-  rowParams?: TableRowParams<T> //? Must be wrapped in useMemo because of render virtual table specific
-
-  showCard?: boolean
-  className?: string
-  classNameTableWrapper?: string
-  emptyMessage?: string
-}
 
 const Table = <T extends object, P extends object>({
   data,

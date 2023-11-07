@@ -35,8 +35,15 @@ export interface TableRowParams<T> {
 export interface TableViewProps<T> {
   data: Array<T>
   columns: ColumnType<T>[]
-  loading?: boolean
   loadMore?: () => void
-  rowParams?: TableRowParams<T>
+  rowParams?: TableRowParams<T> //? Must be wrapped in useMemo because of render virtual table specific
   className?: string
+}
+
+export interface TableProps<T, P> extends TableViewProps<T> {
+  loading?: boolean
+  sortViewParams?: SortViewParams<P>
+  showCard?: boolean
+  classNameTableWrapper?: string
+  emptyMessage?: string
 }

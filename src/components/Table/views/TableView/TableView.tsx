@@ -1,4 +1,4 @@
-import React, { ForwardedRef, ReactNode, Ref, forwardRef, memo, useMemo } from 'react'
+import React, { ForwardedRef, Ref, forwardRef, memo, useMemo } from 'react'
 
 import classNames from 'classnames'
 import { TableVirtuoso } from 'react-virtuoso'
@@ -47,7 +47,7 @@ const TableViewInner = <T extends object>({
           {columns.map(({ key, render }) => {
             return (
               <td key={`${key}-${index}`} style={rowProps.style} align="right">
-                {render?.(data[index], index) as ReactNode}
+                {render?.(data[index], index)}
               </td>
             )
           })}
@@ -66,10 +66,10 @@ interface TableRowProps<T>
   rowParams?: TableRowParams<T>
 }
 
-function TableRowInner<T>(
+const TableRowInner = <T,>(
   props: TableRowProps<T>,
   ref: ForwardedRef<HTMLTableRowElement>,
-): JSX.Element {
+): JSX.Element => {
   const { rowParams, item, ...restProps } = props
 
   const rowClassName = getCardOrRowClassName(item, rowParams?.activeRowParams)
