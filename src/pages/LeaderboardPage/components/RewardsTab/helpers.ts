@@ -12,7 +12,7 @@ export const calculateNextTuesdayAtUTC = (): Moment => {
   const daysUntilNextTuesday = (TUESDAY + DAYS_IN_WEEK - now.day()) % DAYS_IN_WEEK
 
   const nextTuesday = moment(now)
-    .add(daysUntilNextTuesday, 'days')
+    .add(daysUntilNextTuesday + (now.day() === TUESDAY ? DAYS_IN_WEEK : 0), 'days')
     .startOf('day')
     .hour(MIDNIGHT_HOUR)
     .minute(MIDNIGHT_MINUTE)
