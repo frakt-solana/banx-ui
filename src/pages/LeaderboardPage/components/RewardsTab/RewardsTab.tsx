@@ -53,6 +53,8 @@ const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({ totalClaimed }) => {
   }
 
   useEffect(() => {
+    updateNextWeeklyRewards()
+
     const timerInterval = setInterval(() => {
       const now = moment.utc()
       if (isTuesdayAndMidnight(now)) {
