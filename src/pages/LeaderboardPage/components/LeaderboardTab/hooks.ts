@@ -14,7 +14,7 @@ export const useLeaderboardData = () => {
   const publicKeyString = publicKey?.toBase58() || ''
 
   const [currentOption, setCurrentOption] = useState<RBOption>(options[0])
-  const [timeRangeType, setTimeRangeType] = useState<LeaderboardTimeRange>('all')
+  const [timeRangeType, setTimeRangeType] = useState<LeaderboardTimeRange>('week')
 
   const fetchData = async (pageParam: number) => {
     const data = await fetchLeaderboardData({
@@ -45,17 +45,14 @@ export const useLeaderboardData = () => {
     return data?.pages?.map((page) => page.data).flat() || []
   }, [data])
 
-  const onToggleChecked = () => {
-    setTimeRangeType(timeRangeType === 'all' ? 'week' : 'all')
-  }
-
   return {
     data: leaderboardData,
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
     isLoading,
-    onToggleChecked,
+    onChangeTimeRange: setTimeRangeType,
+    timeRangeType,
     filterParams: {
       onOptionChange: setCurrentOption,
       currentOption,
