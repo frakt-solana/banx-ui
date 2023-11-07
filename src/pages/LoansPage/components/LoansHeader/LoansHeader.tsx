@@ -11,7 +11,7 @@ import {
 import { VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { Loan } from '@banx/api/core'
-import { calcLoanBorrowedAmount, calculateLoanRepayValue } from '@banx/utils'
+import { calculateLoanRepayValue } from '@banx/utils'
 
 interface LoansHeaderProps {
   loans: Loan[]
@@ -19,7 +19,7 @@ interface LoansHeaderProps {
 
 const LoansHeader: FC<LoansHeaderProps> = ({ loans }) => {
   const numberOfLoans = loans.length
-  const totalBorrowed = sumBy(loans, (loan) => calcLoanBorrowedAmount(loan))
+  const totalBorrowed = sumBy(loans, (loan) => loan.fraktBond.borrowedAmount)
   const totalDebt = sumBy(loans, (loan) => calculateLoanRepayValue(loan))
 
   return (
