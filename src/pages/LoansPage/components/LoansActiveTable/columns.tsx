@@ -2,7 +2,7 @@ import Checkbox from '@banx/components/Checkbox'
 import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
 import { ColumnType, createColumn } from '@banx/components/TableVirtual'
 
-import { Loan } from '@banx/api/core'
+import { Loan, Offer } from '@banx/api/core'
 import { formatDecimal } from '@banx/utils'
 
 import { LoanOptimistic } from '../../loansState'
@@ -16,6 +16,7 @@ interface GetTableColumnsProps {
   toggleLoanInSelection: (loan: Loan) => void
   hasSelectedLoans: boolean
   isCardView: boolean
+  offers: Record<string, Offer[]>
 }
 
 export const getTableColumns = ({
@@ -24,6 +25,7 @@ export const getTableColumns = ({
   toggleLoanInSelection,
   hasSelectedLoans,
   isCardView,
+  offers,
 }: GetTableColumnsProps): ColumnType<Loan>[] => {
   const columns: ColumnType<Loan>[] = [
     {
@@ -84,6 +86,7 @@ export const getTableColumns = ({
       render: (loan) => (
         <ActionsCell
           loan={loan}
+          offers={offers}
           isCardView={isCardView}
           disableActions={!!findLoanInSelection(loan.publicKey)}
         />

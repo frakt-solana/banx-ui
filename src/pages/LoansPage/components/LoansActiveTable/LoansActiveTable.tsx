@@ -1,11 +1,11 @@
-import { useMemo } from 'react'
+import { FC, useCallback, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
 import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/TableVirtual'
 
-import { Loan } from '@banx/api/core'
+import { Loan, Offer } from '@banx/api/core'
 import { ViewState, useTableView } from '@banx/store'
 import { LoanStatus, determineLoanStatus } from '@banx/utils'
 
@@ -16,12 +16,25 @@ import { useLoansActiveTable } from './hooks'
 
 import styles from './LoansActiveTable.module.less'
 
-export const LoansActiveTable = () => {
+interface LoansActiveTableProps {
+  loans: Loan[]
+  isLoading: boolean
+  offers: Record<string, Offer[]>
+}
+
+export const LoansActiveTable: FC<LoansActiveTableProps> = ({
+  loans: rawLoans,
+  isLoading,
+  offers,
+}) => {
   const { publicKey: walletPublicKey } = useWallet()
   const walletPublicKeyString = walletPublicKey?.toBase58() || ''
 
   const { sortViewParams, loans, loading, showEmptyList, emptyListParams, showSummary } =
-    useLoansActiveTable()
+    useLoansActiveTable({
+      loans: rawLoans,
+      isLoading,
+    })
 
   const {
     selection,
@@ -36,33 +49,44 @@ export const LoansActiveTable = () => {
     return selection.filter(({ wallet }) => wallet === walletPublicKeyString)
   }, [selection, walletPublicKeyString])
 
-  const hasSelectedLoans = !!walletSelectedLoans?.length
+  const hasSelectedLoans = useMemo(() => !!walletSelectedLoans?.length, [walletSelectedLoans])
 
   const { viewState } = useTableView()
 
-  const onSelectAll = (): void => {
+  const onSelectAll = useCallback(() => {
     if (hasSelectedLoans) {
       clearSelection()
     } else {
       setSelection(loans, walletPublicKeyString)
     }
-  }
+  }, [clearSelection, hasSelectedLoans, loans, setSelection, walletPublicKeyString])
 
-  const findLoanInSelection = (loanPubkey: string) => {
-    return find(loanPubkey, walletPublicKeyString)
-  }
+  const findLoanInSelection = useCallback(
+    (loanPubkey: string) => {
+      return find(loanPubkey, walletPublicKeyString)
+    },
+    [find, walletPublicKeyString],
+  )
 
-  const onRowClick = (loan: Loan) => {
-    toggleLoanInSelection(loan, walletPublicKeyString)
-  }
+  const onRowClick = useCallback(
+    (loan: Loan) => {
+      toggleLoanInSelection(loan, walletPublicKeyString)
+    },
+    [toggleLoanInSelection, walletPublicKeyString],
+  )
 
-  const columns = getTableColumns({
-    onSelectAll,
-    findLoanInSelection,
-    toggleLoanInSelection: onRowClick,
-    hasSelectedLoans,
-    isCardView: viewState === ViewState.CARD,
-  })
+  const columns = useMemo(
+    () =>
+      getTableColumns({
+        onSelectAll,
+        findLoanInSelection,
+        toggleLoanInSelection: onRowClick,
+        hasSelectedLoans,
+        isCardView: viewState === ViewState.CARD,
+        offers,
+      }),
+    [onSelectAll, findLoanInSelection, onRowClick, hasSelectedLoans, viewState, offers],
+  )
 
   if (showEmptyList) return <EmptyList {...emptyListParams} />
 

@@ -11,9 +11,8 @@ import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan, Offer } from '@banx/api/core'
 import { BONDS, SECONDS_IN_HOUR } from '@banx/constants'
-import { useWalletLoansAndOffers } from '@banx/pages/LoansPage/hooks'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
-import { useLoansOptimistic, useModal } from '@banx/store'
+import { useLoansOptimistic, useModal, useOffersOptimistic } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeBorrowRefinanceAction } from '@banx/transactions/loans'
@@ -40,7 +39,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
   const { update: updateLoansOptimistic } = useLoansOptimistic()
   const { clear: clearSelection } = useSelectedLoans()
 
-  const { updateOptimisticOffers } = useWalletLoansAndOffers()
+  const { update: updateOptimisticOffers } = useOffersOptimistic()
 
   const isTerminatingStatus = isLoanTerminating(loan)
 

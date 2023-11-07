@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
 
-import { useWalletLoansAndOffers } from '@banx/pages/LoansPage/hooks'
+import { Loan } from '@banx/api/core'
 import { PATHS } from '@banx/router'
 
 import { DEFAULT_SORT_OPTION, EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
@@ -22,8 +22,12 @@ export interface SearchSelectOption {
   numberOfNFTs: number
 }
 
-export const useLoansActiveTable = () => {
-  const { loans, isLoading } = useWalletLoansAndOffers()
+interface UseLoansActiveTableProps {
+  loans: Loan[]
+  isLoading: boolean
+}
+
+export const useLoansActiveTable = ({ loans, isLoading }: UseLoansActiveTableProps) => {
   const { connected } = useWallet()
   const navigate = useNavigate()
 
