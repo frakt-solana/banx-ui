@@ -12,7 +12,7 @@ import { Loan } from '@banx/api/core'
 import { formatDecimal } from '@banx/utils'
 
 import { LoanOptimistic } from '../../loansState'
-import { ActionsCell, DebtCell, HealthCell, StatusCell } from './TableCells'
+import { ActionsCell, DebtCell, HealthCell, InterestCell, StatusCell } from './TableCells'
 
 import styles from './LoansActiveTable.module.less'
 
@@ -55,6 +55,11 @@ export const getTableColumns = ({
       render: (_, { fraktBond }) =>
         createSolValueJSX(fraktBond.borrowedAmount, 1e9, '--', formatDecimal),
       sorter: true,
+    },
+    {
+      key: 'fee',
+      title: <HeaderCell label="Weekly fee" />,
+      render: (_, loan) => <InterestCell loan={loan} isCardView={isCardView} />,
     },
     {
       key: 'repayValue',
