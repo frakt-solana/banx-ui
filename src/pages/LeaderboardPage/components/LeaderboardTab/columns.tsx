@@ -1,24 +1,23 @@
-import { ColumnsType } from 'antd/es/table'
-
-import { HeaderCell, createColumn } from '@banx/components/TableComponents'
+import { HeaderCell } from '@banx/components/TableComponents'
+import { ColumnType } from '@banx/components/TableVirtual'
 
 import { LeaderboardData } from '@banx/api/user'
 
 import { LoyaltyCell, PointsCell, UserInfoCell } from './components'
 
 export const getTableColumns = () => {
-  const columns: ColumnsType<LeaderboardData> = [
+  const columns: ColumnType<LeaderboardData>[] = [
     {
       key: 'collateral',
       title: <HeaderCell label="Rank, Profile" />,
-      render: (_, { user, rank, avatar }) => (
+      render: ({ user, rank, avatar }) => (
         <UserInfoCell user={user} rank={rank} avatar={avatar ?? ''} />
       ),
     },
     {
       key: 'points',
       title: <HeaderCell label="Points" />,
-      render: (_, { points }) => <PointsCell points={points} />,
+      render: ({ points }) => <PointsCell points={points} />,
     },
     {
       key: 'loyalty',
@@ -28,9 +27,9 @@ export const getTableColumns = () => {
           tooltipText="Loyalty tracks % of your loans on Banx vs other protocols. Loyalty impacts the amount of rewards; if you're more loyal you'll get much more rewards"
         />
       ),
-      render: (_, { loyalty }) => <LoyaltyCell loyalty={loyalty} />,
+      render: ({ loyalty }) => <LoyaltyCell loyalty={loyalty} />,
     },
   ]
 
-  return columns.map((column) => createColumn(column))
+  return columns
 }

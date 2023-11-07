@@ -1,12 +1,12 @@
-import { useEffect } from 'react'
+import { useCallback, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
 import EmptyList from '@banx/components/EmptyList'
 import { RadioButton } from '@banx/components/RadioButton'
-import Table from '@banx/components/Table'
+import Table from '@banx/components/TableVirtual'
 
-import { useIntersection } from '@banx/hooks'
+import { LeaderboardData } from '@banx/api/user'
 
 import { getTableColumns } from './columns'
 import { useLeaderboardData } from './hooks'
@@ -19,15 +19,24 @@ const LeaderboardTab = () => {
 
   const columns = getTableColumns()
 
-  const { ref: fetchMoreTrigger, inView } = useIntersection()
-
   const { data, hasNextPage, fetchNextPage, filterParams, isLoading } = useLeaderboardData()
 
-  useEffect(() => {
-    if (inView && hasNextPage) {
+  const loadMore = useCallback(() => {
+    if (hasNextPage) {
       fetchNextPage()
     }
-  }, [inView, hasNextPage, fetchNextPage])
+  }, [hasNextPage, fetchNextPage])
+
+  const rowParams = useMemo(() => {
+    return {
+      activeRowParams: [
+        {
+          condition: ({ user }: LeaderboardData) => user === walletPublicKeyString,
+          className: styles.highlightUser,
+        },
+      ],
+    }
+  }, [walletPublicKeyString])
 
   return (
     <>
@@ -39,15 +48,9 @@ const LeaderboardTab = () => {
         data={data}
         columns={columns}
         loading={isLoading}
-        rowKeyField="user"
         className={styles.tableRoot}
-        fetchMoreTrigger={fetchMoreTrigger}
-        activeRowParams={[
-          {
-            condition: ({ user }) => user === walletPublicKeyString,
-            className: styles.highlightUser,
-          },
-        ]}
+        loadMore={loadMore}
+        rowParams={rowParams}
       />
     </>
   )

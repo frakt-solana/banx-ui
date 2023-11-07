@@ -1,5 +1,5 @@
 import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
-import { ColumnType, createColumn } from '@banx/components/TableVirtual'
+import { ColumnType } from '@banx/components/TableVirtual'
 import Timer from '@banx/components/Timer/Timer'
 
 import { Loan } from '@banx/api/core'
@@ -78,7 +78,7 @@ export const getTableColumns = ({
     },
   ]
 
-  return columns.map((column) => createColumn(column))
+  return columns
 }
 
 type CalcWeeklyInterestFee = (Loan: Loan) => number

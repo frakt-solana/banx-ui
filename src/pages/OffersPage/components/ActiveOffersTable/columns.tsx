@@ -1,6 +1,5 @@
-import { ColumnsType } from 'antd/es/table'
-
-import { HeaderCell, NftInfoCell, createColumn } from '@banx/components/TableComponents'
+import { HeaderCell, NftInfoCell } from '@banx/components/TableComponents'
+import { ColumnType } from '@banx/components/TableVirtual'
 
 import { Loan } from '@banx/api/core'
 
@@ -11,18 +10,18 @@ interface GetTableColumns {
 }
 
 export const getTableColumns = ({ isCardView }: GetTableColumns) => {
-  const columns: ColumnsType<Loan> = [
+  const columns: ColumnType<Loan>[] = [
     {
       key: 'collateral',
       title: <HeaderCell label="Collateral" />,
-      render: (_, loan) => (
+      render: (loan) => (
         <NftInfoCell nftName={loan.nft.meta.name} nftImage={loan.nft.meta.imageUrl} />
       ),
     },
     {
       key: 'lent',
       title: <HeaderCell label="Lent" />,
-      render: (_, loan) => <LentCell loan={loan} />,
+      render: (loan) => <LentCell loan={loan} />,
       sorter: true,
     },
     {
@@ -33,12 +32,12 @@ export const getTableColumns = ({ isCardView }: GetTableColumns) => {
           tooltipText="Sum of lent amount and accrued interest to date"
         />
       ),
-      render: (_, loan) => <InterestCell loan={loan} isCardView={isCardView} />,
+      render: (loan) => <InterestCell loan={loan} isCardView={isCardView} />,
     },
     {
       key: 'apy',
       title: <HeaderCell label="APY" />,
-      render: (_, loan) => <APRCell loan={loan} />,
+      render: (loan) => <APRCell loan={loan} />,
       sorter: true,
     },
     {
@@ -49,14 +48,15 @@ export const getTableColumns = ({ isCardView }: GetTableColumns) => {
           tooltipText="Current status and duration of the loan that has been passed"
         />
       ),
-      render: (_, loan) => <StatusCell loan={loan} isCardView={isCardView} />,
+      render: (loan) => <StatusCell loan={loan} isCardView={isCardView} />,
       sorter: true,
     },
     {
+      key: 'actionsCell',
       title: <HeaderCell label="Termination" />,
-      render: (_, loan) => <ActionsCell loan={loan} isCardView={isCardView} />,
+      render: (loan) => <ActionsCell loan={loan} isCardView={isCardView} />,
     },
   ]
 
-  return columns.map((column) => createColumn(column))
+  return columns
 }

@@ -3,25 +3,21 @@ import { ReactNode } from 'react'
 import classNames from 'classnames'
 import { VirtuosoGrid } from 'react-virtuoso'
 
-import { TableProps } from '../../Table'
 import { getCardOrRowClassName } from '../../helpers'
-import { ColumnType } from '../../types'
+import { ColumnType, TableViewProps } from '../../types'
 
 import styles from './CardView.module.less'
 
-type CardViewProps<T> = Omit<TableProps<T, null>, 'sortViewParams' | 'loading'>
-
-const CardView = <T extends object>({
+export const CardView = <T extends object>({
   data,
   className,
   columns,
-  onRowClick,
-  activeRowParams,
+  rowParams,
   loadMore,
-}: CardViewProps<T>) => {
+}: TableViewProps<T>) => {
   const handleRowClick = (dataRow: T) => {
-    if (onRowClick) {
-      onRowClick(dataRow)
+    if (rowParams?.onRowClick) {
+      rowParams?.onRowClick(dataRow)
     }
   }
 
@@ -37,9 +33,9 @@ const CardView = <T extends object>({
           onClick={() => handleRowClick(data[index])}
           className={classNames(
             styles.card,
-            getCardOrRowClassName(data[index], activeRowParams, true),
+            getCardOrRowClassName(data[index], rowParams?.activeRowParams, true),
           )}
-          style={{ cursor: onRowClick ? 'pointer' : 'default' }}
+          style={{ cursor: rowParams?.onRowClick ? 'pointer' : 'default' }}
         >
           {columns.map((column) => (
             <CardRow key={`${column.key}-${index}`} column={column} dataRow={data[index]} />
@@ -50,8 +46,6 @@ const CardView = <T extends object>({
   )
 }
 
-export default CardView
-
 interface CardRowProps<T extends object> {
   column: ColumnType<T>
   dataRow: T
@@ -60,9 +54,8 @@ interface CardRowProps<T extends object> {
 const CardRow = <T extends object>({ column, dataRow }: CardRowProps<T>) => {
   const { key, title, render } = column || {}
 
-  const columnKey = key as keyof T
-  const renderedTitle = title && columnKey ? (title as ReactNode) : null
-  const renderedValue = render?.(dataRow, columnKey as number)
+  const renderedTitle = title && key ? title : null
+  const renderedValue = render?.(dataRow, key)
 
   return (
     <div className={styles.cardRow}>

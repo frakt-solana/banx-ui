@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 
 import Table from '@banx/components/TableVirtual'
 
@@ -22,12 +22,18 @@ const BorrowTable: FC<BorrowTableProps> = ({ nfts, isLoading, rawOffers }) => {
       rawOffers,
     })
 
+  const rowParams = useMemo(() => {
+    return {
+      onRowClick,
+    }
+  }, [onRowClick])
+
   return (
     <div className={styles.tableRoot}>
       <Table
         data={tableNftData}
         columns={columns}
-        onRowClick={onRowClick}
+        rowParams={rowParams}
         sortViewParams={sortViewParams}
         className={styles.borrowTable}
         loading={isLoading}

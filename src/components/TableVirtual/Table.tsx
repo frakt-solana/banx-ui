@@ -1,10 +1,12 @@
+import { memo } from 'react'
+
 import classNames from 'classnames'
 import { isEmpty } from 'lodash'
 
 import { ViewState, useTableView } from '@banx/store'
 
 import { Loader } from '../Loader'
-import { ActiveRowParams, ColumnType, PartialBreakpoints, SortViewParams } from './types'
+import { ColumnType, SortViewParams, TableRowParams } from './types'
 import { CardView, SortView, TableView } from './views'
 
 import styles from './Table.module.less'
@@ -16,14 +18,11 @@ export interface TableProps<T, P> {
   loadMore?: () => void
 
   sortViewParams?: SortViewParams<P>
-  activeRowParams?: ActiveRowParams<T>[]
+  rowParams?: TableRowParams<T> //? Must be wrapped in useMemo because of render virtual table specific
 
   showCard?: boolean
-  onRowClick?: (dataItem: T) => void
-  breakpoints?: PartialBreakpoints
   className?: string
   classNameTableWrapper?: string
-  scrollX?: number
   emptyMessage?: string
 }
 
@@ -31,17 +30,17 @@ const Table = <T extends object, P extends object>({
   data,
   columns,
   sortViewParams,
-  activeRowParams,
+  rowParams,
   showCard,
   loading,
   emptyMessage,
+  className,
   classNameTableWrapper,
-  ...props
+  loadMore,
 }: TableProps<T, P>) => {
   const { viewState } = useTableView()
 
   const ViewComponent = showCard && ViewState.CARD === viewState ? CardView : TableView
-  // const ViewComponent = CardView
 
   const hasData = !isEmpty(data)
 
@@ -56,8 +55,9 @@ const Table = <T extends object, P extends object>({
           <ViewComponent
             data={data}
             columns={columns}
-            activeRowParams={activeRowParams}
-            {...props}
+            rowParams={rowParams}
+            className={className}
+            loadMore={loadMore}
           />
         )}
       </div>
@@ -65,4 +65,4 @@ const Table = <T extends object, P extends object>({
   )
 }
 
-export default Table
+export default memo(Table) as typeof Table

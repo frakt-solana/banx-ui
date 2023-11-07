@@ -1,10 +1,8 @@
-import { ReactNode } from 'react'
-
-import { ActiveRowParams, ColumnType } from './types'
+import { TableRowActiveParams } from './types'
 
 export const getCardOrRowClassName = <T>(
   record: T,
-  params?: ActiveRowParams<T>[],
+  params?: TableRowActiveParams<T>,
   isCard = false,
 ): string => {
   if (!params || params.length === 0) return ''
@@ -17,19 +15,4 @@ export const getCardOrRowClassName = <T>(
   }
 
   return ''
-}
-
-export const createColumn = <T extends object>({
-  key,
-  title,
-  render,
-  sorter = false,
-}: ColumnType<T>) => {
-  return {
-    key,
-    title: title as ReactNode,
-    render: (record: T, index: number) => render?.(record, index),
-    showSorterTooltip: sorter ? false : undefined,
-    sorter,
-  }
 }

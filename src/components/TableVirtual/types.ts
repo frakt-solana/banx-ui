@@ -1,15 +1,8 @@
-import React, { ReactNode } from 'react'
+import { Key, ReactNode } from 'react'
 
 import { SearchSelectProps } from '../SearchSelect'
 import { SortDropdownProps } from '../SortDropdown'
 import { ToggleProps } from '../Toggle'
-
-interface Breakpoints {
-  scrollX: number
-  scrollY: number
-}
-
-export type PartialBreakpoints = Partial<Breakpoints>
 
 export type SortParams = Omit<SortDropdownProps, 'options'>
 
@@ -19,18 +12,31 @@ export interface SortViewParams<T> {
   toggleParams?: ToggleProps
 }
 
-export interface ActiveRowParams<T> {
+export interface ColumnType<T> {
+  key: string | Key
+  title?: string | ReactNode
+  render: (record: T, key?: Key) => ReactNode
+  showSorterTooltip?: boolean //? Legacy prop
+  sorter?: boolean //? Legacy prop
+}
+
+export type TableRowActiveParams<T> = Array<{
   field?: string
   condition: (record: T) => boolean
   cardClassName?: string
   className?: string
+}>
+
+export interface TableRowParams<T> {
+  activeRowParams?: TableRowActiveParams<T>
+  onRowClick?: (dataItem: T) => void
 }
 
-export interface ColumnType<T> {
-  key: string | React.Key
-  dataIndex?: React.Key
-  title?: string | ReactNode
-  render: (record: T, index: number) => ReactNode
-  showSorterTooltip?: boolean
-  sorter?: boolean
+export interface TableViewProps<T> {
+  data: Array<T>
+  columns: ColumnType<T>[]
+  loading?: boolean
+  loadMore?: () => void
+  rowParams?: TableRowParams<T>
+  className?: string
 }

@@ -1,5 +1,5 @@
 import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
-import { ColumnType, createColumn } from '@banx/components/TableVirtual'
+import { ColumnType } from '@banx/components/TableVirtual'
 
 import { formatDecimal, formatLoansAmount } from '@banx/utils'
 
@@ -47,5 +47,5 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
     },
   ]
 
-  return columns.map((column) => createColumn(column))
+  return columns
 }

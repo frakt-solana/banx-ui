@@ -1,26 +1,28 @@
-import { ReactNode } from 'react'
+import React, { ForwardedRef, ReactNode, Ref, forwardRef, memo, useMemo } from 'react'
 
 import classNames from 'classnames'
 import { TableVirtuoso } from 'react-virtuoso'
 
-import { TableProps } from '../../Table'
+import { getCardOrRowClassName } from '../../helpers'
+import { TableRowParams, TableViewProps } from '../../types'
 
-// import { getCardOrRowClassName } from '../../helpers'
 import styles from './TableView.module.less'
 
-type TableViewProps<T> = Omit<TableProps<T, null>, 'sortViewParams' | 'loading'>
-
-const TableView = <T extends object>({
+const TableViewInner = <T extends object>({
   data,
   className,
   columns,
-  onRowClick, // activeRowParams, //TODO Implement
+  rowParams,
   loadMore,
 }: TableViewProps<T>) => {
   const rowProps = {
-    onClick: onRowClick ? (rowData: T) => onRowClick(rowData) : () => null,
-    style: onRowClick && { cursor: 'pointer' },
+    onClick: rowParams?.onRowClick ? (rowData: T) => rowParams?.onRowClick?.(rowData) : () => null,
+    style: rowParams?.onRowClick && { cursor: 'pointer' },
   }
+
+  const tableComponents = useMemo(() => {
+    return createTableComponents(rowParams)
+  }, [rowParams])
 
   return (
     <TableVirtuoso
@@ -39,16 +41,12 @@ const TableView = <T extends object>({
           })}
         </tr>
       )}
+      components={tableComponents}
       itemContent={(index) => (
         <>
           {columns.map(({ key, render }) => {
             return (
-              <td
-                key={`${key}-${index}`}
-                onClick={() => rowProps.onClick(data[index])}
-                style={rowProps.style}
-                align="right"
-              >
+              <td key={`${key}-${index}`} style={rowProps.style} align="right">
                 {render?.(data[index], index) as ReactNode}
               </td>
             )
@@ -59,4 +57,46 @@ const TableView = <T extends object>({
   )
 }
 
-export default TableView
+export const TableView = memo(TableViewInner) as typeof TableViewInner
+
+interface TableRowProps<T>
+  extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+  'data-index': number
+  item: T
+  rowParams?: TableRowParams<T>
+}
+
+function TableRowInner<T>(
+  props: TableRowProps<T>,
+  ref: ForwardedRef<HTMLTableRowElement>,
+): JSX.Element {
+  const { rowParams, item, ...restProps } = props
+
+  const rowClassName = getCardOrRowClassName(item, rowParams?.activeRowParams)
+
+  return (
+    <tr
+      {...restProps}
+      onClick={() => {
+        rowParams?.onRowClick?.(item)
+      }}
+      ref={ref as Ref<HTMLTableRowElement>}
+      className={rowClassName}
+    />
+  )
+}
+
+const TableRow = memo(
+  forwardRef(TableRowInner) as <T>(
+    props: TableRowProps<T> & { ref?: ForwardedRef<HTMLTableRowElement> },
+  ) => ReturnType<typeof TableRowInner>,
+)
+TableRow.displayName = 'TableRow'
+
+const createTableComponents = <T,>(rowParams?: TableRowParams<T>) => {
+  return {
+    //? I'm sorry:(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    TableRow: (props: any) => <TableRow {...props} rowParams={rowParams} />,
+  }
+}

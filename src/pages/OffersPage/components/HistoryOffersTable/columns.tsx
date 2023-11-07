@@ -4,7 +4,7 @@ import {
   NftInfoCell,
   createSolValueJSX,
 } from '@banx/components/TableComponents'
-import { ColumnType, createColumn } from '@banx/components/TableVirtual'
+import { ColumnType } from '@banx/components/TableVirtual'
 
 import { LenderActivity } from '@banx/api/activity'
 import { formatDecimal } from '@banx/utils'
@@ -59,5 +59,5 @@ export const getTableColumns = () => {
     },
   ]
 
-  return columns.map((column) => createColumn(column))
+  return columns
 }

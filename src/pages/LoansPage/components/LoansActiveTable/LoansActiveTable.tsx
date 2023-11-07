@@ -75,18 +75,27 @@ export const LoansActiveTable: FC<LoansActiveTableProps> = ({
     [toggleLoanInSelection, walletPublicKeyString],
   )
 
-  const columns = useMemo(
-    () =>
-      getTableColumns({
-        onSelectAll,
-        findLoanInSelection,
-        toggleLoanInSelection: onRowClick,
-        hasSelectedLoans,
-        isCardView: viewState === ViewState.CARD,
-        offers,
-      }),
-    [onSelectAll, findLoanInSelection, onRowClick, hasSelectedLoans, viewState, offers],
-  )
+  const columns = getTableColumns({
+    onSelectAll,
+    findLoanInSelection,
+    toggleLoanInSelection: onRowClick,
+    hasSelectedLoans,
+    isCardView: viewState === ViewState.CARD,
+    offers,
+  })
+
+  const rowParams = useMemo(() => {
+    return {
+      onRowClick,
+      activeRowParams: [
+        {
+          condition: checkIsTerminationLoan,
+          className: styles.terminated,
+          cardClassName: styles.terminated,
+        },
+      ],
+    }
+  }, [onRowClick])
 
   if (showEmptyList) return <EmptyList {...emptyListParams} />
 
@@ -95,18 +104,11 @@ export const LoansActiveTable: FC<LoansActiveTableProps> = ({
       <Table
         data={loans}
         columns={columns}
-        onRowClick={onRowClick}
+        rowParams={rowParams}
         sortViewParams={sortViewParams}
         className={styles.table}
         loading={loading}
         showCard
-        activeRowParams={[
-          {
-            condition: checkIsTerminationLoan,
-            className: styles.terminated,
-            cardClassName: styles.terminated,
-          },
-        ]}
       />
       {showSummary && (
         <Summary loans={loans} selectedLoans={walletSelectedLoans} setSelection={setSelection} />

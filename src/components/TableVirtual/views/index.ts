@@ -1,3 +1,3 @@
-export { default as TableView } from './TableView'
-export { default as SortView } from './SortView'
-export { default as CardView } from './CardView'
+export { TableView } from './TableView'
+export { SortView } from './SortView'
+export { CardView } from './CardView'

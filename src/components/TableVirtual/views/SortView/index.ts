@@ -1,1 +1,1 @@
-export { default } from './SortView'
+export { SortView } from './SortView'

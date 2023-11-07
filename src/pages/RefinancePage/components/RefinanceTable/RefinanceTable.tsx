@@ -1,3 +1,5 @@
+import { useMemo } from 'react'
+
 import { useNavigate } from 'react-router-dom'
 
 import EmptyList from '@banx/components/EmptyList'
@@ -32,6 +34,12 @@ export const RefinanceTable = () => {
     navigate(PATHS.LEND)
   }
 
+  const rowParams = useMemo(() => {
+    return {
+      onRowClick: onSelectLoan,
+    }
+  }, [onSelectLoan])
+
   if (showEmptyList)
     return (
       <EmptyList
@@ -46,7 +54,7 @@ export const RefinanceTable = () => {
         data={loans}
         columns={columns}
         className={styles.refinanceTable}
-        onRowClick={onSelectLoan}
+        rowParams={rowParams}
         sortViewParams={sortViewParams}
         loading={loading}
         showCard

@@ -1,5 +1,5 @@
 import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
-import { ColumnType, createColumn } from '@banx/components/TableVirtual'
+import { ColumnType } from '@banx/components/TableVirtual'
 
 import { MarketPreview } from '@banx/api/core'
 import { DAYS_IN_YEAR } from '@banx/constants'
@@ -46,5 +46,5 @@ export const getTableColumns = () => {
     },
   ]
 
-  return columns.map((column) => createColumn(column))
+  return columns
 }

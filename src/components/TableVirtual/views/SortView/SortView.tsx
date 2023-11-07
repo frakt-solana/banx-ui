@@ -20,7 +20,7 @@ interface SortViewProps<T, P> {
   showCard?: boolean
 }
 
-const SortView = <T extends object, P extends object>({
+export const SortView = <T extends object, P extends object>({
   columns,
   searchSelectParams,
   sortParams,
@@ -54,5 +54,3 @@ const SortView = <T extends object, P extends object>({
     </div>
   )
 }
-
-export default SortView
