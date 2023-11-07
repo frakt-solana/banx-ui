@@ -1,5 +1,5 @@
 import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
-import { ColumnType } from '@banx/components/TableVirtual'
+import { ColumnType } from '@banx/components/Table'
 
 import { formatDecimal, formatLoansAmount } from '@banx/utils'
 

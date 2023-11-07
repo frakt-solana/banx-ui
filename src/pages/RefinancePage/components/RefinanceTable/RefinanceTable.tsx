@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import EmptyList from '@banx/components/EmptyList'
-import Table from '@banx/components/TableVirtual'
+import Table from '@banx/components/Table'
 
 import { PATHS } from '@banx/router'
 import { ViewState, useTableView } from '@banx/store'

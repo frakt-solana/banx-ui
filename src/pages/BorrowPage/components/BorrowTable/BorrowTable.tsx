@@ -1,6 +1,6 @@
 import { FC, useMemo } from 'react'
 
-import Table from '@banx/components/TableVirtual'
+import Table from '@banx/components/Table'
 
 import { BorrowNft, Offer } from '@banx/api/core'
 

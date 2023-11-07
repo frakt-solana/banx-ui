@@ -1,5 +1,5 @@
 import { HeaderCell } from '@banx/components/TableComponents'
-import { ColumnType } from '@banx/components/TableVirtual'
+import { ColumnType } from '@banx/components/Table'
 
 import { LeaderboardData } from '@banx/api/user'
 

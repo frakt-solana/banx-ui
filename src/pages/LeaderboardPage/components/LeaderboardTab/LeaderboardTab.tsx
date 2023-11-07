@@ -4,7 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 import EmptyList from '@banx/components/EmptyList'
 import { RadioButton } from '@banx/components/RadioButton'
-import Table from '@banx/components/TableVirtual'
+import Table from '@banx/components/Table'
 
 import { LeaderboardData } from '@banx/api/user'
 

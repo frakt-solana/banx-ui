@@ -3,7 +3,7 @@ import { FC, useCallback, useMemo } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 
 import EmptyList from '@banx/components/EmptyList'
-import Table from '@banx/components/TableVirtual'
+import Table from '@banx/components/Table'
 
 import { Loan, Offer } from '@banx/api/core'
 import { ViewState, useTableView } from '@banx/store'

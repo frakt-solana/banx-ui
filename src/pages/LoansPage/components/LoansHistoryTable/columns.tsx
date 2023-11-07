@@ -4,7 +4,7 @@ import {
   NftInfoCell,
   createSolValueJSX,
 } from '@banx/components/TableComponents'
-import { ColumnType } from '@banx/components/TableVirtual'
+import { ColumnType } from '@banx/components/Table'
 
 import { BorrowerActivity } from '@banx/api/activity'
 import { formatDecimal } from '@banx/utils'

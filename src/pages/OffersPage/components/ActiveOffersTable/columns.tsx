@@ -1,5 +1,5 @@
 import { HeaderCell, NftInfoCell } from '@banx/components/TableComponents'
-import { ColumnType } from '@banx/components/TableVirtual'
+import { ColumnType } from '@banx/components/Table'
 
 import { Loan } from '@banx/api/core'
 

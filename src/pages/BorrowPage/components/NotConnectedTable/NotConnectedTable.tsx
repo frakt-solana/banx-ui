@@ -1,6 +1,6 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 
-import Table from '@banx/components/TableVirtual'
+import Table from '@banx/components/Table'
 
 import { getTableColumns } from './columns'
 import { EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from './constants'
