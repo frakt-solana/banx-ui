@@ -3,6 +3,7 @@
   color: var(--content-primary);
   margin-left: 32px;
   width: calc(100% - 32px);
+  position: relative;
 
   .ant-select-selector {
     background: var(--bg-action) !important;
@@ -117,15 +118,11 @@
 
   font: var(--card-header-sm);
 
-  top: 39px !important;
+  top: 0 !important;
   left: -65px !important;
 
   padding: 0;
   width: calc(100% + 34px) !important;
-
-  @media (max-width: 640px) {
-    top: 31px !important;
-  }
 
   .ant-select-item {
     border-radius: 0;
