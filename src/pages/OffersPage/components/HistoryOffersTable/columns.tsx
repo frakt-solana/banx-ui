@@ -18,8 +18,15 @@ export const getTableColumns = () => {
     {
       key: 'collateral',
       title: <HeaderCell label="Collateral" />,
-      render: (_, loan) => (
-        <NftInfoCell nftName={loan.nft.meta.name} nftImage={loan.nft.meta.imageUrl} />
+      render: (_, { nft }) => (
+        <NftInfoCell
+          nftName={nft.meta.name}
+          nftImage={nft.meta.imageUrl}
+          banxPoints={{
+            partnerPoints: nft.meta.partnerPoints || 0,
+            playerPoints: nft.meta.playerPoints || 0,
+          }}
+        />
       ),
     },
     {
