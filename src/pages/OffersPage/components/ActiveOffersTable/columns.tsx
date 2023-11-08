@@ -53,7 +53,7 @@ export const getTableColumns = ({ isCardView }: GetTableColumns) => {
     },
     {
       key: 'actionsCell',
-      title: <HeaderCell label="Termination" />,
+      title: !isCardView ? <HeaderCell label="Termination" /> : null,
       render: (loan) => <ActionsCell loan={loan} isCardView={isCardView} />,
     },
   ]
