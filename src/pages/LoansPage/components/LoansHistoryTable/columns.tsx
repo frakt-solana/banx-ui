@@ -18,8 +18,15 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
     {
       key: 'collateral',
       title: <HeaderCell label="Collection" />,
-      render: (_, { nftName, nftImageUrl }) => (
-        <NftInfoCell nftName={nftName} nftImage={nftImageUrl} />
+      render: (_, { nftName, nftImageUrl, nft }) => (
+        <NftInfoCell
+          nftName={nftName}
+          nftImage={nftImageUrl}
+          banxPoints={{
+            partnerPoints: nft.meta.partnerPoints || 0,
+            playerPoints: nft.meta.playerPoints || 0,
+          }}
+        />
       ),
     },
     {

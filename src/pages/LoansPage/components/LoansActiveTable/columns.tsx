@@ -12,7 +12,7 @@ import { Loan } from '@banx/api/core'
 import { formatDecimal } from '@banx/utils'
 
 import { LoanOptimistic } from '../../loansState'
-import { ActionsCell, DebtCell, HealthCell, StatusCell } from './TableCells'
+import { ActionsCell, DebtCell, HealthCell, InterestCell, StatusCell } from './TableCells'
 
 import styles from './LoansActiveTable.module.less'
 
@@ -46,6 +46,10 @@ export const getTableColumns = ({
           onCheckboxClick={() => toggleLoanInSelection(loan)}
           nftName={loan.nft.meta.name}
           nftImage={loan.nft.meta.imageUrl}
+          banxPoints={{
+            partnerPoints: loan.nft.meta.partnerPoints || 0,
+            playerPoints: loan.nft.meta.playerPoints || 0,
+          }}
         />
       ),
     },
@@ -57,6 +61,11 @@ export const getTableColumns = ({
       sorter: true,
     },
     {
+      key: 'fee',
+      title: <HeaderCell label="Fee" />,
+      render: (_, loan) => <InterestCell loan={loan} isCardView={isCardView} />,
+    },
+    {
       key: 'repayValue',
       title: <HeaderCell label="Debt" />,
       render: (_, loan) => <DebtCell loan={loan} isCardView={isCardView} />,
@@ -66,7 +75,7 @@ export const getTableColumns = ({
       key: 'health',
       title: (
         <HeaderCell
-          label="Est. Health"
+          label="Health"
           tooltipText="Estimated  health of loans using a formula: 1 - (debt / floor)"
         />
       ),
@@ -77,7 +86,7 @@ export const getTableColumns = ({
       key: 'status',
       title: (
         <HeaderCell
-          label="Loan status"
+          label="Status"
           tooltipText="Current status and duration of the loan that has been passed"
         />
       ),
