@@ -6,13 +6,7 @@ import { createPercentValueJSX, createSolValueJSX } from '@banx/components/Table
 
 import { Loan } from '@banx/api/core'
 import { BONDS, SECONDS_IN_HOUR } from '@banx/constants'
-import {
-  LoanStatus,
-  STATUS_LOANS_COLOR_MAP,
-  STATUS_LOANS_MAP,
-  convertAprToApy,
-  formatDecimal,
-} from '@banx/utils'
+import { LoanStatus, STATUS_LOANS_COLOR_MAP, STATUS_LOANS_MAP, formatDecimal } from '@banx/utils'
 
 import styles from '../LoansActiveTable.module.less'
 
@@ -36,21 +30,21 @@ export const InterestCell: FC<InterestCellProps> = ({ loan, isCardView }) => {
     rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
   })
 
-  const apy = convertAprToApy(amountOfBonds / 1e4)
+  const aprInPercent = amountOfBonds / 100
 
   const formattedFeeValue = createSolValueJSX(weeklyFee, 1e9, '0◎', formatDecimal)
-  const formattedApyValue = createPercentValueJSX(apy)
+  const formattedAprValue = createPercentValueJSX(aprInPercent)
 
   return !isCardView ? (
     <div className={styles.interestInfo}>
       <span className={styles.interestInfoTitle}>{formattedFeeValue} weekly</span>
       <span style={{ color: statusColor }} className={styles.interestInfoSubtitle}>
-        {formattedApyValue} APY
+        {formattedAprValue} APR
       </span>
     </div>
   ) : (
     <span>
-      {formattedFeeValue} weekly ({formattedApyValue} APY)
+      {formattedFeeValue} weekly ({formattedAprValue} APR)
     </span>
   )
 }
