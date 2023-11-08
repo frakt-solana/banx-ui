@@ -67,13 +67,15 @@ const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({ totalClaimed }) => {
 
   return (
     <div className={styles.claimRewardsBlock}>
-      <StatInfo
-        label="Total received"
-        value={totalClaimed}
-        classNamesProps={{ label: styles.claimRewardsLabel }}
-        tooltipText="Your weekly SOL rewards will be airdropped to your wallet on a random time each Monday"
-        flexType="row"
-      />
+      {connected && (
+        <StatInfo
+          label="Total received"
+          value={totalClaimed}
+          classNamesProps={{ label: styles.claimRewardsLabel }}
+          tooltipText="Your weekly SOL rewards will be airdropped to your wallet on a random time each Monday"
+          flexType="row"
+        />
+      )}
       <StatInfo
         label="Next weekly rewards in"
         value={<Timer expiredAt={nextWeeklyRewards.unix()} />}

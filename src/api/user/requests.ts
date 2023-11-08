@@ -10,6 +10,7 @@ import {
   DiscordUserInfoRaw,
   LeaderboardData,
   LeaderboardDataSchema,
+  LeaderboardTimeRange,
   LeaderboardUsersStats,
   SeasonUserRewards,
   SeasonUserRewardsSchema,
@@ -175,6 +176,7 @@ type FetchLeaderboardData = (props: {
   order?: string
   skip: number
   limit: number
+  timeRangeType: LeaderboardTimeRange
 }) => Promise<LeaderboardData[]>
 export const fetchLeaderboardData: FetchLeaderboardData = async ({
   walletPubkey,
@@ -182,10 +184,11 @@ export const fetchLeaderboardData: FetchLeaderboardData = async ({
   userType,
   skip,
   limit,
+  timeRangeType,
 }) => {
   try {
     const { data } = await axios.get<{ data: LeaderboardData[] }>(
-      `${BACKEND_BASE_URL}/leaderboard/${walletPubkey}?order=${order}&skip=${skip}&limit=${limit}&userType=${userType}`,
+      `${BACKEND_BASE_URL}/leaderboard/${walletPubkey}?order=${order}&skip=${skip}&limit=${limit}&userType=${userType}&timeRangeType=${timeRangeType}`,
     )
 
     try {
@@ -200,7 +203,8 @@ export const fetchLeaderboardData: FetchLeaderboardData = async ({
   }
 }
 
-const LEADERBOARD_USERS_STATS_URL = 'https://gist.githubusercontent.com/Timikcool/5e8f09ffaf6e957753c6d8bb79e0dd97/raw/leaderboard.json'
+const LEADERBOARD_USERS_STATS_URL =
+  'https://gist.githubusercontent.com/Timikcool/5e8f09ffaf6e957753c6d8bb79e0dd97/raw/leaderboard.json'
 
 type FetchLeaderboardUsersStats = () => Promise<LeaderboardUsersStats[]>
 export const fetchLeaderboardUsersStats: FetchLeaderboardUsersStats = async () => {

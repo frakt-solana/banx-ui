@@ -71,3 +71,5 @@ export const LeaderboardUsersStatsSchema = z.object({
 })
 
 export type LeaderboardUsersStats = z.infer<typeof LeaderboardUsersStatsSchema>
+
+export type LeaderboardTimeRange = 'all' | 'week'
