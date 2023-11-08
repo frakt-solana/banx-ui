@@ -6,12 +6,13 @@
   overflow: hidden;
 }
 
-.rootTable :global {
-  .ant-table-tbody > tr > td {
+.tableRoot table {
+  tbody > tr > td {
     width: 210px;
-  }
-  .ant-table-tbody > tr > td:last-child {
-    width: 190px;
+
+    &:last-child {
+      width: 190px;
+    }
   }
 }
 

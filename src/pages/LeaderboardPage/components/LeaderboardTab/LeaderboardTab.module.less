@@ -1,11 +1,9 @@
-.tableRoot :global {
-  .ant-table table {
-    width: unset !important;
-  }
-
-  .ant-table-tbody > tr > td:first-child {
-    max-width: 200px;
-    padding-left: 16px !important;
+.tableRoot table {
+  tbody > tr > td {
+    &:first-child {
+      max-width: 190px;
+      padding-left: 16px;
+    }
   }
 }
 

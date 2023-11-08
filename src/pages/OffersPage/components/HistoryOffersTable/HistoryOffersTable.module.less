@@ -6,10 +6,13 @@
   overflow: hidden;
 }
 
-.tableRoot :global {
-  .ant-table-tbody > tr > td,
-  .ant-table-thead > tr > th {
-    width: 180px;
+.tableRoot table {
+  tr {
+    td,
+    th {
+      min-width: 180px;
+      max-width: 180px;
+    }
   }
 }
 
