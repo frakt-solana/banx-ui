@@ -36,6 +36,10 @@ export const getTableColumns = ({
           onCheckboxClick={() => onNftSelect(nft)}
           nftName={nft.nft.nft.meta.name}
           nftImage={nft.nft.nft.meta.imageUrl}
+          banxPoints={{
+            partnerPoints: nft.nft.nft.meta.partnerPoints || 0,
+            playerPoints: nft.nft.nft.meta.playerPoints || 0,
+          }}
         />
       ),
     },

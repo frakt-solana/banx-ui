@@ -15,9 +15,16 @@ export const getTableColumns = () => {
   const columns: ColumnType<LenderActivity>[] = [
     {
       key: 'collateral',
-      title: <HeaderCell label="Collateral" align="left" />,
-      render: (loan) => (
-        <NftInfoCell nftName={loan.nft.meta.name} nftImage={loan.nft.meta.imageUrl} />
+      title: <HeaderCell label="Collateral" />,
+      render: ({ nft }) => (
+        <NftInfoCell
+          nftName={nft.meta.name}
+          nftImage={nft.meta.imageUrl}
+          banxPoints={{
+            partnerPoints: nft.meta.partnerPoints || 0,
+            playerPoints: nft.meta.playerPoints || 0,
+          }}
+        />
       ),
     },
     {
