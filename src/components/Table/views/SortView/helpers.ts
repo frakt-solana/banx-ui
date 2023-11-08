@@ -1,7 +1,4 @@
-import { ReactElement } from 'react'
-
-import { ColumnType } from 'antd/lib/table'
-import { isFunction } from 'lodash'
+import { ColumnType } from '../../types'
 
 interface ParsedTableColumn {
   value: string
@@ -11,9 +8,7 @@ interface ParsedTableColumn {
 export const parseTableColumn = <T>(column: ColumnType<T>): ParsedTableColumn => {
   const { key, title } = column
 
-  const label = isFunction(title)
-    ? (title({}) as ReactElement<{ label: string }>).props.label
-    : (title as string)
+  const label = title?.props.label
 
   return { value: key as string, label }
 }

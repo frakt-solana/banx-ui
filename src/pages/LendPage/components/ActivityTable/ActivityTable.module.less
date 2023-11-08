@@ -1,16 +1,15 @@
-.tableRoot :global {
-  .ant-table-thead > tr > th {
-    background: var(--bg-primary-deep) !important;
+.tableRoot table {
+  thead > tr > th {
+    background: var(--bg-primary-deep);
   }
 
-  .ant-table-tbody > tr > td,
-  .ant-table-thead > tr > th {
+  tr > td,
+  tr > th {
     width: 150px;
-  }
 
-  .ant-table-tbody > tr > td:last-child,
-  .ant-table-thead > tr > th:last-child {
-    width: 180px;
+    &:last-child {
+      width: 180px;
+    }
   }
 }
 

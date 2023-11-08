@@ -6,12 +6,20 @@
   overflow: hidden;
 }
 
-.refinanceTable :global {
-  .ant-table-tbody > tr > td {
-    width: 285px;
-  }
-  .ant-table-tbody > tr > td:last-child {
-    width: 144px;
+.refinanceTable table {
+  tbody > tr > td {
+    min-width: 140px;
+    max-width: 140px;
+
+    &:first-child {
+      min-width: 200px;
+      max-width: 200px;
+    }
+
+    &:last-child {
+      min-width: 160px;
+      max-width: 160px;
+    }
   }
 }
 
