@@ -1,8 +1,14 @@
 import { ColumnsType } from 'antd/es/table'
 
-import { HeaderCell, NftInfoCell, createColumn } from '@banx/components/TableComponents'
+import {
+  HeaderCell,
+  NftInfoCell,
+  createColumn,
+  createSolValueJSX,
+} from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
+import { formatDecimal } from '@banx/utils'
 
 import { APRCell, ActionsCell, InterestCell, LentCell, StatusCell } from './TableCells'
 
@@ -24,6 +30,11 @@ export const getTableColumns = ({ isCardView }: GetTableColumns) => {
       title: <HeaderCell label="Lent" />,
       render: (_, loan) => <LentCell loan={loan} />,
       sorter: true,
+    },
+    {
+      key: 'repaid',
+      title: <HeaderCell label="Total repaid" />,
+      render: (_, loan) => createSolValueJSX(loan.totalRepaidAmount, 1e9, '--', formatDecimal),
     },
     {
       key: 'interest',
