@@ -9,6 +9,7 @@ import Table from '@banx/components/Table'
 import { LeaderboardData } from '@banx/api/user'
 
 import { getTableColumns } from './columns'
+import { TimeRangeSwitcher } from './components'
 import { useLeaderboardData } from './hooks'
 
 import styles from './LeaderboardTab.module.less'
@@ -19,7 +20,15 @@ const LeaderboardTab = () => {
 
   const columns = getTableColumns()
 
-  const { data, hasNextPage, fetchNextPage, filterParams, isLoading } = useLeaderboardData()
+  const {
+    data,
+    hasNextPage,
+    fetchNextPage,
+    filterParams,
+    timeRangeType,
+    onChangeTimeRange,
+    isLoading,
+  } = useLeaderboardData()
 
   const loadMore = useCallback(() => {
     if (hasNextPage) {
@@ -40,7 +49,11 @@ const LeaderboardTab = () => {
 
   return (
     <>
-      <RadioButton className={styles.radioButton} {...filterParams} />
+      <div className={styles.filtersContainer}>
+        <RadioButton className={styles.radioButton} {...filterParams} />
+        <TimeRangeSwitcher selectedMode={timeRangeType} onModeChange={onChangeTimeRange} />
+        <div className={styles.emptyDiv} />
+      </div>
       {!connected && (
         <EmptyList className={styles.emptyList} message="Connect wallet to see your position" />
       )}

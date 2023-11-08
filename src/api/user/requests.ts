@@ -10,6 +10,7 @@ import {
   DiscordUserInfoRaw,
   LeaderboardData,
   LeaderboardDataSchema,
+  LeaderboardTimeRange,
   LeaderboardUsersStats,
   SeasonUserRewards,
   SeasonUserRewardsSchema,
@@ -175,6 +176,7 @@ type FetchLeaderboardData = (props: {
   order?: string
   skip: number
   limit: number
+  timeRangeType: LeaderboardTimeRange
 }) => Promise<LeaderboardData[]>
 export const fetchLeaderboardData: FetchLeaderboardData = async ({
   walletPubkey,
@@ -182,10 +184,11 @@ export const fetchLeaderboardData: FetchLeaderboardData = async ({
   userType,
   skip,
   limit,
+  timeRangeType,
 }) => {
   try {
     const { data } = await axios.get<{ data: LeaderboardData[] }>(
-      `${BACKEND_BASE_URL}/leaderboard/${walletPubkey}?order=${order}&skip=${skip}&limit=${limit}&userType=${userType}`,
+      `${BACKEND_BASE_URL}/leaderboard/${walletPubkey}?order=${order}&skip=${skip}&limit=${limit}&userType=${userType}&timeRangeType=${timeRangeType}`,
     )
 
     try {
