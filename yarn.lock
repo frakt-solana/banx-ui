@@ -3819,10 +3819,10 @@
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.5.tgz#1001cc5e6a3704b83c236027e77f2f58ea010f40"
   integrity sha512-Klz949h02Gz2uZCMGwDUSDS1YBlTdDDgbWHi+81l29tQALUtvz4rAYi5uoVhE5Lagoq6DeqAUlbrHvW/mXDgdQ==
 
-"@types/mixpanel-browser@^2.47.3":
-  version "2.47.3"
-  resolved "https://registry.yarnpkg.com/@types/mixpanel-browser/-/mixpanel-browser-2.47.3.tgz#1c4c96c946aac102e8a4ed941a9ebaae9ff04f8a"
-  integrity sha512-lum9ZdfLihJ89XoCrBjB8le/Vg6ohYSR2/3AdfLWGZdhUBEgftncDO9+0uW08FSN6SLqy2s9zCf55YV5sNLNYA==
+"@types/mixpanel-browser@^2.47.5":
+  version "2.47.5"
+  resolved "https://registry.yarnpkg.com/@types/mixpanel-browser/-/mixpanel-browser-2.47.5.tgz#133dc80307884d6dc3277516a7d309be9ddc8bfd"
+  integrity sha512-qEKrYSN4nUCPLU39YCoF2vszON0KUkPox0mFlrvhdq+amE44CB25+rdfZV4M9n3pEggXuRH+fbdP9qxthvyFUw==
 
 "@types/ms@*":
   version "0.7.31"
