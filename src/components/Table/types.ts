@@ -16,8 +16,7 @@ export interface ColumnType<T> {
   key: string | Key
   title?: string | ReactNode
   render: (record: T, key?: Key) => ReactNode
-  showSorterTooltip?: boolean //? Legacy prop
-  sorter?: boolean //? Legacy prop
+  sorter?: boolean
 }
 
 export type TableRowActiveParams<T> = Array<{
