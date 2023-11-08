@@ -1,4 +1,4 @@
-import { Key, ReactNode } from 'react'
+import { Key, ReactElement, ReactNode } from 'react'
 
 import { SearchSelectProps } from '../SearchSelect'
 import { SortDropdownProps } from '../SortDropdown'
@@ -14,7 +14,7 @@ export interface SortViewParams<T> {
 
 export interface ColumnType<T> {
   key: string | Key
-  title?: string | ReactNode
+  title?: ReactElement
   render: (record: T, key?: Key) => ReactNode
   sorter?: boolean
 }
