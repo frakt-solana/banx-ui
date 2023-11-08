@@ -43,14 +43,14 @@ export const InterestCell: FC<InterestCellProps> = ({ loan, isCardView }) => {
 
   return !isCardView ? (
     <div className={styles.interestInfo}>
-      <span className={styles.interestInfoTitle}>{formattedFeeValue}</span>
+      <span className={styles.interestInfoTitle}>{formattedFeeValue} weekly</span>
       <span style={{ color: statusColor }} className={styles.interestInfoSubtitle}>
-        {formattedApyValue} annualy
+        {formattedApyValue} APY
       </span>
     </div>
   ) : (
     <span>
-      {formattedFeeValue} ({formattedApyValue} fee)
+      {formattedFeeValue} weekly ({formattedApyValue} APY)
     </span>
   )
 }
