@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from 'react'
+import { FC } from 'react'
 
 import moment from 'moment'
 
@@ -17,35 +17,15 @@ export const APRCell: FC<APRCellProps> = ({ loan }) => {
   const { amountOfBonds } = loan.bondTradeTransaction
   const { refinanceAuctionStartedAt } = loan.fraktBond
 
-  const [currentAPR, setCurrentAPR] = useState<number>(0)
+  const currentTime = moment()
+  const auctionStartTime = moment.unix(refinanceAuctionStartedAt)
+  const hoursSinceStart = currentTime.diff(auctionStartTime, 'hours')
 
-  const prevHoursSinceStartRef = useRef<number | null>(null)
+  const apr = amountOfBonds / 100 + hoursSinceStart
 
-  useEffect(() => {
-    const calculateUpdatedAPR = () => {
-      const currentTime = moment()
-      const auctionStartTime = moment.unix(refinanceAuctionStartedAt)
-      const hoursSinceStart = currentTime.diff(auctionStartTime, 'hours')
+  const colorAPR = getColorByPercent(apr, HealthColorDecreasing)
 
-      if (hoursSinceStart !== prevHoursSinceStartRef.current) {
-        const updatedAPR = amountOfBonds / 100 + hoursSinceStart
-        setCurrentAPR(updatedAPR)
-
-        prevHoursSinceStartRef.current = hoursSinceStart
-      }
-    }
-
-    calculateUpdatedAPR()
-    const interval = setInterval(calculateUpdatedAPR, 1000)
-
-    return () => {
-      clearInterval(interval)
-    }
-  }, [refinanceAuctionStartedAt, amountOfBonds])
-
-  const colorAPR = getColorByPercent(currentAPR, HealthColorDecreasing)
-
-  const apy = Math.min(convertAprToApy(currentAPR / 100), MAX_APY_INCREASE_PERCENT)
+  const apy = Math.min(convertAprToApy(apr / 100), MAX_APY_INCREASE_PERCENT)
 
   const isApyIncreaseRateVisible = apy < MAX_APY_INCREASE_PERCENT
 

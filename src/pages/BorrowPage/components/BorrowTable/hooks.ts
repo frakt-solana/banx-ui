@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { filter, first, get, groupBy, includes, isEmpty, map, sortBy, sumBy } from 'lodash'
@@ -150,18 +150,21 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
     }
   }
 
-  const onNftSelect = (nft: TableNftData) => {
-    const isInCart = !!findOfferInCart({ mint: nft.mint })
+  const onNftSelect = useCallback(
+    (nft: TableNftData) => {
+      const isInCart = !!findOfferInCart({ mint: nft.mint })
 
-    if (isInCart) {
-      return removeNft({ mint: nft.mint })
-    }
+      if (isInCart) {
+        return removeNft({ mint: nft.mint })
+      }
 
-    const bestOffer = findBestOffer({ marketPubkey: nft.nft.loan.marketPubkey })
-    if (bestOffer) {
-      addNft({ mint: nft.mint, offer: bestOffer })
-    }
-  }
+      const bestOffer = findBestOffer({ marketPubkey: nft.nft.loan.marketPubkey })
+      if (bestOffer) {
+        addNft({ mint: nft.mint, offer: bestOffer })
+      }
+    },
+    [addNft, findBestOffer, findOfferInCart, removeNft],
+  )
 
   const { viewState } = useTableView()
 

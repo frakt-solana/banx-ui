@@ -1,17 +1,13 @@
-import { ColumnsType } from 'antd/es/table'
-
-import {
-  HeaderCell,
-  NftInfoCell,
-  createColumn,
-  createSolValueJSX,
-} from '@banx/components/TableComponents'
+import { ColumnType } from '@banx/components/Table'
+import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { calcLoanValueWithProtocolFee, formatDecimal } from '@banx/utils'
 
 import { SimpleOffer } from '../../types'
 import { BorrowCell } from './BorrowCell'
 import { TableNftData } from './types'
+
+import styles from './BorrowTable.module.less'
 
 interface GetTableColumnsProps {
   onNftSelect: (nft: TableNftData) => void
@@ -26,11 +22,15 @@ export const getTableColumns = ({
   onBorrow,
   isCardView,
 }: GetTableColumnsProps) => {
-  const columns: ColumnsType<TableNftData> = [
+  const columns: ColumnType<TableNftData>[] = [
     {
       key: 'collateral',
-      title: <HeaderCell label="Collateral" />,
-      render: (_, nft) => (
+      title: (
+        <div className={styles.headerTitleRow}>
+          <HeaderCell label="Collateral" />
+        </div>
+      ),
+      render: (nft) => (
         <NftInfoCell
           selected={nft.selected}
           onCheckboxClick={() => onNftSelect(nft)}
@@ -46,22 +46,23 @@ export const getTableColumns = ({
     {
       key: 'floorPrice',
       title: <HeaderCell label="Floor" />,
-      render: (_, nft) => createSolValueJSX(nft.nft.nft.collectionFloor, 1e9, '--', formatDecimal),
+      render: (nft) => createSolValueJSX(nft.nft.nft.collectionFloor, 1e9, '--', formatDecimal),
     },
     {
       key: 'loanValue',
       title: <HeaderCell label="Borrow" />,
-      render: (_, nft) =>
+      render: (nft) =>
         createSolValueJSX(calcLoanValueWithProtocolFee(nft.loanValue), 1e9, '--', formatDecimal),
     },
     {
       key: 'weeklyFee',
       title: <HeaderCell label="Weekly Fee" />,
-      render: (_, nft) => createSolValueJSX(nft.interest, 1e9, '--', formatDecimal),
+      render: (nft) => createSolValueJSX(nft.interest, 1e9, '--', formatDecimal),
     },
     {
+      key: 'borrowCell',
       title: <HeaderCell label="" />,
-      render: (_, nft) => (
+      render: (nft) => (
         <BorrowCell
           isCardView={isCardView}
           disabled={!!findOfferInCart(nft) || !nft.loanValue}
@@ -71,5 +72,5 @@ export const getTableColumns = ({
     },
   ]
 
-  return columns.map((column) => createColumn(column))
+  return columns
 }

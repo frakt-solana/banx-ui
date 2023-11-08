@@ -1,10 +1,8 @@
-import { ColumnsType } from 'antd/es/table'
-
+import { ColumnType } from '@banx/components/Table'
 import {
   DurationCell,
   HeaderCell,
   NftInfoCell,
-  createColumn,
   createSolValueJSX,
 } from '@banx/components/TableComponents'
 
@@ -14,11 +12,11 @@ import { formatDecimal } from '@banx/utils'
 import { DebtCell, RepaidCell, StatusCell } from './TableCells'
 
 export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
-  const columns: ColumnsType<BorrowerActivity> = [
+  const columns: ColumnType<BorrowerActivity>[] = [
     {
       key: 'collateral',
       title: <HeaderCell label="Collection" />,
-      render: (_, { nftName, nftImageUrl, nft }) => (
+      render: ({ nftName, nftImageUrl, nft }) => (
         <NftInfoCell
           nftName={nftName}
           nftImage={nftImageUrl}
@@ -32,34 +30,34 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
     {
       key: 'borrowed',
       title: <HeaderCell label="Borrowed" />,
-      render: (_, { borrowed }) => createSolValueJSX(borrowed, 1e9, '--', formatDecimal),
+      render: ({ borrowed }) => createSolValueJSX(borrowed, 1e9, '--', formatDecimal),
       sorter: true,
     },
     {
       key: 'debt',
       title: <HeaderCell label="Debt" />,
-      render: (_, loan) => <DebtCell loan={loan} isCardView={isCardView} />,
+      render: (loan) => <DebtCell loan={loan} isCardView={isCardView} />,
     },
     {
       key: 'status',
       title: <HeaderCell label="Loan status" />,
-      render: (_, loan) => <StatusCell loan={loan} />,
+      render: (loan) => <StatusCell loan={loan} />,
     },
     {
       key: 'repaid',
       title: <HeaderCell label="Repaid by" />,
-      render: (_, loan) => <RepaidCell loan={loan} />,
+      render: (loan) => <RepaidCell loan={loan} />,
       sorter: true,
     },
     {
       key: 'timestamp',
       title: <HeaderCell label="When" />,
-      render: (_, { publicKey, timestamp }) => (
+      render: ({ publicKey, timestamp }) => (
         <DurationCell publicKey={publicKey} timestamp={timestamp} />
       ),
       sorter: true,
     },
   ]
 
-  return columns.map((column) => createColumn(column))
+  return columns
 }

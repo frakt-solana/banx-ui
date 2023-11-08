@@ -1,8 +1,9 @@
+import { useMemo } from 'react'
+
 import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 
 import { Loan } from '@banx/api/core'
-import { useFakeInfinityScroll } from '@banx/hooks'
 import { ViewState, useTableView } from '@banx/store'
 import { LoanStatus, determineLoanStatus } from '@banx/utils'
 
@@ -30,33 +31,35 @@ const ActiveOffersTable = () => {
 
   const columns = getTableColumns({ isCardView })
 
-  const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: loans })
+  const rowParams = useMemo(() => {
+    return {
+      activeRowParams: [
+        {
+          condition: checkIsTerminationLoan,
+          className: styles.terminated,
+          cardClassName: styles.terminated,
+        },
+        {
+          condition: checkIsLiquidatedLoan,
+          className: styles.liquidated,
+          cardClassName: styles.liquidated,
+        },
+      ],
+    }
+  }, [])
 
   if (showEmptyList) return <EmptyList {...emptyListParams} />
 
   return (
     <div className={styles.tableRoot}>
       <Table
-        data={data}
+        data={loans}
         columns={columns}
         sortViewParams={sortViewParams}
         className={styles.rootTable}
-        rowKeyField="publicKey"
-        activeRowParams={[
-          {
-            condition: checkIsTerminationLoan,
-            className: styles.terminated,
-            cardClassName: styles.terminated,
-          },
-          {
-            condition: checkIsLiquidatedLoan,
-            className: styles.liquidated,
-            cardClassName: styles.liquidated,
-          },
-        ]}
+        rowParams={rowParams}
         loading={loading}
         showCard
-        fetchMoreTrigger={fetchMoreTrigger}
       />
       <Summary
         loansToClaim={loansToClaim}

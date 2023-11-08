@@ -1,7 +1,6 @@
 import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 
-import { useFakeInfinityScroll } from '@banx/hooks'
 import { ViewState, useTableView } from '@banx/store'
 
 import { getTableColumns } from './columns'
@@ -17,20 +16,16 @@ export const PendingOfferTable = () => {
 
   const columns = getTableColumns({ isCardView })
 
-  const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: offers })
-
   if (showEmptyList) return <EmptyList {...emptyListParams} />
 
   return (
     <Table
-      data={data}
+      data={offers}
       columns={columns}
-      rowKeyField="publicKey"
       className={styles.table}
       sortViewParams={sortViewParams}
       loading={loading}
       showCard
-      fetchMoreTrigger={fetchMoreTrigger}
     />
   )
 }

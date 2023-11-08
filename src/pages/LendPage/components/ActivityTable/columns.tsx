@@ -1,10 +1,8 @@
-import { ColumnsType } from 'antd/es/table'
-
+import { ColumnType } from '@banx/components/Table'
 import {
   DurationCell,
   HeaderCell,
   NftInfoCell,
-  createColumn,
   createSolValueJSX,
 } from '@banx/components/TableComponents'
 
@@ -13,11 +11,11 @@ import { LenderActivity } from '@banx/api/activity'
 import { ReceivedCell, StatusCell } from './TableCells'
 
 export const getTableColumns = () => {
-  const columns: ColumnsType<LenderActivity> = [
+  const columns: ColumnType<LenderActivity>[] = [
     {
       key: 'collateral',
       title: <HeaderCell label="Collateral" />,
-      render: (_, { nft }) => (
+      render: ({ nft }) => (
         <NftInfoCell
           nftName={nft.meta.name}
           nftImage={nft.meta.imageUrl}
@@ -31,13 +29,13 @@ export const getTableColumns = () => {
     {
       key: 'lent',
       title: <HeaderCell label="Lent" />,
-      render: (_, loan) => createSolValueJSX(loan.lent, 1e9),
+      render: (loan) => createSolValueJSX(loan.lent, 1e9),
       sorter: true,
     },
     {
       key: 'interest',
       title: <HeaderCell label="Interest" />,
-      render: (_, loan) => createSolValueJSX(loan.interest, 1e9),
+      render: (loan) => createSolValueJSX(loan.interest, 1e9),
       sorter: true,
     },
     {
@@ -48,23 +46,23 @@ export const getTableColumns = () => {
           tooltipText="Current status and duration of the loan that has been passed"
         />
       ),
-      render: (_, loan) => <StatusCell loan={loan} />,
+      render: (loan) => <StatusCell loan={loan} />,
     },
     {
       key: 'received',
       title: <HeaderCell label="Received" />,
-      render: (_, loan) => <ReceivedCell loan={loan} />,
+      render: (loan) => <ReceivedCell loan={loan} />,
       sorter: true,
     },
     {
       key: 'timestamp',
       title: <HeaderCell label="When" />,
-      render: (_, { publicKey, timestamp }) => (
+      render: ({ publicKey, timestamp }) => (
         <DurationCell publicKey={publicKey} timestamp={timestamp} />
       ),
       sorter: true,
     },
   ]
 
-  return columns.map((column) => createColumn(column))
+  return columns
 }
