@@ -1,5 +1,6 @@
 import { FC } from 'react'
 
+import { LeaderboardTimeRange } from '@banx/api/user'
 import placeholderBanxImg from '@banx/assets/PlaceholderBanx.png'
 import { useImagePreload } from '@banx/hooks'
 import {
@@ -52,4 +53,37 @@ export const PointsCell: FC<{ points: number }> = ({ points = 0 }) => {
   const formattedPoints = formatNumbersWithCommas(points?.toFixed(0))
 
   return <span className={styles.pointsTitleCell}>{formattedPoints}</span>
+}
+
+interface TimeRangeSwitcherProps {
+  selectedMode: LeaderboardTimeRange
+  onModeChange: (newMode: LeaderboardTimeRange) => void
+}
+
+interface ModeOption {
+  label: string
+  value: LeaderboardTimeRange
+}
+
+export const TimeRangeSwitcher: FC<TimeRangeSwitcherProps> = ({ selectedMode, onModeChange }) => {
+  const modeOptions: ModeOption[] = [
+    { label: 'Week', value: 'week' },
+    { label: 'All', value: 'all' },
+  ]
+
+  return (
+    <div className={styles.switcher}>
+      <div className={styles.modesWrapper}>
+        {modeOptions.map(({ label, value }) => (
+          <span
+            key={value}
+            className={selectedMode === value ? styles.active : ''}
+            onClick={() => onModeChange(value)}
+          >
+            {label}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
 }

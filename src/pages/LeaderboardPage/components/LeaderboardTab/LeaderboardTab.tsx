@@ -9,6 +9,7 @@ import Table from '@banx/components/Table'
 import { useIntersection } from '@banx/hooks'
 
 import { getTableColumns } from './columns'
+import { TimeRangeSwitcher } from './components'
 import { useLeaderboardData } from './hooks'
 
 import styles from './LeaderboardTab.module.less'
@@ -21,7 +22,15 @@ const LeaderboardTab = () => {
 
   const { ref: fetchMoreTrigger, inView } = useIntersection()
 
-  const { data, hasNextPage, fetchNextPage, filterParams, isLoading } = useLeaderboardData()
+  const {
+    data,
+    hasNextPage,
+    fetchNextPage,
+    filterParams,
+    timeRangeType,
+    onChangeTimeRange,
+    isLoading,
+  } = useLeaderboardData()
 
   useEffect(() => {
     if (inView && hasNextPage) {
@@ -31,7 +40,11 @@ const LeaderboardTab = () => {
 
   return (
     <>
-      <RadioButton className={styles.radioButton} {...filterParams} />
+      <div className={styles.filtersContainer}>
+        <RadioButton className={styles.radioButton} {...filterParams} />
+        <TimeRangeSwitcher selectedMode={timeRangeType} onModeChange={onChangeTimeRange} />
+        <div className={styles.emptyDiv} />
+      </div>
       {!connected && (
         <EmptyList className={styles.emptyList} message="Connect wallet to see your position" />
       )}
