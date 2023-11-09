@@ -4,7 +4,7 @@ import { isEmpty } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 
-import { Loan } from '@banx/api/core'
+import { Loan, Offer } from '@banx/api/core'
 import {
   isLoanActiveOrRefinanced,
   isLoanLiquidated,
@@ -13,18 +13,27 @@ import {
 } from '@banx/utils'
 
 import { findBestOffer } from '../helpers'
-import { useLendLoansTransactions, useLenderLoansAndOffers } from '../hooks'
+import { useHiddenNftsMints, useLendLoansTransactions, useOptimisticOffers } from '../hooks'
 
 import styles from '../ActiveOffersTable.module.less'
 
 interface ActionsCellProps {
   loan: Loan
+  offers: Record<string, Offer[]>
   isCardView: boolean
+  updateOrAddOffer: (offer: Offer) => void
+  updateOrAddLoan: (loan: Loan) => void
 }
 
-export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView }) => {
-  const { offers, addMints, updateOrAddLoan, updateOrAddOffer, optimisticOffers } =
-    useLenderLoansAndOffers()
+export const ActionsCell: FC<ActionsCellProps> = ({
+  loan,
+  offers,
+  isCardView,
+  updateOrAddOffer,
+  updateOrAddLoan,
+}) => {
+  const { offers: optimisticOffers } = useOptimisticOffers()
+  const { addMints } = useHiddenNftsMints()
 
   const bestOffer = useMemo(() => {
     return findBestOffer({ loan, offers, optimisticOffers })
