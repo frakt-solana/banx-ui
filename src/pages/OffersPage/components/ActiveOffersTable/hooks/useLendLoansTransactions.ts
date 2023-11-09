@@ -1,8 +1,8 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan, Offer } from '@banx/api/core'
 import { defaultTxnErrorHandler } from '@banx/transactions'
-import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import {
   makeClaimAction,
   makeInstantRefinanceAction,

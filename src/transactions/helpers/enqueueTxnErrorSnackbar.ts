@@ -1,6 +1,7 @@
+import { TxnError } from 'solana-transactions-executor'
+
 import { enqueueSnackbar } from '@banx/utils'
 
-import { TxnError } from '../types'
 import { getTxnErrorDefinition } from './getTxnErrorDefinition'
 
 export const enqueueTxnErrorSnackbar = (error: TxnError) => {

@@ -9,7 +9,7 @@ import { Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
-import { MakeActionFn } from '../TxnExecutor'
+import { MakeActionFn } from 'solana-transactions-executor'
 
 export type MakeClaimActionParams = {
   offerPubkey: string

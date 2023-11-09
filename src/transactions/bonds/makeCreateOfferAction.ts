@@ -3,11 +3,10 @@ import {
   BondOfferOptimistic,
   createPerpetualBondOffer,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { MakeActionFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
-
-import { MakeActionFn } from '../TxnExecutor'
 
 export type MakeCreateOfferActionParams = {
   marketPubkey: string

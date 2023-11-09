@@ -2,19 +2,18 @@ import { CONSTANT_BID_CAP } from 'fbonds-core/lib/fbond-protocol/constants'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { chunk, cloneDeep, first, groupBy } from 'lodash'
 import moment from 'moment'
+import { TxnExecutor, WalletAndConnection } from 'solana-transactions-executor'
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { LoansOptimisticStore, OffersOptimisticStore } from '@banx/store'
 import { BorrowType, defaultTxnErrorHandler } from '@banx/transactions'
-import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import {
   BORROW_NFT_PER_TXN,
   MakeBorrowActionParams,
   getNftBorrowType,
   makeBorrowAction,
 } from '@banx/transactions/borrow'
-import { WalletAndConnection } from '@banx/types'
 import { enqueueSnackbar } from '@banx/utils'
 
 import { CartState } from '../../cartState'
