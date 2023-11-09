@@ -15,7 +15,7 @@ export const getTableColumns = () => {
   const columns: ColumnType<LenderActivity>[] = [
     {
       key: 'collateral',
-      title: <HeaderCell label="Collateral" />,
+      title: <HeaderCell label="Collateral" align="left" />,
       render: ({ nft }) => (
         <NftInfoCell
           nftName={nft.meta.name}
