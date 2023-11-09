@@ -8,27 +8,12 @@ import { useIsLedger } from '@banx/store'
 import { copyToClipboard, shortenAddress, useSolanaBalance } from '@banx/utils'
 
 import Checkbox from '../Checkbox'
+import { StatInfo, VALUES_TYPES } from '../StatInfo'
 import UserAvatar from '../UserAvatar'
 import { iconComponents } from './constants'
-import { formatBalance, getUserRewardsValue } from './helpers'
-import { useFetchUserRewards } from './hooks'
+import { useFetchUserLockedRewards } from './hooks'
 
 import styles from './WalletModal.module.less'
-
-const BalanceInfo: FC<{ label: string; value: string; icon?: FC }> = ({
-  value,
-  label,
-  icon: Icon,
-}) => {
-  return (
-    <div className={styles.userBalanceInfo}>
-      <span className={styles.userBalanceLabel}>{label}</span>
-      <p className={styles.userBalanceValue}>
-        {value} {Icon && <Icon />}
-      </p>
-    </div>
-  )
-}
 
 const UserGeneralInfo = () => {
   const { publicKey } = useWallet()
@@ -57,13 +42,21 @@ const UserBalance = () => {
 
   const publicKeyString = publicKey?.toBase58() || ''
 
-  const { data } = useFetchUserRewards(publicKeyString)
-  const rewardsValue = getUserRewardsValue(data)
+  const { data } = useFetchUserLockedRewards(publicKeyString)
+
+  const displayRewardsValue = (data?.rewards || 0)?.toFixed(2)
 
   return (
     <div className={styles.userBalanceContainer}>
-      <BalanceInfo label="Balance" value={`${formatBalance(solanaBalance)} ◎`} />
-      <BalanceInfo label="Rewards" value={`${formatBalance(rewardsValue)}`} icon={FRKT} />
+      <StatInfo flexType="row" label="Balance" value={solanaBalance} />
+      <StatInfo
+        flexType="row"
+        label="Rewards"
+        value={displayRewardsValue}
+        classNamesProps={{ value: styles.userLockedTokens }}
+        valueType={VALUES_TYPES.STRING}
+        icon={FRKT}
+      />
     </div>
   )
 }
