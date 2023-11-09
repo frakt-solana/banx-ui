@@ -4,12 +4,11 @@ import {
   removePerpetualOffer,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
+import { MakeActionFn } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
-
-import { MakeActionFn } from 'solana-transactions-executor'
 
 export type MakeClaimActionParams = {
   offerPubkey: string
