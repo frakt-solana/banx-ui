@@ -1,8 +1,8 @@
-import { ActiveRowParams } from './types'
+import { TableRowActiveParams } from './types'
 
 export const getCardOrRowClassName = <T>(
   record: T,
-  params?: ActiveRowParams<T>[],
+  params?: TableRowActiveParams<T>,
   isCard = false,
 ): string => {
   if (!params || params.length === 0) return ''

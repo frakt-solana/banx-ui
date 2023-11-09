@@ -5,7 +5,6 @@ import { chain } from 'lodash'
 import { Button } from '@banx/components/Buttons'
 
 import { Loan, Offer } from '@banx/api/core'
-import { useWalletLoansAndOffers } from '@banx/pages/LoansPage/hooks'
 import { useModal } from '@banx/store'
 import { isLoanTerminating } from '@banx/utils'
 
@@ -16,16 +15,15 @@ import styles from './ActionsCell.module.less'
 
 interface ActionsCellProps {
   loan: Loan
+  offers: Record<string, Offer[]>
   isCardView: boolean
   disableActions: boolean
 }
 
-export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView, disableActions }) => {
+export const ActionsCell: FC<ActionsCellProps> = ({ loan, offers, isCardView, disableActions }) => {
   const { fraktBond } = loan
 
   const { open } = useModal()
-
-  const { offers } = useWalletLoansAndOffers()
 
   const isTerminatingStatus = isLoanTerminating(loan)
 

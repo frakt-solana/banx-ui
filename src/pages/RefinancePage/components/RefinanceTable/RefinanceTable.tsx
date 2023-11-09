@@ -1,9 +1,10 @@
+import { useMemo } from 'react'
+
 import { useNavigate } from 'react-router-dom'
 
 import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 
-import { useFakeInfinityScroll } from '@banx/hooks'
 import { PATHS } from '@banx/router'
 import { ViewState, useTableView } from '@banx/store'
 
@@ -23,8 +24,6 @@ export const RefinanceTable = () => {
 
   const { viewState } = useTableView()
 
-  const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: loans })
-
   const columns = getTableColumns({
     isCardView: viewState === ViewState.CARD,
     onSelectLoan,
@@ -34,6 +33,12 @@ export const RefinanceTable = () => {
   const goToLendPage = () => {
     navigate(PATHS.LEND)
   }
+
+  const rowParams = useMemo(() => {
+    return {
+      onRowClick: onSelectLoan,
+    }
+  }, [onSelectLoan])
 
   if (showEmptyList)
     return (
@@ -46,15 +51,13 @@ export const RefinanceTable = () => {
   return (
     <div className={styles.tableRoot}>
       <Table
-        data={data}
+        data={loans}
         columns={columns}
         className={styles.refinanceTable}
-        onRowClick={onSelectLoan}
+        rowParams={rowParams}
         sortViewParams={sortViewParams}
-        rowKeyField="publicKey"
         loading={loading}
         showCard
-        fetchMoreTrigger={fetchMoreTrigger}
       />
       <Summary
         loans={loans}

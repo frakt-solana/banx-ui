@@ -6,19 +6,25 @@
   overflow: hidden;
 }
 
-.borrowTable :global {
-  .ant-table-tbody > tr > td {
-    width: 285px;
-  }
-  .ant-table-tbody > tr > td:last-child {
-    width: 144px;
+.borrowTable table {
+  tr {
+    th,
+    td {
+      min-width: 220px;
+      max-width: 220px;
+
+      &:last-child {
+        min-width: 120px;
+        max-width: 120px;
+      }
+    }
   }
 }
 
 .headerTitleRow {
   display: flex;
-  align-items: baseline;
-  gap: 8px;
+  align-items: center;
+  margin-left: 34px;
 }
 
 .checkbox {

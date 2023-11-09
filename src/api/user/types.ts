@@ -31,14 +31,8 @@ export interface BanxNotification {
   date: number
 }
 
-interface Rewards {
-  user: string
-  reward: number
-}
-
-export interface UserRewards {
-  lenders: Rewards[]
-  borrowers: Rewards[]
+export interface UserLockedRewards {
+  rewards: number
 }
 
 export const SeasonUserRewardsSchema = z.object({

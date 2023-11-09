@@ -14,7 +14,7 @@ import {
   LeaderboardUsersStats,
   SeasonUserRewards,
   SeasonUserRewardsSchema,
-  UserRewards,
+  UserLockedRewards,
 } from './types'
 
 type FetchDiscordUser = (props: { publicKey: web3.PublicKey }) => Promise<DiscordUserInfo | null>
@@ -144,11 +144,17 @@ export const checkBanxAccessToken: CheckBanxAccessToken = async (token) => {
   return data?.token_valid ?? false
 }
 
-type FetchUserRewards = (props: { publicKey: string }) => Promise<UserRewards>
-export const fetchUserRewards: FetchUserRewards = async ({ publicKey }) => {
-  const { data } = await axios.get<UserRewards>(`${BACKEND_BASE_URL}/stats/rewards/${publicKey}`)
+type FetchUserLockedRewards = (props: { publicKey: string }) => Promise<UserLockedRewards>
+export const fetchUserLockedRewards: FetchUserLockedRewards = async ({ publicKey }) => {
+  try {
+    const { data } = await axios.get<{ data: UserLockedRewards }>(
+      `${BACKEND_BASE_URL}/stats/locked-rewards/${publicKey}`,
+    )
 
-  return data
+    return data?.data ?? { rewards: 0 }
+  } catch (error) {
+    return { rewards: 0 }
+  }
 }
 
 type FetchSeasonUserRewards = (props: { walletPubkey: string }) => Promise<SeasonUserRewards | null>

@@ -1,48 +1,50 @@
 import { ReactNode } from 'react'
 
-import { ColumnType } from 'antd/es/table'
 import classNames from 'classnames'
+import { VirtuosoGrid } from 'react-virtuoso'
 
-import { TableProps } from '../../Table'
 import { getCardOrRowClassName } from '../../helpers'
+import { ColumnType, TableViewProps } from '../../types'
 
 import styles from './CardView.module.less'
 
-type CardViewProps<T> = Omit<TableProps<T, null>, 'sortViewParams' | 'loading'>
-
-const CardView = <T extends object>({
+export const CardView = <T extends object>({
   data,
   className,
   columns,
-  onRowClick,
-  activeRowParams,
-  rowKeyField,
-}: CardViewProps<T>) => {
+  rowParams,
+  loadMore,
+}: TableViewProps<T>) => {
   const handleRowClick = (dataRow: T) => {
-    if (onRowClick) {
-      onRowClick(dataRow)
+    if (rowParams?.onRowClick) {
+      rowParams?.onRowClick(dataRow)
     }
   }
 
   return (
-    <div className={classNames(styles.cardList, className)}>
-      {data.map((dataRow) => (
+    <VirtuosoGrid
+      data={data}
+      overscan={200}
+      endReached={loadMore}
+      listClassName={classNames(styles.cardList, className)}
+      itemContent={(index) => (
         <div
-          key={String(dataRow[rowKeyField])}
-          onClick={() => handleRowClick(dataRow)}
-          className={classNames(styles.card, getCardOrRowClassName(dataRow, activeRowParams, true))}
-          style={{ cursor: onRowClick ? 'pointer' : 'default' }}
+          key={String(data[index])}
+          onClick={() => handleRowClick(data[index])}
+          className={classNames(
+            styles.card,
+            getCardOrRowClassName(data[index], rowParams?.activeRowParams, true),
+          )}
+          style={{ cursor: rowParams?.onRowClick ? 'pointer' : 'default' }}
         >
           {columns.map((column) => (
-            <CardRow key={column.key} column={column} dataRow={dataRow} />
+            <CardRow key={`${column.key}-${index}`} column={column} dataRow={data[index]} />
           ))}
         </div>
-      ))}
-    </div>
+      )}
+    />
   )
 }
-
-export default CardView
 
 interface CardRowProps<T extends object> {
   column: ColumnType<T>
@@ -52,9 +54,8 @@ interface CardRowProps<T extends object> {
 const CardRow = <T extends object>({ column, dataRow }: CardRowProps<T>) => {
   const { key, title, render } = column || {}
 
-  const columnKey = key as keyof T
-  const renderedTitle = title && columnKey ? (title as () => ReactNode)() : null
-  const renderedValue = render?.(dataRow[columnKey], dataRow, columnKey as number)
+  const renderedTitle = title && key ? title : null
+  const renderedValue = render?.(dataRow, key)
 
   return (
     <div className={styles.cardRow}>
