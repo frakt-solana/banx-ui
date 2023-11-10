@@ -10,7 +10,12 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { PATHS } from '@banx/router'
 
-import { DEFAULT_SORT_OPTION, EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
+import {
+  DEFAULT_SORT_OPTION,
+  EMPTY_MESSAGE,
+  NOT_CONNECTED_MESSAGE,
+  SORT_OPTIONS,
+} from '../constants'
 import { isLoanAbleToClaim, isLoanAbleToTerminate } from '../helpers'
 import { useLenderLoansAndOffers } from './useLenderLoansAndOffers'
 import { useSortedLenderLoans } from './useSortedOffers'
@@ -65,6 +70,7 @@ export const useActiveOffersTable = () => {
   const sortParams = {
     option: sortOption,
     onChange: setSortOption,
+    options: SORT_OPTIONS,
   }
 
   const filteredLoans = useMemo(() => {
