@@ -10,10 +10,11 @@ import {
   DiscordUserInfoRaw,
   LeaderboardData,
   LeaderboardDataSchema,
+  LeaderboardTimeRange,
   LeaderboardUsersStats,
   SeasonUserRewards,
   SeasonUserRewardsSchema,
-  UserRewards,
+  UserLockedRewards,
 } from './types'
 
 type FetchDiscordUser = (props: { publicKey: web3.PublicKey }) => Promise<DiscordUserInfo | null>
@@ -143,11 +144,17 @@ export const checkBanxAccessToken: CheckBanxAccessToken = async (token) => {
   return data?.token_valid ?? false
 }
 
-type FetchUserRewards = (props: { publicKey: string }) => Promise<UserRewards>
-export const fetchUserRewards: FetchUserRewards = async ({ publicKey }) => {
-  const { data } = await axios.get<UserRewards>(`${BACKEND_BASE_URL}/stats/rewards/${publicKey}`)
+type FetchUserLockedRewards = (props: { publicKey: string }) => Promise<UserLockedRewards>
+export const fetchUserLockedRewards: FetchUserLockedRewards = async ({ publicKey }) => {
+  try {
+    const { data } = await axios.get<{ data: UserLockedRewards }>(
+      `${BACKEND_BASE_URL}/stats/locked-rewards/${publicKey}`,
+    )
 
-  return data
+    return data?.data ?? { rewards: 0 }
+  } catch (error) {
+    return { rewards: 0 }
+  }
 }
 
 type FetchSeasonUserRewards = (props: { walletPubkey: string }) => Promise<SeasonUserRewards | null>
@@ -175,6 +182,7 @@ type FetchLeaderboardData = (props: {
   order?: string
   skip: number
   limit: number
+  timeRangeType: LeaderboardTimeRange
 }) => Promise<LeaderboardData[]>
 export const fetchLeaderboardData: FetchLeaderboardData = async ({
   walletPubkey,
@@ -182,10 +190,11 @@ export const fetchLeaderboardData: FetchLeaderboardData = async ({
   userType,
   skip,
   limit,
+  timeRangeType,
 }) => {
   try {
     const { data } = await axios.get<{ data: LeaderboardData[] }>(
-      `${BACKEND_BASE_URL}/leaderboard/${walletPubkey}?order=${order}&skip=${skip}&limit=${limit}&userType=${userType}`,
+      `${BACKEND_BASE_URL}/leaderboard/${walletPubkey}?order=${order}&skip=${skip}&limit=${limit}&userType=${userType}&timeRangeType=${timeRangeType}`,
     )
 
     try {
@@ -201,7 +210,7 @@ export const fetchLeaderboardData: FetchLeaderboardData = async ({
 }
 
 const LEADERBOARD_USERS_STATS_URL =
-  'https://gist.githubusercontent.com/Timikcool/5e8f09ffaf6e957753c6d8bb79e0dd97/raw/20681155535ac6c90b0656a098eec0038809967e/leaderboard.json'
+  'https://gist.githubusercontent.com/Timikcool/5e8f09ffaf6e957753c6d8bb79e0dd97/raw/leaderboard.json'
 
 type FetchLeaderboardUsersStats = () => Promise<LeaderboardUsersStats[]>
 export const fetchLeaderboardUsersStats: FetchLeaderboardUsersStats = async () => {

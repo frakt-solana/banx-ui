@@ -10,15 +10,16 @@ import {
 } from '@banx/components/PageHeader'
 import { VALUES_TYPES } from '@banx/components/StatInfo'
 
-import { calcLoanBorrowedAmount, calculateLoanRepayValue } from '@banx/utils'
+import { Loan } from '@banx/api/core'
+import { calculateLoanRepayValue } from '@banx/utils'
 
-import { useWalletLoansAndOffers } from '../../hooks'
+interface LoansHeaderProps {
+  loans: Loan[]
+}
 
-const LoansHeader: FC = () => {
-  const { loans } = useWalletLoansAndOffers()
-
+const LoansHeader: FC<LoansHeaderProps> = ({ loans }) => {
   const numberOfLoans = loans.length
-  const totalBorrowed = sumBy(loans, (loan) => calcLoanBorrowedAmount(loan))
+  const totalBorrowed = sumBy(loans, (loan) => loan.fraktBond.borrowedAmount)
   const totalDebt = sumBy(loans, (loan) => calculateLoanRepayValue(loan))
 
   return (

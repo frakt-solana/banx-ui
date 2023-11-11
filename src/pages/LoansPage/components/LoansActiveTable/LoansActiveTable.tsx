@@ -1,8 +1,11 @@
+import { FC, useCallback, useMemo } from 'react'
+
+import { useWallet } from '@solana/wallet-adapter-react'
+
 import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 
-import { Loan } from '@banx/api/core'
-import { useFakeInfinityScroll } from '@banx/hooks'
+import { Loan, Offer } from '@banx/api/core'
 import { ViewState, useTableView } from '@banx/store'
 import { LoanStatus, determineLoanStatus } from '@banx/utils'
 
@@ -13,58 +16,103 @@ import { useLoansActiveTable } from './hooks'
 
 import styles from './LoansActiveTable.module.less'
 
-export const LoansActiveTable = () => {
+interface LoansActiveTableProps {
+  loans: Loan[]
+  isLoading: boolean
+  offers: Record<string, Offer[]>
+}
+
+export const LoansActiveTable: FC<LoansActiveTableProps> = ({
+  loans: rawLoans,
+  isLoading,
+  offers,
+}) => {
+  const { publicKey: walletPublicKey } = useWallet()
+  const walletPublicKeyString = walletPublicKey?.toBase58() || ''
+
   const { sortViewParams, loans, loading, showEmptyList, emptyListParams, showSummary } =
-    useLoansActiveTable()
+    useLoansActiveTable({
+      loans: rawLoans,
+      isLoading,
+    })
 
-  const { selection, toggleLoanInSelection, findLoanInSelection, clearSelection, setSelection } =
-    useSelectedLoans()
+  const {
+    selection,
+    toggle: toggleLoanInSelection,
+    find,
+    clear: clearSelection,
+    set: setSelection,
+  } = useSelectedLoans()
 
-  const hasSelectedLoans = !!selection?.length
+  const walletSelectedLoans = useMemo(() => {
+    if (!walletPublicKeyString) return []
+    return selection.filter(({ wallet }) => wallet === walletPublicKeyString)
+  }, [selection, walletPublicKeyString])
+
+  const hasSelectedLoans = useMemo(() => !!walletSelectedLoans?.length, [walletSelectedLoans])
 
   const { viewState } = useTableView()
 
-  const onSelectAll = (): void => {
+  const onSelectAll = useCallback(() => {
     if (hasSelectedLoans) {
       clearSelection()
     } else {
-      setSelection(loans)
+      setSelection(loans, walletPublicKeyString)
     }
-  }
+  }, [clearSelection, hasSelectedLoans, loans, setSelection, walletPublicKeyString])
+
+  const findLoanInSelection = useCallback(
+    (loanPubkey: string) => {
+      return find(loanPubkey, walletPublicKeyString)
+    },
+    [find, walletPublicKeyString],
+  )
+
+  const onRowClick = useCallback(
+    (loan: Loan) => {
+      toggleLoanInSelection(loan, walletPublicKeyString)
+    },
+    [toggleLoanInSelection, walletPublicKeyString],
+  )
 
   const columns = getTableColumns({
     onSelectAll,
     findLoanInSelection,
-    toggleLoanInSelection,
+    toggleLoanInSelection: onRowClick,
     hasSelectedLoans,
     isCardView: viewState === ViewState.CARD,
+    offers,
   })
 
-  const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: loans })
+  const rowParams = useMemo(() => {
+    return {
+      onRowClick,
+      activeRowParams: [
+        {
+          condition: checkIsTerminationLoan,
+          className: styles.terminated,
+          cardClassName: styles.terminated,
+        },
+      ],
+    }
+  }, [onRowClick])
 
   if (showEmptyList) return <EmptyList {...emptyListParams} />
 
   return (
     <div className={styles.tableRoot}>
       <Table
-        data={data}
+        data={loans}
         columns={columns}
-        onRowClick={toggleLoanInSelection}
+        rowParams={rowParams}
         sortViewParams={sortViewParams}
         className={styles.table}
-        rowKeyField="publicKey"
         loading={loading}
         showCard
-        activeRowParams={[
-          {
-            condition: checkIsTerminationLoan,
-            className: styles.terminated,
-            cardClassName: styles.terminated,
-          },
-        ]}
       />
-      <div ref={fetchMoreTrigger} />
-      {showSummary && <Summary loans={loans} />}
+      {showSummary && (
+        <Summary loans={loans} selectedLoans={walletSelectedLoans} setSelection={setSelection} />
+      )}
     </div>
   )
 }

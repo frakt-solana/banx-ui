@@ -1,9 +1,10 @@
+import { useMemo } from 'react'
+
 import { useNavigate } from 'react-router-dom'
 
 import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 
-import { useFakeInfinityScroll } from '@banx/hooks'
 import { PATHS } from '@banx/router'
 import { ViewState, useTableView } from '@banx/store'
 
@@ -18,12 +19,10 @@ export const RefinanceTable = () => {
   const { loans, sortViewParams, loading, showEmptyList } = useRefinanceTable()
   const navigate = useNavigate()
 
-  const { selectedLoans, onSelectLoan, findSelectedLoan, onSelectAllLoans, onDeselectAllLoans } =
+  const { selectedLoans, onSelectLoan, findSelectedLoan, onSelectLoans, onDeselectAllLoans } =
     useLoansState()
 
   const { viewState } = useTableView()
-
-  const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: loans })
 
   const columns = getTableColumns({
     isCardView: viewState === ViewState.CARD,
@@ -34,6 +33,12 @@ export const RefinanceTable = () => {
   const goToLendPage = () => {
     navigate(PATHS.LEND)
   }
+
+  const rowParams = useMemo(() => {
+    return {
+      onRowClick: onSelectLoan,
+    }
+  }, [onSelectLoan])
 
   if (showEmptyList)
     return (
@@ -46,19 +51,18 @@ export const RefinanceTable = () => {
   return (
     <div className={styles.tableRoot}>
       <Table
-        data={data}
+        data={loans}
         columns={columns}
         className={styles.refinanceTable}
-        onRowClick={onSelectLoan}
+        rowParams={rowParams}
         sortViewParams={sortViewParams}
-        rowKeyField="publicKey"
         loading={loading}
         showCard
       />
-      <div ref={fetchMoreTrigger} />
       <Summary
+        loans={loans}
         selectedLoans={selectedLoans}
-        onSelectAllLoans={() => onSelectAllLoans(loans)}
+        onSelectLoans={onSelectLoans}
         onDeselectAllLoans={onDeselectAllLoans}
       />
     </div>

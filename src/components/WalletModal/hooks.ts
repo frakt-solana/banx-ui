@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { create } from 'zustand'
 
-import { fetchUserRewards } from '@banx/api/user'
+import { fetchUserLockedRewards } from '@banx/api/user'
 
 interface WalletModalState {
   visible: boolean
@@ -15,10 +15,10 @@ export const useWalletModal = create<WalletModalState>((set) => ({
   setVisible: (nextValue) => set((state) => ({ ...state, visible: nextValue })),
 }))
 
-export const useFetchUserRewards = (walletPublicKey: string) => {
+export const useFetchUserLockedRewards = (walletPublicKey: string) => {
   const { data, isLoading, isFetching } = useQuery(
-    ['fetchUserRewards', walletPublicKey],
-    () => fetchUserRewards({ publicKey: walletPublicKey }),
+    ['userLockedRewards', walletPublicKey],
+    () => fetchUserLockedRewards({ publicKey: walletPublicKey }),
     {
       staleTime: 60_000,
       refetchOnWindowFocus: false,
@@ -27,7 +27,7 @@ export const useFetchUserRewards = (walletPublicKey: string) => {
   )
 
   return {
-    data: data,
+    data,
     loading: isLoading || isFetching,
   }
 }

@@ -2,11 +2,23 @@
   &,
   svg,
   img {
-    height: 24px;
-    width: 24px;
+    border-radius: 50%;
+
+    height: 40px;
+    width: 40px;
+
+    @media (max-width: 640px) {
+      height: 32px;
+      width: 32px;
+    }
   }
 
-  img {
-    border-radius: 50%;
+  svg {
+    rect {
+      fill: var(--bg-secondary);
+    }
+    path {
+      fill: var(--bg-border);
+    }
   }
 }

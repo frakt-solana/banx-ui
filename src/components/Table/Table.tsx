@@ -1,48 +1,27 @@
-import { Dispatch, SetStateAction } from 'react'
+import { memo } from 'react'
 
-import { ColumnsType } from 'antd/es/table'
 import classNames from 'classnames'
 import { isEmpty } from 'lodash'
 
 import { ViewState, useTableView } from '@banx/store'
 
 import { Loader } from '../Loader'
-import { SCROLL_THRESHOLD_HEIGHT } from './constants'
-import { ActiveRowParams, PartialBreakpoints, SortViewParams } from './types'
+import { TableProps } from './types'
 import { CardView, SortView, TableView } from './views'
 
 import styles from './Table.module.less'
-
-export interface TableProps<T, P> {
-  data: Array<T>
-  columns: ColumnsType<T>
-  rowKeyField: keyof T
-  loading?: boolean
-
-  sortViewParams?: SortViewParams<P>
-  activeRowParams?: ActiveRowParams<T>[]
-
-  fetchMoreTrigger?: Dispatch<SetStateAction<Element | null>>
-  showCard?: boolean
-  onRowClick?: (dataItem: T) => void
-  breakpoints?: PartialBreakpoints
-  className?: string
-  classNameTableWrapper?: string
-  scrollX?: number
-  emptyMessage?: string
-}
 
 const Table = <T extends object, P extends object>({
   data,
   columns,
   sortViewParams,
-  activeRowParams,
+  rowParams,
   showCard,
   loading,
   emptyMessage,
+  className,
   classNameTableWrapper,
-  fetchMoreTrigger,
-  ...props
+  loadMore,
 }: TableProps<T, P>) => {
   const { viewState } = useTableView()
 
@@ -61,16 +40,14 @@ const Table = <T extends object, P extends object>({
           <ViewComponent
             data={data}
             columns={columns}
-            activeRowParams={activeRowParams}
-            {...props}
+            rowParams={rowParams}
+            className={className}
+            loadMore={loadMore}
           />
-        )}
-        {fetchMoreTrigger && (
-          <div style={{ height: SCROLL_THRESHOLD_HEIGHT }} ref={fetchMoreTrigger} />
         )}
       </div>
     </>
   )
 }
 
-export default Table
+export default memo(Table) as typeof Table

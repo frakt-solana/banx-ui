@@ -1,9 +1,10 @@
-.table :global {
-  .ant-table-tbody > tr > td {
+.table table {
+  tbody > tr > td {
     width: 178px;
-  }
-  .ant-table-tbody > tr > td:last-child {
-    width: 156px;
+
+    &:last-child {
+      width: 156px;
+    }
   }
 }
 
@@ -21,6 +22,7 @@
 }
 
 .removeButton {
+  background-color: var(--additional-red-secondary) !important;
   border: 1px solid var(--additional-red-primary) !important;
 
   &:hover {

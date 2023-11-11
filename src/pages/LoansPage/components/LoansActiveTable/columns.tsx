@@ -1,26 +1,22 @@
-import { ColumnType } from 'antd/es/table'
-
 import Checkbox from '@banx/components/Checkbox'
-import {
-  HeaderCell,
-  NftInfoCell,
-  createColumn,
-  createSolValueJSX,
-} from '@banx/components/TableComponents'
+import { ColumnType } from '@banx/components/Table'
+import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
 
-import { Loan } from '@banx/api/core'
+import { Loan, Offer } from '@banx/api/core'
 import { formatDecimal } from '@banx/utils'
 
-import { ActionsCell, DebtCell, HealthCell, StatusCell } from './TableCells'
+import { LoanOptimistic } from '../../loansState'
+import { ActionsCell, DebtCell, HealthCell, InterestCell, StatusCell } from './TableCells'
 
 import styles from './LoansActiveTable.module.less'
 
 interface GetTableColumnsProps {
   onSelectAll: () => void
-  findLoanInSelection: (loanPubkey: string) => Loan | null
+  findLoanInSelection: (loanPubkey: string) => LoanOptimistic | null
   toggleLoanInSelection: (loan: Loan) => void
   hasSelectedLoans: boolean
   isCardView: boolean
+  offers: Record<string, Offer[]>
 }
 
 export const getTableColumns = ({
@@ -29,7 +25,8 @@ export const getTableColumns = ({
   toggleLoanInSelection,
   hasSelectedLoans,
   isCardView,
-}: GetTableColumnsProps) => {
+  offers,
+}: GetTableColumnsProps): ColumnType<Loan>[] => {
   const columns: ColumnType<Loan>[] = [
     {
       key: 'collateral',
@@ -39,55 +36,66 @@ export const getTableColumns = ({
           <HeaderCell label="Collateral" />
         </div>
       ),
-      render: (_, loan) => (
+      render: (loan) => (
         <NftInfoCell
           selected={!!findLoanInSelection(loan.publicKey)}
           onCheckboxClick={() => toggleLoanInSelection(loan)}
           nftName={loan.nft.meta.name}
           nftImage={loan.nft.meta.imageUrl}
+          banxPoints={{
+            partnerPoints: loan.nft.meta.partnerPoints || 0,
+            playerPoints: loan.nft.meta.playerPoints || 0,
+          }}
         />
       ),
     },
     {
       key: 'loanValue',
       title: <HeaderCell label="Borrowed" />,
-      render: (_, { fraktBond }) =>
+      render: ({ fraktBond }) =>
         createSolValueJSX(fraktBond.borrowedAmount, 1e9, '--', formatDecimal),
       sorter: true,
     },
     {
+      key: 'fee',
+      title: <HeaderCell label="Fee" />,
+      render: (loan) => <InterestCell loan={loan} isCardView={isCardView} />,
+    },
+    {
       key: 'repayValue',
       title: <HeaderCell label="Debt" />,
-      render: (_, loan) => <DebtCell loan={loan} isCardView={isCardView} />,
+      render: (loan) => <DebtCell loan={loan} isCardView={isCardView} />,
       sorter: true,
     },
     {
       key: 'health',
       title: (
         <HeaderCell
-          label="Est. Health"
+          label="Health"
           tooltipText="Estimated  health of loans using a formula: 1 - (debt / floor)"
         />
       ),
-      render: (_, loan) => <HealthCell loan={loan} />,
+      render: (loan) => <HealthCell loan={loan} />,
       sorter: true,
     },
     {
       key: 'status',
       title: (
         <HeaderCell
-          label="Loan status"
-          tooltipText="Current status and remaining duration of a loan"
+          label="Status"
+          tooltipText="Current status and duration of the loan that has been passed"
         />
       ),
-      render: (_, loan) => <StatusCell loan={loan} isCardView={isCardView} />,
+      render: (loan) => <StatusCell loan={loan} isCardView={isCardView} />,
       sorter: true,
     },
     {
+      key: 'actionsCell',
       title: <HeaderCell label="" />,
-      render: (_, loan) => (
+      render: (loan) => (
         <ActionsCell
           loan={loan}
+          offers={offers}
           isCardView={isCardView}
           disableActions={!!findLoanInSelection(loan.publicKey)}
         />
@@ -95,5 +103,5 @@ export const getTableColumns = ({
     },
   ]
 
-  return columns.map((column) => createColumn(column))
+  return columns
 }

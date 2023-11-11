@@ -1,6 +1,5 @@
-import { ColumnsType } from 'antd/es/table'
-
-import { HeaderCell, NftInfoCell, createColumn } from '@banx/components/TableComponents'
+import { ColumnType } from '@banx/components/Table'
+import { HeaderCell, NftInfoCell } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
 
@@ -11,18 +10,25 @@ interface GetTableColumns {
 }
 
 export const getTableColumns = ({ isCardView }: GetTableColumns) => {
-  const columns: ColumnsType<Loan> = [
+  const columns: ColumnType<Loan>[] = [
     {
       key: 'collateral',
       title: <HeaderCell label="Collateral" />,
-      render: (_, loan) => (
-        <NftInfoCell nftName={loan.nft.meta.name} nftImage={loan.nft.meta.imageUrl} />
+      render: ({ nft }) => (
+        <NftInfoCell
+          nftName={nft.meta.name}
+          nftImage={nft.meta.imageUrl}
+          banxPoints={{
+            partnerPoints: nft.meta.partnerPoints || 0,
+            playerPoints: nft.meta.playerPoints || 0,
+          }}
+        />
       ),
     },
     {
       key: 'lent',
       title: <HeaderCell label="Lent" />,
-      render: (_, loan) => <LentCell loan={loan} isCardView={isCardView} />,
+      render: (loan) => <LentCell loan={loan} />,
       sorter: true,
     },
     {
@@ -33,12 +39,12 @@ export const getTableColumns = ({ isCardView }: GetTableColumns) => {
           tooltipText="Sum of lent amount and accrued interest to date"
         />
       ),
-      render: (_, loan) => <InterestCell loan={loan} />,
+      render: (loan) => <InterestCell loan={loan} isCardView={isCardView} />,
     },
     {
       key: 'apy',
       title: <HeaderCell label="APY" />,
-      render: (_, loan) => <APRCell loan={loan} />,
+      render: (loan) => <APRCell loan={loan} />,
       sorter: true,
     },
     {
@@ -46,17 +52,18 @@ export const getTableColumns = ({ isCardView }: GetTableColumns) => {
       title: (
         <HeaderCell
           label="Loan status"
-          tooltipText="Current status and remaining duration of a loan"
+          tooltipText="Current status and duration of the loan that has been passed"
         />
       ),
-      render: (_, loan) => <StatusCell loan={loan} isCardView={isCardView} />,
+      render: (loan) => <StatusCell loan={loan} isCardView={isCardView} />,
       sorter: true,
     },
     {
-      title: <HeaderCell label="Termination" />,
-      render: (_, loan) => <ActionsCell loan={loan} isCardView={isCardView} />,
+      key: 'actionsCell',
+      title: !isCardView ? <HeaderCell label="Termination" /> : undefined,
+      render: (loan) => <ActionsCell loan={loan} isCardView={isCardView} />,
     },
   ]
 
-  return columns.map((column) => createColumn(column))
+  return columns
 }

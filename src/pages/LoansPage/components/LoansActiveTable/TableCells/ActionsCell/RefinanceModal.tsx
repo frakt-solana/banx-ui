@@ -10,10 +10,9 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan, Offer } from '@banx/api/core'
-import { BONDS, SECONDS_IN_HOUR } from '@banx/constants'
-import { useWalletLoansAndOffers } from '@banx/pages/LoansPage/hooks'
+import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
-import { useLoansOptimistic, useModal } from '@banx/store'
+import { useLoansOptimistic, useModal, useOffersOptimistic } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeBorrowRefinanceAction } from '@banx/transactions/loans'
@@ -38,9 +37,9 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
   const { connection } = useConnection()
 
   const { update: updateLoansOptimistic } = useLoansOptimistic()
-  const { clearSelection } = useSelectedLoans()
+  const { clear: clearSelection } = useSelectedLoans()
 
-  const { updateOptimisticOffers } = useWalletLoansAndOffers()
+  const { update: updateOptimisticOffers } = useOffersOptimistic()
 
   const isTerminatingStatus = isLoanTerminating(loan)
 
@@ -48,7 +47,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
   const currentLoanDailyFee = calculateCurrentInterestSolPure({
     loanValue: currentLoanBorrowedAmount,
     startTime: loan.bondTradeTransaction.soldAt,
-    currentTime: moment().unix(),
+    currentTime: loan.bondTradeTransaction.soldAt + SECONDS_IN_DAY,
     rateBasePoints: loan.bondTradeTransaction.amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
   })
   const currentLoanDebt = calculateLoanRepayValue(loan)
@@ -61,7 +60,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
   const newLoanDailyFee = calculateCurrentInterestSolPure({
     loanValue: currentSpotPrice,
     startTime: moment().unix(),
-    currentTime: moment().unix() + 24 * SECONDS_IN_HOUR,
+    currentTime: moment().unix() + SECONDS_IN_DAY,
     rateBasePoints: (offer?.marketApr || 0) + BONDS.PROTOCOL_REPAY_FEE,
   })
   const newLoanDebt = currentSpotPrice

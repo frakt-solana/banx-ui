@@ -1,28 +1,26 @@
 import { useState } from 'react'
 
-import { ColumnsType } from 'antd/es/table'
-
 import { SearchSelect, SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortDropdown } from '@banx/components/SortDropdown'
 import { Toggle, ToggleProps } from '@banx/components/Toggle'
 
 import { ViewState, useTableView } from '@banx/store'
 
-import { SortParams } from '../../types'
+import { ColumnType, SortParams } from '../../types'
 import { SwitchModeButtons } from './components'
 import { parseTableColumn } from './helpers'
 
 import styles from './SortView.module.less'
 
 interface SortViewProps<T, P> {
-  columns: ColumnsType<T>
+  columns: ColumnType<T>[]
   searchSelectParams: SearchSelectProps<P>
   sortParams?: SortParams
   toggleParams?: ToggleProps
   showCard?: boolean
 }
 
-const SortView = <T extends object, P extends object>({
+export const SortView = <T extends object, P extends object>({
   columns,
   searchSelectParams,
   sortParams,
@@ -56,5 +54,3 @@ const SortView = <T extends object, P extends object>({
     </div>
   )
 }
-
-export default SortView
