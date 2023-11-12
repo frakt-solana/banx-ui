@@ -39,7 +39,10 @@ export const useActiveOffersTable = () => {
     return map(loansGroupedByCollection, (groupedLoan) => {
       const firstLoanInGroup = first(groupedLoan)
       const { collectionName = '', collectionImage = '' } = firstLoanInGroup?.nft.meta || {}
-      const taken = sumBy(groupedLoan, (nft) => nft.bondTradeTransaction.solAmount + nft.bondTradeTransaction.feeAmount)
+      const taken = sumBy(
+        groupedLoan,
+        (nft) => nft.bondTradeTransaction.solAmount + nft.bondTradeTransaction.feeAmount,
+      )
 
       return { collectionName, collectionImage, taken }
     })
