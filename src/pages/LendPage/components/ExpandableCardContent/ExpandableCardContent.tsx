@@ -37,10 +37,10 @@ const ExpandableCardContent: FC<ExpandableCardContentProps> = ({
   }
 
   return (
-    <div className={styles.content}>
-      <div className={styles.tabsContentWrapper}>
+    <div className={styles.container}>
+      <div className={styles.content}>
         <Tabs {...tabsParams} />
-        <div className={styles.tabContent}>{TABS_COMPONENTS[tabsParams.value]}</div>
+        {TABS_COMPONENTS[tabsParams.value]}
       </div>
       {isOrderBookVisible && <OrderBook {...marketParams} />}
     </div>

@@ -1,69 +1,37 @@
-.title {
-  font: var(--title-xs);
-  text-align: right;
-  text-transform: uppercase;
-}
-
-.label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: var(--content-secondary);
-  font: var(--table-header-md);
-  text-transform: uppercase;
-  margin: 24px 0 8px;
-}
-
-.orderBook {
+.orderBookWrapper {
   display: flex;
   flex-direction: column;
-  margin-right: 24px;
-
-  max-width: 300px;
-  min-width: 300px;
-  height: 333px;
 
   @media (max-width: 960px) {
     display: none;
   }
 }
 
-.content {
+.orderBook {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  position: relative;
-  height: 100%;
+  margin: 16px 24px 0;
+  height: calc(100% - 72px - 16px); //? 72px => accrued interest container, 16px => labels container
+  min-width: 296px;
 }
 
-.list {
-  overflow-y: scroll;
-  overflow-x: hidden;
-
+.labels {
   display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.noData {
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  overflow-y: scroll;
-  height: 100%;
+  justify-content: space-between;
+  color: var(--content-secondary);
+  font: var(--table-header-md);
+  text-transform: uppercase;
 }
-.noDataTitle {
-  font-family: var(--font-family-syne);
-  font-weight: 700;
-  font-size: 22px;
-  line-height: 26px;
-  text-align: center;
+
+.mobileLabels {
+  padding: 0 24px;
 }
-.noDataSubtitle {
+
+.orderBookList {
   margin-top: 8px;
-  font: var(--font-text-4);
-  text-align: center;
+  overflow: hidden scroll;
+  position: relative;
 }
 
 // Mobile orderbook styles
@@ -79,9 +47,6 @@
   bottom: 0;
   z-index: 3;
 
-  padding: 24px;
-
-  gap: 8px;
   width: 100%;
 
   &.open {
@@ -95,59 +60,6 @@
   @media (max-width: 960px) {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-  }
-
-  @media (max-width: 640px) {
-    padding: 16px;
-  }
-
-  .mobileContent {
-    padding-bottom: 32px;
-    height: 100%;
-  }
-
-  .collectionMobileInfo {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-
-    @media (max-width: 640px) {
-      gap: 2px;
-    }
-  }
-
-  .collapsedContentWrapper {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .collapsedMobileContent {
-    display: flex;
-    gap: 8px;
-  }
-  .collapsedMobileImage {
-    height: 40px;
-    width: 40px;
-
-    @media (max-width: 640px) {
-      height: 32px;
-      width: 32px;
-    }
-  }
-  .collectionMobileTitle {
-    font: var(--card-header-md);
-
-    @media (max-width: 640px) {
-      font: var(--card-header-sm);
-    }
-  }
-  .collectionMobileSubtitle {
-    font: var(--body-text-md);
-
-    @media (max-width: 640px) {
-      font: var(--body-text-xs);
-    }
   }
 }
 
@@ -157,4 +69,84 @@
   &.active {
     transform: none;
   }
+}
+
+.collectionMobileInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  @media (max-width: 640px) {
+    gap: 2px;
+  }
+}
+.collapsedContentWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px;
+
+  @media (max-width: 640px) {
+    padding: 16px;
+  }
+}
+
+.mobileOrderBookList {
+  padding: 0 24px;
+  height: 100%;
+
+  @media (max-width: 640px) {
+    padding: 0 16px;
+  }
+}
+
+.collapsedMobileContent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.collapsedMobileImage {
+  height: 40px;
+  width: 40px;
+
+  @media (max-width: 640px) {
+    height: 32px;
+    width: 32px;
+  }
+}
+.collectionMobileTitle {
+  font: var(--card-header-md);
+
+  @media (max-width: 640px) {
+    font: var(--card-header-sm);
+  }
+}
+.collectionMobileSubtitle {
+  font: var(--body-text-md);
+
+  @media (max-width: 640px) {
+    font: var(--body-text-xs);
+  }
+}
+
+.accruedInterestContainer {
+  border-top: var(--border-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  width: 100%;
+}
+.accruedInterestInfo {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.accruedInterestLabel {
+  color: var(--content-secondary);
+  font: var(--table-header-md);
+  text-transform: uppercase;
+}
+.accruedInterestValue {
+  font: var(--important-text-xl);
 }

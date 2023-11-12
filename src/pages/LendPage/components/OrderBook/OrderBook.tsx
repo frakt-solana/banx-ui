@@ -8,9 +8,9 @@ import { MarketPreview } from '@banx/api/core'
 
 import { OrderBookMarketParams } from '../ExpandableCardContent'
 import {
-  ChevronMobileButton,
+  AccruedInterest,
   CollapsedMobileContent,
-  OrderBookLabel,
+  OrderBookLabels,
   OrderBookList,
 } from './components'
 import { OrderBookParams, useOrderBook } from './hooks'
@@ -18,12 +18,12 @@ import { OrderBookParams, useOrderBook } from './hooks'
 import styles from './OrderBook.module.less'
 
 const OrderBookDesktop: FC<{ orderBookParams: OrderBookParams }> = ({ orderBookParams }) => (
-  <div className={styles.orderBook}>
-    <h5 className={styles.title}>Offers</h5>
-    <OrderBookLabel />
-    <div className={classNames(styles.content, { [styles.visible]: !orderBookParams?.offers })}>
+  <div className={styles.orderBookWrapper}>
+    <div className={styles.orderBook}>
+      <OrderBookLabels />
       <OrderBookList orderBookParams={orderBookParams} />
     </div>
+    <AccruedInterest onClick={() => null} value={26} />
   </div>
 )
 
@@ -40,33 +40,36 @@ const OrderBookMobile: FC<OrderBookMobileProps> = ({ marketPreview, orderBookPar
     setOrderBookOpen(!isOrderBookOpen)
   }
 
-  const { collectionImage, collectionName } = marketPreview || {}
-  const { offers } = orderBookParams || {}
+  const totalUserOffers = useMemo(() => {
+    const isNotSynthetic = (publicKey: string) => publicKey !== PUBKEY_PLACEHOLDER
+    const isOwner = (assetReceiver: string) => assetReceiver === publicKey?.toBase58()
 
-  const userOffers = useMemo(() => {
-    return offers.filter(
-      (offer) =>
-        offer.assetReceiver === publicKey?.toBase58() && offer.publicKey !== PUBKEY_PLACEHOLDER,
+    const filtered = orderBookParams.offers.filter(
+      ({ assetReceiver, publicKey }) => isOwner(assetReceiver) && isNotSynthetic(publicKey),
     )
-  }, [offers, publicKey])
+
+    return filtered.length
+  }, [orderBookParams.offers, publicKey])
 
   return (
     <div className={classNames(styles.orderBookMobile, { [styles.open]: isOrderBookOpen })}>
-      <div className={styles.collapsedContentWrapper}>
-        <CollapsedMobileContent
-          collectionImage={collectionImage}
-          collectionName={collectionName}
-          totalUserOffers={userOffers.length}
-        />
-        <ChevronMobileButton isOrderBookOpen={isOrderBookOpen} onToggleVisible={toggleOrderBook} />
-      </div>
+      <CollapsedMobileContent
+        collectionImage={marketPreview?.collectionImage}
+        collectionName={marketPreview?.collectionName}
+        totalUserOffers={totalUserOffers}
+        isOrderBookOpen={isOrderBookOpen}
+        onToggleVisible={toggleOrderBook}
+      />
       {isOrderBookOpen && (
-        <div className={styles.mobileContent}>
+        <>
+          <OrderBookLabels className={styles.mobileLabels} />
           <OrderBookList
+            className={styles.mobileOrderBookList}
             orderBookParams={orderBookParams}
             closeOrderBook={() => setOrderBookOpen(false)}
           />
-        </div>
+          <AccruedInterest onClick={() => null} value={26} />
+        </>
       )}
     </div>
   )
