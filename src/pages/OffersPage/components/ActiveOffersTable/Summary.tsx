@@ -39,7 +39,7 @@ export const Summary: FC<SummaryProps> = ({
   }, [loansToClaim])
 
   const totalTerminateLent = useMemo(() => {
-    return sumBy(loansToTerminate, ({ fraktBond }) => fraktBond.currentPerpetualBorrowed)
+    return sumBy(loansToTerminate, ({ fraktBond, bondTradeTransaction }) => bondTradeTransaction.solAmount + bondTradeTransaction.feeAmount)
   }, [loansToTerminate])
 
   const terminateLoans = () => {
