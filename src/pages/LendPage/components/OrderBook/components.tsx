@@ -3,6 +3,7 @@ import { FC } from 'react'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
+import { Loader } from '@banx/components/Loader'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { ChevronDown } from '@banx/icons'
@@ -23,23 +24,28 @@ export const OrderBookList: FC<OrderBookListProps> = ({
   closeOrderBook,
   className,
 }) => {
-  const { offers, goToEditOffer, isOwnOffer, bestOffer, offerMode } = orderBookParams || {}
+  const { offers, goToEditOffer, isOwnOffer, bestOffer, offerMode, isLoading } =
+    orderBookParams || {}
 
   return (
     <ul className={classNames(styles.orderBookList, { [styles.visible]: !offers }, className)}>
-      {offers.map((offer, idx) => (
-        <Offer
-          key={idx}
-          offer={offer}
-          editOffer={() => {
-            goToEditOffer(offer)
-            closeOrderBook?.()
-          }}
-          offerMode={offerMode}
-          isOwnOffer={isOwnOffer(offer)}
-          bestOffer={bestOffer}
-        />
-      ))}
+      {isLoading ? (
+        <Loader size="small" />
+      ) : (
+        offers.map((offer, idx) => (
+          <Offer
+            key={idx}
+            offer={offer}
+            editOffer={() => {
+              goToEditOffer(offer)
+              closeOrderBook?.()
+            }}
+            offerMode={offerMode}
+            isOwnOffer={isOwnOffer(offer)}
+            bestOffer={bestOffer}
+          />
+        ))
+      )}
     </ul>
   )
 }

@@ -13,6 +13,7 @@ export interface OrderBookParams {
   isOwnOffer: (offer: SyntheticOffer) => boolean
   bestOffer: SyntheticOffer
   offerMode: OfferMode
+  isLoading: boolean
 }
 
 type UseOrderBook = (props: OrderBookMarketParams) => {
@@ -30,7 +31,7 @@ export const useOrderBook: UseOrderBook = (props) => {
     (market) => market.marketPubkey === marketPubkey,
   )
 
-  const { offers, bestOffer } = useMarketOrders({
+  const { offers, bestOffer, isLoading } = useMarketOrders({
     marketPubkey,
     offerPubkey,
   })
@@ -50,6 +51,7 @@ export const useOrderBook: UseOrderBook = (props) => {
   return {
     orderBookParams: {
       offers,
+      isLoading,
       goToEditOffer,
       isOwnOffer,
       bestOffer,

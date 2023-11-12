@@ -29,37 +29,35 @@
 }
 
 .orderBookList {
+  display: flex;
+  flex-direction: column;
   margin-top: 8px;
   overflow: hidden scroll;
   position: relative;
+  height: 100%;
 }
 
 // Mobile orderbook styles
 .orderBookMobile {
   display: none;
 
-  background: var(--bg-primary);
-  border-top: var(--border-less-primary);
-
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 3;
-
-  width: 100%;
-
-  &.open {
-    border-top: 0;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    height: 100%;
-  }
-
   @media (max-width: 960px) {
+    background: var(--bg-primary);
+
     display: flex;
     flex-direction: column;
+
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3;
+    width: 100%;
+  }
+
+  &.open {
+    position: absolute;
+    top: 0;
   }
 }
 
@@ -75,12 +73,9 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-
-  @media (max-width: 640px) {
-    gap: 2px;
-  }
 }
 .collapsedContentWrapper {
+  border-top: var(--border-less-primary);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -93,7 +88,6 @@
 
 .mobileOrderBookList {
   padding: 0 24px;
-  height: 100%;
 
   @media (max-width: 640px) {
     padding: 0 16px;
@@ -122,8 +116,6 @@
   }
 }
 .collectionMobileSubtitle {
-  font: var(--body-text-md);
-
   @media (max-width: 640px) {
     font: var(--body-text-xs);
   }
