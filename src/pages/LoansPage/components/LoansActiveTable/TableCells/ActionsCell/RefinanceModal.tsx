@@ -54,8 +54,8 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
 
   const currentSpotPrice = offer?.currentSpotPrice || 0
 
-  const newLoanBorrowedAmount =
-    currentSpotPrice - currentSpotPrice * (BONDS.PROTOCOL_FEE_PERCENT / 1e4) || 0
+  const newLoanBorrowedAmount = currentSpotPrice
+  const newLoanDebt = currentSpotPrice
 
   const newLoanDailyFee = calculateCurrentInterestSolPure({
     loanValue: currentSpotPrice,
@@ -63,7 +63,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
     currentTime: moment().unix() + SECONDS_IN_DAY,
     rateBasePoints: (offer?.marketApr || 0) + BONDS.PROTOCOL_REPAY_FEE,
   })
-  const newLoanDebt = currentSpotPrice
+
   const differenceToPay = newLoanBorrowedAmount - currentLoanDebt
 
   const refinance = () => {
