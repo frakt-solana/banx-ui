@@ -49,15 +49,15 @@ export const renderOption: FC<OptionProps> = ({
   index,
   optionClassNameProps,
 }) => {
-  const { labelKey, secondLabel, valueKey, imageKey } = optionKeys
+  const { labelKey, secondLabel, valueKey, imageKey, labelIcon } = optionKeys
 
   const value = option[valueKey]
   const label = option[labelKey]
   const image = option[imageKey]
+  const Icon = labelIcon?.key && option[labelIcon.key] ? labelIcon.icon : null
 
   const secondValue = secondLabel ? option[secondLabel.key] : ''
-
-  const isOptionSelected = selectedOptions.includes(label)
+  const isSelected = selectedOptions.includes(label)
 
   return (
     <Select.Option className={index % 2 === 0 ? styles.evenOption : ''} key={value} value={label}>
@@ -65,9 +65,10 @@ export const renderOption: FC<OptionProps> = ({
         <div className={styles.flexRow}>
           <div className={classNames('searchSelectImageContainer', styles.relativeImageContainer)}>
             {image && <img className={styles.image} src={image} />}
-            {isOptionSelected && <div className={styles.selected} />}
+            {isSelected && <div className={styles.selected} />}
           </div>
           <p className={classNames(styles.label, optionClassNameProps?.label)}>{label}</p>
+          {Icon && <Icon />}
         </div>
         <SecondValue secondLabel={secondLabel} value={secondValue} />
       </div>
