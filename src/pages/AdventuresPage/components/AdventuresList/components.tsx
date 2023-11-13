@@ -4,6 +4,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { Adventure, BanxUser } from 'fbonds-core/lib/fbond-protocol/types'
 import { chunk, find } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 
@@ -12,7 +13,6 @@ import { useCountdown } from '@banx/hooks'
 import { Alert, CircleCheck, MoneyBill, Timer } from '@banx/icons'
 import { useIsLedger } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
-import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import {
   NFTS_TO_SUBSCRIBE_PER_TXN,
   getAdventureStatus,

@@ -3,12 +3,12 @@ import { Connection } from '@solana/web3.js'
 import { web3 } from 'fbonds-core'
 import { EMPTY_PUBKEY } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getRuleset } from 'fbonds-core/lib/fbond-protocol/helpers'
+import { TxnError } from 'solana-transactions-executor'
 
 import { BorrowNft, Loan } from '@banx/api/core'
 import { captureSentryTxnError } from '@banx/utils'
 
 import { enqueueTxnErrorSnackbar, signAndConfirmTransaction } from './helpers'
-import { TxnError } from './types'
 
 export type MakeTransactionFn<T> = (
   params: T & { connection: Connection; wallet: WalletContextState },

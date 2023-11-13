@@ -1,8 +1,8 @@
 import * as Sentry from '@sentry/browser'
 import { Dictionary } from 'lodash'
+import { TxnError } from 'solana-transactions-executor'
 
 import { SENTRY } from '@banx/constants'
-import { TxnError } from '@banx/transactions'
 
 const IGNORE_ERRORS = [
   'Registration failed - push service error',

@@ -1,11 +1,11 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { chunk, groupBy } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
 import { useIsLedger, useLoansOptimistic } from '@banx/store'
 import { BorrowType, defaultTxnErrorHandler } from '@banx/transactions'
-import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import {
   MakeRepayLoansActionParams,
   REPAY_NFT_PER_TXN,

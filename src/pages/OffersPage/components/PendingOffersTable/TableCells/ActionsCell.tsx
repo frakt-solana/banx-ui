@@ -2,6 +2,7 @@ import { FC, useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { useNavigate } from 'react-router-dom'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 
@@ -10,7 +11,6 @@ import { useUserOffers } from '@banx/pages/OffersPage/hooks'
 import { PATHS } from '@banx/router'
 import { useMarketsURLControl, useSyntheticOffers } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
-import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeRemoveOfferAction } from '@banx/transactions/bonds'
 import { enqueueSnackbar, trackPageEvent } from '@banx/utils'
 
