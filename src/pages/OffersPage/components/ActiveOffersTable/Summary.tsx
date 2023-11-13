@@ -41,8 +41,7 @@ export const Summary: FC<SummaryProps> = ({
   const totalTerminateLent = useMemo(() => {
     return sumBy(
       loansToTerminate,
-      ({ bondTradeTransaction }) =>
-        bondTradeTransaction.solAmount + bondTradeTransaction.feeAmount,
+      ({ bondTradeTransaction }) => bondTradeTransaction.solAmount + bondTradeTransaction.feeAmount,
     )
   }, [loansToTerminate])
 

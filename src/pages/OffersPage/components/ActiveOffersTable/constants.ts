@@ -1,7 +1,14 @@
 import { SortOption } from '@banx/components/SortDropdown'
 
+export const SORT_OPTIONS = [
+  { label: 'Lent', value: 'lent' },
+  { label: 'LTV', value: 'ltv' },
+  { label: 'APY', value: 'apy' },
+  { label: 'Status', value: 'status' },
+]
+
 export const DEFAULT_SORT_OPTION: SortOption = {
-  label: 'Loan status',
+  label: 'Status',
   value: 'status_asc',
 }
 
