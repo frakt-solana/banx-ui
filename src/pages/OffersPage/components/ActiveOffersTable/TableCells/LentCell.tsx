@@ -10,9 +10,12 @@ interface LentCellProps {
 }
 
 export const LentCell: FC<LentCellProps> = ({ loan }) => {
-  const { currentPerpetualBorrowed } = loan.fraktBond || {}
+  const { bondTradeTransaction, totalRepaidAmount = 0 } = loan
+  const { solAmount, feeAmount } = loan.bondTradeTransaction
 
-  const formattedLentValue = createSolValueJSX(currentPerpetualBorrowed, 1e9, '0◎', formatDecimal)
+  const totalLent = bondTradeTransaction ? solAmount + feeAmount + totalRepaidAmount : 0
+
+  const formattedLentValue = createSolValueJSX(totalLent, 1e9, '0◎', formatDecimal)
 
   return formattedLentValue
 }

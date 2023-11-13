@@ -2,6 +2,7 @@ import { FC, useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { sumBy } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { StatInfo } from '@banx/components/StatInfo'
@@ -10,7 +11,6 @@ import { Loan } from '@banx/api/core'
 import { TABLET_WIDTH } from '@banx/constants'
 import { useWindowSize } from '@banx/hooks'
 import { defaultTxnErrorHandler } from '@banx/transactions'
-import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeClaimAction, makeTerminateAction } from '@banx/transactions/loans'
 import { enqueueSnackbar } from '@banx/utils'
 
@@ -39,7 +39,10 @@ export const Summary: FC<SummaryProps> = ({
   }, [loansToClaim])
 
   const totalTerminateLent = useMemo(() => {
-    return sumBy(loansToTerminate, ({ fraktBond }) => fraktBond.currentPerpetualBorrowed)
+    return sumBy(
+      loansToTerminate,
+      ({ bondTradeTransaction }) => bondTradeTransaction.solAmount + bondTradeTransaction.feeAmount,
+    )
   }, [loansToTerminate])
 
   const terminateLoans = () => {

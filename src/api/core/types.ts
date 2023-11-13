@@ -18,6 +18,7 @@ export const MarketPreviewSchema = z
     activeBondsAmount: z.number(),
     activeOfferAmount: z.number(),
     loansTvl: z.number(),
+    isHot: z.boolean(),
   })
   .merge(MarketMetaSchema)
 
@@ -138,6 +139,7 @@ export const LoanSchema = z.object({
   fraktBond: FraktBondSchema,
   bondTradeTransaction: BondTradeTransactionSchema,
   nft: NFTSchema,
+  totalRepaidAmount: z.number().optional(), //? exist only in fetchLenderLoansAndOffers request
 })
 
 export type Loan = z.infer<typeof LoanSchema>

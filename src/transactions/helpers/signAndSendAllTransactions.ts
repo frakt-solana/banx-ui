@@ -1,7 +1,8 @@
 import { WalletContextState } from '@solana/wallet-adapter-react'
 import { web3 } from 'fbonds-core'
+import { TxnError } from 'solana-transactions-executor'
 
-import { TxnError, TxnsAndSigners } from '../types'
+import { TxnsAndSigners } from '../types'
 import { defaultTxnErrorHandler } from './defaultTxnErrorHandler'
 
 interface SignAndSendAllTransactionsProps {

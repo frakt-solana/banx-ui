@@ -3,6 +3,7 @@ import React, { FC } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { map, sumBy } from 'lodash'
 import moment from 'moment'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
 import { Button } from '@banx/components/Buttons'
@@ -19,7 +20,6 @@ import {
 import { Loan } from '@banx/api/core'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
-import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeRefinanceAction } from '@banx/transactions/loans'
 import {
   HealthColorDecreasing,

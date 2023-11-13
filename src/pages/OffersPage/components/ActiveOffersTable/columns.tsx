@@ -1,19 +1,28 @@
 import { ColumnType } from '@banx/components/Table'
-import { HeaderCell, NftInfoCell } from '@banx/components/TableComponents'
+import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
 
-import { Loan } from '@banx/api/core'
+import { Loan, Offer } from '@banx/api/core'
+import { formatDecimal } from '@banx/utils'
 
 import { APRCell, ActionsCell, InterestCell, LentCell, StatusCell } from './TableCells'
 
 interface GetTableColumns {
   isCardView: boolean
+  offers: Record<string, Offer[]>
+  updateOrAddOffer: (offer: Offer) => void
+  updateOrAddLoan: (loan: Loan) => void
 }
 
-export const getTableColumns = ({ isCardView }: GetTableColumns) => {
+export const getTableColumns = ({
+  offers,
+  updateOrAddOffer,
+  updateOrAddLoan,
+  isCardView,
+}: GetTableColumns) => {
   const columns: ColumnType<Loan>[] = [
     {
       key: 'collateral',
-      title: <HeaderCell label="Collateral" />,
+      title: <HeaderCell label="Collateral" align="left" />,
       render: ({ nft }) => (
         <NftInfoCell
           nftName={nft.meta.name}
@@ -29,7 +38,11 @@ export const getTableColumns = ({ isCardView }: GetTableColumns) => {
       key: 'lent',
       title: <HeaderCell label="Lent" />,
       render: (loan) => <LentCell loan={loan} />,
-      sorter: true,
+    },
+    {
+      key: 'repaid',
+      title: <HeaderCell label="Total repaid" />,
+      render: (loan) => createSolValueJSX(loan.totalRepaidAmount, 1e9, '0◎', formatDecimal),
     },
     {
       key: 'interest',
@@ -45,23 +58,29 @@ export const getTableColumns = ({ isCardView }: GetTableColumns) => {
       key: 'apy',
       title: <HeaderCell label="APY" />,
       render: (loan) => <APRCell loan={loan} />,
-      sorter: true,
     },
     {
       key: 'status',
       title: (
         <HeaderCell
-          label="Loan status"
+          label="Status"
           tooltipText="Current status and duration of the loan that has been passed"
         />
       ),
       render: (loan) => <StatusCell loan={loan} isCardView={isCardView} />,
-      sorter: true,
     },
     {
       key: 'actionsCell',
       title: !isCardView ? <HeaderCell label="Termination" /> : undefined,
-      render: (loan) => <ActionsCell loan={loan} isCardView={isCardView} />,
+      render: (loan) => (
+        <ActionsCell
+          offers={offers}
+          updateOrAddOffer={updateOrAddOffer}
+          updateOrAddLoan={updateOrAddLoan}
+          loan={loan}
+          isCardView={isCardView}
+        />
+      ),
     },
   ]
 
