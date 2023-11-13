@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 //TODO: Need to add generic type instead of string
 export interface OptionKeys {
   labelKey: string
@@ -7,7 +5,7 @@ export interface OptionKeys {
   imageKey: string
   labelIcon?: {
     key: string
-    icon: FC
+    icon: JSX.Element
   }
   secondLabel?: {
     key: string

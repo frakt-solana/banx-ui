@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
+import Tooltip from '@banx/components/Tooltip'
 
 import { MarketPreview } from '@banx/api/core'
 import { Fire } from '@banx/icons'
@@ -40,7 +41,11 @@ export const useLendPageContent = () => {
       imageKey: 'collectionImage',
       labelIcon: {
         key: 'isHot',
-        icon: Fire,
+        icon: (
+          <Tooltip title="Collection is in huge demand waiting for lenders!">
+            <Fire />
+          </Tooltip>
+        ),
       },
       secondLabel: {
         key: 'marketApr',
