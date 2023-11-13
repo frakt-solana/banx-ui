@@ -30,7 +30,6 @@ export const getTableColumns = ({ isCardView }: GetTableColumns) => {
       key: 'lent',
       title: <HeaderCell label="Lent" />,
       render: (loan) => <LentCell loan={loan} />,
-      sorter: true,
     },
     {
       key: 'repaid',
@@ -51,18 +50,16 @@ export const getTableColumns = ({ isCardView }: GetTableColumns) => {
       key: 'apy',
       title: <HeaderCell label="APY" />,
       render: (loan) => <APRCell loan={loan} />,
-      sorter: true,
     },
     {
       key: 'status',
       title: (
         <HeaderCell
-          label="Loan status"
+          label="Status"
           tooltipText="Current status and duration of the loan that has been passed"
         />
       ),
       render: (loan) => <StatusCell loan={loan} isCardView={isCardView} />,
-      sorter: true,
     },
     {
       key: 'actionsCell',

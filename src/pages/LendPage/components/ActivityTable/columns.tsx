@@ -42,7 +42,7 @@ export const getTableColumns = () => {
       key: 'status',
       title: (
         <HeaderCell
-          label="Loan status"
+          label="Status"
           tooltipText="Current status and duration of the loan that has been passed"
         />
       ),
