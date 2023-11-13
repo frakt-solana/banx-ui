@@ -18,6 +18,7 @@ export const MarketPreviewSchema = z
     activeBondsAmount: z.number(),
     activeOfferAmount: z.number(),
     loansTvl: z.number(),
+    isHot: z.boolean(),
   })
   .merge(MarketMetaSchema)
 
