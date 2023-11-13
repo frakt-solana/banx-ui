@@ -71,7 +71,7 @@ export const SearchSelect = <P extends object>({
       <PrefixInput />
       <AntdSelect
         mode="multiple"
-        inputValue={inputValue}
+        searchValue={inputValue}
         value={selectedOptions}
         onChange={onChange}
         allowClear
