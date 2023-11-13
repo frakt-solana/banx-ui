@@ -109,19 +109,19 @@ export const useCartState = create<CartState>((set, get) => ({
       produce((state: CartState) => {
         if (amount === 0) return
 
-        const usedOffersByMarketAmount: Record<string, number> = {}
+        const usedOffersAmountByMarket: Record<string, number> = {}
 
         const mintAndOffer = mintAndMarketArr
           .map(([mint, marketPubkey]) => {
             const offers = state.offersByMarket[marketPubkey] || []
             const mintAddOffer: Array<[string, SimpleOffer]> = []
 
-            const offer = offers.at(usedOffersByMarketAmount[marketPubkey] || 0)
+            const offer = offers.at(usedOffersAmountByMarket[marketPubkey] || 0)
 
             if (mint && offer) {
               mintAddOffer.push([mint, offer])
-              usedOffersByMarketAmount[marketPubkey] =
-                (usedOffersByMarketAmount[marketPubkey] || 0) + 1
+              usedOffersAmountByMarket[marketPubkey] =
+                (usedOffersAmountByMarket[marketPubkey] || 0) + 1
             }
 
             return mintAddOffer
