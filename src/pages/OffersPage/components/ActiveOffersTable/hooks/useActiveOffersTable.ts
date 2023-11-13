@@ -9,8 +9,14 @@ import { SortOption } from '@banx/components/SortDropdown'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { PATHS } from '@banx/router'
+import { calculateLoanRepayValue, formatDecimal } from '@banx/utils'
 
-import { DEFAULT_SORT_OPTION, EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
+import {
+  DEFAULT_SORT_OPTION,
+  EMPTY_MESSAGE,
+  NOT_CONNECTED_MESSAGE,
+  SORT_OPTIONS,
+} from '../constants'
 import { isLoanAbleToClaim, isLoanAbleToTerminate } from '../helpers'
 import { useLenderLoansAndOffers } from './useLenderLoansAndOffers'
 import { useSortedLenderLoans } from './useSortedOffers'
@@ -20,7 +26,7 @@ import styles from '../ActiveOffersTable.module.less'
 interface SearchSelectOption {
   collectionName: string
   collectionImage: string
-  taken: number
+  totalClaim: number
 }
 
 export const useActiveOffersTable = () => {
@@ -39,12 +45,9 @@ export const useActiveOffersTable = () => {
     return map(loansGroupedByCollection, (groupedLoan) => {
       const firstLoanInGroup = first(groupedLoan)
       const { collectionName = '', collectionImage = '' } = firstLoanInGroup?.nft.meta || {}
-      const taken = sumBy(
-        groupedLoan,
-        (nft) => nft.bondTradeTransaction.solAmount + nft.bondTradeTransaction.feeAmount,
-      )
+      const totalClaim = sumBy(groupedLoan, (loan) => calculateLoanRepayValue(loan))
 
-      return { collectionName, collectionImage, taken }
+      return { collectionName, collectionImage, totalClaim }
     })
   }, [loans])
 
@@ -55,12 +58,12 @@ export const useActiveOffersTable = () => {
       valueKey: 'collectionName',
       imageKey: 'collectionImage',
       secondLabel: {
-        key: 'taken',
-        format: (value: number) => createSolValueJSX(value, 1e9),
+        key: 'totalClaim',
+        format: (value: number) => createSolValueJSX(value, 1e9, '--', formatDecimal),
       },
     },
     selectedOptions,
-    labels: ['Collection', 'Taken'],
+    labels: ['Collection', 'Total claim'],
     onChange: setSelectedOptions,
     className: styles.searchSelect,
   }
@@ -68,6 +71,7 @@ export const useActiveOffersTable = () => {
   const sortParams = {
     option: sortOption,
     onChange: setSortOption,
+    options: SORT_OPTIONS,
   }
 
   const filteredLoans = useMemo(() => {
