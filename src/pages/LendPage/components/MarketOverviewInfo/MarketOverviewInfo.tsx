@@ -1,5 +1,6 @@
 import { FC } from 'react'
 
+import { Tooltip } from 'antd'
 import classNames from 'classnames'
 import { isFunction } from 'lodash'
 
@@ -21,7 +22,12 @@ export const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
       <img src={market.collectionImage} className={styles.collectionImage} />
       <div className={styles.mainInfoContent}>
         <h4 className={styles.collectionName}>
-          {collectionName} {isHot ? <Fire /> : null}
+          {collectionName}
+          {isHot ? (
+            <Tooltip title="Collection is in huge demand waiting for lenders!">
+              <Fire />
+            </Tooltip>
+          ) : null}
         </h4>
         <div className={styles.mainInfoStats}>
           {MAIN_MARKET_INFO.map((statInfo) => {

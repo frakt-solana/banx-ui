@@ -68,7 +68,7 @@ export const renderOption: FC<OptionProps> = ({
             {isSelected && <div className={styles.selected} />}
           </div>
           <p className={classNames(styles.label, optionClassNameProps?.label)}>{label}</p>
-          {Icon && <Icon />}
+          {Icon}
         </div>
         <SecondValue secondLabel={secondLabel} value={secondValue} />
       </div>
