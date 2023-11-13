@@ -16,11 +16,19 @@ interface BorrowTableProps {
 }
 
 const BorrowTable: FC<BorrowTableProps> = ({ nfts, isLoading, rawOffers }) => {
-  const { tableNftData, columns, onRowClick, sortViewParams, nftsInCart, selectAll, borrowAll } =
-    useBorrowTable({
-      nfts,
-      rawOffers,
-    })
+  const {
+    tableNftData,
+    columns,
+    onRowClick,
+    sortViewParams,
+    nftsInCart,
+    selectAmount,
+    borrowAll,
+    maxBorrowAmount,
+  } = useBorrowTable({
+    nfts,
+    rawOffers,
+  })
 
   const rowParams = useMemo(() => {
     return {
@@ -39,7 +47,12 @@ const BorrowTable: FC<BorrowTableProps> = ({ nfts, isLoading, rawOffers }) => {
         loading={isLoading}
         showCard
       />
-      <Summary nftsInCart={nftsInCart} selectAll={selectAll} borrowAll={borrowAll} />
+      <Summary
+        nftsInCart={nftsInCart}
+        borrowAll={borrowAll}
+        selectAmount={selectAmount}
+        maxBorrowAmount={maxBorrowAmount}
+      />
     </div>
   )
 }
