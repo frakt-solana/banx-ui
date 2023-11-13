@@ -28,13 +28,13 @@ export const OrderBookList: FC<OrderBookListProps> = ({
     orderBookParams || {}
 
   return (
-    <ul className={classNames(styles.orderBookList, { [styles.visible]: !offers }, className)}>
+    <ul className={classNames(styles.orderBookList, className)}>
       {isLoading ? (
         <Loader size="small" />
       ) : (
-        offers.map((offer, idx) => (
+        offers.map((offer) => (
           <Offer
-            key={idx}
+            key={offer.publicKey}
             offer={offer}
             editOffer={() => {
               goToEditOffer(offer)

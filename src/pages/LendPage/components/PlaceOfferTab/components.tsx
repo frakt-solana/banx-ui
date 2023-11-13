@@ -66,28 +66,33 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
   }
 
   return (
-    <div className={styles.actionsButtonsWrapper}>
+    <div className={styles.actionsButtonsContainer}>
       {isEditMode ? (
-        <>
-          <Button
-            variant="secondary"
-            onClick={onRemoveOffer}
-            className={classNames(styles.actionButton, styles.deleteOfferButton)}
-          >
-            Remove
+        <div className={styles.editModeContainer}>
+          <div className={styles.editModeButtonsContainer}>
+            <Button
+              variant="secondary"
+              onClick={onRemoveOffer}
+              className={classNames(styles.actionButton, styles.deleteOfferButton)}
+            >
+              Remove
+            </Button>
+            <Button
+              onClick={onUpdateOffer}
+              className={styles.actionButton}
+              disabled={disableUpdateOffer}
+            >
+              Apply changes
+            </Button>
+          </div>
+          <Button onClick={onUpdateOffer} className={styles.actionButton}>
+            Claim interest
           </Button>
-          <Button
-            onClick={onUpdateOffer}
-            className={styles.actionButton}
-            disabled={disableUpdateOffer}
-          >
-            Apply changes
-          </Button>
-        </>
+        </div>
       ) : (
         <Button
+          className={styles.placeOfferButton}
           onClick={onMainActionBtnClick}
-          className={styles.actionButton}
           disabled={disablePlaceOffer}
         >
           {connected ? 'Place' : 'Connect wallet'}
