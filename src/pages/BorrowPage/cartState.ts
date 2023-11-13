@@ -1,8 +1,8 @@
 import produce from 'immer'
-import { cloneDeep, groupBy, isEmpty } from 'lodash'
+import { groupBy, isEmpty } from 'lodash'
 import { create } from 'zustand'
 
-import { MintsByMarket, SimpleOffer, SimpleOffersByMarket } from './types'
+import { SimpleOffer, SimpleOffersByMarket } from './types'
 
 export interface CartState {
   offerByMint: Record<string, SimpleOffer>
@@ -14,9 +14,7 @@ export interface CartState {
   findOfferInCart: (props: { mint: string }) => SimpleOffer | null
   findBestOffer: (props: { marketPubkey: string }) => SimpleOffer | null
 
-  addNftsAuto: (props: { mintsByMarket: MintsByMarket }) => void
-
-  addNftsAmount: (props: { mintAndMarketArr: Array<[string, string]>; amount: number }) => void
+  addNfts: (props: { mintAndMarketArr: Array<[string, string]>; amount: number }) => void
 
   setCart: (props: { offersByMarket: SimpleOffersByMarket }) => void
   resetCart: () => void
@@ -101,39 +99,7 @@ export const useCartState = create<CartState>((set, get) => ({
     )
   },
 
-  addNftsAuto: ({ mintsByMarket }) => {
-    const { resetCart } = get()
-    resetCart()
-    set(
-      produce((state: CartState) => {
-        const offersByMarketSnapshot = cloneDeep(state.offersByMarket) || {}
-
-        const offerByMint = Object.fromEntries(
-          Object.entries(mintsByMarket)
-            .map(([marketPubkey, mints]) => {
-              const offers = offersByMarketSnapshot[marketPubkey] || []
-              const mintAddOfferArr: Array<[string, SimpleOffer]> = []
-              for (let i = 0; i < Math.min(offers.length, mints.length); ++i) {
-                const mint = mints[i]
-                const offer = offers[i]
-                if (mint && offer) {
-                  mintAddOfferArr.push([mint, offer])
-                  state.offersByMarket[marketPubkey] = state.offersByMarket[marketPubkey].filter(
-                    ({ publicKey }) => publicKey !== offer.publicKey,
-                  )
-                }
-              }
-              return mintAddOfferArr
-            })
-            .flat(),
-        )
-
-        state.offerByMint = offerByMint
-      }),
-    )
-  },
-
-  addNftsAmount: ({ mintAndMarketArr, amount = 0 }) => {
+  addNfts: ({ mintAndMarketArr, amount }) => {
     const { resetCart, offerByMint } = get()
 
     if (!isEmpty(offerByMint) || amount === 0) {
