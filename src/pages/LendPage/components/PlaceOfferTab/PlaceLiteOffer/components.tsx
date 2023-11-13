@@ -11,12 +11,14 @@ interface OfferSummaryProps {
   offerSize: number
   marketAPR: number
   loanToValuePercent: number
+  isEditMode: boolean
 }
 
 export const OfferSummary: FC<OfferSummaryProps> = ({
   offerSize,
   marketAPR,
   loanToValuePercent,
+  isEditMode,
 }) => {
   const weeklyAprPercentage = marketAPR / 100 / WEEKS_IN_YEAR
   const estimatedInterest = (offerSize * weeklyAprPercentage) / 100
@@ -47,6 +49,13 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
         valueType={VALUES_TYPES.STRING}
         flexType="row"
       />
+      {isEditMode && (
+        <div className={styles.editOfferSummary}>
+          <StatInfo label="Active loans" value={'2 / 3'} valueType={VALUES_TYPES.STRING} />
+          <StatInfo label="Reserve" value={3} tooltipText="Reserve" />
+          <StatInfo label="Accrued interest" value={12.5} />
+        </div>
+      )}
     </div>
   )
 }

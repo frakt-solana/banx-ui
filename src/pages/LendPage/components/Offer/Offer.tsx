@@ -39,7 +39,7 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, isOwnOffer, bestOffer, offerM
 
   const displayLoanValue = formatDecimal((loanValue || 0) / 1e9)
   const displayLoansAmount = formatLoansAmount(loansAmount)
-  const displayDeltaValue = isProMode && deltaValue ? `- Δ${deltaValue}◎` : ''
+  const displayDeltaValue = isProMode && deltaValue ? `| Δ${deltaValue}◎` : ''
 
   return (
     <li className={listItemClassName}>

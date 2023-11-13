@@ -10,9 +10,10 @@ import styles from './PlaceProOffer.module.less'
 interface OfferSummaryProps {
   offerSize: number
   marketApr: number //? rateBasePoints
+  isEditMode: boolean
 }
 
-export const OfferSummary: FC<OfferSummaryProps> = ({ offerSize, marketApr }) => {
+export const OfferSummary: FC<OfferSummaryProps> = ({ offerSize, marketApr, isEditMode }) => {
   //TODO: Need tp calc weighted ltv or calcl as started ltv
   const weightedLtv = 50
 
@@ -50,6 +51,13 @@ export const OfferSummary: FC<OfferSummaryProps> = ({ offerSize, marketApr }) =>
         value={`${displayWeightedWeeklyInterest}◎`}
         valueType={VALUES_TYPES.STRING}
       />
+      {isEditMode && (
+        <div className={styles.editOfferSummary}>
+          <StatInfo label="Active loans" value={'2 / 3'} valueType={VALUES_TYPES.STRING} />
+          <StatInfo label="Reserve" value={3} tooltipText="Reserve" />
+          <StatInfo label="Accrued interest" value={12.5} />
+        </div>
+      )}
     </div>
   )
 }

@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 
+import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
+
 import { Tab, useTabs } from '@banx/components/Tabs'
 
 import { useSyntheticOffers } from '@banx/store'
@@ -40,6 +42,8 @@ export const useExpandableCardContent = (marketPubkey: string) => {
     setTabValue(BONDS_TABS[1].value)
   }
 
+  const isEditMode = !!offerPubkey && offerPubkey !== PUBKEY_PLACEHOLDER
+
   useEffect(() => {
     if (offerPubkey) {
       setTabValue(DEFAULT_TAB)
@@ -52,6 +56,7 @@ export const useExpandableCardContent = (marketPubkey: string) => {
 
   return {
     goToPlaceOfferTab,
+    isEditMode,
     marketParams: {
       marketPubkey,
       offerPubkey,
