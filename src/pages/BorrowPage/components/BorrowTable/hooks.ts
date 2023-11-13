@@ -53,7 +53,6 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
     removeNft,
     findOfferInCart,
     findBestOffer,
-    isNftInCart,
     addNftsAuto,
     resetCart,
   } = useCartState()
@@ -229,8 +228,8 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
   const maxBorrowAmount = useMemo(() => {
     //? calc amount of nfts that not in cart that user can borrow (if there are offers for them)
     const amountToBorrowNotInCart = chain(filteredNfts)
-      .filter(({ mint }) => {
-        return !isNftInCart({ mint })
+      .filter(({ selected }) => {
+        return !selected
       })
       .groupBy(({ nft }) => nft.loan.marketPubkey)
       .entries()
@@ -245,7 +244,7 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
     const amountToBorrowInCart = Object.keys(offerByMint).length
 
     return amountToBorrowNotInCart + amountToBorrowInCart
-  }, [offersByMarket, filteredNfts, isNftInCart, offerByMint])
+  }, [offersByMarket, filteredNfts, offerByMint])
 
   return {
     tableNftData: sortedNfts,
