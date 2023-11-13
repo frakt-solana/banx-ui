@@ -13,6 +13,7 @@ export interface CartState {
 
   findOfferInCart: (props: { mint: string }) => SimpleOffer | null
   findBestOffer: (props: { marketPubkey: string }) => SimpleOffer | null
+  isNftInCart: (props: { mint: string }) => boolean
 
   addNftsAuto: (props: { mintsByMarket: MintsByMarket }) => void
 
@@ -34,6 +35,10 @@ export const useCartState = create<CartState>((set, get) => ({
 
   findBestOffer: ({ marketPubkey }) => {
     return get().offersByMarket[marketPubkey]?.at(0) ?? null
+  },
+
+  isNftInCart: ({ mint }) => {
+    return !!Object.keys(get().offerByMint).find((nftMint) => nftMint === mint)
   },
 
   addNft: ({ mint, offer }) => {
