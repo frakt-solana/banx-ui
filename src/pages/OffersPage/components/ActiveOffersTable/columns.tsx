@@ -1,7 +1,8 @@
 import { ColumnType } from '@banx/components/Table'
-import { HeaderCell, NftInfoCell } from '@banx/components/TableComponents'
+import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan, Offer } from '@banx/api/core'
+import { formatDecimal } from '@banx/utils'
 
 import { APRCell, ActionsCell, InterestCell, LentCell, StatusCell } from './TableCells'
 
@@ -37,6 +38,11 @@ export const getTableColumns = ({
       key: 'lent',
       title: <HeaderCell label="Lent" />,
       render: (loan) => <LentCell loan={loan} />,
+    },
+    {
+      key: 'repaid',
+      title: <HeaderCell label="Total repaid" />,
+      render: (loan) => createSolValueJSX(loan.totalRepaidAmount, 1e9, '0◎', formatDecimal),
     },
     {
       key: 'interest',
