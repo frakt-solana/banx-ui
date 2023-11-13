@@ -23,13 +23,20 @@ const ActiveOffersTable = () => {
     updateOrAddLoan,
     loansToClaim,
     loansToTerminate,
+    updateOrAddOffer,
     addMints,
+    offers,
   } = useActiveOffersTable()
 
   const { viewState } = useTableView()
   const isCardView = viewState === ViewState.CARD
 
-  const columns = getTableColumns({ isCardView })
+  const columns = getTableColumns({
+    isCardView,
+    offers,
+    updateOrAddOffer,
+    updateOrAddLoan,
+  })
 
   const rowParams = useMemo(() => {
     return {
