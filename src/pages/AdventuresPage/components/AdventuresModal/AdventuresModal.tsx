@@ -2,6 +2,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
@@ -18,7 +19,6 @@ import { TENSOR_BANX_MARKET_URL } from '@banx/constants'
 import { TensorFilled } from '@banx/icons'
 import { useIsLedger, useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
-import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import {
   calcNftsPartnerPoints,
   getAdventureStatus,

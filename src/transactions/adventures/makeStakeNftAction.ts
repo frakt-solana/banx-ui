@@ -1,12 +1,11 @@
 import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { staking } from 'fbonds-core/lib/fbond-protocol/functions/'
+import { MakeActionFn } from 'solana-transactions-executor'
 
 import { Adventure } from '@banx/api/adventures'
 import { BANX_STAKING, BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
-
-import { MakeActionFn } from '../TxnExecutor'
 
 export type MakeStakeNftActionParams = {
   nftMint: string

@@ -11326,6 +11326,15 @@ socks@^2.6.2:
     ip "^2.0.0"
     smart-buffer "^4.2.0"
 
+solana-transactions-executor@1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/solana-transactions-executor/-/solana-transactions-executor-1.0.4.tgz#7e44cd235337d037f92496e16eee18314e307d54"
+  integrity sha512-O9aFhWe3xlak1aR1JiKulgVfmg4jv1XQ8DOgttg9TLLgjDqT/JGYFeH+Zix6fzKSLg3NUZKQvEngU/4VRdiTSQ==
+  dependencies:
+    "@solana/wallet-adapter-react" "^0.15.33"
+    "@solana/web3.js" "^1.68.0"
+    lodash "^4.17.21"
+
 sonic-boom@^2.2.1:
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/sonic-boom/-/sonic-boom-2.8.0.tgz#c1def62a77425090e6ad7516aad8eb402e047611"

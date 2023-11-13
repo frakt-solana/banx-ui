@@ -8,13 +8,12 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { first, uniq } from 'lodash'
+import { MakeActionFn, WalletAndConnection } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BANX_STAKING, BONDS } from '@banx/constants'
-import { WalletAndConnection } from '@banx/types'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
-import { MakeActionFn } from '../TxnExecutor'
 import { BorrowType } from '../constants'
 import { fetchRuleset } from '../functions'
 
