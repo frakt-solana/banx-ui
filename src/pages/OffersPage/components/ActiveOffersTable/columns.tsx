@@ -34,7 +34,7 @@ export const getTableColumns = ({ isCardView }: GetTableColumns) => {
     {
       key: 'repaid',
       title: <HeaderCell label="Total repaid" />,
-      render: (loan) => createSolValueJSX(loan.totalRepaidAmount, 1e9, '--', formatDecimal),
+      render: (loan) => createSolValueJSX(loan.totalRepaidAmount, 1e9, '0◎', formatDecimal),
     },
     {
       key: 'interest',
