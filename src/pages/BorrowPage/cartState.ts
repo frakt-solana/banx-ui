@@ -17,7 +17,7 @@ export interface CartState {
 
   addNftsAuto: (props: { mintsByMarket: MintsByMarket }) => void
 
-  addNftsAmount: (props: { mintsByMarket: MintsByMarket; amount: number }) => void
+  addNftsAmount: (props: { mintAndMarketArr: Array<[string, string]>; amount: number }) => void
 
   setCart: (props: { offersByMarket: SimpleOffersByMarket }) => void
   resetCart: () => void
@@ -138,7 +138,7 @@ export const useCartState = create<CartState>((set, get) => ({
     )
   },
 
-  addNftsAmount: ({ mintsByMarket, amount = 0 }) => {
+  addNftsAmount: ({ mintAndMarketArr, amount = 0 }) => {
     const { resetCart, offerByMint } = get()
 
     if (!isEmpty(offerByMint) || amount === 0) {
@@ -148,17 +148,20 @@ export const useCartState = create<CartState>((set, get) => ({
       produce((state: CartState) => {
         if (amount === 0) return
 
-        const mintAndOffer = Object.entries(mintsByMarket)
-          .map(([marketPubkey, mints]) => {
+        const usedOffersByMarketAmount: Record<string, number> = {}
+
+        const mintAndOffer = mintAndMarketArr
+          .map(([mint, marketPubkey]) => {
             const offers = state.offersByMarket[marketPubkey] || []
             const mintAddOffer: Array<[string, SimpleOffer]> = []
-            for (let i = 0; i < Math.min(offers.length, mints.length); ++i) {
-              const mint = mints[i]
-              const offer = offers[i]
-              if (mint && offer) {
-                mintAddOffer.push([mint, offer])
-              }
+
+            const offer = offers.at(usedOffersByMarketAmount[marketPubkey] || 0)
+
+            if (mint && offer) {
+              mintAddOffer.push([mint, offer])
+              usedOffersByMarketAmount[marketPubkey] += 1
             }
+
             return mintAddOffer
           })
           .flat()

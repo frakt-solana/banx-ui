@@ -200,18 +200,14 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
 
   const onSelectNftsAmount = useCallback(
     (amount = 0) => {
-      const mintsByMarket = Object.fromEntries(
-        Object.entries(
-          groupBy(
-            map(filteredNfts, ({ nft }) => nft),
-            ({ loan }) => loan.marketPubkey,
-          ),
-        ).map(([marketPubkey, nfts]) => [marketPubkey, nfts.map(({ mint }) => mint)]),
-      )
+      const mintAndMarketArr: Array<[string, string]> = sortedNfts.map(({ mint, nft }) => [
+        mint,
+        nft.loan.marketPubkey,
+      ])
 
-      addNftsAmount({ mintsByMarket, amount })
+      addNftsAmount({ mintAndMarketArr, amount })
     },
-    [addNftsAmount, filteredNfts],
+    [addNftsAmount, sortedNfts],
   )
 
   const nftsInCart = useMemo(() => {
