@@ -36,14 +36,6 @@ export const Summary: FC<SummaryProps> = ({
     }),
   )
 
-  // const [value, setValue] = useState(nftsInCart.length)
-
-  // const debouncedChangeHandler = useCallback(debounce(selectAmount, 300), [])
-
-  // useEffect(() => {
-  //   debouncedChangeHandler(value)
-  // }, [value, debouncedChangeHandler])
-
   const [isBorrowing, setIsBorrowing] = useState(false)
   const onBorrow = async () => {
     setIsBorrowing(true)
