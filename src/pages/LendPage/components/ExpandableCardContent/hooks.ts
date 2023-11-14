@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 
@@ -6,8 +6,6 @@ import { Tab, useTabs } from '@banx/components/Tabs'
 
 import { useSyntheticOffers } from '@banx/store'
 import { toLowerCaseNoSpaces, trackPageEvent } from '@banx/utils'
-
-import { BONDS_TABS, DEFAULT_TAB } from './constants'
 
 export enum OfferMode {
   Lite = 'lite',
@@ -20,6 +18,7 @@ export interface OrderBookMarketParams {
   setOfferPubkey: (offerPubkey: string) => void
   offerMode: OfferMode
   onChangeOfferMode: (value: OfferMode) => void
+  goToPlaceOfferTab: () => void
 }
 
 export const useExpandableCardContent = (marketPubkey: string) => {
@@ -36,19 +35,13 @@ export const useExpandableCardContent = (marketPubkey: string) => {
     tabs: bondTabs,
     value: tabValue,
     setValue: setTabValue,
-  } = useTabs({ tabs: BONDS_TABS, defaultValue: DEFAULT_TAB })
+  } = useTabs({ tabs: BONDS_TABS, defaultValue: BONDS_TABS[1].value })
 
   const goToPlaceOfferTab = () => {
     setTabValue(BONDS_TABS[1].value)
   }
 
   const isEditMode = !!offerPubkey && offerPubkey !== PUBKEY_PLACEHOLDER
-
-  useEffect(() => {
-    if (offerPubkey) {
-      setTabValue(DEFAULT_TAB)
-    }
-  }, [offerPubkey, setTabValue])
 
   const onTabClick = (tabProps: Tab) => {
     trackPageEvent('lend', `${toLowerCaseNoSpaces(tabProps.label)}tab`)
@@ -63,6 +56,7 @@ export const useExpandableCardContent = (marketPubkey: string) => {
       setOfferPubkey,
       offerMode,
       onChangeOfferMode: setOfferMode,
+      goToPlaceOfferTab,
     },
     tabsParams: {
       tabs: bondTabs,
@@ -72,3 +66,14 @@ export const useExpandableCardContent = (marketPubkey: string) => {
     },
   }
 }
+
+export const BONDS_TABS = [
+  {
+    label: 'Activity',
+    value: 'activity',
+  },
+  {
+    label: 'Place offer',
+    value: 'offer',
+  },
+]

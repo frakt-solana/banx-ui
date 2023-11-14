@@ -13,27 +13,25 @@ interface OfferSummaryProps {
   isEditMode: boolean
 }
 
+//TODO: Need to in the future
+const MOCK_WEIGHTED_LTV = 50
+const MOCK_ACTIVE_LOANS = 2
+const MOCK_TOTAL_LOANS = 3
+const MOCK_RESERVE_VALUE = 3
+const MOCK_ACCRUED_INTEREST = 2.5
+
 export const OfferSummary: FC<OfferSummaryProps> = ({ offerSize, marketApr, isEditMode }) => {
-  //TODO: Need tp calc weighted ltv or calcl as started ltv
-  const weightedLtv = 50
+  const formattedOfferSize = offerSize / 1e9
 
-  const formattedOfferSize = offerSize / 1e9 || 0
+  const weightedWeeklyInterest = calculateWeightedWeeklyInterest(offerSize, marketApr)
 
-  const weeklyAprPercentage = marketApr / 100 / WEEKS_IN_YEAR
-  const weightedWeeklyInterest = (formattedOfferSize * weeklyAprPercentage) / 100
-
-  const colorLTV = getColorByPercent(weightedLtv, HealthColorIncreasing)
-
-  const displayOfferSize = formattedOfferSize ? formatDecimal(formattedOfferSize) : 0
-  const displayWeightedWeeklyInterest = weightedWeeklyInterest
-    ? formatDecimal(weightedWeeklyInterest)
-    : 0
+  const colorLTV = getColorByPercent(MOCK_WEIGHTED_LTV, HealthColorIncreasing)
 
   return (
     <div className={styles.offerSummary}>
       <StatInfo
         label="Weighted LTV"
-        value={weightedLtv}
+        value={MOCK_WEIGHTED_LTV}
         valueStyles={{ color: colorLTV }}
         flexType="row"
         tooltipText="Weighted LTV"
@@ -41,23 +39,35 @@ export const OfferSummary: FC<OfferSummaryProps> = ({ offerSize, marketApr, isEd
       />
       <StatInfo
         label="Offer size"
-        value={`${displayOfferSize}◎`}
+        value={`${formatDecimal(formattedOfferSize)}◎`}
         flexType="row"
         valueType={VALUES_TYPES.STRING}
       />
       <StatInfo
         flexType="row"
         label="Weighted weekly interest"
-        value={`${displayWeightedWeeklyInterest}◎`}
+        value={`${formatDecimal(weightedWeeklyInterest)}◎`}
         valueType={VALUES_TYPES.STRING}
       />
       {isEditMode && (
         <div className={styles.editOfferSummary}>
-          <StatInfo label="Active loans" value={'2 / 3'} valueType={VALUES_TYPES.STRING} />
-          <StatInfo label="Reserve" value={3} tooltipText="Reserve" />
-          <StatInfo label="Accrued interest" value={12.5} />
+          <StatInfo
+            label="Active loans"
+            value={`${MOCK_ACTIVE_LOANS} / ${MOCK_TOTAL_LOANS}`}
+            valueType={VALUES_TYPES.STRING}
+          />
+          <StatInfo label="Reserve" value={MOCK_RESERVE_VALUE} tooltipText="Reserve" />
+          <StatInfo label="Accrued interest" value={MOCK_ACCRUED_INTEREST} />
         </div>
       )}
     </div>
   )
+}
+
+type CalculateWeightedWeeklyInterest = (offerSize: number, marketApr: number) => number
+const calculateWeightedWeeklyInterest: CalculateWeightedWeeklyInterest = (offerSize, marketApr) => {
+  const weeklyAprPercentage = marketApr / 100 / WEEKS_IN_YEAR
+  const weightedWeeklyInterest = (offerSize * weeklyAprPercentage) / 100
+
+  return weightedWeeklyInterest
 }

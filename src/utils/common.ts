@@ -34,7 +34,9 @@ export const getDecimalPlaces = (value: number | string) => {
   return numericValue < DECIMAL_THRESHOLD ? THREE_DECIMAL_PLACES : TWO_DECIMAL_PLACES
 }
 
-export const formatDecimal = (value: number) => {
+export const formatDecimal = (value: number | string) => {
+  if (!value) return '0'
+
   const numericValue = typeof value === 'string' ? parseFloat(value) : value
 
   if (numericValue < MIN_DISPLAY_VALUE) return `<${MIN_DISPLAY_VALUE}`

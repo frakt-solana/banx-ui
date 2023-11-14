@@ -33,24 +33,20 @@
   gap: 24px;
   width: 100%;
 
+  & > div {
+    max-width: 216px;
+    width: 100%;
+  }
+
   @media (max-width: 640px) {
     gap: 16px;
   }
 }
 
 .numericField {
-  width: 100%;
-}
-
-.button {
-  height: 40px;
-  width: 100%;
+  max-width: unset !important;
 }
 
 .messageContainer {
   height: 14px;
-}
-
-.borrowerMessage {
-  font: var(--body-text-sm);
 }
