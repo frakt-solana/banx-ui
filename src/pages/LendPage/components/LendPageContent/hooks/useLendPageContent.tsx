@@ -1,8 +1,10 @@
 import { useMemo } from 'react'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
+import Tooltip from '@banx/components/Tooltip'
 
 import { MarketPreview } from '@banx/api/core'
+import { Fire } from '@banx/icons'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { useMarketsURLControl } from '@banx/store'
 import { convertAprToApy } from '@banx/utils'
@@ -37,6 +39,14 @@ export const useLendPageContent = () => {
       labelKey: 'collectionName',
       valueKey: 'marketPubkey',
       imageKey: 'collectionImage',
+      labelIcon: {
+        key: 'isHot',
+        icon: (
+          <Tooltip title="Collection is in huge demand waiting for lenders!">
+            <Fire />
+          </Tooltip>
+        ),
+      },
       secondLabel: {
         key: 'marketApr',
         format: (value: number) => `${convertAprToApy(value / 1e4)} %`,

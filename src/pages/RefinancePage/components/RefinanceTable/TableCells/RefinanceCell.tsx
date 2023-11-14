@@ -2,6 +2,7 @@ import React, { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
 import { Button } from '@banx/components/Buttons'
@@ -17,7 +18,6 @@ import { Loan } from '@banx/api/core'
 import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
-import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeRefinanceAction } from '@banx/transactions/loans'
 import { enqueueSnackbar, getDialectAccessToken, trackPageEvent } from '@banx/utils'
 

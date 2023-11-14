@@ -1,5 +1,7 @@
+import { TxnError } from 'solana-transactions-executor'
+
 import { TXN_ERROR_DEFINITIONS } from '../constants'
-import { TxnError, TxnErrorDefinition } from '../types'
+import { TxnErrorDefinition } from '../types'
 
 type GetTxnErrorDefinition = (error: TxnError | Error | unknown) => TxnErrorDefinition | null
 export const getTxnErrorDefinition: GetTxnErrorDefinition = (error) => {

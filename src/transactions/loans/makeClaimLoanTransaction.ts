@@ -6,12 +6,12 @@ import {
   claimPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
+import { MakeActionFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
-import { MakeActionFn } from '../TxnExecutor'
 import { fetchRuleset } from '../functions'
 
 export type MakeClaimActionParams = {

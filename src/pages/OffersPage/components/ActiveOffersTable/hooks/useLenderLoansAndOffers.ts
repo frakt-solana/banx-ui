@@ -13,7 +13,7 @@ interface HiddenNftsMintsState {
   addMints: (...mints: string[]) => void
 }
 
-const useHiddenNftsMints = create<HiddenNftsMintsState>((set) => ({
+export const useHiddenNftsMints = create<HiddenNftsMintsState>((set) => ({
   mints: [],
   addMints: (...mints) => {
     set(
@@ -84,7 +84,7 @@ interface OptimisticOffersState {
   updateOffer: (offer: Offer) => void
 }
 
-const useOptimisticOffers = create<OptimisticOffersState>((set, get) => ({
+export const useOptimisticOffers = create<OptimisticOffersState>((set, get) => ({
   offers: [],
   addOffer: (offer) => {
     set(

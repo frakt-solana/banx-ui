@@ -10,7 +10,7 @@ export const getTableColumns = () => {
   const columns: ColumnType<MarketPreview>[] = [
     {
       key: 'collection',
-      title: <HeaderCell label="Collection" />,
+      title: <HeaderCell label="Collection" align="left" />,
       render: (market) => (
         <NftInfoCell nftName={market.collectionName} nftImage={market.collectionImage} />
       ),

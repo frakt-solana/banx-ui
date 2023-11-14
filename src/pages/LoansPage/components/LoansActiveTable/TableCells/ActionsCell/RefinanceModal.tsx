@@ -4,6 +4,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import moment from 'moment'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { createSolValueJSX } from '@banx/components/TableComponents'
@@ -14,7 +15,6 @@ import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
 import { useLoansOptimistic, useModal, useOffersOptimistic } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
-import { TxnExecutor } from '@banx/transactions/TxnExecutor'
 import { makeBorrowRefinanceAction } from '@banx/transactions/loans'
 import {
   calcLoanBorrowedAmount,
@@ -54,8 +54,8 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
 
   const currentSpotPrice = offer?.currentSpotPrice || 0
 
-  const newLoanBorrowedAmount =
-    currentSpotPrice - currentSpotPrice * (BONDS.PROTOCOL_FEE_PERCENT / 1e4) || 0
+  const newLoanBorrowedAmount = currentSpotPrice
+  const newLoanDebt = currentSpotPrice
 
   const newLoanDailyFee = calculateCurrentInterestSolPure({
     loanValue: currentSpotPrice,
@@ -63,7 +63,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
     currentTime: moment().unix() + SECONDS_IN_DAY,
     rateBasePoints: (offer?.marketApr || 0) + BONDS.PROTOCOL_REPAY_FEE,
   })
-  const newLoanDebt = currentSpotPrice
+
   const differenceToPay = newLoanBorrowedAmount - currentLoanDebt
 
   const refinance = () => {

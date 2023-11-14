@@ -1,11 +1,13 @@
 import { FC } from 'react'
 
+import { Tooltip } from 'antd'
 import classNames from 'classnames'
 import { isFunction } from 'lodash'
 
 import { StatInfo } from '@banx/components/StatInfo'
 
 import { MarketPreview } from '@banx/api/core'
+import { Fire } from '@banx/icons'
 import { getDecimalPlaces } from '@banx/utils'
 
 import { ADDITIONAL_MARKET_INFO, MAIN_MARKET_INFO } from './constants'
@@ -13,11 +15,20 @@ import { ADDITIONAL_MARKET_INFO, MAIN_MARKET_INFO } from './constants'
 import styles from './MarketOverviewInfo.module.less'
 
 export const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
+  const { collectionName, isHot } = market
+
   return (
     <div className={styles.mainInfoContainer}>
       <img src={market.collectionImage} className={styles.collectionImage} />
       <div className={styles.mainInfoContent}>
-        <h4 className={styles.collectionName}>{market.collectionName}</h4>
+        <h4 className={styles.collectionName}>
+          {collectionName}
+          {isHot ? (
+            <Tooltip title="Collection is in huge demand waiting for lenders!">
+              <Fire />
+            </Tooltip>
+          ) : null}
+        </h4>
         <div className={styles.mainInfoStats}>
           {MAIN_MARKET_INFO.map((statInfo) => {
             const { key, ...rest } = statInfo
