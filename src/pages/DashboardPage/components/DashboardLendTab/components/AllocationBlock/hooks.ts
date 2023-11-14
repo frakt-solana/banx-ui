@@ -21,12 +21,15 @@ export const useAllocationBlock = (stats?: AllocationStats) => {
 
   const { activeLoans = 0, underWaterLoans = 0, pendingOffers = 0 } = stats || {}
 
+  //TODO: Add terminatingLoans to totalFunds
   const totalFunds = activeLoans + underWaterLoans + pendingOffers
 
+  //TODO: Replace pendingOffers to terminatingLoans for Terminating
   const allocationStatusToValueMap = {
-    [AllocationStatus.ActiveLoans]: activeLoans,
-    [AllocationStatus.UnderWaterLoans]: underWaterLoans,
-    [AllocationStatus.PendingOffers]: pendingOffers,
+    [AllocationStatus.Active]: activeLoans,
+    [AllocationStatus.Underwater]: underWaterLoans,
+    [AllocationStatus.Pending]: pendingOffers,
+    [AllocationStatus.Terminating]: pendingOffers,
   }
 
   const allocationData = map(allocationStatusToValueMap, (value, status) => ({
