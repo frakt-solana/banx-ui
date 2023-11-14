@@ -1,7 +1,7 @@
 import moment from 'moment'
 
 import { Loan } from '@banx/api/core'
-import { WEEKS_IN_YEAR } from '@banx/constants'
+import { BONDS, WEEKS_IN_YEAR } from '@banx/constants'
 import { calculateLoanRepayValue } from '@banx/utils'
 
 export const calculateAprIncrement = (loan: Loan) => {
@@ -19,10 +19,12 @@ export const calculateAprIncrement = (loan: Loan) => {
 
 type CalcWeeklyInterestFee = (Loan: Loan) => number
 export const calcWeeklyInterestFee: CalcWeeklyInterestFee = (loan) => {
-  const apr = calculateAprIncrement(loan)
+  const aprIncrement = calculateAprIncrement(loan)
+  const aprIncrementWithProtocolFee = aprIncrement + BONDS.PROTOCOL_REPAY_FEE / 100
+
   const repayValue = calculateLoanRepayValue(loan)
 
-  const weeklyAprPercentage = apr / 100 / WEEKS_IN_YEAR
+  const weeklyAprPercentage = aprIncrementWithProtocolFee / 100 / WEEKS_IN_YEAR
   const weeklyFee = weeklyAprPercentage * repayValue
 
   return weeklyFee
