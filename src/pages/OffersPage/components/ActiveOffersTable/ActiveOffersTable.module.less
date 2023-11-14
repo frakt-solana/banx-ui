@@ -7,11 +7,15 @@
 }
 
 .tableRoot table {
-  tbody > tr > td {
-    width: 210px;
+  tr > td {
+    width: 160px;
 
-    &:last-child {
-      width: 190px;
+    &:first-child {
+      min-width: 176px;
+    }
+
+    &:nth-last-child(-n + 2) {
+      width: 100px;
     }
   }
 }
