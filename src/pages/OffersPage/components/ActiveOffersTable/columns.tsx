@@ -35,6 +35,11 @@ export const getTableColumns = ({
       ),
     },
     {
+      key: 'floor',
+      title: <HeaderCell label="Floor" />,
+      render: (loan) => createSolValueJSX(loan.nft.collectionFloor, 1e9, '0◎', formatDecimal),
+    },
+    {
       key: 'lent',
       title: <HeaderCell label="Lent" />,
       render: (loan) => <LentCell loan={loan} />,
@@ -71,7 +76,7 @@ export const getTableColumns = ({
     },
     {
       key: 'actionsCell',
-      title: !isCardView ? <HeaderCell label="Termination" /> : undefined,
+      title: !isCardView ? <HeaderCell label="" /> : undefined,
       render: (loan) => (
         <ActionsCell
           offers={offers}
