@@ -5,8 +5,14 @@ import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/
 import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import { BONDS, SECONDS_IN_HOUR } from '@banx/constants'
-import { LoanStatus, STATUS_LOANS_COLOR_MAP, STATUS_LOANS_MAP, formatDecimal } from '@banx/utils'
+import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
+import {
+  LoanStatus,
+  STATUS_LOANS_COLOR_MAP,
+  STATUS_LOANS_MAP,
+  calcLoanBorrowedAmount,
+  formatDecimal,
+} from '@banx/utils'
 
 import styles from '../LoansActiveTable.module.less'
 
@@ -16,17 +22,16 @@ interface InterestCellProps {
 }
 
 export const InterestCell: FC<InterestCellProps> = ({ loan, isCardView }) => {
-  const { solAmount, feeAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction || {}
-
-  const loanValueWithFee = solAmount + feeAmount
+  const { soldAt, amountOfBonds } = loan.bondTradeTransaction || {}
 
   const statusText = STATUS_LOANS_MAP[loan.bondTradeTransaction.bondTradeTransactionState] || ''
   const statusColor = STATUS_LOANS_COLOR_MAP[statusText as LoanStatus] || ''
 
+  const currentLoanBorrowedAmount = calcLoanBorrowedAmount(loan)
   const weeklyFee = calculateCurrentInterestSolPure({
-    loanValue: loanValueWithFee,
+    loanValue: currentLoanBorrowedAmount,
     startTime: soldAt,
-    currentTime: soldAt + SECONDS_IN_HOUR * 24 * 7,
+    currentTime: soldAt + SECONDS_IN_DAY * 7,
     rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
   })
 
