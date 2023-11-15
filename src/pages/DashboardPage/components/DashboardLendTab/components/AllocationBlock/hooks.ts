@@ -1,4 +1,4 @@
-import { every, map } from 'lodash'
+import { every, map, sum, values } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
 import { DoughnutChartProps } from '@banx/components/Charts'
@@ -19,18 +19,21 @@ export type AllocationStats = TotalLenderStats['allocation']
 export const useAllocationBlock = (stats?: AllocationStats) => {
   const navigate = useNavigate()
 
-  const { activeLoans = 0, underWaterLoans = 0, pendingOffers = 0 } = stats || {}
+  const {
+    activeLoans = 0,
+    underWaterLoans = 0,
+    pendingOffers = 0,
+    terminatingLoans = 0,
+  } = stats || {}
 
-  //TODO: Add terminatingLoans to totalFunds
-  const totalFunds = activeLoans + underWaterLoans + pendingOffers
-
-  //TODO: Replace pendingOffers to terminatingLoans for Terminating
   const allocationStatusToValueMap = {
     [AllocationStatus.Active]: activeLoans,
     [AllocationStatus.Underwater]: underWaterLoans,
     [AllocationStatus.Pending]: pendingOffers,
-    [AllocationStatus.Terminating]: pendingOffers,
+    [AllocationStatus.Terminating]: terminatingLoans,
   }
+
+  const totalFunds = sum(values(allocationStatusToValueMap))
 
   const allocationData = map(allocationStatusToValueMap, (value, status) => ({
     label: STATUS_DISPLAY_NAMES[status as AllocationStatus],
