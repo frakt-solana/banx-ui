@@ -33,8 +33,8 @@ import {
 } from '@banx/utils'
 
 import { useAuctionsLoans } from '../../hooks'
-import { calcWeeklyInterestFee } from './columns'
 import { MAX_APY_INCREASE_PERCENT } from './constants'
+import { calcWeeklyInterestFee } from './helpers'
 
 import styles from './RefinanceTable.module.less'
 
@@ -146,7 +146,7 @@ export const Summary: FC<SummaryProps> = ({
       </div>
       <div className={styles.statsContainer}>
         <StatInfo label="Total to lend" value={totalDebt} divider={1e9} />
-        <StatInfo label="Weekly interest" value={totalWeeklyInterest} />
+        <StatInfo label="Weekly interest" value={totalWeeklyInterest} divider={1e9} />
         <StatInfo
           label="Weighted apy"
           value={formattedWeightedApy}

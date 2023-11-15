@@ -3,11 +3,11 @@ import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/Tab
 import Timer from '@banx/components/Timer/Timer'
 
 import { Loan } from '@banx/api/core'
-import { WEEKS_IN_YEAR } from '@banx/constants'
-import { calculateLoanRepayValue, formatDecimal } from '@banx/utils'
+import { formatDecimal } from '@banx/utils'
 
 import { APRCell, APRIncreaseCell, DebtCell, RefinanceCell } from './TableCells'
 import { SECONDS_IN_72_HOURS } from './constants'
+import { calcWeeklyInterestFee } from './helpers'
 
 interface GetTableColumnsProps {
   onSelectLoan: (loan: Loan) => void
@@ -50,7 +50,7 @@ export const getTableColumns = ({
     {
       key: 'interest',
       title: <HeaderCell label="Weekly interest" />,
-      render: (loan) => createSolValueJSX(calcWeeklyInterestFee(loan), 1, '--', formatDecimal),
+      render: (loan) => createSolValueJSX(calcWeeklyInterestFee(loan), 1e9, '--', formatDecimal),
     },
     {
       key: 'apy',
@@ -85,15 +85,4 @@ export const getTableColumns = ({
   ]
 
   return columns
-}
-
-type CalcWeeklyInterestFee = (Loan: Loan) => number
-export const calcWeeklyInterestFee: CalcWeeklyInterestFee = (loan) => {
-  const apr = loan.bondTradeTransaction.amountOfBonds
-  const repayValue = calculateLoanRepayValue(loan)
-
-  const weeklyAprPercentage = apr / 1e4 / WEEKS_IN_YEAR
-  const weeklyFee = (weeklyAprPercentage * repayValue) / 1e9
-
-  return weeklyFee
 }
