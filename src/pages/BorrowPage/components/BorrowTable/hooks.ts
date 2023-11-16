@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { filter, first, get, groupBy, includes, isEmpty, map, sortBy, sumBy } from 'lodash'
+import { chain, filter, first, get, groupBy, includes, isEmpty, map, sortBy, sumBy } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
@@ -45,8 +45,16 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
-  const { offerByMint, addNft, removeNft, findOfferInCart, findBestOffer, addNftsAuto, resetCart } =
-    useCartState()
+  const {
+    offerByMint,
+    offersByMarket,
+    addNft,
+    addNfts,
+    removeNft,
+    findOfferInCart,
+    findBestOffer,
+    resetCart,
+  } = useCartState()
   const { add: addLoansOptimistic } = useLoansOptimistic()
   const { update: updateOffersOptimistic } = useOffersOptimistic()
 
@@ -134,22 +142,6 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
     }
   }
 
-  const onSelectAll = () => {
-    if (isEmpty(offerByMint)) {
-      const mintsByMarket = Object.fromEntries(
-        Object.entries(
-          groupBy(
-            map(filteredNfts, ({ nft }) => nft),
-            ({ loan }) => loan.marketPubkey,
-          ),
-        ).map(([marketPubkey, nfts]) => [marketPubkey, nfts.map(({ mint }) => mint)]),
-      )
-      addNftsAuto({ mintsByMarket })
-    } else {
-      resetCart()
-    }
-  }
-
   const onNftSelect = useCallback(
     (nft: TableNftData) => {
       const isInCart = !!findOfferInCart({ mint: nft.mint })
@@ -165,15 +157,6 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
     },
     [addNft, findBestOffer, findOfferInCart, removeNft],
   )
-
-  const { viewState } = useTableView()
-
-  const columns = getTableColumns({
-    onNftSelect,
-    onBorrow: borrow,
-    isCardView: viewState === ViewState.CARD,
-    findOfferInCart,
-  })
 
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
 
@@ -201,6 +184,58 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
     const mints = Object.keys(offerByMint)
     return tableNftsData.filter(({ mint }) => mints.includes(mint))
   }, [offerByMint, tableNftsData])
+
+  const maxBorrowAmount = useMemo(() => {
+    //? calc amount of nfts that not in cart that user can borrow (if there are offers for them)
+    const amountToBorrowNotInCart = chain(filteredNfts)
+      .filter(({ selected }) => {
+        return !selected
+      })
+      .groupBy(({ nft }) => nft.loan.marketPubkey)
+      .entries()
+      .map(([marketPubkey, nfts]) => {
+        const availableToBorrow = Math.min(nfts.length, offersByMarket[marketPubkey]?.length || 0)
+        return [marketPubkey, availableToBorrow] as [string, number]
+      })
+      .sumBy(([, amount]) => amount)
+      .value()
+
+    //? get amount of nfts that already in cart
+    const amountToBorrowInCart = Object.keys(offerByMint).length
+
+    return amountToBorrowNotInCart + amountToBorrowInCart
+  }, [offersByMarket, filteredNfts, offerByMint])
+
+  const onSelectNftsAmount = useCallback(
+    (amount = 0) => {
+      const mintAndMarketArr: Array<[string, string]> = sortedNfts.map(({ mint, nft }) => [
+        mint,
+        nft.loan.marketPubkey,
+      ])
+
+      addNfts({ mintAndMarketArr, amount })
+    },
+    [addNfts, sortedNfts],
+  )
+
+  const onSelectAll = useCallback(() => {
+    if (isEmpty(offerByMint)) {
+      onSelectNftsAmount(maxBorrowAmount)
+    } else {
+      resetCart()
+    }
+  }, [offerByMint, onSelectNftsAmount, maxBorrowAmount, resetCart])
+
+  const { viewState } = useTableView()
+
+  const columns = getTableColumns({
+    onNftSelect,
+    onBorrow: borrow,
+    isCardView: viewState === ViewState.CARD,
+    findOfferInCart,
+    hasSelectedNfts: !isEmpty(offerByMint),
+    onSelectAll,
+  })
 
   return {
     tableNftData: sortedNfts,
@@ -231,9 +266,10 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
     },
     borrow,
     borrowAll,
-    selectAll: onSelectAll,
+    selectAmount: onSelectNftsAmount,
     nftsInCart,
     findOfferInCart,
+    maxBorrowAmount,
   }
 }
 
