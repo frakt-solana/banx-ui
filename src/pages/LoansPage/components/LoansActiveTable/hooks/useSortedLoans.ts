@@ -4,10 +4,10 @@ import { get, isFunction, sortBy } from 'lodash'
 
 import { Loan } from '@banx/api/core'
 import {
-  LoanStatus,
   calcLoanBorrowedAmount,
   calculateLoanRepayValue,
-  determineLoanStatus,
+  isLoanLiquidated,
+  isLoanTerminating,
 } from '@banx/utils'
 
 enum SortField {
@@ -17,7 +17,38 @@ enum SortField {
   STATUS = 'status',
 }
 
+type SortOrder = 'asc' | 'desc'
 type SortValueGetter = (loan: Loan) => number
+
+const STATUS_VALUE_MAP: Record<SortField, string | SortValueGetter> = {
+  [SortField.BORROWED]: calcLoanBorrowedAmount,
+  [SortField.DEBT]: calculateLoanRepayValue,
+  [SortField.HEALTH]: (loan: Loan) => loan.nft.collectionFloor / calculateLoanRepayValue(loan),
+  [SortField.STATUS]: '',
+}
+
+const sortLoansByField = (loans: Loan[], field: SortField, order: SortOrder) => {
+  const sorted = sortBy(loans, (loan) => {
+    const sortValue = STATUS_VALUE_MAP[field]
+    return isFunction(sortValue) ? sortValue(loan) : get(loan, sortValue)
+  })
+
+  return order === 'desc' ? sorted.reverse() : sorted
+}
+
+const sortStatusLoans = (loans: Loan[], order: SortOrder) => {
+  const terminatingLoans = loans.filter(isLoanTerminating)
+  const sortedTerminatingLoans = sortBy(
+    terminatingLoans,
+    'fraktBond.refinanceAuctionStartedAt',
+  ).reverse()
+
+  const otherLoans = loans.filter((loan) => !isLoanTerminating(loan) && !isLoanLiquidated(loan))
+  const finalSortedOtherLoans = sortBy(otherLoans, 'fraktBond.activatedAt').reverse()
+  const combinedLoans = [...finalSortedOtherLoans, ...sortedTerminatingLoans]
+
+  return order === 'asc' ? combinedLoans : combinedLoans.reverse()
+}
 
 export const useSortedLoans = (loans: Loan[], sortOptionValue: string) => {
   const sortedLoans = useMemo(() => {
@@ -25,40 +56,11 @@ export const useSortedLoans = (loans: Loan[], sortOptionValue: string) => {
       return loans
     }
 
-    const [name, order] = sortOptionValue.split('_')
+    const [name, order] = sortOptionValue.split('_') as [SortField, SortOrder]
 
-    const sortValueMapping: Record<SortField, string | SortValueGetter> = {
-      [SortField.BORROWED]: (loan) => calcLoanBorrowedAmount(loan),
-      [SortField.DEBT]: (loan) => {
-        return calculateLoanRepayValue(loan)
-      },
-      [SortField.HEALTH]: (loan) => {
-        const collectionFloor = loan.nft.collectionFloor
-        const repayValue = calculateLoanRepayValue(loan)
-
-        return collectionFloor / repayValue
-      },
-      [SortField.STATUS]: (loan) => {
-        const loanStatus = determineLoanStatus(loan)
-        const statusToNumber = {
-          [LoanStatus.Liquidated]: 1,
-          [LoanStatus.Terminating]: 2,
-        }
-
-        return statusToNumber[loanStatus as keyof typeof statusToNumber] || 3
-      },
-    }
-
-    const sorted = sortBy(loans, (loan) => {
-      const sortValue = sortValueMapping[name as SortField]
-      return isFunction(sortValue) ? sortValue(loan) : get(loan, sortValue)
-    })
-
-    if (name === SortField.STATUS) {
-      return order === 'desc' ? sorted : sorted.reverse()
-    }
-
-    return order === 'desc' ? sorted.reverse() : sorted
+    return name === SortField.STATUS
+      ? sortStatusLoans(loans, order)
+      : sortLoansByField(loans, name, order)
   }, [sortOptionValue, loans])
 
   return sortedLoans
