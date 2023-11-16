@@ -1,3 +1,4 @@
+import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
 import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
 
@@ -14,6 +15,8 @@ interface GetTableColumnsProps {
   onBorrow: (nft: TableNftData) => Promise<void>
   findOfferInCart: (nft: TableNftData) => SimpleOffer | null
   isCardView: boolean
+  hasSelectedNfts: boolean
+  onSelectAll: () => void
 }
 
 export const getTableColumns = ({
@@ -21,12 +24,15 @@ export const getTableColumns = ({
   onNftSelect,
   onBorrow,
   isCardView,
+  hasSelectedNfts,
+  onSelectAll,
 }: GetTableColumnsProps) => {
   const columns: ColumnType<TableNftData>[] = [
     {
       key: 'collateral',
       title: (
         <div className={styles.headerTitleRow}>
+          <Checkbox className={styles.checkbox} onChange={onSelectAll} checked={hasSelectedNfts} />
           <HeaderCell label="Collateral" />
         </div>
       ),

@@ -1,8 +1,8 @@
 import produce from 'immer'
-import { cloneDeep, groupBy } from 'lodash'
+import { groupBy, isEmpty } from 'lodash'
 import { create } from 'zustand'
 
-import { MintsByMarket, SimpleOffer, SimpleOffersByMarket } from './types'
+import { SimpleOffer, SimpleOffersByMarket } from './types'
 
 export interface CartState {
   offerByMint: Record<string, SimpleOffer>
@@ -14,7 +14,7 @@ export interface CartState {
   findOfferInCart: (props: { mint: string }) => SimpleOffer | null
   findBestOffer: (props: { marketPubkey: string }) => SimpleOffer | null
 
-  addNftsAuto: (props: { mintsByMarket: MintsByMarket }) => void
+  addNfts: (props: { mintAndMarketArr: Array<[string, string]>; amount: number }) => void
 
   setCart: (props: { offersByMarket: SimpleOffersByMarket }) => void
   resetCart: () => void
@@ -42,7 +42,6 @@ export const useCartState = create<CartState>((set, get) => ({
         state.offerByMint[mint] = offer
 
         //? Remove offer from offersByMarket
-
         const { hadoMarket: marketPubkey } = offer
         state.offersByMarket = {
           ...state.offersByMarket,
@@ -100,34 +99,53 @@ export const useCartState = create<CartState>((set, get) => ({
     )
   },
 
-  addNftsAuto: ({ mintsByMarket }) => {
-    const { resetCart } = get()
-    resetCart()
+  addNfts: ({ mintAndMarketArr, amount }) => {
+    const { resetCart, offerByMint } = get()
+
+    if (!isEmpty(offerByMint) || amount === 0) {
+      resetCart()
+    }
     set(
       produce((state: CartState) => {
-        const offersByMarketSnapshot = cloneDeep(state.offersByMarket) || {}
+        if (amount === 0) return
 
-        const offerByMint = Object.fromEntries(
-          Object.entries(mintsByMarket)
-            .map(([marketPubkey, mints]) => {
-              const offers = offersByMarketSnapshot[marketPubkey] || []
-              const mintAddOfferArr: Array<[string, SimpleOffer]> = []
-              for (let i = 0; i < Math.min(offers.length, mints.length); ++i) {
-                const mint = mints[i]
-                const offer = offers[i]
-                if (mint && offer) {
-                  mintAddOfferArr.push([mint, offer])
-                  state.offersByMarket[marketPubkey] = state.offersByMarket[marketPubkey].filter(
-                    ({ publicKey }) => publicKey !== offer.publicKey,
-                  )
-                }
-              }
-              return mintAddOfferArr
-            })
-            .flat(),
+        const usedOffersAmountByMarket: Record<string, number> = {}
+
+        const mintAndOffer = mintAndMarketArr
+          .map(([mint, marketPubkey]) => {
+            const offers = state.offersByMarket[marketPubkey] || []
+            const mintAddOffer: Array<[string, SimpleOffer]> = []
+
+            const offer = offers.at(usedOffersAmountByMarket[marketPubkey] || 0)
+
+            if (mint && offer) {
+              mintAddOffer.push([mint, offer])
+              usedOffersAmountByMarket[marketPubkey] =
+                (usedOffersAmountByMarket[marketPubkey] || 0) + 1
+            }
+
+            return mintAddOffer
+          })
+          .flat()
+          .slice(0, amount)
+          .sort(([, offerA], [, offerB]) => offerB.loanValue - offerA.loanValue)
+
+        const nextOffersByMarket = Object.fromEntries(
+          Object.entries(state.offersByMarket).map(([marketPubkey, offers]) => {
+            return [
+              marketPubkey,
+              offers.filter((offer) => {
+                const isOfferInUse = !!mintAndOffer.find(
+                  ([, selectedOffer]) => selectedOffer.id === offer.id,
+                )
+                return !isOfferInUse
+              }),
+            ]
+          }),
         )
 
-        state.offerByMint = offerByMint
+        state.offersByMarket = nextOffersByMarket
+        state.offerByMint = Object.fromEntries(mintAndOffer)
       }),
     )
   },
