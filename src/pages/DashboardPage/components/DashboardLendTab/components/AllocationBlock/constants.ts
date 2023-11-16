@@ -6,8 +6,8 @@ export enum AllocationStatus {
 }
 
 export const STATUS_COLOR_MAP: Record<AllocationStatus, string> = {
-  [AllocationStatus.Active]: 'var(--additional-green-primary)',
   [AllocationStatus.Pending]: 'var(--additional-blue-primary)',
+  [AllocationStatus.Active]: 'var(--additional-green-primary)',
   [AllocationStatus.Underwater]: 'var(--additional-orange-primary)',
   [AllocationStatus.Terminating]: 'var(--additional-lava-primary)',
 }

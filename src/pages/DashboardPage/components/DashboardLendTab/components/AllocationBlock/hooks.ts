@@ -27,9 +27,9 @@ export const useAllocationBlock = (stats?: AllocationStats) => {
   } = stats || {}
 
   const allocationStatusToValueMap = {
+    [AllocationStatus.Pending]: pendingOffers,
     [AllocationStatus.Active]: activeLoans,
     [AllocationStatus.Underwater]: underWaterLoans,
-    [AllocationStatus.Pending]: pendingOffers,
     [AllocationStatus.Terminating]: terminatingLoans,
   }
 
