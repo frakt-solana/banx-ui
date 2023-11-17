@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-import { get, isFunction, sortBy } from 'lodash'
+import { chain } from 'lodash'
 
 import { Loan } from '@banx/api/core'
 import {
@@ -20,7 +20,9 @@ enum SortField {
 type SortOrder = 'asc' | 'desc'
 type SortValueGetter = (loan: Loan) => number
 
-const STATUS_VALUE_MAP: Record<SortField, string | SortValueGetter> = {
+type StatusValueMap = Record<SortField, string | SortValueGetter>
+
+const STATUS_VALUE_MAP: StatusValueMap = {
   [SortField.BORROWED]: calcLoanBorrowedAmount,
   [SortField.DEBT]: calculateLoanRepayValue,
   [SortField.HEALTH]: (loan: Loan) => loan.nft.collectionFloor / calculateLoanRepayValue(loan),
@@ -28,24 +30,26 @@ const STATUS_VALUE_MAP: Record<SortField, string | SortValueGetter> = {
 }
 
 const sortLoansByField = (loans: Loan[], field: SortField, order: SortOrder) => {
-  const sorted = sortBy(loans, (loan) => {
-    const sortValue = STATUS_VALUE_MAP[field]
-    return isFunction(sortValue) ? sortValue(loan) : get(loan, sortValue)
-  })
-
-  return order === 'desc' ? sorted.reverse() : sorted
+  return chain(loans)
+    .sortBy((loan) => (STATUS_VALUE_MAP[field] as SortValueGetter)(loan))
+    .thru((sorted) => (order === 'desc' ? sorted.reverse() : sorted))
+    .value()
 }
 
 const sortStatusLoans = (loans: Loan[], order: SortOrder) => {
-  const terminatingLoans = loans.filter(isLoanTerminating)
-  const sortedTerminatingLoans = sortBy(
-    terminatingLoans,
-    'fraktBond.refinanceAuctionStartedAt',
-  ).reverse()
+  const terminatingLoans = chain(loans)
+    .filter(isLoanTerminating)
+    .sortBy('fraktBond.refinanceAuctionStartedAt')
+    .reverse()
+    .value()
 
-  const otherLoans = loans.filter((loan) => !isLoanTerminating(loan) && !isLoanLiquidated(loan))
-  const finalSortedOtherLoans = sortBy(otherLoans, 'fraktBond.activatedAt').reverse()
-  const combinedLoans = [...finalSortedOtherLoans, ...sortedTerminatingLoans]
+  const otherLoans = chain(loans)
+    .filter((loan) => !isLoanTerminating(loan) && !isLoanLiquidated(loan))
+    .sortBy('fraktBond.activatedAt')
+    .reverse()
+    .value()
+
+  const combinedLoans = [...otherLoans, ...terminatingLoans]
 
   return order === 'asc' ? combinedLoans : combinedLoans.reverse()
 }
