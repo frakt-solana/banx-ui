@@ -15,10 +15,20 @@
 .filterWrapper {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 24px;
   width: 100%;
 }
 
 .searchSelect {
   max-width: 750px;
+}
+
+.filterButton {
+  svg path {
+    fill: #fa8c16;
+  }
+
+  &.active {
+    border-color: var(--content-primary);
+  }
 }

@@ -1,5 +1,7 @@
 import { useState } from 'react'
 
+import classNames from 'classnames'
+
 import { Button } from '@banx/components/Buttons'
 import { SearchSelect, SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortDropdown, SortDropdownProps } from '@banx/components/SortDropdown'
@@ -11,11 +13,15 @@ import styles from './FilterSection.module.less'
 interface FilterSectionProps<T> {
   searchSelectParams: SearchSelectProps<T>
   sortParams: SortDropdownProps
+  onToggleHotFilter: () => void
+  isHotFilterActive: boolean
 }
 
 const FilterSection = <T extends object>({
   searchSelectParams,
   sortParams,
+  onToggleHotFilter,
+  isHotFilterActive,
 }: FilterSectionProps<T>) => {
   const [searchSelectCollapsed, setSearchSelectCollapsed] = useState(true)
 
@@ -28,7 +34,12 @@ const FilterSection = <T extends object>({
           collapsed={searchSelectCollapsed}
           onChangeCollapsed={setSearchSelectCollapsed}
         />
-        <Button type="circle" variant="secondary">
+        <Button
+          className={classNames(styles.filterButton, { [styles.active]: isHotFilterActive })}
+          onClick={onToggleHotFilter}
+          variant="secondary"
+          type="circle"
+        >
           <Fire />
         </Button>
       </div>

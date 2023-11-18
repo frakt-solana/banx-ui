@@ -1,4 +1,6 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
+
+import { partition, sortBy } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import Tooltip from '@banx/components/Tooltip'
@@ -15,6 +17,7 @@ export const useLendPageContent = () => {
   const { marketsPreview, isLoading } = useMarketsPreview()
 
   const { selectedMarkets, setSelectedMarkets } = useMarketsURLControl()
+  const [isHotFilterActive, setIsHotFilterActive] = useState(false)
 
   const showEmptyList = !isLoading && !marketsPreview?.length
 
@@ -29,6 +32,17 @@ export const useLendPageContent = () => {
   const { sortedMarkets, sortParams } = useSortMarkets(
     filteredMarkets.length ? filteredMarkets : marketsPreview,
   )
+
+  const sortedAndFilteredMarkets = useMemo(() => {
+    if (isHotFilterActive) {
+      const [hotMarkets, nonHotMarkets] = partition(sortedMarkets, 'isHot')
+      const sortedHotMarkets = sortBy(hotMarkets, 'loansTvl').reverse()
+      const sortedNonHotMarkets = sortBy(nonHotMarkets, 'loansTvl').reverse()
+
+      return [...sortedHotMarkets, ...sortedNonHotMarkets]
+    }
+    return sortedMarkets
+  }, [isHotFilterActive, sortedMarkets])
 
   const searchSelectParams: SearchSelectProps<MarketPreview> = {
     options: marketsPreview,
@@ -56,10 +70,12 @@ export const useLendPageContent = () => {
   }
 
   return {
-    marketsPreview: sortedMarkets,
+    marketsPreview: sortedAndFilteredMarkets,
     isLoading,
     showEmptyList,
     searchSelectParams,
     sortParams,
+    isHotFilterActive,
+    onToggleHotFilter: () => setIsHotFilterActive(!isHotFilterActive),
   }
 }

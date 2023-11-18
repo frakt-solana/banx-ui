@@ -14,14 +14,26 @@ import styles from './LendPageContent.module.less'
 
 const LendPageContent = () => {
   const { visibleMarkets, toggleMarketVisibility } = useMarketsURLControl(true)
-  const { marketsPreview, isLoading, searchSelectParams, sortParams, showEmptyList } =
-    useLendPageContent()
+  const {
+    marketsPreview,
+    isLoading,
+    searchSelectParams,
+    sortParams,
+    showEmptyList,
+    onToggleHotFilter,
+    isHotFilterActive,
+  } = useLendPageContent()
 
   const { data: markets, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: marketsPreview })
 
   return (
     <div className={classNames(styles.content, { [styles.selected]: !!visibleMarkets?.length })}>
-      <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
+      <FilterSection
+        searchSelectParams={searchSelectParams}
+        sortParams={sortParams}
+        isHotFilterActive={isHotFilterActive}
+        onToggleHotFilter={onToggleHotFilter}
+      />
       {isLoading && isEmpty(marketsPreview) ? (
         <Loader />
       ) : (
