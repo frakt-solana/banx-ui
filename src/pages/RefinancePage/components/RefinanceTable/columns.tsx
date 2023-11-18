@@ -5,7 +5,13 @@ import Timer from '@banx/components/Timer/Timer'
 import { Loan } from '@banx/api/core'
 import { formatDecimal } from '@banx/utils'
 
-import { APRCell, APRIncreaseCell, DebtCell, LTVCell, RefinanceCell } from './TableCells'
+import {
+  APRCell,
+  /* APRIncreaseCell */
+  DebtCell,
+  LTVCell,
+  RefinanceCell,
+} from './TableCells'
 import { SECONDS_IN_72_HOURS } from './constants'
 import { calcWeeklyInterestFee } from './helpers'
 
@@ -66,11 +72,11 @@ export const getTableColumns = ({
       render: (loan) => <APRCell loan={loan} />,
       sorter: true,
     },
-    {
-      key: 'nextAprIncrease',
-      title: <HeaderCell label="Next APY increase" />,
-      render: (loan) => <APRIncreaseCell loan={loan} />,
-    },
+    // {
+    //   key: 'nextAprIncrease',
+    //   title: <HeaderCell label="Next APY increase" />,
+    //   render: (loan) => <APRIncreaseCell loan={loan} />,
+    // },
     {
       key: 'duration',
       title: <HeaderCell label="Ends in" />,
