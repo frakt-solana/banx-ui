@@ -19,12 +19,18 @@ export const calculateAprIncrement = (loan: Loan) => {
 
 type CalcWeeklyInterestFee = (Loan: Loan) => number
 export const calcWeeklyInterestFee: CalcWeeklyInterestFee = (loan) => {
-  const aprIncrement = calculateAprIncrement(loan)
-  const aprIncrementWithProtocolFee = aprIncrement + BONDS.PROTOCOL_REPAY_FEE / 100
-
+  //? calculate weekly interest with default apr
+  const aprInPercent = loan.bondTradeTransaction.amountOfBonds / 100
+  const aprWithProtocolFee = aprInPercent + BONDS.PROTOCOL_REPAY_FEE / 100
   const repayValue = calculateLoanRepayValue(loan)
 
-  const weeklyAprPercentage = aprIncrementWithProtocolFee / 100 / WEEKS_IN_YEAR
+  const weeklyAprPercentage = aprWithProtocolFee / 100 / WEEKS_IN_YEAR
+
+  //? calculate weekly interest with incremented apr
+  // const aprIncrement = calculateAprIncrement(loan)
+  // const aprIncrementWithProtocolFee = aprIncrement + BONDS.PROTOCOL_REPAY_FEE / 100
+  // const weeklyAprPercentage = aprIncrementWithProtocolFee / 100 / WEEKS_IN_YEAR
+
   const weeklyFee = weeklyAprPercentage * repayValue
 
   return weeklyFee
