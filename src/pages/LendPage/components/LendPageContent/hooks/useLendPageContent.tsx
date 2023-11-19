@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-import { partition, sortBy } from 'lodash'
+import { filter, sortBy } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import Tooltip from '@banx/components/Tooltip'
@@ -33,13 +33,12 @@ export const useLendPageContent = () => {
     filteredMarkets.length ? filteredMarkets : marketsPreview,
   )
 
-  const sortedAndFilteredMarkets = useMemo(() => {
+  const filteredHotMarkets = useMemo(() => {
     if (isHotFilterActive) {
-      const [hotMarkets, nonHotMarkets] = partition(sortedMarkets, 'isHot')
+      const hotMarkets = filter(sortedMarkets, 'isHot')
       const sortedHotMarkets = sortBy(hotMarkets, 'loansTvl').reverse()
-      const sortedNonHotMarkets = sortBy(nonHotMarkets, 'loansTvl').reverse()
 
-      return [...sortedHotMarkets, ...sortedNonHotMarkets]
+      return sortedHotMarkets
     }
     return sortedMarkets
   }, [isHotFilterActive, sortedMarkets])
@@ -70,7 +69,7 @@ export const useLendPageContent = () => {
   }
 
   return {
-    marketsPreview: sortedAndFilteredMarkets,
+    marketsPreview: filteredHotMarkets,
     isLoading,
     showEmptyList,
     searchSelectParams,
