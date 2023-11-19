@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-import { filter, sortBy } from 'lodash'
+import { filter } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import Tooltip from '@banx/components/Tooltip'
@@ -19,8 +19,6 @@ export const useLendPageContent = () => {
   const { selectedMarkets, setSelectedMarkets } = useMarketsURLControl()
   const [isHotFilterActive, setIsHotFilterActive] = useState(false)
 
-  const showEmptyList = !isLoading && !marketsPreview?.length
-
   const handleFilterChange = (filteredOptions: string[]) => {
     setSelectedMarkets(filteredOptions)
   }
@@ -34,14 +32,12 @@ export const useLendPageContent = () => {
   )
 
   const filteredHotMarkets = useMemo(() => {
-    if (isHotFilterActive) {
-      const hotMarkets = filter(sortedMarkets, 'isHot')
-      const sortedHotMarkets = sortBy(hotMarkets, 'loansTvl').reverse()
+    if (isHotFilterActive) return filter(sortedMarkets, 'isHot')
 
-      return sortedHotMarkets
-    }
     return sortedMarkets
   }, [isHotFilterActive, sortedMarkets])
+
+  const showEmptyList = !isLoading && !filteredHotMarkets?.length
 
   const searchSelectParams: SearchSelectProps<MarketPreview> = {
     options: marketsPreview,
