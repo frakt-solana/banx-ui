@@ -5,6 +5,7 @@ import { isEmpty } from 'lodash'
 import { Button } from '@banx/components/Buttons'
 
 import { Loan, Offer } from '@banx/api/core'
+import { useModal } from '@banx/store'
 import {
   isLoanActiveOrRefinanced,
   isLoanLiquidated,
@@ -12,10 +13,11 @@ import {
   trackPageEvent,
 } from '@banx/utils'
 
-import { findBestOffer } from '../helpers'
-import { useHiddenNftsMints, useLendLoansTransactions, useOptimisticOffers } from '../hooks'
+import { findBestOffer } from '../../helpers'
+import { useHiddenNftsMints, useLendLoansTransactions, useOptimisticOffers } from '../../hooks'
+import { ManageModal } from './ManageModal'
 
-import styles from '../ActiveOffersTable.module.less'
+import styles from './ActionsCell.module.less'
 
 interface ActionsCellProps {
   loan: Loan
@@ -32,6 +34,8 @@ export const ActionsCell: FC<ActionsCellProps> = ({
   updateOrAddOffer,
   updateOrAddLoan,
 }) => {
+  const { open } = useModal()
+
   const { offers: optimisticOffers } = useOptimisticOffers()
   const { addMints } = useHiddenNftsMints()
 
@@ -68,40 +72,37 @@ export const ActionsCell: FC<ActionsCellProps> = ({
   const isTerminatingStatus = isLoanTerminating(loan)
   const isLoanExpired = isLoanLiquidated(loan)
 
-  const hasRefinanceOffers = !isEmpty(bestOffer)
-  const canRefinance = hasRefinanceOffers && loanActiveOrRefinanced
+  const canRefinance = !isEmpty(bestOffer) && loanActiveOrRefinanced
 
-  const showClaimButton = isLoanExpired && isTerminatingStatus
-  const showTerminateButton = (!canRefinance || isTerminatingStatus) && !showClaimButton
-  const showInstantButton = canRefinance && !showClaimButton
+  const canClaim = isLoanExpired && isTerminatingStatus
+  const canTerminate = (!canRefinance || isTerminatingStatus) && !canClaim
+  const canInstant = canRefinance && !canClaim
+
+  const showModal = () => {
+    open(ManageModal, {
+      loan,
+      bestOffer,
+      onTerminate: canTerminate ? onTerminate : undefined,
+      onInstant: canInstant ? onInstant : undefined,
+    })
+  }
 
   return (
     <div className={styles.actionsButtons}>
-      {showTerminateButton && (
+      {canClaim && (
+        <Button className={styles.actionButton} onClick={onClaim} size={buttonSize}>
+          Claim NFT
+        </Button>
+      )}
+      {!canClaim && (
         <Button
           className={styles.actionButton}
-          onClick={onTerminate}
+          onClick={showModal}
           disabled={isTerminatingStatus}
           variant="secondary"
           size={buttonSize}
         >
-          Terminate
-        </Button>
-      )}
-
-      {showInstantButton && (
-        <Button
-          className={styles.actionButton}
-          onClick={onInstant}
-          variant="secondary"
-          size={buttonSize}
-        >
-          Instant
-        </Button>
-      )}
-      {showClaimButton && (
-        <Button className={styles.actionButton} onClick={onClaim} size={buttonSize}>
-          Claim NFT
+          Manage
         </Button>
       )}
     </div>
