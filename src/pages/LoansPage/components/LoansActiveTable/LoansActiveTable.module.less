@@ -6,17 +6,17 @@
   overflow: hidden;
 }
 
-.table {
-  table {
-    tr {
-      th,
-      td {
-        width: 230px;
-      }
+.table table {
+  tr > td {
+    min-width: 144px;
+    max-width: 144px;
 
-      &:last-child {
-        width: 84px;
-      }
+    &:last-child {
+      min-width: 176px;
+    }
+
+    &:last-child {
+      min-width: 208px;
     }
   }
 }

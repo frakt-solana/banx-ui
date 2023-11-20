@@ -1,13 +1,13 @@
 import { useMemo } from 'react'
 
-import { get, isFunction, sortBy } from 'lodash'
+import { chain } from 'lodash'
 
 import { Loan } from '@banx/api/core'
 import {
-  LoanStatus,
   calcLoanBorrowedAmount,
   calculateLoanRepayValue,
-  determineLoanStatus,
+  isLoanLiquidated,
+  isLoanTerminating,
 } from '@banx/utils'
 
 enum SortField {
@@ -17,7 +17,42 @@ enum SortField {
   STATUS = 'status',
 }
 
+type SortOrder = 'asc' | 'desc'
 type SortValueGetter = (loan: Loan) => number
+
+type StatusValueMap = Record<SortField, string | SortValueGetter>
+
+const STATUS_VALUE_MAP: StatusValueMap = {
+  [SortField.BORROWED]: calcLoanBorrowedAmount,
+  [SortField.DEBT]: calculateLoanRepayValue,
+  [SortField.HEALTH]: (loan: Loan) => loan.nft.collectionFloor / calculateLoanRepayValue(loan),
+  [SortField.STATUS]: '',
+}
+
+const sortLoansByField = (loans: Loan[], field: SortField, order: SortOrder) => {
+  return chain(loans)
+    .sortBy((loan) => (STATUS_VALUE_MAP[field] as SortValueGetter)(loan))
+    .thru((sorted) => (order === 'desc' ? sorted.reverse() : sorted))
+    .value()
+}
+
+const sortStatusLoans = (loans: Loan[], order: SortOrder) => {
+  const terminatingLoans = chain(loans)
+    .filter(isLoanTerminating)
+    .sortBy('fraktBond.refinanceAuctionStartedAt')
+    .reverse()
+    .value()
+
+  const otherLoans = chain(loans)
+    .filter((loan) => !isLoanTerminating(loan) && !isLoanLiquidated(loan))
+    .sortBy('fraktBond.activatedAt')
+    .reverse()
+    .value()
+
+  const combinedLoans = [...otherLoans, ...terminatingLoans]
+
+  return order === 'asc' ? combinedLoans : combinedLoans.reverse()
+}
 
 export const useSortedLoans = (loans: Loan[], sortOptionValue: string) => {
   const sortedLoans = useMemo(() => {
@@ -25,40 +60,11 @@ export const useSortedLoans = (loans: Loan[], sortOptionValue: string) => {
       return loans
     }
 
-    const [name, order] = sortOptionValue.split('_')
+    const [name, order] = sortOptionValue.split('_') as [SortField, SortOrder]
 
-    const sortValueMapping: Record<SortField, string | SortValueGetter> = {
-      [SortField.BORROWED]: (loan) => calcLoanBorrowedAmount(loan),
-      [SortField.DEBT]: (loan) => {
-        return calculateLoanRepayValue(loan)
-      },
-      [SortField.HEALTH]: (loan) => {
-        const collectionFloor = loan.nft.collectionFloor
-        const repayValue = calculateLoanRepayValue(loan)
-
-        return collectionFloor / repayValue
-      },
-      [SortField.STATUS]: (loan) => {
-        const loanStatus = determineLoanStatus(loan)
-        const statusToNumber = {
-          [LoanStatus.Liquidated]: 1,
-          [LoanStatus.Terminating]: 2,
-        }
-
-        return statusToNumber[loanStatus as keyof typeof statusToNumber] || 3
-      },
-    }
-
-    const sorted = sortBy(loans, (loan) => {
-      const sortValue = sortValueMapping[name as SortField]
-      return isFunction(sortValue) ? sortValue(loan) : get(loan, sortValue)
-    })
-
-    if (name === SortField.STATUS) {
-      return order === 'desc' ? sorted : sorted.reverse()
-    }
-
-    return order === 'desc' ? sorted.reverse() : sorted
+    return name === SortField.STATUS
+      ? sortStatusLoans(loans, order)
+      : sortLoansByField(loans, name, order)
   }, [sortOptionValue, loans])
 
   return sortedLoans
