@@ -81,7 +81,6 @@ export const ActionsCell: FC<ActionsCellProps> = ({
   const showModal = () => {
     open(ManageModal, {
       loan,
-      bestOffer,
       onTerminate: canTerminate ? onTerminate : undefined,
       onInstant: canInstant ? onInstant : undefined,
     })
