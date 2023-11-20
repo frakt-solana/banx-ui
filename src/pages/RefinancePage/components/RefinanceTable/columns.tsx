@@ -1,3 +1,4 @@
+import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
 import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
 import Timer from '@banx/components/Timer/Timer'
@@ -15,21 +16,32 @@ import {
 import { SECONDS_IN_72_HOURS } from './constants'
 import { calcWeeklyInterestFee } from './helpers'
 
+import styles from './RefinanceTable.module.less'
+
 interface GetTableColumnsProps {
   onSelectLoan: (loan: Loan) => void
   findSelectedLoan: (loanPubkey: string) => Loan | undefined
+  onSelectAll: () => void
   isCardView: boolean
+  hasSelectedLoans: boolean
 }
 
 export const getTableColumns = ({
   isCardView,
   onSelectLoan,
   findSelectedLoan,
+  onSelectAll,
+  hasSelectedLoans,
 }: GetTableColumnsProps) => {
   const columns: ColumnType<Loan>[] = [
     {
       key: 'collateral',
-      title: <HeaderCell label="Collateral" align="left" />,
+      title: (
+        <div className={styles.headerTitleRow}>
+          <Checkbox className={styles.checkbox} onChange={onSelectAll} checked={hasSelectedLoans} />
+          <HeaderCell label="Collateral" />
+        </div>
+      ),
       render: (loan) => (
         <NftInfoCell
           selected={!!findSelectedLoan(loan.publicKey)}
