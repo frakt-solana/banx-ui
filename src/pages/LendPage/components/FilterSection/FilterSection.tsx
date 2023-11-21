@@ -41,7 +41,11 @@ const FilterSection = <T extends object>({
         <Tooltip title="Hot collections">
           <>
             <Button
-              className={classNames(styles.filterButton, { [styles.active]: isHotFilterActive })}
+              className={classNames(
+                styles.filterButton,
+                { [styles.active]: isHotFilterActive },
+                { [styles.disabled]: !hotMarkets?.length },
+              )}
               onClick={onToggleHotFilter}
               disabled={!hotMarkets?.length}
               variant="secondary"

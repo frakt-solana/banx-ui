@@ -25,10 +25,18 @@
 
 .filterButton {
   svg path {
-    fill: #fa8c16;
+    fill: var(--additional-orange-primary);
   }
 
   &.active {
     border-color: var(--content-primary);
+  }
+
+  &.disabled {
+    background: var(--bg-secondary);
+
+    svg path {
+      fill: var(--bg-border-active);
+    }
   }
 }
