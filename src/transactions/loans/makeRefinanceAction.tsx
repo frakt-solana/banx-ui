@@ -1,5 +1,6 @@
 import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
+import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import {
   BondAndTransactionOptimistic,
   refinancePerpetualLoan,
@@ -28,6 +29,10 @@ export type MakeRefinanceActionParams = {
 
 export type MakeRefinanceAction = MakeActionFn<MakeRefinanceActionParams, RefinanceOptimisticResult>
 
+interface OptimisticResult extends BondAndTransactionOptimistic {
+  oldBondOffer: BondOfferV2
+}
+
 export const makeRefinanceAction: MakeRefinanceAction = async (
   ixnParams,
   { connection, wallet },
@@ -44,11 +49,13 @@ export const makeRefinanceAction: MakeRefinanceAction = async (
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
       previousBondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
       previousLender: new web3.PublicKey(bondTradeTransaction.user),
+      oldBondOffer: new web3.PublicKey(loan.bondTradeTransaction.bondOffer),
     },
     optimistic: {
       fraktBond,
+      oldBondOffer: getMockBondOffer(),
       bondTradeTransaction,
-    } as BondAndTransactionOptimistic,
+    } as OptimisticResult,
     connection,
     sendTxn: sendTxnPlaceHolder,
   })
