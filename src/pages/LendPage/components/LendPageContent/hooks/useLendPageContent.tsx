@@ -1,4 +1,6 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
+
+import { filter } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import Tooltip from '@banx/components/Tooltip'
@@ -15,8 +17,7 @@ export const useLendPageContent = () => {
   const { marketsPreview, isLoading } = useMarketsPreview()
 
   const { selectedMarkets, setSelectedMarkets } = useMarketsURLControl()
-
-  const showEmptyList = !isLoading && !marketsPreview?.length
+  const [isHotFilterActive, setIsHotFilterActive] = useState(false)
 
   const handleFilterChange = (filteredOptions: string[]) => {
     setSelectedMarkets(filteredOptions)
@@ -30,8 +31,13 @@ export const useLendPageContent = () => {
     filteredMarkets.length ? filteredMarkets : marketsPreview,
   )
 
+  const hotMarkets = filter(sortedMarkets, 'isHot')
+  const filteredHotMarkets = isHotFilterActive ? hotMarkets : sortedMarkets
+
+  const showEmptyList = !isLoading && !filteredHotMarkets?.length
+
   const searchSelectParams: SearchSelectProps<MarketPreview> = {
-    options: marketsPreview,
+    options: isHotFilterActive ? hotMarkets : marketsPreview,
     selectedOptions: selectedMarkets,
     placeholder: 'Select a collection',
     labels: ['Collection', 'APY'],
@@ -56,10 +62,13 @@ export const useLendPageContent = () => {
   }
 
   return {
-    marketsPreview: sortedMarkets,
+    marketsPreview: filteredHotMarkets,
     isLoading,
     showEmptyList,
     searchSelectParams,
     sortParams,
+    isHotFilterActive,
+    hotMarkets,
+    onToggleHotFilter: () => setIsHotFilterActive(!isHotFilterActive),
   }
 }
