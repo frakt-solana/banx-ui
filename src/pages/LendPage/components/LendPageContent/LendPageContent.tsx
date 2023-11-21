@@ -22,6 +22,7 @@ const LendPageContent = () => {
     showEmptyList,
     onToggleHotFilter,
     isHotFilterActive,
+    hotMarkets,
   } = useLendPageContent()
 
   const { data: markets, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: marketsPreview })
@@ -33,6 +34,7 @@ const LendPageContent = () => {
         sortParams={sortParams}
         isHotFilterActive={isHotFilterActive}
         onToggleHotFilter={onToggleHotFilter}
+        hotMarkets={hotMarkets}
       />
       {isLoading && isEmpty(marketsPreview) ? (
         <Loader />

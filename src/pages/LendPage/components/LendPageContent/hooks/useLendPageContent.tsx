@@ -31,11 +31,8 @@ export const useLendPageContent = () => {
     filteredMarkets.length ? filteredMarkets : marketsPreview,
   )
 
-  const filteredHotMarkets = useMemo(() => {
-    if (isHotFilterActive) return filter(sortedMarkets, 'isHot')
-
-    return sortedMarkets
-  }, [isHotFilterActive, sortedMarkets])
+  const hotMarkets = filter(sortedMarkets, 'isHot')
+  const filteredHotMarkets = isHotFilterActive ? hotMarkets : sortedMarkets
 
   const showEmptyList = !isLoading && !filteredHotMarkets?.length
 
@@ -71,6 +68,7 @@ export const useLendPageContent = () => {
     searchSelectParams,
     sortParams,
     isHotFilterActive,
+    hotMarkets,
     onToggleHotFilter: () => setIsHotFilterActive(!isHotFilterActive),
   }
 }
