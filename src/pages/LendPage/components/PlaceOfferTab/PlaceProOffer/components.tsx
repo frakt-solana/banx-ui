@@ -69,5 +69,5 @@ const calculateWeightedWeeklyInterest: CalculateWeightedWeeklyInterest = (offerS
   const weeklyAprPercentage = marketApr / 100 / WEEKS_IN_YEAR
   const weightedWeeklyInterest = (offerSize * weeklyAprPercentage) / 100
 
-  return weightedWeeklyInterest
+  return weightedWeeklyInterest / 1e9
 }
