@@ -85,17 +85,16 @@ export const CollapsedMobileContent: FC<CollapsedMobileContentProps> = ({
 )
 
 interface AccruedInterestProps {
-  onClick: () => void
   value: number
 }
-export const AccruedInterest: FC<AccruedInterestProps> = ({ value, onClick }) => {
+export const AccruedInterest: FC<AccruedInterestProps> = ({ value }) => {
   return (
     <div className={styles.accruedInterestContainer}>
       <div className={styles.accruedInterestInfo}>
         <span className={styles.accruedInterestValue}>{createSolValueJSX(value)}</span>
         <span className={styles.accruedInterestLabel}>Total accrued interest</span>
       </div>
-      <Button onClick={onClick}>Claim</Button>
+      <Button>Claim</Button>
     </div>
   )
 }

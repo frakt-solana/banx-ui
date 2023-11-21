@@ -37,7 +37,7 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, isOwnOffer, bestOffer, offerM
     [styles.highlightYour]: connected && offer.publicKey === PUBKEY_PLACEHOLDER,
   })
 
-  const displayLoanValue = formatDecimal((loanValue || 0) / 1e9)
+  const displayLoanValue = formatDecimal(loanValue / 1e9)
   const displayLoansAmount = formatLoansAmount(loansAmount)
   const displayDeltaValue = isProMode && deltaValue ? `| Δ${deltaValue}◎` : ''
 

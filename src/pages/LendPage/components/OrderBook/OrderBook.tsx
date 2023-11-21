@@ -17,13 +17,14 @@ import { OrderBookParams, useOrderBook } from './hooks'
 
 import styles from './OrderBook.module.less'
 
+const MOCK_ACCRUED_INTEREST = 26
 const OrderBookDesktop: FC<{ orderBookParams: OrderBookParams }> = ({ orderBookParams }) => (
   <div className={styles.orderBookWrapper}>
     <div className={styles.orderBook}>
       <OrderBookLabels />
       <OrderBookList orderBookParams={orderBookParams} />
     </div>
-    <AccruedInterest onClick={() => null} value={26} />
+    <AccruedInterest value={MOCK_ACCRUED_INTEREST} />
   </div>
 )
 
@@ -68,7 +69,7 @@ const OrderBookMobile: FC<OrderBookMobileProps> = ({ marketPreview, orderBookPar
             orderBookParams={orderBookParams}
             closeOrderBook={() => setOrderBookOpen(false)}
           />
-          <AccruedInterest onClick={() => null} value={26} />
+          <AccruedInterest value={MOCK_ACCRUED_INTEREST} />
         </>
       )}
     </div>
