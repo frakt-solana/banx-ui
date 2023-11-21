@@ -37,7 +37,7 @@ export const useLendPageContent = () => {
   const showEmptyList = !isLoading && !filteredHotMarkets?.length
 
   const searchSelectParams: SearchSelectProps<MarketPreview> = {
-    options: marketsPreview,
+    options: isHotFilterActive ? hotMarkets : marketsPreview,
     selectedOptions: selectedMarkets,
     placeholder: 'Select a collection',
     labels: ['Collection', 'APY'],
