@@ -12,6 +12,31 @@
   }
 }
 
+.filterWrapper {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+}
+
 .searchSelect {
   max-width: 750px;
+}
+
+.filterButton {
+  svg path {
+    fill: var(--additional-orange-primary);
+  }
+
+  &.active {
+    border-color: var(--content-primary);
+  }
+
+  &.disabled {
+    background: var(--bg-secondary);
+
+    svg path {
+      fill: var(--bg-border-active);
+    }
+  }
 }
