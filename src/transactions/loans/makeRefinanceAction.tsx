@@ -29,7 +29,9 @@ export type MakeRefinanceActionParams = {
 
 export type MakeRefinanceAction = MakeActionFn<MakeRefinanceActionParams, RefinanceOptimisticResult>
 
-type OptimisticResult = BondAndTransactionOptimistic & { oldBondOffer: BondOfferV2 }
+interface OptimisticResult extends BondAndTransactionOptimistic {
+  oldBondOffer: BondOfferV2
+}
 
 export const makeRefinanceAction: MakeRefinanceAction = async (
   ixnParams,
