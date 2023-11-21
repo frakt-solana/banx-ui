@@ -60,16 +60,17 @@ export const usePlaceLiteOffer = ({
     }
   }, [loansAmountNumber, loanValueNumber, syntheticOffer, setSyntheticOffer])
 
-  const { onCreateOffer, onRemoveOffer, onUpdateOffer } = useOfferTransactions({
-    marketPubkey,
-    offerPubkey,
-    loanValue: loanValueNumber,
-    loansAmount: loansAmountNumber,
-    optimisticOffer,
-    updateOrAddOffer,
-    resetFormValues,
-    exitEditMode,
-  })
+  const { onCreateOffer, onRemoveOffer, onUpdateOffer, onClaimOfferInterest } =
+    useOfferTransactions({
+      marketPubkey,
+      offerPubkey,
+      loanValue: loanValueNumber,
+      loansAmount: loansAmountNumber,
+      optimisticOffer,
+      updateOrAddOffer,
+      resetFormValues,
+      exitEditMode,
+    })
 
   const offerSize = loanValueNumber * loansAmountNumber || 0
 
@@ -104,6 +105,7 @@ export const usePlaceLiteOffer = ({
     disablePlaceOffer,
 
     offerTransactions: {
+      onClaimOfferInterest,
       onCreateOffer,
       onRemoveOffer,
       onUpdateOffer,

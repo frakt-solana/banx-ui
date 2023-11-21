@@ -39,17 +39,18 @@ export const usePlaceProOffer = ({
   const loansAmountNumber = parseFloat(loansAmount)
   const deltaValueNumber = parseFloat(deltaValue)
 
-  const { onCreateBondingOffer, onUpdateBondingOffer, onRemoveOffer } = useOfferTransactions({
-    marketPubkey,
-    offerPubkey,
-    loanValue: loanValueNumber,
-    loansAmount: loansAmountNumber,
-    deltaValue: deltaValueNumber,
-    optimisticOffer,
-    updateOrAddOffer,
-    resetFormValues,
-    exitEditMode,
-  })
+  const { onCreateBondingOffer, onUpdateBondingOffer, onRemoveOffer, onClaimOfferInterest } =
+    useOfferTransactions({
+      marketPubkey,
+      offerPubkey,
+      loanValue: loanValueNumber,
+      loansAmount: loansAmountNumber,
+      deltaValue: deltaValueNumber,
+      optimisticOffer,
+      updateOrAddOffer,
+      resetFormValues,
+      exitEditMode,
+    })
 
   const offerSize = useMemo(() => {
     return calculateOfferSize({
@@ -107,6 +108,7 @@ export const usePlaceProOffer = ({
     offerTransactions: {
       onCreateOffer: onCreateBondingOffer,
       onUpdateOffer: onUpdateBondingOffer,
+      onClaimOfferInterest,
       onRemoveOffer,
     },
   }

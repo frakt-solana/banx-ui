@@ -42,6 +42,7 @@ interface OfferActionButtonsProps {
   onCreateOffer: () => void
   onRemoveOffer: () => void
   onUpdateOffer: () => void
+  onClaimOfferInterest: () => void
 }
 
 export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
@@ -51,6 +52,7 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
   onCreateOffer,
   onRemoveOffer,
   onUpdateOffer,
+  onClaimOfferInterest,
 }) => {
   const { connected } = useWallet()
   const { toggleVisibility } = useWalletModal()
@@ -85,7 +87,7 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
               Apply changes
             </Button>
           </div>
-          <Button onClick={onUpdateOffer} className={styles.actionButton}>
+          <Button onClick={onClaimOfferInterest} className={styles.actionButton}>
             Claim interest
           </Button>
         </div>

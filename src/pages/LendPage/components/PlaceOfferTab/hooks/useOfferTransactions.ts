@@ -4,6 +4,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 import { Offer } from '@banx/api/core'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import {
+  makeClaimBondOfferInterestAction,
   makeCreateBondingOfferAction,
   makeCreateOfferAction,
   makeRemoveOfferAction,
@@ -149,7 +150,38 @@ export const useOfferTransactions = ({
       .execute()
   }
 
-  return { onCreateBondingOffer, onUpdateBondingOffer, onRemoveOffer, onCreateOffer, onUpdateOffer }
+  const onClaimOfferInterest = () => {
+    if (!optimisticOffer) return
+
+    const txnParam = { offerPubkey, optimisticOffer }
+
+    new TxnExecutor(makeClaimBondOfferInterestAction, { wallet, connection })
+      .addTxnParam(txnParam)
+      .on('pfSuccessEach', (results) => {
+        const { result, txnHash } = results[0]
+        result?.bondOffer && updateOrAddOffer(result.bondOffer)
+
+        showSuccessSnackbar({ message: 'Interest successfully claimed', txnHash })
+        exitEditMode()
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error, {
+          additionalData: txnParam,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'ClaimOfferInterest',
+        })
+      })
+      .execute()
+  }
+
+  return {
+    onCreateBondingOffer,
+    onUpdateBondingOffer,
+    onClaimOfferInterest,
+    onRemoveOffer,
+    onCreateOffer,
+    onUpdateOffer,
+  }
 }
 
 const showSuccessSnackbar = ({ message, txnHash }: { message: string; txnHash: string }) => {
