@@ -1,9 +1,11 @@
 import { web3 } from 'fbonds-core'
 import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
+import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import {
   BondAndTransactionOptimistic,
   repayPartialPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
 import { MakeActionFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
@@ -22,6 +24,8 @@ export type MakeRepayPartialLoanAction = MakeActionFn<
   MakeRepayPartialActionResult
 >
 
+type OptimisticResult = BondAndTransactionOptimistic & { oldBondOffer: BondOfferV2 }
+
 export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
   ixnParams,
   walletAndConnection,
@@ -35,9 +39,14 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     args: {
       fractionToRepay,
-      optimistic: { fraktBond, bondTradeTransaction } as BondAndTransactionOptimistic,
+      optimistic: {
+        fraktBond,
+        bondTradeTransaction,
+        oldBondOffer: getMockBondOffer(),
+      } as OptimisticResult,
     },
     accounts: {
+      oldBondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
       lender: new web3.PublicKey(bondTradeTransaction.user),
       oldBondTradeTransactionV2: new web3.PublicKey(bondTradeTransaction.publicKey),
       fbond: new web3.PublicKey(fraktBond.publicKey),
