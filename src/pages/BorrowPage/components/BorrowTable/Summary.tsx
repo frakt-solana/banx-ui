@@ -3,6 +3,7 @@ import { FC, useState } from 'react'
 import { sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
+import { CounterSlider } from '@banx/components/Slider'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { calcLoanValueWithProtocolFee, trackPageEvent } from '@banx/utils'
@@ -15,14 +16,17 @@ import styles from './BorrowTable.module.less'
 
 interface SummaryProps {
   nftsInCart: TableNftData[]
-  selectAll: () => void
   borrowAll: () => Promise<void>
+  selectAmount: (value?: number) => void
+  maxBorrowAmount: number
 }
 
-export const Summary: FC<SummaryProps> = ({ nftsInCart, selectAll, borrowAll }) => {
-  const selectAllBtnText = !nftsInCart.length ? 'Select all' : 'Deselect all'
-  const selectMobileBtnText = !nftsInCart.length ? `Select all` : `Deselect ${nftsInCart.length}`
-
+export const Summary: FC<SummaryProps> = ({
+  maxBorrowAmount,
+  nftsInCart,
+  borrowAll,
+  selectAmount,
+}) => {
   const totalBorrow = calcLoanValueWithProtocolFee(sumBy(nftsInCart, ({ loanValue }) => loanValue))
   const totalWeeklyFee = sumBy(nftsInCart, ({ nft, loanValue }) =>
     calcInterest({
@@ -57,10 +61,7 @@ export const Summary: FC<SummaryProps> = ({ nftsInCart, selectAll, borrowAll }) 
         </div>
       </div>
       <div className={styles.summaryBtns}>
-        <Button variant="secondary" onClick={selectAll}>
-          <span className={styles.selectButtonText}>{selectAllBtnText}</span>
-          <span className={styles.selectButtonMobileText}>{selectMobileBtnText}</span>
-        </Button>
+        <CounterSlider value={nftsInCart.length} onChange={selectAmount} max={maxBorrowAmount} />
         <Button onClick={onBorrow} disabled={!nftsInCart.length} loading={isBorrowing} size="large">
           Borrow {createSolValueJSX(totalBorrow, 1e9, '0◎')}
         </Button>

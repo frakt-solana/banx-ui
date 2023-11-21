@@ -1,29 +1,47 @@
+import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
 import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
 import Timer from '@banx/components/Timer/Timer'
 
 import { Loan } from '@banx/api/core'
-import { WEEKS_IN_YEAR } from '@banx/constants'
-import { calculateLoanRepayValue, formatDecimal } from '@banx/utils'
+import { formatDecimal } from '@banx/utils'
 
-import { APRCell, APRIncreaseCell, DebtCell, RefinanceCell } from './TableCells'
+import {
+  APRCell,
+  /* APRIncreaseCell */
+  DebtCell,
+  LTVCell,
+  RefinanceCell,
+} from './TableCells'
 import { SECONDS_IN_72_HOURS } from './constants'
+import { calcWeeklyInterestFee } from './helpers'
+
+import styles from './RefinanceTable.module.less'
 
 interface GetTableColumnsProps {
   onSelectLoan: (loan: Loan) => void
   findSelectedLoan: (loanPubkey: string) => Loan | undefined
+  onSelectAll: () => void
   isCardView: boolean
+  hasSelectedLoans: boolean
 }
 
 export const getTableColumns = ({
   isCardView,
   onSelectLoan,
   findSelectedLoan,
+  onSelectAll,
+  hasSelectedLoans,
 }: GetTableColumnsProps) => {
   const columns: ColumnType<Loan>[] = [
     {
       key: 'collateral',
-      title: <HeaderCell label="Collateral" align="left" />,
+      title: (
+        <div className={styles.headerTitleRow}>
+          <Checkbox className={styles.checkbox} onChange={onSelectAll} checked={hasSelectedLoans} />
+          <HeaderCell label="Collateral" />
+        </div>
+      ),
       render: (loan) => (
         <NftInfoCell
           selected={!!findSelectedLoan(loan.publicKey)}
@@ -41,28 +59,36 @@ export const getTableColumns = ({
       key: 'floorPrice',
       title: <HeaderCell label="Floor" />,
       render: (loan) => createSolValueJSX(loan.nft.collectionFloor, 1e9, '--', formatDecimal),
+      sorter: true,
     },
     {
       key: 'repayValue',
       title: <HeaderCell label="Debt" />,
       render: (loan) => <DebtCell loan={loan} />,
+      sorter: true,
+    },
+    {
+      key: 'ltv',
+      title: <HeaderCell label="LTV" />,
+      render: (loan) => <LTVCell loan={loan} />,
+      sorter: true,
     },
     {
       key: 'interest',
       title: <HeaderCell label="Weekly interest" />,
-      render: (loan) => createSolValueJSX(calcWeeklyInterestFee(loan), 1, '--', formatDecimal),
+      render: (loan) => createSolValueJSX(calcWeeklyInterestFee(loan), 1e9, '--', formatDecimal),
     },
     {
       key: 'apy',
       title: <HeaderCell label="APY" />,
       render: (loan) => <APRCell loan={loan} />,
+      sorter: true,
     },
-
-    {
-      key: 'nextAprIncrease',
-      title: <HeaderCell label="Next APY increase" />,
-      render: (loan) => <APRIncreaseCell loan={loan} />,
-    },
+    // {
+    //   key: 'nextAprIncrease',
+    //   title: <HeaderCell label="Next APY increase" />,
+    //   render: (loan) => <APRIncreaseCell loan={loan} />,
+    // },
     {
       key: 'duration',
       title: <HeaderCell label="Ends in" />,
@@ -85,15 +111,4 @@ export const getTableColumns = ({
   ]
 
   return columns
-}
-
-type CalcWeeklyInterestFee = (Loan: Loan) => number
-export const calcWeeklyInterestFee: CalcWeeklyInterestFee = (loan) => {
-  const apr = loan.bondTradeTransaction.amountOfBonds
-  const repayValue = calculateLoanRepayValue(loan)
-
-  const weeklyAprPercentage = apr / 1e4 / WEEKS_IN_YEAR
-  const weeklyFee = (weeklyAprPercentage * repayValue) / 1e9
-
-  return weeklyFee
 }

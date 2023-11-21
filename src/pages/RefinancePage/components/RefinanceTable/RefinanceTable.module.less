@@ -7,18 +7,16 @@
 }
 
 .refinanceTable table {
-  tbody > tr > td {
-    min-width: 140px;
-    max-width: 140px;
+  tr > td {
+    min-width: 120px;
+    max-width: 120px;
 
     &:first-child {
       min-width: 200px;
-      max-width: 200px;
     }
 
     &:last-child {
-      min-width: 160px;
-      max-width: 160px;
+      min-width: 176px;
     }
   }
 }
@@ -147,4 +145,15 @@
       min-width: 176px;
     }
   }
+}
+
+.headerTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.checkbox {
+  height: 18px;
+  padding-left: 18px;
 }

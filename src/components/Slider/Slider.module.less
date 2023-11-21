@@ -21,12 +21,16 @@
 
 .counterInputContainer {
   border: var(--border-primary) !important;
-  max-width: 80px;
+  max-width: 76px;
+  min-width: 58px;
   position: relative;
 
   input {
-    padding-right: 24px;
     height: 38px;
+
+    @media (max-width: 640px) {
+      padding: 8px 24px 8px 4px !important;
+    }
   }
 }
 
