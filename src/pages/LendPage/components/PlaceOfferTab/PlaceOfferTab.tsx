@@ -10,10 +10,16 @@ import { usePlaceOffer } from './hooks'
 
 import styles from './PlaceOfferTab.module.less'
 
-const PlaceOfferTab: FC<OrderBookMarketParams> = (props) => {
-  const { ...offerParams } = usePlaceOffer(props)
+interface PlaceOfferTabProps extends OrderBookMarketParams {
+  offerMode: OfferMode
+  onChangeOfferMode: (value: OfferMode) => void
+}
 
-  const { offerPubkey, onChangeOfferMode, exitEditMode, offerMode } = offerParams
+const PlaceOfferTab: FC<PlaceOfferTabProps> = (props) => {
+  const { offerMode, onChangeOfferMode } = props
+
+  const { ...offerParams } = usePlaceOffer(props)
+  const { offerPubkey, exitEditMode } = offerParams
 
   const isEditMode = !!offerPubkey && offerPubkey !== PUBKEY_PLACEHOLDER
 

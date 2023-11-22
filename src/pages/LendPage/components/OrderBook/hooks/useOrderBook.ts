@@ -1,18 +1,14 @@
-import { useWallet } from '@solana/wallet-adapter-react'
-
 import { MarketPreview } from '@banx/api/core'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { SyntheticOffer, useSyntheticOffers } from '@banx/store'
 
-import { OfferMode, OrderBookMarketParams } from '../../ExpandableCardContent'
+import { OrderBookMarketParams } from '../../ExpandableCardContent'
 import { useMarketOrders } from './useMarketOrders'
 
 export interface OrderBookParams {
   offers: SyntheticOffer[]
   goToEditOffer: (offer: SyntheticOffer) => void
-  isOwnOffer: (offer: SyntheticOffer) => boolean
   bestOffer: SyntheticOffer
-  offerMode: OfferMode
   isLoading: boolean
 }
 
@@ -22,23 +18,15 @@ type UseOrderBook = (props: OrderBookMarketParams) => {
 }
 export const useOrderBook: UseOrderBook = (props) => {
   const { setOffer: setSyntheticOffer } = useSyntheticOffers()
-  const { offerPubkey, setOfferPubkey, marketPubkey, offerMode, goToPlaceOfferTab } = props
+  const { offerPubkey, setOfferPubkey, marketPubkey, goToPlaceOfferTab } = props
 
-  const wallet = useWallet()
   const { marketsPreview } = useMarketsPreview()
 
   const selectedMarketPreview = marketsPreview.find(
     (market) => market.marketPubkey === marketPubkey,
   )
 
-  const { offers, bestOffer, isLoading } = useMarketOrders({
-    marketPubkey,
-    offerPubkey,
-  })
-
-  const isOwnOffer = (offer: SyntheticOffer) => {
-    return offer?.assetReceiver === wallet?.publicKey?.toBase58()
-  }
+  const { offers, bestOffer, isLoading } = useMarketOrders({ marketPubkey, offerPubkey })
 
   const goToEditOffer = (offer: SyntheticOffer) => {
     goToPlaceOfferTab()
@@ -52,9 +40,7 @@ export const useOrderBook: UseOrderBook = (props) => {
       offers,
       isLoading,
       goToEditOffer,
-      isOwnOffer,
       bestOffer,
-      offerMode,
     },
     selectedMarketPreview,
   }

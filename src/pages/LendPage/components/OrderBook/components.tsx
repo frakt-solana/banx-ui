@@ -24,8 +24,7 @@ export const OrderBookList: FC<OrderBookListProps> = ({
   closeOrderBook,
   className,
 }) => {
-  const { offers, goToEditOffer, isOwnOffer, bestOffer, offerMode, isLoading } =
-    orderBookParams || {}
+  const { offers, goToEditOffer, bestOffer, isLoading } = orderBookParams
 
   return (
     <ul className={classNames(styles.orderBookList, className)}>
@@ -40,8 +39,6 @@ export const OrderBookList: FC<OrderBookListProps> = ({
               goToEditOffer(offer)
               closeOrderBook?.()
             }}
-            offerMode={offerMode}
-            isOwnOffer={isOwnOffer(offer)}
             bestOffer={bestOffer}
           />
         ))
