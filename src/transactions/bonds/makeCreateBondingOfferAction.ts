@@ -11,9 +11,9 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type MakeCreateBondingOfferActionParams = {
   marketPubkey: string
-  loanValue: number //? value in sol
+  loanValue: number //? normal number
   loansAmount: number
-  deltaValue: number //? value in sol
+  deltaValue: number //? normal number
   bondingCurveType?: BondingCurveType
 }
 

@@ -13,7 +13,7 @@ interface OfferSummaryProps {
   isEditMode: boolean
 }
 
-//TODO: Need to in the future
+//TODO: Need to calc in the future
 const MOCK_WEIGHTED_LTV = 50
 const MOCK_ACTIVE_LOANS = 2
 const MOCK_TOTAL_LOANS = 3
@@ -64,8 +64,7 @@ export const OfferSummary: FC<OfferSummaryProps> = ({ offerSize, marketApr, isEd
   )
 }
 
-type CalculateWeightedWeeklyInterest = (offerSize: number, marketApr: number) => number
-const calculateWeightedWeeklyInterest: CalculateWeightedWeeklyInterest = (offerSize, marketApr) => {
+const calculateWeightedWeeklyInterest = (offerSize: number, marketApr: number) => {
   const weeklyAprPercentage = marketApr / 100 / WEEKS_IN_YEAR
   const weightedWeeklyInterest = (offerSize * weeklyAprPercentage) / 100
 
