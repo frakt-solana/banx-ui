@@ -40,21 +40,23 @@ export const ManageModal: FC<ManageModalProps> = ({ loan, onTerminate, onInstant
     },
   ]
 
+  const defaultTabValue = modalTabs[0].value
+
   const {
     tabs,
     value: tabValue,
     setValue: setTabValue,
   } = useTabs({
     tabs: modalTabs,
-    defaultValue: modalTabs[0].value,
+    defaultValue: defaultTabValue,
   })
 
   return (
     <Modal className={styles.modal} open onCancel={close} width={572}>
       <Tabs className={styles.tabs} tabs={tabs} value={tabValue} setValue={setTabValue} />
 
-      {tabValue === modalTabs[0].value && <RepaymentCallContent loan={loan} close={close} />}
-      {tabValue !== modalTabs[0].value && (
+      {tabValue === defaultTabValue && <RepaymentCallContent loan={loan} close={close} />}
+      {tabValue !== defaultTabValue && (
         <ClosureContent onInstant={onInstant} onTerminate={onTerminate} />
       )}
     </Modal>
