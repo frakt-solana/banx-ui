@@ -39,7 +39,7 @@ export const usePlaceProOffer = ({
   const loansAmountNumber = parseFloat(loansAmount)
   const deltaValueNumber = parseFloat(deltaValue)
 
-  const { onCreateBondingOffer, onUpdateBondingOffer, onRemoveOffer, onClaimOfferInterest } =
+  const { onCreateOffer, onUpdateOffer, onRemoveOffer, onClaimOfferInterest } =
     useOfferTransactions({
       marketPubkey,
       offerPubkey,
@@ -105,8 +105,8 @@ export const usePlaceProOffer = ({
     showBorrowerMessage,
     showDepositError,
 
-    onCreateBondingOffer,
-    onUpdateBondingOffer,
+    onCreateOffer,
+    onUpdateOffer,
     onClaimOfferInterest,
     onRemoveOffer,
   }
