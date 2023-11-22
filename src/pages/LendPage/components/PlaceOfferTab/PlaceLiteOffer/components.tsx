@@ -25,8 +25,8 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
 
   const colorLTV = getColorByPercent(loanToValuePercent, HealthColorIncreasing)
 
-  const displayEstimatedInterest = estimatedInterest ? formatDecimal(estimatedInterest) : 0
-  const displayOfferSize = offerSize ? formatDecimal(offerSize) : 0
+  const displayEstimatedInterest = estimatedInterest ? formatDecimal(estimatedInterest) : '0'
+  const displayOfferSize = offerSize ? formatDecimal(offerSize) : '0'
 
   return (
     <div className={styles.offerSummary}>
