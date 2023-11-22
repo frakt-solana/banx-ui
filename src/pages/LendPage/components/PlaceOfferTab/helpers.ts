@@ -5,6 +5,7 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV2, BondingCurveType } from 'fbonds-core/lib/fbond-protocol/types'
 
+import { Offer } from '@banx/api/core'
 import { SyntheticOffer } from '@banx/store'
 
 type CalculateOfferSize = (props: {
@@ -57,4 +58,14 @@ export const shouldShowDepositError: ShouldShowDepositError = ({
   const totalAvailableFunds = initialOfferSize + solanaBalance * 1e9
 
   return totalAvailableFunds < offerSize
+}
+
+export const getAdditionalSummaryOfferInfo = (offer?: Offer) => {
+  const { concentrationIndex = 0, edgeSettlement = 0, buyOrdersQuantity = 0 } = offer || {}
+
+  return {
+    accruedInterest: concentrationIndex / 1e9,
+    reserve: edgeSettlement / 1e9,
+    quantityOfLoans: buyOrdersQuantity,
+  }
 }

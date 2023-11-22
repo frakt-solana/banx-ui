@@ -61,7 +61,12 @@ const PlaceProOffer: FC<OfferParams> = (offerParams) => {
         {showDepositError && <InputErrorMessage message="Not enough SOL" />}
         {showBorrowerMessage && <BorrowerMessage loanValue={loanValue} />}
       </div>
-      <OfferSummary isEditMode={isEditMode} offerSize={offerSize} marketApr={marketApr} />
+      <OfferSummary
+        offer={offerParams.optimisticOffer}
+        isEditMode={isEditMode}
+        offerSize={offerSize}
+        marketApr={marketApr}
+      />
       <OfferActionButtons
         isEditMode={isEditMode}
         disableUpdateOffer={disableUpdateOffer}

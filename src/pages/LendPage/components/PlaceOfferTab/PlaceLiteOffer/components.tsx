@@ -2,8 +2,11 @@ import { FC } from 'react'
 
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
+import { Offer } from '@banx/api/core'
 import { WEEKS_IN_YEAR } from '@banx/constants'
 import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
+
+import { getAdditionalSummaryOfferInfo } from '../helpers'
 
 import styles from './PlaceLiteOffer.module.less'
 
@@ -12,6 +15,7 @@ interface OfferSummaryProps {
   marketAPR: number
   loanToValuePercent: number
   isEditMode: boolean
+  offer: Offer | undefined
 }
 
 export const OfferSummary: FC<OfferSummaryProps> = ({
@@ -19,14 +23,19 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
   marketAPR,
   loanToValuePercent,
   isEditMode,
+  offer,
 }) => {
+  const formattedOfferSize = offerSize / 1e9
+
   const weeklyAprPercentage = marketAPR / 100 / WEEKS_IN_YEAR
-  const estimatedInterest = (offerSize * weeklyAprPercentage) / 100
+  const estimatedInterest = (formattedOfferSize * weeklyAprPercentage) / 100
 
   const colorLTV = getColorByPercent(loanToValuePercent, HealthColorIncreasing)
 
-  const displayEstimatedInterest = estimatedInterest ? formatDecimal(estimatedInterest) : '0'
-  const displayOfferSize = offerSize ? formatDecimal(offerSize) : '0'
+  const { accruedInterest, reserve, quantityOfLoans } = getAdditionalSummaryOfferInfo(offer)
+
+  const displayEstimatedInterest = formatDecimal(estimatedInterest)
+  const displayOfferSize = formatDecimal(formattedOfferSize)
 
   return (
     <div className={styles.offerSummary}>
@@ -51,9 +60,9 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
       />
       {isEditMode && (
         <div className={styles.editOfferSummary}>
-          <StatInfo label="Active loans" value={'2 / 3'} valueType={VALUES_TYPES.STRING} />
-          <StatInfo label="Reserve" value={3} tooltipText="Reserve" />
-          <StatInfo label="Accrued interest" value={12.5} />
+          <StatInfo label="Active loans" value={quantityOfLoans} valueType={VALUES_TYPES.STRING} />
+          <StatInfo label="Reserve" value={reserve} tooltipText="Reserve" />
+          <StatInfo label="Accrued interest" value={accruedInterest} />
         </div>
       )}
     </div>
