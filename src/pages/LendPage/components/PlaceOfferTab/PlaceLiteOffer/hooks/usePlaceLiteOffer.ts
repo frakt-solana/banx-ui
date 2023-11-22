@@ -1,45 +1,29 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { isEmpty } from 'lodash'
 
-import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
-import { createEmptySyntheticOffer, useSyntheticOffers } from '@banx/store'
 import { useSolanaBalance } from '@banx/utils'
 
-import { OrderBookMarketParams } from '../../ExpandableCardContent'
-import {
-  calcLoanToValuePercentage,
-  calculateBestLoanValue,
-  shouldShowDepositError,
-} from '../helpers'
+import { shouldShowDepositError } from '../../helpers'
+import { OfferParams } from '../../hooks'
+import { useOfferTransactions } from '../../hooks/useOfferTransactions'
+import { calcLoanToValuePercentage, calculateBestLoanValue } from '../helpers'
 import { useOfferFormController } from './useOfferFormController'
-import { useOfferTransactions } from './useOfferTransactions'
 
-export const usePlaceOfferTab = (props: OrderBookMarketParams) => {
-  const { marketPubkey, offerPubkey, setOfferPubkey } = props
-
-  const { offers, updateOrAddOffer } = useMarketOffers({ marketPubkey })
-  const { marketsPreview } = useMarketsPreview()
-  const solanaBalance = useSolanaBalance()
-
-  const {
-    findOfferByPubkey: findSyntheticOfferByPubkey,
-    setOffer: setSyntheticOffer,
-    removeOffer: removeSyntheticOffer,
-  } = useSyntheticOffers()
-
+export const usePlaceLiteOffer = ({
+  offerPubkey,
+  exitEditMode,
+  syntheticOffer,
+  marketPreview,
+  setSyntheticOffer,
+  optimisticOffer,
+  updateOrAddOffer,
+}: OfferParams) => {
   const { connected } = useWallet()
-  const { publicKey: walletPubkey } = useWallet()
+  const marketPubkey = marketPreview?.marketPubkey || ''
 
-  const marketPreview = marketsPreview.find((market) => market.marketPubkey === marketPubkey)
-
-  const syntheticOffer = useMemo(() => {
-    return (
-      findSyntheticOfferByPubkey(offerPubkey) ||
-      createEmptySyntheticOffer({ marketPubkey, walletPubkey: walletPubkey?.toBase58() || '' })
-    )
-  }, [findSyntheticOfferByPubkey, marketPubkey, walletPubkey, offerPubkey])
+  const solanaBalance = useSolanaBalance()
 
   const {
     loanValue,
@@ -76,33 +60,28 @@ export const usePlaceOfferTab = (props: OrderBookMarketParams) => {
     }
   }, [loansAmountNumber, loanValueNumber, syntheticOffer, setSyntheticOffer])
 
-  const exitEditMode = () => {
-    setOfferPubkey('')
-    removeSyntheticOffer(syntheticOffer.marketPubkey)
-  }
-
-  const { onCreateOffer, onRemoveOffer, onUpdateOffer } = useOfferTransactions({
-    marketPubkey,
-    offerPubkey,
-    loanValue: loanValueNumber,
-    loansAmount: loansAmountNumber,
-    offers,
-    updateOrAddOffer,
-    resetFormValues,
-    exitEditMode,
-  })
+  const { onCreateOffer, onRemoveOffer, onUpdateOffer, onClaimOfferInterest } =
+    useOfferTransactions({
+      marketPubkey,
+      offerPubkey,
+      loanValue: loanValueNumber,
+      loansAmount: loansAmountNumber,
+      optimisticOffer,
+      updateOrAddOffer,
+      resetFormValues,
+      exitEditMode,
+    })
 
   const offerSize = loanValueNumber * loansAmountNumber || 0
 
   const showDepositError = shouldShowDepositError({
     initialLoansAmount: syntheticOffer.loansAmount,
-    initialLoanValue: syntheticOffer.loanValue / 1e9,
+    initialLoanValue: syntheticOffer.loanValue,
+    offerSize: offerSize * 1e9,
     solanaBalance,
-    offerSize,
   })
 
   const showBorrowerMessage = !showDepositError && !!offerSize
-
   const disablePlaceOffer = connected ? showDepositError || !offerSize : false
   const disableUpdateOffer = !hasFormChanges || showDepositError || !offerSize
 
@@ -116,7 +95,6 @@ export const usePlaceOfferTab = (props: OrderBookMarketParams) => {
     loanValue,
     loansAmount,
 
-    exitEditMode,
     onLoanValueChange,
     onLoanAmountChange,
 
@@ -126,10 +104,9 @@ export const usePlaceOfferTab = (props: OrderBookMarketParams) => {
     disableUpdateOffer,
     disablePlaceOffer,
 
-    offerTransactions: {
-      onCreateOffer,
-      onRemoveOffer,
-      onUpdateOffer,
-    },
+    onClaimOfferInterest,
+    onCreateOffer,
+    onRemoveOffer,
+    onUpdateOffer,
   }
 }

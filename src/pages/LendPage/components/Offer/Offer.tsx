@@ -10,6 +10,8 @@ import { Pencil } from '@banx/icons'
 import { SyntheticOffer } from '@banx/store'
 import { formatDecimal, formatLoansAmount } from '@banx/utils'
 
+import { OfferMode } from '../ExpandableCardContent'
+
 import styles from './Offer.module.less'
 
 interface OfferProps {
@@ -17,17 +19,17 @@ interface OfferProps {
   editOffer: () => void
   isOwnOffer: boolean
   bestOffer: SyntheticOffer
+  offerMode: OfferMode
 }
 
-const Offer: FC<OfferProps> = ({ editOffer, offer, isOwnOffer, bestOffer }) => {
+const Offer: FC<OfferProps> = ({ editOffer, offer, isOwnOffer, bestOffer, offerMode }) => {
   const { connected } = useWallet()
   const isBestOffer = offer.publicKey === bestOffer?.publicKey
 
   const isNewOffer = offer.publicKey === PUBKEY_PLACEHOLDER
+  const isProMode = offerMode === OfferMode.Pro
 
-  const { loanValue, loansAmount } = offer
-
-  const displayLoansAmount = formatLoansAmount(loansAmount)
+  const { loanValue, loansAmount, deltaValue } = offer
 
   const listItemClassName = classNames(styles.listItem, {
     [styles.highlightBest]: isBestOffer,
@@ -35,12 +37,16 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, isOwnOffer, bestOffer }) => {
     [styles.highlightYour]: connected && offer.publicKey === PUBKEY_PLACEHOLDER,
   })
 
-  const displayLoanValue = formatDecimal((loanValue || 0) / 1e9)
+  const displayLoanValue = formatDecimal(loanValue / 1e9)
+  const displayLoansAmount = formatLoansAmount(loansAmount)
+  const displayDeltaValue = isProMode && deltaValue ? `| Δ${deltaValue}◎` : ''
 
   return (
     <li className={listItemClassName}>
       <div className={styles.valueWrapper}>
-        <p className={styles.value}>{displayLoanValue}</p>
+        <p className={styles.value}>
+          {displayLoanValue} {displayDeltaValue}
+        </p>
         <p className={styles.value}>{displayLoansAmount}</p>
       </div>
       {isOwnOffer && !isNewOffer && editOffer && (

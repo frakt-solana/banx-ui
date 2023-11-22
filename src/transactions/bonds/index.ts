@@ -1,3 +1,6 @@
-export * from './makeRemoveOfferAction'
+export * from './makeClaimBondOfferInterestAction'
+export * from './makeCreateBondingOfferAction'
 export * from './makeCreateOfferAction'
+export * from './makeRemoveOfferAction'
+export * from './makeUpdateBondingOfferAction'
 export * from './makeUpdateOfferAction'

@@ -1,153 +1,65 @@
-.title {
-  font: var(--title-xs);
-  text-align: right;
-  text-transform: uppercase;
-}
-
-.label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: var(--content-secondary);
-  font: var(--table-header-md);
-  text-transform: uppercase;
-  margin: 24px 0 8px;
-}
-
-.orderBook {
+.orderBookWrapper {
   display: flex;
   flex-direction: column;
-  margin-right: 24px;
-
-  max-width: 300px;
-  min-width: 300px;
-  height: 333px;
+  position: relative;
 
   @media (max-width: 960px) {
     display: none;
   }
 }
 
-.content {
+.orderBook {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  margin: 16px 24px 0;
+  padding-bottom: 88px;
+  min-width: 296px;
+  height: 100%;
+}
+
+.labels {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--content-secondary);
+  font: var(--table-header-md);
+  text-transform: uppercase;
+}
+
+.mobileLabels {
+  padding: 0 24px;
+}
+
+.orderBookList {
+  display: flex;
+  flex-direction: column;
+  margin-top: 8px;
+  overflow: hidden scroll;
   position: relative;
   height: 100%;
-}
-
-.list {
-  overflow-y: scroll;
-  overflow-x: hidden;
-
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.noData {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  overflow-y: scroll;
-  height: 100%;
-}
-.noDataTitle {
-  font-family: var(--font-family-syne);
-  font-weight: 700;
-  font-size: 22px;
-  line-height: 26px;
-  text-align: center;
-}
-.noDataSubtitle {
-  margin-top: 8px;
-  font: var(--font-text-4);
-  text-align: center;
 }
 
 // Mobile orderbook styles
 .orderBookMobile {
   display: none;
 
-  background: var(--bg-primary);
-  border-top: var(--border-less-primary);
+  @media (max-width: 960px) {
+    background: var(--bg-primary);
 
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 3;
+    display: flex;
+    flex-direction: column;
 
-  padding: 24px;
-
-  gap: 8px;
-  width: 100%;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3;
+    width: 100%;
+  }
 
   &.open {
-    border-top: 0;
     position: absolute;
     top: 0;
-    bottom: 0;
-    height: 100%;
-  }
-
-  @media (max-width: 960px) {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  @media (max-width: 640px) {
-    padding: 16px;
-  }
-
-  .mobileContent {
-    padding-bottom: 32px;
-    height: 100%;
-  }
-
-  .collectionMobileInfo {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-
-    @media (max-width: 640px) {
-      gap: 2px;
-    }
-  }
-
-  .collapsedContentWrapper {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .collapsedMobileContent {
-    display: flex;
-    gap: 8px;
-  }
-  .collapsedMobileImage {
-    height: 40px;
-    width: 40px;
-
-    @media (max-width: 640px) {
-      height: 32px;
-      width: 32px;
-    }
-  }
-  .collectionMobileTitle {
-    font: var(--card-header-md);
-
-    @media (max-width: 640px) {
-      font: var(--card-header-sm);
-    }
-  }
-  .collectionMobileSubtitle {
-    font: var(--body-text-md);
-
-    @media (max-width: 640px) {
-      font: var(--body-text-xs);
-    }
   }
 }
 
@@ -157,4 +69,84 @@
   &.active {
     transform: none;
   }
+}
+
+.collectionMobileInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.collapsedContentWrapper {
+  border-top: var(--border-less-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px;
+
+  @media (max-width: 640px) {
+    padding: 16px;
+  }
+}
+
+.mobileOrderBookList {
+  padding: 0 24px;
+
+  @media (max-width: 640px) {
+    padding: 0 16px;
+  }
+}
+
+.collapsedMobileContent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.collapsedMobileImage {
+  height: 40px;
+  width: 40px;
+
+  @media (max-width: 640px) {
+    height: 32px;
+    width: 32px;
+  }
+}
+.collectionMobileTitle {
+  font: var(--card-header-md);
+
+  @media (max-width: 640px) {
+    font: var(--card-header-sm);
+  }
+}
+.collectionMobileSubtitle {
+  @media (max-width: 640px) {
+    font: var(--body-text-xs);
+  }
+}
+
+.accruedInterestContainer {
+  background: var(--bg-primary);
+  border-top: var(--border-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  width: 100%;
+
+  @media (min-width: 961px) {
+    position: absolute;
+    bottom: 0;
+  }
+}
+.accruedInterestInfo {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.accruedInterestLabel {
+  color: var(--content-secondary);
+  font: var(--table-header-md);
+  text-transform: uppercase;
+}
+.accruedInterestValue {
+  font: var(--important-text-xl);
 }

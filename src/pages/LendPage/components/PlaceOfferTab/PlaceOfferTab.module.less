@@ -16,8 +16,7 @@
     margin-bottom: 0;
   }
 }
-
-.title {
+.offerHeaderTitle {
   font: var(--title-sm);
   text-transform: uppercase;
   line-height: 38px;
@@ -28,44 +27,29 @@
   }
 }
 
-.offerSummary {
-  border: 1px dotted var(--bg-border);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 16px;
-  margin: 24px 0;
-
-  @media (max-width: 640px) {
-    gap: 4px;
-    margin: 16px 0;
-  }
-}
-
-.fields {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  width: 100%;
-
-  @media (max-width: 640px) {
-    gap: 16px;
-  }
-}
-
-.numericField {
-  width: 100%;
-}
-
-.buttonsWrapper {
+.actionsButtonsContainer,
+.editModeButtonsContainer {
   display: flex;
   align-items: center;
   gap: 16px;
 }
-
-.button {
-  height: 40px;
+.editModeContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
+}
+.actionButton {
+  width: 144px;
+}
+.placeOfferButton {
+  width: 100%;
+}
+
+.switchModeButtons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .deleteOfferButton {
@@ -77,8 +61,17 @@
   }
 }
 
-.messageContainer {
-  height: 14px;
+.switchButton {
+  height: 40px;
+
+  @media (max-width: 640px) {
+    height: 32px;
+  }
+
+  &.active {
+    color: var(--pure-black);
+    background: var(--accent-primary);
+  }
 }
 
 .borrowerMessage {

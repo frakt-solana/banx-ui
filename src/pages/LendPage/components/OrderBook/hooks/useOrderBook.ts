@@ -4,7 +4,7 @@ import { MarketPreview } from '@banx/api/core'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { SyntheticOffer, useSyntheticOffers } from '@banx/store'
 
-import { OrderBookMarketParams } from '../../ExpandableCardContent'
+import { OfferMode, OrderBookMarketParams } from '../../ExpandableCardContent'
 import { useMarketOrders } from './useMarketOrders'
 
 export interface OrderBookParams {
@@ -12,6 +12,8 @@ export interface OrderBookParams {
   goToEditOffer: (offer: SyntheticOffer) => void
   isOwnOffer: (offer: SyntheticOffer) => boolean
   bestOffer: SyntheticOffer
+  offerMode: OfferMode
+  isLoading: boolean
 }
 
 type UseOrderBook = (props: OrderBookMarketParams) => {
@@ -20,7 +22,8 @@ type UseOrderBook = (props: OrderBookMarketParams) => {
 }
 export const useOrderBook: UseOrderBook = (props) => {
   const { setOffer: setSyntheticOffer } = useSyntheticOffers()
-  const { offerPubkey, setOfferPubkey, marketPubkey } = props
+  const { offerPubkey, setOfferPubkey, marketPubkey, offerMode, goToPlaceOfferTab } = props
+
   const wallet = useWallet()
   const { marketsPreview } = useMarketsPreview()
 
@@ -28,7 +31,7 @@ export const useOrderBook: UseOrderBook = (props) => {
     (market) => market.marketPubkey === marketPubkey,
   )
 
-  const { offers, bestOffer } = useMarketOrders({
+  const { offers, bestOffer, isLoading } = useMarketOrders({
     marketPubkey,
     offerPubkey,
   })
@@ -38,19 +41,20 @@ export const useOrderBook: UseOrderBook = (props) => {
   }
 
   const goToEditOffer = (offer: SyntheticOffer) => {
-    setSyntheticOffer({
-      ...offer,
-      isEdit: true,
-    })
+    goToPlaceOfferTab()
+
+    setSyntheticOffer({ ...offer, isEdit: true })
     setOfferPubkey(offer.publicKey)
   }
 
   return {
     orderBookParams: {
       offers,
+      isLoading,
       goToEditOffer,
       isOwnOffer,
       bestOffer,
+      offerMode,
     },
     selectedMarketPreview,
   }

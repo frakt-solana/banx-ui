@@ -1,5 +1,6 @@
 import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
+import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import { borrowerRefinance } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import {
   BondOfferV2,
@@ -46,8 +47,10 @@ export const makeBorrowRefinanceAction: MakeBorrowRefinanceAction = async (
       previousBondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
       bondOffer: new web3.PublicKey(offer.publicKey),
       previousLender: new web3.PublicKey(bondTradeTransaction.user),
+      oldBondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
     },
     optimistic: {
+      oldBondOffer: getMockBondOffer(),
       oldBondTradeTransaction: loan.bondTradeTransaction as BondTradeTransactionV2,
       bondOffer: offer as BondOfferV2,
       fraktBond: fraktBond as FraktBond,
