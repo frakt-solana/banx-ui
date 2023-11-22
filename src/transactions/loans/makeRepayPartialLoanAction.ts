@@ -24,7 +24,9 @@ export type MakeRepayPartialLoanAction = MakeActionFn<
   MakeRepayPartialActionResult
 >
 
-type OptimisticResult = BondAndTransactionOptimistic & { oldBondOffer: BondOfferV2 }
+interface OptimisticResult extends BondAndTransactionOptimistic {
+  oldBondOffer: BondOfferV2
+}
 
 export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
   ixnParams,

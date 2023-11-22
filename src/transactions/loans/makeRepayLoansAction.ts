@@ -25,7 +25,9 @@ export type MakeRepayActionResult = Loan[]
 
 export type MakeRepayLoansAction = MakeActionFn<MakeRepayLoansActionParams, MakeRepayActionResult>
 
-type OptimisticResult = BondAndTransactionOptimistic & { oldBondOffer: BondOfferV2 }
+interface OptimisticResult extends BondAndTransactionOptimistic {
+  oldBondOffer: BondOfferV2
+}
 
 export const LOANS_PER_TXN = 1
 
