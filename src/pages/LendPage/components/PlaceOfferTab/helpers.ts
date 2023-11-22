@@ -1,3 +1,45 @@
+import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
+import {
+  optimisticInitializeBondOfferBonding,
+  optimisticUpdateBondOfferBonding,
+} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { BondOfferV2, BondingCurveType } from 'fbonds-core/lib/fbond-protocol/types'
+
+import { SyntheticOffer } from '@banx/store'
+
+type CalculateOfferSize = (props: {
+  loanValue: number //? normal number
+  deltaValue: number //? normal number
+  quantityOfLoans: number //? integer number
+  syntheticOffer: SyntheticOffer
+}) => BondOfferV2
+
+export const getUpdatedBondOffer: CalculateOfferSize = ({
+  loanValue,
+  deltaValue,
+  quantityOfLoans,
+  syntheticOffer,
+}) => {
+  const deltaValueInLamports = deltaValue * 1e9
+  const loanValueInLamports = loanValue * 1e9
+
+  const initializedOffer = optimisticInitializeBondOfferBonding({
+    bondingType: BondingCurveType.Linear,
+    hadoMarket: syntheticOffer.marketPubkey,
+    assetReceiver: syntheticOffer.assetReceiver,
+    bondOffer: getMockBondOffer().publicKey,
+  })
+
+  const updatedBondOffer = optimisticUpdateBondOfferBonding({
+    bondOffer: initializedOffer,
+    newLoanValue: loanValueInLamports,
+    newDelta: deltaValueInLamports,
+    newQuantityOfLoans: quantityOfLoans,
+  })
+
+  return updatedBondOffer
+}
+
 type ShouldShowDepositError = (props: {
   initialLoanValue?: number
   initialLoansAmount?: number

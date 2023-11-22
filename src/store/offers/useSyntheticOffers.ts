@@ -69,23 +69,20 @@ export const createEmptySyntheticOffer: CreateEmptySyntheticOffer = ({
 
 export const convertToSynthetic = (offer: Offer, isEdit = false): SyntheticOffer => {
   const {
-    fundsSolOrTokenBalance,
-    currentSpotPrice,
     publicKey,
+    currentSpotPrice,
     assetReceiver,
     hadoMarket,
     mathCounter,
     bondingCurve,
+    buyOrdersQuantity,
   } = offer
-
-  const loansAmount = fundsSolOrTokenBalance / currentSpotPrice
-  const loanValue = currentSpotPrice * Math.min(loansAmount, 1)
 
   return {
     isEdit,
     publicKey,
-    loansAmount,
-    loanValue,
+    loansAmount: buyOrdersQuantity,
+    loanValue: currentSpotPrice,
     assetReceiver,
     marketPubkey: hadoMarket,
     mathCounter,
