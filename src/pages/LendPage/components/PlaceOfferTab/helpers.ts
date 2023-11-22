@@ -1,3 +1,4 @@
+import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import {
   optimisticInitializeBondOfferBonding,
@@ -69,3 +70,6 @@ export const getAdditionalSummaryOfferInfo = (offer?: Offer) => {
     quantityOfLoans: buyOrdersQuantity,
   }
 }
+
+export const checkIsEditMode = (offerPubkey: string) =>
+  !!offerPubkey && offerPubkey !== PUBKEY_PLACEHOLDER
