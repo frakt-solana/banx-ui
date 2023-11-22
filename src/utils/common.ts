@@ -26,23 +26,19 @@ export const convertAprToApy = (apr: number) => {
   return Math.round(apy * 100)
 }
 
-export const getDecimalPlaces = (value: number | string) => {
-  const numericValue = typeof value === 'string' ? parseFloat(value) : value
+export const getDecimalPlaces = (value: number) => {
+  if (!value) return TWO_DECIMAL_PLACES
 
-  if (!numericValue) return TWO_DECIMAL_PLACES
-
-  return numericValue < DECIMAL_THRESHOLD ? THREE_DECIMAL_PLACES : TWO_DECIMAL_PLACES
+  return value < DECIMAL_THRESHOLD ? THREE_DECIMAL_PLACES : TWO_DECIMAL_PLACES
 }
 
-export const formatDecimal = (value: number | string) => {
-  if (!value) return '0'
+export const formatDecimal = (value: number) => {
+  if (value === 0 || isNaN(value)) return '0'
 
-  const numericValue = typeof value === 'string' ? parseFloat(value) : value
+  if (value < MIN_DISPLAY_VALUE) return `<${MIN_DISPLAY_VALUE}`
 
-  if (numericValue < MIN_DISPLAY_VALUE) return `<${MIN_DISPLAY_VALUE}`
-
-  const decimalPlaces = getDecimalPlaces(numericValue)
-  return numericValue.toFixed(decimalPlaces)
+  const decimalPlaces = getDecimalPlaces(value)
+  return value.toFixed(decimalPlaces)
 }
 
 export const formatNumbersWithCommas = (value: number | string) =>
