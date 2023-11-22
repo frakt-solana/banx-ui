@@ -6,7 +6,7 @@ import { OfferMode, OrderBookMarketParams } from '../ExpandableCardContent'
 import PlaceLiteOffer from './PlaceLiteOffer'
 import PlaceProOffer from './PlaceProOffer'
 import { OfferHeader, SwitchModeButtons } from './components'
-import { usePlaceOffer } from './hooks/usePlaceOffer'
+import { usePlaceOffer } from './hooks'
 
 import styles from './PlaceOfferTab.module.less'
 
