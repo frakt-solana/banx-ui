@@ -28,7 +28,10 @@ const PlaceProOffer: FC<OfferParams> = (offerParams) => {
     disableUpdateOffer,
     showBorrowerMessage,
     showDepositError,
-    offerTransactions,
+    onCreateBondingOffer,
+    onUpdateBondingOffer,
+    onClaimOfferInterest,
+    onRemoveOffer,
   } = usePlaceProOffer(offerParams)
 
   return (
@@ -63,7 +66,10 @@ const PlaceProOffer: FC<OfferParams> = (offerParams) => {
         isEditMode={isEditMode}
         disableUpdateOffer={disableUpdateOffer}
         disablePlaceOffer={disablePlaceOffer}
-        {...offerTransactions}
+        onClaimOfferInterest={onClaimOfferInterest}
+        onUpdateOffer={onUpdateBondingOffer}
+        onCreateOffer={onCreateBondingOffer}
+        onRemoveOffer={onRemoveOffer}
       />
     </>
   )

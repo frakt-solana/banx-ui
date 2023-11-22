@@ -20,7 +20,10 @@ const PlaceLiteOffer: FC<OfferParams> = (offersParams) => {
     onLoanAmountChange,
     loanValue,
     onLoanValueChange,
-    offerTransactions,
+    onClaimOfferInterest,
+    onCreateOffer,
+    onRemoveOffer,
+    onUpdateOffer,
     offerSize,
     marketApr,
     showDepositError,
@@ -39,7 +42,6 @@ const PlaceLiteOffer: FC<OfferParams> = (offersParams) => {
           onChange={onLoanValueChange}
           className={styles.numericField}
           disabled={!connected}
-          hasError
         />
         <InputCounter
           label="Number of loans"
@@ -62,7 +64,10 @@ const PlaceLiteOffer: FC<OfferParams> = (offersParams) => {
         isEditMode={isEditMode}
         disableUpdateOffer={disableUpdateOffer}
         disablePlaceOffer={disablePlaceOffer}
-        {...offerTransactions}
+        onClaimOfferInterest={onClaimOfferInterest}
+        onCreateOffer={onCreateOffer}
+        onRemoveOffer={onRemoveOffer}
+        onUpdateOffer={onUpdateOffer}
       />
     </>
   )

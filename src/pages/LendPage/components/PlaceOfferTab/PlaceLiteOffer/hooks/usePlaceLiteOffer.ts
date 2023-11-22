@@ -104,11 +104,9 @@ export const usePlaceLiteOffer = ({
     disableUpdateOffer,
     disablePlaceOffer,
 
-    offerTransactions: {
-      onClaimOfferInterest,
-      onCreateOffer,
-      onRemoveOffer,
-      onUpdateOffer,
-    },
+    onClaimOfferInterest,
+    onCreateOffer,
+    onRemoveOffer,
+    onUpdateOffer,
   }
 }

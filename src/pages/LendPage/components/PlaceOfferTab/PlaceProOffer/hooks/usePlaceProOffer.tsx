@@ -105,11 +105,9 @@ export const usePlaceProOffer = ({
     showBorrowerMessage,
     showDepositError,
 
-    offerTransactions: {
-      onCreateOffer: onCreateBondingOffer,
-      onUpdateOffer: onUpdateBondingOffer,
-      onClaimOfferInterest,
-      onRemoveOffer,
-    },
+    onCreateBondingOffer,
+    onUpdateBondingOffer,
+    onClaimOfferInterest,
+    onRemoveOffer,
   }
 }
