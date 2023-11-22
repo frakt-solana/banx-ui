@@ -1,6 +1,7 @@
 .orderBookWrapper {
   display: flex;
   flex-direction: column;
+  position: relative;
 
   @media (max-width: 960px) {
     display: none;
@@ -11,8 +12,9 @@
   display: flex;
   flex-direction: column;
   margin: 16px 24px 0;
-  height: calc(100% - 72px - 16px); //? 72px => accrued interest container, 16px => labels container
+  padding-bottom: 88px;
   min-width: 296px;
+  height: 100%;
 }
 
 .labels {
@@ -122,12 +124,18 @@
 }
 
 .accruedInterestContainer {
+  background: var(--bg-primary);
   border-top: var(--border-primary);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 16px 24px;
   width: 100%;
+
+  @media (min-width: 961px) {
+    position: absolute;
+    bottom: 0;
+  }
 }
 .accruedInterestInfo {
   display: flex;
