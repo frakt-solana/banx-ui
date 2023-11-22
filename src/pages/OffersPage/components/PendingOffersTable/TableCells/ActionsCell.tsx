@@ -85,6 +85,8 @@ const useActionsCell = (offer: TableUserOfferData) => {
       loansAmount: offer.loansAmount,
       assetReceiver: offer.assetReceiver,
       marketPubkey: offer.hadoMarket,
+      mathCounter: 0,
+      deltaValue: 0,
     })
 
     const collectionName = offer.collectionName

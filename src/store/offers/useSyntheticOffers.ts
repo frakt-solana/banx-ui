@@ -9,10 +9,10 @@ export interface SyntheticOffer {
   publicKey: string //? PUBKEY_PLACEHOLDER for offers to create
   loanValue: number
   loansAmount: number
-  deltaValue?: number //? exist only in pro mode
+  deltaValue: number
   assetReceiver: string
   marketPubkey: string
-  mathCounter?: number
+  mathCounter: number
 }
 
 interface SyntheticOffersState {
@@ -64,6 +64,7 @@ export const createEmptySyntheticOffer: CreateEmptySyntheticOffer = ({
   assetReceiver: walletPubkey,
   marketPubkey,
   mathCounter: 0,
+  deltaValue: 0,
 })
 
 export const convertToSynthetic = (offer: Offer, isEdit = false): SyntheticOffer => {
@@ -74,6 +75,7 @@ export const convertToSynthetic = (offer: Offer, isEdit = false): SyntheticOffer
     assetReceiver,
     hadoMarket,
     mathCounter,
+    bondingCurve,
   } = offer
 
   const loansAmount = fundsSolOrTokenBalance / currentSpotPrice
@@ -87,5 +89,6 @@ export const convertToSynthetic = (offer: Offer, isEdit = false): SyntheticOffer
     assetReceiver,
     marketPubkey: hadoMarket,
     mathCounter,
+    deltaValue: bondingCurve.delta,
   }
 }
