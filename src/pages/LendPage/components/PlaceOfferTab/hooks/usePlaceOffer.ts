@@ -20,12 +20,16 @@ export interface OfferParams {
   setSyntheticOffer: (offer: SyntheticOffer) => void
 }
 
-type UsePlaceOffer = (props: OrderBookMarketParams) => OfferParams & { offerMode: OfferMode }
+interface OfferParamsWithMode extends OfferParams {
+  offerMode: OfferMode
+}
+
+type UsePlaceOffer = (props: OrderBookMarketParams) => OfferParamsWithMode
 
 export const usePlaceOffer: UsePlaceOffer = (props) => {
   const { publicKey: walletPubkey } = useWallet()
 
-  const { offerMode, marketPubkey, onChangeOfferMode, setOfferPubkey, offerPubkey } = props || {}
+  const { offerMode, marketPubkey, onChangeOfferMode, setOfferPubkey, offerPubkey } = props
 
   const {
     findOfferByPubkey: findSyntheticOfferByPubkey,
