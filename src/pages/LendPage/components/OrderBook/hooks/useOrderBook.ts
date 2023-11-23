@@ -17,8 +17,9 @@ type UseOrderBook = (props: OrderBookMarketParams) => {
   selectedMarketPreview: MarketPreview | undefined
 }
 export const useOrderBook: UseOrderBook = (props) => {
-  const { setOffer: setSyntheticOffer } = useSyntheticOffers()
   const { offerPubkey, setOfferPubkey, marketPubkey, goToPlaceOfferTab, onChangeOfferMode } = props
+
+  const { setOffer: setSyntheticOffer } = useSyntheticOffers()
 
   const { marketsPreview } = useMarketsPreview()
 

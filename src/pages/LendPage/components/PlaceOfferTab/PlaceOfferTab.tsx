@@ -17,7 +17,7 @@ interface PlaceOfferTabProps extends OrderBookMarketParams {
 const PlaceOfferTab: FC<PlaceOfferTabProps> = (props) => {
   const { offerMode, onChangeOfferMode } = props
 
-  const { ...offerParams } = usePlaceOffer(props)
+  const offerParams = usePlaceOffer(props)
   const { offerPubkey, exitEditMode } = offerParams
 
   return (

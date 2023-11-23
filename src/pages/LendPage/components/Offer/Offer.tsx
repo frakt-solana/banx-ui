@@ -30,7 +30,7 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, bestOffer }) => {
     assetReceiver,
   } = offer
 
-  const isOwnerOffer = assetReceiver && publicKey?.toBase58()
+  const isOwnOffer = assetReceiver && publicKey?.toBase58()
   const isBestOffer = offerPubkey === bestOffer?.publicKey
   const isNewOffer = offerPubkey === PUBKEY_PLACEHOLDER
   const isCreatingOffer = connected && isNewOffer
@@ -53,7 +53,7 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, bestOffer }) => {
         </p>
         <p className={styles.value}>{displayLoansAmount}</p>
       </div>
-      {isOwnerOffer && !isNewOffer && editOffer && (
+      {isOwnOffer && !isNewOffer && editOffer && (
         <Button
           onClick={editOffer}
           type="circle"
