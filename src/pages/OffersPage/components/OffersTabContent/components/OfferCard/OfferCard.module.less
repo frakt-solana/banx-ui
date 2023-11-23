@@ -1,0 +1,55 @@
+.card {
+  background: var(--bg-primary-deep);
+  border: var(--border-less-primary);
+  border-left: 0;
+  border-right: 0;
+  cursor: pointer;
+  display: flex;
+  align-content: center;
+  gap: 16px;
+  padding: 24px;
+  width: 100%;
+}
+
+//### Main offer overview
+.mainOfferContainer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.mainOfferInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.mainOfferStats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.actionsOfferButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.collectionImage {
+  width: 72px;
+  height: 72px;
+}
+.collectionName {
+  font: var(--card-header-lg);
+}
+
+//### Aditional offer overview
+.additionalOfferContainer {
+  display: flex;
+  align-content: center;
+  gap: 24px;
+  width: 100%;
+
+  & > div {
+    align-items: flex-end;
+    gap: 16px;
+    width: 100%;
+  }
+}
