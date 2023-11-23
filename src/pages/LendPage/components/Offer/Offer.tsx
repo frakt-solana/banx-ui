@@ -30,7 +30,7 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, bestOffer }) => {
     assetReceiver,
   } = offer
 
-  const isOwnOffer = assetReceiver && publicKey?.toBase58()
+  const isOwnOffer = assetReceiver === publicKey?.toBase58()
   const isBestOffer = offerPubkey === bestOffer?.publicKey
   const isNewOffer = offerPubkey === PUBKEY_PLACEHOLDER
   const isCreatingOffer = connected && isNewOffer
