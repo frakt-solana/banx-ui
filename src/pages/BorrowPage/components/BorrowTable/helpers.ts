@@ -178,9 +178,14 @@ export const optimisticWithdrawFromBondOffer = (
 }
 
 const mergeOffersWithLoanValue = (offers: OfferWithLoanValue[]): Offer | null => {
-  const offer = cloneDeep(first(offers))
-  if (!offer) return null
-  const totalLoanValues = (offers.length - 1) * (offer?.loanValue || 0)
+  optimisticBorrowUpdateBondingBondOffer
 
-  return optimisticWithdrawFromBondOffer(offer.offer, totalLoanValues)
+  const { offer } = offers.reduce((acc, offer) => {
+    return {
+      offer: optimisticBorrowUpdateBondingBondOffer(acc.offer as BondOfferV2, offer.loanValue),
+      loanValue: 0,
+    }
+  })
+
+  return offer
 }
