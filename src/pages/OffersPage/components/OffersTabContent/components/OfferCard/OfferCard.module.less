@@ -5,13 +5,18 @@
   border-right: 0;
   cursor: pointer;
   display: flex;
-  align-content: center;
+  align-items: center;
+  justify-content: space-between;
   gap: 16px;
   padding: 24px;
   width: 100%;
 }
 
-//### Main offer overview
+.chevronButton .active svg {
+  transform: rotate(180deg);
+}
+
+/* Main offer overview */
 .mainOfferContainer {
   display: flex;
   align-items: center;
@@ -25,12 +30,7 @@
 .mainOfferStats {
   display: flex;
   align-items: center;
-  gap: 8px;
-}
-.actionsOfferButtons {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  gap: 16px;
 }
 .collectionImage {
   width: 72px;
@@ -39,17 +39,50 @@
 .collectionName {
   font: var(--card-header-lg);
 }
+.actionsOfferButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.removeOfferButton {
+  svg {
+    height: 12px !important;
+    width: 12px !important;
+  }
+}
+.editOfferButton,
+.removeOfferButton {
+  &:disabled {
+    background: var(--bg-secondary);
 
-//### Aditional offer overview
+    path,
+    rect {
+      fill: var(--content-secondary);
+    }
+  }
+}
+
+/* Aditional offer overview */
 .additionalOfferContainer {
   display: flex;
-  align-content: center;
+  align-items: center;
+  justify-content: flex-end;
   gap: 24px;
   width: 100%;
 
   & > div {
     align-items: flex-end;
     gap: 16px;
+    max-width: 132px;
     width: 100%;
   }
+
+  @media (max-width: 960px) {
+    display: none;
+  }
+}
+.additionalApyStat,
+.additionalInterestStat {
+  color: var(--additional-green-primary-deep);
+  font: var(--important-text-lg);
 }
