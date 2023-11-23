@@ -181,15 +181,35 @@ export interface BorrowNftsAndOffersResponse {
   meta: PaginationMeta
 }
 
+export const CollectionMetaSchema = z.object({
+  collectionFloor: z.number(),
+  collectionName: z.string(),
+  collectionImage: z.string(),
+})
+
+export type CollectionMeta = z.infer<typeof CollectionMetaSchema>
+
 export const LendNftsAndOffersSchema = z.object({
   nfts: LoanSchema.array(),
   offers: z.record(PairSchema.array()),
 })
-
 export type LendLoansAndOffers = z.infer<typeof LendNftsAndOffersSchema>
-
 export interface LendLoansAndOffersResponse {
   data: LendLoansAndOffers
+  meta: PaginationMeta
+}
+
+//# endpoint v2
+
+export const LendLoansAndOffersSchema = z.object({
+  offer: PairSchema,
+  loans: LoanSchema.array(),
+  collectionMeta: CollectionMetaSchema,
+})
+
+export type LendLoansAndOffersV2 = z.infer<typeof LendLoansAndOffersSchema>
+export interface LendLoansAndOffersResponseV2 {
+  data: LendLoansAndOffersV2[]
   meta: PaginationMeta
 }
 

@@ -10,6 +10,8 @@ import {
   BorrowNftsAndOffersSchema,
   FetchMarketOffersResponse,
   LendLoansAndOffersResponse,
+  LendLoansAndOffersResponseV2,
+  LendLoansAndOffersSchema,
   LendNftsAndOffersSchema,
   LoanSchema,
   MarketPreview,
@@ -208,6 +210,47 @@ export const fetchLenderLoansAndOffers: FetchLenderLoansAndOffers = async ({
   } catch (error) {
     console.error(error)
     return { nfts: [], offers: {} }
+  }
+}
+
+type FetchLenderLoansAndOffersV2 = (props: {
+  walletPublicKey: string
+  order?: 'asc' | 'desc'
+  skip?: number
+  limit?: number
+  getAll?: boolean
+}) => Promise<LendLoansAndOffersResponseV2['data']>
+
+export const fetchLenderLoansAndOffersV2: FetchLenderLoansAndOffersV2 = async ({
+  walletPublicKey,
+  order = 'desc',
+  skip = 0,
+  limit = 10,
+  getAll = true, //TODO Remove when normal pagination added
+}) => {
+  try {
+    const queryParams = new URLSearchParams({
+      order,
+      skip: String(skip),
+      limit: String(limit),
+      getAll: String(getAll),
+      isPrivate: String(IS_PRIVATE_MARKETS),
+    })
+
+    const { data } = await axios.get<LendLoansAndOffersResponseV2>(
+      `${BACKEND_BASE_URL}/loans/lender/v2/${walletPublicKey}?${queryParams.toString()}`,
+    )
+
+    try {
+      await LendLoansAndOffersSchema.parseAsync(data.data)
+    } catch (validationError) {
+      console.error('Schema validation error:', validationError)
+    }
+
+    return data.data ?? []
+  } catch (error) {
+    console.error(error)
+    return []
   }
 }
 
