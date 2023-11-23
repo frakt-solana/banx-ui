@@ -10,39 +10,43 @@ import { Pencil } from '@banx/icons'
 import { SyntheticOffer } from '@banx/store'
 import { formatDecimal, formatLoansAmount } from '@banx/utils'
 
-import { OfferMode } from '../ExpandableCardContent'
-
 import styles from './Offer.module.less'
 
 interface OfferProps {
   offer: SyntheticOffer
-  editOffer: () => void
-  isOwnOffer: boolean
   bestOffer: SyntheticOffer
-  offerMode: OfferMode
+  editOffer: () => void
 }
 
-const Offer: FC<OfferProps> = ({ editOffer, offer, isOwnOffer, bestOffer, offerMode }) => {
-  const { connected } = useWallet()
-  const isBestOffer = offer.publicKey === bestOffer?.publicKey
+const Offer: FC<OfferProps> = ({ editOffer, offer, bestOffer }) => {
+  const { connected, publicKey } = useWallet()
 
-  const isNewOffer = offer.publicKey === PUBKEY_PLACEHOLDER
-  const isProMode = offerMode === OfferMode.Pro
+  const {
+    publicKey: offerPubkey,
+    isEdit,
+    loanValue,
+    loansAmount,
+    deltaValue,
+    assetReceiver,
+  } = offer
 
-  const { loanValue, loansAmount, deltaValue } = offer
+  const isOwnOffer = assetReceiver && publicKey?.toBase58()
+  const isBestOffer = offerPubkey === bestOffer?.publicKey
+  const isNewOffer = offerPubkey === PUBKEY_PLACEHOLDER
+  const isCreatingOffer = connected && isNewOffer
 
-  const listItemClassName = classNames(styles.listItem, {
+  const listItemClassNames = classNames(styles.listItem, {
+    [styles.highlightYour]: isCreatingOffer,
     [styles.highlightBest]: isBestOffer,
-    [styles.highlightEditing]: offer.isEdit,
-    [styles.highlightYour]: connected && offer.publicKey === PUBKEY_PLACEHOLDER,
+    [styles.highlightEditing]: isEdit,
   })
 
   const displayLoanValue = formatDecimal(loanValue / 1e9)
   const displayLoansAmount = formatLoansAmount(loansAmount)
-  const displayDeltaValue = isProMode && deltaValue ? `| Δ${deltaValue}◎` : ''
+  const displayDeltaValue = deltaValue ? `| Δ${formatDecimal(deltaValue / 1e9)}◎` : ''
 
   return (
-    <li className={listItemClassName}>
+    <li className={listItemClassNames}>
       <div className={styles.valueWrapper}>
         <p className={styles.value}>
           {displayLoanValue} {displayDeltaValue}

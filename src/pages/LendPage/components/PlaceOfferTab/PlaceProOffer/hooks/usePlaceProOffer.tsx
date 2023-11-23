@@ -4,10 +4,9 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 import { useSolanaBalance } from '@banx/utils'
 
-import { shouldShowDepositError } from '../../helpers'
+import { getUpdatedBondOffer, shouldShowDepositError } from '../../helpers'
 import { OfferParams } from '../../hooks'
 import { useOfferTransactions } from '../../hooks/useOfferTransactions'
-import { calculateOfferSize } from '../helpers'
 import { useOfferFormController } from './useOfferFormController'
 
 export const usePlaceProOffer = ({
@@ -53,24 +52,26 @@ export const usePlaceProOffer = ({
     })
 
   const offerSize = useMemo(() => {
-    return calculateOfferSize({
+    const updatedBondOffer = getUpdatedBondOffer({
       loanValue: loanValueNumber,
       deltaValue: deltaValueNumber,
-      amountOfOrders: loansAmountNumber,
-      mathCounter: syntheticOffer?.mathCounter,
+      loansQuantity: loansAmountNumber,
+      syntheticOffer,
     })
+    return updatedBondOffer.fundsSolOrTokenBalance
   }, [syntheticOffer, deltaValueNumber, loanValueNumber, loansAmountNumber])
 
   useEffect(() => {
     if (loansAmountNumber || loanValueNumber || deltaValueNumber) {
       if (!syntheticOffer) return
       const formattedLoanValue = loanValueNumber * 1e9
+      const formattedDeltaValue = deltaValueNumber * 1e9
 
       setSyntheticOffer({
         ...syntheticOffer,
         loanValue: formattedLoanValue,
         loansAmount: loansAmountNumber,
-        deltaValue: deltaValueNumber,
+        deltaValue: formattedDeltaValue,
       })
     }
   }, [loansAmountNumber, deltaValueNumber, loanValueNumber, syntheticOffer, setSyntheticOffer])

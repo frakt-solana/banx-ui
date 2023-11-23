@@ -6,7 +6,7 @@ import { MarketPreview, Offer } from '@banx/api/core'
 import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { SyntheticOffer, createEmptySyntheticOffer, useSyntheticOffers } from '@banx/store'
 
-import { OfferMode, OrderBookMarketParams } from '../../ExpandableCardContent'
+import { OrderBookMarketParams } from '../../ExpandableCardContent'
 
 export interface OfferParams {
   offerPubkey: string
@@ -16,20 +16,15 @@ export interface OfferParams {
 
   exitEditMode: () => void
   updateOrAddOffer: (offer: Offer) => void
-  onChangeOfferMode: (value: OfferMode) => void
   setSyntheticOffer: (offer: SyntheticOffer) => void
 }
 
-interface OfferParamsWithMode extends OfferParams {
-  offerMode: OfferMode
-}
-
-type UsePlaceOffer = (props: OrderBookMarketParams) => OfferParamsWithMode
+type UsePlaceOffer = (props: OrderBookMarketParams) => OfferParams
 
 export const usePlaceOffer: UsePlaceOffer = (props) => {
   const { publicKey: walletPubkey } = useWallet()
 
-  const { offerMode, marketPubkey, onChangeOfferMode, setOfferPubkey, offerPubkey } = props
+  const { marketPubkey, setOfferPubkey, offerPubkey } = props
 
   const {
     findOfferByPubkey: findSyntheticOfferByPubkey,
@@ -60,8 +55,6 @@ export const usePlaceOffer: UsePlaceOffer = (props) => {
   }, [offers, offerPubkey])
 
   return {
-    offerMode,
-
     offerPubkey,
     marketPreview,
 
@@ -71,6 +64,5 @@ export const usePlaceOffer: UsePlaceOffer = (props) => {
     updateOrAddOffer,
 
     exitEditMode,
-    onChangeOfferMode,
   }
 }

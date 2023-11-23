@@ -1,5 +1,3 @@
-import { useWallet } from '@solana/wallet-adapter-react'
-
 import { MarketPreview } from '@banx/api/core'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { SyntheticOffer, useSyntheticOffers } from '@banx/store'
@@ -10,9 +8,7 @@ import { useMarketOrders } from './useMarketOrders'
 export interface OrderBookParams {
   offers: SyntheticOffer[]
   goToEditOffer: (offer: SyntheticOffer) => void
-  isOwnOffer: (offer: SyntheticOffer) => boolean
   bestOffer: SyntheticOffer
-  offerMode: OfferMode
   isLoading: boolean
 }
 
@@ -21,30 +17,28 @@ type UseOrderBook = (props: OrderBookMarketParams) => {
   selectedMarketPreview: MarketPreview | undefined
 }
 export const useOrderBook: UseOrderBook = (props) => {
-  const { setOffer: setSyntheticOffer } = useSyntheticOffers()
-  const { offerPubkey, setOfferPubkey, marketPubkey, offerMode, goToPlaceOfferTab } = props
+  const { offerPubkey, setOfferPubkey, marketPubkey, goToPlaceOfferTab, onChangeOfferMode } = props
 
-  const wallet = useWallet()
+  const { setOffer: setSyntheticOffer } = useSyntheticOffers()
+
   const { marketsPreview } = useMarketsPreview()
 
   const selectedMarketPreview = marketsPreview.find(
     (market) => market.marketPubkey === marketPubkey,
   )
 
-  const { offers, bestOffer, isLoading } = useMarketOrders({
-    marketPubkey,
-    offerPubkey,
-  })
-
-  const isOwnOffer = (offer: SyntheticOffer) => {
-    return offer?.assetReceiver === wallet?.publicKey?.toBase58()
-  }
+  const { offers, bestOffer, isLoading } = useMarketOrders({ marketPubkey, offerPubkey })
 
   const goToEditOffer = (offer: SyntheticOffer) => {
+    const offerMode = offer.deltaValue ? OfferMode.Pro : OfferMode.Lite
+    onChangeOfferMode(offerMode)
+
     goToPlaceOfferTab()
 
-    setSyntheticOffer({ ...offer, isEdit: true })
-    setOfferPubkey(offer.publicKey)
+    const editedOffer = { ...offer, isEdit: true }
+    setSyntheticOffer(editedOffer)
+
+    setOfferPubkey(editedOffer.publicKey)
   }
 
   return {
@@ -52,9 +46,7 @@ export const useOrderBook: UseOrderBook = (props) => {
       offers,
       isLoading,
       goToEditOffer,
-      isOwnOffer,
       bestOffer,
-      offerMode,
     },
     selectedMarketPreview,
   }

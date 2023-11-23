@@ -1,11 +1,11 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { isEmpty } from 'lodash'
 
 import { useSolanaBalance } from '@banx/utils'
 
-import { shouldShowDepositError } from '../../helpers'
+import { getUpdatedBondOffer, shouldShowDepositError } from '../../helpers'
 import { OfferParams } from '../../hooks'
 import { useOfferTransactions } from '../../hooks/useOfferTransactions'
 import { calcLoanToValuePercentage, calculateBestLoanValue } from '../helpers'
@@ -72,13 +72,23 @@ export const usePlaceLiteOffer = ({
       exitEditMode,
     })
 
-  const offerSize = loanValueNumber * loansAmountNumber || 0
+  const offerSize = useMemo(() => {
+    const formattedDeltaValue = syntheticOffer.deltaValue / 1e9
+
+    const updatedBondOffer = getUpdatedBondOffer({
+      loanValue: loanValueNumber,
+      loansQuantity: loansAmountNumber,
+      deltaValue: formattedDeltaValue,
+      syntheticOffer,
+    })
+    return updatedBondOffer.fundsSolOrTokenBalance
+  }, [syntheticOffer, loanValueNumber, loansAmountNumber])
 
   const showDepositError = shouldShowDepositError({
     initialLoansAmount: syntheticOffer.loansAmount,
     initialLoanValue: syntheticOffer.loanValue,
-    offerSize: offerSize * 1e9,
     solanaBalance,
+    offerSize,
   })
 
   const showBorrowerMessage = !showDepositError && !!offerSize

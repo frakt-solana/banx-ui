@@ -2,8 +2,11 @@ import { FC } from 'react'
 
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
+import { Offer } from '@banx/api/core'
 import { WEEKS_IN_YEAR } from '@banx/constants'
 import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
+
+import { getAdditionalSummaryOfferInfo } from '../helpers'
 
 import styles from './PlaceProOffer.module.less'
 
@@ -11,21 +14,24 @@ interface OfferSummaryProps {
   offerSize: number
   marketApr: number //? rateBasePoints
   isEditMode: boolean
+  offer: Offer | undefined
 }
 
 //TODO: Need to calc in the future
 const MOCK_WEIGHTED_LTV = 50
-const MOCK_ACTIVE_LOANS = 2
-const MOCK_TOTAL_LOANS = 3
-const MOCK_RESERVE_VALUE = 3
-const MOCK_ACCRUED_INTEREST = 2.5
 
-export const OfferSummary: FC<OfferSummaryProps> = ({ offerSize, marketApr, isEditMode }) => {
+export const OfferSummary: FC<OfferSummaryProps> = ({
+  offer,
+  offerSize,
+  marketApr,
+  isEditMode,
+}) => {
   const formattedOfferSize = offerSize / 1e9
-
   const weightedWeeklyInterest = calculateWeightedWeeklyInterest(offerSize, marketApr)
 
   const colorLTV = getColorByPercent(MOCK_WEIGHTED_LTV, HealthColorIncreasing)
+
+  const { accruedInterest, reserve, loansQuantity } = getAdditionalSummaryOfferInfo(offer)
 
   return (
     <div className={styles.offerSummary}>
@@ -53,11 +59,11 @@ export const OfferSummary: FC<OfferSummaryProps> = ({ offerSize, marketApr, isEd
         <div className={styles.editOfferSummary}>
           <StatInfo
             label="Active loans"
-            value={`${MOCK_ACTIVE_LOANS} / ${MOCK_TOTAL_LOANS}`}
+            value={`${loansQuantity} / ${loansQuantity}`}
             valueType={VALUES_TYPES.STRING}
           />
-          <StatInfo label="Reserve" value={MOCK_RESERVE_VALUE} tooltipText="Reserve" />
-          <StatInfo label="Accrued interest" value={MOCK_ACCRUED_INTEREST} />
+          <StatInfo label="Reserve" value={reserve} tooltipText="Reserve" divider={1e9} />
+          <StatInfo label="Accrued interest" value={accruedInterest} divider={1e9} />
         </div>
       )}
     </div>

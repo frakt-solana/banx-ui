@@ -2,12 +2,12 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { capitalize } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 import { useWalletModal } from '@banx/components/WalletModal'
 
+import { Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { trackPageEvent } from '@banx/utils'
 
@@ -107,24 +107,35 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
 interface SwitchModeButtonsProps {
   mode: OfferMode
   onChange: (value: OfferMode) => void
+  offer: Offer | undefined
 }
 
-export const SwitchModeButtons: FC<SwitchModeButtonsProps> = ({ mode, onChange }) => {
-  const modes = [OfferMode.Lite, OfferMode.Pro]
+export const SwitchModeButtons: FC<SwitchModeButtonsProps> = ({ mode, onChange, offer }) => {
+  const isOfferCreatedInProMode = !!offer?.bondingCurve.delta
 
   return (
     <div className={styles.switchModeButtons}>
-      {modes.map((buttonMode) => (
-        <Button
-          key={buttonMode}
-          type="circle"
-          variant="text"
-          onClick={() => onChange(buttonMode)}
-          className={classNames(styles.switchButton, { [styles.active]: mode === buttonMode })}
-        >
-          {capitalize(buttonMode)}
-        </Button>
-      ))}
+      <Button
+        type="circle"
+        variant="text"
+        className={classNames(
+          styles.switchButton,
+          { [styles.active]: mode === OfferMode.Lite },
+          { [styles.disabled]: isOfferCreatedInProMode },
+        )}
+        onClick={() => onChange(OfferMode.Lite)}
+        disabled={isOfferCreatedInProMode}
+      >
+        Lite
+      </Button>
+      <Button
+        type="circle"
+        variant="text"
+        className={classNames(styles.switchButton, { [styles.active]: mode === OfferMode.Pro })}
+        onClick={() => onChange(OfferMode.Pro)}
+      >
+        Pro
+      </Button>
     </div>
   )
 }

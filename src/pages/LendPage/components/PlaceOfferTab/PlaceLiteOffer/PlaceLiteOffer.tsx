@@ -59,6 +59,7 @@ const PlaceLiteOffer: FC<OfferParams> = (offersParams) => {
         marketAPR={marketApr}
         loanToValuePercent={loanToValuePercent}
         isEditMode={isEditMode}
+        offer={offersParams.optimisticOffer}
       />
       <OfferActionButtons
         isEditMode={isEditMode}
