@@ -51,6 +51,7 @@ export const useBorrowNfts = () => {
     const optimisticsToRemove = chain(optimisticOffers)
       //? Filter closed offers from LS optimistics
       .filter(({ offer }) => offer?.pairState !== PairState.PerpetualClosed)
+      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualBondingCurveClosed)
       .filter(({ offer }) => {
         const sameOfferFromBE = data.offers[offer.hadoMarket]?.find(
           ({ publicKey }) => publicKey === offer.publicKey,
@@ -78,6 +79,7 @@ export const useBorrowNfts = () => {
     const optimisticsFiltered = chain(optimisticOffers)
       //? Filter closed offers from LS optimistics
       .filter(({ offer }) => offer?.pairState !== PairState.PerpetualClosed)
+      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualBondingCurveClosed)
       //? Filter own offers from LS optimistics
       .filter(({ offer }) => offer?.assetReceiver !== walletPublicKey?.toBase58())
       .value()
@@ -220,15 +222,15 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
     .fill(0)
     .map((_, idx) => {
       return {
-      id: uniqueId(),
+        id: uniqueId(),
         loanValue: calculateNextSpotPrice({
           bondingCurveType: bondingCurve.bondingType as BondingCurveType,
           delta: bondingCurve.delta,
           spotPrice: baseSpotPrice,
           counter: mathCounter + 1 - idx,
         }),
-      hadoMarket: offer.hadoMarket,
-      publicKey: offer.publicKey,
+        hadoMarket: offer.hadoMarket,
+        publicKey: offer.publicKey,
       }
     })
 }
