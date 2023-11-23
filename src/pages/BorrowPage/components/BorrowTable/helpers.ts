@@ -1,6 +1,10 @@
 import { CONSTANT_BID_CAP } from 'fbonds-core/lib/fbond-protocol/constants'
-import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { chunk, cloneDeep, first, groupBy } from 'lodash'
+import {
+  calculateCurrentInterestSolPure,
+  optimisticBorrowUpdateBondingBondOffer,
+} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
+import { chunk, groupBy } from 'lodash'
 import moment from 'moment'
 import { TxnExecutor, WalletAndConnection } from 'solana-transactions-executor'
 
@@ -69,7 +73,11 @@ export const executeBorrow = async (props: {
   const txnsResults = await new TxnExecutor(
     makeBorrowAction,
     { wallet, connection },
-    { signAllChunks: isLedger ? 1 : 40, rejectQueueOnFirstPfError: false },
+    {
+      signAllChunks: isLedger ? 1 : 40,
+      rejectQueueOnFirstPfError: false,
+      parallelExecutionOfTxnsInChunk: false,
+    },
   )
     .addTxnParams(txnParams)
     .on('pfSuccessEach', (results) => {
