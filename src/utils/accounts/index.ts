@@ -33,8 +33,8 @@ const useNativeAccount: UseNativeAccount = ({ isLive = true }) => {
   return nativeAccount
 }
 
-type UseSolanaBalance = ({ isLive }: { isLive?: boolean }) => number
-export const useSolanaBalance: UseSolanaBalance = ({ isLive = true }) => {
+type UseSolanaBalance = (options?: { isLive?: boolean }) => number
+export const useSolanaBalance: UseSolanaBalance = ({ isLive = true } = {}) => {
   const account = useNativeAccount({ isLive })
 
   const balance = (account?.lamports || 0) / web3.LAMPORTS_PER_SOL

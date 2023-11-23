@@ -38,7 +38,7 @@ const UserGeneralInfo = () => {
 
 const UserBalance = () => {
   const { publicKey } = useWallet()
-  const solanaBalance = useSolanaBalance({})
+  const solanaBalance = useSolanaBalance()
 
   const publicKeyString = publicKey?.toBase58() || ''
 
