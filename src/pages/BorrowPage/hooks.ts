@@ -2,7 +2,8 @@ import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
-import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
+import { calculateNextSpotPrice } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { BondingCurveType, PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { produce } from 'immer'
 import { chain, countBy, filter, groupBy, isEmpty, map, sumBy, uniqBy, uniqueId } from 'lodash'
 import { create } from 'zustand'
@@ -213,32 +214,23 @@ const calcMaxBorrow = (nfts: BorrowNft[], offers: SimpleOffersByMarket) => {
 }
 
 const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
-  const { fundsSolOrTokenBalance, currentSpotPrice } = offer
+  const { baseSpotPrice, mathCounter, buyOrdersQuantity, bondingCurve } = offer
 
-  const fullOffersAmount = Math.floor(fundsSolOrTokenBalance / currentSpotPrice)
-
-  const offers = Array(fullOffersAmount)
-    .fill(currentSpotPrice)
-    .map((loanValue) => ({
+  return Array(buyOrdersQuantity)
+    .fill(0)
+    .map((_, idx) => {
+      return {
       id: uniqueId(),
-      loanValue: loanValue,
+        loanValue: calculateNextSpotPrice({
+          bondingCurveType: bondingCurve.bondingType as BondingCurveType,
+          delta: bondingCurve.delta,
+          spotPrice: baseSpotPrice,
+          counter: mathCounter + 1 - idx,
+        }),
       hadoMarket: offer.hadoMarket,
       publicKey: offer.publicKey,
-    }))
-
-  const decimalLoanValue = fundsSolOrTokenBalance - currentSpotPrice * fullOffersAmount
-
-  //? Add not full offer
-  if (decimalLoanValue && decimalLoanValue > 0) {
-    offers.push({
-      id: uniqueId(),
-      loanValue: decimalLoanValue,
-      hadoMarket: offer.hadoMarket,
-      publicKey: offer.publicKey,
+      }
     })
-  }
-
-  return offers
 }
 
 export interface HiddenNftsMintsState {
