@@ -32,7 +32,7 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
 
   const colorLTV = getColorByPercent(loanToValuePercent, HealthColorIncreasing)
 
-  const { accruedInterest, reserve, quantityOfLoans } = getAdditionalSummaryOfferInfo(offer)
+  const { accruedInterest, reserve, loansQuantity } = getAdditionalSummaryOfferInfo(offer)
 
   const displayEstimatedInterest = formatDecimal(estimatedInterest)
   const displayOfferSize = formatDecimal(formattedOfferSize)
@@ -60,7 +60,7 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
       />
       {isEditMode && (
         <div className={styles.editOfferSummary}>
-          <StatInfo label="Active loans" value={quantityOfLoans} valueType={VALUES_TYPES.STRING} />
+          <StatInfo label="Active loans" value={loansQuantity} valueType={VALUES_TYPES.STRING} />
           <StatInfo label="Reserve" value={reserve} tooltipText="Reserve" />
           <StatInfo label="Accrued interest" value={accruedInterest} />
         </div>

@@ -12,14 +12,14 @@ import { SyntheticOffer } from '@banx/store'
 type CalculateOfferSize = (props: {
   loanValue: number //? normal number
   deltaValue: number //? normal number
-  quantityOfLoans: number //? integer number
+  loansQuantity: number //? integer number
   syntheticOffer: SyntheticOffer
 }) => BondOfferV2
 
 export const getUpdatedBondOffer: CalculateOfferSize = ({
   loanValue,
   deltaValue,
-  quantityOfLoans,
+  loansQuantity,
   syntheticOffer,
 }) => {
   const deltaValueInLamports = deltaValue * 1e9
@@ -36,7 +36,7 @@ export const getUpdatedBondOffer: CalculateOfferSize = ({
     bondOffer: initializedOffer,
     newLoanValue: loanValueInLamports,
     newDelta: deltaValueInLamports,
-    newQuantityOfLoans: quantityOfLoans,
+    newQuantityOfLoans: loansQuantity,
   })
 
   return updatedBondOffer
@@ -67,7 +67,7 @@ export const getAdditionalSummaryOfferInfo = (offer?: Offer) => {
   return {
     accruedInterest: concentrationIndex / 1e9,
     reserve: edgeSettlement / 1e9,
-    quantityOfLoans: buyOrdersQuantity,
+    loansQuantity: buyOrdersQuantity,
   }
 }
 

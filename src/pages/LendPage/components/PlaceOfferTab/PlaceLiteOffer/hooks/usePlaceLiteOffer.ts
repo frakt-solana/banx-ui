@@ -77,7 +77,7 @@ export const usePlaceLiteOffer = ({
 
     const updatedBondOffer = getUpdatedBondOffer({
       loanValue: loanValueNumber,
-      quantityOfLoans: loansAmountNumber,
+      loansQuantity: loansAmountNumber,
       deltaValue: formattedDeltaValue,
       syntheticOffer,
     })

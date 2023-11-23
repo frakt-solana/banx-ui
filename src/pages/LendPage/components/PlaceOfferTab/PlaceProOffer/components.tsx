@@ -31,7 +31,7 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
 
   const colorLTV = getColorByPercent(MOCK_WEIGHTED_LTV, HealthColorIncreasing)
 
-  const { accruedInterest, reserve, quantityOfLoans } = getAdditionalSummaryOfferInfo(offer)
+  const { accruedInterest, reserve, loansQuantity } = getAdditionalSummaryOfferInfo(offer)
 
   return (
     <div className={styles.offerSummary}>
@@ -59,7 +59,7 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
         <div className={styles.editOfferSummary}>
           <StatInfo
             label="Active loans"
-            value={`${quantityOfLoans} / ${quantityOfLoans}`}
+            value={`${loansQuantity} / ${loansQuantity}`}
             valueType={VALUES_TYPES.STRING}
           />
           <StatInfo label="Reserve" value={reserve} tooltipText="Reserve" divider={1e9} />

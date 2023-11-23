@@ -55,7 +55,7 @@ export const usePlaceProOffer = ({
     const updatedBondOffer = getUpdatedBondOffer({
       loanValue: loanValueNumber,
       deltaValue: deltaValueNumber,
-      quantityOfLoans: loansAmountNumber,
+      loansQuantity: loansAmountNumber,
       syntheticOffer,
     })
     return updatedBondOffer.fundsSolOrTokenBalance
