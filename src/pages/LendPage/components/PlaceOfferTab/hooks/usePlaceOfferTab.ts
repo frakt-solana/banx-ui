@@ -21,7 +21,7 @@ export const usePlaceOfferTab = (props: OrderBookMarketParams) => {
 
   const { offers, updateOrAddOffer } = useMarketOffers({ marketPubkey })
   const { marketsPreview } = useMarketsPreview()
-  const solanaBalance = useSolanaBalance(false)
+  const solanaBalance = useSolanaBalance({ isLive: false })
 
   const {
     findOfferByPubkey: findSyntheticOfferByPubkey,
