@@ -48,6 +48,7 @@ export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => 
 
     const optimisticsToRemove = chain(optimisticOffers)
       .filter(({ offer }) => offer?.pairState !== PairState.PerpetualClosed)
+      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualBondingCurveClosed)
       .filter(({ offer }) => {
         const sameOfferFromBE = data?.find(({ publicKey }) => publicKey === offer.publicKey)
         if (!sameOfferFromBE) return false
@@ -74,6 +75,7 @@ export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => 
       .groupBy('publicKey')
       .map((offers) => maxBy(offers, 'lastTransactedAt'))
       .filter((offer) => offer?.pairState !== PairState.PerpetualClosed)
+      .filter((offer) => offer?.pairState !== PairState.PerpetualBondingCurveClosed)
       .compact()
       .value()
   }, [optimisticOffers, data, marketPubkey])
