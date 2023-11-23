@@ -29,17 +29,11 @@ const ExpandableCardContent: FC<ExpandableCardContentProps> = ({
   marketPubkey,
   isOrderBookVisible,
 }) => {
-  const { marketParams, tabsParams, goToPlaceOfferTab, isEditMode, offerMode, onChangeOfferMode } =
+  const { marketParams, tabsParams, goToPlaceOfferTab, isEditMode } =
     useExpandableCardContent(marketPubkey)
 
   const TABS_COMPONENTS: TabsComponents = {
-    [TabName.OFFER]: (
-      <PlaceOfferTab
-        {...marketParams}
-        offerMode={offerMode}
-        onChangeOfferMode={onChangeOfferMode}
-      />
-    ),
+    [TabName.OFFER]: <PlaceOfferTab {...marketParams} />,
     [TabName.ACTIVITY]: (
       <ActivityTable marketPubkey={marketPubkey} goToPlaceOfferTab={goToPlaceOfferTab} />
     ),

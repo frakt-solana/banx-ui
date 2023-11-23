@@ -23,7 +23,11 @@ const PlaceOfferTab: FC<PlaceOfferTabProps> = (props) => {
   return (
     <div className={styles.content}>
       <OfferHeader isEditMode={checkIsEditMode(offerPubkey)} exitEditMode={exitEditMode} />
-      <SwitchModeButtons mode={offerMode} onChange={onChangeOfferMode} />
+      <SwitchModeButtons
+        mode={offerMode}
+        onChange={onChangeOfferMode}
+        offer={offerParams.optimisticOffer}
+      />
       {offerMode === OfferMode.Lite && <PlaceLiteOffer {...offerParams} />}
       {offerMode === OfferMode.Pro && <PlaceProOffer {...offerParams} />}
     </div>

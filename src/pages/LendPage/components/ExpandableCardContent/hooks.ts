@@ -17,6 +17,8 @@ export interface OrderBookMarketParams {
   offerPubkey: string
   setOfferPubkey: (offerPubkey: string) => void
   goToPlaceOfferTab: () => void
+  offerMode: OfferMode
+  onChangeOfferMode: (value: OfferMode) => void
 }
 
 export const useExpandableCardContent = (marketPubkey: string) => {
@@ -46,14 +48,14 @@ export const useExpandableCardContent = (marketPubkey: string) => {
   return {
     goToPlaceOfferTab,
     isEditMode: checkIsEditMode(offerPubkey),
-    offerMode,
-    onChangeOfferMode: setOfferMode,
 
     marketParams: {
       marketPubkey,
       offerPubkey,
       setOfferPubkey,
       goToPlaceOfferTab,
+      offerMode,
+      onChangeOfferMode: setOfferMode,
     },
     tabsParams: {
       tabs: bondTabs,

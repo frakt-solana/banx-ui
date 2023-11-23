@@ -2,7 +2,7 @@ import { MarketPreview } from '@banx/api/core'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { SyntheticOffer, useSyntheticOffers } from '@banx/store'
 
-import { OrderBookMarketParams } from '../../ExpandableCardContent'
+import { OfferMode, OrderBookMarketParams } from '../../ExpandableCardContent'
 import { useMarketOrders } from './useMarketOrders'
 
 export interface OrderBookParams {
@@ -18,7 +18,7 @@ type UseOrderBook = (props: OrderBookMarketParams) => {
 }
 export const useOrderBook: UseOrderBook = (props) => {
   const { setOffer: setSyntheticOffer } = useSyntheticOffers()
-  const { offerPubkey, setOfferPubkey, marketPubkey, goToPlaceOfferTab } = props
+  const { offerPubkey, setOfferPubkey, marketPubkey, goToPlaceOfferTab, onChangeOfferMode } = props
 
   const { marketsPreview } = useMarketsPreview()
 
@@ -29,10 +29,15 @@ export const useOrderBook: UseOrderBook = (props) => {
   const { offers, bestOffer, isLoading } = useMarketOrders({ marketPubkey, offerPubkey })
 
   const goToEditOffer = (offer: SyntheticOffer) => {
+    const offerMode = offer.deltaValue ? OfferMode.Pro : OfferMode.Lite
+    onChangeOfferMode(offerMode)
+
     goToPlaceOfferTab()
 
-    setSyntheticOffer({ ...offer, isEdit: true })
-    setOfferPubkey(offer.publicKey)
+    const editedOffer = { ...offer, isEdit: true }
+    setSyntheticOffer(editedOffer)
+
+    setOfferPubkey(editedOffer.publicKey)
   }
 
   return {
