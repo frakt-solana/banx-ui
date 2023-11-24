@@ -48,7 +48,7 @@
     "axios": "^1.4.0",
     "chart.js": "^4.4.0",
     "classnames": "^2.3.2",
-    "fbonds-core": "0.5.219",
+    "fbonds-core": "0.5.222",
     "firebase": "^10.1.0",
     "idb-keyval": "^6.2.1",
     "immer": "9.0.19",
@@ -60,7 +60,7 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.14.2",
     "react-virtuoso": "^4.6.2",
-    "solana-transactions-executor": "1.0.7",
+    "solana-transactions-executor": "1.0.9",
     "zod": "^3.21.4",
     "zustand": "^4.3.9"
   },

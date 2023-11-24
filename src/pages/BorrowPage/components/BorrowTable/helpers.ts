@@ -76,7 +76,7 @@ export const executeBorrow = async (props: {
     {
       signAllChunks: isLedger ? 1 : 40,
       rejectQueueOnFirstPfError: false,
-      parallelExecutionOfTxnsInChunk: false,
+      parallelExecutionTimeot: 2000,
     },
   )
     .addTxnParams(txnParams)
