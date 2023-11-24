@@ -7,16 +7,10 @@ import { BONDS } from '@banx/constants'
 import { calcLoanBorrowedAmount } from '@banx/utils'
 
 export const getAdditionalOfferInfo = (loans: Loan[]) => {
-  const totalLent = sumBy(loans, calculateLentValue)
-
-  //TODO: replace borrowedAmount to totalRepaidAmount
-  const totalRepaid = sumBy(loans, 'borrowedAmount')
-  const totalClaim = sumBy(loans, caclulateClaimValue)
-
   return {
-    lent: totalLent,
-    repaid: totalRepaid,
-    claim: totalClaim,
+    lent: sumBy(loans, calculateLentValue),
+    repaid: sumBy(loans, 'totalRepaidAmount'),
+    claim: sumBy(loans, caclulateClaimValue),
     apy: 0,
     interest: 0,
   }

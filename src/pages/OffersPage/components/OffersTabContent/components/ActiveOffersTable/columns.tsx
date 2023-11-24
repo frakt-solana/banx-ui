@@ -4,9 +4,9 @@ import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/Tab
 import { Loan, Offer } from '@banx/api/core'
 import { formatDecimal } from '@banx/utils'
 
-import { calculateLentValue } from '../OffersTabContent/components/OfferCard/helpers'
+import { CLAIM_TOOLTIP_TEXT, STATUS_TOOLTIP_TEXT } from '../../constants'
+import { calculateLentValue } from '../OfferCard/helpers'
 import { APRCell, ActionsCell, InterestCell, StatusCell } from './TableCells'
-import { CLAIM_TOOLTIP_TEXT, STATUS_TOOLTIP_TEXT } from './constants'
 
 interface GetTableColumns {
   offers: Record<string, Offer[]>

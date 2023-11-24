@@ -6,8 +6,8 @@ import Table from '@banx/components/Table'
 import { Loan } from '@banx/api/core'
 import { isLoanLiquidated, isLoanTerminating } from '@banx/utils'
 
+import { EMPTY_MESSAGE } from '../../constants'
 import { getTableColumns } from './columns'
-import { EMPTY_MESSAGE } from './constants'
 import { useLenderLoansAndOffers } from './hooks'
 
 import styles from './ActiveOffersTable.module.less'
@@ -40,7 +40,15 @@ const ActiveOffersTable: FC<ActiveOffersTableProps> = ({ loans }) => {
 
   if (!loans.length) return <EmptyList message={EMPTY_MESSAGE} />
 
-  return <Table data={loans} columns={columns} className={styles.rootTable} rowParams={rowParams} />
+  return (
+    <Table
+      data={loans}
+      columns={columns}
+      classNameTableWrapper={styles.tableWrapper}
+      className={styles.tableRoot}
+      rowParams={rowParams}
+    />
+  )
 }
 
 export default ActiveOffersTable

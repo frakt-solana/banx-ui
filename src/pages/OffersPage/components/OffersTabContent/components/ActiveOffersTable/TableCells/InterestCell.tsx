@@ -5,7 +5,7 @@ import { createPercentValueJSX, createSolValueJSX } from '@banx/components/Table
 import { Loan } from '@banx/api/core'
 import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
 
-import { caclulateClaimValue } from '../../OffersTabContent/components/OfferCard/helpers'
+import { caclulateClaimValue } from '../../OfferCard/helpers'
 
 import styles from '../ActiveOffersTable.module.less'
 

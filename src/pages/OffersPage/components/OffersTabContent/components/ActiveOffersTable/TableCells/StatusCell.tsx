@@ -6,6 +6,7 @@ import moment from 'moment'
 import Timer from '@banx/components/Timer'
 
 import { Loan } from '@banx/api/core'
+import { SECONDS_IN_72_HOURS } from '@banx/constants'
 import {
   LoanStatus,
   STATUS_LOANS_COLOR_MAP,
@@ -13,8 +14,6 @@ import {
   determineLoanStatus,
   isLoanLiquidated,
 } from '@banx/utils'
-
-import { SECONDS_IN_72_HOURS } from '../constants'
 
 import styles from '../ActiveOffersTable.module.less'
 

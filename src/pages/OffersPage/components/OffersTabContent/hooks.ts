@@ -10,8 +10,8 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Offer, fetchLenderLoansAndOffersV2 } from '@banx/api/core'
 
-import { DEFAULT_SORT_OPTION, SORT_OPTIONS } from '../ActiveOffersTable/constants'
 import { caclulateClaimValue } from './components/OfferCard/helpers'
+import { DEFAULT_SORT_OPTION, SORT_OPTIONS } from './constants'
 
 export const useLenderLoansAndOffers = () => {
   const { publicKey } = useWallet()

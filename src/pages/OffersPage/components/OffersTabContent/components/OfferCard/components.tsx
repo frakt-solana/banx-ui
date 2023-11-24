@@ -33,7 +33,7 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
   const displayDeltaValue = delta ? `| Δ${formatDecimal(delta / 1e9)}◎` : ''
   const displayOfferValue = formatDecimal(currentSpotPrice / 1e9)
 
-  const disabled = pairState !== PairState.PerpetualBondingCurveClosed
+  const disabledActionButton = pairState === PairState.PerpetualBondingCurveClosed
 
   return (
     <div className={styles.mainOfferContainer}>
@@ -43,7 +43,7 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
         <div className={styles.mainOfferStats}>
           <StatInfo
             label="Offer"
-            value={`${displayDeltaValue}${displayOfferValue}`}
+            value={`${displayOfferValue} ${displayDeltaValue}`}
             valueType={VALUES_TYPES.STRING}
           />
           <StatInfo
@@ -56,20 +56,24 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
       </div>
       <div className={styles.actionsOfferButtons}>
         <Button
-          className={classNames(styles.editOfferButton, { [styles.disabled]: disabled })}
+          className={classNames(styles.editOfferButton, {
+            [styles.disabled]: disabledActionButton,
+          })}
           type="circle"
           variant="secondary"
           size="medium"
-          disabled={disabled}
+          disabled={disabledActionButton}
         >
           <Pencil />
         </Button>
         <Button
-          className={classNames(styles.removeOfferButton, { [styles.disabled]: disabled })}
+          className={classNames(styles.removeOfferButton, {
+            [styles.disabled]: disabledActionButton,
+          })}
           type="circle"
           variant="secondary"
           size="medium"
-          disabled={disabled}
+          disabled={disabledActionButton}
         >
           <CloseModal />
         </Button>

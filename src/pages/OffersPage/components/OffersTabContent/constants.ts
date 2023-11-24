@@ -7,9 +7,6 @@ export const DEFAULT_SORT_OPTION: SortOption = {
   value: `${SORT_OPTIONS[0].value}_asc`,
 }
 
-const SECONDS_IN_HOUR = 60 * 60
-export const SECONDS_IN_72_HOURS = 72 * SECONDS_IN_HOUR
-
 export const EMPTY_MESSAGE = 'Your offer is waiting for a borrower'
 
 export const STATUS_TOOLTIP_TEXT = 'Current status and duration of the loan that has been passed'
