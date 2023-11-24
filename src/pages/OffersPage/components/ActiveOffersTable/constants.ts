@@ -1,15 +1,10 @@
 import { SortOption } from '@banx/components/SortDropdown'
 
-export const SORT_OPTIONS = [
-  { label: 'Lent', value: 'lent' },
-  { label: 'LTV', value: 'ltv' },
-  { label: 'APY', value: 'apy' },
-  { label: 'Status', value: 'status' },
-]
+export const SORT_OPTIONS = [{ label: 'Claim', value: 'claim' }]
 
 export const DEFAULT_SORT_OPTION: SortOption = {
-  label: 'Status',
-  value: 'status_asc',
+  label: SORT_OPTIONS[0].label,
+  value: `${SORT_OPTIONS[0].value}_asc`,
 }
 
 const SECONDS_IN_HOUR = 60 * 60
