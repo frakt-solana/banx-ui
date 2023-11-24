@@ -20,31 +20,21 @@ import styles from '../ActiveOffersTable.module.less'
 
 interface StatusCellProps {
   loan: Loan
-  isCardView: boolean
 }
 
-export const StatusCell: FC<StatusCellProps> = ({ loan, isCardView }) => {
+export const StatusCell: FC<StatusCellProps> = ({ loan }) => {
   const loanStatus = determineLoanStatus(loan)
 
   const statusColor = STATUS_LOANS_COLOR_MAP[loanStatus as LoanStatus] || ''
   const timeInfo = calculateTimeInfo(loan, loanStatus)
 
-  const statusInfoTitle = <span className={styles.statusInfoTitle}>{timeInfo}</span>
-  const statusInfoSubtitle = (
-    <span style={{ color: statusColor }} className={styles.statusInfoSubtitle}>
-      {capitalize(loanStatus)}
-    </span>
-  )
-
-  return !isCardView ? (
+  return (
     <div className={styles.statusInfo}>
-      {statusInfoSubtitle}
-      {statusInfoTitle}
+      <span style={{ color: statusColor }} className={styles.statusInfoSubtitle}>
+        {capitalize(loanStatus)}
+      </span>
+      <span className={styles.statusInfoTitle}>{timeInfo}</span>
     </div>
-  ) : (
-    <span>
-      {statusInfoSubtitle} ({statusInfoTitle})
-    </span>
   )
 }
 

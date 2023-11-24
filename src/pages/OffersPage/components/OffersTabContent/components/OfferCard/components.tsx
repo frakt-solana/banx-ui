@@ -89,7 +89,7 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ loan
     <div className={styles.additionalOfferContainer}>
       <StatInfo label="Lent" value={lent} divider={1e9} />
       <StatInfo label="Repaid" value={repaid} divider={1e9} />
-      <StatInfo label="Claim" value={claim} />
+      <StatInfo label="Claim" value={claim} divider={1e9} />
       <StatInfo
         label="APY"
         value={apy}

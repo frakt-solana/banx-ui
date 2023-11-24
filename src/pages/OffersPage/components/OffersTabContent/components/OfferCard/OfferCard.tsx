@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 
 import classNames from 'classnames'
 
@@ -7,6 +7,7 @@ import { Button } from '@banx/components/Buttons'
 import { CollectionMeta, Loan, Offer } from '@banx/api/core'
 import { ChevronDown } from '@banx/icons'
 
+import ActiveOffersTable from '../../../ActiveOffersTable/ActiveOffersTable'
 import { AdditionalOfferOverview, MainOfferOverview } from './components'
 
 import styles from './OfferCard.module.less'
@@ -18,16 +19,21 @@ interface OfferCardProps {
 }
 
 const OfferCard: FC<OfferCardProps> = ({ offer, loans, collectionMeta }) => {
+  const [isOpen, setIsOpen] = useState(false)
+
   return (
     <div className={styles.card}>
-      <MainOfferOverview offer={offer} collectionMeta={collectionMeta} />
-      <AdditionalOfferOverview loans={loans} />
-      <Button
-        type="circle"
-        className={classNames(styles.chevronButton, { [styles.active]: false })}
-      >
-        <ChevronDown />
-      </Button>
+      <div className={styles.cardBody} onClick={() => setIsOpen(!isOpen)}>
+        <MainOfferOverview offer={offer} collectionMeta={collectionMeta} />
+        <AdditionalOfferOverview loans={loans} />
+        <Button
+          type="circle"
+          className={classNames(styles.chevronButton, { [styles.active]: isOpen })}
+        >
+          <ChevronDown />
+        </Button>
+      </div>
+      {isOpen && <ActiveOffersTable loans={loans} />}
     </div>
   )
 }

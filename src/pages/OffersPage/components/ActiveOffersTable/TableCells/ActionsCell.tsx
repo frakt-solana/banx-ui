@@ -20,7 +20,6 @@ import styles from '../ActiveOffersTable.module.less'
 interface ActionsCellProps {
   loan: Loan
   offers: Record<string, Offer[]>
-  isCardView: boolean
   updateOrAddOffer: (offer: Offer) => void
   updateOrAddLoan: (loan: Loan) => void
 }
@@ -28,7 +27,6 @@ interface ActionsCellProps {
 export const ActionsCell: FC<ActionsCellProps> = ({
   loan,
   offers,
-  isCardView,
   updateOrAddOffer,
   updateOrAddLoan,
 }) => {
@@ -62,8 +60,6 @@ export const ActionsCell: FC<ActionsCellProps> = ({
     claimLoan()
   }
 
-  const buttonSize = isCardView ? 'medium' : 'small'
-
   const loanActiveOrRefinanced = isLoanActiveOrRefinanced(loan)
   const isTerminatingStatus = isLoanTerminating(loan)
   const isLoanExpired = isLoanLiquidated(loan)
@@ -83,7 +79,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({
           onClick={onTerminate}
           disabled={isTerminatingStatus}
           variant="secondary"
-          size={buttonSize}
+          size="small"
         >
           Terminate
         </Button>
@@ -94,13 +90,13 @@ export const ActionsCell: FC<ActionsCellProps> = ({
           className={styles.actionButton}
           onClick={onInstant}
           variant="secondary"
-          size={buttonSize}
+          size="small"
         >
           Instant
         </Button>
       )}
       {showClaimButton && (
-        <Button className={styles.actionButton} onClick={onClaim} size={buttonSize}>
+        <Button className={styles.actionButton} onClick={onClaim}>
           Claim NFT
         </Button>
       )}

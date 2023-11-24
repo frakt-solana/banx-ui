@@ -1,50 +1,32 @@
 import { FC } from 'react'
 
-import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import moment from 'moment'
-
 import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import { BONDS } from '@banx/constants'
 import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
+
+import { caclulateClaimValue } from '../../OffersTabContent/components/OfferCard/helpers'
 
 import styles from '../ActiveOffersTable.module.less'
 
 interface InterestCellProps {
   loan: Loan
-  isCardView: boolean
 }
 
-export const InterestCell: FC<InterestCellProps> = ({ loan, isCardView }) => {
-  const { solAmount, feeAmount, amountOfBonds, soldAt } = loan.bondTradeTransaction || {}
-
-  const totalLoanValue = solAmount + feeAmount
+export const InterestCell: FC<InterestCellProps> = ({ loan }) => {
   const collectionFloor = loan.nft.collectionFloor
 
-  const interestParameters = {
-    loanValue: totalLoanValue,
-    startTime: soldAt,
-    currentTime: moment().unix(),
-    rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
-  }
-
-  const currentInterest = calculateCurrentInterestSolPure(interestParameters)
-  const totalClaimValue = currentInterest + totalLoanValue
+  const totalClaimValue = caclulateClaimValue(loan)
 
   const formattedClaimValue = createSolValueJSX(totalClaimValue, 1e9, '--', formatDecimal)
 
   const loanToValueRatio = (totalClaimValue / collectionFloor) * 100
 
-  return !isCardView ? (
+  return (
     <div className={styles.lentInfo}>
       <span>{formattedClaimValue}</span>
       {createLtvValueJSX(loanToValueRatio)}
     </div>
-  ) : (
-    <span>
-      {formattedClaimValue} ({createLtvValueJSX(loanToValueRatio)})
-    </span>
   )
 }
 

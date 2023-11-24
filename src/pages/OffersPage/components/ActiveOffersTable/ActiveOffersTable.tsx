@@ -1,53 +1,36 @@
-import { useMemo } from 'react'
+import { FC, useMemo } from 'react'
 
 import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 
 import { Loan } from '@banx/api/core'
-import { ViewState, useTableView } from '@banx/store'
-import { LoanStatus, determineLoanStatus } from '@banx/utils'
+import { isLoanLiquidated, isLoanTerminating } from '@banx/utils'
 
-import { Summary } from './Summary'
 import { getTableColumns } from './columns'
-import { useActiveOffersTable } from './hooks'
+import { EMPTY_MESSAGE } from './constants'
+import { useLenderLoansAndOffers } from './hooks'
 
 import styles from './ActiveOffersTable.module.less'
 
-const ActiveOffersTable = () => {
-  const {
-    loans,
-    sortViewParams,
-    loading,
-    showEmptyList,
-    emptyListParams,
-    updateOrAddLoan,
-    loansToClaim,
-    loansToTerminate,
-    updateOrAddOffer,
-    addMints,
-    offers,
-  } = useActiveOffersTable()
+interface ActiveOffersTableProps {
+  loans: Loan[]
+}
 
-  const { viewState } = useTableView()
-  const isCardView = viewState === ViewState.CARD
+const ActiveOffersTable: FC<ActiveOffersTableProps> = ({ loans }) => {
+  const { offers, updateOrAddLoan, updateOrAddOffer } = useLenderLoansAndOffers()
 
-  const columns = getTableColumns({
-    isCardView,
-    offers,
-    updateOrAddOffer,
-    updateOrAddLoan,
-  })
+  const columns = getTableColumns({ offers, updateOrAddOffer, updateOrAddLoan })
 
   const rowParams = useMemo(() => {
     return {
       activeRowParams: [
         {
-          condition: checkIsTerminationLoan,
+          condition: (loan: Loan) => isLoanTerminating(loan),
           className: styles.terminated,
           cardClassName: styles.terminated,
         },
         {
-          condition: checkIsLiquidatedLoan,
+          condition: (loan: Loan) => isLoanLiquidated(loan),
           className: styles.liquidated,
           cardClassName: styles.liquidated,
         },
@@ -55,37 +38,9 @@ const ActiveOffersTable = () => {
     }
   }, [])
 
-  if (showEmptyList) return <EmptyList {...emptyListParams} />
+  if (!loans.length) return <EmptyList message={EMPTY_MESSAGE} />
 
-  return (
-    <div className={styles.tableRoot}>
-      <Table
-        data={loans}
-        columns={columns}
-        sortViewParams={sortViewParams}
-        className={styles.rootTable}
-        rowParams={rowParams}
-        loading={loading}
-        showCard
-      />
-      <Summary
-        loansToClaim={loansToClaim}
-        loansToTerminate={loansToTerminate}
-        updateOrAddLoan={updateOrAddLoan}
-        addMints={addMints}
-      />
-    </div>
-  )
+  return <Table data={loans} columns={columns} className={styles.rootTable} rowParams={rowParams} />
 }
 
 export default ActiveOffersTable
-
-const checkIsTerminationLoan = (loan: Loan) => {
-  const loanStatus = determineLoanStatus(loan)
-  return loanStatus === LoanStatus.Terminating
-}
-
-const checkIsLiquidatedLoan = (loan: Loan) => {
-  const loanStatus = determineLoanStatus(loan)
-  return loanStatus === LoanStatus.Liquidated
-}

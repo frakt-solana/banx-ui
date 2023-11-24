@@ -4,21 +4,17 @@ import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/Tab
 import { Loan, Offer } from '@banx/api/core'
 import { formatDecimal } from '@banx/utils'
 
-import { APRCell, ActionsCell, InterestCell, LentCell, StatusCell } from './TableCells'
+import { calculateLentValue } from '../OffersTabContent/components/OfferCard/helpers'
+import { APRCell, ActionsCell, InterestCell, StatusCell } from './TableCells'
+import { CLAIM_TOOLTIP_TEXT, STATUS_TOOLTIP_TEXT } from './constants'
 
 interface GetTableColumns {
-  isCardView: boolean
   offers: Record<string, Offer[]>
   updateOrAddOffer: (offer: Offer) => void
   updateOrAddLoan: (loan: Loan) => void
 }
 
-export const getTableColumns = ({
-  offers,
-  updateOrAddOffer,
-  updateOrAddLoan,
-  isCardView,
-}: GetTableColumns) => {
+export const getTableColumns = ({ offers, updateOrAddOffer, updateOrAddLoan }: GetTableColumns) => {
   const columns: ColumnType<Loan>[] = [
     {
       key: 'collateral',
@@ -35,29 +31,19 @@ export const getTableColumns = ({
       ),
     },
     {
-      key: 'floor',
-      title: <HeaderCell label="Floor" />,
-      render: (loan) => createSolValueJSX(loan.nft.collectionFloor, 1e9, '0◎', formatDecimal),
-    },
-    {
       key: 'lent',
       title: <HeaderCell label="Lent" />,
-      render: (loan) => <LentCell loan={loan} />,
+      render: (loan) => createSolValueJSX(calculateLentValue(loan), 1e9, '0◎', formatDecimal),
     },
     {
       key: 'repaid',
-      title: <HeaderCell label="Total repaid" />,
+      title: <HeaderCell label="Repaid" />,
       render: (loan) => createSolValueJSX(loan.totalRepaidAmount, 1e9, '0◎', formatDecimal),
     },
     {
       key: 'interest',
-      title: (
-        <HeaderCell
-          label="Total claim"
-          tooltipText="Sum of lent amount and accrued interest to date"
-        />
-      ),
-      render: (loan) => <InterestCell loan={loan} isCardView={isCardView} />,
+      title: <HeaderCell label="Claim" tooltipText={CLAIM_TOOLTIP_TEXT} />,
+      render: (loan) => <InterestCell loan={loan} />,
     },
     {
       key: 'apy',
@@ -66,24 +52,18 @@ export const getTableColumns = ({
     },
     {
       key: 'status',
-      title: (
-        <HeaderCell
-          label="Status"
-          tooltipText="Current status and duration of the loan that has been passed"
-        />
-      ),
-      render: (loan) => <StatusCell loan={loan} isCardView={isCardView} />,
+      title: <HeaderCell label="Status" tooltipText={STATUS_TOOLTIP_TEXT} />,
+      render: (loan) => <StatusCell loan={loan} />,
     },
     {
       key: 'actionsCell',
-      title: !isCardView ? <HeaderCell label="" /> : undefined,
+      title: <HeaderCell label="" />,
       render: (loan) => (
         <ActionsCell
           offers={offers}
           updateOrAddOffer={updateOrAddOffer}
           updateOrAddLoan={updateOrAddLoan}
           loan={loan}
-          isCardView={isCardView}
         />
       ),
     },

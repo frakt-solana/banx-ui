@@ -15,5 +15,7 @@ export const DEFAULT_SORT_OPTION: SortOption = {
 const SECONDS_IN_HOUR = 60 * 60
 export const SECONDS_IN_72_HOURS = 72 * SECONDS_IN_HOUR
 
-export const EMPTY_MESSAGE = 'Lend SOL to view your active loans'
-export const NOT_CONNECTED_MESSAGE = 'Connect wallet to view your active loans'
+export const EMPTY_MESSAGE = 'Your offer is waiting for a borrower'
+
+export const STATUS_TOOLTIP_TEXT = 'Current status and duration of the loan that has been passed'
+export const CLAIM_TOOLTIP_TEXT = 'Sum of lent amount and accrued interest to date'
