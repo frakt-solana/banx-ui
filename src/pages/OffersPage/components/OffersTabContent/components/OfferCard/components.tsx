@@ -65,25 +65,31 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
       </div>
       <div className={styles.actionsOfferButtons}>
         <Button
-          onClick={onEdit}
-          className={classNames(styles.editOfferButton, {
-            [styles.disabled]: disabledActionButton,
-          })}
           type="circle"
           variant="secondary"
           size="medium"
+          className={classNames(styles.editOfferButton, {
+            [styles.disabled]: disabledActionButton,
+          })}
+          onClick={(event) => {
+            onEdit()
+            event.stopPropagation()
+          }}
           disabled={disabledActionButton}
         >
           <Pencil />
         </Button>
         <Button
-          onClick={onRemove}
-          className={classNames(styles.removeOfferButton, {
-            [styles.disabled]: disabledActionButton,
-          })}
           type="circle"
           variant="secondary"
           size="medium"
+          onClick={(event) => {
+            onRemove()
+            event.stopPropagation()
+          }}
+          className={classNames(styles.removeOfferButton, {
+            [styles.disabled]: disabledActionButton,
+          })}
           disabled={disabledActionButton}
         >
           <CloseModal />

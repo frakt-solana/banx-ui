@@ -11,6 +11,7 @@ export const getAdditionalOfferInfo = (loans: Loan[]) => {
     lent: sumBy(loans, calculateLentValue),
     repaid: sumBy(loans, 'totalRepaidAmount'),
     claim: sumBy(loans, caclulateClaimValue),
+    ltv: 0,
     apy: 0,
     interest: 0,
     totalLoans: loans.length,
