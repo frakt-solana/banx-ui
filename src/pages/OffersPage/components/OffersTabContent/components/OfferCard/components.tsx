@@ -9,9 +9,10 @@ import { createPercentValueJSX, createSolValueJSX } from '@banx/components/Table
 
 import { CollectionMeta, Loan, Offer } from '@banx/api/core'
 import { CloseModal, Pencil } from '@banx/icons'
-import { formatDecimal } from '@banx/utils'
+import { formatDecimal, trackPageEvent } from '@banx/utils'
 
 import { getAdditionalOfferInfo } from './helpers'
+import { useActionsCell } from './hooks'
 
 import styles from './OfferCard.module.less'
 
@@ -35,6 +36,18 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
 
   const disabledActionButton = pairState === PairState.PerpetualBondingCurveClosed
 
+  const { removeOffer, goToEditOffer } = useActionsCell(offer, collectionMeta)
+
+  const onEdit = () => {
+    goToEditOffer()
+    trackPageEvent('myoffers', 'pendingtab-edit')
+  }
+
+  const onRemove = () => {
+    removeOffer()
+    trackPageEvent('myoffers', 'pendingtab-remove')
+  }
+
   return (
     <div className={styles.mainOfferContainer}>
       <img src={collectionImage} className={styles.collectionImage} />
@@ -52,6 +65,7 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
       </div>
       <div className={styles.actionsOfferButtons}>
         <Button
+          onClick={onEdit}
           className={classNames(styles.editOfferButton, {
             [styles.disabled]: disabledActionButton,
           })}
@@ -63,6 +77,7 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
           <Pencil />
         </Button>
         <Button
+          onClick={onRemove}
           className={classNames(styles.removeOfferButton, {
             [styles.disabled]: disabledActionButton,
           })}

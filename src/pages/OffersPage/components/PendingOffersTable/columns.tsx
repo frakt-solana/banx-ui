@@ -3,7 +3,7 @@ import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/Tab
 
 import { formatDecimal, formatLoansAmount } from '@banx/utils'
 
-import { APRCell, ActionsCell, InterestCell, OfferCell } from './TableCells'
+import { APRCell, InterestCell, OfferCell } from './TableCells'
 import { TableUserOfferData } from './helpers'
 
 export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
@@ -39,11 +39,6 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
       key: 'apy',
       title: <HeaderCell label="APY" />,
       render: (offer) => <APRCell offer={offer} />,
-    },
-    {
-      key: 'actionsCell',
-      title: <HeaderCell label="" />,
-      render: (offer) => <ActionsCell isCardView={isCardView} offer={offer} />,
     },
   ]
 
