@@ -13,6 +13,7 @@ export const getAdditionalOfferInfo = (loans: Loan[]) => {
     claim: sumBy(loans, caclulateClaimValue),
     apy: 0,
     interest: 0,
+    totalLoans: loans.length,
   }
 }
 

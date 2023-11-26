@@ -74,19 +74,52 @@
   gap: 24px;
   width: 100%;
 
-  & > div {
-    align-items: flex-end;
-    gap: 16px;
-    max-width: 132px;
-    width: 100%;
-  }
-
   @media (max-width: 960px) {
     display: none;
   }
 }
-.additionalApyStat,
-.additionalInterestStat {
+.additionalStat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  max-width: 168px;
+  width: 100%;
+}
+.additionalStatLabel {
+  color: var(--content-secondary);
+  font: var(--table-header-md);
+  text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--table-header-sm);
+  }
+}
+.additionalStatValues {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4px;
+  height: 56px;
+
+  span:first-child {
+    font: var(--body-text-md);
+    line-height: 21px;
+
+    @media (max-width: 640px) {
+      font: var(--body-text-sm);
+    }
+  }
+}
+.interestValues {
   color: var(--additional-green-primary-deep);
-  font: var(--important-text-lg);
+  span:first-child {
+    font: var(--important-text-lg);
+  }
+  span:last-child {
+    font: var(--important-text-sm);
+  }
+}
+.ltvValue {
+  font: var(--body-text-sm);
 }

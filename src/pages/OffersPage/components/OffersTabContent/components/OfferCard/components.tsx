@@ -5,6 +5,7 @@ import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Button } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
+import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { CollectionMeta, Loan, Offer } from '@banx/api/core'
 import { CloseModal, Pencil } from '@banx/icons'
@@ -20,12 +21,11 @@ interface MainOfferOverviewProps {
 }
 
 export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectionMeta }) => {
-  const { collectionName, collectionImage } = collectionMeta
+  const { collectionName, collectionImage, collectionFloor } = collectionMeta
 
   const {
     currentSpotPrice,
     fundsSolOrTokenBalance,
-    buyOrdersQuantity,
     pairState,
     bondingCurve: { delta },
   } = offer
@@ -41,14 +41,10 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
       <div className={styles.mainOfferInfo}>
         <h4 className={styles.collectionName}>{collectionName}</h4>
         <div className={styles.mainOfferStats}>
+          <StatInfo label="Floor" value={collectionFloor} divider={1e9} />
           <StatInfo
             label="Offer"
             value={`${displayOfferValue} ${displayDeltaValue}`}
-            valueType={VALUES_TYPES.STRING}
-          />
-          <StatInfo
-            label="Loans"
-            value={`${buyOrdersQuantity} / ${buyOrdersQuantity}`}
             valueType={VALUES_TYPES.STRING}
           />
           <StatInfo label="Size" value={fundsSolOrTokenBalance} divider={1e9} />
@@ -87,24 +83,37 @@ interface AdditionalOfferOverviewProps {
 }
 
 export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ loans }) => {
-  const { lent, repaid, claim, apy, interest } = getAdditionalOfferInfo(loans)
+  const { lent, repaid, claim, apy, interest, totalLoans } = getAdditionalOfferInfo(loans)
 
   return (
     <div className={styles.additionalOfferContainer}>
-      <StatInfo label="Lent" value={lent} divider={1e9} />
-      <StatInfo label="Repaid" value={repaid} divider={1e9} />
-      <StatInfo label="Claim" value={claim} divider={1e9} />
-      <StatInfo
-        label="APY"
-        value={apy}
-        classNamesProps={{ value: styles.additionalApyStat }}
-        valueType={VALUES_TYPES.PERCENT}
-      />
-      <StatInfo
-        label="Interest"
-        value={interest}
-        classNamesProps={{ value: styles.additionalInterestStat }}
-      />
+      <div className={styles.additionalStat}>
+        <div className={styles.additionalStatLabel}>Lend</div>
+        <div className={styles.additionalStatValues}>
+          {createSolValueJSX(lent, 1e9, '0◎')}
+          <span>
+            {totalLoans}/{totalLoans} loans
+          </span>
+        </div>
+      </div>
+      <div className={styles.additionalStat}>
+        <div className={styles.additionalStatLabel}>Repaid</div>
+        <div className={styles.additionalStatValues}>{createSolValueJSX(repaid, 1e9, '0◎')}</div>
+      </div>
+      <div className={styles.additionalStat}>
+        <div className={styles.additionalStatLabel}>Claim</div>
+        <div className={styles.additionalStatValues}>
+          {createSolValueJSX(claim, 1e9, '0◎')}
+          <span className={styles.ltvValue}>{createPercentValueJSX(apy, '0%')} LTV</span>
+        </div>
+      </div>
+      <div className={styles.additionalStat}>
+        <div className={styles.additionalStatLabel}>Interest</div>
+        <div className={classNames(styles.additionalStatValues, styles.interestValues)}>
+          {createSolValueJSX(interest, 1e9, '0◎')}
+          <span>{createPercentValueJSX(apy, '0%')} APY</span>
+        </div>
+      </div>
     </div>
   )
 }
