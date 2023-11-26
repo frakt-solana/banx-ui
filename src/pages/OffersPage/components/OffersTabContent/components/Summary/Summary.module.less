@@ -1,0 +1,74 @@
+.summaryContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid var(--bg-border);
+  gap: 16px;
+  width: 100%;
+}
+
+.summaryWrapper {
+  display: flex;
+  align-items: center;
+  gap: 64px;
+  width: 100%;
+
+  @media (max-width: 960px) {
+    gap: 16px;
+  }
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  white-space: nowrap;
+
+  @media (max-width: 960px) {
+    flex-direction: column;
+    width: 100%;
+  }
+}
+.loansContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.loansValueText {
+  font: var(--important-text-xll);
+
+  @media (max-width: 960px) {
+    display: none;
+  }
+}
+.loansInfoContainer {
+  display: flex;
+  flex-direction: column;
+  color: var(--content-secondary);
+  font: var(--table-header-md);
+  text-transform: uppercase;
+
+  .value {
+    color: var(--content-primary);
+  }
+
+  @media (max-width: 960px) {
+    & > div {
+      text-align: center;
+    }
+  }
+}
+
+.summaryButton {
+  width: 128px;
+
+  @media (max-width: 960px) {
+    width: 100%;
+  }
+}
+
+.terminateButton {
+  background: var(--additional-lava-secondary) !important;
+  border-color: var(--additional-lava-primary) !important;
+}

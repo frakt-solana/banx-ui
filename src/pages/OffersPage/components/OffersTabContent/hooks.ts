@@ -40,7 +40,7 @@ type SearchSelectOption = {
 }
 
 export const useOffersTabContent = () => {
-  const { data } = useLenderLoansAndOffers()
+  const { data, isLoading } = useLenderLoansAndOffers()
 
   const [selectedOffers, setSelectedOffers] = useState<string[]>([])
   const { sortParams } = useSortedOffers(data.map(({ offer }) => offer))
@@ -69,10 +69,14 @@ export const useOffersTabContent = () => {
     onChange: setSelectedOffers,
   }
 
+  const showEmptyList = !isLoading && !data.length
+
   return {
     data,
+    isLoading,
     searchSelectParams,
     sortParams,
+    showEmptyList,
   }
 }
 
