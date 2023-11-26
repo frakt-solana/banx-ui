@@ -7,7 +7,7 @@ import { Button } from '@banx/components/Buttons'
 import { CollectionMeta, Loan, Offer } from '@banx/api/core'
 import { ChevronDown } from '@banx/icons'
 
-import ActiveOffersTable from '../ActiveOffersTable/ActiveOffersTable'
+import ActiveOffersTable from '../ActiveOffersTable/ActiveLoansTable'
 import { AdditionalOfferOverview, MainOfferOverview } from './components'
 
 import styles from './OfferCard.module.less'

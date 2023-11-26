@@ -15,7 +15,7 @@ import {
   isLoanLiquidated,
 } from '@banx/utils'
 
-import styles from '../ActiveOffersTable.module.less'
+import styles from '../ActiveLoansTable.module.less'
 
 interface StatusCellProps {
   loan: Loan

@@ -1,1 +1,1 @@
-export { default } from './ActiveOffersTable'
+export { default } from './ActiveLoansTable'

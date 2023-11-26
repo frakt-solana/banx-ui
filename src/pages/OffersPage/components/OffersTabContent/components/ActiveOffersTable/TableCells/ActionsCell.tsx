@@ -15,7 +15,7 @@ import {
 import { findBestOffer } from '../helpers'
 import { useHiddenNftsMints, useLendLoansTransactions, useOptimisticOffers } from '../hooks'
 
-import styles from '../ActiveOffersTable.module.less'
+import styles from '../ActiveLoansTable.module.less'
 
 interface ActionsCellProps {
   loan: Loan

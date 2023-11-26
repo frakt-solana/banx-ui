@@ -3,7 +3,7 @@ import { FC } from 'react'
 import { Loan } from '@banx/api/core'
 import { HealthColorDecreasing, convertAprToApy, getColorByPercent } from '@banx/utils'
 
-import styles from '../ActiveOffersTable.module.less'
+import styles from '../ActiveLoansTable.module.less'
 
 interface APRCellProps {
   loan: Loan

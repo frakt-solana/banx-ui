@@ -17,6 +17,8 @@ const OffersTabContent = () => {
     showEmptyList,
   } = useOffersTabContent()
 
+
+
   return (
     <div className={styles.content}>
       {isLoading && <Loader />}
