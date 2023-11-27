@@ -26,11 +26,11 @@ const PlaceProOffer: FC<OfferParams> = (offerParams) => {
     disablePlaceOffer,
     disableUpdateOffer,
     showBorrowerMessage,
-    showDepositError,
     onCreateOffer,
     onUpdateOffer,
     onClaimOfferInterest,
     onRemoveOffer,
+    offerErrorMessage,
   } = usePlaceProOffer(offerParams)
 
   return (
@@ -57,7 +57,7 @@ const PlaceProOffer: FC<OfferParams> = (offerParams) => {
         />
       </div>
       <div className={styles.messageContainer}>
-        {showDepositError && <InputErrorMessage message="Not enough SOL" />}
+        {offerErrorMessage && <InputErrorMessage message={offerErrorMessage} />}
         {showBorrowerMessage && <BorrowerMessage loanValue={loanValue} />}
       </div>
       <OfferSummary

@@ -1,12 +1,15 @@
 import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import { isEmpty } from 'lodash'
 
 import { useSolanaBalance } from '@banx/utils'
 
-import { getUpdatedBondOffer, shouldShowDepositError } from '../../helpers'
+import { calculateBestLoanValue } from '../../PlaceLiteOffer/helpers'
+import { getUpdatedBondOffer } from '../../helpers'
 import { OfferParams } from '../../hooks'
 import { useOfferTransactions } from '../../hooks/useOfferTransactions'
+import { getOfferErrorMessage } from '../helpers'
 import { useOfferFormController } from './useOfferFormController'
 
 export const usePlaceProOffer = ({
@@ -62,6 +65,16 @@ export const usePlaceProOffer = ({
   }, [syntheticOffer, deltaValueNumber, loanValueNumber, loansAmountNumber])
 
   useEffect(() => {
+    const hasSolanaBalance = !!solanaBalance
+    const isNotEditMode = !syntheticOffer.isEdit
+
+    if (hasSolanaBalance && isNotEditMode && connected && !isEmpty(marketPreview)) {
+      const bestLoanValue = calculateBestLoanValue(solanaBalance, marketPreview.bestOffer)
+      onLoanValueChange(bestLoanValue)
+    }
+  }, [marketPreview, connected, solanaBalance, syntheticOffer, onLoanValueChange])
+
+  useEffect(() => {
     if (loansAmountNumber || loanValueNumber || deltaValueNumber) {
       if (!syntheticOffer) return
       const formattedLoanValue = loanValueNumber * 1e9
@@ -76,25 +89,19 @@ export const usePlaceProOffer = ({
     }
   }, [loansAmountNumber, deltaValueNumber, loanValueNumber, syntheticOffer, setSyntheticOffer])
 
-  const showDepositError = shouldShowDepositError({
-    initialLoansAmount: syntheticOffer.loansAmount,
-    initialLoanValue: syntheticOffer.loanValue,
-    offerSize: offerSize,
-    solanaBalance,
-  })
+  const offerErrorMessage = getOfferErrorMessage({ syntheticOffer, solanaBalance, offerSize })
 
-  const showBorrowerMessage = !showDepositError && !!offerSize
-  const disablePlaceOffer = connected ? showDepositError || !offerSize : false
-  const disableUpdateOffer = !hasFormChanges || showDepositError || !offerSize
+  const showBorrowerMessage = !offerErrorMessage && !!offerSize
+  const disablePlaceOffer = !!offerErrorMessage || !offerSize
+  const disableUpdateOffer = !hasFormChanges || !!offerErrorMessage || !offerSize
 
   return {
     isEditMode: syntheticOffer.isEdit,
 
-    offerSize,
-
     loanValue,
     loansAmount,
     deltaValue,
+    offerSize,
 
     onDeltaValueChange,
     onLoanValueChange,
@@ -103,7 +110,7 @@ export const usePlaceProOffer = ({
     disablePlaceOffer,
     disableUpdateOffer,
     showBorrowerMessage,
-    showDepositError,
+    offerErrorMessage,
 
     onCreateOffer,
     onUpdateOffer,

@@ -8,7 +8,7 @@ export const useOfferFormController = (syntheticOffer: SyntheticOffer) => {
   const initialValues = useMemo(() => {
     return {
       loanValue: syntheticLoanValue ? (syntheticLoanValue / 1e9).toFixed(2) : '0',
-      loansAmount: String(syntheticLoansAmount),
+      loansAmount: syntheticLoansAmount ? String(syntheticLoansAmount) : '1',
     }
   }, [syntheticLoanValue, syntheticLoansAmount])
 
