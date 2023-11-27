@@ -32,7 +32,7 @@ export const usePlaceLiteOffer = ({
     onLoanAmountChange,
     hasFormChanges,
     resetFormValues,
-  } = useOfferFormController(syntheticOffer?.loanValue / 1e9, syntheticOffer?.loansAmount)
+  } = useOfferFormController(syntheticOffer)
 
   const loanValueNumber = parseFloat(loanValue)
   const loansAmountNumber = parseFloat(loansAmount)
