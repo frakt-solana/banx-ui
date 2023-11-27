@@ -9,22 +9,19 @@ import { BondOfferV2, BondingCurveType } from 'fbonds-core/lib/fbond-protocol/ty
 import { Offer } from '@banx/api/core'
 import { SyntheticOffer } from '@banx/store'
 
-type CalculateOfferSize = (props: {
-  loanValue: number //? normal number
-  deltaValue: number //? normal number
+type GetUpdatedBondOffer = (props: {
+  loanValue: number //? lamports
+  deltaValue: number //? lamports
   loansQuantity: number //? integer number
   syntheticOffer: SyntheticOffer
 }) => BondOfferV2
 
-export const getUpdatedBondOffer: CalculateOfferSize = ({
+export const getUpdatedBondOffer: GetUpdatedBondOffer = ({
   loanValue,
   deltaValue,
   loansQuantity,
   syntheticOffer,
 }) => {
-  const deltaValueInLamports = deltaValue * 1e9
-  const loanValueInLamports = loanValue * 1e9
-
   const initializedOffer = optimisticInitializeBondOfferBonding({
     bondingType: BondingCurveType.Linear,
     hadoMarket: syntheticOffer.marketPubkey,
@@ -34,31 +31,53 @@ export const getUpdatedBondOffer: CalculateOfferSize = ({
 
   const updatedBondOffer = optimisticUpdateBondOfferBonding({
     bondOffer: initializedOffer,
-    newLoanValue: loanValueInLamports,
-    newDelta: deltaValueInLamports,
+    newLoanValue: loanValue,
+    newDelta: deltaValue,
     newQuantityOfLoans: loansQuantity,
   })
 
   return updatedBondOffer
 }
 
-type ShouldShowDepositError = (props: {
-  initialLoanValue?: number
-  initialLoansAmount?: number
+type GetCreateOfferErrorMessage = (props: {
+  syntheticOffer: SyntheticOffer
   solanaBalance: number
   offerSize: number
-}) => boolean
+  loanValue: number
+  loansAmount: number
+  deltaValue: number
+}) => string
 
-export const shouldShowDepositError: ShouldShowDepositError = ({
-  initialLoanValue = 0,
-  initialLoansAmount = 0,
+const ERROR_MESSAGES = {
+  insufficientBalance: 'Insufficient balance. Please deposit more SOL.',
+  invalidOffer: 'Invalid offer. The offer size is too high.',
+}
+
+export const getOfferErrorMessage: GetCreateOfferErrorMessage = ({
   solanaBalance,
   offerSize,
+  loanValue,
+  loansAmount,
+  deltaValue,
+  syntheticOffer,
 }) => {
-  const initialOfferSize = initialLoansAmount * initialLoanValue
-  const totalAvailableFunds = initialOfferSize + solanaBalance * 1e9
+  const initialOfferSize = calculateOfferSize({
+    syntheticOffer,
+    deltaValue: syntheticOffer.deltaValue / 1e9,
+    loanValue: syntheticOffer.loanValue / 1e9,
+    loansQuantity: syntheticOffer.loansAmount,
+  })
 
-  return totalAvailableFunds < offerSize
+  const totalFundsAvailable = initialOfferSize + solanaBalance * 1e9
+  const isBalanceInsufficient = offerSize > totalFundsAvailable
+
+  const isOfferInvalid = deltaValue ? deltaValue * loansAmount > loanValue : false
+
+  return (
+    (isBalanceInsufficient && ERROR_MESSAGES.insufficientBalance) ||
+    (isOfferInvalid && ERROR_MESSAGES.invalidOffer) ||
+    ''
+  )
 }
 
 export const getAdditionalSummaryOfferInfo = (offer?: Offer) => {
@@ -73,3 +92,29 @@ export const getAdditionalSummaryOfferInfo = (offer?: Offer) => {
 
 export const checkIsEditMode = (offerPubkey: string) =>
   !!offerPubkey && offerPubkey !== PUBKEY_PLACEHOLDER
+
+type CalculateOfferSize = (props: {
+  syntheticOffer: SyntheticOffer
+  loanValue: number //? normal number
+  deltaValue: number //? normal number
+  loansQuantity: number
+}) => number
+export const calculateOfferSize: CalculateOfferSize = ({
+  syntheticOffer,
+  loanValue,
+  loansQuantity,
+  deltaValue,
+}) => {
+  const formattedDeltaValue = deltaValue * 1e9
+  const formattedLoanValue = loanValue * 1e9
+
+  const updatedBondOffer = getUpdatedBondOffer({
+    loanValue: formattedLoanValue,
+    deltaValue: formattedDeltaValue,
+    loansQuantity,
+    syntheticOffer,
+  })
+
+  const offerSize = updatedBondOffer.fundsSolOrTokenBalance
+  return offerSize
+}

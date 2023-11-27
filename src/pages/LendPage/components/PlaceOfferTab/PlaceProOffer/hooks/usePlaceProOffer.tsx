@@ -6,10 +6,9 @@ import { isEmpty } from 'lodash'
 import { useSolanaBalance } from '@banx/utils'
 
 import { calculateBestLoanValue } from '../../PlaceLiteOffer/helpers'
-import { getUpdatedBondOffer } from '../../helpers'
+import { calculateOfferSize, getOfferErrorMessage } from '../../helpers'
 import { OfferParams } from '../../hooks'
 import { useOfferTransactions } from '../../hooks/useOfferTransactions'
-import { getOfferErrorMessage } from '../helpers'
 import { useOfferFormController } from './useOfferFormController'
 
 export const usePlaceProOffer = ({
@@ -55,14 +54,13 @@ export const usePlaceProOffer = ({
     })
 
   const offerSize = useMemo(() => {
-    const updatedBondOffer = getUpdatedBondOffer({
-      loanValue: loanValueNumber,
-      deltaValue: deltaValueNumber,
-      loansQuantity: loansAmountNumber,
+    return calculateOfferSize({
       syntheticOffer,
+      loanValue: loanValueNumber,
+      loansQuantity: loansAmountNumber,
+      deltaValue: deltaValueNumber,
     })
-    return updatedBondOffer.fundsSolOrTokenBalance
-  }, [syntheticOffer, deltaValueNumber, loanValueNumber, loansAmountNumber])
+  }, [syntheticOffer, loanValueNumber, loansAmountNumber, deltaValueNumber])
 
   useEffect(() => {
     const hasSolanaBalance = !!solanaBalance
@@ -89,7 +87,14 @@ export const usePlaceProOffer = ({
     }
   }, [loansAmountNumber, deltaValueNumber, loanValueNumber, syntheticOffer, setSyntheticOffer])
 
-  const offerErrorMessage = getOfferErrorMessage({ syntheticOffer, solanaBalance, offerSize })
+  const offerErrorMessage = getOfferErrorMessage({
+    syntheticOffer,
+    solanaBalance,
+    offerSize,
+    loanValue: loanValueNumber,
+    loansAmount: loansAmountNumber,
+    deltaValue: deltaValueNumber,
+  })
 
   const showBorrowerMessage = !offerErrorMessage && !!offerSize
   const disablePlaceOffer = !!offerErrorMessage || !offerSize

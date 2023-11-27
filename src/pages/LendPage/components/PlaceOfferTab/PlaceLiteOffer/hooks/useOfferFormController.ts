@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { SyntheticOffer } from '@banx/store'
+import { formatLoansAmount } from '@banx/utils'
 
 export const useOfferFormController = (syntheticOffer: SyntheticOffer) => {
   const { loanValue: syntheticLoanValue, loansAmount: syntheticLoansAmount } = syntheticOffer
@@ -8,7 +9,7 @@ export const useOfferFormController = (syntheticOffer: SyntheticOffer) => {
   const initialValues = useMemo(() => {
     return {
       loanValue: syntheticLoanValue ? (syntheticLoanValue / 1e9).toFixed(2) : '0',
-      loansAmount: syntheticLoansAmount ? String(syntheticLoansAmount) : '1',
+      loansAmount: formatLoansAmount(syntheticLoansAmount),
     }
   }, [syntheticLoanValue, syntheticLoansAmount])
 

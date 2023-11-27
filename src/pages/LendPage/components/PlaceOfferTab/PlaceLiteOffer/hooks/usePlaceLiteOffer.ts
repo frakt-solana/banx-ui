@@ -5,7 +5,7 @@ import { isEmpty } from 'lodash'
 
 import { useSolanaBalance } from '@banx/utils'
 
-import { getUpdatedBondOffer, shouldShowDepositError } from '../../helpers'
+import { calculateOfferSize, getOfferErrorMessage } from '../../helpers'
 import { OfferParams } from '../../hooks'
 import { useOfferTransactions } from '../../hooks/useOfferTransactions'
 import { calcLoanToValuePercentage, calculateBestLoanValue } from '../helpers'
@@ -73,27 +73,26 @@ export const usePlaceLiteOffer = ({
     })
 
   const offerSize = useMemo(() => {
-    const formattedDeltaValue = syntheticOffer.deltaValue / 1e9
-
-    const updatedBondOffer = getUpdatedBondOffer({
+    return calculateOfferSize({
+      syntheticOffer,
       loanValue: loanValueNumber,
       loansQuantity: loansAmountNumber,
-      deltaValue: formattedDeltaValue,
-      syntheticOffer,
+      deltaValue: 0,
     })
-    return updatedBondOffer.fundsSolOrTokenBalance
   }, [syntheticOffer, loanValueNumber, loansAmountNumber])
 
-  const showDepositError = shouldShowDepositError({
-    initialLoansAmount: syntheticOffer.loansAmount,
-    initialLoanValue: syntheticOffer.loanValue,
+  const offerErrorMessage = getOfferErrorMessage({
+    syntheticOffer,
     solanaBalance,
     offerSize,
+    loanValue: loanValueNumber,
+    loansAmount: loansAmountNumber,
+    deltaValue: 0,
   })
 
-  const showBorrowerMessage = !showDepositError && !!offerSize
-  const disablePlaceOffer = connected ? showDepositError || !offerSize : false
-  const disableUpdateOffer = !hasFormChanges || showDepositError || !offerSize
+  const showBorrowerMessage = !offerErrorMessage && !!offerSize
+  const disablePlaceOffer = !!offerErrorMessage || !offerSize
+  const disableUpdateOffer = !hasFormChanges || !!offerErrorMessage || !offerSize
 
   const loanToValuePercent = calcLoanToValuePercentage(loanValue, marketPreview)
 
@@ -108,8 +107,8 @@ export const usePlaceLiteOffer = ({
     onLoanValueChange,
     onLoanAmountChange,
 
-    showDepositError: showDepositError && connected,
     showBorrowerMessage,
+    offerErrorMessage,
 
     disableUpdateOffer,
     disablePlaceOffer,

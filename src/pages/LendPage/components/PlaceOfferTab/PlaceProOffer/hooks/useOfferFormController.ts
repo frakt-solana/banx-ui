@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { SyntheticOffer } from '@banx/store'
+import { formatLoansAmount } from '@banx/utils'
 
 export const useOfferFormController = (syntheticOffer: SyntheticOffer) => {
   const {
@@ -13,7 +14,7 @@ export const useOfferFormController = (syntheticOffer: SyntheticOffer) => {
     return {
       deltaValue: formatNumber(syntheticDeltaValue / 1e9, '0.1'),
       loanValue: formatNumber(syntheticLoanValue / 1e9),
-      loansAmount: String(syntheticLoansAmount),
+      loansAmount: formatLoansAmount(syntheticLoansAmount),
     }
   }, [syntheticLoanValue, syntheticLoansAmount, syntheticDeltaValue])
 
