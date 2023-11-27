@@ -17,7 +17,6 @@ const PlaceProOffer: FC<OfferParams> = (offerParams) => {
   const {
     isEditMode,
     offerSize,
-    marketApr,
     loansAmount,
     loanValue,
     deltaValue,
@@ -65,7 +64,8 @@ const PlaceProOffer: FC<OfferParams> = (offerParams) => {
         offer={offerParams.optimisticOffer}
         isEditMode={isEditMode}
         offerSize={offerSize}
-        marketApr={marketApr}
+        market={offerParams.marketPreview}
+        loansAmount={parseFloat(loansAmount)}
       />
       <OfferActionButtons
         isEditMode={isEditMode}

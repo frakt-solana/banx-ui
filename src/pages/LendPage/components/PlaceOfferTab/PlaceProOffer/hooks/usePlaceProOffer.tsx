@@ -91,7 +91,6 @@ export const usePlaceProOffer = ({
     isEditMode: syntheticOffer.isEdit,
 
     offerSize,
-    marketApr: marketPreview?.marketApr || 0,
 
     loanValue,
     loansAmount,

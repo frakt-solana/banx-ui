@@ -62,12 +62,12 @@ export const shouldShowDepositError: ShouldShowDepositError = ({
 }
 
 export const getAdditionalSummaryOfferInfo = (offer?: Offer) => {
-  const { concentrationIndex = 0, edgeSettlement = 0, buyOrdersQuantity = 0 } = offer || {}
+  const { concentrationIndex = 0, bidSettlement = 0, buyOrdersQuantity = 0 } = offer || {}
 
   return {
-    accruedInterest: concentrationIndex / 1e9,
-    reserve: edgeSettlement / 1e9,
-    loansQuantity: buyOrdersQuantity,
+    accruedInterest: concentrationIndex,
+    reserve: bidSettlement,
+    activeLoansQuantity: buyOrdersQuantity, //TODO: need calc this value from BE
   }
 }
 

@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
-import { Offer } from '@banx/api/core'
+import { MarketPreview, Offer } from '@banx/api/core'
 import { WEEKS_IN_YEAR } from '@banx/constants'
 import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
 
@@ -12,32 +12,32 @@ import styles from './PlaceProOffer.module.less'
 
 interface OfferSummaryProps {
   offerSize: number
-  marketApr: number //? rateBasePoints
   isEditMode: boolean
   offer: Offer | undefined
+  market?: MarketPreview
+  loansAmount: number
 }
-
-//TODO: Need to calc in the future
-const MOCK_WEIGHTED_LTV = 50
 
 export const OfferSummary: FC<OfferSummaryProps> = ({
   offer,
   offerSize,
-  marketApr,
   isEditMode,
+  market,
+  loansAmount,
 }) => {
-  const formattedOfferSize = offerSize / 1e9
-  const weightedWeeklyInterest = calculateWeightedWeeklyInterest(offerSize, marketApr)
+  const { collectionFloor = 0, marketApr = 0 } = market || {}
 
-  const colorLTV = getColorByPercent(MOCK_WEIGHTED_LTV, HealthColorIncreasing)
+  const { accruedInterest, reserve, activeLoansQuantity } = getAdditionalSummaryOfferInfo(offer)
 
-  const { accruedInterest, reserve, loansQuantity } = getAdditionalSummaryOfferInfo(offer)
+  const weeklyInterest = calculateWeeklyInterest(offerSize, marketApr)
+  const weightedLtv = (offerSize / loansAmount / collectionFloor) * 100
+  const colorLTV = getColorByPercent(weightedLtv, HealthColorIncreasing)
 
   return (
     <div className={styles.offerSummary}>
       <StatInfo
         label="Weighted LTV"
-        value={MOCK_WEIGHTED_LTV}
+        value={weightedLtv || 0}
         valueStyles={{ color: colorLTV }}
         flexType="row"
         tooltipText="Weighted LTV"
@@ -45,21 +45,21 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
       />
       <StatInfo
         label="Offer size"
-        value={`${formatDecimal(formattedOfferSize)}◎`}
+        value={`${formatDecimal(offerSize / 1e9)}◎`}
         flexType="row"
         valueType={VALUES_TYPES.STRING}
       />
       <StatInfo
         flexType="row"
         label="Weighted weekly interest"
-        value={`${formatDecimal(weightedWeeklyInterest)}◎`}
+        value={`${formatDecimal(weeklyInterest / 1e9)}◎`}
         valueType={VALUES_TYPES.STRING}
       />
       {isEditMode && (
         <div className={styles.editOfferSummary}>
           <StatInfo
             label="Active loans"
-            value={`${loansQuantity} / ${loansQuantity}`}
+            value={`${activeLoansQuantity} / ${activeLoansQuantity}`}
             valueType={VALUES_TYPES.STRING}
           />
           <StatInfo label="Reserve" value={reserve} tooltipText="Reserve" divider={1e9} />
@@ -70,9 +70,9 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
   )
 }
 
-const calculateWeightedWeeklyInterest = (offerSize: number, marketApr: number) => {
+const calculateWeeklyInterest = (offerSize: number, marketApr: number) => {
   const weeklyAprPercentage = marketApr / 100 / WEEKS_IN_YEAR
   const weightedWeeklyInterest = (offerSize * weeklyAprPercentage) / 100
 
-  return weightedWeeklyInterest / 1e9
+  return weightedWeeklyInterest
 }
