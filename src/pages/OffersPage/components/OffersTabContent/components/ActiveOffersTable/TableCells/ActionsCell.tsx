@@ -12,8 +12,9 @@ import {
   trackPageEvent,
 } from '@banx/utils'
 
+import { useHiddenNftsMints, useOptimisticOffers } from '../../../hooks'
 import { findBestOffer } from '../helpers'
-import { useHiddenNftsMints, useLendLoansTransactions, useOptimisticOffers } from '../hooks'
+import { useLendLoansTransactions } from '../hooks'
 
 import styles from '../ActiveLoansTable.module.less'
 

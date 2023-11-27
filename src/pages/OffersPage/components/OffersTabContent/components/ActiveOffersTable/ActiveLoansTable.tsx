@@ -7,8 +7,8 @@ import { Loan } from '@banx/api/core'
 import { isLoanLiquidated, isLoanTerminating } from '@banx/utils'
 
 import { EMPTY_LOANS_MESSAGE } from '../../constants'
+import { useLenderLoansAndOffers } from '../../hooks'
 import { getTableColumns } from './columns'
-import { useLenderLoansAndOffers } from './hooks'
 
 import styles from './ActiveLoansTable.module.less'
 
