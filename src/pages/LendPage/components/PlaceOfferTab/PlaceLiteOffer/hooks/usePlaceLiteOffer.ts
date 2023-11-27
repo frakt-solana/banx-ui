@@ -3,12 +3,12 @@ import { useEffect, useMemo } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { isEmpty } from 'lodash'
 
-import { useSolanaBalance } from '@banx/utils'
+import { formatDecimal, useSolanaBalance } from '@banx/utils'
 
-import { calculateOfferSize, getOfferErrorMessage } from '../../helpers'
+import { calculateBestLoanValue, calculateOfferSize, getOfferErrorMessage } from '../../helpers'
 import { OfferParams } from '../../hooks'
 import { useOfferTransactions } from '../../hooks/useOfferTransactions'
-import { calcLoanToValuePercentage, calculateBestLoanValue } from '../helpers'
+import { calcLoanToValuePercentage } from '../helpers'
 import { useOfferFormController } from './useOfferFormController'
 
 export const usePlaceLiteOffer = ({
@@ -43,8 +43,7 @@ export const usePlaceLiteOffer = ({
 
     if (hasSolanaBalance && isNotEditMode && connected && !isEmpty(marketPreview)) {
       const bestLoanValue = calculateBestLoanValue(solanaBalance, marketPreview.bestOffer)
-
-      onLoanValueChange(bestLoanValue)
+      onLoanValueChange(formatDecimal(bestLoanValue))
     }
   }, [marketPreview, connected, solanaBalance, syntheticOffer, onLoanValueChange])
 
