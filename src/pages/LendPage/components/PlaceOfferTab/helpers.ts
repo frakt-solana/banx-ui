@@ -5,6 +5,7 @@ import {
   optimisticUpdateBondOfferBonding,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV2, BondingCurveType } from 'fbonds-core/lib/fbond-protocol/types'
+import { chain } from 'lodash'
 
 import { Offer } from '@banx/api/core'
 import { SyntheticOffer } from '@banx/store'
@@ -49,8 +50,10 @@ type GetCreateOfferErrorMessage = (props: {
 }) => string
 
 const ERROR_MESSAGES = {
-  insufficientBalance: 'Insufficient balance. Please deposit more SOL.',
-  invalidOffer: 'Invalid offer. The offer size is too high.',
+  INSUFFICIENT_BALANCE: 'Insufficient balance. Please deposit more SOL.',
+  INVALID_OFFER: 'Invalid offer. The offer size is too high.',
+  EMPTY_OFFER_VALUE: 'Please enter a valid offer size. The offer size cannot be empty.',
+  EMPTY_LOANS_AMOUNT: 'Please enter a valid number of loans. The loans amount cannot be empty.',
 }
 
 export const getOfferErrorMessage: GetCreateOfferErrorMessage = ({
@@ -73,11 +76,19 @@ export const getOfferErrorMessage: GetCreateOfferErrorMessage = ({
 
   const isOfferInvalid = deltaValue ? deltaValue * loansAmount > loanValue : false
 
-  return (
-    (isBalanceInsufficient && ERROR_MESSAGES.insufficientBalance) ||
-    (isOfferInvalid && ERROR_MESSAGES.invalidOffer) ||
-    ''
-  )
+  const errorConditions: Array<[boolean, string]> = [
+    [!loanValue, ERROR_MESSAGES.EMPTY_OFFER_VALUE],
+    [!loansAmount, ERROR_MESSAGES.EMPTY_LOANS_AMOUNT],
+    [isBalanceInsufficient, ERROR_MESSAGES.INSUFFICIENT_BALANCE],
+    [isOfferInvalid, ERROR_MESSAGES.INVALID_OFFER],
+  ]
+
+  const errorMessage = chain(errorConditions)
+    .find(([condition]) => condition)
+    .thru((error) => (error ? error[1] : ''))
+    .value() as string
+
+  return errorMessage
 }
 
 export const getAdditionalSummaryOfferInfo = (offer?: Offer) => {
