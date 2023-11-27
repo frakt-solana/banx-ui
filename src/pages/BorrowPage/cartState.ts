@@ -76,7 +76,9 @@ export const useCartState = create<CartState>((set, get) => ({
           //? set removable order
           const nftMintWithWorstOffer =
             Object.entries(state.offerByMint).find(
-              ([, offer]) => offer.publicKey === worstOfferWithSameMarket.publicKey,
+              ([, offer]) =>
+                offer.publicKey === worstOfferWithSameMarket.publicKey &&
+                offer.id === worstOfferWithSameMarket.id,
             )?.[0] || ''
 
           state.offerByMint[nftMintWithWorstOffer] = offerInCart

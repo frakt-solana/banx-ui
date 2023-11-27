@@ -43,6 +43,7 @@ export const useUserOffers = () => {
 
     const optimisticsToRemove = chain(optimisticOffers)
       .filter(({ offer }) => offer?.pairState !== PairState.PerpetualClosed)
+      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualBondingCurveClosed)
       .filter(({ offer }) => {
         const sameOfferFromBE = userOffers?.find(({ publicKey }) => publicKey === offer.publicKey)
         if (!sameOfferFromBE) return false
