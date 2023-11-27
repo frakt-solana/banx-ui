@@ -1,41 +1,48 @@
 import { useMemo, useState } from 'react'
 
-import { get, sortBy } from 'lodash'
+import { get, isFunction, sortBy, sumBy } from 'lodash'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
-import { Offer } from '@banx/api/core'
+import { LendLoansAndOffersV2 } from '@banx/api/core'
 
+import { caclulateClaimValue, calculateLentValue } from '../components/OfferCard/helpers'
 import { DEFAULT_SORT_OPTION, SORT_OPTIONS } from '../constants'
 
 enum SortField {
   CLAIM = 'claim',
+  LENT = 'lent',
+  OFFER = 'offer',
 }
 
-export const useSortedOffers = (offers: Offer[]) => {
+type SortValueGetter = (data: LendLoansAndOffersV2) => number
+
+export const useSortedData = (data: LendLoansAndOffersV2[]) => {
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
 
   const sortOptionValue = sortOption?.value
 
-  const sortedMarkets = useMemo(() => {
-    if (!sortOptionValue) return offers
+  const sortedData = useMemo(() => {
+    if (!sortOptionValue) return data
 
     const [name, order] = sortOptionValue.split('_')
 
-    const sortValueMapping: Record<SortField, string> = {
-      [SortField.CLAIM]: 'claim',
+    const sortValueMapping: Record<SortField, string | SortValueGetter> = {
+      [SortField.CLAIM]: ({ loans }) => sumBy(loans, caclulateClaimValue),
+      [SortField.LENT]: ({ loans }) => sumBy(loans, calculateLentValue),
+      [SortField.OFFER]: ({ offer }) => offer.currentSpotPrice,
     }
 
-    const sorted = sortBy(offers, (loan) => {
+    const sorted = sortBy(data, (item) => {
       const sortValue = sortValueMapping[name as SortField]
-      return get(loan, sortValue)
+      return isFunction(sortValue) ? sortValue(item) : get(item, sortValue)
     })
 
     return order === 'desc' ? sorted.reverse() : sorted
-  }, [sortOptionValue, offers])
+  }, [sortOptionValue, data])
 
   return {
-    sortedMarkets,
+    sortedData,
     sortParams: {
       option: sortOption,
       onChange: setSortOption,

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { sumBy } from 'lodash'
 
@@ -7,9 +7,10 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { formatDecimal } from '@banx/utils'
 
+import { isLoanAbleToClaim, isLoanAbleToTerminate } from '../components/ActiveOffersTable/helpers'
 import { caclulateClaimValue } from '../components/OfferCard/helpers'
 import { useLenderLoansAndOffers } from './useLenderLoansAndOffers'
-import { useSortedOffers } from './useSortedOffers'
+import { useSortedData } from './useSortedOffers'
 
 type SearchSelectOption = {
   collectionName: string
@@ -18,10 +19,27 @@ type SearchSelectOption = {
 }
 
 export const useOffersTabContent = () => {
-  const { data, loading: isLoading } = useLenderLoansAndOffers()
+  const {
+    data,
+    offers,
+    optimisticOffers,
+    loading: isLoading,
+    addMints,
+    updateOrAddLoan,
+  } = useLenderLoansAndOffers()
 
   const [selectedOffers, setSelectedOffers] = useState<string[]>([])
-  const { sortParams } = useSortedOffers(data.map(({ offer }) => offer))
+
+  const filteredData = useMemo(() => {
+    if (selectedOffers.length) {
+      return data.filter(({ collectionMeta }) =>
+        selectedOffers.includes(collectionMeta.collectionName),
+      )
+    }
+    return data
+  }, [data, selectedOffers])
+
+  const { sortedData, sortParams } = useSortedData(filteredData)
 
   const searchSelectOptions = data.map(({ loans, collectionMeta }) => {
     return {
@@ -47,13 +65,31 @@ export const useOffersTabContent = () => {
     onChange: setSelectedOffers,
   }
 
+  const { loansToClaim, loansToTerminate } = useMemo(() => {
+    const flatLoans = data.flatMap((item) => item.loans)
+
+    if (!flatLoans.length) return { loansToClaim: [], loansToTerminate: [] }
+
+    const loansToClaim = flatLoans.filter(isLoanAbleToClaim)
+
+    const loansToTerminate = flatLoans.filter((loan) =>
+      isLoanAbleToTerminate({ loan, offers, optimisticOffers }),
+    )
+
+    return { loansToClaim, loansToTerminate }
+  }, [data, offers, optimisticOffers])
+
   const showEmptyList = !isLoading && !data.length
 
   return {
-    data,
+    data: sortedData,
     isLoading,
     searchSelectParams,
     sortParams,
     showEmptyList,
+    loansToClaim,
+    loansToTerminate,
+    addMints,
+    updateOrAddLoan,
   }
 }

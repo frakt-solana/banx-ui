@@ -15,6 +15,10 @@ const OffersTabContent = () => {
     searchSelectParams,
     sortParams,
     showEmptyList,
+    loansToClaim,
+    loansToTerminate,
+    addMints,
+    updateOrAddLoan,
   } = useOffersTabContent()
 
   if (showEmptyList) return <EmptyList message="Lend SOL to view your pending offers" />
@@ -34,10 +38,10 @@ const OffersTabContent = () => {
           </div>
 
           <Summary
-            updateOrAddLoan={() => null}
-            addMints={() => null}
-            loansToClaim={[]}
-            loansToTerminate={[]}
+            updateOrAddLoan={updateOrAddLoan}
+            addMints={addMints}
+            loansToClaim={loansToClaim}
+            loansToTerminate={loansToTerminate}
           />
         </>
       )}

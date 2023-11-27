@@ -1,6 +1,10 @@
 import { SortOption } from '@banx/components/SortDropdown'
 
-export const SORT_OPTIONS = [{ label: 'Claim', value: 'claim' }]
+export const SORT_OPTIONS = [
+  { label: 'Claim', value: 'claim' },
+  { label: 'Lent', value: 'lent' },
+  { label: 'Offer', value: 'offer' },
+]
 
 export const DEFAULT_SORT_OPTION: SortOption = {
   label: SORT_OPTIONS[0].label,
