@@ -1,37 +1,16 @@
 import { useMemo, useState } from 'react'
 
-import { useWallet } from '@solana/wallet-adapter-react'
-import { useQuery } from '@tanstack/react-query'
 import { get, sortBy, sumBy } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
-import { Offer, fetchLenderLoansAndOffersV2 } from '@banx/api/core'
+import { Offer } from '@banx/api/core'
 
+import { useLenderLoansAndOffers } from './components/ActiveOffersTable/hooks'
 import { caclulateClaimValue } from './components/OfferCard/helpers'
 import { DEFAULT_SORT_OPTION, SORT_OPTIONS } from './constants'
-
-export const useLenderLoansAndOffers = () => {
-  const { publicKey } = useWallet()
-  const publicKeyString = publicKey?.toBase58() || ''
-
-  const { data, isLoading } = useQuery(
-    ['lenderLoansAndOffers', publicKeyString],
-    () => fetchLenderLoansAndOffersV2({ walletPublicKey: publicKeyString }),
-    {
-      enabled: !!publicKeyString,
-      staleTime: 60 * 1000,
-      refetchOnWindowFocus: false,
-    },
-  )
-
-  return {
-    data: data ?? [],
-    isLoading,
-  }
-}
 
 type SearchSelectOption = {
   collectionName: string
@@ -40,7 +19,7 @@ type SearchSelectOption = {
 }
 
 export const useOffersTabContent = () => {
-  const { data, isLoading } = useLenderLoansAndOffers()
+  const { data, loading: isLoading } = useLenderLoansAndOffers()
 
   const [selectedOffers, setSelectedOffers] = useState<string[]>([])
   const { sortParams } = useSortedOffers(data.map(({ offer }) => offer))

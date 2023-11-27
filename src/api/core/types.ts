@@ -189,18 +189,7 @@ export const CollectionMetaSchema = z.object({
 
 export type CollectionMeta = z.infer<typeof CollectionMetaSchema>
 
-export const LendNftsAndOffersSchema = z.object({
-  nfts: LoanSchema.array(),
-  offers: z.record(PairSchema.array()),
-})
-export type LendLoansAndOffers = z.infer<typeof LendNftsAndOffersSchema>
-export interface LendLoansAndOffersResponse {
-  data: LendLoansAndOffers
-  meta: PaginationMeta
-}
-
 //# endpoint v2
-
 export const LendLoansAndOffersSchema = z.object({
   offer: PairSchema,
   loans: LoanSchema.array(),

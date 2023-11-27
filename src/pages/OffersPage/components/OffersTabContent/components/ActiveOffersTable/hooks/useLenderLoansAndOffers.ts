@@ -3,10 +3,10 @@ import { useMemo } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 import { produce } from 'immer'
-import { chain, maxBy } from 'lodash'
+import { chain, groupBy, maxBy } from 'lodash'
 import { create } from 'zustand'
 
-import { Loan, Offer, fetchLenderLoansAndOffers } from '@banx/api/core'
+import { Loan, Offer, fetchLenderLoansAndOffersV2 } from '@banx/api/core'
 
 interface HiddenNftsMintsState {
   mints: string[]
@@ -122,13 +122,12 @@ export const useLenderLoansAndOffers = () => {
   const { offers: optimisticOffers, findOffer, updateOffer, addOffer } = useOptimisticOffers()
 
   const { data, isLoading } = useQuery(
-    ['lenderLoans', publicKeyString],
-    () => fetchLenderLoansAndOffers({ walletPublicKey: publicKeyString }),
+    ['lenderLoansAndOffersV2', publicKeyString],
+    () => fetchLenderLoansAndOffersV2({ walletPublicKey: publicKeyString }),
     {
       enabled: !!publicKeyString,
-      staleTime: 5 * 1000,
       refetchOnWindowFocus: false,
-      refetchInterval: 15 * 1000,
+      refetchInterval: 30 * 1000,
     },
   )
 
@@ -137,20 +136,27 @@ export const useLenderLoansAndOffers = () => {
     return optimisticLoans.filter(({ wallet }) => wallet === publicKeyString)
   }, [optimisticLoans, publicKeyString])
 
-  const loans = useMemo(() => {
-    if (!data?.nfts) {
+  const processedData = useMemo(() => {
+    if (!data?.length) {
       return []
     }
 
-    const combinedLoans = [...data.nfts, ...walletOptimisticLoans.map(({ loan }) => loan)]
+    const newData = data.map((item) => {
+      const combinedLoans = [...item.loans, ...walletOptimisticLoans.map(({ loan }) => loan)]
 
-    const filteredLoans = chain(combinedLoans)
-      .groupBy('publicKey')
-      .map((offers) => maxBy(offers, 'fraktBond.lastTransactedAt'))
-      .compact()
-      .value()
+      const filteredLoans = chain(combinedLoans)
+        .groupBy('publicKey')
+        .map((offers) => maxBy(offers, 'fraktBond.lastTransactedAt'))
+        .compact()
+        .value()
 
-    return filteredLoans.filter((loan) => !mints.includes(loan.nft.mint))
+      return {
+        ...item,
+        loans: filteredLoans.filter((loan) => !mints.includes(loan.nft.mint)),
+      }
+    })
+
+    return newData
   }, [data, mints, walletOptimisticLoans])
 
   const updateOrAddLoan = (loan: Loan) => {
@@ -164,8 +170,8 @@ export const useLenderLoansAndOffers = () => {
   }
 
   return {
-    loans,
-    offers: data?.offers ?? {},
+    data: processedData,
+    offers: groupBy(processedData?.flatMap(({ offer }) => offer), 'publicKey') ?? {},
     loading: isLoading,
     optimisticOffers,
     updateOrAddOffer,
