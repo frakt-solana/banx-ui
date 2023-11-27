@@ -16,7 +16,6 @@ export const useOfferTransactions = ({
   loansAmount,
   loanValue,
   deltaValue = 0,
-  offerPubkey,
   optimisticOffer,
   updateOrAddOffer,
   resetFormValues,
@@ -26,7 +25,6 @@ export const useOfferTransactions = ({
   loansAmount: number
   loanValue: number
   deltaValue?: number
-  offerPubkey: string
   optimisticOffer?: Offer
   updateOrAddOffer: (offer: Offer) => void
   resetFormValues: () => void
@@ -64,7 +62,7 @@ export const useOfferTransactions = ({
   const onUpdateOffer = async () => {
     if (!optimisticOffer) return
 
-    const txnParam = { loanValue, offerPubkey, optimisticOffer, loansAmount, deltaValue }
+    const txnParam = { loanValue, optimisticOffer, loansAmount, deltaValue }
 
     await new TxnExecutor(makeUpdateBondingOfferAction, { wallet, connection })
       .addTxnParam(txnParam)
@@ -91,10 +89,8 @@ export const useOfferTransactions = ({
   const onRemoveOffer = () => {
     if (!optimisticOffer) return
 
-    const txnParam = { offerPubkey, optimisticOffer }
-
     new TxnExecutor(makeRemoveOfferAction, { wallet, connection })
-      .addTxnParam(txnParam)
+      .addTxnParam({ optimisticOffer })
       .on('pfSuccessEach', (results) => {
         const { result, txnHash } = results[0]
         result?.bondOffer && updateOrAddOffer(result.bondOffer)
@@ -108,7 +104,7 @@ export const useOfferTransactions = ({
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error, {
-          additionalData: txnParam,
+          additionalData: optimisticOffer,
           walletPubkey: wallet?.publicKey?.toBase58(),
           transactionName: 'RemoveOffer',
         })
@@ -119,10 +115,8 @@ export const useOfferTransactions = ({
   const onClaimOfferInterest = () => {
     if (!optimisticOffer) return
 
-    const txnParam = { offerPubkey, optimisticOffer }
-
     new TxnExecutor(makeClaimBondOfferInterestAction, { wallet, connection })
-      .addTxnParam(txnParam)
+      .addTxnParam({ optimisticOffer })
       .on('pfSuccessEach', (results) => {
         const { result, txnHash } = results[0]
         result?.bondOffer && updateOrAddOffer(result.bondOffer)
@@ -132,11 +126,10 @@ export const useOfferTransactions = ({
           type: 'success',
           solanaExplorerPath: `tx/${txnHash}`,
         })
-        exitEditMode()
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error, {
-          additionalData: txnParam,
+          additionalData: optimisticOffer,
           walletPubkey: wallet?.publicKey?.toBase58(),
           transactionName: 'ClaimOfferInterest',
         })

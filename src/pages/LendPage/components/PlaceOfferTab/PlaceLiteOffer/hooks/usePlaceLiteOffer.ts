@@ -12,7 +12,6 @@ import { calcLoanToValuePercentage } from '../helpers'
 import { useOfferFormController } from './useOfferFormController'
 
 export const usePlaceLiteOffer = ({
-  offerPubkey,
   exitEditMode,
   syntheticOffer,
   marketPreview,
@@ -62,7 +61,6 @@ export const usePlaceLiteOffer = ({
   const { onCreateOffer, onRemoveOffer, onUpdateOffer, onClaimOfferInterest } =
     useOfferTransactions({
       marketPubkey,
-      offerPubkey,
       loanValue: loanValueNumber,
       loansAmount: loansAmountNumber,
       optimisticOffer,

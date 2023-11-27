@@ -11,7 +11,6 @@ import { useOfferTransactions } from '../../hooks/useOfferTransactions'
 import { useOfferFormController } from './useOfferFormController'
 
 export const usePlaceProOffer = ({
-  offerPubkey,
   exitEditMode,
   syntheticOffer,
   marketPreview,
@@ -42,7 +41,6 @@ export const usePlaceProOffer = ({
   const { onCreateOffer, onUpdateOffer, onRemoveOffer, onClaimOfferInterest } =
     useOfferTransactions({
       marketPubkey,
-      offerPubkey,
       loanValue: loanValueNumber,
       loansAmount: loansAmountNumber,
       deltaValue: deltaValueNumber,

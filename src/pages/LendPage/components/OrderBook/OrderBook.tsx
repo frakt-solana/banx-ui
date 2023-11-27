@@ -4,7 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 
-import { MarketPreview } from '@banx/api/core'
+import { MarketPreview, Offer } from '@banx/api/core'
 
 import { OrderBookMarketParams } from '../ExpandableCardContent'
 import {
@@ -17,16 +17,25 @@ import { OrderBookParams, useOrderBook } from './hooks'
 
 import styles from './OrderBook.module.less'
 
-const MOCK_ACCRUED_INTEREST = 26
-const OrderBookDesktop: FC<{ orderBookParams: OrderBookParams }> = ({ orderBookParams }) => (
-  <div className={styles.orderBookWrapper}>
-    <div className={styles.orderBook}>
-      <OrderBookLabels />
-      <OrderBookList orderBookParams={orderBookParams} />
+const OrderBookDesktop: FC<{ orderBookParams: OrderBookParams }> = ({ orderBookParams }) => {
+  const { updateOrAddOffer, offers } = orderBookParams
+
+  const { publicKey } = useWallet()
+
+  const userOffers = useMemo(() => {
+    return getUserOffers(offers, publicKey?.toBase58())
+  }, [offers, publicKey])
+
+  return (
+    <div className={styles.orderBookWrapper}>
+      <div className={styles.orderBook}>
+        <OrderBookLabels />
+        <OrderBookList orderBookParams={orderBookParams} />
+      </div>
+      <AccruedInterest offers={userOffers} updateOrAddOffer={updateOrAddOffer} />
     </div>
-    <AccruedInterest value={MOCK_ACCRUED_INTEREST} />
-  </div>
-)
+  )
+}
 
 interface OrderBookMobileProps {
   marketPreview?: MarketPreview
@@ -34,6 +43,8 @@ interface OrderBookMobileProps {
 }
 
 const OrderBookMobile: FC<OrderBookMobileProps> = ({ marketPreview, orderBookParams }) => {
+  const { updateOrAddOffer, offers } = orderBookParams
+
   const { publicKey } = useWallet()
   const [isOrderBookOpen, setOrderBookOpen] = useState<boolean>(false)
 
@@ -41,23 +52,16 @@ const OrderBookMobile: FC<OrderBookMobileProps> = ({ marketPreview, orderBookPar
     setOrderBookOpen(!isOrderBookOpen)
   }
 
-  const totalUserOffers = useMemo(() => {
-    const isNotSynthetic = (publicKey: string) => publicKey !== PUBKEY_PLACEHOLDER
-    const isOwner = (assetReceiver: string) => assetReceiver === publicKey?.toBase58()
-
-    const filtered = orderBookParams.offers.filter(
-      ({ assetReceiver, publicKey }) => isOwner(assetReceiver) && isNotSynthetic(publicKey),
-    )
-
-    return filtered.length
-  }, [orderBookParams.offers, publicKey])
+  const userOffers = useMemo(() => {
+    return getUserOffers(offers, publicKey?.toBase58())
+  }, [offers, publicKey])
 
   return (
     <div className={classNames(styles.orderBookMobile, { [styles.open]: isOrderBookOpen })}>
       <CollapsedMobileContent
         collectionImage={marketPreview?.collectionImage}
         collectionName={marketPreview?.collectionName}
-        totalUserOffers={totalUserOffers}
+        totalUserOffers={userOffers.length}
         isOrderBookOpen={isOrderBookOpen}
         onToggleVisible={toggleOrderBook}
       />
@@ -69,7 +73,7 @@ const OrderBookMobile: FC<OrderBookMobileProps> = ({ marketPreview, orderBookPar
             orderBookParams={orderBookParams}
             closeOrderBook={() => setOrderBookOpen(false)}
           />
-          <AccruedInterest value={MOCK_ACCRUED_INTEREST} />
+          <AccruedInterest offers={userOffers} updateOrAddOffer={updateOrAddOffer} />
         </>
       )}
     </div>
@@ -88,3 +92,14 @@ const OrderBook: FC<OrderBookMarketParams> = (props) => {
 }
 
 export default OrderBook
+
+const getUserOffers = (offers: Offer[], walletPubkey = '') => {
+  const isNotSynthetic = (publicKey: string) => publicKey !== PUBKEY_PLACEHOLDER
+  const isOwner = (assetReceiver: string) => assetReceiver === walletPubkey
+
+  const userOffers = offers.filter(
+    ({ assetReceiver, publicKey }) => isOwner(assetReceiver) && isNotSynthetic(publicKey),
+  )
+
+  return userOffers
+}
