@@ -38,7 +38,7 @@ const ActiveLoansTable: FC<ActiveLoansTableProps> = ({ loans }) => {
     }
   }, [])
 
-  if (!loans.length) return <EmptyList message={EMPTY_LOANS_MESSAGE} />
+  if (!loans.length) return <EmptyList className={styles.emptyList} message={EMPTY_LOANS_MESSAGE} />
 
   return (
     <Table

@@ -17,20 +17,22 @@ const OffersTabContent = () => {
     showEmptyList,
   } = useOffersTabContent()
 
-
+  if (showEmptyList) return <EmptyList message="Lend SOL to view your pending offers" />
 
   return (
     <div className={styles.content}>
-      {isLoading && <Loader />}
-
-      {!isLoading && !!loansAndOffers.length && (
+      {isLoading ? (
+        <Loader />
+      ) : (
         <>
           <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
+
           <div className={styles.cardsList}>
             {loansAndOffers.map((data) => (
               <OfferCard key={data.offer.publicKey} {...data} />
             ))}
           </div>
+
           <Summary
             updateOrAddLoan={() => null}
             addMints={() => null}
@@ -39,8 +41,6 @@ const OffersTabContent = () => {
           />
         </>
       )}
-
-      {showEmptyList && <EmptyList message="Lend SOL to view your pending offers" />}
     </div>
   )
 }
