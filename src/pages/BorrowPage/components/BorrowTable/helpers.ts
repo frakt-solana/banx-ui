@@ -196,3 +196,15 @@ const mergeOffersWithLoanValue = (offers: OfferWithLoanValue[]): Offer | null =>
 
   return offer
 }
+type CalcAdjustedLoanValueByMaxByMarket = (props: {
+  loanValue: number
+  maxLoanValueOnMarket: number
+  ltv: number
+}) => number
+export const calcAdjustedLoanValueByMaxByMarket: CalcAdjustedLoanValueByMaxByMarket = ({
+  loanValue,
+  maxLoanValueOnMarket,
+  ltv,
+}) => {
+  return Math.min(loanValue, maxLoanValueOnMarket * (ltv / 100)) || 0
+}
