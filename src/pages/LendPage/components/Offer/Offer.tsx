@@ -8,7 +8,7 @@ import { Button } from '@banx/components/Buttons'
 
 import { Pencil } from '@banx/icons'
 import { SyntheticOffer } from '@banx/store'
-import { formatDecimal, formatLoansAmount } from '@banx/utils'
+import { formatDecimal } from '@banx/utils'
 
 import styles from './Offer.module.less'
 
@@ -41,17 +41,18 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, bestOffer }) => {
     [styles.highlightEditing]: isEdit,
   })
 
-  const displayLoanValue = formatDecimal(loanValue / 1e9)
-  const displayLoansAmount = formatLoansAmount(loansAmount)
-  const displayDeltaValue = deltaValue ? `| Δ${formatDecimal(deltaValue / 1e9)}◎` : ''
+  const formattedLoanValue = formatDecimal(loanValue / 1e9)
+  const formattedDeltaValue = formatDecimal(deltaValue / 1e9)
+
+  const displayOfferValue = deltaValue
+    ? `${formattedLoanValue}◎ | ∇ ${formattedDeltaValue}`
+    : formattedLoanValue
 
   return (
     <li className={listItemClassNames}>
       <div className={styles.valueWrapper}>
-        <p className={styles.value}>
-          {displayLoanValue} {displayDeltaValue}
-        </p>
-        <p className={styles.value}>{displayLoansAmount}</p>
+        <p className={styles.value}>{`${displayOfferValue}◎`}</p>
+        <p className={styles.value}>{loansAmount || 0}</p>
       </div>
       {isOwnOffer && !isNewOffer && editOffer && (
         <Button

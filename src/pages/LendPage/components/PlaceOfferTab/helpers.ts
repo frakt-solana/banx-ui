@@ -51,8 +51,8 @@ type GetCreateOfferErrorMessage = (props: {
 
 const ERROR_MESSAGES = {
   INSUFFICIENT_BALANCE: 'Insufficient balance. Please deposit more SOL.',
-  INVALID_OFFER: 'Invalid offer. The offer size is too high.',
-  EMPTY_LOANS_AMOUNT: 'Please enter a valid number of loans. The loans amount cannot be empty.',
+  INVALID_OFFER: 'Invalid offer. The initial offer is too low.',
+  EMPTY_LOANS_AMOUNT: 'Please enter a valid number of loans. The number of loans cannot be empty.',
 }
 
 export const getOfferErrorMessage: GetCreateOfferErrorMessage = ({
