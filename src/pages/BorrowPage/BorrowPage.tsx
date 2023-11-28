@@ -14,7 +14,7 @@ export const BorrowPage = () => {
 
   const { connected } = useWallet()
 
-  const { nfts, isLoading, rawOffers } = useBorrowNfts()
+  const { nfts, isLoading, rawOffers, maxLoanValueByMarket } = useBorrowNfts()
 
   const showEmptyList = !nfts?.length && !isLoading
 
@@ -22,7 +22,12 @@ export const BorrowPage = () => {
     <div className={styles.pageWrapper}>
       <BorrowHeader />
       {connected && !showEmptyList ? (
-        <BorrowTable nfts={nfts} isLoading={isLoading} rawOffers={rawOffers} />
+        <BorrowTable
+          nfts={nfts}
+          isLoading={isLoading}
+          rawOffers={rawOffers}
+          maxLoanValueByMarket={maxLoanValueByMarket}
+        />
       ) : (
         <NotConnectedTable />
       )}

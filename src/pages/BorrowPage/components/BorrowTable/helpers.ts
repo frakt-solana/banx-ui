@@ -23,22 +23,32 @@ import { enqueueSnackbar } from '@banx/utils'
 import { CartState } from '../../cartState'
 import { SimpleOffer } from '../../types'
 import { ONE_WEEK_IN_SECONDS } from './constants'
-import { OfferWithLoanValue } from './types'
+import { OfferWithLoanValue, TableNftData } from './types'
 
 export const createTableNftData = ({
   nfts,
   findOfferInCart,
   findBestOffer,
+  maxLoanValueByMarket,
+  ltv,
 }: {
   nfts: BorrowNft[]
   findOfferInCart: CartState['findOfferInCart']
   findBestOffer: CartState['findBestOffer']
+  maxLoanValueByMarket: Record<string, number>
+  ltv: number
 }) => {
   return nfts.map((nft) => {
     const offer = findOfferInCart({ mint: nft.mint })
 
-    const loanValue =
+    const maxloanValue =
       offer?.loanValue || findBestOffer({ marketPubkey: nft.loan.marketPubkey })?.loanValue || 0
+
+    const loanValue = calcAdjustedLoanValueByMaxByMarket({
+      loanValue: maxloanValue,
+      maxLoanValueOnMarket: maxLoanValueByMarket[nft.loan.marketPubkey] || 0,
+      ltv,
+    })
 
     const selected = !!offer
 
@@ -196,6 +206,7 @@ const mergeOffersWithLoanValue = (offers: OfferWithLoanValue[]): Offer | null =>
 
   return offer
 }
+
 type CalcAdjustedLoanValueByMaxByMarket = (props: {
   loanValue: number
   maxLoanValueOnMarket: number

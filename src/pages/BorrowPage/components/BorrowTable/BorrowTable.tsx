@@ -13,9 +13,15 @@ interface BorrowTableProps {
   nfts: BorrowNft[]
   isLoading: boolean
   rawOffers: Record<string, Offer[]>
+  maxLoanValueByMarket: Record<string, number>
 }
 
-const BorrowTable: FC<BorrowTableProps> = ({ nfts, isLoading, rawOffers }) => {
+const BorrowTable: FC<BorrowTableProps> = ({
+  nfts,
+  isLoading,
+  rawOffers,
+  maxLoanValueByMarket,
+}) => {
   const {
     tableNftData,
     columns,
@@ -28,6 +34,7 @@ const BorrowTable: FC<BorrowTableProps> = ({ nfts, isLoading, rawOffers }) => {
   } = useBorrowTable({
     nfts,
     rawOffers,
+    maxLoanValueByMarket,
   })
 
   const rowParams = useMemo(() => {
