@@ -277,6 +277,8 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
     nftsInCart,
     findOfferInCart,
     maxBorrowAmount,
+    ltv,
+    setLtv,
   }
 }
 
