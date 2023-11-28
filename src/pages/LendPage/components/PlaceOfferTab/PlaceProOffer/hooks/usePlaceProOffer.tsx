@@ -96,6 +96,7 @@ export const usePlaceProOffer = ({
   const showBorrowerMessage = !offerErrorMessage && !!offerSize
   const disablePlaceOffer = !!offerErrorMessage || !offerSize
   const disableUpdateOffer = !hasFormChanges || !!offerErrorMessage || !offerSize
+  const disableClaimInterest = !optimisticOffer?.concentrationIndex
 
   return {
     isEditMode: syntheticOffer.isEdit,
@@ -111,6 +112,7 @@ export const usePlaceProOffer = ({
 
     disablePlaceOffer,
     disableUpdateOffer,
+    disableClaimInterest,
     showBorrowerMessage,
     offerErrorMessage,
 

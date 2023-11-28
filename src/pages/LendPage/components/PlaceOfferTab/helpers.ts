@@ -97,11 +97,14 @@ export const getAdditionalSummaryOfferInfo = (offer?: Offer) => {
     validation,
   } = offer || {}
 
+  const activeLoansQuantity = validation?.maxReturnAmountFilter || 0
+  const totalLoansQuantity = activeLoansQuantity + buyOrdersQuantity
+
   return {
     accruedInterest: concentrationIndex,
     reserve: bidSettlement,
-    activeLoansQuantity: validation?.maxReturnAmountFilter || 0,
-    totalLoansQuantity: buyOrdersQuantity,
+    activeLoansQuantity,
+    totalLoansQuantity,
   }
 }
 

@@ -90,6 +90,7 @@ export const usePlaceLiteOffer = ({
   const showBorrowerMessage = !offerErrorMessage && !!offerSize
   const disablePlaceOffer = !!offerErrorMessage || !offerSize
   const disableUpdateOffer = !hasFormChanges || !!offerErrorMessage || !offerSize
+  const disableClaimInterest = !optimisticOffer?.concentrationIndex
 
   const loanToValuePercent = calcLoanToValuePercentage(loanValue, marketPreview)
 
@@ -109,6 +110,7 @@ export const usePlaceLiteOffer = ({
 
     disableUpdateOffer,
     disablePlaceOffer,
+    disableClaimInterest,
 
     onClaimOfferInterest,
     onCreateOffer,

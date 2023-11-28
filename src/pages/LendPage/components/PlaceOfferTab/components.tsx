@@ -39,6 +39,7 @@ interface OfferActionButtonsProps {
   isEditMode: boolean
   disableUpdateOffer: boolean
   disablePlaceOffer: boolean
+  disableClaimInterest: boolean
   onCreateOffer: () => void
   onRemoveOffer: () => void
   onUpdateOffer: () => void
@@ -49,6 +50,7 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
   isEditMode,
   disableUpdateOffer,
   disablePlaceOffer,
+  disableClaimInterest,
   onCreateOffer,
   onRemoveOffer,
   onUpdateOffer,
@@ -87,7 +89,11 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
               Apply changes
             </Button>
           </div>
-          <Button onClick={onClaimOfferInterest} className={styles.actionButton}>
+          <Button
+            onClick={onClaimOfferInterest}
+            className={styles.actionButton}
+            disabled={disableClaimInterest}
+          >
             Claim interest
           </Button>
         </div>
