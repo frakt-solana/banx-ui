@@ -27,7 +27,8 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
 }) => {
   const { collectionFloor = 0, marketApr = 0 } = market || {}
 
-  const { accruedInterest, reserve, activeLoansQuantity } = getAdditionalSummaryOfferInfo(offer)
+  const { accruedInterest, reserve, activeLoansQuantity, totalLoansQuantity } =
+    getAdditionalSummaryOfferInfo(offer)
 
   const weeklyInterest = calculateWeeklyInterest(offerSize, marketApr)
   const weightedLtv = (offerSize / loansAmount / collectionFloor) * 100
@@ -59,7 +60,7 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
         <div className={styles.editOfferSummary}>
           <StatInfo
             label="Active loans"
-            value={`${activeLoansQuantity} / ${activeLoansQuantity}`}
+            value={`${activeLoansQuantity}/${totalLoansQuantity}`}
             valueType={VALUES_TYPES.STRING}
           />
           <StatInfo label="Reserve" value={reserve} tooltipText="Reserve" divider={1e9} />
