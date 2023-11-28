@@ -19,6 +19,7 @@ export interface SliderProps {
   marks?: { [key: number]: string | JSX.Element }
   step?: number
   max?: number
+  min?: number
   className?: string
   disabled?: boolean
 }
