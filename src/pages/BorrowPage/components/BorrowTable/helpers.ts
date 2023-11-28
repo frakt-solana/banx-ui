@@ -140,20 +140,20 @@ export const executeBorrow = async (props: {
 
 export const createBorrowAllParams = (
   offerByMint: Record<string, SimpleOffer>,
-  nfts: BorrowNft[],
+  nfts: TableNftData[],
   rawOffers: Record<string, Offer[]>,
 ) => {
   const borrowIxnParams = Object.entries(offerByMint)
     .map(([mint, sOffer]) => {
       const nft = nfts.find(({ nft }) => nft.mint === mint)
-      const marketPubkey = nft?.loan.marketPubkey || ''
+      const marketPubkey = nft?.nft?.loan.marketPubkey || ''
       const offer = rawOffers[marketPubkey].find(({ publicKey }) => publicKey === sOffer?.publicKey)
 
       if (!nft || !offer) return null
 
       return {
-        nft: nft as BorrowNft,
-        loanValue: sOffer.loanValue,
+        nft: nft.nft,
+        loanValue: nft.loanValue,
         offer: offer as Offer,
       }
     })

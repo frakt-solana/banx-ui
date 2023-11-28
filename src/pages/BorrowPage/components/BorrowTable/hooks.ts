@@ -130,7 +130,7 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
   }
 
   const borrowAll = async () => {
-    const txnParams = createBorrowAllParams(offerByMint, nfts, rawOffers)
+    const txnParams = createBorrowAllParams(offerByMint, tableNftsData, rawOffers)
 
     const txnsResults = await executeBorrow({
       walletAndConnection: {
