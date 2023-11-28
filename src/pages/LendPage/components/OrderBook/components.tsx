@@ -97,7 +97,7 @@ export const AccruedInterest: FC<AccruedInterestProps> = ({ offers, updateOrAddO
   const wallet = useWallet()
   const { connection } = useConnection()
 
-  const totalClaimValue = sumBy(offers, 'concentrationIndex')
+  const totalClaimValue = sumBy(offers, ({ concentrationIndex }) => concentrationIndex)
 
   const claimInterest = () => {
     const txnParams = offers.map((optimisticOffer) => ({ optimisticOffer }))

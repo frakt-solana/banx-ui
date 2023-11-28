@@ -101,7 +101,7 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
         <Button
           className={styles.placeOfferButton}
           onClick={onMainActionBtnClick}
-          disabled={connected ? disablePlaceOffer : false}
+          disabled={connected || disablePlaceOffer}
         >
           {connected ? 'Place' : 'Connect wallet'}
         </Button>

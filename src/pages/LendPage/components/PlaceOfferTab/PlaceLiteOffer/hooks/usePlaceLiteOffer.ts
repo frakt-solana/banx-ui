@@ -21,6 +21,7 @@ export const usePlaceLiteOffer = ({
 }: OfferParams) => {
   const { connected } = useWallet()
   const marketPubkey = marketPreview?.marketPubkey || ''
+  const isEditMode = syntheticOffer.isEdit
 
   const solanaBalance = useSolanaBalance()
 
@@ -38,13 +39,12 @@ export const usePlaceLiteOffer = ({
 
   useEffect(() => {
     const hasSolanaBalance = !!solanaBalance
-    const isNotEditMode = !syntheticOffer.isEdit
 
-    if (hasSolanaBalance && isNotEditMode && connected && !isEmpty(marketPreview)) {
+    if (hasSolanaBalance && !isEditMode && connected && !isEmpty(marketPreview)) {
       const bestLoanValue = calculateBestLoanValue(solanaBalance, marketPreview.bestOffer)
       onLoanValueChange(formatDecimal(bestLoanValue))
     }
-  }, [marketPreview, connected, solanaBalance, syntheticOffer, onLoanValueChange])
+  }, [marketPreview, isEditMode, connected, solanaBalance, syntheticOffer, onLoanValueChange])
 
   useEffect(() => {
     if (loansAmountNumber || loanValueNumber) {
@@ -95,7 +95,7 @@ export const usePlaceLiteOffer = ({
   const loanToValuePercent = calcLoanToValuePercentage(loanValue, marketPreview)
 
   return {
-    isEditMode: syntheticOffer.isEdit,
+    isEditMode,
     offerSize,
     loanToValuePercent,
     marketApr: marketPreview?.marketApr || 0,

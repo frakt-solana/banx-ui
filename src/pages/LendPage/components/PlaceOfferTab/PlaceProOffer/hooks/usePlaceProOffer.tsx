@@ -20,6 +20,7 @@ export const usePlaceProOffer = ({
 }: OfferParams) => {
   const { connected } = useWallet()
   const marketPubkey = marketPreview?.marketPubkey || ''
+  const isEditMode = syntheticOffer.isEdit
 
   const solanaBalance = useSolanaBalance()
 
@@ -61,13 +62,12 @@ export const usePlaceProOffer = ({
 
   useEffect(() => {
     const hasSolanaBalance = !!solanaBalance
-    const isNotEditMode = !syntheticOffer.isEdit
 
-    if (hasSolanaBalance && isNotEditMode && connected && !isEmpty(marketPreview)) {
+    if (hasSolanaBalance && !isEditMode && connected && !isEmpty(marketPreview)) {
       const bestLoanValue = calculateBestLoanValue(solanaBalance, marketPreview.bestOffer)
       onLoanValueChange(formatDecimal(bestLoanValue))
     }
-  }, [marketPreview, connected, solanaBalance, syntheticOffer, onLoanValueChange])
+  }, [marketPreview, isEditMode, connected, solanaBalance, syntheticOffer, onLoanValueChange])
 
   useEffect(() => {
     if (loansAmountNumber || loanValueNumber || deltaValueNumber) {
@@ -99,7 +99,7 @@ export const usePlaceProOffer = ({
   const disableClaimInterest = !optimisticOffer?.concentrationIndex
 
   return {
-    isEditMode: syntheticOffer.isEdit,
+    isEditMode,
 
     loanValue,
     loansAmount,
