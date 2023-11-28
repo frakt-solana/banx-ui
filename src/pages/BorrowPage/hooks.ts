@@ -5,7 +5,18 @@ import { useQuery } from '@tanstack/react-query'
 import { calculateNextSpotPrice } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondingCurveType, PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { produce } from 'immer'
-import { chain, countBy, filter, groupBy, isEmpty, map, sumBy, uniqBy, uniqueId } from 'lodash'
+import {
+  chain,
+  countBy,
+  filter,
+  groupBy,
+  isEmpty,
+  map,
+  maxBy,
+  sumBy,
+  uniqBy,
+  uniqueId,
+} from 'lodash'
 import { create } from 'zustand'
 
 import { BorrowNft, Offer, fetchBorrowNftsAndOffers } from '@banx/api/core'
@@ -118,6 +129,17 @@ export const useBorrowNfts = () => {
     )
   }, [mergedRawOffers])
 
+  const maxLoanValueByMarket: Record<string, number> = useMemo(() => {
+    return chain(simpleOffers)
+      .entries()
+      .map(([hadoMarket, offers]) => {
+        const bestOffer = maxBy(offers, ({ loanValue }) => loanValue)
+        return [hadoMarket, bestOffer?.loanValue || 0]
+      })
+      .fromPairs()
+      .value()
+  }, [simpleOffers])
+
   //? Set offers in cartState
   useEffect(() => {
     if (!isEmpty(simpleOffers)) {
@@ -194,6 +216,7 @@ export const useBorrowNfts = () => {
     rawOffers: mergedRawOffers || {},
     maxBorrow,
     isLoading,
+    maxLoanValueByMarket,
   }
 }
 
