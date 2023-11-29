@@ -1,9 +1,9 @@
-import { FC } from 'react'
+import React, { FC } from 'react'
 
 import classNames from 'classnames'
 import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { Button } from '@banx/components/Buttons'
+import { Button, ButtonProps } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 
@@ -34,18 +34,29 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
   const displayDeltaValue = delta ? `| Δ${formatDecimal(delta / 1e9)}◎` : ''
   const displayOfferValue = formatDecimal(currentSpotPrice / 1e9)
 
-  const disabledActionButton = pairState === PairState.PerpetualBondingCurveClosed
-
   const { removeOffer, goToEditOffer } = useActionsCell(offer, collectionMeta)
 
-  const onEdit = () => {
+  const onEdit = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     goToEditOffer()
     trackPageEvent('myoffers', 'pendingtab-edit')
+    event.stopPropagation()
   }
 
-  const onRemove = () => {
+  const onRemove = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     removeOffer()
     trackPageEvent('myoffers', 'pendingtab-remove')
+    event.stopPropagation()
+  }
+
+  const disabledActionButton = pairState === PairState.PerpetualBondingCurveClosed
+  const actionButtonProps: ButtonProps = {
+    type: 'circle',
+    variant: 'secondary',
+    size: 'medium',
+    disabled: disabledActionButton,
+    className: classNames(styles.actionButton, {
+      [styles.disabled]: disabledActionButton,
+    }),
   }
 
   return (
@@ -64,33 +75,13 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
         </div>
       </div>
       <div className={styles.actionsOfferButtons}>
-        <Button
-          type="circle"
-          variant="secondary"
-          size="medium"
-          className={classNames(styles.editOfferButton, {
-            [styles.disabled]: disabledActionButton,
-          })}
-          onClick={(event) => {
-            onEdit()
-            event.stopPropagation()
-          }}
-          disabled={disabledActionButton}
-        >
+        <Button {...actionButtonProps} onClick={onEdit}>
           <Pencil />
         </Button>
         <Button
-          type="circle"
-          variant="secondary"
-          size="medium"
-          onClick={(event) => {
-            onRemove()
-            event.stopPropagation()
-          }}
-          className={classNames(styles.removeOfferButton, {
-            [styles.disabled]: disabledActionButton,
-          })}
-          disabled={disabledActionButton}
+          {...actionButtonProps}
+          className={classNames(styles.removeOfferButton, actionButtonProps.className)}
+          onClick={onRemove}
         >
           <CloseModal />
         </Button>
@@ -101,37 +92,42 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
 
 interface AdditionalOfferOverviewProps {
   loans: Loan[]
+  offer: Offer
 }
 
-export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ loans }) => {
-  const { lent, repaid, claim, apy, interest, totalLoans } = getAdditionalOfferInfo(loans)
+export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ loans, offer }) => {
+  const { lent, repaid, claim, apy, ltv, interest, loansQuantity, activeLoansQuantity } =
+    getAdditionalOfferInfo({
+      loans,
+      offer,
+    })
 
   return (
     <div className={styles.additionalOfferContainer}>
       <div className={styles.additionalStat}>
         <div className={styles.additionalStatLabel}>Lent</div>
         <div className={styles.additionalStatValues}>
-          {createSolValueJSX(lent, 1e9, '0◎')}
-          <span>
-            {totalLoans}/{totalLoans} loans
-          </span>
+          {createSolValueJSX(lent, 1e9, '0◎', formatDecimal)}
+          {activeLoansQuantity}/{loansQuantity} loans
         </div>
       </div>
       <div className={styles.additionalStat}>
         <div className={styles.additionalStatLabel}>Repaid</div>
-        <div className={styles.additionalStatValues}>{createSolValueJSX(repaid, 1e9, '0◎')}</div>
+        <div className={styles.additionalStatValues}>
+          {createSolValueJSX(repaid, 1e9, '0◎', formatDecimal)}
+        </div>
       </div>
       <div className={styles.additionalStat}>
         <div className={styles.additionalStatLabel}>Claim</div>
         <div className={styles.additionalStatValues}>
           {createSolValueJSX(claim, 1e9, '0◎')}
-          <span className={styles.ltvValue}>{createPercentValueJSX(apy, '0%')} LTV</span>
+          <span className={styles.ltvValue}>{createPercentValueJSX(ltv, '0%')} LTV</span>
         </div>
       </div>
       <div className={styles.additionalStat}>
         <div className={styles.additionalStatLabel}>Interest</div>
         <div className={classNames(styles.additionalStatValues, styles.interestValues)}>
-          {createSolValueJSX(interest, 1e9, '0◎')}
+          {createSolValueJSX(interest, 1e9, '0◎', formatDecimal)}
           <span>{createPercentValueJSX(apy, '0%')} APY</span>
         </div>
       </div>

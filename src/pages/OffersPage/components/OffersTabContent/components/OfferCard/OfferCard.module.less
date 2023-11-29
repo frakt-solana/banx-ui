@@ -49,6 +49,17 @@
   flex-direction: column;
   gap: 8px;
 }
+
+.actionButton {
+  &:disabled {
+    background: var(--bg-secondary);
+
+    path,
+    rect {
+      fill: var(--content-secondary);
+    }
+  }
+}
 .removeOfferButton {
   svg {
     height: 12px !important;
@@ -56,17 +67,6 @@
 
     rect {
       fill: var(--content-primary);
-    }
-  }
-}
-.editOfferButton,
-.removeOfferButton {
-  &:disabled {
-    background: var(--bg-secondary);
-
-    path,
-    rect {
-      fill: var(--content-secondary);
     }
   }
 }
@@ -79,7 +79,7 @@
   gap: 24px;
   width: 100%;
 
-  @media (max-width: 960px) {
+  @media (max-width: 1240px) {
     display: none;
   }
 }

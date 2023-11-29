@@ -2,15 +2,18 @@ import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/
 import { sumBy } from 'lodash'
 import moment from 'moment'
 
-import { Loan } from '@banx/api/core'
+import { Loan, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { calcLoanBorrowedAmount, calcWeightedAverage } from '@banx/utils'
 
-export const getAdditionalOfferInfo = (loans: Loan[]) => {
+export const getAdditionalOfferInfo = ({ loans, offer }: { loans: Loan[]; offer: Offer }) => {
   const collectionFloor = loans[0]?.nft.collectionFloor
   const totalClaimValue = sumBy(loans, calculateClaimValue)
 
-  const ltv = (totalClaimValue / collectionFloor) * 100
+  const activeLoansQuantity = offer.validation.maxReturnAmountFilter || 0
+  const loansQuantity = loans.length
+
+  const ltv = (totalClaimValue / loansQuantity / collectionFloor) * 100
 
   const weightedApr = calcWeightedAverage(
     loans.map((loan) => loan.bondTradeTransaction.amountOfBonds / 100),
@@ -28,7 +31,8 @@ export const getAdditionalOfferInfo = (loans: Loan[]) => {
     ltv,
     apy: weightedApr,
     interest: 0,
-    totalLoans: loans.length,
+    loansQuantity,
+    activeLoansQuantity,
   }
 }
 
