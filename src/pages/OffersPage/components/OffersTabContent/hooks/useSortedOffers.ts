@@ -7,7 +7,17 @@ import { SortOption } from '@banx/components/SortDropdown'
 import { LendLoansAndOffers } from '@banx/api/core'
 
 import { calculateClaimValue, calculateLentValue } from '../components/OfferCard/helpers'
-import { DEFAULT_SORT_OPTION, SORT_OPTIONS } from '../constants'
+
+const SORT_OPTIONS = [
+  { label: 'Claim', value: 'claim' },
+  { label: 'Lent', value: 'lent' },
+  { label: 'Offer', value: 'offer' },
+]
+
+const DEFAULT_SORT_OPTION: SortOption = {
+  label: SORT_OPTIONS[2].label,
+  value: `${SORT_OPTIONS[2].value}_desc`,
+}
 
 enum SortField {
   CLAIM = 'claim',
