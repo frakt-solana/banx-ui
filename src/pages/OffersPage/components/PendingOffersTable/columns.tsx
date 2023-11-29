@@ -36,7 +36,7 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
       render: (offer) => <InterestCell offer={offer} />,
     },
     {
-      key: 'apy',
+      key: 'apr',
       title: <HeaderCell label="APR" />,
       render: (offer) => <APRCell offer={offer} />,
     },

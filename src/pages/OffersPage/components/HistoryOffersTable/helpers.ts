@@ -28,7 +28,7 @@ export const formatLoanData = (loan: LenderActivity) => {
     nftName,
     lent: lentAmount,
     interest: interestAmount,
-    apy: apyAmount,
+    apr: apyAmount,
     loanStatus,
     received: receivedAmount,
     when: formattedDate,

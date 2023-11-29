@@ -12,7 +12,7 @@ enum SortField {
   FLOOR = 'floorPrice',
   DEBT = 'repayValue',
   LTV = 'ltv',
-  APR = 'apy',
+  APR = 'apr',
 }
 
 type SortValueGetter = (loan: Loan) => number
