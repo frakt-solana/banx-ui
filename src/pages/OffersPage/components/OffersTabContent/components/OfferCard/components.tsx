@@ -9,7 +9,12 @@ import { createPercentValueJSX, createSolValueJSX } from '@banx/components/Table
 
 import { CollectionMeta, Loan, Offer } from '@banx/api/core'
 import { CloseModal, Pencil } from '@banx/icons'
-import { formatDecimal, trackPageEvent } from '@banx/utils'
+import {
+  HealthColorIncreasing,
+  formatDecimal,
+  getColorByPercent,
+  trackPageEvent,
+} from '@banx/utils'
 
 import { getAdditionalOfferInfo } from './helpers'
 import { useActionsCell } from './hooks'
@@ -93,22 +98,28 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
 interface AdditionalOfferOverviewProps {
   loans: Loan[]
   offer: Offer
+  className?: string
 }
 
-export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ loans, offer }) => {
+export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({
+  loans,
+  offer,
+  className,
+}) => {
   const { lent, repaid, claim, apy, ltv, interest, loansQuantity, activeLoansQuantity } =
-    getAdditionalOfferInfo({
-      loans,
-      offer,
-    })
+    getAdditionalOfferInfo({ loans, offer })
+
+  const colorLtv = getColorByPercent(ltv, HealthColorIncreasing)
 
   return (
-    <div className={styles.additionalOfferContainer}>
+    <div className={classNames(styles.additionalOfferContainer, className)}>
       <div className={styles.additionalStat}>
         <div className={styles.additionalStatLabel}>Lent</div>
         <div className={styles.additionalStatValues}>
           {createSolValueJSX(lent, 1e9, '0◎', formatDecimal)}
-          {activeLoansQuantity}/{loansQuantity} loans
+          <span className={styles.additionalStatSubtitle}>
+            {activeLoansQuantity}/{loansQuantity} loans
+          </span>
         </div>
       </div>
       <div className={styles.additionalStat}>
@@ -121,7 +132,9 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ loan
         <div className={styles.additionalStatLabel}>Claim</div>
         <div className={styles.additionalStatValues}>
           {createSolValueJSX(claim, 1e9, '0◎')}
-          <span className={styles.ltvValue}>{createPercentValueJSX(ltv, '0%')} LTV</span>
+          <span style={{ color: apy ? colorLtv : '' }} className={styles.additionalStatSubtitle}>
+            {createPercentValueJSX(ltv, '0%')} LTV
+          </span>
         </div>
       </div>
       <div className={styles.additionalStat}>

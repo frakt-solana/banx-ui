@@ -25,7 +25,11 @@ const OfferCard: FC<OfferCardProps> = ({ offer, loans, collectionMeta }) => {
     <div className={styles.card}>
       <div className={styles.cardBody} onClick={() => setIsOpen(!isOpen)}>
         <MainOfferOverview offer={offer} collectionMeta={collectionMeta} />
-        <AdditionalOfferOverview loans={loans} offer={offer} />
+        <AdditionalOfferOverview
+          loans={loans}
+          offer={offer}
+          className={isOpen ? styles.hiddenAdditionalOverview : ''}
+        />
         <Button
           type="circle"
           className={classNames(styles.chevronButton, { [styles.active]: isOpen })}

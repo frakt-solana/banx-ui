@@ -13,6 +13,11 @@
   gap: 16px;
   padding: 24px;
   width: 100%;
+
+  @media (max-width: 1240px) {
+    flex-wrap: wrap;
+    gap: 24px;
+  }
 }
 
 .chevronButton.active svg {
@@ -28,7 +33,6 @@
 .mainOfferInfo {
   display: flex;
   flex-direction: column;
-  min-width: 280px;
   gap: 10px;
 }
 .mainOfferStats {
@@ -80,6 +84,12 @@
   width: 100%;
 
   @media (max-width: 1240px) {
+    justify-content: center;
+    order: 1;
+  }
+}
+.hiddenAdditionalOverview {
+  @media (max-width: 1240px) {
     display: none;
   }
 }
@@ -89,6 +99,10 @@
   align-items: flex-end;
   max-width: 168px;
   width: 100%;
+
+  @media (max-width: 1240px) {
+    align-items: center;
+  }
 }
 .additionalStatLabel {
   color: var(--content-secondary);
@@ -106,6 +120,10 @@
   justify-content: center;
   gap: 4px;
   height: 56px;
+
+  @media (max-width: 1240px) {
+    align-items: center;
+  }
 
   span:first-child {
     font: var(--body-text-md);
@@ -125,6 +143,7 @@
     font: var(--important-text-sm);
   }
 }
-.ltvValue {
+
+.additionalStatSubtitle {
   font: var(--body-text-sm);
 }
