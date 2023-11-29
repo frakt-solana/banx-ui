@@ -79,7 +79,7 @@ export const getTableColumns = ({
       render: (loan) => createSolValueJSX(calcWeeklyInterestFee(loan), 1e9, '--', formatDecimal),
     },
     {
-      key: 'apy',
+      key: 'apr',
       title: <HeaderCell label="APR" />,
       render: (loan) => <APRCell loan={loan} />,
       sorter: true,

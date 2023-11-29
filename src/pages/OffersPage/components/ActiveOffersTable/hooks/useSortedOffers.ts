@@ -7,7 +7,7 @@ import { LoanStatus, calculateLoanRepayValue, determineLoanStatus } from '@banx/
 
 enum SortField {
   LENT = 'lent',
-  APR = 'apy',
+  APR = 'apr',
   LTV = 'ltv',
   STATUS = 'status',
 }
