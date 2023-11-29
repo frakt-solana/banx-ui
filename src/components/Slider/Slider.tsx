@@ -14,6 +14,8 @@ const DEFAULT_SLIDER_MARKS = {
 }
 
 export interface SliderProps {
+  label?: string
+  labelClassName?: string
   value: number
   onChange: (nextValue: number) => void
   marks?: { [key: number]: string | JSX.Element }
@@ -25,6 +27,8 @@ export interface SliderProps {
 }
 
 export const Slider: FC<SliderProps> = ({
+  label,
+  labelClassName,
   marks = DEFAULT_SLIDER_MARKS,
   step = 1,
   className,
@@ -32,6 +36,7 @@ export const Slider: FC<SliderProps> = ({
 }) => {
   return (
     <div className={classNames(styles.slider, className)}>
+      {!!label && <p className={classNames(styles.label, labelClassName)}>{label}</p>}
       <SliderAntd
         rootClassName="rootSliderClassName"
         marks={marks}
