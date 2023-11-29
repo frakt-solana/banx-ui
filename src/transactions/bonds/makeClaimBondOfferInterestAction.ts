@@ -11,7 +11,6 @@ import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type MakeClaimOfferInterestActionParams = {
-  offerPubkey: string
   optimisticOffer: Offer
 }
 
@@ -24,11 +23,11 @@ export const makeClaimBondOfferInterestAction: MakeClaimBondOfferInterestAction 
   ixnParams,
   { connection, wallet },
 ) => {
-  const { offerPubkey, optimisticOffer } = ixnParams
+  const { optimisticOffer } = ixnParams
 
   const { instructions, signers, optimisticResult } = await claimPerpetualBondOfferInterest({
     accounts: {
-      bondOffer: new web3.PublicKey(offerPubkey),
+      bondOffer: new web3.PublicKey(optimisticOffer.publicKey),
       userPubkey: wallet.publicKey as web3.PublicKey,
     },
     optimistic: {

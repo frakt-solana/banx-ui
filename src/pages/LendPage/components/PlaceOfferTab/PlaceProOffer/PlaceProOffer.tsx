@@ -17,7 +17,6 @@ const PlaceProOffer: FC<OfferParams> = (offerParams) => {
   const {
     isEditMode,
     offerSize,
-    marketApr,
     loansAmount,
     loanValue,
     deltaValue,
@@ -26,12 +25,13 @@ const PlaceProOffer: FC<OfferParams> = (offerParams) => {
     onLoanValueChange,
     disablePlaceOffer,
     disableUpdateOffer,
+    disableClaimInterest,
     showBorrowerMessage,
-    showDepositError,
     onCreateOffer,
     onUpdateOffer,
     onClaimOfferInterest,
     onRemoveOffer,
+    offerErrorMessage,
   } = usePlaceProOffer(offerParams)
 
   return (
@@ -58,19 +58,21 @@ const PlaceProOffer: FC<OfferParams> = (offerParams) => {
         />
       </div>
       <div className={styles.messageContainer}>
-        {showDepositError && <InputErrorMessage message="Not enough SOL" />}
+        {offerErrorMessage && <InputErrorMessage message={offerErrorMessage} />}
         {showBorrowerMessage && <BorrowerMessage loanValue={loanValue} />}
       </div>
       <OfferSummary
         offer={offerParams.optimisticOffer}
         isEditMode={isEditMode}
         offerSize={offerSize}
-        marketApr={marketApr}
+        market={offerParams.marketPreview}
+        loansAmount={parseFloat(loansAmount)}
       />
       <OfferActionButtons
         isEditMode={isEditMode}
         disableUpdateOffer={disableUpdateOffer}
         disablePlaceOffer={disablePlaceOffer}
+        disableClaimInterest={disableClaimInterest}
         onClaimOfferInterest={onClaimOfferInterest}
         onUpdateOffer={onUpdateOffer}
         onCreateOffer={onCreateOffer}

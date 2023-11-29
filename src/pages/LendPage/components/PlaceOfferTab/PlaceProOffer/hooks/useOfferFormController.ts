@@ -1,21 +1,22 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { isInteger } from 'lodash'
-
+import { SyntheticOffer } from '@banx/store'
 import { formatLoansAmount } from '@banx/utils'
 
-export const useOfferFormController = (
-  editLoanValue = 0,
-  editLoansAmount = 0,
-  editDeltaValue = 0,
-) => {
+export const useOfferFormController = (syntheticOffer: SyntheticOffer) => {
+  const {
+    deltaValue: syntheticDeltaValue,
+    loanValue: syntheticLoanValue,
+    loansAmount: syntheticLoansAmount,
+  } = syntheticOffer
+
   const initialValues = useMemo(() => {
     return {
-      loanValue: formatNumber(editLoanValue, '0'),
-      loansAmount: formatLoansAmount(editLoansAmount),
-      deltaValue: formatNumber(editDeltaValue, '0.1'),
+      deltaValue: formatNumber(syntheticDeltaValue / 1e9, '0.1'),
+      loanValue: formatNumber(syntheticLoanValue / 1e9),
+      loansAmount: formatLoansAmount(syntheticLoansAmount),
     }
-  }, [editLoanValue, editLoansAmount, editDeltaValue])
+  }, [syntheticLoanValue, syntheticLoansAmount, syntheticDeltaValue])
 
   const [loanValue, setLoanValue] = useState(initialValues.loanValue)
   const [loansAmount, setLoansAmount] = useState(initialValues.loansAmount)
@@ -38,13 +39,7 @@ export const useOfferFormController = (
   }, [])
 
   const onLoanAmountChange = useCallback((nextValue: string) => {
-    const nextValueNumber = parseFloat(nextValue) || 0
-
-    if (!isInteger(nextValueNumber)) {
-      setLoansAmount(String(Math.trunc(nextValueNumber)))
-    } else {
-      setLoansAmount(nextValue)
-    }
+    setLoansAmount(nextValue)
   }, [])
 
   const resetFormValues = () => {
@@ -55,11 +50,11 @@ export const useOfferFormController = (
 
   const hasFormChanges = useMemo(() => {
     return (
-      (editLoansAmount && loansAmount !== initialValues.loansAmount) ||
-      (editLoanValue && loanValue !== initialValues.loanValue) ||
-      (editLoansAmount && deltaValue !== initialValues.deltaValue)
+      loansAmount !== initialValues.loansAmount ||
+      loanValue !== initialValues.loanValue ||
+      deltaValue !== initialValues.deltaValue
     )
-  }, [initialValues, loansAmount, loanValue, deltaValue, editLoanValue, editLoansAmount])
+  }, [initialValues, loansAmount, loanValue, deltaValue])
 
   return {
     loanValue,
@@ -75,5 +70,5 @@ export const useOfferFormController = (
   }
 }
 
-const formatNumber = (value: number, defaultValue: string) =>
+const formatNumber = (value: number, defaultValue = '0') =>
   value ? value.toFixed(2) : defaultValue

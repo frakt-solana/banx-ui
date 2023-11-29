@@ -21,12 +21,13 @@ const PlaceLiteOffer: FC<OfferParams> = (offersParams) => {
     loanValue,
     onLoanValueChange,
     onClaimOfferInterest,
+    disableClaimInterest,
     onCreateOffer,
     onRemoveOffer,
     onUpdateOffer,
     offerSize,
     marketApr,
-    showDepositError,
+    offerErrorMessage,
     showBorrowerMessage,
     disableUpdateOffer,
     disablePlaceOffer,
@@ -51,7 +52,7 @@ const PlaceLiteOffer: FC<OfferParams> = (offersParams) => {
         />
       </div>
       <div className={styles.messageContainer}>
-        {showDepositError && <InputErrorMessage message="Not enough SOL" />}
+        {offerErrorMessage && <InputErrorMessage message={offerErrorMessage} />}
         {showBorrowerMessage && <BorrowerMessage loanValue={loanValue} />}
       </div>
       <OfferSummary
@@ -65,6 +66,7 @@ const PlaceLiteOffer: FC<OfferParams> = (offersParams) => {
         isEditMode={isEditMode}
         disableUpdateOffer={disableUpdateOffer}
         disablePlaceOffer={disablePlaceOffer}
+        disableClaimInterest={disableClaimInterest}
         onClaimOfferInterest={onClaimOfferInterest}
         onCreateOffer={onCreateOffer}
         onRemoveOffer={onRemoveOffer}

@@ -3,16 +3,15 @@ import { useEffect, useMemo } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { isEmpty } from 'lodash'
 
-import { useSolanaBalance } from '@banx/utils'
+import { formatDecimal, useSolanaBalance } from '@banx/utils'
 
-import { getUpdatedBondOffer, shouldShowDepositError } from '../../helpers'
+import { calculateBestLoanValue, calculateOfferSize, getOfferErrorMessage } from '../../helpers'
 import { OfferParams } from '../../hooks'
 import { useOfferTransactions } from '../../hooks/useOfferTransactions'
-import { calcLoanToValuePercentage, calculateBestLoanValue } from '../helpers'
+import { calcLoanToValuePercentage } from '../helpers'
 import { useOfferFormController } from './useOfferFormController'
 
 export const usePlaceLiteOffer = ({
-  offerPubkey,
   exitEditMode,
   syntheticOffer,
   marketPreview,
@@ -22,6 +21,7 @@ export const usePlaceLiteOffer = ({
 }: OfferParams) => {
   const { connected } = useWallet()
   const marketPubkey = marketPreview?.marketPubkey || ''
+  const isEditMode = syntheticOffer.isEdit
 
   const solanaBalance = useSolanaBalance()
 
@@ -32,21 +32,19 @@ export const usePlaceLiteOffer = ({
     onLoanAmountChange,
     hasFormChanges,
     resetFormValues,
-  } = useOfferFormController(syntheticOffer?.loanValue / 1e9, syntheticOffer?.loansAmount)
+  } = useOfferFormController(syntheticOffer)
 
   const loanValueNumber = parseFloat(loanValue)
   const loansAmountNumber = parseFloat(loansAmount)
 
   useEffect(() => {
     const hasSolanaBalance = !!solanaBalance
-    const isNotEditMode = !syntheticOffer.isEdit
 
-    if (hasSolanaBalance && isNotEditMode && connected && !isEmpty(marketPreview)) {
+    if (hasSolanaBalance && !isEditMode && connected && !isEmpty(marketPreview)) {
       const bestLoanValue = calculateBestLoanValue(solanaBalance, marketPreview.bestOffer)
-
-      onLoanValueChange(bestLoanValue)
+      onLoanValueChange(formatDecimal(bestLoanValue))
     }
-  }, [marketPreview, connected, solanaBalance, syntheticOffer, onLoanValueChange])
+  }, [marketPreview, isEditMode, connected, solanaBalance, syntheticOffer, onLoanValueChange])
 
   useEffect(() => {
     if (loansAmountNumber || loanValueNumber) {
@@ -63,7 +61,6 @@ export const usePlaceLiteOffer = ({
   const { onCreateOffer, onRemoveOffer, onUpdateOffer, onClaimOfferInterest } =
     useOfferTransactions({
       marketPubkey,
-      offerPubkey,
       loanValue: loanValueNumber,
       loansAmount: loansAmountNumber,
       optimisticOffer,
@@ -73,32 +70,32 @@ export const usePlaceLiteOffer = ({
     })
 
   const offerSize = useMemo(() => {
-    const formattedDeltaValue = syntheticOffer.deltaValue / 1e9
-
-    const updatedBondOffer = getUpdatedBondOffer({
+    return calculateOfferSize({
+      syntheticOffer,
       loanValue: loanValueNumber,
       loansQuantity: loansAmountNumber,
-      deltaValue: formattedDeltaValue,
-      syntheticOffer,
+      deltaValue: 0,
     })
-    return updatedBondOffer.fundsSolOrTokenBalance
   }, [syntheticOffer, loanValueNumber, loansAmountNumber])
 
-  const showDepositError = shouldShowDepositError({
-    initialLoansAmount: syntheticOffer.loansAmount,
-    initialLoanValue: syntheticOffer.loanValue,
+  const offerErrorMessage = getOfferErrorMessage({
+    syntheticOffer,
     solanaBalance,
     offerSize,
+    loanValue: loanValueNumber,
+    loansAmount: loansAmountNumber,
+    deltaValue: 0,
   })
 
-  const showBorrowerMessage = !showDepositError && !!offerSize
-  const disablePlaceOffer = connected ? showDepositError || !offerSize : false
-  const disableUpdateOffer = !hasFormChanges || showDepositError || !offerSize
+  const showBorrowerMessage = !offerErrorMessage && !!offerSize
+  const disablePlaceOffer = !!offerErrorMessage || !offerSize
+  const disableUpdateOffer = !hasFormChanges || !!offerErrorMessage || !offerSize
+  const disableClaimInterest = !optimisticOffer?.concentrationIndex
 
   const loanToValuePercent = calcLoanToValuePercentage(loanValue, marketPreview)
 
   return {
-    isEditMode: syntheticOffer.isEdit,
+    isEditMode,
     offerSize,
     loanToValuePercent,
     marketApr: marketPreview?.marketApr || 0,
@@ -108,11 +105,12 @@ export const usePlaceLiteOffer = ({
     onLoanValueChange,
     onLoanAmountChange,
 
-    showDepositError: showDepositError && connected,
     showBorrowerMessage,
+    offerErrorMessage,
 
     disableUpdateOffer,
     disablePlaceOffer,
+    disableClaimInterest,
 
     onClaimOfferInterest,
     onCreateOffer,
