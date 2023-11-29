@@ -11,7 +11,6 @@ import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type MakeClaimActionParams = {
-  offerPubkey: string
   optimisticOffer: Offer
 }
 
@@ -21,12 +20,12 @@ export const makeRemoveOfferAction: MakeRemoveOfferAction = async (
   ixnParams,
   { connection, wallet },
 ) => {
-  const { offerPubkey, optimisticOffer } = ixnParams
+  const { optimisticOffer } = ixnParams
 
   const { instructions, signers, optimisticResult } = await removePerpetualOffer({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
-      bondOfferV2: new web3.PublicKey(offerPubkey),
+      bondOfferV2: new web3.PublicKey(optimisticOffer.publicKey),
       userPubkey: wallet.publicKey as web3.PublicKey,
     },
     optimistic: {

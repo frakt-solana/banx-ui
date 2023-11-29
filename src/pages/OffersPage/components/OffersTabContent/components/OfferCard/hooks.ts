@@ -53,7 +53,7 @@ export const useActionsCell = (offer: Offer, collectionMeta: CollectionMeta) => 
   }
 
   const removeOffer = () => {
-    const txnParam = { offerPubkey: offer.publicKey, optimisticOffer: optimisticOffer as Offer }
+    const txnParam = { optimisticOffer: optimisticOffer as Offer }
 
     new TxnExecutor(makeRemoveOfferAction, { wallet, connection })
       .addTxnParam(txnParam)

@@ -122,7 +122,7 @@ export const useLenderLoansAndOffers = () => {
   const { offers: optimisticOffers, findOffer, updateOffer, addOffer } = useOptimisticOffers()
 
   const { data, isLoading } = useQuery(
-    ['lenderLoansAndOffersV2', publicKeyString],
+    ['lenderLoansAndOffers', publicKeyString],
     () => fetchLenderLoansAndOffersV2({ walletPublicKey: publicKeyString }),
     {
       enabled: !!publicKeyString,

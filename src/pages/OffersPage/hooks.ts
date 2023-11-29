@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, map, maxBy } from 'lodash'
 
-import { Offer, UserOffer, fetchUserOffers } from '@banx/api/core'
+import { Offer, fetchLenderLoansAndOffersV2 } from '@banx/api/core'
 import { fetchUserOffersStats } from '@banx/api/stats'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { isOfferNewer, isOptimisticOfferExpired, useOffersOptimistic } from '@banx/store'
@@ -15,25 +15,26 @@ export const USE_USER_OFFERS_QUERY_KEY = 'userOffers'
 export const useUserOffers = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
+
   const { optimisticOffers, remove: removeOffers, update: updateOrAddOffer } = useOffersOptimistic()
 
-  const { marketsPreview, isLoading: isMarketsPreviewLoading } = useMarketsPreview()
-
+  const { isLoading: isMarketsPreviewLoading } = useMarketsPreview()
   const {
-    data: userOffers,
+    data,
     isLoading: isUserOffersLoading,
     isFetching: isUserOffersFetching,
     isFetched: isUserOffersFetched,
   } = useQuery(
     [USE_USER_OFFERS_QUERY_KEY, publicKeyString],
-    () => fetchUserOffers({ walletPublicKey: publicKeyString }),
+    () => fetchLenderLoansAndOffersV2({ walletPublicKey: publicKeyString }),
     {
       enabled: !!publicKeyString,
-      staleTime: 5 * 1000,
       refetchOnWindowFocus: false,
-      refetchInterval: 15 * 1000,
+      refetchInterval: 30 * 1000,
     },
   )
+
+  const userOffers = (data ?? []).map(({ offer }) => offer)
 
   //? Check expiredOffers and and purge them
   useEffect(() => {
@@ -63,20 +64,8 @@ export const useUserOffers = () => {
       return []
     }
 
-    const optimisticUserOffers: UserOffer[] = optimisticOffers
-      .map(({ offer }) => {
-        const marketPreview = marketsPreview.find(
-          ({ marketPubkey }) => marketPubkey === offer.hadoMarket,
-        )
-
-        return {
-          ...offer,
-          marketApr: marketPreview?.marketApr || 0,
-          collectionFloor: marketPreview?.collectionFloor || 0,
-          collectionImage: marketPreview?.collectionImage || '',
-          collectionName: marketPreview?.collectionName || '',
-        }
-      })
+    const optimisticUserOffers: Offer[] = optimisticOffers
+      .map(({ offer }) => offer)
       .filter(({ assetReceiver }) => assetReceiver === publicKey?.toBase58())
 
     const combinedOffers = [...optimisticUserOffers, ...(userOffers ?? [])]
@@ -84,10 +73,9 @@ export const useUserOffers = () => {
     return chain(combinedOffers)
       .groupBy('publicKey')
       .map((offers) => maxBy(offers, 'lastTransactedAt'))
-      .filter((offer) => offer?.pairState !== PairState.PerpetualClosed)
       .compact()
       .value()
-  }, [userOffers, optimisticOffers, marketsPreview, publicKey])
+  }, [userOffers, optimisticOffers, publicKey])
 
   return {
     offers,
