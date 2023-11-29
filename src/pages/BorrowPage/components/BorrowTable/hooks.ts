@@ -59,7 +59,7 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
   const { add: addLoansOptimistic } = useLoansOptimistic()
   const { update: updateOffersOptimistic } = useOffersOptimistic()
 
-  const [ltv, setLtv] = useState(100)
+  const [maxBorrowPercent, setMaxBorrowPercent] = useState(100)
 
   const tableNftsData: TableNftData[] = useMemo(
     () => {
@@ -68,12 +68,12 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
         findBestOffer,
         findOfferInCart,
         maxLoanValueByMarket,
-        ltv,
+        maxBorrowPercent,
       }).sort((nftA, nftB) => nftB.nft.nft.meta.name.localeCompare(nftA.nft.nft.meta.name))
     },
     //? Because we need to recalc tableNftData each time offerByMint
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [nfts, findBestOffer, findOfferInCart, offerByMint, maxLoanValueByMarket, ltv],
+    [nfts, findBestOffer, findOfferInCart, offerByMint, maxLoanValueByMarket, maxBorrowPercent],
   )
 
   const goToLoansPage = () => {
@@ -263,8 +263,8 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
     nftsInCart,
     findOfferInCart,
     maxBorrowAmount,
-    ltv,
-    setLtv,
+    maxBorrowPercent,
+    setMaxBorrowPercent,
   }
 }
 

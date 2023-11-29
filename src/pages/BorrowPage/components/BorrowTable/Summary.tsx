@@ -19,8 +19,8 @@ interface SummaryProps {
   borrowAll: () => Promise<void>
   selectAmount: (value?: number) => void
   maxBorrowAmount: number
-  ltv: number
-  setLtv: (value: number) => void
+  maxBorrowPercent: number
+  setMaxBorrowPercent: (value: number) => void
 }
 
 export const Summary: FC<SummaryProps> = ({
@@ -28,8 +28,8 @@ export const Summary: FC<SummaryProps> = ({
   nftsInCart,
   borrowAll,
   selectAmount,
-  ltv,
-  setLtv,
+  maxBorrowPercent,
+  setMaxBorrowPercent,
 }) => {
   const totalBorrow = calcLoanValueWithProtocolFee(sumBy(nftsInCart, ({ loanValue }) => loanValue))
   const totalWeeklyFee = sumBy(nftsInCart, ({ nft, loanValue }) =>
@@ -66,8 +66,8 @@ export const Summary: FC<SummaryProps> = ({
       </div>
       <div className={styles.summaryBtns}>
         <Slider
-          value={ltv}
-          onChange={setLtv}
+          value={maxBorrowPercent}
+          onChange={setMaxBorrowPercent}
           min={25}
           max={100}
           marks={{
@@ -76,9 +76,14 @@ export const Summary: FC<SummaryProps> = ({
             75: '75%',
             100: '100%',
           }}
-          className={styles.ltvSlider}
+          label="Max Ltv"
         />
-        <CounterSlider value={nftsInCart.length} onChange={selectAmount} max={maxBorrowAmount} />
+        <CounterSlider
+          value={nftsInCart.length}
+          onChange={selectAmount}
+          max={maxBorrowAmount}
+          label="# Nfts"
+        />
         <Button onClick={onBorrow} disabled={!nftsInCart.length} loading={isBorrowing} size="large">
           Borrow {createSolValueJSX(totalBorrow, 1e9, '0◎')}
         </Button>

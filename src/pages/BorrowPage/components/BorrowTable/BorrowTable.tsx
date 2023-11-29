@@ -31,8 +31,8 @@ const BorrowTable: FC<BorrowTableProps> = ({
     selectAmount,
     borrowAll,
     maxBorrowAmount,
-    ltv,
-    setLtv,
+    maxBorrowPercent,
+    setMaxBorrowPercent,
   } = useBorrowTable({
     nfts,
     rawOffers,
@@ -61,8 +61,8 @@ const BorrowTable: FC<BorrowTableProps> = ({
         borrowAll={borrowAll}
         selectAmount={selectAmount}
         maxBorrowAmount={maxBorrowAmount}
-        ltv={ltv}
-        setLtv={setLtv}
+        maxBorrowPercent={maxBorrowPercent}
+        setMaxBorrowPercent={setMaxBorrowPercent}
       />
     </div>
   )
