@@ -12,7 +12,7 @@ enum SortField {
   FLOOR = 'floorPrice',
   DEBT = 'repayValue',
   LTV = 'ltv',
-  APY = 'apy',
+  APR = 'apy',
 }
 
 type SortValueGetter = (loan: Loan) => number
@@ -29,7 +29,7 @@ export const useSortedLoans = (loans: Loan[], sortOptionValue: string) => {
       [SortField.DURATION]: 'fraktBond.refinanceAuctionStartedAt',
       [SortField.FLOOR]: 'nft.collectionFloor',
       [SortField.DEBT]: (loan) => calculateLoanRepayValue(loan),
-      [SortField.APY]: (loan) => calculateAprIncrement(loan),
+      [SortField.APR]: (loan) => calculateAprIncrement(loan),
       [SortField.LTV]: (loan) => {
         const repayValue = calculateLoanRepayValue(loan)
         const collectionFloor = loan.nft.collectionFloor

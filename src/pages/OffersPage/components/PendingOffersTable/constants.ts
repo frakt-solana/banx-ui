@@ -5,11 +5,11 @@ export const SORT_OPTIONS = [
   { label: 'Loans', value: 'loans' },
   { label: 'Size', value: 'size' },
   { label: 'Interest', value: 'interest' },
-  { label: 'APY', value: 'apy' },
+  { label: 'APR', value: 'apy' },
 ]
 
 export const DEFAULT_SORT_OPTION: SortOption = {
-  label: 'APY',
+  label: 'APR',
   value: 'apy_desc',
 }
 

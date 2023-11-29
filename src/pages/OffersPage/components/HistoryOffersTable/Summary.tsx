@@ -72,7 +72,7 @@ export const Summary = () => {
         <StatInfo label="Total Lent" value={totalLent} divider={1e9} />
         <StatInfo label="Total interest" value={totalInterest} divider={1e9} />
         <StatInfo
-          label="Weighted APY"
+          label="Weighted APR"
           value={weightedApyPercent}
           valueType={VALUES_TYPES.PERCENT}
           valueStyles={{ color: colorAPR }}

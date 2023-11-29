@@ -61,7 +61,7 @@ export const getTableColumns = ({
     },
     {
       key: 'apy',
-      title: <HeaderCell label="APY" />,
+      title: <HeaderCell label="APR" />,
       render: (loan) => <APRCell loan={loan} />,
     },
     {
