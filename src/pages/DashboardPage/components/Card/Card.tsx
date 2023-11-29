@@ -54,7 +54,7 @@ export const LendCard: FC<LendCardProps> = ({ amountOfLoans, offerTvl, apr, ...p
   const BadgeContentElement = apr ? (
     <div className={styles.lendCardBadge}>
       {createPercentValueJSX(convertAprToApy(apr / 1e4))}
-      <span>APY</span>
+      <span>APR</span>
     </div>
   ) : null
 

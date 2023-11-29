@@ -80,13 +80,13 @@ export const getTableColumns = ({
     },
     {
       key: 'apy',
-      title: <HeaderCell label="APY" />,
+      title: <HeaderCell label="APR" />,
       render: (loan) => <APRCell loan={loan} />,
       sorter: true,
     },
     // {
     //   key: 'nextAprIncrease',
-    //   title: <HeaderCell label="Next APY increase" />,
+    //   title: <HeaderCell label="Next APR increase" />,
     //   render: (loan) => <APRIncreaseCell loan={loan} />,
     // },
     {
