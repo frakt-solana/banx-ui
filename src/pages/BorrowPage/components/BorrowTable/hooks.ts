@@ -27,7 +27,7 @@ import { getDialectAccessToken, trackPageEvent } from '@banx/utils'
 import { useCartState } from '../../cartState'
 import { getTableColumns } from './columns'
 import { DEFAULT_TABLE_SORT, SORT_OPTIONS } from './constants'
-import { createBorrowAllParams, createTableNftData, executeBorrow } from './helpers'
+import { createBorrowParams, createTableNftData, executeBorrow } from './helpers'
 import { SortField, TableNftData } from './types'
 
 import styles from './BorrowTable.module.less'
@@ -95,29 +95,14 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
   }
 
   const borrow = async (nft: TableNftData) => {
-    const { marketPubkey } = nft.nft.loan
-
-    const offer = findBestOffer({ marketPubkey })
-    const rawOffer = rawOffers[marketPubkey]?.find(
-      ({ publicKey }) => publicKey === offer?.publicKey,
-    )
-
-    if (!offer || !rawOffer) return
+    const txnParams = createBorrowParams([nft], rawOffers)
 
     const txnResults = await executeBorrow({
       walletAndConnection: {
         wallet,
         connection,
       },
-      txnParams: [
-        [
-          {
-            loanValue: nft.loanValue,
-            nft: nft.nft,
-            offer: rawOffer,
-          },
-        ],
-      ],
+      txnParams: txnParams,
       addLoansOptimistic,
       updateOffersOptimistic,
       onSuccessAll: () => onBorrowSuccess(1),
@@ -130,7 +115,8 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
   }
 
   const borrowAll = async () => {
-    const txnParams = createBorrowAllParams(offerByMint, tableNftsData, rawOffers)
+    const selectedNfts = tableNftsData.filter(({ mint }) => !!offerByMint[mint])
+    const txnParams = createBorrowParams(selectedNfts, rawOffers)
 
     const txnsResults = await executeBorrow({
       walletAndConnection: {
