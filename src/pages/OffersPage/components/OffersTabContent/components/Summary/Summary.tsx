@@ -96,21 +96,19 @@ const Summary: FC<SummaryProps> = ({
 
   return (
     <div className={styles.summaryContainer}>
-      <div className={styles.summaryWrapper}>
-        <ClaimInterestButton
-          onClick={claimLoans}
-          totalLoans={loansToClaim.length}
-          value={26}
-          isMobile={isMobile}
-        />
+      <ClaimInterestButton
+        onClick={claimLoans}
+        totalLoans={loansToClaim.length}
+        isMobile={isMobile}
+        value={10}
+      />
 
-        <ClaimNFTsButton
-          onClick={claimLoans}
-          totalLoans={loansToClaim.length}
-          value={totalClaimableFloor}
-          isMobile={isMobile}
-        />
-      </div>
+      <ClaimNFTsButton
+        onClick={claimLoans}
+        totalLoans={loansToClaim.length}
+        value={totalClaimableFloor}
+        isMobile={isMobile}
+      />
 
       <TerminateButton
         onClick={terminateLoans}
