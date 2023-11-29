@@ -14,7 +14,6 @@ export type MakeUpdateBondingOfferActionParams = {
   loanValue: number //? value in sol
   loansAmount: number
   deltaValue: number //? value in sol
-  offerPubkey: string
   optimisticOffer: Offer
 }
 
@@ -27,13 +26,13 @@ export const makeUpdateBondingOfferAction: MakeUpdateBondingOfferAction = async 
   ixnParams,
   { connection, wallet },
 ) => {
-  const { loanValue, loansAmount, deltaValue, offerPubkey, optimisticOffer } = ixnParams
+  const { loanValue, loansAmount, deltaValue, optimisticOffer } = ixnParams
 
   const { instructions, signers, optimisticResult } = await updatePerpetualOfferBonding({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     connection,
     accounts: {
-      bondOfferV2: new web3.PublicKey(offerPubkey),
+      bondOfferV2: new web3.PublicKey(optimisticOffer.publicKey),
       userPubkey: wallet.publicKey as web3.PublicKey,
     },
     optimistic: {
