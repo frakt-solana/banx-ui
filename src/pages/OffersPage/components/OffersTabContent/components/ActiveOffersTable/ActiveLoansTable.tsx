@@ -6,7 +6,6 @@ import Table from '@banx/components/Table'
 import { Loan } from '@banx/api/core'
 import { isLoanLiquidated, isLoanTerminating } from '@banx/utils'
 
-import { EMPTY_LOANS_MESSAGE } from '../../constants'
 import { useLenderLoansAndOffers } from '../../hooks'
 import { getTableColumns } from './columns'
 
@@ -38,7 +37,10 @@ const ActiveLoansTable: FC<ActiveLoansTableProps> = ({ loans }) => {
     }
   }, [])
 
-  if (!loans.length) return <EmptyList className={styles.emptyList} message={EMPTY_LOANS_MESSAGE} />
+  if (!loans.length)
+    return (
+      <EmptyList className={styles.emptyList} message="Your offer is waiting for a borrower'" />
+    )
 
   return (
     <Table

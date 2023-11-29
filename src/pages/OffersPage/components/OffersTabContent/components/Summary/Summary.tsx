@@ -5,7 +5,7 @@ import { sumBy } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
-import { TABLET_WIDTH } from '@banx/constants'
+import { SMALL_DESKTOP_WIDTH } from '@banx/constants'
 import { useWindowSize } from '@banx/hooks'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimAction, makeTerminateAction } from '@banx/transactions/loans'
@@ -31,15 +31,17 @@ const Summary: FC<SummaryProps> = ({
   const wallet = useWallet()
   const { connection } = useConnection()
   const { width } = useWindowSize()
-  const isMobile = width < TABLET_WIDTH
+  const isSmallDesktop = width < SMALL_DESKTOP_WIDTH
 
-  const totalClaimableFloor = useMemo(() => {
-    return sumBy(loansToClaim, ({ nft }) => nft.collectionFloor)
-  }, [loansToClaim])
+  const totalClaimableFloor = useMemo(
+    () => sumBy(loansToClaim, ({ nft }) => nft.collectionFloor),
+    [loansToClaim],
+  )
 
-  const totalTerminateLent = useMemo(() => {
-    return sumBy(loansToTerminate, (loan) => calcLoanBorrowedAmount(loan))
-  }, [loansToTerminate])
+  const totalTerminateLent = useMemo(
+    () => sumBy(loansToTerminate, (loan) => calcLoanBorrowedAmount(loan)),
+    [loansToTerminate],
+  )
 
   const terminateLoans = () => {
     const txnParams = loansToTerminate.map((loan) => ({ loan }))
@@ -99,7 +101,7 @@ const Summary: FC<SummaryProps> = ({
       <ClaimInterestButton
         onClick={claimLoans}
         totalLoans={loansToClaim.length}
-        isMobile={isMobile}
+        isSmallDesktop={isSmallDesktop}
         value={10}
       />
 
@@ -107,14 +109,14 @@ const Summary: FC<SummaryProps> = ({
         onClick={claimLoans}
         totalLoans={loansToClaim.length}
         value={totalClaimableFloor}
-        isMobile={isMobile}
+        isSmallDesktop={isSmallDesktop}
       />
 
       <TerminateButton
         onClick={terminateLoans}
         totalLoans={loansToTerminate.length}
         value={totalTerminateLent}
-        isMobile={isMobile}
+        isSmallDesktop={isSmallDesktop}
       />
     </div>
   )

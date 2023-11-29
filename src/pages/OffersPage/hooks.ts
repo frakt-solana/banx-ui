@@ -7,7 +7,6 @@ import { chain, map, maxBy } from 'lodash'
 
 import { Offer, fetchLenderLoansAndOffers } from '@banx/api/core'
 import { fetchUserOffersStats } from '@banx/api/stats'
-import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { isOfferNewer, isOptimisticOfferExpired, useOffersOptimistic } from '@banx/store'
 
 export const USE_USER_OFFERS_QUERY_KEY = 'userOffers'
@@ -18,7 +17,6 @@ export const useUserOffers = () => {
 
   const { optimisticOffers, remove: removeOffers, update: updateOrAddOffer } = useOffersOptimistic()
 
-  const { isLoading: isMarketsPreviewLoading } = useMarketsPreview()
   const {
     data,
     isLoading: isUserOffersLoading,
@@ -74,13 +72,15 @@ export const useUserOffers = () => {
     return chain(combinedOffers)
       .groupBy('publicKey')
       .map((offers) => maxBy(offers, 'lastTransactedAt'))
+      .filter((offer) => offer?.pairState !== PairState.PerpetualClosed)
+      .filter((offer) => offer?.pairState !== PairState.PerpetualBondingCurveClosed)
       .compact()
       .value()
   }, [userOffers, optimisticOffers, publicKey])
 
   return {
     offers,
-    loading: isUserOffersLoading || isMarketsPreviewLoading,
+    loading: isUserOffersLoading,
     updateOrAddOffer,
   }
 }

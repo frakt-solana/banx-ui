@@ -5,7 +5,6 @@ import { toLowerCaseNoSpaces, trackPageEvent, useMixpanelLocationTrack } from '@
 import { HistoryOffersTable } from './components/HistoryOffersTable'
 import OffersHeader from './components/OffersHeader'
 import OffersTabContent from './components/OffersTabContent'
-import { DEFAULT_TAB_VALUE, OFFERS_TABS, OffersTabName } from './constants'
 
 import styles from './OffersPage.module.less'
 
@@ -14,7 +13,7 @@ export const OffersPage = () => {
 
   const { value: currentTabValue, ...tabsProps } = useTabs({
     tabs: OFFERS_TABS,
-    defaultValue: DEFAULT_TAB_VALUE,
+    defaultValue: OFFERS_TABS[0].value,
   })
 
   const onTabClick = (tabProps: Tab) => {
@@ -30,3 +29,19 @@ export const OffersPage = () => {
     </div>
   )
 }
+
+enum OffersTabName {
+  OFFERS = 'offers',
+  HISTORY = 'history',
+}
+
+const OFFERS_TABS: Tab[] = [
+  {
+    label: 'Offers',
+    value: OffersTabName.OFFERS,
+  },
+  {
+    label: 'History',
+    value: OffersTabName.HISTORY,
+  },
+]

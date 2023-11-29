@@ -11,13 +11,13 @@ import styles from './Summary.module.less'
 interface ButtonProps {
   onClick: () => void
   totalLoans: number
-  isMobile: boolean
+  isSmallDesktop: boolean
   value: number
 }
 
 export const ClaimInterestButton: FC<ButtonProps> = (props) => {
-  const { isMobile, totalLoans, onClick, value } = props
-  const label = isMobile ? 'interest' : 'Accrued interest'
+  const { isSmallDesktop, totalLoans, onClick, value } = props
+  const label = isSmallDesktop ? 'interest' : 'Accrued interest'
 
   return (
     <div className={styles.infoRow}>
@@ -46,9 +46,9 @@ export const ClaimInterestButton: FC<ButtonProps> = (props) => {
 }
 
 export const ClaimNFTsButton: FC<ButtonProps> = (props) => {
-  const { isMobile, totalLoans, onClick, value } = props
-  const buttonText = isMobile ? 'Claim all NFT' : 'Claim'
-  const label = isMobile ? 'Collateral' : 'Claimable floor'
+  const { isSmallDesktop, totalLoans, onClick, value } = props
+  const buttonText = isSmallDesktop ? 'Claim all NFT' : 'Claim'
+  const label = isSmallDesktop ? 'Collateral' : 'Claimable floor'
 
   return (
     <div className={styles.infoRow}>
@@ -76,9 +76,9 @@ export const ClaimNFTsButton: FC<ButtonProps> = (props) => {
 }
 
 export const TerminateButton: FC<ButtonProps> = (props) => {
-  const { isMobile, totalLoans, onClick, value } = props
-  const buttonText = isMobile ? 'Terminate all' : 'Terminate'
-  const label = isMobile ? 'Underwater' : 'Underwater loans'
+  const { isSmallDesktop, totalLoans, onClick, value } = props
+  const buttonText = isSmallDesktop ? 'Terminate all' : 'Terminate'
+  const label = isSmallDesktop ? 'Underwater' : 'Underwater loans'
 
   return (
     <div className={styles.infoRow}>

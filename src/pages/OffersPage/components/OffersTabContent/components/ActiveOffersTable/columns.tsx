@@ -4,7 +4,6 @@ import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/Tab
 import { Loan, Offer } from '@banx/api/core'
 import { formatDecimal } from '@banx/utils'
 
-import { CLAIM_TOOLTIP_TEXT, STATUS_TOOLTIP_TEXT } from '../../constants'
 import { calculateLentValue } from '../OfferCard/helpers'
 import { APRCell, ActionsCell, InterestCell, StatusCell } from './TableCells'
 
@@ -42,7 +41,12 @@ export const getTableColumns = ({ offers, updateOrAddOffer, updateOrAddLoan }: G
     },
     {
       key: 'interest',
-      title: <HeaderCell label="Claim" tooltipText={CLAIM_TOOLTIP_TEXT} />,
+      title: (
+        <HeaderCell
+          label="Claim"
+          tooltipText="Current status and duration of the loan that has been passed"
+        />
+      ),
       render: (loan) => <InterestCell loan={loan} />,
     },
     {
@@ -52,7 +56,12 @@ export const getTableColumns = ({ offers, updateOrAddOffer, updateOrAddLoan }: G
     },
     {
       key: 'status',
-      title: <HeaderCell label="Status" tooltipText={STATUS_TOOLTIP_TEXT} />,
+      title: (
+        <HeaderCell
+          label="Status"
+          tooltipText="Current status and duration of the loan that has been passed"
+        />
+      ),
       render: (loan) => <StatusCell loan={loan} />,
     },
     {
