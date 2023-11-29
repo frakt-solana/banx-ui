@@ -60,7 +60,7 @@ export const getTableColumns = ({
       render: (loan) => <InterestCell loan={loan} isCardView={isCardView} />,
     },
     {
-      key: 'apy',
+      key: 'apr',
       title: <HeaderCell label="APR" />,
       render: (loan) => <APRCell loan={loan} />,
     },

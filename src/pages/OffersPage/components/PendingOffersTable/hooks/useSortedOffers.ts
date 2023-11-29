@@ -11,7 +11,7 @@ enum SortField {
   LOANS = 'loans',
   SIZE = 'size',
   INTEREST = 'interest',
-  APR = 'apy',
+  APR = 'apr',
 }
 
 export const useSortedOffers = (offers: TableUserOfferData[], sortOptionValue: string) => {
@@ -32,7 +32,7 @@ export const useSortedOffers = (offers: TableUserOfferData[], sortOptionValue: s
         const weeklyAprPercentage = offer.apr / WEEKS_IN_YEAR
         return (offer.size * weeklyAprPercentage) / 100
       },
-      [SortField.APR]: 'apy',
+      [SortField.APR]: 'apr',
     }
 
     const sorted = sortBy(offers, (offer) => {

@@ -12,7 +12,7 @@ enum SortField {
   OFFER_TVL = 'offerTvl',
   LOANS_TVL = 'loansTvl',
   ACTIVE_LOANS = 'activeLoans',
-  APR = 'apy',
+  APR = 'apr',
 }
 
 export const useSortMarkets = (markets: MarketPreview[]) => {

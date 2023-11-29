@@ -3,7 +3,7 @@ import { SortOption } from '@banx/components/SortDropdown'
 export const SORT_OPTIONS = [
   { label: 'Lent', value: 'lent' },
   { label: 'LTV', value: 'ltv' },
-  { label: 'APR', value: 'apy' },
+  { label: 'APR', value: 'apr' },
   { label: 'Status', value: 'status' },
 ]
 
