@@ -90,6 +90,7 @@
 }
 
 .statsContainer {
+  height: 100%;
   display: flex;
   justify-content: space-around;
   flex-grow: 1;
@@ -105,6 +106,9 @@
 }
 
 .stats {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   p:first-child {
     color: var(--content-secondary);
     font: var(--table-header-md);
@@ -119,8 +123,8 @@
 
   @media (max-width: 1240px) {
     display: flex;
-    flex-direction: column;
     align-items: center;
+    gap: 0px;
   }
 
   @media (max-width: 640px) {
@@ -137,47 +141,31 @@
 .summaryBtns {
   display: flex;
   gap: 8px;
-
-  button {
-    &:first-child {
-      min-width: 170px;
-    }
-
-    &:last-child {
-      min-width: 192px;
-    }
-  }
+  align-items: center;
 
   @media (max-width: 960px) {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     width: 100%;
-
-    button {
-      &:first-child,
-      &:last-child {
-        min-width: unset;
-      }
-    }
   }
 }
 
-.ltvSlider {
-  width: 300px;
+.counterSlider {
+  max-width: 240px;
+}
+
+.borrowPercentSlider {
+  width: 240px;
+  max-width: 260px;
+  margin-right: 18px;
+  padding: 0;
 }
 
 .borrowButton {
+  min-width: 192px;
   width: 104px;
-}
 
-.selectButtonText {
-  @media (max-width: 1240px) {
-    display: none;
-  }
-}
-
-.selectButtonMobileText {
-  @media (min-width: 1241px) {
-    display: none;
+  @media (max-width: 960px) {
+    min-width: unset;
   }
 }

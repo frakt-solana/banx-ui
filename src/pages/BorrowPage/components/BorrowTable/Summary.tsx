@@ -77,8 +77,10 @@ export const Summary: FC<SummaryProps> = ({
             100: '100%',
           }}
           label="Max Ltv"
+          className={styles.borrowPercentSlider}
         />
         <CounterSlider
+          className={styles.counterSlider}
           value={nftsInCart.length}
           onChange={selectAmount}
           max={maxBorrowAmount}
