@@ -1,6 +1,10 @@
 import { CONSTANT_BID_CAP } from 'fbonds-core/lib/fbond-protocol/constants'
-import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { chunk, cloneDeep, first, groupBy } from 'lodash'
+import {
+  calculateCurrentInterestSolPure,
+  optimisticBorrowUpdateBondingBondOffer,
+} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
+import { chunk, groupBy } from 'lodash'
 import moment from 'moment'
 import { TxnExecutor, WalletAndConnection } from 'solana-transactions-executor'
 
@@ -69,7 +73,10 @@ export const executeBorrow = async (props: {
   const txnsResults = await new TxnExecutor(
     makeBorrowAction,
     { wallet, connection },
-    { signAllChunks: isLedger ? 1 : 40, rejectQueueOnFirstPfError: false },
+    {
+      signAllChunks: isLedger ? 1 : 40,
+      rejectQueueOnFirstPfError: false,
+    },
   )
     .addTxnParams(txnParams)
     .on('pfSuccessEach', (results) => {
@@ -178,9 +185,14 @@ export const optimisticWithdrawFromBondOffer = (
 }
 
 const mergeOffersWithLoanValue = (offers: OfferWithLoanValue[]): Offer | null => {
-  const offer = cloneDeep(first(offers))
-  if (!offer) return null
-  const totalLoanValues = (offers.length - 1) * (offer?.loanValue || 0)
+  optimisticBorrowUpdateBondingBondOffer
 
-  return optimisticWithdrawFromBondOffer(offer.offer, totalLoanValues)
+  const { offer } = offers.reduce((acc, offer) => {
+    return {
+      offer: optimisticBorrowUpdateBondingBondOffer(acc.offer as BondOfferV2, offer.loanValue),
+      loanValue: 0,
+    }
+  })
+
+  return offer
 }

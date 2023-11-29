@@ -122,6 +122,7 @@ export const useWalletLoansAndOffers = () => {
     const optimisticsToRemove = chain(optimisticOffers)
       //? Filter closed offers from LS optimistics
       .filter(({ offer }) => offer?.pairState !== PairState.PerpetualClosed)
+      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualBondingCurveClosed)
       .filter(({ offer }) => {
         const sameOfferFromBE = data.offers[offer.hadoMarket]?.find(
           ({ publicKey }) => publicKey === offer.publicKey,
@@ -149,6 +150,7 @@ export const useWalletLoansAndOffers = () => {
     const optimisticsFiltered = chain(optimisticOffers)
       //? Filter closed offers from LS optimistics
       .filter(({ offer }) => offer?.pairState !== PairState.PerpetualClosed)
+      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualBondingCurveClosed)
       //? Filter own offers from LS optimistics
       .filter(({ offer }) => offer?.assetReceiver !== publicKeyString)
       .value()
