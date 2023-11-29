@@ -20,10 +20,10 @@ export const copyToClipboard = (value: string): void => {
 
 //? takes and return the value in normal percent, F.e 30 => 30%
 export const convertAprToApy = (apr: number) => {
-  const compoundedInterest = 1 + apr / WEEKS_IN_YEAR
-  const apy = Math.pow(compoundedInterest, WEEKS_IN_YEAR) - 1
+  // const compoundedInterest = 1 + apr / WEEKS_IN_YEAR
+  // const apy = Math.pow(compoundedInterest, WEEKS_IN_YEAR) - 1
 
-  return Math.round(apy * 100)
+  return Math.round(apr * 100)
 }
 
 export const getDecimalPlaces = (value: number | string) => {
