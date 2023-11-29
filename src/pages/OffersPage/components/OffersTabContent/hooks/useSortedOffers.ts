@@ -6,7 +6,7 @@ import { SortOption } from '@banx/components/SortDropdown'
 
 import { LendLoansAndOffersV2 } from '@banx/api/core'
 
-import { caclulateClaimValue, calculateLentValue } from '../components/OfferCard/helpers'
+import { calculateClaimValue, calculateLentValue } from '../components/OfferCard/helpers'
 import { DEFAULT_SORT_OPTION, SORT_OPTIONS } from '../constants'
 
 enum SortField {
@@ -28,7 +28,7 @@ export const useSortedData = (data: LendLoansAndOffersV2[]) => {
     const [name, order] = sortOptionValue.split('_')
 
     const sortValueMapping: Record<SortField, string | SortValueGetter> = {
-      [SortField.CLAIM]: ({ loans }) => sumBy(loans, caclulateClaimValue),
+      [SortField.CLAIM]: ({ loans }) => sumBy(loans, calculateClaimValue),
       [SortField.LENT]: ({ loans }) => sumBy(loans, calculateLentValue),
       [SortField.OFFER]: ({ offer }) => offer.currentSpotPrice,
     }

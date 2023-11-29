@@ -8,7 +8,7 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 import { formatDecimal } from '@banx/utils'
 
 import { isLoanAbleToClaim, isLoanAbleToTerminate } from '../components/ActiveOffersTable/helpers'
-import { caclulateClaimValue } from '../components/OfferCard/helpers'
+import { calculateClaimValue } from '../components/OfferCard/helpers'
 import { useLenderLoansAndOffers } from './useLenderLoansAndOffers'
 import { useSortedData } from './useSortedOffers'
 
@@ -45,7 +45,7 @@ export const useOffersTabContent = () => {
     return {
       collectionName: collectionMeta.collectionName,
       collectionImage: collectionMeta.collectionImage,
-      claim: sumBy(loans, caclulateClaimValue),
+      claim: sumBy(loans, calculateClaimValue),
     }
   })
 

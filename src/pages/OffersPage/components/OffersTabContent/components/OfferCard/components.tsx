@@ -109,7 +109,7 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ loan
   return (
     <div className={styles.additionalOfferContainer}>
       <div className={styles.additionalStat}>
-        <div className={styles.additionalStatLabel}>Lend</div>
+        <div className={styles.additionalStatLabel}>Lent</div>
         <div className={styles.additionalStatValues}>
           {createSolValueJSX(lent, 1e9, '0◎')}
           <span>

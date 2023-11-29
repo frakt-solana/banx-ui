@@ -4,15 +4,29 @@ import moment from 'moment'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { calcLoanBorrowedAmount } from '@banx/utils'
+import { calcLoanBorrowedAmount, calcWeightedAverage } from '@banx/utils'
 
 export const getAdditionalOfferInfo = (loans: Loan[]) => {
+  const collectionFloor = loans[0]?.nft.collectionFloor
+  const totalClaimValue = sumBy(loans, calculateClaimValue)
+
+  const ltv = (totalClaimValue / collectionFloor) * 100
+
+  const weightedApr = calcWeightedAverage(
+    loans.map((loan) => loan.bondTradeTransaction.amountOfBonds / 100),
+    loans.map((loan) => loan.fraktBond.borrowedAmount),
+  )
+
+  const totalLent = sumBy(loans, calculateLentValue)
+  const totalClaim = sumBy(loans, calculateClaimValue)
+  const totalRepaid = sumBy(loans, ({ totalRepaidAmount = 0 }) => totalRepaidAmount)
+
   return {
-    lent: sumBy(loans, calculateLentValue),
-    repaid: sumBy(loans, 'totalRepaidAmount'),
-    claim: sumBy(loans, caclulateClaimValue),
-    ltv: 0,
-    apy: 0,
+    lent: totalLent,
+    repaid: totalRepaid,
+    claim: totalClaim,
+    ltv,
+    apy: weightedApr,
     interest: 0,
     totalLoans: loans.length,
   }
@@ -26,7 +40,7 @@ export const calculateLentValue = (loan: Loan) => {
   return loanBorrowedAmount + totalRepaidAmount
 }
 
-export const caclulateClaimValue = (loan: Loan) => {
+export const calculateClaimValue = (loan: Loan) => {
   const { amountOfBonds, soldAt } = loan.bondTradeTransaction
 
   const loanBorrowedAmount = calcLoanBorrowedAmount(loan)

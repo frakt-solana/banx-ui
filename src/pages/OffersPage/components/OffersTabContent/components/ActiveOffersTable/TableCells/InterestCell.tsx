@@ -5,7 +5,7 @@ import { createPercentValueJSX, createSolValueJSX } from '@banx/components/Table
 import { Loan } from '@banx/api/core'
 import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
 
-import { caclulateClaimValue } from '../../OfferCard/helpers'
+import { calculateClaimValue } from '../../OfferCard/helpers'
 
 import styles from '../ActiveLoansTable.module.less'
 
@@ -16,7 +16,7 @@ interface InterestCellProps {
 export const InterestCell: FC<InterestCellProps> = ({ loan }) => {
   const collectionFloor = loan.nft.collectionFloor
 
-  const totalClaimValue = caclulateClaimValue(loan)
+  const totalClaimValue = calculateClaimValue(loan)
 
   const formattedClaimValue = createSolValueJSX(totalClaimValue, 1e9, '--', formatDecimal)
 
