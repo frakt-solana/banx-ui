@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { CollectionMeta, Offer } from '@banx/api/core'
-import { useUserOffers } from '@banx/pages/OffersPage/hooks'
+import { useLenderLoansAndOffers } from '@banx/pages/OffersPage/hooks'
 import { PATHS } from '@banx/router'
 import { useMarketsURLControl, useSyntheticOffers } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
@@ -15,7 +15,8 @@ import { enqueueSnackbar } from '@banx/utils'
 export const useActionsCell = (offer: Offer, collectionMeta: CollectionMeta) => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { offers, updateOrAddOffer } = useUserOffers()
+  const { data, updateOrAddOffer } = useLenderLoansAndOffers()
+  const offers = data.map(({ offer }) => offer)
 
   const navigate = useNavigate()
 

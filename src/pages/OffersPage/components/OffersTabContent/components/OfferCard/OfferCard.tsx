@@ -7,7 +7,7 @@ import { Button } from '@banx/components/Buttons'
 import { CollectionMeta, Loan, Offer } from '@banx/api/core'
 import { ChevronDown } from '@banx/icons'
 
-import ActiveOffersTable from '../ActiveOffersTable/ActiveLoansTable'
+import ActiveLoansTable from '../ActiveLoansTable'
 import { AdditionalOfferOverview, MainOfferOverview } from './components'
 
 import styles from './OfferCard.module.less'
@@ -33,7 +33,7 @@ const OfferCard: FC<OfferCardProps> = ({ offer, loans, collectionMeta }) => {
           <ChevronDown />
         </Button>
       </div>
-      {isOpen && <ActiveOffersTable loans={loans} />}
+      {isOpen && <ActiveLoansTable loans={loans} />}
     </div>
   )
 }

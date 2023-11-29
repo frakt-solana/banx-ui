@@ -1,6 +1,7 @@
 import { chain, maxBy, sortBy } from 'lodash'
 
 import { Loan, Offer } from '@banx/api/core'
+import { OfferOptimistic } from '@banx/store'
 import {
   calculateLoanRepayValue,
   calculateLoanValue,
@@ -20,7 +21,7 @@ export const isLoanAbleToClaim: IsLoanAbleToClaim = (loan) => {
 type IsLoanAbleToTerminate = (props: {
   loan: Loan
   offers: Record<string, Offer[]>
-  optimisticOffers: Offer[]
+  optimisticOffers: OfferOptimistic[]
 }) => boolean
 export const isLoanAbleToTerminate: IsLoanAbleToTerminate = ({
   loan,
@@ -38,12 +39,15 @@ export const isLoanAbleToTerminate: IsLoanAbleToTerminate = ({
 type FindBestOffer = (props: {
   loan: Loan
   offers: Record<string, Offer[]>
-  optimisticOffers: Offer[]
+  optimisticOffers: OfferOptimistic[]
 }) => Offer
 
 export const findBestOffer: FindBestOffer = ({ loan, offers, optimisticOffers }) => {
   const offersByMarket = offers[loan.fraktBond.hadoMarket || '']
-  const combinedOffers = [...optimisticOffers, ...(offersByMarket ?? [])]
+  const combinedOffers = [
+    ...optimisticOffers.map((offer) => offer.offer),
+    ...(offersByMarket ?? []),
+  ]
 
   const filteredOffers = chain(combinedOffers)
     .groupBy('publicKey')

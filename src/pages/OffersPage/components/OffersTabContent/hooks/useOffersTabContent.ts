@@ -1,15 +1,15 @@
 import { useMemo, useState } from 'react'
 
-import { sumBy, uniqBy } from 'lodash'
+import { groupBy, sumBy, uniqBy } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
+import { useLenderLoansAndOffers } from '@banx/pages/OffersPage/hooks'
 import { formatDecimal } from '@banx/utils'
 
-import { isLoanAbleToClaim, isLoanAbleToTerminate } from '../components/ActiveOffersTable/helpers'
+import { isLoanAbleToClaim, isLoanAbleToTerminate } from '../components/ActiveLoansTable/helpers'
 import { calculateClaimValue } from '../components/OfferCard/helpers'
-import { useLenderLoansAndOffers } from './useLenderLoansAndOffers'
 import { useSortedData } from './useSortedOffers'
 
 type SearchSelectOption = {
@@ -21,7 +21,6 @@ type SearchSelectOption = {
 export const useOffersTabContent = () => {
   const {
     data,
-    offers,
     optimisticOffers,
     loading: isLoading,
     addMints,
@@ -68,17 +67,18 @@ export const useOffersTabContent = () => {
 
   const { loansToClaim, loansToTerminate } = useMemo(() => {
     const flatLoans = data.flatMap(({ loans }) => loans)
+    const groupedOffers = groupBy(data?.flatMap(({ offer }) => offer), 'publicKey') ?? {}
 
     if (!flatLoans.length) return { loansToClaim: [], loansToTerminate: [] }
 
     const loansToClaim = flatLoans.filter(isLoanAbleToClaim)
 
     const loansToTerminate = flatLoans.filter((loan) =>
-      isLoanAbleToTerminate({ loan, offers, optimisticOffers }),
+      isLoanAbleToTerminate({ loan, offers: groupedOffers, optimisticOffers }),
     )
 
     return { loansToClaim, loansToTerminate }
-  }, [data, offers, optimisticOffers])
+  }, [data, optimisticOffers])
 
   const showEmptyList = !isLoading && !data.length
 

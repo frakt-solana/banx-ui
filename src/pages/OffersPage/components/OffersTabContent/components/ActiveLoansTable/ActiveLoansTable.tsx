@@ -1,12 +1,14 @@
 import { FC, useMemo } from 'react'
 
+import { groupBy } from 'lodash'
+
 import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 
 import { Loan } from '@banx/api/core'
+import { useLenderLoansAndOffers } from '@banx/pages/OffersPage/hooks'
 import { isLoanLiquidated, isLoanTerminating } from '@banx/utils'
 
-import { useLenderLoansAndOffers } from '../../hooks'
 import { getTableColumns } from './columns'
 
 import styles from './ActiveLoansTable.module.less'
@@ -16,9 +18,16 @@ interface ActiveLoansTableProps {
 }
 
 const ActiveLoansTable: FC<ActiveLoansTableProps> = ({ loans }) => {
-  const { offers, updateOrAddLoan, updateOrAddOffer } = useLenderLoansAndOffers()
+  const { data, updateOrAddLoan, updateOrAddOffer, optimisticOffers } = useLenderLoansAndOffers()
 
-  const columns = getTableColumns({ offers, updateOrAddOffer, updateOrAddLoan })
+  const groupedOffers = groupBy(data?.flatMap(({ offer }) => offer), 'publicKey') ?? {}
+
+  const columns = getTableColumns({
+    offers: groupedOffers,
+    updateOrAddOffer,
+    optimisticOffers,
+    updateOrAddLoan,
+  })
 
   const rowParams = useMemo(() => {
     return {
@@ -38,9 +47,7 @@ const ActiveLoansTable: FC<ActiveLoansTableProps> = ({ loans }) => {
   }, [])
 
   if (!loans.length)
-    return (
-      <EmptyList className={styles.emptyList} message="Your offer is waiting for a borrower'" />
-    )
+    return <EmptyList className={styles.emptyList} message="Your offer is waiting for a borrower" />
 
   return (
     <Table
