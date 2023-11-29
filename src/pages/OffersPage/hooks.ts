@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, map, maxBy } from 'lodash'
 
-import { Offer, fetchLenderLoansAndOffersV2 } from '@banx/api/core'
+import { Offer, fetchLenderLoansAndOffers } from '@banx/api/core'
 import { fetchUserOffersStats } from '@banx/api/stats'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { isOfferNewer, isOptimisticOfferExpired, useOffersOptimistic } from '@banx/store'
@@ -26,7 +26,7 @@ export const useUserOffers = () => {
     isFetched: isUserOffersFetched,
   } = useQuery(
     [USE_USER_OFFERS_QUERY_KEY, publicKeyString],
-    () => fetchLenderLoansAndOffersV2({ walletPublicKey: publicKeyString }),
+    () => fetchLenderLoansAndOffers({ walletPublicKey: publicKeyString }),
     {
       enabled: !!publicKeyString,
       refetchOnWindowFocus: false,

@@ -61,12 +61,7 @@ export const PairSchema = z.object({
   validation: ValidationPairSchema,
 })
 
-export const UserPairSchema = PairSchema.merge(MarketMetaSchema).merge(
-  z.object({ collectionFloor: z.number() }),
-)
-
 export type Offer = z.infer<typeof PairSchema>
-export type UserOffer = z.infer<typeof UserPairSchema>
 
 export interface FetchMarketOffersResponse {
   data: Offer[]
@@ -189,16 +184,15 @@ export const CollectionMetaSchema = z.object({
 
 export type CollectionMeta = z.infer<typeof CollectionMetaSchema>
 
-//# endpoint v2
 export const LendLoansAndOffersSchema = z.object({
   offer: PairSchema,
   loans: LoanSchema.array(),
   collectionMeta: CollectionMetaSchema,
 })
 
-export type LendLoansAndOffersV2 = z.infer<typeof LendLoansAndOffersSchema>
+export type LendLoansAndOffers = z.infer<typeof LendLoansAndOffersSchema>
 export interface LendLoansAndOffersResponseV2 {
-  data: LendLoansAndOffersV2[]
+  data: LendLoansAndOffers[]
   meta: PaginationMeta
 }
 

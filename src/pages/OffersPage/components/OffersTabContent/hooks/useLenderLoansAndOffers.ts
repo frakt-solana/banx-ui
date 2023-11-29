@@ -6,7 +6,7 @@ import { produce } from 'immer'
 import { chain, groupBy, maxBy } from 'lodash'
 import { create } from 'zustand'
 
-import { Loan, Offer, fetchLenderLoansAndOffersV2 } from '@banx/api/core'
+import { Loan, Offer, fetchLenderLoansAndOffers } from '@banx/api/core'
 
 interface HiddenNftsMintsState {
   mints: string[]
@@ -123,7 +123,7 @@ export const useLenderLoansAndOffers = () => {
 
   const { data, isLoading } = useQuery(
     ['lenderLoansAndOffers', publicKeyString],
-    () => fetchLenderLoansAndOffersV2({ walletPublicKey: publicKeyString }),
+    () => fetchLenderLoansAndOffers({ walletPublicKey: publicKeyString }),
     {
       enabled: !!publicKeyString,
       refetchOnWindowFocus: false,

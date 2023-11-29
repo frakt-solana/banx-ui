@@ -4,7 +4,7 @@ import { get, isFunction, sortBy, sumBy } from 'lodash'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
-import { LendLoansAndOffersV2 } from '@banx/api/core'
+import { LendLoansAndOffers } from '@banx/api/core'
 
 import { calculateClaimValue, calculateLentValue } from '../components/OfferCard/helpers'
 import { DEFAULT_SORT_OPTION, SORT_OPTIONS } from '../constants'
@@ -15,9 +15,9 @@ enum SortField {
   OFFER = 'offer',
 }
 
-type SortValueGetter = (data: LendLoansAndOffersV2) => number
+type SortValueGetter = (data: LendLoansAndOffers) => number
 
-export const useSortedData = (data: LendLoansAndOffersV2[]) => {
+export const useSortedData = (data: LendLoansAndOffers[]) => {
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
 
   const sortOptionValue = sortOption?.value
