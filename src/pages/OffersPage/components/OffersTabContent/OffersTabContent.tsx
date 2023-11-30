@@ -19,6 +19,8 @@ const OffersTabContent = () => {
     loansToTerminate,
     addMints,
     updateOrAddLoan,
+    updateOrAddOffer,
+    offers,
   } = useOffersTabContent()
 
   if (showEmptyList) return <EmptyList message="Lend SOL to view your pending offers" />
@@ -39,9 +41,11 @@ const OffersTabContent = () => {
 
           <Summary
             updateOrAddLoan={updateOrAddLoan}
+            updateOrAddOffer={updateOrAddOffer}
             addMints={addMints}
             loansToClaim={loansToClaim}
             loansToTerminate={loansToTerminate}
+            offers={offers}
           />
         </>
       )}

@@ -38,8 +38,8 @@ export const useActionsCell = (offer: Offer, collectionMeta: CollectionMeta) => 
       loansAmount: offer.buyOrdersQuantity,
       assetReceiver: offer.assetReceiver,
       marketPubkey: offer.hadoMarket,
-      mathCounter: 0,
-      deltaValue: 0,
+      mathCounter: offer.mathCounter,
+      deltaValue: offer.bondingCurve.delta,
     })
 
     const collectionName = collectionMeta.collectionName
