@@ -6,7 +6,6 @@ import {
   MIN_DISPLAY_VALUE,
   THREE_DECIMAL_PLACES,
   TWO_DECIMAL_PLACES,
-  WEEKS_IN_YEAR,
 } from '@banx/constants'
 
 // shorten the checksummed version of the input address to have 4 characters at start and end

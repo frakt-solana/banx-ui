@@ -35,7 +35,7 @@ export const InterestCell: FC<InterestCellProps> = ({ loan, isCardView }) => {
     rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
   })
 
-  const aprInPercent = amountOfBonds / 100
+  const aprInPercent = (amountOfBonds + BONDS.PROTOCOL_REPAY_FEE) / 100
 
   const formattedFeeValue = createSolValueJSX(weeklyFee, 1e9, '0◎', formatDecimal)
   const formattedAprValue = createPercentValueJSX(aprInPercent)
