@@ -5,8 +5,8 @@ import { isEmpty } from 'lodash'
 import { Button } from '@banx/components/Buttons'
 
 import { Loan } from '@banx/api/core'
-import { useHiddenNftsMints } from '@banx/pages/BorrowPage/hooks'
 import { useMarketOffers } from '@banx/pages/LendPage/hooks'
+import { useHiddenNftsMints } from '@banx/pages/OffersPage/hooks'
 import {
   isLoanActiveOrRefinanced,
   isLoanLiquidated,
@@ -26,7 +26,7 @@ interface ActionsCellProps {
 
 export const ActionsCell: FC<ActionsCellProps> = ({ loan, updateOrAddLoan }) => {
   const { offers, updateOrAddOffer } = useMarketOffers({ marketPubkey: loan.fraktBond.hadoMarket })
-  const { add: addMints } = useHiddenNftsMints()
+  const { addMints } = useHiddenNftsMints()
 
   const bestOffer = useMemo(() => {
     return findBestOffer({ loan, offers })
