@@ -3,10 +3,14 @@ import { FC, useState } from 'react'
 import { sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
-import { CounterSlider } from '@banx/components/Slider'
+import { CounterSlider, Slider } from '@banx/components/Slider'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
-import { calcLoanValueWithProtocolFee, trackPageEvent } from '@banx/utils'
+import {
+  calcBorrowValueWithProtocolFee,
+  calcBorrowValueWithRentFee,
+  trackPageEvent,
+} from '@banx/utils'
 
 import { ONE_WEEK_IN_SECONDS } from './constants'
 import { calcInterest } from './helpers'
@@ -19,6 +23,8 @@ interface SummaryProps {
   borrowAll: () => Promise<void>
   selectAmount: (value?: number) => void
   maxBorrowAmount: number
+  maxBorrowPercent: number
+  setMaxBorrowPercent: (value: number) => void
 }
 
 export const Summary: FC<SummaryProps> = ({
@@ -26,8 +32,14 @@ export const Summary: FC<SummaryProps> = ({
   nftsInCart,
   borrowAll,
   selectAmount,
+  maxBorrowPercent,
+  setMaxBorrowPercent,
 }) => {
-  const totalBorrow = calcLoanValueWithProtocolFee(sumBy(nftsInCart, ({ loanValue }) => loanValue))
+  const totalBorrow = sumBy(nftsInCart, ({ loanValue, nft }) => {
+    const loanValueWithProtocolFee = calcBorrowValueWithProtocolFee(loanValue)
+    return calcBorrowValueWithRentFee(loanValueWithProtocolFee, nft.loan.marketPubkey)
+  })
+
   const totalWeeklyFee = sumBy(nftsInCart, ({ nft, loanValue }) =>
     calcInterest({
       timeInterval: ONE_WEEK_IN_SECONDS,
@@ -61,7 +73,27 @@ export const Summary: FC<SummaryProps> = ({
         </div>
       </div>
       <div className={styles.summaryBtns}>
-        <CounterSlider value={nftsInCart.length} onChange={selectAmount} max={maxBorrowAmount} />
+        <Slider
+          value={maxBorrowPercent}
+          onChange={setMaxBorrowPercent}
+          min={25}
+          max={100}
+          marks={{
+            25: '25%',
+            50: '50%',
+            75: '75%',
+            100: '100%',
+          }}
+          label="Max Ltv"
+          className={styles.borrowPercentSlider}
+        />
+        <CounterSlider
+          className={styles.counterSlider}
+          value={nftsInCart.length}
+          onChange={selectAmount}
+          max={maxBorrowAmount}
+          label="# Nfts"
+        />
         <Button onClick={onBorrow} disabled={!nftsInCart.length} loading={isBorrowing} size="large">
           Borrow {createSolValueJSX(totalBorrow, 1e9, '0◎')}
         </Button>

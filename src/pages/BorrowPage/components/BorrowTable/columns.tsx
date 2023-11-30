@@ -2,7 +2,11 @@ import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
 import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
 
-import { calcLoanValueWithProtocolFee, formatDecimal } from '@banx/utils'
+import {
+  calcBorrowValueWithProtocolFee,
+  calcBorrowValueWithRentFee,
+  formatDecimal,
+} from '@banx/utils'
 
 import { SimpleOffer } from '../../types'
 import { BorrowCell } from './BorrowCell'
@@ -57,8 +61,15 @@ export const getTableColumns = ({
     {
       key: 'loanValue',
       title: <HeaderCell label="Borrow" />,
-      render: (nft) =>
-        createSolValueJSX(calcLoanValueWithProtocolFee(nft.loanValue), 1e9, '--', formatDecimal),
+      render: (nft) => {
+        const loanValueWithProtocolFee = calcBorrowValueWithProtocolFee(nft.loanValue)
+        return createSolValueJSX(
+          calcBorrowValueWithRentFee(loanValueWithProtocolFee, nft.nft.loan.marketPubkey),
+          1e9,
+          '--',
+          formatDecimal,
+        )
+      },
     },
     {
       key: 'weeklyFee',
