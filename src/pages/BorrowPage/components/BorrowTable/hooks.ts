@@ -27,7 +27,7 @@ import { getDialectAccessToken, trackPageEvent } from '@banx/utils'
 import { useCartState } from '../../cartState'
 import { getTableColumns } from './columns'
 import { DEFAULT_TABLE_SORT, SORT_OPTIONS } from './constants'
-import { createBorrowAllParams, createTableNftData, executeBorrow } from './helpers'
+import { createBorrowParams, createTableNftData, executeBorrow } from './helpers'
 import { SortField, TableNftData } from './types'
 
 import styles from './BorrowTable.module.less'
@@ -35,9 +35,10 @@ import styles from './BorrowTable.module.less'
 export interface UseBorrowTableProps {
   nfts: BorrowNft[]
   rawOffers: Record<string, Offer[]>
+  maxLoanValueByMarket: Record<string, number>
 }
 
-export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
+export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBorrowTableProps) => {
   const wallet = useWallet()
   const { connection } = useConnection()
   const navigate = useNavigate()
@@ -58,15 +59,21 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
   const { add: addLoansOptimistic } = useLoansOptimistic()
   const { update: updateOffersOptimistic } = useOffersOptimistic()
 
+  const [maxBorrowPercent, setMaxBorrowPercent] = useState(100)
+
   const tableNftsData: TableNftData[] = useMemo(
     () => {
-      return createTableNftData({ nfts, findBestOffer, findOfferInCart }).sort((nftA, nftB) =>
-        nftB.nft.nft.meta.name.localeCompare(nftA.nft.nft.meta.name),
-      )
+      return createTableNftData({
+        nfts,
+        findBestOffer,
+        findOfferInCart,
+        maxLoanValueByMarket,
+        maxBorrowPercent,
+      }).sort((nftA, nftB) => nftB.nft.nft.meta.name.localeCompare(nftA.nft.nft.meta.name))
     },
     //? Because we need to recalc tableNftData each time offerByMint
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [nfts, findBestOffer, findOfferInCart, offerByMint],
+    [nfts, findBestOffer, findOfferInCart, offerByMint, maxLoanValueByMarket, maxBorrowPercent],
   )
 
   const goToLoansPage = () => {
@@ -88,29 +95,14 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
   }
 
   const borrow = async (nft: TableNftData) => {
-    const { marketPubkey } = nft.nft.loan
-
-    const offer = findBestOffer({ marketPubkey })
-    const rawOffer = rawOffers[marketPubkey]?.find(
-      ({ publicKey }) => publicKey === offer?.publicKey,
-    )
-
-    if (!offer || !rawOffer) return
+    const txnParams = createBorrowParams([nft], rawOffers)
 
     const txnResults = await executeBorrow({
       walletAndConnection: {
         wallet,
         connection,
       },
-      txnParams: [
-        [
-          {
-            loanValue: nft.loanValue,
-            nft: nft.nft,
-            offer: rawOffer,
-          },
-        ],
-      ],
+      txnParams: txnParams,
       addLoansOptimistic,
       updateOffersOptimistic,
       onSuccessAll: () => onBorrowSuccess(1),
@@ -123,7 +115,8 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
   }
 
   const borrowAll = async () => {
-    const txnParams = createBorrowAllParams(offerByMint, nfts, rawOffers)
+    const selectedNfts = tableNftsData.filter(({ mint }) => !!offerByMint[mint])
+    const txnParams = createBorrowParams(selectedNfts, rawOffers)
 
     const txnsResults = await executeBorrow({
       walletAndConnection: {
@@ -270,6 +263,8 @@ export const useBorrowTable = ({ nfts, rawOffers }: UseBorrowTableProps) => {
     nftsInCart,
     findOfferInCart,
     maxBorrowAmount,
+    maxBorrowPercent,
+    setMaxBorrowPercent,
   }
 }
 
