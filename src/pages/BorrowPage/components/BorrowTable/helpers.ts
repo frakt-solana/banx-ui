@@ -139,25 +139,7 @@ export const executeBorrow = async (props: {
 }
 
 export const createBorrowParams = (nfts: TableNftData[], rawOffers: Record<string, Offer[]>) => {
-  // const nftsByMarket = chain(nfts)
-  //   .filter(({ mint }) => !!offerByMint[mint])
-  //   .groupBy(({ nft }) => nft.loan.marketPubkey)
-  //   .value()
-
   const nftsByMarket = groupBy(nfts, ({ nft }) => nft.loan.marketPubkey)
-
-  //? For debugging
-  // console.log(
-  //   'offerByMintStart',
-  //   chain(offerByMint)
-  //     .entries()
-  //     .map(([mint, offer]) => [
-  //       mint,
-  //       rawOffers[offer.hadoMarket].find(({ hadoMarket }) => hadoMarket === offer.hadoMarket),
-  //     ])
-  //     .fromPairs()
-  //     .value(),
-  // )
 
   const txnData = chain(nftsByMarket)
     .entries()
@@ -165,12 +147,6 @@ export const createBorrowParams = (nfts: TableNftData[], rawOffers: Record<strin
     .map(([marketPubkey, nfts]) => matchNftsAndOffers({ nfts, rawOffers: rawOffers[marketPubkey] }))
     .flatten()
     .value()
-
-  //? For debugging
-  // console.log(
-  //   'offerByMintFinish',
-  //   Object.fromEntries(txnData.map(({ offer, nft }) => [nft.mint, offer])),
-  // )
 
   return chunkBorrowIxnsParams(txnData)
 }
