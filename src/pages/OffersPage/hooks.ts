@@ -81,7 +81,7 @@ const useLenderLoansOptimistic = create<OptimisticLenderLoansState>((set, get) =
   },
 }))
 
-export const USE_USER_OFFERS_QUERY_KEY = 'userOffers'
+export const USE_USER_OFFERS_V2_QUERY_KEY = 'userOffersV2'
 
 export const useLenderLoansAndOffers = () => {
   const { publicKey } = useWallet()
@@ -95,7 +95,7 @@ export const useLenderLoansAndOffers = () => {
   const { marketsPreview } = useMarketsPreview()
 
   const { data, isLoading, isFetching, isFetched } = useQuery(
-    [USE_USER_OFFERS_QUERY_KEY, publicKeyString],
+    [USE_USER_OFFERS_V2_QUERY_KEY, publicKeyString],
     () => fetchLenderLoansAndOffers({ walletPublicKey: publicKeyString }),
     {
       enabled: !!publicKeyString,
