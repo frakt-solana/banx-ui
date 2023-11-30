@@ -20,7 +20,7 @@ export const useLendLoansTransactions = ({
   loan: Loan
   bestOffer: Offer
   updateOrAddLoan: (loan: Loan) => void
-  updateOrAddOffer: (offer: Offer[]) => void
+  updateOrAddOffer: (offer: Offer) => void
   addMints: (...mints: string[]) => void
 }) => {
   const wallet = useWallet()
@@ -74,7 +74,7 @@ export const useLendLoansTransactions = ({
       .addTxnParam({ loan, bestOffer })
       .on('pfSuccessEach', (results) => {
         const { result, txnHash } = results[0]
-        result?.bondOffer && updateOrAddOffer([result.bondOffer])
+        result?.bondOffer && updateOrAddOffer(result.bondOffer)
         addMints(loan.nft.mint)
         enqueueSnackbar({
           message: 'Offer successfully sold',

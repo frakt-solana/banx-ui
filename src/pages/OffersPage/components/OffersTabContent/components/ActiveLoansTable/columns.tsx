@@ -1,19 +1,17 @@
 import { ColumnType } from '@banx/components/Table'
 import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
 
-import { Loan, Offer } from '@banx/api/core'
+import { Loan } from '@banx/api/core'
 import { formatDecimal } from '@banx/utils'
 
 import { calculateLentValue } from '../OfferCard/helpers'
 import { APRCell, ActionsCell, InterestCell, StatusCell } from './TableCells'
 
 interface GetTableColumns {
-  offers: Offer[]
-  updateOrAddOffer: (offer: Offer[]) => void
   updateOrAddLoan: (loan: Loan) => void
 }
 
-export const getTableColumns = ({ offers, updateOrAddOffer, updateOrAddLoan }: GetTableColumns) => {
+export const getTableColumns = ({ updateOrAddLoan }: GetTableColumns) => {
   const columns: ColumnType<Loan>[] = [
     {
       key: 'collateral',
@@ -67,14 +65,7 @@ export const getTableColumns = ({ offers, updateOrAddOffer, updateOrAddLoan }: G
     {
       key: 'actionsCell',
       title: <HeaderCell label="" />,
-      render: (loan) => (
-        <ActionsCell
-          offers={offers}
-          updateOrAddOffer={updateOrAddOffer}
-          updateOrAddLoan={updateOrAddLoan}
-          loan={loan}
-        />
-      ),
+      render: (loan) => <ActionsCell updateOrAddLoan={updateOrAddLoan} loan={loan} />,
     },
   ]
 

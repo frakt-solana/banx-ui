@@ -16,9 +16,9 @@ interface ActiveLoansTableProps {
 }
 
 const ActiveLoansTable: FC<ActiveLoansTableProps> = ({ loans }) => {
-  const { offers, updateOrAddLoan, updateOrAddOffer } = useLenderLoansAndOffers()
+  const { updateOrAddLoan } = useLenderLoansAndOffers()
 
-  const columns = getTableColumns({ offers, updateOrAddOffer, updateOrAddLoan })
+  const columns = getTableColumns({ updateOrAddLoan })
 
   const rowParams = useMemo(() => {
     return {

@@ -13,6 +13,8 @@ export const getAdditionalOfferInfo = ({ loans, offer }: { loans: Loan[]; offer:
   const activeLoansQuantity = offer.validation.maxReturnAmountFilter || 0
   const loansQuantity = loans.length
 
+  const interest = offer.concentrationIndex
+
   const ltv = (totalClaimValue / loansQuantity / collectionFloor) * 100
 
   const weightedApr = calcWeightedAverage(
@@ -30,7 +32,7 @@ export const getAdditionalOfferInfo = ({ loans, offer }: { loans: Loan[]; offer:
     claim: totalClaim,
     ltv,
     apy: weightedApr,
-    interest: 0,
+    interest,
     loansQuantity,
     activeLoansQuantity,
   }
