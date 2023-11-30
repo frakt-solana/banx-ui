@@ -9,7 +9,7 @@ import {
   BorrowNftsAndOffersResponse,
   BorrowNftsAndOffersSchema,
   FetchMarketOffersResponse,
-  LendLoansAndOffersResponseV2,
+  LendLoansAndOffersResponse,
   LendLoansAndOffersSchema,
   LoanSchema,
   MarketPreview,
@@ -134,7 +134,7 @@ type fetchLenderLoansAndOffers = (props: {
   skip?: number
   limit?: number
   getAll?: boolean
-}) => Promise<LendLoansAndOffersResponseV2['data']>
+}) => Promise<LendLoansAndOffersResponse['data']>
 
 export const fetchLenderLoansAndOffers: fetchLenderLoansAndOffers = async ({
   walletPublicKey,
@@ -152,7 +152,7 @@ export const fetchLenderLoansAndOffers: fetchLenderLoansAndOffers = async ({
       isPrivate: String(IS_PRIVATE_MARKETS),
     })
 
-    const { data } = await axios.get<LendLoansAndOffersResponseV2>(
+    const { data } = await axios.get<LendLoansAndOffersResponse>(
       `${BACKEND_BASE_URL}/loans/lender/v2/${walletPublicKey}?${queryParams.toString()}`,
     )
 

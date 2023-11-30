@@ -1,7 +1,5 @@
 import { FC, useMemo } from 'react'
 
-import { groupBy } from 'lodash'
-
 import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 
@@ -18,16 +16,9 @@ interface ActiveLoansTableProps {
 }
 
 const ActiveLoansTable: FC<ActiveLoansTableProps> = ({ loans }) => {
-  const { data, updateOrAddLoan, updateOrAddOffer, optimisticOffers } = useLenderLoansAndOffers()
+  const { offers, updateOrAddLoan, updateOrAddOffer } = useLenderLoansAndOffers()
 
-  const groupedOffers = groupBy(data?.flatMap(({ offer }) => offer), 'publicKey') ?? {}
-
-  const columns = getTableColumns({
-    offers: groupedOffers,
-    updateOrAddOffer,
-    optimisticOffers,
-    updateOrAddLoan,
-  })
+  const columns = getTableColumns({ offers, updateOrAddOffer, updateOrAddLoan })
 
   const rowParams = useMemo(() => {
     return {

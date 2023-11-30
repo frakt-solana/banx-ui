@@ -6,7 +6,6 @@ import { Button } from '@banx/components/Buttons'
 
 import { Loan, Offer } from '@banx/api/core'
 import { useHiddenNftsMints } from '@banx/pages/BorrowPage/hooks'
-import { OfferOptimistic } from '@banx/store'
 import {
   isLoanActiveOrRefinanced,
   isLoanLiquidated,
@@ -21,10 +20,9 @@ import styles from '../ActiveLoansTable.module.less'
 
 interface ActionsCellProps {
   loan: Loan
-  offers: Record<string, Offer[]>
+  offers: Offer[]
   updateOrAddOffer: (offer: Offer[]) => void
   updateOrAddLoan: (loan: Loan) => void
-  optimisticOffers: OfferOptimistic[]
 }
 
 export const ActionsCell: FC<ActionsCellProps> = ({
@@ -32,13 +30,12 @@ export const ActionsCell: FC<ActionsCellProps> = ({
   offers,
   updateOrAddOffer,
   updateOrAddLoan,
-  optimisticOffers,
 }) => {
   const { add: addMints } = useHiddenNftsMints()
 
   const bestOffer = useMemo(() => {
-    return findBestOffer({ loan, offers, optimisticOffers })
-  }, [offers, optimisticOffers, loan])
+    return findBestOffer({ loan, offers })
+  }, [offers, loan])
 
   const { terminateLoan, claimLoan, instantLoan } = useLendLoansTransactions({
     loan,

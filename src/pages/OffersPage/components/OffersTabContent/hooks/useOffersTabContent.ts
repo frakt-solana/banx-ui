@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-import { groupBy, sumBy, uniqBy } from 'lodash'
+import { sumBy, uniqBy } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { createSolValueJSX } from '@banx/components/TableComponents'
@@ -21,7 +21,7 @@ type SearchSelectOption = {
 export const useOffersTabContent = () => {
   const {
     data,
-    optimisticOffers,
+    offers,
     loading: isLoading,
     addMints,
     updateOrAddLoan,
@@ -68,18 +68,15 @@ export const useOffersTabContent = () => {
 
   const { loansToClaim, loansToTerminate } = useMemo(() => {
     const flatLoans = data.flatMap(({ loans }) => loans)
-    const groupedOffers = groupBy(data?.flatMap(({ offer }) => offer), 'publicKey') ?? {}
 
     if (!flatLoans.length) return { loansToClaim: [], loansToTerminate: [] }
 
     const loansToClaim = flatLoans.filter(isLoanAbleToClaim)
 
-    const loansToTerminate = flatLoans.filter((loan) =>
-      isLoanAbleToTerminate({ loan, offers: groupedOffers, optimisticOffers }),
-    )
+    const loansToTerminate = flatLoans.filter((loan) => isLoanAbleToTerminate({ loan, offers }))
 
     return { loansToClaim, loansToTerminate }
-  }, [data, optimisticOffers])
+  }, [data, offers])
 
   const showEmptyList = !isLoading && !data.length
 
@@ -94,6 +91,6 @@ export const useOffersTabContent = () => {
     addMints,
     updateOrAddLoan,
     updateOrAddOffer,
-    offers: data?.flatMap(({ offer }) => offer),
+    offers,
   }
 }

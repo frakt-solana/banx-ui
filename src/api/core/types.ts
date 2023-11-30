@@ -191,7 +191,7 @@ export const LendLoansAndOffersSchema = z.object({
 })
 
 export type LendLoansAndOffers = z.infer<typeof LendLoansAndOffersSchema>
-export interface LendLoansAndOffersResponseV2 {
+export interface LendLoansAndOffersResponse {
   data: LendLoansAndOffers[]
   meta: PaginationMeta
 }

@@ -1,7 +1,6 @@
-import { chain, maxBy, sortBy } from 'lodash'
+import { sortBy } from 'lodash'
 
 import { Loan, Offer } from '@banx/api/core'
-import { OfferOptimistic } from '@banx/store'
 import {
   calculateLoanRepayValue,
   calculateLoanValue,
@@ -18,45 +17,26 @@ export const isLoanAbleToClaim: IsLoanAbleToClaim = (loan) => {
   return isLoanExpired && isTerminatingStatus
 }
 
-type IsLoanAbleToTerminate = (props: {
-  loan: Loan
-  offers: Record<string, Offer[]>
-  optimisticOffers: OfferOptimistic[]
-}) => boolean
-export const isLoanAbleToTerminate: IsLoanAbleToTerminate = ({
-  loan,
-  offers,
-  optimisticOffers,
-}) => {
+type IsLoanAbleToTerminate = (props: { loan: Loan; offers: Offer[] }) => boolean
+export const isLoanAbleToTerminate: IsLoanAbleToTerminate = ({ loan, offers }) => {
   const isLoanExpired = isLoanLiquidated(loan)
   const isTerminatingStatus = isLoanTerminating(loan)
-  const hasRefinanceOffers = findBestOffer({ loan, offers, optimisticOffers })
+  const hasRefinanceOffers = findBestOffer({ loan, offers })
   const isLoanUnderWater = isUnderWaterLoan(loan)
 
   return !isLoanExpired && !isTerminatingStatus && !hasRefinanceOffers && isLoanUnderWater
 }
 
-type FindBestOffer = (props: {
-  loan: Loan
-  offers: Record<string, Offer[]>
-  optimisticOffers: OfferOptimistic[]
-}) => Offer
+type FindBestOffer = (props: { loan: Loan; offers: Offer[] }) => Offer
 
-export const findBestOffer: FindBestOffer = ({ loan, offers, optimisticOffers }) => {
-  const offersByMarket = offers[loan.fraktBond.hadoMarket || '']
-  const combinedOffers = [
-    ...optimisticOffers.map((offer) => offer.offer),
-    ...(offersByMarket ?? []),
-  ]
+export const findBestOffer: FindBestOffer = ({ loan, offers }) => {
+  const offersByMarket = offers.filter((offer) => offer.hadoMarket === loan.fraktBond.hadoMarket)
 
-  const filteredOffers = chain(combinedOffers)
-    .groupBy('publicKey')
-    .map((offers) => maxBy(offers, 'lastTransactedAt'))
-    .compact()
-    .filter((offer) => calculateLoanValue(offer) > calculateLoanRepayValue(loan))
-    .value()
+  const filteredOffers = offersByMarket.filter(
+    (offer) => calculateLoanValue(offer) > calculateLoanRepayValue(loan),
+  )
 
-  const sortedOffers = sortBy(filteredOffers, 'fundsSolOrTokenBalance')
+  const sortedOffers = sortBy(filteredOffers, (offer) => offer.fundsSolOrTokenBalance)
 
   return sortedOffers[0]
 }

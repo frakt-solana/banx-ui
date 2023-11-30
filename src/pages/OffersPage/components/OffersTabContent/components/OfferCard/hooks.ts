@@ -12,6 +12,7 @@ import { defaultTxnErrorHandler } from '@banx/transactions'
 import { makeRemoveOfferAction } from '@banx/transactions/bonds'
 import { enqueueSnackbar } from '@banx/utils'
 
+//TODO: rename useActionsCell
 export const useActionsCell = (offer: Offer, collectionMeta: CollectionMeta) => {
   const wallet = useWallet()
   const { connection } = useConnection()
@@ -54,10 +55,10 @@ export const useActionsCell = (offer: Offer, collectionMeta: CollectionMeta) => 
   }
 
   const removeOffer = () => {
-    const txnParam = { optimisticOffer: optimisticOffer as Offer }
+    if (!optimisticOffer) return
 
     new TxnExecutor(makeRemoveOfferAction, { wallet, connection })
-      .addTxnParam(txnParam)
+      .addTxnParam({ optimisticOffer })
       .on('pfSuccessEach', (results) => {
         const { txnHash, result } = results[0]
         if (result?.bondOffer) {
@@ -72,7 +73,7 @@ export const useActionsCell = (offer: Offer, collectionMeta: CollectionMeta) => 
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error, {
-          additionalData: txnParam,
+          additionalData: optimisticOffer,
           walletPubkey: wallet?.publicKey?.toBase58(),
           transactionName: 'RemoveOffer',
         })

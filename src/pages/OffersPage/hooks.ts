@@ -201,6 +201,7 @@ export const useLenderLoansAndOffers = () => {
 
   return {
     data: processedData,
+    offers: processedData.map(({ offer }) => offer),
     loading: isLoading,
     optimisticOffers,
     updateOrAddOffer,
