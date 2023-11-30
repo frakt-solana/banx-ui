@@ -7,9 +7,11 @@ import { produce } from 'immer'
 import { chain, map, maxBy } from 'lodash'
 import { create } from 'zustand'
 
-import { Loan, Offer, fetchLenderLoansAndOffers } from '@banx/api/core'
+import { LendLoansAndOffers, Loan, Offer, fetchLenderLoansAndOffers } from '@banx/api/core'
 import { fetchUserOffersStats } from '@banx/api/stats'
 import { isOfferNewer, isOptimisticOfferExpired, useOffersOptimistic } from '@banx/store'
+
+import { useMarketsPreview } from '../LendPage/hooks'
 
 interface HiddenNftsMintsState {
   mints: string[]
@@ -90,6 +92,8 @@ export const useLenderLoansAndOffers = () => {
   const { loans: optimisticLoans, addLoans, findLoans, updateLoans } = useLenderLoansOptimistic()
   const { optimisticOffers, remove: removeOffers, update: updateOrAddOffer } = useOffersOptimistic()
 
+  const { marketsPreview } = useMarketsPreview()
+
   const { data, isLoading, isFetching, isFetched } = useQuery(
     [USE_USER_OFFERS_QUERY_KEY, publicKeyString],
     () => fetchLenderLoansAndOffers({ walletPublicKey: publicKeyString }),
@@ -152,25 +156,43 @@ export const useLenderLoansAndOffers = () => {
   const processedData = useMemo(() => {
     if (!data?.length) return []
 
-    const newData = data.map((item) => {
+    const getLoans = (item: LendLoansAndOffers) => {
       const combinedLoans = [...item.loans, ...walletOptimisticLoans.map(({ loan }) => loan)]
-
-      const loans = chain(combinedLoans)
-        .groupBy(({ publicKey }) => publicKey)
+      return chain(combinedLoans)
+        .groupBy('publicKey')
         .map((offers) => maxBy(offers, ({ fraktBond }) => fraktBond.lastTransactedAt))
         .compact()
         .filter((loan) => !mints.includes(loan.nft.mint))
         .value()
+    }
 
-      return {
-        ...item,
-        offer: offers.find((offer) => offer.publicKey === item.offer.publicKey) || item.offer,
-        loans,
+    const getOffer = (item: LendLoansAndOffers) =>
+      offers.find(({ publicKey }) => publicKey === item.offer.publicKey) || item.offer
+
+    const updatedData = data.map((item) => ({
+      ...item,
+      offer: getOffer(item),
+      loans: getLoans(item),
+    }))
+
+    //? Add missing offers
+    offers.forEach((offer) => {
+      if (!updatedData.find((item) => item.offer.publicKey === offer.publicKey)) {
+        const {
+          collectionName = '',
+          collectionImage = '',
+          collectionFloor = 0,
+        } = marketsPreview.find(({ marketPubkey }) => marketPubkey === offer.hadoMarket) ?? {}
+
+        updatedData.push({
+          loans: [],
+          collectionMeta: { collectionName, collectionImage, collectionFloor },
+          offer,
+        })
       }
     })
-
-    return newData.filter(({ offer, loans }) => !isClosedAndEmptyOffer(offer, loans))
-  }, [data, mints, offers, walletOptimisticLoans])
+    return updatedData.filter(({ offer, loans }) => !isClosedAndEmptyOffer(offer, loans))
+  }, [data, mints, offers, walletOptimisticLoans, marketsPreview])
 
   const updateOrAddLoan = (loan: Loan) => {
     const loanExists = !!findLoans(loan.publicKey, publicKeyString)
