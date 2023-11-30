@@ -6,7 +6,11 @@ import { Button } from '@banx/components/Buttons'
 import { CounterSlider, Slider } from '@banx/components/Slider'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
-import { calcLoanValueWithProtocolFee, trackPageEvent } from '@banx/utils'
+import {
+  calcBorrowValueWithProtocolFee,
+  calcBorrowValueWithRentFee,
+  trackPageEvent,
+} from '@banx/utils'
 
 import { ONE_WEEK_IN_SECONDS } from './constants'
 import { calcInterest } from './helpers'
@@ -31,7 +35,11 @@ export const Summary: FC<SummaryProps> = ({
   maxBorrowPercent,
   setMaxBorrowPercent,
 }) => {
-  const totalBorrow = calcLoanValueWithProtocolFee(sumBy(nftsInCart, ({ loanValue }) => loanValue))
+  const totalBorrow = sumBy(nftsInCart, ({ loanValue, nft }) => {
+    const loanValueWithProtocolFee = calcBorrowValueWithProtocolFee(loanValue)
+    return calcBorrowValueWithRentFee(loanValueWithProtocolFee, nft.loan.marketPubkey)
+  })
+
   const totalWeeklyFee = sumBy(nftsInCart, ({ nft, loanValue }) =>
     calcInterest({
       timeInterval: ONE_WEEK_IN_SECONDS,

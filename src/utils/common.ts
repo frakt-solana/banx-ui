@@ -65,6 +65,8 @@ export const calcBorrowValueWithRentFee = (loanValue: number, marketPubkey: stri
   if (marketPubkey === BONDS.FACELESS_MARKET_PUBKEY) return loanValue
   return loanValue - BONDS.BORROW_RENT_FEE
 }
+
+export const calcBorrowValueWithProtocolFee = (loanValue: number) =>
   Math.floor(loanValue * (1 - BONDS.PROTOCOL_FEE_PERCENT / 1e4))
 
 export const calcWeightedAverage = (nums: number[], weights: number[]) => {

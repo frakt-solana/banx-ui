@@ -4,7 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { produce } from 'immer'
-import { chain, countBy, filter, groupBy, isEmpty, map, maxBy, sumBy, uniqBy } from 'lodash'
+import { chain, filter, groupBy, isEmpty, map, maxBy, sumBy, uniqBy } from 'lodash'
 import { create } from 'zustand'
 
 import { BorrowNft, fetchBorrowNftsAndOffers } from '@banx/api/core'
@@ -16,7 +16,12 @@ import {
   useOffersOptimistic,
 } from '@banx/store'
 import { convertLoanToBorrowNft } from '@banx/transactions'
-import { calcLoanValueWithProtocolFee, isLoanActiveOrRefinanced, isLoanRepaid } from '@banx/utils'
+import {
+  calcBorrowValueWithProtocolFee,
+  calcBorrowValueWithRentFee,
+  isLoanActiveOrRefinanced,
+  isLoanRepaid,
+} from '@banx/utils'
 
 import { useCartState } from './cartState'
 import { convertOffersToSimple } from './helpers'
@@ -205,21 +210,21 @@ export const useBorrowNfts = () => {
 }
 
 const calcMaxBorrow = (nfts: BorrowNft[], offers: SimpleOffersByMarket) => {
-  const nftsAmountByMarket = countBy(nfts, ({ loan }) => loan.marketPubkey)
-
-  const maxBorrow = Object.entries(nftsAmountByMarket).reduce(
-    (maxBorrow, [marketPubkey, nftsAmount]) => {
+  return chain(nfts)
+    .countBy(({ loan }) => loan.marketPubkey)
+    .entries()
+    .reduce((maxBorrow, [marketPubkey, nftsAmount]) => {
       const maxBorrowMarket = sumBy(
         (offers[marketPubkey] || []).slice(0, nftsAmount),
-        ({ loanValue }) => loanValue,
+        ({ loanValue, hadoMarket }) => {
+          const loanValueWithProtocolFee = calcBorrowValueWithProtocolFee(loanValue)
+          return calcBorrowValueWithRentFee(loanValueWithProtocolFee, hadoMarket)
+        },
       )
 
       return maxBorrow + maxBorrowMarket
-    },
-    0,
-  )
-
-  return calcLoanValueWithProtocolFee(maxBorrow)
+    }, 0)
+    .value()
 }
 
 export interface HiddenNftsMintsState {
