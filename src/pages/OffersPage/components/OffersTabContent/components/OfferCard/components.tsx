@@ -139,9 +139,15 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({
       </div>
       <div className={styles.additionalStat}>
         <div className={styles.additionalStatLabel}>Interest</div>
-        <div className={classNames(styles.additionalStatValues, styles.interestValues)}>
+        <div
+          className={classNames(styles.additionalStatValues, styles.interestValues, {
+            [styles.highlight]: interest,
+          })}
+        >
           {createSolValueJSX(interest, 1e9, '0◎', formatDecimal)}
-          <span>{createPercentValueJSX(apy, '0%')} APY</span>
+          <span className={classNames({ [styles.highlight]: apy })}>
+            {createPercentValueJSX(apy, '0%')} APY
+          </span>
         </div>
       </div>
     </div>

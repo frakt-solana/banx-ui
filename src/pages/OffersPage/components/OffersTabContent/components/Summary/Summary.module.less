@@ -1,11 +1,18 @@
 .summaryContainer {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
   border-top: 1px solid var(--bg-border);
-  gap: 16px;
+  gap: 80px;
   width: 100%;
+
+  @media (max-width: 1320px) {
+    gap: 16px;
+  }
+
+  @media (max-width: 640px) {
+    gap: 8px;
+  }
 }
 
 .infoRow {
@@ -13,6 +20,10 @@
   align-items: center;
   gap: 16px;
   white-space: nowrap;
+
+  &:last-child {
+    margin-left: auto;
+  }
 
   @media (max-width: 1240px) {
     flex-direction: column;

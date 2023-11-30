@@ -47,8 +47,8 @@ export const ClaimInterestButton: FC<ButtonProps> = (props) => {
 
 export const ClaimNFTsButton: FC<ButtonProps> = (props) => {
   const { isSmallDesktop, totalLoans, onClick, value } = props
-  const buttonText = isSmallDesktop ? 'Claim all NFT' : 'Claim'
-  const label = isSmallDesktop ? 'Collateral' : 'Claimable floor'
+  const buttonText = isSmallDesktop ? 'Claim' : 'Claim all NFTs'
+  const label = isSmallDesktop ? 'Claimable floor' : 'Collateral'
 
   return (
     <div className={styles.infoRow}>
@@ -77,7 +77,7 @@ export const ClaimNFTsButton: FC<ButtonProps> = (props) => {
 
 export const TerminateButton: FC<ButtonProps> = (props) => {
   const { isSmallDesktop, totalLoans, onClick, value } = props
-  const buttonText = isSmallDesktop ? 'Terminate all' : 'Terminate'
+  const buttonText = isSmallDesktop ? 'Terminate' : 'Terminate all'
   const label = isSmallDesktop ? 'Underwater' : 'Underwater loans'
 
   return (

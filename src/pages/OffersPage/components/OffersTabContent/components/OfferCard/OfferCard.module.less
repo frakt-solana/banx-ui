@@ -29,6 +29,10 @@
   display: flex;
   align-items: center;
   gap: 16px;
+
+  @media (max-width: 640px) {
+    align-items: flex-start;
+  }
 }
 .mainOfferInfo {
   display: flex;
@@ -42,11 +46,20 @@
   white-space: nowrap;
 }
 .collectionImage {
-  width: 72px;
   height: 72px;
+  width: 72px;
+
+  @media (max-width: 640px) {
+    height: 32px;
+    width: 32px;
+  }
 }
 .collectionName {
   font: var(--card-header-lg);
+
+  @media (max-width: 640px) {
+    font: var(--card-header-md);
+  }
 }
 .actionsOfferButtons {
   display: flex;
@@ -135,7 +148,6 @@
   }
 }
 .interestValues {
-  color: var(--additional-green-primary-deep);
   span:first-child {
     font: var(--important-text-lg);
   }
@@ -146,4 +158,8 @@
 
 .additionalStatSubtitle {
   font: var(--body-text-sm);
+}
+
+.highlight {
+  color: var(--additional-green-primary-deep);
 }
