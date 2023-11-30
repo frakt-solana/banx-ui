@@ -4,10 +4,11 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { sumBy } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
-import { Loan } from '@banx/api/core'
+import { Loan, Offer } from '@banx/api/core'
 import { SMALL_DESKTOP_WIDTH } from '@banx/constants'
 import { useWindowSize } from '@banx/hooks'
 import { defaultTxnErrorHandler } from '@banx/transactions'
+import { makeClaimBondOfferInterestAction } from '@banx/transactions/bonds'
 import { makeClaimAction, makeTerminateAction } from '@banx/transactions/loans'
 import { calcLoanBorrowedAmount, enqueueSnackbar } from '@banx/utils'
 
@@ -17,16 +18,20 @@ import styles from './Summary.module.less'
 
 interface SummaryProps {
   updateOrAddLoan: (loan: Loan) => void
+  updateOrAddOffer: (offer: Offer[]) => void
   addMints: (...mints: string[]) => void
   loansToClaim: Loan[]
   loansToTerminate: Loan[]
+  offers: Offer[]
 }
 
 const Summary: FC<SummaryProps> = ({
   updateOrAddLoan,
+  updateOrAddOffer,
   loansToTerminate,
   loansToClaim,
   addMints,
+  offers,
 }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
@@ -41,6 +46,11 @@ const Summary: FC<SummaryProps> = ({
   const totalTerminateLent = useMemo(
     () => sumBy(loansToTerminate, (loan) => calcLoanBorrowedAmount(loan)),
     [loansToTerminate],
+  )
+
+  const totalAccruedInterest = useMemo(
+    () => sumBy(offers, (offer) => offer.concentrationIndex),
+    [offers],
   )
 
   const terminateLoans = () => {
@@ -66,6 +76,34 @@ const Summary: FC<SummaryProps> = ({
           additionalData: txnParams,
           walletPubkey: wallet?.publicKey?.toBase58(),
           transactionName: 'Terminate',
+        })
+      })
+      .execute()
+  }
+
+  const claimInterest = () => {
+    if (!offers.length) return
+
+    const txnParams = offers.map((optimisticOffer) => ({ optimisticOffer }))
+
+    new TxnExecutor(makeClaimBondOfferInterestAction, { wallet, connection })
+      .addTxnParams(txnParams)
+      .on('pfSuccessEach', (results) => {
+        results.forEach(({ result }) => {
+          if (result) updateOrAddOffer([result.bondOffer])
+        })
+      })
+      .on('pfSuccessAll', () => {
+        enqueueSnackbar({
+          message: 'Interest successfully claimed',
+          type: 'success',
+        })
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error, {
+          additionalData: offers,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'ClaimOfferInterest',
         })
       })
       .execute()
@@ -99,10 +137,9 @@ const Summary: FC<SummaryProps> = ({
   return (
     <div className={styles.summaryContainer}>
       <ClaimInterestButton
-        onClick={claimLoans}
-        totalLoans={loansToClaim.length}
+        onClick={claimInterest}
         isSmallDesktop={isSmallDesktop}
-        value={10}
+        value={totalAccruedInterest}
       />
 
       <ClaimNFTsButton

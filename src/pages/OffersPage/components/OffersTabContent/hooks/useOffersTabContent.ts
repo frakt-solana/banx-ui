@@ -25,6 +25,7 @@ export const useOffersTabContent = () => {
     loading: isLoading,
     addMints,
     updateOrAddLoan,
+    updateOrAddOffer,
   } = useLenderLoansAndOffers()
 
   const [selectedOffers, setSelectedOffers] = useState<string[]>([])
@@ -92,5 +93,7 @@ export const useOffersTabContent = () => {
     loansToTerminate,
     addMints,
     updateOrAddLoan,
+    updateOrAddOffer,
+    offers: data?.flatMap(({ offer }) => offer),
   }
 }

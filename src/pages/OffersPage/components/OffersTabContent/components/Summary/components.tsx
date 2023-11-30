@@ -3,40 +3,44 @@ import { FC } from 'react'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
-import { StatInfo } from '@banx/components/StatInfo'
+import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createSolValueJSX } from '@banx/components/TableComponents'
+
+import { formatDecimal } from '@banx/utils'
 
 import styles from './Summary.module.less'
 
 interface ButtonProps {
   onClick: () => void
-  totalLoans: number
+  totalLoans?: number
   isSmallDesktop: boolean
   value: number
 }
 
 export const ClaimInterestButton: FC<ButtonProps> = (props) => {
-  const { isSmallDesktop, totalLoans, onClick, value } = props
+  const { isSmallDesktop, onClick, value } = props
   const label = isSmallDesktop ? 'interest' : 'Accrued interest'
 
   return (
     <div className={styles.infoRow}>
       <div className={styles.loansContainer}>
-        <p className={styles.loansValueText}>{createSolValueJSX(value, 1e9, '0◎')}</p>
+        <p className={styles.loansValueText}>
+          {createSolValueJSX(value, 1e9, '0◎', formatDecimal)}
+        </p>
         <p className={styles.loansValueLabel}>{label}</p>
         <div className={styles.loansInterestContainer}>
           <StatInfo
             label={label}
-            value={value}
+            value={`${formatDecimal(value / 1e9)}0◎`}
             classNamesProps={{ value: styles.value }}
-            divider={1e9}
+            valueType={VALUES_TYPES.STRING}
           />
         </div>
       </div>
       <Button
         className={styles.summaryButton}
         onClick={onClick}
-        disabled={!totalLoans}
+        disabled={!value}
         variant="secondary"
       >
         Claim
