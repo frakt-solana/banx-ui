@@ -60,7 +60,10 @@ export const generateCSVContent = <T extends object>(dataList: T[]): string => {
   return csvContent
 }
 
-export const calcLoanValueWithProtocolFee = (loanValue: number) =>
+export const calcBorrowValueWithRentFee = (loanValue: number, marketPubkey: string) => {
+  if (loanValue === 0) return 0
+  return loanValue - BONDS.BORROW_RENT_FEE
+}
   Math.floor(loanValue * (1 - BONDS.PROTOCOL_FEE_PERCENT / 1e4))
 
 export const calcWeightedAverage = (nums: number[], weights: number[]) => {
