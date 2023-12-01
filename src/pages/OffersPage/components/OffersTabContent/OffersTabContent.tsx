@@ -34,8 +34,13 @@ const OffersTabContent = () => {
           <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
 
           <div className={styles.cardsList}>
-            {loansAndOffers.map((data) => (
-              <OfferCard key={data.offer.publicKey} {...data} />
+            {loansAndOffers.map(({ offer, loans, collectionMeta }) => (
+              <OfferCard
+                key={offer.publicKey}
+                offer={offer}
+                loans={loans}
+                collectionMeta={collectionMeta}
+              />
             ))}
           </div>
 
