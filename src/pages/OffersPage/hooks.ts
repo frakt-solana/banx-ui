@@ -43,7 +43,7 @@ export interface LoanOptimistic {
 interface OptimisticLenderLoansState {
   loans: LoanOptimistic[]
   addLoans: (loan: Loan, walletPublicKey: string) => void
-  findLoans: (loanPubkey: string, walletPublicKey: string) => LoanOptimistic | null
+  findLoan: (loanPubkey: string, walletPublicKey: string) => LoanOptimistic | null
   updateLoans: (loan: Loan, walletPublicKey: string) => void
 }
 
@@ -58,7 +58,7 @@ const useLenderLoansOptimistic = create<OptimisticLenderLoansState>((set, get) =
       }),
     )
   },
-  findLoans: (loanPubkey, walletPublicKey) => {
+  findLoan: (loanPubkey, walletPublicKey) => {
     if (!walletPublicKey) return null
 
     return get().loans.find(({ loan }) => loan.publicKey === loanPubkey) ?? null
@@ -66,7 +66,7 @@ const useLenderLoansOptimistic = create<OptimisticLenderLoansState>((set, get) =
   updateLoans: (loan, walletPublicKey) => {
     if (!walletPublicKey) return
 
-    const loanExists = !!get().findLoans(loan.publicKey, walletPublicKey)
+    const loanExists = !!get().findLoan(loan.publicKey, walletPublicKey)
 
     loanExists &&
       set(
@@ -89,7 +89,7 @@ export const useLenderLoansAndOffers = () => {
 
   const { mints, addMints } = useHiddenNftsMints()
 
-  const { loans: optimisticLoans, addLoans, findLoans, updateLoans } = useLenderLoansOptimistic()
+  const { loans: optimisticLoans, addLoans, findLoan, updateLoans } = useLenderLoansOptimistic()
   const { optimisticOffers, remove: removeOffers, update: updateOrAddOffer } = useOffersOptimistic()
 
   const { marketsPreview } = useMarketsPreview()
@@ -195,7 +195,7 @@ export const useLenderLoansAndOffers = () => {
   }, [data, mints, offers, walletOptimisticLoans, marketsPreview])
 
   const updateOrAddLoan = (loan: Loan) => {
-    const loanExists = !!findLoans(loan.publicKey, publicKeyString)
+    const loanExists = !!findLoan(loan.publicKey, publicKeyString)
     return loanExists ? updateLoans(loan, publicKeyString) : addLoans(loan, publicKeyString)
   }
 
