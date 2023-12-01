@@ -4,7 +4,7 @@ export const SPECIAL_COLLECTIONS_MARKETS = [
   '7hZYBSfxVJEydFxzugnthKJn8f2Xq3Hh44Noi6rXqUF8',
   'CPca2BSabUFiP8ioanSSEWVUY5QzND6wKxiWAPi98Yc4',
   'Bkv2jmAQDqJPWogsRxZD2eD7TenJtYwQUprMoYgPyLB7',
-  'BHjTiajLCGnqQTCCFb9vGBEBWaCQfw2BuLghy7wGY2Gp',
+  'DJ93XkwUQXipHEpNCf8esEZf2mPh1NFhqLoYMnHL1Baw',
   '4Z4L87vE7mwxSa4tYvmXKEF5swbkoEg4RfosFh1nyw1W',
   'BKTH6dKm3WTwYAr9PxKSEgPfHScqxtMqgfD8kuZ2QPm',
   '3eF8HfdCFJyAo59zgojh8JqpXAWPYoBZtHeN4p5kbjLy',
