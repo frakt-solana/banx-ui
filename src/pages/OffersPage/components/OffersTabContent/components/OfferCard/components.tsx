@@ -17,7 +17,7 @@ import {
 } from '@banx/utils'
 
 import { getAdditionalOfferInfo } from './helpers'
-import { useActionsCell } from './hooks'
+import { useOfferActions } from './hooks'
 
 import styles from './OfferCard.module.less'
 
@@ -39,7 +39,7 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
   const displayDeltaValue = delta ? `| Δ${formatDecimal(delta / 1e9)}◎` : ''
   const displayOfferValue = formatDecimal(currentSpotPrice / 1e9)
 
-  const { removeOffer, goToEditOffer } = useActionsCell(offer, collectionMeta)
+  const { removeOffer, goToEditOffer } = useOfferActions(offer, collectionMeta)
 
   const onEdit = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     goToEditOffer()

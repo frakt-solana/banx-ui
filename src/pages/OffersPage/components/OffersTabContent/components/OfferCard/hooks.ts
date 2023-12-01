@@ -12,8 +12,7 @@ import { defaultTxnErrorHandler } from '@banx/transactions'
 import { makeRemoveOfferAction } from '@banx/transactions/bonds'
 import { enqueueSnackbar } from '@banx/utils'
 
-//TODO: rename useActionsCell
-export const useActionsCell = (offer: Offer, collectionMeta: CollectionMeta) => {
+export const useOfferActions = (offer: Offer, collectionMeta: CollectionMeta) => {
   const wallet = useWallet()
   const { connection } = useConnection()
   const { data, updateOrAddOffer } = useLenderLoansAndOffers()
