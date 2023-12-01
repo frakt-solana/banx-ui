@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-import { sumBy, uniqBy } from 'lodash'
+import { chain, sumBy } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { createSolValueJSX } from '@banx/components/TableComponents'
@@ -41,14 +41,14 @@ export const useOffersTabContent = () => {
 
   const { sortedData, sortParams } = useSortedData(filteredData)
 
-  const searchSelectOptions = uniqBy(
-    data.map(({ loans, collectionMeta }) => ({
+  const searchSelectOptions = chain(data)
+    .map(({ loans, collectionMeta }) => ({
       collectionName: collectionMeta.collectionName,
       collectionImage: collectionMeta.collectionImage,
       claim: sumBy(loans, calculateClaimValue),
-    })),
-    ({ collectionName }) => collectionName,
-  )
+    }))
+    .uniqBy(({ collectionName }) => collectionName)
+    .value()
 
   const searchSelectParams: SearchSelectProps<SearchSelectOption> = {
     options: searchSelectOptions,
