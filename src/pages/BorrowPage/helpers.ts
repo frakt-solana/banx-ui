@@ -13,6 +13,7 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
     buyOrdersQuantity,
     bondingCurve,
     bidSettlement: reserve,
+    validation,
   } = offer
 
   const simpleOffers = Array(buyOrdersQuantity)
@@ -26,7 +27,7 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
           counter: mathCounter + 1 - idx,
         })
 
-        const loanValue = Math.min(baseSpotPrice, nextSpotPrice + acc.reserve)
+        const loanValue = Math.min(validation.loanToValueFilter, nextSpotPrice + acc.reserve)
 
         const nextReserve = acc.reserve - Math.max(loanValue - nextSpotPrice, 0)
 
