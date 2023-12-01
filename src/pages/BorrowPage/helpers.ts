@@ -7,23 +7,45 @@ import { Offer } from '@banx/api/core'
 import { SimpleOffer } from './types'
 
 const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
-  const { baseSpotPrice, mathCounter, buyOrdersQuantity, bondingCurve } = offer
+  const {
+    baseSpotPrice,
+    mathCounter,
+    buyOrdersQuantity,
+    bondingCurve,
+    bidSettlement: reserve,
+  } = offer
 
-  return Array(buyOrdersQuantity)
+  const simpleOffers = Array(buyOrdersQuantity)
     .fill(0)
-    .map((_, idx) => {
-      return {
-        id: uniqueId(),
-        loanValue: calculateNextSpotPrice({
+    .reduce(
+      (acc: { reserve: number; orders: SimpleOffer[] }, _, idx) => {
+        const nextSpotPrice = calculateNextSpotPrice({
           bondingCurveType: bondingCurve.bondingType as BondingCurveType,
           delta: bondingCurve.delta,
           spotPrice: baseSpotPrice,
           counter: mathCounter + 1 - idx,
-        }),
-        hadoMarket: offer.hadoMarket,
-        publicKey: offer.publicKey,
-      }
-    })
+        })
+
+        const loanValue = Math.min(baseSpotPrice, nextSpotPrice + acc.reserve)
+
+        const nextReserve = acc.reserve - Math.max(loanValue - nextSpotPrice, 0)
+
+        const simpleOffer = {
+          id: uniqueId(),
+          loanValue,
+          hadoMarket: offer.hadoMarket,
+          publicKey: offer.publicKey,
+        }
+
+        return {
+          reserve: nextReserve,
+          simpleOffers: [...acc.orders, simpleOffer],
+        }
+      },
+      { reserve, simpleOffers: [] },
+    ).simpleOffers
+
+  return simpleOffers
 }
 
 type ConvertOffersToSimple = (offers: Offer[], sort?: 'desc' | 'asc') => SimpleOffer[]
