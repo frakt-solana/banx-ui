@@ -1,4 +1,4 @@
-import { sortBy } from 'lodash'
+import { first, sortBy } from 'lodash'
 
 import { Loan, Offer } from '@banx/api/core'
 import {
@@ -30,13 +30,13 @@ export const isLoanAbleToTerminate: IsLoanAbleToTerminate = ({ loan, offers }) =
 type FindBestOffer = (props: { loan: Loan; offers: Offer[] }) => Offer
 
 export const findBestOffer: FindBestOffer = ({ loan, offers }) => {
-  const offersByMarket = offers.filter((offer) => offer.hadoMarket === loan.fraktBond.hadoMarket)
+  const marketOffers = offers.filter((offer) => offer.hadoMarket === loan.fraktBond.hadoMarket)
 
-  const filteredOffers = offersByMarket.filter(
+  const filteredOffers = marketOffers.filter(
     (offer) => calculateLoanValue(offer) > calculateLoanRepayValue(loan),
   )
 
   const sortedOffers = sortBy(filteredOffers, (offer) => offer.fundsSolOrTokenBalance)
 
-  return sortedOffers[0]
+  return first(sortedOffers) as Offer
 }
