@@ -18,7 +18,7 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
   const simpleOffers = Array(buyOrdersQuantity)
     .fill(0)
     .reduce(
-      (acc: { reserve: number; orders: SimpleOffer[] }, _, idx) => {
+      (acc: { reserve: number; simpleOffers: SimpleOffer[] }, _, idx) => {
         const nextSpotPrice = calculateNextSpotPrice({
           bondingCurveType: bondingCurve.bondingType as BondingCurveType,
           delta: bondingCurve.delta,
@@ -39,7 +39,7 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
 
         return {
           reserve: nextReserve,
-          simpleOffers: [...acc.orders, simpleOffer],
+          simpleOffers: [...acc.simpleOffers, simpleOffer],
         }
       },
       { reserve, simpleOffers: [] },
