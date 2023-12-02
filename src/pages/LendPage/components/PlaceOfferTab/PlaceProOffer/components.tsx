@@ -41,7 +41,7 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
         value={weightedLtv || 0}
         valueStyles={{ color: colorLTV }}
         flexType="row"
-        tooltipText="Weighted LTV"
+        tooltipText="Average LTV offered by your pool"
         valueType={VALUES_TYPES.PERCENT}
       />
       <StatInfo
@@ -52,7 +52,7 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
       />
       <StatInfo
         flexType="row"
-        label="Weighted weekly interest"
+        label="Weekly interest"
         value={`${formatDecimal(weeklyInterest / 1e9)}◎`}
         valueType={VALUES_TYPES.STRING}
       />
@@ -63,7 +63,12 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
             value={`${activeLoansQuantity}/${totalLoansQuantity}`}
             valueType={VALUES_TYPES.STRING}
           />
-          <StatInfo label="Reserve" value={reserve} tooltipText="Reserve" divider={1e9} />
+          <StatInfo
+            label="Reserve"
+            value={reserve}
+            tooltipText="Leftover SOL is sent here if offers are partially taken"
+            divider={1e9}
+          />
           <StatInfo label="Accrued interest" value={accruedInterest} divider={1e9} />
         </div>
       )}
