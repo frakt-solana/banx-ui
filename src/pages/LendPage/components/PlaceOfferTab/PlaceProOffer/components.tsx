@@ -69,7 +69,11 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
             tooltipText="Leftover SOL is sent here if offers are partially taken"
             divider={1e9}
           />
-          <StatInfo label="Accrued interest" value={accruedInterest} divider={1e9} />
+          <StatInfo
+            label="Accrued interest"
+            value={`${formatDecimal(accruedInterest / 1e9)}◎`}
+            valueType={VALUES_TYPES.STRING}
+          />
         </div>
       )}
     </div>

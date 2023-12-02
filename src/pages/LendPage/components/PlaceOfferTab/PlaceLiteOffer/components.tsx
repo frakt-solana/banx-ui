@@ -67,7 +67,11 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
             valueType={VALUES_TYPES.STRING}
           />
           <StatInfo label="Reserve" value={reserve} tooltipText="Reserve" divider={1e9} />
-          <StatInfo label="Accrued interest" value={accruedInterest} divider={1e9} />
+          <StatInfo
+            label="Accrued interest"
+            value={`${formatDecimal(accruedInterest / 1e9)}◎`}
+            valueType={VALUES_TYPES.STRING}
+          />
         </div>
       )}
     </div>

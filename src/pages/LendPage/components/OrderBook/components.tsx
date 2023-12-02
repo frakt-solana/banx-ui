@@ -7,7 +7,6 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { Loader } from '@banx/components/Loader'
-import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Offer } from '@banx/api/core'
 import { ChevronDown } from '@banx/icons'
@@ -93,6 +92,8 @@ interface AccruedInterestProps {
   updateOrAddOffer: (offer: Offer) => void
 }
 
+const MIN_DISPLAY_ACCRUED_INTERST = 0.01
+
 export const AccruedInterest: FC<AccruedInterestProps> = ({ offers, updateOrAddOffer }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
@@ -131,7 +132,7 @@ export const AccruedInterest: FC<AccruedInterestProps> = ({ offers, updateOrAddO
     <div className={styles.accruedInterestContainer}>
       <div className={styles.accruedInterestInfo}>
         <span className={styles.accruedInterestValue}>
-          {createSolValueJSX(totalClaimValue, 1e9, '0◎', formatDecimal)}
+          {formatDecimal(totalClaimValue / 1e9, MIN_DISPLAY_ACCRUED_INTERST)}◎
         </span>
         <span className={styles.accruedInterestLabel}>Total accrued interest</span>
       </div>

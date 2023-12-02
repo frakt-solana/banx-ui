@@ -130,7 +130,7 @@ export const SwitchModeButtons: FC<SwitchModeButtonsProps> = ({ mode, onChange, 
           { [styles.disabled]: isOfferCreatedInProMode },
         )}
         onClick={() => onChange(OfferMode.Lite)}
-        disabled={isOfferCreatedInProMode}
+        disabled={isOfferCreatedInProMode || mode === OfferMode.Lite}
       >
         Lite
       </Button>
@@ -139,6 +139,7 @@ export const SwitchModeButtons: FC<SwitchModeButtonsProps> = ({ mode, onChange, 
         variant="text"
         className={classNames(styles.switchButton, { [styles.active]: mode === OfferMode.Pro })}
         onClick={() => onChange(OfferMode.Pro)}
+        disabled={mode === OfferMode.Pro}
       >
         Pro
       </Button>
