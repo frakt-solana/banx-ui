@@ -4,6 +4,7 @@ import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 
 import { Loan } from '@banx/api/core'
+import { useSortedLoans } from '@banx/pages/LoansPage/components/LoansActiveTable/hooks'
 import { useLenderLoansAndOffers } from '@banx/pages/OffersPage/hooks'
 import { isLoanLiquidated, isLoanTerminating } from '@banx/utils'
 
@@ -17,6 +18,7 @@ interface ActiveLoansTableProps {
 
 const ActiveLoansTable: FC<ActiveLoansTableProps> = ({ loans }) => {
   const { updateOrAddLoan } = useLenderLoansAndOffers()
+  const sortedLoans = useSortedLoans(loans)
 
   const columns = getTableColumns({ updateOrAddLoan })
 
@@ -42,7 +44,7 @@ const ActiveLoansTable: FC<ActiveLoansTableProps> = ({ loans }) => {
 
   return (
     <Table
-      data={loans}
+      data={sortedLoans}
       columns={columns}
       classNameTableWrapper={styles.tableWrapper}
       className={styles.tableRoot}
