@@ -1,4 +1,4 @@
-import { Key, ReactElement, ReactNode } from 'react'
+import { CSSProperties, Key, ReactElement, ReactNode } from 'react'
 
 import { SearchSelectProps } from '../SearchSelect'
 import { SortDropdownProps } from '../SortDropdown'
@@ -42,6 +42,7 @@ export interface TableViewProps<T> {
 export interface TableProps<T, P> extends TableViewProps<T> {
   loading?: boolean
   sortViewParams?: SortViewParams<P>
+  styleTableWrapper?: CSSProperties
   showCard?: boolean
   classNameTableWrapper?: string
   emptyMessage?: string

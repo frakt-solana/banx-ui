@@ -32,15 +32,24 @@
   display: flex;
   align-items: center;
   gap: 16px;
+
+  @media (max-width: 640px) {
+    gap: 8px;
+  }
 }
 .editModeContainer {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
   width: 100%;
 }
 .actionButton {
   width: 144px;
+
+  @media (max-width: 640px) {
+    width: 100%;
+  }
 }
 .placeOfferButton {
   width: 100%;
@@ -81,4 +90,20 @@
 
 .borrowerMessage {
   font: var(--body-text-sm);
+}
+
+.claimButton {
+  @media (max-width: 640px) {
+    max-width: 70px;
+  }
+  span:first-child {
+    @media (max-width: 640px) {
+      display: none;
+    }
+  }
+  span:last-child {
+    @media (min-width: 641px) {
+      display: none;
+    }
+  }
 }

@@ -7,15 +7,17 @@ import { BONDS } from '@banx/constants'
 import { calcLoanBorrowedAmount, calcWeightedAverage } from '@banx/utils'
 
 export const getAdditionalOfferInfo = ({ loans, offer }: { loans: Loan[]; offer: Offer }) => {
+  const { buyOrdersQuantity, validation } = offer
+
   const collectionFloor = loans[0]?.nft.collectionFloor
   const totalClaimValue = sumBy(loans, calculateClaimValue)
 
-  const activeLoansQuantity = offer.validation.maxReturnAmountFilter || 0
-  const loansQuantity = loans.length
+  const activeLoansQuantity = validation.maxReturnAmountFilter || 0
+  const totalLoansQuantity = activeLoansQuantity + buyOrdersQuantity
 
   const interest = offer.concentrationIndex
 
-  const ltv = (totalClaimValue / loansQuantity / collectionFloor) * 100
+  const ltv = (totalClaimValue / loans.length / collectionFloor) * 100
 
   const weightedApr = calcWeightedAverage(
     loans.map((loan) => loan.bondTradeTransaction.amountOfBonds / 100),
@@ -33,7 +35,7 @@ export const getAdditionalOfferInfo = ({ loans, offer }: { loans: Loan[]; offer:
     ltv,
     apy: weightedApr,
     interest,
-    loansQuantity,
+    totalLoansQuantity,
     activeLoansQuantity,
   }
 }

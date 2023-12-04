@@ -91,10 +91,11 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
           </div>
           <Button
             onClick={onClaimOfferInterest}
-            className={styles.actionButton}
+            className={classNames(styles.actionButton, styles.claimButton)}
             disabled={disableClaimInterest}
           >
-            Claim interest
+            <span>Claim interest</span>
+            <span>Claim</span>
           </Button>
         </div>
       ) : (

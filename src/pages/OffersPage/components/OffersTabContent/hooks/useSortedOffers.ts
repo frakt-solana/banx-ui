@@ -15,8 +15,8 @@ const SORT_OPTIONS = [
 ]
 
 const DEFAULT_SORT_OPTION: SortOption = {
-  label: SORT_OPTIONS[2].label,
-  value: `${SORT_OPTIONS[2].value}_desc`,
+  label: SORT_OPTIONS[1].label,
+  value: `${SORT_OPTIONS[1].value}_desc`,
 }
 
 enum SortField {
