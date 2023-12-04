@@ -92,7 +92,7 @@ interface AccruedInterestProps {
   updateOrAddOffer: (offer: Offer) => void
 }
 
-const MIN_DISPLAY_ACCRUED_INTERST = 0.01
+const MIN_DISPLAY_ACCRUED_INTEREST = 0.01
 
 export const AccruedInterest: FC<AccruedInterestProps> = ({ offers, updateOrAddOffer }) => {
   const wallet = useWallet()
@@ -132,7 +132,7 @@ export const AccruedInterest: FC<AccruedInterestProps> = ({ offers, updateOrAddO
     <div className={styles.accruedInterestContainer}>
       <div className={styles.accruedInterestInfo}>
         <span className={styles.accruedInterestValue}>
-          {formatDecimal(totalClaimValue / 1e9, MIN_DISPLAY_ACCRUED_INTERST)}◎
+          {formatDecimal(totalClaimValue / 1e9, MIN_DISPLAY_ACCRUED_INTEREST)}◎
         </span>
         <span className={styles.accruedInterestLabel}>Total accrued interest</span>
       </div>
