@@ -3,6 +3,7 @@ import { FC } from 'react'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
+import Tooltip from '@banx/components/Tooltip/Tooltip'
 
 import { useBurgerMenu } from '@banx/Layout/components/BurgerMenu/hooks'
 // import { useUserNotifications } from '@banx/hooks'
@@ -33,15 +34,19 @@ export const BanxNotificationsButton: FC<BanxNotificationsButtonProps> = ({ clas
   }
 
   return (
-    <Button
-      type="circle"
-      variant="secondary"
-      id={BUTTON_ID}
-      className={classNames(className, { [styles.buttonActive]: isVisible })}
-      onClick={onIconClick}
-    >
-      {/* {hasUnread ? <BellWithBadge /> : <Bell />} */}
-      <Bell />
-    </Button>
+    <Tooltip title="Notifications">
+      <>
+        <Button
+          type="circle"
+          variant="secondary"
+          id={BUTTON_ID}
+          className={classNames(className, { [styles.buttonActive]: isVisible })}
+          onClick={onIconClick}
+        >
+          {/* {hasUnread ? <BellWithBadge /> : <Bell />} */}
+          <Bell />
+        </Button>
+      </>
+    </Tooltip>
   )
 }
