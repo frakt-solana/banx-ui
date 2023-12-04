@@ -27,7 +27,7 @@ import { useCartState } from './cartState'
 import { convertOffersToSimple } from './helpers'
 import { SimpleOffersByMarket } from './types'
 
-export const USE_BORROW_NFTS_QUERY_KEY = 'walletBorrowNfts'
+export const USE_BORROW_NFTS_V2_QUERY_KEY = 'walletBorrowNftsV2'
 
 export const useBorrowNfts = () => {
   const { setCart } = useCartState()
@@ -38,7 +38,7 @@ export const useBorrowNfts = () => {
   const walletPubkeyString = walletPublicKey?.toBase58() || ''
 
   const { data, isLoading, isFetched, isFetching } = useQuery(
-    [USE_BORROW_NFTS_QUERY_KEY, walletPubkeyString],
+    [USE_BORROW_NFTS_V2_QUERY_KEY, walletPubkeyString],
     () => fetchBorrowNftsAndOffers({ walletPubkey: walletPubkeyString }),
     {
       enabled: !!walletPublicKey,

@@ -75,10 +75,6 @@ export const calculateLoanRepayValue = (loan: Loan) => {
 }
 
 export const formatLoansAmount = (loansAmount = 0) => {
-  if (loansAmount < 1) {
-    return '1'
-  }
-
   if (isInteger(loansAmount)) {
     return String(loansAmount)
   }

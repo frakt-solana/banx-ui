@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 
 import { Offer } from '@banx/api/core'
@@ -46,6 +47,7 @@ type UseProcessedOffers = (props: {
 
 const useProcessedOffers: UseProcessedOffers = ({ marketPubkey, offers, editableOfferPubkey }) => {
   const { offerByMarketPubkey } = useSyntheticOffers()
+  const { publicKey } = useWallet()
 
   const processedOffers = useMemo(() => {
     const syntheticOffer = offerByMarketPubkey[marketPubkey]
@@ -54,16 +56,19 @@ const useProcessedOffers: UseProcessedOffers = ({ marketPubkey, offers, editable
 
     const offersConvertedToSynthetic = offers.map((offer) => convertToSynthetic(offer))
 
-    const processedEditableOffers = offersConvertedToSynthetic.filter(
-      (offer) => offer.publicKey !== editableOfferPubkey,
-    )
+    const processedEditableOffers = offersConvertedToSynthetic
+      .filter((offer) => offer.publicKey !== editableOfferPubkey)
+      //? Filter empty offers. Show empty offers if assetReceiver === user
+      .filter(
+        (offer) => !(offer.loansAmount === 0 && offer.assetReceiver !== publicKey?.toBase58()),
+      )
 
     if (syntheticOffer) {
       processedEditableOffers.push(syntheticOffer)
     }
 
     return processedEditableOffers
-  }, [offerByMarketPubkey, marketPubkey, offers, editableOfferPubkey])
+  }, [offerByMarketPubkey, marketPubkey, offers, editableOfferPubkey, publicKey])
 
   return processedOffers
 }
