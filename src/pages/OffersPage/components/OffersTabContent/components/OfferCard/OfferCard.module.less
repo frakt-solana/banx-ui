@@ -18,6 +18,11 @@
     flex-wrap: wrap;
     gap: 24px;
   }
+
+  @media (max-width: 640px) {
+    padding: 16px;
+    gap: 16px;
+  }
 }
 
 .chevronButton.active svg {
@@ -32,6 +37,7 @@
 
   @media (max-width: 640px) {
     align-items: flex-start;
+    gap: 8px;
   }
 }
 .mainOfferInfo {
@@ -44,6 +50,10 @@
   align-items: center;
   gap: 16px;
   white-space: nowrap;
+
+  @media (max-width: 640px) {
+    gap: 8px;
+  }
 }
 .collectionImage {
   height: 72px;
@@ -76,7 +86,15 @@
       fill: var(--content-secondary);
     }
   }
+
+  @media (max-width: 640px) {
+    min-height: 24px !important;
+    max-height: 24px !important;
+    min-width: 24px !important;
+    max-width: 24px !important;
+  }
 }
+
 .removeOfferButton {
   svg {
     height: 12px !important;
@@ -149,15 +167,27 @@
 }
 .interestValues {
   span:first-child {
-    font: var(--important-text-lg);
+    font: var(--important-text-md);
+
+    @media (max-width: 640px) {
+      font: var(--important-text-sm);
+    }
   }
   span:last-child {
     font: var(--important-text-sm);
+
+    @media (max-width: 640px) {
+      font-size: 12px;
+    }
   }
 }
 
 .additionalStatSubtitle {
   font: var(--body-text-sm);
+
+  @media (max-width: 640px) {
+    font: var(--body-text-xs);
+  }
 }
 
 .highlight {
