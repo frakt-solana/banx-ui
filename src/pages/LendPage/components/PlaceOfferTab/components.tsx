@@ -91,10 +91,11 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
           </div>
           <Button
             onClick={onClaimOfferInterest}
-            className={styles.actionButton}
+            className={classNames(styles.actionButton, styles.claimButton)}
             disabled={disableClaimInterest}
           >
-            Claim interest
+            <span>Claim interest</span>
+            <span>Claim</span>
           </Button>
         </div>
       ) : (
@@ -130,7 +131,7 @@ export const SwitchModeButtons: FC<SwitchModeButtonsProps> = ({ mode, onChange, 
           { [styles.disabled]: isOfferCreatedInProMode },
         )}
         onClick={() => onChange(OfferMode.Lite)}
-        disabled={isOfferCreatedInProMode}
+        disabled={isOfferCreatedInProMode || mode === OfferMode.Lite}
       >
         Lite
       </Button>
@@ -139,6 +140,7 @@ export const SwitchModeButtons: FC<SwitchModeButtonsProps> = ({ mode, onChange, 
         variant="text"
         className={classNames(styles.switchButton, { [styles.active]: mode === OfferMode.Pro })}
         onClick={() => onChange(OfferMode.Pro)}
+        disabled={mode === OfferMode.Pro}
       >
         Pro
       </Button>

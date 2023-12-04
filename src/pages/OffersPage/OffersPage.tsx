@@ -2,11 +2,9 @@ import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
 import { toLowerCaseNoSpaces, trackPageEvent, useMixpanelLocationTrack } from '@banx/utils'
 
-import ActiveOffersTable from './components/ActiveOffersTable'
 import { HistoryOffersTable } from './components/HistoryOffersTable'
 import OffersHeader from './components/OffersHeader'
-import { PendingOfferTable } from './components/PendingOffersTable'
-import { DEFAULT_TAB_VALUE, OFFERS_TABS, OffersTabName } from './constants'
+import OffersTabContent from './components/OffersTabContent'
 
 import styles from './OffersPage.module.less'
 
@@ -15,7 +13,7 @@ export const OffersPage = () => {
 
   const { value: currentTabValue, ...tabsProps } = useTabs({
     tabs: OFFERS_TABS,
-    defaultValue: DEFAULT_TAB_VALUE,
+    defaultValue: OFFERS_TABS[0].value,
   })
 
   const onTabClick = (tabProps: Tab) => {
@@ -26,9 +24,24 @@ export const OffersPage = () => {
     <div className={styles.pageWrapper}>
       <OffersHeader />
       <Tabs value={currentTabValue} {...tabsProps} onTabClick={onTabClick} />
-      {currentTabValue === OffersTabName.PENDING && <PendingOfferTable />}
-      {currentTabValue === OffersTabName.ACTIVE && <ActiveOffersTable />}
+      {currentTabValue === OffersTabName.OFFERS && <OffersTabContent />}
       {currentTabValue === OffersTabName.HISTORY && <HistoryOffersTable />}
     </div>
   )
 }
+
+enum OffersTabName {
+  OFFERS = 'offers',
+  HISTORY = 'history',
+}
+
+const OFFERS_TABS: Tab[] = [
+  {
+    label: 'Offers',
+    value: OffersTabName.OFFERS,
+  },
+  {
+    label: 'History',
+    value: OffersTabName.HISTORY,
+  },
+]

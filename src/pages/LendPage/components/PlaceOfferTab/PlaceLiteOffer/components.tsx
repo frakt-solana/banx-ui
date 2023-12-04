@@ -66,8 +66,16 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
             value={`${activeLoansQuantity}/${totalLoansQuantity}`}
             valueType={VALUES_TYPES.STRING}
           />
-          <StatInfo label="Reserve" value={reserve} tooltipText="Reserve" divider={1e9} />
-          <StatInfo label="Accrued interest" value={accruedInterest} divider={1e9} />
+          <StatInfo
+            value={reserve}
+            divider={1e9}
+            tooltipText="Leftover SOL is sent here if offers are partially taken"
+          />
+          <StatInfo
+            label="Accrued interest"
+            value={`${formatDecimal(accruedInterest / 1e9)}◎`}
+            valueType={VALUES_TYPES.STRING}
+          />
         </div>
       )}
     </div>

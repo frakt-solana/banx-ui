@@ -49,6 +49,7 @@ const PlaceProOffer: FC<OfferParams> = (offerParams) => {
           onChange={onDeltaValueChange}
           value={deltaValue}
           disabled={!connected}
+          tooltipText="The difference in SOL between each offer in your pool"
         />
         <InputCounter
           label="Number of loans"

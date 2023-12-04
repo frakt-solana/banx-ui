@@ -71,6 +71,8 @@ export const convertToSynthetic = (offer: Offer, isEdit = false): SyntheticOffer
   const {
     publicKey,
     currentSpotPrice,
+    validation,
+    bidSettlement,
     assetReceiver,
     hadoMarket,
     mathCounter,
@@ -82,7 +84,7 @@ export const convertToSynthetic = (offer: Offer, isEdit = false): SyntheticOffer
     isEdit,
     publicKey,
     loansAmount: buyOrdersQuantity,
-    loanValue: currentSpotPrice,
+    loanValue: Math.min(validation.loanToValueFilter, currentSpotPrice + bidSettlement),
     assetReceiver,
     marketPubkey: hadoMarket,
     mathCounter,

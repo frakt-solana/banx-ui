@@ -32,10 +32,10 @@ export const getDecimalPlaces = (value: number) => {
   return value < DECIMAL_THRESHOLD ? THREE_DECIMAL_PLACES : TWO_DECIMAL_PLACES
 }
 
-export const formatDecimal = (value: number) => {
+export const formatDecimal = (value: number, minDisplayValue = MIN_DISPLAY_VALUE) => {
   if (value === 0 || isNaN(value)) return '0'
 
-  if (value < MIN_DISPLAY_VALUE) return `<${MIN_DISPLAY_VALUE}`
+  if (value < minDisplayValue) return `<${minDisplayValue}`
 
   const decimalPlaces = getDecimalPlaces(value)
   return value.toFixed(decimalPlaces)

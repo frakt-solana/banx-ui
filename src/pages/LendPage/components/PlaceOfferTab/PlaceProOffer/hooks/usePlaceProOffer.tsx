@@ -91,6 +91,7 @@ export const usePlaceProOffer = ({
     loanValue: loanValueNumber,
     loansAmount: loansAmountNumber,
     deltaValue: deltaValueNumber,
+    hasFormChanges,
   })
 
   const showBorrowerMessage = !offerErrorMessage && !!offerSize
