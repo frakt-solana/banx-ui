@@ -1,5 +1,6 @@
 import { FC, useMemo } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
 import { isEmpty } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
@@ -25,12 +26,13 @@ interface ActionsCellProps {
 }
 
 export const ActionsCell: FC<ActionsCellProps> = ({ loan, updateOrAddLoan }) => {
+  const { publicKey } = useWallet()
   const { offers, updateOrAddOffer } = useMarketOffers({ marketPubkey: loan.fraktBond.hadoMarket })
   const { addMints } = useHiddenNftsMints()
 
   const bestOffer = useMemo(() => {
-    return findBestOffer({ loan, offers })
-  }, [offers, loan])
+    return findBestOffer({ loan, offers, walletPubkey: publicKey?.toBase58() || '' })
+  }, [offers, loan, publicKey])
 
   const { terminateLoan, claimLoan, instantLoan } = useLendLoansTransactions({
     loan,

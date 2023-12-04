@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
 import { chain, sumBy } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
@@ -27,6 +28,8 @@ export const useOffersTabContent = () => {
     updateOrAddLoan,
     updateOrAddOffer,
   } = useLenderLoansAndOffers()
+
+  const { publicKey } = useWallet()
 
   const [selectedOffers, setSelectedOffers] = useState<string[]>([])
 
@@ -73,10 +76,12 @@ export const useOffersTabContent = () => {
 
     const loansToClaim = flatLoans.filter(isLoanAbleToClaim)
 
-    const loansToTerminate = flatLoans.filter((loan) => isLoanAbleToTerminate({ loan, offers }))
+    const loansToTerminate = flatLoans.filter((loan) =>
+      isLoanAbleToTerminate({ loan, offers, walletPubkey: publicKey?.toBase58() || '' }),
+    )
 
     return { loansToClaim, loansToTerminate }
-  }, [data, offers])
+  }, [data, offers, publicKey])
 
   const showEmptyList = !isLoading && !data.length
 
