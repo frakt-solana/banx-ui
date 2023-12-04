@@ -47,6 +47,7 @@ type GetCreateOfferErrorMessage = (props: {
   loanValue: number
   loansAmount: number
   deltaValue: number
+  hasFormChanges: boolean
 }) => string
 
 const ERROR_MESSAGES = {
@@ -62,6 +63,7 @@ export const getOfferErrorMessage: GetCreateOfferErrorMessage = ({
   loansAmount,
   deltaValue,
   syntheticOffer,
+  hasFormChanges,
 }) => {
   const initialOfferSize = calculateOfferSize({
     syntheticOffer,
@@ -73,10 +75,13 @@ export const getOfferErrorMessage: GetCreateOfferErrorMessage = ({
   const totalFundsAvailable = initialOfferSize + solanaBalance * 1e9
   const isBalanceInsufficient = offerSize > totalFundsAvailable
 
-  const isOfferInvalid = deltaValue ? deltaValue * 1e9 * loansAmount > loanValue * 1e9 : false
+  const isOfferInvalid =
+    deltaValue && hasFormChanges ? deltaValue * 1e9 * loansAmount > loanValue * 1e9 : false
+
+  const isEmptyLoansAmount = hasFormChanges && !loansAmount
 
   const errorConditions: Array<[boolean, string]> = [
-    [!loansAmount, ERROR_MESSAGES.EMPTY_LOANS_AMOUNT],
+    [isEmptyLoansAmount, ERROR_MESSAGES.EMPTY_LOANS_AMOUNT],
     [isBalanceInsufficient, ERROR_MESSAGES.INSUFFICIENT_BALANCE],
     [isOfferInvalid, ERROR_MESSAGES.INVALID_OFFER],
   ]
