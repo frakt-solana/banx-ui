@@ -22,6 +22,8 @@ type SortValueGetter = (loan: Loan) => number
 
 type StatusValueMap = Record<SortField, string | SortValueGetter>
 
+export const DEFAULT_SORT_OPTION_VALUE = `${SortField.STATUS}_desc`
+
 const STATUS_VALUE_MAP: StatusValueMap = {
   [SortField.BORROWED]: calcLoanBorrowedAmount,
   [SortField.DEBT]: calculateLoanRepayValue,
@@ -54,7 +56,7 @@ const sortStatusLoans = (loans: Loan[], order: SortOrder) => {
   return order === 'asc' ? combinedLoans : combinedLoans.reverse()
 }
 
-export const useSortedLoans = (loans: Loan[], sortOptionValue: string) => {
+export const useSortedLoans = (loans: Loan[], sortOptionValue = DEFAULT_SORT_OPTION_VALUE) => {
   const sortedLoans = useMemo(() => {
     if (!sortOptionValue) {
       return loans

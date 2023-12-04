@@ -40,10 +40,7 @@ export const getTableColumns = ({ updateOrAddLoan }: GetTableColumns) => {
     {
       key: 'interest',
       title: (
-        <HeaderCell
-          label="Claim"
-          tooltipText="Current status and duration of the loan that has been passed"
-        />
+        <HeaderCell label="Claim" tooltipText="Sum of lent amount and accrued interest to date" />
       ),
       render: (loan) => <InterestCell loan={loan} />,
     },
