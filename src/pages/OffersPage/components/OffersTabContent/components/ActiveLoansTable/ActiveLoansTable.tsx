@@ -44,6 +44,7 @@ const ActiveLoansTable: FC<ActiveLoansTableProps> = ({ loans }) => {
 
   return (
     <Table
+      styleTableWrapper={{ height: caclulateTableHeight(loans.length) }}
       data={sortedLoans}
       columns={columns}
       classNameTableWrapper={styles.tableWrapper}
@@ -54,3 +55,12 @@ const ActiveLoansTable: FC<ActiveLoansTableProps> = ({ loans }) => {
 }
 
 export default ActiveLoansTable
+
+//! Sorry :( I haven't really found a better solution on how to implement dynamic height using a virtual table.
+const caclulateTableHeight = (totalLoans: number) => {
+  const ROW_HEIGHT_PX = 60
+  const MAX_TABLE_HEIGHT_PX = 4200
+  const HEAD_ROW_PX = 30
+
+  return Math.min(ROW_HEIGHT_PX * totalLoans + HEAD_ROW_PX, MAX_TABLE_HEIGHT_PX)
+}
