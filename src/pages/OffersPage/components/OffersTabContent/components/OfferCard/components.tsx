@@ -106,7 +106,7 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({
   offer,
   className,
 }) => {
-  const { lent, repaid, claim, apy, ltv, interest, loansQuantity, activeLoansQuantity } =
+  const { lent, repaid, claim, apy, ltv, interest, totalLoansQuantity, activeLoansQuantity } =
     getAdditionalOfferInfo({ loans, offer })
 
   const colorLtv = getColorByPercent(ltv, HealthColorIncreasing)
@@ -118,7 +118,7 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({
         <div className={styles.additionalStatValues}>
           {createSolValueJSX(lent, 1e9, '0◎', formatDecimal)}
           <span className={styles.additionalStatSubtitle}>
-            {activeLoansQuantity}/{loansQuantity} loans
+            {activeLoansQuantity}/{totalLoansQuantity} loans
           </span>
         </div>
       </div>
