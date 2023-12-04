@@ -77,8 +77,10 @@ export const getOfferErrorMessage: GetCreateOfferErrorMessage = ({
 
   const isOfferInvalid = deltaValue && hasFormChanges ? deltaValue * loansAmount > loanValue : false
 
+  const isEmptyLoansAmount = hasFormChanges && !loansAmount
+
   const errorConditions: Array<[boolean, string]> = [
-    [!loansAmount, ERROR_MESSAGES.EMPTY_LOANS_AMOUNT],
+    [isEmptyLoansAmount, ERROR_MESSAGES.EMPTY_LOANS_AMOUNT],
     [isBalanceInsufficient, ERROR_MESSAGES.INSUFFICIENT_BALANCE],
     [isOfferInvalid, ERROR_MESSAGES.INVALID_OFFER],
   ]
