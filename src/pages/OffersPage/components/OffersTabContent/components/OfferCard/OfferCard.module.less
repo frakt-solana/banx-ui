@@ -1,0 +1,165 @@
+.card {
+  background: var(--bg-primary-deep);
+  border: var(--border-less-primary);
+  border-left: 0;
+  border-right: 0;
+  cursor: pointer;
+}
+
+.cardBody {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px;
+  width: 100%;
+
+  @media (max-width: 1240px) {
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+}
+
+.chevronButton.active svg {
+  transform: rotate(180deg);
+}
+
+/* Main offer overview */
+.mainOfferContainer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  @media (max-width: 640px) {
+    align-items: flex-start;
+  }
+}
+.mainOfferInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.mainOfferStats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  white-space: nowrap;
+}
+.collectionImage {
+  height: 72px;
+  width: 72px;
+
+  @media (max-width: 640px) {
+    height: 32px;
+    width: 32px;
+  }
+}
+.collectionName {
+  font: var(--card-header-lg);
+
+  @media (max-width: 640px) {
+    font: var(--card-header-md);
+  }
+}
+.actionsOfferButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.actionButton {
+  &:disabled {
+    background: var(--bg-secondary);
+
+    path,
+    rect {
+      fill: var(--content-secondary);
+    }
+  }
+}
+.removeOfferButton {
+  svg {
+    height: 12px !important;
+    width: 12px !important;
+
+    rect {
+      fill: var(--content-primary);
+    }
+  }
+}
+
+/* Aditional offer overview */
+.additionalOfferContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 24px;
+  width: 100%;
+
+  @media (max-width: 1240px) {
+    justify-content: center;
+    order: 1;
+  }
+}
+.hiddenAdditionalOverview {
+  @media (max-width: 1240px) {
+    display: none;
+  }
+}
+.additionalStat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  max-width: 168px;
+  width: 100%;
+
+  @media (max-width: 1240px) {
+    align-items: center;
+  }
+}
+.additionalStatLabel {
+  color: var(--content-secondary);
+  font: var(--table-header-md);
+  text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--table-header-sm);
+  }
+}
+.additionalStatValues {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4px;
+  height: 56px;
+
+  @media (max-width: 1240px) {
+    align-items: center;
+  }
+
+  span:first-child {
+    font: var(--body-text-md);
+    line-height: 21px;
+
+    @media (max-width: 640px) {
+      font: var(--body-text-sm);
+    }
+  }
+}
+.interestValues {
+  span:first-child {
+    font: var(--important-text-lg);
+  }
+  span:last-child {
+    font: var(--important-text-sm);
+  }
+}
+
+.additionalStatSubtitle {
+  font: var(--body-text-sm);
+}
+
+.highlight {
+  color: var(--additional-green-primary-deep);
+}

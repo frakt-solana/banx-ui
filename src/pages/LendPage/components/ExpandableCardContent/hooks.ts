@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { Tab, useTabs } from '@banx/components/Tabs'
 
@@ -28,6 +28,12 @@ export const useExpandableCardContent = (marketPubkey: string) => {
   const syntheticOffer = useMemo(() => {
     return findOffer(marketPubkey)
   }, [findOffer, marketPubkey])
+
+  useEffect(() => {
+    if (syntheticOffer?.isEdit && syntheticOffer.deltaValue) {
+      setOfferMode(OfferMode.Pro)
+    }
+  }, [syntheticOffer])
 
   const [offerPubkey, setOfferPubkey] = useState(syntheticOffer?.publicKey || '')
 
