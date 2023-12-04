@@ -1,7 +1,5 @@
 .rootSliderClassName {
-  .ant-slider {
-    margin: 0;
-  }
+  margin: 0 !important;
 
   .ant-slider-rail,
   .ant-slider:hover .ant-slider-rail {
@@ -63,6 +61,55 @@
     &:focus,
     &:hover {
       box-shadow: unset;
+    }
+  }
+}
+
+.sliderValue {
+  .ant-slider-handle {
+    &::before {
+      inset-inline-start: unset !important;
+      inset-block-start: unset !important;
+
+      display: block;
+      content: attr(aria-valuenow) '';
+      background: unset;
+
+      color: var(--content-primary);
+      font: var(--body-text-md);
+      width: unset !important;
+      height: unset !important;
+      text-align: center;
+      padding: 0 !important;
+      position: absolute;
+      top: 12px !important;
+      left: 50% !important;
+      transform: translateX(-50%);
+
+      @media screen and (max-width: 640px) {
+        font: var(--body-text-sm);
+      }
+    }
+  }
+}
+
+.sliderWithValue {
+  .sliderValue();
+}
+.sliderWithValueSol {
+  .sliderValue();
+  .ant-slider-handle {
+    &::before {
+      min-width: 56px;
+      content: attr(aria-valuenow) ' SOL';
+    }
+  }
+}
+.sliderWithValuePercent {
+  .sliderValue();
+  .ant-slider-handle {
+    &::before {
+      content: attr(aria-valuenow) '%';
     }
   }
 }

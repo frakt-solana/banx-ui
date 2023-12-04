@@ -59,7 +59,11 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
         divider={1e9}
         classNamesProps={{ container: styles.repayModalInfo }}
       />
-      <Slider value={partialPercent} onChange={onPartialPercentChange} />
+      <Slider
+        value={partialPercent}
+        onChange={onPartialPercentChange}
+        className={styles.repayModalSlider}
+      />
       <div className={styles.repayModalAdditionalInfo}>
         <StatInfo flexType="row" label="Repay value" value={paybackValue} divider={1e9} />
         <StatInfo flexType="row" label="Remaining debt" value={remainingValue} divider={1e9} />

@@ -1,5 +1,6 @@
 import { FC, useState } from 'react'
 
+import classNames from 'classnames'
 import { sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
@@ -12,11 +13,11 @@ import {
   trackPageEvent,
 } from '@banx/utils'
 
-import { ONE_WEEK_IN_SECONDS } from './constants'
-import { calcInterest } from './helpers'
-import { TableNftData } from './types'
+import { ONE_WEEK_IN_SECONDS } from '../constants'
+import { calcInterest } from '../helpers'
+import { TableNftData } from '../types'
 
-import styles from './BorrowTable.module.less'
+import styles from './Summary.module.less'
 
 interface SummaryProps {
   nftsInCart: TableNftData[]
@@ -62,39 +63,52 @@ export const Summary: FC<SummaryProps> = ({
         <p className={styles.collateralsTitle}>{nftsInCart.length}</p>
         <p className={styles.collateralsSubtitle}>Nfts selected</p>
       </div>
+
       <div className={styles.statsContainer}>
         <div className={styles.stats}>
-          <p>To borrow</p>
-          <p>{createSolValueJSX(totalBorrow, 1e9, '0◎')}</p>
+          <p className={styles.statsTitle}>To borrow</p>
+          <p className={styles.statsValue}>{createSolValueJSX(totalBorrow, 1e9, '0◎')}</p>
         </div>
         <div className={styles.stats}>
-          <p>Weekly fee</p>
-          <p>{createSolValueJSX(totalWeeklyFee, 1e9, '0◎')}</p>
+          <p className={styles.statsTitle}>Weekly fee</p>
+          <p className={styles.statsValue}>{createSolValueJSX(totalWeeklyFee, 1e9, '0◎')}</p>
+        </div>
+        <div className={styles.stats}>
+          <p className={classNames(styles.statsTitle, styles.statsTitleLeft)}>Max Ltv</p>
+          <Slider
+            value={maxBorrowPercent}
+            onChange={setMaxBorrowPercent}
+            min={25}
+            max={100}
+            marks={{
+              25: '25%',
+              50: '50%',
+              75: '75%',
+              100: '100%',
+            }}
+            showValue="percent"
+            className={styles.maxLtvSlider}
+          />
         </div>
       </div>
-      <div className={styles.summaryBtns}>
-        <Slider
-          value={maxBorrowPercent}
-          onChange={setMaxBorrowPercent}
-          min={25}
-          max={100}
-          marks={{
-            25: '25%',
-            50: '50%',
-            75: '75%',
-            100: '100%',
-          }}
-          label="Max Ltv"
-          className={styles.borrowPercentSlider}
-        />
-        <CounterSlider
-          className={styles.counterSlider}
-          value={nftsInCart.length}
-          onChange={selectAmount}
-          max={maxBorrowAmount}
-          label="# Nfts"
-        />
-        <Button onClick={onBorrow} disabled={!nftsInCart.length} loading={isBorrowing} size="large">
+
+      <div className={styles.summaryControls}>
+        <div className={styles.stats}>
+          <p className={classNames(styles.statsTitle, styles.statsTitleLeft)}># NFTS</p>
+          <CounterSlider
+            className={styles.counterSlider}
+            value={nftsInCart.length}
+            onChange={selectAmount}
+            max={maxBorrowAmount}
+          />
+        </div>
+        <Button
+          className={styles.borrowSummaryBtn}
+          onClick={onBorrow}
+          disabled={!nftsInCart.length}
+          loading={isBorrowing}
+          size="large"
+        >
           Borrow {createSolValueJSX(totalBorrow, 1e9, '0◎')}
         </Button>
       </div>
