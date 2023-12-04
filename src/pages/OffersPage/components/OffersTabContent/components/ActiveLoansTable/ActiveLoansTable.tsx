@@ -4,7 +4,7 @@ import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 
 import { Loan } from '@banx/api/core'
-import { useSortedLoans } from '@banx/pages/LoansPage/components/LoansActiveTable/hooks'
+import { useSortedLoans } from '@banx/pages/LoansPage/components/LoansActiveTable'
 import { useLenderLoansAndOffers } from '@banx/pages/OffersPage/hooks'
 import { isLoanLiquidated, isLoanTerminating } from '@banx/utils'
 
