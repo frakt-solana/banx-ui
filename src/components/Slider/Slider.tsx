@@ -23,6 +23,7 @@ export interface SliderProps {
   max?: number
   min?: number
   className?: string
+  rootClassName?: string
   disabled?: boolean
 }
 
@@ -32,13 +33,14 @@ export const Slider: FC<SliderProps> = ({
   marks = DEFAULT_SLIDER_MARKS,
   step = 1,
   className,
+  rootClassName,
   ...props
 }) => {
   return (
     <div className={classNames(styles.slider, className)}>
       {!!label && <p className={classNames(styles.label, labelClassName)}>{label}</p>}
       <SliderAntd
-        rootClassName="rootSliderClassName"
+        rootClassName={classNames('rootSliderClassName', rootClassName)}
         marks={marks}
         step={step}
         tooltip={{ open: false }}
