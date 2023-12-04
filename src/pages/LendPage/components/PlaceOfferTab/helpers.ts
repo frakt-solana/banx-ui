@@ -75,7 +75,8 @@ export const getOfferErrorMessage: GetCreateOfferErrorMessage = ({
   const totalFundsAvailable = initialOfferSize + solanaBalance * 1e9
   const isBalanceInsufficient = offerSize > totalFundsAvailable
 
-  const isOfferInvalid = deltaValue && hasFormChanges ? deltaValue * loansAmount > loanValue : false
+  const isOfferInvalid =
+    deltaValue && hasFormChanges ? deltaValue * 1e9 * loansAmount > loanValue * 1e9 : false
 
   const isEmptyLoansAmount = hasFormChanges && !loansAmount
 
