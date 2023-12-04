@@ -2,6 +2,7 @@ import { FC } from 'react'
 
 import { Slider as SliderAntd } from 'antd'
 import classNames from 'classnames'
+import { chain } from 'lodash'
 
 import styles from './Slider.module.less'
 
@@ -25,6 +26,14 @@ export interface SliderProps {
   className?: string
   rootClassName?: string
   disabled?: boolean
+  showValue?: 'number' | 'percent' | 'sol'
+}
+
+//? Described in global silder.less file
+const SLIDER_WITH_VALUE_CLASSNAME = {
+  number: 'sliderWithValue',
+  percent: 'sliderWithValuePercent',
+  sol: 'sliderWithValueSol',
 }
 
 export const Slider: FC<SliderProps> = ({
@@ -34,16 +43,32 @@ export const Slider: FC<SliderProps> = ({
   step = 1,
   className,
   rootClassName,
+  showValue,
   ...props
 }) => {
+  //? Show marks without text when showValue exists
+  const marksFormatted = showValue
+    ? chain(marks)
+        .entries()
+        .map(([label]) => [label, ' '])
+        .fromPairs()
+        .value()
+    : marks
+
   return (
-    <div className={classNames(styles.slider, className)}>
+    <div className={classNames(styles.slider, { [styles.sliderWithValue]: showValue }, className)}>
       {!!label && <p className={classNames(styles.label, labelClassName)}>{label}</p>}
       <SliderAntd
-        rootClassName={classNames('rootSliderClassName', rootClassName)}
-        marks={marks}
+        rootClassName={classNames(
+          'rootSliderClassName',
+          { [SLIDER_WITH_VALUE_CLASSNAME[showValue || 'number']]: !!showValue },
+          rootClassName,
+        )}
+        marks={marksFormatted}
         step={step}
-        tooltip={{ open: false }}
+        tooltip={{
+          open: false,
+        }}
         {...props}
       />
     </div>

@@ -84,8 +84,8 @@ export const Summary: FC<SummaryProps> = ({
             75: '75%',
             100: '100%',
           }}
-          label="Max Ltv"
-          className={styles.borrowPercentSlider}
+          showValue="percent"
+          rootClassName={styles.borrowPercentSlider}
         />
         <CounterSlider
           className={styles.counterSlider}
