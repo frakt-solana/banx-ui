@@ -85,6 +85,7 @@ export const usePlaceLiteOffer = ({
     loanValue: loanValueNumber,
     loansAmount: loansAmountNumber,
     deltaValue: 0,
+    hasFormChanges,
   })
 
   const showBorrowerMessage = !offerErrorMessage && !!offerSize
