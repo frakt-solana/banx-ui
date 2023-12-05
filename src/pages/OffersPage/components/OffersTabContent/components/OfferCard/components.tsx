@@ -37,7 +37,7 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
     bondingCurve: { delta },
   } = offer
 
-  const displayDeltaValue = delta ? `| Δ${formatDecimal(delta / 1e9)}◎` : ''
+  const displayDeltaValue = delta ? `| ∇${formatDecimal(delta / 1e9)}◎` : ''
   const displayOfferValue = formatDecimal(currentSpotPrice / 1e9)
 
   const { removeOffer, goToEditOffer } = useOfferActions(offer, collectionMeta)

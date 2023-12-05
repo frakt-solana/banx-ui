@@ -1,7 +1,8 @@
 import { FC } from 'react'
 
+import { createPercentValueJSX } from '@banx/components/TableComponents'
+
 import { LenderActivity } from '@banx/api/activity'
-import { HealthColorDecreasing, convertAprToApy, getColorByPercent } from '@banx/utils'
 
 import styles from '../HistoryOffersTable.module.less'
 
@@ -10,13 +11,7 @@ interface APRCellProps {
 }
 
 export const APRCell: FC<APRCellProps> = ({ loan }) => {
-  const aprPercent = loan.apr / 100
+  const aprInPercent = loan.apr / 100
 
-  const colorAPR = getColorByPercent(aprPercent, HealthColorDecreasing)
-
-  return (
-    <span style={{ color: colorAPR }} className={styles.aprValue}>
-      {convertAprToApy(aprPercent / 100)}%
-    </span>
-  )
+  return <span className={styles.aprValue}>{createPercentValueJSX(aprInPercent)}</span>
 }
