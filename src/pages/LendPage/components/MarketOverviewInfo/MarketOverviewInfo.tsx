@@ -51,21 +51,14 @@ interface MarketAdditionalInfoProps {
 export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isCardOpen }) => (
   <div className={classNames(styles.additionalInfoStats, { [styles.hidden]: isCardOpen })}>
     {ADDITIONAL_MARKET_INFO.map((statInfo) => {
-      const { key, secondValue, valueRenderer, valueStyles, ...rest } = statInfo
+      const { key, secondValue, valueRenderer, ...rest } = statInfo
       const value = market[key as keyof MarketPreview] as number
       const computedSecondValue = isFunction(secondValue) ? secondValue(market) : secondValue
 
       const computedValue = valueRenderer ? valueRenderer(value) : value
-      const styles = isFunction(valueStyles) ? valueStyles(market) : valueStyles
 
       return (
-        <StatInfo
-          key={key}
-          value={computedValue}
-          secondValue={computedSecondValue}
-          valueStyles={styles}
-          {...rest}
-        />
+        <StatInfo key={key} value={computedValue} secondValue={computedSecondValue} {...rest} />
       )
     })}
   </div>

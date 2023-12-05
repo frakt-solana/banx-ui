@@ -34,10 +34,13 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
     currentSpotPrice,
     fundsSolOrTokenBalance,
     pairState,
+    bidSettlement,
     bondingCurve: { delta },
   } = offer
 
-  const displayDeltaValue = delta ? `| Δ${formatDecimal(delta / 1e9)}◎` : ''
+  const offerSize = fundsSolOrTokenBalance + bidSettlement
+
+  const displayDeltaValue = delta ? `| ∇${formatDecimal(delta / 1e9)}◎` : ''
   const displayOfferValue = formatDecimal(currentSpotPrice / 1e9)
 
   const { removeOffer, goToEditOffer } = useOfferActions(offer, collectionMeta)
@@ -77,7 +80,7 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
             value={`${displayOfferValue} ${displayDeltaValue}`}
             valueType={VALUES_TYPES.STRING}
           />
-          <StatInfo label="Size" value={fundsSolOrTokenBalance} divider={1e9} />
+          <StatInfo label="Size" value={offerSize} divider={1e9} />
         </div>
       </div>
       <div className={styles.actionsOfferButtons}>
