@@ -13,6 +13,7 @@ import {
 } from '@banx/components/modals'
 
 import { BorrowNft, Offer } from '@banx/api/core'
+import { SPECIAL_COLLECTIONS_MARKETS } from '@banx/constants'
 import { PATHS } from '@banx/router'
 import {
   ViewState,
@@ -80,15 +81,22 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
     navigate(PATHS.LOANS)
   }
 
-  const onBorrowSuccess = (loansAmount = 1) => {
-    if (!getDialectAccessToken(wallet.publicKey?.toBase58())) {
+  const onBorrowSuccess = (loansAmount = 1, showCongrats = false) => {
+    const isUserSubscribedToNotifications = !!getDialectAccessToken(wallet.publicKey?.toBase58())
+
+    if (!isUserSubscribedToNotifications || showCongrats) {
       open(SubscribeNotificationsModal, {
         title: createLoanSubscribeNotificationsTitle(loansAmount),
-        message: createLoanSubscribeNotificationsContent(),
-        onActionClick: () => {
-          close()
-          setBanxNotificationsSiderVisibility(true)
-        },
+        message: createLoanSubscribeNotificationsContent(
+          showCongrats,
+          !isUserSubscribedToNotifications,
+        ),
+        onActionClick: !isUserSubscribedToNotifications
+          ? () => {
+              close()
+              setBanxNotificationsSiderVisibility(true)
+            }
+          : undefined,
         onCancel: close,
       })
     }
@@ -96,6 +104,8 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
 
   const borrow = async (nft: TableNftData) => {
     const txnParams = createBorrowParams([nft], rawOffers)
+
+    const showCongratsMessage = SPECIAL_COLLECTIONS_MARKETS.includes(nft.nft.loan.marketPubkey)
 
     const txnResults = await executeBorrow({
       walletAndConnection: {
@@ -105,7 +115,7 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
       txnParams: txnParams,
       addLoansOptimistic,
       updateOffersOptimistic,
-      onSuccessAll: () => onBorrowSuccess(1),
+      onSuccessAll: () => onBorrowSuccess(1, showCongratsMessage),
       isLedger,
     })
 
@@ -118,6 +128,10 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
     const selectedNfts = tableNftsData.filter(({ mint }) => !!offerByMint[mint])
     const txnParams = createBorrowParams(selectedNfts, rawOffers)
 
+    const showCongratsMessage = !!txnParams
+      .flat()
+      .find(({ offer }) => SPECIAL_COLLECTIONS_MARKETS.includes(offer.hadoMarket))
+
     const txnsResults = await executeBorrow({
       walletAndConnection: {
         wallet,
@@ -126,7 +140,11 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
       txnParams,
       addLoansOptimistic,
       updateOffersOptimistic,
-      onSuccessAll: () => onBorrowSuccess(sumBy(txnParams, (param) => param.length)),
+      onSuccessAll: () =>
+        onBorrowSuccess(
+          sumBy(txnParams, (param) => param.length),
+          showCongratsMessage,
+        ),
       isLedger,
     })
 

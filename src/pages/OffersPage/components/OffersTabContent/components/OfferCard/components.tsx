@@ -6,6 +6,7 @@ import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { Button, ButtonProps } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
+import Tooltip from '@banx/components/Tooltip'
 
 import { CollectionMeta, Loan, Offer } from '@banx/api/core'
 import { CloseModal, Pencil } from '@banx/icons'
@@ -80,16 +81,25 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
         </div>
       </div>
       <div className={styles.actionsOfferButtons}>
-        <Button {...actionButtonProps} onClick={onEdit}>
-          <Pencil />
-        </Button>
-        <Button
-          {...actionButtonProps}
-          className={classNames(styles.removeOfferButton, actionButtonProps.className)}
-          onClick={onRemove}
-        >
-          <CloseModal />
-        </Button>
+        <Tooltip title="Edit">
+          <>
+            <Button {...actionButtonProps} onClick={onEdit}>
+              <Pencil />
+            </Button>
+          </>
+        </Tooltip>
+
+        <Tooltip title="Close">
+          <>
+            <Button
+              {...actionButtonProps}
+              className={classNames(styles.removeOfferButton, actionButtonProps.className)}
+              onClick={onRemove}
+            >
+              <CloseModal />
+            </Button>
+          </>
+        </Tooltip>
       </div>
     </div>
   )

@@ -45,8 +45,8 @@ export const getTableColumns = ({ updateOrAddLoan }: GetTableColumns) => {
       render: (loan) => <InterestCell loan={loan} />,
     },
     {
-      key: 'apy',
-      title: <HeaderCell label="APY" />,
+      key: 'apr',
+      title: <HeaderCell label="APR" />,
       render: (loan) => <APRCell loan={loan} />,
     },
     {

@@ -44,7 +44,7 @@ const useFilteredMarkets = (marketsPreview: MarketPreview[]) => {
         format: (apr: number) => createPercentValueJSX(convertAprToApy(apr / 1e4)),
       },
     },
-    labels: ['Collection', 'APY'],
+    labels: ['Collection', 'APR'],
   }
 
   return { filteredMarkets, searchSelectParams }

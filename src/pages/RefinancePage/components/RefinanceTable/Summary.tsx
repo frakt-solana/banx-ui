@@ -148,7 +148,7 @@ export const Summary: FC<SummaryProps> = ({
         <StatInfo label="Total to lend" value={totalDebt} divider={1e9} />
         <StatInfo label="Weekly interest" value={totalWeeklyInterest} divider={1e9} />
         <StatInfo
-          label="Weighted apy"
+          label="Weighted apr"
           value={formattedWeightedApy}
           valueStyles={{ color: weightedApr ? colorApr : '' }}
           classNamesProps={{ value: styles.aprValue }}
