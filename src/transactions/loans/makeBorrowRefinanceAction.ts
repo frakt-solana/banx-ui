@@ -9,6 +9,7 @@ import {
   BondOfferV2,
   BondTradeTransactionV2,
   FraktBond,
+  PairState,
 } from 'fbonds-core/lib/fbond-protocol/types'
 import { MakeActionFn, WalletAndConnection } from 'solana-transactions-executor'
 
@@ -99,7 +100,10 @@ const getIxnsAndSigners = async ({
     minMarketFee: bondTradeTransaction.amountOfBonds,
   }
 
-  if (offer.publicKey === bondTradeTransaction.bondOffer) {
+  if (
+    offer.publicKey === bondTradeTransaction.bondOffer &&
+    offer.pairState === PairState.PerpetualBondingCurveOnMarket
+  ) {
     const { instructions, signers, optimisticResult } = await borrowerRefinanceToSame({
       args: { solToRefinance: offer.currentSpotPrice },
       accounts,
