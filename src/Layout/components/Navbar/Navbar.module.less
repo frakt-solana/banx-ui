@@ -21,6 +21,7 @@
 .link {
   color: var(--content-primary);
   font: var(--menu-tab-sm);
+  border-right: 4px solid transparent;
 
   display: flex;
   align-items: center;
@@ -34,7 +35,7 @@
   user-select: none;
 
   &:hover {
-    border-right: 4px solid var(--accent-secondary);
+    border-color: var(--accent-secondary);
     background: var(--additional-green-secondary);
   }
 }
@@ -42,7 +43,7 @@
   padding-left: 56px;
 }
 .link.active {
-  border-right: 4px solid var(--accent-secondary);
+  border-color: var(--accent-secondary);
   background: var(--additional-green-secondary);
   pointer-events: none;
 }
