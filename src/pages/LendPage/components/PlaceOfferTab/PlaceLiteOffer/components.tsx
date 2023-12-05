@@ -67,6 +67,7 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
             valueType={VALUES_TYPES.STRING}
           />
           <StatInfo
+            label="Reserve"
             value={reserve}
             divider={1e9}
             tooltipText="Leftover SOL is sent here if offers are partially taken"
