@@ -5,6 +5,7 @@ import classNames from 'classnames'
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 
 import { Button } from '@banx/components/Buttons'
+import Tooltip from '@banx/components/Tooltip'
 
 import { Pencil } from '@banx/icons'
 import { SyntheticOffer } from '@banx/store'
@@ -62,7 +63,11 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, bestOffer }) => {
           size="medium"
           className={styles.editButton}
         >
-          <Pencil />
+          <Tooltip title="Edit">
+            <div className={styles.tooltipInnerContent}>
+              <Pencil />
+            </div>
+          </Tooltip>
         </Button>
       )}
     </li>
