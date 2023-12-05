@@ -56,19 +56,19 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, bestOffer }) => {
         <p className={styles.value}>{loansAmount || 0}</p>
       </div>
       {isOwnOffer && !isNewOffer && editOffer && (
-        <Tooltip title="Edit">
-          <>
-            <Button
-              onClick={editOffer}
-              type="circle"
-              variant="secondary"
-              size="medium"
-              className={styles.editButton}
-            >
+        <Button
+          onClick={editOffer}
+          type="circle"
+          variant="secondary"
+          size="medium"
+          className={styles.editButton}
+        >
+          <Tooltip title="Edit">
+            <div className={styles.tooltipInnerContent}>
               <Pencil />
-            </Button>
-          </>
-        </Tooltip>
+            </div>
+          </Tooltip>
+        </Button>
       )}
     </li>
   )
