@@ -62,6 +62,7 @@ const useProcessedOffers: UseProcessedOffers = ({ marketPubkey, offers, editable
       .filter(
         (offer) => !(offer.loansAmount === 0 && offer.assetReceiver !== publicKey?.toBase58()),
       )
+      .filter((offer) => !(offer.loanValue === 0 && offer.assetReceiver !== publicKey?.toBase58()))
 
     if (syntheticOffer) {
       processedEditableOffers.push(syntheticOffer)
