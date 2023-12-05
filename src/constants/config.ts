@@ -32,7 +32,7 @@ export const BONDS = {
   ADMIN_PUBKEY: '9J4yDqU6wBkdhP5bmJhukhsEzBkaAXiBmii52kTdxpQq',
   BORROW_RENT_FEE: 4621440, //? Solana lamports
   PROTOCOL_FEE_PERCENT: 100, //? Base points
-  PROTOCOL_REPAY_FEE: 1600, //? Base points
+  PROTOCOL_REPAY_FEE: 620, //? Base points
   FACELESS_MARKET_PUBKEY: 'BzxKw3JLmPt7aagkHnRQEMQ4Le1rZdwEib5Viuig42hu',
 }
 

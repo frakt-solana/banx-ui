@@ -7,7 +7,7 @@ import { LoanStatus, calculateLoanRepayValue, determineLoanStatus } from '@banx/
 
 enum SortField {
   LENT = 'lent',
-  APY = 'apy',
+  APR = 'apr',
   LTV = 'ltv',
   STATUS = 'status',
 }
@@ -24,7 +24,7 @@ export const useSortedLenderLoans = (loans: Loan[], sortOptionValue: string) => 
 
     const sortValueMapping: Record<SortField, string | SortValueGetter> = {
       [SortField.LENT]: 'fraktBond.currentPerpetualBorrowed',
-      [SortField.APY]: 'bondTradeTransaction.amountOfBonds',
+      [SortField.APR]: 'bondTradeTransaction.amountOfBonds',
       [SortField.LTV]: (loan) => {
         const collectionFloor = loan.nft.collectionFloor
         const repayValue = calculateLoanRepayValue(loan)

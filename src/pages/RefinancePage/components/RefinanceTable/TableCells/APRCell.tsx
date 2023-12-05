@@ -17,26 +17,26 @@ interface APRCellProps {
 
 //   const colorAPR = getColorByPercent(aprIncrement, HealthColorDecreasing)
 
-//   const apy = Math.min(convertAprToApy(aprIncrement / 100), MAX_APY_INCREASE_PERCENT)
+//   const apr = Math.min(convertAprToApy(aprIncrement / 100), MAX_APY_INCREASE_PERCENT)
 
-//   const isApyIncreaseRateVisible = apy < MAX_APY_INCREASE_PERCENT
+//   const isApyIncreaseRateVisible = apr < MAX_APY_INCREASE_PERCENT
 
 //   return (
 //     <span style={{ color: colorAPR }} className={styles.aprValue}>
-//       {apy}% {isApyIncreaseRateVisible ? `(+${INCREASE_PERCENT_APR_PER_HOUR}%)` : null}
+//       {apr}% {isApyIncreaseRateVisible ? `(+${INCREASE_PERCENT_APR_PER_HOUR}%)` : null}
 //     </span>
 //   )
 // }
 
 export const APRCell: FC<APRCellProps> = ({ loan }) => {
   const aprInPercent = loan.bondTradeTransaction.amountOfBonds / 100
-  const apy = convertAprToApy(aprInPercent / 100)
+  const apr = convertAprToApy(aprInPercent / 100)
 
-  const colorAPR = getColorByPercent(apy, HealthColorDecreasing)
+  const colorAPR = getColorByPercent(apr, HealthColorDecreasing)
 
   return (
     <span style={{ color: colorAPR }} className={styles.aprValue}>
-      {apy}%
+      {apr}%
     </span>
   )
 }

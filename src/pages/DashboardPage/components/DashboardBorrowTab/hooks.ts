@@ -13,6 +13,7 @@ import {
 } from '@banx/components/modals'
 
 import { BorrowNft, MarketPreview } from '@banx/api/core'
+import { SPECIAL_COLLECTIONS_MARKETS } from '@banx/constants'
 import { executeBorrow } from '@banx/pages/BorrowPage/components/BorrowTable/helpers'
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
@@ -96,15 +97,22 @@ export const useSingleBorrow = () => {
     navigate(PATHS.LOANS)
   }
 
-  const onBorrowSuccess = () => {
-    if (!getDialectAccessToken(wallet.publicKey?.toBase58())) {
+  const onBorrowSuccess = (showCongrats = false) => {
+    const isUserSubscribedToNotifications = !!getDialectAccessToken(wallet.publicKey?.toBase58())
+
+    if (!isUserSubscribedToNotifications || showCongrats) {
       open(SubscribeNotificationsModal, {
         title: createLoanSubscribeNotificationsTitle(1),
-        message: createLoanSubscribeNotificationsContent(),
-        onActionClick: () => {
-          close()
-          setBanxNotificationsSiderVisibility(true)
-        },
+        message: createLoanSubscribeNotificationsContent(
+          showCongrats,
+          !isUserSubscribedToNotifications,
+        ),
+        onActionClick: !isUserSubscribedToNotifications
+          ? () => {
+              close()
+              setBanxNotificationsSiderVisibility(true)
+            }
+          : undefined,
         onCancel: close,
       })
     }
@@ -125,7 +133,7 @@ export const useSingleBorrow = () => {
       txnParams: [[{ nft, offer: rawOffer, loanValue: calculateLoanValue(offer) }]],
       addLoansOptimistic,
       updateOffersOptimistic,
-      onSuccessAll: onBorrowSuccess,
+      onSuccessAll: () => onBorrowSuccess(SPECIAL_COLLECTIONS_MARKETS.includes(marketPubkey)),
     })
 
     if (txnResults?.length) {

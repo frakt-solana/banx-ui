@@ -20,8 +20,8 @@ export const ADDITIONAL_MARKET_INFO = [
   },
   {
     key: 'marketApr',
-    label: 'Apy',
-    tooltipText: 'Annual compounded interest rate',
+    label: 'Apr',
+    tooltipText: 'Annual interest rate',
     valueRenderer: (apr: number) => convertAprToApy(apr / 1e4),
     valueType: VALUES_TYPES.PERCENT,
     valueStyles: (market: MarketPreview) => ({
