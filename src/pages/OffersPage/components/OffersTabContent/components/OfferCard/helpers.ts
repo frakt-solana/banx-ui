@@ -33,7 +33,7 @@ export const getAdditionalOfferInfo = ({ loans, offer }: { loans: Loan[]; offer:
     repaid: totalRepaid,
     claim: totalClaim,
     ltv,
-    apy: weightedApr,
+    apr: weightedApr,
     interest,
     totalLoansQuantity,
     activeLoansQuantity,

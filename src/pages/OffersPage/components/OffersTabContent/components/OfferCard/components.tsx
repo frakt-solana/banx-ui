@@ -40,7 +40,7 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
 
   const offerSize = fundsSolOrTokenBalance + bidSettlement
 
-  const displayDeltaValue = delta ? `| ∇${formatDecimal(delta / 1e9)}◎` : ''
+  const displayDeltaValue = delta ? `| ∇ ${formatDecimal(delta / 1e9)}◎` : ''
   const displayOfferValue = formatDecimal(currentSpotPrice / 1e9)
 
   const { removeOffer, goToEditOffer } = useOfferActions(offer, collectionMeta)
@@ -119,7 +119,7 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({
   offer,
   className,
 }) => {
-  const { lent, repaid, claim, apy, ltv, interest, totalLoansQuantity, activeLoansQuantity } =
+  const { lent, repaid, claim, apr, ltv, interest, totalLoansQuantity, activeLoansQuantity } =
     getAdditionalOfferInfo({ loans, offer })
 
   const colorLtv = getColorByPercent(ltv, HealthColorIncreasing)
@@ -145,7 +145,7 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({
         <div className={styles.additionalStatLabel}>Claim</div>
         <div className={styles.additionalStatValues}>
           {createSolValueJSX(claim, 1e9, '0◎')}
-          <span style={{ color: apy ? colorLtv : '' }} className={styles.additionalStatSubtitle}>
+          <span style={{ color: ltv ? colorLtv : '' }} className={styles.additionalStatSubtitle}>
             {createPercentValueJSX(ltv, '0%')} LTV
           </span>
         </div>
@@ -158,8 +158,8 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({
           })}
         >
           {createSolValueJSX(interest, 1e9, '0◎', formatDecimal)}
-          <span className={classNames({ [styles.highlight]: apy })}>
-            {createPercentValueJSX(apy, '0%')} APY
+          <span className={classNames({ [styles.highlight]: apr })}>
+            {createPercentValueJSX(apr, '0%')} APR
           </span>
         </div>
       </div>
