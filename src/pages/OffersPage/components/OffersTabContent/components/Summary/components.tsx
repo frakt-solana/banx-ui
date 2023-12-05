@@ -31,7 +31,7 @@ export const ClaimInterestButton: FC<ButtonProps> = (props) => {
         <div className={styles.loansInterestContainer}>
           <StatInfo
             label={label}
-            value={`${formatDecimal(value / 1e9)}0◎`}
+            value={`${formatDecimal(value / 1e9)}◎`}
             classNamesProps={{ value: styles.value }}
             valueType={VALUES_TYPES.STRING}
           />
