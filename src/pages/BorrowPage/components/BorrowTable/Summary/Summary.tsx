@@ -10,6 +10,7 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 import {
   calcBorrowValueWithProtocolFee,
   calcBorrowValueWithRentFee,
+  getColorByPercent,
   trackPageEvent,
 } from '@banx/utils'
 
@@ -75,20 +76,7 @@ export const Summary: FC<SummaryProps> = ({
         </div>
         <div className={styles.stats}>
           <p className={classNames(styles.statsTitle, styles.statsTitleLeft)}>Max Ltv</p>
-          <Slider
-            value={maxBorrowPercent}
-            onChange={setMaxBorrowPercent}
-            min={25}
-            max={100}
-            marks={{
-              25: '25%',
-              50: '50%',
-              75: '75%',
-              100: '100%',
-            }}
-            showValue="percent"
-            className={styles.maxLtvSlider}
-          />
+          <MaxLtvSlider value={maxBorrowPercent} onChange={setMaxBorrowPercent} />
         </div>
       </div>
 
@@ -113,5 +101,31 @@ export const Summary: FC<SummaryProps> = ({
         </Button>
       </div>
     </div>
+  )
+}
+
+interface MaxLtvSliderProps {
+  value: number
+  onChange: (value: number) => void
+}
+
+const MaxLtvSlider: FC<MaxLtvSliderProps> = ({ value, onChange }) => {
+  const colorClassNameByValue = {
+    30: styles.maxLtvSliderGreen,
+    80: styles.maxLtvSliderYellow,
+    100: styles.maxLtvSliderRed,
+  }
+
+  return (
+    <Slider
+      value={value}
+      onChange={onChange}
+      min={10}
+      max={100}
+      marks={{}}
+      showValue="percent"
+      className={styles.maxLtvSlider}
+      rootClassName={getColorByPercent(value, colorClassNameByValue)}
+    />
   )
 }
