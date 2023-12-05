@@ -115,6 +115,32 @@
     width: 120px;
   }
 }
+.maxLtvSliderColor (@color: var(--accent-primary)) {
+  :global {
+    .ant-slider-track,
+    .ant-slider:hover .ant-slider-track {
+      background: @color !important;
+      border-color: @color !important;
+    }
+    .ant-slider-dot-active,
+    .ant-slider:hover .ant-slider-dot-active {
+      border-color: @color !important;
+    }
+
+    .ant-slider-handle {
+      border-color: @color !important;
+    }
+  }
+}
+.maxLtvSliderGreen {
+  .maxLtvSliderColor(var(--accent-primary));
+}
+.maxLtvSliderYellow {
+  .maxLtvSliderColor(var(--additional-gold-primary));
+}
+.maxLtvSliderRed {
+  .maxLtvSliderColor(var(--additional-red-primary));
+}
 
 .summaryControls {
   display: flex;
