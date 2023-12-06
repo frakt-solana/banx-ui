@@ -45,7 +45,7 @@ const PlaceLiteOffer: FC<OfferParams> = (offersParams) => {
           disabled={!connected}
         />
         <InputCounter
-          label="Number of loans"
+          label="Number of offers"
           onChange={onLoanAmountChange}
           value={loansAmount}
           disabled={!connected}
