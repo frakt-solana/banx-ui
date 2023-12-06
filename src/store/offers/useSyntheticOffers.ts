@@ -1,4 +1,6 @@
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
+import { calculateNextSpotPrice } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { BondingCurveType } from 'fbonds-core/lib/fbond-protocol/types'
 import produce from 'immer'
 import { create } from 'zustand'
 
@@ -68,26 +70,31 @@ export const createEmptySyntheticOffer: CreateEmptySyntheticOffer = ({
 })
 
 export const convertToSynthetic = (offer: Offer, isEdit = false): SyntheticOffer => {
-  const {
-    publicKey,
-    currentSpotPrice,
-    validation,
-    bidSettlement,
-    assetReceiver,
-    hadoMarket,
-    mathCounter,
-    bondingCurve,
-    buyOrdersQuantity,
-  } = offer
+  const { publicKey, assetReceiver, hadoMarket, mathCounter, bondingCurve, buyOrdersQuantity } =
+    offer
 
   return {
     isEdit,
     publicKey,
     loansAmount: buyOrdersQuantity,
-    loanValue: Math.min(validation.loanToValueFilter, currentSpotPrice + bidSettlement),
+    loanValue: calcSyntheticLoanValue(offer),
     assetReceiver,
     marketPubkey: hadoMarket,
     mathCounter,
     deltaValue: bondingCurve.delta,
   }
+}
+
+export const calcSyntheticLoanValue = (offer: Offer): number => {
+  const { currentSpotPrice, baseSpotPrice, validation, bidSettlement, mathCounter, bondingCurve } =
+    offer
+
+  const prevSpotPrice = calculateNextSpotPrice({
+    bondingCurveType: bondingCurve.bondingType as BondingCurveType,
+    delta: bondingCurve.delta,
+    spotPrice: baseSpotPrice,
+    counter: mathCounter + 2,
+  })
+
+  return Math.min(validation.loanToValueFilter, currentSpotPrice + bidSettlement, prevSpotPrice)
 }

@@ -10,6 +10,7 @@ import Tooltip from '@banx/components/Tooltip'
 
 import { CollectionMeta, Loan, Offer } from '@banx/api/core'
 import { CloseModal, Pencil } from '@banx/icons'
+import { calcSyntheticLoanValue } from '@banx/store'
 import {
   HealthColorIncreasing,
   formatDecimal,
@@ -31,7 +32,6 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
   const { collectionName, collectionImage, collectionFloor } = collectionMeta
 
   const {
-    currentSpotPrice,
     fundsSolOrTokenBalance,
     pairState,
     bidSettlement,
@@ -41,9 +41,11 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
 
   const offerSize = fundsSolOrTokenBalance + bidSettlement
 
-  const minDeltaValue = currentSpotPrice - (buyOrdersQuantity - 1) * delta
+  const loanValue = calcSyntheticLoanValue(offer)
 
-  const formattedLoanValue = formatDecimal(currentSpotPrice / 1e9)
+  const minDeltaValue = loanValue - (buyOrdersQuantity - 1) * delta
+
+  const formattedLoanValue = formatDecimal(loanValue / 1e9)
   const formattedMinLoanValue = formatDecimal(minDeltaValue / 1e9)
 
   const displayOfferValue = delta

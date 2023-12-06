@@ -7,7 +7,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 import { CollectionMeta, Offer } from '@banx/api/core'
 import { useLenderLoansAndOffers } from '@banx/pages/OffersPage/hooks'
 import { PATHS } from '@banx/router'
-import { useMarketsURLControl, useSyntheticOffers } from '@banx/store'
+import { convertToSynthetic, useMarketsURLControl, useSyntheticOffers } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { makeRemoveOfferAction } from '@banx/transactions/bonds'
 import { enqueueSnackbar } from '@banx/utils'
@@ -31,16 +31,7 @@ export const useOfferActions = (offer: Offer, collectionMeta: CollectionMeta) =>
   }, [offers, offerPubkey])
 
   const goToEditOffer = () => {
-    setSyntheticOffer({
-      isEdit: true,
-      publicKey: offer.publicKey,
-      loanValue: offer.currentSpotPrice,
-      loansAmount: offer.buyOrdersQuantity,
-      assetReceiver: offer.assetReceiver,
-      marketPubkey: offer.hadoMarket,
-      mathCounter: offer.mathCounter,
-      deltaValue: offer.bondingCurve.delta,
-    })
+    setSyntheticOffer(convertToSynthetic(offer, true))
 
     const collectionName = collectionMeta.collectionName
 
