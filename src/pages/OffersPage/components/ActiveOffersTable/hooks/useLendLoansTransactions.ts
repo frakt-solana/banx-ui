@@ -2,6 +2,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan, Offer } from '@banx/api/core'
+import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import {
   makeClaimAction,
@@ -25,6 +26,7 @@ export const useLendLoansTransactions = ({
 }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
+  const { close } = useModal()
 
   const terminateLoan = () => {
     new TxnExecutor(makeTerminateAction, { wallet, connection })
@@ -37,6 +39,9 @@ export const useLendLoansTransactions = ({
           type: 'success',
           solanaExplorerPath: `tx/${txnHash}`,
         })
+      })
+      .on('pfSuccessAll', () => {
+        close()
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error, {
@@ -81,6 +86,9 @@ export const useLendLoansTransactions = ({
           type: 'success',
           solanaExplorerPath: `tx/${txnHash}`,
         })
+      })
+      .on('pfSuccessAll', () => {
+        close()
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error, {
