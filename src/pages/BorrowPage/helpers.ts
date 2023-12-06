@@ -20,14 +20,27 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
     .fill(0)
     .reduce(
       (acc: { reserve: number; simpleOffers: SimpleOffer[] }, _, idx) => {
+        const baseMathCounter = mathCounter + 1 - idx
+
+        const prevSpotPrice = calculateNextSpotPrice({
+          bondingCurveType: bondingCurve.bondingType as BondingCurveType,
+          delta: bondingCurve.delta,
+          spotPrice: baseSpotPrice,
+          counter: baseMathCounter + 1,
+        })
+
         const nextSpotPrice = calculateNextSpotPrice({
           bondingCurveType: bondingCurve.bondingType as BondingCurveType,
           delta: bondingCurve.delta,
           spotPrice: baseSpotPrice,
-          counter: mathCounter + 1 - idx,
+          counter: baseMathCounter,
         })
 
-        const loanValue = Math.min(validation.loanToValueFilter, nextSpotPrice + acc.reserve)
+        const loanValue = Math.min(
+          validation.loanToValueFilter,
+          nextSpotPrice + acc.reserve,
+          prevSpotPrice,
+        )
 
         const nextReserve = acc.reserve - Math.max(loanValue - nextSpotPrice, 0)
 
