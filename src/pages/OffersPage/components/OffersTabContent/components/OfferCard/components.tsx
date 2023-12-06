@@ -35,13 +35,20 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
     fundsSolOrTokenBalance,
     pairState,
     bidSettlement,
+    buyOrdersQuantity,
     bondingCurve: { delta },
   } = offer
 
   const offerSize = fundsSolOrTokenBalance + bidSettlement
 
-  const displayDeltaValue = delta ? `| ∇ ${formatDecimal(delta / 1e9)}◎` : ''
-  const displayOfferValue = formatDecimal(currentSpotPrice / 1e9)
+  const minDeltaValue = currentSpotPrice - (buyOrdersQuantity - 1) * delta
+
+  const formattedLoanValue = formatDecimal(currentSpotPrice / 1e9)
+  const formattedMinLoanValue = formatDecimal(minDeltaValue / 1e9)
+
+  const displayOfferValue = delta
+    ? `${formattedLoanValue} - ${formattedMinLoanValue}`
+    : `${formattedLoanValue}`
 
   const { removeOffer, goToEditOffer } = useOfferActions(offer, collectionMeta)
 
@@ -75,11 +82,7 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
         <h4 className={styles.collectionName}>{collectionName}</h4>
         <div className={styles.mainOfferStats}>
           <StatInfo label="Floor" value={collectionFloor} divider={1e9} />
-          <StatInfo
-            label="Offer"
-            value={`${displayOfferValue} ${displayDeltaValue}`}
-            valueType={VALUES_TYPES.STRING}
-          />
+          <StatInfo label="Offer" value={`${displayOfferValue}◎`} valueType={VALUES_TYPES.STRING} />
           <StatInfo label="Size" value={offerSize} divider={1e9} />
         </div>
       </div>

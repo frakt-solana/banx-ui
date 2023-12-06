@@ -38,7 +38,7 @@ const PlaceLiteOffer: FC<OfferParams> = (offersParams) => {
     <>
       <div className={styles.fields}>
         <NumericInputField
-          label="Offer"
+          label="Max offer"
           value={loanValue}
           onChange={onLoanValueChange}
           className={styles.numericField}

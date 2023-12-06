@@ -41,20 +41,20 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
   return (
     <div className={styles.offerSummary}>
       <StatInfo
-        label="LTV"
+        label="Max LTV"
         value={loanToValuePercent}
         valueStyles={{ color: colorLTV }}
         flexType="row"
         valueType={VALUES_TYPES.PERCENT}
       />
       <StatInfo
-        label="Offer size"
+        label="Pool size"
         value={`${displayOfferSize}◎`}
         flexType="row"
         valueType={VALUES_TYPES.STRING}
       />
       <StatInfo
-        label="Weekly interest"
+        label="Max weekly interest"
         value={`${displayEstimatedInterest}◎`}
         valueType={VALUES_TYPES.STRING}
         flexType="row"

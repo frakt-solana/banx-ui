@@ -38,7 +38,7 @@ const PlaceProOffer: FC<OfferParams> = (offerParams) => {
     <>
       <div className={styles.fields}>
         <NumericInputField
-          label="Initial offer"
+          label="Max offer"
           value={loanValue}
           onChange={onLoanValueChange}
           className={styles.numericField}

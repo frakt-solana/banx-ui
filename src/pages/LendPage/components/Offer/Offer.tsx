@@ -42,11 +42,13 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, bestOffer }) => {
     [styles.highlightEditing]: isEdit,
   })
 
+  const minDeltaValue = loanValue - (loansAmount - 1) * deltaValue
+
   const formattedLoanValue = formatDecimal(loanValue / 1e9)
-  const formattedDeltaValue = formatDecimal(deltaValue / 1e9)
+  const formattedMinLoanValue = formatDecimal(minDeltaValue / 1e9)
 
   const displayOfferValue = deltaValue
-    ? `${formattedLoanValue}◎ | ∇ ${formattedDeltaValue}`
+    ? `${formattedLoanValue} - ${formattedMinLoanValue}`
     : formattedLoanValue
 
   return (

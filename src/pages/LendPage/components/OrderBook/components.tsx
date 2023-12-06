@@ -148,7 +148,7 @@ interface OrderBookLabelsProps {
 }
 export const OrderBookLabels: FC<OrderBookLabelsProps> = ({ className }) => (
   <div className={classNames(styles.labels, className)}>
-    <span>Offers</span>
-    <span>Number of loans</span>
+    <span>Max offers</span>
+    <span>Number of offers</span>
   </div>
 )

@@ -37,7 +37,7 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
   return (
     <div className={styles.offerSummary}>
       <StatInfo
-        label="Weighted LTV"
+        label="Max weighted LTV"
         value={weightedLtv || 0}
         valueStyles={{ color: colorLTV }}
         flexType="row"
@@ -45,14 +45,14 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
         valueType={VALUES_TYPES.PERCENT}
       />
       <StatInfo
-        label="Offer size"
+        label="Pool size"
         value={`${formatDecimal(offerSize / 1e9)}◎`}
         flexType="row"
         valueType={VALUES_TYPES.STRING}
       />
       <StatInfo
         flexType="row"
-        label="Weekly interest"
+        label="Max weekly interest"
         value={`${formatDecimal(weeklyInterest / 1e9)}◎`}
         valueType={VALUES_TYPES.STRING}
       />
