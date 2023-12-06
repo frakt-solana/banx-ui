@@ -4,10 +4,10 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { produce } from 'immer'
-import { chain, countBy, filter, groupBy, isEmpty, map, sumBy, uniqBy, uniqueId } from 'lodash'
+import { chain, filter, groupBy, isEmpty, map, maxBy, sumBy, uniqBy } from 'lodash'
 import { create } from 'zustand'
 
-import { BorrowNft, Offer, fetchBorrowNftsAndOffers } from '@banx/api/core'
+import { BorrowNft, fetchBorrowNftsAndOffers } from '@banx/api/core'
 import {
   isOfferNewer,
   isOptimisticLoanExpired,
@@ -16,12 +16,18 @@ import {
   useOffersOptimistic,
 } from '@banx/store'
 import { convertLoanToBorrowNft } from '@banx/transactions'
-import { calcLoanValueWithProtocolFee, isLoanActiveOrRefinanced, isLoanRepaid } from '@banx/utils'
+import {
+  calcBorrowValueWithProtocolFee,
+  calcBorrowValueWithRentFee,
+  isLoanActiveOrRefinanced,
+  isLoanRepaid,
+} from '@banx/utils'
 
 import { useCartState } from './cartState'
-import { SimpleOffer, SimpleOffersByMarket } from './types'
+import { convertOffersToSimple } from './helpers'
+import { SimpleOffersByMarket } from './types'
 
-export const USE_BORROW_NFTS_QUERY_KEY = 'walletBorrowNfts'
+export const USE_BORROW_NFTS_V2_QUERY_KEY = 'walletBorrowNftsV2'
 
 export const useBorrowNfts = () => {
   const { setCart } = useCartState()
@@ -32,7 +38,7 @@ export const useBorrowNfts = () => {
   const walletPubkeyString = walletPublicKey?.toBase58() || ''
 
   const { data, isLoading, isFetched, isFetching } = useQuery(
-    [USE_BORROW_NFTS_QUERY_KEY, walletPubkeyString],
+    [USE_BORROW_NFTS_V2_QUERY_KEY, walletPubkeyString],
     () => fetchBorrowNftsAndOffers({ walletPubkey: walletPubkeyString }),
     {
       enabled: !!walletPublicKey,
@@ -50,6 +56,7 @@ export const useBorrowNfts = () => {
     const optimisticsToRemove = chain(optimisticOffers)
       //? Filter closed offers from LS optimistics
       .filter(({ offer }) => offer?.pairState !== PairState.PerpetualClosed)
+      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualBondingCurveClosed)
       .filter(({ offer }) => {
         const sameOfferFromBE = data.offers[offer.hadoMarket]?.find(
           ({ publicKey }) => publicKey === offer.publicKey,
@@ -77,6 +84,7 @@ export const useBorrowNfts = () => {
     const optimisticsFiltered = chain(optimisticOffers)
       //? Filter closed offers from LS optimistics
       .filter(({ offer }) => offer?.pairState !== PairState.PerpetualClosed)
+      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualBondingCurveClosed)
       //? Filter own offers from LS optimistics
       .filter(({ offer }) => offer?.assetReceiver !== walletPublicKey?.toBase58())
       .value()
@@ -104,16 +112,22 @@ export const useBorrowNfts = () => {
   const simpleOffers = useMemo(() => {
     return Object.fromEntries(
       Object.entries(mergedRawOffers || {}).map(([marketPubkey, offers]) => {
-        const simpleOffers = offers
-          .map(spreadToSimpleOffers)
-          .flat()
-          .sort((a, b) => {
-            return b.loanValue - a.loanValue
-          })
+        const simpleOffers = convertOffersToSimple(offers, 'desc')
         return [marketPubkey, simpleOffers]
       }),
     )
   }, [mergedRawOffers])
+
+  const maxLoanValueByMarket: Record<string, number> = useMemo(() => {
+    return chain(simpleOffers)
+      .entries()
+      .map(([hadoMarket, offers]) => {
+        const bestOffer = maxBy(offers, ({ loanValue }) => loanValue)
+        return [hadoMarket, bestOffer?.loanValue || 0]
+      })
+      .fromPairs()
+      .value()
+  }, [simpleOffers])
 
   //? Set offers in cartState
   useEffect(() => {
@@ -191,54 +205,26 @@ export const useBorrowNfts = () => {
     rawOffers: mergedRawOffers || {},
     maxBorrow,
     isLoading,
+    maxLoanValueByMarket,
   }
 }
 
 const calcMaxBorrow = (nfts: BorrowNft[], offers: SimpleOffersByMarket) => {
-  const nftsAmountByMarket = countBy(nfts, ({ loan }) => loan.marketPubkey)
-
-  const maxBorrow = Object.entries(nftsAmountByMarket).reduce(
-    (maxBorrow, [marketPubkey, nftsAmount]) => {
+  return chain(nfts)
+    .countBy(({ loan }) => loan.marketPubkey)
+    .entries()
+    .reduce((maxBorrow, [marketPubkey, nftsAmount]) => {
       const maxBorrowMarket = sumBy(
         (offers[marketPubkey] || []).slice(0, nftsAmount),
-        ({ loanValue }) => loanValue,
+        ({ loanValue, hadoMarket }) => {
+          const loanValueWithProtocolFee = calcBorrowValueWithProtocolFee(loanValue)
+          return calcBorrowValueWithRentFee(loanValueWithProtocolFee, hadoMarket)
+        },
       )
 
       return maxBorrow + maxBorrowMarket
-    },
-    0,
-  )
-
-  return calcLoanValueWithProtocolFee(maxBorrow)
-}
-
-const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
-  const { fundsSolOrTokenBalance, currentSpotPrice } = offer
-
-  const fullOffersAmount = Math.floor(fundsSolOrTokenBalance / currentSpotPrice)
-
-  const offers = Array(fullOffersAmount)
-    .fill(currentSpotPrice)
-    .map((loanValue) => ({
-      id: uniqueId(),
-      loanValue: loanValue,
-      hadoMarket: offer.hadoMarket,
-      publicKey: offer.publicKey,
-    }))
-
-  const decimalLoanValue = fundsSolOrTokenBalance - currentSpotPrice * fullOffersAmount
-
-  //? Add not full offer
-  if (decimalLoanValue && decimalLoanValue > 0) {
-    offers.push({
-      id: uniqueId(),
-      loanValue: decimalLoanValue,
-      hadoMarket: offer.hadoMarket,
-      publicKey: offer.publicKey,
-    })
-  }
-
-  return offers
+    }, 0)
+    .value()
 }
 
 export interface HiddenNftsMintsState {

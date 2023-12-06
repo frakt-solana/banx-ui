@@ -9,7 +9,13 @@ import { Slider, SliderProps } from './Slider'
 
 import styles from './Slider.module.less'
 
-export const CounterSlider: FC<SliderProps> = ({ value, onChange, max = 0 }) => {
+export const CounterSlider: FC<SliderProps> = ({
+  value,
+  onChange,
+  max = 0,
+  label,
+  labelClassName,
+}) => {
   const canIncrement = value < max
   const canDecrement = value > 0
 
@@ -33,6 +39,8 @@ export const CounterSlider: FC<SliderProps> = ({ value, onChange, max = 0 }) => 
         onChange={onChange}
         marks={{}}
         max={max}
+        label={label}
+        labelClassName={labelClassName}
       />
       <div className={styles.counterInputContainer}>
         <NumericInput

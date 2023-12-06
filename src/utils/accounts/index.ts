@@ -1,34 +1,27 @@
-import { useEffect, useState } from 'react'
-
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { useQuery } from '@tanstack/react-query'
 import { web3 } from 'fbonds-core'
 
 type UseNativeAccount = ({ isLive }: { isLive?: boolean }) => web3.AccountInfo<Buffer> | null
+
 const useNativeAccount: UseNativeAccount = ({ isLive = true }) => {
   const { connection } = useConnection()
-  const { wallet, publicKey } = useWallet()
+  const { publicKey } = useWallet()
 
-  const [nativeAccount, setNativeAccount] = useState<web3.AccountInfo<Buffer> | null>(null)
-
-  useEffect(() => {
-    if (!connection || !publicKey) {
-      return
-    }
-
-    connection.getAccountInfo(publicKey).then((acc) => {
-      if (acc) {
-        setNativeAccount(acc)
+  const { data: nativeAccount = null } = useQuery(
+    ['nativeAccount', publicKey],
+    async () => {
+      if (connection && publicKey) {
+        const acc = await connection.getAccountInfo(publicKey)
+        return acc || null
       }
-    })
-
-    if (isLive) {
-      connection.onAccountChange(publicKey, (acc) => {
-        if (acc) {
-          setNativeAccount(acc)
-        }
-      })
-    }
-  }, [wallet, publicKey, connection, isLive])
+      return null
+    },
+    {
+      enabled: Boolean(connection && publicKey),
+      refetchInterval: isLive ? 10000 : false,
+    },
+  )
 
   return nativeAccount
 }

@@ -4,64 +4,16 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
-import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 import { useWalletModal } from '@banx/components/WalletModal'
-import { InputErrorMessage } from '@banx/components/inputs'
 
-import { BONDS, WEEKS_IN_YEAR } from '@banx/constants'
-import {
-  HealthColorIncreasing,
-  formatDecimal,
-  getColorByPercent,
-  trackPageEvent,
-} from '@banx/utils'
+import { Offer } from '@banx/api/core'
+import { BONDS } from '@banx/constants'
+import { trackPageEvent } from '@banx/utils'
+
+import { OfferMode } from '../ExpandableCardContent'
 
 import styles from './PlaceOfferTab.module.less'
-
-interface OfferSummaryProps {
-  offerSize: number
-  marketAPR: number
-  loanToValuePercent: number
-}
-
-export const OfferSummary: FC<OfferSummaryProps> = ({
-  offerSize,
-  marketAPR,
-  loanToValuePercent,
-}) => {
-  const weeklyAprPercentage = marketAPR / 100 / WEEKS_IN_YEAR
-  const estimatedInterest = (offerSize * weeklyAprPercentage) / 100
-
-  const colorLTV = getColorByPercent(loanToValuePercent, HealthColorIncreasing)
-
-  const displayEstimatedInterest = estimatedInterest ? formatDecimal(estimatedInterest) : 0
-  const displayOfferSize = offerSize ? formatDecimal(offerSize) : 0
-
-  return (
-    <div className={styles.offerSummary}>
-      <StatInfo
-        label="LTV"
-        value={loanToValuePercent}
-        valueStyles={{ color: colorLTV }}
-        flexType="row"
-        valueType={VALUES_TYPES.PERCENT}
-      />
-      <StatInfo
-        label="Offer size"
-        value={`${displayOfferSize}◎`}
-        flexType="row"
-        valueType={VALUES_TYPES.STRING}
-      />
-      <StatInfo
-        label="Weekly interest"
-        value={`${displayEstimatedInterest}◎`}
-        valueType={VALUES_TYPES.STRING}
-        flexType="row"
-      />
-    </div>
-  )
-}
 
 interface OfferHeaderProps {
   isEditMode: boolean
@@ -73,7 +25,7 @@ export const OfferHeader: FC<OfferHeaderProps> = ({ isEditMode, exitEditMode }) 
 
   return (
     <div className={styles.offerHeaderContent}>
-      <h4 className={styles.title}>{title}</h4>
+      <h4 className={styles.offerHeaderTitle}>{title}</h4>
       {isEditMode && (
         <Button type="circle" variant="text" onClick={exitEditMode}>
           Exit
@@ -87,18 +39,22 @@ interface OfferActionButtonsProps {
   isEditMode: boolean
   disableUpdateOffer: boolean
   disablePlaceOffer: boolean
+  disableClaimInterest: boolean
   onCreateOffer: () => void
   onRemoveOffer: () => void
   onUpdateOffer: () => void
+  onClaimOfferInterest: () => void
 }
 
 export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
   isEditMode,
   disableUpdateOffer,
   disablePlaceOffer,
+  disableClaimInterest,
   onCreateOffer,
   onRemoveOffer,
   onUpdateOffer,
+  onClaimOfferInterest,
 }) => {
   const { connected } = useWallet()
   const { toggleVisibility } = useWalletModal()
@@ -114,25 +70,39 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
   }
 
   return (
-    <div className={styles.buttonsWrapper}>
+    <div className={styles.actionsButtonsContainer}>
       {isEditMode ? (
-        <>
+        <div className={styles.editModeContainer}>
+          <div className={styles.editModeButtonsContainer}>
+            <Button
+              variant="secondary"
+              onClick={onRemoveOffer}
+              className={classNames(styles.actionButton, styles.deleteOfferButton)}
+            >
+              Remove
+            </Button>
+            <Button
+              onClick={onUpdateOffer}
+              className={styles.actionButton}
+              disabled={disableUpdateOffer}
+            >
+              Apply changes
+            </Button>
+          </div>
           <Button
-            variant="secondary"
-            onClick={onRemoveOffer}
-            className={classNames(styles.button, styles.deleteOfferButton)}
+            onClick={onClaimOfferInterest}
+            className={classNames(styles.actionButton, styles.claimButton)}
+            disabled={disableClaimInterest}
           >
-            Remove
+            <span>Claim interest</span>
+            <span>Claim</span>
           </Button>
-          <Button onClick={onUpdateOffer} className={styles.button} disabled={disableUpdateOffer}>
-            Apply changes
-          </Button>
-        </>
+        </div>
       ) : (
         <Button
+          className={styles.placeOfferButton}
           onClick={onMainActionBtnClick}
-          className={styles.button}
-          disabled={disablePlaceOffer}
+          disabled={connected ? disablePlaceOffer : false}
         >
           {connected ? 'Place' : 'Connect wallet'}
         </Button>
@@ -141,29 +111,55 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
   )
 }
 
-interface OfferMessages {
-  showDepositErrorMessage: boolean
-  showBorrowerMessage: boolean
+interface SwitchModeButtonsProps {
+  mode: OfferMode
+  onChange: (value: OfferMode) => void
+  offer: Offer | undefined
+}
+
+export const SwitchModeButtons: FC<SwitchModeButtonsProps> = ({ mode, onChange, offer }) => {
+  const isOfferCreatedInProMode = !!offer?.bondingCurve.delta
+
+  return (
+    <div className={styles.switchModeButtons}>
+      <Button
+        type="circle"
+        variant="text"
+        className={classNames(
+          styles.switchButton,
+          { [styles.active]: mode === OfferMode.Lite },
+          { [styles.disabled]: isOfferCreatedInProMode },
+        )}
+        onClick={() => onChange(OfferMode.Lite)}
+        disabled={isOfferCreatedInProMode || mode === OfferMode.Lite}
+      >
+        Lite
+      </Button>
+      <Button
+        type="circle"
+        variant="text"
+        className={classNames(styles.switchButton, { [styles.active]: mode === OfferMode.Pro })}
+        onClick={() => onChange(OfferMode.Pro)}
+        disabled={mode === OfferMode.Pro}
+      >
+        Pro
+      </Button>
+    </div>
+  )
+}
+
+interface BorrowerMessageProps {
   loanValue: string
 }
 
-export const OfferMessages: FC<OfferMessages> = ({
-  showDepositErrorMessage,
-  showBorrowerMessage,
-  loanValue,
-}) => {
+export const BorrowerMessage: FC<BorrowerMessageProps> = ({ loanValue }) => {
   const loanValueToNumber = parseFloat(loanValue) || 0
   const loanValueWithProtocolFee =
     loanValueToNumber - loanValueToNumber * (BONDS.PROTOCOL_FEE_PERCENT / 1e4)
 
   return (
-    <div className={styles.messageContainer}>
-      {showBorrowerMessage && (
-        <p className={styles.borrowerMessage}>
-          Borrower sees: {createSolValueJSX(loanValueWithProtocolFee)}
-        </p>
-      )}
-      {showDepositErrorMessage && <InputErrorMessage message="Not enough SOL" />}
-    </div>
+    <p className={styles.borrowerMessage}>
+      Borrower sees: {createSolValueJSX(loanValueWithProtocolFee)}
+    </p>
   )
 }
