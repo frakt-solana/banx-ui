@@ -80,9 +80,7 @@ type SearchSelectOption = {
 }
 
 export const ActiveLoansTab = () => {
-  const { data, loansToTerminate, updateOrAddLoan, addMints, loansToClaim } = useOffersTabContent()
-
-  const loans = data.flatMap(({ loans }) => loans)
+  const { loans, loansToTerminate, updateOrAddLoan, addMints, loansToClaim } = useOffersTabContent()
 
   const [selectedOffers, setSelectedOffers] = useState<string[]>([])
 
