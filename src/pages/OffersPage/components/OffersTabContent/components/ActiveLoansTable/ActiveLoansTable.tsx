@@ -12,7 +12,9 @@ import { useSortedLoans } from '@banx/pages/LoansPage/components/LoansActiveTabl
 import { useLenderLoansAndOffers } from '@banx/pages/OffersPage/hooks'
 import { formatDecimal, isLoanLiquidated, isLoanTerminating } from '@banx/utils'
 
+import { useOffersTabContent } from '../../hooks'
 import { calculateClaimValue } from '../OfferCard'
+import { ActiveTabSummary } from '../Summary/Summary'
 import { getTableColumns } from './columns'
 import { useSortedLenderLoans } from './hooks/useSortedOffers'
 
@@ -78,7 +80,7 @@ type SearchSelectOption = {
 }
 
 export const ActiveLoansTab = () => {
-  const { data, updateOrAddLoan } = useLenderLoansAndOffers()
+  const { data, loansToTerminate, updateOrAddLoan, addMints, loansToClaim } = useOffersTabContent()
 
   const loans = data.flatMap(({ loans }) => loans)
 
@@ -140,13 +142,20 @@ export const ActiveLoansTab = () => {
   if (!loans.length) return <EmptyList message="Your offer is waiting for a borrower" />
 
   return (
-    <Table
-      data={sortedLoans}
-      columns={columns}
-      classNameTableWrapper={styles.tableWrapper}
-      className={styles.tableRoot}
-      rowParams={rowParams}
-      sortViewParams={{ searchSelectParams, sortParams }}
-    />
+    <div className={styles.tableRoot}>
+      <Table
+        data={sortedLoans}
+        columns={columns}
+        classNameTableWrapper={styles.tableWrapper}
+        rowParams={rowParams}
+        sortViewParams={{ searchSelectParams, sortParams }}
+      />
+      <ActiveTabSummary
+        addMints={addMints}
+        loansToTerminate={loansToTerminate}
+        loansToClaim={loansToClaim}
+        updateOrAddLoan={updateOrAddLoan}
+      />
+    </div>
   )
 }
