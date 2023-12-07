@@ -2,6 +2,7 @@ import { FC } from 'react'
 
 import classNames from 'classnames'
 
+import Tooltip from '../Tooltip'
 import NumericInput from './NumericInput'
 
 import styles from './Inputs.module.less'
@@ -14,8 +15,8 @@ interface NumericInputFieldProps {
   className?: string
   showIcon?: boolean
   integerOnly?: boolean
-  hasError?: boolean
   disabled?: boolean
+  tooltipText?: string
 }
 
 export const NumericInputField: FC<NumericInputFieldProps> = ({
@@ -27,12 +28,15 @@ export const NumericInputField: FC<NumericInputFieldProps> = ({
   showIcon = true,
   integerOnly = false,
   disabled,
-  hasError,
+  tooltipText,
 }) => {
   return (
     <div className={classNames(styles.field, className)}>
-      <span className={styles.label}>{label}</span>
-      <div className={classNames(styles.numericInputWrapper, { [styles.inputError]: hasError })}>
+      <div className={styles.labelWrapper}>
+        <span className={styles.label}>{label}</span>
+        {tooltipText && <Tooltip title={tooltipText} />}
+      </div>
+      <div className={styles.numericInputWrapper}>
         <NumericInput
           value={value}
           integerOnly={integerOnly}

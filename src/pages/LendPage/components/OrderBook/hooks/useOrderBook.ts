@@ -1,17 +1,17 @@
-import { useWallet } from '@solana/wallet-adapter-react'
-
-import { MarketPreview } from '@banx/api/core'
-import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
+import { MarketPreview, Offer } from '@banx/api/core'
+import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { SyntheticOffer, useSyntheticOffers } from '@banx/store'
 
-import { OrderBookMarketParams } from '../../ExpandableCardContent'
+import { OfferMode, OrderBookMarketParams } from '../../ExpandableCardContent'
 import { useMarketOrders } from './useMarketOrders'
 
 export interface OrderBookParams {
-  offers: SyntheticOffer[]
+  syntheticOffers: SyntheticOffer[]
   goToEditOffer: (offer: SyntheticOffer) => void
-  isOwnOffer: (offer: SyntheticOffer) => boolean
   bestOffer: SyntheticOffer
+  isLoading: boolean
+  offers: Offer[]
+  updateOrAddOffer: (offer: Offer) => void
 }
 
 type UseOrderBook = (props: OrderBookMarketParams) => {
@@ -19,38 +19,44 @@ type UseOrderBook = (props: OrderBookMarketParams) => {
   selectedMarketPreview: MarketPreview | undefined
 }
 export const useOrderBook: UseOrderBook = (props) => {
+  const { offerPubkey, setOfferPubkey, marketPubkey, goToPlaceOfferTab, onChangeOfferMode } = props
+
   const { setOffer: setSyntheticOffer } = useSyntheticOffers()
-  const { offerPubkey, setOfferPubkey, marketPubkey } = props
-  const wallet = useWallet()
+
   const { marketsPreview } = useMarketsPreview()
 
   const selectedMarketPreview = marketsPreview.find(
     (market) => market.marketPubkey === marketPubkey,
   )
 
-  const { offers, bestOffer } = useMarketOrders({
-    marketPubkey,
-    offerPubkey,
-  })
+  const {
+    offers: syntheticOffers,
+    bestOffer,
+    isLoading,
+  } = useMarketOrders({ marketPubkey, offerPubkey })
 
-  const isOwnOffer = (offer: SyntheticOffer) => {
-    return offer?.assetReceiver === wallet?.publicKey?.toBase58()
-  }
+  const { offers, updateOrAddOffer } = useMarketOffers({ marketPubkey })
 
   const goToEditOffer = (offer: SyntheticOffer) => {
-    setSyntheticOffer({
-      ...offer,
-      isEdit: true,
-    })
-    setOfferPubkey(offer.publicKey)
+    const offerMode = offer.deltaValue ? OfferMode.Pro : OfferMode.Lite
+    onChangeOfferMode(offerMode)
+
+    goToPlaceOfferTab()
+
+    const editedOffer = { ...offer, isEdit: true }
+    setSyntheticOffer(editedOffer)
+
+    setOfferPubkey(editedOffer.publicKey)
   }
 
   return {
     orderBookParams: {
-      offers,
+      syntheticOffers,
+      isLoading,
       goToEditOffer,
-      isOwnOffer,
       bestOffer,
+      offers,
+      updateOrAddOffer,
     },
     selectedMarketPreview,
   }

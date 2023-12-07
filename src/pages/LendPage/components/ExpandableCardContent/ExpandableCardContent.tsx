@@ -1,5 +1,7 @@
 import { FC } from 'react'
 
+import classNames from 'classnames'
+
 import { Tabs } from '@banx/components/Tabs'
 
 import ActivityTable from '../ActivityTable'
@@ -27,7 +29,8 @@ const ExpandableCardContent: FC<ExpandableCardContentProps> = ({
   marketPubkey,
   isOrderBookVisible,
 }) => {
-  const { marketParams, tabsParams, goToPlaceOfferTab } = useExpandableCardContent(marketPubkey)
+  const { marketParams, tabsParams, goToPlaceOfferTab, isEditMode } =
+    useExpandableCardContent(marketPubkey)
 
   const TABS_COMPONENTS: TabsComponents = {
     [TabName.OFFER]: <PlaceOfferTab {...marketParams} />,
@@ -37,10 +40,10 @@ const ExpandableCardContent: FC<ExpandableCardContentProps> = ({
   }
 
   return (
-    <div className={styles.content}>
-      <div className={styles.tabsContentWrapper}>
+    <div className={classNames(styles.container, { [styles.isEditMode]: isEditMode })}>
+      <div className={styles.content}>
         <Tabs {...tabsParams} />
-        <div className={styles.tabContent}>{TABS_COMPONENTS[tabsParams.value]}</div>
+        {TABS_COMPONENTS[tabsParams.value]}
       </div>
       {isOrderBookVisible && <OrderBook {...marketParams} />}
     </div>

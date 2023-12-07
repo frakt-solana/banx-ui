@@ -2,7 +2,6 @@ import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
-import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, filter, groupBy, map } from 'lodash'
 import moment from 'moment'
 
@@ -17,7 +16,7 @@ import {
   useLoansOptimistic,
   useOffersOptimistic,
 } from '@banx/store'
-import { isLoanRepaid, isLoanTerminating } from '@banx/utils'
+import { isLoanRepaid, isLoanTerminating, isOfferClosed } from '@banx/utils'
 
 import { SECONDS_IN_72_HOURS } from './constants'
 
@@ -121,7 +120,7 @@ export const useWalletLoansAndOffers = () => {
 
     const optimisticsToRemove = chain(optimisticOffers)
       //? Filter closed offers from LS optimistics
-      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualClosed)
+      .filter(({ offer }) => !isOfferClosed(offer?.pairState))
       .filter(({ offer }) => {
         const sameOfferFromBE = data.offers[offer.hadoMarket]?.find(
           ({ publicKey }) => publicKey === offer.publicKey,
@@ -148,7 +147,7 @@ export const useWalletLoansAndOffers = () => {
 
     const optimisticsFiltered = chain(optimisticOffers)
       //? Filter closed offers from LS optimistics
-      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualClosed)
+      .filter(({ offer }) => !isOfferClosed(offer?.pairState))
       //? Filter own offers from LS optimistics
       .filter(({ offer }) => offer?.assetReceiver !== publicKeyString)
       .value()

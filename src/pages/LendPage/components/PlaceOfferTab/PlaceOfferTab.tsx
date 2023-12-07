@@ -1,70 +1,35 @@
 import { FC } from 'react'
 
-import { useWallet } from '@solana/wallet-adapter-react'
-
-import { InputCounter, NumericInputField } from '@banx/components/inputs'
-
-import { OrderBookMarketParams } from '../ExpandableCardContent'
-import { OfferActionButtons, OfferHeader, OfferMessages, OfferSummary } from './components'
-import { usePlaceOfferTab } from './hooks'
+import { OfferMode, OrderBookMarketParams } from '../ExpandableCardContent'
+import PlaceLiteOffer from './PlaceLiteOffer'
+import PlaceProOffer from './PlaceProOffer'
+import { OfferHeader, SwitchModeButtons } from './components'
+import { checkIsEditMode } from './helpers'
+import { usePlaceOffer } from './hooks'
 
 import styles from './PlaceOfferTab.module.less'
 
-const PlaceOfferTab: FC<OrderBookMarketParams> = (props) => {
-  const { connected } = useWallet()
+interface PlaceOfferTabProps extends OrderBookMarketParams {
+  offerMode: OfferMode
+  onChangeOfferMode: (value: OfferMode) => void
+}
 
-  const {
-    isEditMode,
-    exitEditMode,
-    loansAmount,
-    onLoanAmountChange,
-    loanValue,
-    onLoanValueChange,
-    offerTransactions,
-    offerSize,
-    marketApr,
-    showDepositError,
-    showBorrowerMessage,
-    disableUpdateOffer,
-    disablePlaceOffer,
-    loanToValuePercent,
-  } = usePlaceOfferTab({ ...props })
+const PlaceOfferTab: FC<PlaceOfferTabProps> = (props) => {
+  const { offerMode, onChangeOfferMode } = props
+
+  const offerParams = usePlaceOffer(props)
+  const { offerPubkey, exitEditMode } = offerParams
 
   return (
     <div className={styles.content}>
-      <OfferHeader isEditMode={isEditMode} exitEditMode={exitEditMode} />
-      <div className={styles.fields}>
-        <NumericInputField
-          label="Offer"
-          value={loanValue}
-          onChange={onLoanValueChange}
-          className={styles.numericField}
-          disabled={!connected}
-          hasError
-        />
-        <InputCounter
-          label="Number of loans"
-          onChange={onLoanAmountChange}
-          value={loansAmount}
-          disabled={!connected}
-        />
-      </div>
-      <OfferMessages
-        showDepositErrorMessage={showDepositError}
-        showBorrowerMessage={showBorrowerMessage}
-        loanValue={loanValue}
+      <OfferHeader isEditMode={checkIsEditMode(offerPubkey)} exitEditMode={exitEditMode} />
+      <SwitchModeButtons
+        mode={offerMode}
+        onChange={onChangeOfferMode}
+        offer={offerParams.optimisticOffer}
       />
-      <OfferSummary
-        offerSize={offerSize}
-        marketAPR={marketApr}
-        loanToValuePercent={loanToValuePercent}
-      />
-      <OfferActionButtons
-        isEditMode={isEditMode}
-        disableUpdateOffer={disableUpdateOffer}
-        disablePlaceOffer={disablePlaceOffer}
-        {...offerTransactions}
-      />
+      {offerMode === OfferMode.Lite && <PlaceLiteOffer {...offerParams} />}
+      {offerMode === OfferMode.Pro && <PlaceProOffer {...offerParams} />}
     </div>
   )
 }

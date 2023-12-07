@@ -1,12 +1,20 @@
 import { FC } from 'react'
 
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { sumBy } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
+import { Loader } from '@banx/components/Loader'
 
+import { Offer } from '@banx/api/core'
 import { ChevronDown } from '@banx/icons'
+import { defaultTxnErrorHandler } from '@banx/transactions'
+import { makeClaimBondOfferInterestAction } from '@banx/transactions/bonds'
+import { enqueueSnackbar, formatDecimal } from '@banx/utils'
 
-import Offer from '../Offer'
+import OfferComponent from '../Offer'
 import { OrderBookParams } from './hooks'
 
 import styles from './OrderBook.module.less'
@@ -14,78 +22,133 @@ import styles from './OrderBook.module.less'
 interface OrderBookListProps {
   orderBookParams: OrderBookParams
   closeOrderBook?: () => void
+  className?: string
 }
 
-export const OrderBookList: FC<OrderBookListProps> = ({ orderBookParams, closeOrderBook }) => {
-  const { offers, goToEditOffer, isOwnOffer, bestOffer } = orderBookParams || {}
+export const OrderBookList: FC<OrderBookListProps> = ({
+  orderBookParams,
+  closeOrderBook,
+  className,
+}) => {
+  const { syntheticOffers, goToEditOffer, bestOffer, isLoading } = orderBookParams
 
   return (
-    <ul className={styles.list}>
-      {offers.map((offer, idx) => (
-        <Offer
-          key={idx}
-          offer={offer}
-          editOffer={() => {
-            goToEditOffer(offer)
-            closeOrderBook?.()
-          }}
-          isOwnOffer={isOwnOffer(offer)}
-          bestOffer={bestOffer}
-        />
-      ))}
+    <ul className={classNames(styles.orderBookList, className)}>
+      {isLoading ? (
+        <Loader size="small" />
+      ) : (
+        syntheticOffers.map((offer) => (
+          <OfferComponent
+            key={offer.publicKey}
+            offer={offer}
+            editOffer={() => {
+              goToEditOffer(offer)
+              closeOrderBook?.()
+            }}
+            bestOffer={bestOffer}
+          />
+        ))
+      )}
     </ul>
   )
 }
-
-export const OrderBookLabel = () => (
-  <div className={styles.label}>
-    <span>Offers</span>
-    <span>Number of loans</span>
-  </div>
-)
-
-export const NoActiveOffers = () => (
-  <div className={styles.noData}>
-    <p className={styles.noDataTitle}>No active offers at the moment</p>
-    <p className={styles.noDataSubtitle}>Good chance to be first!</p>
-  </div>
-)
-
-interface ChevronMobileButtonProps {
-  isOrderBookOpen: boolean
-  onToggleVisible: () => void
-}
-
-export const ChevronMobileButton: FC<ChevronMobileButtonProps> = ({
-  isOrderBookOpen,
-  onToggleVisible,
-}) => (
-  <Button
-    type="circle"
-    variant="secondary"
-    onClick={onToggleVisible}
-    className={classNames(styles.chevronButton, { [styles.active]: isOrderBookOpen })}
-  >
-    <ChevronDown />
-  </Button>
-)
 
 interface CollapsedMobileContentProps {
   collectionName?: string
   collectionImage?: string
   totalUserOffers?: number
+  isOrderBookOpen: boolean
+  onToggleVisible: () => void
 }
 
 export const CollapsedMobileContent: FC<CollapsedMobileContentProps> = ({
   collectionName = '',
   collectionImage = '',
   totalUserOffers = 0,
+  isOrderBookOpen,
+  onToggleVisible,
 }) => (
-  <div className={styles.collapsedMobileContent}>
-    <img className={styles.collapsedMobileImage} src={collectionImage} />
-    <div className={styles.collectionMobileInfo}>
-      <p className={styles.collectionMobileTitle}>{collectionName} offers</p>
-      <p className={styles.collectionMobileSubtitle}>Mine: {totalUserOffers}</p>
+  <div className={styles.collapsedContentWrapper}>
+    <div className={styles.collapsedMobileContent}>
+      <img className={styles.collapsedMobileImage} src={collectionImage} />
+      <div className={styles.collectionMobileInfo}>
+        <p className={styles.collectionMobileTitle}>{collectionName} offers</p>
+        <p className={styles.collectionMobileSubtitle}>Mine: {totalUserOffers}</p>
+      </div>
     </div>
+    <Button
+      type="circle"
+      variant="secondary"
+      onClick={onToggleVisible}
+      className={classNames(styles.chevronButton, { [styles.active]: isOrderBookOpen })}
+    >
+      <ChevronDown />
+    </Button>
+  </div>
+)
+
+interface AccruedInterestProps {
+  offers: Offer[]
+  updateOrAddOffer: (offer: Offer) => void
+}
+
+const MIN_DISPLAY_ACCRUED_INTEREST = 0.01
+
+export const AccruedInterest: FC<AccruedInterestProps> = ({ offers, updateOrAddOffer }) => {
+  const wallet = useWallet()
+  const { connection } = useConnection()
+
+  const totalClaimValue = sumBy(offers, ({ concentrationIndex }) => concentrationIndex)
+
+  const claimInterest = () => {
+    const txnParams = offers.map((optimisticOffer) => ({ optimisticOffer }))
+
+    new TxnExecutor(makeClaimBondOfferInterestAction, { wallet, connection })
+      .addTxnParams(txnParams)
+      .on('pfSuccessEach', (results) => {
+        results.forEach(({ txnHash, result }) => {
+          enqueueSnackbar({
+            message: 'Interest successfully claimed',
+            type: 'success',
+            solanaExplorerPath: `tx/${txnHash}`,
+          })
+
+          if (result) {
+            updateOrAddOffer(result.bondOffer)
+          }
+        })
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error, {
+          additionalData: txnParams,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'ClaimOfferInterest',
+        })
+      })
+      .execute()
+  }
+
+  return (
+    <div className={styles.accruedInterestContainer}>
+      <div className={styles.accruedInterestInfo}>
+        <span className={styles.accruedInterestValue}>
+          {formatDecimal(totalClaimValue / 1e9, MIN_DISPLAY_ACCRUED_INTEREST)}◎
+        </span>
+        <span className={styles.accruedInterestLabel}>Total accrued interest</span>
+      </div>
+      <Button onClick={claimInterest} disabled={!totalClaimValue}>
+        Claim
+      </Button>
+    </div>
+  )
+}
+
+interface OrderBookLabelsProps {
+  className?: string
+}
+export const OrderBookLabels: FC<OrderBookLabelsProps> = ({ className }) => (
+  <div className={classNames(styles.labels, className)}>
+    <span>Max offers</span>
+    <span>Number of offers</span>
   </div>
 )

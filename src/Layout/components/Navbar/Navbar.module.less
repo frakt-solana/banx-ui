@@ -21,6 +21,7 @@
 .link {
   color: var(--content-primary);
   font: var(--menu-tab-sm);
+  border-right: 4px solid transparent;
 
   display: flex;
   align-items: center;
@@ -32,12 +33,17 @@
   text-transform: uppercase;
   text-decoration: none;
   user-select: none;
+
+  &:hover {
+    border-color: var(--accent-secondary);
+    background: var(--additional-green-secondary);
+  }
 }
 .link.secondary {
   padding-left: 56px;
 }
 .link.active {
-  border-right: 4px solid var(--accent-secondary);
+  border-color: var(--accent-secondary);
   background: var(--additional-green-secondary);
   pointer-events: none;
 }

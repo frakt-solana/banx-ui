@@ -2,47 +2,118 @@ import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
-import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
+import { produce } from 'immer'
 import { chain, map, maxBy } from 'lodash'
+import { create } from 'zustand'
 
-import { Offer, UserOffer, fetchUserOffers } from '@banx/api/core'
+import { LendLoansAndOffers, Loan, Offer, fetchLenderLoansAndOffers } from '@banx/api/core'
 import { fetchUserOffersStats } from '@banx/api/stats'
-import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { isOfferNewer, isOptimisticOfferExpired, useOffersOptimistic } from '@banx/store'
+import { isOfferClosed } from '@banx/utils'
 
-export const USE_USER_OFFERS_QUERY_KEY = 'userOffers'
+import { useMarketsPreview } from '../LendPage/hooks'
 
-export const useUserOffers = () => {
+interface HiddenNftsMintsState {
+  mints: string[]
+  addMints: (...mints: string[]) => void
+}
+
+export const useHiddenNftsMints = create<HiddenNftsMintsState>((set) => ({
+  mints: [],
+  addMints: (...mints) =>
+    set(
+      produce((state: HiddenNftsMintsState) => {
+        state.mints.push(...mints)
+      }),
+    ),
+}))
+
+const convertLoanToOptimistic = (loan: Loan, walletPublicKey: string) => {
+  return {
+    loan,
+    wallet: walletPublicKey,
+  }
+}
+
+export interface LoanOptimistic {
+  loan: Loan
+  wallet: string
+}
+
+interface OptimisticLenderLoansState {
+  loans: LoanOptimistic[]
+  addLoans: (loan: Loan, walletPublicKey: string) => void
+  findLoan: (loanPubkey: string, walletPublicKey: string) => LoanOptimistic | null
+  updateLoans: (loan: Loan, walletPublicKey: string) => void
+}
+
+const useLenderLoansOptimistic = create<OptimisticLenderLoansState>((set, get) => ({
+  loans: [],
+  addLoans: (loan, walletPublicKey) => {
+    if (!walletPublicKey) return
+
+    return set(
+      produce((state: OptimisticLenderLoansState) => {
+        state.loans.push(convertLoanToOptimistic(loan, walletPublicKey))
+      }),
+    )
+  },
+  findLoan: (loanPubkey, walletPublicKey) => {
+    if (!walletPublicKey) return null
+
+    return get().loans.find(({ loan }) => loan.publicKey === loanPubkey) ?? null
+  },
+  updateLoans: (loan, walletPublicKey) => {
+    if (!walletPublicKey) return
+
+    const loanExists = !!get().findLoan(loan.publicKey, walletPublicKey)
+
+    loanExists &&
+      set(
+        produce((state: OptimisticLenderLoansState) => {
+          state.loans = state.loans.map((existingLoan) =>
+            existingLoan.loan.publicKey === loan.publicKey
+              ? convertLoanToOptimistic(loan, walletPublicKey)
+              : existingLoan,
+          )
+        }),
+      )
+  },
+}))
+
+export const USE_LENDER_LOANS_AND_OFFERS_QUERY_KEY = 'userOffersV2'
+
+export const useLenderLoansAndOffers = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
+
+  const { mints, addMints } = useHiddenNftsMints()
+
+  const { loans: optimisticLoans, addLoans, findLoan, updateLoans } = useLenderLoansOptimistic()
   const { optimisticOffers, remove: removeOffers, update: updateOrAddOffer } = useOffersOptimistic()
 
-  const { marketsPreview, isLoading: isMarketsPreviewLoading } = useMarketsPreview()
+  const { marketsPreview } = useMarketsPreview()
 
-  const {
-    data: userOffers,
-    isLoading: isUserOffersLoading,
-    isFetching: isUserOffersFetching,
-    isFetched: isUserOffersFetched,
-  } = useQuery(
-    [USE_USER_OFFERS_QUERY_KEY, publicKeyString],
-    () => fetchUserOffers({ walletPublicKey: publicKeyString }),
+  const { data, isLoading, isFetching, isFetched } = useQuery(
+    [USE_LENDER_LOANS_AND_OFFERS_QUERY_KEY, publicKeyString],
+    () => fetchLenderLoansAndOffers({ walletPublicKey: publicKeyString }),
     {
       enabled: !!publicKeyString,
-      staleTime: 5 * 1000,
       refetchOnWindowFocus: false,
-      refetchInterval: 15 * 1000,
+      refetchInterval: 30 * 1000,
     },
   )
 
   //? Check expiredOffers and and purge them
   useEffect(() => {
-    if (!userOffers || isUserOffersFetching || !isUserOffersFetched) return
+    const userOffers = (data ?? []).map(({ offer }) => offer)
+
+    if (!userOffers || isFetching || !isFetched) return
 
     const expiredOffersByTime = optimisticOffers.filter((offer) => isOptimisticOfferExpired(offer))
 
     const optimisticsToRemove = chain(optimisticOffers)
-      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualClosed)
+      .filter(({ offer }) => !isOfferClosed(offer?.pairState))
       .filter(({ offer }) => {
         const sameOfferFromBE = userOffers?.find(({ publicKey }) => publicKey === offer.publicKey)
         if (!sameOfferFromBE) return false
@@ -56,44 +127,92 @@ export const useUserOffers = () => {
         map([...expiredOffersByTime, ...optimisticsToRemove], ({ offer }) => offer.publicKey),
       )
     }
-  }, [userOffers, isUserOffersFetching, isUserOffersFetched, optimisticOffers, removeOffers])
+  }, [data, isFetching, isFetched, optimisticOffers, removeOffers])
+
+  const walletOptimisticLoans = useMemo(() => {
+    if (!publicKeyString) return []
+    return optimisticLoans.filter(({ wallet }) => wallet === publicKeyString)
+  }, [optimisticLoans, publicKeyString])
 
   const offers = useMemo(() => {
-    if (!userOffers || !optimisticOffers) {
-      return []
-    }
+    const userOffers = (data ?? []).map(({ offer }) => offer)
 
-    const optimisticUserOffers: UserOffer[] = optimisticOffers
-      .map(({ offer }) => {
-        const marketPreview = marketsPreview.find(
-          ({ marketPubkey }) => marketPubkey === offer.hadoMarket,
-        )
+    if (!userOffers || !optimisticOffers) return []
 
-        return {
-          ...offer,
-          marketApr: marketPreview?.marketApr || 0,
-          collectionFloor: marketPreview?.collectionFloor || 0,
-          collectionImage: marketPreview?.collectionImage || '',
-          collectionName: marketPreview?.collectionName || '',
-        }
-      })
+    const optimisticUserOffers: Offer[] = optimisticOffers
+      .map(({ offer }) => offer)
       .filter(({ assetReceiver }) => assetReceiver === publicKey?.toBase58())
 
-    const combinedOffers = [...optimisticUserOffers, ...(userOffers ?? [])]
+    const combinedOffers = [...optimisticUserOffers, ...userOffers]
 
     return chain(combinedOffers)
-      .groupBy('publicKey')
-      .map((offers) => maxBy(offers, 'lastTransactedAt'))
-      .filter((offer) => offer?.pairState !== PairState.PerpetualClosed)
+      .groupBy(({ publicKey }) => publicKey)
+      .map((offers) => maxBy(offers, ({ lastTransactedAt }) => lastTransactedAt))
       .compact()
       .value()
-  }, [userOffers, optimisticOffers, marketsPreview, publicKey])
+  }, [data, optimisticOffers, publicKey])
+
+  const processedData = useMemo(() => {
+    if (!data?.length) return []
+
+    const getLoans = (item: LendLoansAndOffers) => {
+      const combinedLoans = [...item.loans, ...walletOptimisticLoans.map(({ loan }) => loan)]
+      return chain(combinedLoans)
+        .groupBy('publicKey')
+        .map((offers) => maxBy(offers, ({ fraktBond }) => fraktBond.lastTransactedAt))
+        .compact()
+        .filter((loan) => !mints.includes(loan.nft.mint))
+        .value()
+    }
+
+    const getOffer = (item: LendLoansAndOffers) =>
+      offers.find(({ publicKey }) => publicKey === item.offer.publicKey) || item.offer
+
+    const updatedData = data.map((item) => ({
+      ...item,
+      offer: getOffer(item),
+      loans: getLoans(item),
+    }))
+
+    //? Add missing offers
+    offers.forEach((offer) => {
+      if (!updatedData.find((item) => item.offer.publicKey === offer.publicKey)) {
+        const {
+          collectionName = '',
+          collectionImage = '',
+          collectionFloor = 0,
+        } = marketsPreview.find(({ marketPubkey }) => marketPubkey === offer.hadoMarket) ?? {}
+
+        updatedData.push({
+          loans: [],
+          collectionMeta: { collectionName, collectionImage, collectionFloor },
+          offer,
+        })
+      }
+    })
+    return updatedData.filter(({ offer, loans }) => !isClosedAndEmptyOffer(offer, loans))
+  }, [data, mints, offers, walletOptimisticLoans, marketsPreview])
+
+  const updateOrAddLoan = (loan: Loan) => {
+    const loanExists = !!findLoan(loan.publicKey, publicKeyString)
+    return loanExists ? updateLoans(loan, publicKeyString) : addLoans(loan, publicKeyString)
+  }
 
   return {
-    offers,
-    loading: isUserOffersLoading || isMarketsPreviewLoading,
+    data: processedData,
+    offers: processedData.map(({ offer }) => offer),
+    loading: isLoading,
+    optimisticOffers,
     updateOrAddOffer,
+    updateOrAddLoan,
+    addMints,
   }
+}
+
+const isClosedAndEmptyOffer = (offer: Offer, loans: Loan[]) => {
+  const isClosedOffer = isOfferClosed(offer?.pairState)
+
+  return isClosedOffer && !loans.length
 }
 
 export const useUserOffersStats = () => {
