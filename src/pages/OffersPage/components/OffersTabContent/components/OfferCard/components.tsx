@@ -39,7 +39,7 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
     bondingCurve: { delta },
   } = offer
 
-  const offerSize = fundsSolOrTokenBalance + bidSettlement
+  const offerSize = Math.max(fundsSolOrTokenBalance + bidSettlement, 0)
 
   const loanValue = calcSyntheticLoanValue(offer)
 
