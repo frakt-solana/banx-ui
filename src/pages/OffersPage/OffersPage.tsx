@@ -5,6 +5,7 @@ import { toLowerCaseNoSpaces, trackPageEvent, useMixpanelLocationTrack } from '@
 import { HistoryOffersTable } from './components/HistoryOffersTable'
 import OffersHeader from './components/OffersHeader'
 import OffersTabContent from './components/OffersTabContent'
+import { ActiveLoansTab } from './components/OffersTabContent/components/ActiveLoansTable/ActiveLoansTable'
 
 import styles from './OffersPage.module.less'
 
@@ -25,6 +26,7 @@ export const OffersPage = () => {
       <OffersHeader />
       <Tabs value={currentTabValue} {...tabsProps} onTabClick={onTabClick} />
       {currentTabValue === OffersTabName.OFFERS && <OffersTabContent />}
+      {currentTabValue === OffersTabName.ACTIVE && <ActiveLoansTab />}
       {currentTabValue === OffersTabName.HISTORY && <HistoryOffersTable />}
     </div>
   )
@@ -32,6 +34,7 @@ export const OffersPage = () => {
 
 enum OffersTabName {
   OFFERS = 'offers',
+  ACTIVE = 'active',
   HISTORY = 'history',
 }
 
@@ -39,6 +42,10 @@ const OFFERS_TABS: Tab[] = [
   {
     label: 'Offers',
     value: OffersTabName.OFFERS,
+  },
+  {
+    label: 'Active',
+    value: OffersTabName.ACTIVE,
   },
   {
     label: 'History',
