@@ -97,5 +97,6 @@ export const useOffersTabContent = () => {
     updateOrAddLoan,
     updateOrAddOffer,
     offers,
+    loans: data.flatMap(({ loans }) => loans),
   }
 }
