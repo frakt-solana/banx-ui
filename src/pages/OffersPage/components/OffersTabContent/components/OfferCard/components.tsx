@@ -1,7 +1,6 @@
 import React, { FC } from 'react'
 
 import classNames from 'classnames'
-import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Button, ButtonProps } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
@@ -15,6 +14,7 @@ import {
   HealthColorIncreasing,
   formatDecimal,
   getColorByPercent,
+  isOfferClosed,
   trackPageEvent,
 } from '@banx/utils'
 
@@ -66,7 +66,7 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
     event.stopPropagation()
   }
 
-  const disabledActionButton = pairState === PairState.PerpetualBondingCurveClosed
+  const disabledActionButton = isOfferClosed(pairState)
   const actionButtonProps: ButtonProps = {
     type: 'circle',
     variant: 'secondary',
