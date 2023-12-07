@@ -2,7 +2,6 @@ import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
-import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { produce } from 'immer'
 import { chain, map, maxBy } from 'lodash'
 import { create } from 'zustand'
@@ -10,6 +9,7 @@ import { create } from 'zustand'
 import { LendLoansAndOffers, Loan, Offer, fetchLenderLoansAndOffers } from '@banx/api/core'
 import { fetchUserOffersStats } from '@banx/api/stats'
 import { isOfferNewer, isOptimisticOfferExpired, useOffersOptimistic } from '@banx/store'
+import { isOfferClosed } from '@banx/utils'
 
 import { useMarketsPreview } from '../LendPage/hooks'
 
@@ -113,8 +113,7 @@ export const useLenderLoansAndOffers = () => {
     const expiredOffersByTime = optimisticOffers.filter((offer) => isOptimisticOfferExpired(offer))
 
     const optimisticsToRemove = chain(optimisticOffers)
-      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualClosed)
-      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualBondingCurveClosed)
+      .filter(({ offer }) => !isOfferClosed(offer?.pairState))
       .filter(({ offer }) => {
         const sameOfferFromBE = userOffers?.find(({ publicKey }) => publicKey === offer.publicKey)
         if (!sameOfferFromBE) return false
@@ -211,9 +210,7 @@ export const useLenderLoansAndOffers = () => {
 }
 
 const isClosedAndEmptyOffer = (offer: Offer, loans: Loan[]) => {
-  const isClosedOffer =
-    offer.pairState === PairState.PerpetualClosed ||
-    offer.pairState === PairState.PerpetualBondingCurveClosed
+  const isClosedOffer = isOfferClosed(offer?.pairState)
 
   return isClosedOffer && !loans.length
 }

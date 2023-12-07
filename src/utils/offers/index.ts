@@ -1,3 +1,5 @@
+import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
+
 import { Offer } from '@banx/api/core'
 
 export const сalculateLoansAmount = (offer: Offer) => {
@@ -15,4 +17,12 @@ export const calculateLoanValue = (offer: Offer) => {
   const loanValue = currentSpotPrice * Math.min(loansAmount, 1)
 
   return loanValue
+}
+
+export const isOfferClosed = (pairState: string) => {
+  return (
+    pairState === PairState.PerpetualClosed ||
+    pairState === PairState.PerpetualBondingCurveClosed ||
+    pairState === PairState.PerpetualMigrated
+  )
 }

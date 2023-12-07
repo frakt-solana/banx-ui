@@ -2,7 +2,6 @@ import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
-import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { produce } from 'immer'
 import { chain, filter, groupBy, isEmpty, map, maxBy, sumBy, uniqBy } from 'lodash'
 import { create } from 'zustand'
@@ -21,6 +20,7 @@ import {
   calcBorrowValueWithRentFee,
   isLoanActiveOrRefinanced,
   isLoanRepaid,
+  isOfferClosed,
 } from '@banx/utils'
 
 import { useCartState } from './cartState'
@@ -55,8 +55,7 @@ export const useBorrowNfts = () => {
 
     const optimisticsToRemove = chain(optimisticOffers)
       //? Filter closed offers from LS optimistics
-      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualClosed)
-      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualBondingCurveClosed)
+      .filter(({ offer }) => !isOfferClosed(offer?.pairState))
       .filter(({ offer }) => {
         const sameOfferFromBE = data.offers[offer.hadoMarket]?.find(
           ({ publicKey }) => publicKey === offer.publicKey,
@@ -83,8 +82,7 @@ export const useBorrowNfts = () => {
 
     const optimisticsFiltered = chain(optimisticOffers)
       //? Filter closed offers from LS optimistics
-      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualClosed)
-      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualBondingCurveClosed)
+      .filter(({ offer }) => !isOfferClosed(offer?.pairState))
       //? Filter own offers from LS optimistics
       .filter(({ offer }) => offer?.assetReceiver !== walletPublicKey?.toBase58())
       .value()

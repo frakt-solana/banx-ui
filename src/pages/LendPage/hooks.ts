@@ -7,6 +7,7 @@ import { chain, map, maxBy } from 'lodash'
 
 import { Offer, fetchMarketOffers, fetchMarketsPreview } from '@banx/api/core'
 import { isOfferNewer, isOptimisticOfferExpired, useOffersOptimistic } from '@banx/store'
+import { isOfferClosed } from '@banx/utils'
 
 export const USE_MARKETS_PREVIEW_QUERY_KEY = 'marketsPreview'
 
@@ -47,8 +48,7 @@ export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => 
     const expiredOffersByTime = optimisticOffers.filter((offer) => isOptimisticOfferExpired(offer))
 
     const optimisticsToRemove = chain(optimisticOffers)
-      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualClosed)
-      .filter(({ offer }) => offer?.pairState !== PairState.PerpetualBondingCurveClosed)
+      .filter(({ offer }) => !isOfferClosed(offer?.pairState))
       .filter(({ offer }) => {
         const sameOfferFromBE = data?.find(({ publicKey }) => publicKey === offer.publicKey)
         if (!sameOfferFromBE) return false
@@ -74,8 +74,7 @@ export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => 
     return chain(combinedOffers)
       .groupBy('publicKey')
       .map((offers) => maxBy(offers, 'lastTransactedAt'))
-      .filter((offer) => offer?.pairState !== PairState.PerpetualClosed)
-      .filter((offer) => offer?.pairState !== PairState.PerpetualBondingCurveClosed)
+      .filter((offer) => !isOfferClosed(offer?.pairState || PairState.PerpetualClosed))
       .compact()
       .value()
   }, [optimisticOffers, data, marketPubkey])
