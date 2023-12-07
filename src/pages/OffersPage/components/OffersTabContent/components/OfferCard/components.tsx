@@ -132,7 +132,9 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({
   return (
     <div className={classNames(styles.additionalOfferContainer, className)}>
       <div className={styles.additionalStat}>
-        <div className={styles.additionalStatLabel}>Lent</div>
+        <div className={styles.additionalStatLabel}>
+          Lent <Tooltip title="SOL in current active loans" />
+        </div>
         <div className={styles.additionalStatValues}>
           {createSolValueJSX(lent, 1e9, '0◎', formatDecimal)}
           <span className={styles.additionalStatSubtitle}>
@@ -141,13 +143,17 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({
         </div>
       </div>
       <div className={styles.additionalStat}>
-        <div className={styles.additionalStatLabel}>Repaid</div>
+        <div className={styles.additionalStatLabel}>
+          Repaid <Tooltip title="Total SOL repaid by borrowers" />
+        </div>
         <div className={styles.additionalStatValues}>
           {createSolValueJSX(repaid, 1e9, '0◎', formatDecimal)}
         </div>
       </div>
       <div className={styles.additionalStat}>
-        <div className={styles.additionalStatLabel}>Claim</div>
+        <div className={styles.additionalStatLabel}>
+          Total claim <Tooltip title="Net SOL owed by the borrowers" />
+        </div>
         <div className={styles.additionalStatValues}>
           {createSolValueJSX(claim, 1e9, '0◎')}
           <span style={{ color: ltv ? colorLtv : '' }} className={styles.additionalStatSubtitle}>
