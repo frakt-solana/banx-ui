@@ -93,10 +93,10 @@ export const ActiveLoansTab = () => {
 
   const { sortedLoans, sortParams } = useSortedLenderLoans(filteredData)
 
-  const searchSelectOptions = chain(data)
-    .map(({ loans, collectionMeta }) => ({
-      collectionName: collectionMeta.collectionName,
-      collectionImage: collectionMeta.collectionImage,
+  const searchSelectOptions = chain(loans)
+    .map(({ nft }) => ({
+      collectionName: nft.meta.collectionName,
+      collectionImage: nft.meta.collectionImage,
       claim: sumBy(loans, calculateClaimValue),
     }))
     .uniqBy(({ collectionName }) => collectionName)
