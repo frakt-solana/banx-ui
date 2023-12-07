@@ -7,12 +7,12 @@ import { BONDS } from '@banx/constants'
 import { calcLoanBorrowedAmount, calcWeightedAverage } from '@banx/utils'
 
 export const getAdditionalOfferInfo = ({ loans, offer }: { loans: Loan[]; offer: Offer }) => {
-  const { buyOrdersQuantity, validation } = offer
+  const { buyOrdersQuantity } = offer
 
   const collectionFloor = loans[0]?.nft.collectionFloor
   const totalClaimValue = sumBy(loans, calculateClaimValue)
 
-  const activeLoansQuantity = validation.maxReturnAmountFilter || 0
+  const activeLoansQuantity = loans?.length || 0
   const totalLoansQuantity = activeLoansQuantity + buyOrdersQuantity
 
   const interest = offer.concentrationIndex
