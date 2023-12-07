@@ -16,7 +16,7 @@ enum SortField {
 
 type SortValueGetter = (loan: Loan) => number
 
-export const DEFAULT_SORT_OPTION = { label: 'Status', value: 'status_desc' }
+export const DEFAULT_SORT_OPTION = { label: 'Status', value: 'status_asc' }
 
 export const SORT_OPTIONS = [
   { label: 'Lent', value: 'lent' },
