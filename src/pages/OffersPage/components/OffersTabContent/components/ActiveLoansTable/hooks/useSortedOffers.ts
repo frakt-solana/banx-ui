@@ -1,6 +1,8 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 
 import { get, isFunction, sortBy } from 'lodash'
+
+import { SortOption } from '@banx/components/SortDropdown'
 
 import { Loan } from '@banx/api/core'
 import { LoanStatus, calculateLoanRepayValue, determineLoanStatus } from '@banx/utils'
@@ -14,7 +16,20 @@ enum SortField {
 
 type SortValueGetter = (loan: Loan) => number
 
-export const useSortedLenderLoans = (loans: Loan[], sortOptionValue: string) => {
+export const DEFAULT_SORT_OPTION = { label: 'Status', value: 'status_desc' }
+
+export const SORT_OPTIONS = [
+  { label: 'Lent', value: 'lent' },
+  { label: 'APR', value: 'apr' },
+  { label: 'LTV', value: 'ltv' },
+  { label: 'Status', value: 'status' },
+]
+
+export const useSortedLenderLoans = (loans: Loan[]) => {
+  const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
+
+  const sortOptionValue = sortOption?.value
+
   const sortedLoans = useMemo(() => {
     if (!sortOptionValue) {
       return loans
@@ -50,5 +65,12 @@ export const useSortedLenderLoans = (loans: Loan[], sortOptionValue: string) => 
     return order === 'desc' ? sorted.reverse() : sorted
   }, [sortOptionValue, loans])
 
-  return sortedLoans
+  return {
+    sortedLoans,
+    sortParams: {
+      option: sortOption,
+      onChange: setSortOption,
+      options: SORT_OPTIONS,
+    },
+  }
 }
