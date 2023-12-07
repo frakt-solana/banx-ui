@@ -7,7 +7,7 @@ import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { useLenderLoansAndOffers } from '@banx/pages/OffersPage/hooks'
-import { formatDecimal } from '@banx/utils'
+import { formatDecimal, isOfferClosed } from '@banx/utils'
 
 import { isLoanAbleToClaim, isLoanAbleToTerminate } from '../components/ActiveLoansTable/helpers'
 import { calculateClaimValue } from '../components/OfferCard/helpers'
@@ -39,7 +39,7 @@ export const useOffersTabContent = () => {
         selectedOffers.includes(collectionMeta.collectionName),
       )
     }
-    return data
+    return data.filter(({ offer }) => !isOfferClosed(offer?.pairState))
   }, [data, selectedOffers])
 
   const { sortedData, sortParams } = useSortedData(filteredData)
