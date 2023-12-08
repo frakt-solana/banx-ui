@@ -17,7 +17,7 @@ import { useOffersTabContent } from '../../hooks'
 import { calculateClaimValue } from '../OfferCard'
 import { ActiveTabSummary } from '../Summary/Summary'
 import { getTableColumns } from './columns'
-import { useSortedLenderLoans } from './hooks/useSortedOffers'
+import { useSortedLenderLoans } from './hooks'
 
 import styles from './ActiveLoansTable.module.less'
 
