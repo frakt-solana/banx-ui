@@ -9,9 +9,10 @@ import { APRCell, ActionsCell, InterestCell, StatusCell } from './TableCells'
 
 interface GetTableColumns {
   updateOrAddLoan: (loan: Loan) => void
+  isCardView?: boolean
 }
 
-export const getTableColumns = ({ updateOrAddLoan }: GetTableColumns) => {
+export const getTableColumns = ({ updateOrAddLoan, isCardView = false }: GetTableColumns) => {
   const columns: ColumnType<Loan>[] = [
     {
       key: 'collateral',
@@ -42,7 +43,7 @@ export const getTableColumns = ({ updateOrAddLoan }: GetTableColumns) => {
       title: (
         <HeaderCell label="Claim" tooltipText="Sum of lent amount and accrued interest to date" />
       ),
-      render: (loan) => <InterestCell loan={loan} />,
+      render: (loan) => <InterestCell loan={loan} isCardView={isCardView} />,
     },
     {
       key: 'apr',
@@ -57,12 +58,14 @@ export const getTableColumns = ({ updateOrAddLoan }: GetTableColumns) => {
           tooltipText="Current status and duration of the loan that has been passed"
         />
       ),
-      render: (loan) => <StatusCell loan={loan} />,
+      render: (loan) => <StatusCell loan={loan} isCardView={isCardView} />,
     },
     {
       key: 'actionsCell',
-      title: <HeaderCell label="" />,
-      render: (loan) => <ActionsCell updateOrAddLoan={updateOrAddLoan} loan={loan} />,
+      title: !isCardView ? <HeaderCell label="" /> : undefined,
+      render: (loan) => (
+        <ActionsCell updateOrAddLoan={updateOrAddLoan} loan={loan} isCardView={isCardView} />
+      ),
     },
   ]
 

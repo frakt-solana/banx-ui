@@ -11,9 +11,10 @@ import styles from '../ActiveLoansTable.module.less'
 
 interface InterestCellProps {
   loan: Loan
+  isCardView?: boolean
 }
 
-export const InterestCell: FC<InterestCellProps> = ({ loan }) => {
+export const InterestCell: FC<InterestCellProps> = ({ loan, isCardView = false }) => {
   const collectionFloor = loan.nft.collectionFloor
 
   const totalClaimValue = calculateClaimValue(loan)
@@ -21,12 +22,16 @@ export const InterestCell: FC<InterestCellProps> = ({ loan }) => {
   const formattedClaimValue = createSolValueJSX(totalClaimValue, 1e9, '--', formatDecimal)
 
   const loanToValueRatio = (totalClaimValue / collectionFloor) * 100
-
-  return (
+  
+  return !isCardView ? (
     <div className={styles.lentInfo}>
       <span>{formattedClaimValue}</span>
       {createLtvValueJSX(loanToValueRatio)}
     </div>
+  ) : (
+    <span>
+      {formattedClaimValue} ({createLtvValueJSX(loanToValueRatio)})
+    </span>
   )
 }
 
