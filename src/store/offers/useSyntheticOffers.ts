@@ -73,7 +73,7 @@ export const convertToSynthetic = (offer: Offer, isEdit = false): SyntheticOffer
   const { publicKey, assetReceiver, hadoMarket, mathCounter, bondingCurve, buyOrdersQuantity } =
     offer
 
-  const loanValue = calcSyntheticLoanValue(offer);
+  const loanValue = calcSyntheticLoanValue(offer)
   return {
     isEdit,
     publicKey,
@@ -87,8 +87,15 @@ export const convertToSynthetic = (offer: Offer, isEdit = false): SyntheticOffer
 }
 
 export const calcSyntheticLoanValue = (offer: Offer): number => {
-  const { currentSpotPrice, baseSpotPrice, validation, bidSettlement, mathCounter, bondingCurve, buyOrdersQuantity } =
-    offer
+  const {
+    currentSpotPrice,
+    baseSpotPrice,
+    validation,
+    bidSettlement,
+    mathCounter,
+    bondingCurve,
+    buyOrdersQuantity,
+  } = offer
 
   const prevSpotPrice = calculateNextSpotPrice({
     bondingCurveType: bondingCurve.bondingType as BondingCurveType,
@@ -97,5 +104,9 @@ export const calcSyntheticLoanValue = (offer: Offer): number => {
     counter: mathCounter + 2,
   })
 
-  return Math.min(validation.loanToValueFilter, (buyOrdersQuantity > 0 ? currentSpotPrice : 0) + bidSettlement, prevSpotPrice)
+  return Math.min(
+    validation.loanToValueFilter,
+    (buyOrdersQuantity > 0 ? currentSpotPrice : 0) + bidSettlement,
+    prevSpotPrice,
+  )
 }

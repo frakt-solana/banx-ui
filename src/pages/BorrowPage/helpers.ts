@@ -17,19 +17,15 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
   } = offer
 
   if (buyOrdersQuantity === 0) {
-    const baseMathCounter = mathCounter + 1;
+    const baseMathCounter = mathCounter + 1
 
     const prevSpotPrice = calculateNextSpotPrice({
       bondingCurveType: bondingCurve.bondingType as BondingCurveType,
       delta: bondingCurve.delta,
       spotPrice: baseSpotPrice,
       counter: baseMathCounter + 1,
-    });
-    const loanValue = Math.min(
-      validation.loanToValueFilter,
-      reserve,
-      prevSpotPrice,
-    )
+    })
+    const loanValue = Math.min(validation.loanToValueFilter, reserve, prevSpotPrice)
 
     const simpleOffer = {
       id: uniqueId(),
