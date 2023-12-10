@@ -1,6 +1,6 @@
 import { FC, useMemo, useState } from 'react'
 
-import { chain, sumBy } from 'lodash'
+import { first, groupBy, map, sumBy } from 'lodash'
 
 import EmptyList from '@banx/components/EmptyList'
 import { SearchSelectProps } from '@banx/components/SearchSelect'
@@ -93,14 +93,17 @@ export const ActiveLoansTab = () => {
 
   const { sortedLoans, sortParams } = useSortedLenderLoans(filteredData)
 
-  const searchSelectOptions = chain(loans)
-    .map(({ nft }) => ({
-      collectionName: nft.meta.collectionName,
-      collectionImage: nft.meta.collectionImage,
-      claim: sumBy(loans, calculateClaimValue),
-    }))
-    .uniqBy(({ collectionName }) => collectionName)
-    .value()
+  const searchSelectOptions = useMemo(() => {
+    const loansGroupedByCollection = groupBy(loans, ({ nft }) => nft.meta.collectionName)
+
+    return map(loansGroupedByCollection, (groupedLoans) => {
+      const firstLoanInGroup = first(groupedLoans)
+      const { collectionName = '', collectionImage = '' } = firstLoanInGroup?.nft.meta || {}
+      const claim = sumBy(groupedLoans, calculateClaimValue)
+
+      return { collectionName, collectionImage, claim }
+    })
+  }, [loans])
 
   const searchSelectParams: SearchSelectProps<SearchSelectOption> = {
     options: searchSelectOptions,
