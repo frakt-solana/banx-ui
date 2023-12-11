@@ -47,7 +47,6 @@ export const SearchSelect = <P extends object>({
   const {
     containerRef,
     isPopupOpen,
-    defaultOpen,
     handleDropdownVisibleChange,
     handleInputChange,
     showSufixIcon,
@@ -85,7 +84,6 @@ export const SearchSelect = <P extends object>({
         suffixIcon={showSufixIcon && <SuffixIcon isPopupOpen={isPopupOpen} />}
         onSearch={handleInputChange}
         onDropdownVisibleChange={handleDropdownVisibleChange}
-        defaultOpen={defaultOpen}
         maxTagCount="responsive"
         dropdownRender={(menu) => (
           <>
