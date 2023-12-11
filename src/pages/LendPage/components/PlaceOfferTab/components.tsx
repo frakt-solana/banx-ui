@@ -91,7 +91,7 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
           </div>
           <Button
             onClick={onWithdrawReserve}
-            className={styles.actionButton}
+            className={classNames(styles.actionButton, styles.withdrawButton)}
             disabled={disableWithdrawReserve}
           >
             Withdraw reserve
