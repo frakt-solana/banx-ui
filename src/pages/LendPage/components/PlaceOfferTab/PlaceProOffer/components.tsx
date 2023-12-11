@@ -6,21 +6,25 @@ import { MarketPreview, Offer } from '@banx/api/core'
 import { WEEKS_IN_YEAR } from '@banx/constants'
 import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
 
-import { getSummaryOfferInfo } from '../helpers'
-
 import styles from './PlaceProOffer.module.less'
 
 interface OfferSummaryProps {
+  offerSize: number
   isEditMode: boolean
   offer: Offer | undefined
   market?: MarketPreview
   loansAmount: number
 }
 
-export const OfferSummary: FC<OfferSummaryProps> = ({ offer, isEditMode, market, loansAmount }) => {
+export const OfferSummary: FC<OfferSummaryProps> = ({
+  offer,
+  offerSize,
+  isEditMode,
+  market,
+  loansAmount,
+}) => {
   const { collectionFloor = 0, marketApr = 0 } = market || {}
-
-  const { accruedInterest, lentValue, offerSize } = getSummaryOfferInfo(offer)
+  const { concentrationIndex: accruedInterest = 0, edgeSettlement: lentValue = 0 } = offer || {}
 
   const weeklyInterest = calculateWeeklyInterest(offerSize, marketApr)
   const weightedLtv = (offerSize / loansAmount / collectionFloor) * 100
@@ -39,6 +43,14 @@ export const OfferSummary: FC<OfferSummaryProps> = ({ offer, isEditMode, market,
         tooltipText="Average LTV offered by your pool"
         valueType={VALUES_TYPES.PERCENT}
       />
+      {!isEditMode && (
+        <StatInfo
+          label="Pool size"
+          value={`${displayOfferSize}◎`}
+          flexType="row"
+          valueType={VALUES_TYPES.STRING}
+        />
+      )}
       <StatInfo
         flexType="row"
         label="Max weekly interest"

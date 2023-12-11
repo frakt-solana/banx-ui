@@ -6,11 +6,10 @@ import { Offer } from '@banx/api/core'
 import { WEEKS_IN_YEAR } from '@banx/constants'
 import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
 
-import { getSummaryOfferInfo } from '../helpers'
-
 import styles from './PlaceLiteOffer.module.less'
 
 interface OfferSummaryProps {
+  offerSize: number
   marketAPR: number
   loanToValuePercent: number
   isEditMode: boolean
@@ -18,12 +17,13 @@ interface OfferSummaryProps {
 }
 
 export const OfferSummary: FC<OfferSummaryProps> = ({
+  offerSize,
   marketAPR,
   loanToValuePercent,
   isEditMode,
   offer,
 }) => {
-  const { accruedInterest, lentValue, offerSize } = getSummaryOfferInfo(offer)
+  const { concentrationIndex: accruedInterest = 0, edgeSettlement: lentValue = 0 } = offer || {}
 
   const weeklyAprPercentage = marketAPR / 100 / WEEKS_IN_YEAR
   const estimatedInterest = ((offerSize / 1e9) * weeklyAprPercentage) / 100
@@ -43,6 +43,14 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
         flexType="row"
         valueType={VALUES_TYPES.PERCENT}
       />
+      {!isEditMode && (
+        <StatInfo
+          label="Pool size"
+          value={`${displayOfferSize}◎`}
+          flexType="row"
+          valueType={VALUES_TYPES.STRING}
+        />
+      )}
       <StatInfo
         label="Max weekly interest"
         value={`${displayEstimatedInterest}◎`}

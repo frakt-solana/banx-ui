@@ -51,13 +51,31 @@ export const usePlaceProOffer = ({
   })
 
   const offerSize = useMemo(() => {
+    if (isEditMode && !hasFormChanges) {
+      const {
+        edgeSettlement = 0,
+        bidSettlement = 0,
+        fundsSolOrTokenBalance = 0,
+      } = optimisticOffer || {}
+
+      return edgeSettlement + bidSettlement + fundsSolOrTokenBalance
+    }
+
     return calculateOfferSize({
       syntheticOffer,
       loanValue: loanValueNumber,
       loansQuantity: loansAmountNumber,
       deltaValue: deltaValueNumber,
     })
-  }, [syntheticOffer, loanValueNumber, loansAmountNumber, deltaValueNumber])
+  }, [
+    isEditMode,
+    hasFormChanges,
+    syntheticOffer,
+    loanValueNumber,
+    loansAmountNumber,
+    deltaValueNumber,
+    optimisticOffer,
+  ])
 
   useEffect(() => {
     const hasSolanaBalance = !!solanaBalance
@@ -103,6 +121,7 @@ export const usePlaceProOffer = ({
     loanValue,
     loansAmount,
     deltaValue,
+    offerSize,
 
     onDeltaValueChange,
     onLoanValueChange,

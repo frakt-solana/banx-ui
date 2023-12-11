@@ -69,13 +69,30 @@ export const usePlaceLiteOffer = ({
   })
 
   const offerSize = useMemo(() => {
+    if (isEditMode && !hasFormChanges) {
+      const {
+        edgeSettlement = 0,
+        bidSettlement = 0,
+        fundsSolOrTokenBalance = 0,
+      } = optimisticOffer || {}
+
+      return edgeSettlement + bidSettlement + fundsSolOrTokenBalance
+    }
+
     return calculateOfferSize({
       syntheticOffer,
       loanValue: loanValueNumber,
       loansQuantity: loansAmountNumber,
       deltaValue: 0,
     })
-  }, [syntheticOffer, loanValueNumber, loansAmountNumber])
+  }, [
+    isEditMode,
+    hasFormChanges,
+    syntheticOffer,
+    loanValueNumber,
+    loansAmountNumber,
+    optimisticOffer,
+  ])
 
   const offerErrorMessage = getOfferErrorMessage({
     syntheticOffer,
@@ -95,6 +112,7 @@ export const usePlaceLiteOffer = ({
 
   return {
     isEditMode,
+    offerSize,
     loanToValuePercent,
     marketApr: marketPreview?.marketApr || 0,
     loanValue,

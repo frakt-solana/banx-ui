@@ -23,6 +23,7 @@ const PlaceLiteOffer: FC<OfferParams> = (offersParams) => {
     onCreateOffer,
     onRemoveOffer,
     onUpdateOffer,
+    offerSize,
     marketApr,
     offerErrorMessage,
     showBorrowerMessage,
@@ -53,6 +54,7 @@ const PlaceLiteOffer: FC<OfferParams> = (offersParams) => {
         {showBorrowerMessage && <BorrowerMessage loanValue={loanValue} />}
       </div>
       <OfferSummary
+        offerSize={offerSize}
         marketAPR={marketApr}
         loanToValuePercent={loanToValuePercent}
         isEditMode={isEditMode}

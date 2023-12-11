@@ -7,7 +7,6 @@ import {
 import { BondOfferV2, BondingCurveType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
 
-import { Offer } from '@banx/api/core'
 import { SyntheticOffer } from '@banx/store'
 
 type GetUpdatedBondOffer = (props: {
@@ -92,23 +91,6 @@ export const getOfferErrorMessage: GetCreateOfferErrorMessage = ({
     .value() as string
 
   return errorMessage
-}
-
-export const getSummaryOfferInfo = (offer: Offer | undefined) => {
-  const {
-    concentrationIndex = 0,
-    edgeSettlement = 0,
-    bidSettlement = 0,
-    fundsSolOrTokenBalance = 0,
-  } = offer || {}
-
-  const offerSize = edgeSettlement + bidSettlement + fundsSolOrTokenBalance
-
-  return {
-    accruedInterest: concentrationIndex,
-    lentValue: edgeSettlement,
-    offerSize,
-  }
 }
 
 export const checkIsEditMode = (offerPubkey: string) =>
