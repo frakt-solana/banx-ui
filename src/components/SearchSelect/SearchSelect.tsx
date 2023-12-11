@@ -58,7 +58,10 @@ export const SearchSelect = <P extends object>({
     return (
       <CollapsedContent
         selectedOptions={selectedOptions}
-        onClick={() => onChangeCollapsed?.(!collapsed)}
+        onClick={() => {
+          onChangeCollapsed?.(!collapsed)
+          handleDropdownVisibleChange(!collapsed)
+        }}
       />
     )
 
