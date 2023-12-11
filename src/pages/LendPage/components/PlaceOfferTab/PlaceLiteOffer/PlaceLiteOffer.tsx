@@ -20,8 +20,8 @@ const PlaceLiteOffer: FC<OfferParams> = (offersParams) => {
     onLoanAmountChange,
     loanValue,
     onLoanValueChange,
-    onClaimOfferInterest,
-    disableClaimInterest,
+    onWithdrawReserve,
+    disableWithdrawReserve,
     onCreateOffer,
     onRemoveOffer,
     onUpdateOffer,
@@ -66,8 +66,8 @@ const PlaceLiteOffer: FC<OfferParams> = (offersParams) => {
         isEditMode={isEditMode}
         disableUpdateOffer={disableUpdateOffer}
         disablePlaceOffer={disablePlaceOffer}
-        disableClaimInterest={disableClaimInterest}
-        onClaimOfferInterest={onClaimOfferInterest}
+        disableWithdrawReserve={disableWithdrawReserve}
+        onWithdrawReserve={onWithdrawReserve}
         onCreateOffer={onCreateOffer}
         onRemoveOffer={onRemoveOffer}
         onUpdateOffer={onUpdateOffer}

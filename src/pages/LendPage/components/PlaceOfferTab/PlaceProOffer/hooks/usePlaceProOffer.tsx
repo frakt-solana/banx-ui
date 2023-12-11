@@ -39,17 +39,16 @@ export const usePlaceProOffer = ({
   const loansAmountNumber = parseFloat(loansAmount)
   const deltaValueNumber = parseFloat(deltaValue)
 
-  const { onCreateOffer, onUpdateOffer, onRemoveOffer, onClaimOfferInterest } =
-    useOfferTransactions({
-      marketPubkey,
-      loanValue: loanValueNumber,
-      loansAmount: loansAmountNumber,
-      deltaValue: deltaValueNumber,
-      optimisticOffer,
-      updateOrAddOffer,
-      resetFormValues,
-      exitEditMode,
-    })
+  const { onCreateOffer, onUpdateOffer, onRemoveOffer, onWithdrawReserve } = useOfferTransactions({
+    marketPubkey,
+    loanValue: loanValueNumber,
+    loansAmount: loansAmountNumber,
+    deltaValue: deltaValueNumber,
+    optimisticOffer,
+    updateOrAddOffer,
+    resetFormValues,
+    exitEditMode,
+  })
 
   const offerSize = useMemo(() => {
     return calculateOfferSize({
@@ -97,7 +96,7 @@ export const usePlaceProOffer = ({
   const showBorrowerMessage = !offerErrorMessage && !!offerSize
   const disablePlaceOffer = !!offerErrorMessage || !offerSize
   const disableUpdateOffer = !hasFormChanges || !!offerErrorMessage || !offerSize
-  const disableClaimInterest = !optimisticOffer?.concentrationIndex
+  const disableWithdrawReserve = !optimisticOffer?.bidSettlement
 
   return {
     isEditMode,
@@ -113,13 +112,13 @@ export const usePlaceProOffer = ({
 
     disablePlaceOffer,
     disableUpdateOffer,
-    disableClaimInterest,
+    disableWithdrawReserve,
     showBorrowerMessage,
     offerErrorMessage,
 
     onCreateOffer,
     onUpdateOffer,
-    onClaimOfferInterest,
+    onWithdrawReserve,
     onRemoveOffer,
   }
 }

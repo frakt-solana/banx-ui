@@ -1,4 +1,5 @@
 export * from './makeClaimBondOfferInterestAction'
+export * from './makeClaimBondOfferReserveAction'
 export * from './makeCreateBondingOfferAction'
 export * from './makeCreateOfferAction'
 export * from './makeRemoveOfferAction'

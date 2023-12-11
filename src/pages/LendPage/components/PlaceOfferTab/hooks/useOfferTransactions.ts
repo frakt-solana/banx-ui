@@ -4,7 +4,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 import { Offer } from '@banx/api/core'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import {
-  makeClaimBondOfferInterestAction,
+  makeClaimBondOfferReserveAction,
   makeCreateBondingOfferAction,
   makeRemoveOfferAction,
   makeUpdateBondingOfferAction,
@@ -112,17 +112,17 @@ export const useOfferTransactions = ({
       .execute()
   }
 
-  const onClaimOfferInterest = () => {
+  const onWithdrawReserve = () => {
     if (!optimisticOffer) return
 
-    new TxnExecutor(makeClaimBondOfferInterestAction, { wallet, connection })
+    new TxnExecutor(makeClaimBondOfferReserveAction, { wallet, connection })
       .addTxnParam({ optimisticOffer })
       .on('pfSuccessEach', (results) => {
         const { result, txnHash } = results[0]
         result?.bondOffer && updateOrAddOffer(result.bondOffer)
 
         enqueueSnackbar({
-          message: 'Interest successfully claimed',
+          message: 'Reserve successfully claimed',
           type: 'success',
           solanaExplorerPath: `tx/${txnHash}`,
         })
@@ -131,7 +131,7 @@ export const useOfferTransactions = ({
         defaultTxnErrorHandler(error, {
           additionalData: optimisticOffer,
           walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'ClaimOfferInterest',
+          transactionName: 'ClaimOfferReserve',
         })
       })
       .execute()
@@ -140,7 +140,7 @@ export const useOfferTransactions = ({
   return {
     onCreateOffer,
     onUpdateOffer,
-    onClaimOfferInterest,
+    onWithdrawReserve,
     onRemoveOffer,
   }
 }
