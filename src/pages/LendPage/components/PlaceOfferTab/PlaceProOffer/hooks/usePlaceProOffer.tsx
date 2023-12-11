@@ -103,7 +103,6 @@ export const usePlaceProOffer = ({
     loanValue,
     loansAmount,
     deltaValue,
-    offerSize,
 
     onDeltaValueChange,
     onLoanValueChange,

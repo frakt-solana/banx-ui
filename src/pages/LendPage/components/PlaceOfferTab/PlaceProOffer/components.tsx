@@ -6,33 +6,28 @@ import { MarketPreview, Offer } from '@banx/api/core'
 import { WEEKS_IN_YEAR } from '@banx/constants'
 import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
 
-import { getAdditionalSummaryOfferInfo } from '../helpers'
+import { getSummaryOfferInfo } from '../helpers'
 
 import styles from './PlaceProOffer.module.less'
 
 interface OfferSummaryProps {
-  offerSize: number
   isEditMode: boolean
   offer: Offer | undefined
   market?: MarketPreview
   loansAmount: number
 }
 
-export const OfferSummary: FC<OfferSummaryProps> = ({
-  offer,
-  offerSize,
-  isEditMode,
-  market,
-  loansAmount,
-}) => {
+export const OfferSummary: FC<OfferSummaryProps> = ({ offer, isEditMode, market, loansAmount }) => {
   const { collectionFloor = 0, marketApr = 0 } = market || {}
 
-  const { accruedInterest, reserve, activeLoansQuantity, totalLoansQuantity } =
-    getAdditionalSummaryOfferInfo(offer)
+  const { accruedInterest, lentValue, offerSize } = getSummaryOfferInfo(offer)
 
   const weeklyInterest = calculateWeeklyInterest(offerSize, marketApr)
   const weightedLtv = (offerSize / loansAmount / collectionFloor) * 100
   const colorLTV = getColorByPercent(weightedLtv, HealthColorIncreasing)
+
+  const displayOfferSize = formatDecimal(offerSize / 1e9)
+  const displayLentValue = formatDecimal(lentValue / 1e9)
 
   return (
     <div className={styles.offerSummary}>
@@ -45,12 +40,6 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
         valueType={VALUES_TYPES.PERCENT}
       />
       <StatInfo
-        label="Pool size"
-        value={`${formatDecimal(offerSize / 1e9)}◎`}
-        flexType="row"
-        valueType={VALUES_TYPES.STRING}
-      />
-      <StatInfo
         flexType="row"
         label="Max weekly interest"
         value={`${formatDecimal(weeklyInterest / 1e9)}◎`}
@@ -59,15 +48,9 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
       {isEditMode && (
         <div className={styles.editOfferSummary}>
           <StatInfo
-            label="Active loans"
-            value={`${activeLoansQuantity}/${totalLoansQuantity}`}
+            label="Lent / size"
+            value={`${displayLentValue}/${displayOfferSize}◎`}
             valueType={VALUES_TYPES.STRING}
-          />
-          <StatInfo
-            label="Reserve"
-            value={reserve}
-            tooltipText="Leftover SOL is sent here if offers are partially taken"
-            divider={1e9}
           />
           <StatInfo
             label="Accrued interest"

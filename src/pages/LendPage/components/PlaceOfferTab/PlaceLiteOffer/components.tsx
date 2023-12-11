@@ -6,12 +6,11 @@ import { Offer } from '@banx/api/core'
 import { WEEKS_IN_YEAR } from '@banx/constants'
 import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
 
-import { getAdditionalSummaryOfferInfo } from '../helpers'
+import { getSummaryOfferInfo } from '../helpers'
 
 import styles from './PlaceLiteOffer.module.less'
 
 interface OfferSummaryProps {
-  offerSize: number
   marketAPR: number
   loanToValuePercent: number
   isEditMode: boolean
@@ -19,24 +18,21 @@ interface OfferSummaryProps {
 }
 
 export const OfferSummary: FC<OfferSummaryProps> = ({
-  offerSize,
   marketAPR,
   loanToValuePercent,
   isEditMode,
   offer,
 }) => {
-  const formattedOfferSize = offerSize / 1e9
+  const { accruedInterest, lentValue, offerSize } = getSummaryOfferInfo(offer)
 
   const weeklyAprPercentage = marketAPR / 100 / WEEKS_IN_YEAR
-  const estimatedInterest = (formattedOfferSize * weeklyAprPercentage) / 100
+  const estimatedInterest = ((offerSize / 1e9) * weeklyAprPercentage) / 100
 
   const colorLTV = getColorByPercent(loanToValuePercent, HealthColorIncreasing)
 
-  const { accruedInterest, reserve, activeLoansQuantity, totalLoansQuantity } =
-    getAdditionalSummaryOfferInfo(offer)
-
   const displayEstimatedInterest = formatDecimal(estimatedInterest)
-  const displayOfferSize = formatDecimal(formattedOfferSize)
+  const displayOfferSize = formatDecimal(offerSize / 1e9)
+  const displayLentValue = formatDecimal(lentValue / 1e9)
 
   return (
     <div className={styles.offerSummary}>
@@ -48,12 +44,6 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
         valueType={VALUES_TYPES.PERCENT}
       />
       <StatInfo
-        label="Pool size"
-        value={`${displayOfferSize}◎`}
-        flexType="row"
-        valueType={VALUES_TYPES.STRING}
-      />
-      <StatInfo
         label="Max weekly interest"
         value={`${displayEstimatedInterest}◎`}
         valueType={VALUES_TYPES.STRING}
@@ -62,15 +52,9 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
       {isEditMode && (
         <div className={styles.editOfferSummary}>
           <StatInfo
-            label="Active loans"
-            value={`${activeLoansQuantity}/${totalLoansQuantity}`}
+            label="Lent / size"
+            value={`${displayLentValue}/${displayOfferSize}◎`}
             valueType={VALUES_TYPES.STRING}
-          />
-          <StatInfo
-            label="Reserve"
-            value={reserve}
-            divider={1e9}
-            tooltipText="Leftover SOL is sent here if offers are partially taken"
           />
           <StatInfo
             label="Accrued interest"

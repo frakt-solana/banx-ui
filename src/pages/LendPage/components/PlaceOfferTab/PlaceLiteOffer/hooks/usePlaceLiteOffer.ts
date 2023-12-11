@@ -95,7 +95,6 @@ export const usePlaceLiteOffer = ({
 
   return {
     isEditMode,
-    offerSize,
     loanToValuePercent,
     marketApr: marketPreview?.marketApr || 0,
     loanValue,
