@@ -17,5 +17,5 @@ export const LTVCell: FC<LTVCellProps> = ({ loan }) => {
 
   const colorLTV = getColorByPercent(ltv, HealthColorIncreasing)
 
-  return <span style={{ color: colorLTV }}>{createPercentValueJSX(ltv)} LTV</span>
+  return <span style={{ color: colorLTV }}>{createPercentValueJSX(ltv)}</span>
 }
