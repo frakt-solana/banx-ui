@@ -1,5 +1,7 @@
 import { FC } from 'react'
 
+import classNames from 'classnames'
+
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
@@ -32,5 +34,9 @@ interface APRCellProps {
 export const APRCell: FC<APRCellProps> = ({ loan }) => {
   const aprInPercent = loan.bondTradeTransaction.amountOfBonds / 100
 
-  return <span className={styles.aprValue}>{createPercentValueJSX(aprInPercent)}</span>
+  return (
+    <span className={classNames(styles.aprValue, { [styles.highlight]: true })}>
+      {createPercentValueJSX(aprInPercent)}
+    </span>
+  )
 }

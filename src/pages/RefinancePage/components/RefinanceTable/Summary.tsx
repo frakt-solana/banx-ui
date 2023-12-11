@@ -1,8 +1,8 @@
 import React, { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import classNames from 'classnames'
 import { map, sumBy } from 'lodash'
-import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
@@ -22,12 +22,9 @@ import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { makeRefinanceAction } from '@banx/transactions/loans'
 import {
-  HealthColorDecreasing,
   calcWeightedAverage,
   calculateLoanRepayValue,
-  convertAprToApy,
   enqueueSnackbar,
-  getColorByPercent,
   getDialectAccessToken,
   trackPageEvent,
 } from '@banx/utils'
@@ -62,24 +59,9 @@ export const Summary: FC<SummaryProps> = ({
   const totalLoanValue = map(selectedLoans, (loan) => loan.fraktBond.borrowedAmount)
   const totalWeeklyInterest = sumBy(selectedLoans, (loan) => calcWeeklyInterestFee(loan))
 
-  const totalApy = map(selectedLoans, (loan) => {
-    const { refinanceAuctionStartedAt } = loan.fraktBond
-    const { amountOfBonds } = loan.bondTradeTransaction
-
-    const currentTime = moment()
-    const auctionStartTime = moment.unix(refinanceAuctionStartedAt)
-    const hoursSinceStart = currentTime.diff(auctionStartTime, 'hours')
-
-    const updatedAPR = amountOfBonds / 1e2 + hoursSinceStart
-    return updatedAPR
-  })
-
-  const weightedApr = calcWeightedAverage(totalApy, totalLoanValue)
-  const colorApr = getColorByPercent(weightedApr, HealthColorDecreasing)
-  const formattedWeightedApy = Math.min(
-    convertAprToApy(weightedApr / 1e2),
-    MAX_APY_INCREASE_PERCENT,
-  )
+  const totalApr = map(selectedLoans, (loan) => loan.bondTradeTransaction.amountOfBonds / 100)
+  const weightedApr = calcWeightedAverage(totalApr, totalLoanValue)
+  const cappedWeightedApr = Math.min(weightedApr, MAX_APY_INCREASE_PERCENT)
 
   const refinanceAll = () => {
     const txnParams = selectedLoans.map((loan) => ({ loan }))
@@ -149,9 +131,10 @@ export const Summary: FC<SummaryProps> = ({
         <StatInfo label="Weekly interest" value={totalWeeklyInterest} divider={1e9} />
         <StatInfo
           label="Weighted apr"
-          value={formattedWeightedApy}
-          valueStyles={{ color: weightedApr ? colorApr : '' }}
-          classNamesProps={{ value: styles.aprValue }}
+          value={cappedWeightedApr}
+          classNamesProps={{
+            value: classNames(styles.aprValue, { [styles.highlight]: weightedApr }),
+          }}
           valueType={VALUES_TYPES.PERCENT}
         />
       </div>
