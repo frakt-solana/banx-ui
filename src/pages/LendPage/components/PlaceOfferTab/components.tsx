@@ -39,22 +39,18 @@ interface OfferActionButtonsProps {
   isEditMode: boolean
   disableUpdateOffer: boolean
   disablePlaceOffer: boolean
-  disableClaimInterest: boolean
   onCreateOffer: () => void
   onRemoveOffer: () => void
   onUpdateOffer: () => void
-  onClaimOfferInterest: () => void
 }
 
 export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
   isEditMode,
   disableUpdateOffer,
   disablePlaceOffer,
-  disableClaimInterest,
   onCreateOffer,
   onRemoveOffer,
   onUpdateOffer,
-  onClaimOfferInterest,
 }) => {
   const { connected } = useWallet()
   const { toggleVisibility } = useWalletModal()
@@ -89,14 +85,6 @@ export const OfferActionButtons: FC<OfferActionButtonsProps> = ({
               Apply changes
             </Button>
           </div>
-          <Button
-            onClick={onClaimOfferInterest}
-            className={classNames(styles.actionButton, styles.claimButton)}
-            disabled={disableClaimInterest}
-          >
-            <span>Claim interest</span>
-            <span>Claim</span>
-          </Button>
         </div>
       ) : (
         <Button

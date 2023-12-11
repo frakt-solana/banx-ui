@@ -58,16 +58,15 @@ export const usePlaceLiteOffer = ({
     }
   }, [loansAmountNumber, loanValueNumber, syntheticOffer, setSyntheticOffer])
 
-  const { onCreateOffer, onRemoveOffer, onUpdateOffer, onClaimOfferInterest } =
-    useOfferTransactions({
-      marketPubkey,
-      loanValue: loanValueNumber,
-      loansAmount: loansAmountNumber,
-      optimisticOffer,
-      updateOrAddOffer,
-      resetFormValues,
-      exitEditMode,
-    })
+  const { onCreateOffer, onRemoveOffer, onUpdateOffer } = useOfferTransactions({
+    marketPubkey,
+    loanValue: loanValueNumber,
+    loansAmount: loansAmountNumber,
+    optimisticOffer,
+    updateOrAddOffer,
+    resetFormValues,
+    exitEditMode,
+  })
 
   const offerSize = useMemo(() => {
     return calculateOfferSize({
@@ -91,7 +90,6 @@ export const usePlaceLiteOffer = ({
   const showBorrowerMessage = !offerErrorMessage && !!offerSize
   const disablePlaceOffer = !!offerErrorMessage || !offerSize
   const disableUpdateOffer = !hasFormChanges || !!offerErrorMessage || !offerSize
-  const disableClaimInterest = !optimisticOffer?.concentrationIndex
 
   const loanToValuePercent = calcLoanToValuePercentage(loanValue, marketPreview)
 
@@ -111,9 +109,7 @@ export const usePlaceLiteOffer = ({
 
     disableUpdateOffer,
     disablePlaceOffer,
-    disableClaimInterest,
 
-    onClaimOfferInterest,
     onCreateOffer,
     onRemoveOffer,
     onUpdateOffer,
