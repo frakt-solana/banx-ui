@@ -7,14 +7,14 @@ import styles from './MarketOverviewInfo.module.less'
 export const ADDITIONAL_MARKET_INFO = [
   {
     key: 'loansTvl',
-    label: 'Loans TVL',
+    label: 'In loans',
     tooltipText: 'Liquidity that is locked in active loans',
     secondValue: (market: MarketPreview) => `in ${market?.activeBondsAmount || 0} loans`,
     divider: 1e9,
   },
   {
     key: 'offerTvl',
-    label: 'Offers TVL',
+    label: 'In offers',
     tooltipText: 'Total liquidity currently available in active offers',
     secondValue: (market: MarketPreview) => `in ${market?.activeOfferAmount || 0} offers`,
     divider: 1e9,
