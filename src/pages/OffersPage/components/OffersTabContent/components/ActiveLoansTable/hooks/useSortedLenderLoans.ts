@@ -41,7 +41,7 @@ const sortLoansByField = (loans: Loan[], field: SortField, order: SortOrder) => 
     .value()
 }
 
-const sortStatusLoans = (loans: Loan[], order: SortOrder) => {
+const sortLoansByStatus = (loans: Loan[], order: SortOrder) => {
   const terminatingLoans = chain(loans)
     .filter(isLoanTerminating)
     .sortBy((loan) => loan.fraktBond.refinanceAuctionStartedAt)
@@ -72,7 +72,7 @@ export const useSortedLenderLoans = (loans: Loan[]) => {
     const [name, order] = sortOptionValue.split('_') as [SortField, SortOrder]
 
     return name === SortField.STATUS
-      ? sortStatusLoans(loans, order)
+      ? sortLoansByStatus(loans, order)
       : sortLoansByField(loans, name, order)
   }, [sortOptionValue, loans])
 
