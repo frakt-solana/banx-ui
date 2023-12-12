@@ -4,6 +4,7 @@ import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/gette
 import {
   BondAndTransactionOptimistic,
   repayCnftPerpetualLoan,
+  repayCnftPerpetualLoanCanopy,
   repayPerpetualLoan,
   repayStakedBanxPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
@@ -123,7 +124,7 @@ const getIxnsAndSignersByBorrowType = async ({
 
     const proof = await getAssetProof(loan.nft.mint, connection.rpcEndpoint)
 
-    const { instructions, signers, optimisticResults } = await repayCnftPerpetualLoan({
+    const { instructions, signers, optimisticResults } = await repayCnftPerpetualLoanCanopy({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         oldBondOffer: new web3.PublicKey(loan.bondTradeTransaction.bondOffer),
