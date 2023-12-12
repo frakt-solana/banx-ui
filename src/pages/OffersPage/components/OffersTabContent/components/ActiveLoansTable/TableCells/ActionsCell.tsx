@@ -23,9 +23,14 @@ import styles from '../ActiveLoansTable.module.less'
 interface ActionsCellProps {
   loan: Loan
   updateOrAddLoan: (loan: Loan) => void
+  isCardView?: boolean
 }
 
-export const ActionsCell: FC<ActionsCellProps> = ({ loan, updateOrAddLoan }) => {
+export const ActionsCell: FC<ActionsCellProps> = ({
+  loan,
+  updateOrAddLoan,
+  isCardView = false,
+}) => {
   const { publicKey } = useWallet()
   const { offers, updateOrAddOffer } = useMarketOffers({ marketPubkey: loan.fraktBond.hadoMarket })
   const { addMints } = useHiddenNftsMints()
@@ -68,6 +73,8 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, updateOrAddLoan }) => 
   const showTerminateButton = (!canRefinance || isTerminatingStatus) && !showClaimButton
   const showInstantButton = canRefinance && !showClaimButton
 
+  const buttonSize = isCardView ? 'medium' : 'small'
+
   return (
     <div className={styles.actionsButtons}>
       {showTerminateButton && (
@@ -76,7 +83,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, updateOrAddLoan }) => 
           onClick={onTerminate}
           disabled={isTerminatingStatus}
           variant="secondary"
-          size="small"
+          size={buttonSize}
         >
           Terminate
         </Button>
@@ -87,13 +94,13 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, updateOrAddLoan }) => 
           className={styles.actionButton}
           onClick={onInstant}
           variant="secondary"
-          size="small"
+          size={buttonSize}
         >
           Instant
         </Button>
       )}
       {showClaimButton && (
-        <Button className={styles.actionButton} onClick={onClaim}>
+        <Button className={styles.actionButton} onClick={onClaim} size={buttonSize}>
           Claim NFT
         </Button>
       )}

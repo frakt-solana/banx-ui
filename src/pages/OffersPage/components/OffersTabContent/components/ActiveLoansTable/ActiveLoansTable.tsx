@@ -10,13 +10,14 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 import { Loan } from '@banx/api/core'
 import { useSortedLoans } from '@banx/pages/LoansPage/components/LoansActiveTable'
 import { useLenderLoansAndOffers } from '@banx/pages/OffersPage/hooks'
+import { ViewState, useTableView } from '@banx/store'
 import { formatDecimal, isLoanLiquidated, isLoanTerminating } from '@banx/utils'
 
 import { useOffersTabContent } from '../../hooks'
 import { calculateClaimValue } from '../OfferCard'
 import { ActiveTabSummary } from '../Summary/Summary'
 import { getTableColumns } from './columns'
-import { useSortedLenderLoans } from './hooks/useSortedOffers'
+import { useSortedLenderLoans } from './hooks'
 
 import styles from './ActiveLoansTable.module.less'
 
@@ -81,6 +82,7 @@ type SearchSelectOption = {
 
 export const ActiveLoansTab = () => {
   const { loans, loansToTerminate, updateOrAddLoan, addMints, loansToClaim } = useOffersTabContent()
+  const { viewState } = useTableView()
 
   const [selectedOffers, setSelectedOffers] = useState<string[]>([])
 
@@ -108,6 +110,7 @@ export const ActiveLoansTab = () => {
   const searchSelectParams: SearchSelectProps<SearchSelectOption> = {
     options: searchSelectOptions,
     selectedOptions: selectedOffers,
+    className: styles.searchSelect,
     labels: ['Collection', 'Claim'],
     optionKeys: {
       labelKey: 'collectionName',
@@ -121,7 +124,7 @@ export const ActiveLoansTab = () => {
     onChange: setSelectedOffers,
   }
 
-  const columns = getTableColumns({ updateOrAddLoan })
+  const columns = getTableColumns({ updateOrAddLoan, isCardView: viewState === ViewState.CARD })
 
   const rowParams = useMemo(() => {
     return {
@@ -150,6 +153,7 @@ export const ActiveLoansTab = () => {
         classNameTableWrapper={styles.tableWrapper}
         rowParams={rowParams}
         sortViewParams={{ searchSelectParams, sortParams }}
+        showCard
       />
       <ActiveTabSummary
         addMints={addMints}

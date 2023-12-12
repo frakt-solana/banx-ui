@@ -19,21 +19,31 @@ import styles from '../ActiveLoansTable.module.less'
 
 interface StatusCellProps {
   loan: Loan
+  isCardView?: boolean
 }
 
-export const StatusCell: FC<StatusCellProps> = ({ loan }) => {
+export const StatusCell: FC<StatusCellProps> = ({ loan, isCardView = false }) => {
   const loanStatus = determineLoanStatus(loan)
 
   const statusColor = STATUS_LOANS_COLOR_MAP[loanStatus as LoanStatus] || ''
   const timeInfo = calculateTimeInfo(loan, loanStatus)
 
-  return (
+  const statusInfoTitle = <span className={styles.statusInfoTitle}>{timeInfo}</span>
+  const statusInfoSubtitle = (
+    <span style={{ color: statusColor }} className={styles.statusInfoSubtitle}>
+      {capitalize(loanStatus)}
+    </span>
+  )
+
+  return !isCardView ? (
     <div className={styles.statusInfo}>
-      <span style={{ color: statusColor }} className={styles.statusInfoSubtitle}>
-        {capitalize(loanStatus)}
-      </span>
-      <span className={styles.statusInfoTitle}>{timeInfo}</span>
+      {statusInfoSubtitle}
+      {statusInfoTitle}
     </div>
+  ) : (
+    <span>
+      {statusInfoSubtitle} ({statusInfoTitle})
+    </span>
   )
 }
 
