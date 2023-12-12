@@ -46,12 +46,9 @@ export const useSearchSelect = ({
   const showSufixIcon = !selectedOptions?.length && !inputValue
   const showCollapsedContent = collapsed && isMobile && onChangeCollapsed
 
-  const defaultOpen = !collapsed && isMobile
-
   return {
     containerRef,
     isPopupOpen,
-    defaultOpen,
 
     inputValue,
     handleInputChange,
