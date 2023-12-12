@@ -2,6 +2,7 @@ import { web3 } from 'fbonds-core'
 import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   borrowCnftPerpetual,
+  borrowCnftPerpetualCanopy,
   borrowPerpetual,
   borrowStakedBanxPerpetual,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
@@ -111,7 +112,7 @@ const getIxnsAndSignersByBorrowType = async ({
 
     const proof = await getAssetProof(params.nft.mint, connection.rpcEndpoint)
 
-    const { instructions, signers, optimisticResults } = await borrowCnftPerpetual({
+    const { instructions, signers, optimisticResults } = await borrowCnftPerpetualCanopy({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       addComputeUnits: true,
 
