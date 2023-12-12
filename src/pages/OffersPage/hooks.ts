@@ -156,7 +156,11 @@ export const useLenderLoansAndOffers = () => {
     if (!data?.length) return []
 
     const getLoans = (item: LendLoansAndOffers) => {
-      const combinedLoans = [...item.loans, ...walletOptimisticLoans.map(({ loan }) => loan)]
+      const filteredOptimisticLoans = walletOptimisticLoans.filter(
+        ({ loan }) => loan.bondTradeTransaction.bondOffer === item.offer.publicKey,
+      )
+
+      const combinedLoans = [...item.loans, ...filteredOptimisticLoans.map(({ loan }) => loan)]
       return chain(combinedLoans)
         .groupBy('publicKey')
         .map((offers) => maxBy(offers, ({ fraktBond }) => fraktBond.lastTransactedAt))
