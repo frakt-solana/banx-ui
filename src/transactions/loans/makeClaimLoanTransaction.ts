@@ -3,6 +3,7 @@ import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/const
 import {
   BondAndTransactionOptimistic,
   claimCnftPerpetualLoan,
+  claimCnftPerpetualLoanCanopy,
   claimPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
@@ -24,7 +25,7 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
   const { bondTradeTransaction, fraktBond } = ixnParams.loan || {}
 
   if (ixnParams.loan.nft.compression) {
-    const { instructions, signers, optimisticResult } = await claimCnftPerpetualLoan({
+    const { instructions, signers, optimisticResult } = await claimCnftPerpetualLoanCanopy({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       addComputeUnits: true,
       accounts: {
