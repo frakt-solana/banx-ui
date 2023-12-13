@@ -65,7 +65,6 @@ export const DebtCell: FC<CellProps> = ({ loan }) => {
 
 export const LTVCell: FC<CellProps> = ({ loan }) => {
   const debtValue = calculateLoanRepayValue(loan)
-  const borrowedValue = loan.fraktBond.borrowedAmount
   const collectionFloor = loan.nft.collectionFloor
 
   const formattedLtvValue = createPercentValueJSX((debtValue / collectionFloor) * 100)
@@ -73,14 +72,16 @@ export const LTVCell: FC<CellProps> = ({ loan }) => {
   const tooltipContent = (
     <div className={styles.tooltipContent}>
       <TooltipRow label="Floor" value={collectionFloor} />
-      <TooltipRow label="Debt" value={borrowedValue} />
+      <TooltipRow label="Debt" value={debtValue} />
     </div>
   )
 
   return (
     <div className={styles.cellInfo}>
       <Tooltip title={tooltipContent}>
-        <span className={styles.highlightValue}>{formattedLtvValue}</span>
+        <span className={classNames(styles.cellInfoTitle, { [styles.highlight]: true })}>
+          {formattedLtvValue}
+        </span>
         <InfoCircleOutlined className={styles.tooltipIcon} />
       </Tooltip>
     </div>
