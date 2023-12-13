@@ -4,7 +4,6 @@ import { TxnExecutor } from 'solana-transactions-executor'
 import { Offer } from '@banx/api/core'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import {
-  makeClaimBondOfferInterestAction,
   makeCreateBondingOfferAction,
   makeRemoveOfferAction,
   makeUpdateBondingOfferAction,
@@ -112,35 +111,9 @@ export const useOfferTransactions = ({
       .execute()
   }
 
-  const onClaimOfferInterest = () => {
-    if (!optimisticOffer) return
-
-    new TxnExecutor(makeClaimBondOfferInterestAction, { wallet, connection })
-      .addTxnParam({ optimisticOffer })
-      .on('pfSuccessEach', (results) => {
-        const { result, txnHash } = results[0]
-        result?.bondOffer && updateOrAddOffer(result.bondOffer)
-
-        enqueueSnackbar({
-          message: 'Interest successfully claimed',
-          type: 'success',
-          solanaExplorerPath: `tx/${txnHash}`,
-        })
-      })
-      .on('pfError', (error) => {
-        defaultTxnErrorHandler(error, {
-          additionalData: optimisticOffer,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'ClaimOfferInterest',
-        })
-      })
-      .execute()
-  }
-
   return {
     onCreateOffer,
     onUpdateOffer,
-    onClaimOfferInterest,
     onRemoveOffer,
   }
 }

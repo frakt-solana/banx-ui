@@ -32,7 +32,7 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
 
   const colorLTV = getColorByPercent(loanToValuePercent, HealthColorIncreasing)
 
-  const { accruedInterest, reserve, activeLoansQuantity, totalLoansQuantity } =
+  const { accruedInterest, activeLoansQuantity, totalLoansQuantity } =
     getAdditionalSummaryOfferInfo(offer)
 
   const displayEstimatedInterest = formatDecimal(estimatedInterest)
@@ -65,12 +65,6 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
             label="Active loans"
             value={`${activeLoansQuantity}/${totalLoansQuantity}`}
             valueType={VALUES_TYPES.STRING}
-          />
-          <StatInfo
-            label="Reserve"
-            value={reserve}
-            divider={1e9}
-            tooltipText="Leftover SOL is sent here if offers are partially taken"
           />
           <StatInfo
             label="Accrued interest"

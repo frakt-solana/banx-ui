@@ -5,11 +5,11 @@ import { isEmpty } from 'lodash'
 
 import { formatDecimal, useSolanaBalance } from '@banx/utils'
 
+import { useOfferFormController } from '../../PlaceProOffer/hooks/useOfferFormController'
 import { calculateBestLoanValue, calculateOfferSize, getOfferErrorMessage } from '../../helpers'
 import { OfferParams } from '../../hooks'
 import { useOfferTransactions } from '../../hooks/useOfferTransactions'
 import { calcLoanToValuePercentage } from '../helpers'
-import { useOfferFormController } from './useOfferFormController'
 
 export const usePlaceLiteOffer = ({
   exitEditMode,
@@ -58,16 +58,15 @@ export const usePlaceLiteOffer = ({
     }
   }, [loansAmountNumber, loanValueNumber, syntheticOffer, setSyntheticOffer])
 
-  const { onCreateOffer, onRemoveOffer, onUpdateOffer, onClaimOfferInterest } =
-    useOfferTransactions({
-      marketPubkey,
-      loanValue: loanValueNumber,
-      loansAmount: loansAmountNumber,
-      optimisticOffer,
-      updateOrAddOffer,
-      resetFormValues,
-      exitEditMode,
-    })
+  const { onCreateOffer, onRemoveOffer, onUpdateOffer } = useOfferTransactions({
+    marketPubkey,
+    loanValue: loanValueNumber,
+    loansAmount: loansAmountNumber,
+    optimisticOffer,
+    updateOrAddOffer,
+    resetFormValues,
+    exitEditMode,
+  })
 
   const offerSize = useMemo(() => {
     return calculateOfferSize({
@@ -113,7 +112,6 @@ export const usePlaceLiteOffer = ({
     disablePlaceOffer,
     disableClaimInterest,
 
-    onClaimOfferInterest,
     onCreateOffer,
     onRemoveOffer,
     onUpdateOffer,
