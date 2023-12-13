@@ -6,6 +6,7 @@ import classNames from 'classnames'
 import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
+import { BONDS } from '@banx/constants'
 import {
   calcBorrowValueWithProtocolFee,
   calcBorrowValueWithRentFee,
@@ -40,7 +41,7 @@ export const BorrowCell: FC<CellProps> = ({ nft }) => {
       <TooltipRow label="Floor" value={collectionFloor} />
       <div className={styles.tooltipRow}>
         <span className={styles.tooltipRowLabel}>LTV</span>
-        <span className={styles.ltvValue}> {createPercentValueJSX(ltv)}</span>
+        <span className={styles.ltvValue}>{createPercentValueJSX(ltv)}</span>
       </div>
     </div>
   )
@@ -63,7 +64,9 @@ export const BorrowCell: FC<CellProps> = ({ nft }) => {
 }
 
 export const APRCell: FC<CellProps> = ({ nft }) => {
-  const formattedAprValue = createPercentValueJSX(nft.nft.loan.marketApr / 100)
+  const formattedAprValue = createPercentValueJSX(
+    (nft.nft.loan.marketApr + BONDS.PROTOCOL_REPAY_FEE) / 100,
+  )
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>

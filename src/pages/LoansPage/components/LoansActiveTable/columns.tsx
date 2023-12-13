@@ -56,13 +56,13 @@ export const getTableColumns = ({
     },
     {
       key: 'apr',
-      title: <HeaderCell label="Apr" />,
+      title: <HeaderCell label="APR" />,
       render: (loan) => <APRCell loan={loan} />,
       sorter: true,
     },
     {
       key: 'ltv',
-      title: <HeaderCell label="Ltv" />,
+      title: <HeaderCell label="LTV" />,
       render: (loan) => <LTVCell loan={loan} />,
       sorter: true,
     },

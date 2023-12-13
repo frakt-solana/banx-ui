@@ -9,7 +9,12 @@ import Tooltip from '@banx/components/Tooltip/Tooltip'
 
 import { Loan } from '@banx/api/core'
 import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
-import { calcLoanBorrowedAmount, calculateLoanRepayValue, formatDecimal } from '@banx/utils'
+import {
+  calcBorrowValueWithProtocolFee,
+  calcLoanBorrowedAmount,
+  calculateLoanRepayValue,
+  formatDecimal,
+} from '@banx/utils'
 
 import styles from '../LoansActiveTable.module.less'
 
@@ -34,6 +39,7 @@ export const DebtCell: FC<CellProps> = ({ loan }) => {
   const debtValue = calculateLoanRepayValue(loan)
   const borrowedValue = loan.fraktBond.borrowedAmount
   const accruedInterest = debtValue - solAmount
+  const upfrontFee = debtValue - calcBorrowValueWithProtocolFee(debtValue)
 
   const weeklyFee = calculateCurrentInterestSolPure({
     loanValue: calcLoanBorrowedAmount(loan),
@@ -47,7 +53,7 @@ export const DebtCell: FC<CellProps> = ({ loan }) => {
   const tooltipContent = (
     <div className={styles.tooltipContent}>
       <TooltipRow label="Principal" value={borrowedValue} />
-      <TooltipRow label="Upfront fee" value={borrowedValue} />
+      <TooltipRow label="Upfront fee" value={upfrontFee} />
       <TooltipRow label="Accrued interest" value={accruedInterest} />
       <TooltipRow label="Est. weekly fee" value={weeklyFee} />
     </div>

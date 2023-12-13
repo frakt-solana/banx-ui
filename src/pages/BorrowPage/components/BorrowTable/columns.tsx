@@ -59,8 +59,8 @@ export const getTableColumns = ({
       key: 'fee',
       title: <HeaderCell label="Upfront fee" />,
       render: ({ loanValue }) => {
-        const protocolFee = loanValue - calcBorrowValueWithProtocolFee(loanValue)
-        return createSolValueJSX(protocolFee, 1e9, '--', formatDecimal)
+        const upfrontFee = loanValue - calcBorrowValueWithProtocolFee(loanValue)
+        return createSolValueJSX(upfrontFee, 1e9, '--', formatDecimal)
       },
     },
     {
