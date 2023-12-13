@@ -1,10 +1,10 @@
-import { useOfferMode } from '@banx/components/PlaceOfferSection/components'
+import { OfferMode, useOfferMode } from '@banx/components/PlaceOfferSection/components'
 
 import { MarketPreview, Offer } from '@banx/api/core'
 import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { SyntheticOffer, useSyntheticOffers } from '@banx/store'
 
-import { OfferMode, OrderBookMarketParams } from '../../ExpandableCardContent'
+import { OrderBookMarketParams } from '../../ExpandableCardContent'
 import { useMarketOrders } from './useMarketOrders'
 
 export interface OrderBookParams {

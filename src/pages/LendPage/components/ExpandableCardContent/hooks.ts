@@ -7,11 +7,6 @@ import { toLowerCaseNoSpaces, trackPageEvent } from '@banx/utils'
 
 import { checkIsEditMode } from '../../../../components/PlaceOfferSection'
 
-export enum OfferMode {
-  Lite = 'lite',
-  Pro = 'pro',
-}
-
 export interface OrderBookMarketParams {
   marketPubkey: string
   offerPubkey: string

@@ -69,7 +69,7 @@ const PlaceOfferContent: FC<OfferParams> = ({
         isEditMode={isEditMode}
         offerSize={offerSize}
         market={marketPreview}
-        loansAmount={parseFloat(loansAmount)}
+        loansQuantity={parseFloat(loansAmount)}
       />
       <ActionsButtons
         isEditMode={isEditMode}

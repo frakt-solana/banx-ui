@@ -13,7 +13,7 @@ interface OfferSummaryProps {
   isEditMode: boolean
   offer: Offer | undefined
   market?: MarketPreview
-  loansAmount: number
+  loansQuantity: number
 }
 
 export const Summary: FC<OfferSummaryProps> = ({
@@ -21,18 +21,18 @@ export const Summary: FC<OfferSummaryProps> = ({
   offerSize,
   isEditMode,
   market,
-  loansAmount,
+  loansQuantity,
 }) => {
-  const { concentrationIndex: accruedInterest = 0, buyOrdersQuantity = 0, validation } = offer || {}
+  const { concentrationIndex: accruedInterest = 0, edgeSettlement: lentValue = 0 } = offer || {}
   const { collectionFloor = 0, marketApr = 0 } = market || {}
-
-  const activeLoansQuantity = validation?.maxReturnAmountFilter || 0
-  const totalLoansQuantity = activeLoansQuantity + buyOrdersQuantity
 
   const weeklyAprPercentage = marketApr / 100 / WEEKS_IN_YEAR
   const weeklyInterest = (offerSize * weeklyAprPercentage) / 100
 
-  const ltv = (offerSize / loansAmount / collectionFloor) * 100
+  const ltv = (offerSize / loansQuantity / collectionFloor) * 100
+
+  const formattedOfferSize = formatDecimal(offerSize / 1e9)
+  const formattedLentValue = formatDecimal(lentValue / 1e9)
 
   return (
     <div className={styles.summary}>
@@ -44,12 +44,14 @@ export const Summary: FC<OfferSummaryProps> = ({
         tooltipText="Average LTV offered by your pool"
         valueType={VALUES_TYPES.PERCENT}
       />
-      <StatInfo
-        label="Pool size"
-        value={`${formatDecimal(offerSize / 1e9)}◎`}
-        flexType="row"
-        valueType={VALUES_TYPES.STRING}
-      />
+      {!isEditMode && (
+        <StatInfo
+          label="Pool size"
+          value={`${formattedOfferSize}◎`}
+          flexType="row"
+          valueType={VALUES_TYPES.STRING}
+        />
+      )}
       <StatInfo
         flexType="row"
         label="Max weekly interest"
@@ -60,8 +62,8 @@ export const Summary: FC<OfferSummaryProps> = ({
       {isEditMode && (
         <div className={styles.editSummary}>
           <StatInfo
-            label="Active loans"
-            value={`${activeLoansQuantity}/${totalLoansQuantity}`}
+            label="Lent/Pool size"
+            value={`${formattedLentValue}/${formattedOfferSize}◎`}
             valueType={VALUES_TYPES.STRING}
           />
           <StatInfo

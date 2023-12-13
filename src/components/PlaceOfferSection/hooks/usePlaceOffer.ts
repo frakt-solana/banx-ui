@@ -8,7 +8,7 @@ import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { createEmptySyntheticOffer, useSyntheticOffers } from '@banx/store'
 import { formatDecimal, useSolanaBalance } from '@banx/utils'
 
-import { OfferMode } from '../../../pages/LendPage/components/ExpandableCardContent'
+import { OfferMode } from '../components'
 import { calculateBestLoanValue, calculateOfferSize, getOfferErrorMessage } from '../helpers'
 import { useOfferFormController } from './useOfferFormController'
 import { useOfferTransactions } from './useOfferTransactions'
