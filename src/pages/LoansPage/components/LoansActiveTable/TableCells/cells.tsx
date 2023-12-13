@@ -39,7 +39,7 @@ export const DebtCell: FC<CellProps> = ({ loan }) => {
   const debtValue = calculateLoanRepayValue(loan)
   const borrowedValue = loan.fraktBond.borrowedAmount
   const accruedInterest = debtValue - solAmount
-  const upfrontFee = debtValue - calcBorrowValueWithProtocolFee(debtValue)
+  const upfrontFee = borrowedValue - calcBorrowValueWithProtocolFee(borrowedValue)
 
   const weeklyFee = calculateCurrentInterestSolPure({
     loanValue: calcLoanBorrowedAmount(loan),
