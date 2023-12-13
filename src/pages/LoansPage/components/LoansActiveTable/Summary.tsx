@@ -47,10 +47,12 @@ export const Summary: FC<SummaryProps> = ({ loans, selectedLoans, setSelection }
         <StatInfo label="Borrowed" value={totalBorrowed} divider={1e9} />
         <StatInfo label="Debt" value={totalDebt} divider={1e9} />
       </div>
-      <div className={styles.summaryBtns}>
+      <div className={styles.summaryControls}>
         <CounterSlider
+          label="# Loans"
           value={totalSelectedLoans}
           onChange={(value) => handleLoanSelection(value)}
+          rootClassName={styles.slider}
           max={loans.length}
         />
         <Button onClick={repayBulkLoan} disabled={!totalSelectedLoans}>

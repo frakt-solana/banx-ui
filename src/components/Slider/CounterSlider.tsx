@@ -15,6 +15,7 @@ export const CounterSlider: FC<SliderProps> = ({
   max = 0,
   label,
   labelClassName,
+  rootClassName,
 }) => {
   const canIncrement = value < max
   const canDecrement = value > 0
@@ -41,6 +42,7 @@ export const CounterSlider: FC<SliderProps> = ({
         max={max}
         label={label}
         labelClassName={labelClassName}
+        rootClassName={rootClassName}
       />
       <div className={styles.counterInputContainer}>
         <NumericInput
