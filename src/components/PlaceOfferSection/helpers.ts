@@ -7,7 +7,6 @@ import {
 import { BondOfferV2, BondingCurveType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
 
-import { Offer } from '@banx/api/core'
 import { SyntheticOffer } from '@banx/store'
 
 type GetUpdatedBondOffer = (props: {
@@ -92,19 +91,6 @@ export const getOfferErrorMessage: GetCreateOfferErrorMessage = ({
     .value() as string
 
   return errorMessage
-}
-
-export const getAdditionalSummaryOfferInfo = (offer?: Offer) => {
-  const { concentrationIndex = 0, buyOrdersQuantity = 0, validation } = offer || {}
-
-  const activeLoansQuantity = validation?.maxReturnAmountFilter || 0
-  const totalLoansQuantity = activeLoansQuantity + buyOrdersQuantity
-
-  return {
-    accruedInterest: concentrationIndex,
-    activeLoansQuantity,
-    totalLoansQuantity,
-  }
 }
 
 export const checkIsEditMode = (offerPubkey: string) =>

@@ -8,7 +8,7 @@ import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { createEmptySyntheticOffer, useSyntheticOffers } from '@banx/store'
 import { formatDecimal, useSolanaBalance } from '@banx/utils'
 
-import { OfferMode, OrderBookMarketParams } from '../../ExpandableCardContent'
+import { OfferMode } from '../../../pages/LendPage/components/ExpandableCardContent'
 import { calculateBestLoanValue, calculateOfferSize, getOfferErrorMessage } from '../helpers'
 import { useOfferFormController } from './useOfferFormController'
 import { useOfferTransactions } from './useOfferTransactions'
@@ -35,7 +35,12 @@ export interface OfferParams {
   onLoanAmountChange: (value: string) => void
 }
 
-type UsePlaceOffer = (props: OrderBookMarketParams) => OfferParams
+type UsePlaceOffer = (props: {
+  offerMode: OfferMode
+  setOfferPubkey: (offerPubkey: string) => void
+  offerPubkey: string
+  marketPubkey: string
+}) => OfferParams
 
 export const usePlaceOffer: UsePlaceOffer = (props) => {
   const { marketPubkey, setOfferPubkey, offerPubkey, offerMode } = props

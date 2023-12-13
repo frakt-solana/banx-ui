@@ -6,9 +6,7 @@ import { MarketPreview, Offer } from '@banx/api/core'
 import { WEEKS_IN_YEAR } from '@banx/constants'
 import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
 
-import { getAdditionalSummaryOfferInfo } from '../helpers'
-
-import styles from './PlaceProOffer.module.less'
+import styles from '../PlaceOfferContent.module.less'
 
 interface OfferSummaryProps {
   offerSize: number
@@ -18,29 +16,30 @@ interface OfferSummaryProps {
   loansAmount: number
 }
 
-export const OfferSummary: FC<OfferSummaryProps> = ({
+export const Summary: FC<OfferSummaryProps> = ({
   offer,
   offerSize,
   isEditMode,
   market,
   loansAmount,
 }) => {
+  const { concentrationIndex: accruedInterest = 0, buyOrdersQuantity = 0, validation } = offer || {}
   const { collectionFloor = 0, marketApr = 0 } = market || {}
 
-  const { accruedInterest, activeLoansQuantity, totalLoansQuantity } =
-    getAdditionalSummaryOfferInfo(offer)
+  const activeLoansQuantity = validation?.maxReturnAmountFilter || 0
+  const totalLoansQuantity = activeLoansQuantity + buyOrdersQuantity
 
-  const weeklyInterest = calculateWeeklyInterest(offerSize, marketApr)
+  const weeklyAprPercentage = marketApr / 100 / WEEKS_IN_YEAR
+  const weeklyInterest = (offerSize * weeklyAprPercentage) / 100
 
   const ltv = (offerSize / loansAmount / collectionFloor) * 100
-  const colorLTV = getColorByPercent(ltv, HealthColorIncreasing)
 
   return (
-    <div className={styles.offerSummary}>
+    <div className={styles.summary}>
       <StatInfo
         label="Max weighted LTV"
         value={ltv || 0}
-        valueStyles={{ color: colorLTV }}
+        valueStyles={{ color: getColorByPercent(ltv, HealthColorIncreasing) }}
         flexType="row"
         tooltipText="Average LTV offered by your pool"
         valueType={VALUES_TYPES.PERCENT}
@@ -57,8 +56,9 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
         value={`${formatDecimal(weeklyInterest / 1e9)}◎`}
         valueType={VALUES_TYPES.STRING}
       />
+
       {isEditMode && (
-        <div className={styles.editOfferSummary}>
+        <div className={styles.editSummary}>
           <StatInfo
             label="Active loans"
             value={`${activeLoansQuantity}/${totalLoansQuantity}`}
@@ -73,11 +73,4 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
       )}
     </div>
   )
-}
-
-const calculateWeeklyInterest = (offerSize: number, marketApr: number) => {
-  const weeklyAprPercentage = marketApr / 100 / WEEKS_IN_YEAR
-  const weightedWeeklyInterest = (offerSize * weeklyAprPercentage) / 100
-
-  return weightedWeeklyInterest
 }

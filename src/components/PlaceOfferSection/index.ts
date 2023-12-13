@@ -1,3 +1,3 @@
-export { default } from './PlaceOfferTab'
+export { default } from './PlaceOfferSection'
 export * from './hooks'
 export * from './helpers'

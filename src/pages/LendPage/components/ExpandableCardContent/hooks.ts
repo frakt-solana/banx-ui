@@ -5,7 +5,7 @@ import { Tab, useTabs } from '@banx/components/Tabs'
 import { useSyntheticOffers } from '@banx/store'
 import { toLowerCaseNoSpaces, trackPageEvent } from '@banx/utils'
 
-import { checkIsEditMode } from '../PlaceOfferTab'
+import { checkIsEditMode } from '../../../../components/PlaceOfferSection'
 
 export enum OfferMode {
   Lite = 'lite',

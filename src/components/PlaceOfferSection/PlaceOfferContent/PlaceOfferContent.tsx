@@ -4,13 +4,13 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 import { InputCounter, InputErrorMessage, NumericInputField } from '@banx/components/inputs'
 
-import { BorrowerMessage, OfferActionButtons } from '../components'
+import { BorrowerMessage } from '../components'
 import { OfferParams } from '../hooks'
-import { OfferSummary } from './components'
+import { ActionsButtons, Summary } from './components'
 
-import styles from './PlaceProOffer.module.less'
+import styles from './PlaceOfferContent.module.less'
 
-const PlaceProOffer: FC<OfferParams> = ({
+const PlaceOfferContent: FC<OfferParams> = ({
   loanValue,
   loansAmount,
   deltaValue,
@@ -64,14 +64,14 @@ const PlaceProOffer: FC<OfferParams> = ({
         {offerErrorMessage && <InputErrorMessage message={offerErrorMessage} />}
         {showBorrowerMessage && <BorrowerMessage loanValue={loanValue} />}
       </div>
-      <OfferSummary
+      <Summary
         offer={optimisticOffer}
         isEditMode={isEditMode}
         offerSize={offerSize}
         market={marketPreview}
         loansAmount={parseFloat(loansAmount)}
       />
-      <OfferActionButtons
+      <ActionsButtons
         isEditMode={isEditMode}
         disableUpdateOffer={disableUpdateOffer}
         disablePlaceOffer={disablePlaceOffer}
@@ -83,4 +83,4 @@ const PlaceProOffer: FC<OfferParams> = ({
   )
 }
 
-export default PlaceProOffer
+export default PlaceOfferContent

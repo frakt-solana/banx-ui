@@ -2,11 +2,11 @@ import { FC } from 'react'
 
 import classNames from 'classnames'
 
+import PlaceOfferSection from '@banx/components/PlaceOfferSection/PlaceOfferSection'
 import { Tabs } from '@banx/components/Tabs'
 
 import ActivityTable from '../ActivityTable'
 import OrderBook from '../OrderBook'
-import PlaceOfferTab from '../PlaceOfferTab'
 import { useExpandableCardContent } from './hooks'
 
 import styles from './ExpandableCardContent.module.less'
@@ -33,7 +33,7 @@ const ExpandableCardContent: FC<ExpandableCardContentProps> = ({
     useExpandableCardContent(marketPubkey)
 
   const TABS_COMPONENTS: TabsComponents = {
-    [TabName.OFFER]: <PlaceOfferTab {...marketParams} />,
+    [TabName.OFFER]: <PlaceOfferSection {...marketParams} />,
     [TabName.ACTIVITY]: (
       <ActivityTable marketPubkey={marketPubkey} goToPlaceOfferTab={goToPlaceOfferTab} />
     ),
