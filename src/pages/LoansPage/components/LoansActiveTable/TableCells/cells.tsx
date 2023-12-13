@@ -10,10 +10,12 @@ import Tooltip from '@banx/components/Tooltip/Tooltip'
 import { Loan } from '@banx/api/core'
 import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
 import {
+  HealthColorIncreasing,
   calcBorrowValueWithProtocolFee,
   calcLoanBorrowedAmount,
   calculateLoanRepayValue,
   formatDecimal,
+  getColorByPercent,
 } from '@banx/utils'
 
 import styles from '../LoansActiveTable.module.less'
@@ -34,10 +36,11 @@ interface CellProps {
 }
 
 export const DebtCell: FC<CellProps> = ({ loan }) => {
-  const { soldAt, solAmount, amountOfBonds } = loan.bondTradeTransaction || {}
+  const { totalRepaidAmount = 0, bondTradeTransaction, fraktBond } = loan
+  const { soldAt, solAmount, amountOfBonds } = bondTradeTransaction || {}
 
   const debtValue = calculateLoanRepayValue(loan)
-  const borrowedValue = loan.fraktBond.borrowedAmount
+  const borrowedValue = fraktBond.borrowedAmount - totalRepaidAmount
   const accruedInterest = debtValue - solAmount
   const upfrontFee = borrowedValue - calcBorrowValueWithProtocolFee(borrowedValue)
 
@@ -53,8 +56,9 @@ export const DebtCell: FC<CellProps> = ({ loan }) => {
   const tooltipContent = (
     <div className={styles.tooltipContent}>
       <TooltipRow label="Principal" value={borrowedValue} />
-      <TooltipRow label="Upfront fee" value={upfrontFee} />
+      <TooltipRow label="Repaid" value={totalRepaidAmount} />
       <TooltipRow label="Accrued interest" value={accruedInterest} />
+      <TooltipRow label="Upfront fee" value={upfrontFee} />
       <TooltipRow label="Est. weekly fee" value={weeklyFee} />
     </div>
   )
@@ -73,7 +77,8 @@ export const LTVCell: FC<CellProps> = ({ loan }) => {
   const debtValue = calculateLoanRepayValue(loan)
   const collectionFloor = loan.nft.collectionFloor
 
-  const formattedLtvValue = createPercentValueJSX((debtValue / collectionFloor) * 100)
+  const ltvPercent = (debtValue / collectionFloor) * 100
+  const formattedLtvValue = createPercentValueJSX(ltvPercent)
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>
@@ -85,7 +90,10 @@ export const LTVCell: FC<CellProps> = ({ loan }) => {
   return (
     <div className={styles.cellInfo}>
       <Tooltip title={tooltipContent}>
-        <span className={classNames(styles.cellInfoTitle, { [styles.highlight]: true })}>
+        <span
+          style={{ color: getColorByPercent(ltvPercent, HealthColorIncreasing) }}
+          className={classNames(styles.cellInfoTitle, { [styles.highlight]: true })}
+        >
           {formattedLtvValue}
         </span>
         <InfoCircleOutlined className={styles.tooltipIcon} />

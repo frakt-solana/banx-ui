@@ -30,8 +30,12 @@ export const Summary: FC<SummaryProps> = ({ loans, selectedLoans, setSelection }
 
   const totalSelectedLoans = selectedLoans.length
 
-  const totalBorrowed = sumBy(selectedLoans, ({ loan }) => loan.fraktBond.borrowedAmount)
   const totalDebt = sumBy(selectedLoans, ({ loan }) => calculateLoanRepayValue(loan))
+
+  const totalBorrowed = sumBy(selectedLoans, ({ loan }) => {
+    const { fraktBond, totalRepaidAmount = 0 } = loan
+    return fraktBond.borrowedAmount - totalRepaidAmount
+  })
 
   const handleLoanSelection = (value = 0) => {
     setSelection(loans.slice(0, value), walletPublicKeyString)
@@ -44,7 +48,7 @@ export const Summary: FC<SummaryProps> = ({ loans, selectedLoans, setSelection }
         <p className={styles.collateralsSubtitle}>Nfts selected</p>
       </div>
       <div className={styles.statsContainer}>
-        <StatInfo label="Borrowed" value={totalBorrowed} divider={1e9} />
+        <StatInfo label="Principal" value={totalBorrowed} divider={1e9} />
         <StatInfo label="Debt" value={totalDebt} divider={1e9} />
       </div>
       <div className={styles.summaryControls}>
