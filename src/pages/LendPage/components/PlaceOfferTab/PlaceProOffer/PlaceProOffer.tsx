@@ -1,31 +1,34 @@
 import { FC } from 'react'
 
-import { InputErrorMessage } from '@banx/components/inputs'
+import { useWallet } from '@solana/wallet-adapter-react'
 
-import { BorrowerMessage, OfferActionButtons, PlaceOfferFields } from '../components'
+import { InputCounter, InputErrorMessage, NumericInputField } from '@banx/components/inputs'
+
+import { BorrowerMessage, OfferActionButtons } from '../components'
 import { OfferParams } from '../hooks'
 import { OfferSummary } from './components'
 
 import styles from './PlaceProOffer.module.less'
 
-const PlaceProOffer: FC<OfferParams> = (offerParams) => {
-  const {
-    loanValue,
-    loansAmount,
-    deltaValue,
-    onLoanValueChange,
-    onLoanAmountChange,
-    onDeltaValueChange,
-    onCreateOffer,
-    onRemoveOffer,
-    onUpdateOffer,
-    isEditMode,
-    offerSize,
-    offerErrorMessage,
-    hasFormChanges,
-    marketPreview,
-    optimisticOffer,
-  } = offerParams
+const PlaceProOffer: FC<OfferParams> = ({
+  loanValue,
+  loansAmount,
+  deltaValue,
+  onLoanValueChange,
+  onLoanAmountChange,
+  onDeltaValueChange,
+  onCreateOffer,
+  onRemoveOffer,
+  onUpdateOffer,
+  isEditMode,
+  offerSize,
+  offerErrorMessage,
+  hasFormChanges,
+  marketPreview,
+  optimisticOffer,
+}) => {
+  const { connected } = useWallet()
+  const disabled = !connected
 
   const showBorrowerMessage = !offerErrorMessage && !!offerSize
   const disablePlaceOffer = !!offerErrorMessage || !offerSize
@@ -33,14 +36,30 @@ const PlaceProOffer: FC<OfferParams> = (offerParams) => {
 
   return (
     <>
-      <PlaceOfferFields
-        loanValue={loanValue}
-        deltaValue={deltaValue}
-        loansAmount={loansAmount}
-        onLoanAmountChange={onLoanAmountChange}
-        onDeltaValueChange={onDeltaValueChange}
-        onLoanValueChange={onLoanValueChange}
-      />
+      <div className={styles.fields}>
+        <NumericInputField
+          label="Max offer"
+          value={loanValue}
+          onChange={onLoanValueChange}
+          className={styles.numericField}
+          disabled={disabled}
+        />
+        {onDeltaValueChange && (
+          <NumericInputField
+            label="Avg Delta"
+            onChange={onDeltaValueChange}
+            value={deltaValue}
+            disabled={disabled}
+            tooltipText="The average difference between loans taken from this pool given 100% utilization. For example: initialOffer: 1 SOL, delta 0.2 SOL, number of offers 2. The loans can be either the max 1, 0.8; or 0.2, 0.4, 0.4, 0,6, 0.1, 0.1. In both cases the average delta is 0.2. And the sum of loans is same"
+          />
+        )}
+        <InputCounter
+          label="Number of offers"
+          onChange={onLoanAmountChange}
+          value={loansAmount}
+          disabled={disabled}
+        />
+      </div>
       <div className={styles.messageContainer}>
         {offerErrorMessage && <InputErrorMessage message={offerErrorMessage} />}
         {showBorrowerMessage && <BorrowerMessage loanValue={loanValue} />}

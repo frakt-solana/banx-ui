@@ -14,7 +14,7 @@ export const useOfferTransactions = ({
   marketPubkey,
   loansAmount,
   loanValue,
-  deltaValue = 0,
+  deltaValue,
   optimisticOffer,
   updateOrAddOffer,
   resetFormValues,
@@ -23,7 +23,7 @@ export const useOfferTransactions = ({
   marketPubkey: string
   loansAmount: number
   loanValue: number
-  deltaValue?: number
+  deltaValue: number
   optimisticOffer?: Offer
   updateOrAddOffer: (offer: Offer) => void
   resetFormValues: () => void

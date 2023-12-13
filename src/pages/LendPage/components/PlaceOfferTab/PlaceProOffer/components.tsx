@@ -31,14 +31,15 @@ export const OfferSummary: FC<OfferSummaryProps> = ({
     getAdditionalSummaryOfferInfo(offer)
 
   const weeklyInterest = calculateWeeklyInterest(offerSize, marketApr)
-  const weightedLtv = (offerSize / loansAmount / collectionFloor) * 100
-  const colorLTV = getColorByPercent(weightedLtv, HealthColorIncreasing)
+
+  const ltv = (offerSize / loansAmount / collectionFloor) * 100
+  const colorLTV = getColorByPercent(ltv, HealthColorIncreasing)
 
   return (
     <div className={styles.offerSummary}>
       <StatInfo
         label="Max weighted LTV"
-        value={weightedLtv || 0}
+        value={ltv || 0}
         valueStyles={{ color: colorLTV }}
         flexType="row"
         tooltipText="Average LTV offered by your pool"

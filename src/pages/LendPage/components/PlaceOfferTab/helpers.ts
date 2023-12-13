@@ -95,19 +95,13 @@ export const getOfferErrorMessage: GetCreateOfferErrorMessage = ({
 }
 
 export const getAdditionalSummaryOfferInfo = (offer?: Offer) => {
-  const {
-    concentrationIndex = 0,
-    bidSettlement = 0,
-    buyOrdersQuantity = 0,
-    validation,
-  } = offer || {}
+  const { concentrationIndex = 0, buyOrdersQuantity = 0, validation } = offer || {}
 
   const activeLoansQuantity = validation?.maxReturnAmountFilter || 0
   const totalLoansQuantity = activeLoansQuantity + buyOrdersQuantity
 
   return {
     accruedInterest: concentrationIndex,
-    reserve: bidSettlement,
     activeLoansQuantity,
     totalLoansQuantity,
   }

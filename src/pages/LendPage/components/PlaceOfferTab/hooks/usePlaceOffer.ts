@@ -9,33 +9,30 @@ import { createEmptySyntheticOffer, useSyntheticOffers } from '@banx/store'
 import { formatDecimal, useSolanaBalance } from '@banx/utils'
 
 import { OfferMode, OrderBookMarketParams } from '../../ExpandableCardContent'
-import { useOfferFormController } from '../PlaceProOffer/hooks/useOfferFormController'
 import { calculateBestLoanValue, calculateOfferSize, getOfferErrorMessage } from '../helpers'
+import { useOfferFormController } from './useOfferFormController'
 import { useOfferTransactions } from './useOfferTransactions'
 
 export interface OfferParams {
   marketPreview: MarketPreview | undefined
   optimisticOffer: Offer | undefined
+  offerErrorMessage: string
+  hasFormChanges: boolean
+  isEditMode: boolean
 
   exitEditMode: () => void
-
   onCreateOffer: () => void
   onRemoveOffer: () => void
   onUpdateOffer: () => void
 
-  offerSize: number
-
-  loanValue: string
   loansAmount: string
   deltaValue: string
+  loanValue: string
+  offerSize: number
 
   onDeltaValueChange?: (value: string) => void
   onLoanValueChange: (value: string) => void
   onLoanAmountChange: (value: string) => void
-
-  hasFormChanges: boolean
-  isEditMode: boolean
-  offerErrorMessage: string
 }
 
 type UsePlaceOffer = (props: OrderBookMarketParams) => OfferParams
@@ -91,6 +88,7 @@ export const usePlaceOffer: UsePlaceOffer = (props) => {
     loanValue: loanValueNumber,
     loansAmount: loansAmountNumber,
     optimisticOffer: offer,
+    deltaValue: deltaValueNumber,
     updateOrAddOffer,
     resetFormValues,
     exitEditMode,
@@ -116,10 +114,9 @@ export const usePlaceOffer: UsePlaceOffer = (props) => {
   })
 
   useEffect(() => {
-    const hasSolanaBalance = !!solanaBalance
-
-    if (hasSolanaBalance && !isEditMode && connected && !isEmpty(market)) {
+    if (!!solanaBalance && !isEditMode && connected && !isEmpty(market)) {
       const bestLoanValue = calculateBestLoanValue(solanaBalance, market.bestOffer)
+
       onLoanValueChange(formatDecimal(bestLoanValue))
     }
   }, [market, isEditMode, connected, solanaBalance, syntheticOffer, onLoanValueChange])
@@ -127,8 +124,6 @@ export const usePlaceOffer: UsePlaceOffer = (props) => {
   return {
     marketPreview: market,
     optimisticOffer: offer,
-
-    exitEditMode,
 
     loanValue,
     loansAmount,
@@ -143,6 +138,7 @@ export const usePlaceOffer: UsePlaceOffer = (props) => {
     hasFormChanges,
     isEditMode,
 
+    exitEditMode,
     onCreateOffer,
     onRemoveOffer,
     onUpdateOffer,
