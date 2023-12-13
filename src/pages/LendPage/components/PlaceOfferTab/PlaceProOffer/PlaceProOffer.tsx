@@ -5,28 +5,31 @@ import { InputErrorMessage } from '@banx/components/inputs'
 import { BorrowerMessage, OfferActionButtons, PlaceOfferFields } from '../components'
 import { OfferParams } from '../hooks'
 import { OfferSummary } from './components'
-import { usePlaceProOffer } from './hooks'
 
 import styles from './PlaceProOffer.module.less'
 
 const PlaceProOffer: FC<OfferParams> = (offerParams) => {
   const {
-    isEditMode,
-    offerSize,
-    loansAmount,
     loanValue,
+    loansAmount,
     deltaValue,
+    onLoanValueChange,
     onLoanAmountChange,
     onDeltaValueChange,
-    onLoanValueChange,
-    disablePlaceOffer,
-    disableUpdateOffer,
-    showBorrowerMessage,
     onCreateOffer,
-    onUpdateOffer,
     onRemoveOffer,
+    onUpdateOffer,
+    isEditMode,
+    offerSize,
     offerErrorMessage,
-  } = usePlaceProOffer(offerParams)
+    hasFormChanges,
+    marketPreview,
+    optimisticOffer,
+  } = offerParams
+
+  const showBorrowerMessage = !offerErrorMessage && !!offerSize
+  const disablePlaceOffer = !!offerErrorMessage || !offerSize
+  const disableUpdateOffer = !hasFormChanges || !!offerErrorMessage || !offerSize
 
   return (
     <>
@@ -43,10 +46,10 @@ const PlaceProOffer: FC<OfferParams> = (offerParams) => {
         {showBorrowerMessage && <BorrowerMessage loanValue={loanValue} />}
       </div>
       <OfferSummary
-        offer={offerParams.optimisticOffer}
+        offer={optimisticOffer}
         isEditMode={isEditMode}
         offerSize={offerSize}
-        market={offerParams.marketPreview}
+        market={marketPreview}
         loansAmount={parseFloat(loansAmount)}
       />
       <OfferActionButtons
