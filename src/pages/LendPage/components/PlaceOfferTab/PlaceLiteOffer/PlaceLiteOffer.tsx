@@ -1,10 +1,8 @@
 import { FC } from 'react'
 
-import { useWallet } from '@solana/wallet-adapter-react'
+import { InputErrorMessage } from '@banx/components/inputs'
 
-import { InputCounter, InputErrorMessage, NumericInputField } from '@banx/components/inputs'
-
-import { BorrowerMessage, OfferActionButtons } from '../components'
+import { BorrowerMessage, OfferActionButtons, PlaceOfferFields } from '../components'
 import { OfferParams } from '../hooks'
 import { OfferSummary } from './components'
 import { usePlaceLiteOffer } from './hooks'
@@ -12,8 +10,6 @@ import { usePlaceLiteOffer } from './hooks'
 import styles from './PlaceLiteOffer.module.less'
 
 const PlaceLiteOffer: FC<OfferParams> = (offersParams) => {
-  const { connected } = useWallet()
-
   const {
     isEditMode,
     loansAmount,
@@ -34,21 +30,12 @@ const PlaceLiteOffer: FC<OfferParams> = (offersParams) => {
 
   return (
     <>
-      <div className={styles.fields}>
-        <NumericInputField
-          label="Max offer"
-          value={loanValue}
-          onChange={onLoanValueChange}
-          className={styles.numericField}
-          disabled={!connected}
-        />
-        <InputCounter
-          label="Number of offers"
-          onChange={onLoanAmountChange}
-          value={loansAmount}
-          disabled={!connected}
-        />
-      </div>
+      <PlaceOfferFields
+        loanValue={loanValue}
+        loansAmount={loansAmount}
+        onLoanAmountChange={onLoanAmountChange}
+        onLoanValueChange={onLoanValueChange}
+      />
       <div className={styles.messageContainer}>
         {offerErrorMessage && <InputErrorMessage message={offerErrorMessage} />}
         {showBorrowerMessage && <BorrowerMessage loanValue={loanValue} />}
