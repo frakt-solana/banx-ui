@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { Tab, useTabs } from '@banx/components/Tabs'
 
@@ -17,23 +17,14 @@ export interface OrderBookMarketParams {
   offerPubkey: string
   setOfferPubkey: (offerPubkey: string) => void
   goToPlaceOfferTab: () => void
-  offerMode: OfferMode
-  onChangeOfferMode: (value: OfferMode) => void
 }
 
 export const useExpandableCardContent = (marketPubkey: string) => {
   const { findOffer } = useSyntheticOffers()
-  const [offerMode, setOfferMode] = useState<OfferMode>(OfferMode.Lite)
 
   const syntheticOffer = useMemo(() => {
     return findOffer(marketPubkey)
   }, [findOffer, marketPubkey])
-
-  useEffect(() => {
-    if (syntheticOffer?.isEdit && syntheticOffer.deltaValue) {
-      setOfferMode(OfferMode.Pro)
-    }
-  }, [syntheticOffer])
 
   const [offerPubkey, setOfferPubkey] = useState(syntheticOffer?.publicKey || '')
 
@@ -60,8 +51,6 @@ export const useExpandableCardContent = (marketPubkey: string) => {
       offerPubkey,
       setOfferPubkey,
       goToPlaceOfferTab,
-      offerMode,
-      onChangeOfferMode: setOfferMode,
     },
     tabsParams: {
       tabs: bondTabs,

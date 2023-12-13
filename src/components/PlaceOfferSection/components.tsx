@@ -1,14 +1,13 @@
 import { FC } from 'react'
 
 import classNames from 'classnames'
+import { create } from 'zustand'
 
 import { Button } from '@banx/components/Buttons'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-
-import { OfferMode } from '../../pages/LendPage/components/ExpandableCardContent'
 
 import styles from './PlaceOfferSection.module.less'
 
@@ -68,6 +67,21 @@ export const SwitchModeButtons: FC<SwitchModeButtonsProps> = ({ mode, onChange, 
     </div>
   )
 }
+
+export enum OfferMode {
+  Lite = 'lite',
+  Pro = 'pro',
+}
+
+interface UseOfferMode {
+  mode: OfferMode
+  onChange: (mode: OfferMode) => void
+}
+
+export const useOfferMode = create<UseOfferMode>((set) => ({
+  mode: OfferMode.Lite,
+  onChange: (mode) => set({ mode }),
+}))
 
 interface BorrowerMessageProps {
   loanValue: string
