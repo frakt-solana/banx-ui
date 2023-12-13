@@ -21,7 +21,7 @@ export const makeUnstakeNftAction: MakeUnstakeNftAction = async (nft, { connecti
         nft?.subscriptions?.filter(isSubscriptionActive).map(({ publicKey, adventure }) => ({
           adventure: new web3.PublicKey(adventure),
           adventureSubscription: new web3.PublicKey(publicKey),
-        })) ?? [],
+        })).slice(0, 5) ?? [],
     },
     addComputeUnits: true,
     connection,
