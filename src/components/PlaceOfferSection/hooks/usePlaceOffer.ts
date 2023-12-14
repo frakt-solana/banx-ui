@@ -5,7 +5,7 @@ import { isEmpty } from 'lodash'
 
 import { MarketPreview, Offer } from '@banx/api/core'
 import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
-import { createEmptySyntheticOffer, useSyntheticOffers } from '@banx/store'
+import { SyntheticOffer, createEmptySyntheticOffer, useSyntheticOffers } from '@banx/store'
 import { formatDecimal, useSolanaBalance } from '@banx/utils'
 
 import { OfferMode } from '../components'
@@ -16,6 +16,7 @@ import { useOfferTransactions } from './useOfferTransactions'
 export interface OfferParams {
   marketPreview: MarketPreview | undefined
   optimisticOffer: Offer | undefined
+  syntheticOffer: SyntheticOffer
   offerErrorMessage: string
   hasFormChanges: boolean
   isEditMode: boolean
@@ -130,9 +131,11 @@ export const usePlaceOffer: UsePlaceOffer = (props) => {
     marketPreview: market,
     optimisticOffer: offer,
 
+    syntheticOffer,
+
     loanValue,
     loansAmount,
-    deltaValue,
+    deltaValue: isProMode ? deltaValue : '0',
     offerSize,
 
     onDeltaValueChange: isProMode ? onDeltaValueChange : undefined,

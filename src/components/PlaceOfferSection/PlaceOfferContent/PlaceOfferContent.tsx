@@ -1,12 +1,17 @@
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import { chain } from 'lodash'
 
 import { InputCounter, InputErrorMessage, NumericInputField } from '@banx/components/inputs'
 
+import { convertOffersToSimple } from '@banx/pages/BorrowPage/helpers'
+
 import { BorrowerMessage } from '../components'
+import { getUpdatedBondOffer } from '../helpers'
 import { OfferParams } from '../hooks'
 import { ActionsButtons, Summary } from './components'
+import Diagram from './components/Diagram'
 
 import styles from './PlaceOfferContent.module.less'
 
@@ -26,6 +31,7 @@ const PlaceOfferContent: FC<OfferParams> = ({
   hasFormChanges,
   marketPreview,
   optimisticOffer,
+  syntheticOffer,
 }) => {
   const { connected } = useWallet()
   const disabled = !connected
@@ -33,6 +39,42 @@ const PlaceOfferContent: FC<OfferParams> = ({
   const showBorrowerMessage = !offerErrorMessage && !!offerSize
   const disablePlaceOffer = !!offerErrorMessage || !offerSize
   const disableUpdateOffer = !hasFormChanges || !!offerErrorMessage || !offerSize
+
+  const diagramData = useMemo(() => {
+    const loansQuantity = parseFloat(loansAmount)
+    const loanValueNumber = parseFloat(loanValue)
+    const deltaValueNumber = parseFloat(deltaValue)
+
+    if (!isEditMode) {
+      return chain(new Array(loansQuantity))
+        .fill(loanValueNumber)
+        .map((value, index) => (index === 0 ? value : value - deltaValueNumber * index))
+        .sortBy()
+        .value()
+    } else {
+      if (!optimisticOffer) return []
+
+      const offer = hasFormChanges
+        ? getUpdatedBondOffer({
+            loanValue: loanValueNumber * 1e9,
+            deltaValue: deltaValueNumber * 1e9,
+            loansQuantity,
+            syntheticOffer,
+          })
+        : optimisticOffer
+
+      const simpleOffers = convertOffersToSimple([offer], 'asc')
+      return simpleOffers.map((offer) => offer.loanValue / 1e9)
+    }
+  }, [
+    deltaValue,
+    hasFormChanges,
+    isEditMode,
+    loanValue,
+    loansAmount,
+    optimisticOffer,
+    syntheticOffer,
+  ])
 
   return (
     <>
@@ -64,6 +106,7 @@ const PlaceOfferContent: FC<OfferParams> = ({
         {offerErrorMessage && <InputErrorMessage message={offerErrorMessage} />}
         {showBorrowerMessage && <BorrowerMessage loanValue={loanValue} />}
       </div>
+      <Diagram marks={diagramData} />
       <Summary
         offer={optimisticOffer}
         isEditMode={isEditMode}
