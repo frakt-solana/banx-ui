@@ -22,7 +22,7 @@ export const InterestCell: FC<InterestCellProps> = ({ loan, isCardView = false }
   const formattedClaimValue = createSolValueJSX(totalClaimValue, 1e9, '--', formatDecimal)
 
   const loanToValueRatio = (totalClaimValue / collectionFloor) * 100
-  
+
   return !isCardView ? (
     <div className={styles.lentInfo}>
       <span>{formattedClaimValue}</span>
