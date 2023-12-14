@@ -1,17 +1,24 @@
 import { FC, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { chain } from 'lodash'
+import { useQuery } from '@tanstack/react-query'
+import { chain, sortBy } from 'lodash'
 
 import { InputCounter, InputErrorMessage, NumericInputField } from '@banx/components/inputs'
 
+import { fetchLenderLoansByCertainOffer } from '@banx/api/core'
 import { convertOffersToSimple } from '@banx/pages/BorrowPage/helpers'
 
 import { BorrowerMessage } from '../components'
 import { getUpdatedBondOffer } from '../helpers'
 import { OfferParams } from '../hooks'
 import { ActionsButtons, Summary } from './components'
-import Diagram from './components/Diagram'
+import {
+  convertLoanToMark,
+  convertOfferToMark,
+  convertSimpleOfferToMark,
+} from './components/Diagram'
+import Diagram from './components/Diagram/Diagram'
 
 import styles from './PlaceOfferContent.module.less'
 
@@ -40,6 +47,8 @@ const PlaceOfferContent: FC<OfferParams> = ({
   const disablePlaceOffer = !!offerErrorMessage || !offerSize
   const disableUpdateOffer = !hasFormChanges || !!offerErrorMessage || !offerSize
 
+  const { lenderLoans } = useLenderLoans(syntheticOffer.publicKey)
+
   const diagramData = useMemo(() => {
     const loansQuantity = parseFloat(loansAmount)
     const loanValueNumber = parseFloat(loanValue)
@@ -48,11 +57,11 @@ const PlaceOfferContent: FC<OfferParams> = ({
     if (!isEditMode) {
       return chain(new Array(loansQuantity))
         .fill(loanValueNumber)
-        .map((value, index) => (index === 0 ? value : value - deltaValueNumber * index))
-        .sortBy()
+        .map((offerValue, index) => convertOfferToMark(offerValue, index, deltaValueNumber))
+        .sortBy(({ loanValue }) => loanValue)
         .value()
     } else {
-      if (!optimisticOffer) return []
+      if (!optimisticOffer) return
 
       const offer = hasFormChanges
         ? getUpdatedBondOffer({
@@ -63,10 +72,13 @@ const PlaceOfferContent: FC<OfferParams> = ({
           })
         : optimisticOffer
 
-      const simpleOffers = convertOffersToSimple([offer], 'asc')
-      return simpleOffers.map((offer) => offer.loanValue / 1e9)
+      const loansToMarks = lenderLoans.map(convertLoanToMark)
+      const simpleOffersToMarks = convertOffersToSimple([offer]).map(convertSimpleOfferToMark)
+
+      return sortBy([...loansToMarks, ...simpleOffersToMarks], ({ loanValue }) => loanValue)
     }
   }, [
+    lenderLoans,
     deltaValue,
     hasFormChanges,
     isEditMode,
@@ -127,3 +139,31 @@ const PlaceOfferContent: FC<OfferParams> = ({
 }
 
 export default PlaceOfferContent
+
+export const useLenderLoans = (offerPubKey: string) => {
+  const { publicKey } = useWallet()
+
+  const { data, isLoading, refetch } = useQuery(
+    ['lenderLoans', publicKey?.toBase58(), offerPubKey],
+    () =>
+      fetchLenderLoansByCertainOffer({ walletPublicKey: publicKey?.toBase58() || '', offerPubKey }),
+    {
+      staleTime: 60_000,
+      refetchInterval: 5_000,
+      refetchOnWindowFocus: false,
+    },
+  )
+
+  const lenderLoans = useMemo(() => {
+    if (!data) return []
+
+    return data.flatMap(({ loans }) => loans)
+  }, [data])
+
+  return {
+    data: data ?? [],
+    lenderLoans,
+    isLoading,
+    refetch,
+  }
+}

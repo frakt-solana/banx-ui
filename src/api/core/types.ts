@@ -196,6 +196,18 @@ export interface LendLoansAndOffersResponse {
   meta: PaginationMeta
 }
 
+export const LenderLoansSchema = z.object({
+  offer: PairSchema,
+  loans: LoanSchema.array(),
+})
+
+export type LenderLoans = z.infer<typeof LenderLoansSchema>
+
+export interface LenderLoansResponse {
+  data: LenderLoans[]
+  meta: PaginationMeta
+}
+
 export interface AuctionsLoansResponse {
   data: Loan[]
   meta: PaginationMeta

@@ -1,0 +1,41 @@
+.diagram {
+  display: flex;
+  align-items: center;
+  margin: 16px 0;
+  height: 60px;
+  position: relative;
+}
+
+.diagramLine {
+  background: var(--accent-primary-sub);
+  height: 2px;
+  width: 100%;
+}
+
+.mark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+
+  position: absolute;
+  bottom: 2px;
+
+  .square {
+    background: var(--accent-primary-sub);
+    border: 2px solid var(--accent-primary);
+    height: 24px;
+    width: 24px;
+  }
+
+  .dot {
+    background: var(--accent-primary);
+    border-radius: 100px;
+    height: 8px;
+    width: 8px;
+  }
+
+  .value {
+    font: var(--body-text-sm);
+  }
+}

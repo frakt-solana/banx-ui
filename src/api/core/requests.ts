@@ -11,6 +11,8 @@ import {
   FetchMarketOffersResponse,
   LendLoansAndOffersResponse,
   LendLoansAndOffersSchema,
+  LenderLoansResponse,
+  LenderLoansSchema,
   LoanSchema,
   MarketPreview,
   MarketPreviewResponse,
@@ -158,6 +160,51 @@ export const fetchLenderLoansAndOffers: fetchLenderLoansAndOffers = async ({
 
     try {
       await LendLoansAndOffersSchema.parseAsync(data.data)
+    } catch (validationError) {
+      console.error('Schema validation error:', validationError)
+    }
+
+    return data.data ?? []
+  } catch (error) {
+    console.error(error)
+    return []
+  }
+}
+
+type FetchLenderLoansByCertainOffer = (props: {
+  walletPublicKey: string
+  offerPubKey: string
+  order?: 'asc' | 'desc'
+  skip?: number
+  limit?: number
+  getAll?: boolean
+}) => Promise<LenderLoansResponse['data']>
+
+export const fetchLenderLoansByCertainOffer: FetchLenderLoansByCertainOffer = async ({
+  walletPublicKey,
+  offerPubKey,
+  order = 'desc',
+  skip = 0,
+  limit = 10,
+  getAll = true, //TODO Remove when normal pagination added
+}) => {
+  try {
+    const queryParams = new URLSearchParams({
+      order,
+      skip: String(skip),
+      limit: String(limit),
+      getAll: String(getAll),
+      isPrivate: String(IS_PRIVATE_MARKETS),
+      walletPubKey: String(walletPublicKey),
+      offerPubKey: String(offerPubKey),
+    })
+
+    const { data } = await axios.get<LenderLoansResponse>(
+      `${BACKEND_BASE_URL}/loans/lender/v3/?${queryParams.toString()}`,
+    )
+
+    try {
+      await LenderLoansSchema.parseAsync(data.data)
     } catch (validationError) {
       console.error('Schema validation error:', validationError)
     }
