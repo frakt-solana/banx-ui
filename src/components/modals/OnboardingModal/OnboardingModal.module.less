@@ -1,0 +1,51 @@
+.modalContent {
+  margin: -24px;
+  @media (max-width: 640px) {
+    margin: -16px;
+  }
+
+  :global {
+    .slick-dots li button {
+      background: var(--content-primary) !important;
+    }
+
+    .slick-dots li.slick-active {
+      width: 16px !important;
+    }
+  }
+}
+
+.title {
+  color: var(--content-primary);
+  font: var(--title-sm);
+  text-transform: uppercase;
+
+  padding: 20px 24px;
+
+  @media screen and (max-width: 640px) {
+    font: var(--title-xs);
+    padding: 18px 16px;
+  }
+}
+
+.slide {
+  user-select: none;
+}
+
+.slideImg {
+  width: 100%;
+  object-fit: cover;
+}
+
+.slideText {
+  color: var(--content-primary);
+  font: var(--body-text-md);
+  padding: 8px 24px 24px;
+  @media screen and (max-width: 640px) {
+    padding: 8px 16px 24px;
+  }
+}
+.slideTextImportant {
+  font: var(--important-text-md);
+  text-transform: uppercase;
+}
