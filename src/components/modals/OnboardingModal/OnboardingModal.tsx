@@ -2,6 +2,7 @@ import { FC } from 'react'
 
 import { Carousel } from 'antd'
 
+import { Loader } from '@banx/components/Loader'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { CONTENT } from './content'
@@ -32,6 +33,9 @@ export const OnboardingModal: FC<OnboardingModalProps> = ({
             </div>
           ))}
         </Carousel>
+      </div>
+      <div className={styles.loaderWrapper}>
+        <Loader size="large" />
       </div>
     </Modal>
   )

@@ -1,8 +1,24 @@
+.loaderWrapper {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
 .modalContent {
+  position: relative;
+  z-index: 2;
   margin: -24px;
   @media (max-width: 640px) {
     margin: -16px;
   }
+
+  animation: 0.3s linear modalAppear;
 
   :global {
     .slick-dots li button {
@@ -16,6 +32,21 @@
     .slick-track:focus-visible {
       outline: none !important;
     }
+  }
+}
+
+@keyframes modalAppear {
+  0% {
+    opacity: 0;
+    height: 400px;
+  }
+  99% {
+    opacity: 0;
+    height: 400px;
+  }
+  100% {
+    opacity: 100%;
+    height: unset;
   }
 }
 
@@ -34,6 +65,7 @@
 
 .slide {
   user-select: none;
+  width: 100%;
 
   &,
   &:focus,
