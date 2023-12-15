@@ -135,6 +135,7 @@ export const LoanSchema = z.object({
   bondTradeTransaction: BondTradeTransactionSchema,
   nft: NFTSchema,
   totalRepaidAmount: z.number().optional(), //? exist only in fetchLenderLoansAndOffers request
+  accruedInterest: z.number().optional(),
 })
 
 export type Loan = z.infer<typeof LoanSchema>

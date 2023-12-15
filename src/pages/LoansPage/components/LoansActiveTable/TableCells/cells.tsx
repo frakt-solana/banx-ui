@@ -36,12 +36,11 @@ interface CellProps {
 }
 
 export const DebtCell: FC<CellProps> = ({ loan }) => {
-  const { totalRepaidAmount = 0, bondTradeTransaction, fraktBond } = loan
-  const { soldAt, solAmount, amountOfBonds } = bondTradeTransaction || {}
+  const { totalRepaidAmount = 0, accruedInterest = 0, bondTradeTransaction, fraktBond } = loan
+  const { soldAt, amountOfBonds } = bondTradeTransaction || {}
 
   const debtValue = calculateLoanRepayValue(loan)
   const borrowedValue = fraktBond.borrowedAmount - totalRepaidAmount
-  const accruedInterest = debtValue - solAmount
   const upfrontFee = borrowedValue - calcBorrowValueWithProtocolFee(borrowedValue)
 
   const weeklyFee = calculateCurrentInterestSolPure({
