@@ -1,17 +1,18 @@
 import { useEffect } from 'react'
 
+import { chain } from 'lodash'
+
 import { OnboardingModal, OnboardingModalContentType } from '@banx/components/modals'
 
 import { useModal } from '@banx/store'
 
 import { useLocalStorage } from './useLocalStorage'
 
-const ONBOARDING_VIEW_STATE_DEFAULT_VALUE = {
-  [OnboardingModalContentType.DASHBOARD]: false,
-  [OnboardingModalContentType.BORROW]: false,
-  [OnboardingModalContentType.LEND]: false,
-  [OnboardingModalContentType.REFINANCE]: false,
-}
+const ONBOARDING_VIEW_STATE_DEFAULT_VALUE = chain(OnboardingModalContentType)
+  .values()
+  .map((value) => [value, false])
+  .fromPairs()
+  .value()
 
 export const useOnboardingModal = (contentType: `${OnboardingModalContentType}`) => {
   const { open, close } = useModal()
