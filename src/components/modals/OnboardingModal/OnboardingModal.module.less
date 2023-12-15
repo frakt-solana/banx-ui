@@ -32,6 +32,20 @@
     .slick-track:focus-visible {
       outline: none !important;
     }
+
+    .slick-arrow {
+      width: 42px !important;
+      height: 42px !important;
+      margin-top: -64px !important;
+      transform: rotate(90deg);
+      inset-inline-start: 0;
+      z-index: 1;
+    }
+    .slick-next {
+      transform: rotate(-90deg);
+      inset-inline-end: 0;
+      inset-inline-start: unset;
+    }
   }
 }
 
@@ -92,4 +106,8 @@
 .slideTextImportant {
   font: var(--important-text-md);
   text-transform: uppercase;
+}
+
+.carouselArrow {
+  transform: rotate(90deg);
 }
