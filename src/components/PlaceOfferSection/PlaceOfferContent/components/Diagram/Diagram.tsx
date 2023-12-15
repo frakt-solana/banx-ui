@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import { map, slice, sum, sumBy } from 'lodash'
+import { map, slice, sum } from 'lodash'
 
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
@@ -19,15 +19,15 @@ interface DiagramProps {
 }
 
 const Diagram: FC<DiagramProps> = ({ marks }) => {
-  const cumulativeSum = sumBy(marks, 'loanValue')
-  const arrayLoanValues = map(marks, 'loanValue')
+  const mappedLoanValues = map(marks, (mark) => mark.loanValue)
+  const sumOfLoanValues = sum(mappedLoanValues)
 
   return (
     <div className={styles.diagram}>
       <div className={styles.diagramLine}>
-        {map(marks, (value, index) => {
-          const left = calculateLeftPercentage(arrayLoanValues, index, cumulativeSum)
-          return <Mark key={index} loan={value?.loan} value={value.loanValue} left={left} />
+        {map(marks, ({ loanValue, loan }, index) => {
+          const left = calculateLeftPercentage(mappedLoanValues, index, sumOfLoanValues)
+          return <DiagramMark key={index} loan={loan} value={loanValue} left={left} />
         })}
       </div>
     </div>
@@ -36,15 +36,21 @@ const Diagram: FC<DiagramProps> = ({ marks }) => {
 
 export default Diagram
 
-interface MarkProps {
+interface DiagramMarkProps {
   left: number
   value: number
   loan?: Loan
 }
-const Mark: FC<MarkProps> = ({ value, left, loan }) => {
+const DiagramMark: FC<DiagramMarkProps> = ({ value, left, loan }) => {
+  const nftImage = loan?.nft.meta.imageUrl
+
   return (
     <div style={{ left: `calc(${left}% - 24px)` }} className={styles.mark}>
-      <img src={loan ? loan?.nft.meta.imageUrl : ''} className={styles.square} />
+      {nftImage ? (
+        <img src={nftImage} className={styles.square} />
+      ) : (
+        <div className={styles.square} />
+      )}
       <div className={styles.dot} />
       <div className={styles.value}>{createSolValueJSX(value, 1, '0◎', formatDecimal)}</div>
     </div>
