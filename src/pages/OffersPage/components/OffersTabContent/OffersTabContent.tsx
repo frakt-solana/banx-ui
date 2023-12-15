@@ -15,10 +15,6 @@ const OffersTabContent = () => {
     searchSelectParams,
     sortParams,
     showEmptyList,
-    loansToClaim,
-    loansToTerminate,
-    addMints,
-    updateOrAddLoan,
     updateOrAddOffer,
     offers,
   } = useOffersTabContent()
@@ -44,14 +40,7 @@ const OffersTabContent = () => {
             ))}
           </div>
 
-          <Summary
-            updateOrAddLoan={updateOrAddLoan}
-            updateOrAddOffer={updateOrAddOffer}
-            addMints={addMints}
-            loansToClaim={loansToClaim}
-            loansToTerminate={loansToTerminate}
-            offers={offers}
-          />
+          <Summary updateOrAddOffer={updateOrAddOffer} offers={offers} />
         </>
       )}
     </div>

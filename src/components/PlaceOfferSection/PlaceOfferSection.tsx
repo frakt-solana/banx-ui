@@ -8,9 +8,9 @@ import { usePlaceOffer } from './hooks'
 import styles from './PlaceOfferSection.module.less'
 
 interface PlaceOfferSectionProps {
-  setOfferPubkey: (offerPubkey: string) => void
   offerPubkey: string
   marketPubkey: string
+  setOfferPubkey: (offerPubkey: string) => void
 }
 
 const PlaceOfferSection: FC<PlaceOfferSectionProps> = ({
