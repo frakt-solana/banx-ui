@@ -8,16 +8,22 @@ import styles from './PageHeader.module.less'
 
 interface PageHeaderProps {
   title: string
+  titleBtn?: JSX.Element
   className?: string
 }
 
 export const PageHeaderBackdrop: FC<PropsWithChildren<PageHeaderProps>> = ({
   title,
+  titleBtn,
   className,
   children,
 }) => (
   <div className={classNames(styles.container, className)}>
-    <h2 className={styles.title}>{title}</h2>
+    <div className={styles.titleWrapper}>
+      <h2 className={styles.title}>{title}</h2>
+      {titleBtn}
+    </div>
+
     <div className={styles.content}>{children}</div>
   </div>
 )

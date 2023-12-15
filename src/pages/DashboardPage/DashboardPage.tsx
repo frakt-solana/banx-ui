@@ -1,5 +1,6 @@
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
+import { useOnboardingModal } from '@banx/hooks'
 import { toLowerCaseNoSpaces, trackPageEvent, useMixpanelLocationTrack } from '@banx/utils'
 
 import DashboardBorrowTab from './components/DashboardBorrowTab'
@@ -19,6 +20,8 @@ export const DashboardPage = () => {
   const onTabClick = (tabProps: Tab) => {
     trackPageEvent('dashboard', `${toLowerCaseNoSpaces(tabProps.label)}tab`)
   }
+
+  useOnboardingModal('dashboard')
 
   const { value: currentTabValue, ...tabsProps } = useTabs({
     tabs: DASHBOARD_TABS,
