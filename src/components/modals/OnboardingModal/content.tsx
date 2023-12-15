@@ -87,8 +87,8 @@ const REFINANCE_CONTENT = {
       img: <img className={styles.slideImg} src={refinanceImg1} alt="refinance 1" />,
       text: (
         <p className={styles.slideText}>
-          Lenders can send borrowers termination calls if they wish to exit. The loan will be sent
-          to the refinance auction, where it will be offered to other lenders on the same terms.
+          Lenders can terminate loans if they wish to exit. The loan will be sent to the refinance
+          auction, where it will be offered to other lenders on the same terms.
           <br />
           The auction continues until a new lender refinances, or the borrower repays in full. If
           neither happens after 72 hours, the NFT will be liquidated to the lender.
