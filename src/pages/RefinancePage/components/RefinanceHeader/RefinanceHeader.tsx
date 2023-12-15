@@ -1,3 +1,4 @@
+import { OnboardButton } from '@banx/components/Buttons'
 import { MainStat, PageHeaderBackdrop } from '@banx/components/PageHeader'
 import { VALUES_TYPES } from '@banx/components/StatInfo'
 
@@ -9,7 +10,7 @@ const RefinanceHeader = () => {
   const { loans } = useAuctionsLoans()
 
   return (
-    <PageHeaderBackdrop title="Refinance">
+    <PageHeaderBackdrop title="Refinance" titleBtn={<OnboardButton contentType="refinance" />}>
       <MainStat
         classNamesProps={{ value: styles.mainValue }}
         label="Available"

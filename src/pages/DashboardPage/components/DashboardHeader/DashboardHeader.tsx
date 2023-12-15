@@ -1,3 +1,4 @@
+import { OnboardButton } from '@banx/components/Buttons'
 import {
   AdditionalStat,
   MainStat,
@@ -23,7 +24,11 @@ const Header = () => {
   } = data || {}
 
   return (
-    <PageHeaderBackdrop className={styles.container} title="Dashboard">
+    <PageHeaderBackdrop
+      className={styles.container}
+      title="Dashboard"
+      titleBtn={<OnboardButton contentType="dashboard" />}
+    >
       <AdditionalStat label="Daily volume" value={dailyVolume} divider={1e9} decimalPlaces={0} />
       <AdditionalStat
         label="Active loans"

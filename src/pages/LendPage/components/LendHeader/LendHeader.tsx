@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 
 import { sumBy } from 'lodash'
 
+import { OnboardButton } from '@banx/components/Buttons'
 import {
   AdditionalStat,
   MainStat,
@@ -35,7 +36,7 @@ const Header = () => {
   const formattedOffersTVL = formatNumbersWithCommas((offersTVL / 1e9)?.toFixed(0))
 
   return (
-    <PageHeaderBackdrop title="Lend">
+    <PageHeaderBackdrop title="Lend" titleBtn={<OnboardButton contentType="lend" />}>
       <AdditionalStat
         label="Loan TVL"
         value={

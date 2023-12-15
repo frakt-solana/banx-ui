@@ -1,6 +1,7 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import { sumBy } from 'lodash'
 
+import { OnboardButton } from '@banx/components/Buttons'
 import {
   AdditionalStat,
   MainStat,
@@ -26,7 +27,7 @@ const Header = () => {
   const totalLiquidity = sumBy(marketsPreview, 'offerTvl')
 
   return (
-    <PageHeaderBackdrop title="Borrow">
+    <PageHeaderBackdrop title="Borrow" titleBtn={<OnboardButton contentType="borrow" />}>
       {connected ? (
         <AdditionalStat label="Your NFTs" value={nftsAmount} valueType={VALUES_TYPES.STRING} />
       ) : (
