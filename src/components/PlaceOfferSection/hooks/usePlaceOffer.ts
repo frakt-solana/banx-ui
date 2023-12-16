@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { isEmpty } from 'lodash'
@@ -21,10 +21,13 @@ export interface OfferParams {
   hasFormChanges: boolean
   isEditMode: boolean
 
-  exitEditMode?: () => void
+  exitEditMode: () => void
   onCreateOffer: () => void
   onRemoveOffer: () => void
   onUpdateOffer: () => void
+
+  offerMode: OfferMode
+  onChangeOfferMode: (mode: OfferMode) => void
 
   loansAmount: string
   deltaValue: string
@@ -37,14 +40,13 @@ export interface OfferParams {
 }
 
 type UsePlaceOffer = (props: {
-  offerMode: OfferMode
-  setOfferPubkey?: (offerPubkey: string) => void
   offerPubkey: string
   marketPubkey: string
+  setOfferPubkey?: (offerPubkey: string) => void
 }) => OfferParams
 
 export const usePlaceOffer: UsePlaceOffer = (props) => {
-  const { marketPubkey, setOfferPubkey, offerPubkey, offerMode } = props
+  const { marketPubkey, offerPubkey, setOfferPubkey } = props
 
   const { connected } = useWallet()
   const solanaBalance = useSolanaBalance()
@@ -55,15 +57,9 @@ export const usePlaceOffer: UsePlaceOffer = (props) => {
     marketPubkey,
   )
 
+  const { offerMode, onChangeOfferMode } = useOfferMode(syntheticOffer)
   const isEditMode = syntheticOffer.isEdit
   const isProMode = offerMode === OfferMode.Pro
-
-  const exitEditMode = () => {
-    if (!setOfferPubkey) return
-
-    setOfferPubkey('')
-    removeSyntheticOffer()
-  }
 
   const {
     loanValue,
@@ -79,6 +75,13 @@ export const usePlaceOffer: UsePlaceOffer = (props) => {
   const deltaValueNumber = isProMode ? parseFloat(deltaValue) : 0
   const loansAmountNumber = parseFloat(loansAmount)
   const loanValueNumber = parseFloat(loanValue)
+
+  const exitEditMode = () => {
+    if (!setOfferPubkey) return
+
+    setOfferPubkey('')
+    removeSyntheticOffer()
+  }
 
   useEffect(() => {
     if (!syntheticOffer) return
@@ -135,6 +138,9 @@ export const usePlaceOffer: UsePlaceOffer = (props) => {
 
     syntheticOffer,
 
+    offerMode,
+    onChangeOfferMode,
+
     loanValue,
     loansAmount,
     deltaValue: isProMode ? deltaValue : '0',
@@ -148,7 +154,7 @@ export const usePlaceOffer: UsePlaceOffer = (props) => {
     hasFormChanges,
     isEditMode,
 
-    exitEditMode: setOfferPubkey ? exitEditMode : undefined,
+    exitEditMode,
     onCreateOffer,
     onRemoveOffer,
     onUpdateOffer,
@@ -192,4 +198,22 @@ const useMarketAndOffer = (offerPubkey: string, marketPubkey: string) => {
     market,
     updateOrAddOffer,
   }
+}
+
+const useOfferMode = (syntheticOffer: SyntheticOffer) => {
+  const { deltaValue, isEdit } = syntheticOffer
+
+  const defaultOfferMode = deltaValue ? OfferMode.Pro : OfferMode.Lite
+
+  const [offerMode, setOfferMode] = useState(defaultOfferMode)
+
+  useEffect(() => {
+    if (isEdit && syntheticOffer.deltaValue) {
+      setOfferMode(OfferMode.Pro)
+    } else {
+      setOfferMode(OfferMode.Lite)
+    }
+  }, [syntheticOffer, isEdit, deltaValue])
+
+  return { offerMode, onChangeOfferMode: setOfferMode }
 }

@@ -1,7 +1,7 @@
 import { FC } from 'react'
 
 import PlaceOfferContent from './PlaceOfferContent'
-import { OfferHeader, SwitchModeButtons, useOfferMode } from './components'
+import { OfferHeader, SwitchModeButtons } from './components'
 import { checkIsEditMode } from './helpers'
 import { usePlaceOffer } from './hooks'
 
@@ -10,6 +10,7 @@ import styles from './PlaceOfferSection.module.less'
 interface PlaceOfferSectionProps {
   offerPubkey: string
   marketPubkey: string
+
   setOfferPubkey?: (offerPubkey: string) => void
 }
 
@@ -18,23 +19,20 @@ const PlaceOfferSection: FC<PlaceOfferSectionProps> = ({
   marketPubkey,
   setOfferPubkey,
 }) => {
-  const { mode: offerMode, onChange } = useOfferMode()
-
   const offerParams = usePlaceOffer({
-    offerMode,
     offerPubkey,
     marketPubkey,
     setOfferPubkey,
   })
 
-  const { exitEditMode, optimisticOffer } = offerParams
+  const { exitEditMode, optimisticOffer, offerMode, onChangeOfferMode } = offerParams
 
   return (
     <div className={styles.content}>
-      {exitEditMode && (
+      {setOfferPubkey && (
         <OfferHeader isEditMode={checkIsEditMode(offerPubkey)} exitEditMode={exitEditMode} />
       )}
-      <SwitchModeButtons mode={offerMode} onChange={onChange} offer={optimisticOffer} />
+      <SwitchModeButtons mode={offerMode} onChange={onChangeOfferMode} offer={optimisticOffer} />
       <PlaceOfferContent {...offerParams} />
     </div>
   )

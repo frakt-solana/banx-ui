@@ -1,5 +1,3 @@
-import { OfferMode, useOfferMode } from '@banx/components/PlaceOfferSection/components'
-
 import { MarketPreview, Offer } from '@banx/api/core'
 import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { SyntheticOffer, useSyntheticOffers } from '@banx/store'
@@ -23,7 +21,6 @@ type UseOrderBook = (props: OrderBookMarketParams) => {
 
 export const useOrderBook: UseOrderBook = (props) => {
   const { offerPubkey, setOfferPubkey, marketPubkey, goToPlaceOfferTab } = props
-  const { onChange: onChangeOfferMode } = useOfferMode()
 
   const { setOffer: setSyntheticOffer } = useSyntheticOffers()
 
@@ -42,15 +39,10 @@ export const useOrderBook: UseOrderBook = (props) => {
   const { offers, updateOrAddOffer } = useMarketOffers({ marketPubkey })
 
   const goToEditOffer = (offer: SyntheticOffer) => {
-    const offerMode = offer.deltaValue ? OfferMode.Pro : OfferMode.Lite
-    onChangeOfferMode(offerMode)
+    setSyntheticOffer({ ...offer, isEdit: true })
+    setOfferPubkey(offer.publicKey)
 
     goToPlaceOfferTab()
-
-    const editedOffer = { ...offer, isEdit: true }
-    setSyntheticOffer(editedOffer)
-
-    setOfferPubkey(editedOffer.publicKey)
   }
 
   return {

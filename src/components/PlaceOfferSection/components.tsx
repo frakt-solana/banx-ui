@@ -13,7 +13,7 @@ import styles from './PlaceOfferSection.module.less'
 
 interface OfferHeaderProps {
   isEditMode: boolean
-  exitEditMode?: () => void
+  exitEditMode: () => void
 }
 
 export const OfferHeader: FC<OfferHeaderProps> = ({ isEditMode, exitEditMode }) => {
@@ -22,7 +22,7 @@ export const OfferHeader: FC<OfferHeaderProps> = ({ isEditMode, exitEditMode }) 
   return (
     <div className={styles.offerHeaderContent}>
       <h4 className={styles.offerHeaderTitle}>{title}</h4>
-      {isEditMode && exitEditMode && (
+      {isEditMode && (
         <Button type="circle" variant="text" onClick={exitEditMode}>
           Exit
         </Button>
