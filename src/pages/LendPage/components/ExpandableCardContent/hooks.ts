@@ -1,11 +1,10 @@
 import { useMemo, useState } from 'react'
 
+import { checkIsEditMode } from '@banx/components/PlaceOfferSection'
 import { Tab, useTabs } from '@banx/components/Tabs'
 
 import { useSyntheticOffers } from '@banx/store'
 import { toLowerCaseNoSpaces, trackPageEvent } from '@banx/utils'
-
-import { checkIsEditMode } from '../../../../components/PlaceOfferSection'
 
 export interface OrderBookMarketParams {
   marketPubkey: string

@@ -21,7 +21,7 @@ export interface OfferParams {
   hasFormChanges: boolean
   isEditMode: boolean
 
-  exitEditMode: () => void
+  exitEditMode?: () => void
   onCreateOffer: () => void
   onRemoveOffer: () => void
   onUpdateOffer: () => void
@@ -38,7 +38,7 @@ export interface OfferParams {
 
 type UsePlaceOffer = (props: {
   offerMode: OfferMode
-  setOfferPubkey: (offerPubkey: string) => void
+  setOfferPubkey?: (offerPubkey: string) => void
   offerPubkey: string
   marketPubkey: string
 }) => OfferParams
@@ -59,6 +59,8 @@ export const usePlaceOffer: UsePlaceOffer = (props) => {
   const isProMode = offerMode === OfferMode.Pro
 
   const exitEditMode = () => {
+    if (!setOfferPubkey) return
+
     setOfferPubkey('')
     removeSyntheticOffer()
   }
@@ -146,7 +148,7 @@ export const usePlaceOffer: UsePlaceOffer = (props) => {
     hasFormChanges,
     isEditMode,
 
-    exitEditMode,
+    exitEditMode: setOfferPubkey ? exitEditMode : undefined,
     onCreateOffer,
     onRemoveOffer,
     onUpdateOffer,

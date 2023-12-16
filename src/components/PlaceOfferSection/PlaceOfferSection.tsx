@@ -10,7 +10,7 @@ import styles from './PlaceOfferSection.module.less'
 interface PlaceOfferSectionProps {
   offerPubkey: string
   marketPubkey: string
-  setOfferPubkey: (offerPubkey: string) => void
+  setOfferPubkey?: (offerPubkey: string) => void
 }
 
 const PlaceOfferSection: FC<PlaceOfferSectionProps> = ({
@@ -31,7 +31,9 @@ const PlaceOfferSection: FC<PlaceOfferSectionProps> = ({
 
   return (
     <div className={styles.content}>
-      <OfferHeader isEditMode={checkIsEditMode(offerPubkey)} exitEditMode={exitEditMode} />
+      {exitEditMode && (
+        <OfferHeader isEditMode={checkIsEditMode(offerPubkey)} exitEditMode={exitEditMode} />
+      )}
       <SwitchModeButtons mode={offerMode} onChange={onChange} offer={optimisticOffer} />
       <PlaceOfferContent {...offerParams} />
     </div>

@@ -22,7 +22,7 @@ interface OfferCardProps {
 const OfferCard: FC<OfferCardProps> = ({ offer, loans, collectionMeta }) => {
   const [isOpen, setIsOpen] = useState(false)
 
-  const { setOffer: setSyntheticOffer, removeOffer: removeSyntheticOffer } = useSyntheticOffers()
+  const { setOffer: setSyntheticOffer } = useSyntheticOffers()
 
   const onCardClick = () => {
     setSyntheticOffer(convertToSynthetic(offer, true))
@@ -46,11 +46,7 @@ const OfferCard: FC<OfferCardProps> = ({ offer, loans, collectionMeta }) => {
         </Button>
       </div>
       {isOpen && (
-        <PlaceOfferSection
-          offerPubkey={offer.publicKey}
-          marketPubkey={offer.hadoMarket}
-          setOfferPubkey={() => null}
-        />
+        <PlaceOfferSection offerPubkey={offer.publicKey} marketPubkey={offer.hadoMarket} />
       )}
     </div>
   )

@@ -52,7 +52,7 @@ export const useOfferTransactions = ({
         defaultTxnErrorHandler(error, {
           additionalData: txnParam,
           walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'CreateBondingOffer',
+          transactionName: 'CreateOffer',
         })
       })
       .execute()
@@ -79,7 +79,7 @@ export const useOfferTransactions = ({
         defaultTxnErrorHandler(error, {
           additionalData: txnParam,
           walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'UpdateBondingOffer',
+          transactionName: 'UpdateOffer',
         })
       })
       .execute()
