@@ -37,11 +37,13 @@ interface CellProps {
 
 export const DebtCell: FC<CellProps> = ({ loan }) => {
   const { totalRepaidAmount = 0, accruedInterest = 0, bondTradeTransaction, fraktBond } = loan
-  const { soldAt, amountOfBonds } = bondTradeTransaction || {}
+  const { soldAt, amountOfBonds, solAmount, feeAmount } = bondTradeTransaction || {}
 
   const debtValue = calculateLoanRepayValue(loan)
   const borrowedValue = fraktBond.borrowedAmount - totalRepaidAmount
   const upfrontFee = borrowedValue - calcBorrowValueWithProtocolFee(borrowedValue)
+
+  const totalAccruedInterest = debtValue - solAmount + feeAmount + accruedInterest
 
   const weeklyFee = calculateCurrentInterestSolPure({
     loanValue: calcLoanBorrowedAmount(loan),
@@ -56,7 +58,7 @@ export const DebtCell: FC<CellProps> = ({ loan }) => {
     <div className={styles.tooltipContent}>
       <TooltipRow label="Principal" value={borrowedValue} />
       <TooltipRow label="Repaid" value={totalRepaidAmount} />
-      <TooltipRow label="Accrued interest" value={accruedInterest} />
+      <TooltipRow label="Accrued interest" value={totalAccruedInterest} />
       <TooltipRow label="Upfront fee" value={upfrontFee} />
       <TooltipRow label="Est. weekly fee" value={weeklyFee} />
     </div>
