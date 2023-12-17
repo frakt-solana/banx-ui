@@ -173,7 +173,7 @@ export const fetchLenderLoansAndOffers: fetchLenderLoansAndOffers = async ({
 
 type FetchLenderLoansByCertainOffer = (props: {
   walletPublicKey: string
-  offerPubKey: string
+  offerPubkey: string
   order?: 'asc' | 'desc'
   skip?: number
   limit?: number
@@ -182,7 +182,7 @@ type FetchLenderLoansByCertainOffer = (props: {
 
 export const fetchLenderLoansByCertainOffer: FetchLenderLoansByCertainOffer = async ({
   walletPublicKey,
-  offerPubKey,
+  offerPubkey,
   order = 'desc',
   skip = 0,
   limit = 10,
@@ -196,7 +196,7 @@ export const fetchLenderLoansByCertainOffer: FetchLenderLoansByCertainOffer = as
       getAll: String(getAll),
       isPrivate: String(IS_PRIVATE_MARKETS),
       walletPubKey: String(walletPublicKey),
-      offerPubKey: String(offerPubKey),
+      offerPubKey: String(offerPubkey),
     })
 
     const { data } = await axios.get<LenderLoansResponse>(

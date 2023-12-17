@@ -5,16 +5,17 @@ import { useQuery } from '@tanstack/react-query'
 
 import { fetchLenderLoansByCertainOffer } from '@banx/api/core'
 
-export const useLenderLoans = (offerPubKey: string) => {
+export const useLenderLoans = ({ offerPubkey }: { offerPubkey: string }) => {
   const { publicKey } = useWallet()
   const walletPublicKey = publicKey?.toBase58() || ''
 
   const { data, isLoading, refetch } = useQuery(
-    ['lenderLoans', walletPublicKey, offerPubKey],
-    () => fetchLenderLoansByCertainOffer({ walletPublicKey, offerPubKey }),
+    ['lenderLoans', walletPublicKey, offerPubkey],
+    () => fetchLenderLoansByCertainOffer({ walletPublicKey, offerPubkey }),
     {
       staleTime: 60_000,
       refetchInterval: 5_000,
+      enabled: !!offerPubkey,
       refetchOnWindowFocus: false,
     },
   )

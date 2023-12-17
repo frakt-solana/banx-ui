@@ -29,6 +29,7 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
   offerSize,
   market,
   diagramData,
+  isLoadingDiagram,
 }) => {
   const { connected } = useWallet()
 
@@ -67,7 +68,7 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
         {offerErrorMessage && <InputErrorMessage message={offerErrorMessage} />}
         {showBorrowerMessage && <BorrowerMessage loanValue={loanValue} />}
       </div>
-      <Diagram marks={diagramData} />
+      <Diagram marks={diagramData} isLoading={isLoadingDiagram} />
       <Summary
         offer={optimisticOffer}
         isEditMode={isEditMode}

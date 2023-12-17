@@ -48,6 +48,7 @@ export interface PlaceOfferParams {
   onLoanAmountChange: (value: string) => void
 
   diagramData: Mark[]
+  isLoadingDiagram: boolean
 }
 
 type UsePlaceOffer = (props: {
@@ -60,7 +61,6 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
   const { connected } = useWallet()
   const solanaBalance = useSolanaBalance()
 
-  const { lenderLoans } = useLenderLoans(offerPubkey)
   const { offer, market, updateOrAddOffer } = useMarketAndOffer(offerPubkey, marketPubkey)
   const { syntheticOffer, removeSyntheticOffer, setSyntheticOffer } = useSyntheticOffer(
     offerPubkey,
@@ -70,6 +70,8 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
   const { offerMode, onChangeOfferMode } = useOfferMode(syntheticOffer)
   const isEditMode = syntheticOffer.isEdit
   const isProMode = offerMode === OfferMode.Pro
+
+  const { lenderLoans, isLoading: isLoadingLenderLoans } = useLenderLoans({ offerPubkey })
 
   const {
     loanValue: loanValueString,
@@ -191,5 +193,6 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
     onUpdateOffer,
 
     diagramData,
+    isLoadingDiagram: isEditMode ? isLoadingLenderLoans : false,
   }
 }

@@ -1,5 +1,6 @@
 import { FC } from 'react'
 
+import { Skeleton } from 'antd'
 import { map } from 'lodash'
 
 import { createSolValueJSX } from '@banx/components/TableComponents'
@@ -18,19 +19,24 @@ export interface Mark {
 
 interface DiagramProps {
   marks: Mark[]
+  isLoading: boolean
 }
 
-const Diagram: FC<DiagramProps> = ({ marks }) => {
+const Diagram: FC<DiagramProps> = ({ marks, isLoading }) => {
   const values = map(marks, (mark) => mark.value)
 
   return (
     <div className={styles.diagram}>
-      <div className={styles.diagramLine}>
-        {map(marks, ({ value, loan }, index) => {
-          const left = calcLeftPercentage(values, index)
-          return <DiagramMark key={index} loan={loan} value={value} left={left} />
-        })}
-      </div>
+      {isLoading ? (
+        <Skeleton.Input active size="large" block />
+      ) : (
+        <div className={styles.diagramLine}>
+          {map(marks, ({ value, loan }, index) => {
+            const left = calcLeftPercentage(values, index)
+            return <DiagramMark key={index} loan={loan} value={value} left={left} />
+          })}
+        </div>
+      )}
     </div>
   )
 }
