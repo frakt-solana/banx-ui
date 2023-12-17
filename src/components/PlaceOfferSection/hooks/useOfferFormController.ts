@@ -11,7 +11,7 @@ export const useOfferFormController = (syntheticOffer: SyntheticOffer) => {
 
   const initialValues = useMemo(() => {
     return {
-      deltaValue: syntheticOffer.deltaValue ? formatNumber(syntheticDeltaValue / 1e9) : '0',
+      deltaValue: formatNumber(syntheticDeltaValue / 1e9),
       loanValue: formatNumber(syntheticLoanValue / 1e9),
       loansAmount: syntheticOffer.isEdit ? String(syntheticLoansAmount) : '1',
     }

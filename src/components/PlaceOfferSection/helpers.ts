@@ -74,7 +74,7 @@ export const getErrorMessage: GetErrorMessage = ({
   const totalFundsAvailable = initialOfferSize + solanaBalance * 1e9
 
   const isOfferInvalid = deltaValue && hasFormChanges ? deltaValue * loansAmount > loanValue : false
-  const isBalanceInsufficient = offerSize > totalFundsAvailable
+  const isBalanceInsufficient = !!solanaBalance && offerSize > totalFundsAvailable
   const isEmptyLoansAmount = hasFormChanges && !loansAmount
 
   const errorConditions: Array<[boolean, string]> = [

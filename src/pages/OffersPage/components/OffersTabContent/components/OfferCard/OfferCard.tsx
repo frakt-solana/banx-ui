@@ -31,7 +31,10 @@ const OfferCard: FC<OfferCardProps> = ({ offer, loans, collectionMeta }) => {
 
   return (
     <div className={styles.card}>
-      <div className={styles.cardBody} onClick={onCardClick}>
+      <div
+        className={classNames(styles.cardBody, { [styles.active]: isOpen })}
+        onClick={onCardClick}
+      >
         <MainOfferOverview offer={offer} collectionMeta={collectionMeta} />
         <AdditionalOfferOverview
           loans={loans}

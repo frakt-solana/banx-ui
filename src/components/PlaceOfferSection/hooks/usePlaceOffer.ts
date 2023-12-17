@@ -3,11 +3,12 @@ import { useEffect, useMemo } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { chain, isEmpty, sortBy } from 'lodash'
 
-import { Loan, MarketPreview, Offer } from '@banx/api/core'
+import { MarketPreview, Offer } from '@banx/api/core'
 import { convertOffersToSimple } from '@banx/pages/BorrowPage/helpers'
 import { SyntheticOffer } from '@banx/store'
 import { formatDecimal, useSolanaBalance } from '@banx/utils'
 
+import { Mark } from '../PlaceOfferContent/components'
 import {
   convertLoanToMark,
   convertOfferToMark,
@@ -46,7 +47,7 @@ export interface PlaceOfferParams {
   onLoanValueChange: (value: string) => void
   onLoanAmountChange: (value: string) => void
 
-  diagramData: { loanValue: number; loan?: Loan }[]
+  diagramData: Mark[]
 }
 
 type UsePlaceOffer = (props: {
@@ -139,7 +140,7 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
       return chain(new Array(loansAmount))
         .fill(loanValue)
         .map((offerValue, index) => convertOfferToMark(offerValue, index, deltaValue))
-        .sortBy(({ loanValue }) => loanValue)
+        .sortBy(({ value }) => value)
         .value()
     }
 
@@ -151,7 +152,7 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
     const loansToMarks = lenderLoans.map(convertLoanToMark)
     const simpleOffersToMarks = convertOffersToSimple([offerToUse]).map(convertSimpleOfferToMark)
 
-    return sortBy([...loansToMarks, ...simpleOffersToMarks], ({ loanValue }) => loanValue)
+    return sortBy([...loansToMarks, ...simpleOffersToMarks], ({ value }) => value)
   }, [
     isEditMode,
     loansAmount,
@@ -174,7 +175,7 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
 
     loanValue: loanValueString,
     loansAmount: loansAmountString,
-    deltaValue: isProMode ? deltaValueString : '0',
+    deltaValue: deltaValueString,
     offerSize,
 
     onDeltaValueChange,
