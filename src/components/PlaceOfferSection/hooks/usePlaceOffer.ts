@@ -1,56 +1,65 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { isEmpty } from 'lodash'
+import { chain, isEmpty, sortBy } from 'lodash'
 
-import { MarketPreview, Offer } from '@banx/api/core'
-import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
-import { SyntheticOffer, createEmptySyntheticOffer, useSyntheticOffers } from '@banx/store'
+import { Loan, MarketPreview, Offer } from '@banx/api/core'
+import { convertOffersToSimple } from '@banx/pages/BorrowPage/helpers'
+import { SyntheticOffer } from '@banx/store'
 import { formatDecimal, useSolanaBalance } from '@banx/utils'
 
+import {
+  convertLoanToMark,
+  convertOfferToMark,
+  convertSimpleOfferToMark,
+} from '../PlaceOfferContent/components/Diagram'
 import { OfferMode } from '../components'
-import { calculateBestLoanValue, calculateOfferSize, getOfferErrorMessage } from '../helpers'
+import { calcBestOfferValue, calcOfferSize, getErrorMessage, getUpdatedBondOffer } from '../helpers'
+import { useMarketAndOffer, useOfferMode, useSyntheticOffer } from './hooks'
+import { useLenderLoans } from './useLenderLoans'
 import { useOfferFormController } from './useOfferFormController'
 import { useOfferTransactions } from './useOfferTransactions'
 
-export interface OfferParams {
-  marketPreview: MarketPreview | undefined
+export interface PlaceOfferParams {
+  market: MarketPreview | undefined
   optimisticOffer: Offer | undefined
   syntheticOffer: SyntheticOffer
+
+  onChangeOfferMode: (mode: OfferMode) => void
+  exitEditMode: () => void
+  offerMode: OfferMode
+  isProMode: boolean
+
   offerErrorMessage: string
   hasFormChanges: boolean
-  isEditMode: boolean
 
-  exitEditMode: () => void
   onCreateOffer: () => void
   onRemoveOffer: () => void
   onUpdateOffer: () => void
-
-  offerMode: OfferMode
-  onChangeOfferMode: (mode: OfferMode) => void
 
   loansAmount: string
   deltaValue: string
   loanValue: string
   offerSize: number
 
-  onDeltaValueChange?: (value: string) => void
+  onDeltaValueChange: (value: string) => void
   onLoanValueChange: (value: string) => void
   onLoanAmountChange: (value: string) => void
+
+  diagramData: { loanValue: number; loan?: Loan }[]
 }
 
 type UsePlaceOffer = (props: {
   offerPubkey: string
   marketPubkey: string
   setOfferPubkey?: (offerPubkey: string) => void
-}) => OfferParams
+}) => PlaceOfferParams
 
-export const usePlaceOffer: UsePlaceOffer = (props) => {
-  const { marketPubkey, offerPubkey, setOfferPubkey } = props
-
+export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOfferPubkey }) => {
   const { connected } = useWallet()
   const solanaBalance = useSolanaBalance()
 
+  const { lenderLoans } = useLenderLoans(offerPubkey)
   const { offer, market, updateOrAddOffer } = useMarketAndOffer(offerPubkey, marketPubkey)
   const { syntheticOffer, removeSyntheticOffer, setSyntheticOffer } = useSyntheticOffer(
     offerPubkey,
@@ -62,9 +71,9 @@ export const usePlaceOffer: UsePlaceOffer = (props) => {
   const isProMode = offerMode === OfferMode.Pro
 
   const {
-    loanValue,
-    loansAmount,
-    deltaValue,
+    loanValue: loanValueString,
+    loansAmount: loansAmountString,
+    deltaValue: deltaValueString,
     onDeltaValueChange,
     onLoanValueChange,
     onLoanAmountChange,
@@ -72,9 +81,9 @@ export const usePlaceOffer: UsePlaceOffer = (props) => {
     resetFormValues,
   } = useOfferFormController(syntheticOffer)
 
-  const deltaValueNumber = isProMode ? parseFloat(deltaValue) : 0
-  const loansAmountNumber = parseFloat(loansAmount)
-  const loanValueNumber = parseFloat(loanValue)
+  const deltaValue = isProMode ? parseFloat(deltaValueString) * 1e9 : 0
+  const loanValue = parseFloat(loanValueString) * 1e9
+  const loansAmount = parseFloat(loansAmountString)
 
   const exitEditMode = () => {
     if (!setOfferPubkey) return
@@ -85,135 +94,101 @@ export const usePlaceOffer: UsePlaceOffer = (props) => {
 
   useEffect(() => {
     if (!syntheticOffer) return
+    const newSyntheticOffer = { ...syntheticOffer, deltaValue, loanValue, loansAmount }
 
-    setSyntheticOffer({
-      ...syntheticOffer,
-      deltaValue: deltaValueNumber * 1e9,
-      loanValue: loanValueNumber * 1e9,
-      loansAmount: loansAmountNumber,
-    })
-  }, [syntheticOffer, setSyntheticOffer, deltaValueNumber, loanValueNumber, loansAmountNumber])
+    setSyntheticOffer(newSyntheticOffer)
+  }, [syntheticOffer, setSyntheticOffer, deltaValue, loanValue, loansAmount])
 
   const { onCreateOffer, onRemoveOffer, onUpdateOffer } = useOfferTransactions({
     marketPubkey,
-    loanValue: loanValueNumber,
-    loansAmount: loansAmountNumber,
+    loanValue,
+    loansAmount,
     optimisticOffer: offer,
-    deltaValue: deltaValueNumber,
+    deltaValue,
     updateOrAddOffer,
     resetFormValues,
     exitEditMode,
   })
 
   const offerSize = useMemo(() => {
-    return calculateOfferSize({
-      syntheticOffer,
-      loanValue: loanValueNumber,
-      loansQuantity: loansAmountNumber,
-      deltaValue: deltaValueNumber,
-    })
-  }, [syntheticOffer, loanValueNumber, loansAmountNumber, deltaValueNumber])
+    return calcOfferSize({ syntheticOffer, loanValue, loansAmount, deltaValue })
+  }, [syntheticOffer, loanValue, loansAmount, deltaValue])
 
-  const offerErrorMessage = getOfferErrorMessage({
+  const offerErrorMessage = getErrorMessage({
     syntheticOffer,
     solanaBalance,
     offerSize,
-    loanValue: loanValueNumber,
-    loansAmount: loansAmountNumber,
-    deltaValue: deltaValueNumber,
+    loanValue,
+    loansAmount,
+    deltaValue,
     hasFormChanges,
   })
 
   useEffect(() => {
-    if (!!solanaBalance && !isEditMode && connected && !isEmpty(market)) {
-      const bestLoanValue = calculateBestLoanValue(solanaBalance, market.bestOffer)
+    const shouldSetBestOfferValue = !!solanaBalance && !isEditMode && connected && !isEmpty(market)
+    if (shouldSetBestOfferValue) {
+      const bestLoanValue = calcBestOfferValue({ solanaBalance, bestOffer: market.bestOffer })
+      const formattedBestLoanValue = formatDecimal(bestLoanValue / 1e9)
 
-      onLoanValueChange(formatDecimal(bestLoanValue))
+      onLoanValueChange(formattedBestLoanValue)
     }
   }, [market, isEditMode, connected, solanaBalance, syntheticOffer, onLoanValueChange])
 
-  return {
-    marketPreview: market,
-    optimisticOffer: offer,
+  const diagramData = useMemo(() => {
+    if (!isEditMode) {
+      return chain(new Array(loansAmount))
+        .fill(loanValue)
+        .map((offerValue, index) => convertOfferToMark(offerValue, index, deltaValue))
+        .sortBy(({ loanValue }) => loanValue)
+        .value()
+    }
 
+    if (!offer) return []
+
+    const offerToUpdate = { syntheticOffer, loanValue, deltaValue, loansAmount }
+    const offerToUse = hasFormChanges ? getUpdatedBondOffer(offerToUpdate) : offer
+
+    const loansToMarks = lenderLoans.map(convertLoanToMark)
+    const simpleOffersToMarks = convertOffersToSimple([offerToUse]).map(convertSimpleOfferToMark)
+
+    return sortBy([...loansToMarks, ...simpleOffersToMarks], ({ loanValue }) => loanValue)
+  }, [
+    isEditMode,
+    loansAmount,
+    loanValue,
+    deltaValue,
+    offer,
+    hasFormChanges,
+    syntheticOffer,
+    lenderLoans,
+  ])
+
+  return {
+    market,
+    optimisticOffer: offer,
     syntheticOffer,
 
     offerMode,
     onChangeOfferMode,
+    isProMode,
 
-    loanValue,
-    loansAmount,
-    deltaValue: isProMode ? deltaValue : '0',
+    loanValue: loanValueString,
+    loansAmount: loansAmountString,
+    deltaValue: isProMode ? deltaValueString : '0',
     offerSize,
 
-    onDeltaValueChange: isProMode ? onDeltaValueChange : undefined,
+    onDeltaValueChange,
     onLoanValueChange,
     onLoanAmountChange,
 
     offerErrorMessage,
     hasFormChanges,
-    isEditMode,
 
     exitEditMode,
     onCreateOffer,
     onRemoveOffer,
     onUpdateOffer,
+
+    diagramData,
   }
-}
-
-const useSyntheticOffer = (offerPubkey: string, marketPubkey: string) => {
-  const { publicKey: walletPubkey } = useWallet()
-
-  const { findOfferByPubkey, setOffer: setSyntheticOffer, removeOffer } = useSyntheticOffers()
-
-  const syntheticOffer = useMemo(() => {
-    return (
-      findOfferByPubkey(offerPubkey) ||
-      createEmptySyntheticOffer({ marketPubkey, walletPubkey: walletPubkey?.toBase58() || '' })
-    )
-  }, [findOfferByPubkey, marketPubkey, walletPubkey, offerPubkey])
-
-  const removeSyntheticOffer = () => {
-    removeOffer(syntheticOffer.marketPubkey)
-  }
-
-  return { syntheticOffer, removeSyntheticOffer, setSyntheticOffer }
-}
-
-const useMarketAndOffer = (offerPubkey: string, marketPubkey: string) => {
-  const { marketsPreview } = useMarketsPreview()
-
-  const market = useMemo(() => {
-    return marketsPreview.find((market) => market.marketPubkey === marketPubkey)
-  }, [marketPubkey, marketsPreview])
-
-  const { offers, updateOrAddOffer } = useMarketOffers({ marketPubkey })
-
-  const offer = useMemo(() => {
-    return offers.find((offer) => offer.publicKey === offerPubkey)
-  }, [offers, offerPubkey])
-
-  return {
-    offer,
-    market,
-    updateOrAddOffer,
-  }
-}
-
-const useOfferMode = (syntheticOffer: SyntheticOffer) => {
-  const { deltaValue, isEdit } = syntheticOffer
-
-  const defaultOfferMode = deltaValue ? OfferMode.Pro : OfferMode.Lite
-
-  const [offerMode, setOfferMode] = useState(defaultOfferMode)
-
-  useEffect(() => {
-    if (isEdit && syntheticOffer.deltaValue) {
-      setOfferMode(OfferMode.Pro)
-    } else {
-      setOfferMode(OfferMode.Lite)
-    }
-  }, [syntheticOffer, isEdit, deltaValue])
-
-  return { offerMode, onChangeOfferMode: setOfferMode }
 }

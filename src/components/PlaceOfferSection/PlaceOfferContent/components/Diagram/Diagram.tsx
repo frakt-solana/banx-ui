@@ -52,7 +52,7 @@ const DiagramMark: FC<DiagramMarkProps> = ({ value, left, loan }) => {
         <div className={styles.square} />
       )}
       <div className={styles.dot} />
-      <div className={styles.value}>{createSolValueJSX(value, 1, '0◎', formatDecimal)}</div>
+      <div className={styles.value}>{createSolValueJSX(value, 1e9, '0◎', formatDecimal)}</div>
     </div>
   )
 }

@@ -14,6 +14,7 @@ interface OfferSummaryProps {
   offer: Offer | undefined
   market?: MarketPreview
   loansQuantity: number
+  isProMode: boolean
 }
 
 export const Summary: FC<OfferSummaryProps> = ({
@@ -22,6 +23,7 @@ export const Summary: FC<OfferSummaryProps> = ({
   isEditMode,
   market,
   loansQuantity,
+  isProMode,
 }) => {
   const { concentrationIndex: accruedInterest = 0, edgeSettlement: lentValue = 0 } = offer || {}
   const { collectionFloor = 0, marketApr = 0 } = market || {}
@@ -37,11 +39,11 @@ export const Summary: FC<OfferSummaryProps> = ({
   return (
     <div className={styles.summary}>
       <StatInfo
-        label="Max weighted LTV"
+        label={isProMode ? 'Max weighted LTV' : 'LTV'}
         value={ltv || 0}
         valueStyles={{ color: getColorByPercent(ltv, HealthColorIncreasing) }}
         flexType="row"
-        tooltipText="Average LTV offered by your pool"
+        tooltipText={isProMode ? 'Average LTV offered by your pool' : ''}
         valueType={VALUES_TYPES.PERCENT}
       />
       {!isEditMode && (

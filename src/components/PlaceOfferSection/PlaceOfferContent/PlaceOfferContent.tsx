@@ -1,26 +1,17 @@
-import { FC, useMemo } from 'react'
+import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { chain, sortBy } from 'lodash'
 
 import { InputCounter, InputErrorMessage, NumericInputField } from '@banx/components/inputs'
 
-import { convertOffersToSimple } from '@banx/pages/BorrowPage/helpers'
-
 import { BorrowerMessage } from '../components'
-import { getUpdatedBondOffer } from '../helpers'
-import { OfferParams, useLenderLoans } from '../hooks'
+import { PlaceOfferParams } from '../hooks'
 import { ActionsButtons, Summary } from './components'
-import {
-  convertLoanToMark,
-  convertOfferToMark,
-  convertSimpleOfferToMark,
-} from './components/Diagram'
 import Diagram from './components/Diagram/Diagram'
 
 import styles from './PlaceOfferContent.module.less'
 
-const PlaceOfferContent: FC<OfferParams> = ({
+const PlaceOfferContent: FC<PlaceOfferParams> = ({
   loanValue,
   loansAmount,
   deltaValue,
@@ -30,60 +21,21 @@ const PlaceOfferContent: FC<OfferParams> = ({
   onCreateOffer,
   onRemoveOffer,
   onUpdateOffer,
-  isEditMode,
-  offerSize,
-  offerErrorMessage,
-  hasFormChanges,
-  marketPreview,
   optimisticOffer,
   syntheticOffer,
+  offerErrorMessage,
+  hasFormChanges,
+  isProMode,
+  offerSize,
+  market,
+  diagramData,
 }) => {
   const { connected } = useWallet()
 
+  const isEditMode = syntheticOffer.isEdit
   const showBorrowerMessage = !offerErrorMessage && !!offerSize
   const disablePlaceOffer = !!offerErrorMessage || !offerSize
   const disableUpdateOffer = !hasFormChanges || !!offerErrorMessage || !offerSize
-
-  const { lenderLoans } = useLenderLoans(syntheticOffer.publicKey)
-
-  const diagramData = useMemo(() => {
-    const loansQuantity = parseFloat(loansAmount)
-    const loanValueNumber = parseFloat(loanValue)
-    const deltaValueNumber = parseFloat(deltaValue)
-
-    if (!isEditMode) {
-      return chain(new Array(loansQuantity))
-        .fill(loanValueNumber)
-        .map((offerValue, index) => convertOfferToMark(offerValue, index, deltaValueNumber))
-        .sortBy(({ loanValue }) => loanValue)
-        .value()
-    } else {
-      if (!optimisticOffer) return
-
-      const offer = hasFormChanges
-        ? getUpdatedBondOffer({
-            loanValue: loanValueNumber * 1e9,
-            deltaValue: deltaValueNumber * 1e9,
-            loansQuantity,
-            syntheticOffer,
-          })
-        : optimisticOffer
-
-      const loansToMarks = lenderLoans.map(convertLoanToMark)
-      const simpleOffersToMarks = convertOffersToSimple([offer]).map(convertSimpleOfferToMark)
-
-      return sortBy([...loansToMarks, ...simpleOffersToMarks], ({ loanValue }) => loanValue)
-    }
-  }, [
-    lenderLoans,
-    deltaValue,
-    hasFormChanges,
-    isEditMode,
-    loanValue,
-    loansAmount,
-    optimisticOffer,
-    syntheticOffer,
-  ])
 
   return (
     <>
@@ -95,7 +47,7 @@ const PlaceOfferContent: FC<OfferParams> = ({
           className={styles.numericField}
           disabled={!connected}
         />
-        {onDeltaValueChange && (
+        {isProMode && (
           <NumericInputField
             label="Avg Delta"
             onChange={onDeltaValueChange}
@@ -120,8 +72,9 @@ const PlaceOfferContent: FC<OfferParams> = ({
         offer={optimisticOffer}
         isEditMode={isEditMode}
         offerSize={offerSize}
-        market={marketPreview}
+        market={market}
         loansQuantity={parseFloat(loansAmount)}
+        isProMode={isProMode}
       />
       <ActionsButtons
         isEditMode={isEditMode}

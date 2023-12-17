@@ -1,7 +1,6 @@
 import { FC } from 'react'
 
 import classNames from 'classnames'
-import { create } from 'zustand'
 
 import { Button } from '@banx/components/Buttons'
 import { createSolValueJSX } from '@banx/components/TableComponents'
@@ -72,16 +71,6 @@ export enum OfferMode {
   Lite = 'lite',
   Pro = 'pro',
 }
-
-interface UseOfferMode {
-  mode: OfferMode
-  onChange: (mode: OfferMode) => void
-}
-
-export const useOfferMode = create<UseOfferMode>((set) => ({
-  mode: OfferMode.Lite,
-  onChange: (mode) => set({ mode }),
-}))
 
 interface BorrowerMessageProps {
   loanValue: string

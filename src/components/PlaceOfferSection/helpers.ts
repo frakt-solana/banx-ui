@@ -12,14 +12,14 @@ import { SyntheticOffer } from '@banx/store'
 type GetUpdatedBondOffer = (props: {
   loanValue: number //? lamports
   deltaValue: number //? lamports
-  loansQuantity: number //? integer number
+  loansAmount: number //? integer number
   syntheticOffer: SyntheticOffer
 }) => BondOfferV2
 
 export const getUpdatedBondOffer: GetUpdatedBondOffer = ({
   loanValue,
   deltaValue,
-  loansQuantity,
+  loansAmount,
   syntheticOffer,
 }) => {
   const initializedOffer = optimisticInitializeBondOfferBonding({
@@ -33,13 +33,13 @@ export const getUpdatedBondOffer: GetUpdatedBondOffer = ({
     bondOffer: initializedOffer,
     newLoanValue: loanValue,
     newDelta: deltaValue,
-    newQuantityOfLoans: loansQuantity,
+    newQuantityOfLoans: loansAmount,
   })
 
   return updatedBondOffer
 }
 
-type GetCreateOfferErrorMessage = (props: {
+type GetErrorMessage = (props: {
   syntheticOffer: SyntheticOffer
   solanaBalance: number
   offerSize: number
@@ -55,7 +55,7 @@ const ERROR_MESSAGES = {
   EMPTY_LOANS_AMOUNT: 'Please enter a valid number of loans. The number of loans cannot be empty.',
 }
 
-export const getOfferErrorMessage: GetCreateOfferErrorMessage = ({
+export const getErrorMessage: GetErrorMessage = ({
   solanaBalance,
   offerSize,
   loanValue,
@@ -64,24 +64,22 @@ export const getOfferErrorMessage: GetCreateOfferErrorMessage = ({
   syntheticOffer,
   hasFormChanges,
 }) => {
-  const initialOfferSize = calculateOfferSize({
+  const initialOfferSize = calcOfferSize({
     syntheticOffer,
-    deltaValue: syntheticOffer.deltaValue / 1e9,
-    loanValue: syntheticOffer.loanValue / 1e9,
-    loansQuantity: syntheticOffer.loansAmount,
+    deltaValue: syntheticOffer.deltaValue,
+    loanValue: syntheticOffer.loanValue,
+    loansAmount: syntheticOffer.loansAmount,
   })
 
   const totalFundsAvailable = initialOfferSize + solanaBalance * 1e9
+
+  const isOfferInvalid = deltaValue && hasFormChanges ? deltaValue * loansAmount > loanValue : false
   const isBalanceInsufficient = offerSize > totalFundsAvailable
-
-  const isOfferInvalid =
-    deltaValue && hasFormChanges ? deltaValue * 1e9 * loansAmount > loanValue * 1e9 : false
-
   const isEmptyLoansAmount = hasFormChanges && !loansAmount
 
   const errorConditions: Array<[boolean, string]> = [
-    [isEmptyLoansAmount, ERROR_MESSAGES.EMPTY_LOANS_AMOUNT],
     [isBalanceInsufficient, ERROR_MESSAGES.INSUFFICIENT_BALANCE],
+    [isEmptyLoansAmount, ERROR_MESSAGES.EMPTY_LOANS_AMOUNT],
     [isOfferInvalid, ERROR_MESSAGES.INVALID_OFFER],
   ]
 
@@ -96,38 +94,34 @@ export const getOfferErrorMessage: GetCreateOfferErrorMessage = ({
 export const checkIsEditMode = (offerPubkey: string) =>
   !!offerPubkey && offerPubkey !== PUBKEY_PLACEHOLDER
 
-type CalculateOfferSize = (props: {
+type CalcOfferSize = (props: {
   syntheticOffer: SyntheticOffer
-  loanValue: number //? normal number
-  deltaValue: number //? normal number
-  loansQuantity: number
+  loanValue: number //? lamports
+  deltaValue: number //? lamports
+  loansAmount: number
 }) => number
-export const calculateOfferSize: CalculateOfferSize = ({
+
+export const calcOfferSize: CalcOfferSize = ({
   syntheticOffer,
   loanValue,
-  loansQuantity,
+  loansAmount,
   deltaValue,
 }) => {
-  const formattedDeltaValue = deltaValue * 1e9
-  const formattedLoanValue = loanValue * 1e9
-
-  const updatedBondOffer = getUpdatedBondOffer({
-    loanValue: formattedLoanValue,
-    deltaValue: formattedDeltaValue,
-    loansQuantity,
-    syntheticOffer,
-  })
+  const offerToUpdate = { loanValue, deltaValue, loansAmount, syntheticOffer }
+  const updatedBondOffer = getUpdatedBondOffer(offerToUpdate)
 
   const offerSize = updatedBondOffer.fundsSolOrTokenBalance
   return offerSize
 }
 
-const TRANSACTION_FEE_IN_SOL = 0.01 //? transaction fee for prevent any case with not enough sol
-export const calculateBestLoanValue = (solanaBalance: number, bestOffer: number) => {
-  const balanceAfterDeductingFee = solanaBalance - TRANSACTION_FEE_IN_SOL
-  const maxLoanValue = Math.max(balanceAfterDeductingFee, 0)
+type CalcBestOfferValue = (props: {
+  solanaBalance: number //? normal number
+  bestOffer: number //? lamports
+}) => number
 
-  const bestOfferInSol = bestOffer / 1e9
-  const bestLoanValue = Math.min(maxLoanValue, bestOfferInSol) || 0
-  return bestLoanValue
+const TRANSACTION_FEE_IN_LAMPORTS = 0.01 * 1e9 //? transaction fee for prevent any case with not enough sol
+
+export const calcBestOfferValue: CalcBestOfferValue = ({ solanaBalance, bestOffer }) => {
+  const balanceAfterDeductingFee = Math.max(solanaBalance * 1e9 - TRANSACTION_FEE_IN_LAMPORTS, 0)
+  return Math.min(balanceAfterDeductingFee, bestOffer) || 0
 }

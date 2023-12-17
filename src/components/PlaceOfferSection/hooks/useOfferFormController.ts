@@ -11,11 +11,11 @@ export const useOfferFormController = (syntheticOffer: SyntheticOffer) => {
 
   const initialValues = useMemo(() => {
     return {
-      deltaValue: formatNumber(syntheticDeltaValue / 1e9),
+      deltaValue: syntheticOffer.deltaValue ? formatNumber(syntheticDeltaValue / 1e9) : '0',
       loanValue: formatNumber(syntheticLoanValue / 1e9),
       loansAmount: syntheticOffer.isEdit ? String(syntheticLoansAmount) : '1',
     }
-  }, [syntheticDeltaValue, syntheticLoanValue, syntheticLoansAmount, syntheticOffer.isEdit])
+  }, [syntheticDeltaValue, syntheticLoanValue, syntheticLoansAmount, syntheticOffer])
 
   const [loanValue, setLoanValue] = useState(initialValues.loanValue)
   const [loansAmount, setLoansAmount] = useState(initialValues.loansAmount)
@@ -38,7 +38,7 @@ export const useOfferFormController = (syntheticOffer: SyntheticOffer) => {
   }, [])
 
   const onLoanAmountChange = useCallback((nextValue: string) => {
-    setLoansAmount(nextValue)
+    setLoansAmount(nextValue || '0')
   }, [])
 
   const resetFormValues = () => {
