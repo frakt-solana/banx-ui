@@ -39,7 +39,7 @@ const DASHBOARD_CONTENT = {
       text: (
         <div className={styles.slideText}>
           <p>
-            The $BANX token will hit the market in Q1&apos;t24 and{' '}
+            The $BANX token will hit the market in Q1&apos;24 and{' '}
             <span className={styles.slideTextImportant}>
               you can farm it on banx.gg with no vesting.
             </span>
