@@ -11,7 +11,6 @@ import { Loan } from '@banx/api/core'
 import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
 import {
   HealthColorIncreasing,
-  calcBorrowValueWithProtocolFee,
   calcLoanBorrowedAmount,
   calculateLoanRepayValue,
   formatDecimal,
@@ -36,14 +35,13 @@ interface CellProps {
 }
 
 export const DebtCell: FC<CellProps> = ({ loan }) => {
-  const { totalRepaidAmount = 0, accruedInterest = 0, bondTradeTransaction, fraktBond } = loan
+  const { accruedInterest = 0, totalRepaidAmount = 0, bondTradeTransaction, fraktBond } = loan
   const { soldAt, amountOfBonds, solAmount, feeAmount } = bondTradeTransaction || {}
 
   const debtValue = calculateLoanRepayValue(loan)
-  const borrowedValue = fraktBond.borrowedAmount - totalRepaidAmount
-  const upfrontFee = borrowedValue - calcBorrowValueWithProtocolFee(borrowedValue)
+  const borrowedValue = fraktBond.borrowedAmount
 
-  const totalAccruedInterest = debtValue - solAmount + feeAmount + accruedInterest
+  const totalAccruedInterest = debtValue - solAmount - feeAmount + accruedInterest
 
   const weeklyFee = calculateCurrentInterestSolPure({
     loanValue: calcLoanBorrowedAmount(loan),
@@ -58,8 +56,8 @@ export const DebtCell: FC<CellProps> = ({ loan }) => {
     <div className={styles.tooltipContent}>
       <TooltipRow label="Principal" value={borrowedValue} />
       <TooltipRow label="Repaid" value={totalRepaidAmount} />
-      <TooltipRow label="Accrued interest" value={totalAccruedInterest} />
-      <TooltipRow label="Upfront fee" value={upfrontFee} />
+      <TooltipRow label="Accrued interest" value={totalAccruedInterest + feeAmount} />
+      <TooltipRow label="Upfront fee" value={feeAmount} />
       <TooltipRow label="Est. weekly fee" value={weeklyFee} />
     </div>
   )
