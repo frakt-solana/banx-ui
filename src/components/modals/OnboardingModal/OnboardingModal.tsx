@@ -5,6 +5,7 @@ import { Carousel } from 'antd'
 import { Loader } from '@banx/components/Loader'
 import { Modal } from '@banx/components/modals/BaseModal'
 
+import { Theme, useTheme } from '@banx/hooks'
 import { ChevronDown } from '@banx/icons'
 
 import { CONTENT } from './content'
@@ -21,6 +22,9 @@ export const OnboardingModal: FC<OnboardingModalProps> = ({
   contentType = 'dashboard',
   onCancel,
 }) => {
+  const { theme } = useTheme()
+  const isDarkMode = theme === Theme.DARK
+
   const content = CONTENT[contentType] || CONTENT[OnboardingModalContentType.DASHBOARD]
 
   return (
@@ -34,9 +38,9 @@ export const OnboardingModal: FC<OnboardingModalProps> = ({
           arrows
           infinite={false}
         >
-          {content.slides.map(({ text, img }, idx) => (
+          {content.slides.map(({ text, img, imgDark }, idx) => (
             <div className={styles.slide} key={idx}>
-              {img}
+              {isDarkMode ? imgDark : img}
               {text}
             </div>
           ))}

@@ -1,9 +1,15 @@
 import borrowImg1 from './assets/borrow1.png'
+import borrowImg1_dark from './assets/borrow1_dark.png'
 import dashboardImg1 from './assets/dashboard1.png'
+import dashboardImg1_dark from './assets/dashboard1_dark.png'
 import dashboardImg2 from './assets/dashboard2.png'
+import dashboardImg2_dark from './assets/dashboard2_dark.png'
 import dashboardImg3 from './assets/dashboard3.png'
+import dashboardImg3_dark from './assets/dashboard3_dark.png'
 import lendImg1 from './assets/lend1.png'
+import lendImg1_dark from './assets/lend1_dark.png'
 import refinanceImg1 from './assets/refinance1.png'
+import refinanceImg1_dark from './assets/refinance1_dark.png'
 import { OnboardingModalContentType } from './types'
 
 import styles from './OnboardingModal.module.less'
@@ -13,6 +19,7 @@ const DASHBOARD_CONTENT = {
   slides: [
     {
       img: <img className={styles.slideImg} src={dashboardImg1} alt="dashboard 1" />,
+      imgDark: <img className={styles.slideImg} src={dashboardImg1_dark} alt="dashboard 1" />,
       text: (
         <div className={styles.slideText}>
           <p>
@@ -25,6 +32,7 @@ const DASHBOARD_CONTENT = {
     },
     {
       img: <img className={styles.slideImg} src={dashboardImg2} alt="dashboard 2" />,
+      imgDark: <img className={styles.slideImg} src={dashboardImg2_dark} alt="dashboard 2" />,
       text: (
         <div className={styles.slideText}>
           <p>
@@ -36,6 +44,7 @@ const DASHBOARD_CONTENT = {
     },
     {
       img: <img className={styles.slideImg} src={dashboardImg3} alt="dashboard 3" />,
+      imgDark: <img className={styles.slideImg} src={dashboardImg3_dark} alt="dashboard 3" />,
       text: (
         <div className={styles.slideText}>
           <p>
@@ -55,6 +64,7 @@ const BORROW_CONTENT = {
   slides: [
     {
       img: <img className={styles.slideImg} src={borrowImg1} alt="borrow 1" />,
+      imgDark: <img className={styles.slideImg} src={borrowImg1_dark} alt="borrow 1" />,
       text: (
         <div className={styles.slideText}>
           <p>
@@ -76,6 +86,7 @@ const LEND_CONTENT = {
   slides: [
     {
       img: <img className={styles.slideImg} src={lendImg1} alt="lend 1" />,
+      imgDark: <img className={styles.slideImg} src={lendImg1_dark} alt="lend 1" />,
       text: (
         <div className={styles.slideText}>
           <p>
@@ -97,6 +108,7 @@ const REFINANCE_CONTENT = {
   slides: [
     {
       img: <img className={styles.slideImg} src={refinanceImg1} alt="refinance 1" />,
+      imgDark: <img className={styles.slideImg} src={refinanceImg1_dark} alt="refinance 1" />,
       text: (
         <div className={styles.slideText}>
           <p>
