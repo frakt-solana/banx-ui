@@ -11,6 +11,7 @@ import { Loan } from '@banx/api/core'
 import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
 import {
   HealthColorIncreasing,
+  calcBorrowValueWithProtocolFee,
   calcLoanBorrowedAmount,
   calculateLoanRepayValue,
   formatDecimal,
@@ -42,6 +43,7 @@ export const DebtCell: FC<CellProps> = ({ loan }) => {
   const borrowedValue = fraktBond.borrowedAmount
 
   const totalAccruedInterest = debtValue - solAmount - feeAmount + accruedInterest
+  const upfrontFee = borrowedValue - calcBorrowValueWithProtocolFee(borrowedValue)
 
   const weeklyFee = calculateCurrentInterestSolPure({
     loanValue: calcLoanBorrowedAmount(loan),
@@ -56,8 +58,8 @@ export const DebtCell: FC<CellProps> = ({ loan }) => {
     <div className={styles.tooltipContent}>
       <TooltipRow label="Principal" value={borrowedValue} />
       <TooltipRow label="Repaid" value={totalRepaidAmount} />
-      <TooltipRow label="Accrued interest" value={totalAccruedInterest + feeAmount} />
-      <TooltipRow label="Upfront fee" value={feeAmount} />
+      <TooltipRow label="Accrued interest" value={totalAccruedInterest + upfrontFee} />
+      <TooltipRow label="Upfront fee" value={upfrontFee} />
       <TooltipRow label="Est. weekly fee" value={weeklyFee} />
     </div>
   )
