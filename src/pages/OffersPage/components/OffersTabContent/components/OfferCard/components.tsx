@@ -58,6 +58,37 @@ interface AdditionalOfferOverviewProps {
   className?: string
 }
 
-export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ className }) => {
-  return <div className={classNames(styles.additionalOfferContainer, className)}></div>
+export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offer, className }) => {
+  const {
+    edgeSettlement: lentValue,
+    concentrationIndex: accruedInterest,
+    fundsSolOrTokenBalance,
+    bidSettlement,
+    marketApr = 0,
+    validation,
+  } = offer
+
+  const offerSize = lentValue + fundsSolOrTokenBalance + bidSettlement
+
+  const formattedOfferSize = formatDecimal(offerSize / 1e9)
+  const formattedLentValue = formatDecimal(lentValue / 1e9)
+  const formattedAprValue = (marketApr / 100)?.toFixed(0)
+  const activeLoans = validation.maxReturnAmountFilter
+
+  return (
+    <div className={classNames(styles.additionalOfferContainer, className)}>
+      <StatInfo
+        label="Lent"
+        value={`${formattedLentValue}/${formattedOfferSize}◎`}
+        valueType={VALUES_TYPES.STRING}
+        secondValue={`${activeLoans} loans`}
+      />
+      <StatInfo
+        label="Accrued interest"
+        value={accruedInterest}
+        secondValue={`${formattedAprValue}% APR`}
+        divider={1e9}
+      />
+    </div>
+  )
 }

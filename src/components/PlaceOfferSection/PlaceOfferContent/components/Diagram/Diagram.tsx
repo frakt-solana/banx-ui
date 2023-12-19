@@ -26,7 +26,7 @@ const Diagram: FC<DiagramProps> = ({ marks = [], isLoading }) => {
   return (
     <div className={styles.diagram}>
       {isLoading ? (
-        <Skeleton.Input active size="large" block />
+        <Skeleton.Input size="large" active block />
       ) : (
         <div className={styles.diagramLine}>
           {groupedMarks.map((mark, index) => {
@@ -54,8 +54,8 @@ const DiagramMark: FC<DiagramMarkProps> = ({ mark, left }) => {
 
   const nftImage = firstLoan?.nft.meta.imageUrl
 
-  const startValue = formatDecimal(firstValue / 1e9)
-  const endValue = marks.length > 1 ? `-${formatDecimal(lastValue / 1e9)}` : ''
+  const formattedFirstValue = formatDecimal(firstValue / 1e9)
+  const formattedLastValue = marks.length > 1 ? `-${formatDecimal(lastValue / 1e9)}` : ''
 
   const markCountBadge = marks.length > 1 && (
     <div className={styles.markCountBadge}>{marks.length}</div>
@@ -66,7 +66,7 @@ const DiagramMark: FC<DiagramMarkProps> = ({ mark, left }) => {
       {markCountBadge}
       {createSquareElement(nftImage)}
       <div className={styles.dot} />
-      <div className={styles.value}>{`${startValue}${endValue}◎`}</div>
+      <div className={styles.value}>{`${formattedFirstValue}${formattedLastValue}◎`}</div>
     </div>
   )
 }
