@@ -1,14 +1,12 @@
 import { FC } from 'react'
 
 import { Skeleton } from 'antd'
-import { map } from 'lodash'
-
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import { first, isArray, last } from 'lodash'
 
 import { Loan } from '@banx/api/core'
 import { formatDecimal } from '@banx/utils'
 
-import { calcLeftPercentage } from './helpers'
+import { calcLeftPercentage, groupMarks } from './helpers'
 
 import styles from './Diagram.module.less'
 
@@ -22,8 +20,8 @@ interface DiagramProps {
   isLoading: boolean
 }
 
-const Diagram: FC<DiagramProps> = ({ marks, isLoading }) => {
-  const values = map(marks, (mark) => mark.value)
+const Diagram: FC<DiagramProps> = ({ marks = [], isLoading }) => {
+  const groupedMarks = groupMarks(marks)
 
   return (
     <div className={styles.diagram}>
@@ -31,9 +29,9 @@ const Diagram: FC<DiagramProps> = ({ marks, isLoading }) => {
         <Skeleton.Input active size="large" block />
       ) : (
         <div className={styles.diagramLine}>
-          {map(marks, ({ value, loan }, index) => {
-            const left = calcLeftPercentage(values, index)
-            return <DiagramMark key={index} loan={loan} value={value} left={left} />
+          {groupedMarks.map((mark, index) => {
+            const left = calcLeftPercentage(groupedMarks, index)
+            return <DiagramMark key={index} mark={mark} left={left} />
           })}
         </div>
       )}
@@ -45,18 +43,30 @@ export default Diagram
 
 interface DiagramMarkProps {
   left: number
-  value: number
-  loan?: Loan
+  mark: Mark[] | Mark
 }
 
-const DiagramMark: FC<DiagramMarkProps> = ({ value, left, loan }) => {
-  const nftImage = loan?.nft.meta.imageUrl
+const DiagramMark: FC<DiagramMarkProps> = ({ mark, left }) => {
+  const marks = isArray(mark) ? mark : [mark]
+
+  const { loan: firstLoan, value: firstValue = 0 } = first(marks) || {}
+  const { value: lastValue = 0 } = last(marks) || {}
+
+  const nftImage = firstLoan?.nft.meta.imageUrl
+
+  const startValue = formatDecimal(firstValue / 1e9)
+  const endValue = marks.length > 1 ? `-${formatDecimal(lastValue / 1e9)}` : ''
+
+  const markCountBadge = marks.length > 1 && (
+    <div className={styles.markCountBadge}>{marks.length}</div>
+  )
 
   return (
     <div className={styles.mark} style={{ left: calculateStyle(left) }}>
+      {markCountBadge}
       {createSquareElement(nftImage)}
       <div className={styles.dot} />
-      <div className={styles.value}>{createSolValueJSX(value, 1e9, '0◎', formatDecimal)}</div>
+      <div className={styles.value}>{`${startValue}${endValue}◎`}</div>
     </div>
   )
 }
