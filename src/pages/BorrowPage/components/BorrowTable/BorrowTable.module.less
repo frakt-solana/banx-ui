@@ -39,3 +39,49 @@
 .borrowButton {
   width: 104px;
 }
+
+.cellInfo {
+  &,
+  & > * {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+  }
+}
+.cellInfoTitle {
+  font: var(--body-text-md);
+
+  &.highlight {
+    color: var(--additional-green-primary-deep);
+    font: var(--important-text-md);
+  }
+}
+.ltvValue {
+  color: var(--additional-green-primary-deep);
+}
+.tooltipContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tooltipRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 230px;
+}
+.tooltipRowLabel {
+  color: var(--content-secondary);
+  font: var(--table-header-md);
+  text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--table-header-sm);
+  }
+}
+.tooltipIcon svg {
+  fill: var(--content-secondary);
+  width: 13px;
+  height: 13px;
+}
