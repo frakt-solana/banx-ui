@@ -3,17 +3,12 @@ import { useMemo } from 'react'
 import { chain } from 'lodash'
 
 import { Loan } from '@banx/api/core'
-import {
-  calcLoanBorrowedAmount,
-  calculateLoanRepayValue,
-  isLoanLiquidated,
-  isLoanTerminating,
-} from '@banx/utils'
+import { calculateLoanRepayValue, isLoanLiquidated, isLoanTerminating } from '@banx/utils'
 
 enum SortField {
-  BORROWED = 'loanValue',
-  DEBT = 'repayValue',
-  HEALTH = 'health',
+  DEBT = 'debt',
+  APR = 'apr',
+  LTV = 'ltv',
   STATUS = 'status',
 }
 
@@ -25,9 +20,9 @@ type StatusValueMap = Record<SortField, string | SortValueGetter>
 export const DEFAULT_SORT_OPTION_VALUE = `${SortField.STATUS}_desc`
 
 const STATUS_VALUE_MAP: StatusValueMap = {
-  [SortField.BORROWED]: calcLoanBorrowedAmount,
   [SortField.DEBT]: calculateLoanRepayValue,
-  [SortField.HEALTH]: (loan: Loan) => loan.nft.collectionFloor / calculateLoanRepayValue(loan),
+  [SortField.APR]: (loan) => loan.bondTradeTransaction.amountOfBonds,
+  [SortField.LTV]: (loan) => calculateLoanRepayValue(loan) / loan.nft.collectionFloor,
   [SortField.STATUS]: '',
 }
 

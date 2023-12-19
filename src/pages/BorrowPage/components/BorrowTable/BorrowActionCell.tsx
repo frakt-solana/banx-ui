@@ -6,13 +6,13 @@ import { trackPageEvent } from '@banx/utils'
 
 import styles from './BorrowTable.module.less'
 
-interface BorrowCellProps {
+interface BorrowActionCellProps {
   onBorrow: () => Promise<void>
   disabled?: boolean
   isCardView?: boolean
 }
 
-export const BorrowCell: FC<BorrowCellProps> = ({
+export const BorrowActionCell: FC<BorrowActionCellProps> = ({
   onBorrow,
   disabled = false,
   isCardView = false,
