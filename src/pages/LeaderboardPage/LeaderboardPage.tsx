@@ -18,7 +18,7 @@ export enum LeaderboardTabName {
 export const LeaderboardPage = () => {
   const { value: currentTabValue, ...tabsProps } = useTabs({
     tabs: LEADERBOARD_TABS,
-    defaultValue: LEADERBOARD_TABS[0].value,
+    defaultValue: LEADERBOARD_TABS[1].value,
   })
 
   return (
