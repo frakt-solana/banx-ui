@@ -138,6 +138,11 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
   }, [market, isEditMode, connected, solanaBalance, syntheticOffer, onLoanValueChange])
 
   const diagramData = useMemo(() => {
+    const isOfferInvalid =
+      deltaValue && hasFormChanges ? deltaValue * loansAmount > loanValue : false
+
+    if (isOfferInvalid) return []
+
     if (!isEditMode) {
       return chain(new Array(loansAmount))
         .fill(loanValue)

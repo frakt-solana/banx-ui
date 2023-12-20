@@ -78,9 +78,9 @@ export const getErrorMessage: GetErrorMessage = ({
   const isEmptyLoansAmount = hasFormChanges && !loansAmount
 
   const errorConditions: Array<[boolean, string]> = [
+    [isOfferInvalid, ERROR_MESSAGES.INVALID_OFFER],
     [isBalanceInsufficient, ERROR_MESSAGES.INSUFFICIENT_BALANCE],
     [isEmptyLoansAmount, ERROR_MESSAGES.EMPTY_LOANS_AMOUNT],
-    [isOfferInvalid, ERROR_MESSAGES.INVALID_OFFER],
   ]
 
   const errorMessage = chain(errorConditions)
