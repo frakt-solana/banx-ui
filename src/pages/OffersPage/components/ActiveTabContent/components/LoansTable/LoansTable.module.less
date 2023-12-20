@@ -1,0 +1,73 @@
+.tableRoot {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.tableRoot table {
+  tr > td {
+    width: 160px;
+
+    &:first-child {
+      min-width: 176px;
+    }
+
+    &:nth-last-child(-n + 2) {
+      width: 100px;
+    }
+  }
+}
+
+.emptyList {
+  margin-top: 0;
+}
+
+.actionsButtons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 100%;
+}
+
+.actionButton {
+  width: 104px;
+}
+
+.lentInfo,
+.statusInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.statusInfoTitle {
+  font: var(--body-text-sm);
+}
+.statusInfoSubtitle {
+  font: var(--body-text-sm);
+}
+
+.lentInfoSubtitle {
+  font: var(--body-text-sm);
+}
+
+.aprValue {
+  color: var(--additional-green-primary-deep);
+  font: var(--important-text-md);
+}
+
+.searchSelect {
+  max-width: 750px;
+}
+
+.terminated {
+  background: var(--additional-lava-secondary) !important;
+}
+
+.liquidated {
+  background: var(--additional-red-secondary) !important;
+}
