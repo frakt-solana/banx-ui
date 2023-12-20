@@ -15,7 +15,9 @@ import {
   Lend,
   LendDark,
   Medium,
-  MediumDark, // Raffles,
+  MediumDark,
+  Rewards,
+  RewardsDark, // Raffles,
   // RafflesDark,
   Twitter,
   TwitterDark,
@@ -61,6 +63,14 @@ export const NAVIGATION_LINKS = [
   {
     pathname: PATHS.REFINANCE,
     label: 'Refinance',
+  },
+  {
+    pathname: PATHS.LEADERBOARD,
+    label: 'Rewards',
+    icons: {
+      light: Rewards,
+      dark: RewardsDark,
+    },
   },
 ]
 
