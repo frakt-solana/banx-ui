@@ -288,19 +288,22 @@ type FetchUserOffers = (props: {
   order?: string
   skip?: number
   limit?: number
+  sortBy?: string
 }) => Promise<UserOffer[]>
 export const fetchUserOffers: FetchUserOffers = async ({
   walletPubkey,
   order = 'desc',
   skip = 0,
   limit = 10,
+  sortBy = 'lent',
 }) => {
   try {
     const queryParams = new URLSearchParams({
+      isPrivate: String(IS_PRIVATE_MARKETS),
       order,
       skip: String(skip),
       limit: String(limit),
-      isPrivate: String(IS_PRIVATE_MARKETS),
+      sortBy,
     })
 
     const { data } = await axios.get<FetchUserOffersResponse>(

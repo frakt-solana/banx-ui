@@ -29,7 +29,7 @@ export const useOffersContent = () => {
     .map(({ collectionMeta }) => ({
       collectionName: collectionMeta.collectionName,
       collectionImage: collectionMeta.collectionImage,
-      claim: 0,
+      claim: 0, //TODO: need to calc claim or smth another?
     }))
     .uniqBy(({ collectionName }) => collectionName)
     .value()

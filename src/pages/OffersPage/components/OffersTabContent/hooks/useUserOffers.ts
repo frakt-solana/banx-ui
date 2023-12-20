@@ -4,9 +4,10 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { chain, map, maxBy } from 'lodash'
 
-import { RBOption } from '@banx/components/RadioButton'
+import { SortOption } from '@banx/components/SortDropdown'
 
-import { Offer, fetchUserOffers } from '@banx/api/core'
+import { fetchUserOffers } from '@banx/api/core'
+import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { isOfferNewer, isOptimisticOfferExpired, useOffersOptimistic } from '@banx/store'
 import { isOfferClosed } from '@banx/utils'
 
@@ -18,14 +19,20 @@ export const useUserOffers = () => {
 
   const { optimisticOffers, remove: removeOffers, update: updateOrAddOffer } = useOffersOptimistic()
 
-  const [currentOption, setCurrentOption] = useState<RBOption>(SORT_OPTIONS[0])
+  const [currentOption, setCurrentOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
   const [selectedCollections, setSelectedCollections] = useState<string[]>([])
 
+  const { marketsPreview } = useMarketsPreview()
+
   const fetchData = async (pageParam: number) => {
+    const [sortBy, order] = currentOption.value.split('_')
+
     const data = await fetchUserOffers({
       skip: PAGINATION_LIMIT * pageParam,
       limit: PAGINATION_LIMIT,
       walletPubkey: publicKeyString,
+      sortBy,
+      order,
     })
 
     return { pageParam, data }
@@ -61,7 +68,7 @@ export const useUserOffers = () => {
       .filter(({ offer }) => {
         const sameOfferFromBE = userOffers?.find(({ publicKey }) => publicKey === offer.publicKey)
         if (!sameOfferFromBE) return false
-        const isBEOfferNewer = isOfferNewer(sameOfferFromBE as Offer, offer)
+        const isBEOfferNewer = isOfferNewer(sameOfferFromBE, offer)
         return isBEOfferNewer
       })
       .value()
@@ -79,15 +86,14 @@ export const useUserOffers = () => {
     if (!userOffers || !optimisticOffers) return []
 
     const optimisticUserOffers = optimisticOffers
-      .map((offer) => {
-        return {
-          offer: offer.offer,
-          collectionMeta: {
-            collectionFloor: 0,
-            collectionName: '',
-            collectionImage: '',
-          },
-        }
+      .map(({ offer }) => {
+        const {
+          collectionName = '',
+          collectionImage = '',
+          collectionFloor = 0,
+        } = marketsPreview.find(({ marketPubkey }) => marketPubkey === offer.hadoMarket) ?? {}
+
+        return { offer, collectionMeta: { collectionFloor, collectionName, collectionImage } }
       })
       .filter(({ offer }) => offer.assetReceiver === publicKey?.toBase58())
 
@@ -95,10 +101,11 @@ export const useUserOffers = () => {
 
     return chain(combinedOffers)
       .groupBy(({ offer }) => offer.publicKey)
-      .map((offers) => maxBy(offers, ({ offer }) => offer.lastTransactedAt))
+      .map((groupedOffers) => maxBy(groupedOffers, ({ offer }) => offer.lastTransactedAt))
       .compact()
+      .filter(({ offer }) => !isOfferClosed(offer.pairState))
       .value()
-  }, [offersFlat, optimisticOffers, publicKey])
+  }, [marketsPreview, offersFlat, optimisticOffers, publicKey])
 
   return {
     offers,
@@ -122,3 +129,8 @@ const SORT_OPTIONS = [
   { label: 'Lent', value: 'lent' },
   { label: 'Offer', value: 'offer' },
 ]
+
+export const DEFAULT_SORT_OPTION = {
+  label: SORT_OPTIONS[1].label,
+  value: `${SORT_OPTIONS[1].value}_desc`,
+}

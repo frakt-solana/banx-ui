@@ -7,11 +7,10 @@ import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { useLenderLoansAndOffers } from '@banx/pages/OffersPage/hooks'
-import { formatDecimal, isOfferClosed } from '@banx/utils'
+import { formatDecimal } from '@banx/utils'
 
 import { isLoanAbleToClaim, isLoanAbleToTerminate } from '../components/ActiveLoansTable/helpers'
 import { calculateClaimValue } from '../components/OfferCard/helpers'
-import { useSortedData } from './useSortedOffers'
 
 type SearchSelectOption = {
   collectionName: string
@@ -32,17 +31,6 @@ export const useActiveTabContent = () => {
   const { publicKey } = useWallet()
 
   const [selectedOffers, setSelectedOffers] = useState<string[]>([])
-
-  const filteredData = useMemo(() => {
-    if (selectedOffers.length) {
-      return data.filter(({ collectionMeta }) =>
-        selectedOffers.includes(collectionMeta.collectionName),
-      )
-    }
-    return data.filter(({ offer }) => !isOfferClosed(offer?.pairState))
-  }, [data, selectedOffers])
-
-  const { sortedData, sortParams } = useSortedData(filteredData)
 
   const searchSelectOptions = chain(data)
     .map(({ loans, collectionMeta }) => ({
@@ -86,10 +74,9 @@ export const useActiveTabContent = () => {
   const showEmptyList = !isLoading && !data.length
 
   return {
-    data: sortedData,
+    data,
     isLoading,
     searchSelectParams,
-    sortParams,
     showEmptyList,
     loansToClaim,
     loansToTerminate,
