@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { first, groupBy, map, sumBy } from 'lodash'
 
@@ -12,6 +12,7 @@ import { calculateClaimValue, useLenderLoans } from '@banx/pages/OffersPage'
 import { ViewState, useTableView } from '@banx/store'
 import { formatDecimal, isLoanLiquidated, isLoanTerminating } from '@banx/utils'
 
+import { Summary } from './Summary'
 import { getTableColumns } from './columns'
 import { useSortedLoans } from './hooks'
 
@@ -108,12 +109,12 @@ export const LoansTable = () => {
         sortViewParams={{ searchSelectParams, sortParams }}
         loading={loading}
       />
-      {/* <ActiveTabSummary
+      <Summary
         addMints={addMints}
         loansToTerminate={loansToTerminate}
         loansToClaim={loansToClaim}
         updateOrAddLoan={updateOrAddLoan}
-      /> */}
+      />
     </div>
   )
 }
