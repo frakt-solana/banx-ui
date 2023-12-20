@@ -212,3 +212,14 @@ export interface AuctionsLoansResponse {
   data: Loan[]
   meta: PaginationMeta
 }
+
+export const UserOfferSchema = z.object({
+  offer: PairSchema,
+  collectionMeta: CollectionMetaSchema,
+})
+export type UserOffer = z.infer<typeof UserOfferSchema>
+
+export interface FetchUserOffersResponse {
+  data: UserOffer[]
+  meta: PaginationMeta
+}

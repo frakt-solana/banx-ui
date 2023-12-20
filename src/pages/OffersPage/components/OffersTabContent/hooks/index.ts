@@ -1,1 +1,1 @@
-export * from './useOffersTabContent'
+export * from './useActiveTabContent'

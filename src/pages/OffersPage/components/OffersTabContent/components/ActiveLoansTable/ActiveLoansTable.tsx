@@ -13,7 +13,7 @@ import { useLenderLoansAndOffers } from '@banx/pages/OffersPage/hooks'
 import { ViewState, useTableView } from '@banx/store'
 import { formatDecimal, isLoanLiquidated, isLoanTerminating } from '@banx/utils'
 
-import { useOffersTabContent } from '../../hooks'
+import { useActiveTabContent } from '../../hooks'
 import { calculateClaimValue } from '../OfferCard'
 import { ActiveTabSummary } from '../Summary/Summary'
 import { getTableColumns } from './columns'
@@ -81,7 +81,7 @@ type SearchSelectOption = {
 }
 
 export const ActiveLoansTab = () => {
-  const { loans, loansToTerminate, updateOrAddLoan, addMints, loansToClaim } = useOffersTabContent()
+  const { loans, loansToTerminate, updateOrAddLoan, addMints, loansToClaim } = useActiveTabContent()
   const { viewState } = useTableView()
 
   const [selectedOffers, setSelectedOffers] = useState<string[]>([])

@@ -4,7 +4,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { sumBy } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
-import { Loan, Offer } from '@banx/api/core'
+import { Loan, Offer, UserOffer } from '@banx/api/core'
 import { SMALL_DESKTOP_WIDTH } from '@banx/constants'
 import { useWindowSize } from '@banx/hooks'
 import { defaultTxnErrorHandler } from '@banx/transactions'
@@ -18,7 +18,7 @@ import styles from './Summary.module.less'
 
 interface SummaryProps {
   updateOrAddOffer: (offer: Offer[]) => void
-  offers: Offer[]
+  offers: UserOffer[]
 }
 
 const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
@@ -28,14 +28,14 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
   const isSmallDesktop = width < SMALL_DESKTOP_WIDTH
 
   const totalAccruedInterest = useMemo(
-    () => sumBy(offers, (offer) => offer.concentrationIndex),
+    () => sumBy(offers, ({ offer }) => offer.concentrationIndex),
     [offers],
   )
 
   const claimInterest = () => {
     if (!offers.length) return
 
-    const txnParams = offers.map((optimisticOffer) => ({ optimisticOffer }))
+    const txnParams = offers.map(({ offer }) => ({ optimisticOffer: offer }))
 
     new TxnExecutor(makeClaimBondOfferInterestAction, { wallet, connection })
       .addTxnParams(txnParams)

@@ -3,9 +3,9 @@ import { FC, useState } from 'react'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
-import PlaceOfferSection from '@banx/components/PlaceOfferSection/PlaceOfferSection'
+import PlaceOfferSection from '@banx/components/PlaceOfferSection'
 
-import { CollectionMeta, Loan, Offer } from '@banx/api/core'
+import { UserOffer } from '@banx/api/core'
 import { ChevronDown } from '@banx/icons'
 import { convertToSynthetic, useSyntheticOffers } from '@banx/store'
 
@@ -14,18 +14,16 @@ import { AdditionalOfferOverview, MainOfferOverview } from './components'
 import styles from './OfferCard.module.less'
 
 interface OfferCardProps {
-  offer: Offer
-  loans: Loan[]
-  collectionMeta: CollectionMeta
+  offer: UserOffer
 }
 
-const OfferCard: FC<OfferCardProps> = ({ offer, loans, collectionMeta }) => {
+const OfferCard: FC<OfferCardProps> = ({ offer }) => {
   const [isOpen, setIsOpen] = useState(false)
 
   const { setOffer: setSyntheticOffer } = useSyntheticOffers()
 
   const onCardClick = () => {
-    setSyntheticOffer(convertToSynthetic(offer, true))
+    setSyntheticOffer(convertToSynthetic(offer.offer, true))
     setIsOpen(!isOpen)
   }
 
@@ -35,10 +33,9 @@ const OfferCard: FC<OfferCardProps> = ({ offer, loans, collectionMeta }) => {
         className={classNames(styles.cardBody, { [styles.active]: isOpen })}
         onClick={onCardClick}
       >
-        <MainOfferOverview offer={offer} collectionMeta={collectionMeta} />
+        <MainOfferOverview offer={offer.offer} collectionMeta={offer.collectionMeta} />
         <AdditionalOfferOverview
-          loans={loans}
-          offer={offer}
+          offer={offer.offer}
           className={isOpen ? styles.hiddenAdditionalOverview : ''}
         />
         <Button
@@ -49,7 +46,10 @@ const OfferCard: FC<OfferCardProps> = ({ offer, loans, collectionMeta }) => {
         </Button>
       </div>
       {isOpen && (
-        <PlaceOfferSection offerPubkey={offer.publicKey} marketPubkey={offer.hadoMarket} />
+        <PlaceOfferSection
+          offerPubkey={offer.offer.publicKey}
+          marketPubkey={offer.offer.hadoMarket}
+        />
       )}
     </div>
   )

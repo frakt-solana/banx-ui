@@ -9,6 +9,7 @@ import {
   BorrowNftsAndOffersResponse,
   BorrowNftsAndOffersSchema,
   FetchMarketOffersResponse,
+  FetchUserOffersResponse,
   LendLoansAndOffersResponse,
   LendLoansAndOffersSchema,
   LenderLoansResponse,
@@ -19,6 +20,8 @@ import {
   MarketPreviewSchema,
   Offer,
   PairSchema,
+  UserOffer,
+  UserOfferSchema,
   WalletLoansAndOffers,
   WalletLoansAndOffersResponse,
   WalletLoansAndOffersShema,
@@ -274,6 +277,43 @@ export const fetchAuctionsLoans = async () => {
     }
 
     return data.data
+  } catch (error) {
+    console.error(error)
+    return []
+  }
+}
+
+type FetchUserOffers = (props: {
+  walletPubkey: string
+  order?: string
+  skip?: number
+  limit?: number
+}) => Promise<UserOffer[]>
+export const fetchUserOffers: FetchUserOffers = async ({
+  walletPubkey,
+  order = 'desc',
+  skip = 0,
+  limit = 10,
+}) => {
+  try {
+    const queryParams = new URLSearchParams({
+      order,
+      skip: String(skip),
+      limit: String(limit),
+      isPrivate: String(IS_PRIVATE_MARKETS),
+    })
+
+    const { data } = await axios.get<FetchUserOffersResponse>(
+      `${BACKEND_BASE_URL}/bond-offers/user/${walletPubkey}?${queryParams.toString()}`,
+    )
+
+    try {
+      await UserOfferSchema.parseAsync(data.data)
+    } catch (validationError) {
+      console.error('Schema validation error:', validationError)
+    }
+
+    return data.data ?? []
   } catch (error) {
     console.error(error)
     return []

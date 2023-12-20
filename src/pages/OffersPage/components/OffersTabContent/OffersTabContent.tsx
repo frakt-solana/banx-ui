@@ -4,20 +4,21 @@ import { Loader } from '@banx/components/Loader'
 import FilterSection from '../FilterSection'
 import OfferCard from './components/OfferCard'
 import Summary from './components/Summary'
-import { useOffersTabContent } from './hooks'
+import { useOffersContent } from './hooks/useOffersTabContent'
 
 import styles from './OffersTabContent.module.less'
 
 const OffersTabContent = () => {
   const {
-    data: loansAndOffers,
+    offers,
     isLoading,
-    searchSelectParams,
-    sortParams,
     showEmptyList,
     updateOrAddOffer,
-    offers,
-  } = useOffersTabContent()
+    searchSelectParams,
+    sortParams,
+    // hasNextPage,
+    // fetchNextPage,
+  } = useOffersContent()
 
   if (showEmptyList) return <EmptyList message="Lend SOL to view your pending offers" />
 
@@ -30,13 +31,8 @@ const OffersTabContent = () => {
           <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
 
           <div className={styles.cardsList}>
-            {loansAndOffers.map(({ offer, loans, collectionMeta }) => (
-              <OfferCard
-                key={offer.publicKey}
-                offer={offer}
-                loans={loans}
-                collectionMeta={collectionMeta}
-              />
+            {offers.map((offer) => (
+              <OfferCard key={offer.offer.publicKey} offer={offer} />
             ))}
           </div>
 

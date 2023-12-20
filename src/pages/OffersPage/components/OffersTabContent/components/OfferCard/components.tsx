@@ -4,7 +4,7 @@ import classNames from 'classnames'
 
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
-import { CollectionMeta, Loan, Offer } from '@banx/api/core'
+import { CollectionMeta, Offer } from '@banx/api/core'
 import { calcSyntheticLoanValue } from '@banx/store'
 import { formatDecimal } from '@banx/utils'
 
@@ -53,7 +53,6 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
 }
 
 interface AdditionalOfferOverviewProps {
-  loans: Loan[]
   offer: Offer
   className?: string
 }
