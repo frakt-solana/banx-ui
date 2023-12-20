@@ -11,7 +11,6 @@ import { Loan } from '@banx/api/core'
 import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
 import {
   HealthColorIncreasing,
-  calcBorrowValueWithProtocolFee,
   calcLoanBorrowedAmount,
   calculateLoanRepayValue,
   formatDecimal,
@@ -43,7 +42,7 @@ export const DebtCell: FC<CellProps> = ({ loan }) => {
   const borrowedValue = fraktBond.borrowedAmount
 
   const totalAccruedInterest = debtValue - solAmount - feeAmount + accruedInterest
-  const upfrontFee = borrowedValue - calcBorrowValueWithProtocolFee(borrowedValue)
+  const upfrontFee = fraktBond.fbondTokenSupply || feeAmount
 
   const weeklyFee = calculateCurrentInterestSolPure({
     loanValue: calcLoanBorrowedAmount(loan),
