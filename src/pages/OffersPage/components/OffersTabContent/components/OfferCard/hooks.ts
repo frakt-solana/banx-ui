@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { CollectionMeta, Offer } from '@banx/api/core'
-import { useLenderLoansAndOffers } from '@banx/pages/OffersPage/hooks'
+import { useLenderLoansAndOffers } from '@banx/pages/OffersPage'
 import { PATHS } from '@banx/router'
 import { convertToSynthetic, useMarketsURLControl, useSyntheticOffers } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
