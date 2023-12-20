@@ -4,26 +4,25 @@ import classNames from 'classnames'
 
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
-import { CollectionMeta, Offer } from '@banx/api/core'
+import { UserOffer } from '@banx/api/core'
 import { calcSyntheticLoanValue } from '@banx/store'
-import { formatDecimal } from '@banx/utils'
+import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
 
 import styles from './OfferCard.module.less'
 
 interface MainOfferOverviewProps {
-  offer: Offer
-  collectionMeta: CollectionMeta
+  offer: UserOffer
 }
 
-export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectionMeta }) => {
-  const { collectionName, collectionImage, collectionFloor } = collectionMeta
+export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer }) => {
+  const { collectionName, collectionImage, collectionFloor } = offer.collectionMeta
 
   const {
     buyOrdersQuantity,
     bondingCurve: { delta },
-  } = offer
+  } = offer.offer
 
-  const loanValue = calcSyntheticLoanValue(offer)
+  const loanValue = calcSyntheticLoanValue(offer.offer)
 
   const minDeltaValue = loanValue - (buyOrdersQuantity - 1) * delta
 
@@ -53,7 +52,7 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer, collectio
 }
 
 interface AdditionalOfferOverviewProps {
-  offer: Offer
+  offer: UserOffer
   className?: string
 }
 
@@ -65,14 +64,18 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
     bidSettlement,
     marketApr = 0,
     validation,
-  } = offer
+  } = offer.offer
 
+  const loanValue = calcSyntheticLoanValue(offer.offer)
+
+  const collectionFloor = offer.collectionMeta.collectionFloor
+  const activeLoans = validation.maxReturnAmountFilter
   const offerSize = lentValue + fundsSolOrTokenBalance + bidSettlement
 
   const formattedOfferSize = formatDecimal(offerSize / 1e9)
   const formattedLentValue = formatDecimal(lentValue / 1e9)
   const formattedAprValue = (marketApr / 100)?.toFixed(0)
-  const activeLoans = validation.maxReturnAmountFilter
+  const formattedLtvValue = collectionFloor / loanValue / 100
 
   return (
     <div className={classNames(styles.additionalOfferContainer, className)}>
@@ -81,6 +84,12 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
         value={`${formattedLentValue}/${formattedOfferSize}◎`}
         valueType={VALUES_TYPES.STRING}
         secondValue={`${activeLoans} loans`}
+      />
+      <StatInfo
+        label="LTV"
+        value={formattedLtvValue}
+        valueType={VALUES_TYPES.PERCENT}
+        valueStyles={{ color: getColorByPercent(formattedLtvValue, HealthColorIncreasing) }}
       />
       <StatInfo
         label="Accrued interest"

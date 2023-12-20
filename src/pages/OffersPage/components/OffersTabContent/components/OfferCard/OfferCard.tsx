@@ -33,9 +33,9 @@ const OfferCard: FC<OfferCardProps> = ({ offer }) => {
         className={classNames(styles.cardBody, { [styles.active]: isOpen })}
         onClick={onCardClick}
       >
-        <MainOfferOverview offer={offer.offer} collectionMeta={offer.collectionMeta} />
+        <MainOfferOverview offer={offer} />
         <AdditionalOfferOverview
-          offer={offer.offer}
+          offer={offer}
           className={isOpen ? styles.hiddenAdditionalOverview : ''}
         />
         <Button

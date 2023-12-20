@@ -283,27 +283,12 @@ export const fetchAuctionsLoans = async () => {
   }
 }
 
-type FetchUserOffers = (props: {
-  walletPubkey: string
-  order?: string
-  skip?: number
-  limit?: number
-  sortBy?: string
-}) => Promise<UserOffer[]>
-export const fetchUserOffers: FetchUserOffers = async ({
-  walletPubkey,
-  order = 'desc',
-  skip = 0,
-  limit = 10,
-  sortBy = 'lent',
-}) => {
+type FetchUserOffers = (props: { walletPubkey: string; getAll?: boolean }) => Promise<UserOffer[]>
+export const fetchUserOffers: FetchUserOffers = async ({ walletPubkey, getAll = true }) => {
   try {
     const queryParams = new URLSearchParams({
       isPrivate: String(IS_PRIVATE_MARKETS),
-      order,
-      skip: String(skip),
-      limit: String(limit),
-      sortBy,
+      getAll: String(getAll),
     })
 
     const { data } = await axios.get<FetchUserOffersResponse>(

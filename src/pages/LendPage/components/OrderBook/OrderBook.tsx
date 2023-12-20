@@ -6,7 +6,6 @@ import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 
 import { MarketPreview, Offer } from '@banx/api/core'
 
-import { OrderBookMarketParams } from '../ExpandableCardContent'
 import {
   AccruedInterest,
   CollapsedMobileContent,
@@ -16,6 +15,13 @@ import {
 import { OrderBookParams, useOrderBook } from './hooks'
 
 import styles from './OrderBook.module.less'
+
+export interface OrderBookMarketParams {
+  marketPubkey: string
+  offerPubkey: string
+  setOfferPubkey: (offerPubkey: string) => void
+  goToPlaceOfferTab: () => void
+}
 
 const OrderBookDesktop: FC<{ orderBookParams: OrderBookParams }> = ({ orderBookParams }) => {
   const { updateOrAddOffer, offers } = orderBookParams

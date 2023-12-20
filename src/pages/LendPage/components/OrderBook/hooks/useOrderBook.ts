@@ -2,7 +2,7 @@ import { MarketPreview, Offer } from '@banx/api/core'
 import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { SyntheticOffer, useSyntheticOffers } from '@banx/store'
 
-import { OrderBookMarketParams } from '../../ExpandableCardContent'
+import { OrderBookMarketParams } from '../OrderBook'
 import { useMarketOrders } from './useMarketOrders'
 
 export interface OrderBookParams {
