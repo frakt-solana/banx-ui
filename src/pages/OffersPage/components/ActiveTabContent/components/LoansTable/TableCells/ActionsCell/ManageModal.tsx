@@ -1,6 +1,9 @@
-import { FC, useState } from 'react'
+import { FC, useMemo, useState } from 'react'
 
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { isEmpty } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { Slider } from '@banx/components/Slider'
@@ -9,11 +12,18 @@ import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan } from '@banx/api/core'
+import { useMarketOffers } from '@banx/pages/LendPage'
+import { findBestOffer, useHiddenNftsMints, useLenderLoans } from '@banx/pages/OffersPage'
 import { useModal } from '@banx/store'
+import { defaultTxnErrorHandler } from '@banx/transactions'
+import { makeInstantRefinanceAction, makeTerminateAction } from '@banx/transactions/loans'
 import {
   HealthColorIncreasing,
   calculateLoanRepayValue,
+  enqueueSnackbar,
   getColorByPercent,
+  isLoanActiveOrRefinanced,
+  isLoanTerminating,
   trackPageEvent,
 } from '@banx/utils'
 
@@ -21,11 +31,9 @@ import styles from './ActionsCell.module.less'
 
 interface ManageModalProps {
   loan: Loan
-  onTerminate?: () => void
-  onInstant?: () => void
 }
 
-export const ManageModal: FC<ManageModalProps> = ({ loan, onTerminate, onInstant }) => {
+export const ManageModal: FC<ManageModalProps> = ({ loan }) => {
   const { close } = useModal()
 
   const modalTabs: Tab[] = [
@@ -57,18 +65,85 @@ export const ManageModal: FC<ManageModalProps> = ({ loan, onTerminate, onInstant
       <Tabs className={styles.tabs} tabs={tabs} value={tabValue} setValue={setTabValue} />
 
       {tabValue === modalTabs[0].value && <RepaymentCallContent loan={loan} close={close} />}
-      {tabValue === modalTabs[1].value && (
-        <ClosureContent onInstant={onInstant} onTerminate={onTerminate} />
-      )}
+      {tabValue === modalTabs[1].value && <ClosureContent loan={loan} />}
     </Modal>
   )
 }
 
 interface ClosureContentProps {
-  onTerminate?: () => void
-  onInstant?: () => void
+  loan: Loan
 }
-const ClosureContent: FC<ClosureContentProps> = ({ onTerminate, onInstant }) => {
+const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
+  const wallet = useWallet()
+  const { connection } = useConnection()
+
+  const { updateOrAddLoan } = useLenderLoans()
+  const { addMints: hideLoans } = useHiddenNftsMints()
+
+  const { offers, updateOrAddOffer } = useMarketOffers({ marketPubkey: loan.fraktBond.hadoMarket })
+
+  const bestOffer = useMemo(() => {
+    return findBestOffer({ loan, offers, walletPubkey: wallet?.publicKey?.toBase58() || '' })
+  }, [offers, loan, wallet])
+
+  const loanActiveOrRefinanced = isLoanActiveOrRefinanced(loan)
+  const isTerminatingStatus = isLoanTerminating(loan)
+  const hasRefinanceOffers = !isEmpty(bestOffer)
+
+  const canRefinance = hasRefinanceOffers && loanActiveOrRefinanced
+  const canTerminate = !canRefinance || isTerminatingStatus
+
+  const terminateLoan = () => {
+    new TxnExecutor(makeTerminateAction, { wallet, connection })
+      .addTxnParam({ loan })
+      .on('pfSuccessEach', (results) => {
+        const { result, txnHash } = results[0]
+        updateOrAddLoan({ ...loan, ...result })
+        enqueueSnackbar({
+          message: 'Offer termination successfully initialized',
+          type: 'success',
+          solanaExplorerPath: `tx/${txnHash}`,
+        })
+      })
+      .on('pfSuccessAll', () => {
+        close()
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error, {
+          additionalData: loan,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'Terminate',
+        })
+      })
+      .execute()
+  }
+
+  const instantLoan = () => {
+    new TxnExecutor(makeInstantRefinanceAction, { wallet, connection })
+      .addTxnParam({ loan, bestOffer })
+      .on('pfSuccessEach', (results) => {
+        const { result, txnHash } = results[0]
+        result?.bondOffer && updateOrAddOffer(result.bondOffer)
+        hideLoans(loan.nft.mint)
+        enqueueSnackbar({
+          message: 'Offer successfully sold',
+          type: 'success',
+          solanaExplorerPath: `tx/${txnHash}`,
+        })
+      })
+      .on('pfSuccessAll', () => {
+        close()
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error, {
+          additionalData: loan,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'RefinanceInstant',
+        })
+      })
+      .execute()
+  }
+
   return (
     <div className={styles.closureContent}>
       <div
@@ -85,13 +160,13 @@ const ClosureContent: FC<ClosureContentProps> = ({ onTerminate, onInstant }) => 
 
       <div className={classNames(styles.modalContent, styles.contentBorderTop)}>
         <div className={styles.twoColumnsContent}>
-          <Button onClick={onInstant} disabled={!onInstant} variant="secondary">
+          <Button onClick={instantLoan} disabled={!canRefinance} variant="secondary">
             Exit
           </Button>
           <Button
             className={styles.terminateButton}
-            onClick={onTerminate}
-            disabled={!onTerminate}
+            onClick={terminateLoan}
+            disabled={!canTerminate}
             variant="secondary"
           >
             Terminate

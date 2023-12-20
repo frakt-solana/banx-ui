@@ -26,14 +26,14 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
   const { connection } = useConnection()
   const { open } = useModal()
 
-  const { addMints } = useHiddenNftsMints()
+  const { addMints: hideLoans } = useHiddenNftsMints()
 
   const onClaim = () => {
     trackPageEvent('myoffers', 'activetab-claim')
     new TxnExecutor(makeClaimAction, { wallet, connection })
       .addTxnParam({ loan })
       .on('pfSuccessEach', (results) => {
-        addMints(loan.nft.mint)
+        hideLoans(loan.nft.mint)
         enqueueSnackbar({
           message: 'Collateral successfully claimed',
           type: 'success',

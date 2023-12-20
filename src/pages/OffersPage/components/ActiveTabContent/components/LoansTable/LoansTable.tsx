@@ -30,7 +30,7 @@ type SearchSelectOption = {
 }
 
 export const LoansTable = () => {
-  const { loans, addMints, updateOrAddLoan, loading } = useLenderLoans()
+  const { loans, addMints: hideLoans, updateOrAddLoan, loading } = useLenderLoans()
 
   const { loansToClaim, loansToTerminate } = useMemo(() => {
     if (!loans.length) return { loansToClaim: [], loansToTerminate: [] }
@@ -115,7 +115,7 @@ export const LoansTable = () => {
         loading={loading}
       />
       <Summary
-        addMints={addMints}
+        hideLoans={hideLoans}
         loansToTerminate={loansToTerminate}
         loansToClaim={loansToClaim}
         updateOrAddLoan={updateOrAddLoan}

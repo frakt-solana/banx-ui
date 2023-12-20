@@ -19,7 +19,7 @@ import styles from './LoansTable.module.less'
 
 interface SummaryProps {
   updateOrAddLoan: (loan: Loan) => void
-  addMints: (...mints: string[]) => void
+  hideLoans: (...mints: string[]) => void
   loansToClaim: Loan[]
   loansToTerminate: Loan[]
 }
@@ -28,7 +28,7 @@ export const Summary: FC<SummaryProps> = ({
   updateOrAddLoan,
   loansToTerminate,
   loansToClaim,
-  addMints,
+  hideLoans,
 }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
@@ -86,7 +86,7 @@ export const Summary: FC<SummaryProps> = ({
         })
       })
       .on('pfSuccessAll', () => {
-        addMints(...loansToClaim.map(({ nft }) => nft.mint))
+        hideLoans(...loansToClaim.map(({ nft }) => nft.mint))
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error, {
