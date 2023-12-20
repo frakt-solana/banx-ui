@@ -32,6 +32,9 @@ interface RefinanceModalProps {
 }
 
 export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
+  const { bondTradeTransaction, fraktBond } = loan
+  const { feeAmount } = bondTradeTransaction
+
   const { close } = useModal()
   const wallet = useWallet()
   const { connection } = useConnection()
@@ -42,6 +45,8 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
   const { update: updateOptimisticOffers } = useOffersOptimistic()
 
   const isTerminatingStatus = isLoanTerminating(loan)
+
+  const upfrontFee = fraktBond.fbondTokenSupply || feeAmount
 
   const currentLoanBorrowedAmount = calcLoanBorrowedAmount(loan)
   const currentLoanDailyFee = calculateCurrentInterestSolPure({
@@ -54,7 +59,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
 
   const currentSpotPrice = offer?.currentSpotPrice || 0
 
-  const newLoanBorrowedAmount = currentSpotPrice
+  const newLoanBorrowedAmount = currentSpotPrice - upfrontFee
   const newLoanDebt = currentSpotPrice
 
   const newLoanDailyFee = calculateCurrentInterestSolPure({
@@ -64,7 +69,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
     rateBasePoints: (offer?.marketApr || 0) + BONDS.PROTOCOL_REPAY_FEE,
   })
 
-  const differenceToPay = newLoanBorrowedAmount - currentLoanDebt
+  const differenceToPay = newLoanDebt - currentLoanDebt
 
   const refinance = () => {
     if (!offer) return
