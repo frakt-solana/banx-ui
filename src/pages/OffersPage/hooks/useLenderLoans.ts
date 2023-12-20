@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-import { useWallet } from '@solana/wallet-adapter-react'
+// import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 import { web3 } from 'fbonds-core'
 
@@ -12,23 +12,23 @@ export const USE_LENDER_LOANS_QUERY_KEY = 'lenderLoansV2'
 
 export const useLenderLoans = () => {
   // const { publicKey } = useWallet()
-  const { publicKey: publicKey2 } = useWallet()
+  // const { publicKey: publicKey2 } = useWallet()
   const publicKey = useMemo(
     () => new web3.PublicKey('mm8fDa7jiufFGD6h4foq9vdmTRxDeDSTKB9CZynwQQs'),
     [],
   )
   const publicKeyString = publicKey?.toBase58() || ''
 
-  const { mints, addMints } = useHiddenNftsMints()
+  const { /*mints,*/ addMints } = useHiddenNftsMints()
 
-  const { loans: optimisticLoans, addLoans, findLoan, updateLoans } = useLenderLoansOptimistic()
+  const { /*loans: optimisticLoans,*/ addLoans, findLoan, updateLoans } = useLenderLoansOptimistic()
   // const { optimisticOffers, remove: removeOffers, update: updateOrAddOffer } = useOffersOptimistic()
 
   const {
     data: loans,
     isLoading,
-    isFetching,
-    isFetched,
+    // isFetching,
+    // isFetched,
   } = useQuery(
     [USE_LENDER_LOANS_QUERY_KEY, publicKeyString],
     () => fetchLenderLoans({ walletPublicKey: publicKeyString, getAll: true }),
@@ -38,6 +38,11 @@ export const useLenderLoans = () => {
       refetchInterval: 30 * 1000,
     },
   )
+
+  // const walletOptimisticLoans = useMemo(() => {
+  //   if (!publicKeyString) return []
+  //   return optimisticLoans.filter(({ wallet }) => wallet === publicKeyString)
+  // }, [optimisticLoans, publicKeyString])
 
   // const { data, fetchNextPage, isFetchingNextPage, hasNextPage, isLoading } = useInfiniteQuery({
   //   queryKey: [USE_LENDER_LOANS_QUERY_KEY, publicKey],
@@ -70,7 +75,7 @@ export const useLenderLoans = () => {
   //   return optimisticLoans.filter(({ wallet }) => wallet === publicKeyString)
   // }, [optimisticLoans, publicKeyString])
 
-  // //? Check same active loans (duplicated with BE) and purge them
+  //? Check same active loans (duplicated with BE) and purge them
   // useEffect(() => {
   //   if (!data || isFetching || !isFetched || !publicKeyString) return
 
