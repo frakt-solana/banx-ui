@@ -7,7 +7,7 @@ import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/u
 
 import { calculateClaimValue } from '../../../../OffersTabContent/components/OfferCard'
 
-import styles from '../ActiveLoansTable.module.less'
+import styles from '../LoansTable.module.less'
 
 interface InterestCellProps {
   loan: Loan

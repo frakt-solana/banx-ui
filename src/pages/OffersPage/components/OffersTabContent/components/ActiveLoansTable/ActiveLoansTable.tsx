@@ -1,23 +1,14 @@
-import { FC, useMemo, useState } from 'react'
-
-import { first, groupBy, map, sumBy } from 'lodash'
+import { FC, useMemo } from 'react'
 
 import EmptyList from '@banx/components/EmptyList'
-import { SearchSelectProps } from '@banx/components/SearchSelect'
 import Table from '@banx/components/Table'
-import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
 import { useSortedLoans } from '@banx/pages/LoansPage/components/LoansActiveTable'
 import { useLenderLoansAndOffers } from '@banx/pages/OffersPage/hooks'
-import { ViewState, useTableView } from '@banx/store'
-import { formatDecimal, isLoanLiquidated, isLoanTerminating } from '@banx/utils'
+import { isLoanLiquidated, isLoanTerminating } from '@banx/utils'
 
-import { useActiveTabContent } from '../../hooks'
-import { calculateClaimValue } from '../OfferCard'
-import { ActiveTabSummary } from '../Summary/Summary'
 import { getTableColumns } from './columns'
-import { useSortedLenderLoans } from './hooks'
 
 import styles from './ActiveLoansTable.module.less'
 
@@ -72,95 +63,4 @@ const caclulateTableHeight = (totalLoans: number) => {
   const HEAD_ROW_PX = 30
 
   return Math.min(ROW_HEIGHT_PX * totalLoans + HEAD_ROW_PX, MAX_TABLE_HEIGHT_PX)
-}
-
-type SearchSelectOption = {
-  collectionName: string
-  collectionImage: string
-  claim: number
-}
-
-export const ActiveLoansTab = () => {
-  const { loans, loansToTerminate, updateOrAddLoan, addMints, loansToClaim } = useActiveTabContent()
-  const { viewState } = useTableView()
-
-  const [selectedOffers, setSelectedOffers] = useState<string[]>([])
-
-  const filteredData = useMemo(() => {
-    if (selectedOffers.length) {
-      return loans.filter(({ nft }) => selectedOffers.includes(nft.meta.collectionName))
-    }
-    return loans
-  }, [loans, selectedOffers])
-
-  const { sortedLoans, sortParams } = useSortedLenderLoans(filteredData)
-
-  const searchSelectOptions = useMemo(() => {
-    const loansGroupedByCollection = groupBy(loans, ({ nft }) => nft.meta.collectionName)
-
-    return map(loansGroupedByCollection, (groupedLoans) => {
-      const firstLoanInGroup = first(groupedLoans)
-      const { collectionName = '', collectionImage = '' } = firstLoanInGroup?.nft.meta || {}
-      const claim = sumBy(groupedLoans, calculateClaimValue)
-
-      return { collectionName, collectionImage, claim }
-    })
-  }, [loans])
-
-  const searchSelectParams: SearchSelectProps<SearchSelectOption> = {
-    options: searchSelectOptions,
-    selectedOptions: selectedOffers,
-    className: styles.searchSelect,
-    labels: ['Collection', 'Claim'],
-    optionKeys: {
-      labelKey: 'collectionName',
-      valueKey: 'collectionName',
-      imageKey: 'collectionImage',
-      secondLabel: {
-        key: 'claim',
-        format: (value: number) => createSolValueJSX(value, 1e9, '0◎', formatDecimal),
-      },
-    },
-    onChange: setSelectedOffers,
-  }
-
-  const columns = getTableColumns({ updateOrAddLoan, isCardView: viewState === ViewState.CARD })
-
-  const rowParams = useMemo(() => {
-    return {
-      activeRowParams: [
-        {
-          condition: (loan: Loan) => isLoanTerminating(loan),
-          className: styles.terminated,
-          cardClassName: styles.terminated,
-        },
-        {
-          condition: (loan: Loan) => isLoanLiquidated(loan),
-          className: styles.liquidated,
-          cardClassName: styles.liquidated,
-        },
-      ],
-    }
-  }, [])
-
-  if (!loans.length) return <EmptyList message="Your offer is waiting for a borrower" />
-
-  return (
-    <div className={styles.tableRoot}>
-      <Table
-        data={sortedLoans}
-        columns={columns}
-        classNameTableWrapper={styles.tableWrapper}
-        rowParams={rowParams}
-        sortViewParams={{ searchSelectParams, sortParams }}
-        showCard
-      />
-      <ActiveTabSummary
-        addMints={addMints}
-        loansToTerminate={loansToTerminate}
-        loansToClaim={loansToClaim}
-        updateOrAddLoan={updateOrAddLoan}
-      />
-    </div>
-  )
 }

@@ -2,84 +2,14 @@ import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
-import { produce } from 'immer'
 import { chain, map, maxBy } from 'lodash'
-import { create } from 'zustand'
 
 import { LendLoansAndOffers, Loan, Offer, fetchLenderLoansAndOffers } from '@banx/api/core'
-import { fetchUserOffersStats } from '@banx/api/stats'
+import { useMarketsPreview } from '@banx/pages/LendPage'
 import { isOfferNewer, isOptimisticOfferExpired, useOffersOptimistic } from '@banx/store'
 import { isOfferClosed } from '@banx/utils'
 
-import { useMarketsPreview } from '../LendPage/hooks'
-
-interface HiddenNftsMintsState {
-  mints: string[]
-  addMints: (...mints: string[]) => void
-}
-
-export const useHiddenNftsMints = create<HiddenNftsMintsState>((set) => ({
-  mints: [],
-  addMints: (...mints) =>
-    set(
-      produce((state: HiddenNftsMintsState) => {
-        state.mints.push(...mints)
-      }),
-    ),
-}))
-
-const convertLoanToOptimistic = (loan: Loan, walletPublicKey: string) => {
-  return {
-    loan,
-    wallet: walletPublicKey,
-  }
-}
-
-export interface LoanOptimistic {
-  loan: Loan
-  wallet: string
-}
-
-interface OptimisticLenderLoansState {
-  loans: LoanOptimistic[]
-  addLoans: (loan: Loan, walletPublicKey: string) => void
-  findLoan: (loanPubkey: string, walletPublicKey: string) => LoanOptimistic | null
-  updateLoans: (loan: Loan, walletPublicKey: string) => void
-}
-
-const useLenderLoansOptimistic = create<OptimisticLenderLoansState>((set, get) => ({
-  loans: [],
-  addLoans: (loan, walletPublicKey) => {
-    if (!walletPublicKey) return
-
-    return set(
-      produce((state: OptimisticLenderLoansState) => {
-        state.loans.push(convertLoanToOptimistic(loan, walletPublicKey))
-      }),
-    )
-  },
-  findLoan: (loanPubkey, walletPublicKey) => {
-    if (!walletPublicKey) return null
-
-    return get().loans.find(({ loan }) => loan.publicKey === loanPubkey) ?? null
-  },
-  updateLoans: (loan, walletPublicKey) => {
-    if (!walletPublicKey) return
-
-    const loanExists = !!get().findLoan(loan.publicKey, walletPublicKey)
-
-    loanExists &&
-      set(
-        produce((state: OptimisticLenderLoansState) => {
-          state.loans = state.loans.map((existingLoan) =>
-            existingLoan.loan.publicKey === loan.publicKey
-              ? convertLoanToOptimistic(loan, walletPublicKey)
-              : existingLoan,
-          )
-        }),
-      )
-  },
-}))
+import { useHiddenNftsMints, useLenderLoansOptimistic } from '.'
 
 export const USE_LENDER_LOANS_AND_OFFERS_QUERY_KEY = 'userOffersV2'
 
@@ -217,25 +147,4 @@ const isClosedAndEmptyOffer = (offer: Offer, loans: Loan[]) => {
   const isClosedOffer = isOfferClosed(offer?.pairState)
 
   return isClosedOffer && !loans.length
-}
-
-export const useUserOffersStats = () => {
-  const { publicKey } = useWallet()
-  const publicKeyString = publicKey?.toBase58() || ''
-
-  const { data, isLoading } = useQuery(
-    ['userOffersStats', publicKeyString],
-    () => fetchUserOffersStats(publicKeyString),
-    {
-      enabled: !!publicKeyString,
-      staleTime: 5 * 1000,
-      refetchOnWindowFocus: false,
-      refetchInterval: 15 * 1000,
-    },
-  )
-
-  return {
-    data,
-    isLoading,
-  }
 }
