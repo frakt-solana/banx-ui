@@ -8,7 +8,12 @@ import Table from '@banx/components/Table'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import { calculateClaimValue, useLenderLoans } from '@banx/pages/OffersPage'
+import {
+  calculateClaimValue,
+  isLoanAbleToClaim,
+  isLoanAbleToTerminate,
+  useLenderLoans,
+} from '@banx/pages/OffersPage'
 import { ViewState, useTableView } from '@banx/store'
 import { formatDecimal, isLoanLiquidated, isLoanTerminating } from '@banx/utils'
 
@@ -30,12 +35,12 @@ export const LoansTable = () => {
   const { loansToClaim, loansToTerminate } = useMemo(() => {
     if (!loans.length) return { loansToClaim: [], loansToTerminate: [] }
 
-    const loansToClaim: Loan[] = []
+    const loansToClaim = loans.filter(isLoanAbleToClaim)
 
-    const loansToTerminate: Loan[] = []
+    const loansToTerminate = loans.filter((loan) => isLoanAbleToTerminate(loan))
 
     return { loansToClaim, loansToTerminate }
-  }, [loans.length])
+  }, [loans])
 
   const { viewState } = useTableView()
 
@@ -79,7 +84,7 @@ export const LoansTable = () => {
     onChange: setSelectedOffers,
   }
 
-  const columns = getTableColumns({ updateOrAddLoan, isCardView: viewState === ViewState.CARD })
+  const columns = getTableColumns({ isCardView: viewState === ViewState.CARD })
 
   const rowParams = useMemo(() => {
     return {
