@@ -19,7 +19,7 @@ interface DiagramProps {
   isLoading: boolean
 }
 
-const Diagram: FC<DiagramProps> = ({ marks = [], isLoading }) => {
+export const Diagram: FC<DiagramProps> = ({ marks = [], isLoading }) => {
   const groupedMarks = groupMarks(marks)
 
   return (
@@ -37,5 +37,3 @@ const Diagram: FC<DiagramProps> = ({ marks = [], isLoading }) => {
     </div>
   )
 }
-
-export default Diagram

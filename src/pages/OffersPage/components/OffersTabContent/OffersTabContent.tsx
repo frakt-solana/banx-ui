@@ -4,7 +4,7 @@ import { Loader } from '@banx/components/Loader'
 import FilterSection from '../FilterSection'
 import OfferCard from './components/OfferCard'
 import Summary from './components/Summary'
-import { useOffersContent } from './hooks/useOffersTabContent'
+import { useOffersContent } from './hooks'
 
 import styles from './OffersTabContent.module.less'
 
