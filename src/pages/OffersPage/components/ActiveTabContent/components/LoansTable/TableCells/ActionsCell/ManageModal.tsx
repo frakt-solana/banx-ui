@@ -66,6 +66,7 @@ interface ClosureContentProps {
 const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
+  const { close } = useModal()
 
   const { updateOrAddLoan, addMints: hideLoans } = useLenderLoans()
 
