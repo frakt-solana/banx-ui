@@ -60,8 +60,6 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
   const showModal = () => {
     open(ManageModal, {
       loan,
-      onTerminate: undefined,
-      onInstant: undefined,
     })
   }
 
@@ -86,5 +84,3 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
     </div>
   )
 }
-
-export default ActionsCell
