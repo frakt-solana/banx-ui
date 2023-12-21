@@ -104,6 +104,6 @@ export const DiagramMark: FC<DiagramMarkProps> = ({ mark, left }) => {
   return tooltipContent ? (
     <Tooltip title={tooltipContent}>{commonMarkContent}</Tooltip>
   ) : (
-    <>{commonMarkContent}</>
+    commonMarkContent
   )
 }
