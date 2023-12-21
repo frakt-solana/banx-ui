@@ -59,7 +59,7 @@ type UsePlaceOffer = (props: {
 
 export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOfferPubkey }) => {
   const { connected } = useWallet()
-  const solanaBalance = useSolanaBalance()
+  const solanaBalance = useSolanaBalance({ isLive: false })
 
   const { offer, market, updateOrAddOffer } = useMarketAndOffer(offerPubkey, marketPubkey)
   const { syntheticOffer, removeSyntheticOffer, setSyntheticOffer } = useSyntheticOffer(
