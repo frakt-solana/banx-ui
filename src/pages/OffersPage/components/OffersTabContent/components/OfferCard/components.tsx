@@ -74,6 +74,7 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
 
   const formattedOfferSize = formatDecimal(offerSize / 1e9)
   const formattedLentValue = formatDecimal(lentValue / 1e9)
+  const formattedInterestValue = formatDecimal(accruedInterest / 1e9)
   const formattedAprValue = (marketApr / 100)?.toFixed(0)
   const formattedLtvValue = (loanValue / collectionFloor) * 100
 
@@ -93,9 +94,9 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
       />
       <StatInfo
         label="Accrued interest"
-        value={accruedInterest}
+        value={formattedInterestValue}
         secondValue={`${formattedAprValue}% APR`}
-        divider={1e9}
+        valueType={VALUES_TYPES.STRING}
       />
     </div>
   )
