@@ -5,7 +5,7 @@ import { SimpleOffer } from '@banx/pages/BorrowPage/types'
 import { calcLoanBorrowedAmount } from '@banx/utils'
 
 import { Mark } from './Diagram'
-import { MAX_GROUP_SIZE, MAX_LEFT_PERCENTAGE, MIN_LEFT_PERCENTAGE } from './constants'
+import { MAX_BOUND_PERCENTAGE, MAX_GROUP_SIZE, MIN_BOUND_PERCENTAGE } from './constants'
 
 export const convertLoanToMark = (loan: Loan) => {
   return { value: calcLoanBorrowedAmount(loan), loan }
@@ -21,7 +21,7 @@ export const convertOfferToMark = (offerValue: number, index: number, delta: num
 
 export const calcLeftPercentage = (values: Mark[] | Mark[][], currentIndex: number) => {
   const percentage = (currentIndex / (values.length - 1)) * 100
-  return clamp(percentage, MIN_LEFT_PERCENTAGE, MAX_LEFT_PERCENTAGE)
+  return clamp(percentage, MIN_BOUND_PERCENTAGE, MAX_BOUND_PERCENTAGE)
 }
 
 export const groupMarks = (marks: Mark[]): Mark[] | Mark[][] => {
