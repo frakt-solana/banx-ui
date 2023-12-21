@@ -234,7 +234,7 @@ export const fetchLenderLoans: FetchLenderLoans = async ({
   skip = 0,
   limit = 50,
   sortBy = 'status',
-  getAll = IS_PRIVATE_MARKETS,
+  getAll = true, //TODO Remove when normal pagination added
 }) => {
   try {
     const queryParams = new URLSearchParams({
