@@ -23,17 +23,19 @@ export const Diagram: FC<DiagramProps> = ({ marks = [], isLoading }) => {
   const groupedMarks = groupMarks(marks)
 
   return (
-    <div className={styles.diagram}>
-      {isLoading ? (
-        <Skeleton.Input size="large" active block />
-      ) : (
-        <div className={styles.diagramLine}>
-          {groupedMarks.map((mark, index) => {
-            const left = calcLeftPercentage(groupedMarks, index)
-            return <DiagramMark key={index} mark={mark} left={left} />
-          })}
-        </div>
-      )}
+    <div className={styles.diagramWrapper}>
+      <div className={styles.diagram}>
+        {isLoading ? (
+          <Skeleton.Input size="large" active block />
+        ) : (
+          <div className={styles.diagramLine}>
+            {groupedMarks.map((mark, index) => {
+              const left = calcLeftPercentage(groupedMarks, index)
+              return <DiagramMark key={index} mark={mark} left={left} />
+            })}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

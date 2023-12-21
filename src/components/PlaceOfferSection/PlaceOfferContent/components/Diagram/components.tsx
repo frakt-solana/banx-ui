@@ -61,7 +61,7 @@ const createTooltip = (loans: Loan[]) => {
 
 const createSquareElement = (nftImage: string | undefined) => {
   if (nftImage) {
-    return <img src={nftImage} className={styles.square} />
+    return <img src={nftImage} className={styles.imageSquare} />
   }
   return <div className={styles.square} />
 }

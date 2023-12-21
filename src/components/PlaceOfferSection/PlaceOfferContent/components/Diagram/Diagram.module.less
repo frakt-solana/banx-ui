@@ -1,9 +1,19 @@
+.diagramWrapper {
+  overflow-x: scroll;
+  width: 100%;
+}
+
 .diagram {
   display: flex;
   align-items: center;
   margin: 16px 0;
   height: 60px;
   position: relative;
+  width: 100%;
+
+  @media (max-width: 1240px) {
+    width: 960px;
+  }
 }
 
 .diagramLine {
@@ -21,11 +31,27 @@
   position: absolute;
   bottom: 2px;
 
-  .square {
+  @media (max-width: 640px) {
+    gap: 2px;
+    bottom: 8px;
+  }
+
+  .square,
+  .imageSquare {
     background: var(--accent-primary-sub);
     border: 2px solid var(--accent-primary);
     height: 24px;
     width: 24px;
+
+    @media (max-width: 640px) {
+      border-width: 1px;
+      height: 20px;
+      width: 20px;
+    }
+  }
+
+  .imageSquare {
+    border: 0;
   }
 
   .dot {
@@ -38,6 +64,10 @@
   .value {
     font: var(--body-text-sm);
     white-space: nowrap;
+
+    @media (max-width: 640px) {
+      font: var(--body-text-xs);
+    }
   }
 }
 
