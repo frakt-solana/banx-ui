@@ -16,10 +16,12 @@ import {
 } from '../PlaceOfferContent/components/Diagram'
 import { OfferMode } from '../components'
 import { calcBestOfferValue, calcOfferSize, getErrorMessage, getUpdatedBondOffer } from '../helpers'
-import { useMarketAndOffer, useOfferMode, useSyntheticOffer } from './hooks'
 import { useLenderLoans } from './useLenderLoans'
+import { useMarketAndOffer } from './useMarketAndOffer'
 import { useOfferFormController } from './useOfferFormController'
+import { useOfferMode } from './useOfferMode'
 import { useOfferTransactions } from './useOfferTransactions'
+import { useSyntheticOffer } from './useSyntheticOffer'
 
 export interface PlaceOfferParams {
   market: MarketPreview | undefined
