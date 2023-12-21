@@ -6,6 +6,7 @@ import { isEmpty } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
+import { Loader } from '@banx/components/Loader'
 import { Slider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
@@ -80,18 +81,19 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const { updateOrAddLoan } = useLenderLoans()
   const { addMints: hideLoans } = useHiddenNftsMints()
 
-  const { offers, updateOrAddOffer } = useMarketOffers({ marketPubkey: loan.fraktBond.hadoMarket })
+  const { offers, updateOrAddOffer, isLoading } = useMarketOffers({
+    marketPubkey: loan.fraktBond.hadoMarket,
+  })
 
   const bestOffer = useMemo(() => {
     return findBestOffer({ loan, offers, walletPubkey: wallet?.publicKey?.toBase58() || '' })
   }, [offers, loan, wallet])
 
   const loanActiveOrRefinanced = isLoanActiveOrRefinanced(loan)
-  const isTerminatingStatus = isLoanTerminating(loan)
   const hasRefinanceOffers = !isEmpty(bestOffer)
 
   const canRefinance = hasRefinanceOffers && loanActiveOrRefinanced
-  const canTerminate = !canRefinance || isTerminatingStatus
+  const canTerminate = !isLoanTerminating(loan) && loanActiveOrRefinanced
 
   const terminateLoan = () => {
     new TxnExecutor(makeTerminateAction, { wallet, connection })
@@ -158,20 +160,23 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
         </p>
       </div>
 
-      <div className={classNames(styles.modalContent, styles.contentBorderTop)}>
-        <div className={styles.twoColumnsContent}>
-          <Button onClick={instantLoan} disabled={!canRefinance} variant="secondary">
-            Exit
-          </Button>
-          <Button
-            className={styles.terminateButton}
-            onClick={terminateLoan}
-            disabled={!canTerminate}
-            variant="secondary"
-          >
-            Terminate
-          </Button>
-        </div>
+      <div className={styles.modalContent}>
+        {isLoading && <Loader />}
+        {!isLoading && (
+          <div className={styles.twoColumnsContent}>
+            <Button onClick={instantLoan} disabled={!canRefinance} variant="secondary">
+              {canRefinance ? 'Exit' : 'No suitable offers yet'}
+            </Button>
+            <Button
+              className={styles.terminateButton}
+              onClick={terminateLoan}
+              disabled={!canTerminate}
+              variant="secondary"
+            >
+              Terminate
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   )
