@@ -37,23 +37,23 @@ export const LoansTable = () => {
 
     const loansToClaim = loans.filter(isLoanAbleToClaim)
 
-    const loansToTerminate = loans.filter((loan) => isLoanAbleToTerminate(loan))
+    const loansToTerminate = loans.filter(isLoanAbleToTerminate)
 
     return { loansToClaim, loansToTerminate }
   }, [loans])
 
   const { viewState } = useTableView()
 
-  const [selectedOffers, setSelectedOffers] = useState<string[]>([])
+  const [selectedCollections, setSelectedCollections] = useState<string[]>([])
 
-  const filteredData = useMemo(() => {
-    if (selectedOffers.length) {
-      return loans.filter(({ nft }) => selectedOffers.includes(nft.meta.collectionName))
+  const filteredLoans = useMemo(() => {
+    if (selectedCollections.length) {
+      return loans.filter(({ nft }) => selectedCollections.includes(nft.meta.collectionName))
     }
     return loans
-  }, [loans, selectedOffers])
+  }, [loans, selectedCollections])
 
-  const { sortedLoans, sortParams } = useSortedLoans(filteredData)
+  const { sortedLoans, sortParams } = useSortedLoans(filteredLoans)
 
   const searchSelectOptions = useMemo(() => {
     const loansGroupedByCollection = groupBy(loans, ({ nft }) => nft.meta.collectionName)
@@ -69,7 +69,7 @@ export const LoansTable = () => {
 
   const searchSelectParams: SearchSelectProps<SearchSelectOption> = {
     options: searchSelectOptions,
-    selectedOptions: selectedOffers,
+    selectedOptions: selectedCollections,
     className: styles.searchSelect,
     labels: ['Collection', 'Claim'],
     optionKeys: {
@@ -81,7 +81,7 @@ export const LoansTable = () => {
         format: (value: number) => createSolValueJSX(value, 1e9, '0◎', formatDecimal),
       },
     },
-    onChange: setSelectedOffers,
+    onChange: setSelectedCollections,
   }
 
   const columns = getTableColumns({ isCardView: viewState === ViewState.CARD })
@@ -103,7 +103,8 @@ export const LoansTable = () => {
     }
   }, [])
 
-  if (!loans.length && !loading) return <EmptyList message="Your offer is waiting for a borrower" />
+  if (!loans.length && !loading)
+    return <EmptyList message="Your offers is waiting for a borrower" />
 
   return (
     <div className={styles.tableRoot}>
@@ -113,6 +114,7 @@ export const LoansTable = () => {
         rowParams={rowParams}
         sortViewParams={{ searchSelectParams, sortParams }}
         loading={loading}
+        showCard
       />
       <Summary
         hideLoans={hideLoans}
