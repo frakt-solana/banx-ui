@@ -75,7 +75,7 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
   const formattedOfferSize = formatDecimal(offerSize / 1e9)
   const formattedLentValue = formatDecimal(lentValue / 1e9)
   const formattedAprValue = (marketApr / 100)?.toFixed(0)
-  const formattedLtvValue = collectionFloor / loanValue / 100
+  const formattedLtvValue = (loanValue / collectionFloor) * 100
 
   return (
     <div className={classNames(styles.additionalOfferContainer, className)}>
