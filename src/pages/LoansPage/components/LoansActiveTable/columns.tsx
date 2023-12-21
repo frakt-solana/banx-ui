@@ -1,12 +1,11 @@
 import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
-import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
+import { HeaderCell, NftInfoCell } from '@banx/components/TableComponents'
 
 import { Loan, Offer } from '@banx/api/core'
-import { formatDecimal } from '@banx/utils'
 
 import { LoanOptimistic } from '../../loansState'
-import { ActionsCell, DebtCell, HealthCell, InterestCell, StatusCell } from './TableCells'
+import { APRCell, ActionsCell, DebtCell, LTVCell, StatusCell } from './TableCells'
 
 import styles from './LoansActiveTable.module.less'
 
@@ -50,32 +49,21 @@ export const getTableColumns = ({
       ),
     },
     {
-      key: 'loanValue',
-      title: <HeaderCell label="Borrowed" />,
-      render: ({ fraktBond }) =>
-        createSolValueJSX(fraktBond.borrowedAmount, 1e9, '--', formatDecimal),
-      sorter: true,
-    },
-    {
-      key: 'fee',
-      title: <HeaderCell label="Fee" />,
-      render: (loan) => <InterestCell loan={loan} isCardView={isCardView} />,
-    },
-    {
-      key: 'repayValue',
+      key: 'debt',
       title: <HeaderCell label="Debt" />,
-      render: (loan) => <DebtCell loan={loan} isCardView={isCardView} />,
+      render: (loan) => <DebtCell loan={loan} />,
       sorter: true,
     },
     {
-      key: 'health',
-      title: (
-        <HeaderCell
-          label="Health"
-          tooltipText="Estimated  health of loans using a formula: 1 - (debt / floor)"
-        />
-      ),
-      render: (loan) => <HealthCell loan={loan} />,
+      key: 'apr',
+      title: <HeaderCell label="APR" />,
+      render: (loan) => <APRCell loan={loan} />,
+      sorter: true,
+    },
+    {
+      key: 'ltv',
+      title: <HeaderCell label="LTV" />,
+      render: (loan) => <LTVCell loan={loan} />,
       sorter: true,
     },
     {

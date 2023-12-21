@@ -28,6 +28,7 @@ const FilterSection = <T extends object>({
   hotMarkets,
 }: FilterSectionProps<T>) => {
   const [searchSelectCollapsed, setSearchSelectCollapsed] = useState(true)
+  const disabledHotFilterAction = !hotMarkets?.length
 
   return (
     <div className={styles.container}>
@@ -38,16 +39,18 @@ const FilterSection = <T extends object>({
           collapsed={searchSelectCollapsed}
           onChangeCollapsed={setSearchSelectCollapsed}
         />
-        <Tooltip title="Hot collections">
+        <Tooltip
+          title={disabledHotFilterAction ? 'No hot collections currently' : 'Hot collections'}
+        >
           <>
             <Button
               className={classNames(
                 styles.filterButton,
                 { [styles.active]: isHotFilterActive },
-                { [styles.disabled]: !hotMarkets?.length },
+                { [styles.disabled]: disabledHotFilterAction },
               )}
               onClick={onToggleHotFilter}
-              disabled={!hotMarkets?.length}
+              disabled={disabledHotFilterAction}
               variant="secondary"
               type="circle"
             >

@@ -43,7 +43,7 @@ const RewardsButton = () => (
         [styles.active]: isActivePath(PATHS.LEADERBOARD),
       })}
     >
-      <Cup /> <span>Rewards</span>
+      <Cup /> <span>Farm $BANX</span>
     </Button>
   </NavLink>
 )

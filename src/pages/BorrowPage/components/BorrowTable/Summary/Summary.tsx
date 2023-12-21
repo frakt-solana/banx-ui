@@ -10,6 +10,7 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 import {
   calcBorrowValueWithProtocolFee,
   calcBorrowValueWithRentFee,
+  formatDecimal,
   getColorByPercent,
   trackPageEvent,
 } from '@banx/utils'
@@ -42,6 +43,10 @@ export const Summary: FC<SummaryProps> = ({
     return calcBorrowValueWithRentFee(loanValueWithProtocolFee, nft.loan.marketPubkey)
   })
 
+  const totalUpfrontFee = sumBy(nftsInCart, ({ loanValue }) => {
+    return loanValue - calcBorrowValueWithProtocolFee(loanValue)
+  })
+
   const totalWeeklyFee = sumBy(nftsInCart, ({ nft, loanValue }) =>
     calcInterest({
       timeInterval: ONE_WEEK_IN_SECONDS,
@@ -67,12 +72,16 @@ export const Summary: FC<SummaryProps> = ({
 
       <div className={styles.statsContainer}>
         <div className={styles.stats}>
-          <p className={styles.statsTitle}>To borrow</p>
-          <p className={styles.statsValue}>{createSolValueJSX(totalBorrow, 1e9, '0◎')}</p>
+          <p className={styles.statsTitle}>Upfront fee</p>
+          <p className={styles.statsValue}>
+            {createSolValueJSX(totalUpfrontFee, 1e9, '0◎', formatDecimal)}
+          </p>
         </div>
         <div className={styles.stats}>
           <p className={styles.statsTitle}>Weekly fee</p>
-          <p className={styles.statsValue}>{createSolValueJSX(totalWeeklyFee, 1e9, '0◎')}</p>
+          <p className={styles.statsValue}>
+            {createSolValueJSX(totalWeeklyFee, 1e9, '0◎', formatDecimal)}
+          </p>
         </div>
         <div className={styles.stats}>
           <p className={classNames(styles.statsTitle, styles.statsTitleLeft)}>Max Ltv</p>
