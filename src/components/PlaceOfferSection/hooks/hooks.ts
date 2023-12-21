@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
-import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
+import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage'
 import { SyntheticOffer, createEmptySyntheticOffer, useSyntheticOffers } from '@banx/store'
 
 import { OfferMode } from '../components'

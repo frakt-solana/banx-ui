@@ -1,5 +1,5 @@
 import { MarketPreview, Offer } from '@banx/api/core'
-import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
+import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage'
 import { SyntheticOffer, useSyntheticOffers } from '@banx/store'
 
 import { OrderBookMarketParams } from '../OrderBook'
