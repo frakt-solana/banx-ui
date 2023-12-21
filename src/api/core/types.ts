@@ -190,22 +190,23 @@ export const LendLoansAndOffersSchema = z.object({
   loans: LoanSchema.array(),
   collectionMeta: CollectionMetaSchema,
 })
-
 export type LendLoansAndOffers = z.infer<typeof LendLoansAndOffersSchema>
 export interface LendLoansAndOffersResponse {
   data: LendLoansAndOffers[]
   meta: PaginationMeta
 }
-
 export const LenderLoansSchema = z.object({
   offer: PairSchema,
   loans: LoanSchema.array(),
 })
-
 export type LenderLoans = z.infer<typeof LenderLoansSchema>
-
 export interface LenderLoansResponse {
   data: LenderLoans[]
+  meta: PaginationMeta
+}
+
+export interface LendLoansResponse {
+  data: Loan[]
   meta: PaginationMeta
 }
 

@@ -2,10 +2,10 @@ import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
 import { toLowerCaseNoSpaces, trackPageEvent, useMixpanelLocationTrack } from '@banx/utils'
 
+import { ActiveTabContent } from './components/ActiveTabContent'
 import { HistoryOffersTable } from './components/HistoryOffersTable'
 import OffersHeader from './components/OffersHeader'
 import OffersTabContent from './components/OffersTabContent'
-import { ActiveLoansTab } from './components/OffersTabContent/components/ActiveLoansTable/ActiveLoansTable'
 
 import styles from './OffersPage.module.less'
 
@@ -26,7 +26,7 @@ export const OffersPage = () => {
       <OffersHeader />
       <Tabs value={currentTabValue} {...tabsProps} onTabClick={onTabClick} />
       {currentTabValue === OffersTabName.OFFERS && <OffersTabContent />}
-      {currentTabValue === OffersTabName.ACTIVE && <ActiveLoansTab />}
+      {currentTabValue === OffersTabName.ACTIVE && <ActiveTabContent />}
       {currentTabValue === OffersTabName.HISTORY && <HistoryOffersTable />}
     </div>
   )

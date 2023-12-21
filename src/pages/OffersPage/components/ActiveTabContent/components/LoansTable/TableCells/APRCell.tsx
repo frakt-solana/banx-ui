@@ -4,7 +4,7 @@ import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
 
-import styles from '../ActiveLoansTable.module.less'
+import styles from '../LoansTable.module.less'
 
 interface APRCellProps {
   loan: Loan
