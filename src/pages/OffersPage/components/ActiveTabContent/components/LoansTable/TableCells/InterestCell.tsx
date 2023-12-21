@@ -3,11 +3,10 @@ import { FC } from 'react'
 import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
+import { calculateClaimValue } from '@banx/pages/OffersPage'
 import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
 
-import { calculateClaimValue } from '../../OfferCard'
-
-import styles from '../ActiveLoansTable.module.less'
+import styles from '../LoansTable.module.less'
 
 interface InterestCellProps {
   loan: Loan

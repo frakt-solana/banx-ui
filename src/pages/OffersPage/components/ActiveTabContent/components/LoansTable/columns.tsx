@@ -2,17 +2,16 @@ import { ColumnType } from '@banx/components/Table'
 import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
+import { calculateLentValue } from '@banx/pages/OffersPage'
 import { formatDecimal } from '@banx/utils'
 
-import { calculateLentValue } from '../OfferCard/helpers'
 import { APRCell, ActionsCell, InterestCell, StatusCell } from './TableCells'
 
 interface GetTableColumns {
-  updateOrAddLoan: (loan: Loan) => void
   isCardView?: boolean
 }
 
-export const getTableColumns = ({ updateOrAddLoan, isCardView = false }: GetTableColumns) => {
+export const getTableColumns = ({ isCardView = false }: GetTableColumns) => {
   const columns: ColumnType<Loan>[] = [
     {
       key: 'collateral',
@@ -63,9 +62,7 @@ export const getTableColumns = ({ updateOrAddLoan, isCardView = false }: GetTabl
     {
       key: 'actionsCell',
       title: !isCardView ? <HeaderCell label="" /> : undefined,
-      render: (loan) => (
-        <ActionsCell updateOrAddLoan={updateOrAddLoan} loan={loan} isCardView={isCardView} />
-      ),
+      render: (loan) => <ActionsCell loan={loan} isCardView={isCardView} />,
     },
   ]
 

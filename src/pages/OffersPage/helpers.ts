@@ -1,7 +1,11 @@
+import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { chain, first } from 'lodash'
+import moment from 'moment'
 
 import { Loan, Offer } from '@banx/api/core'
+import { BONDS } from '@banx/constants'
 import {
+  calcLoanBorrowedAmount,
   calculateLoanRepayValue,
   calculateLoanValue,
   isLoanLiquidated,
@@ -17,22 +21,13 @@ export const isLoanAbleToClaim: IsLoanAbleToClaim = (loan) => {
   return isLoanExpired && isTerminatingStatus
 }
 
-type IsLoanAbleToTerminate = (props: {
-  loan: Loan
-  offers: Offer[]
-  walletPubkey: string
-}) => boolean
-export const isLoanAbleToTerminate: IsLoanAbleToTerminate = ({
-  loan,
-  offers,
-  walletPubkey = '',
-}) => {
+type IsLoanAbleToTerminate = (loan: Loan) => boolean
+export const isLoanAbleToTerminate: IsLoanAbleToTerminate = (loan) => {
   const isLoanExpired = isLoanLiquidated(loan)
   const isTerminatingStatus = isLoanTerminating(loan)
-  const hasRefinanceOffers = findBestOffer({ loan, offers, walletPubkey })
   const isLoanUnderWater = isUnderWaterLoan(loan)
 
-  return !isLoanExpired && !isTerminatingStatus && !hasRefinanceOffers && isLoanUnderWater
+  return !isLoanExpired && !isTerminatingStatus && isLoanUnderWater
 }
 
 type FindBestOffer = (props: { loan: Loan; offers: Offer[]; walletPubkey: string }) => Offer
@@ -47,4 +42,28 @@ export const findBestOffer: FindBestOffer = ({ loan, offers, walletPubkey }) => 
     .value()
 
   return first(filteredOffers) as Offer
+}
+
+export const calculateLentValue = (loan: Loan) => {
+  const totalRepaidAmount = loan.totalRepaidAmount || 0
+
+  const loanBorrowedAmount = calcLoanBorrowedAmount(loan)
+
+  return loanBorrowedAmount + totalRepaidAmount
+}
+
+export const calculateClaimValue = (loan: Loan) => {
+  const { amountOfBonds, soldAt } = loan.bondTradeTransaction
+
+  const loanBorrowedAmount = calcLoanBorrowedAmount(loan)
+
+  const interestParameters = {
+    loanValue: loanBorrowedAmount,
+    startTime: soldAt,
+    currentTime: moment().unix(),
+    rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
+  }
+
+  const currentInterest = calculateCurrentInterestSolPure(interestParameters)
+  return currentInterest + loanBorrowedAmount
 }

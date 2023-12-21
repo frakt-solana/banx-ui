@@ -1,0 +1,33 @@
+.tableRoot {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.tableRoot table {
+  tr > td {
+    width: 160px;
+
+    &:first-child {
+      min-width: 176px;
+    }
+
+    &:nth-last-child(-n + 2) {
+      width: 100px;
+    }
+  }
+}
+
+.searchSelect {
+  max-width: 750px;
+}
+
+.terminated {
+  background: var(--additional-lava-secondary) !important;
+}
+
+.liquidated {
+  background: var(--additional-red-secondary) !important;
+}

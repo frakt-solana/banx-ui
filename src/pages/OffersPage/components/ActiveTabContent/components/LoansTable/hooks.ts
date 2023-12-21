@@ -59,7 +59,7 @@ const sortLoansByStatus = (loans: Loan[], order: SortOrder) => {
   return order === 'asc' ? combinedLoans : combinedLoans.reverse()
 }
 
-export const useSortedLenderLoans = (loans: Loan[]) => {
+export const useSortedLoans = (loans: Loan[]) => {
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
 
   const sortOptionValue = sortOption?.value
