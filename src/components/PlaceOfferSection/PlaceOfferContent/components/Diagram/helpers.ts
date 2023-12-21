@@ -38,3 +38,5 @@ export const groupMarks = (marks: Mark[]): Mark[] | Mark[][] => {
 
   return concat(groupedMarksWithLoan, groupedMarksWithoutLoan)
 }
+
+export const calculateStyle = (left: number) => `calc(${left}% - 24px)`

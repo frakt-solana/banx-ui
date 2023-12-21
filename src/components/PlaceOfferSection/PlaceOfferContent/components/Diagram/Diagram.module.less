@@ -56,3 +56,46 @@
   width: 24px;
   font: var(--body-text-xs);
 }
+
+.tooltip {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 236px;
+  min-width: 232px;
+  overflow: auto;
+}
+
+.tooltipHeaderContent {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+
+  span {
+    text-align: right;
+    width: 100px;
+  }
+}
+.tooltipHeaderLabel {
+  color: var(--content-secondary);
+  font: var(--table-header-sm);
+  text-transform: uppercase;
+}
+
+.tooltipBodyContent {
+  display: flex;
+  flex-direction: column;
+  font: var(--body-text-sm);
+  gap: 2px;
+}
+.tooltipRowContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.nftImage {
+  width: 24px;
+  height: 24px;
+}

@@ -14,7 +14,6 @@ export const useLenderLoans = ({ offerPubkey }: { offerPubkey: string }) => {
     () => fetchLenderLoansByCertainOffer({ walletPublicKey, offerPubkey }),
     {
       staleTime: 60_000,
-      refetchInterval: 5_000,
       enabled: !!offerPubkey,
       refetchOnWindowFocus: false,
     },

@@ -203,7 +203,7 @@ export const fetchLenderLoansByCertainOffer: FetchLenderLoansByCertainOffer = as
     })
 
     const { data } = await axios.get<LenderLoansResponse>(
-      `${BACKEND_BASE_URL}/loans/lender/v3/?${queryParams.toString()}`,
+      `${BACKEND_BASE_URL}/loans/lender-loans/v3/?${queryParams.toString()}`,
     )
 
     try {
