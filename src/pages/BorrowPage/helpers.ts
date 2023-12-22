@@ -12,7 +12,8 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
     mathCounter,
     buyOrdersQuantity,
     bondingCurve,
-    bidSettlement: reserve,
+    bidSettlement,
+    currentSpotPrice,
     validation,
   } = offer
 
@@ -25,7 +26,7 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
       spotPrice: baseSpotPrice,
       counter: baseMathCounter + 1,
     })
-    const loanValue = Math.min(validation.loanToValueFilter, reserve, prevSpotPrice)
+    const loanValue = Math.min(validation.loanToValueFilter, bidSettlement, prevSpotPrice)
 
     const simpleOffer = {
       id: uniqueId(),
@@ -35,7 +36,7 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
     }
     return [simpleOffer]
   }
-  const simpleOffers = Array(buyOrdersQuantity)
+  const { reserve, simpleOffers: mainOffers, prevSpotPrice } = Array(buyOrdersQuantity)
     .fill(0)
     .reduce(
       (acc: { reserve: number; simpleOffers: SimpleOffer[] }, _, idx) => {
@@ -73,10 +74,31 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
         return {
           reserve: nextReserve,
           simpleOffers: [...acc.simpleOffers, simpleOffer],
+          prevSpotPrice,
         }
       },
-      { reserve, simpleOffers: [] },
-    ).simpleOffers
+      { reserve: bidSettlement, simpleOffers: [], prevSpotPrice: currentSpotPrice },
+    )
+
+  const reserveDenominator = Math.min(validation.loanToValueFilter, prevSpotPrice);
+  const reserveOrdersCount = Math.floor(reserve / reserveDenominator)
+  const reserveOffers = Array(reserveOrdersCount)
+    .fill(0).map(_ => ({
+      id: uniqueId(),
+      loanValue: reserveDenominator,
+      hadoMarket: offer.hadoMarket,
+      publicKey: offer.publicKey,
+    }))
+
+  const lastOfferValue = reserve % reserveDenominator;
+  const lastOffer = {
+    id: uniqueId(),
+    loanValue: lastOfferValue,
+    hadoMarket: offer.hadoMarket,
+    publicKey: offer.publicKey,
+  }
+
+  const simpleOffers = [...mainOffers, ...reserveOffers, lastOffer]
 
   return simpleOffers
 }
