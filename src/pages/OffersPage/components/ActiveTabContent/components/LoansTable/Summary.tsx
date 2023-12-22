@@ -9,7 +9,7 @@ import { Button } from '@banx/components/Buttons'
 import { StatInfo } from '@banx/components/StatInfo'
 
 import { Loan } from '@banx/api/core'
-import { SMALL_DESKTOP_WIDTH } from '@banx/constants'
+import { TABLET_WIDTH } from '@banx/constants'
 import { useWindowSize } from '@banx/hooks'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimAction, makeTerminateAction } from '@banx/transactions/loans'
@@ -33,7 +33,7 @@ export const Summary: FC<SummaryProps> = ({
   const wallet = useWallet()
   const { connection } = useConnection()
   const { width } = useWindowSize()
-  const isSmallDesktop = width < SMALL_DESKTOP_WIDTH
+  const isSmallDesktop = width < TABLET_WIDTH
 
   const totalClaimableFloor = useMemo(
     () => sumBy(loansToClaim, ({ nft }) => nft.collectionFloor),

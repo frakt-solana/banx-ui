@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-import { chain, filter, includes } from 'lodash'
+import { filter, first, groupBy, includes, map, sumBy } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { createSolValueJSX } from '@banx/components/TableComponents'
@@ -13,7 +13,7 @@ import { useUserOffers } from './useUserOffers'
 type SearchSelectOption = {
   collectionName: string
   collectionImage: string
-  claim: number
+  lent: number
 }
 
 export const useOffersContent = () => {
@@ -32,25 +32,31 @@ export const useOffersContent = () => {
 
   const { sortParams, sortedOffers } = useSortedOffers(filteredOffers)
 
-  const searchSelectOptions = chain(offers)
-    .map(({ collectionMeta }) => ({
-      collectionName: collectionMeta.collectionName,
-      collectionImage: collectionMeta.collectionImage,
-      claim: 0, //TODO: need to calc claim or smth another?
-    }))
-    .uniqBy(({ collectionName }) => collectionName)
-    .value()
+  const searchSelectOptions = useMemo(() => {
+    const offersGroupedByCollection = groupBy(
+      offers,
+      ({ collectionMeta }) => collectionMeta.collectionName,
+    )
+
+    return map(offersGroupedByCollection, (groupedLoan) => {
+      const firstLoanInGroup = first(groupedLoan)
+      const { collectionName = '', collectionImage = '' } = firstLoanInGroup?.collectionMeta || {}
+      const lent = sumBy(groupedLoan, ({ offer }) => offer.edgeSettlement)
+
+      return { collectionName, collectionImage, lent }
+    })
+  }, [offers])
 
   const searchSelectParams: SearchSelectProps<SearchSelectOption> = {
     options: searchSelectOptions,
     selectedOptions: selectedCollections,
-    labels: ['Collection', 'Claim'],
+    labels: ['Collection', 'Lent'],
     optionKeys: {
       labelKey: 'collectionName',
       valueKey: 'collectionName',
       imageKey: 'collectionImage',
       secondLabel: {
-        key: 'claim',
+        key: 'lent',
         format: (value: number) => createSolValueJSX(value, 1e9, '0◎', formatDecimal),
       },
     },

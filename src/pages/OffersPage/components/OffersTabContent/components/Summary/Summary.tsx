@@ -5,7 +5,7 @@ import { sumBy } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Offer, UserOffer } from '@banx/api/core'
-import { SMALL_DESKTOP_WIDTH } from '@banx/constants'
+import { TABLET_WIDTH } from '@banx/constants'
 import { useWindowSize } from '@banx/hooks'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimBondOfferInterestAction } from '@banx/transactions/bonds'
@@ -24,7 +24,7 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
   const { width } = useWindowSize()
-  const isSmallDesktop = width < SMALL_DESKTOP_WIDTH
+  const isSmallDesktop = width < TABLET_WIDTH
 
   const totalAccruedInterest = useMemo(
     () => sumBy(offers, ({ offer }) => offer.concentrationIndex),

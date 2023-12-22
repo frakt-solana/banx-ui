@@ -17,21 +17,9 @@ interface MainOfferOverviewProps {
 export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer }) => {
   const { collectionName, collectionImage, collectionFloor } = offer.collectionMeta
 
-  const {
-    buyOrdersQuantity,
-    bondingCurve: { delta },
-  } = offer.offer
-
   const loanValue = calcSyntheticLoanValue(offer.offer)
 
-  const minDeltaValue = loanValue - (buyOrdersQuantity - 1) * delta
-
   const formattedLoanValue = formatDecimal(loanValue / 1e9)
-  const formattedMinLoanValue = formatDecimal(minDeltaValue / 1e9)
-
-  const displayOfferValue = delta
-    ? `${formattedLoanValue} - ${formattedMinLoanValue}`
-    : `${formattedLoanValue}`
 
   return (
     <div className={styles.mainOfferContainer}>
@@ -42,7 +30,7 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer }) => {
           <StatInfo label="Floor" value={collectionFloor} divider={1e9} />
           <StatInfo
             label="Best offer"
-            value={`${displayOfferValue}◎`}
+            value={`${formattedLoanValue}◎`}
             valueType={VALUES_TYPES.STRING}
           />
         </div>

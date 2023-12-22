@@ -31,7 +31,7 @@ const STATUS_VALUE_MAP: StatusValueMap = {
   [SortField.LENT]: ({ offer }) => offer.edgeSettlement,
   [SortField.INTEREST]: ({ offer }) => offer.concentrationIndex,
   [SortField.LTV]: ({ offer, collectionMeta }) =>
-    collectionMeta.collectionFloor / calcSyntheticLoanValue(offer),
+    calcSyntheticLoanValue(offer) / collectionMeta.collectionFloor,
 }
 
 export const useSortedOffers = (offers: UserOffer[]) => {

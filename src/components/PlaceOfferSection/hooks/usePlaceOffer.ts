@@ -150,6 +150,7 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
         .fill(loanValue)
         .map((offerValue, index) => convertOfferToMark(offerValue, index, deltaValue))
         .sortBy(({ value }) => value)
+        .reverse()
         .value()
     }
 
@@ -161,7 +162,7 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
     const loansToMarks = lenderLoans.map(convertLoanToMark)
     const simpleOffersToMarks = convertOffersToSimple([offerToUse]).map(convertSimpleOfferToMark)
 
-    return sortBy([...loansToMarks, ...simpleOffersToMarks], ({ value }) => value)
+    return sortBy([...loansToMarks, ...simpleOffersToMarks], ({ value }) => value).reverse()
   }, [
     isEditMode,
     loansAmount,
