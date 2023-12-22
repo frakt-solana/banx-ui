@@ -16,26 +16,28 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
     currentSpotPrice,
     validation,
   } = offer
+  const baseMathCounterInitial = mathCounter + 1
 
-  if (buyOrdersQuantity === 0) {
-    const baseMathCounter = mathCounter + 1
+  const prevSpotPriceInitial = calculateNextSpotPrice({
+    bondingCurveType: bondingCurve.bondingType as BondingCurveType,
+    delta: bondingCurve.delta,
+    spotPrice: baseSpotPrice,
+    counter: baseMathCounterInitial + 1,
+  })
+  // if (buyOrdersQuantity === 0) {
+  //   const baseMathCounter = mathCounter + 1
 
-    const prevSpotPrice = calculateNextSpotPrice({
-      bondingCurveType: bondingCurve.bondingType as BondingCurveType,
-      delta: bondingCurve.delta,
-      spotPrice: baseSpotPrice,
-      counter: baseMathCounter + 1,
-    })
-    const loanValue = Math.min(validation.loanToValueFilter, bidSettlement, prevSpotPrice)
 
-    const simpleOffer = {
-      id: uniqueId(),
-      loanValue,
-      hadoMarket: offer.hadoMarket,
-      publicKey: offer.publicKey,
-    }
-    return [simpleOffer]
-  }
+  //   const loanValue = Math.min(validation.loanToValueFilter, bidSettlement, prevSpotPrice)
+
+  //   const simpleOffer = {
+  //     id: uniqueId(),
+  //     loanValue,
+  //     hadoMarket: offer.hadoMarket,
+  //     publicKey: offer.publicKey,
+  //   }
+  //   return [simpleOffer]
+  // }
   const { reserve, simpleOffers: mainOffers, prevSpotPrice } = Array(buyOrdersQuantity)
     .fill(0)
     .reduce(
@@ -74,11 +76,13 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
         return {
           reserve: nextReserve,
           simpleOffers: [...acc.simpleOffers, simpleOffer],
-          prevSpotPrice,
+          prevSpotPrice: nextSpotPrice,
         }
       },
-      { reserve: bidSettlement, simpleOffers: [], prevSpotPrice: currentSpotPrice },
+      { reserve: bidSettlement, simpleOffers: [], prevSpotPrice: prevSpotPriceInitial },
     )
+
+
 
   const reserveDenominator = Math.min(validation.loanToValueFilter, prevSpotPrice);
   const reserveOrdersCount = Math.floor(reserve / reserveDenominator)
