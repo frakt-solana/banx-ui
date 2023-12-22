@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { chain, isEmpty, sortBy } from 'lodash'
+import { chain, isEmpty } from 'lodash'
 
 import { MarketPreview, Offer } from '@banx/api/core'
 import { convertOffersToSimple } from '@banx/pages/BorrowPage/helpers'
@@ -162,7 +162,11 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
     const loansToMarks = lenderLoans.map(convertLoanToMark)
     const simpleOffersToMarks = convertOffersToSimple([offerToUse]).map(convertSimpleOfferToMark)
 
-    return sortBy([...loansToMarks, ...simpleOffersToMarks], ({ value }) => value).reverse()
+    return chain([...loansToMarks, ...simpleOffersToMarks])
+      .filter(({ value }) => value > 0)
+      .sortBy(({ value }) => value)
+      .reverse()
+      .value()
   }, [
     isEditMode,
     loansAmount,
