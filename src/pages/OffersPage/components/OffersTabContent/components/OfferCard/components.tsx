@@ -58,7 +58,7 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
 
   const collectionFloor = offer.collectionMeta.collectionFloor
   const activeLoans = validation.maxReturnAmountFilter
-  const offerSize = lentValue + fundsSolOrTokenBalance + bidSettlement
+  const offerSize = fundsSolOrTokenBalance + bidSettlement
 
   const formattedOfferSize = formatDecimal(offerSize / 1e9)
   const formattedLentValue = formatDecimal(lentValue / 1e9)
