@@ -69,7 +69,7 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
   return (
     <div className={classNames(styles.additionalOfferContainer, className)}>
       <StatInfo
-        label="Lent"
+        label="Lent/Size"
         value={`${formattedLentValue}/${formattedOfferSize}◎`}
         valueType={VALUES_TYPES.STRING}
         secondValue={`${activeLoans} loans`}
