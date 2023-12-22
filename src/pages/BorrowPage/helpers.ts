@@ -98,14 +98,15 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
     publicKey: offer.publicKey,
   }
 
-  const simpleOffers = [...mainOffers, ...reserveOffers, lastOffer]
+  const simpleOffers = [...mainOffers, ...reserveOffers, ...(lastOfferValue > 0 ? [lastOffer] : [])]
 
+  console.log("simpleOffers: ", simpleOffers);
   return simpleOffers
 }
 
 type ConvertOffersToSimple = (offers: Offer[], sort?: 'desc' | 'asc') => SimpleOffer[]
 export const convertOffersToSimple: ConvertOffersToSimple = (offers, sort = 'desc') => {
-  return chain(offers)
+  const convertedOffers = chain(offers)
     .map(spreadToSimpleOffers)
     .flatten()
     .sort((a, b) => {
@@ -115,4 +116,7 @@ export const convertOffersToSimple: ConvertOffersToSimple = (offers, sort = 'des
       return a.loanValue - b.loanValue
     })
     .value()
+
+  console.log("convertedOffers: ", convertedOffers)
+  return convertedOffers
 }
