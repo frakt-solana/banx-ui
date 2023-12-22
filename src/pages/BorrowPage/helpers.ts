@@ -104,6 +104,7 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
 
   const simpleOffers = [...mainOffers, ...reserveOffers, ...(lastOfferValue > 0 ? [lastOffer] : [])]
 
+  console.log("simpleOffers: ", simpleOffers)
   return simpleOffers
 }
 
