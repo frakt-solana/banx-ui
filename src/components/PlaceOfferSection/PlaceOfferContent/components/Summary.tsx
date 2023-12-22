@@ -78,7 +78,7 @@ export const Summary: FC<OfferSummaryProps> = ({
       {isEditMode && (
         <div className={styles.editSummary}>
           <StatInfo
-            label="Lent/Pool size"
+            label="Lent/Size"
             value={`${formattedLentValue}/${formattedOfferSize}◎`}
             valueType={VALUES_TYPES.STRING}
           />

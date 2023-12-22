@@ -11,11 +11,16 @@ import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan } from '@banx/api/core'
 import { useMarketOffers } from '@banx/pages/LendPage'
-import { findBestOffer, useLenderLoans } from '@banx/pages/OffersPage'
+import { calculateClaimValue, findBestOffer, useLenderLoans } from '@banx/pages/OffersPage'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { makeInstantRefinanceAction, makeTerminateAction } from '@banx/transactions/loans'
-import { enqueueSnackbar, isLoanActiveOrRefinanced, isLoanTerminating } from '@banx/utils'
+import {
+  enqueueSnackbar,
+  formatDecimal,
+  isLoanActiveOrRefinanced,
+  isLoanTerminating,
+} from '@banx/utils'
 
 import styles from './ActionsCell.module.less'
 
@@ -83,6 +88,9 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
 
   const canRefinance = hasRefinanceOffer && loanActiveOrRefinanced
   const canTerminate = !isLoanTerminating(loan) && loanActiveOrRefinanced
+
+  const totalClaimValue = calculateClaimValue(loan)
+  const formattedClaimValue = `+${formatDecimal(totalClaimValue / 1e9)}◎`
 
   const terminateLoan = () => {
     new TxnExecutor(makeTerminateAction, { wallet, connection })
@@ -154,7 +162,7 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
         {!isLoading && (
           <div className={styles.twoColumnsContent}>
             <Button onClick={instantLoan} disabled={!canRefinance} variant="secondary">
-              {canRefinance ? 'Exit' : 'No suitable offers yet'}
+              {canRefinance ? `Exit ${formattedClaimValue}` : 'No suitable offers yet'}
             </Button>
             <Button
               className={styles.terminateButton}
