@@ -86,8 +86,8 @@ export const DiagramMark: FC<DiagramMarkProps> = ({ mark, left }) => {
 
   const nftImage = firstLoan?.nft.meta.imageUrl
 
-  const formattedFirstValue = formatDecimal(firstValue / 1e9)
-  const formattedLastValue = marks.length > 1 ? `- ${formatDecimal(lastValue / 1e9)}` : ''
+  const formattedFirstValue = formatValue(firstValue)
+  const formattedLastValue = marks.length > 1 ? `- ${formatValue(lastValue)}` : ''
 
   const loans = compact(marks.map((mark) => mark?.loan))
   const tooltipContent = createTooltip(loans)
@@ -106,4 +106,9 @@ export const DiagramMark: FC<DiagramMarkProps> = ({ mark, left }) => {
   ) : (
     commonMarkContent
   )
+}
+
+const formatValue = (value: number) => {
+  const formattedDecimalValue = formatDecimal(value / 1e9)
+  return formattedDecimalValue.replace(/\.?0+$/, '')
 }
