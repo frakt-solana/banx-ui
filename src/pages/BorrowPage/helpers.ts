@@ -104,7 +104,6 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
 
   const simpleOffers = [...mainOffers, ...reserveOffers, ...(lastOfferValue > 0 ? [lastOffer] : [])]
 
-  console.log("simpleOffers: ", simpleOffers);
   return simpleOffers
 }
 
@@ -121,6 +120,5 @@ export const convertOffersToSimple: ConvertOffersToSimple = (offers, sort = 'des
     })
     .value()
 
-  console.log("convertedOffers: ", convertedOffers)
   return convertedOffers
 }
