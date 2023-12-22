@@ -7,15 +7,8 @@ import { Offer } from '@banx/api/core'
 import { SimpleOffer } from './types'
 
 const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
-  const {
-    baseSpotPrice,
-    mathCounter,
-    buyOrdersQuantity,
-    bondingCurve,
-    bidSettlement,
-    currentSpotPrice,
-    validation,
-  } = offer
+  const { baseSpotPrice, mathCounter, buyOrdersQuantity, bondingCurve, bidSettlement, validation } =
+    offer
   const baseMathCounterInitial = mathCounter + 1
 
   const prevSpotPriceInitial = calculateNextSpotPrice({
@@ -27,7 +20,6 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
   // if (buyOrdersQuantity === 0) {
   //   const baseMathCounter = mathCounter + 1
 
-
   //   const loanValue = Math.min(validation.loanToValueFilter, bidSettlement, prevSpotPrice)
 
   //   const simpleOffer = {
@@ -38,7 +30,11 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
   //   }
   //   return [simpleOffer]
   // }
-  const { reserve, simpleOffers: mainOffers, prevSpotPrice } = Array(buyOrdersQuantity)
+  const {
+    reserve,
+    simpleOffers: mainOffers,
+    prevSpotPrice,
+  } = Array(buyOrdersQuantity)
     .fill(0)
     .reduce(
       (acc: { reserve: number; simpleOffers: SimpleOffer[] }, _, idx) => {
@@ -82,17 +78,21 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
       { reserve: bidSettlement, simpleOffers: [], prevSpotPrice: prevSpotPriceInitial },
     )
 
-  const reserveDenominator = Math.min(validation.loanToValueFilter, prevSpotPrice);
+  const reserveDenominator = Math.min(validation.loanToValueFilter, prevSpotPrice)
   const reserveOrdersCount = reserveDenominator > 0 ? Math.floor(reserve / reserveDenominator) : 0
-  const reserveOffers = reserveOrdersCount > 0 ? Array(reserveOrdersCount)
-    .fill(0).map(_ => ({
-      id: uniqueId(),
-      loanValue: reserveDenominator,
-      hadoMarket: offer.hadoMarket,
-      publicKey: offer.publicKey,
-    })) : []
+  const reserveOffers =
+    reserveOrdersCount > 0
+      ? Array(reserveOrdersCount)
+          .fill(0)
+          .map(() => ({
+            id: uniqueId(),
+            loanValue: reserveDenominator,
+            hadoMarket: offer.hadoMarket,
+            publicKey: offer.publicKey,
+          }))
+      : []
 
-  const lastOfferValue = reserve % reserveDenominator;
+  const lastOfferValue = reserve % reserveDenominator
   const lastOffer = {
     id: uniqueId(),
     loanValue: lastOfferValue,
@@ -102,7 +102,6 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
 
   const simpleOffers = [...mainOffers, ...reserveOffers, ...(lastOfferValue > 0 ? [lastOffer] : [])]
 
-  console.log("simpleOffers: ", simpleOffers)
   return simpleOffers
 }
 
