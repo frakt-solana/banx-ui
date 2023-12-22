@@ -86,18 +86,20 @@ export const DiagramMark: FC<DiagramMarkProps> = ({ mark, left }) => {
 
   const nftImage = firstLoan?.nft.meta.imageUrl
 
-  const formattedFirstValue = formatValue(firstValue)
-  const formattedLastValue = marks.length > 1 ? `- ${formatValue(lastValue)}` : ''
-
   const loans = compact(marks.map((mark) => mark?.loan))
   const tooltipContent = createTooltip(loans)
+
+  const displayOfferValue =
+    marks.length > 1
+      ? `${formatValue(firstValue)} - ${formatValue(lastValue)}◎`
+      : `${formatValue(firstValue)}◎`
 
   const commonMarkContent = (
     <div className={styles.mark} style={{ left: calculateStyle(left) }}>
       {createMarkCountBadge(marks)}
       {createSquareElement(nftImage)}
       <div className={styles.dot} />
-      <div className={styles.value}>{`${formattedFirstValue} ${formattedLastValue}◎`}</div>
+      <div className={styles.value}>{displayOfferValue}</div>
     </div>
   )
 
