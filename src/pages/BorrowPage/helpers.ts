@@ -82,17 +82,15 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
       { reserve: bidSettlement, simpleOffers: [], prevSpotPrice: prevSpotPriceInitial },
     )
 
-
-
   const reserveDenominator = Math.min(validation.loanToValueFilter, prevSpotPrice);
-  const reserveOrdersCount = Math.floor(reserve / reserveDenominator)
-  const reserveOffers = Array(reserveOrdersCount)
+  const reserveOrdersCount = reserveDenominator > 0 ? Math.floor(reserve / reserveDenominator) : 0
+  const reserveOffers = reserveOrdersCount > 0 ? Array(reserveOrdersCount)
     .fill(0).map(_ => ({
       id: uniqueId(),
       loanValue: reserveDenominator,
       hadoMarket: offer.hadoMarket,
       publicKey: offer.publicKey,
-    }))
+    })) : []
 
   const lastOfferValue = reserve % reserveDenominator;
   const lastOffer = {
