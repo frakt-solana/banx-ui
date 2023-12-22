@@ -1,0 +1,90 @@
+.summary {
+  border: 1px dotted var(--bg-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+
+  @media (max-width: 640px) {
+    gap: 4px;
+    margin-bottom: 16px;
+  }
+}
+
+.editSummary {
+  border-top: var(--border-less-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding-top: 8px;
+  gap: 16px;
+
+  & > div {
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 0;
+  }
+}
+
+.fields {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+
+  & > div {
+    max-width: 216px;
+    width: 100%;
+  }
+
+  @media (max-width: 640px) {
+    gap: 16px;
+  }
+}
+
+.numericField {
+  max-width: unset !important;
+}
+
+.messageContainer {
+  height: 14px;
+}
+
+// OffetActionButtons
+.actionsButtonsContainer,
+.editModeButtonsContainer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  @media (max-width: 640px) {
+    gap: 8px;
+  }
+}
+.editModeContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+.actionButton {
+  width: 144px;
+
+  @media (max-width: 640px) {
+    width: 100%;
+  }
+}
+.placeOfferButton {
+  width: 100%;
+}
+
+.removeOfferButton {
+  background-color: var(--additional-red-secondary) !important;
+  border: 1px solid var(--additional-red-primary) !important;
+
+  &:hover {
+    border: 1px solid var(--additional-red-primary-deep) !important;
+  }
+}

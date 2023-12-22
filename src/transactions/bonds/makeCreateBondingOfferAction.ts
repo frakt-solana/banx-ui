@@ -42,8 +42,8 @@ export const makeCreateBondingOfferAction: MakeCreateBondingOfferAction = async 
       userPubkey: wallet.publicKey as web3.PublicKey,
     },
     args: {
-      loanValue: loanValue * 1e9,
-      delta: deltaValue * 1e9,
+      loanValue,
+      delta: deltaValue,
       quantityOfLoans: loansAmount,
       bondingCurveType,
     },

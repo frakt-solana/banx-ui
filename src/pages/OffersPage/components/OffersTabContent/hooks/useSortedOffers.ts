@@ -1,58 +1,57 @@
 import { useMemo, useState } from 'react'
 
-import { get, isFunction, sortBy, sumBy } from 'lodash'
+import { chain } from 'lodash'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
-import { LendLoansAndOffers } from '@banx/api/core'
+import { UserOffer } from '@banx/api/core'
+import { calcSyntheticLoanValue } from '@banx/store'
 
-import { calculateClaimValue, calculateLentValue } from '../components/OfferCard/helpers'
+enum SortField {
+  LENT = 'lent',
+  INTEREST = 'interest',
+  LTV = 'ltv',
+}
 
 const SORT_OPTIONS = [
-  { label: 'Claim', value: 'claim' },
-  { label: 'Lent', value: 'lent' },
-  { label: 'Offer', value: 'offer' },
+  { label: 'Lent', value: SortField.LENT },
+  { label: 'Interest', value: SortField.INTEREST },
+  { label: 'LTV', value: SortField.LTV },
 ]
 
 const DEFAULT_SORT_OPTION: SortOption = {
-  label: SORT_OPTIONS[1].label,
-  value: `${SORT_OPTIONS[1].value}_desc`,
+  label: SORT_OPTIONS[0].label,
+  value: `${SORT_OPTIONS[0].value}_desc`,
 }
 
-enum SortField {
-  CLAIM = 'claim',
-  LENT = 'lent',
-  OFFER = 'offer',
+type SortValueGetter = (offer: UserOffer) => number
+type StatusValueMap = Record<SortField, string | SortValueGetter>
+
+const STATUS_VALUE_MAP: StatusValueMap = {
+  [SortField.LENT]: ({ offer }) => offer.edgeSettlement,
+  [SortField.INTEREST]: ({ offer }) => offer.concentrationIndex,
+  [SortField.LTV]: ({ offer, collectionMeta }) =>
+    calcSyntheticLoanValue(offer) / collectionMeta.collectionFloor,
 }
 
-type SortValueGetter = (data: LendLoansAndOffers) => number
-
-export const useSortedData = (data: LendLoansAndOffers[]) => {
+export const useSortedOffers = (offers: UserOffer[]) => {
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
 
   const sortOptionValue = sortOption?.value
 
-  const sortedData = useMemo(() => {
-    if (!sortOptionValue) return data
+  const sortedOffers = useMemo(() => {
+    if (!sortOptionValue) return offers
 
-    const [name, order] = sortOptionValue.split('_')
+    const [field, order] = sortOptionValue.split('_')
 
-    const sortValueMapping: Record<SortField, string | SortValueGetter> = {
-      [SortField.CLAIM]: ({ loans }) => sumBy(loans, calculateClaimValue),
-      [SortField.LENT]: ({ loans }) => sumBy(loans, calculateLentValue),
-      [SortField.OFFER]: ({ offer }) => offer.currentSpotPrice,
-    }
-
-    const sorted = sortBy(data, (item) => {
-      const sortValue = sortValueMapping[name as SortField]
-      return isFunction(sortValue) ? sortValue(item) : get(item, sortValue)
-    })
-
-    return order === 'desc' ? sorted.reverse() : sorted
-  }, [sortOptionValue, data])
+    return chain(offers)
+      .sortBy((offer) => (STATUS_VALUE_MAP[field as SortField] as SortValueGetter)(offer))
+      .thru((sorted) => (order === 'desc' ? sorted.reverse() : sorted))
+      .value()
+  }, [sortOptionValue, offers])
 
   return {
-    sortedData,
+    sortedOffers,
     sortParams: {
       option: sortOption,
       onChange: setSortOption,

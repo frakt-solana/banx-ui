@@ -14,7 +14,7 @@
   padding: 24px;
   width: 100%;
 
-  @media (max-width: 1240px) {
+  @media (max-width: 960px) {
     flex-wrap: wrap;
     gap: 24px;
   }
@@ -22,6 +22,10 @@
   @media (max-width: 640px) {
     padding: 16px;
     gap: 16px;
+  }
+
+  &.active {
+    padding-bottom: 0;
   }
 }
 
@@ -113,33 +117,43 @@
 
 /* Aditional offer overview */
 .additionalOfferContainer {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 24px;
-  width: 100%;
-
-  @media (max-width: 1240px) {
+  @media (max-width: 960px) {
     justify-content: center;
     order: 1;
   }
+
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
+
+  & > div {
+    align-items: flex-end;
+    white-space: nowrap;
+    width: 100%;
+  }
+
+  @media (max-width: 960px) {
+    justify-content: space-between;
+    gap: 0;
+
+    & > div {
+      align-items: center;
+    }
+    & > div:first-child {
+      align-items: flex-start;
+    }
+    & > div:last-child {
+      align-items: flex-end;
+    }
+  }
 }
 .hiddenAdditionalOverview {
-  @media (max-width: 1240px) {
+  @media (max-width: 960px) {
     display: none;
   }
 }
-.additionalStat {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  max-width: 168px;
-  width: 100%;
 
-  @media (max-width: 1240px) {
-    align-items: center;
-  }
-}
 .additionalStatLabel {
   color: var(--content-secondary);
   font: var(--table-header-md);
@@ -151,53 +165,4 @@
   @media (max-width: 640px) {
     font: var(--table-header-sm);
   }
-}
-.additionalStatValues {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 4px;
-  height: 56px;
-
-  @media (max-width: 1240px) {
-    align-items: center;
-  }
-
-  span:first-child {
-    font: var(--body-text-md);
-    line-height: 21px;
-
-    @media (max-width: 640px) {
-      font: var(--body-text-sm);
-    }
-  }
-}
-.interestValues {
-  span:first-child {
-    font: var(--important-text-md);
-
-    @media (max-width: 640px) {
-      font: var(--important-text-sm);
-    }
-  }
-  span:last-child {
-    font: var(--important-text-sm);
-
-    @media (max-width: 640px) {
-      font-size: 12px;
-    }
-  }
-}
-
-.additionalStatSubtitle {
-  font: var(--body-text-sm);
-
-  @media (max-width: 640px) {
-    font: var(--body-text-xs);
-  }
-}
-
-.highlight {
-  color: var(--additional-green-primary-deep);
 }

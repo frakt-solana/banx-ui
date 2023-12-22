@@ -1,13 +1,15 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 
 import classNames from 'classnames'
 
-import { Tabs } from '@banx/components/Tabs'
+import { checkIsEditMode } from '@banx/components/PlaceOfferSection'
+import PlaceOfferSection from '@banx/components/PlaceOfferSection/PlaceOfferSection'
+import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
+
+import { toLowerCaseNoSpaces, trackPageEvent } from '@banx/utils'
 
 import ActivityTable from '../ActivityTable'
 import OrderBook from '../OrderBook'
-import PlaceOfferTab from '../PlaceOfferTab'
-import { useExpandableCardContent } from './hooks'
 
 import styles from './ExpandableCardContent.module.less'
 
@@ -29,25 +31,71 @@ const ExpandableCardContent: FC<ExpandableCardContentProps> = ({
   marketPubkey,
   isOrderBookVisible,
 }) => {
-  const { marketParams, tabsParams, goToPlaceOfferTab, isEditMode } =
-    useExpandableCardContent(marketPubkey)
+  const [offerPubkey, setOfferPubkey] = useState('')
+
+  const {
+    value: currentTabValue,
+    setValue: setTabValue,
+    ...tabsProps
+  } = useTabs({ tabs: BONDS_TABS, defaultValue: BONDS_TABS[1].value })
+
+  const onTabClick = (tabProps: Tab) => {
+    trackPageEvent('lend', `${toLowerCaseNoSpaces(tabProps.label)}tab`)
+  }
+
+  const goToPlaceOfferTab = () => {
+    setTabValue(BONDS_TABS[1].value)
+  }
 
   const TABS_COMPONENTS: TabsComponents = {
-    [TabName.OFFER]: <PlaceOfferTab {...marketParams} />,
+    [TabName.OFFER]: (
+      <PlaceOfferSection
+        setOfferPubkey={setOfferPubkey}
+        offerPubkey={offerPubkey}
+        marketPubkey={marketPubkey}
+      />
+    ),
     [TabName.ACTIVITY]: (
       <ActivityTable marketPubkey={marketPubkey} goToPlaceOfferTab={goToPlaceOfferTab} />
     ),
   }
 
   return (
-    <div className={classNames(styles.container, { [styles.isEditMode]: isEditMode })}>
+    <div
+      className={classNames(styles.container, {
+        [styles.isEditMode]: checkIsEditMode(offerPubkey),
+      })}
+    >
       <div className={styles.content}>
-        <Tabs {...tabsParams} />
-        {TABS_COMPONENTS[tabsParams.value]}
+        <Tabs
+          value={currentTabValue}
+          onTabClick={onTabClick}
+          setValue={setTabValue}
+          {...tabsProps}
+        />
+        {TABS_COMPONENTS[currentTabValue]}
       </div>
-      {isOrderBookVisible && <OrderBook {...marketParams} />}
+      {isOrderBookVisible && (
+        <OrderBook
+          marketPubkey={marketPubkey}
+          offerPubkey={offerPubkey}
+          setOfferPubkey={setOfferPubkey}
+          goToPlaceOfferTab={goToPlaceOfferTab}
+        />
+      )}
     </div>
   )
 }
 
 export default ExpandableCardContent
+
+const BONDS_TABS = [
+  {
+    label: 'Activity',
+    value: 'activity',
+  },
+  {
+    label: 'Place offer',
+    value: 'offer',
+  },
+]
