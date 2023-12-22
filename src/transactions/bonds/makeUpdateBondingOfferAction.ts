@@ -39,8 +39,8 @@ export const makeUpdateBondingOfferAction: MakeUpdateBondingOfferAction = async 
       bondOffer: optimisticOffer as BondOfferV2,
     },
     args: {
-      loanValue: loanValue * 1e9,
-      delta: deltaValue * 1e9,
+      loanValue,
+      delta: deltaValue,
       quantityOfLoans: loansAmount,
     },
     sendTxn: sendTxnPlaceHolder,

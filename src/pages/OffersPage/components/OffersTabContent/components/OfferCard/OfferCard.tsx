@@ -3,30 +3,38 @@ import { FC, useState } from 'react'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
+import PlaceOfferSection from '@banx/components/PlaceOfferSection'
 
-import { CollectionMeta, Loan, Offer } from '@banx/api/core'
+import { UserOffer } from '@banx/api/core'
 import { ChevronDown } from '@banx/icons'
+import { convertToSynthetic, useSyntheticOffers } from '@banx/store'
 
-import ActiveLoansTable from '../ActiveLoansTable'
 import { AdditionalOfferOverview, MainOfferOverview } from './components'
 
 import styles from './OfferCard.module.less'
 
 interface OfferCardProps {
-  offer: Offer
-  loans: Loan[]
-  collectionMeta: CollectionMeta
+  offer: UserOffer
 }
 
-const OfferCard: FC<OfferCardProps> = ({ offer, loans, collectionMeta }) => {
+const OfferCard: FC<OfferCardProps> = ({ offer }) => {
   const [isOpen, setIsOpen] = useState(false)
+
+  const { setOffer: setSyntheticOffer } = useSyntheticOffers()
+
+  const onCardClick = () => {
+    setSyntheticOffer(convertToSynthetic(offer.offer, true))
+    setIsOpen(!isOpen)
+  }
 
   return (
     <div className={styles.card}>
-      <div className={styles.cardBody} onClick={() => setIsOpen(!isOpen)}>
-        <MainOfferOverview offer={offer} collectionMeta={collectionMeta} />
+      <div
+        className={classNames(styles.cardBody, { [styles.active]: isOpen })}
+        onClick={onCardClick}
+      >
+        <MainOfferOverview offer={offer} />
         <AdditionalOfferOverview
-          loans={loans}
           offer={offer}
           className={isOpen ? styles.hiddenAdditionalOverview : ''}
         />
@@ -37,7 +45,12 @@ const OfferCard: FC<OfferCardProps> = ({ offer, loans, collectionMeta }) => {
           <ChevronDown />
         </Button>
       </div>
-      {isOpen && <ActiveLoansTable loans={loans} />}
+      {isOpen && (
+        <PlaceOfferSection
+          offerPubkey={offer.offer.publicKey}
+          marketPubkey={offer.offer.hadoMarket}
+        />
+      )}
     </div>
   )
 }

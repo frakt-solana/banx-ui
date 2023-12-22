@@ -1,7 +1,5 @@
 import { FC } from 'react'
 
-import classNames from 'classnames'
-
 import { Button } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createSolValueJSX } from '@banx/components/TableComponents'
@@ -44,66 +42,6 @@ export const ClaimInterestButton: FC<ButtonProps> = (props) => {
         variant="secondary"
       >
         Claim
-      </Button>
-    </div>
-  )
-}
-
-export const ClaimNFTsButton: FC<ButtonProps> = (props) => {
-  const { isSmallDesktop, totalLoans, onClick, value } = props
-  const buttonText = isSmallDesktop ? 'Claim' : 'Claim all NFTs'
-  const label = isSmallDesktop ? 'Claimable floor' : 'Collateral'
-
-  return (
-    <div className={styles.infoRow}>
-      <div className={styles.loansContainer}>
-        <p className={styles.loansValueText}>{totalLoans}</p>
-        <div className={styles.loansInfoContainer}>
-          <StatInfo
-            label={label}
-            value={value}
-            classNamesProps={{ value: styles.value }}
-            divider={1e9}
-          />
-        </div>
-      </div>
-      <Button
-        className={styles.summaryButton}
-        onClick={onClick}
-        disabled={!totalLoans}
-        variant="secondary"
-      >
-        {buttonText}
-      </Button>
-    </div>
-  )
-}
-
-export const TerminateButton: FC<ButtonProps> = (props) => {
-  const { isSmallDesktop, totalLoans, onClick, value } = props
-  const buttonText = isSmallDesktop ? 'Terminate' : 'Terminate all'
-  const label = isSmallDesktop ? 'Underwater' : 'Underwater loans'
-
-  return (
-    <div className={styles.infoRow}>
-      <div className={styles.loansContainer}>
-        <p className={styles.loansValueText}>{totalLoans}</p>
-        <div className={styles.loansInfoContainer}>
-          <StatInfo
-            label={label}
-            value={value}
-            classNamesProps={{ value: styles.value }}
-            divider={1e9}
-          />
-        </div>
-      </div>
-      <Button
-        className={classNames(styles.summaryButton, styles.terminateButton)}
-        onClick={onClick}
-        disabled={!totalLoans}
-        variant="secondary"
-      >
-        {buttonText}
       </Button>
     </div>
   )

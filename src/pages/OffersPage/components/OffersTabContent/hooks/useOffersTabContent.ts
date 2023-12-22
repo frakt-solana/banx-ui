@@ -1,102 +1,76 @@
 import { useMemo, useState } from 'react'
 
-import { useWallet } from '@solana/wallet-adapter-react'
-import { chain, sumBy } from 'lodash'
+import { filter, first, groupBy, includes, map, sumBy } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
-import { useLenderLoansAndOffers } from '@banx/pages/OffersPage/hooks'
-import { formatDecimal, isOfferClosed } from '@banx/utils'
+import { formatDecimal } from '@banx/utils'
 
-import { isLoanAbleToClaim, isLoanAbleToTerminate } from '../components/ActiveLoansTable/helpers'
-import { calculateClaimValue } from '../components/OfferCard/helpers'
-import { useSortedData } from './useSortedOffers'
+import { useSortedOffers } from './useSortedOffers'
+import { useUserOffers } from './useUserOffers'
 
 type SearchSelectOption = {
   collectionName: string
   collectionImage: string
-  claim: number
+  lent: number
 }
 
-export const useOffersTabContent = () => {
-  const {
-    data,
-    offers,
-    loading: isLoading,
-    addMints,
-    updateOrAddLoan,
-    updateOrAddOffer,
-  } = useLenderLoansAndOffers()
+export const useOffersContent = () => {
+  const { offers, updateOrAddOffer, isLoading } = useUserOffers()
 
-  const { publicKey } = useWallet()
+  const [selectedCollections, setSelectedCollections] = useState<string[]>([])
 
-  const [selectedOffers, setSelectedOffers] = useState<string[]>([])
-
-  const filteredData = useMemo(() => {
-    if (selectedOffers.length) {
-      return data.filter(({ collectionMeta }) =>
-        selectedOffers.includes(collectionMeta.collectionName),
+  const filteredOffers = useMemo(() => {
+    if (selectedCollections.length) {
+      return filter(offers, ({ collectionMeta }) =>
+        includes(selectedCollections, collectionMeta.collectionName),
       )
     }
-    return data.filter(({ offer }) => !isOfferClosed(offer?.pairState))
-  }, [data, selectedOffers])
+    return offers
+  }, [offers, selectedCollections])
 
-  const { sortedData, sortParams } = useSortedData(filteredData)
+  const { sortParams, sortedOffers } = useSortedOffers(filteredOffers)
 
-  const searchSelectOptions = chain(data)
-    .map(({ loans, collectionMeta }) => ({
-      collectionName: collectionMeta.collectionName,
-      collectionImage: collectionMeta.collectionImage,
-      claim: sumBy(loans, calculateClaimValue),
-    }))
-    .uniqBy(({ collectionName }) => collectionName)
-    .value()
+  const searchSelectOptions = useMemo(() => {
+    const offersGroupedByCollection = groupBy(
+      offers,
+      ({ collectionMeta }) => collectionMeta.collectionName,
+    )
+
+    return map(offersGroupedByCollection, (groupedLoan) => {
+      const firstLoanInGroup = first(groupedLoan)
+      const { collectionName = '', collectionImage = '' } = firstLoanInGroup?.collectionMeta || {}
+      const lent = sumBy(groupedLoan, ({ offer }) => offer.edgeSettlement)
+
+      return { collectionName, collectionImage, lent }
+    })
+  }, [offers])
 
   const searchSelectParams: SearchSelectProps<SearchSelectOption> = {
     options: searchSelectOptions,
-    selectedOptions: selectedOffers,
-    labels: ['Collection', 'Claim'],
+    selectedOptions: selectedCollections,
+    labels: ['Collection', 'Lent'],
     optionKeys: {
       labelKey: 'collectionName',
       valueKey: 'collectionName',
       imageKey: 'collectionImage',
       secondLabel: {
-        key: 'claim',
+        key: 'lent',
         format: (value: number) => createSolValueJSX(value, 1e9, '0◎', formatDecimal),
       },
     },
-    onChange: setSelectedOffers,
+    onChange: setSelectedCollections,
   }
 
-  const { loansToClaim, loansToTerminate } = useMemo(() => {
-    const flatLoans = data.flatMap(({ loans }) => loans)
-
-    if (!flatLoans.length) return { loansToClaim: [], loansToTerminate: [] }
-
-    const loansToClaim = flatLoans.filter(isLoanAbleToClaim)
-
-    const loansToTerminate = flatLoans.filter((loan) =>
-      isLoanAbleToTerminate({ loan, offers, walletPubkey: publicKey?.toBase58() || '' }),
-    )
-
-    return { loansToClaim, loansToTerminate }
-  }, [data, offers, publicKey])
-
-  const showEmptyList = !isLoading && !data.length
+  const showEmptyList = !isLoading && !offers.length
 
   return {
-    data: sortedData,
+    offers: sortedOffers,
     isLoading,
     searchSelectParams,
     sortParams,
     showEmptyList,
-    loansToClaim,
-    loansToTerminate,
-    addMints,
-    updateOrAddLoan,
     updateOrAddOffer,
-    offers,
-    loans: data.flatMap(({ loans }) => loans),
   }
 }
