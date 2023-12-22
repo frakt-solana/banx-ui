@@ -15,18 +15,28 @@ interface OfferSummaryProps {
   market?: MarketPreview
   loansQuantity: number
   isProMode: boolean
+  hasFormChanges: boolean
 }
 
 export const Summary: FC<OfferSummaryProps> = ({
   offer,
-  offerSize,
+  offerSize: updatedOfferSize,
   isEditMode,
   market,
   loansQuantity,
   isProMode,
+  hasFormChanges,
 }) => {
-  const { concentrationIndex: accruedInterest = 0, edgeSettlement: lentValue = 0 } = offer || {}
+  const {
+    concentrationIndex: accruedInterest = 0,
+    edgeSettlement: lentValue = 0,
+    fundsSolOrTokenBalance = 0,
+    bidSettlement = 0,
+  } = offer || {}
   const { collectionFloor = 0, marketApr = 0 } = market || {}
+
+  const initialOfferSize = fundsSolOrTokenBalance + bidSettlement
+  const offerSize = hasFormChanges ? updatedOfferSize : initialOfferSize
 
   const weeklyAprPercentage = marketApr / 100 / WEEKS_IN_YEAR
   const weeklyInterest = (offerSize * weeklyAprPercentage) / 100

@@ -110,7 +110,7 @@ export const calcOfferSize: CalcOfferSize = ({
   const offerToUpdate = { loanValue, deltaValue, loansAmount, syntheticOffer }
   const updatedBondOffer = getUpdatedBondOffer(offerToUpdate)
 
-  const offerSize = updatedBondOffer.fundsSolOrTokenBalance
+  const offerSize = updatedBondOffer.fundsSolOrTokenBalance + updatedBondOffer.bidSettlement
   return offerSize
 }
 
