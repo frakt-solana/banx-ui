@@ -35,7 +35,7 @@ export const Summary: FC<OfferSummaryProps> = ({
   } = offer || {}
   const { collectionFloor = 0, marketApr = 0 } = market || {}
 
-  const initialOfferSize = fundsSolOrTokenBalance + bidSettlement
+  const initialOfferSize = fundsSolOrTokenBalance + bidSettlement + lentValue
   const offerSize = hasFormChanges ? updatedOfferSize : initialOfferSize
 
   const weeklyAprPercentage = marketApr / 100 / WEEKS_IN_YEAR
@@ -43,6 +43,7 @@ export const Summary: FC<OfferSummaryProps> = ({
 
   const ltv = (offerSize / loansQuantity / collectionFloor) * 100
 
+  const formattedLtvValue = isFinite(ltv) && ltv > 0 ? ltv : 0
   const formattedOfferSize = formatDecimal(offerSize / 1e9)
   const formattedLentValue = formatDecimal(lentValue / 1e9)
 
@@ -50,7 +51,7 @@ export const Summary: FC<OfferSummaryProps> = ({
     <div className={styles.summary}>
       <StatInfo
         label={isProMode ? 'Max weighted LTV' : 'LTV'}
-        value={ltv || 0}
+        value={formattedLtvValue}
         valueStyles={{ color: getColorByPercent(ltv, HealthColorIncreasing) }}
         flexType="row"
         tooltipText={isProMode ? 'Average LTV offered by your pool' : ''}
