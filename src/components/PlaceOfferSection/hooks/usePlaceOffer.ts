@@ -49,8 +49,6 @@ export interface PlaceOfferParams {
   onLoanValueChange: (value: string) => void
   onLoanAmountChange: (value: string) => void
 
-  updatedOffer: Offer
-
   diagramData: Mark[]
   isLoadingDiagram: boolean
 }
@@ -116,10 +114,6 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
     resetFormValues,
     exitEditMode,
   })
-
-  const updatedOffer = useMemo(() => {
-    return getUpdatedBondOffer({ syntheticOffer, loanValue, loansAmount, deltaValue })
-  }, [syntheticOffer, loanValue, loansAmount, deltaValue])
 
   const offerSize = useMemo(() => {
     return calcOfferSize({ syntheticOffer, loanValue, loansAmount, deltaValue })
@@ -209,8 +203,6 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
     onCreateOffer,
     onRemoveOffer,
     onUpdateOffer,
-
-    updatedOffer,
 
     diagramData,
     isLoadingDiagram: isEditMode ? isLoadingLenderLoans : false,

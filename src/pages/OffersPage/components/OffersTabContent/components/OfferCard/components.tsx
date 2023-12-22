@@ -54,6 +54,8 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
     validation,
   } = offer.offer
 
+  const loanValue = calcSyntheticLoanValue(offer.offer)
+
   const collectionFloor = offer.collectionMeta.collectionFloor
   const activeLoans = validation.maxReturnAmountFilter
   const offerSize = fundsSolOrTokenBalance + bidSettlement + lentValue
@@ -62,7 +64,7 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
   const formattedLentValue = formatDecimal(lentValue / 1e9)
   const formattedInterestValue = formatDecimal(accruedInterest / 1e9)
   const formattedAprValue = (marketApr / 100)?.toFixed(0)
-  const formattedLtvValue = (validation.loanToValueFilter / collectionFloor) * 100
+  const formattedLtvValue = (loanValue / collectionFloor) * 100
 
   return (
     <div className={classNames(styles.additionalOfferContainer, className)}>

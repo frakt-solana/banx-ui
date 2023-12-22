@@ -12,8 +12,8 @@ interface OfferSummaryProps {
   offerSize: number
   isEditMode: boolean
   offer: Offer | undefined
-  updatedOffer: Offer
   market?: MarketPreview
+  loansQuantity: number
   isProMode: boolean
   hasFormChanges: boolean
 }
@@ -23,20 +23,17 @@ export const Summary: FC<OfferSummaryProps> = ({
   offerSize: updatedOfferSize,
   isEditMode,
   market,
+  loansQuantity,
   isProMode,
   hasFormChanges,
-  updatedOffer,
 }) => {
-  const { collectionFloor = 0, marketApr = 0 } = market || {}
-
   const {
     concentrationIndex: accruedInterest = 0,
     edgeSettlement: lentValue = 0,
     fundsSolOrTokenBalance = 0,
     bidSettlement = 0,
   } = offer || {}
-
-  const initialMaxLoanValue = updatedOffer.validation.loanToValueFilter
+  const { collectionFloor = 0, marketApr = 0 } = market || {}
 
   const initialOfferSize = fundsSolOrTokenBalance + bidSettlement + lentValue
   const offerSize = hasFormChanges ? updatedOfferSize : initialOfferSize
@@ -44,7 +41,7 @@ export const Summary: FC<OfferSummaryProps> = ({
   const weeklyAprPercentage = marketApr / 100 / WEEKS_IN_YEAR
   const weeklyInterest = (offerSize * weeklyAprPercentage) / 100
 
-  const ltv = (initialMaxLoanValue / collectionFloor) * 100
+  const ltv = (offerSize / loansQuantity / collectionFloor) * 100
 
   const formattedLtvValue = isFinite(ltv) && ltv > 0 ? ltv : 0
   const formattedOfferSize = formatDecimal(offerSize / 1e9)
