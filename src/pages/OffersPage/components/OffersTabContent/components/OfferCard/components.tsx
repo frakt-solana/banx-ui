@@ -73,11 +73,13 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
         value={`${formattedLentValue}/${formattedOfferSize}◎`}
         valueType={VALUES_TYPES.STRING}
         secondValue={`${activeLoans} loans`}
+        tooltipText="SOL in current active loans"
       />
       <StatInfo
         label="LTV"
         value={formattedLtvValue}
         valueType={VALUES_TYPES.PERCENT}
+        tooltipText="Best offer expressed as a % of floor price"
         valueStyles={{ color: getColorByPercent(formattedLtvValue, HealthColorIncreasing) }}
       />
       <StatInfo
