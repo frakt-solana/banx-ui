@@ -118,8 +118,15 @@ export const executeBorrow = async (props: {
 
       const optimisticByPubkey = groupBy(optimisticOffers, ({ offer }) => offer.publicKey)
 
-      const optimisticsToAdd = Object.values(optimisticByPubkey).map((offers) => {
-        return mergeOffersWithLoanValue(offers)
+      const optimizeIntoReservesByOfferPubkey = chain(txnParams)
+        .flatten()
+        .map(({ offer, optimizeIntoReserves }) => [offer.publicKey, optimizeIntoReserves || true])
+        .uniqBy(([publicKey]) => publicKey)
+        .fromPairs()
+        .value() as Record<string, boolean>
+
+      const optimisticsToAdd = Object.entries(optimisticByPubkey).map(([offerPubkey, offers]) => {
+        return mergeOffersWithLoanValue(offers, optimizeIntoReservesByOfferPubkey[offerPubkey])
       }) as Offer[]
 
       updateOffersOptimistic(optimisticsToAdd)
@@ -245,15 +252,16 @@ export const optimisticWithdrawFromBondOffer = (
   }
 }
 
-const mergeOffersWithLoanValue = (offers: OfferWithLoanValue[]): Offer | null => {
-  optimisticBorrowUpdateBondingBondOffer
-
+const mergeOffersWithLoanValue = (
+  offers: OfferWithLoanValue[],
+  optimizeIntoReserves = true,
+): Offer | null => {
   const { offer } = offers.reduce((acc, offer) => {
     return {
       offer: optimisticBorrowUpdateBondingBondOffer(
         acc.offer as BondOfferV2,
         offer.loanValue,
-        false,
+        optimizeIntoReserves,
       ),
       loanValue: 0,
     }
