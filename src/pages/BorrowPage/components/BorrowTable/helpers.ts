@@ -4,7 +4,7 @@ import {
   optimisticBorrowUpdateBondingBondOffer,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
-import { chain, chunk, groupBy } from 'lodash'
+import { chain, chunk, groupBy, sumBy } from 'lodash'
 import moment from 'moment'
 import { TxnExecutor, WalletAndConnection } from 'solana-transactions-executor'
 
@@ -18,7 +18,7 @@ import {
   getNftBorrowType,
   makeBorrowAction,
 } from '@banx/transactions/borrow'
-import { enqueueSnackbar } from '@banx/utils'
+import { enqueueSnackbar, offerNeedsReservesOptimizationOnBorrow } from '@banx/utils'
 
 import { CartState } from '../../cartState'
 import { convertOffersToSimple } from '../../helpers'
@@ -192,7 +192,25 @@ const matchNftsAndOffers: MatchNftsAndOffers = ({ nfts, rawOffers }) => {
     )
     .value().ixnParams
 
-  return ixnsParams
+  //? Calc total loanValue for every offer
+  const loanValueSumByOffer = chain(ixnsParams)
+    .groupBy(({ offer }) => offer.publicKey)
+    .entries()
+    .map(([offerPubkey, ixnParams]) => [
+      offerPubkey,
+      sumBy(ixnParams, ({ loanValue }) => loanValue),
+    ])
+    .fromPairs()
+    .value() as Record<string, number>
+
+  return ixnsParams.map(({ offer, ...restParams }) => ({
+    ...restParams,
+    offer,
+    optimizeIntoReserves: offerNeedsReservesOptimizationOnBorrow(
+      offer,
+      loanValueSumByOffer[offer.publicKey],
+    ),
+  }))
 }
 
 const chunkBorrowIxnsParams = (borrowIxnParams: MakeBorrowActionParams) => {
@@ -232,7 +250,11 @@ const mergeOffersWithLoanValue = (offers: OfferWithLoanValue[]): Offer | null =>
 
   const { offer } = offers.reduce((acc, offer) => {
     return {
-      offer: optimisticBorrowUpdateBondingBondOffer(acc.offer as BondOfferV2, offer.loanValue, false),
+      offer: optimisticBorrowUpdateBondingBondOffer(
+        acc.offer as BondOfferV2,
+        offer.loanValue,
+        false,
+      ),
       loanValue: 0,
     }
   })

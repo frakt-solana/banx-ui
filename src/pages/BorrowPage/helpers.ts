@@ -63,7 +63,6 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
 
         const nextReserve = acc.reserve - Math.max(loanValue - nextSpotPrice, 0)
 
-
         const simpleOffer = {
           id: uniqueId(),
           loanValue,
@@ -85,13 +84,13 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
   const reserveOffers =
     reserveOrdersCount > 0
       ? Array(reserveOrdersCount)
-        .fill(0)
-        .map(() => ({
-          id: uniqueId(),
-          loanValue: reserveDenominator,
-          hadoMarket: offer.hadoMarket,
-          publicKey: offer.publicKey,
-        }))
+          .fill(0)
+          .map(() => ({
+            id: uniqueId(),
+            loanValue: reserveDenominator,
+            hadoMarket: offer.hadoMarket,
+            publicKey: offer.publicKey,
+          }))
       : []
 
   const lastOfferValue = reserve % reserveDenominator

@@ -26,3 +26,7 @@ export const isOfferClosed = (pairState: string) => {
     pairState === PairState.PerpetualMigrated
   )
 }
+
+//? Prevent orders wrong distibution on bulk borrow from same offer
+export const offerNeedsReservesOptimizationOnBorrow = (offer: Offer, loanValueSum: number) =>
+  loanValueSum <= offer.fundsSolOrTokenBalance
