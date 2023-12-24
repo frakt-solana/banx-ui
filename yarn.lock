@@ -6838,10 +6838,10 @@ faye-websocket@0.11.4, faye-websocket@^0.11.3:
   dependencies:
     websocket-driver ">=0.5.1"
 
-fbonds-core@0.5.276:
-  version "0.5.276"
-  resolved "https://registry.yarnpkg.com/fbonds-core/-/fbonds-core-0.5.276.tgz#a9496cdc38cdc561730eae0893f49d8c637cd8f0"
-  integrity sha512-OfP0rRfg5dSAIw5RWxOA3JcWGlNjHiSieE4/NvN1yrUDo0EZZdllkTaYe5mDTXSEopJHNvYxDMqA2NDeog8EHA==
+fbonds-core@0.5.277:
+  version "0.5.277"
+  resolved "https://registry.yarnpkg.com/fbonds-core/-/fbonds-core-0.5.277.tgz#3161b2224b58a1276b0217b170f691053d76dbda"
+  integrity sha512-0YLtYMEB5DqihztzDeD0UqoWMLGwH0NNbr1o4NUuaw0GVioNIjzh0750hzifgoekfhuyqTVMcRrmEw+hL95Rug==
   dependencies:
     "@metaplex-foundation/mpl-token-metadata" "^2.8.1"
     "@project-serum/anchor" "^0.26.0"
