@@ -27,7 +27,7 @@ export type MakeBorrowActionResult = { loan: Loan; offer: Offer }[]
 
 export type MakeBorrowAction = MakeActionFn<MakeBorrowActionParams, MakeBorrowActionResult>
 
-export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndConnection) => {
+export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndConnection,) => {
   const borrowType = getChunkBorrowType(ixnParams.map(({ nft }) => nft))
 
   if (ixnParams.length > BORROW_NFT_PER_TXN[borrowType]) {
@@ -38,6 +38,7 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndCon
     ixnParams,
     type: borrowType,
     walletAndConnection,
+    optimizeIntoReserves: false
   })
 
   const loansAndOffers = optimisticResults.map((optimistic, idx) => {
@@ -63,10 +64,13 @@ const getIxnsAndSignersByBorrowType = async ({
   ixnParams,
   type = BorrowType.Default,
   walletAndConnection,
+  optimizeIntoReserves
 }: {
   ixnParams: MakeBorrowActionParams
   type?: BorrowType
   walletAndConnection: WalletAndConnection
+  optimizeIntoReserves: boolean
+
 }) => {
   const { connection, wallet } = walletAndConnection
 
@@ -96,6 +100,7 @@ const getIxnsAndSignersByBorrowType = async ({
             bondOffer: offer as BondOfferV2,
           },
         })),
+        optimizeIntoReserves
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
@@ -134,6 +139,7 @@ const getIxnsAndSignersByBorrowType = async ({
           minMarketFee: params.nft.loan.marketApr,
           bondOffer: params.offer as BondOfferV2,
         },
+        optimizeIntoReserves
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
@@ -169,6 +175,8 @@ const getIxnsAndSignersByBorrowType = async ({
           bondOffer: offer as BondOfferV2,
         },
       })),
+      optimizeIntoReserves
+
     },
     connection,
     sendTxn: sendTxnPlaceHolder,
