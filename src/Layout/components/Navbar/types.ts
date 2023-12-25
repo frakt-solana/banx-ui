@@ -1,19 +1,16 @@
 import { FC } from 'react'
 
-export interface MenuItemProps {
+interface LinkProps {
   label: string
-  icons?: { light: FC; dark: FC }
   className?: string
+  icon?: FC
+}
+
+export interface InternalLinkProps extends LinkProps {
   pathname?: string
-  href?: string
   primary?: boolean
 }
 
-export interface LinkProps {
-  label: string
-  href?: string
-  pathname?: string
-  icon?: FC
-  className?: string
-  primary?: boolean
+export interface ExternalLinkProps extends LinkProps {
+  href: string
 }

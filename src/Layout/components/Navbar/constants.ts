@@ -1,140 +1,82 @@
-import { DISCORD, DOCS_URL, GITHUB_URL, MEDIUM_URL, TWITTER_URL } from '@banx/constants'
+import { DISCORD, DOCS_URL, GITHUB_URL, X_URL } from '@banx/constants'
 import {
   BanxFilled,
-  BanxFilledDark,
   Borrow,
-  BorrowDark,
   Dashboard,
-  DashboardDark,
   Discord,
-  DiscordDark,
   Docs,
-  DocsDark,
   Github,
-  GithubDark,
   Lend,
-  LendDark,
-  Medium,
-  MediumDark,
   Rewards,
-  RewardsDark, // Raffles,
-  // RafflesDark,
   Twitter,
-  TwitterDark,
 } from '@banx/icons'
 import { PATHS } from '@banx/router'
 
 export const NAVIGATION_LINKS = [
   {
-    pathname: PATHS.ROOT,
     label: 'Dashboard',
+    pathname: PATHS.ROOT,
+    icon: Dashboard,
     primary: true,
-    icons: {
-      light: Dashboard,
-      dark: DashboardDark,
-    },
   },
   {
-    pathname: PATHS.BORROW,
     label: 'Borrow',
+    pathname: PATHS.BORROW,
+    icon: Borrow,
     primary: true,
-    icons: {
-      light: Borrow,
-      dark: BorrowDark,
-    },
   },
   {
-    pathname: PATHS.LOANS,
     label: 'My loans',
+    pathname: PATHS.LOANS,
   },
   {
-    pathname: PATHS.LEND,
     label: 'Lend',
+    pathname: PATHS.LEND,
+    icon: Lend,
     primary: true,
-    icons: {
-      light: Lend,
-      dark: LendDark,
-    },
   },
   {
-    pathname: PATHS.OFFERS,
     label: 'My offers',
+    pathname: PATHS.OFFERS,
   },
   {
-    pathname: PATHS.REFINANCE,
     label: 'Refinance',
-  },
-  {
-    pathname: PATHS.LEADERBOARD,
-    label: 'Rewards',
-    icons: {
-      light: Rewards,
-      dark: RewardsDark,
-    },
+    pathname: PATHS.REFINANCE,
   },
 ]
 
 export const SECONDARY_NAVIGATION_LINKS = [
   {
-    pathname: PATHS.ADVENTURES,
+    label: 'Rewards',
+    pathname: PATHS.LEADERBOARD,
+    icon: Rewards,
+  },
+  {
     label: 'Banx',
-    icons: {
-      light: BanxFilled,
-      dark: BanxFilledDark,
-    },
-  },
-  // {
-  //   pathname: PATHS.LIQUIDATIONS,
-  //   label: 'Raffles',
-  //   icons: {
-  //     light: Raffles,
-  //     dark: RafflesDark,
-  //   },
-  // },
-]
-
-export const DOCUMENTATIONS_LINKS = [
-  {
-    label: 'Docs',
-    href: DOCS_URL,
-    icons: {
-      light: Docs,
-      dark: DocsDark,
-    },
-  },
-  {
-    label: 'Medium',
-    href: MEDIUM_URL,
-    icons: {
-      light: Medium,
-      dark: MediumDark,
-    },
-  },
-  {
-    label: 'GitHub',
-    href: GITHUB_URL,
-    icons: {
-      light: Github,
-      dark: GithubDark,
-    },
+    pathname: PATHS.ADVENTURES,
+    icon: BanxFilled,
   },
 ]
 
-export const COMMUNITY_LINKS = [
+export const EXTERNAL_LINKS = [
+  {
+    label: 'X',
+    href: X_URL,
+    icon: Twitter,
+  },
   {
     label: 'Discord',
     href: DISCORD.SERVER_URL,
-    icons: {
-      light: Discord,
-      dark: DiscordDark,
-    },
+    icon: Discord,
   },
   {
-    label: 'Twitter',
-    href: TWITTER_URL,
-    icons: {
-      light: Twitter,
-      dark: TwitterDark,
-    },
+    label: 'Docs',
+    href: DOCS_URL,
+    icon: Docs,
+  },
+  {
+    label: 'Github',
+    href: GITHUB_URL,
+    icon: Github,
   },
 ]
