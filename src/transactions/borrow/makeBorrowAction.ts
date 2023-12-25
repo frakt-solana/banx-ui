@@ -49,7 +49,10 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndCon
       nft: ixnParams[idx].nft.nft,
     }
 
-    return { loan, offer: optimistic.bondOffer }
+    return {
+      loan,
+      offer: optimistic.bondOffer,
+    }
   })
 
   return {
@@ -71,9 +74,10 @@ const getIxnsAndSignersByBorrowType = async ({
 }) => {
   const { connection, wallet } = walletAndConnection
 
-  const optimizeIntoReserves = ixnParams[0]?.optimizeIntoReserves === undefined ? true : ixnParams[0]?.optimizeIntoReserves;
+  const optimizeIntoReserves =
+    ixnParams[0]?.optimizeIntoReserves === undefined ? true : ixnParams[0]?.optimizeIntoReserves
 
-  const aprRate = ixnParams[0].nft.loan.marketApr;
+  const aprRate = ixnParams[0].nft.loan.marketApr
 
   if (type === BorrowType.StakedBanx) {
     const params = ixnParams[0]
