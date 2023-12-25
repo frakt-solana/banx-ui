@@ -71,6 +71,10 @@ const getIxnsAndSignersByBorrowType = async ({
 }) => {
   const { connection, wallet } = walletAndConnection
 
+  const optimizeIntoReserves = ixnParams[0]?.optimizeIntoReserves === undefined ? true : ixnParams[0]?.optimizeIntoReserves;
+
+  console.log("optimizeIntoReserves: ", optimizeIntoReserves);
+
   if (type === BorrowType.StakedBanx) {
     const params = ixnParams[0]
     if (!params.nft.loan.banxStake) {
@@ -86,7 +90,7 @@ const getIxnsAndSignersByBorrowType = async ({
       },
       args: {
         perpetualBorrowParamsAndAccounts: ixnParams.map(({ nft, offer, loanValue }) => ({
-          amountOfSolToGet: loanValue,
+          amountOfSolToGet: Math.floor(loanValue),
           tokenMint: new web3.PublicKey(nft.mint),
           bondOfferV2: new web3.PublicKey(offer.publicKey),
           hadoMarket: new web3.PublicKey(offer.hadoMarket),
@@ -97,7 +101,7 @@ const getIxnsAndSignersByBorrowType = async ({
             bondOffer: offer as BondOfferV2,
           },
         })),
-        optimizeIntoReserves: ixnParams[0]?.optimizeIntoReserves || true,
+        optimizeIntoReserves: optimizeIntoReserves,
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
@@ -136,7 +140,7 @@ const getIxnsAndSignersByBorrowType = async ({
           minMarketFee: params.nft.loan.marketApr,
           bondOffer: params.offer as BondOfferV2,
         },
-        optimizeIntoReserves: ixnParams[0]?.optimizeIntoReserves || true,
+        optimizeIntoReserves: optimizeIntoReserves,
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
@@ -161,7 +165,7 @@ const getIxnsAndSignersByBorrowType = async ({
     },
     args: {
       perpetualBorrowParamsAndAccounts: ixnParams.map(({ nft, offer, loanValue }, idx) => ({
-        amountOfSolToGet: loanValue,
+        amountOfSolToGet: Math.floor(loanValue),
         ruleSet: ruleSets[idx],
         tokenMint: new web3.PublicKey(nft.mint),
         bondOfferV2: new web3.PublicKey(offer.publicKey),
@@ -172,7 +176,7 @@ const getIxnsAndSignersByBorrowType = async ({
           bondOffer: offer as BondOfferV2,
         },
       })),
-      optimizeIntoReserves: ixnParams[0]?.optimizeIntoReserves || true,
+      optimizeIntoReserves: optimizeIntoReserves,
     },
     connection,
     sendTxn: sendTxnPlaceHolder,
