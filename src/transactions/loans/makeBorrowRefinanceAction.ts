@@ -105,7 +105,7 @@ const getIxnsAndSigners = async ({
     offer.pairState === PairState.PerpetualBondingCurveOnMarket
   ) {
     const { instructions, signers, optimisticResult } = await borrowerRefinanceToSame({
-      args: { solToRefinance: offer.currentSpotPrice },
+      args: { solToRefinance: offer.currentSpotPrice, aprRate: bondTradeTransaction.amountOfBonds },
       accounts,
       optimistic,
       connection,
@@ -118,6 +118,7 @@ const getIxnsAndSigners = async ({
     const { instructions, signers, optimisticResult } = await borrowerRefinance({
       args: {
         solToRefinance: offer.currentSpotPrice,
+        aprRate: bondTradeTransaction.amountOfBonds
       },
       accounts: {
         ...accounts,

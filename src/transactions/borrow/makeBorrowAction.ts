@@ -73,7 +73,7 @@ const getIxnsAndSignersByBorrowType = async ({
 
   const optimizeIntoReserves = ixnParams[0]?.optimizeIntoReserves === undefined ? true : ixnParams[0]?.optimizeIntoReserves;
 
-  console.log("optimizeIntoReserves: ", optimizeIntoReserves);
+  const aprRate = ixnParams[0].nft.loan.marketApr;
 
   if (type === BorrowType.StakedBanx) {
     const params = ixnParams[0]
@@ -102,6 +102,7 @@ const getIxnsAndSignersByBorrowType = async ({
           },
         })),
         optimizeIntoReserves: optimizeIntoReserves,
+        aprRate,
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
@@ -141,6 +142,7 @@ const getIxnsAndSignersByBorrowType = async ({
           bondOffer: params.offer as BondOfferV2,
         },
         optimizeIntoReserves: optimizeIntoReserves,
+        aprRate,
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
@@ -177,6 +179,7 @@ const getIxnsAndSignersByBorrowType = async ({
         },
       })),
       optimizeIntoReserves: optimizeIntoReserves,
+      aprRate,
     },
     connection,
     sendTxn: sendTxnPlaceHolder,
