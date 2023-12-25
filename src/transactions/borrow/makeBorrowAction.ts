@@ -1,9 +1,10 @@
 import { web3 } from 'fbonds-core'
-import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
+import { BASE_POINTS, EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   borrowCnftPerpetualCanopy,
   borrowPerpetual,
   borrowStakedBanxPerpetual,
+  calculateDynamicApr,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
@@ -77,7 +78,9 @@ const getIxnsAndSignersByBorrowType = async ({
   const optimizeIntoReserves =
     ixnParams[0]?.optimizeIntoReserves === undefined ? true : ixnParams[0]?.optimizeIntoReserves
 
-  const aprRate = ixnParams[0].nft.loan.marketApr
+  const aprRate = calculateDynamicApr(
+    Math.floor((ixnParams[0].loanValue / ixnParams[0].nft.nft.collectionFloor) * BASE_POINTS),
+  )
 
   if (type === BorrowType.StakedBanx) {
     const params = ixnParams[0]

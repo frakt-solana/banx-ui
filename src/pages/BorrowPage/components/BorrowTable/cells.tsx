@@ -2,6 +2,8 @@ import { FC } from 'react'
 
 import { InfoCircleOutlined } from '@ant-design/icons'
 import classNames from 'classnames'
+import { BASE_POINTS } from 'fbonds-core/lib/fbond-protocol/constants'
+import { calculateDynamicApr } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 
 import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
@@ -64,9 +66,11 @@ export const BorrowCell: FC<CellProps> = ({ nft }) => {
 }
 
 export const APRCell: FC<CellProps> = ({ nft }) => {
-  const formattedAprValue = createPercentValueJSX(
-    (nft.nft.loan.marketApr + BONDS.PROTOCOL_REPAY_FEE) / 100,
+  const apr = calculateDynamicApr(
+    Math.floor((nft.loanValue / nft.nft.nft.collectionFloor) * BASE_POINTS),
   )
+
+  const formattedAprValue = createPercentValueJSX((apr + BONDS.PROTOCOL_REPAY_FEE) / 100)
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>
