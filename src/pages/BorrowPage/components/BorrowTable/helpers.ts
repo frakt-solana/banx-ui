@@ -4,7 +4,7 @@ import {
   optimisticBorrowUpdateBondingBondOffer,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
-import { chain, chunk, groupBy } from 'lodash'
+import { chain, chunk, groupBy, sumBy } from 'lodash'
 import moment from 'moment'
 import { TxnExecutor, WalletAndConnection } from 'solana-transactions-executor'
 
@@ -18,7 +18,7 @@ import {
   getNftBorrowType,
   makeBorrowAction,
 } from '@banx/transactions/borrow'
-import { enqueueSnackbar } from '@banx/utils'
+import { enqueueSnackbar, offerNeedsReservesOptimizationOnBorrow } from '@banx/utils'
 
 import { CartState } from '../../cartState'
 import { convertOffersToSimple } from '../../helpers'
@@ -118,8 +118,15 @@ export const executeBorrow = async (props: {
 
       const optimisticByPubkey = groupBy(optimisticOffers, ({ offer }) => offer.publicKey)
 
-      const optimisticsToAdd = Object.values(optimisticByPubkey).map((offers) => {
-        return mergeOffersWithLoanValue(offers)
+      const optimizeIntoReservesByOfferPubkey = chain(txnParams)
+        .flatten()
+        .map(({ offer, optimizeIntoReserves }) => [offer.publicKey, optimizeIntoReserves || true])
+        .uniqBy(([publicKey]) => publicKey)
+        .fromPairs()
+        .value() as Record<string, boolean>
+
+      const optimisticsToAdd = Object.entries(optimisticByPubkey).map(([offerPubkey, offers]) => {
+        return mergeOffersWithLoanValue(offers, optimizeIntoReservesByOfferPubkey[offerPubkey])
       }) as Offer[]
 
       updateOffersOptimistic(optimisticsToAdd)
@@ -192,7 +199,25 @@ const matchNftsAndOffers: MatchNftsAndOffers = ({ nfts, rawOffers }) => {
     )
     .value().ixnParams
 
-  return ixnsParams
+  //? Calc total loanValue for every offer
+  const loanValueSumByOffer = chain(ixnsParams)
+    .groupBy(({ offer }) => offer.publicKey)
+    .entries()
+    .map(([offerPubkey, ixnParams]) => [
+      offerPubkey,
+      sumBy(ixnParams, ({ loanValue }) => loanValue),
+    ])
+    .fromPairs()
+    .value() as Record<string, number>
+
+  return ixnsParams.map(({ offer, ...restParams }) => ({
+    ...restParams,
+    offer,
+    optimizeIntoReserves: offerNeedsReservesOptimizationOnBorrow(
+      offer,
+      loanValueSumByOffer[offer.publicKey],
+    ),
+  }))
 }
 
 const chunkBorrowIxnsParams = (borrowIxnParams: MakeBorrowActionParams) => {
@@ -227,12 +252,17 @@ export const optimisticWithdrawFromBondOffer = (
   }
 }
 
-const mergeOffersWithLoanValue = (offers: OfferWithLoanValue[]): Offer | null => {
-  optimisticBorrowUpdateBondingBondOffer
-
+const mergeOffersWithLoanValue = (
+  offers: OfferWithLoanValue[],
+  optimizeIntoReserves = true,
+): Offer | null => {
   const { offer } = offers.reduce((acc, offer) => {
     return {
-      offer: optimisticBorrowUpdateBondingBondOffer(acc.offer as BondOfferV2, offer.loanValue, false),
+      offer: optimisticBorrowUpdateBondingBondOffer(
+        acc.offer as BondOfferV2,
+        offer.loanValue,
+        optimizeIntoReserves,
+      ),
       loanValue: 0,
     }
   })
