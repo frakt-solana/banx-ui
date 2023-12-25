@@ -3,12 +3,15 @@ import { FC } from 'react'
 import { InfoCircleOutlined } from '@ant-design/icons'
 import classNames from 'classnames'
 import { BASE_POINTS } from 'fbonds-core/lib/fbond-protocol/constants'
-import { calculateDynamicApr } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import {
+  calculateCurrentInterestSolPure,
+  calculateDynamicApr,
+} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 
 import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
-import { BONDS } from '@banx/constants'
+import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
 import {
   calcBorrowValueWithProtocolFee,
   calcBorrowValueWithRentFee,
@@ -70,11 +73,18 @@ export const APRCell: FC<CellProps> = ({ nft }) => {
     Math.floor((nft.loanValue / nft.nft.nft.collectionFloor) * BASE_POINTS),
   )
 
+  const weeklyFee = calculateCurrentInterestSolPure({
+    loanValue: nft.loanValue,
+    startTime: 0,
+    currentTime: SECONDS_IN_DAY * 7,
+    rateBasePoints: apr + BONDS.PROTOCOL_REPAY_FEE,
+  })
+
   const formattedAprValue = createPercentValueJSX((apr + BONDS.PROTOCOL_REPAY_FEE) / 100)
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>
-      <TooltipRow label="Weekly fee" value={nft.interest} />
+      <TooltipRow label="Weekly fee" value={weeklyFee} />
     </div>
   )
 
