@@ -21,13 +21,14 @@ export type MakeBorrowActionParams = {
   nft: BorrowNft
   loanValue: number
   offer: Offer
+  optimizeIntoReserves?: boolean
 }[]
 
 export type MakeBorrowActionResult = { loan: Loan; offer: Offer }[]
 
 export type MakeBorrowAction = MakeActionFn<MakeBorrowActionParams, MakeBorrowActionResult>
 
-export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndConnection,) => {
+export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndConnection) => {
   const borrowType = getChunkBorrowType(ixnParams.map(({ nft }) => nft))
 
   if (ixnParams.length > BORROW_NFT_PER_TXN[borrowType]) {
@@ -38,7 +39,6 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndCon
     ixnParams,
     type: borrowType,
     walletAndConnection,
-    optimizeIntoReserves: false
   })
 
   const loansAndOffers = optimisticResults.map((optimistic, idx) => {
@@ -64,15 +64,16 @@ const getIxnsAndSignersByBorrowType = async ({
   ixnParams,
   type = BorrowType.Default,
   walletAndConnection,
-  optimizeIntoReserves
 }: {
   ixnParams: MakeBorrowActionParams
   type?: BorrowType
   walletAndConnection: WalletAndConnection
-  optimizeIntoReserves: boolean
-
 }) => {
   const { connection, wallet } = walletAndConnection
+
+  const optimizeIntoReserves = ixnParams[0]?.optimizeIntoReserves === undefined ? true : ixnParams[0]?.optimizeIntoReserves;
+
+  console.log("optimizeIntoReserves: ", optimizeIntoReserves);
 
   if (type === BorrowType.StakedBanx) {
     const params = ixnParams[0]
@@ -89,7 +90,7 @@ const getIxnsAndSignersByBorrowType = async ({
       },
       args: {
         perpetualBorrowParamsAndAccounts: ixnParams.map(({ nft, offer, loanValue }) => ({
-          amountOfSolToGet: loanValue,
+          amountOfSolToGet: Math.floor(loanValue),
           tokenMint: new web3.PublicKey(nft.mint),
           bondOfferV2: new web3.PublicKey(offer.publicKey),
           hadoMarket: new web3.PublicKey(offer.hadoMarket),
@@ -100,7 +101,7 @@ const getIxnsAndSignersByBorrowType = async ({
             bondOffer: offer as BondOfferV2,
           },
         })),
-        optimizeIntoReserves
+        optimizeIntoReserves: optimizeIntoReserves,
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
@@ -139,7 +140,7 @@ const getIxnsAndSignersByBorrowType = async ({
           minMarketFee: params.nft.loan.marketApr,
           bondOffer: params.offer as BondOfferV2,
         },
-        optimizeIntoReserves
+        optimizeIntoReserves: optimizeIntoReserves,
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
@@ -164,7 +165,7 @@ const getIxnsAndSignersByBorrowType = async ({
     },
     args: {
       perpetualBorrowParamsAndAccounts: ixnParams.map(({ nft, offer, loanValue }, idx) => ({
-        amountOfSolToGet: loanValue,
+        amountOfSolToGet: Math.floor(loanValue),
         ruleSet: ruleSets[idx],
         tokenMint: new web3.PublicKey(nft.mint),
         bondOfferV2: new web3.PublicKey(offer.publicKey),
@@ -175,8 +176,7 @@ const getIxnsAndSignersByBorrowType = async ({
           bondOffer: offer as BondOfferV2,
         },
       })),
-      optimizeIntoReserves
-
+      optimizeIntoReserves: optimizeIntoReserves,
     },
     connection,
     sendTxn: sendTxnPlaceHolder,
