@@ -232,7 +232,11 @@ const mergeOffersWithLoanValue = (offers: OfferWithLoanValue[]): Offer | null =>
 
   const { offer } = offers.reduce((acc, offer) => {
     return {
-      offer: optimisticBorrowUpdateBondingBondOffer(acc.offer as BondOfferV2, offer.loanValue, false),
+      offer: optimisticBorrowUpdateBondingBondOffer(
+        acc.offer as BondOfferV2,
+        offer.loanValue,
+        false,
+      ),
       loanValue: 0,
     }
   })
