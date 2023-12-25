@@ -2,12 +2,16 @@ import { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { BASE_POINTS } from 'fbonds-core/lib/fbond-protocol/constants'
+import {
+  calculateCurrentInterestSolPure,
+  calculateDynamicApr,
+} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan, Offer } from '@banx/api/core'
@@ -32,7 +36,7 @@ interface RefinanceModalProps {
 }
 
 export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
-  const { bondTradeTransaction, fraktBond } = loan
+  const { bondTradeTransaction, fraktBond, nft } = loan
   const { feeAmount } = bondTradeTransaction
 
   const { close } = useModal()
@@ -59,14 +63,22 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
 
   const currentSpotPrice = offer?.currentSpotPrice || 0
 
+  const currentApr = calculateDynamicApr(
+    Math.floor((currentLoanBorrowedAmount / nft.collectionFloor) * BASE_POINTS),
+  )
+
   const newLoanBorrowedAmount = currentSpotPrice - upfrontFee
   const newLoanDebt = currentSpotPrice
+
+  const newApr = calculateDynamicApr(
+    Math.floor((newLoanBorrowedAmount / nft.collectionFloor) * BASE_POINTS),
+  )
 
   const newLoanDailyFee = calculateCurrentInterestSolPure({
     loanValue: currentSpotPrice,
     startTime: moment().unix(),
     currentTime: moment().unix() + SECONDS_IN_DAY,
-    rateBasePoints: (offer?.marketApr || 0) + BONDS.PROTOCOL_REPAY_FEE,
+    rateBasePoints: newApr + BONDS.PROTOCOL_REPAY_FEE,
   })
 
   const differenceToPay = newLoanDebt - currentLoanDebt
@@ -110,6 +122,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
         borrowedAmount={currentLoanBorrowedAmount}
         dailyFee={currentLoanDailyFee}
         debt={currentLoanDebt}
+        apr={currentApr}
         faded
         className={styles.currentLoanInfo}
       />
@@ -118,6 +131,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
         borrowedAmount={newLoanBorrowedAmount}
         dailyFee={newLoanDailyFee}
         debt={newLoanDebt}
+        apr={newApr}
         className={styles.newLoanInfo}
       />
 
@@ -135,6 +149,7 @@ interface LoanInfoProps {
   borrowedAmount: number //? lamports
   dailyFee: number //? lamports
   debt: number //? lamports
+  apr: number //? base points
   faded?: boolean //? Make gray text color
   className?: string
 }
@@ -144,6 +159,7 @@ const LoanInfo: FC<LoanInfoProps> = ({
   borrowedAmount,
   dailyFee,
   debt,
+  apr,
   faded,
   className,
 }) => {
@@ -162,6 +178,10 @@ const LoanInfo: FC<LoanInfoProps> = ({
         <div className={styles.loanInfoValue}>
           <p>{createSolValueJSX(debt, 1e9, '0◎')}</p>
           <p>Debt</p>
+        </div>
+        <div className={styles.loanInfoValue}>
+          <p>{createPercentValueJSX((apr + BONDS.PROTOCOL_REPAY_FEE) / 100)}</p>
+          <p>APR</p>
         </div>
       </div>
     </div>
