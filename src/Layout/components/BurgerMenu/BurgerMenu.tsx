@@ -2,8 +2,13 @@ import classNames from 'classnames'
 
 import { Burger, BurgerClose } from '@banx/icons'
 
-import { ExternalLinks, InternalLink } from '../Navbar/components'
-import { EXTERNAL_LINKS, NAVIGATION_LINKS, SECONDARY_NAVIGATION_LINKS } from '../Navbar/constants'
+import {
+  EXTERNAL_LINKS,
+  ExternalLinks,
+  InternalLink,
+  NAVIGATION_LINKS,
+  SECONDARY_NAVIGATION_LINKS,
+} from '../Navbar'
 import { useBurgerMenu } from './hooks'
 
 import styles from './BurgerMenu.module.less'
