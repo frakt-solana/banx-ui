@@ -1,4 +1,5 @@
-import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
+import { getMaxLoanValueFromBondOffer } from 'fbonds-core/lib/fbond-protocol/helpers'
+import { BondOfferV2, PairState } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Offer } from '@banx/api/core'
 
@@ -11,12 +12,13 @@ export const сalculateLoansAmount = (offer: Offer) => {
 }
 
 export const calculateLoanValue = (offer: Offer) => {
-  const { currentSpotPrice } = offer
+  return getMaxLoanValueFromBondOffer(offer as BondOfferV2)
+  // const { currentSpotPrice } = offer
 
-  const loansAmount = сalculateLoansAmount(offer)
-  const loanValue = currentSpotPrice * Math.min(loansAmount, 1)
+  // const loansAmount = сalculateLoansAmount(offer)
+  // const loanValue = currentSpotPrice * Math.min(loansAmount, 1)
 
-  return loanValue
+  // return loanValue
 }
 
 export const isOfferClosed = (pairState: string) => {
