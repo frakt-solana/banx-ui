@@ -50,11 +50,11 @@ interface MarketAdditionalInfoProps {
   isCardOpen: boolean
 }
 
-export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isCardOpen }) => {
-  const { loansTvl, offerTvl, marketApr, activeBondsAmount, activeOfferAmount } = market
+const MIN_APR_VALUE = 34
+const MAX_APR_VALUE = 104
 
-  const minAprValue = marketApr / 100
-  const maxAprValue = marketApr / 100
+export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isCardOpen }) => {
+  const { loansTvl, offerTvl, activeBondsAmount, activeOfferAmount } = market
 
   return (
     <div className={classNames(styles.additionalInfoStats, { [styles.hidden]: isCardOpen })}>
@@ -74,7 +74,7 @@ export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, is
       />
       <StatInfo
         label="Apr"
-        value={`${minAprValue} - ${maxAprValue}%`}
+        value={`${MIN_APR_VALUE} - ${MAX_APR_VALUE}%`}
         classNamesProps={{ value: styles.aprValue }}
         tooltipText="Annual interest rate"
         valueType={VALUES_TYPES.STRING}
