@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
 import { first, groupBy, map, sumBy } from 'lodash'
 
 import EmptyList from '@banx/components/EmptyList'
@@ -30,6 +31,8 @@ type SearchSelectOption = {
 }
 
 export const LoansTable = () => {
+  const { connected } = useWallet()
+
   const { loans, addMints: hideLoans, updateOrAddLoan, loading } = useLenderLoans()
 
   const { loansToClaim, loansToTerminate } = useMemo(() => {
@@ -103,8 +106,12 @@ export const LoansTable = () => {
     }
   }, [])
 
-  if (!loans.length && !loading)
-    return <EmptyList message="Your offers is waiting for a borrower" />
+  const showEmptyList = (!loans.length && !loading) || !connected
+  const emptyMessage = connected
+    ? 'Your offers is waiting for a borrower'
+    : 'Connect wallet to view your active offers'
+
+  if (showEmptyList) return <EmptyList message={emptyMessage} />
 
   return (
     <div className={styles.tableRoot}>
