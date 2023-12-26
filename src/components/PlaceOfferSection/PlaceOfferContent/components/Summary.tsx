@@ -27,13 +27,14 @@ export const Summary: FC<OfferSummaryProps> = ({
   isProMode,
   hasFormChanges,
 }) => {
+  const { collectionFloor = 0, marketApr = 0 } = market || {}
+
   const {
     concentrationIndex: accruedInterest = 0,
     edgeSettlement: lentValue = 0,
     fundsSolOrTokenBalance = 0,
     bidSettlement = 0,
   } = offer || {}
-  const { collectionFloor = 0, marketApr = 0 } = market || {}
 
   const initialOfferSize = fundsSolOrTokenBalance + bidSettlement + lentValue
   const offerSize = hasFormChanges ? updatedOfferSize : initialOfferSize
@@ -71,16 +72,30 @@ export const Summary: FC<OfferSummaryProps> = ({
         value={`${formatDecimal(weeklyInterest / 1e9)}◎`}
         valueType={VALUES_TYPES.STRING}
       />
+      {!isEditMode && (
+        <StatInfo
+          flexType="row"
+          label="Apr"
+          value={`${formatDecimal(weeklyInterest / 1e9)}◎`}
+          valueType={VALUES_TYPES.STRING}
+        />
+      )}
 
       {isEditMode && (
         <div className={styles.editSummary}>
           <StatInfo
-            label="Lent/Size"
+            label="Lent"
             value={`${formattedLentValue}/${formattedOfferSize}◎`}
             valueType={VALUES_TYPES.STRING}
           />
+          <StatInfo label="Loan" value={loansQuantity} valueType={VALUES_TYPES.STRING} />
           <StatInfo
             label="Accrued interest"
+            value={`${formatDecimal(accruedInterest / 1e9)}◎`}
+            valueType={VALUES_TYPES.STRING}
+          />
+          <StatInfo
+            label="Apr"
             value={`${formatDecimal(accruedInterest / 1e9)}◎`}
             valueType={VALUES_TYPES.STRING}
           />
