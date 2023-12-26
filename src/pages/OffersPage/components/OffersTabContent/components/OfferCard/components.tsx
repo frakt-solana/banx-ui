@@ -3,6 +3,7 @@ import { FC } from 'react'
 import classNames from 'classnames'
 
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
+import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { UserOffer } from '@banx/api/core'
 import { calcSyntheticLoanValue } from '@banx/store'
@@ -62,25 +63,27 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
 
   const formattedOfferSize = formatDecimal(offerSize / 1e9)
   const formattedLentValue = formatDecimal(lentValue / 1e9)
-  const formattedInterestValue = formatDecimal(accruedInterest / 1e9)
+  const formattedInterestValue = createSolValueJSX(accruedInterest, 1e9, '0◎', formatDecimal)
   const formattedAprValue = (marketApr / 100)?.toFixed(0)
-  const formattedLtvValue = (loanValue / collectionFloor) * 100
+
+  const maxLtv = (loanValue / collectionFloor) * 100
+  //TODO: Need to calc current ltv 
+  const currentLtv = (loanValue / collectionFloor) * 100
 
   return (
     <div className={classNames(styles.additionalOfferContainer, className)}>
       <StatInfo
-        label="Lent/Size"
-        value={`${formattedLentValue}/${formattedOfferSize}◎`}
+        label="Lent / Size"
+        value={`${formattedLentValue} / ${formattedOfferSize}◎`}
         valueType={VALUES_TYPES.STRING}
         secondValue={`${activeLoans} loans`}
         tooltipText="SOL in current active loans"
       />
       <StatInfo
-        label="LTV"
-        value={formattedLtvValue}
-        valueType={VALUES_TYPES.PERCENT}
+        label="Max / Current ltv"
+        value={createLtvValuesJSX(maxLtv, currentLtv)}
         tooltipText="Best offer expressed as a % of floor price"
-        valueStyles={{ color: getColorByPercent(formattedLtvValue, HealthColorIncreasing) }}
+        valueType={VALUES_TYPES.STRING}
       />
       <StatInfo
         label="Accrued interest"
@@ -91,3 +94,15 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
     </div>
   )
 }
+
+const createLtvValuesJSX = (maxLtv: number, currentLtv: number) => (
+  <div className={styles.ltvValues}>
+    <span style={{ color: getColorByPercent(maxLtv, HealthColorIncreasing) }}>
+      {createPercentValueJSX(maxLtv)}
+    </span>
+    {' / '}
+    <span style={{ color: getColorByPercent(currentLtv, HealthColorIncreasing) }}>
+      {createPercentValueJSX(currentLtv)}
+    </span>
+  </div>
+)

@@ -6,7 +6,7 @@ import { Button } from '@banx/components/Buttons'
 import PlaceOfferSection from '@banx/components/PlaceOfferSection'
 
 import { UserOffer } from '@banx/api/core'
-import { ChevronDown } from '@banx/icons'
+import { Pencil } from '@banx/icons'
 import { convertToSynthetic, useSyntheticOffers } from '@banx/store'
 
 import { AdditionalOfferOverview, MainOfferOverview } from './components'
@@ -40,9 +40,9 @@ const OfferCard: FC<OfferCardProps> = ({ offer }) => {
         />
         <Button
           type="circle"
-          className={classNames(styles.chevronButton, { [styles.active]: isOpen })}
+          className={classNames(styles.editButton, { [styles.active]: isOpen })}
         >
-          <ChevronDown />
+          <Pencil />
         </Button>
       </div>
       {isOpen && (
