@@ -107,7 +107,7 @@ export const useBorrowNfts = () => {
         const mergedOffers = sortBy(
           [...nextOffers, ...optimisticsWithSameMarket],
           calculateLoanValue,
-        )
+        ).reverse()
 
         return [marketPubkey, mergedOffers]
       })
