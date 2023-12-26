@@ -1,12 +1,15 @@
 import { FC } from 'react'
 
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
+import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { MarketPreview, Offer } from '@banx/api/core'
-import { WEEKS_IN_YEAR } from '@banx/constants'
 import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
 
-import styles from '../PlaceOfferContent.module.less'
+import { MAX_APR_VALUE, MIN_APR_VALUE } from './constants'
+import { caclWeeklyInterest, calcOfferSize, getSummaryInfo } from './helpers'
+
+import styles from '../../PlaceOfferContent.module.less'
 
 interface OfferSummaryProps {
   offerSize: number
@@ -24,35 +27,39 @@ export const Summary: FC<OfferSummaryProps> = ({
   isEditMode,
   market,
   loansQuantity,
-  isProMode,
   hasFormChanges,
+  isProMode,
 }) => {
-  const { collectionFloor = 0, marketApr = 0 } = market || {}
+  console.log(offer, 'offer')
+  const { collectionFloor = 0 } = market || {}
 
-  const {
-    concentrationIndex: accruedInterest = 0,
-    edgeSettlement: lentValue = 0,
-    fundsSolOrTokenBalance = 0,
-    bidSettlement = 0,
-  } = offer || {}
+  const { offerSize, weeklyInterest, initialLoansQuantity } = getSummaryInfo({
+    initialOffer: offer,
+    updatedOffer: offer,
+    market,
+    hasFormChanges,
+  })
 
-  const initialOfferSize = fundsSolOrTokenBalance + bidSettlement + lentValue
-  const offerSize = hasFormChanges ? updatedOfferSize : initialOfferSize
-
-  const weeklyAprPercentage = marketApr / 100 / WEEKS_IN_YEAR
-  const weeklyInterest = (offerSize * weeklyAprPercentage) / 100
+  const { concentrationIndex: accruedInterest = 0, edgeSettlement: lentValue = 0 } = offer || {}
 
   const ltv = (offerSize / loansQuantity / collectionFloor) * 100
 
-  const formattedLtvValue = isFinite(ltv) && ltv > 0 ? ltv : 0
+  const formattedMaxLtv = isFinite(ltv) && ltv > 0 ? ltv : 0
   const formattedOfferSize = formatDecimal(offerSize / 1e9)
   const formattedLentValue = formatDecimal(lentValue / 1e9)
 
   return (
     <div className={styles.summary}>
       <StatInfo
+        label="Max / current LTV"
+        value={createLtvValuesJSX(ltv, ltv)}
+        tooltipText="Max / current LTV"
+        valueType={VALUES_TYPES.STRING}
+        flexType="row"
+      />
+      <StatInfo
         label={isProMode ? 'Max weighted LTV' : 'LTV'}
-        value={formattedLtvValue}
+        value={formattedMaxLtv}
         valueStyles={{ color: getColorByPercent(ltv, HealthColorIncreasing) }}
         flexType="row"
         tooltipText={isProMode ? 'Average LTV offered by your pool' : ''}
@@ -76,7 +83,7 @@ export const Summary: FC<OfferSummaryProps> = ({
         <StatInfo
           flexType="row"
           label="Apr"
-          value={`${formatDecimal(weeklyInterest / 1e9)}◎`}
+          value={`${MIN_APR_VALUE} - ${MAX_APR_VALUE}%`}
           valueType={VALUES_TYPES.STRING}
         />
       )}
@@ -85,10 +92,10 @@ export const Summary: FC<OfferSummaryProps> = ({
         <div className={styles.editSummary}>
           <StatInfo
             label="Lent"
-            value={`${formattedLentValue}/${formattedOfferSize}◎`}
+            value={`${formattedLentValue} / ${formattedOfferSize}◎`}
             valueType={VALUES_TYPES.STRING}
           />
-          <StatInfo label="Loan" value={loansQuantity} valueType={VALUES_TYPES.STRING} />
+          <StatInfo label="Loan" value={initialLoansQuantity} valueType={VALUES_TYPES.STRING} />
           <StatInfo
             label="Accrued interest"
             value={`${formatDecimal(accruedInterest / 1e9)}◎`}
@@ -96,7 +103,7 @@ export const Summary: FC<OfferSummaryProps> = ({
           />
           <StatInfo
             label="Apr"
-            value={`${formatDecimal(accruedInterest / 1e9)}◎`}
+            value={`${MIN_APR_VALUE} - ${MAX_APR_VALUE}%`}
             valueType={VALUES_TYPES.STRING}
           />
         </div>
@@ -104,3 +111,15 @@ export const Summary: FC<OfferSummaryProps> = ({
     </div>
   )
 }
+
+const createLtvValuesJSX = (maxLtv: number, currentLtv: number) => (
+  <div className={styles.ltvValues}>
+    <span style={{ color: getColorByPercent(maxLtv, HealthColorIncreasing) }}>
+      {createPercentValueJSX(maxLtv)}
+    </span>
+    {' / '}
+    <span style={{ color: getColorByPercent(currentLtv, HealthColorIncreasing) }}>
+      {createPercentValueJSX(currentLtv)}
+    </span>
+  </div>
+)

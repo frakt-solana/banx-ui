@@ -67,7 +67,7 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
   const formattedAprValue = (marketApr / 100)?.toFixed(0)
 
   const maxLtv = (loanValue / collectionFloor) * 100
-  //TODO: Need to calc current ltv 
+  //TODO: Need to calc current ltv
   const currentLtv = (loanValue / collectionFloor) * 100
 
   return (
@@ -82,7 +82,7 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
       <StatInfo
         label="Max / Current ltv"
         value={createLtvValuesJSX(maxLtv, currentLtv)}
-        tooltipText="Best offer expressed as a % of floor price"
+        tooltipText="Max / current LTV"
         valueType={VALUES_TYPES.STRING}
       />
       <StatInfo
