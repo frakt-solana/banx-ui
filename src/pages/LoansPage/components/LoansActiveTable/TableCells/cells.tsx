@@ -2,11 +2,7 @@ import { FC } from 'react'
 
 import { InfoCircleOutlined } from '@ant-design/icons'
 import classNames from 'classnames'
-import { BASE_POINTS } from 'fbonds-core/lib/fbond-protocol/constants'
-import {
-  calculateCurrentInterestSolPure,
-  calculateDynamicApr,
-} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 
 import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip/Tooltip'
@@ -107,11 +103,11 @@ export const LTVCell: FC<CellProps> = ({ loan }) => {
 }
 
 export const APRCell: FC<CellProps> = ({ loan }) => {
-  const debtValue = calculateLoanRepayValue(loan)
-  const collectionFloor = loan.nft.collectionFloor
-  const apr = calculateDynamicApr(Math.floor((debtValue / collectionFloor) * BASE_POINTS))
+  const { bondTradeTransaction } = loan
 
-  const formattedAprValue = createPercentValueJSX(apr + BONDS.PROTOCOL_REPAY_FEE / 100)
+  const formattedAprValue = createPercentValueJSX(
+    (bondTradeTransaction.amountOfBonds + BONDS.PROTOCOL_REPAY_FEE) / 100,
+  )
 
   return (
     <span className={classNames(styles.cellInfoTitle, { [styles.highlight]: true })}>
