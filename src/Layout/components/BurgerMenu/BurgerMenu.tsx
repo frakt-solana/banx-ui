@@ -1,33 +1,48 @@
 import classNames from 'classnames'
 
-import { MenuItem } from '../Navbar/components'
-import { CommunityLinks } from './components'
-import { communityLinks, navigationsLinks } from './constants'
+import { Burger, BurgerClose } from '@banx/icons'
+
+import {
+  EXTERNAL_LINKS,
+  ExternalLinks,
+  InternalLink,
+  NAVIGATION_LINKS,
+  SECONDARY_NAVIGATION_LINKS,
+} from '../Navbar'
 import { useBurgerMenu } from './hooks'
 
 import styles from './BurgerMenu.module.less'
+
+const navigationsLinks = [...NAVIGATION_LINKS, ...SECONDARY_NAVIGATION_LINKS]
 
 const BurgerMenu = () => {
   const { isVisible, toggleVisibility } = useBurgerMenu()
 
   return (
     <div
-      className={classNames(styles.burgerMenuWrapper, { [styles.hidden]: !isVisible })}
+      className={classNames(styles.burgerMenu, { [styles.hidden]: !isVisible })}
       onClick={toggleVisibility}
     >
       <ul className={styles.navigationList}>
         {navigationsLinks.map((link) => (
-          <MenuItem key={link.label} className={styles.link} {...link} />
+          <InternalLink key={link.label} className={styles.link} {...link} />
         ))}
       </ul>
-      {communityLinks.map((communityLink, idx) => (
-        <div key={idx} className={styles.communityContainer}>
-          <p className={styles.communitySubtitle}>{communityLink.subtitle}</p>
-          <CommunityLinks links={communityLink.links} />
-        </div>
-      ))}
+      <div className={styles.communityContainer}>
+        <p className={styles.communitySubtitle}>Community</p>
+        <ExternalLinks links={EXTERNAL_LINKS} />
+      </div>
     </div>
   )
 }
 
 export default BurgerMenu
+
+export const BurgerIcon = () => {
+  const { isVisible, toggleVisibility } = useBurgerMenu()
+  return (
+    <div onClick={toggleVisibility} className={styles.burgerIcon}>
+      {isVisible ? <BurgerClose /> : <Burger />}
+    </div>
+  )
+}

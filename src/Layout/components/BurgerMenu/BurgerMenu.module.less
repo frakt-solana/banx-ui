@@ -1,4 +1,4 @@
-.burgerMenuWrapper {
+.burgerMenu {
   display: none;
 
   @media screen and (max-width: 960px) {
@@ -14,10 +14,10 @@
     width: 100%;
     z-index: 99;
   }
-}
 
-.burgerMenuWrapper.hidden {
-  display: none;
+  &.hidden {
+    display: none;
+  }
 }
 
 .communityContainer {
@@ -32,20 +32,13 @@
   text-transform: uppercase;
 }
 
-.iconContainer {
-  display: flex;
-  margin-top: 16px;
-  gap: 16px;
-
-  svg {
-    width: 24px;
-    height: 24px;
-  }
-}
-
 .burgerIcon {
   display: none;
   cursor: pointer;
+
+  svg path {
+    fill: var(--content-primary);
+  }
 
   @media screen and (max-width: 960px) {
     display: flex;
@@ -55,10 +48,6 @@
 
   @media (max-width: 640px) {
     margin-left: 8px;
-  }
-
-  svg path {
-    fill: var(--content-primary);
   }
 }
 

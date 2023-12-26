@@ -118,7 +118,7 @@ const getIxnsAndSigners = async ({
     const { instructions, signers, optimisticResult } = await borrowerRefinance({
       args: {
         solToRefinance: offer.currentSpotPrice,
-        aprRate: bondTradeTransaction.amountOfBonds
+        aprRate: bondTradeTransaction.amountOfBonds,
       },
       accounts: {
         ...accounts,
