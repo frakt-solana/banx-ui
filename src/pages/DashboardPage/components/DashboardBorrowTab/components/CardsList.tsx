@@ -4,7 +4,11 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 import { BorrowNft, MarketPreview, Offer } from '@banx/api/core'
 import { useFakeInfinityScroll } from '@banx/hooks'
-import { calculateLoanValue } from '@banx/utils'
+import {
+  calcBorrowValueWithProtocolFee,
+  calcBorrowValueWithRentFee,
+  calculateLoanValue,
+} from '@banx/utils'
 
 import { BorrowCard } from '../../Card'
 import { calcDailyInterestFee } from '../helpers'
@@ -67,7 +71,14 @@ const NFTCard: FC<NFTCardProps> = ({ borrowNft, borrow, findBestOffer }) => {
     const bestOffer = findBestOffer(loan.marketPubkey)
     if (!bestOffer) return 0
 
-    return calculateLoanValue(bestOffer)
+    const loanValueWithProtocolFee = calcBorrowValueWithProtocolFee(calculateLoanValue(bestOffer))
+
+    const borrowValueWithRentFee = calcBorrowValueWithRentFee(
+      loanValueWithProtocolFee,
+      loan.marketPubkey,
+    )
+
+    return borrowValueWithRentFee
   }, [findBestOffer, loan.marketPubkey])
 
   return (
