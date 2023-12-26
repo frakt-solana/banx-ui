@@ -64,7 +64,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
   const currentSpotPrice = offer?.currentSpotPrice || 0
 
   const currentApr = calculateDynamicApr(
-    Math.floor((currentLoanBorrowedAmount / nft.collectionFloor) * BASE_POINTS),
+    Math.floor((bondTradeTransaction.amountOfBonds / nft.collectionFloor) * BASE_POINTS),
   )
 
   const newLoanBorrowedAmount = currentSpotPrice - upfrontFee
