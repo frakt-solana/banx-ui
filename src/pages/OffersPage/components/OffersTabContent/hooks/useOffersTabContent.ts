@@ -1,10 +1,13 @@
 import { useMemo, useState } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
 import { filter, first, groupBy, includes, map, sumBy } from 'lodash'
+import { useNavigate } from 'react-router-dom'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
+import { PATHS } from '@banx/router'
 import { formatDecimal } from '@banx/utils'
 
 import { useSortedOffers } from './useSortedOffers'
@@ -17,6 +20,9 @@ type SearchSelectOption = {
 }
 
 export const useOffersContent = () => {
+  const { connected } = useWallet()
+  const navigate = useNavigate()
+
   const { offers, updateOrAddOffer, isLoading } = useUserOffers()
 
   const [selectedCollections, setSelectedCollections] = useState<string[]>([])
@@ -63,7 +69,18 @@ export const useOffersContent = () => {
     onChange: setSelectedCollections,
   }
 
-  const showEmptyList = !isLoading && !offers.length
+  const goToLendPage = () => {
+    navigate(PATHS.LEND)
+  }
+
+  const emptyListParams = {
+    message: connected
+      ? 'Lend SOL to view your pending offers'
+      : 'Connect wallet to view your offers',
+    buttonProps: connected ? { text: 'Lend', onClick: goToLendPage } : undefined,
+  }
+
+  const showEmptyList = (!offers.length && !isLoading) || !connected
 
   return {
     offers: sortedOffers,
@@ -71,6 +88,7 @@ export const useOffersContent = () => {
     searchSelectParams,
     sortParams,
     showEmptyList,
+    emptyListParams,
     updateOrAddOffer,
   }
 }

@@ -9,10 +9,17 @@ import { useOffersContent } from './hooks'
 import styles from './OffersTabContent.module.less'
 
 const OffersTabContent = () => {
-  const { offers, isLoading, showEmptyList, updateOrAddOffer, searchSelectParams, sortParams } =
-    useOffersContent()
+  const {
+    offers,
+    isLoading,
+    showEmptyList,
+    emptyListParams,
+    updateOrAddOffer,
+    searchSelectParams,
+    sortParams,
+  } = useOffersContent()
 
-  if (showEmptyList) return <EmptyList message="Lend SOL to view your pending offers" />
+  if (showEmptyList) return <EmptyList {...emptyListParams} />
 
   return (
     <div className={styles.content}>
