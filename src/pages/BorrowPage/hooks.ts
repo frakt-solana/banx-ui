@@ -3,10 +3,10 @@ import { useEffect, useMemo } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 import { produce } from 'immer'
-import { chain, filter, groupBy, isEmpty, map, maxBy, sumBy, uniqBy } from 'lodash'
+import { chain, filter, groupBy, isEmpty, map, maxBy, sortBy, sumBy, uniqBy } from 'lodash'
 import { create } from 'zustand'
 
-import { BorrowNft, fetchBorrowNftsAndOffers } from '@banx/api/core'
+import { BorrowNft, Offer, fetchBorrowNftsAndOffers } from '@banx/api/core'
 import {
   isOfferNewer,
   isOptimisticLoanExpired,
@@ -18,6 +18,7 @@ import { convertLoanToBorrowNft } from '@banx/transactions'
 import {
   calcBorrowValueWithProtocolFee,
   calcBorrowValueWithRentFee,
+  calculateLoanValue,
   isLoanActiveOrRefinanced,
   isLoanRepaid,
   isOfferClosed,
@@ -89,8 +90,9 @@ export const useBorrowNfts = () => {
 
     const optimisticsByMarket = groupBy(optimisticsFiltered, ({ offer }) => offer.hadoMarket)
 
-    return Object.fromEntries(
-      Object.entries(data.offers).map(([marketPubkey, offers]) => {
+    return chain(data.offers)
+      .entries()
+      .map(([marketPubkey, offers]) => {
         const nextOffers = offers.filter((offer) => {
           const sameOptimistic = optimisticsByMarket[offer.hadoMarket]?.find(
             ({ offer: optimisticOffer }) => optimisticOffer.publicKey === offer.publicKey,
@@ -102,9 +104,15 @@ export const useBorrowNfts = () => {
         const optimisticsWithSameMarket =
           optimisticsByMarket[marketPubkey]?.map(({ offer }) => offer) || []
 
-        return [marketPubkey, [...nextOffers, ...optimisticsWithSameMarket]]
-      }),
-    )
+        const mergedOffers = sortBy(
+          [...nextOffers, ...optimisticsWithSameMarket],
+          calculateLoanValue,
+        )
+
+        return [marketPubkey, mergedOffers]
+      })
+      .fromPairs()
+      .value() as Record<string, Offer[]>
   }, [data, optimisticOffers, walletPublicKey])
 
   const simpleOffers = useMemo(() => {

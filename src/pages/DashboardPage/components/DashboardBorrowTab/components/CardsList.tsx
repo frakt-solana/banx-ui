@@ -63,11 +63,12 @@ const NFTCard: FC<NFTCardProps> = ({ borrowNft, borrow, findBestOffer }) => {
     collectionFloor: nft.collectionFloor,
   })
 
-  const bestOffer = useMemo(
-    () => findBestOffer(loan.marketPubkey),
-    [findBestOffer, loan.marketPubkey],
-  )
-  const bestLoanValue = bestOffer ? calculateLoanValue(bestOffer) : 0
+  const bestLoanValue = useMemo(() => {
+    const bestOffer = findBestOffer(loan.marketPubkey)
+    if (!bestOffer) return 0
+
+    return calculateLoanValue(bestOffer)
+  }, [findBestOffer, loan.marketPubkey])
 
   return (
     <BorrowCard
