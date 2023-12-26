@@ -66,8 +66,7 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
   const formattedInterestValue = createSolValueJSX(accruedInterest, 1e9, '0◎', formatDecimal)
   const formattedAprValue = (marketApr / 100)?.toFixed(0)
 
-  const maxLtv = (loanValue / collectionFloor) * 100
-  //TODO: Need to calc current ltv
+  const maxLtv = (validation.loanToValueFilter / collectionFloor) * 100
   const currentLtv = (loanValue / collectionFloor) * 100
 
   return (
@@ -81,7 +80,7 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
       />
       <StatInfo
         label="Max / Current ltv"
-        value={createLtvValuesJSX(maxLtv, currentLtv)}
+        value={createLtvValuesJSX({ maxLtv, currentLtv })}
         tooltipText="Max / current LTV"
         valueType={VALUES_TYPES.STRING}
       />
@@ -95,7 +94,7 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
   )
 }
 
-const createLtvValuesJSX = (maxLtv: number, currentLtv: number) => (
+const createLtvValuesJSX = ({ currentLtv, maxLtv }: { currentLtv: number; maxLtv: number }) => (
   <div className={styles.ltvValues}>
     <span style={{ color: getColorByPercent(maxLtv, HealthColorIncreasing) }}>
       {createPercentValueJSX(maxLtv)}

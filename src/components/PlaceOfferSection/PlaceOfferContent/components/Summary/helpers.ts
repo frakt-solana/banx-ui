@@ -8,55 +8,65 @@ export const caclWeeklyInterest = ({ apr, offerSize }: { apr: number; offerSize:
   return weeklyInterest
 }
 
-type CalcOfferSize = (props: {
-  initialOffer: Offer | undefined
-  updatedOffer: Offer | undefined
-  hasFormChanges: boolean
-}) => number
-
-export const calcOfferSize: CalcOfferSize = ({ initialOffer, updatedOffer, hasFormChanges }) => {
-  const {
-    edgeSettlement: initialEdgeSettlement = 0,
-    fundsSolOrTokenBalance: initialFundsSolOrTokenBalance = 0,
-    bidSettlement: initialBidSettlemet = 0,
-  } = initialOffer || {}
-
+type CalcOfferSize = (props: { updatedOffer: Offer | undefined }) => number
+export const calcOfferSize: CalcOfferSize = ({ updatedOffer }) => {
   const {
     fundsSolOrTokenBalance: updatedFundsSolOrTokenBalance = 0,
     bidSettlement: updatedBidSettlemet = 0,
   } = updatedOffer || {}
 
-  const initialOfferSize =
-    initialEdgeSettlement + initialFundsSolOrTokenBalance + initialBidSettlemet
-
-  const updatedOfferSize = updatedFundsSolOrTokenBalance + updatedBidSettlemet
-
-  return hasFormChanges ? initialOfferSize : updatedOfferSize
+  return updatedFundsSolOrTokenBalance + updatedBidSettlemet
 }
 
-type GetSummaryInfo = (props: {
+interface GetSummaryInfoProps {
   initialOffer: Offer | undefined
   updatedOffer: Offer | undefined
   market: MarketPreview | undefined
-  hasFormChanges: boolean
-}) => any
+}
 
-export const getSummaryInfo: GetSummaryInfo = ({
-  initialOffer,
-  updatedOffer,
-  market,
-  hasFormChanges,
-}) => {
+export const getSummaryInfo = ({ initialOffer, updatedOffer, market }: GetSummaryInfoProps) => {
+  const { concentrationIndex: accruedInterest = 0, edgeSettlement: lentValue = 0 } =
+    initialOffer || {}
+
   const { marketApr = 0 } = market || {}
 
-  const offerSize = calcOfferSize({ initialOffer, updatedOffer, hasFormChanges })
-  const weeklyInterest = caclWeeklyInterest({ apr: marketApr, offerSize })
+  const offerSize = calcOfferSize({ updatedOffer })
 
+  const weeklyInterest = caclWeeklyInterest({ offerSize, apr: marketApr })
   const initialLoansQuantity = initialOffer?.validation?.maxReturnAmountFilter || 0
 
+  const { currentLtv, maxLtv } =
+    calcCurrentAndMaxLtv({ initialOffer, updatedOffer, market, offerSize }) || {}
+
   return {
+    maxLtv,
+    currentLtv,
     offerSize,
     weeklyInterest,
     initialLoansQuantity,
+    accruedInterest,
+    lentValue,
   }
+}
+
+const calcCurrentAndMaxLtv = ({
+  initialOffer,
+  updatedOffer,
+  market,
+  offerSize,
+}: {
+  initialOffer: Offer | undefined
+  updatedOffer: Offer | undefined
+  market: MarketPreview | undefined
+  offerSize: number
+}) => {
+  const { collectionFloor = 0 } = market || {}
+
+  const initialMaxLoanValue = initialOffer?.validation.loanToValueFilter || 0
+  const maxLtv = (initialMaxLoanValue / collectionFloor) * 100
+
+  const loansQuantity = updatedOffer?.buyOrdersQuantity || 0
+  const currentLtv = (offerSize / loansQuantity / collectionFloor) * 100
+
+  return { currentLtv, maxLtv: Math.max(currentLtv, maxLtv) }
 }
