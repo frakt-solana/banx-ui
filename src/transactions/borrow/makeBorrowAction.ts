@@ -12,7 +12,7 @@ import { first, uniq } from 'lodash'
 import { MakeActionFn, WalletAndConnection } from 'solana-transactions-executor'
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
-import { BONDS } from '@banx/constants'
+import { BONDS, DYNAMIC_APR } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { BorrowType } from '../constants'
@@ -80,6 +80,7 @@ const getIxnsAndSignersByBorrowType = async ({
 
   const aprRate = calculateDynamicApr(
     Math.floor((ixnParams[0].loanValue / ixnParams[0].nft.nft.collectionFloor) * BASE_POINTS),
+    DYNAMIC_APR,
   )
 
   if (type === BorrowType.StakedBanx) {

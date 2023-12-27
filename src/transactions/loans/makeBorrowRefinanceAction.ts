@@ -15,7 +15,7 @@ import {
 import { MakeActionFn, WalletAndConnection } from 'solana-transactions-executor'
 
 import { Loan, Offer } from '@banx/api/core'
-import { BONDS } from '@banx/constants'
+import { BONDS, DYNAMIC_APR } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export interface BorrowRefinanceActionOptimisticResult {
@@ -86,6 +86,7 @@ const getIxnsAndSigners = async ({
 
   const aprRate = calculateDynamicApr(
     Math.floor((offer.currentSpotPrice / nft.collectionFloor) * BASE_POINTS),
+    DYNAMIC_APR,
   )
 
   const accounts = {

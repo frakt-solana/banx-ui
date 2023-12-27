@@ -12,7 +12,7 @@ import { createPercentValueJSX, createSolValueJSX } from '@banx/components/Table
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan, Offer } from '@banx/api/core'
-import { BONDS } from '@banx/constants'
+import { BONDS, DYNAMIC_APR } from '@banx/constants'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
 import { useLoansOptimistic, useModal, useOffersOptimistic } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
@@ -69,6 +69,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
 
   const newApr = calculateDynamicApr(
     Math.floor((newLoanBorrowedAmount / nft.collectionFloor) * BASE_POINTS),
+    DYNAMIC_APR,
   )
 
   const differenceToPay = newLoanDebt - currentLoanDebt

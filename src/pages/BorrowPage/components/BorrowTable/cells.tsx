@@ -11,7 +11,7 @@ import {
 import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
-import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
+import { BONDS, DYNAMIC_APR, SECONDS_IN_DAY } from '@banx/constants'
 import {
   calcBorrowValueWithProtocolFee,
   calcBorrowValueWithRentFee,
@@ -71,6 +71,7 @@ export const BorrowCell: FC<CellProps> = ({ nft }) => {
 export const APRCell: FC<CellProps> = ({ nft }) => {
   const apr = calculateDynamicApr(
     Math.floor((nft.loanValue / nft.nft.nft.collectionFloor) * BASE_POINTS),
+    DYNAMIC_APR,
   )
 
   const weeklyFee = calculateCurrentInterestSolPure({
