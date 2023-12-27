@@ -7,6 +7,7 @@ import { MAX_APR_VALUE, MIN_APR_VALUE } from '@banx/components/PlaceOfferSection
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { MarketPreview } from '@banx/api/core'
+import { DYNAMIC_APR } from '@banx/constants'
 import { Fire } from '@banx/icons'
 
 import styles from './MarketOverviewInfo.module.less'
@@ -54,6 +55,8 @@ interface MarketAdditionalInfoProps {
 export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isCardOpen }) => {
   const { loansTvl, offerTvl, activeBondsAmount, activeOfferAmount } = market
 
+  const aprValue = DYNAMIC_APR ? `${MIN_APR_VALUE} - ${MAX_APR_VALUE}%` : `${MIN_APR_VALUE}%`
+
   return (
     <div className={classNames(styles.additionalInfoStats, { [styles.hidden]: isCardOpen })}>
       <StatInfo
@@ -72,7 +75,7 @@ export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, is
       />
       <StatInfo
         label="Apr"
-        value={`${MIN_APR_VALUE} - ${MAX_APR_VALUE}%`}
+        value={aprValue}
         classNamesProps={{ value: styles.aprValue }}
         tooltipText="Annual interest rate"
         valueType={VALUES_TYPES.STRING}
