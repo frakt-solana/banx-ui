@@ -45,7 +45,7 @@ interface AdditionalOfferOverviewProps {
   className?: string
 }
 
-//TODO: Need calc dynamic in the future
+//TODO: Need to calc dynamic in the future
 const MIN_APR_VALUE = 34
 const MAX_APR_VALUE = 104
 
