@@ -7,8 +7,10 @@
   margin-bottom: 24px;
 
   @media (max-width: 640px) {
+    border-left: 0;
+    border-right: 0;
     gap: 4px;
-    margin-bottom: 16px;
+    margin: 0 -16px 16px;
   }
 }
 
@@ -24,6 +26,11 @@
     flex-direction: column-reverse;
     align-items: center;
     gap: 0;
+  }
+
+  @media (max-width: 640px) {
+    white-space: nowrap;
+    gap: 8px;
   }
 }
 

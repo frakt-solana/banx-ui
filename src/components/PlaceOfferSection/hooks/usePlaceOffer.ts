@@ -26,6 +26,7 @@ import { useSyntheticOffer } from './useSyntheticOffer'
 export interface PlaceOfferParams {
   market: MarketPreview | undefined
   optimisticOffer: Offer | undefined
+  updatedOffer: Offer | undefined
   syntheticOffer: SyntheticOffer
 
   onChangeOfferMode: (mode: OfferMode) => void
@@ -119,6 +120,10 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
     return calcOfferSize({ syntheticOffer, loanValue, loansAmount, deltaValue })
   }, [syntheticOffer, loanValue, loansAmount, deltaValue])
 
+  const updatedOffer = useMemo(() => {
+    return getUpdatedBondOffer({ syntheticOffer, loanValue, loansAmount, deltaValue })
+  }, [syntheticOffer, loanValue, loansAmount, deltaValue])
+
   const offerErrorMessage = getErrorMessage({
     syntheticOffer,
     solanaBalance,
@@ -182,6 +187,7 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
     market,
     optimisticOffer: offer,
     syntheticOffer,
+    updatedOffer,
 
     offerMode,
     onChangeOfferMode,

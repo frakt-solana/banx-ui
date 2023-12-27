@@ -2,11 +2,18 @@ import { FC } from 'react'
 
 import classNames from 'classnames'
 
+import { MIN_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
+import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { UserOffer } from '@banx/api/core'
 import { calcSyntheticLoanValue } from '@banx/store'
-import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
+import {
+  HealthColorIncreasing,
+  calcDynamicApr,
+  formatDecimal,
+  getColorByPercent,
+} from '@banx/utils'
 
 import styles from './OfferCard.module.less'
 
@@ -50,7 +57,6 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
     concentrationIndex: accruedInterest,
     fundsSolOrTokenBalance,
     bidSettlement,
-    marketApr = 0,
     validation,
   } = offer.offer
 
@@ -62,32 +68,53 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
 
   const formattedOfferSize = formatDecimal(offerSize / 1e9)
   const formattedLentValue = formatDecimal(lentValue / 1e9)
-  const formattedInterestValue = formatDecimal(accruedInterest / 1e9)
-  const formattedAprValue = (marketApr / 100)?.toFixed(0)
-  const formattedLtvValue = (loanValue / collectionFloor) * 100
+  const formattedInterestValue = createSolValueJSX(accruedInterest, 1e9, '0◎', formatDecimal)
+
+  const maxLtv = (validation.loanToValueFilter / collectionFloor) * 100
+  const currentLtv = (loanValue / collectionFloor) * 100
+
+  const maxDynamicApr = calcDynamicApr(loanValue, collectionFloor)
+  const displayAprRange = `${MIN_APR_VALUE} - ${maxDynamicApr?.toFixed(0)}% APR`
 
   return (
     <div className={classNames(styles.additionalOfferContainer, className)}>
       <StatInfo
-        label="Lent/Size"
-        value={`${formattedLentValue}/${formattedOfferSize}◎`}
+        label="Lent / Size"
+        value={`${formattedLentValue} / ${formattedOfferSize}◎`}
         valueType={VALUES_TYPES.STRING}
         secondValue={`${activeLoans} loans`}
         tooltipText="SOL in current active loans"
       />
       <StatInfo
-        label="LTV"
-        value={formattedLtvValue}
-        valueType={VALUES_TYPES.PERCENT}
-        tooltipText="Best offer expressed as a % of floor price"
-        valueStyles={{ color: getColorByPercent(formattedLtvValue, HealthColorIncreasing) }}
+        label="Max / Current ltv"
+        value={createLtvValuesJSX({ maxLtv, currentLtv })}
+        tooltipText="Max / current LTV"
+        valueType={VALUES_TYPES.STRING}
       />
       <StatInfo
         label="Accrued interest"
         value={formattedInterestValue}
-        secondValue={`${formattedAprValue}% APR`}
+        secondValue={displayAprRange}
         valueType={VALUES_TYPES.STRING}
       />
     </div>
   )
 }
+
+const createLtvValuesJSX = ({
+  currentLtv = 0,
+  maxLtv = 0,
+}: {
+  currentLtv: number
+  maxLtv: number
+}) => (
+  <div className={styles.ltvValues}>
+    <span style={{ color: getColorByPercent(maxLtv, HealthColorIncreasing) }}>
+      {createPercentValueJSX(maxLtv, '0%')}
+    </span>
+    {' / '}
+    <span style={{ color: getColorByPercent(currentLtv, HealthColorIncreasing) }}>
+      {createPercentValueJSX(currentLtv, '0%')}
+    </span>
+  </div>
+)

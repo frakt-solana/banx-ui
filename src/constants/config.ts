@@ -49,3 +49,5 @@ export const BANX_STAKING = {
 export const IS_PRIVATE_MARKETS = process.env.IS_PRIVATE_MARKETS === 'true'
 
 export const MIXPANEL_ACCESS_TOKEN = process.env.MIXPANEL_ACCESS_TOKEN
+
+export const DYNAMIC_APR = process.env.DYNAMIC_APR === 'true'
