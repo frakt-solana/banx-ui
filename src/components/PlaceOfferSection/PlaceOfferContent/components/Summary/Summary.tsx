@@ -49,7 +49,7 @@ export const Summary: FC<OfferSummaryProps> = ({
   const formattedWeeklyInterestValue = formatDecimal(weeklyInterest / 1e9)
 
   const maxDynamicApr = calcDynamicApr(bestLoanValue, collectionFloor)
-  const displayAprRange = `${MIN_APR_VALUE} - ${maxDynamicApr?.toFixed(0)}% APR`
+  const displayAprRange = `${MIN_APR_VALUE} - ${maxDynamicApr?.toFixed(0)}%`
 
   return (
     <div className={styles.summary}>

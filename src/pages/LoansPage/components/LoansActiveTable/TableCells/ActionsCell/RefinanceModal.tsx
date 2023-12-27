@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
@@ -11,6 +11,7 @@ import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
+import { Slider } from '@banx/components/Slider'
 import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 import { Modal } from '@banx/components/modals/BaseModal'
 
@@ -61,9 +62,17 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
   })
   const currentLoanDebt = calculateLoanRepayValue(loan)
 
-  const currentSpotPrice = offer?.currentSpotPrice || 0
+  const initialCurrentSpotPrice = offer?.currentSpotPrice || 0
 
   const currentApr = bondTradeTransaction.amountOfBonds
+
+  const [partialPercent, setPartialPercent] = useState<number>(100)
+  const [currentSpotPrice, setCurrentSpotPrice] = useState<number>(initialCurrentSpotPrice)
+
+  const onPartialPercentChange = (percentValue: number) => {
+    setPartialPercent(percentValue)
+    setCurrentSpotPrice(Math.max(Math.floor((initialCurrentSpotPrice * percentValue) / 100), 1000))
+  }
 
   const newLoanBorrowedAmount = currentSpotPrice - upfrontFee
   const newLoanDebt = currentSpotPrice
@@ -87,7 +96,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
     new TxnExecutor(makeBorrowRefinanceAction, { connection, wallet })
       .addTxnParam({
         loan,
-        offer: offer,
+        offer: { ...offer, currentSpotPrice },
       })
       .on('pfSuccessEach', (results) => {
         const { result, txnHash } = results[0]
@@ -135,11 +144,28 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
 
       <LoanDifference difference={differenceToPay} className={styles.difference} />
 
+      <Slider
+        value={partialPercent}
+        onChange={onPartialPercentChange}
+        className={styles.refinanceModalSlider}
+        marks={DEFAULT_SLIDER_MARKS}
+        min={10}
+        max={100}
+      />
+
       <Button className={styles.refinanceModalButton} onClick={refinance} disabled={!offer}>
         {isTerminatingStatus ? 'Extend' : 'Reborrow'}
       </Button>
     </Modal>
   )
+}
+
+const DEFAULT_SLIDER_MARKS = {
+  10: '10%',
+  25: '25%',
+  50: '50%',
+  75: '75%',
+  100: '100%',
 }
 
 interface LoanInfoProps {
