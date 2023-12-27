@@ -94,14 +94,20 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
   )
 }
 
-const createLtvValuesJSX = ({ currentLtv, maxLtv }: { currentLtv: number; maxLtv: number }) => (
+const createLtvValuesJSX = ({
+  currentLtv = 0,
+  maxLtv = 0,
+}: {
+  currentLtv: number
+  maxLtv: number
+}) => (
   <div className={styles.ltvValues}>
     <span style={{ color: getColorByPercent(maxLtv, HealthColorIncreasing) }}>
-      {createPercentValueJSX(maxLtv)}
+      {createPercentValueJSX(maxLtv, '0%')}
     </span>
     {' / '}
     <span style={{ color: getColorByPercent(currentLtv, HealthColorIncreasing) }}>
-      {createPercentValueJSX(currentLtv)}
+      {createPercentValueJSX(currentLtv, '0%')}
     </span>
   </div>
 )

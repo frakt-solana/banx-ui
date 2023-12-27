@@ -16,6 +16,7 @@ interface OfferSummaryProps {
   updatedOffer: Offer | undefined
   market: MarketPreview | undefined
   isProMode: boolean
+  hasFormChanges: boolean
 }
 
 export const Summary: FC<OfferSummaryProps> = ({
@@ -23,9 +24,10 @@ export const Summary: FC<OfferSummaryProps> = ({
   updatedOffer,
   market,
   isProMode,
+  hasFormChanges,
 }) => {
   const {
-    offerSize,
+    offerSize: rawOfferSize,
     weeklyInterest,
     initialLoansQuantity,
     currentLtv,
@@ -33,6 +35,8 @@ export const Summary: FC<OfferSummaryProps> = ({
     accruedInterest,
     lentValue,
   } = getSummaryInfo({ initialOffer, updatedOffer, market })
+
+  const offerSize = hasFormChanges ? rawOfferSize : rawOfferSize + lentValue
 
   const formattedOfferSize = formatDecimal(offerSize / 1e9)
   const formattedLentValue = formatDecimal(lentValue / 1e9)
@@ -95,7 +99,7 @@ export const Summary: FC<OfferSummaryProps> = ({
             value={`${formattedLentValue} / ${formattedOfferSize}◎`}
             valueType={VALUES_TYPES.STRING}
           />
-          <StatInfo label="Loan" value={initialLoansQuantity} valueType={VALUES_TYPES.STRING} />
+          <StatInfo label="Loans" value={initialLoansQuantity} valueType={VALUES_TYPES.STRING} />
           <StatInfo
             label="Accrued interest"
             value={`${formatDecimal(accruedInterest / 1e9)}◎`}
@@ -111,11 +115,11 @@ export const Summary: FC<OfferSummaryProps> = ({
 const createLtvValuesJSX = ({ currentLtv, maxLtv }: { currentLtv: number; maxLtv: number }) => (
   <div className={styles.ltvValues}>
     <span style={{ color: getColorByPercent(maxLtv, HealthColorIncreasing) }}>
-      {createPercentValueJSX(maxLtv)}
+      {createPercentValueJSX(maxLtv, '0%')}
     </span>
     {' / '}
     <span style={{ color: getColorByPercent(currentLtv, HealthColorIncreasing) }}>
-      {createPercentValueJSX(currentLtv)}
+      {createPercentValueJSX(currentLtv, '0%')}
     </span>
   </div>
 )

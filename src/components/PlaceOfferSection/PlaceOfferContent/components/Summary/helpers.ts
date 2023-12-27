@@ -8,14 +8,9 @@ export const caclWeeklyInterest = ({ apr, offerSize }: { apr: number; offerSize:
   return weeklyInterest
 }
 
-type CalcOfferSize = (props: { updatedOffer: Offer | undefined }) => number
-export const calcOfferSize: CalcOfferSize = ({ updatedOffer }) => {
-  const {
-    fundsSolOrTokenBalance: updatedFundsSolOrTokenBalance = 0,
-    bidSettlement: updatedBidSettlemet = 0,
-  } = updatedOffer || {}
-
-  return updatedFundsSolOrTokenBalance + updatedBidSettlemet
+export const calcOfferSize = (offer: Offer | undefined) => {
+  const { fundsSolOrTokenBalance = 0, bidSettlement = 0 } = offer || {}
+  return fundsSolOrTokenBalance + bidSettlement
 }
 
 interface GetSummaryInfoProps {
@@ -30,7 +25,7 @@ export const getSummaryInfo = ({ initialOffer, updatedOffer, market }: GetSummar
 
   const { marketApr = 0 } = market || {}
 
-  const offerSize = calcOfferSize({ updatedOffer })
+  const offerSize = calcOfferSize(updatedOffer)
 
   const weeklyInterest = caclWeeklyInterest({ offerSize, apr: marketApr })
   const initialLoansQuantity = initialOffer?.validation?.maxReturnAmountFilter || 0
@@ -66,7 +61,7 @@ const calcCurrentAndMaxLtv = ({
   const maxLtv = (initialMaxLoanValue / collectionFloor) * 100
 
   const loansQuantity = updatedOffer?.buyOrdersQuantity || 0
-  const currentLtv = (offerSize / loansQuantity / collectionFloor) * 100
+  const currentLtv = (offerSize / loansQuantity / collectionFloor) * 100 || 0
 
   return { currentLtv, maxLtv: Math.max(currentLtv, maxLtv) }
 }

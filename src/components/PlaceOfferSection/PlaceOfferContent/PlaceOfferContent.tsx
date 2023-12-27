@@ -74,6 +74,7 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
         updatedOffer={updatedOffer}
         market={market}
         isProMode={isProMode}
+        hasFormChanges={hasFormChanges}
       />
       <ActionsButtons
         isEditMode={isEditMode}
