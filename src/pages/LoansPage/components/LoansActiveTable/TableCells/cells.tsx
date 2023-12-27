@@ -103,8 +103,11 @@ export const LTVCell: FC<CellProps> = ({ loan }) => {
 }
 
 export const APRCell: FC<CellProps> = ({ loan }) => {
-  const aprWithProtocolFee = loan.bondTradeTransaction.amountOfBonds + BONDS.PROTOCOL_REPAY_FEE
-  const formattedAprValue = createPercentValueJSX(aprWithProtocolFee / 100)
+  const { bondTradeTransaction } = loan
+
+  const formattedAprValue = createPercentValueJSX(
+    (bondTradeTransaction.amountOfBonds + BONDS.PROTOCOL_REPAY_FEE) / 100,
+  )
 
   return (
     <span className={classNames(styles.cellInfoTitle, { [styles.highlight]: true })}>

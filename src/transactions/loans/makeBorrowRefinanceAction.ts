@@ -1,9 +1,10 @@
 import { web3 } from 'fbonds-core'
-import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
+import { BASE_POINTS, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import {
   borrowerRefinance,
   borrowerRefinanceToSame,
+  calculateDynamicApr,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import {
   BondOfferV2,
@@ -79,9 +80,13 @@ const getIxnsAndSigners = async ({
 }) => {
   const { connection, wallet } = walletAndConnection
   const {
-    loan: { bondTradeTransaction, fraktBond },
+    loan: { bondTradeTransaction, fraktBond, nft },
     offer,
   } = ixnParams
+
+  const aprRate = calculateDynamicApr(
+    Math.floor((offer.currentSpotPrice / nft.collectionFloor) * BASE_POINTS),
+  )
 
   const accounts = {
     fbond: new web3.PublicKey(fraktBond.publicKey),
@@ -105,7 +110,7 @@ const getIxnsAndSigners = async ({
     offer.pairState === PairState.PerpetualBondingCurveOnMarket
   ) {
     const { instructions, signers, optimisticResult } = await borrowerRefinanceToSame({
-      args: { solToRefinance: offer.currentSpotPrice, aprRate: bondTradeTransaction.amountOfBonds },
+      args: { solToRefinance: offer.currentSpotPrice, aprRate },
       accounts,
       optimistic,
       connection,
@@ -118,7 +123,7 @@ const getIxnsAndSigners = async ({
     const { instructions, signers, optimisticResult } = await borrowerRefinance({
       args: {
         solToRefinance: offer.currentSpotPrice,
-        aprRate: bondTradeTransaction.amountOfBonds
+        aprRate,
       },
       accounts: {
         ...accounts,
