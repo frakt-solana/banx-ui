@@ -2,13 +2,18 @@ import { FC } from 'react'
 
 import classNames from 'classnames'
 
-import { MAX_APR_VALUE, MIN_APR_VALUE } from '@banx/components/PlaceOfferSection'
+import { MIN_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { UserOffer } from '@banx/api/core'
 import { calcSyntheticLoanValue } from '@banx/store'
-import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
+import {
+  HealthColorIncreasing,
+  calcDynamicApr,
+  formatDecimal,
+  getColorByPercent,
+} from '@banx/utils'
 
 import styles from './OfferCard.module.less'
 
@@ -68,7 +73,8 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
   const maxLtv = (validation.loanToValueFilter / collectionFloor) * 100
   const currentLtv = (loanValue / collectionFloor) * 100
 
-  const displayAprRange = `${MIN_APR_VALUE} - ${MAX_APR_VALUE}% APR`
+  const maxDynamicApr = calcDynamicApr(loanValue, collectionFloor)
+  const displayAprRange = `${MIN_APR_VALUE} - ${maxDynamicApr?.toFixed(0)}% APR`
 
   return (
     <div className={classNames(styles.additionalOfferContainer, className)}>
