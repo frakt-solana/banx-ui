@@ -120,7 +120,10 @@ export const executeBorrow = async (props: {
 
       const optimizeIntoReservesByOfferPubkey = chain(txnParams)
         .flatten()
-        .map(({ offer, optimizeIntoReserves }) => [offer.publicKey, optimizeIntoReserves || true])
+        .map(({ offer, optimizeIntoReserves }) => [
+          offer.publicKey,
+          optimizeIntoReserves === undefined ? true : optimizeIntoReserves,
+        ])
         .uniqBy(([publicKey]) => publicKey)
         .fromPairs()
         .value() as Record<string, boolean>
