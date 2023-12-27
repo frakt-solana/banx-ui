@@ -104,10 +104,8 @@ const calcCurrentAndMaxLtv = ({
   const maxLtv = Math.max(currentLtv, initialMaxLtv)
 
   //? Calculate dynamic LTV with delta
-  const dinamicLtvWithDelta = calcLtv(
-    offerSize / (updatedOffer?.buyOrdersQuantity || 0),
-    collectionFloor,
-  ) || 0
+  const dinamicLtvWithDelta =
+    calcLtv(offerSize / (updatedOffer?.buyOrdersQuantity || 0), collectionFloor) || 0
 
   return { currentLtv, dinamicLtvWithDelta, maxLtv }
 }
