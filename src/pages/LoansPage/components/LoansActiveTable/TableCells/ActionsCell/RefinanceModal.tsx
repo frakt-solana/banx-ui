@@ -3,11 +3,7 @@ import { FC, useState } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { BASE_POINTS } from 'fbonds-core/lib/fbond-protocol/constants'
-import {
-  calculateCurrentInterestSolPure,
-  calculateDynamicApr,
-} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import moment from 'moment'
+import { calculateDynamicApr } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
@@ -16,7 +12,7 @@ import { createPercentValueJSX, createSolValueJSX } from '@banx/components/Table
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan, Offer } from '@banx/api/core'
-import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
+import { BONDS } from '@banx/constants'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
 import { useLoansOptimistic, useModal, useOffersOptimistic } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
@@ -54,12 +50,6 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
   const upfrontFee = fraktBond.fbondTokenSupply || feeAmount
 
   const currentLoanBorrowedAmount = calcLoanBorrowedAmount(loan)
-  const currentLoanDailyFee = calculateCurrentInterestSolPure({
-    loanValue: currentLoanBorrowedAmount,
-    startTime: loan.bondTradeTransaction.soldAt,
-    currentTime: loan.bondTradeTransaction.soldAt + SECONDS_IN_DAY,
-    rateBasePoints: loan.bondTradeTransaction.amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
-  })
   const currentLoanDebt = calculateLoanRepayValue(loan)
 
   const initialCurrentSpotPrice = offer?.currentSpotPrice || 0
@@ -80,13 +70,6 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
   const newApr = calculateDynamicApr(
     Math.floor((newLoanBorrowedAmount / nft.collectionFloor) * BASE_POINTS),
   )
-
-  const newLoanDailyFee = calculateCurrentInterestSolPure({
-    loanValue: currentSpotPrice,
-    startTime: moment().unix(),
-    currentTime: moment().unix() + SECONDS_IN_DAY,
-    rateBasePoints: newApr + BONDS.PROTOCOL_REPAY_FEE,
-  })
 
   const differenceToPay = newLoanDebt - currentLoanDebt
 
@@ -127,16 +110,14 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
       <LoanInfo
         title="Current loan"
         borrowedAmount={currentLoanBorrowedAmount}
-        dailyFee={currentLoanDailyFee}
         debt={currentLoanDebt}
         apr={currentApr}
-        faded
         className={styles.currentLoanInfo}
+        faded
       />
       <LoanInfo
         title="New loan"
         borrowedAmount={newLoanBorrowedAmount}
-        dailyFee={newLoanDailyFee}
         debt={newLoanDebt}
         apr={newApr}
         className={styles.newLoanInfo}
@@ -145,6 +126,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
       <LoanDifference difference={differenceToPay} className={styles.difference} />
 
       <Slider
+        label="Loan"
         value={partialPercent}
         onChange={onPartialPercentChange}
         className={styles.refinanceModalSlider}
@@ -171,22 +153,13 @@ const DEFAULT_SLIDER_MARKS = {
 interface LoanInfoProps {
   title: string
   borrowedAmount: number //? lamports
-  dailyFee: number //? lamports
   debt: number //? lamports
   apr: number //? base points
   faded?: boolean //? Make gray text color
   className?: string
 }
 
-const LoanInfo: FC<LoanInfoProps> = ({
-  title,
-  borrowedAmount,
-  dailyFee,
-  debt,
-  apr,
-  faded,
-  className,
-}) => {
+const LoanInfo: FC<LoanInfoProps> = ({ title, borrowedAmount, debt, apr, faded, className }) => {
   return (
     <div className={classNames(styles.loanInfo, faded && styles.loanInfoFaded, className)}>
       <h5 className={styles.loanInfoTitle}>{title}</h5>
@@ -196,16 +169,12 @@ const LoanInfo: FC<LoanInfoProps> = ({
           <p>Borrowed</p>
         </div>
         <div className={styles.loanInfoValue}>
-          <p>{createSolValueJSX(dailyFee, 1e9, '0◎')}</p>
-          <p>Daily fee</p>
+          <p>{createPercentValueJSX((apr + BONDS.PROTOCOL_REPAY_FEE) / 100)}</p>
+          <p>APR</p>
         </div>
         <div className={styles.loanInfoValue}>
           <p>{createSolValueJSX(debt, 1e9, '0◎')}</p>
           <p>Debt</p>
-        </div>
-        <div className={styles.loanInfoValue}>
-          <p>{createPercentValueJSX((apr + BONDS.PROTOCOL_REPAY_FEE) / 100)}</p>
-          <p>APR</p>
         </div>
       </div>
     </div>
