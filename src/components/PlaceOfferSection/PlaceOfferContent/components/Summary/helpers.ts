@@ -107,7 +107,7 @@ const calcCurrentAndMaxLtv = ({
   const dinamicLtvWithDelta = calcLtv(
     offerSize / (updatedOffer?.buyOrdersQuantity || 0),
     collectionFloor,
-  )
+  ) || 0
 
   return { currentLtv, dinamicLtvWithDelta, maxLtv }
 }
