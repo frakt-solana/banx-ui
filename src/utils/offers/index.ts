@@ -29,7 +29,7 @@ export const isOfferClosed = (pairState: string) => {
 }
 
 export const calcDynamicApr = (loanValue: number, collectionFloor: number) => {
-  const staticApr = Math.floor((loanValue / collectionFloor) * 1e4)
+  const staticApr = Math.floor((loanValue / collectionFloor) * 1e4) || 0
   return calculateDynamicApr(staticApr) / 100
 }
 
