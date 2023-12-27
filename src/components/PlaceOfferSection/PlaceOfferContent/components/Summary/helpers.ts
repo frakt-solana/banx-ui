@@ -8,11 +8,6 @@ export const caclWeeklyInterest = ({ apr, offerSize }: { apr: number; offerSize:
   return weeklyInterest
 }
 
-export const calcOfferSize = (offer: Offer | undefined) => {
-  const { fundsSolOrTokenBalance = 0, bidSettlement = 0 } = offer || {}
-  return fundsSolOrTokenBalance + bidSettlement
-}
-
 interface GetSummaryInfoProps {
   initialOffer: Offer | undefined
   updatedOffer: Offer | undefined
@@ -20,12 +15,22 @@ interface GetSummaryInfoProps {
 }
 
 export const getSummaryInfo = ({ initialOffer, updatedOffer, market }: GetSummaryInfoProps) => {
-  const { concentrationIndex: accruedInterest = 0, edgeSettlement: lentValue = 0 } =
-    initialOffer || {}
-
   const { marketApr = 0 } = market || {}
 
-  const offerSize = calcOfferSize(updatedOffer)
+  const {
+    fundsSolOrTokenBalance: updatedFundsSolOrTokenBalance = 0,
+    bidSettlement: updatedBidSettlement = 0,
+  } = updatedOffer || {}
+
+  const {
+    concentrationIndex: accruedInterest = 0,
+    fundsSolOrTokenBalance: initialFundsSolOrTokenBalance = 0,
+    bidSettlement: initialBidSettlement = 0,
+    edgeSettlement: lentValue = 0,
+  } = initialOffer || {}
+
+  const offerSize = updatedFundsSolOrTokenBalance + updatedBidSettlement
+  const initialOfferSize = initialFundsSolOrTokenBalance + initialBidSettlement + lentValue
 
   const weeklyInterest = caclWeeklyInterest({ offerSize, apr: marketApr })
   const initialLoansQuantity = initialOffer?.validation?.maxReturnAmountFilter || 0
@@ -36,7 +41,8 @@ export const getSummaryInfo = ({ initialOffer, updatedOffer, market }: GetSummar
   return {
     maxLtv,
     currentLtv,
-    offerSize,
+    updatedOfferSize: offerSize,
+    initialOfferSize,
     weeklyInterest,
     initialLoansQuantity,
     accruedInterest,

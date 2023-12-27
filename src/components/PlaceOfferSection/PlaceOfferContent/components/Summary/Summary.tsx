@@ -27,16 +27,17 @@ export const Summary: FC<OfferSummaryProps> = ({
   hasFormChanges,
 }) => {
   const {
-    offerSize: rawOfferSize,
     weeklyInterest,
     initialLoansQuantity,
     currentLtv,
     maxLtv,
     accruedInterest,
     lentValue,
+    updatedOfferSize,
+    initialOfferSize,
   } = getSummaryInfo({ initialOffer, updatedOffer, market })
 
-  const offerSize = hasFormChanges ? rawOfferSize : rawOfferSize + lentValue
+  const offerSize = hasFormChanges ? updatedOfferSize : initialOfferSize
 
   const formattedOfferSize = formatDecimal(offerSize / 1e9)
   const formattedLentValue = formatDecimal(lentValue / 1e9)
