@@ -6,7 +6,6 @@ import { createPercentValueJSX } from '@banx/components/TableComponents'
 import { MarketPreview, Offer } from '@banx/api/core'
 import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
 
-import { MAX_APR_VALUE, MIN_APR_VALUE } from './constants'
 import { getSummaryInfo } from './helpers'
 
 import styles from '../../PlaceOfferContent.module.less'
@@ -18,6 +17,10 @@ interface OfferSummaryProps {
   isProMode: boolean
   hasFormChanges: boolean
 }
+
+//TODO: Need calc dynamic in the future
+const MIN_APR_VALUE = 34
+const MAX_APR_VALUE = 104
 
 export const Summary: FC<OfferSummaryProps> = ({
   initialOffer,
@@ -33,11 +36,9 @@ export const Summary: FC<OfferSummaryProps> = ({
     maxLtv,
     accruedInterest,
     lentValue,
-    updatedOfferSize,
-    initialOfferSize,
-  } = getSummaryInfo({ initialOffer, updatedOffer, market })
-
-  const offerSize = hasFormChanges ? updatedOfferSize : initialOfferSize
+    offerSize,
+    dinamicLtvWithDelta,
+  } = getSummaryInfo({ initialOffer, updatedOffer, market, hasFormChanges })
 
   const formattedOfferSize = formatDecimal(offerSize / 1e9)
   const formattedLentValue = formatDecimal(lentValue / 1e9)
@@ -60,7 +61,7 @@ export const Summary: FC<OfferSummaryProps> = ({
       {!initialOffer && (
         <StatInfo
           label={isProMode ? 'Max weighted LTV' : 'LTV'}
-          value={currentLtv}
+          value={isProMode ? dinamicLtvWithDelta : currentLtv}
           valueStyles={{ color: getColorByPercent(currentLtv, HealthColorIncreasing) }}
           tooltipText={isProMode ? 'Average LTV offered by your pool' : ''}
           valueType={VALUES_TYPES.PERCENT}

@@ -45,13 +45,16 @@ interface AdditionalOfferOverviewProps {
   className?: string
 }
 
+//TODO: Need calc dynamic in the future
+const MIN_APR_VALUE = 34
+const MAX_APR_VALUE = 104
+
 export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offer, className }) => {
   const {
     edgeSettlement: lentValue,
     concentrationIndex: accruedInterest,
     fundsSolOrTokenBalance,
     bidSettlement,
-    marketApr = 0,
     validation,
   } = offer.offer
 
@@ -64,10 +67,11 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
   const formattedOfferSize = formatDecimal(offerSize / 1e9)
   const formattedLentValue = formatDecimal(lentValue / 1e9)
   const formattedInterestValue = createSolValueJSX(accruedInterest, 1e9, '0◎', formatDecimal)
-  const formattedAprValue = (marketApr / 100)?.toFixed(0)
 
   const maxLtv = (validation.loanToValueFilter / collectionFloor) * 100
   const currentLtv = (loanValue / collectionFloor) * 100
+
+  const displayAprRange = `${MIN_APR_VALUE} - ${MAX_APR_VALUE}% APR`
 
   return (
     <div className={classNames(styles.additionalOfferContainer, className)}>
@@ -87,7 +91,7 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
       <StatInfo
         label="Accrued interest"
         value={formattedInterestValue}
-        secondValue={`${formattedAprValue}% APR`}
+        secondValue={displayAprRange}
         valueType={VALUES_TYPES.STRING}
       />
     </div>
