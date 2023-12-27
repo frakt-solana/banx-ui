@@ -2,6 +2,7 @@ import { FC } from 'react'
 
 import classNames from 'classnames'
 
+import { MAX_APR_VALUE, MIN_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 
@@ -44,10 +45,6 @@ interface AdditionalOfferOverviewProps {
   offer: UserOffer
   className?: string
 }
-
-//TODO: Need to calc dynamic in the future
-const MIN_APR_VALUE = 34
-const MAX_APR_VALUE = 104
 
 export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offer, className }) => {
   const {

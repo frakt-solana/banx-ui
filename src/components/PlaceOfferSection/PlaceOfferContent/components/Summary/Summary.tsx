@@ -1,5 +1,6 @@
 import { FC } from 'react'
 
+import { MAX_APR_VALUE, MIN_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 
@@ -17,10 +18,6 @@ interface OfferSummaryProps {
   isProMode: boolean
   hasFormChanges: boolean
 }
-
-//TODO: Need to calc dynamic in the future
-const MIN_APR_VALUE = 34
-const MAX_APR_VALUE = 104
 
 export const Summary: FC<OfferSummaryProps> = ({
   initialOffer,

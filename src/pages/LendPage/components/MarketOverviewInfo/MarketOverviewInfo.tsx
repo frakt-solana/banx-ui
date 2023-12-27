@@ -3,6 +3,7 @@ import { FC } from 'react'
 import { Tooltip } from 'antd'
 import classNames from 'classnames'
 
+import { MAX_APR_VALUE, MIN_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { MarketPreview } from '@banx/api/core'
@@ -49,10 +50,6 @@ interface MarketAdditionalInfoProps {
   market: MarketPreview
   isCardOpen: boolean
 }
-
-//TODO: Need to calc dynamic in the future
-const MIN_APR_VALUE = 34
-const MAX_APR_VALUE = 104
 
 export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isCardOpen }) => {
   const { loansTvl, offerTvl, activeBondsAmount, activeOfferAmount } = market
