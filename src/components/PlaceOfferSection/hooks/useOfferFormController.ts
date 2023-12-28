@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { clamp } from 'lodash'
+import { clamp, trimStart } from 'lodash'
 
 import { SyntheticOffer } from '@banx/store'
 
@@ -40,8 +40,8 @@ export const useOfferFormController = (syntheticOffer: SyntheticOffer) => {
   }, [])
 
   const onLoanAmountChange = useCallback((nextValue: string) => {
-    const sanitizedValue = nextValue.replace(/^0+/, '')
-    const numericValue = parseInt(sanitizedValue, 10) || 0
+    const sanitizedValue = trimStart(nextValue, '0')
+    const numericValue = parseFloat(sanitizedValue) || 0
     const clampedValue = clamp(numericValue, 0, 10000)
 
     setLoansAmount(clampedValue.toString())
