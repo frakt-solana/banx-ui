@@ -63,12 +63,22 @@ export const Summary: FC<OfferSummaryProps> = ({
         />
       )}
 
-      {!initialOffer && (
+      {!initialOffer && isProMode && (
         <StatInfo
-          label={isProMode ? 'Max weighted LTV' : 'LTV'}
-          value={isProMode ? dinamicLtvWithDelta : currentLtv}
+          label="Max weighted LTV"
+          value={dinamicLtvWithDelta}
+          valueStyles={{ color: getColorByPercent(dinamicLtvWithDelta, HealthColorIncreasing) }}
+          tooltipText="Average LTV offered by your pool"
+          valueType={VALUES_TYPES.PERCENT}
+          flexType="row"
+        />
+      )}
+
+      {!initialOffer && !isProMode && (
+        <StatInfo
+          label="LTV"
+          value={currentLtv}
           valueStyles={{ color: getColorByPercent(currentLtv, HealthColorIncreasing) }}
-          tooltipText={isProMode ? 'Average LTV offered by your pool' : ''}
           valueType={VALUES_TYPES.PERCENT}
           flexType="row"
         />
@@ -82,14 +92,12 @@ export const Summary: FC<OfferSummaryProps> = ({
           flexType="row"
         />
       )}
-
       <StatInfo
         label="Max weekly interest"
         value={`${formattedWeeklyInterestValue}◎`}
         valueType={VALUES_TYPES.STRING}
         flexType="row"
       />
-
       {!initialOffer && (
         <StatInfo
           label="Apr"
@@ -98,7 +106,6 @@ export const Summary: FC<OfferSummaryProps> = ({
           flexType="row"
         />
       )}
-
       {initialOffer && (
         <div className={styles.editSummary}>
           <StatInfo
