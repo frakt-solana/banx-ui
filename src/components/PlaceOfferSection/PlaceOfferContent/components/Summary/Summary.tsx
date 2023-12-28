@@ -63,27 +63,25 @@ export const Summary: FC<OfferSummaryProps> = ({
         />
       )}
 
-      {!initialOffer && (
-        <>
-          {isProMode ? (
-            <StatInfo
-              label="Max weighted LTV"
-              value={dinamicLtvWithDelta}
-              valueStyles={{ color: getColorByPercent(dinamicLtvWithDelta, HealthColorIncreasing) }}
-              tooltipText="Average LTV offered by your pool"
-              valueType={VALUES_TYPES.PERCENT}
-              flexType="row"
-            />
-          ) : (
-            <StatInfo
-              label="LTV"
-              value={currentLtv}
-              valueStyles={{ color: getColorByPercent(currentLtv, HealthColorIncreasing) }}
-              valueType={VALUES_TYPES.PERCENT}
-              flexType="row"
-            />
-          )}
-        </>
+      {!initialOffer && isProMode && (
+        <StatInfo
+          label="Max weighted LTV"
+          value={dinamicLtvWithDelta}
+          valueStyles={{ color: getColorByPercent(dinamicLtvWithDelta, HealthColorIncreasing) }}
+          tooltipText="Average LTV offered by your pool"
+          valueType={VALUES_TYPES.PERCENT}
+          flexType="row"
+        />
+      )}
+
+      {!initialOffer && !isProMode && (
+        <StatInfo
+          label="LTV"
+          value={currentLtv}
+          valueStyles={{ color: getColorByPercent(currentLtv, HealthColorIncreasing) }}
+          valueType={VALUES_TYPES.PERCENT}
+          flexType="row"
+        />
       )}
 
       {!initialOffer && (
@@ -94,14 +92,12 @@ export const Summary: FC<OfferSummaryProps> = ({
           flexType="row"
         />
       )}
-
       <StatInfo
         label="Max weekly interest"
         value={`${formattedWeeklyInterestValue}◎`}
         valueType={VALUES_TYPES.STRING}
         flexType="row"
       />
-
       {!initialOffer && (
         <StatInfo
           label="Apr"
@@ -110,7 +106,6 @@ export const Summary: FC<OfferSummaryProps> = ({
           flexType="row"
         />
       )}
-
       {initialOffer && (
         <div className={styles.editSummary}>
           <StatInfo
