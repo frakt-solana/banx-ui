@@ -111,5 +111,5 @@ const calcCurrentAndMaxLtv = ({
 }
 
 const calcLtv = (loanValue: number, collectionFloor: number) => {
-  return (loanValue / collectionFloor) * 100
+  return Math.max((loanValue / collectionFloor) * 100, 0)
 }

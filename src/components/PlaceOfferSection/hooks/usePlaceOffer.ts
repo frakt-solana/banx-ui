@@ -6,7 +6,7 @@ import { chain, isEmpty } from 'lodash'
 import { MarketPreview, Offer } from '@banx/api/core'
 import { convertOffersToSimple } from '@banx/pages/BorrowPage/helpers'
 import { SyntheticOffer } from '@banx/store'
-import { formatDecimal, useSolanaBalance } from '@banx/utils'
+import { getDecimalPlaces, useSolanaBalance } from '@banx/utils'
 
 import { Mark } from '../PlaceOfferContent/components'
 import {
@@ -138,9 +138,10 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
     const shouldSetBestOfferValue = !!solanaBalance && !isEditMode && connected && !isEmpty(market)
     if (shouldSetBestOfferValue) {
       const bestLoanValue = calcBestOfferValue({ solanaBalance, bestOffer: market.bestOffer })
-      const formattedBestLoanValue = formatDecimal(bestLoanValue / 1e9)
+      const decimalPlaces = getDecimalPlaces(bestLoanValue / 1e9)
+      const formattedLoanValue = (bestLoanValue / 1e9)?.toFixed(decimalPlaces)
 
-      onLoanValueChange(formattedBestLoanValue)
+      onLoanValueChange(formattedLoanValue)
     }
   }, [market, isEditMode, connected, solanaBalance, syntheticOffer, onLoanValueChange])
 

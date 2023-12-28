@@ -64,14 +64,26 @@ export const Summary: FC<OfferSummaryProps> = ({
       )}
 
       {!initialOffer && (
-        <StatInfo
-          label={isProMode ? 'Max weighted LTV' : 'LTV'}
-          value={isProMode ? dinamicLtvWithDelta : currentLtv}
-          valueStyles={{ color: getColorByPercent(currentLtv, HealthColorIncreasing) }}
-          tooltipText={isProMode ? 'Average LTV offered by your pool' : ''}
-          valueType={VALUES_TYPES.PERCENT}
-          flexType="row"
-        />
+        <>
+          {isProMode ? (
+            <StatInfo
+              label="Max weighted LTV"
+              value={dinamicLtvWithDelta}
+              valueStyles={{ color: getColorByPercent(dinamicLtvWithDelta, HealthColorIncreasing) }}
+              tooltipText="Average LTV offered by your pool"
+              valueType={VALUES_TYPES.PERCENT}
+              flexType="row"
+            />
+          ) : (
+            <StatInfo
+              label="LTV"
+              value={currentLtv}
+              valueStyles={{ color: getColorByPercent(currentLtv, HealthColorIncreasing) }}
+              valueType={VALUES_TYPES.PERCENT}
+              flexType="row"
+            />
+          )}
+        </>
       )}
 
       {!initialOffer && (
