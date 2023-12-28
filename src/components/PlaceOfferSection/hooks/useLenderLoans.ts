@@ -4,6 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 
 import { fetchLenderLoansByCertainOffer } from '@banx/api/core'
+import { isLoanTerminating } from '@banx/utils'
 
 export const useLenderLoans = ({ offerPubkey }: { offerPubkey: string }) => {
   const { publicKey } = useWallet()
@@ -22,7 +23,7 @@ export const useLenderLoans = ({ offerPubkey }: { offerPubkey: string }) => {
   const lenderLoans = useMemo(() => {
     if (!data) return []
 
-    return data.flatMap(({ loans }) => loans)
+    return data.flatMap(({ loans }) => loans).filter((loan) => !isLoanTerminating(loan))
   }, [data])
 
   return {
