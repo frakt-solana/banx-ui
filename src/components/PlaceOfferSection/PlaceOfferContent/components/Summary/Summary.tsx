@@ -57,7 +57,7 @@ export const Summary: FC<OfferSummaryProps> = ({
         <StatInfo
           label="Max / current LTV"
           value={createLtvValuesJSX({ maxLtv, currentLtv })}
-          tooltipText="Max / current LTV"
+          tooltipText="Max offer given sufficient pool liquidity / Top offer given current pool liquidity"
           valueType={VALUES_TYPES.STRING}
           flexType="row"
         />
@@ -96,6 +96,7 @@ export const Summary: FC<OfferSummaryProps> = ({
         label="Max weekly interest"
         value={`${formattedWeeklyInterestValue}◎`}
         valueType={VALUES_TYPES.STRING}
+        tooltipText="Max weekly interest if all pool offers are taken at Max LTV"
         flexType="row"
       />
       {!initialOffer && (
@@ -117,6 +118,7 @@ export const Summary: FC<OfferSummaryProps> = ({
           <StatInfo
             label="Accrued interest"
             value={`${formatDecimal(accruedInterest / 1e9)}◎`}
+            tooltipText="Total accrued interest available to harvest"
             valueType={VALUES_TYPES.STRING}
           />
           <StatInfo label="Apr" value={displayAprRange} valueType={VALUES_TYPES.STRING} />

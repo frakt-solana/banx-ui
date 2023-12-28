@@ -6,6 +6,7 @@ import { sumBy } from 'lodash'
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider, Slider } from '@banx/components/Slider'
 import { createSolValueJSX } from '@banx/components/TableComponents'
+import Tooltip from '@banx/components/Tooltip'
 
 import {
   calcBorrowValueWithProtocolFee,
@@ -84,7 +85,10 @@ export const Summary: FC<SummaryProps> = ({
           </p>
         </div>
         <div className={styles.stats}>
-          <p className={classNames(styles.statsTitle, styles.statsTitleLeft)}>Max Ltv</p>
+          <div className={styles.statsLabel}>
+            <p className={classNames(styles.statsTitle, styles.statsTitleLeft)}>Max Ltv</p>
+            <Tooltip title="Set the maximum amount to borrow against the # NFTs selected" />
+          </div>
           <MaxLtvSlider value={maxBorrowPercent} onChange={setMaxBorrowPercent} />
         </div>
       </div>

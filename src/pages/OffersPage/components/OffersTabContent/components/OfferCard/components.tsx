@@ -83,18 +83,19 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
         value={`${formattedLentValue} / ${formattedOfferSize}◎`}
         valueType={VALUES_TYPES.STRING}
         secondValue={`${activeLoans} loans`}
-        tooltipText="SOL in current active loans"
+        tooltipText="SOL in active offers / SOL in active + pending offers"
       />
       <StatInfo
         label="Max / Current ltv"
         value={createLtvValuesJSX({ maxLtv, currentLtv })}
-        tooltipText="Max / current LTV"
+        tooltipText="Max offer given sufficient pool liquidity / Top offer given current pool liquidity"
         valueType={VALUES_TYPES.STRING}
       />
       <StatInfo
         label="Accrued interest"
         value={formattedInterestValue}
         secondValue={displayAprRange}
+        tooltipText="Total accrued interest available to harvest"
         valueType={VALUES_TYPES.STRING}
       />
     </div>
