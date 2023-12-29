@@ -30,7 +30,7 @@ export const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
         <div className={styles.mainInfoStats}>
           <StatInfo label="Floor" value={collectionFloor} divider={1e9} />
           <StatInfo
-            label="Best"
+            label="Top"
             value={bestOffer}
             tooltipText="Highest current offer"
             divider={1e9}
