@@ -3,4 +3,5 @@ export enum OnboardingModalContentType {
   BORROW = 'borrow',
   LEND = 'lend',
   REFINANCE = 'refinance',
+  OFFERS = 'offers',
 }

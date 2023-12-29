@@ -8,6 +8,8 @@ import dashboardImg3 from './assets/dashboard3.png'
 import dashboardImg3_dark from './assets/dashboard3_dark.png'
 import lendImg1 from './assets/lend1.png'
 import lendImg1_dark from './assets/lend1_dark.png'
+import offersImg1 from './assets/offers1.png'
+import offersImg1_dark from './assets/offers1_dark.png'
 import refinanceImg1 from './assets/refinance1.png'
 import refinanceImg1_dark from './assets/refinance1_dark.png'
 import { OnboardingModalContentType } from './types'
@@ -125,9 +127,37 @@ const REFINANCE_CONTENT = {
   ],
 }
 
+const OFFERS_CONTENT = {
+  title: 'My offers',
+  slides: [
+    {
+      img: <img className={styles.slideImg} src={offersImg1} alt="offers 1" />,
+      imgDark: <img className={styles.slideImg} src={offersImg1_dark} alt="offers 1" />,
+      text: (
+        <div className={styles.slideText}>
+          <p>
+            Once an offer is created, it will exist in the Pending tab. You can monitor the risk of
+            pending offers, edit parameters to adjust this risk, or close the offer and recover SOL
+            not lent.
+          </p>
+          <p>
+            You can monitor the risk of active offers in the Active tab. You can terminate if you
+            wish to exit, recovering either SOL or collateral within 72 hours.
+          </p>
+          <p>
+            A record of offers being initiated, repaid or liquidated can be found in the History
+            tab.
+          </p>
+        </div>
+      ),
+    },
+  ],
+}
+
 export const CONTENT = {
   [OnboardingModalContentType.DASHBOARD]: DASHBOARD_CONTENT,
   [OnboardingModalContentType.BORROW]: BORROW_CONTENT,
   [OnboardingModalContentType.LEND]: LEND_CONTENT,
   [OnboardingModalContentType.REFINANCE]: REFINANCE_CONTENT,
+  [OnboardingModalContentType.OFFERS]: OFFERS_CONTENT,
 }
