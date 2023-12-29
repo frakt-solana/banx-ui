@@ -136,17 +136,18 @@ const OFFERS_CONTENT = {
       text: (
         <div className={styles.slideText}>
           <p>
-            Once an offer is created, it will exist in the Pending tab. You can monitor the risk of
-            pending offers, edit parameters to adjust this risk, or close the offer and recover SOL
-            not lent.
+            <span className={styles.slideTextImportant}>The Pending tab</span> shows offers not yet
+            taken. You can adjust risk by editing parameters, or close the offer and recover SOL not
+            lent.
           </p>
           <p>
-            You can monitor the risk of active offers in the Active tab. You can terminate if you
-            wish to exit, recovering either SOL or collateral within 72 hours.
+            <span className={styles.slideTextImportant}>The Active tab</span> shows offers taken.
+            You can terminate if you wish to exit, recovering either SOL or collateral within 72
+            hours.
           </p>
           <p>
-            A record of offers being initiated, repaid or liquidated can be found in the History
-            tab.
+            A record of offers being initiated, repaid or liquidated can be found in{' '}
+            <span className={styles.slideTextImportant}>the History tab.</span>
           </p>
         </div>
       ),
