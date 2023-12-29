@@ -33,11 +33,9 @@ export const Summary: FC<OfferSummaryProps> = ({
 }) => {
   const {
     weeklyInterest,
-    initialLoansQuantity,
     currentLtv,
     maxLtv,
     accruedInterest,
-    lentValue,
     offerSize,
     dinamicLtvWithDelta,
     collectionFloor,
@@ -45,7 +43,6 @@ export const Summary: FC<OfferSummaryProps> = ({
   } = getSummaryInfo({ initialOffer, updatedOffer, market, hasFormChanges })
 
   const formattedOfferSize = formatDecimal(offerSize / 1e9)
-  const formattedLentValue = formatDecimal(lentValue / 1e9)
   const formattedWeeklyInterestValue = formatDecimal(weeklyInterest / 1e9)
 
   const maxDynamicApr = calcDynamicApr(bestLoanValue, collectionFloor)
@@ -55,9 +52,9 @@ export const Summary: FC<OfferSummaryProps> = ({
     <div className={styles.summary}>
       {initialOffer && (
         <StatInfo
-          label="Max / current LTV"
+          label="current | Max  LTV"
           value={createLtvValuesJSX({ maxLtv, currentLtv })}
-          tooltipText="Max / current LTV"
+          tooltipText="Max offer given sufficient pool liquidity / Top offer given current pool liquidity"
           valueType={VALUES_TYPES.STRING}
           flexType="row"
         />
@@ -92,36 +89,31 @@ export const Summary: FC<OfferSummaryProps> = ({
           flexType="row"
         />
       )}
+
       <StatInfo
         label="Max weekly interest"
         value={`${formattedWeeklyInterestValue}◎`}
         valueType={VALUES_TYPES.STRING}
+        tooltipText="Max weekly interest if all pool offers are taken at Max LTV"
         flexType="row"
       />
-      {!initialOffer && (
+
+      {initialOffer && (
         <StatInfo
-          label="Apr"
-          value={displayAprRange}
+          label="Accrued interest"
+          value={`${formatDecimal(accruedInterest / 1e9)}◎`}
+          tooltipText="Total accrued interest available to harvest"
           valueType={VALUES_TYPES.STRING}
           flexType="row"
         />
       )}
-      {initialOffer && (
-        <div className={styles.editSummary}>
-          <StatInfo
-            label="Lent"
-            value={`${formattedLentValue} / ${formattedOfferSize}◎`}
-            valueType={VALUES_TYPES.STRING}
-          />
-          <StatInfo label="Loans" value={initialLoansQuantity} valueType={VALUES_TYPES.STRING} />
-          <StatInfo
-            label="Accrued interest"
-            value={`${formatDecimal(accruedInterest / 1e9)}◎`}
-            valueType={VALUES_TYPES.STRING}
-          />
-          <StatInfo label="Apr" value={displayAprRange} valueType={VALUES_TYPES.STRING} />
-        </div>
-      )}
+
+      <StatInfo
+        label="Apr"
+        value={displayAprRange}
+        valueType={VALUES_TYPES.STRING}
+        flexType="row"
+      />
     </div>
   )
 }
@@ -131,7 +123,7 @@ const createLtvValuesJSX = ({ currentLtv, maxLtv }: { currentLtv: number; maxLtv
     <span style={{ color: getColorByPercent(maxLtv, HealthColorIncreasing) }}>
       {createPercentValueJSX(maxLtv, '0%')}
     </span>
-    {' / '}
+    {' | '}
     <span style={{ color: getColorByPercent(currentLtv, HealthColorIncreasing) }}>
       {createPercentValueJSX(currentLtv, '0%')}
     </span>
