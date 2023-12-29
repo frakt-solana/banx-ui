@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import { MIN_APR_VALUE } from '@banx/components/PlaceOfferSection/constants'
+import { MIN_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 
