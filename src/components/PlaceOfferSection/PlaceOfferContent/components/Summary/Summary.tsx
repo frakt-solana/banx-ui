@@ -1,16 +1,11 @@
 import { FC } from 'react'
 
-import { MIN_APR_VALUE } from '@banx/components/PlaceOfferSection'
+import { MIN_APR_VALUE } from '@banx/components/PlaceOfferSection/constants'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { MarketPreview, Offer } from '@banx/api/core'
-import {
-  HealthColorIncreasing,
-  calcDynamicApr,
-  formatDecimal,
-  getColorByPercent,
-} from '@banx/utils'
+import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
 
 import { getSummaryInfo } from './helpers'
 
@@ -38,15 +33,15 @@ export const Summary: FC<OfferSummaryProps> = ({
     accruedInterest,
     offerSize,
     dinamicLtvWithDelta,
-    collectionFloor,
-    bestLoanValue,
+    // collectionFloor,
+    // bestLoanValue,
   } = getSummaryInfo({ initialOffer, updatedOffer, market, hasFormChanges })
 
   const formattedOfferSize = formatDecimal(offerSize / 1e9)
   const formattedWeeklyInterestValue = formatDecimal(weeklyInterest / 1e9)
 
-  const maxDynamicApr = calcDynamicApr(bestLoanValue, collectionFloor)
-  const displayAprRange = `${MIN_APR_VALUE} - ${maxDynamicApr?.toFixed(0)}%`
+  // const maxDynamicApr = calcDynamicApr(bestLoanValue, collectionFloor)
+  // const displayAprRange = `${MIN_APR_VALUE} - ${maxDynamicApr?.toFixed(0)}%`
 
   return (
     <div className={styles.summary}>
@@ -108,12 +103,7 @@ export const Summary: FC<OfferSummaryProps> = ({
         />
       )}
 
-      <StatInfo
-        label="Apr"
-        value={displayAprRange}
-        valueType={VALUES_TYPES.STRING}
-        flexType="row"
-      />
+      <StatInfo label="Apr" value={MIN_APR_VALUE} valueType={VALUES_TYPES.PERCENT} flexType="row" />
     </div>
   )
 }

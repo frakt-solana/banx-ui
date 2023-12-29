@@ -7,13 +7,7 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { UserOffer } from '@banx/api/core'
-import { calcSyntheticLoanValue } from '@banx/store'
-import {
-  HealthColorIncreasing,
-  calcDynamicApr,
-  formatDecimal,
-  getColorByPercent,
-} from '@banx/utils'
+import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
 
 import styles from './OfferCard.module.less'
 
@@ -48,12 +42,12 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
   const collectionFloor = offer.collectionMeta.collectionFloor
   const availableToFund = fundsSolOrTokenBalance + bidSettlement
 
-  const bestCurrentOfferValue = calcSyntheticLoanValue(offer.offer)
+  // const bestCurrentOfferValue = calcSyntheticLoanValue(offer.offer)
 
   const bestOfferValue = validation.loanToValueFilter
   const maxLtv = (bestOfferValue / collectionFloor) * 100
 
-  const maxDynamicApr = calcDynamicApr(bestCurrentOfferValue, collectionFloor)
+  // const maxDynamicApr = calcDynamicApr(bestCurrentOfferValue, collectionFloor)
 
   return (
     <div className={classNames(styles.additionalOfferContainer, className)}>
@@ -77,9 +71,10 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
       />
       <StatInfo
         label="Apr"
-        value={`${MIN_APR_VALUE} - ${maxDynamicApr?.toFixed(0)}%`}
+        // value={`${MIN_APR_VALUE} - ${maxDynamicApr?.toFixed(0)}%`}
+        value={MIN_APR_VALUE}
         classNamesProps={{ value: styles.value }}
-        valueType={VALUES_TYPES.STRING}
+        valueType={VALUES_TYPES.PERCENT}
       />
     </div>
   )
