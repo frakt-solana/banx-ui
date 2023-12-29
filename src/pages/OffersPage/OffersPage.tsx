@@ -25,7 +25,7 @@ export const OffersPage = () => {
     <div className={styles.pageWrapper}>
       <OffersHeader />
       <Tabs value={currentTabValue} {...tabsProps} onTabClick={onTabClick} />
-      {currentTabValue === OffersTabName.OFFERS && <OffersTabContent />}
+      {currentTabValue === OffersTabName.PENDING && <OffersTabContent />}
       {currentTabValue === OffersTabName.ACTIVE && <ActiveTabContent />}
       {currentTabValue === OffersTabName.HISTORY && <HistoryOffersTable />}
     </div>
@@ -33,15 +33,15 @@ export const OffersPage = () => {
 }
 
 enum OffersTabName {
-  OFFERS = 'offers',
+  PENDING = 'pending',
   ACTIVE = 'active',
   HISTORY = 'history',
 }
 
 const OFFERS_TABS: Tab[] = [
   {
-    label: 'Offers',
-    value: OffersTabName.OFFERS,
+    label: 'Pending',
+    value: OffersTabName.PENDING,
   },
   {
     label: 'Active',

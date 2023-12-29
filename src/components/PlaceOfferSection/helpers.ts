@@ -51,7 +51,8 @@ type GetErrorMessage = (props: {
 
 const ERROR_MESSAGES = {
   INSUFFICIENT_BALANCE: 'Insufficient balance. Please deposit more SOL.',
-  INVALID_OFFER: 'Invalid offer. The initial offer is too low.',
+  INVALID_OFFER:
+    'Max Offer must be equal to or greater than the Delta multiplied by the Number of offers.',
   EMPTY_LOANS_AMOUNT: 'Please enter a valid number of loans. The number of loans cannot be empty.',
 }
 

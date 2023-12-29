@@ -19,7 +19,7 @@ export interface StatsInfoProps {
 
   icon?: FC<SVGProps<SVGSVGElement>>
   label?: string
-  secondValue?: string
+  secondValue?: string | JSX.Element
   tooltipText?: string
   valueType?: VALUES_TYPES
   decimalPlaces?: number
@@ -66,7 +66,7 @@ export const StatInfo: FC<StatsInfoProps> = ({
   )
 }
 
-const renderSecondValue = (flexType: string, secondValue?: string) => {
+const renderSecondValue = (flexType: string, secondValue?: string | JSX.Element) => {
   if (flexType !== 'row' && secondValue) {
     return <span className={styles.secondValue}>{secondValue}</span>
   }

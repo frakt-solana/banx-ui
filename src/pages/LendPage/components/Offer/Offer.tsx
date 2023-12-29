@@ -19,7 +19,7 @@ interface OfferProps {
   editOffer: () => void
 }
 
-const Offer: FC<OfferProps> = ({ editOffer, offer, bestOffer }) => {
+const Offer: FC<OfferProps> = ({ editOffer, offer }) => {
   const { connected, publicKey } = useWallet()
 
   const {
@@ -32,13 +32,11 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, bestOffer }) => {
   } = offer
 
   const isOwnOffer = assetReceiver === publicKey?.toBase58()
-  const isBestOffer = offerPubkey === bestOffer?.publicKey
   const isNewOffer = offerPubkey === PUBKEY_PLACEHOLDER
   const isCreatingOffer = connected && isNewOffer
 
   const listItemClassNames = classNames(styles.listItem, {
     [styles.highlightYour]: isCreatingOffer,
-    [styles.highlightBest]: isBestOffer,
     [styles.highlightEditing]: isEdit,
   })
 
