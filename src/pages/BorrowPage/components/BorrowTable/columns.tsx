@@ -57,7 +57,12 @@ export const getTableColumns = ({
     },
     {
       key: 'fee',
-      title: <HeaderCell label="Upfront fee" />,
+      title: (
+        <HeaderCell
+          label="Upfront fee"
+          tooltipText="1% upfront fee charged on the principal amount"
+        />
+      ),
       render: ({ loanValue }) => {
         const upfrontFee = loanValue - calcBorrowValueWithProtocolFee(loanValue)
         return createSolValueJSX(upfrontFee, 1e9, '--', formatDecimal)
@@ -65,7 +70,12 @@ export const getTableColumns = ({
     },
     {
       key: 'apr',
-      title: <HeaderCell label="Apr" />,
+      title: (
+        <HeaderCell
+          label="Apr"
+          tooltipText="Annual interest rate. Dynamic when selecting Max LTV to borrow, fixed once loan is active"
+        />
+      ),
       render: (nft) => <APRCell nft={nft} />,
     },
     {
