@@ -52,7 +52,7 @@ export const Summary: FC<OfferSummaryProps> = ({
     <div className={styles.summary}>
       {initialOffer && (
         <StatInfo
-          label="current | Max  LTV"
+          label="Max LTV | current"
           value={createLtvValuesJSX({ maxLtv, currentLtv })}
           tooltipText="Max offer given sufficient pool liquidity / Top offer given current pool liquidity"
           valueType={VALUES_TYPES.STRING}
