@@ -38,7 +38,7 @@ export const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
           <StatInfo
             label="Ltv"
             value={bestLtv}
-            tooltipText="Best offer expressed as a % of floor price"
+            tooltipText="Highest offer expressed as a % of floor price"
             valueType={VALUES_TYPES.PERCENT}
           />
         </div>
