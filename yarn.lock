@@ -11258,10 +11258,10 @@ socks@^2.6.2:
     ip "^2.0.0"
     smart-buffer "^4.2.0"
 
-solana-transactions-executor@1.0.9:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/solana-transactions-executor/-/solana-transactions-executor-1.0.9.tgz#bc5b66a72e573bffc783b24abe6abfd3d8b608a7"
-  integrity sha512-Lld5GKLLVRp9/PfkxTa6fHpr8GTUpGYkR5rBiyErjCx+9nsPrbqRdyh27b0vQoUHft4pPqR+DEHmM1tYRS9Bmw==
+solana-transactions-executor@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/solana-transactions-executor/-/solana-transactions-executor-1.1.0.tgz#1bbe94f48401685b29109a1e4d92cf1038a8c0a5"
+  integrity sha512-mRp27Z9IhzfS6paC9sANrfgZDv30i7OReXVueOsQ3fj5CY8TnadDq9qxtja18zuLUGAHZwe2WbtZ1b+9D7b58A==
   dependencies:
     "@solana/wallet-adapter-react" "^0.15.33"
     "@solana/web3.js" "^1.68.0"
