@@ -41,7 +41,7 @@ interface AdditionalOfferOverviewProps {
 }
 
 export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offer, className }) => {
-  const { fundsSolOrTokenBalance, bidSettlement, validation } = offer.offer
+  const { fundsSolOrTokenBalance, bidSettlement, validation, buyOrdersQuantity } = offer.offer
 
   const collectionFloor = offer.collectionMeta.collectionFloor
   const maxOfferValue = validation.loanToValueFilter
@@ -50,6 +50,8 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
   const maxDynamicApr = calcDynamicApr(maxOfferValue, collectionFloor)
   const initialOfferSize = fundsSolOrTokenBalance + bidSettlement
 
+  const loansQuantity = validation.maxReturnAmountFilter + buyOrdersQuantity
+
   const formattedMaxOffer = formatDecimal(maxOfferValue / 1e9)
 
   return (
@@ -57,9 +59,9 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
       <StatInfo
         label="In offer"
         value={initialOfferSize}
-        classNamesProps={{ value: styles.value }}
         valueType={VALUES_TYPES.SOLPRICE}
         tooltipText="Total liquidity currently available in offer"
+        secondValue={`min ${loansQuantity} loans`}
         divider={1e9}
       />
       <StatInfo
@@ -76,7 +78,6 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
       <StatInfo
         label="Max Apr"
         value={maxDynamicApr}
-        classNamesProps={{ value: styles.value }}
         valueType={VALUES_TYPES.PERCENT}
         tooltipText="Maximum annual interest rate. Ranges between 34-104% APR depending on the loan-to-value (LTV) offered, and becomes fixed once offer is taken"
       />

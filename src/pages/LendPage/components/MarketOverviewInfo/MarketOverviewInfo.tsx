@@ -59,7 +59,6 @@ export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, is
         value={offerTvl}
         tooltipText="Total liquidity currently available in active offers"
         divider={1e9}
-        classNamesProps={{ value: styles.value }}
       />
       <StatInfo
         label="Max offer"
