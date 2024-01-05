@@ -3,11 +3,12 @@ import { FC } from 'react'
 import { Tooltip } from 'antd'
 import classNames from 'classnames'
 
+import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { MarketPreview } from '@banx/api/core'
 import { Fire } from '@banx/icons'
-import { calcDynamicApr, formatDecimal } from '@banx/utils'
+import { formatDecimal } from '@banx/utils'
 
 import styles from './MarketOverviewInfo.module.less'
 
@@ -40,9 +41,8 @@ interface MarketAdditionalInfoProps {
 }
 
 export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isCardOpen }) => {
-  const { loansTvl, offerTvl, bestOffer, collectionFloor, activeBondsAmount, bestLtv } = market
+  const { loansTvl, offerTvl, bestOffer, activeBondsAmount, bestLtv } = market
 
-  const maxDynamicApr = calcDynamicApr(bestOffer, collectionFloor)
   const formattedMaxOffer = formatDecimal(bestOffer / 1e9)
 
   return (
@@ -70,7 +70,7 @@ export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, is
       />
       <StatInfo
         label="Max apr"
-        value={maxDynamicApr}
+        value={MAX_APR_VALUE}
         classNamesProps={{ value: styles.aprValue }}
         tooltipText="Max annual interest rate"
         valueType={VALUES_TYPES.PERCENT}
