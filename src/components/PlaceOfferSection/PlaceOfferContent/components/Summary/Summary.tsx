@@ -36,15 +36,31 @@ export const Summary: FC<OfferSummaryProps> = ({
   })
 
   const formattedOfferSize = formatDecimal(offerSize / 1e9)
-  const formattedWeeklyInterestValue = formatDecimal(weeklyInterest / 1e9)
-
   const maxDynamicApr = calcDynamicApr(maxOfferValue, collectionFloor)
+
+  const maxOfferValuesJSX = (
+    <div className={styles.ltvValues}>
+      {createSolValueJSX(maxOfferValue, 1e9, '0◎', formatDecimal)}
+      {' | '}
+      <span style={{ color: getColorByPercent(maxLtv, HealthColorIncreasing) }}>
+        {createPercentValueJSX(maxLtv, '0%')}
+      </span>
+    </div>
+  )
+
+  const interestValuesJSX = (
+    <>
+      {createSolValueJSX(weeklyInterest, 1e9, '0◎', formatDecimal)}
+      {' | '}
+      <span className={styles.aprValue}>{createPercentValueJSX(maxDynamicApr, '0%')}</span>
+    </>
+  )
 
   return (
     <div className={styles.summary}>
       <StatInfo
-        label="Max offer | Max LTV"
-        value={createLtvValuesJSX({ maxOfferValue, maxLtv })}
+        label="Max offer | LTV"
+        value={maxOfferValuesJSX}
         tooltipText="Max offer given sufficient pool liquidity | Top offer given current pool liquidity"
         valueType={VALUES_TYPES.STRING}
         flexType="row"
@@ -59,36 +75,12 @@ export const Summary: FC<OfferSummaryProps> = ({
       />
 
       <StatInfo
-        label="Max Apr"
-        value={maxDynamicApr}
-        valueType={VALUES_TYPES.PERCENT}
-        tooltipText="Max annual interest rate"
-        flexType="row"
-      />
-
-      <StatInfo
-        label="Max weekly interest"
-        value={`${formattedWeeklyInterestValue}◎`}
+        label="Max weekly interest | Apr"
+        value={interestValuesJSX}
         valueType={VALUES_TYPES.STRING}
-        tooltipText="Max weekly interest if all pool offers are taken at Max LTV"
+        tooltipText="Max weekly interest if all pool offers are taken at Max LTV | Max annual interest rate"
         flexType="row"
       />
     </div>
   )
 }
-
-const createLtvValuesJSX = ({
-  maxLtv,
-  maxOfferValue,
-}: {
-  maxLtv: number
-  maxOfferValue: number
-}) => (
-  <div className={styles.ltvValues}>
-    {createSolValueJSX(maxOfferValue, 1e9, '0◎')}
-    {' | '}
-    <span style={{ color: getColorByPercent(maxLtv, HealthColorIncreasing) }}>
-      {createPercentValueJSX(maxLtv, '0%')}
-    </span>
-  </div>
-)

@@ -1,8 +1,8 @@
 .mainInfoContainer {
   display: flex;
   align-items: center;
+  min-width: 260px;
   gap: 16px;
-  width: 100%;
 
   @media (max-width: 640px) {
     gap: 8px;
@@ -20,8 +20,8 @@
   width: 72px;
 
   @media (max-width: 640px) {
-    height: 64px;
-    width: 64px;
+    height: 56px;
+    width: 56px;
   }
 }
 
@@ -47,6 +47,7 @@
   display: flex;
   justify-content: flex-end;
   gap: 16px;
+  white-space: nowrap;
   width: 100%;
 
   & > div {

@@ -12,9 +12,7 @@ import { calcDynamicApr, formatDecimal } from '@banx/utils'
 import styles from './MarketOverviewInfo.module.less'
 
 export const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
-  const { collectionName, isHot, collectionFloor, bestOffer, bestLtv } = market
-
-  const formattedMaxOffer = formatDecimal(bestOffer / 1e9)
+  const { collectionName, isHot, collectionFloor } = market
 
   return (
     <div className={styles.mainInfoContainer}>
@@ -30,12 +28,6 @@ export const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
         </h4>
         <div className={styles.mainInfoStats}>
           <StatInfo label="Floor" value={collectionFloor} divider={1e9} />
-          <StatInfo
-            label="Top offer"
-            value={`${formattedMaxOffer}◎ | ${bestLtv?.toFixed(0)}% LTV`}
-            tooltipText="Highest current offer"
-            valueType={VALUES_TYPES.STRING}
-          />
         </div>
       </div>
     </div>
@@ -48,9 +40,10 @@ interface MarketAdditionalInfoProps {
 }
 
 export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isCardOpen }) => {
-  const { loansTvl, offerTvl, bestOffer, collectionFloor, activeBondsAmount } = market
+  const { loansTvl, offerTvl, bestOffer, collectionFloor, activeBondsAmount, bestLtv } = market
 
   const maxDynamicApr = calcDynamicApr(bestOffer, collectionFloor)
+  const formattedMaxOffer = formatDecimal(bestOffer / 1e9)
 
   return (
     <div className={classNames(styles.additionalInfoStats, { [styles.hidden]: isCardOpen })}>
@@ -67,6 +60,13 @@ export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, is
         tooltipText="Total liquidity currently available in active offers"
         divider={1e9}
         classNamesProps={{ value: styles.value }}
+      />
+      <StatInfo
+        label="Max offer"
+        secondValue={`${bestLtv?.toFixed(0)}% LTV`}
+        value={`${formattedMaxOffer}◎`}
+        tooltipText="Highest current offer"
+        valueType={VALUES_TYPES.STRING}
       />
       <StatInfo
         label="Max apr"

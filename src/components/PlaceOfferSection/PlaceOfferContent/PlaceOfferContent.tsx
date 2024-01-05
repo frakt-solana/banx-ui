@@ -69,9 +69,7 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
         {showBorrowerMessage && <BorrowerMessage loanValue={loanValue} />}
       </div>
 
-      <div className={styles.diagramContainer}>
-        {isProMode && <Diagram marks={diagramData} isLoading={isLoadingDiagram} />}
-      </div>
+      <Diagram marks={diagramData} isLoading={isLoadingDiagram} />
 
       <Summary
         initialOffer={optimisticOffer}

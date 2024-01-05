@@ -54,8 +54,7 @@ export const getSummaryInfo = ({
 
   const maxOfferValue = Math.max(initialMaxOfferValue, updatedMaxOfferValue)
 
-  const { maxLtv } =
-    calcCurrentAndMaxLtv({ initialOffer, updatedOffer, market, hasFormChanges }) || {}
+  const maxLtv = calcMaxLtv({ initialOffer, updatedOffer, market, hasFormChanges })
 
   return {
     maxLtv,
@@ -66,7 +65,7 @@ export const getSummaryInfo = ({
   }
 }
 
-const calcCurrentAndMaxLtv = ({
+const calcMaxLtv = ({
   initialOffer,
   updatedOffer,
   market,
@@ -92,9 +91,8 @@ const calcCurrentAndMaxLtv = ({
   const updatedCurrentLtv = calcLtv(updatedBestLoanValue, collectionFloor) || 0
 
   const currentLtv = initialOffer && !hasFormChanges ? initialCurrentLtv : updatedCurrentLtv
-  const maxLtv = Math.max(currentLtv, initialMaxLtv)
 
-  return { currentLtv, maxLtv }
+  return Math.max(currentLtv, initialMaxLtv)
 }
 
 const calcLtv = (loanValue: number, collectionFloor: number) => {

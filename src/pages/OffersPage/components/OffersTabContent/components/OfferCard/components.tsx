@@ -55,6 +55,14 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
   return (
     <div className={classNames(styles.additionalOfferContainer, className)}>
       <StatInfo
+        label="In offer"
+        value={initialOfferSize}
+        classNamesProps={{ value: styles.value }}
+        valueType={VALUES_TYPES.SOLPRICE}
+        tooltipText="Total liquidity currently available in offer"
+        divider={1e9}
+      />
+      <StatInfo
         label="Max offer"
         value={`${formattedMaxOffer}◎`}
         valueType={VALUES_TYPES.STRING}
@@ -64,14 +72,6 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
           </span>
         }
         tooltipText="Max offer given sufficient pool liquidity"
-      />
-      <StatInfo
-        label="In offer"
-        value={initialOfferSize}
-        classNamesProps={{ value: styles.value }}
-        valueType={VALUES_TYPES.SOLPRICE}
-        tooltipText="Total liquidity currently available in offer"
-        divider={1e9}
       />
       <StatInfo
         label="Max Apr"
