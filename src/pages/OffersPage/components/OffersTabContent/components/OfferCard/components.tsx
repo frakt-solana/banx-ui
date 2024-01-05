@@ -6,7 +6,6 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { UserOffer } from '@banx/api/core'
-import { calcSyntheticLoanValue } from '@banx/store'
 import {
   HealthColorIncreasing,
   calcDynamicApr,
@@ -42,10 +41,10 @@ interface AdditionalOfferOverviewProps {
 }
 
 export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offer, className }) => {
-  const { fundsSolOrTokenBalance, bidSettlement } = offer.offer
+  const { fundsSolOrTokenBalance, bidSettlement, validation } = offer.offer
 
   const collectionFloor = offer.collectionMeta.collectionFloor
-  const maxOfferValue = calcSyntheticLoanValue(offer.offer)
+  const maxOfferValue = validation.loanToValueFilter
   const maxLtv = (maxOfferValue / collectionFloor) * 100
 
   const maxDynamicApr = calcDynamicApr(maxOfferValue, collectionFloor)

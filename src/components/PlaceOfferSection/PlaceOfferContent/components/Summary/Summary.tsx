@@ -54,6 +54,7 @@ export const Summary: FC<OfferSummaryProps> = ({
         label="In offer"
         value={`${formattedOfferSize}◎`}
         valueType={VALUES_TYPES.STRING}
+        tooltipText="Total liquidity currently available in offer"
         flexType="row"
       />
 
@@ -61,6 +62,7 @@ export const Summary: FC<OfferSummaryProps> = ({
         label="Max Apr"
         value={maxDynamicApr}
         valueType={VALUES_TYPES.PERCENT}
+        tooltipText="Max annual interest rate"
         flexType="row"
       />
 

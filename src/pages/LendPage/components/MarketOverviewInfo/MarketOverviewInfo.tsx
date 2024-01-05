@@ -4,16 +4,10 @@ import { Tooltip } from 'antd'
 import classNames from 'classnames'
 
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
-import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { MarketPreview } from '@banx/api/core'
 import { Fire } from '@banx/icons'
-import {
-  HealthColorIncreasing,
-  calcDynamicApr,
-  formatDecimal,
-  getColorByPercent,
-} from '@banx/utils'
+import { calcDynamicApr, formatDecimal } from '@banx/utils'
 
 import styles from './MarketOverviewInfo.module.less'
 
@@ -21,16 +15,6 @@ export const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
   const { collectionName, isHot, collectionFloor, bestOffer, bestLtv } = market
 
   const formattedMaxOffer = formatDecimal(bestOffer / 1e9)
-
-  const maxOfferValueJSX = (
-    <>
-      <span>{formattedMaxOffer}◎</span>
-      {' | '}
-      <span style={{ color: bestLtv ? getColorByPercent(bestLtv, HealthColorIncreasing) : '' }}>
-        {createPercentValueJSX(bestLtv, '0%')} LTV
-      </span>
-    </>
-  )
 
   return (
     <div className={styles.mainInfoContainer}>
@@ -48,7 +32,7 @@ export const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
           <StatInfo label="Floor" value={collectionFloor} divider={1e9} />
           <StatInfo
             label="Top offer"
-            value={maxOfferValueJSX}
+            value={`${formattedMaxOffer}◎ | ${bestLtv?.toFixed(0)}% LTV`}
             tooltipText="Highest current offer"
             valueType={VALUES_TYPES.STRING}
           />
