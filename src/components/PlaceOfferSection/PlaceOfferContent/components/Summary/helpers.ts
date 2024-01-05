@@ -54,7 +54,7 @@ export const getSummaryInfo = ({
 
   const maxLtv = calcMaxLtv({ initialOffer, updatedOffer, market, hasFormChanges })
 
-  const loansQuantity = getLoansQuantity(initialOffer, updatedOffer)
+  const loansQuantity = updatedOffer?.buyOrdersQuantity || 0
 
   return {
     maxLtv,
@@ -63,15 +63,6 @@ export const getSummaryInfo = ({
     maxOfferValue,
     loansQuantity,
   }
-}
-
-const getLoansQuantity = (initialOffer: Offer | undefined, updatedOffer: Offer | undefined) => {
-  const { buyOrdersQuantity: updatedBuyOrdersQuantity = 0 } = updatedOffer || {}
-
-  const initialActiveLoans = initialOffer?.validation.maxReturnAmountFilter || 0
-  const updatedLoansQuantity = updatedBuyOrdersQuantity + initialActiveLoans
-
-  return updatedLoansQuantity
 }
 
 const calcMaxLtv = ({
