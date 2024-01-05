@@ -51,7 +51,7 @@ export const getSummaryInfo = ({
 
   const weeklyInterest = caclWeeklyInterest({ offerSize, apr: marketApr })
 
-  const bestLoanValue = updatedOffer ? calcSyntheticLoanValue(updatedOffer) : 0
+  const maxOfferValue = updatedOffer ? calcSyntheticLoanValue(updatedOffer) : 0
 
   const { maxLtv } =
     calcCurrentAndMaxLtv({ initialOffer, updatedOffer, market, hasFormChanges }) || {}
@@ -62,7 +62,7 @@ export const getSummaryInfo = ({
     weeklyInterest,
     accruedInterest,
     collectionFloor,
-    bestLoanValue,
+    maxOfferValue,
   }
 }
 

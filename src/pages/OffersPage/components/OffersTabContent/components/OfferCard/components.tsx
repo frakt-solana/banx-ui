@@ -71,6 +71,7 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
         value={initialOfferSize}
         classNamesProps={{ value: styles.value }}
         valueType={VALUES_TYPES.SOLPRICE}
+        tooltipText="Total liquidity currently available in offer"
         divider={1e9}
       />
       <StatInfo
@@ -78,6 +79,7 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
         value={maxDynamicApr}
         classNamesProps={{ value: styles.value }}
         valueType={VALUES_TYPES.PERCENT}
+        tooltipText="Max annual interest rate"
       />
     </div>
   )

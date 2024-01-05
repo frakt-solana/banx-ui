@@ -88,7 +88,7 @@ export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, is
         label="Max apr"
         value={maxDynamicApr}
         classNamesProps={{ value: styles.aprValue }}
-        tooltipText="Annual interest rate"
+        tooltipText="Max annual interest rate"
         valueType={VALUES_TYPES.PERCENT}
       />
     </div>

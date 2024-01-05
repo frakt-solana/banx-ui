@@ -28,7 +28,7 @@ export const Summary: FC<OfferSummaryProps> = ({
   market,
   hasFormChanges,
 }) => {
-  const { weeklyInterest, maxLtv, offerSize, collectionFloor, bestLoanValue } = getSummaryInfo({
+  const { weeklyInterest, maxLtv, offerSize, collectionFloor, maxOfferValue } = getSummaryInfo({
     hasFormChanges,
     initialOffer,
     updatedOffer,
@@ -38,13 +38,13 @@ export const Summary: FC<OfferSummaryProps> = ({
   const formattedOfferSize = formatDecimal(offerSize / 1e9)
   const formattedWeeklyInterestValue = formatDecimal(weeklyInterest / 1e9)
 
-  const maxDynamicApr = calcDynamicApr(bestLoanValue, collectionFloor)
+  const maxDynamicApr = calcDynamicApr(maxOfferValue, collectionFloor)
 
   return (
     <div className={styles.summary}>
       <StatInfo
         label="Max offer | Max LTV"
-        value={createLtvValuesJSX({ maxOfferValue: bestLoanValue, maxLtv })}
+        value={createLtvValuesJSX({ maxOfferValue, maxLtv })}
         tooltipText="Max offer given sufficient pool liquidity | Top offer given current pool liquidity"
         valueType={VALUES_TYPES.STRING}
         flexType="row"

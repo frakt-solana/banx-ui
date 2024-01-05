@@ -3,12 +3,7 @@ import { useMemo } from 'react'
 import { sumBy } from 'lodash'
 
 import { OnboardButton } from '@banx/components/Buttons'
-import {
-  AdditionalStat,
-  MainStat,
-  PageHeaderBackdrop,
-  SeparateStatsLine,
-} from '@banx/components/PageHeader'
+import { AdditionalStat, PageHeaderBackdrop } from '@banx/components/PageHeader'
 import { VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { MarketPreview } from '@banx/api/core'
@@ -56,12 +51,6 @@ const Header = () => {
             <span className={styles.value}>in {formatNumbersWithCommas(totalOffers)} offers</span>
           </>
         }
-        valueType={VALUES_TYPES.STRING}
-      />
-      <SeparateStatsLine />
-      <MainStat
-        label="Whitelisted"
-        value={marketsPreview?.length}
         valueType={VALUES_TYPES.STRING}
       />
     </PageHeaderBackdrop>
