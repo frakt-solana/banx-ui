@@ -1,11 +1,15 @@
 import { FC } from 'react'
 
-import { MIN_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
-import { createPercentValueJSX } from '@banx/components/TableComponents'
+import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { MarketPreview, Offer } from '@banx/api/core'
-import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
+import {
+  HealthColorIncreasing,
+  calcDynamicApr,
+  formatDecimal,
+  getColorByPercent,
+} from '@banx/utils'
 
 import { getSummaryInfo } from './helpers'
 
@@ -15,7 +19,6 @@ interface OfferSummaryProps {
   initialOffer: Offer | undefined
   updatedOffer: Offer | undefined
   market: MarketPreview | undefined
-  isProMode: boolean
   hasFormChanges: boolean
 }
 
@@ -23,67 +26,43 @@ export const Summary: FC<OfferSummaryProps> = ({
   initialOffer,
   updatedOffer,
   market,
-  isProMode,
   hasFormChanges,
 }) => {
-  const {
-    weeklyInterest,
-    currentLtv,
-    maxLtv,
-    accruedInterest,
-    offerSize,
-    dinamicLtvWithDelta,
-    // collectionFloor,
-    // bestLoanValue,
-  } = getSummaryInfo({ initialOffer, updatedOffer, market, hasFormChanges })
+  const { weeklyInterest, maxLtv, offerSize, collectionFloor, bestLoanValue } = getSummaryInfo({
+    hasFormChanges,
+    initialOffer,
+    updatedOffer,
+    market,
+  })
 
   const formattedOfferSize = formatDecimal(offerSize / 1e9)
   const formattedWeeklyInterestValue = formatDecimal(weeklyInterest / 1e9)
 
-  // const maxDynamicApr = calcDynamicApr(bestLoanValue, collectionFloor)
-  // const displayAprRange = `${MIN_APR_VALUE} - ${maxDynamicApr?.toFixed(0)}%`
+  const maxDynamicApr = calcDynamicApr(bestLoanValue, collectionFloor)
 
   return (
     <div className={styles.summary}>
-      {initialOffer && (
-        <StatInfo
-          label="Max | current LTV"
-          value={createLtvValuesJSX({ maxLtv, currentLtv })}
-          tooltipText="Max offer given sufficient pool liquidity | Top offer given current pool liquidity"
-          valueType={VALUES_TYPES.STRING}
-          flexType="row"
-        />
-      )}
+      <StatInfo
+        label="Max offer | Max LTV"
+        value={createLtvValuesJSX({ maxOfferValue: bestLoanValue, maxLtv })}
+        tooltipText="Max offer given sufficient pool liquidity | Top offer given current pool liquidity"
+        valueType={VALUES_TYPES.STRING}
+        flexType="row"
+      />
 
-      {!initialOffer && isProMode && (
-        <StatInfo
-          label="Max weighted LTV"
-          value={dinamicLtvWithDelta}
-          valueStyles={{ color: getColorByPercent(dinamicLtvWithDelta, HealthColorIncreasing) }}
-          tooltipText="Average LTV offered by your pool"
-          valueType={VALUES_TYPES.PERCENT}
-          flexType="row"
-        />
-      )}
+      <StatInfo
+        label="In offer"
+        value={`${formattedOfferSize}◎`}
+        valueType={VALUES_TYPES.STRING}
+        flexType="row"
+      />
 
-      {!initialOffer && !isProMode && (
-        <StatInfo
-          label="LTV"
-          value={currentLtv}
-          valueStyles={{ color: getColorByPercent(currentLtv, HealthColorIncreasing) }}
-          valueType={VALUES_TYPES.PERCENT}
-          flexType="row"
-        />
-      )}
-
-      {!initialOffer && (
-        <StatInfo
-          label="Pool size"
-          value={`${formattedOfferSize}◎`}
-          valueType={VALUES_TYPES.STRING}
-          flexType="row"
-        />
-      )}
+      <StatInfo
+        label="Max Apr"
+        value={maxDynamicApr}
+        valueType={VALUES_TYPES.PERCENT}
+        flexType="row"
+      />
 
       <StatInfo
         label="Max weekly interest"
@@ -92,30 +71,22 @@ export const Summary: FC<OfferSummaryProps> = ({
         tooltipText="Max weekly interest if all pool offers are taken at Max LTV"
         flexType="row"
       />
-
-      {initialOffer && (
-        <StatInfo
-          label="Accrued interest"
-          value={`${formatDecimal(accruedInterest / 1e9)}◎`}
-          tooltipText="Total accrued interest available to harvest"
-          valueType={VALUES_TYPES.STRING}
-          flexType="row"
-        />
-      )}
-
-      <StatInfo label="Apr" value={MIN_APR_VALUE} valueType={VALUES_TYPES.PERCENT} flexType="row" />
     </div>
   )
 }
 
-const createLtvValuesJSX = ({ currentLtv, maxLtv }: { currentLtv: number; maxLtv: number }) => (
+const createLtvValuesJSX = ({
+  maxLtv,
+  maxOfferValue,
+}: {
+  maxLtv: number
+  maxOfferValue: number
+}) => (
   <div className={styles.ltvValues}>
+    {createSolValueJSX(maxOfferValue, 1e9, '0◎')}
+    {' | '}
     <span style={{ color: getColorByPercent(maxLtv, HealthColorIncreasing) }}>
       {createPercentValueJSX(maxLtv, '0%')}
-    </span>
-    {' | '}
-    <span style={{ color: getColorByPercent(currentLtv, HealthColorIncreasing) }}>
-      {createPercentValueJSX(currentLtv, '0%')}
     </span>
   </div>
 )

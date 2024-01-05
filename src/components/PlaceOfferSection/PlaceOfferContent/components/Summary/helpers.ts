@@ -54,16 +54,14 @@ export const getSummaryInfo = ({
 
   const bestLoanValue = updatedOffer ? calcSyntheticLoanValue(updatedOffer) : 0
 
-  const { currentLtv, maxLtv, dinamicLtvWithDelta } =
-    calcCurrentAndMaxLtv({ initialOffer, updatedOffer, market, offerSize, hasFormChanges }) || {}
+  const { maxLtv } =
+    calcCurrentAndMaxLtv({ initialOffer, updatedOffer, market, hasFormChanges }) || {}
 
   return {
     maxLtv,
-    currentLtv,
     offerSize,
     weeklyInterest,
     accruedInterest,
-    dinamicLtvWithDelta,
     collectionFloor,
     bestLoanValue,
   }
@@ -73,13 +71,11 @@ const calcCurrentAndMaxLtv = ({
   initialOffer,
   updatedOffer,
   market,
-  offerSize,
   hasFormChanges,
 }: {
   initialOffer: Offer | undefined
   updatedOffer: Offer | undefined
   market: MarketPreview | undefined
-  offerSize: number
   hasFormChanges: boolean
 }) => {
   const collectionFloor = market?.collectionFloor || 0
@@ -99,11 +95,7 @@ const calcCurrentAndMaxLtv = ({
   const currentLtv = initialOffer && !hasFormChanges ? initialCurrentLtv : updatedCurrentLtv
   const maxLtv = Math.max(currentLtv, initialMaxLtv)
 
-  //? Calculate dynamic LTV with delta
-  const dinamicLtvWithDelta =
-    calcLtv(offerSize / (updatedOffer?.buyOrdersQuantity || 0), collectionFloor) || 0
-
-  return { currentLtv, dinamicLtvWithDelta, maxLtv }
+  return { currentLtv, maxLtv }
 }
 
 const calcLtv = (loanValue: number, collectionFloor: number) => {
