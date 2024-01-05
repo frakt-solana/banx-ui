@@ -68,12 +68,13 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
         {offerErrorMessage && <InputErrorMessage message={offerErrorMessage} />}
         {showBorrowerMessage && <BorrowerMessage loanValue={loanValue} />}
       </div>
+
       <Diagram marks={diagramData} isLoading={isLoadingDiagram} />
+
       <Summary
         initialOffer={optimisticOffer}
         updatedOffer={updatedOffer}
         market={market}
-        isProMode={isProMode}
         hasFormChanges={hasFormChanges}
       />
       <ActionsButtons

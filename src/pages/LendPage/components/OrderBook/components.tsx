@@ -1,20 +1,13 @@
 import { FC } from 'react'
 
-import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { sumBy } from 'lodash'
-import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { Loader } from '@banx/components/Loader'
 
-import { Offer } from '@banx/api/core'
 import { ChevronDown } from '@banx/icons'
-import { defaultTxnErrorHandler } from '@banx/transactions'
-import { makeClaimBondOfferInterestAction } from '@banx/transactions/bonds'
-import { enqueueSnackbar, formatDecimal } from '@banx/utils'
 
-import OfferComponent from '../Offer'
+import Offer from '../Offer'
 import { OrderBookParams } from './hooks'
 
 import styles from './OrderBook.module.less'
@@ -22,30 +15,24 @@ import styles from './OrderBook.module.less'
 interface OrderBookListProps {
   orderBookParams: OrderBookParams
   closeOrderBook?: () => void
-  className?: string
 }
 
-export const OrderBookList: FC<OrderBookListProps> = ({
-  orderBookParams,
-  closeOrderBook,
-  className,
-}) => {
-  const { syntheticOffers, goToEditOffer, bestOffer, isLoading } = orderBookParams
+export const OrderBookList: FC<OrderBookListProps> = ({ orderBookParams, closeOrderBook }) => {
+  const { syntheticOffers, goToEditOffer, isLoading } = orderBookParams
 
   return (
-    <ul className={classNames(styles.orderBookList, className)}>
+    <ul className={styles.orderBookList}>
       {isLoading ? (
         <Loader size="small" />
       ) : (
         syntheticOffers.map((offer) => (
-          <OfferComponent
+          <Offer
             key={offer.publicKey}
             offer={offer}
             editOffer={() => {
               goToEditOffer(offer)
               closeOrderBook?.()
             }}
-            bestOffer={bestOffer}
           />
         ))
       )}
@@ -86,62 +73,6 @@ export const CollapsedMobileContent: FC<CollapsedMobileContentProps> = ({
     </Button>
   </div>
 )
-
-interface AccruedInterestProps {
-  offers: Offer[]
-  updateOrAddOffer: (offer: Offer) => void
-}
-
-const MIN_DISPLAY_ACCRUED_INTEREST = 0.01
-
-export const AccruedInterest: FC<AccruedInterestProps> = ({ offers, updateOrAddOffer }) => {
-  const wallet = useWallet()
-  const { connection } = useConnection()
-
-  const totalClaimValue = sumBy(offers, ({ concentrationIndex }) => concentrationIndex)
-
-  const claimInterest = () => {
-    const txnParams = offers.map((optimisticOffer) => ({ optimisticOffer }))
-
-    new TxnExecutor(makeClaimBondOfferInterestAction, { wallet, connection })
-      .addTxnParams(txnParams)
-      .on('pfSuccessEach', (results) => {
-        results.forEach(({ txnHash, result }) => {
-          enqueueSnackbar({
-            message: 'Interest successfully claimed',
-            type: 'success',
-            solanaExplorerPath: `tx/${txnHash}`,
-          })
-
-          if (result) {
-            updateOrAddOffer(result.bondOffer)
-          }
-        })
-      })
-      .on('pfError', (error) => {
-        defaultTxnErrorHandler(error, {
-          additionalData: txnParams,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'ClaimOfferInterest',
-        })
-      })
-      .execute()
-  }
-
-  return (
-    <div className={styles.accruedInterestContainer}>
-      <div className={styles.accruedInterestInfo}>
-        <span className={styles.accruedInterestValue}>
-          {formatDecimal(totalClaimValue / 1e9, MIN_DISPLAY_ACCRUED_INTEREST)}◎
-        </span>
-        <span className={styles.accruedInterestLabel}>Total accrued interest</span>
-      </div>
-      <Button onClick={claimInterest} disabled={!totalClaimValue}>
-        Claim
-      </Button>
-    </div>
-  )
-}
 
 interface OrderBookLabelsProps {
   className?: string
