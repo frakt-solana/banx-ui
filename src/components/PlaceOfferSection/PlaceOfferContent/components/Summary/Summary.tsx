@@ -51,7 +51,7 @@ export const Summary: FC<OfferSummaryProps> = ({
   return (
     <div className={styles.summary}>
       <StatInfo
-        label="Maximum offer"
+        label="Maximum offer | LTV"
         value={maxOfferValuesJSX}
         tooltipText="Max offer given sufficient liquidity in your offer. Actual loan amount taken can be less depending on the amount of SOL borrowers choose to borrow"
         valueType={VALUES_TYPES.STRING}
