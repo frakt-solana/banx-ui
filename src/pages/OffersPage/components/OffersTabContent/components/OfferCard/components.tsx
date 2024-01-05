@@ -78,7 +78,7 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
         value={maxDynamicApr}
         classNamesProps={{ value: styles.value }}
         valueType={VALUES_TYPES.PERCENT}
-        tooltipText="Annual interest rate. Ranges between 34-104% APR depending on the loan-to-value (LTV) offered, and becomes fixed once offer is taken"
+        tooltipText="Maximum annual interest rate. Ranges between 34-104% APR depending on the loan-to-value (LTV) offered, and becomes fixed once offer is taken"
       />
     </div>
   )
