@@ -2,6 +2,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  width: 100%;
 
   @media (max-width: 640px) {
     gap: 8px;
@@ -38,27 +39,19 @@
 .mainInfoStats {
   display: flex;
   align-items: center;
-  gap: 8px;
-
-  & > div {
-    min-width: 80px;
-    height: 40px;
-
-    @media (max-width: 640px) {
-      min-width: 65px;
-      height: 36px;
-    }
-  }
+  gap: 16px;
+  width: 100%;
 }
 
 .additionalInfoStats {
   display: flex;
-  align-items: flex-start;
+  justify-content: flex-end;
   gap: 16px;
   width: 100%;
 
   & > div {
     align-items: flex-end;
+    max-width: 260px;
     width: 100%;
   }
 
@@ -87,4 +80,9 @@
 .aprValue {
   color: var(--additional-green-primary-deep);
   font: var(--important-text-md);
+}
+
+.value,
+.aprValue {
+  padding-top: 10px;
 }

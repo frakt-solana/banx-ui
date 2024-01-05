@@ -17,11 +17,10 @@ const calcOfferSize = ({ initialOffer, updatedOffer, hasFormChanges }: CalcOffer
   const {
     fundsSolOrTokenBalance: initialFundsSolOrTokenBalance = 0,
     bidSettlement: initialBidSettlement = 0,
-    edgeSettlement: lentValue = 0,
   } = initialOffer || {}
 
-  const updatedOfferSize = updatedFundsSolOrTokenBalance + updatedBidSettlement + lentValue
-  const initialOfferSize = initialFundsSolOrTokenBalance + initialBidSettlement + lentValue
+  const updatedOfferSize = updatedFundsSolOrTokenBalance + updatedBidSettlement
+  const initialOfferSize = initialFundsSolOrTokenBalance + initialBidSettlement
 
   return hasFormChanges ? updatedOfferSize : initialOfferSize
 }

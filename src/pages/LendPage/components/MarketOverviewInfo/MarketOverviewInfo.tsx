@@ -3,17 +3,34 @@ import { FC } from 'react'
 import { Tooltip } from 'antd'
 import classNames from 'classnames'
 
-import { MAX_APR_VALUE, MIN_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
+import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { MarketPreview } from '@banx/api/core'
-import { DYNAMIC_APR } from '@banx/constants'
 import { Fire } from '@banx/icons'
+import {
+  HealthColorIncreasing,
+  calcDynamicApr,
+  formatDecimal,
+  getColorByPercent,
+} from '@banx/utils'
 
 import styles from './MarketOverviewInfo.module.less'
 
 export const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
   const { collectionName, isHot, collectionFloor, bestOffer, bestLtv } = market
+
+  const formattedMaxOffer = formatDecimal(bestOffer / 1e9)
+
+  const maxOfferValueJSX = (
+    <>
+      <span>{formattedMaxOffer}◎</span>
+      {' | '}
+      <span style={{ color: bestLtv ? getColorByPercent(bestLtv, HealthColorIncreasing) : '' }}>
+        {createPercentValueJSX(bestLtv, '0%')} LTV
+      </span>
+    </>
+  )
 
   return (
     <div className={styles.mainInfoContainer}>
@@ -30,16 +47,10 @@ export const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
         <div className={styles.mainInfoStats}>
           <StatInfo label="Floor" value={collectionFloor} divider={1e9} />
           <StatInfo
-            label="Top"
-            value={bestOffer}
+            label="Top offer"
+            value={maxOfferValueJSX}
             tooltipText="Highest current offer"
-            divider={1e9}
-          />
-          <StatInfo
-            label="Ltv"
-            value={bestLtv}
-            tooltipText="Highest offer expressed as a % of floor price"
-            valueType={VALUES_TYPES.PERCENT}
+            valueType={VALUES_TYPES.STRING}
           />
         </div>
       </div>
@@ -53,9 +64,9 @@ interface MarketAdditionalInfoProps {
 }
 
 export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isCardOpen }) => {
-  const { loansTvl, offerTvl, activeBondsAmount, activeOfferAmount } = market
+  const { loansTvl, offerTvl, bestOffer, collectionFloor, activeBondsAmount } = market
 
-  const aprValue = DYNAMIC_APR ? `${MIN_APR_VALUE} - ${MAX_APR_VALUE}%` : `${MIN_APR_VALUE}%`
+  const maxDynamicApr = calcDynamicApr(bestOffer, collectionFloor)
 
   return (
     <div className={classNames(styles.additionalInfoStats, { [styles.hidden]: isCardOpen })}>
@@ -69,16 +80,16 @@ export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, is
       <StatInfo
         label="In offers"
         value={offerTvl}
-        secondValue={`in ${activeOfferAmount} offers`}
         tooltipText="Total liquidity currently available in active offers"
         divider={1e9}
+        classNamesProps={{ value: styles.value }}
       />
       <StatInfo
-        label="Apr"
-        value={aprValue}
+        label="Max apr"
+        value={maxDynamicApr}
         classNamesProps={{ value: styles.aprValue }}
         tooltipText="Annual interest rate"
-        valueType={VALUES_TYPES.STRING}
+        valueType={VALUES_TYPES.PERCENT}
       />
     </div>
   )
