@@ -82,8 +82,8 @@ const BORROW_CONTENT = {
           <p>
             Low LTV loans are the safest way to borrow, benefiting from lower interest and lower
             refinancing call risk. If you receive a refinancing call, the Loan Status will change
-            from ‘Active’ to ‘Terminating’. You will have 72 hours to extend to a new offer or repay
-            in full, otherwise your NFT will be liquidated.
+            from {'Active'} to {'Terminating'}. You will have 72 hours to extend to a new offer or
+            repay in full, otherwise your NFT will be liquidated.
           </p>
         </div>
       ),
@@ -150,12 +150,12 @@ const OFFERS_CONTENT = {
         <div className={styles.slideText}>
           <p>
             <span className={styles.slideTextImportant}>The Pending tab</span> shows offers not yet
-            taken. Monitor and adjust risk of existing offers by: editing {`'Max Offer'`},
+            taken. Monitor and adjust risk of existing offers by: editing {'Max Offer'},
             adding/removing liquidity, or closing the offer and recovering SOL not lent.
           </p>
           <p>
             <span className={styles.slideTextImportant}>The Active tab</span> shows offers taken.
-            Monitor the risk of your active offers and {`'Manage' -> 'Terminate'`} loans if you wish
+            Monitor the risk of your active offers and {`'Manage' -> 'Terminate`} loans if you wish
             to exit, recovering either SOL or collateral within 72 hours.
           </p>
           <p>
@@ -178,15 +178,15 @@ const LOANS_CONTENT = {
         <div className={styles.slideText}>
           <p>
             View and manage your active loans here. Monitor the loan-to-value (LTV) and reduce risk
-            by making partial repayments via the {`'Repay'`} button.
+            by making partial repayments via the {'Repay'} button.
           </p>
           <p>
-            The {`'Reborrow'`} button allows you to borrow more SOL with higher interest, or less
-            SOL with lower interest, depending on available offers.
+            The {'Reborrow'} button allows you to borrow more SOL with higher interest, or less SOL
+            with lower interest, depending on available offers.
           </p>
           <p>
-            If you receive a refinancing call, the loan Status will change from {`'Active'`} to
-            {` 'Terminating'`}. You will have 72 hours to extend to a new offer or repay in full,
+            If you receive a refinancing call, the loan Status will change from {'Active'} to
+            {' Terminating'}. You will have 72 hours to extend to a new offer or repay in full,
             otherwise your NFT will be liquidated.
           </p>
         </div>
