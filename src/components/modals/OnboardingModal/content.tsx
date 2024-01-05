@@ -8,6 +8,8 @@ import dashboardImg3 from './assets/dashboard3.png'
 import dashboardImg3_dark from './assets/dashboard3_dark.png'
 import lendImg1 from './assets/lend1.png'
 import lendImg1_dark from './assets/lend1_dark.png'
+import loansImg1 from './assets/loans1.png'
+import loansImg1_dark from './assets/loans1_dark.png'
 import offersImg1 from './assets/offers1.png'
 import offersImg1_dark from './assets/offers1_dark.png'
 import refinanceImg1 from './assets/refinance1.png'
@@ -74,8 +76,14 @@ const BORROW_CONTENT = {
             no expiry, no fixed duration.
           </p>
           <p>
-            As the borrower, you can repay and exit any time. Interest accrues to the second so you
-            never pay more than you need to.
+            As the borrower, you can repay and exit anytime. Interest rates depend on the
+            loan-to-value (LTV) you initially borrow against, only pay for the time your borrow.
+          </p>
+          <p>
+            Low LTV loans are the safest way to borrow, benefiting from lower interest and lower
+            refinancing call risk. If you receive a refinancing call, the Loan Status will change
+            from ‘Active’ to ‘Terminating’. You will have 72 hours to extend to a new offer or repay
+            in full, otherwise your NFT will be liquidated.
           </p>
         </div>
       ),
@@ -92,12 +100,17 @@ const LEND_CONTENT = {
       text: (
         <div className={styles.slideText}>
           <p>
-            As a lender, you can instantly earn yield by funding loans in the refinance auctions. Or
-            you can lend via the orderbook, where you control exactly how much you offer.
+            Create offers for collections you want to lend against. Loan requests are fulfilled by
+            the closest offer value, meaning the highest offer isn’t necessarily the one that is
+            taken.
           </p>
           <p>
-            You can automate your lending pools to reduce offer size the more you lend, and to place
-            offers back in the orderbook as they are repaid.
+            Interest rates range depending on the loan-to-value (LTV) that your offer is initially
+            taken against. Once an offer is taken, the APR becomes fixed.
+          </p>
+          <p>
+            Offers are replenished as they are repaid by borrowers, and you can close this on MY
+            OFFERS page.
           </p>
         </div>
       ),
@@ -137,17 +150,44 @@ const OFFERS_CONTENT = {
         <div className={styles.slideText}>
           <p>
             <span className={styles.slideTextImportant}>The Pending tab</span> shows offers not yet
-            taken. You can adjust risk by editing parameters, or close the offer and recover SOL not
-            lent.
+            taken. Monitor and adjust risk of existing offers by: editing {`'Max Offer'`},
+            adding/removing liquidity, or closing the offer and recovering SOL not lent.
           </p>
           <p>
             <span className={styles.slideTextImportant}>The Active tab</span> shows offers taken.
-            You can terminate if you wish to exit, recovering either SOL or collateral within 72
-            hours.
+            Monitor the risk of your active offers and {`'Manage' -> 'Terminate'`} loans if you wish
+            to exit, recovering either SOL or collateral within 72 hours.
           </p>
           <p>
-            A record of offers being initiated, repaid or liquidated can be found in{' '}
-            <span className={styles.slideTextImportant}>the History tab.</span>
+            <span className={styles.slideTextImportant}>The History tab</span> shows a record of
+            offers being initiated, repaid or liquidated.
+          </p>
+        </div>
+      ),
+    },
+  ],
+}
+
+const LOANS_CONTENT = {
+  title: 'My loans',
+  slides: [
+    {
+      img: <img className={styles.slideImg} src={loansImg1} alt="loans 1" />,
+      imgDark: <img className={styles.slideImg} src={loansImg1_dark} alt="loans 1" />,
+      text: (
+        <div className={styles.slideText}>
+          <p>
+            View and manage your active loans here. Monitor the loan-to-value (LTV) and reduce risk
+            by making partial repayments via the {`'Repay'`} button.
+          </p>
+          <p>
+            The {`'Reborrow'`} button allows you to borrow more SOL with higher interest, or less
+            SOL with lower interest, depending on available offers.
+          </p>
+          <p>
+            If you receive a refinancing call, the loan Status will change from {`'Active'`} to
+            {`'Terminating'`}. You will have 72 hours to extend to a new offer or repay in full,
+            otherwise your NFT will be liquidated.
           </p>
         </div>
       ),
@@ -161,4 +201,5 @@ export const CONTENT = {
   [OnboardingModalContentType.LEND]: LEND_CONTENT,
   [OnboardingModalContentType.REFINANCE]: REFINANCE_CONTENT,
   [OnboardingModalContentType.OFFERS]: OFFERS_CONTENT,
+  [OnboardingModalContentType.LOANS]: LOANS_CONTENT,
 }
