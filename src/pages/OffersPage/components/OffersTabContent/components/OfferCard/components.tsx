@@ -50,8 +50,6 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
   const maxDynamicApr = calcDynamicApr(maxOfferValue, collectionFloor)
   const initialOfferSize = fundsSolOrTokenBalance + bidSettlement
 
-  const loansQuantity = validation.maxReturnAmountFilter + buyOrdersQuantity
-
   const formattedMaxOffer = formatDecimal(maxOfferValue / 1e9)
 
   return (
@@ -61,7 +59,7 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
         value={initialOfferSize}
         valueType={VALUES_TYPES.SOLPRICE}
         tooltipText="Total liquidity currently available in offer"
-        secondValue={`min ${loansQuantity} loans`}
+        secondValue={`min ${buyOrdersQuantity} loans`}
         divider={1e9}
       />
       <StatInfo
