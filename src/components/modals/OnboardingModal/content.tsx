@@ -186,7 +186,7 @@ const LOANS_CONTENT = {
           </p>
           <p>
             If you receive a refinancing call, the loan Status will change from {`'Active'`} to
-            {`'Terminating'`}. You will have 72 hours to extend to a new offer or repay in full,
+            {` 'Terminating'`}. You will have 72 hours to extend to a new offer or repay in full,
             otherwise your NFT will be liquidated.
           </p>
         </div>

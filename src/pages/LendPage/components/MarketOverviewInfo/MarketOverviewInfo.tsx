@@ -72,7 +72,7 @@ export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, is
         label="Max apr"
         value={MAX_APR_VALUE}
         classNamesProps={{ value: styles.aprValue }}
-        tooltipText="Max annual interest rate"
+        tooltipText="Annual interest rate. Ranges between 34-104% APR depending on the loan-to-value (LTV) offered, and becomes fixed once offer is taken"
         valueType={VALUES_TYPES.PERCENT}
       />
     </div>

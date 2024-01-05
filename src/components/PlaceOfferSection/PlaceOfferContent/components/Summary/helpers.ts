@@ -43,11 +43,9 @@ export const getSummaryInfo = ({
   market,
   hasFormChanges,
 }: GetSummaryInfoProps) => {
-  const { marketApr = 0, collectionFloor = 0 } = market || {}
+  const { collectionFloor = 0 } = market || {}
 
   const offerSize = calcOfferSize({ initialOffer, updatedOffer, hasFormChanges })
-
-  const weeklyInterest = caclWeeklyInterest({ offerSize, apr: marketApr })
 
   const initialMaxOfferValue = initialOffer?.validation.loanToValueFilter || 0
   const updatedMaxOfferValue = updatedOffer?.validation.loanToValueFilter || 0
@@ -56,12 +54,14 @@ export const getSummaryInfo = ({
 
   const maxLtv = calcMaxLtv({ initialOffer, updatedOffer, market, hasFormChanges })
 
+  const loansQuantity = updatedOffer?.buyOrdersQuantity || 0
+
   return {
     maxLtv,
     offerSize,
-    weeklyInterest,
     collectionFloor,
     maxOfferValue,
+    loansQuantity,
   }
 }
 

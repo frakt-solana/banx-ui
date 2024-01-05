@@ -28,7 +28,7 @@ export const Summary: FC<OfferSummaryProps> = ({
   market,
   hasFormChanges,
 }) => {
-  const { weeklyInterest, maxLtv, offerSize, collectionFloor, maxOfferValue } = getSummaryInfo({
+  const { maxLtv, offerSize, collectionFloor, loansQuantity, maxOfferValue } = getSummaryInfo({
     hasFormChanges,
     initialOffer,
     updatedOffer,
@@ -48,26 +48,26 @@ export const Summary: FC<OfferSummaryProps> = ({
     </div>
   )
 
-  const interestValuesJSX = (
-    <>
-      {createSolValueJSX(weeklyInterest, 1e9, '0◎', formatDecimal)}
-      {' | '}
-      <span className={styles.aprValue}>{createPercentValueJSX(maxDynamicApr, '0%')}</span>
-    </>
-  )
-
   return (
     <div className={styles.summary}>
       <StatInfo
-        label="Max offer | LTV"
+        label="Maximum offer"
         value={maxOfferValuesJSX}
-        tooltipText="Max offer given sufficient pool liquidity | Top offer given current pool liquidity"
+        tooltipText="Max offer given sufficient liquidity in your offer. Actual loan amount taken can be less depending on the amount of SOL borrowers choose to borrow"
         valueType={VALUES_TYPES.STRING}
         flexType="row"
       />
 
       <StatInfo
-        label="In offer"
+        label="Funding at least"
+        value={`${loansQuantity} loans`}
+        tooltipText="Minimum amount of loans you will fund if your entire liquidity in offer is lend at Max Offer. As borrowers can borrow at loan value equal or smaller than your max offer you could end up funding more loans"
+        valueType={VALUES_TYPES.STRING}
+        flexType="row"
+      />
+
+      <StatInfo
+        label="Total liquidity in offer"
         value={`${formattedOfferSize}◎`}
         valueType={VALUES_TYPES.STRING}
         tooltipText="Total liquidity currently available in offer"
@@ -75,10 +75,11 @@ export const Summary: FC<OfferSummaryProps> = ({
       />
 
       <StatInfo
-        label="Max weekly interest | Apr"
-        value={interestValuesJSX}
-        valueType={VALUES_TYPES.STRING}
-        tooltipText="Max weekly interest if all pool offers are taken at Max LTV | Max annual interest rate"
+        label="Max Apr"
+        value={maxDynamicApr}
+        valueType={VALUES_TYPES.PERCENT}
+        classNamesProps={{ value: styles.aprValue }}
+        tooltipText="Maximum annual interest rate. Ranges between 34-104% APR depending on the loan-to-value (LTV) offered, and becomes fixed once offer is taken by a borrower"
         flexType="row"
       />
     </div>
