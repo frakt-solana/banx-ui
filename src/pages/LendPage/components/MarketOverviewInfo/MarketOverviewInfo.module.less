@@ -1,6 +1,7 @@
 .mainInfoContainer {
   display: flex;
   align-items: center;
+  min-width: 260px;
   gap: 16px;
 
   @media (max-width: 640px) {
@@ -19,8 +20,8 @@
   width: 72px;
 
   @media (max-width: 640px) {
-    height: 64px;
-    width: 64px;
+    height: 56px;
+    width: 56px;
   }
 }
 
@@ -38,27 +39,20 @@
 .mainInfoStats {
   display: flex;
   align-items: center;
-  gap: 8px;
-
-  & > div {
-    min-width: 80px;
-    height: 40px;
-
-    @media (max-width: 640px) {
-      min-width: 65px;
-      height: 36px;
-    }
-  }
+  gap: 16px;
+  width: 100%;
 }
 
 .additionalInfoStats {
   display: flex;
-  align-items: flex-start;
+  justify-content: flex-end;
   gap: 16px;
+  white-space: nowrap;
   width: 100%;
 
   & > div {
     align-items: flex-end;
+    max-width: 260px;
     width: 100%;
   }
 

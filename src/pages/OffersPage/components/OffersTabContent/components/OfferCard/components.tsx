@@ -2,12 +2,16 @@ import { FC } from 'react'
 
 import classNames from 'classnames'
 
-import { MIN_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { UserOffer } from '@banx/api/core'
-import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
+import {
+  HealthColorIncreasing,
+  calcDynamicApr,
+  formatDecimal,
+  getColorByPercent,
+} from '@banx/utils'
 
 import styles from './OfferCard.module.less'
 
@@ -37,44 +41,45 @@ interface AdditionalOfferOverviewProps {
 }
 
 export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offer, className }) => {
-  const { fundsSolOrTokenBalance, bidSettlement, validation } = offer.offer
+  const { fundsSolOrTokenBalance, bidSettlement, validation, buyOrdersQuantity } = offer.offer
 
   const collectionFloor = offer.collectionMeta.collectionFloor
-  const availableToFund = fundsSolOrTokenBalance + bidSettlement
+  const maxOfferValue = validation.loanToValueFilter
+  const maxLtv = (maxOfferValue / collectionFloor) * 100
 
-  // const bestCurrentOfferValue = calcSyntheticLoanValue(offer.offer)
+  const maxDynamicApr = calcDynamicApr(maxOfferValue, collectionFloor)
+  const initialOfferSize = fundsSolOrTokenBalance + bidSettlement
 
-  const bestOfferValue = validation.loanToValueFilter
-  const maxLtv = (bestOfferValue / collectionFloor) * 100
+  const loansQuantity = validation.maxReturnAmountFilter + buyOrdersQuantity
 
-  // const maxDynamicApr = calcDynamicApr(bestCurrentOfferValue, collectionFloor)
+  const formattedMaxOffer = formatDecimal(maxOfferValue / 1e9)
 
   return (
     <div className={classNames(styles.additionalOfferContainer, className)}>
       <StatInfo
-        label="Available"
-        value={`${formatDecimal(availableToFund / 1e9)}◎`}
-        tooltipText="Current pool liquidity"
-        valueType={VALUES_TYPES.STRING}
-        classNamesProps={{ value: styles.value }}
+        label="In offer"
+        value={initialOfferSize}
+        valueType={VALUES_TYPES.SOLPRICE}
+        tooltipText="Total liquidity currently available in offer"
+        secondValue={`min ${loansQuantity} loans`}
+        divider={1e9}
       />
       <StatInfo
         label="Max offer"
-        value={`${formatDecimal(bestOfferValue / 1e9)}◎`}
+        value={`${formattedMaxOffer}◎`}
         valueType={VALUES_TYPES.STRING}
         secondValue={
           <span style={{ color: maxLtv ? getColorByPercent(maxLtv, HealthColorIncreasing) : '' }}>
             {createPercentValueJSX(maxLtv, '0%')} LTV
           </span>
         }
-        tooltipText="Max offer given sufficient pool liquidity"
+        tooltipText="Max offer given sufficient liquidity. Actual offer size taken can be less depending on the amount of SOL users choose to borrow."
       />
       <StatInfo
-        label="Apr"
-        // value={`${MIN_APR_VALUE} - ${maxDynamicApr?.toFixed(0)}%`}
-        value={MIN_APR_VALUE}
-        classNamesProps={{ value: styles.value }}
+        label="Max Apr"
+        value={maxDynamicApr}
         valueType={VALUES_TYPES.PERCENT}
+        tooltipText="Maximum annual interest rate. Ranges between 34-104% APR depending on the loan-to-value (LTV) offered, and becomes fixed once offer is taken"
       />
     </div>
   )

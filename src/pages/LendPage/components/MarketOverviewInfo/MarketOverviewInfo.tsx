@@ -3,17 +3,17 @@ import { FC } from 'react'
 import { Tooltip } from 'antd'
 import classNames from 'classnames'
 
-import { MAX_APR_VALUE, MIN_APR_VALUE } from '@banx/components/PlaceOfferSection'
+import { MIN_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { MarketPreview } from '@banx/api/core'
-import { DYNAMIC_APR } from '@banx/constants'
 import { Fire } from '@banx/icons'
+import { formatDecimal } from '@banx/utils'
 
 import styles from './MarketOverviewInfo.module.less'
 
 export const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
-  const { collectionName, isHot, collectionFloor, bestOffer, bestLtv } = market
+  const { collectionName, isHot, collectionFloor } = market
 
   return (
     <div className={styles.mainInfoContainer}>
@@ -29,18 +29,6 @@ export const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
         </h4>
         <div className={styles.mainInfoStats}>
           <StatInfo label="Floor" value={collectionFloor} divider={1e9} />
-          <StatInfo
-            label="Top"
-            value={bestOffer}
-            tooltipText="Highest current offer"
-            divider={1e9}
-          />
-          <StatInfo
-            label="Ltv"
-            value={bestLtv}
-            tooltipText="Highest offer expressed as a % of floor price"
-            valueType={VALUES_TYPES.PERCENT}
-          />
         </div>
       </div>
     </div>
@@ -53,9 +41,9 @@ interface MarketAdditionalInfoProps {
 }
 
 export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isCardOpen }) => {
-  const { loansTvl, offerTvl, activeBondsAmount, activeOfferAmount } = market
+  const { loansTvl, offerTvl, bestOffer, activeBondsAmount, bestLtv } = market
 
-  const aprValue = DYNAMIC_APR ? `${MIN_APR_VALUE} - ${MAX_APR_VALUE}%` : `${MIN_APR_VALUE}%`
+  const formattedMaxOffer = formatDecimal(bestOffer / 1e9)
 
   return (
     <div className={classNames(styles.additionalInfoStats, { [styles.hidden]: isCardOpen })}>
@@ -69,16 +57,22 @@ export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, is
       <StatInfo
         label="In offers"
         value={offerTvl}
-        secondValue={`in ${activeOfferAmount} offers`}
         tooltipText="Total liquidity currently available in active offers"
         divider={1e9}
       />
       <StatInfo
-        label="Apr"
-        value={aprValue}
-        classNamesProps={{ value: styles.aprValue }}
-        tooltipText="Annual interest rate"
+        label="Max offer"
+        secondValue={`${bestLtv?.toFixed(0)}% LTV`}
+        value={`${formattedMaxOffer}◎`}
+        tooltipText="Highest current offer"
         valueType={VALUES_TYPES.STRING}
+      />
+      <StatInfo
+        label="Max apr"
+        value={MIN_APR_VALUE}
+        classNamesProps={{ value: styles.aprValue }}
+        tooltipText="Maximum annual interest rate. Ranges between 34-104% APR depending on the loan-to-value (LTV) offered, and becomes fixed once offer is taken"
+        valueType={VALUES_TYPES.PERCENT}
       />
     </div>
   )

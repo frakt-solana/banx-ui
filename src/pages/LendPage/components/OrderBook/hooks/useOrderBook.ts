@@ -1,42 +1,48 @@
+import { useMemo } from 'react'
+
+import { useWallet } from '@solana/wallet-adapter-react'
+import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
+import { chain } from 'lodash'
+
 import { MarketPreview, Offer } from '@banx/api/core'
 import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage'
 import { SyntheticOffer, useSyntheticOffers } from '@banx/store'
 
-import { OrderBookMarketParams } from '../OrderBook'
+import { OrderBookProps } from '../OrderBook'
 import { useMarketOrders } from './useMarketOrders'
 
 export interface OrderBookParams {
   syntheticOffers: SyntheticOffer[]
   goToEditOffer: (offer: SyntheticOffer) => void
-  bestOffer: SyntheticOffer
   isLoading: boolean
-  offers: Offer[]
-  updateOrAddOffer: (offer: Offer) => void
+  userOffers: Offer[]
 }
 
-type UseOrderBook = (props: OrderBookMarketParams) => {
-  orderBookParams: OrderBookParams
-  selectedMarketPreview: MarketPreview | undefined
+type UseOrderBook = (props: OrderBookProps) => OrderBookParams & {
+  market: MarketPreview | undefined
 }
 
 export const useOrderBook: UseOrderBook = (props) => {
   const { offerPubkey, setOfferPubkey, marketPubkey, goToPlaceOfferTab } = props
 
+  const { publicKey } = useWallet()
+
   const { setOffer: setSyntheticOffer } = useSyntheticOffers()
 
   const { marketsPreview } = useMarketsPreview()
 
-  const selectedMarketPreview = marketsPreview.find(
-    (market) => market.marketPubkey === marketPubkey,
-  )
+  const market = marketsPreview.find((market) => market.marketPubkey === marketPubkey)
 
-  const {
-    offers: syntheticOffers,
-    bestOffer,
-    isLoading,
-  } = useMarketOrders({ marketPubkey, offerPubkey })
+  const { offers: syntheticOffers, isLoading } = useMarketOrders({ marketPubkey, offerPubkey })
 
-  const { offers, updateOrAddOffer } = useMarketOffers({ marketPubkey })
+  const { offers } = useMarketOffers({ marketPubkey })
+
+  const userOffers = useMemo(() => {
+    return chain(offers)
+      .filter((offer) => offer.publicKey !== PUBKEY_PLACEHOLDER)
+      .filter((offer) => offer.assetReceiver === publicKey?.toBase58())
+      .value()
+  }, [offers, publicKey])
 
   const goToEditOffer = (offer: SyntheticOffer) => {
     setSyntheticOffer({ ...offer, isEdit: true })
@@ -46,14 +52,10 @@ export const useOrderBook: UseOrderBook = (props) => {
   }
 
   return {
-    orderBookParams: {
-      syntheticOffers,
-      isLoading,
-      goToEditOffer,
-      bestOffer,
-      offers,
-      updateOrAddOffer,
-    },
-    selectedMarketPreview,
+    syntheticOffers,
+    isLoading,
+    goToEditOffer,
+    userOffers,
+    market,
   }
 }

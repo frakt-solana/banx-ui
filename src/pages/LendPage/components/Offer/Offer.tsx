@@ -15,7 +15,6 @@ import styles from './Offer.module.less'
 
 interface OfferProps {
   offer: SyntheticOffer
-  bestOffer: SyntheticOffer
   editOffer: () => void
 }
 
