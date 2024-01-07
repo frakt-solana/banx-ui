@@ -6,6 +6,7 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { UserOffer } from '@banx/api/core'
+import { useMarketsPreview } from '@banx/pages/LendPage'
 import {
   HealthColorIncreasing,
   calcDynamicApr,
@@ -22,6 +23,10 @@ interface MainOfferOverviewProps {
 export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer }) => {
   const { collectionName, collectionImage, collectionFloor } = offer.collectionMeta
 
+  const { marketsPreview } = useMarketsPreview()
+  const { bestOffer = 0 } =
+    marketsPreview.find((market) => market.marketPubkey === offer.offer.hadoMarket) || {}
+
   return (
     <div className={styles.mainOfferContainer}>
       <img src={collectionImage} className={styles.collectionImage} />
@@ -29,6 +34,12 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer }) => {
         <h4 className={styles.collectionName}>{collectionName}</h4>
         <div className={styles.mainOfferStats}>
           <StatInfo label="Floor" value={collectionFloor} divider={1e9} />
+          <StatInfo
+            label="Top offer"
+            value={bestOffer}
+            divider={1e9}
+            tooltipText="Highest offer among all lenders providing liquidity for this collection"
+          />
         </div>
       </div>
     </div>
