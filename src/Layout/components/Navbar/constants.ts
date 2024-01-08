@@ -15,7 +15,7 @@ import { PATHS } from '@banx/router'
 export const NAVIGATION_LINKS = [
   {
     label: 'Dashboard',
-    pathname: PATHS.ROOT,
+    pathname: PATHS.DASHBOARD,
     icon: Dashboard,
     primary: true,
   },
