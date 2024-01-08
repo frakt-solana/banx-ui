@@ -50,6 +50,8 @@ export const WalletConnectButton = () => {
 
 const THRESHOLD_LARGE_BALANCE = 1000
 const formatBalance = (balance = 0) => {
+  if (!balance) return '0.00'
+
   if (balance > THRESHOLD_LARGE_BALANCE) {
     return formatNumbersWithCommas(balance.toFixed(0))
   }
