@@ -40,7 +40,7 @@ const DASHBOARD_CONTENT = {
       text: (
         <div className={styles.slideText}>
           <p>
-            <span className={styles.slideTextImportant}>Loans are perpetual</span>: they last at
+            <span className={styles.slideTextImportant}>Loans are perpetual:</span> they last at
             least 3 days and don&apos;t expire if you keep them healthy with small repayments.
           </p>
         </div>
@@ -72,7 +72,7 @@ const BORROW_CONTENT = {
       text: (
         <div className={styles.slideText}>
           <p>
-            <span className={styles.slideTextImportant}>Banx loans are perpetual</span>: they have
+            <span className={styles.slideTextImportant}>Banx loans are perpetual:</span> they have
             no expiry, no fixed duration. As the borrower, you can repay and exit anytime.
           </p>
           <p>

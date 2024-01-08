@@ -11,12 +11,12 @@
   align-items: center;
   z-index: 1;
 
-  animation: hideLoader @animation-duration ease-out forwards;
+  animation: hideLoader @animation-duration forwards;
 }
 
 @keyframes hideLoader {
   to {
-    display: none;
+    opacity: 0;
   }
 }
 
