@@ -1,5 +1,6 @@
 import { FC, PropsWithChildren } from 'react'
 
+//? trigger vercel
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react'
 
 import { ErrorBoundary } from '@banx/components/ErrorBoundary'
