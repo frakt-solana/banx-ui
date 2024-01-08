@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import classNames from 'classnames'
 
-import { InputArrowUp } from '@banx/icons/InputArrowUp'
+import { InputArrowUp } from '@banx/icons'
 
 import NumericInput from '../inputs/NumericInput'
 import { Slider, SliderProps } from './Slider'
