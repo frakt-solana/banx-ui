@@ -19,10 +19,10 @@ export const Header = () => {
 
   return (
     <div className={styles.header}>
-      <a href="/" className={styles.logoWrapper}>
+      <NavLink to={PATHS.ROOT} className={styles.logoWrapper}>
         <LogoFull className={styles.logo} />
         <Logo className={styles.logoBasic} />
-      </a>
+      </NavLink>
       <div className={styles.widgetContainer}>
         <RewardsButton />
         <ThemeSwitcher />
