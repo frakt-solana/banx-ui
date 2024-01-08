@@ -6,6 +6,8 @@ import { getTableColumns } from './columns'
 import { EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from './constants'
 import { useNotConnectedBorrow } from './hooks'
 
+import styles from './NotConnectedTable.module.less'
+
 const NotConnectedTable = () => {
   const { connected } = useWallet()
   const { marketsPreview, sortViewParams, isLoading } = useNotConnectedBorrow()
@@ -21,6 +23,7 @@ const NotConnectedTable = () => {
       sortViewParams={sortViewParams}
       loading={isLoading}
       emptyMessage={emptyMessage}
+      className={styles.borrowTable}
       showCard
     />
   )

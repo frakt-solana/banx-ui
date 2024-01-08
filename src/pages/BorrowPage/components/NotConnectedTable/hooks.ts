@@ -92,6 +92,13 @@ const useSortMarkets = (markets: MarketPreview[]) => {
     sortParams: {
       option: sortOption,
       onChange: setSortOption,
+      options: SORT_OPTIONS,
     },
   }
 }
+
+const SORT_OPTIONS = [
+  { label: 'Floor', value: SortField.FLOOR },
+  { label: 'Borrow', value: SortField.BORROW },
+  { label: 'Liquidity', value: SortField.LIQUIDITY },
+]
