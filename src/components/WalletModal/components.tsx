@@ -5,7 +5,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useDiscordUser } from '@banx/hooks'
 import { ChangeWallet, Copy, FRKT, SignOut } from '@banx/icons'
 import { useIsLedger } from '@banx/store'
-import { copyToClipboard, shortenAddress, useSolanaBalance } from '@banx/utils'
+import { copyToClipboard, shortenAddress } from '@banx/utils'
 
 import Checkbox from '../Checkbox'
 import { StatInfo, VALUES_TYPES } from '../StatInfo'
@@ -38,7 +38,6 @@ const UserGeneralInfo = () => {
 
 const UserBalance = () => {
   const { publicKey } = useWallet()
-  const solanaBalance = useSolanaBalance()
 
   const publicKeyString = publicKey?.toBase58() || ''
 
@@ -48,7 +47,6 @@ const UserBalance = () => {
 
   return (
     <div className={styles.userBalanceContainer}>
-      <StatInfo flexType="row" label="Balance" value={solanaBalance} />
       <StatInfo
         flexType="row"
         label="Rewards"
