@@ -53,7 +53,7 @@ export const Summary: FC<OfferSummaryProps> = ({
       <StatInfo
         label="Maximum offer | LTV"
         value={maxOfferValuesJSX}
-        tooltipText="Max offer given sufficient liquidity in your offer. Actual loan amount taken can be less depending on the amount of SOL borrowers choose to borrow"
+        tooltipText="Your max offer given sufficient liquidity in your offer. Actual loan amount taken can be less depending on the amount of SOL borrowers choose to borrow"
         valueType={VALUES_TYPES.STRING}
         flexType="row"
       />
@@ -61,7 +61,7 @@ export const Summary: FC<OfferSummaryProps> = ({
       <StatInfo
         label="Funding at least"
         value={`${loansQuantity} loans`}
-        tooltipText="Minimum amount of loans you will fund if your entire liquidity in offer is lend at Max Offer. As borrowers can borrow at loan value equal or smaller than your max offer you could end up funding more loans"
+        tooltipText="Your minimum amount of loans you will fund if your entire liquidity in offer is lend at Max Offer. As borrowers can borrow at loan value equal or smaller than your max offer you could end up funding more loans"
         valueType={VALUES_TYPES.STRING}
         flexType="row"
       />
@@ -70,7 +70,7 @@ export const Summary: FC<OfferSummaryProps> = ({
         label="Total liquidity in offer"
         value={`${formattedOfferSize}◎`}
         valueType={VALUES_TYPES.STRING}
-        tooltipText="Total liquidity currently available in offer"
+        tooltipText="Your total liquidity currently available in offer"
         flexType="row"
       />
 
@@ -79,7 +79,7 @@ export const Summary: FC<OfferSummaryProps> = ({
         value={maxDynamicApr}
         valueType={VALUES_TYPES.PERCENT}
         classNamesProps={{ value: styles.aprValue }}
-        tooltipText="Maximum annual interest rate. Ranges between 34-104% APR depending on the loan-to-value (LTV) offered, and becomes fixed once offer is taken by a borrower"
+        tooltipText="Your maximum annual interest rate. Ranges between 34-104% APR depending on the loan-to-value (LTV) offered, and becomes fixed once offer is taken by a borrower"
         flexType="row"
       />
     </div>
