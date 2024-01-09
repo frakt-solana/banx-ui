@@ -3,7 +3,7 @@ import { FC } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 
 import { Button } from '@banx/components/Buttons'
-import EmptyList from '@banx/components/EmptyList/EmptyList'
+import EmptyList from '@banx/components/EmptyList'
 
 import { formatNumbersWithCommas } from '@banx/utils'
 
