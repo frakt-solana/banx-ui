@@ -1,37 +1,34 @@
-import { FC, useEffect, useMemo, useState } from 'react'
+import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import moment from 'moment'
 
-import EmptyList from '@banx/components/EmptyList'
-import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
-import Timer from '@banx/components/Timer'
+import { Button } from '@banx/components/Buttons'
+import EmptyList from '@banx/components/EmptyList/EmptyList'
 
-import { Borrow, CircleCheck, Lend } from '@banx/icons'
+import { formatNumbersWithCommas } from '@banx/utils'
 
-import { useLeaderboardUserStats } from '../../hooks'
-import { calculateNextTuesdayAtUTC, isTuesdayAndMidnight } from './helpers'
+import AnybodiesImg from './assets/Anybodies.png'
+import BanxImg from './assets/Banx.png'
 
 import styles from './RewardsTab.module.less'
 
+//TODO: Remove all mocks in the future
+const MOCK_BONK_VALUE = 50_000_000
+
 const RewardsTab = () => {
-  const { publicKey: walletPublicKey } = useWallet()
-  const walletPublicKeyString = walletPublicKey?.toBase58() || ''
+  const { publicKey } = useWallet()
 
-  const { data: userStats } = useLeaderboardUserStats()
-
-  const userTotalClaimed = useMemo(() => {
-    const currentUser = userStats?.find((user) => user.user === walletPublicKeyString)
-
-    if (currentUser) return parseFloat(currentUser.Sol)
-
-    return 0
-  }, [userStats, walletPublicKeyString])
+  const MOCK_TOTAL_WEEK_REWARDS = publicKey ? MOCK_BONK_VALUE : 0
+  const MOCK_AVAILABLE_TO_CLAIM = publicKey ? MOCK_BONK_VALUE : 0
+  const MOCK_TOTAL_CLAIMED = publicKey ? MOCK_BONK_VALUE : 0
 
   return (
     <div className={styles.container}>
-      <ClaimRewardsBlock totalClaimed={userTotalClaimed} />
-      <RewardsInfoBlock />
+      <ClaimRewardsBlock totalWeekRewards={MOCK_TOTAL_WEEK_REWARDS} />
+      <AvailableToClaim
+        availableToClaim={MOCK_AVAILABLE_TO_CLAIM}
+        totalClaimed={MOCK_TOTAL_CLAIMED}
+      />
     </div>
   )
 }
@@ -39,80 +36,55 @@ const RewardsTab = () => {
 export default RewardsTab
 
 interface ClaimRewardsBlockProps {
+  totalWeekRewards: number
+}
+
+const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({ totalWeekRewards }) => {
+  return (
+    <div className={styles.weeklyRewardsBlock}>
+      <div className={styles.weeklyRewardsInfo}>
+        <p className={styles.blockTitle}>This week bounty</p>
+        <p className={styles.rewardsValue}>{formatNumber(totalWeekRewards)} BONK</p>
+      </div>
+      <div className={styles.partnersInfoWrapper}>
+        <p className={styles.blockTitle}>Powered by</p>
+        <div className={styles.partnersImages}>
+          <img src={BanxImg} alt="Banx" />
+          <img src={AnybodiesImg} alt="Anybodies" />
+        </div>
+      </div>
+    </div>
+  )
+}
+interface AvailableToClaimProps {
+  availableToClaim: number
   totalClaimed: number
 }
 
-const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({ totalClaimed }) => {
+const AvailableToClaim: FC<AvailableToClaimProps> = ({ availableToClaim, totalClaimed }) => {
   const { connected } = useWallet()
 
-  const [nextWeeklyRewards, setNextWeeklyRewards] = useState(calculateNextTuesdayAtUTC())
-
-  const updateNextWeeklyRewards = () => {
-    const newNextRewards = calculateNextTuesdayAtUTC()
-    setNextWeeklyRewards(newNextRewards)
-  }
-
-  useEffect(() => {
-    updateNextWeeklyRewards()
-
-    const timerInterval = setInterval(() => {
-      const now = moment.utc()
-      if (isTuesdayAndMidnight(now)) {
-        updateNextWeeklyRewards()
-      }
-    }, 1000)
-
-    return () => clearInterval(timerInterval)
-  }, [])
-
   return (
-    <div className={styles.claimRewardsBlock}>
-      {connected && (
-        <StatInfo
-          label="Total received"
-          value={totalClaimed}
-          classNamesProps={{ label: styles.claimRewardsLabel }}
-          tooltipText="Your weekly SOL rewards will be airdropped to your wallet on a random time each Monday"
-          flexType="row"
-        />
-      )}
-      <StatInfo
-        label="Next weekly rewards in"
-        value={<Timer expiredAt={nextWeeklyRewards.unix()} />}
-        valueType={VALUES_TYPES.STRING}
-        classNamesProps={{ label: styles.claimRewardsLabel }}
-        flexType="row"
-      />
-      {!connected && (
-        <EmptyList className={styles.emptyList} message="Connect wallet to see your rewards" />
+    <div className={styles.availableToClaim}>
+      <div className={styles.availableToClaimInfo}>
+        <p className={styles.blockTitle}>Available to claim</p>
+        <p className={styles.rewardsValue}>{formatNumber(availableToClaim)} BONK</p>
+      </div>
+      <div className={styles.totalClaimedInfo}>
+        <p className={styles.totalClaimedLabel}>Claimed to date:</p>
+        <p className={styles.totalClaimedValue}>{formatNumber(totalClaimed)} BONK</p>
+      </div>
+      {connected ? (
+        <Button className={styles.claimButton}>Claim</Button>
+      ) : (
+        <EmptyList className={styles.emptyList} message="Connect wallet to see claimable" />
       )}
     </div>
   )
 }
 
-const RewardsInfoBlock = () => (
-  <div className={styles.rewardsInfoBlock}>
-    <div className={styles.rewardsInfo}>
-      <span className={styles.rewardsInfoTitle}>
-        <Lend /> Lender
-      </span>
-      {/* <div className={styles.infoRow}>
-        <CircleCheck />
-        <span> earn SOL APR while your competitive offers are pending in the orders books</span>
-      </div> */}
-      <div className={styles.infoRow}>
-        <CircleCheck />
-        <span>earn extra SOL APR for your active loans</span>
-      </div>
-    </div>
-    <div className={styles.rewardsInfo}>
-      <span className={styles.rewardsInfoTitle}>
-        <Borrow /> Borrowers
-      </span>
-      <div className={styles.infoRow}>
-        <CircleCheck />
-        <span>earn SOL cashbacks for each loan you take</span>
-      </div>
-    </div>
-  </div>
-)
+const formatNumber = (value = 0) => {
+  if (!value) return '--'
+
+  return formatNumbersWithCommas(value)
+}
