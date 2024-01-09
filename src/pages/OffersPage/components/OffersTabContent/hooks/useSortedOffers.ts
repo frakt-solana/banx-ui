@@ -20,8 +20,8 @@ const SORT_OPTIONS = [
 ]
 
 const DEFAULT_SORT_OPTION: SortOption = {
-  label: SORT_OPTIONS[0].label,
-  value: `${SORT_OPTIONS[0].value}_desc`,
+  label: SORT_OPTIONS[2].label,
+  value: `${SORT_OPTIONS[2].value}_desc`,
 }
 
 type SortValueGetter = (offer: UserOffer) => number
@@ -31,7 +31,7 @@ const STATUS_VALUE_MAP: StatusValueMap = {
   [SortField.LENT]: ({ offer }) => offer.edgeSettlement,
   [SortField.INTEREST]: ({ offer }) => offer.concentrationIndex,
   [SortField.LTV]: ({ offer, collectionMeta }) =>
-    calcSyntheticLoanValue(offer) / collectionMeta.collectionFloor,
+    collectionMeta.collectionFloor / calcSyntheticLoanValue(offer),
 }
 
 export const useSortedOffers = (offers: UserOffer[]) => {
