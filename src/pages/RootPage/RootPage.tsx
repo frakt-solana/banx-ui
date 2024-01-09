@@ -29,19 +29,21 @@ export const RootPage = () => {
   )
 }
 
-const Header = () => (
-  <div className={styles.header}>
-    <h1>NFT Lending done right</h1>
-    <h2>Borrow, Lend and Refinance with maximum capital efficiency</h2>
-  </div>
-)
-
-const AdvantagesSection = () => {
+const Header = () => {
   const { theme } = useTheme()
-  const isLightTheme = theme === Theme.LIGHT
+  const isDarkTheme = theme === Theme.DARK
 
   return (
-    <div className={classNames(styles.advantages, { [styles.advantagesLight]: isLightTheme })}>
+    <div className={classNames(styles.header, { [styles.headerDark]: isDarkTheme })}>
+      <h1>NFT Lending done right</h1>
+      <h2>Borrow, Lend and Refinance with maximum capital efficiency</h2>
+    </div>
+  )
+}
+
+const AdvantagesSection = () => {
+  return (
+    <div className={styles.advantages}>
       <div className={styles.advantage}>
         <Interest />
         <p>
