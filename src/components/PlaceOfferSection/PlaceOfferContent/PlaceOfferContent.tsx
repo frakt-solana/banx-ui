@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
-import { InputCounter, InputErrorMessage, NumericInputField } from '@banx/components/inputs'
+import { InputCounter, InputErrorMessage, NumericStepInput } from '@banx/components/inputs'
 
 import { BorrowerMessage } from '../components'
 import { PlaceOfferParams } from '../hooks'
@@ -41,7 +41,7 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
   return (
     <>
       <div className={styles.fields}>
-        <NumericInputField
+        <NumericStepInput
           label="Max offer"
           value={loanValue}
           onChange={onLoanValueChange}
@@ -49,7 +49,7 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
           disabled={!connected}
         />
         {isProMode && (
-          <NumericInputField
+          <NumericStepInput
             label="Avg Delta"
             onChange={onDeltaValueChange}
             value={deltaValue}
