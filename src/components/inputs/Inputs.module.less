@@ -144,6 +144,10 @@ body .input {
 .containerWithPostfix {
   input {
     padding-right: 54px;
+
+    @media (max-width: 640px) {
+      padding-right: 42px;
+    }
   }
 }
 
@@ -190,6 +194,9 @@ body .input {
   right: 32px;
   top: 50%;
   transform: translate(0%, -50%);
-}
 
+  @media (max-width: 640px) {
+    right: 26px;
+  }
+}
 /* NumericStepInput styles */
