@@ -1,8 +1,5 @@
 import { FC, useState } from 'react'
 
-import classNames from 'classnames'
-
-import { checkIsEditMode } from '@banx/components/PlaceOfferSection'
 import PlaceOfferSection from '@banx/components/PlaceOfferSection/PlaceOfferSection'
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
@@ -12,10 +9,6 @@ import ActivityTable from '../ActivityTable'
 import OrderBook from '../OrderBook'
 
 import styles from './ExpandableCardContent.module.less'
-
-interface TabsComponents {
-  [key: string]: JSX.Element
-}
 
 interface ExpandableCardContentProps {
   marketPubkey: string
@@ -33,23 +26,8 @@ const ExpandableCardContent: FC<ExpandableCardContentProps> = ({ marketPubkey })
     trackPageEvent('lend', `${toLowerCaseNoSpaces(tabProps.label)}tab`)
   }
 
-  const TABS_COMPONENTS: TabsComponents = {
-    [TabName.OFFERS]: (
-      <OrderBook
-        marketPubkey={marketPubkey}
-        offerPubkey={offerPubkey}
-        setOfferPubkey={setOfferPubkey}
-      />
-    ),
-    [TabName.ACTIVITY]: <ActivityTable marketPubkey={marketPubkey} />,
-  }
-
   return (
-    <div
-      className={classNames(styles.container, {
-        [styles.isEditMode]: checkIsEditMode(offerPubkey),
-      })}
-    >
+    <div className={styles.container}>
       <PlaceOfferSection
         setOfferPubkey={setOfferPubkey}
         offerPubkey={offerPubkey}
@@ -57,7 +35,14 @@ const ExpandableCardContent: FC<ExpandableCardContentProps> = ({ marketPubkey })
       />
       <div className={styles.content}>
         <Tabs value={currentTabValue} onTabClick={onTabClick} {...tabsProps} />
-        {TABS_COMPONENTS[currentTabValue]}
+        {currentTabValue === TabName.OFFERS && (
+          <OrderBook
+            marketPubkey={marketPubkey}
+            offerPubkey={offerPubkey}
+            setOfferPubkey={setOfferPubkey}
+          />
+        )}
+        {currentTabValue === TabName.ACTIVITY && <ActivityTable marketPubkey={marketPubkey} />}
       </div>
     </div>
   )

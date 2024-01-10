@@ -1,46 +1,40 @@
 .orderBook {
   display: flex;
   flex-direction: column;
-  padding: 24px 0 16px;
-  position: relative;
+  padding: 24px 0 48px;
   height: 100%;
 }
 
-.labels {
+.labelsWrapper {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   padding: 0 64px 0 24px;
-  color: var(--content-secondary);
-  font: var(--table-header-md);
-  text-transform: uppercase;
   width: 100%;
+}
 
-  span {
-    width: calc(100% / 3);
+.labelWrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: calc(100% / 3);
 
-    &:nth-child(2) {
-      text-align: center;
-    }
+  &:nth-child(2) {
+    justify-content: center;
+  }
 
-    &:last-child {
-      text-align: right;
-    }
+  &:last-child {
+    justify-content: flex-end;
   }
 }
 
-.orderBookList {
-  display: flex;
-  flex-direction: column;
-  margin-top: 8px;
-  overflow: hidden scroll;
-  position: relative;
+.label {
+  color: var(--content-secondary);
+  font: var(--table-header-md);
+  text-transform: uppercase;
+}
 
-  @media (max-width: 960px) {
-    padding: 0 24px;
-  }
-  @media (max-width: 640px) {
-    padding: 0 16px;
-  }
+.offersList {
+  margin-top: 8px;
+  overflow-y: auto;
 }

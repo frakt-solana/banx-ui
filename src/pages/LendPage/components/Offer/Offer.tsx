@@ -60,7 +60,7 @@ const Offer: FC<OfferProps> = ({ editOffer, offer }) => {
           onClick={editOffer}
           type="circle"
           variant="secondary"
-          size="medium"
+          size="small"
           className={styles.editButton}
         >
           <Tooltip title="Edit">

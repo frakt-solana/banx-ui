@@ -1,9 +1,12 @@
 import { FC } from 'react'
 
 import { Loader } from '@banx/components/Loader'
+import Tooltip from '@banx/components/Tooltip/Tooltip'
+
+import { SyntheticOffer, useSyntheticOffers } from '@banx/store'
 
 import Offer from '../Offer'
-import { OrderBookParams, useOrderBook } from './hooks'
+import { useMarketOrders } from './hooks'
 
 import styles from './OrderBook.module.less'
 
@@ -14,44 +17,48 @@ export interface OrderBookProps {
 }
 
 const OrderBook: FC<OrderBookProps> = (props) => {
-  const orderBookParams = useOrderBook(props)
+  const { offerPubkey, setOfferPubkey, marketPubkey } = props
+
+  const { setOffer: setSyntheticOffer } = useSyntheticOffers()
+  const { offers, isLoading } = useMarketOrders({ marketPubkey, offerPubkey })
+
+  const handleEditOffer = (offer: SyntheticOffer) => {
+    setSyntheticOffer({ ...offer, isEdit: true })
+    setOfferPubkey(offer.publicKey)
+  }
 
   return (
     <div className={styles.orderBook}>
-      <div className={styles.labels}>
-        <span>Max offers</span>
-        <span>Max Apr</span>
-        <span>Offers amount</span>
+      <div className={styles.labelsWrapper}>
+        <Label title="Max offer" tooltipText="Max offers pending for this collection" />
+        <Label
+          title="Max Apr"
+          tooltipText="Max annual interest rate each offer will yield if max offer size is taken"
+        />
+        <Label title="Number of offers" />
       </div>
-      <OrderBookList orderBookParams={orderBookParams} />
+
+      <ul className={styles.offersList}>
+        {isLoading && <Loader size="small" />}
+
+        {!isLoading &&
+          offers.map((offer) => (
+            <Offer key={offer.publicKey} offer={offer} editOffer={() => handleEditOffer(offer)} />
+          ))}
+      </ul>
     </div>
   )
 }
 
 export default OrderBook
 
-interface OrderBookListProps {
-  orderBookParams: OrderBookParams
+interface LabelProps {
+  title: string
+  tooltipText?: string
 }
-
-const OrderBookList: FC<OrderBookListProps> = ({ orderBookParams }) => {
-  const { syntheticOffers, goToEditOffer, isLoading } = orderBookParams
-
-  return (
-    <ul className={styles.orderBookList}>
-      {isLoading ? (
-        <Loader size="small" />
-      ) : (
-        syntheticOffers.map((offer) => (
-          <Offer
-            key={offer.publicKey}
-            offer={offer}
-            editOffer={() => {
-              goToEditOffer(offer)
-            }}
-          />
-        ))
-      )}
-    </ul>
-  )
-}
+const Label: FC<LabelProps> = ({ title, tooltipText }) => (
+  <div className={styles.labelWrapper}>
+    <span className={styles.label}>{title}</span>
+    {tooltipText && <Tooltip title={tooltipText} />}
+  </div>
+)
