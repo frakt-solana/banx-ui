@@ -1,11 +1,8 @@
 import { FC } from 'react'
 
-import classNames from 'classnames'
-
 import { Button } from '@banx/components/Buttons'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
-import { Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 
 import styles from './PlaceOfferSection.module.less'
@@ -28,48 +25,6 @@ export const OfferHeader: FC<OfferHeaderProps> = ({ isEditMode, exitEditMode }) 
       )}
     </div>
   )
-}
-
-interface SwitchModeButtonsProps {
-  mode: OfferMode
-  onChange: (value: OfferMode) => void
-  offer: Offer | undefined
-}
-
-export const SwitchModeButtons: FC<SwitchModeButtonsProps> = ({ mode, onChange, offer }) => {
-  const isOfferCreatedInProMode = !!offer?.bondingCurve.delta
-
-  return (
-    <div className={styles.switchModeButtons}>
-      <Button
-        type="circle"
-        variant="text"
-        className={classNames(
-          styles.switchButton,
-          { [styles.active]: mode === OfferMode.Lite },
-          { [styles.disabled]: isOfferCreatedInProMode },
-        )}
-        onClick={() => onChange(OfferMode.Lite)}
-        disabled={isOfferCreatedInProMode || mode === OfferMode.Lite}
-      >
-        Lite
-      </Button>
-      <Button
-        type="circle"
-        variant="text"
-        className={classNames(styles.switchButton, { [styles.active]: mode === OfferMode.Pro })}
-        onClick={() => onChange(OfferMode.Pro)}
-        disabled={mode === OfferMode.Pro}
-      >
-        Pro
-      </Button>
-    </div>
-  )
-}
-
-export enum OfferMode {
-  Lite = 'lite',
-  Pro = 'pro',
 }
 
 interface BorrowerMessageProps {

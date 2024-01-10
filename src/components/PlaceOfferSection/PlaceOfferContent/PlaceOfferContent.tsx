@@ -24,7 +24,6 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
   syntheticOffer,
   offerErrorMessage,
   hasFormChanges,
-  isProMode,
   offerSize,
   market,
   diagramData,
@@ -48,15 +47,13 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
           className={styles.numericField}
           disabled={!connected}
         />
-        {isProMode && (
-          <NumericInputField
-            label="Avg Delta"
-            onChange={onDeltaValueChange}
-            value={deltaValue}
-            disabled={!connected}
-            tooltipText={DELTA_TOOLTIP_TEXT}
-          />
-        )}
+        <NumericInputField
+          label="Avg Delta"
+          onChange={onDeltaValueChange}
+          value={deltaValue}
+          disabled={!connected}
+          tooltipText={DELTA_TOOLTIP_TEXT}
+        />
         <InputCounter
           label="Number of offers"
           onChange={onLoanAmountChange}
