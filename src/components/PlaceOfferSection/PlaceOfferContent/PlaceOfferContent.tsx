@@ -6,7 +6,7 @@ import { InputCounter, InputErrorMessage, NumericInputField } from '@banx/compon
 
 import { BorrowerMessage } from '../components'
 import { PlaceOfferParams } from '../hooks'
-import { ActionsButtons, Diagram, Summary } from './components'
+import { ActionsButtons, AdditionalSummary, Diagram, MainSummary } from './components'
 
 import styles from './PlaceOfferContent.module.less'
 
@@ -66,14 +66,21 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
         {showBorrowerMessage && <BorrowerMessage loanValue={loanValue} />}
       </div>
 
-      <Diagram marks={diagramData} isLoading={isLoadingDiagram} />
-
-      <Summary
+      <MainSummary
+        hasFormChanges={hasFormChanges}
         initialOffer={optimisticOffer}
         updatedOffer={updatedOffer}
         market={market}
-        hasFormChanges={hasFormChanges}
       />
+
+      <Diagram marks={diagramData} isLoading={isLoadingDiagram} />
+
+      <AdditionalSummary
+        hasFormChanges={hasFormChanges}
+        initialOffer={optimisticOffer}
+        updatedOffer={updatedOffer}
+      />
+
       <ActionsButtons
         isEditMode={isEditMode}
         disableUpdateOffer={disableUpdateOffer}

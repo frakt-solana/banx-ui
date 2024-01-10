@@ -1,4 +1,4 @@
-import { MarketPreview, Offer } from '@banx/api/core'
+import { Offer } from '@banx/api/core'
 import { WEEKS_IN_YEAR } from '@banx/constants'
 import { calcSyntheticLoanValue } from '@banx/store'
 
@@ -8,7 +8,11 @@ interface CalcOfferSizeProps {
   hasFormChanges: boolean
 }
 
-const calcOfferSize = ({ initialOffer, updatedOffer, hasFormChanges }: CalcOfferSizeProps) => {
+export const calcOfferSize = ({
+  initialOffer,
+  updatedOffer,
+  hasFormChanges,
+}: CalcOfferSizeProps) => {
   const {
     fundsSolOrTokenBalance: updatedFundsSolOrTokenBalance = 0,
     bidSettlement: updatedBidSettlement = 0,
@@ -30,54 +34,17 @@ export const caclWeeklyInterest = ({ apr, offerSize }: { apr: number; offerSize:
   return (offerSize * weeklyAprPercentage) / 100
 }
 
-interface GetSummaryInfoProps {
-  initialOffer: Offer | undefined
-  updatedOffer: Offer | undefined
-  market: MarketPreview | undefined
-  hasFormChanges: boolean
-}
-
-export const getSummaryInfo = ({
+export const calcMaxLtv = ({
   initialOffer,
   updatedOffer,
-  market,
-  hasFormChanges,
-}: GetSummaryInfoProps) => {
-  const { collectionFloor = 0 } = market || {}
-
-  const offerSize = calcOfferSize({ initialOffer, updatedOffer, hasFormChanges })
-
-  const initialMaxOfferValue = initialOffer?.validation.loanToValueFilter || 0
-  const updatedMaxOfferValue = updatedOffer?.validation.loanToValueFilter || 0
-
-  const maxOfferValue = Math.max(initialMaxOfferValue, updatedMaxOfferValue)
-
-  const maxLtv = calcMaxLtv({ initialOffer, updatedOffer, market, hasFormChanges })
-
-  const loansQuantity = updatedOffer?.buyOrdersQuantity || 0
-
-  return {
-    maxLtv,
-    offerSize,
-    collectionFloor,
-    maxOfferValue,
-    loansQuantity,
-  }
-}
-
-const calcMaxLtv = ({
-  initialOffer,
-  updatedOffer,
-  market,
+  collectionFloor,
   hasFormChanges,
 }: {
   initialOffer: Offer | undefined
   updatedOffer: Offer | undefined
-  market: MarketPreview | undefined
+  collectionFloor: number
   hasFormChanges: boolean
 }) => {
-  const collectionFloor = market?.collectionFloor || 0
-
   //? Calculate initial LTV based on the best offer in the pool
   const bestLoanValue = initialOffer ? calcSyntheticLoanValue(initialOffer) : 0
   const initialCurrentLtv = calcLtv(bestLoanValue, collectionFloor)
