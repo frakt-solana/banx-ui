@@ -44,6 +44,13 @@ export const SeasonUserRewardsSchema = z.object({
   firstSeasonRewards: z.number(),
   secondSeasonRewards: z.number(),
   totalParticipants: z.number(),
+  bonkRewards: z
+    .object({
+      totalAccumulated: z.number(),
+      available: z.number(),
+      redeemed: z.number(),
+    })
+    .optional(),
 })
 
 export type SeasonUserRewards = z.infer<typeof SeasonUserRewardsSchema>
