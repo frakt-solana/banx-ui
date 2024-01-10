@@ -26,20 +26,24 @@ export const NumericStepInput: FC<NumericStepInputProps> = ({
   className,
   step = 0.1,
 }) => {
-  const numericValue = parseFloat(value)
+  const numericValue = parseFloat(value) || 0
   const canIncrement = numericValue < max
   const canDecrement = numericValue > 0
 
+  const updateValue = (newNumericValue: number) => {
+    const newValue = Math.max(0, Math.min(max, newNumericValue))
+    onChange(String(roundToPrecision(newValue)))
+  }
+
   const incrementValue = () => {
     if (canIncrement) {
-      onChange(String(roundToPrecision(numericValue + step)))
+      updateValue(numericValue + step)
     }
   }
 
   const decrementValue = () => {
     if (canDecrement) {
-      const newValue = numericValue - step < 0 ? 0 : roundToPrecision(numericValue - step)
-      onChange(String(newValue))
+      updateValue(numericValue - step)
     }
   }
 
