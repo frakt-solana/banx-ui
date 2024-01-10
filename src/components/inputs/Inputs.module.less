@@ -136,7 +136,17 @@ body .input {
 .counterInputContainer {
   border: var(--border-primary) !important;
   position: relative;
+
+  input {
+    padding: 8px 24px 8px 8px;
+  }
 }
+.containerWithPostfix {
+  input {
+    padding-right: 54px;
+  }
+}
+
 .customCounterControls {
   border-left: var(--border-primary);
 
@@ -175,4 +185,11 @@ body .input {
     }
   }
 }
+.postfix {
+  position: absolute;
+  right: 32px;
+  top: 50%;
+  transform: translate(0%, -50%);
+}
+
 /* NumericStepInput styles */

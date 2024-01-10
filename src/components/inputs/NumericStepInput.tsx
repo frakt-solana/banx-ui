@@ -14,6 +14,7 @@ interface NumericStepInputProps extends NumericInputProps {
   tooltipText?: string
   label?: string
   step?: number
+  postfix?: boolean
 }
 
 export const NumericStepInput: FC<NumericStepInputProps> = ({
@@ -25,6 +26,7 @@ export const NumericStepInput: FC<NumericStepInputProps> = ({
   label,
   className,
   step = 0.1,
+  postfix,
 }) => {
   const numericValue = parseFloat(value) || 0
   const canIncrement = numericValue < max
@@ -48,13 +50,20 @@ export const NumericStepInput: FC<NumericStepInputProps> = ({
   }
 
   const inputElement = (
-    <div className={classNames(styles.counterInputContainer, className)}>
+    <div
+      className={classNames(
+        styles.counterInputContainer,
+        { [styles.containerWithPostfix]: postfix },
+        className,
+      )}
+    >
       <NumericInput
         value={value}
         onChange={(value) => onChange(value)}
         disabled={disabled}
         positiveOnly
       />
+      {postfix && <div className={styles.postfix}>◎</div>}
       <div className={styles.customCounterControls}>
         <InputArrowUp
           className={classNames(styles.arrow, { [styles.disabled]: !canIncrement })}

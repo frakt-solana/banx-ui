@@ -47,6 +47,7 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
           onChange={onLoanValueChange}
           className={styles.numericField}
           disabled={!connected}
+          postfix
         />
         {isProMode && (
           <NumericStepInput
@@ -55,6 +56,7 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
             value={deltaValue}
             disabled={!connected}
             tooltipText={DELTA_TOOLTIP_TEXT}
+            postfix
           />
         )}
         <InputCounter
