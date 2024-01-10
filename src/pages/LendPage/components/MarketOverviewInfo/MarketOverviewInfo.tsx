@@ -13,7 +13,9 @@ import { formatDecimal } from '@banx/utils'
 import styles from './MarketOverviewInfo.module.less'
 
 export const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
-  const { collectionName, isHot, collectionFloor } = market
+  const { collectionName, isHot, collectionFloor, bestOffer } = market
+
+  const formattedMaxOffer = formatDecimal(bestOffer / 1e9)
 
   return (
     <div className={styles.mainInfoContainer}>
@@ -29,6 +31,12 @@ export const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
         </h4>
         <div className={styles.mainInfoStats}>
           <StatInfo label="Floor" value={collectionFloor} divider={1e9} />
+          <StatInfo
+            label="Top offer"
+            value={`${formattedMaxOffer}◎`}
+            tooltipText="Highest offer among all lenders providing liquidity for this collection"
+            valueType={VALUES_TYPES.STRING}
+          />
         </div>
       </div>
     </div>
@@ -41,9 +49,7 @@ interface MarketAdditionalInfoProps {
 }
 
 export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isCardOpen }) => {
-  const { loansTvl, offerTvl, bestOffer, activeBondsAmount, bestLtv } = market
-
-  const formattedMaxOffer = formatDecimal(bestOffer / 1e9)
+  const { loansTvl, offerTvl, activeBondsAmount } = market
 
   return (
     <div className={classNames(styles.additionalInfoStats, { [styles.hidden]: isCardOpen })}>
@@ -59,13 +65,6 @@ export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, is
         value={offerTvl}
         tooltipText="Total liquidity currently available in active offers"
         divider={1e9}
-      />
-      <StatInfo
-        label="Top offer"
-        secondValue={`${bestLtv?.toFixed(0)}% LTV`}
-        value={`${formattedMaxOffer}◎`}
-        tooltipText="Highest offer among all lenders providing liquidity for this collection"
-        valueType={VALUES_TYPES.STRING}
       />
       <StatInfo
         label="Max apr"
