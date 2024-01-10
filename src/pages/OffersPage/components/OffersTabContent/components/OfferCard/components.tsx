@@ -69,7 +69,7 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
         label="In offer"
         value={initialOfferSize}
         valueType={VALUES_TYPES.SOLPRICE}
-        tooltipText="Your total liquidity currently available in offer"
+        tooltipText="Your total liquidity currently available in offer. Repayments from borrowers return here, close offer to stop"
         secondValue={`min ${buyOrdersQuantity} loans`}
         divider={1e9}
       />
@@ -82,7 +82,7 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
             {createPercentValueJSX(maxLtv, '0%')} LTV
           </span>
         }
-        tooltipText="Your max offer given sufficient liquidity. Actual offer size taken can be less depending on the amount of SOL users choose to borrow."
+        tooltipText="Your max offer given sufficient liquidity. Actual offer size taken can be less depending on the amount of SOL users choose to borrow"
       />
       <StatInfo
         label="Max Apr"
