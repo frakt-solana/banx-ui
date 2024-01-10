@@ -13,7 +13,6 @@ export interface OrderBookProps {
   marketPubkey: string
   offerPubkey: string
   setOfferPubkey: (offerPubkey: string) => void
-  goToPlaceOfferTab: () => void
 }
 
 const OrderBookDesktop: FC<{ orderBookParams: OrderBookParams }> = ({ orderBookParams }) => {

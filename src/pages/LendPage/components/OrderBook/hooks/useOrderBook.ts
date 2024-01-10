@@ -23,7 +23,7 @@ type UseOrderBook = (props: OrderBookProps) => OrderBookParams & {
 }
 
 export const useOrderBook: UseOrderBook = (props) => {
-  const { offerPubkey, setOfferPubkey, marketPubkey, goToPlaceOfferTab } = props
+  const { offerPubkey, setOfferPubkey, marketPubkey } = props
 
   const { publicKey } = useWallet()
 
@@ -47,8 +47,6 @@ export const useOrderBook: UseOrderBook = (props) => {
   const goToEditOffer = (offer: SyntheticOffer) => {
     setSyntheticOffer({ ...offer, isEdit: true })
     setOfferPubkey(offer.publicKey)
-
-    goToPlaceOfferTab()
   }
 
   return {

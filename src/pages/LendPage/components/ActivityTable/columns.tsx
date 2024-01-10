@@ -8,13 +8,13 @@ import {
 
 import { LenderActivity } from '@banx/api/activity'
 
-import { ReceivedCell, StatusCell } from './TableCells'
+import { StatusCell } from './TableCells'
 
 export const getTableColumns = () => {
   const columns: ColumnType<LenderActivity>[] = [
     {
       key: 'collateral',
-      title: <HeaderCell label="Collateral" />,
+      title: <HeaderCell label="Collateral" align="left" />,
       render: ({ nft }) => (
         <NftInfoCell
           nftName={nft.meta.name}
@@ -33,12 +33,6 @@ export const getTableColumns = () => {
       sorter: true,
     },
     {
-      key: 'interest',
-      title: <HeaderCell label="Interest" />,
-      render: (loan) => createSolValueJSX(loan.interest, 1e9),
-      sorter: true,
-    },
-    {
       key: 'status',
       title: (
         <HeaderCell
@@ -47,12 +41,6 @@ export const getTableColumns = () => {
         />
       ),
       render: (loan) => <StatusCell loan={loan} />,
-    },
-    {
-      key: 'received',
-      title: <HeaderCell label="Received" />,
-      render: (loan) => <ReceivedCell loan={loan} />,
-      sorter: true,
     },
     {
       key: 'timestamp',

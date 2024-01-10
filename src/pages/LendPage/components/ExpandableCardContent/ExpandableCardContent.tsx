@@ -13,51 +13,35 @@ import OrderBook from '../OrderBook'
 
 import styles from './ExpandableCardContent.module.less'
 
-enum TabName {
-  OFFER = 'offer',
-  ACTIVITY = 'activity',
-}
-
 interface TabsComponents {
   [key: string]: JSX.Element
 }
 
 interface ExpandableCardContentProps {
   marketPubkey: string
-  isOrderBookVisible: boolean
 }
 
-const ExpandableCardContent: FC<ExpandableCardContentProps> = ({
-  marketPubkey,
-  isOrderBookVisible,
-}) => {
+const ExpandableCardContent: FC<ExpandableCardContentProps> = ({ marketPubkey }) => {
   const [offerPubkey, setOfferPubkey] = useState('')
 
-  const {
-    value: currentTabValue,
-    setValue: setTabValue,
-    ...tabsProps
-  } = useTabs({ tabs: BONDS_TABS, defaultValue: BONDS_TABS[1].value })
+  const { value: currentTabValue, ...tabsProps } = useTabs({
+    tabs: BONDS_TABS,
+    defaultValue: BONDS_TABS[1].value,
+  })
 
   const onTabClick = (tabProps: Tab) => {
     trackPageEvent('lend', `${toLowerCaseNoSpaces(tabProps.label)}tab`)
   }
 
-  const goToPlaceOfferTab = () => {
-    setTabValue(BONDS_TABS[1].value)
-  }
-
   const TABS_COMPONENTS: TabsComponents = {
-    [TabName.OFFER]: (
-      <PlaceOfferSection
-        setOfferPubkey={setOfferPubkey}
-        offerPubkey={offerPubkey}
+    [TabName.OFFERS]: (
+      <OrderBook
         marketPubkey={marketPubkey}
+        offerPubkey={offerPubkey}
+        setOfferPubkey={setOfferPubkey}
       />
     ),
-    [TabName.ACTIVITY]: (
-      <ActivityTable marketPubkey={marketPubkey} goToPlaceOfferTab={goToPlaceOfferTab} />
-    ),
+    [TabName.ACTIVITY]: <ActivityTable marketPubkey={marketPubkey} />,
   }
 
   return (
@@ -66,36 +50,33 @@ const ExpandableCardContent: FC<ExpandableCardContentProps> = ({
         [styles.isEditMode]: checkIsEditMode(offerPubkey),
       })}
     >
+      <PlaceOfferSection
+        setOfferPubkey={setOfferPubkey}
+        offerPubkey={offerPubkey}
+        marketPubkey={marketPubkey}
+      />
       <div className={styles.content}>
-        <Tabs
-          value={currentTabValue}
-          onTabClick={onTabClick}
-          setValue={setTabValue}
-          {...tabsProps}
-        />
+        <Tabs value={currentTabValue} onTabClick={onTabClick} {...tabsProps} />
         {TABS_COMPONENTS[currentTabValue]}
       </div>
-      {isOrderBookVisible && (
-        <OrderBook
-          marketPubkey={marketPubkey}
-          offerPubkey={offerPubkey}
-          setOfferPubkey={setOfferPubkey}
-          goToPlaceOfferTab={goToPlaceOfferTab}
-        />
-      )}
     </div>
   )
 }
 
 export default ExpandableCardContent
 
+enum TabName {
+  OFFERS = 'offers',
+  ACTIVITY = 'activity',
+}
+
 const BONDS_TABS = [
   {
-    label: 'Activity',
-    value: 'activity',
+    label: 'Offers',
+    value: TabName.OFFERS,
   },
   {
-    label: 'Place offer',
-    value: 'offer',
+    label: 'Activity',
+    value: TabName.ACTIVITY,
   },
 ]
