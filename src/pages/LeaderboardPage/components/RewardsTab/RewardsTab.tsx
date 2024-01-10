@@ -1,10 +1,12 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import { web3 } from 'fbonds-core'
 
 import { Button } from '@banx/components/Buttons'
 import EmptyList from '@banx/components/EmptyList'
 
+import { fetchBonkWithdrawal, sendBonkWithdrawal } from '@banx/api/user'
 import { formatNumbersWithCommas } from '@banx/utils'
 
 import { useSeasonUserRewards } from '../../hooks'
@@ -15,7 +17,6 @@ import styles from './RewardsTab.module.less'
 
 const RewardsTab = () => {
   const { data } = useSeasonUserRewards()
-
   const { available = 0, redeemed = 0, totalAccumulated = 0 } = data?.bonkRewards || {}
 
   return (
@@ -55,7 +56,41 @@ interface AvailableToClaimProps {
 }
 
 const AvailableToClaim: FC<AvailableToClaimProps> = ({ availableToClaim, totalClaimed }) => {
-  const { connected } = useWallet()
+  const wallet = useWallet()
+  const walletPubkeyString = wallet.publicKey?.toBase58()
+
+  const [isLoading, setIsLoading] = useState(false)
+
+  const onClaim = async () => {
+    try {
+      if (!walletPubkeyString || !wallet.signTransaction) return
+      setIsLoading(true)
+      const bonkWithdrawal = await fetchBonkWithdrawal({ walletPubkey: walletPubkeyString })
+
+      if (!bonkWithdrawal) throw new Error('BONK withdrawal fetching error')
+
+      const transaction = web3.Transaction.from(bonkWithdrawal.rawTransaction)
+      const signedTransaction = await wallet.signTransaction(transaction)
+      const signedTranactionBuffer = signedTransaction.serialize({
+        verifySignatures: false,
+        requireAllSignatures: false,
+      })
+
+      await sendBonkWithdrawal({
+        walletPubkey: walletPubkeyString,
+        bonkWithdrawal: {
+          requestId: bonkWithdrawal.requestId,
+          rawTransaction: signedTranactionBuffer.toJSON().data,
+        },
+      })
+
+      //TODO: Implement optimistics and notistack
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
     <div className={styles.availableToClaim}>
@@ -67,8 +102,15 @@ const AvailableToClaim: FC<AvailableToClaimProps> = ({ availableToClaim, totalCl
         <p className={styles.totalClaimedLabel}>Claimed to date:</p>
         <p className={styles.totalClaimedValue}>{formatNumber(totalClaimed)} BONK</p>
       </div>
-      {connected ? (
-        <Button className={styles.claimButton}>Claim</Button>
+      {wallet.connected ? (
+        <Button
+          className={styles.claimButton}
+          onClick={onClaim}
+          loading={isLoading}
+          disabled={isLoading || !availableToClaim}
+        >
+          Claim
+        </Button>
       ) : (
         <EmptyList className={styles.emptyList} message="Connect wallet to see claimable" />
       )}
