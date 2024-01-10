@@ -7,28 +7,21 @@ import EmptyList from '@banx/components/EmptyList'
 
 import { formatNumbersWithCommas } from '@banx/utils'
 
+import { useSeasonUserRewards } from '../../hooks'
 import AnybodiesImg from './assets/Anybodies.png'
 import BanxImg from './assets/Banx.png'
 
 import styles from './RewardsTab.module.less'
 
-//TODO: Remove all mocks in the future
-const MOCK_BONK_VALUE = 50_000_000
-
 const RewardsTab = () => {
-  const { publicKey } = useWallet()
+  const { data } = useSeasonUserRewards()
 
-  const MOCK_TOTAL_WEEK_REWARDS = publicKey ? MOCK_BONK_VALUE : 0
-  const MOCK_AVAILABLE_TO_CLAIM = publicKey ? MOCK_BONK_VALUE : 0
-  const MOCK_TOTAL_CLAIMED = publicKey ? MOCK_BONK_VALUE : 0
+  const { available = 0, redeemed = 0, totalAccumulated = 0 } = data?.bonkRewards || {}
 
   return (
     <div className={styles.container}>
-      <ClaimRewardsBlock totalWeekRewards={MOCK_TOTAL_WEEK_REWARDS} />
-      <AvailableToClaim
-        availableToClaim={MOCK_AVAILABLE_TO_CLAIM}
-        totalClaimed={MOCK_TOTAL_CLAIMED}
-      />
+      <ClaimRewardsBlock totalWeekRewards={totalAccumulated} />
+      <AvailableToClaim availableToClaim={available} totalClaimed={redeemed} />
     </div>
   )
 }
