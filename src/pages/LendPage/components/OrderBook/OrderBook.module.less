@@ -1,19 +1,8 @@
-.orderBookWrapper {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-
-  @media (max-width: 960px) {
-    display: none;
-  }
-}
-
 .orderBook {
   display: flex;
   flex-direction: column;
-  margin: 16px 24px 0;
-  padding-bottom: 16px;
-  min-width: 296px;
+  padding: 24px 0 16px;
+  position: relative;
   height: 100%;
 }
 
@@ -21,13 +10,24 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  padding: 0 64px 0 24px;
   color: var(--content-secondary);
   font: var(--table-header-md);
   text-transform: uppercase;
-}
+  width: 100%;
 
-.mobileLabels {
-  padding: 0 24px;
+  span {
+    width: calc(100% / 3);
+
+    &:nth-child(2) {
+      text-align: center;
+    }
+
+    &:last-child {
+      text-align: right;
+    }
+  }
 }
 
 .orderBookList {
@@ -36,88 +36,11 @@
   margin-top: 8px;
   overflow: hidden scroll;
   position: relative;
-  height: 100%;
 
   @media (max-width: 960px) {
     padding: 0 24px;
   }
   @media (max-width: 640px) {
     padding: 0 16px;
-  }
-}
-
-// Mobile orderbook styles
-.orderBookMobile {
-  display: none;
-
-  @media (max-width: 960px) {
-    background: var(--bg-primary);
-
-    display: flex;
-    flex-direction: column;
-
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 3;
-    width: 100%;
-  }
-
-  &.open {
-    position: fixed;
-    top: 0;
-  }
-}
-
-.chevronButton {
-  transform: rotate(180deg);
-
-  &.active {
-    transform: none;
-  }
-}
-
-.collectionMobileInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.collapsedContentWrapper {
-  border-top: var(--border-less-primary);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 24px;
-
-  @media (max-width: 640px) {
-    padding: 16px;
-  }
-}
-
-.collapsedMobileContent {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.collapsedMobileImage {
-  height: 40px;
-  width: 40px;
-
-  @media (max-width: 640px) {
-    height: 32px;
-    width: 32px;
-  }
-}
-.collectionMobileTitle {
-  font: var(--card-header-md);
-
-  @media (max-width: 640px) {
-    font: var(--card-header-sm);
-  }
-}
-.collectionMobileSubtitle {
-  @media (max-width: 640px) {
-    font: var(--body-text-xs);
   }
 }

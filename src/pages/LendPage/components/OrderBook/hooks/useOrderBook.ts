@@ -4,8 +4,8 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 import { chain } from 'lodash'
 
-import { MarketPreview, Offer } from '@banx/api/core'
-import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage'
+import { Offer } from '@banx/api/core'
+import { useMarketOffers } from '@banx/pages/LendPage'
 import { SyntheticOffer, useSyntheticOffers } from '@banx/store'
 
 import { OrderBookProps } from '../OrderBook'
@@ -18,9 +18,7 @@ export interface OrderBookParams {
   userOffers: Offer[]
 }
 
-type UseOrderBook = (props: OrderBookProps) => OrderBookParams & {
-  market: MarketPreview | undefined
-}
+type UseOrderBook = (props: OrderBookProps) => OrderBookParams
 
 export const useOrderBook: UseOrderBook = (props) => {
   const { offerPubkey, setOfferPubkey, marketPubkey } = props
@@ -28,10 +26,6 @@ export const useOrderBook: UseOrderBook = (props) => {
   const { publicKey } = useWallet()
 
   const { setOffer: setSyntheticOffer } = useSyntheticOffers()
-
-  const { marketsPreview } = useMarketsPreview()
-
-  const market = marketsPreview.find((market) => market.marketPubkey === marketPubkey)
 
   const { offers: syntheticOffers, isLoading } = useMarketOrders({ marketPubkey, offerPubkey })
 
@@ -54,6 +48,5 @@ export const useOrderBook: UseOrderBook = (props) => {
     isLoading,
     goToEditOffer,
     userOffers,
-    market,
   }
 }

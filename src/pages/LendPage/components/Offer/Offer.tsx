@@ -52,6 +52,7 @@ const Offer: FC<OfferProps> = ({ editOffer, offer }) => {
     <li className={listItemClassNames}>
       <div className={styles.valueWrapper}>
         <p className={styles.value}>{`${displayOfferValue}◎`}</p>
+        <p className={styles.value}>10%</p>
         <p className={styles.value}>{loansAmount || 0}</p>
       </div>
       {isOwnOffer && !isNewOffer && editOffer && (

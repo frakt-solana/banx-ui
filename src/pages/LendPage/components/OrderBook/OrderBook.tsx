@@ -1,10 +1,8 @@
-import { FC, useState } from 'react'
+import { FC } from 'react'
 
-import classNames from 'classnames'
+import { Loader } from '@banx/components/Loader'
 
-import { MarketPreview } from '@banx/api/core'
-
-import { CollapsedMobileContent, OrderBookLabels, OrderBookList } from './components'
+import Offer from '../Offer'
 import { OrderBookParams, useOrderBook } from './hooks'
 
 import styles from './OrderBook.module.less'
@@ -15,62 +13,45 @@ export interface OrderBookProps {
   setOfferPubkey: (offerPubkey: string) => void
 }
 
-const OrderBookDesktop: FC<{ orderBookParams: OrderBookParams }> = ({ orderBookParams }) => {
-  return (
-    <div className={styles.orderBookWrapper}>
-      <div className={styles.orderBook}>
-        <OrderBookLabels />
-        <OrderBookList orderBookParams={orderBookParams} />
-      </div>
-    </div>
-  )
-}
-
-interface OrderBookMobileProps {
-  market: MarketPreview | undefined
-  orderBookParams: OrderBookParams
-}
-
-const OrderBookMobile: FC<OrderBookMobileProps> = ({ market, orderBookParams }) => {
-  const { userOffers } = orderBookParams
-
-  const [isOpen, setIsOpen] = useState<boolean>(false)
-
-  const toggleOrderBook = () => {
-    setIsOpen(!isOpen)
-  }
-
-  return (
-    <div className={classNames(styles.orderBookMobile, { [styles.open]: isOpen })}>
-      <CollapsedMobileContent
-        collectionImage={market?.collectionImage}
-        collectionName={market?.collectionName}
-        totalUserOffers={userOffers.length}
-        isOrderBookOpen={isOpen}
-        onToggleVisible={toggleOrderBook}
-      />
-      {isOpen && (
-        <>
-          <OrderBookLabels className={styles.mobileLabels} />
-          <OrderBookList
-            orderBookParams={orderBookParams}
-            closeOrderBook={() => setIsOpen(false)}
-          />
-        </>
-      )}
-    </div>
-  )
-}
-
 const OrderBook: FC<OrderBookProps> = (props) => {
-  const { market, ...orderBookParams } = useOrderBook(props)
+  const orderBookParams = useOrderBook(props)
 
   return (
-    <>
-      <OrderBookDesktop orderBookParams={orderBookParams} />
-      <OrderBookMobile orderBookParams={orderBookParams} market={market} />
-    </>
+    <div className={styles.orderBook}>
+      <div className={styles.labels}>
+        <span>Max offers</span>
+        <span>Max Apr</span>
+        <span>Offers amount</span>
+      </div>
+      <OrderBookList orderBookParams={orderBookParams} />
+    </div>
   )
 }
 
 export default OrderBook
+
+interface OrderBookListProps {
+  orderBookParams: OrderBookParams
+}
+
+const OrderBookList: FC<OrderBookListProps> = ({ orderBookParams }) => {
+  const { syntheticOffers, goToEditOffer, isLoading } = orderBookParams
+
+  return (
+    <ul className={styles.orderBookList}>
+      {isLoading ? (
+        <Loader size="small" />
+      ) : (
+        syntheticOffers.map((offer) => (
+          <Offer
+            key={offer.publicKey}
+            offer={offer}
+            editOffer={() => {
+              goToEditOffer(offer)
+            }}
+          />
+        ))
+      )}
+    </ul>
+  )
+}
