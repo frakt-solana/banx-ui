@@ -6,6 +6,8 @@ import { getDiscordAvatarUrl } from '@banx/utils'
 
 import {
   BanxNotification,
+  BonkWithdrawal,
+  BonkWithdrawalSchema,
   DiscordUserInfo,
   DiscordUserInfoRaw,
   LeaderboardData,
@@ -221,4 +223,34 @@ export const fetchLeaderboardUsersStats: FetchLeaderboardUsersStats = async () =
   } catch (error) {
     return []
   }
+}
+
+type FetchBonkWithdrawal = (props: { walletPubkey: string }) => Promise<BonkWithdrawal | null>
+export const fetchBonkWithdrawal: FetchBonkWithdrawal = async ({ walletPubkey }) => {
+  try {
+    const { data: bondWithdrawal } = await axios.get<BonkWithdrawal>(
+      `${BACKEND_BASE_URL}/leaderboard/request-bonk-withdrawal/${walletPubkey}`,
+    )
+
+    try {
+      await BonkWithdrawalSchema.parseAsync(bondWithdrawal)
+    } catch (validationError) {
+      console.error('Schema validation error:', validationError)
+    }
+
+    return bondWithdrawal || null
+  } catch (error) {
+    return null
+  }
+}
+
+type SendBonkWithdrawal = (props: {
+  bonkWithdrawal: BonkWithdrawal
+  walletPubkey: string
+}) => Promise<void>
+export const sendBonkWithdrawal: SendBonkWithdrawal = async ({ bonkWithdrawal, walletPubkey }) => {
+  await axios.post(
+    `${BACKEND_BASE_URL}/leaderboard/process-bonk-withdrawal/${walletPubkey}`,
+    bonkWithdrawal,
+  )
 }

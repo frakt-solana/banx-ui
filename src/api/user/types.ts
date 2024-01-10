@@ -74,3 +74,9 @@ export const LeaderboardUsersStatsSchema = z.object({
 export type LeaderboardUsersStats = z.infer<typeof LeaderboardUsersStatsSchema>
 
 export type LeaderboardTimeRange = 'all' | 'week'
+
+export const BonkWithdrawalSchema = z.object({
+  requestId: z.string(),
+  rawTransaction: z.number().array(),
+})
+export type BonkWithdrawal = z.infer<typeof BonkWithdrawalSchema>
