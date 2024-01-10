@@ -47,18 +47,18 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
           className={styles.numericField}
           disabled={!connected}
         />
+        <InputCounter
+          label="Number of offers"
+          onChange={onLoanAmountChange}
+          value={loansAmount}
+          disabled={!connected}
+        />
         <NumericInputField
           label="Avg Delta"
           onChange={onDeltaValueChange}
           value={deltaValue}
           disabled={!connected}
           tooltipText={DELTA_TOOLTIP_TEXT}
-        />
-        <InputCounter
-          label="Number of offers"
-          onChange={onLoanAmountChange}
-          value={loansAmount}
-          disabled={!connected}
         />
       </div>
       <div className={styles.messageContainer}>
