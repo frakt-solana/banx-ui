@@ -1,14 +1,19 @@
 .tableRoot table {
-  thead > tr > th {
-    background: var(--bg-primary-deep);
-  }
+  thead,
+  tbody {
+    tr {
+      td,
+      th {
+        width: 180px;
+      }
 
-  tr > td,
-  tr > th {
-    width: 150px;
+      td {
+        padding: 1px 8px;
+      }
 
-    &:last-child {
-      width: 180px;
+      th {
+        background: var(--bg-primary-deep);
+      }
     }
   }
 }
@@ -33,4 +38,37 @@
 
 .radioButton label {
   padding: 2px 12px;
+}
+
+.collateralCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.collateralImageWrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+
+  img,
+  svg {
+    height: 24px;
+    width: 24px;
+  }
+}
+.nftNames {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.nftCollectionName {
+  font: var(--card-header-sm);
+}
+.nftNumber {
+  font: var(--body-text-xs);
+}
+
+.lentCellTitle,
+.aprCellTitle {
+  font: var(--body-text-sm);
 }

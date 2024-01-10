@@ -66,7 +66,7 @@ interface NftImageProps {
   nftImage: string
 }
 
-const NftImage: FC<NftImageProps> = ({ nftImage }) => {
+export const NftImage: FC<NftImageProps> = ({ nftImage }) => {
   const imageLoaded = useImagePreload(nftImage)
 
   return imageLoaded ? (
@@ -81,7 +81,7 @@ interface PointsBanxBadgeProps {
   partnerPoints: number
 }
 
-const PointsBanxBadge: FC<PointsBanxBadgeProps> = ({ playerPoints, partnerPoints }) => {
+export const PointsBanxBadge: FC<PointsBanxBadgeProps> = ({ playerPoints, partnerPoints }) => {
   return (
     <Tooltip title="Partner Points / Player Points">
       <div className={styles.badge}>

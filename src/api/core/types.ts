@@ -90,6 +90,8 @@ export const NFTSchema = z.object({
   collectionFloor: z.number(),
 })
 
+export type NFT = z.infer<typeof NFTSchema>
+
 const BondTradeTransactionSchema = z.object({
   bondTradeTransactionState: z.string(),
   bondOffer: z.string(),
