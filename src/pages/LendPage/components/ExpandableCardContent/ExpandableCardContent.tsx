@@ -26,7 +26,7 @@ const ExpandableCardContent: FC<ExpandableCardContentProps> = ({ marketPubkey })
 
   const { value: currentTabValue, ...tabsProps } = useTabs({
     tabs: BONDS_TABS,
-    defaultValue: BONDS_TABS[1].value,
+    defaultValue: BONDS_TABS[0].value,
   })
 
   const onTabClick = (tabProps: Tab) => {

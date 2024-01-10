@@ -8,7 +8,7 @@ import {
 
 import { LenderActivity } from '@banx/api/activity'
 
-import { StatusCell } from './TableCells'
+import { StatusCell } from './cells'
 
 export const getTableColumns = () => {
   const columns: ColumnType<LenderActivity>[] = [

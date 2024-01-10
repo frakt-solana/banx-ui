@@ -41,11 +41,13 @@ export const NftInfoCell: FC<NftInfoCellProps> = ({
       {onCheckboxClick && !isCardView && (
         <Checkbox className={styles.checkbox} onChange={onCheckboxClick} checked={selected} />
       )}
+
       <div className={styles.nftImageWrapper}>
         {!!banxPoints?.partnerPoints && <PointsBanxBadge {...banxPoints} />}
         <NftImage nftImage={nftImage} />
         {selected && isCardView && <div className={styles.selectedCollectionOverlay} />}
       </div>
+
       <div className={styles.nftNames}>
         <p
           className={classNames(styles.nftCollectionName, {
