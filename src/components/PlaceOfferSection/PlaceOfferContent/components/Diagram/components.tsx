@@ -106,4 +106,4 @@ const formatValue = (value: number) => {
 }
 
 const getOffersCountAttribute = (marks: Mark[]) =>
-  marks.length > 0 ? { 'data-offers-count': marks.length } : {}
+  marks.length > 1 ? { 'data-offers-count': marks.length } : undefined
