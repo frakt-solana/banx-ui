@@ -56,7 +56,7 @@ export const OfferHeader: FC<OfferHeaderProps> = ({ isEditMode, exitEditMode, sh
     <div className={styles.offerHeaderContent}>
       <h4 className={styles.offerHeaderTitle}>{title}</h4>
       {isEditMode && (
-        <Button type="circle" variant="text" onClick={exitEditMode}>
+        <Button className={styles.editButton} type="circle" variant="text" onClick={exitEditMode}>
           Exit
         </Button>
       )}
