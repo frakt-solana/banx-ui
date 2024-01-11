@@ -16,13 +16,18 @@ import BanxImg from './assets/Banx.png'
 import styles from './RewardsTab.module.less'
 
 const RewardsTab = () => {
-  const { data } = useSeasonUserRewards()
+  const { data, isLoading } = useSeasonUserRewards()
   const { available = 0, redeemed = 0, totalAccumulated = 0 } = data?.bonkRewards || {}
 
   return (
     <div className={styles.container}>
-      <ClaimRewardsBlock totalWeekRewards={totalAccumulated} />
-      <AvailableToClaim availableToClaim={available} totalClaimed={redeemed} />
+      {isLoading && <Loader />}
+      {!isLoading && (
+        <>
+          <ClaimRewardsBlock totalWeekRewards={totalAccumulated} />
+          <AvailableToClaim availableToClaim={available} totalClaimed={redeemed} />
+        </>
+      )}
     </div>
   )
 }
