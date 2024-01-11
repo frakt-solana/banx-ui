@@ -3,6 +3,10 @@
   flex-direction: column;
   padding: 24px 0 48px;
   height: 100%;
+
+  @media (max-width: 960px) {
+    padding: 16px 0 0;
+  }
 }
 
 .labelsWrapper {
@@ -11,6 +15,10 @@
   justify-content: space-between;
   padding: 0 64px 0 24px;
   width: 100%;
+
+  @media (max-width: 640px) {
+    padding: 0 56px 0 16px;
+  }
 }
 
 .labelWrapper {
@@ -26,6 +34,10 @@
   &:last-child {
     justify-content: flex-end;
   }
+
+  @media (max-width: 640px) {
+    width: 100%;
+  }
 }
 
 .label {
@@ -33,6 +45,10 @@
   font: var(--table-header-md);
   text-transform: uppercase;
   white-space: nowrap;
+
+  @media (max-width: 640px) {
+    font: var(--table-header-sm);
+  }
 }
 
 .offersList {

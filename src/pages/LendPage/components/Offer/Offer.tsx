@@ -48,7 +48,9 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, collectionFloor }) => {
       </div>
 
       <div className={styles.values}>
-        <p className={styles.value}>{`${displayOfferValue}◎`}</p>
+        <p
+          className={classNames(styles.value, { [styles.hightlight]: isEdit || isNewOffer })}
+        >{`${displayOfferValue}◎`}</p>
         <p className={styles.value}>{createPercentValueJSX(maxDynamicApr)}</p>
         <p className={styles.value}>{loansAmount || 0}</p>
       </div>

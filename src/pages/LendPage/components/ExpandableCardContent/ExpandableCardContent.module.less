@@ -4,6 +4,10 @@
   overflow: hidden;
   height: 454px;
   width: 100%;
+
+  @media (max-width: 640px) {
+    height: 416px;
+  }
 }
 
 .tabsContent {
@@ -52,7 +56,7 @@
   line-height: 38px;
 
   @media (max-width: 640px) {
-    font: var(--title-xs);
+    font-size: 12px;
     line-height: 32px;
   }
 }
@@ -68,4 +72,8 @@
 .editButton,
 .offersButton {
   width: 104px;
+
+  @media (max-width: 640px) {
+    width: 80px;
+  }
 }
