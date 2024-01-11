@@ -21,3 +21,13 @@ export const enqueueTxnErrorSnackbar = (error: TxnError) => {
     type: errorDefinition?.type ?? 'error',
   })
 }
+
+export const enqueueUnknownErrorSnackbar = (error: Error) => {
+  const errorDefinition = getTxnErrorDefinition(error)
+
+  return enqueueSnackbar({
+    message: errorDefinition?.humanMessage ?? 'Something went wrong',
+    description: !errorDefinition?.humanMessage ? error.message : undefined,
+    type: errorDefinition?.type ?? 'error',
+  })
+}
