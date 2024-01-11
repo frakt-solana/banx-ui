@@ -5,9 +5,11 @@ import { web3 } from 'fbonds-core'
 
 import { Button } from '@banx/components/Buttons'
 import EmptyList from '@banx/components/EmptyList'
+import { Loader } from '@banx/components/Loader'
 
 import { fetchBonkWithdrawal, sendBonkWithdrawal } from '@banx/api/user'
-import { formatNumbersWithCommas } from '@banx/utils'
+import { enqueueUnknownErrorSnackbar } from '@banx/transactions'
+import { enqueueSnackbar, formatNumbersWithCommas } from '@banx/utils'
 
 import { useSeasonUserRewards } from '../../hooks'
 import AnybodiesImg from './assets/Anybodies.png'
@@ -89,9 +91,13 @@ const AvailableToClaim: FC<AvailableToClaimProps> = ({ availableToClaim, totalCl
         },
       })
 
-      //TODO: Implement optimistics and notistack
+      enqueueSnackbar({
+        message: 'BONK successfully claimed',
+        type: 'success',
+      })
     } catch (error) {
       console.error(error)
+      enqueueUnknownErrorSnackbar(error as Error)
     } finally {
       setIsLoading(false)
     }
