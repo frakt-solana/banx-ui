@@ -12,7 +12,7 @@ export const useSeasonUserRewards = () => {
     () => fetchSeasonUserRewards({ walletPubkey: publicKeyString }),
     {
       refetchOnWindowFocus: false,
-      staleTime: 30 * 60 * 1000, //? 30 mins
+      staleTime: 30 * 1000, //? 30 seconds
     },
   )
 
