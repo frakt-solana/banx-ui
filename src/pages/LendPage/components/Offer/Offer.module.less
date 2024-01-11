@@ -10,57 +10,54 @@
   &:not(:last-child) {
     border-bottom: var(--border-primary);
   }
-}
 
-.highlightYour,
-.highlightEditing {
-  position: relative;
+  &.creating,
+  &.editing {
+    position: relative;
 
-  font: var(--table-header-sm);
-  color: var(--pure-black);
-  text-transform: uppercase;
-
-  &::after,
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    z-index: 2;
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -1px;
+      height: 4px;
+      width: 100%;
+      z-index: 1;
+    }
   }
 
-  &::before {
-    padding: 1px 8px;
-  }
-
-  &::after {
-    height: 4px;
-    width: 100%;
-    z-index: 1;
-  }
-}
-
-.highlightYour {
-  &::before {
-    content: 'Your';
+  &.creating::after {
     background: var(--accent-primary);
   }
-  &::after {
-    background: var(--accent-primary);
-  }
-}
 
-.highlightEditing {
-  &::before {
-    content: 'Editing';
-    background: var(--additional-blue-primary);
-  }
-  &::after {
+  &.editing::after {
     background: var(--additional-blue-primary);
   }
 }
 
-.valueWrapper {
+.highlightItem {
+  position: absolute;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 24px;
+
+  &.creating {
+    background: var(--accent-primary);
+  }
+
+  &.editing {
+    background: var(--additional-blue-primary);
+  }
+
+  &.hidden {
+    display: none;
+  }
+}
+
+.values {
   display: flex;
   align-items: center;
   justify-content: space-between;
