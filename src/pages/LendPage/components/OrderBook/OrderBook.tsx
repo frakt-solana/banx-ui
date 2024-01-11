@@ -20,7 +20,7 @@ const OrderBook: FC<OrderBookProps> = (props) => {
   const { offerPubkey, setOfferPubkey, marketPubkey } = props
 
   const { setOffer: setSyntheticOffer } = useSyntheticOffers()
-  const { offers, isLoading } = useMarketOrders({ marketPubkey, offerPubkey })
+  const { offers, market, isLoading } = useMarketOrders({ marketPubkey, offerPubkey })
 
   const handleEditOffer = (offer: SyntheticOffer) => {
     setSyntheticOffer({ ...offer, isEdit: true })
@@ -43,7 +43,12 @@ const OrderBook: FC<OrderBookProps> = (props) => {
 
         {!isLoading &&
           offers.map((offer) => (
-            <Offer key={offer.publicKey} offer={offer} editOffer={() => handleEditOffer(offer)} />
+            <Offer
+              key={offer.publicKey}
+              offer={offer}
+              editOffer={() => handleEditOffer(offer)}
+              collectionFloor={market?.collectionFloor || 0}
+            />
           ))}
       </ul>
     </div>

@@ -5,21 +5,23 @@ import classNames from 'classnames'
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 
 import { Button } from '@banx/components/Buttons'
+import { createPercentValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
 import { Pencil } from '@banx/icons'
 import { SyntheticOffer } from '@banx/store'
-import { formatDecimal } from '@banx/utils'
+import { calcDynamicApr, formatDecimal } from '@banx/utils'
 
 import styles from './Offer.module.less'
 
 interface OfferProps {
   offer: SyntheticOffer
   editOffer: () => void
+  collectionFloor: number
 }
 
-const Offer: FC<OfferProps> = ({ editOffer, offer }) => {
-  const { publicKey: offerPubkey, isEdit, loansAmount, assetReceiver } = offer
+const Offer: FC<OfferProps> = ({ editOffer, offer, collectionFloor }) => {
+  const { publicKey: offerPubkey, isEdit, loansAmount, loanValue, assetReceiver } = offer
 
   const { connected, publicKey } = useWallet()
 
@@ -37,6 +39,7 @@ const Offer: FC<OfferProps> = ({ editOffer, offer }) => {
   const highlightItemClassNames = classNames(styles.highlightItem, commonHighlightClassNames)
 
   const displayOfferValue = getDisplayOfferRange(offer)
+  const maxDynamicApr = calcDynamicApr(loanValue, collectionFloor)
 
   return (
     <li className={listItemClassNames}>
@@ -46,7 +49,7 @@ const Offer: FC<OfferProps> = ({ editOffer, offer }) => {
 
       <div className={styles.values}>
         <p className={styles.value}>{`${displayOfferValue}◎`}</p>
-        <p className={styles.value}>10%</p>
+        <p className={styles.value}>{createPercentValueJSX(maxDynamicApr)}</p>
         <p className={styles.value}>{loansAmount || 0}</p>
       </div>
 
