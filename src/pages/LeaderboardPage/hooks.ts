@@ -1,14 +1,20 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 
-import { fetchLeaderboardUsersStats, fetchSeasonUserRewards } from '@banx/api/user'
+import { SeasonUserRewards, fetchSeasonUserRewards } from '@banx/api/user'
+import { queryClient } from '@banx/utils'
 
+const USE_SEASON_USER_REWARDS_QUERY_KEY = 'seasonUserRewards'
+const createSeasonUserRewardsQueryKey = (walletPubkey: string) => [
+  USE_SEASON_USER_REWARDS_QUERY_KEY,
+  walletPubkey,
+]
 export const useSeasonUserRewards = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
   const { data, isLoading } = useQuery(
-    ['seasonUserRewards', publicKeyString],
+    createSeasonUserRewardsQueryKey(publicKeyString),
     () => fetchSeasonUserRewards({ walletPubkey: publicKeyString }),
     {
       refetchOnWindowFocus: false,
@@ -21,19 +27,21 @@ export const useSeasonUserRewards = () => {
     isLoading,
   }
 }
+//? Optimistic based on queryData modification
+export const updateBonkWithdrawOptimistic = (walletPubkey: string) =>
+  queryClient.setQueryData(
+    createSeasonUserRewardsQueryKey(walletPubkey),
+    (queryData: SeasonUserRewards | undefined) => {
+      if (!queryData) return queryData
+      const { available = 0, redeemed = 0, totalAccumulated = 0 } = queryData?.bonkRewards || {}
 
-export const useLeaderboardUserStats = () => {
-  const { data, isLoading } = useQuery(
-    ['leaderboardUserStats'],
-    () => fetchLeaderboardUsersStats(),
-    {
-      refetchOnWindowFocus: false,
-      staleTime: 30 * 60 * 1000, //? 30 mins
+      return {
+        ...queryData,
+        bonkRewards: {
+          totalAccumulated,
+          available: 0,
+          redeemed: redeemed + available,
+        },
+      }
     },
   )
-
-  return {
-    data,
-    isLoading,
-  }
-}

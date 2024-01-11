@@ -11,7 +11,7 @@ import { fetchBonkWithdrawal, sendBonkWithdrawal } from '@banx/api/user'
 import { enqueueUnknownErrorSnackbar } from '@banx/transactions'
 import { enqueueSnackbar, formatNumbersWithCommas } from '@banx/utils'
 
-import { useSeasonUserRewards } from '../../hooks'
+import { updateBonkWithdrawOptimistic, useSeasonUserRewards } from '../../hooks'
 import AnybodiesImg from './assets/Anybodies.png'
 import BanxImg from './assets/Banx.png'
 
@@ -95,6 +95,7 @@ const ClaimBlock: FC<ClaimBlockProps> = ({ availableToClaim, totalClaimed }) => 
         message: 'BONK successfully claimed',
         type: 'success',
       })
+      updateBonkWithdrawOptimistic(walletPubkeyString)
     } catch (error) {
       console.error(error)
       enqueueUnknownErrorSnackbar(error as Error)
