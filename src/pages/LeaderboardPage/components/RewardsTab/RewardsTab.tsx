@@ -27,7 +27,7 @@ const RewardsTab = () => {
       {!isLoading && (
         <>
           <ClaimRewardsBlock totalWeekRewards={totalAccumulated} />
-          <AvailableToClaim availableToClaim={available} totalClaimed={redeemed} />
+          <ClaimBlock availableToClaim={available} totalClaimed={redeemed} />
         </>
       )}
     </div>
@@ -57,12 +57,12 @@ const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({ totalWeekRewards }) => 
     </div>
   )
 }
-interface AvailableToClaimProps {
+interface ClaimBlockProps {
   availableToClaim: number
   totalClaimed: number
 }
 
-const AvailableToClaim: FC<AvailableToClaimProps> = ({ availableToClaim, totalClaimed }) => {
+const ClaimBlock: FC<ClaimBlockProps> = ({ availableToClaim, totalClaimed }) => {
   const wallet = useWallet()
   const walletPubkeyString = wallet.publicKey?.toBase58()
 
