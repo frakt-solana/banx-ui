@@ -4,7 +4,12 @@
     tr {
       td,
       th {
-        min-width: 140px;
+        width: 120px;
+
+        &:first-child,
+        &:last-child {
+          min-width: 144px;
+        }
       }
 
       td {
@@ -18,8 +23,15 @@
   }
 }
 
+.tableWrapper {
+  @media (max-width: 1240px) {
+    height: 314px;
+  }
+}
+
 .statusCellTitle {
   font: var(--body-text-sm);
+  white-space: nowrap;
 }
 
 .filterTableSection {

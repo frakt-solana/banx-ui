@@ -40,6 +40,7 @@ const ActivityTable: FC<ActivityTableProps> = ({ marketPubkey }) => {
           columns={columns}
           className={styles.tableRoot}
           loadMore={hasNextPage ? fetchNextPage : undefined}
+          classNameTableWrapper={styles.tableWrapper}
           loading={isLoading}
         />
       ) : (

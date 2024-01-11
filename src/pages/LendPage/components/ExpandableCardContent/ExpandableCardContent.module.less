@@ -2,13 +2,8 @@
   cursor: default;
   display: flex;
   overflow: hidden;
-
   height: 454px;
   width: 100%;
-
-  @media (max-width: 640px) {
-    height: 454px;
-  }
 }
 
 .content {
@@ -16,4 +11,18 @@
   border-right: 0;
   border-bottom: 0;
   width: 100%;
+
+  @media (max-width: 1240px) {
+    display: none;
+  }
+}
+
+.modal :global {
+  .ant-modal-body {
+    height: 440px;
+  }
+
+  .ant-modal-content {
+    padding: 0;
+  }
 }
