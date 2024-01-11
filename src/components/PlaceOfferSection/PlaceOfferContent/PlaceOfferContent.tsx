@@ -57,7 +57,7 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
           step={1}
         />
         <NumericStepInput
-          label="Avg Delta"
+          label="Delta"
           onChange={onDeltaValueChange}
           value={deltaValue}
           disabled={!connected}

@@ -75,5 +75,9 @@ export const useOfferFormController = (syntheticOffer: SyntheticOffer) => {
   }
 }
 
-const formatNumber = (value: number, defaultValue = '0') =>
-  value ? value.toFixed(2) : defaultValue
+const formatNumber = (value: number, defaultValue = '0') => {
+  if (!value) return defaultValue
+
+  const formattedValue = value.toFixed(2)
+  return formattedValue.replace(/\.?0+$/, '')
+}
