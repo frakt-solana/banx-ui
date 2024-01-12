@@ -50,8 +50,18 @@
   }
 }
 
-.radioButton label {
-  padding: 2px 12px;
+.radioButton {
+  label {
+    padding: 2px 12px;
+
+    @media (max-width: 640px) {
+      font: var(--tab-text-sm);
+    }
+  }
+
+  @media (max-width: 640px) {
+    justify-content: center;
+  }
 }
 
 .collateralCell {

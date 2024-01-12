@@ -3,7 +3,7 @@ import { FC } from 'react'
 import { Loader } from '@banx/components/Loader'
 import Tooltip from '@banx/components/Tooltip/Tooltip'
 
-import { SyntheticOffer, useSyntheticOffers } from '@banx/store'
+import { SyntheticOffer, useModal, useSyntheticOffers } from '@banx/store'
 
 import Offer from '../Offer'
 import { useMarketOrders } from './hooks'
@@ -19,12 +19,14 @@ export interface OrderBookProps {
 const OrderBook: FC<OrderBookProps> = (props) => {
   const { offerPubkey, setOfferPubkey, marketPubkey } = props
 
+  const { close } = useModal()
   const { setOffer: setSyntheticOffer } = useSyntheticOffers()
   const { offers, market, isLoading } = useMarketOrders({ marketPubkey, offerPubkey })
 
   const handleEditOffer = (offer: SyntheticOffer) => {
     setSyntheticOffer({ ...offer, isEdit: true })
     setOfferPubkey(offer.publicKey)
+    close()
   }
 
   return (

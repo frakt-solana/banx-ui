@@ -3,7 +3,7 @@ import { FC } from 'react'
 import { Tooltip } from 'antd'
 import classNames from 'classnames'
 
-import { MIN_APR_VALUE } from '@banx/components/PlaceOfferSection'
+import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { MarketPreview } from '@banx/api/core'
@@ -68,7 +68,7 @@ export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, is
       />
       <StatInfo
         label="Max apr"
-        value={MIN_APR_VALUE}
+        value={MAX_APR_VALUE}
         classNamesProps={{ value: styles.aprValue }}
         tooltipText="Maximum annual interest rate. Ranges between 34-104% APR depending on the loan-to-value (LTV) offered, and becomes fixed once offer is taken"
         valueType={VALUES_TYPES.PERCENT}
