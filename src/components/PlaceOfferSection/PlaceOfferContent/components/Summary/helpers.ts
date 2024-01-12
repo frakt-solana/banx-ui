@@ -59,7 +59,8 @@ export const calcMaxLtv = ({
 
   const currentLtv = initialOffer && !hasFormChanges ? initialCurrentLtv : updatedCurrentLtv
 
-  return Math.max(currentLtv, initialMaxLtv)
+  const result = Math.max(currentLtv, initialMaxLtv)
+  return isFinite(result) ? result : 0
 }
 
 const calcLtv = (loanValue: number, collectionFloor: number) => {
