@@ -61,10 +61,10 @@ export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, is
         divider={1e9}
       />
       <StatInfo
-        label="Max offer"
+        label="Top offer"
         secondValue={`${bestLtv?.toFixed(0)}% LTV`}
         value={`${formattedMaxOffer}◎`}
-        tooltipText="Highest current offer"
+        tooltipText="Highest offer among all lenders providing liquidity for this collection"
         valueType={VALUES_TYPES.STRING}
       />
       <StatInfo

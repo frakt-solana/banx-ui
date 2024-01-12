@@ -3,8 +3,12 @@ import classNames from 'classnames'
 
 import { useDiscordUser } from '@banx/hooks'
 import { ChevronDown, Wallet } from '@banx/icons'
-import { useSeasonUserRewards } from '@banx/pages/LeaderboardPage/hooks'
-import { HealthColorDecreasing, getColorByPercent, shortenAddress } from '@banx/utils'
+import {
+  formatDecimal,
+  formatNumbersWithCommas,
+  shortenAddress,
+  useSolanaBalance,
+} from '@banx/utils'
 
 import UserAvatar from '../UserAvatar'
 import { useWalletModal } from '../WalletModal'
@@ -17,12 +21,7 @@ export const WalletConnectButton = () => {
   const { publicKey, connected } = useWallet()
 
   const { data: discordUserData } = useDiscordUser()
-  const { data: userRewardsStats } = useSeasonUserRewards()
-
-  const loyalty = userRewardsStats?.loyalty || 0
-  const formattedLoyalty = Math.max((loyalty - 1) * 100, 0)
-
-  const loyaltyColor = getColorByPercent(formattedLoyalty, HealthColorDecreasing)
+  const solanaBalance = useSolanaBalance()
 
   const ConnectedButton = () => (
     <div className={styles.connectedButton} onClick={toggleVisibility}>
@@ -31,9 +30,7 @@ export const WalletConnectButton = () => {
         <span className={styles.connectedWalletAddress}>
           {shortenAddress(publicKey?.toBase58() || '')}
         </span>
-        <span style={{ color: loyaltyColor }} className={styles.connectedWalletLoyalty}>
-          {formattedLoyalty}% loyalty
-        </span>
+        <span className={styles.solanaBalance}>{`${formatBalance(solanaBalance)}◎`}</span>
       </div>
       <ChevronDown
         className={classNames(styles.connectedWalletChevron, { [styles.active]: visible })}
@@ -49,4 +46,16 @@ export const WalletConnectButton = () => {
   )
 
   return connected ? <ConnectedButton /> : <DisconnectedButton />
+}
+
+const THRESHOLD_LARGE_BALANCE = 1000
+const formatBalance = (balance = 0) => {
+  if (!balance) return '0.00'
+
+  if (balance > THRESHOLD_LARGE_BALANCE) {
+    return formatNumbersWithCommas(balance.toFixed(0))
+  }
+
+  const formattedDecimalValue = formatDecimal(balance)
+  return formattedDecimalValue.replace(/\.?0+$/, '')
 }
