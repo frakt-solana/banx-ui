@@ -46,6 +46,7 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
           onChange={onLoanValueChange}
           className={styles.maxOfferInput}
           disabled={!connected}
+          tooltipText="Max offer"
           postfix
         />
         <NumericStepInput
