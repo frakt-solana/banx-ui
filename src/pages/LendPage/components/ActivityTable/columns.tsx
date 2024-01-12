@@ -10,7 +10,7 @@ export const getTableColumns = () => {
     {
       key: 'collateral',
       title: <HeaderCell label="Collateral" align="left" />,
-      render: ({ nft }) => <CollateralCell nft={nft} />,
+      render: (loan) => <CollateralCell loan={loan} />,
     },
     {
       key: 'lent',

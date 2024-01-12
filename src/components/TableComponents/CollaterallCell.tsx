@@ -79,12 +79,17 @@ export const NftImage: FC<NftImageProps> = ({ nftImage }) => {
 interface PointsBanxBadgeProps {
   playerPoints: number
   partnerPoints: number
+  className?: string
 }
 
-export const PointsBanxBadge: FC<PointsBanxBadgeProps> = ({ playerPoints, partnerPoints }) => {
+export const PointsBanxBadge: FC<PointsBanxBadgeProps> = ({
+  playerPoints,
+  partnerPoints,
+  className,
+}) => {
   return (
     <Tooltip title="Partner Points / Player Points">
-      <div className={styles.badge}>
+      <div className={classNames(styles.badge, className)}>
         {partnerPoints}/{playerPoints}
       </div>
     </Tooltip>

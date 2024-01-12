@@ -4,12 +4,12 @@ import { capitalize } from 'lodash'
 
 import {
   NftImage,
+  PointsBanxBadge,
   createPercentValueJSX,
   createSolValueJSX,
 } from '@banx/components/TableComponents'
 
 import { LenderActivity } from '@banx/api/activity'
-import { NFT } from '@banx/api/core'
 import { LoanStatus, STATUS_LOANS_COLOR_MAP, STATUS_LOANS_MAP } from '@banx/utils'
 
 import styles from './ActivityTable.module.less'
@@ -30,11 +30,11 @@ export const StatusCell: FC<StatusCellProps> = ({ loan }) => {
 }
 
 interface CollateralCellProps {
-  nft: NFT
+  loan: LenderActivity
 }
 
-export const CollateralCell: FC<CollateralCellProps> = ({ nft }) => {
-  const { name, imageUrl /* partnerPoints = 0, playerPoints = 0 */ } = nft.meta
+export const CollateralCell: FC<CollateralCellProps> = ({ loan }) => {
+  const { name, imageUrl, partnerPoints = 0, playerPoints = 0 } = loan.nft.meta
 
   const [nftCollectionName, nftNumber] = name.split('#')
   const displayNftNumber = nftNumber ? `#${nftNumber}` : ''
@@ -42,12 +42,15 @@ export const CollateralCell: FC<CollateralCellProps> = ({ nft }) => {
   return (
     <div className={styles.collateralCell}>
       <div className={styles.collateralImageWrapper}>
-        {/* {!!partnerPoints && (
-          <PointsBanxBadge partnerPoints={partnerPoints} playerPoints={playerPoints} />
-        )} */}
+        {!!partnerPoints && (
+          <PointsBanxBadge
+            className={styles.badge}
+            partnerPoints={partnerPoints}
+            playerPoints={playerPoints}
+          />
+        )}
         <NftImage nftImage={imageUrl} />
       </div>
-
       <div className={styles.nftNames}>
         <p className={styles.nftCollectionName}>{nftCollectionName}</p>
         {displayNftNumber && <p className={styles.nftNumber}>{displayNftNumber}</p>}
