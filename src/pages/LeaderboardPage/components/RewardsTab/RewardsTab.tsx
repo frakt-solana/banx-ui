@@ -2,12 +2,15 @@ import { FC, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { web3 } from 'fbonds-core'
+import { NavLink } from 'react-router-dom'
 
 import { Button } from '@banx/components/Buttons'
 import EmptyList from '@banx/components/EmptyList'
 import { Loader } from '@banx/components/Loader'
 
 import { fetchBonkWithdrawal, sendBonkWithdrawal } from '@banx/api/user'
+import { CircleCheck } from '@banx/icons'
+import { PATHS } from '@banx/router'
 import { enqueueUnknownErrorSnackbar } from '@banx/transactions'
 import { enqueueSnackbar } from '@banx/utils'
 
@@ -39,29 +42,43 @@ export default RewardsTab
 interface ClaimRewardsBlockProps {
   totalWeekRewards: number
 }
-
 const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({ totalWeekRewards }) => {
   return (
     <div className={styles.weeklyRewardsBlock}>
-      <div className={styles.weeklyRewardsInfo}>
-        <p className={styles.blockTitle}>This week bounty</p>
-        <p className={styles.rewardsValue}>{formatNumber(totalWeekRewards)} BONK</p>
-      </div>
-      <div className={styles.partnersInfoWrapper}>
-        <p className={styles.blockTitle}>Powered by</p>
-        <div className={styles.partnersImages}>
-          <img src={BanxImg} alt="Banx" />
-          <img src={AnybodiesImg} alt="Anybodies" />
+      <div className={styles.weeklyRewardsInfoRow}>
+        <div className={styles.weeklyRewardsInfo}>
+          <p className={styles.blockTitle}>This week bounty</p>
+          <p className={styles.rewardsValue}>{formatNumber(totalWeekRewards)} BONK</p>
+        </div>
+        <div className={styles.partnersInfoWrapper}>
+          <p className={styles.blockTitle}>Powered by</p>
+          <div className={styles.partnersImages}>
+            <img src={BanxImg} alt="Banx" />
+            <img src={AnybodiesImg} alt="Anybodies" />
+          </div>
         </div>
       </div>
+      <ul className={styles.weeklyRewardsList}>
+        <li>
+          <CircleCheck />
+          Only borrowing on Banx.gg counts
+        </li>
+        <li>
+          <CircleCheck /> The more you borrow, the more you earn
+        </li>
+      </ul>
+
+      <NavLink to={PATHS.BORROW} className={styles.weeklyRewardsBorrowBtn}>
+        <Button>Borrow</Button>
+      </NavLink>
     </div>
   )
 }
+
 interface ClaimBlockProps {
   availableToClaim: number
   totalClaimed: number
 }
-
 const ClaimBlock: FC<ClaimBlockProps> = ({ availableToClaim, totalClaimed }) => {
   const wallet = useWallet()
   const walletPubkeyString = wallet.publicKey?.toBase58()
@@ -110,22 +127,25 @@ const ClaimBlock: FC<ClaimBlockProps> = ({ availableToClaim, totalClaimed }) => 
         <p className={styles.blockTitle}>Available to claim</p>
         <p className={styles.rewardsValue}>{formatNumber(availableToClaim)} BONK</p>
       </div>
-      <div className={styles.totalClaimedInfo}>
-        <p className={styles.totalClaimedLabel}>Claimed to date:</p>
-        <p className={styles.totalClaimedValue}>{formatNumber(totalClaimed)} BONK</p>
+      <div className={styles.claimBtnWrapper}>
+        <div className={styles.totalClaimedInfo}>
+          <p className={styles.totalClaimedLabel}>Claimed to date:</p>
+          <p className={styles.totalClaimedValue}>{formatNumber(totalClaimed)} BONK</p>
+        </div>
+        {wallet.connected && (
+          <Button
+            className={styles.claimButton}
+            onClick={onClaim}
+            loading={isLoading}
+            disabled={isLoading || !availableToClaim}
+          >
+            Claim
+          </Button>
+        )}
+        {!wallet.connected && (
+          <EmptyList className={styles.emptyList} message="Connect wallet to see claimable" />
+        )}
       </div>
-      {wallet.connected ? (
-        <Button
-          className={styles.claimButton}
-          onClick={onClaim}
-          loading={isLoading}
-          disabled={isLoading || !availableToClaim}
-        >
-          Claim
-        </Button>
-      ) : (
-        <EmptyList className={styles.emptyList} message="Connect wallet to see claimable" />
-      )}
     </div>
   )
 }
