@@ -9,7 +9,7 @@ import { Loader } from '@banx/components/Loader'
 
 import { fetchBonkWithdrawal, sendBonkWithdrawal } from '@banx/api/user'
 import { enqueueUnknownErrorSnackbar } from '@banx/transactions'
-import { enqueueSnackbar, formatNumbersWithCommas } from '@banx/utils'
+import { enqueueSnackbar } from '@banx/utils'
 
 import { updateBonkWithdrawOptimistic, useSeasonUserRewards } from '../../hooks'
 import AnybodiesImg from './assets/Anybodies.png'
@@ -133,5 +133,8 @@ const ClaimBlock: FC<ClaimBlockProps> = ({ availableToClaim, totalClaimed }) => 
 const formatNumber = (value = 0) => {
   if (!value) return '--'
 
-  return formatNumbersWithCommas(value)
+  return Intl.NumberFormat('en-US', {
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(value)
 }
