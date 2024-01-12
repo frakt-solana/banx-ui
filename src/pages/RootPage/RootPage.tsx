@@ -8,7 +8,7 @@ import { InfinityIcon, Lightning, Shield } from '@banx/icons'
 import { PATHS } from '@banx/router'
 import { useMixpanelLocationTrack } from '@banx/utils'
 
-import { Borrow, Interest, Lend, Refinance } from './icons'
+import { Interest } from './icons'
 
 import styles from './RootPage.module.less'
 
@@ -21,9 +21,7 @@ export const RootPage = () => {
       <div className={styles.content}>
         <AdvantagesSection />
 
-        <ButtonsSection />
-
-        <DescriptionsSection />
+        <ListsSection />
       </div>
     </div>
   )
@@ -47,9 +45,9 @@ const AdvantagesSection = () => {
       <div className={styles.advantage}>
         <Interest />
         <p>
-          Time-based
+          Flexible
           <br />
-          interest
+          lending
         </p>
       </div>
       <div className={styles.advantage}>
@@ -80,45 +78,28 @@ const AdvantagesSection = () => {
   )
 }
 
-const ButtonsSection = () => (
-  <div className={styles.buttons}>
-    <NavLink to={PATHS.BORROW} className={styles.button}>
-      <Button>Borrow</Button>
-    </NavLink>
-
-    <NavLink to={PATHS.LEND} className={styles.button}>
-      <Button>Lend</Button>
-    </NavLink>
-  </div>
-)
-
-const DescriptionsSection = () => (
-  <div className={styles.descriptions}>
-    <div className={styles.description}>
-      <h5>
-        <Borrow /> Borrow
-      </h5>
-      <p>
-        Borrow SOL against your NFT assets. Loans have no fixed duration, so you can repay any time.
-        Interest accrues to the second, so you never pay more than you need to
-      </p>
+const ListsSection = () => (
+  <div className={styles.listsWrapper}>
+    <div className={styles.listCol}>
+      <NavLink to={PATHS.BORROW} className={styles.button}>
+        <Button>Borrow</Button>
+      </NavLink>
+      <ul>
+        <li>Borrow SOL against your NFTs</li>
+        <li>Loans have no fixed duration: repay when you want, in full or in part</li>
+        <li>Enjoy pro-rata interest and a 72H guaranteed extension on repayment calls</li>
+      </ul>
     </div>
-    <div className={styles.descriptionsCol2}>
-      <div className={styles.description}>
-        <h5>
-          <Lend /> Lend
-        </h5>
-        <p>
-          Earn yield on your SOL by providing loans against NFTs. If you are unhappy, you can
-          terminate loan or sell it to another lender any time
-        </p>
-      </div>
-      <div className={styles.description}>
-        <h5>
-          <Refinance /> Refinance
-        </h5>
-        <p>You can instantly start earning yield by funding loans in the refinance auctions</p>
-      </div>
+
+    <div className={styles.listCol}>
+      <NavLink to={PATHS.LEND} className={styles.button}>
+        <Button>Lend</Button>
+      </NavLink>
+      <ul>
+        <li>Earn yield on your SOL by providing loans against NFTs</li>
+        <li>Set offers or instantly refinance active loans within your personal risk tolerance</li>
+        <li>Terminate or sell your loans to exit anytime you want</li>
+      </ul>
     </div>
   </div>
 )
