@@ -25,12 +25,12 @@ const SORT_OPTIONS = [
   { label: 'Status', value: 'status' },
 ]
 
-const DEFAULT_SORT_OPTION = { label: 'Status', value: 'status_desc' }
+const DEFAULT_SORT_OPTION = { label: 'LTV', value: 'ltv_desc' }
 
 const STATUS_VALUE_MAP: StatusValueMap = {
   [SortField.LENT]: (loan: Loan) => loan.fraktBond.currentPerpetualBorrowed,
   [SortField.APR]: (loan: Loan) => loan.bondTradeTransaction.amountOfBonds,
-  [SortField.LTV]: (loan: Loan) => loan.nft.collectionFloor / calculateLoanRepayValue(loan),
+  [SortField.LTV]: (loan: Loan) => calculateLoanRepayValue(loan) / loan.nft.collectionFloor,
   [SortField.STATUS]: '',
 }
 
