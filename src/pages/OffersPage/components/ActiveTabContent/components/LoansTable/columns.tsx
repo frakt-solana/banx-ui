@@ -1,3 +1,4 @@
+import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
 import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
 
@@ -7,15 +8,30 @@ import { formatDecimal } from '@banx/utils'
 
 import { APRCell, ActionsCell, InterestCell, StatusCell } from './TableCells'
 
-interface GetTableColumns {
-  isCardView?: boolean
+import styles from './LoansTable.module.less'
+
+interface GetTableColumnsProps {
+  onSelectAll: () => void
+  findLoanInSelection: (loanPubkey: string) => Loan | null
+  toggleLoanInSelection: (loan: Loan) => void
+  hasSelectedLoans: boolean
+  isCardView: boolean
 }
 
-export const getTableColumns = ({ isCardView = false }: GetTableColumns) => {
+export const getTableColumns = ({
+  isCardView = false,
+  onSelectAll,
+  hasSelectedLoans,
+}: GetTableColumnsProps) => {
   const columns: ColumnType<Loan>[] = [
     {
       key: 'collateral',
-      title: <HeaderCell label="Collateral" align="left" />,
+      title: (
+        <div className={styles.headerTitleRow}>
+          <Checkbox className={styles.checkbox} onChange={onSelectAll} checked={hasSelectedLoans} />
+          <HeaderCell label="Collateral" align="left" />
+        </div>
+      ),
       render: ({ nft }) => (
         <NftInfoCell
           nftName={nft.meta.name}

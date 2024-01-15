@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { first, groupBy, map, sumBy } from 'lodash'
@@ -21,6 +21,7 @@ import { formatDecimal, isLoanLiquidated, isLoanTerminating } from '@banx/utils'
 import { Summary } from './Summary'
 import { getTableColumns } from './columns'
 import { useSortedLoans } from './hooks'
+import { useSelectedLoans } from './loansState'
 
 import styles from './LoansTable.module.less'
 
@@ -87,10 +88,42 @@ export const LoansTable = () => {
     onChange: setSelectedCollections,
   }
 
-  const columns = getTableColumns({ isCardView: viewState === ViewState.CARD })
+  const {
+    selection,
+    toggle: toggleLoanInSelection,
+    find: findLoanInSelection,
+    clear: clearSelection,
+    set: setSelection,
+  } = useSelectedLoans()
+
+  const onRowClick = useCallback(
+    (loan: Loan) => {
+      toggleLoanInSelection(loan)
+    },
+    [toggleLoanInSelection],
+  )
+
+  const hasSelectedLoans = useMemo(() => !!selection?.length, [selection])
+
+  const onSelectAll = useCallback(() => {
+    if (hasSelectedLoans) {
+      clearSelection()
+    } else {
+      setSelection(loans)
+    }
+  }, [clearSelection, hasSelectedLoans, loans, setSelection])
+
+  const columns = getTableColumns({
+    onSelectAll,
+    findLoanInSelection,
+    toggleLoanInSelection: onRowClick,
+    hasSelectedLoans,
+    isCardView: viewState === ViewState.CARD,
+  })
 
   const rowParams = useMemo(() => {
     return {
+      onRowClick,
       activeRowParams: [
         {
           condition: (loan: Loan) => isLoanTerminating(loan),
@@ -104,7 +137,7 @@ export const LoansTable = () => {
         },
       ],
     }
-  }, [])
+  }, [onRowClick])
 
   const showEmptyList = (!loans.length && !loading) || !connected
   const emptyMessage = connected
