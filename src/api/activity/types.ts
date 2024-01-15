@@ -18,6 +18,7 @@ export const LenderActivitySchema = z.object({
   received: z.number(),
   timestamp: z.number(),
   user: z.string(),
+  currentRemainingLentAmount: z.number(),
   nft: NFTSchema,
 })
 
