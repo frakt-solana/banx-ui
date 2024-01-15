@@ -38,16 +38,19 @@ export const NumericStepInput: FC<NumericStepInputProps> = ({
   }
 
   const incrementValue = () => {
-    if (canIncrement) {
+    if (canIncrement && !disabled) {
       updateValue(numericValue + step)
     }
   }
 
   const decrementValue = () => {
-    if (canDecrement) {
+    if (canDecrement && !disabled) {
       updateValue(numericValue - step)
     }
   }
+
+  const isIncrementDisabled = !canIncrement || disabled
+  const isDecrementDisabled = !canDecrement || disabled
 
   const inputElement = (
     <div
@@ -66,7 +69,7 @@ export const NumericStepInput: FC<NumericStepInputProps> = ({
       {postfix && <div className={styles.postfix}>◎</div>}
       <div className={styles.customCounterControls}>
         <InputArrowUp
-          className={classNames(styles.arrow, { [styles.disabled]: !canIncrement })}
+          className={classNames(styles.arrow, { [styles.disabled]: isIncrementDisabled })}
           onClick={incrementValue}
         />
         <div className={styles.separatorLine} />
@@ -74,7 +77,7 @@ export const NumericStepInput: FC<NumericStepInputProps> = ({
           onClick={decrementValue}
           className={classNames(
             styles.arrow,
-            { [styles.disabled]: !canDecrement },
+            { [styles.disabled]: isDecrementDisabled },
             { [styles.rotate]: true },
           )}
         />

@@ -20,9 +20,10 @@ export const useAllLenderActivity = (marketPubkey: string) => {
   const { marketsPreview } = useMarketsPreview()
 
   const options = appendIdToOptions(RADIO_BUTTONS_OPTIONS, marketPubkey)
+  const loanedOption = options[1]
 
   const [checked, setChecked] = useState<boolean>(false)
-  const [currentOption, setCurrentOption] = useState<RBOption>(options[0])
+  const [currentOption, setCurrentOption] = useState<RBOption>(loanedOption)
 
   const eventType = currentOption.value.split('_')[0]
   const currentMarket = marketsPreview.find((market) => market.marketPubkey === marketPubkey)

@@ -59,20 +59,6 @@ const createTooltip = (loans: Loan[]) => {
   return null
 }
 
-const createSquareElement = (nftImage: string | undefined) => {
-  if (nftImage) {
-    return <img src={nftImage} className={styles.imageSquare} />
-  }
-  return <div className={styles.square} />
-}
-
-const createMarkCountBadge = (marks: Mark[]) => {
-  if (marks.length > 1) {
-    return <div className={styles.markCountBadge}>{marks.length}</div>
-  }
-  return null
-}
-
 interface DiagramMarkProps {
   left: number
   mark: Mark[] | Mark
@@ -96,8 +82,12 @@ export const DiagramMark: FC<DiagramMarkProps> = ({ mark, left }) => {
 
   const commonMarkContent = (
     <div className={styles.mark} style={{ left: calculateStyle(left) }}>
-      {createMarkCountBadge(marks)}
-      {createSquareElement(nftImage)}
+      {nftImage ? (
+        <img src={nftImage} className={styles.imageSquare} {...getOffersCountAttribute(marks)} />
+      ) : (
+        <div className={styles.square} {...getOffersCountAttribute(marks)} />
+      )}
+
       <div className={styles.dot} />
       <div className={styles.value}>{displayOfferValue}</div>
     </div>
@@ -114,3 +104,6 @@ const formatValue = (value: number) => {
   const formattedDecimalValue = formatDecimal(value / 1e9)
   return formattedDecimalValue.replace(/\.?0+$/, '')
 }
+
+const getOffersCountAttribute = (marks: Mark[]) =>
+  marks.length > 1 ? { 'data-offers-count': marks.length } : undefined
