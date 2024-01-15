@@ -46,7 +46,7 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
           onChange={onLoanValueChange}
           className={styles.maxOfferInput}
           disabled={!connected}
-          tooltipText="Max offer"
+          tooltipText="Your max offer, given sufficient liquidity in your offer. Actual loan amount taken can be less depending on the amount of SOL borrowers choose to borrow"
           postfix
         />
         <NumericStepInput

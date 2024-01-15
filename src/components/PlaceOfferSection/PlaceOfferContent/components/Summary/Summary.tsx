@@ -45,7 +45,7 @@ export const MainSummary: FC<MainSummaryProps> = ({
       <StatInfo
         label="Max LTV"
         value={maxLtv}
-        tooltipText="Your max offer given sufficient liquidity in your offer. Actual loan amount taken can be less depending on the amount of SOL borrowers choose to borrow"
+        tooltipText="Your max offer expressed as loan-to-value, given sufficient liquidity in your offer. Actual loan amount taken can be less depending on the amount of SOL borrowers choose to borrow"
         valueType={VALUES_TYPES.PERCENT}
         valueStyles={{ color: getColorByPercent(maxLtv, HealthColorIncreasing) }}
         classNamesProps={{ container: styles.mainSummaryStat }}
