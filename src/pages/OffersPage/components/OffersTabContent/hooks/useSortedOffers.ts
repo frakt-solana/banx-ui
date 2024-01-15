@@ -14,14 +14,14 @@ enum SortField {
 }
 
 const SORT_OPTIONS = [
+  { label: 'LTV', value: SortField.LTV },
   { label: 'Lent', value: SortField.LENT },
   { label: 'Interest', value: SortField.INTEREST },
-  { label: 'LTV', value: SortField.LTV },
 ]
 
 const DEFAULT_SORT_OPTION: SortOption = {
-  label: SORT_OPTIONS[2].label,
-  value: `${SORT_OPTIONS[2].value}_desc`,
+  label: SORT_OPTIONS[0].label,
+  value: `${SORT_OPTIONS[0].value}_desc`,
 }
 
 type SortValueGetter = (offer: UserOffer) => number
@@ -31,7 +31,7 @@ const STATUS_VALUE_MAP: StatusValueMap = {
   [SortField.LENT]: ({ offer }) => offer.edgeSettlement,
   [SortField.INTEREST]: ({ offer }) => offer.concentrationIndex,
   [SortField.LTV]: ({ offer, collectionMeta }) =>
-    collectionMeta.collectionFloor / calcSyntheticLoanValue(offer),
+    calcSyntheticLoanValue(offer) / collectionMeta.collectionFloor,
 }
 
 export const useSortedOffers = (offers: UserOffer[]) => {
