@@ -77,7 +77,7 @@ export const AdditionalSummary: FC<OfferSummaryProps> = ({
       <StatInfo
         label="Funding at least"
         value={`${loansQuantity} loans`}
-        tooltipText="Your minimum amount of loans you will fund if your entire liquidity in offer is lend at Max Offer. As borrowers can borrow at loan value equal or smaller than your max offer you could end up funding more loans"
+        tooltipText="The minimum amount of loans you will fund if the entire liquidity in offer is lent at the Max Offer value. As borrowers can borrow at loan values equal to or less than your Max Offer, you may end up funding more loans"
         valueType={VALUES_TYPES.STRING}
         flexType="row"
       />

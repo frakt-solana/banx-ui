@@ -63,7 +63,7 @@ export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, is
       <StatInfo
         label="In offers"
         value={offerTvl}
-        tooltipText="Total liquidity currently available in active offers"
+        tooltipText="Total liquidity currently available in pending offers"
         divider={1e9}
       />
       <StatInfo

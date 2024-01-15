@@ -50,10 +50,9 @@ type GetErrorMessage = (props: {
 }) => string
 
 const ERROR_MESSAGES = {
-  INSUFFICIENT_BALANCE: 'Insufficient balance. Please deposit more SOL.',
-  INVALID_OFFER:
-    'Max Offer must be equal to or greater than the Delta multiplied by the Number of offers.',
-  EMPTY_LOANS_AMOUNT: 'Please enter a valid number of loans. The number of loans cannot be empty.',
+  INSUFFICIENT_BALANCE: 'Not enough SOL in wallet',
+  INVALID_OFFER: 'Offer imbalance. Increase Max Offer, or reduce Delta and/or Number of Offers',
+  EMPTY_LOANS_AMOUNT: 'Please enter a valid number of loans. The number of loans cannot be empty',
 }
 
 export const getErrorMessage: GetErrorMessage = ({
