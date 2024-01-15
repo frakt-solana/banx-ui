@@ -1,42 +1,26 @@
 import { ColumnType } from '@banx/components/Table'
-import {
-  DurationCell,
-  HeaderCell,
-  NftInfoCell,
-  createSolValueJSX,
-} from '@banx/components/TableComponents'
+import { DurationCell, HeaderCell } from '@banx/components/TableComponents'
 
 import { LenderActivity } from '@banx/api/activity'
 
-import { ReceivedCell, StatusCell } from './TableCells'
+import { AprCell, CollateralCell, LentCell, StatusCell } from './cells'
 
 export const getTableColumns = () => {
   const columns: ColumnType<LenderActivity>[] = [
     {
       key: 'collateral',
-      title: <HeaderCell label="Collateral" />,
-      render: ({ nft }) => (
-        <NftInfoCell
-          nftName={nft.meta.name}
-          nftImage={nft.meta.imageUrl}
-          banxPoints={{
-            partnerPoints: nft.meta.partnerPoints || 0,
-            playerPoints: nft.meta.playerPoints || 0,
-          }}
-        />
-      ),
+      title: <HeaderCell label="Collateral" align="left" />,
+      render: (loan) => <CollateralCell loan={loan} />,
     },
     {
       key: 'lent',
       title: <HeaderCell label="Lent" />,
-      render: (loan) => createSolValueJSX(loan.lent, 1e9),
-      sorter: true,
+      render: (loan) => <LentCell loan={loan} />,
     },
     {
-      key: 'interest',
-      title: <HeaderCell label="Interest" />,
-      render: (loan) => createSolValueJSX(loan.interest, 1e9),
-      sorter: true,
+      key: 'apr',
+      title: <HeaderCell label="Apr" />,
+      render: (loan) => <AprCell loan={loan} />,
     },
     {
       key: 'status',
@@ -47,12 +31,6 @@ export const getTableColumns = () => {
         />
       ),
       render: (loan) => <StatusCell loan={loan} />,
-    },
-    {
-      key: 'received',
-      title: <HeaderCell label="Received" />,
-      render: (loan) => <ReceivedCell loan={loan} />,
-      sorter: true,
     },
     {
       key: 'timestamp',

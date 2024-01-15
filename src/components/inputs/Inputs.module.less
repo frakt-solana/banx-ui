@@ -130,6 +130,11 @@ body .input {
   color: var(--additional-red-primary);
   font: var(--body-text-sm);
   height: 14px;
+
+  @media (max-width: 640px) {
+    font: var(--body-text-xs);
+    line-height: 14px;
+  }
 }
 
 /* NumericStepInput styles */
