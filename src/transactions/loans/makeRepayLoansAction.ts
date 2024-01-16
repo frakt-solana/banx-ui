@@ -182,6 +182,7 @@ const getIxnsAndSignersByBorrowType = async ({
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
       oldBondOffer: new web3.PublicKey(loan.bondTradeTransaction.bondOffer),
     },
+    addComputeUnits: true,
     args: {
       repayAccounts: loans.map(({ fraktBond, bondTradeTransaction }, idx) => ({
         bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
