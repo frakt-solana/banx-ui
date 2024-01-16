@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { ReactNode, useState } from 'react'
 
 import { SearchSelect, SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortDropdown } from '@banx/components/SortDropdown'
@@ -18,6 +18,7 @@ interface SortViewProps<T, P> {
   sortParams?: SortParams
   toggleParams?: ToggleProps
   showCard?: boolean
+  customFiltersJSX?: ReactNode
 }
 
 export const SortView = <T extends object, P extends object>({
@@ -26,6 +27,7 @@ export const SortView = <T extends object, P extends object>({
   sortParams,
   toggleParams,
   showCard,
+  customFiltersJSX,
 }: SortViewProps<T, P>) => {
   const { viewState, setViewState } = useTableView()
   const [searchSelectCollapsed, setSearchSelectCollapsed] = useState(true)
@@ -39,11 +41,15 @@ export const SortView = <T extends object, P extends object>({
 
   return (
     <div className={styles.sortWrapper}>
-      <SearchSelect
-        {...searchSelectParams}
-        collapsed={searchSelectCollapsed}
-        onChangeCollapsed={setSearchSelectCollapsed}
-      />
+      <div className={styles.filters}>
+        <SearchSelect
+          {...searchSelectParams}
+          collapsed={searchSelectCollapsed}
+          onChangeCollapsed={setSearchSelectCollapsed}
+        />
+        {customFiltersJSX}
+      </div>
+
       {searchSelectCollapsed && (
         <div className={styles.rowGap}>
           {showCard && <SwitchModeButtons viewState={viewState} onChange={handleViewStateChange} />}
