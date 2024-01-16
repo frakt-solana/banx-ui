@@ -35,7 +35,7 @@ const BondingCurveSchema = z.object({
 })
 
 const ValidationPairSchema = z.object({
-  loanToValueFilter: z.number().optional(),
+  loanToValueFilter: z.number(),
   durationFilter: z.number(),
   maxReturnAmountFilter: z.number(),
   bondFeatures: z.string(),
@@ -61,12 +61,7 @@ export const PairSchema = z.object({
   validation: ValidationPairSchema,
 })
 
-export const UserPairSchema = PairSchema.merge(MarketMetaSchema).merge(
-  z.object({ collectionFloor: z.number() }),
-)
-
 export type Offer = z.infer<typeof PairSchema>
-export type UserOffer = z.infer<typeof UserPairSchema>
 
 export interface FetchMarketOffersResponse {
   data: Offer[]
@@ -140,6 +135,7 @@ export const LoanSchema = z.object({
   bondTradeTransaction: BondTradeTransactionSchema,
   nft: NFTSchema,
   totalRepaidAmount: z.number().optional(), //? exist only in fetchLenderLoansAndOffers request
+  accruedInterest: z.number().optional(),
 })
 
 export type Loan = z.infer<typeof LoanSchema>
@@ -181,19 +177,51 @@ export interface BorrowNftsAndOffersResponse {
   meta: PaginationMeta
 }
 
-export const LendNftsAndOffersSchema = z.object({
-  nfts: LoanSchema.array(),
-  offers: z.record(PairSchema.array()),
+export const CollectionMetaSchema = z.object({
+  collectionFloor: z.number(),
+  collectionName: z.string(),
+  collectionImage: z.string(),
 })
 
-export type LendLoansAndOffers = z.infer<typeof LendNftsAndOffersSchema>
+export type CollectionMeta = z.infer<typeof CollectionMetaSchema>
 
+export const LendLoansAndOffersSchema = z.object({
+  offer: PairSchema,
+  loans: LoanSchema.array(),
+  collectionMeta: CollectionMetaSchema,
+})
+export type LendLoansAndOffers = z.infer<typeof LendLoansAndOffersSchema>
 export interface LendLoansAndOffersResponse {
-  data: LendLoansAndOffers
+  data: LendLoansAndOffers[]
+  meta: PaginationMeta
+}
+export const LenderLoansSchema = z.object({
+  offer: PairSchema,
+  loans: LoanSchema.array(),
+})
+export type LenderLoans = z.infer<typeof LenderLoansSchema>
+export interface LenderLoansResponse {
+  data: LenderLoans[]
+  meta: PaginationMeta
+}
+
+export interface LendLoansResponse {
+  data: Loan[]
   meta: PaginationMeta
 }
 
 export interface AuctionsLoansResponse {
   data: Loan[]
+  meta: PaginationMeta
+}
+
+export const UserOfferSchema = z.object({
+  offer: PairSchema,
+  collectionMeta: CollectionMetaSchema,
+})
+export type UserOffer = z.infer<typeof UserOfferSchema>
+
+export interface FetchUserOffersResponse {
+  data: UserOffer[]
   meta: PaginationMeta
 }

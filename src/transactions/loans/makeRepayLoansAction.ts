@@ -1,12 +1,14 @@
 import { web3 } from 'fbonds-core'
 import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
+import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import {
   BondAndTransactionOptimistic,
-  repayCnftPerpetualLoan,
+  repayCnftPerpetualLoanCanopy,
   repayPerpetualLoan,
   repayStakedBanxPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
+import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
 import { first, uniq } from 'lodash'
 import { MakeActionFn, WalletAndConnection } from 'solana-transactions-executor'
 
@@ -22,6 +24,10 @@ export type MakeRepayLoansActionParams = Loan[]
 export type MakeRepayActionResult = Loan[]
 
 export type MakeRepayLoansAction = MakeActionFn<MakeRepayLoansActionParams, MakeRepayActionResult>
+
+interface OptimisticResult extends BondAndTransactionOptimistic {
+  oldBondOffer: BondOfferV2
+}
 
 export const LOANS_PER_TXN = 1
 
@@ -81,6 +87,7 @@ const getIxnsAndSignersByBorrowType = async ({
     const { instructions, signers, optimisticResults } = await repayStakedBanxPerpetualLoan({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
+        oldBondOffer: new web3.PublicKey(loan.bondTradeTransaction.bondOffer),
         userPubkey: wallet.publicKey as web3.PublicKey,
         protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
       },
@@ -90,7 +97,11 @@ const getIxnsAndSignersByBorrowType = async ({
           lender: new web3.PublicKey(bondTradeTransaction.user),
           fbond: new web3.PublicKey(fraktBond.publicKey),
           banxStake: new web3.PublicKey(fraktBond.banxStake),
-          optimistic: { fraktBond, bondTradeTransaction } as BondAndTransactionOptimistic,
+          optimistic: {
+            fraktBond,
+            bondTradeTransaction,
+            oldBondOffer: getMockBondOffer(),
+          } as OptimisticResult,
         })),
       },
       connection,
@@ -112,9 +123,10 @@ const getIxnsAndSignersByBorrowType = async ({
 
     const proof = await getAssetProof(loan.nft.mint, connection.rpcEndpoint)
 
-    const { instructions, signers, optimisticResults } = await repayCnftPerpetualLoan({
+    const { instructions, signers, optimisticResults } = await repayCnftPerpetualLoanCanopy({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
+        oldBondOffer: new web3.PublicKey(loan.bondTradeTransaction.bondOffer),
         userPubkey: wallet.publicKey as web3.PublicKey,
         bondTradeTransactionV2: new web3.PublicKey(loan.bondTradeTransaction.publicKey),
         lender: new web3.PublicKey(loan.bondTradeTransaction.user),
@@ -128,7 +140,8 @@ const getIxnsAndSignersByBorrowType = async ({
         optimistic: {
           fraktBond: loan.fraktBond,
           bondTradeTransaction: loan.bondTradeTransaction,
-        } as BondAndTransactionOptimistic,
+          oldBondOffer: getMockBondOffer(),
+        } as OptimisticResult,
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
@@ -153,6 +166,7 @@ const getIxnsAndSignersByBorrowType = async ({
     accounts: {
       userPubkey: wallet.publicKey as web3.PublicKey,
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
+      oldBondOffer: new web3.PublicKey(ixnParams[0].bondTradeTransaction.bondOffer),
     },
     args: {
       repayAccounts: ixnParams.map(({ fraktBond, bondTradeTransaction }, idx) => ({
@@ -161,7 +175,11 @@ const getIxnsAndSignersByBorrowType = async ({
         lender: new web3.PublicKey(bondTradeTransaction.user),
         fbond: new web3.PublicKey(fraktBond.publicKey),
         collateralTokenMint: new web3.PublicKey(fraktBond.fbondTokenMint),
-        optimistic: { fraktBond, bondTradeTransaction } as BondAndTransactionOptimistic,
+        optimistic: {
+          fraktBond,
+          oldBondOffer: getMockBondOffer(),
+          bondTradeTransaction,
+        } as OptimisticResult,
       })),
     },
     connection,

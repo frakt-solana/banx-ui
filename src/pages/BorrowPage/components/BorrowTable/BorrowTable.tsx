@@ -13,14 +13,31 @@ interface BorrowTableProps {
   nfts: BorrowNft[]
   isLoading: boolean
   rawOffers: Record<string, Offer[]>
+  maxLoanValueByMarket: Record<string, number>
 }
 
-const BorrowTable: FC<BorrowTableProps> = ({ nfts, isLoading, rawOffers }) => {
-  const { tableNftData, columns, onRowClick, sortViewParams, nftsInCart, selectAll, borrowAll } =
-    useBorrowTable({
-      nfts,
-      rawOffers,
-    })
+const BorrowTable: FC<BorrowTableProps> = ({
+  nfts,
+  isLoading,
+  rawOffers,
+  maxLoanValueByMarket,
+}) => {
+  const {
+    tableNftData,
+    columns,
+    onRowClick,
+    sortViewParams,
+    nftsInCart,
+    selectAmount,
+    borrowAll,
+    maxBorrowAmount,
+    maxBorrowPercent,
+    setMaxBorrowPercent,
+  } = useBorrowTable({
+    nfts,
+    rawOffers,
+    maxLoanValueByMarket,
+  })
 
   const rowParams = useMemo(() => {
     return {
@@ -39,7 +56,14 @@ const BorrowTable: FC<BorrowTableProps> = ({ nfts, isLoading, rawOffers }) => {
         loading={isLoading}
         showCard
       />
-      <Summary nftsInCart={nftsInCart} selectAll={selectAll} borrowAll={borrowAll} />
+      <Summary
+        nftsInCart={nftsInCart}
+        borrowAll={borrowAll}
+        selectAmount={selectAmount}
+        maxBorrowAmount={maxBorrowAmount}
+        maxBorrowPercent={maxBorrowPercent}
+        setMaxBorrowPercent={setMaxBorrowPercent}
+      />
     </div>
   )
 }

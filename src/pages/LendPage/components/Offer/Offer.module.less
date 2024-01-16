@@ -1,95 +1,109 @@
 .listItem {
   position: relative;
-  padding: 8px 48px 8px 8px;
+  padding: 4px 64px 4px 24px;
   background: var(--bg-action);
-  border-bottom: var(--border-primary);
   display: flex;
   align-items: center;
-  min-height: 48px;
+  min-height: 32px;
   width: 100%;
-}
 
-.highlightBest,
-.highlightYour,
-.highlightEditing {
-  position: relative;
-
-  font: var(--table-header-sm);
-  color: var(--pure-black);
-  text-align: center;
-  text-transform: uppercase;
-
-  &::after,
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    z-index: 2;
+  &:not(:last-child) {
+    border-bottom: var(--border-primary);
   }
 
-  &::before {
-    padding: 1px 8px;
+  &.creating,
+  &.editing {
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -1px;
+      height: 4px;
+      width: 100%;
+      z-index: 1;
+    }
   }
 
-  &::after {
-    height: 4px;
-    width: 100%;
-    z-index: 1;
-  }
-}
-
-.highlightBest {
-  &::before {
-    content: 'Best';
-    background: var(--additional-yellow-primary);
-  }
-  &::after {
-    background: var(--additional-yellow-primary);
-  }
-}
-
-.highlightYour {
-  &::before {
-    content: 'Your';
+  &.creating::after {
     background: var(--accent-primary);
   }
-  &::after {
-    background: var(--accent-primary);
-  }
-}
 
-.highlightEditing {
-  &::before {
-    content: 'Editing';
-    background: var(--additional-blue-primary);
-  }
-  &::after {
+  &.editing::after {
     background: var(--additional-blue-primary);
   }
 }
 
-.valueWrapper {
+.highlightItem {
+  position: absolute;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 24px;
+
+  &.creating {
+    background: var(--accent-primary);
+  }
+
+  &.editing {
+    background: var(--additional-blue-primary);
+  }
+
+  &.hidden {
+    display: none;
+  }
+}
+
+.values {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
+
+  p {
+    width: calc(100% / 3);
+
+    &:nth-child(2) {
+      text-align: center;
+    }
+
+    &:last-child {
+      text-align: right;
+    }
+  }
 }
 
 .value {
   color: var(--content-primary);
-  display: flex;
-  gap: 4px;
   font: var(--body-text-md);
-
+  line-height: 24px;
   overflow: auto;
   white-space: nowrap;
-  max-width: 200px;
+
+  &.hightlight {
+    margin-left: 4px;
+  }
 }
 
 .editButton {
   position: absolute;
   top: 50%;
-  right: 8px;
+  right: 24px;
   transform: translateY(-50%);
+
+  svg {
+    height: 14px;
+    width: 14px;
+  }
+}
+
+.tooltipInnerContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
 }

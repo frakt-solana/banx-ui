@@ -2,20 +2,20 @@ import { FC } from 'react'
 
 import { Tooltip } from 'antd'
 import classNames from 'classnames'
-import { isFunction } from 'lodash'
 
-import { StatInfo } from '@banx/components/StatInfo'
+import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
+import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { MarketPreview } from '@banx/api/core'
 import { Fire } from '@banx/icons'
-import { getDecimalPlaces } from '@banx/utils'
-
-import { ADDITIONAL_MARKET_INFO, MAIN_MARKET_INFO } from './constants'
+import { formatDecimal } from '@banx/utils'
 
 import styles from './MarketOverviewInfo.module.less'
 
 export const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
-  const { collectionName, isHot } = market
+  const { collectionName, isHot, collectionFloor, bestOffer } = market
+
+  const formattedMaxOffer = formatDecimal(bestOffer / 1e9)
 
   return (
     <div className={styles.mainInfoContainer}>
@@ -30,13 +30,13 @@ export const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
           ) : null}
         </h4>
         <div className={styles.mainInfoStats}>
-          {MAIN_MARKET_INFO.map((statInfo) => {
-            const { key, ...rest } = statInfo
-            const value = market[key as keyof MarketPreview] as string
-            const decimalPlaces = getDecimalPlaces(parseFloat(value) / 1e9)
-
-            return <StatInfo key={key} value={value} {...rest} decimalPlaces={decimalPlaces} />
-          })}
+          <StatInfo label="Floor" value={collectionFloor} divider={1e9} />
+          <StatInfo
+            label="Top offer"
+            value={`${formattedMaxOffer}◎`}
+            tooltipText="Highest offer among all lenders providing liquidity for this collection"
+            valueType={VALUES_TYPES.STRING}
+          />
         </div>
       </div>
     </div>
@@ -48,25 +48,31 @@ interface MarketAdditionalInfoProps {
   isCardOpen: boolean
 }
 
-export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isCardOpen }) => (
-  <div className={classNames(styles.additionalInfoStats, { [styles.hidden]: isCardOpen })}>
-    {ADDITIONAL_MARKET_INFO.map((statInfo) => {
-      const { key, secondValue, valueRenderer, valueStyles, ...rest } = statInfo
-      const value = market[key as keyof MarketPreview] as number
-      const computedSecondValue = isFunction(secondValue) ? secondValue(market) : secondValue
+export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isCardOpen }) => {
+  const { loansTvl, offerTvl, activeBondsAmount } = market
 
-      const computedValue = valueRenderer ? valueRenderer(value) : value
-      const styles = isFunction(valueStyles) ? valueStyles(market) : valueStyles
-
-      return (
-        <StatInfo
-          key={key}
-          value={computedValue}
-          secondValue={computedSecondValue}
-          valueStyles={styles}
-          {...rest}
-        />
-      )
-    })}
-  </div>
-)
+  return (
+    <div className={classNames(styles.additionalInfoStats, { [styles.hidden]: isCardOpen })}>
+      <StatInfo
+        label="In loans"
+        value={loansTvl}
+        secondValue={`in ${activeBondsAmount} loans`}
+        tooltipText="Liquidity that is locked in active loans"
+        divider={1e9}
+      />
+      <StatInfo
+        label="In offers"
+        value={offerTvl}
+        tooltipText="Total liquidity currently available in pending offers"
+        divider={1e9}
+      />
+      <StatInfo
+        label="Max apr"
+        value={MAX_APR_VALUE}
+        classNamesProps={{ value: styles.aprValue }}
+        tooltipText="Maximum annual interest rate. Ranges between 34-104% APR depending on the loan-to-value (LTV) offered, and becomes fixed once offer is taken"
+        valueType={VALUES_TYPES.PERCENT}
+      />
+    </div>
+  )
+}

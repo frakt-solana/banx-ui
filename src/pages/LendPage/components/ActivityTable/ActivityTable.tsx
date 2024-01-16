@@ -11,10 +11,9 @@ import styles from './ActivityTable.module.less'
 
 interface ActivityTableProps {
   marketPubkey: string
-  goToPlaceOfferTab: () => void
 }
 
-const ActivityTable: FC<ActivityTableProps> = ({ marketPubkey, goToPlaceOfferTab }) => {
+const ActivityTable: FC<ActivityTableProps> = ({ marketPubkey }) => {
   const {
     loans,
     isLoading,
@@ -40,18 +39,12 @@ const ActivityTable: FC<ActivityTableProps> = ({ marketPubkey, goToPlaceOfferTab
           data={loans}
           columns={columns}
           className={styles.tableRoot}
-          classNameTableWrapper={styles.tableWrapper}
           loadMore={hasNextPage ? fetchNextPage : undefined}
+          classNameTableWrapper={styles.tableWrapper}
           loading={isLoading}
         />
       ) : (
-        <EmptyList
-          message="Offers activity should be displayed here, but it's empty yet. Be first lender"
-          buttonProps={{
-            onClick: goToPlaceOfferTab,
-            text: 'Lend SOL',
-          }}
-        />
+        <EmptyList message="Offers activity should be displayed here, but it's empty yet. Be first lender" />
       )}
     </>
   )

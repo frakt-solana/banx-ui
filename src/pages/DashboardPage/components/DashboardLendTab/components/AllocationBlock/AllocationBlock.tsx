@@ -33,9 +33,9 @@ const AllocationBlock: FC<AllocationBlockProps> = ({ stats }) => {
               divider={1e9}
             />
             <DashboardStatInfo
-              label="Weighted apy"
+              label="Weighted apr"
               value={weightedApy / 100}
-              tooltipText="Average compounded interest rate of your current active loans"
+              tooltipText="Average annual interest rate of your current active loans"
               valueType={VALUES_TYPES.PERCENT}
             />
           </div>

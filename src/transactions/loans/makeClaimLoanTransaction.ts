@@ -2,7 +2,7 @@ import { web3 } from 'fbonds-core'
 import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   BondAndTransactionOptimistic,
-  claimCnftPerpetualLoan,
+  claimCnftPerpetualLoanCanopy,
   claimPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
@@ -24,10 +24,11 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
   const { bondTradeTransaction, fraktBond } = ixnParams.loan || {}
 
   if (ixnParams.loan.nft.compression) {
-    const { instructions, signers, optimisticResult } = await claimCnftPerpetualLoan({
+    const { instructions, signers, optimisticResult } = await claimCnftPerpetualLoanCanopy({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       addComputeUnits: true,
       accounts: {
+        bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
         fbond: new web3.PublicKey(fraktBond.publicKey),
         userPubkey: wallet.publicKey as web3.PublicKey,
         tree: new web3.PublicKey(ixnParams.loan.nft.compression.tree),
@@ -57,6 +58,7 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       addComputeUnits: true,
       accounts: {
+        bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
         fbond: new web3.PublicKey(fraktBond.publicKey),
         collateralTokenMint: new web3.PublicKey(fraktBond.fbondTokenMint),
         collateralOwner: new web3.PublicKey(fraktBond.fbondIssuer),

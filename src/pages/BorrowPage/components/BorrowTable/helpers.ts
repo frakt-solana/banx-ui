@@ -1,6 +1,10 @@
 import { CONSTANT_BID_CAP } from 'fbonds-core/lib/fbond-protocol/constants'
-import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { chunk, cloneDeep, first, groupBy } from 'lodash'
+import {
+  calculateCurrentInterestSolPure,
+  optimisticBorrowUpdateBondingBondOffer,
+} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
+import { chain, chunk, groupBy, sumBy } from 'lodash'
 import moment from 'moment'
 import { TxnExecutor, WalletAndConnection } from 'solana-transactions-executor'
 
@@ -14,27 +18,37 @@ import {
   getNftBorrowType,
   makeBorrowAction,
 } from '@banx/transactions/borrow'
-import { enqueueSnackbar } from '@banx/utils'
+import { enqueueSnackbar, offerNeedsReservesOptimizationOnBorrow } from '@banx/utils'
 
 import { CartState } from '../../cartState'
-import { SimpleOffer } from '../../types'
+import { convertOffersToSimple } from '../../helpers'
 import { ONE_WEEK_IN_SECONDS } from './constants'
-import { OfferWithLoanValue } from './types'
+import { OfferWithLoanValue, TableNftData } from './types'
 
 export const createTableNftData = ({
   nfts,
   findOfferInCart,
   findBestOffer,
+  maxLoanValueByMarket,
+  maxBorrowPercent,
 }: {
   nfts: BorrowNft[]
   findOfferInCart: CartState['findOfferInCart']
   findBestOffer: CartState['findBestOffer']
+  maxLoanValueByMarket: Record<string, number>
+  maxBorrowPercent: number
 }) => {
   return nfts.map((nft) => {
     const offer = findOfferInCart({ mint: nft.mint })
 
-    const loanValue =
+    const maxloanValue =
       offer?.loanValue || findBestOffer({ marketPubkey: nft.loan.marketPubkey })?.loanValue || 0
+
+    const loanValue = calcAdjustedLoanValueByMaxByMarket({
+      loanValue: maxloanValue,
+      maxLoanValueOnMarket: maxLoanValueByMarket[nft.loan.marketPubkey] || 0,
+      maxBorrowPercent,
+    })
 
     const selected = !!offer
 
@@ -69,7 +83,10 @@ export const executeBorrow = async (props: {
   const txnsResults = await new TxnExecutor(
     makeBorrowAction,
     { wallet, connection },
-    { signAllChunks: isLedger ? 1 : 40, rejectQueueOnFirstPfError: false },
+    {
+      signAllChunks: isLedger ? 1 : 40,
+      rejectQueueOnFirstPfError: false,
+    },
   )
     .addTxnParams(txnParams)
     .on('pfSuccessEach', (results) => {
@@ -101,8 +118,18 @@ export const executeBorrow = async (props: {
 
       const optimisticByPubkey = groupBy(optimisticOffers, ({ offer }) => offer.publicKey)
 
-      const optimisticsToAdd = Object.values(optimisticByPubkey).map((offers) => {
-        return mergeOffersWithLoanValue(offers)
+      const optimizeIntoReservesByOfferPubkey = chain(txnParams)
+        .flatten()
+        .map(({ offer, optimizeIntoReserves }) => [
+          offer.publicKey,
+          optimizeIntoReserves === undefined ? true : optimizeIntoReserves,
+        ])
+        .uniqBy(([publicKey]) => publicKey)
+        .fromPairs()
+        .value() as Record<string, boolean>
+
+      const optimisticsToAdd = Object.entries(optimisticByPubkey).map(([offerPubkey, offers]) => {
+        return mergeOffersWithLoanValue(offers, optimizeIntoReservesByOfferPubkey[offerPubkey])
       }) as Offer[]
 
       updateOffersOptimistic(optimisticsToAdd)
@@ -121,28 +148,79 @@ export const executeBorrow = async (props: {
   return txnsResults
 }
 
-export const createBorrowAllParams = (
-  offerByMint: Record<string, SimpleOffer>,
-  nfts: BorrowNft[],
-  rawOffers: Record<string, Offer[]>,
-) => {
-  const borrowIxnParams = Object.entries(offerByMint)
-    .map(([mint, sOffer]) => {
-      const nft = nfts.find(({ nft }) => nft.mint === mint)
-      const marketPubkey = nft?.loan.marketPubkey || ''
-      const offer = rawOffers[marketPubkey].find(({ publicKey }) => publicKey === sOffer?.publicKey)
+export const createBorrowParams = (nfts: TableNftData[], rawOffers: Record<string, Offer[]>) => {
+  const nftsByMarket = groupBy(nfts, ({ nft }) => nft.loan.marketPubkey)
 
-      if (!nft || !offer) return null
+  const txnData = chain(nftsByMarket)
+    .entries()
+    //? Match nfts and offers to borrow from the most suitable offers
+    .map(([marketPubkey, nfts]) => matchNftsAndOffers({ nfts, rawOffers: rawOffers[marketPubkey] }))
+    .flatten()
+    .value()
 
-      return {
-        nft: nft as BorrowNft,
-        loanValue: sOffer.loanValue,
-        offer: offer as Offer,
-      }
+  return chunkBorrowIxnsParams(txnData)
+}
+
+type MatchNftsAndOffers = (props: {
+  nfts: TableNftData[]
+  rawOffers: Offer[]
+}) => MakeBorrowActionParams
+const matchNftsAndOffers: MatchNftsAndOffers = ({ nfts, rawOffers }) => {
+  //? Create simple offers array sorted by loanValue (offerValue) asc
+  const simpleOffers = convertOffersToSimple(rawOffers, 'asc')
+
+  //? Generate MakeBorrowActionParams
+  const ixnsParams = chain(nfts)
+    .cloneDeep()
+    //? Sort by selected loanValue asc
+    .sort((a, b) => {
+      return a.loanValue - b.loanValue
     })
-    .filter(Boolean) as MakeBorrowActionParams
+    .reduce(
+      (acc, nft) => {
+        //? Find index of offer. OfferValue must be <= than selected loanValue. And mustn't be used by prev iteration
+        const offerIndex = simpleOffers.findIndex(
+          ({ loanValue: offerValue }, idx) => nft.loanValue <= offerValue && acc.offerIndex <= idx,
+        )
 
-  return chunkBorrowIxnsParams(borrowIxnParams)
+        const ixnParams = {
+          nft: nft.nft,
+          loanValue: nft.loanValue,
+          //? find normal offer using index
+          offer: rawOffers.find(
+            ({ publicKey }) => publicKey === simpleOffers[offerIndex].publicKey,
+          ),
+        }
+
+        return {
+          //? Increment offerIndex to use in next iteration (to reduce amount of iterations)
+          offerIndex: offerIndex + 1,
+          ixnParams: [...acc.ixnParams, ixnParams] as MakeBorrowActionParams,
+        }
+      },
+      { offerIndex: 0, ixnParams: [] } as { offerIndex: number; ixnParams: MakeBorrowActionParams },
+    )
+    .value().ixnParams
+
+  //? Calc total loanValue for every offer
+  const loanValueSumByOffer = chain(ixnsParams)
+    .groupBy(({ offer }) => offer.publicKey)
+    .entries()
+    .map(([offerPubkey, ixnParams]) => [
+      offerPubkey,
+      sumBy(ixnParams, ({ loanValue }) => loanValue),
+    ])
+    .fromPairs()
+    .value() as Record<string, number>
+
+  return ixnsParams.map(({ offer, ...restParams }) => ({
+    ...restParams,
+    offer,
+    optimizeIntoReserves: offerNeedsReservesOptimizationOnBorrow(
+      offer,
+      loanValueSumByOffer[offer.publicKey],
+    ),
+  }))
 }
 
 const chunkBorrowIxnsParams = (borrowIxnParams: MakeBorrowActionParams) => {
@@ -177,10 +255,33 @@ export const optimisticWithdrawFromBondOffer = (
   }
 }
 
-const mergeOffersWithLoanValue = (offers: OfferWithLoanValue[]): Offer | null => {
-  const offer = cloneDeep(first(offers))
-  if (!offer) return null
-  const totalLoanValues = (offers.length - 1) * (offer?.loanValue || 0)
+const mergeOffersWithLoanValue = (
+  offers: OfferWithLoanValue[],
+  optimizeIntoReserves = true,
+): Offer | null => {
+  const { offer } = offers.reduce((acc, offer) => {
+    return {
+      offer: optimisticBorrowUpdateBondingBondOffer(
+        acc.offer as BondOfferV2,
+        offer.loanValue,
+        optimizeIntoReserves,
+      ),
+      loanValue: 0,
+    }
+  })
 
-  return optimisticWithdrawFromBondOffer(offer.offer, totalLoanValues)
+  return offer
+}
+
+type CalcAdjustedLoanValueByMaxByMarket = (props: {
+  loanValue: number
+  maxLoanValueOnMarket: number
+  maxBorrowPercent: number
+}) => number
+export const calcAdjustedLoanValueByMaxByMarket: CalcAdjustedLoanValueByMaxByMarket = ({
+  loanValue,
+  maxLoanValueOnMarket,
+  maxBorrowPercent,
+}) => {
+  return Math.min(loanValue, maxLoanValueOnMarket * (maxBorrowPercent / 100)) || 0
 }

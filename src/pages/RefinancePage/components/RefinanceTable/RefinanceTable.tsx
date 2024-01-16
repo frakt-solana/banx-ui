@@ -24,10 +24,21 @@ export const RefinanceTable = () => {
 
   const { viewState } = useTableView()
 
+  const hasSelectedLoans = !!selectedLoans.length
+  const onSelectAll = () => {
+    if (hasSelectedLoans) {
+      onDeselectAllLoans()
+    } else {
+      onSelectLoans(loans)
+    }
+  }
+
   const columns = getTableColumns({
     isCardView: viewState === ViewState.CARD,
     onSelectLoan,
     findSelectedLoan,
+    onSelectAll,
+    hasSelectedLoans,
   })
 
   const goToLendPage = () => {

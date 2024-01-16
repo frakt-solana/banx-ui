@@ -1,0 +1,79 @@
+.editSummary {
+  border-top: var(--border-less-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding-top: 8px;
+  gap: 16px;
+
+  & > div {
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 0;
+  }
+
+  @media (max-width: 640px) {
+    white-space: nowrap;
+    gap: 8px;
+  }
+}
+
+.fields {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    gap: 16px;
+  }
+}
+.maxOfferInput,
+.offersAmountInput {
+  max-width: 146px;
+}
+.deltaInput {
+  max-width: 96px;
+}
+
+.messageContainer {
+  height: 14px;
+}
+
+// OffetActionButtons
+.actionsButtonsContainer,
+.editModeButtonsContainer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  @media (max-width: 640px) {
+    gap: 8px;
+  }
+}
+.editModeContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+.actionButton {
+  width: 144px;
+
+  @media (max-width: 640px) {
+    width: 100%;
+  }
+}
+.placeOfferButton {
+  width: 100%;
+}
+
+.removeOfferButton {
+  background-color: var(--additional-red-secondary) !important;
+  border: 1px solid var(--additional-red-primary) !important;
+
+  &:hover {
+    border: 1px solid var(--additional-red-primary-deep) !important;
+  }
+}

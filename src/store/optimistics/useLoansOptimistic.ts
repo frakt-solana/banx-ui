@@ -8,7 +8,7 @@ import { create } from 'zustand'
 import { Loan } from '@banx/api/core'
 
 const BANX_LOANS_OPTIMISTICS_LS_KEY = '@banx.loansOptimistics'
-const LOANS_CACHE_TIME_UNIX = 15 * 60 //? 15 minutes
+const LOANS_CACHE_TIME_UNIX = 2 * 60 //? Auto clear optimistic after 2 minutes
 
 export interface LoanOptimistic {
   loan: Loan

@@ -1,86 +1,71 @@
-import { FC, useMemo, useState } from 'react'
+import { FC } from 'react'
 
-import { useWallet } from '@solana/wallet-adapter-react'
-import classNames from 'classnames'
-import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
+import { Loader } from '@banx/components/Loader'
+import Tooltip from '@banx/components/Tooltip/Tooltip'
 
-import { MarketPreview } from '@banx/api/core'
+import { SyntheticOffer, useModal, useSyntheticOffers } from '@banx/store'
 
-import { OrderBookMarketParams } from '../ExpandableCardContent'
-import {
-  ChevronMobileButton,
-  CollapsedMobileContent,
-  OrderBookLabel,
-  OrderBookList,
-} from './components'
-import { OrderBookParams, useOrderBook } from './hooks'
+import Offer from '../Offer'
+import { useMarketOrders } from './hooks'
 
 import styles from './OrderBook.module.less'
 
-const OrderBookDesktop: FC<{ orderBookParams: OrderBookParams }> = ({ orderBookParams }) => (
-  <div className={styles.orderBook}>
-    <h5 className={styles.title}>Offers</h5>
-    <OrderBookLabel />
-    <div className={classNames(styles.content, { [styles.visible]: !orderBookParams?.offers })}>
-      <OrderBookList orderBookParams={orderBookParams} />
-    </div>
-  </div>
-)
-
-interface OrderBookMobileProps {
-  marketPreview?: MarketPreview
-  orderBookParams: OrderBookParams
+export interface OrderBookProps {
+  marketPubkey: string
+  offerPubkey: string
+  setOfferPubkey: (offerPubkey: string) => void
 }
 
-const OrderBookMobile: FC<OrderBookMobileProps> = ({ marketPreview, orderBookParams }) => {
-  const { publicKey } = useWallet()
-  const [isOrderBookOpen, setOrderBookOpen] = useState<boolean>(false)
+const OrderBook: FC<OrderBookProps> = (props) => {
+  const { offerPubkey, setOfferPubkey, marketPubkey } = props
 
-  const toggleOrderBook = () => {
-    setOrderBookOpen(!isOrderBookOpen)
+  const { close } = useModal()
+  const { setOffer: setSyntheticOffer } = useSyntheticOffers()
+  const { offers, market, isLoading } = useMarketOrders({ marketPubkey, offerPubkey })
+
+  const handleEditOffer = (offer: SyntheticOffer) => {
+    setSyntheticOffer({ ...offer, isEdit: true })
+    setOfferPubkey(offer.publicKey)
+    close()
   }
 
-  const { collectionImage, collectionName } = marketPreview || {}
-  const { offers } = orderBookParams || {}
-
-  const userOffers = useMemo(() => {
-    return offers.filter(
-      (offer) =>
-        offer.assetReceiver === publicKey?.toBase58() && offer.publicKey !== PUBKEY_PLACEHOLDER,
-    )
-  }, [offers, publicKey])
-
   return (
-    <div className={classNames(styles.orderBookMobile, { [styles.open]: isOrderBookOpen })}>
-      <div className={styles.collapsedContentWrapper}>
-        <CollapsedMobileContent
-          collectionImage={collectionImage}
-          collectionName={collectionName}
-          totalUserOffers={userOffers.length}
+    <div className={styles.orderBook}>
+      <div className={styles.labelsWrapper}>
+        <Label title="Max offer" tooltipText="Max offers pending for this collection" />
+        <Label
+          title="Max Apr"
+          tooltipText="Max annual interest rate each offer will yield if max offer size is taken"
         />
-        <ChevronMobileButton isOrderBookOpen={isOrderBookOpen} onToggleVisible={toggleOrderBook} />
+        <Label title="Number of offers" />
       </div>
-      {isOrderBookOpen && (
-        <div className={styles.mobileContent}>
-          <OrderBookList
-            orderBookParams={orderBookParams}
-            closeOrderBook={() => setOrderBookOpen(false)}
-          />
-        </div>
-      )}
+
+      <ul className={styles.offersList}>
+        {isLoading && <Loader size="small" />}
+
+        {!isLoading &&
+          offers.map((offer) => (
+            <Offer
+              key={offer.publicKey}
+              offer={offer}
+              editOffer={() => handleEditOffer(offer)}
+              collectionFloor={market?.collectionFloor || 0}
+            />
+          ))}
+      </ul>
     </div>
-  )
-}
-
-const OrderBook: FC<OrderBookMarketParams> = (props) => {
-  const { orderBookParams, selectedMarketPreview } = useOrderBook(props)
-
-  return (
-    <>
-      <OrderBookDesktop orderBookParams={orderBookParams} />
-      <OrderBookMobile orderBookParams={orderBookParams} marketPreview={selectedMarketPreview} />
-    </>
   )
 }
 
 export default OrderBook
+
+interface LabelProps {
+  title: string
+  tooltipText?: string
+}
+const Label: FC<LabelProps> = ({ title, tooltipText }) => (
+  <div className={styles.labelWrapper}>
+    <span className={styles.label}>{title}</span>
+    {tooltipText && <Tooltip title={tooltipText} />}
+  </div>
+)

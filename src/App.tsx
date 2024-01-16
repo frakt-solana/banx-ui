@@ -7,10 +7,10 @@ import { ErrorBoundary } from '@banx/components/ErrorBoundary'
 import { RPC_ENDPOINTS, WALLETS } from '@banx/constants'
 import { useBestWorkingRPC } from '@banx/hooks'
 import { Router } from '@banx/router'
-import { DialectProvider, QueryProvider, initSentry } from '@banx/utils'
+import { DialectProvider, QueryProvider, initSentry, purgeIdb } from '@banx/utils'
 
 initSentry()
-localStorage.removeItem('@banx.queryData') //TODO Remove after a while. Just to make sure that there is no garbage in LS
+purgeIdb()
 
 const SolanaConnectionWalletProvider: FC<PropsWithChildren> = ({ children }) => {
   const { endpoint, isLoading } = useBestWorkingRPC({

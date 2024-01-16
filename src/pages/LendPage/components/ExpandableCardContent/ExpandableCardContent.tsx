@@ -1,48 +1,56 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 
-import { Tabs } from '@banx/components/Tabs'
+import PlaceOfferSection, {
+  checkIsEditMode,
+  useSyntheticOffer,
+} from '@banx/components/PlaceOfferSection'
 
-import ActivityTable from '../ActivityTable'
-import OrderBook from '../OrderBook'
-import PlaceOfferTab from '../PlaceOfferTab'
-import { useExpandableCardContent } from './hooks'
+import { useModal } from '@banx/store'
+
+import { OfferHeader, OffersModal, TabsContent } from './components'
 
 import styles from './ExpandableCardContent.module.less'
 
-enum TabName {
-  OFFER = 'offer',
-  ACTIVITY = 'activity',
-}
-
-interface TabsComponents {
-  [key: string]: JSX.Element
-}
-
 interface ExpandableCardContentProps {
   marketPubkey: string
-  isOrderBookVisible: boolean
 }
 
-const ExpandableCardContent: FC<ExpandableCardContentProps> = ({
-  marketPubkey,
-  isOrderBookVisible,
-}) => {
-  const { marketParams, tabsParams, goToPlaceOfferTab } = useExpandableCardContent(marketPubkey)
+const ExpandableCardContent: FC<ExpandableCardContentProps> = ({ marketPubkey }) => {
+  const [offerPubkey, setOfferPubkey] = useState('')
+  const { open } = useModal()
 
-  const TABS_COMPONENTS: TabsComponents = {
-    [TabName.OFFER]: <PlaceOfferTab {...marketParams} />,
-    [TabName.ACTIVITY]: (
-      <ActivityTable marketPubkey={marketPubkey} goToPlaceOfferTab={goToPlaceOfferTab} />
-    ),
+  const { removeSyntheticOffer } = useSyntheticOffer(offerPubkey, marketPubkey)
+
+  const exitEditMode = () => {
+    setOfferPubkey('')
+    removeSyntheticOffer()
+  }
+
+  const showModal = () => {
+    open(OffersModal, { setOfferPubkey, offerPubkey, marketPubkey })
   }
 
   return (
-    <div className={styles.content}>
-      <div className={styles.tabsContentWrapper}>
-        <Tabs {...tabsParams} />
-        <div className={styles.tabContent}>{TABS_COMPONENTS[tabsParams.value]}</div>
+    <div className={styles.container}>
+      <div className={styles.content}>
+        <OfferHeader
+          isEditMode={checkIsEditMode(offerPubkey)}
+          showModal={showModal}
+          exitEditMode={exitEditMode}
+        />
+        <PlaceOfferSection
+          offerPubkey={offerPubkey}
+          marketPubkey={marketPubkey}
+          setOfferPubkey={setOfferPubkey}
+        />
       </div>
-      {isOrderBookVisible && <OrderBook {...marketParams} />}
+      <div className={styles.tabsContent}>
+        <TabsContent
+          marketPubkey={marketPubkey}
+          offerPubkey={offerPubkey}
+          setOfferPubkey={setOfferPubkey}
+        />
+      </div>
     </div>
   )
 }

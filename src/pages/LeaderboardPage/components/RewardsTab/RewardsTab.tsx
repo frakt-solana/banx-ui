@@ -98,11 +98,11 @@ const RewardsInfoBlock = () => (
       </span>
       {/* <div className={styles.infoRow}>
         <CircleCheck />
-        <span> earn SOL APY while your competitive offers are pending in the orders books</span>
+        <span> earn SOL APR while your competitive offers are pending in the orders books</span>
       </div> */}
       <div className={styles.infoRow}>
         <CircleCheck />
-        <span>earn extra SOL APY for your active loans</span>
+        <span>earn extra SOL APR for your active loans</span>
       </div>
     </div>
     <div className={styles.rewardsInfo}>

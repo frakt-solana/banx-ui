@@ -3,63 +3,64 @@ import { FC } from 'react'
 import classNames from 'classnames'
 import { NavLink } from 'react-router-dom'
 
-import { Theme, useTheme } from '@banx/hooks'
 import { toLowerCaseNoSpaces, trackNavigationEvent } from '@banx/utils'
 
 import { isActivePath } from './helpers'
-import { LinkProps, MenuItemProps } from './types'
+import { ExternalLinkProps, InternalLinkProps } from './types'
 
 import styles from './Navbar.module.less'
 
-const Link: FC<LinkProps> = ({ href, pathname = '', icon: Icon, label, className, primary }) => {
-  const linkProps = {
-    className: classNames(styles.link, className, {
-      [styles.active]: isActivePath(pathname),
-      [styles.primary]: primary,
-      [styles.secondary]: !Icon,
-    }),
-  }
-
+export const InternalLink: FC<InternalLinkProps> = ({
+  label,
+  pathname = '',
+  icon: Icon,
+  className,
+  primary,
+}) => {
   const onLinkClickHandler = () => {
     trackNavigationEvent(toLowerCaseNoSpaces(label))
   }
 
-  if (href) {
-    return (
-      <a
-        href={href}
-        rel="noopener noreferrer"
-        target="_blank"
-        {...linkProps}
-        onClick={onLinkClickHandler}
-      >
-        {Icon && <Icon />}
-        {label && <span>{label}</span>}
-      </a>
-    )
-  }
-
   return (
-    <NavLink to={pathname} {...linkProps} onClick={onLinkClickHandler}>
+    <NavLink
+      to={pathname}
+      onClick={onLinkClickHandler}
+      className={classNames(styles.link, className, {
+        [styles.active]: isActivePath(pathname),
+        [styles.primary]: primary,
+        [styles.secondary]: !Icon,
+      })}
+    >
       {Icon && <Icon />}
       {label && <span>{label}</span>}
     </NavLink>
   )
 }
 
-export const MenuItem: FC<MenuItemProps> = (props) => {
-  const { theme } = useTheme()
-  const { icons } = props || {}
+const ExternalLink: FC<ExternalLinkProps> = ({ label, icon: Icon, href }) => {
+  const onLinkClickHandler = () => {
+    trackNavigationEvent(toLowerCaseNoSpaces(label))
+  }
 
-  const Icon = theme === Theme.LIGHT ? icons?.light : icons?.dark
-
-  return <Link {...props} icon={Icon} />
+  return (
+    <a href={href} rel="noopener noreferrer" target="_blank" onClick={onLinkClickHandler}>
+      {Icon && <Icon />}
+    </a>
+  )
 }
 
-export const NavigationsLinks: FC<{ options: MenuItemProps[] }> = ({ options = [] }) => (
-  <div className={styles.navigationLinksWrapper}>
-    {options.map((option) => (
-      <MenuItem key={option.label} {...option} />
+export const NavigationsLinks: FC<{ links: InternalLinkProps[] }> = ({ links }) => (
+  <div className={styles.internalLinks}>
+    {links.map((option) => (
+      <InternalLink key={option.label} {...option} />
+    ))}
+  </div>
+)
+
+export const ExternalLinks: FC<{ links: ExternalLinkProps[] }> = ({ links }) => (
+  <div className={styles.externalLinks}>
+    {links.map((option) => (
+      <ExternalLink key={option.label} {...option} />
     ))}
   </div>
 )

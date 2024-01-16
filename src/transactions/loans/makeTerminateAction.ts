@@ -1,9 +1,11 @@
 import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
+import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import {
   BondAndTransactionOptimistic,
   terminatePerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
 import { MakeActionFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
@@ -16,6 +18,10 @@ export type MakeTerminateActionParams = {
 
 export type MakeTerminateAction = MakeActionFn<MakeTerminateActionParams, Loan>
 
+interface OptimisticResult extends BondAndTransactionOptimistic {
+  bondOffer: BondOfferV2
+}
+
 export const makeTerminateAction: MakeTerminateAction = async (
   ixnParams,
   { connection, wallet },
@@ -25,14 +31,16 @@ export const makeTerminateAction: MakeTerminateAction = async (
   const { instructions, signers, optimisticResult } = await terminatePerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
+      bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
       bondTradeTransactionV2: new web3.PublicKey(bondTradeTransaction.publicKey),
       fbond: new web3.PublicKey(fraktBond.publicKey),
       userPubkey: wallet.publicKey as web3.PublicKey,
     },
     optimistic: {
       fraktBond,
+      bondOffer: getMockBondOffer(),
       bondTradeTransaction,
-    } as BondAndTransactionOptimistic,
+    } as OptimisticResult,
     connection,
     sendTxn: sendTxnPlaceHolder,
   })

@@ -1,4 +1,6 @@
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
+import { calculateNextSpotPrice } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { BondingCurveType } from 'fbonds-core/lib/fbond-protocol/types'
 import produce from 'immer'
 import { create } from 'zustand'
 
@@ -9,8 +11,10 @@ export interface SyntheticOffer {
   publicKey: string //? PUBKEY_PLACEHOLDER for offers to create
   loanValue: number
   loansAmount: number
+  deltaValue: number
   assetReceiver: string
   marketPubkey: string
+  mathCounter: number
 }
 
 interface SyntheticOffersState {
@@ -61,20 +65,48 @@ export const createEmptySyntheticOffer: CreateEmptySyntheticOffer = ({
   loansAmount: 0,
   assetReceiver: walletPubkey,
   marketPubkey,
+  mathCounter: 0,
+  deltaValue: 0,
 })
 
 export const convertToSynthetic = (offer: Offer, isEdit = false): SyntheticOffer => {
-  const { fundsSolOrTokenBalance, currentSpotPrice, publicKey, assetReceiver, hadoMarket } = offer
+  const { publicKey, assetReceiver, hadoMarket, mathCounter, bondingCurve, buyOrdersQuantity } =
+    offer
 
-  const loansAmount = fundsSolOrTokenBalance / currentSpotPrice
-  const loanValue = currentSpotPrice * Math.min(loansAmount, 1)
-
+  const loanValue = calcSyntheticLoanValue(offer)
   return {
     isEdit,
     publicKey,
-    loansAmount,
-    loanValue,
+    loansAmount: loanValue > 0 ? Math.max(buyOrdersQuantity, 1) : 0,
+    loanValue: loanValue,
     assetReceiver,
     marketPubkey: hadoMarket,
+    mathCounter,
+    deltaValue: bondingCurve.delta,
   }
+}
+
+export const calcSyntheticLoanValue = (offer: Offer): number => {
+  const {
+    currentSpotPrice,
+    baseSpotPrice,
+    validation,
+    bidSettlement,
+    mathCounter,
+    bondingCurve,
+    buyOrdersQuantity,
+  } = offer
+
+  const prevSpotPrice = calculateNextSpotPrice({
+    bondingCurveType: bondingCurve.bondingType as BondingCurveType,
+    delta: bondingCurve.delta,
+    spotPrice: baseSpotPrice,
+    counter: mathCounter + 2,
+  })
+
+  return Math.min(
+    validation.loanToValueFilter,
+    (buyOrdersQuantity > 0 ? currentSpotPrice : 0) + bidSettlement,
+    prevSpotPrice,
+  )
 }

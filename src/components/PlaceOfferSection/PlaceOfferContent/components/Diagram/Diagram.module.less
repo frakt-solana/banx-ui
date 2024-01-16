@@ -1,0 +1,130 @@
+.diagramWrapper {
+  overflow-x: scroll;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    width: calc(100% + 16px);
+  }
+}
+
+.diagram {
+  display: flex;
+  align-items: center;
+  margin: 16px 0;
+  height: 44px;
+  position: relative;
+  width: 100%;
+
+  @media (max-width: 1240px) {
+    width: 960px;
+  }
+}
+
+.diagramLine {
+  background: var(--accent-primary-sub);
+  height: 2px;
+  width: 100%;
+}
+
+.mark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+
+  position: absolute;
+  bottom: -4px;
+
+  @media (max-width: 640px) {
+    bottom: 0;
+  }
+
+  .square,
+  .imageSquare {
+    background: var(--accent-primary-sub);
+    border: 1px solid var(--accent-primary);
+    height: 16px;
+    width: 16px;
+    position: relative;
+
+    &[data-offers-count]::after {
+      content: attr(data-offers-count);
+      color: var(--additional-green-primary-deep);
+      background: var(--additional-green-secondary);
+      border-radius: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      top: -8px;
+      right: -14px;
+      min-width: 12px;
+      height: 16px;
+      padding: 0 6px;
+      font: var(--body-text-xs);
+    }
+  }
+
+  .imageSquare {
+    border: 0;
+  }
+
+  .dot {
+    background: var(--accent-primary);
+    border-radius: 100px;
+    height: 8px;
+    width: 8px;
+  }
+
+  .value {
+    font: var(--body-text-sm);
+    white-space: nowrap;
+
+    @media (max-width: 640px) {
+      font: var(--body-text-xs);
+    }
+  }
+}
+
+.tooltip {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 236px;
+  min-width: 232px;
+  overflow: auto;
+}
+
+.tooltipHeaderContent {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+
+  span {
+    text-align: right;
+    width: 100px;
+  }
+}
+.tooltipHeaderLabel {
+  color: var(--content-secondary);
+  font: var(--table-header-sm);
+  text-transform: uppercase;
+}
+
+.tooltipBodyContent {
+  display: flex;
+  flex-direction: column;
+  font: var(--body-text-sm);
+  gap: 2px;
+}
+.tooltipRowContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.nftImage {
+  width: 24px;
+  height: 24px;
+}

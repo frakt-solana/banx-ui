@@ -1,0 +1,83 @@
+.summaryContainer {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid var(--bg-border);
+  gap: 80px;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    gap: 8px;
+  }
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  white-space: nowrap;
+
+  &:last-child {
+    margin-left: auto;
+  }
+
+  @media (max-width: 960px) {
+    flex-direction: column;
+    width: 100%;
+  }
+}
+.loansContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.loansInterestContainer {
+  display: none;
+  @media (max-width: 960px) {
+    display: flex;
+  }
+}
+
+.loansValueInterest {
+  font: var(--important-text-xll);
+
+  @media (max-width: 960px) {
+    display: none;
+  }
+}
+
+.loansValueText {
+  font: var(--important-text-xll);
+  line-height: 42px;
+
+  @media (max-width: 960px) {
+    display: none;
+  }
+}
+.loansValueLabel {
+  color: var(--content-secondary);
+  font: var(--table-header-md);
+  text-transform: uppercase;
+  white-space: initial;
+  max-width: 70px;
+
+  @media (max-width: 960px) {
+    display: none;
+  }
+}
+
+.loansInterestContainer {
+  @media (max-width: 960px) {
+    & > div {
+      text-align: center;
+    }
+  }
+}
+
+.summaryButton {
+  width: 128px;
+
+  @media (max-width: 960px) {
+    width: 100%;
+  }
+}

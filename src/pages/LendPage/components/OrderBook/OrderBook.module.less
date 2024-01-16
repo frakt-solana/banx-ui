@@ -1,160 +1,58 @@
-.title {
-  font: var(--title-xs);
-  text-align: right;
-  text-transform: uppercase;
-}
-
-.label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: var(--content-secondary);
-  font: var(--table-header-md);
-  text-transform: uppercase;
-  margin: 24px 0 8px;
-}
-
 .orderBook {
   display: flex;
   flex-direction: column;
-  margin-right: 24px;
-
-  max-width: 300px;
-  min-width: 300px;
-  height: 333px;
+  padding: 24px 0 48px;
+  height: 100%;
 
   @media (max-width: 960px) {
-    display: none;
+    padding: 16px 0 0;
+    height: 400px;
   }
 }
 
-.content {
+.labelsWrapper {
   display: flex;
-  flex-direction: column;
-  gap: 24px;
-  position: relative;
-  height: 100%;
-}
-
-.list {
-  overflow-y: scroll;
-  overflow-x: hidden;
-
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.noData {
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  overflow-y: scroll;
-  height: 100%;
-}
-.noDataTitle {
-  font-family: var(--font-family-syne);
-  font-weight: 700;
-  font-size: 22px;
-  line-height: 26px;
-  text-align: center;
-}
-.noDataSubtitle {
-  margin-top: 8px;
-  font: var(--font-text-4);
-  text-align: center;
-}
-
-// Mobile orderbook styles
-.orderBookMobile {
-  display: none;
-
-  background: var(--bg-primary);
-  border-top: var(--border-less-primary);
-
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 3;
-
-  padding: 24px;
-
-  gap: 8px;
+  justify-content: space-between;
+  padding: 0 64px 0 24px;
   width: 100%;
 
-  &.open {
-    border-top: 0;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    height: 100%;
+  @media (max-width: 640px) {
+    padding: 0 56px 0 16px;
+  }
+}
+
+.labelWrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: calc(100% / 3);
+
+  &:nth-child(2) {
+    justify-content: center;
   }
 
-  @media (max-width: 960px) {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+  &:last-child {
+    justify-content: flex-end;
   }
 
   @media (max-width: 640px) {
-    padding: 16px;
-  }
-
-  .mobileContent {
-    padding-bottom: 32px;
-    height: 100%;
-  }
-
-  .collectionMobileInfo {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-
-    @media (max-width: 640px) {
-      gap: 2px;
-    }
-  }
-
-  .collapsedContentWrapper {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .collapsedMobileContent {
-    display: flex;
-    gap: 8px;
-  }
-  .collapsedMobileImage {
-    height: 40px;
-    width: 40px;
-
-    @media (max-width: 640px) {
-      height: 32px;
-      width: 32px;
-    }
-  }
-  .collectionMobileTitle {
-    font: var(--card-header-md);
-
-    @media (max-width: 640px) {
-      font: var(--card-header-sm);
-    }
-  }
-  .collectionMobileSubtitle {
-    font: var(--body-text-md);
-
-    @media (max-width: 640px) {
-      font: var(--body-text-xs);
-    }
+    width: 100%;
   }
 }
 
-.chevronButton {
-  transform: rotate(180deg);
+.label {
+  color: var(--content-secondary);
+  font: var(--table-header-md);
+  text-transform: uppercase;
+  white-space: nowrap;
 
-  &.active {
-    transform: none;
+  @media (max-width: 640px) {
+    font: var(--table-header-sm);
   }
+}
+
+.offersList {
+  margin-top: 8px;
+  overflow-y: auto;
 }

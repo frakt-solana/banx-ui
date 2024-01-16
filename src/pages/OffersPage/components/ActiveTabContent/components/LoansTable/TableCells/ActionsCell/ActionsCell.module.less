@@ -1,0 +1,99 @@
+.actionsButtons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 100%;
+}
+.actionButton {
+  width: 104px;
+}
+
+//? ### ManageModal
+.modal {
+  :global {
+    z-index: 2;
+
+    .ant-modal-body {
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+
+      @media (min-width: 961px) {
+        // min-height: 336px; //? min-height for modal with tabs enabled
+        min-height: 240px;
+      }
+    }
+
+    .ant-modal-content {
+      padding: 0;
+    }
+  }
+}
+.tabs {
+  flex-wrap: nowrap;
+}
+.modalContent {
+  padding: 24px;
+  color: var(--content-primary);
+
+  @media screen and (max-width: 960px) {
+    padding: 18px;
+  }
+}
+//? ### ManageModal
+
+//? ### Repaiment content
+.repaymentCallInfo {
+  display: flex;
+  justify-content: flex-start;
+}
+.repaimentCallAdditionalInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 42px 0 8px;
+  margin-bottom: 12px;
+}
+.repaymentCallButton {
+  width: 100%;
+}
+//? ### Repaiment content
+
+//? ### Closure content
+.closureContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  flex-grow: 1;
+}
+.twoColumnsContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.closureTexts {
+  h3 {
+    font: var(--title-xs);
+    margin-bottom: 0;
+    text-transform: uppercase;
+  }
+  p {
+    font: var(--body-text-md);
+    @media (max-width: 640px) {
+      font: var(--body-text-xs);
+    }
+  }
+}
+
+.terminateButton {
+  &:not(&:disabled) {
+    background-color: var(--additional-red-secondary);
+    border: 1px solid var(--additional-red-primary);
+
+    &:hover {
+      border: 1px solid var(--additional-red-primary-deep);
+    }
+  }
+}
+//? ### Closure content

@@ -6,17 +6,19 @@
   overflow: hidden;
 }
 
-.table {
-  table {
-    tr {
-      th,
-      td {
-        width: 230px;
-      }
+.table table {
+  tr > td,
+  tr > th {
+    min-width: 144px;
+    max-width: 144px;
 
-      &:last-child {
-        width: 84px;
-      }
+    &:first-child {
+      min-width: 176px;
+      max-width: unset;
+    }
+
+    &:last-child {
+      min-width: 208px;
     }
   }
 }
@@ -40,26 +42,36 @@
   background: var(--additional-lava-secondary) !important;
 }
 
-.statusInfo,
-.debtInfo,
-.interestInfo {
+.statusInfo {
   display: flex;
   flex-direction: column;
   white-space: nowrap;
   align-items: flex-end;
   gap: 4px;
 }
-
-.statusInfoTitle,
-.debtInfoTitle,
-.interestInfoTitle {
+.statusInfoTitle {
   font: var(--body-text-md);
 }
-
-.statusInfoSubtitle,
-.debtInfoSubtitle,
-.interestInfoSubtitle {
+.statusInfoSubtitle {
   font: var(--body-text-sm);
+}
+
+.cellInfo {
+  &,
+  & > * {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+  }
+}
+.cellInfoTitle {
+  font: var(--body-text-md);
+
+  &.highlight {
+    color: var(--additional-green-primary-deep);
+    font: var(--important-text-md);
+  }
 }
 
 .summary {
@@ -86,6 +98,7 @@
 
   & > div {
     align-items: end;
+    gap: 6px;
   }
 
   @media (max-width: 1240px) {
@@ -102,7 +115,7 @@
   }
 }
 
-.summaryBtns {
+.summaryControls {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -120,6 +133,9 @@
       min-width: unset;
     }
   }
+}
+.slider {
+  padding-bottom: 18px;
 }
 
 .collaterals {
@@ -156,4 +172,30 @@
     font: var(--table-header-sm);
     width: 86px;
   }
+}
+
+.tooltipContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tooltipRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 230px;
+}
+.tooltipRowLabel {
+  color: var(--content-secondary);
+  font: var(--table-header-md);
+  text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--table-header-sm);
+  }
+}
+.tooltipIcon svg {
+  fill: var(--content-secondary);
+  width: 13px;
+  height: 13px;
 }

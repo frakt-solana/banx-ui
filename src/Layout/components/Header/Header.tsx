@@ -8,7 +8,7 @@ import { Button, WalletConnectButton } from '@banx/components/Buttons'
 import { Cup, Logo, LogoFull } from '@banx/icons'
 import { PATHS } from '@banx/router'
 
-import { BurgerIcon } from '../BurgerMenu/components'
+import { BurgerIcon } from '../BurgerMenu'
 import { isActivePath } from '../Navbar/helpers'
 import ThemeSwitcher from '../ThemeSwitcher'
 
@@ -43,7 +43,7 @@ const RewardsButton = () => (
         [styles.active]: isActivePath(PATHS.LEADERBOARD),
       })}
     >
-      <Cup /> <span>Rewards</span>
+      <Cup /> <span>Farm $BANX</span>
     </Button>
   </NavLink>
 )

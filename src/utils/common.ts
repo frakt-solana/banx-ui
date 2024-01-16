@@ -6,7 +6,6 @@ import {
   MIN_DISPLAY_VALUE,
   THREE_DECIMAL_PLACES,
   TWO_DECIMAL_PLACES,
-  WEEKS_IN_YEAR,
 } from '@banx/constants'
 
 // shorten the checksummed version of the input address to have 4 characters at start and end
@@ -20,27 +19,25 @@ export const copyToClipboard = (value: string): void => {
 
 //? takes and return the value in normal percent, F.e 30 => 30%
 export const convertAprToApy = (apr: number) => {
-  const compoundedInterest = 1 + apr / WEEKS_IN_YEAR
-  const apy = Math.pow(compoundedInterest, WEEKS_IN_YEAR) - 1
+  // const compoundedInterest = 1 + apr / WEEKS_IN_YEAR
+  // const apr = Math.pow(compoundedInterest, WEEKS_IN_YEAR) - 1
 
-  return Math.round(apy * 100)
+  return Math.round(apr * 100)
 }
 
-export const getDecimalPlaces = (value: number | string) => {
-  const numericValue = typeof value === 'string' ? parseFloat(value) : value
+export const getDecimalPlaces = (value: number) => {
+  if (!value) return TWO_DECIMAL_PLACES
 
-  if (!numericValue) return TWO_DECIMAL_PLACES
-
-  return numericValue < DECIMAL_THRESHOLD ? THREE_DECIMAL_PLACES : TWO_DECIMAL_PLACES
+  return value < DECIMAL_THRESHOLD ? THREE_DECIMAL_PLACES : TWO_DECIMAL_PLACES
 }
 
-export const formatDecimal = (value: number) => {
-  const numericValue = typeof value === 'string' ? parseFloat(value) : value
+export const formatDecimal = (value: number, minDisplayValue = MIN_DISPLAY_VALUE) => {
+  if (value === 0 || isNaN(value)) return '0'
 
-  if (numericValue < MIN_DISPLAY_VALUE) return `<${MIN_DISPLAY_VALUE}`
+  if (value < minDisplayValue) return `<${minDisplayValue}`
 
-  const decimalPlaces = getDecimalPlaces(numericValue)
-  return numericValue.toFixed(decimalPlaces)
+  const decimalPlaces = getDecimalPlaces(value)
+  return value.toFixed(decimalPlaces)
 }
 
 export const formatNumbersWithCommas = (value: number | string) =>
@@ -62,7 +59,13 @@ export const generateCSVContent = <T extends object>(dataList: T[]): string => {
   return csvContent
 }
 
-export const calcLoanValueWithProtocolFee = (loanValue: number) =>
+export const calcBorrowValueWithRentFee = (loanValue: number, marketPubkey: string) => {
+  if (loanValue === 0) return 0
+  if (marketPubkey === BONDS.FACELESS_MARKET_PUBKEY) return loanValue
+  return loanValue - BONDS.BORROW_RENT_FEE
+}
+
+export const calcBorrowValueWithProtocolFee = (loanValue: number) =>
   Math.floor(loanValue * (1 - BONDS.PROTOCOL_FEE_PERCENT / 1e4))
 
 export const calcWeightedAverage = (nums: number[], weights: number[]) => {
