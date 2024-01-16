@@ -29,6 +29,7 @@ export const LoansTable = () => {
     emptyMessage,
     isUnderwaterFilterActive,
     onToggleUnderwaterFilter,
+    underwaterLoans,
   } = useLoansTable()
 
   const { viewState } = useTableView()
@@ -89,14 +90,19 @@ export const LoansTable = () => {
   }, [onRowClick])
 
   const customFiltersJSX = (
-    <Button
-      className={classNames(styles.filterButton, { [styles.active]: isUnderwaterFilterActive })}
-      onClick={onToggleUnderwaterFilter}
-      type="circle"
-      variant="secondary"
+    <div
+      className={styles.filterButtonWrapper}
+      data-underwater-loans={underwaterLoans.length > 0 ? underwaterLoans.length : null}
     >
-      <Underwater />
-    </Button>
+      <Button
+        className={classNames(styles.filterButton, { [styles.active]: isUnderwaterFilterActive })}
+        onClick={onToggleUnderwaterFilter}
+        type="circle"
+        variant="secondary"
+      >
+        <Underwater />
+      </Button>
+    </div>
   )
 
   if (showEmptyList) return <EmptyList message={emptyMessage} />

@@ -63,6 +63,27 @@
   padding-left: 18px;
 }
 
+.filterButtonWrapper {
+  position: relative;
+
+  &[data-underwater-loans]::after {
+    content: attr(data-underwater-loans);
+    color: var(--additional-yellow-primary-deep);
+    background: var(--additional-yellow-secondary);
+    border-radius: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 7px;
+    right: -14px;
+    min-width: 12px;
+    height: 16px;
+    padding: 0 6px;
+    font: var(--body-text-xs);
+  }
+}
+
 .filterButton {
   svg path:nth-child(2) {
     fill: var(--additional-yellow-primary-deep);

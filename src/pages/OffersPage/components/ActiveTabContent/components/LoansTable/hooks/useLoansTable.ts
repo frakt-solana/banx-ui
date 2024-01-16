@@ -32,7 +32,8 @@ export const useLoansTable = () => {
     onToggleUnderwaterFilter,
     selectedCollections,
     setSelectedCollections,
-  } = useFilteredLoans(loans)
+    underwaterLoans,
+  } = useFilterLoans(loans)
 
   const { sortedLoans, sortParams } = useSortedLoans(filteredLoans)
 
@@ -52,6 +53,8 @@ export const useLoansTable = () => {
     hideLoans,
     updateOrAddLoan,
     loading,
+
+    underwaterLoans,
 
     isUnderwaterFilterActive,
     onToggleUnderwaterFilter,
@@ -107,7 +110,7 @@ const createSearchSelectParams = ({
   return searchSelectParams
 }
 
-const useFilteredLoans = (loans: Loan[]) => {
+const useFilterLoans = (loans: Loan[]) => {
   const { set: setSelection, clear: clearSelection } = useSelectedLoans()
 
   const [selectedCollections, setSelectedCollections] = useState<string[]>([])
@@ -121,7 +124,10 @@ const useFilteredLoans = (loans: Loan[]) => {
     return loans
   }, [loans, selectedCollections])
 
-  const filteredUnderwaterLoans = filteredLoansByCollection.filter(isUnderWaterLoan)
+  const underwaterLoans = useMemo(
+    () => filteredLoansByCollection.filter(isUnderWaterLoan),
+    [filteredLoansByCollection],
+  )
 
   const onToggleUnderwaterFilter = () => {
     setIsUnderwaterFilterActive(!isUnderwaterFilterActive)
@@ -129,15 +135,15 @@ const useFilteredLoans = (loans: Loan[]) => {
     if (isUnderwaterFilterActive) {
       clearSelection()
     } else {
-      setSelection(filteredUnderwaterLoans)
+      setSelection(underwaterLoans)
     }
   }
 
   const filteredLoans = useMemo(() => {
-    if (isUnderwaterFilterActive) return filteredUnderwaterLoans
+    if (isUnderwaterFilterActive) return underwaterLoans
 
     return filteredLoansByCollection
-  }, [isUnderwaterFilterActive, filteredUnderwaterLoans, filteredLoansByCollection])
+  }, [isUnderwaterFilterActive, underwaterLoans, filteredLoansByCollection])
 
   return {
     filteredLoans,
@@ -147,5 +153,7 @@ const useFilteredLoans = (loans: Loan[]) => {
 
     selectedCollections,
     setSelectedCollections,
+
+    underwaterLoans,
   }
 }
