@@ -168,6 +168,7 @@ const getIxnsAndSignersByBorrowType = async ({
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
       oldBondOffer: new web3.PublicKey(ixnParams[0].bondTradeTransaction.bondOffer),
     },
+    addComputeUnits: true,
     args: {
       repayAccounts: ixnParams.map(({ fraktBond, bondTradeTransaction }, idx) => ({
         bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
