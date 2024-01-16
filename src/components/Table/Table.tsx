@@ -23,6 +23,7 @@ const Table = <T extends object, P extends object>({
   classNameTableWrapper,
   loadMore,
   styleTableWrapper,
+  customFiltersJSX,
 }: TableProps<T, P>) => {
   const { viewState } = useTableView()
 
@@ -32,7 +33,14 @@ const Table = <T extends object, P extends object>({
 
   return (
     <>
-      {sortViewParams && <SortView columns={columns} showCard={showCard} {...sortViewParams} />}
+      {sortViewParams && (
+        <SortView
+          columns={columns}
+          showCard={showCard}
+          customFiltersJSX={customFiltersJSX}
+          {...sortViewParams}
+        />
+      )}
 
       {loading && <Loader />}
       {emptyMessage && !loading && <div className={styles.emptyList}>{emptyMessage}</div>}
