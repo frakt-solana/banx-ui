@@ -46,10 +46,12 @@ const OfferCard: FC<OfferCardProps> = ({ offer }) => {
         </Button>
       </div>
       {isOpen && (
-        <PlaceOfferSection
-          offerPubkey={offer.offer.publicKey}
-          marketPubkey={offer.offer.hadoMarket}
-        />
+        <div className={styles.placeOfferContent}>
+          <PlaceOfferSection
+            offerPubkey={offer.offer.publicKey}
+            marketPubkey={offer.offer.hadoMarket}
+          />
+        </div>
       )}
     </div>
   )

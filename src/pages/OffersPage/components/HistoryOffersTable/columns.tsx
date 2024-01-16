@@ -30,7 +30,8 @@ export const getTableColumns = () => {
     {
       key: 'lent',
       title: <HeaderCell label="Lent" />,
-      render: (loan) => createSolValueJSX(loan.lent, 1e9, '--', formatDecimal),
+      render: (loan) =>
+        createSolValueJSX(loan.currentRemainingLentAmount, 1e9, '--', formatDecimal),
       sorter: true,
     },
     {

@@ -14,9 +14,9 @@ enum SortField {
 }
 
 const SORT_OPTIONS = [
+  { label: 'LTV', value: SortField.LTV },
   { label: 'Lent', value: SortField.LENT },
   { label: 'Interest', value: SortField.INTEREST },
-  { label: 'LTV', value: SortField.LTV },
 ]
 
 const DEFAULT_SORT_OPTION: SortOption = {

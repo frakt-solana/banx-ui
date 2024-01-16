@@ -55,15 +55,15 @@ export const getTableColumns = ({
       sorter: true,
     },
     {
-      key: 'apr',
-      title: <HeaderCell label="APR" />,
-      render: (loan) => <APRCell loan={loan} />,
-      sorter: true,
-    },
-    {
       key: 'ltv',
       title: <HeaderCell label="LTV" />,
       render: (loan) => <LTVCell loan={loan} />,
+      sorter: true,
+    },
+    {
+      key: 'apr',
+      title: <HeaderCell label="APR" />,
+      render: (loan) => <APRCell loan={loan} />,
       sorter: true,
     },
     {

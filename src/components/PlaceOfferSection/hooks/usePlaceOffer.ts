@@ -14,12 +14,10 @@ import {
   convertOfferToMark,
   convertSimpleOfferToMark,
 } from '../PlaceOfferContent/components/Diagram'
-import { OfferMode } from '../components'
 import { calcBestOfferValue, calcOfferSize, getErrorMessage, getUpdatedBondOffer } from '../helpers'
 import { useLenderLoans } from './useLenderLoans'
 import { useMarketAndOffer } from './useMarketAndOffer'
 import { useOfferFormController } from './useOfferFormController'
-import { useOfferMode } from './useOfferMode'
 import { useOfferTransactions } from './useOfferTransactions'
 import { useSyntheticOffer } from './useSyntheticOffer'
 
@@ -29,10 +27,7 @@ export interface PlaceOfferParams {
   updatedOffer: Offer | undefined
   syntheticOffer: SyntheticOffer
 
-  onChangeOfferMode: (mode: OfferMode) => void
   exitEditMode: () => void
-  offerMode: OfferMode
-  isProMode: boolean
 
   offerErrorMessage: string
   hasFormChanges: boolean
@@ -70,9 +65,7 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
     marketPubkey,
   )
 
-  const { offerMode, onChangeOfferMode } = useOfferMode(syntheticOffer)
   const isEditMode = syntheticOffer.isEdit
-  const isProMode = offerMode === OfferMode.Pro
 
   const { lenderLoans, isLoading: isLoadingLenderLoans } = useLenderLoans({ offerPubkey })
 
@@ -87,7 +80,7 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
     resetFormValues,
   } = useOfferFormController(syntheticOffer)
 
-  const deltaValue = isProMode ? parseFloat(deltaValueString) * 1e9 : 0
+  const deltaValue = parseFloat(deltaValueString) * 1e9
   const loanValue = parseFloat(loanValueString) * 1e9
   const loansAmount = parseFloat(loansAmountString)
 
@@ -189,10 +182,6 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
     optimisticOffer: offer,
     syntheticOffer,
     updatedOffer,
-
-    offerMode,
-    onChangeOfferMode,
-    isProMode,
 
     loanValue: loanValueString,
     loansAmount: loansAmountString,

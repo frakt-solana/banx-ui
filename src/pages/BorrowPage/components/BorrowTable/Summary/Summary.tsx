@@ -1,6 +1,8 @@
 import { FC, useState } from 'react'
 
 import classNames from 'classnames'
+import { BASE_POINTS } from 'fbonds-core/lib/fbond-protocol/constants'
+import { calculateDynamicApr } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
@@ -8,6 +10,7 @@ import { CounterSlider, Slider } from '@banx/components/Slider'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
+import { DYNAMIC_APR } from '@banx/constants'
 import {
   calcBorrowValueWithProtocolFee,
   calcBorrowValueWithRentFee,
@@ -48,13 +51,14 @@ export const Summary: FC<SummaryProps> = ({
     return loanValue - calcBorrowValueWithProtocolFee(loanValue)
   })
 
-  const totalWeeklyFee = sumBy(nftsInCart, ({ nft, loanValue }) =>
-    calcInterest({
-      timeInterval: ONE_WEEK_IN_SECONDS,
-      loanValue,
-      apr: nft.loan.marketApr,
-    }),
-  )
+  const totalWeeklyFee = sumBy(nftsInCart, ({ nft, loanValue }) => {
+    const apr = calculateDynamicApr(
+      Math.floor((loanValue / nft.nft.collectionFloor) * BASE_POINTS),
+      DYNAMIC_APR,
+    )
+
+    return calcInterest({ timeInterval: ONE_WEEK_IN_SECONDS, loanValue, apr })
+  })
 
   const [isBorrowing, setIsBorrowing] = useState(false)
   const onBorrow = async () => {

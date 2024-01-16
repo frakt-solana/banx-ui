@@ -49,4 +49,9 @@
     border-left: unset;
     border-top: 0.5px solid var(--bg-border);
   }
+
+  //? Prevent zIndex bug on phantom mobile app
+  @media screen and (max-width: 640px) {
+    position: fixed;
+  }
 }
