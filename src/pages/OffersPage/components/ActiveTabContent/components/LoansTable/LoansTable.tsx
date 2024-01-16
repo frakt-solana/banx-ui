@@ -1,5 +1,7 @@
 import { useCallback, useMemo } from 'react'
 
+import classNames from 'classnames'
+
 import { Button } from '@banx/components/Buttons'
 import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
@@ -88,7 +90,7 @@ export const LoansTable = () => {
 
   const customFiltersJSX = (
     <Button
-      className={styles.filterButton}
+      className={classNames(styles.filterButton, { [styles.active]: isUnderwaterFilterActive })}
       onClick={onToggleUnderwaterFilter}
       type="circle"
       variant="secondary"
