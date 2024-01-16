@@ -19,8 +19,6 @@ import styles from './LoansTable.module.less'
 export const LoansTable = () => {
   const {
     loans,
-    loansToClaim,
-    loansToTerminate,
     sortViewParams,
     hideLoans,
     updateOrAddLoan,
@@ -89,7 +87,12 @@ export const LoansTable = () => {
   }, [onRowClick])
 
   const customFiltersJSX = (
-    <Button onClick={onToggleUnderwaterFilter} type="circle" variant="secondary">
+    <Button
+      className={styles.filterButton}
+      onClick={onToggleUnderwaterFilter}
+      type="circle"
+      variant="secondary"
+    >
       <Underwater />
     </Button>
   )
@@ -108,13 +111,12 @@ export const LoansTable = () => {
         showCard
       />
       <Summary
-        hideLoans={hideLoans}
-        loansToTerminate={loansToTerminate}
-        loansToClaim={loansToClaim}
+        loans={loans}
         updateOrAddLoan={updateOrAddLoan}
         isUnderwaterFilterActive={isUnderwaterFilterActive}
         selectedLoans={selection}
         setSelection={setSelection}
+        hideLoans={hideLoans}
       />
     </div>
   )

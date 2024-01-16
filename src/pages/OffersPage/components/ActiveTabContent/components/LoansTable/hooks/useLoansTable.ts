@@ -7,12 +7,7 @@ import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import {
-  calculateClaimValue,
-  isLoanAbleToClaim,
-  isLoanAbleToTerminate,
-  useLenderLoans,
-} from '@banx/pages/OffersPage'
+import { calculateClaimValue, useLenderLoans } from '@banx/pages/OffersPage'
 import { formatDecimal, isUnderWaterLoan } from '@banx/utils'
 
 import { useSelectedLoans } from '../loansState'
@@ -30,13 +25,6 @@ export const useLoansTable = () => {
   const { connected } = useWallet()
 
   const { loans, addMints: hideLoans, updateOrAddLoan, loading } = useLenderLoans()
-
-  const { loansToClaim, loansToTerminate } = useMemo(() => {
-    const loansToClaim = loans.filter(isLoanAbleToClaim)
-    const loansToTerminate = loans.filter(isLoanAbleToTerminate)
-
-    return { loansToClaim, loansToTerminate }
-  }, [loans])
 
   const {
     filteredLoans,
@@ -60,9 +48,6 @@ export const useLoansTable = () => {
     : 'Connect wallet to view your active offers'
 
   return {
-    loansToClaim,
-    loansToTerminate,
-
     loans: sortedLoans,
     hideLoans,
     updateOrAddLoan,
