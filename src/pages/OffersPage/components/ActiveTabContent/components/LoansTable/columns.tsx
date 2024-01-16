@@ -11,37 +11,59 @@ import { APRCell, ActionsCell, InterestCell, StatusCell } from './TableCells'
 import styles from './LoansTable.module.less'
 
 interface GetTableColumnsProps {
-  onSelectAll: () => void
   findLoanInSelection: (loanPubkey: string) => Loan | null
   toggleLoanInSelection: (loan: Loan) => void
+  onSelectAll: () => void
+
+  isUnderwaterFilterActive: boolean
   hasSelectedLoans: boolean
   isCardView: boolean
 }
 
 export const getTableColumns = ({
-  isCardView = false,
+  findLoanInSelection,
+  toggleLoanInSelection,
   onSelectAll,
+  isUnderwaterFilterActive,
   hasSelectedLoans,
+  isCardView,
 }: GetTableColumnsProps) => {
   const columns: ColumnType<Loan>[] = [
     {
       key: 'collateral',
       title: (
         <div className={styles.headerTitleRow}>
-          <Checkbox className={styles.checkbox} onChange={onSelectAll} checked={hasSelectedLoans} />
+          {isUnderwaterFilterActive && (
+            <Checkbox
+              className={styles.checkbox}
+              onChange={onSelectAll}
+              checked={hasSelectedLoans}
+            />
+          )}
           <HeaderCell label="Collateral" align="left" />
         </div>
       ),
-      render: ({ nft }) => (
-        <NftInfoCell
-          nftName={nft.meta.name}
-          nftImage={nft.meta.imageUrl}
-          banxPoints={{
-            partnerPoints: nft.meta.partnerPoints || 0,
-            playerPoints: nft.meta.playerPoints || 0,
-          }}
-        />
-      ),
+      render: (loan) => {
+        const { partnerPoints = 0, playerPoints = 0, name, imageUrl } = loan.nft.meta
+
+        const onCheckboxClick = isUnderwaterFilterActive
+          ? () => toggleLoanInSelection(loan)
+          : undefined
+
+        const selected = isUnderwaterFilterActive
+          ? !!findLoanInSelection(loan.publicKey)
+          : undefined
+
+        return (
+          <NftInfoCell
+            nftName={name}
+            nftImage={imageUrl}
+            selected={selected}
+            onCheckboxClick={onCheckboxClick}
+            banxPoints={{ partnerPoints, playerPoints }}
+          />
+        )
+      },
     },
     {
       key: 'lent',

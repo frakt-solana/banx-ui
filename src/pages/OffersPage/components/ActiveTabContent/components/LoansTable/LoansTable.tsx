@@ -1,92 +1,37 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 
-import { useWallet } from '@solana/wallet-adapter-react'
-import { first, groupBy, map, sumBy } from 'lodash'
-
+import { Button } from '@banx/components/Buttons'
 import EmptyList from '@banx/components/EmptyList'
-import { SearchSelectProps } from '@banx/components/SearchSelect'
 import Table from '@banx/components/Table'
-import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import {
-  calculateClaimValue,
-  isLoanAbleToClaim,
-  isLoanAbleToTerminate,
-  useLenderLoans,
-} from '@banx/pages/OffersPage'
+import { Underwater } from '@banx/icons'
 import { ViewState, useTableView } from '@banx/store'
-import { formatDecimal, isLoanLiquidated, isLoanTerminating } from '@banx/utils'
+import { isLoanLiquidated, isLoanTerminating, isUnderWaterLoan } from '@banx/utils'
 
-import { Summary } from './Summary'
+import { Summary } from './Summary/Summary'
 import { getTableColumns } from './columns'
-import { useSortedLoans } from './hooks'
+import { useLoansTable } from './hooks/useLoansTable'
 import { useSelectedLoans } from './loansState'
 
 import styles from './LoansTable.module.less'
 
-type SearchSelectOption = {
-  collectionName: string
-  collectionImage: string
-  claim: number
-}
-
 export const LoansTable = () => {
-  const { connected } = useWallet()
-
-  const { loans, addMints: hideLoans, updateOrAddLoan, loading } = useLenderLoans()
-
-  const { loansToClaim, loansToTerminate } = useMemo(() => {
-    if (!loans.length) return { loansToClaim: [], loansToTerminate: [] }
-
-    const loansToClaim = loans.filter(isLoanAbleToClaim)
-
-    const loansToTerminate = loans.filter(isLoanAbleToTerminate)
-
-    return { loansToClaim, loansToTerminate }
-  }, [loans])
+  const {
+    loans,
+    loansToClaim,
+    loansToTerminate,
+    sortViewParams,
+    hideLoans,
+    updateOrAddLoan,
+    loading,
+    showEmptyList,
+    emptyMessage,
+    isUnderwaterFilterActive,
+    onToggleUnderwaterFilter,
+  } = useLoansTable()
 
   const { viewState } = useTableView()
-
-  const [selectedCollections, setSelectedCollections] = useState<string[]>([])
-
-  const filteredLoans = useMemo(() => {
-    if (selectedCollections.length) {
-      return loans.filter(({ nft }) => selectedCollections.includes(nft.meta.collectionName))
-    }
-    return loans
-  }, [loans, selectedCollections])
-
-  const { sortedLoans, sortParams } = useSortedLoans(filteredLoans)
-
-  const searchSelectOptions = useMemo(() => {
-    const loansGroupedByCollection = groupBy(loans, ({ nft }) => nft.meta.collectionName)
-
-    return map(loansGroupedByCollection, (groupedLoans) => {
-      const firstLoanInGroup = first(groupedLoans)
-      const { collectionName = '', collectionImage = '' } = firstLoanInGroup?.nft.meta || {}
-      const claim = sumBy(groupedLoans, calculateClaimValue)
-
-      return { collectionName, collectionImage, claim }
-    })
-  }, [loans])
-
-  const searchSelectParams: SearchSelectProps<SearchSelectOption> = {
-    options: searchSelectOptions,
-    selectedOptions: selectedCollections,
-    className: styles.searchSelect,
-    labels: ['Collection', 'Claim'],
-    optionKeys: {
-      labelKey: 'collectionName',
-      valueKey: 'collectionName',
-      imageKey: 'collectionImage',
-      secondLabel: {
-        key: 'claim',
-        format: (value: number) => createSolValueJSX(value, 1e9, '0◎', formatDecimal),
-      },
-    },
-    onChange: setSelectedCollections,
-  }
 
   const {
     selection,
@@ -96,14 +41,7 @@ export const LoansTable = () => {
     set: setSelection,
   } = useSelectedLoans()
 
-  const onRowClick = useCallback(
-    (loan: Loan) => {
-      toggleLoanInSelection(loan)
-    },
-    [toggleLoanInSelection],
-  )
-
-  const hasSelectedLoans = useMemo(() => !!selection?.length, [selection])
+  const hasSelectedLoans = !!selection?.length
 
   const onSelectAll = useCallback(() => {
     if (hasSelectedLoans) {
@@ -111,15 +49,21 @@ export const LoansTable = () => {
     } else {
       setSelection(loans)
     }
-  }, [clearSelection, hasSelectedLoans, loans, setSelection])
+  }, [clearSelection, loans, hasSelectedLoans, setSelection])
 
   const columns = getTableColumns({
     onSelectAll,
     findLoanInSelection,
-    toggleLoanInSelection: onRowClick,
+    toggleLoanInSelection,
     hasSelectedLoans,
     isCardView: viewState === ViewState.CARD,
+    isUnderwaterFilterActive,
   })
+
+  const onRowClick = useCallback(
+    (loan: Loan) => toggleLoanInSelection(loan),
+    [toggleLoanInSelection],
+  )
 
   const rowParams = useMemo(() => {
     return {
@@ -135,25 +79,32 @@ export const LoansTable = () => {
           className: styles.liquidated,
           cardClassName: styles.liquidated,
         },
+        {
+          condition: (loan: Loan) => isUnderWaterLoan(loan),
+          className: styles.underwater,
+          cardClassName: styles.underwater,
+        },
       ],
     }
   }, [onRowClick])
 
-  const showEmptyList = (!loans.length && !loading) || !connected
-  const emptyMessage = connected
-    ? 'Your offers is waiting for a borrower'
-    : 'Connect wallet to view your active offers'
+  const customFiltersJSX = (
+    <Button onClick={onToggleUnderwaterFilter} type="circle" variant="secondary">
+      <Underwater />
+    </Button>
+  )
 
   if (showEmptyList) return <EmptyList message={emptyMessage} />
 
   return (
     <div className={styles.tableRoot}>
       <Table
-        data={sortedLoans}
+        data={loans}
         columns={columns}
         rowParams={rowParams}
-        sortViewParams={{ searchSelectParams, sortParams }}
+        sortViewParams={sortViewParams}
         loading={loading}
+        customFiltersJSX={customFiltersJSX}
         showCard
       />
       <Summary
@@ -161,6 +112,9 @@ export const LoansTable = () => {
         loansToTerminate={loansToTerminate}
         loansToClaim={loansToClaim}
         updateOrAddLoan={updateOrAddLoan}
+        isUnderwaterFilterActive={isUnderwaterFilterActive}
+        selectedLoans={selection}
+        setSelection={setSelection}
       />
     </div>
   )
