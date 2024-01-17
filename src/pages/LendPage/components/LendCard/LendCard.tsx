@@ -15,11 +15,10 @@ import styles from './LendCard.module.less'
 interface LendCardProps {
   market: MarketPreview
   isCardOpen: boolean
-  isOrderBookVisible: boolean
   onCardClick: () => void
 }
 
-const LendCard: FC<LendCardProps> = ({ isCardOpen, onCardClick, market, isOrderBookVisible }) => {
+const LendCard: FC<LendCardProps> = ({ isCardOpen, onCardClick, market }) => {
   const cardRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -45,12 +44,7 @@ const LendCard: FC<LendCardProps> = ({ isCardOpen, onCardClick, market, isOrderB
           </Button>
         </div>
       </div>
-      {isCardOpen && (
-        <ExpandableCardContent
-          marketPubkey={market.marketPubkey}
-          isOrderBookVisible={isOrderBookVisible}
-        />
-      )}
+      {isCardOpen && <ExpandableCardContent marketPubkey={market.marketPubkey} />}
     </div>
   )
 }

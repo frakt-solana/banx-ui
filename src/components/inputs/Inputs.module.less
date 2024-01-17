@@ -130,4 +130,78 @@ body .input {
   color: var(--additional-red-primary);
   font: var(--body-text-sm);
   height: 14px;
+
+  @media (max-width: 640px) {
+    font: var(--body-text-xs);
+    line-height: 14px;
+  }
 }
+
+/* NumericStepInput styles */
+.counterInputContainer {
+  border: var(--border-primary) !important;
+  position: relative;
+
+  input {
+    padding: 8px 24px 8px 8px;
+  }
+}
+.containerWithPostfix {
+  input {
+    padding-right: 54px;
+
+    @media (max-width: 640px) {
+      padding-right: 42px;
+    }
+  }
+}
+
+.customCounterControls {
+  border-left: var(--border-primary);
+
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-evenly;
+
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 22px;
+}
+.separatorLine {
+  background: var(--bg-border);
+  height: 1px;
+  width: 100%;
+}
+.arrow {
+  cursor: pointer;
+
+  path {
+    fill: var(--content-primary);
+  }
+
+  &.rotate {
+    transform: rotate(180deg);
+  }
+
+  &.disabled {
+    cursor: default;
+
+    path {
+      fill: var(--content-secondary);
+    }
+  }
+}
+.postfix {
+  position: absolute;
+  right: 32px;
+  top: 50%;
+  transform: translate(0%, -50%);
+
+  @media (max-width: 640px) {
+    right: 26px;
+  }
+}
+/* NumericStepInput styles */

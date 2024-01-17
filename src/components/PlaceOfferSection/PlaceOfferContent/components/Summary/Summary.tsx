@@ -1,7 +1,6 @@
 import { FC } from 'react'
 
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
-import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { MarketPreview, Offer } from '@banx/api/core'
 import {
@@ -11,57 +10,74 @@ import {
   getColorByPercent,
 } from '@banx/utils'
 
-import { getSummaryInfo } from './helpers'
+import { calcMaxLtv, calcOfferSize } from './helpers'
 
-import styles from '../../PlaceOfferContent.module.less'
+import styles from './Summary.module.less'
 
 interface OfferSummaryProps {
   initialOffer: Offer | undefined
   updatedOffer: Offer | undefined
-  market: MarketPreview | undefined
   hasFormChanges: boolean
 }
 
-export const Summary: FC<OfferSummaryProps> = ({
+interface MainSummaryProps extends OfferSummaryProps {
+  market: MarketPreview | undefined
+}
+
+export const MainSummary: FC<MainSummaryProps> = ({
   initialOffer,
   updatedOffer,
   market,
   hasFormChanges,
 }) => {
-  const { maxLtv, offerSize, collectionFloor, loansQuantity, maxOfferValue } = getSummaryInfo({
-    hasFormChanges,
-    initialOffer,
-    updatedOffer,
-    market,
-  })
+  const { collectionFloor = 0 } = market || {}
 
-  const formattedOfferSize = formatDecimal(offerSize / 1e9)
+  const initialMaxOfferValue = initialOffer?.validation.loanToValueFilter || 0
+  const updatedMaxOfferValue = updatedOffer?.validation.loanToValueFilter || 0
+  const maxOfferValue = Math.max(initialMaxOfferValue, updatedMaxOfferValue)
+
+  const maxLtv = calcMaxLtv({ initialOffer, updatedOffer, collectionFloor, hasFormChanges })
+
   const maxDynamicApr = calcDynamicApr(maxOfferValue, collectionFloor)
 
-  const maxOfferValuesJSX = (
-    <div className={styles.ltvValues}>
-      {createSolValueJSX(maxOfferValue, 1e9, '0◎', formatDecimal)}
-      {' | '}
-      <span style={{ color: getColorByPercent(maxLtv, HealthColorIncreasing) }}>
-        {createPercentValueJSX(maxLtv, '0%')}
-      </span>
+  return (
+    <div className={styles.mainSummary}>
+      <StatInfo
+        label="Max LTV"
+        value={maxLtv}
+        tooltipText="Your max offer expressed as loan-to-value, given sufficient liquidity in your offer. Actual loan amount taken can be less depending on the amount of SOL borrowers choose to borrow"
+        valueType={VALUES_TYPES.PERCENT}
+        valueStyles={{ color: getColorByPercent(maxLtv, HealthColorIncreasing) }}
+        classNamesProps={{ container: styles.mainSummaryStat }}
+      />
+      <div className={styles.separateLine} />
+      <StatInfo
+        label="Max Apr"
+        value={maxDynamicApr}
+        valueType={VALUES_TYPES.PERCENT}
+        classNamesProps={{ value: styles.aprValue, container: styles.mainSummaryStat }}
+        tooltipText="Your maximum annual interest rate. Ranges between 34-104% APR depending on the loan-to-value (LTV) offered, and becomes fixed once offer is taken by a borrower"
+      />
     </div>
   )
+}
+
+export const AdditionalSummary: FC<OfferSummaryProps> = ({
+  initialOffer,
+  updatedOffer,
+  hasFormChanges,
+}) => {
+  const loansQuantity = updatedOffer?.buyOrdersQuantity || 0
+  const offerSize = calcOfferSize({ initialOffer, updatedOffer, hasFormChanges })
+
+  const formattedOfferSize = formatDecimal(offerSize / 1e9)
 
   return (
-    <div className={styles.summary}>
-      <StatInfo
-        label="Maximum offer | LTV"
-        value={maxOfferValuesJSX}
-        tooltipText="Max offer given sufficient liquidity in your offer. Actual loan amount taken can be less depending on the amount of SOL borrowers choose to borrow"
-        valueType={VALUES_TYPES.STRING}
-        flexType="row"
-      />
-
+    <div className={styles.additionalSummary}>
       <StatInfo
         label="Funding at least"
         value={`${loansQuantity} loans`}
-        tooltipText="Minimum amount of loans you will fund if your entire liquidity in offer is lend at Max Offer. As borrowers can borrow at loan value equal or smaller than your max offer you could end up funding more loans"
+        tooltipText="The minimum amount of loans you will fund if the entire liquidity in offer is lent at the Max Offer value. As borrowers can borrow at loan values equal to or less than your Max Offer, you may end up funding more loans"
         valueType={VALUES_TYPES.STRING}
         flexType="row"
       />
@@ -70,16 +86,7 @@ export const Summary: FC<OfferSummaryProps> = ({
         label="Total liquidity in offer"
         value={`${formattedOfferSize}◎`}
         valueType={VALUES_TYPES.STRING}
-        tooltipText="Total liquidity currently available in offer"
-        flexType="row"
-      />
-
-      <StatInfo
-        label="Max Apr"
-        value={maxDynamicApr}
-        valueType={VALUES_TYPES.PERCENT}
-        classNamesProps={{ value: styles.aprValue }}
-        tooltipText="Maximum annual interest rate. Ranges between 34-104% APR depending on the loan-to-value (LTV) offered, and becomes fixed once offer is taken by a borrower"
+        tooltipText="Your total liquidity currently available in offer"
         flexType="row"
       />
     </div>

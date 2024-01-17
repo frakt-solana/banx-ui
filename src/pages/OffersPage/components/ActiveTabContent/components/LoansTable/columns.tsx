@@ -34,13 +34,21 @@ export const getTableColumns = ({ isCardView = false }: GetTableColumns) => {
     },
     {
       key: 'repaid',
-      title: <HeaderCell label="Repaid" />,
+      title: (
+        <HeaderCell
+          label="Repaid"
+          tooltipText="Repayments returned to pending offer if open, or wallet if closed"
+        />
+      ),
       render: (loan) => createSolValueJSX(loan.totalRepaidAmount, 1e9, '0◎', formatDecimal),
     },
     {
       key: 'interest',
       title: (
-        <HeaderCell label="Claim" tooltipText="Sum of lent amount and accrued interest to date" />
+        <HeaderCell
+          label="Claim"
+          tooltipText="Sum of lent amount and accrued interest to date, less any repayments"
+        />
       ),
       render: (loan) => <InterestCell loan={loan} isCardView={isCardView} />,
     },

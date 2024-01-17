@@ -18,14 +18,12 @@ export const getTableColumns = () => {
       key: 'floorPrice',
       title: <HeaderCell label="Floor" />,
       render: (market) => createSolValueJSX(market.collectionFloor, 1e9),
-      sorter: true,
     },
 
     {
       key: 'borrow',
-      title: <HeaderCell label="Borrow" />,
+      title: <HeaderCell label="Borrow up to" />,
       render: (market) => createSolValueJSX(market.bestOffer, 1e9),
-      sorter: true,
     },
     {
       key: 'liquidity',
@@ -35,7 +33,6 @@ export const getTableColumns = () => {
           {createSolValueJSX(offerTvl, 1e9)}
         </span>
       ),
-      sorter: true,
     },
   ]
 
