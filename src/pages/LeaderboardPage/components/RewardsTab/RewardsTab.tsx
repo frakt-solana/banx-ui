@@ -47,7 +47,7 @@ const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({ totalWeekRewards }) => 
     <div className={styles.weeklyRewardsBlock}>
       <div className={styles.weeklyRewardsInfoRow}>
         <div className={styles.weeklyRewardsInfo}>
-          <p className={styles.blockTitle}>This week bounty</p>
+          <p className={styles.blockTitle}>Total earned</p>
           <p className={styles.rewardsValue}>{formatNumber(totalWeekRewards)} BONK</p>
         </div>
         <div className={styles.partnersInfoWrapper}>
