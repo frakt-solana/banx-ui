@@ -6,12 +6,13 @@ import { getDiscordAvatarUrl } from '@banx/utils'
 
 import {
   BanxNotification,
+  BonkWithdrawal,
+  BonkWithdrawalSchema,
   DiscordUserInfo,
   DiscordUserInfoRaw,
   LeaderboardData,
   LeaderboardDataSchema,
   LeaderboardTimeRange,
-  LeaderboardUsersStats,
   SeasonUserRewards,
   SeasonUserRewardsSchema,
   UserLockedRewards,
@@ -209,16 +210,32 @@ export const fetchLeaderboardData: FetchLeaderboardData = async ({
   }
 }
 
-const LEADERBOARD_USERS_STATS_URL =
-  'https://gist.githubusercontent.com/Timikcool/5e8f09ffaf6e957753c6d8bb79e0dd97/raw/leaderboard.json'
-
-type FetchLeaderboardUsersStats = () => Promise<LeaderboardUsersStats[]>
-export const fetchLeaderboardUsersStats: FetchLeaderboardUsersStats = async () => {
+type FetchBonkWithdrawal = (props: { walletPubkey: string }) => Promise<BonkWithdrawal | null>
+export const fetchBonkWithdrawal: FetchBonkWithdrawal = async ({ walletPubkey }) => {
   try {
-    const { data } = await axios.get<LeaderboardUsersStats[]>(LEADERBOARD_USERS_STATS_URL)
+    const { data: bondWithdrawal } = await axios.get<BonkWithdrawal>(
+      `${BACKEND_BASE_URL}/leaderboard/request-bonk-withdrawal/${walletPubkey}`,
+    )
 
-    return data ?? []
+    try {
+      await BonkWithdrawalSchema.parseAsync(bondWithdrawal)
+    } catch (validationError) {
+      console.error('Schema validation error:', validationError)
+    }
+
+    return bondWithdrawal || null
   } catch (error) {
-    return []
+    return null
   }
+}
+
+type SendBonkWithdrawal = (props: {
+  bonkWithdrawal: BonkWithdrawal
+  walletPubkey: string
+}) => Promise<void>
+export const sendBonkWithdrawal: SendBonkWithdrawal = async ({ bonkWithdrawal, walletPubkey }) => {
+  await axios.post(
+    `${BACKEND_BASE_URL}/leaderboard/process-bonk-withdrawal/${walletPubkey}`,
+    bonkWithdrawal,
+  )
 }

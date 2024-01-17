@@ -1,4 +1,4 @@
-import { Key } from 'react'
+import { Key, ReactNode } from 'react'
 
 import { notification } from 'antd'
 import { NotificationPlacement } from 'antd/es/notification/interface'
@@ -19,6 +19,7 @@ import styles from './Snackbar.module.less'
 export type SnackbarType = 'info' | 'success' | 'warning' | 'error' | 'loading'
 
 export interface SnackbarProps extends SnackMessageProps, Partial<SnackDescriptionProps> {
+  icon?: ReactNode
   autoHideDuration?: number
   closable?: boolean //? Show or hide close btn
   persist?: boolean
@@ -31,6 +32,7 @@ type EnqueueSnackbar = (props: SnackbarProps) => Key
 export const enqueueSnackbar: EnqueueSnackbar = ({
   message,
   description,
+  icon,
   type = 'info',
   autoHideDuration = 4.5,
   closable = true,
@@ -47,6 +49,13 @@ export const enqueueSnackbar: EnqueueSnackbar = ({
     maxCount: 5, //? Max Notification show, drop oldest if exceed limit
   })
 
+  const notificationIcon =
+    type === 'loading' ? (
+      <LoaderCircle className={styles.loadingIcon} gradientColor="#096DD9" />
+    ) : (
+      icon
+    )
+
   notification.open({
     type: type === 'loading' ? 'info' : type,
     className: classNames(styles.snack, styles[`snack__${type}`], className),
@@ -58,10 +67,7 @@ export const enqueueSnackbar: EnqueueSnackbar = ({
       ) : undefined,
     placement,
     duration: persist ? 0 : autoHideDuration,
-    icon:
-      type === 'loading' ? (
-        <LoaderCircle className={styles.loadingIcon} gradientColor="#096DD9" />
-      ) : undefined,
+    icon: notificationIcon,
     key,
   })
 

@@ -10,6 +10,7 @@ import { CounterSlider, Slider } from '@banx/components/Slider'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
+import bonkTokenImg from '@banx/assets/BonkToken.png'
 import { DYNAMIC_APR } from '@banx/constants'
 import {
   calcBorrowValueWithProtocolFee,
@@ -32,6 +33,7 @@ interface SummaryProps {
   maxBorrowAmount: number
   maxBorrowPercent: number
   setMaxBorrowPercent: (value: number) => void
+  bonkRewardsAvailable: boolean
 }
 
 export const Summary: FC<SummaryProps> = ({
@@ -41,6 +43,7 @@ export const Summary: FC<SummaryProps> = ({
   selectAmount,
   maxBorrowPercent,
   setMaxBorrowPercent,
+  bonkRewardsAvailable,
 }) => {
   const totalBorrow = sumBy(nftsInCart, ({ loanValue, nft }) => {
     const loanValueWithProtocolFee = calcBorrowValueWithProtocolFee(loanValue)
@@ -67,6 +70,8 @@ export const Summary: FC<SummaryProps> = ({
     await borrowAll()
     setIsBorrowing(false)
   }
+
+  const showBonkRewardsSticker = !!(bonkRewardsAvailable && nftsInCart.length)
 
   return (
     <div className={styles.summary}>
@@ -114,6 +119,11 @@ export const Summary: FC<SummaryProps> = ({
           loading={isBorrowing}
           size="large"
         >
+          {!!showBonkRewardsSticker && (
+            <Tooltip className={styles.bonkTokenSticker} title="50% upfront fee refunded in $BONK">
+              <img src={bonkTokenImg} alt="Bonk token sticker" />
+            </Tooltip>
+          )}
           Borrow {createSolValueJSX(totalBorrow, 1e9, '0◎')}
         </Button>
       </div>
