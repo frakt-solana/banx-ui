@@ -4,7 +4,7 @@ import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/Tab
 
 import { Loan } from '@banx/api/core'
 import { calculateLentValue } from '@banx/pages/OffersPage'
-import { formatDecimal } from '@banx/utils'
+import { formatDecimal, isLoanTerminating } from '@banx/utils'
 
 import { APRCell, ActionsCell, InterestCell, StatusCell } from './TableCells'
 
@@ -46,13 +46,13 @@ export const getTableColumns = ({
       render: (loan) => {
         const { partnerPoints = 0, playerPoints = 0, name, imageUrl } = loan.nft.meta
 
+        const canSelect = isUnderwaterFilterActive && !isLoanTerminating(loan)
+
         const onCheckboxClick = isUnderwaterFilterActive
           ? () => toggleLoanInSelection(loan)
           : undefined
 
-        const selected = isUnderwaterFilterActive
-          ? !!findLoanInSelection(loan.publicKey)
-          : undefined
+        const selected = canSelect ? !!findLoanInSelection(loan.publicKey) : undefined
 
         return (
           <NftInfoCell
@@ -61,6 +61,7 @@ export const getTableColumns = ({
             selected={selected}
             onCheckboxClick={onCheckboxClick}
             banxPoints={{ partnerPoints, playerPoints }}
+            checkboxClassName={!canSelect ? styles.nftCellCheckbox : ''}
           />
         )
       },

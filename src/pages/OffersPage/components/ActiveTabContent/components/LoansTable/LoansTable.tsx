@@ -48,12 +48,8 @@ export const LoansTable = () => {
   const hasSelectedLoans = !!selection?.length
 
   const onSelectAll = useCallback(() => {
-    if (hasSelectedLoans) {
-      clearSelection()
-    } else {
-      setSelection(loans)
-    }
-  }, [clearSelection, loans, hasSelectedLoans, setSelection])
+    return hasSelectedLoans ? clearSelection() : setSelection(underwaterLoans)
+  }, [hasSelectedLoans, clearSelection, setSelection, underwaterLoans])
 
   const columns = getTableColumns({
     onSelectAll,
@@ -65,7 +61,11 @@ export const LoansTable = () => {
   })
 
   const onRowClick = useCallback(
-    (loan: Loan) => toggleLoanInSelection(loan),
+    (loan: Loan) => {
+      if (isLoanTerminating(loan)) return
+
+      toggleLoanInSelection(loan)
+    },
     [toggleLoanInSelection],
   )
 
