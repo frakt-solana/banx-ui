@@ -292,7 +292,7 @@ export const calcAdjustedLoanValueByMaxByMarket: CalcAdjustedLoanValueByMaxByMar
 export const showBonkRewardsSnack = () => {
   enqueueSnackbar({
     className: styles.bonkRewardsSnack,
-    message: '50% of fee is refunded in $BONK',
+    message: 'You just got 50% cashback in $BONK',
     icon: <img src={bonkTokenImg} alt="Bonk token" className={styles.bonkRewardsSnackIcon} />,
     autoHideDuration: 500,
   })
