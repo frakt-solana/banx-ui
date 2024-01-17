@@ -93,13 +93,14 @@
 .terminateSliderWrapper {
   max-width: 220px;
 
+  & > div:first-child {
+    padding-bottom: 8px;
+  }
+
   @media (max-width: 960px) {
     height: 32px;
     max-width: unset;
   }
-}
-.terminateSlider {
-  padding-bottom: 8px;
 }
 
 .terminateButton:not(:disabled) {

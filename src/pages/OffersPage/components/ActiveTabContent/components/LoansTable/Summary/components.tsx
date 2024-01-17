@@ -98,7 +98,6 @@ export const TerminateContent: FC<TerminateContentProps> = ({
           value={totalSelectedLoans}
           onChange={(value) => handleLoanSelection(value)}
           className={styles.terminateSliderWrapper}
-          rootClassName={styles.terminateSlider}
           max={loans.length}
         />
 
