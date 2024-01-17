@@ -30,7 +30,12 @@ import { getDialectAccessToken, trackPageEvent } from '@banx/utils'
 import { useCartState } from '../../cartState'
 import { getTableColumns } from './columns'
 import { DEFAULT_TABLE_SORT, SORT_OPTIONS } from './constants'
-import { createBorrowParams, createTableNftData, executeBorrow } from './helpers'
+import {
+  createBorrowParams,
+  createTableNftData,
+  executeBorrow,
+  showBonkRewardsSnack,
+} from './helpers'
 import { SortField, TableNftData } from './types'
 
 import styles from './BorrowTable.module.less'
@@ -86,8 +91,13 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
   }
 
   const onBorrowSuccess = (loansAmount = 1, showCongrats = false) => {
-    const isUserSubscribedToNotifications = !!getDialectAccessToken(wallet.publicKey?.toBase58())
+    //? Show bonk snack if bonkRewardsAvailable
+    if (bonkRewardsAvailable) {
+      showBonkRewardsSnack()
+    }
 
+    //? Show notification with an offer to subscribe (if user not subscribed)
+    const isUserSubscribedToNotifications = !!getDialectAccessToken(wallet.publicKey?.toBase58())
     if (!isUserSubscribedToNotifications || showCongrats) {
       open(SubscribeNotificationsModal, {
         title: createLoanSubscribeNotificationsTitle(loansAmount),
