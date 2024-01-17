@@ -118,7 +118,7 @@ export const Summary: FC<SummaryProps> = ({
           {!!showBonkRewardsSticker && (
             <Tooltip
               className={styles.bonkTokenSticker}
-              title="You are getting 50% cashback on platform fees in $BONK!"
+              title="50% upfront fee refunded in $BONK"
             >
               <img src={bonkTokenImg} alt="Bonk token sticker" />
             </Tooltip>
