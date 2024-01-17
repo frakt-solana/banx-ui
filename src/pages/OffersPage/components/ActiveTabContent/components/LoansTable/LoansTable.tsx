@@ -12,9 +12,9 @@ import { Underwater } from '@banx/icons'
 import { ViewState, useTableView } from '@banx/store'
 import { isLoanLiquidated, isLoanTerminating, isUnderWaterLoan } from '@banx/utils'
 
-import { Summary } from './Summary/Summary'
+import { Summary } from './Summary'
 import { getTableColumns } from './columns'
-import { useLoansTable } from './hooks/useLoansTable'
+import { useLoansTable } from './hooks'
 import { useSelectedLoans } from './loansState'
 
 import styles from './LoansTable.module.less'
