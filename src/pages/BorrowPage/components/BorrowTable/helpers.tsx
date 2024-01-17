@@ -294,6 +294,5 @@ export const showBonkRewardsSnack = () => {
     className: styles.bonkRewardsSnack,
     message: 'You just got 50% cashback in $BONK',
     icon: <img src={bonkTokenImg} alt="Bonk token" className={styles.bonkRewardsSnackIcon} />,
-    autoHideDuration: 500,
   })
 }
