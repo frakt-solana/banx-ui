@@ -10,6 +10,8 @@ import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { Loan } from '@banx/api/core'
+import { TABLET_WIDTH } from '@banx/constants'
+import { useWindowSize } from '@banx/hooks'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimAction, makeTerminateAction } from '@banx/transactions/loans'
 import { HealthColorIncreasing, enqueueSnackbar, getColorByPercent } from '@banx/utils'
@@ -118,8 +120,13 @@ interface ClaimContentProps {
 export const ClaimContent: FC<ClaimContentProps> = ({ loans, hideLoans }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
+  const { width } = useWindowSize()
+  const isSmallDesktop = width < TABLET_WIDTH
 
   const totalClaimableFloor = useMemo(() => sumBy(loans, ({ nft }) => nft.collectionFloor), [loans])
+
+  const buttonText = isSmallDesktop ? 'Claim' : 'Claim all NFTs'
+  const label = isSmallDesktop ? 'Claimable floor' : 'Collateral'
 
   const claimLoans = () => {
     const txnParams = loans.map((loan) => ({ loan }))
@@ -152,7 +159,7 @@ export const ClaimContent: FC<ClaimContentProps> = ({ loans, hideLoans }) => {
         <p className={styles.loansValueText}>{loans.length}</p>
         <div className={styles.loansInfoContainer}>
           <StatInfo
-            label="Collateral"
+            label={label}
             value={totalClaimableFloor}
             classNamesProps={{ value: styles.value }}
             divider={1e9}
@@ -165,7 +172,7 @@ export const ClaimContent: FC<ClaimContentProps> = ({ loans, hideLoans }) => {
         disabled={!loans.length}
         variant="secondary"
       >
-        Claim all NFTs
+        {buttonText}
       </Button>
     </div>
   )

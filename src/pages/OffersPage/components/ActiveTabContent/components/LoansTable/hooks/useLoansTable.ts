@@ -43,6 +43,8 @@ export const useLoansTable = () => {
     onChange: setSelectedCollections,
   })
 
+  const underwaterLoansCount = underwaterLoans.length > 0 ? underwaterLoans.length : null
+
   const showEmptyList = (!loans.length && !loading) || !connected
   const emptyMessage = connected
     ? 'Your offers is waiting for a borrower'
@@ -54,7 +56,7 @@ export const useLoansTable = () => {
     updateOrAddLoan,
     loading,
 
-    underwaterLoans,
+    underwaterLoansCount,
 
     isUnderwaterFilterActive,
     onToggleUnderwaterFilter,

@@ -84,8 +84,9 @@
   }
 }
 
-.summaryButton {
-  width: 128px;
+.summaryButton,
+.terminateButton {
+  width: 152px;
 
   @media (max-width: 960px) {
     width: 100%;
@@ -93,8 +94,6 @@
 }
 
 .terminateButton {
-  width: 152px;
-
   &:not(:disabled) {
     background: var(--additional-lava-secondary) !important;
     border-color: var(--additional-lava-primary) !important;
@@ -107,6 +106,10 @@
   justify-content: space-between;
   gap: 16px;
   width: 100%;
+
+  @media (max-width: 960px) {
+    flex-direction: column;
+  }
 }
 
 .stats {
@@ -115,16 +118,33 @@
   gap: 24px;
 
   & > div {
-    min-width: 160px;
+    min-width: 148px;
+
+    @media (max-width: 1240px) {
+      min-width: 104px;
+    }
+
+    @media (max-width: 960px) {
+      align-items: center;
+    }
   }
 }
 
 .counterSlider {
   max-width: 220px;
+  height: 32px;
+
+  @media (max-width: 960px) {
+    max-width: unset;
+  }
 }
 
 .sliderAndButtonWrapper {
   display: flex;
   align-items: center;
   gap: 16px;
+
+  @media (max-width: 960px) {
+    width: 100%;
+  }
 }

@@ -29,7 +29,7 @@ export const LoansTable = () => {
     emptyMessage,
     isUnderwaterFilterActive,
     onToggleUnderwaterFilter,
-    underwaterLoans,
+    underwaterLoansCount,
   } = useLoansTable()
 
   const { viewState } = useTableView()
@@ -90,10 +90,7 @@ export const LoansTable = () => {
   }, [onRowClick])
 
   const customFiltersJSX = (
-    <div
-      className={styles.filterButtonWrapper}
-      data-underwater-loans={underwaterLoans.length > 0 ? underwaterLoans.length : null}
-    >
+    <div className={styles.filterButtonWrapper} data-underwater-loans={underwaterLoansCount}>
       <Button
         className={classNames(styles.filterButton, { [styles.active]: isUnderwaterFilterActive })}
         onClick={onToggleUnderwaterFilter}
