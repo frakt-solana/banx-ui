@@ -85,7 +85,9 @@ export const TerminateContent: FC<TerminateContentProps> = ({
           label="Avg ltv"
           value={averageLtv}
           valueType={VALUES_TYPES.PERCENT}
-          valueStyles={{ color: getColorByPercent(averageLtv, HealthColorIncreasing) }}
+          valueStyles={{
+            color: averageLtv ? getColorByPercent(averageLtv, HealthColorIncreasing) : '',
+          }}
         />
         <StatInfo label="interest" value={totalInterest} divider={1e9} />
       </div>
@@ -95,7 +97,8 @@ export const TerminateContent: FC<TerminateContentProps> = ({
           label="# Loans"
           value={totalSelectedLoans}
           onChange={(value) => handleLoanSelection(value)}
-          className={styles.terminateSlider}
+          className={styles.terminateSliderWrapper}
+          rootClassName={styles.terminateSlider}
           max={loans.length}
         />
 

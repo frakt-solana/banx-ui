@@ -90,13 +90,16 @@
   }
 }
 
-.terminateSlider {
+.terminateSliderWrapper {
   max-width: 220px;
-  height: 32px;
 
   @media (max-width: 960px) {
+    height: 32px;
     max-width: unset;
   }
+}
+.terminateSlider {
+  padding-bottom: 8px;
 }
 
 .terminateButton:not(:disabled) {
