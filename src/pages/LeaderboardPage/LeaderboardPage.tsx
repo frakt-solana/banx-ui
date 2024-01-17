@@ -35,7 +35,7 @@ export const LeaderboardPage = () => {
 
 export const LEADERBOARD_TABS: Tab[] = [
   {
-    label: 'SOL rewards',
+    label: 'BONK rewards',
     value: LeaderboardTabName.REWARDS,
   },
   {

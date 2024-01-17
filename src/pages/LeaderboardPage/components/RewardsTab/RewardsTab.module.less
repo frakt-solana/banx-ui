@@ -1,8 +1,6 @@
 .container {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: auto 0;
+  align-items: stretch;
   padding: 24px;
   gap: 24px;
   width: 100%;
@@ -17,55 +15,147 @@
   }
 }
 
-.claimRewardsBlock,
-.rewardsInfoBlock {
+.weeklyRewardsBlock {
   border: var(--border-less-primary);
   border-style: dashed;
   display: flex;
   flex-direction: column;
-  padding: 16px;
-  height: 100%;
+  padding: 24px;
   width: 100%;
+  height: 100%;
+
+  @media (max-width: 640px) {
+    padding: 16px;
+  }
+}
+.weeklyRewardsInfoRow {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 18px;
+}
+.weeklyRewardsInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.weeklyRewardsList {
+  font: var(--body-text-md);
+  display: flex;
+  flex-direction: column;
+  row-gap: 6px;
+  margin-bottom: 8px;
+  li {
+    display: flex;
+    align-items: center;
+    column-gap: 8px;
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+    li {
+      column-gap: 4px;
+      svg {
+        height: 18px;
+        width: 18px;
+      }
+    }
+  }
+}
+.weeklyRewardsBorrowBtn {
+  text-decoration: none;
+  button {
+    width: 100%;
+  }
 }
 
-.claimRewardsBlock {
-  justify-content: center;
-  gap: 16px;
+.partnersInfoWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
-.claimRewardsLabel {
-  color: var(--content-primary);
+.partnersImages {
+  display: flex;
+
+  img {
+    border-radius: 100%;
+    height: 48px;
+    width: 48px;
+
+    @media (max-width: 640px) {
+      height: 24px;
+      width: 24px;
+    }
+  }
+
+  img:last-child {
+    margin-left: -8px;
+  }
+}
+
+.rewardsValue {
+  font: var(--important-text-xll);
+  white-space: nowrap;
+
+  @media (max-width: 640px) {
+    font: var(--important-text-md);
+  }
+}
+
+.blockTitle {
+  font: var(--table-header-md);
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  @media (max-width: 640px) {
+    font: var(--table-header-sm);
+  }
+}
+
+.availableToClaim {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px 0;
+  @media (max-width: 640px) {
+    padding: 16px 0;
+  }
+}
+.availableToClaimInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.totalClaimedInfo {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  margin: 16px 0 8px;
+}
+.totalClaimedLabel {
+  color: var(--content-secondary);
+  font: var(--table-header-md);
+  text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--table-header-sm);
+  }
+}
+.totalClaimedValue {
+  font: var(--body-text-sm);
+}
+.claimButton {
+  width: 100%;
 }
 
 .emptyList {
   margin: 0;
-}
-
-.rewardsInfoBlock {
-  gap: 24px;
-}
-.rewardsInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.rewardsInfoTitle {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font: var(--title-xs);
-  text-transform: uppercase;
-
-  svg path {
-    stroke: var(--content-primary);
-  }
-}
-
-.infoRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  svg {
-    min-width: 24px;
-  }
 }

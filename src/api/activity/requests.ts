@@ -119,3 +119,13 @@ export const fetchActivityCollectionsList: FetchActivityCollectionsList = async 
     return []
   }
 }
+
+export const fetchBorrowBonkRewardsAvailability = async () => {
+  const { data } = await axios.get<{
+    data: {
+      rewardsAvailable: boolean
+    }
+  }>(`${BACKEND_BASE_URL}/bonds/bonk-rewards-availability`)
+
+  return data?.data?.rewardsAvailable || false
+}

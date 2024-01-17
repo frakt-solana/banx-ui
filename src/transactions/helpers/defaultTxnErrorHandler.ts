@@ -2,7 +2,7 @@ import { TxnError } from 'solana-transactions-executor'
 
 import { captureSentryTxnError } from '@banx/utils'
 
-import { enqueueTxnErrorSnackbar } from './enqueueTxnErrorSnackbar'
+import { enqueueTxnErrorSnackbar } from './enqueueErrorSnackbar'
 
 type DefaultTxnErrorHandler = (
   error: TxnError,
