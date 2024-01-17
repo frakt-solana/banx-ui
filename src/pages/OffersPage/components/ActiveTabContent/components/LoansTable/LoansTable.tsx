@@ -30,6 +30,8 @@ export const LoansTable = () => {
     isUnderwaterFilterActive,
     onToggleUnderwaterFilter,
     underwaterLoansCount,
+    loansToClaim,
+    underwaterLoans,
   } = useLoansTable()
 
   const { viewState } = useTableView()
@@ -116,7 +118,8 @@ export const LoansTable = () => {
         showCard
       />
       <Summary
-        loans={loans}
+        loansToClaim={loansToClaim}
+        underwaterLoans={underwaterLoans}
         updateOrAddLoan={updateOrAddLoan}
         isUnderwaterFilterActive={isUnderwaterFilterActive}
         selectedLoans={selection}

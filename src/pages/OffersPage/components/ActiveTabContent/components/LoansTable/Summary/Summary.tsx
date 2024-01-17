@@ -1,8 +1,6 @@
-import { FC, useMemo } from 'react'
+import { FC } from 'react'
 
 import { Loan } from '@banx/api/core'
-import { isLoanAbleToClaim } from '@banx/pages/OffersPage'
-import { isUnderWaterLoan } from '@banx/utils'
 
 import { ClaimContent, TerminateContent } from './components'
 
@@ -16,25 +14,24 @@ interface SummaryProps {
   selectedLoans: Loan[]
   setSelection: (loans: Loan[]) => void
 
-  loans: Loan[]
+  loansToClaim: Loan[]
+  underwaterLoans: Loan[]
 }
 
 export const Summary: FC<SummaryProps> = ({
   updateOrAddLoan,
-  loans,
+  loansToClaim,
+  underwaterLoans,
   hideLoans,
   isUnderwaterFilterActive,
   selectedLoans,
   setSelection,
 }) => {
-  const loansToClaim = useMemo(() => loans.filter(isLoanAbleToClaim), [loans])
-  const loansToTerminate = useMemo(() => loans.filter(isUnderWaterLoan), [loans])
-
   return (
     <div className={styles.summaryContainer}>
       {isUnderwaterFilterActive ? (
         <TerminateContent
-          loans={loansToTerminate}
+          loans={underwaterLoans}
           selectedLoans={selectedLoans}
           setSelection={setSelection}
           updateOrAddLoan={updateOrAddLoan}

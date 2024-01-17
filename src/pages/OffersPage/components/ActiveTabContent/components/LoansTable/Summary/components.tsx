@@ -73,13 +73,13 @@ export const TerminateContent: FC<TerminateContentProps> = ({
   }
 
   return (
-    <div className={styles.content}>
+    <div className={styles.terminateContent}>
       <div className={styles.collaterals}>
         <p className={styles.collateralsTitle}>{totalSelectedLoans}</p>
         <p className={styles.collateralsSubtitle}>Loans selected</p>
       </div>
 
-      <div className={styles.stats}>
+      <div className={styles.terminateStats}>
         <StatInfo label="Lent" value={totalLent} divider={1e9} />
         <StatInfo
           label="Avg ltv"
@@ -90,12 +90,12 @@ export const TerminateContent: FC<TerminateContentProps> = ({
         <StatInfo label="interest" value={totalInterest} divider={1e9} />
       </div>
 
-      <div className={styles.sliderAndButtonWrapper}>
+      <div className={styles.terminateControls}>
         <CounterSlider
           label="# Loans"
           value={totalSelectedLoans}
           onChange={(value) => handleLoanSelection(value)}
-          className={styles.counterSlider}
+          className={styles.terminateSlider}
           max={loans.length}
         />
 
@@ -154,14 +154,14 @@ export const ClaimContent: FC<ClaimContentProps> = ({ loans, hideLoans }) => {
   }
 
   return (
-    <div className={styles.infoRow}>
-      <div className={styles.loansContainer}>
-        <p className={styles.loansValueText}>{loans.length}</p>
+    <div className={styles.claimContent}>
+      <div className={styles.claimInfo}>
+        <p className={styles.claimInfoTitle}>{loans.length}</p>
         <div className={styles.loansInfoContainer}>
           <StatInfo
             label={label}
             value={totalClaimableFloor}
-            classNamesProps={{ value: styles.value }}
+            classNamesProps={{ container: styles.claimStat }}
             divider={1e9}
           />
         </div>

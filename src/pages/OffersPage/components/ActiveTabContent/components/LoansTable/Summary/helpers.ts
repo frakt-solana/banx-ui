@@ -10,10 +10,11 @@ export const getTerminateStatsInfo = (loans: Loan[]) => {
     (acc, loan) => {
       const claimValue = calculateClaimValue(loan)
       const borrowedAmount = calcLoanBorrowedAmount(loan)
+      const collectionFloor = loan.nft.collectionFloor
 
       return {
         totalLent: acc.totalLent + borrowedAmount,
-        averageLtv: acc.averageLtv + (claimValue / loan.nft.collectionFloor) * 100,
+        averageLtv: acc.averageLtv + (claimValue / collectionFloor / loans.length) * 100,
         totalInterest: acc.totalInterest + claimValue - borrowedAmount,
       }
     },

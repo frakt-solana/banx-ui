@@ -6,7 +6,13 @@
   width: 100%;
 }
 
-// ----------------------------------------------------------------
+.summaryButton {
+  width: 152px;
+
+  @media (max-width: 960px) {
+    width: 100%;
+  }
+}
 
 .collaterals {
   display: flex;
@@ -18,7 +24,6 @@
     display: none;
   }
 }
-
 .collateralsTitle {
   font: var(--important-text-xll);
   color: var(--content-primary);
@@ -27,7 +32,6 @@
     font: var(--important-text-xl);
   }
 }
-
 .collateralsSubtitle {
   font: var(--table-header-md);
   color: var(--content-secondary);
@@ -44,9 +48,64 @@
   }
 }
 
-//? Summary styles
+/* ### Terminate content ###  */
+.terminateContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
 
-.infoRow {
+  @media (max-width: 960px) {
+    flex-direction: column;
+  }
+}
+
+.terminateStats {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+
+  & > div {
+    align-items: flex-end;
+    min-width: 148px;
+
+    @media (max-width: 1240px) {
+      min-width: 104px;
+    }
+
+    @media (max-width: 960px) {
+      align-items: center;
+    }
+  }
+}
+
+.terminateControls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  @media (max-width: 960px) {
+    width: 100%;
+  }
+}
+
+.terminateSlider {
+  max-width: 220px;
+  height: 32px;
+
+  @media (max-width: 960px) {
+    max-width: unset;
+  }
+}
+
+.terminateButton:not(:disabled) {
+  background: var(--additional-lava-secondary) !important;
+  border-color: var(--additional-lava-primary) !important;
+}
+
+/* ### Claim content ###  */
+.claimContent {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -62,13 +121,13 @@
   }
 }
 
-.loansContainer {
+.claimInfo {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.loansValueText {
+.claimInfoTitle {
   font: var(--important-text-xll);
 
   @media (max-width: 960px) {
@@ -76,75 +135,8 @@
   }
 }
 
-.loansInfoContainer {
+.claimStat {
   @media (max-width: 960px) {
-    & > div {
-      text-align: center;
-    }
-  }
-}
-
-.summaryButton,
-.terminateButton {
-  width: 152px;
-
-  @media (max-width: 960px) {
-    width: 100%;
-  }
-}
-
-.terminateButton {
-  &:not(:disabled) {
-    background: var(--additional-lava-secondary) !important;
-    border-color: var(--additional-lava-primary) !important;
-  }
-}
-
-.content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  width: 100%;
-
-  @media (max-width: 960px) {
-    flex-direction: column;
-  }
-}
-
-.stats {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-
-  & > div {
-    min-width: 148px;
-
-    @media (max-width: 1240px) {
-      min-width: 104px;
-    }
-
-    @media (max-width: 960px) {
-      align-items: center;
-    }
-  }
-}
-
-.counterSlider {
-  max-width: 220px;
-  height: 32px;
-
-  @media (max-width: 960px) {
-    max-width: unset;
-  }
-}
-
-.sliderAndButtonWrapper {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-
-  @media (max-width: 960px) {
-    width: 100%;
+    text-align: center;
   }
 }
