@@ -5,6 +5,7 @@ import classNames from 'classnames'
 import { Button } from '@banx/components/Buttons'
 import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
+import Tooltip from '@banx/components/Tooltip'
 
 import { Loan } from '@banx/api/core'
 import { Underwater } from '@banx/icons'
@@ -92,16 +93,23 @@ export const LoansTable = () => {
   }, [onRowClick])
 
   const customFiltersJSX = (
-    <div className={styles.filterButtonWrapper} data-underwater-loans={underwaterLoansCount}>
-      <Button
-        className={classNames(styles.filterButton, { [styles.active]: isUnderwaterFilterActive })}
-        onClick={onToggleUnderwaterFilter}
-        type="circle"
-        variant="secondary"
-      >
-        <Underwater />
-      </Button>
-    </div>
+    <Tooltip title={underwaterLoansCount ? 'Underwater loans' : 'No underwater loans currently'}>
+      <div className={styles.filterButtonWrapper} data-underwater-loans={underwaterLoansCount}>
+        <Button
+          className={classNames(
+            styles.filterButton,
+            { [styles.active]: isUnderwaterFilterActive },
+            { [styles.disabled]: !underwaterLoansCount },
+          )}
+          disabled={!underwaterLoansCount}
+          onClick={onToggleUnderwaterFilter}
+          type="circle"
+          variant="secondary"
+        >
+          <Underwater />
+        </Button>
+      </div>
+    </Tooltip>
   )
 
   if (showEmptyList) return <EmptyList message={emptyMessage} />

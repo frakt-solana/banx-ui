@@ -152,15 +152,11 @@ const useFilterLoans = (loans: Loan[]) => {
 
   return {
     filteredLoans,
-
     filteredAllLoans,
-
     isUnderwaterFilterActive,
     onToggleUnderwaterFilter,
-
     selectedCollections,
     setSelectedCollections,
-
     underwaterLoans,
   }
 }
