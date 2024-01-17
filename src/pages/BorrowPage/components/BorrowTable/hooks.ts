@@ -329,7 +329,8 @@ export const useBorrowBonkRewardsAvailability = () => {
     ['borrowBonkRewardsAvailability'],
     () => fetchBorrowBonkRewardsAvailability(),
     {
-      staleTime: Infinity,
+      staleTime: 20 * 1000, //? 20 sec
+      refetchInterval: 30 * 1000, //? 30 sec
       refetchOnWindowFocus: false,
     },
   )
