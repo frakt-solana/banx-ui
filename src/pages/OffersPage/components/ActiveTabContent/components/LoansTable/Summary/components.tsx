@@ -41,7 +41,7 @@ export const TerminateContent: FC<TerminateContentProps> = ({
   const { totalLent, averageLtv, totalInterest } = getTerminateStatsInfo(selectedLoans)
 
   const terminateLoans = () => {
-    const txnParams = loans.map((loan) => ({ loan }))
+    const txnParams = selectedLoans.map((loan) => ({ loan }))
 
     new TxnExecutor(makeTerminateAction, { wallet, connection })
       .addTxnParams(txnParams)
