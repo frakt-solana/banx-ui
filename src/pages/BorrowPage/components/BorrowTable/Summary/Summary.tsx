@@ -8,6 +8,7 @@ import { CounterSlider, Slider } from '@banx/components/Slider'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
+import bonkTokenImg from '@banx/assets/BonkToken.png'
 import {
   calcBorrowValueWithProtocolFee,
   calcBorrowValueWithRentFee,
@@ -18,6 +19,7 @@ import {
 
 import { ONE_WEEK_IN_SECONDS } from '../constants'
 import { calcInterest } from '../helpers'
+import { useBorrowBonkRewardsAvailability } from '../hooks'
 import { TableNftData } from '../types'
 
 import styles from './Summary.module.less'
@@ -63,6 +65,9 @@ export const Summary: FC<SummaryProps> = ({
     await borrowAll()
     setIsBorrowing(false)
   }
+
+  const bonkRewardsAvailable = useBorrowBonkRewardsAvailability()
+  const showBonkRewardsSticker = !!(bonkRewardsAvailable && nftsInCart.length)
 
   return (
     <div className={styles.summary}>
@@ -110,6 +115,14 @@ export const Summary: FC<SummaryProps> = ({
           loading={isBorrowing}
           size="large"
         >
+          {!!showBonkRewardsSticker && (
+            <Tooltip
+              className={styles.bonkTokenSticker}
+              title="You are getting 50% cashback on platform fees in $BONK!"
+            >
+              <img src={bonkTokenImg} alt="Bonk token sticker" />
+            </Tooltip>
+          )}
           Borrow {createSolValueJSX(totalBorrow, 1e9, '0◎')}
         </Button>
       </div>
