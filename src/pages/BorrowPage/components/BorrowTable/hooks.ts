@@ -49,6 +49,8 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
+  const bonkRewardsAvailable = useBorrowBonkRewardsAvailability()
+
   const {
     offerByMint,
     offersByMarket,
@@ -285,6 +287,7 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
     maxBorrowAmount,
     maxBorrowPercent,
     setMaxBorrowPercent,
+    bonkRewardsAvailable,
   }
 }
 
@@ -334,5 +337,5 @@ export const useBorrowBonkRewardsAvailability = () => {
       refetchOnWindowFocus: false,
     },
   )
-  return bonkRewardsAvailable
+  return bonkRewardsAvailable || false
 }

@@ -19,7 +19,6 @@ import {
 
 import { ONE_WEEK_IN_SECONDS } from '../constants'
 import { calcInterest } from '../helpers'
-import { useBorrowBonkRewardsAvailability } from '../hooks'
 import { TableNftData } from '../types'
 
 import styles from './Summary.module.less'
@@ -31,6 +30,7 @@ interface SummaryProps {
   maxBorrowAmount: number
   maxBorrowPercent: number
   setMaxBorrowPercent: (value: number) => void
+  bonkRewardsAvailable: boolean
 }
 
 export const Summary: FC<SummaryProps> = ({
@@ -40,6 +40,7 @@ export const Summary: FC<SummaryProps> = ({
   selectAmount,
   maxBorrowPercent,
   setMaxBorrowPercent,
+  bonkRewardsAvailable,
 }) => {
   const totalBorrow = sumBy(nftsInCart, ({ loanValue, nft }) => {
     const loanValueWithProtocolFee = calcBorrowValueWithProtocolFee(loanValue)
@@ -66,7 +67,6 @@ export const Summary: FC<SummaryProps> = ({
     setIsBorrowing(false)
   }
 
-  const bonkRewardsAvailable = useBorrowBonkRewardsAvailability()
   const showBonkRewardsSticker = !!(bonkRewardsAvailable && nftsInCart.length)
 
   return (
