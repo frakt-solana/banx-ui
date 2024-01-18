@@ -9,6 +9,7 @@ import moment from 'moment'
 import { TxnExecutor, WalletAndConnection } from 'solana-transactions-executor'
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
+import bonkTokenImg from '@banx/assets/BonkToken.png'
 import { BONDS } from '@banx/constants'
 import { LoansOptimisticStore, OffersOptimisticStore } from '@banx/store'
 import { BorrowType, defaultTxnErrorHandler } from '@banx/transactions'
@@ -24,6 +25,8 @@ import { CartState } from '../../cartState'
 import { convertOffersToSimple } from '../../helpers'
 import { ONE_WEEK_IN_SECONDS } from './constants'
 import { OfferWithLoanValue, TableNftData } from './types'
+
+import styles from './BorrowTable.module.less'
 
 export const createTableNftData = ({
   nfts,
@@ -284,4 +287,12 @@ export const calcAdjustedLoanValueByMaxByMarket: CalcAdjustedLoanValueByMaxByMar
   maxBorrowPercent,
 }) => {
   return Math.min(loanValue, maxLoanValueOnMarket * (maxBorrowPercent / 100)) || 0
+}
+
+export const showBonkRewardsSnack = () => {
+  enqueueSnackbar({
+    className: styles.bonkRewardsSnack,
+    message: 'You got a 50% $BONK cashback claimable on the Rewards page!',
+    icon: <img src={bonkTokenImg} alt="Bonk token" className={styles.bonkRewardsSnackIcon} />,
+  })
 }

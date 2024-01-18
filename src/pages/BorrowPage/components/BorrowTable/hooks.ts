@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { useQuery } from '@tanstack/react-query'
 import { chain, filter, first, get, groupBy, includes, isEmpty, map, sortBy, sumBy } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
@@ -12,6 +13,7 @@ import {
   createLoanSubscribeNotificationsTitle,
 } from '@banx/components/modals'
 
+import { fetchBorrowBonkRewardsAvailability } from '@banx/api/activity'
 import { BorrowNft, Offer } from '@banx/api/core'
 import { SPECIAL_COLLECTIONS_MARKETS } from '@banx/constants'
 import { PATHS } from '@banx/router'
@@ -28,7 +30,12 @@ import { getDialectAccessToken, trackPageEvent } from '@banx/utils'
 import { useCartState } from '../../cartState'
 import { getTableColumns } from './columns'
 import { DEFAULT_TABLE_SORT, SORT_OPTIONS } from './constants'
-import { createBorrowParams, createTableNftData, executeBorrow } from './helpers'
+import {
+  createBorrowParams,
+  createTableNftData,
+  executeBorrow,
+  showBonkRewardsSnack,
+} from './helpers'
 import { SortField, TableNftData } from './types'
 
 import styles from './BorrowTable.module.less'
@@ -46,6 +53,8 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
   const { isLedger } = useIsLedger()
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
+
+  const bonkRewardsAvailable = useBorrowBonkRewardsAvailability()
 
   const {
     offerByMint,
@@ -82,8 +91,13 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
   }
 
   const onBorrowSuccess = (loansAmount = 1, showCongrats = false) => {
-    const isUserSubscribedToNotifications = !!getDialectAccessToken(wallet.publicKey?.toBase58())
+    //? Show bonk snack if bonkRewardsAvailable
+    if (bonkRewardsAvailable) {
+      showBonkRewardsSnack()
+    }
 
+    //? Show notification with an offer to subscribe (if user not subscribed)
+    const isUserSubscribedToNotifications = !!getDialectAccessToken(wallet.publicKey?.toBase58())
     if (!isUserSubscribedToNotifications || showCongrats) {
       open(SubscribeNotificationsModal, {
         title: createLoanSubscribeNotificationsTitle(loansAmount),
@@ -283,6 +297,7 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
     maxBorrowAmount,
     maxBorrowPercent,
     setMaxBorrowPercent,
+    bonkRewardsAvailable,
   }
 }
 
@@ -320,4 +335,17 @@ const useSortedNfts = (nfts: TableNftData[], sortOptionValue: string) => {
   }, [sortOptionValue, nfts])
 
   return sortedLoans
+}
+
+export const useBorrowBonkRewardsAvailability = () => {
+  const { data: bonkRewardsAvailable } = useQuery(
+    ['borrowBonkRewardsAvailability'],
+    () => fetchBorrowBonkRewardsAvailability(),
+    {
+      staleTime: 20 * 1000, //? 20 sec
+      refetchInterval: 30 * 1000, //? 30 sec
+      refetchOnWindowFocus: false,
+    },
+  )
+  return bonkRewardsAvailable || false
 }

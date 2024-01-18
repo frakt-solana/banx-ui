@@ -1,4 +1,4 @@
-export * from './enqueueTxnErrorSnackbar'
+export * from './enqueueErrorSnackbar'
 export * from './getTxnErrorDefinition'
 export * from './signAndConfirmTransaction'
 export * from './signAndSendAllTransactions'

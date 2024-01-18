@@ -1,37 +1,38 @@
-import { FC, useEffect, useMemo, useState } from 'react'
+import { FC, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import moment from 'moment'
+import { web3 } from 'fbonds-core'
+import { NavLink } from 'react-router-dom'
 
+import { Button } from '@banx/components/Buttons'
 import EmptyList from '@banx/components/EmptyList'
-import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
-import Timer from '@banx/components/Timer'
+import { Loader } from '@banx/components/Loader'
 
-import { Borrow, CircleCheck, Lend } from '@banx/icons'
+import { fetchBonkWithdrawal, sendBonkWithdrawal } from '@banx/api/user'
+import { CircleCheck } from '@banx/icons'
+import { PATHS } from '@banx/router'
+import { enqueueUnknownErrorSnackbar } from '@banx/transactions'
+import { enqueueSnackbar } from '@banx/utils'
 
-import { useLeaderboardUserStats } from '../../hooks'
-import { calculateNextTuesdayAtUTC, isTuesdayAndMidnight } from './helpers'
+import { updateBonkWithdrawOptimistic, useSeasonUserRewards } from '../../hooks'
+import AnybodiesImg from './assets/Anybodies.png'
+import BanxImg from './assets/Banx.png'
 
 import styles from './RewardsTab.module.less'
 
 const RewardsTab = () => {
-  const { publicKey: walletPublicKey } = useWallet()
-  const walletPublicKeyString = walletPublicKey?.toBase58() || ''
-
-  const { data: userStats } = useLeaderboardUserStats()
-
-  const userTotalClaimed = useMemo(() => {
-    const currentUser = userStats?.find((user) => user.user === walletPublicKeyString)
-
-    if (currentUser) return parseFloat(currentUser.Sol)
-
-    return 0
-  }, [userStats, walletPublicKeyString])
+  const { data, isLoading } = useSeasonUserRewards()
+  const { available = 0, redeemed = 0, totalAccumulated = 0 } = data?.bonkRewards || {}
 
   return (
     <div className={styles.container}>
-      <ClaimRewardsBlock totalClaimed={userTotalClaimed} />
-      <RewardsInfoBlock />
+      {isLoading && <Loader />}
+      {!isLoading && (
+        <>
+          <ClaimRewardsBlock totalWeekRewards={totalAccumulated} />
+          <ClaimBlock availableToClaim={available} totalClaimed={redeemed} />
+        </>
+      )}
     </div>
   )
 }
@@ -39,80 +40,121 @@ const RewardsTab = () => {
 export default RewardsTab
 
 interface ClaimRewardsBlockProps {
-  totalClaimed: number
+  totalWeekRewards: number
 }
-
-const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({ totalClaimed }) => {
-  const { connected } = useWallet()
-
-  const [nextWeeklyRewards, setNextWeeklyRewards] = useState(calculateNextTuesdayAtUTC())
-
-  const updateNextWeeklyRewards = () => {
-    const newNextRewards = calculateNextTuesdayAtUTC()
-    setNextWeeklyRewards(newNextRewards)
-  }
-
-  useEffect(() => {
-    updateNextWeeklyRewards()
-
-    const timerInterval = setInterval(() => {
-      const now = moment.utc()
-      if (isTuesdayAndMidnight(now)) {
-        updateNextWeeklyRewards()
-      }
-    }, 1000)
-
-    return () => clearInterval(timerInterval)
-  }, [])
-
+const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({ totalWeekRewards }) => {
   return (
-    <div className={styles.claimRewardsBlock}>
-      {connected && (
-        <StatInfo
-          label="Total received"
-          value={totalClaimed}
-          classNamesProps={{ label: styles.claimRewardsLabel }}
-          tooltipText="Your weekly SOL rewards will be airdropped to your wallet on a random time each Monday"
-          flexType="row"
-        />
-      )}
-      <StatInfo
-        label="Next weekly rewards in"
-        value={<Timer expiredAt={nextWeeklyRewards.unix()} />}
-        valueType={VALUES_TYPES.STRING}
-        classNamesProps={{ label: styles.claimRewardsLabel }}
-        flexType="row"
-      />
-      {!connected && (
-        <EmptyList className={styles.emptyList} message="Connect wallet to see your rewards" />
-      )}
+    <div className={styles.weeklyRewardsBlock}>
+      <div className={styles.weeklyRewardsInfoRow}>
+        <div className={styles.weeklyRewardsInfo}>
+          <p className={styles.blockTitle}>Total earned</p>
+          <p className={styles.rewardsValue}>{formatNumber(totalWeekRewards)} BONK</p>
+        </div>
+        <div className={styles.partnersInfoWrapper}>
+          <p className={styles.blockTitle}>Powered by</p>
+          <div className={styles.partnersImages}>
+            <img src={BanxImg} alt="Banx" />
+            <img src={AnybodiesImg} alt="Anybodies" />
+          </div>
+        </div>
+      </div>
+      <ul className={styles.weeklyRewardsList}>
+        <li>
+          <CircleCheck />
+          Only borrowing on Banx.gg counts
+        </li>
+        <li>
+          <CircleCheck /> The more you borrow, the more you earn
+        </li>
+      </ul>
+
+      <NavLink to={PATHS.BORROW} className={styles.weeklyRewardsBorrowBtn}>
+        <Button>Borrow</Button>
+      </NavLink>
     </div>
   )
 }
 
-const RewardsInfoBlock = () => (
-  <div className={styles.rewardsInfoBlock}>
-    <div className={styles.rewardsInfo}>
-      <span className={styles.rewardsInfoTitle}>
-        <Lend /> Lender
-      </span>
-      {/* <div className={styles.infoRow}>
-        <CircleCheck />
-        <span> earn SOL APR while your competitive offers are pending in the orders books</span>
-      </div> */}
-      <div className={styles.infoRow}>
-        <CircleCheck />
-        <span>earn extra SOL APR for your active loans</span>
+interface ClaimBlockProps {
+  availableToClaim: number
+  totalClaimed: number
+}
+const ClaimBlock: FC<ClaimBlockProps> = ({ availableToClaim, totalClaimed }) => {
+  const wallet = useWallet()
+  const walletPubkeyString = wallet.publicKey?.toBase58()
+
+  const [isLoading, setIsLoading] = useState(false)
+
+  const onClaim = async () => {
+    try {
+      if (!walletPubkeyString || !wallet.signTransaction) return
+      setIsLoading(true)
+      const bonkWithdrawal = await fetchBonkWithdrawal({ walletPubkey: walletPubkeyString })
+
+      if (!bonkWithdrawal) throw new Error('BONK withdrawal fetching error')
+
+      const transaction = web3.Transaction.from(bonkWithdrawal.rawTransaction)
+      const signedTransaction = await wallet.signTransaction(transaction)
+      const signedTranactionBuffer = signedTransaction.serialize({
+        verifySignatures: false,
+        requireAllSignatures: false,
+      })
+
+      await sendBonkWithdrawal({
+        walletPubkey: walletPubkeyString,
+        bonkWithdrawal: {
+          requestId: bonkWithdrawal.requestId,
+          rawTransaction: signedTranactionBuffer.toJSON().data,
+        },
+      })
+
+      enqueueSnackbar({
+        message: 'BONK successfully claimed',
+        type: 'success',
+      })
+      updateBonkWithdrawOptimistic(walletPubkeyString)
+    } catch (error) {
+      console.error(error)
+      enqueueUnknownErrorSnackbar(error as Error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <div className={styles.availableToClaim}>
+      <div className={styles.availableToClaimInfo}>
+        <p className={styles.blockTitle}>Available to claim</p>
+        <p className={styles.rewardsValue}>{formatNumber(availableToClaim)} BONK</p>
+      </div>
+      <div className={styles.claimBtnWrapper}>
+        <div className={styles.totalClaimedInfo}>
+          <p className={styles.totalClaimedLabel}>Claimed to date:</p>
+          <p className={styles.totalClaimedValue}>{formatNumber(totalClaimed)} BONK</p>
+        </div>
+        {wallet.connected && (
+          <Button
+            className={styles.claimButton}
+            onClick={onClaim}
+            loading={isLoading}
+            disabled={isLoading || !availableToClaim}
+          >
+            Claim
+          </Button>
+        )}
+        {!wallet.connected && (
+          <EmptyList className={styles.emptyList} message="Connect wallet to see claimable" />
+        )}
       </div>
     </div>
-    <div className={styles.rewardsInfo}>
-      <span className={styles.rewardsInfoTitle}>
-        <Borrow /> Borrowers
-      </span>
-      <div className={styles.infoRow}>
-        <CircleCheck />
-        <span>earn SOL cashbacks for each loan you take</span>
-      </div>
-    </div>
-  </div>
-)
+  )
+}
+
+const formatNumber = (value = 0) => {
+  if (!value) return '--'
+
+  return Intl.NumberFormat('en-US', {
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(value)
+}
