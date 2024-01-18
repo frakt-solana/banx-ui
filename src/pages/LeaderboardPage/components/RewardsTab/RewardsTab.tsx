@@ -1,6 +1,7 @@
 import { FC, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import classNames from 'classnames'
 import { web3 } from 'fbonds-core'
 import { NavLink } from 'react-router-dom'
 
@@ -9,6 +10,7 @@ import EmptyList from '@banx/components/EmptyList'
 import { Loader } from '@banx/components/Loader'
 
 import { fetchBonkWithdrawal, sendBonkWithdrawal } from '@banx/api/user'
+import { useBorrowBonkRewardsAvailability } from '@banx/hooks'
 import { CircleCheck } from '@banx/icons'
 import { PATHS } from '@banx/router'
 import { enqueueUnknownErrorSnackbar } from '@banx/transactions'
@@ -43,6 +45,8 @@ interface ClaimRewardsBlockProps {
   totalWeekRewards: number
 }
 const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({ totalWeekRewards }) => {
+  const bonkRewardsAvailable = useBorrowBonkRewardsAvailability()
+
   return (
     <div className={styles.weeklyRewardsBlock}>
       <div className={styles.weeklyRewardsInfoRow}>
@@ -65,6 +69,14 @@ const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({ totalWeekRewards }) => 
         </li>
         <li>
           <CircleCheck /> The more you borrow, the more you earn
+        </li>
+        <li>
+          100 loans/day availability:{' '}
+          {bonkRewardsAvailable ? (
+            <span className={styles.bonkRewards}>On</span>
+          ) : (
+            <span className={classNames(styles.bonkRewards, styles.bonkRewardsOff)}>Off</span>
+          )}
         </li>
       </ul>
 
