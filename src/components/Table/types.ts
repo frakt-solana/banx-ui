@@ -46,5 +46,5 @@ export interface TableProps<T, P> extends TableViewProps<T> {
   showCard?: boolean
   classNameTableWrapper?: string
   emptyMessage?: string
-  customJSXLeft?: ReactNode
+  customJSX?: ReactNode
 }
