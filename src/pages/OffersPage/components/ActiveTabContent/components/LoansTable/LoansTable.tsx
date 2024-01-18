@@ -92,7 +92,7 @@ export const LoansTable = () => {
     }
   }, [onRowClick])
 
-  const customFiltersJSX = (
+  const customJSXLeft = (
     <Tooltip title={underwaterLoansCount ? 'Underwater loans' : 'No underwater loans currently'}>
       <div className={styles.filterButtonWrapper} data-underwater-loans={underwaterLoansCount}>
         <Button
@@ -122,7 +122,7 @@ export const LoansTable = () => {
         rowParams={rowParams}
         sortViewParams={sortViewParams}
         loading={loading}
-        customFiltersJSX={customFiltersJSX}
+        customJSXLeft={customJSXLeft}
         showCard
       />
       <Summary

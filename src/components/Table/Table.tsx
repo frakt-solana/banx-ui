@@ -23,7 +23,7 @@ const Table = <T extends object, P extends object>({
   classNameTableWrapper,
   loadMore,
   styleTableWrapper,
-  customFiltersJSX,
+  customJSXLeft,
 }: TableProps<T, P>) => {
   const { viewState } = useTableView()
 
@@ -37,7 +37,7 @@ const Table = <T extends object, P extends object>({
         <SortView
           columns={columns}
           showCard={showCard}
-          customFiltersJSX={customFiltersJSX}
+          customJSXLeft={customJSXLeft}
           {...sortViewParams}
         />
       )}

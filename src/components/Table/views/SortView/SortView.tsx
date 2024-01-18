@@ -18,7 +18,7 @@ interface SortViewProps<T, P> {
   sortParams?: SortParams
   toggleParams?: ToggleProps
   showCard?: boolean
-  customFiltersJSX?: ReactNode
+  customJSXLeft?: ReactNode
 }
 
 export const SortView = <T extends object, P extends object>({
@@ -27,7 +27,7 @@ export const SortView = <T extends object, P extends object>({
   sortParams,
   toggleParams,
   showCard,
-  customFiltersJSX,
+  customJSXLeft,
 }: SortViewProps<T, P>) => {
   const { viewState, setViewState } = useTableView()
   const [searchSelectCollapsed, setSearchSelectCollapsed] = useState(true)
@@ -47,7 +47,7 @@ export const SortView = <T extends object, P extends object>({
           collapsed={searchSelectCollapsed}
           onChangeCollapsed={setSearchSelectCollapsed}
         />
-        {customFiltersJSX}
+        {customJSXLeft}
       </div>
 
       {searchSelectCollapsed && (
