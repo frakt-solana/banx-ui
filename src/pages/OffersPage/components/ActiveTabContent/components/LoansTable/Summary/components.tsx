@@ -2,7 +2,7 @@ import { FC, useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { sumBy } from 'lodash'
+import { chain, sumBy } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
@@ -12,6 +12,7 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { Loan } from '@banx/api/core'
 import { TABLET_WIDTH } from '@banx/constants'
 import { useWindowSize } from '@banx/hooks'
+import { calculateClaimValue } from '@banx/pages/OffersPage/helpers'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimAction, makeTerminateAction } from '@banx/transactions/loans'
 import { HealthColorIncreasing, enqueueSnackbar, getColorByPercent } from '@banx/utils'
@@ -69,7 +70,12 @@ export const TerminateContent: FC<TerminateContentProps> = ({
   }
 
   const handleLoanSelection = (value = 0) => {
-    setSelection(loans.slice(0, value))
+    const sortedLoans = chain(loans)
+      .sortBy((loan) => calculateClaimValue(loan) / loan.nft.collectionFloor)
+      .reverse()
+      .value()
+
+    setSelection(sortedLoans.slice(0, value))
   }
 
   return (
