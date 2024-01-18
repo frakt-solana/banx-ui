@@ -4,6 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { first, groupBy, map, sumBy } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
+import { SortOption } from '@banx/components/SortDropdown'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
@@ -11,7 +12,7 @@ import { calculateClaimValue, isLoanAbleToClaim, useLenderLoans } from '@banx/pa
 import { formatDecimal, isLoanTerminating, isUnderWaterLoan } from '@banx/utils'
 
 import { useSelectedLoans } from '../loansState'
-import { useSortedLoans } from './useSortedLoans'
+import { DEFAULT_SORT_OPTION, SORT_OPTIONS, useSortedLoans } from './useSortedLoans'
 
 import styles from '../LoansTable.module.less'
 
@@ -37,9 +38,12 @@ export const useLoansTable = () => {
     underwaterLoansCount,
   } = useFilterLoans(loans)
 
-  const loansToClaim = useMemo(() => loans.filter(isLoanAbleToClaim), [loans])
+  const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
 
-  const { sortedLoans, sortParams } = useSortedLoans(filteredLoans)
+  const sortedLoans = useSortedLoans(filteredLoans, sortOption)
+  const sortedUnderwaterLoans = useSortedLoans(underwaterLoans, sortOption)
+
+  const loansToClaim = useMemo(() => loans.filter(isLoanAbleToClaim), [loans])
 
   const searchSelectParams = createSearchSelectParams({
     loans: filteredAllLoans,
@@ -59,7 +63,7 @@ export const useLoansTable = () => {
     loading,
 
     loansToClaim,
-    underwaterLoans,
+    underwaterLoans: sortedUnderwaterLoans,
 
     underwaterLoansCount,
 
@@ -68,7 +72,11 @@ export const useLoansTable = () => {
 
     sortViewParams: {
       searchSelectParams,
-      sortParams,
+      sortParams: {
+        option: sortOption,
+        onChange: setSortOption,
+        options: SORT_OPTIONS,
+      },
     },
 
     showEmptyList,
