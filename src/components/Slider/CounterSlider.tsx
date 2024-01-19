@@ -1,5 +1,7 @@
 import { FC } from 'react'
 
+import classNames from 'classnames'
+
 import { NumericStepInput } from '../inputs'
 import { Slider, SliderProps } from './Slider'
 
@@ -12,13 +14,14 @@ export const CounterSlider: FC<SliderProps> = ({
   label,
   labelClassName,
   rootClassName,
+  className,
 }) => {
   const handleNumericInput = (value: string) => {
     onChange(Number(value))
   }
 
   return (
-    <div className={styles.couterSliderContainer}>
+    <div className={classNames(styles.couterSliderContainer, className)}>
       <Slider
         className={styles.counterSlider}
         value={value}

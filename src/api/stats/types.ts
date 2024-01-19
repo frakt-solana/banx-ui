@@ -44,6 +44,7 @@ export const TotalLenderStatsSchema = z.object({
   allocation: z.object({
     activeLoans: z.number(),
     underWaterLoans: z.number(),
+    terminatingLoans: z.number(),
     pendingOffers: z.number(),
     weeklyInterest: z.number(),
     weightedApy: z.number(),
