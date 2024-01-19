@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 
 import { chain } from 'lodash'
 
@@ -18,14 +18,14 @@ type SortOrder = 'asc' | 'desc'
 type SortValueGetter = (loan: Loan) => number
 type StatusValueMap = Record<SortField, string | SortValueGetter>
 
-const SORT_OPTIONS = [
+export const SORT_OPTIONS = [
   { label: 'Lent', value: 'lent' },
   { label: 'APR', value: 'apr' },
   { label: 'LTV', value: 'ltv' },
   { label: 'Status', value: 'status' },
 ]
 
-const DEFAULT_SORT_OPTION = { label: 'LTV', value: 'ltv_desc' }
+export const DEFAULT_SORT_OPTION = { label: 'LTV', value: 'ltv_desc' }
 
 const STATUS_VALUE_MAP: StatusValueMap = {
   [SortField.LENT]: (loan: Loan) => loan.fraktBond.currentPerpetualBorrowed,
@@ -59,9 +59,7 @@ const sortLoansByStatus = (loans: Loan[], order: SortOrder) => {
   return order === 'asc' ? combinedLoans : combinedLoans.reverse()
 }
 
-export const useSortedLoans = (loans: Loan[]) => {
-  const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
-
+export const useSortedLoans = (loans: Loan[], sortOption: SortOption) => {
   const sortOptionValue = sortOption?.value
 
   const sortedLoans = useMemo(() => {
@@ -76,12 +74,5 @@ export const useSortedLoans = (loans: Loan[]) => {
       : sortLoansByField(loans, name, order)
   }, [sortOptionValue, loans])
 
-  return {
-    sortedLoans,
-    sortParams: {
-      option: sortOption,
-      onChange: setSortOption,
-      options: SORT_OPTIONS,
-    },
-  }
+  return sortedLoans
 }

@@ -17,6 +17,8 @@ interface NftInfoCellProps {
   selected?: boolean
   onCheckboxClick?: () => void
 
+  checkboxClassName?: string
+
   banxPoints?: {
     partnerPoints: number
     playerPoints: number
@@ -29,6 +31,7 @@ export const NftInfoCell: FC<NftInfoCellProps> = ({
   onCheckboxClick,
   selected = false,
   banxPoints,
+  checkboxClassName,
 }) => {
   const { viewState } = useTableView()
   const isCardView = viewState === ViewState.CARD
@@ -39,7 +42,11 @@ export const NftInfoCell: FC<NftInfoCellProps> = ({
   return (
     <div className={styles.nftInfo}>
       {onCheckboxClick && !isCardView && (
-        <Checkbox className={styles.checkbox} onChange={onCheckboxClick} checked={selected} />
+        <Checkbox
+          className={classNames(styles.checkbox, checkboxClassName)}
+          onChange={onCheckboxClick}
+          checked={selected}
+        />
       )}
 
       <div className={styles.nftImageWrapper}>
