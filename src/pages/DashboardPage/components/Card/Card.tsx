@@ -5,11 +5,11 @@ import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
 import ImageWithPreload from '@banx/components/ImageWithPreload'
+import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
-import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
+import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Snowflake } from '@banx/icons'
-import { convertAprToApy } from '@banx/utils'
 
 import styles from './Card.module.less'
 
@@ -53,8 +53,7 @@ interface LendCardProps extends CardProps {
 export const LendCard: FC<LendCardProps> = ({ amountOfLoans, offerTvl, apr, ...props }) => {
   const BadgeContentElement = apr ? (
     <div className={styles.lendCardBadge}>
-      {createPercentValueJSX(convertAprToApy(apr / 1e4))}
-      <span>APR</span>
+      {MAX_APR_VALUE}%<span>MAX APR</span>
     </div>
   ) : null
 
