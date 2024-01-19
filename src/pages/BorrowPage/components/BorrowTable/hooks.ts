@@ -1,7 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { useQuery } from '@tanstack/react-query'
 import { chain, filter, first, get, groupBy, includes, isEmpty, map, sortBy, sumBy } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
@@ -13,9 +12,9 @@ import {
   createLoanSubscribeNotificationsTitle,
 } from '@banx/components/modals'
 
-import { fetchBorrowBonkRewardsAvailability } from '@banx/api/activity'
 import { BorrowNft, Offer } from '@banx/api/core'
 import { SPECIAL_COLLECTIONS_MARKETS } from '@banx/constants'
+import { useBorrowBonkRewardsAvailability } from '@banx/hooks'
 import { PATHS } from '@banx/router'
 import {
   ViewState,
@@ -335,17 +334,4 @@ const useSortedNfts = (nfts: TableNftData[], sortOptionValue: string) => {
   }, [sortOptionValue, nfts])
 
   return sortedLoans
-}
-
-export const useBorrowBonkRewardsAvailability = () => {
-  const { data: bonkRewardsAvailable } = useQuery(
-    ['borrowBonkRewardsAvailability'],
-    () => fetchBorrowBonkRewardsAvailability(),
-    {
-      staleTime: 20 * 1000, //? 20 sec
-      refetchInterval: 30 * 1000, //? 30 sec
-      refetchOnWindowFocus: false,
-    },
-  )
-  return bonkRewardsAvailable || false
 }
