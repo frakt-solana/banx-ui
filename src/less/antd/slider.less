@@ -2,19 +2,23 @@
   margin: 0 !important;
 
   .ant-slider-rail,
-  .ant-slider:hover .ant-slider-rail {
+  &:hover .ant-slider-rail {
     background: var(--accent-primary-sub) !important;
     height: 4px;
   }
 
-  .ant-slider-track,
-  .ant-slider:hover .ant-slider-track {
-    background: var(--accent-primary) !important;
+  .ant-slider-track {
+    background: var(--accent-primary);
+    border: 2px solid var(--accent-primary);
+  }
+
+  &:hover .ant-slider-track {
+    background: var(--accent-primary);
     border: 2px solid var(--accent-primary);
   }
 
   .ant-slider-dot,
-  .ant-slider:hover .ant-slider-dot {
+  &:hover .ant-slider-dot {
     background: var(--bg-primary);
     border: 2px solid var(--accent-primary-sub) !important;
     height: 8px;
@@ -22,7 +26,7 @@
   }
 
   .ant-slider-dot-active,
-  .ant-slider:hover .ant-slider-dot-active {
+  &:hover .ant-slider-dot-active {
     background: var(--bg-primary);
     border: 2px solid var(--accent-primary) !important;
   }
