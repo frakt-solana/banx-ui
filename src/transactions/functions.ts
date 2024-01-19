@@ -86,9 +86,17 @@ type FetchRuleset = (props: {
   marketPubkey?: string
   connection: web3.Connection
 }) => Promise<web3.PublicKey | undefined>
+//? Some collections have different rulests for NFTs. Need to ignore caching for them. E.g. "Flash Trade" collection
+const IGNORE_CACHING_MARKETS = ['JE5PENhUEUzkHUoZDe6ydwXr6LEBfddHL7yiugDBKr8f']
 const rulesetsCache = new Map<string, Promise<web3.PublicKey | undefined>>()
 export const fetchRuleset: FetchRuleset = ({ nftMint, marketPubkey, connection }) => {
+  //? Prevent error when marketPubkey is undefined
   if (!marketPubkey) return new Promise(() => undefined)
+
+  //? Ignore caching for some collections
+  if (IGNORE_CACHING_MARKETS.includes(marketPubkey)) {
+    return getRuleset(nftMint, connection)
+  }
 
   if (!rulesetsCache.has(marketPubkey)) {
     const rulesetPromise = getRuleset(nftMint, connection)

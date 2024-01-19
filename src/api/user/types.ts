@@ -44,6 +44,13 @@ export const SeasonUserRewardsSchema = z.object({
   firstSeasonRewards: z.number(),
   secondSeasonRewards: z.number(),
   totalParticipants: z.number(),
+  bonkRewards: z
+    .object({
+      totalAccumulated: z.number(),
+      available: z.number(),
+      redeemed: z.number(),
+    })
+    .optional(),
 })
 
 export type SeasonUserRewards = z.infer<typeof SeasonUserRewardsSchema>
@@ -58,12 +65,10 @@ export const LeaderboardDataSchema = z.object({
 
 export type LeaderboardData = z.infer<typeof LeaderboardDataSchema>
 
-// TODO: need to rename "Sol" to "totalReceived"
-export const LeaderboardUsersStatsSchema = z.object({
-  user: z.string(),
-  Sol: z.string(),
-})
-
-export type LeaderboardUsersStats = z.infer<typeof LeaderboardUsersStatsSchema>
-
 export type LeaderboardTimeRange = 'all' | 'week'
+
+export const BonkWithdrawalSchema = z.object({
+  requestId: z.string(),
+  rawTransaction: z.number().array(),
+})
+export type BonkWithdrawal = z.infer<typeof BonkWithdrawalSchema>

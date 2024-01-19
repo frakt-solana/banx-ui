@@ -1,4 +1,5 @@
 export * from './useBestWorkingRPC'
+export * from './useBorrowBonkRewardsAvailability'
 export * from './useContainerWidth'
 export * from './useCountdown'
 export * from './useDebounce'

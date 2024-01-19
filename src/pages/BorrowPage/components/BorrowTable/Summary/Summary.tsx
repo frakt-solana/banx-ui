@@ -1,6 +1,8 @@
 import { FC, useState } from 'react'
 
 import classNames from 'classnames'
+import { BASE_POINTS } from 'fbonds-core/lib/fbond-protocol/constants'
+import { calculateDynamicApr } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
@@ -8,6 +10,8 @@ import { CounterSlider, Slider } from '@banx/components/Slider'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
+import bonkTokenImg from '@banx/assets/BonkToken.png'
+import { DYNAMIC_APR } from '@banx/constants'
 import {
   calcBorrowValueWithProtocolFee,
   calcBorrowValueWithRentFee,
@@ -29,6 +33,7 @@ interface SummaryProps {
   maxBorrowAmount: number
   maxBorrowPercent: number
   setMaxBorrowPercent: (value: number) => void
+  bonkRewardsAvailable: boolean
 }
 
 export const Summary: FC<SummaryProps> = ({
@@ -38,6 +43,7 @@ export const Summary: FC<SummaryProps> = ({
   selectAmount,
   maxBorrowPercent,
   setMaxBorrowPercent,
+  bonkRewardsAvailable,
 }) => {
   const totalBorrow = sumBy(nftsInCart, ({ loanValue, nft }) => {
     const loanValueWithProtocolFee = calcBorrowValueWithProtocolFee(loanValue)
@@ -48,13 +54,14 @@ export const Summary: FC<SummaryProps> = ({
     return loanValue - calcBorrowValueWithProtocolFee(loanValue)
   })
 
-  const totalWeeklyFee = sumBy(nftsInCart, ({ nft, loanValue }) =>
-    calcInterest({
-      timeInterval: ONE_WEEK_IN_SECONDS,
-      loanValue,
-      apr: nft.loan.marketApr,
-    }),
-  )
+  const totalWeeklyFee = sumBy(nftsInCart, ({ nft, loanValue }) => {
+    const apr = calculateDynamicApr(
+      Math.floor((loanValue / nft.nft.collectionFloor) * BASE_POINTS),
+      DYNAMIC_APR,
+    )
+
+    return calcInterest({ timeInterval: ONE_WEEK_IN_SECONDS, loanValue, apr })
+  })
 
   const [isBorrowing, setIsBorrowing] = useState(false)
   const onBorrow = async () => {
@@ -63,6 +70,8 @@ export const Summary: FC<SummaryProps> = ({
     await borrowAll()
     setIsBorrowing(false)
   }
+
+  const showBonkRewardsSticker = !!(bonkRewardsAvailable && nftsInCart.length)
 
   return (
     <div className={styles.summary}>
@@ -110,6 +119,11 @@ export const Summary: FC<SummaryProps> = ({
           loading={isBorrowing}
           size="large"
         >
+          {!!showBonkRewardsSticker && (
+            <Tooltip className={styles.bonkTokenSticker} title="50% upfront fee refunded in $BONK">
+              <img src={bonkTokenImg} alt="Bonk token sticker" />
+            </Tooltip>
+          )}
           Borrow {createSolValueJSX(totalBorrow, 1e9, '0◎')}
         </Button>
       </div>

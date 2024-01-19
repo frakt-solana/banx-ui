@@ -17,6 +17,8 @@ interface NftInfoCellProps {
   selected?: boolean
   onCheckboxClick?: () => void
 
+  checkboxClassName?: string
+
   banxPoints?: {
     partnerPoints: number
     playerPoints: number
@@ -29,6 +31,7 @@ export const NftInfoCell: FC<NftInfoCellProps> = ({
   onCheckboxClick,
   selected = false,
   banxPoints,
+  checkboxClassName,
 }) => {
   const { viewState } = useTableView()
   const isCardView = viewState === ViewState.CARD
@@ -39,13 +42,19 @@ export const NftInfoCell: FC<NftInfoCellProps> = ({
   return (
     <div className={styles.nftInfo}>
       {onCheckboxClick && !isCardView && (
-        <Checkbox className={styles.checkbox} onChange={onCheckboxClick} checked={selected} />
+        <Checkbox
+          className={classNames(styles.checkbox, checkboxClassName)}
+          onChange={onCheckboxClick}
+          checked={selected}
+        />
       )}
+
       <div className={styles.nftImageWrapper}>
         {!!banxPoints?.partnerPoints && <PointsBanxBadge {...banxPoints} />}
         <NftImage nftImage={nftImage} />
         {selected && isCardView && <div className={styles.selectedCollectionOverlay} />}
       </div>
+
       <div className={styles.nftNames}>
         <p
           className={classNames(styles.nftCollectionName, {
@@ -64,7 +73,7 @@ interface NftImageProps {
   nftImage: string
 }
 
-const NftImage: FC<NftImageProps> = ({ nftImage }) => {
+export const NftImage: FC<NftImageProps> = ({ nftImage }) => {
   const imageLoaded = useImagePreload(nftImage)
 
   return imageLoaded ? (
@@ -77,12 +86,17 @@ const NftImage: FC<NftImageProps> = ({ nftImage }) => {
 interface PointsBanxBadgeProps {
   playerPoints: number
   partnerPoints: number
+  className?: string
 }
 
-const PointsBanxBadge: FC<PointsBanxBadgeProps> = ({ playerPoints, partnerPoints }) => {
+export const PointsBanxBadge: FC<PointsBanxBadgeProps> = ({
+  playerPoints,
+  partnerPoints,
+  className,
+}) => {
   return (
     <Tooltip title="Partner Points / Player Points">
-      <div className={styles.badge}>
+      <div className={classNames(styles.badge, className)}>
         {partnerPoints}/{playerPoints}
       </div>
     </Tooltip>

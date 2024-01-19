@@ -1,31 +1,70 @@
+import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
 import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
 import { calculateLentValue } from '@banx/pages/OffersPage'
-import { formatDecimal } from '@banx/utils'
+import { formatDecimal, isLoanTerminating } from '@banx/utils'
 
 import { APRCell, ActionsCell, InterestCell, StatusCell } from './TableCells'
 
-interface GetTableColumns {
-  isCardView?: boolean
+import styles from './LoansTable.module.less'
+
+interface GetTableColumnsProps {
+  findLoanInSelection: (loanPubkey: string) => Loan | null
+  toggleLoanInSelection: (loan: Loan) => void
+  onSelectAll: () => void
+
+  isUnderwaterFilterActive: boolean
+  hasSelectedLoans: boolean
+  isCardView: boolean
 }
 
-export const getTableColumns = ({ isCardView = false }: GetTableColumns) => {
+export const getTableColumns = ({
+  findLoanInSelection,
+  toggleLoanInSelection,
+  onSelectAll,
+  isUnderwaterFilterActive,
+  hasSelectedLoans,
+  isCardView,
+}: GetTableColumnsProps) => {
   const columns: ColumnType<Loan>[] = [
     {
       key: 'collateral',
-      title: <HeaderCell label="Collateral" align="left" />,
-      render: ({ nft }) => (
-        <NftInfoCell
-          nftName={nft.meta.name}
-          nftImage={nft.meta.imageUrl}
-          banxPoints={{
-            partnerPoints: nft.meta.partnerPoints || 0,
-            playerPoints: nft.meta.playerPoints || 0,
-          }}
-        />
+      title: (
+        <div className={styles.headerTitleRow}>
+          {isUnderwaterFilterActive && (
+            <Checkbox
+              className={styles.checkbox}
+              onChange={onSelectAll}
+              checked={hasSelectedLoans}
+            />
+          )}
+          <HeaderCell label="Collateral" align="left" />
+        </div>
       ),
+      render: (loan) => {
+        const { partnerPoints = 0, playerPoints = 0, name, imageUrl } = loan.nft.meta
+
+        const canSelect = isUnderwaterFilterActive && !isLoanTerminating(loan)
+
+        const onCheckboxClick = isUnderwaterFilterActive
+          ? () => toggleLoanInSelection(loan)
+          : undefined
+
+        const selected = canSelect ? !!findLoanInSelection(loan.publicKey) : undefined
+
+        return (
+          <NftInfoCell
+            nftName={name}
+            nftImage={imageUrl}
+            selected={selected}
+            onCheckboxClick={onCheckboxClick}
+            banxPoints={{ partnerPoints, playerPoints }}
+            checkboxClassName={!canSelect ? styles.nftCellCheckbox : ''}
+          />
+        )
+      },
     },
     {
       key: 'lent',
