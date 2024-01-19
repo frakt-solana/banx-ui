@@ -18,11 +18,7 @@ export const RootPage = () => {
   return (
     <div className={styles.pageWrapper}>
       <Header />
-      <div className={styles.content}>
-        <AdvantagesSection />
-
-        <ListsSection />
-      </div>
+      <Content />
     </div>
   )
 }
@@ -33,8 +29,11 @@ const Header = () => {
 
   return (
     <div className={classNames(styles.header, { [styles.headerDark]: isDarkTheme })}>
-      <h1>NFT Lending done right</h1>
-      <h2>Borrow, Lend and Refinance with maximum capital efficiency</h2>
+      <div className={styles.headerContent}>
+        <h1>NFT Loans done right</h1>
+        <h2>Borrow and Lend with maximum capital efficiency</h2>
+        <AdvantagesSection />
+      </div>
     </div>
   )
 }
@@ -78,8 +77,8 @@ const AdvantagesSection = () => {
   )
 }
 
-const ListsSection = () => (
-  <div className={styles.listsWrapper}>
+const Content = () => (
+  <div className={styles.content}>
     <div className={styles.listCol}>
       <NavLink to={PATHS.BORROW} className={styles.button}>
         <Button>Borrow</Button>
