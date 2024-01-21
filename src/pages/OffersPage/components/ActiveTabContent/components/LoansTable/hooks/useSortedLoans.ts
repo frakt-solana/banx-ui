@@ -4,19 +4,20 @@ import { chain } from 'lodash'
 
 import { Loan } from '@banx/api/core'
 import { useLocalStorage } from '@banx/hooks'
-import { createSortParams } from '@banx/store'
-import { calculateLoanRepayValue, isLoanLiquidated, isLoanTerminating } from '@banx/utils'
+import {
+  SORT_STORAGE_KEY,
+  SortOrder,
+  calculateLoanRepayValue,
+  createSortParams,
+  isLoanLiquidated,
+  isLoanTerminating,
+} from '@banx/utils'
 
 enum SortField {
   LENT = 'lent',
   APR = 'apr',
   LTV = 'ltv',
   STATUS = 'status',
-}
-
-enum SortOrder {
-  ASC = 'asc',
-  DESC = 'desc',
 }
 
 type SortValueGetter = (loan: Loan) => number | null
@@ -63,12 +64,10 @@ const sortLoansByStatus = (loans: Loan[], order: string) => {
   return order === 'asc' ? combinedLoans : combinedLoans.reverse()
 }
 
-const SORT_STORAGE_KEY = '@banx.sort.loans'
-
 export const useSortedLoans = (loans: Loan[]) => {
   const { value: defaultOptionValue } = DEFAULT_SORT_OPTION
   const [sortOptionValue, setSortOptionValue] = useLocalStorage(
-    SORT_STORAGE_KEY,
+    SORT_STORAGE_KEY.LENDER_LOANS_ACTIVE,
     defaultOptionValue,
   )
 

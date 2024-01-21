@@ -4,7 +4,7 @@ import { chain } from 'lodash'
 
 import { MarketPreview } from '@banx/api/core'
 import { useLocalStorage } from '@banx/hooks'
-import { createSortParams } from '@banx/store'
+import { SORT_STORAGE_KEY, createSortParams } from '@banx/utils'
 
 enum SortField {
   OFFERS_TVL = 'offerTvl',
@@ -32,12 +32,10 @@ const STATUS_VALUE_MAP: StatusValueMap = {
   [SortField.APR]: (market) => market.marketApr,
 }
 
-const SORT_STORAGE_KEY = '@banx.sort.lend'
-
 export const useSortMarkets = (markets: MarketPreview[]) => {
   const { value: defaultOptionValue } = DEFAULT_SORT_OPTION
   const [sortOptionValue, setSortOptionValue] = useLocalStorage(
-    SORT_STORAGE_KEY,
+    SORT_STORAGE_KEY.LEND,
     defaultOptionValue,
   )
 

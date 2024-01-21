@@ -17,14 +17,18 @@ import { useBorrowBonkRewardsAvailability, useLocalStorage } from '@banx/hooks'
 import { PATHS } from '@banx/router'
 import {
   ViewState,
-  createSortParams,
   useIsLedger,
   useLoansOptimistic,
   useModal,
   useOffersOptimistic,
   useTableView,
 } from '@banx/store'
-import { getDialectAccessToken, trackPageEvent } from '@banx/utils'
+import {
+  SORT_STORAGE_KEY,
+  createSortParams,
+  getDialectAccessToken,
+  trackPageEvent,
+} from '@banx/utils'
 
 import { useCartState } from '../../cartState'
 import { getTableColumns } from './columns'
@@ -314,12 +318,10 @@ const STATUS_VALUE_MAP: StatusValueMap = {
   [SortField.FEE]: (nft) => nft.interest,
 }
 
-const SORT_STORAGE_KEY = '@banx.sort.borrow'
-
 const useSortedNfts = (nfts: TableNftData[]) => {
   const { value: defaultOptionValue } = DEFAULT_TABLE_SORT
   const [sortOptionValue, setSortOptionValue] = useLocalStorage(
-    SORT_STORAGE_KEY,
+    SORT_STORAGE_KEY.BORROW,
     defaultOptionValue,
   )
 
