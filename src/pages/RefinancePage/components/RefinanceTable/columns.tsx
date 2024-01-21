@@ -6,13 +6,7 @@ import Timer from '@banx/components/Timer/Timer'
 import { Loan } from '@banx/api/core'
 import { formatDecimal } from '@banx/utils'
 
-import {
-  APRCell,
-  /* APRIncreaseCell */
-  DebtCell,
-  LTVCell,
-  RefinanceCell,
-} from './TableCells'
+import { APRCell, DebtCell, LTVCell, RefinanceCell } from './TableCells'
 import { SECONDS_IN_72_HOURS } from './constants'
 import { calcWeeklyInterestFee } from './helpers'
 
@@ -59,19 +53,16 @@ export const getTableColumns = ({
       key: 'floorPrice',
       title: <HeaderCell label="Floor" />,
       render: (loan) => createSolValueJSX(loan.nft.collectionFloor, 1e9, '--', formatDecimal),
-      sorter: true,
     },
     {
       key: 'repayValue',
       title: <HeaderCell label="Debt" />,
       render: (loan) => <DebtCell loan={loan} />,
-      sorter: true,
     },
     {
       key: 'ltv',
       title: <HeaderCell label="LTV" />,
       render: (loan) => <LTVCell loan={loan} />,
-      sorter: true,
     },
     {
       key: 'interest',
@@ -84,18 +75,12 @@ export const getTableColumns = ({
       render: (loan) => <APRCell loan={loan} />,
       sorter: true,
     },
-    // {
-    //   key: 'nextAprIncrease',
-    //   title: <HeaderCell label="Next APR increase" />,
-    //   render: (loan) => <APRIncreaseCell loan={loan} />,
-    // },
     {
       key: 'duration',
       title: <HeaderCell label="Ends in" />,
       render: ({ fraktBond }) => (
         <Timer expiredAt={fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS} />
       ),
-      sorter: true,
     },
     {
       key: 'refinanceCell',
