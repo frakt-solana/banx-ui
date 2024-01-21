@@ -6,7 +6,7 @@ import { MarketPreview } from '@banx/api/core'
 import { createSortParams, useSort } from '@banx/store'
 
 enum SortField {
-  OFFER_TVL = 'offerTvl',
+  OFFERS_TVL = 'offerTvl',
   LOANS_TVL = 'loansTvl',
   ACTIVE_LOANS = 'activeLoans',
   APR = 'apr',
@@ -16,7 +16,7 @@ type SortValueGetter = (market: MarketPreview) => number
 type StatusValueMap = Record<string, SortValueGetter>
 
 const SORT_OPTIONS = [
-  { label: 'Offers TVL', value: SortField.OFFER_TVL },
+  { label: 'Offers TVL', value: SortField.OFFERS_TVL },
   { label: 'Loans TVL', value: SortField.LOANS_TVL },
   { label: 'Active loans', value: SortField.ACTIVE_LOANS },
   { label: 'APR', value: SortField.APR },
@@ -25,7 +25,7 @@ const SORT_OPTIONS = [
 const DEFAULT_SORT_OPTION = { label: 'Loans TVL', value: 'loansTvl_desc' }
 
 const STATUS_VALUE_MAP: StatusValueMap = {
-  [SortField.OFFER_TVL]: (market) => market.offerTvl,
+  [SortField.OFFERS_TVL]: (market) => market.offerTvl,
   [SortField.LOANS_TVL]: (market) => market.loansTvl,
   [SortField.ACTIVE_LOANS]: (market) => market.activeBondsAmount,
   [SortField.APR]: (market) => market.marketApr,

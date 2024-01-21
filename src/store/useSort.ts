@@ -1,31 +1,16 @@
-import { useEffect } from 'react'
-
-import { create } from 'zustand'
+import { useEffect, useState } from 'react'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
-interface SortState {
-  sortOptionValue: string
-  setSortOptionValue: (value: string) => void
-}
-
-const useSortState = create<SortState>((set) => ({
-  sortOptionValue: '',
-  setSortOptionValue: (value) => set({ sortOptionValue: value }),
-}))
-
 export const useSort = (key: string, initialValue: string) => {
-  const { sortOptionValue, setSortOptionValue } = useSortState()
+  const storedValue = localStorage.getItem(key)
+  const [sortOptionValue, setSortOptionValue] = useState<string>(storedValue || initialValue)
 
   useEffect(() => {
-    const storedValue = localStorage.getItem(key)
-    if (storedValue) {
-      setSortOptionValue(storedValue)
-    } else {
+    if (!storedValue) {
       localStorage.setItem(key, initialValue)
-      setSortOptionValue(initialValue)
     }
-  }, [key, initialValue, setSortOptionValue])
+  }, [key, initialValue, storedValue])
 
   useEffect(() => {
     localStorage.setItem(key, sortOptionValue)
