@@ -1,12 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 
-import { get, sortBy } from 'lodash'
-
-import { SortOption } from '@banx/components/SortDropdown'
+import { chain } from 'lodash'
 
 import { MarketPreview } from '@banx/api/core'
-
-import { DEFAULT_SORT_OPTION, SORT_OPTIONS } from '../constants'
+import { createSortParams, useSort } from '@banx/store'
 
 enum SortField {
   OFFER_TVL = 'offerTvl',
@@ -15,39 +12,50 @@ enum SortField {
   APR = 'apr',
 }
 
-export const useSortMarkets = (markets: MarketPreview[]) => {
-  const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
+type SortValueGetter = (market: MarketPreview) => number
+type StatusValueMap = Record<string, SortValueGetter>
 
-  const sortOptionValue = sortOption?.value
+const SORT_OPTIONS = [
+  { label: 'Offers TVL', value: SortField.OFFER_TVL },
+  { label: 'Loans TVL', value: SortField.LOANS_TVL },
+  { label: 'Active loans', value: SortField.ACTIVE_LOANS },
+  { label: 'APR', value: SortField.APR },
+]
+
+const DEFAULT_SORT_OPTION = { label: 'Loans TVL', value: 'loansTvl_desc' }
+
+const STATUS_VALUE_MAP: StatusValueMap = {
+  [SortField.OFFER_TVL]: (market) => market.offerTvl,
+  [SortField.LOANS_TVL]: (market) => market.loansTvl,
+  [SortField.ACTIVE_LOANS]: (market) => market.activeBondsAmount,
+  [SortField.APR]: (market) => market.marketApr,
+}
+
+const SORT_STORAGE_KEY = '@banx.sort.lend'
+
+export const useSortMarkets = (markets: MarketPreview[]) => {
+  const { value: defaultOptionValue } = DEFAULT_SORT_OPTION
+  const { sortOptionValue, setSortOptionValue } = useSort(SORT_STORAGE_KEY, defaultOptionValue)
 
   const sortedMarkets = useMemo(() => {
-    if (!sortOptionValue) {
-      return markets
-    }
+    if (!sortOptionValue) return markets
 
-    const [name, order] = sortOptionValue.split('_')
+    const [field, order] = sortOptionValue.split('_')
 
-    const sortValueMapping: Record<SortField, string> = {
-      [SortField.OFFER_TVL]: 'offerTvl',
-      [SortField.LOANS_TVL]: 'loansTvl',
-      [SortField.ACTIVE_LOANS]: 'activeBondsAmount',
-      [SortField.APR]: 'marketApr',
-    }
-
-    const sorted = sortBy(markets, (loan) => {
-      const sortValue = sortValueMapping[name as SortField]
-      return get(loan, sortValue)
-    })
-
-    return order === 'desc' ? sorted.reverse() : sorted
+    return chain(markets)
+      .sortBy((market) => STATUS_VALUE_MAP[field](market))
+      .thru((sorted) => (order === 'desc' ? sorted.reverse() : sorted))
+      .value()
   }, [sortOptionValue, markets])
 
-  return {
-    sortedMarkets,
-    sortParams: {
-      option: sortOption,
-      onChange: setSortOption,
+  const sortParams = useMemo(() => {
+    return createSortParams({
+      sortOptionValue,
+      setSortOptionValue,
+      defaultOption: DEFAULT_SORT_OPTION,
       options: SORT_OPTIONS,
-    },
-  }
+    })
+  }, [setSortOptionValue, sortOptionValue])
+
+  return { sortedMarkets, sortParams }
 }
