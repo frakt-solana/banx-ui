@@ -4,7 +4,6 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { first, groupBy, map, sumBy } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
-import { SortOption } from '@banx/components/SortDropdown'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
@@ -12,7 +11,7 @@ import { calculateClaimValue, isLoanAbleToClaim, useLenderLoans } from '@banx/pa
 import { formatDecimal, isLoanTerminating, isUnderWaterLoan } from '@banx/utils'
 
 import { useSelectedLoans } from '../loansState'
-import { DEFAULT_SORT_OPTION, SORT_OPTIONS, useSortedLoans } from './useSortedLoans'
+import { useSortedLoans } from './useSortedLoans'
 
 import styles from '../LoansTable.module.less'
 
@@ -27,6 +26,8 @@ export const useLoansTable = () => {
 
   const { loans, addMints: hideLoans, updateOrAddLoan, loading } = useLenderLoans()
 
+  const { sortedLoans, sortParams } = useSortedLoans(loans)
+
   const {
     filteredLoans,
     isUnderwaterFilterActive,
@@ -36,12 +37,7 @@ export const useLoansTable = () => {
     filteredAllLoans,
     underwaterLoans,
     underwaterLoansCount,
-  } = useFilterLoans(loans)
-
-  const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
-
-  const sortedLoans = useSortedLoans(filteredLoans, sortOption)
-  const sortedUnderwaterLoans = useSortedLoans(underwaterLoans, sortOption)
+  } = useFilterLoans(sortedLoans)
 
   const loansToClaim = useMemo(() => loans.filter(isLoanAbleToClaim), [loans])
 
@@ -57,27 +53,20 @@ export const useLoansTable = () => {
     : 'Connect wallet to view your active offers'
 
   return {
-    loans: sortedLoans,
+    loans: filteredLoans,
     hideLoans,
     updateOrAddLoan,
     loading,
 
     loansToClaim,
-    underwaterLoans: sortedUnderwaterLoans,
+    underwaterLoans,
 
     underwaterLoansCount,
 
     isUnderwaterFilterActive,
     onToggleUnderwaterFilter,
 
-    sortViewParams: {
-      searchSelectParams,
-      sortParams: {
-        option: sortOption,
-        onChange: setSortOption,
-        options: SORT_OPTIONS,
-      },
-    },
+    sortViewParams: { searchSelectParams, sortParams },
 
     showEmptyList,
     emptyMessage,

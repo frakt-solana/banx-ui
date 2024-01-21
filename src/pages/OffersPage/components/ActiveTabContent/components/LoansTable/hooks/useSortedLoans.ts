@@ -2,9 +2,8 @@ import { useMemo } from 'react'
 
 import { chain } from 'lodash'
 
-import { SortOption } from '@banx/components/SortDropdown'
-
 import { Loan } from '@banx/api/core'
+import { createSortParams, useSort } from '@banx/store'
 import { calculateLoanRepayValue, isLoanLiquidated, isLoanTerminating } from '@banx/utils'
 
 enum SortField {
@@ -14,34 +13,38 @@ enum SortField {
   STATUS = 'status',
 }
 
-type SortOrder = 'asc' | 'desc'
-type SortValueGetter = (loan: Loan) => number
-type StatusValueMap = Record<SortField, string | SortValueGetter>
+enum SortOrder {
+  ASC = 'asc',
+  DESC = 'desc',
+}
+
+type SortValueGetter = (loan: Loan) => number | null
+type StatusValueMap = Record<string, SortValueGetter>
 
 export const SORT_OPTIONS = [
-  { label: 'Lent', value: 'lent' },
-  { label: 'APR', value: 'apr' },
-  { label: 'LTV', value: 'ltv' },
-  { label: 'Status', value: 'status' },
+  { label: 'Lent', value: SortField.LENT },
+  { label: 'APR', value: SortField.APR },
+  { label: 'LTV', value: SortField.LTV },
+  { label: 'Status', value: SortField.STATUS },
 ]
 
-export const DEFAULT_SORT_OPTION = { label: 'LTV', value: 'ltv_desc' }
+export const DEFAULT_SORT_OPTION = { label: 'LTV', value: `${SortField.LTV}_${SortOrder.DESC}` }
 
 const STATUS_VALUE_MAP: StatusValueMap = {
   [SortField.LENT]: (loan: Loan) => loan.fraktBond.currentPerpetualBorrowed,
   [SortField.APR]: (loan: Loan) => loan.bondTradeTransaction.amountOfBonds,
   [SortField.LTV]: (loan: Loan) => calculateLoanRepayValue(loan) / loan.nft.collectionFloor,
-  [SortField.STATUS]: '',
+  [SortField.STATUS]: () => null,
 }
 
-const sortLoansByField = (loans: Loan[], field: SortField, order: SortOrder) => {
+const sortLoansByField = (loans: Loan[], field: string, order: string) => {
   return chain(loans)
-    .sortBy((loan) => (STATUS_VALUE_MAP[field] as SortValueGetter)(loan))
+    .sortBy((loan) => STATUS_VALUE_MAP[field](loan))
     .thru((sorted) => (order === 'desc' ? sorted.reverse() : sorted))
     .value()
 }
 
-const sortLoansByStatus = (loans: Loan[], order: SortOrder) => {
+const sortLoansByStatus = (loans: Loan[], order: string) => {
   const terminatingLoans = chain(loans)
     .filter(isLoanTerminating)
     .sortBy((loan) => loan.fraktBond.refinanceAuctionStartedAt)
@@ -59,20 +62,32 @@ const sortLoansByStatus = (loans: Loan[], order: SortOrder) => {
   return order === 'asc' ? combinedLoans : combinedLoans.reverse()
 }
 
-export const useSortedLoans = (loans: Loan[], sortOption: SortOption) => {
-  const sortOptionValue = sortOption?.value
+const SORT_STORAGE_KEY = '@banx.sort.loans'
+
+export const useSortedLoans = (loans: Loan[]) => {
+  const { value: defaultOptionValue } = DEFAULT_SORT_OPTION
+  const { sortOptionValue, setSortOptionValue } = useSort(SORT_STORAGE_KEY, defaultOptionValue)
 
   const sortedLoans = useMemo(() => {
     if (!sortOptionValue) {
       return loans
     }
 
-    const [name, order] = sortOptionValue.split('_') as [SortField, SortOrder]
+    const [field, order] = sortOptionValue.split('_')
 
-    return name === SortField.STATUS
+    return field === SortField.STATUS
       ? sortLoansByStatus(loans, order)
-      : sortLoansByField(loans, name, order)
+      : sortLoansByField(loans, field, order)
   }, [sortOptionValue, loans])
 
-  return sortedLoans
+  const sortParams = useMemo(() => {
+    return createSortParams({
+      sortOptionValue,
+      setSortOptionValue,
+      defaultOption: DEFAULT_SORT_OPTION,
+      options: SORT_OPTIONS,
+    })
+  }, [setSortOptionValue, sortOptionValue])
+
+  return { sortedLoans, sortParams }
 }
