@@ -7,10 +7,12 @@ import { Loan } from '@banx/api/core'
 import {
   SORT_STORAGE_KEY,
   SortOrder,
+  SortValueMap,
   calculateLoanRepayValue,
   createSortParams,
   isLoanLiquidated,
   isLoanTerminating,
+  sortDataByValueMap,
 } from '@banx/utils'
 
 enum SortField {
@@ -28,21 +30,39 @@ const SORT_OPTIONS = [
 ]
 const DEFAULT_SORT_OPTION = { label: 'LTV', value: `${SortField.STATUS}_${SortOrder.DESC}` }
 
-type SortValueGetter = (loan: Loan) => number | null
-type StatusValueMap = Record<string, SortValueGetter>
-
-const STATUS_VALUE_MAP: StatusValueMap = {
+const SORT_VALUE_MAP: SortValueMap<Loan> = {
   [SortField.DEBT]: (loan) => calculateLoanRepayValue(loan),
   [SortField.APR]: (loan) => loan.bondTradeTransaction.amountOfBonds,
   [SortField.LTV]: (loan) => calculateLoanRepayValue(loan) / loan.nft.collectionFloor,
   [SortField.STATUS]: () => null,
 }
 
-const sortLoansByField = (loans: Loan[], field: string, order: string) => {
-  return chain(loans)
-    .sortBy((loan) => STATUS_VALUE_MAP[field](loan))
-    .thru((sorted) => (order === 'desc' ? sorted.reverse() : sorted))
-    .value()
+export const useSortedLoans = (loans: Loan[]) => {
+  const [sortOptionValue, setSortOptionValue] = useLocalStorage(
+    SORT_STORAGE_KEY.LOANS_ACTIVE,
+    DEFAULT_SORT_OPTION.value,
+  )
+
+  const sortedLoans = useMemo(() => {
+    if (!sortOptionValue) return loans
+
+    const [field, order] = sortOptionValue.split('_')
+
+    return field === SortField.STATUS
+      ? sortLoansByStatus(loans, order)
+      : sortDataByValueMap(loans, sortOptionValue, SORT_VALUE_MAP)
+  }, [sortOptionValue, loans])
+
+  const sortParams = useMemo(() => {
+    return createSortParams({
+      sortOptionValue,
+      setSortOptionValue,
+      defaultOption: DEFAULT_SORT_OPTION,
+      options: SORT_OPTIONS,
+    })
+  }, [setSortOptionValue, sortOptionValue])
+
+  return { sortedLoans, sortParams }
 }
 
 const sortLoansByStatus = (loans: Loan[], order: string) => {
@@ -61,33 +81,4 @@ const sortLoansByStatus = (loans: Loan[], order: string) => {
   const combinedLoans = [...otherLoans, ...terminatingLoans]
 
   return order === 'asc' ? combinedLoans : combinedLoans.reverse()
-}
-
-export const useSortedLoans = (loans: Loan[]) => {
-  const { value: defaultOptionValue } = DEFAULT_SORT_OPTION
-  const [sortOptionValue, setSortOptionValue] = useLocalStorage(
-    SORT_STORAGE_KEY.LOANS_ACTIVE,
-    defaultOptionValue,
-  )
-
-  const sortedLoans = useMemo(() => {
-    if (!sortOptionValue) return loans
-
-    const [field, order] = sortOptionValue.split('_')
-
-    return field === SortField.STATUS
-      ? sortLoansByStatus(loans, order)
-      : sortLoansByField(loans, field, order)
-  }, [sortOptionValue, loans])
-
-  const sortParams = useMemo(() => {
-    return createSortParams({
-      sortOptionValue,
-      setSortOptionValue,
-      defaultOption: DEFAULT_SORT_OPTION,
-      options: SORT_OPTIONS,
-    })
-  }, [setSortOptionValue, sortOptionValue])
-
-  return { sortedLoans, sortParams }
 }

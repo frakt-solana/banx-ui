@@ -1,10 +1,15 @@
 import { useMemo } from 'react'
 
-import { chain } from 'lodash'
-
 import { Loan } from '@banx/api/core'
 import { useLocalStorage } from '@banx/hooks'
-import { SORT_STORAGE_KEY, calculateLoanRepayValue, createSortParams } from '@banx/utils'
+import {
+  SORT_STORAGE_KEY,
+  SortOrder,
+  SortValueMap,
+  calculateLoanRepayValue,
+  createSortParams,
+  sortDataByValueMap,
+} from '@banx/utils'
 
 import { calculateAprIncrement } from './../helpers'
 
@@ -24,12 +29,9 @@ const SORT_OPTIONS = [
   { label: 'Ends in', value: SortField.DURATION },
 ]
 
-const DEFAULT_SORT_OPTION = { label: 'LTV', value: `${SortField.LTV}_asc` }
+const DEFAULT_SORT_OPTION = { label: 'LTV', value: `${SortField.LTV}_${SortOrder.ASC}` }
 
-type SortValueGetter = (loan: Loan) => number
-type StatusValueMap = Record<string, SortValueGetter>
-
-const STATUS_VALUE_MAP: StatusValueMap = {
+const SORT_VALUE_MAP: SortValueMap<Loan> = {
   [SortField.DURATION]: (loan) => loan.fraktBond.refinanceAuctionStartedAt,
   [SortField.FLOOR]: (loan) => loan.nft.collectionFloor,
   [SortField.DEBT]: (loan) => calculateLoanRepayValue(loan),
@@ -41,21 +43,13 @@ const STATUS_VALUE_MAP: StatusValueMap = {
 }
 
 export const useSortedLoans = (loans: Loan[]) => {
-  const { value: defaultOptionValue } = DEFAULT_SORT_OPTION
   const [sortOptionValue, setSortOptionValue] = useLocalStorage(
     SORT_STORAGE_KEY.REFINANCE,
-    defaultOptionValue,
+    DEFAULT_SORT_OPTION.value,
   )
 
   const sortedLoans = useMemo(() => {
-    if (!sortOptionValue) return loans
-
-    const [field, order] = sortOptionValue.split('_')
-
-    return chain(loans)
-      .sortBy((loan) => STATUS_VALUE_MAP[field](loan))
-      .thru((sorted) => (order === 'desc' ? sorted.reverse() : sorted))
-      .value()
+    return sortDataByValueMap(loans, sortOptionValue, SORT_VALUE_MAP)
   }, [sortOptionValue, loans])
 
   const sortParams = useMemo(() => {
