@@ -1,11 +1,13 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 
 import { chain } from 'lodash'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
 import { UserOffer } from '@banx/api/core'
+import { useLocalStorage } from '@banx/hooks'
 import { calcSyntheticLoanValue } from '@banx/store'
+import { SORT_STORAGE_KEY, createSortParams } from '@banx/utils'
 
 enum SortField {
   LENT = 'lent',
@@ -35,9 +37,11 @@ const STATUS_VALUE_MAP: StatusValueMap = {
 }
 
 export const useSortedOffers = (offers: UserOffer[]) => {
-  const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
-
-  const sortOptionValue = sortOption?.value
+  const { value: defaultOptionValue } = DEFAULT_SORT_OPTION
+  const [sortOptionValue, setSortOptionValue] = useLocalStorage(
+    SORT_STORAGE_KEY.LENDER_OFFERS,
+    defaultOptionValue,
+  )
 
   const sortedOffers = useMemo(() => {
     if (!sortOptionValue) return offers
@@ -50,12 +54,14 @@ export const useSortedOffers = (offers: UserOffer[]) => {
       .value()
   }, [sortOptionValue, offers])
 
-  return {
-    sortedOffers,
-    sortParams: {
-      option: sortOption,
-      onChange: setSortOption,
+  const sortParams = useMemo(() => {
+    return createSortParams({
+      sortOptionValue,
+      setSortOptionValue,
+      defaultOption: DEFAULT_SORT_OPTION,
       options: SORT_OPTIONS,
-    },
-  }
+    })
+  }, [setSortOptionValue, sortOptionValue])
+
+  return { sortedOffers, sortParams }
 }

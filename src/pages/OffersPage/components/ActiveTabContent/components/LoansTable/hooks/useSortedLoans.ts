@@ -23,14 +23,14 @@ enum SortField {
 type SortValueGetter = (loan: Loan) => number | null
 type StatusValueMap = Record<string, SortValueGetter>
 
-export const SORT_OPTIONS = [
+const SORT_OPTIONS = [
   { label: 'Lent', value: SortField.LENT },
   { label: 'APR', value: SortField.APR },
   { label: 'LTV', value: SortField.LTV },
   { label: 'Status', value: SortField.STATUS },
 ]
 
-export const DEFAULT_SORT_OPTION = { label: 'LTV', value: `${SortField.LTV}_${SortOrder.DESC}` }
+const DEFAULT_SORT_OPTION = { label: 'LTV', value: `${SortField.LTV}_${SortOrder.DESC}` }
 
 const STATUS_VALUE_MAP: StatusValueMap = {
   [SortField.LENT]: (loan: Loan) => loan.fraktBond.currentPerpetualBorrowed,
@@ -72,9 +72,7 @@ export const useSortedLoans = (loans: Loan[]) => {
   )
 
   const sortedLoans = useMemo(() => {
-    if (!sortOptionValue) {
-      return loans
-    }
+    if (!sortOptionValue) return loans
 
     const [field, order] = sortOptionValue.split('_')
 

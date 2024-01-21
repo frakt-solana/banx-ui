@@ -5,12 +5,11 @@ import { first, groupBy, map } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
-import { SortOption } from '@banx/components/SortDropdown'
 
 import { Loan } from '@banx/api/core'
 import { PATHS } from '@banx/router'
 
-import { DEFAULT_SORT_OPTION, EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
+import { EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
 import { useFilteredLoans } from './useFilteredLoans'
 import { useSortedLoans } from './useSortedLoans'
 
@@ -32,10 +31,9 @@ export const useLoansActiveTable = ({ loans, isLoading }: UseLoansActiveTablePro
   const navigate = useNavigate()
 
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
-  const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
 
   const filteredLoans = useFilteredLoans(loans, selectedOptions)
-  const sortedLoans = useSortedLoans(filteredLoans, sortOption.value)
+  const { sortedLoans, sortParams } = useSortedLoans(filteredLoans)
 
   const searchSelectOptions = useMemo(() => {
     const loansGroupedByCollection = groupBy(loans, ({ nft }) => nft.meta.collectionName)
@@ -63,12 +61,6 @@ export const useLoansActiveTable = ({ loans, isLoading }: UseLoansActiveTablePro
     className: styles.searchSelect,
   }
 
-  const sortParams = {
-    option: sortOption,
-    onChange: setSortOption,
-    className: styles.sortDropdown,
-  }
-
   const showEmptyList = (!loans?.length && !isLoading) || !connected
   const showSummary = !!loans.length && !isLoading
 
@@ -89,7 +81,10 @@ export const useLoansActiveTable = ({ loans, isLoading }: UseLoansActiveTablePro
     emptyListParams,
     sortViewParams: {
       searchSelectParams,
-      sortParams,
+      sortParams: {
+        ...sortParams,
+        className: styles.sortDropdown,
+      },
     },
   }
 }
