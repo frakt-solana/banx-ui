@@ -3,7 +3,8 @@ import { useMemo } from 'react'
 import { chain } from 'lodash'
 
 import { Loan } from '@banx/api/core'
-import { createSortParams, useSort } from '@banx/store'
+import { useLocalStorage } from '@banx/hooks'
+import { createSortParams } from '@banx/store'
 import { calculateLoanRepayValue } from '@banx/utils'
 
 import { calculateAprIncrement } from './../helpers'
@@ -44,7 +45,10 @@ const SORT_STORAGE_KEY = '@banx.sort.refinance'
 
 export const useSortedLoans = (loans: Loan[]) => {
   const { value: defaultOptionValue } = DEFAULT_SORT_OPTION
-  const { sortOptionValue, setSortOptionValue } = useSort(SORT_STORAGE_KEY, defaultOptionValue)
+  const [sortOptionValue, setSortOptionValue] = useLocalStorage(
+    SORT_STORAGE_KEY,
+    defaultOptionValue,
+  )
 
   const sortedLoans = useMemo(() => {
     if (!sortOptionValue) return loans

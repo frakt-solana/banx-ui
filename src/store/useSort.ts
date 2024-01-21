@@ -1,23 +1,4 @@
-import { useEffect, useState } from 'react'
-
 import { SortOption } from '@banx/components/SortDropdown'
-
-export const useSort = (key: string, initialValue: string) => {
-  const storedValue = localStorage.getItem(key)
-  const [sortOptionValue, setSortOptionValue] = useState<string>(storedValue || initialValue)
-
-  useEffect(() => {
-    if (!storedValue) {
-      localStorage.setItem(key, initialValue)
-    }
-  }, [key, initialValue, storedValue])
-
-  useEffect(() => {
-    localStorage.setItem(key, sortOptionValue)
-  }, [key, sortOptionValue])
-
-  return { sortOptionValue, setSortOptionValue }
-}
 
 interface CreateSortParamsProps {
   sortOptionValue: string

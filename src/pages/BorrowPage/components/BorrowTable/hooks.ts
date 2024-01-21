@@ -13,7 +13,7 @@ import {
 
 import { BorrowNft, Offer } from '@banx/api/core'
 import { SPECIAL_COLLECTIONS_MARKETS } from '@banx/constants'
-import { useBorrowBonkRewardsAvailability } from '@banx/hooks'
+import { useBorrowBonkRewardsAvailability, useLocalStorage } from '@banx/hooks'
 import { PATHS } from '@banx/router'
 import {
   ViewState,
@@ -22,7 +22,6 @@ import {
   useLoansOptimistic,
   useModal,
   useOffersOptimistic,
-  useSort,
   useTableView,
 } from '@banx/store'
 import { getDialectAccessToken, trackPageEvent } from '@banx/utils'
@@ -319,7 +318,10 @@ const SORT_STORAGE_KEY = '@banx.sort.borrow'
 
 const useSortedNfts = (nfts: TableNftData[]) => {
   const { value: defaultOptionValue } = DEFAULT_TABLE_SORT
-  const { sortOptionValue, setSortOptionValue } = useSort(SORT_STORAGE_KEY, defaultOptionValue)
+  const [sortOptionValue, setSortOptionValue] = useLocalStorage(
+    SORT_STORAGE_KEY,
+    defaultOptionValue,
+  )
 
   const sortedNfts = useMemo(() => {
     if (!sortOptionValue) return nfts
