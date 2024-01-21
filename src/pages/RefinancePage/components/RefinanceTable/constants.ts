@@ -5,6 +5,5 @@ export const INCREASE_PERCENT_APR_PER_HOUR = 1
 
 export const MAX_APY_INCREASE_PERCENT = 253
 
-
 export const EMPTY_MESSAGE =
   'No offers to refinance. Create an offer if you want to fund some loans'

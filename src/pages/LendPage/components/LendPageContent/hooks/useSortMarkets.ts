@@ -3,7 +3,8 @@ import { useMemo } from 'react'
 import { chain } from 'lodash'
 
 import { MarketPreview } from '@banx/api/core'
-import { createSortParams, useSort } from '@banx/store'
+import { useLocalStorage } from '@banx/hooks'
+import { createSortParams } from '@banx/store'
 
 enum SortField {
   OFFERS_TVL = 'offerTvl',
@@ -35,7 +36,10 @@ const SORT_STORAGE_KEY = '@banx.sort.lend'
 
 export const useSortMarkets = (markets: MarketPreview[]) => {
   const { value: defaultOptionValue } = DEFAULT_SORT_OPTION
-  const { sortOptionValue, setSortOptionValue } = useSort(SORT_STORAGE_KEY, defaultOptionValue)
+  const [sortOptionValue, setSortOptionValue] = useLocalStorage(
+    SORT_STORAGE_KEY,
+    defaultOptionValue,
+  )
 
   const sortedMarkets = useMemo(() => {
     if (!sortOptionValue) return markets
