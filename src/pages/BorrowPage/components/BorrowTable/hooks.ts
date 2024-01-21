@@ -25,8 +25,10 @@ import {
 } from '@banx/store'
 import {
   SORT_STORAGE_KEY,
+  SortValueMap,
   createSortParams,
   getDialectAccessToken,
+  sortDataByValueMap,
   trackPageEvent,
 } from '@banx/utils'
 
@@ -309,31 +311,20 @@ const useFilteredNfts = (nfts: TableNftData[], selectedOptions: string[]) => {
   return filteredLoans
 }
 
-type SortValueGetter = (nft: TableNftData) => number
-type StatusValueMap = Record<string, SortValueGetter>
-
-const STATUS_VALUE_MAP: StatusValueMap = {
+const SORT_VALUE_MAP: SortValueMap<TableNftData> = {
   [SortField.BORROW]: (nft) => nft.loanValue,
   [SortField.FLOOR]: (nft) => nft.nft.nft.collectionFloor,
   [SortField.FEE]: (nft) => nft.interest,
 }
 
 const useSortedNfts = (nfts: TableNftData[]) => {
-  const { value: defaultOptionValue } = DEFAULT_TABLE_SORT
   const [sortOptionValue, setSortOptionValue] = useLocalStorage(
     SORT_STORAGE_KEY.BORROW,
-    defaultOptionValue,
+    DEFAULT_TABLE_SORT.value,
   )
 
   const sortedNfts = useMemo(() => {
-    if (!sortOptionValue) return nfts
-
-    const [field, order] = sortOptionValue.split('_')
-
-    return chain(nfts)
-      .sortBy((nft) => STATUS_VALUE_MAP[field](nft))
-      .thru((sorted) => (order === 'desc' ? sorted.reverse() : sorted))
-      .value()
+    return sortDataByValueMap(nfts, sortOptionValue, SORT_VALUE_MAP)
   }, [sortOptionValue, nfts])
 
   const sortParams = useMemo(() => {

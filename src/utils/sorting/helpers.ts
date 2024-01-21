@@ -1,4 +1,8 @@
+import { chain } from 'lodash'
+
 import { SortOption } from '@banx/components/SortDropdown'
+
+import { SortOrder } from './constants'
 
 interface CreateSortParamsProps {
   sortOptionValue: string
@@ -13,7 +17,7 @@ export const createSortParams = ({
   defaultOption,
   options,
 }: CreateSortParamsProps) => {
-  const field = sortOptionValue.split('_')[0]
+  const [field] = sortOptionValue.split('_')
 
   const { value: defaultOptionValue, label: defaultOptionLabel } = defaultOption
 
@@ -27,4 +31,22 @@ export const createSortParams = ({
     onChange: (option: SortOption) => setSortOptionValue(option.value),
     options,
   }
+}
+
+type ValueGetter<T> = (item: T) => number | null
+export type SortValueMap<T> = Record<string, ValueGetter<T>>
+
+export const sortDataByValueMap = <T>(
+  data: T[],
+  sortOptionValue: string,
+  sortValueMap: SortValueMap<T>,
+) => {
+  if (!sortOptionValue) return data
+
+  const [field, order] = sortOptionValue.split('_')
+
+  return chain(data)
+    .sortBy((market) => sortValueMap[field](market))
+    .thru((sorted) => (order === SortOrder.DESC ? sorted.reverse() : sorted))
+    .value()
 }

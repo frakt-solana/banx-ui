@@ -1,13 +1,15 @@
 import { useMemo } from 'react'
 
-import { chain } from 'lodash'
-
-import { SortOption } from '@banx/components/SortDropdown'
-
 import { UserOffer } from '@banx/api/core'
 import { useLocalStorage } from '@banx/hooks'
 import { calcSyntheticLoanValue } from '@banx/store'
-import { SORT_STORAGE_KEY, createSortParams } from '@banx/utils'
+import {
+  SORT_STORAGE_KEY,
+  SortOrder,
+  SortValueMap,
+  createSortParams,
+  sortDataByValueMap,
+} from '@banx/utils'
 
 enum SortField {
   LENT = 'lent',
@@ -21,15 +23,12 @@ const SORT_OPTIONS = [
   { label: 'Interest', value: SortField.INTEREST },
 ]
 
-const DEFAULT_SORT_OPTION: SortOption = {
-  label: SORT_OPTIONS[0].label,
-  value: `${SORT_OPTIONS[0].value}_desc`,
+const DEFAULT_SORT_OPTION = {
+  label: 'LTV',
+  value: `${SortField.LTV}_${SortOrder.DESC}`,
 }
 
-type SortValueGetter = (offer: UserOffer) => number
-type StatusValueMap = Record<SortField, string | SortValueGetter>
-
-const STATUS_VALUE_MAP: StatusValueMap = {
+const SORT_VALUE_MAP: SortValueMap<UserOffer> = {
   [SortField.LENT]: ({ offer }) => offer.edgeSettlement,
   [SortField.INTEREST]: ({ offer }) => offer.concentrationIndex,
   [SortField.LTV]: ({ offer, collectionMeta }) =>
@@ -37,21 +36,13 @@ const STATUS_VALUE_MAP: StatusValueMap = {
 }
 
 export const useSortedOffers = (offers: UserOffer[]) => {
-  const { value: defaultOptionValue } = DEFAULT_SORT_OPTION
   const [sortOptionValue, setSortOptionValue] = useLocalStorage(
     SORT_STORAGE_KEY.LENDER_OFFERS,
-    defaultOptionValue,
+    DEFAULT_SORT_OPTION.value,
   )
 
   const sortedOffers = useMemo(() => {
-    if (!sortOptionValue) return offers
-
-    const [field, order] = sortOptionValue.split('_')
-
-    return chain(offers)
-      .sortBy((offer) => (STATUS_VALUE_MAP[field as SortField] as SortValueGetter)(offer))
-      .thru((sorted) => (order === 'desc' ? sorted.reverse() : sorted))
-      .value()
+    return sortDataByValueMap(offers, sortOptionValue, SORT_VALUE_MAP)
   }, [sortOptionValue, offers])
 
   const sortParams = useMemo(() => {
