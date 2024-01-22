@@ -15,9 +15,13 @@ import { Modal } from '@banx/components/modals/BaseModal'
 import { Loan } from '@banx/api/core'
 import { useMarketOffers } from '@banx/pages/LendPage'
 import { calculateClaimValue, findBestOffer, useLenderLoans } from '@banx/pages/OffersPage'
-import { useModal } from '@banx/store'
+import { useLoansOptimistic, useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
-import { makeInstantRefinanceAction, makeTerminateAction } from '@banx/transactions/loans'
+import {
+  makeInstantRefinanceAction,
+  makeRepaymentCallAction,
+  makeTerminateAction,
+} from '@banx/transactions/loans'
 import {
   HealthColorIncreasing,
   calculateLoanRepayValue,
@@ -188,7 +192,11 @@ interface RepaymentCallContentProps {
   close: () => void
 }
 const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, close }) => {
-  const DEFAULT_PERCENT_VALUE = 25
+  const DEFAULT_PERCENT_VALUE = 50
+
+  const wallet = useWallet()
+  const { connection } = useConnection()
+  const { update: updateLoansOptimistic } = useLoansOptimistic()
 
   const totalClaim = calculateLoanRepayValue(loan)
   const initialRepayValue = totalClaim * (DEFAULT_PERCENT_VALUE / 100)
@@ -198,7 +206,7 @@ const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, close }) =>
 
   const onPartialPercentChange = (percentValue: number) => {
     setPartialPercent(percentValue)
-    setPaybackValue((totalClaim * percentValue) / 100)
+    setPaybackValue(Math.floor((totalClaim * percentValue) / 100))
   }
 
   const remainingDebt = totalClaim - paybackValue
@@ -206,13 +214,44 @@ const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, close }) =>
   const ltv = (remainingDebt / loan.nft.collectionFloor) * 100
   const colorLTV = getColorByPercent(ltv, HealthColorIncreasing)
 
-  const onSend = () => {
-    try {
-      //TODO send repayment call logic here
-      trackPageEvent('myoffers', 'activetab-repaymentcall')
-    } finally {
-      close()
+  const onSend = async () => {
+    trackPageEvent('myoffers', 'activetab-repaymentcall')
+
+    const txnParam = {
+      loan,
+      callAmount: paybackValue,
     }
+
+    await new TxnExecutor(
+      makeRepaymentCallAction,
+      { wallet, connection },
+      {
+        preventTxnsSending: true,
+      },
+    )
+      .addTxnParam(txnParam)
+      .on('pfSuccessAll', (results) => {
+        const { result, txnHash } = results[0]
+
+        if (result && wallet.publicKey) {
+          updateLoansOptimistic([result], wallet.publicKey?.toBase58())
+        }
+        enqueueSnackbar({
+          message: 'Repayment call initialized',
+          type: 'success',
+          solanaExplorerPath: `tx/${txnHash}`,
+        })
+
+        close()
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error, {
+          additionalData: txnParam,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'RepaymentCall',
+        })
+      })
+      .execute()
   }
 
   return (
