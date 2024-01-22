@@ -1,4 +1,5 @@
 export enum PAGE_NAMES {
+  INDEX = 'index',
   DASHBOARD = 'dashboard',
   LEND = 'lend',
   BORROW = 'borrow',
