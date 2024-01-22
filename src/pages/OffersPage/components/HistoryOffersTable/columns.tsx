@@ -32,19 +32,16 @@ export const getTableColumns = () => {
       title: <HeaderCell label="Lent" />,
       render: (loan) =>
         createSolValueJSX(loan.currentRemainingLentAmount, 1e9, '--', formatDecimal),
-      sorter: true,
     },
     {
       key: 'interest',
       title: <HeaderCell label="Interest" />,
       render: (loan) => createSolValueJSX(loan.interest, 1e9, '--', formatDecimal),
-      sorter: true,
     },
     {
       key: 'apr',
       title: <HeaderCell label="APR" />,
       render: (loan) => <APRCell loan={loan} />,
-      sorter: true,
     },
     {
       key: 'status',
@@ -55,7 +52,6 @@ export const getTableColumns = () => {
       key: 'received',
       title: <HeaderCell label="Received" />,
       render: (loan) => <ReceivedCell loan={loan} />,
-      sorter: true,
     },
     {
       key: 'timestamp',
@@ -63,7 +59,6 @@ export const getTableColumns = () => {
       render: ({ publicKey, timestamp }) => (
         <DurationCell publicKey={publicKey} timestamp={timestamp} />
       ),
-      sorter: true,
     },
   ]
 

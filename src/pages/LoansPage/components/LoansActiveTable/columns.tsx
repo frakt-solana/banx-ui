@@ -52,19 +52,16 @@ export const getTableColumns = ({
       key: 'debt',
       title: <HeaderCell label="Debt" />,
       render: (loan) => <DebtCell loan={loan} />,
-      sorter: true,
     },
     {
       key: 'ltv',
       title: <HeaderCell label="LTV" />,
       render: (loan) => <LTVCell loan={loan} />,
-      sorter: true,
     },
     {
       key: 'apr',
       title: <HeaderCell label="APR" />,
       render: (loan) => <APRCell loan={loan} />,
-      sorter: true,
     },
     {
       key: 'status',
@@ -75,7 +72,6 @@ export const getTableColumns = ({
         />
       ),
       render: (loan) => <StatusCell loan={loan} isCardView={isCardView} />,
-      sorter: true,
     },
     {
       key: 'actionsCell',

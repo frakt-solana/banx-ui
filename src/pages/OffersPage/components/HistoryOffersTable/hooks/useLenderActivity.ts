@@ -3,22 +3,42 @@ import { useMemo, useState } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
-import { SortOption } from '@banx/components/SortDropdown'
-
 import { fetchLenderActivity } from '@banx/api/activity'
+import { useLocalStorage } from '@banx/hooks'
+import { SORT_STORAGE_KEY, createSortParams } from '@banx/utils'
 
 import { DEFAULT_SORT_OPTION } from '../constants'
 
 const PAGINATION_LIMIT = 15
 
+enum SortField {
+  LENT = 'lent',
+  INTEREST = 'interest',
+  APR = 'apr',
+  RECEIVED = 'received',
+  TIMESTAMP = 'timestamp',
+}
+
+const SORT_OPTIONS = [
+  { label: 'Lent', value: SortField.LENT },
+  { label: 'Interest', value: SortField.INTEREST },
+  { label: 'APR', value: SortField.APR },
+  { label: 'Received', value: SortField.RECEIVED },
+  { label: 'When', value: SortField.TIMESTAMP },
+]
+
 export const useLenderActivity = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
-  const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
+  const [sortOptionValue, setSortOptionValue] = useLocalStorage(
+    SORT_STORAGE_KEY.LENDER_LOANS_HISTORY,
+    DEFAULT_SORT_OPTION.value,
+  )
+
   const [selectedCollections, setSelectedCollections] = useState<string[]>([])
 
-  const [sortBy, order] = sortOption.value.split('_')
+  const [sortBy, order] = sortOptionValue.split('_')
 
   const fetchData = async (pageParam: number) => {
     const data = await fetchLenderActivity({
@@ -34,7 +54,7 @@ export const useLenderActivity = () => {
   }
 
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage, isLoading } = useInfiniteQuery({
-    queryKey: ['lenderActivity', publicKey, sortOption, selectedCollections],
+    queryKey: ['lenderActivity', publicKey, sortOptionValue, selectedCollections],
     queryFn: ({ pageParam = 0 }) => fetchData(pageParam),
     getPreviousPageParam: (firstPage) => {
       return firstPage.pageParam - 1 ?? undefined
@@ -52,16 +72,22 @@ export const useLenderActivity = () => {
     return data?.pages?.map((page) => page.data).flat() || []
   }, [data])
 
+  const sortParams = useMemo(() => {
+    return createSortParams({
+      sortOptionValue,
+      setSortOptionValue,
+      defaultOption: DEFAULT_SORT_OPTION,
+      options: SORT_OPTIONS,
+    })
+  }, [setSortOptionValue, sortOptionValue])
+
   return {
     loans,
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
     isLoading,
-    sortParams: {
-      option: sortOption,
-      onChange: setSortOption,
-    },
+    sortParams,
     selectedCollections,
     setSelectedCollections,
   }

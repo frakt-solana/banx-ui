@@ -38,7 +38,6 @@ export const getTableColumns = () => {
       render: ({ publicKey, timestamp }) => (
         <DurationCell publicKey={publicKey} timestamp={timestamp} />
       ),
-      sorter: true,
     },
   ]
 
