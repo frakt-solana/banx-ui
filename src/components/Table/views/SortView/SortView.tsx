@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { ReactNode, useState } from 'react'
 
 import { SearchSelect, SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortDropdown, SortDropdownProps } from '@banx/components/SortDropdown'
@@ -15,6 +15,7 @@ interface SortViewProps<P> {
   sortParams?: SortDropdownProps
   toggleParams?: ToggleProps
   showCard?: boolean
+  customJSX?: ReactNode
 }
 
 export const SortView = <P extends object>({

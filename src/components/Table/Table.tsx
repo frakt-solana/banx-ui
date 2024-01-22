@@ -33,9 +33,7 @@ const Table = <T extends object, P extends object>({
 
   return (
     <>
-      {sortViewParams && (
-        <SortView columns={columns} showCard={showCard} customJSX={customJSX} {...sortViewParams} />
-      )}
+      {sortViewParams && <SortView showCard={showCard} customJSX={customJSX} {...sortViewParams} />}
 
       {loading && <Loader />}
       {emptyMessage && !loading && <div className={styles.emptyList}>{emptyMessage}</div>}
