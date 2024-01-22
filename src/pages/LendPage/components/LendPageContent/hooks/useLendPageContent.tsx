@@ -40,7 +40,7 @@ export const useLendPageContent = () => {
     options: isHotFilterActive ? hotMarkets : marketsPreview,
     selectedOptions: selectedMarkets,
     placeholder: 'Select a collection',
-    labels: ['Collection', 'APR'],
+    labels: ['Collection', 'Max APR'],
     optionKeys: {
       labelKey: 'collectionName',
       valueKey: 'marketPubkey',
