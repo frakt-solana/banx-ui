@@ -22,6 +22,10 @@ interface Route {
 export const routes: Route[] = [
   {
     path: PATHS.ROOT,
+    component: RootPage,
+  },
+  {
+    path: PATHS.DASHBOARD,
     component: DashboardPage,
   },
   {
@@ -53,7 +57,7 @@ export const routes: Route[] = [
     component: LeaderboardPage,
   },
   {
-    path: PATHS.PAGE_404,
+    path: PATHS.PAGE_404, //? Why don't we have page 404?
     component: RootPage,
   },
   {
