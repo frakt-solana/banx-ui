@@ -2,11 +2,11 @@ import { useMemo, useState } from 'react'
 
 import { filter, includes } from 'lodash'
 
+import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { MarketPreview } from '@banx/api/core'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
-import { convertAprToApy } from '@banx/utils'
 
 export const useDashboardLendTab = () => {
   const { marketsPreview } = useMarketsPreview()
@@ -41,10 +41,10 @@ const useFilteredMarkets = (marketsPreview: MarketPreview[]) => {
       imageKey: 'collectionImage',
       secondLabel: {
         key: 'marketApr',
-        format: (apr: number) => createPercentValueJSX(convertAprToApy(apr / 1e4)),
+        format: () => createPercentValueJSX(MAX_APR_VALUE),
       },
     },
-    labels: ['Collection', 'APR'],
+    labels: ['Collection', 'Max APR'],
   }
 
   return { filteredMarkets, searchSelectParams }

@@ -2,14 +2,15 @@ import { useMemo, useState } from 'react'
 
 import { filter } from 'lodash'
 
+import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { SearchSelectProps } from '@banx/components/SearchSelect'
+import { createPercentValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
 import { MarketPreview } from '@banx/api/core'
 import { Fire } from '@banx/icons'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { useMarketsURLControl } from '@banx/store'
-import { convertAprToApy } from '@banx/utils'
 
 import { useSortMarkets } from './useSortMarkets'
 
@@ -40,7 +41,7 @@ export const useLendPageContent = () => {
     options: isHotFilterActive ? hotMarkets : marketsPreview,
     selectedOptions: selectedMarkets,
     placeholder: 'Select a collection',
-    labels: ['Collection', 'APR'],
+    labels: ['Collection', 'Max APR'],
     optionKeys: {
       labelKey: 'collectionName',
       valueKey: 'marketPubkey',
@@ -55,7 +56,7 @@ export const useLendPageContent = () => {
       },
       secondLabel: {
         key: 'marketApr',
-        format: (value: number) => `${convertAprToApy(value / 1e4)} %`,
+        format: () => createPercentValueJSX(MAX_APR_VALUE),
       },
     },
     onChange: handleFilterChange,

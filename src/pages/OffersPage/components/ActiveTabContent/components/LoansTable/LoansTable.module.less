@@ -20,6 +20,10 @@
   }
 }
 
+.nftCellCheckbox {
+  pointer-events: none;
+}
+
 .emptyList {
   margin-top: 0;
 }
@@ -52,6 +56,56 @@
   max-width: 750px;
 }
 
+.headerTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 16px !important;
+  height: 14px;
+}
+
+.checkbox {
+  height: 16px;
+  padding-left: 18px;
+}
+
+.filterButtonWrapper {
+  position: relative;
+
+  &[data-underwater-loans]::after {
+    content: attr(data-underwater-loans);
+    color: var(--additional-yellow-primary-deep);
+    background: var(--additional-yellow-secondary);
+    border-radius: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 7px;
+    right: -14px;
+    min-width: 12px;
+    height: 16px;
+    padding: 0 6px;
+    font: var(--body-text-xs);
+  }
+}
+
+.filterButton {
+  svg path:nth-child(2) {
+    fill: var(--additional-yellow-primary-deep);
+  }
+
+  &.active {
+    border-color: var(--content-primary);
+  }
+
+  &.disabled {
+    path {
+      fill: var(--content-secondary);
+    }
+  }
+}
+
+//? Active row styles
 .terminated {
   background: var(--additional-lava-secondary) !important;
 }
@@ -60,68 +114,6 @@
   background: var(--additional-red-secondary) !important;
 }
 
-//? Summary styles
-
-.summaryContainer {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  border-top: 1px solid var(--bg-border);
-  gap: 80px;
-  width: 100%;
-
-  @media (max-width: 640px) {
-    gap: 8px;
-  }
-}
-
-.infoRow {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  white-space: nowrap;
-
-  &:last-child {
-    margin-left: auto;
-  }
-
-  @media (max-width: 960px) {
-    flex-direction: column;
-    width: 100%;
-  }
-}
-
-.loansContainer {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.loansValueText {
-  font: var(--important-text-xll);
-
-  @media (max-width: 960px) {
-    display: none;
-  }
-}
-
-.loansInfoContainer {
-  @media (max-width: 960px) {
-    & > div {
-      text-align: center;
-    }
-  }
-}
-
-.summaryButton {
-  width: 128px;
-
-  @media (max-width: 960px) {
-    width: 100%;
-  }
-}
-
-.terminateButton:not(:disabled) {
-  background: var(--additional-lava-secondary) !important;
-  border-color: var(--additional-lava-primary) !important;
+.underwater {
+  background: var(--additional-yellow-secondary) !important;
 }

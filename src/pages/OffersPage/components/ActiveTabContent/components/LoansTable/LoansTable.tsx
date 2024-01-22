@@ -1,96 +1,77 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 
-import { useWallet } from '@solana/wallet-adapter-react'
-import { first, groupBy, map, sumBy } from 'lodash'
+import classNames from 'classnames'
 
+import { Button } from '@banx/components/Buttons'
 import EmptyList from '@banx/components/EmptyList'
-import { SearchSelectProps } from '@banx/components/SearchSelect'
 import Table from '@banx/components/Table'
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import Tooltip from '@banx/components/Tooltip'
 
 import { Loan } from '@banx/api/core'
-import {
-  calculateClaimValue,
-  isLoanAbleToClaim,
-  isLoanAbleToTerminate,
-  useLenderLoans,
-} from '@banx/pages/OffersPage'
+import { Underwater } from '@banx/icons'
 import { ViewState, useTableView } from '@banx/store'
-import { formatDecimal, isLoanLiquidated, isLoanTerminating } from '@banx/utils'
+import { isLoanLiquidated, isLoanTerminating, isUnderWaterLoan } from '@banx/utils'
 
 import { Summary } from './Summary'
 import { getTableColumns } from './columns'
-import { useSortedLoans } from './hooks'
+import { useLoansTable } from './hooks'
+import { useSelectedLoans } from './loansState'
 
 import styles from './LoansTable.module.less'
 
-type SearchSelectOption = {
-  collectionName: string
-  collectionImage: string
-  claim: number
-}
-
 export const LoansTable = () => {
-  const { connected } = useWallet()
-
-  const { loans, addMints: hideLoans, updateOrAddLoan, loading } = useLenderLoans()
-
-  const { loansToClaim, loansToTerminate } = useMemo(() => {
-    if (!loans.length) return { loansToClaim: [], loansToTerminate: [] }
-
-    const loansToClaim = loans.filter(isLoanAbleToClaim)
-
-    const loansToTerminate = loans.filter(isLoanAbleToTerminate)
-
-    return { loansToClaim, loansToTerminate }
-  }, [loans])
+  const {
+    loans,
+    sortViewParams,
+    hideLoans,
+    updateOrAddLoan,
+    loading,
+    showEmptyList,
+    emptyMessage,
+    isUnderwaterFilterActive,
+    onToggleUnderwaterFilter,
+    underwaterLoansCount,
+    loansToClaim,
+    underwaterLoans,
+  } = useLoansTable()
 
   const { viewState } = useTableView()
 
-  const [selectedCollections, setSelectedCollections] = useState<string[]>([])
+  const {
+    selection,
+    toggle: toggleLoanInSelection,
+    find: findLoanInSelection,
+    clear: clearSelection,
+    set: setSelection,
+  } = useSelectedLoans()
 
-  const filteredLoans = useMemo(() => {
-    if (selectedCollections.length) {
-      return loans.filter(({ nft }) => selectedCollections.includes(nft.meta.collectionName))
-    }
-    return loans
-  }, [loans, selectedCollections])
+  const hasSelectedLoans = !!selection?.length
 
-  const { sortedLoans, sortParams } = useSortedLoans(filteredLoans)
+  const onSelectAll = useCallback(() => {
+    return hasSelectedLoans ? clearSelection() : setSelection(underwaterLoans)
+  }, [hasSelectedLoans, clearSelection, setSelection, underwaterLoans])
 
-  const searchSelectOptions = useMemo(() => {
-    const loansGroupedByCollection = groupBy(loans, ({ nft }) => nft.meta.collectionName)
+  const columns = getTableColumns({
+    onSelectAll,
+    findLoanInSelection,
+    toggleLoanInSelection,
+    hasSelectedLoans,
+    isCardView: viewState === ViewState.CARD,
+    isUnderwaterFilterActive,
+  })
 
-    return map(loansGroupedByCollection, (groupedLoans) => {
-      const firstLoanInGroup = first(groupedLoans)
-      const { collectionName = '', collectionImage = '' } = firstLoanInGroup?.nft.meta || {}
-      const claim = sumBy(groupedLoans, calculateClaimValue)
+  const onRowClick = useCallback(
+    (loan: Loan) => {
+      if (isLoanTerminating(loan)) return
 
-      return { collectionName, collectionImage, claim }
-    })
-  }, [loans])
-
-  const searchSelectParams: SearchSelectProps<SearchSelectOption> = {
-    options: searchSelectOptions,
-    selectedOptions: selectedCollections,
-    className: styles.searchSelect,
-    labels: ['Collection', 'Claim'],
-    optionKeys: {
-      labelKey: 'collectionName',
-      valueKey: 'collectionName',
-      imageKey: 'collectionImage',
-      secondLabel: {
-        key: 'claim',
-        format: (value: number) => createSolValueJSX(value, 1e9, '0◎', formatDecimal),
-      },
+      toggleLoanInSelection(loan)
     },
-    onChange: setSelectedCollections,
-  }
-
-  const columns = getTableColumns({ isCardView: viewState === ViewState.CARD })
+    [toggleLoanInSelection],
+  )
 
   const rowParams = useMemo(() => {
     return {
+      onRowClick,
       activeRowParams: [
         {
           condition: (loan: Loan) => isLoanTerminating(loan),
@@ -102,32 +83,56 @@ export const LoansTable = () => {
           className: styles.liquidated,
           cardClassName: styles.liquidated,
         },
+        {
+          condition: (loan: Loan) => isUnderWaterLoan(loan),
+          className: styles.underwater,
+          cardClassName: styles.underwater,
+        },
       ],
     }
-  }, [])
+  }, [onRowClick])
 
-  const showEmptyList = (!loans.length && !loading) || !connected
-  const emptyMessage = connected
-    ? 'Your offers is waiting for a borrower'
-    : 'Connect wallet to view your active offers'
+  const customJSX = (
+    <Tooltip title={underwaterLoansCount ? 'Underwater loans' : 'No underwater loans currently'}>
+      <div className={styles.filterButtonWrapper} data-underwater-loans={underwaterLoansCount}>
+        <Button
+          className={classNames(
+            styles.filterButton,
+            { [styles.active]: isUnderwaterFilterActive },
+            { [styles.disabled]: !underwaterLoansCount },
+          )}
+          disabled={!underwaterLoansCount}
+          onClick={onToggleUnderwaterFilter}
+          type="circle"
+          variant="secondary"
+        >
+          <Underwater />
+        </Button>
+      </div>
+    </Tooltip>
+  )
 
   if (showEmptyList) return <EmptyList message={emptyMessage} />
 
   return (
     <div className={styles.tableRoot}>
       <Table
-        data={sortedLoans}
+        data={loans}
         columns={columns}
         rowParams={rowParams}
-        sortViewParams={{ searchSelectParams, sortParams }}
+        sortViewParams={sortViewParams}
         loading={loading}
+        customJSX={customJSX}
         showCard
       />
       <Summary
-        hideLoans={hideLoans}
-        loansToTerminate={loansToTerminate}
         loansToClaim={loansToClaim}
+        underwaterLoans={underwaterLoans}
         updateOrAddLoan={updateOrAddLoan}
+        isUnderwaterFilterActive={isUnderwaterFilterActive}
+        selectedLoans={selection}
+        setSelection={setSelection}
+        hideLoans={hideLoans}
       />
     </div>
   )
