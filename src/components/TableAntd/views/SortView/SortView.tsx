@@ -1,39 +1,30 @@
 import { useState } from 'react'
 
-import { ColumnsType } from 'antd/es/table'
-
 import { SearchSelect, SearchSelectProps } from '@banx/components/SearchSelect'
-import { SortDropdown } from '@banx/components/SortDropdown'
+import { SortDropdown, SortDropdownProps } from '@banx/components/SortDropdown'
 import { Toggle, ToggleProps } from '@banx/components/Toggle'
 
 import { ViewState, useTableView } from '@banx/store'
 
-import { SortParams } from '../../types'
 import { SwitchModeButtons } from './components'
-import { parseTableColumn } from './helpers'
 
 import styles from './SortView.module.less'
 
-interface SortViewProps<T, P> {
-  columns: ColumnsType<T>
+interface SortViewProps<P> {
   searchSelectParams: SearchSelectProps<P>
-  sortParams?: SortParams
+  sortParams?: SortDropdownProps
   toggleParams?: ToggleProps
   showCard?: boolean
 }
 
-const SortView = <T extends object, P extends object>({
-  columns,
+const SortView = <P extends object>({
   searchSelectParams,
   sortParams,
   toggleParams,
   showCard,
-}: SortViewProps<T, P>) => {
+}: SortViewProps<P>) => {
   const { viewState, setViewState } = useTableView()
   const [searchSelectCollapsed, setSearchSelectCollapsed] = useState(true)
-
-  const sortableColumns = columns.filter((column) => !!column.sorter)
-  const sortDropdownOptions = sortableColumns.map(parseTableColumn)
 
   const handleViewStateChange = (state: ViewState) => {
     setViewState(state)
@@ -50,7 +41,7 @@ const SortView = <T extends object, P extends object>({
         <div className={styles.rowGap}>
           {showCard && <SwitchModeButtons viewState={viewState} onChange={handleViewStateChange} />}
           {toggleParams && <Toggle {...toggleParams} />}
-          {sortParams && <SortDropdown options={sortDropdownOptions} {...sortParams} />}
+          {sortParams && <SortDropdown {...sortParams} />}
         </div>
       )}
     </div>

@@ -15,7 +15,7 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
   const columns: ColumnType<BorrowerActivity>[] = [
     {
       key: 'collateral',
-      title: <HeaderCell label="Collection" />,
+      title: <HeaderCell label="Collection" align='left' />,
       render: ({ nftName, nftImageUrl, nft }) => (
         <NftInfoCell
           nftName={nftName}
@@ -31,7 +31,6 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
       key: 'borrowed',
       title: <HeaderCell label="Borrowed" />,
       render: ({ borrowed }) => createSolValueJSX(borrowed, 1e9, '--', formatDecimal),
-      sorter: true,
     },
     {
       key: 'debt',
@@ -47,7 +46,6 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
       key: 'repaid',
       title: <HeaderCell label="Repaid by" />,
       render: (loan) => <RepaidCell loan={loan} />,
-      sorter: true,
     },
     {
       key: 'timestamp',
@@ -55,7 +53,6 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
       render: ({ publicKey, timestamp }) => (
         <DurationCell publicKey={publicKey} timestamp={timestamp} />
       ),
-      sorter: true,
     },
   ]
 
