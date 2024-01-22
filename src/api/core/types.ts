@@ -129,6 +129,21 @@ const FraktBondSchema = z.object({
   publicKey: z.string(),
 })
 
+export const RepaymentCallSchema = z.object({
+  callState: z.string(),
+  user: z.string(),
+  bond: z.string(),
+  bondTradeTransaction: z.string(),
+  callAmount: z.number(),
+  lastUpdatedAt: z.number(),
+  lastCallAt: z.number(),
+  lastRepaidAt: z.number(),
+  placeholderOne: z.string(),
+  publicKey: z.string(),
+})
+
+export type RepaymentCall = z.infer<typeof RepaymentCallSchema>
+
 export const LoanSchema = z.object({
   publicKey: z.string(),
   fraktBond: FraktBondSchema,
@@ -136,6 +151,7 @@ export const LoanSchema = z.object({
   nft: NFTSchema,
   totalRepaidAmount: z.number().optional(), //? exist only in fetchLenderLoansAndOffers request
   accruedInterest: z.number().optional(),
+  repaymentCall: RepaymentCallSchema.optional(),
 })
 
 export type Loan = z.infer<typeof LoanSchema>
