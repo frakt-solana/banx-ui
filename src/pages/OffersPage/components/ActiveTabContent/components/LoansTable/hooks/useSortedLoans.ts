@@ -39,10 +39,9 @@ const SORT_VALUE_MAP: SortValueMap<Loan> = {
 }
 
 export const useSortedLoans = (loans: Loan[]) => {
-  const { value: defaultOptionValue } = DEFAULT_SORT_OPTION
   const [sortOptionValue, setSortOptionValue] = useLocalStorage(
     SORT_STORAGE_KEY.LENDER_LOANS_ACTIVE,
-    defaultOptionValue,
+    DEFAULT_SORT_OPTION.value,
   )
 
   const sortedLoans = useMemo(() => {

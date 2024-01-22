@@ -4,11 +4,9 @@ import { SearchSelectProps } from '../SearchSelect'
 import { SortDropdownProps } from '../SortDropdown'
 import { ToggleProps } from '../Toggle'
 
-export type SortParams = Omit<SortDropdownProps, 'options'>
-
 export interface SortViewParams<T> {
   searchSelectParams: SearchSelectProps<T>
-  sortParams?: SortParams
+  sortParams?: SortDropdownProps
   toggleParams?: ToggleProps
 }
 

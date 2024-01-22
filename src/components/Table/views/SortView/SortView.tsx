@@ -1,39 +1,30 @@
-import { ReactNode, useState } from 'react'
+import { useState } from 'react'
 
 import { SearchSelect, SearchSelectProps } from '@banx/components/SearchSelect'
-import { SortDropdown } from '@banx/components/SortDropdown'
+import { SortDropdown, SortDropdownProps } from '@banx/components/SortDropdown'
 import { Toggle, ToggleProps } from '@banx/components/Toggle'
 
 import { ViewState, useTableView } from '@banx/store'
 
-import { ColumnType, SortParams } from '../../types'
 import { SwitchModeButtons } from './components'
-import { parseTableColumn } from './helpers'
 
 import styles from './SortView.module.less'
 
-interface SortViewProps<T, P> {
-  columns: ColumnType<T>[]
+interface SortViewProps<P> {
   searchSelectParams: SearchSelectProps<P>
-  sortParams?: SortParams
+  sortParams?: SortDropdownProps
   toggleParams?: ToggleProps
   showCard?: boolean
-  customJSX?: ReactNode
 }
 
-export const SortView = <T extends object, P extends object>({
-  columns,
+export const SortView = <P extends object>({
   searchSelectParams,
   sortParams,
   toggleParams,
   showCard,
-  customJSX,
-}: SortViewProps<T, P>) => {
+}: SortViewProps<P>) => {
   const { viewState, setViewState } = useTableView()
   const [searchSelectCollapsed, setSearchSelectCollapsed] = useState(true)
-
-  const sortableColumns = columns.filter((column) => !!column.sorter)
-  const sortDropdownOptions = sortableColumns.map(parseTableColumn)
 
   const handleViewStateChange = (state: ViewState) => {
     setViewState(state)
@@ -41,20 +32,16 @@ export const SortView = <T extends object, P extends object>({
 
   return (
     <div className={styles.sortWrapper}>
-      <div className={styles.filters}>
-        <SearchSelect
-          {...searchSelectParams}
-          collapsed={searchSelectCollapsed}
-          onChangeCollapsed={setSearchSelectCollapsed}
-        />
-        {customJSX}
-      </div>
-
+      <SearchSelect
+        {...searchSelectParams}
+        collapsed={searchSelectCollapsed}
+        onChangeCollapsed={setSearchSelectCollapsed}
+      />
       {searchSelectCollapsed && (
         <div className={styles.rowGap}>
           {showCard && <SwitchModeButtons viewState={viewState} onChange={handleViewStateChange} />}
           {toggleParams && <Toggle {...toggleParams} />}
-          {sortParams && <SortDropdown options={sortDropdownOptions} {...sortParams} />}
+          {sortParams && <SortDropdown {...sortParams} />}
         </div>
       )}
     </div>

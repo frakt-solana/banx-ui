@@ -52,7 +52,7 @@ const Table = <T extends object, P extends object>({
 
   return (
     <>
-      {sortViewParams && <SortView showCard={showCard} {...sortViewParams} />}
+      {sortViewParams && <SortView columns={columns} showCard={showCard} {...sortViewParams} />}
 
       {loading && <Loader />}
       {emptyMessage && !loading && <div className={styles.emptyList}>{emptyMessage}</div>}
