@@ -23,6 +23,7 @@ export const SortView = <P extends object>({
   sortParams,
   toggleParams,
   showCard,
+  customJSX,
 }: SortViewProps<P>) => {
   const { viewState, setViewState } = useTableView()
   const [searchSelectCollapsed, setSearchSelectCollapsed] = useState(true)
@@ -33,11 +34,14 @@ export const SortView = <P extends object>({
 
   return (
     <div className={styles.sortWrapper}>
-      <SearchSelect
-        {...searchSelectParams}
-        collapsed={searchSelectCollapsed}
-        onChangeCollapsed={setSearchSelectCollapsed}
-      />
+      <div className={styles.filters}>
+        <SearchSelect
+          {...searchSelectParams}
+          collapsed={searchSelectCollapsed}
+          onChangeCollapsed={setSearchSelectCollapsed}
+        />
+        {customJSX}
+      </div>
       {searchSelectCollapsed && (
         <div className={styles.rowGap}>
           {showCard && <SwitchModeButtons viewState={viewState} onChange={handleViewStateChange} />}
