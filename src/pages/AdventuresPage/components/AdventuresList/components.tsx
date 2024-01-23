@@ -65,17 +65,17 @@ export const AdventureSubscribeButton: FC<AdventuresComponentsProps> = ({
     const nftsToSubscribe = stakedNfts.filter(({ mint }) => !subscribedNftsMints.includes(mint))
     const nftsChunks = chunk(nftsToSubscribe, NFTS_TO_SUBSCRIBE_PER_TXN)
 
+    const params = nftsChunks.map((nftChunk) => ({
+      nfts: nftChunk,
+      adventureToSubscribe: adventure,
+    }))
+
     new TxnExecutor(
       makeSubscribeNftsAction,
       { wallet, connection },
       { signAllChunks: isLedger ? 5 : 40 },
     )
-      .addTxnParams(
-        nftsChunks.map((nftChunk) => ({
-          nfts: nftChunk,
-          adventureToSubscribe: adventure,
-        })),
-      )
+      .addTxnParams(params)
       .on('pfSuccessEach', (results) => {
         const { txnHash } = results[0]
         enqueueSnackbar({
@@ -88,7 +88,11 @@ export const AdventureSubscribeButton: FC<AdventuresComponentsProps> = ({
         refetch()
       })
       .on('pfError', (error) => {
-        defaultTxnErrorHandler(error)
+        defaultTxnErrorHandler(error, {
+          additionalData: params,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'SubscribeBanx',
+        })
       })
       .execute()
   }, [refetch, connection, wallet, adventure, stakedNfts, subscribedNfts, isLedger])
