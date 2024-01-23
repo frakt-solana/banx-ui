@@ -1,6 +1,7 @@
 import { web3 } from 'fbonds-core'
 import { setRepaymentCall } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { RepaymentCall } from 'fbonds-core/lib/fbond-protocol/types'
+import moment from 'moment'
 import { MakeActionFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
@@ -45,6 +46,10 @@ export const makeRepaymentCallAction: MakeRepaymentCallAction = async (
 
   const optimisticLoan: Loan = {
     ...loan,
+    fraktBond: {
+      ...loan.fraktBond,
+      lastTransactedAt: moment().unix(),
+    },
     repaymentCall: optimisticResult.repaymentCall,
   }
 

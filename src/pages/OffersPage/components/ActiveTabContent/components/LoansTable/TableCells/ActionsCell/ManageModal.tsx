@@ -15,7 +15,7 @@ import { Modal } from '@banx/components/modals/BaseModal'
 import { Loan } from '@banx/api/core'
 import { useMarketOffers } from '@banx/pages/LendPage'
 import { calculateClaimValue, findBestOffer, useLenderLoans } from '@banx/pages/OffersPage'
-import { useLoansOptimistic, useModal } from '@banx/store'
+import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import {
   makeInstantRefinanceAction,
@@ -196,7 +196,7 @@ const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, close }) =>
 
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { update: updateLoansOptimistic } = useLoansOptimistic()
+  const { updateOrAddLoan } = useLenderLoans()
 
   const totalClaim = calculateLoanRepayValue(loan)
   const initialRepayValue = totalClaim * (DEFAULT_PERCENT_VALUE / 100)
@@ -234,7 +234,7 @@ const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, close }) =>
         const { result, txnHash } = results[0]
 
         if (result && wallet.publicKey) {
-          updateLoansOptimistic([result], wallet.publicKey?.toBase58())
+          updateOrAddLoan(result)
         }
         enqueueSnackbar({
           message: 'Repayment call initialized',
