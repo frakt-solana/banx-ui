@@ -48,7 +48,7 @@ export const makeRepaymentCallAction: MakeRepaymentCallAction = async (
     ...loan,
     fraktBond: {
       ...loan.fraktBond,
-      lastTransactedAt: moment().unix(),
+      lastTransactedAt: moment().unix(), //? Needs to prevent BE data overlap in optimistics logic
     },
     repaymentCall: optimisticResult.repaymentCall,
   }
