@@ -3,7 +3,12 @@ import { useMemo } from 'react'
 import { chain } from 'lodash'
 
 import { Loan } from '@banx/api/core'
-import { calculateLoanRepayValue, isLoanLiquidated, isLoanTerminating } from '@banx/utils'
+import {
+  calculateLoanRepayValue,
+  isLoanLiquidated,
+  isLoanRepaymentCallActive,
+  isLoanTerminating,
+} from '@banx/utils'
 
 enum SortField {
   DEBT = 'debt',
@@ -40,13 +45,22 @@ const sortStatusLoans = (loans: Loan[], order: SortOrder) => {
     .reverse()
     .value()
 
+  const repaymentCallLoans = chain(loans)
+    .filter(isLoanRepaymentCallActive)
+    .sortBy('repaymentCall.callAmount')
+    .reverse()
+    .value()
+
   const otherLoans = chain(loans)
-    .filter((loan) => !isLoanTerminating(loan) && !isLoanLiquidated(loan))
+    .filter(
+      (loan) =>
+        !isLoanTerminating(loan) && !isLoanLiquidated(loan) && !isLoanRepaymentCallActive(loan),
+    )
     .sortBy('fraktBond.activatedAt')
     .reverse()
     .value()
 
-  const combinedLoans = [...otherLoans, ...terminatingLoans]
+  const combinedLoans = [...otherLoans, ...repaymentCallLoans, ...terminatingLoans]
 
   return order === 'asc' ? combinedLoans : combinedLoans.reverse()
 }
