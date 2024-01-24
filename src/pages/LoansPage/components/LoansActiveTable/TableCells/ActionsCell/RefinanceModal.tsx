@@ -77,11 +77,15 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
   const refinance = () => {
     if (!offer) return
     trackPageEvent('myloans', isTerminatingStatus ? 'refinance' : 'reborrow')
+
+    const newOffer = { ...offer, currentSpotPrice }
+    const newLoan = {
+      ...loan,
+      bondTradeTransaction: { ...bondTradeTransaction, amountOfBonds: newApr },
+    }
+
     new TxnExecutor(makeBorrowRefinanceAction, { connection, wallet })
-      .addTxnParam({
-        loan,
-        offer: { ...offer, currentSpotPrice },
-      })
+      .addTxnParam({ loan: newLoan, offer: newOffer })
       .on('pfSuccessEach', (results) => {
         const { result, txnHash } = results[0]
         result?.offer && updateOptimisticOffers([result.offer])
