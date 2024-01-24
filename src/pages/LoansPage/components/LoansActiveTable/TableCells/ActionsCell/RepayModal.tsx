@@ -21,18 +21,8 @@ interface RepayModalProps {
 export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
   const { close } = useModal()
 
-  const repaymentCallExists = !!loan.repaymentCall?.callAmount
-
-  const totalRepayValue = calculateLoanRepayValue(loan)
-
-  const DEFAULT_REPAY_PERCENT = 100
-  const initialRepayPercent = repaymentCallExists
-    ? ((loan.repaymentCall?.callAmount || 0) / totalRepayValue) * 100
-    : DEFAULT_REPAY_PERCENT
-
-  const initialRepayValue = repaymentCallExists
-    ? loan.repaymentCall?.callAmount || 0
-    : totalRepayValue * (initialRepayPercent / 100)
+  const { repaymentCallExists, totalRepayValue, initialRepayPercent, initialRepayValue } =
+    calculateRepaymentStaticValues(loan)
 
   const { repayLoan, repayPartialLoan } = useLoansTransactions()
 
@@ -95,4 +85,26 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
       </Button>
     </Modal>
   )
+}
+
+export const calculateRepaymentStaticValues = (loan: Loan) => {
+  const repaymentCallExists = !!loan.repaymentCall?.callAmount
+
+  const totalRepayValue = calculateLoanRepayValue(loan)
+
+  const DEFAULT_REPAY_PERCENT = 100
+  const initialRepayPercent = repaymentCallExists
+    ? ((loan.repaymentCall?.callAmount || 0) / totalRepayValue) * 100
+    : DEFAULT_REPAY_PERCENT
+
+  const initialRepayValue = repaymentCallExists
+    ? loan.repaymentCall?.callAmount || 0
+    : totalRepayValue * (initialRepayPercent / 100)
+
+  return {
+    repaymentCallExists,
+    totalRepayValue,
+    initialRepayPercent,
+    initialRepayValue,
+  }
 }
