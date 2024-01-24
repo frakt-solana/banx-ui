@@ -119,3 +119,7 @@ export const isUnderWaterLoan = (loan: Loan) => {
 
   return totalLentValue > collectionFloor
 }
+
+export const isLoanRepaymentCallActive = (loan: Loan) => {
+  return !!loan.repaymentCall?.callAmount
+}
