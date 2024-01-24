@@ -24,7 +24,6 @@ import {
 } from '@banx/transactions/loans'
 import {
   HealthColorIncreasing,
-  calculateLoanRepayValue,
   enqueueSnackbar,
   formatDecimal,
   getColorByPercent,
@@ -32,6 +31,8 @@ import {
   isLoanTerminating,
   trackPageEvent,
 } from '@banx/utils'
+
+import { calculateRepaymentStaticValues } from './helpers'
 
 import styles from './ActionsCell.module.less'
 
@@ -191,21 +192,20 @@ interface RepaymentCallContentProps {
   loan: Loan
   close: () => void
 }
-const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, close }) => {
-  const DEFAULT_PERCENT_VALUE = 50
 
+const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, close }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
   const { updateOrAddLoan } = useLenderLoans()
 
-  const totalClaim = calculateLoanRepayValue(loan)
-  const initialRepayValue = totalClaim * (DEFAULT_PERCENT_VALUE / 100)
+  const { totalClaim, initialRepayPercent, initialRepayValue } =
+    calculateRepaymentStaticValues(loan)
 
-  const [partialPercent, setPartialPercent] = useState<number>(DEFAULT_PERCENT_VALUE)
+  const [repayPercent, setRepayPercent] = useState<number>(initialRepayPercent)
   const [paybackValue, setPaybackValue] = useState<number>(initialRepayValue)
 
   const onPartialPercentChange = (percentValue: number) => {
-    setPartialPercent(percentValue)
+    setRepayPercent(percentValue)
     setPaybackValue(Math.floor((totalClaim * percentValue) / 100))
   }
 
@@ -213,6 +213,9 @@ const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, close }) =>
 
   const ltv = (remainingDebt / loan.nft.collectionFloor) * 100
   const colorLTV = getColorByPercent(ltv, HealthColorIncreasing)
+
+  const sendBtnDisabled =
+    !repayPercent || (!!loan.repaymentCall && initialRepayValue === paybackValue)
 
   const onSend = async () => {
     trackPageEvent('myoffers', 'activetab-repaymentcall')
@@ -222,13 +225,7 @@ const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, close }) =>
       callAmount: paybackValue,
     }
 
-    await new TxnExecutor(
-      makeRepaymentCallAction,
-      { wallet, connection },
-      {
-        preventTxnsSending: true,
-      },
-    )
+    await new TxnExecutor(makeRepaymentCallAction, { wallet, connection })
       .addTxnParam(txnParam)
       .on('pfSuccessAll', (results) => {
         const { result, txnHash } = results[0]
@@ -256,27 +253,20 @@ const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, close }) =>
 
   return (
     <div className={styles.modalContent}>
-      <StatInfo
-        flexType="row"
-        label="Total claim:"
-        value={totalClaim}
-        divider={1e9}
-        classNamesProps={{ container: styles.repaymentCallInfo }}
-      />
-      <Slider value={partialPercent} onChange={onPartialPercentChange} />
+      <Slider value={repayPercent} onChange={onPartialPercentChange} />
       <div className={styles.repaimentCallAdditionalInfo}>
-        <StatInfo flexType="row" label="Repay value" value={paybackValue} divider={1e9} />
-        <StatInfo flexType="row" label="Remaining debt" value={remainingDebt} divider={1e9} />
+        <StatInfo flexType="row" label="Ask borrower to repay" value={paybackValue} divider={1e9} />
+        <StatInfo flexType="row" label="Debt after repayment" value={remainingDebt} divider={1e9} />
         <StatInfo
           flexType="row"
-          label="New LTV"
+          label="Ltv after repayment"
           value={ltv}
           valueStyles={{ color: colorLTV }}
           valueType={VALUES_TYPES.PERCENT}
         />
       </div>
-      <Button className={styles.repaymentCallButton} onClick={onSend} disabled={!partialPercent}>
-        Send
+      <Button className={styles.repaymentCallButton} onClick={onSend} disabled={sendBtnDisabled}>
+        {!loan.repaymentCall ? 'Send' : 'Update'}
       </Button>
     </div>
   )
