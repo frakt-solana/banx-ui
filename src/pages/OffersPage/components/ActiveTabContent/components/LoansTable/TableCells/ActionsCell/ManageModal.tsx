@@ -53,19 +53,15 @@ export const ManageModal: FC<ManageModalProps> = ({ loan }) => {
       value: 'closure',
     },
   ]
-  const defaultTabValue = modalTabs[0].value
-  const {
-    tabs,
-    value: tabValue,
-    setValue: setTabValue,
-  } = useTabs({
+
+  const { value: tabValue, ...tabsProps } = useTabs({
     tabs: modalTabs,
-    defaultValue: defaultTabValue,
+    defaultValue: modalTabs[0].value,
   })
 
   return (
     <Modal className={styles.modal} open onCancel={close} width={572}>
-      <Tabs className={styles.tabs} tabs={tabs} value={tabValue} setValue={setTabValue} />
+      <Tabs className={styles.tabs} value={tabValue} {...tabsProps} />
       {tabValue === modalTabs[0].value && <RepaymentCallContent loan={loan} close={close} />}
       {tabValue === modalTabs[1].value && <ClosureContent loan={loan} />}
     </Modal>
