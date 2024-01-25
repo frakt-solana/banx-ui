@@ -65,7 +65,6 @@ export const ManageModal: FC<ManageModalProps> = ({ loan }) => {
 
   return (
     <Modal className={styles.modal} open onCancel={close} width={572}>
-      {/* //? Uncomment when repayment call ready */}
       <Tabs className={styles.tabs} tabs={tabs} value={tabValue} setValue={setTabValue} />
       {tabValue === modalTabs[0].value && <RepaymentCallContent loan={loan} close={close} />}
       {tabValue === modalTabs[1].value && <ClosureContent loan={loan} />}
@@ -187,7 +186,6 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   )
 }
 
-//? Uncomment when repayment call ready
 interface RepaymentCallContentProps {
   loan: Loan
   close: () => void
