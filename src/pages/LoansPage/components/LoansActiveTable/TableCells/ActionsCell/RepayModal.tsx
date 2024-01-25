@@ -93,9 +93,11 @@ export const calculateRepaymentStaticValues = (loan: Loan) => {
   const totalRepayValue = calculateLoanRepayValue(loan)
 
   const DEFAULT_REPAY_PERCENT = 100
-  const initialRepayPercent = repaymentCallExists
-    ? ((loan.repaymentCall?.callAmount || 0) / totalRepayValue) * 100
-    : DEFAULT_REPAY_PERCENT
+  const initialRepayPercent = Math.ceil(
+    repaymentCallExists
+      ? ((loan.repaymentCall?.callAmount || 0) / totalRepayValue) * 100
+      : DEFAULT_REPAY_PERCENT,
+  )
 
   const initialRepayValue = repaymentCallExists
     ? loan.repaymentCall?.callAmount || 0
