@@ -17,12 +17,7 @@ export type MakeRepayPartialLoanActionParams = {
   fractionToRepay: number //? F.E 50% => 5000
 }
 
-export type MakeRepayPartialActionResult = Loan
-
-export type MakeRepayPartialLoanAction = MakeActionFn<
-  MakeRepayPartialLoanActionParams,
-  MakeRepayPartialActionResult
->
+export type MakeRepayPartialLoanAction = MakeActionFn<MakeRepayPartialLoanActionParams, Loan>
 
 interface OptimisticResult extends BondAndTransactionOptimistic {
   oldBondOffer: BondOfferV2
@@ -63,6 +58,7 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
     publicKey: optimistic.fraktBond.publicKey,
     fraktBond: optimistic.fraktBond,
     bondTradeTransaction: optimistic.bondTradeTransaction,
+    repaymentCall: optimistic?.repaymentCall,
     nft,
   }))[0]
 
