@@ -3,7 +3,6 @@ import { chain, first } from 'lodash'
 import moment from 'moment'
 
 import { Loan, Offer } from '@banx/api/core'
-import { BONDS } from '@banx/constants'
 import {
   calcLoanBorrowedAmount,
   calculateLoanRepayValue,
@@ -61,7 +60,7 @@ export const calculateClaimValue = (loan: Loan) => {
     loanValue: loanBorrowedAmount,
     startTime: soldAt,
     currentTime: moment().unix(),
-    rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
+    rateBasePoints: amountOfBonds,
   }
 
   const currentInterest = calculateCurrentInterestSolPure(interestParameters)
