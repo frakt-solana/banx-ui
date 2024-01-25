@@ -41,13 +41,13 @@ const sortLoansByField = (loans: Loan[], field: SortField, order: SortOrder) => 
 const sortStatusLoans = (loans: Loan[], order: SortOrder) => {
   const terminatingLoans = chain(loans)
     .filter(isLoanTerminating)
-    .sortBy('fraktBond.refinanceAuctionStartedAt')
+    .sortBy((loan) => loan.fraktBond.refinanceAuctionStartedAt)
     .reverse()
     .value()
 
   const repaymentCallLoans = chain(loans)
     .filter(isLoanRepaymentCallActive)
-    .sortBy('repaymentCall.callAmount')
+    .sortBy((loan) => loan.repaymentCall?.callAmount)
     .reverse()
     .value()
 
@@ -56,7 +56,7 @@ const sortStatusLoans = (loans: Loan[], order: SortOrder) => {
       (loan) =>
         !isLoanTerminating(loan) && !isLoanLiquidated(loan) && !isLoanRepaymentCallActive(loan),
     )
-    .sortBy('fraktBond.activatedAt')
+    .sortBy((loan) => loan.fraktBond.activatedAt)
     .reverse()
     .value()
 
