@@ -88,23 +88,21 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
 }
 
 export const calculateRepaymentStaticValues = (loan: Loan) => {
-  const repaymentCallExists = !!loan.repaymentCall?.callAmount
+  const repaymentCallAmount = loan.repaymentCall?.callAmount || 0
 
   const totalRepayValue = calculateLoanRepayValue(loan)
 
   const DEFAULT_REPAY_PERCENT = 100
   const initialRepayPercent = Math.ceil(
-    repaymentCallExists
-      ? ((loan.repaymentCall?.callAmount || 0) / totalRepayValue) * 100
-      : DEFAULT_REPAY_PERCENT,
+    repaymentCallAmount ? (repaymentCallAmount / totalRepayValue) * 100 : DEFAULT_REPAY_PERCENT,
   )
 
-  const initialRepayValue = repaymentCallExists
-    ? loan.repaymentCall?.callAmount || 0
+  const initialRepayValue = repaymentCallAmount
+    ? repaymentCallAmount
     : totalRepayValue * (initialRepayPercent / 100)
 
   return {
-    repaymentCallExists,
+    repaymentCallExists: !!repaymentCallAmount,
     totalRepayValue,
     initialRepayPercent,
     initialRepayValue,
