@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
+
 import { Select as AntdSelect } from 'antd'
 import classNames from 'classnames'
+import { orderBy } from 'lodash'
 
 import { CloseModal } from '@banx/icons'
 
@@ -29,6 +32,8 @@ export interface SearchSelectProps<P> {
   labels?: string[]
   placeholder?: string
   className?: string
+
+  sortOrder?: 'asc' | 'desc'
 }
 
 export const SearchSelect = <P extends object>({
@@ -42,6 +47,7 @@ export const SearchSelect = <P extends object>({
   collapsed,
   onChangeCollapsed,
   optionClassNameProps,
+  sortOrder = 'desc',
   ...props
 }: SearchSelectProps<P>) => {
   const {
@@ -53,6 +59,11 @@ export const SearchSelect = <P extends object>({
     showCollapsedContent,
     inputValue,
   } = useSearchSelect({ onChangeCollapsed, selectedOptions, collapsed })
+
+  const sortedOptions = useMemo(() => {
+    const sortedField = optionKeys.secondLabel?.key
+    return orderBy(options, sortedField, sortOrder)
+  }, [options])
 
   if (showCollapsedContent)
     return (
@@ -96,7 +107,7 @@ export const SearchSelect = <P extends object>({
         )}
         {...props}
       >
-        {options.map((option, index) =>
+        {sortedOptions.map((option, index) =>
           renderOption({ option, optionKeys, selectedOptions, index, optionClassNameProps }),
         )}
       </AntdSelect>
