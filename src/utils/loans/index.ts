@@ -59,7 +59,7 @@ export const determineLoanStatus = (loan: Loan) => {
   return mappedStatus
 }
 
-export const calculateLoanRepayValue = (loan: Loan) => {
+export const calculateLoanRepayValue = (loan: Loan, ignoreProtocolFee = false) => {
   const { solAmount, feeAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction || {}
 
   const loanValueWithFee = solAmount + feeAmount
@@ -68,7 +68,7 @@ export const calculateLoanRepayValue = (loan: Loan) => {
     loanValue: loanValueWithFee,
     startTime: soldAt,
     currentTime: moment().unix(),
-    rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
+    rateBasePoints: amountOfBonds + (ignoreProtocolFee ? 0 : BONDS.PROTOCOL_REPAY_FEE),
   })
 
   return loanValueWithFee + calculatedInterest
@@ -120,6 +120,13 @@ export const isUnderWaterLoan = (loan: Loan) => {
   return totalLentValue > collectionFloor
 }
 
+const IGNORE_REPAYMENT_CALL_THESHOLD = 0.005
 export const isLoanRepaymentCallActive = (loan: Loan) => {
-  return !!loan.repaymentCall?.callAmount
+  if (!loan.repaymentCall?.callAmount) return false
+
+  const repayValueWithoutProtocolFee = calculateLoanRepayValue(loan)
+
+  return (
+    loan.repaymentCall.callAmount / repayValueWithoutProtocolFee > IGNORE_REPAYMENT_CALL_THESHOLD
+  )
 }
