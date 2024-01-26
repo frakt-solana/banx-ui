@@ -13,9 +13,9 @@ export const STATUS_COLOR_MAP: Record<AllocationStatus, string> = {
 }
 
 export const STATUS_DISPLAY_NAMES: Record<AllocationStatus, string> = {
-  [AllocationStatus.Active]: 'Active',
+  [AllocationStatus.Active]: 'Active healthy',
   [AllocationStatus.Pending]: 'Pending',
-  [AllocationStatus.Underwater]: 'Underwater',
+  [AllocationStatus.Underwater]: 'Active underwater',
   [AllocationStatus.Terminating]: 'Terminating',
 }
 

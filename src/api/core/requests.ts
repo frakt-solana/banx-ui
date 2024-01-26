@@ -165,7 +165,7 @@ export const fetchLenderLoansByCertainOffer: FetchLenderLoansByCertainOffer = as
     )
 
     try {
-      await LenderLoansSchema.parseAsync(data.data)
+      await LenderLoansSchema.array().parseAsync(data.data)
     } catch (validationError) {
       console.error('Schema validation error:', validationError)
     }
@@ -297,7 +297,7 @@ export const fetchUserOffers: FetchUserOffers = async ({ walletPubkey, getAll = 
     )
 
     try {
-      await UserOfferSchema.parseAsync(data.data)
+      await UserOfferSchema.array().parseAsync(data.data)
     } catch (validationError) {
       console.error('Schema validation error:', validationError)
     }

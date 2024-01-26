@@ -136,17 +136,17 @@ const StakeContent: FC<StakeContent> = ({ nfts = [], adventures = [] }) => {
         return status === AdventureStatus.UPCOMING
       })
 
+      const params = selectedNfts.map((nft) => ({
+        nftMint: nft.mint,
+        adventures: adventuresToSubscribe,
+      }))
+
       new TxnExecutor(
         makeStakeNftAction,
         { wallet, connection },
         { signAllChunks: isLedger ? 5 : 40 },
       )
-        .addTxnParams(
-          selectedNfts.map((nft) => ({
-            nftMint: nft.mint,
-            adventures: adventuresToSubscribe,
-          })),
-        )
+        .addTxnParams(params)
         .on('pfSuccessEach', (results) => {
           const { txnHash } = results[0]
           enqueueSnackbar({
@@ -160,7 +160,11 @@ const StakeContent: FC<StakeContent> = ({ nfts = [], adventures = [] }) => {
           refetch()
         })
         .on('pfError', (error) => {
-          defaultTxnErrorHandler(error)
+          defaultTxnErrorHandler(error, {
+            additionalData: params,
+            walletPubkey: wallet?.publicKey?.toBase58(),
+            transactionName: 'StakeBanx',
+          })
         })
         .execute()
     } catch (error) {
@@ -264,7 +268,11 @@ const UnstakeContent: FC<UnstakeContent> = ({ nfts = [] }) => {
           refetch()
         })
         .on('pfError', (error) => {
-          defaultTxnErrorHandler(error)
+          defaultTxnErrorHandler(error, {
+            additionalData: selectedNfts,
+            walletPubkey: wallet?.publicKey?.toBase58(),
+            transactionName: 'UnstakeBanx',
+          })
         })
         .execute()
     } catch (error) {
