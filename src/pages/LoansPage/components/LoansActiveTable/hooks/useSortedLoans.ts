@@ -3,7 +3,12 @@ import { useMemo } from 'react'
 import { chain } from 'lodash'
 
 import { Loan } from '@banx/api/core'
-import { calculateLoanRepayValue, isLoanLiquidated, isLoanTerminating } from '@banx/utils'
+import {
+  calculateLoanRepayValue,
+  isLoanLiquidated,
+  isLoanRepaymentCallActive,
+  isLoanTerminating,
+} from '@banx/utils'
 
 enum SortField {
   DEBT = 'debt',
@@ -36,17 +41,26 @@ const sortLoansByField = (loans: Loan[], field: SortField, order: SortOrder) => 
 const sortStatusLoans = (loans: Loan[], order: SortOrder) => {
   const terminatingLoans = chain(loans)
     .filter(isLoanTerminating)
-    .sortBy('fraktBond.refinanceAuctionStartedAt')
+    .sortBy((loan) => loan.fraktBond.refinanceAuctionStartedAt)
+    .reverse()
+    .value()
+
+  const repaymentCallLoans = chain(loans)
+    .filter(isLoanRepaymentCallActive)
+    .sortBy((loan) => loan.repaymentCall?.callAmount)
     .reverse()
     .value()
 
   const otherLoans = chain(loans)
-    .filter((loan) => !isLoanTerminating(loan) && !isLoanLiquidated(loan))
-    .sortBy('fraktBond.activatedAt')
+    .filter(
+      (loan) =>
+        !isLoanTerminating(loan) && !isLoanLiquidated(loan) && !isLoanRepaymentCallActive(loan),
+    )
+    .sortBy((loan) => loan.fraktBond.activatedAt)
     .reverse()
     .value()
 
-  const combinedLoans = [...otherLoans, ...terminatingLoans]
+  const combinedLoans = [...otherLoans, ...repaymentCallLoans, ...terminatingLoans]
 
   return order === 'asc' ? combinedLoans : combinedLoans.reverse()
 }

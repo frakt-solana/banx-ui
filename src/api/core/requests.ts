@@ -116,7 +116,7 @@ export const fetchWalletLoansAndOffers: FetchWalletLoansAndOffers = async ({
     })
 
     const { data } = await axios.get<WalletLoansAndOffersResponse>(
-      `${BACKEND_BASE_URL}/loans/v2/${walletPublicKey}?${queryParams.toString()}`,
+      `${BACKEND_BASE_URL}/loans/borrower/${walletPublicKey}?${queryParams.toString()}`,
     )
 
     try {

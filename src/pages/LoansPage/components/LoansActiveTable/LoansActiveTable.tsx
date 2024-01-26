@@ -7,7 +7,7 @@ import Table from '@banx/components/Table'
 
 import { Loan, Offer } from '@banx/api/core'
 import { ViewState, useTableView } from '@banx/store'
-import { LoanStatus, determineLoanStatus } from '@banx/utils'
+import { LoanStatus, determineLoanStatus, isLoanRepaymentCallActive } from '@banx/utils'
 
 import { useSelectedLoans } from '../../loansState'
 import { Summary } from './Summary'
@@ -92,6 +92,11 @@ export const LoansActiveTable: FC<LoansActiveTableProps> = ({
           condition: checkIsTerminationLoan,
           className: styles.terminated,
           cardClassName: styles.terminated,
+        },
+        {
+          condition: isLoanRepaymentCallActive,
+          className: styles.repaymentCallActive,
+          cardClassName: styles.repaymentCallActive,
         },
       ],
     }
