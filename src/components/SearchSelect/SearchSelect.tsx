@@ -61,8 +61,8 @@ export const SearchSelect = <P extends object>({
   } = useSearchSelect({ onChangeCollapsed, selectedOptions, collapsed })
 
   const sortedOptions = useMemo(() => {
-    const sortedField = optionKeys.secondLabel?.key
-    return orderBy(options, sortedField, sortOrder)
+    const field = optionKeys.secondLabel?.key
+    return orderBy(options, field, sortOrder)
   }, [options])
 
   if (showCollapsedContent)
