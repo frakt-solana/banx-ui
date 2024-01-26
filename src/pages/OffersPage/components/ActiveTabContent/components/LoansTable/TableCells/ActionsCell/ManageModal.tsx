@@ -192,7 +192,7 @@ const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, close }) =>
   const { connection } = useConnection()
   const { updateOrAddLoan } = useLenderLoans()
 
-  const { repaymentCallExists, totalClaim, initialRepayPercent, initialRepayValue } =
+  const { repaymentCallActive, totalClaim, initialRepayPercent, initialRepayValue } =
     calculateRepaymentStaticValues(loan)
 
   const [repayPercent, setRepayPercent] = useState<number>(initialRepayPercent)
@@ -209,7 +209,7 @@ const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, close }) =>
   const colorLTV = getColorByPercent(ltv, HealthColorIncreasing)
 
   const sendBtnDisabled =
-    !repayPercent || (repaymentCallExists && initialRepayValue === paybackValue)
+    !repayPercent || (repaymentCallActive && initialRepayValue === paybackValue)
 
   const onSend = async () => {
     trackPageEvent('myoffers', 'activetab-repaymentcall')
@@ -260,7 +260,7 @@ const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, close }) =>
         />
       </div>
       <Button className={styles.repaymentCallButton} onClick={onSend} disabled={sendBtnDisabled}>
-        {!repaymentCallExists ? 'Send' : 'Update'}
+        {!repaymentCallActive ? 'Send' : 'Update'}
       </Button>
     </div>
   )
