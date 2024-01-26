@@ -8,7 +8,12 @@ import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan } from '@banx/api/core'
 import { useModal } from '@banx/store'
-import { calculateLoanRepayValue, getColorByPercent, trackPageEvent } from '@banx/utils'
+import {
+  calculateLoanRepayValue,
+  getColorByPercent,
+  isLoanRepaymentCallActive,
+  trackPageEvent,
+} from '@banx/utils'
 
 import { useLoansTransactions } from '../../hooks'
 
@@ -21,7 +26,7 @@ interface RepayModalProps {
 export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
   const { close } = useModal()
 
-  const { repaymentCallExists, totalRepayValue, initialRepayPercent, initialRepayValue } =
+  const { repaymentCallActive, totalRepayValue, initialRepayPercent, initialRepayValue } =
     calculateRepaymentStaticValues(loan)
 
   const { repayLoan, repayPartialLoan } = useLoansTransactions()
@@ -65,7 +70,7 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
         rootClassName={getColorByPercent(partialPercent, colorClassNameByValue)}
       />
       <div className={styles.repayModalAdditionalInfo}>
-        {repaymentCallExists && (
+        {repaymentCallActive && (
           <StatInfo
             flexType="row"
             label="Repayment call"
@@ -88,21 +93,26 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
 }
 
 export const calculateRepaymentStaticValues = (loan: Loan) => {
+  const repaymentCallActive = isLoanRepaymentCallActive(loan)
   const repaymentCallAmount = loan.repaymentCall?.callAmount || 0
 
   const totalRepayValue = calculateLoanRepayValue(loan)
+  const repayValueWithoutProtocolFee = calculateLoanRepayValue(loan, true)
 
   const DEFAULT_REPAY_PERCENT = 100
-  const initialRepayPercent = Math.ceil(
-    repaymentCallAmount ? (repaymentCallAmount / totalRepayValue) * 100 : DEFAULT_REPAY_PERCENT,
-  )
+  const initialRepayPercent =
+    Math.ceil(
+      repaymentCallActive
+        ? (repaymentCallAmount / repayValueWithoutProtocolFee) * 100
+        : DEFAULT_REPAY_PERCENT,
+    ) + 1
 
-  const initialRepayValue = repaymentCallAmount
+  const initialRepayValue = repaymentCallActive
     ? repaymentCallAmount
     : totalRepayValue * (initialRepayPercent / 100)
 
   return {
-    repaymentCallExists: !!repaymentCallAmount,
+    repaymentCallActive,
     totalRepayValue,
     initialRepayPercent,
     initialRepayValue,
