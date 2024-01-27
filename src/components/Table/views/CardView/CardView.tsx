@@ -10,7 +10,6 @@ import styles from './CardView.module.less'
 
 export const CardView = <T extends object>({
   data,
-  className,
   columns,
   rowParams,
   loadMore,
@@ -26,7 +25,7 @@ export const CardView = <T extends object>({
       data={data}
       overscan={200}
       endReached={loadMore}
-      listClassName={classNames(styles.cardList, className)}
+      listClassName={styles.cardList}
       itemContent={(index) => (
         <div
           key={String(data[index])}
