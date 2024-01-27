@@ -1,8 +1,14 @@
-.tableRoot table {
-  tbody > tr > td {
-    &:first-child {
-      max-width: 190px;
-      padding-left: 16px;
+.table {
+  min-width: 508px;
+
+  table {
+    tr > td,
+    tr > th {
+      width: 144px;
+
+      &:first-child {
+        width: 220px;
+      }
     }
   }
 }

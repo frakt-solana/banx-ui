@@ -15,7 +15,7 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
   const columns: ColumnType<BorrowerActivity>[] = [
     {
       key: 'collateral',
-      title: <HeaderCell label="Collection" />,
+      title: <HeaderCell label="Collection" align="left" />,
       render: ({ nftName, nftImageUrl, nft }) => (
         <NftInfoCell
           nftName={nftName}

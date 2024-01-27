@@ -3,16 +3,16 @@
   font: var(--important-text-md);
 }
 
-.borrowTable table {
-  tr {
-    th,
-    td {
-      min-width: 176px;
-      max-width: 176px;
+.borrowTable {
+  min-width: 652px;
+
+  table {
+    tr > td,
+    tr > th {
+      width: 144px;
 
       &:first-child {
-        min-width: 220px;
-        max-width: 220px;
+        width: 220px;
       }
     }
   }

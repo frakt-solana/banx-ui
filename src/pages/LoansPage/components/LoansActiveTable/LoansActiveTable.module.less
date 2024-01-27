@@ -6,19 +6,20 @@
   overflow: hidden;
 }
 
-.table table {
-  tr > td,
-  tr > th {
-    min-width: 144px;
-    max-width: 144px;
+.table {
+  min-width: 1036px;
 
-    &:first-child {
-      min-width: 176px;
-      max-width: unset;
-    }
+  table {
+    tr > td,
+    tr > th {
+      width: 144px;
 
-    &:last-child {
-      min-width: 208px;
+      &:first-child {
+        width: 220px;
+      }
+      &:last-child {
+        width: 240px;
+      }
     }
   }
 }
