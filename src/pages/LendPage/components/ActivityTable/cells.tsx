@@ -1,5 +1,6 @@
 import { FC } from 'react'
 
+import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
 import { capitalize } from 'lodash'
 
 import {
@@ -18,8 +19,13 @@ interface StatusCellProps {
   loan: LenderActivity
 }
 
+const NEW_STATUS_LOANS_MAP: Record<string, string> = {
+  ...STATUS_LOANS_MAP,
+  [BondTradeTransactionV2State.PerpetualRefinancedActive]: LoanStatus.RefinancedActive,
+}
+
 export const StatusCell: FC<StatusCellProps> = ({ loan }) => {
-  const loanStatus = STATUS_LOANS_MAP[loan.status]
+  const loanStatus = NEW_STATUS_LOANS_MAP[loan.status]
   const statusColor = STATUS_LOANS_COLOR_MAP[loanStatus as LoanStatus]
 
   return (
