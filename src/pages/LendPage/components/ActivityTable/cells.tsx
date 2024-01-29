@@ -1,6 +1,5 @@
 import { FC } from 'react'
 
-import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
 import { capitalize } from 'lodash'
 
 import {
@@ -11,7 +10,11 @@ import {
 } from '@banx/components/TableComponents'
 
 import { LenderActivity } from '@banx/api/activity'
-import { LoanStatus, STATUS_LOANS_COLOR_MAP, STATUS_LOANS_MAP } from '@banx/utils'
+import {
+  LoanStatus,
+  STATUS_LOANS_COLOR_MAP,
+  STATUS_LOANS_MAP_WITH_REFINANCED_ACTIVE,
+} from '@banx/utils'
 
 import styles from './ActivityTable.module.less'
 
@@ -19,13 +22,8 @@ interface StatusCellProps {
   loan: LenderActivity
 }
 
-const NEW_STATUS_LOANS_MAP: Record<string, string> = {
-  ...STATUS_LOANS_MAP,
-  [BondTradeTransactionV2State.PerpetualRefinancedActive]: LoanStatus.RefinancedActive,
-}
-
 export const StatusCell: FC<StatusCellProps> = ({ loan }) => {
-  const loanStatus = NEW_STATUS_LOANS_MAP[loan.status]
+  const loanStatus = STATUS_LOANS_MAP_WITH_REFINANCED_ACTIVE[loan.status]
   const statusColor = STATUS_LOANS_COLOR_MAP[loanStatus as LoanStatus]
 
   return (
