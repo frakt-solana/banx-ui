@@ -8,7 +8,12 @@ import { SortOption } from '@banx/components/SortDropdown'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import { calculateClaimValue, isLoanAbleToClaim, useLenderLoans } from '@banx/pages/OffersPage'
+import {
+  calculateClaimValue,
+  isLoanAbleToClaim,
+  isLoanAbleToTerminate,
+  useLenderLoans,
+} from '@banx/pages/OffersPage'
 import { formatDecimal, isLoanTerminating, isUnderWaterLoan } from '@banx/utils'
 
 import { useSelectedLoans } from '../loansState'
@@ -34,16 +39,15 @@ export const useLoansTable = () => {
     selectedCollections,
     setSelectedCollections,
     filteredAllLoans,
-    underwaterLoans,
     underwaterLoansCount,
   } = useFilterLoans(loans)
 
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
 
   const sortedLoans = useSortedLoans(filteredLoans, sortOption)
-  const sortedUnderwaterLoans = useSortedLoans(underwaterLoans, sortOption)
 
-  const loansToClaim = useMemo(() => loans.filter(isLoanAbleToClaim), [loans])
+  const loansToClaim = useMemo(() => sortedLoans.filter(isLoanAbleToClaim), [sortedLoans])
+  const loansToTerminate = useMemo(() => sortedLoans.filter(isLoanAbleToTerminate), [sortedLoans])
 
   const searchSelectParams = createSearchSelectParams({
     loans: filteredAllLoans,
@@ -63,7 +67,7 @@ export const useLoansTable = () => {
     loading,
 
     loansToClaim,
-    underwaterLoans: sortedUnderwaterLoans,
+    loansToTerminate,
 
     underwaterLoansCount,
 
@@ -147,7 +151,7 @@ const useFilterLoans = (loans: Loan[]) => {
 
   const onToggleUnderwaterFilter = () => {
     setIsUnderwaterFilterActive(!isUnderwaterFilterActive)
-    isUnderwaterFilterActive ? clearSelection() : setSelection(nonTerminatingUnderwaterLoans)
+    !isUnderwaterFilterActive && setSelection(nonTerminatingUnderwaterLoans)
   }
 
   const { filteredLoans, filteredAllLoans } = useMemo(() => {
@@ -165,7 +169,6 @@ const useFilterLoans = (loans: Loan[]) => {
     filteredLoans,
     filteredAllLoans,
 
-    underwaterLoans: nonTerminatingUnderwaterLoans,
     underwaterLoansCount,
 
     isUnderwaterFilterActive,

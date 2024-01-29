@@ -32,7 +32,7 @@ export const LoansTable = () => {
     onToggleUnderwaterFilter,
     underwaterLoansCount,
     loansToClaim,
-    underwaterLoans,
+    loansToTerminate,
   } = useLoansTable()
 
   const { viewState } = useTableView()
@@ -48,8 +48,8 @@ export const LoansTable = () => {
   const hasSelectedLoans = !!selection?.length
 
   const onSelectAll = useCallback(() => {
-    return hasSelectedLoans ? clearSelection() : setSelection(underwaterLoans)
-  }, [hasSelectedLoans, clearSelection, setSelection, underwaterLoans])
+    return hasSelectedLoans ? clearSelection() : setSelection(loansToTerminate)
+  }, [hasSelectedLoans, clearSelection, setSelection, loansToTerminate])
 
   const columns = getTableColumns({
     onSelectAll,
@@ -57,7 +57,6 @@ export const LoansTable = () => {
     toggleLoanInSelection,
     hasSelectedLoans,
     isCardView: viewState === ViewState.CARD,
-    isUnderwaterFilterActive,
   })
 
   const onRowClick = useCallback(
@@ -127,9 +126,8 @@ export const LoansTable = () => {
       />
       <Summary
         loansToClaim={loansToClaim}
-        underwaterLoans={underwaterLoans}
+        loansToTerminate={loansToTerminate}
         updateOrAddLoan={updateOrAddLoan}
-        isUnderwaterFilterActive={isUnderwaterFilterActive}
         selectedLoans={selection}
         setSelection={setSelection}
         hideLoans={hideLoans}
