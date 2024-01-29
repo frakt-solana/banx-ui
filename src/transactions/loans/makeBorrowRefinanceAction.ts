@@ -1,10 +1,9 @@
 import { web3 } from 'fbonds-core'
-import { BASE_POINTS, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
+import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import {
   borrowerRefinance,
   borrowerRefinanceToSame,
-  calculateDynamicApr,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import {
   BondOfferV2,
@@ -15,7 +14,7 @@ import {
 import { MakeActionFn, WalletAndConnection } from 'solana-transactions-executor'
 
 import { Loan, Offer } from '@banx/api/core'
-import { BONDS, DYNAMIC_APR } from '@banx/constants'
+import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export interface BorrowRefinanceActionOptimisticResult {
@@ -80,14 +79,11 @@ const getIxnsAndSigners = async ({
 }) => {
   const { connection, wallet } = walletAndConnection
   const {
-    loan: { bondTradeTransaction, fraktBond, nft },
+    loan: { bondTradeTransaction, fraktBond },
     offer,
   } = ixnParams
 
-  const aprRate = calculateDynamicApr(
-    Math.floor((offer.currentSpotPrice / nft.collectionFloor) * BASE_POINTS),
-    DYNAMIC_APR,
-  )
+  const aprRate = bondTradeTransaction.amountOfBonds
 
   const accounts = {
     fbond: new web3.PublicKey(fraktBond.publicKey),
