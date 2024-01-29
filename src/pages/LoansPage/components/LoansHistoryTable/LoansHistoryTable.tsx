@@ -26,6 +26,7 @@ export const LoansHistoryTable = () => {
         columns={columns}
         sortViewParams={sortViewParams}
         loadMore={loadMore}
+        className={styles.table}
         loading={loading}
         showCard
       />

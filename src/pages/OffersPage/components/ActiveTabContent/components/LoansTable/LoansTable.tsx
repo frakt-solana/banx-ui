@@ -123,6 +123,7 @@ export const LoansTable = () => {
         sortViewParams={sortViewParams}
         loading={loading}
         customJSX={customJSX}
+        className={styles.table}
         showCard
       />
       <Summary

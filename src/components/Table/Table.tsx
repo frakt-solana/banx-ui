@@ -22,7 +22,6 @@ const Table = <T extends object, P extends object>({
   className,
   classNameTableWrapper,
   loadMore,
-  styleTableWrapper,
   customJSX,
 }: TableProps<T, P>) => {
   const { viewState } = useTableView()
@@ -39,10 +38,7 @@ const Table = <T extends object, P extends object>({
 
       {loading && <Loader />}
       {emptyMessage && !loading && <div className={styles.emptyList}>{emptyMessage}</div>}
-      <div
-        style={styleTableWrapper}
-        className={classNames(styles.tableWrapper, classNameTableWrapper)}
-      >
+      <div className={classNames(styles.tableWrapper, classNameTableWrapper)}>
         {hasData && (
           <ViewComponent
             data={data}
