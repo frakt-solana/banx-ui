@@ -26,6 +26,11 @@ export const STATUS_LOANS_MAP: Record<string, string> = {
   [BondTradeTransactionV2State.PerpetualManualTerminating]: LoanStatus.Terminating,
 }
 
+export const STATUS_LOANS_MAP_WITH_REFINANCED_ACTIVE: Record<string, string> = {
+  ...STATUS_LOANS_MAP,
+  [BondTradeTransactionV2State.PerpetualRefinancedActive]: LoanStatus.RefinancedActive,
+}
+
 export const STATUS_LOANS_COLOR_MAP: Record<LoanStatus, string> = {
   [LoanStatus.Active]: 'var(--additional-green-primary-deep)',
   [LoanStatus.Refinanced]: 'var(--additional-green-primary-deep)',
