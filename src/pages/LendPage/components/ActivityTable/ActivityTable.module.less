@@ -1,28 +1,22 @@
-.tableRoot table {
-  thead,
-  tbody {
-    tr {
-      td,
-      th {
-        min-width: 60px;
+.tableRoot {
+  min-width: 656px;
 
-        &:first-child,
-        &:last-child {
-          min-width: 144px;
-        }
+  table tr {
+    td,
+    th {
+      width: 120px;
 
-        &:nth-child(4) {
-          min-width: 96px;
-        }
+      &:first-child,
+      &:last-child {
+        width: 148px;
       }
+    }
 
-      td {
-        padding: 1px 8px;
-      }
-
-      th {
-        background: var(--bg-primary-deep);
-      }
+    td {
+      padding: 1px 8px;
+    }
+    th {
+      background: var(--bg-primary-deep);
     }
   }
 }

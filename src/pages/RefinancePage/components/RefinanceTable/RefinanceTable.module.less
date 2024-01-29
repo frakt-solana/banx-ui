@@ -6,17 +6,21 @@
   overflow: hidden;
 }
 
-.refinanceTable table {
-  tr > td {
-    min-width: 120px;
-    max-width: 120px;
+.refinanceTable {
+  min-width: 1260px;
 
-    &:first-child {
-      min-width: 200px;
-    }
+  table {
+    tr > td,
+    tr > th {
+      width: 144px;
 
-    &:last-child {
-      min-width: 176px;
+      &:first-child {
+        width: 220px;
+      }
+
+      &:last-child {
+        width: 176px;
+      }
     }
   }
 }

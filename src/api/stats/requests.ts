@@ -11,6 +11,7 @@ import {
   TotalLenderStatsSchema,
   UserLoansStats,
   UserLoansStatsResponse,
+  UserLoansStatsSchema,
   UserOffersStats,
   UserOffersStatsResponse,
   UserOffersStatsSchema,
@@ -46,7 +47,7 @@ export const fetchUserLoansStats: FetchUserLoansStats = async (walletPubkey) => 
     )
 
     try {
-      await UserOffersStatsSchema.parseAsync(data.data)
+      await UserLoansStatsSchema.parseAsync(data.data)
     } catch (validationError) {
       console.error('Schema validation error:', validationError)
     }

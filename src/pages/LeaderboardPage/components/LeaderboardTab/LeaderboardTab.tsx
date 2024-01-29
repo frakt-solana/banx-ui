@@ -61,7 +61,7 @@ const LeaderboardTab = () => {
         data={data}
         columns={columns}
         loading={isLoading}
-        className={styles.tableRoot}
+        className={styles.table}
         loadMore={loadMore}
         rowParams={rowParams}
       />
