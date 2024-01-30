@@ -11,6 +11,7 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
+import { useIsLedger } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimAction, makeTerminateAction } from '@banx/transactions/loans'
 import { HealthColorIncreasing, enqueueSnackbar, getColorByPercent } from '@banx/utils'
@@ -38,13 +39,18 @@ export const Summary: FC<SummaryProps> = ({
 }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
+  const { isLedger } = useIsLedger()
 
   const { totalLent, averageLtv, totalInterest } = getTerminateStatsInfo(selectedLoans)
 
   const terminateLoans = () => {
     const txnParams = selectedLoans.map((loan) => ({ loan }))
 
-    new TxnExecutor(makeTerminateAction, { wallet, connection })
+    new TxnExecutor(
+      makeTerminateAction,
+      { wallet, connection },
+      { signAllChunks: isLedger ? 5 : 40 },
+    )
       .addTxnParams(txnParams)
       .on('pfSuccessEach', (results) => {
         results.forEach(({ txnHash, result }) => {
