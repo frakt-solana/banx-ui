@@ -63,7 +63,7 @@ export const SearchSelect = <P extends object>({
   const sortedOptions = useMemo(() => {
     const field = optionKeys.secondLabel?.key
     return orderBy(options, field, sortOrder)
-  }, [options])
+  }, [optionKeys, options, sortOrder])
 
   if (showCollapsedContent)
     return (
