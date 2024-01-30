@@ -1,8 +1,7 @@
-import { FC, useMemo } from 'react'
+import { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { sumBy } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
@@ -26,7 +25,7 @@ interface SummaryProps {
   updateOrAddLoan: (loan: Loan) => void
   hideLoans: (...mints: string[]) => void
   selectedLoans: Loan[]
-  setSelection: (loans: Loan[]) => void
+  setSelection: (loans: Loan[], walletPublicKey: string) => void
 }
 
 export const Summary: FC<SummaryProps> = ({
@@ -38,6 +37,8 @@ export const Summary: FC<SummaryProps> = ({
   setSelection,
 }) => {
   const wallet = useWallet()
+  const walletPublicKeyString = wallet.publicKey?.toBase58() || ''
+
   const { connection } = useConnection()
   const { isLedger } = useIsLedger()
 
@@ -75,11 +76,6 @@ export const Summary: FC<SummaryProps> = ({
       .execute()
   }
 
-  const totalClaimableFloor = useMemo(
-    () => sumBy(loansToClaim, ({ nft }) => nft.collectionFloor),
-    [loansToClaim],
-  )
-
   const claimLoans = () => {
     const txnParams = loansToClaim.map((loan) => ({ loan }))
 
@@ -106,14 +102,14 @@ export const Summary: FC<SummaryProps> = ({
   }
 
   const handleLoanSelection = (value = 0) => {
-    setSelection(loansToTerminate.slice(0, value))
+    setSelection(loansToTerminate.slice(0, value), walletPublicKeyString)
   }
 
   return (
     <div className={styles.container}>
       {!!loansToClaim.length && (
         <Button className={styles.claimButton} onClick={claimLoans} type="circle" variant="text">
-          Claimable floor {createSolValueJSX(totalClaimableFloor, 1e9, '0◎')}
+          Claim defaults
         </Button>
       )}
 

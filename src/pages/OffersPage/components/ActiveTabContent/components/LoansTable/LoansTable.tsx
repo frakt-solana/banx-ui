@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
@@ -20,6 +21,9 @@ import { useSelectedLoans } from './loansState'
 import styles from './LoansTable.module.less'
 
 export const LoansTable = () => {
+  const { publicKey: walletPublicKey } = useWallet()
+  const walletPublicKeyString = walletPublicKey?.toBase58() || ''
+
   const {
     loans,
     sortViewParams,
@@ -40,33 +44,47 @@ export const LoansTable = () => {
   const {
     selection,
     toggle: toggleLoanInSelection,
-    find: findLoanInSelection,
+    find,
     clear: clearSelection,
     set: setSelection,
   } = useSelectedLoans()
 
-  const hasSelectedLoans = !!selection?.length
+  const walletSelectedLoans = useMemo(() => {
+    if (!walletPublicKeyString) return []
+    return selection
+      .filter(({ wallet }) => wallet === walletPublicKeyString)
+      .map(({ loan }) => loan)
+  }, [selection, walletPublicKeyString])
+
+  const hasSelectedLoans = useMemo(() => !!walletSelectedLoans?.length, [walletSelectedLoans])
 
   const onSelectAll = useCallback(() => {
-    return hasSelectedLoans ? clearSelection() : setSelection(loansToTerminate)
-  }, [hasSelectedLoans, clearSelection, setSelection, loansToTerminate])
+    return hasSelectedLoans
+      ? clearSelection()
+      : setSelection(loansToTerminate, walletPublicKeyString)
+  }, [hasSelectedLoans, clearSelection, setSelection, loansToTerminate, walletPublicKeyString])
+
+  const findLoanInSelection = useCallback(
+    (loanPubkey: string) => {
+      return find(loanPubkey, walletPublicKeyString)
+    },
+    [find, walletPublicKeyString],
+  )
+
+  const onRowClick = useCallback(
+    (loan: Loan) => {
+      toggleLoanInSelection(loan, walletPublicKeyString)
+    },
+    [toggleLoanInSelection, walletPublicKeyString],
+  )
 
   const columns = getTableColumns({
     onSelectAll,
     findLoanInSelection,
-    toggleLoanInSelection,
+    toggleLoanInSelection: onRowClick,
     hasSelectedLoans,
     isCardView: viewState === ViewState.CARD,
   })
-
-  const onRowClick = useCallback(
-    (loan: Loan) => {
-      if (isLoanTerminating(loan)) return
-
-      toggleLoanInSelection(loan)
-    },
-    [toggleLoanInSelection],
-  )
 
   const rowParams = useMemo(() => {
     return {
@@ -128,7 +146,7 @@ export const LoansTable = () => {
         loansToClaim={loansToClaim}
         loansToTerminate={loansToTerminate}
         updateOrAddLoan={updateOrAddLoan}
-        selectedLoans={selection}
+        selectedLoans={walletSelectedLoans}
         setSelection={setSelection}
         hideLoans={hideLoans}
       />

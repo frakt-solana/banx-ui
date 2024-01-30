@@ -14,9 +14,8 @@ import {
   isLoanAbleToTerminate,
   useLenderLoans,
 } from '@banx/pages/OffersPage'
-import { formatDecimal, isLoanTerminating, isUnderWaterLoan } from '@banx/utils'
+import { formatDecimal, isUnderWaterLoan } from '@banx/utils'
 
-import { useSelectedLoans } from '../loansState'
 import { DEFAULT_SORT_OPTION, SORT_OPTIONS, useSortedLoans } from './useSortedLoans'
 
 import styles from '../LoansTable.module.less'
@@ -130,8 +129,6 @@ const createSearchSelectParams = ({
 }
 
 const useFilterLoans = (loans: Loan[]) => {
-  const { set: setSelection, clear: clearSelection } = useSelectedLoans()
-
   const [isUnderwaterFilterActive, setIsUnderwaterFilterActive] = useState(false)
   const [selectedCollections, setSelectedCollections] = useState<string[]>([])
 
@@ -142,16 +139,13 @@ const useFilterLoans = (loans: Loan[]) => {
     return loans
   }, [loans, selectedCollections])
 
-  const { underwaterLoans, nonTerminatingUnderwaterLoans } = useMemo(() => {
-    const underwaterLoans = filteredLoansByCollection.filter(isUnderWaterLoan)
-    const nonTerminatingUnderwaterLoans = underwaterLoans.filter((loan) => !isLoanTerminating(loan))
-
-    return { underwaterLoans, nonTerminatingUnderwaterLoans }
-  }, [filteredLoansByCollection])
+  const underwaterLoans = useMemo(
+    () => filteredLoansByCollection.filter(isUnderWaterLoan),
+    [filteredLoansByCollection],
+  )
 
   const onToggleUnderwaterFilter = () => {
     setIsUnderwaterFilterActive(!isUnderwaterFilterActive)
-    !isUnderwaterFilterActive && setSelection(nonTerminatingUnderwaterLoans)
   }
 
   const { filteredLoans, filteredAllLoans } = useMemo(() => {

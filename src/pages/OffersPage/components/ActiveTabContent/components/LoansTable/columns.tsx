@@ -7,11 +7,12 @@ import { calculateLentValue, isLoanAbleToTerminate } from '@banx/pages/OffersPag
 import { formatDecimal } from '@banx/utils'
 
 import { APRCell, ActionsCell, InterestCell, StatusCell } from './TableCells'
+import { LoanOptimistic } from './loansState'
 
 import styles from './LoansTable.module.less'
 
 interface GetTableColumnsProps {
-  findLoanInSelection: (loanPubkey: string) => Loan | null
+  findLoanInSelection: (loanPubkey: string) => LoanOptimistic | null
   toggleLoanInSelection: (loan: Loan) => void
   onSelectAll: () => void
 
