@@ -119,6 +119,12 @@ export const Summary: FC<SummaryProps> = ({
 
         <div className={styles.additionalStats}>
           <StatInfo
+            classNamesProps={{ container: styles.lentAmountStat }}
+            label="Lent amount"
+            value={totalLent}
+            divider={1e9}
+          />
+          <StatInfo
             label="Avg ltv"
             value={averageLtv}
             valueType={VALUES_TYPES.PERCENT}
@@ -134,6 +140,7 @@ export const Summary: FC<SummaryProps> = ({
             label="# Loans"
             value={selectedLoans.length}
             onChange={(value) => handleLoanSelection(value)}
+            disabled={!loansToTerminate.length}
             className={styles.terminateSliderWrapper}
             max={loansToTerminate.length}
           />
