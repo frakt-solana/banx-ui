@@ -5,15 +5,13 @@ import { Burger, BurgerClose } from '@banx/icons'
 import {
   EXTERNAL_LINKS,
   ExternalLinks,
-  InternalLink,
   NAVIGATION_LINKS,
+  NavigationsLinks,
   SECONDARY_NAVIGATION_LINKS,
 } from '../Navbar'
 import { useBurgerMenu } from './hooks'
 
 import styles from './BurgerMenu.module.less'
-
-const navigationsLinks = [...NAVIGATION_LINKS, ...SECONDARY_NAVIGATION_LINKS]
 
 const BurgerMenu = () => {
   const { isVisible, toggleVisibility } = useBurgerMenu()
@@ -23,13 +21,10 @@ const BurgerMenu = () => {
       className={classNames(styles.burgerMenu, { [styles.hidden]: !isVisible })}
       onClick={toggleVisibility}
     >
-      <ul className={styles.navigationList}>
-        {navigationsLinks.map((link) => (
-          <InternalLink key={link.label} className={styles.link} {...link} />
-        ))}
-      </ul>
+        <NavigationsLinks links={NAVIGATION_LINKS} />
+        <NavigationsLinks links={SECONDARY_NAVIGATION_LINKS} />
+
       <div className={styles.communityContainer}>
-        <p className={styles.communitySubtitle}>Community</p>
         <ExternalLinks links={EXTERNAL_LINKS} />
       </div>
     </div>

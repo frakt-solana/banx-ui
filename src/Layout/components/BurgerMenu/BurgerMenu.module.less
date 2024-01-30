@@ -2,17 +2,25 @@
   display: none;
 
   @media screen and (max-width: 960px) {
-    background: var(--bg-primary);
+    background: var(--bg-secondary);
+    border-left: var(--border-less-primary);
 
     display: flex;
     flex-direction: column;
-    align-items: center;
+    overflow-y: scroll;
+    height: 100%;
+    width: 304px;
 
-    padding: 24px 0 120px;
-    overflow: auto;
-    height: 100vh;
-    width: 100%;
+    padding: 12px 0 80px;
+
+    position: fixed;
+    right: 0;
     z-index: 99;
+  }
+
+  @media screen and (max-width: 640px) {
+    padding: 8px 0 80px;
+    width: 208px;
   }
 
   &.hidden {
@@ -21,15 +29,7 @@
 }
 
 .communityContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 24px;
-}
-.communitySubtitle {
-  color: var(--content-secondary);
-  font: var(--table-header-md);
-  text-transform: uppercase;
+  height: 100vh;
 }
 
 .burgerIcon {
@@ -48,29 +48,5 @@
 
   @media (max-width: 640px) {
     margin-left: 8px;
-  }
-}
-
-.link {
-  padding: 8px 24px;
-  height: unset;
-}
-
-.navigationList {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-
-  a {
-    display: flex;
-    justify-content: center;
-    font: var(--menu-tab-lg) !important;
-    padding: 8px 24px !important;
-    width: 100%;
-  }
-
-  svg {
-    display: none;
   }
 }
