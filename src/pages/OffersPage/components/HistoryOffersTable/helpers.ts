@@ -11,9 +11,9 @@ const isPerpetualLiquidatedByClaim = (status: string) =>
   status === BondTradeTransactionV2State.PerpetualLiquidatedByClaim
 
 export const formatLoanData = (loan: LenderActivity) => {
-  const { nftName, lent, interest, status, apr, received } = loan
+  const { nftName, interest, status, apr, received, currentRemainingLentAmount } = loan
 
-  const lentAmount = formatAmount(lent)
+  const lentAmount = formatAmount(currentRemainingLentAmount)
   const interestAmount = formatAmount(interest)
   const apyAmount = convertAprToApy(apr / 1e4)
 
