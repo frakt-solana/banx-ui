@@ -10,7 +10,10 @@ const RefinanceHeader = () => {
   const { loans } = useAuctionsLoans()
 
   return (
-    <PageHeaderBackdrop title="Refinance" titleBtn={<OnboardButton contentType="refinance" />}>
+    <PageHeaderBackdrop
+      title="Refinance"
+      titleBtn={<OnboardButton contentType="refinance" title="Refinance" />}
+    >
       <MainStat
         classNamesProps={{ value: styles.mainValue }}
         label="Available"

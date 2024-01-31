@@ -4,18 +4,11 @@
   align-items: center;
   justify-content: space-between;
   padding: 24px;
+  gap: 24px;
   width: 100%;
 
-  @media (max-width: 960px) {
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: unset;
-    padding: 42px 24px;
-    gap: 16px;
-  }
-
   @media (max-width: 640px) {
-    padding: 24px 16px;
+    padding: 16px;
   }
 }
 
@@ -30,11 +23,7 @@
   text-transform: uppercase;
 
   @media (max-width: 960px) {
-    font: var(--title-md);
-  }
-
-  @media (max-width: 640px) {
-    font: var(--title-sm);
+    display: none;
   }
 }
 
@@ -42,12 +31,14 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  overflow: auto hidden;
+  margin-right: -24px;
+  padding-right: 24px;
 
   @media (max-width: 640px) {
-    overflow-x: auto;
-    overflow-y: hidden;
+    margin-right: -16px;
+    padding-right: 16px;
     gap: 8px;
-    width: 100%;
   }
 }
 
@@ -65,11 +56,20 @@
 .mainValue {
   font: var(--important-text-md);
   line-height: 24px;
+
+  @media (max-width: 640px) {
+    font: var(--important-text-uppercase-sm);
+    line-height: 16px;
+  }
 }
 
 .mainLabel {
   color: var(--content-primary);
   font: var(--table-header-md);
+
+  @media (max-width: 640px) {
+    font: var(--table-header-sm);
+  }
 }
 
 .additionalValue {
@@ -78,11 +78,20 @@
   gap: 4px;
   font: var(--body-text-md);
   line-height: 21px;
+
+  @media (max-width: 640px) {
+    font: var(--body-text-xs);
+    line-height: 16px;
+  }
 }
 
 .additionalLabel {
   font: var(--table-header-md);
   text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--table-header-sm);
+  }
 }
 
 .separateLine {

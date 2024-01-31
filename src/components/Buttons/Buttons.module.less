@@ -224,6 +224,19 @@
   align-items: center;
   gap: 4px;
 
+  @media (max-width: 960px) {
+    font: var(--btn-text-sm) !important;
+    .instructionsLabel {
+      display: none;
+    }
+  }
+
+  @media (min-width: 961px) {
+    .pageTitle {
+      display: none;
+    }
+  }
+
   svg {
     transform: rotate(-15deg);
 
