@@ -15,6 +15,7 @@ export const CounterSlider: FC<SliderProps> = ({
   labelClassName,
   rootClassName,
   className,
+  disabled,
 }) => {
   const handleNumericInput = (value: string) => {
     onChange(Number(value))
@@ -31,6 +32,7 @@ export const CounterSlider: FC<SliderProps> = ({
         label={label}
         labelClassName={labelClassName}
         rootClassName={rootClassName}
+        disabled={disabled}
       />
       <NumericStepInput
         onChange={handleNumericInput}
@@ -38,6 +40,7 @@ export const CounterSlider: FC<SliderProps> = ({
         max={max}
         step={1}
         className={styles.counterInputContainer}
+        disabled={disabled}
       />
     </div>
   )
