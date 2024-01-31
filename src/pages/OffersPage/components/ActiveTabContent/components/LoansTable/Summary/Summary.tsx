@@ -84,7 +84,7 @@ export const Summary: FC<SummaryProps> = ({
   const claimLoans = () => {
     const txnParams = loansToClaim.map((loan) => ({ loan }))
 
-    new TxnExecutor(makeClaimAction, { wallet, connection })
+    new TxnExecutor(makeClaimAction, { wallet, connection }, { signAllChunks: isLedger ? 5 : 40 })
       .addTxnParams(txnParams)
       .on('pfSuccessEach', (results) => {
         enqueueSnackbar({
