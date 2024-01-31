@@ -15,6 +15,7 @@ import { defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimAction, makeTerminateAction } from '@banx/transactions/loans'
 import { HealthColorIncreasing, enqueueSnackbar, getColorByPercent } from '@banx/utils'
 
+import { useSelectedLoans } from '../loansState'
 import { getTerminateStatsInfo } from './helpers'
 
 import styles from './Summary.module.less'
@@ -38,6 +39,7 @@ export const Summary: FC<SummaryProps> = ({
 }) => {
   const wallet = useWallet()
   const walletPublicKeyString = wallet.publicKey?.toBase58() || ''
+  const { clear: clearSelection } = useSelectedLoans()
 
   const { connection } = useConnection()
   const { isLedger } = useIsLedger()
@@ -65,6 +67,9 @@ export const Summary: FC<SummaryProps> = ({
             updateOrAddLoan(result)
           }
         })
+      })
+      .on('pfSuccessAll', () => {
+        clearSelection()
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error, {

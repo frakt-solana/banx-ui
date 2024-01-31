@@ -10,6 +10,7 @@ import Tooltip from '@banx/components/Tooltip'
 
 import { Loan } from '@banx/api/core'
 import { Underwater } from '@banx/icons'
+import { isLoanAbleToTerminate } from '@banx/pages/OffersPage'
 import { ViewState, useTableView } from '@banx/store'
 import { isLoanLiquidated, isLoanTerminating, isUnderWaterLoan } from '@banx/utils'
 
@@ -73,6 +74,7 @@ export const LoansTable = () => {
 
   const onRowClick = useCallback(
     (loan: Loan) => {
+      if (!isLoanAbleToTerminate(loan)) return
       toggleLoanInSelection(loan, walletPublicKeyString)
     },
     [toggleLoanInSelection, walletPublicKeyString],
