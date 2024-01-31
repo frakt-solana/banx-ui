@@ -1,15 +1,12 @@
 import { FC } from 'react'
 
-import { InfoCircleOutlined } from '@ant-design/icons'
-import classNames from 'classnames'
 import { BASE_POINTS } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   calculateCurrentInterestSolPure,
   calculateDynamicApr,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 
-import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
-import Tooltip from '@banx/components/Tooltip'
+import { RowCell, createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { BONDS, DYNAMIC_APR, SECONDS_IN_DAY } from '@banx/constants'
 import {
@@ -56,16 +53,9 @@ export const BorrowCell: FC<CellProps> = ({ nft }) => {
     nft.nft.loan.marketPubkey,
   )
 
-  return (
-    <div className={styles.cellInfo}>
-      <Tooltip title={tooltipContent}>
-        <span className={styles.cellInfoTitle}>
-          {createSolValueJSX(borrowValueWithRentFee, 1e9, '--', formatDecimal)}
-        </span>
-        <InfoCircleOutlined className={styles.tooltipIcon} />
-      </Tooltip>
-    </div>
-  )
+  const formattedBorrowValue = createSolValueJSX(borrowValueWithRentFee, 1e9, '--', formatDecimal)
+
+  return <RowCell value={formattedBorrowValue} tooltipContent={tooltipContent} />
 }
 
 export const APRCell: FC<CellProps> = ({ nft }) => {
@@ -89,14 +79,5 @@ export const APRCell: FC<CellProps> = ({ nft }) => {
     </div>
   )
 
-  return (
-    <div className={styles.cellInfo}>
-      <Tooltip title={tooltipContent}>
-        <span className={classNames(styles.cellInfoTitle, { [styles.highlight]: true })}>
-          {formattedAprValue}
-        </span>
-        <InfoCircleOutlined className={styles.tooltipIcon} />
-      </Tooltip>
-    </div>
-  )
+  return <RowCell value={formattedAprValue} tooltipContent={tooltipContent} isHighlighted />
 }

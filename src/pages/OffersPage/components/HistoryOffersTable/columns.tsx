@@ -3,13 +3,15 @@ import {
   DurationCell,
   HeaderCell,
   NftInfoCell,
+  RowCell,
+  createPercentValueJSX,
   createSolValueJSX,
 } from '@banx/components/TableComponents'
 
 import { LenderActivity } from '@banx/api/activity'
 import { formatDecimal } from '@banx/utils'
 
-import { APRCell, ReceivedCell, StatusCell } from './TableCells'
+import { ReceivedCell, StatusCell } from './TableCells'
 
 export const getTableColumns = () => {
   const columns: ColumnType<LenderActivity>[] = [
@@ -30,20 +32,25 @@ export const getTableColumns = () => {
     {
       key: 'lent',
       title: <HeaderCell label="Lent" />,
-      render: (loan) =>
-        createSolValueJSX(loan.currentRemainingLentAmount, 1e9, '--', formatDecimal),
+      render: (loan) => (
+        <RowCell
+          value={createSolValueJSX(loan.currentRemainingLentAmount, 1e9, '--', formatDecimal)}
+        />
+      ),
       sorter: true,
     },
     {
       key: 'interest',
       title: <HeaderCell label="Interest" />,
-      render: (loan) => createSolValueJSX(loan.interest, 1e9, '--', formatDecimal),
+      render: (loan) => (
+        <RowCell value={createSolValueJSX(loan.interest, 1e9, '--', formatDecimal)} />
+      ),
       sorter: true,
     },
     {
       key: 'apr',
       title: <HeaderCell label="APR" />,
-      render: (loan) => <APRCell loan={loan} />,
+      render: (loan) => <RowCell value={createPercentValueJSX(loan.apr / 100)} isHighlighted />,
       sorter: true,
     },
     {

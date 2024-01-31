@@ -1,12 +1,18 @@
 import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
-import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
+import {
+  HeaderCell,
+  NftInfoCell,
+  RowCell,
+  createPercentValueJSX,
+  createSolValueJSX,
+} from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
 import { calculateLentValue } from '@banx/pages/OffersPage'
 import { formatDecimal, isLoanTerminating } from '@banx/utils'
 
-import { APRCell, ActionsCell, InterestCell, StatusCell } from './TableCells'
+import { ActionsCell, InterestCell, StatusCell } from './TableCells'
 
 import styles from './LoansTable.module.less'
 
@@ -69,7 +75,9 @@ export const getTableColumns = ({
     {
       key: 'lent',
       title: <HeaderCell label="Lent" />,
-      render: (loan) => createSolValueJSX(calculateLentValue(loan), 1e9, '0◎', formatDecimal),
+      render: (loan) => (
+        <RowCell value={createSolValueJSX(calculateLentValue(loan), 1e9, '0◎', formatDecimal)} />
+      ),
     },
     {
       key: 'repaid',
@@ -79,7 +87,9 @@ export const getTableColumns = ({
           tooltipText="Repayments returned to pending offer if open, or wallet if closed"
         />
       ),
-      render: (loan) => createSolValueJSX(loan.totalRepaidAmount, 1e9, '0◎', formatDecimal),
+      render: (loan) => (
+        <RowCell value={createSolValueJSX(loan.totalRepaidAmount, 1e9, '0◎', formatDecimal)} />
+      ),
     },
     {
       key: 'interest',
@@ -94,7 +104,12 @@ export const getTableColumns = ({
     {
       key: 'apr',
       title: <HeaderCell label="APR" />,
-      render: (loan) => <APRCell loan={loan} />,
+      render: (loan) => (
+        <RowCell
+          value={createPercentValueJSX(loan.bondTradeTransaction.amountOfBonds / 100)}
+          isHighlighted
+        />
+      ),
     },
     {
       key: 'status',

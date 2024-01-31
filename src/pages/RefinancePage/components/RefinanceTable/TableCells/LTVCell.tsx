@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import { createPercentValueJSX } from '@banx/components/TableComponents'
+import { RowCell, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
 import { HealthColorIncreasing, calculateLoanRepayValue, getColorByPercent } from '@banx/utils'
@@ -15,7 +15,10 @@ export const LTVCell: FC<LTVCellProps> = ({ loan }) => {
   const collectionFloor = loan.nft.collectionFloor
   const ltv = (repayValue / collectionFloor) * 100
 
-  const colorLTV = getColorByPercent(ltv, HealthColorIncreasing)
-
-  return <span style={{ color: colorLTV }}>{createPercentValueJSX(ltv)}</span>
+  return (
+    <RowCell
+      value={createPercentValueJSX(ltv)}
+      textColor={getColorByPercent(ltv, HealthColorIncreasing)}
+    />
+  )
 }
