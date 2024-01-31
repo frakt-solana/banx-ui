@@ -1,11 +1,8 @@
 import { FC } from 'react'
 
-import { InfoCircleOutlined } from '@ant-design/icons'
-import classNames from 'classnames'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 
-import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
-import Tooltip from '@banx/components/Tooltip/Tooltip'
+import { RowCell, createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
 import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
@@ -63,14 +60,7 @@ export const DebtCell: FC<CellProps> = ({ loan }) => {
     </div>
   )
 
-  return (
-    <div className={styles.cellInfo}>
-      <Tooltip title={tooltipContent}>
-        <span className={styles.cellInfoTitle}>{formattedDebtValue}</span>
-        <InfoCircleOutlined className={styles.tooltipIcon} />
-      </Tooltip>
-    </div>
-  )
+  return <RowCell tooltipContent={tooltipContent} value={formattedDebtValue} />
 }
 
 export const LTVCell: FC<CellProps> = ({ loan }) => {
@@ -88,30 +78,16 @@ export const LTVCell: FC<CellProps> = ({ loan }) => {
   )
 
   return (
-    <div className={styles.cellInfo}>
-      <Tooltip title={tooltipContent}>
-        <span
-          style={{ color: getColorByPercent(ltvPercent, HealthColorIncreasing) }}
-          className={classNames(styles.cellInfoTitle, { [styles.highlight]: true })}
-        >
-          {formattedLtvValue}
-        </span>
-        <InfoCircleOutlined className={styles.tooltipIcon} />
-      </Tooltip>
-    </div>
+    <RowCell
+      value={formattedLtvValue}
+      tooltipContent={tooltipContent}
+      textColor={getColorByPercent(ltvPercent, HealthColorIncreasing)}
+    />
   )
 }
 
 export const APRCell: FC<CellProps> = ({ loan }) => {
-  const { bondTradeTransaction } = loan
+  const apr = (loan.bondTradeTransaction.amountOfBonds + BONDS.PROTOCOL_REPAY_FEE) / 100
 
-  const formattedAprValue = createPercentValueJSX(
-    (bondTradeTransaction.amountOfBonds + BONDS.PROTOCOL_REPAY_FEE) / 100,
-  )
-
-  return (
-    <span className={classNames(styles.cellInfoTitle, { [styles.highlight]: true })}>
-      {formattedAprValue}
-    </span>
-  )
+  return <RowCell value={createPercentValueJSX(apr)} isHighlighted />
 }

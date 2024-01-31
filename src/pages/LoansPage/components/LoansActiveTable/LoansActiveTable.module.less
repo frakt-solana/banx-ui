@@ -43,35 +43,29 @@
   background: var(--additional-lava-secondary) !important;
 }
 
-.statusInfo {
+.columnCell {
   display: flex;
   flex-direction: column;
   white-space: nowrap;
   align-items: flex-end;
   gap: 4px;
-}
-.statusInfoTitle {
-  font: var(--body-text-md);
-}
-.statusInfoSubtitle {
-  font: var(--body-text-sm);
-}
 
-.cellInfo {
-  &,
-  & > * {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 4px;
+  @media (max-width: 640px) {
+    gap: unset;
   }
 }
-.cellInfoTitle {
+.columnCellTitle {
   font: var(--body-text-md);
 
-  &.highlight {
-    color: var(--additional-green-primary-deep);
-    font: var(--important-text-md);
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
+}
+.columnCellSubtitle {
+  font: var(--body-text-sm);
+
+  @media (max-width: 640px) {
+    font: var(--body-text-xs);
   }
 }
 
@@ -194,9 +188,4 @@
   @media (max-width: 640px) {
     font: var(--table-header-sm);
   }
-}
-.tooltipIcon svg {
-  fill: var(--content-secondary);
-  width: 13px;
-  height: 13px;
 }

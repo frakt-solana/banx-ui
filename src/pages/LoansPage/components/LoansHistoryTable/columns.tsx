@@ -3,6 +3,7 @@ import {
   DurationCell,
   HeaderCell,
   NftInfoCell,
+  RowCell,
   createSolValueJSX,
 } from '@banx/components/TableComponents'
 
@@ -30,7 +31,9 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
     {
       key: 'borrowed',
       title: <HeaderCell label="Borrowed" />,
-      render: ({ borrowed }) => createSolValueJSX(borrowed, 1e9, '--', formatDecimal),
+      render: ({ borrowed }) => (
+        <RowCell value={createSolValueJSX(borrowed, 1e9, '--', formatDecimal)} />
+      ),
       sorter: true,
     },
     {

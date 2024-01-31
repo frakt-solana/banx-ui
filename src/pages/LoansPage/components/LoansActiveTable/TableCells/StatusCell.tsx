@@ -29,21 +29,21 @@ export const StatusCell: FC<StatusCellProps> = ({ loan, isCardView }) => {
 
   const timeInfo = calculateTimeInfo(loan, statusText)
 
-  const statusInfoTitle = <span className={styles.statusInfoTitle}>{timeInfo}</span>
-  const statusInfoSubtitle = (
-    <span style={{ color: statusColor }} className={styles.statusInfoSubtitle}>
+  const statusInfoTitle = (
+    <span style={{ color: statusColor }} className={styles.columnCellTitle}>
       {capitalize(statusText)}
     </span>
   )
+  const statusInfoSubtitle = <span className={styles.columnCellSubtitle}>{timeInfo}</span>
 
   return !isCardView ? (
-    <div className={styles.statusInfo}>
-      {statusInfoSubtitle}
+    <div className={styles.columnCell}>
       {statusInfoTitle}
+      {statusInfoSubtitle}
     </div>
   ) : (
     <span>
-      {statusInfoSubtitle} ({statusInfoTitle})
+      {statusInfoTitle} ({statusInfoSubtitle})
     </span>
   )
 }
