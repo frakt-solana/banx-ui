@@ -44,6 +44,7 @@ export const Slider: FC<SliderProps> = ({
   className,
   rootClassName,
   showValue,
+  disabled,
   ...props
 }) => {
   //? Show marks without text when showValue exists
@@ -62,9 +63,11 @@ export const Slider: FC<SliderProps> = ({
         rootClassName={classNames(
           'rootSliderClassName',
           { [SLIDER_WITH_VALUE_CLASSNAME[showValue || 'number']]: !!showValue },
+          { ['sliderDisabled']: disabled },
           rootClassName,
         )}
         marks={marksFormatted}
+        disabled={disabled}
         step={step}
         tooltip={{
           open: false,

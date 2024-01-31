@@ -24,9 +24,8 @@ type IsLoanAbleToTerminate = (loan: Loan) => boolean
 export const isLoanAbleToTerminate: IsLoanAbleToTerminate = (loan) => {
   const isLoanExpired = isLoanLiquidated(loan)
   const isTerminatingStatus = isLoanTerminating(loan)
-  const isLoanUnderWater = isUnderWaterLoan(loan)
 
-  return !isLoanExpired && !isTerminatingStatus && isLoanUnderWater
+  return !isLoanExpired && !isTerminatingStatus
 }
 
 type FindBestOffer = (props: { loan: Loan; offers: Offer[]; walletPubkey: string }) => Offer

@@ -69,6 +69,18 @@
   }
 }
 
+.sliderDisabled {
+  .ant-slider-rail,
+  &:hover .ant-slider-rail {
+    background: var(--content-secondary) !important;
+  }
+
+  .ant-slider-handle {
+    background: var(--bg-primary);
+    border: 2px solid var(--content-secondary);
+  }
+}
+
 .sliderValue {
   .ant-slider-handle {
     &::before {
