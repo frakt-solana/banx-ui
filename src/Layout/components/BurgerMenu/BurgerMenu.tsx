@@ -21,8 +21,8 @@ const BurgerMenu = () => {
       className={classNames(styles.burgerMenu, { [styles.hidden]: !isVisible })}
       onClick={toggleVisibility}
     >
-        <NavigationsLinks links={NAVIGATION_LINKS} />
-        <NavigationsLinks links={SECONDARY_NAVIGATION_LINKS} />
+      <NavigationsLinks links={NAVIGATION_LINKS} />
+      <NavigationsLinks links={SECONDARY_NAVIGATION_LINKS} />
 
       <div className={styles.communityContainer}>
         <ExternalLinks links={EXTERNAL_LINKS} />

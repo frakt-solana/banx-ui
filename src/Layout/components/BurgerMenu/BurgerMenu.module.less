@@ -29,7 +29,14 @@
 }
 
 .communityContainer {
-  height: 100vh;
+  position: fixed;
+  bottom: 24px;
+  width: 304px;
+
+  @media screen and (max-width: 640px) {
+    bottom: 16px;
+    width: 208px;
+  }
 }
 
 .burgerIcon {
