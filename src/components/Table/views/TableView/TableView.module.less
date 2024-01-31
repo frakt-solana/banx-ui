@@ -16,7 +16,9 @@
         padding: 8px;
         text-align: -webkit-right;
         transition: unset;
+      }
 
+      td {
         @media (max-width: 640px) {
           padding: 2px;
         }
@@ -36,6 +38,10 @@
         text-transform: uppercase;
         white-space: nowrap;
         vertical-align: middle;
+
+        @media (max-width: 640px) {
+          font: var(--table-header-sm);
+        }
 
         &:first-child {
           padding-left: 24px;

@@ -34,18 +34,13 @@
   gap: 8px;
 }
 
-.switchButtons {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.switchViewButton svg {
-  height: 24px;
-  width: 24px;
-}
-.switchViewButton.active {
-  border-color: var(--content-primary);
-}
-.switchViewButton svg path {
-  fill: var(--content-primary);
+.switchViewButton {
+  svg {
+    height: 24px;
+    width: 24px;
+
+    path {
+      fill: var(--content-primary);
+    }
+  }
 }
