@@ -225,9 +225,21 @@
   gap: 4px;
 
   @media (max-width: 960px) {
+    flex-direction: row-reverse;
     font: var(--btn-text-sm) !important;
+    height: 32px;
+
     .instructionsLabel {
       display: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    font: var(--btn-text-sm) !important;
+
+    svg {
+      width: 16px;
+      height: 16px;
     }
   }
 
