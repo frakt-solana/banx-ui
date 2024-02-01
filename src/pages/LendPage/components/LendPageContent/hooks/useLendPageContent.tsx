@@ -8,6 +8,7 @@ import { createPercentValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
 import { MarketPreview } from '@banx/api/core'
+import { MARKETS_WITH_CUSTOM_APR } from '@banx/constants'
 import { Fire } from '@banx/icons'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { useMarketsURLControl } from '@banx/store'
@@ -55,8 +56,13 @@ export const useLendPageContent = () => {
         ),
       },
       secondLabel: {
-        key: 'marketApr',
-        format: () => createPercentValueJSX(MAX_APR_VALUE),
+        key: 'marketPubkey',
+        format: (marketPubkey) => {
+          //TODO Refactor this piece of shit (code)
+          const customApr = MARKETS_WITH_CUSTOM_APR[marketPubkey as unknown as string]
+          const apr = customApr !== undefined ? customApr / 100 : MAX_APR_VALUE
+          return createPercentValueJSX(apr)
+        },
       },
     },
     onChange: handleFilterChange,
