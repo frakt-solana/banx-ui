@@ -1,43 +1,43 @@
-import moment from 'moment'
+import { FC } from 'react'
+
+import { InfoCircleOutlined } from '@ant-design/icons'
+import classNames from 'classnames'
+
+import Tooltip from '../Tooltip'
 
 import styles from './TableCells.module.less'
 
-const formatDisplayValue = (
-  initialValue: number,
-  formattedValue: string,
-  unit: string,
-  zeroPlaceholder = '--',
-) => {
-  return initialValue ? `${formattedValue}${unit}` : zeroPlaceholder
+interface RowCellProps {
+  value: string | number | JSX.Element
+
+  tooltipContent?: string | JSX.Element
+  isHighlighted?: boolean
+  textColor?: string
 }
 
-export const createSolValueJSX = (
-  value: number = 0,
-  divider: number = 1,
-  zeroPlaceholder: string = '--',
-  formatValueFunction?: (value: number) => string,
-) => {
-  const valueToFormat = value / divider
+export const RowCell: FC<RowCellProps> = ({
+  tooltipContent,
+  value,
+  textColor = '',
+  isHighlighted = false,
+}) => {
+  const cellContent = (
+    <span
+      style={{ color: textColor }}
+      className={classNames(styles.rowCellTitle, { [styles.highlight]: isHighlighted })}
+    >
+      {value}
+    </span>
+  )
 
-  const formattedValue = formatValueFunction
-    ? formatValueFunction(valueToFormat)
-    : valueToFormat.toFixed(2)
-
-  const displayValue = formatDisplayValue(value, formattedValue, '◎', zeroPlaceholder)
-
-  return <span className={styles.value}>{displayValue}</span>
-}
-
-export const createPercentValueJSX = (initialValue = 0, zeroPlaceholder = '--') => {
-  const formattedValue = initialValue.toFixed(0)
-  const displayValue = formatDisplayValue(initialValue, formattedValue, '%', zeroPlaceholder)
-
-  return <span className={styles.value}>{displayValue}</span>
-}
-
-export const createTimeValueJSX = (initialValue: number, zeroPlaceholder = '--') => {
-  const formattedValue = moment.unix(initialValue).fromNow(false)
-  const displayValue = formatDisplayValue(initialValue, formattedValue, '', zeroPlaceholder)
-
-  return <span className={styles.value}>{displayValue}</span>
+  return tooltipContent ? (
+    <div className={styles.rowCell}>
+      <Tooltip title={tooltipContent}>
+        {cellContent}
+        <InfoCircleOutlined className={styles.rowCellTooltipIcon} />
+      </Tooltip>
+    </div>
+  ) : (
+    cellContent
+  )
 }
