@@ -10,7 +10,7 @@ import Tooltip from '@banx/components/Tooltip'
 
 import { Pencil } from '@banx/icons'
 import { SyntheticOffer } from '@banx/store'
-import { calcDynamicApr, formatDecimal } from '@banx/utils'
+import { calculateApr, formatDecimal } from '@banx/utils'
 
 import styles from './Offer.module.less'
 
@@ -21,7 +21,14 @@ interface OfferProps {
 }
 
 const Offer: FC<OfferProps> = ({ editOffer, offer, collectionFloor }) => {
-  const { publicKey: offerPubkey, isEdit, loansAmount, loanValue, assetReceiver } = offer
+  const {
+    publicKey: offerPubkey,
+    isEdit,
+    loansAmount,
+    loanValue,
+    assetReceiver,
+    marketPubkey,
+  } = offer
 
   const { connected, publicKey } = useWallet()
 
@@ -39,7 +46,7 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, collectionFloor }) => {
   const highlightItemClassNames = classNames(styles.highlightItem, commonHighlightClassNames)
 
   const displayOfferValue = getDisplayOfferRange(offer)
-  const maxDynamicApr = calcDynamicApr(loanValue, collectionFloor)
+  const maxDynamicApr = calculateApr({ loanValue, collectionFloor, marketPubkey }) / 100
 
   return (
     <li className={listItemClassNames}>

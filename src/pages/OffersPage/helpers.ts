@@ -9,7 +9,6 @@ import {
   calculateLoanValue,
   isLoanLiquidated,
   isLoanTerminating,
-  isUnderWaterLoan,
 } from '@banx/utils'
 
 type IsLoanAbleToClaim = (loan: Loan) => boolean

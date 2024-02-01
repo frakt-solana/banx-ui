@@ -4,5 +4,5 @@ export const SORT_OPTIONS = [
   { label: 'Offers TVL', value: 'offerTvl' },
   { label: 'Loans TVL', value: 'loansTvl' },
   { label: 'Active loans', value: 'activeLoans' },
-  { label: 'APR', value: 'apr' },
+  // { label: 'APR', value: 'apr' },
 ]
