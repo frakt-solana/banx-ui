@@ -2,8 +2,6 @@ import { FC, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { BASE_POINTS } from 'fbonds-core/lib/fbond-protocol/constants'
-import { calculateDynamicApr } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
@@ -12,13 +10,14 @@ import { createPercentValueJSX, createSolValueJSX } from '@banx/components/Table
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan, Offer } from '@banx/api/core'
-import { BONDS, DYNAMIC_APR } from '@banx/constants'
+import { BONDS } from '@banx/constants'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
 import { useLoansOptimistic, useModal, useOffersOptimistic } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { makeBorrowRefinanceAction } from '@banx/transactions/loans'
 import {
   calcLoanBorrowedAmount,
+  calculateApr,
   calculateLoanRepayValue,
   enqueueSnackbar,
   isLoanTerminating,
@@ -67,10 +66,11 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan, offer }) => {
   const newLoanBorrowedAmount = currentSpotPrice - upfrontFee
   const newLoanDebt = currentSpotPrice
 
-  const newApr = calculateDynamicApr(
-    Math.floor((newLoanBorrowedAmount / nft.collectionFloor) * BASE_POINTS),
-    DYNAMIC_APR,
-  )
+  const newApr = calculateApr({
+    loanValue: newLoanBorrowedAmount,
+    collectionFloor: nft.collectionFloor,
+    marketPubkey: fraktBond.hadoMarket,
+  })
 
   const differenceToPay = newLoanDebt - currentLoanDebt
 

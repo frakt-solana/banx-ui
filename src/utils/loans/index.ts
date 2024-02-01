@@ -1,10 +1,14 @@
-import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { BASE_POINTS } from 'fbonds-core/lib/fbond-protocol/constants'
+import {
+  calculateCurrentInterestSolPure,
+  calculateDynamicApr,
+} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
 import { isInteger } from 'lodash'
 import moment from 'moment'
 
 import { Loan } from '@banx/api/core'
-import { BONDS, SECONDS_IN_72_HOURS } from '@banx/constants'
+import { BONDS, DYNAMIC_APR, MARKETS_WITH_CUSTOM_APR, SECONDS_IN_72_HOURS } from '@banx/constants'
 
 export enum LoanStatus {
   Active = 'active',
@@ -125,4 +129,21 @@ export const isUnderWaterLoan = (loan: Loan) => {
   const totalLentValue = solAmount + feeAmount
 
   return totalLentValue > collectionFloor
+}
+
+//? Returns apr value in base points: 7380 => 73.8%
+type CalculateApr = (params: {
+  loanValue: number
+  collectionFloor: number
+  marketPubkey?: string
+}) => number
+export const calculateApr: CalculateApr = ({ loanValue, collectionFloor, marketPubkey }) => {
+  //? exceptions for some collections with hardcoded APR
+  const customApr = MARKETS_WITH_CUSTOM_APR[marketPubkey || '']
+  if (customApr !== undefined) {
+    return customApr
+  }
+
+  const staticApr = Math.floor((loanValue / collectionFloor) * BASE_POINTS) || 0
+  return calculateDynamicApr(staticApr, DYNAMIC_APR)
 }
