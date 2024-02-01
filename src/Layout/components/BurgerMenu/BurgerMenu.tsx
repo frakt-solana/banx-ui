@@ -17,17 +17,20 @@ const BurgerMenu = () => {
   const { isVisible, toggleVisibility } = useBurgerMenu()
 
   return (
-    <div
-      className={classNames(styles.burgerMenu, { [styles.hidden]: !isVisible })}
-      onClick={toggleVisibility}
-    >
-      <NavigationsLinks links={NAVIGATION_LINKS} />
-      <NavigationsLinks links={SECONDARY_NAVIGATION_LINKS} />
+    <>
+      {isVisible && <div className={styles.overlay} />}
+      <div
+        className={classNames(styles.burgerMenu, { [styles.hidden]: !isVisible })}
+        onClick={toggleVisibility}
+      >
+        <NavigationsLinks links={NAVIGATION_LINKS} />
+        <NavigationsLinks links={SECONDARY_NAVIGATION_LINKS} />
 
-      <div className={styles.communityContainer}>
-        <ExternalLinks links={EXTERNAL_LINKS} />
+        <div className={styles.communityContainer}>
+          <ExternalLinks links={EXTERNAL_LINKS} />
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 
