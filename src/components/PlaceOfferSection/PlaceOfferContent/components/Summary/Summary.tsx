@@ -3,12 +3,7 @@ import { FC } from 'react'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { MarketPreview, Offer } from '@banx/api/core'
-import {
-  HealthColorIncreasing,
-  calcDynamicApr,
-  formatDecimal,
-  getColorByPercent,
-} from '@banx/utils'
+import { HealthColorIncreasing, calculateApr, formatDecimal, getColorByPercent } from '@banx/utils'
 
 import { calcMaxLtv, calcOfferSize } from './helpers'
 
@@ -38,7 +33,12 @@ export const MainSummary: FC<MainSummaryProps> = ({
 
   const maxLtv = calcMaxLtv({ initialOffer, updatedOffer, collectionFloor, hasFormChanges })
 
-  const maxDynamicApr = calcDynamicApr(maxOfferValue, collectionFloor)
+  const maxDynamicApr =
+    calculateApr({
+      loanValue: maxOfferValue,
+      collectionFloor,
+      marketPubkey: market?.marketPubkey,
+    }) / 100
 
   return (
     <div className={styles.mainSummary}>

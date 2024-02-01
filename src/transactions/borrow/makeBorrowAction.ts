@@ -1,10 +1,9 @@
 import { web3 } from 'fbonds-core'
-import { BASE_POINTS, EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
+import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   borrowCnftPerpetualCanopy,
   borrowPerpetual,
   borrowStakedBanxPerpetual,
-  calculateDynamicApr,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
@@ -12,8 +11,8 @@ import { first, uniq } from 'lodash'
 import { MakeActionFn, WalletAndConnection } from 'solana-transactions-executor'
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
-import { BONDS, DYNAMIC_APR } from '@banx/constants'
-import { sendTxnPlaceHolder } from '@banx/utils'
+import { BONDS } from '@banx/constants'
+import { calculateApr, sendTxnPlaceHolder } from '@banx/utils'
 
 import { BorrowType } from '../constants'
 import { fetchRuleset } from '../functions'
@@ -78,10 +77,11 @@ const getIxnsAndSignersByBorrowType = async ({
   const optimizeIntoReserves =
     ixnParams[0]?.optimizeIntoReserves === undefined ? true : ixnParams[0]?.optimizeIntoReserves
 
-  const aprRate = calculateDynamicApr(
-    Math.floor((ixnParams[0].loanValue / ixnParams[0].nft.nft.collectionFloor) * BASE_POINTS),
-    DYNAMIC_APR,
-  )
+  const aprRate = calculateApr({
+    loanValue: ixnParams[0].loanValue,
+    collectionFloor: ixnParams[0].nft.nft.collectionFloor,
+    marketPubkey: ixnParams[0].nft.loan.marketPubkey,
+  })
 
   if (type === BorrowType.StakedBanx) {
     const params = ixnParams[0]

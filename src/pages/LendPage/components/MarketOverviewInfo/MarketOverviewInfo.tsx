@@ -7,6 +7,7 @@ import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { MarketPreview } from '@banx/api/core'
+import { MARKETS_WITH_CUSTOM_APR } from '@banx/constants'
 import { Fire } from '@banx/icons'
 import { formatDecimal } from '@banx/utils'
 
@@ -49,7 +50,10 @@ interface MarketAdditionalInfoProps {
 }
 
 export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isCardOpen }) => {
-  const { loansTvl, offerTvl, activeBondsAmount } = market
+  const { loansTvl, offerTvl, activeBondsAmount, marketPubkey } = market
+
+  const customApr = MARKETS_WITH_CUSTOM_APR[marketPubkey]
+  const apr = customApr !== undefined ? customApr / 100 : MAX_APR_VALUE
 
   return (
     <div className={classNames(styles.additionalInfoStats, { [styles.hidden]: isCardOpen })}>
@@ -68,7 +72,7 @@ export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, is
       />
       <StatInfo
         label="Max apr"
-        value={MAX_APR_VALUE}
+        value={apr}
         classNamesProps={{ value: styles.aprValue }}
         tooltipText="Maximum annual interest rate. Ranges between 34-104% APR depending on the loan-to-value (LTV) offered, and becomes fixed once offer is taken"
         valueType={VALUES_TYPES.PERCENT}

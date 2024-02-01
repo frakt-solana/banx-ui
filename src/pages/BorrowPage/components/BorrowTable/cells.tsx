@@ -2,19 +2,16 @@ import { FC } from 'react'
 
 import { InfoCircleOutlined } from '@ant-design/icons'
 import classNames from 'classnames'
-import { BASE_POINTS } from 'fbonds-core/lib/fbond-protocol/constants'
-import {
-  calculateCurrentInterestSolPure,
-  calculateDynamicApr,
-} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 
 import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
-import { BONDS, DYNAMIC_APR, SECONDS_IN_DAY } from '@banx/constants'
+import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
 import {
   calcBorrowValueWithProtocolFee,
   calcBorrowValueWithRentFee,
+  calculateApr,
   formatDecimal,
 } from '@banx/utils'
 
@@ -69,10 +66,11 @@ export const BorrowCell: FC<CellProps> = ({ nft }) => {
 }
 
 export const APRCell: FC<CellProps> = ({ nft }) => {
-  const apr = calculateDynamicApr(
-    Math.floor((nft.loanValue / nft.nft.nft.collectionFloor) * BASE_POINTS),
-    DYNAMIC_APR,
-  )
+  const apr = calculateApr({
+    loanValue: nft.loanValue,
+    collectionFloor: nft.nft.nft.collectionFloor,
+    marketPubkey: nft.nft.loan.marketPubkey,
+  })
 
   const weeklyFee = calculateCurrentInterestSolPure({
     loanValue: nft.loanValue,
