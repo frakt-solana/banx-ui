@@ -80,7 +80,7 @@ export const findSuitableOffer: FindSuitableOffer = ({ loan, offers, walletPubke
   //? Create simple offers array sorted by loanValue (offerValue) asc
   const simpleOffers = convertOffersToSimple(fiteredOffers, 'asc')
 
-  //? Find offer. OfferValue must be <= than selected loanValue
+  //? Find offer. OfferValue must be greater than or equal to loanValue
   const simpleOffer = simpleOffers.find(({ loanValue: offerValue }) => loanValue <= offerValue)
 
   return offers.find(({ publicKey }) => publicKey === simpleOffer?.publicKey)

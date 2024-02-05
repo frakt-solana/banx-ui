@@ -181,7 +181,7 @@ const matchNftsAndOffers: MatchNftsAndOffers = ({ nfts, rawOffers }) => {
     })
     .reduce(
       (acc, nft) => {
-        //? Find index of offer. OfferValue must be <= than selected loanValue. And mustn't be used by prev iteration
+        //? Find index of offer. OfferValue must be greater than or equal to selected loanValue. And mustn't be used by prev iteration
         const offerIndex = simpleOffers.findIndex(
           ({ loanValue: offerValue }, idx) => nft.loanValue <= offerValue && acc.offerIndex <= idx,
         )
