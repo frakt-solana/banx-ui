@@ -1,11 +1,13 @@
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 
 import { compact, first, isArray, last } from 'lodash'
 
-import { createPercentValueJSX } from '@banx/components/TableComponents'
+import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
 import { Loan } from '@banx/api/core'
+import { useImagePreload } from '@banx/hooks'
+import { PlaceholderPFP } from '@banx/icons'
 import {
   HealthColorIncreasing,
   calcLoanBorrowedAmount,
@@ -15,48 +17,43 @@ import {
 } from '@banx/utils'
 
 import { Mark } from './Diagram'
-import { calculateStyle } from './helpers'
+import { calculateStyle, formatMarkValue } from './helpers'
 
 import styles from './Diagram.module.less'
 
-const TooltipHeader = () => (
-  <div className={styles.tooltipHeaderContent}>
-    <span className={styles.tooltipHeaderLabel}>Offer</span>
-    <span className={styles.tooltipHeaderLabel}>LTV</span>
-  </div>
-)
+const TooltipRow = ({ loan }: { loan: Loan }) => {
+  const { nft, totalRepaidAmount = 0 } = loan
 
-const TooltipBody: FC<{ loans: Loan[] }> = ({ loans }) => (
-  <div className={styles.tooltipBodyContent}>
-    {loans.map((loan) => {
-      const { nft, publicKey, totalRepaidAmount = 0 } = loan
-      const collectionFloor = nft.collectionFloor
-      const ltv = (calculateLoanRepayValue(loan) / collectionFloor) * 100
-      const loanValue = calcLoanBorrowedAmount(loan) + totalRepaidAmount
+  const loanToValue = (calculateLoanRepayValue(loan) / nft.collectionFloor) * 100
+  const loanValue = calcLoanBorrowedAmount(loan) + totalRepaidAmount
 
-      return (
-        <div key={publicKey} className={styles.tooltipRowContent}>
-          <img className={styles.nftImage} src={nft.meta.imageUrl} />
-          <span>{formatDecimal(loanValue / 1e9)}◎</span>
-          <span style={{ color: getColorByPercent(ltv, HealthColorIncreasing) }}>
-            {createPercentValueJSX(ltv)}
-          </span>
-        </div>
-      )
-    })}
-  </div>
-)
+  return (
+    <div className={styles.tooltipRowContent}>
+      <ImageWithPlaceholder className={styles.nftImage} url={nft.meta.imageUrl} />
+      {createSolValueJSX(loanValue, 1e9, '0◎', formatDecimal)}
+      <span style={{ color: getColorByPercent(loanToValue, HealthColorIncreasing) }}>
+        {createPercentValueJSX(loanToValue)}
+      </span>
+    </div>
+  )
+}
 
-const createTooltip = (loans: Loan[]) => {
-  if (loans.length) {
-    return (
-      <div className={styles.tooltip}>
-        <TooltipHeader />
-        <TooltipBody loans={loans} />
+const createTooltipContent = (loans: Loan[]) => {
+  if (!loans.length) return null
+
+  return (
+    <div className={styles.tooltip}>
+      <div className={styles.tooltipHeaderContent}>
+        <span className={styles.tooltipHeaderLabel}>Offer</span>
+        <span className={styles.tooltipHeaderLabel}>LTV</span>
       </div>
-    )
-  }
-  return null
+      <div className={styles.tooltipBodyContent}>
+        {loans.map((loan) => (
+          <TooltipRow key={loan.publicKey} loan={loan} />
+        ))}
+      </div>
+    </div>
+  )
 }
 
 interface DiagramMarkProps {
@@ -65,45 +62,70 @@ interface DiagramMarkProps {
 }
 
 export const DiagramMark: FC<DiagramMarkProps> = ({ mark, left }) => {
-  const marks = isArray(mark) ? mark : [mark]
+  const markers = isArray(mark) ? mark : [mark]
 
-  const { loan: firstLoan, value: firstValue = 0 } = first(marks) || {}
-  const { value: lastValue = 0 } = last(marks) || {}
+  const { loan: firstLoan, value: firstValue = 0 } = first(markers) || {}
+  const { value: lastValue = 0 } = last(markers) || {}
 
-  const nftImage = firstLoan?.nft.meta.imageUrl
-
-  const loans = compact(marks.map((mark) => mark?.loan))
-  const tooltipContent = createTooltip(loans)
+  const nftImageUrl = firstLoan?.nft.meta.imageUrl
+  const loans = compact(markers.map((marker) => marker.loan))
+  const tooltipContent = createTooltipContent(loans)
 
   const displayOfferValue =
-    marks.length > 1
-      ? `${formatValue(firstValue)} - ${formatValue(lastValue)}◎`
-      : `${formatValue(firstValue)}◎`
+    markers.length > 1 && firstValue !== lastValue
+      ? `${formatMarkValue(firstValue)} - ${formatMarkValue(lastValue)}◎`
+      : `${formatMarkValue(firstValue)}◎`
 
-  const commonMarkContent = (
+  const MarkContent = (
     <div className={styles.mark} style={{ left: calculateStyle(left) }}>
-      {nftImage ? (
-        <img src={nftImage} className={styles.imageSquare} {...getOffersCountAttribute(marks)} />
-      ) : (
-        <div className={styles.square} {...getOffersCountAttribute(marks)} />
-      )}
-
+      <CollateralImage markers={markers} url={nftImageUrl} />
       <div className={styles.dot} />
       <div className={styles.value}>{displayOfferValue}</div>
     </div>
   )
 
-  return tooltipContent ? (
-    <Tooltip title={tooltipContent}>{commonMarkContent}</Tooltip>
-  ) : (
-    commonMarkContent
+  return tooltipContent ? <Tooltip title={tooltipContent}>{MarkContent}</Tooltip> : MarkContent
+}
+
+interface CollateralImageProps {
+  url: string | undefined
+  markers: Mark[]
+}
+
+export const CollateralImage: FC<CollateralImageProps> = ({ url = '', markers }) => {
+  const offersCountAttribute = useMemo(() => {
+    return markers.length > 1 ? { 'data-offers-count': markers.length } : {}
+  }, [markers])
+
+  if (!url) {
+    return <div className={styles.square} {...offersCountAttribute} />
+  }
+
+  return (
+    <ImageWithPlaceholder
+      url={url}
+      className={styles.imageSquare}
+      attributes={offersCountAttribute}
+    />
   )
 }
 
-const formatValue = (value: number) => {
-  const formattedDecimalValue = formatDecimal(value / 1e9)
-  return formattedDecimalValue.replace(/\.?0+$/, '')
+interface ImageWithPlaceholderProps {
+  url: string | undefined
+  className: string
+  attributes?: { [key: string]: number | undefined }
 }
 
-const getOffersCountAttribute = (marks: Mark[]) =>
-  marks.length > 1 ? { 'data-offers-count': marks.length } : undefined
+const ImageWithPlaceholder: FC<ImageWithPlaceholderProps> = ({
+  url = '',
+  className,
+  attributes,
+}) => {
+  const imageLoaded = useImagePreload(url)
+
+  return imageLoaded ? (
+    <img src={url} className={className} {...attributes} />
+  ) : (
+    <PlaceholderPFP className={className} />
+  )
+}

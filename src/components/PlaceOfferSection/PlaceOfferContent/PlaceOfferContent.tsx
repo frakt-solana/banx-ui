@@ -78,7 +78,7 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
         market={market}
       />
 
-      <Diagram marks={diagramData} isLoading={isLoadingDiagram} />
+      <Diagram marks={diagramData} isLoading={isLoadingDiagram} market={market} />
 
       <AdditionalSummary
         hasFormChanges={hasFormChanges}

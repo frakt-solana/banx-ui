@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import { Skeleton } from 'antd'
 
-import { Loan } from '@banx/api/core'
+import { Loan, MarketPreview } from '@banx/api/core'
 
 import { DiagramMark } from './components'
 import { calcLeftPercentage, groupMarks } from './helpers'
@@ -17,9 +17,10 @@ export interface Mark {
 interface DiagramProps {
   marks: Mark[]
   isLoading: boolean
+  market: MarketPreview | undefined
 }
 
-export const Diagram: FC<DiagramProps> = ({ marks = [], isLoading }) => {
+export const Diagram: FC<DiagramProps> = ({ marks = [], isLoading, market }) => {
   const groupedMarks = groupMarks(marks)
 
   return (
@@ -30,7 +31,7 @@ export const Diagram: FC<DiagramProps> = ({ marks = [], isLoading }) => {
         ) : (
           <div className={styles.diagramLine}>
             {groupedMarks.map((mark, index) => {
-              const left = calcLeftPercentage(groupedMarks, index)
+              const left = calcLeftPercentage(groupedMarks, index, market?.collectionFloor)
               return <DiagramMark key={index} mark={mark} left={left} />
             })}
           </div>
