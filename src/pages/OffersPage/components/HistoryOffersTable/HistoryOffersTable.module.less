@@ -26,41 +26,36 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
+  padding: 8px 24px;
   width: 100%;
 
   @media (max-width: 960px) {
     flex-direction: column;
-    gap: 24px;
-  }
-
-  @media (max-width: 640px) {
-    gap: 16px;
+    padding: 16px;
+    gap: 8px;
   }
 }
 
-.totalOffers {
+.mainStat {
   display: flex;
   align-items: center;
   gap: 8px;
-}
 
-.totalOffersValue {
-  font: var(--important-text-xll);
-}
+  @media (max-width: 1240px) {
+    display: none;
+  }
 
-.totalOffersInfo {
-  display: flex;
-  flex-direction: column;
-}
-.totalOffersInfoTitle {
-  color: var(--content-secondary);
-  font: var(--table-header-md);
-  text-transform: uppercase;
-}
+  p:first-child {
+    font: var(--important-text-xll);
+    line-height: 40px;
+  }
 
-.totalOffersInfoSubtitle {
-  font: var(--body-text-md);
+  p:last-child {
+    color: var(--content-secondary);
+    font: var(--title-sm);
+    text-transform: uppercase;
+    max-width: 100px;
+  }
 }
 
 .statsContainer {
@@ -69,6 +64,7 @@
   flex-grow: 1;
 
   & > div {
+    gap: 2px;
     align-items: end;
   }
 
@@ -83,7 +79,7 @@
   }
 
   @media (max-width: 640px) {
-    gap: 8px 8px;
+    gap: 8px;
   }
 }
 

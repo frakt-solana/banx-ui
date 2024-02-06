@@ -43,9 +43,9 @@ export const Summary: FC<SummaryProps> = ({ loans, selectedLoans, setSelection }
 
   return (
     <div className={styles.summary}>
-      <div className={styles.collaterals}>
-        <p className={styles.collateralsTitle}>{totalSelectedLoans}</p>
-        <p className={styles.collateralsSubtitle}>Nfts selected</p>
+      <div className={styles.mainStat}>
+        <p>{totalSelectedLoans}</p>
+        <p>Nfts selected</p>
       </div>
       <div className={styles.statsContainer}>
         <StatInfo label="Principal" value={totalBorrowed} divider={1e9} />
