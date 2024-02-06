@@ -5,6 +5,7 @@ import classNames from 'classnames'
 import { useImagePreload } from '@banx/hooks'
 import { PlaceholderPFP } from '@banx/icons'
 import { ViewState, useTableView } from '@banx/store'
+import { createImageSrcWithCdn } from '@banx/utils'
 
 import Checkbox from '../Checkbox'
 import Tooltip from '../Tooltip/Tooltip'
@@ -71,13 +72,16 @@ export const NftInfoCell: FC<NftInfoCellProps> = ({
 
 interface NftImageProps {
   nftImage: string
+  disableCDN?: boolean
 }
 
-export const NftImage: FC<NftImageProps> = ({ nftImage }) => {
-  const imageLoaded = useImagePreload(nftImage)
+export const NftImage: FC<NftImageProps> = ({ nftImage, disableCDN = false }) => {
+  const imgSrc = disableCDN ? nftImage : createImageSrcWithCdn(nftImage)
+
+  const imageLoaded = useImagePreload(imgSrc)
 
   return imageLoaded ? (
-    <img src={nftImage} className={styles.nftImage} />
+    <img src={imgSrc} className={styles.nftImage} />
   ) : (
     <PlaceholderPFP className={styles.nftPlaceholderIcon} />
   )
