@@ -44,6 +44,7 @@ export const getTableColumns = ({
 
         return (
           <NftInfoCell
+            key={loan.publicKey}
             nftName={name}
             nftImage={imageUrl}
             selected={selected}
