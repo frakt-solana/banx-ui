@@ -1,9 +1,7 @@
-import { calculateDynamicApr } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { getMaxLoanValueFromBondOffer } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { BondOfferV2, PairState } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Offer } from '@banx/api/core'
-import { DYNAMIC_APR } from '@banx/constants'
 
 export const сalculateLoansAmount = (offer: Offer) => {
   const { fundsSolOrTokenBalance, currentSpotPrice } = offer
@@ -29,11 +27,6 @@ export const isOfferClosed = (pairState: string) => {
     pairState === PairState.PerpetualBondingCurveClosed ||
     pairState === PairState.PerpetualMigrated
   )
-}
-
-export const calcDynamicApr = (loanValue: number, collectionFloor: number) => {
-  const staticApr = Math.floor((loanValue / collectionFloor) * 1e4) || 0
-  return calculateDynamicApr(staticApr, DYNAMIC_APR) / 100
 }
 
 //? Prevent orders wrong distibution on bulk borrow from same offer

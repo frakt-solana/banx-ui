@@ -1,7 +1,5 @@
 import { FC, useState } from 'react'
 
-import { BASE_POINTS } from 'fbonds-core/lib/fbond-protocol/constants'
-import { calculateDynamicApr } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
@@ -10,10 +8,10 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
 import bonkTokenImg from '@banx/assets/BonkToken.png'
-import { DYNAMIC_APR } from '@banx/constants'
 import {
   calcBorrowValueWithProtocolFee,
   calcBorrowValueWithRentFee,
+  calculateApr,
   formatDecimal,
   getColorByPercent,
   trackPageEvent,
@@ -54,10 +52,11 @@ export const Summary: FC<SummaryProps> = ({
   })
 
   const totalWeeklyFee = sumBy(nftsInCart, ({ nft, loanValue }) => {
-    const apr = calculateDynamicApr(
-      Math.floor((loanValue / nft.nft.collectionFloor) * BASE_POINTS),
-      DYNAMIC_APR,
-    )
+    const apr = calculateApr({
+      loanValue: loanValue,
+      collectionFloor: nft.nft.collectionFloor,
+      marketPubkey: nft.loan.marketPubkey,
+    })
 
     return calcInterest({ timeInterval: ONE_WEEK_IN_SECONDS, loanValue, apr })
   })

@@ -18,7 +18,7 @@ export const Summary = () => {
   const { publicKey } = useWallet()
 
   const { data } = useUserLoansStats()
-  const { totalLoans = 0, totalBorrowed = 0, totalDebt = 0, totalRepaid = 0 } = data || {}
+  const { totalLoans = 0, totalBorrowed = 0, totalRepaid = 0 } = data || {}
 
   const [isDownloading, setIsDownloading] = useState(false)
   const download = async () => {
@@ -54,7 +54,6 @@ export const Summary = () => {
       </div>
       <div className={styles.statsContainer}>
         <StatInfo label="Borrowed" value={totalBorrowed} divider={1e9} />
-        <StatInfo label="Debt" value={totalDebt} divider={1e9} />
         <StatInfo label="Repaid" value={totalRepaid} divider={1e9} />
       </div>
       <Button onClick={download} className={styles.summaryButton} loading={isDownloading}>

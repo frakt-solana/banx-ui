@@ -7,12 +7,7 @@ import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { UserOffer } from '@banx/api/core'
 import { useMarketsPreview } from '@banx/pages/LendPage'
-import {
-  HealthColorIncreasing,
-  calcDynamicApr,
-  formatDecimal,
-  getColorByPercent,
-} from '@banx/utils'
+import { HealthColorIncreasing, calculateApr, formatDecimal, getColorByPercent } from '@banx/utils'
 
 import styles from './OfferCard.module.less'
 
@@ -52,13 +47,15 @@ interface AdditionalOfferOverviewProps {
 }
 
 export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offer, className }) => {
-  const { fundsSolOrTokenBalance, bidSettlement, validation, buyOrdersQuantity } = offer.offer
+  const { fundsSolOrTokenBalance, bidSettlement, validation, buyOrdersQuantity, hadoMarket } =
+    offer.offer
 
   const collectionFloor = offer.collectionMeta.collectionFloor
   const maxOfferValue = validation.loanToValueFilter
   const maxLtv = (maxOfferValue / collectionFloor) * 100
 
-  const maxDynamicApr = calcDynamicApr(maxOfferValue, collectionFloor)
+  const maxDynamicApr =
+    calculateApr({ loanValue: maxOfferValue, collectionFloor, marketPubkey: hadoMarket }) / 100
   const initialOfferSize = fundsSolOrTokenBalance + bidSettlement
 
   const formattedMaxOffer = formatDecimal(maxOfferValue / 1e9)

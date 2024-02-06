@@ -8,10 +8,14 @@ import { SortOption } from '@banx/components/SortDropdown'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import { calculateClaimValue, isLoanAbleToClaim, useLenderLoans } from '@banx/pages/OffersPage'
-import { formatDecimal, isLoanTerminating, isUnderWaterLoan } from '@banx/utils'
+import {
+  calculateClaimValue,
+  isLoanAbleToClaim,
+  isLoanAbleToTerminate,
+  useLenderLoans,
+} from '@banx/pages/OffersPage'
+import { formatDecimal, isUnderWaterLoan } from '@banx/utils'
 
-import { useSelectedLoans } from '../loansState'
 import { DEFAULT_SORT_OPTION, SORT_OPTIONS, useSortedLoans } from './useSortedLoans'
 
 import styles from '../LoansTable.module.less'
@@ -34,16 +38,15 @@ export const useLoansTable = () => {
     selectedCollections,
     setSelectedCollections,
     filteredAllLoans,
-    underwaterLoans,
     underwaterLoansCount,
   } = useFilterLoans(loans)
 
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
 
   const sortedLoans = useSortedLoans(filteredLoans, sortOption)
-  const sortedUnderwaterLoans = useSortedLoans(underwaterLoans, sortOption)
 
-  const loansToClaim = useMemo(() => loans.filter(isLoanAbleToClaim), [loans])
+  const loansToClaim = useMemo(() => sortedLoans.filter(isLoanAbleToClaim), [sortedLoans])
+  const loansToTerminate = useMemo(() => sortedLoans.filter(isLoanAbleToTerminate), [sortedLoans])
 
   const searchSelectParams = createSearchSelectParams({
     loans: filteredAllLoans,
@@ -63,7 +66,7 @@ export const useLoansTable = () => {
     loading,
 
     loansToClaim,
-    underwaterLoans: sortedUnderwaterLoans,
+    loansToTerminate,
 
     underwaterLoansCount,
 
@@ -126,8 +129,6 @@ const createSearchSelectParams = ({
 }
 
 const useFilterLoans = (loans: Loan[]) => {
-  const { set: setSelection, clear: clearSelection } = useSelectedLoans()
-
   const [isUnderwaterFilterActive, setIsUnderwaterFilterActive] = useState(false)
   const [selectedCollections, setSelectedCollections] = useState<string[]>([])
 
@@ -138,16 +139,13 @@ const useFilterLoans = (loans: Loan[]) => {
     return loans
   }, [loans, selectedCollections])
 
-  const { underwaterLoans, nonTerminatingUnderwaterLoans } = useMemo(() => {
-    const underwaterLoans = filteredLoansByCollection.filter(isUnderWaterLoan)
-    const nonTerminatingUnderwaterLoans = underwaterLoans.filter((loan) => !isLoanTerminating(loan))
-
-    return { underwaterLoans, nonTerminatingUnderwaterLoans }
-  }, [filteredLoansByCollection])
+  const underwaterLoans = useMemo(
+    () => filteredLoansByCollection.filter(isUnderWaterLoan),
+    [filteredLoansByCollection],
+  )
 
   const onToggleUnderwaterFilter = () => {
     setIsUnderwaterFilterActive(!isUnderwaterFilterActive)
-    isUnderwaterFilterActive ? clearSelection() : setSelection(nonTerminatingUnderwaterLoans)
   }
 
   const { filteredLoans, filteredAllLoans } = useMemo(() => {
@@ -165,7 +163,6 @@ const useFilterLoans = (loans: Loan[]) => {
     filteredLoans,
     filteredAllLoans,
 
-    underwaterLoans: nonTerminatingUnderwaterLoans,
     underwaterLoansCount,
 
     isUnderwaterFilterActive,
