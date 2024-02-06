@@ -13,7 +13,10 @@ export const useImagePreload = (src: string): boolean => {
     img.addEventListener('load', handleLoad)
     img.src = src
 
-    return () => img.removeEventListener('load', handleLoad)
+    return () => {
+      img.src = ''
+      img.removeEventListener('load', handleLoad)
+    }
   }, [src])
 
   return imageLoaded
