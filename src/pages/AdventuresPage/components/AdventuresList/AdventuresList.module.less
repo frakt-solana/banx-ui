@@ -90,7 +90,7 @@
 }
 .timerText {
   text-transform: uppercase;
-  font: var(--table-header-md);
+  font: var(--title-sm);
 }
 
 .stats {
@@ -108,8 +108,16 @@
 
   h5 {
     color: var(--content-secondary);
-    font: var(--table-header-md);
+    font: var(--title-sm);
     text-transform: uppercase;
+
+    @media (max-width: 640px) {
+      font: var(--title-xs);
+    }
+  }
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
   }
 
   &:first-of-type {
