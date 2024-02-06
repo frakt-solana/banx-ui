@@ -19,7 +19,8 @@
   gap: 8px;
 }
 
-.pointsTitleCell {
+.pointsTitleCell,
+.loyaltyTitleCell {
   font: var(--body-text-md);
 
   @media (max-width: 640px) {
@@ -46,28 +47,20 @@
 }
 
 .userAvatar {
-  height: 40px;
-  width: 40px;
+  height: 32px;
+  width: 32px;
 
   @media (max-width: 640px) {
-    height: 32px;
-    width: 32px;
+    height: 24px;
+    width: 24px;
   }
 }
 
 .userWalletAddress {
-  font: var(--card-header-md);
+  font: var(--card-header-sm);
 
   @media (max-width: 640px) {
-    font: var(--card-header-sm);
-  }
-}
-
-.loyaltyTitleCell {
-  font: var(--important-text-md);
-
-  @media (max-width: 640px) {
-    font: var(--important-text-sm);
+    font: var(--card-header-xs);
   }
 }
 
