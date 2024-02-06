@@ -193,7 +193,11 @@
   }
 }
 .solanaBalance {
-  font: var(--important-text-sm);
+  font: var(--body-text-md);
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
 }
 .connectedWalletChevron {
   path {

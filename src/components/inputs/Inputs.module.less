@@ -31,6 +31,7 @@ body .input {
   }
 
   @media (max-width: 640px) {
+    font: var(--body-text-sm);
     height: 32px;
   }
 }
@@ -40,6 +41,11 @@ body .input {
   flex-direction: column;
   gap: 8px;
   margin-top: 16px;
+
+  @media (max-width: 640px) {
+    margin-top: 8px;
+    gap: 6px;
+  }
 }
 
 .labelWrapper {
@@ -50,12 +56,12 @@ body .input {
 
 .label {
   color: var(--content-secondary);
-  font: var(--table-header-md);
+  font: var(--table-header-sm);
   text-transform: uppercase;
   white-space: nowrap;
 
   @media (max-width: 640px) {
-    font: var(--table-header-sm);
+    font: var(--table-header-xs);
   }
 }
 
