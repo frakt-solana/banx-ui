@@ -44,7 +44,6 @@ export const getTableColumns = ({
       ),
       render: (loan) => (
         <NftInfoCell
-          key={loan.publicKey}
           selected={!!findSelectedLoan(loan.publicKey)}
           onCheckboxClick={() => onSelectLoan(loan)}
           nftName={loan.nft.meta.name}

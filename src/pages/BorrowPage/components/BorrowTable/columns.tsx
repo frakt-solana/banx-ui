@@ -39,7 +39,6 @@ export const getTableColumns = ({
       ),
       render: (nft) => (
         <NftInfoCell
-          key={nft.mint}
           selected={nft.selected}
           onCheckboxClick={() => onNftSelect(nft)}
           nftName={nft.nft.nft.meta.name}
