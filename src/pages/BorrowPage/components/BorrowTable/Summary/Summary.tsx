@@ -1,12 +1,11 @@
 import { FC, useState } from 'react'
 
-import classNames from 'classnames'
 import { BASE_POINTS } from 'fbonds-core/lib/fbond-protocol/constants'
 import { calculateDynamicApr } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
-import { CounterSlider, Slider } from '@banx/components/Slider'
+import { CounterSlider, Slider, SliderProps } from '@banx/components/Slider'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
@@ -75,9 +74,9 @@ export const Summary: FC<SummaryProps> = ({
 
   return (
     <div className={styles.summary}>
-      <div className={styles.collaterals}>
-        <p className={styles.collateralsTitle}>{nftsInCart.length}</p>
-        <p className={styles.collateralsSubtitle}>Nfts selected</p>
+      <div className={styles.mainStat}>
+        <p>{nftsInCart.length}</p>
+        <p>Nfts selected</p>
       </div>
 
       <div className={styles.statsContainer}>
@@ -93,20 +92,21 @@ export const Summary: FC<SummaryProps> = ({
             {createSolValueJSX(totalWeeklyFee, 1e9, '0◎', formatDecimal)}
           </p>
         </div>
-        <div className={styles.stats}>
-          <div className={styles.statsLabel}>
-            <p className={classNames(styles.statsTitle, styles.statsTitleLeft)}>Loan value</p>
-            <Tooltip title="Set the maximum amount to borrow against the # NFTs selected. Lower value loans have higher perpetuality" />
-          </div>
-          <MaxLtvSlider value={maxBorrowPercent} onChange={setMaxBorrowPercent} />
-        </div>
       </div>
 
       <div className={styles.summaryControls}>
-        <div className={styles.stats}>
-          <p className={classNames(styles.statsTitle, styles.statsTitleLeft)}># NFTS</p>
+        <div className={styles.slidersWrapper}>
+          <MaxLtvSlider
+            label="Loan value"
+            value={maxBorrowPercent}
+            onChange={setMaxBorrowPercent}
+            tooltipText="Set the maximum amount to borrow against the # NFTs selected. Lower value loans have higher perpetuality"
+          />
+
           <CounterSlider
-            className={styles.counterSlider}
+            label="# NFTs"
+            rootClassName={styles.nftsSlider}
+            className={styles.nftsSliderContainer}
             value={nftsInCart.length}
             onChange={selectAmount}
             max={maxBorrowAmount}
@@ -131,12 +131,12 @@ export const Summary: FC<SummaryProps> = ({
   )
 }
 
-interface MaxLtvSliderProps {
+interface MaxLtvSliderProps extends SliderProps {
   value: number
   onChange: (value: number) => void
 }
 
-const MaxLtvSlider: FC<MaxLtvSliderProps> = ({ value, onChange }) => {
+const MaxLtvSlider: FC<MaxLtvSliderProps> = ({ value, onChange, ...props }) => {
   const colorClassNameByValue = {
     30: styles.maxLtvSliderGreen,
     80: styles.maxLtvSliderYellow,
@@ -153,6 +153,7 @@ const MaxLtvSlider: FC<MaxLtvSliderProps> = ({ value, onChange }) => {
       showValue="percent"
       className={styles.maxLtvSlider}
       rootClassName={getColorByPercent(value, colorClassNameByValue)}
+      {...props}
     />
   )
 }

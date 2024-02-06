@@ -4,6 +4,8 @@ import { Slider as SliderAntd } from 'antd'
 import classNames from 'classnames'
 import { chain } from 'lodash'
 
+import Tooltip from '../Tooltip'
+
 import styles from './Slider.module.less'
 
 const DEFAULT_SLIDER_MARKS = {
@@ -16,6 +18,7 @@ const DEFAULT_SLIDER_MARKS = {
 
 export interface SliderProps {
   label?: string
+  tooltipText?: string
   labelClassName?: string
   value: number
   onChange: (nextValue: number) => void
@@ -44,6 +47,7 @@ export const Slider: FC<SliderProps> = ({
   className,
   rootClassName,
   showValue,
+  tooltipText,
   ...props
 }) => {
   //? Show marks without text when showValue exists
@@ -57,7 +61,12 @@ export const Slider: FC<SliderProps> = ({
 
   return (
     <div className={classNames(styles.slider, { [styles.sliderWithValue]: showValue }, className)}>
-      {!!label && <p className={classNames(styles.label, labelClassName)}>{label}</p>}
+      {!!label && (
+        <div className={styles.labels}>
+          <p className={classNames(styles.label, labelClassName)}>{label}</p>
+          {tooltipText && <Tooltip title={tooltipText} />}
+        </div>
+      )}
       <SliderAntd
         rootClassName={classNames(
           'rootSliderClassName',
