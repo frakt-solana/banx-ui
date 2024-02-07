@@ -8,5 +8,3 @@ export const GITHUB_URL = 'https://github.com/frakt-solana'
 export const DOCS_URL = 'https://docs.banx.gg/'
 
 export const DISCORD_AVATARS_URL = 'https://cdn.discordapp.com/avatars'
-
-export const TENSOR_CDN_URL = 'https://prod-image-cdn.tensor.trade'
