@@ -135,6 +135,7 @@ export const Summary: FC<SummaryProps> = ({
           value={selectedLoans.length}
           onChange={(value) => handleLoanSelection(value)}
           max={loans.length}
+          className={styles.sliderContainer}
         />
         <Button onClick={onClickHandler} disabled={!selectedLoans.length}>
           Refinance {createSolValueJSX(totalDebt, 1e9, '0◎')}

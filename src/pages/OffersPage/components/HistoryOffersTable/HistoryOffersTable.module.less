@@ -58,6 +58,12 @@
   }
 }
 
+.weightedAprStat {
+  @media (min-width: 1241px) {
+    display: none;
+  }
+}
+
 .statsContainer {
   display: flex;
   justify-content: space-around;
@@ -69,8 +75,10 @@
   }
 
   @media (max-width: 960px) {
+    margin-right: -16px;
+    padding-right: 16px;
+    overflow: auto hidden;
     white-space: nowrap;
-    overflow: auto;
     width: 100%;
 
     & > div {
@@ -80,6 +88,10 @@
 
   @media (max-width: 640px) {
     gap: 8px;
+  }
+
+  @media (max-width: 420px) {
+    justify-content: flex-start;
   }
 }
 

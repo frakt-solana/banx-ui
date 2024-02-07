@@ -57,6 +57,7 @@ export const Summary: FC<SummaryProps> = ({ loans, selectedLoans, setSelection }
           value={totalSelectedLoans}
           onChange={(value) => handleLoanSelection(value)}
           rootClassName={styles.slider}
+          className={styles.sliderContainer}
           max={loans.length}
         />
         <Button onClick={repayBulkLoan} disabled={!totalSelectedLoans}>
