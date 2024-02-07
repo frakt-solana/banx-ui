@@ -3,6 +3,7 @@ import { chain, first } from 'lodash'
 import moment from 'moment'
 
 import { Loan, Offer } from '@banx/api/core'
+import { convertOffersToSimple } from '@banx/pages/BorrowPage'
 import {
   calcLoanBorrowedAmount,
   calculateLoanRepayValue,
@@ -63,4 +64,24 @@ export const calculateClaimValue = (loan: Loan) => {
 
   const currentInterest = calculateCurrentInterestSolPure(interestParameters)
   return currentInterest + loanBorrowedAmount
+}
+
+type FindSuitableOffer = (props: {
+  loan: Loan
+  offers: Offer[]
+  walletPubkey: string
+}) => Offer | undefined
+export const findSuitableOffer: FindSuitableOffer = ({ loan, offers, walletPubkey }) => {
+  const loanValue = calculateLoanRepayValue(loan)
+
+  //? Filter out users offers
+  const fiteredOffers = offers.filter((offer) => offer.assetReceiver !== walletPubkey)
+
+  //? Create simple offers array sorted by loanValue (offerValue) asc
+  const simpleOffers = convertOffersToSimple(fiteredOffers, 'asc')
+
+  //? Find offer. OfferValue must be greater than or equal to loanValue
+  const simpleOffer = simpleOffers.find(({ loanValue: offerValue }) => loanValue <= offerValue)
+
+  return offers.find(({ publicKey }) => publicKey === simpleOffer?.publicKey)
 }
