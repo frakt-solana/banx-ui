@@ -11,7 +11,11 @@ export const getTableColumns = () => {
       key: 'collection',
       title: <HeaderCell label="Collection" align="left" />,
       render: (market) => (
-        <NftInfoCell nftName={market.collectionName} nftImage={market.collectionImage} />
+        <NftInfoCell
+          key={market.marketPubkey}
+          nftName={market.collectionName}
+          nftImage={market.collectionImage}
+        />
       ),
     },
     {
