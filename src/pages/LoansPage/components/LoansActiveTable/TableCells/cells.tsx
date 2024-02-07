@@ -23,7 +23,9 @@ interface TooltipRowProps {
 const TooltipRow: FC<TooltipRowProps> = ({ label, value }) => (
   <div className={styles.tooltipRow}>
     <span className={styles.tooltipRowLabel}>{label}</span>
-    {createSolValueJSX(value, 1e9, '0◎', formatDecimal)}
+    <span className={styles.tooltipRowValue}>
+      {createSolValueJSX(value, 1e9, '0◎', formatDecimal)}
+    </span>
   </div>
 )
 

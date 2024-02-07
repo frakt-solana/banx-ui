@@ -1,5 +1,6 @@
 import { FC } from 'react'
 
+import classNames from 'classnames'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 
 import { RowCell, createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
@@ -23,7 +24,9 @@ interface TooltipRowProps {
 const TooltipRow: FC<TooltipRowProps> = ({ label, value }) => (
   <div className={styles.tooltipRow}>
     <span className={styles.tooltipRowLabel}>{label}</span>
-    {createSolValueJSX(value, 1e9, '0◎', formatDecimal)}
+    <span className={styles.tooltipRowValue}>
+      {createSolValueJSX(value, 1e9, '0◎', formatDecimal)}
+    </span>
   </div>
 )
 
@@ -40,7 +43,9 @@ export const BorrowCell: FC<CellProps> = ({ nft }) => {
       <TooltipRow label="Floor" value={collectionFloor} />
       <div className={styles.tooltipRow}>
         <span className={styles.tooltipRowLabel}>LTV</span>
-        <span className={styles.ltvValue}>{createPercentValueJSX(ltv)}</span>
+        <span className={classNames(styles.ltvValue, styles.tooltipRowValue)}>
+          {createPercentValueJSX(ltv)}
+        </span>
       </div>
     </div>
   )

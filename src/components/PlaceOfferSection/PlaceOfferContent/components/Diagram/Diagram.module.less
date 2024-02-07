@@ -112,8 +112,12 @@
 }
 .tooltipHeaderLabel {
   color: var(--content-secondary);
-  font: var(--table-header-sm);
+  font: var(--title-sm);
   text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--title-xs);
+  }
 }
 
 .tooltipBodyContent {
