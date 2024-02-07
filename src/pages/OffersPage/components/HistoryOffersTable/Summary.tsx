@@ -7,7 +7,7 @@ import { StatInfo } from '@banx/components/StatInfo'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { fetchLenderActivity } from '@banx/api/activity'
-import { convertAprToApy, createDownloadLink, generateCSVContent } from '@banx/utils'
+import { createDownloadLink, generateCSVContent } from '@banx/utils'
 
 import { useUserOffersStats } from '../../hooks'
 import { ACTIVITY_CSV_FILENAME } from './constants'
@@ -19,9 +19,7 @@ export const Summary = () => {
   const { data } = useUserOffersStats()
   const { publicKey } = useWallet()
 
-  const { totalLent = 0, totalInterest = 0, totalReceived = 0, weightedApr = 0 } = data || {}
-
-  const weightedApyPercent = convertAprToApy(weightedApr / 1e4)
+  const { totalLent = 0, pendingInterest = 0, paidInterest = 0, weightedApr = 0 } = data || {}
 
   const [isDownloading, setIsDownloading] = useState(false)
   const download = async () => {
@@ -49,13 +47,13 @@ export const Summary = () => {
   return (
     <div className={styles.summary}>
       <div className={styles.mainStat}>
-        <p>{createPercentValueJSX(weightedApyPercent)}</p>
+        <p>{createPercentValueJSX(weightedApr)}</p>
         <p>Weighted APR</p>
       </div>
       <div className={styles.statsContainer}>
         <StatInfo label="Lent" value={totalLent} divider={1e9} />
-        <StatInfo label="Pending interest" value={totalInterest} divider={1e9} />
-        <StatInfo label="Earned interest" value={totalReceived} divider={1e9} />
+        <StatInfo label="Pending interest" value={pendingInterest} divider={1e9} />
+        <StatInfo label="Earned interest" value={paidInterest} divider={1e9} />
       </div>
       <Button onClick={download} className={styles.summaryButton} loading={isDownloading}>
         Download .CSV
