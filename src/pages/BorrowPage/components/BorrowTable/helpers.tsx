@@ -19,10 +19,13 @@ import {
   getNftBorrowType,
   makeBorrowAction,
 } from '@banx/transactions/borrow'
-import { enqueueSnackbar, offerNeedsReservesOptimizationOnBorrow } from '@banx/utils'
+import {
+  convertOffersToSimple,
+  enqueueSnackbar,
+  offerNeedsReservesOptimizationOnBorrow,
+} from '@banx/utils'
 
 import { CartState } from '../../cartState'
-import { convertOffersToSimple } from '../../helpers'
 import { ONE_WEEK_IN_SECONDS } from './constants'
 import { OfferWithLoanValue, TableNftData } from './types'
 

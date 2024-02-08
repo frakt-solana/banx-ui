@@ -3,11 +3,11 @@ import { chain, first } from 'lodash'
 import moment from 'moment'
 
 import { Loan, Offer } from '@banx/api/core'
-import { convertOffersToSimple } from '@banx/pages/BorrowPage'
 import {
   calcLoanBorrowedAmount,
   calculateLoanRepayValue,
   calculateLoanValue,
+  convertOffersToSimple,
   isLoanLiquidated,
   isLoanTerminating,
 } from '@banx/utils'

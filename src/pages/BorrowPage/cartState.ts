@@ -2,7 +2,9 @@ import produce from 'immer'
 import { groupBy, isEmpty } from 'lodash'
 import { create } from 'zustand'
 
-import { SimpleOffer, SimpleOffersByMarket } from './types'
+import { SimpleOffer } from '@banx/utils'
+
+import { SimpleOffersByMarket } from './types'
 
 export interface CartState {
   offerByMint: Record<string, SimpleOffer>

@@ -3,9 +3,8 @@ import { useEffect, useMemo } from 'react'
 import { chain } from 'lodash'
 
 import { MarketPreview, Offer } from '@banx/api/core'
-import { convertOffersToSimple } from '@banx/pages/BorrowPage/helpers'
 import { SyntheticOffer } from '@banx/store'
-import { useSolanaBalance } from '@banx/utils'
+import { convertOffersToSimple, useSolanaBalance } from '@banx/utils'
 
 import { Mark } from '../PlaceOfferContent/components'
 import {
