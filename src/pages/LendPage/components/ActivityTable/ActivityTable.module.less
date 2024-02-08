@@ -1,6 +1,10 @@
 .tableRoot {
   width: 100%;
 
+  @media (max-width: 640px) {
+    min-width: 618px;
+  }
+
   table tr {
     td,
     th {
@@ -13,7 +17,7 @@
     }
 
     td {
-      padding: 1px 8px;
+      padding: 4px;
       font: var(--body-text-sm);
     }
     th {
@@ -82,8 +86,8 @@
 
   img,
   svg {
-    height: 24px;
-    width: 24px;
+    height: 30px;
+    width: 30px;
   }
 }
 .nftNames {
@@ -92,10 +96,7 @@
   overflow: hidden;
 }
 .nftCollectionName {
-  font: var(--card-header-xs);
-}
-.nftNumber {
-  font: var(--body-text-xs);
+  font: var(--body-text-sm);
 }
 
 .lentCellTitle,
