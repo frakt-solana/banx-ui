@@ -2,8 +2,8 @@ import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
 import {
   HeaderCell,
+  HorizontalCell,
   NftInfoCell,
-  RowCell,
   createPercentValueJSX,
   createSolValueJSX,
 } from '@banx/components/TableComponents'
@@ -59,7 +59,9 @@ export const getTableColumns = ({
       key: 'floorPrice',
       title: <HeaderCell label="Floor" />,
       render: (loan) => (
-        <RowCell value={createSolValueJSX(loan.nft.collectionFloor, 1e9, '--', formatDecimal)} />
+        <HorizontalCell
+          value={createSolValueJSX(loan.nft.collectionFloor, 1e9, '--', formatDecimal)}
+        />
       ),
       sorter: true,
     },
@@ -68,7 +70,7 @@ export const getTableColumns = ({
       title: <HeaderCell label="Debt" />,
       render: (loan) => {
         const repayValue = calculateLoanRepayValue(loan)
-        return <RowCell value={createSolValueJSX(repayValue, 1e9, '--', formatDecimal)} />
+        return <HorizontalCell value={createSolValueJSX(repayValue, 1e9, '--', formatDecimal)} />
       },
       sorter: true,
     },
@@ -82,14 +84,16 @@ export const getTableColumns = ({
       key: 'interest',
       title: <HeaderCell label="Weekly interest" />,
       render: (loan) => (
-        <RowCell value={createSolValueJSX(calcWeeklyInterestFee(loan), 1e9, '--', formatDecimal)} />
+        <HorizontalCell
+          value={createSolValueJSX(calcWeeklyInterestFee(loan), 1e9, '--', formatDecimal)}
+        />
       ),
     },
     {
       key: 'apr',
       title: <HeaderCell label="APR" />,
       render: (loan) => (
-        <RowCell
+        <HorizontalCell
           value={createPercentValueJSX(loan.bondTradeTransaction.amountOfBonds / 100)}
           isHighlighted
         />

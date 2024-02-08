@@ -3,7 +3,11 @@ import { FC } from 'react'
 import classNames from 'classnames'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 
-import { RowCell, createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
+import {
+  HorizontalCell,
+  createPercentValueJSX,
+  createSolValueJSX,
+} from '@banx/components/TableComponents'
 
 import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
 import {
@@ -57,7 +61,7 @@ export const BorrowCell: FC<CellProps> = ({ nft }) => {
 
   const formattedBorrowValue = createSolValueJSX(borrowValueWithRentFee, 1e9, '--', formatDecimal)
 
-  return <RowCell value={formattedBorrowValue} tooltipContent={tooltipContent} />
+  return <HorizontalCell value={formattedBorrowValue} tooltipContent={tooltipContent} />
 }
 
 export const APRCell: FC<CellProps> = ({ nft }) => {
@@ -82,5 +86,5 @@ export const APRCell: FC<CellProps> = ({ nft }) => {
     </div>
   )
 
-  return <RowCell value={formattedAprValue} tooltipContent={tooltipContent} isHighlighted />
+  return <HorizontalCell value={formattedAprValue} tooltipContent={tooltipContent} isHighlighted />
 }

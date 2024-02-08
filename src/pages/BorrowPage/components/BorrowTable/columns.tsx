@@ -2,8 +2,8 @@ import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
 import {
   HeaderCell,
+  HorizontalCell,
   NftInfoCell,
-  RowCell,
   createSolValueJSX,
 } from '@banx/components/TableComponents'
 
@@ -70,7 +70,7 @@ export const getTableColumns = ({
       ),
       render: ({ loanValue }) => {
         const upfrontFee = loanValue - calcBorrowValueWithProtocolFee(loanValue)
-        return <RowCell value={createSolValueJSX(upfrontFee, 1e9, '--', formatDecimal)} />
+        return <HorizontalCell value={createSolValueJSX(upfrontFee, 1e9, '--', formatDecimal)} />
       },
     },
     {

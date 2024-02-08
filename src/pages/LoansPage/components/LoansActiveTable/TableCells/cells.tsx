@@ -2,7 +2,11 @@ import { FC } from 'react'
 
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 
-import { RowCell, createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
+import {
+  HorizontalCell,
+  createPercentValueJSX,
+  createSolValueJSX,
+} from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
 import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
@@ -62,7 +66,7 @@ export const DebtCell: FC<CellProps> = ({ loan }) => {
     </div>
   )
 
-  return <RowCell tooltipContent={tooltipContent} value={formattedDebtValue} />
+  return <HorizontalCell tooltipContent={tooltipContent} value={formattedDebtValue} />
 }
 
 export const LTVCell: FC<CellProps> = ({ loan }) => {
@@ -80,7 +84,7 @@ export const LTVCell: FC<CellProps> = ({ loan }) => {
   )
 
   return (
-    <RowCell
+    <HorizontalCell
       value={formattedLtvValue}
       tooltipContent={tooltipContent}
       textColor={getColorByPercent(ltvPercent, HealthColorIncreasing)}
@@ -91,5 +95,5 @@ export const LTVCell: FC<CellProps> = ({ loan }) => {
 export const APRCell: FC<CellProps> = ({ loan }) => {
   const apr = (loan.bondTradeTransaction.amountOfBonds + BONDS.PROTOCOL_REPAY_FEE) / 100
 
-  return <RowCell value={createPercentValueJSX(apr)} isHighlighted />
+  return <HorizontalCell value={createPercentValueJSX(apr)} isHighlighted />
 }

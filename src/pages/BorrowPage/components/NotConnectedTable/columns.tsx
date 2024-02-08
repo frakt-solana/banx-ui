@@ -1,8 +1,8 @@
 import { ColumnType } from '@banx/components/Table'
 import {
   HeaderCell,
+  HorizontalCell,
   NftInfoCell,
-  RowCell,
   createSolValueJSX,
 } from '@banx/components/TableComponents'
 
@@ -22,7 +22,9 @@ export const getTableColumns = () => {
       key: 'floorPrice',
       title: <HeaderCell label="Floor" />,
       render: (market) => (
-        <RowCell value={createSolValueJSX(market.collectionFloor, 1e9, '--', formatDecimal)} />
+        <HorizontalCell
+          value={createSolValueJSX(market.collectionFloor, 1e9, '--', formatDecimal)}
+        />
       ),
     },
 
@@ -30,14 +32,14 @@ export const getTableColumns = () => {
       key: 'borrow',
       title: <HeaderCell label="Borrow up to" />,
       render: (market) => (
-        <RowCell value={createSolValueJSX(market.bestOffer, 1e9, '--', formatDecimal)} />
+        <HorizontalCell value={createSolValueJSX(market.bestOffer, 1e9, '--', formatDecimal)} />
       ),
     },
     {
       key: 'liquidity',
       title: <HeaderCell label="Liquidity" />,
       render: ({ offerTvl }) => (
-        <RowCell
+        <HorizontalCell
           value={createSolValueJSX(offerTvl, 1e9, '--', formatDecimal)}
           isHighlighted={!!offerTvl}
         />

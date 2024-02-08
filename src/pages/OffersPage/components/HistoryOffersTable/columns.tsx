@@ -2,8 +2,8 @@ import { ColumnType } from '@banx/components/Table'
 import {
   DurationCell,
   HeaderCell,
+  HorizontalCell,
   NftInfoCell,
-  RowCell,
   createPercentValueJSX,
   createSolValueJSX,
 } from '@banx/components/TableComponents'
@@ -33,7 +33,7 @@ export const getTableColumns = () => {
       key: 'lent',
       title: <HeaderCell label="Lent" />,
       render: (loan) => (
-        <RowCell
+        <HorizontalCell
           value={createSolValueJSX(loan.currentRemainingLentAmount, 1e9, '--', formatDecimal)}
         />
       ),
@@ -43,14 +43,16 @@ export const getTableColumns = () => {
       key: 'interest',
       title: <HeaderCell label="Interest" />,
       render: (loan) => (
-        <RowCell value={createSolValueJSX(loan.interest, 1e9, '--', formatDecimal)} />
+        <HorizontalCell value={createSolValueJSX(loan.interest, 1e9, '--', formatDecimal)} />
       ),
       sorter: true,
     },
     {
       key: 'apr',
       title: <HeaderCell label="APR" />,
-      render: (loan) => <RowCell value={createPercentValueJSX(loan.apr / 100)} isHighlighted />,
+      render: (loan) => (
+        <HorizontalCell value={createPercentValueJSX(loan.apr / 100)} isHighlighted />
+      ),
       sorter: true,
     },
     {

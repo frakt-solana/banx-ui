@@ -7,7 +7,7 @@ import Tooltip from '../Tooltip'
 
 import styles from './TableCells.module.less'
 
-interface RowCellProps {
+interface HorizontalCellProps {
   value: string | number | JSX.Element
 
   tooltipContent?: string | JSX.Element
@@ -15,7 +15,7 @@ interface RowCellProps {
   textColor?: string
 }
 
-export const RowCell: FC<RowCellProps> = ({
+export const HorizontalCell: FC<HorizontalCellProps> = ({
   tooltipContent,
   value,
   textColor = '',

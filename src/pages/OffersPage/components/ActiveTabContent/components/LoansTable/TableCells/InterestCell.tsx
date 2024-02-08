@@ -1,6 +1,10 @@
 import { FC } from 'react'
 
-import { RowCell, createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
+import {
+  HorizontalCell,
+  createPercentValueJSX,
+  createSolValueJSX,
+} from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
 import { calculateClaimValue } from '@banx/pages/OffersPage'
@@ -35,7 +39,7 @@ export const InterestCell: FC<InterestCellProps> = ({ loan, isCardView = false }
 }
 
 const createLtvValueJSX = (ltv: number) => (
-  <RowCell
+  <HorizontalCell
     textColor={getColorByPercent(ltv, HealthColorIncreasing)}
     value={createPercentValueJSX(ltv)}
   />

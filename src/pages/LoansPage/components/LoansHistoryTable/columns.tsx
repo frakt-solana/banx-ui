@@ -2,8 +2,8 @@ import { ColumnType } from '@banx/components/Table'
 import {
   DurationCell,
   HeaderCell,
+  HorizontalCell,
   NftInfoCell,
-  RowCell,
   createSolValueJSX,
 } from '@banx/components/TableComponents'
 
@@ -32,7 +32,7 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
       key: 'borrowed',
       title: <HeaderCell label="Borrowed" />,
       render: ({ borrowed }) => (
-        <RowCell value={createSolValueJSX(borrowed, 1e9, '--', formatDecimal)} />
+        <HorizontalCell value={createSolValueJSX(borrowed, 1e9, '--', formatDecimal)} />
       ),
       sorter: true,
     },

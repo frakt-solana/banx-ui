@@ -2,8 +2,8 @@ import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
 import {
   HeaderCell,
+  HorizontalCell,
   NftInfoCell,
-  RowCell,
   createPercentValueJSX,
   createSolValueJSX,
 } from '@banx/components/TableComponents'
@@ -64,7 +64,9 @@ export const getTableColumns = ({
       key: 'lent',
       title: <HeaderCell label="Lent" />,
       render: (loan) => (
-        <RowCell value={createSolValueJSX(calculateLentValue(loan), 1e9, '0◎', formatDecimal)} />
+        <HorizontalCell
+          value={createSolValueJSX(calculateLentValue(loan), 1e9, '0◎', formatDecimal)}
+        />
       ),
     },
     {
@@ -76,7 +78,9 @@ export const getTableColumns = ({
         />
       ),
       render: (loan) => (
-        <RowCell value={createSolValueJSX(loan.totalRepaidAmount, 1e9, '0◎', formatDecimal)} />
+        <HorizontalCell
+          value={createSolValueJSX(loan.totalRepaidAmount, 1e9, '0◎', formatDecimal)}
+        />
       ),
     },
     {
@@ -93,7 +97,7 @@ export const getTableColumns = ({
       key: 'apr',
       title: <HeaderCell label="APR" />,
       render: (loan) => (
-        <RowCell
+        <HorizontalCell
           value={createPercentValueJSX(loan.bondTradeTransaction.amountOfBonds / 100)}
           isHighlighted
         />
