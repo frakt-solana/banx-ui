@@ -58,20 +58,18 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.content}>
-        <div className={styles.mainStat}>
-          <p>{createSolValueJSX(totalAccruedInterest, 1e9, '0◎', formatDecimal)}</p>
-          <p>Accrued interest</p>
-        </div>
-        <Button
-          className={styles.claimButton}
-          onClick={claimInterest}
-          disabled={!totalAccruedInterest}
-          variant="secondary"
-        >
-          Claim
-        </Button>
+      <div className={styles.mainStat}>
+        <p>{createSolValueJSX(totalAccruedInterest, 1e9, '0◎', formatDecimal)}</p>
+        <p>Accrued interest</p>
       </div>
+      <Button
+        className={styles.claimButton}
+        onClick={claimInterest}
+        disabled={!totalAccruedInterest}
+        variant="secondary"
+      >
+        Claim
+      </Button>
     </div>
   )
 }
