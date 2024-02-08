@@ -153,20 +153,28 @@ export const isOfferClosed = (pairState: string) => {
 export const offerNeedsReservesOptimizationOnBorrow = (offer: Offer, loanValueSum: number) =>
   loanValueSum <= (offer.bidSettlement + offer.buyOrdersQuantity > 0 ? offer.currentSpotPrice : 0)
 
-type FindSuitableOffer = (props: {
-  loanValue: number
-  offers: Offer[]
-  walletPubkey: string
-}) => Offer | undefined
-export const findSuitableOffer: FindSuitableOffer = ({ loanValue, offers, walletPubkey }) => {
-  //? Filter out users offers
-  const fiteredOffers = offers.filter((offer) => offer.assetReceiver !== walletPubkey)
+type FilterOutWalletLoans = (props: { offers: Offer[]; walletPubkey?: string }) => Offer[]
+export const filterOutWalletLoans: FilterOutWalletLoans = ({ offers, walletPubkey }) => {
+  if (!walletPubkey) return offers
+  return offers.filter((offer) => offer.assetReceiver !== walletPubkey)
+}
 
+type FindSuitableOffer = (props: { loanValue: number; offers: Offer[] }) => Offer | undefined
+export const findSuitableOffer: FindSuitableOffer = ({ loanValue, offers }) => {
   //? Create simple offers array sorted by loanValue (offerValue) asc
-  const simpleOffers = convertOffersToSimple(fiteredOffers, 'asc')
+  const simpleOffers = convertOffersToSimple(offers, 'asc')
 
   //? Find offer. OfferValue must be greater than or equal to loanValue
   const simpleOffer = simpleOffers.find(({ loanValue: offerValue }) => loanValue <= offerValue)
 
   return offers.find(({ publicKey }) => publicKey === simpleOffer?.publicKey)
+}
+
+export const isOfferNotEmpty = (offer: Offer) => {
+  const { fundsSolOrTokenBalance, currentSpotPrice } = offer
+  const fullOffersAmount = Math.floor(fundsSolOrTokenBalance / currentSpotPrice)
+  if (fullOffersAmount >= 1) return true
+  const decimalLoanValue = fundsSolOrTokenBalance - currentSpotPrice * fullOffersAmount
+  if (decimalLoanValue > 0) return true
+  return false
 }
