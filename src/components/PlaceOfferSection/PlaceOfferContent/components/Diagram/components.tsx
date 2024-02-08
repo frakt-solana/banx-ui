@@ -101,6 +101,8 @@ export const DiagramMark: FC<DiagramMarkProps> = ({ mark, left }) => {
 }
 
 const formatValue = (value: number) => {
+  if (!value) return 0
+
   const formattedDecimalValue = formatDecimal(value / 1e9)
   return formattedDecimalValue.replace(/\.?0+$/, '')
 }

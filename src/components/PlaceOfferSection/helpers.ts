@@ -113,15 +113,3 @@ export const calcOfferSize: CalcOfferSize = ({
   const offerSize = updatedBondOffer.fundsSolOrTokenBalance + updatedBondOffer.bidSettlement
   return offerSize
 }
-
-type CalcBestOfferValue = (props: {
-  solanaBalance: number //? normal number
-  bestOffer: number //? lamports
-}) => number
-
-const TRANSACTION_FEE_IN_LAMPORTS = 0.01 * 1e9 //? transaction fee for prevent any case with not enough sol
-
-export const calcBestOfferValue: CalcBestOfferValue = ({ solanaBalance, bestOffer }) => {
-  const balanceAfterDeductingFee = Math.max(solanaBalance * 1e9 - TRANSACTION_FEE_IN_LAMPORTS, 0)
-  return Math.min(balanceAfterDeductingFee, bestOffer) || 0
-}
