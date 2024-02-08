@@ -9,7 +9,10 @@ const OffersHeader = () => {
   const { loansVolume = 0, offersVolume = 0 } = data || {}
 
   return (
-    <PageHeaderBackdrop title="My offers" titleBtn={<OnboardButton contentType="offers" />}>
+    <PageHeaderBackdrop
+      title="My offers"
+      titleBtn={<OnboardButton contentType="offers" title="My offers" />}
+    >
       <AdditionalStat label="Loan TVL" value={loansVolume} divider={1e9} />
       <AdditionalStat label="Offer TVL" value={offersVolume} divider={1e9} />
     </PageHeaderBackdrop>

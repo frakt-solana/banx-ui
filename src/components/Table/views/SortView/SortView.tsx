@@ -7,7 +7,7 @@ import { Toggle, ToggleProps } from '@banx/components/Toggle'
 import { ViewState, useTableView } from '@banx/store'
 
 import { ColumnType, SortParams } from '../../types'
-import { SwitchModeButtons } from './components'
+import { SwitchModeButton } from './components'
 import { parseTableColumn } from './helpers'
 
 import styles from './SortView.module.less'
@@ -52,7 +52,7 @@ export const SortView = <T extends object, P extends object>({
 
       {searchSelectCollapsed && (
         <div className={styles.rowGap}>
-          {showCard && <SwitchModeButtons viewState={viewState} onChange={handleViewStateChange} />}
+          {showCard && <SwitchModeButton viewState={viewState} onChange={handleViewStateChange} />}
           {toggleParams && <Toggle {...toggleParams} />}
           {sortParams && <SortDropdown options={sortDropdownOptions} {...sortParams} />}
         </div>

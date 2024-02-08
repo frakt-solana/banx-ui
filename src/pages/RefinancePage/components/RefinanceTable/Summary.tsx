@@ -1,7 +1,6 @@
 import React, { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import classNames from 'classnames'
 import { map, sumBy } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
@@ -122,27 +121,21 @@ export const Summary: FC<SummaryProps> = ({
 
   return (
     <div className={styles.summary}>
-      <div className={styles.collaterals}>
-        <p className={styles.collateralsTitle}>{selectedLoans.length}</p>
-        <p className={styles.collateralsSubtitle}>Loans selected</p>
+      <div className={styles.mainStat}>
+        <p>{selectedLoans.length}</p>
+        <p>Loans selected</p>
       </div>
       <div className={styles.statsContainer}>
         <StatInfo label="Total to lend" value={totalDebt} divider={1e9} />
         <StatInfo label="Weekly interest" value={totalWeeklyInterest} divider={1e9} />
-        <StatInfo
-          label="Weighted apr"
-          value={cappedWeightedApr}
-          classNamesProps={{
-            value: classNames(styles.aprValue, { [styles.highlight]: weightedApr }),
-          }}
-          valueType={VALUES_TYPES.PERCENT}
-        />
+        <StatInfo label="Weighted apr" value={cappedWeightedApr} valueType={VALUES_TYPES.PERCENT} />
       </div>
-      <div className={styles.summaryBtns}>
+      <div className={styles.summaryControls}>
         <CounterSlider
           value={selectedLoans.length}
           onChange={(value) => handleLoanSelection(value)}
           max={loans.length}
+          className={styles.sliderContainer}
         />
         <Button onClick={onClickHandler} disabled={!selectedLoans.length}>
           Refinance {createSolValueJSX(totalDebt, 1e9, '0◎')}

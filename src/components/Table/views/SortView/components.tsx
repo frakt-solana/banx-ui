@@ -1,34 +1,31 @@
 import { FC } from 'react'
 
-import classNames from 'classnames'
-
 import { Button } from '@banx/components/Buttons'
 
+import { CardView, TableView } from '@banx/icons'
 import { ViewState } from '@banx/store'
-
-import { ButtonConfigurations } from './constants'
 
 import styles from './SortView.module.less'
 
-interface SwitchModeButtonsProps {
+interface SwitchModeButtonProps {
   viewState: ViewState
   onChange: (value: ViewState) => void
 }
 
-export const SwitchModeButtons: FC<SwitchModeButtonsProps> = ({ viewState, onChange }) => (
-  <div className={styles.switchButtons}>
-    {ButtonConfigurations.map(({ state, icon }) => (
-      <Button
-        key={state}
-        type="circle"
-        variant="secondary"
-        className={classNames(styles.switchViewButton, {
-          [styles.active]: viewState === state,
-        })}
-        onClick={() => onChange(state)}
-      >
-        {icon}
-      </Button>
-    ))}
-  </div>
-)
+export const SwitchModeButton: FC<SwitchModeButtonProps> = ({ viewState, onChange }) => {
+  const Icon = viewState === ViewState.CARD ? <CardView /> : <TableView />
+
+  const onToggleViewMode = () =>
+    onChange(viewState === ViewState.CARD ? ViewState.TABLE : ViewState.CARD)
+
+  return (
+    <Button
+      type="circle"
+      variant="secondary"
+      className={styles.switchViewButton}
+      onClick={onToggleViewMode}
+    >
+      {Icon}
+    </Button>
+  )
+}

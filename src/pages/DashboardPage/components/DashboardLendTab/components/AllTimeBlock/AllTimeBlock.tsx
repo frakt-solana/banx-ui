@@ -3,6 +3,7 @@ import { FC } from 'react'
 import { every, map } from 'lodash'
 
 import { SingleBar } from '@banx/components/Charts'
+import { StatInfo } from '@banx/components/StatInfo'
 
 import { TotalLenderStats } from '@banx/api/stats'
 
@@ -23,7 +24,7 @@ interface AllTimeBlockProps {
 }
 
 const AllTimeBlock: FC<AllTimeBlockProps> = ({ stats }) => {
-  const { totalInterestEarned = 0, totalLent = 0 } = stats || {}
+  const { paidInterest = 0, pendingInterest = 0, totalLent = 0 } = stats || {}
 
   const { allTimeData, chartData } = getAllTimeStatsData(stats)
 
@@ -33,12 +34,22 @@ const AllTimeBlock: FC<AllTimeBlockProps> = ({ stats }) => {
       <div className={styles.allTimeContent}>
         <div className={styles.allTimeStatsContainer}>
           <div className={styles.allTimeStats}>
-            <DashboardStatInfo label="Total lent" value={totalLent} divider={1e9} />
             <DashboardStatInfo
-              label="Total interest earned"
-              value={totalInterestEarned}
+              classNamesProps={{ container: styles.totalLent }}
+              label="Total lent"
+              value={totalLent}
               divider={1e9}
             />
+            <div className={styles.separateLine} />
+            <div className={styles.interestStats}>
+              <StatInfo
+                flexType="row"
+                label="Pending interest"
+                value={pendingInterest}
+                divider={1e9}
+              />
+              <StatInfo flexType="row" label="Earned interest" value={paidInterest} divider={1e9} />
+            </div>
           </div>
           <div className={styles.allTimeChartStats}>
             {allTimeData.map(({ key, label, value }) => (

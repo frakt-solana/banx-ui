@@ -2,7 +2,7 @@
   color: var(--content-secondary);
   margin-bottom: 10px;
   text-transform: uppercase;
-  font: var(--table-header-md);
+  font: var(--title-sm);
 }
 
 .discordSettings,
@@ -28,8 +28,13 @@
   &,
   svg,
   img {
-    width: 88px;
-    height: 88px;
+    height: 56px;
+    width: 56px;
+
+    @media (max-width: 640px) {
+      height: 48px;
+      width: 48px;
+    }
   }
 }
 
@@ -38,10 +43,19 @@
   flex-direction: column;
   justify-content: center;
   gap: 8px;
+  width: 100%;
+
+  button {
+    width: 100%;
+  }
 }
 
 .discordSettingsUserName {
   font: var(--body-text-lg);
+
+  @media (max-width: 640px) {
+    font: var(--body-text-md);
+  }
 }
 
 .discordAlert {
@@ -49,7 +63,7 @@
   border: 1px solid var(--additional-gold-primary);
   background: var(--additional-gold-secondary);
   color: var(--content-primary);
-  font: var(--body-text-xs);
+  font: var(--body-text-sm);
   display: flex;
   gap: 12px;
   align-items: center;
@@ -75,6 +89,10 @@
   font: var(--body-text-lg);
   display: flex;
   justify-content: space-between;
+
+  @media (max-width: 640px) {
+    font: var(--body-text-md);
+  }
 }
 
 //? AddressInput
@@ -98,7 +116,7 @@
 .addressInput {
   height: 100%;
   color: var(--content-primary);
-  font: var(--body-text-sm);
+  font: var(--body-text-md);
   flex-grow: 1;
   background: transparent;
 

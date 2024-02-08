@@ -3,15 +3,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px;
+  padding: 12px 24px;
   gap: 16px;
 
   @media (max-width: 960px) {
-    padding: 16px;
-  }
-
-  @media (max-width: 640px) {
-    max-height: 64px;
+    padding: 8px 16px;
   }
 }
 
@@ -19,6 +15,10 @@
   display: flex;
   align-items: center;
   gap: 16px;
+
+  @media (max-width: 960px) {
+    gap: 8px;
+  }
 }
 
 .filters {
@@ -34,18 +34,13 @@
   gap: 8px;
 }
 
-.switchButtons {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.switchViewButton svg {
-  height: 24px;
-  width: 24px;
-}
-.switchViewButton.active {
-  border-color: var(--content-primary);
-}
-.switchViewButton svg path {
-  fill: var(--content-primary);
+.switchViewButton {
+  svg {
+    height: 24px;
+    width: 24px;
+
+    path {
+      fill: var(--content-primary);
+    }
+  }
 }

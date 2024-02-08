@@ -1,11 +1,13 @@
 import { FC } from 'react'
 
-import { InfoCircleOutlined } from '@ant-design/icons'
 import classNames from 'classnames'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 
-import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
-import Tooltip from '@banx/components/Tooltip'
+import {
+  HorizontalCell,
+  createPercentValueJSX,
+  createSolValueJSX,
+} from '@banx/components/TableComponents'
 
 import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
 import {
@@ -26,7 +28,9 @@ interface TooltipRowProps {
 const TooltipRow: FC<TooltipRowProps> = ({ label, value }) => (
   <div className={styles.tooltipRow}>
     <span className={styles.tooltipRowLabel}>{label}</span>
-    {createSolValueJSX(value, 1e9, '0◎', formatDecimal)}
+    <span className={styles.tooltipRowValue}>
+      {createSolValueJSX(value, 1e9, '0◎', formatDecimal)}
+    </span>
   </div>
 )
 
@@ -43,7 +47,9 @@ export const BorrowCell: FC<CellProps> = ({ nft }) => {
       <TooltipRow label="Floor" value={collectionFloor} />
       <div className={styles.tooltipRow}>
         <span className={styles.tooltipRowLabel}>LTV</span>
-        <span className={styles.ltvValue}>{createPercentValueJSX(ltv)}</span>
+        <span className={classNames(styles.ltvValue, styles.tooltipRowValue)}>
+          {createPercentValueJSX(ltv)}
+        </span>
       </div>
     </div>
   )
@@ -53,16 +59,9 @@ export const BorrowCell: FC<CellProps> = ({ nft }) => {
     nft.nft.loan.marketPubkey,
   )
 
-  return (
-    <div className={styles.cellInfo}>
-      <Tooltip title={tooltipContent}>
-        <span className={styles.cellInfoTitle}>
-          {createSolValueJSX(borrowValueWithRentFee, 1e9, '--', formatDecimal)}
-        </span>
-        <InfoCircleOutlined className={styles.tooltipIcon} />
-      </Tooltip>
-    </div>
-  )
+  const formattedBorrowValue = createSolValueJSX(borrowValueWithRentFee, 1e9, '--', formatDecimal)
+
+  return <HorizontalCell value={formattedBorrowValue} tooltipContent={tooltipContent} />
 }
 
 export const APRCell: FC<CellProps> = ({ nft }) => {
@@ -87,14 +86,5 @@ export const APRCell: FC<CellProps> = ({ nft }) => {
     </div>
   )
 
-  return (
-    <div className={styles.cellInfo}>
-      <Tooltip title={tooltipContent}>
-        <span className={classNames(styles.cellInfoTitle, { [styles.highlight]: true })}>
-          {formattedAprValue}
-        </span>
-        <InfoCircleOutlined className={styles.tooltipIcon} />
-      </Tooltip>
-    </div>
-  )
+  return <HorizontalCell value={formattedAprValue} tooltipContent={tooltipContent} isHighlighted />
 }

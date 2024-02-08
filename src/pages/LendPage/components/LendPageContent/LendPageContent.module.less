@@ -25,5 +25,9 @@
 .marketsList {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 12px;
+
+  @media (max-width: 640px) {
+    gap: 8px;
+  }
 }

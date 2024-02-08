@@ -42,7 +42,7 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  width: 24px;
+  width: 16px;
 
   &.creating {
     background: var(--accent-primary);
@@ -54,6 +54,11 @@
 
   &.hidden {
     display: none;
+  }
+
+  svg {
+    height: 12px;
+    width: 12px;
   }
 }
 
@@ -78,7 +83,7 @@
 
 .value {
   color: var(--content-primary);
-  font: var(--body-text-md);
+  font: var(--body-text-sm);
   line-height: 24px;
   overflow: auto;
   white-space: nowrap;

@@ -24,22 +24,26 @@
   }
 
   h1 {
-    font: var(--title-lg);
+    font: var(--title-3xl);
   }
 
   p {
-    font: var(--body-text-lg);
+    font: var(--body-text-xl);
   }
 
-  @media (max-width: 1023px) {
+  @media (max-width: 1024px) {
     h1 {
-      font: var(--title-md);
+      font: var(--title-2xl);
     }
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     h1 {
-      font: var(--title-xs);
+      font: var(--title-lg);
+    }
+
+    p {
+      font: var(--body-text-lg);
     }
   }
 }

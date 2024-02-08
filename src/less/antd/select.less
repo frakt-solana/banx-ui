@@ -55,7 +55,11 @@
 
   .ant-select-selection-placeholder {
     color: var(--content-secondary);
-    font: var(--body-text-md);
+    font: var(--body-text-lg);
+
+    @media (max-width: 640px) {
+      font: var(--body-text-md);
+    }
   }
 
   .ant-select-selection-item-remove span {
@@ -135,8 +139,12 @@
   .ant-select-item {
     border-radius: 0;
     color: var(--content-primary);
-    padding: 8px;
+    padding: 6px 16px;
     transition: none;
+
+    @media (max-width: 640px) {
+      padding: 4px 16px;
+    }
   }
 
   .ant-select-item-option-active:not(.ant-select-item-option-disabled) {

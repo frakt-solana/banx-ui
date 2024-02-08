@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import { HorizontalCell, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { BorrowerActivity } from '@banx/api/activity'
 import { formatDecimal } from '@banx/utils'
@@ -15,8 +15,8 @@ export const RepaidCell: FC<RepaidCellProps> = ({ loan }) => {
   const { repaid, status } = loan
 
   if (status === BondTradeTransactionV2State.PerpetualLiquidatedByClaim) {
-    return <>Collateral</>
+    return <HorizontalCell value="Collateral" />
   }
 
-  return createSolValueJSX(repaid, 1e9, '--', formatDecimal)
+  return <HorizontalCell value={createSolValueJSX(repaid, 1e9, '--', formatDecimal)} />
 }

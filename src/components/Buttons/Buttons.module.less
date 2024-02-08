@@ -193,7 +193,11 @@
   }
 }
 .solanaBalance {
-  font: var(--important-text-sm);
+  font: var(--body-text-md);
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
 }
 .connectedWalletChevron {
   path {
@@ -223,6 +227,31 @@
   display: flex;
   align-items: center;
   gap: 4px;
+
+  @media (max-width: 960px) {
+    flex-direction: row-reverse;
+    font: var(--btn-text-sm) !important;
+    height: 32px;
+
+    .instructionsLabel {
+      display: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    font: var(--btn-text-sm) !important;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  @media (min-width: 961px) {
+    .pageTitle {
+      display: none;
+    }
+  }
 
   svg {
     transform: rotate(-15deg);

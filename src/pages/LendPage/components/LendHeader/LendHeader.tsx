@@ -29,7 +29,7 @@ const Header = () => {
   const formattedLoansTVL = formatNumbersWithCommas((loansTVL / 1e9)?.toFixed(0))
 
   return (
-    <PageHeaderBackdrop title="Lend" titleBtn={<OnboardButton contentType="lend" />}>
+    <PageHeaderBackdrop title="Lend" titleBtn={<OnboardButton contentType="lend" title="Lend" />}>
       <AdditionalStat
         label="Loan TVL"
         value={

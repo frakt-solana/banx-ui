@@ -1,7 +1,5 @@
 import { create } from 'zustand'
 
-import { MOBILE_WIDTH } from '@banx/constants'
-
 export enum ViewState {
   TABLE = 'table',
   CARD = 'card',
@@ -13,10 +11,8 @@ interface TableViewState {
 }
 
 export const useTableView = create<TableViewState>((set) => {
-  const isMobileWidth = window.innerWidth < MOBILE_WIDTH
-
   const initialState: TableViewState = {
-    viewState: isMobileWidth ? ViewState.CARD : ViewState.TABLE,
+    viewState: ViewState.TABLE,
     setViewState: (nextValue) => set((state) => ({ ...state, viewState: nextValue })),
   }
 

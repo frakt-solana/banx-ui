@@ -24,8 +24,12 @@
 
 .headerTitle {
   color: var(--content-secondary);
-  font: var(--title-sm);
+  font: var(--title-lg);
   text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--title-md);
+  }
 }
 
 .clearNotificationsBtn {
@@ -66,22 +70,36 @@
 }
 
 .contentTitle {
-  font: var(--title-sm);
+  font: var(--title-lg);
   text-transform: uppercase;
   width: 100%;
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
+
+  @media (max-width: 640px) {
+    margin-bottom: 8px;
+    font: var(--title-md);
+  }
 }
 .contentTitleSign {
   margin-bottom: 8px;
 }
 
 .contentTitleOffsetTop {
-  padding-top: 32px;
+  padding-top: 24px;
+
+  @media (max-width: 640px) {
+    padding-top: 16px;
+  }
 }
 
 .signMessageSubtitle {
+  font: var(--body-text-lg);
   margin-bottom: 8px;
+}
+
+.signMessageButton {
+  width: 100%;
 }
 
 .ledgerCheckbox {
