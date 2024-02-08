@@ -24,7 +24,7 @@ const OffersTabContent = () => {
   return (
     <div className={styles.content}>
       {isLoading ? (
-        <Loader />
+        <Loader size="small" />
       ) : (
         <>
           <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
