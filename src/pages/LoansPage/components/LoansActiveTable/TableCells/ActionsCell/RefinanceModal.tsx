@@ -45,7 +45,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
   const { feeAmount } = bondTradeTransaction
 
   const { offers, updateOrAddOffer, isLoading } = useMarketOffers({
-    marketPubkey: loan.fraktBond.hadoMarket,
+    marketPubkey: fraktBond.hadoMarket,
   })
 
   const bestOffer = useMemo(() => {
