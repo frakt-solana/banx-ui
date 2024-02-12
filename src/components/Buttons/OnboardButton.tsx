@@ -11,9 +11,10 @@ import styles from './Buttons.module.less'
 
 interface OnboardButtonProps {
   contentType: `${OnboardingModalContentType}`
+  title: string
 }
 
-export const OnboardButton: FC<OnboardButtonProps> = ({ contentType }) => {
+export const OnboardButton: FC<OnboardButtonProps> = ({ title, contentType }) => {
   const { open, close } = useModal()
 
   const openModal = () => {
@@ -23,7 +24,8 @@ export const OnboardButton: FC<OnboardButtonProps> = ({ contentType }) => {
   return (
     <Button type="circle" variant="text" className={styles.onboardBtn} onClick={openModal}>
       <LifeRing />
-      <span>How it works?</span>
+      <span className={styles.instructionsLabel}>How it works?</span>
+      <span className={styles.pageTitle}>{title}</span>
     </Button>
   )
 }

@@ -4,14 +4,13 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { sumBy } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
+import { Button } from '@banx/components/Buttons'
+import { createSolValueJSX } from '@banx/components/TableComponents'
+
 import { Offer, UserOffer } from '@banx/api/core'
-import { TABLET_WIDTH } from '@banx/constants'
-import { useWindowSize } from '@banx/hooks'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimBondOfferInterestAction } from '@banx/transactions/bonds'
-import { enqueueSnackbar } from '@banx/utils'
-
-import { ClaimInterestButton } from './components'
+import { enqueueSnackbar, formatDecimal } from '@banx/utils'
 
 import styles from './Summary.module.less'
 
@@ -23,8 +22,6 @@ interface SummaryProps {
 const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { width } = useWindowSize()
-  const isSmallDesktop = width < TABLET_WIDTH
 
   const totalAccruedInterest = useMemo(
     () => sumBy(offers, ({ offer }) => offer.concentrationIndex),
@@ -60,12 +57,19 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
   }
 
   return (
-    <div className={styles.summaryContainer}>
-      <ClaimInterestButton
+    <div className={styles.container}>
+      <div className={styles.mainStat}>
+        <p>{createSolValueJSX(totalAccruedInterest, 1e9, '0◎', formatDecimal)}</p>
+        <p>Accrued interest</p>
+      </div>
+      <Button
+        className={styles.claimButton}
         onClick={claimInterest}
-        isSmallDesktop={isSmallDesktop}
-        value={totalAccruedInterest}
-      />
+        disabled={!totalAccruedInterest}
+        variant="secondary"
+      >
+        Claim
+      </Button>
     </div>
   )
 }

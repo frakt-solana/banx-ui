@@ -5,6 +5,8 @@ import { LenderActivity } from '@banx/api/activity'
 
 import { AprCell, CollateralCell, LentCell, StatusCell } from './cells'
 
+import styles from './ActivityTable.module.less'
+
 export const getTableColumns = () => {
   const columns: ColumnType<LenderActivity>[] = [
     {
@@ -36,7 +38,7 @@ export const getTableColumns = () => {
       key: 'timestamp',
       title: <HeaderCell label="When" />,
       render: ({ publicKey, timestamp }) => (
-        <DurationCell publicKey={publicKey} timestamp={timestamp} />
+        <DurationCell className={styles.activityTime} publicKey={publicKey} timestamp={timestamp} />
       ),
       sorter: true,
     },

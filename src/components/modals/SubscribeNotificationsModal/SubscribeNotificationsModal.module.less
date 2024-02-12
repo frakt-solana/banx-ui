@@ -1,9 +1,13 @@
 .title {
   color: var(--content-primary);
   text-align: center;
-  font: var(--title-sm);
+  font: var(--title-lg);
   text-transform: uppercase;
   margin-bottom: 12px;
+
+  @media (max-width: 640px) {
+    font: var(--title-md);
+  }
 }
 
 .content {
@@ -14,6 +18,7 @@
   white-space: pre-line;
 
   @media (max-width: 640px) {
+    font: var(--body-text-md);
     padding: 0 16px 16px;
   }
 }

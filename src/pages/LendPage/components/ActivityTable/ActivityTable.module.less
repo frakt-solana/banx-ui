@@ -1,40 +1,48 @@
 .tableRoot {
-  min-width: 656px;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    min-width: 618px;
+  }
 
   table tr {
     td,
     th {
-      width: 120px;
+      width: 110px;
 
       &:first-child,
       &:last-child {
-        width: 148px;
+        width: 144px;
       }
     }
 
     td {
-      padding: 1px 8px;
+      padding: 4px;
+      font: var(--body-text-sm);
     }
     th {
       background: var(--bg-primary-deep);
+
+      & > div {
+        font: var(--title-xs);
+      }
     }
   }
 }
 
 .tableWrapper {
-  height: 328px;
+  height: 352px;
 
   @media (max-width: 1240px) {
-    height: 314px;
+    height: 344px;
   }
 
   @media (max-width: 640px) {
-    height: 302px;
+    height: 330px;
   }
 }
 
 .statusCellTitle {
-  font: var(--body-text-sm);
   white-space: nowrap;
 }
 
@@ -42,11 +50,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px;
+  padding: 16px 24px;
   width: 100%;
 
   @media (max-width: 640px) {
-    padding: 16px;
+    padding: 8px 16px;
     flex-direction: column-reverse;
     gap: 16px;
   }
@@ -78,8 +86,8 @@
 
   img,
   svg {
-    height: 24px;
-    width: 24px;
+    height: 30px;
+    width: 30px;
   }
 }
 .nftNames {
@@ -88,10 +96,7 @@
   overflow: hidden;
 }
 .nftCollectionName {
-  font: var(--card-header-sm);
-}
-.nftNumber {
-  font: var(--body-text-xs);
+  font: var(--body-text-sm);
 }
 
 .lentCellTitle,
@@ -104,4 +109,8 @@
   font-size: 10px;
   left: -12px;
   top: -4px;
+}
+
+.activityTime {
+  font: var(--body-text-sm);
 }

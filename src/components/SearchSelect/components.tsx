@@ -67,7 +67,7 @@ export const renderOption: FC<OptionProps> = ({
             {image && <img className={styles.image} src={image} />}
             {isSelected && <div className={styles.selected} />}
           </div>
-          <p className={classNames(styles.label, optionClassNameProps?.label)}>{label}</p>
+          <p className={classNames(styles.optionLabel, optionClassNameProps?.label)}>{label}</p>
           {Icon}
         </div>
         <SecondValue secondLabel={secondLabel} value={secondValue} />

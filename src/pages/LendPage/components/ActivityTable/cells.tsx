@@ -41,7 +41,7 @@ export const CollateralCell: FC<CollateralCellProps> = ({ loan }) => {
   const { name, imageUrl, partnerPoints = 0, playerPoints = 0 } = loan.nft.meta
 
   const [nftCollectionName, nftNumber] = name.split('#')
-  const displayNftNumber = nftNumber ? `#${nftNumber}` : ''
+  const displayCollectionName = nftNumber ? `#${nftNumber}` : nftCollectionName
 
   return (
     <div className={styles.collateralCell}>
@@ -56,8 +56,7 @@ export const CollateralCell: FC<CollateralCellProps> = ({ loan }) => {
         <NftImage nftImage={imageUrl} />
       </div>
       <div className={styles.nftNames}>
-        <p className={styles.nftCollectionName}>{nftCollectionName}</p>
-        {displayNftNumber && <p className={styles.nftNumber}>{displayNftNumber}</p>}
+        <p className={styles.nftCollectionName}>{displayCollectionName}</p>
       </div>
     </div>
   )

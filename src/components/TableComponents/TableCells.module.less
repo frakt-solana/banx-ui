@@ -11,12 +11,12 @@
 .nftImage,
 .selectedCollectionOverlay,
 .nftPlaceholderIcon {
-  height: 40px;
-  width: 40px;
+  height: 32px;
+  width: 32px;
 
   @media (max-width: 640px) {
-    height: 32px;
-    width: 32px;
+    height: 30px;
+    width: 30px;
   }
 }
 
@@ -51,11 +51,15 @@
 .nftNames {
   display: flex;
   flex-direction: column;
-  gap: 4px;
   overflow: hidden;
+  gap: 2px;
+
+  @media (max-width: 640px) {
+    gap: unset;
+  }
 }
 .nftCollectionName {
-  font: var(--card-header-md);
+  font: var(--card-header-sm);
 }
 .nftCollectionNameEllipsis {
   max-width: 180px;
@@ -78,7 +82,12 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  font: var(--title-sm);
   gap: 4px;
+
+  @media (max-width: 640px) {
+    font: var(--title-xs);
+  }
 }
 .headerCellLeft {
   justify-content: flex-start;
@@ -86,9 +95,13 @@
 
 .activityTime {
   color: var(--content-primary);
-  font: var(--body-text-sm);
+  font: var(--body-text-md);
   text-decoration: underline;
   white-space: nowrap;
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
 
   &:hover {
     color: var(--content-primary);
@@ -107,4 +120,35 @@
   top: -8px;
   white-space: nowrap;
   z-index: 1;
+
+  @media (max-width: 640px) {
+    top: -4px;
+  }
+}
+
+.rowCell {
+  &,
+  & > * {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+  }
+}
+.rowCellTitle {
+  font: var(--body-text-md);
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
+
+  &.highlight {
+    color: var(--additional-green-primary-deep);
+  }
+}
+
+.rowCellTooltipIcon svg {
+  fill: var(--content-secondary);
+  width: 13px;
+  height: 13px;
 }

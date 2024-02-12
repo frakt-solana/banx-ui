@@ -11,8 +11,6 @@ import { formatNumbersWithCommas } from '@banx/utils'
 
 import { useAllTotalStats } from '../../hooks'
 
-import styles from './DashboardHeader.module.less'
-
 const Header = () => {
   const { data } = useAllTotalStats()
 
@@ -25,9 +23,8 @@ const Header = () => {
 
   return (
     <PageHeaderBackdrop
-      className={styles.container}
       title="Dashboard"
-      titleBtn={<OnboardButton contentType="dashboard" />}
+      titleBtn={<OnboardButton contentType="dashboard" title="Dashboard" />}
     >
       <AdditionalStat label="Daily volume" value={dailyVolume} divider={1e9} decimalPlaces={0} />
       <AdditionalStat

@@ -22,11 +22,13 @@ const Header = () => {
   const { marketsPreview } = useMarketsPreview()
 
   const nftsAmount = nfts.length
-
   const totalLiquidity = sumBy(marketsPreview, (offer) => offer.offerTvl)
 
   return (
-    <PageHeaderBackdrop title="Borrow" titleBtn={<OnboardButton contentType="borrow" />}>
+    <PageHeaderBackdrop
+      title="Borrow"
+      titleBtn={<OnboardButton title="Borrow" contentType="borrow" />}
+    >
       {connected && (
         <AdditionalStat label="Your NFTs" value={nftsAmount} valueType={VALUES_TYPES.STRING} />
       )}

@@ -9,6 +9,8 @@ export const UserOffersStatsSchema = z.object({
   totalInterest: z.number(),
   weightedApr: z.number(),
   totalReceived: z.number(),
+  paidInterest: z.number(),
+  pendingInterest: z.number(),
 })
 
 export type UserOffersStats = z.infer<typeof UserOffersStatsSchema>
@@ -54,6 +56,8 @@ export const TotalLenderStatsSchema = z.object({
     totalInterestEarned: z.number(),
     totalRepaid: z.number(),
     totalDefaulted: z.number(),
+    paidInterest: z.number(),
+    pendingInterest: z.number(),
   }),
 })
 

@@ -1,9 +1,4 @@
-export interface SimpleOffer {
-  id: string
-  publicKey: string
-  loanValue: number
-  hadoMarket: string
-}
+import { SimpleOffer } from '@banx/utils'
 
 export type SimpleOffersByMarket = Record<string, SimpleOffer[]>
 

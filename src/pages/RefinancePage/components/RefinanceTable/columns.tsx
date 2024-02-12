@@ -1,18 +1,18 @@
 import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
-import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
+import {
+  HeaderCell,
+  HorizontalCell,
+  NftInfoCell,
+  createPercentValueJSX,
+  createSolValueJSX,
+} from '@banx/components/TableComponents'
 import Timer from '@banx/components/Timer/Timer'
 
 import { Loan } from '@banx/api/core'
-import { formatDecimal } from '@banx/utils'
+import { calculateLoanRepayValue, formatDecimal } from '@banx/utils'
 
-import {
-  APRCell,
-  /* APRIncreaseCell */
-  DebtCell,
-  LTVCell,
-  RefinanceCell,
-} from './TableCells'
+import { LTVCell, RefinanceCell } from './TableCells'
 import { SECONDS_IN_72_HOURS } from './constants'
 import { calcWeeklyInterestFee } from './helpers'
 
@@ -59,13 +59,20 @@ export const getTableColumns = ({
     {
       key: 'floorPrice',
       title: <HeaderCell label="Floor" />,
-      render: (loan) => createSolValueJSX(loan.nft.collectionFloor, 1e9, '--', formatDecimal),
+      render: (loan) => (
+        <HorizontalCell
+          value={createSolValueJSX(loan.nft.collectionFloor, 1e9, '--', formatDecimal)}
+        />
+      ),
       sorter: true,
     },
     {
       key: 'repayValue',
       title: <HeaderCell label="Debt" />,
-      render: (loan) => <DebtCell loan={loan} />,
+      render: (loan) => {
+        const repayValue = calculateLoanRepayValue(loan)
+        return <HorizontalCell value={createSolValueJSX(repayValue, 1e9, '--', formatDecimal)} />
+      },
       sorter: true,
     },
     {
@@ -77,19 +84,24 @@ export const getTableColumns = ({
     {
       key: 'interest',
       title: <HeaderCell label="Weekly interest" />,
-      render: (loan) => createSolValueJSX(calcWeeklyInterestFee(loan), 1e9, '--', formatDecimal),
+      render: (loan) => (
+        <HorizontalCell
+          value={createSolValueJSX(calcWeeklyInterestFee(loan), 1e9, '--', formatDecimal)}
+        />
+      ),
     },
     {
       key: 'apr',
       title: <HeaderCell label="APR" />,
-      render: (loan) => <APRCell loan={loan} />,
+      render: (loan) => (
+        <HorizontalCell
+          value={createPercentValueJSX(loan.bondTradeTransaction.amountOfBonds / 100)}
+          isHighlighted
+        />
+      ),
       sorter: true,
     },
-    // {
-    //   key: 'nextAprIncrease',
-    //   title: <HeaderCell label="Next APR increase" />,
-    //   render: (loan) => <APRIncreaseCell loan={loan} />,
-    // },
+
     {
       key: 'duration',
       title: <HeaderCell label="Ends in" />,

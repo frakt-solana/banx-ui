@@ -40,7 +40,9 @@ export const SignMessageScreen = () => {
         checked={isLedger}
         className={styles.ledgerCheckbox}
       />
-      <Button onClick={authorize}>Sign</Button>
+      <Button className={styles.signMessageButton} onClick={authorize}>
+        Sign
+      </Button>
     </div>
   )
 }

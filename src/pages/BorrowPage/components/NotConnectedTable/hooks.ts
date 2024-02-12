@@ -11,6 +11,8 @@ import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 
 import { DEFAULT_SORT_OPTION } from './constants'
 
+import styles from './NotConnectedTable.module.less'
+
 export const useNotConnectedBorrow = () => {
   const { marketsPreview, isLoading } = useMarketsPreview()
 
@@ -45,6 +47,7 @@ export const useNotConnectedBorrow = () => {
       },
     },
     onChange: handleFilterChange,
+    className: styles.searchSelect,
   }
 
   return {

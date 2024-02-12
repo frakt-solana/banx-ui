@@ -2,10 +2,25 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 12px;
+  padding: 12px 16px;
   color: var(--content-secondary);
-  font: var(--table-header-sm);
   text-transform: uppercase;
+
+  span {
+    font: var(--title-sm);
+
+    @media (max-width: 640px) {
+      font: var(--title-xs);
+    }
+  }
+}
+
+.optionLabel {
+  font: var(--card-header-sm);
+
+  @media (max-width: 640px) {
+    font: var(--card-header-xs);
+  }
 }
 
 .selectWrapper {
@@ -64,12 +79,12 @@
 .relativeImageContainer,
 .image {
   position: relative;
-  height: 40px;
-  width: 40px;
+  height: 32px;
+  width: 32px;
 
   @media (max-width: 640px) {
-    height: 32px;
-    width: 32px;
+    height: 24px;
+    width: 24px;
   }
 }
 
@@ -78,8 +93,8 @@
   position: absolute;
   top: 0;
   left: 0;
-  height: 40px;
-  width: 40px;
+  height: 32px;
+  width: 32px;
 
   &:after {
     content: '';
@@ -94,8 +109,8 @@
   }
 
   @media (max-width: 640px) {
-    height: 32px;
-    width: 32px;
+    height: 24px;
+    width: 24px;
   }
 }
 
@@ -107,6 +122,10 @@
 
 .secondValue {
   font: var(--body-text-md);
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
 }
 
 .rotate {

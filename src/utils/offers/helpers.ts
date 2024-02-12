@@ -1,5 +1,6 @@
 import { calculateNextSpotPrice } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondingCurveType } from 'fbonds-core/lib/fbond-protocol/types'
+import { getMaxLoanValueFromBondOffer } from 'fbonds-core/lib/fbond-protocol/helpers'
+import { BondOfferV2, BondingCurveType, PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, uniqueId } from 'lodash'
 
 import { Offer } from '@banx/api/core'
@@ -120,4 +121,60 @@ export const convertOffersToSimple: ConvertOffersToSimple = (offers, sort = 'des
     .value()
 
   return convertedOffers
+}
+
+export const сalculateLoansAmount = (offer: Offer) => {
+  const { fundsSolOrTokenBalance, currentSpotPrice } = offer
+
+  const loansAmount = fundsSolOrTokenBalance / currentSpotPrice
+
+  return loansAmount
+}
+
+export const calculateLoanValue = (offer: Offer) => {
+  return getMaxLoanValueFromBondOffer(offer as BondOfferV2)
+  // const { currentSpotPrice } = offer
+
+  // const loansAmount = сalculateLoansAmount(offer)
+  // const loanValue = currentSpotPrice * Math.min(loansAmount, 1)
+
+  // return loanValue
+}
+
+export const isOfferClosed = (pairState: string) => {
+  return (
+    pairState === PairState.PerpetualClosed ||
+    pairState === PairState.PerpetualBondingCurveClosed ||
+    pairState === PairState.PerpetualMigrated
+  )
+}
+
+//? Prevent orders wrong distibution on bulk borrow from same offer
+export const offerNeedsReservesOptimizationOnBorrow = (offer: Offer, loanValueSum: number) =>
+  loanValueSum <= (offer.bidSettlement + offer.buyOrdersQuantity > 0 ? offer.currentSpotPrice : 0)
+
+type FilterOutWalletLoans = (props: { offers: Offer[]; walletPubkey?: string }) => Offer[]
+export const filterOutWalletLoans: FilterOutWalletLoans = ({ offers, walletPubkey }) => {
+  if (!walletPubkey) return offers
+  return offers.filter((offer) => offer.assetReceiver !== walletPubkey)
+}
+
+type FindSuitableOffer = (props: { loanValue: number; offers: Offer[] }) => Offer | undefined
+export const findSuitableOffer: FindSuitableOffer = ({ loanValue, offers }) => {
+  //? Create simple offers array sorted by loanValue (offerValue) asc
+  const simpleOffers = convertOffersToSimple(offers, 'asc')
+
+  //? Find offer. OfferValue must be greater than or equal to loanValue
+  const simpleOffer = simpleOffers.find(({ loanValue: offerValue }) => loanValue <= offerValue)
+
+  return offers.find(({ publicKey }) => publicKey === simpleOffer?.publicKey)
+}
+
+export const isOfferNotEmpty = (offer: Offer) => {
+  const { fundsSolOrTokenBalance, currentSpotPrice } = offer
+  const fullOffersAmount = Math.floor(fundsSolOrTokenBalance / currentSpotPrice)
+  if (fullOffersAmount >= 1) return true
+  const decimalLoanValue = fundsSolOrTokenBalance - currentSpotPrice * fullOffersAmount
+  if (decimalLoanValue > 0) return true
+  return false
 }
