@@ -42,6 +42,7 @@ const ActivityTable: FC<ActivityTableProps> = ({ marketPubkey }) => {
           loadMore={hasNextPage ? fetchNextPage : undefined}
           classNameTableWrapper={styles.tableWrapper}
           loading={isLoading}
+          loaderSize="small"
         />
       ) : (
         <EmptyList message="Offers activity should be displayed here, but it's empty yet. Be first lender" />

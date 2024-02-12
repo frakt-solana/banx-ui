@@ -7,7 +7,7 @@ import styles from '../BanxNotificationsSider.module.less'
 export const LoadingScreen = () => {
   return (
     <div className={classNames(styles.content, styles.contentCentered)}>
-      <Loader size="large" />
+      <Loader />
     </div>
   )
 }

@@ -14,9 +14,7 @@
 .section {
   display: flex;
   flex-direction: column;
-  row-gap: 8px;
-
-  margin-bottom: 28px;
+  margin-bottom: 24px;
 
   &:last-of-type {
     margin-bottom: 0;
@@ -30,7 +28,7 @@
   margin-bottom: 16px;
 
   @media screen and (max-width: 640px) {
-    margin-bottom: 12px;
+    margin-bottom: 0;
   }
 
   span {
@@ -94,9 +92,24 @@
     column-gap: 8px;
 
     svg {
-      width: 24px;
-      height: 24px;
       fill: var(--content-secondary);
+      height: 18px;
+      width: 18px;
     }
   }
+
+  @media screen and (max-width: 640px) {
+    border-width: 1px 0 0;
+    margin: -16px;
+  }
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.manageButton {
+  margin-top: 8px;
 }

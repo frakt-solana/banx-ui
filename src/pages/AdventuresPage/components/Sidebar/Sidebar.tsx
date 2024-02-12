@@ -4,10 +4,12 @@ import { ExclamationCircleOutlined } from '@ant-design/icons'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
+import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { AdventuresInfo } from '@banx/api/adventures'
 import { Gamepad } from '@banx/icons'
 import { useModal } from '@banx/store'
+import { formatNumbersWithCommas } from '@banx/utils'
 
 import { calcNftsPartnerPoints, isNftStaked } from '../../helpers'
 import { AdventuresModal } from '../AdventuresModal'
@@ -34,17 +36,23 @@ export const Sidebar: FC<SidebarProps> = ({ adventuresInfo, className }) => {
       <div className={styles.section}>
         <Title text="My squad" icon={<Gamepad />} />
 
-        <Info
-          value={`${stakedNfts.length}/${nfts?.length}`}
-          text="Banx staked"
-          button={{
-            text: 'Manage',
-            type: 'primary',
-            onClick: () => open(AdventuresModal, { adventuresInfo }),
-          }}
-        />
+        <div className={styles.stats}>
+          <Info value={`${stakedNfts.length}/${nfts?.length}`} text="Banx staked" />
 
-        <Info value={partnerPoints.toString()} text="partner points" />
+          <StatInfo
+            label="partner points"
+            value={formatNumbersWithCommas(partnerPoints)}
+            valueType={VALUES_TYPES.STRING}
+            flexType="row"
+          />
+        </div>
+        <Button
+          onClick={() => open(AdventuresModal, { adventuresInfo })}
+          className={styles.manageButton}
+          size="small"
+        >
+          Manage
+        </Button>
       </div>
 
       <div className={styles.section}>
@@ -76,23 +84,13 @@ interface InfoProps {
   value: string
   text: string
   textStyle?: CSSProperties
-  button?: {
-    text: string
-    onClick: () => void
-    type?: 'primary' | 'secondary'
-  }
 }
 
-const Info: FC<InfoProps> = ({ value, text, button, textStyle }) => (
+const Info: FC<InfoProps> = ({ value, text, textStyle }) => (
   <div className={styles.infoWrapper}>
     <div className={styles.info}>
       <span>{value}</span>
       <span style={textStyle}>{text}</span>
     </div>
-    {!!button && (
-      <Button variant={button?.type || 'secondary'} onClick={button.onClick}>
-        {button.text}
-      </Button>
-    )}
   </div>
 )
