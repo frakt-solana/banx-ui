@@ -1,5 +1,8 @@
 .content {
-  padding-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: hidden;
 }
 
 .content.selected {
@@ -26,6 +29,8 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  overflow-y: auto;
+  padding-bottom: 24px;
 
   @media (max-width: 640px) {
     gap: 8px;
