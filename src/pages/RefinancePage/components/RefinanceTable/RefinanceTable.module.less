@@ -7,7 +7,7 @@
 }
 
 .refinanceTable {
-  min-width: 1260px;
+  min-width: 1116px;
 
   table {
     tr > td,
@@ -139,4 +139,30 @@
 .checkbox {
   height: 18px;
   padding-left: 18px;
+}
+
+.tooltipContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 200px;
+
+  span:first-child {
+    color: var(--content-secondary);
+    font: var(--title-sm);
+    text-transform: uppercase;
+
+    @media (max-width: 640px) {
+      font: var(--title-xs);
+    }
+  }
+
+  span:last-child {
+    color: var(--content-primary);
+    font: var(--body-text-md);
+
+    @media (max-width: 640px) {
+      font: var(--body-text-sm);
+    }
+  }
 }
