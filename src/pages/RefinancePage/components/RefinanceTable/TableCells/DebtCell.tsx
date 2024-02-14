@@ -16,10 +16,10 @@ export const DebtCell: FC<DebtCellProps> = ({ loan }) => {
   const collectionFloor = loan.nft.collectionFloor
 
   const tooltopContent = (
-    <>
+    <div className={styles.tooltipContainer}>
       {createTooltipContent('Floor', collectionFloor)}
       {createTooltipContent('Debt', repayValue)}
-    </>
+    </div>
   )
 
   return (
