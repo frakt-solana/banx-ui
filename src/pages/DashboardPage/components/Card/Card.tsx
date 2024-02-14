@@ -10,7 +10,7 @@ import { createPercentValueJSX, createSolValueJSX } from '@banx/components/Table
 import Tooltip from '@banx/components/Tooltip'
 
 import { BorrowNft, MarketPreview, Offer } from '@banx/api/core'
-import { BONDS, MARKETS_WITH_CUSTOM_APR } from '@banx/constants'
+import { BONDS } from '@banx/constants'
 import { calculateApr, calculateLoanValue, formatDecimal } from '@banx/utils'
 
 import { calLoanValueWithFees, calcWeeklyInterestFee } from './helpers'
@@ -77,21 +77,20 @@ interface MarketCardProps {
 }
 
 export const MarketCard: FC<MarketCardProps> = ({ market, onClick }) => {
-  const { bestOffer, collectionFloor, collectionImage } = market
+  const { bestOffer, collectionFloor, collectionImage, marketPubkey } = market
 
   const BadgeContentElement = <>+{createSolValueJSX(bestOffer, 1e9, '0◎', formatDecimal)}</>
 
   const ltv = (bestOffer / collectionFloor) * 100
   const ltvTooltipContent = createTooltipContent('Borrow up to', bestOffer)
 
-  const customApr = MARKETS_WITH_CUSTOM_APR[market.marketPubkey]
-  const apr = customApr !== undefined ? customApr / 100 : MAX_APR_VALUE
+  const apr = calculateApr({ loanValue: market.bestOffer, collectionFloor, marketPubkey }) / 100
 
   return (
     <CardBackdrop image={collectionImage} onClick={onClick} badgeElement={BadgeContentElement}>
       <div className={styles.cardFooter}>
         <Stat label="Max ltv" value={ltv} tooltipContent={ltvTooltipContent} />
-        <Stat label="Max apr" value={apr} />
+        <Stat label="Apr" value={apr} />
       </div>
     </CardBackdrop>
   )
