@@ -43,7 +43,7 @@ const UserBalance = () => {
 
   const { data } = useFetchUserLockedRewards(publicKeyString)
 
-  const displayRewardsValue = formatNumbersWithCommas(data?.rewards?.toFixed(2) || 0)
+  const displayRewardsValue = formatNumbersWithCommas(data?.rewards?.toFixed(0) || 0)
 
   return (
     <div className={styles.userBalanceContainer}>
