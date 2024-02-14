@@ -25,7 +25,7 @@ export const DebtCell: FC<DebtCellProps> = ({ loan }) => {
   return (
     <HorizontalCell
       tooltipContent={tooltopContent}
-      value={createSolValueJSX(repayValue, 1e9, '--', formatDecimal)}
+      value={createSolValueJSX(repayValue, 1e9, '0◎', formatDecimal)}
     />
   )
 }
@@ -33,6 +33,6 @@ export const DebtCell: FC<DebtCellProps> = ({ loan }) => {
 const createTooltipContent = (label: string, value: number) => (
   <div className={styles.tooltipContent}>
     <span>{label}</span>
-    <span>{createSolValueJSX(value, 1e9, '--', formatDecimal)}</span>
+    <span>{createSolValueJSX(value, 1e9, '0◎', formatDecimal)}</span>
   </div>
 )
