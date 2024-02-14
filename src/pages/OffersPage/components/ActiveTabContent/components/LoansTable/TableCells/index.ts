@@ -1,3 +1,3 @@
 export * from './ActionsCell'
-export * from './InterestCell'
+export * from './ClaimCell'
 export * from './StatusCell'

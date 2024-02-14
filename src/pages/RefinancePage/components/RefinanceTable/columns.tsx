@@ -10,9 +10,9 @@ import {
 import Timer from '@banx/components/Timer/Timer'
 
 import { Loan } from '@banx/api/core'
-import { calculateLoanRepayValue, formatDecimal } from '@banx/utils'
+import { formatDecimal } from '@banx/utils'
 
-import { LTVCell, RefinanceCell } from './TableCells'
+import { DebtCell, LTVCell, RefinanceCell } from './TableCells'
 import { SECONDS_IN_72_HOURS } from './constants'
 import { calcWeeklyInterestFee } from './helpers'
 
@@ -57,22 +57,9 @@ export const getTableColumns = ({
       ),
     },
     {
-      key: 'floorPrice',
-      title: <HeaderCell label="Floor" />,
-      render: (loan) => (
-        <HorizontalCell
-          value={createSolValueJSX(loan.nft.collectionFloor, 1e9, '--', formatDecimal)}
-        />
-      ),
-      sorter: true,
-    },
-    {
       key: 'repayValue',
       title: <HeaderCell label="Debt" />,
-      render: (loan) => {
-        const repayValue = calculateLoanRepayValue(loan)
-        return <HorizontalCell value={createSolValueJSX(repayValue, 1e9, '--', formatDecimal)} />
-      },
+      render: (loan) => <DebtCell loan={loan} />,
       sorter: true,
     },
     {
