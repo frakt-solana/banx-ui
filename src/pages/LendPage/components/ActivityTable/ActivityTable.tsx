@@ -1,5 +1,8 @@
 import { FC } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
+import classNames from 'classnames'
+
 import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 
@@ -25,6 +28,7 @@ const ActivityTable: FC<ActivityTableProps> = ({ marketPubkey }) => {
     isToggleDisabled,
   } = useAllLenderActivity(marketPubkey)
 
+  const { connected } = useWallet()
   const columns = getTableColumns()
 
   return (
@@ -40,7 +44,9 @@ const ActivityTable: FC<ActivityTableProps> = ({ marketPubkey }) => {
           columns={columns}
           className={styles.tableRoot}
           loadMore={hasNextPage ? fetchNextPage : undefined}
-          classNameTableWrapper={styles.tableWrapper}
+          classNameTableWrapper={classNames(styles.tableWrapper, {
+            [styles.notConnectedTableWrapper]: !connected,
+          })}
           loading={isLoading}
         />
       ) : (
