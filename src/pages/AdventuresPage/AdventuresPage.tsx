@@ -1,5 +1,7 @@
 import { FC } from 'react'
 
+import classNames from 'classnames'
+
 import { Loader } from '@banx/components/Loader'
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
@@ -20,7 +22,7 @@ export const AdventuresPage: FC = () => {
 
   return (
     <div className={styles.pageWrapper}>
-      <div className={styles.content}>
+      <div className={classNames(styles.content, { [styles.active]: adventuresInfo?.banxUserPDA })}>
         <Header />
         {isLoading && <Loader className={styles.loader} />}
         {!isLoading && !!adventuresInfo && (

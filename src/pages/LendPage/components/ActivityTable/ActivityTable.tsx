@@ -48,6 +48,7 @@ const ActivityTable: FC<ActivityTableProps> = ({ marketPubkey }) => {
             [styles.notConnectedTableWrapper]: !connected,
           })}
           loading={isLoading}
+          loaderSize="small"
         />
       ) : (
         <EmptyList message="Offers activity should be displayed here, but it's empty yet. Be first lender" />

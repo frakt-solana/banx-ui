@@ -1,15 +1,8 @@
 .content {
-  padding-bottom: 24px;
-}
-
-.content.selected {
-  @media (max-width: 960px) {
-    padding-bottom: 114px;
-  }
-
-  @media (max-width: 640px) {
-    padding-bottom: 80px;
-  }
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: hidden;
 }
 
 .emptyList {
@@ -26,6 +19,8 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  overflow-y: auto;
+  padding-bottom: 24px;
 
   @media (max-width: 640px) {
     gap: 8px;

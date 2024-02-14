@@ -65,8 +65,16 @@
   color: var(--content-primary);
   font: var(--body-text-sm);
   display: flex;
-  gap: 12px;
   align-items: center;
+  gap: 8px;
+
+  svg {
+    min-width: 24px;
+
+    @media (max-width: 640px) {
+      min-width: 16px;
+    }
+  }
 
   a {
     color: inherit;

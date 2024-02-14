@@ -1,7 +1,6 @@
 import { FC, useCallback, useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import classNames from 'classnames'
 import { Adventure, BanxUser } from 'fbonds-core/lib/fbond-protocol/types'
 import { chunk, find } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
@@ -204,7 +203,7 @@ export const NotParticipatedColumn: FC<AdventuresComponentsProps> = ({ adventure
   const adventureStatus = getAdventureStatus(adventure)
 
   return (
-    <div className={classNames(styles.statsCol, styles.statsColWarn)}>
+    <div className={styles.statsColWarn}>
       <Alert />
       <p>
         {TEXT_BY_STATUS[adventureStatus as keyof typeof TEXT_BY_STATUS] || TEXT_BY_STATUS.DEFAULT}
@@ -245,7 +244,7 @@ export const WalletParticipationColumn: FC<AdventuresComponentsProps> = ({
           TITLE_BY_STATUS.DEFAULT}
       </h5>
       <p>{nftsAmount} Banx</p>
-      <p>{points} Partner points</p>
+      <p>{points} Partner pts</p>
     </div>
   )
 }
@@ -277,7 +276,7 @@ export const TotalParticipationColumn: FC<AdventuresComponentsProps> = ({ advent
           TITLE_BY_STATUS.DEFAULT}
       </h5>
       <p>{totalBanxSubscribed} Banx</p>
-      <p>{totalPartnerPoints} Partner points</p>
+      <p>{totalPartnerPoints} Partner pts</p>
     </div>
   )
 }

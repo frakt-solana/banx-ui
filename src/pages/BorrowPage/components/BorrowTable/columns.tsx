@@ -7,9 +7,8 @@ import {
   createSolValueJSX,
 } from '@banx/components/TableComponents'
 
-import { calcBorrowValueWithProtocolFee, formatDecimal } from '@banx/utils'
+import { SimpleOffer, calcBorrowValueWithProtocolFee, formatDecimal } from '@banx/utils'
 
-import { SimpleOffer } from '../../types'
 import { BorrowActionCell } from './BorrowActionCell'
 import { APRCell, BorrowCell } from './cells'
 import { TableNftData } from './types'

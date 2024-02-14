@@ -1,4 +1,3 @@
-import classNames from 'classnames'
 import { isEmpty } from 'lodash'
 
 import { Loader } from '@banx/components/Loader'
@@ -28,7 +27,7 @@ const LendPageContent = () => {
   const { data: markets, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: marketsPreview })
 
   return (
-    <div className={classNames(styles.content, { [styles.selected]: !!visibleMarkets?.length })}>
+    <div className={styles.content}>
       <FilterSection
         searchSelectParams={searchSelectParams}
         sortParams={sortParams}
