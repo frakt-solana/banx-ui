@@ -37,7 +37,7 @@ interface SummaryProps {
   bonkRewardsAvailable: boolean
 }
 
-const calLoanValueWithFees = (nft: TableNftData) => {
+const calcLoanValueWithFees = (nft: TableNftData) => {
   const loanValueWithProtocolFee = calcBorrowValueWithProtocolFee(nft.loanValue)
   return calcBorrowValueWithRentFee(loanValueWithProtocolFee, nft.nft.loan.marketPubkey)
 }
@@ -59,7 +59,7 @@ export const Summary: FC<SummaryProps> = ({
   setMaxBorrowPercent,
   bonkRewardsAvailable,
 }) => {
-  const totalBorrow = sumBy(nftsInCart, calLoanValueWithFees)
+  const totalBorrow = sumBy(nftsInCart, calcLoanValueWithFees)
 
   const totalUpfrontFee = sumBy(nftsInCart, ({ loanValue }) => {
     return loanValue - calcBorrowValueWithProtocolFee(loanValue)
@@ -75,7 +75,7 @@ export const Summary: FC<SummaryProps> = ({
       nftsInCart,
       ({ nft, loanValue }) => (caclAprValue(nft, loanValue) + BONDS.PROTOCOL_REPAY_FEE) / 100,
     )
-    const totalLoanValue = map(nftsInCart, calLoanValueWithFees)
+    const totalLoanValue = map(nftsInCart, calcLoanValueWithFees)
 
     return calcWeightedAverage(totalApr, totalLoanValue)
   }, [nftsInCart])
