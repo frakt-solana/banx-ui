@@ -34,7 +34,7 @@ export const calcLeftPercentage = (
     .value()
 
   if (uniqueMarks.length === 1) {
-    return calculatePercentage(uniqueMarks[0].value, collectionFloor)
+    return 100 - calculatePercentage(uniqueMarks[0].value, collectionFloor)
   }
 
   return calculatePercentage(currentIndex, markers.length - 1)
@@ -68,6 +68,8 @@ export const groupMarks = (markers: Mark[]): Mark[] | Mark[][] => {
 export const calculateStyle = (left: number) => `calc(${left}% - 24px)`
 
 export const formatMarkValue = (value: number) => {
+  if (!value) return '0'
+
   const formattedDecimalValue = formatDecimal(value / 1e9)
   return formattedDecimalValue.replace(/\.?0+$/, '')
 }
