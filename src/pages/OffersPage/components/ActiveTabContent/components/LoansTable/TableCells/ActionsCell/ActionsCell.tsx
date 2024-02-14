@@ -73,7 +73,10 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
       {!canClaim && (
         <Button
           className={styles.actionButton}
-          onClick={showModal}
+          onClick={(event) => {
+            showModal()
+            event.stopPropagation()
+          }}
           disabled={isTerminatingStatus}
           variant="secondary"
           size={buttonSize}
