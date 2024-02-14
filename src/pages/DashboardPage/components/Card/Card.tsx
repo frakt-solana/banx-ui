@@ -13,7 +13,7 @@ import { BorrowNft, MarketPreview, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { calculateApr, calculateLoanValue, formatDecimal } from '@banx/utils'
 
-import { calLoanValueWithFees, calcWeeklyInterestFee } from './helpers'
+import { calcLoanValueWithFees, calcWeeklyInterestFee } from './helpers'
 
 import styles from './Card.module.less'
 
@@ -111,7 +111,7 @@ export const BorrowCard: FC<BorrowCardProps> = ({ nft, onClick, findBestOffer })
   const bestOffer = useMemo(() => findBestOffer(marketPubkey), [findBestOffer, marketPubkey])
 
   const loanValue = bestOffer ? calculateLoanValue(bestOffer) : 0
-  const loanValueWithFees = calLoanValueWithFees(bestOffer)
+  const loanValueWithFees = calcLoanValueWithFees(bestOffer)
 
   const ltv = (loanValueWithFees / collectionFloor) * 100
   const apr = calculateApr({ loanValue, collectionFloor, marketPubkey })

@@ -8,7 +8,7 @@ import {
   calculateLoanValue,
 } from '@banx/utils'
 
-export const calLoanValueWithFees = (offer: Offer | null) => {
+export const calcLoanValueWithFees = (offer: Offer | null) => {
   if (!offer) return 0
 
   const loanValue = calculateLoanValue(offer)
