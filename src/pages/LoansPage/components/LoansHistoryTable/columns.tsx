@@ -2,6 +2,7 @@ import { ColumnType } from '@banx/components/Table'
 import {
   DurationCell,
   HeaderCell,
+  HorizontalCell,
   NftInfoCell,
   createSolValueJSX,
 } from '@banx/components/TableComponents'
@@ -16,8 +17,9 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
     {
       key: 'collateral',
       title: <HeaderCell label="Collection" align="left" />,
-      render: ({ nftName, nftImageUrl, nft }) => (
+      render: ({ nftName, nftImageUrl, nft, id }) => (
         <NftInfoCell
+          key={id}
           nftName={nftName}
           nftImage={nftImageUrl}
           banxPoints={{
@@ -30,7 +32,9 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
     {
       key: 'borrowed',
       title: <HeaderCell label="Borrowed" />,
-      render: ({ borrowed }) => createSolValueJSX(borrowed, 1e9, '--', formatDecimal),
+      render: ({ borrowed }) => (
+        <HorizontalCell value={createSolValueJSX(borrowed, 1e9, '--', formatDecimal)} />
+      ),
       sorter: true,
     },
     {

@@ -46,4 +46,5 @@ export interface TableProps<T, P> extends TableViewProps<T> {
   classNameTableWrapper?: string
   emptyMessage?: string
   customJSX?: ReactNode
+  loaderSize?: 'large' | 'default' | 'small'
 }

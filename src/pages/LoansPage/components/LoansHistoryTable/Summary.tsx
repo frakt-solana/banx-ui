@@ -45,12 +45,9 @@ export const Summary = () => {
 
   return (
     <div className={styles.summary}>
-      <div className={styles.totalOffers}>
-        <p className={styles.totalOffersValue}>{totalLoans}</p>
-        <div className={styles.totalOffersInfo}>
-          <p className={styles.totalOffersInfoTitle}>Total loans</p>
-          <p className={styles.totalOffersInfoSubtitle}>All time</p>
-        </div>
+      <div className={styles.mainStat}>
+        <p>{totalLoans}</p>
+        <p>Total loans</p>
       </div>
       <div className={styles.statsContainer}>
         <StatInfo label="Borrowed" value={totalBorrowed} divider={1e9} />

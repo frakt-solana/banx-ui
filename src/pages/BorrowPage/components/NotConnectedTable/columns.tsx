@@ -1,9 +1,13 @@
 import { ColumnType } from '@banx/components/Table'
-import { HeaderCell, NftInfoCell, createSolValueJSX } from '@banx/components/TableComponents'
+import {
+  HeaderCell,
+  HorizontalCell,
+  NftInfoCell,
+  createSolValueJSX,
+} from '@banx/components/TableComponents'
 
 import { MarketPreview } from '@banx/api/core'
-
-import styles from './NotConnectedTable.module.less'
+import { formatDecimal } from '@banx/utils'
 
 export const getTableColumns = () => {
   const columns: ColumnType<MarketPreview>[] = [
@@ -11,27 +15,38 @@ export const getTableColumns = () => {
       key: 'collection',
       title: <HeaderCell label="Collection" align="left" />,
       render: (market) => (
-        <NftInfoCell nftName={market.collectionName} nftImage={market.collectionImage} />
+        <NftInfoCell
+          key={market.marketPubkey}
+          nftName={market.collectionName}
+          nftImage={market.collectionImage}
+        />
       ),
     },
     {
       key: 'floorPrice',
       title: <HeaderCell label="Floor" />,
-      render: (market) => createSolValueJSX(market.collectionFloor, 1e9),
+      render: (market) => (
+        <HorizontalCell
+          value={createSolValueJSX(market.collectionFloor, 1e9, '--', formatDecimal)}
+        />
+      ),
     },
 
     {
       key: 'borrow',
       title: <HeaderCell label="Borrow up to" />,
-      render: (market) => createSolValueJSX(market.bestOffer, 1e9),
+      render: (market) => (
+        <HorizontalCell value={createSolValueJSX(market.bestOffer, 1e9, '--', formatDecimal)} />
+      ),
     },
     {
       key: 'liquidity',
       title: <HeaderCell label="Liquidity" />,
       render: ({ offerTvl }) => (
-        <span className={offerTvl ? styles.liquidityCell : ''}>
-          {createSolValueJSX(offerTvl, 1e9)}
-        </span>
+        <HorizontalCell
+          value={createSolValueJSX(offerTvl, 1e9, '--', formatDecimal)}
+          isHighlighted={!!offerTvl}
+        />
       ),
     },
   ]

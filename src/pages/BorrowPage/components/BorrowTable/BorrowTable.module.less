@@ -33,30 +33,13 @@
 }
 
 .searchSelect {
-  max-width: 750px;
+  max-width: 456px;
 }
 
 .borrowButton {
   width: 104px;
 }
 
-.cellInfo {
-  &,
-  & > * {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 4px;
-  }
-}
-.cellInfoTitle {
-  font: var(--body-text-md);
-
-  &.highlight {
-    color: var(--additional-green-primary-deep);
-    font: var(--important-text-md);
-  }
-}
 .ltvValue {
   color: var(--additional-green-primary-deep);
 }
@@ -73,17 +56,19 @@
 }
 .tooltipRowLabel {
   color: var(--content-secondary);
-  font: var(--table-header-md);
+  font: var(--title-sm);
   text-transform: uppercase;
 
   @media (max-width: 640px) {
-    font: var(--table-header-sm);
+    font: var(--title-xs);
   }
 }
-.tooltipIcon svg {
-  fill: var(--content-secondary);
-  width: 13px;
-  height: 13px;
+.tooltipRowValue {
+  font: var(--body-text-md);
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
 }
 
 .bonkRewardsSnack {

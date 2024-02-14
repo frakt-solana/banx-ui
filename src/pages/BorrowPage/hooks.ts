@@ -19,13 +19,13 @@ import {
   calcBorrowValueWithProtocolFee,
   calcBorrowValueWithRentFee,
   calculateLoanValue,
+  convertOffersToSimple,
   isLoanActiveOrRefinanced,
   isLoanRepaid,
   isOfferClosed,
 } from '@banx/utils'
 
 import { useCartState } from './cartState'
-import { convertOffersToSimple } from './helpers'
 import { SimpleOffersByMarket } from './types'
 
 export const USE_BORROW_NFTS_V2_QUERY_KEY = 'walletBorrowNftsV2'

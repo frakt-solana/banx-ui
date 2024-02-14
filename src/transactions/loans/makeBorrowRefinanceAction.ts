@@ -26,6 +26,8 @@ export interface BorrowRefinanceActionOptimisticResult {
 export type MakeBorrowRefinanceActionParams = {
   loan: Loan
   offer: Offer
+  solToRefinance: number
+  aprRate: number //? Base points
 }
 
 export type MakeBorrowRefinanceAction = MakeActionFn<
@@ -81,9 +83,9 @@ const getIxnsAndSigners = async ({
   const {
     loan: { bondTradeTransaction, fraktBond },
     offer,
+    solToRefinance,
+    aprRate,
   } = ixnParams
-
-  const aprRate = bondTradeTransaction.amountOfBonds
 
   const accounts = {
     fbond: new web3.PublicKey(fraktBond.publicKey),
@@ -99,7 +101,7 @@ const getIxnsAndSigners = async ({
     oldBondTradeTransaction: bondTradeTransaction as BondTradeTransactionV2,
     bondOffer: offer as BondOfferV2,
     fraktBond: fraktBond as FraktBond,
-    minMarketFee: bondTradeTransaction.amountOfBonds,
+    minMarketFee: aprRate,
   }
 
   if (
@@ -107,7 +109,7 @@ const getIxnsAndSigners = async ({
     offer.pairState === PairState.PerpetualBondingCurveOnMarket
   ) {
     const { instructions, signers, optimisticResult } = await borrowerRefinanceToSame({
-      args: { solToRefinance: offer.currentSpotPrice, aprRate },
+      args: { solToRefinance, aprRate },
       accounts,
       optimistic,
       connection,
@@ -119,7 +121,7 @@ const getIxnsAndSigners = async ({
   } else {
     const { instructions, signers, optimisticResult } = await borrowerRefinance({
       args: {
-        solToRefinance: offer.currentSpotPrice,
+        solToRefinance,
         aprRate,
       },
       accounts: {

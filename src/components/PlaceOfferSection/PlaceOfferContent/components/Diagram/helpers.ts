@@ -1,8 +1,7 @@
 import { chain, chunk, clamp, concat, filter, uniqBy } from 'lodash'
 
 import { Loan } from '@banx/api/core'
-import { SimpleOffer } from '@banx/pages/BorrowPage/types'
-import { calcLoanBorrowedAmount, formatDecimal } from '@banx/utils'
+import { SimpleOffer, calcLoanBorrowedAmount, formatDecimal } from '@banx/utils'
 
 import { Mark } from './Diagram'
 import { MAX_BOUND_PERCENTAGE, MAX_GROUP_SIZE, MIN_BOUND_PERCENTAGE } from './constants'

@@ -16,9 +16,13 @@
 .cardsList {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding-bottom: 24px;
+  gap: 12px;
+  padding-bottom: 12px;
   flex-grow: 1;
   overflow-y: scroll;
   height: 100vh;
+
+  @media (max-width: 640px) {
+    gap: 8px;
+  }
 }

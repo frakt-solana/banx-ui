@@ -1,12 +1,10 @@
 import { useEffect, useMemo } from 'react'
 
-import { useWallet } from '@solana/wallet-adapter-react'
-import { chain, isEmpty } from 'lodash'
+import { chain } from 'lodash'
 
 import { MarketPreview, Offer } from '@banx/api/core'
-import { convertOffersToSimple } from '@banx/pages/BorrowPage/helpers'
 import { SyntheticOffer } from '@banx/store'
-import { getDecimalPlaces, useSolanaBalance } from '@banx/utils'
+import { convertOffersToSimple, useSolanaBalance } from '@banx/utils'
 
 import { Mark } from '../PlaceOfferContent/components'
 import {
@@ -14,7 +12,7 @@ import {
   convertOfferToMark,
   convertSimpleOfferToMark,
 } from '../PlaceOfferContent/components/Diagram'
-import { calcBestOfferValue, calcOfferSize, getErrorMessage, getUpdatedBondOffer } from '../helpers'
+import { calcOfferSize, getErrorMessage, getUpdatedBondOffer } from '../helpers'
 import { useLenderLoans } from './useLenderLoans'
 import { useMarketAndOffer } from './useMarketAndOffer'
 import { useOfferFormController } from './useOfferFormController'
@@ -56,7 +54,6 @@ type UsePlaceOffer = (props: {
 }) => PlaceOfferParams
 
 export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOfferPubkey }) => {
-  const { connected } = useWallet()
   const solanaBalance = useSolanaBalance({ isLive: false })
 
   const { offer, market, updateOrAddOffer } = useMarketAndOffer(offerPubkey, marketPubkey)
@@ -126,17 +123,6 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
     deltaValue,
     hasFormChanges,
   })
-
-  useEffect(() => {
-    const shouldSetBestOfferValue = !!solanaBalance && !isEditMode && connected && !isEmpty(market)
-    if (shouldSetBestOfferValue) {
-      const bestLoanValue = calcBestOfferValue({ solanaBalance, bestOffer: market.bestOffer })
-      const decimalPlaces = getDecimalPlaces(bestLoanValue / 1e9)
-      const formattedLoanValue = (bestLoanValue / 1e9)?.toFixed(decimalPlaces)
-
-      onLoanValueChange(formattedLoanValue)
-    }
-  }, [market, isEditMode, connected, solanaBalance, syntheticOffer, onLoanValueChange])
 
   const diagramData = useMemo(() => {
     const isOfferInvalid =

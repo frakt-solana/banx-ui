@@ -19,10 +19,13 @@ import {
   getNftBorrowType,
   makeBorrowAction,
 } from '@banx/transactions/borrow'
-import { enqueueSnackbar, offerNeedsReservesOptimizationOnBorrow } from '@banx/utils'
+import {
+  convertOffersToSimple,
+  enqueueSnackbar,
+  offerNeedsReservesOptimizationOnBorrow,
+} from '@banx/utils'
 
 import { CartState } from '../../cartState'
-import { convertOffersToSimple } from '../../helpers'
 import { ONE_WEEK_IN_SECONDS } from './constants'
 import { OfferWithLoanValue, TableNftData } from './types'
 
@@ -181,7 +184,7 @@ const matchNftsAndOffers: MatchNftsAndOffers = ({ nfts, rawOffers }) => {
     })
     .reduce(
       (acc, nft) => {
-        //? Find index of offer. OfferValue must be <= than selected loanValue. And mustn't be used by prev iteration
+        //? Find index of offer. OfferValue must be greater than or equal to selected loanValue. And mustn't be used by prev iteration
         const offerIndex = simpleOffers.findIndex(
           ({ loanValue: offerValue }, idx) => nft.loanValue <= offerValue && acc.offerIndex <= idx,
         )

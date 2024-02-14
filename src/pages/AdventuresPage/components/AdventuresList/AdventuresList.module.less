@@ -1,29 +1,51 @@
 .list {
   display: flex;
   flex-direction: column;
-  row-gap: 16px;
+  row-gap: 12px;
+
+  @media (max-width: 640px) {
+    row-gap: 8px;
+  }
 }
 .card {
-  padding: 16px;
-  border: 1px solid var(--bg-border);
+  border-style: solid;
+  border-color: var(--bg-border);
+  border-width: 1px 0 1px;
+  padding: 12px 24px;
+
+  @media (max-width: 640px) {
+    padding: 8px 12px;
+  }
 }
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 48px;
+  margin-bottom: 16px;
+
+  @media (max-width: 640px) {
+    margin-bottom: 8px;
+  }
 }
 .title {
   font: var(--card-header-lg);
+
+  @media (max-width: 640px) {
+    font: var(--card-header-md);
+  }
 }
 .titleEnded {
   color: var(--content-secondary);
 }
 .status {
-  font: var(--body-text-md);
+  color: var(--content-secondary);
+  font: var(--body-text-lg);
   display: flex;
   align-items: center;
-  color: var(--content-secondary);
+
+  @media (max-width: 640px) {
+    font: var(--body-text-md);
+  }
 
   &::before {
     content: '';
@@ -77,6 +99,16 @@
     width: 26px;
     height: 26px;
   }
+
+  @media (max-width: 640px) {
+    width: 32px;
+    height: 32px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
 }
 
 .timerSvg {
@@ -87,10 +119,18 @@
 
 .timer {
   font: var(--important-text-xl);
+
+  @media (max-width: 640px) {
+    font: var(--important-text-lg);
+  }
 }
 .timerText {
   text-transform: uppercase;
-  font: var(--table-header-md);
+  font: var(--title-sm);
+
+  @media (max-width: 640px) {
+    font: var(--title-xs);
+  }
 }
 
 .stats {
@@ -100,16 +140,32 @@
   justify-content: space-between;
   flex-wrap: nowrap;
   column-gap: 24px;
+
+  @media (max-width: 640px) {
+    column-gap: 8px;
+  }
 }
 
 .statsCol {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   font: var(--body-text-md);
   text-align: left;
 
   h5 {
     color: var(--content-secondary);
-    font: var(--table-header-md);
+    font: var(--title-sm);
     text-transform: uppercase;
+    white-space: nowrap;
+
+    @media (max-width: 640px) {
+      font: var(--title-xs);
+    }
+  }
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
   }
 
   &:first-of-type {
@@ -118,13 +174,18 @@
 }
 .statsColWarn {
   background: var(--additional-gold-secondary);
+  border: 1px dashed var(--content-secondary);
+  font: var(--body-text-md);
   padding: 16px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  column-gap: 12px;
-  font: var(--btn-text-md);
-  border: 1px dashed var(--content-secondary);
+  gap: 8px;
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+    max-width: 156px;
+    padding: 8px;
+  }
 }
 
 .statusAndBtnWrapper {
@@ -143,6 +204,11 @@
   align-items: center;
   column-gap: 10px;
   padding: 8px;
+  height: 40px;
+
+  @media (max-width: 640px) {
+    height: 32px;
+  }
 }
 
 .statusLineIcon {

@@ -32,12 +32,20 @@
   display: flex;
   align-items: center;
   gap: 24px;
-  margin-bottom: 18px;
+  margin-bottom: 24px;
+
+  @media (max-width: 640px) {
+    margin-bottom: 16px;
+  }
 }
 .weeklyRewardsInfo {
   display: flex;
   flex-direction: column;
   gap: 12px;
+
+  @media (max-width: 640px) {
+    gap: 8px;
+  }
 }
 .weeklyRewardsList {
   font: var(--body-text-md);
@@ -119,12 +127,12 @@
 }
 
 .blockTitle {
-  font: var(--table-header-md);
+  font: var(--title-sm);
   text-transform: uppercase;
   white-space: nowrap;
 
   @media (max-width: 640px) {
-    font: var(--table-header-sm);
+    font: var(--title-xs);
   }
 }
 
@@ -153,15 +161,19 @@
 }
 .totalClaimedLabel {
   color: var(--content-secondary);
-  font: var(--table-header-md);
+  font: var(--title-sm);
   text-transform: uppercase;
 
   @media (max-width: 640px) {
-    font: var(--table-header-sm);
+    font: var(--title-xs);
   }
 }
 .totalClaimedValue {
-  font: var(--body-text-sm);
+  font: var(--body-text-md);
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
 }
 .claimButton {
   width: 100%;

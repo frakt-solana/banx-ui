@@ -24,7 +24,10 @@ const LoansHeader: FC<LoansHeaderProps> = ({ loans }) => {
   const totalDebt = sumBy(loans, (loan) => calculateLoanRepayValue(loan))
 
   return (
-    <PageHeaderBackdrop title="My loans" titleBtn={<OnboardButton contentType="loans" />}>
+    <PageHeaderBackdrop
+      title="My loans"
+      titleBtn={<OnboardButton contentType="loans" title="My loans" />}
+    >
       <AdditionalStat label="Loans" value={numberOfLoans} valueType={VALUES_TYPES.STRING} />
       <AdditionalStat label="Total borrowed" value={totalBorrowed} divider={1e9} />
       <SeparateStatsLine />

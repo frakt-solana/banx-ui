@@ -3,19 +3,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px;
+  padding: 12px 24px;
+  gap: 24px;
   width: 100%;
 
-  @media (max-width: 960px) {
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: unset;
-    padding: 42px 24px;
-    gap: 16px;
-  }
-
   @media (max-width: 640px) {
-    padding: 24px 16px;
+    padding: 8px 16px;
+    gap: 16px;
   }
 }
 
@@ -26,15 +20,11 @@
 }
 
 .title {
-  font: var(--title-lg);
+  font: var(--title-3xl);
   text-transform: uppercase;
 
   @media (max-width: 960px) {
-    font: var(--title-md);
-  }
-
-  @media (max-width: 640px) {
-    font: var(--title-sm);
+    display: none;
   }
 }
 
@@ -42,12 +32,14 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  overflow: auto hidden;
+  margin-right: -24px;
+  padding-right: 24px;
 
   @media (max-width: 640px) {
-    overflow-x: auto;
-    overflow-y: hidden;
+    margin-right: -16px;
+    padding-right: 16px;
     gap: 8px;
-    width: 100%;
   }
 }
 
@@ -55,34 +47,46 @@
 .additionalContainer {
   flex-direction: column-reverse;
   white-space: nowrap;
+  gap: 6px;
+
+  @media (max-width: 640px) {
+    gap: 2px;
+  }
 }
 
 .mainContainer {
   align-items: flex-end;
-  gap: 0;
 }
-
 .mainValue {
   font: var(--important-text-md);
-  line-height: 24px;
-}
+  line-height: 18px;
 
+  @media (max-width: 640px) {
+    font: var(--important-text-sm);
+  }
+}
 .mainLabel {
   color: var(--content-primary);
-  font: var(--table-header-md);
+  font: var(--title-sm);
+
+  @media (max-width: 640px) {
+    font: var(--title-xs);
+  }
 }
 
 .additionalValue {
   display: flex;
   align-items: center;
   gap: 4px;
-  font: var(--body-text-md);
-  line-height: 21px;
+  line-height: 18px;
 }
-
 .additionalLabel {
-  font: var(--table-header-md);
+  font: var(--table-header-sm);
   text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--table-header-xs);
+  }
 }
 
 .separateLine {

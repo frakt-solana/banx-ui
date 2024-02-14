@@ -2,7 +2,7 @@ import { FC, useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { isEmpty } from 'lodash'
+import { chain, isEmpty } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
@@ -11,12 +11,15 @@ import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan } from '@banx/api/core'
 import { useMarketOffers } from '@banx/pages/LendPage'
-import { calculateClaimValue, findBestOffer, useLenderLoans } from '@banx/pages/OffersPage'
+import { calculateClaimValue, useLenderLoans } from '@banx/pages/OffersPage'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { makeInstantRefinanceAction, makeTerminateAction } from '@banx/transactions/loans'
 import {
+  calculateLoanRepayValue,
   enqueueSnackbar,
+  filterOutWalletLoans,
+  findSuitableOffer,
   formatDecimal,
   isLoanActiveOrRefinanced,
   isLoanTerminating,
@@ -80,7 +83,20 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   })
 
   const bestOffer = useMemo(() => {
-    return findBestOffer({ loan, offers, walletPubkey: wallet?.publicKey?.toBase58() || '' })
+    return chain(offers)
+      .thru((offers) =>
+        filterOutWalletLoans({
+          offers,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+        }),
+      )
+      .thru((offers) =>
+        findSuitableOffer({
+          loanValue: calculateLoanRepayValue(loan),
+          offers,
+        }),
+      )
+      .value()
   }, [offers, loan, wallet])
 
   const loanActiveOrRefinanced = isLoanActiveOrRefinanced(loan)
@@ -118,6 +134,8 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   }
 
   const instantLoan = () => {
+    if (!bestOffer) return
+
     new TxnExecutor(makeInstantRefinanceAction, { wallet, connection })
       .addTxnParam({ loan, bestOffer })
       .on('pfSuccessEach', (results) => {

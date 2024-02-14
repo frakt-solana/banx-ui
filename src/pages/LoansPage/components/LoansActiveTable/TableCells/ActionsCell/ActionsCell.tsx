@@ -1,12 +1,10 @@
 import { FC, useMemo } from 'react'
 
-import { chain } from 'lodash'
-
 import { Button } from '@banx/components/Buttons'
 
 import { Loan, Offer } from '@banx/api/core'
 import { useModal } from '@banx/store'
-import { isLoanTerminating } from '@banx/utils'
+import { isLoanTerminating, isOfferNotEmpty } from '@banx/utils'
 
 import { RefinanceModal } from './RefinanceModal'
 import { RepayModal } from './RepayModal'
@@ -27,14 +25,9 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, offers, isCardView, di
 
   const isTerminatingStatus = isLoanTerminating(loan)
 
-  const offerToRefinance = useMemo(() => {
+  const refinanceAvailable = useMemo(() => {
     const offersByMarket = offers[fraktBond.hadoMarket || '']
-    return chain(offersByMarket)
-      .sortBy(offersByMarket, 'currentSpotPrice')
-      .filter(isOfferNotEmpty)
-      .reverse()
-      .value()
-      .at(0)
+    return !!offersByMarket?.filter(isOfferNotEmpty).length
   }, [offers, fraktBond])
 
   return (
@@ -43,9 +36,9 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, offers, isCardView, di
         className={styles.refinanceButton}
         size={isCardView ? 'medium' : 'small'}
         variant="secondary"
-        disabled={disableActions || !offerToRefinance}
+        disabled={disableActions || !refinanceAvailable}
         onClick={(event) => {
-          open(RefinanceModal, { loan, offer: offerToRefinance })
+          open(RefinanceModal, { loan })
           event.stopPropagation()
         }}
       >
@@ -64,13 +57,4 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, offers, isCardView, di
       </Button>
     </div>
   )
-}
-
-const isOfferNotEmpty = (offer: Offer) => {
-  const { fundsSolOrTokenBalance, currentSpotPrice } = offer
-  const fullOffersAmount = Math.floor(fundsSolOrTokenBalance / currentSpotPrice)
-  if (fullOffersAmount >= 1) return true
-  const decimalLoanValue = fundsSolOrTokenBalance - currentSpotPrice * fullOffersAmount
-  if (decimalLoanValue > 0) return true
-  return false
 }
