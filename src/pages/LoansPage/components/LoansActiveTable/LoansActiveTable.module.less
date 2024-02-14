@@ -7,18 +7,30 @@
 }
 
 .table {
-  min-width: 1036px;
+  tr > td,
+  tr > th {
+    &:first-child,
+    &:last-child {
+      width: 210px;
+    }
+  }
 
-  table {
+  @media (max-width: 1180px) {
+    min-width: 990px;
+  }
+
+  @media (max-width: 640px) {
+    min-width: 762px;
+
     tr > td,
     tr > th {
-      width: 144px;
+      width: 96px;
 
       &:first-child {
-        width: 220px;
+        width: 168px;
       }
       &:last-child {
-        width: 240px;
+        width: 210px;
       }
     }
   }
