@@ -132,17 +132,22 @@ export const banxSignIn: BanxSignIn = async ({ publicKey, signature }) => {
   return data?.access_token ?? null
 }
 
-//TODO Not implemented on BE yet. Use instead of manual expiration check of access token
-type CheckBanxAccessToken = (token: string) => Promise<boolean>
-export const checkBanxAccessToken: CheckBanxAccessToken = async (token) => {
-  const { data } = await axios.post<{ token_valid: boolean }>(
-    `${BACKEND_BASE_URL}/auth/validate-token`,
-    {
-      token,
-    },
-  )
+type CheckBanxJwt = (jwt: string) => Promise<boolean>
+export const checkBanxJwt: CheckBanxJwt = async (jwt) => {
+  try {
+    const { data } = await axios.get<{ wallet: string }>(`${BACKEND_BASE_URL}/auth/user`, {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    })
 
-  return data?.token_valid ?? false
+    if (!data.wallet) return false
+
+    return true
+  } catch (error) {
+    console.error(error)
+    return false
+  }
 }
 
 type FetchUserLockedRewards = (props: { publicKey: string }) => Promise<UserLockedRewards>
