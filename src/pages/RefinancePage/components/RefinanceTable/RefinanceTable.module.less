@@ -7,19 +7,40 @@
 }
 
 .refinanceTable {
-  min-width: 1116px;
+  min-width: 972px;
 
-  table {
+  tr > td,
+  tr > th {
+    &:first-child {
+      width: 220px;
+    }
+
+    &:last-child {
+      width: 160px;
+    }
+  }
+
+  @media (max-width: 1240px) {
     tr > td,
     tr > th {
-      width: 144px;
+      width: 110px;
+
+      //? Weekly interest cell
+      &:nth-child(4) {
+        width: 136px;
+      }
+    }
+  }
+
+  @media (max-width: 640px) {
+    min-width: 848px;
+
+    tr > td,
+    tr > th {
+      width: 96px;
 
       &:first-child {
-        width: 220px;
-      }
-
-      &:last-child {
-        width: 176px;
+        width: 168px;
       }
     }
   }

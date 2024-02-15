@@ -9,13 +9,29 @@
 .borrowTable {
   min-width: 796px;
 
-  table {
+  tr > td,
+  tr > th {
+    &:first-child {
+      width: 220px;
+    }
+    &:last-child {
+      width: 144px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    min-width: 614px;
+
     tr > td,
     tr > th {
-      width: 144px;
+      width: 96px;
+
+      &:nth-child(3) {
+        width: 110px;
+      }
 
       &:first-child {
-        width: 220px;
+        width: 168px;
       }
     }
   }
