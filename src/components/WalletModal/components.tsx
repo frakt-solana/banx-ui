@@ -3,9 +3,9 @@ import { FC } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 
 import { useDiscordUser } from '@banx/hooks'
-import { ChangeWallet, Copy, FRKT, SignOut } from '@banx/icons'
+import { ChangeWallet, Copy, Logo, SignOut } from '@banx/icons'
 import { useIsLedger } from '@banx/store'
-import { copyToClipboard, shortenAddress } from '@banx/utils'
+import { copyToClipboard, formatNumbersWithCommas, shortenAddress } from '@banx/utils'
 
 import Checkbox from '../Checkbox'
 import { StatInfo, VALUES_TYPES } from '../StatInfo'
@@ -43,7 +43,7 @@ const UserBalance = () => {
 
   const { data } = useFetchUserLockedRewards(publicKeyString)
 
-  const displayRewardsValue = (data?.rewards || 0)?.toFixed(2)
+  const displayRewardsValue = formatNumbersWithCommas(data?.rewards?.toFixed(0) || 0)
 
   return (
     <div className={styles.userBalanceContainer}>
@@ -51,9 +51,9 @@ const UserBalance = () => {
         flexType="row"
         label="Rewards"
         value={displayRewardsValue}
-        classNamesProps={{ value: styles.userLockedTokens }}
+        classNamesProps={{ container: styles.userRewards, value: styles.userLockedTokens }}
         valueType={VALUES_TYPES.STRING}
-        icon={FRKT}
+        icon={Logo}
       />
     </div>
   )
