@@ -1,13 +1,11 @@
 .table {
-  min-width: 508px;
+  min-width: 304px;
 
-  table {
+  @media (max-width: 640px) {
     tr > td,
     tr > th {
-      width: 144px;
-
       &:first-child {
-        width: 220px;
+        width: 168px;
       }
     }
   }
@@ -32,7 +30,7 @@
   display: flex;
   border-radius: 100px;
   height: 8px;
-  width: 8px;
+  min-width: 8px;
 }
 
 .userRank {

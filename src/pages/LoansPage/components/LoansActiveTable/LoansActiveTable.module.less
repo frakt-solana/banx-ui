@@ -7,20 +7,17 @@
 }
 
 .table {
+  min-width: 990px;
+
   tr > td,
   tr > th {
-    &:first-child,
     &:last-child {
-      width: 210px;
+      width: 220px;
     }
   }
 
-  @media (max-width: 1180px) {
-    min-width: 990px;
-  }
-
   @media (max-width: 640px) {
-    min-width: 762px;
+    min-width: 772px;
 
     tr > td,
     tr > th {
@@ -28,9 +25,6 @@
 
       &:first-child {
         width: 168px;
-      }
-      &:last-child {
-        width: 210px;
       }
     }
   }
