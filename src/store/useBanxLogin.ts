@@ -69,44 +69,54 @@ export const useBanxLogin = () => {
     }
   }, [connection, wallet, isLoggingIn, setIsLoggingIn, setAccessToken, isLedger])
 
+  const clearWalletJwt = useCallback(
+    (walletPubKey: web3.PublicKey) => {
+      setBanxJwtLS(walletPubKey, null)
+      setAccessToken(null)
+    },
+    [setAccessToken],
+  )
+
   useEffect(() => {
-    const checkWalletAccess = async () => {
+    const checkWalletAccessLS = async () => {
+      if (!wallet.publicKey) return
+
       try {
         setIsLoggingIn(true)
 
-        if (!wallet.publicKey) return
-
         const jwt = getBanxJwtFromLS(wallet.publicKey)
+        //? Check if jwt exists in LS
         if (!jwt) {
-          setBanxJwtLS(wallet.publicKey, null)
-          setAccessToken(null)
+          clearWalletJwt(wallet.publicKey)
           return
         }
 
+        //? Check jwt validity using BE
         const isJwtValid = await checkBanxJwt(jwt)
         if (!isJwtValid) {
-          setBanxJwtLS(wallet.publicKey, null)
-          setAccessToken(null)
+          clearWalletJwt(wallet.publicKey)
           return
         }
 
         const { exp: tokenExpiredAt } = parseBanxLoginJwt(jwt)
 
-        //? Clear LS data if token is expired
+        //? Check if jwt expired
         if (tokenExpiredAt < moment().unix()) {
-          setBanxJwtLS(wallet.publicKey, null)
-          setAccessToken(null)
+          clearWalletJwt(wallet.publicKey)
           return
         }
 
         setAccessToken(jwt)
+      } catch (error) {
+        console.error(error)
+        clearWalletJwt(wallet.publicKey)
       } finally {
         setIsLoggingIn(false)
       }
     }
 
-    checkWalletAccess()
-  }, [wallet.publicKey, setAccessToken, setIsLoggingIn])
+    checkWalletAccessLS()
+  }, [wallet.publicKey, setAccessToken, setIsLoggingIn, clearWalletJwt])
 
   return {
     jwt,
@@ -116,7 +126,7 @@ export const useBanxLogin = () => {
   }
 }
 
-const BANX_LOGIN_DATA_LS_KEY = '@banx.loginData'
+const BANX_LOGIN_DATA_LS_KEY = '@banx.login'
 
 type BanxJwtsMap = Record<string, string> //? Record<walletPubkeyString, jwt>
 
