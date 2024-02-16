@@ -77,6 +77,7 @@ export const useBanxLogin = () => {
     [setAccessToken],
   )
 
+  //? Try to get jwt from LS and check its validity
   useEffect(() => {
     const checkWalletAccessLS = async () => {
       if (!wallet.publicKey) return
@@ -139,7 +140,7 @@ const getBanxJwtsFromLS = (): BanxJwtsMap | null => {
   return banxLogins || null
 }
 
-const getBanxJwtFromLS = (walletPubkey: web3.PublicKey): string | null => {
+export const getBanxJwtFromLS = (walletPubkey: web3.PublicKey): string | null => {
   const banxJwts = getBanxJwtsFromLS()
   return banxJwts?.[walletPubkey.toBase58()] || null
 }
