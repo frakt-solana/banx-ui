@@ -1,4 +1,5 @@
 export { useIsLedger } from './useIsLedger'
+export { useBanxLogin } from './useBanxLogin'
 export * from './useModal'
 export * from './useTableView'
 
