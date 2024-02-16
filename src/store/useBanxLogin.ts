@@ -16,21 +16,21 @@ interface BanxLoginState {
   isLoggingIn: boolean
   jwt: string | null
   setIsLoggingIn: (nextValue: boolean) => void
-  setAccessToken: (nextValue: string | null) => void
+  setJwt: (nextValue: string | null) => void
 }
 
 const useBanxLoginState = create<BanxLoginState>((set) => ({
   isLoggingIn: false,
   jwt: null,
   setIsLoggingIn: (nextValue) => set((state) => ({ ...state, isLoggingIn: nextValue })),
-  setAccessToken: (nextValue) => set((state) => ({ ...state, jwt: nextValue })),
+  setJwt: (nextValue) => set((state) => ({ ...state, jwt: nextValue })),
 }))
 
 export const useBanxLogin = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
 
-  const { isLoggingIn, setIsLoggingIn, jwt, setAccessToken } = useBanxLoginState()
+  const { isLoggingIn, setIsLoggingIn, jwt, setJwt } = useBanxLoginState()
 
   const { isLedger } = useIsLedger()
 
@@ -55,26 +55,25 @@ export const useBanxLogin = () => {
       if (!jwt) throw new Error('BE auth error')
 
       setBanxJwtLS(wallet.publicKey, jwt)
-
-      setAccessToken(jwt)
+      setJwt(jwt)
 
       return jwt
     } catch (error) {
       setBanxJwtLS(wallet.publicKey, null)
-      setAccessToken(null)
+      setJwt(null)
 
       return null
     } finally {
       setIsLoggingIn(false)
     }
-  }, [connection, wallet, isLoggingIn, setIsLoggingIn, setAccessToken, isLedger])
+  }, [connection, wallet, isLoggingIn, setIsLoggingIn, setJwt, isLedger])
 
   const clearWalletJwt = useCallback(
     (walletPubKey: web3.PublicKey) => {
       setBanxJwtLS(walletPubKey, null)
-      setAccessToken(null)
+      setJwt(null)
     },
-    [setAccessToken],
+    [setJwt],
   )
 
   //? Try to get jwt from LS and check its validity
@@ -92,13 +91,6 @@ export const useBanxLogin = () => {
           return
         }
 
-        //? Check jwt validity using BE
-        const isJwtValid = await checkBanxJwt(jwt)
-        if (!isJwtValid) {
-          clearWalletJwt(wallet.publicKey)
-          return
-        }
-
         const { exp: tokenExpiredAt } = parseBanxLoginJwt(jwt)
 
         //? Check if jwt expired
@@ -107,7 +99,14 @@ export const useBanxLogin = () => {
           return
         }
 
-        setAccessToken(jwt)
+        //? Check jwt validity using BE
+        const isJwtValid = await checkBanxJwt(jwt)
+        if (!isJwtValid) {
+          clearWalletJwt(wallet.publicKey)
+          return
+        }
+
+        setJwt(jwt)
       } catch (error) {
         console.error(error)
         clearWalletJwt(wallet.publicKey)
@@ -117,7 +116,7 @@ export const useBanxLogin = () => {
     }
 
     checkWalletAccessLS()
-  }, [wallet.publicKey, setAccessToken, setIsLoggingIn, clearWalletJwt])
+  }, [wallet.publicKey, setJwt, setIsLoggingIn, clearWalletJwt])
 
   return {
     jwt,
