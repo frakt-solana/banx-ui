@@ -1,4 +1,5 @@
-// import { FC } from 'react'
+import { FC } from 'react'
+
 import { PlusOutlined } from '@ant-design/icons'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { NavLink } from 'react-router-dom'
@@ -6,6 +7,7 @@ import { NavLink } from 'react-router-dom'
 import { Button } from '@banx/components/Buttons'
 import EmptyList from '@banx/components/EmptyList/EmptyList'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
+import { useFetchUserLockedRewards } from '@banx/components/WalletModal'
 
 import { Theme, useTheme } from '@banx/hooks'
 import {
@@ -14,16 +16,17 @@ import {
   CircleCheck as CircleCheckIcon,
 } from '@banx/icons'
 import { PATHS } from '@banx/router'
+import { formatNumbersWithCommas } from '@banx/utils'
 
-// import { formatNumbersWithCommas } from '@banx/utils'
-// import { useSeasonUserRewards } from '../../hooks'
 import styles from './BanxRewardsTab.module.less'
 
 const BanxRewardsTab = () => {
   const { connected } = useWallet()
 
-  // const { data } = useSeasonUserRewards()
-  // const { earlyIncentives = 0, firstSeasonRewards = 0, secondSeasonRewards = 0 } = data || {}
+  const { publicKey } = useWallet()
+  const publicKeyString = publicKey?.toBase58() || ''
+
+  const { data } = useFetchUserLockedRewards(publicKeyString)
 
   const { theme } = useTheme()
   const Icon = theme === Theme.DARK ? BanxRewardsDarkIcon : BanxRewardsIcon
@@ -31,11 +34,7 @@ const BanxRewardsTab = () => {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        <StatsBlock
-        // earlyIncentives={earlyIncentives}
-        // firstSeasonRewards={firstSeasonRewards}
-        // secondSeasonRewards={secondSeasonRewards}
-        />
+        <StatsBlock earlyIncentives={data?.rewards || 0} />
         {!connected && (
           <EmptyList className={styles.emptyList} message="Connect wallet to see your rewards" />
         )}
@@ -48,17 +47,11 @@ const BanxRewardsTab = () => {
 
 export default BanxRewardsTab
 
-// interface StatsBlockProps {
-//   earlyIncentives: number
-//   firstSeasonRewards: number
-//   secondSeasonRewards: number
-// }
+interface StatsBlockProps {
+  earlyIncentives: number
+}
 
-const StatsBlock /* : FC<StatsBlockProps> */ = (/*{
-  earlyIncentives,
-  firstSeasonRewards,
-  secondSeasonRewards,
-}*/) => {
+const StatsBlock: FC<StatsBlockProps> = ({ earlyIncentives }) => {
   const statClassNames = {
     container: styles.statContainer,
     value: styles.statValue,
@@ -69,19 +62,10 @@ const StatsBlock /* : FC<StatsBlockProps> */ = (/*{
     <div className={styles.stats}>
       <StatInfo
         label="Early incentives"
-        value="? $BANX"
-        // value={`${formatNumbersWithCommas(earlyIncentives)} $BANX`}
+        value={`${formatNumbersWithCommas(earlyIncentives?.toFixed(0))} $BANX`}
         classNamesProps={statClassNames}
         valueType={VALUES_TYPES.STRING}
         tooltipText="We converted the locked $FRKT rewards you received from past marketing campaigns to their equivalent amount of $BANX tokens"
-      />
-      <PlusOutlined />
-      <StatInfo
-        label="Leaderboard s1"
-        value="? $BANX"
-        // value={`${formatNumbersWithCommas(firstSeasonRewards)} $BANX`}
-        classNamesProps={statClassNames}
-        valueType={VALUES_TYPES.STRING}
       />
       <PlusOutlined />
       <StatInfo
@@ -113,5 +97,5 @@ const INFO_TEXTS = [
   'You can boost your rewards by staking Banx NFTs',
   'More player points staked = higher boost',
   '$banx IDO will happen at the end of leaderboard S2',
-  'At IDO, $banx rewards will start to unlock linearly over a year period',
+  // 'At IDO, $banx rewards will start to unlock linearly over a year period',
 ]

@@ -1,18 +1,19 @@
 .tableRoot {
   width: 100%;
 
-  @media (max-width: 640px) {
-    min-width: 618px;
+  @media (max-width: 1240px) {
+    min-width: 490px;
   }
 
-  table tr {
-    td,
-    th {
-      width: 110px;
+  tr > td,
+  tr > th {
+    @media (max-width: 1240px) {
+      width: 68px;
 
       &:first-child,
+      &:nth-child(4),
       &:last-child {
-        width: 144px;
+        width: 118px;
       }
     }
 
@@ -42,7 +43,14 @@
   }
 }
 
+.notConnectedTableWrapper {
+  @media (max-width: 640px) {
+    height: 364px;
+  }
+}
+
 .statusCellTitle {
+  font: var(--body-text-sm);
   white-space: nowrap;
 }
 

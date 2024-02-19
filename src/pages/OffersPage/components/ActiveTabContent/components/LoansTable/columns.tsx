@@ -9,10 +9,10 @@ import {
 } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import { calculateLentValue, isLoanAbleToTerminate } from '@banx/pages/OffersPage'
-import { formatDecimal } from '@banx/utils'
+import { calculateClaimValue, isLoanAbleToTerminate } from '@banx/pages/OffersPage'
+import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
 
-import { ActionsCell, InterestCell, StatusCell } from './TableCells'
+import { ActionsCell, ClaimCell, StatusCell } from './TableCells'
 import { LoanOptimistic } from './loansState'
 
 import styles from './LoansTable.module.less'
@@ -62,13 +62,27 @@ export const getTableColumns = ({
       },
     },
     {
-      key: 'lent',
-      title: <HeaderCell label="Lent" />,
-      render: (loan) => (
-        <HorizontalCell
-          value={createSolValueJSX(calculateLentValue(loan), 1e9, '0◎', formatDecimal)}
+      key: 'interest',
+      title: (
+        <HeaderCell
+          label="Claim"
+          tooltipText="Sum of lent amount and accrued interest to date, less any repayments"
         />
       ),
+      render: (loan) => <ClaimCell loan={loan} />,
+    },
+    {
+      key: 'ltv',
+      title: <HeaderCell label="Ltv" />,
+      render: (loan) => {
+        const ltv = (calculateClaimValue(loan) / loan.nft.collectionFloor) * 100
+        return (
+          <HorizontalCell
+            textColor={getColorByPercent(ltv, HealthColorIncreasing)}
+            value={createPercentValueJSX(ltv, '0%')}
+          />
+        )
+      },
     },
     {
       key: 'repaid',
@@ -83,16 +97,6 @@ export const getTableColumns = ({
           value={createSolValueJSX(loan.totalRepaidAmount, 1e9, '0◎', formatDecimal)}
         />
       ),
-    },
-    {
-      key: 'interest',
-      title: (
-        <HeaderCell
-          label="Claim"
-          tooltipText="Sum of lent amount and accrued interest to date, less any repayments"
-        />
-      ),
-      render: (loan) => <InterestCell loan={loan} isCardView={isCardView} />,
     },
     {
       key: 'apr',

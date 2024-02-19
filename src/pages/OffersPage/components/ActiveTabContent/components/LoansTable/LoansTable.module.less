@@ -7,15 +7,27 @@
 }
 
 .table {
-  min-width: 1084px;
+  min-width: 990px;
 
-  table {
+  tr > td,
+  tr > th {
+    &:first-child {
+      width: 220px;
+    }
+    &:last-child {
+      width: 144px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    min-width: 792px;
+
     tr > td,
     tr > th {
-      width: 144px;
+      width: 96px;
 
       &:first-child {
-        width: 220px;
+        width: 168px;
       }
     }
   }
@@ -117,4 +129,35 @@
 
 .underwater {
   background: var(--additional-yellow-secondary) !important;
+}
+
+.tooltipContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tooltipContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 220px;
+
+  span:first-child {
+    color: var(--content-secondary);
+    font: var(--title-sm);
+    text-transform: uppercase;
+
+    @media (max-width: 640px) {
+      font: var(--title-xs);
+    }
+  }
+
+  span:last-child {
+    color: var(--pure-white);
+    font: var(--body-text-md);
+
+    @media (max-width: 640px) {
+      font: var(--body-text-sm);
+    }
+  }
 }

@@ -15,7 +15,7 @@ const Header = () => {
   const { data } = useAllTotalStats()
 
   const {
-    dailyVolume = 0,
+    // dailyVolume = 0,
     activeLoans = 0,
     totalValueLocked = 0,
     loansVolumeAllTime = 0,
@@ -26,7 +26,7 @@ const Header = () => {
       title="Dashboard"
       titleBtn={<OnboardButton contentType="dashboard" title="Dashboard" />}
     >
-      <AdditionalStat label="Daily volume" value={dailyVolume} divider={1e9} decimalPlaces={0} />
+      {/* <AdditionalStat label="Daily volume" value={dailyVolume} divider={1e9} decimalPlaces={0} /> */}
       <AdditionalStat
         label="Active loans"
         value={formatNumbersWithCommas(activeLoans)}

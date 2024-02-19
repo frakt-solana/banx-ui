@@ -7,19 +7,40 @@
 }
 
 .refinanceTable {
-  min-width: 1260px;
+  min-width: 972px;
 
-  table {
+  tr > td,
+  tr > th {
+    &:first-child {
+      width: 220px;
+    }
+
+    &:last-child {
+      width: 160px;
+    }
+  }
+
+  @media (max-width: 1240px) {
     tr > td,
     tr > th {
-      width: 144px;
+      width: 110px;
+
+      //? Weekly interest cell
+      &:nth-child(4) {
+        width: 136px;
+      }
+    }
+  }
+
+  @media (max-width: 640px) {
+    min-width: 848px;
+
+    tr > td,
+    tr > th {
+      width: 96px;
 
       &:first-child {
-        width: 220px;
-      }
-
-      &:last-child {
-        width: 176px;
+        width: 168px;
       }
     }
   }
@@ -139,4 +160,35 @@
 .checkbox {
   height: 18px;
   padding-left: 18px;
+}
+
+.tooltipContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tooltipContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 200px;
+
+  span:first-child {
+    color: var(--content-secondary);
+    font: var(--title-sm);
+    text-transform: uppercase;
+
+    @media (max-width: 640px) {
+      font: var(--title-xs);
+    }
+  }
+
+  span:last-child {
+    color: var(--pure-white);
+    font: var(--body-text-md);
+
+    @media (max-width: 640px) {
+      font: var(--body-text-sm);
+    }
+  }
 }

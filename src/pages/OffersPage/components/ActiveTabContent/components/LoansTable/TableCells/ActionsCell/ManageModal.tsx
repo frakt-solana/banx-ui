@@ -25,6 +25,8 @@ import {
   isLoanTerminating,
 } from '@banx/utils'
 
+import { useSelectedLoans } from '../../loansState'
+
 import styles from './ActionsCell.module.less'
 
 interface ManageModalProps {
@@ -76,6 +78,8 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const { connection } = useConnection()
   const { close } = useModal()
 
+  const { remove: removeLoan } = useSelectedLoans()
+
   const { updateOrAddLoan, addMints: hideLoans } = useLenderLoans()
 
   const { offers, updateOrAddOffer, isLoading } = useMarketOffers({
@@ -119,6 +123,8 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
           type: 'success',
           solanaExplorerPath: `tx/${txnHash}`,
         })
+
+        removeLoan(loan.publicKey, wallet?.publicKey?.toBase58() || '')
       })
       .on('pfSuccessAll', () => {
         close()
