@@ -18,26 +18,9 @@ export const convertOfferToMark = (offerValue: number, index: number, delta: num
   return { value: index === 0 ? offerValue : offerValue - delta * index }
 }
 
-const calculatePercentage = (value: number, total: number) => {
-  const percentage = (value / total) * 100
+export const calcLeftPercentage = (markers: Mark[] | Mark[][], currentIndex: number) => {
+  const percentage = (currentIndex / (markers.length - 1)) * 100 || 0
   return clamp(percentage, MIN_BOUND_PERCENTAGE, MAX_BOUND_PERCENTAGE)
-}
-
-export const calcLeftPercentage = (
-  markers: Mark[] | Mark[][],
-  currentIndex: number,
-  collectionFloor = 0,
-) => {
-  const uniqueMarks = chain(markers as Mark[][])
-    .flatten()
-    .uniqBy((mark) => mark.value)
-    .value()
-
-  if (uniqueMarks.length === 1) {
-    return 100 - calculatePercentage(uniqueMarks[0].value, collectionFloor)
-  }
-
-  return calculatePercentage(currentIndex, markers.length - 1)
 }
 
 export const groupMarks = (markers: Mark[]): Mark[] | Mark[][] => {
