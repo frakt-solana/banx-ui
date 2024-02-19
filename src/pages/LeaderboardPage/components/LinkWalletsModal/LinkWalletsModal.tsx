@@ -351,6 +351,8 @@ const WalletInfo: FC<WalletInfoProps> = ({ beginLinkingData }) => {
               {type === 'main' && '🏠'}
             </pre>
 
+            {wallet === publicKey?.toBase58() && <Button>Active</Button>}
+
             {type === 'linked' && accessToUnlink && (
               <Button
                 variant="secondary"
