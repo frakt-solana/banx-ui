@@ -2,6 +2,7 @@ import axios from 'axios'
 import { web3 } from 'fbonds-core'
 
 import { BACKEND_BASE_URL } from '@banx/constants'
+import { MutationResponse } from '@banx/types'
 import { getDiscordAvatarUrl } from '@banx/utils'
 
 import {
@@ -173,10 +174,10 @@ type LinkWallet = (params: {
   linkedWalletJwt: string
   wallet: string
   signature: string
-}) => Promise<boolean>
+}) => Promise<MutationResponse>
 export const linkWallet: LinkWallet = async ({ linkedWalletJwt, wallet, signature }) => {
   try {
-    await axios.post(
+    const { data } = await axios.post<{ data: MutationResponse }>(
       `${BACKEND_BASE_URL}/leaderboard/link-wallet`,
       {
         publicKey: wallet,
@@ -189,29 +190,38 @@ export const linkWallet: LinkWallet = async ({ linkedWalletJwt, wallet, signatur
       },
     )
 
-    return true
+    return data.data
   } catch (error) {
     console.error(error)
-    return false
+    return {
+      message: 'Unable to link wallet',
+      success: false,
+    }
   }
 }
 
-type UnlinkWallet = (params: { jwt: string; walletToUnlink: string }) => Promise<boolean>
+type UnlinkWallet = (params: { jwt: string; walletToUnlink: string }) => Promise<MutationResponse>
 export const unlinkWallet: UnlinkWallet = async ({ jwt, walletToUnlink }) => {
   try {
-    await axios.delete(`${BACKEND_BASE_URL}/leaderboard/unlink-wallet`, {
-      data: {
-        wallet: walletToUnlink,
+    const { data } = await axios.delete<{ data: MutationResponse }>(
+      `${BACKEND_BASE_URL}/leaderboard/unlink-wallet`,
+      {
+        data: {
+          wallet: walletToUnlink,
+        },
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
       },
-      headers: {
-        Authorization: `Bearer ${jwt}`,
-      },
-    })
+    )
 
-    return true
+    return data.data
   } catch (error) {
     console.error(error)
-    return false
+    return {
+      message: 'Unable to unlink wallet',
+      success: false,
+    }
   }
 }
 
