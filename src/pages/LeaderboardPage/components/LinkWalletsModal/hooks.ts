@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
@@ -11,7 +11,7 @@ import { generateSignature } from '@banx/utils'
 export type SavedLinkingData = {
   walletPubkey: string
   jwt: string
-  data: LinkedWallet[] | null
+  linkedWallets: LinkedWallet[] | null
 }
 
 type SavedLinkingDataState = {
@@ -32,22 +32,29 @@ export const useLinkWalletsModal = () => {
   const { jwt, AUTH_MESSAGE, logIn, isLoggedIn, ...banxLoginState } = useBanxLogin()
   const { isLedger, setIsLedger } = useIsLedger()
 
-  const { data: linkedWalletsData, isLoading: linkedWalletsDataLoading } = useQuery(
+  const { data: linkedWalletsDataBE, isLoading: linkedWalletsDataBELoading } = useQuery(
     ['fetchLinkedWallets', publicKey],
     () => fetchLinkedWallets({ walletPublicKey: publicKey?.toBase58() || '' }),
   )
+
+  const linkedWalletsData = useMemo(() => {
+    if (savedLinkingData?.linkedWallets) {
+      return savedLinkingData?.linkedWallets
+    }
+    return linkedWalletsDataBE
+  }, [linkedWalletsDataBE, savedLinkingData])
 
   const onStartLinking = useCallback(() => {
     if (!publicKey || !jwt) return
     setSavedLinkingData({
       walletPubkey: publicKey.toBase58(),
       jwt: jwt,
-      data: linkedWalletsData || null,
+      linkedWallets: linkedWalletsDataBE || null,
     })
-  }, [jwt, linkedWalletsData, publicKey, setSavedLinkingData])
+  }, [jwt, linkedWalletsDataBE, publicKey, setSavedLinkingData])
 
-  const onVerify = useCallback(async () => {
-    if (!publicKey || !jwt) return
+  const onLink = useCallback(async () => {
+    if (!publicKey || !savedLinkingData) return
 
     const signature = await generateSignature({
       isLedger,
@@ -63,17 +70,31 @@ export const useLinkWalletsModal = () => {
 
     //? Optimistic here
     await linkWallet({
-      linkedWalletJwt: jwt,
+      linkedWalletJwt: savedLinkingData.jwt,
       wallet: publicKey.toBase58(),
       signature,
     })
 
-    logIn({
-      signature,
-      walletPubkey: publicKey,
-    })
+    //? If new wallet doesn't have jwt --> login
+    if (!jwt) {
+      logIn({
+        signature,
+        walletPubkey: publicKey,
+      })
+    }
+
     setSavedLinkingData(null)
-  }, [AUTH_MESSAGE, connection, isLedger, jwt, logIn, publicKey, setSavedLinkingData, wallet])
+  }, [
+    publicKey,
+    savedLinkingData,
+    isLedger,
+    AUTH_MESSAGE,
+    wallet,
+    connection,
+    jwt,
+    setSavedLinkingData,
+    logIn,
+  ])
 
   const onLogin = useCallback(async () => {
     if (!publicKey) return
@@ -124,7 +145,7 @@ export const useLinkWalletsModal = () => {
 
   return {
     linkedWalletsData,
-    isLoading: linkedWalletsDataLoading,
+    isLoading: linkedWalletsDataBELoading,
     onCloseModal,
     wallet: {
       publicKey,
@@ -140,7 +161,7 @@ export const useLinkWalletsModal = () => {
     },
     banxLoginState: { jwt, AUTH_MESSAGE, logIn, isLoggedIn, ...banxLoginState },
     onStartLinking,
-    onVerify,
+    onLink,
     onLogin,
     onUnlink,
     canUnlink,

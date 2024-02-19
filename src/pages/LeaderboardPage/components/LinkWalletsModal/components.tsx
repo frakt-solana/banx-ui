@@ -50,8 +50,7 @@ export const WalletsBlock = () => {
 //? Info about linked wallets here
 //? + Optimistic
 export const WalletInfo: FC = () => {
-  const { wallet, canUnlink, onUnlink, linkedWalletsData, savedLinkingState } =
-    useLinkWalletsModal()
+  const { wallet, canUnlink, onUnlink, linkedWalletsData } = useLinkWalletsModal()
   const { publicKey } = wallet
 
   //? No linking data and no BE info.
@@ -61,37 +60,35 @@ export const WalletInfo: FC = () => {
 
   return (
     <div>
-      {(savedLinkingState.savedLinkingData?.data || linkedWalletsData)?.map(
-        ({ type, wallet }, idx) => {
-          return (
-            <div
-              key={idx}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-              }}
-            >
-              <pre>
-                {wallet}
-                {type === 'main' && '🏠'}
-              </pre>
+      {linkedWalletsData?.map(({ type, wallet }, idx) => {
+        return (
+          <div
+            key={idx}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <pre>
+              {wallet}
+              {type === 'main' && '🏠'}
+            </pre>
 
-              {wallet === publicKey?.toBase58() && <b>&nbsp;[Active]</b>}
+            {wallet === publicKey?.toBase58() && <b>&nbsp;[Active]</b>}
 
-              {type === 'linked' && canUnlink && (
-                <Button
-                  variant="secondary"
-                  onClick={() => {
-                    onUnlink(wallet)
-                  }}
-                >
-                  Unlink
-                </Button>
-              )}
-            </div>
-          )
-        },
-      )}
+            {type === 'linked' && canUnlink && (
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  onUnlink(wallet)
+                }}
+              >
+                Unlink
+              </Button>
+            )}
+          </div>
+        )
+      })}
       <hr />
     </div>
   )

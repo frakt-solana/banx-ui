@@ -79,7 +79,7 @@ const LinkingBlock = () => {
     wallet,
     savedLinkingState,
     onStartLinking,
-    onVerify,
+    onLink,
     isDiffWalletConnected,
     ledgerState,
   } = useLinkWalletsModal()
@@ -128,7 +128,7 @@ const LinkingBlock = () => {
         />
         Add new wallet <pre>{wallet.publicKey?.toBase58()}</pre>
         <Checkbox onChange={() => setIsLedger(!isLedger)} label="I use ledger" checked={isLedger} />
-        <Button onClick={onVerify}>Verify</Button>
+        <Button onClick={onLink}>Link</Button>
       </>
     )
   }
