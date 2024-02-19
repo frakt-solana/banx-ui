@@ -11,15 +11,43 @@ import { useLinkWalletsModal } from './hooks'
 import styles from './LinkWalletsModal.module.less'
 
 export const LinkWalletsModal = () => {
-  const { onCloseModal, wallet, banxLoginState, savedLinkingState } = useLinkWalletsModal()
+  const {
+    onCloseModal,
+    wallet,
+    banxLoginState,
+    savedLinkingState,
+    linkedWalletsData,
+    isDiffWalletConnected,
+  } = useLinkWalletsModal()
   const { checkAccess } = banxLoginState
   const { publicKey } = wallet
   const { savedLinkingData } = savedLinkingState
 
+  //? Check jwt token validity
   useEffect(() => {
     if (!publicKey || savedLinkingData) return
     checkAccess(publicKey)
   }, [publicKey, checkAccess, savedLinkingData])
+
+  //? Don't allow to link wallet if it's already in this wallet group
+  useEffect(() => {
+    if (
+      !publicKey ||
+      !linkedWalletsData ||
+      !savedLinkingState.savedLinkingData ||
+      !isDiffWalletConnected
+    ) {
+      return
+    }
+
+    const walletAlreadyLinked = linkedWalletsData.some(
+      ({ wallet }) => wallet === publicKey.toBase58(),
+    )
+
+    if (walletAlreadyLinked) {
+      savedLinkingState.setSavedLinkingData(null)
+    }
+  }, [publicKey, linkedWalletsData, savedLinkingState, isDiffWalletConnected])
 
   return (
     <Modal className={styles.modal} open onCancel={onCloseModal} width={572}>
