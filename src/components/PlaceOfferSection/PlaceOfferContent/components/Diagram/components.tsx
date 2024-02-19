@@ -24,15 +24,15 @@ import styles from './Diagram.module.less'
 const TooltipRow = ({ loan }: { loan: Loan }) => {
   const { nft, totalRepaidAmount = 0 } = loan
 
-  const loanToValue = (calculateLoanRepayValue(loan) / nft.collectionFloor) * 100
+  const ltv = (calculateLoanRepayValue(loan) / nft.collectionFloor) * 100
   const loanValue = calcLoanBorrowedAmount(loan) + totalRepaidAmount
 
   return (
     <div className={styles.tooltipRowContent}>
       <ImageWithPlaceholder className={styles.nftImage} url={nft.meta.imageUrl} />
       {createSolValueJSX(loanValue, 1e9, '0◎', formatDecimal)}
-      <span style={{ color: getColorByPercent(loanToValue, HealthColorIncreasing) }}>
-        {createPercentValueJSX(loanToValue)}
+      <span style={{ color: getColorByPercent(ltv, HealthColorIncreasing) }}>
+        {createPercentValueJSX(ltv)}
       </span>
     </div>
   )
@@ -84,7 +84,11 @@ export const DiagramMark: FC<DiagramMarkProps> = ({ mark, left }) => {
     </div>
   )
 
-  return tooltipContent ? <Tooltip title={tooltipContent}>{MarkContent}</Tooltip> : MarkContent
+  if (tooltipContent) {
+    return <Tooltip title={tooltipContent}>{MarkContent}</Tooltip>
+  }
+
+  return MarkContent
 }
 
 interface CollateralImageProps {
