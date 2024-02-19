@@ -1,5 +1,6 @@
 import { FC, useMemo } from 'react'
 
+import classNames from 'classnames'
 import { compact, first, isArray, last } from 'lodash'
 
 import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
@@ -130,6 +131,6 @@ const ImageWithPlaceholder: FC<ImageWithPlaceholderProps> = ({
   return imageLoaded ? (
     <img src={url} className={className} {...attributes} />
   ) : (
-    <PlaceholderPFP className={className} />
+    <PlaceholderPFP className={classNames(styles.nftPlaceholderIcon, className)} />
   )
 }
