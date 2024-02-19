@@ -1,14 +1,11 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback } from 'react'
 
-import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { web3 } from 'fbonds-core'
 import moment from 'moment'
 import { create } from 'zustand'
 
 import { banxSignIn, checkBanxJwt } from '@banx/api/user'
-import { generateSignature, parseBanxLoginJwt } from '@banx/utils'
-
-import { useIsLedger } from './useIsLedger'
+import { parseBanxLoginJwt } from '@banx/utils'
 
 const AUTH_MESSAGE = 'Hello! Please sign this message to proceed!'
 
@@ -27,46 +24,38 @@ const useBanxLoginState = create<BanxLoginState>((set) => ({
 }))
 
 export const useBanxLogin = () => {
-  const wallet = useWallet()
-  const { connection } = useConnection()
-
   const { isLoggingIn, setIsLoggingIn, jwt, setJwt } = useBanxLoginState()
 
-  const { isLedger } = useIsLedger()
+  const logIn = useCallback(
+    async (props: { walletPubkey: web3.PublicKey; signature: string }) => {
+      const { walletPubkey, signature } = props
 
-  const logIn = useCallback(async () => {
-    if (isLoggingIn || !wallet.publicKey) return
-    try {
-      setIsLoggingIn(true)
-      const signature = await generateSignature({
-        isLedger,
-        nonce: AUTH_MESSAGE,
-        wallet,
-        connection,
-      })
+      if (isLoggingIn) return
+      try {
+        setIsLoggingIn(true)
 
-      if (!signature) return
+        const jwt = await banxSignIn({
+          publicKey: walletPubkey,
+          signature,
+        })
 
-      const jwt = await banxSignIn({
-        publicKey: wallet.publicKey,
-        signature,
-      })
+        if (!jwt) throw new Error('BE auth error')
 
-      if (!jwt) throw new Error('BE auth error')
+        setBanxJwtLS(walletPubkey, jwt)
+        setJwt(jwt)
 
-      setBanxJwtLS(wallet.publicKey, jwt)
-      setJwt(jwt)
+        return jwt
+      } catch (error) {
+        setBanxJwtLS(walletPubkey, null)
+        setJwt(null)
 
-      return jwt
-    } catch (error) {
-      setBanxJwtLS(wallet.publicKey, null)
-      setJwt(null)
-
-      return null
-    } finally {
-      setIsLoggingIn(false)
-    }
-  }, [connection, wallet, isLoggingIn, setIsLoggingIn, setJwt, isLedger])
+        return null
+      } finally {
+        setIsLoggingIn(false)
+      }
+    },
+    [isLoggingIn, setIsLoggingIn, setJwt],
+  )
 
   const clearWalletJwt = useCallback(
     (walletPubKey: web3.PublicKey) => {
@@ -76,18 +65,15 @@ export const useBanxLogin = () => {
     [setJwt],
   )
 
-  //? Try to get jwt from LS and check its validity
-  useEffect(() => {
-    const checkWalletAccessLS = async () => {
-      if (!wallet.publicKey) return
-
+  const checkAccess = useCallback(
+    async (walletPubkey: web3.PublicKey) => {
       try {
         setIsLoggingIn(true)
 
-        const jwt = getBanxJwtFromLS(wallet.publicKey)
+        const jwt = getBanxJwtFromLS(walletPubkey)
         //? Check if jwt exists in LS
         if (!jwt) {
-          clearWalletJwt(wallet.publicKey)
+          clearWalletJwt(walletPubkey)
           return
         }
 
@@ -95,34 +81,35 @@ export const useBanxLogin = () => {
 
         //? Check if jwt expired
         if (tokenExpiredAt < moment().unix()) {
-          clearWalletJwt(wallet.publicKey)
+          clearWalletJwt(walletPubkey)
           return
         }
 
         //? Check jwt validity using BE
         const isJwtValid = await checkBanxJwt(jwt)
         if (!isJwtValid) {
-          clearWalletJwt(wallet.publicKey)
+          clearWalletJwt(walletPubkey)
           return
         }
 
         setJwt(jwt)
       } catch (error) {
         console.error(error)
-        clearWalletJwt(wallet.publicKey)
+        clearWalletJwt(walletPubkey)
       } finally {
         setIsLoggingIn(false)
       }
-    }
-
-    checkWalletAccessLS()
-  }, [wallet.publicKey, setJwt, setIsLoggingIn, clearWalletJwt])
+    },
+    [setJwt, setIsLoggingIn, clearWalletJwt],
+  )
 
   return {
     jwt,
     isLoggedIn: !!jwt,
     isLoggingIn,
     logIn,
+    checkAccess,
+    AUTH_MESSAGE,
   }
 }
 
