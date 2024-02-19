@@ -59,7 +59,7 @@ export const WalletInfo: FC<WalletInfoProps> = ({ walletPublicKey }) => {
           Link wallets
         </Button>
       </div>
-      <div className={styles.walletInfoMobileBadge}>
+      <div className={styles.walletInfoMobileBadge} onClick={onLinkWalletsClick}>
         {walletPublicKey.slice(0, 4)} <LinkIcon />
       </div>
     </>
