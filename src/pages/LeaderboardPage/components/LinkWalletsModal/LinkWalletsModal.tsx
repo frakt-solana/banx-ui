@@ -17,99 +17,81 @@ import { generateSignature } from '@banx/utils'
 
 import styles from './LinkWalletsModal.module.less'
 
-type SavedData = {
+type SavedLinkingData = {
   walletPubkey: string
   jwt: string
   data: LinkedWallet[] | null
 }
 
-interface SavedDataState {
-  data: SavedData | null
-  setData: (nextValue: SavedData | null) => void
+type SavedLinkingDataState = {
+  savedLinkingData: SavedLinkingData | null
+  setSavedLinkingData: (nextValue: SavedLinkingData | null) => void
 }
 
-const useSavedDataState = create<SavedDataState>((set) => ({
-  data: null,
-  setData: (nextValue) => {
-    set((state) => {
-      return { ...state, data: nextValue }
-    })
-  },
+const useSavedDataState = create<SavedLinkingDataState>((set) => ({
+  savedLinkingData: null,
+  setSavedLinkingData: (nextValue) => set((state) => ({ ...state, savedLinkingData: nextValue })),
 }))
 
 export const LinkWalletsModal = () => {
   const { close } = useModal()
   const { publicKey } = useWallet()
-
   const { checkAccess } = useBanxLogin()
-
-  const { data: beginLinkingData, setData: setBeginLinkingData } = useSavedDataState()
+  const { savedLinkingData, setSavedLinkingData } = useSavedDataState()
 
   useEffect(() => {
-    if (!publicKey || beginLinkingData) return
+    if (!publicKey || savedLinkingData) return
     checkAccess(publicKey)
-  }, [publicKey, checkAccess, beginLinkingData])
-
-  //? Send request for wallets only if vierified
+  }, [publicKey, checkAccess, savedLinkingData])
 
   return (
     <Modal
       className={styles.modal}
       open
       onCancel={() => {
-        setBeginLinkingData(null)
+        setSavedLinkingData(null)
         close()
       }}
       width={572}
     >
-      <WalletInfo beginLinkingData={beginLinkingData} setBeginLinkingData={setBeginLinkingData} />
+      <WalletInfo savedLinkingData={savedLinkingData} />
       <LinkWalletsModalContent
-        beginLinkingData={beginLinkingData}
-        setBeginLinkingData={setBeginLinkingData}
+        savedLinkingData={savedLinkingData}
+        setSavedLinkingData={setSavedLinkingData}
       />
     </Modal>
   )
 }
 
 type LinkWalletsModalContentProps = {
-  beginLinkingData: SavedData | null
-  setBeginLinkingData: (nextValue: SavedData | null) => void
+  savedLinkingData: SavedLinkingData | null
+  setSavedLinkingData: (nextValue: SavedLinkingData | null) => void
 }
 
 const LinkWalletsModalContent: FC<LinkWalletsModalContentProps> = ({
-  beginLinkingData,
-  setBeginLinkingData,
+  savedLinkingData,
+  setSavedLinkingData,
 }) => {
   const { connected } = useWallet()
 
   const { isLoggedIn } = useBanxLogin()
 
   //? Wallet not connected and linking data isnt in progress (for some reason)
-  if (!connected && !beginLinkingData) {
+  if (!connected && !savedLinkingData) {
     return <p>Connect wallet</p>
   }
 
   //? Wallet not verified and linking data isnt in progress
-  if (connected && !isLoggedIn && !beginLinkingData) {
-    return (
-      <VerifyWalletBlock
-        beginLinkingData={beginLinkingData}
-        setBeginLinkingData={setBeginLinkingData}
-      />
-    )
+  if (connected && !isLoggedIn && !savedLinkingData) {
+    return <VerifyWalletBlock />
   }
 
   return (
-    <LinkingBlock beginLinkingData={beginLinkingData} setBeginLinkingData={setBeginLinkingData} />
+    <LinkingBlock savedLinkingData={savedLinkingData} setSavedLinkingData={setSavedLinkingData} />
   )
 }
 
-type VerifyWalletBlockProps = {
-  beginLinkingData: SavedData | null
-  setBeginLinkingData: (nextValue: SavedData | null) => void
-}
-
-const VerifyWalletBlock: FC<VerifyWalletBlockProps> = () => {
+const VerifyWalletBlock: FC = () => {
   const wallet = useWallet()
   const { isLedger, setIsLedger } = useIsLedger()
   const { connection } = useConnection()
@@ -154,11 +136,11 @@ const VerifyWalletBlock: FC<VerifyWalletBlockProps> = () => {
 }
 
 type VerifiedBlockProps = {
-  beginLinkingData: SavedData | null
-  setBeginLinkingData: (nextValue: SavedData | null) => void
+  savedLinkingData: SavedLinkingData | null
+  setSavedLinkingData: (nextValue: SavedLinkingData | null) => void
 }
 
-const LinkingBlock: FC<VerifiedBlockProps> = ({ beginLinkingData, setBeginLinkingData }) => {
+const LinkingBlock: FC<VerifiedBlockProps> = ({ savedLinkingData, setSavedLinkingData }) => {
   const { close } = useModal()
   const wallet = useWallet()
   const { connection } = useConnection()
@@ -172,43 +154,31 @@ const LinkingBlock: FC<VerifiedBlockProps> = ({ beginLinkingData, setBeginLinkin
 
   const onBeginLinking = () => {
     if (!wallet.publicKey || !jwt) return
-    setBeginLinkingData({
+    setSavedLinkingData({
       walletPubkey: wallet.publicKey.toBase58(),
       jwt,
       data: data || null,
     })
   }
 
-  if (!beginLinkingData) {
+  if (!savedLinkingData) {
     return <Button onClick={onBeginLinking}>Begin linking</Button>
   }
 
   const isDiffWalletConnected =
     !!wallet.publicKey &&
-    !!beginLinkingData &&
-    wallet.publicKey.toBase58() !== beginLinkingData?.walletPubkey
+    !!savedLinkingData &&
+    wallet.publicKey.toBase58() !== savedLinkingData?.walletPubkey
 
-  if (beginLinkingData && !wallet.connected) {
+  if (savedLinkingData && !wallet.connected) {
     return (
       <>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
+        <LinkingInProgressBlock
+          onCancel={() => {
+            setSavedLinkingData(null)
+            close()
           }}
-        >
-          <pre>Linking in Progress</pre>
-          <Button
-            onClick={() => {
-              setBeginLinkingData(null)
-              close()
-            }}
-            variant="secondary"
-            type="circle"
-          >
-            x
-          </Button>
-        </div>
+        />
         <hr />
         <SelectWalletsBlock />
       </>
@@ -218,25 +188,12 @@ const LinkingBlock: FC<VerifiedBlockProps> = ({ beginLinkingData, setBeginLinkin
   if (!isDiffWalletConnected) {
     return (
       <>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
+        <LinkingInProgressBlock
+          onCancel={() => {
+            setSavedLinkingData(null)
           }}
-        >
-          <pre>Linking in Progress</pre>
-          <Button
-            onClick={() => {
-              setBeginLinkingData(null)
-            }}
-            variant="secondary"
-            type="circle"
-          >
-            x
-          </Button>
-        </div>
+        />
         <hr />
-
         <Button
           onClick={() => {
             wallet.disconnect()
@@ -262,7 +219,7 @@ const LinkingBlock: FC<VerifiedBlockProps> = ({ beginLinkingData, setBeginLinkin
 
     //? Optimistic here
     await linkWallet({
-      linkedWalletJwt: beginLinkingData.jwt,
+      linkedWalletJwt: savedLinkingData.jwt,
       wallet: wallet.publicKey.toBase58(),
       signature,
     })
@@ -271,29 +228,17 @@ const LinkingBlock: FC<VerifiedBlockProps> = ({ beginLinkingData, setBeginLinkin
       signature,
       walletPubkey: wallet.publicKey,
     })
-    setBeginLinkingData(null)
+    setSavedLinkingData(null)
   }
 
   if (isDiffWalletConnected) {
     return (
       <>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
+        <LinkingInProgressBlock
+          onCancel={() => {
+            setSavedLinkingData(null)
           }}
-        >
-          <pre>Linking in Progress</pre>
-          <Button
-            onClick={() => {
-              setBeginLinkingData(null)
-            }}
-            variant="secondary"
-            type="circle"
-          >
-            x
-          </Button>
-        </div>
+        />
         <hr />
         Add new wallet <pre>{wallet.publicKey?.toBase58()}</pre>
         <Checkbox onChange={() => setIsLedger(!isLedger)} label="I use ledger" checked={isLedger} />
@@ -303,14 +248,33 @@ const LinkingBlock: FC<VerifiedBlockProps> = ({ beginLinkingData, setBeginLinkin
   }
 }
 
+type LinkingInProgressBlockProps = {
+  onCancel: () => void
+}
+
+const LinkingInProgressBlock: FC<LinkingInProgressBlockProps> = ({ onCancel }) => {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    >
+      <pre>Linking in Progress</pre>
+      <Button onClick={onCancel} variant="secondary" type="circle">
+        x
+      </Button>
+    </div>
+  )
+}
+
 type WalletInfoProps = {
-  beginLinkingData: SavedData | null
-  setBeginLinkingData: (nextValue: SavedData | null) => void
+  savedLinkingData: SavedLinkingData | null
 }
 
 //? Info about linked wallets here
 //? + Optimistic
-const WalletInfo: FC<WalletInfoProps> = ({ beginLinkingData }) => {
+const WalletInfo: FC<WalletInfoProps> = ({ savedLinkingData }) => {
   const { publicKey } = useWallet()
   const { isLoggedIn, jwt } = useBanxLogin()
 
@@ -321,7 +285,7 @@ const WalletInfo: FC<WalletInfoProps> = ({ beginLinkingData }) => {
   const accessToUnlink =
     publicKey && data?.some(({ wallet }) => wallet === publicKey?.toBase58()) && isLoggedIn
 
-  if (!beginLinkingData && !data) {
+  if (!savedLinkingData && !data) {
     return <p>{publicKey?.toBase58()}</p>
   }
 
@@ -337,7 +301,7 @@ const WalletInfo: FC<WalletInfoProps> = ({ beginLinkingData }) => {
 
   return (
     <div>
-      {(beginLinkingData?.data || data)?.map(({ type, wallet }, idx) => {
+      {(savedLinkingData?.data || data)?.map(({ type, wallet }, idx) => {
         return (
           <div
             key={idx}
