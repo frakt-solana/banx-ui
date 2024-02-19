@@ -50,7 +50,8 @@ export const WalletsBlock = () => {
 //? Info about linked wallets here
 //? + Optimistic
 export const WalletInfo: FC = () => {
-  const { wallet, canUnlink, onUnlink, linkedWalletsData } = useLinkWalletsModal()
+  const { wallet, canUnlink, onUnlink, linkedWalletsData, savedLinkingState } =
+    useLinkWalletsModal()
   const { publicKey } = wallet
 
   //? No linking data and no BE info.
@@ -76,7 +77,7 @@ export const WalletInfo: FC = () => {
 
             {wallet === publicKey?.toBase58() && <b>&nbsp;[Active]</b>}
 
-            {type === 'linked' && canUnlink && (
+            {type === 'linked' && canUnlink && !savedLinkingState.savedLinkingData && (
               <Button
                 variant="secondary"
                 onClick={() => {
