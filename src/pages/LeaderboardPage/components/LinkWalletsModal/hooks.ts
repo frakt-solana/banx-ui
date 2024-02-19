@@ -6,7 +6,7 @@ import { create } from 'zustand'
 
 import { LinkedWallet, fetchLinkedWallets, linkWallet, unlinkWallet } from '@banx/api/user'
 import { useBanxLogin, useIsLedger, useModal } from '@banx/store'
-import { enqueueSnackbar, generateSignature } from '@banx/utils'
+import { enqueueSnackbar, generateSignature, queryClient } from '@banx/utils'
 
 type SavedLinkingData = {
   walletPubkey: string
@@ -33,7 +33,7 @@ export const useLinkWalletsModal = () => {
   const { isLedger, setIsLedger } = useIsLedger()
 
   const { data: linkedWalletsDataBE, isLoading: linkedWalletsDataBELoading } = useQuery(
-    ['fetchLinkedWallets', publicKey],
+    createFetchLinkedWalletsQueryKey(publicKey?.toBase58() || ''),
     () => fetchLinkedWallets({ walletPublicKey: publicKey?.toBase58() || '' }),
   )
 
@@ -87,6 +87,12 @@ export const useLinkWalletsModal = () => {
         })
       }
 
+      if (savedLinkingData.linkedWallets) {
+        setLinkedWalletsOptimistic(publicKey.toBase58(), [
+          ...savedLinkingData.linkedWallets,
+          { type: 'linked', wallet: publicKey.toBase58() },
+        ])
+      }
       setSavedLinkingData(null)
       enqueueSnackbar({
         message: 'Linked sucessfully',
@@ -148,6 +154,8 @@ export const useLinkWalletsModal = () => {
           throw new Error(unlinkResponse.message || 'Unable to link wallet')
         }
 
+        removeLinkedWalletOptimistic(publicKey.toBase58(), walletToUnlink)
+
         enqueueSnackbar({
           message: 'Unlinked sucessfully',
           type: 'success',
@@ -203,3 +211,33 @@ export const useLinkWalletsModal = () => {
     isDiffWalletConnected,
   }
 }
+
+const USE_FETCH_LINKED_WALLETS_QUERY_KEY = 'fetchLinkedWallets'
+const createFetchLinkedWalletsQueryKey = (walletPubkey: string) => [
+  USE_FETCH_LINKED_WALLETS_QUERY_KEY,
+  walletPubkey,
+]
+//? Optimistics based on queryData modification
+const setLinkedWalletsOptimistic = (walletPubkey: string, nextState: LinkedWallet[]) =>
+  queryClient.setQueryData(
+    createFetchLinkedWalletsQueryKey(walletPubkey),
+    (queryData: LinkedWallet[] | undefined) => {
+      if (!queryData) return queryData
+      return nextState
+    },
+  )
+
+const removeLinkedWalletOptimistic = (walletPubkey: string, walletPubkeyToRemove: string) =>
+  queryClient.setQueryData(
+    createFetchLinkedWalletsQueryKey(walletPubkey),
+    (queryData: LinkedWallet[] | undefined) => {
+      if (!queryData) return queryData
+
+      //TODO: try to remove explicit typing
+      if (walletPubkey === walletPubkeyToRemove) {
+        return [{ wallet: walletPubkey, type: 'main' }] as LinkedWallet[]
+      }
+
+      return queryData.filter(({ wallet }) => wallet !== walletPubkeyToRemove)
+    },
+  )
