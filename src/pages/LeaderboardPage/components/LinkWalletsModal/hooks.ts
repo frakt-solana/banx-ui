@@ -6,9 +6,9 @@ import { create } from 'zustand'
 
 import { LinkedWallet, fetchLinkedWallets, linkWallet, unlinkWallet } from '@banx/api/user'
 import { useBanxLogin, useIsLedger, useModal } from '@banx/store'
-import { generateSignature } from '@banx/utils'
+import { enqueueSnackbar, generateSignature } from '@banx/utils'
 
-export type SavedLinkingData = {
+type SavedLinkingData = {
   walletPubkey: string
   jwt: string
   linkedWallets: LinkedWallet[] | null
@@ -56,34 +56,51 @@ export const useLinkWalletsModal = () => {
   const onLink = useCallback(async () => {
     if (!publicKey || !savedLinkingData) return
 
-    const signature = await generateSignature({
-      isLedger,
-      nonce: AUTH_MESSAGE,
-      wallet: {
-        publicKey,
-        ...wallet,
-      },
-      connection,
-    })
-
-    if (!signature) return
-
-    //? Optimistic here
-    await linkWallet({
-      linkedWalletJwt: savedLinkingData.jwt,
-      wallet: publicKey.toBase58(),
-      signature,
-    })
-
-    //? If new wallet doesn't have jwt --> login
-    if (!jwt) {
-      logIn({
-        signature,
-        walletPubkey: publicKey,
+    try {
+      const signature = await generateSignature({
+        isLedger,
+        nonce: AUTH_MESSAGE,
+        wallet: {
+          publicKey,
+          ...wallet,
+        },
+        connection,
       })
-    }
 
-    setSavedLinkingData(null)
+      if (!signature) return
+
+      //? Optimistic here
+      const linkResponse = await linkWallet({
+        linkedWalletJwt: savedLinkingData.jwt,
+        wallet: publicKey.toBase58(),
+        signature,
+      })
+      if (!linkResponse.success) {
+        throw new Error(linkResponse.message || 'Unable to link wallet')
+      }
+
+      //? If new wallet doesn't have jwt --> login
+      if (!jwt) {
+        logIn({
+          signature,
+          walletPubkey: publicKey,
+        })
+      }
+
+      setSavedLinkingData(null)
+      enqueueSnackbar({
+        message: 'Linked sucessfully',
+        type: 'success',
+      })
+    } catch (error) {
+      console.error({ error })
+      if (error instanceof Error) {
+        enqueueSnackbar({
+          message: error?.message,
+          type: 'error',
+        })
+      }
+    }
   }, [
     publicKey,
     savedLinkingData,
@@ -121,11 +138,29 @@ export const useLinkWalletsModal = () => {
     async (walletToUnlink: string) => {
       if (!publicKey || !jwt) return
 
-      //? Optimistic here
-      await unlinkWallet({
-        jwt,
-        walletToUnlink,
-      })
+      try {
+        //? Optimistic here
+        const unlinkResponse = await unlinkWallet({
+          jwt,
+          walletToUnlink,
+        })
+        if (!unlinkResponse.success) {
+          throw new Error(unlinkResponse.message || 'Unable to link wallet')
+        }
+
+        enqueueSnackbar({
+          message: 'Unlinked sucessfully',
+          type: 'success',
+        })
+      } catch (error) {
+        console.error({ error })
+        if (error instanceof Error) {
+          enqueueSnackbar({
+            message: error?.message,
+            type: 'error',
+          })
+        }
+      }
     },
     [jwt, publicKey],
   )
