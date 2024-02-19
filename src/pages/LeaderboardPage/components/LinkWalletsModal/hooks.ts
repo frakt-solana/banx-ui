@@ -79,13 +79,10 @@ export const useLinkWalletsModal = () => {
         throw new Error(linkResponse.message || 'Unable to link wallet')
       }
 
-      //? If new wallet doesn't have jwt --> login
-      if (!jwt) {
-        logIn({
-          signature,
-          walletPubkey: publicKey,
-        })
-      }
+      logIn({
+        signature,
+        walletPubkey: publicKey,
+      })
 
       if (savedLinkingData.linkedWallets) {
         setLinkedWalletsOptimistic(publicKey.toBase58(), [
@@ -114,9 +111,8 @@ export const useLinkWalletsModal = () => {
     AUTH_MESSAGE,
     wallet,
     connection,
-    jwt,
-    setSavedLinkingData,
     logIn,
+    setSavedLinkingData,
   ])
 
   const onLogin = useCallback(async () => {
