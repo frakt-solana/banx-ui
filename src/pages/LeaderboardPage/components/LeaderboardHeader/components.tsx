@@ -8,12 +8,15 @@ import Tooltip from '@banx/components/Tooltip'
 
 import { Link as LinkIcon } from '@banx/icons'
 import { PATHS } from '@banx/router'
+import { useModal } from '@banx/store'
 import {
   HealthColorDecreasing,
   formatNumbersWithCommas,
   getColorByPercent,
   shortenAddress,
 } from '@banx/utils'
+
+import { LinkWalletsModal } from '../LinkWalletsModal'
 
 import styles from './LeaderboardHeader.module.less'
 
@@ -37,12 +40,23 @@ interface WalletInfoProps {
   walletPublicKey: string
 }
 export const WalletInfo: FC<WalletInfoProps> = ({ walletPublicKey }) => {
+  const { open } = useModal()
+
+  const onLinkWalletsClick = () => {
+    open(LinkWalletsModal, {})
+  }
+
   return (
     <>
       <div className={styles.walletInfo}>
         <span className={styles.walletAddress}>{shortenAddress(walletPublicKey)}</span>
-        <Button className={styles.connectWalletButton} variant="secondary" size="small" disabled>
-          Link wallets (Soon)
+        <Button
+          className={styles.connectWalletButton}
+          variant="secondary"
+          size="small"
+          onClick={onLinkWalletsClick}
+        >
+          Link wallets
         </Button>
       </div>
       <div className={styles.walletInfoMobileBadge}>
