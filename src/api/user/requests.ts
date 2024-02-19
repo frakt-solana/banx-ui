@@ -13,6 +13,7 @@ import {
   LeaderboardData,
   LeaderboardDataSchema,
   LeaderboardTimeRange,
+  LinkedWallet,
   SeasonUserRewards,
   SeasonUserRewardsSchema,
   UserLockedRewards,
@@ -142,6 +143,70 @@ export const checkBanxJwt: CheckBanxJwt = async (jwt) => {
     })
 
     if (!data.wallet) return false
+
+    return true
+  } catch (error) {
+    console.error(error)
+    return false
+  }
+}
+
+type FetchLinkedWallets = (params: { walletPublicKey: string }) => Promise<Array<LinkedWallet>>
+export const fetchLinkedWallets: FetchLinkedWallets = async ({ walletPublicKey }) => {
+  try {
+    const { data } = await axios.get<{ data: Array<LinkedWallet> }>(
+      `${BACKEND_BASE_URL}/leaderboard/linked-wallets/${walletPublicKey}`,
+    )
+
+    return data.data
+  } catch (error) {
+    return [
+      {
+        type: 'main',
+        wallet: walletPublicKey,
+      },
+    ]
+  }
+}
+
+type LinkWallet = (params: {
+  linkedWalletJwt: string
+  wallet: string
+  signature: string
+}) => Promise<boolean>
+export const linkWallet: LinkWallet = async ({ linkedWalletJwt, wallet, signature }) => {
+  try {
+    await axios.post(
+      `${BACKEND_BASE_URL}/leaderboard/link-wallet`,
+      {
+        publicKey: wallet,
+        signature,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${linkedWalletJwt}`,
+        },
+      },
+    )
+
+    return true
+  } catch (error) {
+    console.error(error)
+    return false
+  }
+}
+
+type UnlinkWallet = (params: { jwt: string; walletToUnlink: string }) => Promise<boolean>
+export const unlinkWallet: UnlinkWallet = async ({ jwt, walletToUnlink }) => {
+  try {
+    await axios.delete(`${BACKEND_BASE_URL}/leaderboard/unlink-wallet`, {
+      data: {
+        wallet: walletToUnlink,
+      },
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    })
 
     return true
   } catch (error) {

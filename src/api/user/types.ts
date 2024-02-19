@@ -72,3 +72,8 @@ export const BonkWithdrawalSchema = z.object({
   rawTransaction: z.number().array(),
 })
 export type BonkWithdrawal = z.infer<typeof BonkWithdrawalSchema>
+
+export type LinkedWallet = {
+  type: 'main' | 'linked'
+  wallet: string
+}
