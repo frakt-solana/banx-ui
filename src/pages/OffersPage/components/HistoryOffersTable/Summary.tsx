@@ -6,12 +6,11 @@ import { Button } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 
-import { fetchLenderActivity } from '@banx/api/activity'
-import { createDownloadLink, generateCSVContent } from '@banx/utils'
+import { fetchLenderActivityCSV } from '@banx/api/activity'
+import { createDownloadLink } from '@banx/utils'
 
 import { useUserOffersStats } from '../../hooks'
 import { ACTIVITY_CSV_FILENAME } from './constants'
-import { formatLoanData } from './helpers'
 
 import styles from './HistoryOffersTable.module.less'
 
@@ -25,17 +24,9 @@ export const Summary = () => {
   const download = async () => {
     try {
       setIsDownloading(true)
-      const data = await fetchLenderActivity({
-        order: 'desc',
-        sortBy: 'timestamp',
-        walletPubkey: publicKey?.toBase58() || '',
-        getAll: true,
-      })
 
-      const formattedLoans = data.map(formatLoanData)
-      const csvContent = generateCSVContent(formattedLoans)
-
-      createDownloadLink(csvContent, ACTIVITY_CSV_FILENAME)
+      const data = await fetchLenderActivityCSV({ walletPubkey: publicKey?.toBase58() || '' })
+      createDownloadLink(data, ACTIVITY_CSV_FILENAME)
       return data
     } catch (error) {
       console.error('Error downloading data:', error)
