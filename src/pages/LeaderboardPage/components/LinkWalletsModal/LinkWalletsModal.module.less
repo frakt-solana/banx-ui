@@ -9,7 +9,11 @@
       flex-direction: column;
       justify-content: flex-end;
       align-items: stretch;
-      // margin: -1px;
+
+      @media screen and (max-width: 960px) {
+        height: unset !important;
+        max-height: 384px !important;
+      }
     }
 
     .ant-modal-content {
@@ -18,9 +22,13 @@
   }
 }
 
-.linkWalletsActionContainer {
+.linkWalletsControlsContainer {
   padding: 12px 24px 24px;
   border-top: var(--border-less-primary);
+
+  @media screen and (max-width: 640px) {
+    padding: 8px 16px 16px;
+  }
 }
 
 .explanation {
@@ -28,10 +36,6 @@
   border: 1px solid var(--additional-blue-primary);
   font: var(--body-text-md);
   padding: 8px 16px;
-
-  @media (max-width: 960px) {
-    margin: 8px 16px;
-  }
 }
 
 //? Linked wallets list component
@@ -45,6 +49,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  @media screen and (max-width: 640px) {
+    padding: 6px 16px;
+  }
 }
 .linkedWalletItemDeepBg {
   background: var(--bg-primary-deep);
@@ -52,6 +60,10 @@
 .linkedWalletKey {
   font: var(--card-header-md);
   position: relative;
+
+  @media screen and (max-width: 640px) {
+    font: var(--card-header-sm);
+  }
 }
 .linkedWalletKeyActive {
   &::before {
@@ -66,6 +78,10 @@
     left: -16px;
     top: 50%;
     transform: translateY(-50%);
+
+    @media screen and (max-width: 640px) {
+      left: -12px;
+    }
   }
 }
 .linkedWalletRightContainer {
@@ -190,8 +206,8 @@
 }
 //? Linking block
 
-//? Wallets block
-.walletsBlock {
+//? Wallets list
+.walletsList {
   width: 100%;
   display: flex;
   flex-wrap: wrap;
@@ -201,4 +217,4 @@
   row-gap: 0;
   font: var(--btn-text-sm);
 }
-//? Wallets block
+//? Wallets list

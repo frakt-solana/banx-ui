@@ -1,42 +1,17 @@
 import { FC, useState } from 'react'
 
 import { MinusOutlined } from '@ant-design/icons'
-import { WalletName } from '@solana/wallet-adapter-base'
-import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
-import { WalletItem } from '@banx/components/WalletModal'
 
 import { LinkedWallet } from '@banx/api/user'
 import { House, LoaderCircle } from '@banx/icons'
 import { shortenAddress } from '@banx/utils'
 
-import { useLinkWalletsModal } from './hooks'
+import { useLinkWalletsModal } from '../hooks'
 
-import styles from './LinkWalletsModal.module.less'
-
-export const WalletsBlock = () => {
-  const { wallets, select } = useWallet()
-
-  const handleWalletSelect = (walletName: WalletName) => {
-    select(walletName)
-  }
-
-  return (
-    <div className={styles.walletsBlock}>
-      {wallets.map(({ adapter }, idx) => (
-        <WalletItem
-          key={idx}
-          onClick={() => handleWalletSelect(adapter.name)}
-          image={adapter.icon}
-          name={adapter.name}
-          className={styles.walletItem}
-        />
-      ))}
-    </div>
-  )
-}
+import styles from '../LinkWalletsModal.module.less'
 
 export const LinkedWalletsList: FC = () => {
   const { wallet, canUnlink, onUnlink, linkedWalletsData, savedLinkingState } =

@@ -222,14 +222,13 @@ const setLinkedWalletsOptimistic = (walletPubkey: string, nextState: LinkedWalle
       return nextState
     },
   )
-
 const removeLinkedWalletOptimistic = (walletPubkey: string, walletPubkeyToRemove: string) =>
   queryClient.setQueryData(
     createFetchLinkedWalletsQueryKey(walletPubkey),
     (queryData: LinkedWallet[] | undefined) => {
       if (!queryData) return queryData
 
-      //TODO: try to remove explicit typing
+      //? An explicit conversion is required here
       if (walletPubkey === walletPubkeyToRemove) {
         return [{ wallet: walletPubkey, type: 'main' }] as LinkedWallet[]
       }
