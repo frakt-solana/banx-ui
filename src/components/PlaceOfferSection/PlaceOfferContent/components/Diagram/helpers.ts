@@ -1,7 +1,7 @@
-import { chunk, clamp, concat, filter } from 'lodash'
+import { chain, chunk, clamp, concat, filter, uniqBy } from 'lodash'
 
 import { Loan } from '@banx/api/core'
-import { SimpleOffer, calcLoanBorrowedAmount } from '@banx/utils'
+import { SimpleOffer, calcLoanBorrowedAmount, formatDecimal } from '@banx/utils'
 
 import { Mark } from './Diagram'
 import { MAX_BOUND_PERCENTAGE, MAX_GROUP_SIZE, MIN_BOUND_PERCENTAGE } from './constants'
@@ -18,19 +18,29 @@ export const convertOfferToMark = (offerValue: number, index: number, delta: num
   return { value: index === 0 ? offerValue : offerValue - delta * index }
 }
 
-export const calcLeftPercentage = (values: Mark[] | Mark[][], currentIndex: number) => {
-  const percentage = (currentIndex / (values.length - 1)) * 100
+export const calcLeftPercentage = (markers: Mark[] | Mark[][], currentIndex: number) => {
+  const percentage = (currentIndex / (markers.length - 1)) * 100 || 0
   return clamp(percentage, MIN_BOUND_PERCENTAGE, MAX_BOUND_PERCENTAGE)
 }
 
-export const groupMarks = (marks: Mark[]): Mark[] | Mark[][] => {
-  if (marks.length <= MAX_GROUP_SIZE) {
-    return marks
+export const groupMarks = (markers: Mark[]): Mark[] | Mark[][] => {
+  const uniqueMarks = uniqBy(markers, (mark) => mark.value)
+
+  // //? If all marks have the same value, group them by value. Used for offers without delta
+  if (uniqueMarks.length === 1) {
+    return chain(markers)
+      .groupBy((mark) => mark.value)
+      .values()
+      .value()
   }
 
-  const groupSize = Math.ceil(marks.length / MAX_GROUP_SIZE)
-  const marksWithLoan = filter(marks, (mark) => mark.loan !== undefined)
-  const marksWithoutLoan = filter(marks, (mark) => mark.loan === undefined)
+  if (markers.length <= MAX_GROUP_SIZE) {
+    return markers
+  }
+
+  const groupSize = Math.ceil(markers.length / MAX_GROUP_SIZE)
+  const marksWithLoan = filter(markers, (mark) => mark.loan !== undefined)
+  const marksWithoutLoan = filter(markers, (mark) => mark.loan === undefined)
 
   const groupedMarksWithLoan = chunk(marksWithLoan, groupSize)
   const groupedMarksWithoutLoan = chunk(marksWithoutLoan, groupSize)
@@ -39,3 +49,10 @@ export const groupMarks = (marks: Mark[]): Mark[] | Mark[][] => {
 }
 
 export const calculateStyle = (left: number) => `calc(${left}% - 24px)`
+
+export const formatMarkValue = (value: number) => {
+  if (!value) return '0'
+
+  const formattedDecimalValue = formatDecimal(value / 1e9)
+  return formattedDecimalValue.replace(/\.?0+$/, '')
+}

@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import React, { FC, useRef, useState } from 'react'
 
 import { Skeleton } from 'antd'
 
@@ -22,8 +22,35 @@ interface DiagramProps {
 export const Diagram: FC<DiagramProps> = ({ marks = [], isLoading }) => {
   const groupedMarks = groupMarks(marks)
 
+  const [isScrolling, setIsScrolling] = useState(false)
+  const [clientX, setClientX] = useState(0)
+  const scrollContainer = useRef<HTMLDivElement | null>(null)
+
+  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+    setIsScrolling(true)
+    setClientX(event.clientX)
+  }
+
+  const handleMouseUp = () => {
+    setIsScrolling(false)
+  }
+
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (isScrolling && scrollContainer.current) {
+      const dx = event.clientX - clientX
+      scrollContainer.current.scrollLeft -= dx
+      setClientX(event.clientX)
+    }
+  }
+
   return (
-    <div className={styles.diagramWrapper}>
+    <div
+      ref={scrollContainer}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseMove={handleMouseMove}
+      className={styles.diagramWrapper}
+    >
       <div className={styles.diagram}>
         {isLoading ? (
           <Skeleton.Input size="large" active block />
