@@ -1,29 +1,20 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 
+import { MinusOutlined } from '@ant-design/icons'
 import { WalletName } from '@solana/wallet-adapter-base'
 import { useWallet } from '@solana/wallet-adapter-react'
+import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
-import { WalletItem } from '@banx/components/WalletModal/components'
+import { WalletItem } from '@banx/components/WalletModal'
+
+import { LinkedWallet } from '@banx/api/user'
+import { House, LoaderCircle } from '@banx/icons'
+import { shortenAddress } from '@banx/utils'
 
 import { useLinkWalletsModal } from './hooks'
 
-type LinkingInProgressBlockProps = {
-  onCancel: () => void
-}
-export const LinkingInProgressBlock: FC<LinkingInProgressBlockProps> = ({ onCancel }) => (
-  <div
-    style={{
-      display: 'flex',
-      alignItems: 'center',
-    }}
-  >
-    <pre>Linking in Progress</pre>
-    <Button onClick={onCancel} variant="secondary" type="circle">
-      x
-    </Button>
-  </div>
-)
+import styles from './LinkWalletsModal.module.less'
 
 export const WalletsBlock = () => {
   const { wallets, select } = useWallet()
@@ -32,65 +23,97 @@ export const WalletsBlock = () => {
     select(walletName)
   }
 
-  //TODO: Create new WalletItem component
   return (
-    <div>
+    <div className={styles.walletsBlock}>
       {wallets.map(({ adapter }, idx) => (
         <WalletItem
           key={idx}
           onClick={() => handleWalletSelect(adapter.name)}
           image={adapter.icon}
           name={adapter.name}
+          className={styles.walletItem}
         />
       ))}
     </div>
   )
 }
 
-//? Info about linked wallets here
-//? + Optimistic
-export const WalletInfo: FC = () => {
+export const LinkedWalletsList: FC = () => {
   const { wallet, canUnlink, onUnlink, linkedWalletsData, savedLinkingState } =
     useLinkWalletsModal()
   const { publicKey } = wallet
 
-  //? No linking data and no BE info.
-  // if (!savedLinkingData && !data) {
-  //   return <p>{publicKey?.toBase58()}</p>
-  // }
+  const isWalletActive = (walletPubkey: string) => walletPubkey === publicKey?.toBase58()
+
+  const isUnlinkAvailable = (wallet: LinkedWallet) =>
+    wallet.type === 'linked' && canUnlink && !savedLinkingState.savedLinkingData
 
   return (
-    <div>
-      {linkedWalletsData?.map(({ type, wallet }, idx) => {
+    <ul className={styles.linkedWalletsList}>
+      {linkedWalletsData?.map((linkedWallet, idx) => {
         return (
-          <div
+          <LinkedWalletItem
+            className={classNames({ [styles.linkedWalletItemDeepBg]: idx % 2 === 0 })}
             key={idx}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            <pre>
-              {wallet}
-              {type === 'main' && '🏠'}
-            </pre>
-
-            {wallet === publicKey?.toBase58() && <b>&nbsp;[Active]</b>}
-
-            {type === 'linked' && canUnlink && !savedLinkingState.savedLinkingData && (
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  onUnlink(wallet)
-                }}
-              >
-                Unlink
-              </Button>
-            )}
-          </div>
+            linkedWallet={linkedWallet}
+            isActive={isWalletActive(linkedWallet.wallet)}
+            onUnlink={
+              isUnlinkAvailable(linkedWallet) ? () => onUnlink(linkedWallet.wallet) : undefined
+            }
+          />
         )
       })}
-      <hr />
-    </div>
+    </ul>
+  )
+}
+
+type LinkedWalletProps = {
+  linkedWallet: LinkedWallet
+  isActive?: boolean
+  onUnlink?: () => Promise<void>
+  className?: string
+}
+const LinkedWalletItem: FC<LinkedWalletProps> = ({
+  linkedWallet,
+  isActive = false,
+  onUnlink,
+  className,
+}) => {
+  //? For loading state
+  const [isUnlinking, setIsUnlinking] = useState(false)
+
+  const isMainWallet = linkedWallet.type === 'main'
+
+  const unlink = async () => {
+    if (!onUnlink) return
+    try {
+      setIsUnlinking(true)
+      await onUnlink()
+    } finally {
+      setIsUnlinking(false)
+    }
+  }
+
+  return (
+    <li className={classNames(styles.linkedWalletItem, className)}>
+      <p
+        className={classNames(styles.linkedWalletKey, { [styles.linkedWalletKeyActive]: isActive })}
+      >
+        {shortenAddress(linkedWallet.wallet)}
+      </p>
+      <div className={styles.linkedWalletRightContainer}>
+        {isMainWallet && <House className={styles.houseIco} />}
+        {onUnlink && !isUnlinking && (
+          <Button onClick={unlink} type="circle" variant="secondary" className={styles.unlinkBtn}>
+            <MinusOutlined />
+          </Button>
+        )}
+        {isUnlinking && (
+          <div className={styles.unlinkLoader}>
+            <LoaderCircle gradientColor="#AEAEB2" />
+          </div>
+        )}
+      </div>
+    </li>
   )
 }

@@ -1,0 +1,204 @@
+.modal {
+  :global {
+    z-index: 2;
+
+    .ant-modal-body {
+      padding: 0 !important;
+      height: 384px !important;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: stretch;
+      // margin: -1px;
+    }
+
+    .ant-modal-content {
+      padding: 0;
+    }
+  }
+}
+
+.linkWalletsActionContainer {
+  padding: 12px 24px 24px;
+  border-top: var(--border-less-primary);
+}
+
+.explanation {
+  background: var(--additional-blue-secondary);
+  border: 1px solid var(--additional-blue-primary);
+  font: var(--body-text-md);
+  padding: 8px 16px;
+
+  @media (max-width: 960px) {
+    margin: 8px 16px;
+  }
+}
+
+//? Linked wallets list component
+.linkedWalletsList {
+  flex-grow: 1;
+  overflow-y: scroll;
+}
+
+.linkedWalletItem {
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.linkedWalletItemDeepBg {
+  background: var(--bg-primary-deep);
+}
+.linkedWalletKey {
+  font: var(--card-header-md);
+  position: relative;
+}
+.linkedWalletKeyActive {
+  &::before {
+    display: block;
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--additional-green-primary);
+    z-index: 1;
+    border-radius: 50%;
+    position: absolute;
+    left: -16px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+.linkedWalletRightContainer {
+  width: 24px;
+  height: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.houseIco {
+  width: 24px;
+  height: 24px;
+  path {
+    fill: var(--content-secondary);
+  }
+}
+.unlinkBtn {
+  min-height: 24px !important;
+  min-width: 24px !important;
+  max-height: 24px !important;
+  max-width: 24px !important;
+
+  svg {
+    height: 16px !important;
+    width: 16px !important;
+  }
+
+  //? Hide unlink btn on mobile
+  @media screen and (max-width: 960px) {
+    display: none;
+  }
+}
+.unlinkLoader {
+  display: block;
+  background: var(--bg-secondary);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+
+  svg {
+    width: 16px;
+    height: 16px;
+    animation: rotate 1s infinite linear;
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+//? Linked wallets list component
+
+//? Verify wallet block
+.verifyWalletBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: 8px;
+
+  button,
+  p {
+    width: 100%;
+  }
+}
+//? Verify wallet block
+
+//? Linking block
+.linkingBlockStart {
+  button {
+    width: 100%;
+  }
+}
+
+.linkingBlockChange {
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+  p {
+    width: 100%;
+  }
+}
+
+.linkingBlockNewWallet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: 8px;
+  p {
+    width: 100%;
+  }
+}
+
+.linkingBlockSelectWallet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: 8px;
+}
+
+.linkingBtns {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 12px;
+}
+
+.cancelLinkingBtn {
+  background-color: var(--additional-red-secondary) !important;
+  border: 1px solid var(--additional-red-primary) !important;
+
+  &:hover {
+    border: 1px solid var(--additional-red-primary-deep) !important;
+  }
+}
+//? Linking block
+
+//? Wallets block
+.walletsBlock {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+}
+.walletItem {
+  width: 90px;
+  row-gap: 0;
+  font: var(--btn-text-sm);
+}
+//? Wallets block
