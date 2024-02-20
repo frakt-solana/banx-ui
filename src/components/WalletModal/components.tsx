@@ -1,6 +1,7 @@
 import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import classNames from 'classnames'
 
 import { useDiscordUser } from '@banx/hooks'
 import { ChangeWallet, Copy, Logo, SignOut } from '@banx/icons'
@@ -85,6 +86,7 @@ interface WalletItemProps {
   onClick: () => void
   image: string
   name: string
+  className?: string
 }
 
 // To prevent same background for white icons
@@ -93,14 +95,14 @@ const CustomIcon: FC<{ name: string }> = ({ name }) => {
   return IconComponent ? <IconComponent className={styles.walletIcon} /> : null
 }
 
-export const WalletItem: FC<WalletItemProps> = ({ onClick, image, name }) => {
+export const WalletItem: FC<WalletItemProps> = ({ onClick, image, name, className }) => {
   const customIconNames = Object.keys(iconComponents)
   const hasCustomIcon = customIconNames.includes(name)
 
   const shortWalletName = name.split(' ')[0]
 
   return (
-    <div className={styles.walletItem} onClick={onClick}>
+    <div className={classNames(styles.walletItem, className)} onClick={onClick}>
       {hasCustomIcon ? <CustomIcon name={name} /> : <img src={image} alt={name} />}
       {shortWalletName}
     </div>
