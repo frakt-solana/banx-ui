@@ -47,11 +47,9 @@ export const LinkingBlock = () => {
     return (
       <div className={styles.linkingBlockSelectWallet}>
         <WalletsList />
-        <div className={styles.linkingBtns}>
-          <Button className={styles.cancelLinkingBtn} onClick={onCloseModal}>
-            Cancel
-          </Button>
-        </div>
+        <Button className={styles.cancelLinkingBtn} onClick={onCloseModal}>
+          Cancel
+        </Button>
       </div>
     )
   }
