@@ -143,9 +143,7 @@ export const checkBanxJwt: CheckBanxJwt = async (jwt) => {
       },
     })
 
-    if (!data.wallet) return false
-
-    return true
+    return !!data?.wallet
   } catch (error) {
     console.error(error)
     return false
