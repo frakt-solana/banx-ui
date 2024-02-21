@@ -36,7 +36,7 @@ export const RefinanceCell: FC<RefinanceCellProps> = ({ loan, isCardView, disabl
   const { toggleVisibility } = useWalletModal()
 
   const refinance = useRefinanceTransaction(loan)
-  const buttonSize = isCardView ? 'medium' : 'small'
+  const buttonSize = isCardView ? 'default' : 'small'
 
   const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (connected) {

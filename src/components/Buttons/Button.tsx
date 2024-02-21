@@ -12,9 +12,9 @@ export interface ButtonProps {
   disabled?: boolean
   loading?: boolean //? Applies only for standard buttons
   onClick?: (args: MouseEvent<HTMLButtonElement>) => void
-  type?: 'standard' | 'circle' | 'square'
-  variant?: 'primary' | 'secondary' | 'link' | 'text'
-  size?: 'small' | 'medium' | 'large'
+  type?: 'standard' | 'circle'
+  variant?: 'primary' | 'secondary' | 'text'
+  size?: 'default' | 'small'
 }
 
 export const Button: FC<PropsWithChildren<ButtonProps>> = ({
@@ -25,7 +25,7 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({
   onClick,
   type = 'standard',
   variant = 'primary',
-  size = 'large',
+  size = 'default',
   children,
 }) => {
   const applyLoadingStyle = type === 'standard' && loading

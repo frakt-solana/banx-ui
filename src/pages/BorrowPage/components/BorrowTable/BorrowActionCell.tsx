@@ -29,7 +29,7 @@ export const BorrowActionCell: FC<BorrowActionCellProps> = ({
   return (
     <Button
       className={styles.borrowButton}
-      size={isCardView ? 'medium' : 'small'}
+      size={isCardView ? 'default' : 'small'}
       disabled={disabled}
       loading={isBorrowing}
       onClick={onClickHandler}
