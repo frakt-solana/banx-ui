@@ -53,6 +53,7 @@ export const LinkWalletsModal = () => {
 
   return (
     <Modal className={styles.modal} open onCancel={onCloseModal} width={572}>
+      <h3 className={styles.modalTitle}>Link wallets to see your total rewards</h3>
       {!!isLoading && <Loader />}
       {!isLoading && (
         <>
