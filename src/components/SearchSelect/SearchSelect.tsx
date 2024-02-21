@@ -99,6 +99,7 @@ export const SearchSelect = <P extends object>({
         onSearch={handleInputChange}
         onDropdownVisibleChange={handleDropdownVisibleChange}
         maxTagCount="responsive"
+        transitionName="" //? Remove all animations
         dropdownRender={(menu) => (
           <>
             <SelectLabels labels={labels} />
