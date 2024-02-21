@@ -58,9 +58,7 @@ export const LinkingBlock = () => {
   if (!isDiffWalletConnected) {
     return (
       <div className={styles.linkingBlockChange}>
-        <p className={styles.explanation}>
-          Please change wallet in your extension or change extension itself
-        </p>
+        <p className={styles.explanation}>Switch wallet or accounts within your existing wallet</p>
         <div className={styles.linkingBtns}>
           <Button
             className={styles.cancelLinkingBtn}
@@ -75,7 +73,7 @@ export const LinkingBlock = () => {
               wallet.disconnect()
             }}
           >
-            Change wallet
+            Proceed
           </Button>
         </div>
       </div>
@@ -86,7 +84,7 @@ export const LinkingBlock = () => {
   return (
     <div className={styles.linkingBlockNewWallet}>
       <p className={styles.explanation}>
-        Link
+        Linking wallet:
         <br />
         {wallet.publicKey?.toBase58()}
       </p>
