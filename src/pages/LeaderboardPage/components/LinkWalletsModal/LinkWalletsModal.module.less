@@ -210,11 +210,11 @@
 //? Wallets list
 .walletsList {
   width: 100%;
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  row-gap: 12px;
 }
 .walletItem {
-  width: 90px;
   row-gap: 0;
   font: var(--btn-text-sm);
 }
