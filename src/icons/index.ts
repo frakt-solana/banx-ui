@@ -48,6 +48,7 @@ export { TensorFilled } from './TensorFilled'
 export { Timer } from './Timer'
 export { Twitter } from './Twitter'
 export { Underwater } from './Underwater'
+export { Unlink } from './Unlink'
 export { Wallet } from './Wallet'
 export { WalletAvatar } from './WalletAvatar'
 

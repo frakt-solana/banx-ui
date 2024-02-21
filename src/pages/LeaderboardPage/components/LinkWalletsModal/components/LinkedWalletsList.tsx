@@ -1,12 +1,11 @@
 import { FC, useState } from 'react'
 
-import { MinusOutlined } from '@ant-design/icons'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
 
 import { LinkedWallet } from '@banx/api/user'
-import { House, LoaderCircle } from '@banx/icons'
+import { House, LoaderCircle, Unlink } from '@banx/icons'
 import { shortenAddress } from '@banx/utils'
 
 import { useLinkWalletsModal } from '../hooks'
@@ -80,7 +79,7 @@ const LinkedWalletItem: FC<LinkedWalletProps> = ({
         {isMainWallet && <House className={styles.houseIco} />}
         {onUnlink && !isUnlinking && (
           <Button onClick={unlink} type="circle" variant="secondary" className={styles.unlinkBtn}>
-            <MinusOutlined />
+            <Unlink />
           </Button>
         )}
         {isUnlinking && (
