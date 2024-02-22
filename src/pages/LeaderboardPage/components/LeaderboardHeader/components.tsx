@@ -80,15 +80,18 @@ export const LoyaltyBlock: FC<LoyaltyBlockProps> = ({
 }) => {
   const formattedLoyalty = Math.max((loyalty - 1) * 100, 0)
 
+  const formattedLenderPoints = formatNumbersWithCommas(lenderPoints?.toFixed(0))
+  const formattedBorrowerPoints = formatNumbersWithCommas(borrowerPoints?.toFixed(0))
+
   return (
     <div className={styles.loyaltyContainer}>
       <ul className={styles.loyaltyList}>
         <li>
           <span className={styles.loyaltyListTitle}>Lender pts</span>
-          {lenderPoints}
+          {formattedLenderPoints}
         </li>
         <li>
-          <span className={styles.loyaltyListTitle}>Borrower pts</span> {borrowerPoints}
+          <span className={styles.loyaltyListTitle}>Borrower pts</span> {formattedBorrowerPoints}
         </li>
         <li>
           <span className={styles.loyaltyListTitle}>
