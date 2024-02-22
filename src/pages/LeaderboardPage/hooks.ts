@@ -93,9 +93,15 @@ const removeLinkedWalletOptimistic = (walletPubkey: string, walletPubkeyToRemove
     (queryData: LinkedWallet[] | undefined) => {
       if (!queryData) return queryData
 
-      //? An explicit conversion is required here
-      if (walletPubkey === walletPubkeyToRemove) {
-        return [{ wallet: walletPubkey, type: 'main' }] as LinkedWallet[]
+      //? If we remove connected wallet
+      if (walletPubkeyToRemove === walletPubkey) {
+        const removableWallet = queryData.find(({ wallet }) => wallet === walletPubkeyToRemove)
+
+        const nextState: LinkedWallet[] = removableWallet
+          ? [{ ...removableWallet, type: 'main' }]
+          : []
+
+        return nextState
       }
 
       return queryData.filter(({ wallet }) => wallet !== walletPubkeyToRemove)
