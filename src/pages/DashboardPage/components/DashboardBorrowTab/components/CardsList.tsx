@@ -2,6 +2,8 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
+import EmptyList from '@banx/components/EmptyList'
+
 import { BorrowNft, MarketPreview, Offer } from '@banx/api/core'
 import { useFakeInfinityScroll } from '@banx/hooks'
 
@@ -30,6 +32,10 @@ const CardsList: FC<CardsListProps> = ({
 
   return (
     <>
+      {connected && !nfts.length && (
+        <EmptyList className={styles.emptyList} message="You don’t have any suitable NFTs" />
+      )}
+
       <div className={styles.cardsList}>
         {connected &&
           nftsData.map((nft) => (
