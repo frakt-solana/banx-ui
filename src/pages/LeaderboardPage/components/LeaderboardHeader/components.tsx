@@ -69,14 +69,38 @@ export const WalletInfo: FC<WalletInfoProps> = ({ walletPublicKey }) => {
 interface LoyaltyBlockProps {
   multiplier: number
   loyalty: number
+  lenderPoints: number
+  borrowerPoints: number
 }
-export const LoyaltyBlock: FC<LoyaltyBlockProps> = ({ multiplier, loyalty }) => {
+export const LoyaltyBlock: FC<LoyaltyBlockProps> = ({
+  multiplier,
+  loyalty,
+  lenderPoints,
+  borrowerPoints,
+}) => {
   const formattedLoyalty = Math.max((loyalty - 1) * 100, 0)
 
   return (
     <div className={styles.loyaltyContainer}>
-      <div className={styles.loyaltyInfoWrapper}>
-        <LoyaltyInfo multiplier={multiplier} />
+      <ul className={styles.loyaltyList}>
+        <li>
+          <span className={styles.loyaltyListTitle}>Lender pts</span>
+          {lenderPoints}
+        </li>
+        <li>
+          <span className={styles.loyaltyListTitle}>Borrower pts</span> {borrowerPoints}
+        </li>
+        <li>
+          <span className={styles.loyaltyListTitle}>
+            Boost{' '}
+            <Tooltip title="Only $BANX rewards are boosted by staking Banx NFTs, the more player points staked the higher the boost" />{' '}
+          </span>
+          <span className={styles.loyaltyBoost}>{multiplier}x</span>
+        </li>
+      </ul>
+
+      <div className={styles.loyaltyBoostIncrease}>
+        <p>Want to increase your boost?</p>
         <NavLink className={styles.stakeBanxButton} to={PATHS.ADVENTURES}>
           <Button variant="secondary" size="small">
             Stake Banx
@@ -87,23 +111,6 @@ export const LoyaltyBlock: FC<LoyaltyBlockProps> = ({ multiplier, loyalty }) => 
     </div>
   )
 }
-
-interface LoyaltyInfoProps {
-  multiplier: number
-}
-
-const LoyaltyInfo: FC<LoyaltyInfoProps> = ({ multiplier }) => (
-  <div className={styles.loyaltyInfo}>
-    <span className={styles.loyaltyMultiplier}>{multiplier}x</span>
-    <div className={styles.loyaltyDetails}>
-      <span className={styles.loyaltyTitle}>
-        Boost
-        <Tooltip title="Only $BANX rewards are boosted by staking Banx NFTs, the more player points staked the higher the boost" />
-      </span>
-      <span className={styles.loyaltySubtitle}>Want to increase your boost?</span>
-    </div>
-  </div>
-)
 
 export const NoConnectedWalletInfo = () => (
   <span className={styles.notConnectedTitle}>Unknown Banx</span>
@@ -131,7 +138,7 @@ const LoyaltyProgressBar: FC<LoyaltyProgressBarProps> = ({ percentage }) => {
   const loyaltyColor = getColorByPercent(percentage, HealthColorDecreasing)
 
   return (
-    <div className={styles.progressContainer}>
+    <div className={styles.loyaltyDiagramContainer}>
       <svg viewBox="0 0 100 70">
         <path {...commonPathProps} />
         <path
@@ -142,7 +149,7 @@ const LoyaltyProgressBar: FC<LoyaltyProgressBarProps> = ({ percentage }) => {
         />
       </svg>
       <StatInfo
-        classNamesProps={{ container: styles.textContainer, value: styles.value }}
+        classNamesProps={{ container: styles.loyaltyDiagramText, value: styles.value }}
         valueStyles={{ color: loyaltyColor }}
         label="Loyalty"
         value={percentage}
