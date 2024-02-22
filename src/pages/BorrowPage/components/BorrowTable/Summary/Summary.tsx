@@ -139,7 +139,6 @@ export const Summary: FC<SummaryProps> = ({
           onClick={onBorrow}
           disabled={!nftsInCart.length}
           loading={isBorrowing}
-          size="large"
         >
           {!!showBonkRewardsSticker && (
             <Tooltip className={styles.bonkTokenSticker} title="50% upfront fee refunded in $BONK">

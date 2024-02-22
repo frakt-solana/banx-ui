@@ -24,7 +24,7 @@ export const Header = () => {
     <div className={styles.header}>
       <NavLink to={PATHS.ROOT} className={styles.logoWrapper}>
         <LogoFull className={styles.logo} />
-        <Logo className={styles.logoBasic} />
+        <Logo className={styles.logoMobile} />
       </NavLink>
       <div className={styles.widgetContainer}>
         <RewardsButton />

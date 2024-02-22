@@ -66,7 +66,6 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
         className={styles.claimButton}
         onClick={claimInterest}
         disabled={!totalAccruedInterest}
-        variant="secondary"
       >
         Claim
       </Button>

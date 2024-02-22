@@ -66,15 +66,12 @@
     display: none;
   }
 
-  // background: var(--additional-green-secondary);
-  // border: 0.5px solid var(--additional-green-primary-deep);
-  // color: var(--additional-green-primary-deep);
-  // cursor: pointer;
+  background: var(--additional-green-secondary);
+  border: 0.5px solid var(--additional-green-primary-deep);
+  color: var(--additional-green-primary-deep);
+  cursor: pointer;
 
-  background: var(--bg-secondary);
-  border: 0.5px solid var(--bg-border);
   border-radius: 100px;
-  color: var(--content-secondary);
 
   font: var(--body-text-sm);
 
@@ -90,7 +87,8 @@
   right: 8px;
 
   svg path {
-    fill: var(--content-secondary);
+    // fill: var(--content-secondary);
+    fill: var(--additional-green-primary-deep);
   }
 
   @media (max-width: 640px) {
@@ -125,60 +123,89 @@
   }
 }
 
-// Loyalty block styles
+//? Loyalty block styles
 .loyaltyContainer {
   display: flex;
-  align-items: center;
-  gap: 24px;
-  @media (max-width: 640px) {
-    gap: 8px;
+  align-items: flex-end;
+  column-gap: 24px;
+
+  @media (max-width: 960px) {
+    column-gap: 12px;
   }
-}
-.loyaltyInfoWrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  @media (max-width: 640px) {
-    gap: 4px;
-  }
-}
-.loyaltyInfo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.loyaltyDetails {
-  display: flex;
-  flex-direction: column;
-}
-.loyaltyMultiplier {
-  color: var(--pure-purple);
-  font: var(--important-text-xll);
 
   @media (max-width: 640px) {
-    font: var(--important-text-xl);
+    column-gap: 8px;
   }
 }
-.loyaltyTitle {
+
+.loyaltyList {
   display: flex;
-  align-items: center;
-  gap: 4px;
-  color: var(--content-secondary);
-  font: var(--table-header-md);
+  flex-direction: column;
+  justify-content: center;
+  font: var(--body-text-md);
+  row-gap: 4px;
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    column-gap: 8px;
+
+    @media (max-width: 640px) {
+      column-gap: 4px;
+    }
+  }
+}
+.loyaltyListTitle {
   text-transform: uppercase;
+  font: var(--title-sm);
+  color: var(--content-secondary);
+  display: flex;
+  align-items: center;
+  column-gap: 4px;
 
   @media (max-width: 640px) {
-    font: var(--table-header-sm);
+    font: var(--title-xs);
+    column-gap: 2px;
   }
 }
-.loyaltySubtitle {
+.loyaltyBoost {
   font: var(--important-text-md);
+  font-size: 14px;
+  color: var(--pure-purple);
 
   @media (max-width: 640px) {
-    font: var(--important-text-xs);
+    font: var(--important-text-sm);
+    font-size: 12px;
   }
 }
+
+.loyaltyBoostIncrease {
+  display: flex;
+  flex-direction: column;
+  row-gap: 4px;
+  max-width: 176px;
+
+  @media (max-width: 640px) {
+    max-width: 104px;
+  }
+
+  p {
+    font: var(--important-text-md);
+    font-size: 14px;
+    line-height: normal;
+
+    @media (max-width: 640px) {
+      font: var(--important-text-sm);
+      font-size: 12px;
+    }
+  }
+}
+
 .stakeBanxButton {
   &,
   button {
@@ -187,7 +214,7 @@
   }
 }
 
-.progressContainer {
+.loyaltyDiagramContainer {
   position: relative;
   height: 74px;
   width: 116px;
@@ -197,12 +224,11 @@
   }
 
   @media (max-width: 640px) {
-    height: 60px;
-    width: 72px;
+    display: none;
   }
 }
 
-.textContainer {
+.loyaltyDiagramText {
   position: absolute;
   bottom: 0;
   left: 50%;
@@ -224,3 +250,4 @@
     }
   }
 }
+//? Loyalty block styles
