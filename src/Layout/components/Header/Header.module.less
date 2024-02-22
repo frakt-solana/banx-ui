@@ -16,7 +16,7 @@
   margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 
   @media (max-width: 640px) {
     gap: 8px;
@@ -25,14 +25,6 @@
   a {
     text-decoration: none;
   }
-}
-
-.logoWrapper {
-  display: flex;
-  align-items: center;
-}
-.logoWrapper svg path {
-  fill: var(--content-primary);
 }
 
 .rewardsButton {
@@ -73,20 +65,24 @@
   color: var(--additional-orange-primary);
 }
 
-.logo {
-  height: 40px;
-}
+.logoWrapper {
+  height: 32px;
 
-.logoBasic {
-  display: none;
-}
+  svg path {
+    fill: var(--content-primary);
+  }
 
-@media screen and (max-width: 960px) {
-  .logo {
+  .logoMobile {
     display: none;
   }
 
-  .logoBasic {
-    display: flex;
+  @media screen and (max-width: 960px) {
+    .logo {
+      display: none;
+    }
+
+    .logoMobile {
+      display: flex;
+    }
   }
 }

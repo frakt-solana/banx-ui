@@ -2,6 +2,7 @@ import axios from 'axios'
 import { web3 } from 'fbonds-core'
 
 import { BACKEND_BASE_URL } from '@banx/constants'
+import { MutationResponse } from '@banx/types'
 import { getDiscordAvatarUrl } from '@banx/utils'
 
 import {
@@ -13,6 +14,8 @@ import {
   LeaderboardData,
   LeaderboardDataSchema,
   LeaderboardTimeRange,
+  LinkWalletResponse,
+  LinkedWallet,
   SeasonUserRewards,
   SeasonUserRewardsSchema,
   UserLockedRewards,
@@ -132,17 +135,104 @@ export const banxSignIn: BanxSignIn = async ({ publicKey, signature }) => {
   return data?.access_token ?? null
 }
 
-//TODO Not implemented on BE yet. Use instead of manual expiration check of access token
-type CheckBanxAccessToken = (token: string) => Promise<boolean>
-export const checkBanxAccessToken: CheckBanxAccessToken = async (token) => {
-  const { data } = await axios.post<{ token_valid: boolean }>(
-    `${BACKEND_BASE_URL}/auth/validate-token`,
-    {
-      token,
-    },
-  )
+type CheckBanxJwt = (jwt: string) => Promise<boolean>
+export const checkBanxJwt: CheckBanxJwt = async (jwt) => {
+  try {
+    const { data } = await axios.get<{ wallet: string }>(`${BACKEND_BASE_URL}/auth/user`, {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    })
 
-  return data?.token_valid ?? false
+    return !!data?.wallet
+  } catch (error) {
+    console.error(error)
+    return false
+  }
+}
+
+type FetchLinkedWallets = (params: { walletPublicKey: string }) => Promise<Array<LinkedWallet>>
+export const fetchLinkedWallets: FetchLinkedWallets = async ({ walletPublicKey }) => {
+  try {
+    const { data } = await axios.get<{ data: Array<LinkedWallet> }>(
+      `${BACKEND_BASE_URL}/leaderboard/linked-wallets/${walletPublicKey}`,
+    )
+
+    return data.data
+  } catch (error) {
+    const defaultResponse: LinkedWallet[] = [
+      {
+        type: 'main',
+        wallet: walletPublicKey,
+        borrowerPoints: 0,
+        borrowerRank: 0,
+        lenderPoints: 0,
+        lenderRank: 0,
+      },
+    ]
+
+    return defaultResponse
+  }
+}
+
+type LinkWallet = (params: {
+  linkedWalletJwt: string
+  wallet: string
+  signature: string
+}) => Promise<LinkWalletResponse>
+export const linkWallet: LinkWallet = async ({ linkedWalletJwt, wallet, signature }) => {
+  try {
+    const { data } = await axios.post<{ data: LinkWalletResponse }>(
+      `${BACKEND_BASE_URL}/leaderboard/link-wallet`,
+      {
+        publicKey: wallet,
+        signature,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${linkedWalletJwt}`,
+        },
+      },
+    )
+
+    return data.data
+  } catch (error) {
+    console.error(error)
+    const errorResponse: LinkWalletResponse = {
+      message: 'Unable to link wallet',
+      success: false,
+      borrowerPoints: 0,
+      borrowerRank: 0,
+      lenderPoints: 0,
+      lenderRank: 0,
+    }
+    return errorResponse
+  }
+}
+
+type UnlinkWallet = (params: { jwt: string; walletToUnlink: string }) => Promise<MutationResponse>
+export const unlinkWallet: UnlinkWallet = async ({ jwt, walletToUnlink }) => {
+  try {
+    const { data } = await axios.delete<{ data: MutationResponse }>(
+      `${BACKEND_BASE_URL}/leaderboard/unlink-wallet`,
+      {
+        data: {
+          wallet: walletToUnlink,
+        },
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      },
+    )
+
+    return data.data
+  } catch (error) {
+    console.error(error)
+    return {
+      message: 'Unable to unlink wallet',
+      success: false,
+    }
+  }
 }
 
 type FetchUserLockedRewards = (props: { publicKey: string }) => Promise<UserLockedRewards>

@@ -1,12 +1,12 @@
 body .input {
   background: var(--bg-action);
-  border-radius: 0;
+  border-radius: 6px;
   color: var(--content-primary);
   font: var(--body-text-md);
   outline: none;
   transition: none;
   padding: 8px 12px;
-  height: 40px;
+  height: 32px;
 
   &,
   &:hover,
@@ -28,11 +28,15 @@ body .input {
   &:disabled {
     background: var(--bg-action);
     color: var(--content-secondary);
+    pointer-events: none;
+
+    svg path {
+      fill: var(--content-secondary);
+    }
   }
 
   @media (max-width: 640px) {
     font: var(--body-text-sm);
-    height: 32px;
   }
 }
 
@@ -40,10 +44,8 @@ body .input {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-top: 16px;
 
   @media (max-width: 640px) {
-    margin-top: 8px;
     gap: 6px;
   }
 }
@@ -56,18 +58,15 @@ body .input {
 
 .label {
   color: var(--content-secondary);
-  font: var(--table-header-sm);
+  font: var(--table-header-xs);
   text-transform: uppercase;
   white-space: nowrap;
-
-  @media (max-width: 640px) {
-    font: var(--table-header-xs);
-  }
 }
 
 /* Input counter styles */
 .inputCounterWrapper {
   border: var(--border-primary);
+  border-radius: 6px;
   display: flex;
   justify-content: flex-end;
   text-align: center;
@@ -97,38 +96,9 @@ body .input {
   &:last-child {
     border-left: var(--border-primary);
   }
-}
-.counterButton svg path {
-  fill: var(--content-primary);
-}
-.counterButton.disabled {
-  pointer-events: none;
+
   svg path {
-    fill: var(--content-secondary);
-  }
-}
-
-/* Number input styles */
-.numericInputWrapper {
-  border: var(--border-primary);
-
-  display: flex;
-  justify-content: flex-end;
-  width: 100%;
-
-  input {
-    border: 0;
-  }
-}
-
-.selectTokenBtn {
-  background: var(--bg-action);
-  padding-right: 12px;
-  display: flex;
-  align-items: center;
-
-  @media (max-width: 640px) {
-    padding-right: 6px;
+    fill: var(--content-primary);
   }
 }
 
@@ -145,6 +115,7 @@ body .input {
 
 /* NumericStepInput styles */
 .counterInputContainer {
+  border-radius: 6px;
   border: var(--border-primary) !important;
   position: relative;
 

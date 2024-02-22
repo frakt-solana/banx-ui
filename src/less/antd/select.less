@@ -1,5 +1,6 @@
 .rootSelectClassName {
   background: var(--bg-action);
+  border-radius: 6px;
   color: var(--content-primary);
   margin-left: 32px;
   width: calc(100% - 32px);
@@ -8,13 +9,9 @@
     background: var(--bg-action) !important;
     box-shadow: none !important;
     border: 0 !important;
-    padding: 5px 0px;
+    padding: 1px 0px;
     padding-inline-end: 40px !important;
     transition: none !important;
-
-    @media (max-width: 640px) {
-      padding: 1px 0px;
-    }
   }
 
   .ant-select-selection-item {
@@ -122,19 +119,17 @@
   border: var(--border-primary);
   border-top: 0;
   border-radius: 0;
+  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: 6px;
   box-shadow: none;
 
   font: var(--card-header-sm);
 
-  top: 39px !important;
+  top: 31px !important;
   left: -65px !important;
 
   padding: 0;
   width: calc(100% + 34px) !important;
-
-  @media (max-width: 640px) {
-    top: 31px !important;
-  }
 
   .ant-select-item {
     border-radius: 0;

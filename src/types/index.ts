@@ -16,3 +16,8 @@ interface PaginationOptions {
 }
 
 export type BasePaginationRequest = SortingOptions & PaginationOptions
+
+export type MutationResponse = {
+  message?: string
+  success: boolean
+}
