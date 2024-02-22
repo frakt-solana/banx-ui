@@ -14,6 +14,7 @@ import {
   LeaderboardData,
   LeaderboardDataSchema,
   LeaderboardTimeRange,
+  LinkWalletResponse,
   LinkedWallet,
   SeasonUserRewards,
   SeasonUserRewardsSchema,
@@ -159,12 +160,18 @@ export const fetchLinkedWallets: FetchLinkedWallets = async ({ walletPublicKey }
 
     return data.data
   } catch (error) {
-    return [
+    const defaultResponse: LinkedWallet[] = [
       {
         type: 'main',
         wallet: walletPublicKey,
+        borrowerPoints: 0,
+        borrowerRank: 0,
+        lenderPoints: 0,
+        lenderRank: 0,
       },
     ]
+
+    return defaultResponse
   }
 }
 
@@ -172,10 +179,10 @@ type LinkWallet = (params: {
   linkedWalletJwt: string
   wallet: string
   signature: string
-}) => Promise<MutationResponse>
+}) => Promise<LinkWalletResponse>
 export const linkWallet: LinkWallet = async ({ linkedWalletJwt, wallet, signature }) => {
   try {
-    const { data } = await axios.post<{ data: MutationResponse }>(
+    const { data } = await axios.post<{ data: LinkWalletResponse }>(
       `${BACKEND_BASE_URL}/leaderboard/link-wallet`,
       {
         publicKey: wallet,
@@ -191,10 +198,15 @@ export const linkWallet: LinkWallet = async ({ linkedWalletJwt, wallet, signatur
     return data.data
   } catch (error) {
     console.error(error)
-    return {
+    const errorResponse: LinkWalletResponse = {
       message: 'Unable to link wallet',
       success: false,
+      borrowerPoints: 0,
+      borrowerRank: 0,
+      lenderPoints: 0,
+      lenderRank: 0,
     }
+    return errorResponse
   }
 }
 

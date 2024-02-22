@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { MutationResponse } from '@banx/types'
+
 export interface DiscordUserInfoRaw {
   avatar: string
   discordId: string
@@ -73,7 +75,16 @@ export const BonkWithdrawalSchema = z.object({
 })
 export type BonkWithdrawal = z.infer<typeof BonkWithdrawalSchema>
 
+export type LinkedWalletPoints = {
+  borrowerPoints: number
+  borrowerRank: number
+  lenderPoints: number
+  lenderRank: number
+}
+
 export type LinkedWallet = {
   type: 'main' | 'linked'
   wallet: string
-}
+} & LinkedWalletPoints
+
+export type LinkWalletResponse = MutationResponse & LinkedWalletPoints
