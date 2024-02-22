@@ -13,6 +13,10 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+
+  @media (max-width: 640px) {
+    gap: 2px;
+  }
 }
 
 .collectionImage {
@@ -20,8 +24,8 @@
   width: 64px;
 
   @media (max-width: 640px) {
-    height: 56px;
-    width: 56px;
+    height: 48px;
+    width: 48px;
   }
 }
 
@@ -42,6 +46,12 @@
   white-space: nowrap;
   gap: 16px;
   width: 100%;
+
+  @media (max-width: 640px) {
+    & > div {
+      gap: unset;
+    }
+  }
 }
 
 .additionalInfoStats {
@@ -59,12 +69,9 @@
 
   @media (max-width: 960px) {
     justify-content: space-between;
-    gap: 0;
+    gap: unset;
 
     & > div {
-      align-items: center;
-    }
-    & > div:first-child {
       align-items: flex-start;
     }
     & > div:last-child {

@@ -26,20 +26,19 @@
 .selectWrapper {
   background: var(--bg-action);
   border: var(--border-primary);
+  border-radius: 6px;
   position: relative;
-  height: 40px;
+  height: 32px;
   width: 100%;
 
   @media (max-width: 960px) {
     max-width: unset !important;
   }
 
-  @media (max-width: 640px) {
-    height: 32px;
-  }
-
   &.active {
     border-bottom: 1px solid transparent;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
   }
 }
 

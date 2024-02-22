@@ -56,14 +56,14 @@ export const NftInfoCell: FC<NftInfoCellProps> = ({
       </div>
 
       <div className={styles.nftNames}>
-        <p
-          className={classNames(styles.nftCollectionName, {
-            [styles.nftCollectionNameEllipsis]: !isCardView,
-          })}
-        >
+        <p className={classNames(styles.nftCollectionName, { [styles.ellipsis]: !isCardView })}>
           {nftCollectionName}
         </p>
-        {displayNftNumber && <p className={styles.nftNumber}>{displayNftNumber}</p>}
+        {displayNftNumber && (
+          <p className={classNames(styles.nftNumber, { [styles.ellipsis]: !isCardView })}>
+            {displayNftNumber}
+          </p>
+        )}
       </div>
     </div>
   )

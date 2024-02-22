@@ -50,7 +50,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
       .execute()
   }
 
-  const buttonSize = isCardView ? 'medium' : 'small'
+  const buttonSize = isCardView ? 'default' : 'small'
 
   const isTerminatingStatus = isLoanTerminating(loan)
   const isLoanExpired = isLoanLiquidated(loan)

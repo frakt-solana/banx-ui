@@ -129,3 +129,19 @@ export const fetchBorrowBonkRewardsAvailability = async () => {
 
   return data?.data?.rewardsAvailable || false
 }
+
+export const fetchLenderActivityCSV = async ({ walletPubkey }: { walletPubkey: string }) => {
+  const { data } = await axios.get<string>(
+    `${BACKEND_BASE_URL}/activity/lender/${walletPubkey}/csv`,
+  )
+
+  return data ?? ''
+}
+
+export const fetchBorrowerActivityCSV = async ({ walletPubkey }: { walletPubkey: string }) => {
+  const { data } = await axios.get<string>(
+    `${BACKEND_BASE_URL}/activity/borrower/${walletPubkey}/csv`,
+  )
+
+  return data ?? ''
+}
