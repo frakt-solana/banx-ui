@@ -1,12 +1,12 @@
 import { useCallback, useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { useQuery } from '@tanstack/react-query'
 import { create } from 'zustand'
 
-import { LinkedWallet, fetchLinkedWallets, linkWallet, unlinkWallet } from '@banx/api/user'
+import { LinkedWallet, linkWallet, unlinkWallet } from '@banx/api/user'
+import { useLinkedWallets } from '@banx/pages/LeaderboardPage'
 import { useBanxLogin, useIsLedger, useModal } from '@banx/store'
-import { enqueueSnackbar, generateSignature, queryClient } from '@banx/utils'
+import { enqueueSnackbar, generateSignature } from '@banx/utils'
 
 type SavedLinkingData = {
   walletPubkey: string
@@ -31,11 +31,12 @@ export const useLinkWalletsModal = () => {
   const { close: closeModal } = useModal()
   const { jwt, AUTH_MESSAGE, logIn, isLoggedIn, ...banxLoginState } = useBanxLogin()
   const { isLedger, setIsLedger } = useIsLedger()
-
-  const { data: linkedWalletsDataBE, isLoading: linkedWalletsDataBELoading } = useQuery(
-    createFetchLinkedWalletsQueryKey(publicKey?.toBase58() || ''),
-    () => fetchLinkedWallets({ walletPublicKey: publicKey?.toBase58() || '' }),
-  )
+  const {
+    linkedWallets: linkedWalletsDataBE,
+    isLoading: linkedWalletsDataBELoading,
+    setLinkedWalletsOptimistic,
+    removeLinkedWalletOptimistic,
+  } = useLinkedWallets()
 
   const linkedWalletsData = useMemo(() => {
     if (savedLinkingData?.linkedWallets) {
@@ -87,7 +88,14 @@ export const useLinkWalletsModal = () => {
       if (savedLinkingData.linkedWallets) {
         setLinkedWalletsOptimistic(publicKey.toBase58(), [
           ...savedLinkingData.linkedWallets,
-          { type: 'linked', wallet: publicKey.toBase58() },
+          {
+            type: 'linked',
+            wallet: publicKey.toBase58(),
+            borrowerPoints: 0,
+            borrowerRank: 0,
+            lenderPoints: 0,
+            lenderRank: 0,
+          },
         ])
       }
       setSavedLinkingData(null)
@@ -113,6 +121,7 @@ export const useLinkWalletsModal = () => {
     connection,
     logIn,
     setSavedLinkingData,
+    setLinkedWalletsOptimistic,
   ])
 
   const onLogin = useCallback(async () => {
@@ -166,7 +175,7 @@ export const useLinkWalletsModal = () => {
         }
       }
     },
-    [jwt, publicKey],
+    [jwt, publicKey, removeLinkedWalletOptimistic],
   )
 
   const onCloseModal = useCallback(() => {
@@ -207,32 +216,3 @@ export const useLinkWalletsModal = () => {
     isDiffWalletConnected,
   }
 }
-
-const USE_FETCH_LINKED_WALLETS_QUERY_KEY = 'fetchLinkedWallets'
-const createFetchLinkedWalletsQueryKey = (walletPubkey: string) => [
-  USE_FETCH_LINKED_WALLETS_QUERY_KEY,
-  walletPubkey,
-]
-//? Optimistics based on queryData modification
-const setLinkedWalletsOptimistic = (walletPubkey: string, nextState: LinkedWallet[]) =>
-  queryClient.setQueryData(
-    createFetchLinkedWalletsQueryKey(walletPubkey),
-    (queryData: LinkedWallet[] | undefined) => {
-      if (!queryData) return queryData
-      return nextState
-    },
-  )
-const removeLinkedWalletOptimistic = (walletPubkey: string, walletPubkeyToRemove: string) =>
-  queryClient.setQueryData(
-    createFetchLinkedWalletsQueryKey(walletPubkey),
-    (queryData: LinkedWallet[] | undefined) => {
-      if (!queryData) return queryData
-
-      //? An explicit conversion is required here
-      if (walletPubkey === walletPubkeyToRemove) {
-        return [{ wallet: walletPubkey, type: 'main' }] as LinkedWallet[]
-      }
-
-      return queryData.filter(({ wallet }) => wallet !== walletPubkeyToRemove)
-    },
-  )
