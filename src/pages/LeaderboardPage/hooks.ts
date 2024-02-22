@@ -1,9 +1,15 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 
-import { SeasonUserRewards, fetchSeasonUserRewards } from '@banx/api/user'
+import {
+  LinkedWallet,
+  SeasonUserRewards,
+  fetchLinkedWallets,
+  fetchSeasonUserRewards,
+} from '@banx/api/user'
 import { queryClient } from '@banx/utils'
 
+//? useSeasonUserRewards
 const USE_SEASON_USER_REWARDS_QUERY_KEY = 'seasonUserRewards'
 const createSeasonUserRewardsQueryKey = (walletPubkey: string) => [
   USE_SEASON_USER_REWARDS_QUERY_KEY,
@@ -45,3 +51,54 @@ export const updateBonkWithdrawOptimistic = (walletPubkey: string) =>
       }
     },
   )
+//? useSeasonUserRewards
+
+//? useLinkedWallets
+export const useLinkedWallets = () => {
+  const { publicKey } = useWallet()
+
+  const { data: linkedWallets, isLoading } = useQuery(
+    createFetchLinkedWalletsQueryKey(publicKey?.toBase58() || ''),
+    () => fetchLinkedWallets({ walletPublicKey: publicKey?.toBase58() || '' }),
+    {
+      staleTime: 5 * 1000,
+    },
+  )
+
+  return {
+    linkedWallets,
+    isLoading,
+    setLinkedWalletsOptimistic,
+    removeLinkedWalletOptimistic,
+  }
+}
+
+const USE_FETCH_LINKED_WALLETS_QUERY_KEY = 'fetchLinkedWallets'
+const createFetchLinkedWalletsQueryKey = (walletPubkey: string) => [
+  USE_FETCH_LINKED_WALLETS_QUERY_KEY,
+  walletPubkey,
+]
+//? Optimistics based on queryData modification
+const setLinkedWalletsOptimistic = (walletPubkey: string, nextState: LinkedWallet[]) =>
+  queryClient.setQueryData(
+    createFetchLinkedWalletsQueryKey(walletPubkey),
+    (queryData: LinkedWallet[] | undefined) => {
+      if (!queryData) return queryData
+      return nextState
+    },
+  )
+const removeLinkedWalletOptimistic = (walletPubkey: string, walletPubkeyToRemove: string) =>
+  queryClient.setQueryData(
+    createFetchLinkedWalletsQueryKey(walletPubkey),
+    (queryData: LinkedWallet[] | undefined) => {
+      if (!queryData) return queryData
+
+      //? An explicit conversion is required here
+      if (walletPubkey === walletPubkeyToRemove) {
+        return [{ wallet: walletPubkey, type: 'main' }] as LinkedWallet[]
+      }
+
+      return queryData.filter(({ wallet }) => wallet !== walletPubkeyToRemove)
+    },
+  )
+//? useLinkedWallets
