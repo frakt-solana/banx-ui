@@ -1,4 +1,4 @@
-import { BASE_POINTS } from 'fbonds-core/lib/fbond-protocol/constants'
+import { BASE_POINTS, SECONDS_IN_DAY } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   calculateCurrentInterestSolPure,
   calculateDynamicApr,
@@ -146,4 +146,15 @@ export const calculateApr: CalculateApr = ({ loanValue, collectionFloor, marketP
 
   const staticApr = Math.floor((loanValue / collectionFloor) * BASE_POINTS) || 0
   return calculateDynamicApr(staticApr, DYNAMIC_APR)
+}
+
+export const calcWeeklyFeeWithRepayFee = (loan: Loan) => {
+  const { soldAt, amountOfBonds } = loan.bondTradeTransaction
+
+  return calculateCurrentInterestSolPure({
+    loanValue: calcLoanBorrowedAmount(loan),
+    startTime: soldAt,
+    currentTime: soldAt + SECONDS_IN_DAY * 7,
+    rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
+  })
 }
