@@ -1,3 +1,2 @@
-import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare'
-
-export const WALLETS = [new SolflareWalletAdapter()]
+//? Add additional wallet adapters here
+export const WALLETS = []
