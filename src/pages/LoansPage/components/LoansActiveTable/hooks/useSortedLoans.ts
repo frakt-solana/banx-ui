@@ -10,6 +10,7 @@ enum SortField {
   APR = 'apr',
   LTV = 'ltv',
   STATUS = 'status',
+  CREATED_AT = 'createdAt',
 }
 
 type SortOrder = 'asc' | 'desc'
@@ -19,10 +20,19 @@ type StatusValueMap = Record<SortField, string | SortValueGetter>
 
 export const DEFAULT_SORT_OPTION_VALUE = `${SortField.STATUS}_desc`
 
+export const SORT_OPTIONS = [
+  { label: 'Debt', value: SortField.DEBT },
+  { label: 'APR', value: SortField.APR },
+  { label: 'LTV', value: SortField.LTV },
+  { label: 'Status', value: SortField.STATUS },
+  { label: 'Created at', value: SortField.CREATED_AT },
+]
+
 const STATUS_VALUE_MAP: StatusValueMap = {
   [SortField.DEBT]: calculateLoanRepayValue,
   [SortField.APR]: (loan) => loan.bondTradeTransaction.amountOfBonds,
   [SortField.LTV]: (loan) => calculateLoanRepayValue(loan) / loan.nft.collectionFloor,
+  [SortField.CREATED_AT]: (loan) => loan.fraktBond.activatedAt * -1,
   [SortField.STATUS]: '',
 }
 
