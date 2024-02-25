@@ -1,13 +1,17 @@
 import { FC, useCallback, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import classNames from 'classnames'
 
+import { Button } from '@banx/components/Buttons'
 import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
+import Tooltip from '@banx/components/Tooltip'
 
 import { Loan, Offer } from '@banx/api/core'
+import { Warning } from '@banx/icons'
 import { ViewState, useTableView } from '@banx/store'
-import { LoanStatus, determineLoanStatus } from '@banx/utils'
+import { isLoanTerminating } from '@banx/utils'
 
 import { useSelectedLoans } from '../../loansState'
 import { Summary } from './Summary'
@@ -30,11 +34,17 @@ export const LoansActiveTable: FC<LoansActiveTableProps> = ({
   const { publicKey: walletPublicKey } = useWallet()
   const walletPublicKeyString = walletPublicKey?.toBase58() || ''
 
-  const { sortViewParams, loans, loading, showEmptyList, emptyListParams, showSummary } =
-    useLoansActiveTable({
-      loans: rawLoans,
-      isLoading,
-    })
+  const {
+    sortViewParams,
+    loans,
+    loading,
+    showEmptyList,
+    emptyListParams,
+    showSummary,
+    isTerminationFilterEnabled,
+    countOfTerminatingLoans,
+    toggleTerminationFilter,
+  } = useLoansActiveTable({ loans: rawLoans, isLoading })
 
   const {
     selection,
@@ -89,13 +99,35 @@ export const LoansActiveTable: FC<LoansActiveTableProps> = ({
       onRowClick,
       activeRowParams: [
         {
-          condition: checkIsTerminationLoan,
+          condition: isLoanTerminating,
           className: styles.terminated,
           cardClassName: styles.terminated,
         },
       ],
     }
   }, [onRowClick])
+
+  const customJSX = (
+    <Tooltip
+      title={countOfTerminatingLoans ? 'Terminating loans' : 'No terminating loans currently'}
+    >
+      <div className={styles.filterButtonWrapper} data-count-of-loans={countOfTerminatingLoans}>
+        <Button
+          className={classNames(
+            styles.filterButton,
+            { [styles.active]: isTerminationFilterEnabled },
+            { [styles.disabled]: !countOfTerminatingLoans },
+          )}
+          disabled={!countOfTerminatingLoans}
+          onClick={toggleTerminationFilter}
+          variant="secondary"
+          type="circle"
+        >
+          <Warning />
+        </Button>
+      </div>
+    </Tooltip>
+  )
 
   if (showEmptyList) return <EmptyList {...emptyListParams} />
 
@@ -107,6 +139,7 @@ export const LoansActiveTable: FC<LoansActiveTableProps> = ({
         rowParams={rowParams}
         sortViewParams={sortViewParams}
         className={styles.table}
+        customJSX={customJSX}
         loading={loading}
         showCard
       />
@@ -115,9 +148,4 @@ export const LoansActiveTable: FC<LoansActiveTableProps> = ({
       )}
     </div>
   )
-}
-
-const checkIsTerminationLoan = (loan: Loan) => {
-  const loanStatus = determineLoanStatus(loan)
-  return loanStatus === LoanStatus.Terminating
 }

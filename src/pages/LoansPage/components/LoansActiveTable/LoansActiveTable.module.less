@@ -187,3 +187,47 @@
     font: var(--body-text-sm);
   }
 }
+
+.filterButtonWrapper {
+  position: relative;
+
+  &[data-count-of-loans]::after {
+    background: var(--additional-lava-primary);
+    border-radius: 100px;
+    content: attr(data-count-of-loans);
+    color: var(--pure-black);
+    font: var(--body-text-xs);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+
+    position: absolute;
+    top: -2px;
+    right: -8px;
+    min-width: 8px;
+    height: 16px;
+  }
+}
+
+.filterButton {
+  svg {
+    path:first-child {
+      fill: var(--additional-lava-primary);
+    }
+    path:last-child {
+      fill: var(--pure-black);
+    }
+  }
+
+  &.active {
+    border-color: var(--content-primary);
+  }
+
+  &.disabled {
+    svg path:first-child {
+      fill: var(--content-secondary);
+    }
+  }
+}
