@@ -112,10 +112,51 @@ export const useLoansTransactions = () => {
       .execute()
   }
 
+  interface LoanWithFractionToRepay {
+    loan: Loan
+    fractionToRepay: number
+  }
+
+  const repayUnpaidLoansInterest = async (loans: LoanWithFractionToRepay[]) => {
+    await new TxnExecutor(
+      makeRepayPartialLoanAction,
+      { wallet, connection },
+      { signAllChunks: isLedger ? 5 : 40 },
+    )
+      .addTxnParams(loans)
+      .on('pfSuccessEach', (results) => {
+        results.forEach(({ txnHash, result }) => {
+          if (result && wallet.publicKey) {
+            enqueueSnackbar({
+              message: 'Loan interest paid successfully',
+              type: 'success',
+              solanaExplorerPath: `tx/${txnHash}`,
+            })
+
+            if (result) {
+              updateLoansOptimistic([result], wallet.publicKey.toBase58())
+            }
+          }
+        })
+      })
+      .on('pfSuccessAll', () => {
+        clearSelection()
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error, {
+          additionalData: loans,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'RepayUnpaidLoansInterest',
+        })
+      })
+      .execute()
+  }
+
   return {
     repayLoan,
     repayBulkLoan,
     repayPartialLoan,
+    repayUnpaidLoansInterest,
   }
 }
 
