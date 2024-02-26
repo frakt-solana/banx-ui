@@ -17,8 +17,18 @@ export const PrefixInput = () => (
   </div>
 )
 
-export const SuffixIcon = ({ isPopupOpen }: { isPopupOpen: boolean }) => (
-  <ChevronDown className={isPopupOpen ? styles.rotate : ''} />
+interface SuffixIconProps {
+  isPopupOpen: boolean
+  disabled?: boolean
+}
+export const SuffixIcon: FC<SuffixIconProps> = ({ isPopupOpen, disabled = false }) => (
+  <ChevronDown
+    className={classNames(
+      styles.suffixIcon,
+      { [styles.rotate]: isPopupOpen },
+      { [styles.disabled]: disabled },
+    )}
+  />
 )
 
 export const SelectLabels = ({ labels = [] }: { labels?: string[] }) => (

@@ -21,6 +21,7 @@ export const SearchableHeading = <T extends object>({
     <SearchSelect
       optionClassNameProps={{ label: styles.searchSelectOptionLabel }}
       className={styles.searchSelect}
+      disabled={!searchSelectParams.options.length}
       collapsed
       {...searchSelectParams}
     />
