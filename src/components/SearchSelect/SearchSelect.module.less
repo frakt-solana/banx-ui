@@ -40,6 +40,10 @@
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
   }
+
+  &.disabled {
+    pointer-events: none;
+  }
 }
 
 .prefix {
@@ -127,8 +131,16 @@
   }
 }
 
-.rotate {
-  transform: rotate(180deg);
+.suffixIcon {
+  &.rotate {
+    transform: rotate(180deg);
+  }
+
+  &.disabled {
+    path {
+      fill: var(--content-secondary) !important;
+    }
+  }
 }
 
 .collapsedContent {
