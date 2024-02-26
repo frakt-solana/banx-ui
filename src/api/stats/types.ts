@@ -69,6 +69,7 @@ export const TotalBorrowerStatsSchema = z.object({
   liquidationLoansCount: z.number(),
   totalBorrowed: z.number(),
   totalDebt: z.number(),
+  totalWeeklyInterest: z.number(),
 })
 
 export type TotalBorrowerStats = z.infer<typeof TotalBorrowerStatsSchema>
