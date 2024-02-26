@@ -97,8 +97,11 @@
 
   @media (max-width: 640px) {
     justify-content: unset;
+    margin-right: -16px;
+    padding-right: 16px;
     gap: 8px;
-    overflow: auto;
+    overflow: auto hidden;
+    width: calc(100% + 16px);
   }
 }
 .statsContainer > div {
@@ -129,13 +132,12 @@
   min-width: 170px;
 
   @media (max-width: 1240px) {
+    min-width: unset;
+    width: 100%;
+
     span {
       display: none;
     }
-  }
-
-  @media (max-width: 640px) {
-    min-width: 90px;
   }
 }
 
@@ -173,8 +175,7 @@
 }
 
 .weightedAprStat,
-.debtInterestStat,
-.accruedInterestStat {
+.debtInterestStat {
   display: none;
 
   @media (max-width: 1240px) {

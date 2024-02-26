@@ -12,12 +12,7 @@ import { Loan } from '@banx/api/core'
 import { calcWeeklyFeeWithRepayFee, calculateLoanRepayValue, formatDecimal } from '@banx/utils'
 
 import { LoanOptimistic } from '../../loansState'
-import {
-  PARTIAL_REPAY_FEE,
-  caclFractionToRepay,
-  calcUnpaidAccruedInterest,
-  calcWeightedApr,
-} from './helpers'
+import { calcUnpaidAccruedInterest, calcWeightedApr } from './helpers'
 import { useLoansTransactions } from './hooks'
 
 import styles from './LoansActiveTable.module.less'
@@ -34,7 +29,7 @@ export const Summary: FC<SummaryProps> = ({
   setSelection,
 }) => {
   const { publicKey: walletPublicKey } = useWallet()
-  const { repayBulkLoan, repayUnpaidLoansInterest } = useLoansTransactions()
+  const { repayBulkLoan /* repayUnpaidLoansInterest */ } = useLoansTransactions()
 
   const selectedLoans = useMemo(() => {
     return rawSelectedLoans.map(({ loan }) => loan)
@@ -43,17 +38,14 @@ export const Summary: FC<SummaryProps> = ({
   const totalSelectedLoans = selectedLoans.length
   const totalDebt = sumBy(selectedLoans, calculateLoanRepayValue)
   const totalWeeklyFee = sumBy(selectedLoans, calcWeeklyFeeWithRepayFee)
-  const totalUnpaidAccruedInterest = sumBy(
-    selectedLoans,
-    (loan) => calcUnpaidAccruedInterest(loan) + PARTIAL_REPAY_FEE,
-  )
+  const totalUnpaidAccruedInterest = sumBy(selectedLoans, (loan) => calcUnpaidAccruedInterest(loan))
   const totalPrincipal = sumBy(selectedLoans, (loan) => loan.fraktBond.borrowedAmount)
 
-  const loansWithCalculatedUnpaidInterest = useMemo(() => {
-    return selectedLoans
-      .map((loan) => ({ loan, fractionToRepay: caclFractionToRepay(loan) }))
-      .filter(({ fractionToRepay }) => fractionToRepay > 0)
-  }, [selectedLoans])
+  // const loansWithCalculatedUnpaidInterest = useMemo(() => {
+  //   return selectedLoans
+  //     .map((loan) => ({ loan, fractionToRepay: caclFractionToRepay(loan) }))
+  //     .filter(({ fractionToRepay }) => fractionToRepay > 0)
+  // }, [selectedLoans])
 
   const handleLoanSelection = (value = 0) => {
     setSelection(loans.slice(0, value), walletPublicKey?.toBase58() || '')
@@ -73,12 +65,7 @@ export const Summary: FC<SummaryProps> = ({
           classNamesProps={{ container: styles.debtInterestStat }}
           divider={1e9}
         />
-        <StatInfo
-          label="Accrued interest"
-          value={totalUnpaidAccruedInterest}
-          classNamesProps={{ container: styles.accruedInterestStat }}
-          divider={1e9}
-        />
+        <StatInfo label="Accrued interest" value={totalUnpaidAccruedInterest} divider={1e9} />
         <StatInfo label="Weekly fee" value={totalWeeklyFee} divider={1e9} />
         <StatInfo
           label="Weighted apr"
@@ -96,13 +83,13 @@ export const Summary: FC<SummaryProps> = ({
           className={styles.sliderContainer}
           max={loans.length}
         />
-        <Button
+        {/* <Button
           variant="secondary"
           onClick={() => repayUnpaidLoansInterest(loansWithCalculatedUnpaidInterest)}
           disabled={!totalUnpaidAccruedInterest}
         >
           Pay interest {createSolValueJSX(totalUnpaidAccruedInterest, 1e9, '0◎', formatDecimal)}
-        </Button>
+        </Button> */}
         <Button onClick={repayBulkLoan} disabled={!totalSelectedLoans}>
           Repay {createSolValueJSX(totalDebt, 1e9, '0◎', formatDecimal)}
         </Button>
