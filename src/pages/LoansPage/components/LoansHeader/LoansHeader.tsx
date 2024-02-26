@@ -30,10 +30,10 @@ const LoansHeader: FC<LoansHeaderProps> = ({ loans }) => {
       titleBtn={<OnboardButton contentType="loans" title="My loans" />}
     >
       <AdditionalStat label="Loans" value={numberOfLoans} valueType={VALUES_TYPES.STRING} />
-      <AdditionalStat label="Total borrowed" value={totalBorrowed} divider={1e9} />
-      <AdditionalStat label="Total weekly fee" value={totalWeeklyFee} divider={1e9} />
+      <AdditionalStat label="Borrowed" value={totalBorrowed} divider={1e9} />
+      <AdditionalStat label="Weekly fee" value={totalWeeklyFee} divider={1e9} />
       <SeparateStatsLine />
-      <MainStat label="Total debt" value={totalDebt} divider={1e9} />
+      <MainStat label="Debt" value={totalDebt} divider={1e9} />
     </PageHeaderBackdrop>
   )
 }
