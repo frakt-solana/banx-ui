@@ -12,7 +12,12 @@ import { Loan } from '@banx/api/core'
 import { calcWeeklyFeeWithRepayFee, calculateLoanRepayValue, formatDecimal } from '@banx/utils'
 
 import { LoanOptimistic } from '../../loansState'
-import { caclFractionToRepay, calcUnpaidAccruedInterest, calcWeightedApr } from './helpers'
+import {
+  PARTIAL_REPAY_FEE,
+  caclFractionToRepay,
+  calcUnpaidAccruedInterest,
+  calcWeightedApr,
+} from './helpers'
 import { useLoansTransactions } from './hooks'
 
 import styles from './LoansActiveTable.module.less'
@@ -38,7 +43,10 @@ export const Summary: FC<SummaryProps> = ({
   const totalSelectedLoans = selectedLoans.length
   const totalDebt = sumBy(selectedLoans, calculateLoanRepayValue)
   const totalWeeklyFee = sumBy(selectedLoans, calcWeeklyFeeWithRepayFee)
-  const totalUnpaidAccruedInterest = sumBy(selectedLoans, calcUnpaidAccruedInterest)
+  const totalUnpaidAccruedInterest = sumBy(
+    selectedLoans,
+    (loan) => calcUnpaidAccruedInterest(loan) + PARTIAL_REPAY_FEE,
+  )
   const totalPrincipal = sumBy(selectedLoans, (loan) => loan.fraktBond.borrowedAmount)
 
   const loansWithCalculatedUnpaidInterest = useMemo(() => {
@@ -89,6 +97,7 @@ export const Summary: FC<SummaryProps> = ({
           max={loans.length}
         />
         <Button
+          variant="secondary"
           onClick={() => repayUnpaidLoansInterest(loansWithCalculatedUnpaidInterest)}
           disabled={!totalUnpaidAccruedInterest}
         >

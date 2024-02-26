@@ -4,6 +4,9 @@ import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { calcWeightedAverage, calculateLoanRepayValue } from '@banx/utils'
 
+//? Account creation fee
+export const PARTIAL_REPAY_FEE = 0.00217152 * 1e9
+
 export const calcAccruedInterest = (loan: Loan) => {
   const { accruedInterest = 0, bondTradeTransaction } = loan
   const { solAmount, feeAmount } = bondTradeTransaction || {}
@@ -27,10 +30,10 @@ export const calcUnpaidAccruedInterest = (loan: Loan) => {
 }
 
 export const caclFractionToRepay = (loan: Loan) => {
-  const repayValue = calculateLoanRepayValue(loan)
-  const percentToRepay = calcUnpaidAccruedInterest(loan) / repayValue
+  const percentToRepay =
+    (calcUnpaidAccruedInterest(loan) / loan.bondTradeTransaction.solAmount) * 100
 
-  return Math.floor(percentToRepay * 1e4)
+  return Math.floor(percentToRepay * 100)
 }
 
 export const calcUpfrontFee = (loan: Loan) => {
