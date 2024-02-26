@@ -1,18 +1,15 @@
-import { useState } from 'react'
-
 import { useWallet } from '@solana/wallet-adapter-react'
 import { first, groupBy, map } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
-import { SortOption } from '@banx/components/SortDropdown'
 
 import { Loan } from '@banx/api/core'
 import { PATHS } from '@banx/router'
 
-import { DEFAULT_SORT_OPTION, EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
+import { EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
 import { useFilterLoans } from './useFilteredLoans'
-import { SORT_OPTIONS, useSortedLoans } from './useSortedLoans'
+import { useSortLoans } from './useSortLoans'
 
 import styles from '../LoansActiveTable.module.less'
 
@@ -41,9 +38,7 @@ export const useLoansActiveTable = ({ loans, isLoading }: UseLoansActiveTablePro
     countOfTerminatingLoans,
   } = useFilterLoans(loans)
 
-  const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
-
-  const sortedLoans = useSortedLoans(filteredLoansBySelectedCollection, sortOption.value)
+  const { sortedLoans, sortParams } = useSortLoans(filteredLoansBySelectedCollection)
 
   const searchSelectParams = createSearchSelectParams({
     loans: filteredAllLoans,
@@ -75,15 +70,7 @@ export const useLoansActiveTable = ({ loans, isLoading }: UseLoansActiveTablePro
     showEmptyList,
     emptyListParams,
 
-    sortViewParams: {
-      searchSelectParams,
-      sortParams: {
-        option: sortOption,
-        onChange: setSortOption,
-        className: styles.sortDropdown,
-        options: SORT_OPTIONS,
-      },
-    },
+    sortViewParams: { searchSelectParams, sortParams },
   }
 }
 
