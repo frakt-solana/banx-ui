@@ -193,7 +193,7 @@ export const useLinkWalletsModal = () => {
 
   return {
     linkedWalletsData,
-    isLoading: linkedWalletsDataBELoading,
+    isLoading: linkedWalletsDataBELoading && !!publicKey,
     onCloseModal,
     wallet: {
       publicKey,
