@@ -52,25 +52,72 @@
   padding: 8px 16px;
 }
 
-//? Linked wallets list component
-.linkedWalletsList {
+//? Linked wallets table component
+.linkedWalletsTableContainer {
   flex-grow: 1;
-  overflow-y: scroll;
 }
 
-.linkedWalletItem {
-  padding: 12px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.linkedWalletsTable {
+  width: 100%;
+  overflow-y: scroll;
+  border-collapse: collapse;
 
-  @media screen and (max-width: 640px) {
-    padding: 6px 16px;
+  tbody {
+    tr {
+      &:nth-child(odd) {
+        background: var(--bg-primary-deep);
+      }
+    }
+  }
+
+  th,
+  td {
+    padding: 12px 8px;
+    vertical-align: middle;
+
+    &:first-child {
+      padding-left: 24px;
+    }
+    &:last-child {
+      padding-right: 24px;
+    }
+
+    @media screen and (max-width: 640px) {
+      padding: 6px 0;
+      &:first-child {
+        padding-left: 16px;
+      }
+      &:last-child {
+        padding-right: 16px;
+      }
+    }
+  }
+
+  th {
+    font: var(--title-sm);
+    text-transform: uppercase;
+    color: var(--content-secondary);
+    vertical-align: middle;
+
+    text-align: right;
+    &:first-child {
+      text-align: left;
+    }
+
+    @media screen and (max-width: 640px) {
+      font: var(--title-xs);
+    }
+  }
+
+  td {
+    text-align: right;
+
+    &:first-child {
+      text-align: left;
+    }
   }
 }
-.linkedWalletItemDeepBg {
-  background: var(--bg-primary-deep);
-}
+
 .linkedWalletKey {
   font: var(--card-header-md);
   position: relative;
@@ -89,23 +136,23 @@
     z-index: 1;
     border-radius: 50%;
     position: absolute;
-    left: -16px;
+    left: 8px;
     top: 50%;
     transform: translateY(-50%);
 
     @media screen and (max-width: 640px) {
-      left: -12px;
+      left: 4px;
     }
   }
 }
-.linkedWalletRightContainer {
-  width: 24px;
-  height: 24px;
 
+.linkedWalletRightContainer {
+  height: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
 }
+
 .houseIco {
   width: 24px;
   height: 24px;
@@ -154,7 +201,7 @@
     transform: rotate(360deg);
   }
 }
-//? Linked wallets list component
+//? Linked wallets table component
 
 //? Verify wallet block
 .verifyWalletBlock {

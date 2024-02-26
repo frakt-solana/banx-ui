@@ -6,7 +6,7 @@ import { Modal } from '@banx/components/modals/BaseModal'
 import { TABLET_WIDTH } from '@banx/constants'
 import { useWindowSize } from '@banx/hooks'
 
-import { LinkedWalletsList, LinkingBlock, VerifyWalletBlock } from './components'
+import { LinkedWalletsTable, LinkingBlock, VerifyWalletBlock } from './components'
 import { useLinkWalletsModal } from './hooks'
 
 import styles from './LinkWalletsModal.module.less'
@@ -57,7 +57,7 @@ export const LinkWalletsModal = () => {
       {!!isLoading && <Loader />}
       {!isLoading && (
         <>
-          <LinkedWalletsList />
+          <LinkedWalletsTable />
           <div className={styles.linkWalletsControlsContainer}>
             <LinkWalletsControls />
           </div>
