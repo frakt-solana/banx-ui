@@ -5,14 +5,14 @@ import { sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider } from '@banx/components/Slider'
-import { StatInfo } from '@banx/components/StatInfo'
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
+import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
 import { calcWeeklyFeeWithRepayFee, calculateLoanRepayValue, formatDecimal } from '@banx/utils'
 
 import { LoanOptimistic } from '../../loansState'
-import { caclFractionToRepay, calcUnpaidAccruedInterest } from './helpers'
+import { caclFractionToRepay, calcUnpaidAccruedInterest, calcWeightedApr } from './helpers'
 import { useLoansTransactions } from './hooks'
 
 import styles from './LoansActiveTable.module.less'
@@ -23,44 +23,61 @@ interface SummaryProps {
   setSelection: (loans: Loan[], walletPublicKey: string) => void
 }
 
-export const Summary: FC<SummaryProps> = ({ loans, selectedLoans, setSelection }) => {
+export const Summary: FC<SummaryProps> = ({
+  loans,
+  selectedLoans: rawSelectedLoans,
+  setSelection,
+}) => {
   const { publicKey: walletPublicKey } = useWallet()
-  const walletPublicKeyString = walletPublicKey?.toBase58() || ''
-
   const { repayBulkLoan, repayUnpaidLoansInterest } = useLoansTransactions()
 
+  const selectedLoans = useMemo(() => {
+    return rawSelectedLoans.map(({ loan }) => loan)
+  }, [rawSelectedLoans])
+
   const totalSelectedLoans = selectedLoans.length
-
-  const totalDebt = sumBy(selectedLoans, ({ loan }) => calculateLoanRepayValue(loan))
-  const totalWeeklyFee = sumBy(selectedLoans, ({ loan }) => calcWeeklyFeeWithRepayFee(loan))
-  const totalUnpaidAccruedInterest = sumBy(selectedLoans, ({ loan }) =>
-    calcUnpaidAccruedInterest(loan),
-  )
-
-  const totalBorrowed = sumBy(selectedLoans, ({ loan }) => {
-    const { fraktBond, totalRepaidAmount = 0 } = loan
-    return fraktBond.borrowedAmount - totalRepaidAmount
-  })
+  const totalDebt = sumBy(selectedLoans, calculateLoanRepayValue)
+  const totalWeeklyFee = sumBy(selectedLoans, calcWeeklyFeeWithRepayFee)
+  const totalUnpaidAccruedInterest = sumBy(selectedLoans, calcUnpaidAccruedInterest)
+  const totalPrincipal = sumBy(selectedLoans, (loan) => loan.fraktBond.borrowedAmount)
 
   const loansWithCalculatedUnpaidInterest = useMemo(() => {
     return selectedLoans
-      .map(({ loan }) => ({ loan, fractionToRepay: caclFractionToRepay(loan) }))
+      .map((loan) => ({ loan, fractionToRepay: caclFractionToRepay(loan) }))
       .filter(({ fractionToRepay }) => fractionToRepay > 0)
   }, [selectedLoans])
 
   const handleLoanSelection = (value = 0) => {
-    setSelection(loans.slice(0, value), walletPublicKeyString)
+    setSelection(loans.slice(0, value), walletPublicKey?.toBase58() || '')
   }
 
   return (
     <div className={styles.summary}>
       <div className={styles.mainStat}>
-        <p>{totalSelectedLoans}</p>
-        <p>Nfts selected</p>
+        <p>{createPercentValueJSX(calcWeightedApr(selectedLoans), '0%')}</p>
+        <p>Weighted apr</p>
       </div>
       <div className={styles.statsContainer}>
-        <StatInfo label="Principal" value={totalBorrowed} divider={1e9} />
+        <StatInfo label="Principal" value={totalPrincipal} divider={1e9} />
+        <StatInfo
+          label="Debt"
+          value={totalDebt}
+          classNamesProps={{ container: styles.debtInterestStat }}
+          divider={1e9}
+        />
+        <StatInfo
+          label="Accrued interest"
+          value={totalUnpaidAccruedInterest}
+          classNamesProps={{ container: styles.accruedInterestStat }}
+          divider={1e9}
+        />
         <StatInfo label="Weekly fee" value={totalWeeklyFee} divider={1e9} />
+        <StatInfo
+          label="Weighted apr"
+          value={calcWeightedApr(selectedLoans)}
+          valueType={VALUES_TYPES.PERCENT}
+          classNamesProps={{ container: styles.weightedAprStat }}
+        />
       </div>
       <div className={styles.summaryControls}>
         <CounterSlider
@@ -75,7 +92,7 @@ export const Summary: FC<SummaryProps> = ({ loans, selectedLoans, setSelection }
           onClick={() => repayUnpaidLoansInterest(loansWithCalculatedUnpaidInterest)}
           disabled={!totalUnpaidAccruedInterest}
         >
-          Pay fee {createSolValueJSX(totalUnpaidAccruedInterest, 1e9, '0◎', formatDecimal)}
+          Pay interest {createSolValueJSX(totalUnpaidAccruedInterest, 1e9, '0◎', formatDecimal)}
         </Button>
         <Button onClick={repayBulkLoan} disabled={!totalSelectedLoans}>
           Repay {createSolValueJSX(totalDebt, 1e9, '0◎', formatDecimal)}

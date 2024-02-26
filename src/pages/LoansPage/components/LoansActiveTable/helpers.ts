@@ -1,5 +1,8 @@
+import { map } from 'lodash'
+
 import { Loan } from '@banx/api/core'
-import { calculateLoanRepayValue } from '@banx/utils'
+import { BONDS } from '@banx/constants'
+import { calcWeightedAverage, calculateLoanRepayValue } from '@banx/utils'
 
 export const calcAccruedInterest = (loan: Loan) => {
   const { accruedInterest = 0, bondTradeTransaction } = loan
@@ -35,4 +38,14 @@ export const calcUpfrontFee = (loan: Loan) => {
   const upfrontFee = fraktBond.fbondTokenSupply || bondTradeTransaction.feeAmount
 
   return upfrontFee
+}
+
+export const calcWeightedApr = (loans: Loan[]) => {
+  const totalAprValues = map(
+    loans,
+    (loan) => (loan.bondTradeTransaction.amountOfBonds + BONDS.PROTOCOL_REPAY_FEE) / 100,
+  )
+
+  const totalRepayValues = map(loans, calculateLoanRepayValue)
+  return calcWeightedAverage(totalAprValues, totalRepayValues)
 }
