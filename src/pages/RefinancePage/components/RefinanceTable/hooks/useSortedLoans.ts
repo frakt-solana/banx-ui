@@ -5,8 +5,6 @@ import { get, isFunction, sortBy } from 'lodash'
 import { Loan } from '@banx/api/core'
 import { calculateLoanRepayValue } from '@banx/utils'
 
-import { calculateAprIncrement } from './../helpers'
-
 enum SortField {
   DURATION = 'duration',
   FLOOR = 'floorPrice',
@@ -26,10 +24,10 @@ export const useSortedLoans = (loans: Loan[], sortOptionValue: string) => {
     const [name, order] = sortOptionValue.split('_')
 
     const sortValueMapping: Record<SortField, string | SortValueGetter> = {
-      [SortField.DURATION]: 'fraktBond.refinanceAuctionStartedAt',
-      [SortField.FLOOR]: 'nft.collectionFloor',
+      [SortField.DURATION]: (loan) => loan.fraktBond.refinanceAuctionStartedAt,
+      [SortField.FLOOR]: (loan) => loan.nft.collectionFloor,
       [SortField.DEBT]: (loan) => calculateLoanRepayValue(loan),
-      [SortField.APR]: (loan) => calculateAprIncrement(loan),
+      [SortField.APR]: (loan) => loan.bondTradeTransaction.amountOfBonds,
       [SortField.LTV]: (loan) => {
         const repayValue = calculateLoanRepayValue(loan)
         const collectionFloor = loan.nft.collectionFloor
