@@ -32,7 +32,7 @@ export interface SearchSelectProps<P> {
   labels?: string[]
   placeholder?: string
   className?: string
-
+  disabled?: boolean
   sortOrder?: 'asc' | 'desc'
 }
 
@@ -48,6 +48,7 @@ export const SearchSelect = <P extends object>({
   onChangeCollapsed,
   optionClassNameProps,
   sortOrder = 'desc',
+  disabled = false,
   ...props
 }: SearchSelectProps<P>) => {
   const {
@@ -79,7 +80,12 @@ export const SearchSelect = <P extends object>({
   return (
     <div
       ref={containerRef}
-      className={classNames(styles.selectWrapper, { [styles.active]: isPopupOpen }, className)}
+      className={classNames(
+        styles.selectWrapper,
+        { [styles.active]: isPopupOpen },
+        { [styles.disabled]: disabled },
+        className,
+      )}
     >
       <PrefixInput />
       <AntdSelect
@@ -95,7 +101,7 @@ export const SearchSelect = <P extends object>({
         popupClassName="rootSelectPopupClassName"
         getPopupContainer={getPopupContainer}
         clearIcon={<CloseModal />}
-        suffixIcon={showSufixIcon && <SuffixIcon isPopupOpen={isPopupOpen} />}
+        suffixIcon={showSufixIcon && <SuffixIcon isPopupOpen={isPopupOpen} disabled={disabled} />}
         onSearch={handleInputChange}
         onDropdownVisibleChange={handleDropdownVisibleChange}
         maxTagCount="responsive"
