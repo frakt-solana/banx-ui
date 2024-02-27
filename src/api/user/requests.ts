@@ -23,53 +23,38 @@ import {
 
 type FetchDiscordUser = (props: { publicKey: web3.PublicKey }) => Promise<DiscordUserInfo | null>
 export const fetchDiscordUser: FetchDiscordUser = async ({ publicKey }) => {
-  try {
-    const { data } = await axios.get<DiscordUserInfoRaw>(
-      `${BACKEND_BASE_URL}/discord/${publicKey.toBase58()}`,
-    )
+  const { data } = await axios.get<DiscordUserInfoRaw>(
+    `${BACKEND_BASE_URL}/discord/${publicKey.toBase58()}`,
+  )
 
-    if (!data) return null
+  if (!data) return null
 
-    const avatarUrl = getDiscordAvatarUrl(data.discordId, data.avatar)
+  const avatarUrl = getDiscordAvatarUrl(data.discordId, data.avatar)
 
-    if (!avatarUrl) return null
+  if (!avatarUrl) return null
 
-    const { data: avatarExists } = await axios.get<string>(avatarUrl)
+  const { data: avatarExists } = await axios.get<string>(avatarUrl)
 
-    return {
-      avatarUrl: avatarExists ? avatarUrl : null,
-      isOnServer: data?.isOnServer ?? false,
-    }
-  } catch (error) {
-    return {
-      avatarUrl: null,
-      isOnServer: false,
-    }
+  return {
+    avatarUrl: avatarExists ? avatarUrl : null,
+    isOnServer: data?.isOnServer ?? false,
   }
 }
 
 type RemoveDiscordUser = (props: { publicKey: web3.PublicKey }) => Promise<void>
 export const removeDiscordUser: RemoveDiscordUser = async ({ publicKey }) => {
-  try {
-    await axios.get(`${BACKEND_BASE_URL}/discord/${publicKey.toBase58()}/delete`)
-  } catch (error) {
-    return
-  }
+  await axios.get(`${BACKEND_BASE_URL}/discord/${publicKey.toBase58()}/delete`)
 }
 
 type GetBanxUserNotifications = (props: {
   publicKey: web3.PublicKey
 }) => Promise<ReadonlyArray<BanxNotification>>
 export const getBanxUserNotifications: GetBanxUserNotifications = async ({ publicKey }) => {
-  try {
-    const { data } = await axios.get<{ data: ReadonlyArray<BanxNotification> }>(
-      `${BACKEND_BASE_URL}/history/${publicKey.toBase58()}`,
-    )
+  const { data } = await axios.get<{ data: ReadonlyArray<BanxNotification> }>(
+    `${BACKEND_BASE_URL}/history/${publicKey.toBase58()}`,
+  )
 
-    return data?.data ?? []
-  } catch (error) {
-    return []
-  }
+  return data?.data ?? []
 }
 
 type MarkBanxNotificationsAsRead = (props: {
@@ -98,30 +83,6 @@ export const deleteBanxNotifications: DeleteBanxNotifications = async ({
   })
 }
 
-// type GetBanxUserNotificationsSettings = (props: {
-//   publicKey: web3.PublicKey
-// }) => Promise<Record<string, boolean>>
-// export const getBanxUserNotificationsSettings: GetBanxUserNotificationsSettings = async ({
-//   publicKey,
-// }) => {
-//   const { data } = await axios.get<{ data: Record<string, boolean> }>(
-//     `${BACKEND_BASE_URL}/settings/${publicKey.toBase58()}`,
-//   )
-
-//   return data?.data || {}
-// }
-
-// type SetBanxUserNotificationsSettings = (props: {
-//   publicKey: web3.PublicKey
-//   settings: Record<string, boolean>
-// }) => Promise<void>
-// export const setBanxUserNotificationsSettings: SetBanxUserNotificationsSettings = async ({
-//   publicKey,
-//   settings,
-// }) => {
-//   await axios.post(`${BACKEND_BASE_URL}/settings/${publicKey.toBase58()}`, settings)
-// }
-
 type BanxSignIn = (params: {
   publicKey: web3.PublicKey
   signature: string
@@ -137,42 +98,33 @@ export const banxSignIn: BanxSignIn = async ({ publicKey, signature }) => {
 
 type CheckBanxJwt = (jwt: string) => Promise<boolean>
 export const checkBanxJwt: CheckBanxJwt = async (jwt) => {
-  try {
-    const { data } = await axios.get<{ wallet: string }>(`${BACKEND_BASE_URL}/auth/user`, {
-      headers: {
-        Authorization: `Bearer ${jwt}`,
-      },
-    })
+  const { data } = await axios.get<{ wallet: string }>(`${BACKEND_BASE_URL}/auth/user`, {
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
+  })
 
-    return !!data?.wallet
-  } catch (error) {
-    console.error(error)
-    return false
-  }
+  return !!data?.wallet ?? false
 }
 
 type FetchLinkedWallets = (params: { walletPublicKey: string }) => Promise<Array<LinkedWallet>>
 export const fetchLinkedWallets: FetchLinkedWallets = async ({ walletPublicKey }) => {
-  try {
-    const { data } = await axios.get<{ data: Array<LinkedWallet> }>(
-      `${BACKEND_BASE_URL}/leaderboard/linked-wallets/${walletPublicKey}`,
-    )
+  const DEFAULT_RESPONSE: LinkedWallet[] = [
+    {
+      type: 'main',
+      wallet: walletPublicKey,
+      borrowerPoints: 0,
+      borrowerRank: 0,
+      lenderPoints: 0,
+      lenderRank: 0,
+    },
+  ]
 
-    return data.data
-  } catch (error) {
-    const defaultResponse: LinkedWallet[] = [
-      {
-        type: 'main',
-        wallet: walletPublicKey,
-        borrowerPoints: 0,
-        borrowerRank: 0,
-        lenderPoints: 0,
-        lenderRank: 0,
-      },
-    ]
+  const { data } = await axios.get<{ data: Array<LinkedWallet> }>(
+    `${BACKEND_BASE_URL}/leaderboard/linked-wallets/${walletPublicKey}`,
+  )
 
-    return defaultResponse
-  }
+  return data.data ?? DEFAULT_RESPONSE
 }
 
 type LinkWallet = (params: {
@@ -198,6 +150,7 @@ export const linkWallet: LinkWallet = async ({ linkedWalletJwt, wallet, signatur
     return data.data
   } catch (error) {
     console.error(error)
+    //? Need to warp it into try/catch to get error message (can't trust BE)
     const errorResponse: LinkWalletResponse = {
       message: 'Unable to link wallet',
       success: false,
@@ -228,6 +181,7 @@ export const unlinkWallet: UnlinkWallet = async ({ jwt, walletToUnlink }) => {
     return data.data
   } catch (error) {
     console.error(error)
+    //? Need to warp it into try/catch to get error message (can't trust BE)
     return {
       message: 'Unable to unlink wallet',
       success: false,
@@ -237,34 +191,26 @@ export const unlinkWallet: UnlinkWallet = async ({ jwt, walletToUnlink }) => {
 
 type FetchUserLockedRewards = (props: { publicKey: string }) => Promise<UserLockedRewards>
 export const fetchUserLockedRewards: FetchUserLockedRewards = async ({ publicKey }) => {
-  try {
-    const { data } = await axios.get<{ data: UserLockedRewards }>(
-      `${BACKEND_BASE_URL}/stats/locked-rewards/${publicKey}`,
-    )
+  const { data } = await axios.get<{ data: UserLockedRewards }>(
+    `${BACKEND_BASE_URL}/stats/locked-rewards/${publicKey}`,
+  )
 
-    return data?.data ?? { rewards: 0 }
-  } catch (error) {
-    return { rewards: 0 }
-  }
+  return data?.data ?? { rewards: 0 }
 }
 
 type FetchSeasonUserRewards = (props: { walletPubkey: string }) => Promise<SeasonUserRewards | null>
 export const fetchSeasonUserRewards: FetchSeasonUserRewards = async ({ walletPubkey }) => {
+  const { data } = await axios.get<{ data: SeasonUserRewards }>(
+    `${BACKEND_BASE_URL}/leaderboard/user-rewards/${walletPubkey}`,
+  )
+
   try {
-    const { data } = await axios.get<{ data: SeasonUserRewards }>(
-      `${BACKEND_BASE_URL}/leaderboard/user-rewards/${walletPubkey}`,
-    )
-
-    try {
-      await SeasonUserRewardsSchema.parseAsync(data?.data)
-    } catch (validationError) {
-      console.error('Schema validation error:', validationError)
-    }
-
-    return data?.data
-  } catch (error) {
-    return null
+    await SeasonUserRewardsSchema.parseAsync(data?.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
   }
+
+  return data?.data ?? null
 }
 
 type FetchLeaderboardData = (props: {
@@ -283,40 +229,32 @@ export const fetchLeaderboardData: FetchLeaderboardData = async ({
   limit,
   timeRangeType,
 }) => {
+  const { data } = await axios.get<{ data: LeaderboardData[] }>(
+    `${BACKEND_BASE_URL}/leaderboard/list/v2/${walletPubkey}?order=${order}&skip=${skip}&limit=${limit}&userType=${userType}&timeRangeType=${timeRangeType}`,
+  )
+
   try {
-    const { data } = await axios.get<{ data: LeaderboardData[] }>(
-      `${BACKEND_BASE_URL}/leaderboard/list/v2/${walletPubkey}?order=${order}&skip=${skip}&limit=${limit}&userType=${userType}&timeRangeType=${timeRangeType}`,
-    )
-
-    try {
-      await LeaderboardDataSchema.array().parseAsync(data.data)
-    } catch (validationError) {
-      console.error('Schema validation error:', validationError)
-    }
-
-    return data?.data
-  } catch (error) {
-    return []
+    await LeaderboardDataSchema.array().parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
   }
+
+  return data?.data ?? []
 }
 
 type FetchBonkWithdrawal = (props: { walletPubkey: string }) => Promise<BonkWithdrawal | null>
 export const fetchBonkWithdrawal: FetchBonkWithdrawal = async ({ walletPubkey }) => {
+  const { data: bondWithdrawal } = await axios.get<BonkWithdrawal>(
+    `${BACKEND_BASE_URL}/leaderboard/request-bonk-withdrawal/${walletPubkey}`,
+  )
+
   try {
-    const { data: bondWithdrawal } = await axios.get<BonkWithdrawal>(
-      `${BACKEND_BASE_URL}/leaderboard/request-bonk-withdrawal/${walletPubkey}`,
-    )
-
-    try {
-      await BonkWithdrawalSchema.parseAsync(bondWithdrawal)
-    } catch (validationError) {
-      console.error('Schema validation error:', validationError)
-    }
-
-    return bondWithdrawal || null
-  } catch (error) {
-    return null
+    await BonkWithdrawalSchema.parseAsync(bondWithdrawal)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
   }
+
+  return bondWithdrawal ?? null
 }
 
 type SendBonkWithdrawal = (props: {

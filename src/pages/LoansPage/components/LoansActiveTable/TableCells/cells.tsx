@@ -1,7 +1,5 @@
 import { FC } from 'react'
 
-import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-
 import {
   HorizontalCell,
   createPercentValueJSX,
@@ -9,14 +7,16 @@ import {
 } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
+import { BONDS } from '@banx/constants'
 import {
   HealthColorIncreasing,
-  calcLoanBorrowedAmount,
+  calcWeeklyFeeWithRepayFee,
   calculateLoanRepayValue,
   formatDecimal,
   getColorByPercent,
 } from '@banx/utils'
+
+import { calcAccruedInterest, calcUpfrontFee } from '../helpers'
 
 import styles from '../LoansActiveTable.module.less'
 
@@ -38,21 +38,15 @@ interface CellProps {
 }
 
 export const DebtCell: FC<CellProps> = ({ loan }) => {
-  const { accruedInterest = 0, totalRepaidAmount = 0, bondTradeTransaction, fraktBond } = loan
-  const { soldAt, amountOfBonds, solAmount, feeAmount } = bondTradeTransaction || {}
+  const { totalRepaidAmount = 0, fraktBond } = loan
 
   const debtValue = calculateLoanRepayValue(loan)
   const borrowedValue = fraktBond.borrowedAmount
 
-  const totalAccruedInterest = debtValue - solAmount - feeAmount + accruedInterest
-  const upfrontFee = fraktBond.fbondTokenSupply || feeAmount
+  const totalAccruedInterest = calcAccruedInterest(loan)
+  const upfrontFee = calcUpfrontFee(loan)
 
-  const weeklyFee = calculateCurrentInterestSolPure({
-    loanValue: calcLoanBorrowedAmount(loan),
-    startTime: soldAt,
-    currentTime: soldAt + SECONDS_IN_DAY * 7,
-    rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
-  })
+  const weeklyFee = calcWeeklyFeeWithRepayFee(loan)
 
   const formattedDebtValue = createSolValueJSX(debtValue, 1e9, '0◎', formatDecimal)
 
