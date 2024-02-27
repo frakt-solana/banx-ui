@@ -24,34 +24,29 @@ export const fetchLenderActivity: FetchLenderActivity = async ({
   collection,
   getAll = false,
 }) => {
+  const queryParams = new URLSearchParams({
+    order,
+    skip: String(skip),
+    limit: String(limit),
+    sortBy,
+    state,
+    getAll: String(getAll),
+    isPrivate: String(IS_PRIVATE_MARKETS),
+  })
+
+  if (collection?.length) queryParams.append('collection', String(collection))
+
+  const { data } = await axios.get<LenderActivityResponse>(
+    `${BACKEND_BASE_URL}/activity/lender/${walletPubkey}?${queryParams.toString()}`,
+  )
+
   try {
-    const queryParams = new URLSearchParams({
-      order,
-      skip: String(skip),
-      limit: String(limit),
-      sortBy,
-      state,
-      getAll: String(getAll),
-      isPrivate: String(IS_PRIVATE_MARKETS),
-    })
-
-    if (collection?.length) queryParams.append('collection', String(collection))
-
-    const { data } = await axios.get<LenderActivityResponse>(
-      `${BACKEND_BASE_URL}/activity/lender/${walletPubkey}?${queryParams.toString()}`,
-    )
-
-    try {
-      await LenderActivitySchema.array().parseAsync(data.data)
-    } catch (validationError) {
-      console.error('Schema validation error:', validationError)
-    }
-
-    return data.data
-  } catch (error) {
-    console.error(error)
-    return []
+    await LenderActivitySchema.array().parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
   }
+
+  return data.data ?? []
 }
 
 export const fetchBorrowerActivity: FetchBorrowerActivity = async ({
@@ -64,60 +59,50 @@ export const fetchBorrowerActivity: FetchBorrowerActivity = async ({
   getAll = false,
   collection,
 }) => {
+  const queryParams = new URLSearchParams({
+    order,
+    skip: String(skip),
+    limit: String(limit),
+    sortBy,
+    isPrivate: String(IS_PRIVATE_MARKETS),
+    getAll: String(getAll),
+    state,
+  })
+
+  if (collection?.length) queryParams.append('collection', String(collection))
+
+  const { data } = await axios.get<BorrowedActivityResponse>(
+    `${BACKEND_BASE_URL}/activity/borrower/${walletPubkey}?${queryParams.toString()}`,
+  )
+
   try {
-    const queryParams = new URLSearchParams({
-      order,
-      skip: String(skip),
-      limit: String(limit),
-      sortBy,
-      isPrivate: String(IS_PRIVATE_MARKETS),
-      getAll: String(getAll),
-      state,
-    })
-
-    if (collection?.length) queryParams.append('collection', String(collection))
-
-    const { data } = await axios.get<BorrowedActivityResponse>(
-      `${BACKEND_BASE_URL}/activity/borrower/${walletPubkey}?${queryParams.toString()}`,
-    )
-
-    try {
-      await BorrowerActivitySchema.array().parseAsync(data.data)
-    } catch (validationError) {
-      console.error('Schema validation error:', validationError)
-    }
-
-    return data.data
-  } catch (error) {
-    console.error(error)
-    return []
+    await BorrowerActivitySchema.array().parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
   }
+
+  return data.data ?? []
 }
 
 export const fetchActivityCollectionsList: FetchActivityCollectionsList = async ({
   walletPubkey,
   userType,
 }) => {
+  const queryParams = new URLSearchParams({
+    userType: String(userType),
+  })
+
+  const { data } = await axios.get<{ data: { collections: ActivityCollectionsList[] } }>(
+    `${BACKEND_BASE_URL}/activity/collections-list/${walletPubkey}?${queryParams.toString()}`,
+  )
+
   try {
-    const queryParams = new URLSearchParams({
-      userType: String(userType),
-    })
-
-    const { data } = await axios.get<{ data: { collections: ActivityCollectionsList[] } }>(
-      `${BACKEND_BASE_URL}/activity/collections-list/${walletPubkey}?${queryParams.toString()}`,
-    )
-
-    try {
-      await ActivityCollectionsListSchema.array().parseAsync(data.data.collections)
-    } catch (validationError) {
-      console.error('Schema validation error:', validationError)
-    }
-
-    return data.data.collections
-  } catch (error) {
-    console.error(error)
-    return []
+    await ActivityCollectionsListSchema.array().parseAsync(data.data.collections)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
   }
+
+  return data.data.collections ?? []
 }
 
 export const fetchBorrowBonkRewardsAvailability = async () => {
