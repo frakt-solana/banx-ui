@@ -61,6 +61,11 @@
 .linkedWalletsTable {
   width: 100%;
   border-collapse: collapse;
+  font: var(--body-text-md);
+
+  @media screen and (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
 
   tbody {
     tr {
