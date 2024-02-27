@@ -230,7 +230,7 @@ export const fetchLeaderboardData: FetchLeaderboardData = async ({
   timeRangeType,
 }) => {
   const { data } = await axios.get<{ data: LeaderboardData[] }>(
-    `${BACKEND_BASE_URL}/leaderboard/${walletPubkey}?order=${order}&skip=${skip}&limit=${limit}&userType=${userType}&timeRangeType=${timeRangeType}`,
+    `${BACKEND_BASE_URL}/leaderboard/list/v2/${walletPubkey}?order=${order}&skip=${skip}&limit=${limit}&userType=${userType}&timeRangeType=${timeRangeType}`,
   )
 
   try {
