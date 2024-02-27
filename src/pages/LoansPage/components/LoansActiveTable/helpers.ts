@@ -15,15 +15,16 @@ export const calcAccruedInterest = (loan: Loan) => {
 }
 
 export const calcUnpaidAccruedInterest = (loan: Loan) => {
-  const totalRepaidAmount = loan.totalRepaidAmount || 0
+  //TODO: uncomment when the "Pay interst" feature is ready
+  // const totalRepaidAmount = loan.totalRepaidAmount || 0
 
   const accruedInterest = calcAccruedInterest(loan)
   const upfrontFee = calcUpfrontFee(loan)
 
   const totalAccruedInterest = accruedInterest + upfrontFee
-
-  const unpaidAccruedInterest = Math.max(0, totalAccruedInterest - totalRepaidAmount)
-  return unpaidAccruedInterest
+  return totalAccruedInterest
+  // const unpaidAccruedInterest = Math.max(0, totalAccruedInterest - totalRepaidAmount)
+  // return unpaidAccruedInterest
 }
 
 export const caclFractionToRepay = (loan: Loan) => {
