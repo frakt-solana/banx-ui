@@ -82,7 +82,7 @@
   align-items: center;
   padding: 8px 24px;
 
-  @media (max-width: 960px) {
+  @media (max-width: 1240px) {
     flex-direction: column;
     padding: 16px;
     gap: 8px;
@@ -96,15 +96,22 @@
   width: 100%;
 
   @media (max-width: 640px) {
+    justify-content: unset;
+    margin-right: -16px;
+    padding-right: 16px;
     gap: 8px;
+    overflow: auto hidden;
+    width: calc(100% + 16px);
   }
 }
 .statsContainer > div {
   align-items: flex-end;
   gap: 2px;
 
-  @media (max-width: 960px) {
+  @media (max-width: 1240px) {
     align-items: center;
+    white-space: nowrap;
+    width: 100%;
   }
 }
 
@@ -113,21 +120,29 @@
   align-items: center;
   gap: 16px;
 
-  @media (max-width: 960px) {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+  @media (max-width: 1240px) {
     width: 100%;
+  }
+
+  @media (max-width: 640px) {
+    gap: 8px;
   }
 }
 .summaryControls button {
   min-width: 170px;
-  @media (max-width: 960px) {
+
+  @media (max-width: 1240px) {
     min-width: unset;
+    width: 100%;
+
+    span {
+      display: none;
+    }
   }
 }
 
 .sliderContainer {
-  @media (max-width: 960px) {
+  @media (max-width: 1240px) {
     order: 2;
     flex-direction: row-reverse;
   }
@@ -159,6 +174,15 @@
   }
 }
 
+.weightedAprStat,
+.debtInterestStat {
+  display: none;
+
+  @media (max-width: 1240px) {
+    display: flex;
+  }
+}
+
 .tooltipContent {
   display: flex;
   flex-direction: column;
@@ -185,5 +209,49 @@
 
   @media (max-width: 640px) {
     font: var(--body-text-sm);
+  }
+}
+
+.filterButtonWrapper {
+  position: relative;
+
+  &[data-count-of-loans]::after {
+    background: var(--additional-lava-primary);
+    border-radius: 100px;
+    content: attr(data-count-of-loans);
+    color: var(--pure-black);
+    font: var(--body-text-xs);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+
+    position: absolute;
+    top: -2px;
+    right: -8px;
+    min-width: 8px;
+    height: 16px;
+  }
+}
+
+.filterButton {
+  svg {
+    path:first-child {
+      fill: var(--additional-lava-primary);
+    }
+    path:last-child {
+      fill: var(--pure-black);
+    }
+  }
+
+  &.active {
+    border-color: var(--content-primary);
+  }
+
+  &.disabled {
+    svg path:first-child {
+      fill: var(--content-secondary);
+    }
   }
 }

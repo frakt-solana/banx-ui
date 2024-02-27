@@ -12,7 +12,7 @@ import {
 import { VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { Loan } from '@banx/api/core'
-import { calculateLoanRepayValue } from '@banx/utils'
+import { calcWeeklyFeeWithRepayFee, calculateLoanRepayValue } from '@banx/utils'
 
 interface LoansHeaderProps {
   loans: Loan[]
@@ -21,7 +21,8 @@ interface LoansHeaderProps {
 const LoansHeader: FC<LoansHeaderProps> = ({ loans }) => {
   const numberOfLoans = loans.length
   const totalBorrowed = sumBy(loans, (loan) => loan.fraktBond.borrowedAmount)
-  const totalDebt = sumBy(loans, (loan) => calculateLoanRepayValue(loan))
+  const totalDebt = sumBy(loans, calculateLoanRepayValue)
+  const totalWeeklyFee = sumBy(loans, calcWeeklyFeeWithRepayFee)
 
   return (
     <PageHeaderBackdrop
@@ -29,9 +30,10 @@ const LoansHeader: FC<LoansHeaderProps> = ({ loans }) => {
       titleBtn={<OnboardButton contentType="loans" title="My loans" />}
     >
       <AdditionalStat label="Loans" value={numberOfLoans} valueType={VALUES_TYPES.STRING} />
-      <AdditionalStat label="Total borrowed" value={totalBorrowed} divider={1e9} />
+      <AdditionalStat label="Borrowed" value={totalBorrowed} divider={1e9} />
+      <AdditionalStat label="Weekly fee" value={totalWeeklyFee} divider={1e9} />
       <SeparateStatsLine />
-      <MainStat label="Total debt" value={totalDebt} divider={1e9} />
+      <MainStat label="Debt" value={totalDebt} divider={1e9} />
     </PageHeaderBackdrop>
   )
 }
