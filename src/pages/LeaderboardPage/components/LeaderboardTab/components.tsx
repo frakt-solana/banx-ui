@@ -1,5 +1,7 @@
 import { FC } from 'react'
 
+import { createPercentValueJSX } from '@banx/components/TableComponents'
+
 import { LeaderboardTimeRange } from '@banx/api/user'
 import placeholderBanxImg from '@banx/assets/PlaceholderBanx.png'
 import { useImagePreload } from '@banx/hooks'
@@ -44,7 +46,7 @@ export const LoyaltyCell: FC<{ loyalty: number }> = ({ loyalty }) => {
 
   return (
     <span style={{ color: loyaltyColor }} className={styles.loyaltyTitleCell}>
-      {formattedLoyalty}%
+      {createPercentValueJSX(formattedLoyalty)}
     </span>
   )
 }
