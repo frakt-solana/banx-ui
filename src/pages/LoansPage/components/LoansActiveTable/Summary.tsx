@@ -39,7 +39,6 @@ export const Summary: FC<SummaryProps> = ({
   const totalDebt = sumBy(selectedLoans, calculateLoanRepayValue)
   const totalWeeklyFee = sumBy(selectedLoans, calcWeeklyFeeWithRepayFee)
   const totalUnpaidAccruedInterest = sumBy(selectedLoans, (loan) => calcUnpaidAccruedInterest(loan))
-  const totalPrincipal = sumBy(selectedLoans, (loan) => loan.fraktBond.borrowedAmount)
 
   // const loansWithCalculatedUnpaidInterest = useMemo(() => {
   //   return selectedLoans
@@ -58,7 +57,6 @@ export const Summary: FC<SummaryProps> = ({
         <p>Weighted apr</p>
       </div>
       <div className={styles.statsContainer}>
-        <StatInfo label="Principal" value={totalPrincipal} divider={1e9} />
         <StatInfo
           label="Debt"
           value={totalDebt}
