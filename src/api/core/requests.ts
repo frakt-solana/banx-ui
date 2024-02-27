@@ -28,27 +28,22 @@ import {
 
 type FetchMarketsPreview = () => Promise<MarketPreview[]>
 export const fetchMarketsPreview: FetchMarketsPreview = async () => {
+  const queryParams = new URLSearchParams({
+    isPrivate: String(IS_PRIVATE_MARKETS),
+    getAll: String(true),
+  })
+
+  const { data } = await axios.get<MarketPreviewResponse>(
+    `${BACKEND_BASE_URL}/bonds/preview?${queryParams.toString()}`,
+  )
+
   try {
-    const queryParams = new URLSearchParams({
-      isPrivate: String(IS_PRIVATE_MARKETS),
-      getAll: String(true),
-    })
-
-    const { data } = await axios.get<MarketPreviewResponse>(
-      `${BACKEND_BASE_URL}/bonds/preview?${queryParams.toString()}`,
-    )
-
-    try {
-      await MarketPreviewSchema.array().parseAsync(data.data)
-    } catch (validationError) {
-      console.error('Schema validation error:', validationError)
-    }
-
-    return data.data
-  } catch (error) {
-    console.error(error)
-    return []
+    await MarketPreviewSchema.array().parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
   }
+
+  return data.data
 }
 
 type FetchMarketOffers = (props: {
@@ -65,30 +60,25 @@ export const fetchMarketOffers: FetchMarketOffers = async ({
   limit = 10,
   getAll = true, //TODO Remove when normal pagination added
 }) => {
+  const queryParams = new URLSearchParams({
+    order,
+    skip: String(skip),
+    limit: String(limit),
+    getAll: String(getAll),
+    isPrivate: String(IS_PRIVATE_MARKETS),
+  })
+
+  const { data } = await axios.get<FetchMarketOffersResponse>(
+    `${BACKEND_BASE_URL}/bond-offers/${marketPubkey?.toBase58() || ''}?${queryParams.toString()}`,
+  )
+
   try {
-    const queryParams = new URLSearchParams({
-      order,
-      skip: String(skip),
-      limit: String(limit),
-      getAll: String(getAll),
-      isPrivate: String(IS_PRIVATE_MARKETS),
-    })
-
-    const { data } = await axios.get<FetchMarketOffersResponse>(
-      `${BACKEND_BASE_URL}/bond-offers/${marketPubkey?.toBase58() || ''}?${queryParams.toString()}`,
-    )
-
-    try {
-      await PairSchema.array().parseAsync(data?.data)
-    } catch (validationError) {
-      console.error('Schema validation error:', validationError)
-    }
-
-    return data?.data
-  } catch (error) {
-    console.error(error)
-    return []
+    await PairSchema.array().parseAsync(data?.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
   }
+
+  return data?.data
 }
 
 type FetchWalletLoansAndOffers = (props: {
@@ -106,30 +96,25 @@ export const fetchWalletLoansAndOffers: FetchWalletLoansAndOffers = async ({
   limit = 10,
   getAll = true, //TODO Remove when normal pagination added
 }) => {
+  const queryParams = new URLSearchParams({
+    order,
+    skip: String(skip),
+    limit: String(limit),
+    getAll: String(getAll),
+    isPrivate: String(IS_PRIVATE_MARKETS),
+  })
+
+  const { data } = await axios.get<WalletLoansAndOffersResponse>(
+    `${BACKEND_BASE_URL}/loans/v2/${walletPublicKey}?${queryParams.toString()}`,
+  )
+
   try {
-    const queryParams = new URLSearchParams({
-      order,
-      skip: String(skip),
-      limit: String(limit),
-      getAll: String(getAll),
-      isPrivate: String(IS_PRIVATE_MARKETS),
-    })
-
-    const { data } = await axios.get<WalletLoansAndOffersResponse>(
-      `${BACKEND_BASE_URL}/loans/v2/${walletPublicKey}?${queryParams.toString()}`,
-    )
-
-    try {
-      await WalletLoansAndOffersShema.parseAsync(data.data)
-    } catch (validationError) {
-      console.error('Schema validation error:', validationError)
-    }
-
-    return data.data || { nfts: [], offers: {} }
-  } catch (error) {
-    console.error(error)
-    return { nfts: [], offers: {} }
+    await WalletLoansAndOffersShema.parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
   }
+
+  return data.data ?? { nfts: [], offers: {} }
 }
 
 type FetchLenderLoansByCertainOffer = (props: {
@@ -149,32 +134,27 @@ export const fetchLenderLoansByCertainOffer: FetchLenderLoansByCertainOffer = as
   limit = 10,
   getAll = true, //TODO Remove when normal pagination added
 }) => {
+  const queryParams = new URLSearchParams({
+    order,
+    skip: String(skip),
+    limit: String(limit),
+    getAll: String(getAll),
+    isPrivate: String(IS_PRIVATE_MARKETS),
+    walletPubKey: String(walletPublicKey),
+    offerPubKey: String(offerPubkey),
+  })
+
+  const { data } = await axios.get<LenderLoansResponse>(
+    `${BACKEND_BASE_URL}/loans/lender-loans/v3/?${queryParams.toString()}`,
+  )
+
   try {
-    const queryParams = new URLSearchParams({
-      order,
-      skip: String(skip),
-      limit: String(limit),
-      getAll: String(getAll),
-      isPrivate: String(IS_PRIVATE_MARKETS),
-      walletPubKey: String(walletPublicKey),
-      offerPubKey: String(offerPubkey),
-    })
-
-    const { data } = await axios.get<LenderLoansResponse>(
-      `${BACKEND_BASE_URL}/loans/lender-loans/v3/?${queryParams.toString()}`,
-    )
-
-    try {
-      await LenderLoansSchema.array().parseAsync(data.data)
-    } catch (validationError) {
-      console.error('Schema validation error:', validationError)
-    }
-
-    return data.data ?? []
-  } catch (error) {
-    console.error(error)
-    return []
+    await LenderLoansSchema.array().parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
   }
+
+  return data.data ?? []
 }
 
 type FetchLenderLoans = (props: {
@@ -193,31 +173,26 @@ export const fetchLenderLoans: FetchLenderLoans = async ({
   sortBy = 'status',
   getAll = true, //TODO Remove when normal pagination added
 }) => {
+  const queryParams = new URLSearchParams({
+    order,
+    skip: String(skip),
+    limit: String(limit),
+    getAll: String(getAll),
+    sortBy: String(sortBy),
+    isPrivate: String(IS_PRIVATE_MARKETS),
+  })
+
+  const { data } = await axios.get<LendLoansResponse>(
+    `${BACKEND_BASE_URL}/loans/lender/${walletPublicKey}?${queryParams.toString()}`,
+  )
+
   try {
-    const queryParams = new URLSearchParams({
-      order,
-      skip: String(skip),
-      limit: String(limit),
-      getAll: String(getAll),
-      sortBy: String(sortBy),
-      isPrivate: String(IS_PRIVATE_MARKETS),
-    })
-
-    const { data } = await axios.get<LendLoansResponse>(
-      `${BACKEND_BASE_URL}/loans/lender/${walletPublicKey}?${queryParams.toString()}`,
-    )
-
-    try {
-      await LoanSchema.array().parseAsync(data.data)
-    } catch (validationError) {
-      console.error('Schema validation error:', validationError)
-    }
-
-    return data.data ?? []
-  } catch (error) {
-    console.error(error)
-    return []
+    await LoanSchema.array().parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
   }
+
+  return data.data ?? []
 }
 
 type FetchBorrowNftsAndOffers = (props: {
@@ -234,77 +209,62 @@ export const fetchBorrowNftsAndOffers: FetchBorrowNftsAndOffers = async ({
   skip = 0,
   limit = 10,
 }) => {
+  const queryParams = new URLSearchParams({
+    order,
+    skip: String(skip),
+    limit: String(limit),
+    getAll: String(getAll),
+    isPrivate: String(IS_PRIVATE_MARKETS),
+  })
+
+  const { data } = await axios.get<BorrowNftsAndOffersResponse>(
+    `${BACKEND_BASE_URL}/nfts/borrow/${walletPubkey}?${queryParams.toString()}`,
+  )
+
+  //TODO: Remove it when BE satisfyies schema
   try {
-    const queryParams = new URLSearchParams({
-      order,
-      skip: String(skip),
-      limit: String(limit),
-      getAll: String(getAll),
-      isPrivate: String(IS_PRIVATE_MARKETS),
-    })
-
-    const { data } = await axios.get<BorrowNftsAndOffersResponse>(
-      `${BACKEND_BASE_URL}/nfts/borrow/${walletPubkey}?${queryParams.toString()}`,
-    )
-
-    //TODO: Remove it when BE satisfyies schema
-    try {
-      await BorrowNftsAndOffersSchema.parseAsync(data.data)
-    } catch (validationError) {
-      console.error('Schema validation error:', validationError)
-    }
-
-    return data.data || { nfts: [], offers: {} }
-  } catch (error) {
-    console.error(error)
-    return { nfts: [], offers: {} }
+    await BorrowNftsAndOffersSchema.parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
   }
+
+  return data.data ?? { nfts: [], offers: {} }
 }
 
 export const fetchAuctionsLoans = async () => {
+  const queryParams = new URLSearchParams({
+    isPrivate: String(IS_PRIVATE_MARKETS),
+  })
+
+  const { data } = await axios.get<AuctionsLoansResponse>(
+    `${BACKEND_BASE_URL}/auctions/?${queryParams.toString()}`,
+  )
+
   try {
-    const queryParams = new URLSearchParams({
-      isPrivate: String(IS_PRIVATE_MARKETS),
-    })
-
-    const { data } = await axios.get<AuctionsLoansResponse>(
-      `${BACKEND_BASE_URL}/auctions/?${queryParams.toString()}`,
-    )
-
-    try {
-      await LoanSchema.array().parseAsync(data.data)
-    } catch (validationError) {
-      console.error('Schema validation error:', validationError)
-    }
-
-    return data.data
-  } catch (error) {
-    console.error(error)
-    return []
+    await LoanSchema.array().parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
   }
+
+  return data.data ?? []
 }
 
 type FetchUserOffers = (props: { walletPubkey: string; getAll?: boolean }) => Promise<UserOffer[]>
 export const fetchUserOffers: FetchUserOffers = async ({ walletPubkey, getAll = true }) => {
+  const queryParams = new URLSearchParams({
+    isPrivate: String(IS_PRIVATE_MARKETS),
+    getAll: String(getAll),
+  })
+
+  const { data } = await axios.get<FetchUserOffersResponse>(
+    `${BACKEND_BASE_URL}/bond-offers/user/${walletPubkey}?${queryParams.toString()}`,
+  )
+
   try {
-    const queryParams = new URLSearchParams({
-      isPrivate: String(IS_PRIVATE_MARKETS),
-      getAll: String(getAll),
-    })
-
-    const { data } = await axios.get<FetchUserOffersResponse>(
-      `${BACKEND_BASE_URL}/bond-offers/user/${walletPubkey}?${queryParams.toString()}`,
-    )
-
-    try {
-      await UserOfferSchema.array().parseAsync(data.data)
-    } catch (validationError) {
-      console.error('Schema validation error:', validationError)
-    }
-
-    return data.data ?? []
-  } catch (error) {
-    console.error(error)
-    return []
+    await UserOfferSchema.array().parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
   }
+
+  return data.data ?? []
 }

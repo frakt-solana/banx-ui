@@ -61,6 +61,7 @@ export const useLinkedWallets = () => {
     createFetchLinkedWalletsQueryKey(publicKey?.toBase58() || ''),
     () => fetchLinkedWallets({ walletPublicKey: publicKey?.toBase58() || '' }),
     {
+      enabled: !!publicKey?.toBase58(),
       staleTime: 5 * 1000,
     },
   )

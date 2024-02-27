@@ -20,99 +20,74 @@ import {
 type FetchUserOffersStats = (walletPubkey: string) => Promise<UserOffersStats | null>
 
 export const fetchUserOffersStats: FetchUserOffersStats = async (walletPubkey) => {
+  const { data } = await axios.get<UserOffersStatsResponse>(
+    `${BACKEND_BASE_URL}/stats/my-offers/${walletPubkey}`,
+  )
+
   try {
-    const { data } = await axios.get<UserOffersStatsResponse>(
-      `${BACKEND_BASE_URL}/stats/my-offers/${walletPubkey}`,
-    )
-
-    try {
-      await UserOffersStatsSchema.parseAsync(data.data)
-    } catch (validationError) {
-      console.error('Schema validation error:', validationError)
-    }
-
-    return data.data
-  } catch (error) {
-    console.error(error)
-    return null
+    await UserOffersStatsSchema.parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
   }
+
+  return data.data ?? null
 }
 
 type FetchUserLoansStats = (walletPubkey: string) => Promise<UserLoansStats | null>
 
 export const fetchUserLoansStats: FetchUserLoansStats = async (walletPubkey) => {
+  const { data } = await axios.get<UserLoansStatsResponse>(
+    `${BACKEND_BASE_URL}/stats/my-loans/${walletPubkey}`,
+  )
+
   try {
-    const { data } = await axios.get<UserLoansStatsResponse>(
-      `${BACKEND_BASE_URL}/stats/my-loans/${walletPubkey}`,
-    )
-
-    try {
-      await UserLoansStatsSchema.parseAsync(data.data)
-    } catch (validationError) {
-      console.error('Schema validation error:', validationError)
-    }
-
-    return data.data
-  } catch (error) {
-    console.error(error)
-    return null
+    await UserLoansStatsSchema.parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
   }
+
+  return data.data ?? null
 }
 
 type FetchAllTotalStats = () => Promise<AllTotalStats | null>
 export const fetchAllTotalStats: FetchAllTotalStats = async () => {
+  const { data } = await axios.get<{ data: AllTotalStats }>(`${BACKEND_BASE_URL}/stats/all`)
+
   try {
-    const { data } = await axios.get<{ data: AllTotalStats }>(`${BACKEND_BASE_URL}/stats/all`)
-
-    try {
-      await AllTotalStatsSchema.parseAsync(data.data)
-    } catch (validationError) {
-      console.error('Schema validation error:', validationError)
-    }
-
-    return data.data
-  } catch (error) {
-    console.error(error)
-    return null
+    await AllTotalStatsSchema.parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
   }
+
+  return data.data ?? null
 }
 
 type FetchLenderStats = (walletPubkey: string) => Promise<TotalLenderStats | null>
 export const fetchLenderStats: FetchLenderStats = async (walletPubkey) => {
+  const { data } = await axios.get<{ data: TotalLenderStats }>(
+    `${BACKEND_BASE_URL}/stats/lend/${walletPubkey}`,
+  )
+
   try {
-    const { data } = await axios.get<{ data: TotalLenderStats }>(
-      `${BACKEND_BASE_URL}/stats/lend/${walletPubkey}`,
-    )
-
-    try {
-      await TotalLenderStatsSchema.parseAsync(data.data)
-    } catch (validationError) {
-      console.error('Schema validation error:', validationError)
-    }
-
-    return data.data
-  } catch (error) {
-    console.error(error)
-    return null
+    await TotalLenderStatsSchema.parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
   }
+
+  return data.data ?? null
 }
 
 type FetchBorrowerStats = (walletPubkey: string) => Promise<TotalBorrowerStats | null>
 export const fetchBorrowerStats: FetchBorrowerStats = async (walletPubkey) => {
+  const { data } = await axios.get<{ data: TotalBorrowerStats }>(
+    `${BACKEND_BASE_URL}/stats/borrow/${walletPubkey}`,
+  )
+
   try {
-    const { data } = await axios.get<{ data: TotalBorrowerStats }>(
-      `${BACKEND_BASE_URL}/stats/borrow/${walletPubkey}`,
-    )
-
-    try {
-      await TotalBorrowerStatsSchema.parseAsync(data.data)
-    } catch (validationError) {
-      console.error('Schema validation error:', validationError)
-    }
-
-    return data.data
-  } catch (error) {
-    console.error(error)
-    return null
+    await TotalBorrowerStatsSchema.parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
   }
+
+  return data.data ?? null
 }
