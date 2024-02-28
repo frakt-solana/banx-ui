@@ -6,6 +6,7 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { UserOffer } from '@banx/api/core'
+import { TensorFilled } from '@banx/icons'
 import { useMarketsPreview } from '@banx/pages/LendPage'
 import { HealthColorIncreasing, calculateApr, formatDecimal, getColorByPercent } from '@banx/utils'
 
@@ -26,7 +27,10 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer }) => {
     <div className={styles.mainOfferContainer}>
       <img src={collectionImage} className={styles.collectionImage} />
       <div className={styles.mainOfferInfo}>
-        <h4 className={styles.collectionName}>{collectionName}</h4>
+        <div className={styles.collectionInfo}>
+          <h4 className={styles.collectionName}>{collectionName}</h4>
+          <TensorFilled />
+        </div>
         <div className={styles.mainOfferStats}>
           <StatInfo label="Floor" value={collectionFloor} divider={1e9} />
           <StatInfo

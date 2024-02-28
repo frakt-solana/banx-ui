@@ -4,6 +4,7 @@ import { Tooltip } from 'antd'
 import classNames from 'classnames'
 
 import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
+import { TensorLink } from '@banx/components/SolanaLinks'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { MarketPreview } from '@banx/api/core'
@@ -14,7 +15,7 @@ import { formatDecimal } from '@banx/utils'
 import styles from './MarketOverviewInfo.module.less'
 
 export const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
-  const { collectionName, isHot, collectionFloor, bestOffer } = market
+  const { collectionName, isHot, collectionFloor, bestOffer, tensorSlug } = market
 
   const formattedMaxOffer = formatDecimal(bestOffer / 1e9)
 
@@ -22,14 +23,16 @@ export const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
     <div className={styles.mainInfoContainer}>
       <img src={market.collectionImage} className={styles.collectionImage} />
       <div className={styles.mainInfoContent}>
-        <h4 className={styles.collectionName}>
-          {collectionName}
-          {isHot ? (
+        <div className={styles.collectionInfo}>
+          <h4 className={styles.collectionName}>{collectionName}</h4>
+          {isHot && (
             <Tooltip title="Collection is in huge demand waiting for lenders!">
               <Fire />
             </Tooltip>
-          ) : null}
-        </h4>
+          )}
+          {tensorSlug && <TensorLink slug={tensorSlug} />}
+        </div>
+
         <div className={styles.mainInfoStats}>
           <StatInfo label="Floor" value={collectionFloor} divider={1e9} />
           <StatInfo
