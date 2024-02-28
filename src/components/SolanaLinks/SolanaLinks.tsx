@@ -28,6 +28,7 @@ interface TensorLinkProps {
 export const TensorLink: FC<TensorLinkProps> = ({ slug }) => {
   return (
     <a
+      onClick={(event) => event.stopPropagation()}
       className={styles.tensorLink}
       href={`${TENSOR_MARKET_URL}${slug}`}
       target="_blank"
