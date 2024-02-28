@@ -1,7 +1,7 @@
 import { FC } from 'react'
 
-import { SOLANAFM_URL } from '@banx/constants'
-import { SolanaFM } from '@banx/icons'
+import { SOLANAFM_URL, TENSOR_MARKET_URL } from '@banx/constants'
+import { SolanaFM, TensorFilled } from '@banx/icons'
 
 import { Button, ButtonProps } from '../Buttons'
 
@@ -17,6 +17,23 @@ export const SolanaFMLink: FC<SolanaFMLink> = ({ path, ...props }) => {
       <Button type="circle" variant="secondary" {...props}>
         <img className={styles.solanaFMIcon} src={SolanaFM} />
       </Button>
+    </a>
+  )
+}
+
+interface TensorLinkProps {
+  slug: string
+}
+
+export const TensorLink: FC<TensorLinkProps> = ({ slug }) => {
+  return (
+    <a
+      className={styles.tensorLink}
+      href={`${TENSOR_MARKET_URL}${slug}`}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <TensorFilled />
     </a>
   )
 }
