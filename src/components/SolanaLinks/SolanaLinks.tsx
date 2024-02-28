@@ -1,5 +1,7 @@
 import { FC } from 'react'
 
+import classNames from 'classnames'
+
 import { SOLANAFM_URL, TENSOR_MARKET_URL } from '@banx/constants'
 import { SolanaFM, TensorFilled } from '@banx/icons'
 
@@ -23,13 +25,14 @@ export const SolanaFMLink: FC<SolanaFMLink> = ({ path, ...props }) => {
 
 interface TensorLinkProps {
   slug: string
+  className?: string
 }
 
-export const TensorLink: FC<TensorLinkProps> = ({ slug }) => {
+export const TensorLink: FC<TensorLinkProps> = ({ slug, className }) => {
   return (
     <a
       onClick={(event) => event.stopPropagation()}
-      className={styles.tensorLink}
+      className={classNames(styles.tensorLink, className)}
       href={`${TENSOR_MARKET_URL}${slug}`}
       target="_blank"
       rel="noopener noreferrer"

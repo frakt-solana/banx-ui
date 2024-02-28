@@ -29,7 +29,7 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer }) => {
       <div className={styles.mainOfferInfo}>
         <div className={styles.collectionInfo}>
           <h4 className={styles.collectionName}>{collectionName}</h4>
-          {tensorSlug && <TensorLink slug={tensorSlug} />}
+          {tensorSlug && <TensorLink className={styles.tensorLink} slug={tensorSlug} />}
         </div>
         <div className={styles.mainOfferStats}>
           <StatInfo label="Floor" value={collectionFloor} divider={1e9} />

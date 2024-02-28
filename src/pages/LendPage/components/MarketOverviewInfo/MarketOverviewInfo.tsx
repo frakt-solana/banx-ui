@@ -30,7 +30,7 @@ export const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
               <Fire />
             </Tooltip>
           )}
-          {tensorSlug && <TensorLink slug={tensorSlug} />}
+          {tensorSlug && <TensorLink className={styles.tensorLink} slug={tensorSlug} />}
         </div>
 
         <div className={styles.mainInfoStats}>
