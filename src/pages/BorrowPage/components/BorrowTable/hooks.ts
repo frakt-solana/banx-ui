@@ -24,6 +24,7 @@ import {
   useOffersOptimistic,
   useTableView,
 } from '@banx/store'
+import { createCollectionsStore } from '@banx/store/functions'
 import { getDialectAccessToken, trackPageEvent } from '@banx/utils'
 
 import { useCartState } from '../../cartState'
@@ -44,6 +45,8 @@ export interface UseBorrowTableProps {
   rawOffers: Record<string, Offer[]>
   maxLoanValueByMarket: Record<string, number>
 }
+
+const useCollectionsStore = createCollectionsStore()
 
 export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBorrowTableProps) => {
   const wallet = useWallet()
@@ -182,11 +185,11 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
     [addNft, findBestOffer, findOfferInCart, removeNft],
   )
 
-  const [selectedOptions, setSelectedOptions] = useState<string[]>([])
+  const { selectedCollections, setSelectedCollections } = useCollectionsStore()
 
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_TABLE_SORT)
 
-  const filteredNfts = useFilteredNfts(tableNftsData, selectedOptions)
+  const filteredNfts = useFilteredNfts(tableNftsData, selectedCollections)
   const sortedNfts = useSortedNfts(filteredNfts, sortOption.value)
 
   const searchSelectOptions = useMemo(() => {
@@ -275,11 +278,11 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
           secondLabel: { key: 'numberOfNFTs' },
         },
         className: styles.searchSelect,
-        selectedOptions,
+        selectedOptions: selectedCollections,
         labels: ['Collection', 'Nfts'],
         onChange: (value: string[]) => {
           trackPageEvent('borrow', `filter`)
-          setSelectedOptions(value)
+          setSelectedCollections(value)
         },
       },
       sortParams: {
