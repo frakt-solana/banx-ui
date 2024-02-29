@@ -214,40 +214,4 @@
   }
 }
 
-.loyaltyDiagramContainer {
-  position: relative;
-  height: 74px;
-  width: 116px;
-
-  svg path:first-child {
-    stroke: var(--bg-secondary);
-  }
-
-  @media (max-width: 640px) {
-    display: none;
-  }
-}
-
-.loyaltyDiagramText {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translate(-50%, 0%);
-
-  flex-direction: column-reverse;
-  align-items: center;
-  gap: 0;
-
-  @media (max-width: 640px) {
-    transform: translate(-50%, -30%);
-  }
-
-  .value {
-    font: var(--important-text-xl);
-
-    @media (max-width: 640px) {
-      font: var(--important-text-sm);
-    }
-  }
-}
 //? Loyalty block styles

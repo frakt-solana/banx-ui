@@ -62,7 +62,6 @@ export const LeaderboardDataSchema = z.object({
   avatar: z.string().nullable(),
   user: z.string(),
   points: z.number(),
-  loyalty: z.number(), //? F.e 1 => 0 percentage, 2 => 100 percentage
 })
 
 export type LeaderboardData = z.infer<typeof LeaderboardDataSchema>
