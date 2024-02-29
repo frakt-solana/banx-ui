@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { filter, first, groupBy, includes, map, sumBy } from 'lodash'
@@ -8,6 +8,7 @@ import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { PATHS } from '@banx/router'
+import { createCollectionsStore } from '@banx/store/functions'
 import { formatDecimal } from '@banx/utils'
 
 import { useSortedOffers } from './useSortedOffers'
@@ -19,13 +20,15 @@ type SearchSelectOption = {
   lent: number
 }
 
+const useCollectionsStore = createCollectionsStore()
+
 export const useOffersContent = () => {
   const { connected } = useWallet()
   const navigate = useNavigate()
 
   const { offers, updateOrAddOffer, isLoading } = useUserOffers()
 
-  const [selectedCollections, setSelectedCollections] = useState<string[]>([])
+  const { selectedCollections, setSelectedCollections } = useCollectionsStore()
 
   const filteredOffers = useMemo(() => {
     if (selectedCollections.length) {
