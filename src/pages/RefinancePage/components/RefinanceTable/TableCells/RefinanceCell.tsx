@@ -59,7 +59,7 @@ export const RefinanceCell: FC<RefinanceCellProps> = ({ loan, isCardView, disabl
         type="circle"
         size="small"
       >
-        <TensorLink slug={loan.nft.meta.tensorSlug} />
+        <TensorLink mint={loan.nft.mint} />
       </Button>
     </div>
   )
