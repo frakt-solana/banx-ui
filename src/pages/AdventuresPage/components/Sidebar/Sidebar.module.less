@@ -61,21 +61,28 @@
   display: flex;
   align-items: center;
   column-gap: 6px;
+  flex-wrap: wrap;
+  width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  span {
+    width: 100%;
+  }
 
   span:first-child {
-    font: var(--important-text-xl);
+    font: var(--important-text-mds);
     @media screen and (max-width: 640px) {
-      font: var(--important-text-lg);
+      font: var(--important-text-mds);
     }
   }
 
   span:last-child {
     font: var(--title-sm);
     @media screen and (max-width: 640px) {
-      font: var(--title-xs);
+      font: var(--title-sm);
     }
     text-transform: uppercase;
-    max-width: 95px;
   }
 }
 
@@ -106,10 +113,10 @@
 
 .stats {
   display: flex;
-  flex-direction: column;
   gap: 8px;
 }
 
 .manageButton {
   margin-top: 8px;
+  width: 168px;
 }

@@ -4,12 +4,10 @@ import { ExclamationCircleOutlined } from '@ant-design/icons'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
-import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { AdventuresInfo } from '@banx/api/adventures'
-import { Gamepad } from '@banx/icons'
+import { Gamepad, MoneyBill } from '@banx/icons'
 import { useModal } from '@banx/store'
-import { formatNumbersWithCommas } from '@banx/utils'
 
 import { calcNftsPartnerPoints, isNftStaked } from '../../helpers'
 import { AdventuresModal } from '../AdventuresModal'
@@ -37,22 +35,39 @@ export const Sidebar: FC<SidebarProps> = ({ adventuresInfo, className }) => {
         <Title text="My squad" icon={<Gamepad />} />
 
         <div className={styles.stats}>
-          <Info value={`${stakedNfts.length}/${nfts?.length}`} text="Banx staked" />
-
-          <StatInfo
-            label="partner points"
-            value={formatNumbersWithCommas(partnerPoints)}
-            valueType={VALUES_TYPES.STRING}
-            flexType="row"
-          />
+          <Info value={`${stakedNfts.length}/${nfts?.length}`} text="NFTs staked" />
+          <Button
+            onClick={() => open(AdventuresModal, { adventuresInfo })}
+            className={styles.manageButton}
+            size="default"
+            variant={'secondary'}
+          >
+            Manage
+          </Button>
         </div>
-        <Button
-          onClick={() => open(AdventuresModal, { adventuresInfo })}
-          className={styles.manageButton}
-          size="small"
-        >
-          Manage
-        </Button>
+
+        <div className={styles.stats}>
+          <Info value={`600K/25B`} text="tokens staked" />
+          <Button
+            onClick={() => open(AdventuresModal, { adventuresInfo })}
+            className={styles.manageButton}
+            size="default"
+            variant={'secondary'}
+          >
+            Manage
+          </Button>
+        </div>
+      </div>
+
+      <div className={styles.section}>
+        <Title text="Rewards" icon={<MoneyBill />} />
+
+        <div className={styles.stats}>
+          <Info value={'1.5'} text="claimable" />
+          <Button className={styles.manageButton} size="default">
+            Claim
+          </Button>
+        </div>
       </div>
 
       <div className={styles.section}>
