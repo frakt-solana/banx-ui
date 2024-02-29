@@ -19,6 +19,7 @@ export const MarketPreviewSchema = z
     activeOfferAmount: z.number(),
     loansTvl: z.number(),
     isHot: z.boolean(),
+    tensorSlug: z.string(),
   })
   .merge(MarketMetaSchema)
 
@@ -75,6 +76,7 @@ export const NFTSchema = z.object({
     name: z.string(),
     collectionName: z.string(),
     collectionImage: z.string(),
+    tensorSlug: z.string(),
     partnerPoints: z.number().optional(),
     playerPoints: z.number().optional(),
   }),

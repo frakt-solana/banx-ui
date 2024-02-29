@@ -6,7 +6,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
 import { Button } from '@banx/components/Buttons'
-import { SolanaFMLink } from '@banx/components/SolanaLinks'
+import { TensorLink } from '@banx/components/SolanaLinks'
 import { useWalletModal } from '@banx/components/WalletModal'
 import {
   SubscribeNotificationsModal,
@@ -53,11 +53,14 @@ export const RefinanceCell: FC<RefinanceCellProps> = ({ loan, isCardView, disabl
       <Button onClick={onClickHandler} size={buttonSize} disabled={disabledAction}>
         Refinance
       </Button>
-      <SolanaFMLink
-        className={classNames(styles.solanaNftButton, { [styles.isCardView]: isCardView })}
-        path={`address/${loan.nft.mint}`}
-        size={buttonSize}
-      />
+      <Button
+        className={classNames(styles.tensorButtonLink, { [styles.cardView]: isCardView })}
+        variant="secondary"
+        type="circle"
+        size="small"
+      >
+        <TensorLink slug={loan.nft.meta.tensorSlug} />
+      </Button>
     </div>
   )
 }

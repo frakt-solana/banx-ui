@@ -29,14 +29,43 @@
   }
 }
 
-.collectionName {
+.collectionInfo {
   display: flex;
   align-items: center;
   gap: 8px;
+  z-index: 1;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.collectionName {
   font: var(--card-header-lg);
+  max-width: 290px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+
+  @media (min-width: 961px) and (max-width: 1240px), (max-width: 640px) {
+    max-width: 176px;
+  }
 
   @media (max-width: 640px) {
     font: var(--card-header-md);
+  }
+}
+
+.tensorLink {
+  svg path {
+    fill: var(--content-secondary);
+  }
+
+  &:hover {
+    svg path {
+      fill: var(--content-primary);
+    }
   }
 }
 
@@ -63,8 +92,16 @@
 
   & > div {
     align-items: flex-end;
-    max-width: 260px;
+    max-width: 240px;
     width: 100%;
+
+    @media (max-width: 1380px) {
+      max-width: 200px;
+    }
+
+    @media (max-width: 1240px) {
+      max-width: 120px;
+    }
   }
 
   @media (max-width: 960px) {
