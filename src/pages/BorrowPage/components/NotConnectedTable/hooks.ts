@@ -8,24 +8,20 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { MarketPreview } from '@banx/api/core'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
-import { createCollectionsStore } from '@banx/store/functions'
+import { createGlobalState } from '@banx/store/functions'
 
 import { DEFAULT_SORT_OPTION } from './constants'
 
 import styles from './NotConnectedTable.module.less'
 
-const useCollectionsStore = createCollectionsStore()
+const useCollectionsStore = createGlobalState<string[]>([])
 
 export const useNotConnectedBorrow = () => {
   const { marketsPreview, isLoading } = useMarketsPreview()
 
-  const { selectedCollections, setSelectedCollections } = useCollectionsStore()
+  const [selectedCollections, setSelectedCollections] = useCollectionsStore()
 
   const showEmptyList = !isLoading && !marketsPreview?.length
-
-  const handleFilterChange = (filteredOptions: string[]) => {
-    setSelectedCollections(filteredOptions)
-  }
 
   const filteredMarkets = useMemo(() => {
     return marketsPreview.filter(({ collectionName }) =>
@@ -51,7 +47,7 @@ export const useNotConnectedBorrow = () => {
         format: (value: number) => createSolValueJSX(value, 1e9),
       },
     },
-    onChange: handleFilterChange,
+    onChange: setSelectedCollections,
     className: styles.searchSelect,
   }
 

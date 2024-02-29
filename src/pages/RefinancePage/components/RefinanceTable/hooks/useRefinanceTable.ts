@@ -7,7 +7,7 @@ import { SortOption } from '@banx/components/SortDropdown'
 
 import { Loan } from '@banx/api/core'
 import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
-import { createCollectionsStore } from '@banx/store/functions'
+import { createGlobalState } from '@banx/store/functions'
 
 import { DEFAULT_SORT_OPTION } from '../constants'
 import { useFilteredLoans } from './useFilteredLoans'
@@ -15,12 +15,12 @@ import { useSortedLoans } from './useSortedLoans'
 
 import styles from '../RefinanceTable.module.less'
 
-const useCollectionsStore = createCollectionsStore()
+const useCollectionsStore = createGlobalState<string[]>([])
 
 export const useRefinanceTable = () => {
   const { loans, isLoading } = useAuctionsLoans()
 
-  const { selectedCollections, setSelectedCollections } = useCollectionsStore()
+  const [selectedCollections, setSelectedCollections] = useCollectionsStore()
 
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
 

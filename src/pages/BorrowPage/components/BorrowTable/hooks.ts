@@ -24,7 +24,7 @@ import {
   useOffersOptimistic,
   useTableView,
 } from '@banx/store'
-import { createCollectionsStore } from '@banx/store/functions'
+import { createGlobalState } from '@banx/store/functions'
 import { getDialectAccessToken, trackPageEvent } from '@banx/utils'
 
 import { useCartState } from '../../cartState'
@@ -46,7 +46,7 @@ export interface UseBorrowTableProps {
   maxLoanValueByMarket: Record<string, number>
 }
 
-const useCollectionsStore = createCollectionsStore()
+const useCollectionsStore = createGlobalState<string[]>([])
 
 export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBorrowTableProps) => {
   const wallet = useWallet()
@@ -185,7 +185,7 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
     [addNft, findBestOffer, findOfferInCart, removeNft],
   )
 
-  const { selectedCollections, setSelectedCollections } = useCollectionsStore()
+  const [selectedCollections, setSelectedCollections] = useCollectionsStore()
 
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_TABLE_SORT)
 

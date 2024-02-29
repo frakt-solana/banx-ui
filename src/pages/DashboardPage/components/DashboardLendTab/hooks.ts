@@ -7,7 +7,7 @@ import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { MarketPreview } from '@banx/api/core'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
-import { createCollectionsStore } from '@banx/store/functions'
+import { createGlobalState } from '@banx/store/functions'
 
 export const useDashboardLendTab = () => {
   const { marketsPreview } = useMarketsPreview()
@@ -20,10 +20,10 @@ export const useDashboardLendTab = () => {
   return { marketsPreview: sortedMarketsByOfferTvl, searchSelectParams }
 }
 
-const useCollectionsStore = createCollectionsStore()
+const useCollectionsStore = createGlobalState<string[]>([])
 
 const useFilteredMarkets = (marketsPreview: MarketPreview[]) => {
-  const { selectedCollections, setSelectedCollections } = useCollectionsStore()
+  const [selectedCollections, setSelectedCollections] = useCollectionsStore()
 
   const filteredMarkets = useMemo(() => {
     if (selectedCollections.length) {

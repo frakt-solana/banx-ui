@@ -19,7 +19,7 @@ import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { PATHS } from '@banx/router'
 import { useLoansOptimistic, useModal, useOffersOptimistic } from '@banx/store'
-import { createCollectionsStore } from '@banx/store/functions'
+import { createGlobalState } from '@banx/store/functions'
 import { calculateLoanValue, getDialectAccessToken, trackPageEvent } from '@banx/utils'
 
 import { useBorrowerStats } from '../../hooks'
@@ -145,12 +145,12 @@ export const useSingleBorrow = () => {
   return { borrow, nfts, isLoading, findBestOffer }
 }
 
-const useCollectionsStore = createCollectionsStore()
+const useCollectionsStore = createGlobalState<string[]>([])
 
 const useFilteredMarketsAndNFTs = (marketsPreview: MarketPreview[], nfts: BorrowNft[]) => {
   const { connected } = useWallet()
 
-  const { selectedCollections, setSelectedCollections } = useCollectionsStore()
+  const [selectedCollections, setSelectedCollections] = useCollectionsStore()
 
   const filteredMarkets = useMemo(() => {
     if (selectedCollections.length) {

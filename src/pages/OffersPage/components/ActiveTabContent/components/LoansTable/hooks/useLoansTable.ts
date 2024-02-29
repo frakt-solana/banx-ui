@@ -14,7 +14,7 @@ import {
   isLoanAbleToTerminate,
   useLenderLoans,
 } from '@banx/pages/OffersPage'
-import { createCollectionsStore } from '@banx/store/functions'
+import { createGlobalState } from '@banx/store/functions'
 import { formatDecimal, isUnderWaterLoan } from '@banx/utils'
 
 import { DEFAULT_SORT_OPTION, SORT_OPTIONS, useSortedLoans } from './useSortedLoans'
@@ -129,11 +129,11 @@ const createSearchSelectParams = ({
   return searchSelectParams
 }
 
-const useCollectionsStore = createCollectionsStore()
+const useCollectionsStore = createGlobalState<string[]>([])
 
 const useFilterLoans = (loans: Loan[]) => {
   const [isUnderwaterFilterActive, setIsUnderwaterFilterActive] = useState(false)
-  const { selectedCollections, setSelectedCollections } = useCollectionsStore()
+  const [selectedCollections, setSelectedCollections] = useCollectionsStore()
 
   const filteredLoansByCollection = useMemo(() => {
     if (selectedCollections.length) {
