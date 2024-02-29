@@ -6,17 +6,20 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { SortOption } from '@banx/components/SortDropdown'
 
 import { fetchBorrowerActivity } from '@banx/api/activity'
+import { createCollectionsStore } from '@banx/store/functions'
 
 import { DEFAULT_SORT_OPTION } from '../constants'
 
 const PAGINATION_LIMIT = 15
+
+const useCollectionsStore = createCollectionsStore()
 
 export const useBorrowerActivity = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
-  const [selectedCollections, setSelectedCollections] = useState<string[]>([])
+  const { selectedCollections, setSelectedCollections } = useCollectionsStore()
 
   const [sortBy, order] = sortOption.value.split('_')
 

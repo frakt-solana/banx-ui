@@ -3,11 +3,14 @@ import { useMemo, useState } from 'react'
 import { filter, size } from 'lodash'
 
 import { Loan } from '@banx/api/core'
+import { createCollectionsStore } from '@banx/store/functions'
 import { isLoanTerminating } from '@banx/utils'
+
+const useCollectionsStore = createCollectionsStore()
 
 export const useFilterLoans = (loans: Loan[]) => {
   const [isTerminationFilterEnabled, setTerminationFilterState] = useState(false)
-  const [selectedCollections, setSelectedCollections] = useState<string[]>([])
+  const { selectedCollections, setSelectedCollections } = useCollectionsStore()
 
   const toggleTerminationFilter = () => {
     setTerminationFilterState(!isTerminationFilterEnabled)
