@@ -1,7 +1,9 @@
 export const FRAKTLISTING_URL = 'https://fraktlisting.frakt.xyz/'
 export const LEADERBOARD_URL = 'https://leaderboard.frakt.xyz/'
-export const TENSOR_BANX_MARKET_URL = 'https://www.tensor.trade/trade/banx/'
 export const SOLANAFM_URL = 'https://solana.fm/'
+
+export const TENSOR_MARKET_URL = 'https://www.tensor.trade/trade/'
+export const TENSOR_BANX_MARKET_URL = `${TENSOR_MARKET_URL}banx/`
 
 export const X_URL = 'https://twitter.com/banx_gg'
 export const GITHUB_URL = 'https://github.com/frakt-solana'

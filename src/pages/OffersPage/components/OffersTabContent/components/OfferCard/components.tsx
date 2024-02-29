@@ -2,6 +2,7 @@ import { FC } from 'react'
 
 import classNames from 'classnames'
 
+import { TensorLink } from '@banx/components/SolanaLinks'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 
@@ -19,14 +20,17 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer }) => {
   const { collectionName, collectionImage, collectionFloor } = offer.collectionMeta
 
   const { marketsPreview } = useMarketsPreview()
-  const { bestOffer = 0 } =
+  const { bestOffer = 0, tensorSlug } =
     marketsPreview.find((market) => market.marketPubkey === offer.offer.hadoMarket) || {}
 
   return (
     <div className={styles.mainOfferContainer}>
       <img src={collectionImage} className={styles.collectionImage} />
       <div className={styles.mainOfferInfo}>
-        <h4 className={styles.collectionName}>{collectionName}</h4>
+        <div className={styles.collectionInfo}>
+          <h4 className={styles.collectionName}>{collectionName}</h4>
+          {tensorSlug && <TensorLink className={styles.tensorLink} slug={tensorSlug} />}
+        </div>
         <div className={styles.mainOfferStats}>
           <StatInfo label="Floor" value={collectionFloor} divider={1e9} />
           <StatInfo
