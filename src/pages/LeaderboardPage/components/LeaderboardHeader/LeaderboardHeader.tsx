@@ -17,7 +17,7 @@ const Header = () => {
   const walletPublicKeyString = walletPublicKey?.toBase58() || ''
 
   const { data: userRewardsData, isLoading: userRewardsDataLoading } = useSeasonUserRewards()
-  const { loyalty = 0, playerPoints = 0, totalParticipants = 0 } = userRewardsData || {}
+  const { playerPoints = 0, totalParticipants = 0 } = userRewardsData || {}
 
   const { linkedWallets, isLoading: linkedWalletsLoading } = useLinkedWallets()
 
@@ -51,7 +51,6 @@ const Header = () => {
       {showLoyaltyBlock ? (
         <LoyaltyBlock
           multiplier={playerPoints}
-          loyalty={loyalty}
           lenderPoints={lenderPoints}
           borrowerPoints={borrowerPoints}
         />
