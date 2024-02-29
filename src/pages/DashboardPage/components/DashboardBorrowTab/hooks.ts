@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { filter, first, groupBy, includes, map } from 'lodash'
@@ -19,6 +19,7 @@ import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { PATHS } from '@banx/router'
 import { useLoansOptimistic, useModal, useOffersOptimistic } from '@banx/store'
+import { createCollectionsStore } from '@banx/store/functions'
 import { calculateLoanValue, getDialectAccessToken, trackPageEvent } from '@banx/utils'
 
 import { useBorrowerStats } from '../../hooks'
@@ -144,26 +145,28 @@ export const useSingleBorrow = () => {
   return { borrow, nfts, isLoading, findBestOffer }
 }
 
+const useCollectionsStore = createCollectionsStore()
+
 const useFilteredMarketsAndNFTs = (marketsPreview: MarketPreview[], nfts: BorrowNft[]) => {
   const { connected } = useWallet()
 
-  const [selectedOptions, setSelectedOptions] = useState<string[]>([])
+  const { selectedCollections, setSelectedCollections } = useCollectionsStore()
 
   const filteredMarkets = useMemo(() => {
-    if (selectedOptions.length) {
+    if (selectedCollections.length) {
       return filter(marketsPreview, ({ collectionName }) =>
-        includes(selectedOptions, collectionName),
+        includes(selectedCollections, collectionName),
       )
     }
     return marketsPreview
-  }, [marketsPreview, selectedOptions])
+  }, [marketsPreview, selectedCollections])
 
   const filteredNFTs = useMemo(() => {
-    if (selectedOptions.length) {
-      return filter(nfts, ({ nft }) => includes(selectedOptions, nft.meta.collectionName))
+    if (selectedCollections.length) {
+      return filter(nfts, ({ nft }) => includes(selectedCollections, nft.meta.collectionName))
     }
     return nfts
-  }, [nfts, selectedOptions])
+  }, [nfts, selectedCollections])
 
   const searchSelectOptions = useMemo(() => {
     const nftsGroupedByCollection = groupBy(nfts, (nft) => nft.nft.meta.collectionName)
@@ -183,9 +186,9 @@ const useFilteredMarketsAndNFTs = (marketsPreview: MarketPreview[], nfts: Borrow
   }, [nfts, marketsPreview])
 
   const searchSelectParams = {
-    onChange: setSelectedOptions,
+    onChange: setSelectedCollections,
     options: connected ? searchSelectOptions : marketsPreview,
-    selectedOptions,
+    selectedOptions: selectedCollections,
     optionKeys: {
       labelKey: 'collectionName',
       imageKey: 'collectionImage',
