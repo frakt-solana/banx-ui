@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import classNames from 'classnames'
 
-import { SOLANAFM_URL, TENSOR_MARKET_URL } from '@banx/constants'
+import { BASE_TENSOR_URL, SOLANAFM_URL, TENSOR_MARKET_URL } from '@banx/constants'
 import { SolanaFM, TensorFilled } from '@banx/icons'
 
 import { Button, ButtonProps } from '../Buttons'
@@ -23,17 +23,20 @@ export const SolanaFMLink: FC<SolanaFMLink> = ({ path, ...props }) => {
   )
 }
 
-interface TensorLinkProps {
-  slug: string
+type TensorLinkProps = {
+  slug?: string
+  mint?: string
   className?: string
 }
 
-export const TensorLink: FC<TensorLinkProps> = ({ slug, className }) => {
+export const TensorLink: FC<TensorLinkProps> = ({ slug, mint, className }) => {
+  const urlPath = mint ? `${BASE_TENSOR_URL}item/${mint}` : `${TENSOR_MARKET_URL}${slug}`
+
   return (
     <a
       onClick={(event) => event.stopPropagation()}
       className={classNames(styles.tensorLink, className)}
-      href={`${TENSOR_MARKET_URL}${slug}`}
+      href={urlPath}
       target="_blank"
       rel="noopener noreferrer"
     >
