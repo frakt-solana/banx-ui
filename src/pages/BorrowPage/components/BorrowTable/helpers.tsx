@@ -22,6 +22,7 @@ import {
 import {
   convertOffersToSimple,
   enqueueSnackbar,
+  identifyWalletNameOnBorrow,
   offerNeedsReservesOptimizationOnBorrow,
 } from '@banx/utils'
 
@@ -92,6 +93,7 @@ export const executeBorrow = async (props: {
     {
       signAllChunks: isLedger ? 1 : 40,
       rejectQueueOnFirstPfError: false,
+      preventTxnsSending: true,
     },
   )
     .addTxnParams(txnParams)
@@ -141,6 +143,20 @@ export const executeBorrow = async (props: {
       updateOffersOptimistic(optimisticsToAdd)
 
       onSuccessAll?.()
+    })
+    .on('pfSuccessSome', (results) => {
+      const fraktBondPubkeys = chain(results)
+        .map(({ result }) => result)
+        .compact()
+        .flatten()
+        .map((result) => result.loan.fraktBond.publicKey)
+        .uniq()
+        .value()
+
+      identifyWalletNameOnBorrow({
+        walletContext: walletAndConnection.wallet,
+        fraktBondPubkeys,
+      })
     })
     .on('pfError', (error) => {
       defaultTxnErrorHandler(error, {
