@@ -2,7 +2,9 @@ import { useRef, useState } from 'react'
 
 import { WalletName } from '@solana/wallet-adapter-base'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { sortBy } from 'lodash'
 
+import { MAGIC_EDEN_WALLET_NAME } from '@banx/constants'
 import { useOnClickOutside } from '@banx/hooks'
 
 import { UserInfo, WalletItem } from './components'
@@ -31,6 +33,8 @@ export const WalletModal = () => {
     setChangeWallet(true)
   }
 
+  const walletsSorted = sortBy(wallets, ({ adapter }) => adapter.name !== MAGIC_EDEN_WALLET_NAME)
+
   return (
     <div ref={modalRef} className={styles.modal}>
       {shouldShowUserInfo && (
@@ -38,7 +42,7 @@ export const WalletModal = () => {
       )}
       {shouldShowWalletItems && (
         <div className={styles.walletItems}>
-          {wallets.map(({ adapter }, idx) => (
+          {walletsSorted.map(({ adapter }, idx) => (
             <WalletItem
               key={idx}
               onClick={() => handleWalletSelect(adapter.name)}
