@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 
 import { filter, includes } from 'lodash'
 
@@ -7,6 +7,7 @@ import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { MarketPreview } from '@banx/api/core'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
+import { createGlobalState } from '@banx/store/functions'
 
 export const useDashboardLendTab = () => {
   const { marketsPreview } = useMarketsPreview()
@@ -19,22 +20,24 @@ export const useDashboardLendTab = () => {
   return { marketsPreview: sortedMarketsByOfferTvl, searchSelectParams }
 }
 
+const useCollectionsStore = createGlobalState<string[]>([])
+
 const useFilteredMarkets = (marketsPreview: MarketPreview[]) => {
-  const [selectedOptions, setSelectedOptions] = useState<string[]>([])
+  const [selectedCollections, setSelectedCollections] = useCollectionsStore()
 
   const filteredMarkets = useMemo(() => {
-    if (selectedOptions.length) {
+    if (selectedCollections.length) {
       return filter(marketsPreview, ({ collectionName }) =>
-        includes(selectedOptions, collectionName),
+        includes(selectedCollections, collectionName),
       )
     }
     return marketsPreview
-  }, [marketsPreview, selectedOptions])
+  }, [marketsPreview, selectedCollections])
 
   const searchSelectParams = {
-    onChange: setSelectedOptions,
+    onChange: setSelectedCollections,
     options: marketsPreview,
-    selectedOptions,
+    selectedOptions: selectedCollections,
     optionKeys: {
       labelKey: 'collectionName',
       valueKey: 'collectionName',
