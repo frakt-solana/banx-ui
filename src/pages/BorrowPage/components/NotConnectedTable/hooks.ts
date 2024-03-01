@@ -8,25 +8,26 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { MarketPreview } from '@banx/api/core'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
+import { createGlobalState } from '@banx/store/functions'
 
 import { DEFAULT_SORT_OPTION } from './constants'
 
 import styles from './NotConnectedTable.module.less'
 
+const useCollectionsStore = createGlobalState<string[]>([])
+
 export const useNotConnectedBorrow = () => {
   const { marketsPreview, isLoading } = useMarketsPreview()
 
-  const [selectedMarkets, setSelectedMarkets] = useState<string[]>([])
+  const [selectedCollections, setSelectedCollections] = useCollectionsStore()
 
   const showEmptyList = !isLoading && !marketsPreview?.length
 
-  const handleFilterChange = (filteredOptions: string[]) => {
-    setSelectedMarkets(filteredOptions)
-  }
-
   const filteredMarkets = useMemo(() => {
-    return marketsPreview.filter(({ collectionName }) => selectedMarkets.includes(collectionName))
-  }, [marketsPreview, selectedMarkets])
+    return marketsPreview.filter(({ collectionName }) =>
+      selectedCollections.includes(collectionName),
+    )
+  }, [marketsPreview, selectedCollections])
 
   const { sortedMarkets, sortParams } = useSortMarkets(
     filteredMarkets.length ? filteredMarkets : marketsPreview,
@@ -34,7 +35,7 @@ export const useNotConnectedBorrow = () => {
 
   const searchSelectParams: SearchSelectProps<MarketPreview> = {
     options: marketsPreview,
-    selectedOptions: selectedMarkets,
+    selectedOptions: selectedCollections,
     placeholder: 'Select a collection',
     labels: ['Collection', 'Liquidity'],
     optionKeys: {
@@ -46,7 +47,7 @@ export const useNotConnectedBorrow = () => {
         format: (value: number) => createSolValueJSX(value, 1e9),
       },
     },
-    onChange: handleFilterChange,
+    onChange: setSelectedCollections,
     className: styles.searchSelect,
   }
 
