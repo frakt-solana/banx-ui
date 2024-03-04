@@ -51,7 +51,12 @@ export const getTableColumns = ({
     },
     {
       key: 'debt',
-      title: <HeaderCell label="Debt" />,
+      title: (
+        <HeaderCell
+          label="Debt"
+          tooltipText="Hover over the debt balance of your loans below to view a breakdown of your principal, interest and repayments (if any) to date"
+        />
+      ),
       render: (loan) => <DebtCell loan={loan} />,
     },
     {

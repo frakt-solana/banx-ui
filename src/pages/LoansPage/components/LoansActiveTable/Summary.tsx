@@ -64,7 +64,7 @@ export const Summary: FC<SummaryProps> = ({
           divider={1e9}
         />
         <StatInfo label="Accrued interest" value={totalUnpaidAccruedInterest} divider={1e9} />
-        <StatInfo label="Weekly fee" value={totalWeeklyFee} divider={1e9} />
+        <StatInfo label="Weekly interest" value={totalWeeklyFee} divider={1e9} />
         <StatInfo
           label="Weighted apr"
           value={calcWeightedApr(selectedLoans)}

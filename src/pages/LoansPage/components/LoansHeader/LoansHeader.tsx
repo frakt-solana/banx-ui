@@ -31,7 +31,12 @@ const LoansHeader: FC<LoansHeaderProps> = ({ loans }) => {
     >
       <AdditionalStat label="Loans" value={numberOfLoans} valueType={VALUES_TYPES.STRING} />
       <AdditionalStat label="Borrowed" value={totalBorrowed} divider={1e9} />
-      <AdditionalStat label="Weekly fee" value={totalWeeklyFee} divider={1e9} />
+      <AdditionalStat
+        label="Weekly interest"
+        tooltipText="Expected weekly interest on your loans. Interest is added to your debt balance"
+        value={totalWeeklyFee}
+        divider={1e9}
+      />
       <SeparateStatsLine />
       <MainStat label="Debt" value={totalDebt} divider={1e9} />
     </PageHeaderBackdrop>
