@@ -1,28 +1,18 @@
-import { WalletName } from '@solana/wallet-adapter-base'
-import { useWallet } from '@solana/wallet-adapter-react'
-import { sortBy } from 'lodash'
-
 import { WalletItem } from '@banx/components/WalletModal'
 
-import { MAGIC_EDEN_WALLET_NAME } from '@banx/constants'
+import { useWalletAdapters } from '@banx/hooks'
 
 import styles from '../LinkWalletsModal.module.less'
 
 export const WalletsList = () => {
-  const { wallets, select } = useWallet()
-
-  const handleWalletSelect = (walletName: WalletName) => {
-    select(walletName)
-  }
-
-  const walletsSorted = sortBy(wallets, ({ adapter }) => adapter.name !== MAGIC_EDEN_WALLET_NAME)
+  const wallets = useWalletAdapters()
 
   return (
     <div className={styles.walletsList}>
-      {walletsSorted.map(({ adapter }, idx) => (
+      {wallets.map(({ adapter, select }, idx) => (
         <WalletItem
           key={idx}
-          onClick={() => handleWalletSelect(adapter.name)}
+          onClick={select}
           image={adapter.icon}
           name={adapter.name}
           className={styles.walletItem}
