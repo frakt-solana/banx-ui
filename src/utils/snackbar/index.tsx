@@ -26,6 +26,7 @@ export interface SnackbarProps extends SnackMessageProps, Partial<SnackDescripti
   customKey?: Key
   placement?: NotificationPlacement
   className?: string
+  closeIconClassName?: string
 }
 
 type EnqueueSnackbar = (props: SnackbarProps) => Key
@@ -40,6 +41,7 @@ export const enqueueSnackbar: EnqueueSnackbar = ({
   customKey,
   placement = 'bottomRight',
   className,
+  closeIconClassName,
   solanaExplorerPath,
   copyButtonProps,
 }) => {
@@ -59,7 +61,11 @@ export const enqueueSnackbar: EnqueueSnackbar = ({
   notification.open({
     type: type === 'loading' ? 'info' : type,
     className: classNames(styles.snack, styles[`snack__${type}`], className),
-    closeIcon: closable ? <CloseModal className={styles.closeIcon} /> : false,
+    closeIcon: closable ? (
+      <CloseModal className={classNames(styles.closeIcon, closeIconClassName)} />
+    ) : (
+      false
+    ),
     message: <SnackMessage message={message} solanaExplorerPath={solanaExplorerPath} />,
     description:
       description || copyButtonProps ? (
