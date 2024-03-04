@@ -3004,6 +3004,13 @@
     "@solana/wallet-adapter-base" "^0.9.23"
     buffer "^6.0.3"
 
+"@solana/wallet-adapter-magiceden@^0.1.13":
+  version "0.1.13"
+  resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-magiceden/-/wallet-adapter-magiceden-0.1.13.tgz#4686f6f1d000db9ef60359d1a8556395f9f3c6fd"
+  integrity sha512-3jaUBTBmRNLK94ednqUgeszFR2L6nlttVZquJP4z12qSFinwXsdAqAvbxV3NbEY/JHm62EoFj+o4U+mVxaL5fw==
+  dependencies:
+    "@solana/wallet-adapter-base" "^0.9.23"
+
 "@solana/wallet-adapter-mathwallet@^0.9.18":
   version "0.9.18"
   resolved "https://registry.yarnpkg.com/@solana/wallet-adapter-mathwallet/-/wallet-adapter-mathwallet-0.9.18.tgz#23172fef715a7dc8b600887c5d0fb996eb6c6cf0"
@@ -11297,10 +11304,10 @@ socks@^2.6.2:
     ip "^2.0.0"
     smart-buffer "^4.2.0"
 
-solana-transactions-executor@1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/solana-transactions-executor/-/solana-transactions-executor-1.1.0.tgz#1bbe94f48401685b29109a1e4d92cf1038a8c0a5"
-  integrity sha512-mRp27Z9IhzfS6paC9sANrfgZDv30i7OReXVueOsQ3fj5CY8TnadDq9qxtja18zuLUGAHZwe2WbtZ1b+9D7b58A==
+solana-transactions-executor@1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/solana-transactions-executor/-/solana-transactions-executor-1.1.2.tgz#5383336ea834e6e7a9de94e20a3d555e49aaacaf"
+  integrity sha512-430v1omfv3lZ+YNpJOlindltZMw1/y61RsThgoiUVWwz7G9czFjOHKoWfhatMIyILYYFWwmxt8qZb8UN1uW5dA==
   dependencies:
     "@solana/wallet-adapter-react" "^0.15.33"
     "@solana/web3.js" "^1.68.0"

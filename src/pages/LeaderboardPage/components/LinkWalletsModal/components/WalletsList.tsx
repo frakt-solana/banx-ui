@@ -1,23 +1,18 @@
-import { WalletName } from '@solana/wallet-adapter-base'
-import { useWallet } from '@solana/wallet-adapter-react'
-
 import { WalletItem } from '@banx/components/WalletModal'
+
+import { useWalletAdapters } from '@banx/hooks'
 
 import styles from '../LinkWalletsModal.module.less'
 
 export const WalletsList = () => {
-  const { wallets, select } = useWallet()
-
-  const handleWalletSelect = (walletName: WalletName) => {
-    select(walletName)
-  }
+  const wallets = useWalletAdapters()
 
   return (
     <div className={styles.walletsList}>
-      {wallets.map(({ adapter }, idx) => (
+      {wallets.map(({ adapter, select }, idx) => (
         <WalletItem
           key={idx}
-          onClick={() => handleWalletSelect(adapter.name)}
+          onClick={select}
           image={adapter.icon}
           name={adapter.name}
           className={styles.walletItem}
