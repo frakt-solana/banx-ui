@@ -6,7 +6,7 @@ import { MAGIC_EDEN_DOWNLOAD_URL, MAGIC_EDEN_WALLET_NAME } from '@banx/constants
 
 type UseWalletAdapters = (
   props?: Partial<{
-    onWalletSelect?: () => void
+    onWalletSelect: () => void
   }>,
 ) => Array<{ adapter: Adapter; select: () => void }>
 

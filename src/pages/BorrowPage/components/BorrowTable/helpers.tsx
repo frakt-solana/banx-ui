@@ -320,7 +320,7 @@ export const showMagicEdenRewardsSnack = () => {
   enqueueSnackbar({
     className: styles.magicEdenRewardsSnack,
     closeIconClassName: styles.magicEdenCloseIcon,
-    message: '100% cashback on protocol fees for ME wallet users',
+    message: 'You just got 100% cashback for using Magic wallet! Check out Rewards page!',
     icon: (
       <img src={magicEdenLogoImg} alt="Magic Eden" className={styles.magicEdenRewardsSnackIcon} />
     ),
