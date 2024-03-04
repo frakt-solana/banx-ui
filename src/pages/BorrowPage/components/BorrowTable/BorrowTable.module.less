@@ -88,11 +88,35 @@
 }
 
 .bonkRewardsSnack {
-  border-color: var(--additional-orange-primary-deep);
+  border: var(--additional-orange-primary-deep);
   background: var(--additional-orange-secondary) !important;
 }
 .bonkRewardsSnackIcon {
   height: 24px;
   width: 21px;
+  transform: translateY(-4px);
+}
+
+.magicEdenRewardsSnack {
+  border: 1px solid #e42575;
+  background: linear-gradient(91deg, #100915 0.86%, #8b1647 100%) !important;
+
+  :global {
+    .ant-notification-notice-message {
+      color: var(--pure-white) !important;
+    }
+    .ant-notification-notice-message {
+      margin-left: 40px !important;
+    }
+  }
+}
+.magicEdenCloseIcon {
+  rect {
+    fill: var(--pure-white);
+  }
+}
+.magicEdenRewardsSnackIcon {
+  height: 24px;
+  width: 34px;
   transform: translateY(-4px);
 }
