@@ -5,8 +5,12 @@ import { Tooltip as AntdTooltip, TooltipProps as AntdTooltipProps } from 'antd'
 
 import styles from './Tooltip.module.less'
 
-const Tooltip: FC<PropsWithChildren<AntdTooltipProps>> = ({ children, ...props }) => (
-  <AntdTooltip {...props} arrowContent={null} placement="bottom">
+const Tooltip: FC<PropsWithChildren<AntdTooltipProps>> = ({
+  children,
+  placement = 'bottom',
+  ...props
+}) => (
+  <AntdTooltip {...props} arrowContent={null} placement={placement}>
     {children || <InfoCircleOutlined className={styles.icon} />}
   </AntdTooltip>
 )

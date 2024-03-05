@@ -56,7 +56,7 @@ export const DebtCell: FC<CellProps> = ({ loan }) => {
       <TooltipRow label="Repaid" value={totalRepaidAmount} />
       <TooltipRow label="Accrued interest" value={totalAccruedInterest + upfrontFee} />
       <TooltipRow label="Upfront fee" value={upfrontFee} />
-      <TooltipRow label="Est. weekly fee" value={weeklyFee} />
+      <TooltipRow label="Est. weekly interest" value={weeklyFee} />
     </div>
   )
 
