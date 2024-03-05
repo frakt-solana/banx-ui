@@ -86,7 +86,7 @@ export const useLinkWalletsModal = () => {
       })
 
       if (savedLinkingData.linkedWallets) {
-        const { borrowerPoints, borrowerRank, lenderPoints, lenderRank } = linkResponse
+        const { borrowerPoints, borrowerRank, lenderPoints, lenderRank, boost } = linkResponse
 
         setLinkedWalletsOptimistic(publicKey.toBase58(), [
           ...savedLinkingData.linkedWallets,
@@ -97,6 +97,7 @@ export const useLinkWalletsModal = () => {
             borrowerRank: borrowerRank ?? 0,
             lenderPoints: lenderPoints ?? 0,
             lenderRank: lenderRank ?? 0,
+            boost: boost ?? 0,
           },
         ])
       }
