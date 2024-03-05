@@ -117,6 +117,7 @@ export const fetchLinkedWallets: FetchLinkedWallets = async ({ walletPublicKey }
       borrowerRank: 0,
       lenderPoints: 0,
       lenderRank: 0,
+      boost: 0,
     },
   ]
 
@@ -158,6 +159,7 @@ export const linkWallet: LinkWallet = async ({ linkedWalletJwt, wallet, signatur
       borrowerRank: 0,
       lenderPoints: 0,
       lenderRank: 0,
+      boost: 0,
     }
     return errorResponse
   }

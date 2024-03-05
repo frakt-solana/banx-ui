@@ -30,6 +30,7 @@ export const LinkedWalletsTable: FC = () => {
             <th>Wallet</th>
             <th>Borrower pts</th>
             <th>Lender pts</th>
+            <th>Boost</th>
             <th></th>
           </tr>
         </thead>
@@ -82,6 +83,7 @@ const LinkedWalletItem: FC<LinkedWalletProps> = ({ linkedWallet, isActive = fals
       </td>
       <td>{formatNumbersWithCommas(linkedWallet.borrowerPoints?.toFixed(0))}</td>
       <td>{formatNumbersWithCommas(linkedWallet.lenderPoints?.toFixed(0))}</td>
+      <td className={styles.linkedWalletBoost}>{formatNumbersWithCommas(linkedWallet.boost)}x</td>
       <td className={styles.linkedWalletRightContainer}>
         {isMainWallet && <House className={styles.houseIco} />}
         {onUnlink && !isUnlinking && (

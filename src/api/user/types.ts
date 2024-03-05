@@ -79,6 +79,7 @@ export type LinkedWalletPoints = {
   borrowerRank: number
   lenderPoints: number
   lenderRank: number
+  boost: number
 }
 
 export type LinkedWallet = {
