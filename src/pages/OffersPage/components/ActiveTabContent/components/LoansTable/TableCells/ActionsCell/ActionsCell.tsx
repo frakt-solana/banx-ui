@@ -1,9 +1,11 @@
 import { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import classNames from 'classnames'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
+import { TensorLink } from '@banx/components/SolanaLinks'
 
 import { Loan } from '@banx/api/core'
 import { useHiddenNftsMints } from '@banx/pages/OffersPage'
@@ -84,6 +86,14 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
           Manage
         </Button>
       )}
+      <Button
+        className={classNames(styles.tensorButtonLink, { [styles.cardView]: isCardView })}
+        variant="secondary"
+        type="circle"
+        size="small"
+      >
+        <TensorLink mint={loan.nft.mint} />
+      </Button>
     </div>
   )
 }
