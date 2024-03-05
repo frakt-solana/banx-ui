@@ -34,6 +34,7 @@ const LoansHeader: FC<LoansHeaderProps> = ({ loans }) => {
       <AdditionalStat
         label="Weekly interest"
         tooltipText="Expected weekly interest on your loans. Interest is added to your debt balance"
+        tooltipPlacement="bottomLeft"
         value={totalWeeklyFee}
         divider={1e9}
       />

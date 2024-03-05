@@ -1,5 +1,6 @@
 import { CSSProperties, FC, SVGProps } from 'react'
 
+import { TooltipPlacement } from 'antd/es/tooltip'
 import classNames from 'classnames'
 
 import Tooltip from '../Tooltip'
@@ -21,6 +22,7 @@ export interface StatsInfoProps {
   label?: string
   secondValue?: string | JSX.Element
   tooltipText?: string
+  tooltipPlacement?: TooltipPlacement
   valueType?: VALUES_TYPES
   decimalPlaces?: number
   divider?: number
@@ -33,6 +35,7 @@ export const StatInfo: FC<StatsInfoProps> = ({
   label,
   value,
   tooltipText,
+  tooltipPlacement,
   secondValue,
   valueType = VALUES_TYPES.SOLPRICE,
   decimalPlaces = 2,
@@ -54,7 +57,7 @@ export const StatInfo: FC<StatsInfoProps> = ({
     <div className={containerClasses}>
       <div className={styles.labelWrapper}>
         <span className={labelClasses}>{label}</span>
-        {tooltipText && <Tooltip title={tooltipText} />}
+        {tooltipText && <Tooltip title={tooltipText} placement={tooltipPlacement} />}
       </div>
       <span className={valueClasses} style={valueStyles}>
         {formattedValue}
