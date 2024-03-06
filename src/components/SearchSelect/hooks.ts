@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 
+import { isEqual } from 'lodash'
+
 import { TABLET_WIDTH } from '@banx/constants'
-import { useOnClickOutside, useWindowSize } from '@banx/hooks'
+import { useLocalStorage, useOnClickOutside, useWindowSize } from '@banx/hooks'
 
 const MAX_TAG_TEXT_LENGTH = 15
 
@@ -39,8 +41,13 @@ export const useSearchSelect = ({
     setInputValue(limitedValue)
   }
 
-  const handleDropdownVisibleChange = (visible: boolean) => {
+  const togglePopupVisible = (visible: boolean) => {
     setIsPopupOpen(visible)
+  }
+
+  const handleCollapseClick = () => {
+    onChangeCollapsed?.(!collapsed)
+    togglePopupVisible(!collapsed)
   }
 
   const showSufixIcon = !selectedOptions?.length && !inputValue
@@ -52,9 +59,36 @@ export const useSearchSelect = ({
 
     inputValue,
     handleInputChange,
-    handleDropdownVisibleChange,
+    togglePopupVisible,
 
     showSufixIcon,
     showCollapsedContent,
+
+    handleCollapseClick,
   }
+}
+
+export const useFavoriteOptions = <OptionType>(key: string) => {
+  const storageKey = `@banx.favorite_${key}`
+
+  const [favoriteOptions, setFavoriteOptions] = useLocalStorage<OptionType[]>(storageKey, [])
+
+  const isOptionFavorite = (option: OptionType) =>
+    favoriteOptions.some((fav) => isEqual(fav, option))
+
+  const toggleFavorite = (option: OptionType) => {
+    setFavoriteOptions((prevFavorites) => {
+      if (isOptionFavorite(option)) {
+        return prevFavorites.filter((key) => !isEqual(key, option))
+      }
+      return [...prevFavorites, option]
+    })
+  }
+
+  const sortOptionsByFavoriteStatus = (options: OptionType[]) => {
+    const nonFavoriteOptions = options.filter((option) => !isOptionFavorite(option))
+    return [...favoriteOptions, ...nonFavoriteOptions]
+  }
+
+  return { favoriteOptions, toggleFavorite, sortOptionsByFavoriteStatus, isOptionFavorite }
 }
