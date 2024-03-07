@@ -69,26 +69,35 @@ export const useSearchSelect = ({
 }
 
 export const useFavoriteOptions = <OptionType>(key: string) => {
-  const storageKey = `@banx.favorite_${key}`
+  const storageKey = `@banx.favorites`
 
-  const [favoriteOptions, setFavoriteOptions] = useLocalStorage<OptionType[]>(storageKey, [])
+  const [favoriteOptions, setFavoriteOptions] = useLocalStorage<{ [key: string]: OptionType[] }>(
+    storageKey,
+    {},
+  )
 
   const isOptionFavorite = (option: OptionType) =>
-    favoriteOptions.some((fav) => isEqual(fav, option))
+    favoriteOptions[key]?.some((fav) => isEqual(fav, option)) || false
 
   const toggleFavorite = (option: OptionType) => {
     setFavoriteOptions((prevFavorites) => {
+      const favoritesForKey = prevFavorites[key] || []
       if (isOptionFavorite(option)) {
-        return prevFavorites.filter((key) => !isEqual(key, option))
+        return { ...prevFavorites, [key]: favoritesForKey.filter((fav) => !isEqual(fav, option)) }
       }
-      return [...prevFavorites, option]
+      return { ...prevFavorites, [key]: [...favoritesForKey, option] }
     })
   }
 
   const sortOptionsByFavoriteStatus = (options: OptionType[]) => {
     const nonFavoriteOptions = options.filter((option) => !isOptionFavorite(option))
-    return [...favoriteOptions, ...nonFavoriteOptions]
+    return [...(favoriteOptions[key] || []), ...nonFavoriteOptions]
   }
 
-  return { favoriteOptions, toggleFavorite, sortOptionsByFavoriteStatus, isOptionFavorite }
+  return {
+    favoriteOptions: favoriteOptions[key] || [],
+    toggleFavorite,
+    sortOptionsByFavoriteStatus,
+    isOptionFavorite,
+  }
 }
