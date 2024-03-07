@@ -67,7 +67,14 @@ const AddToFavoriteIcon: FC<AddToFavoriteIconProps> = ({ onClick, selected }) =>
     event.stopPropagation()
   }
 
-  return <div onClick={handleClick}>{selected ? <StarActive /> : <Star />}</div>
+  return (
+    <div
+      className={classNames(styles.addToFavoriteIcon, 'serchSelectFavoriteIcon')}
+      onClick={handleClick}
+    >
+      {selected ? <StarActive /> : <Star />}
+    </div>
+  )
 }
 
 interface ImageContainerProps {
