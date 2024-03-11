@@ -32,7 +32,7 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
         fbond: new web3.PublicKey(fraktBond.publicKey),
         userPubkey: wallet.publicKey as web3.PublicKey,
         tree: new web3.PublicKey(ixnParams.loan.nft.compression.tree),
-        bondTradeTransactionV2: new web3.PublicKey(bondTradeTransaction.publicKey),
+        bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
       },
       args: {
         proof: await getAssetProof(ixnParams.loan.nft.mint, connection.rpcEndpoint),
