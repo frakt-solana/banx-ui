@@ -1,6 +1,7 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
-import {fetchTokenStakeInfo} from "@banx/api/banxTokenStake";
+
+import { fetchTokenStakeInfo } from '@banx/api/banxTokenStake'
 
 export const useBanxTokenStake = () => {
   const { publicKey } = useWallet()
