@@ -23,10 +23,10 @@ import { calculateStyle, formatMarkValue } from './helpers'
 import styles from './Diagram.module.less'
 
 const TooltipRow = ({ loan }: { loan: Loan }) => {
-  const { nft, totalRepaidAmount = 0 } = loan
+  const { nft } = loan
 
   const ltv = (calculateLoanRepayValue(loan) / nft.collectionFloor) * 100
-  const loanValue = calcLoanBorrowedAmount(loan) + totalRepaidAmount
+  const loanValue = calcLoanBorrowedAmount(loan)
 
   return (
     <div className={styles.tooltipRowContent}>
