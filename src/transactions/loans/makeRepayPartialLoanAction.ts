@@ -50,7 +50,7 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
     accounts: {
       oldBondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
       lender: new web3.PublicKey(bondTradeTransaction.user),
-      oldBondTradeTransactionV2: new web3.PublicKey(bondTradeTransaction.publicKey),
+      oldBondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
       fbond: new web3.PublicKey(fraktBond.publicKey),
       userPubkey: new web3.PublicKey(wallet.publicKey || EMPTY_PUBKEY),
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),

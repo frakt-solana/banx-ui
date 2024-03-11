@@ -32,7 +32,7 @@ export const makeTerminateAction: MakeTerminateAction = async (
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
-      bondTradeTransactionV2: new web3.PublicKey(bondTradeTransaction.publicKey),
+      bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
       fbond: new web3.PublicKey(fraktBond.publicKey),
       userPubkey: wallet.publicKey as web3.PublicKey,
     },
