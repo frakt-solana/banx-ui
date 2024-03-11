@@ -43,6 +43,7 @@ export const useLendPageContent = () => {
     selectedOptions: selectedMarkets,
     placeholder: 'Select a collection',
     labels: ['Collection', 'Max APR'],
+    favoriteKey: 'lend',
     optionKeys: {
       labelKey: 'collectionName',
       valueKey: 'marketPubkey',

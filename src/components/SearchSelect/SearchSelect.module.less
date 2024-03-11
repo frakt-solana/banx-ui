@@ -15,14 +15,6 @@
   }
 }
 
-.optionLabel {
-  font: var(--card-header-sm);
-
-  @media (max-width: 640px) {
-    font: var(--card-header-xs);
-  }
-}
-
 .selectWrapper {
   background: var(--bg-action);
   border: var(--border-primary);
@@ -65,69 +57,6 @@
 
   svg path {
     fill: var(--content-secondary);
-  }
-}
-
-//? Options styles
-.optionWrapper {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.evenOption {
-  background: var(--bg-primary-deep);
-}
-
-.relativeImageContainer,
-.image {
-  position: relative;
-  height: 32px;
-  width: 32px;
-
-  @media (max-width: 640px) {
-    height: 24px;
-    width: 24px;
-  }
-}
-
-.relativeImageContainer .selected {
-  background-color: var(--accent-primary);
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 32px;
-  width: 32px;
-
-  &:after {
-    content: '';
-    display: block;
-    background: var(--pure-black);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    height: 2px;
-    width: 11px;
-  }
-
-  @media (max-width: 640px) {
-    height: 24px;
-    width: 24px;
-  }
-}
-
-.flexRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.secondValue {
-  font: var(--body-text-md);
-
-  @media (max-width: 640px) {
-    font: var(--body-text-sm);
   }
 }
 
