@@ -6,12 +6,13 @@ import classNames from 'classnames'
 import { Button } from '@banx/components/Buttons'
 
 import { AdventuresInfo } from '@banx/api/adventures'
+import { BanxTokenStake } from '@banx/api/banxTokenStake'
 import { Gamepad, MoneyBill } from '@banx/icons'
 import { useModal } from '@banx/store'
+
 import { AdventuresModal } from '../AdventuresModal'
 
 import styles from './Sidebar.module.less'
-import {BanxTokenStake} from "@banx/api/banxTokenStake";
 
 interface SidebarProps {
   className?: string
@@ -21,7 +22,6 @@ interface SidebarProps {
 
 export const Sidebar: FC<SidebarProps> = ({ adventuresInfo, className, banxTokenStake }) => {
   const { open } = useModal()
-
 
   return (
     <div className={classNames(styles.sidebar, className)}>
@@ -59,10 +59,10 @@ export const Sidebar: FC<SidebarProps> = ({ adventuresInfo, className, banxToken
       </div>
 
       <div className={styles.section}>
-        <Title text="Rewards" icon={<MoneyBill/>}/>
+        <Title text="Rewards" icon={<MoneyBill />} />
 
         <div className={styles.stats}>
-          <Info value={'1.5'} text="claimable"/>
+          <Info value={'1.5'} text="claimable" />
           <Button className={styles.manageButton} size="default">
             Claim
           </Button>
