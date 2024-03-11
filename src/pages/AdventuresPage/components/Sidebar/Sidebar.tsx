@@ -8,26 +8,20 @@ import { Button } from '@banx/components/Buttons'
 import { AdventuresInfo } from '@banx/api/adventures'
 import { Gamepad, MoneyBill } from '@banx/icons'
 import { useModal } from '@banx/store'
-
-import { calcNftsPartnerPoints, isNftStaked } from '../../helpers'
 import { AdventuresModal } from '../AdventuresModal'
 
 import styles from './Sidebar.module.less'
+import {BanxTokenStake} from "@banx/api/banxTokenStake";
 
 interface SidebarProps {
   className?: string
   adventuresInfo: AdventuresInfo
+  banxTokenStake: BanxTokenStake
 }
 
-export const Sidebar: FC<SidebarProps> = ({ adventuresInfo, className }) => {
-  const { nfts } = adventuresInfo
+export const Sidebar: FC<SidebarProps> = ({ adventuresInfo, className, banxTokenStake }) => {
   const { open } = useModal()
 
-  const stakedNfts = useMemo(() => {
-    return (nfts || [])?.filter(isNftStaked)
-  }, [nfts])
-
-  const partnerPoints = useMemo(() => calcNftsPartnerPoints(stakedNfts), [stakedNfts])
 
   return (
     <div className={classNames(styles.sidebar, className)}>
@@ -35,7 +29,7 @@ export const Sidebar: FC<SidebarProps> = ({ adventuresInfo, className }) => {
         <Title text="My squad" icon={<Gamepad />} />
 
         <div className={styles.stats}>
-          <Info value={`${stakedNfts.length}/${nfts?.length}`} text="NFTs staked" />
+          <Info value={`${banxTokenStake.banxNftsStakedQuantity}/8,200`} text="NFTs staked" />
           <Button
             onClick={() => open(AdventuresModal, { adventuresInfo })}
             className={styles.manageButton}
@@ -47,7 +41,7 @@ export const Sidebar: FC<SidebarProps> = ({ adventuresInfo, className }) => {
         </div>
 
         <div className={styles.stats}>
-          <Info value={`600K/25B`} text="tokens staked" />
+          <Info value={`${banxTokenStake.tokensStaked}/25B`} text="tokens staked" />
           <Button
             onClick={() => open(AdventuresModal, { adventuresInfo })}
             className={styles.manageButton}
@@ -56,17 +50,27 @@ export const Sidebar: FC<SidebarProps> = ({ adventuresInfo, className }) => {
           >
             Manage
           </Button>
+        </div>
+
+        <div className={styles.divider}>
+          <span>total staked</span>
+          <span>10,000 pts</span>
         </div>
       </div>
 
       <div className={styles.section}>
-        <Title text="Rewards" icon={<MoneyBill />} />
+        <Title text="Rewards" icon={<MoneyBill/>}/>
 
         <div className={styles.stats}>
-          <Info value={'1.5'} text="claimable" />
+          <Info value={'1.5'} text="claimable"/>
           <Button className={styles.manageButton} size="default">
             Claim
           </Button>
+        </div>
+
+        <div className={styles.divider}>
+          <span>total claimed</span>
+          <span>10,000 pts</span>
         </div>
       </div>
 
