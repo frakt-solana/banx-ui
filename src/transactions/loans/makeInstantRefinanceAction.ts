@@ -4,7 +4,7 @@ import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/gette
 import { instantRefinancePerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import {
   BondOfferV2,
-  BondTradeTransactionV2,
+  BondTradeTransactionV3,
   FraktBond,
 } from 'fbonds-core/lib/fbond-protocol/types'
 import { MakeActionFn } from 'solana-transactions-executor'
@@ -15,9 +15,9 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 
 export interface InstantRefinanceOptimisticResult {
   bondOffer: BondOfferV2
-  newBondTradeTransaction: BondTradeTransactionV2
+  newBondTradeTransaction: BondTradeTransactionV3
   fraktBond: FraktBond
-  oldBondTradeTransaction: BondTradeTransactionV2
+  oldBondTradeTransaction: BondTradeTransactionV3
 }
 
 export type MakeInstantRefinanceActionParams = {
@@ -50,7 +50,7 @@ export const makeInstantRefinanceAction: MakeInstantRefinanceAction = async (
       oldBondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
     },
     optimistic: {
-      oldBondTradeTransaction: bondTradeTransaction as BondTradeTransactionV2,
+      oldBondTradeTransaction: bondTradeTransaction as BondTradeTransactionV3,
       bondOffer: bestOffer as BondOfferV2,
       fraktBond: fraktBond as FraktBond,
       minMarketFee: bondTradeTransaction.amountOfBonds,

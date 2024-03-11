@@ -7,7 +7,7 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import {
   BondOfferV2,
-  BondTradeTransactionV2,
+  BondTradeTransactionV3,
   FraktBond,
   PairState,
 } from 'fbonds-core/lib/fbond-protocol/types'
@@ -98,7 +98,7 @@ const getIxnsAndSigners = async ({
   }
 
   const optimistic = {
-    oldBondTradeTransaction: bondTradeTransaction as BondTradeTransactionV2,
+    oldBondTradeTransaction: bondTradeTransaction as BondTradeTransactionV3,
     bondOffer: offer as BondOfferV2,
     fraktBond: fraktBond as FraktBond,
     minMarketFee: aprRate,
