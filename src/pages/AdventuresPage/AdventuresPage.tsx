@@ -11,14 +11,17 @@ import { Sidebar } from './components/Sidebar'
 import { useAdventuresInfo } from './hooks'
 
 import styles from './AdventuresPage.module.less'
+import {useBanxTokenStake} from "@banx/pages/AdventuresPage/hooks/useBanxTokenStake";
 
 export const AdventuresPage: FC = () => {
   const { adventuresInfo, isLoading } = useAdventuresInfo()
-
+  const {banxTokenStake, ...tokenStakeInfoProps} = useBanxTokenStake()
   const { value: currentTabValue, ...tabProps } = useTabs({
     tabs: ADVENTURES_TABS,
     defaultValue: ADVENTURES_TABS[0].value,
   })
+
+  console.log(banxTokenStake)
 
   return (
     <div className={styles.pageWrapper}>
@@ -36,8 +39,8 @@ export const AdventuresPage: FC = () => {
           </>
         )}
       </div>
-      {adventuresInfo?.banxUserPDA && (
-        <Sidebar className={styles.sidebar} adventuresInfo={adventuresInfo} />
+      {banxTokenStake && adventuresInfo?.banxUserPDA && (
+        <Sidebar className={styles.sidebar} adventuresInfo={adventuresInfo} banxTokenStake={banxTokenStake.banxTokenStake} />
       )}
     </div>
   )
