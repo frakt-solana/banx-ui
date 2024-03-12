@@ -65,6 +65,13 @@ export const calcBorrowValueWithRentFee = (loanValue: number, marketPubkey: stri
   return loanValue - BONDS.BORROW_RENT_FEE
 }
 
+export const formatCompact = (value: number) => {
+  return Intl.NumberFormat('en-US', {
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(value)
+}
+
 export const calcBorrowValueWithProtocolFee = (loanValue: number) =>
   Math.floor(loanValue * (1 - BONDS.PROTOCOL_FEE_PERCENT / 1e4))
 

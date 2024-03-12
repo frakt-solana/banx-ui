@@ -7,7 +7,7 @@ export const useBanxTokenStake = () => {
   const { publicKey } = useWallet()
 
   const {
-    data: banxTokenStake,
+    data: banxStake,
     isLoading,
     refetch,
   } = useQuery(
@@ -21,7 +21,7 @@ export const useBanxTokenStake = () => {
   )
 
   return {
-    banxTokenStake,
+    banxStake,
     isLoading,
     refetch,
   }

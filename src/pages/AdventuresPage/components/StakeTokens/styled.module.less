@@ -1,0 +1,61 @@
+.modal {
+  :global {
+    z-index: 2;
+
+    .ant-modal-body {
+      padding: 0 !important;
+      // margin: -1px;
+    }
+
+    .ant-modal-content {
+      padding: 0;
+    }
+  }
+}
+
+.container {
+  padding: 12px 24px 24px 24px;
+
+  & svg {
+    margin-right: 4px;
+  }
+}
+
+.input {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  border-radius: 6px;
+  border: 1px solid var(--bg-border);
+  padding-right: 4px;
+  background: var(--bg-action);
+  margin-bottom: 10px;
+}
+
+.uppercaseText {
+  font: var(--menu-tab-md);
+  text-transform: uppercase;
+  margin-right: 4px;
+  color: var(--content-secondary)
+}
+
+.valueText {
+  font: var(--body-text-md);
+  margin-right: 4px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  &__btw {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    justify-content: space-between;
+  }
+}
+
+.btn {
+  width: 100%;
+}
