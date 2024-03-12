@@ -1,7 +1,12 @@
 import axios from 'axios'
 import { web3 } from 'fbonds-core'
 
-import {BanxStake, BanxStakeSchema, BanxStakeSettings, BanxStakeSettingsSchema} from '@banx/api/banxTokenStake/types'
+import {
+  BanxStake,
+  BanxStakeSchema,
+  BanxStakeSettings,
+  BanxStakeSettingsSchema,
+} from '@banx/api/banxTokenStake/types'
 import { BACKEND_BASE_URL } from '@banx/constants'
 
 type FetchTokenStakeInfo = (props: { publicKey?: web3.PublicKey }) => Promise<BanxStake>
@@ -22,7 +27,6 @@ export const fetchTokenStakeInfo: FetchTokenStakeInfo = async ({ publicKey }) =>
     }
   )
 }
-
 
 type FetchBanxTokenSettings = () => Promise<BanxStakeSettings>
 export const fetchBanxTokenSettings: FetchBanxTokenSettings = async () => {

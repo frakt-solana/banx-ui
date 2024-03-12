@@ -1,30 +1,33 @@
-import {Modal} from "@banx/components/modals/BaseModal";
-import {FC, useState} from "react";
-import {useModal} from "@banx/store";
-import {Tab, Tabs, useTabs} from '@banx/components/Tabs'
+import { FC, useState } from 'react'
 
-import {Button} from "@banx/components/Buttons";
-import NumericInput from "@banx/components/inputs/NumericInput";
+import { Button } from '@banx/components/Buttons'
+import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
+import NumericInput from '@banx/components/inputs/NumericInput'
+import { Modal } from '@banx/components/modals/BaseModal'
+
+import { BanxLogo } from '@banx/icons'
+import { useBanxTokenSettings } from '@banx/pages/AdventuresPage/hooks/useBanxTokenSettings'
+import { useModal } from '@banx/store'
+import { formatNumbersWithCommas } from '@banx/utils'
+
 import styles from './styled.module.less'
-import {BanxLogo} from "@banx/icons";
-import {useBanxTokenSettings} from "@banx/pages/AdventuresPage/hooks/useBanxTokenSettings";
-import {formatNumbersWithCommas} from "@banx/utils";
 
-interface Props {
-}
+interface Props {}
 
 export const StakeTokens: FC<Props> = () => {
-  const {close} = useModal()
+  const { close } = useModal()
   const format = formatNumbersWithCommas
   const [value, setValue] = useState('')
-  const { banxTokenSettings} = useBanxTokenSettings()
+  const { banxTokenSettings } = useBanxTokenSettings()
 
-  const {value: currentTabValue, ...tabProps} = useTabs({
+  const { value: currentTabValue, ...tabProps } = useTabs({
     tabs: MODAL_TABS,
     defaultValue: MODAL_TABS[0].value,
   })
 
-  const willReceive = banxTokenSettings?.tokensPerPartnerPoints && Number(value) * 1e8 / banxTokenSettings?.tokensPerPartnerPoints
+  const willReceive =
+    banxTokenSettings?.tokensPerPartnerPoints &&
+    (Number(value) * 1e8) / banxTokenSettings?.tokensPerPartnerPoints
 
   // value * 1e8 / tokensPerPartnerPoints  - stake
 
@@ -32,12 +35,11 @@ export const StakeTokens: FC<Props> = () => {
     <Modal className={styles.modal} open onCancel={close} footer={false} width={572} centered>
       <Tabs value={currentTabValue} {...tabProps} />
       <div className={styles.container}>
-
         {currentTabValue === ModalTabs.STAKE && (
           <div className={styles.row}>
             <span className={styles.uppercaseText}>wallet balance</span>
             <span className={styles.valueText}>12.5M</span>
-            <BanxLogo/>
+            <BanxLogo />
           </div>
         )}
 
@@ -45,17 +47,14 @@ export const StakeTokens: FC<Props> = () => {
           <div className={styles.row}>
             <span className={styles.uppercaseText}>total staked</span>
             <span className={styles.valueText}>12.5M</span>
-            <BanxLogo/>
+            <BanxLogo />
             <span className={styles.valueText}>12,000 pts</span>
           </div>
         )}
 
         <div className={styles.input}>
-          <NumericInput positiveOnly onChange={setValue} value={value}/>
-          <Button
-            size="small"
-            variant={'secondary'}
-          >
+          <NumericInput positiveOnly onChange={setValue} value={value} />
+          <Button size="small" variant={'secondary'}>
             Use max
           </Button>
         </div>
@@ -66,7 +65,7 @@ export const StakeTokens: FC<Props> = () => {
               <span className={styles.uppercaseText}>idle on wallet</span>
               <div>
                 <span className={styles.valueText}>11,500,000</span>
-                <BanxLogo/>
+                <BanxLogo />
               </div>
             </div>
 
@@ -85,7 +84,7 @@ export const StakeTokens: FC<Props> = () => {
               <span className={styles.uppercaseText}>staked</span>
               <div>
                 <span className={styles.valueText}>11,500,000</span>
-                <BanxLogo/>
+                <BanxLogo />
               </div>
             </div>
 
