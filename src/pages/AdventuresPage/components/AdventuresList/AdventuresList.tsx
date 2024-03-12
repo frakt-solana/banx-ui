@@ -4,15 +4,13 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { staking } from 'fbonds-core/lib/fbond-protocol/functions'
 import { Adventure, BanxUser } from 'fbonds-core/lib/fbond-protocol/types'
-import { capitalize } from 'lodash'
 
 import { AdventureNft, AdventureStatus, AdventuresInfo } from '@banx/api/adventures'
 import { useModal } from '@banx/store'
-import { getAdventureStatus, isNftParticipating } from '@banx/transactions/adventures'
+import { getAdventureStatus } from '@banx/transactions/adventures'
 
 import { AdventuresModal } from '../AdventuresModal'
 import {
-  AdventureStatusLine,
   AdventureSubscribeButton,
   AdventuresTimer,
   NotParticipatedColumn,
@@ -21,53 +19,72 @@ import {
 } from './components'
 
 import styles from './AdventuresList.module.less'
+import {BanxAdventure, BanxStake, BanxStakeSettings, BanxSubscription} from "@banx/api/banxTokenStake";
+import {formatCompact, formatNumbersWithCommas} from "@banx/utils";
+import {TOTAL_BANX_NFTS, TOTAL_BANX_PTS} from "@banx/constants";
+import {capitalize} from "lodash";
 
 interface AdventuresCardProps {
-  adventure: Adventure
-  banxUser?: BanxUser
-  nfts?: AdventureNft[]
+  banxSubscription?: BanxSubscription
+  banxAdventure: BanxAdventure
   walletConnected?: boolean
-  setNftsModalOpen: (nextValue: boolean) => void
+  maxTokenStakeAmount: number
 }
 
-const AdventuresCard: FC<AdventuresCardProps> = (props) => {
-  const adventureStatus = getAdventureStatus(props.adventure)
+const AdventuresCard: FC<AdventuresCardProps> = ({banxAdventure, walletConnected, maxTokenStakeAmount, banxSubscription}) => {
+  const format = formatNumbersWithCommas
+  const isEnded = banxAdventure.periodEndingAt * 1000 < Date.now()
 
-  const isEnded = adventureStatus === AdventureStatus.ENDED
+  const isParticipating = !!banxSubscription?.stakeTokensAmount || !!banxSubscription?.stakeNftAmount || !!banxSubscription?.stakePartnerPointsAmount
 
-  const isParticipating = useMemo(() => {
-    if (props.nfts?.length) {
-      return !!props.nfts.find((nft) => isNftParticipating(nft, props.adventure.publicKey))
+  const totalBanxSubscribed = `${format(banxAdventure.totalBanxSubscribed)}/${format(TOTAL_BANX_NFTS)}`
+  const totalBanxTokensSubscribed = `${formatCompact(banxAdventure.totalTokensStaked)}/${formatCompact(maxTokenStakeAmount)}`
+  const totalPartnerPoints = `${banxAdventure.totalPartnerPoints}/${format(TOTAL_BANX_PTS)}`
+
+  const status = useMemo(() => {
+    if(isEnded) {
+      return AdventureStatus.ENDED
     }
 
-    return false
-  }, [props.nfts, props.adventure])
+    return AdventureStatus.LIVE
+  }, [isEnded])
 
   return (
     <li className={styles.card}>
       <div className={styles.header}>
         <h3 className={classNames(styles.title, { [styles.titleEnded]: isEnded })}>
-          Week {staking.helpers.adventureTimestampToWeeks(props.adventure.periodStartedAt)}
+          Week {banxAdventure.week}
         </h3>
-        <p className={classNames(styles.status, styles[`status__${adventureStatus}`])}>
-          {capitalize(adventureStatus)}
+        <p className={classNames(styles.status, styles[`status__${status}`])}>
+          {capitalize(status)}
         </p>
       </div>
       <div className={styles.info}>
-        {!isEnded && <AdventuresTimer {...props} />}
+        <AdventuresTimer status={status}  endsAt={banxAdventure.periodEndingAt}/>
 
         <div className={styles.stats}>
-          <TotalParticipationColumn {...props} />
+          <TotalParticipationColumn
+            totalBanxSubscribed={totalBanxSubscribed}
+            totalBanxTokensSubscribed={totalBanxTokensSubscribed}
+            totalPartnerPoints={totalPartnerPoints}
+          />
 
-          {isParticipating && props.walletConnected && <WalletParticipationColumn {...props} />}
 
-          {!isParticipating && props.walletConnected && <NotParticipatedColumn {...props} />}
+          {isParticipating  && (
+            <WalletParticipationColumn
+              status={status}
+              banxTokenAmount={format(banxSubscription.stakeTokensAmount)}
+              banxAmount={format(banxSubscription.stakeNftAmount)}
+              partnerPts={banxSubscription.stakePartnerPointsAmount}
+            />
+          )}
+
+          {!isParticipating && walletConnected && <NotParticipatedColumn status={AdventureStatus.LIVE} />}
         </div>
 
-        {props.walletConnected && (
+        {walletConnected && (
           <div className={styles.statusAndBtnWrapper}>
-            {!isEnded && <AdventureStatusLine {...props} />}
-            <AdventureSubscribeButton {...props} />
+            <AdventureSubscribeButton />
           </div>
         )}
       </div>
@@ -76,46 +93,28 @@ const AdventuresCard: FC<AdventuresCardProps> = (props) => {
 }
 
 interface AdventuresListProps {
-  adventuresInfo: AdventuresInfo
-  historyMode?: boolean
+  banxTokenSettings: BanxStakeSettings
+  banxStake: BanxStake
   className?: string
 }
 
 export const AdventuresList: FC<AdventuresListProps> = ({
-  adventuresInfo,
-  historyMode,
+  banxTokenSettings,
+  banxStake,
   className,
 }) => {
   const { connected } = useWallet()
-  const { open } = useModal()
 
-  const filteredAdventures = useMemo(() => {
-    const filteredAdventures = adventuresInfo.adventures.filter((adventure) => {
-      const adventureStatus = getAdventureStatus(adventure)
-      const isEnded = adventureStatus === AdventureStatus.ENDED
-      return historyMode ? isEnded : !isEnded
-    })
-
-    return historyMode
-      ? filteredAdventures.sort((adventureA, adventureB) => {
-          return (
-            staking.helpers.adventureTimestampToWeeks(adventureB.periodStartedAt) -
-            staking.helpers.adventureTimestampToWeeks(adventureA.periodStartedAt)
-          )
-        })
-      : filteredAdventures
-  }, [adventuresInfo, historyMode])
 
   return (
     <ul className={classNames(styles.list, className)}>
-      {filteredAdventures.map((adventure) => (
+      {banxStake.banxAdventures.map(({banxAdventure, subscription}) => (
         <AdventuresCard
-          key={adventure.publicKey}
-          adventure={adventure}
-          banxUser={adventuresInfo?.banxUserPDA}
+          banxSubscription={subscription}
+          banxAdventure={banxAdventure}
+          key={banxAdventure?.publicKey}
           walletConnected={connected}
-          nfts={adventuresInfo?.nfts}
-          setNftsModalOpen={() => open(AdventuresModal, { adventuresInfo })}
+          maxTokenStakeAmount={banxTokenSettings.maxTokenStakeAmount}
         />
       ))}
     </ul>

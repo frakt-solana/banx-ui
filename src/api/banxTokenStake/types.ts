@@ -1,6 +1,6 @@
 import {
   BanxAdventureState,
-  BanxAdventureSubscriptionState,
+  BanxAdventureSubscriptionState, BanxStakingSettingsState,
   BanxTokenStakeState,
 } from 'fbonds-core/lib/fbond-protocol/types'
 import { z } from 'zod'
@@ -61,9 +61,25 @@ export const BanxStakeSchema = z.object({
   banxTokenStake: BanxTokenStakeSchema,
   banxAdventures: z
     .object({
-      banxAdventure: BanxAdventureSchema.optional(),
-      banxSubscription: BanxSubscriptionSchema.optional(),
+      banxAdventure: BanxAdventureSchema,
+      subscription: BanxSubscriptionSchema.optional(),
     })
     .array(),
 })
 export type BanxStake = z.infer<typeof BanxStakeSchema>
+
+
+export const BanxStakeSettingsSchema = z.object({
+  publicKey: z.string(),
+  banxStaked:z.number(),
+  banxStakingSettingsState: z.nativeEnum(BanxStakingSettingsState),
+  maxTokenStakeAmount: z.number(),
+  placeholderOne: z.string(),
+  rewardsHarvested: z.number(),
+  tokensPerPartnerPoints: z.number(),
+  tokensPerWeek: z.number(),
+  tokensStaked: z.number(),
+})
+export type BanxStakeSettings = z.infer<typeof BanxStakeSettingsSchema>
+
+

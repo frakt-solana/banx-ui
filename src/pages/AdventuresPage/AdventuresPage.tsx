@@ -1,68 +1,60 @@
-import { FC } from 'react'
+import {FC} from 'react'
 
 import classNames from 'classnames'
 
 import { Loader } from '@banx/components/Loader'
-import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
-
 import { useBanxTokenStake } from '@banx/pages/AdventuresPage/hooks/useBanxTokenStake'
 
 import { AdventuresList } from './components/AdventuresList'
 import { Header } from './components/Header'
 import { Sidebar } from './components/Sidebar'
-import { useAdventuresInfo } from './hooks'
 
 import styles from './AdventuresPage.module.less'
+import {useBanxTokenSettings} from "@banx/pages/AdventuresPage/hooks/useBanxTokenSettings";
 
 export const AdventuresPage: FC = () => {
-  const { adventuresInfo, isLoading } = useAdventuresInfo()
-  const { banxTokenStake, ...tokenStakeInfoProps } = useBanxTokenStake()
-  const { value: currentTabValue, ...tabProps } = useTabs({
-    tabs: ADVENTURES_TABS,
-    defaultValue: ADVENTURES_TABS[0].value,
-  })
+  const { banxStake, isLoading: banxTokenStakeLoading } = useBanxTokenStake()
+  const { banxTokenSettings, isLoading: banxTokenSettingsLoading} = useBanxTokenSettings()
 
-  console.log(banxTokenStake)
+  console.log({banxTokenSettings, banxStake})
+
+  const isLoading = banxTokenSettingsLoading || banxTokenStakeLoading
+  const isSuccess = !!banxStake && !!banxTokenSettings
+
+  const totalStaked = banxStake?.banxAdventures.reduce((acc, adv) => (
+    acc + adv.banxAdventure.totalPartnerPoints
+  ), 0) || 0
+
 
   return (
     <div className={styles.pageWrapper}>
-      <div className={classNames(styles.content, { [styles.active]: adventuresInfo?.banxUserPDA })}>
+      <div className={classNames(styles.content, { [styles.active]: false })}>
         <Header />
         {isLoading && <Loader className={styles.loader} />}
-        {!isLoading && !!adventuresInfo && (
+        {!isLoading && isSuccess && (
           <>
-            <Tabs value={currentTabValue} {...tabProps} />
             <AdventuresList
+              banxStake={banxStake}
+              banxTokenSettings={banxTokenSettings}
               className={styles.adventuresList}
-              adventuresInfo={adventuresInfo}
-              historyMode={currentTabValue === AdventuresTabsNames.HISTORY}
             />
           </>
         )}
       </div>
-      {banxTokenStake && adventuresInfo?.banxUserPDA && (
+
+      {/*<StakeTokens/>*/}
+
+
+      {isSuccess && (
         <Sidebar
+          totalClaimed={banxTokenSettings?.rewardsHarvested || 0}
+          totalStaked={totalStaked}
+          maxTokenStakeAmount={banxTokenSettings.maxTokenStakeAmount}
           className={styles.sidebar}
-          adventuresInfo={adventuresInfo}
-          banxTokenStake={banxTokenStake.banxTokenStake}
+          banxTokenStake={banxStake.banxTokenStake}
         />
       )}
     </div>
   )
 }
 
-enum AdventuresTabsNames {
-  ADVENTURES = 'adventures',
-  HISTORY = 'history',
-}
-
-const ADVENTURES_TABS: Tab[] = [
-  {
-    label: 'Adventures',
-    value: 'adventures',
-  },
-  {
-    label: 'History',
-    value: 'history',
-  },
-]
