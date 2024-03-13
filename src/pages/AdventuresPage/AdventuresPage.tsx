@@ -4,6 +4,7 @@ import classNames from 'classnames'
 
 import { Loader } from '@banx/components/Loader'
 
+import { useAdventuresInfo } from '@banx/pages/AdventuresPage/hooks'
 import { useBanxTokenSettings } from '@banx/pages/AdventuresPage/hooks/useBanxTokenSettings'
 import { useBanxTokenStake } from '@banx/pages/AdventuresPage/hooks/useBanxTokenStake'
 
@@ -16,11 +17,11 @@ import styles from './AdventuresPage.module.less'
 export const AdventuresPage: FC = () => {
   const { banxStake, isLoading: banxTokenStakeLoading } = useBanxTokenStake()
   const { banxTokenSettings, isLoading: banxTokenSettingsLoading } = useBanxTokenSettings()
+  const { adventuresInfo, isLoading: adventuresInfoLoading } = useAdventuresInfo()
+  console.log({ banxTokenSettings, banxStake, adventuresInfo })
 
-  console.log({ banxTokenSettings, banxStake })
-
-  const isLoading = banxTokenSettingsLoading || banxTokenStakeLoading
-  const isSuccess = !!banxStake && !!banxTokenSettings
+  const isLoading = banxTokenSettingsLoading || banxTokenStakeLoading || adventuresInfoLoading
+  const isSuccess = !!banxStake && !!banxTokenSettings && !!adventuresInfo
 
   const totalStaked =
     banxStake?.banxAdventures.reduce((acc, adv) => acc + adv.banxAdventure.totalPartnerPoints, 0) ||
@@ -42,10 +43,9 @@ export const AdventuresPage: FC = () => {
         )}
       </div>
 
-      {/*<StakeTokens/>*/}
-
       {isSuccess && (
         <Sidebar
+          adventuresInfo={adventuresInfo}
           totalClaimed={banxTokenSettings?.rewardsHarvested || 0}
           totalStaked={totalStaked}
           maxTokenStakeAmount={banxTokenSettings.maxTokenStakeAmount}

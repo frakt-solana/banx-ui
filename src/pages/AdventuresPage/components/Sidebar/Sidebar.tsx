@@ -2,9 +2,11 @@ import { CSSProperties, FC } from 'react'
 
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import classNames from 'classnames'
+import { calculateRewardsFromSubscriptions } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
 
 import { Button } from '@banx/components/Buttons'
 
+import { AdventuresInfo } from '@banx/api/adventures'
 import { BanxTokenStake } from '@banx/api/banxTokenStake'
 import { TOTAL_BANX_NFTS } from '@banx/constants'
 import { Gamepad, MoneyBill } from '@banx/icons'
@@ -18,6 +20,7 @@ import styles from './Sidebar.module.less'
 interface SidebarProps {
   className?: string
   banxTokenStake: BanxTokenStake
+  adventuresInfo: AdventuresInfo
   maxTokenStakeAmount: number
   totalStaked: number
   totalClaimed: number
@@ -25,6 +28,7 @@ interface SidebarProps {
 
 export const Sidebar: FC<SidebarProps> = ({
   className,
+  adventuresInfo,
   banxTokenStake,
   maxTokenStakeAmount,
   totalStaked,
@@ -32,6 +36,8 @@ export const Sidebar: FC<SidebarProps> = ({
 }) => {
   const format = formatNumbersWithCommas
   const { open } = useModal()
+
+  const c = calculateRewardsFromSubscriptions
 
   return (
     <div className={classNames(styles.sidebar, className)}>
@@ -44,7 +50,7 @@ export const Sidebar: FC<SidebarProps> = ({
             text="NFTs staked"
           />
           <Button
-            onClick={() => open(AdventuresModal)}
+            onClick={() => open(AdventuresModal, { adventuresInfo })}
             className={styles.manageButton}
             size="default"
             variant={'secondary'}
