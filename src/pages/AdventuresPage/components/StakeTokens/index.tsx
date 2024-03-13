@@ -1,5 +1,9 @@
 import { FC, useState } from 'react'
 
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
+import { TxnExecutor } from 'solana-transactions-executor'
+
 import { Button } from '@banx/components/Buttons'
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 import NumericInput from '@banx/components/inputs/NumericInput'
@@ -7,29 +11,73 @@ import { Modal } from '@banx/components/modals/BaseModal'
 
 import { BanxLogo } from '@banx/icons'
 import { useBanxTokenSettings } from '@banx/pages/AdventuresPage/hooks/useBanxTokenSettings'
+import { useBanxTokenStake } from '@banx/pages/AdventuresPage/hooks/useBanxTokenStake'
 import { useModal } from '@banx/store'
-import { formatNumbersWithCommas } from '@banx/utils'
+import { defaultTxnErrorHandler } from '@banx/transactions'
+import { stakeBanxTokenAction } from '@banx/transactions/banxStaking'
+import { enqueueSnackbar, formatNumbersWithCommas } from '@banx/utils'
 
 import styles from './styled.module.less'
 
 interface Props {}
 
 export const StakeTokens: FC<Props> = () => {
+  const { connection } = useConnection()
+  const wallet = useWallet()
   const { close } = useModal()
-  const format = formatNumbersWithCommas
   const [value, setValue] = useState('')
   const { banxTokenSettings } = useBanxTokenSettings()
-
+  const { banxStake } = useBanxTokenStake()
   const { value: currentTabValue, ...tabProps } = useTabs({
     tabs: MODAL_TABS,
     defaultValue: MODAL_TABS[0].value,
   })
 
-  const willReceive =
-    banxTokenSettings?.tokensPerPartnerPoints &&
-    (Number(value) * 1e8) / banxTokenSettings?.tokensPerPartnerPoints
+  const format = formatNumbersWithCommas
+  const calcPts = (v: string | number) =>
+    banxTokenSettings?.tokensPerPartnerPoints
+      ? Math.round((Number(v) * 1e8) / banxTokenSettings?.tokensPerPartnerPoints)
+      : 0
+  const willGetPts = calcPts(value)
 
-  // value * 1e8 / tokensPerPartnerPoints  - stake
+  const onStakeTokens = () => {
+    if (!wallet.publicKey || !banxStake?.banxAdventures?.length || !banxTokenSettings || !value) {
+      return
+    }
+    const optimistic: BanxSubscribeAdventureOptimistic = {
+      banxStakingSettings: banxTokenSettings,
+      banxAdventures: banxStake.banxAdventures,
+      banxTokenStake: banxStake.banxTokenStake,
+    }
+
+    const txnParam = {
+      tokensToStake: Number(value),
+      userPubkey: wallet.publicKey,
+      optimistic,
+    }
+
+    new TxnExecutor(stakeBanxTokenAction, { wallet, connection })
+      .addTxnParam(txnParam)
+      .on('pfSuccessEach', (results) => {
+        results.forEach(({ result }) => {
+          console.log('SUCCESS ', result)
+        })
+      })
+      .on('pfSuccessAll', () => {
+        enqueueSnackbar({
+          message: 'Interest successfully claimed',
+          type: 'success',
+        })
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error, {
+          additionalData: txnParam,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'Stake banx token',
+        })
+      })
+      .execute()
+  }
 
   return (
     <Modal className={styles.modal} open onCancel={close} footer={false} width={572} centered>
@@ -46,9 +94,11 @@ export const StakeTokens: FC<Props> = () => {
         {currentTabValue === ModalTabs.UNSTAKE && (
           <div className={styles.row}>
             <span className={styles.uppercaseText}>total staked</span>
-            <span className={styles.valueText}>12.5M</span>
+            <span className={styles.valueText}>{format(banxTokenSettings?.tokensStaked || 0)}</span>
             <BanxLogo />
-            <span className={styles.valueText}>12,000 pts</span>
+            <span className={styles.valueText}>
+              {format(calcPts(banxTokenSettings?.tokensStaked || 0))} pts
+            </span>
           </div>
         )}
 
@@ -72,7 +122,7 @@ export const StakeTokens: FC<Props> = () => {
             <div className={styles.row__btw}>
               <span className={styles.uppercaseText}>you will get</span>
               <div>
-                <span className={styles.valueText}>{format(willReceive || 0)} pts</span>
+                <span className={styles.valueText}>{format(willGetPts || 0)} pts</span>
               </div>
             </div>
           </>
@@ -91,13 +141,19 @@ export const StakeTokens: FC<Props> = () => {
             <div className={styles.row__btw}>
               <span className={styles.uppercaseText}>you will unstake</span>
               <div>
-                <span className={styles.valueText}>1,000 pts</span>
+                <span className={styles.valueText}>{format(willGetPts || 0)} pts</span>
               </div>
             </div>
           </>
         )}
 
-        <Button size="default" variant={'primary'} className={styles.btn}>
+        <Button
+          disabled={!Number(value)}
+          size="default"
+          variant={'primary'}
+          className={styles.btn}
+          onClick={onStakeTokens}
+        >
           Stake
         </Button>
       </div>

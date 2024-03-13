@@ -63,7 +63,7 @@ export const BanxStakeSchema = z.object({
   banxAdventures: z
     .object({
       banxAdventure: BanxAdventureSchema,
-      subscription: BanxSubscriptionSchema.optional(),
+      adventureSubscription: BanxSubscriptionSchema.optional(),
     })
     .array(),
 })

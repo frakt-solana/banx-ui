@@ -125,9 +125,9 @@ export const AdventuresList: FC<AdventuresListProps> = ({
 
   return (
     <ul className={classNames(styles.list, className)}>
-      {banxStake.banxAdventures.map(({ banxAdventure, subscription }) => (
+      {banxStake.banxAdventures.map(({ banxAdventure, adventureSubscription }) => (
         <AdventuresCard
-          banxSubscription={subscription}
+          banxSubscription={adventureSubscription}
           banxAdventure={banxAdventure}
           key={banxAdventure?.publicKey}
           walletConnected={connected}
