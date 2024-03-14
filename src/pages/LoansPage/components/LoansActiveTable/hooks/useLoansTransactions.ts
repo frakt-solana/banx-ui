@@ -24,7 +24,7 @@ export const useLoansTransactions = () => {
   const { clear: clearSelection } = useSelectedLoans()
 
   const repayLoan = async (loan: Loan) => {
-    await new TxnExecutor(makeRepayLoansAction, { wallet, connection })
+    await new TxnExecutor(makeRepayLoansAction, { wallet, connection }, { maxRetries: 10 })
       .addTxnParam([loan])
       .on('pfSuccessAll', (results) => {
         const { txnHash, result } = results[0]
@@ -51,7 +51,7 @@ export const useLoansTransactions = () => {
   const repayPartialLoan = async (loan: Loan, fractionToRepay: number) => {
     const txnParam = { loan, fractionToRepay }
 
-    await new TxnExecutor(makeRepayPartialLoanAction, { wallet, connection })
+    await new TxnExecutor(makeRepayPartialLoanAction, { wallet, connection }, { maxRetries: 10 })
       .addTxnParam(txnParam)
       .on('pfSuccessAll', (results) => {
         const { txnHash, result } = results[0]
@@ -84,7 +84,7 @@ export const useLoansTransactions = () => {
     await new TxnExecutor(
       makeRepayLoansAction,
       { wallet, connection },
-      { signAllChunks: isLedger ? 1 : 40, rejectQueueOnFirstPfError: false },
+      { signAllChunks: isLedger ? 1 : 40, rejectQueueOnFirstPfError: false, maxRetries: 10 },
     )
       .addTxnParams(loansChunks)
       .on('pfSuccessEach', (results) => {
@@ -121,7 +121,7 @@ export const useLoansTransactions = () => {
     await new TxnExecutor(
       makeRepayPartialLoanAction,
       { wallet, connection },
-      { signAllChunks: isLedger ? 5 : 40 },
+      { signAllChunks: isLedger ? 5 : 40, maxRetries: 10 },
     )
       .addTxnParams(loans)
       .on('pfSuccessEach', (results) => {

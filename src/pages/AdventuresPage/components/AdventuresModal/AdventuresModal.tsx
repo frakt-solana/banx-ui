@@ -144,7 +144,7 @@ const StakeContent: FC<StakeContent> = ({ nfts = [], adventures = [] }) => {
       new TxnExecutor(
         makeStakeNftAction,
         { wallet, connection },
-        { signAllChunks: isLedger ? 5 : 40 },
+        { signAllChunks: isLedger ? 5 : 40, maxRetries: 10 },
       )
         .addTxnParams(params)
         .on('pfSuccessEach', (results) => {
@@ -252,7 +252,7 @@ const UnstakeContent: FC<UnstakeContent> = ({ nfts = [] }) => {
       new TxnExecutor(
         makeUnstakeNftAction,
         { wallet, connection },
-        { signAllChunks: isLedger ? 5 : 40 },
+        { signAllChunks: isLedger ? 5 : 40, maxRetries: 10 },
       )
         .addTxnParams(selectedNfts)
         .on('pfSuccessEach', (results) => {

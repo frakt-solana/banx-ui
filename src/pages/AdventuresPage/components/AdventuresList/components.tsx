@@ -72,7 +72,7 @@ export const AdventureSubscribeButton: FC<AdventuresComponentsProps> = ({
     new TxnExecutor(
       makeSubscribeNftsAction,
       { wallet, connection },
-      { signAllChunks: isLedger ? 5 : 20 },
+      { signAllChunks: isLedger ? 5 : 20, maxRetries: 10 },
     )
       .addTxnParams(params)
       .on('pfSuccessEach', (results) => {

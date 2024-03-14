@@ -88,7 +88,7 @@ const useRefinanceTransaction = (loan: Loan) => {
   }
 
   const refinance = () => {
-    new TxnExecutor(makeRefinanceAction, { wallet, connection })
+    new TxnExecutor(makeRefinanceAction, { wallet, connection }, { maxRetries: 10 })
       .addTxnParam({ loan })
       .on('pfSuccessEach', (results) => {
         const { txnHash } = results[0]

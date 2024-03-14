@@ -32,7 +32,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
 
   const onClaim = () => {
     trackPageEvent('myoffers', 'activetab-claim')
-    new TxnExecutor(makeClaimAction, { wallet, connection })
+    new TxnExecutor(makeClaimAction, { wallet, connection }, { maxRetries: 10 })
       .addTxnParam({ loan })
       .on('pfSuccessEach', (results) => {
         hideLoans(loan.nft.mint)

@@ -113,7 +113,7 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const formattedClaimValue = `+${formatDecimal(totalClaimValue / 1e9)}◎`
 
   const terminateLoan = () => {
-    new TxnExecutor(makeTerminateAction, { wallet, connection })
+    new TxnExecutor(makeTerminateAction, { wallet, connection }, { maxRetries: 10 })
       .addTxnParam({ loan })
       .on('pfSuccessEach', (results) => {
         const { result, txnHash } = results[0]
@@ -142,7 +142,7 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const instantLoan = () => {
     if (!bestOffer) return
 
-    new TxnExecutor(makeInstantRefinanceAction, { wallet, connection })
+    new TxnExecutor(makeInstantRefinanceAction, { wallet, connection }, { maxRetries: 10 })
       .addTxnParam({ loan, bestOffer })
       .on('pfSuccessEach', (results) => {
         const { result, txnHash } = results[0]

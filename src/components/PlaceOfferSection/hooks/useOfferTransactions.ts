@@ -35,7 +35,7 @@ export const useOfferTransactions = ({
   const onCreateOffer = async () => {
     const txnParam = { marketPubkey, loansAmount, loanValue, deltaValue }
 
-    await new TxnExecutor(makeCreateBondingOfferAction, { wallet, connection })
+    await new TxnExecutor(makeCreateBondingOfferAction, { wallet, connection }, { maxRetries: 10 })
       .addTxnParam(txnParam)
       .on('pfSuccessEach', (results) => {
         const { result, txnHash } = results[0]
@@ -63,7 +63,7 @@ export const useOfferTransactions = ({
 
     const txnParam = { loanValue, optimisticOffer, loansAmount, deltaValue }
 
-    await new TxnExecutor(makeUpdateBondingOfferAction, { wallet, connection })
+    await new TxnExecutor(makeUpdateBondingOfferAction, { wallet, connection }, { maxRetries: 10 })
       .addTxnParam(txnParam)
       .on('pfSuccessEach', (results) => {
         const { result, txnHash } = results[0]
@@ -88,7 +88,7 @@ export const useOfferTransactions = ({
   const onRemoveOffer = () => {
     if (!optimisticOffer) return
 
-    new TxnExecutor(makeRemoveOfferAction, { wallet, connection })
+    new TxnExecutor(makeRemoveOfferAction, { wallet, connection }, { maxRetries: 10 })
       .addTxnParam({ optimisticOffer })
       .on('pfSuccessEach', (results) => {
         const { result, txnHash } = results[0]

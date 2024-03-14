@@ -79,7 +79,7 @@ export const Summary: FC<SummaryProps> = ({
       }
     }
 
-    new TxnExecutor(makeRefinanceAction, { wallet, connection })
+    new TxnExecutor(makeRefinanceAction, { wallet, connection }, { maxRetries: 10 })
       .addTxnParams(txnParams)
       .on('pfSuccessEach', (results) => {
         const { txnHash } = results[0]

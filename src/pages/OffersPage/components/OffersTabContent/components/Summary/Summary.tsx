@@ -33,7 +33,7 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
 
     const txnParams = offers.map(({ offer }) => ({ optimisticOffer: offer }))
 
-    new TxnExecutor(makeClaimBondOfferInterestAction, { wallet, connection })
+    new TxnExecutor(makeClaimBondOfferInterestAction, { wallet, connection }, { maxRetries: 10 })
       .addTxnParams(txnParams)
       .on('pfSuccessEach', (results) => {
         results.forEach(({ result }) => {

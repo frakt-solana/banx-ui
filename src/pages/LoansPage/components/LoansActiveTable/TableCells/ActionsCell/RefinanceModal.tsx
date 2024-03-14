@@ -118,7 +118,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
 
     if (!suitableOffer) return
 
-    new TxnExecutor(makeBorrowRefinanceAction, { connection, wallet })
+    new TxnExecutor(makeBorrowRefinanceAction, { connection, wallet }, { maxRetries: 10 })
       .addTxnParam({
         loan,
         offer: suitableOffer,

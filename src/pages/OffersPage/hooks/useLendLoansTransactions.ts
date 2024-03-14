@@ -29,7 +29,7 @@ export const useLendLoansTransactions = ({
   const { close } = useModal()
 
   const terminateLoan = () => {
-    new TxnExecutor(makeTerminateAction, { wallet, connection })
+    new TxnExecutor(makeTerminateAction, { wallet, connection }, { maxRetries: 10 })
       .addTxnParam({ loan })
       .on('pfSuccessEach', (results) => {
         const { result, txnHash } = results[0]
@@ -54,7 +54,7 @@ export const useLendLoansTransactions = ({
   }
 
   const claimLoan = () => {
-    new TxnExecutor(makeClaimAction, { wallet, connection })
+    new TxnExecutor(makeClaimAction, { wallet, connection }, { maxRetries: 10 })
       .addTxnParam({ loan })
       .on('pfSuccessEach', (results) => {
         addMints(loan.nft.mint)
@@ -75,7 +75,7 @@ export const useLendLoansTransactions = ({
   }
 
   const instantLoan = () => {
-    new TxnExecutor(makeInstantRefinanceAction, { wallet, connection })
+    new TxnExecutor(makeInstantRefinanceAction, { wallet, connection }, { maxRetries: 10 })
       .addTxnParam({ loan, bestOffer })
       .on('pfSuccessEach', (results) => {
         const { result, txnHash } = results[0]
