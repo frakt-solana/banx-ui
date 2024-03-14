@@ -38,7 +38,10 @@ export const useSolanaBalance: UseSolanaBalance = ({ isLive = true } = {}) => {
   return balance
 }
 
-export const calculatePriorityFees = async (connection: web3.Connection): Promise<number> => {
+export const calculatePriorityFees = async (
+  connection: web3.Connection,
+  accountKeys: string[],
+): Promise<number> => {
   try {
     const response = await axios.post(connection.rpcEndpoint, {
       jsonrpc: '2.0',
@@ -46,7 +49,7 @@ export const calculatePriorityFees = async (connection: web3.Connection): Promis
       method: 'getPriorityFeeEstimate',
       params: [
         {
-          accountKeys: [BONDS.PROGRAM_PUBKEY],
+          accountKeys,
           options: {
             includeAllPriorityFeeLevels: true,
           },
@@ -62,12 +65,16 @@ export const calculatePriorityFees = async (connection: web3.Connection): Promis
   }
 }
 
-export const usePriorityFees = () => {
+const DEFAULT_ACCOUNT_KEYS = [BONDS.PROGRAM_PUBKEY]
+
+export const usePriorityFees = (params?: { accountKeys: string[] }) => {
+  const { accountKeys = DEFAULT_ACCOUNT_KEYS } = params || {}
+
   const { connection } = useConnection()
 
   const { data: priorityFees } = useQuery(
-    ['priorityFees'],
-    () => calculatePriorityFees(connection),
+    ['priorityFees', accountKeys],
+    () => calculatePriorityFees(connection, accountKeys),
     {
       refetchInterval: 5000,
       cacheTime: 5000,
