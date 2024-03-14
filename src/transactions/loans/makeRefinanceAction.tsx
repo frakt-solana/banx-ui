@@ -5,7 +5,6 @@ import {
   BondAndTransactionOptimistic,
   refinancePerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { calculatePriorityFees } from 'fbonds-core/lib/fbond-protocol/helpers'
 import {
   BondOfferV2,
   BondTradeTransactionV2,
@@ -26,6 +25,7 @@ export interface RefinanceOptimisticResult {
 
 export type MakeRefinanceActionParams = {
   loan: Loan
+  priorityFees: number
 }
 
 export type MakeRefinanceAction = MakeActionFn<MakeRefinanceActionParams, RefinanceOptimisticResult>
@@ -38,10 +38,8 @@ export const makeRefinanceAction: MakeRefinanceAction = async (
   ixnParams,
   { connection, wallet },
 ) => {
-  const { loan } = ixnParams || {}
+  const { loan, priorityFees } = ixnParams || {}
   const { bondTradeTransaction, fraktBond } = loan
-
-  const priorityFees = await calculatePriorityFees(connection)
 
   const { instructions, signers, optimisticResult } = await refinancePerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),

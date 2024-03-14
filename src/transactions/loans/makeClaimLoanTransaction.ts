@@ -5,7 +5,7 @@ import {
   claimCnftPerpetualLoanCanopy,
   claimPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { calculatePriorityFees, getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
+import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { MakeActionFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
@@ -16,16 +16,16 @@ import { fetchRuleset } from '../functions'
 
 export type MakeClaimActionParams = {
   loan: Loan
+  priorityFees: number
 }
 
 export type MakeClaimAction = MakeActionFn<MakeClaimActionParams, BondAndTransactionOptimistic>
 
 export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, wallet }) => {
-  const { bondTradeTransaction, fraktBond } = ixnParams.loan || {}
+  const { loan, priorityFees } = ixnParams
+  const { bondTradeTransaction, fraktBond } = loan
 
   if (ixnParams.loan.nft.compression) {
-    const priorityFees = await calculatePriorityFees(connection)
-
     const { instructions, signers, optimisticResult } = await claimCnftPerpetualLoanCanopy({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       addComputeUnits: true,
@@ -56,8 +56,6 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
     }
   } else {
-    const priorityFees = await calculatePriorityFees(connection)
-
     const { instructions, signers, optimisticResult } = await claimPerpetualLoan({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       addComputeUnits: true,

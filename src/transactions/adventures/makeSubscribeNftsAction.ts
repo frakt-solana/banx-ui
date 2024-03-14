@@ -1,7 +1,6 @@
 import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE, PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 import { staking } from 'fbonds-core/lib/fbond-protocol/functions'
-import { calculatePriorityFees } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { MakeActionFn } from 'solana-transactions-executor'
 
 import { Adventure, AdventureNft } from '@banx/api/adventures'
@@ -11,6 +10,7 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 export type MakeSubscribeNftsActionParams = {
   nfts: AdventureNft[]
   adventureToSubscribe: Adventure
+  priorityFees: number
 }
 
 export type MakeSubscribeNftsAction = MakeActionFn<MakeSubscribeNftsActionParams, null>
@@ -18,14 +18,12 @@ export type MakeSubscribeNftsAction = MakeActionFn<MakeSubscribeNftsActionParams
 export const NFTS_TO_SUBSCRIBE_PER_TXN = 5
 
 export const makeSubscribeNftsAction: MakeSubscribeNftsAction = async (
-  { nfts, adventureToSubscribe },
+  { nfts, adventureToSubscribe, priorityFees },
   { connection, wallet },
 ) => {
   if (nfts.length > NFTS_TO_SUBSCRIBE_PER_TXN) {
     throw new Error(`Maximum nfts to subscribe per txn is ${NFTS_TO_SUBSCRIBE_PER_TXN}`)
   }
-
-  const priorityFees = await calculatePriorityFees(connection)
 
   const { instructions, signers } = await staking.adventure.subAndUnsubOrHarvestWeeksEnhanced({
     accounts: {

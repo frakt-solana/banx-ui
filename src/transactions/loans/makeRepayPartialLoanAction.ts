@@ -5,7 +5,6 @@ import {
   BondAndTransactionOptimistic,
   repayPartialPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { calculatePriorityFees } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
 import { MakeActionFn } from 'solana-transactions-executor'
 
@@ -16,6 +15,7 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 export type MakeRepayPartialLoanActionParams = {
   loan: Loan
   fractionToRepay: number //? F.E 50% => 5000
+  priorityFees: number
 }
 
 export type MakeRepayPartialActionResult = Loan
@@ -33,12 +33,10 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
   ixnParams,
   walletAndConnection,
 ) => {
-  const { loan, fractionToRepay } = ixnParams
+  const { loan, fractionToRepay, priorityFees } = ixnParams
   const { connection, wallet } = walletAndConnection
 
   const { fraktBond, bondTradeTransaction, nft } = loan
-
-  const priorityFees = await calculatePriorityFees(connection)
 
   const { instructions, signers, optimisticResults } = await repayPartialPerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),

@@ -1,7 +1,6 @@
 import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { staking } from 'fbonds-core/lib/fbond-protocol/functions/'
-import { calculatePriorityFees } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { MakeActionFn } from 'solana-transactions-executor'
 
 import { Adventure } from '@banx/api/adventures'
@@ -11,14 +10,13 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 export type MakeStakeNftActionParams = {
   nftMint: string
   adventures: Adventure[]
+  priorityFees: number
 }
 
 export type MakeStakeNftAction = MakeActionFn<MakeStakeNftActionParams, null>
 
 export const makeStakeNftAction: MakeStakeNftAction = async (ixnParams, { connection, wallet }) => {
-  const { nftMint, adventures } = ixnParams
-
-  const priorityFees = await calculatePriorityFees(connection)
+  const { nftMint, adventures, priorityFees } = ixnParams
 
   const { instructions, signers } = await staking.manageStake.stakeBanx({
     accounts: {

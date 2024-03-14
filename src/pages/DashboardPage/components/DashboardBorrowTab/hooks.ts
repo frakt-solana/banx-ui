@@ -20,7 +20,12 @@ import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { PATHS } from '@banx/router'
 import { useLoansOptimistic, useModal, useOffersOptimistic } from '@banx/store'
 import { createGlobalState } from '@banx/store/functions'
-import { calculateLoanValue, getDialectAccessToken, trackPageEvent } from '@banx/utils'
+import {
+  calculateLoanValue,
+  getDialectAccessToken,
+  trackPageEvent,
+  usePriorityFees,
+} from '@banx/utils'
 
 import { useBorrowerStats } from '../../hooks'
 
@@ -86,6 +91,8 @@ export const useSingleBorrow = () => {
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
+  const priorityFees = usePriorityFees()
+
   const { update: updateOffersOptimistic } = useOffersOptimistic()
   const { add: addLoansOptimistic } = useLoansOptimistic()
   const { nfts, rawOffers, isLoading } = useBorrowNfts()
@@ -131,7 +138,7 @@ export const useSingleBorrow = () => {
 
     const txnResults = await executeBorrow({
       walletAndConnection: { wallet, connection },
-      txnParams: [[{ nft, offer: rawOffer, loanValue: calculateLoanValue(offer) }]],
+      txnParams: [[{ nft, offer: rawOffer, loanValue: calculateLoanValue(offer), priorityFees }]],
       addLoansOptimistic,
       updateOffersOptimistic,
       onSuccessAll: () => onBorrowSuccess(SPECIAL_COLLECTIONS_MARKETS.includes(marketPubkey)),
