@@ -38,7 +38,7 @@ export const Summary = () => {
   return (
     <div className={styles.summary}>
       <div className={styles.mainStat}>
-        <p>{createPercentValueJSX(weightedApr / 100)}</p>
+        <p>{createPercentValueJSX(weightedApr / 100, '0%')}</p>
         <p>Weighted apr</p>
       </div>
       <div className={styles.statsContainer}>
