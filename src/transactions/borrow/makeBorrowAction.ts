@@ -5,7 +5,7 @@ import {
   borrowPerpetual,
   borrowStakedBanxPerpetual,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
+import { calculatePriorityFees, getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
 import { first, uniq } from 'lodash'
 import { MakeActionFn, WalletAndConnection } from 'solana-transactions-executor'
@@ -88,6 +88,9 @@ const getIxnsAndSignersByBorrowType = async ({
     if (!params.nft.loan.banxStake) {
       throw new Error(`Not BanxStaked NFT`)
     }
+
+    const priorityFees = await calculatePriorityFees(connection)
+
     const { instructions, signers, optimisticResults } = await borrowStakedBanxPerpetual({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       addComputeUnits: true,
@@ -114,6 +117,7 @@ const getIxnsAndSignersByBorrowType = async ({
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
+      priorityFees,
     })
     return { instructions, signers, optimisticResults }
   }
@@ -125,6 +129,8 @@ const getIxnsAndSignersByBorrowType = async ({
     }
 
     const proof = await getAssetProof(params.nft.mint, connection.rpcEndpoint)
+
+    const priorityFees = await calculatePriorityFees(connection)
 
     const { instructions, signers, optimisticResults } = await borrowCnftPerpetualCanopy({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
@@ -154,6 +160,7 @@ const getIxnsAndSignersByBorrowType = async ({
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
+      priorityFees,
     })
 
     return { instructions, signers, optimisticResults }
@@ -164,6 +171,8 @@ const getIxnsAndSignersByBorrowType = async ({
       fetchRuleset({ nftMint: nft.mint, connection, marketPubkey: nft.loan.marketPubkey }),
     ),
   )
+
+  const priorityFees = await calculatePriorityFees(connection)
 
   const { instructions, signers, optimisticResults } = await borrowPerpetual({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
@@ -191,6 +200,7 @@ const getIxnsAndSignersByBorrowType = async ({
     },
     connection,
     sendTxn: sendTxnPlaceHolder,
+    priorityFees,
   })
 
   return { instructions, signers, optimisticResults }

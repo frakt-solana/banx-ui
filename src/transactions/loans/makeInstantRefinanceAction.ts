@@ -2,6 +2,7 @@ import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import { instantRefinancePerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { calculatePriorityFees } from 'fbonds-core/lib/fbond-protocol/helpers'
 import {
   BondOfferV2,
   BondTradeTransactionV3,
@@ -37,6 +38,8 @@ export const makeInstantRefinanceAction: MakeInstantRefinanceAction = async (
   const { loan, bestOffer } = ixnParams || {}
   const { bondTradeTransaction, fraktBond } = loan
 
+  const priorityFees = await calculatePriorityFees(connection)
+
   const { instructions, signers, optimisticResult } = await instantRefinancePerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     addComputeUnits: true,
@@ -58,6 +61,7 @@ export const makeInstantRefinanceAction: MakeInstantRefinanceAction = async (
     },
     connection,
     sendTxn: sendTxnPlaceHolder,
+    priorityFees,
   })
 
   return {

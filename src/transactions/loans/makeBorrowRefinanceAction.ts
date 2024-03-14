@@ -5,6 +5,7 @@ import {
   borrowerRefinance,
   borrowerRefinanceToSame,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { calculatePriorityFees } from 'fbonds-core/lib/fbond-protocol/helpers'
 import {
   BondOfferV2,
   BondTradeTransactionV3,
@@ -108,6 +109,8 @@ const getIxnsAndSigners = async ({
     offer.publicKey === bondTradeTransaction.bondOffer &&
     offer.pairState === PairState.PerpetualBondingCurveOnMarket
   ) {
+    const priorityFees = await calculatePriorityFees(connection)
+
     const { instructions, signers, optimisticResult } = await borrowerRefinanceToSame({
       args: { solToRefinance, aprRate },
       accounts,
@@ -115,10 +118,13 @@ const getIxnsAndSigners = async ({
       connection,
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       sendTxn: sendTxnPlaceHolder,
+      priorityFees,
     })
 
     return { instructions, signers, optimisticResult }
   } else {
+    const priorityFees = await calculatePriorityFees(connection)
+
     const { instructions, signers, optimisticResult } = await borrowerRefinance({
       args: {
         solToRefinance,
@@ -135,6 +141,7 @@ const getIxnsAndSigners = async ({
       connection,
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       sendTxn: sendTxnPlaceHolder,
+      priorityFees,
     })
 
     return { instructions, signers, optimisticResult }

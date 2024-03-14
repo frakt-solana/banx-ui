@@ -7,7 +7,7 @@ import {
   repayPerpetualLoan,
   repayStakedBanxPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
+import { calculatePriorityFees, getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
 import { first, uniq } from 'lodash'
 import { MakeActionFn, WalletAndConnection } from 'solana-transactions-executor'
@@ -84,6 +84,9 @@ const getIxnsAndSignersByBorrowType = async ({
     ) {
       throw new Error(`Not BanxStaked NFT`)
     }
+
+    const priorityFees = await calculatePriorityFees(connection)
+
     const { instructions, signers, optimisticResults } = await repayStakedBanxPerpetualLoan({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
@@ -106,6 +109,7 @@ const getIxnsAndSignersByBorrowType = async ({
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
+      priorityFees,
     })
     return {
       instructions,
@@ -121,6 +125,7 @@ const getIxnsAndSignersByBorrowType = async ({
       throw new Error(`Not cNFT`)
     }
 
+    const priorityFees = await calculatePriorityFees(connection)
     const proof = await getAssetProof(loan.nft.mint, connection.rpcEndpoint)
 
     const { instructions, signers, optimisticResults } = await repayCnftPerpetualLoanCanopy({
@@ -145,6 +150,7 @@ const getIxnsAndSignersByBorrowType = async ({
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
+      priorityFees,
     })
 
     return {
@@ -160,6 +166,8 @@ const getIxnsAndSignersByBorrowType = async ({
       fetchRuleset({ nftMint: nft.mint, connection, marketPubkey: fraktBond.hadoMarket }),
     ),
   )
+
+  const priorityFees = await calculatePriorityFees(connection)
 
   const { instructions, signers, optimisticResults } = await repayPerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
@@ -184,6 +192,7 @@ const getIxnsAndSignersByBorrowType = async ({
     },
     connection,
     sendTxn: sendTxnPlaceHolder,
+    priorityFees,
   })
 
   return {
