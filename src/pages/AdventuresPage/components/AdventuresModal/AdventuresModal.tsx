@@ -20,7 +20,6 @@ import { TensorFilled } from '@banx/icons'
 import { useIsLedger, useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import {
-  calcNftsPartnerPoints,
   getAdventureStatus,
   isNftLoaned,
   makeStakeNftAction,
@@ -372,7 +371,7 @@ interface ModalStatsProps {
   nfts: AdventureNft[]
 }
 const ModalStats: FC<ModalStatsProps> = ({ nfts = [] }) => {
-  const walletPartnerPoints = useMemo(() => calcNftsPartnerPoints(nfts), [nfts])
+  const walletPartnerPoints = 12 // useMemo(() => calcNftsPartnerPoints(nfts), [nfts])
 
   return (
     <div className={styles.stats}>

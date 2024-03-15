@@ -2,11 +2,9 @@ import { FC, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { staking } from 'fbonds-core/lib/fbond-protocol/functions'
-import { Adventure, BanxUser } from 'fbonds-core/lib/fbond-protocol/types'
 import { capitalize } from 'lodash'
 
-import { AdventureNft, AdventureStatus, AdventuresInfo } from '@banx/api/adventures'
+import { AdventureStatus } from '@banx/api/adventures'
 import {
   BanxAdventure,
   BanxStake,
@@ -14,11 +12,9 @@ import {
   BanxSubscription,
 } from '@banx/api/banxTokenStake'
 import { TOTAL_BANX_NFTS, TOTAL_BANX_PTS } from '@banx/constants'
-import { useModal } from '@banx/store'
-import { getAdventureStatus } from '@banx/transactions/adventures'
+import { fromDecimals } from '@banx/pages/AdventuresPage/helpers'
 import { formatCompact, formatNumbersWithCommas } from '@banx/utils'
 
-import { AdventuresModal } from '../AdventuresModal'
 import {
   AdventureSubscribeButton,
   AdventuresTimer,
@@ -46,17 +42,17 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
   const isEnded = banxAdventure.periodEndingAt * 1000 < Date.now()
 
   const isParticipating =
-    !!banxSubscription?.stakeTokensAmount ||
-    !!banxSubscription?.stakeNftAmount ||
-    !!banxSubscription?.stakePartnerPointsAmount
+    !!banxSubscription?.stakeTokensAmount || !!banxSubscription?.stakeNftAmount
 
-  const totalBanxSubscribed = `${format(banxAdventure.totalBanxSubscribed)}/${format(
+  const totalBanxSubscribed = `${format(fromDecimals(banxAdventure.totalBanxSubscribed))}/${format(
     TOTAL_BANX_NFTS,
   )}`
   const totalBanxTokensSubscribed = `${formatCompact(
     banxAdventure.totalTokensStaked,
   )}/${formatCompact(maxTokenStakeAmount)}`
-  const totalPartnerPoints = `${banxAdventure.totalPartnerPoints}/${format(TOTAL_BANX_PTS)}`
+  const totalPartnerPoints = `${formatCompact(
+    fromDecimals(banxAdventure.totalPartnerPoints),
+  )}/${format(TOTAL_BANX_PTS)}`
 
   const status = useMemo(() => {
     if (isEnded) {
@@ -89,9 +85,9 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
           {isParticipating && (
             <WalletParticipationColumn
               status={status}
-              banxTokenAmount={format(banxSubscription.stakeTokensAmount)}
+              banxTokenAmount={formatCompact(banxSubscription.stakeTokensAmount)}
               banxAmount={format(banxSubscription.stakeNftAmount)}
-              partnerPts={banxSubscription.stakePartnerPointsAmount}
+              partnerPts={format(banxSubscription.stakePartnerPointsAmount)}
             />
           )}
 
@@ -125,11 +121,11 @@ export const AdventuresList: FC<AdventuresListProps> = ({
 
   return (
     <ul className={classNames(styles.list, className)}>
-      {banxStake.banxAdventures.map(({ banxAdventure, adventureSubscription }) => (
+      {banxStake.banxAdventures.map(({ adventure, adventureSubscription }) => (
         <AdventuresCard
           banxSubscription={adventureSubscription}
-          banxAdventure={banxAdventure}
-          key={banxAdventure?.publicKey}
+          banxAdventure={adventure}
+          key={adventure?.publicKey}
           walletConnected={connected}
           maxTokenStakeAmount={banxTokenSettings.maxTokenStakeAmount}
         />

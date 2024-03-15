@@ -1,64 +1,16 @@
-import { FC, useCallback, useMemo } from 'react'
-
-import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { Adventure, BanxUser } from 'fbonds-core/lib/fbond-protocol/types'
-import { chunk, find } from 'lodash'
-import { TxnExecutor } from 'solana-transactions-executor'
+import { FC } from 'react'
 
 import { Button } from '@banx/components/Buttons'
 
-import { AdventureNft, AdventureStatus } from '@banx/api/adventures'
+import { AdventureStatus } from '@banx/api/adventures'
 import { useCountdown } from '@banx/hooks'
-import { Alert, CircleCheck, MoneyBill, Timer } from '@banx/icons'
-import { useIsLedger } from '@banx/store'
-import { defaultTxnErrorHandler } from '@banx/transactions'
-import {
-  NFTS_TO_SUBSCRIBE_PER_TXN,
-  getAdventureStatus,
-  isNftParticipating,
-  makeSubscribeNftsAction,
-} from '@banx/transactions/adventures'
-import { START_PERIOD_TIME_ADJUST } from '@banx/transactions/adventures/constants'
-import { enqueueSnackbar, formatNumbersWithCommas } from '@banx/utils'
-
-import { calcNftsPartnerPoints, isNftStaked } from '../../helpers'
-import { useAdventuresInfo, useBanxStats } from '../../hooks'
+import { Alert, MoneyBill, Timer } from '@banx/icons'
 
 import styles from './AdventuresList.module.less'
 
 interface AdventuresComponentsProps {}
 
 export const AdventureSubscribeButton: FC<AdventuresComponentsProps> = () => {
-  const { connection } = useConnection()
-  const wallet = useWallet()
-
-  //   new TxnExecutor(
-  //     makeSubscribeNftsAction,
-  //     {wallet, connection},
-  //     {signAllChunks: isLedger ? 5 : 20},
-  //   )
-  //     .addTxnParams(params)
-  //     .on('pfSuccessEach', (results) => {
-  //       const {txnHash} = results[0]
-  //       enqueueSnackbar({
-  //         message: 'Subscribed successfully',
-  //         type: 'success',
-  //         solanaExplorerPath: `tx/${txnHash}`,
-  //       })
-  //     })
-  //     .on('pfSuccessAll', () => {
-  //       refetch()
-  //     })
-  //     .on('pfError', (error) => {
-  //       defaultTxnErrorHandler(error, {
-  //         additionalData: params,
-  //         walletPubkey: wallet?.publicKey?.toBase58(),
-  //         transactionName: 'SubscribeBanx',
-  //       })
-  //     })
-  //     .execute()
-  // }, [refetch, connection, wallet, adventure, stakedNfts, subscribedNfts, isLedger])
-
   return (
     <Button variant="primary" className={styles.subscribeBtn}>
       Subscribe to participate
