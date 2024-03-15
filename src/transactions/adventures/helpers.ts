@@ -7,6 +7,7 @@ import {
   AdventureSubscription,
   SubscriptionStatus,
 } from '@banx/api/adventures'
+import { NftType } from '@banx/api/banxTokenStake'
 
 import { START_PERIOD_TIME_ADJUST } from './constants'
 
@@ -37,6 +38,6 @@ export const isNftLoaned = (nft: AdventureNft) => {
   return !!nft?.banxStake?.isLoaned
 }
 
-export const calcNftsPartnerPoints = (nfts: AdventureNft[] = []) => {
+export const calcNftsPartnerPoints = (nfts: NftType[] = []) => {
   return nfts.reduce((acc, { meta }) => acc + Number(meta.partnerPoints), 0)
 }

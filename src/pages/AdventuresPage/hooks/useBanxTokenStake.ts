@@ -1,5 +1,6 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
+import { web3 } from 'fbonds-core'
 
 import { fetchTokenStakeInfo } from '@banx/api/banxTokenStake'
 
@@ -12,7 +13,7 @@ export const useBanxTokenStake = () => {
     refetch,
   } = useQuery(
     ['tokenStakeInfo', publicKey?.toBase58()],
-    () => fetchTokenStakeInfo({ publicKey: publicKey ?? undefined }),
+    () => fetchTokenStakeInfo({ userPubkey: publicKey?.toBase58() }),
     {
       staleTime: 60_000,
       // refetchInterval: 5_000,

@@ -1,12 +1,12 @@
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 
 import { Loader } from '@banx/components/Loader'
 
 import { useAdventuresInfo } from '@banx/pages/AdventuresPage/hooks'
-import { useBanxTokenSettings } from '@banx/pages/AdventuresPage/hooks/useBanxTokenSettings'
-import { useBanxTokenStake } from '@banx/pages/AdventuresPage/hooks/useBanxTokenStake'
+import { useBanxStakeState } from '@banx/pages/AdventuresPage/state'
 
 import { AdventuresList } from './components/AdventuresList'
 import { Header } from './components/Header'
@@ -15,24 +15,41 @@ import { Sidebar } from './components/Sidebar'
 import styles from './AdventuresPage.module.less'
 
 export const AdventuresPage: FC = () => {
-  const { banxStake, isLoading: banxTokenStakeLoading } = useBanxTokenStake()
-  const { banxTokenSettings, isLoading: banxTokenSettingsLoading } = useBanxTokenSettings()
+  const { connection } = useConnection()
   const { adventuresInfo, isLoading: adventuresInfoLoading } = useAdventuresInfo()
-  console.log({ banxTokenSettings, banxStake, adventuresInfo })
+  const { publicKey } = useWallet()
+  const userPubkey = publicKey?.toBase58()
+  const {
+    banxStake,
+    banxTokenSettings,
+    loadBanxTokenSettings,
+    loadBanxStake,
+    loadBanxTokenBalance,
+  } = useBanxStakeState()
 
-  const isLoading = banxTokenSettingsLoading || banxTokenStakeLoading || adventuresInfoLoading
+  useEffect(() => {
+    void loadBanxTokenSettings()
+    void loadBanxStake({ userPubkey })
+    if (publicKey?.toBase58()) {
+      void loadBanxTokenBalance({ userPubkey: publicKey, connection })
+    }
+  }, [userPubkey])
+
+  const isLoading = !banxStake || !banxTokenSettings || adventuresInfoLoading
   const isSuccess = !!banxStake && !!banxTokenSettings && !!adventuresInfo
 
   const totalStaked =
-    banxStake?.banxAdventures.reduce((acc, adv) => acc + adv.banxAdventure.totalPartnerPoints, 0) ||
-    0
+    banxStake?.banxAdventures.reduce(
+      (acc: number, adv) => acc + adv.adventure.totalPartnerPoints,
+      0,
+    ) || 0
 
   return (
     <div className={styles.pageWrapper}>
       <div className={classNames(styles.content, { [styles.active]: false })}>
         <Header />
         {isLoading && <Loader className={styles.loader} />}
-        {!isLoading && isSuccess && (
+        {isSuccess && (
           <>
             <AdventuresList
               banxStake={banxStake}
@@ -43,7 +60,7 @@ export const AdventuresPage: FC = () => {
         )}
       </div>
 
-      {isSuccess && (
+      {!!banxStake?.banxTokenStake && isSuccess && (
         <Sidebar
           adventuresInfo={adventuresInfo}
           totalClaimed={banxTokenSettings?.rewardsHarvested || 0}

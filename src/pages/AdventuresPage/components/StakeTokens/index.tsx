@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
@@ -10,12 +10,13 @@ import NumericInput from '@banx/components/inputs/NumericInput'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { BanxLogo } from '@banx/icons'
-import { useBanxTokenSettings } from '@banx/pages/AdventuresPage/hooks/useBanxTokenSettings'
-import { useBanxTokenStake } from '@banx/pages/AdventuresPage/hooks/useBanxTokenStake'
+import { calcPartnerPoints, fromDecimals, toDecimals } from '@banx/pages/AdventuresPage/helpers'
+import { useBanxStakeState } from '@banx/pages/AdventuresPage/state'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxTokenAction } from '@banx/transactions/banxStaking'
-import { enqueueSnackbar, formatNumbersWithCommas } from '@banx/utils'
+import { unStakeBanxTokenAction } from '@banx/transactions/banxStaking/unStakeBanxToken'
+import { enqueueSnackbar, formatCompact, formatNumbersWithCommas } from '@banx/utils'
 
 import styles from './styled.module.less'
 
@@ -23,11 +24,11 @@ interface Props {}
 
 export const StakeTokens: FC<Props> = () => {
   const { connection } = useConnection()
+  const { updateStake, banxStake, banxTokenSettings, balance } = useBanxStakeState()
   const wallet = useWallet()
   const { close } = useModal()
   const [value, setValue] = useState('')
-  const { banxTokenSettings } = useBanxTokenSettings()
-  const { banxStake } = useBanxTokenStake()
+
   const { value: currentTabValue, ...tabProps } = useTabs({
     tabs: MODAL_TABS,
     defaultValue: MODAL_TABS[0].value,
@@ -35,13 +36,11 @@ export const StakeTokens: FC<Props> = () => {
 
   const format = formatNumbersWithCommas
   const calcPts = (v: string | number) =>
-    banxTokenSettings?.tokensPerPartnerPoints
-      ? Math.round((Number(v) * 1e8) / banxTokenSettings?.tokensPerPartnerPoints)
-      : 0
+    calcPartnerPoints(v, banxTokenSettings?.tokensPerPartnerPoints)
   const willGetPts = calcPts(value)
 
   const onStakeTokens = () => {
-    if (!wallet.publicKey || !banxStake?.banxAdventures?.length || !banxTokenSettings || !value) {
+    if (!wallet.publicKey || !banxTokenSettings || !value || !banxStake?.banxTokenStake) {
       return
     }
     const optimistic: BanxSubscribeAdventureOptimistic = {
@@ -51,7 +50,7 @@ export const StakeTokens: FC<Props> = () => {
     }
 
     const txnParam = {
-      tokensToStake: Number(value),
+      tokensToStake: toDecimals(value),
       userPubkey: wallet.publicKey,
       optimistic,
     }
@@ -60,7 +59,67 @@ export const StakeTokens: FC<Props> = () => {
       .addTxnParam(txnParam)
       .on('pfSuccessEach', (results) => {
         results.forEach(({ result }) => {
-          console.log('SUCCESS ', result)
+          if (result?.banxStakingSettings && result?.banxAdventures && result?.banxTokenStake) {
+            updateStake({
+              banxTokenSettings: result?.banxStakingSettings,
+              banxStake: {
+                ...banxStake,
+                banxAdventures: result?.banxAdventures as any,
+                banxTokenStake: result?.banxTokenStake,
+              },
+              balance: balance - toDecimals(value),
+            })
+          }
+        })
+      })
+      .on('pfSuccessAll', () => {
+        enqueueSnackbar({
+          message: 'Interest successfully claimed',
+          type: 'success',
+        })
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error, {
+          additionalData: txnParam,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'Stake banx token',
+        })
+      })
+      .execute()
+  }
+  const onUnStakeTokens = () => {
+    if (!wallet.publicKey || !banxTokenSettings || !value || !banxStake?.banxTokenStake) {
+      return
+    }
+    const optimistic: BanxSubscribeAdventureOptimistic = {
+      banxStakingSettings: banxTokenSettings,
+      banxAdventures: banxStake.banxAdventures,
+      banxTokenStake: banxStake.banxTokenStake,
+    }
+
+    const txnParam = {
+      tokensToUnstake: toDecimals(value),
+      userPubkey: wallet.publicKey,
+      optimistic,
+    }
+
+    new TxnExecutor(unStakeBanxTokenAction, { wallet, connection })
+      .addTxnParam(txnParam)
+      .on('pfSuccessEach', (results) => {
+        results.forEach(({ result }) => {
+          if (!result?.banxStakingSettings || !result?.banxAdventures || !result?.banxTokenStake) {
+            return
+          }
+
+          updateStake({
+            banxTokenSettings: result?.banxStakingSettings,
+            banxStake: {
+              ...banxStake,
+              banxAdventures: result?.banxAdventures as any,
+              banxTokenStake: result?.banxTokenStake,
+            },
+            balance: balance + Number(toDecimals(value)),
+          })
         })
       })
       .on('pfSuccessAll', () => {
@@ -79,6 +138,31 @@ export const StakeTokens: FC<Props> = () => {
       .execute()
   }
 
+  const onSubmit = () => {
+    if (currentTabValue === ModalTabs.STAKE) {
+      void onStakeTokens()
+    }
+    if (currentTabValue === ModalTabs.UNSTAKE) {
+      void onUnStakeTokens()
+    }
+  }
+
+  const idleOnWallet = fromDecimals(balance) - Number(value)
+  const banxBalance = formatCompact(balance)
+  const tokensStaked = format(fromDecimals(banxTokenSettings?.tokensStaked || 0))
+  const ptsAmount = format(calcPts(fromDecimals(banxTokenSettings?.tokensStaked || 0)))
+
+  const disabledBtn = useMemo(() => {
+    const emptyValue = !Number(value)
+    const notEnoughStake =
+      currentTabValue === ModalTabs.STAKE && Number(fromDecimals(balance)) < Number(value)
+    const notEnoughUnStake =
+      currentTabValue === ModalTabs.UNSTAKE &&
+      Number(fromDecimals(banxTokenSettings?.tokensStaked || 0)) < Number(value)
+
+    return emptyValue || notEnoughStake || notEnoughUnStake
+  }, [value])
+
   return (
     <Modal className={styles.modal} open onCancel={close} footer={false} width={572} centered>
       <Tabs value={currentTabValue} {...tabProps} />
@@ -86,7 +170,7 @@ export const StakeTokens: FC<Props> = () => {
         {currentTabValue === ModalTabs.STAKE && (
           <div className={styles.row}>
             <span className={styles.uppercaseText}>wallet balance</span>
-            <span className={styles.valueText}>12.5M</span>
+            <span className={styles.valueText}>{banxBalance}</span>
             <BanxLogo />
           </div>
         )}
@@ -94,11 +178,9 @@ export const StakeTokens: FC<Props> = () => {
         {currentTabValue === ModalTabs.UNSTAKE && (
           <div className={styles.row}>
             <span className={styles.uppercaseText}>total staked</span>
-            <span className={styles.valueText}>{format(banxTokenSettings?.tokensStaked || 0)}</span>
+            <span className={styles.valueText}>{tokensStaked}</span>
             <BanxLogo />
-            <span className={styles.valueText}>
-              {format(calcPts(banxTokenSettings?.tokensStaked || 0))} pts
-            </span>
+            <span className={styles.valueText}>{ptsAmount} pts</span>
           </div>
         )}
 
@@ -114,7 +196,7 @@ export const StakeTokens: FC<Props> = () => {
             <div className={styles.row__btw}>
               <span className={styles.uppercaseText}>idle on wallet</span>
               <div>
-                <span className={styles.valueText}>11,500,000</span>
+                <span className={styles.valueText}>{idleOnWallet}</span>
                 <BanxLogo />
               </div>
             </div>
@@ -133,7 +215,7 @@ export const StakeTokens: FC<Props> = () => {
             <div className={styles.row__btw}>
               <span className={styles.uppercaseText}>staked</span>
               <div>
-                <span className={styles.valueText}>11,500,000</span>
+                <span className={styles.valueText}>{tokensStaked}</span>
                 <BanxLogo />
               </div>
             </div>
@@ -148,13 +230,14 @@ export const StakeTokens: FC<Props> = () => {
         )}
 
         <Button
-          disabled={!Number(value)}
+          disabled={disabledBtn}
           size="default"
           variant={'primary'}
           className={styles.btn}
-          onClick={onStakeTokens}
+          onClick={onSubmit}
         >
-          Stake
+          {currentTabValue === ModalTabs.STAKE && 'Stake'}
+          {currentTabValue === ModalTabs.UNSTAKE && 'Unstake'}
         </Button>
       </div>
     </Modal>

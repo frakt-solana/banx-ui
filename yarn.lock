@@ -3334,7 +3334,7 @@
     rpc-websockets "^7.5.1"
     superstruct "^0.14.2"
 
-"@solana/web3.js@^1.91.1":
+"@solana/web3.js@^1.90.0":
   version "1.91.1"
   resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.91.1.tgz#d49d2f982b52070be3b987fd8d892fcbddd064b5"
   integrity sha512-cPgjZXm688oM9cULvJ8u2VH6Qp5rvptE1N1VODVxn2mAbpZsWrvWNPjmASkMYT/HzyrtqFkPvFdSHg8Xjt7aQA==
@@ -6924,15 +6924,15 @@ faye-websocket@0.11.4, faye-websocket@^0.11.3:
   dependencies:
     websocket-driver ">=0.5.1"
 
-fbonds-core@0.5.321:
-  version "0.5.321"
-  resolved "https://registry.yarnpkg.com/fbonds-core/-/fbonds-core-0.5.321.tgz#b632241db7d019489be8e639b26fc39fd7d3087d"
-  integrity sha512-QjPVRrU8Gr6unwuFvBLzBqmv84Ub1/OS6TmKIUicPh+zlbwd+eizfPOf6JzsueMB1ouNsxTj1BTVaaFTtoGvFA==
+fbonds-core@0.5.314:
+  version "0.5.314"
+  resolved "https://registry.yarnpkg.com/fbonds-core/-/fbonds-core-0.5.314.tgz#297c934b6de7182931cd0e6e9913db4cba104007"
+  integrity sha512-jqYt33BHlXXlG+9u4IrNXT0UPoOlbVxl6A8O0rF/dgQ+nbkv++LA3TxZjSG06YwNARBTKyRx6Az3/BeP+FRCxg==
   dependencies:
     "@metaplex-foundation/mpl-token-metadata" "^2.8.1"
     "@project-serum/anchor" "^0.26.0"
     "@solana/spl-account-compression" "^0.2.0"
-    "@solana/web3.js" "^1.91.1"
+    "@solana/web3.js" "^1.90.0"
     axios "^1.4.0"
     bs58 "^4.0.1"
     lodash "^4.17.21"

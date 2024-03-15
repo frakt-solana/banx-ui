@@ -18,7 +18,7 @@ const stylesHandler = isProduction ? MiniCssExtractPlugin.loader : 'style-loader
 require('dotenv').config({ path: './.env' })
 
 const config = {
-  entry: './src/index.ts',
+  entry: './src/index.tsx',
   output: {
     path: path.resolve(__dirname, 'dist'),
   },
