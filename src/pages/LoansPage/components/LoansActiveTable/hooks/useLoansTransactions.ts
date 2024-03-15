@@ -7,25 +7,28 @@ import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
 import { useIsLedger, useLoansOptimistic } from '@banx/store'
 import { BorrowType, defaultTxnErrorHandler } from '@banx/transactions'
 import {
-  MakeRepayLoansActionParams,
   REPAY_NFT_PER_TXN,
   getLoanBorrowType,
   makeRepayLoansAction,
   makeRepayPartialLoanAction,
 } from '@banx/transactions/loans'
-import { enqueueSnackbar } from '@banx/utils'
+import { enqueueSnackbar, usePriorityFees } from '@banx/utils'
 
 export const useLoansTransactions = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
   const { isLedger } = useIsLedger()
 
+  const priorityFees = usePriorityFees()
+
   const { update: updateLoansOptimistic } = useLoansOptimistic()
   const { clear: clearSelection } = useSelectedLoans()
 
   const repayLoan = async (loan: Loan) => {
+    const txnParam = { loans: [loan], priorityFees }
+
     await new TxnExecutor(makeRepayLoansAction, { wallet, connection })
-      .addTxnParam([loan])
+      .addTxnParam(txnParam)
       .on('pfSuccessAll', (results) => {
         const { txnHash, result } = results[0]
         if (result && wallet.publicKey) {
@@ -49,7 +52,7 @@ export const useLoansTransactions = () => {
   }
 
   const repayPartialLoan = async (loan: Loan, fractionToRepay: number) => {
-    const txnParam = { loan, fractionToRepay }
+    const txnParam = { loan, fractionToRepay, priorityFees }
 
     await new TxnExecutor(makeRepayPartialLoanAction, { wallet, connection })
       .addTxnParam(txnParam)
@@ -81,12 +84,14 @@ export const useLoansTransactions = () => {
     const selectedLoans = selection.map((loan) => loan.loan)
     const loansChunks = chunkRepayIxnsParams(selectedLoans)
 
+    const txnParams = loansChunks.map((chunk) => ({ loans: chunk, priorityFees: priorityFees }))
+
     await new TxnExecutor(
       makeRepayLoansAction,
       { wallet, connection },
       { signAllChunks: isLedger ? 1 : 40, rejectQueueOnFirstPfError: false },
     )
-      .addTxnParams(loansChunks)
+      .addTxnParams(txnParams)
       .on('pfSuccessEach', (results) => {
         results.forEach(({ txnHash, result }) => {
           if (result && wallet.publicKey) {
@@ -118,12 +123,14 @@ export const useLoansTransactions = () => {
   }
 
   const repayUnpaidLoansInterest = async (loans: LoanWithFractionToRepay[]) => {
+    const txnParams = loans.map((loan) => ({ ...loan, priorityFees }))
+
     await new TxnExecutor(
       makeRepayPartialLoanAction,
       { wallet, connection },
       { signAllChunks: isLedger ? 5 : 40 },
     )
-      .addTxnParams(loans)
+      .addTxnParams(txnParams)
       .on('pfSuccessEach', (results) => {
         results.forEach(({ txnHash, result }) => {
           if (result && wallet.publicKey) {
@@ -160,7 +167,7 @@ export const useLoansTransactions = () => {
   }
 }
 
-const chunkRepayIxnsParams = (borrowIxnParams: MakeRepayLoansActionParams) => {
+const chunkRepayIxnsParams = (borrowIxnParams: Loan[]) => {
   const ixnsByBorrowType = groupBy(borrowIxnParams, (loan) => getLoanBorrowType(loan))
   return Object.entries(ixnsByBorrowType)
     .map(([type, ixns]) => chunk(ixns, REPAY_NFT_PER_TXN[type as BorrowType]))

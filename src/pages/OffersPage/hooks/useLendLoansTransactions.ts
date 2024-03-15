@@ -9,7 +9,7 @@ import {
   makeInstantRefinanceAction,
   makeTerminateAction,
 } from '@banx/transactions/loans'
-import { enqueueSnackbar } from '@banx/utils'
+import { enqueueSnackbar, usePriorityFees } from '@banx/utils'
 
 export const useLendLoansTransactions = ({
   loan,
@@ -27,6 +27,8 @@ export const useLendLoansTransactions = ({
   const wallet = useWallet()
   const { connection } = useConnection()
   const { close } = useModal()
+
+  const priorityFees = usePriorityFees()
 
   const terminateLoan = () => {
     new TxnExecutor(makeTerminateAction, { wallet, connection })
@@ -55,7 +57,7 @@ export const useLendLoansTransactions = ({
 
   const claimLoan = () => {
     new TxnExecutor(makeClaimAction, { wallet, connection })
-      .addTxnParam({ loan })
+      .addTxnParam({ loan, priorityFees })
       .on('pfSuccessEach', (results) => {
         addMints(loan.nft.mint)
         enqueueSnackbar({
@@ -76,7 +78,7 @@ export const useLendLoansTransactions = ({
 
   const instantLoan = () => {
     new TxnExecutor(makeInstantRefinanceAction, { wallet, connection })
-      .addTxnParam({ loan, bestOffer })
+      .addTxnParam({ loan, bestOffer, priorityFees })
       .on('pfSuccessEach', (results) => {
         const { result, txnHash } = results[0]
         result?.bondOffer && updateOrAddOffer(result.bondOffer)

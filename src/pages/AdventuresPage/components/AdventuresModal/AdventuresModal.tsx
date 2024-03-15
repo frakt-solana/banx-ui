@@ -26,7 +26,7 @@ import {
   makeStakeNftAction,
   makeUnstakeNftAction,
 } from '@banx/transactions/adventures'
-import { enqueueSnackbar } from '@banx/utils'
+import { enqueueSnackbar, usePriorityFees } from '@banx/utils'
 
 import { isNftStaked } from '../../helpers'
 import { useAdventuresInfo } from '../../hooks'
@@ -104,6 +104,8 @@ const StakeContent: FC<StakeContent> = ({ nfts = [], adventures = [] }) => {
   const { isLedger } = useIsLedger()
   const { close } = useModal()
 
+  const priorityFees = usePriorityFees()
+
   const [selectedNfts, setSelectedNfts] = useState<AdventureNft[]>([])
 
   const toggleNft = useCallback(
@@ -139,6 +141,7 @@ const StakeContent: FC<StakeContent> = ({ nfts = [], adventures = [] }) => {
       const params = selectedNfts.map((nft) => ({
         nftMint: nft.mint,
         adventures: adventuresToSubscribe,
+        priorityFees,
       }))
 
       new TxnExecutor(
@@ -222,6 +225,8 @@ const UnstakeContent: FC<UnstakeContent> = ({ nfts = [] }) => {
   const { isLedger } = useIsLedger()
   const { close } = useModal()
 
+  const priorityFees = usePriorityFees()
+
   const [selectedNfts, setSelectedNfts] = useState<AdventureNft[]>([])
 
   const toggleNft = useCallback(
@@ -248,13 +253,15 @@ const UnstakeContent: FC<UnstakeContent> = ({ nfts = [] }) => {
   }, [])
 
   const onUnstake = () => {
+    const txnParams = selectedNfts.map((nft) => ({ nft, priorityFees }))
+
     try {
       new TxnExecutor(
         makeUnstakeNftAction,
         { wallet, connection },
         { signAllChunks: isLedger ? 5 : 40 },
       )
-        .addTxnParams(selectedNfts)
+        .addTxnParams(txnParams)
         .on('pfSuccessEach', (results) => {
           const { txnHash } = results[0]
           enqueueSnackbar({

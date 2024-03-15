@@ -15,6 +15,7 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 export type MakeRepayPartialLoanActionParams = {
   loan: Loan
   fractionToRepay: number //? F.E 50% => 5000
+  priorityFees: number
 }
 
 export type MakeRepayPartialActionResult = Loan
@@ -32,7 +33,7 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
   ixnParams,
   walletAndConnection,
 ) => {
-  const { loan, fractionToRepay } = ixnParams
+  const { loan, fractionToRepay, priorityFees } = ixnParams
   const { connection, wallet } = walletAndConnection
 
   const { fraktBond, bondTradeTransaction, nft } = loan
@@ -57,6 +58,7 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
     },
     connection,
     sendTxn: sendTxnPlaceHolder,
+    priorityFees,
   })
 
   const optimisticResult = optimisticResults.map((optimistic) => ({

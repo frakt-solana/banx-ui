@@ -9,9 +9,17 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { isSubscriptionActive } from './helpers'
 
-export type MakeUnstakeNftAction = MakeActionFn<AdventureNft, null>
+export type MakeUnstakeNftActionParams = {
+  nft: AdventureNft
+  priorityFees: number
+}
 
-export const makeUnstakeNftAction: MakeUnstakeNftAction = async (nft, { connection, wallet }) => {
+export type MakeUnstakeNftAction = MakeActionFn<MakeUnstakeNftActionParams, null>
+
+export const makeUnstakeNftAction: MakeUnstakeNftAction = async (
+  { nft, priorityFees },
+  { connection, wallet },
+) => {
   const { instructions, signers } = await staking.manageStake.unstakeBanx({
     accounts: {
       banxStake: new web3.PublicKey(nft?.banxStake?.publicKey || PUBKEY_PLACEHOLDER),
@@ -26,6 +34,7 @@ export const makeUnstakeNftAction: MakeUnstakeNftAction = async (nft, { connecti
           }))
           .slice(0, 5) ?? [],
     },
+    priorityFees,
     addComputeUnits: true,
     connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),

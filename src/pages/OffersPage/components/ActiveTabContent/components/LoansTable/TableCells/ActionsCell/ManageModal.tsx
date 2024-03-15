@@ -23,6 +23,7 @@ import {
   formatDecimal,
   isLoanActiveOrRefinanced,
   isLoanTerminating,
+  usePriorityFees,
 } from '@banx/utils'
 
 import { useSelectedLoans } from '../../loansState'
@@ -77,6 +78,8 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
   const { close } = useModal()
+
+  const priorityFees = usePriorityFees()
 
   const { remove: removeLoan } = useSelectedLoans()
 
@@ -143,7 +146,7 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
     if (!bestOffer) return
 
     new TxnExecutor(makeInstantRefinanceAction, { wallet, connection })
-      .addTxnParam({ loan, bestOffer })
+      .addTxnParam({ loan, bestOffer, priorityFees })
       .on('pfSuccessEach', (results) => {
         const { result, txnHash } = results[0]
         result?.bondOffer && updateOrAddOffer(result.bondOffer)
