@@ -14,6 +14,7 @@ export type StakeBanxTokenActionParams = {
   whitelistEntry: web3.PublicKey
   hadoRegistry: web3.PublicKey
   banxPointsMap: BanxPointsMap
+  priorityFees: number
   optimistic: BanxSubscribeAdventureOptimistic
 }
 
@@ -34,6 +35,7 @@ export const stakeBanxNftAction: StakeBanxTokenAction = async (
     connection: connection,
     addComputeUnits: true,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
+    priorityFees: ixnParams.priorityFees,
     accounts: {
       tokenMint: ixnParams.tokenMint,
       whitelistEntry: ixnParams.whitelistEntry,
