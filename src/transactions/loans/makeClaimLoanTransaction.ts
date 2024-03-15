@@ -16,12 +16,14 @@ import { fetchRuleset } from '../functions'
 
 export type MakeClaimActionParams = {
   loan: Loan
+  priorityFees: number
 }
 
 export type MakeClaimAction = MakeActionFn<MakeClaimActionParams, BondAndTransactionOptimistic>
 
 export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, wallet }) => {
-  const { bondTradeTransaction, fraktBond } = ixnParams.loan || {}
+  const { loan, priorityFees } = ixnParams
+  const { bondTradeTransaction, fraktBond } = loan
 
   if (ixnParams.loan.nft.compression) {
     const { instructions, signers, optimisticResult } = await claimCnftPerpetualLoanCanopy({
@@ -42,9 +44,9 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
           bondTradeTransaction,
         } as BondAndTransactionOptimistic,
       },
-
       connection,
       sendTxn: sendTxnPlaceHolder,
+      priorityFees,
     })
 
     return {
@@ -82,6 +84,7 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       } as BondAndTransactionOptimistic,
       connection,
       sendTxn: sendTxnPlaceHolder,
+      priorityFees,
     })
 
     return {

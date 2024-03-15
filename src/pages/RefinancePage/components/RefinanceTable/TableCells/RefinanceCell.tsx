@@ -19,7 +19,12 @@ import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { makeRefinanceAction } from '@banx/transactions/loans'
-import { enqueueSnackbar, getDialectAccessToken, trackPageEvent } from '@banx/utils'
+import {
+  enqueueSnackbar,
+  getDialectAccessToken,
+  trackPageEvent,
+  usePriorityFees,
+} from '@banx/utils'
 
 import { useLoansState } from '../hooks'
 
@@ -73,6 +78,8 @@ const useRefinanceTransaction = (loan: Loan) => {
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
+  const priorityFees = usePriorityFees()
+
   const onSuccess = () => {
     if (!getDialectAccessToken(wallet.publicKey?.toBase58())) {
       open(SubscribeNotificationsModal, {
@@ -89,7 +96,7 @@ const useRefinanceTransaction = (loan: Loan) => {
 
   const refinance = () => {
     new TxnExecutor(makeRefinanceAction, { wallet, connection })
-      .addTxnParam({ loan })
+      .addTxnParam({ loan, priorityFees })
       .on('pfSuccessEach', (results) => {
         const { txnHash } = results[0]
         addMints(loan.nft.mint)

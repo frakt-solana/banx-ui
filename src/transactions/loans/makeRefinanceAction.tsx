@@ -25,6 +25,7 @@ export interface RefinanceOptimisticResult {
 
 export type MakeRefinanceActionParams = {
   loan: Loan
+  priorityFees: number
 }
 
 export type MakeRefinanceAction = MakeActionFn<MakeRefinanceActionParams, RefinanceOptimisticResult>
@@ -37,7 +38,7 @@ export const makeRefinanceAction: MakeRefinanceAction = async (
   ixnParams,
   { connection, wallet },
 ) => {
-  const { loan } = ixnParams || {}
+  const { loan, priorityFees } = ixnParams || {}
   const { bondTradeTransaction, fraktBond } = loan
 
   const { instructions, signers, optimisticResult } = await refinancePerpetualLoan({
@@ -58,6 +59,7 @@ export const makeRefinanceAction: MakeRefinanceAction = async (
     } as OptimisticResult,
     connection,
     sendTxn: sendTxnPlaceHolder,
+    priorityFees,
   })
 
   return {

@@ -26,6 +26,7 @@ import {
   enqueueSnackbar,
   getDialectAccessToken,
   trackPageEvent,
+  usePriorityFees,
 } from '@banx/utils'
 
 import { useAuctionsLoans } from '../../hooks'
@@ -54,6 +55,8 @@ export const Summary: FC<SummaryProps> = ({
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
+  const priorityFees = usePriorityFees()
+
   const totalDebt = sumBy(selectedLoans, (loan) => calculateLoanRepayValue(loan))
   const totalLoanValue = map(selectedLoans, (loan) => loan.fraktBond.borrowedAmount)
   const totalWeeklyInterest = sumBy(selectedLoans, (loan) => calcWeeklyInterestFee(loan))
@@ -63,7 +66,7 @@ export const Summary: FC<SummaryProps> = ({
   const cappedWeightedApr = Math.min(weightedApr, MAX_APY_INCREASE_PERCENT)
 
   const refinanceAll = () => {
-    const txnParams = selectedLoans.map((loan) => ({ loan }))
+    const txnParams = selectedLoans.map((loan) => ({ loan, priorityFees }))
 
     const onSuccess = () => {
       if (!getDialectAccessToken(wallet.publicKey?.toBase58())) {

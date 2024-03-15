@@ -12,7 +12,13 @@ import { useHiddenNftsMints } from '@banx/pages/OffersPage'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimAction } from '@banx/transactions/loans'
-import { enqueueSnackbar, isLoanLiquidated, isLoanTerminating, trackPageEvent } from '@banx/utils'
+import {
+  enqueueSnackbar,
+  isLoanLiquidated,
+  isLoanTerminating,
+  trackPageEvent,
+  usePriorityFees,
+} from '@banx/utils'
 
 import { ManageModal } from './ManageModal'
 
@@ -28,12 +34,14 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
   const { connection } = useConnection()
   const { open } = useModal()
 
+  const priorityFees = usePriorityFees()
+
   const { addMints: hideLoans } = useHiddenNftsMints()
 
   const onClaim = () => {
     trackPageEvent('myoffers', 'activetab-claim')
     new TxnExecutor(makeClaimAction, { wallet, connection })
-      .addTxnParam({ loan })
+      .addTxnParam({ loan, priorityFees })
       .on('pfSuccessEach', (results) => {
         hideLoans(loan.nft.mint)
         enqueueSnackbar({

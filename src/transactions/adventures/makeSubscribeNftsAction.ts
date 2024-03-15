@@ -10,6 +10,7 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 export type MakeSubscribeNftsActionParams = {
   nfts: AdventureNft[]
   adventureToSubscribe: Adventure
+  priorityFees: number
 }
 
 export type MakeSubscribeNftsAction = MakeActionFn<MakeSubscribeNftsActionParams, null>
@@ -17,7 +18,7 @@ export type MakeSubscribeNftsAction = MakeActionFn<MakeSubscribeNftsActionParams
 export const NFTS_TO_SUBSCRIBE_PER_TXN = 5
 
 export const makeSubscribeNftsAction: MakeSubscribeNftsAction = async (
-  { nfts, adventureToSubscribe },
+  { nfts, adventureToSubscribe, priorityFees },
   { connection, wallet },
 ) => {
   if (nfts.length > NFTS_TO_SUBSCRIBE_PER_TXN) {
@@ -40,6 +41,7 @@ export const makeSubscribeNftsAction: MakeSubscribeNftsAction = async (
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     sendTxn: sendTxnPlaceHolder,
     addComputeUnits: true,
+    priorityFees,
   })
 
   return {

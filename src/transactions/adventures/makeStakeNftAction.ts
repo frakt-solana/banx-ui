@@ -10,12 +10,13 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 export type MakeStakeNftActionParams = {
   nftMint: string
   adventures: Adventure[]
+  priorityFees: number
 }
 
 export type MakeStakeNftAction = MakeActionFn<MakeStakeNftActionParams, null>
 
 export const makeStakeNftAction: MakeStakeNftAction = async (ixnParams, { connection, wallet }) => {
-  const { nftMint, adventures } = ixnParams
+  const { nftMint, adventures, priorityFees } = ixnParams
 
   const { instructions, signers } = await staking.manageStake.stakeBanx({
     accounts: {
@@ -33,6 +34,7 @@ export const makeStakeNftAction: MakeStakeNftAction = async (ixnParams, { connec
     connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     sendTxn: sendTxnPlaceHolder,
+    priorityFees,
   })
 
   return {

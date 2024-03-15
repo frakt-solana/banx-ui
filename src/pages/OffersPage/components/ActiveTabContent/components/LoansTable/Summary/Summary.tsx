@@ -13,7 +13,12 @@ import { Loan } from '@banx/api/core'
 import { useIsLedger } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimAction, makeTerminateAction } from '@banx/transactions/loans'
-import { HealthColorIncreasing, enqueueSnackbar, getColorByPercent } from '@banx/utils'
+import {
+  HealthColorIncreasing,
+  enqueueSnackbar,
+  getColorByPercent,
+  usePriorityFees,
+} from '@banx/utils'
 
 import { useSelectedLoans } from '../loansState'
 import { getTerminateStatsInfo } from './helpers'
@@ -43,6 +48,8 @@ export const Summary: FC<SummaryProps> = ({
 
   const { connection } = useConnection()
   const { isLedger } = useIsLedger()
+
+  const priorityFees = usePriorityFees()
 
   const { totalLent, averageLtv, totalInterest } = getTerminateStatsInfo(selectedLoans)
 
@@ -82,7 +89,7 @@ export const Summary: FC<SummaryProps> = ({
   }
 
   const claimLoans = () => {
-    const txnParams = loansToClaim.map((loan) => ({ loan }))
+    const txnParams = loansToClaim.map((loan) => ({ loan, priorityFees }))
 
     new TxnExecutor(makeClaimAction, { wallet, connection }, { signAllChunks: isLedger ? 5 : 40 })
       .addTxnParams(txnParams)

@@ -25,7 +25,7 @@ import {
   useTableView,
 } from '@banx/store'
 import { createGlobalState } from '@banx/store/functions'
-import { getDialectAccessToken, trackPageEvent } from '@banx/utils'
+import { getDialectAccessToken, trackPageEvent, usePriorityFees } from '@banx/utils'
 
 import { useCartState } from '../../cartState'
 import { getTableColumns } from './columns'
@@ -56,6 +56,8 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
   const { isLedger } = useIsLedger()
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
+
+  const priorityFees = usePriorityFees()
 
   const bonkRewardsAvailable = useBorrowBonkRewardsAvailability()
 
@@ -124,6 +126,9 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
 
   const borrow = async (nft: TableNftData) => {
     const txnParams = createBorrowParams([nft], rawOffers)
+    const txnParamsWithPriorityFees = txnParams.map((innerArray) =>
+      innerArray.map((params) => ({ ...params, priorityFees })),
+    )
 
     const showCongratsMessage = SPECIAL_COLLECTIONS_MARKETS.includes(nft.nft.loan.marketPubkey)
 
@@ -132,7 +137,7 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
         wallet,
         connection,
       },
-      txnParams: txnParams,
+      txnParams: txnParamsWithPriorityFees,
       addLoansOptimistic,
       updateOffersOptimistic,
       onSuccessAll: () => onBorrowSuccess(1, showCongratsMessage),
@@ -148,6 +153,10 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
     const selectedNfts = tableNftsData.filter(({ mint }) => !!offerByMint[mint])
     const txnParams = createBorrowParams(selectedNfts, rawOffers)
 
+    const txnParamsWithPriorityFees = txnParams.map((innerArray) =>
+      innerArray.map((params) => ({ ...params, priorityFees })),
+    )
+
     const showCongratsMessage = !!txnParams
       .flat()
       .find(({ offer }) => SPECIAL_COLLECTIONS_MARKETS.includes(offer.hadoMarket))
@@ -157,7 +166,7 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
         wallet,
         connection,
       },
-      txnParams,
+      txnParams: txnParamsWithPriorityFees,
       addLoansOptimistic,
       updateOffersOptimistic,
       onSuccessAll: () =>

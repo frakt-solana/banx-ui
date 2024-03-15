@@ -28,6 +28,7 @@ export type MakeBorrowRefinanceActionParams = {
   offer: Offer
   solToRefinance: number
   aprRate: number //? Base points
+  priorityFees: number
 }
 
 export type MakeBorrowRefinanceAction = MakeActionFn<
@@ -85,6 +86,7 @@ const getIxnsAndSigners = async ({
     offer,
     solToRefinance,
     aprRate,
+    priorityFees,
   } = ixnParams
 
   const accounts = {
@@ -115,6 +117,7 @@ const getIxnsAndSigners = async ({
       connection,
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       sendTxn: sendTxnPlaceHolder,
+      priorityFees,
     })
 
     return { instructions, signers, optimisticResult }
@@ -135,6 +138,7 @@ const getIxnsAndSigners = async ({
       connection,
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       sendTxn: sendTxnPlaceHolder,
+      priorityFees,
     })
 
     return { instructions, signers, optimisticResult }

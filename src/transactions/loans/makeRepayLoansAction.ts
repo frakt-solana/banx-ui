@@ -19,7 +19,10 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 import { BorrowType } from '../constants'
 import { fetchRuleset } from '../functions'
 
-export type MakeRepayLoansActionParams = Loan[]
+export type MakeRepayLoansActionParams = {
+  loans: Loan[]
+  priorityFees: number
+}
 
 export type MakeRepayActionResult = Loan[]
 
@@ -35,9 +38,10 @@ export const makeRepayLoansAction: MakeRepayLoansAction = async (
   ixnParams,
   walletAndConnection,
 ) => {
-  const borrowType = getChunkBorrowType(ixnParams)
+  const { loans } = ixnParams
+  const borrowType = getChunkBorrowType(loans)
 
-  if (ixnParams.length > REPAY_NFT_PER_TXN[borrowType]) {
+  if (loans.length > REPAY_NFT_PER_TXN[borrowType]) {
     throw new Error(`Maximum borrow per txn is ${REPAY_NFT_PER_TXN[borrowType]}`)
   }
 
@@ -48,18 +52,18 @@ export const makeRepayLoansAction: MakeRepayLoansAction = async (
       walletAndConnection,
     })
 
-  const loans: Loan[] = optimisticResults.map((optimistic, idx) => ({
+  const optimisticLoans: Loan[] = optimisticResults.map((optimistic, idx) => ({
     publicKey: optimistic.fraktBond.publicKey,
     fraktBond: optimistic.fraktBond,
     bondTradeTransaction: optimistic.bondTradeTransaction,
-    nft: ixnParams[idx].nft,
+    nft: loans[idx].nft,
   }))
 
   return {
     instructions,
     signers,
     lookupTables,
-    additionalResult: loans,
+    additionalResult: optimisticLoans,
   }
 }
 
@@ -75,7 +79,9 @@ const getIxnsAndSignersByBorrowType = async ({
   const { connection, wallet } = walletAndConnection
 
   if (type === BorrowType.StakedBanx) {
-    const loan = ixnParams[0]
+    const { loans, priorityFees } = ixnParams
+    const loan = loans[0]
+
     if (
       !(
         loan.fraktBond.banxStake !== EMPTY_PUBKEY.toBase58() &&
@@ -84,6 +90,7 @@ const getIxnsAndSignersByBorrowType = async ({
     ) {
       throw new Error(`Not BanxStaked NFT`)
     }
+
     const { instructions, signers, optimisticResults } = await repayStakedBanxPerpetualLoan({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
@@ -92,7 +99,7 @@ const getIxnsAndSignersByBorrowType = async ({
         protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
       },
       args: {
-        repayAccounts: ixnParams.map(({ fraktBond, bondTradeTransaction }) => ({
+        repayAccounts: loans.map(({ fraktBond, bondTradeTransaction }) => ({
           bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
           lender: new web3.PublicKey(bondTradeTransaction.user),
           fbond: new web3.PublicKey(fraktBond.publicKey),
@@ -106,6 +113,7 @@ const getIxnsAndSignersByBorrowType = async ({
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
+      priorityFees,
     })
     return {
       instructions,
@@ -116,7 +124,9 @@ const getIxnsAndSignersByBorrowType = async ({
   }
 
   if (type === BorrowType.CNft) {
-    const loan = ixnParams[0]
+    const { loans, priorityFees } = ixnParams
+    const loan = loans[0]
+
     if (!loan.nft.compression) {
       throw new Error(`Not cNFT`)
     }
@@ -145,6 +155,7 @@ const getIxnsAndSignersByBorrowType = async ({
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
+      priorityFees,
     })
 
     return {
@@ -155,8 +166,11 @@ const getIxnsAndSignersByBorrowType = async ({
     }
   }
 
+  const { loans, priorityFees } = ixnParams
+  const loan = loans[0]
+
   const ruleSets = await Promise.all(
-    ixnParams.map(({ nft, fraktBond }) =>
+    loans.map(({ nft, fraktBond }) =>
       fetchRuleset({ nftMint: nft.mint, connection, marketPubkey: fraktBond.hadoMarket }),
     ),
   )
@@ -166,11 +180,11 @@ const getIxnsAndSignersByBorrowType = async ({
     accounts: {
       userPubkey: wallet.publicKey as web3.PublicKey,
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
-      oldBondOffer: new web3.PublicKey(ixnParams[0].bondTradeTransaction.bondOffer),
+      oldBondOffer: new web3.PublicKey(loan.bondTradeTransaction.bondOffer),
     },
     addComputeUnits: true,
     args: {
-      repayAccounts: ixnParams.map(({ fraktBond, bondTradeTransaction }, idx) => ({
+      repayAccounts: loans.map(({ fraktBond, bondTradeTransaction }, idx) => ({
         bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
         ruleSet: ruleSets[idx],
         lender: new web3.PublicKey(bondTradeTransaction.user),
@@ -185,6 +199,7 @@ const getIxnsAndSignersByBorrowType = async ({
     },
     connection,
     sendTxn: sendTxnPlaceHolder,
+    priorityFees,
   })
 
   return {

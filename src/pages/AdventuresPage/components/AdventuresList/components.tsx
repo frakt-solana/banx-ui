@@ -19,7 +19,7 @@ import {
   makeSubscribeNftsAction,
 } from '@banx/transactions/adventures'
 import { START_PERIOD_TIME_ADJUST } from '@banx/transactions/adventures/constants'
-import { enqueueSnackbar, formatNumbersWithCommas } from '@banx/utils'
+import { enqueueSnackbar, formatNumbersWithCommas, usePriorityFees } from '@banx/utils'
 
 import { calcNftsPartnerPoints, isNftStaked } from '../../helpers'
 import { useAdventuresInfo, useBanxStats } from '../../hooks'
@@ -47,6 +47,8 @@ export const AdventureSubscribeButton: FC<AdventuresComponentsProps> = ({
   const wallet = useWallet()
   const { isLedger } = useIsLedger()
 
+  const priorityFees = usePriorityFees()
+
   const { refetch } = useAdventuresInfo()
 
   const stakedNfts = useMemo(() => {
@@ -67,6 +69,7 @@ export const AdventureSubscribeButton: FC<AdventuresComponentsProps> = ({
     const params = nftsChunks.map((nftChunk) => ({
       nfts: nftChunk,
       adventureToSubscribe: adventure,
+      priorityFees,
     }))
 
     new TxnExecutor(
@@ -94,7 +97,7 @@ export const AdventureSubscribeButton: FC<AdventuresComponentsProps> = ({
         })
       })
       .execute()
-  }, [refetch, connection, wallet, adventure, stakedNfts, subscribedNfts, isLedger])
+  }, [stakedNfts, subscribedNfts, wallet, connection, isLedger, adventure, priorityFees, refetch])
 
   const isParticipating = !!subscribedNfts.length
 
