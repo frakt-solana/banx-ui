@@ -1,4 +1,5 @@
 import { web3 } from '@project-serum/anchor'
+import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { unstakeBanxNft } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
 import { BanxStake } from 'fbonds-core/lib/fbond-protocol/types'
@@ -11,8 +12,8 @@ type Params = Parameters<typeof unstakeBanxNft>[0]
 
 export type StakeBanxTokenActionParams = {
   userPubkey: web3.PublicKey
-  banxStake: web3.PublicKey
   tokenMint: web3.PublicKey
+  priorityFees: number
   optimistic: {
     banxSubscribeAdventureOptimistic: BanxSubscribeAdventureOptimistic
     banxStake: BanxStake
@@ -29,14 +30,11 @@ export const unStakeBanxNftAction: UnStakeBanxNftAction = async (ixnParams, { co
     connection: connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     addComputeUnits: true,
-    args: {
-      tokensToUnstake: 9,
-    },
-    // priorityFees: 12,
+    priorityFees: ixnParams.priorityFees,
     accounts: {
       userPubkey: ixnParams.userPubkey,
       tokenMint: ixnParams.tokenMint,
-      banxStake: ixnParams.banxStake,
+      banxStake: new web3.PublicKey(ixnParams.optimistic.banxStake.publicKey),
     },
     optimistics: {
       banxSubscribeAdventureOptimistic: ixnParams.optimistic.banxSubscribeAdventureOptimistic,
@@ -49,7 +47,7 @@ export const unStakeBanxNftAction: UnStakeBanxNftAction = async (ixnParams, { co
 
   return {
     instructions: r.instructions,
-    signers: [],
+    signers: r.signers,
     lookupTables: [],
     optimisticResult: r.optimisticResult,
   }

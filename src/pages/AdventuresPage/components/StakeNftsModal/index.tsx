@@ -17,12 +17,14 @@ import { useBanxStakeState } from '@banx/pages/AdventuresPage/state'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxNftAction } from '@banx/transactions/banxStaking/stakeBanxNftsAction'
-import { enqueueSnackbar } from '@banx/utils'
+import { unStakeBanxNftAction } from '@banx/transactions/banxStaking/unStakeBanxNftsAction'
+import { enqueueSnackbar, usePriorityFees } from '@banx/utils'
 
 import styles from './styled.module.less'
 
 export const StakeNftsModal = () => {
   const { close } = useModal()
+  const priorityFees = usePriorityFees()
   const { banxStake, banxTokenSettings, updateStake } = useBanxStakeState()
   const nfts = banxStake?.nfts || []
   const wallet = useWallet()
@@ -107,10 +109,76 @@ export const StakeNftsModal = () => {
         hadoRegistry: new web3.PublicKey(BANX_STAKING.HADO_REGISTRY_PUBKEY),
         banxPointsMap: nft.pointsMap,
         optimistic,
+        priorityFees,
       }))
 
       new TxnExecutor(stakeBanxNftAction, { wallet, connection })
         .addTxnParams(params)
+        .on('pfSuccessEach', (results) => {
+          const { txnHash } = results[0]
+          enqueueSnackbar({
+            message: 'Staked successfully',
+            type: 'success',
+            solanaExplorerPath: `tx/${txnHash}`,
+          })
+          results.forEach(({ result }) => {
+            if (
+              !result?.banxStakingSettings ||
+              !result?.banxAdventures ||
+              !result?.banxTokenStake
+            ) {
+              return
+            }
+
+            updateStake({
+              banxTokenSettings: result?.banxStakingSettings,
+              banxStake: {
+                ...banxStake,
+                banxAdventures: result?.banxAdventures as any,
+                banxTokenStake: result?.banxTokenStake,
+                nfts: banxStake.nfts?.filter(({ mint }) => !selectedNfts[mint]),
+              },
+            })
+          })
+        })
+        .on('pfSuccessAll', () => {
+          close()
+        })
+        .on('pfError', (error) => {
+          defaultTxnErrorHandler(error, {
+            additionalData: params,
+            walletPubkey: wallet?.publicKey?.toBase58(),
+            transactionName: 'StakeBanx',
+          })
+        })
+        .execute()
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  const onUnStake = () => {
+    try {
+      if (!wallet.publicKey?.toBase58() || !banxTokenSettings || !banxStake?.banxTokenStake) {
+        return
+      }
+      const banxSubscribeAdventureOptimistic: BanxSubscribeAdventureOptimistic = {
+        banxStakingSettings: banxTokenSettings,
+        banxAdventures: banxStake.banxAdventures,
+        banxTokenStake: banxStake.banxTokenStake,
+      }
+
+      const params = Object.values(selectedNfts).map((nft) => ({
+        tokenMint: new web3.PublicKey(nft.mint),
+        userPubkey: wallet.publicKey as web3.PublicKey,
+        optimistic: {
+          banxSubscribeAdventureOptimistic,
+          banxStake: nft.stake,
+        },
+        priorityFees,
+      }))
+
+      new TxnExecutor(unStakeBanxNftAction, { wallet, connection })
+        .addTxnParams(params as any)
         .on('pfSuccessEach', (results) => {
           const { txnHash } = results[0]
           enqueueSnackbar({
@@ -183,7 +251,7 @@ export const StakeNftsModal = () => {
           variant="primary"
           className={styles.footerBtn}
           disabled={!Object.values(selectedNfts).length}
-          onClick={onStake}
+          onClick={currentTab === modalTabs[0].value && 'Stake' ? onStake : onUnStake}
         >
           {currentTab === modalTabs[0].value && 'Stake'}
           {currentTab === modalTabs[1].value && 'Unstake'}

@@ -16,7 +16,12 @@ import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxTokenAction } from '@banx/transactions/banxStaking'
 import { unStakeBanxTokenAction } from '@banx/transactions/banxStaking/unStakeBanxToken'
-import { enqueueSnackbar, formatCompact, formatNumbersWithCommas } from '@banx/utils'
+import {
+  enqueueSnackbar,
+  formatCompact,
+  formatNumbersWithCommas,
+  usePriorityFees,
+} from '@banx/utils'
 
 import styles from './styled.module.less'
 
@@ -24,6 +29,7 @@ interface Props {}
 
 export const StakeTokens: FC<Props> = () => {
   const { connection } = useConnection()
+  const priorityFees = usePriorityFees()
   const { updateStake, banxStake, banxTokenSettings, balance } = useBanxStakeState()
   const wallet = useWallet()
   const { close } = useModal()
@@ -53,6 +59,7 @@ export const StakeTokens: FC<Props> = () => {
       tokensToStake: toDecimals(value),
       userPubkey: wallet.publicKey,
       optimistic,
+      priorityFees,
     }
 
     new TxnExecutor(stakeBanxTokenAction, { wallet, connection })
@@ -101,6 +108,7 @@ export const StakeTokens: FC<Props> = () => {
       tokensToUnstake: toDecimals(value),
       userPubkey: wallet.publicKey,
       optimistic,
+      priorityFees,
     }
 
     new TxnExecutor(unStakeBanxTokenAction, { wallet, connection })

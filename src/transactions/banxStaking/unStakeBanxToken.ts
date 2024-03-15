@@ -13,6 +13,7 @@ export type StakeBanxTokenActionParams = {
   userPubkey: web3.PublicKey
   tokensToUnstake: number
   optimistic: BanxSubscribeAdventureOptimistic
+  priorityFees: number
 }
 
 export type StakeBanxTokenAction = MakeActionFn<
@@ -21,7 +22,6 @@ export type StakeBanxTokenAction = MakeActionFn<
 >
 
 export const unStakeBanxTokenAction: StakeBanxTokenAction = async (ixnParams, { connection }) => {
-  console.log(BANX_TOKEN_MINT.toBase58())
   const params: Params = {
     connection: connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
@@ -29,6 +29,7 @@ export const unStakeBanxTokenAction: StakeBanxTokenAction = async (ixnParams, { 
       userPubkey: ixnParams.userPubkey,
       tokenMint: BANX_TOKEN_MINT,
     },
+    priorityFees: ixnParams.priorityFees,
     args: {
       tokensToUnstake: ixnParams.tokensToUnstake,
     },
