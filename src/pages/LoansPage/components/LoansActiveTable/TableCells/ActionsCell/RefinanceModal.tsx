@@ -15,7 +15,7 @@ import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { useMarketOffers } from '@banx/pages/LendPage'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
-import { useLoansOptimistic, useModal } from '@banx/store'
+import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { makeBorrowRefinanceAction } from '@banx/transactions/loans'
 import {
@@ -47,7 +47,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
   const { bondTradeTransaction, fraktBond, nft } = loan
   const { feeAmount } = bondTradeTransaction
 
-  const { offers, updateOrAddOffer, isLoading } = useMarketOffers({
+  const { offers, isLoading } = useMarketOffers({
     marketPubkey: fraktBond.hadoMarket,
   })
 
@@ -69,7 +69,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
     setCurrentSpotPrice(initialCurrentSpotPrice)
   }, [initialCurrentSpotPrice])
 
-  const { update: updateLoansOptimistic } = useLoansOptimistic()
+  // const { update: updateLoansOptimistic } = useLoansOptimistic()
   const { clear: clearSelection } = useSelectedLoans()
 
   const isTerminatingStatus = isLoanTerminating(loan)
@@ -129,15 +129,26 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
         aprRate: newApr,
         priorityFees,
       })
+      // .on('pfSuccessEach', (results) => {
+      //   const { result, txnHash } = results[0]
+      //   result?.offer && updateOrAddOffer(result.offer)
+      //   if (result?.loan) {
+      //     updateLoansOptimistic([result.loan], wallet.publicKey?.toBase58() || '')
+      //   }
+      //   clearSelection()
+      //   enqueueSnackbar({
+      //     message: 'Loan successfully refinanced',
+      //     type: 'success',
+      //     solanaExplorerPath: `tx/${txnHash}`,
+      //   })
+      //   close()
+      // })
       .on('pfSuccessEach', (results) => {
-        const { result, txnHash } = results[0]
-        result?.offer && updateOrAddOffer(result.offer)
-        if (result?.loan) {
-          updateLoansOptimistic([result.loan], wallet.publicKey?.toBase58() || '')
-        }
+        const { txnHash } = results[0]
+
         clearSelection()
         enqueueSnackbar({
-          message: 'Loan successfully refinanced',
+          message: 'Transaction sent',
           type: 'success',
           solanaExplorerPath: `tx/${txnHash}`,
         })
