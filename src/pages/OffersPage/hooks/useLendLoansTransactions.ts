@@ -14,8 +14,8 @@ import { enqueueSnackbar, usePriorityFees } from '@banx/utils'
 export const useLendLoansTransactions = ({
   loan,
   bestOffer, // updateOrAddLoan,
-  // updateOrAddOffer,
-} // addMints,
+  // addMints,
+} // updateOrAddOffer,
 : {
   loan: Loan
   bestOffer: Offer
@@ -44,8 +44,8 @@ export const useLendLoansTransactions = ({
       .on('pfSuccessEach', (results) => {
         const { txnHash } = results[0]
         enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'success',
+          message: 'Transactions sent',
+          type: 'info',
           solanaExplorerPath: `tx/${txnHash}`,
         })
       })
@@ -108,7 +108,7 @@ export const useLendLoansTransactions = ({
 
         enqueueSnackbar({
           message: 'Transaction sent',
-          type: 'success',
+          type: 'info',
           solanaExplorerPath: `tx/${txnHash}`,
         })
       })

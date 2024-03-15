@@ -149,7 +149,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
         clearSelection()
         enqueueSnackbar({
           message: 'Transaction sent',
-          type: 'success',
+          type: 'info',
           solanaExplorerPath: `tx/${txnHash}`,
         })
         close()

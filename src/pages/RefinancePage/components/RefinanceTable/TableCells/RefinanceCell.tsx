@@ -111,7 +111,7 @@ const useRefinanceTransaction = (loan: Loan) => {
         const { txnHash } = results[0]
 
         enqueueSnackbar({
-          message: 'Transaction sent',
+          message: 'Transactions sent',
           type: 'info',
           solanaExplorerPath: `tx/${txnHash}`,
         })

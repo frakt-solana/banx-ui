@@ -45,7 +45,7 @@ export const useLoansTransactions = () => {
         const { txnHash, result } = results[0]
         if (result && wallet.publicKey) {
           enqueueSnackbar({
-            message: 'Transaction sent',
+            message: 'Transactions sent',
             type: 'info',
             solanaExplorerPath: `tx/${txnHash}`,
           })
