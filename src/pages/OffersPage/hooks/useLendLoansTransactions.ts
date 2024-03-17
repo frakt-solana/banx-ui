@@ -13,11 +13,10 @@ import { enqueueSnackbar, usePriorityFees } from '@banx/utils'
 
 export const useLendLoansTransactions = ({
   loan,
-  bestOffer,
-  updateOrAddLoan,
-  updateOrAddOffer,
-  addMints,
-}: {
+  bestOffer, // updateOrAddLoan,
+  // addMints,
+} // updateOrAddOffer,
+: {
   loan: Loan
   bestOffer: Offer
   updateOrAddLoan: (loan: Loan) => void
@@ -33,12 +32,20 @@ export const useLendLoansTransactions = ({
   const terminateLoan = () => {
     new TxnExecutor(makeTerminateAction, { wallet, connection })
       .addTxnParam({ loan })
+      // .on('pfSuccessEach', (results) => {
+      //   const { result, txnHash } = results[0]
+      //   updateOrAddLoan({ ...loan, ...result })
+      //   enqueueSnackbar({
+      //     message: 'Offer termination successfully initialized',
+      //     type: 'success',
+      //     solanaExplorerPath: `tx/${txnHash}`,
+      //   })
+      // })
       .on('pfSuccessEach', (results) => {
-        const { result, txnHash } = results[0]
-        updateOrAddLoan({ ...loan, ...result })
+        const { txnHash } = results[0]
         enqueueSnackbar({
-          message: 'Offer termination successfully initialized',
-          type: 'success',
+          message: 'Transactions sent',
+          type: 'info',
           solanaExplorerPath: `tx/${txnHash}`,
         })
       })
@@ -58,11 +65,18 @@ export const useLendLoansTransactions = ({
   const claimLoan = () => {
     new TxnExecutor(makeClaimAction, { wallet, connection })
       .addTxnParam({ loan, priorityFees })
+      // .on('pfSuccessEach', (results) => {
+      //   addMints(loan.nft.mint)
+      //   enqueueSnackbar({
+      //     message: 'Collateral successfully claimed',
+      //     type: 'success',
+      //     solanaExplorerPath: `tx/${results[0].txnHash}`,
+      //   })
+      // })
       .on('pfSuccessEach', (results) => {
-        addMints(loan.nft.mint)
         enqueueSnackbar({
-          message: 'Collateral successfully claimed',
-          type: 'success',
+          message: 'Trasaction sent',
+          type: 'info',
           solanaExplorerPath: `tx/${results[0].txnHash}`,
         })
       })
@@ -79,13 +93,22 @@ export const useLendLoansTransactions = ({
   const instantLoan = () => {
     new TxnExecutor(makeInstantRefinanceAction, { wallet, connection })
       .addTxnParam({ loan, bestOffer, priorityFees })
+      // .on('pfSuccessEach', (results) => {
+      //   const { result, txnHash } = results[0]
+      //   result?.bondOffer && updateOrAddOffer(result.bondOffer)
+      //   addMints(loan.nft.mint)
+      //   enqueueSnackbar({
+      //     message: 'Offer successfully sold',
+      //     type: 'success',
+      //     solanaExplorerPath: `tx/${txnHash}`,
+      //   })
+      // })
       .on('pfSuccessEach', (results) => {
-        const { result, txnHash } = results[0]
-        result?.bondOffer && updateOrAddOffer(result.bondOffer)
-        addMints(loan.nft.mint)
+        const { txnHash } = results[0]
+
         enqueueSnackbar({
-          message: 'Offer successfully sold',
-          type: 'success',
+          message: 'Transaction sent',
+          type: 'info',
           solanaExplorerPath: `tx/${txnHash}`,
         })
       })

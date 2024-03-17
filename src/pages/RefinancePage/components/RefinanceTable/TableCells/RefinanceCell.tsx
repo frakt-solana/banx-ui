@@ -15,7 +15,7 @@ import {
 } from '@banx/components/modals'
 
 import { Loan } from '@banx/api/core'
-import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
+// import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { makeRefinanceAction } from '@banx/transactions/loans'
@@ -26,8 +26,7 @@ import {
   usePriorityFees,
 } from '@banx/utils'
 
-import { useLoansState } from '../hooks'
-
+// import { useLoansState } from '../hooks'
 import styles from '../RefinanceTable.module.less'
 
 interface RefinanceCellProps {
@@ -73,8 +72,8 @@ export const RefinanceCell: FC<RefinanceCellProps> = ({ loan, isCardView, disabl
 const useRefinanceTransaction = (loan: Loan) => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { addMints } = useAuctionsLoans()
-  const { deselectLoan } = useLoansState()
+  // const { addMints } = useAuctionsLoans()
+  // const { deselectLoan } = useLoansState()
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
@@ -97,13 +96,23 @@ const useRefinanceTransaction = (loan: Loan) => {
   const refinance = () => {
     new TxnExecutor(makeRefinanceAction, { wallet, connection })
       .addTxnParam({ loan, priorityFees })
+      // .on('pfSuccessEach', (results) => {
+      //   const { txnHash } = results[0]
+      //   addMints(loan.nft.mint)
+      //   deselectLoan(loan.publicKey)
+      //   enqueueSnackbar({
+      //     message: 'Loan successfully refinanced',
+      //     type: 'success',
+      //     solanaExplorerPath: `tx/${txnHash}`,
+      //   })
+      //   onSuccess()
+      // })
       .on('pfSuccessEach', (results) => {
         const { txnHash } = results[0]
-        addMints(loan.nft.mint)
-        deselectLoan(loan.publicKey)
+
         enqueueSnackbar({
-          message: 'Loan successfully refinanced',
-          type: 'success',
+          message: 'Transactions sent',
+          type: 'info',
           solanaExplorerPath: `tx/${txnHash}`,
         })
         onSuccess()
