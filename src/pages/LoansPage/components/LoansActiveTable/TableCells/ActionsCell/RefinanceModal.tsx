@@ -45,7 +45,6 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
   const priorityFees = usePriorityFees()
 
   const { bondTradeTransaction, fraktBond, nft } = loan
-  const { feeAmount } = bondTradeTransaction
 
   const { offers, updateOrAddOffer, isLoading } = useMarketOffers({
     marketPubkey: fraktBond.hadoMarket,
@@ -74,13 +73,6 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
 
   const isTerminatingStatus = isLoanTerminating(loan)
 
-  const upfrontFee = fraktBond.fbondTokenSupply || feeAmount
-
-  const currentLoanBorrowedAmount = calcLoanBorrowedAmount(loan)
-  const currentLoanDebt = calculateLoanRepayValue(loan)
-
-  const currentApr = bondTradeTransaction.amountOfBonds
-
   const [partialPercent, setPartialPercent] = useState<number>(100)
   const [currentSpotPrice, setCurrentSpotPrice] = useState<number>(initialCurrentSpotPrice)
 
@@ -88,6 +80,12 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
     setPartialPercent(percentValue)
     setCurrentSpotPrice(Math.max(Math.floor((initialCurrentSpotPrice * percentValue) / 100), 1000))
   }
+
+  const upfrontFee = currentSpotPrice / 100
+
+  const currentLoanBorrowedAmount = calcLoanBorrowedAmount(loan)
+  const currentLoanDebt = calculateLoanRepayValue(loan)
+  const currentApr = bondTradeTransaction.amountOfBonds
 
   const newLoanBorrowedAmount = currentSpotPrice - upfrontFee
   const newLoanDebt = currentSpotPrice
@@ -98,7 +96,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
     marketPubkey: fraktBond.hadoMarket,
   })
 
-  const differenceToPay = newLoanDebt - currentLoanDebt
+  const differenceToPay = newLoanDebt - currentLoanDebt - upfrontFee
 
   const refinance = () => {
     if (!bestOffer) return

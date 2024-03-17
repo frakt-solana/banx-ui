@@ -16,7 +16,7 @@ import {
   getColorByPercent,
 } from '@banx/utils'
 
-import { calcAccruedInterest, calcUpfrontFee } from '../helpers'
+import { calcAccruedInterest } from '../helpers'
 
 import styles from '../LoansActiveTable.module.less'
 
@@ -44,7 +44,7 @@ export const DebtCell: FC<CellProps> = ({ loan }) => {
   const borrowedValue = fraktBond.borrowedAmount
 
   const totalAccruedInterest = calcAccruedInterest(loan)
-  const upfrontFee = calcUpfrontFee(loan)
+  const upfrontFee = borrowedValue / 100
 
   const weeklyFee = calcWeeklyFeeWithRepayFee(loan)
 
