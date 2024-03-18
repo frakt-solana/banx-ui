@@ -15,7 +15,7 @@ import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { useMarketOffers } from '@banx/pages/LendPage'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
-import { useLoansOptimistic, useModal } from '@banx/store'
+import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { makeBorrowRefinanceAction } from '@banx/transactions/loans'
 import {
@@ -45,9 +45,8 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
   const priorityFees = usePriorityFees()
 
   const { bondTradeTransaction, fraktBond, nft } = loan
-  const { feeAmount } = bondTradeTransaction
 
-  const { offers, updateOrAddOffer, isLoading } = useMarketOffers({
+  const { offers, isLoading } = useMarketOffers({
     marketPubkey: fraktBond.hadoMarket,
   })
 
@@ -69,17 +68,10 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
     setCurrentSpotPrice(initialCurrentSpotPrice)
   }, [initialCurrentSpotPrice])
 
-  const { update: updateLoansOptimistic } = useLoansOptimistic()
+  // const { update: updateLoansOptimistic } = useLoansOptimistic()
   const { clear: clearSelection } = useSelectedLoans()
 
   const isTerminatingStatus = isLoanTerminating(loan)
-
-  const upfrontFee = fraktBond.fbondTokenSupply || feeAmount
-
-  const currentLoanBorrowedAmount = calcLoanBorrowedAmount(loan)
-  const currentLoanDebt = calculateLoanRepayValue(loan)
-
-  const currentApr = bondTradeTransaction.amountOfBonds
 
   const [partialPercent, setPartialPercent] = useState<number>(100)
   const [currentSpotPrice, setCurrentSpotPrice] = useState<number>(initialCurrentSpotPrice)
@@ -88,6 +80,12 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
     setPartialPercent(percentValue)
     setCurrentSpotPrice(Math.max(Math.floor((initialCurrentSpotPrice * percentValue) / 100), 1000))
   }
+
+  const upfrontFee = currentSpotPrice / 100
+
+  const currentLoanBorrowedAmount = calcLoanBorrowedAmount(loan)
+  const currentLoanDebt = calculateLoanRepayValue(loan)
+  const currentApr = bondTradeTransaction.amountOfBonds
 
   const newLoanBorrowedAmount = currentSpotPrice - upfrontFee
   const newLoanDebt = currentSpotPrice
@@ -98,7 +96,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
     marketPubkey: fraktBond.hadoMarket,
   })
 
-  const differenceToPay = newLoanDebt - currentLoanDebt
+  const differenceToPay = newLoanDebt - currentLoanDebt - upfrontFee
 
   const refinance = () => {
     if (!bestOffer) return
@@ -129,16 +127,27 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
         aprRate: newApr,
         priorityFees,
       })
+      // .on('pfSuccessEach', (results) => {
+      //   const { result, txnHash } = results[0]
+      //   result?.offer && updateOrAddOffer(result.offer)
+      //   if (result?.loan) {
+      //     updateLoansOptimistic([result.loan], wallet.publicKey?.toBase58() || '')
+      //   }
+      //   clearSelection()
+      //   enqueueSnackbar({
+      //     message: 'Loan successfully refinanced',
+      //     type: 'success',
+      //     solanaExplorerPath: `tx/${txnHash}`,
+      //   })
+      //   close()
+      // })
       .on('pfSuccessEach', (results) => {
-        const { result, txnHash } = results[0]
-        result?.offer && updateOrAddOffer(result.offer)
-        if (result?.loan) {
-          updateLoansOptimistic([result.loan], wallet.publicKey?.toBase58() || '')
-        }
+        const { txnHash } = results[0]
+
         clearSelection()
         enqueueSnackbar({
-          message: 'Loan successfully refinanced',
-          type: 'success',
+          message: 'Transaction sent',
+          type: 'info',
           solanaExplorerPath: `tx/${txnHash}`,
         })
         close()

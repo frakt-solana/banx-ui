@@ -19,7 +19,7 @@ interface SummaryProps {
   offers: UserOffer[]
 }
 
-const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
+const Summary: FC<SummaryProps> = ({ /*updateOrAddOffer */ offers }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
 
@@ -35,15 +35,22 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
 
     new TxnExecutor(makeClaimBondOfferInterestAction, { wallet, connection })
       .addTxnParams(txnParams)
-      .on('pfSuccessEach', (results) => {
-        results.forEach(({ result }) => {
-          if (result) updateOrAddOffer([result.bondOffer])
-        })
-      })
+      // .on('pfSuccessEach', (results) => {
+      //   results.forEach(({ result }) => {
+      //     if (result) updateOrAddOffer([result.bondOffer])
+      //   })
+      // })
+
+      // .on('pfSuccessAll', () => {
+      //   enqueueSnackbar({
+      //     message: 'Interest successfully claimed',
+      //     type: 'success',
+      //   })
+      // })
       .on('pfSuccessAll', () => {
         enqueueSnackbar({
-          message: 'Interest successfully claimed',
-          type: 'success',
+          message: 'Transaction sent',
+          type: 'info',
         })
       })
       .on('pfError', (error) => {
