@@ -1,6 +1,5 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
-import { web3 } from 'fbonds-core'
 
 import { fetchTokenStakeInfo } from '@banx/api/banxTokenStake'
 

@@ -16,7 +16,6 @@ import { fromDecimals } from '@banx/pages/AdventuresPage/helpers'
 import { formatCompact, formatNumbersWithCommas } from '@banx/utils'
 
 import {
-  AdventureSubscribeButton,
   AdventuresTimer,
   NotParticipatedColumn,
   TotalParticipationColumn,
@@ -95,12 +94,6 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
             <NotParticipatedColumn status={AdventureStatus.LIVE} />
           )}
         </div>
-
-        {walletConnected && (
-          <div className={styles.statusAndBtnWrapper}>
-            <AdventureSubscribeButton />
-          </div>
-        )}
       </div>
     </li>
   )

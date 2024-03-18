@@ -17,7 +17,7 @@ import { useBanxStakeState } from '@banx/pages/AdventuresPage/state'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxNftAction } from '@banx/transactions/banxStaking/stakeBanxNftsAction'
-import { unStakeBanxNftAction } from '@banx/transactions/banxStaking/unStakeBanxNftsAction'
+import { unstakeBanxNftsAction } from '@banx/transactions/banxStaking/unstakeBanxNftsAction'
 import { enqueueSnackbar, usePriorityFees } from '@banx/utils'
 
 import styles from './styled.module.less'
@@ -26,7 +26,7 @@ export const StakeNftsModal = () => {
   const { close } = useModal()
   const priorityFees = usePriorityFees()
   const { banxStake, banxTokenSettings, updateStake } = useBanxStakeState()
-  const nfts = banxStake?.nfts || []
+  const nfts = useMemo(() => banxStake?.nfts || [], [banxStake?.nfts])
   const wallet = useWallet()
   const { connection } = useConnection()
   const [selectedNfts, setSelectedNfts] = useState<{ [k: string]: NftType }>({})
@@ -90,7 +90,7 @@ export const StakeNftsModal = () => {
     }
 
     return nfts.filter((nft) => nft?.stake?.banxStakeState === 'staked')
-  }, [nfts?.length, wallet.publicKey?.toBase58(), currentTab])
+  }, [nfts, currentTab, modalTabs])
 
   const onStake = () => {
     try {
@@ -122,11 +122,9 @@ export const StakeNftsModal = () => {
             solanaExplorerPath: `tx/${txnHash}`,
           })
           results.forEach(({ result }) => {
-            if (
-              !result?.banxStakingSettings ||
-              !result?.banxAdventures ||
-              !result?.banxTokenStake
-            ) {
+            const { banxStakingSettings, banxAdventures, banxTokenStake } = result || {}
+
+            if (!banxStakingSettings || !banxAdventures || !banxTokenStake) {
               return
             }
 
@@ -134,8 +132,8 @@ export const StakeNftsModal = () => {
               banxTokenSettings: result?.banxStakingSettings,
               banxStake: {
                 ...banxStake,
-                banxAdventures: result?.banxAdventures as any,
-                banxTokenStake: result?.banxTokenStake,
+                banxAdventures: banxAdventures,
+                banxTokenStake: banxTokenStake,
                 nfts: banxStake.nfts?.filter(({ mint }) => !selectedNfts[mint]),
               },
             })
@@ -177,8 +175,8 @@ export const StakeNftsModal = () => {
         priorityFees,
       }))
 
-      new TxnExecutor(unStakeBanxNftAction, { wallet, connection })
-        .addTxnParams(params as any)
+      new TxnExecutor(unstakeBanxNftsAction, { wallet, connection })
+        .addTxnParams(params)
         .on('pfSuccessEach', (results) => {
           const { txnHash } = results[0]
           enqueueSnackbar({
@@ -187,11 +185,9 @@ export const StakeNftsModal = () => {
             solanaExplorerPath: `tx/${txnHash}`,
           })
           results.forEach(({ result }) => {
-            if (
-              !result?.banxStakingSettings ||
-              !result?.banxAdventures ||
-              !result?.banxTokenStake
-            ) {
+            const { banxStakingSettings, banxAdventures, banxTokenStake } = result || {}
+
+            if (!banxStakingSettings || !banxAdventures || !banxTokenStake) {
               return
             }
 
@@ -199,8 +195,9 @@ export const StakeNftsModal = () => {
               banxTokenSettings: result?.banxStakingSettings,
               banxStake: {
                 ...banxStake,
-                banxAdventures: result?.banxAdventures as any,
-                banxTokenStake: result?.banxTokenStake,
+                banxAdventures: banxAdventures,
+                banxTokenStake: banxTokenStake,
+                nfts: banxStake.nfts?.filter(({ mint }) => !selectedNfts[mint]),
               },
             })
           })

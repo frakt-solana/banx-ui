@@ -68,7 +68,6 @@ export const BanxStakeSchema = z.object({
   placeholderOne: z.string(),
   publicKey: z.string(),
 })
-export type BanxStake = z.infer<typeof BanxStakeSchema>
 
 export const AdventureSubscriptionSchema = z.object({
   user: z.string(),

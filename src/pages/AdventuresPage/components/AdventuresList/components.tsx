@@ -1,22 +1,10 @@
 import { FC } from 'react'
 
-import { Button } from '@banx/components/Buttons'
-
 import { AdventureStatus } from '@banx/api/adventures'
 import { useCountdown } from '@banx/hooks'
 import { Alert, MoneyBill, Timer } from '@banx/icons'
 
 import styles from './AdventuresList.module.less'
-
-interface AdventuresComponentsProps {}
-
-export const AdventureSubscribeButton: FC<AdventuresComponentsProps> = () => {
-  return (
-    <Button variant="primary" className={styles.subscribeBtn}>
-      Subscribe to participate
-    </Button>
-  )
-}
 
 export const NotParticipatedColumn: FC<{ status: AdventureStatus }> = ({ status }) => {
   const TEXT_BY_STATUS = {

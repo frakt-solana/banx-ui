@@ -1,5 +1,4 @@
 import { web3 } from '@project-serum/anchor'
-import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { unstakeBanxNft } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
 import { BanxStake } from 'fbonds-core/lib/fbond-protocol/types'
@@ -7,8 +6,6 @@ import { MakeActionFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
-
-type Params = Parameters<typeof unstakeBanxNft>[0]
 
 export type StakeBanxTokenActionParams = {
   userPubkey: web3.PublicKey
@@ -25,8 +22,8 @@ export type UnStakeBanxNftAction = MakeActionFn<
   BanxSubscribeAdventureOptimistic
 >
 
-export const unStakeBanxNftAction: UnStakeBanxNftAction = async (ixnParams, { connection }) => {
-  const params: Params = {
+export const unstakeBanxNftsAction: UnStakeBanxNftAction = async (ixnParams, { connection }) => {
+  const params = {
     connection: connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     addComputeUnits: true,
@@ -43,12 +40,12 @@ export const unStakeBanxNftAction: UnStakeBanxNftAction = async (ixnParams, { co
     sendTxn: sendTxnPlaceHolder,
   }
 
-  const r = await unstakeBanxNft(params)
+  const { instructions, signers, optimisticResult } = await unstakeBanxNft(params)
 
   return {
-    instructions: r.instructions,
-    signers: r.signers,
+    instructions: instructions,
+    signers: signers,
     lookupTables: [],
-    optimisticResult: r.optimisticResult,
+    optimisticResult: optimisticResult,
   }
 }

@@ -2,6 +2,7 @@ import { FC, useEffect } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import _ from 'lodash'
 
 import { Loader } from '@banx/components/Loader'
 
@@ -33,30 +34,32 @@ export const AdventuresPage: FC = () => {
     if (publicKey?.toBase58()) {
       void loadBanxTokenBalance({ userPubkey: publicKey, connection })
     }
-  }, [userPubkey])
+  }, [
+    userPubkey,
+    loadBanxTokenSettings,
+    loadBanxStake,
+    loadBanxTokenBalance,
+    connection,
+    publicKey,
+  ])
 
   const isLoading = !banxStake || !banxTokenSettings || adventuresInfoLoading
   const isSuccess = !!banxStake && !!banxTokenSettings && !!adventuresInfo
 
   const totalStaked =
-    banxStake?.banxAdventures.reduce(
-      (acc: number, adv) => acc + adv.adventure.totalPartnerPoints,
-      0,
-    ) || 0
+    _.sumBy(banxStake?.banxAdventures, (adv) => adv.adventure.totalPartnerPoints) || 0
 
   return (
     <div className={styles.pageWrapper}>
-      <div className={classNames(styles.content, { [styles.active]: false })}>
+      <div className={classNames(styles.content, styles.active)}>
         <Header />
         {isLoading && <Loader className={styles.loader} />}
         {isSuccess && (
-          <>
-            <AdventuresList
-              banxStake={banxStake}
-              banxTokenSettings={banxTokenSettings}
-              className={styles.adventuresList}
-            />
-          </>
+          <AdventuresList
+            banxStake={banxStake}
+            banxTokenSettings={banxTokenSettings}
+            className={styles.adventuresList}
+          />
         )}
       </div>
 

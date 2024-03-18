@@ -1,5 +1,6 @@
 import { Connection } from '@solana/web3.js'
 import { web3 } from 'fbonds-core'
+import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
 import { create } from 'zustand'
 
 import {
@@ -47,7 +48,7 @@ export const useBanxStakeState = create<BanxStakeStore>((set) => ({
     })
   },
   loadBanxTokenBalance: async ({ userPubkey, connection }) => {
-    const value = await getTokenBalance(userPubkey, connection)
+    const value = await getTokenBalance(userPubkey, connection, BANX_TOKEN_MINT)
     set({
       balance: value,
     })
