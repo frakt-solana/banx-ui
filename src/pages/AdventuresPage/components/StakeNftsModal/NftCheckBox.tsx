@@ -21,6 +21,10 @@ export const NftCheckbox: FC<NftCheckboxProps> = ({
   disabled = false,
   onClick,
 }) => {
+  if (!nft?.meta) {
+    return null
+  }
+
   return (
     <div
       className={classNames(

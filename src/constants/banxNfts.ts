@@ -1,0 +1,1 @@
+export const BANX_TOKEN_STAKE_DECIMAL = 1e9

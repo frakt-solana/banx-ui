@@ -1,9 +1,9 @@
 import { Connection } from '@solana/web3.js'
 import { BN, web3 } from 'fbonds-core'
-import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
 
 import { AdventureNft, BanxStakeState } from '@banx/api/adventures'
-import { BANX_TOKEN_STAKE_DECIMAL, BONDS } from '@banx/constants'
+import { BONDS } from '@banx/constants'
+import { BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
 
 export const isNftStaked = (nft: AdventureNft) => {
   return nft?.banxStake?.banxStakeState === BanxStakeState.Staked
@@ -34,10 +34,11 @@ export const calcPartnerPoints = (v: string | number, tokensPerPartnerPoints?: n
 export async function getTokenBalance(
   userPubKey: web3.PublicKey,
   connection: Connection,
+  tokenMint: web3.PublicKey,
 ): Promise<number> {
   const tokenAccounts = await connection.getTokenAccountsByOwner(userPubKey, {
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-    mint: BANX_TOKEN_MINT,
+    mint: tokenMint,
   })
   const userTokenAccountAddress = tokenAccounts.value[0]?.pubkey
   if (!userTokenAccountAddress) {

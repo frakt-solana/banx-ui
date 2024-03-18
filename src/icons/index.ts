@@ -1,6 +1,7 @@
 export { Alert } from './Alert'
 export { ArrowDown } from './ArrowDown'
 export { BanxFilled } from './BanxFilled'
+export { BanxLogo } from './BanxLogo'
 export { BanxRewards, BanxRewardsDark } from './BanxRewards'
 export { BanxToken } from './BanxToken'
 export { Bell, BellWithBadge, BellSlash } from './Bell'
@@ -55,7 +56,6 @@ export { Unlink } from './Unlink'
 export { Wallet } from './Wallet'
 export { WalletAvatar } from './WalletAvatar'
 export { Warning } from './Warning'
-export { BanxLogo } from './BanxLogo'
 
 //? Raster icons
 export { default as SolanaFM } from './SolanaFM.png'

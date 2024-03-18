@@ -7,8 +7,6 @@ import { MakeActionFn } from 'solana-transactions-executor'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
-type Params = Parameters<typeof stakeBanxNft>[0]
-
 export type StakeBanxTokenActionParams = {
   tokenMint: web3.PublicKey
   whitelistEntry: web3.PublicKey
@@ -31,7 +29,7 @@ export const stakeBanxNftAction: StakeBanxTokenAction = async (
     throw 'Wallet not connected!'
   }
 
-  const params: Params = {
+  const params = {
     connection: connection,
     addComputeUnits: true,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
@@ -49,13 +47,11 @@ export const stakeBanxNftAction: StakeBanxTokenAction = async (
     sendTxn: sendTxnPlaceHolder,
   }
 
-  const r = await stakeBanxNft(params)
-  console.log('params ', params)
-  console.log('result ', r)
+  const { instructions, signers, optimisticResult } = await stakeBanxNft(params)
   return {
-    instructions: r.instructions,
-    signers: r.signers,
-    additionalResult: r.optimisticResult,
+    instructions: instructions,
+    signers: signers,
+    additionalResult: optimisticResult,
     lookupTables: [],
   }
 }

@@ -7,8 +7,6 @@ import { MakeActionFn } from 'solana-transactions-executor'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
-type Params = Parameters<typeof unstakeBanxToken>[0]
-
 export type StakeBanxTokenActionParams = {
   userPubkey: web3.PublicKey
   tokensToUnstake: number
@@ -21,8 +19,8 @@ export type StakeBanxTokenAction = MakeActionFn<
   BanxSubscribeAdventureOptimistic
 >
 
-export const unStakeBanxTokenAction: StakeBanxTokenAction = async (ixnParams, { connection }) => {
-  const params: Params = {
+export const unstakeBanxTokenAction: StakeBanxTokenAction = async (ixnParams, { connection }) => {
+  const params = {
     connection: connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
@@ -39,12 +37,12 @@ export const unStakeBanxTokenAction: StakeBanxTokenAction = async (ixnParams, { 
     sendTxn: sendTxnPlaceHolder,
   }
 
-  const r = await unstakeBanxToken(params)
+  const { instructions, optimisticResult, signers } = await unstakeBanxToken(params)
 
   return {
-    instructions: r.instructions,
-    signers: [],
-    additionalResult: r.optimisticResult,
+    instructions,
+    signers,
+    additionalResult: optimisticResult,
     lookupTables: [],
   }
 }

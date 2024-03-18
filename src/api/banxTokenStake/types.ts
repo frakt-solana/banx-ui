@@ -1,23 +1,24 @@
 import {
   BanxAdventureState,
   BanxAdventureSubscriptionState,
+  BanxStakeState,
   BanxStakingSettingsState,
   BanxTokenStakeState,
 } from 'fbonds-core/lib/fbond-protocol/types'
 import { z } from 'zod'
 
-export const PintsMapSchema = z.object({
+export const PointsMapSchema = z.object({
   banxMint: z.string(),
   partnerPoints: z.number(),
   playerPoints: z.number(),
   publicKey: z.string(),
 })
-export type PointsMap = z.infer<typeof PintsMapSchema>
+export type PointsMap = z.infer<typeof PointsMapSchema>
 
 export const StakeSchema = z.object({
   publicKey: z.string(),
   adventureSubscriptionsQuantity: z.number(),
-  banxStakeState: z.string(),
+  banxStakeState: z.nativeEnum(BanxStakeState),
   bond: z.string(),
   collateralTokenAccount: z.string(),
   farmedAmount: z.number(),
@@ -42,8 +43,8 @@ export const NftSchema = z.object({
     rarity: z.string(),
   }),
   mint: z.string(),
-  pointsMap: PintsMapSchema,
-  stake: StakeSchema.optional(),
+  pointsMap: PointsMapSchema,
+  stake: StakeSchema,
 })
 export type NftType = z.infer<typeof NftSchema>
 
@@ -99,15 +100,16 @@ export const BanxTokenStakeSchema = z.object({
 })
 export type BanxTokenStake = z.infer<typeof BanxTokenStakeSchema>
 
+export const BanxAdventuresSchema = z.object({
+  adventure: BanxAdventureSchema,
+  adventureSubscription: BanxSubscriptionSchema.optional(),
+})
+export type BanxAdventures = z.infer<typeof BanxAdventuresSchema>
+
 export const BanxStakeSchema = z.object({
   banxTokenStake: BanxTokenStakeSchema.nullable(),
-  banxAdventures: z
-    .object({
-      adventure: BanxAdventureSchema,
-      adventureSubscription: BanxSubscriptionSchema.optional(),
-    })
-    .array(),
-  nfts: NftSchema.array().optional(),
+  banxAdventures: BanxAdventuresSchema.array(),
+  nfts: NftSchema.array(),
 })
 export type BanxStake = z.infer<typeof BanxStakeSchema>
 
