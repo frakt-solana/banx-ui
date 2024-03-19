@@ -2,7 +2,12 @@ import React, { FC, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
+import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
 import { capitalize } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
+
+import { Button } from '@banx/components/Buttons'
 
 import { AdventureStatus } from '@banx/api/adventures'
 import {
@@ -12,8 +17,17 @@ import {
   BanxSubscription,
 } from '@banx/api/banxTokenStake'
 import { TOTAL_BANX_NFTS, TOTAL_BANX_PTS } from '@banx/constants'
+import { Clock, SuccessIcon } from '@banx/icons'
 import { fromDecimals } from '@banx/pages/AdventuresPage/helpers'
-import { enqueueSnackbar, formatCompact, formatNumbersWithCommas, usePriorityFees } from '@banx/utils'
+import { useBanxStakeState } from '@banx/pages/AdventuresPage/state'
+import { defaultTxnErrorHandler } from '@banx/transactions'
+import { subscribeBanxAdventureAction } from '@banx/transactions/banxStaking/subscribeBanxAdventureAction'
+import {
+  enqueueSnackbar,
+  formatCompact,
+  formatNumbersWithCommas,
+  usePriorityFees,
+} from '@banx/utils'
 
 import {
   AdventuresTimer,
@@ -23,14 +37,6 @@ import {
 } from './components'
 
 import styles from './AdventuresList.module.less'
-import { Button } from '@banx/components/Buttons'
-import { subscribeBanxAdventureAction } from '@banx/transactions/banxStaking/subscribeBanxAdventureAction'
-import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
-import { useBanxStakeState } from '@banx/pages/AdventuresPage/state'
-import { TxnExecutor } from 'solana-transactions-executor'
-import { defaultTxnErrorHandler } from '@banx/transactions'
-import { Clock, SuccessIcon } from '@banx/icons'
-import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
 
 interface AdventuresCardProps {
   banxSubscription?: BanxSubscription
@@ -46,7 +52,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
   banxSubscription,
 }) => {
   const [isLoading, setLoading] = useState(false)
-  const {connection} = useConnection()
+  const { connection } = useConnection()
   const format = formatNumbersWithCommas
   const isEnded = banxAdventure.periodEndingAt * 1000 < Date.now()
   const { banxStake, banxTokenSettings, updateStake } = useBanxStakeState()
@@ -88,7 +94,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
       weeks: [banxAdventure.week],
       userPubkey: wallet.publicKey,
       optimistic: {
-        banxSubscribeAdventureOptimistic
+        banxSubscribeAdventureOptimistic,
       },
       priorityFees,
     }
@@ -135,7 +141,8 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
       .execute()
   }
 
-  const isSubscribed = banxSubscription?.adventureSubscriptionState === BanxAdventureSubscriptionState.Active
+  const isSubscribed =
+    banxSubscription?.adventureSubscriptionState === BanxAdventureSubscriptionState.Active
 
   return (
     <li className={styles.card}>
@@ -166,16 +173,14 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
             />
           )}
 
-          {!!walletConnected && (
-            <NotParticipatedColumn status={AdventureStatus.LIVE} />
-          )}
+          {!!walletConnected && <NotParticipatedColumn status={AdventureStatus.LIVE} />}
         </div>
       </div>
 
       {isSubscribed && (
         <Button disabled className={styles.subscribeBtn}>
           <div>
-            <SuccessIcon/>
+            <SuccessIcon />
             <span>Subscribed</span>
           </div>
         </Button>
@@ -185,10 +190,12 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
         <Button disabled={isLoading} onClick={onSubscribe} className={styles.subscribeBtn}>
           {isLoading ? (
             <div>
-              <Clock/>
+              <Clock />
               <span>Participating</span>
             </div>
-          ) : "Subscribe to participate"}
+          ) : (
+            'Subscribe to participate'
+          )}
         </Button>
       )}
     </li>

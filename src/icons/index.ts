@@ -14,7 +14,7 @@ export { ChevronDown } from './ChevronDown'
 export { CircleCheck } from './CircleCheck'
 export { CloseConfirmModal } from './CloseConfirmModal'
 export { CloseModal } from './CloseModal'
-export { Clock } from "./Clock"
+export { Clock } from './Clock'
 export { Copy } from './Copy'
 export { Cup } from './Cup'
 export { Dashboard } from './Dashboard'
