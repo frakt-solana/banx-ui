@@ -1,6 +1,6 @@
-import { FC, useMemo } from 'react'
+import React, { FC, useMemo, useState } from 'react'
 
-import { useWallet } from '@solana/wallet-adapter-react'
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { capitalize } from 'lodash'
 
@@ -13,7 +13,7 @@ import {
 } from '@banx/api/banxTokenStake'
 import { TOTAL_BANX_NFTS, TOTAL_BANX_PTS } from '@banx/constants'
 import { fromDecimals } from '@banx/pages/AdventuresPage/helpers'
-import { formatCompact, formatNumbersWithCommas } from '@banx/utils'
+import { enqueueSnackbar, formatCompact, formatNumbersWithCommas, usePriorityFees } from '@banx/utils'
 
 import {
   AdventuresTimer,
@@ -23,6 +23,14 @@ import {
 } from './components'
 
 import styles from './AdventuresList.module.less'
+import { Button } from '@banx/components/Buttons'
+import { subscribeBanxAdventureAction } from '@banx/transactions/banxStaking/subscribeBanxAdventureAction'
+import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
+import { useBanxStakeState } from '@banx/pages/AdventuresPage/state'
+import { TxnExecutor } from 'solana-transactions-executor'
+import { defaultTxnErrorHandler } from '@banx/transactions'
+import { Clock, SuccessIcon } from '@banx/icons'
+import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
 
 interface AdventuresCardProps {
   banxSubscription?: BanxSubscription
@@ -37,8 +45,14 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
   maxTokenStakeAmount,
   banxSubscription,
 }) => {
+  const [isLoading, setLoading] = useState(false)
+  const {connection} = useConnection()
   const format = formatNumbersWithCommas
   const isEnded = banxAdventure.periodEndingAt * 1000 < Date.now()
+  const { banxStake, banxTokenSettings, updateStake } = useBanxStakeState()
+  const priorityFees = usePriorityFees()
+
+  const wallet = useWallet()
 
   const isParticipating =
     !!banxSubscription?.stakeTokensAmount || !!banxSubscription?.stakeNftAmount
@@ -49,9 +63,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
   const totalBanxTokensSubscribed = `${formatCompact(
     banxAdventure.totalTokensStaked,
   )}/${formatCompact(maxTokenStakeAmount)}`
-  const totalPartnerPoints = `${formatCompact(
-    fromDecimals(banxAdventure.totalPartnerPoints),
-  )}/${format(TOTAL_BANX_PTS)}`
+  const totalPartnerPoints = `${banxAdventure.totalPartnerPoints}/${format(TOTAL_BANX_PTS)}`
 
   const status = useMemo(() => {
     if (isEnded) {
@@ -60,6 +72,70 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
 
     return AdventureStatus.LIVE
   }, [isEnded])
+
+  const onSubscribe = () => {
+    if (!wallet.publicKey?.toBase58() || !banxTokenSettings || !banxStake?.banxTokenStake) {
+      return
+    }
+    setLoading(true)
+    const banxSubscribeAdventureOptimistic: BanxSubscribeAdventureOptimistic = {
+      banxStakingSettings: banxTokenSettings,
+      banxAdventures: banxStake.banxAdventures,
+      banxTokenStake: banxStake.banxTokenStake,
+    }
+
+    const params = {
+      weeks: [banxAdventure.week],
+      userPubkey: wallet.publicKey,
+      optimistic: {
+        banxSubscribeAdventureOptimistic
+      },
+      priorityFees,
+    }
+
+    new TxnExecutor(subscribeBanxAdventureAction, { wallet, connection })
+      .addTxnParam(params)
+      .on('pfSuccessEach', (results) => {
+        setLoading(false)
+        const { txnHash } = results[0]
+        enqueueSnackbar({
+          message: 'Subscribed successfully',
+          type: 'success',
+          solanaExplorerPath: `tx/${txnHash}`,
+        })
+        results.forEach(({ result }) => {
+          const { banxStakingSettings, banxAdventures, banxTokenStake } = result || {}
+
+          if (!banxStakingSettings || !banxAdventures || !banxTokenStake) {
+            return
+          }
+
+          updateStake({
+            banxTokenSettings: result?.banxStakingSettings,
+            banxStake: {
+              ...banxStake,
+              banxAdventures: banxAdventures,
+              banxTokenStake: banxTokenStake,
+            },
+          })
+        })
+      })
+      .on('pfSuccessAll', () => {
+        close()
+        setLoading(false)
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error, {
+          additionalData: params,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'Subscribe',
+        })
+        setLoading(false)
+      })
+      .execute()
+  }
+
+  const isSubscribed = banxSubscription?.adventureSubscriptionState === BanxAdventureSubscriptionState.Active
 
   return (
     <li className={styles.card}>
@@ -90,11 +166,31 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
             />
           )}
 
-          {!isParticipating && walletConnected && (
+          {!!walletConnected && (
             <NotParticipatedColumn status={AdventureStatus.LIVE} />
           )}
         </div>
       </div>
+
+      {isSubscribed && (
+        <Button disabled className={styles.subscribeBtn}>
+          <div>
+            <SuccessIcon/>
+            <span>Subscribed</span>
+          </div>
+        </Button>
+      )}
+
+      {!isSubscribed && !!wallet.publicKey?.toBase58() && (
+        <Button disabled={isLoading} onClick={onSubscribe} className={styles.subscribeBtn}>
+          {isLoading ? (
+            <div>
+              <Clock/>
+              <span>Participating</span>
+            </div>
+          ) : "Subscribe to participate"}
+        </Button>
+      )}
     </li>
   )
 }
