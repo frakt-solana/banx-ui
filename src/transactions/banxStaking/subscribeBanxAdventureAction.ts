@@ -1,4 +1,3 @@
-
 import { web3 } from '@project-serum/anchor'
 import {
   BanxSubscribeAdventureOptimistic,
@@ -11,7 +10,7 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type SubscribeBanxAdventureParams = {
   userPubkey: web3.PublicKey
-  weeks: number[];
+  weeks: number[]
   priorityFees: number
   optimistic: {
     banxSubscribeAdventureOptimistic: BanxSubscribeAdventureOptimistic
@@ -23,14 +22,17 @@ export type SubscribeBanxAdventureAction = MakeActionFn<
   BanxSubscribeAdventureOptimistic
 >
 
-export const subscribeBanxAdventureAction: SubscribeBanxAdventureAction = async (ixnParams, { connection }) => {
+export const subscribeBanxAdventureAction: SubscribeBanxAdventureAction = async (
+  ixnParams,
+  { connection },
+) => {
   const params = {
     connection: connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     addComputeUnits: true,
     priorityFees: ixnParams.priorityFees,
     args: {
-      weeks: ixnParams.weeks
+      weeks: ixnParams.weeks,
     },
     accounts: {
       userPubkey: ixnParams.userPubkey,
