@@ -1,3 +1,4 @@
+import { BN } from 'fbonds-core'
 import { flatMap, map, reduce, uniq } from 'lodash'
 
 import {
@@ -101,4 +102,16 @@ export const createDownloadLink = (data: string, filename: string, type?: string
   tempLink.click()
 
   window.URL.revokeObjectURL(blobURL)
+}
+
+export const toDecimals = (v: string | number, decimals = 9) => {
+  const banxStakingMintDecimal = new BN(decimals)
+  const _v = new BN(v)
+  return _v.mul(banxStakingMintDecimal).toString()
+}
+
+export const fromDecimals = (v: string | number, decimals = 9) => {
+  const banxStakingMintDecimal = new BN(decimals)
+  const _v = new BN(v)
+  return _v.div(banxStakingMintDecimal).toString()
 }

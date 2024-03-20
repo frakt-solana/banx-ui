@@ -2,7 +2,7 @@ import { FC, useEffect } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import _ from 'lodash'
+import { sumBy } from 'lodash'
 
 import { Loader } from '@banx/components/Loader'
 
@@ -47,7 +47,7 @@ export const AdventuresPage: FC = () => {
   const isSuccess = !!banxStake && !!banxTokenSettings && !!adventuresInfo
 
   const totalStaked =
-    _.sumBy(banxStake?.banxAdventures, (adv) => adv.adventure.totalPartnerPoints) || 0
+    sumBy(banxStake?.banxAdventures, (adv) => adv.adventure.totalPartnerPoints) || 0
 
   return (
     <div className={styles.pageWrapper}>

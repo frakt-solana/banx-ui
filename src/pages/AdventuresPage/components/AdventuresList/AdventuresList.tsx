@@ -16,16 +16,16 @@ import {
   BanxStakeSettings,
   BanxSubscription,
 } from '@banx/api/banxTokenStake'
-import { TOTAL_BANX_NFTS, TOTAL_BANX_PTS } from '@banx/constants'
+import { BANX_TOKEN_STAKE_DECIMAL, TOTAL_BANX_NFTS, TOTAL_BANX_PTS } from '@banx/constants/banxNfts'
 import { Clock, SuccessIcon } from '@banx/icons'
-import { fromDecimals } from '@banx/pages/AdventuresPage/helpers'
 import { useBanxStakeState } from '@banx/pages/AdventuresPage/state'
 import { defaultTxnErrorHandler } from '@banx/transactions'
-import { subscribeBanxAdventureAction } from '@banx/transactions/banxStaking/subscribeBanxAdventureAction'
+import { subscribeBanxAdventureAction } from '@banx/transactions/banxStaking'
 import {
   enqueueSnackbar,
+  formatNumbersWithCommas as format,
   formatCompact,
-  formatNumbersWithCommas,
+  fromDecimals,
   usePriorityFees,
 } from '@banx/utils'
 
@@ -53,7 +53,6 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
 }) => {
   const [isLoading, setLoading] = useState(false)
   const { connection } = useConnection()
-  const format = formatNumbersWithCommas
   const isEnded = banxAdventure.periodEndingAt * 1000 < Date.now()
   const { banxStake, banxTokenSettings, updateStake } = useBanxStakeState()
   const priorityFees = usePriorityFees()
@@ -63,9 +62,9 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
   const isParticipating =
     !!banxSubscription?.stakeTokensAmount || !!banxSubscription?.stakeNftAmount
 
-  const totalBanxSubscribed = `${format(fromDecimals(banxAdventure.totalBanxSubscribed))}/${format(
-    TOTAL_BANX_NFTS,
-  )}`
+  const totalBanxSubscribed = `${format(
+    fromDecimals(banxAdventure.totalBanxSubscribed, BANX_TOKEN_STAKE_DECIMAL),
+  )}/${format(TOTAL_BANX_NFTS)}`
   const totalBanxTokensSubscribed = `${formatCompact(
     banxAdventure.totalTokensStaked,
   )}/${formatCompact(maxTokenStakeAmount)}`

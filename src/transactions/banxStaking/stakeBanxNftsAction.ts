@@ -7,7 +7,7 @@ import { MakeActionFn } from 'solana-transactions-executor'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
-export type StakeBanxTokenActionParams = {
+export type StakeBanxNftsTokenActionParams = {
   tokenMint: web3.PublicKey
   whitelistEntry: web3.PublicKey
   hadoRegistry: web3.PublicKey
@@ -16,12 +16,12 @@ export type StakeBanxTokenActionParams = {
   optimistic: BanxSubscribeAdventureOptimistic
 }
 
-export type StakeBanxTokenAction = MakeActionFn<
-  StakeBanxTokenActionParams,
+export type StakeBanxNftsTokenAction = MakeActionFn<
+  StakeBanxNftsTokenActionParams,
   BanxSubscribeAdventureOptimistic
 >
 
-export const stakeBanxNftAction: StakeBanxTokenAction = async (
+export const stakeBanxNftAction: StakeBanxNftsTokenAction = async (
   ixnParams,
   { connection, wallet },
 ) => {

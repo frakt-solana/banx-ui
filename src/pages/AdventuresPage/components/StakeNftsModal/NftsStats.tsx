@@ -1,19 +1,21 @@
 import { FC, useMemo } from 'react'
 
+import { sumBy } from 'lodash'
+
 import { NftType } from '@banx/api/banxTokenStake'
 
-import styles from './styled.module.less'
+import styles from './styles.module.less'
 
 interface Props {
   nfts: NftType[]
 }
 export const NftsStats: FC<Props> = ({ nfts = [] }) => {
   const walletPartnerPoints = useMemo(
-    () => nfts.reduce((acc, { pointsMap }) => acc + Number(pointsMap.partnerPoints), 0),
+    () => sumBy(nfts, ({ pointsMap }) => pointsMap.partnerPoints),
     [nfts],
   )
   const walletPlayerPoints = useMemo(
-    () => nfts.reduce((acc, { pointsMap }) => acc + Number(pointsMap.playerPoints), 0),
+    () => sumBy(nfts, ({ pointsMap }) => pointsMap.playerPoints),
     [nfts],
   )
 

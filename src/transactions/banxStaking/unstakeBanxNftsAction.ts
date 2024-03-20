@@ -7,7 +7,7 @@ import { MakeActionFn } from 'solana-transactions-executor'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
-export type StakeBanxTokenActionParams = {
+export type UnstakeBanxNftsActionParams = {
   userPubkey: web3.PublicKey
   tokenMint: web3.PublicKey
   priorityFees: number
@@ -17,12 +17,15 @@ export type StakeBanxTokenActionParams = {
   }
 }
 
-export type UnStakeBanxNftAction = MakeActionFn<
-  StakeBanxTokenActionParams,
+export type UnstakeBanxNftsActionAction = MakeActionFn<
+  UnstakeBanxNftsActionParams,
   BanxSubscribeAdventureOptimistic
 >
 
-export const unstakeBanxNftsAction: UnStakeBanxNftAction = async (ixnParams, { connection }) => {
+export const unstakeBanxNftsAction: UnstakeBanxNftsActionAction = async (
+  ixnParams,
+  { connection },
+) => {
   const params = {
     connection: connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
