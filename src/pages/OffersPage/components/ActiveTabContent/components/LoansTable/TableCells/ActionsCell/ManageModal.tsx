@@ -11,7 +11,7 @@ import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan } from '@banx/api/core'
 import { useMarketOffers } from '@banx/pages/LendPage'
-import { calculateClaimValue } from '@banx/pages/OffersPage'
+import { calculateClaimValue, useLenderLoans } from '@banx/pages/OffersPage'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { makeInstantRefinanceAction, makeTerminateAction } from '@banx/transactions/loans'
@@ -26,7 +26,8 @@ import {
   usePriorityFees,
 } from '@banx/utils'
 
-// import { useSelectedLoans } from '../../loansState'
+import { useSelectedLoans } from '../../loansState'
+
 import styles from './ActionsCell.module.less'
 
 interface ManageModalProps {
@@ -80,11 +81,11 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
 
   const priorityFees = usePriorityFees()
 
-  // const { remove: removeLoan } = useSelectedLoans()
+  const { remove: removeLoan } = useSelectedLoans()
 
-  // const { updateOrAddLoan , addMints: hideLoans  } = useLenderLoans()
+  const { updateOrAddLoan, addMints: hideLoans } = useLenderLoans()
 
-  const { offers, /* updateOrAddOffer */ isLoading } = useMarketOffers({
+  const { offers, updateOrAddOffer, isLoading } = useMarketOffers({
     marketPubkey: loan.fraktBond.hadoMarket,
   })
 
@@ -117,24 +118,16 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const terminateLoan = () => {
     new TxnExecutor(makeTerminateAction, { wallet, connection })
       .addTxnParam({ loan })
-      // .on('pfSuccessEach', (results) => {
-      //   const { result, txnHash } = results[0]
-      //   updateOrAddLoan({ ...loan, ...result })
-      //   enqueueSnackbar({
-      //     message: 'Offer termination successfully initialized',
-      //     type: 'success',
-      //     solanaExplorerPath: `tx/${txnHash}`,
-      //   })
-
-      //   removeLoan(loan.publicKey, wallet?.publicKey?.toBase58() || '')
-      // })
       .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
+        const { result, txnHash } = results[0]
+        updateOrAddLoan({ ...loan, ...result })
         enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
+          message: 'Offer termination successfully initialized',
+          type: 'success',
           solanaExplorerPath: `tx/${txnHash}`,
         })
+
+        removeLoan(loan.publicKey, wallet?.publicKey?.toBase58() || '')
       })
       .on('pfSuccessAll', () => {
         close()
@@ -154,21 +147,13 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
 
     new TxnExecutor(makeInstantRefinanceAction, { wallet, connection })
       .addTxnParam({ loan, bestOffer, priorityFees })
-      // .on('pfSuccessEach', (results) => {
-      //   const { result, txnHash } = results[0]
-      //   result?.bondOffer && updateOrAddOffer(result.bondOffer)
-      //   hideLoans(loan.nft.mint)
-      //   enqueueSnackbar({
-      //     message: 'Offer successfully sold',
-      //     type: 'success',
-      //     solanaExplorerPath: `tx/${txnHash}`,
-      //   })
-      // })
       .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
+        const { result, txnHash } = results[0]
+        result?.bondOffer && updateOrAddOffer(result.bondOffer)
+        hideLoans(loan.nft.mint)
         enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
+          message: 'Offer successfully sold',
+          type: 'success',
           solanaExplorerPath: `tx/${txnHash}`,
         })
       })

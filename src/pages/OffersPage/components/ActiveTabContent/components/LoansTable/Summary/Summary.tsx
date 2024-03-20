@@ -37,8 +37,8 @@ interface SummaryProps {
 export const Summary: FC<SummaryProps> = ({
   loansToTerminate,
   loansToClaim,
-  // updateOrAddLoan,
-  // hideLoans,
+  updateOrAddLoan,
+  hideLoans,
   selectedLoans,
   setSelection,
 }) => {
@@ -62,26 +62,17 @@ export const Summary: FC<SummaryProps> = ({
       { signAllChunks: isLedger ? 5 : 40 },
     )
       .addTxnParams(txnParams)
-      // .on('pfSuccessEach', (results) => {
-      //   results.forEach(({ txnHash, result }) => {
-      //     enqueueSnackbar({
-      //       message: 'Collateral successfully terminated',
-      //       type: 'success',
-      //       solanaExplorerPath: `tx/${txnHash}`,
-      //     })
-
-      //     if (result) {
-      //       updateOrAddLoan(result)
-      //     }
-      //   })
-      // })
       .on('pfSuccessEach', (results) => {
-        results.forEach(({ txnHash }) => {
+        results.forEach(({ txnHash, result }) => {
           enqueueSnackbar({
-            message: 'Transaction sent',
+            message: 'Collateral successfully terminated',
             type: 'success',
             solanaExplorerPath: `tx/${txnHash}`,
           })
+
+          if (result) {
+            updateOrAddLoan(result)
+          }
         })
       })
       .on('pfSuccessAll', () => {
@@ -102,23 +93,16 @@ export const Summary: FC<SummaryProps> = ({
 
     new TxnExecutor(makeClaimAction, { wallet, connection }, { signAllChunks: isLedger ? 5 : 40 })
       .addTxnParams(txnParams)
-      // .on('pfSuccessEach', (results) => {
-      //   enqueueSnackbar({
-      //     message: 'Collateral successfully claimed',
-      //     type: 'success',
-      //     solanaExplorerPath: `tx/${results[0].txnHash}`,
-      //   })
-      // })
       .on('pfSuccessEach', (results) => {
         enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
+          message: 'Collateral successfully claimed',
+          type: 'success',
           solanaExplorerPath: `tx/${results[0].txnHash}`,
         })
       })
-      // .on('pfSuccessAll', () => {
-      //   hideLoans(...loansToClaim.map(({ nft }) => nft.mint))
-      // })
+      .on('pfSuccessAll', () => {
+        hideLoans(...loansToClaim.map(({ nft }) => nft.mint))
+      })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: txnParams,

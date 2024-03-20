@@ -78,19 +78,11 @@ export const AdventureSubscribeButton: FC<AdventuresComponentsProps> = ({
       { signAllChunks: isLedger ? 5 : 20 },
     )
       .addTxnParams(params)
-      // .on('pfSuccessEach', (results) => {
-      //   const { txnHash } = results[0]
-      //   enqueueSnackbar({
-      //     message: 'Subscribed successfully',
-      //     type: 'success',
-      //     solanaExplorerPath: `tx/${txnHash}`,
-      //   })
-      // })
       .on('pfSuccessEach', (results) => {
         const { txnHash } = results[0]
         enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
+          message: 'Subscribed successfully',
+          type: 'success',
           solanaExplorerPath: `tx/${txnHash}`,
         })
       })
