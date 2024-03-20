@@ -4,7 +4,7 @@ import classNames from 'classnames'
 
 import { NftType } from '@banx/api/banxTokenStake'
 
-import styles from './styled.module.less'
+import styles from './styles.module.less'
 
 interface NftCheckboxProps {
   nft: NftType

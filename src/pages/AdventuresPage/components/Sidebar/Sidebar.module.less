@@ -71,9 +71,48 @@
   }
 
   span:first-child {
-    font: var(--important-text-mds);
+    font: var(--important-text-lg);
     @media screen and (max-width: 640px) {
-      font: var(--important-text-mds);
+      font: var(--important-text-lg);
+    }
+  }
+
+  span:last-child {
+    font: var(--title-sm);
+    color: var(--content-secondary);
+    @media screen and (max-width: 640px) {
+      font: var(--title-sm);
+    }
+    text-transform: uppercase;
+  }
+}
+
+.claimInfo {
+  display: flex;
+  align-items: center;
+  column-gap: 6px;
+  flex-wrap: wrap;
+  width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  span {
+    width: 100%;
+  }
+
+  span:first-child {
+    font: var(--important-text-3xl);
+    display: flex;
+    align-items: center;
+
+    svg {
+      margin-left: 4px;
+      width: 18px;
+      height: 18px;
+    }
+
+    @media screen and (max-width: 640px) {
+      font: var(--important-text-lg);
     }
   }
 
@@ -136,6 +175,6 @@
   }
 
   span:last-child {
-    font: var(--important-text-mds);
+    font: var(--important-text-lg);
   }
 }

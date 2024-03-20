@@ -1,4 +1,4 @@
-import { CSSProperties, FC } from 'react'
+import React, { CSSProperties, FC } from 'react'
 
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import classNames from 'classnames'
@@ -7,13 +7,11 @@ import { Button } from '@banx/components/Buttons'
 
 import { AdventuresInfo } from '@banx/api/adventures'
 import { BanxTokenStake } from '@banx/api/banxTokenStake'
-import { TOTAL_BANX_NFTS } from '@banx/constants'
-import { Gamepad, MoneyBill } from '@banx/icons'
-import { StakeNftsModal } from '@banx/pages/AdventuresPage/components/StakeNftsModal'
-import { StakeTokens } from '@banx/pages/AdventuresPage/components/StakeTokens'
-import { fromDecimals } from '@banx/pages/AdventuresPage/helpers'
+import { BANX_TOKEN_STAKE_DECIMAL, TOTAL_BANX_NFTS } from '@banx/constants/banxNfts'
+import { BanxLogo, Gamepad, MoneyBill } from '@banx/icons'
+import { StakeNftsModal, StakeTokens } from '@banx/pages/AdventuresPage/components'
 import { useModal } from '@banx/store'
-import { formatCompact, formatNumbersWithCommas } from '@banx/utils'
+import { formatNumbersWithCommas as format, formatCompact, fromDecimals } from '@banx/utils'
 
 import styles from './Sidebar.module.less'
 
@@ -33,7 +31,6 @@ export const Sidebar: FC<SidebarProps> = ({
   totalStaked,
   totalClaimed,
 }) => {
-  const format = formatNumbersWithCommas
   const { open } = useModal()
 
   return (
@@ -83,7 +80,11 @@ export const Sidebar: FC<SidebarProps> = ({
         <Title text="Rewards" icon={<MoneyBill />} />
 
         <div className={styles.stats}>
-          <Info value={format(fromDecimals(banxTokenStake.farmedAmount))} text="claimable" />
+          <ClaimInfo
+            icon={<BanxLogo />}
+            value={format(fromDecimals(banxTokenStake.farmedAmount, BANX_TOKEN_STAKE_DECIMAL))}
+            text="claimable"
+          />
           <Button className={styles.manageButton} size="default">
             Claim
           </Button>
@@ -91,7 +92,7 @@ export const Sidebar: FC<SidebarProps> = ({
 
         <div className={styles.divider}>
           <span>total claimed</span>
-          <span> {format(fromDecimals(totalClaimed))} pts</span>
+          <span> {format(fromDecimals(totalClaimed, BANX_TOKEN_STAKE_DECIMAL))} pts</span>
         </div>
       </div>
 
@@ -130,6 +131,24 @@ const Info: FC<InfoProps> = ({ value, text, textStyle }) => (
   <div className={styles.infoWrapper}>
     <div className={styles.info}>
       <span>{value}</span>
+      <span style={textStyle}>{text}</span>
+    </div>
+  </div>
+)
+
+interface ClaimInfoProps {
+  value: string
+  text: string
+  textStyle?: CSSProperties
+  icon?: React.ReactElement
+}
+
+const ClaimInfo: FC<ClaimInfoProps> = ({ value, text, textStyle, icon }) => (
+  <div className={styles.infoWrapper}>
+    <div className={styles.claimInfo}>
+      <span>
+        {value} {icon}
+      </span>
       <span style={textStyle}>{text}</span>
     </div>
   </div>

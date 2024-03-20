@@ -11,16 +11,14 @@ import { Modal } from '@banx/components/modals/BaseModal'
 
 import { NftType } from '@banx/api/banxTokenStake'
 import { BANX_STAKING } from '@banx/constants'
-import { NftCheckbox } from '@banx/pages/AdventuresPage/components/StakeNftsModal/NftCheckBox'
-import { NftsStats } from '@banx/pages/AdventuresPage/components/StakeNftsModal/NftsStats'
+import { NftCheckbox, NftsStats } from '@banx/pages/AdventuresPage/components'
 import { useBanxStakeState } from '@banx/pages/AdventuresPage/state'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
-import { stakeBanxNftAction } from '@banx/transactions/banxStaking/stakeBanxNftsAction'
-import { unstakeBanxNftsAction } from '@banx/transactions/banxStaking/unstakeBanxNftsAction'
+import { stakeBanxNftAction, unstakeBanxNftsAction } from '@banx/transactions/banxStaking'
 import { enqueueSnackbar, usePriorityFees } from '@banx/utils'
 
-import styles from './styled.module.less'
+import styles from './styles.module.less'
 
 export const StakeNftsModal = () => {
   const { close } = useModal()
@@ -154,7 +152,7 @@ export const StakeNftsModal = () => {
       console.error(error)
     }
   }
-  const onUnStake = () => {
+  const onUnstake = () => {
     try {
       if (!wallet.publicKey?.toBase58() || !banxTokenSettings || !banxStake?.banxTokenStake) {
         return
@@ -248,7 +246,7 @@ export const StakeNftsModal = () => {
           variant="primary"
           className={styles.footerBtn}
           disabled={!Object.values(selectedNfts).length}
-          onClick={currentTab === modalTabs[0].value && 'Stake' ? onStake : onUnStake}
+          onClick={currentTab === modalTabs[0].value ? onStake : onUnstake}
         >
           {currentTab === modalTabs[0].value && 'Stake'}
           {currentTab === modalTabs[1].value && 'Unstake'}
