@@ -113,7 +113,7 @@ export const BorrowCard: FC<BorrowCardProps> = ({ nft, onClick, findBestOffer })
   const loanValue = bestOffer ? calculateLoanValue(bestOffer) : 0
   const loanValueWithFees = calcLoanValueWithFees(bestOffer)
 
-  const ltv = (loanValueWithFees / collectionFloor) * 100
+  const ltv = Math.max((loanValueWithFees / collectionFloor) * 100, 0)
   const apr = calculateApr({ loanValue, collectionFloor, marketPubkey })
   const weeklyFee = calcWeeklyInterestFee({ loanValue, apr })
 
@@ -129,7 +129,11 @@ export const BorrowCard: FC<BorrowCardProps> = ({ nft, onClick, findBestOffer })
         <Stat label="Apr" value={formattedAprValue} tooltipContent={aprTooltipContent} />
       </div>
       <Button className={styles.borrowButton} disabled={!loanValue}>
-        {!loanValue ? 'No offers' : <>Get {createSolValueJSX(loanValueWithFees, 1e9, '0◎')}</>}
+        {!loanValue ? (
+          'No offers'
+        ) : (
+          <>Get {createSolValueJSX(loanValueWithFees, 1e9, '0◎', formatDecimal)}</>
+        )}
       </Button>
     </CardBackdrop>
   )
