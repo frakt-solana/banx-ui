@@ -2,6 +2,7 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { web3 } from 'fbonds-core'
 
 import { useDiscordUser } from '@banx/hooks'
 import { ChangeWallet, Copy, Logo, SignOut } from '@banx/icons'
@@ -15,7 +16,6 @@ import { iconComponents } from './constants'
 import { useFetchUserLockedRewards } from './hooks'
 
 import styles from './WalletModal.module.less'
-import { web3 } from 'fbonds-core'
 
 const UserGeneralInfo = () => {
   const { publicKey } = useWallet()
@@ -45,7 +45,7 @@ const UserBalance = () => {
 
   const { data } = useFetchUserLockedRewards(publicKeyString)
 
-  const alloc = data?.sum ? data?.sum / BigInt(web3.LAMPORTS_PER_SOL) : 0;
+  const alloc = data?.sum ? data?.sum / BigInt(web3.LAMPORTS_PER_SOL) : 0
 
   const displayRewardsValue = formatNumbersWithCommas(alloc.toString())
 
