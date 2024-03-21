@@ -79,10 +79,10 @@ const StatsBlock: FC<StatsBlockProps> = ({ earlyIncentives, sources }) => {
           <StatInfo
             key={i}
             label={name}
-            value={`${formatNumbersWithCommas(value.toString())} $BANX`}
+            value={carr[0] === 'Partner collections (FCFS)' ? '??? $BANX' : `${formatNumbersWithCommas(value.toString())} $BANX`}
             classNamesProps={statClassNames}
             valueType={VALUES_TYPES.STRING}
-            //tooltipText="We converted the locked $FRKT rewards you received from past marketing campaigns to their equivalent amount of $BANX tokens"
+          //tooltipText="We converted the locked $FRKT rewards you received from past marketing campaigns to their equivalent amount of $BANX tokens"
           />
         )
       })}
