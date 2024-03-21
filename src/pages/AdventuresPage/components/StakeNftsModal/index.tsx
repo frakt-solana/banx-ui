@@ -225,6 +225,7 @@ export const StakeNftsModal = () => {
         <ul className={styles.nfts}>
           {filteredNfts.map((nft) => (
             <NftCheckbox
+              // disabled={nft.stake.banxStakeState === BanxStakeState.Staked}
               key={nft.mint}
               nft={nft}
               onClick={onSelect}

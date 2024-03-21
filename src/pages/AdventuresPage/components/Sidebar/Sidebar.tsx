@@ -20,16 +20,16 @@ interface SidebarProps {
   banxTokenStake: BanxTokenStake
   adventuresInfo: AdventuresInfo
   maxTokenStakeAmount: number
-  totalStaked: number
   totalClaimed: number
+  rewards: number
 }
 
 export const Sidebar: FC<SidebarProps> = ({
   className,
   banxTokenStake,
   maxTokenStakeAmount,
-  totalStaked,
   totalClaimed,
+  rewards,
 }) => {
   const { open } = useModal()
 
@@ -55,9 +55,9 @@ export const Sidebar: FC<SidebarProps> = ({
 
         <div className={styles.stats}>
           <Info
-            value={`${formatCompact(banxTokenStake.tokensStaked)}/${formatCompact(
-              maxTokenStakeAmount,
-            )}`}
+            value={`${formatCompact(
+              fromDecimals(banxTokenStake.tokensStaked, BANX_TOKEN_STAKE_DECIMAL),
+            )}/${formatCompact(fromDecimals(maxTokenStakeAmount, BANX_TOKEN_STAKE_DECIMAL))}`}
             text="tokens staked"
           />
           <Button
@@ -72,7 +72,7 @@ export const Sidebar: FC<SidebarProps> = ({
 
         <div className={styles.divider}>
           <span>total staked</span>
-          <span>{format(fromDecimals(totalStaked))}pts</span>
+          <span>{format(banxTokenStake.partnerPointsStaked)}pts</span>
         </div>
       </div>
 
@@ -82,7 +82,7 @@ export const Sidebar: FC<SidebarProps> = ({
         <div className={styles.stats}>
           <ClaimInfo
             icon={<BanxLogo />}
-            value={format(fromDecimals(banxTokenStake.farmedAmount, BANX_TOKEN_STAKE_DECIMAL))}
+            value={format(fromDecimals(rewards, BANX_TOKEN_STAKE_DECIMAL))}
             text="claimable"
           />
           <Button className={styles.manageButton} size="default">
@@ -92,7 +92,10 @@ export const Sidebar: FC<SidebarProps> = ({
 
         <div className={styles.divider}>
           <span>total claimed</span>
-          <span> {format(fromDecimals(totalClaimed, BANX_TOKEN_STAKE_DECIMAL))} pts</span>
+          <span>
+            {' '}
+            {format(fromDecimals(totalClaimed, BANX_TOKEN_STAKE_DECIMAL))} <BanxLogo />
+          </span>
         </div>
       </div>
 

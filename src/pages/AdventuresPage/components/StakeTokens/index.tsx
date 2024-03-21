@@ -33,7 +33,7 @@ export const StakeTokens = () => {
   const { updateStake, banxStake, banxTokenSettings, balance } = useBanxStakeState()
   const wallet = useWallet()
   const { close } = useModal()
-  const [value, setValue] = useState('')
+  const [value, setValue] = useState('0')
 
   const { value: currentTabValue, ...tabProps } = useTabs({
     tabs: MODAL_TABS,
@@ -50,12 +50,14 @@ export const StakeTokens = () => {
     }
     const optimistic: BanxSubscribeAdventureOptimistic = {
       banxStakingSettings: banxTokenSettings,
-      banxAdventures: banxStake.banxAdventures,
+      banxAdventures: banxStake.banxAdventures.filter(
+        ({ adventure }) => adventure.periodStartedAt * 1000 < Date.now(),
+      ),
       banxTokenStake: banxStake.banxTokenStake,
     }
 
     const txnParam = {
-      tokensToStake: toDecimals(value, BANX_TOKEN_STAKE_DECIMAL),
+      tokensToStake: parseFloat(toDecimals(value, BANX_TOKEN_STAKE_DECIMAL)),
       userPubkey: wallet.publicKey,
       optimistic,
       priorityFees,
@@ -77,7 +79,7 @@ export const StakeTokens = () => {
               banxAdventures: banxAdventures,
               banxTokenStake: banxTokenStake,
             },
-            balance: balance - toDecimals(value, BANX_TOKEN_STAKE_DECIMAL),
+            balance: balance - parseFloat(toDecimals(value, BANX_TOKEN_STAKE_DECIMAL)),
           })
         })
       })
@@ -102,12 +104,14 @@ export const StakeTokens = () => {
     }
     const optimistic: BanxSubscribeAdventureOptimistic = {
       banxStakingSettings: banxTokenSettings,
-      banxAdventures: banxStake.banxAdventures,
+      banxAdventures: banxStake.banxAdventures.filter(
+        ({ adventure }) => adventure.periodStartedAt * 1000 < Date.now(),
+      ),
       banxTokenStake: banxStake.banxTokenStake,
     }
 
     const txnParam = {
-      tokensToUnstake: toDecimals(value, BANX_TOKEN_STAKE_DECIMAL),
+      tokensToUnstake: Number(toDecimals(value, BANX_TOKEN_STAKE_DECIMAL)),
       userPubkey: wallet.publicKey,
       optimistic,
       priorityFees,
@@ -152,13 +156,14 @@ export const StakeTokens = () => {
 
   const onSubmit = () => {
     if (currentTabValue === ModalTabs.STAKE) {
-      void onStakeTokens()
+      return void onStakeTokens()
     }
 
-    void onUnstakeTokens()
+    return void onUnstakeTokens()
   }
 
-  const idleOnWallet = fromDecimals(balance, BANX_TOKEN_STAKE_DECIMAL) - parseFloat(value)
+  const idleOnWallet =
+    fromDecimals(balance || 0, BANX_TOKEN_STAKE_DECIMAL) - parseFloat(value || '0')
   const banxBalance = formatCompact(balance)
   const tokensStaked = format(
     fromDecimals(banxTokenSettings?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL),
@@ -179,6 +184,13 @@ export const StakeTokens = () => {
 
     return emptyValue || notEnoughStake || notEnoughUnStake
   }, [value, balance, currentTabValue, banxTokenSettings?.tokensStaked])
+
+  const onSetMax = () => {
+    if (currentTabValue === ModalTabs.STAKE) {
+      return setValue(fromDecimals(balance || 0, BANX_TOKEN_STAKE_DECIMAL))
+    }
+    return setValue(tokensStaked)
+  }
 
   return (
     <Modal className={styles.modal} open onCancel={close} footer={false} width={572} centered>
@@ -203,7 +215,7 @@ export const StakeTokens = () => {
 
         <div className={styles.input}>
           <NumericInput positiveOnly onChange={setValue} value={value} />
-          <Button size="small" variant="secondary">
+          <Button size="small" variant="secondary" onClick={onSetMax}>
             Use max
           </Button>
         </div>
