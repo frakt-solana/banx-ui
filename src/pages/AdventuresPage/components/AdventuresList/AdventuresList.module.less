@@ -231,6 +231,10 @@
   width: 100%;
   margin-top: 12px;
 
+  &:disabled {
+    border: none;
+  }
+
   & > div {
     display: flex;
     align-items: center;
@@ -238,5 +242,28 @@
     & svg {
       margin-right: 4px;
     }
+  }
+}
+
+.distributed {
+  display: flex;
+  align-items: center;
+  background: var(--accent-primary-sub);
+  padding: 3px 0;
+  justify-content: center;
+  border-radius: 1000px;
+  margin-top: 12px;
+
+  span:first-child {
+    font: var(--important-text-md);
+  }
+
+  svg {
+    margin: 0 4px;
+  }
+
+  span:last-child {
+    font: var(--card-header-sm);
+    text-transform: uppercase;
   }
 }

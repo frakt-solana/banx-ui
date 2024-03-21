@@ -1,8 +1,14 @@
-import { FC } from 'react'
+import React, { FC } from 'react'
+
+import { Button } from '@banx/components/Buttons'
 
 import { AdventureStatus } from '@banx/api/adventures'
+import { BanxAdventure, BanxSubscription } from '@banx/api/banxTokenStake'
+import { BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
 import { useCountdown } from '@banx/hooks'
-import { Alert, MoneyBill, Timer } from '@banx/icons'
+import { Alert, BanxLogo, Clock, MoneyBill, SuccessIcon, Timer } from '@banx/icons'
+import { calculateRewards } from '@banx/pages/AdventuresPage/helpers'
+import { formatNumbersWithCommas, fromDecimals } from '@banx/utils'
 
 import styles from './AdventuresList.module.less'
 
@@ -60,10 +66,11 @@ export const TotalParticipationColumn: FC<{
   )
 }
 
-export const AdventuresTimer: FC<{ status: AdventureStatus; endsAt: number }> = ({
-  status,
-  endsAt,
-}) => {
+export const AdventuresTimer: FC<{
+  status: AdventureStatus
+  endsAt: number
+  adventureWithSubscription: { adventure: BanxAdventure; adventureSubscription?: BanxSubscription }
+}> = ({ status, endsAt, adventureWithSubscription }) => {
   const TIMER_TEXT_BY_STATUS = {
     [AdventureStatus.LIVE]: 'Before rewards distribution',
     [AdventureStatus.UPCOMING]: 'Deadline to subscribe',
@@ -71,8 +78,19 @@ export const AdventuresTimer: FC<{ status: AdventureStatus; endsAt: number }> = 
   }
 
   const isLive = status === AdventureStatus.LIVE
-
   const { timeLeft } = useCountdown(endsAt)
+  const rewards = () => {
+    if (adventureWithSubscription.adventureSubscription) {
+      const props = {
+        adventure: adventureWithSubscription.adventure,
+        adventureSubscription: adventureWithSubscription.adventureSubscription,
+      }
+
+      return calculateRewards([props])
+    }
+
+    return 0
+  }
 
   return (
     <div className={styles.timerWrapper}>
@@ -87,7 +105,66 @@ export const AdventuresTimer: FC<{ status: AdventureStatus; endsAt: number }> = 
           {TIMER_TEXT_BY_STATUS[status as keyof typeof TIMER_TEXT_BY_STATUS] ||
             TIMER_TEXT_BY_STATUS.DEFAULT}
         </p>
+        {status === AdventureStatus.LIVE && (
+          <div className={styles.distributed}>
+            <span>
+              {formatNumbersWithCommas(fromDecimals(rewards(), BANX_TOKEN_STAKE_DECIMAL))}
+            </span>
+            <BanxLogo />
+            <span>to be distributed</span>
+          </div>
+        )}
       </div>
     </div>
+  )
+}
+
+interface ParticipateProps {
+  isStarted: boolean
+  isSubscribed: boolean
+  isDisabled: boolean
+  onSubmit: () => void
+}
+
+export const Participate: FC<ParticipateProps> = ({
+  isStarted,
+  isSubscribed,
+  isDisabled,
+  onSubmit,
+}) => {
+  if (!isStarted && isSubscribed) {
+    return (
+      <Button disabled className={styles.subscribeBtn}>
+        <div>
+          <Clock />
+          <span>Participating</span>
+        </div>
+      </Button>
+    )
+  }
+
+  if (!isStarted && !isSubscribed) {
+    return null
+  }
+
+  if (isStarted && isSubscribed) {
+    return (
+      <Button disabled className={styles.subscribeBtn}>
+        <div>
+          <SuccessIcon />
+          <span>Subscribed</span>
+        </div>
+      </Button>
+    )
+  }
+
+  if (isStarted && !isSubscribed) {
+    return null
+  }
+
+  return (
+    <Button disabled={isDisabled} onClick={onSubmit} className={styles.subscribeBtn}>
+      Subscribe to participate
+    </Button>
   )
 }

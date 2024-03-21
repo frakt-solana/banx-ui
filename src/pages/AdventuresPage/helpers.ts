@@ -1,6 +1,8 @@
 import { Connection } from '@solana/web3.js'
 import { BN, web3 } from 'fbonds-core'
+import { calculateRewardsFromSubscriptions } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
 
+import { BanxAdventure, BanxSubscription } from '@banx/api/banxTokenStake'
 import { BONDS } from '@banx/constants'
 import { BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
 
@@ -30,4 +32,10 @@ export async function getTokenBalance(
   const balance = await connection.getTokenAccountBalance(userTokenAccountAddress)
 
   return parseFloat(balance?.value.amount) || 0
+}
+
+export const calculateRewards = (
+  props: { adventure: BanxAdventure; adventureSubscription: BanxSubscription }[],
+) => {
+  return calculateRewardsFromSubscriptions(props)
 }

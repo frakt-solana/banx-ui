@@ -34,6 +34,7 @@ export const NftCheckbox: FC<NftCheckboxProps> = ({
       )}
       onClick={() => onClick?.(nft)}
     >
+      {disabled && 'disabled'}
       <div className={styles.image}>
         {selected && <div className={styles.selected} />}
         {additionalText && !selected && (
