@@ -15,6 +15,7 @@ import { iconComponents } from './constants'
 import { useFetchUserLockedRewards } from './hooks'
 
 import styles from './WalletModal.module.less'
+import { web3 } from 'fbonds-core'
 
 const UserGeneralInfo = () => {
   const { publicKey } = useWallet()
@@ -44,7 +45,9 @@ const UserBalance = () => {
 
   const { data } = useFetchUserLockedRewards(publicKeyString)
 
-  const displayRewardsValue = formatNumbersWithCommas(data?.rewards?.toFixed(0) || 0)
+  const alloc = data?.sum ? data?.sum / BigInt(web3.LAMPORTS_PER_SOL) : 0;
+
+  const displayRewardsValue = formatNumbersWithCommas(alloc.toString())
 
   return (
     <div className={styles.userBalanceContainer}>

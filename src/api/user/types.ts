@@ -34,7 +34,8 @@ export interface BanxNotification {
 }
 
 export interface UserLockedRewards {
-  rewards: number
+  sum: bigint
+  sources: any[]
 }
 
 export const SeasonUserRewardsSchema = z.object({

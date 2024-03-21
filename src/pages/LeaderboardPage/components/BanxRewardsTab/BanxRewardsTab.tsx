@@ -19,6 +19,13 @@ import { PATHS } from '@banx/router'
 import { formatNumbersWithCommas } from '@banx/utils'
 
 import styles from './BanxRewardsTab.module.less'
+import { web3 } from 'fbonds-core'
+
+const statClassNames = {
+  container: styles.statContainer,
+  value: styles.statValue,
+  label: styles.statLabel,
+}
 
 const BanxRewardsTab = () => {
   const { connected } = useWallet()
@@ -31,10 +38,14 @@ const BanxRewardsTab = () => {
   const { theme } = useTheme()
   const Icon = theme === Theme.DARK ? BanxRewardsDarkIcon : BanxRewardsIcon
 
+  const alloc = data?.sum ? (data?.sum / BigInt(web3.LAMPORTS_PER_SOL)) : BigInt(0);
+
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        <StatsBlock earlyIncentives={data?.rewards || 0} />
+        <StatInfo value={`${formatNumbersWithCommas(alloc.toString())} $BANX`} label='Total rewards' classNamesProps={statClassNames}
+          valueType={VALUES_TYPES.STRING} />
+        <StatsBlock earlyIncentives={data?.sum || BigInt(0)} sources={data?.sources || []} />
         {!connected && (
           <EmptyList className={styles.emptyList} message="Connect wallet to see your rewards" />
         )}
@@ -48,34 +59,33 @@ const BanxRewardsTab = () => {
 export default BanxRewardsTab
 
 interface StatsBlockProps {
-  earlyIncentives: number
+  earlyIncentives: bigint,
+  sources: any[]
 }
 
-const StatsBlock: FC<StatsBlockProps> = ({ earlyIncentives }) => {
-  const statClassNames = {
-    container: styles.statContainer,
-    value: styles.statValue,
-    label: styles.statLabel,
-  }
+const StatsBlock: FC<StatsBlockProps> = ({ earlyIncentives, sources }) => {
 
-  return (
-    <div className={styles.stats}>
-      <StatInfo
-        label="Early incentives"
-        value={`${formatNumbersWithCommas(earlyIncentives?.toFixed(0))} $BANX`}
-        classNamesProps={statClassNames}
-        valueType={VALUES_TYPES.STRING}
-        tooltipText="We converted the locked $FRKT rewards you received from past marketing campaigns to their equivalent amount of $BANX tokens"
-      />
-      <PlusOutlined />
-      <StatInfo
-        label="Leaderboard s2"
-        value="? $BANX"
-        // value={`${formatNumbersWithCommas(secondSeasonRewards)} $BANX`}
-        classNamesProps={statClassNames}
-        valueType={VALUES_TYPES.STRING}
-      />
-    </div>
+
+  const alloc = earlyIncentives / BigInt(web3.LAMPORTS_PER_SOL);
+
+  return (<div className={styles.stats}>
+    {
+      sources.map((carr, i) => {
+        const name = carr[0];
+        const value = BigInt(carr[1]) / BigInt(web3.LAMPORTS_PER_SOL);
+        return <StatInfo
+          key={i}
+          label={name}
+          value={`${formatNumbersWithCommas(value.toString())} $BANX`}
+          classNamesProps={statClassNames}
+          valueType={VALUES_TYPES.STRING}
+        //tooltipText="We converted the locked $FRKT rewards you received from past marketing campaigns to their equivalent amount of $BANX tokens"
+        />
+      })
+    }
+
+  </div>
+
   )
 }
 

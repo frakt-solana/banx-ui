@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { web3 } from 'fbonds-core'
+import { sumBy } from 'lodash'
 
 import { BACKEND_BASE_URL } from '@banx/constants'
 import { MutationResponse } from '@banx/types'
@@ -193,11 +194,13 @@ export const unlinkWallet: UnlinkWallet = async ({ jwt, walletToUnlink }) => {
 
 type FetchUserLockedRewards = (props: { publicKey: string }) => Promise<UserLockedRewards>
 export const fetchUserLockedRewards: FetchUserLockedRewards = async ({ publicKey }) => {
-  const { data } = await axios.get<{ data: UserLockedRewards }>(
-    `${BACKEND_BASE_URL}/stats/locked-rewards/${publicKey}`,
-  )
+  const { data } = await axios.get(`${BACKEND_BASE_URL}/launch/user/${publicKey}`)
 
-  return data?.data ?? { rewards: 0 }
+  const sum: bigint = data?.data?.sources.reduce(
+    (acc: bigint, val: string[]) => acc + BigInt(val[1]),
+    BigInt(0),
+  )
+  return data?.data ? { sources: data.data.sources, sum } : { sum: BigInt(0), sources: [] }
 }
 
 type FetchSeasonUserRewards = (props: { walletPubkey: string }) => Promise<SeasonUserRewards | null>

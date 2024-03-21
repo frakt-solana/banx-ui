@@ -26,6 +26,8 @@ export const useFetchUserLockedRewards = (walletPublicKey: string) => {
     },
   )
 
+  console.log({ data })
+
   return {
     data,
     loading: isLoading || isFetching,
