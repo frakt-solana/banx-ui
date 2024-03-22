@@ -24,7 +24,7 @@ import {
   formatNumbersWithCommas as format,
   formatCompact,
   fromDecimals,
-  usePriorityFees,
+  usePriorityFees, toDecimals,
 } from '@banx/utils'
 
 import {
@@ -36,6 +36,7 @@ import {
 } from './components'
 
 import styles from './AdventuresList.module.less'
+import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
 
 interface AdventuresCardProps {
   banxSubscription?: BanxSubscription
@@ -43,6 +44,8 @@ interface AdventuresCardProps {
   walletConnected?: boolean
   maxTokenStakeAmount: number
 }
+
+
 
 const AdventuresCard: FC<AdventuresCardProps> = ({
   banxAdventure,
@@ -52,12 +55,25 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
 }) => {
   const { connection } = useConnection()
   const isEnded = banxAdventure.periodEndingAt * 1000 < Date.now()
-  const isStarted = banxAdventure.periodStartedAt * 1000 + BANX_ADVENTURE_GAP * 1000 > Date.now()
+  const isStarted = banxAdventure.periodStartedAt * 1000 + BANX_ADVENTURE_GAP * 1000 < Date.now()
   const { banxStake, banxTokenSettings, updateStake } = useBanxStakeState()
   const priorityFees = usePriorityFees()
 
   const wallet = useWallet()
 
+
+  const calcMaxPts = () => {
+    if(!banxTokenSettings) {
+      return 0
+    }
+
+    const maxTokenStakeAmount = toDecimals(banxTokenSettings.maxTokenStakeAmount, BANX_TOKEN_STAKE_DECIMAL)
+
+    return (maxTokenStakeAmount / banxAdventure.tokensPerPoints + TOTAL_BANX_PTS)
+  }
+
+  const tokenPts = calcPartnerPoints(banxAdventure.totalTokensStaked, banxAdventure.tokensPerPoints)
+  const totalAdventurePts = parseFloat(fromDecimals(tokenPts, BANX_TOKEN_STAKE_DECIMAL)) + banxAdventure.totalPartnerPoints
   const isParticipating =
     !!banxSubscription?.stakeTokensAmount || !!banxSubscription?.stakeNftAmount
 
@@ -66,8 +82,10 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
   )}`
   const totalBanxTokensSubscribed = `${formatCompact(
     fromDecimals(banxAdventure.totalTokensStaked, BANX_TOKEN_STAKE_DECIMAL),
-  )}/${formatCompact(fromDecimals(maxTokenStakeAmount))}`
-  const totalPartnerPoints = `${banxAdventure.totalPartnerPoints}/${format(TOTAL_BANX_PTS)}`
+  )}/${formatCompact(maxTokenStakeAmount)}`
+
+
+  const totalPartnerPoints = `${format(totalAdventurePts)}/${formatCompact(calcMaxPts())}`
 
   const status = useMemo(() => {
     if (isEnded) {
@@ -108,22 +126,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
           type: 'success',
           solanaExplorerPath: `tx/${txnHash}`,
         })
-        results.forEach(({ result }) => {
-          const { banxStakingSettings, banxAdventures, banxTokenStake } = result || {}
-
-          if (!banxStakingSettings || !banxAdventures || !banxTokenStake) {
-            return
-          }
-
-          updateStake({
-            banxTokenSettings: result?.banxStakingSettings,
-            banxStake: {
-              ...banxStake,
-              banxAdventures: banxAdventures,
-              banxTokenStake: banxTokenStake,
-            },
-          })
-        })
+        results.forEach(({ result }) => !!result && updateStake(result))
       })
       .on('pfSuccessAll', () => {
         close()
@@ -137,6 +140,9 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
       })
       .execute()
   }
+  const walletTokenPts = calcPartnerPoints(banxSubscription?.stakeTokensAmount || 0, banxAdventure.tokensPerPoints)
+
+  const totalWalletPts = parseFloat(fromDecimals(walletTokenPts, BANX_TOKEN_STAKE_DECIMAL)) + (banxSubscription?.stakePartnerPointsAmount || 0)
 
   const isSubscribed =
     banxSubscription?.adventureSubscriptionState === BanxAdventureSubscriptionState.Active
@@ -159,25 +165,24 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
           }}
           status={status}
           endsAt={
-            isStarted
-              ? banxAdventure.periodStartedAt + BANX_ADVENTURE_GAP
-              : banxAdventure.periodEndingAt
+            isStarted ? banxAdventure.periodEndingAt : banxAdventure.periodStartedAt + BANX_ADVENTURE_GAP
           }
         />
 
         <div className={styles.stats}>
           <TotalParticipationColumn
-            totalBanxSubscribed={totalBanxSubscribed}
             totalBanxTokensSubscribed={totalBanxTokensSubscribed}
+            totalBanxSubscribed={totalBanxSubscribed}
             totalPartnerPoints={totalPartnerPoints}
           />
+
 
           {isParticipating && (
             <WalletParticipationColumn
               status={status}
-              banxTokenAmount={formatCompact(banxSubscription.stakeTokensAmount)}
+              banxTokenAmount={formatCompact(fromDecimals(banxSubscription.stakeTokensAmount, BANX_TOKEN_STAKE_DECIMAL))}
               banxAmount={format(banxSubscription.stakeNftAmount)}
-              partnerPts={format(banxSubscription.stakePartnerPointsAmount)}
+              partnerPts={format(totalWalletPts)}
             />
           )}
 
@@ -188,6 +193,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
       </div>
 
       <Participate
+        isNone={banxAdventure.adventureState === 'none'}
         isStarted={isStarted}
         isSubscribed={isSubscribed}
         isDisabled={!wallet.publicKey?.toBase58()}

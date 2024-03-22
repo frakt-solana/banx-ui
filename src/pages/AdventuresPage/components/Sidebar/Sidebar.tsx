@@ -7,31 +7,41 @@ import { Button } from '@banx/components/Buttons'
 
 import { AdventuresInfo } from '@banx/api/adventures'
 import { BanxTokenStake } from '@banx/api/banxTokenStake'
-import { BANX_TOKEN_STAKE_DECIMAL, TOTAL_BANX_NFTS } from '@banx/constants/banxNfts'
+import { BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
 import { BanxLogo, Gamepad, MoneyBill } from '@banx/icons'
 import { StakeNftsModal, StakeTokens } from '@banx/pages/AdventuresPage/components'
 import { useModal } from '@banx/store'
 import { formatNumbersWithCommas as format, formatCompact, fromDecimals } from '@banx/utils'
 
 import styles from './Sidebar.module.less'
+import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { useBanxTokenBalance } from '@banx/pages/AdventuresPage/hooks/useBanxTokenBalance'
 
 interface SidebarProps {
   className?: string
   banxTokenStake: BanxTokenStake
   adventuresInfo: AdventuresInfo
-  maxTokenStakeAmount: number
+  nftsCount: number
   totalClaimed: number
   rewards: number
+  tokensPerPartnerPoints: number
 }
 
 export const Sidebar: FC<SidebarProps> = ({
   className,
   banxTokenStake,
-  maxTokenStakeAmount,
+  nftsCount,
   totalClaimed,
   rewards,
+  tokensPerPartnerPoints
 }) => {
   const { open } = useModal()
+  const {publicKey} = useWallet()
+  const {connection} = useConnection()
+  const tokensPts = fromDecimals(calcPartnerPoints(banxTokenStake.tokensStaked, tokensPerPartnerPoints), BANX_TOKEN_STAKE_DECIMAL)
+  const {data: balance} = useBanxTokenBalance(connection, publicKey)
+  const totalPts = parseFloat(tokensPts.toString()) + banxTokenStake.partnerPointsStaked
 
   return (
     <div className={classNames(styles.sidebar, className)}>
@@ -40,7 +50,7 @@ export const Sidebar: FC<SidebarProps> = ({
 
         <div className={styles.stats}>
           <Info
-            value={`${format(banxTokenStake.banxNftsStakedQuantity)}/${format(TOTAL_BANX_NFTS)}`}
+            value={`${format(banxTokenStake.banxNftsStakedQuantity)}/${format(nftsCount)}`}
             text="NFTs staked"
           />
           <Button
@@ -57,7 +67,7 @@ export const Sidebar: FC<SidebarProps> = ({
           <Info
             value={`${formatCompact(
               fromDecimals(banxTokenStake.tokensStaked, BANX_TOKEN_STAKE_DECIMAL),
-            )}/${formatCompact(fromDecimals(maxTokenStakeAmount, BANX_TOKEN_STAKE_DECIMAL))}`}
+            )}/${formatCompact(fromDecimals(balance, BANX_TOKEN_STAKE_DECIMAL))}`}
             text="tokens staked"
           />
           <Button
@@ -72,7 +82,7 @@ export const Sidebar: FC<SidebarProps> = ({
 
         <div className={styles.divider}>
           <span>total staked</span>
-          <span>{format(banxTokenStake.partnerPointsStaked)}pts</span>
+          <span>{format(totalPts)} pts</span>
         </div>
       </div>
 

@@ -104,7 +104,7 @@ export const createDownloadLink = (data: string, filename: string, type?: string
   window.URL.revokeObjectURL(blobURL)
 }
 
-export const toDecimals = (v: string | number, decimals = 9): string => {
+export const toDecimals = (v: string | number, decimals = 9) => {
   const _decimals = new BN(decimals)
   const _v = new BN(v)
   return _v.mul(_decimals).toString()

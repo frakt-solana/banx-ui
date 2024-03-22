@@ -123,6 +123,7 @@ interface ParticipateProps {
   isStarted: boolean
   isSubscribed: boolean
   isDisabled: boolean
+  isNone: boolean
   onSubmit: () => void
 }
 
@@ -130,9 +131,11 @@ export const Participate: FC<ParticipateProps> = ({
   isStarted,
   isSubscribed,
   isDisabled,
+                                                    isNone,
   onSubmit,
 }) => {
-  if (!isStarted && isSubscribed) {
+
+  if(isStarted && isSubscribed) {
     return (
       <Button disabled className={styles.subscribeBtn}>
         <div>
@@ -143,11 +146,51 @@ export const Participate: FC<ParticipateProps> = ({
     )
   }
 
-  if (!isStarted && !isSubscribed) {
-    return null
+  if(!isStarted && !isSubscribed) {
+    return (
+      <Button disabled={isDisabled} onClick={onSubmit} className={styles.subscribeBtn}>
+        Subscribe to participate
+      </Button>
+    )
   }
 
-  if (isStarted && isSubscribed) {
+  if(!isStarted && isSubscribed) {
+    return (
+      <Button disabled className={styles.subscribeBtn}>
+        <div>
+          <SuccessIcon />
+          <span>Subscribed</span>
+        </div>
+      </Button>
+    )
+  }
+
+
+
+  if(isNone && !isStarted) {
+    return (
+      <Button disabled={isDisabled} onClick={onSubmit} className={styles.subscribeBtn}>
+        Subscribe to participate
+      </Button>
+    )
+  }
+
+  // if (!isStarted && isSubscribed) {
+  //   return (
+  //     <Button disabled className={styles.subscribeBtn}>
+  //       <div>
+  //         <Clock />
+  //         <span>Participating</span>
+  //       </div>
+  //     </Button>
+  //   )
+  // }
+  //
+  // if (!isStarted && !isSubscribed) {
+  //   return null
+  // }
+
+  if (isStarted && isSubscribed && isNone) {
     return (
       <Button disabled className={styles.subscribeBtn}>
         <div>

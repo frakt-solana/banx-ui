@@ -15,12 +15,12 @@ interface NftCheckboxProps {
 }
 
 export const NftCheckbox: FC<NftCheckboxProps> = ({
-  nft,
-  selected = false,
-  additionalText = '',
-  disabled = false,
-  onClick,
-}) => {
+                                                    nft,
+                                                    selected = false,
+                                                    additionalText = '',
+                                                    disabled = false,
+                                                    onClick,
+                                                  }) => {
   if (!nft?.meta) {
     return null
   }
@@ -34,9 +34,14 @@ export const NftCheckbox: FC<NftCheckboxProps> = ({
       )}
       onClick={() => onClick?.(nft)}
     >
-      {disabled && 'disabled'}
+
+      {disabled && (
+        <div className={styles.cover}>
+          <span>Loaned</span>
+        </div>
+      )}
       <div className={styles.image}>
-        {selected && <div className={styles.selected} />}
+        {disabled || selected && <div className={styles.selected} />}
         {additionalText && !selected && (
           <div className={styles.additionalText}>{additionalText}</div>
         )}

@@ -104,7 +104,7 @@ export const BanxAdventuresSchema = z.object({
   adventure: BanxAdventureSchema,
   adventureSubscription: BanxSubscriptionSchema.optional(),
 })
-export type BanxAdventures = z.infer<typeof BanxAdventuresSchema>
+export type BanxAdventureWithSubscription = z.infer<typeof BanxAdventuresSchema>
 
 export const BanxStakeSchema = z.object({
   banxTokenStake: BanxTokenStakeSchema.nullable(),
