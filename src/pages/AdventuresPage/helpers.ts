@@ -37,7 +37,7 @@ export async function getTokenBalance(
 export const calculateRewards = (
   props: { adventure: BanxAdventure; adventureSubscription: BanxSubscription }[],
 ) => {
-  if(!props.length) {
+  if (!props.length) {
     return 0
   }
 

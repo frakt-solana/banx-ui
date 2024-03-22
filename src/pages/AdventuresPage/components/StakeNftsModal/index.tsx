@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { web3 } from 'fbonds-core'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
+import { BanxStakeState } from 'fbonds-core/lib/fbond-protocol/types'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
@@ -19,7 +20,6 @@ import { stakeBanxNftAction, unstakeBanxNftsAction } from '@banx/transactions/ba
 import { enqueueSnackbar, usePriorityFees } from '@banx/utils'
 
 import styles from './styles.module.less'
-import { BanxStakeState } from 'fbonds-core/lib/fbond-protocol/types'
 
 export const StakeNftsModal = () => {
   const { close } = useModal()
@@ -65,18 +65,17 @@ export const StakeNftsModal = () => {
   }
 
   const onSelectAll = () => {
-    const currentNfts = nfts
-      .filter((nft) => {
-        const isStaked = nft?.stake?.banxStakeState === BanxStakeState.Staked
+    const currentNfts = nfts.filter((nft) => {
+      const isStaked = nft?.stake?.banxStakeState === BanxStakeState.Staked
 
-        if(currentTab === modalTabs[0].value && !isStaked) {
-          return nft
-        }
+      if (currentTab === modalTabs[0].value && !isStaked) {
+        return nft
+      }
 
-        if(currentTab === modalTabs[1].value && isStaked) {
-          return nft
-        }
-      })
+      if (currentTab === modalTabs[1].value && isStaked) {
+        return nft
+      }
+    })
 
     const isSelectedAll = !!Object.values(selectedNfts).length
 
@@ -89,9 +88,9 @@ export const StakeNftsModal = () => {
       const nftsMap = currentNfts
         .filter((nft) => !nft?.stake?.isLoaned)
         .reduce<{ [k: string]: NftType }>((acc, nft) => {
-        acc[nft.mint] = nft
-        return acc
-      }, {})
+          acc[nft.mint] = nft
+          return acc
+        }, {})
 
       setSelectedNfts(nftsMap)
       return
@@ -201,11 +200,11 @@ export const StakeNftsModal = () => {
   }
 
   const getStatsNfts = () => {
-    if(currentTab === modalTabs[0].value) {
-      return nfts.filter(({stake}) => stake?.banxStakeState === BanxStakeState.Unstaked)
+    if (currentTab === modalTabs[0].value) {
+      return nfts.filter(({ stake }) => stake?.banxStakeState === BanxStakeState.Unstaked)
     }
 
-    return nfts.filter(({stake}) => stake?.banxStakeState !== BanxStakeState.Unstaked)
+    return nfts.filter(({ stake }) => stake?.banxStakeState !== BanxStakeState.Unstaked)
   }
 
   useEffect(() => {
