@@ -50,11 +50,13 @@ interface RewardsStatProps extends StatsInfoProps {
 }
 
 const RewardsStat: FC<RewardsStatProps> = ({ value, disabled, ...props }) => {
-  const formattedValue = formatNumbersWithCommas(convertBNToNumber(value)?.toFixed(0))
+  const formattedValue = formatNumbersWithCommas(value?.toFixed(0))
 
   return (
     <div className={classNames(styles.statRewardWrapper, { [styles.disabled]: disabled })}>
-      <CircleCheckIcon />
+      <CircleCheckIcon
+        className={classNames(styles.circleCheckIcon, { [styles.disabled]: disabled })}
+      />
       <StatInfo
         value={formattedValue}
         valueType={VALUES_TYPES.STRING}
@@ -94,8 +96,8 @@ const RewardsBlock = () => {
               <RewardsStat
                 key={label}
                 label={label}
-                value={value}
-                disabled={!value || !connected}
+                value={convertBNToNumber(value)}
+                disabled={!convertBNToNumber(value) || !connected}
               />
             ))}
           </div>

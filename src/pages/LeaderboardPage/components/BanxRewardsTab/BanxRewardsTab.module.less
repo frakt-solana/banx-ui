@@ -165,19 +165,14 @@
     display: flex;
     align-items: center;
     gap: 4px;
+
+    svg path {
+      fill: #1b1b1b;
+    }
   }
 
   &.disabled {
     background: var(--bg-secondary);
-
-    svg {
-      path:first-child {
-        fill: none;
-      }
-      path:last-child {
-        fill: var(--content-secondary);
-      }
-    }
 
     .stat {
       span {
@@ -188,6 +183,17 @@
 
   @media (max-width: 640px) {
     width: 100%;
+  }
+}
+
+.circleCheckIcon {
+  &.disabled {
+    path:first-child {
+      fill: none;
+    }
+    path:last-child {
+      fill: var(--content-secondary);
+    }
   }
 }
 
