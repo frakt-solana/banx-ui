@@ -55,7 +55,7 @@ export const AdventuresPage: FC = () => {
       return acc
     }, []) || []
 
-  const rewards = calculateRewards(adventuresWithSubscriptions)
+  const rewards = calculateRewards(adventuresWithSubscriptions) || 0
 
   return (
     <div className={styles.pageWrapper}>
@@ -73,10 +73,11 @@ export const AdventuresPage: FC = () => {
 
       {!!banxStake?.banxTokenStake && isSuccess && (
         <Sidebar
+          tokensPerPartnerPoints={banxTokenSettings.tokensPerPartnerPoints}
           rewards={rewards}
           adventuresInfo={adventuresInfo}
           totalClaimed={banxTokenSettings?.rewardsHarvested || 0}
-          maxTokenStakeAmount={banxTokenSettings.maxTokenStakeAmount}
+          nftsCount={banxStake?.nfts?.length || 0}
           className={styles.sidebar}
           banxTokenStake={banxStake.banxTokenStake}
         />

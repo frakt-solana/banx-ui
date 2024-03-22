@@ -10,19 +10,14 @@ import {
   fetchTokenStakeInfo,
 } from '@banx/api/banxTokenStake'
 import { getTokenBalance } from '@banx/pages/AdventuresPage/helpers'
-
-interface UpdatedStake {
-  banxTokenSettings: BanxStakeSettings
-  banxStake: BanxStake
-  balance: number
-}
+import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 
 export interface BanxStakeStore {
   banxTokenSettings: BanxStakeSettings | null
   banxStake: BanxStake | null
-  balance: number
+  balance: string
 
-  updateStake: (props: Partial<UpdatedStake>) => void
+  updateStake: (props: BanxSubscribeAdventureOptimistic) => void
   loadBanxTokenSettings: () => Promise<void>
   loadBanxStake: (props: { userPubkey?: string }) => Promise<void>
   loadBanxTokenBalance: (props: {
@@ -31,10 +26,11 @@ export interface BanxStakeStore {
   }) => Promise<void>
 }
 
-export const useBanxStakeState = create<BanxStakeStore>((set) => ({
+
+export const useBanxStakeState = create<BanxStakeStore>((set, getState) => ({
   banxTokenSettings: null,
   banxStake: null,
-  balance: 0,
+  balance: "0",
   loadBanxTokenSettings: async () => {
     const banxTokenSettings = await fetchBanxTokenSettings()
     set({
@@ -54,8 +50,32 @@ export const useBanxStakeState = create<BanxStakeStore>((set) => ({
     })
   },
   updateStake: (props) => {
+    const state = getState()
+
+    if(!state.banxStake){
+      return
+    }
+
+    const banxAdventuresMap = props.banxAdventures.reduce((acc, adv) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      acc[adv.adventure.publicKey] = adv;
+      return acc
+    },{})
+
+    const updated = {
+      banxTokenSettings: props.banxStakingSettings,
+      banxStake: {
+        ...state.banxStake,
+        banxTokenStake: props.banxTokenStake,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        banxAdventures: state.banxStake.banxAdventures.map((adv) => banxAdventuresMap[adv.adventure.publicKey] ? banxAdventuresMap[adv.adventure.publicKey] : adv)
+      },
+    }
+
     set({
-      ...props,
+        ...updated
     })
   },
 }))

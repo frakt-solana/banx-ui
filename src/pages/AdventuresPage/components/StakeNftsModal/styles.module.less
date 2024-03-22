@@ -112,6 +112,26 @@
 .nftDisabled {
   cursor: not-allowed;
   pointer-events: none;
+  position: relative;
+
+  .cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 34px;
+    background: #000000b0;
+    z-index: 999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    span {
+      color: var(--pure-white);
+      font: var(--important-text-xl);
+      text-align: center;
+    }
+  }
 }
 
 .image {

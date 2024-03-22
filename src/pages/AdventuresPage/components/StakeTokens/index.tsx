@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
@@ -19,7 +19,6 @@ import { stakeBanxTokenAction, unstakeBanxTokenAction } from '@banx/transactions
 import {
   enqueueSnackbar,
   formatNumbersWithCommas as format,
-  formatCompact,
   fromDecimals,
   toDecimals,
   usePriorityFees,
@@ -40,6 +39,16 @@ export const StakeTokens = () => {
     defaultValue: MODAL_TABS[0].value,
   })
 
+  const handleChangeValue = (v: string) => {
+
+    const isMaxBanxBalance = currentTabValue === ModalTabs.STAKE && parseFloat(v) <= parseFloat(fromDecimals(balance, BANX_TOKEN_STAKE_DECIMAL))
+    const isMaxStaked = currentTabValue === ModalTabs.UNSTAKE && parseFloat(v) <= fromDecimals(banxStake?.banxTokenStake?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL)
+
+    if (!v || isMaxBanxBalance || isMaxStaked) {
+      setValue(v || '')
+    }
+  }
+
   const calcPts = (v: string | number) =>
     calcPartnerPoints(v, banxTokenSettings?.tokensPerPartnerPoints)
   const pointsToReceive = calcPts(value)
@@ -50,9 +59,7 @@ export const StakeTokens = () => {
     }
     const optimistic: BanxSubscribeAdventureOptimistic = {
       banxStakingSettings: banxTokenSettings,
-      banxAdventures: banxStake.banxAdventures.filter(
-        ({ adventure }) => adventure.periodStartedAt * 1000 < Date.now(),
-      ),
+      banxAdventures: banxStake.banxAdventures,
       banxTokenStake: banxStake.banxTokenStake,
     }
 
@@ -66,28 +73,14 @@ export const StakeTokens = () => {
     new TxnExecutor(stakeBanxTokenAction, { wallet, connection })
       .addTxnParam(txnParam)
       .on('pfSuccessEach', (results) => {
-        results.forEach(({ result }) => {
-          const { banxStakingSettings, banxAdventures, banxTokenStake } = result || {}
-
-          if (!banxStakingSettings || !banxAdventures || !banxTokenStake) {
-            return
-          }
-          updateStake({
-            banxTokenSettings: banxStakingSettings,
-            banxStake: {
-              ...banxStake,
-              banxAdventures: banxAdventures,
-              banxTokenStake: banxTokenStake,
-            },
-            balance: balance - parseFloat(toDecimals(value, BANX_TOKEN_STAKE_DECIMAL)),
-          })
-        })
+        results.forEach(({ result }) => !!result && updateStake(result))
       })
       .on('pfSuccessAll', () => {
         enqueueSnackbar({
-          message: 'Interest successfully claimed',
+          message: 'Successfully Token staked',
           type: 'success',
         })
+        close()
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error, {
@@ -104,9 +97,7 @@ export const StakeTokens = () => {
     }
     const optimistic: BanxSubscribeAdventureOptimistic = {
       banxStakingSettings: banxTokenSettings,
-      banxAdventures: banxStake.banxAdventures.filter(
-        ({ adventure }) => adventure.periodStartedAt * 1000 < Date.now(),
-      ),
+      banxAdventures: banxStake.banxAdventures,
       banxTokenStake: banxStake.banxTokenStake,
     }
 
@@ -120,29 +111,14 @@ export const StakeTokens = () => {
     new TxnExecutor(unstakeBanxTokenAction, { wallet, connection })
       .addTxnParam(txnParam)
       .on('pfSuccessEach', (results) => {
-        results.forEach(({ result }) => {
-          const { banxStakingSettings, banxAdventures, banxTokenStake } = result || {}
-
-          if (!banxStakingSettings || !banxAdventures || !banxTokenStake) {
-            return
-          }
-
-          updateStake({
-            banxTokenSettings: result?.banxStakingSettings,
-            banxStake: {
-              ...banxStake,
-              banxAdventures: banxAdventures,
-              banxTokenStake: banxTokenStake,
-            },
-            balance: balance + parseFloat(toDecimals(value, BANX_TOKEN_STAKE_DECIMAL)),
-          })
-        })
+        results.forEach(({ result }) => !!result && updateStake(result))
       })
       .on('pfSuccessAll', () => {
         enqueueSnackbar({
-          message: 'Interest successfully claimed',
+          message: 'Successfully Token staked',
           type: 'success',
         })
+        close()
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error, {
@@ -162,14 +138,13 @@ export const StakeTokens = () => {
     return void onUnstakeTokens()
   }
 
-  const idleOnWallet =
-    fromDecimals(balance || 0, BANX_TOKEN_STAKE_DECIMAL) - parseFloat(value || '0')
-  const banxBalance = formatCompact(balance)
+  const idleOnWallet = format(fromDecimals(balance || 0, BANX_TOKEN_STAKE_DECIMAL) - parseFloat(value || '0'))
+  const banxBalance = format(fromDecimals(balance, BANX_TOKEN_STAKE_DECIMAL))
   const tokensStaked = format(
-    fromDecimals(banxTokenSettings?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL),
+    fromDecimals(banxStake?.banxTokenStake?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL) - parseFloat(value || '0'),
   )
   const ptsAmount = format(
-    calcPts(fromDecimals(banxTokenSettings?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL)),
+    calcPts(fromDecimals(banxStake?.banxTokenStake?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL)),
   )
 
   const disabledBtn = useMemo(() => {
@@ -180,17 +155,21 @@ export const StakeTokens = () => {
     const notEnoughUnStake =
       currentTabValue === ModalTabs.UNSTAKE &&
       parseFloat(fromDecimals(banxTokenSettings?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL)) <
-        parseFloat(value)
+      parseFloat(value)
 
     return emptyValue || notEnoughStake || notEnoughUnStake
   }, [value, balance, currentTabValue, banxTokenSettings?.tokensStaked])
 
   const onSetMax = () => {
     if (currentTabValue === ModalTabs.STAKE) {
-      return setValue(fromDecimals(balance || 0, BANX_TOKEN_STAKE_DECIMAL))
+      return setValue(fromDecimals(balance.toString() || 0, BANX_TOKEN_STAKE_DECIMAL))
     }
-    return setValue(tokensStaked)
+    return setValue(fromDecimals(banxStake?.banxTokenStake?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL))
   }
+
+  useEffect(() => {
+    setValue('')
+  }, [currentTabValue])
 
   return (
     <Modal className={styles.modal} open onCancel={close} footer={false} width={572} centered>
@@ -214,7 +193,7 @@ export const StakeTokens = () => {
         )}
 
         <div className={styles.input}>
-          <NumericInput positiveOnly onChange={setValue} value={value} />
+          <NumericInput positiveOnly onChange={handleChangeValue} value={value} />
           <Button size="small" variant="secondary" onClick={onSetMax}>
             Use max
           </Button>
