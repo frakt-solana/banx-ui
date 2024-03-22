@@ -5,7 +5,7 @@ import { BACKEND_BASE_URL } from '@banx/constants'
 import { MutationResponse } from '@banx/types'
 import { getDiscordAvatarUrl } from '@banx/utils'
 
-import { convertToSourcesBN } from './helpers'
+import { convertToSourcesNumber } from './helpers'
 import {
   BanxNotification,
   BonkWithdrawal,
@@ -203,7 +203,7 @@ export const fetchUserRewards: FetchUserRewards = async ({ walletPubkey }) => {
   const { sources } = data.data
 
   return {
-    sources: sources ? convertToSourcesBN(sources) : undefined,
+    sources: sources ? convertToSourcesNumber(sources) : undefined,
   }
 }
 

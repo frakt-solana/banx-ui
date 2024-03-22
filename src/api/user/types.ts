@@ -1,4 +1,3 @@
-import { BN } from 'fbonds-core'
 import { z } from 'zod'
 
 import { MutationResponse } from '@banx/types'
@@ -100,8 +99,8 @@ export enum ClaimSource {
   COLLECTIONS = 'Partner collections (FCFS)',
 }
 
-export type Sources = [ClaimSource, number][]
-export type SourcesBN = [ClaimSource, BN][]
+export type Sources = [ClaimSource, string][]
+export type SourcesNumber = [ClaimSource, number][]
 
 export type FetchUserRewardsResponse = {
   sources?: Sources
@@ -109,4 +108,4 @@ export type FetchUserRewardsResponse = {
 
 export type FetchUserRewards = (props: {
   walletPubkey: string
-}) => Promise<{ sources?: SourcesBN } | null>
+}) => Promise<{ sources?: SourcesNumber } | null>

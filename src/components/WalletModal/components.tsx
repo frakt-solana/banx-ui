@@ -7,12 +7,7 @@ import { sumBy } from 'lodash'
 import { useDiscordUser } from '@banx/hooks'
 import { ChangeWallet, Copy, Logo, SignOut } from '@banx/icons'
 import { useIsLedger } from '@banx/store'
-import {
-  convertBNToNumber,
-  copyToClipboard,
-  formatNumbersWithCommas,
-  shortenAddress,
-} from '@banx/utils'
+import { copyToClipboard, formatNumbersWithCommas, shortenAddress } from '@banx/utils'
 
 import Checkbox from '../Checkbox'
 import { StatInfo, VALUES_TYPES } from '../StatInfo'
@@ -50,8 +45,8 @@ const UserBalance = () => {
 
   const { data } = useFetchUserRewards(publicKeyString)
 
-  const totalRewards = sumBy(data?.sources?.map(([, value]) => value), convertBNToNumber)
-  const displayRewardsValue = formatNumbersWithCommas(totalRewards?.toFixed(0) || 0)
+  const totalRewards = sumBy(data?.sources?.map(([, value]) => value))
+  const displayRewardsValue = formatNumbersWithCommas((totalRewards / 1e9)?.toFixed(0) || 0)
 
   return (
     <div className={styles.userBalanceContainer}>

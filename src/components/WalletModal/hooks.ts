@@ -1,8 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
-import { BN } from 'fbonds-core'
 import { create } from 'zustand'
 
-import { ClaimSource, SourcesBN, fetchUserRewards } from '@banx/api/user'
+import { ClaimSource, SourcesNumber, fetchUserRewards } from '@banx/api/user'
 
 interface WalletModalState {
   visible: boolean
@@ -17,14 +16,14 @@ export const useWalletModal = create<WalletModalState>((set) => ({
 }))
 
 export const useFetchUserRewards = (walletPublicKey: string) => {
-  const DEFAULT_RESPONSE: SourcesBN = [
-    [ClaimSource.ATLAS, new BN(0)],
-    [ClaimSource.FRKT_SWAPS, new BN(0)],
-    [ClaimSource.LOCKED_FRKT, new BN(0)],
-    [ClaimSource.BANX_SWAPS, new BN(0)],
-    [ClaimSource.CATNIP, new BN(0)],
-    [ClaimSource.LEADERBOARD, new BN(0)],
-    [ClaimSource.COLLECTIONS, new BN(0)],
+  const DEFAULT_RESPONSE: SourcesNumber = [
+    [ClaimSource.ATLAS, 0],
+    [ClaimSource.BANX_SWAPS, 0],
+    [ClaimSource.CATNIP, 0],
+    [ClaimSource.COLLECTIONS, 0],
+    [ClaimSource.LOCKED_FRKT, 0],
+    [ClaimSource.LEADERBOARD, 0],
+    [ClaimSource.FRKT_SWAPS, 0],
   ]
 
   const { data, isLoading, isFetching } = useQuery(

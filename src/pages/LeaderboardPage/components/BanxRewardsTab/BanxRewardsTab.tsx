@@ -23,11 +23,11 @@ import {
   Heart as HeartIcon,
 } from '@banx/icons'
 import { PATHS } from '@banx/router'
-import { convertBNToNumber, formatNumbersWithCommas } from '@banx/utils'
+import { formatNumbersWithCommas } from '@banx/utils'
+
+import { TIME_TO_CLAIM } from './constants'
 
 import styles from './BanxRewardsTab.module.less'
-
-const TIME_TO_CLAIM = 1711326000
 
 const BanxRewardsTab = () => {
   const { theme } = useTheme()
@@ -52,7 +52,7 @@ interface RewardsStatProps extends StatsInfoProps {
 }
 
 const RewardsStat: FC<RewardsStatProps> = ({ value, disabled, ...props }) => {
-  const formattedValue = formatNumbersWithCommas(value?.toFixed(0))
+  const formattedValue = formatNumbersWithCommas((value / 1e9)?.toFixed(0))
 
   return (
     <div className={classNames(styles.statRewardWrapper, { [styles.disabled]: disabled })}>
@@ -78,7 +78,7 @@ const RewardsBlock = () => {
 
   const slicedSources = (start: number, end: number) => slice(data?.sources, start, end)
 
-  const totalRewards = sumBy(data?.sources?.map(([, value]) => value), convertBNToNumber)
+  const totalRewards = sumBy(data?.sources?.map(([, value]) => value))
 
   const rows = [slicedSources(0, 3), slicedSources(3, 5), slicedSources(5, 7)]
 
@@ -98,8 +98,8 @@ const RewardsBlock = () => {
               <RewardsStat
                 key={label}
                 label={label}
-                value={convertBNToNumber(value)}
-                disabled={!convertBNToNumber(value) || !connected}
+                value={value}
+                disabled={!value || !connected}
               />
             ))}
           </div>
@@ -114,7 +114,7 @@ const RewardsBlock = () => {
         {connected && (
           <StatInfo
             label="Total rewards"
-            value={formatNumbersWithCommas(totalRewards?.toFixed(0))}
+            value={formatNumbersWithCommas((totalRewards / 1e9)?.toFixed(0))}
             valueType={VALUES_TYPES.STRING}
             icon={BanxTokenIcon}
             classNamesProps={{
