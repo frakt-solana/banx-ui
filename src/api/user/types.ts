@@ -1,3 +1,4 @@
+import { BN } from 'fbonds-core'
 import { z } from 'zod'
 
 import { MutationResponse } from '@banx/types'
@@ -88,3 +89,24 @@ export type LinkedWallet = {
 } & LinkedWalletPoints
 
 export type LinkWalletResponse = MutationResponse & LinkedWalletPoints
+
+export enum ClaimSource {
+  ATLAS = 'Atlas presales',
+  FRKT_SWAPS = 'FRKT migration',
+  LOCKED_FRKT = 'Locked FRKT rewards',
+  BANX_SWAPS = 'Banx NFT swaps',
+  CATNIP = 'Catnip rewards',
+  LEADERBOARD = 'Leaderboard S2 rewards',
+  COLLECTIONS = 'Partner collections (FCFS)',
+}
+
+export type Sources = [ClaimSource, number][]
+export type SourcesBN = [ClaimSource, BN][]
+
+export type FetchUserRewardsResponse = {
+  sources?: Sources
+}
+
+export type FetchUserRewards = (props: {
+  walletPubkey: string
+}) => Promise<{ sources?: SourcesBN } | null>

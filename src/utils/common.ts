@@ -1,3 +1,4 @@
+import { BN } from 'fbonds-core'
 import { flatMap, map, reduce, uniq } from 'lodash'
 
 import {
@@ -94,4 +95,8 @@ export const createDownloadLink = (data: string, filename: string, type?: string
   tempLink.click()
 
   window.URL.revokeObjectURL(blobURL)
+}
+
+export const convertBNToNumber = (value: BN, decimals = 9) => {
+  return parseFloat(value.toString()) / Math.pow(10, decimals)
 }
