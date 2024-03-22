@@ -1,6 +1,7 @@
 import React, { CSSProperties, FC } from 'react'
 
 import { ExclamationCircleOutlined } from '@ant-design/icons'
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
@@ -10,13 +11,12 @@ import { BanxTokenStake } from '@banx/api/banxTokenStake'
 import { BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
 import { BanxLogo, Gamepad, MoneyBill } from '@banx/icons'
 import { StakeNftsModal, StakeTokens } from '@banx/pages/AdventuresPage/components'
+import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
+import { useBanxTokenBalance } from '@banx/pages/AdventuresPage/hooks/useBanxTokenBalance'
 import { useModal } from '@banx/store'
 import { formatNumbersWithCommas as format, formatCompact, fromDecimals } from '@banx/utils'
 
 import styles from './Sidebar.module.less'
-import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
-import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { useBanxTokenBalance } from '@banx/pages/AdventuresPage/hooks/useBanxTokenBalance'
 
 interface SidebarProps {
   className?: string
@@ -34,13 +34,16 @@ export const Sidebar: FC<SidebarProps> = ({
   nftsCount,
   totalClaimed,
   rewards,
-  tokensPerPartnerPoints
+  tokensPerPartnerPoints,
 }) => {
   const { open } = useModal()
-  const {publicKey} = useWallet()
-  const {connection} = useConnection()
-  const tokensPts = fromDecimals(calcPartnerPoints(banxTokenStake.tokensStaked, tokensPerPartnerPoints), BANX_TOKEN_STAKE_DECIMAL)
-  const {data: balance} = useBanxTokenBalance(connection, publicKey)
+  const { publicKey } = useWallet()
+  const { connection } = useConnection()
+  const tokensPts = fromDecimals(
+    calcPartnerPoints(banxTokenStake.tokensStaked, tokensPerPartnerPoints),
+    BANX_TOKEN_STAKE_DECIMAL,
+  )
+  const { data: balance } = useBanxTokenBalance(connection, publicKey)
   const totalPts = parseFloat(tokensPts.toString()) + banxTokenStake.partnerPointsStaked
 
   return (

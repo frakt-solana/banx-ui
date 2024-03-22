@@ -40,9 +40,13 @@ export const StakeTokens = () => {
   })
 
   const handleChangeValue = (v: string) => {
-
-    const isMaxBanxBalance = currentTabValue === ModalTabs.STAKE && parseFloat(v) <= parseFloat(fromDecimals(balance, BANX_TOKEN_STAKE_DECIMAL))
-    const isMaxStaked = currentTabValue === ModalTabs.UNSTAKE && parseFloat(v) <= fromDecimals(banxStake?.banxTokenStake?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL)
+    const isMaxBanxBalance =
+      currentTabValue === ModalTabs.STAKE &&
+      parseFloat(v) <= parseFloat(fromDecimals(balance, BANX_TOKEN_STAKE_DECIMAL))
+    const isMaxStaked =
+      currentTabValue === ModalTabs.UNSTAKE &&
+      parseFloat(v) <=
+        fromDecimals(banxStake?.banxTokenStake?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL)
 
     if (!v || isMaxBanxBalance || isMaxStaked) {
       setValue(v || '')
@@ -138,10 +142,13 @@ export const StakeTokens = () => {
     return void onUnstakeTokens()
   }
 
-  const idleOnWallet = format(fromDecimals(balance || 0, BANX_TOKEN_STAKE_DECIMAL) - parseFloat(value || '0'))
+  const idleOnWallet = format(
+    fromDecimals(balance || 0, BANX_TOKEN_STAKE_DECIMAL) - parseFloat(value || '0'),
+  )
   const banxBalance = format(fromDecimals(balance, BANX_TOKEN_STAKE_DECIMAL))
   const tokensStaked = format(
-    fromDecimals(banxStake?.banxTokenStake?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL) - parseFloat(value || '0'),
+    fromDecimals(banxStake?.banxTokenStake?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL) -
+      parseFloat(value || '0'),
   )
   const ptsAmount = format(
     calcPts(fromDecimals(banxStake?.banxTokenStake?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL)),
@@ -155,7 +162,7 @@ export const StakeTokens = () => {
     const notEnoughUnStake =
       currentTabValue === ModalTabs.UNSTAKE &&
       parseFloat(fromDecimals(banxTokenSettings?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL)) <
-      parseFloat(value)
+        parseFloat(value)
 
     return emptyValue || notEnoughStake || notEnoughUnStake
   }, [value, balance, currentTabValue, banxTokenSettings?.tokensStaked])
@@ -164,7 +171,9 @@ export const StakeTokens = () => {
     if (currentTabValue === ModalTabs.STAKE) {
       return setValue(fromDecimals(balance.toString() || 0, BANX_TOKEN_STAKE_DECIMAL))
     }
-    return setValue(fromDecimals(banxStake?.banxTokenStake?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL))
+    return setValue(
+      fromDecimals(banxStake?.banxTokenStake?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL),
+    )
   }
 
   useEffect(() => {

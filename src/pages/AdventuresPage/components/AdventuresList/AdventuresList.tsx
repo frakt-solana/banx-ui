@@ -16,6 +16,7 @@ import {
   BanxSubscription,
 } from '@banx/api/banxTokenStake'
 import { BANX_TOKEN_STAKE_DECIMAL, TOTAL_BANX_NFTS, TOTAL_BANX_PTS } from '@banx/constants/banxNfts'
+import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
 import { useBanxStakeState } from '@banx/pages/AdventuresPage/state'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { subscribeBanxAdventureAction } from '@banx/transactions/banxStaking'
@@ -24,7 +25,8 @@ import {
   formatNumbersWithCommas as format,
   formatCompact,
   fromDecimals,
-  usePriorityFees, toDecimals,
+  toDecimals,
+  usePriorityFees,
 } from '@banx/utils'
 
 import {
@@ -36,7 +38,6 @@ import {
 } from './components'
 
 import styles from './AdventuresList.module.less'
-import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
 
 interface AdventuresCardProps {
   banxSubscription?: BanxSubscription
@@ -44,8 +45,6 @@ interface AdventuresCardProps {
   walletConnected?: boolean
   maxTokenStakeAmount: number
 }
-
-
 
 const AdventuresCard: FC<AdventuresCardProps> = ({
   banxAdventure,
@@ -61,19 +60,22 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
 
   const wallet = useWallet()
 
-
   const calcMaxPts = () => {
-    if(!banxTokenSettings) {
+    if (!banxTokenSettings) {
       return 0
     }
 
-    const maxTokenStakeAmount = toDecimals(banxTokenSettings.maxTokenStakeAmount, BANX_TOKEN_STAKE_DECIMAL)
+    const maxTokenStakeAmount = toDecimals(
+      banxTokenSettings.maxTokenStakeAmount,
+      BANX_TOKEN_STAKE_DECIMAL,
+    )
 
-    return (maxTokenStakeAmount / banxAdventure.tokensPerPoints + TOTAL_BANX_PTS)
+    return maxTokenStakeAmount / banxAdventure.tokensPerPoints + TOTAL_BANX_PTS
   }
 
   const tokenPts = calcPartnerPoints(banxAdventure.totalTokensStaked, banxAdventure.tokensPerPoints)
-  const totalAdventurePts = parseFloat(fromDecimals(tokenPts, BANX_TOKEN_STAKE_DECIMAL)) + banxAdventure.totalPartnerPoints
+  const totalAdventurePts =
+    parseFloat(fromDecimals(tokenPts, BANX_TOKEN_STAKE_DECIMAL)) + banxAdventure.totalPartnerPoints
   const isParticipating =
     !!banxSubscription?.stakeTokensAmount || !!banxSubscription?.stakeNftAmount
 
@@ -83,7 +85,6 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
   const totalBanxTokensSubscribed = `${formatCompact(
     fromDecimals(banxAdventure.totalTokensStaked, BANX_TOKEN_STAKE_DECIMAL),
   )}/${formatCompact(maxTokenStakeAmount)}`
-
 
   const totalPartnerPoints = `${format(totalAdventurePts)}/${formatCompact(calcMaxPts())}`
 
@@ -140,9 +141,14 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
       })
       .execute()
   }
-  const walletTokenPts = calcPartnerPoints(banxSubscription?.stakeTokensAmount || 0, banxAdventure.tokensPerPoints)
+  const walletTokenPts = calcPartnerPoints(
+    banxSubscription?.stakeTokensAmount || 0,
+    banxAdventure.tokensPerPoints,
+  )
 
-  const totalWalletPts = parseFloat(fromDecimals(walletTokenPts, BANX_TOKEN_STAKE_DECIMAL)) + (banxSubscription?.stakePartnerPointsAmount || 0)
+  const totalWalletPts =
+    parseFloat(fromDecimals(walletTokenPts, BANX_TOKEN_STAKE_DECIMAL)) +
+    (banxSubscription?.stakePartnerPointsAmount || 0)
 
   const isSubscribed =
     banxSubscription?.adventureSubscriptionState === BanxAdventureSubscriptionState.Active
@@ -165,7 +171,9 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
           }}
           status={status}
           endsAt={
-            isStarted ? banxAdventure.periodEndingAt : banxAdventure.periodStartedAt + BANX_ADVENTURE_GAP
+            isStarted
+              ? banxAdventure.periodEndingAt
+              : banxAdventure.periodStartedAt + BANX_ADVENTURE_GAP
           }
         />
 
@@ -176,11 +184,12 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
             totalPartnerPoints={totalPartnerPoints}
           />
 
-
           {isParticipating && (
             <WalletParticipationColumn
               status={status}
-              banxTokenAmount={formatCompact(fromDecimals(banxSubscription.stakeTokensAmount, BANX_TOKEN_STAKE_DECIMAL))}
+              banxTokenAmount={formatCompact(
+                fromDecimals(banxSubscription.stakeTokensAmount, BANX_TOKEN_STAKE_DECIMAL),
+              )}
               banxAmount={format(banxSubscription.stakeNftAmount)}
               partnerPts={format(totalWalletPts)}
             />
