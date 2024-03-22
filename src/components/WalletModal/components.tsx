@@ -2,17 +2,23 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { sumBy } from 'lodash'
 
 import { useDiscordUser } from '@banx/hooks'
 import { ChangeWallet, Copy, Logo, SignOut } from '@banx/icons'
 import { useIsLedger } from '@banx/store'
-import { copyToClipboard, formatNumbersWithCommas, shortenAddress } from '@banx/utils'
+import {
+  convertBNToNumber,
+  copyToClipboard,
+  formatNumbersWithCommas,
+  shortenAddress,
+} from '@banx/utils'
 
 import Checkbox from '../Checkbox'
 import { StatInfo, VALUES_TYPES } from '../StatInfo'
 import UserAvatar from '../UserAvatar'
 import { iconComponents } from './constants'
-import { useFetchUserLockedRewards } from './hooks'
+import { useFetchUserRewards } from './hooks'
 
 import styles from './WalletModal.module.less'
 
@@ -42,9 +48,10 @@ const UserBalance = () => {
 
   const publicKeyString = publicKey?.toBase58() || ''
 
-  const { data } = useFetchUserLockedRewards(publicKeyString)
+  const { data } = useFetchUserRewards(publicKeyString)
 
-  const displayRewardsValue = formatNumbersWithCommas(data?.rewards?.toFixed(0) || 0)
+  const totalRewards = sumBy(data?.sources?.map(([, value]) => value), convertBNToNumber)
+  const displayRewardsValue = formatNumbersWithCommas(totalRewards?.toFixed(0) || 0)
 
   return (
     <div className={styles.userBalanceContainer}>
