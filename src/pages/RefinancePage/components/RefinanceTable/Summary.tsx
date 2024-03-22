@@ -84,21 +84,12 @@ export const Summary: FC<SummaryProps> = ({
 
     new TxnExecutor(makeRefinanceAction, { wallet, connection })
       .addTxnParams(txnParams)
-      // .on('pfSuccessEach', (results) => {
-      //   const { txnHash } = results[0]
-
-      //   enqueueSnackbar({
-      //     message: 'Loan successfully refinanced',
-      //     type: 'success',
-      //     solanaExplorerPath: `tx/${txnHash}`,
-      //   })
-      // })
       .on('pfSuccessEach', (results) => {
         const { txnHash } = results[0]
 
         enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
+          message: 'Loan successfully refinanced',
+          type: 'success',
           solanaExplorerPath: `tx/${txnHash}`,
         })
       })

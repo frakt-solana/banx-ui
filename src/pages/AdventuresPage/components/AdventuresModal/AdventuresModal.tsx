@@ -150,19 +150,11 @@ const StakeContent: FC<StakeContent> = ({ nfts = [], adventures = [] }) => {
         { signAllChunks: isLedger ? 5 : 40 },
       )
         .addTxnParams(params)
-        // .on('pfSuccessEach', (results) => {
-        //   const { txnHash } = results[0]
-        //   enqueueSnackbar({
-        //     message: 'Staked successfully',
-        //     type: 'success',
-        //     solanaExplorerPath: `tx/${txnHash}`,
-        //   })
-        // })
         .on('pfSuccessEach', (results) => {
           const { txnHash } = results[0]
           enqueueSnackbar({
-            message: 'Transaction sent',
-            type: 'info',
+            message: 'Staked successfully',
+            type: 'success',
             solanaExplorerPath: `tx/${txnHash}`,
           })
         })
@@ -270,19 +262,11 @@ const UnstakeContent: FC<UnstakeContent> = ({ nfts = [] }) => {
         { signAllChunks: isLedger ? 5 : 40 },
       )
         .addTxnParams(txnParams)
-        // .on('pfSuccessEach', (results) => {
-        //   const { txnHash } = results[0]
-        //   enqueueSnackbar({
-        //     message: 'Unstaked successfully',
-        //     type: 'success',
-        //     solanaExplorerPath: `tx/${txnHash}`,
-        //   })
-        // })
         .on('pfSuccessEach', (results) => {
           const { txnHash } = results[0]
           enqueueSnackbar({
-            message: 'Transaction sent',
-            type: 'info',
+            message: 'Unstaked successfully',
+            type: 'success',
             solanaExplorerPath: `tx/${txnHash}`,
           })
         })

@@ -8,7 +8,7 @@ import { Button } from '@banx/components/Buttons'
 import { TensorLink } from '@banx/components/SolanaLinks'
 
 import { Loan } from '@banx/api/core'
-// import { useHiddenNftsMints } from '@banx/pages/OffersPage'
+import { useHiddenNftsMints } from '@banx/pages/OffersPage'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimAction } from '@banx/transactions/loans'
@@ -36,24 +36,17 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
 
   const priorityFees = usePriorityFees()
 
-  // const { addMints: hideLoans } = useHiddenNftsMints()
+  const { addMints: hideLoans } = useHiddenNftsMints()
 
   const onClaim = () => {
     trackPageEvent('myoffers', 'activetab-claim')
     new TxnExecutor(makeClaimAction, { wallet, connection })
       .addTxnParam({ loan, priorityFees })
-      // .on('pfSuccessEach', (results) => {
-      //   hideLoans(loan.nft.mint)
-      //   enqueueSnackbar({
-      //     message: 'Collateral successfully claimed',
-      //     type: 'success',
-      //     solanaExplorerPath: `tx/${results[0].txnHash}`,
-      //   })
-      // })
       .on('pfSuccessEach', (results) => {
+        hideLoans(loan.nft.mint)
         enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
+          message: 'Collateral successfully claimed',
+          type: 'success',
           solanaExplorerPath: `tx/${results[0].txnHash}`,
         })
       })
