@@ -128,10 +128,7 @@ const RewardsBlock = () => {
           title={!availableToClaim ? 'There will be a link to claim here when time runs out' : ''}
         >
           <>
-            <Button
-              disabled={!availableToClaim}
-              className={classNames(styles.claimButton, { [styles.disabled]: !availableToClaim })}
-            >
+            <Button disabled={!availableToClaim} className={styles.claimButton}>
               {availableToClaim ? 'To claim' : <Timer expiredAt={TIME_TO_CLAIM} />}
             </Button>
           </>
