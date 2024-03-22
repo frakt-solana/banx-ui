@@ -44,12 +44,12 @@ const BanxRewardsTab = () => {
 
 export default BanxRewardsTab
 
-interface StatProps extends StatsInfoProps {
+interface RewardsStatProps extends StatsInfoProps {
   value: number
   disabled: boolean
 }
 
-const Stat: FC<StatProps> = ({ value, disabled, ...props }) => {
+const RewardsStat: FC<RewardsStatProps> = ({ value, disabled, ...props }) => {
   const formattedValue = formatNumbersWithCommas(convertBNToNumber(value)?.toFixed(0))
 
   return (
@@ -91,7 +91,12 @@ const RewardsBlock = () => {
         {rows.map((row, index) => (
           <div key={index} className={styles.row}>
             {row?.map(([label, value]) => (
-              <Stat key={label} label={label} value={value} disabled={!value || !connected} />
+              <RewardsStat
+                key={label}
+                label={label}
+                value={value}
+                disabled={!value || !connected}
+              />
             ))}
           </div>
         ))}
