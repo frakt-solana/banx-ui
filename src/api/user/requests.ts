@@ -5,12 +5,15 @@ import { BACKEND_BASE_URL } from '@banx/constants'
 import { MutationResponse } from '@banx/types'
 import { getDiscordAvatarUrl } from '@banx/utils'
 
+import { convertToSourcesNumber } from './helpers'
 import {
   BanxNotification,
   BonkWithdrawal,
   BonkWithdrawalSchema,
   DiscordUserInfo,
   DiscordUserInfoRaw,
+  FetchUserRewards,
+  FetchUserRewardsResponse,
   LeaderboardData,
   LeaderboardDataSchema,
   LeaderboardTimeRange,
@@ -18,7 +21,6 @@ import {
   LinkedWallet,
   SeasonUserRewards,
   SeasonUserRewardsSchema,
-  UserLockedRewards,
 } from './types'
 
 type FetchDiscordUser = (props: { publicKey: web3.PublicKey }) => Promise<DiscordUserInfo | null>
@@ -191,13 +193,18 @@ export const unlinkWallet: UnlinkWallet = async ({ jwt, walletToUnlink }) => {
   }
 }
 
-type FetchUserLockedRewards = (props: { publicKey: string }) => Promise<UserLockedRewards>
-export const fetchUserLockedRewards: FetchUserLockedRewards = async ({ publicKey }) => {
-  const { data } = await axios.get<{ data: UserLockedRewards }>(
-    `${BACKEND_BASE_URL}/stats/locked-rewards/${publicKey}`,
+export const fetchUserRewards: FetchUserRewards = async ({ walletPubkey }) => {
+  const { data } = await axios.get<{ data: FetchUserRewardsResponse }>(
+    `${BACKEND_BASE_URL}/launch/user/${walletPubkey}`,
   )
 
-  return data?.data ?? { rewards: 0 }
+  if (!data?.data) return null
+
+  const { sources } = data.data
+
+  return {
+    sources: sources ? convertToSourcesNumber(sources) : undefined,
+  }
 }
 
 type FetchSeasonUserRewards = (props: { walletPubkey: string }) => Promise<SeasonUserRewards | null>
