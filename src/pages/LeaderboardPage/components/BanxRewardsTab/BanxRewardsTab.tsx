@@ -13,6 +13,7 @@ import Timer from '@banx/components/Timer'
 import Tooltip from '@banx/components/Tooltip'
 import { useFetchUserRewards } from '@banx/components/WalletModal'
 
+import { LAUNCH_APP_URL } from '@banx/constants'
 import { Theme, useTheme } from '@banx/hooks'
 import {
   BanxRewardsDark as BanxRewardsDarkIcon,
@@ -124,15 +125,24 @@ const RewardsBlock = () => {
           />
         )}
 
-        <Tooltip
-          title={!availableToClaim ? 'There will be a link to claim here when time runs out' : ''}
-        >
-          <>
-            <Button disabled={!availableToClaim} className={styles.claimButton}>
-              {availableToClaim ? 'To claim' : <Timer expiredAt={TIME_TO_CLAIM} />}
-            </Button>
-          </>
-        </Tooltip>
+        {!availableToClaim ? (
+          <Tooltip title="There will be a link to claim here when time runs out">
+            <>
+              <Button className={styles.claimButton} disabled>
+                <Timer expiredAt={TIME_TO_CLAIM} />
+              </Button>
+            </>
+          </Tooltip>
+        ) : (
+          <a
+            href={LAUNCH_APP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.claimButtonLink}
+          >
+            <Button className={styles.claimButton}>To claim</Button>
+          </a>
+        )}
       </div>
     </div>
   )
