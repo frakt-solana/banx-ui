@@ -14,11 +14,11 @@
 .content {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  min-width: 608px;
   width: 100%;
 
   @media (max-width: 640px) {
-    gap: 16px;
+    min-width: unset;
   }
 }
 
@@ -73,37 +73,157 @@
   margin: 0;
 }
 
-.stats {
+.rewardsBlock {
+  background: var(--additional-lime-secondary);
+  border: var(--border-less-primary);
+  border-bottom: 0;
+  border-radius: 18px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.rewardsBlockTitleWrapper {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 24px;
-  white-space: nowrap;
-  overflow-x: auto;
-  overflow-y: hidden;
-  height: 100%;
-  width: 100%;
+  padding: 12px;
+  gap: 8px;
 }
 
-.statContainer {
-  flex-direction: column-reverse;
+.rewardsBlockTitle {
+  font: var(--title-xl);
+  text-transform: uppercase;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  gap: 8px;
+}
+
+.border-after(@direction) {
+  position: relative;
+
+  &::after {
+    content: '';
+    background: var(--accent-secondary);
+    position: absolute;
+    top: 50%;
+    @{direction}: -9px;
+    height: 0.5px;
+    width: 9px;
+  }
+}
+
+.row {
+  display: flex;
   align-items: center;
-  gap: 0;
-}
+  overflow-x: auto;
+  gap: 8px;
 
-.statValue {
-  font: var(--important-text-xl);
+  & > div:first-child {
+    border-left: 0;
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+
+    .border-after(right);
+  }
+
+  & > div:nth-child(3) {
+    .border-after(left);
+  }
 
   @media (max-width: 640px) {
-    font: var(--important-text-sm);
+    & > div:last-child {
+      border-right: 0;
+      border-bottom-right-radius: 0;
+      border-top-right-radius: 0;
+    }
   }
 }
 
-.statLabel {
-  color: var(--content-primary);
-  font: var(--title-sm);
+.statRewardWrapper {
+  background: var(--accent-primary-sub);
+  border: 1px solid var(--accent-secondary);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  gap: 8px;
+
+  .stat {
+    flex-direction: column-reverse;
+    white-space: nowrap;
+    gap: 0px;
+
+    span {
+      color: var(--content-primary);
+    }
+  }
+
+  .value {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    svg path {
+      fill: #1b1b1b;
+    }
+  }
+
+  &.disabled {
+    background: var(--bg-secondary);
+
+    .stat {
+      span {
+        color: var(--content-secondary);
+      }
+    }
+  }
 
   @media (max-width: 640px) {
-    font: var(--title-xs);
+    width: 100%;
   }
+}
+
+.circleCheckIcon {
+  &.disabled {
+    path:first-child {
+      fill: none;
+    }
+    path:last-child {
+      fill: var(--content-secondary);
+    }
+  }
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+}
+
+.totalRewardsStat {
+  gap: 0px;
+
+  .label {
+    color: var(--content-primary);
+  }
+
+  .value {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font: var(--important-text-lg);
+  }
+}
+
+.claimButtonLink,
+.claimButton {
+  text-decoration: none;
+}
+
+.claimButton {
+  width: 128px;
 }

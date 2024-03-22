@@ -2,6 +2,7 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { sumBy } from 'lodash'
 
 import { useDiscordUser } from '@banx/hooks'
 import { ChangeWallet, Copy, Logo, SignOut } from '@banx/icons'
@@ -12,7 +13,7 @@ import Checkbox from '../Checkbox'
 import { StatInfo, VALUES_TYPES } from '../StatInfo'
 import UserAvatar from '../UserAvatar'
 import { iconComponents } from './constants'
-import { useFetchUserLockedRewards } from './hooks'
+import { useFetchUserRewards } from './hooks'
 
 import styles from './WalletModal.module.less'
 
@@ -42,9 +43,10 @@ const UserBalance = () => {
 
   const publicKeyString = publicKey?.toBase58() || ''
 
-  const { data } = useFetchUserLockedRewards(publicKeyString)
+  const { data } = useFetchUserRewards(publicKeyString)
 
-  const displayRewardsValue = formatNumbersWithCommas(data?.rewards?.toFixed(0) || 0)
+  const totalRewards = sumBy(data?.sources?.map(([, value]) => value))
+  const displayRewardsValue = formatNumbersWithCommas((totalRewards / 1e9)?.toFixed(0) || 0)
 
   return (
     <div className={styles.userBalanceContainer}>
