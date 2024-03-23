@@ -115,7 +115,7 @@ export const AdventureSubscribeButton: FC<AdventuresComponentsProps> = ({
 
   if (subscribeUpdateAvailable && isParticipating && isUpcoming)
     return (
-      <Button variant="secondary" className={styles.subscribeBtn} onClick={subscribe}>
+      <Button variant="secondary" className={styles.subscribeBtn} onClick={subscribe} disabled>
         Update subscription with new Banx
       </Button>
     )
@@ -126,6 +126,7 @@ export const AdventureSubscribeButton: FC<AdventuresComponentsProps> = ({
         variant="primary"
         className={styles.subscribeBtn}
         onClick={stakedNfts.length ? subscribe : () => setNftsModalOpen(true)}
+        disabled
       >
         Subscribe to participate
       </Button>

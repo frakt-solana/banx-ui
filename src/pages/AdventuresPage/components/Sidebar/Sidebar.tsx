@@ -49,6 +49,7 @@ export const Sidebar: FC<SidebarProps> = ({ adventuresInfo, className }) => {
         <Button
           onClick={() => open(AdventuresModal, { adventuresInfo })}
           className={styles.manageButton}
+          disabled
           size="small"
         >
           Manage
