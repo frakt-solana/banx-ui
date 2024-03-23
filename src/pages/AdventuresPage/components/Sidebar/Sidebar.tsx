@@ -168,7 +168,9 @@ export const Sidebar: FC<SidebarProps> = ({
               value={format(fromDecimals(rewards, BANX_TOKEN_STAKE_DECIMAL))}
               icon={BanxLogo}
             />
-            <Button  onClick={claimAction} disabled={!rewards} className={styles.manageButton}>Claim</Button>
+            <Button onClick={claimAction} disabled={!rewards} className={styles.manageButton}>
+              Claim
+            </Button>
           </div>
 
           <div className={styles.divider} />
