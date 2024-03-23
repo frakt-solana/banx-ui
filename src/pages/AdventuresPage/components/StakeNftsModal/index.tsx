@@ -201,10 +201,14 @@ export const StakeNftsModal = () => {
 
   const getStatsNfts = () => {
     if (currentTab === modalTabs[0].value) {
-      return nfts.filter(({ stake, isLoaned }) => !isLoaned && stake?.banxStakeState === BanxStakeState.Unstaked)
+      return nfts.filter(
+        ({ stake, isLoaned }) => !isLoaned && stake?.banxStakeState === BanxStakeState.Unstaked,
+      )
     }
 
-    return nfts.filter(({ stake, isLoaned }) => !isLoaned && stake?.banxStakeState !== BanxStakeState.Unstaked)
+    return nfts.filter(
+      ({ stake, isLoaned }) => !isLoaned && stake?.banxStakeState !== BanxStakeState.Unstaked,
+    )
   }
 
   useEffect(() => {
