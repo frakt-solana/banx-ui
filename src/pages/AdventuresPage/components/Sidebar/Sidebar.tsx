@@ -3,6 +3,11 @@ import React, { CSSProperties, FC } from 'react'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { web3 } from 'fbonds-core'
+import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
+import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
+import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 
@@ -13,8 +18,17 @@ import { BanxLogo, Gamepad, MoneyBill } from '@banx/icons'
 import { StakeNftsModal, StakeTokens } from '@banx/pages/AdventuresPage/components'
 import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
 import { useBanxTokenBalance } from '@banx/pages/AdventuresPage/hooks/useBanxTokenBalance'
+import { useBanxStakeState } from '@banx/pages/AdventuresPage/state'
 import { useModal } from '@banx/store'
-import { formatNumbersWithCommas as format, formatCompact, fromDecimals } from '@banx/utils'
+import { defaultTxnErrorHandler } from '@banx/transactions'
+import { stakeBanxClaimAction } from '@banx/transactions/banxStaking/stakeBanxClaimAction'
+import {
+  enqueueSnackbar,
+  formatNumbersWithCommas as format,
+  formatCompact,
+  fromDecimals,
+  usePriorityFees,
+} from '@banx/utils'
 
 import styles from './Sidebar.module.less'
 
@@ -37,6 +51,9 @@ export const Sidebar: FC<SidebarProps> = ({
   tokensPerPartnerPoints,
 }) => {
   const { open } = useModal()
+  const wallet = useWallet()
+  const { banxStake, banxTokenSettings, updateStake } = useBanxStakeState()
+
   const { publicKey } = useWallet()
   const { connection } = useConnection()
   const tokensPts = fromDecimals(
@@ -45,6 +62,56 @@ export const Sidebar: FC<SidebarProps> = ({
   )
   const { data: balance } = useBanxTokenBalance(connection, publicKey)
   const totalPts = parseFloat(tokensPts.toString()) + banxTokenStake.partnerPointsStaked
+  const priorityFees = usePriorityFees()
+
+  const claimAction = () => {
+    if (!wallet.publicKey?.toBase58() || !banxTokenSettings || !banxStake?.banxTokenStake) {
+      return
+    }
+    const banxSubscribeAdventureOptimistic: BanxSubscribeAdventureOptimistic = {
+      banxStakingSettings: banxTokenSettings,
+      banxAdventures: banxStake.banxAdventures,
+      banxTokenStake: banxStake.banxTokenStake,
+    }
+
+    const weeks = banxStake.banxAdventures
+      .filter(
+        ({ adventureSubscription }) =>
+          adventureSubscription?.adventureSubscriptionState ===
+          BanxAdventureSubscriptionState.Active,
+      )
+      .map(({ adventure }) => adventure.week)
+
+    const params = {
+      tokenMint: new web3.PublicKey(BANX_TOKEN_MINT),
+      optimistic: banxSubscribeAdventureOptimistic,
+      priorityFees,
+      weeks,
+    }
+
+    new TxnExecutor(stakeBanxClaimAction, { wallet, connection })
+      .addTxnParam(params)
+      .on('pfSuccessEach', (results) => {
+        const { txnHash } = results[0]
+        enqueueSnackbar({
+          message: 'Successfully claimed',
+          type: 'success',
+          solanaExplorerPath: `tx/${txnHash}`,
+        })
+        results.forEach(({ result }) => !!result && updateStake(result))
+      })
+      .on('pfSuccessAll', () => {
+        close()
+      })
+      .on('pfError', (error) => {
+        defaultTxnErrorHandler(error, {
+          additionalData: params,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'Claim StakeBanx',
+        })
+      })
+      .execute()
+  }
 
   return (
     <div className={classNames(styles.sidebar, className)}>
@@ -98,7 +165,12 @@ export const Sidebar: FC<SidebarProps> = ({
             value={format(fromDecimals(rewards, BANX_TOKEN_STAKE_DECIMAL))}
             text="claimable"
           />
-          <Button className={styles.manageButton} size="default">
+          <Button
+            disabled={!rewards}
+            className={styles.manageButton}
+            size="default"
+            onClick={claimAction}
+          >
             Claim
           </Button>
         </div>
