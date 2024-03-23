@@ -71,7 +71,7 @@ export const AdventuresPage: FC = () => {
         )}
       </div>
 
-      {!!banxStake?.banxTokenStake && isSuccess && (
+      {!!userPubkey && !!banxStake?.banxTokenStake && isSuccess && (
         <Sidebar
           tokensPerPartnerPoints={banxTokenSettings.tokensPerPartnerPoints}
           rewards={rewards}

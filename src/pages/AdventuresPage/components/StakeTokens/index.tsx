@@ -81,7 +81,7 @@ export const StakeTokens = () => {
       })
       .on('pfSuccessAll', () => {
         enqueueSnackbar({
-          message: 'Successfully Token staked',
+          message: 'Token successfully staked',
           type: 'success',
         })
         close()
@@ -119,7 +119,7 @@ export const StakeTokens = () => {
       })
       .on('pfSuccessAll', () => {
         enqueueSnackbar({
-          message: 'Successfully Token staked',
+          message: 'Token successfully unstaked',
           type: 'success',
         })
         close()
@@ -128,7 +128,7 @@ export const StakeTokens = () => {
         defaultTxnErrorHandler(error, {
           additionalData: txnParam,
           walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'Stake banx token',
+          transactionName: 'Unstake banx token',
         })
       })
       .execute()
