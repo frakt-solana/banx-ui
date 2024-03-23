@@ -1,1 +1,1 @@
-export const TIME_TO_CLAIM = 1711326000
+export const TIME_TO_CLAIM = 1711383600
