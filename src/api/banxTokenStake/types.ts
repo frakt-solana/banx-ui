@@ -42,6 +42,7 @@ export const NftSchema = z.object({
     playerPoints: z.number(),
     rarity: z.string(),
   }),
+  isLoaned: z.boolean(),
   mint: z.string(),
   pointsMap: PointsMapSchema,
   stake: StakeSchema,

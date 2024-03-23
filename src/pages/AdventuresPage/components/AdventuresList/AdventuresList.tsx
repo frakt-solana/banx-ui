@@ -77,7 +77,10 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
   const totalAdventurePts =
     parseFloat(fromDecimals(tokenPts, BANX_TOKEN_STAKE_DECIMAL)) + banxAdventure.totalPartnerPoints
   const isParticipating =
-    !!banxSubscription?.stakeTokensAmount || !!banxSubscription?.stakeNftAmount
+    !!banxStake?.banxTokenStake?.tokensStaked || !!banxStake?.banxTokenStake?.banxNftsStakedQuantity
+
+  const isSubscribed =
+    banxSubscription?.adventureSubscriptionState === BanxAdventureSubscriptionState.Active
 
   const totalBanxSubscribed = `${format(banxAdventure.totalBanxSubscribed)}/${format(
     TOTAL_BANX_NFTS,
@@ -150,9 +153,6 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
     parseFloat(fromDecimals(walletTokenPts, BANX_TOKEN_STAKE_DECIMAL)) +
     (banxSubscription?.stakePartnerPointsAmount || 0)
 
-  const isSubscribed =
-    banxSubscription?.adventureSubscriptionState === BanxAdventureSubscriptionState.Active
-
   return (
     <li className={styles.card}>
       <div className={styles.header}>
@@ -169,6 +169,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
             adventure: banxAdventure,
             adventureSubscription: banxSubscription,
           }}
+          isSubscribed={isSubscribed}
           status={status}
           endsAt={
             isStarted
@@ -184,9 +185,9 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
             totalPartnerPoints={totalPartnerPoints}
           />
 
-          {isParticipating && (
+          {wallet.connected && isSubscribed && (
             <WalletParticipationColumn
-              status={status}
+              status={banxSubscription?.adventureSubscriptionState}
               banxTokenAmount={formatCompact(
                 fromDecimals(banxSubscription.stakeTokensAmount, BANX_TOKEN_STAKE_DECIMAL),
               )}
@@ -195,19 +196,22 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
             />
           )}
 
-          {!!walletConnected && !isParticipating && (
+          {!!walletConnected && !isSubscribed && (
             <NotParticipatedColumn status={AdventureStatus.LIVE} />
           )}
         </div>
       </div>
 
-      <Participate
-        isNone={banxAdventure.adventureState === 'none'}
-        isStarted={isStarted}
-        isSubscribed={isSubscribed}
-        isDisabled={!wallet.publicKey?.toBase58()}
-        onSubmit={onSubscribe}
-      />
+      {wallet.connected && (
+        <Participate
+          isParticipating={isParticipating}
+          isNone={banxAdventure.adventureState === 'none'}
+          isStarted={isStarted}
+          isSubscribed={isSubscribed}
+          isDisabled={!wallet.publicKey?.toBase58()}
+          onSubmit={onSubscribe}
+        />
+      )}
     </li>
   )
 }
@@ -228,6 +232,8 @@ export const AdventuresList: FC<AdventuresListProps> = ({
   return (
     <ul className={classNames(styles.list, className)}>
       {banxStake.banxAdventures
+        // TODO until 38 will not finished
+        .filter(({ adventure }) => adventure.week !== 38)
         .sort((a, b) => (a.adventure.week > b.adventure.week ? 1 : -1))
         .map(({ adventure, adventureSubscription }) => (
           <AdventuresCard
