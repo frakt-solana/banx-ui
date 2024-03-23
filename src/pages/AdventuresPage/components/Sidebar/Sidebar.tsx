@@ -18,7 +18,7 @@ import { BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
 import { BanxLogo, Gamepad, MoneyBill } from '@banx/icons'
 import { StakeNftsModal, StakeTokens } from '@banx/pages/AdventuresPage/components'
 import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
-import { useBanxTokenBalance } from '@banx/pages/AdventuresPage/hooks/useBanxTokenBalance'
+// import { useBanxTokenBalance } from '@banx/pages/AdventuresPage/hooks/useBanxTokenBalance'
 import { useBanxStakeState } from '@banx/pages/AdventuresPage/state'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
@@ -55,13 +55,13 @@ export const Sidebar: FC<SidebarProps> = ({
   const wallet = useWallet()
   const { banxStake, banxTokenSettings, updateStake } = useBanxStakeState()
 
-  const { publicKey } = useWallet()
+  // const { publicKey } = useWallet()
   const { connection } = useConnection()
   const tokensPts = fromDecimals(
     calcPartnerPoints(banxTokenStake.tokensStaked, tokensPerPartnerPoints),
     BANX_TOKEN_STAKE_DECIMAL,
   )
-  const { data: balance } = useBanxTokenBalance(connection, publicKey)
+  // const { data: balance } = useBanxTokenBalance(connection, publicKey)
   const totalPts = parseFloat(tokensPts.toString()) + banxTokenStake.partnerPointsStaked
   const priorityFees = usePriorityFees()
 
@@ -114,6 +114,14 @@ export const Sidebar: FC<SidebarProps> = ({
       .execute()
   }
 
+  const tokensTotal = () => {
+    if(!banxTokenSettings?.maxTokenStakeAmount) {
+      return 0
+    }
+
+    return formatCompact(fromDecimals(banxTokenStake.tokensStaked + banxTokenSettings?.maxTokenStakeAmount, BANX_TOKEN_STAKE_DECIMAL))
+  }
+
   return (
     <div className={classNames(styles.sidebar, className)}>
       <div className={styles.content}>
@@ -141,7 +149,7 @@ export const Sidebar: FC<SidebarProps> = ({
                 label="Tokens staked"
                 value={`${formatCompact(
                   fromDecimals(banxTokenStake.tokensStaked, BANX_TOKEN_STAKE_DECIMAL),
-                )}/${formatCompact(fromDecimals(balance, BANX_TOKEN_STAKE_DECIMAL))}`}
+                )}/${tokensTotal()}`}
               />
 
               <Button

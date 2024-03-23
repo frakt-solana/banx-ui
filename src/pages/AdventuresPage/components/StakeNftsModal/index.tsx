@@ -99,7 +99,7 @@ export const StakeNftsModal = () => {
 
   const filteredNfts = useMemo(() => {
     if (currentTab === modalTabs[0].value) {
-      return nfts.filter((nft) => nft?.stake?.banxStakeState === BanxStakeState.Unstaked)
+      return nfts.filter((nft) => !nft.isLoaned && nft?.stake?.banxStakeState === BanxStakeState.Unstaked)
     }
 
     return nfts.filter((nft) => nft?.stake?.banxStakeState !== BanxStakeState.Unstaked)
@@ -207,7 +207,7 @@ export const StakeNftsModal = () => {
     }
 
     return nfts.filter(
-      ({ stake, isLoaned }) => !isLoaned && stake?.banxStakeState !== BanxStakeState.Unstaked,
+      ({ stake }) => stake?.banxStakeState !== BanxStakeState.Unstaked,
     )
   }
 
