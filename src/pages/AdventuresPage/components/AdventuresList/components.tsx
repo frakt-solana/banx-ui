@@ -1,5 +1,7 @@
 import React, { FC } from 'react'
 
+import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
+
 import { Button } from '@banx/components/Buttons'
 
 import { AdventureStatus } from '@banx/api/adventures'
@@ -31,11 +33,11 @@ export const WalletParticipationColumn: FC<{
   banxTokenAmount: string
   banxAmount: string
   partnerPts: string | number
-  status: AdventureStatus
+  status: BanxAdventureSubscriptionState
 }> = (props) => {
   const TITLE_BY_STATUS = {
-    [AdventureStatus.ENDED]: 'You participated with',
-    [AdventureStatus.LIVE]: 'You are participating with',
+    [BanxAdventureSubscriptionState.Active]: 'You subscribed with',
+    [BanxAdventureSubscriptionState.None]: 'You are participating with',
     DEFAULT: 'You subscribed with',
   }
 
@@ -70,7 +72,8 @@ export const AdventuresTimer: FC<{
   status: AdventureStatus
   endsAt: number
   adventureWithSubscription: { adventure: BanxAdventure; adventureSubscription?: BanxSubscription }
-}> = ({ status, endsAt, adventureWithSubscription }) => {
+  isSubscribed: boolean
+}> = ({ status, endsAt, adventureWithSubscription, isSubscribed }) => {
   const TIMER_TEXT_BY_STATUS = {
     [AdventureStatus.LIVE]: 'Before rewards distribution',
     [AdventureStatus.UPCOMING]: 'Deadline to subscribe',
@@ -81,6 +84,9 @@ export const AdventuresTimer: FC<{
   const { timeLeft } = useCountdown(endsAt)
   const rewards = () => {
     if (adventureWithSubscription.adventureSubscription) {
+      if (!isSubscribed) {
+        return 0
+      }
       const props = {
         adventure: adventureWithSubscription.adventure,
         adventureSubscription: adventureWithSubscription.adventureSubscription,
@@ -105,7 +111,7 @@ export const AdventuresTimer: FC<{
           {TIMER_TEXT_BY_STATUS[status as keyof typeof TIMER_TEXT_BY_STATUS] ||
             TIMER_TEXT_BY_STATUS.DEFAULT}
         </p>
-        {status === AdventureStatus.LIVE && (
+        {isSubscribed && status === AdventureStatus.LIVE && (
           <div className={styles.distributed}>
             <span>
               {formatNumbersWithCommas(fromDecimals(rewards(), BANX_TOKEN_STAKE_DECIMAL))}
@@ -123,6 +129,7 @@ interface ParticipateProps {
   isStarted: boolean
   isSubscribed: boolean
   isDisabled: boolean
+  isParticipating: boolean
   isNone: boolean
   onSubmit: () => void
 }
@@ -132,9 +139,14 @@ export const Participate: FC<ParticipateProps> = ({
   isSubscribed,
   isDisabled,
   isNone,
+  isParticipating,
   onSubmit,
 }) => {
-  if (isStarted && isSubscribed) {
+  const showSubscribeBtn = (!isStarted && !isSubscribed) || (isNone && !isStarted)
+  const showParticipating = isStarted && isSubscribed
+  const showSubscribed = !isStarted && isSubscribed
+
+  if (showParticipating) {
     return (
       <Button disabled className={styles.subscribeBtn}>
         <div>
@@ -145,15 +157,19 @@ export const Participate: FC<ParticipateProps> = ({
     )
   }
 
-  if (!isStarted && !isSubscribed) {
+  if (showSubscribeBtn) {
     return (
-      <Button disabled={isDisabled} onClick={onSubmit} className={styles.subscribeBtn}>
+      <Button
+        disabled={isDisabled || !isParticipating}
+        onClick={onSubmit}
+        className={styles.subscribeBtn}
+      >
         Subscribe to participate
       </Button>
     )
   }
 
-  if (!isStarted && isSubscribed) {
+  if (showSubscribed) {
     return (
       <Button disabled className={styles.subscribeBtn}>
         <div>
@@ -164,47 +180,5 @@ export const Participate: FC<ParticipateProps> = ({
     )
   }
 
-  if (isNone && !isStarted) {
-    return (
-      <Button disabled={isDisabled} onClick={onSubmit} className={styles.subscribeBtn}>
-        Subscribe to participate
-      </Button>
-    )
-  }
-
-  // if (!isStarted && isSubscribed) {
-  //   return (
-  //     <Button disabled className={styles.subscribeBtn}>
-  //       <div>
-  //         <Clock />
-  //         <span>Participating</span>
-  //       </div>
-  //     </Button>
-  //   )
-  // }
-  //
-  // if (!isStarted && !isSubscribed) {
-  //   return null
-  // }
-
-  if (isStarted && isSubscribed && isNone) {
-    return (
-      <Button disabled className={styles.subscribeBtn}>
-        <div>
-          <SuccessIcon />
-          <span>Subscribed</span>
-        </div>
-      </Button>
-    )
-  }
-
-  if (isStarted && !isSubscribed) {
-    return null
-  }
-
-  return (
-    <Button disabled={isDisabled} onClick={onSubmit} className={styles.subscribeBtn}>
-      Subscribe to participate
-    </Button>
-  )
+  return null
 }

@@ -49,6 +49,6 @@ export const unstakeBanxNftsAction: UnstakeBanxNftsActionAction = async (
     instructions: instructions,
     signers: signers,
     lookupTables: [],
-    sd: optimisticResult,
+    additionalResult: optimisticResult.banxSubscribeAdventureOptimistic,
   }
 }

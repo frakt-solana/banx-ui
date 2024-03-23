@@ -99,10 +99,10 @@ export const StakeNftsModal = () => {
 
   const filteredNfts = useMemo(() => {
     if (currentTab === modalTabs[0].value) {
-      return nfts.filter((nft) => nft?.stake?.banxStakeState === 'unstaked')
+      return nfts.filter((nft) => nft?.stake?.banxStakeState === BanxStakeState.Unstaked)
     }
 
-    return nfts.filter((nft) => nft?.stake?.banxStakeState === 'staked')
+    return nfts.filter((nft) => nft?.stake?.banxStakeState === BanxStakeState.Staked)
   }, [nfts, currentTab, modalTabs])
 
   const onStake = () => {
@@ -130,7 +130,7 @@ export const StakeNftsModal = () => {
         .on('pfSuccessEach', (results) => {
           const { txnHash } = results[0]
           enqueueSnackbar({
-            message: 'Staked Nft successfully',
+            message: 'Nft successfully staked',
             type: 'success',
             solanaExplorerPath: `tx/${txnHash}`,
           })
@@ -174,10 +174,10 @@ export const StakeNftsModal = () => {
 
       new TxnExecutor(unstakeBanxNftsAction, { wallet, connection })
         .addTxnParams(params)
-        .on('pfSuccessAll', (results) => {
+        .on('pfSuccessEach', (results) => {
           const { txnHash } = results[0]
           enqueueSnackbar({
-            message: 'Unstaked Nft successfully',
+            message: 'Nft successfully unstaked',
             type: 'success',
             solanaExplorerPath: `tx/${txnHash}`,
           })
@@ -190,7 +190,7 @@ export const StakeNftsModal = () => {
           defaultTxnErrorHandler(error, {
             additionalData: params,
             walletPubkey: wallet?.publicKey?.toBase58(),
-            transactionName: 'StakeBanx',
+            transactionName: 'UnstakeBanx',
           })
         })
         .execute()
@@ -220,7 +220,7 @@ export const StakeNftsModal = () => {
         <ul className={styles.nfts}>
           {filteredNfts.map((nft) => (
             <NftCheckbox
-              disabled={nft.stake.isLoaned && nft.stake.banxStakeState === BanxStakeState.Staked}
+              disabled={nft?.isLoaned && nft.stake.banxStakeState === BanxStakeState.Staked}
               key={nft.mint}
               nft={nft}
               onClick={onSelect}
