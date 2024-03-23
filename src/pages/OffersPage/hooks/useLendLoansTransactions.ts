@@ -14,8 +14,8 @@ import { enqueueSnackbar, usePriorityFees } from '@banx/utils'
 export const useLendLoansTransactions = ({
   loan,
   bestOffer, // updateOrAddLoan,
-  // updateOrAddOffer,
-} // addMints,
+  // addMints,
+} // updateOrAddOffer,
 : {
   loan: Loan
   bestOffer: Offer

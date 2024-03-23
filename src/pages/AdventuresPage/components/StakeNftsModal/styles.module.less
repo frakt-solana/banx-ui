@@ -204,6 +204,17 @@
   z-index: 999;
 }
 
+.footerEmpty {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  padding: 24px;
+  background-color: var(--bg-primary);
+  border-top: 1px solid var(--bg-border);
+  z-index: 999;
+}
+
 .footerBtn {
   padding: 10px;
 }
@@ -218,4 +229,20 @@
   font: var(--important-text-xl);
   font-weight: 400;
   margin-top: 130px;
+}
+
+.footerTensorBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+
+  svg {
+    margin-right: 4px;
+  }
+
+  & > a {
+    display: flex;
+    align-items: center;
+    color: inherit;
+  }
 }

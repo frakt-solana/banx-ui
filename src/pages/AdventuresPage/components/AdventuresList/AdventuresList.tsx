@@ -89,7 +89,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
     fromDecimals(banxAdventure.totalTokensStaked, BANX_TOKEN_STAKE_DECIMAL),
   )}/${formatCompact(maxTokenStakeAmount)}`
 
-  const totalPartnerPoints = `${format(totalAdventurePts)}/${formatCompact(calcMaxPts())}`
+  const totalPartnerPoints = `${formatCompact(totalAdventurePts)}/${formatCompact(calcMaxPts())}`
 
   const status = useMemo(() => {
     if (isEnded) {

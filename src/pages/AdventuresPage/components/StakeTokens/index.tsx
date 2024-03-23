@@ -48,7 +48,6 @@ export const StakeTokens = () => {
       currentTabValue === ModalTabs.UNSTAKE &&
       parseFloat(v) <=
         fromDecimals(banxStake?.banxTokenStake?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL)
-
     if (!v || isMaxBanxBalance || isMaxStaked) {
       setValue(v || '')
     }
@@ -146,7 +145,7 @@ export const StakeTokens = () => {
   const idleOnWallet = format(
     fromDecimals(balance || 0, BANX_TOKEN_STAKE_DECIMAL) - parseFloat(value || '0'),
   )
-  const banxBalance = format(fromDecimals(balance, BANX_TOKEN_STAKE_DECIMAL))
+  const banxBalance = format(parseFloat(fromDecimals(balance, BANX_TOKEN_STAKE_DECIMAL)))
   const tokensStaked = format(
     fromDecimals(banxStake?.banxTokenStake?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL) -
       parseFloat(value || '0'),

@@ -12,6 +12,7 @@ import { Modal } from '@banx/components/modals/BaseModal'
 
 import { NftType } from '@banx/api/banxTokenStake'
 import { BANX_STAKING } from '@banx/constants'
+import { TensorFilled } from '@banx/icons'
 import { NftCheckbox, NftsStats } from '@banx/pages/AdventuresPage/components'
 import { useBanxStakeState } from '@banx/pages/AdventuresPage/state'
 import { useModal } from '@banx/store'
@@ -240,25 +241,39 @@ export const StakeNftsModal = () => {
           </ul>
         )}
       </div>
-      <div className={styles.footer}>
-        <Button
-          variant="secondary"
-          className={styles.footerBtn}
-          disabled={!nfts.length}
-          onClick={onSelectAll}
-        >
-          {!Object.values(selectedNfts).length ? 'Select all' : 'Deselect all'}
-        </Button>
-        <Button
-          variant="primary"
-          className={styles.footerBtn}
-          disabled={!Object.values(selectedNfts).length}
-          onClick={currentTab === modalTabs[0].value ? onStake : onUnstake}
-        >
-          {currentTab === modalTabs[0].value && 'Stake'}
-          {currentTab === modalTabs[1].value && 'Unstake'}
-        </Button>
+      <div className={styles.footerEmpty}>
+        {!filteredNfts.length && (
+          <Button className={styles.footerTensorBtn}>
+            <a href="https://www.tensor.trade/trade/banx" target="_blank" rel="noreferrer">
+              <TensorFilled />
+              <span>Buy Banx on Tensor</span>
+            </a>
+          </Button>
+        )}
       </div>
+      {!!filteredNfts.length && (
+        <div className={styles.footer}>
+          <>
+            <Button
+              variant="secondary"
+              className={styles.footerBtn}
+              disabled={!nfts.length}
+              onClick={onSelectAll}
+            >
+              {!Object.values(selectedNfts).length ? 'Select all' : 'Deselect all'}
+            </Button>
+            <Button
+              variant="primary"
+              className={styles.footerBtn}
+              disabled={!Object.values(selectedNfts).length}
+              onClick={currentTab === modalTabs[0].value ? onStake : onUnstake}
+            >
+              {currentTab === modalTabs[0].value && 'Stake'}
+              {currentTab === modalTabs[1].value && 'Unstake'}
+            </Button>
+          </>
+        </div>
+      )}
     </Modal>
   )
 }

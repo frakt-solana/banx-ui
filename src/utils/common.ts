@@ -104,14 +104,12 @@ export const createDownloadLink = (data: string, filename: string, type?: string
   window.URL.revokeObjectURL(blobURL)
 }
 
-export const toDecimals = (v: string | number, decimals = 9) => {
+export const toDecimals = (v: string | number, decimals = 1e9) => {
   const _decimals = new BN(decimals)
   const _v = new BN(v)
   return _v.mul(_decimals).toString()
 }
-
-export const fromDecimals = (v: string | number, decimals = 9) => {
-  const _decimals = new BN(decimals)
-  const _v = new BN(v)
-  return _v.div(_decimals).toString()
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+export const fromDecimals = (v: string | number, decimals = 1e9): any => {
+  return (parseFloat(v.toString()) / decimals).toFixed(2)
 }
