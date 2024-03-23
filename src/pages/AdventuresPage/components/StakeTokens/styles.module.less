@@ -32,28 +32,43 @@
   margin-bottom: 10px;
 }
 
+.stats {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+  gap: 8px;
+
+  .value {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
 .uppercaseText {
-  font: var(--menu-tab-md);
+  color: var(--content-secondary);
+  font: var(--title-sm);
   text-transform: uppercase;
   margin-right: 4px;
-  color: var(--content-secondary);
+
+  @media (max-width: 640px) {
+    font: var(--title-xs);
+  }
 }
 
 .valueText {
   font: var(--body-text-md);
   margin-right: 4px;
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
 }
 
 .row {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
-  &Btw {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-    justify-content: space-between;
-  }
 }
 
 .btn {

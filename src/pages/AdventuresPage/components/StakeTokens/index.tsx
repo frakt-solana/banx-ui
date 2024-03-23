@@ -5,6 +5,7 @@ import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
+import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 import NumericInput from '@banx/components/inputs/NumericInput'
 import { Modal } from '@banx/components/modals/BaseModal'
@@ -186,7 +187,7 @@ export const StakeTokens = () => {
       <div className={styles.container}>
         {currentTabValue === ModalTabs.STAKE && (
           <div className={styles.row}>
-            <span className={styles.uppercaseText}>wallet balance</span>
+            <span className={styles.uppercaseText}>Wallet balance</span>
             <span className={styles.valueText}>{banxBalance}</span>
             <BanxLogo />
           </div>
@@ -194,7 +195,7 @@ export const StakeTokens = () => {
 
         {currentTabValue === ModalTabs.UNSTAKE && (
           <div className={styles.row}>
-            <span className={styles.uppercaseText}>total staked</span>
+            <span className={styles.uppercaseText}>Total staked</span>
             <span className={styles.valueText}>{tokensStaked}</span>
             <BanxLogo />
             <span className={styles.valueText}>{ptsAmount} pts</span>
@@ -209,41 +210,43 @@ export const StakeTokens = () => {
         </div>
 
         {currentTabValue === ModalTabs.STAKE && (
-          <>
-            <div className={styles.rowBtw}>
-              <span className={styles.uppercaseText}>idle on wallet</span>
-              <div>
-                <span className={styles.valueText}>{idleOnWallet}</span>
-                <BanxLogo />
-              </div>
-            </div>
+          <div className={styles.stats}>
+            <StatInfo
+              label="Idle on wallet"
+              value={idleOnWallet}
+              valueType={VALUES_TYPES.STRING}
+              classNamesProps={{ value: styles.value }}
+              icon={BanxLogo}
+              flexType="row"
+            />
 
-            <div className={styles.rowBtw}>
-              <span className={styles.uppercaseText}>you will get</span>
-              <div>
-                <span className={styles.valueText}>{format(pointsToReceive || 0)} pts</span>
-              </div>
-            </div>
-          </>
+            <StatInfo
+              label="You will get"
+              value={`${format(pointsToReceive || 0)} pts`}
+              valueType={VALUES_TYPES.STRING}
+              flexType="row"
+            />
+          </div>
         )}
 
         {currentTabValue === ModalTabs.UNSTAKE && (
-          <>
-            <div className={styles.rowBtw}>
-              <span className={styles.uppercaseText}>staked</span>
-              <div>
-                <span className={styles.valueText}>{tokensStaked}</span>
-                <BanxLogo />
-              </div>
-            </div>
+          <div className={styles.stats}>
+            <StatInfo
+              label="Staked"
+              value={tokensStaked}
+              valueType={VALUES_TYPES.STRING}
+              classNamesProps={{ value: styles.value }}
+              icon={BanxLogo}
+              flexType="row"
+            />
 
-            <div className={styles.rowBtw}>
-              <span className={styles.uppercaseText}>you will unstake</span>
-              <div>
-                <span className={styles.valueText}>{format(pointsToReceive || 0)} pts</span>
-              </div>
-            </div>
-          </>
+            <StatInfo
+              label="You will unstake"
+              value={`${format(pointsToReceive || 0)} pts`}
+              valueType={VALUES_TYPES.STRING}
+              flexType="row"
+            />
+          </div>
         )}
 
         <Button
