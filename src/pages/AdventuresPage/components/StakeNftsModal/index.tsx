@@ -201,10 +201,10 @@ export const StakeNftsModal = () => {
 
   const getStatsNfts = () => {
     if (currentTab === modalTabs[0].value) {
-      return nfts.filter(({ stake }) => stake?.banxStakeState === BanxStakeState.Unstaked)
+      return nfts.filter(({ stake, isLoaned }) => !isLoaned && stake?.banxStakeState === BanxStakeState.Unstaked)
     }
 
-    return nfts.filter(({ stake }) => stake?.banxStakeState !== BanxStakeState.Unstaked)
+    return nfts.filter(({ stake, isLoaned }) => !isLoaned && stake?.banxStakeState !== BanxStakeState.Unstaked)
   }
 
   useEffect(() => {
@@ -226,7 +226,7 @@ export const StakeNftsModal = () => {
           <ul className={styles.nfts}>
             {filteredNfts.map((nft) => (
               <NftCheckbox
-                disabled={nft?.isLoaned && nft.stake.banxStakeState === BanxStakeState.Staked}
+                disabled={nft?.isLoaned}
                 key={nft.mint}
                 nft={nft}
                 onClick={onSelect}
