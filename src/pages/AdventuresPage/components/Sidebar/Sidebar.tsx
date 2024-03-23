@@ -115,11 +115,16 @@ export const Sidebar: FC<SidebarProps> = ({
   }
 
   const tokensTotal = () => {
-    if(!banxTokenSettings?.maxTokenStakeAmount) {
+    if (!banxTokenSettings?.maxTokenStakeAmount) {
       return 0
     }
 
-    return formatCompact(fromDecimals(banxTokenStake.tokensStaked + banxTokenSettings?.maxTokenStakeAmount, BANX_TOKEN_STAKE_DECIMAL))
+    return formatCompact(
+      fromDecimals(
+        banxTokenStake.tokensStaked + banxTokenSettings?.maxTokenStakeAmount,
+        BANX_TOKEN_STAKE_DECIMAL,
+      ),
+    )
   }
 
   return (
