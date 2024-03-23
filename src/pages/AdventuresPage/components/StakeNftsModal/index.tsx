@@ -102,7 +102,7 @@ export const StakeNftsModal = () => {
       return nfts.filter((nft) => nft?.stake?.banxStakeState === BanxStakeState.Unstaked)
     }
 
-    return nfts.filter((nft) => nft?.stake?.banxStakeState === BanxStakeState.Staked)
+    return nfts.filter((nft) => nft?.stake?.banxStakeState !== BanxStakeState.Unstaked)
   }, [nfts, currentTab, modalTabs])
 
   const onStake = () => {
@@ -217,17 +217,24 @@ export const StakeNftsModal = () => {
 
       <div className={styles.content}>
         <NftsStats nfts={getStatsNfts()} />
-        <ul className={styles.nfts}>
-          {filteredNfts.map((nft) => (
-            <NftCheckbox
-              disabled={nft?.isLoaned && nft.stake.banxStakeState === BanxStakeState.Staked}
-              key={nft.mint}
-              nft={nft}
-              onClick={onSelect}
-              selected={!!selectedNfts[nft.mint]}
-            />
-          ))}
-        </ul>
+        {!filteredNfts.length && (
+          <div className={styles.emptyNfts}>
+            You don’t have suitable NFTs or your Banx is listed
+          </div>
+        )}
+        {!!filteredNfts.length && (
+          <ul className={styles.nfts}>
+            {filteredNfts.map((nft) => (
+              <NftCheckbox
+                disabled={nft?.isLoaned && nft.stake.banxStakeState === BanxStakeState.Staked}
+                key={nft.mint}
+                nft={nft}
+                onClick={onSelect}
+                selected={!!selectedNfts[nft.mint]}
+              />
+            ))}
+          </ul>
+        )}
       </div>
       <div className={styles.footer}>
         <Button
