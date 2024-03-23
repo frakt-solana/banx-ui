@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC } from 'react'
+import { FC } from 'react'
 
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
@@ -10,6 +10,7 @@ import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/t
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
+import { StatInfo, StatsInfoProps, VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { AdventuresInfo } from '@banx/api/adventures'
 import { BanxTokenStake } from '@banx/api/banxTokenStake'
@@ -115,83 +116,80 @@ export const Sidebar: FC<SidebarProps> = ({
 
   return (
     <div className={classNames(styles.sidebar, className)}>
-      <div className={styles.section}>
-        <Title text="My squad" icon={<Gamepad />} />
+      <div className={styles.content}>
+        <div className={styles.squadSection}>
+          <Title text="My squad" icon={<Gamepad />} />
 
-        <div className={styles.stats}>
-          <Info
-            value={`${format(banxTokenStake.banxNftsStakedQuantity)}/${format(nftsCount)}`}
-            text="NFTs staked"
-          />
-          <Button
-            onClick={() => open(StakeNftsModal)}
-            className={styles.manageButton}
-            size="default"
-            variant={'secondary'}
-          >
-            Manage
-          </Button>
+          <div className={styles.stakedInfoContainer}>
+            <div className={styles.stakedInfo}>
+              <StakingStat
+                label="NFTs staked"
+                value={`${format(banxTokenStake.banxNftsStakedQuantity)}/${format(nftsCount)}`}
+              />
+
+              <Button
+                onClick={() => open(StakeNftsModal)}
+                className={styles.manageButton}
+                variant="secondary"
+              >
+                Manage
+              </Button>
+            </div>
+
+            <div className={styles.stakedInfo}>
+              <StakingStat
+                label="Tokens staked"
+                value={`${formatCompact(
+                  fromDecimals(banxTokenStake.tokensStaked, BANX_TOKEN_STAKE_DECIMAL),
+                )}/${formatCompact(fromDecimals(balance, BANX_TOKEN_STAKE_DECIMAL))}`}
+              />
+
+              <Button
+                onClick={() => open(StakeTokens)}
+                className={styles.manageButton}
+                variant="secondary"
+              >
+                Manage
+              </Button>
+            </div>
+          </div>
+
+          <div className={styles.divider} />
+
+          <StakingStat label="Total staked" value={`${format(totalPts)} pts`} flexType="row" />
         </div>
 
-        <div className={styles.stats}>
-          <Info
-            value={`${formatCompact(
-              fromDecimals(banxTokenStake.tokensStaked, BANX_TOKEN_STAKE_DECIMAL),
-            )}/${formatCompact(fromDecimals(balance, BANX_TOKEN_STAKE_DECIMAL))}`}
-            text="tokens staked"
-          />
-          <Button
-            onClick={() => open(StakeTokens)}
-            className={styles.manageButton}
-            size="default"
-            variant={'secondary'}
-          >
-            Manage
-          </Button>
-        </div>
+        <div className={styles.claimSection}>
+          <Title text="Rewards" icon={<MoneyBill />} />
 
-        <div className={styles.divider}>
-          <span>total staked</span>
-          <span>{format(totalPts)} pts</span>
+          <div className={styles.claimStatsContainer}>
+            <StakingStat
+              label="claimable"
+              value={format(fromDecimals(rewards, BANX_TOKEN_STAKE_DECIMAL))}
+              icon={BanxLogo}
+            />
+            <Button onClick={claimAction} disabled={!rewards} className={styles.manageButton}>
+              Claim
+            </Button>
+          </div>
+
+          <div className={styles.divider} />
+
+          <StakingStat
+            label="Total claimed"
+            value={format(fromDecimals(totalClaimed, BANX_TOKEN_STAKE_DECIMAL))}
+            icon={BanxLogo}
+            flexType="row"
+          />
         </div>
       </div>
 
-      <div className={styles.section}>
-        <Title text="Rewards" icon={<MoneyBill />} />
-
-        <div className={styles.stats}>
-          <ClaimInfo
-            icon={<BanxLogo />}
-            value={format(fromDecimals(rewards, BANX_TOKEN_STAKE_DECIMAL))}
-            text="claimable"
-          />
-          <Button
-            disabled={!rewards}
-            className={styles.manageButton}
-            size="default"
-            onClick={claimAction}
-          >
-            Claim
-          </Button>
-        </div>
-
-        <div className={styles.divider}>
-          <span>total claimed</span>
-          <span>
-            {' '}
-            {format(fromDecimals(totalClaimed, BANX_TOKEN_STAKE_DECIMAL))} <BanxLogo />
-          </span>
-        </div>
-      </div>
-
-      <div className={styles.section}>
-        <div className={styles.warns}>
-          <p>
-            <ExclamationCircleOutlined />
-            As your Banx stay in your wallet when used as collateral for a loan on Banx they can be
-            sent in Adventures in parallel
-          </p>
-        </div>
+      <div className={styles.infoSection}>
+        <p>
+          <ExclamationCircleOutlined />
+          As your Banx stay in your wallet when used as collateral for a loan on Banx they can be
+          sent in Adventures in parallel
+        </p>
       </div>
     </div>
   )
@@ -203,41 +201,37 @@ interface TitleProps {
 }
 
 const Title: FC<TitleProps> = ({ text, icon }) => (
-  <h2 className={styles.title}>
-    <div className={styles.titleIcon}>{icon}</div>
+  <h2 className={styles.titleWrapper}>
+    <div className={styles.icon}>{icon}</div>
     <span>{text}</span>
   </h2>
 )
 
-interface InfoProps {
-  value: string
-  text: string
-  textStyle?: CSSProperties
+const StakingStat: FC<StatsInfoProps> = ({
+  value,
+  label,
+  flexType = 'column',
+  classNamesProps,
+  ...props
+}) => {
+  const stakingStatClassNames = {
+    container: classNames(
+      styles.stakingStatInfo,
+      { [styles.col]: flexType === 'column' },
+      classNamesProps?.container,
+    ),
+    value: classNames(styles.value, classNamesProps?.value),
+    label: classNames(styles.label, classNamesProps?.label),
+  }
+
+  return (
+    <StatInfo
+      label={label}
+      value={value}
+      valueType={VALUES_TYPES.STRING}
+      flexType={flexType}
+      classNamesProps={stakingStatClassNames}
+      {...props}
+    />
+  )
 }
-
-const Info: FC<InfoProps> = ({ value, text, textStyle }) => (
-  <div className={styles.infoWrapper}>
-    <div className={styles.info}>
-      <span>{value}</span>
-      <span style={textStyle}>{text}</span>
-    </div>
-  </div>
-)
-
-interface ClaimInfoProps {
-  value: string
-  text: string
-  textStyle?: CSSProperties
-  icon?: React.ReactElement
-}
-
-const ClaimInfo: FC<ClaimInfoProps> = ({ value, text, textStyle, icon }) => (
-  <div className={styles.infoWrapper}>
-    <div className={styles.claimInfo}>
-      <span>
-        {value} {icon}
-      </span>
-      <span style={textStyle}>{text}</span>
-    </div>
-  </div>
-)
