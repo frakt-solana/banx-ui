@@ -66,7 +66,6 @@ export const StakeNftsModal = () => {
   }
 
   const onSelectAll = () => {
-
     const isSelectedAll = !!Object.values(selectedNfts).length
 
     if (isSelectedAll) {
