@@ -51,7 +51,7 @@ export const StakeTokens = () => {
       parseFloat(v) <=
         fromDecimals(banxStake?.banxTokenStake?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL)
 
-    if (isMaxBanxBalance || isMaxStaked) {
+    if (!v || isMaxBanxBalance || isMaxStaked) {
       setValue(v || '0')
     }
   }
