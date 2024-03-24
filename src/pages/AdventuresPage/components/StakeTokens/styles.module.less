@@ -42,6 +42,10 @@
     display: flex;
     align-items: center;
     gap: 4px;
+
+    path {
+      fill: #1b1b1b;
+    }
   }
 }
 
@@ -69,8 +73,51 @@
   display: flex;
   align-items: center;
   margin-bottom: 10px;
+
+  path {
+    fill: #1b1b1b;
+  }
 }
 
 .btn {
   width: 100%;
+}
+
+.youWillStake {
+  border: 0.5px dashed var(--bg-border, #ccc);
+  padding: 12px;
+
+  .title {
+    text-align: center;
+    font: var(--card-header-sm);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    span {
+      margin-right: 4px;
+    }
+  }
+
+  .valuesRaw {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 12px;
+  }
+
+  .values {
+    span:first-child {
+      display: block;
+      text-align: center;
+      font: var(--body-text-xl);
+      margin: 0 10px;
+    }
+    span:last-child {
+      font: var(--body-text-xl);
+      font: var(--card-header-sm);
+      text-transform: uppercase;
+      margin: 0 6px;
+    }
+  }
 }

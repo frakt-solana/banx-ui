@@ -15,7 +15,7 @@ import { StatInfo, StatsInfoProps, VALUES_TYPES } from '@banx/components/StatInf
 import { AdventuresInfo } from '@banx/api/adventures'
 import { BanxTokenStake } from '@banx/api/banxTokenStake'
 import { BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
-import { BanxLogo, Gamepad, MoneyBill } from '@banx/icons'
+import { BanxToken, Gamepad, MoneyBill } from '@banx/icons'
 import { StakeNftsModal, StakeTokens } from '@banx/pages/AdventuresPage/components'
 import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
 import { useBanxTokenBalance } from '@banx/pages/AdventuresPage/hooks/useBanxTokenBalance'
@@ -61,7 +61,7 @@ export const Sidebar: FC<SidebarProps> = ({
     calcPartnerPoints(banxTokenStake.tokensStaked, tokensPerPartnerPoints),
     BANX_TOKEN_STAKE_DECIMAL,
   )
-  const { data: balance } = useBanxTokenBalance(connection, publicKey)
+  const { data: balance, isLoading } = useBanxTokenBalance(connection, publicKey)
   const totalPts = parseFloat(tokensPts.toString()) + banxTokenStake.partnerPointsStaked
   const priorityFees = usePriorityFees()
 
@@ -115,12 +115,21 @@ export const Sidebar: FC<SidebarProps> = ({
   }
 
   const tokensTotal = () => {
-    if (!banxTokenSettings?.maxTokenStakeAmount) {
-      return 0
+    if (!banxTokenSettings?.maxTokenStakeAmount || isLoading) {
+      return '0'
     }
 
     return formatCompact(
       fromDecimals(banxTokenStake.tokensStaked + parseFloat(balance), BANX_TOKEN_STAKE_DECIMAL),
+    )
+  }
+
+  const Totals = () => {
+    return (
+      <div>
+        <div className={styles.totalValues}>{format(totalPts)} partner</div>
+        {/*<div className={styles.totalValues}>{format(banxTokenStake.playerPointsStaked)} player</div>*/}
+      </div>
     )
   }
 
@@ -146,27 +155,38 @@ export const Sidebar: FC<SidebarProps> = ({
               </Button>
             </div>
 
-            <div className={styles.stakedInfo}>
-              <StakingStat
-                label="Tokens staked"
-                value={`${formatCompact(
-                  fromDecimals(banxTokenStake.tokensStaked, BANX_TOKEN_STAKE_DECIMAL),
-                )}/${tokensTotal()}`}
-              />
+            {!isLoading && (
+              <div className={styles.stakedInfo}>
+                <StakingStat
+                  label="Tokens staked"
+                  value={`${formatCompact(
+                    fromDecimals(banxTokenStake.tokensStaked, BANX_TOKEN_STAKE_DECIMAL),
+                  )}/${tokensTotal()}`}
+                />
 
-              <Button
-                onClick={() => open(StakeTokens)}
-                className={styles.manageButton}
-                variant="secondary"
-              >
-                Manage
-              </Button>
-            </div>
+                <Button
+                  onClick={() => open(StakeTokens)}
+                  className={styles.manageButton}
+                  variant="secondary"
+                >
+                  Manage
+                </Button>
+              </div>
+            )}
           </div>
 
           <div className={styles.divider} />
 
-          <StakingStat label="Total staked" value={`${format(totalPts)} pts`} flexType="row" />
+          <StakingStat
+            classNamesProps={{
+              label: styles.totalPointsStaked,
+              labelWrapper: styles.labelWrapper,
+            }}
+            tooltipText="The Banx ecosystem is governed by Partner and Player points. These points determine holder benefits, proportional to total amount of points staked."
+            label="Total points staked"
+            value={<Totals />}
+            flexType="row"
+          />
         </div>
 
         <div className={styles.claimSection}>
@@ -176,7 +196,7 @@ export const Sidebar: FC<SidebarProps> = ({
             <StakingStat
               label="claimable"
               value={format(fromDecimals(rewards, BANX_TOKEN_STAKE_DECIMAL))}
-              icon={BanxLogo}
+              icon={BanxToken}
             />
             <Button onClick={claimAction} disabled={!rewards} className={styles.manageButton}>
               Claim
@@ -188,7 +208,7 @@ export const Sidebar: FC<SidebarProps> = ({
           <StakingStat
             label="Total claimed"
             value={format(fromDecimals(totalClaimed, BANX_TOKEN_STAKE_DECIMAL))}
-            icon={BanxLogo}
+            icon={BanxToken}
             flexType="row"
           />
         </div>
@@ -197,8 +217,8 @@ export const Sidebar: FC<SidebarProps> = ({
       <div className={styles.infoSection}>
         <p>
           <ExclamationCircleOutlined />
-          As your Banx stay in your wallet when used as collateral for a loan on Banx they can be
-          sent in Adventures in parallel
+          As your Banx NFTs stay in your wallet when used as collateral for a loan on Banx.gg they
+          can be sent in Adventures in parallel
         </p>
       </div>
     </div>
@@ -232,6 +252,7 @@ const StakingStat: FC<StatsInfoProps> = ({
     ),
     value: classNames(styles.value, classNamesProps?.value),
     label: classNames(styles.label, classNamesProps?.label),
+    labelWrapper: classNamesProps?.labelWrapper,
   }
 
   return (

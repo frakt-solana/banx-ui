@@ -3,12 +3,13 @@ import React, { FC } from 'react'
 import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Button } from '@banx/components/Buttons'
+import Tooltip from '@banx/components/Tooltip'
 
 import { AdventureStatus } from '@banx/api/adventures'
 import { BanxAdventure, BanxSubscription } from '@banx/api/banxTokenStake'
 import { BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
 import { useCountdown } from '@banx/hooks'
-import { Alert, BanxLogo, Clock, MoneyBill, SuccessIcon, Timer } from '@banx/icons'
+import { Alert, BanxToken, Clock, MoneyBill, SuccessIcon, Timer } from '@banx/icons'
 import { calculateRewards } from '@banx/pages/AdventuresPage/helpers'
 import { formatNumbersWithCommas, fromDecimals } from '@banx/utils'
 
@@ -46,7 +47,7 @@ export const WalletParticipationColumn: FC<{
   return (
     <div className={styles.statsCol}>
       <h5>{TITLE_BY_STATUS[status as keyof typeof TITLE_BY_STATUS] || TITLE_BY_STATUS.DEFAULT}</h5>
-      <p>{banxAmount} Banx</p>
+      <p>{banxAmount} Banx NFTs</p>
       <p>{banxTokenAmount} $BANX</p>
       <p>{partnerPts} Partner pts</p>
     </div>
@@ -61,7 +62,7 @@ export const TotalParticipationColumn: FC<{
   return (
     <div className={styles.statsCol}>
       <h5>Total participation</h5>
-      <p>{totalBanxSubscribed} Banx</p>
+      <p>{totalBanxSubscribed} Banx NFTs</p>
       <p>{totalBanxTokensSubscribed} $BANX</p>
       <p>{totalPartnerPoints} Partner pts</p>
     </div>
@@ -113,11 +114,15 @@ export const AdventuresTimer: FC<{
         </p>
         {isSubscribed && status === AdventureStatus.LIVE && (
           <div className={styles.distributed}>
-            <span>
+            <span>you will receive</span>
+            <span className={styles.value}>
               {formatNumbersWithCommas(fromDecimals(rewards(), BANX_TOKEN_STAKE_DECIMAL))}
             </span>
-            <BanxLogo />
-            <span>to be distributed</span>
+            <BanxToken className={styles.banxIcon} />
+            <Tooltip
+              className={styles.tooltip}
+              title="Every week Banx purchases $BANX from the market using 100% of its revenue and then distribute these tokens to stakers, proportionally to their player points"
+            />
           </div>
         )}
       </div>

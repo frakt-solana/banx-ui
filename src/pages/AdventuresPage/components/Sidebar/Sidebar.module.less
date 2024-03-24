@@ -33,6 +33,18 @@
   @media screen and (max-width: 1280px) {
     width: 100%;
   }
+
+  .totalPointsStaked {
+    width: 105px;
+  }
+}
+
+.totalValues {
+  text-align: right;
+}
+
+.labelWrapper {
+  align-items: flex-start !important;
 }
 
 .stakedInfoContainer {
@@ -162,6 +174,10 @@
     align-items: center;
     gap: 4px;
     font: var(--important-text-lg);
+
+    path {
+      fill: #1b1b1b !important;
+    }
 
     @media screen and (max-width: 640px) {
       font: var(--important-text-sm);

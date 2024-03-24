@@ -249,21 +249,39 @@
   display: flex;
   align-items: center;
   background: var(--accent-primary-sub);
-  padding: 3px 0;
+  padding: 3px 12px;
   justify-content: center;
   border-radius: 1000px;
   margin-top: 12px;
 
   span:first-child {
-    font: var(--important-text-md);
-  }
-
-  svg {
-    margin: 0 4px;
-  }
-
-  span:last-child {
     font: var(--card-header-sm);
     text-transform: uppercase;
+    margin-right: 4px;
+  }
+
+  .value {
+    font: var(--important-text-md);
+    margin-right: 4px;
+  }
+
+  .tooltip {
+    width: 12px;
+    height: 12px;
+    margin-right: 0 !important;
+
+    svg {
+      width: 12px !important;
+      height: 12px !important;
+    }
+  }
+
+  .banxIcon {
+    margin: 0 4px;
+    width: 14px;
+    height: 14px;
+    path {
+      fill: #1b1b1b;
+    }
   }
 }

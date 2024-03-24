@@ -13,6 +13,7 @@ interface ClassNamesProps {
   container: string
   label: string
   value: string
+  labelWrapper: string
 }
 
 export interface StatsInfoProps {
@@ -51,11 +52,12 @@ export const StatInfo: FC<StatsInfoProps> = ({
 
   const containerClasses = classNames(flexStyle, classNamesProps?.container)
   const labelClasses = classNames(styles.label, classNamesProps?.label)
+  const labelWrapperClasses = classNames(styles.labelWrapper, classNamesProps?.labelWrapper)
   const valueClasses = classNames(styles.value, classNamesProps?.value)
 
   return (
     <div className={containerClasses}>
-      <div className={styles.labelWrapper}>
+      <div className={labelWrapperClasses}>
         <span className={labelClasses}>{label}</span>
         {tooltipText && <Tooltip title={tooltipText} placement={tooltipPlacement} />}
       </div>

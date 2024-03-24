@@ -2,16 +2,18 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
+import { parseInt } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
+import Tooltip from '@banx/components/Tooltip'
 import NumericInput from '@banx/components/inputs/NumericInput'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
-import { BanxLogo } from '@banx/icons'
+import { BanxToken } from '@banx/icons'
 import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
 import { useBanxStakeState } from '@banx/pages/AdventuresPage/state'
 import { useModal } from '@banx/store'
@@ -48,8 +50,9 @@ export const StakeTokens = () => {
       currentTabValue === ModalTabs.UNSTAKE &&
       parseFloat(v) <=
         fromDecimals(banxStake?.banxTokenStake?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL)
-    if (!v || isMaxBanxBalance || isMaxStaked) {
-      setValue(v || '')
+
+    if (isMaxBanxBalance || isMaxStaked) {
+      setValue(v || '0')
     }
   }
 
@@ -68,7 +71,7 @@ export const StakeTokens = () => {
     }
 
     const txnParam = {
-      tokensToStake: parseFloat(toDecimals(value, BANX_TOKEN_STAKE_DECIMAL)),
+      tokensToStake: parseFloat(toDecimals(parseInt(value), BANX_TOKEN_STAKE_DECIMAL)),
       userPubkey: wallet.publicKey,
       optimistic,
       priorityFees,
@@ -104,9 +107,8 @@ export const StakeTokens = () => {
       banxAdventures: banxStake.banxAdventures,
       banxTokenStake: banxStake.banxTokenStake,
     }
-
     const txnParam = {
-      tokensToUnstake: Number(toDecimals(value, BANX_TOKEN_STAKE_DECIMAL)),
+      tokensToUnstake: parseFloat(toDecimals(parseFloat(value), BANX_TOKEN_STAKE_DECIMAL)),
       userPubkey: wallet.publicKey,
       optimistic,
       priorityFees,
@@ -177,7 +179,7 @@ export const StakeTokens = () => {
   }
 
   useEffect(() => {
-    setValue('')
+    setValue('0')
   }, [currentTabValue])
 
   return (
@@ -188,7 +190,7 @@ export const StakeTokens = () => {
           <div className={styles.row}>
             <span className={styles.uppercaseText}>Wallet balance</span>
             <span className={styles.valueText}>{banxBalance}</span>
-            <BanxLogo />
+            <BanxToken />
           </div>
         )}
 
@@ -196,7 +198,7 @@ export const StakeTokens = () => {
           <div className={styles.row}>
             <span className={styles.uppercaseText}>Total staked</span>
             <span className={styles.valueText}>{tokensStaked}</span>
-            <BanxLogo />
+            <BanxToken />
             <span className={styles.valueText}>{ptsAmount} pts</span>
           </div>
         )}
@@ -205,7 +207,7 @@ export const StakeTokens = () => {
           <NumericInput
             positiveOnly
             onChange={handleChangeValue}
-            value={parseFloat(value).toString()}
+            value={parseInt(value).toFixed(0)}
           />
           <Button size="small" variant="secondary" onClick={onSetMax}>
             Use max
@@ -214,19 +216,29 @@ export const StakeTokens = () => {
 
         {currentTabValue === ModalTabs.STAKE && (
           <div className={styles.stats}>
+            <div className={styles.youWillStake}>
+              <p className={styles.title}>
+                <span>You will stake</span>
+                <Tooltip title="The Banx ecosystem is governed by Partner and Player points. These points determine holder benefits, proportional to total amount of points staked." />
+              </p>
+
+              <div className={styles.valuesRaw}>
+                <div className={styles.values}>
+                  <span>{pointsToReceive}</span>
+                  <span>PARTNER POINTS</span>
+                </div>
+                {/*<div className={styles.values}>*/}
+                {/*  <span>800</span>*/}
+                {/*  <span>player POINTS</span>*/}
+                {/*</div>*/}
+              </div>
+            </div>
             <StatInfo
               label="Idle on wallet"
               value={idleOnWallet}
               valueType={VALUES_TYPES.STRING}
               classNamesProps={{ value: styles.value }}
-              icon={BanxLogo}
-              flexType="row"
-            />
-
-            <StatInfo
-              label="You will get"
-              value={`${format(pointsToReceive || 0)} pts`}
-              valueType={VALUES_TYPES.STRING}
+              icon={BanxToken}
               flexType="row"
             />
           </div>
@@ -234,19 +246,30 @@ export const StakeTokens = () => {
 
         {currentTabValue === ModalTabs.UNSTAKE && (
           <div className={styles.stats}>
+            <div className={styles.youWillStake}>
+              <p className={styles.title}>
+                <span>You will unstake</span>
+                <Tooltip title="The Banx ecosystem is governed by Partner and Player points. These points determine holder benefits, proportional to total amount of points staked." />
+              </p>
+
+              <div className={styles.valuesRaw}>
+                <div className={styles.values}>
+                  <span>{pointsToReceive}</span>
+                  <span>PARTNER POINTS</span>
+                </div>
+                {/*<div className={styles.values}>*/}
+                {/*  <span>800</span>*/}
+                {/*  <span>player POINTS</span>*/}
+                {/*</div>*/}
+              </div>
+            </div>
+
             <StatInfo
               label="Staked"
               value={tokensStaked}
               valueType={VALUES_TYPES.STRING}
               classNamesProps={{ value: styles.value }}
-              icon={BanxLogo}
-              flexType="row"
-            />
-
-            <StatInfo
-              label="You will unstake"
-              value={`${format(pointsToReceive || 0)} pts`}
-              valueType={VALUES_TYPES.STRING}
+              icon={BanxToken}
               flexType="row"
             />
           </div>

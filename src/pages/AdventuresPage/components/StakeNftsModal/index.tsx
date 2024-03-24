@@ -64,7 +64,6 @@ export const StakeNftsModal = () => {
       return
     }
   }
-
   const onSelectAll = () => {
     const isSelectedAll = !!Object.values(selectedNfts).length
 
@@ -75,7 +74,7 @@ export const StakeNftsModal = () => {
 
     if (!isSelectedAll) {
       const nftsMap = filteredNfts
-        .filter((nft) => !nft?.stake?.isLoaned)
+        .filter((nft) => !nft?.isLoaned)
         .reduce<{ [k: string]: NftType }>((acc, nft) => {
           acc[nft.mint] = nft
           return acc
@@ -89,11 +88,12 @@ export const StakeNftsModal = () => {
   const filteredNfts = useMemo(() => {
     if (currentTab === modalTabs[0].value) {
       return nfts.filter(
-        (nft) => !nft.isLoaned && nft?.stake?.banxStakeState === BanxStakeState.Unstaked,
+        (nft) =>
+          !nft?.stake || (!nft.isLoaned && nft?.stake?.banxStakeState === BanxStakeState.Unstaked),
       )
     }
 
-    return nfts.filter((nft) => nft?.stake?.banxStakeState !== BanxStakeState.Unstaked)
+    return nfts.filter((nft) => !nft?.stake || nft?.stake?.banxStakeState === BanxStakeState.Staked)
   }, [nfts, currentTab, modalTabs])
 
   const onStake = () => {
@@ -190,16 +190,6 @@ export const StakeNftsModal = () => {
     }
   }
 
-  const getStatsNfts = () => {
-    if (currentTab === modalTabs[0].value) {
-      return nfts.filter(
-        ({ stake, isLoaned }) => !isLoaned && stake?.banxStakeState === BanxStakeState.Unstaked,
-      )
-    }
-
-    return nfts.filter(({ stake }) => stake?.banxStakeState !== BanxStakeState.Unstaked)
-  }
-
   useEffect(() => {
     setSelectedNfts({})
   }, [currentTab])
@@ -209,7 +199,7 @@ export const StakeNftsModal = () => {
       <Tabs className={styles.tabs} value={currentTab} {...tabsProps} />
 
       <div className={styles.content}>
-        <NftsStats nfts={getStatsNfts()} />
+        <NftsStats nfts={filteredNfts} />
         {!filteredNfts.length && (
           <div className={styles.emptyNfts}>
             You don’t have suitable NFTs or your Banx is listed
