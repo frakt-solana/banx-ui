@@ -82,7 +82,7 @@ const RewardsBlock = () => {
 
   const rows = [slicedSources(0, 3), slicedSources(3, 5), slicedSources(5, 7)]
 
-  const availableToClaim = moment.now() < TIME_TO_CLAIM
+  const availableToClaim = moment().unix() > TIME_TO_CLAIM
 
   return (
     <div className={styles.rewardsBlock}>
