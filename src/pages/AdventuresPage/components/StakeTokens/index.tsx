@@ -202,7 +202,7 @@ export const StakeTokens = () => {
         )}
 
         <div className={styles.input}>
-          <NumericInput positiveOnly onChange={handleChangeValue} value={value} />
+          <NumericInput positiveOnly onChange={handleChangeValue} value={parseFloat(value).toString()} />
           <Button size="small" variant="secondary" onClick={onSetMax}>
             Use max
           </Button>
