@@ -66,17 +66,6 @@ export const StakeNftsModal = () => {
   }
 
   const onSelectAll = () => {
-    const currentNfts = nfts.filter((nft) => {
-      const isStaked = nft?.stake?.banxStakeState === BanxStakeState.Staked
-
-      if (currentTab === modalTabs[0].value && !isStaked) {
-        return nft
-      }
-
-      if (currentTab === modalTabs[1].value && isStaked) {
-        return nft
-      }
-    })
 
     const isSelectedAll = !!Object.values(selectedNfts).length
 
@@ -86,7 +75,7 @@ export const StakeNftsModal = () => {
     }
 
     if (!isSelectedAll) {
-      const nftsMap = currentNfts
+      const nftsMap = filteredNfts
         .filter((nft) => !nft?.stake?.isLoaned)
         .reduce<{ [k: string]: NftType }>((acc, nft) => {
           acc[nft.mint] = nft
