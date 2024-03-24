@@ -85,16 +85,18 @@ export const StakeNftsModal = () => {
     }
   }
 
+
   const filteredNfts = useMemo(() => {
     if (currentTab === modalTabs[0].value) {
       return nfts.filter(
         (nft) =>
-          !nft?.stake || (!nft.isLoaned && nft?.stake?.banxStakeState === BanxStakeState.Unstaked),
+          !nft?.stake || nft?.stake?.banxStakeState === BanxStakeState.Unstaked,
       )
     }
 
-    return nfts.filter((nft) => !nft?.stake || nft?.stake?.banxStakeState === BanxStakeState.Staked)
+    return nfts.filter((nft) => nft?.stake?.banxStakeState === BanxStakeState.Staked)
   }, [nfts, currentTab, modalTabs])
+
 
   const onStake = () => {
     try {
@@ -125,7 +127,7 @@ export const StakeNftsModal = () => {
             type: 'success',
             solanaExplorerPath: `tx/${txnHash}`,
           })
-          results.forEach(({ result }) => !!result && updateStake(result))
+          // results.forEach(({ result }) => !!result && updateStake(result))
         })
         .on('pfSuccessAll', () => {
           close()
@@ -172,7 +174,7 @@ export const StakeNftsModal = () => {
             type: 'success',
             solanaExplorerPath: `tx/${txnHash}`,
           })
-          results.forEach(({ result }) => !!result && updateStake(result))
+          // results.forEach(({ result }) => !!result && updateStake(result))
         })
         .on('pfSuccessAll', () => {
           close()
@@ -193,6 +195,8 @@ export const StakeNftsModal = () => {
   useEffect(() => {
     setSelectedNfts({})
   }, [currentTab])
+
+  const disabledSelect = !!filteredNfts.filter(({isLoaned}) => !isLoaned).length
 
   return (
     <Modal className={styles.modal} open onCancel={close} footer={false} width={768} centered>
@@ -235,7 +239,7 @@ export const StakeNftsModal = () => {
             <Button
               variant="secondary"
               className={styles.footerBtn}
-              disabled={!nfts.length}
+              disabled={!disabledSelect}
               onClick={onSelectAll}
             >
               {!Object.values(selectedNfts).length ? 'Select all' : 'Deselect all'}
