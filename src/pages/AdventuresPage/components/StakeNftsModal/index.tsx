@@ -25,7 +25,7 @@ import styles from './styles.module.less'
 export const StakeNftsModal = () => {
   const { close } = useModal()
   const priorityFees = usePriorityFees()
-  const { banxStake, banxTokenSettings, updateStake } = useBanxStakeState()
+  const { banxStake, banxTokenSettings } = useBanxStakeState()
   const nfts = useMemo(() => banxStake?.nfts || [], [banxStake?.nfts])
   const wallet = useWallet()
   const { connection } = useConnection()
@@ -85,18 +85,15 @@ export const StakeNftsModal = () => {
     }
   }
 
-
   const filteredNfts = useMemo(() => {
     if (currentTab === modalTabs[0].value) {
       return nfts.filter(
-        (nft) =>
-          !nft?.stake || nft?.stake?.banxStakeState === BanxStakeState.Unstaked,
+        (nft) => !nft?.stake || nft?.stake?.banxStakeState === BanxStakeState.Unstaked,
       )
     }
 
     return nfts.filter((nft) => nft?.stake?.banxStakeState === BanxStakeState.Staked)
   }, [nfts, currentTab, modalTabs])
-
 
   const onStake = () => {
     try {
@@ -196,7 +193,7 @@ export const StakeNftsModal = () => {
     setSelectedNfts({})
   }, [currentTab])
 
-  const disabledSelect = !!filteredNfts.filter(({isLoaned}) => !isLoaned).length
+  const disabledSelect = !!filteredNfts.filter(({ isLoaned }) => !isLoaned).length
 
   return (
     <Modal className={styles.modal} open onCancel={close} footer={false} width={768} centered>
