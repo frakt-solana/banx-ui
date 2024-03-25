@@ -6,6 +6,7 @@ import { MakeActionFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
+import { BN } from 'fbonds-core'
 
 export type StakeBanxTokenActionParams = {
   userPubkey: web3.PublicKey
@@ -29,7 +30,7 @@ export const stakeBanxTokenAction: StakeBanxTokenAction = async (ixnParams, { co
       tokenMint: BANX_TOKEN_MINT,
     },
     args: {
-      tokensToStake: BigInt(parseFloat(ixnParams.tokensToStake)),
+      tokensToStake: new BN(ixnParams.tokensToStake),
     },
     optimistics: ixnParams.optimistic,
     sendTxn: sendTxnPlaceHolder,

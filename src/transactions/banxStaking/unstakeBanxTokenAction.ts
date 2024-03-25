@@ -6,6 +6,7 @@ import { MakeActionFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
+import { BN } from 'fbonds-core'
 
 export type UnstakeBanxTokenParams = {
   userPubkey: web3.PublicKey
@@ -32,7 +33,7 @@ export const unstakeBanxTokenAction: UnstakeBanxTokenParamsAction = async (
     },
     priorityFees: ixnParams.priorityFees,
     args: {
-      tokensToUnstake: ixnParams.tokensToUnstake,
+      tokensToUnstake: new BN(ixnParams.tokensToUnstake),
     },
     optimistics: {
       banxSubscribeAdventureOptimistic: ixnParams.optimistic,
