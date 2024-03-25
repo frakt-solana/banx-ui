@@ -61,7 +61,7 @@ export const StakeTokens = () => {
   }
 
   const calcPts = (v: string | number) =>
-    calcPartnerPoints(v, banxTokenSettings?.tokensPerPartnerPoints)
+    calcPartnerPoints(v.toString(), banxTokenSettings?.tokensPerPartnerPoints)
   const pointsToReceive = calcPts(value)
 
   const onStakeTokens = () => {
@@ -75,7 +75,7 @@ export const StakeTokens = () => {
     }
 
     const txnParam = {
-      tokensToStake: parseFloat(toDecimals(parseInt(value), BANX_TOKEN_STAKE_DECIMAL)),
+      tokensToStake: toDecimals(parseInt(value), BANX_TOKEN_STAKE_DECIMAL),
       userPubkey: wallet.publicKey,
       optimistic,
       priorityFees,

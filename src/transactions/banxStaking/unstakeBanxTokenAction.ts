@@ -1,4 +1,5 @@
 import { web3 } from '@project-serum/anchor'
+import { BN } from 'fbonds-core'
 import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { unstakeBanxToken } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
@@ -32,7 +33,7 @@ export const unstakeBanxTokenAction: UnstakeBanxTokenParamsAction = async (
     },
     priorityFees: ixnParams.priorityFees,
     args: {
-      tokensToUnstake: ixnParams.tokensToUnstake,
+      tokensToUnstake: new BN(ixnParams.tokensToUnstake),
     },
     optimistics: {
       banxSubscribeAdventureOptimistic: ixnParams.optimistic,
@@ -40,12 +41,11 @@ export const unstakeBanxTokenAction: UnstakeBanxTokenParamsAction = async (
     sendTxn: sendTxnPlaceHolder,
   }
 
-  const { instructions, optimisticResult, signers } = await unstakeBanxToken(params)
+  const { instructions, signers } = await unstakeBanxToken(params)
 
   return {
     instructions,
     signers,
-    additionalResult: optimisticResult,
     lookupTables: [],
   }
 }

@@ -1,4 +1,5 @@
 import { web3 } from '@project-serum/anchor'
+import { BN } from 'fbonds-core'
 import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { stakeBanxToken } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
@@ -9,7 +10,7 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type StakeBanxTokenActionParams = {
   userPubkey: web3.PublicKey
-  tokensToStake: number
+  tokensToStake: string
   optimistic: BanxSubscribeAdventureOptimistic
   priorityFees: number
 }
@@ -29,18 +30,17 @@ export const stakeBanxTokenAction: StakeBanxTokenAction = async (ixnParams, { co
       tokenMint: BANX_TOKEN_MINT,
     },
     args: {
-      tokensToStake: ixnParams.tokensToStake,
+      tokensToStake: new BN(ixnParams.tokensToStake),
     },
     optimistics: ixnParams.optimistic,
     sendTxn: sendTxnPlaceHolder,
   }
 
-  const { instructions, optimisticResult, signers } = await stakeBanxToken(params)
+  const { instructions, signers } = await stakeBanxToken(params)
 
   return {
     instructions: instructions,
     signers: signers,
-    additionalResult: optimisticResult,
     lookupTables: [],
   }
 }
