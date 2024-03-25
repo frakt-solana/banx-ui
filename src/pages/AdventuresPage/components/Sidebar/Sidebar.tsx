@@ -38,10 +38,10 @@ interface SidebarProps {
   className?: string
   banxTokenStake: BanxTokenStake
   adventuresInfo: AdventuresInfo
-  nftsCount: number
-  totalClaimed: number
-  rewards: number
-  tokensPerPartnerPoints: number
+  nftsCount: string
+  totalClaimed: string
+  rewards: bigint
+  tokensPerPartnerPoints: string
 }
 
 export const Sidebar: FC<SidebarProps> = ({
@@ -88,7 +88,7 @@ export const Sidebar: FC<SidebarProps> = ({
       tokenMint: new web3.PublicKey(BANX_TOKEN_MINT),
       optimistic: banxSubscribeAdventureOptimistic,
       priorityFees,
-      weeks,
+      weeks: weeks.map((w) => parseFloat(w)),
     }
 
     new TxnExecutor(stakeBanxClaimAction, { wallet, connection })
@@ -124,9 +124,9 @@ export const Sidebar: FC<SidebarProps> = ({
     )
   }
 
-  const stakenTokensPlayersPoints = calculatePlayerPointsForTokens(banxTokenStake.tokensStaked)
+  const stakenTokensPlayersPoints = calculatePlayerPointsForTokens(parseFloat(banxTokenStake.tokensStaked))
   const totalPlayersPoints = format(
-    (banxTokenStake.playerPointsStaked + stakenTokensPlayersPoints).toFixed(2),
+    (banxTokenStake.playerPointsStaked + stakenTokensPlayersPoints).toString(),
   )
 
   const Totals = () => {
@@ -198,7 +198,7 @@ export const Sidebar: FC<SidebarProps> = ({
           <div className={styles.claimStatsContainer}>
             <StakingStat
               label="claimable"
-              value={format(fromDecimals(rewards, BANX_TOKEN_STAKE_DECIMAL))}
+              value={format(fromDecimals(0, BANX_TOKEN_STAKE_DECIMAL))} // rewards
               icon={BanxToken}
             />
             <Button onClick={claimAction} disabled={!rewards} className={styles.manageButton}>

@@ -43,7 +43,7 @@ interface AdventuresCardProps {
   banxSubscription?: BanxSubscription
   banxAdventure: BanxAdventure
   walletConnected?: boolean
-  maxTokenStakeAmount: number
+  maxTokenStakeAmount: string
 }
 
 const AdventuresCard: FC<AdventuresCardProps> = ({
@@ -53,16 +53,16 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
   banxSubscription,
 }) => {
   const { connection } = useConnection()
-  const isEnded = banxAdventure.periodEndingAt * 1000 < Date.now()
-  const isStarted = banxAdventure.periodStartedAt * 1000 + BANX_ADVENTURE_GAP * 1000 < Date.now()
+  const isEnded = parseFloat(banxAdventure.periodEndingAt) * 1000 < Date.now()
+  const isStarted = parseFloat(banxAdventure.periodStartedAt) * 1000 + BANX_ADVENTURE_GAP * 1000 < Date.now()
   const { banxStake, banxTokenSettings } = useBanxStakeState()
   const priorityFees = usePriorityFees()
 
   const wallet = useWallet()
 
-  const calcMaxPts = () => {
+  const calcMaxPts = (): string => {
     if (!banxTokenSettings) {
-      return 0
+      return '0'
     }
 
     const maxTokenStakeAmount = toDecimals(
@@ -70,7 +70,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
       BANX_TOKEN_STAKE_DECIMAL,
     )
 
-    return maxTokenStakeAmount / banxAdventure.tokensPerPoints + TOTAL_BANX_PTS
+    return (parseFloat(maxTokenStakeAmount) / parseFloat(banxAdventure.tokensPerPoints) + TOTAL_BANX_PTS).toString()
   }
 
   const tokenPts = calcPartnerPoints(banxAdventure.totalTokensStaked, banxAdventure.tokensPerPoints)
@@ -95,7 +95,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
     if (isEnded) {
       return AdventureStatus.ENDED
     }
-    if (banxAdventure.periodStartedAt * 1000 + BANX_ADVENTURE_GAP > Date.now()) {
+    if (parseFloat(banxAdventure.periodStartedAt) * 1000 + BANX_ADVENTURE_GAP > Date.now()) {
       return AdventureStatus.UPCOMING
     }
 
@@ -113,7 +113,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
     }
 
     const params = {
-      weeks: [banxAdventure.week],
+      weeks: [parseFloat(banxAdventure.week)],
       userPubkey: wallet.publicKey,
       optimistic: {
         banxSubscribeAdventureOptimistic,
@@ -144,13 +144,13 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
       .execute()
   }
   const walletTokenPts = calcPartnerPoints(
-    banxSubscription?.stakeTokensAmount || 0,
-    banxAdventure.tokensPerPoints,
+    banxSubscription?.stakeTokensAmount || '0',
+    banxAdventure.tokensPerPoints.toString(),
   )
 
   const totalWalletPts =
     parseFloat(fromDecimals(walletTokenPts, BANX_TOKEN_STAKE_DECIMAL)) +
-    (banxSubscription?.stakePartnerPointsAmount || 0)
+    (banxSubscription?.stakePartnerPointsAmount || '0')
 
   return (
     <li className={styles.card}>
@@ -172,8 +172,8 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
           status={status}
           endsAt={
             isStarted
-              ? banxAdventure.periodEndingAt
-              : banxAdventure.periodStartedAt + BANX_ADVENTURE_GAP
+              ? parseFloat(banxAdventure.periodEndingAt)
+              : parseFloat(banxAdventure.periodStartedAt) + BANX_ADVENTURE_GAP
           }
         />
 
@@ -232,7 +232,7 @@ export const AdventuresList: FC<AdventuresListProps> = ({
     <ul className={classNames(styles.list, className)}>
       {banxStake.banxAdventures
         // TODO until 38 will not finished
-        .filter(({ adventure }) => adventure.week !== 38)
+        .filter(({ adventure }) => adventure.week !== '38')
         .sort((a, b) => (a.adventure.week > b.adventure.week ? 1 : -1))
         .map(({ adventure, adventureSubscription }) => (
           <AdventuresCard

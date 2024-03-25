@@ -40,12 +40,11 @@ export const unstakeBanxTokenAction: UnstakeBanxTokenParamsAction = async (
     sendTxn: sendTxnPlaceHolder,
   }
 
-  const { instructions, optimisticResult, signers } = await unstakeBanxToken(params)
+  const { instructions, signers } = await unstakeBanxToken(params)
 
   return {
     instructions,
     signers,
-    additionalResult: optimisticResult,
     lookupTables: [],
   }
 }
