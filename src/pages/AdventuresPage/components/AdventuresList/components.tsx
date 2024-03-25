@@ -176,7 +176,6 @@ export const Participate: FC<ParticipateProps> = ({
     )
   }
 
-
   if (showSubscribed) {
     return (
       <Button disabled className={styles.subscribeBtn}>

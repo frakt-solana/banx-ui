@@ -47,13 +47,16 @@ export const AdventuresPage: FC = () => {
 
   const adventuresWithSubscriptions =
     banxStake?.banxAdventures
-      .filter(({adventure}) => adventure.periodEndingAt * 1000 < Date.now())
-      .reduce<{ adventure: BanxAdventure; adventureSubscription: BanxSubscription }[]>((acc, { adventure, adventureSubscription }) => {
-      if (adventure && adventureSubscription) {
-        acc.push({ adventure, adventureSubscription })
-      }
-      return acc
-    }, []) || []
+      .filter(({ adventure }) => adventure.periodEndingAt * 1000 < Date.now())
+      .reduce<{ adventure: BanxAdventure; adventureSubscription: BanxSubscription }[]>(
+        (acc, { adventure, adventureSubscription }) => {
+          if (adventure && adventureSubscription) {
+            acc.push({ adventure, adventureSubscription })
+          }
+          return acc
+        },
+        [],
+      ) || []
 
   const rewards = calculateRewards(adventuresWithSubscriptions) || 0
 

@@ -125,7 +125,6 @@ export const Sidebar: FC<SidebarProps> = ({
   }
 
   const Totals = () => {
-
     // const r = calculatePlayerPointsForTokens(b)
     return (
       <div>

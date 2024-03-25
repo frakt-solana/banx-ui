@@ -14,12 +14,12 @@ export const useBanxTokenBalance = (connection: Connection, userPubKey: web3.Pub
       '0',
     {
       refetchInterval: 10_000,
-      cacheTime: 10_000
-    }
+      cacheTime: 10_000,
+    },
   )
   return {
     data: data || '0',
     isLoading,
-    refetch
+    refetch,
   }
 }
