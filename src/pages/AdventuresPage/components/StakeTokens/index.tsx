@@ -28,12 +28,15 @@ import {
 } from '@banx/utils'
 
 import styles from './styles.module.less'
+import { useBanxTokenBalance } from '@banx/pages/AdventuresPage/hooks/useBanxTokenBalance'
 
 export const StakeTokens = () => {
   const { connection } = useConnection()
   const priorityFees = usePriorityFees()
-  const { updateStake, banxStake, banxTokenSettings, balance } = useBanxStakeState()
+  const { banxStake, banxTokenSettings } = useBanxStakeState()
   const wallet = useWallet()
+  const {data: balance, refetch} = useBanxTokenBalance(connection, wallet.publicKey)
+
   const { close } = useModal()
   const [value, setValue] = useState('0')
 
@@ -80,14 +83,16 @@ export const StakeTokens = () => {
     new TxnExecutor(stakeBanxTokenAction, { wallet, connection })
       .addTxnParam(txnParam)
       .on('pfSuccessEach', (results) => {
-        results.forEach(({ result }) => !!result && updateStake(result))
+        const { txnHash } = results[0]
+        enqueueSnackbar({
+          message: 'Transaction send',
+          type: 'info',
+          solanaExplorerPath: `tx/${txnHash}`,
+        })
       })
       .on('pfSuccessAll', () => {
-        enqueueSnackbar({
-          message: 'Token successfully staked',
-          type: 'success',
-        })
         close()
+        void refetch()
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error, {
@@ -117,14 +122,16 @@ export const StakeTokens = () => {
     new TxnExecutor(unstakeBanxTokenAction, { wallet, connection })
       .addTxnParam(txnParam)
       .on('pfSuccessEach', (results) => {
-        results.forEach(({ result }) => !!result && updateStake(result))
+        const { txnHash } = results[0]
+        enqueueSnackbar({
+          message: 'Transaction send',
+          type: 'info',
+          solanaExplorerPath: `tx/${txnHash}`,
+        })
       })
       .on('pfSuccessAll', () => {
-        enqueueSnackbar({
-          message: 'Token successfully unstaked',
-          type: 'success',
-        })
         close()
+        void refetch()
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error, {

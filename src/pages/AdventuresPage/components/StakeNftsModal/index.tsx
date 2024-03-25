@@ -120,8 +120,8 @@ export const StakeNftsModal = () => {
         .on('pfSuccessEach', (results) => {
           const { txnHash } = results[0]
           enqueueSnackbar({
-            message: 'Nft successfully staked',
-            type: 'success',
+            message: 'Transaction send',
+            type: 'info',
             solanaExplorerPath: `tx/${txnHash}`,
           })
           // results.forEach(({ result }) => !!result && updateStake(result))
@@ -167,11 +167,10 @@ export const StakeNftsModal = () => {
         .on('pfSuccessEach', (results) => {
           const { txnHash } = results[0]
           enqueueSnackbar({
-            message: 'Nft successfully unstaked',
-            type: 'success',
+            message: 'Transaction send',
+            type: 'info',
             solanaExplorerPath: `tx/${txnHash}`,
           })
-          // results.forEach(({ result }) => !!result && updateStake(result))
         })
         .on('pfSuccessAll', () => {
           close()

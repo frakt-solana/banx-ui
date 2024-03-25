@@ -149,20 +149,9 @@ export const Participate: FC<ParticipateProps> = ({
   isParticipating,
   onSubmit,
 }) => {
-  const showSubscribeBtn = (!isStarted && !isSubscribed) || (isNone && !isStarted)
   const showParticipating = isStarted && isSubscribed
+  const showSubscribeBtn = (!isStarted && !isSubscribed) || (isNone && !isStarted)
   const showSubscribed = !isStarted && isSubscribed
-
-  if (showParticipating) {
-    return (
-      <Button disabled className={styles.subscribeBtn}>
-        <div>
-          <Clock />
-          <span>Participating</span>
-        </div>
-      </Button>
-    )
-  }
 
   if (showSubscribeBtn) {
     return (
@@ -175,6 +164,18 @@ export const Participate: FC<ParticipateProps> = ({
       </Button>
     )
   }
+
+  if (showParticipating) {
+    return (
+      <Button disabled className={styles.subscribeBtn}>
+        <div>
+          <Clock />
+          <span>Participating</span>
+        </div>
+      </Button>
+    )
+  }
+
 
   if (showSubscribed) {
     return (

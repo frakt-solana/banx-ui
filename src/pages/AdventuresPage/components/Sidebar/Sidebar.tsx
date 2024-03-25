@@ -125,6 +125,8 @@ export const Sidebar: FC<SidebarProps> = ({
   }
 
   const Totals = () => {
+
+    // const r = calculatePlayerPointsForTokens(b)
     return (
       <div>
         <div className={styles.totalValues}>{format(totalPts)} partner</div>
@@ -155,24 +157,22 @@ export const Sidebar: FC<SidebarProps> = ({
               </Button>
             </div>
 
-            {!isLoading && (
-              <div className={styles.stakedInfo}>
-                <StakingStat
-                  label="Tokens staked"
-                  value={`${formatCompact(
-                    fromDecimals(banxTokenStake.tokensStaked, BANX_TOKEN_STAKE_DECIMAL),
-                  )}/${tokensTotal()}`}
-                />
+            <div className={styles.stakedInfo}>
+              <StakingStat
+                label="Tokens staked"
+                value={`${formatCompact(
+                  fromDecimals(banxTokenStake.tokensStaked, BANX_TOKEN_STAKE_DECIMAL),
+                )}/${tokensTotal()}`}
+              />
 
-                <Button
-                  onClick={() => open(StakeTokens)}
-                  className={styles.manageButton}
-                  variant="secondary"
-                >
-                  Manage
-                </Button>
-              </div>
-            )}
+              <Button
+                onClick={() => open(StakeTokens)}
+                className={styles.manageButton}
+                variant="secondary"
+              >
+                Manage
+              </Button>
+            </div>
           </div>
 
           <div className={styles.divider} />

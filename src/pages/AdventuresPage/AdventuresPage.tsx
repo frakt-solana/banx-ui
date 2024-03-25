@@ -46,9 +46,9 @@ export const AdventuresPage: FC = () => {
   const isSuccess = !!banxStake && !!banxTokenSettings && !!adventuresInfo
 
   const adventuresWithSubscriptions =
-    banxStake?.banxAdventures.reduce<
-      { adventure: BanxAdventure; adventureSubscription: BanxSubscription }[]
-    >((acc, { adventure, adventureSubscription }) => {
+    banxStake?.banxAdventures
+      .filter(({adventure}) => adventure.periodEndingAt * 1000 < Date.now())
+      .reduce<{ adventure: BanxAdventure; adventureSubscription: BanxSubscription }[]>((acc, { adventure, adventureSubscription }) => {
       if (adventure && adventureSubscription) {
         acc.push({ adventure, adventureSubscription })
       }
