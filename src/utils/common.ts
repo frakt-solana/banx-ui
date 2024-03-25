@@ -110,6 +110,6 @@ export const toDecimals = (v: string | number, decimals = 1e9) => {
   return _v.mul(_decimals).toString()
 }
 /* eslint-disable  @typescript-eslint/no-explicit-any */
-export const fromDecimals = (v: string | number, decimals = 1e9): any => {
-  return (parseFloat(v.toString()) / decimals).toFixed(2)
+export const fromDecimals = (v: string | number, decimals = 1e9, toFixed = 2): any => {
+  return (parseFloat(v.toString()) / decimals).toFixed(toFixed)
 }
