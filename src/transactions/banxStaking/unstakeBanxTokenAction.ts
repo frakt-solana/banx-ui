@@ -10,7 +10,7 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type UnstakeBanxTokenParams = {
   userPubkey: web3.PublicKey
-  tokensToUnstake: number
+  tokensToUnstake: string
   optimistic: BanxSubscribeAdventureOptimistic
   priorityFees: number
 }
