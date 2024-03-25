@@ -55,7 +55,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
   const { connection } = useConnection()
   const isEnded = banxAdventure.periodEndingAt * 1000 < Date.now()
   const isStarted = banxAdventure.periodStartedAt * 1000 + BANX_ADVENTURE_GAP * 1000 < Date.now()
-  const { banxStake, banxTokenSettings, updateStake } = useBanxStakeState()
+  const { banxStake, banxTokenSettings } = useBanxStakeState()
   const priorityFees = usePriorityFees()
 
   const wallet = useWallet()
@@ -126,11 +126,10 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
       .on('pfSuccessEach', (results) => {
         const { txnHash } = results[0]
         enqueueSnackbar({
-          message: 'Subscribed successfully',
-          type: 'success',
+          message: 'Transaction send',
+          type: 'info',
           solanaExplorerPath: `tx/${txnHash}`,
         })
-        results.forEach(({ result }) => !!result && updateStake(result))
       })
       .on('pfSuccessAll', () => {
         close()

@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react'
+import { FC, useCallback, useEffect } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
@@ -27,13 +27,26 @@ export const AdventuresPage: FC = () => {
     loadBanxTokenBalance,
   } = useBanxStakeState()
 
-  useEffect(() => {
+  const fetchBanxStake  = useCallback(() => {
     void loadBanxTokenSettings()
     void loadBanxStake({ userPubkey })
     if (publicKey?.toBase58()) {
       void loadBanxTokenBalance({ userPubkey: publicKey, connection })
     }
+  },[
+    userPubkey,
+    loadBanxTokenSettings,
+    loadBanxStake,
+    loadBanxTokenBalance,
+    connection,
+    publicKey
+  ])
+
+  useEffect(() => {
+    const timer = setInterval(fetchBanxStake, 5_000);
+    return () => clearTimeout(timer)
   }, [
+    fetchBanxStake,
     userPubkey,
     loadBanxTokenSettings,
     loadBanxStake,
@@ -41,6 +54,7 @@ export const AdventuresPage: FC = () => {
     connection,
     publicKey,
   ])
+
 
   const isLoading = !banxStake || !banxTokenSettings || adventuresInfoLoading
   const isSuccess = !!banxStake && !!banxTokenSettings && !!adventuresInfo

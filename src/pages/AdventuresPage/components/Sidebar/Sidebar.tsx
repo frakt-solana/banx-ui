@@ -54,7 +54,7 @@ export const Sidebar: FC<SidebarProps> = ({
 }) => {
   const { open } = useModal()
   const wallet = useWallet()
-  const { banxStake, banxTokenSettings, updateStake } = useBanxStakeState()
+  const { banxStake, banxTokenSettings } = useBanxStakeState()
 
   const { publicKey } = useWallet()
   const { connection } = useConnection()
@@ -96,11 +96,10 @@ export const Sidebar: FC<SidebarProps> = ({
       .on('pfSuccessEach', (results) => {
         const { txnHash } = results[0]
         enqueueSnackbar({
-          message: 'Successfully claimed',
-          type: 'success',
+          message: 'Transaction send',
+          type: 'info',
           solanaExplorerPath: `tx/${txnHash}`,
         })
-        results.forEach(({ result }) => !!result && updateStake(result))
       })
       .on('pfSuccessAll', () => {
         close()
@@ -134,7 +133,7 @@ export const Sidebar: FC<SidebarProps> = ({
     return (
       <div>
         <div className={styles.totalValues}>{format(totalPts)} partner</div>
-        <div className={styles.totalValues}>{totalPlayersPoints} player</div>
+        <div className={styles.totalValues}>{parseFloat(totalPlayersPoints)} player</div>
       </div>
     )
   }
