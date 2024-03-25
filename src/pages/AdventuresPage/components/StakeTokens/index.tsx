@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
+import { calculatePlayerPointsForTokens } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
 import { parseInt } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
@@ -29,7 +30,6 @@ import {
 } from '@banx/utils'
 
 import styles from './styles.module.less'
-import { calculatePlayerPointsForTokens } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
 
 export const StakeTokens = () => {
   const { connection } = useConnection()
@@ -190,8 +190,9 @@ export const StakeTokens = () => {
     setValue('0')
   }, [currentTabValue])
 
-
-  const calcTokensPlayersPoints = calculatePlayerPointsForTokens(parseFloat(toDecimals(parseFloat(value)))).toFixed(2)
+  const calcTokensPlayersPoints = calculatePlayerPointsForTokens(
+    parseFloat(toDecimals(parseFloat(value))),
+  ).toFixed(2)
 
   return (
     <Modal className={styles.modal} open onCancel={close} footer={false} width={572} centered>

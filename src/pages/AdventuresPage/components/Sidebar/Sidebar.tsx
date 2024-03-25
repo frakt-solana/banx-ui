@@ -6,6 +6,7 @@ import classNames from 'classnames'
 import { web3 } from 'fbonds-core'
 import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
+import { calculatePlayerPointsForTokens } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
 import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
 import { TxnExecutor } from 'solana-transactions-executor'
 
@@ -32,7 +33,6 @@ import {
 } from '@banx/utils'
 
 import styles from './Sidebar.module.less'
-import { calculatePlayerPointsForTokens } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
 
 interface SidebarProps {
   className?: string
@@ -126,7 +126,9 @@ export const Sidebar: FC<SidebarProps> = ({
   }
 
   const stakenTokensPlayersPoints = calculatePlayerPointsForTokens(banxTokenStake.tokensStaked)
-  const totalPlayersPoints = format((banxTokenStake.playerPointsStaked + stakenTokensPlayersPoints).toFixed(2))
+  const totalPlayersPoints = format(
+    (banxTokenStake.playerPointsStaked + stakenTokensPlayersPoints).toFixed(2),
+  )
 
   const Totals = () => {
     return (
