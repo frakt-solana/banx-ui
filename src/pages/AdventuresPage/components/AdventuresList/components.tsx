@@ -123,7 +123,7 @@ export const AdventuresTimer: FC<{
             <BanxToken className={styles.banxIcon} />
             <Tooltip
               className={styles.tooltip}
-              title="Every week Banx purchases $BANX from the market using 100% of its revenue and then distribute these tokens to stakers, proportionally to their player points"
+              title="Every week Banx purchases $BANX from the market using 100% of its revenue and then distribute these tokens to stakers, proportionally to their partner points"
             />
           </div>
         )}
