@@ -124,7 +124,9 @@ export const Sidebar: FC<SidebarProps> = ({
     )
   }
 
-  const stakenTokensPlayersPoints = calculatePlayerPointsForTokens(parseFloat(banxTokenStake.tokensStaked))
+  const stakenTokensPlayersPoints = calculatePlayerPointsForTokens(
+    parseFloat(banxTokenStake.tokensStaked),
+  )
   const totalPlayersPoints = format(
     (banxTokenStake.playerPointsStaked + stakenTokensPlayersPoints).toString(),
   )
