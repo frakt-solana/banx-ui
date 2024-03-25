@@ -116,7 +116,9 @@ export const AdventuresTimer: FC<{
           <div className={styles.distributed}>
             <span>you will receive</span>
             <span className={styles.value}>
-              {formatNumbersWithCommas(fromDecimals(rewards().toFixed(0), BANX_TOKEN_STAKE_DECIMAL, 0))}
+              {formatNumbersWithCommas(
+                fromDecimals(rewards().toFixed(0), BANX_TOKEN_STAKE_DECIMAL, 0),
+              )}
             </span>
             <BanxToken className={styles.banxIcon} />
             <Tooltip
