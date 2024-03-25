@@ -120,7 +120,7 @@ export const StakeNftsModal = () => {
         .on('pfSuccessEach', (results) => {
           const { txnHash } = results[0]
           enqueueSnackbar({
-            message: 'Transaction send',
+            message: 'Transaction sent',
             type: 'info',
             solanaExplorerPath: `tx/${txnHash}`,
           })
@@ -167,7 +167,7 @@ export const StakeNftsModal = () => {
         .on('pfSuccessEach', (results) => {
           const { txnHash } = results[0]
           enqueueSnackbar({
-            message: 'Transaction send',
+            message: 'Transaction sent',
             type: 'info',
             solanaExplorerPath: `tx/${txnHash}`,
           })
