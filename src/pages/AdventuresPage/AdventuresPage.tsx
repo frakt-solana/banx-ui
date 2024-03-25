@@ -27,23 +27,23 @@ export const AdventuresPage: FC = () => {
     loadBanxTokenBalance,
   } = useBanxStakeState()
 
-  const fetchBanxStake  = useCallback(() => {
+  const fetchBanxStake = useCallback(() => {
     void loadBanxTokenSettings()
     void loadBanxStake({ userPubkey })
     if (publicKey?.toBase58()) {
       void loadBanxTokenBalance({ userPubkey: publicKey, connection })
     }
-  },[
+  }, [
     userPubkey,
     loadBanxTokenSettings,
     loadBanxStake,
     loadBanxTokenBalance,
     connection,
-    publicKey
+    publicKey,
   ])
 
   useEffect(() => {
-    const timer = setInterval(fetchBanxStake, 5_000);
+    const timer = setInterval(fetchBanxStake, 5_000)
     return () => clearTimeout(timer)
   }, [
     fetchBanxStake,
@@ -54,7 +54,6 @@ export const AdventuresPage: FC = () => {
     connection,
     publicKey,
   ])
-
 
   const isLoading = !banxStake || !banxTokenSettings || adventuresInfoLoading
   const isSuccess = !!banxStake && !!banxTokenSettings && !!adventuresInfo
