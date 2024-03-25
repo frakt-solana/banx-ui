@@ -3,7 +3,7 @@ import { FC } from 'react'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { web3 } from 'fbonds-core'
+import { BN, web3 } from 'fbonds-core'
 import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { calculatePlayerPointsForTokens } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
@@ -63,7 +63,7 @@ export const Sidebar: FC<SidebarProps> = ({
     BANX_TOKEN_STAKE_DECIMAL,
   )
   const { data: balance, isLoading } = useBanxTokenBalance(connection, publicKey)
-  const totalPts = parseFloat(tokensPts.toString()) + banxTokenStake.partnerPointsStaked
+  const totalPts = parseFloat(tokensPts.toString()) + parseFloat(banxTokenStake.partnerPointsStaked)
   const priorityFees = usePriorityFees()
 
   const claimAction = () => {
@@ -118,9 +118,11 @@ export const Sidebar: FC<SidebarProps> = ({
     if (!banxTokenSettings?.maxTokenStakeAmount || isLoading) {
       return '0'
     }
+    const tokensStakedBN = new BN(banxTokenStake.tokensStaked)
+    const balanceBN = new BN(balance)
 
     return formatCompact(
-      fromDecimals(banxTokenStake.tokensStaked + parseFloat(balance), BANX_TOKEN_STAKE_DECIMAL),
+      fromDecimals(tokensStakedBN.add(balanceBN), BANX_TOKEN_STAKE_DECIMAL),
     )
   }
 
@@ -128,7 +130,7 @@ export const Sidebar: FC<SidebarProps> = ({
     parseFloat(banxTokenStake.tokensStaked),
   )
   const totalPlayersPoints = format(
-    (banxTokenStake.playerPointsStaked + stakenTokensPlayersPoints).toString(),
+    (parseFloat(banxTokenStake.playerPointsStaked) + stakenTokensPlayersPoints).toString(),
   )
 
   const Totals = () => {
@@ -200,7 +202,7 @@ export const Sidebar: FC<SidebarProps> = ({
           <div className={styles.claimStatsContainer}>
             <StakingStat
               label="claimable"
-              value={format(fromDecimals(0, BANX_TOKEN_STAKE_DECIMAL))} // rewards
+              value={format(fromDecimals(rewards.toString(), BANX_TOKEN_STAKE_DECIMAL))}
               icon={BanxToken}
             />
             <Button onClick={claimAction} disabled={!rewards} className={styles.manageButton}>
