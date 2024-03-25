@@ -32,6 +32,7 @@ import {
 } from '@banx/utils'
 
 import styles from './Sidebar.module.less'
+import { calculatePlayerPointsForTokens } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
 
 interface SidebarProps {
   className?: string
@@ -124,12 +125,14 @@ export const Sidebar: FC<SidebarProps> = ({
     )
   }
 
+  const stakenTokensPlayersPoints = calculatePlayerPointsForTokens(banxTokenStake.tokensStaked)
+  const totalPlayersPoints = format((banxTokenStake.playerPointsStaked + stakenTokensPlayersPoints).toFixed(2))
+
   const Totals = () => {
-    // const r = calculatePlayerPointsForTokens(b)
     return (
       <div>
         <div className={styles.totalValues}>{format(totalPts)} partner</div>
-        {/*<div className={styles.totalValues}>{format(banxTokenStake.playerPointsStaked)} player</div>*/}
+        <div className={styles.totalValues}>{totalPlayersPoints} player</div>
       </div>
     )
   }

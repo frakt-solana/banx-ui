@@ -29,6 +29,7 @@ import {
 } from '@banx/utils'
 
 import styles from './styles.module.less'
+import { calculatePlayerPointsForTokens } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
 
 export const StakeTokens = () => {
   const { connection } = useConnection()
@@ -189,6 +190,9 @@ export const StakeTokens = () => {
     setValue('0')
   }, [currentTabValue])
 
+
+  const calcTokensPlayersPoints = calculatePlayerPointsForTokens(parseFloat(toDecimals(parseFloat(value)))).toFixed(2)
+
   return (
     <Modal className={styles.modal} open onCancel={close} footer={false} width={572} centered>
       <Tabs value={currentTabValue} {...tabProps} />
@@ -234,10 +238,10 @@ export const StakeTokens = () => {
                   <span>{pointsToReceive}</span>
                   <span>PARTNER POINTS</span>
                 </div>
-                {/*<div className={styles.values}>*/}
-                {/*  <span>800</span>*/}
-                {/*  <span>player POINTS</span>*/}
-                {/*</div>*/}
+                <div className={styles.values}>
+                  <span>{calcTokensPlayersPoints}</span>
+                  <span>player POINTS</span>
+                </div>
               </div>
             </div>
             <StatInfo
@@ -264,10 +268,10 @@ export const StakeTokens = () => {
                   <span>{pointsToReceive}</span>
                   <span>PARTNER POINTS</span>
                 </div>
-                {/*<div className={styles.values}>*/}
-                {/*  <span>800</span>*/}
-                {/*  <span>player POINTS</span>*/}
-                {/*</div>*/}
+                <div className={styles.values}>
+                  <span>{calcTokensPlayersPoints}</span>
+                  <span>player POINTS</span>
+                </div>
               </div>
             </div>
 
