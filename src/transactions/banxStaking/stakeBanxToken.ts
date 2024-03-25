@@ -1,4 +1,5 @@
 import { web3 } from '@project-serum/anchor'
+import { BN } from 'fbonds-core'
 import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { stakeBanxToken } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
@@ -6,7 +7,6 @@ import { MakeActionFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
-import { BN } from 'fbonds-core'
 
 export type StakeBanxTokenActionParams = {
   userPubkey: web3.PublicKey
