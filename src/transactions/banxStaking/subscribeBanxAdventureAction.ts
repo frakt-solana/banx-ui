@@ -41,12 +41,11 @@ export const subscribeBanxAdventureAction: SubscribeBanxAdventureAction = async 
     sendTxn: sendTxnPlaceHolder,
   }
 
-  const { instructions, signers, optimisticResult } = await subscribeBanxAdventure(params)
+  const { instructions, signers } = await subscribeBanxAdventure(params)
 
   return {
     instructions: instructions,
     signers: signers,
     lookupTables: [],
-    optimisticResult: optimisticResult,
   }
 }

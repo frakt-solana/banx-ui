@@ -47,11 +47,10 @@ export const stakeBanxNftAction: StakeBanxNftsTokenAction = async (
     sendTxn: sendTxnPlaceHolder,
   }
 
-  const { instructions, signers, optimisticResult } = await stakeBanxNft(params)
+  const { instructions, signers } = await stakeBanxNft(params)
   return {
     instructions: instructions,
     signers: signers,
-    additionalResult: optimisticResult,
     lookupTables: [],
   }
 }

@@ -117,7 +117,7 @@ export const AdventuresTimer: FC<{
             <span>you will receive</span>
             <span className={styles.value}>
               {formatNumbersWithCommas(
-                fromDecimals(rewards().toFixed(0), BANX_TOKEN_STAKE_DECIMAL, 0),
+                fromDecimals(rewards().toString(), BANX_TOKEN_STAKE_DECIMAL, 0),
               )}
             </span>
             <BanxToken className={styles.banxIcon} />

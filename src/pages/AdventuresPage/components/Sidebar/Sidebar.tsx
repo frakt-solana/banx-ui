@@ -3,7 +3,7 @@ import { FC } from 'react'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { web3 } from 'fbonds-core'
+import { BN, web3 } from 'fbonds-core'
 import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { calculatePlayerPointsForTokens } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
@@ -38,10 +38,10 @@ interface SidebarProps {
   className?: string
   banxTokenStake: BanxTokenStake
   adventuresInfo: AdventuresInfo
-  nftsCount: number
-  totalClaimed: number
-  rewards: number
-  tokensPerPartnerPoints: number
+  nftsCount: string
+  totalClaimed: string
+  rewards: bigint
+  tokensPerPartnerPoints: string
 }
 
 export const Sidebar: FC<SidebarProps> = ({
@@ -63,7 +63,9 @@ export const Sidebar: FC<SidebarProps> = ({
     BANX_TOKEN_STAKE_DECIMAL,
   )
   const { data: balance, isLoading } = useBanxTokenBalance(connection, publicKey)
-  const totalPts = parseFloat(tokensPts.toString()) + banxTokenStake.partnerPointsStaked
+  const totalPts = (
+    parseFloat(tokensPts.toString()) + parseFloat(banxTokenStake.partnerPointsStaked)
+  ).toFixed(2)
   const priorityFees = usePriorityFees()
 
   const claimAction = () => {
@@ -88,7 +90,7 @@ export const Sidebar: FC<SidebarProps> = ({
       tokenMint: new web3.PublicKey(BANX_TOKEN_MINT),
       optimistic: banxSubscribeAdventureOptimistic,
       priorityFees,
-      weeks,
+      weeks: weeks.map((w) => parseFloat(w)),
     }
 
     new TxnExecutor(stakeBanxClaimAction, { wallet, connection })
@@ -118,15 +120,17 @@ export const Sidebar: FC<SidebarProps> = ({
     if (!banxTokenSettings?.maxTokenStakeAmount || isLoading) {
       return '0'
     }
+    const tokensStakedBN = new BN(banxTokenStake.tokensStaked)
+    const balanceBN = new BN(balance)
 
-    return formatCompact(
-      fromDecimals(banxTokenStake.tokensStaked + parseFloat(balance), BANX_TOKEN_STAKE_DECIMAL),
-    )
+    return formatCompact(fromDecimals(tokensStakedBN.add(balanceBN), BANX_TOKEN_STAKE_DECIMAL))
   }
 
-  const stakenTokensPlayersPoints = calculatePlayerPointsForTokens(banxTokenStake.tokensStaked)
+  const stakenTokensPlayersPoints = calculatePlayerPointsForTokens(
+    parseFloat(banxTokenStake.tokensStaked),
+  )
   const totalPlayersPoints = format(
-    (banxTokenStake.playerPointsStaked + stakenTokensPlayersPoints).toFixed(2),
+    (parseFloat(banxTokenStake.playerPointsStaked) + stakenTokensPlayersPoints).toString(),
   )
 
   const Totals = () => {
@@ -198,7 +202,7 @@ export const Sidebar: FC<SidebarProps> = ({
           <div className={styles.claimStatsContainer}>
             <StakingStat
               label="claimable"
-              value={format(fromDecimals(rewards, BANX_TOKEN_STAKE_DECIMAL))}
+              value={format(fromDecimals(rewards.toString(), BANX_TOKEN_STAKE_DECIMAL))}
               icon={BanxToken}
             />
             <Button onClick={claimAction} disabled={!rewards} className={styles.manageButton}>

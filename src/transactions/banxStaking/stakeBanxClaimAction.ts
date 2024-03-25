@@ -42,11 +42,10 @@ export const stakeBanxClaimAction: StakeBanxClaimAction = async (
     sendTxn: sendTxnPlaceHolder,
   }
 
-  const { instructions, signers, optimisticResult } = await claimStakingRewards(params)
+  const { instructions, signers } = await claimStakingRewards(params)
   return {
     instructions: instructions,
     signers: signers,
-    additionalResult: optimisticResult,
     lookupTables: [],
   }
 }

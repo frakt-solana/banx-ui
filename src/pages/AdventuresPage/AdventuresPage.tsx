@@ -60,7 +60,7 @@ export const AdventuresPage: FC = () => {
 
   const adventuresWithSubscriptions =
     banxStake?.banxAdventures
-      .filter(({ adventure }) => adventure.periodEndingAt * 1000 < Date.now())
+      .filter(({ adventure }) => parseInt(adventure.periodEndingAt) * 1000 < Date.now())
       .reduce<{ adventure: BanxAdventure; adventureSubscription: BanxSubscription }[]>(
         (acc, { adventure, adventureSubscription }) => {
           if (adventure && adventureSubscription) {
@@ -71,7 +71,7 @@ export const AdventuresPage: FC = () => {
         [],
       ) || []
 
-  const rewards = calculateRewards(adventuresWithSubscriptions) || 0
+  const rewards = calculateRewards(adventuresWithSubscriptions)
 
   return (
     <div className={styles.pageWrapper}>
@@ -92,8 +92,8 @@ export const AdventuresPage: FC = () => {
           tokensPerPartnerPoints={banxTokenSettings.tokensPerPartnerPoints}
           rewards={rewards}
           adventuresInfo={adventuresInfo}
-          totalClaimed={banxTokenSettings?.rewardsHarvested || 0}
-          nftsCount={banxStake?.nfts?.length || 0}
+          totalClaimed={banxTokenSettings?.rewardsHarvested || '0'}
+          nftsCount={banxStake?.nfts?.length.toString() || '0'}
           className={styles.sidebar}
           banxTokenStake={banxStake.banxTokenStake}
         />

@@ -43,12 +43,11 @@ export const unstakeBanxNftsAction: UnstakeBanxNftsActionAction = async (
     sendTxn: sendTxnPlaceHolder,
   }
 
-  const { instructions, signers, optimisticResult } = await unstakeBanxNft(params)
+  const { instructions, signers } = await unstakeBanxNft(params)
 
   return {
     instructions: instructions,
     signers: signers,
     lookupTables: [],
-    additionalResult: optimisticResult.banxSubscribeAdventureOptimistic,
   }
 }

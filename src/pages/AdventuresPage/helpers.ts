@@ -26,18 +26,18 @@ export async function getTokenBalance(
 
 export const calculateRewards = (
   props: { adventure: BanxAdventure; adventureSubscription: BanxSubscription }[],
-) => {
+): bigint => {
   if (!props.length) {
-    return 0
+    return BigInt(0)
   }
 
-  return calculateRewardsFromSubscriptions(props)
+  return calculateRewardsFromSubscriptions(props) as bigint
 }
 
-export const calcPartnerPoints = (v: string | number, tokensPerPartnerPoints?: number) => {
+export const calcPartnerPoints = (v: string, tokensPerPartnerPoints?: string) => {
   if (!tokensPerPartnerPoints) {
-    return 0
+    return '0'
   }
-  const res = (parseFloat(v.toString()) * BANX_TOKEN_STAKE_DECIMAL) / tokensPerPartnerPoints
+  const res = (parseFloat(v) * BANX_TOKEN_STAKE_DECIMAL) / parseFloat(tokensPerPartnerPoints)
   return isNaN(res) ? '0' : res.toFixed(2)
 }
