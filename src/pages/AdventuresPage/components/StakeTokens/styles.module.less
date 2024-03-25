@@ -1,0 +1,123 @@
+.modal {
+  :global {
+    z-index: 2;
+
+    .ant-modal-body {
+      padding: 0 !important;
+      // margin: -1px;
+    }
+
+    .ant-modal-content {
+      padding: 0;
+    }
+  }
+}
+
+.container {
+  padding: 12px 24px 24px 24px;
+
+  & svg {
+    margin-right: 4px;
+  }
+}
+
+.input {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  border-radius: 6px;
+  border: 1px solid var(--bg-border);
+  padding-right: 4px;
+  background: var(--bg-action);
+  margin-bottom: 10px;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+  gap: 8px;
+
+  .value {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    path {
+      fill: #1b1b1b;
+    }
+  }
+}
+
+.uppercaseText {
+  color: var(--content-secondary);
+  font: var(--title-sm);
+  text-transform: uppercase;
+  margin-right: 4px;
+
+  @media (max-width: 640px) {
+    font: var(--title-xs);
+  }
+}
+
+.valueText {
+  font: var(--body-text-md);
+  margin-right: 4px;
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+
+  path {
+    fill: #1b1b1b;
+  }
+}
+
+.btn {
+  width: 100%;
+}
+
+.youWillStake {
+  border: 0.5px dashed var(--bg-border, #ccc);
+  padding: 12px;
+
+  .title {
+    text-align: center;
+    font: var(--card-header-sm);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    span {
+      margin-right: 4px;
+    }
+  }
+
+  .valuesRaw {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 12px;
+  }
+
+  .values {
+    span:first-child {
+      display: block;
+      text-align: center;
+      font: var(--body-text-xl);
+      margin: 0 10px;
+    }
+    span:last-child {
+      font: var(--body-text-xl);
+      font: var(--card-header-sm);
+      text-transform: uppercase;
+      margin: 0 6px;
+    }
+  }
+}

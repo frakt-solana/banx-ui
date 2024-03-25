@@ -3,6 +3,7 @@ import { FC } from 'react'
 import classNames from 'classnames'
 import { NavLink } from 'react-router-dom'
 
+import { PATHS } from '@banx/router'
 import { toLowerCaseNoSpaces, trackNavigationEvent } from '@banx/utils'
 
 import { isActivePath } from './helpers'
@@ -29,6 +30,7 @@ export const InternalLink: FC<InternalLinkProps> = ({
         [styles.active]: isActivePath(pathname),
         [styles.primary]: primary,
         [styles.secondary]: !Icon,
+        [styles.stake]: pathname === PATHS.ADVENTURES,
       })}
     >
       {Icon && <Icon />}

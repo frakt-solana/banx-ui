@@ -1,15 +1,6 @@
 import { DISCORD, DOCS_URL, GITHUB_URL, X_URL } from '@banx/constants'
-import {
-  BanxFilled,
-  Borrow,
-  Dashboard,
-  Discord,
-  Docs,
-  Github,
-  Lend,
-  Rewards,
-  Twitter,
-} from '@banx/icons'
+import { Borrow, Dashboard, Discord, Docs, Github, Lend, Rewards, Twitter } from '@banx/icons'
+import { StakeFilled } from '@banx/icons/Stake'
 import { PATHS } from '@banx/router'
 
 export const NAVIGATION_LINKS = [
@@ -52,9 +43,9 @@ export const SECONDARY_NAVIGATION_LINKS = [
     icon: Rewards,
   },
   {
-    label: 'Banx',
+    label: 'Stake',
     pathname: PATHS.ADVENTURES,
-    icon: BanxFilled,
+    icon: StakeFilled,
   },
 ]
 

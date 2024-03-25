@@ -1,3 +1,4 @@
+import { BN } from 'fbonds-core'
 import { flatMap, map, reduce, uniq } from 'lodash'
 
 import {
@@ -65,6 +66,13 @@ export const calcBorrowValueWithRentFee = (loanValue: number, marketPubkey: stri
   return loanValue - BONDS.BORROW_RENT_FEE
 }
 
+export const formatCompact = (value: number, maximumFractionDigits = 1) => {
+  return Intl.NumberFormat('en-US', {
+    notation: 'compact',
+    maximumFractionDigits,
+  }).format(value)
+}
+
 export const calcBorrowValueWithProtocolFee = (loanValue: number) =>
   Math.floor(loanValue * (1 - BONDS.PROTOCOL_FEE_PERCENT / 1e4))
 
@@ -94,4 +102,14 @@ export const createDownloadLink = (data: string, filename: string, type?: string
   tempLink.click()
 
   window.URL.revokeObjectURL(blobURL)
+}
+
+export const toDecimals = (v: string | number, decimals = 1e9) => {
+  const _decimals = new BN(decimals)
+  const _v = new BN(v)
+  return _v.mul(_decimals).toString()
+}
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+export const fromDecimals = (v: string | number, decimals = 1e9, toFixed = 2): any => {
+  return (parseFloat(v.toString()) / decimals).toFixed(toFixed)
 }
