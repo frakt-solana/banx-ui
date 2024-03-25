@@ -121,9 +121,7 @@ export const Sidebar: FC<SidebarProps> = ({
     const tokensStakedBN = new BN(banxTokenStake.tokensStaked)
     const balanceBN = new BN(balance)
 
-    return formatCompact(
-      fromDecimals(tokensStakedBN.add(balanceBN), BANX_TOKEN_STAKE_DECIMAL),
-    )
+    return formatCompact(fromDecimals(tokensStakedBN.add(balanceBN), BANX_TOKEN_STAKE_DECIMAL))
   }
 
   const stakenTokensPlayersPoints = calculatePlayerPointsForTokens(
