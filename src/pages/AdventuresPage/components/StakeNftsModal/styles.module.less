@@ -30,7 +30,13 @@
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
+  margin-bottom: 18px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   margin-bottom: 18px;
 }
 
@@ -106,6 +112,26 @@
 .nftDisabled {
   cursor: not-allowed;
   pointer-events: none;
+  position: relative;
+
+  .cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 34px;
+    background: #000000b0;
+    z-index: 999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    span {
+      color: var(--pure-white);
+      font: var(--important-text-xl);
+      text-align: center;
+    }
+  }
 }
 
 .image {
@@ -175,7 +201,18 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 24px;
-  z-index: 3;
+  z-index: 999;
+}
+
+.footerEmpty {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  padding: 24px;
+  background-color: var(--bg-primary);
+  border-top: 1px solid var(--bg-border);
+  z-index: 999;
 }
 
 .footerBtn {
@@ -184,4 +221,28 @@
 
 .tabs {
   flex-wrap: nowrap;
+}
+
+.emptyNfts {
+  width: 100%;
+  text-align: center;
+  font: var(--important-text-xl);
+  font-weight: 400;
+  margin-top: 130px;
+}
+
+.footerTensorBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+
+  svg {
+    margin-right: 4px;
+  }
+
+  & > a {
+    display: flex;
+    align-items: center;
+    color: inherit;
+  }
 }

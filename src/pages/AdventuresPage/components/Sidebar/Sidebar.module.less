@@ -11,85 +11,126 @@
   }
 }
 
-.section {
+.content {
   display: flex;
   flex-direction: column;
-  margin-bottom: 24px;
+  gap: 24px;
 
-  &:last-of-type {
-    margin-bottom: 0;
+  @media screen and (max-width: 1280px) {
+    flex-direction: row;
+  }
+
+  @media screen and (max-width: 640px) {
+    gap: 16px;
   }
 }
 
-.title {
+.squadSection,
+.claimSection {
+  display: flex;
+  flex-direction: column;
+
+  @media screen and (max-width: 1280px) {
+    width: 100%;
+  }
+
+  .totalPointsStaked {
+    width: 105px;
+  }
+}
+
+.totalValues {
+  text-align: right;
+}
+
+.labelWrapper {
+  align-items: flex-start !important;
+}
+
+.stakedInfoContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .stakedInfo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  @media screen and (max-width: 1280px) {
+    padding-bottom: 8px;
+  }
+}
+
+.titleWrapper {
   display: flex;
   align-items: center;
+  margin-bottom: 12px;
   column-gap: 6px;
-  margin-bottom: 16px;
-
-  @media screen and (max-width: 640px) {
-    margin-bottom: 0;
-  }
 
   span {
     color: var(--content-primary);
     font: var(--card-header-lg);
 
-    line-height: 1;
     @media screen and (max-width: 640px) {
       font: var(--card-header-md);
     }
   }
-}
-.titleIcon {
-  width: 32px;
-  height: 32px;
-  background: var(--bg-secondary);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+  @media screen and (max-width: 640px) {
+    margin-bottom: 8px;
+  }
+
+  .icon {
+    width: 32px;
+    height: 32px;
+    background: var(--bg-secondary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    @media screen and (max-width: 640px) {
+      width: 24px;
+      height: 24px;
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
 }
 
-.infoWrapper {
+.divider {
+  background: var(--bg-border);
+  margin: 8px 0;
+  height: 1px;
+  width: 100%;
+
+  @media (max-width: 1280px) {
+    margin-top: auto;
+  }
+}
+
+.claimStatsContainer {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
 }
 
-.info {
-  display: flex;
-  align-items: center;
-  column-gap: 6px;
-
-  span:first-child {
-    font: var(--important-text-xl);
-    @media screen and (max-width: 640px) {
-      font: var(--important-text-lg);
-    }
-  }
-
-  span:last-child {
-    font: var(--title-sm);
-    @media screen and (max-width: 640px) {
-      font: var(--title-xs);
-    }
-    text-transform: uppercase;
-    max-width: 95px;
-  }
-}
-
-.warns {
-  padding: 16px;
+.infoSection {
   border: 1px dashed var(--content-secondary);
+  font: var(--body-text-md);
   display: flex;
   flex-direction: column;
-  row-gap: 8px;
-  font: var(--body-text-sm);
+  margin-top: 24px;
+  padding: 16px;
 
   p {
     display: flex;
-    column-gap: 8px;
+    gap: 8px;
 
     svg {
       fill: var(--content-secondary);
@@ -98,18 +139,53 @@
     }
   }
 
-  @media screen and (max-width: 640px) {
-    border-width: 1px 0 0;
+  @media (max-width: 640px) {
+    padding: 8px 16px;
     margin: -16px;
+    margin-top: 16px;
   }
 }
 
-.stats {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+.manageButton {
+  width: 168px;
+
+  @media (max-width: 960px) {
+    width: 128px;
+  }
+
+  @media (max-width: 640px) {
+    height: 24px !important;
+    width: 64px;
+  }
 }
 
-.manageButton {
-  margin-top: 8px;
+.stakingStatInfo {
+  &.col {
+    flex-direction: column-reverse;
+    gap: 0;
+  }
+
+  .label {
+    color: var(--content-primary);
+  }
+
+  .value {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font: var(--important-text-lg);
+
+    path {
+      fill: #1b1b1b !important;
+    }
+
+    @media screen and (max-width: 640px) {
+      font: var(--important-text-sm);
+
+      svg {
+        height: 12px;
+        width: 12px;
+      }
+    }
+  }
 }
