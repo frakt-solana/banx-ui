@@ -63,7 +63,7 @@ export const Sidebar: FC<SidebarProps> = ({
     BANX_TOKEN_STAKE_DECIMAL,
   )
   const { data: balance, isLoading } = useBanxTokenBalance(connection, publicKey)
-  const totalPts = parseFloat(tokensPts.toString()) + parseFloat(banxTokenStake.partnerPointsStaked)
+  const totalPts = (parseFloat(tokensPts.toString()) + parseFloat(banxTokenStake.partnerPointsStaked)).toFixed(2)
   const priorityFees = usePriorityFees()
 
   const claimAction = () => {
