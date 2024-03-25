@@ -79,7 +79,8 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
 
   const tokenPts = calcPartnerPoints(banxAdventure.totalTokensStaked, banxAdventure.tokensPerPoints)
   const totalAdventurePts =
-    parseFloat(fromDecimals(tokenPts, BANX_TOKEN_STAKE_DECIMAL)) + banxAdventure.totalPartnerPoints
+    (parseFloat(fromDecimals(tokenPts, BANX_TOKEN_STAKE_DECIMAL)) + parseFloat(banxAdventure.totalPartnerPoints)).toFixed(2)
+
   const isParticipating =
     !!banxStake?.banxTokenStake?.tokensStaked || !!banxStake?.banxTokenStake?.banxNftsStakedQuantity
 
@@ -154,7 +155,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
 
   const totalWalletPts =
     parseFloat(fromDecimals(walletTokenPts, BANX_TOKEN_STAKE_DECIMAL)) +
-    (banxSubscription?.stakePartnerPointsAmount || '0')
+    parseFloat(banxSubscription?.stakePartnerPointsAmount || '0')
 
   return (
     <li className={styles.card}>
