@@ -49,10 +49,10 @@ export const StakeTokens = () => {
   const handleChangeValue = (v: string) => {
     const isMaxBanxBalance =
       currentTabValue === ModalTabs.STAKE &&
-      parseFloat(v) <= parseFloat(fromDecimals(balance, BANX_TOKEN_STAKE_DECIMAL))
+      parseFloat(v) < parseFloat(fromDecimals(balance, BANX_TOKEN_STAKE_DECIMAL))
     const isMaxStaked =
       currentTabValue === ModalTabs.UNSTAKE &&
-      parseFloat(v) <=
+      parseFloat(v) <
         fromDecimals(banxStake?.banxTokenStake?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL)
 
     if (!v || isMaxBanxBalance || isMaxStaked) {
@@ -75,7 +75,7 @@ export const StakeTokens = () => {
     }
 
     const txnParam = {
-      tokensToStake: toDecimals(parseInt(value), BANX_TOKEN_STAKE_DECIMAL),
+      tokensToStake: toDecimals(value, BANX_TOKEN_STAKE_DECIMAL),
       userPubkey: wallet.publicKey,
       optimistic,
       priorityFees,
@@ -114,7 +114,7 @@ export const StakeTokens = () => {
       banxTokenStake: banxStake.banxTokenStake,
     }
     const txnParam = {
-      tokensToUnstake: parseFloat(toDecimals(parseFloat(value), BANX_TOKEN_STAKE_DECIMAL)),
+      tokensToUnstake: toDecimals(value, BANX_TOKEN_STAKE_DECIMAL),
       userPubkey: wallet.publicKey,
       optimistic,
       priorityFees,
@@ -153,12 +153,14 @@ export const StakeTokens = () => {
   }
 
   const idleOnWallet = format(
-    fromDecimals(balance || 0, BANX_TOKEN_STAKE_DECIMAL) - parseFloat(value || '0'),
+    (fromDecimals(balance || 0, BANX_TOKEN_STAKE_DECIMAL) - parseFloat(value || '0')).toFixed(0),
   )
   const banxBalance = format(parseFloat(fromDecimals(balance, BANX_TOKEN_STAKE_DECIMAL)))
   const tokensStaked = format(
-    fromDecimals(banxStake?.banxTokenStake?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL) -
-      parseFloat(value || '0'),
+    (
+      fromDecimals(banxStake?.banxTokenStake?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL) -
+      parseFloat(value || '0')
+    ).toFixed(0),
   )
   const ptsAmount = format(
     calcPts(fromDecimals(banxStake?.banxTokenStake?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL)),
