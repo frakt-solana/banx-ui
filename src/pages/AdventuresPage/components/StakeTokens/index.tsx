@@ -75,7 +75,7 @@ export const StakeTokens = () => {
     }
 
     const txnParam = {
-      tokensToStake: toDecimals(value, BANX_TOKEN_STAKE_DECIMAL),
+      tokensToStake: toDecimals(parseFloat(value), BANX_TOKEN_STAKE_DECIMAL),
       userPubkey: wallet.publicKey,
       optimistic,
       priorityFees,
@@ -114,7 +114,7 @@ export const StakeTokens = () => {
       banxTokenStake: banxStake.banxTokenStake,
     }
     const txnParam = {
-      tokensToUnstake: toDecimals(value, BANX_TOKEN_STAKE_DECIMAL),
+      tokensToUnstake: toDecimals(parseFloat(value), BANX_TOKEN_STAKE_DECIMAL),
       userPubkey: wallet.publicKey,
       optimistic,
       priorityFees,
