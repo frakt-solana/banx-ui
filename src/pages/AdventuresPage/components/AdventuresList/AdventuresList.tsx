@@ -85,7 +85,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
   ).toFixed(2)
 
   const isParticipating =
-    banxStake?.banxTokenStake?.tokensStaked !== '0' &&
+    banxStake?.banxTokenStake?.tokensStaked !== '0' ||
     banxStake?.banxTokenStake?.banxNftsStakedQuantity !== '0'
 
   const isSubscribed =
