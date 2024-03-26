@@ -53,7 +53,6 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
   maxTokenStakeAmount,
   banxSubscription,
 }) => {
-  const priorityFees = usePriorityFees()
   const { connection } = useConnection()
   const wallet = useWallet()
 
@@ -61,8 +60,8 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
   const { banxStake } = useBanxTokenStake()
 
   const isEnded = parseFloat(banxAdventure.periodEndingAt) < moment().unix()
-  const isStarted =
-    parseFloat(banxAdventure.periodStartedAt) * 1000 + BANX_ADVENTURE_GAP < moment().unix()
+  const isStarted = parseFloat(banxAdventure.periodStartedAt) + BANX_ADVENTURE_GAP < moment().unix()
+  const priorityFees = usePriorityFees()
 
   const calcMaxPts = (): string => {
     if (!banxTokenSettings) {
@@ -105,7 +104,8 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
     if (isEnded) {
       return AdventureStatus.ENDED
     }
-    if (parseFloat(banxAdventure.periodStartedAt) * 1000 + BANX_ADVENTURE_GAP > Date.now()) {
+
+    if (parseFloat(banxAdventure.periodStartedAt) + BANX_ADVENTURE_GAP > moment().unix()) {
       return AdventureStatus.UPCOMING
     }
 
