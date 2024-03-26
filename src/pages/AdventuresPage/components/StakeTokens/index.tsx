@@ -16,7 +16,6 @@ import { Modal } from '@banx/components/modals/BaseModal'
 import { BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
 import { BanxToken } from '@banx/icons'
 import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
-import { useBanxTokenBalance } from '@banx/pages/AdventuresPage/hooks/useBanxTokenBalance'
 import { useBanxStakeState } from '@banx/pages/AdventuresPage/state'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
@@ -36,7 +35,8 @@ export const StakeTokens = () => {
   const priorityFees = usePriorityFees()
   const { banxStake, banxTokenSettings } = useBanxStakeState()
   const wallet = useWallet()
-  const { data: balance, refetch } = useBanxTokenBalance(connection, wallet.publicKey)
+  const balance = banxStake?.banxWalletBalance || '0'
+  console.log(banxStake)
 
   const { close } = useModal()
   const [value, setValue] = useState('0')
@@ -93,7 +93,6 @@ export const StakeTokens = () => {
       })
       .on('pfSuccessAll', () => {
         close()
-        void refetch()
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error, {
@@ -132,7 +131,6 @@ export const StakeTokens = () => {
       })
       .on('pfSuccessAll', () => {
         close()
-        void refetch()
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error, {
