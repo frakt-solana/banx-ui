@@ -17,6 +17,7 @@ import {
   BanxSubscription,
 } from '@banx/api/banxTokenStake'
 import { BANX_TOKEN_STAKE_DECIMAL, TOTAL_BANX_NFTS, TOTAL_BANX_PTS } from '@banx/constants/banxNfts'
+import { useBanxTokenSettings, useBanxTokenStake } from '@banx/pages/AdventuresPage'
 import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { subscribeBanxAdventureAction } from '@banx/transactions/banxStaking'
@@ -29,7 +30,6 @@ import {
   usePriorityFees,
 } from '@banx/utils'
 
-import { useBanxTokenSettings, useBanxTokenStake } from '../../hooks'
 import {
   AdventuresTimer,
   NotParticipatedColumn,

@@ -15,6 +15,11 @@ import { Modal } from '@banx/components/modals/BaseModal'
 
 import { BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
 import { BanxToken } from '@banx/icons'
+import {
+  useBanxTokenBalance,
+  useBanxTokenSettings,
+  useBanxTokenStake,
+} from '@banx/pages/AdventuresPage'
 import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
@@ -26,8 +31,6 @@ import {
   toDecimals,
   usePriorityFees,
 } from '@banx/utils'
-
-import { useBanxTokenBalance, useBanxTokenSettings, useBanxTokenStake } from '../../hooks'
 
 import styles from './styles.module.less'
 

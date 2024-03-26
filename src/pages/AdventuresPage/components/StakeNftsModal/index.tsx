@@ -14,13 +14,12 @@ import { Modal } from '@banx/components/modals/BaseModal'
 import { NftType } from '@banx/api/banxTokenStake'
 import { BANX_STAKING } from '@banx/constants'
 import { TensorFilled } from '@banx/icons'
+import { useBanxTokenSettings, useBanxTokenStake } from '@banx/pages/AdventuresPage'
 import { NftCheckbox, NftsStats } from '@banx/pages/AdventuresPage/components'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxNftAction, unstakeBanxNftsAction } from '@banx/transactions/banxStaking'
 import { enqueueSnackbar, usePriorityFees } from '@banx/utils'
-
-import { useBanxTokenSettings, useBanxTokenStake } from '../../hooks'
 
 import styles from './styles.module.less'
 

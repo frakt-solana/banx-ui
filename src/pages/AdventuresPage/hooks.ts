@@ -65,6 +65,7 @@ export const useBanxTokenSettings = () => {
     isLoading,
     refetch,
   } = useQuery(createBanxTokenSettingsQueryKey(), () => fetchBanxTokenSettings(), {
+    refetchInterval: 10_000,
     staleTime: 60_000,
     refetchOnWindowFocus: false,
   })
