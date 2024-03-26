@@ -16,10 +16,7 @@ import { StatInfo, StatsInfoProps, VALUES_TYPES } from '@banx/components/StatInf
 import { BanxTokenStake } from '@banx/api/banxTokenStake'
 import { BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
 import { BanxToken, Gamepad, MoneyBill } from '@banx/icons'
-import {
-  useBanxTokenSettings,
-  useBanxTokenStake,
-} from '@banx/pages/AdventuresPage'
+import { useBanxTokenSettings, useBanxTokenStake } from '@banx/pages/AdventuresPage'
 import { StakeNftsModal, StakeTokens } from '@banx/pages/AdventuresPage/components'
 import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
 import { useModal } from '@banx/store'

@@ -1,7 +1,6 @@
-import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
-import { web3 } from 'fbonds-core'
-import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
+
 
 import {
   BanxStake,
@@ -10,8 +9,6 @@ import {
   fetchTokenStakeInfo,
 } from '@banx/api/banxTokenStake'
 import { queryClient } from '@banx/utils'
-
-import { getTokenBalance } from './helpers'
 
 const createBanxTokenStakeQueryKey = (walletPubkey: string) => ['fetchBanxTokenStake', walletPubkey]
 const setBanxTokenStakeOptimistic = (walletPubkey: string, nextState: BanxStake) =>

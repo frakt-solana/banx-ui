@@ -15,10 +15,7 @@ import { Modal } from '@banx/components/modals/BaseModal'
 
 import { BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
 import { BanxToken } from '@banx/icons'
-import {
-  useBanxTokenSettings,
-  useBanxTokenStake,
-} from '@banx/pages/AdventuresPage'
+import { useBanxTokenSettings, useBanxTokenStake } from '@banx/pages/AdventuresPage'
 import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
@@ -155,7 +152,9 @@ export const StakeTokens = () => {
   }
 
   const idleOnWallet = format(
-    (fromDecimals(banxWalletBalance || 0, BANX_TOKEN_STAKE_DECIMAL) - parseFloat(value || '0')).toFixed(0),
+    (
+      fromDecimals(banxWalletBalance || 0, BANX_TOKEN_STAKE_DECIMAL) - parseFloat(value || '0')
+    ).toFixed(0),
   )
   const banxBalance = format(parseFloat(fromDecimals(banxWalletBalance, BANX_TOKEN_STAKE_DECIMAL)))
   const tokensStaked = format(
