@@ -6,6 +6,7 @@ import { BANX_ADVENTURE_GAP } from 'fbonds-core/lib/fbond-protocol/constants'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
 import { capitalize } from 'lodash'
+import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { AdventureStatus } from '@banx/api/adventures'
@@ -53,9 +54,8 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
   banxSubscription,
 }) => {
   const { connection } = useConnection()
-  const isEnded = parseFloat(banxAdventure.periodEndingAt) * 1000 < Date.now()
-  const isStarted =
-    parseFloat(banxAdventure.periodStartedAt) * 1000 + BANX_ADVENTURE_GAP * 1000 < Date.now()
+  const isEnded = parseFloat(banxAdventure.periodEndingAt) < moment().unix()
+  const isStarted = parseFloat(banxAdventure.periodStartedAt) + BANX_ADVENTURE_GAP < moment().unix()
   const { banxStake, banxTokenSettings } = useBanxStakeState()
   const priorityFees = usePriorityFees()
 
@@ -102,7 +102,8 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
     if (isEnded) {
       return AdventureStatus.ENDED
     }
-    if (parseFloat(banxAdventure.periodStartedAt) * 1000 + BANX_ADVENTURE_GAP > Date.now()) {
+
+    if (parseFloat(banxAdventure.periodStartedAt) + BANX_ADVENTURE_GAP > moment().unix()) {
       return AdventureStatus.UPCOMING
     }
 

@@ -76,8 +76,8 @@ export const AdventuresTimer: FC<{
   isSubscribed: boolean
 }> = ({ status, endsAt, adventureWithSubscription, isSubscribed }) => {
   const TIMER_TEXT_BY_STATUS = {
-    [AdventureStatus.LIVE]: 'Deadline to subscribe',
-    [AdventureStatus.UPCOMING]: 'Before rewards distribution',
+    [AdventureStatus.LIVE]: 'Before rewards distribution',
+    [AdventureStatus.UPCOMING]: 'Deadline to subscribe',
     DEFAULT: 'Before rewards distribution',
   }
 
