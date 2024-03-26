@@ -4,7 +4,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { web3 } from 'fbonds-core'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { BanxStakeState } from 'fbonds-core/lib/fbond-protocol/types'
-import { keyBy } from 'lodash'
+// import { keyBy } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
@@ -27,12 +27,12 @@ import styles from './styles.module.less'
 export const StakeNftsModal = () => {
   const { connection } = useConnection()
   const wallet = useWallet()
-  const walletPubkey = wallet.publicKey?.toBase58() || ''
+  // const walletPubkey = wallet.publicKey?.toBase58() || ''
 
   const { close } = useModal()
   const priorityFees = usePriorityFees()
-  const { banxTokenSettings, setBanxTokenSettingsOptimistic } = useBanxTokenSettings()
-  const { banxStake, setBanxTokenStakeOptimistic } = useBanxTokenStake()
+  const { banxTokenSettings /* setBanxTokenSettingsOptimistic */ } = useBanxTokenSettings()
+  const { banxStake /* setBanxTokenStakeOptimistic */ } = useBanxTokenStake()
 
   const nfts = useMemo(() => banxStake?.nfts || [], [banxStake?.nfts])
 
@@ -131,25 +131,25 @@ export const StakeNftsModal = () => {
             type: 'info',
             solanaExplorerPath: `tx/${txnHash}`,
           })
-          results.forEach(({ result }) => {
-            if (result) {
-              const banxAdventuresMap = keyBy(
-                result.banxAdventures,
-                ({ adventure }) => adventure.publicKey,
-              )
+          // results.forEach(({ result }) => {
+          //   if (result) {
+          //     const banxAdventuresMap = keyBy(
+          //       result.banxAdventures,
+          //       ({ adventure }) => adventure.publicKey,
+          //     )
 
-              const updatedBanxTokenStake = {
-                ...banxStake,
-                banxTokenStake: result.banxTokenStake,
-                banxAdventures: result.banxAdventures.map(
-                  (adv) => banxAdventuresMap[adv.adventure && adv.adventure.publicKey] || adv,
-                ),
-              }
+          //     const updatedBanxTokenStake = {
+          //       ...banxStake,
+          //       banxTokenStake: result.banxTokenStake,
+          //       banxAdventures: result.banxAdventures.map(
+          //         (adv) => banxAdventuresMap[adv.adventure && adv.adventure.publicKey] || adv,
+          //       ),
+          //     }
 
-              setBanxTokenStakeOptimistic(walletPubkey, updatedBanxTokenStake)
-              setBanxTokenSettingsOptimistic({ ...result.banxStakingSettings })
-            }
-          })
+          //     setBanxTokenStakeOptimistic(walletPubkey, updatedBanxTokenStake)
+          //     setBanxTokenSettingsOptimistic({ ...result.banxStakingSettings })
+          //   }
+          // })
         })
         .on('pfSuccessAll', () => {
           close()
