@@ -77,31 +77,3 @@ export const useBanxTokenSettings = () => {
     refetch,
   }
 }
-
-export const useBanxTokenBalance = () => {
-  const { publicKey } = useWallet()
-  const { connection } = useConnection()
-  const walletPubkey = publicKey?.toBase58() || ''
-
-  const fetchTokenBalance = () => {
-    if (publicKey) {
-      return getTokenBalance(publicKey, connection, new web3.PublicKey(BANX_TOKEN_MINT))
-    }
-    return '0'
-  }
-
-  const { data, isLoading, refetch } = useQuery(
-    ['banxTokenBalance', walletPubkey],
-    fetchTokenBalance,
-    {
-      refetchInterval: 10_000,
-      cacheTime: 10_000,
-    },
-  )
-
-  return {
-    data: data ?? '0',
-    isLoading,
-    refetch,
-  }
-}
