@@ -15,18 +15,12 @@ export const fetchTokenStakeInfo: FetchTokenStakeInfo = async ({ userPubkey }) =
   )
 
   try {
-    await BanxStakeSchema.parseAsync({
-      ...data.data,
-      banxWalletBalance: '123456782783',
-    })
+    await BanxStakeSchema.parseAsync(data.data)
   } catch (validationError) {
     console.error('Schema validation error:', validationError)
   }
 
-  return {
-    ...data.data,
-    banxWalletBalance: '123456782783',
-  }
+  return data.data
 }
 
 type FetchBanxTokenSettings = () => Promise<BanxStakeSettings>
