@@ -6,6 +6,7 @@ import { BANX_ADVENTURE_GAP } from 'fbonds-core/lib/fbond-protocol/constants'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
 import { capitalize } from 'lodash'
+import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { AdventureStatus } from '@banx/api/adventures'
@@ -17,7 +18,6 @@ import {
 } from '@banx/api/banxTokenStake'
 import { BANX_TOKEN_STAKE_DECIMAL, TOTAL_BANX_NFTS, TOTAL_BANX_PTS } from '@banx/constants/banxNfts'
 import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
-import { useBanxStakeState } from '@banx/pages/AdventuresPage/state'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { subscribeBanxAdventureAction } from '@banx/transactions/banxStaking'
 import {
@@ -29,6 +29,7 @@ import {
   usePriorityFees,
 } from '@banx/utils'
 
+import { useBanxTokenSettings, useBanxTokenStake } from '../../hooks'
 import {
   AdventuresTimer,
   NotParticipatedColumn,
@@ -52,14 +53,16 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
   maxTokenStakeAmount,
   banxSubscription,
 }) => {
-  const { connection } = useConnection()
-  const isEnded = parseFloat(banxAdventure.periodEndingAt) * 1000 < Date.now()
-  const isStarted =
-    parseFloat(banxAdventure.periodStartedAt) * 1000 + BANX_ADVENTURE_GAP * 1000 < Date.now()
-  const { banxStake, banxTokenSettings } = useBanxStakeState()
   const priorityFees = usePriorityFees()
-
+  const { connection } = useConnection()
   const wallet = useWallet()
+
+  const { banxTokenSettings } = useBanxTokenSettings()
+  const { banxStake } = useBanxTokenStake()
+
+  const isEnded = parseFloat(banxAdventure.periodEndingAt) < moment().unix()
+  const isStarted =
+    parseFloat(banxAdventure.periodStartedAt) * 1000 + BANX_ADVENTURE_GAP < moment().unix()
 
   const calcMaxPts = (): string => {
     if (!banxTokenSettings) {
@@ -238,8 +241,6 @@ export const AdventuresList: FC<AdventuresListProps> = ({
   return (
     <ul className={classNames(styles.list, className)}>
       {banxStake.banxAdventures
-        // TODO until 38 will not finished
-        .filter(({ adventure }) => adventure.week !== '38')
         .sort((a, b) => (a.adventure.week > b.adventure.week ? 1 : -1))
         .map(({ adventure, adventureSubscription }) => (
           <AdventuresCard

@@ -16,8 +16,6 @@ import { Modal } from '@banx/components/modals/BaseModal'
 import { BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
 import { BanxToken } from '@banx/icons'
 import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
-import { useBanxTokenBalance } from '@banx/pages/AdventuresPage/hooks/useBanxTokenBalance'
-import { useBanxStakeState } from '@banx/pages/AdventuresPage/state'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxTokenAction, unstakeBanxTokenAction } from '@banx/transactions/banxStaking'
@@ -29,14 +27,18 @@ import {
   usePriorityFees,
 } from '@banx/utils'
 
+import { useBanxTokenBalance, useBanxTokenSettings, useBanxTokenStake } from '../../hooks'
+
 import styles from './styles.module.less'
 
 export const StakeTokens = () => {
+  const wallet = useWallet()
   const { connection } = useConnection()
   const priorityFees = usePriorityFees()
-  const { banxStake, banxTokenSettings } = useBanxStakeState()
-  const wallet = useWallet()
-  const { data: balance, refetch } = useBanxTokenBalance(connection, wallet.publicKey)
+
+  const { data: balance, refetch } = useBanxTokenBalance()
+  const { banxTokenSettings } = useBanxTokenSettings()
+  const { banxStake } = useBanxTokenStake()
 
   const { close } = useModal()
   const [value, setValue] = useState('0')

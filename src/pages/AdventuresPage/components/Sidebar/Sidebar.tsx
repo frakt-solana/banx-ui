@@ -13,14 +13,11 @@ import { TxnExecutor } from 'solana-transactions-executor'
 import { Button } from '@banx/components/Buttons'
 import { StatInfo, StatsInfoProps, VALUES_TYPES } from '@banx/components/StatInfo'
 
-import { AdventuresInfo } from '@banx/api/adventures'
 import { BanxTokenStake } from '@banx/api/banxTokenStake'
 import { BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
 import { BanxToken, Gamepad, MoneyBill } from '@banx/icons'
 import { StakeNftsModal, StakeTokens } from '@banx/pages/AdventuresPage/components'
 import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
-import { useBanxTokenBalance } from '@banx/pages/AdventuresPage/hooks/useBanxTokenBalance'
-import { useBanxStakeState } from '@banx/pages/AdventuresPage/state'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxClaimAction } from '@banx/transactions/banxStaking/stakeBanxClaimAction'
@@ -32,12 +29,13 @@ import {
   usePriorityFees,
 } from '@banx/utils'
 
+import { useBanxTokenBalance, useBanxTokenSettings, useBanxTokenStake } from '../../hooks'
+
 import styles from './Sidebar.module.less'
 
 interface SidebarProps {
   className?: string
   banxTokenStake: BanxTokenStake
-  adventuresInfo: AdventuresInfo
   nftsCount: string
   totalClaimed: string
   rewards: bigint
@@ -54,15 +52,16 @@ export const Sidebar: FC<SidebarProps> = ({
 }) => {
   const { open } = useModal()
   const wallet = useWallet()
-  const { banxStake, banxTokenSettings } = useBanxStakeState()
+  const { banxTokenSettings } = useBanxTokenSettings()
+  const { banxStake } = useBanxTokenStake()
 
-  const { publicKey } = useWallet()
   const { connection } = useConnection()
   const tokensPts = fromDecimals(
     calcPartnerPoints(banxTokenStake.tokensStaked, tokensPerPartnerPoints),
     BANX_TOKEN_STAKE_DECIMAL,
   )
-  const { data: balance, isLoading } = useBanxTokenBalance(connection, publicKey)
+  const { data: balance, isLoading } = useBanxTokenBalance()
+
   const totalPts = (
     parseFloat(tokensPts.toString()) + parseFloat(banxTokenStake.partnerPointsStaked)
   ).toFixed(2)
