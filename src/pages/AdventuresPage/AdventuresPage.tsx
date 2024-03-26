@@ -1,66 +1,32 @@
-import { FC, useCallback, useEffect } from 'react'
+import { FC } from 'react'
 
-import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import moment from 'moment'
 
 import { Loader } from '@banx/components/Loader'
 
 import { BanxAdventure, BanxSubscription } from '@banx/api/banxTokenStake'
 import { calculateRewards } from '@banx/pages/AdventuresPage/helpers'
-import { useAdventuresInfo } from '@banx/pages/AdventuresPage/hooks'
-import { useBanxStakeState } from '@banx/pages/AdventuresPage/state'
 
 import { AdventuresList, Header, Sidebar } from './components'
+import { useBanxTokenSettings, useBanxTokenStake } from './hooks'
 
 import styles from './AdventuresPage.module.less'
 
 export const AdventuresPage: FC = () => {
-  const { connection } = useConnection()
-  const { adventuresInfo, isLoading: adventuresInfoLoading } = useAdventuresInfo()
   const { publicKey } = useWallet()
   const userPubkey = publicKey?.toBase58()
-  const {
-    banxStake,
-    banxTokenSettings,
-    loadBanxTokenSettings,
-    loadBanxStake,
-    loadBanxTokenBalance,
-  } = useBanxStakeState()
 
-  const fetchBanxStake = useCallback(() => {
-    void loadBanxTokenSettings()
-    void loadBanxStake({ userPubkey })
-    if (publicKey?.toBase58()) {
-      void loadBanxTokenBalance({ userPubkey: publicKey, connection })
-    }
-  }, [
-    userPubkey,
-    loadBanxTokenSettings,
-    loadBanxStake,
-    loadBanxTokenBalance,
-    connection,
-    publicKey,
-  ])
+  const { banxTokenSettings, isLoading: isBanxTokenSettingsLoading } = useBanxTokenSettings()
+  const { banxStake, isLoading: isBanxTokenStakeLoading } = useBanxTokenStake()
 
-  useEffect(() => {
-    const timer = setInterval(fetchBanxStake, 5_000)
-    return () => clearTimeout(timer)
-  }, [
-    fetchBanxStake,
-    userPubkey,
-    loadBanxTokenSettings,
-    loadBanxStake,
-    loadBanxTokenBalance,
-    connection,
-    publicKey,
-  ])
-
-  const isLoading = !banxStake || !banxTokenSettings || adventuresInfoLoading
-  const isSuccess = !!banxStake && !!banxTokenSettings && !!adventuresInfo
+  const isLoading = isBanxTokenSettingsLoading || isBanxTokenStakeLoading
+  const isDataReady = !!banxStake && !!banxTokenSettings
 
   const adventuresWithSubscriptions =
     banxStake?.banxAdventures
-      .filter(({ adventure }) => parseInt(adventure.periodEndingAt) * 1000 < Date.now())
+      .filter(({ adventure }) => parseInt(adventure.periodEndingAt) < moment().unix())
       .reduce<{ adventure: BanxAdventure; adventureSubscription: BanxSubscription }[]>(
         (acc, { adventure, adventureSubscription }) => {
           if (adventure && adventureSubscription) {
@@ -78,7 +44,7 @@ export const AdventuresPage: FC = () => {
       <div className={classNames(styles.content, styles.active)}>
         <Header />
         {isLoading && <Loader className={styles.loader} />}
-        {isSuccess && (
+        {isDataReady && (
           <AdventuresList
             banxStake={banxStake}
             banxTokenSettings={banxTokenSettings}
@@ -87,11 +53,10 @@ export const AdventuresPage: FC = () => {
         )}
       </div>
 
-      {!!userPubkey && !!banxStake?.banxTokenStake && isSuccess && (
+      {!!userPubkey && !!banxStake?.banxTokenStake && isDataReady && (
         <Sidebar
           tokensPerPartnerPoints={banxTokenSettings.tokensPerPartnerPoints}
           rewards={rewards}
-          adventuresInfo={adventuresInfo}
           totalClaimed={banxTokenSettings?.rewardsHarvested || '0'}
           nftsCount={banxStake?.nfts?.length.toString() || '0'}
           className={styles.sidebar}

@@ -17,8 +17,8 @@ import {
   BanxSubscription,
 } from '@banx/api/banxTokenStake'
 import { BANX_TOKEN_STAKE_DECIMAL, TOTAL_BANX_NFTS, TOTAL_BANX_PTS } from '@banx/constants/banxNfts'
+import { useBanxTokenSettings, useBanxTokenStake } from '@banx/pages/AdventuresPage'
 import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
-import { useBanxStakeState } from '@banx/pages/AdventuresPage/state'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { subscribeBanxAdventureAction } from '@banx/transactions/banxStaking'
 import {
@@ -54,12 +54,14 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
   banxSubscription,
 }) => {
   const { connection } = useConnection()
+  const wallet = useWallet()
+
+  const { banxTokenSettings } = useBanxTokenSettings()
+  const { banxStake } = useBanxTokenStake()
+
   const isEnded = parseFloat(banxAdventure.periodEndingAt) < moment().unix()
   const isStarted = parseFloat(banxAdventure.periodStartedAt) + BANX_ADVENTURE_GAP < moment().unix()
-  const { banxStake, banxTokenSettings } = useBanxStakeState()
   const priorityFees = usePriorityFees()
-
-  const wallet = useWallet()
 
   const calcMaxPts = (): string => {
     if (!banxTokenSettings) {
@@ -239,8 +241,6 @@ export const AdventuresList: FC<AdventuresListProps> = ({
   return (
     <ul className={classNames(styles.list, className)}>
       {banxStake.banxAdventures
-        // TODO until 38 will not finished
-        .filter(({ adventure }) => adventure.week !== '38')
         .sort((a, b) => (a.adventure.week > b.adventure.week ? 1 : -1))
         .map(({ adventure, adventureSubscription }) => (
           <AdventuresCard

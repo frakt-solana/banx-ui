@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { web3 } from 'fbonds-core'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { BanxStakeState } from 'fbonds-core/lib/fbond-protocol/types'
+// import { keyBy } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
@@ -13,8 +14,8 @@ import { Modal } from '@banx/components/modals/BaseModal'
 import { NftType } from '@banx/api/banxTokenStake'
 import { BANX_STAKING } from '@banx/constants'
 import { TensorFilled } from '@banx/icons'
+import { useBanxTokenSettings, useBanxTokenStake } from '@banx/pages/AdventuresPage'
 import { NftCheckbox, NftsStats } from '@banx/pages/AdventuresPage/components'
-import { useBanxStakeState } from '@banx/pages/AdventuresPage/state'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxNftAction, unstakeBanxNftsAction } from '@banx/transactions/banxStaking'
@@ -23,12 +24,17 @@ import { enqueueSnackbar, usePriorityFees } from '@banx/utils'
 import styles from './styles.module.less'
 
 export const StakeNftsModal = () => {
+  const { connection } = useConnection()
+  const wallet = useWallet()
+  // const walletPubkey = wallet.publicKey?.toBase58() || ''
+
   const { close } = useModal()
   const priorityFees = usePriorityFees()
-  const { banxStake, banxTokenSettings } = useBanxStakeState()
+  const { banxTokenSettings /* setBanxTokenSettingsOptimistic */ } = useBanxTokenSettings()
+  const { banxStake /* setBanxTokenStakeOptimistic */ } = useBanxTokenStake()
+
   const nfts = useMemo(() => banxStake?.nfts || [], [banxStake?.nfts])
-  const wallet = useWallet()
-  const { connection } = useConnection()
+
   const [selectedNfts, setSelectedNfts] = useState<{ [k: string]: NftType }>({})
 
   const modalTabs: Tab[] = useMemo(() => {
@@ -124,7 +130,25 @@ export const StakeNftsModal = () => {
             type: 'info',
             solanaExplorerPath: `tx/${txnHash}`,
           })
-          // results.forEach(({ result }) => !!result && updateStake(result))
+          // results.forEach(({ result }) => {
+          //   if (result) {
+          //     const banxAdventuresMap = keyBy(
+          //       result.banxAdventures,
+          //       ({ adventure }) => adventure.publicKey,
+          //     )
+
+          //     const updatedBanxTokenStake = {
+          //       ...banxStake,
+          //       banxTokenStake: result.banxTokenStake,
+          //       banxAdventures: result.banxAdventures.map(
+          //         (adv) => banxAdventuresMap[adv.adventure && adv.adventure.publicKey] || adv,
+          //       ),
+          //     }
+
+          //     setBanxTokenStakeOptimistic(walletPubkey, updatedBanxTokenStake)
+          //     setBanxTokenSettingsOptimistic({ ...result.banxStakingSettings })
+          //   }
+          // })
         })
         .on('pfSuccessAll', () => {
           close()
