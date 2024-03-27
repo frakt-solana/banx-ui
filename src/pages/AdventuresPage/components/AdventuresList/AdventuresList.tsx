@@ -2,7 +2,6 @@ import React, { FC, useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { BN } from 'fbonds-core'
 import { BANX_ADVENTURE_GAP } from 'fbonds-core/lib/fbond-protocol/constants'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
