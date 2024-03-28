@@ -8,7 +8,13 @@ import {
   makeRemoveOfferAction,
   makeUpdateBondingOfferAction,
 } from '@banx/transactions/bonds'
-import { enqueueSnackbar } from '@banx/utils'
+import {
+  createSnackbarState,
+  destroySnackbar,
+  enqueueSnackbar,
+  enqueueTransactionSent,
+  enqueueWaitingConfirmation,
+} from '@banx/utils'
 
 export const useOfferTransactions = ({
   marketPubkey,
@@ -16,7 +22,7 @@ export const useOfferTransactions = ({
   loanValue,
   deltaValue,
   optimisticOffer,
-  // updateOrAddOffer,
+  updateOrAddOffer,
   resetFormValues,
   exitEditMode,
 }: {
@@ -33,6 +39,8 @@ export const useOfferTransactions = ({
   const { connection } = useConnection()
 
   const onCreateOffer = async () => {
+    const loadingSnackbarState = createSnackbarState()
+
     const txnParam = { marketPubkey, loansAmount, loanValue, deltaValue }
 
     await new TxnExecutor(makeCreateBondingOfferAction, {
@@ -41,27 +49,28 @@ export const useOfferTransactions = ({
     })
       .addTransactionParam(txnParam)
       .on('sentSome', (results) => {
-        const { signature } = results[0]
-
-        enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
-          solanaExplorerPath: `tx/${signature}`,
-        })
-        resetFormValues()
+        results.forEach(({ signature }) => enqueueTransactionSent(signature))
+        loadingSnackbarState.id = enqueueWaitingConfirmation()
       })
-      // .on('sentSome', (results) => {
-      //   const { result, txnHash } = results[0]
-      //   result?.bondOffer && updateOrAddOffer(result.bondOffer)
+      .on('confirmedAll', (results) => {
+        const { confirmed } = results
 
-      //   enqueueSnackbar({
-      //     message: 'Offer successfully placed',
-      //     type: 'success',
-      //     solanaExplorerPath: `tx/${signature}`,
-      //   })
-      //   resetFormValues()
-      // })
+        return confirmed.forEach(({ result, signature }) => {
+          if (result) {
+            destroySnackbar(loadingSnackbarState.id)
+            enqueueSnackbar({
+              message: 'Offer successfully placed',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
+
+            updateOrAddOffer(result.bondOffer)
+            resetFormValues()
+          }
+        })
+      })
       .on('error', (error) => {
+        destroySnackbar(loadingSnackbarState.id)
         defaultTxnErrorHandler(error, {
           additionalData: txnParam,
           walletPubkey: wallet?.publicKey?.toBase58(),
@@ -74,6 +83,8 @@ export const useOfferTransactions = ({
   const onUpdateOffer = async () => {
     if (!optimisticOffer) return
 
+    const loadingSnackbarState = createSnackbarState()
+
     const txnParam = { loanValue, optimisticOffer, loansAmount, deltaValue }
 
     await new TxnExecutor(makeUpdateBondingOfferAction, {
@@ -82,25 +93,27 @@ export const useOfferTransactions = ({
     })
       .addTransactionParam(txnParam)
       .on('sentSome', (results) => {
-        const { signature } = results[0]
+        results.forEach(({ signature }) => enqueueTransactionSent(signature))
+        loadingSnackbarState.id = enqueueWaitingConfirmation()
+      })
+      .on('confirmedAll', (results) => {
+        const { confirmed } = results
 
-        enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
-          solanaExplorerPath: `tx/${signature}`,
+        return confirmed.forEach(({ result, signature }) => {
+          if (result) {
+            destroySnackbar(loadingSnackbarState.id)
+            enqueueSnackbar({
+              message: 'Changes successfully applied',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
+
+            updateOrAddOffer(result.bondOffer)
+          }
         })
       })
-      // .on('sentSome', (results) => {
-      //   const { result, txnHash } = results[0]
-      //   result?.bondOffer && updateOrAddOffer(result.bondOffer)
-
-      //   enqueueSnackbar({
-      //     message: 'Changes successfully applied',
-      //     type: 'success',
-      //     solanaExplorerPath: `tx/${signature}`,
-      //   })
-      // })
       .on('error', (error) => {
+        destroySnackbar(loadingSnackbarState.id)
         defaultTxnErrorHandler(error, {
           additionalData: txnParam,
           walletPubkey: wallet?.publicKey?.toBase58(),
@@ -113,30 +126,34 @@ export const useOfferTransactions = ({
   const onRemoveOffer = () => {
     if (!optimisticOffer) return
 
+    const loadingSnackbarState = createSnackbarState()
+
     new TxnExecutor(makeRemoveOfferAction, { wallet: createWalletInstance(wallet), connection })
       .addTransactionParam({ optimisticOffer })
-      // .on('sentSome', (results) => {
-      //   const { result, txnHash } = results[0]
-      //   result?.bondOffer && updateOrAddOffer(result.bondOffer)
 
-      //   enqueueSnackbar({
-      //     message: 'Offer successfully removed',
-      //     type: 'success',
-      //     solanaExplorerPath: `tx/${signature}`,
-      //   })
-      //   exitEditMode()
-      // })
       .on('sentSome', (results) => {
-        const { signature } = results[0]
+        results.forEach(({ signature }) => enqueueTransactionSent(signature))
+        loadingSnackbarState.id = enqueueWaitingConfirmation()
+      })
+      .on('confirmedAll', (results) => {
+        const { confirmed } = results
 
-        enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
-          solanaExplorerPath: `tx/${signature}`,
+        return confirmed.forEach(({ result, signature }) => {
+          if (result) {
+            destroySnackbar(loadingSnackbarState.id)
+            enqueueSnackbar({
+              message: 'Offer successfully removed',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
+
+            updateOrAddOffer(result.bondOffer)
+            exitEditMode()
+          }
         })
-        exitEditMode()
       })
       .on('error', (error) => {
+        destroySnackbar(loadingSnackbarState.id)
         defaultTxnErrorHandler(error, {
           additionalData: optimisticOffer,
           walletPubkey: wallet?.publicKey?.toBase58(),
