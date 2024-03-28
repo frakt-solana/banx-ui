@@ -5,6 +5,6 @@ export const MARKETS_WITH_CUSTOM_APR: Record<string, number> = {
   ['HpzJyoNhfwbtco6Z8ghtqf85cDwFpYWqkBo1X1ah8cwX']: 900, //? Lifinity collection PUBLIC market
   ['FFhTvrX3L3QJwZrbjb2BQxV1PXccXfW8cWpz7VVyD3nM']: 900, //? Lifinity collection PRIVATE market
 
-  ['4XNFTPM6v5fDySb3nsmfcozc2Cf12Xsmvy3nufNfoWUS']: 3380, //? Cloak DAO collection PUBLIC market
-  ['HuKW1yTTLFcTdt9cKvGxSBjYhmQgyAXpgyEwqdxAZS7e']: 3380, //? Cloak DAO collection PRIVATE market
+  ['4XNFTPM6v5fDySb3nsmfcozc2Cf12Xsmvy3nufNfoWUS']: 3000, //? Cloak DAO collection PUBLIC market
+  ['HuKW1yTTLFcTdt9cKvGxSBjYhmQgyAXpgyEwqdxAZS7e']: 3000, //? Cloak DAO collection PRIVATE market
 }
