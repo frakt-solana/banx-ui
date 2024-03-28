@@ -79,3 +79,27 @@ export const enqueueSnackbar: EnqueueSnackbar = ({
 
   return key
 }
+
+export const destroySnackbar = (key?: Key) => notification.destroy(key)
+
+export const createSnackbarState = (): { id: Key | undefined } => {
+  return {
+    id: undefined,
+  }
+}
+
+export const enqueueTransactionSent = (signature: string) => {
+  enqueueSnackbar({
+    message: 'Transaction sent',
+    type: 'info',
+    solanaExplorerPath: `tx/${signature}`,
+  })
+}
+
+export const enqueueWaitingConfirmation = () => {
+  return enqueueSnackbar({
+    message: 'Waiting for confirmation',
+    type: 'loading',
+    persist: true,
+  })
+}
