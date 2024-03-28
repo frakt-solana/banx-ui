@@ -1,3 +1,5 @@
+import { WalletContextState } from '@solana/wallet-adapter-react'
+import { web3 } from 'fbonds-core'
 import { CONSTANT_BID_CAP } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   calculateCurrentInterestSolPure, // optimisticBorrowUpdateBondingBondOffer,
@@ -5,14 +7,14 @@ import {
 // import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, chunk, groupBy, sumBy } from 'lodash'
 import moment from 'moment'
-import { TxnExecutor, WalletAndConnection } from 'solana-transactions-executor'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { BorrowNft, Offer } from '@banx/api/core'
 import bonkTokenImg from '@banx/assets/BonkToken.png'
 import magicEdenLogoImg from '@banx/assets/MagicEdenLogo.png'
 import { BONDS } from '@banx/constants'
 import { LoansOptimisticStore, OffersOptimisticStore } from '@banx/store'
-import { BorrowType, defaultTxnErrorHandler } from '@banx/transactions'
+import { BorrowType, createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
   BORROW_NFT_PER_TXN,
   MakeBorrowActionParams,
@@ -71,7 +73,8 @@ export const createTableNftData = ({
 export const executeBorrow = async (props: {
   isLedger?: boolean
   txnParams: MakeBorrowActionParams[]
-  walletAndConnection: WalletAndConnection
+  wallet: WalletContextState
+  connection: web3.Connection
   addLoansOptimistic: LoansOptimisticStore['add']
   updateOffersOptimistic: OffersOptimisticStore['update']
   onSuccessAll?: () => void
@@ -79,29 +82,26 @@ export const executeBorrow = async (props: {
   const {
     isLedger = false,
     txnParams,
-    walletAndConnection,
+    wallet,
+    connection,
     // addLoansOptimistic,
     // updateOffersOptimistic,
     // onSuccessAll,
   } = props
-  const { wallet, connection } = walletAndConnection
 
   const txnsResults = await new TxnExecutor(
     makeBorrowAction,
-    { wallet, connection },
-    {
-      signAllChunks: isLedger ? 1 : 40,
-      rejectQueueOnFirstPfError: false,
-    },
+    { wallet: createWalletInstance(wallet), connection },
+    { signAllChunkSize: isLedger ? 1 : 40 },
   )
-    .addTxnParams(txnParams)
-    // .on('pfSuccessEach', (results) => {
+    .addTransactionParams(txnParams)
+    // .on('sentSome', (results) => {
     //   const loansFlat = results
     //     .map(({ txnHash, result }) => {
     //       enqueueSnackbar({
     //         message: 'Borrowed successfully',
     //         type: 'success',
-    //         solanaExplorerPath: `tx/${txnHash}`,
+    //         solanaExplorerPath: `tx/${signature}`,
     //       })
     //       return result?.map(({ loan }) => loan)
     //     })
@@ -111,16 +111,16 @@ export const executeBorrow = async (props: {
     //     addLoansOptimistic(loansFlat, wallet.publicKey?.toBase58())
     //   }
     // })
-    .on('pfSuccessEach', (results) => {
-      return results.map(({ txnHash }) => {
+    .on('sentSome', (results) => {
+      return results.map(({ signature }) => {
         enqueueSnackbar({
           message: 'Transaction sent',
           type: 'info',
-          solanaExplorerPath: `tx/${txnHash}`,
+          solanaExplorerPath: `tx/${signature}`,
         })
       })
     })
-    // .on('pfSuccessAll', (results) => {
+    // .on('sentAll', (results) => {
     //   const optimisticOffers: OfferWithLoanValue[] = results
     //     ?.map(
     //       (result) =>
@@ -165,7 +165,7 @@ export const executeBorrow = async (props: {
     //     fraktBondPubkeys,
     //   })
     // })
-    .on('pfError', (error) => {
+    .on('error', (error) => {
       defaultTxnErrorHandler(error, {
         additionalData: txnParams,
         walletPubkey: wallet?.publicKey?.toBase58(),

@@ -133,10 +133,8 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
     const showCongratsMessage = SPECIAL_COLLECTIONS_MARKETS.includes(nft.nft.loan.marketPubkey)
 
     const txnResults = await executeBorrow({
-      walletAndConnection: {
-        wallet,
-        connection,
-      },
+      wallet,
+      connection,
       txnParams: txnParamsWithPriorityFees,
       addLoansOptimistic,
       updateOffersOptimistic,
@@ -162,10 +160,8 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
       .find(({ offer }) => SPECIAL_COLLECTIONS_MARKETS.includes(offer.hadoMarket))
 
     const txnsResults = await executeBorrow({
-      walletAndConnection: {
-        wallet,
-        connection,
-      },
+      wallet,
+      connection,
       txnParams: txnParamsWithPriorityFees,
       addLoansOptimistic,
       updateOffersOptimistic,

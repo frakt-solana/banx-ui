@@ -137,7 +137,8 @@ export const useSingleBorrow = () => {
     if (!offer || !rawOffer) return
 
     const txnResults = await executeBorrow({
-      walletAndConnection: { wallet, connection },
+      wallet,
+      connection,
       txnParams: [[{ nft, offer: rawOffer, loanValue: calculateLoanValue(offer), priorityFees }]],
       addLoansOptimistic,
       updateOffersOptimistic,
