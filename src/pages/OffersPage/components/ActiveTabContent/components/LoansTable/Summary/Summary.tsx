@@ -11,7 +11,7 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
 import { useIsLedger } from '@banx/store'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimAction, makeTerminateAction } from '@banx/transactions/loans'
 import {
   HealthColorIncreasing,
@@ -58,16 +58,16 @@ export const Summary: FC<SummaryProps> = ({
 
     new TxnExecutor(
       makeTerminateAction,
-      { wallet, connection },
-      { signAllChunks: isLedger ? 5 : 40 },
+      { wallet: createWalletInstance(wallet), connection },
+      { signAllChunkSize: isLedger ? 5 : 40 },
     )
-      .addTxnParams(txnParams)
-      // .on('pfSuccessEach', (results) => {
+      .addTransactionParams(txnParams)
+      // .on('sentSome', (results) => {
       //   results.forEach(({ txnHash, result }) => {
       //     enqueueSnackbar({
       //       message: 'Collateral successfully terminated',
       //       type: 'success',
-      //       solanaExplorerPath: `tx/${txnHash}`,
+      //       solanaExplorerPath: `tx/${signature}`,
       //     })
 
       //     if (result) {
@@ -75,19 +75,21 @@ export const Summary: FC<SummaryProps> = ({
       //     }
       //   })
       // })
-      .on('pfSuccessEach', (results) => {
-        results.forEach(({ txnHash }) => {
-          enqueueSnackbar({
-            message: 'Transaction sent',
-            type: 'success',
-            solanaExplorerPath: `tx/${txnHash}`,
-          })
-        })
-      })
-      .on('pfSuccessAll', () => {
+      // .on('sentSome', (results) => {
+      //   const results = results[0].transactionResult
+
+      //   results.forEach(({ txnHash }) => {
+      //     enqueueSnackbar({
+      //       message: 'Transaction sent',
+      //       type: 'success',
+      //       solanaExplorerPath: `tx/${signature}`,
+      //     })
+      //   })
+      // })
+      .on('sentAll', () => {
         clearSelection()
       })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: txnParams,
           walletPubkey: wallet?.publicKey?.toBase58(),
@@ -100,26 +102,30 @@ export const Summary: FC<SummaryProps> = ({
   const claimLoans = () => {
     const txnParams = loansToClaim.map((loan) => ({ loan, priorityFees }))
 
-    new TxnExecutor(makeClaimAction, { wallet, connection }, { signAllChunks: isLedger ? 5 : 40 })
-      .addTxnParams(txnParams)
-      // .on('pfSuccessEach', (results) => {
+    new TxnExecutor(
+      makeClaimAction,
+      { wallet: createWalletInstance(wallet), connection },
+      { signAllChunkSize: isLedger ? 5 : 40 },
+    )
+      .addTransactionParams(txnParams)
+      // .on('sentSome', (results) => {
       //   enqueueSnackbar({
       //     message: 'Collateral successfully claimed',
       //     type: 'success',
       //     solanaExplorerPath: `tx/${results[0].txnHash}`,
       //   })
       // })
-      .on('pfSuccessEach', (results) => {
+      .on('sentSome', (results) => {
         enqueueSnackbar({
           message: 'Transaction sent',
           type: 'info',
-          solanaExplorerPath: `tx/${results[0].txnHash}`,
+          solanaExplorerPath: `tx/${results[0].signature}`,
         })
       })
-      // .on('pfSuccessAll', () => {
+      // .on('sentAll', () => {
       //   hideLoans(...loansToClaim.map(({ nft }) => nft.mint))
       // })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: txnParams,
           walletPubkey: wallet?.publicKey?.toBase58(),

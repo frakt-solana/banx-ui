@@ -18,7 +18,7 @@ import {
 
 import { Loan } from '@banx/api/core'
 import { useModal } from '@banx/store'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeRefinanceAction } from '@banx/transactions/loans'
 import {
   calcWeightedAverage,
@@ -82,32 +82,32 @@ export const Summary: FC<SummaryProps> = ({
       }
     }
 
-    new TxnExecutor(makeRefinanceAction, { wallet, connection })
-      .addTxnParams(txnParams)
-      // .on('pfSuccessEach', (results) => {
-      //   const { txnHash } = results[0]
+    new TxnExecutor(makeRefinanceAction, { wallet: createWalletInstance(wallet), connection })
+      .addTransactionParams(txnParams)
+      // .on('sentSome', (results) => {
+      //   const { signature } = results[0]
 
       //   enqueueSnackbar({
       //     message: 'Loan successfully refinanced',
       //     type: 'success',
-      //     solanaExplorerPath: `tx/${txnHash}`,
+      //     solanaExplorerPath: `tx/${signature}`,
       //   })
       // })
-      .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
+      .on('sentSome', (results) => {
+        const { signature } = results[0]
 
         enqueueSnackbar({
           message: 'Transaction sent',
           type: 'info',
-          solanaExplorerPath: `tx/${txnHash}`,
+          solanaExplorerPath: `tx/${signature}`,
         })
       })
-      .on('pfSuccessAll', () => {
+      .on('sentAll', () => {
         onDeselectAllLoans()
         addMints(...selectedLoans.map(({ nft }) => nft.mint))
         onSuccess()
       })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: txnParams,
           walletPubkey: wallet?.publicKey?.toBase58(),

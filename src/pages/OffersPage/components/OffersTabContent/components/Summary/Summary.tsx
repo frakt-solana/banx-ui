@@ -8,7 +8,7 @@ import { Button } from '@banx/components/Buttons'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Offer, UserOffer } from '@banx/api/core'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimBondOfferInterestAction } from '@banx/transactions/bonds'
 import { enqueueSnackbar, formatDecimal } from '@banx/utils'
 
@@ -33,27 +33,30 @@ const Summary: FC<SummaryProps> = ({ /*updateOrAddOffer */ offers }) => {
 
     const txnParams = offers.map(({ offer }) => ({ optimisticOffer: offer }))
 
-    new TxnExecutor(makeClaimBondOfferInterestAction, { wallet, connection })
-      .addTxnParams(txnParams)
-      // .on('pfSuccessEach', (results) => {
+    new TxnExecutor(makeClaimBondOfferInterestAction, {
+      wallet: createWalletInstance(wallet),
+      connection,
+    })
+      .addTransactionParams(txnParams)
+      // .on('sentSome', (results) => {
       //   results.forEach(({ result }) => {
       //     if (result) updateOrAddOffer([result.bondOffer])
       //   })
       // })
 
-      // .on('pfSuccessAll', () => {
+      // .on('sentAll', () => {
       //   enqueueSnackbar({
       //     message: 'Interest successfully claimed',
       //     type: 'success',
       //   })
       // })
-      .on('pfSuccessAll', () => {
+      .on('sentAll', () => {
         enqueueSnackbar({
           message: 'Transaction sent',
           type: 'info',
         })
       })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: offers,
           walletPubkey: wallet?.publicKey?.toBase58(),

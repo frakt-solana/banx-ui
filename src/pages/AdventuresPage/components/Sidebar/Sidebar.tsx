@@ -24,7 +24,7 @@ import {
 import { StakeNftsModal, StakeTokens } from '@banx/pages/AdventuresPage/components'
 import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
 import { useModal } from '@banx/store'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxClaimAction } from '@banx/transactions/banxStaking/stakeBanxClaimAction'
 import {
   enqueueSnackbar,
@@ -95,20 +95,20 @@ export const Sidebar: FC<SidebarProps> = ({
       weeks: weeks.map((w) => parseFloat(w)),
     }
 
-    new TxnExecutor(stakeBanxClaimAction, { wallet, connection })
-      .addTxnParam(params)
-      .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
+    new TxnExecutor(stakeBanxClaimAction, { wallet: createWalletInstance(wallet), connection })
+      .addTransactionParam(params)
+      .on('sentSome', (results) => {
+        const { signature } = results[0]
         enqueueSnackbar({
           message: 'Transaction sent',
           type: 'info',
-          solanaExplorerPath: `tx/${txnHash}`,
+          solanaExplorerPath: `tx/${signature}`,
         })
       })
-      .on('pfSuccessAll', () => {
+      .on('sentAll', () => {
         close()
       })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: params,
           walletPubkey: wallet?.publicKey?.toBase58(),

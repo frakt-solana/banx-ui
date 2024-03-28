@@ -17,7 +17,7 @@ import { TensorFilled } from '@banx/icons'
 import { useBanxTokenSettings, useBanxTokenStake } from '@banx/pages/AdventuresPage'
 import { NftCheckbox, NftsStats } from '@banx/pages/AdventuresPage/components'
 import { useModal } from '@banx/store'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxNftAction, unstakeBanxNftsAction } from '@banx/transactions/banxStaking'
 import { enqueueSnackbar, usePriorityFees } from '@banx/utils'
 
@@ -121,14 +121,14 @@ export const StakeNftsModal = () => {
         priorityFees,
       }))
 
-      new TxnExecutor(stakeBanxNftAction, { wallet, connection })
-        .addTxnParams(params)
-        .on('pfSuccessEach', (results) => {
-          const { txnHash } = results[0]
+      new TxnExecutor(stakeBanxNftAction, { wallet: createWalletInstance(wallet), connection })
+        .addTransactionParams(params)
+        .on('sentSome', (results) => {
+          const { signature } = results[0]
           enqueueSnackbar({
             message: 'Transaction sent',
             type: 'info',
-            solanaExplorerPath: `tx/${txnHash}`,
+            solanaExplorerPath: `tx/${signature}`,
           })
           // results.forEach(({ result }) => {
           //   if (result) {
@@ -150,10 +150,10 @@ export const StakeNftsModal = () => {
           //   }
           // })
         })
-        .on('pfSuccessAll', () => {
+        .on('sentAll', () => {
           close()
         })
-        .on('pfError', (error) => {
+        .on('error', (error) => {
           defaultTxnErrorHandler(error, {
             additionalData: params,
             walletPubkey: wallet?.publicKey?.toBase58(),
@@ -186,20 +186,20 @@ export const StakeNftsModal = () => {
         priorityFees,
       }))
 
-      new TxnExecutor(unstakeBanxNftsAction, { wallet, connection })
-        .addTxnParams(params)
-        .on('pfSuccessEach', (results) => {
-          const { txnHash } = results[0]
+      new TxnExecutor(unstakeBanxNftsAction, { wallet: createWalletInstance(wallet), connection })
+        .addTransactionParams(params)
+        .on('sentSome', (results) => {
+          const { signature } = results[0]
           enqueueSnackbar({
             message: 'Transaction sent',
             type: 'info',
-            solanaExplorerPath: `tx/${txnHash}`,
+            solanaExplorerPath: `tx/${signature}`,
           })
         })
-        .on('pfSuccessAll', () => {
+        .on('sentAll', () => {
           close()
         })
-        .on('pfError', (error) => {
+        .on('error', (error) => {
           defaultTxnErrorHandler(error, {
             additionalData: params,
             walletPubkey: wallet?.publicKey?.toBase58(),

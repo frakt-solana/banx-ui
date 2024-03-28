@@ -16,7 +16,7 @@ import { BONDS } from '@banx/constants'
 import { useMarketOffers } from '@banx/pages/LendPage'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
 import { useModal } from '@banx/store'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeBorrowRefinanceAction } from '@banx/transactions/loans'
 import {
   calcLoanBorrowedAmount,
@@ -119,15 +119,15 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
 
     if (!suitableOffer) return
 
-    new TxnExecutor(makeBorrowRefinanceAction, { connection, wallet })
-      .addTxnParam({
+    new TxnExecutor(makeBorrowRefinanceAction, { wallet: createWalletInstance(wallet), connection })
+      .addTransactionParam({
         loan,
         offer: suitableOffer,
         solToRefinance: currentSpotPrice,
         aprRate: newApr,
         priorityFees,
       })
-      // .on('pfSuccessEach', (results) => {
+      // .on('sentSome', (results) => {
       //   const { result, txnHash } = results[0]
       //   result?.offer && updateOrAddOffer(result.offer)
       //   if (result?.loan) {
@@ -137,22 +137,22 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
       //   enqueueSnackbar({
       //     message: 'Loan successfully refinanced',
       //     type: 'success',
-      //     solanaExplorerPath: `tx/${txnHash}`,
+      //     solanaExplorerPath: `tx/${signature}`,
       //   })
       //   close()
       // })
-      .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
+      .on('sentSome', (results) => {
+        const { signature } = results[0]
 
         clearSelection()
         enqueueSnackbar({
           message: 'Transaction sent',
           type: 'info',
-          solanaExplorerPath: `tx/${txnHash}`,
+          solanaExplorerPath: `tx/${signature}`,
         })
         close()
       })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),

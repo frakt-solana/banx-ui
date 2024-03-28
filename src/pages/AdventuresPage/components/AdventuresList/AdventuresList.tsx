@@ -1,8 +1,7 @@
-import React, { FC, useMemo } from 'react'
+import { FC, useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { BN } from 'fbonds-core'
 import { BANX_ADVENTURE_GAP } from 'fbonds-core/lib/fbond-protocol/constants'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
@@ -20,7 +19,7 @@ import {
 import { BANX_TOKEN_STAKE_DECIMAL, TOTAL_BANX_NFTS, TOTAL_BANX_PTS } from '@banx/constants/banxNfts'
 import { useBanxTokenSettings, useBanxTokenStake } from '@banx/pages/AdventuresPage'
 import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { subscribeBanxAdventureAction } from '@banx/transactions/banxStaking'
 import {
   enqueueSnackbar,
@@ -133,20 +132,23 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
       priorityFees,
     }
 
-    new TxnExecutor(subscribeBanxAdventureAction, { wallet, connection })
-      .addTxnParam(params)
-      .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
+    new TxnExecutor(subscribeBanxAdventureAction, {
+      wallet: createWalletInstance(wallet),
+      connection,
+    })
+      .addTransactionParam(params)
+      .on('sentSome', (results) => {
+        const { signature } = results[0]
         enqueueSnackbar({
           message: 'Transaction sent',
           type: 'info',
-          solanaExplorerPath: `tx/${txnHash}`,
+          solanaExplorerPath: `tx/${signature}`,
         })
       })
-      .on('pfSuccessAll', () => {
+      .on('sentAll', () => {
         close()
       })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: params,
           walletPubkey: wallet?.publicKey?.toBase58(),

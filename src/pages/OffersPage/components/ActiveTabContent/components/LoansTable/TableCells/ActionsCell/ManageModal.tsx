@@ -13,7 +13,7 @@ import { Loan } from '@banx/api/core'
 import { useMarketOffers } from '@banx/pages/LendPage'
 import { calculateClaimValue } from '@banx/pages/OffersPage'
 import { useModal } from '@banx/store'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeInstantRefinanceAction, makeTerminateAction } from '@banx/transactions/loans'
 import {
   calculateLoanRepayValue,
@@ -115,31 +115,31 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const formattedClaimValue = `+${formatDecimal(totalClaimValue / 1e9)}◎`
 
   const terminateLoan = () => {
-    new TxnExecutor(makeTerminateAction, { wallet, connection })
-      .addTxnParam({ loan })
-      // .on('pfSuccessEach', (results) => {
+    new TxnExecutor(makeTerminateAction, { wallet: createWalletInstance(wallet), connection })
+      .addTransactionParam({ loan })
+      // .on('sentSome', (results) => {
       //   const { result, txnHash } = results[0]
       //   updateOrAddLoan({ ...loan, ...result })
       //   enqueueSnackbar({
       //     message: 'Offer termination successfully initialized',
       //     type: 'success',
-      //     solanaExplorerPath: `tx/${txnHash}`,
+      //     solanaExplorerPath: `tx/${signature}`,
       //   })
 
       //   removeLoan(loan.publicKey, wallet?.publicKey?.toBase58() || '')
       // })
-      .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
+      .on('sentSome', (results) => {
+        const { signature } = results[0]
         enqueueSnackbar({
           message: 'Transaction sent',
           type: 'info',
-          solanaExplorerPath: `tx/${txnHash}`,
+          solanaExplorerPath: `tx/${signature}`,
         })
       })
-      .on('pfSuccessAll', () => {
+      .on('sentAll', () => {
         close()
       })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),
@@ -152,30 +152,33 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const instantLoan = () => {
     if (!bestOffer) return
 
-    new TxnExecutor(makeInstantRefinanceAction, { wallet, connection })
-      .addTxnParam({ loan, bestOffer, priorityFees })
-      // .on('pfSuccessEach', (results) => {
+    new TxnExecutor(makeInstantRefinanceAction, {
+      wallet: createWalletInstance(wallet),
+      connection,
+    })
+      .addTransactionParam({ loan, bestOffer, priorityFees })
+      // .on('sentSome', (results) => {
       //   const { result, txnHash } = results[0]
       //   result?.bondOffer && updateOrAddOffer(result.bondOffer)
       //   hideLoans(loan.nft.mint)
       //   enqueueSnackbar({
       //     message: 'Offer successfully sold',
       //     type: 'success',
-      //     solanaExplorerPath: `tx/${txnHash}`,
+      //     solanaExplorerPath: `tx/${signature}`,
       //   })
       // })
-      .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
+      .on('sentSome', (results) => {
+        const { signature } = results[0]
         enqueueSnackbar({
           message: 'Transaction sent',
           type: 'info',
-          solanaExplorerPath: `tx/${txnHash}`,
+          solanaExplorerPath: `tx/${signature}`,
         })
       })
-      .on('pfSuccessAll', () => {
+      .on('sentAll', () => {
         close()
       })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),

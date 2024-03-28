@@ -22,7 +22,7 @@ import {
 } from '@banx/pages/AdventuresPage'
 import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
 import { useModal } from '@banx/store'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxTokenAction, unstakeBanxTokenAction } from '@banx/transactions/banxStaking'
 import {
   enqueueSnackbar,
@@ -86,21 +86,21 @@ export const StakeTokens = () => {
       priorityFees,
     }
 
-    new TxnExecutor(stakeBanxTokenAction, { wallet, connection })
-      .addTxnParam(txnParam)
-      .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
+    new TxnExecutor(stakeBanxTokenAction, { wallet: createWalletInstance(wallet), connection })
+      .addTransactionParam(txnParam)
+      .on('sentSome', (results) => {
+        const { signature } = results[0]
         enqueueSnackbar({
           message: 'Transaction sent',
           type: 'info',
-          solanaExplorerPath: `tx/${txnHash}`,
+          solanaExplorerPath: `tx/${signature}`,
         })
       })
-      .on('pfSuccessAll', () => {
+      .on('sentAll', () => {
         close()
         void refetch()
       })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: txnParam,
           walletPubkey: wallet?.publicKey?.toBase58(),
@@ -125,21 +125,21 @@ export const StakeTokens = () => {
       priorityFees,
     }
 
-    new TxnExecutor(unstakeBanxTokenAction, { wallet, connection })
-      .addTxnParam(txnParam)
-      .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
+    new TxnExecutor(unstakeBanxTokenAction, { wallet: createWalletInstance(wallet), connection })
+      .addTransactionParam(txnParam)
+      .on('sentSome', (results) => {
+        const { signature } = results[0]
         enqueueSnackbar({
           message: 'Transaction sent',
           type: 'info',
-          solanaExplorerPath: `tx/${txnHash}`,
+          solanaExplorerPath: `tx/${signature}`,
         })
       })
-      .on('pfSuccessAll', () => {
+      .on('sentAll', () => {
         close()
         void refetch()
       })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: txnParam,
           walletPubkey: wallet?.publicKey?.toBase58(),

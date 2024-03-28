@@ -5,7 +5,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 import { Loan } from '@banx/api/core'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
 import { useIsLedger, useLoansOptimistic } from '@banx/store'
-import { BorrowType, defaultTxnErrorHandler } from '@banx/transactions'
+import { BorrowType, createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
   REPAY_NFT_PER_TXN,
   getLoanBorrowType,
@@ -27,32 +27,35 @@ export const useLoansTransactions = () => {
   const repayLoan = async (loan: Loan) => {
     const txnParam = { loans: [loan], priorityFees }
 
-    await new TxnExecutor(makeRepayLoansAction, { wallet, connection })
-      .addTxnParam(txnParam)
-      // .on('pfSuccessAll', (results) => {
+    await new TxnExecutor(makeRepayLoansAction, {
+      wallet: createWalletInstance(wallet),
+      connection,
+    })
+      .addTransactionParam(txnParam)
+      // .on('sentAll', (results) => {
       //   const { txnHash, result } = results[0]
       //   if (result && wallet.publicKey) {
       //     enqueueSnackbar({
       //       message: 'Repaid successfully',
       //       type: 'success',
-      //       solanaExplorerPath: `tx/${txnHash}`,
+      //       solanaExplorerPath: `tx/${signature}`,
       //     })
       //     updateLoansOptimistic(result, wallet.publicKey.toBase58())
       //   }
       //   clearSelection()
       // })
-      .on('pfSuccessAll', (results) => {
-        const { txnHash, result } = results[0]
-        if (result && wallet.publicKey) {
+      .on('sentAll', (results) => {
+        const { signature, transactionResult } = results[0]
+        if (transactionResult && wallet.publicKey) {
           enqueueSnackbar({
             message: 'Transactions sent',
             type: 'info',
-            solanaExplorerPath: `tx/${txnHash}`,
+            solanaExplorerPath: `tx/${signature}`,
           })
         }
         clearSelection()
       })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),
@@ -65,32 +68,35 @@ export const useLoansTransactions = () => {
   const repayPartialLoan = async (loan: Loan, fractionToRepay: number) => {
     const txnParam = { loan, fractionToRepay, priorityFees }
 
-    await new TxnExecutor(makeRepayPartialLoanAction, { wallet, connection })
-      .addTxnParam(txnParam)
-      // .on('pfSuccessAll', (results) => {
+    await new TxnExecutor(makeRepayPartialLoanAction, {
+      wallet: createWalletInstance(wallet),
+      connection,
+    })
+      .addTransactionParam(txnParam)
+      // .on('sentAll', (results) => {
       //   const { txnHash, result } = results[0]
       //   if (result && wallet.publicKey) {
       //     enqueueSnackbar({
       //       message: 'Repaid successfully',
       //       type: 'success',
-      //       solanaExplorerPath: `tx/${txnHash}`,
+      //       solanaExplorerPath: `tx/${signature}`,
       //     })
       //     updateLoansOptimistic([result], wallet.publicKey.toBase58())
       //   }
       //   clearSelection()
       // })
-      .on('pfSuccessAll', (results) => {
-        const { txnHash, result } = results[0]
-        if (result && wallet.publicKey) {
+      .on('sentAll', (results) => {
+        const { signature, transactionResult } = results[0]
+        if (transactionResult && wallet.publicKey) {
           enqueueSnackbar({
             message: 'Transaction sent',
             type: 'info',
-            solanaExplorerPath: `tx/${txnHash}`,
+            solanaExplorerPath: `tx/${signature}`,
           })
         }
         clearSelection()
       })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: txnParam,
           walletPubkey: wallet?.publicKey?.toBase58(),
@@ -110,37 +116,37 @@ export const useLoansTransactions = () => {
 
     await new TxnExecutor(
       makeRepayLoansAction,
-      { wallet, connection },
-      { signAllChunks: isLedger ? 1 : 40, rejectQueueOnFirstPfError: false },
+      { wallet: createWalletInstance(wallet), connection },
+      { signAllChunkSize: isLedger ? 1 : 40 },
     )
-      .addTxnParams(txnParams)
-      // .on('pfSuccessEach', (results) => {
+      .addTransactionParams(txnParams)
+      // .on('sentSome', (results) => {
       //   results.forEach(({ txnHash, result }) => {
       //     if (result && wallet.publicKey) {
       //       enqueueSnackbar({
       //         message: 'Repaid successfully',
       //         type: 'success',
-      //         solanaExplorerPath: `tx/${txnHash}`,
+      //         solanaExplorerPath: `tx/${signature}`,
       //       })
       //       updateLoansOptimistic(result, wallet.publicKey.toBase58())
       //     }
       //   })
       // })
-      .on('pfSuccessEach', (results) => {
-        results.forEach(({ txnHash, result }) => {
-          if (result && wallet.publicKey) {
+      .on('sentSome', (results) => {
+        results.forEach(({ signature, transactionResult }) => {
+          if (transactionResult && wallet.publicKey) {
             enqueueSnackbar({
               message: 'Transaction sent',
               type: 'info',
-              solanaExplorerPath: `tx/${txnHash}`,
+              solanaExplorerPath: `tx/${signature}`,
             })
           }
         })
       })
-      .on('pfSuccessAll', () => {
+      .on('sentAll', () => {
         clearSelection()
       })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: loansChunks,
           walletPubkey: wallet?.publicKey?.toBase58(),
@@ -160,29 +166,29 @@ export const useLoansTransactions = () => {
 
     await new TxnExecutor(
       makeRepayPartialLoanAction,
-      { wallet, connection },
-      { signAllChunks: isLedger ? 5 : 40 },
+      { wallet: createWalletInstance(wallet), connection },
+      { signAllChunkSize: isLedger ? 5 : 40 },
     )
-      .addTxnParams(txnParams)
-      .on('pfSuccessEach', (results) => {
-        results.forEach(({ txnHash, result }) => {
-          if (result && wallet.publicKey) {
+      .addTransactionParams(txnParams)
+      .on('sentSome', (results) => {
+        results.forEach(({ signature, transactionResult }) => {
+          if (transactionResult && wallet.publicKey) {
             enqueueSnackbar({
               message: 'Loan interest paid successfully',
               type: 'success',
-              solanaExplorerPath: `tx/${txnHash}`,
+              solanaExplorerPath: `tx/${signature}`,
             })
 
-            if (result) {
-              updateLoansOptimistic([result], wallet.publicKey.toBase58())
+            if (transactionResult) {
+              updateLoansOptimistic([transactionResult.loan], wallet.publicKey.toBase58())
             }
           }
         })
       })
-      .on('pfSuccessAll', () => {
+      .on('sentAll', () => {
         clearSelection()
       })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: loans,
           walletPubkey: wallet?.publicKey?.toBase58(),

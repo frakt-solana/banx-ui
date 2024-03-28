@@ -10,7 +10,7 @@ import { TensorLink } from '@banx/components/SolanaLinks'
 import { Loan } from '@banx/api/core'
 // import { useHiddenNftsMints } from '@banx/pages/OffersPage'
 import { useModal } from '@banx/store'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimAction } from '@banx/transactions/loans'
 import {
   enqueueSnackbar,
@@ -40,9 +40,9 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
 
   const onClaim = () => {
     trackPageEvent('myoffers', 'activetab-claim')
-    new TxnExecutor(makeClaimAction, { wallet, connection })
-      .addTxnParam({ loan, priorityFees })
-      // .on('pfSuccessEach', (results) => {
+    new TxnExecutor(makeClaimAction, { wallet: createWalletInstance(wallet), connection })
+      .addTransactionParam({ loan, priorityFees })
+      // .on('sentSome', (results) => {
       //   hideLoans(loan.nft.mint)
       //   enqueueSnackbar({
       //     message: 'Collateral successfully claimed',
@@ -50,14 +50,14 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
       //     solanaExplorerPath: `tx/${results[0].txnHash}`,
       //   })
       // })
-      .on('pfSuccessEach', (results) => {
+      .on('sentSome', (results) => {
         enqueueSnackbar({
           message: 'Transaction sent',
           type: 'info',
-          solanaExplorerPath: `tx/${results[0].txnHash}`,
+          solanaExplorerPath: `tx/${results[0].signature}`,
         })
       })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),

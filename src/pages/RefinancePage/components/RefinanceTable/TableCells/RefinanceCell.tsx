@@ -17,7 +17,7 @@ import {
 import { Loan } from '@banx/api/core'
 // import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
 import { useModal } from '@banx/store'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeRefinanceAction } from '@banx/transactions/loans'
 import {
   enqueueSnackbar,
@@ -94,30 +94,30 @@ const useRefinanceTransaction = (loan: Loan) => {
   }
 
   const refinance = () => {
-    new TxnExecutor(makeRefinanceAction, { wallet, connection })
-      .addTxnParam({ loan, priorityFees })
-      // .on('pfSuccessEach', (results) => {
-      //   const { txnHash } = results[0]
+    new TxnExecutor(makeRefinanceAction, { wallet: createWalletInstance(wallet), connection })
+      .addTransactionParam({ loan, priorityFees })
+      // .on('sentSome', (results) => {
+      //   const { signature } = results[0]
       //   addMints(loan.nft.mint)
       //   deselectLoan(loan.publicKey)
       //   enqueueSnackbar({
       //     message: 'Loan successfully refinanced',
       //     type: 'success',
-      //     solanaExplorerPath: `tx/${txnHash}`,
+      //     solanaExplorerPath: `tx/${signature}`,
       //   })
       //   onSuccess()
       // })
-      .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
+      .on('sentSome', (results) => {
+        const { signature } = results[0]
 
         enqueueSnackbar({
           message: 'Transactions sent',
           type: 'info',
-          solanaExplorerPath: `tx/${txnHash}`,
+          solanaExplorerPath: `tx/${signature}`,
         })
         onSuccess()
       })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),

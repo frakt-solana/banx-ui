@@ -2,7 +2,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
   makeCreateBondingOfferAction,
   makeRemoveOfferAction,
@@ -35,30 +35,33 @@ export const useOfferTransactions = ({
   const onCreateOffer = async () => {
     const txnParam = { marketPubkey, loansAmount, loanValue, deltaValue }
 
-    await new TxnExecutor(makeCreateBondingOfferAction, { wallet, connection })
-      .addTxnParam(txnParam)
-      .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
+    await new TxnExecutor(makeCreateBondingOfferAction, {
+      wallet: createWalletInstance(wallet),
+      connection,
+    })
+      .addTransactionParam(txnParam)
+      .on('sentSome', (results) => {
+        const { signature } = results[0]
 
         enqueueSnackbar({
           message: 'Transaction sent',
           type: 'info',
-          solanaExplorerPath: `tx/${txnHash}`,
+          solanaExplorerPath: `tx/${signature}`,
         })
         resetFormValues()
       })
-      // .on('pfSuccessEach', (results) => {
+      // .on('sentSome', (results) => {
       //   const { result, txnHash } = results[0]
       //   result?.bondOffer && updateOrAddOffer(result.bondOffer)
 
       //   enqueueSnackbar({
       //     message: 'Offer successfully placed',
       //     type: 'success',
-      //     solanaExplorerPath: `tx/${txnHash}`,
+      //     solanaExplorerPath: `tx/${signature}`,
       //   })
       //   resetFormValues()
       // })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: txnParam,
           walletPubkey: wallet?.publicKey?.toBase58(),
@@ -73,28 +76,31 @@ export const useOfferTransactions = ({
 
     const txnParam = { loanValue, optimisticOffer, loansAmount, deltaValue }
 
-    await new TxnExecutor(makeUpdateBondingOfferAction, { wallet, connection })
-      .addTxnParam(txnParam)
-      .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
+    await new TxnExecutor(makeUpdateBondingOfferAction, {
+      wallet: createWalletInstance(wallet),
+      connection,
+    })
+      .addTransactionParam(txnParam)
+      .on('sentSome', (results) => {
+        const { signature } = results[0]
 
         enqueueSnackbar({
           message: 'Transaction sent',
           type: 'info',
-          solanaExplorerPath: `tx/${txnHash}`,
+          solanaExplorerPath: `tx/${signature}`,
         })
       })
-      // .on('pfSuccessEach', (results) => {
+      // .on('sentSome', (results) => {
       //   const { result, txnHash } = results[0]
       //   result?.bondOffer && updateOrAddOffer(result.bondOffer)
 
       //   enqueueSnackbar({
       //     message: 'Changes successfully applied',
       //     type: 'success',
-      //     solanaExplorerPath: `tx/${txnHash}`,
+      //     solanaExplorerPath: `tx/${signature}`,
       //   })
       // })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: txnParam,
           walletPubkey: wallet?.publicKey?.toBase58(),
@@ -107,30 +113,30 @@ export const useOfferTransactions = ({
   const onRemoveOffer = () => {
     if (!optimisticOffer) return
 
-    new TxnExecutor(makeRemoveOfferAction, { wallet, connection })
-      .addTxnParam({ optimisticOffer })
-      // .on('pfSuccessEach', (results) => {
+    new TxnExecutor(makeRemoveOfferAction, { wallet: createWalletInstance(wallet), connection })
+      .addTransactionParam({ optimisticOffer })
+      // .on('sentSome', (results) => {
       //   const { result, txnHash } = results[0]
       //   result?.bondOffer && updateOrAddOffer(result.bondOffer)
 
       //   enqueueSnackbar({
       //     message: 'Offer successfully removed',
       //     type: 'success',
-      //     solanaExplorerPath: `tx/${txnHash}`,
+      //     solanaExplorerPath: `tx/${signature}`,
       //   })
       //   exitEditMode()
       // })
-      .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
+      .on('sentSome', (results) => {
+        const { signature } = results[0]
 
         enqueueSnackbar({
           message: 'Transaction sent',
           type: 'info',
-          solanaExplorerPath: `tx/${txnHash}`,
+          solanaExplorerPath: `tx/${signature}`,
         })
         exitEditMode()
       })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: optimisticOffer,
           walletPubkey: wallet?.publicKey?.toBase58(),
