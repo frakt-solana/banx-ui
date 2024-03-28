@@ -12,6 +12,7 @@ import {
   createSnackbarState,
   destroySnackbar,
   enqueueSnackbar,
+  enqueueTranactionError,
   enqueueTransactionSent,
   enqueueWaitingConfirmation,
 } from '@banx/utils'
@@ -53,7 +54,12 @@ export const useOfferTransactions = ({
         loadingSnackbarState.id = enqueueWaitingConfirmation()
       })
       .on('confirmedAll', (results) => {
-        const { confirmed } = results
+        const { confirmed, failed } = results
+
+        if (failed.length) {
+          destroySnackbar(loadingSnackbarState.id)
+          return enqueueTranactionError()
+        }
 
         return confirmed.forEach(({ result, signature }) => {
           if (result) {
@@ -97,7 +103,12 @@ export const useOfferTransactions = ({
         loadingSnackbarState.id = enqueueWaitingConfirmation()
       })
       .on('confirmedAll', (results) => {
-        const { confirmed } = results
+        const { confirmed, failed } = results
+
+        if (failed.length) {
+          destroySnackbar(loadingSnackbarState.id)
+          return enqueueTranactionError()
+        }
 
         return confirmed.forEach(({ result, signature }) => {
           if (result) {
@@ -136,7 +147,12 @@ export const useOfferTransactions = ({
         loadingSnackbarState.id = enqueueWaitingConfirmation()
       })
       .on('confirmedAll', (results) => {
-        const { confirmed } = results
+        const { confirmed, failed } = results
+
+        if (failed.length) {
+          destroySnackbar(loadingSnackbarState.id)
+          return enqueueTranactionError()
+        }
 
         return confirmed.forEach(({ result, signature }) => {
           if (result) {

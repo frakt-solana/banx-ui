@@ -88,18 +88,22 @@ export const createSnackbarState = (): { id: Key | undefined } => {
   }
 }
 
-export const enqueueTransactionSent = (signature: string) => {
+export const enqueueTransactionSent = (signature: string) =>
   enqueueSnackbar({
     message: 'Transaction sent',
     type: 'info',
     solanaExplorerPath: `tx/${signature}`,
   })
-}
 
-export const enqueueWaitingConfirmation = () => {
-  return enqueueSnackbar({
+export const enqueueWaitingConfirmation = () =>
+  enqueueSnackbar({
     message: 'Waiting for confirmation',
     type: 'loading',
     persist: true,
   })
-}
+
+export const enqueueTranactionError = () =>
+  enqueueSnackbar({
+    message: 'Transaction failed. Give it another try',
+    type: 'error',
+  })

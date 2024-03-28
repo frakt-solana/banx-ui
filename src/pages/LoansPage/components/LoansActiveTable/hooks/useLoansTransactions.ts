@@ -16,6 +16,7 @@ import {
   createSnackbarState,
   destroySnackbar,
   enqueueSnackbar,
+  enqueueTranactionError,
   enqueueTransactionSent,
   enqueueWaitingConfirmation,
   usePriorityFees,
@@ -46,7 +47,12 @@ export const useLoansTransactions = () => {
         loadingSnackbarState.id = enqueueWaitingConfirmation()
       })
       .on('confirmedAll', (results) => {
-        const { confirmed } = results
+        const { confirmed, failed } = results
+
+        if (failed.length) {
+          destroySnackbar(loadingSnackbarState.id)
+          return enqueueTranactionError()
+        }
 
         confirmed.forEach(({ result, signature }) => {
           if (result && wallet.publicKey) {
@@ -88,7 +94,12 @@ export const useLoansTransactions = () => {
         loadingSnackbarState.id = enqueueWaitingConfirmation()
       })
       .on('confirmedAll', (results) => {
-        const { confirmed } = results
+        const { confirmed, failed } = results
+
+        if (failed.length) {
+          destroySnackbar(loadingSnackbarState.id)
+          return enqueueTranactionError()
+        }
 
         confirmed.forEach(({ result, signature }) => {
           if (result && wallet.publicKey) {
@@ -101,8 +112,8 @@ export const useLoansTransactions = () => {
 
             updateLoansOptimistic([result], wallet.publicKey.toBase58())
           }
-          clearSelection()
         })
+        clearSelection()
       })
       .on('error', (error) => {
         destroySnackbar(loadingSnackbarState.id)
@@ -136,7 +147,12 @@ export const useLoansTransactions = () => {
         loadingSnackbarState.id = enqueueWaitingConfirmation()
       })
       .on('confirmedAll', (results) => {
-        const { confirmed } = results
+        const { confirmed, failed } = results
+
+        if (failed.length) {
+          destroySnackbar(loadingSnackbarState.id)
+          return enqueueTranactionError()
+        }
 
         confirmed.forEach(({ result, signature }) => {
           if (result && wallet.publicKey) {
@@ -150,7 +166,6 @@ export const useLoansTransactions = () => {
             updateLoansOptimistic(result, wallet.publicKey.toBase58())
           }
         })
-
         clearSelection()
       })
       .on('error', (error) => {
@@ -185,7 +200,12 @@ export const useLoansTransactions = () => {
         loadingSnackbarState.id = enqueueWaitingConfirmation()
       })
       .on('confirmedAll', (results) => {
-        const { confirmed } = results
+        const { confirmed, failed } = results
+
+        if (failed.length) {
+          destroySnackbar(loadingSnackbarState.id)
+          return enqueueTranactionError()
+        }
 
         confirmed.forEach(({ signature, result }) => {
           if (result && wallet.publicKey) {
