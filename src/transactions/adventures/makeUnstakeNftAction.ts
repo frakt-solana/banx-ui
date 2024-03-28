@@ -1,7 +1,7 @@
 import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE, PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 import { staking } from 'fbonds-core/lib/fbond-protocol/functions/'
-import { MakeActionFn } from 'solana-transactions-executor'
+import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { AdventureNft } from '@banx/api/adventures'
 import { BONDS } from '@banx/constants'
@@ -14,7 +14,7 @@ export type MakeUnstakeNftActionParams = {
   priorityFees: number
 }
 
-export type MakeUnstakeNftAction = MakeActionFn<MakeUnstakeNftActionParams, null>
+export type MakeUnstakeNftAction = CreateTransactionDataFn<MakeUnstakeNftActionParams, null>
 
 export const makeUnstakeNftAction: MakeUnstakeNftAction = async (
   { nft, priorityFees },

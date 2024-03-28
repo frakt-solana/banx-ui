@@ -7,7 +7,7 @@ import {
   BondTradeTransactionV3,
   FraktBond,
 } from 'fbonds-core/lib/fbond-protocol/types'
-import { MakeActionFn } from 'solana-transactions-executor'
+import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
@@ -26,7 +26,7 @@ export type MakeInstantRefinanceActionParams = {
   priorityFees: number
 }
 
-export type MakeInstantRefinanceAction = MakeActionFn<
+export type MakeInstantRefinanceAction = CreateTransactionDataFn<
   MakeInstantRefinanceActionParams,
   InstantRefinanceOptimisticResult
 >

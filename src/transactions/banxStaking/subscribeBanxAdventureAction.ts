@@ -3,7 +3,7 @@ import {
   BanxSubscribeAdventureOptimistic,
   subscribeBanxAdventure,
 } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
-import { MakeActionFn } from 'solana-transactions-executor'
+import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
@@ -17,7 +17,7 @@ export type SubscribeBanxAdventureParams = {
   }
 }
 
-export type SubscribeBanxAdventureAction = MakeActionFn<
+export type SubscribeBanxAdventureAction = CreateTransactionDataFn<
   SubscribeBanxAdventureParams,
   BanxSubscribeAdventureOptimistic
 >

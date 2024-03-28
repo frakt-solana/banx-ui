@@ -10,7 +10,7 @@ import {
 import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
 import { first, uniq } from 'lodash'
-import { MakeActionFn, WalletAndConnection } from 'solana-transactions-executor'
+import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BANX_STAKING, BONDS } from '@banx/constants'
@@ -26,7 +26,10 @@ export type MakeRepayLoansActionParams = {
 
 export type MakeRepayActionResult = Loan[]
 
-export type MakeRepayLoansAction = MakeActionFn<MakeRepayLoansActionParams, MakeRepayActionResult>
+export type MakeRepayLoansAction = CreateTransactionDataFn<
+  MakeRepayLoansActionParams,
+  MakeRepayActionResult
+>
 
 interface OptimisticResult extends BondAndTransactionOptimistic {
   oldBondOffer: BondOfferV2

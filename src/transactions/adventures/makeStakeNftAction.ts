@@ -1,7 +1,7 @@
 import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { staking } from 'fbonds-core/lib/fbond-protocol/functions/'
-import { MakeActionFn } from 'solana-transactions-executor'
+import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Adventure } from '@banx/api/adventures'
 import { BANX_STAKING, BONDS } from '@banx/constants'
@@ -13,7 +13,7 @@ export type MakeStakeNftActionParams = {
   priorityFees: number
 }
 
-export type MakeStakeNftAction = MakeActionFn<MakeStakeNftActionParams, null>
+export type MakeStakeNftAction = CreateTransactionDataFn<MakeStakeNftActionParams, null>
 
 export const makeStakeNftAction: MakeStakeNftAction = async (ixnParams, { connection, wallet }) => {
   const { nftMint, adventures, priorityFees } = ixnParams

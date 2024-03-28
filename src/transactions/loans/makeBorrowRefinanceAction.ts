@@ -11,7 +11,7 @@ import {
   FraktBond,
   PairState,
 } from 'fbonds-core/lib/fbond-protocol/types'
-import { MakeActionFn, WalletAndConnection } from 'solana-transactions-executor'
+import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transactions-executor'
 
 import { Loan, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
@@ -31,7 +31,7 @@ export type MakeBorrowRefinanceActionParams = {
   priorityFees: number
 }
 
-export type MakeBorrowRefinanceAction = MakeActionFn<
+export type MakeBorrowRefinanceAction = CreateTransactionDataFn<
   MakeBorrowRefinanceActionParams,
   BorrowRefinanceActionOptimisticResult
 >

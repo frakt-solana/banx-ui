@@ -6,7 +6,7 @@ import {
   claimPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
-import { MakeActionFn } from 'solana-transactions-executor'
+import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
@@ -19,7 +19,10 @@ export type MakeClaimActionParams = {
   priorityFees: number
 }
 
-export type MakeClaimAction = MakeActionFn<MakeClaimActionParams, BondAndTransactionOptimistic>
+export type MakeClaimAction = CreateTransactionDataFn<
+  MakeClaimActionParams,
+  BondAndTransactionOptimistic
+>
 
 export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, wallet }) => {
   const { loan, priorityFees } = ixnParams

@@ -1,7 +1,7 @@
 import { web3 } from '@project-serum/anchor'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { claimStakingRewards } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking/claimStakingRewards'
-import { MakeActionFn } from 'solana-transactions-executor'
+import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
@@ -13,7 +13,7 @@ export type StakeBanxClaimActionParams = {
   optimistic: BanxSubscribeAdventureOptimistic
 }
 
-export type StakeBanxClaimAction = MakeActionFn<
+export type StakeBanxClaimAction = CreateTransactionDataFn<
   StakeBanxClaimActionParams,
   BanxSubscribeAdventureOptimistic
 >

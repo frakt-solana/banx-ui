@@ -4,7 +4,7 @@ import {
   claimPerpetualBondOfferInterest,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
-import { MakeActionFn } from 'solana-transactions-executor'
+import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
@@ -14,7 +14,7 @@ export type MakeClaimOfferInterestActionParams = {
   optimisticOffer: Offer
 }
 
-export type MakeClaimBondOfferInterestAction = MakeActionFn<
+export type MakeClaimBondOfferInterestAction = CreateTransactionDataFn<
   MakeClaimOfferInterestActionParams,
   BondOfferOptimistic
 >

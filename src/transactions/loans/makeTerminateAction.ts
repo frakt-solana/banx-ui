@@ -6,7 +6,7 @@ import {
   terminatePerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
-import { MakeActionFn } from 'solana-transactions-executor'
+import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
@@ -16,7 +16,7 @@ export type MakeTerminateActionParams = {
   loan: Loan
 }
 
-export type MakeTerminateAction = MakeActionFn<MakeTerminateActionParams, Loan>
+export type MakeTerminateAction = CreateTransactionDataFn<MakeTerminateActionParams, Loan>
 
 interface OptimisticResult extends BondAndTransactionOptimistic {
   bondOffer: BondOfferV2

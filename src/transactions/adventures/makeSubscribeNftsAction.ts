@@ -1,7 +1,7 @@
 import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE, PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 import { staking } from 'fbonds-core/lib/fbond-protocol/functions'
-import { MakeActionFn } from 'solana-transactions-executor'
+import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Adventure, AdventureNft } from '@banx/api/adventures'
 import { BONDS } from '@banx/constants'
@@ -13,7 +13,7 @@ export type MakeSubscribeNftsActionParams = {
   priorityFees: number
 }
 
-export type MakeSubscribeNftsAction = MakeActionFn<MakeSubscribeNftsActionParams, null>
+export type MakeSubscribeNftsAction = CreateTransactionDataFn<MakeSubscribeNftsActionParams, null>
 
 export const NFTS_TO_SUBSCRIBE_PER_TXN = 5
 

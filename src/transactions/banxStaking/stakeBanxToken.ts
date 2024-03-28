@@ -3,7 +3,7 @@ import { BN } from 'fbonds-core'
 import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { stakeBanxToken } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
-import { MakeActionFn } from 'solana-transactions-executor'
+import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
@@ -15,7 +15,7 @@ export type StakeBanxTokenActionParams = {
   priorityFees: number
 }
 
-export type StakeBanxTokenAction = MakeActionFn<
+export type StakeBanxTokenAction = CreateTransactionDataFn<
   StakeBanxTokenActionParams,
   BanxSubscribeAdventureOptimistic
 >

@@ -2,7 +2,7 @@ import { web3 } from '@project-serum/anchor'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { stakeBanxNft } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
 import { BanxPointsMap } from 'fbonds-core/lib/fbond-protocol/types'
-import { MakeActionFn } from 'solana-transactions-executor'
+import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
@@ -16,7 +16,7 @@ export type StakeBanxNftsTokenActionParams = {
   optimistic: BanxSubscribeAdventureOptimistic
 }
 
-export type StakeBanxNftsTokenAction = MakeActionFn<
+export type StakeBanxNftsTokenAction = CreateTransactionDataFn<
   StakeBanxNftsTokenActionParams,
   BanxSubscribeAdventureOptimistic
 >

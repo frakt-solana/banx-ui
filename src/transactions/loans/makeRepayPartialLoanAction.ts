@@ -6,7 +6,7 @@ import {
   repayPartialPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
-import { MakeActionFn } from 'solana-transactions-executor'
+import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
@@ -20,7 +20,7 @@ export type MakeRepayPartialLoanActionParams = {
 
 export type MakeRepayPartialActionResult = Loan
 
-export type MakeRepayPartialLoanAction = MakeActionFn<
+export type MakeRepayPartialLoanAction = CreateTransactionDataFn<
   MakeRepayPartialLoanActionParams,
   MakeRepayPartialActionResult
 >

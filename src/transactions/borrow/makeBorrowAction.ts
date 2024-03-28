@@ -8,7 +8,7 @@ import {
 import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
 import { first, uniq } from 'lodash'
-import { MakeActionFn, WalletAndConnection } from 'solana-transactions-executor'
+import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transactions-executor'
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
@@ -27,7 +27,10 @@ export type MakeBorrowActionParams = {
 
 export type MakeBorrowActionResult = { loan: Loan; offer: Offer }[]
 
-export type MakeBorrowAction = MakeActionFn<MakeBorrowActionParams, MakeBorrowActionResult>
+export type MakeBorrowAction = CreateTransactionDataFn<
+  MakeBorrowActionParams,
+  MakeBorrowActionResult
+>
 
 export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndConnection) => {
   const borrowType = getChunkBorrowType(ixnParams.map(({ nft }) => nft))

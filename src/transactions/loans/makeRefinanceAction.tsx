@@ -10,7 +10,7 @@ import {
   BondTradeTransactionV2,
   FraktBond,
 } from 'fbonds-core/lib/fbond-protocol/types'
-import { MakeActionFn } from 'solana-transactions-executor'
+import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
@@ -28,7 +28,10 @@ export type MakeRefinanceActionParams = {
   priorityFees: number
 }
 
-export type MakeRefinanceAction = MakeActionFn<MakeRefinanceActionParams, RefinanceOptimisticResult>
+export type MakeRefinanceAction = CreateTransactionDataFn<
+  MakeRefinanceActionParams,
+  RefinanceOptimisticResult
+>
 
 interface OptimisticResult extends BondAndTransactionOptimistic {
   oldBondOffer: BondOfferV2

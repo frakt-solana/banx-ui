@@ -4,7 +4,7 @@ import {
   removePerpetualOffer,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
-import { MakeActionFn } from 'solana-transactions-executor'
+import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
@@ -14,7 +14,10 @@ export type MakeClaimActionParams = {
   optimisticOffer: Offer
 }
 
-export type MakeRemoveOfferAction = MakeActionFn<MakeClaimActionParams, BondOfferOptimistic>
+export type MakeRemoveOfferAction = CreateTransactionDataFn<
+  MakeClaimActionParams,
+  BondOfferOptimistic
+>
 
 export const makeRemoveOfferAction: MakeRemoveOfferAction = async (
   ixnParams,
