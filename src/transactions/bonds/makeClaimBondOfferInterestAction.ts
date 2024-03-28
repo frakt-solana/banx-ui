@@ -41,7 +41,7 @@ export const makeClaimBondOfferInterestAction: MakeClaimBondOfferInterestAction 
   return {
     instructions,
     signers,
-    additionalResult: optimisticResult,
+    result: optimisticResult,
     lookupTables: [],
   }
 }

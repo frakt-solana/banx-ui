@@ -49,7 +49,7 @@ export const makeUpdateBondingOfferAction: MakeUpdateBondingOfferAction = async 
   return {
     instructions,
     signers,
-    additionalResult: optimisticResult,
+    result: optimisticResult,
     lookupTables: [],
   }
 }

@@ -40,7 +40,7 @@ export const makeStakeNftAction: MakeStakeNftAction = async (ixnParams, { connec
   return {
     instructions,
     signers,
-    additionalResult: null,
+    result: null,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }

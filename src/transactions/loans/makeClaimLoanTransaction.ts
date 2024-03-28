@@ -55,7 +55,7 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
     return {
       instructions,
       signers,
-      additionalResult: optimisticResult,
+      result: optimisticResult,
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
     }
   } else {
@@ -93,7 +93,7 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
     return {
       instructions,
       signers,
-      additionalResult: optimisticResult,
+      result: optimisticResult,
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
     }
   }

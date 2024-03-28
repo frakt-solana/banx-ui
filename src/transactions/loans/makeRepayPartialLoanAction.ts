@@ -72,6 +72,6 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
     instructions,
     signers,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
-    additionalResult: optimisticResult,
+    result: optimisticResult,
   }
 }

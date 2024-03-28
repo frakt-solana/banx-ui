@@ -42,7 +42,7 @@ export const makeCreateOfferAction: MakeCreateOfferAction = async (
   return {
     instructions,
     signers,
-    additionalResult: optimisticResult,
+    result: optimisticResult,
     lookupTables: [],
   }
 }

@@ -53,7 +53,7 @@ export const makeTerminateAction: MakeTerminateAction = async (
   return {
     instructions,
     signers,
-    additionalResult: loanOptimisticResult,
+    result: loanOptimisticResult,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }

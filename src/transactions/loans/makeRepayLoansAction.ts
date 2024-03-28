@@ -66,7 +66,7 @@ export const makeRepayLoansAction: MakeRepayLoansAction = async (
     instructions,
     signers,
     lookupTables,
-    additionalResult: optimisticLoans,
+    result: optimisticLoans,
   }
 }
 

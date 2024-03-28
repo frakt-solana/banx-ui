@@ -68,7 +68,7 @@ export const makeRefinanceAction: MakeRefinanceAction = async (
   return {
     instructions,
     signers,
-    additionalResult: optimisticResult,
+    result: optimisticResult,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }

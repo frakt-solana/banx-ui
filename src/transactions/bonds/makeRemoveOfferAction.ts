@@ -41,7 +41,6 @@ export const makeRemoveOfferAction: MakeRemoveOfferAction = async (
   return {
     instructions,
     signers,
-    additionalResult: optimisticResult,
-    lookupTables: [],
+    result: optimisticResult,
   }
 }

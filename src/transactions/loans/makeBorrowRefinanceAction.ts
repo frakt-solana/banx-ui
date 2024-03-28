@@ -64,7 +64,7 @@ export const makeBorrowRefinanceAction: MakeBorrowRefinanceAction = async (
   return {
     instructions,
     signers,
-    additionalResult: {
+    result: {
       loan: optimisticLoan,
       oldLoan,
       offer: optimisticResult.bondOffer,

@@ -62,7 +62,7 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndCon
   return {
     instructions,
     signers,
-    additionalResult: loansAndOffers,
+    result: loansAndOffers,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }
