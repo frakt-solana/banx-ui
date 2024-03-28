@@ -4,7 +4,10 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
-import { useIsLedger, useLoansOptimistic } from '@banx/store'
+import {
+  useIsLedger,
+  /*useLoansOptimistic*/
+} from '@banx/store'
 import { BorrowType, defaultTxnErrorHandler } from '@banx/transactions'
 import {
   REPAY_NFT_PER_TXN,
@@ -21,7 +24,7 @@ export const useLoansTransactions = () => {
 
   const priorityFees = usePriorityFees()
 
-  const { update: updateLoansOptimistic } = useLoansOptimistic()
+  // const { update: updateLoansOptimistic } = useLoansOptimistic()
   const { clear: clearSelection } = useSelectedLoans()
 
   const repayLoan = async (loan: Loan) => {
@@ -164,21 +167,21 @@ export const useLoansTransactions = () => {
       { signAllChunks: isLedger ? 5 : 40 },
     )
       .addTxnParams(txnParams)
-      .on('pfSuccessEach', (results) => {
-        results.forEach(({ txnHash, result }) => {
-          if (result && wallet.publicKey) {
-            enqueueSnackbar({
-              message: 'Loan interest paid successfully',
-              type: 'success',
-              solanaExplorerPath: `tx/${txnHash}`,
-            })
+      // .on('pfSuccessEach', (results) => {
+      //   results.forEach(({ txnHash, result }) => {
+      //     if (result && wallet.publicKey) {
+      //       enqueueSnackbar({
+      //         message: 'Loan interest paid successfully',
+      //         type: 'success',
+      //         solanaExplorerPath: `tx/${txnHash}`,
+      //       })
 
-            if (result) {
-              updateLoansOptimistic([result], wallet.publicKey.toBase58())
-            }
-          }
-        })
-      })
+      //       if (result) {
+      //         updateLoansOptimistic([result], wallet.publicKey.toBase58())
+      //       }
+      //     }
+      //   })
+      // })
       .on('pfSuccessAll', () => {
         clearSelection()
       })
