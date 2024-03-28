@@ -94,7 +94,12 @@ export const getTableColumns = ({
       ),
       render: (loan) => (
         <HorizontalCell
-          value={createSolValueJSX(loan.totalRepaidAmount, 1e9, '0◎', formatDecimal)}
+          value={createSolValueJSX(
+            loan.bondTradeTransaction.lenderFullRepaidAmount,
+            1e9,
+            '0◎',
+            formatDecimal,
+          )}
         />
       ),
     },

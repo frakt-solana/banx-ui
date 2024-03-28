@@ -42,8 +42,7 @@ export const findBestOffer: FindBestOffer = ({ loan, offers, walletPubkey }) => 
 }
 
 export const calculateLentValue = (loan: Loan) => {
-  const totalRepaidAmount = loan.totalRepaidAmount || 0
-
+  const totalRepaidAmount = loan.bondTradeTransaction.lenderFullRepaidAmount || 0
   const loanBorrowedAmount = calcLoanBorrowedAmount(loan)
 
   return loanBorrowedAmount + totalRepaidAmount
