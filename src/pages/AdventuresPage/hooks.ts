@@ -1,7 +1,6 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 
-
 import {
   BanxStake,
   BanxStakeSettings,
