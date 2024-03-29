@@ -7,6 +7,12 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/types'
 import { z } from 'zod'
 
+export enum AdventureStatus {
+  LIVE = 'live',
+  UPCOMING = 'upcoming',
+  ENDED = 'ended',
+}
+
 export const PointsMapSchema = z.object({
   banxMint: z.string(),
   partnerPoints: z.number(),

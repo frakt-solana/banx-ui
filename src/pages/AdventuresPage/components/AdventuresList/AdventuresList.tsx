@@ -9,8 +9,8 @@ import { capitalize } from 'lodash'
 import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
-import { AdventureStatus } from '@banx/api/adventures'
 import {
+  AdventureStatus,
   BanxAdventure,
   BanxStake,
   BanxStakeSettings,
