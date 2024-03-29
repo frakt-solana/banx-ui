@@ -13,11 +13,15 @@ import { TxnExecutor } from 'solana-transactions-executor'
 import { Button } from '@banx/components/Buttons'
 import { StatInfo, StatsInfoProps, VALUES_TYPES } from '@banx/components/StatInfo'
 
-import { BanxTokenStake } from '@banx/api/staking'
-import { BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
+import {
+  BanxStakingSettingsBN,
+  BanxTokenStake,
+  convertToBanxStakingSettingsString,
+} from '@banx/api/staking'
+import { BANX_TOKEN_DECIMALS, BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
 import { BanxToken, Gamepad, MoneyBill } from '@banx/icons'
-import { useBanxStakeSettings, useStakeInfo } from '@banx/pages/AdventuresPage'
-import { StakeNftsModal, StakeTokens } from '@banx/pages/AdventuresPage/components'
+import { useStakeInfo } from '@banx/pages/AdventuresPage'
+import { StakeNftsModal, StakeTokensModal } from '@banx/pages/AdventuresPage/components'
 import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
@@ -29,34 +33,34 @@ import {
   fromDecimals,
   usePriorityFees,
 } from '@banx/utils'
+import { bnToHuman } from '@banx/utils/bn'
 
 import styles from './Sidebar.module.less'
 
 interface SidebarProps {
   className?: string
+  banxStakingSettings: BanxStakingSettingsBN
   banxTokenStake: BanxTokenStake
   nftsCount: string
-  totalClaimed: string
   rewards: bigint
-  tokensPerPartnerPoints: string
 }
 
 export const Sidebar: FC<SidebarProps> = ({
   className,
   banxTokenStake,
+  banxStakingSettings,
   nftsCount,
-  totalClaimed,
   rewards,
-  tokensPerPartnerPoints,
 }) => {
   const { open } = useModal()
   const wallet = useWallet()
-  const { banxTokenSettings } = useBanxStakeSettings()
   const { banxStake } = useStakeInfo()
+
+  const { tokensPerPartnerPoints, rewardsHarvested } = banxStakingSettings
 
   const { connection } = useConnection()
   const tokensPts = fromDecimals(
-    calcPartnerPoints(banxTokenStake.tokensStaked, tokensPerPartnerPoints),
+    calcPartnerPoints(banxTokenStake.tokensStaked, tokensPerPartnerPoints.toString()),
     BANX_TOKEN_STAKE_DECIMAL,
   )
 
@@ -66,11 +70,11 @@ export const Sidebar: FC<SidebarProps> = ({
   const priorityFees = usePriorityFees()
 
   const claimAction = () => {
-    if (!wallet.publicKey?.toBase58() || !banxTokenSettings || !banxStake?.banxTokenStake) {
+    if (!wallet.publicKey?.toBase58() || !banxStakingSettings || !banxStake?.banxTokenStake) {
       return
     }
     const banxSubscribeAdventureOptimistic: BanxSubscribeAdventureOptimistic = {
-      banxStakingSettings: banxTokenSettings,
+      banxStakingSettings: convertToBanxStakingSettingsString(banxStakingSettings),
       banxAdventures: banxStake.banxAdventures,
       banxTokenStake: banxStake.banxTokenStake,
     }
@@ -164,7 +168,7 @@ export const Sidebar: FC<SidebarProps> = ({
               />
 
               <Button
-                onClick={() => open(StakeTokens)}
+                onClick={() => open(StakeTokensModal)}
                 className={styles.manageButton}
                 variant="secondary"
               >
@@ -207,7 +211,9 @@ export const Sidebar: FC<SidebarProps> = ({
 
           <StakingStat
             label="Total claimed"
-            value={formatNumbersWithCommas(fromDecimals(totalClaimed, BANX_TOKEN_STAKE_DECIMAL))}
+            value={formatNumbersWithCommas(
+              bnToHuman(rewardsHarvested, BANX_TOKEN_DECIMALS).toFixed(2),
+            )}
             icon={BanxToken}
             flexType="row"
           />

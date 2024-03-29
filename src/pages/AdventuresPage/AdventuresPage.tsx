@@ -18,11 +18,11 @@ export const AdventuresPage: FC = () => {
   const { publicKey } = useWallet()
   const userPubkey = publicKey?.toBase58()
 
-  const { banxTokenSettings, isLoading: isBanxTokenSettingsLoading } = useBanxStakeSettings()
+  const { banxStakeSettings, isLoading: isBanxStakeSettingsLoading } = useBanxStakeSettings()
   const { banxStake, isLoading: isBanxTokenStakeLoading } = useStakeInfo()
 
-  const isLoading = isBanxTokenSettingsLoading || isBanxTokenStakeLoading
-  const isDataReady = !!banxStake && !!banxTokenSettings
+  const isLoading = isBanxStakeSettingsLoading || isBanxTokenStakeLoading
+  const isDataReady = !!banxStake && !!banxStakeSettings
 
   const adventuresWithSubscriptions =
     banxStake?.banxAdventures
@@ -47,7 +47,7 @@ export const AdventuresPage: FC = () => {
         {isDataReady && (
           <AdventuresList
             banxStake={banxStake}
-            banxTokenSettings={banxTokenSettings}
+            banxStakingSettings={banxStakeSettings}
             className={styles.adventuresList}
           />
         )}
@@ -55,9 +55,8 @@ export const AdventuresPage: FC = () => {
 
       {!!userPubkey && !!banxStake?.banxTokenStake && isDataReady && (
         <Sidebar
-          tokensPerPartnerPoints={banxTokenSettings.tokensPerPartnerPoints}
+          banxStakingSettings={banxStakeSettings}
           rewards={rewards}
-          totalClaimed={banxTokenSettings?.rewardsHarvested || '0'}
           nftsCount={banxStake?.nfts?.length.toString() || '0'}
           className={styles.sidebar}
           banxTokenStake={banxStake.banxTokenStake}

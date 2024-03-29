@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import {
   BanxStake,
-  BanxStakeSettings,
+  BanxStakingSettings,
   fetchBanxStakeSettings,
   fetchStakeInfo,
 } from '@banx/api/staking'
@@ -45,11 +45,11 @@ export const useStakeInfo = () => {
   }
 }
 
-const createBanxTokenSettingsQueryKey = () => ['fetchBanxTokenSettings']
-const setBanxTokenSettingsOptimistic = (nextState: BanxStakeSettings) =>
+const createBanxStakeSettingsQueryKey = () => ['fetchBanxStakeSettings']
+const setBanxStakeSettingsOptimistic = (nextState: BanxStakingSettings) =>
   queryClient.setQueryData(
-    createBanxTokenSettingsQueryKey(),
-    (queryData: BanxStakeSettings | undefined) => {
+    createBanxStakeSettingsQueryKey(),
+    (queryData: BanxStakingSettings | undefined) => {
       if (!queryData) return queryData
       return nextState
     },
@@ -57,18 +57,18 @@ const setBanxTokenSettingsOptimistic = (nextState: BanxStakeSettings) =>
 
 export const useBanxStakeSettings = () => {
   const {
-    data: banxTokenSettings,
+    data: banxStakeSettings,
     isLoading,
     refetch,
-  } = useQuery(createBanxTokenSettingsQueryKey(), () => fetchBanxStakeSettings(), {
+  } = useQuery(createBanxStakeSettingsQueryKey(), () => fetchBanxStakeSettings(), {
     refetchInterval: 10_000,
     staleTime: 60_000,
     refetchOnWindowFocus: false,
   })
 
   return {
-    banxTokenSettings,
-    setBanxTokenSettingsOptimistic,
+    banxStakeSettings,
+    setBanxStakeSettingsOptimistic,
     isLoading,
     refetch,
   }

@@ -24,6 +24,7 @@ export async function getTokenBalance(
   return balance?.value.amount?.toString() || '0'
 }
 
+//TODO refactor
 export const calculateRewards = (
   props: { adventure: BanxAdventure; adventureSubscription: BanxSubscription }[],
 ): bigint => {
@@ -34,6 +35,7 @@ export const calculateRewards = (
   return calculateRewardsFromSubscriptions(props) as bigint
 }
 
+//TODO refactor
 export const calcPartnerPoints = (v: string, tokensPerPartnerPoints?: string) => {
   if (!tokensPerPartnerPoints) {
     return '0'

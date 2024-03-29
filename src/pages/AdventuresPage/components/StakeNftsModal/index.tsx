@@ -11,7 +11,7 @@ import { Button } from '@banx/components/Buttons'
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 import { Modal } from '@banx/components/modals/BaseModal'
 
-import { NftType } from '@banx/api/staking'
+import { NftType, convertToBanxStakingSettingsString } from '@banx/api/staking'
 import { BANX_STAKING } from '@banx/constants'
 import { TensorFilled } from '@banx/icons'
 import { useBanxStakeSettings, useStakeInfo } from '@banx/pages/AdventuresPage'
@@ -23,6 +23,7 @@ import { enqueueSnackbar, usePriorityFees } from '@banx/utils'
 
 import styles from './styles.module.less'
 
+//TODO Refactor
 export const StakeNftsModal = () => {
   const { connection } = useConnection()
   const wallet = useWallet()
@@ -30,7 +31,7 @@ export const StakeNftsModal = () => {
 
   const { close } = useModal()
   const priorityFees = usePriorityFees()
-  const { banxTokenSettings /* setBanxTokenSettingsOptimistic */ } = useBanxStakeSettings()
+  const { banxStakeSettings /* setBanxTokenSettingsOptimistic */ } = useBanxStakeSettings()
   const { banxStake /* setBanxTokenStakeOptimistic */ } = useStakeInfo()
 
   const nfts = useMemo(() => banxStake?.nfts || [], [banxStake?.nfts])
@@ -103,11 +104,11 @@ export const StakeNftsModal = () => {
 
   const onStake = () => {
     try {
-      if (!wallet.publicKey || !banxTokenSettings || !banxStake?.banxTokenStake) {
+      if (!wallet.publicKey || !banxStakeSettings || !banxStake?.banxTokenStake) {
         return
       }
       const optimistic: BanxSubscribeAdventureOptimistic = {
-        banxStakingSettings: banxTokenSettings,
+        banxStakingSettings: convertToBanxStakingSettingsString(banxStakeSettings),
         banxAdventures: banxStake.banxAdventures,
         banxTokenStake: banxStake.banxTokenStake,
       }
@@ -167,11 +168,11 @@ export const StakeNftsModal = () => {
   }
   const onUnstake = () => {
     try {
-      if (!wallet.publicKey?.toBase58() || !banxTokenSettings || !banxStake?.banxTokenStake) {
+      if (!wallet.publicKey?.toBase58() || !banxStakeSettings || !banxStake?.banxTokenStake) {
         return
       }
       const banxSubscribeAdventureOptimistic: BanxSubscribeAdventureOptimistic = {
-        banxStakingSettings: banxTokenSettings,
+        banxStakingSettings: convertToBanxStakingSettingsString(banxStakeSettings),
         banxAdventures: banxStake.banxAdventures,
         banxTokenStake: banxStake.banxTokenStake,
       }

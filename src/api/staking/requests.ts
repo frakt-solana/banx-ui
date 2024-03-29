@@ -3,10 +3,13 @@ import axios from 'axios'
 import {
   BanxStake,
   BanxStakeSchema,
-  BanxStakeSettings,
-  BanxStakeSettingsSchema,
-} from '@banx/api/staking/types'
+  BanxStakingSettings,
+  BanxStakingSettingsSchema,
+} from '@banx/api/staking/schemas'
 import { BACKEND_BASE_URL } from '@banx/constants'
+
+import { convertToBanxStakingSettingsBN } from './helpers'
+import { BanxStakingSettingsBN } from './types'
 
 type FetchStakeInfo = (props: { userPubkey?: string }) => Promise<BanxStake>
 export const fetchStakeInfo: FetchStakeInfo = async ({ userPubkey }) => {
@@ -27,21 +30,19 @@ export const fetchStakeInfo: FetchStakeInfo = async ({ userPubkey }) => {
   )
 }
 
-type FetchBanxStakeSettings = () => Promise<BanxStakeSettings>
+type FetchBanxStakeSettings = () => Promise<BanxStakingSettingsBN | null>
 export const fetchBanxStakeSettings: FetchBanxStakeSettings = async () => {
-  const { data } = await axios.get<{ data: BanxStakeSettings }>(
+  const { data } = await axios.get<{ data: BanxStakingSettings }>(
     `${BACKEND_BASE_URL}/tokenStake/settings`,
   )
 
   try {
-    await BanxStakeSettingsSchema.parseAsync(data.data)
+    await BanxStakingSettingsSchema.parseAsync(data.data)
   } catch (validationError) {
-    console.error('Schema validation error:', validationError)
+    console.error('BanxStakingSettings validation error:', validationError)
   }
 
-  return (
-    data.data ?? {
-      adventures: [],
-    }
-  )
+  if (!data?.data) return null
+
+  return convertToBanxStakingSettingsBN(data.data)
 }
