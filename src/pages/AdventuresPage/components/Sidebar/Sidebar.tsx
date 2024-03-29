@@ -16,11 +16,7 @@ import { StatInfo, StatsInfoProps, VALUES_TYPES } from '@banx/components/StatInf
 import { BanxTokenStake } from '@banx/api/banxTokenStake'
 import { BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
 import { BanxToken, Gamepad, MoneyBill } from '@banx/icons'
-import {
-  useBanxTokenBalance,
-  useBanxTokenSettings,
-  useBanxTokenStake,
-} from '@banx/pages/AdventuresPage'
+import { useBanxTokenSettings, useBanxTokenStake } from '@banx/pages/AdventuresPage'
 import { StakeNftsModal, StakeTokens } from '@banx/pages/AdventuresPage/components'
 import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
 import { useModal } from '@banx/store'
@@ -63,7 +59,8 @@ export const Sidebar: FC<SidebarProps> = ({
     calcPartnerPoints(banxTokenStake.tokensStaked, tokensPerPartnerPoints),
     BANX_TOKEN_STAKE_DECIMAL,
   )
-  const { data: balance, isLoading } = useBanxTokenBalance()
+
+  const banxWalletBalance = banxStake?.banxWalletBalance || '0'
 
   const totalPts = (
     parseFloat(tokensPts.toString()) + parseFloat(banxTokenStake.partnerPointsStaked)
@@ -118,16 +115,6 @@ export const Sidebar: FC<SidebarProps> = ({
       .execute()
   }
 
-  const tokensTotal = () => {
-    if (!banxTokenSettings?.maxTokenStakeAmount || isLoading) {
-      return '0'
-    }
-    const tokensStakedBN = new BN(banxTokenStake.tokensStaked)
-    const balanceBN = new BN(balance)
-
-    return formatCompact(fromDecimals(tokensStakedBN.add(balanceBN), BANX_TOKEN_STAKE_DECIMAL))
-  }
-
   const stakenTokensPlayersPoints = calculatePlayerPointsForTokens(
     parseFloat(banxTokenStake.tokensStaked),
   )
@@ -171,7 +158,7 @@ export const Sidebar: FC<SidebarProps> = ({
                 label="Tokens staked"
                 value={`${formatCompact(
                   fromDecimals(banxTokenStake.tokensStaked, BANX_TOKEN_STAKE_DECIMAL),
-                )}/${tokensTotal()}`}
+                )}`}
               />
 
               <Button
