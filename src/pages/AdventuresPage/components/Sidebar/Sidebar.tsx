@@ -27,12 +27,7 @@ import { useModal } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxClaimAction } from '@banx/transactions/banxStaking/stakeBanxClaimAction'
 import {
-  createSnackbarState,
-  destroySnackbar,
-  enqueueSnackbar,
-  enqueueTranactionError,
   enqueueTransactionSent,
-  enqueueWaitingConfirmation,
   formatNumbersWithCommas as format,
   formatCompact,
   fromDecimals,
@@ -80,7 +75,7 @@ export const Sidebar: FC<SidebarProps> = ({
       return
     }
 
-    const loadingSnackbarState = createSnackbarState()
+    // const loadingSnackbarState = createSnackbarState()
 
     const banxSubscribeAdventureOptimistic: BanxSubscribeAdventureOptimistic = {
       banxStakingSettings: banxTokenSettings,
@@ -107,30 +102,31 @@ export const Sidebar: FC<SidebarProps> = ({
       .addTransactionParam(params)
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
-        loadingSnackbarState.id = enqueueWaitingConfirmation()
+        // loadingSnackbarState.id = enqueueWaitingConfirmation()
+        close()
       })
-      .on('confirmedAll', (results) => {
-        const { confirmed, failed } = results
+      // .on('confirmedAll', (results) => {
+      //   const { confirmed, failed } = results
 
-        if (failed.length) {
-          destroySnackbar(loadingSnackbarState.id)
-          return enqueueTranactionError()
-        }
+      //   if (failed.length) {
+      //     destroySnackbar(loadingSnackbarState.id)
+      //     return enqueueTranactionError()
+      //   }
 
-        return confirmed.forEach(({ result, signature }) => {
-          if (result) {
-            destroySnackbar(loadingSnackbarState.id)
-            enqueueSnackbar({
-              message: 'Banx tokens successfully claimed',
-              type: 'success',
-              solanaExplorerPath: `tx/${signature}`,
-            })
-            close()
-          }
-        })
-      })
+      //   return confirmed.forEach(({ result, signature }) => {
+      //     if (result) {
+      //       destroySnackbar(loadingSnackbarState.id)
+      //       enqueueSnackbar({
+      //         message: 'Banx tokens successfully claimed',
+      //         type: 'success',
+      //         solanaExplorerPath: `tx/${signature}`,
+      //       })
+      //       close()
+      //     }
+      //   })
+      // })
       .on('error', (error) => {
-        destroySnackbar(loadingSnackbarState.id)
+        // destroySnackbar(loadingSnackbarState.id)
         defaultTxnErrorHandler(error, {
           additionalData: params,
           walletPubkey: wallet?.publicKey?.toBase58(),

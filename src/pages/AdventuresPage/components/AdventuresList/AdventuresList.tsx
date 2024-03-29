@@ -22,12 +22,7 @@ import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { subscribeBanxAdventureAction } from '@banx/transactions/banxStaking'
 import {
-  createSnackbarState,
-  destroySnackbar,
-  enqueueSnackbar,
-  enqueueTranactionError,
   enqueueTransactionSent,
-  enqueueWaitingConfirmation,
   formatNumbersWithCommas as format,
   formatCompact,
   fromDecimals,
@@ -123,7 +118,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
       return
     }
 
-    const loadingSnackbarState = createSnackbarState()
+    // const loadingSnackbarState = createSnackbarState()
 
     const banxSubscribeAdventureOptimistic: BanxSubscribeAdventureOptimistic = {
       banxStakingSettings: banxTokenSettings,
@@ -147,30 +142,31 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
       .addTransactionParam(params)
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
-        loadingSnackbarState.id = enqueueWaitingConfirmation()
+        // loadingSnackbarState.id = enqueueWaitingConfirmation()
+        close()
       })
-      .on('confirmedAll', (results) => {
-        const { confirmed, failed } = results
+      // .on('confirmedAll', (results) => {
+      //   const { confirmed, failed } = results
 
-        if (failed.length) {
-          destroySnackbar(loadingSnackbarState.id)
-          return enqueueTranactionError()
-        }
+      //   if (failed.length) {
+      //     destroySnackbar(loadingSnackbarState.id)
+      //     return enqueueTranactionError()
+      //   }
 
-        return confirmed.forEach(({ result, signature }) => {
-          if (result) {
-            destroySnackbar(loadingSnackbarState.id)
-            enqueueSnackbar({
-              message: 'Successfully subscribed',
-              type: 'success',
-              solanaExplorerPath: `tx/${signature}`,
-            })
-            close()
-          }
-        })
-      })
+      //   return confirmed.forEach(({ result, signature }) => {
+      //     if (result) {
+      //       destroySnackbar(loadingSnackbarState.id)
+      //       enqueueSnackbar({
+      //         message: 'Successfully subscribed',
+      //         type: 'success',
+      //         solanaExplorerPath: `tx/${signature}`,
+      //       })
+      //       close()
+      //     }
+      //   })
+      // })
       .on('error', (error) => {
-        destroySnackbar(loadingSnackbarState.id)
+        // destroySnackbar(loadingSnackbarState.id)
         defaultTxnErrorHandler(error, {
           additionalData: params,
           walletPubkey: wallet?.publicKey?.toBase58(),
