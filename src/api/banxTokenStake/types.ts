@@ -111,7 +111,7 @@ export const BanxStakeSchema = z.object({
   banxWalletBalance: z.string().nullable(),
   banxTokenStake: BanxTokenStakeSchema.nullable(),
   banxAdventures: BanxAdventuresSchema.array(),
-  nfts: NftSchema.array(),
+  nfts: NftSchema.array().optional(),
 })
 export type BanxStake = z.infer<typeof BanxStakeSchema>
 
