@@ -75,8 +75,6 @@ export const Sidebar: FC<SidebarProps> = ({
       return
     }
 
-    // const loadingSnackbarState = createSnackbarState()
-
     const banxSubscribeAdventureOptimistic: BanxSubscribeAdventureOptimistic = {
       banxStakingSettings: banxTokenSettings,
       banxAdventures: banxStake.banxAdventures,
@@ -102,31 +100,9 @@ export const Sidebar: FC<SidebarProps> = ({
       .addTransactionParam(params)
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
-        // loadingSnackbarState.id = enqueueWaitingConfirmation()
         close()
       })
-      // .on('confirmedAll', (results) => {
-      //   const { confirmed, failed } = results
-
-      //   if (failed.length) {
-      //     destroySnackbar(loadingSnackbarState.id)
-      //     return enqueueTranactionError()
-      //   }
-
-      //   return confirmed.forEach(({ result, signature }) => {
-      //     if (result) {
-      //       destroySnackbar(loadingSnackbarState.id)
-      //       enqueueSnackbar({
-      //         message: 'Banx tokens successfully claimed',
-      //         type: 'success',
-      //         solanaExplorerPath: `tx/${signature}`,
-      //       })
-      //       close()
-      //     }
-      //   })
-      // })
       .on('error', (error) => {
-        // destroySnackbar(loadingSnackbarState.id)
         defaultTxnErrorHandler(error, {
           additionalData: params,
           walletPubkey: wallet?.publicKey?.toBase58(),

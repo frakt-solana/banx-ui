@@ -2,6 +2,7 @@ import { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
@@ -13,7 +14,6 @@ import { useModal } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimAction } from '@banx/transactions/loans'
 import {
-  createSnackbarState,
   destroySnackbar,
   enqueueSnackbar,
   enqueueTranactionError,
@@ -46,25 +46,25 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
   const onClaim = () => {
     trackPageEvent('myoffers', 'activetab-claim')
 
-    const loadingSnackbarState = createSnackbarState()
+    const loadingSnackbarId = uniqueId()
 
     new TxnExecutor(makeClaimAction, { wallet: createWalletInstance(wallet), connection })
       .addTransactionParam({ loan, priorityFees })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
-        loadingSnackbarState.id = enqueueWaitingConfirmation()
+        enqueueWaitingConfirmation(loadingSnackbarId)
       })
       .on('confirmedAll', (results) => {
         const { confirmed, failed } = results
 
+        destroySnackbar(loadingSnackbarId)
+
         if (failed.length) {
-          destroySnackbar(loadingSnackbarState.id)
           return enqueueTranactionError()
         }
 
         return confirmed.forEach(({ result, signature }) => {
           if (result) {
-            destroySnackbar(loadingSnackbarState.id)
             enqueueSnackbar({
               message: 'Collateral successfully claimed',
               type: 'success',
@@ -76,7 +76,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
         })
       })
       .on('error', (error) => {
-        destroySnackbar(loadingSnackbarState.id)
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),

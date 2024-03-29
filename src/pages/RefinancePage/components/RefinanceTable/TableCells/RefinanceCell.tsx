@@ -2,6 +2,7 @@ import React, { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
@@ -20,7 +21,6 @@ import { useModal } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeRefinanceAction } from '@banx/transactions/loans'
 import {
-  createSnackbarState,
   destroySnackbar,
   enqueueSnackbar,
   enqueueTranactionError,
@@ -100,25 +100,25 @@ const useRefinanceTransaction = (loan: Loan) => {
   }
 
   const refinance = () => {
-    const loadingSnackbarState = createSnackbarState()
+    const loadingSnackbarId = uniqueId()
 
     new TxnExecutor(makeRefinanceAction, { wallet: createWalletInstance(wallet), connection })
       .addTransactionParam({ loan, priorityFees })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
-        loadingSnackbarState.id = enqueueWaitingConfirmation()
+        enqueueWaitingConfirmation(loadingSnackbarId)
       })
       .on('confirmedAll', (results) => {
         const { confirmed, failed } = results
 
+        destroySnackbar(loadingSnackbarId)
+
         if (failed.length) {
-          destroySnackbar(loadingSnackbarState.id)
           return enqueueTranactionError()
         }
 
         return confirmed.forEach(({ result, signature }) => {
           if (result) {
-            destroySnackbar(loadingSnackbarState.id)
             enqueueSnackbar({
               message: 'Loan successfully refinanced',
               type: 'success',
@@ -132,7 +132,7 @@ const useRefinanceTransaction = (loan: Loan) => {
         })
       })
       .on('error', (error) => {
-        destroySnackbar(loadingSnackbarState.id)
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),

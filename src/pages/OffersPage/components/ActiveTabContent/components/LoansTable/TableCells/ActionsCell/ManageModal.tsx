@@ -2,7 +2,7 @@ import { FC, useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { chain, isEmpty } from 'lodash'
+import { chain, isEmpty, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
@@ -166,7 +166,7 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const instantLoan = () => {
     if (!bestOffer) return
 
-    const loadingSnackbarState = createSnackbarState()
+    const loadingSnackbarId = uniqueId()
 
     new TxnExecutor(makeInstantRefinanceAction, {
       wallet: createWalletInstance(wallet),
@@ -175,19 +175,19 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
       .addTransactionParam({ loan, bestOffer, priorityFees })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
-        loadingSnackbarState.id = enqueueWaitingConfirmation()
+        enqueueWaitingConfirmation(loadingSnackbarId)
       })
       .on('confirmedAll', (results) => {
         const { confirmed, failed } = results
 
+        destroySnackbar(loadingSnackbarId)
+
         if (failed.length) {
-          destroySnackbar(loadingSnackbarState.id)
           return enqueueTranactionError()
         }
 
-        confirmed.forEach(({ result, signature }) => {
+        return confirmed.forEach(({ result, signature }) => {
           if (result) {
-            destroySnackbar(loadingSnackbarState.id)
             enqueueSnackbar({
               message: 'Offer successfully sold',
               type: 'success',
@@ -196,12 +196,12 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
 
             updateOrAddOffer(result.bondOffer)
             hideLoans(loan.nft.mint)
+            close()
           }
         })
-        close()
       })
       .on('error', (error) => {
-        destroySnackbar(loadingSnackbarState.id)
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),

@@ -1,4 +1,5 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan, Offer } from '@banx/api/core'
@@ -10,7 +11,6 @@ import {
   makeTerminateAction,
 } from '@banx/transactions/loans'
 import {
-  createSnackbarState,
   destroySnackbar,
   enqueueSnackbar,
   enqueueTranactionError,
@@ -39,25 +39,25 @@ export const useLendLoansTransactions = ({
   const priorityFees = usePriorityFees()
 
   const terminateLoan = () => {
-    const loadingSnackbarState = createSnackbarState()
+    const loadingSnackbarId = uniqueId()
 
     new TxnExecutor(makeTerminateAction, { wallet: createWalletInstance(wallet), connection })
       .addTransactionParam({ loan })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
-        loadingSnackbarState.id = enqueueWaitingConfirmation()
+        enqueueWaitingConfirmation(loadingSnackbarId)
       })
       .on('confirmedAll', (results) => {
         const { confirmed, failed } = results
 
+        destroySnackbar(loadingSnackbarId)
+
         if (failed.length) {
-          destroySnackbar(loadingSnackbarState.id)
           return enqueueTranactionError()
         }
 
-        confirmed.forEach(({ result, signature }) => {
+        return confirmed.forEach(({ result, signature }) => {
           if (result) {
-            destroySnackbar(loadingSnackbarState.id)
             enqueueSnackbar({
               message: 'Offer termination successfully initialized',
               type: 'success',
@@ -65,12 +65,12 @@ export const useLendLoansTransactions = ({
             })
 
             updateOrAddLoan({ ...loan, ...result })
+            close()
           }
         })
-        close()
       })
       .on('error', (error) => {
-        destroySnackbar(loadingSnackbarState.id)
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),
@@ -81,26 +81,26 @@ export const useLendLoansTransactions = ({
   }
 
   const claimLoan = () => {
-    const loadingSnackbarState = createSnackbarState()
+    const loadingSnackbarId = uniqueId()
 
     new TxnExecutor(makeClaimAction, { wallet: createWalletInstance(wallet), connection })
       .addTransactionParam({ loan, priorityFees })
 
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
-        loadingSnackbarState.id = enqueueWaitingConfirmation()
+        enqueueWaitingConfirmation(loadingSnackbarId)
       })
       .on('confirmedAll', (results) => {
         const { confirmed, failed } = results
 
+        destroySnackbar(loadingSnackbarId)
+
         if (failed.length) {
-          destroySnackbar(loadingSnackbarState.id)
           return enqueueTranactionError()
         }
 
         return confirmed.forEach(({ result, signature }) => {
           if (result) {
-            destroySnackbar(loadingSnackbarState.id)
             enqueueSnackbar({
               message: 'Collateral successfully claimed',
               type: 'success',
@@ -112,7 +112,7 @@ export const useLendLoansTransactions = ({
         })
       })
       .on('error', (error) => {
-        destroySnackbar(loadingSnackbarState.id)
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),
@@ -123,7 +123,7 @@ export const useLendLoansTransactions = ({
   }
 
   const instantLoan = () => {
-    const loadingSnackbarState = createSnackbarState()
+    const loadingSnackbarId = uniqueId()
 
     new TxnExecutor(makeInstantRefinanceAction, {
       wallet: createWalletInstance(wallet),
@@ -132,19 +132,19 @@ export const useLendLoansTransactions = ({
       .addTransactionParam({ loan, bestOffer, priorityFees })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
-        loadingSnackbarState.id = enqueueWaitingConfirmation()
+        enqueueWaitingConfirmation(loadingSnackbarId)
       })
       .on('confirmedAll', (results) => {
         const { confirmed, failed } = results
 
+        destroySnackbar(loadingSnackbarId)
+
         if (failed.length) {
-          destroySnackbar(loadingSnackbarState.id)
           return enqueueTranactionError()
         }
 
-        confirmed.forEach(({ result, signature }) => {
+        return confirmed.forEach(({ result, signature }) => {
           if (result) {
-            destroySnackbar(loadingSnackbarState.id)
             enqueueSnackbar({
               message: 'Offer successfully sold',
               type: 'success',
@@ -153,12 +153,12 @@ export const useLendLoansTransactions = ({
 
             updateOrAddOffer(result.bondOffer)
             addMints(loan.nft.mint)
+            close()
           }
         })
-        close()
       })
       .on('error', (error) => {
-        destroySnackbar(loadingSnackbarState.id)
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),

@@ -2,7 +2,7 @@ import { FC, useEffect, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { chain } from 'lodash'
+import { chain, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
@@ -22,7 +22,6 @@ import {
   calcLoanBorrowedAmount,
   calculateApr,
   calculateLoanRepayValue,
-  createSnackbarState,
   destroySnackbar,
   enqueueSnackbar,
   enqueueTranactionError,
@@ -124,7 +123,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
 
     if (!suitableOffer) return
 
-    const loadingSnackbarState = createSnackbarState()
+    const loadingSnackbarId = uniqueId()
 
     new TxnExecutor(makeBorrowRefinanceAction, { wallet: createWalletInstance(wallet), connection })
       .addTransactionParam({
@@ -136,19 +135,19 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
       })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
-        loadingSnackbarState.id = enqueueWaitingConfirmation()
+        enqueueWaitingConfirmation(loadingSnackbarId)
       })
       .on('confirmedAll', (results) => {
         const { confirmed, failed } = results
 
+        destroySnackbar(loadingSnackbarId)
+
         if (failed.length) {
-          destroySnackbar(loadingSnackbarState.id)
           return enqueueTranactionError()
         }
 
-        confirmed.forEach(({ result, signature }) => {
+        return confirmed.forEach(({ result, signature }) => {
           if (result && wallet?.publicKey) {
-            destroySnackbar(loadingSnackbarState.id)
             enqueueSnackbar({
               message: 'Loan successfully refinanced',
               type: 'success',
@@ -157,13 +156,13 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
 
             updateOrAddOffer(result.offer)
             updateLoansOptimistic([result.loan], wallet.publicKey.toBase58())
+            clearSelection()
+            close()
           }
         })
-        clearSelection()
-        close()
       })
       .on('error', (error) => {
-        destroySnackbar(loadingSnackbarState.id)
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),
