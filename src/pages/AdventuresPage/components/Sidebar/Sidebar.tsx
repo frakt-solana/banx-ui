@@ -118,16 +118,6 @@ export const Sidebar: FC<SidebarProps> = ({
       .execute()
   }
 
-  const tokensTotal = () => {
-    if (!banxTokenSettings?.maxTokenStakeAmount || isLoading) {
-      return '0'
-    }
-    const tokensStakedBN = new BN(banxTokenStake.tokensStaked)
-    const balanceBN = new BN(balance)
-
-    return formatCompact(fromDecimals(tokensStakedBN.add(balanceBN), BANX_TOKEN_STAKE_DECIMAL))
-  }
-
   const stakenTokensPlayersPoints = calculatePlayerPointsForTokens(
     parseFloat(banxTokenStake.tokensStaked),
   )
@@ -171,7 +161,7 @@ export const Sidebar: FC<SidebarProps> = ({
                 label="Tokens staked"
                 value={`${formatCompact(
                   fromDecimals(banxTokenStake.tokensStaked, BANX_TOKEN_STAKE_DECIMAL),
-                )}/${tokensTotal()}`}
+                )}`}
               />
 
               <Button
