@@ -15,11 +15,7 @@ import { Modal } from '@banx/components/modals/BaseModal'
 
 import { BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
 import { BanxToken } from '@banx/icons'
-import {
-  useBanxTokenBalance,
-  useBanxTokenSettings,
-  useBanxTokenStake,
-} from '@banx/pages/AdventuresPage'
+import { useBanxTokenSettings, useBanxTokenStake } from '@banx/pages/AdventuresPage'
 import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
@@ -38,10 +34,10 @@ export const StakeTokens = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
   const priorityFees = usePriorityFees()
-
-  const { data: balance, refetch } = useBanxTokenBalance()
   const { banxTokenSettings } = useBanxTokenSettings()
   const { banxStake } = useBanxTokenStake()
+
+  const banxWalletBalance = banxStake?.banxWalletBalance || '0'
 
   const { close } = useModal()
   const [value, setValue] = useState('0')
@@ -54,7 +50,7 @@ export const StakeTokens = () => {
   const handleChangeValue = (v: string) => {
     const isMaxBanxBalance =
       currentTabValue === ModalTabs.STAKE &&
-      parseFloat(v) < parseFloat(fromDecimals(balance, BANX_TOKEN_STAKE_DECIMAL))
+      parseFloat(v) < parseFloat(fromDecimals(banxWalletBalance, BANX_TOKEN_STAKE_DECIMAL))
     const isMaxStaked =
       currentTabValue === ModalTabs.UNSTAKE &&
       parseFloat(v) <
@@ -98,7 +94,6 @@ export const StakeTokens = () => {
       })
       .on('pfSuccessAll', () => {
         close()
-        void refetch()
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error, {
@@ -137,7 +132,6 @@ export const StakeTokens = () => {
       })
       .on('pfSuccessAll', () => {
         close()
-        void refetch()
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error, {
@@ -158,9 +152,11 @@ export const StakeTokens = () => {
   }
 
   const idleOnWallet = format(
-    (fromDecimals(balance || 0, BANX_TOKEN_STAKE_DECIMAL) - parseFloat(value || '0')).toFixed(0),
+    (
+      fromDecimals(banxWalletBalance || 0, BANX_TOKEN_STAKE_DECIMAL) - parseFloat(value || '0')
+    ).toFixed(0),
   )
-  const banxBalance = format(parseFloat(fromDecimals(balance, BANX_TOKEN_STAKE_DECIMAL)))
+  const banxBalance = format(parseFloat(fromDecimals(banxWalletBalance, BANX_TOKEN_STAKE_DECIMAL)))
   const tokensStaked = format(
     (
       fromDecimals(banxStake?.banxTokenStake?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL) -
@@ -175,18 +171,18 @@ export const StakeTokens = () => {
     const emptyValue = !parseFloat(value)
     const notEnoughStake =
       currentTabValue === ModalTabs.STAKE &&
-      parseFloat(fromDecimals(balance, BANX_TOKEN_STAKE_DECIMAL)) < parseFloat(value)
+      parseFloat(fromDecimals(banxWalletBalance, BANX_TOKEN_STAKE_DECIMAL)) < parseFloat(value)
     const notEnoughUnStake =
       currentTabValue === ModalTabs.UNSTAKE &&
       parseFloat(fromDecimals(banxTokenSettings?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL)) <
         parseFloat(value)
 
     return emptyValue || notEnoughStake || notEnoughUnStake
-  }, [value, balance, currentTabValue, banxTokenSettings?.tokensStaked])
+  }, [value, banxWalletBalance, currentTabValue, banxTokenSettings?.tokensStaked])
 
   const onSetMax = () => {
     if (currentTabValue === ModalTabs.STAKE) {
-      return setValue(fromDecimals(balance.toString() || 0, BANX_TOKEN_STAKE_DECIMAL))
+      return setValue(fromDecimals(banxWalletBalance.toString() || 0, BANX_TOKEN_STAKE_DECIMAL))
     }
     return setValue(
       fromDecimals(banxStake?.banxTokenStake?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL),
