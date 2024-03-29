@@ -19,7 +19,7 @@ import { NftCheckbox, NftsStats } from '@banx/pages/AdventuresPage/components'
 import { useModal } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxNftAction, unstakeBanxNftsAction } from '@banx/transactions/banxStaking'
-import { enqueueTransactionSent, usePriorityFees } from '@banx/utils'
+import { enqueueTransactionsSent, usePriorityFees } from '@banx/utils'
 
 import styles from './styles.module.less'
 
@@ -107,8 +107,6 @@ export const StakeNftsModal = () => {
         return
       }
 
-      // const loadingSnackbarState = createSnackbarState()
-
       const optimistic: BanxSubscribeAdventureOptimistic = {
         banxStakingSettings: banxTokenSettings,
         banxAdventures: banxStake.banxAdventures,
@@ -126,31 +124,10 @@ export const StakeNftsModal = () => {
 
       new TxnExecutor(stakeBanxNftAction, { wallet: createWalletInstance(wallet), connection })
         .addTransactionParams(params)
-        .on('sentSome', (results) => {
-          results.forEach(({ signature }) => enqueueTransactionSent(signature))
-          // loadingSnackbarState.id = enqueueWaitingConfirmation()
+        .on('sentAll', () => {
+          enqueueTransactionsSent()
           close()
         })
-        // .on('confirmedAll', (results) => {
-        //   const { confirmed, failed } = results
-
-        //   if (failed.length) {
-        //     destroySnackbar(loadingSnackbarState.id)
-        //     return enqueueTranactionError()
-        //   }
-
-        //   return confirmed.forEach(({ result, signature }) => {
-        //     if (result) {
-        //       destroySnackbar(loadingSnackbarState.id)
-        //       enqueueSnackbar({
-        //         message: 'Banx successfully staked',
-        //         type: 'success',
-        //         solanaExplorerPath: `tx/${signature}`,
-        //       })
-        //       v
-        //     }
-        //   })
-        // })
         // results.forEach(({ result }) => {
         //   if (result) {
         //     const banxAdventuresMap = keyBy(
@@ -171,7 +148,6 @@ export const StakeNftsModal = () => {
         //   }
         // })
         .on('error', (error) => {
-          // destroySnackbar(loadingSnackbarState.id)
           defaultTxnErrorHandler(error, {
             additionalData: params,
             walletPubkey: wallet?.publicKey?.toBase58(),
@@ -188,8 +164,6 @@ export const StakeNftsModal = () => {
       if (!wallet.publicKey?.toBase58() || !banxTokenSettings || !banxStake?.banxTokenStake) {
         return
       }
-
-      // const loadingSnackbarState = createSnackbarState()
 
       const banxSubscribeAdventureOptimistic: BanxSubscribeAdventureOptimistic = {
         banxStakingSettings: banxTokenSettings,
@@ -209,33 +183,11 @@ export const StakeNftsModal = () => {
 
       new TxnExecutor(unstakeBanxNftsAction, { wallet: createWalletInstance(wallet), connection })
         .addTransactionParams(params)
-        .on('sentSome', (results) => {
-          results.forEach(({ signature }) => enqueueTransactionSent(signature))
-          // loadingSnackbarState.id = enqueueWaitingConfirmation()
+        .on('sentAll', () => {
+          enqueueTransactionsSent()
           close()
         })
-        // .on('confirmedAll', (results) => {
-        //   const { confirmed, failed } = results
-
-        //   if (failed.length) {
-        //     destroySnackbar(loadingSnackbarState.id)
-        //     return enqueueTranactionError()
-        //   }
-
-        //   return confirmed.forEach(({ result, signature }) => {
-        //     if (result) {
-        //       destroySnackbar(loadingSnackbarState.id)
-        //       enqueueSnackbar({
-        //         message: 'Banx successfully unstaked',
-        //         type: 'success',
-        //         solanaExplorerPath: `tx/${signature}`,
-        //       })
-        //       close()
-        //     }
-        //   })
-        // })
         .on('error', (error) => {
-          // destroySnackbar(loadingSnackbarState.id)
           defaultTxnErrorHandler(error, {
             additionalData: params,
             walletPubkey: wallet?.publicKey?.toBase58(),
