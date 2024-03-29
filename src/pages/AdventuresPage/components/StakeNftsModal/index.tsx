@@ -19,7 +19,15 @@ import { NftCheckbox, NftsStats } from '@banx/pages/AdventuresPage/components'
 import { useModal } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxNftAction, unstakeBanxNftsAction } from '@banx/transactions/banxStaking'
-import { enqueueSnackbar, usePriorityFees } from '@banx/utils'
+import {
+  createSnackbarState,
+  destroySnackbar,
+  enqueueSnackbar,
+  enqueueTranactionError,
+  enqueueTransactionSent,
+  enqueueWaitingConfirmation,
+  usePriorityFees,
+} from '@banx/utils'
 
 import styles from './styles.module.less'
 
@@ -106,6 +114,9 @@ export const StakeNftsModal = () => {
       if (!wallet.publicKey || !banxTokenSettings || !banxStake?.banxTokenStake) {
         return
       }
+
+      const loadingSnackbarState = createSnackbarState()
+
       const optimistic: BanxSubscribeAdventureOptimistic = {
         banxStakingSettings: banxTokenSettings,
         banxAdventures: banxStake.banxAdventures,
@@ -124,36 +135,50 @@ export const StakeNftsModal = () => {
       new TxnExecutor(stakeBanxNftAction, { wallet: createWalletInstance(wallet), connection })
         .addTransactionParams(params)
         .on('sentSome', (results) => {
-          const { signature } = results[0]
-          enqueueSnackbar({
-            message: 'Transaction sent',
-            type: 'info',
-            solanaExplorerPath: `tx/${signature}`,
+          results.forEach(({ signature }) => enqueueTransactionSent(signature))
+          loadingSnackbarState.id = enqueueWaitingConfirmation()
+        })
+        .on('confirmedAll', (results) => {
+          const { confirmed, failed } = results
+
+          if (failed.length) {
+            destroySnackbar(loadingSnackbarState.id)
+            return enqueueTranactionError()
+          }
+
+          return confirmed.forEach(({ result, signature }) => {
+            if (result) {
+              destroySnackbar(loadingSnackbarState.id)
+              enqueueSnackbar({
+                message: 'Banx successfully staked',
+                type: 'success',
+                solanaExplorerPath: `tx/${signature}`,
+              })
+              close()
+            }
           })
-          // results.forEach(({ result }) => {
-          //   if (result) {
-          //     const banxAdventuresMap = keyBy(
-          //       result.banxAdventures,
-          //       ({ adventure }) => adventure.publicKey,
-          //     )
-
-          //     const updatedBanxTokenStake = {
-          //       ...banxStake,
-          //       banxTokenStake: result.banxTokenStake,
-          //       banxAdventures: result.banxAdventures.map(
-          //         (adv) => banxAdventuresMap[adv.adventure && adv.adventure.publicKey] || adv,
-          //       ),
-          //     }
-
-          //     setBanxTokenStakeOptimistic(walletPubkey, updatedBanxTokenStake)
-          //     setBanxTokenSettingsOptimistic({ ...result.banxStakingSettings })
-          //   }
-          // })
         })
-        .on('sentAll', () => {
-          close()
-        })
+        // results.forEach(({ result }) => {
+        //   if (result) {
+        //     const banxAdventuresMap = keyBy(
+        //       result.banxAdventures,
+        //       ({ adventure }) => adventure.publicKey,
+        //     )
+
+        //     const updatedBanxTokenStake = {
+        //       ...banxStake,
+        //       banxTokenStake: result.banxTokenStake,
+        //       banxAdventures: result.banxAdventures.map(
+        //         (adv) => banxAdventuresMap[adv.adventure && adv.adventure.publicKey] || adv,
+        //       ),
+        //     }
+
+        //     setBanxTokenStakeOptimistic(walletPubkey, updatedBanxTokenStake)
+        //     setBanxTokenSettingsOptimistic({ ...result.banxStakingSettings })
+        //   }
+        // })
         .on('error', (error) => {
+          destroySnackbar(loadingSnackbarState.id)
           defaultTxnErrorHandler(error, {
             additionalData: params,
             walletPubkey: wallet?.publicKey?.toBase58(),
@@ -170,6 +195,9 @@ export const StakeNftsModal = () => {
       if (!wallet.publicKey?.toBase58() || !banxTokenSettings || !banxStake?.banxTokenStake) {
         return
       }
+
+      const loadingSnackbarState = createSnackbarState()
+
       const banxSubscribeAdventureOptimistic: BanxSubscribeAdventureOptimistic = {
         banxStakingSettings: banxTokenSettings,
         banxAdventures: banxStake.banxAdventures,
@@ -189,17 +217,31 @@ export const StakeNftsModal = () => {
       new TxnExecutor(unstakeBanxNftsAction, { wallet: createWalletInstance(wallet), connection })
         .addTransactionParams(params)
         .on('sentSome', (results) => {
-          const { signature } = results[0]
-          enqueueSnackbar({
-            message: 'Transaction sent',
-            type: 'info',
-            solanaExplorerPath: `tx/${signature}`,
+          results.forEach(({ signature }) => enqueueTransactionSent(signature))
+          loadingSnackbarState.id = enqueueWaitingConfirmation()
+        })
+        .on('confirmedAll', (results) => {
+          const { confirmed, failed } = results
+
+          if (failed.length) {
+            destroySnackbar(loadingSnackbarState.id)
+            return enqueueTranactionError()
+          }
+
+          return confirmed.forEach(({ result, signature }) => {
+            if (result) {
+              destroySnackbar(loadingSnackbarState.id)
+              enqueueSnackbar({
+                message: 'Banx successfully unstaked',
+                type: 'success',
+                solanaExplorerPath: `tx/${signature}`,
+              })
+              close()
+            }
           })
         })
-        .on('sentAll', () => {
-          close()
-        })
         .on('error', (error) => {
+          destroySnackbar(loadingSnackbarState.id)
           defaultTxnErrorHandler(error, {
             additionalData: params,
             walletPubkey: wallet?.publicKey?.toBase58(),

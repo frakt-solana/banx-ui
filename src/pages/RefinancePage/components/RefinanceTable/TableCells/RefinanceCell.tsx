@@ -15,18 +15,24 @@ import {
 } from '@banx/components/modals'
 
 import { Loan } from '@banx/api/core'
-// import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
+import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
 import { useModal } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeRefinanceAction } from '@banx/transactions/loans'
 import {
+  createSnackbarState,
+  destroySnackbar,
   enqueueSnackbar,
+  enqueueTranactionError,
+  enqueueTransactionSent,
+  enqueueWaitingConfirmation,
   getDialectAccessToken,
   trackPageEvent,
   usePriorityFees,
 } from '@banx/utils'
 
-// import { useLoansState } from '../hooks'
+import { useLoansState } from '../hooks'
+
 import styles from '../RefinanceTable.module.less'
 
 interface RefinanceCellProps {
@@ -72,8 +78,8 @@ export const RefinanceCell: FC<RefinanceCellProps> = ({ loan, isCardView, disabl
 const useRefinanceTransaction = (loan: Loan) => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  // const { addMints } = useAuctionsLoans()
-  // const { deselectLoan } = useLoansState()
+  const { addMints } = useAuctionsLoans()
+  const { deselectLoan } = useLoansState()
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
@@ -94,30 +100,39 @@ const useRefinanceTransaction = (loan: Loan) => {
   }
 
   const refinance = () => {
+    const loadingSnackbarState = createSnackbarState()
+
     new TxnExecutor(makeRefinanceAction, { wallet: createWalletInstance(wallet), connection })
       .addTransactionParam({ loan, priorityFees })
-      // .on('sentSome', (results) => {
-      //   const { signature } = results[0]
-      //   addMints(loan.nft.mint)
-      //   deselectLoan(loan.publicKey)
-      //   enqueueSnackbar({
-      //     message: 'Loan successfully refinanced',
-      //     type: 'success',
-      //     solanaExplorerPath: `tx/${signature}`,
-      //   })
-      //   onSuccess()
-      // })
       .on('sentSome', (results) => {
-        const { signature } = results[0]
+        results.forEach(({ signature }) => enqueueTransactionSent(signature))
+        loadingSnackbarState.id = enqueueWaitingConfirmation()
+      })
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
 
-        enqueueSnackbar({
-          message: 'Transactions sent',
-          type: 'info',
-          solanaExplorerPath: `tx/${signature}`,
+        if (failed.length) {
+          destroySnackbar(loadingSnackbarState.id)
+          return enqueueTranactionError()
+        }
+
+        return confirmed.forEach(({ result, signature }) => {
+          if (result) {
+            destroySnackbar(loadingSnackbarState.id)
+            enqueueSnackbar({
+              message: 'Loan successfully refinanced',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
+
+            addMints(loan.nft.mint)
+            deselectLoan(loan.publicKey)
+            onSuccess()
+          }
         })
-        onSuccess()
       })
       .on('error', (error) => {
+        destroySnackbar(loadingSnackbarState.id)
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),

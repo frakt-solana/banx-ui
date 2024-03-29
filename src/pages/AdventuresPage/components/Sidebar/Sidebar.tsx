@@ -27,7 +27,12 @@ import { useModal } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxClaimAction } from '@banx/transactions/banxStaking/stakeBanxClaimAction'
 import {
+  createSnackbarState,
+  destroySnackbar,
   enqueueSnackbar,
+  enqueueTranactionError,
+  enqueueTransactionSent,
+  enqueueWaitingConfirmation,
   formatNumbersWithCommas as format,
   formatCompact,
   fromDecimals,
@@ -74,6 +79,9 @@ export const Sidebar: FC<SidebarProps> = ({
     if (!wallet.publicKey?.toBase58() || !banxTokenSettings || !banxStake?.banxTokenStake) {
       return
     }
+
+    const loadingSnackbarState = createSnackbarState()
+
     const banxSubscribeAdventureOptimistic: BanxSubscribeAdventureOptimistic = {
       banxStakingSettings: banxTokenSettings,
       banxAdventures: banxStake.banxAdventures,
@@ -98,17 +106,31 @@ export const Sidebar: FC<SidebarProps> = ({
     new TxnExecutor(stakeBanxClaimAction, { wallet: createWalletInstance(wallet), connection })
       .addTransactionParam(params)
       .on('sentSome', (results) => {
-        const { signature } = results[0]
-        enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
-          solanaExplorerPath: `tx/${signature}`,
+        results.forEach(({ signature }) => enqueueTransactionSent(signature))
+        loadingSnackbarState.id = enqueueWaitingConfirmation()
+      })
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
+
+        if (failed.length) {
+          destroySnackbar(loadingSnackbarState.id)
+          return enqueueTranactionError()
+        }
+
+        return confirmed.forEach(({ result, signature }) => {
+          if (result) {
+            destroySnackbar(loadingSnackbarState.id)
+            enqueueSnackbar({
+              message: 'Banx tokens successfully claimed',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
+            close()
+          }
         })
       })
-      .on('sentAll', () => {
-        close()
-      })
       .on('error', (error) => {
+        destroySnackbar(loadingSnackbarState.id)
         defaultTxnErrorHandler(error, {
           additionalData: params,
           walletPubkey: wallet?.publicKey?.toBase58(),

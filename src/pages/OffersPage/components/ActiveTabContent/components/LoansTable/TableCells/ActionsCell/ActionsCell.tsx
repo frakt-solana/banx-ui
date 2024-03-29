@@ -8,12 +8,17 @@ import { Button } from '@banx/components/Buttons'
 import { TensorLink } from '@banx/components/SolanaLinks'
 
 import { Loan } from '@banx/api/core'
-// import { useHiddenNftsMints } from '@banx/pages/OffersPage'
+import { useHiddenNftsMints } from '@banx/pages/OffersPage'
 import { useModal } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimAction } from '@banx/transactions/loans'
 import {
+  createSnackbarState,
+  destroySnackbar,
   enqueueSnackbar,
+  enqueueTranactionError,
+  enqueueTransactionSent,
+  enqueueWaitingConfirmation,
   isLoanLiquidated,
   isLoanTerminating,
   trackPageEvent,
@@ -36,28 +41,42 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
 
   const priorityFees = usePriorityFees()
 
-  // const { addMints: hideLoans } = useHiddenNftsMints()
+  const { addMints: hideLoans } = useHiddenNftsMints()
 
   const onClaim = () => {
     trackPageEvent('myoffers', 'activetab-claim')
+
+    const loadingSnackbarState = createSnackbarState()
+
     new TxnExecutor(makeClaimAction, { wallet: createWalletInstance(wallet), connection })
       .addTransactionParam({ loan, priorityFees })
-      // .on('sentSome', (results) => {
-      //   hideLoans(loan.nft.mint)
-      //   enqueueSnackbar({
-      //     message: 'Collateral successfully claimed',
-      //     type: 'success',
-      //     solanaExplorerPath: `tx/${results[0].txnHash}`,
-      //   })
-      // })
       .on('sentSome', (results) => {
-        enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
-          solanaExplorerPath: `tx/${results[0].signature}`,
+        results.forEach(({ signature }) => enqueueTransactionSent(signature))
+        loadingSnackbarState.id = enqueueWaitingConfirmation()
+      })
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
+
+        if (failed.length) {
+          destroySnackbar(loadingSnackbarState.id)
+          return enqueueTranactionError()
+        }
+
+        return confirmed.forEach(({ result, signature }) => {
+          if (result) {
+            destroySnackbar(loadingSnackbarState.id)
+            enqueueSnackbar({
+              message: 'Collateral successfully claimed',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
+
+            hideLoans(loan.nft.mint)
+          }
         })
       })
       .on('error', (error) => {
+        destroySnackbar(loadingSnackbarState.id)
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),

@@ -10,7 +10,15 @@ import { createSolValueJSX } from '@banx/components/TableComponents'
 import { Offer, UserOffer } from '@banx/api/core'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimBondOfferInterestAction } from '@banx/transactions/bonds'
-import { enqueueSnackbar, formatDecimal } from '@banx/utils'
+import {
+  createSnackbarState,
+  destroySnackbar,
+  enqueueSnackbar,
+  enqueueTranactionError,
+  enqueueTransactionSent,
+  enqueueWaitingConfirmation,
+  formatDecimal,
+} from '@banx/utils'
 
 import styles from './Summary.module.less'
 
@@ -19,7 +27,7 @@ interface SummaryProps {
   offers: UserOffer[]
 }
 
-const Summary: FC<SummaryProps> = ({ /*updateOrAddOffer */ offers }) => {
+const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
 
@@ -31,6 +39,8 @@ const Summary: FC<SummaryProps> = ({ /*updateOrAddOffer */ offers }) => {
   const claimInterest = () => {
     if (!offers.length) return
 
+    const loadingSnackbarState = createSnackbarState()
+
     const txnParams = offers.map(({ offer }) => ({ optimisticOffer: offer }))
 
     new TxnExecutor(makeClaimBondOfferInterestAction, {
@@ -38,25 +48,33 @@ const Summary: FC<SummaryProps> = ({ /*updateOrAddOffer */ offers }) => {
       connection,
     })
       .addTransactionParams(txnParams)
-      // .on('sentSome', (results) => {
-      //   results.forEach(({ result }) => {
-      //     if (result) updateOrAddOffer([result.bondOffer])
-      //   })
-      // })
+      .on('sentSome', (results) => {
+        results.forEach(({ signature }) => enqueueTransactionSent(signature))
+        loadingSnackbarState.id = enqueueWaitingConfirmation()
+      })
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
 
-      // .on('sentAll', () => {
-      //   enqueueSnackbar({
-      //     message: 'Interest successfully claimed',
-      //     type: 'success',
-      //   })
-      // })
-      .on('sentAll', () => {
-        enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
+        if (failed.length) {
+          destroySnackbar(loadingSnackbarState.id)
+          return enqueueTranactionError()
+        }
+
+        return confirmed.forEach(({ result, signature }) => {
+          if (result) {
+            destroySnackbar(loadingSnackbarState.id)
+            enqueueSnackbar({
+              message: 'Interest successfully claimed',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
+
+            updateOrAddOffer([result.bondOffer])
+          }
         })
       })
       .on('error', (error) => {
+        destroySnackbar(loadingSnackbarState.id)
         defaultTxnErrorHandler(error, {
           additionalData: offers,
           walletPubkey: wallet?.publicKey?.toBase58(),

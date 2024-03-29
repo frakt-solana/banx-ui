@@ -9,11 +9,22 @@ import {
   makeInstantRefinanceAction,
   makeTerminateAction,
 } from '@banx/transactions/loans'
-import { enqueueSnackbar, usePriorityFees } from '@banx/utils'
+import {
+  createSnackbarState,
+  destroySnackbar,
+  enqueueSnackbar,
+  enqueueTranactionError,
+  enqueueTransactionSent,
+  enqueueWaitingConfirmation,
+  usePriorityFees,
+} from '@banx/utils'
 
 export const useLendLoansTransactions = ({
   loan,
   bestOffer,
+  updateOrAddLoan,
+  updateOrAddOffer,
+  addMints,
 }: {
   loan: Loan
   bestOffer: Offer
@@ -28,29 +39,38 @@ export const useLendLoansTransactions = ({
   const priorityFees = usePriorityFees()
 
   const terminateLoan = () => {
+    const loadingSnackbarState = createSnackbarState()
+
     new TxnExecutor(makeTerminateAction, { wallet: createWalletInstance(wallet), connection })
       .addTransactionParam({ loan })
-      // .on('sentSome', (results) => {
-      //   const { result, txnHash } = results[0]
-      //   updateOrAddLoan({ ...loan, ...result })
-      //   enqueueSnackbar({
-      //     message: 'Offer termination successfully initialized',
-      //     type: 'success',
-      //     solanaExplorerPath: `tx/${signature}`,
-      //   })
-      // })
       .on('sentSome', (results) => {
-        const { signature } = results[0]
-        enqueueSnackbar({
-          message: 'Transactions sent',
-          type: 'info',
-          solanaExplorerPath: `tx/${signature}`,
-        })
+        results.forEach(({ signature }) => enqueueTransactionSent(signature))
+        loadingSnackbarState.id = enqueueWaitingConfirmation()
       })
-      .on('sentAll', () => {
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
+
+        if (failed.length) {
+          destroySnackbar(loadingSnackbarState.id)
+          return enqueueTranactionError()
+        }
+
+        confirmed.forEach(({ result, signature }) => {
+          if (result) {
+            destroySnackbar(loadingSnackbarState.id)
+            enqueueSnackbar({
+              message: 'Offer termination successfully initialized',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
+
+            updateOrAddLoan({ ...loan, ...result })
+          }
+        })
         close()
       })
       .on('error', (error) => {
+        destroySnackbar(loadingSnackbarState.id)
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),
@@ -61,24 +81,38 @@ export const useLendLoansTransactions = ({
   }
 
   const claimLoan = () => {
+    const loadingSnackbarState = createSnackbarState()
+
     new TxnExecutor(makeClaimAction, { wallet: createWalletInstance(wallet), connection })
       .addTransactionParam({ loan, priorityFees })
-      // .on('sentSome', (results) => {
-      //   addMints(loan.nft.mint)
-      //   enqueueSnackbar({
-      //     message: 'Collateral successfully claimed',
-      //     type: 'success',
-      //     solanaExplorerPath: `tx/${results[0].txnHash}`,
-      //   })
-      // })
+
       .on('sentSome', (results) => {
-        enqueueSnackbar({
-          message: 'Trasaction sent',
-          type: 'info',
-          solanaExplorerPath: `tx/${results[0].signature}`,
+        results.forEach(({ signature }) => enqueueTransactionSent(signature))
+        loadingSnackbarState.id = enqueueWaitingConfirmation()
+      })
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
+
+        if (failed.length) {
+          destroySnackbar(loadingSnackbarState.id)
+          return enqueueTranactionError()
+        }
+
+        return confirmed.forEach(({ result, signature }) => {
+          if (result) {
+            destroySnackbar(loadingSnackbarState.id)
+            enqueueSnackbar({
+              message: 'Collateral successfully claimed',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
+
+            addMints(loan.nft.mint)
+          }
         })
       })
       .on('error', (error) => {
+        destroySnackbar(loadingSnackbarState.id)
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),
@@ -89,34 +123,42 @@ export const useLendLoansTransactions = ({
   }
 
   const instantLoan = () => {
+    const loadingSnackbarState = createSnackbarState()
+
     new TxnExecutor(makeInstantRefinanceAction, {
       wallet: createWalletInstance(wallet),
       connection,
     })
       .addTransactionParam({ loan, bestOffer, priorityFees })
-      // .on('sentSome', (results) => {
-      //   const { result, txnHash } = results[0]
-      //   result?.bondOffer && updateOrAddOffer(result.bondOffer)
-      //   addMints(loan.nft.mint)
-      //   enqueueSnackbar({
-      //     message: 'Offer successfully sold',
-      //     type: 'success',
-      //     solanaExplorerPath: `tx/${signature}`,
-      //   })
-      // })
       .on('sentSome', (results) => {
-        const { signature } = results[0]
-
-        enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
-          solanaExplorerPath: `tx/${signature}`,
-        })
+        results.forEach(({ signature }) => enqueueTransactionSent(signature))
+        loadingSnackbarState.id = enqueueWaitingConfirmation()
       })
-      .on('sentAll', () => {
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
+
+        if (failed.length) {
+          destroySnackbar(loadingSnackbarState.id)
+          return enqueueTranactionError()
+        }
+
+        confirmed.forEach(({ result, signature }) => {
+          if (result) {
+            destroySnackbar(loadingSnackbarState.id)
+            enqueueSnackbar({
+              message: 'Offer successfully sold',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
+
+            updateOrAddOffer(result.bondOffer)
+            addMints(loan.nft.mint)
+          }
+        })
         close()
       })
       .on('error', (error) => {
+        destroySnackbar(loadingSnackbarState.id)
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),

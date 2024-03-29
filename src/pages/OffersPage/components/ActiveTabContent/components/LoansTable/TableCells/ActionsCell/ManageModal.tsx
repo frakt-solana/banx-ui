@@ -11,13 +11,18 @@ import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan } from '@banx/api/core'
 import { useMarketOffers } from '@banx/pages/LendPage'
-import { calculateClaimValue } from '@banx/pages/OffersPage'
+import { calculateClaimValue, useLenderLoans } from '@banx/pages/OffersPage'
 import { useModal } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeInstantRefinanceAction, makeTerminateAction } from '@banx/transactions/loans'
 import {
   calculateLoanRepayValue,
+  createSnackbarState,
+  destroySnackbar,
   enqueueSnackbar,
+  enqueueTranactionError,
+  enqueueTransactionSent,
+  enqueueWaitingConfirmation,
   filterOutWalletLoans,
   findSuitableOffer,
   formatDecimal,
@@ -26,7 +31,8 @@ import {
   usePriorityFees,
 } from '@banx/utils'
 
-// import { useSelectedLoans } from '../../loansState'
+import { useSelectedLoans } from '../../loansState'
+
 import styles from './ActionsCell.module.less'
 
 interface ManageModalProps {
@@ -80,11 +86,11 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
 
   const priorityFees = usePriorityFees()
 
-  // const { remove: removeLoan } = useSelectedLoans()
+  const { remove: removeLoan } = useSelectedLoans()
 
-  // const { updateOrAddLoan , addMints: hideLoans  } = useLenderLoans()
+  const { updateOrAddLoan, addMints: hideLoans } = useLenderLoans()
 
-  const { offers, /* updateOrAddOffer */ isLoading } = useMarketOffers({
+  const { offers, updateOrAddOffer, isLoading } = useMarketOffers({
     marketPubkey: loan.fraktBond.hadoMarket,
   })
 
@@ -115,31 +121,39 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const formattedClaimValue = `+${formatDecimal(totalClaimValue / 1e9)}◎`
 
   const terminateLoan = () => {
+    const loadingSnackbarState = createSnackbarState()
+
     new TxnExecutor(makeTerminateAction, { wallet: createWalletInstance(wallet), connection })
       .addTransactionParam({ loan })
-      // .on('sentSome', (results) => {
-      //   const { result, txnHash } = results[0]
-      //   updateOrAddLoan({ ...loan, ...result })
-      //   enqueueSnackbar({
-      //     message: 'Offer termination successfully initialized',
-      //     type: 'success',
-      //     solanaExplorerPath: `tx/${signature}`,
-      //   })
-
-      //   removeLoan(loan.publicKey, wallet?.publicKey?.toBase58() || '')
-      // })
       .on('sentSome', (results) => {
-        const { signature } = results[0]
-        enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
-          solanaExplorerPath: `tx/${signature}`,
-        })
+        results.forEach(({ signature }) => enqueueTransactionSent(signature))
+        loadingSnackbarState.id = enqueueWaitingConfirmation()
       })
-      .on('sentAll', () => {
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
+
+        if (failed.length) {
+          destroySnackbar(loadingSnackbarState.id)
+          return enqueueTranactionError()
+        }
+
+        confirmed.forEach(({ result, signature }) => {
+          if (result && wallet?.publicKey) {
+            destroySnackbar(loadingSnackbarState.id)
+            enqueueSnackbar({
+              message: 'Offer termination successfully initialized',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
+
+            updateOrAddLoan({ ...loan, ...result })
+            removeLoan(loan.publicKey, wallet.publicKey.toBase58())
+          }
+        })
         close()
       })
       .on('error', (error) => {
+        destroySnackbar(loadingSnackbarState.id)
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),
@@ -152,33 +166,42 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const instantLoan = () => {
     if (!bestOffer) return
 
+    const loadingSnackbarState = createSnackbarState()
+
     new TxnExecutor(makeInstantRefinanceAction, {
       wallet: createWalletInstance(wallet),
       connection,
     })
       .addTransactionParam({ loan, bestOffer, priorityFees })
-      // .on('sentSome', (results) => {
-      //   const { result, txnHash } = results[0]
-      //   result?.bondOffer && updateOrAddOffer(result.bondOffer)
-      //   hideLoans(loan.nft.mint)
-      //   enqueueSnackbar({
-      //     message: 'Offer successfully sold',
-      //     type: 'success',
-      //     solanaExplorerPath: `tx/${signature}`,
-      //   })
-      // })
       .on('sentSome', (results) => {
-        const { signature } = results[0]
-        enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
-          solanaExplorerPath: `tx/${signature}`,
-        })
+        results.forEach(({ signature }) => enqueueTransactionSent(signature))
+        loadingSnackbarState.id = enqueueWaitingConfirmation()
       })
-      .on('sentAll', () => {
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
+
+        if (failed.length) {
+          destroySnackbar(loadingSnackbarState.id)
+          return enqueueTranactionError()
+        }
+
+        confirmed.forEach(({ result, signature }) => {
+          if (result) {
+            destroySnackbar(loadingSnackbarState.id)
+            enqueueSnackbar({
+              message: 'Offer successfully sold',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
+
+            updateOrAddOffer(result.bondOffer)
+            hideLoans(loan.nft.mint)
+          }
+        })
         close()
       })
       .on('error', (error) => {
+        destroySnackbar(loadingSnackbarState.id)
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),
