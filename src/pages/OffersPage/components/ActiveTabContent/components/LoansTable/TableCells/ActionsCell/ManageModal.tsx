@@ -17,7 +17,6 @@ import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions
 import { makeInstantRefinanceAction, makeTerminateAction } from '@banx/transactions/loans'
 import {
   calculateLoanRepayValue,
-  createSnackbarState,
   destroySnackbar,
   enqueueSnackbar,
   enqueueTranactionError,
@@ -121,25 +120,25 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const formattedClaimValue = `+${formatDecimal(totalClaimValue / 1e9)}◎`
 
   const terminateLoan = () => {
-    const loadingSnackbarState = createSnackbarState()
+    const loadingSnackbarId = uniqueId()
 
     new TxnExecutor(makeTerminateAction, { wallet: createWalletInstance(wallet), connection })
       .addTransactionParam({ loan })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
-        loadingSnackbarState.id = enqueueWaitingConfirmation()
+        enqueueWaitingConfirmation(loadingSnackbarId)
       })
       .on('confirmedAll', (results) => {
         const { confirmed, failed } = results
 
+        destroySnackbar(loadingSnackbarId)
+
         if (failed.length) {
-          destroySnackbar(loadingSnackbarState.id)
           return enqueueTranactionError()
         }
 
-        confirmed.forEach(({ result, signature }) => {
+        return confirmed.forEach(({ result, signature }) => {
           if (result && wallet?.publicKey) {
-            destroySnackbar(loadingSnackbarState.id)
             enqueueSnackbar({
               message: 'Offer termination successfully initialized',
               type: 'success',
@@ -148,12 +147,12 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
 
             updateOrAddLoan({ ...loan, ...result })
             removeLoan(loan.publicKey, wallet.publicKey.toBase58())
+            close()
           }
         })
-        close()
       })
       .on('error', (error) => {
-        destroySnackbar(loadingSnackbarState.id)
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),
