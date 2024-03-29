@@ -24,8 +24,8 @@ import { defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxClaimAction } from '@banx/transactions/banxStaking/stakeBanxClaimAction'
 import {
   enqueueSnackbar,
-  formatNumbersWithCommas as format,
   formatCompact,
+  formatNumbersWithCommas,
   fromDecimals,
   usePriorityFees,
 } from '@banx/utils'
@@ -113,18 +113,20 @@ export const Sidebar: FC<SidebarProps> = ({
       .execute()
   }
 
-  const stakenTokensPlayersPoints = calculatePlayerPointsForTokens(
-    parseFloat(banxTokenStake.tokensStaked),
-  )
-  const totalPlayersPoints = format(
-    (parseFloat(banxTokenStake.playerPointsStaked) + stakenTokensPlayersPoints).toString(),
-  )
-
   const Totals = () => {
+    const stakenTokensPlayersPoints = calculatePlayerPointsForTokens(
+      parseFloat(banxTokenStake.tokensStaked),
+    )
+    const totalPlayersPoints = (
+      parseFloat(banxTokenStake.playerPointsStaked) + stakenTokensPlayersPoints
+    ).toFixed(2)
+
     return (
       <div>
-        <div className={styles.totalValues}>{format(totalPts)} partner</div>
-        <div className={styles.totalValues}>{parseFloat(totalPlayersPoints)} player</div>
+        <div className={styles.totalValues}>{formatNumbersWithCommas(totalPts)} partner</div>
+        <div className={styles.totalValues}>
+          {formatNumbersWithCommas(totalPlayersPoints)} player
+        </div>
       </div>
     )
   }
@@ -139,7 +141,9 @@ export const Sidebar: FC<SidebarProps> = ({
             <div className={styles.stakedInfo}>
               <StakingStat
                 label="NFTs staked"
-                value={`${format(banxTokenStake.banxNftsStakedQuantity)}/${format(nftsCount)}`}
+                value={`${formatNumbersWithCommas(
+                  banxTokenStake.banxNftsStakedQuantity,
+                )}/${formatNumbersWithCommas(nftsCount)}`}
               />
 
               <Button
@@ -189,7 +193,9 @@ export const Sidebar: FC<SidebarProps> = ({
           <div className={styles.claimStatsContainer}>
             <StakingStat
               label="claimable"
-              value={format(fromDecimals(rewards.toString(), BANX_TOKEN_STAKE_DECIMAL))}
+              value={formatNumbersWithCommas(
+                fromDecimals(rewards.toString(), BANX_TOKEN_STAKE_DECIMAL),
+              )}
               icon={BanxToken}
             />
             <Button onClick={claimAction} disabled={!rewards} className={styles.manageButton}>
@@ -201,7 +207,7 @@ export const Sidebar: FC<SidebarProps> = ({
 
           <StakingStat
             label="Total claimed"
-            value={format(fromDecimals(totalClaimed, BANX_TOKEN_STAKE_DECIMAL))}
+            value={formatNumbersWithCommas(fromDecimals(totalClaimed, BANX_TOKEN_STAKE_DECIMAL))}
             icon={BanxToken}
             flexType="row"
           />
