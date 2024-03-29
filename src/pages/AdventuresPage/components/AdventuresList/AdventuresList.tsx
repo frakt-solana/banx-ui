@@ -15,9 +15,9 @@ import {
   BanxStake,
   BanxStakeSettings,
   BanxSubscription,
-} from '@banx/api/banxTokenStake'
+} from '@banx/api/staking'
 import { BANX_TOKEN_STAKE_DECIMAL, TOTAL_BANX_NFTS, TOTAL_BANX_PTS } from '@banx/constants/banxNfts'
-import { useBanxTokenSettings, useBanxTokenStake } from '@banx/pages/AdventuresPage'
+import { useBanxStakeSettings, useStakeInfo } from '@banx/pages/AdventuresPage'
 import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { subscribeBanxAdventureAction } from '@banx/transactions/banxStaking'
@@ -56,8 +56,8 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
   const { connection } = useConnection()
   const wallet = useWallet()
 
-  const { banxTokenSettings } = useBanxTokenSettings()
-  const { banxStake } = useBanxTokenStake()
+  const { banxTokenSettings } = useBanxStakeSettings()
+  const { banxStake } = useStakeInfo()
 
   const isEnded = parseFloat(banxAdventure.periodEndingAt) < moment().unix()
   const isStarted = parseFloat(banxAdventure.periodStartedAt) + BANX_ADVENTURE_GAP < moment().unix()

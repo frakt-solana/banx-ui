@@ -11,10 +11,10 @@ import { Button } from '@banx/components/Buttons'
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 import { Modal } from '@banx/components/modals/BaseModal'
 
-import { NftType } from '@banx/api/banxTokenStake'
+import { NftType } from '@banx/api/staking'
 import { BANX_STAKING } from '@banx/constants'
 import { TensorFilled } from '@banx/icons'
-import { useBanxTokenSettings, useBanxTokenStake } from '@banx/pages/AdventuresPage'
+import { useBanxStakeSettings, useStakeInfo } from '@banx/pages/AdventuresPage'
 import { NftCheckbox, NftsStats } from '@banx/pages/AdventuresPage/components'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
@@ -30,8 +30,8 @@ export const StakeNftsModal = () => {
 
   const { close } = useModal()
   const priorityFees = usePriorityFees()
-  const { banxTokenSettings /* setBanxTokenSettingsOptimistic */ } = useBanxTokenSettings()
-  const { banxStake /* setBanxTokenStakeOptimistic */ } = useBanxTokenStake()
+  const { banxTokenSettings /* setBanxTokenSettingsOptimistic */ } = useBanxStakeSettings()
+  const { banxStake /* setBanxTokenStakeOptimistic */ } = useStakeInfo()
 
   const nfts = useMemo(() => banxStake?.nfts || [], [banxStake?.nfts])
 

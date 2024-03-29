@@ -4,9 +4,9 @@ import { useQuery } from '@tanstack/react-query'
 import {
   BanxStake,
   BanxStakeSettings,
-  fetchBanxTokenSettings,
-  fetchTokenStakeInfo,
-} from '@banx/api/banxTokenStake'
+  fetchBanxStakeSettings,
+  fetchStakeInfo,
+} from '@banx/api/staking'
 import { queryClient } from '@banx/utils'
 
 const createBanxTokenStakeQueryKey = (walletPubkey: string) => ['fetchBanxTokenStake', walletPubkey]
@@ -19,7 +19,7 @@ const setBanxTokenStakeOptimistic = (walletPubkey: string, nextState: BanxStake)
     },
   )
 
-export const useBanxTokenStake = () => {
+export const useStakeInfo = () => {
   const { publicKey } = useWallet()
   const walletPubkey = publicKey?.toBase58() || ''
 
@@ -29,7 +29,7 @@ export const useBanxTokenStake = () => {
     refetch,
   } = useQuery(
     createBanxTokenStakeQueryKey(walletPubkey),
-    () => fetchTokenStakeInfo({ userPubkey: walletPubkey }),
+    () => fetchStakeInfo({ userPubkey: walletPubkey }),
     {
       refetchInterval: 10_000,
       staleTime: 60_000,
@@ -55,12 +55,12 @@ const setBanxTokenSettingsOptimistic = (nextState: BanxStakeSettings) =>
     },
   )
 
-export const useBanxTokenSettings = () => {
+export const useBanxStakeSettings = () => {
   const {
     data: banxTokenSettings,
     isLoading,
     refetch,
-  } = useQuery(createBanxTokenSettingsQueryKey(), () => fetchBanxTokenSettings(), {
+  } = useQuery(createBanxTokenSettingsQueryKey(), () => fetchBanxStakeSettings(), {
     refetchInterval: 10_000,
     staleTime: 60_000,
     refetchOnWindowFocus: false,

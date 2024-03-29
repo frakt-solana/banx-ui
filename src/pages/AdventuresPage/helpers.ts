@@ -2,7 +2,7 @@ import { Connection } from '@solana/web3.js'
 import { web3 } from 'fbonds-core'
 import { calculateRewardsFromSubscriptions } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
 
-import { BanxAdventure, BanxSubscription } from '@banx/api/banxTokenStake'
+import { BanxAdventure, BanxSubscription } from '@banx/api/staking'
 import { BONDS } from '@banx/constants'
 import { BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
 

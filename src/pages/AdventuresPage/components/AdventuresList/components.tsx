@@ -5,7 +5,7 @@ import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/t
 import { Button } from '@banx/components/Buttons'
 import Tooltip from '@banx/components/Tooltip'
 
-import { AdventureStatus, BanxAdventure, BanxSubscription } from '@banx/api/banxTokenStake'
+import { AdventureStatus, BanxAdventure, BanxSubscription } from '@banx/api/staking'
 import { BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
 import { useCountdown } from '@banx/hooks'
 import { Alert, BanxToken, Clock, MoneyBill, SuccessIcon, Timer } from '@banx/icons'

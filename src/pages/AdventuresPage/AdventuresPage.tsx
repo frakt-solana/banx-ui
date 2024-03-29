@@ -6,11 +6,11 @@ import moment from 'moment'
 
 import { Loader } from '@banx/components/Loader'
 
-import { BanxAdventure, BanxSubscription } from '@banx/api/banxTokenStake'
+import { BanxAdventure, BanxSubscription } from '@banx/api/staking'
 import { calculateRewards } from '@banx/pages/AdventuresPage/helpers'
 
 import { AdventuresList, Header, Sidebar } from './components'
-import { useBanxTokenSettings, useBanxTokenStake } from './hooks'
+import { useBanxStakeSettings, useStakeInfo } from './hooks'
 
 import styles from './AdventuresPage.module.less'
 
@@ -18,8 +18,8 @@ export const AdventuresPage: FC = () => {
   const { publicKey } = useWallet()
   const userPubkey = publicKey?.toBase58()
 
-  const { banxTokenSettings, isLoading: isBanxTokenSettingsLoading } = useBanxTokenSettings()
-  const { banxStake, isLoading: isBanxTokenStakeLoading } = useBanxTokenStake()
+  const { banxTokenSettings, isLoading: isBanxTokenSettingsLoading } = useBanxStakeSettings()
+  const { banxStake, isLoading: isBanxTokenStakeLoading } = useStakeInfo()
 
   const isLoading = isBanxTokenSettingsLoading || isBanxTokenStakeLoading
   const isDataReady = !!banxStake && !!banxTokenSettings

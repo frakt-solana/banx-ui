@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import classNames from 'classnames'
 
-import { NftType } from '@banx/api/banxTokenStake'
+import { NftType } from '@banx/api/staking'
 
 import styles from './styles.module.less'
 

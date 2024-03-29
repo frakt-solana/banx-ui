@@ -2,7 +2,7 @@ import { FC, useMemo } from 'react'
 
 import { sumBy } from 'lodash'
 
-import { NftType } from '@banx/api/banxTokenStake'
+import { NftType } from '@banx/api/staking'
 
 import styles from './styles.module.less'
 

@@ -5,11 +5,11 @@ import {
   BanxStakeSchema,
   BanxStakeSettings,
   BanxStakeSettingsSchema,
-} from '@banx/api/banxTokenStake/types'
+} from '@banx/api/staking/types'
 import { BACKEND_BASE_URL } from '@banx/constants'
 
-type FetchTokenStakeInfo = (props: { userPubkey?: string }) => Promise<BanxStake>
-export const fetchTokenStakeInfo: FetchTokenStakeInfo = async ({ userPubkey }) => {
+type FetchStakeInfo = (props: { userPubkey?: string }) => Promise<BanxStake>
+export const fetchStakeInfo: FetchStakeInfo = async ({ userPubkey }) => {
   const { data } = await axios.get<{ data: BanxStake }>(
     `${BACKEND_BASE_URL}/tokenStake?walletPubkey=${userPubkey || ''}`,
   )
@@ -27,8 +27,8 @@ export const fetchTokenStakeInfo: FetchTokenStakeInfo = async ({ userPubkey }) =
   )
 }
 
-type FetchBanxTokenSettings = () => Promise<BanxStakeSettings>
-export const fetchBanxTokenSettings: FetchBanxTokenSettings = async () => {
+type FetchBanxStakeSettings = () => Promise<BanxStakeSettings>
+export const fetchBanxStakeSettings: FetchBanxStakeSettings = async () => {
   const { data } = await axios.get<{ data: BanxStakeSettings }>(
     `${BACKEND_BASE_URL}/tokenStake/settings`,
   )

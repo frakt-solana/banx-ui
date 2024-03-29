@@ -13,10 +13,10 @@ import { TxnExecutor } from 'solana-transactions-executor'
 import { Button } from '@banx/components/Buttons'
 import { StatInfo, StatsInfoProps, VALUES_TYPES } from '@banx/components/StatInfo'
 
-import { BanxTokenStake } from '@banx/api/banxTokenStake'
+import { BanxTokenStake } from '@banx/api/staking'
 import { BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
 import { BanxToken, Gamepad, MoneyBill } from '@banx/icons'
-import { useBanxTokenSettings, useBanxTokenStake } from '@banx/pages/AdventuresPage'
+import { useBanxStakeSettings, useStakeInfo } from '@banx/pages/AdventuresPage'
 import { StakeNftsModal, StakeTokens } from '@banx/pages/AdventuresPage/components'
 import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
 import { useModal } from '@banx/store'
@@ -51,8 +51,8 @@ export const Sidebar: FC<SidebarProps> = ({
 }) => {
   const { open } = useModal()
   const wallet = useWallet()
-  const { banxTokenSettings } = useBanxTokenSettings()
-  const { banxStake } = useBanxTokenStake()
+  const { banxTokenSettings } = useBanxStakeSettings()
+  const { banxStake } = useStakeInfo()
 
   const { connection } = useConnection()
   const tokensPts = fromDecimals(
