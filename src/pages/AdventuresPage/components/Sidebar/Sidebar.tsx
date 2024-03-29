@@ -33,6 +33,7 @@ import {
   fromDecimals,
   usePriorityFees,
 } from '@banx/utils'
+import { bnToFixed } from '@banx/utils/converter'
 
 import styles from './Sidebar.module.less'
 
@@ -148,6 +149,9 @@ export const Sidebar: FC<SidebarProps> = ({
     <div className={classNames(styles.sidebar, className)}>
       <div className={styles.content}>
         <div className={styles.squadSection}>
+          {/*TODO REMOVE IT*/}
+          <div>bnToFixed fn: {bnToFixed('1000000010000000', BANX_TOKEN_STAKE_DECIMAL)}</div>
+
           <Title text="My squad" icon={<Gamepad />} />
 
           <div className={styles.stakedInfoContainer}>
