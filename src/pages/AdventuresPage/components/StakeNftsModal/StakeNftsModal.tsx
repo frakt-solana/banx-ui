@@ -25,7 +25,7 @@ import { useBanxStakeInfo, useBanxStakeSettings } from '@banx/pages/AdventuresPa
 import { NftCheckbox, NftsStats } from '@banx/pages/AdventuresPage/components'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
-import { stakeBanxNftAction, unstakeBanxNftsAction } from '@banx/transactions/banxStaking'
+import { stakeBanxNftAction, unstakeBanxNftsAction } from '@banx/transactions/staking'
 import { enqueueSnackbar, usePriorityFees } from '@banx/utils'
 
 import styles from './StakeNftsModal.module.less'

@@ -30,7 +30,7 @@ import {
 } from '@banx/pages/AdventuresPage'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
-import { stakeBanxTokenAction, unstakeBanxTokenAction } from '@banx/transactions/banxStaking'
+import { stakeBanxTokenAction, unstakeBanxTokenAction } from '@banx/transactions/staking'
 import {
   enqueueSnackbar,
   formatNumbersWithCommas,

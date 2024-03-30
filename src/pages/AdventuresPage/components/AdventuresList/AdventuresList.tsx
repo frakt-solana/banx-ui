@@ -30,7 +30,7 @@ import {
   isAdventureStarted,
 } from '@banx/pages/AdventuresPage'
 import { defaultTxnErrorHandler } from '@banx/transactions'
-import { subscribeBanxAdventureAction } from '@banx/transactions/banxStaking'
+import { subscribeBanxAdventureAction } from '@banx/transactions/staking'
 import {
   enqueueSnackbar,
   formatCompact,

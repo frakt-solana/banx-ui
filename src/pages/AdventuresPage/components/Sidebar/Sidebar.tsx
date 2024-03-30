@@ -32,7 +32,7 @@ import {
 import { StakeNftsModal, StakeTokensModal } from '@banx/pages/AdventuresPage/components'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
-import { stakeBanxClaimAction } from '@banx/transactions/banxStaking/stakeBanxClaimAction'
+import { stakeBanxClaimAction } from '@banx/transactions/staking/stakeBanxClaimAction'
 import {
   enqueueSnackbar,
   formatCompact,
