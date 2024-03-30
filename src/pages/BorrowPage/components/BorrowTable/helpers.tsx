@@ -13,7 +13,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
 import bonkTokenImg from '@banx/assets/BonkToken.png'
 import magicEdenLogoImg from '@banx/assets/MagicEdenLogo.png'
-import { BONDS } from '@banx/constants'
+import { BONDS, SPECIAL_COLLECTIONS_MARKETS } from '@banx/constants'
 import { LoansOptimisticStore, OffersOptimisticStore } from '@banx/store'
 import { BorrowType, createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
@@ -83,6 +83,7 @@ export const executeBorrow = async (props: {
   addLoansOptimistic: LoansOptimisticStore['add']
   updateOffersOptimistic: OffersOptimisticStore['update']
   onSuccessAll?: () => void
+  onBorrowSuccess?: (loansAmount: number, showCongrats: boolean) => void
 }) => {
   const {
     isLedger = false,
@@ -92,6 +93,7 @@ export const executeBorrow = async (props: {
     addLoansOptimistic,
     updateOffersOptimistic,
     onSuccessAll,
+    onBorrowSuccess,
   } = props
 
   const loadingSnackbarId = uniqueId()
@@ -151,7 +153,12 @@ export const executeBorrow = async (props: {
 
         updateOffersOptimistic(optimisticsToAdd)
 
+        const showCongtarsMessage = !!loansFlat
+          .flat()
+          .find(({ fraktBond }) => SPECIAL_COLLECTIONS_MARKETS.includes(fraktBond.hadoMarket || ''))
+
         onSuccessAll?.()
+        onBorrowSuccess?.(loansFlat.length, showCongtarsMessage)
       }
 
       if (failedTransactionsCount) {

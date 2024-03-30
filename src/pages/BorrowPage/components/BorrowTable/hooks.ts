@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { chain, filter, first, get, groupBy, includes, isEmpty, map, sortBy, sumBy } from 'lodash'
+import { chain, filter, first, get, groupBy, includes, isEmpty, map, sortBy } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
@@ -13,7 +13,7 @@ import {
 } from '@banx/components/modals'
 
 import { BorrowNft, Offer } from '@banx/api/core'
-import { MAGIC_EDEN_WALLET_NAME, SPECIAL_COLLECTIONS_MARKETS } from '@banx/constants'
+import { MAGIC_EDEN_WALLET_NAME } from '@banx/constants'
 import { useBorrowBonkRewardsAvailability } from '@banx/hooks'
 import { PATHS } from '@banx/router'
 import {
@@ -130,17 +130,15 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
       innerArray.map((params) => ({ ...params, priorityFees })),
     )
 
-    const showCongratsMessage = SPECIAL_COLLECTIONS_MARKETS.includes(nft.nft.loan.marketPubkey)
-
     await executeBorrow({
       wallet,
       connection,
       txnParams: txnParamsWithPriorityFees,
       addLoansOptimistic,
       updateOffersOptimistic,
+      onBorrowSuccess,
       onSuccessAll: () => {
         goToLoansPage()
-        onBorrowSuccess(1, showCongratsMessage)
       },
       isLedger,
     })
@@ -154,22 +152,15 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
       innerArray.map((params) => ({ ...params, priorityFees })),
     )
 
-    const showCongratsMessage = !!txnParams
-      .flat()
-      .find(({ offer }) => SPECIAL_COLLECTIONS_MARKETS.includes(offer.hadoMarket))
-
     await executeBorrow({
       wallet,
       connection,
       txnParams: txnParamsWithPriorityFees,
       addLoansOptimistic,
       updateOffersOptimistic,
+      onBorrowSuccess,
       onSuccessAll: () => {
         goToLoansPage()
-        onBorrowSuccess(
-          sumBy(txnParams, (param) => param.length),
-          showCongratsMessage,
-        )
       },
       isLedger,
     })
