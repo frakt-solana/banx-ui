@@ -69,10 +69,10 @@ export const Summary: FC<SummaryProps> = ({
   const weightedApr = calcWeightedAverage(totalApr, totalLoanValue)
   const cappedWeightedApr = Math.min(weightedApr, MAX_APY_INCREASE_PERCENT)
 
-  const onSuccess = () => {
+  const onSuccess = (loansAmount: number) => {
     if (!getDialectAccessToken(wallet.publicKey?.toBase58())) {
       open(SubscribeNotificationsModal, {
-        title: createRefinanceSubscribeNotificationsTitle(selectedLoans.length),
+        title: createRefinanceSubscribeNotificationsTitle(loansAmount),
         message: createRefinanceSubscribeNotificationsContent(),
         onActionClick: () => {
           close()
@@ -110,7 +110,7 @@ export const Summary: FC<SummaryProps> = ({
 
           addMints(...mintsToHidden)
           onDeselectAllLoans()
-          onSuccess()
+          onSuccess(mintsToHidden.length)
         }
 
         if (failedTransactionsCount) {
