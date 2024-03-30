@@ -35,7 +35,7 @@ export const stringToBN = (value: string, decimals = 9): BN => {
       return new BN(fractionalPart.slice(0, decimals))
     }
 
-    return new BN(fractionalPart).mul(new BN(decimals - fractionalPart.length))
+    return new BN(fractionalPart).mul(new BN(10 ** (decimals - fractionalPart.length)))
   }
 
   const fractional = calculateFractionalPart(fractionalPart)
