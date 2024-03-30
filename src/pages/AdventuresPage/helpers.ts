@@ -115,7 +115,6 @@ export const calculatePlayerPointsForBanxTokens = (tokensStaked: BN): number => 
   /* eslint-disable  @typescript-eslint/no-explicit-any */
   const playerPoints = calculatePlayerPointsForTokens(tokensStaked.toString() as any)
 
-
   return playerPoints
 }
 

@@ -22,8 +22,12 @@ import {
 } from '@banx/api/staking'
 import { BANX_TOKEN_DECIMALS, BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
 import { BanxToken } from '@banx/icons'
-import { useBanxStakeInfo, useBanxStakeSettings } from '@banx/pages/AdventuresPage'
-import { banxTokenBNToFixed, calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
+import {
+  banxTokenBNToFixed,
+  calcPartnerPoints,
+  useBanxStakeInfo,
+  useBanxStakeSettings,
+} from '@banx/pages/AdventuresPage'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxTokenAction, unstakeBanxTokenAction } from '@banx/transactions/banxStaking'

@@ -23,13 +23,13 @@ import {
 } from '@banx/api/staking'
 import { BANX_TOKEN_DECIMALS, BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
 import { BanxToken, Gamepad, MoneyBill } from '@banx/icons'
-import { StakeNftsModal, StakeTokensModal } from '@banx/pages/AdventuresPage/components'
 import {
   banxTokenBNToFixed,
   calcPartnerPoints,
   calculateAdventureRewards,
   calculatePlayerPointsForBanxTokens,
-} from '@banx/pages/AdventuresPage/helpers'
+} from '@banx/pages/AdventuresPage'
+import { StakeNftsModal, StakeTokensModal } from '@banx/pages/AdventuresPage/components'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxClaimAction } from '@banx/transactions/banxStaking/stakeBanxClaimAction'

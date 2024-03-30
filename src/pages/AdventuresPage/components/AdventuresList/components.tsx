@@ -13,7 +13,7 @@ import {
   calculateAdventureRewards,
   getAdventureEndTime,
   getAdventureStatus,
-} from '@banx/pages/AdventuresPage/helpers'
+} from '@banx/pages/AdventuresPage'
 import { formatNumbersWithCommas } from '@banx/utils'
 
 import styles from './AdventuresList.module.less'

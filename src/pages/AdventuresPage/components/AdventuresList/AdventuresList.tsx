@@ -28,7 +28,7 @@ import {
   getAdventureStatus,
   isAdventureEnded,
   isAdventureStarted,
-} from '@banx/pages/AdventuresPage/helpers'
+} from '@banx/pages/AdventuresPage'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { subscribeBanxAdventureAction } from '@banx/transactions/banxStaking'
 import {
