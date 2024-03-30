@@ -40,7 +40,7 @@ export const convertToBanxStakingSettingsBN = (
     publicKey,
     banxStaked: new BN(banxStaked),
     banxStakingSettingsState,
-    maxTokenStakeAmount: new BN(maxTokenStakeAmount).mul(new BN(10 ** BANX_TOKEN_DECIMALS)), //TODO Send from BE in decimals
+    maxTokenStakeAmount: new BN(maxTokenStakeAmount).mul(new BN(10 ** BANX_TOKEN_DECIMALS)), //TODO Contract stores this value without decimals. Need to convert
     rewardsHarvested: new BN(rewardsHarvested),
     tokensPerPartnerPoints: new BN(tokensPerPartnerPoints),
     tokensPerWeek: new BN(tokensPerWeek),
@@ -68,7 +68,7 @@ export const convertToBanxStakingSettingsString = (
     publicKey,
     banxStaked: banxStaked.toString(),
     banxStakingSettingsState,
-    maxTokenStakeAmount: maxTokenStakeAmount.div(new BN(10 ** BANX_TOKEN_DECIMALS)).toString(), //TODO Send from BE in decimals
+    maxTokenStakeAmount: maxTokenStakeAmount.div(new BN(10 ** BANX_TOKEN_DECIMALS)).toString(), //TODO Contract stores this value without decimals. Need to convert
     rewardsHarvested: rewardsHarvested.toString(),
     tokensPerPartnerPoints: tokensPerPartnerPoints.toString(),
     tokensPerWeek: tokensPerWeek.toString(),
@@ -178,7 +178,7 @@ const convertToBanxAdventureBN = (adventure: BanxAdventure): BanxAdventureBN => 
   return {
     week: parseInt(week),
     amountOfTokensHarvested: new BN(amountOfTokensHarvested),
-    rewardsToBeDistributed: new BN(rewardsToBeDistributed),
+    rewardsToBeDistributed: new BN(rewardsToBeDistributed).mul(new BN(10 ** BANX_TOKEN_DECIMALS)), //TODO Contract stores this value without decimals. Need to convert
     tokensPerPoints: new BN(tokensPerPoints),
     totalBanxSubscribed: parseInt(totalBanxSubscribed),
     totalPartnerPoints: parseFloat(totalPartnerPoints),
@@ -208,7 +208,9 @@ export const convertToBanxAdventure = (adventure: BanxAdventureBN): BanxAdventur
   return {
     week: week.toString(),
     amountOfTokensHarvested: amountOfTokensHarvested.toString(),
-    rewardsToBeDistributed: rewardsToBeDistributed.toString(),
+    rewardsToBeDistributed: rewardsToBeDistributed
+      .div(new BN(10 ** BANX_TOKEN_DECIMALS))
+      .toString(), //TODO Contract stores this value without decimals. Need to convert
     tokensPerPoints: tokensPerPoints.toString(),
     totalBanxSubscribed: totalBanxSubscribed.toString(),
     totalPartnerPoints: totalPartnerPoints.toString(),
