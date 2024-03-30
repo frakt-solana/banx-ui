@@ -57,13 +57,13 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
 
         destroySnackbar(loadingSnackbarId)
 
-        if (failedTransactionsCount) {
-          return enqueueTranactionsError(failedTransactionsCount)
-        }
-
         if (confirmed.length) {
           enqueueSnackbar({ message: 'Interest successfully claimed', type: 'success' })
           confirmed.forEach(({ result }) => result && updateOrAddOffer([result.bondOffer]))
+        }
+
+        if (failedTransactionsCount) {
+          return enqueueTranactionsError(failedTransactionsCount)
         }
       })
       .on('error', (error) => {

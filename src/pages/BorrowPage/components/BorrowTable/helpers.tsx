@@ -112,10 +112,6 @@ export const executeBorrow = async (props: {
 
       destroySnackbar(loadingSnackbarId)
 
-      if (failedTransactionsCount) {
-        return enqueueTranactionsError(failedTransactionsCount)
-      }
-
       if (confirmed.length) {
         enqueueSnackbar({ message: 'Borrowed successfully', type: 'success' })
 
@@ -156,6 +152,10 @@ export const executeBorrow = async (props: {
         updateOffersOptimistic(optimisticsToAdd)
 
         onSuccessAll?.()
+      }
+
+      if (failedTransactionsCount) {
+        return enqueueTranactionsError(failedTransactionsCount)
       }
     })
     .on('error', (error) => {

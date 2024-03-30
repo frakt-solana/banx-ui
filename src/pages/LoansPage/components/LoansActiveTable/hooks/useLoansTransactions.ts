@@ -153,10 +153,6 @@ export const useLoansTransactions = () => {
 
         destroySnackbar(loadingSnackbarId)
 
-        if (failedTransactionsCount) {
-          return enqueueTranactionsError(failedTransactionsCount)
-        }
-
         if (confirmed.length) {
           enqueueSnackbar({ message: 'Loans successfully repaid', type: 'success' })
 
@@ -166,6 +162,10 @@ export const useLoansTransactions = () => {
             }
           })
           clearSelection()
+        }
+
+        if (failedTransactionsCount) {
+          return enqueueTranactionsError(failedTransactionsCount)
         }
       })
       .on('error', (error) => {
@@ -205,10 +205,6 @@ export const useLoansTransactions = () => {
 
         destroySnackbar(loadingSnackbarId)
 
-        if (failedTransactionsCount) {
-          return enqueueTranactionsError(failedTransactionsCount)
-        }
-
         if (confirmed.length) {
           enqueueSnackbar({ message: 'Loans interest successfully paid', type: 'success' })
 
@@ -218,6 +214,10 @@ export const useLoansTransactions = () => {
             }
           })
           clearSelection()
+        }
+
+        if (failedTransactionsCount) {
+          return enqueueTranactionsError(failedTransactionsCount)
         }
       })
       .on('error', (error) => {

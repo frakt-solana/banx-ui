@@ -79,14 +79,14 @@ export const Summary: FC<SummaryProps> = ({
 
         destroySnackbar(loadingSnackbarId)
 
-        if (failedTransactionsCount) {
-          return enqueueTranactionsError(failedTransactionsCount)
-        }
-
         if (confirmed.length) {
           enqueueSnackbar({ message: 'Collaterals successfully terminated', type: 'success' })
           confirmed.forEach(({ result }) => result && updateOrAddLoan(result))
           clearSelection()
+        }
+
+        if (failedTransactionsCount) {
+          return enqueueTranactionsError(failedTransactionsCount)
         }
       })
       .on('error', (error) => {
@@ -121,10 +121,6 @@ export const Summary: FC<SummaryProps> = ({
 
         destroySnackbar(loadingSnackbarId)
 
-        if (failedTransactionsCount) {
-          return enqueueTranactionsError(failedTransactionsCount)
-        }
-
         if (confirmed.length) {
           enqueueSnackbar({ message: 'Collaterals successfully claimed', type: 'success' })
 
@@ -134,6 +130,10 @@ export const Summary: FC<SummaryProps> = ({
             .value()
 
           hideLoans(...mintsToHidden)
+        }
+
+        if (failedTransactionsCount) {
+          return enqueueTranactionsError(failedTransactionsCount)
         }
       })
       .on('error', (error) => {

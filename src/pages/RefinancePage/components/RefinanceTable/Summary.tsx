@@ -100,10 +100,6 @@ export const Summary: FC<SummaryProps> = ({
 
         destroySnackbar(loadingSnackbarId)
 
-        if (failedTransactionsCount) {
-          return enqueueTranactionsError(failedTransactionsCount)
-        }
-
         if (confirmed.length) {
           enqueueSnackbar({ message: 'Loans successfully refinanced', type: 'success' })
 
@@ -115,6 +111,10 @@ export const Summary: FC<SummaryProps> = ({
           addMints(...mintsToHidden)
           onDeselectAllLoans()
           onSuccess()
+        }
+
+        if (failedTransactionsCount) {
+          return enqueueTranactionsError(failedTransactionsCount)
         }
       })
       .on('error', (error) => {
