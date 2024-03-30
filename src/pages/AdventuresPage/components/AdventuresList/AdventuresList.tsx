@@ -64,7 +64,7 @@ export const AdventuresList: FC<AdventuresListProps> = ({
       {[...banxStakeInfo.banxAdventures]
         .sort(
           ({ adventure: adventureA }, { adventure: adventureB }) =>
-            adventureB.week - adventureA.week,
+            adventureA.week - adventureB.week,
         )
         .map(({ adventure, adventureSubscription }) => (
           <AdventuresCard
