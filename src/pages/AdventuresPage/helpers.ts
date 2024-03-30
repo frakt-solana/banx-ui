@@ -1,10 +1,22 @@
 import { Connection } from '@solana/web3.js'
-import { web3 } from 'fbonds-core'
-import { calculateRewardsFromSubscriptions } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
+import { BN, web3 } from 'fbonds-core'
+import { BANX_ADVENTURE_GAP } from 'fbonds-core/lib/fbond-protocol/constants'
+import {
+  calculatePlayerPointsForTokens,
+  calculateRewardsFromSubscriptions,
+} from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
+import { chain } from 'lodash'
+import moment from 'moment'
 
-import { BanxAdventure, BanxSubscription } from '@banx/api/staking'
+import {
+  AdventureStatus,
+  BanxAdventureBN,
+  BanxAdventureSubscriptionBN,
+  BanxStakeBN,
+} from '@banx/api/staking'
 import { BONDS } from '@banx/constants'
-import { BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
+import { BANX_TOKEN_DECIMALS } from '@banx/constants/banxNfts'
+import { bnToHuman } from '@banx/utils/bn'
 
 export async function getTokenBalance(
   userPubKey: web3.PublicKey,
@@ -25,21 +37,82 @@ export async function getTokenBalance(
 }
 
 //TODO refactor
-export const calculateRewards = (
-  props: { adventure: BanxAdventure; adventureSubscription: BanxSubscription }[],
-): bigint => {
-  if (!props.length) {
-    return BigInt(0)
-  }
+export const calculateAdventureRewards = (
+  params: Array<{ adventure: BanxAdventureBN; subscription?: BanxAdventureSubscriptionBN }>,
+): BN => {
+  if (!params.length) return new BN(0)
 
-  return calculateRewardsFromSubscriptions(props) as bigint
+  const hasSubscriptions = !!params.find(({ subscription }) => !!subscription)
+
+  if (!hasSubscriptions) return new BN(0)
+
+  const calculateRewardsParams = chain(params)
+    .filter(({ subscription }) => !!subscription)
+    .map(({ adventure, subscription }) => ({
+      subscriptuionStakeTokensAmount: subscription?.stakeTokensAmount ?? new BN(0),
+      adventureStakePartnerPointsAmount: new BN(subscription?.stakePartnerPointsAmount ?? 0),
+      adventureTotalPartnerPoints: new BN(adventure.totalPartnerPoints),
+      adventureTokensPerPoints: adventure.tokensPerPoints,
+      adventureTotalTokensStaked: adventure.totalTokensStaked,
+      adventureRewardsToBeDistributed: adventure.rewardsToBeDistributed,
+    }))
+    .value()
+
+  return calculateRewardsFromSubscriptions(calculateRewardsParams)
 }
 
-//TODO refactor
-export const calcPartnerPoints = (v: string, tokensPerPartnerPoints?: string) => {
+export const calcPartnerPoints = (tokensAmount: BN, tokensPerPartnerPoints?: BN): number => {
   if (!tokensPerPartnerPoints) {
-    return '0'
+    return 0
   }
-  const res = (parseFloat(v) * BANX_TOKEN_STAKE_DECIMAL) / parseFloat(tokensPerPartnerPoints)
-  return isNaN(res) ? '0' : res.toFixed(2)
+
+  const partnerPoints =
+    bnToHuman(tokensAmount, BANX_TOKEN_DECIMALS) /
+    bnToHuman(tokensPerPartnerPoints, BANX_TOKEN_DECIMALS)
+
+  return isNaN(partnerPoints) ? 0 : partnerPoints
+}
+
+export const checkIsParticipatingInAdventure = (banxTokenStake?: BanxStakeBN) => {
+  if (!banxTokenStake) return false
+  if (banxTokenStake.tokensStaked.eq(new BN(0))) return false
+  if (banxTokenStake.banxNftsStakedQuantity === 0) return false
+
+  return true
+}
+
+export const isAdventureStarted = (adventure: BanxAdventureBN): boolean => {
+  return adventure.periodStartedAt + BANX_ADVENTURE_GAP < moment().unix()
+}
+
+export const isAdventureEnded = (adventure: BanxAdventureBN): boolean => {
+  return adventure.periodEndingAt < moment().unix()
+}
+
+export const getAdventureEndTime = (adventure: BanxAdventureBN): number => {
+  const isStarted = isAdventureStarted(adventure)
+
+  return isStarted ? adventure.periodEndingAt : adventure.periodStartedAt + BANX_ADVENTURE_GAP
+}
+
+export const getAdventureStatus = (adventure: BanxAdventureBN): AdventureStatus => {
+  const isEnded = isAdventureEnded(adventure)
+  const isStarted = isAdventureStarted(adventure)
+
+  if (isEnded) {
+    return AdventureStatus.ENDED
+  }
+
+  if (isStarted) {
+    AdventureStatus.LIVE
+  }
+
+  return AdventureStatus.UPCOMING
+}
+
+export const calculatePlayerPointsForBanxTokens = (tokensStaked: BN): number => {
+  const playerPoints = calculatePlayerPointsForTokens(bnToHuman(tokensStaked, BANX_TOKEN_DECIMALS))
+
+  //TODO COnvert to BN in future
+  return playerPoints
 }

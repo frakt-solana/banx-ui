@@ -2,34 +2,34 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 
 import {
-  BanxStake,
+  BanxInfoBN,
   BanxStakingSettings,
+  fetchBanxStakeInfo,
   fetchBanxStakeSettings,
-  fetchStakeInfo,
 } from '@banx/api/staking'
 import { queryClient } from '@banx/utils'
 
-const createBanxTokenStakeQueryKey = (walletPubkey: string) => ['fetchBanxTokenStake', walletPubkey]
-const setBanxTokenStakeOptimistic = (walletPubkey: string, nextState: BanxStake) =>
+const createBanxStakeInfoQueryKey = (walletPubkey: string) => ['fetchBanxStakeInfo', walletPubkey]
+const setBanxStakeInfoOptimistic = (walletPubkey: string, nextState: BanxInfoBN) =>
   queryClient.setQueryData(
-    createBanxTokenStakeQueryKey(walletPubkey),
-    (queryData: BanxStake | undefined) => {
+    createBanxStakeInfoQueryKey(walletPubkey),
+    (queryData: BanxInfoBN | undefined) => {
       if (!queryData) return queryData
       return nextState
     },
   )
 
-export const useStakeInfo = () => {
+export const useBanxStakeInfo = () => {
   const { publicKey } = useWallet()
   const walletPubkey = publicKey?.toBase58() || ''
 
   const {
-    data: banxStake,
+    data: banxStakeInfo,
     isLoading,
     refetch,
   } = useQuery(
-    createBanxTokenStakeQueryKey(walletPubkey),
-    () => fetchStakeInfo({ userPubkey: walletPubkey }),
+    createBanxStakeInfoQueryKey(walletPubkey),
+    () => fetchBanxStakeInfo({ userPubkey: walletPubkey }),
     {
       refetchInterval: 10_000,
       staleTime: 60_000,
@@ -38,10 +38,10 @@ export const useStakeInfo = () => {
   )
 
   return {
-    banxStake,
+    banxStakeInfo,
     isLoading,
     refetch,
-    setBanxTokenStakeOptimistic,
+    setOptimistic: setBanxStakeInfoOptimistic,
   }
 }
 
@@ -68,7 +68,7 @@ export const useBanxStakeSettings = () => {
 
   return {
     banxStakeSettings,
-    setBanxStakeSettingsOptimistic,
+    setOptimistic: setBanxStakeSettingsOptimistic,
     isLoading,
     refetch,
   }

@@ -1,16 +1,21 @@
-import React, { FC } from 'react'
+import React, { FC, useMemo } from 'react'
 
 import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Button } from '@banx/components/Buttons'
 import Tooltip from '@banx/components/Tooltip'
 
-import { AdventureStatus, BanxAdventure, BanxSubscription } from '@banx/api/staking'
-import { BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
+import { AdventureStatus, BanxAdventureBN, BanxAdventureSubscriptionBN } from '@banx/api/staking'
+import { BANX_TOKEN_DECIMALS } from '@banx/constants/banxNfts'
 import { useCountdown } from '@banx/hooks'
 import { Alert, BanxToken, Clock, MoneyBill, SuccessIcon, Timer } from '@banx/icons'
-import { calculateRewards } from '@banx/pages/AdventuresPage/helpers'
-import { formatNumbersWithCommas, fromDecimals } from '@banx/utils'
+import {
+  calculateAdventureRewards,
+  getAdventureEndTime,
+  getAdventureStatus,
+} from '@banx/pages/AdventuresPage/helpers'
+import { formatNumbersWithCommas } from '@banx/utils'
+import { bnToFixed } from '@banx/utils/bn'
 
 import styles from './AdventuresList.module.less'
 
@@ -69,34 +74,36 @@ export const TotalParticipationColumn: FC<{
 }
 
 export const AdventuresTimer: FC<{
-  status: AdventureStatus
-  endsAt: number
-  adventureWithSubscription: { adventure: BanxAdventure; adventureSubscription?: BanxSubscription }
-  isSubscribed: boolean
-}> = ({ status, endsAt, adventureWithSubscription, isSubscribed }) => {
+  banxAdventure: BanxAdventureBN
+  banxAdventureSubscription?: BanxAdventureSubscriptionBN
+}> = ({ banxAdventure, banxAdventureSubscription }) => {
   const TIMER_TEXT_BY_STATUS = {
     [AdventureStatus.LIVE]: 'Before rewards distribution',
     [AdventureStatus.UPCOMING]: 'Deadline to subscribe',
     DEFAULT: 'Before rewards distribution',
   }
 
+  const isSubscribed =
+    banxAdventureSubscription?.adventureSubscriptionState === BanxAdventureSubscriptionState.Active
+
+  const status = getAdventureStatus(banxAdventure)
+
+  const endsAt = getAdventureEndTime(banxAdventure)
+
   const isLive = status === AdventureStatus.LIVE
   const { timeLeft } = useCountdown(endsAt)
-  const rewards = () => {
-    if (adventureWithSubscription.adventureSubscription) {
-      if (!isSubscribed) {
-        return 0
-      }
-      const props = {
-        adventure: adventureWithSubscription.adventure,
-        adventureSubscription: adventureWithSubscription.adventureSubscription,
-      }
 
-      return calculateRewards([props])
-    }
+  const rewards: string = useMemo(() => {
+    if (!banxAdventureSubscription || !isSubscribed) return '0'
 
-    return 0
-  }
+    return bnToFixed({
+      value: calculateAdventureRewards([
+        { adventure: banxAdventure, subscription: banxAdventureSubscription },
+      ]),
+      decimals: BANX_TOKEN_DECIMALS,
+      fractionDigits: 2,
+    })
+  }, [banxAdventure, banxAdventureSubscription, isSubscribed])
 
   return (
     <div className={styles.timerWrapper}>
@@ -114,11 +121,7 @@ export const AdventuresTimer: FC<{
         {isSubscribed && status === AdventureStatus.LIVE && (
           <div className={styles.distributed}>
             <span>you will receive</span>
-            <span className={styles.value}>
-              {formatNumbersWithCommas(
-                fromDecimals(rewards().toString(), BANX_TOKEN_STAKE_DECIMAL, 0),
-              )}
-            </span>
+            <span className={styles.value}>{formatNumbersWithCommas(rewards)}</span>
             <BanxToken className={styles.banxIcon} />
             <Tooltip
               className={styles.tooltip}

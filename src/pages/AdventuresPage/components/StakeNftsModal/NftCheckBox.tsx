@@ -2,16 +2,16 @@ import { FC } from 'react'
 
 import classNames from 'classnames'
 
-import { NftType } from '@banx/api/staking'
+import { BanxStakeNft } from '@banx/api/staking'
 
-import styles from './styles.module.less'
+import styles from './StakeNftsModal.module.less'
 
 interface NftCheckboxProps {
-  nft: NftType
+  nft: BanxStakeNft
   selected?: boolean
   additionalText?: string
   disabled?: boolean
-  onClick?: (nft: NftType) => void
+  onClick?: () => void
 }
 
 export const NftCheckbox: FC<NftCheckboxProps> = ({
@@ -32,7 +32,7 @@ export const NftCheckbox: FC<NftCheckboxProps> = ({
         { [styles.nftPointer]: onClick && !disabled },
         { [styles.nftDisabled]: disabled },
       )}
-      onClick={() => onClick?.(nft)}
+      onClick={() => onClick?.()}
     >
       {disabled && (
         <div className={styles.cover}>

@@ -2,42 +2,22 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import moment from 'moment'
 
 import { Loader } from '@banx/components/Loader'
 
-import { BanxAdventure, BanxSubscription } from '@banx/api/staking'
-import { calculateRewards } from '@banx/pages/AdventuresPage/helpers'
-
 import { AdventuresList, Header, Sidebar } from './components'
-import { useBanxStakeSettings, useStakeInfo } from './hooks'
+import { useBanxStakeInfo, useBanxStakeSettings } from './hooks'
 
 import styles from './AdventuresPage.module.less'
 
 export const AdventuresPage: FC = () => {
-  const { publicKey } = useWallet()
-  const userPubkey = publicKey?.toBase58()
+  const { connected } = useWallet()
 
   const { banxStakeSettings, isLoading: isBanxStakeSettingsLoading } = useBanxStakeSettings()
-  const { banxStake, isLoading: isBanxTokenStakeLoading } = useStakeInfo()
+  const { banxStakeInfo, isLoading: isBanxTokenStakeLoading } = useBanxStakeInfo()
 
   const isLoading = isBanxStakeSettingsLoading || isBanxTokenStakeLoading
-  const isDataReady = !!banxStake && !!banxStakeSettings
-
-  const adventuresWithSubscriptions =
-    banxStake?.banxAdventures
-      .filter(({ adventure }) => parseInt(adventure.periodEndingAt) < moment().unix())
-      .reduce<{ adventure: BanxAdventure; adventureSubscription: BanxSubscription }[]>(
-        (acc, { adventure, adventureSubscription }) => {
-          if (adventure && adventureSubscription) {
-            acc.push({ adventure, adventureSubscription })
-          }
-          return acc
-        },
-        [],
-      ) || []
-
-  const rewards = calculateRewards(adventuresWithSubscriptions)
+  const isDataReady = !!banxStakeInfo && !!banxStakeSettings
 
   return (
     <div className={styles.pageWrapper}>
@@ -46,20 +26,18 @@ export const AdventuresPage: FC = () => {
         {isLoading && <Loader className={styles.loader} />}
         {isDataReady && (
           <AdventuresList
-            banxStake={banxStake}
+            banxStakeInfo={banxStakeInfo}
             banxStakingSettings={banxStakeSettings}
             className={styles.adventuresList}
           />
         )}
       </div>
 
-      {!!userPubkey && !!banxStake?.banxTokenStake && isDataReady && (
+      {connected && isDataReady && (
         <Sidebar
+          banxStakeInfo={banxStakeInfo}
           banxStakingSettings={banxStakeSettings}
-          rewards={rewards}
-          nftsCount={banxStake?.nfts?.length.toString() || '0'}
           className={styles.sidebar}
-          banxTokenStake={banxStake.banxTokenStake}
         />
       )}
     </div>

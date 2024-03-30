@@ -6,4 +6,9 @@ export const bnToHuman = (value: BN, decimals = 9): number => {
   return parseFloat(valueStr) / 10 ** decimals
 }
 
-//TODO Add bnToFixed BN -> string function
+//TODO Refactor to safe parsing
+export const bnToFixed = (params: { value: BN; fractionDigits?: number; decimals?: number }) => {
+  const { value, fractionDigits = 0, decimals = 9 } = params
+
+  return bnToHuman(value, decimals).toFixed(fractionDigits)
+}

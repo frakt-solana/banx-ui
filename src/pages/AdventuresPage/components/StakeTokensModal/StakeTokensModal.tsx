@@ -14,22 +14,27 @@ import Tooltip from '@banx/components/Tooltip'
 import NumericInput from '@banx/components/inputs/NumericInput'
 import { Modal } from '@banx/components/modals/BaseModal'
 
-import { convertToBanxStakingSettingsString } from '@banx/api/staking'
+import {
+  convertToBanxAdventure,
+  convertToBanxStake,
+  convertToBanxStakingSettingsString,
+  convertToBanxSubscription,
+} from '@banx/api/staking'
 import { BANX_TOKEN_DECIMALS, BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
 import { BanxToken } from '@banx/icons'
-import { useBanxStakeSettings, useStakeInfo } from '@banx/pages/AdventuresPage'
+import { useBanxStakeInfo, useBanxStakeSettings } from '@banx/pages/AdventuresPage'
 import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxTokenAction, unstakeBanxTokenAction } from '@banx/transactions/banxStaking'
 import {
   enqueueSnackbar,
-  formatNumbersWithCommas as format,
+  formatNumbersWithCommas,
   fromDecimals,
   toDecimals,
   usePriorityFees,
 } from '@banx/utils'
-import { bnToHuman } from '@banx/utils/bn'
+import { bnToFixed, bnToHuman } from '@banx/utils/bn'
 
 import styles from './StakeTokensModal.module.less'
 
@@ -39,9 +44,12 @@ export const StakeTokensModal = () => {
   const { connection } = useConnection()
   const priorityFees = usePriorityFees()
   const { banxStakeSettings } = useBanxStakeSettings()
-  const { banxStake } = useStakeInfo()
+  const { banxStakeInfo } = useBanxStakeInfo()
 
-  const banxWalletBalance = banxStake?.banxWalletBalance || '0'
+  const banxWalletBalance = bnToHuman(
+    banxStakeInfo?.banxWalletBalance ?? new BN(0),
+    BANX_TOKEN_DECIMALS,
+  )
 
   const { close } = useModal()
   const [value, setValue] = useState('0')
@@ -53,36 +61,48 @@ export const StakeTokensModal = () => {
 
   const handleChangeValue = (v: string) => {
     const isMaxBanxBalance =
-      currentTabValue === ModalTabs.STAKE &&
-      parseFloat(v) < parseFloat(fromDecimals(banxWalletBalance, BANX_TOKEN_STAKE_DECIMAL))
+      currentTabValue === ModalTabs.STAKE && parseFloat(v) < banxWalletBalance
     const isMaxStaked =
       currentTabValue === ModalTabs.UNSTAKE &&
       parseFloat(v) <
-        fromDecimals(banxStake?.banxTokenStake?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL)
+        bnToHuman(banxStakeInfo?.banxTokenStake?.tokensStaked ?? new BN(0), BANX_TOKEN_DECIMALS)
 
     if (!v || isMaxBanxBalance || isMaxStaked) {
       setValue(v || '0')
     }
   }
 
-  const calcPts = (v: string | number) =>
-    calcPartnerPoints(v.toString(), banxStakeSettings?.tokensPerPartnerPoints.toString())
+  const calcPts = (value: string) =>
+    calcPartnerPoints(
+      new BN(parseFloat(value) * 10 ** BANX_TOKEN_DECIMALS),
+      banxStakeSettings?.tokensPerPartnerPoints,
+    )
+
   const pointsToReceive = calcPts(value)
 
   const onStakeTokens = () => {
-    if (!wallet.publicKey || !banxStakeSettings || !value || !banxStake?.banxTokenStake) {
+    if (!wallet.publicKey || !banxStakeSettings || !value || !banxStakeInfo) {
       return
     }
-    const optimistic: BanxSubscribeAdventureOptimistic = {
+
+    const { banxAdventures, banxTokenStake } = banxStakeInfo
+
+    const banxSubscribeAdventureOptimistic = {
       banxStakingSettings: convertToBanxStakingSettingsString(banxStakeSettings),
-      banxAdventures: banxStake.banxAdventures,
-      banxTokenStake: banxStake.banxTokenStake,
-    }
+      banxAdventures: banxAdventures.map(({ adventure, adventureSubscription }) => ({
+        adventure: convertToBanxAdventure(adventure),
+        adventureSubscription: adventureSubscription
+          ? convertToBanxSubscription(adventureSubscription)
+          : undefined,
+      })),
+      banxTokenStake: banxTokenStake ? convertToBanxStake(banxTokenStake) : undefined,
+      //TODO Remove explicit conversion here when sdk updates ready
+    } as BanxSubscribeAdventureOptimistic
 
     const txnParam = {
       tokensToStake: toDecimals(parseFloat(value), BANX_TOKEN_STAKE_DECIMAL),
       userPubkey: wallet.publicKey,
-      optimistic,
+      optimistic: banxSubscribeAdventureOptimistic,
       priorityFees,
     }
 
@@ -109,18 +129,28 @@ export const StakeTokensModal = () => {
       .execute()
   }
   const onUnstakeTokens = () => {
-    if (!wallet.publicKey || !banxStakeSettings || !value || !banxStake?.banxTokenStake) {
+    if (!wallet.publicKey || !banxStakeSettings || !value || !banxStakeInfo) {
       return
     }
-    const optimistic: BanxSubscribeAdventureOptimistic = {
+
+    const { banxAdventures, banxTokenStake } = banxStakeInfo
+
+    const banxSubscribeAdventureOptimistic = {
       banxStakingSettings: convertToBanxStakingSettingsString(banxStakeSettings),
-      banxAdventures: banxStake.banxAdventures,
-      banxTokenStake: banxStake.banxTokenStake,
-    }
+      banxAdventures: banxAdventures.map(({ adventure, adventureSubscription }) => ({
+        adventure: convertToBanxAdventure(adventure),
+        adventureSubscription: adventureSubscription
+          ? convertToBanxSubscription(adventureSubscription)
+          : undefined,
+      })),
+      banxTokenStake: banxTokenStake ? convertToBanxStake(banxTokenStake) : undefined,
+      //TODO Remove explicit conversion here when sdk updates ready
+    } as BanxSubscribeAdventureOptimistic
+
     const txnParam = {
       tokensToUnstake: toDecimals(parseFloat(value), BANX_TOKEN_STAKE_DECIMAL),
       userPubkey: wallet.publicKey,
-      optimistic,
+      optimistic: banxSubscribeAdventureOptimistic,
       priorityFees,
     }
 
@@ -155,20 +185,27 @@ export const StakeTokensModal = () => {
     return void onUnstakeTokens()
   }
 
-  const idleOnWallet = format(
+  const idleOnWallet = formatNumbersWithCommas(
     (
       fromDecimals(banxWalletBalance || 0, BANX_TOKEN_STAKE_DECIMAL) - parseFloat(value || '0')
     ).toFixed(0),
   )
-  const banxBalance = format(parseFloat(fromDecimals(banxWalletBalance, BANX_TOKEN_STAKE_DECIMAL)))
-  const tokensStaked = format(
+  const banxBalance = formatNumbersWithCommas(
+    parseFloat(fromDecimals(banxWalletBalance, BANX_TOKEN_STAKE_DECIMAL)),
+  )
+  const tokensStaked = formatNumbersWithCommas(
     (
-      fromDecimals(banxStake?.banxTokenStake?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL) -
-      parseFloat(value || '0')
+      bnToHuman(banxStakeInfo?.banxTokenStake?.tokensStaked ?? new BN(0)) - parseFloat(value || '0')
     ).toFixed(0),
   )
-  const ptsAmount = format(
-    calcPts(fromDecimals(banxStake?.banxTokenStake?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL)),
+  const ptsAmount = formatNumbersWithCommas(
+    calcPts(
+      bnToFixed({
+        value: banxStakeInfo?.banxTokenStake?.tokensStaked ?? new BN(0),
+        decimals: BANX_TOKEN_DECIMALS,
+        fractionDigits: 2,
+      }),
+    ),
   )
 
   const disabledBtn = useMemo(() => {
@@ -189,7 +226,11 @@ export const StakeTokensModal = () => {
       return setValue(fromDecimals(banxWalletBalance.toString() || 0, BANX_TOKEN_STAKE_DECIMAL))
     }
     return setValue(
-      fromDecimals(banxStake?.banxTokenStake?.tokensStaked || 0, BANX_TOKEN_STAKE_DECIMAL),
+      bnToFixed({
+        value: banxStakeInfo?.banxTokenStake?.tokensStaked ?? new BN(0),
+        decimals: BANX_TOKEN_DECIMALS,
+        fractionDigits: 2,
+      }),
     )
   }
 
@@ -317,10 +358,10 @@ enum ModalTabs {
 const MODAL_TABS: Tab[] = [
   {
     label: 'Stake',
-    value: 'stake',
+    value: ModalTabs.STAKE,
   },
   {
     label: 'Unstake',
-    value: 'unstake',
+    value: ModalTabs.UNSTAKE,
   },
 ]
