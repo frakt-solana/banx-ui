@@ -16,7 +16,6 @@ import {
 import { BANX_TOKEN_DECIMALS } from '@banx/constants'
 import { ZERO_BN, bnToFixed, bnToHuman } from '@banx/utils'
 
-//TODO Fix rewards
 export const calculateAdventureRewards = (
   params: Array<{ adventure: BanxAdventureBN; subscription?: BanxAdventureSubscriptionBN }>,
 ): BN => {
@@ -94,7 +93,6 @@ export const getAdventureStatus = (adventure: BanxAdventureBN): AdventureStatus 
   return AdventureStatus.UPCOMING
 }
 
-//TODO calculatePlayerPointsForTokens gets js number. It crashes on big number
 export const calculatePlayerPointsForBanxTokens = (tokensStaked: BN): number => {
   const playerPoints = calculatePlayerPointsForTokens(tokensStaked)
 

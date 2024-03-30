@@ -3,8 +3,7 @@ import { FC, useMemo } from 'react'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { BN, web3 } from 'fbonds-core'
-import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
+import { BN } from 'fbonds-core'
 import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
@@ -101,7 +100,6 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
       .value()
 
     const params = {
-      tokenMint: new web3.PublicKey(BANX_TOKEN_MINT),
       priorityFees,
       weeks,
     }
