@@ -32,13 +32,13 @@ import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxTokenAction, unstakeBanxTokenAction } from '@banx/transactions/staking'
 import {
+  bnToHuman,
   enqueueSnackbar,
   formatNumbersWithCommas,
   fromDecimals,
   toDecimals,
   usePriorityFees,
 } from '@banx/utils'
-import { bnToHuman } from '@banx/utils/bn'
 
 import styles from './StakeTokensModal.module.less'
 

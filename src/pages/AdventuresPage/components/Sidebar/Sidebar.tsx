@@ -35,12 +35,13 @@ import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxClaimAction } from '@banx/transactions/staking/stakeBanxClaimAction'
 import {
+  bnToFixed,
+  bnToHuman,
   enqueueSnackbar,
   formatCompact,
   formatNumbersWithCommas,
   usePriorityFees,
 } from '@banx/utils'
-import { bnToFixed, bnToHuman } from '@banx/utils/bn'
 
 import styles from './Sidebar.module.less'
 

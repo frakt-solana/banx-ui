@@ -14,7 +14,7 @@ import {
   BanxStakeBN,
 } from '@banx/api/staking'
 import { BANX_TOKEN_DECIMALS } from '@banx/constants'
-import { bnToFixed, bnToHuman } from '@banx/utils/bn'
+import { bnToFixed, bnToHuman } from '@banx/utils'
 
 //TODO Fix rewards
 export const calculateAdventureRewards = (
