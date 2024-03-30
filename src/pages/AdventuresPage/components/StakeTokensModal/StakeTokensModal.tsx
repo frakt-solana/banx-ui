@@ -78,7 +78,8 @@ export const StakeTokensModal = () => {
 
   const calcPts = (value: string) =>
     calcPartnerPoints(
-      new BN(parseFloat(value) * 10 ** BANX_TOKEN_DECIMALS),
+      //TODO Prevent assertion failed for big number (fix with normal string to BN parsing)
+      new BN(parseFloat(value)).mul(new BN(10 ** BANX_TOKEN_DECIMALS)),
       banxStakeSettings?.tokensPerPartnerPoints,
     )
 
