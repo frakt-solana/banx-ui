@@ -132,19 +132,18 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
 
     const showCongratsMessage = SPECIAL_COLLECTIONS_MARKETS.includes(nft.nft.loan.marketPubkey)
 
-    const txnResults = await executeBorrow({
+    await executeBorrow({
       wallet,
       connection,
       txnParams: txnParamsWithPriorityFees,
       addLoansOptimistic,
       updateOffersOptimistic,
-      onSuccessAll: () => onBorrowSuccess(1, showCongratsMessage),
+      onSuccessAll: () => {
+        goToLoansPage()
+        onBorrowSuccess(1, showCongratsMessage)
+      },
       isLedger,
     })
-
-    if (txnResults?.length) {
-      goToLoansPage()
-    }
   }
 
   const borrowAll = async () => {
@@ -159,23 +158,21 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
       .flat()
       .find(({ offer }) => SPECIAL_COLLECTIONS_MARKETS.includes(offer.hadoMarket))
 
-    const txnsResults = await executeBorrow({
+    await executeBorrow({
       wallet,
       connection,
       txnParams: txnParamsWithPriorityFees,
       addLoansOptimistic,
       updateOffersOptimistic,
-      onSuccessAll: () =>
+      onSuccessAll: () => {
+        goToLoansPage()
         onBorrowSuccess(
           sumBy(txnParams, (param) => param.length),
           showCongratsMessage,
-        ),
+        )
+      },
       isLedger,
     })
-
-    if (txnsResults?.length) {
-      goToLoansPage()
-    }
   }
 
   const onNftSelect = useCallback(
