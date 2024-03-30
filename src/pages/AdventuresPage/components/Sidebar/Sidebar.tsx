@@ -60,7 +60,6 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
 
   const nftsCount = nfts?.length.toString() || '0'
 
-  //TODO move to separate function
   const rewards: string = useMemo(() => {
     if (!banxAdventures) return '0'
 

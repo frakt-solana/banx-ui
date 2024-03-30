@@ -36,7 +36,7 @@ export async function getTokenBalance(
   return balance?.value.amount?.toString() || '0'
 }
 
-//TODO refactor
+//TODO Fix rewards
 export const calculateAdventureRewards = (
   params: Array<{ adventure: BanxAdventureBN; subscription?: BanxAdventureSubscriptionBN }>,
 ): BN => {
@@ -104,16 +104,18 @@ export const getAdventureStatus = (adventure: BanxAdventureBN): AdventureStatus 
   }
 
   if (isStarted) {
-    AdventureStatus.LIVE
+    return AdventureStatus.LIVE
   }
 
   return AdventureStatus.UPCOMING
 }
 
+//TODO calculatePlayerPointsForTokens gets js number. It crashes on big number
 export const calculatePlayerPointsForBanxTokens = (tokensStaked: BN): number => {
-  const playerPoints = calculatePlayerPointsForTokens(bnToHuman(tokensStaked, BANX_TOKEN_DECIMALS))
+  /* eslint-disable  @typescript-eslint/no-explicit-any */
+  const playerPoints = calculatePlayerPointsForTokens(tokensStaked.toString() as any)
 
-  //TODO COnvert to BN in future
+
   return playerPoints
 }
 

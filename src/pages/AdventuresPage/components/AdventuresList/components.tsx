@@ -72,16 +72,16 @@ export const TotalParticipationColumn: FC<{
   )
 }
 
+const TIMER_TEXT_BY_STATUS = {
+  [AdventureStatus.LIVE]: 'Before rewards distribution',
+  [AdventureStatus.UPCOMING]: 'Deadline to subscribe',
+  DEFAULT: 'Before rewards distribution',
+}
+
 export const AdventuresTimer: FC<{
   banxAdventure: BanxAdventureBN
   banxAdventureSubscription?: BanxAdventureSubscriptionBN
 }> = ({ banxAdventure, banxAdventureSubscription }) => {
-  const TIMER_TEXT_BY_STATUS = {
-    [AdventureStatus.LIVE]: 'Before rewards distribution',
-    [AdventureStatus.UPCOMING]: 'Deadline to subscribe',
-    DEFAULT: 'Before rewards distribution',
-  }
-
   const isSubscribed =
     banxAdventureSubscription?.adventureSubscriptionState === BanxAdventureSubscriptionState.Active
 
