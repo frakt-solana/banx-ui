@@ -20,7 +20,7 @@ import {
   convertToBanxStakingSettingsString,
   convertToBanxSubscription,
 } from '@banx/api/staking'
-import { TOTAL_BANX_NFTS, TOTAL_BANX_PTS } from '@banx/constants/banxNfts'
+import { TOTAL_BANX_NFTS, TOTAL_BANX_PTS } from '@banx/constants'
 import {
   banxTokenBNToFixed,
   calcPartnerPoints,

@@ -1,6 +1,6 @@
 import { BN } from 'fbonds-core'
 
-import { BANX_TOKEN_DECIMALS } from '@banx/constants/banxNfts'
+import { BANX_TOKEN_DECIMALS } from '@banx/constants'
 
 import {
   BanxAdventure,

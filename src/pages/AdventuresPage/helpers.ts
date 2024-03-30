@@ -14,8 +14,7 @@ import {
   BanxAdventureSubscriptionBN,
   BanxStakeBN,
 } from '@banx/api/staking'
-import { BONDS } from '@banx/constants'
-import { BANX_TOKEN_DECIMALS } from '@banx/constants/banxNfts'
+import { BANX_TOKEN_DECIMALS, BONDS } from '@banx/constants'
 import { bnToFixed, bnToHuman } from '@banx/utils/bn'
 
 export async function getTokenBalance(

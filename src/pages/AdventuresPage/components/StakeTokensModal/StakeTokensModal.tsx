@@ -20,7 +20,7 @@ import {
   convertToBanxStakingSettingsString,
   convertToBanxSubscription,
 } from '@banx/api/staking'
-import { BANX_TOKEN_DECIMALS, BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
+import { BANX_TOKEN_DECIMALS, BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants'
 import { BanxToken } from '@banx/icons'
 import {
   banxTokenBNToFixed,
@@ -42,7 +42,7 @@ import { bnToHuman } from '@banx/utils/bn'
 
 import styles from './StakeTokensModal.module.less'
 
-//TODO Refactor
+//TODO Refactor it completely
 export const StakeTokensModal = () => {
   const wallet = useWallet()
   const { connection } = useConnection()

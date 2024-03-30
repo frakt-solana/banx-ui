@@ -21,7 +21,7 @@ import {
   convertToBanxStakingSettingsString,
   convertToBanxSubscription,
 } from '@banx/api/staking'
-import { BANX_TOKEN_DECIMALS, BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
+import { BANX_TOKEN_DECIMALS } from '@banx/constants'
 import { BanxToken, Gamepad, MoneyBill } from '@banx/icons'
 import {
   banxTokenBNToFixed,
@@ -37,7 +37,6 @@ import {
   enqueueSnackbar,
   formatCompact,
   formatNumbersWithCommas,
-  fromDecimals,
   usePriorityFees,
 } from '@banx/utils'
 import { bnToFixed, bnToHuman } from '@banx/utils/bn'
@@ -222,9 +221,7 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
           <div className={styles.claimStatsContainer}>
             <StakingStat
               label="claimable"
-              value={formatNumbersWithCommas(
-                fromDecimals(rewards.toString(), BANX_TOKEN_STAKE_DECIMAL),
-              )}
+              value={formatNumbersWithCommas(rewards)}
               icon={BanxToken}
             />
             <Button onClick={claimAction} disabled={!rewards} className={styles.manageButton}>
