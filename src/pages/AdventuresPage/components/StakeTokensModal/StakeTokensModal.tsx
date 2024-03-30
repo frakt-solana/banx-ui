@@ -36,7 +36,6 @@ import {
   bnToHuman,
   enqueueSnackbar,
   formatNumbersWithCommas,
-  fromDecimals,
   toDecimals,
   usePriorityFees,
 } from '@banx/utils'
@@ -192,13 +191,10 @@ export const StakeTokensModal = () => {
   }
 
   const idleOnWallet = formatNumbersWithCommas(
-    (
-      fromDecimals(banxWalletBalance || 0, BANX_TOKEN_STAKE_DECIMAL) - parseFloat(value || '0')
-    ).toFixed(0),
+    (banxWalletBalance - parseFloat(value || '0')).toFixed(0),
   )
-  const banxBalance = formatNumbersWithCommas(
-    parseFloat(fromDecimals(banxWalletBalance, BANX_TOKEN_STAKE_DECIMAL)),
-  )
+  const banxBalance = formatNumbersWithCommas(banxWalletBalance.toFixed(2))
+
   const tokensStaked = formatNumbersWithCommas(
     (
       bnToHuman(banxStakeInfo?.banxTokenStake?.tokensStaked ?? ZERO_BN) - parseFloat(value || '0')
@@ -211,11 +207,10 @@ export const StakeTokensModal = () => {
     ),
   )
 
-  const disabledBtn = useMemo(() => {
+  const isBtnDisabled = useMemo(() => {
     const emptyValue = !parseFloat(value)
     const notEnoughStake =
-      currentTabValue === ModalTabs.STAKE &&
-      parseFloat(fromDecimals(banxWalletBalance, BANX_TOKEN_STAKE_DECIMAL)) < parseFloat(value)
+      currentTabValue === ModalTabs.STAKE && banxWalletBalance < parseFloat(value)
     const notEnoughUnStake =
       currentTabValue === ModalTabs.UNSTAKE &&
       bnToHuman(banxStakeSettings?.tokensStaked ?? ZERO_BN, BANX_TOKEN_DECIMALS) < parseFloat(value)
@@ -225,7 +220,7 @@ export const StakeTokensModal = () => {
 
   const onSetMax = () => {
     if (currentTabValue === ModalTabs.STAKE) {
-      return setValue(fromDecimals(banxWalletBalance.toString() || 0, BANX_TOKEN_STAKE_DECIMAL))
+      return setValue(banxWalletBalance.toFixed(2))
     }
     return setValue(banxTokenBNToFixed(banxStakeInfo?.banxTokenStake?.tokensStaked ?? ZERO_BN, 2))
   }
@@ -332,7 +327,7 @@ export const StakeTokensModal = () => {
         )}
 
         <Button
-          disabled={disabledBtn}
+          disabled={isBtnDisabled}
           size="default"
           variant="primary"
           className={styles.btn}
