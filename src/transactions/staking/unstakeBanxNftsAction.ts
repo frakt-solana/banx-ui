@@ -9,7 +9,7 @@ export type UnstakeBanxNftsActionParams = {
   userPubkey: web3.PublicKey
   nftMint: string
   priorityFees: number
-  banxStakePublicKey: string
+  nftStakePublicKey: string
 }
 
 export type UnstakeBanxNftsActionAction = MakeActionFn<UnstakeBanxNftsActionParams, null>
@@ -26,7 +26,7 @@ export const unstakeBanxNftsAction: UnstakeBanxNftsActionAction = async (
     accounts: {
       userPubkey: ixnParams.userPubkey,
       tokenMint: new web3.PublicKey(ixnParams.nftMint),
-      banxStake: new web3.PublicKey(ixnParams.banxStakePublicKey),
+      banxStake: new web3.PublicKey(ixnParams.nftStakePublicKey),
     },
     sendTxn: sendTxnPlaceHolder,
   }

@@ -1,6 +1,5 @@
 import { web3 } from '@project-serum/anchor'
 import { stakeBanxNft } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
-import { BanxPointsMap } from 'fbonds-core/lib/fbond-protocol/types'
 import { MakeActionFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
@@ -10,7 +9,6 @@ export type StakeBanxNftsTokenActionParams = {
   nftMint: string
   whitelistEntry: web3.PublicKey
   hadoRegistry: web3.PublicKey
-  banxPointsMap: BanxPointsMap
   priorityFees: number
 }
 
