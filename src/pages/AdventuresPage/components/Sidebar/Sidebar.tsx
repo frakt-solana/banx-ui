@@ -5,7 +5,6 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { web3 } from 'fbonds-core'
 import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
-import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
@@ -13,14 +12,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 import { Button } from '@banx/components/Buttons'
 import { StatInfo, StatsInfoProps, VALUES_TYPES } from '@banx/components/StatInfo'
 
-import {
-  BanxInfoBN,
-  BanxStakingSettingsBN,
-  convertToBanxAdventure,
-  convertToBanxStake,
-  convertToBanxStakingSettingsString,
-  convertToBanxSubscription,
-} from '@banx/api/staking'
+import { BanxInfoBN, BanxStakingSettingsBN } from '@banx/api/staking'
 import { BANX_TOKEN_DECIMALS } from '@banx/constants'
 import { BanxToken, Gamepad, MoneyBill } from '@banx/icons'
 import {
@@ -89,18 +81,6 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
       return
     }
 
-    const banxSubscribeAdventureOptimistic = {
-      banxStakingSettings: convertToBanxStakingSettingsString(banxStakingSettings),
-      banxAdventures: banxAdventures.map(({ adventure, adventureSubscription }) => ({
-        adventure: convertToBanxAdventure(adventure),
-        adventureSubscription: adventureSubscription
-          ? convertToBanxSubscription(adventureSubscription)
-          : undefined,
-      })),
-      banxTokenStake: banxTokenStake ? convertToBanxStake(banxTokenStake) : undefined,
-      //TODO Remove explicit conversion here when sdk updates ready
-    } as BanxSubscribeAdventureOptimistic
-
     const weeks = chain(banxAdventures)
       //? Claim only from active subscriptions
       .filter(
@@ -115,7 +95,6 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
 
     const params = {
       tokenMint: new web3.PublicKey(BANX_TOKEN_MINT),
-      optimistic: banxSubscribeAdventureOptimistic,
       priorityFees,
       weeks,
     }

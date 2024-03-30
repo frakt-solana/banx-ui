@@ -1,7 +1,6 @@
 import { web3 } from '@project-serum/anchor'
 import { BN } from 'fbonds-core'
 import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
-import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { stakeBanxToken } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
 import { MakeActionFn } from 'solana-transactions-executor'
 
@@ -11,14 +10,10 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 export type StakeBanxTokenActionParams = {
   userPubkey: web3.PublicKey
   tokensToStake: string
-  optimistic: BanxSubscribeAdventureOptimistic
   priorityFees: number
 }
 
-export type StakeBanxTokenAction = MakeActionFn<
-  StakeBanxTokenActionParams,
-  BanxSubscribeAdventureOptimistic
->
+export type StakeBanxTokenAction = MakeActionFn<StakeBanxTokenActionParams, null>
 
 export const stakeBanxTokenAction: StakeBanxTokenAction = async (ixnParams, { connection }) => {
   const params = {
@@ -32,7 +27,6 @@ export const stakeBanxTokenAction: StakeBanxTokenAction = async (ixnParams, { co
     args: {
       tokensToStake: new BN(ixnParams.tokensToStake),
     },
-    optimistics: ixnParams.optimistic,
     sendTxn: sendTxnPlaceHolder,
   }
 
@@ -40,6 +34,7 @@ export const stakeBanxTokenAction: StakeBanxTokenAction = async (ixnParams, { co
 
   return {
     instructions: instructions,
+    additionalResult: null,
     signers: signers,
     lookupTables: [],
   }

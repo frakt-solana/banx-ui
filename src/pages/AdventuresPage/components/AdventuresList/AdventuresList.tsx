@@ -2,7 +2,6 @@ import { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
 import { capitalize } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
@@ -14,10 +13,6 @@ import {
   BanxInfoBN,
   BanxStakeBN,
   BanxStakingSettingsBN,
-  convertToBanxAdventure,
-  convertToBanxStake,
-  convertToBanxStakingSettingsString,
-  convertToBanxSubscription,
 } from '@banx/api/staking'
 import { TOTAL_BANX_NFTS, TOTAL_BANX_PTS } from '@banx/constants'
 import {
@@ -137,26 +132,10 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
     if (!wallet.publicKey?.toBase58() || !banxTokenStake) {
       return
     }
-    const banxSubscribeAdventureOptimistic = {
-      banxStakingSettings: convertToBanxStakingSettingsString(banxStakingSettings),
-      banxAdventures: [
-        {
-          adventure: convertToBanxAdventure(banxAdventure),
-          adventureSubscription: banxAdventureSubscription
-            ? convertToBanxSubscription(banxAdventureSubscription)
-            : undefined,
-        },
-      ],
-      banxTokenStake: banxTokenStake ? convertToBanxStake(banxTokenStake) : undefined,
-      //TODO Remove explicit conversion here when sdk updates ready
-    } as BanxSubscribeAdventureOptimistic
 
     const params = {
       weeks: [banxAdventure.week],
       userPubkey: wallet.publicKey,
-      optimistic: {
-        banxSubscribeAdventureOptimistic,
-      },
       priorityFees,
     }
 

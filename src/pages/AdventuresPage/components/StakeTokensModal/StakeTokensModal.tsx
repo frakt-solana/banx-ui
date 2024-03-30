@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BN } from 'fbonds-core'
-import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { parseInt } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
@@ -13,12 +12,6 @@ import Tooltip from '@banx/components/Tooltip'
 import NumericInput from '@banx/components/inputs/NumericInput'
 import { Modal } from '@banx/components/modals/BaseModal'
 
-import {
-  convertToBanxAdventure,
-  convertToBanxStake,
-  convertToBanxStakingSettingsString,
-  convertToBanxSubscription,
-} from '@banx/api/staking'
 import { BANX_TOKEN_DECIMALS, BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants'
 import { BanxToken } from '@banx/icons'
 import {
@@ -90,24 +83,9 @@ export const StakeTokensModal = () => {
       return
     }
 
-    const { banxAdventures, banxTokenStake } = banxStakeInfo
-
-    const banxSubscribeAdventureOptimistic = {
-      banxStakingSettings: convertToBanxStakingSettingsString(banxStakeSettings),
-      banxAdventures: banxAdventures.map(({ adventure, adventureSubscription }) => ({
-        adventure: convertToBanxAdventure(adventure),
-        adventureSubscription: adventureSubscription
-          ? convertToBanxSubscription(adventureSubscription)
-          : undefined,
-      })),
-      banxTokenStake: banxTokenStake ? convertToBanxStake(banxTokenStake) : undefined,
-      //TODO Remove explicit conversion here when sdk updates ready
-    } as BanxSubscribeAdventureOptimistic
-
     const txnParam = {
       tokensToStake: toDecimals(parseFloat(value), BANX_TOKEN_STAKE_DECIMAL),
       userPubkey: wallet.publicKey,
-      optimistic: banxSubscribeAdventureOptimistic,
       priorityFees,
     }
 
@@ -138,24 +116,9 @@ export const StakeTokensModal = () => {
       return
     }
 
-    const { banxAdventures, banxTokenStake } = banxStakeInfo
-
-    const banxSubscribeAdventureOptimistic = {
-      banxStakingSettings: convertToBanxStakingSettingsString(banxStakeSettings),
-      banxAdventures: banxAdventures.map(({ adventure, adventureSubscription }) => ({
-        adventure: convertToBanxAdventure(adventure),
-        adventureSubscription: adventureSubscription
-          ? convertToBanxSubscription(adventureSubscription)
-          : undefined,
-      })),
-      banxTokenStake: banxTokenStake ? convertToBanxStake(banxTokenStake) : undefined,
-      //TODO Remove explicit conversion here when sdk updates ready
-    } as BanxSubscribeAdventureOptimistic
-
     const txnParam = {
       tokensToUnstake: toDecimals(parseFloat(value), BANX_TOKEN_STAKE_DECIMAL),
       userPubkey: wallet.publicKey,
-      optimistic: banxSubscribeAdventureOptimistic,
       priorityFees,
     }
 

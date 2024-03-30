@@ -2,23 +2,14 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { web3 } from 'fbonds-core'
-import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
-import { BanxStake, BanxStakeState } from 'fbonds-core/lib/fbond-protocol/types'
-// import { keyBy } from 'lodash'
+import { BanxStakeState } from 'fbonds-core/lib/fbond-protocol/types'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 import { Modal } from '@banx/components/modals/BaseModal'
 
-import {
-  BanxStakeNft,
-  convertToBanxAdventure,
-  convertToBanxStake,
-  convertToBanxStakingSettingsString,
-  convertToBanxSubscription,
-  convertToStake,
-} from '@banx/api/staking'
+import { BanxStakeNft } from '@banx/api/staking'
 import { BANX_STAKING } from '@banx/constants'
 import { TensorFilled } from '@banx/icons'
 import { useBanxStakeInfo, useBanxStakeSettings } from '@banx/pages/AdventuresPage'
@@ -89,26 +80,11 @@ export const StakeNftsModal = () => {
         return
       }
 
-      const { banxAdventures, banxTokenStake } = banxStakeInfo
-
-      const banxSubscribeAdventureOptimistic = {
-        banxStakingSettings: convertToBanxStakingSettingsString(banxStakeSettings),
-        banxAdventures: banxAdventures.map(({ adventure, adventureSubscription }) => ({
-          adventure: convertToBanxAdventure(adventure),
-          adventureSubscription: adventureSubscription
-            ? convertToBanxSubscription(adventureSubscription)
-            : undefined,
-        })),
-        banxTokenStake: banxTokenStake ? convertToBanxStake(banxTokenStake) : undefined,
-        //TODO Remove explicit conversion here when sdk updates ready
-      } as BanxSubscribeAdventureOptimistic
-
       const params = selectedNfts.map((nft) => ({
         nftMint: nft.mint,
         whitelistEntry: new web3.PublicKey(BANX_STAKING.WHITELIST_ENTRY_PUBKEY),
         hadoRegistry: new web3.PublicKey(BANX_STAKING.HADO_REGISTRY_PUBKEY),
         banxPointsMap: nft.pointsMap,
-        optimistic: banxSubscribeAdventureOptimistic,
         priorityFees,
       }))
 
@@ -143,28 +119,13 @@ export const StakeNftsModal = () => {
         return
       }
 
-      const { banxAdventures, banxTokenStake } = banxStakeInfo
-
-      const banxSubscribeAdventureOptimistic = {
-        banxStakingSettings: convertToBanxStakingSettingsString(banxStakeSettings),
-        banxAdventures: banxAdventures.map(({ adventure, adventureSubscription }) => ({
-          adventure: convertToBanxAdventure(adventure),
-          adventureSubscription: adventureSubscription
-            ? convertToBanxSubscription(adventureSubscription)
-            : undefined,
-        })),
-        banxTokenStake: banxTokenStake ? convertToBanxStake(banxTokenStake) : undefined,
-        //TODO Remove explicit conversion here when sdk updates ready
-      } as BanxSubscribeAdventureOptimistic
+      const { banxTokenStake } = banxStakeInfo
 
       const params = selectedNfts.map((nft) => ({
         nftMint: nft.mint,
         userPubkey: wallet.publicKey as web3.PublicKey,
-        optimistic: {
-          banxSubscribeAdventureOptimistic,
-          banxStake: nft?.stake ? convertToStake(nft.stake) : ({} as BanxStake), //TODO Remove explicit conversion here when sdk updates ready
-        },
         priorityFees,
+        banxStakePublicKey: banxTokenStake?.publicKey ?? '',
       }))
 
       new TxnExecutor(unstakeBanxNftsAction, { wallet, connection })

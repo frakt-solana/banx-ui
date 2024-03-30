@@ -1,5 +1,4 @@
 import { web3 } from '@project-serum/anchor'
-import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { stakeBanxNft } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
 import { BanxPointsMap } from 'fbonds-core/lib/fbond-protocol/types'
 import { MakeActionFn } from 'solana-transactions-executor'
@@ -13,13 +12,9 @@ export type StakeBanxNftsTokenActionParams = {
   hadoRegistry: web3.PublicKey
   banxPointsMap: BanxPointsMap
   priorityFees: number
-  optimistic: BanxSubscribeAdventureOptimistic
 }
 
-export type StakeBanxNftsTokenAction = MakeActionFn<
-  StakeBanxNftsTokenActionParams,
-  BanxSubscribeAdventureOptimistic
->
+export type StakeBanxNftsTokenAction = MakeActionFn<StakeBanxNftsTokenActionParams, null>
 
 export const stakeBanxNftAction: StakeBanxNftsTokenAction = async (
   ixnParams,
@@ -40,10 +35,6 @@ export const stakeBanxNftAction: StakeBanxNftsTokenAction = async (
       hadoRegistry: ixnParams.hadoRegistry,
       userPubkey: wallet.publicKey,
     },
-    optimistics: {
-      banxSubscribeAdventureOptimistic: ixnParams.optimistic,
-      banxPointsMap: ixnParams.banxPointsMap,
-    },
     sendTxn: sendTxnPlaceHolder,
   }
 
@@ -51,6 +42,7 @@ export const stakeBanxNftAction: StakeBanxNftsTokenAction = async (
   return {
     instructions: instructions,
     signers: signers,
+    additionalResult: null,
     lookupTables: [],
   }
 }
