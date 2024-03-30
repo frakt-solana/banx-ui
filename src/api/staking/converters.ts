@@ -97,7 +97,7 @@ const convertToBanxStakeNft = (nft: NftType): BanxStakeNft => {
   const { stake, ...rest } = nft
 
   return {
-    stake: convertToBanxNftStakeBN(stake),
+    stake: stake ? convertToBanxNftStakeBN(stake) : undefined,
     ...rest,
   }
 }

@@ -13,12 +13,12 @@ import {
   BanxAdventureBN,
   BanxAdventureSubscriptionBN,
   BanxInfoBN,
-  BanxStakingSettingsBN,
   BanxStakeBN,
+  BanxStakingSettingsBN,
   convertToBanxAdventure,
+  convertToBanxStake,
   convertToBanxStakingSettingsString,
   convertToBanxSubscription,
-  convertToBanxStake,
 } from '@banx/api/staking'
 import { BANX_TOKEN_DECIMALS, TOTAL_BANX_NFTS, TOTAL_BANX_PTS } from '@banx/constants/banxNfts'
 import {

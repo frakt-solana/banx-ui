@@ -56,7 +56,7 @@ export type BanxStakeNft = {
   isLoaned: boolean
   mint: string
   pointsMap: PointsMap
-  stake: BanxNftStakeBN
+  stake?: BanxNftStakeBN
 }
 
 export type BanxAdventureSubscriptionBN = {

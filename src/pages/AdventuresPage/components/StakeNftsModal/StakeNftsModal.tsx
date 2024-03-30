@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { web3 } from 'fbonds-core'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
-import { BanxStakeState } from 'fbonds-core/lib/fbond-protocol/types'
+import { BanxStake, BanxStakeState } from 'fbonds-core/lib/fbond-protocol/types'
 // import { keyBy } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
@@ -181,7 +181,7 @@ export const StakeNftsModal = () => {
         userPubkey: wallet.publicKey as web3.PublicKey,
         optimistic: {
           banxSubscribeAdventureOptimistic,
-          banxStake: convertToStake(nft.stake),
+          banxStake: nft?.stake ? convertToStake(nft.stake) : ({} as BanxStake), //TODO Remove explicit conversion here when sdk updates ready
         },
         priorityFees,
       }))

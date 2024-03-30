@@ -58,7 +58,7 @@ export const NftSchema = z.object({
   isLoaned: z.boolean(),
   mint: z.string(),
   pointsMap: PointsMapSchema,
-  stake: StakeSchema,
+  stake: StakeSchema.optional(),
 })
 export type NftType = z.infer<typeof NftSchema>
 
