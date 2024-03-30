@@ -153,12 +153,12 @@ export const executeBorrow = async (props: {
 
         updateOffersOptimistic(optimisticsToAdd)
 
-        const showCongtarsMessage = !!loansFlat
+        const showCongratsMessage = !!loansFlat
           .flat()
           .find(({ fraktBond }) => SPECIAL_COLLECTIONS_MARKETS.includes(fraktBond.hadoMarket || ''))
 
         onSuccessAll?.()
-        onBorrowSuccess?.(loansFlat.length, showCongtarsMessage)
+        onBorrowSuccess?.(loansFlat.length, showCongratsMessage)
       }
 
       if (failedTransactionsCount) {
