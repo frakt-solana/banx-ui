@@ -9,7 +9,7 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type UnstakeBanxNftsActionParams = {
   userPubkey: web3.PublicKey
-  tokenMint: web3.PublicKey
+  nftMint: string
   priorityFees: number
   optimistic: {
     banxSubscribeAdventureOptimistic: BanxSubscribeAdventureOptimistic
@@ -33,7 +33,7 @@ export const unstakeBanxNftsAction: UnstakeBanxNftsActionAction = async (
     priorityFees: ixnParams.priorityFees,
     accounts: {
       userPubkey: ixnParams.userPubkey,
-      tokenMint: ixnParams.tokenMint,
+      tokenMint: new web3.PublicKey(ixnParams.nftMint),
       banxStake: new web3.PublicKey(ixnParams.optimistic.banxStake.publicKey),
     },
     optimistics: {

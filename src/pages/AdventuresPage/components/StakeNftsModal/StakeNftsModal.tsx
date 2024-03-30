@@ -104,7 +104,7 @@ export const StakeNftsModal = () => {
       } as BanxSubscribeAdventureOptimistic
 
       const params = selectedNfts.map((nft) => ({
-        tokenMint: new web3.PublicKey(nft.mint),
+        nftMint: nft.mint,
         whitelistEntry: new web3.PublicKey(BANX_STAKING.WHITELIST_ENTRY_PUBKEY),
         hadoRegistry: new web3.PublicKey(BANX_STAKING.HADO_REGISTRY_PUBKEY),
         banxPointsMap: nft.pointsMap,
@@ -121,25 +121,6 @@ export const StakeNftsModal = () => {
             type: 'info',
             solanaExplorerPath: `tx/${txnHash}`,
           })
-          // results.forEach(({ result }) => {
-          //   if (result) {
-          //     const banxAdventuresMap = keyBy(
-          //       result.banxAdventures,
-          //       ({ adventure }) => adventure.publicKey,
-          //     )
-
-          //     const updatedBanxTokenStake = {
-          //       ...banxStake,
-          //       banxTokenStake: result.banxTokenStake,
-          //       banxAdventures: result.banxAdventures.map(
-          //         (adv) => banxAdventuresMap[adv.adventure && adv.adventure.publicKey] || adv,
-          //       ),
-          //     }
-
-          //     setBanxTokenStakeOptimistic(walletPubkey, updatedBanxTokenStake)
-          //     setBanxTokenSettingsOptimistic({ ...result.banxStakingSettings })
-          //   }
-          // })
         })
         .on('pfSuccessAll', () => {
           close()
@@ -177,7 +158,7 @@ export const StakeNftsModal = () => {
       } as BanxSubscribeAdventureOptimistic
 
       const params = selectedNfts.map((nft) => ({
-        tokenMint: new web3.PublicKey(nft.mint),
+        nftMint: nft.mint,
         userPubkey: wallet.publicKey as web3.PublicKey,
         optimistic: {
           banxSubscribeAdventureOptimistic,

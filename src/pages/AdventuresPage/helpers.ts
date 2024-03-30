@@ -30,7 +30,7 @@ export const calculateAdventureRewards = (
     .filter(({ subscription }) => !!subscription)
     .map(({ adventure, subscription }) => ({
       subscriptuionStakeTokensAmount: subscription?.stakeTokensAmount ?? ZERO_BN,
-      adventureStakePartnerPointsAmount: new BN(subscription?.stakePartnerPointsAmount ?? 0),
+      subscriptionStakePartnerPointsAmount: new BN(subscription?.stakePartnerPointsAmount ?? 0),
       adventureTotalPartnerPoints: new BN(adventure.totalPartnerPoints),
       adventureTokensPerPoints: adventure.tokensPerPoints,
       adventureTotalTokensStaked: adventure.totalTokensStaked,
@@ -38,7 +38,9 @@ export const calculateAdventureRewards = (
     }))
     .value()
 
-  return calculateRewardsFromSubscriptions(calculateRewardsParams)
+  const amount = calculateRewardsFromSubscriptions(calculateRewardsParams)
+
+  return amount
 }
 
 export const calcPartnerPoints = (tokensAmount: BN, tokensPerPartnerPoints?: BN): number => {
@@ -94,8 +96,7 @@ export const getAdventureStatus = (adventure: BanxAdventureBN): AdventureStatus 
 
 //TODO calculatePlayerPointsForTokens gets js number. It crashes on big number
 export const calculatePlayerPointsForBanxTokens = (tokensStaked: BN): number => {
-  /* eslint-disable  @typescript-eslint/no-explicit-any */
-  const playerPoints = calculatePlayerPointsForTokens(tokensStaked.toString() as any)
+  const playerPoints = calculatePlayerPointsForTokens(tokensStaked)
 
   return playerPoints
 }

@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BN } from 'fbonds-core'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
-import { calculatePlayerPointsForTokens } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
 import { parseInt } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
@@ -25,6 +24,7 @@ import { BanxToken } from '@banx/icons'
 import {
   banxTokenBNToFixed,
   calcPartnerPoints,
+  calculatePlayerPointsForBanxTokens,
   useBanxStakeInfo,
   useBanxStakeSettings,
 } from '@banx/pages/AdventuresPage'
@@ -229,8 +229,8 @@ export const StakeTokensModal = () => {
     setValue('0')
   }, [currentTabValue])
 
-  const calcTokensPlayersPoints = calculatePlayerPointsForTokens(
-    parseFloat(toDecimals(parseFloat(value))),
+  const calcTokensPlayersPoints = calculatePlayerPointsForBanxTokens(
+    new BN(toDecimals(parseFloat(value))),
   ).toFixed(2)
 
   return (

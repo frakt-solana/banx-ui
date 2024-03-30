@@ -8,7 +8,7 @@ import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type StakeBanxNftsTokenActionParams = {
-  tokenMint: web3.PublicKey
+  nftMint: string
   whitelistEntry: web3.PublicKey
   hadoRegistry: web3.PublicKey
   banxPointsMap: BanxPointsMap
@@ -35,7 +35,7 @@ export const stakeBanxNftAction: StakeBanxNftsTokenAction = async (
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     priorityFees: ixnParams.priorityFees,
     accounts: {
-      tokenMint: ixnParams.tokenMint,
+      tokenMint: new web3.PublicKey(ixnParams.nftMint),
       whitelistEntry: ixnParams.whitelistEntry,
       hadoRegistry: ixnParams.hadoRegistry,
       userPubkey: wallet.publicKey,
