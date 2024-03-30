@@ -8,8 +8,7 @@ import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type UnstakeBanxTokenParams = {
-  userPubkey: web3.PublicKey
-  tokensToUnstake: string
+  tokensToUnstake: BN
   priorityFees: number
 }
 
@@ -17,28 +16,23 @@ export type UnstakeBanxTokenParamsAction = MakeActionFn<UnstakeBanxTokenParams, 
 
 export const unstakeBanxTokenAction: UnstakeBanxTokenParamsAction = async (
   ixnParams,
-  { connection },
+  { wallet, connection },
 ) => {
-  const params = {
-    connection: connection,
+  const { tokensToUnstake, priorityFees } = ixnParams
+
+  const { instructions, signers } = await unstakeBanxToken({
+    connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
-      userPubkey: ixnParams.userPubkey,
+      userPubkey: wallet.publicKey as web3.PublicKey,
       tokenMint: BANX_TOKEN_MINT,
     },
-    priorityFees: ixnParams.priorityFees,
     args: {
-      tokensToUnstake: new BN(ixnParams.tokensToUnstake),
+      tokensToUnstake,
     },
+    priorityFees,
     sendTxn: sendTxnPlaceHolder,
-  }
+  })
 
-  const { instructions, signers } = await unstakeBanxToken(params)
-
-  return {
-    instructions,
-    signers,
-    additionalResult: null,
-    lookupTables: [],
-  }
+  return { instructions, signers, lookupTables: [] }
 }

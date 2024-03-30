@@ -1,102 +1,89 @@
-.modal {
-  :global {
-    z-index: 2;
+.modal :global {
+  z-index: 2;
 
-    .ant-modal-body {
-      padding: 0 !important;
-      // margin: -1px;
-    }
+  .ant-modal-body {
+    padding: 0 !important;
+  }
 
-    .ant-modal-content {
-      padding: 0;
-    }
+  .ant-modal-content {
+    padding: 0;
   }
 }
 
 .container {
-  padding: 12px 24px 24px 24px;
-
-  & svg {
-    margin-right: 4px;
-  }
+  padding: 12px 24px 24px;
 }
 
 .input {
-  display: flex;
-  align-content: center;
-  align-items: center;
-  border-radius: 6px;
-  border: 1px solid var(--bg-border);
-  padding-right: 4px;
   background: var(--bg-action);
-  margin-bottom: 10px;
+  border: 1px solid var(--bg-border);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  padding-right: 4px;
+  margin: 8px 0 12px;
 }
 
-.stats {
+.content {
   display: flex;
   flex-direction: column;
   margin-bottom: 12px;
   gap: 8px;
+}
 
-  .value {
-    display: flex;
-    align-items: center;
-    gap: 4px;
+.statInfo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 
-    path {
-      fill: #1b1b1b;
+  .label {
+    color: var(--content-secondary);
+    font: var(--title-sm);
+    text-transform: uppercase;
+
+    @media (max-width: 640px) {
+      font: var(--title-xs);
     }
   }
-}
 
-.uppercaseText {
-  color: var(--content-secondary);
-  font: var(--title-sm);
-  text-transform: uppercase;
-  margin-right: 4px;
+  .value {
+    font: var(--body-text-md);
 
-  @media (max-width: 640px) {
-    font: var(--title-xs);
+    @media (max-width: 640px) {
+      font: var(--body-text-sm);
+    }
   }
-}
 
-.valueText {
-  font: var(--body-text-md);
-  margin-right: 4px;
+  &.spaceBetween {
+    justify-content: space-between;
+  }
 
-  @media (max-width: 640px) {
-    font: var(--body-text-sm);
+  //? Prevent bug with BANX icon on dark theme
+  svg path {
+    fill: #1b1b1b;
   }
 }
 
 .row {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
-
-  path {
-    fill: #1b1b1b;
-  }
+  gap: 4px;
 }
 
-.btn {
-  width: 100%;
-}
-
-.youWillStake {
-  border: 0.5px dashed var(--bg-border, #ccc);
+.stakeContainer {
+  display: flex;
+  border: 0.5px dashed var(--bg-border);
+  flex-direction: column;
+  align-items: center;
   padding: 12px;
+  gap: 12px;
 
   .title {
-    text-align: center;
-    font: var(--card-header-sm);
-    text-transform: uppercase;
     display: flex;
     align-items: center;
-    justify-content: center;
-    span {
-      margin-right: 4px;
-    }
+    gap: 4px;
+    font: var(--card-header-sm);
+    text-transform: uppercase;
   }
 
   .valuesRaw {
@@ -120,4 +107,30 @@
       margin: 0 6px;
     }
   }
+}
+
+//? New styles
+.banxPointsStats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.banxPointsStat {
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: unset;
+
+  .value {
+    font: var(--important-text-xl);
+  }
+
+  .label {
+    color: var(--content-primary);
+  }
+}
+
+.stakeButton,
+.unstakeButton {
+  width: 100%;
 }
