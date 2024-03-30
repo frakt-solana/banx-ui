@@ -199,7 +199,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
                 fromDecimals(banxSubscription.stakeTokensAmount, BANX_TOKEN_STAKE_DECIMAL),
               )}
               banxAmount={format(banxSubscription.stakeNftAmount)}
-              partnerPts={format(totalWalletPts)}
+              partnerPts={format(totalWalletPts.toFixed(2))}
             />
           )}
 

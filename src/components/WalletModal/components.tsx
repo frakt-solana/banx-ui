@@ -2,18 +2,15 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { sumBy } from 'lodash'
 
 import { useDiscordUser } from '@banx/hooks'
-import { ChangeWallet, Copy, Logo, SignOut } from '@banx/icons'
+import { ChangeWallet, Copy, SignOut } from '@banx/icons'
 import { useIsLedger } from '@banx/store'
-import { copyToClipboard, formatNumbersWithCommas, shortenAddress } from '@banx/utils'
+import { copyToClipboard, shortenAddress } from '@banx/utils'
 
 import Checkbox from '../Checkbox'
-import { StatInfo, VALUES_TYPES } from '../StatInfo'
 import UserAvatar from '../UserAvatar'
 import { iconComponents } from './constants'
-import { useFetchUserRewards } from './hooks'
 
 import styles from './WalletModal.module.less'
 
@@ -38,30 +35,6 @@ const UserGeneralInfo = () => {
   )
 }
 
-const UserBalance = () => {
-  const { publicKey } = useWallet()
-
-  const publicKeyString = publicKey?.toBase58() || ''
-
-  const { data } = useFetchUserRewards(publicKeyString)
-
-  const totalRewards = sumBy(data?.sources?.map(([, value]) => value))
-  const displayRewardsValue = formatNumbersWithCommas((totalRewards / 1e9)?.toFixed(0) || 0)
-
-  return (
-    <div className={styles.userBalanceContainer}>
-      <StatInfo
-        flexType="row"
-        label="Rewards"
-        value={displayRewardsValue}
-        classNamesProps={{ container: styles.userRewards, value: styles.userLockedTokens }}
-        valueType={VALUES_TYPES.STRING}
-        icon={Logo}
-      />
-    </div>
-  )
-}
-
 interface UserInfoProps {
   onChangeWallet: () => void
   disconnect: () => Promise<void>
@@ -70,7 +43,6 @@ interface UserInfoProps {
 export const UserInfo: FC<UserInfoProps> = ({ onChangeWallet, disconnect }) => (
   <div className={styles.userInfoContainer}>
     <UserGeneralInfo />
-    <UserBalance />
     <div className={styles.buttonsWrapper}>
       <div className={styles.changeWalletButton} onClick={onChangeWallet}>
         <ChangeWallet />

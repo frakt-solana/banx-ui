@@ -29,7 +29,7 @@ export const RAFFLE_PROGRAM_PUBKEY = 'raffyhEJMx59iDx778Y9gdaVcP2XDeusPcPBxwr3qA
 
 export const BONDS = {
   PROGRAM_PUBKEY: '4tdmkuY6EStxbS6Y8s5ueznL3VPMSugrvQuDeAHGZhSt',
-  ADMIN_PUBKEY: '9J4yDqU6wBkdhP5bmJhukhsEzBkaAXiBmii52kTdxpQq',
+  ADMIN_PUBKEY: 'revJ8QJgQ3xCcZ6CMykjsmGMYdg8Pj9WnqgJZBHBwSK',
   BORROW_RENT_FEE: 4621440, //? Solana lamports
   PROTOCOL_FEE_PERCENT: 100, //? Base points
   PROTOCOL_REPAY_FEE: 620, //? Base points

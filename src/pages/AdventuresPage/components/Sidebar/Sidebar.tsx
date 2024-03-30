@@ -3,7 +3,7 @@ import { FC } from 'react'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { BN, web3 } from 'fbonds-core'
+import { web3 } from 'fbonds-core'
 import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { calculatePlayerPointsForTokens } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
@@ -16,11 +16,7 @@ import { StatInfo, StatsInfoProps, VALUES_TYPES } from '@banx/components/StatInf
 import { BanxTokenStake } from '@banx/api/banxTokenStake'
 import { BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
 import { BanxToken, Gamepad, MoneyBill } from '@banx/icons'
-import {
-  useBanxTokenBalance,
-  useBanxTokenSettings,
-  useBanxTokenStake,
-} from '@banx/pages/AdventuresPage'
+import { useBanxTokenSettings, useBanxTokenStake } from '@banx/pages/AdventuresPage'
 import { StakeNftsModal, StakeTokens } from '@banx/pages/AdventuresPage/components'
 import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
 import { useModal } from '@banx/store'
@@ -28,8 +24,8 @@ import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions
 import { stakeBanxClaimAction } from '@banx/transactions/banxStaking/stakeBanxClaimAction'
 import {
   enqueueTransactionSent,
-  formatNumbersWithCommas as format,
   formatCompact,
+  formatNumbersWithCommas,
   fromDecimals,
   usePriorityFees,
 } from '@banx/utils'
@@ -63,7 +59,6 @@ export const Sidebar: FC<SidebarProps> = ({
     calcPartnerPoints(banxTokenStake.tokensStaked, tokensPerPartnerPoints),
     BANX_TOKEN_STAKE_DECIMAL,
   )
-  const { data: balance, isLoading } = useBanxTokenBalance()
 
   const totalPts = (
     parseFloat(tokensPts.toString()) + parseFloat(banxTokenStake.partnerPointsStaked)
@@ -112,28 +107,20 @@ export const Sidebar: FC<SidebarProps> = ({
       .execute()
   }
 
-  const tokensTotal = () => {
-    if (!banxTokenSettings?.maxTokenStakeAmount || isLoading) {
-      return '0'
-    }
-    const tokensStakedBN = new BN(banxTokenStake.tokensStaked)
-    const balanceBN = new BN(balance)
-
-    return formatCompact(fromDecimals(tokensStakedBN.add(balanceBN), BANX_TOKEN_STAKE_DECIMAL))
-  }
-
-  const stakenTokensPlayersPoints = calculatePlayerPointsForTokens(
-    parseFloat(banxTokenStake.tokensStaked),
-  )
-  const totalPlayersPoints = format(
-    (parseFloat(banxTokenStake.playerPointsStaked) + stakenTokensPlayersPoints).toString(),
-  )
-
   const Totals = () => {
+    const stakenTokensPlayersPoints = calculatePlayerPointsForTokens(
+      parseFloat(banxTokenStake.tokensStaked),
+    )
+    const totalPlayersPoints = (
+      parseFloat(banxTokenStake.playerPointsStaked) + stakenTokensPlayersPoints
+    ).toFixed(2)
+
     return (
       <div>
-        <div className={styles.totalValues}>{format(totalPts)} partner</div>
-        <div className={styles.totalValues}>{parseFloat(totalPlayersPoints)} player</div>
+        <div className={styles.totalValues}>{formatNumbersWithCommas(totalPts)} partner</div>
+        <div className={styles.totalValues}>
+          {formatNumbersWithCommas(totalPlayersPoints)} player
+        </div>
       </div>
     )
   }
@@ -148,7 +135,9 @@ export const Sidebar: FC<SidebarProps> = ({
             <div className={styles.stakedInfo}>
               <StakingStat
                 label="NFTs staked"
-                value={`${format(banxTokenStake.banxNftsStakedQuantity)}/${format(nftsCount)}`}
+                value={`${formatNumbersWithCommas(
+                  banxTokenStake.banxNftsStakedQuantity,
+                )}/${formatNumbersWithCommas(nftsCount)}`}
               />
 
               <Button
@@ -165,7 +154,7 @@ export const Sidebar: FC<SidebarProps> = ({
                 label="Tokens staked"
                 value={`${formatCompact(
                   fromDecimals(banxTokenStake.tokensStaked, BANX_TOKEN_STAKE_DECIMAL),
-                )}/${tokensTotal()}`}
+                )}`}
               />
 
               <Button
@@ -198,7 +187,9 @@ export const Sidebar: FC<SidebarProps> = ({
           <div className={styles.claimStatsContainer}>
             <StakingStat
               label="claimable"
-              value={format(fromDecimals(rewards.toString(), BANX_TOKEN_STAKE_DECIMAL))}
+              value={formatNumbersWithCommas(
+                fromDecimals(rewards.toString(), BANX_TOKEN_STAKE_DECIMAL),
+              )}
               icon={BanxToken}
             />
             <Button onClick={claimAction} disabled={!rewards} className={styles.manageButton}>
@@ -210,7 +201,7 @@ export const Sidebar: FC<SidebarProps> = ({
 
           <StakingStat
             label="Total claimed"
-            value={format(fromDecimals(totalClaimed, BANX_TOKEN_STAKE_DECIMAL))}
+            value={formatNumbersWithCommas(fromDecimals(totalClaimed, BANX_TOKEN_STAKE_DECIMAL))}
             icon={BanxToken}
             flexType="row"
           />
