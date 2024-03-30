@@ -61,6 +61,7 @@ export const AdventuresList: FC<AdventuresListProps> = ({
           ({ adventure: adventureA }, { adventure: adventureB }) =>
             adventureA.week - adventureB.week,
         )
+        .filter(({ adventure }) => !isAdventureEnded(adventure))
         .map(({ adventure, adventureSubscription }) => (
           <AdventuresCard
             key={adventure?.publicKey}
