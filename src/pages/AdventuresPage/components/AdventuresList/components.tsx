@@ -99,7 +99,7 @@ export const AdventuresTimer: FC<{
       calculateAdventureRewards([
         { adventure: banxAdventure, subscription: banxAdventureSubscription },
       ]),
-      2,
+      0,
     )
   }, [banxAdventure, banxAdventureSubscription, isSubscribed])
 

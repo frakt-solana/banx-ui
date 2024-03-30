@@ -3,7 +3,7 @@ import { FC, useMemo } from 'react'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { web3 } from 'fbonds-core'
+import { BN, web3 } from 'fbonds-core'
 import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
 import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
@@ -29,7 +29,6 @@ import { stakeBanxClaimAction } from '@banx/transactions/staking/stakeBanxClaimA
 import {
   ZERO_BN,
   bnToFixed,
-  bnToHuman,
   enqueueSnackbar,
   formatCompact,
   formatNumbersWithCommas,
@@ -54,17 +53,25 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
 
   const nftsCount = nfts?.length.toString() || '0'
 
-  const rewards: string = useMemo(() => {
-    if (!banxAdventures) return '0'
+  const rewards: BN = useMemo(() => {
+    if (!banxAdventures) return ZERO_BN
 
     const rewardsBN = calculateAdventureRewards(
-      banxAdventures.map(({ adventure, adventureSubscription }) => ({
-        adventure,
-        subscription: adventureSubscription ?? undefined,
-      })),
+      banxAdventures //? Claim only from active subscriptions
+        .filter(
+          ({ adventureSubscription }) =>
+            adventureSubscription?.adventureSubscriptionState ===
+            BanxAdventureSubscriptionState.Active,
+        )
+        //? Claim only from ended adventures
+        .filter(({ adventure }) => isAdventureEnded(adventure))
+        .map(({ adventure, adventureSubscription }) => ({
+          adventure,
+          subscription: adventureSubscription ?? undefined,
+        })),
     )
 
-    return banxTokenBNToFixed(rewardsBN, 2)
+    return rewardsBN
   }, [banxAdventures])
 
   const { tokensPerPartnerPoints, rewardsHarvested } = banxStakingSettings
@@ -206,10 +213,14 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
           <div className={styles.claimStatsContainer}>
             <StakingStat
               label="claimable"
-              value={formatNumbersWithCommas(rewards)}
+              value={formatNumbersWithCommas(banxTokenBNToFixed(rewards, 2))}
               icon={BanxToken}
             />
-            <Button onClick={claimAction} disabled={!rewards} className={styles.manageButton}>
+            <Button
+              onClick={claimAction}
+              disabled={rewards.eq(ZERO_BN)}
+              className={styles.manageButton}
+            >
               Claim
             </Button>
           </div>
@@ -218,9 +229,7 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
 
           <StakingStat
             label="Total claimed"
-            value={formatNumbersWithCommas(
-              bnToHuman(rewardsHarvested, BANX_TOKEN_DECIMALS).toFixed(2),
-            )}
+            value={formatNumbersWithCommas(banxTokenBNToFixed(rewardsHarvested, 2))}
             icon={BanxToken}
             flexType="row"
           />
