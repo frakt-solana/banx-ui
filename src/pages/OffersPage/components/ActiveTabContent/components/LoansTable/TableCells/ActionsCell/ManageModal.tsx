@@ -140,7 +140,7 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
         return confirmed.forEach(({ result, signature }) => {
           if (result && wallet?.publicKey) {
             enqueueSnackbar({
-              message: 'Offer termination successfully initialized',
+              message: 'Offer successfully terminated',
               type: 'success',
               solanaExplorerPath: `tx/${signature}`,
             })

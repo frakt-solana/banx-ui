@@ -18,7 +18,6 @@ import {
   HealthColorIncreasing,
   destroySnackbar,
   enqueueSnackbar,
-  enqueueTranactionError,
   enqueueTranactionsError,
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
@@ -118,11 +117,12 @@ export const Summary: FC<SummaryProps> = ({
       })
       .on('confirmedAll', (results) => {
         const { confirmed, failed } = results
+        const failedTransactionsCount = failed.length
 
         destroySnackbar(loadingSnackbarId)
 
-        if (failed.length) {
-          return enqueueTranactionError()
+        if (failedTransactionsCount) {
+          return enqueueTranactionsError(failedTransactionsCount)
         }
 
         if (confirmed.length) {

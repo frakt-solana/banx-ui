@@ -59,7 +59,7 @@ export const useLendLoansTransactions = ({
         return confirmed.forEach(({ result, signature }) => {
           if (result) {
             enqueueSnackbar({
-              message: 'Offer termination successfully initialized',
+              message: 'Offer successfully terminated',
               type: 'success',
               solanaExplorerPath: `tx/${signature}`,
             })
@@ -85,7 +85,6 @@ export const useLendLoansTransactions = ({
 
     new TxnExecutor(makeClaimAction, { wallet: createWalletInstance(wallet), connection })
       .addTransactionParam({ loan, priorityFees })
-
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
         enqueueWaitingConfirmation(loadingSnackbarId)

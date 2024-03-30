@@ -210,7 +210,7 @@ export const useLoansTransactions = () => {
         }
 
         if (confirmed.length) {
-          enqueueSnackbar({ message: 'Loans interest paid successfully', type: 'success' })
+          enqueueSnackbar({ message: 'Loans interest successfully paid', type: 'success' })
 
           confirmed.forEach(({ result }) => {
             if (result && wallet.publicKey) {
