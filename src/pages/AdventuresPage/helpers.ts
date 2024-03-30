@@ -1,5 +1,4 @@
-import { Connection } from '@solana/web3.js'
-import { BN, web3 } from 'fbonds-core'
+import { BN } from 'fbonds-core'
 import { BANX_ADVENTURE_GAP } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   calculatePlayerPointsForTokens,
@@ -14,26 +13,8 @@ import {
   BanxAdventureSubscriptionBN,
   BanxStakeBN,
 } from '@banx/api/staking'
-import { BANX_TOKEN_DECIMALS, BONDS } from '@banx/constants'
+import { BANX_TOKEN_DECIMALS } from '@banx/constants'
 import { bnToFixed, bnToHuman } from '@banx/utils/bn'
-
-export async function getTokenBalance(
-  userPubKey: web3.PublicKey,
-  connection: Connection,
-  tokenMint: web3.PublicKey,
-): Promise<string> {
-  const tokenAccounts = await connection.getTokenAccountsByOwner(userPubKey, {
-    programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-    mint: tokenMint,
-  })
-  const userTokenAccountAddress = tokenAccounts.value[0]?.pubkey
-  if (!userTokenAccountAddress) {
-    return '0'
-  }
-  const balance = await connection.getTokenAccountBalance(userTokenAccountAddress)
-
-  return balance?.value.amount?.toString() || '0'
-}
 
 //TODO Fix rewards
 export const calculateAdventureRewards = (
@@ -85,7 +66,9 @@ export const isAdventureStarted = (adventure: BanxAdventureBN): boolean => {
 }
 
 export const isAdventureEnded = (adventure: BanxAdventureBN): boolean => {
-  return adventure.periodEndingAt < moment().unix()
+  const endTime = getAdventureEndTime(adventure)
+
+  return endTime < moment().unix()
 }
 
 export const getAdventureEndTime = (adventure: BanxAdventureBN): number => {

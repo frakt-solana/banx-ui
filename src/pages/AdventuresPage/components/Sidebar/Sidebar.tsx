@@ -28,6 +28,7 @@ import {
   calcPartnerPoints,
   calculateAdventureRewards,
   calculatePlayerPointsForBanxTokens,
+  isAdventureEnded,
 } from '@banx/pages/AdventuresPage'
 import { StakeNftsModal, StakeTokensModal } from '@banx/pages/AdventuresPage/components'
 import { useModal } from '@banx/store'
@@ -99,11 +100,14 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
     } as BanxSubscribeAdventureOptimistic
 
     const weeks = chain(banxAdventures)
+      //? Claim only from active subscriptions
       .filter(
         ({ adventureSubscription }) =>
           adventureSubscription?.adventureSubscriptionState ===
           BanxAdventureSubscriptionState.Active,
       )
+      //? Claim only from ended adventures
+      .filter(({ adventure }) => isAdventureEnded(adventure))
       .map(({ adventure }) => adventure.week)
       .value()
 
