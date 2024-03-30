@@ -78,7 +78,7 @@ export const StakeTokensModal = () => {
       banxStakeSettings?.tokensPerPartnerPoints,
     )
 
-  const pointsToReceive = calcPts(value)
+  const pointsToReceive = calcPts(value).toFixed(2)
 
   const onStakeTokens = () => {
     if (!wallet.publicKey || !banxStakeSettings || !value || !banxStakeInfo) {
@@ -198,6 +198,7 @@ export const StakeTokensModal = () => {
       bnToHuman(banxStakeInfo?.banxTokenStake?.tokensStaked ?? new BN(0)) - parseFloat(value || '0')
     ).toFixed(0),
   )
+
   const ptsAmount = formatNumbersWithCommas(
     calcPts(
       bnToFixed({
@@ -205,7 +206,7 @@ export const StakeTokensModal = () => {
         decimals: BANX_TOKEN_DECIMALS,
         fractionDigits: 2,
       }),
-    ),
+    ).toFixed(2),
   )
 
   const disabledBtn = useMemo(() => {
