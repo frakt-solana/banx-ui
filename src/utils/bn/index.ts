@@ -14,3 +14,31 @@ export const bnToFixed = (params: { value: BN; fractionDigits?: number; decimals
 
   return bnToHuman(value, decimals).toFixed(fractionDigits)
 }
+
+export const stringToBN = (value: string, decimals = 9): BN => {
+  const isValidFormatRegExp = new RegExp(/^\d*\.?\d*$/)
+
+  if (!isValidFormatRegExp.test(value)) return ZERO_BN
+
+  const [integerPart, fractionalPart] = value.split('.')
+
+  if (isNaN(parseInt(integerPart))) return ZERO_BN
+
+  const integer = new BN(integerPart).mul(new BN(10 ** decimals))
+
+  const calculateFractionalPart = (fractionalPart: string) => {
+    if (fractionalPart === '' || isNaN(parseInt(fractionalPart))) {
+      return ZERO_BN
+    }
+
+    if (fractionalPart.length >= decimals) {
+      return new BN(fractionalPart.slice(0, decimals))
+    }
+
+    return new BN(fractionalPart).mul(new BN(decimals - fractionalPart.length))
+  }
+
+  const fractional = calculateFractionalPart(fractionalPart)
+
+  return integer.add(fractional)
+}
