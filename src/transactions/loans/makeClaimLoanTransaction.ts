@@ -19,10 +19,7 @@ export type MakeClaimActionParams = {
   priorityFees: number
 }
 
-export type MakeClaimAction = CreateTransactionDataFn<
-  MakeClaimActionParams,
-  BondAndTransactionOptimistic
->
+export type MakeClaimAction = CreateTransactionDataFn<MakeClaimActionParams, Loan>
 
 export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, wallet }) => {
   const { loan, priorityFees } = ixnParams
@@ -52,10 +49,16 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       priorityFees,
     })
 
+    const optimisticLoan = {
+      ...loan,
+      fraktBond: optimisticResult.fraktBond,
+      bondTradeTransaction: optimisticResult.bondTradeTransaction,
+    }
+
     return {
       instructions,
       signers,
-      result: optimisticResult,
+      result: optimisticLoan,
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
     }
   } else {
@@ -90,10 +93,16 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       priorityFees,
     })
 
+    const optimisticLoan = {
+      ...loan,
+      fraktBond: optimisticResult.fraktBond,
+      bondTradeTransaction: optimisticResult.bondTradeTransaction,
+    }
+
     return {
       instructions,
       signers,
-      result: optimisticResult,
+      result: optimisticLoan,
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
     }
   }

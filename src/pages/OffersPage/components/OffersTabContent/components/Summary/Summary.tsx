@@ -1,7 +1,7 @@
 import { FC, useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { sumBy } from 'lodash'
+import { sumBy, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
@@ -11,11 +11,10 @@ import { Offer, UserOffer } from '@banx/api/core'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimBondOfferInterestAction } from '@banx/transactions/bonds'
 import {
-  createSnackbarState,
   destroySnackbar,
   enqueueSnackbar,
-  enqueueTranactionError,
-  enqueueTransactionSent,
+  enqueueTranactionsError,
+  enqueueTransactionsSent,
   enqueueWaitingConfirmation,
   formatDecimal,
 } from '@banx/utils'
@@ -39,7 +38,7 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
   const claimInterest = () => {
     if (!offers.length) return
 
-    const loadingSnackbarState = createSnackbarState()
+    const loadingSnackbarId = uniqueId()
 
     const txnParams = offers.map(({ offer }) => ({ optimisticOffer: offer }))
 
@@ -48,33 +47,27 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
       connection,
     })
       .addTransactionParams(txnParams)
-      .on('sentSome', (results) => {
-        results.forEach(({ signature }) => enqueueTransactionSent(signature))
-        loadingSnackbarState.id = enqueueWaitingConfirmation()
+      .on('sentAll', () => {
+        enqueueTransactionsSent()
+        enqueueWaitingConfirmation(loadingSnackbarId)
       })
       .on('confirmedAll', (results) => {
         const { confirmed, failed } = results
+        const failedTransactionsCount = failed.length
 
-        if (failed.length) {
-          destroySnackbar(loadingSnackbarState.id)
-          return enqueueTranactionError()
+        destroySnackbar(loadingSnackbarId)
+
+        if (failedTransactionsCount) {
+          return enqueueTranactionsError(failedTransactionsCount)
         }
 
-        return confirmed.forEach(({ result, signature }) => {
-          if (result) {
-            destroySnackbar(loadingSnackbarState.id)
-            enqueueSnackbar({
-              message: 'Interest successfully claimed',
-              type: 'success',
-              solanaExplorerPath: `tx/${signature}`,
-            })
-
-            updateOrAddOffer([result.bondOffer])
-          }
-        })
+        if (confirmed.length) {
+          enqueueSnackbar({ message: 'Interest successfully claimed', type: 'success' })
+          confirmed.forEach(({ result }) => result && updateOrAddOffer([result.bondOffer]))
+        }
       })
       .on('error', (error) => {
-        destroySnackbar(loadingSnackbarState.id)
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: offers,
           walletPubkey: wallet?.publicKey?.toBase58(),

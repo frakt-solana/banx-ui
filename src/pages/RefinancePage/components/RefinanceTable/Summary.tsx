@@ -1,7 +1,7 @@
 import React, { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { map, sumBy } from 'lodash'
+import { chain, map, sumBy, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
@@ -23,11 +23,10 @@ import { makeRefinanceAction } from '@banx/transactions/loans'
 import {
   calcWeightedAverage,
   calculateLoanRepayValue,
-  createSnackbarState,
   destroySnackbar,
   enqueueSnackbar,
-  enqueueTranactionError,
-  enqueueTransactionSent,
+  enqueueTranactionsError,
+  enqueueTransactionsSent,
   enqueueWaitingConfirmation,
   getDialectAccessToken,
   trackPageEvent,
@@ -85,42 +84,41 @@ export const Summary: FC<SummaryProps> = ({
   }
 
   const refinanceAll = () => {
-    const loadingSnackbarState = createSnackbarState()
+    const loadingSnackbarId = uniqueId()
 
     const txnParams = selectedLoans.map((loan) => ({ loan, priorityFees }))
 
     new TxnExecutor(makeRefinanceAction, { wallet: createWalletInstance(wallet), connection })
       .addTransactionParams(txnParams)
-
-      .on('sentSome', (results) => {
-        results.forEach(({ signature }) => enqueueTransactionSent(signature))
-        loadingSnackbarState.id = enqueueWaitingConfirmation()
+      .on('sentAll', () => {
+        enqueueTransactionsSent()
+        enqueueWaitingConfirmation(loadingSnackbarId)
       })
       .on('confirmedAll', (results) => {
         const { confirmed, failed } = results
+        const failedTransactionsCount = failed.length
 
-        if (failed.length) {
-          destroySnackbar(loadingSnackbarState.id)
-          return enqueueTranactionError()
+        destroySnackbar(loadingSnackbarId)
+
+        if (failedTransactionsCount) {
+          return enqueueTranactionsError(failedTransactionsCount)
         }
 
-        confirmed.forEach(({ result, signature }) => {
-          if (result) {
-            destroySnackbar(loadingSnackbarState.id)
-            enqueueSnackbar({
-              message: 'Loan successfully refinanced',
-              type: 'success',
-              solanaExplorerPath: `tx/${signature}`,
-            })
-          }
-        })
+        if (confirmed.length) {
+          enqueueSnackbar({ message: 'Loans successfully refinanced', type: 'success' })
 
-        onDeselectAllLoans()
-        addMints(...selectedLoans.map(({ nft }) => nft.mint))
-        onSuccess()
+          const mintsToHidden = chain(confirmed)
+            .map(({ result }) => result?.nft.mint)
+            .compact()
+            .value()
+
+          addMints(...mintsToHidden)
+          onDeselectAllLoans()
+          onSuccess()
+        }
       })
       .on('error', (error) => {
-        destroySnackbar(loadingSnackbarState.id)
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: txnParams,
           walletPubkey: wallet?.publicKey?.toBase58(),

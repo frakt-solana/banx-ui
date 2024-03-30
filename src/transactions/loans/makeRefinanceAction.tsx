@@ -28,10 +28,7 @@ export type MakeRefinanceActionParams = {
   priorityFees: number
 }
 
-export type MakeRefinanceAction = CreateTransactionDataFn<
-  MakeRefinanceActionParams,
-  RefinanceOptimisticResult
->
+export type MakeRefinanceAction = CreateTransactionDataFn<MakeRefinanceActionParams, Loan>
 
 interface OptimisticResult extends BondAndTransactionOptimistic {
   oldBondOffer: BondOfferV2
@@ -65,10 +62,16 @@ export const makeRefinanceAction: MakeRefinanceAction = async (
     priorityFees,
   })
 
+  const optimisticLoan = {
+    ...loan,
+    fraktBond: optimisticResult.fraktBond,
+    bondTradeTransaction: optimisticResult.newBondTradeTransaction,
+  }
+
   return {
     instructions,
     signers,
-    result: optimisticResult,
+    result: optimisticLoan,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }

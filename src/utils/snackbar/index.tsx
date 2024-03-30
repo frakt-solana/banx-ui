@@ -89,7 +89,7 @@ export const enqueueTransactionSent = (signature: string) =>
     solanaExplorerPath: `tx/${signature}`,
   })
 
-export const enqueueWaitingConfirmation = (key?: string) =>
+export const enqueueWaitingConfirmation = (key: string) =>
   enqueueSnackbar({
     customKey: key,
     message: 'Waiting for confirmation',
@@ -105,7 +105,7 @@ export const enqueueTranactionError = () =>
 
 export const enqueueTranactionsError = (count: number) =>
   enqueueSnackbar({
-    message: `Transactions failed (${count}). Please try again`,
+    message: `${count} transaction${count > 1 ? 's' : ''} failed. Please try again`,
     type: 'error',
   })
 
