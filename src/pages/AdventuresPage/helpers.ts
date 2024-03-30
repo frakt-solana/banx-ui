@@ -16,7 +16,7 @@ import {
 } from '@banx/api/staking'
 import { BONDS } from '@banx/constants'
 import { BANX_TOKEN_DECIMALS } from '@banx/constants/banxNfts'
-import { bnToHuman } from '@banx/utils/bn'
+import { bnToFixed, bnToHuman } from '@banx/utils/bn'
 
 export async function getTokenBalance(
   userPubKey: web3.PublicKey,
@@ -116,3 +116,6 @@ export const calculatePlayerPointsForBanxTokens = (tokensStaked: BN): number => 
   //TODO COnvert to BN in future
   return playerPoints
 }
+
+export const banxTokenBNToFixed = (value: BN, fractionDigits = 2) =>
+  bnToFixed({ value, fractionDigits, decimals: BANX_TOKEN_DECIMALS })

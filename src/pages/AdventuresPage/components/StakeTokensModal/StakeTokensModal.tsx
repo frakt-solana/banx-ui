@@ -23,7 +23,7 @@ import {
 import { BANX_TOKEN_DECIMALS, BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/banxNfts'
 import { BanxToken } from '@banx/icons'
 import { useBanxStakeInfo, useBanxStakeSettings } from '@banx/pages/AdventuresPage'
-import { calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
+import { banxTokenBNToFixed, calcPartnerPoints } from '@banx/pages/AdventuresPage/helpers'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxTokenAction, unstakeBanxTokenAction } from '@banx/transactions/banxStaking'
@@ -34,7 +34,7 @@ import {
   toDecimals,
   usePriorityFees,
 } from '@banx/utils'
-import { bnToFixed, bnToHuman } from '@banx/utils/bn'
+import { bnToHuman } from '@banx/utils/bn'
 
 import styles from './StakeTokensModal.module.less'
 
@@ -201,11 +201,7 @@ export const StakeTokensModal = () => {
 
   const ptsAmount = formatNumbersWithCommas(
     calcPts(
-      bnToFixed({
-        value: banxStakeInfo?.banxTokenStake?.tokensStaked ?? new BN(0),
-        decimals: BANX_TOKEN_DECIMALS,
-        fractionDigits: 2,
-      }),
+      banxTokenBNToFixed(banxStakeInfo?.banxTokenStake?.tokensStaked ?? new BN(0), 2),
     ).toFixed(2),
   )
 
@@ -226,13 +222,7 @@ export const StakeTokensModal = () => {
     if (currentTabValue === ModalTabs.STAKE) {
       return setValue(fromDecimals(banxWalletBalance.toString() || 0, BANX_TOKEN_STAKE_DECIMAL))
     }
-    return setValue(
-      bnToFixed({
-        value: banxStakeInfo?.banxTokenStake?.tokensStaked ?? new BN(0),
-        decimals: BANX_TOKEN_DECIMALS,
-        fractionDigits: 2,
-      }),
-    )
+    return setValue(banxTokenBNToFixed(banxStakeInfo?.banxTokenStake?.tokensStaked ?? new BN(0), 2))
   }
 
   useEffect(() => {

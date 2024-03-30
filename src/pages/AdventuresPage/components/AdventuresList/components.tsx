@@ -6,16 +6,15 @@ import { Button } from '@banx/components/Buttons'
 import Tooltip from '@banx/components/Tooltip'
 
 import { AdventureStatus, BanxAdventureBN, BanxAdventureSubscriptionBN } from '@banx/api/staking'
-import { BANX_TOKEN_DECIMALS } from '@banx/constants/banxNfts'
 import { useCountdown } from '@banx/hooks'
 import { Alert, BanxToken, Clock, MoneyBill, SuccessIcon, Timer } from '@banx/icons'
 import {
+  banxTokenBNToFixed,
   calculateAdventureRewards,
   getAdventureEndTime,
   getAdventureStatus,
 } from '@banx/pages/AdventuresPage/helpers'
 import { formatNumbersWithCommas } from '@banx/utils'
-import { bnToFixed } from '@banx/utils/bn'
 
 import styles from './AdventuresList.module.less'
 
@@ -96,13 +95,12 @@ export const AdventuresTimer: FC<{
   const rewards: string = useMemo(() => {
     if (!banxAdventureSubscription || !isSubscribed) return '0'
 
-    return bnToFixed({
-      value: calculateAdventureRewards([
+    return banxTokenBNToFixed(
+      calculateAdventureRewards([
         { adventure: banxAdventure, subscription: banxAdventureSubscription },
       ]),
-      decimals: BANX_TOKEN_DECIMALS,
-      fractionDigits: 2,
-    })
+      2,
+    )
   }, [banxAdventure, banxAdventureSubscription, isSubscribed])
 
   return (

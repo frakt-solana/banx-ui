@@ -25,6 +25,7 @@ import { BANX_TOKEN_DECIMALS, BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants/b
 import { BanxToken, Gamepad, MoneyBill } from '@banx/icons'
 import { StakeNftsModal, StakeTokensModal } from '@banx/pages/AdventuresPage/components'
 import {
+  banxTokenBNToFixed,
   calcPartnerPoints,
   calculateAdventureRewards,
   calculatePlayerPointsForBanxTokens,
@@ -70,11 +71,7 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
       })),
     )
 
-    return bnToFixed({
-      value: rewardsBN,
-      decimals: BANX_TOKEN_DECIMALS,
-      fractionDigits: 2,
-    })
+    return banxTokenBNToFixed(rewardsBN, 2)
   }, [banxAdventures])
 
   const { tokensPerPartnerPoints, rewardsHarvested } = banxStakingSettings

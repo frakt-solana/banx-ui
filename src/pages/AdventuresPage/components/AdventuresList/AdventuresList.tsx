@@ -20,8 +20,9 @@ import {
   convertToBanxStakingSettingsString,
   convertToBanxSubscription,
 } from '@banx/api/staking'
-import { BANX_TOKEN_DECIMALS, TOTAL_BANX_NFTS, TOTAL_BANX_PTS } from '@banx/constants/banxNfts'
+import { TOTAL_BANX_NFTS, TOTAL_BANX_PTS } from '@banx/constants/banxNfts'
 import {
+  banxTokenBNToFixed,
   calcPartnerPoints,
   checkIsParticipatingInAdventure,
   getAdventureStatus,
@@ -36,7 +37,6 @@ import {
   formatNumbersWithCommas,
   usePriorityFees,
 } from '@banx/utils'
-import { bnToFixed } from '@banx/utils/bn'
 
 import {
   AdventuresTimer,
@@ -85,10 +85,6 @@ interface AdventuresCardProps {
   banxAdventureSubscription?: BanxAdventureSubscriptionBN
   banxTokenStake?: BanxStakeBN
 }
-
-//TODO rename
-const banxTokenBNToFixed = (value: BN, fractionDigits = 2) =>
-  bnToFixed({ value, fractionDigits, decimals: BANX_TOKEN_DECIMALS })
 
 const AdventuresCard: FC<AdventuresCardProps> = ({
   banxAdventure,
