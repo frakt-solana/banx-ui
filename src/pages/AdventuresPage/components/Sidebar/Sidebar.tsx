@@ -3,7 +3,7 @@ import { FC, useMemo } from 'react'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { BN, web3 } from 'fbonds-core'
+import { web3 } from 'fbonds-core'
 import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
@@ -35,6 +35,7 @@ import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxClaimAction } from '@banx/transactions/staking/stakeBanxClaimAction'
 import {
+  ZERO_BN,
   bnToFixed,
   bnToHuman,
   enqueueSnackbar,
@@ -77,7 +78,7 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
   const { tokensPerPartnerPoints, rewardsHarvested } = banxStakingSettings
 
   const tokensPts = calcPartnerPoints(
-    banxTokenStake?.tokensStaked ?? new BN(0),
+    banxTokenStake?.tokensStaked ?? ZERO_BN,
     tokensPerPartnerPoints,
   )
 
@@ -144,7 +145,7 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
 
   const Totals = () => {
     const stakenTokensPlayersPoints = calculatePlayerPointsForBanxTokens(
-      banxTokenStake?.tokensStaked ?? new BN(0),
+      banxTokenStake?.tokensStaked ?? ZERO_BN,
     )
     const totalPlayersPoints = (
       (banxTokenStake?.playerPointsStaked ?? 0) + stakenTokensPlayersPoints
@@ -189,7 +190,7 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
                 label="Tokens staked"
                 value={`${formatCompact(
                   bnToFixed({
-                    value: banxTokenStake?.tokensStaked || new BN(0),
+                    value: banxTokenStake?.tokensStaked ?? ZERO_BN,
                     decimals: BANX_TOKEN_DECIMALS,
                     fractionDigits: 2,
                   }),

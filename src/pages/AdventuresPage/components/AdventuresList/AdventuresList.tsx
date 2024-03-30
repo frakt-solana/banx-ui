@@ -2,7 +2,6 @@ import { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { BN } from 'fbonds-core'
 import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
 import { capitalize } from 'lodash'
@@ -32,6 +31,7 @@ import {
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { subscribeBanxAdventureAction } from '@banx/transactions/staking'
 import {
+  ZERO_BN,
   enqueueSnackbar,
   formatCompact,
   formatNumbersWithCommas,
@@ -184,7 +184,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
   }
 
   const walletTokenPts = calcPartnerPoints(
-    banxAdventureSubscription?.stakeTokensAmount ?? new BN(0),
+    banxAdventureSubscription?.stakeTokensAmount ?? ZERO_BN,
     banxAdventure.tokensPerPoints,
   )
 

@@ -1,5 +1,7 @@
 import { BN } from 'fbonds-core'
 
+export const ZERO_BN = new BN(0)
+
 export const bnToHuman = (value: BN, decimals = 9): number => {
   const valueStr = value.toString()
 

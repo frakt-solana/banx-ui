@@ -14,22 +14,22 @@ import {
   BanxStakeBN,
 } from '@banx/api/staking'
 import { BANX_TOKEN_DECIMALS } from '@banx/constants'
-import { bnToFixed, bnToHuman } from '@banx/utils'
+import { ZERO_BN, bnToFixed, bnToHuman } from '@banx/utils'
 
 //TODO Fix rewards
 export const calculateAdventureRewards = (
   params: Array<{ adventure: BanxAdventureBN; subscription?: BanxAdventureSubscriptionBN }>,
 ): BN => {
-  if (!params.length) return new BN(0)
+  if (!params.length) return ZERO_BN
 
   const hasSubscriptions = !!params.find(({ subscription }) => !!subscription)
 
-  if (!hasSubscriptions) return new BN(0)
+  if (!hasSubscriptions) return ZERO_BN
 
   const calculateRewardsParams = chain(params)
     .filter(({ subscription }) => !!subscription)
     .map(({ adventure, subscription }) => ({
-      subscriptuionStakeTokensAmount: subscription?.stakeTokensAmount ?? new BN(0),
+      subscriptuionStakeTokensAmount: subscription?.stakeTokensAmount ?? ZERO_BN,
       adventureStakePartnerPointsAmount: new BN(subscription?.stakePartnerPointsAmount ?? 0),
       adventureTotalPartnerPoints: new BN(adventure.totalPartnerPoints),
       adventureTokensPerPoints: adventure.tokensPerPoints,
@@ -55,7 +55,7 @@ export const calcPartnerPoints = (tokensAmount: BN, tokensPerPartnerPoints?: BN)
 
 export const checkIsParticipatingInAdventure = (banxTokenStake?: BanxStakeBN) => {
   if (!banxTokenStake) return false
-  if (banxTokenStake.tokensStaked.eq(new BN(0))) return false
+  if (banxTokenStake.tokensStaked.eq(ZERO_BN)) return false
   if (banxTokenStake.banxNftsStakedQuantity === 0) return false
 
   return true
