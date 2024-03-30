@@ -1,5 +1,7 @@
 import { BN } from 'fbonds-core'
 
+import { BANX_TOKEN_DECIMALS } from '@banx/constants/banxNfts'
+
 import {
   BanxAdventure,
   BanxStakeInfoResponse,
@@ -38,7 +40,7 @@ export const convertToBanxStakingSettingsBN = (
     publicKey,
     banxStaked: new BN(banxStaked),
     banxStakingSettingsState,
-    maxTokenStakeAmount: new BN(maxTokenStakeAmount),
+    maxTokenStakeAmount: new BN(maxTokenStakeAmount).mul(new BN(10 ** BANX_TOKEN_DECIMALS)), //TODO Send from BE in decimals
     rewardsHarvested: new BN(rewardsHarvested),
     tokensPerPartnerPoints: new BN(tokensPerPartnerPoints),
     tokensPerWeek: new BN(tokensPerWeek),
@@ -66,7 +68,7 @@ export const convertToBanxStakingSettingsString = (
     publicKey,
     banxStaked: banxStaked.toString(),
     banxStakingSettingsState,
-    maxTokenStakeAmount: maxTokenStakeAmount.toString(),
+    maxTokenStakeAmount: maxTokenStakeAmount.div(new BN(10 ** BANX_TOKEN_DECIMALS)).toString(), //TODO Send from BE in decimals
     rewardsHarvested: rewardsHarvested.toString(),
     tokensPerPartnerPoints: tokensPerPartnerPoints.toString(),
     tokensPerWeek: tokensPerWeek.toString(),
