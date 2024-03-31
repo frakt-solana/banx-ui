@@ -135,7 +135,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
             banxAdventure={banxAdventure}
           />
         )}
-        {isEnded && (
+        {isEnded && wallet.connected && (
           <AdventureEndedRewardsResult
             banxAdventureSubscription={banxAdventureSubscription}
             banxAdventure={banxAdventure}
