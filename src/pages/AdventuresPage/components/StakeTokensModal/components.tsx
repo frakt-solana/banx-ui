@@ -10,6 +10,8 @@ import NumericInput, { NumericInputProps } from '@banx/components/inputs/Numeric
 import { BanxToken } from '@banx/icons'
 import { formatNumbersWithCommas } from '@banx/utils'
 
+import { limitDecimalPlaces } from './helpers'
+
 import styles from './StakeTokensModal.module.less'
 
 interface BanxPointsStatsProps {
@@ -46,7 +48,9 @@ export const BanxPointsStats: FC<BanxPointsStatsProps> = ({ partnerPoints, playe
 }
 
 export const BanxWalletBalance: FC<{ banxWalletBalance: number }> = ({ banxWalletBalance }) => {
-  const formattedBanxWalletBalance = formatNumbersWithCommas(banxWalletBalance.toFixed(2))
+  const formattedBanxWalletBalance = formatNumbersWithCommas(
+    limitDecimalPlaces(String(banxWalletBalance)),
+  )
 
   return (
     <div className={styles.statInfo}>
@@ -58,7 +62,7 @@ export const BanxWalletBalance: FC<{ banxWalletBalance: number }> = ({ banxWalle
 }
 
 export const TotalStakedInfo: FC<{ tokensStaked: number }> = ({ tokensStaked }) => {
-  const formattedTokensStaked = formatNumbersWithCommas(tokensStaked.toFixed(2))
+  const formattedTokensStaked = formatNumbersWithCommas(limitDecimalPlaces(String(tokensStaked)))
 
   return (
     <div className={styles.statInfo}>
@@ -97,7 +101,7 @@ interface IdleTokensBalanceProps {
 }
 
 export const IdleTokensBalance: FC<IdleTokensBalanceProps> = ({ value, label }) => {
-  const formattedIdleTokensBalance = formatNumbersWithCommas(value?.toFixed(2))
+  const formattedIdleTokensBalance = formatNumbersWithCommas(limitDecimalPlaces(String(value)))
 
   return (
     <div className={classNames(styles.statInfo, styles.spaceBetween)}>

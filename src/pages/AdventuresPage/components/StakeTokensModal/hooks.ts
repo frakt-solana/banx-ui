@@ -11,7 +11,7 @@ import { ZERO_BN, bnToHuman, enqueueSnackbar, stringToBN, usePriorityFees } from
 
 import { calcPartnerPoints } from '../../helpers'
 import { useBanxStakeInfo, useBanxStakeSettings } from '../../hooks'
-import { calcIdleBalance, calcPlayerPoints } from './helpers'
+import { calcIdleBalance, calcPlayerPoints, limitDecimalPlaces } from './helpers'
 
 export const useStakeTokensModal = () => {
   const { banxStakeSettings } = useBanxStakeSettings()
@@ -22,27 +22,26 @@ export const useStakeTokensModal = () => {
     defaultValue: MODAL_TABS[0].value,
   })
 
+  const tokensPerPartnerPointsBN = banxStakeSettings?.tokensPerPartnerPoints ?? ZERO_BN
+  const banxWalletBalance = bnToHuman(banxStakeInfo?.banxWalletBalance ?? ZERO_BN)
+  const totalTokenStaked = bnToHuman(banxStakeInfo?.banxTokenStake?.tokensStaked ?? ZERO_BN)
+
   const [inputTokenAmount, setInputTokenAmount] = useState('')
 
   const handleChangeValue = (inputValue: string) => {
-    setInputTokenAmount(inputValue)
+    setInputTokenAmount(limitDecimalPlaces(inputValue))
   }
 
   const onSetMax = () => {
     if (currentTabValue === ModalTabs.STAKE) {
-      return setInputTokenAmount(String(banxWalletBalance))
+      return setInputTokenAmount(limitDecimalPlaces(String(banxWalletBalance)))
     }
-    return setInputTokenAmount(String(totalTokenStaked))
+    return setInputTokenAmount(limitDecimalPlaces(String(totalTokenStaked)))
   }
 
   const onTabClick = () => {
     setInputTokenAmount('')
   }
-
-  const tokensPerPartnerPointsBN = banxStakeSettings?.tokensPerPartnerPoints ?? ZERO_BN
-
-  const banxWalletBalance = bnToHuman(banxStakeInfo?.banxWalletBalance ?? ZERO_BN)
-  const totalTokenStaked = bnToHuman(banxStakeInfo?.banxTokenStake?.tokensStaked ?? ZERO_BN)
 
   const idleBanxWalletBalance = calcIdleBalance(banxWalletBalance, inputTokenAmount)
   const idleStakedTokens = calcIdleBalance(totalTokenStaked, inputTokenAmount)
