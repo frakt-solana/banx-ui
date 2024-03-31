@@ -1,5 +1,5 @@
 import { web3 } from '@project-serum/anchor'
-import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
+import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
 import { claimStakingRewards } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking/claimStakingRewards'
 import { MakeActionFn } from 'solana-transactions-executor'
 
@@ -7,16 +7,11 @@ import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type StakeBanxClaimActionParams = {
-  tokenMint: web3.PublicKey
   weeks: number[]
   priorityFees: number
-  optimistic: BanxSubscribeAdventureOptimistic
 }
 
-export type StakeBanxClaimAction = MakeActionFn<
-  StakeBanxClaimActionParams,
-  BanxSubscribeAdventureOptimistic
->
+export type StakeBanxClaimAction = MakeActionFn<StakeBanxClaimActionParams, null>
 
 export const stakeBanxClaimAction: StakeBanxClaimAction = async (
   ixnParams,
@@ -35,10 +30,9 @@ export const stakeBanxClaimAction: StakeBanxClaimAction = async (
       weeks: ixnParams.weeks,
     },
     accounts: {
-      tokenMint: ixnParams.tokenMint,
+      tokenMint: BANX_TOKEN_MINT,
       userPubkey: wallet.publicKey,
     },
-    optimistics: ixnParams.optimistic,
     sendTxn: sendTxnPlaceHolder,
   }
 
@@ -47,5 +41,6 @@ export const stakeBanxClaimAction: StakeBanxClaimAction = async (
     instructions: instructions,
     signers: signers,
     lookupTables: [],
+    additionalResult: null,
   }
 }
