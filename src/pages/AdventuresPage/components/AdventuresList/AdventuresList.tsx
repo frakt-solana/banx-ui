@@ -40,37 +40,36 @@ import {
   TotalParticipationColumn,
   WalletParticipationColumn,
 } from './components'
+import { useAdventuresAndSubscriptions } from './hooks'
 
 import styles from './AdventuresList.module.less'
 
 interface AdventuresListProps {
   banxStakingSettings: BanxStakingSettingsBN
   banxStakeInfo: BanxInfoBN
+  historyMode: boolean
   className?: string
 }
 
 export const AdventuresList: FC<AdventuresListProps> = ({
   banxStakingSettings,
   banxStakeInfo,
+  historyMode,
   className,
 }) => {
+  const adventuresAndSubscriptions = useAdventuresAndSubscriptions(banxStakeInfo, historyMode)
+
   return (
     <ul className={classNames(styles.list, className)}>
-      {[...banxStakeInfo.banxAdventures]
-        .sort(
-          ({ adventure: adventureA }, { adventure: adventureB }) =>
-            adventureA.week - adventureB.week,
-        )
-        .filter(({ adventure }) => !isAdventureEnded(adventure))
-        .map(({ adventure, adventureSubscription }) => (
-          <AdventuresCard
-            key={adventure?.publicKey}
-            banxAdventureSubscription={adventureSubscription ?? undefined}
-            banxAdventure={adventure}
-            banxStakingSettings={banxStakingSettings}
-            banxTokenStake={banxStakeInfo.banxTokenStake ?? undefined}
-          />
-        ))}
+      {adventuresAndSubscriptions.map(({ adventure, adventureSubscription }) => (
+        <AdventuresCard
+          key={adventure?.publicKey}
+          banxAdventureSubscription={adventureSubscription ?? undefined}
+          banxAdventure={adventure}
+          banxStakingSettings={banxStakingSettings}
+          banxTokenStake={banxStakeInfo.banxTokenStake ?? undefined}
+        />
+      ))}
     </ul>
   )
 }
