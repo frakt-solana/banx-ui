@@ -83,7 +83,7 @@ export type BanxAdventureBN = {
   rewardsToBeDistributed: BN
   tokensPerPoints: BN
   totalBanxSubscribed: number
-  totalPartnerPoints: number
+  totalPartnerPoints: number //? sum of partner points of all subscribed nfts
   totalPlayerPoints: number
   totalTokensStaked: BN
   periodEndingAt: number

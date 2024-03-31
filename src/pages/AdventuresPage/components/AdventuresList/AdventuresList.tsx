@@ -14,7 +14,6 @@ import {
   BanxStakeBN,
   BanxStakingSettingsBN,
 } from '@banx/api/staking'
-import { TOTAL_BANX_NFTS, TOTAL_BANX_PTS } from '@banx/constants'
 import {
   banxTokenBNToFixed,
   calcPartnerPoints,
@@ -91,42 +90,22 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
   const wallet = useWallet()
   const priorityFees = usePriorityFees()
 
-  const { maxTokenStakeAmount } = banxStakingSettings
-  const maxTokenStakeAmountStr = banxTokenBNToFixed(maxTokenStakeAmount)
-
-  const { tokensPerPoints } = banxAdventure
-  const tokensPerPointsStr = banxTokenBNToFixed(tokensPerPoints)
-
   const isEnded = isAdventureEnded(banxAdventure)
   const isStarted = isAdventureStarted(banxAdventure)
-
-  //TODO Refactor
-  const calcMaxPts = (): string => {
-    return (
-      parseFloat(maxTokenStakeAmountStr) / parseFloat(tokensPerPointsStr) +
-      TOTAL_BANX_PTS
-    ).toString()
-  }
-
-  const tokenPts = calcPartnerPoints(banxAdventure.totalTokensStaked, banxAdventure.tokensPerPoints)
-  const totalAdventurePts = (tokenPts + banxAdventure.totalPartnerPoints).toFixed(2)
 
   const isParticipating = checkIsParticipatingInAdventure(banxTokenStake)
 
   const isSubscribed =
     banxAdventureSubscription?.adventureSubscriptionState === BanxAdventureSubscriptionState.Active
 
-  const totalBanxSubscribed = `${formatNumbersWithCommas(
-    banxAdventure.totalBanxSubscribed,
-  )}/${formatNumbersWithCommas(TOTAL_BANX_NFTS)}`
-
-  const totalBanxTokensSubscribed = `${formatCompact(
-    banxTokenBNToFixed(banxAdventure.totalTokensStaked),
-  )}/${formatCompact(maxTokenStakeAmountStr)}`
-
-  const totalPartnerPoints = `${formatCompact(totalAdventurePts)}/${formatCompact(calcMaxPts())}`
-
   const status = getAdventureStatus(banxAdventure)
+
+  const walletTokenPts = calcPartnerPoints(
+    banxAdventureSubscription?.stakeTokensAmount ?? ZERO_BN,
+    banxAdventure.tokensPerPoints,
+  )
+
+  const totalWalletPts = walletTokenPts + (banxAdventureSubscription?.stakePartnerPointsAmount ?? 0)
 
   const onSubscribe = () => {
     if (!wallet.publicKey?.toBase58() || !banxTokenStake) {
@@ -162,13 +141,6 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
       .execute()
   }
 
-  const walletTokenPts = calcPartnerPoints(
-    banxAdventureSubscription?.stakeTokensAmount ?? ZERO_BN,
-    banxAdventure.tokensPerPoints,
-  )
-
-  const totalWalletPts = walletTokenPts + (banxAdventureSubscription?.stakePartnerPointsAmount ?? 0)
-
   return (
     <li className={styles.card}>
       <div className={styles.header}>
@@ -187,9 +159,8 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
 
         <div className={styles.stats}>
           <TotalParticipationColumn
-            totalBanxTokensSubscribed={totalBanxTokensSubscribed}
-            totalBanxSubscribed={totalBanxSubscribed}
-            totalPartnerPoints={totalPartnerPoints}
+            banxAdventure={banxAdventure}
+            banxStakingSettings={banxStakingSettings}
           />
 
           {wallet.connected && isSubscribed && (

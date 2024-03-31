@@ -1,20 +1,31 @@
-import React, { FC, useMemo } from 'react'
+import { FC, useMemo } from 'react'
 
 import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Button } from '@banx/components/Buttons'
 import Tooltip from '@banx/components/Tooltip'
 
-import { AdventureStatus, BanxAdventureBN, BanxAdventureSubscriptionBN } from '@banx/api/staking'
+import {
+  AdventureStatus,
+  BanxAdventureBN,
+  BanxAdventureSubscriptionBN,
+  BanxStakingSettingsBN,
+} from '@banx/api/staking'
+import {
+  BANX_TOKEN_DECIMALS,
+  TOTAL_BANX_NFTS,
+  TOTAL_BANX_NFTS_PARTNER_POINTS,
+} from '@banx/constants'
 import { useCountdown } from '@banx/hooks'
 import { Alert, BanxToken, Clock, MoneyBill, SuccessIcon, Timer } from '@banx/icons'
 import {
   banxTokenBNToFixed,
+  calcPartnerPoints,
   calculateAdventureRewards,
   getAdventureEndTime,
   getAdventureStatus,
 } from '@banx/pages/AdventuresPage'
-import { formatNumbersWithCommas } from '@banx/utils'
+import { bnToHuman, formatCompact, formatNumbersWithCommas } from '@banx/utils'
 
 import styles from './AdventuresList.module.less'
 
@@ -57,17 +68,49 @@ export const WalletParticipationColumn: FC<{
   )
 }
 
-export const TotalParticipationColumn: FC<{
-  totalBanxSubscribed: string
-  totalBanxTokensSubscribed: string
-  totalPartnerPoints: string
-}> = ({ totalBanxSubscribed, totalPartnerPoints, totalBanxTokensSubscribed }) => {
+type TotalParticipationColumnProps = {
+  banxAdventure: BanxAdventureBN
+  banxStakingSettings: BanxStakingSettingsBN
+}
+export const TotalParticipationColumn: FC<TotalParticipationColumnProps> = ({
+  banxAdventure,
+  banxStakingSettings,
+}) => {
+  const {
+    totalTokensStaked: tokensSubscribed,
+    totalBanxSubscribed: nftsSubscribed,
+    tokensPerPoints,
+    totalPartnerPoints: totalNftsPartnerPoints,
+  } = banxAdventure
+  const { maxTokenStakeAmount: maxTokensToSubscribe } = banxStakingSettings
+
+  const maxTokensToSubscribeFloat = bnToHuman(maxTokensToSubscribe, BANX_TOKEN_DECIMALS)
+  const tokensPerPointsFloat = bnToHuman(tokensPerPoints, BANX_TOKEN_DECIMALS)
+  const totalTokensPartnerPoints = calcPartnerPoints(tokensSubscribed, tokensPerPoints)
+
+  const partnerPointsSubscribed = totalTokensPartnerPoints + totalNftsPartnerPoints
+
+  const maxPartnerPoints =
+    maxTokensToSubscribeFloat / tokensPerPointsFloat + TOTAL_BANX_NFTS_PARTNER_POINTS
+
+  const nftsSubscribedStr = `${formatNumbersWithCommas(nftsSubscribed)}/${formatNumbersWithCommas(
+    TOTAL_BANX_NFTS,
+  )}`
+
+  const banxTokensSubscribedStr = `${formatCompact(
+    banxTokenBNToFixed(tokensSubscribed, 0),
+  )}/${formatCompact(banxTokenBNToFixed(maxTokensToSubscribe, 0))}`
+
+  const partnerPointsStr = `${formatCompact(partnerPointsSubscribed.toFixed(0))}/${formatCompact(
+    maxPartnerPoints.toFixed(0),
+  )}`
+
   return (
     <div className={styles.statsCol}>
       <h5>Total participation</h5>
-      <p>{totalBanxSubscribed} Banx NFTs</p>
-      <p>{totalBanxTokensSubscribed} $BANX</p>
-      <p>{totalPartnerPoints} Partner pts</p>
+      <p>{nftsSubscribedStr} Banx NFTs</p>
+      <p>{banxTokensSubscribedStr} $BANX</p>
+      <p>{partnerPointsStr} Partner pts</p>
     </div>
   )
 }
