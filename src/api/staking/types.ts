@@ -108,12 +108,16 @@ export type BanxStakeBN = {
   placeholderOne: string
 }
 
+export type BanxAdventureAndSubscription = {
+  adventure: BanxAdventureBN
+  adventureSubscription: BanxAdventureSubscriptionBN | null
+}
+
+export type BanxAdventureAndSubscriptionArray = ReadonlyArray<BanxAdventureAndSubscription>
+
 export type BanxInfoBN = {
   banxWalletBalance: BN | null
   banxTokenStake: BanxStakeBN | null
-  banxAdventures: ReadonlyArray<{
-    adventure: BanxAdventureBN
-    adventureSubscription: BanxAdventureSubscriptionBN | null
-  }>
+  banxAdventures: BanxAdventureAndSubscriptionArray
   nfts: ReadonlyArray<BanxStakeNft> | null
 }
