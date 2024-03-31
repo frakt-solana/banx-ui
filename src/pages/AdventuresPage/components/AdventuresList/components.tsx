@@ -139,10 +139,14 @@ export const TotalParticipationColumn: FC<TotalParticipationColumnProps> = ({
   )
 }
 
-export const AdventuresTimer: FC<{
+type AdventuresTimerProps = {
   banxAdventure: BanxAdventureBN
   banxAdventureSubscription?: BanxAdventureSubscriptionBN
-}> = ({ banxAdventure, banxAdventureSubscription }) => {
+}
+export const AdventuresTimer: FC<AdventuresTimerProps> = ({
+  banxAdventure,
+  banxAdventureSubscription,
+}) => {
   const TIMER_TEXT_BY_STATUS = {
     [AdventureStatus.LIVE]: 'Before rewards distribution',
     [AdventureStatus.UPCOMING]: 'Deadline to subscribe',
@@ -197,64 +201,6 @@ export const AdventuresTimer: FC<{
       </div>
     </div>
   )
-}
-
-interface ParticipateProps {
-  isStarted: boolean
-  isSubscribed: boolean
-  isDisabled: boolean
-  isParticipating: boolean
-  isNone: boolean
-  onSubmit: () => void
-}
-
-export const Participate: FC<ParticipateProps> = ({
-  isStarted,
-  isSubscribed,
-  isDisabled,
-  isNone,
-  isParticipating,
-  onSubmit,
-}) => {
-  const showParticipating = isStarted && isSubscribed
-  const showSubscribeBtn = (!isStarted && !isSubscribed) || (isNone && !isStarted)
-  const showSubscribed = !isStarted && isSubscribed
-
-  if (showSubscribeBtn) {
-    return (
-      <Button
-        disabled={isDisabled || !isParticipating}
-        onClick={onSubmit}
-        className={styles.subscribeBtn}
-      >
-        Subscribe to participate
-      </Button>
-    )
-  }
-
-  if (showParticipating) {
-    return (
-      <Button disabled className={styles.subscribeBtn}>
-        <div>
-          <Clock />
-          <span>Participating</span>
-        </div>
-      </Button>
-    )
-  }
-
-  if (showSubscribed) {
-    return (
-      <Button disabled className={styles.subscribeBtn}>
-        <div>
-          <SuccessIcon />
-          <span>Subscribed</span>
-        </div>
-      </Button>
-    )
-  }
-
-  return null
 }
 
 type ParticipateButtonProps = {
