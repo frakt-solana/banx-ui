@@ -18,6 +18,7 @@ import { subscribeBanxAdventureAction } from '@banx/transactions/staking'
 import { enqueueSnackbar, usePriorityFees } from '@banx/utils'
 
 import {
+  AdventureEndedRewardsResult,
   AdventuresTimer,
   NotParticipatedColumn,
   ParticipateButton,
@@ -130,6 +131,12 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
       <div className={styles.info}>
         {!isEnded && (
           <AdventuresTimer
+            banxAdventureSubscription={banxAdventureSubscription}
+            banxAdventure={banxAdventure}
+          />
+        )}
+        {isEnded && (
+          <AdventureEndedRewardsResult
             banxAdventureSubscription={banxAdventureSubscription}
             banxAdventure={banxAdventure}
           />

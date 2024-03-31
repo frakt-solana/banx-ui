@@ -19,7 +19,7 @@ import {
   TOTAL_BANX_NFTS_PARTNER_POINTS,
 } from '@banx/constants'
 import { useCountdown } from '@banx/hooks'
-import { Alert, BanxToken, Clock, MoneyBill, SuccessIcon, Timer } from '@banx/icons'
+import { Alert, BanxLogo, BanxToken, Clock, MoneyBill, SuccessIcon, Timer } from '@banx/icons'
 import {
   banxTokenBNToFixed,
   calcPartnerPoints,
@@ -199,6 +199,39 @@ export const AdventuresTimer: FC<AdventuresTimerProps> = ({
           </div>
         )}
       </div>
+    </div>
+  )
+}
+
+type AdventureEndedRewardsResultProps = {
+  banxAdventure: BanxAdventureBN
+  banxAdventureSubscription?: BanxAdventureSubscriptionBN
+}
+export const AdventureEndedRewardsResult: FC<AdventureEndedRewardsResultProps> = ({
+  banxAdventure,
+  banxAdventureSubscription,
+}) => {
+  const isSubscribed =
+    banxAdventureSubscription?.adventureSubscriptionState === BanxAdventureSubscriptionState.Active
+
+  const rewards: string = useMemo(() => {
+    if (!banxAdventureSubscription || !isSubscribed) return '0'
+
+    return banxTokenBNToFixed(
+      calculateAdventureRewards([
+        { adventure: banxAdventure, subscription: banxAdventureSubscription },
+      ]),
+      0,
+    )
+  }, [banxAdventure, banxAdventureSubscription, isSubscribed])
+
+  return (
+    <div className={styles.endedRewards}>
+      <div className={styles.endedRewardsValue}>
+        <p>{formatNumbersWithCommas(rewards)}</p>
+        <BanxLogo className={styles.endedRewardsBanxLogo} />
+      </div>
+      <p className={styles.endedRewardsText}>You received</p>
     </div>
   )
 }
