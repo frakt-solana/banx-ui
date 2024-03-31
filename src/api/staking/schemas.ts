@@ -7,11 +7,24 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/types'
 import { z } from 'zod'
 
+export const BanxStakingSettingsSchema = z.object({
+  publicKey: z.string(),
+  banxStaked: z.string(),
+  banxStakingSettingsState: z.nativeEnum(BanxStakingSettingsState),
+  maxTokenStakeAmount: z.string(),
+  placeholderOne: z.string(),
+  rewardsHarvested: z.string(),
+  tokensPerPartnerPoints: z.string(),
+  tokensPerWeek: z.string(),
+  tokensStaked: z.string(),
+})
+export type BanxStakingSettings = z.infer<typeof BanxStakingSettingsSchema>
+
 export const PointsMapSchema = z.object({
+  publicKey: z.string(),
   banxMint: z.string(),
   partnerPoints: z.number(),
   playerPoints: z.number(),
-  publicKey: z.string(),
 })
 export type PointsMap = z.infer<typeof PointsMapSchema>
 
@@ -45,7 +58,7 @@ export const NftSchema = z.object({
   isLoaned: z.boolean(),
   mint: z.string(),
   pointsMap: PointsMapSchema,
-  stake: StakeSchema,
+  stake: StakeSchema.optional(),
 })
 export type NftType = z.infer<typeof NftSchema>
 
@@ -105,25 +118,11 @@ export const BanxAdventuresSchema = z.object({
   adventure: BanxAdventureSchema,
   adventureSubscription: BanxSubscriptionSchema.optional(),
 })
-export type BanxAdventureWithSubscription = z.infer<typeof BanxAdventuresSchema>
 
-export const BanxStakeSchema = z.object({
+export const BanxStakeInfoResponseSchema = z.object({
   banxWalletBalance: z.string().nullable(),
   banxTokenStake: BanxTokenStakeSchema.nullable(),
   banxAdventures: BanxAdventuresSchema.array(),
-  nfts: NftSchema.array(),
+  nfts: NftSchema.array().optional(),
 })
-export type BanxStake = z.infer<typeof BanxStakeSchema>
-
-export const BanxStakeSettingsSchema = z.object({
-  publicKey: z.string(),
-  banxStaked: z.string(),
-  banxStakingSettingsState: z.nativeEnum(BanxStakingSettingsState),
-  maxTokenStakeAmount: z.string(),
-  placeholderOne: z.string(),
-  rewardsHarvested: z.string(),
-  tokensPerPartnerPoints: z.string(),
-  tokensPerWeek: z.string(),
-  tokensStaked: z.string(),
-})
-export type BanxStakeSettings = z.infer<typeof BanxStakeSettingsSchema>
+export type BanxStakeInfoResponse = z.infer<typeof BanxStakeInfoResponseSchema>

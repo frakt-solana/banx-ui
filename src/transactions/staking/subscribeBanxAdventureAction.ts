@@ -1,8 +1,5 @@
 import { web3 } from '@project-serum/anchor'
-import {
-  BanxSubscribeAdventureOptimistic,
-  subscribeBanxAdventure,
-} from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
+import { subscribeBanxAdventure } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { MakeActionFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
@@ -12,15 +9,9 @@ export type SubscribeBanxAdventureParams = {
   userPubkey: web3.PublicKey
   weeks: number[]
   priorityFees: number
-  optimistic: {
-    banxSubscribeAdventureOptimistic: BanxSubscribeAdventureOptimistic
-  }
 }
 
-export type SubscribeBanxAdventureAction = MakeActionFn<
-  SubscribeBanxAdventureParams,
-  BanxSubscribeAdventureOptimistic
->
+export type SubscribeBanxAdventureAction = MakeActionFn<SubscribeBanxAdventureParams, null>
 
 export const subscribeBanxAdventureAction: SubscribeBanxAdventureAction = async (
   ixnParams,
@@ -37,7 +28,6 @@ export const subscribeBanxAdventureAction: SubscribeBanxAdventureAction = async 
     accounts: {
       userPubkey: ixnParams.userPubkey,
     },
-    optimistics: ixnParams.optimistic.banxSubscribeAdventureOptimistic,
     sendTxn: sendTxnPlaceHolder,
   }
 
@@ -46,6 +36,7 @@ export const subscribeBanxAdventureAction: SubscribeBanxAdventureAction = async 
   return {
     instructions: instructions,
     signers: signers,
+    additionalResult: null,
     lookupTables: [],
   }
 }
