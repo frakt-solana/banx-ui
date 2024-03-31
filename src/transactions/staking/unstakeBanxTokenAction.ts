@@ -1,7 +1,6 @@
 import { web3 } from '@project-serum/anchor'
 import { BN } from 'fbonds-core'
 import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
-import { BanxSubscribeAdventureOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { unstakeBanxToken } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
@@ -11,14 +10,10 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 export type UnstakeBanxTokenParams = {
   userPubkey: web3.PublicKey
   tokensToUnstake: string
-  optimistic: BanxSubscribeAdventureOptimistic
   priorityFees: number
 }
 
-export type UnstakeBanxTokenParamsAction = CreateTransactionDataFn<
-  UnstakeBanxTokenParams,
-  BanxSubscribeAdventureOptimistic
->
+export type UnstakeBanxTokenParamsAction = CreateTransactionDataFn<UnstakeBanxTokenParams, null>
 
 export const unstakeBanxTokenAction: UnstakeBanxTokenParamsAction = async (
   ixnParams,
@@ -34,9 +29,6 @@ export const unstakeBanxTokenAction: UnstakeBanxTokenParamsAction = async (
     priorityFees: ixnParams.priorityFees,
     args: {
       tokensToUnstake: new BN(ixnParams.tokensToUnstake),
-    },
-    optimistics: {
-      banxSubscribeAdventureOptimistic: ixnParams.optimistic,
     },
     sendTxn: sendTxnPlaceHolder,
   }

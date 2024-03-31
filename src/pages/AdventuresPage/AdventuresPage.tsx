@@ -2,42 +2,22 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import moment from 'moment'
 
 import { Loader } from '@banx/components/Loader'
 
-import { BanxAdventure, BanxSubscription } from '@banx/api/banxTokenStake'
-import { calculateRewards } from '@banx/pages/AdventuresPage/helpers'
-
 import { AdventuresList, Header, Sidebar } from './components'
-import { useBanxTokenSettings, useBanxTokenStake } from './hooks'
+import { useBanxStakeInfo, useBanxStakeSettings } from './hooks'
 
 import styles from './AdventuresPage.module.less'
 
 export const AdventuresPage: FC = () => {
-  const { publicKey } = useWallet()
-  const userPubkey = publicKey?.toBase58()
+  const { connected } = useWallet()
 
-  const { banxTokenSettings, isLoading: isBanxTokenSettingsLoading } = useBanxTokenSettings()
-  const { banxStake, isLoading: isBanxTokenStakeLoading } = useBanxTokenStake()
+  const { banxStakeSettings, isLoading: isBanxStakeSettingsLoading } = useBanxStakeSettings()
+  const { banxStakeInfo, isLoading: isBanxTokenStakeLoading } = useBanxStakeInfo()
 
-  const isLoading = isBanxTokenSettingsLoading || isBanxTokenStakeLoading
-  const isDataReady = !!banxStake && !!banxTokenSettings
-
-  const adventuresWithSubscriptions =
-    banxStake?.banxAdventures
-      .filter(({ adventure }) => parseInt(adventure.periodEndingAt) < moment().unix())
-      .reduce<{ adventure: BanxAdventure; adventureSubscription: BanxSubscription }[]>(
-        (acc, { adventure, adventureSubscription }) => {
-          if (adventure && adventureSubscription) {
-            acc.push({ adventure, adventureSubscription })
-          }
-          return acc
-        },
-        [],
-      ) || []
-
-  const rewards = calculateRewards(adventuresWithSubscriptions)
+  const isLoading = isBanxStakeSettingsLoading || isBanxTokenStakeLoading
+  const isDataReady = !!banxStakeInfo && !!banxStakeSettings
 
   return (
     <div className={styles.pageWrapper}>
@@ -46,21 +26,18 @@ export const AdventuresPage: FC = () => {
         {isLoading && <Loader className={styles.loader} />}
         {isDataReady && (
           <AdventuresList
-            banxStake={banxStake}
-            banxTokenSettings={banxTokenSettings}
+            banxStakeInfo={banxStakeInfo}
+            banxStakingSettings={banxStakeSettings}
             className={styles.adventuresList}
           />
         )}
       </div>
 
-      {!!userPubkey && !!banxStake?.banxTokenStake && isDataReady && (
+      {connected && isDataReady && (
         <Sidebar
-          tokensPerPartnerPoints={banxTokenSettings.tokensPerPartnerPoints}
-          rewards={rewards}
-          totalClaimed={banxTokenSettings?.rewardsHarvested || '0'}
-          nftsCount={banxStake?.nfts?.length.toString() || '0'}
+          banxStakeInfo={banxStakeInfo}
+          banxStakingSettings={banxStakeSettings}
           className={styles.sidebar}
-          banxTokenStake={banxStake.banxTokenStake}
         />
       )}
     </div>
