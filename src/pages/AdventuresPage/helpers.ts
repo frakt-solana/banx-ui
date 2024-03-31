@@ -4,6 +4,7 @@ import {
   calculatePlayerPointsForTokens,
   calculateRewardsFromSubscriptions,
 } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
+import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
 import moment from 'moment'
 
@@ -54,22 +55,48 @@ export const calcPartnerPoints = (tokensAmount: BN, tokensPerPartnerPoints?: BN)
   return isNaN(partnerPoints) ? 0 : partnerPoints
 }
 
-export const checkIsParticipatingInAdventure = (banxTokenStake?: BanxStakeBN) => {
-  if (!banxTokenStake) return false
-  if (banxTokenStake.tokensStaked.eq(ZERO_BN)) return false
-  if (banxTokenStake.banxNftsStakedQuantity === 0) return false
+export const checkIsUserStaking = (banxTokenStake: BanxStakeBN) => {
+  const { tokensStaked, banxNftsStakedQuantity } = banxTokenStake
+
+  if (!tokensStaked.eq(ZERO_BN) || !banxNftsStakedQuantity) return false
 
   return true
+}
+
+export const checkIsSubscribed = (banxAdventureSubscription: BanxAdventureSubscriptionBN) => {
+  const { adventureSubscriptionState, stakeTokensAmount, stakeNftAmount } =
+    banxAdventureSubscription
+
+  if (adventureSubscriptionState === BanxAdventureSubscriptionState.None) return false
+
+  if (stakeNftAmount !== 0) return true
+  if (!stakeTokensAmount.eq(ZERO_BN)) return true
+
+  return false
 }
 
 export const isAdventureStarted = (adventure: BanxAdventureBN): boolean => {
   return adventure.periodStartedAt + BANX_ADVENTURE_GAP < moment().unix()
 }
 
+export const isAdventureLive = (adventure: BanxAdventureBN): boolean => {
+  const isStarted = isAdventureStarted(adventure)
+  const isEnded = isAdventureEnded(adventure)
+
+  return isStarted && !isEnded
+}
+
 export const isAdventureEnded = (adventure: BanxAdventureBN): boolean => {
   const endTime = getAdventureEndTime(adventure)
 
   return endTime < moment().unix()
+}
+
+export const isAdventureUpcomming = (adventure: BanxAdventureBN): boolean => {
+  const isEnded = isAdventureEnded(adventure)
+  const isLive = isAdventureLive(adventure)
+
+  return !isEnded && !isLive
 }
 
 export const getAdventureEndTime = (adventure: BanxAdventureBN): number => {
@@ -80,13 +107,13 @@ export const getAdventureEndTime = (adventure: BanxAdventureBN): number => {
 
 export const getAdventureStatus = (adventure: BanxAdventureBN): AdventureStatus => {
   const isEnded = isAdventureEnded(adventure)
-  const isStarted = isAdventureStarted(adventure)
+  const isLive = isAdventureLive(adventure)
 
   if (isEnded) {
     return AdventureStatus.ENDED
   }
 
-  if (isStarted) {
+  if (isLive) {
     return AdventureStatus.LIVE
   }
 

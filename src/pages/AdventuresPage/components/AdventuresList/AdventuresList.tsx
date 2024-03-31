@@ -2,40 +2,25 @@ import { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
 import { capitalize } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import {
-  AdventureStatus,
   BanxAdventureBN,
   BanxAdventureSubscriptionBN,
   BanxInfoBN,
   BanxStakeBN,
   BanxStakingSettingsBN,
 } from '@banx/api/staking'
-import {
-  banxTokenBNToFixed,
-  calcPartnerPoints,
-  checkIsParticipatingInAdventure,
-  getAdventureStatus,
-  isAdventureEnded,
-  isAdventureStarted,
-} from '@banx/pages/AdventuresPage'
+import { checkIsSubscribed, getAdventureStatus, isAdventureEnded } from '@banx/pages/AdventuresPage'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { subscribeBanxAdventureAction } from '@banx/transactions/staking'
-import {
-  ZERO_BN,
-  enqueueSnackbar,
-  formatCompact,
-  formatNumbersWithCommas,
-  usePriorityFees,
-} from '@banx/utils'
+import { enqueueSnackbar, usePriorityFees } from '@banx/utils'
 
 import {
   AdventuresTimer,
   NotParticipatedColumn,
-  Participate,
+  ParticipateButton,
   TotalParticipationColumn,
   WalletParticipationColumn,
 } from './components'
@@ -91,21 +76,12 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
   const priorityFees = usePriorityFees()
 
   const isEnded = isAdventureEnded(banxAdventure)
-  const isStarted = isAdventureStarted(banxAdventure)
 
-  const isParticipating = checkIsParticipatingInAdventure(banxTokenStake)
-
-  const isSubscribed =
-    banxAdventureSubscription?.adventureSubscriptionState === BanxAdventureSubscriptionState.Active
+  const isSubscribed = banxAdventureSubscription
+    ? checkIsSubscribed(banxAdventureSubscription)
+    : false
 
   const status = getAdventureStatus(banxAdventure)
-
-  const walletTokenPts = calcPartnerPoints(
-    banxAdventureSubscription?.stakeTokensAmount ?? ZERO_BN,
-    banxAdventure.tokensPerPoints,
-  )
-
-  const totalWalletPts = walletTokenPts + (banxAdventureSubscription?.stakePartnerPointsAmount ?? 0)
 
   const onSubscribe = () => {
     if (!wallet.publicKey?.toBase58() || !banxTokenStake) {
@@ -152,42 +128,37 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
         </p>
       </div>
       <div className={styles.info}>
-        <AdventuresTimer
-          banxAdventureSubscription={banxAdventureSubscription}
-          banxAdventure={banxAdventure}
-        />
-
+        {!isEnded && (
+          <AdventuresTimer
+            banxAdventureSubscription={banxAdventureSubscription}
+            banxAdventure={banxAdventure}
+          />
+        )}
         <div className={styles.stats}>
           <TotalParticipationColumn
             banxAdventure={banxAdventure}
             banxStakingSettings={banxStakingSettings}
           />
 
-          {wallet.connected && isSubscribed && (
+          {wallet.connected && isSubscribed && !!banxAdventureSubscription && (
             <WalletParticipationColumn
-              status={banxAdventureSubscription?.adventureSubscriptionState}
-              banxTokenAmount={formatCompact(
-                banxTokenBNToFixed(banxAdventureSubscription.stakeTokensAmount),
-              )}
-              banxAmount={formatNumbersWithCommas(banxAdventureSubscription.stakeNftAmount)}
-              partnerPts={formatNumbersWithCommas(totalWalletPts.toFixed(2))}
+              banxAdventure={banxAdventure}
+              banxAdventureSubscription={banxAdventureSubscription}
             />
           )}
 
           {!!wallet.connected && !isSubscribed && (
-            <NotParticipatedColumn status={AdventureStatus.LIVE} />
+            <NotParticipatedColumn banxAdventure={banxAdventure} />
           )}
         </div>
       </div>
 
       {wallet.connected && (
-        <Participate
-          isParticipating={isParticipating}
-          isNone={banxAdventure.adventureState === 'none'}
-          isStarted={isStarted}
-          isSubscribed={isSubscribed}
-          isDisabled={!wallet.publicKey?.toBase58()}
-          onSubmit={onSubscribe}
+        <ParticipateButton
+          banxAdventure={banxAdventure}
+          banxAdventureSubscription={banxAdventureSubscription}
+          banxTokenStake={banxTokenStake}
+          onClick={onSubscribe}
         />
       )}
     </li>
