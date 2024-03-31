@@ -1,5 +1,6 @@
 import { FC, useMemo } from 'react'
 
+import classNames from 'classnames'
 import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Button } from '@banx/components/Buttons'
@@ -295,7 +296,10 @@ export const ParticipateButton: FC<ParticipateButtonProps> = ({
 
   if (showParticipating) {
     return (
-      <Button disabled className={styles.subscribeBtn}>
+      <Button
+        disabled
+        className={classNames(styles.subscribeBtn, styles.subscribeBtnParticipating)}
+      >
         <div>
           <Clock />
           <span>Participating</span>
