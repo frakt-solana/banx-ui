@@ -122,7 +122,7 @@ export const StakeNftsModal = () => {
         nftMint: nft.mint,
         userPubkey: wallet.publicKey as web3.PublicKey,
         priorityFees,
-        banxStakePublicKey: nft.stake?.publicKey ?? '',
+        nftStakePublicKey: nft.stake?.publicKey ?? '',
       }))
 
       new TxnExecutor(unstakeBanxNftsAction, { wallet, connection })

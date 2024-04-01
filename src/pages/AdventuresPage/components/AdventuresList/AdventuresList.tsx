@@ -11,11 +11,11 @@ import {
   BanxInfoBN,
   BanxStakeBN,
 } from '@banx/api/staking'
+import { checkIsSubscribed, getAdventureStatus, isAdventureEnded } from '@banx/pages/AdventuresPage'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { subscribeBanxAdventureAction } from '@banx/transactions/staking'
 import { enqueueSnackbar, usePriorityFees } from '@banx/utils'
 
-import { checkIsSubscribed, getAdventureStatus, isAdventureEnded } from '../../helpers'
 import {
   AdventureEndedRewardsResult,
   AdventuresTimer,
