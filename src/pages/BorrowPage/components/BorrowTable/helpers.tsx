@@ -20,7 +20,7 @@ import {
 } from '@banx/transactions/borrow'
 import {
   convertOffersToSimple,
-  enqueueSnackbar, // identifyWalletNameOnBorrow,
+  enqueueSnackbar,
   offerNeedsReservesOptimizationOnBorrow,
 } from '@banx/utils'
 
@@ -159,11 +159,6 @@ export const executeBorrow = async (props: {
     //     .uniq()
     //     .value()
 
-    //   identifyWalletNameOnBorrow({
-    //     walletContext: walletAndConnection.wallet,
-    //     fraktBondPubkeys,
-    //   })
-    // })
     .on('pfError', (error) => {
       defaultTxnErrorHandler(error, {
         additionalData: txnParams,

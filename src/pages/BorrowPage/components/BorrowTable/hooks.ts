@@ -95,7 +95,6 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
   }
 
   const onBorrowSuccess = (loansAmount = 1, showCongrats = false) => {
-    //? Show bonk snack if bonkRewardsAvailable and wallet isnt ME
     if (bonkRewardsAvailable) {
       showBonkRewardsSnack()
     }
