@@ -237,8 +237,7 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
             />
             <Button
               onClick={claimAction}
-              disabled
-              // disabled={rewards.eq(ZERO_BN)}
+              disabled={rewards.eq(ZERO_BN)}
               className={styles.manageButton}
             >
               Claim
