@@ -10,7 +10,6 @@ import {
   BanxAdventureSubscriptionBN,
   BanxInfoBN,
   BanxStakeBN,
-  BanxStakingSettingsBN,
 } from '@banx/api/staking'
 import { checkIsSubscribed, getAdventureStatus, isAdventureEnded } from '@banx/pages/AdventuresPage'
 import { defaultTxnErrorHandler } from '@banx/transactions'
@@ -30,14 +29,12 @@ import { useAdventuresAndSubscriptions } from './hooks'
 import styles from './AdventuresList.module.less'
 
 interface AdventuresListProps {
-  banxStakingSettings: BanxStakingSettingsBN
   banxStakeInfo: BanxInfoBN
   historyMode: boolean
   className?: string
 }
 
 export const AdventuresList: FC<AdventuresListProps> = ({
-  banxStakingSettings,
   banxStakeInfo,
   historyMode,
   className,
@@ -51,7 +48,6 @@ export const AdventuresList: FC<AdventuresListProps> = ({
           key={adventure?.publicKey}
           banxAdventureSubscription={adventureSubscription ?? undefined}
           banxAdventure={adventure}
-          banxStakingSettings={banxStakingSettings}
           banxTokenStake={banxStakeInfo.banxTokenStake ?? undefined}
         />
       ))}
@@ -61,14 +57,12 @@ export const AdventuresList: FC<AdventuresListProps> = ({
 
 interface AdventuresCardProps {
   banxAdventure: BanxAdventureBN
-  banxStakingSettings: BanxStakingSettingsBN
   banxAdventureSubscription?: BanxAdventureSubscriptionBN
   banxTokenStake?: BanxStakeBN
 }
 
 const AdventuresCard: FC<AdventuresCardProps> = ({
   banxAdventure,
-  banxStakingSettings,
   banxAdventureSubscription,
   banxTokenStake,
 }) => {
@@ -140,10 +134,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
           />
         )}
         <div className={styles.stats}>
-          <TotalParticipationColumn
-            banxAdventure={banxAdventure}
-            banxStakingSettings={banxStakingSettings}
-          />
+          <TotalParticipationColumn banxAdventure={banxAdventure} />
 
           {wallet.connected && isSubscribed && !!banxAdventureSubscription && (
             <WalletParticipationColumn

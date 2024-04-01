@@ -11,7 +11,6 @@ import {
   BanxAdventureBN,
   BanxAdventureSubscriptionBN,
   BanxStakeBN,
-  BanxStakingSettingsBN,
 } from '@banx/api/staking'
 import {
   BANX_TOKEN_DECIMALS,
@@ -30,6 +29,7 @@ import {
   getAdventureStatus,
   isAdventureLive,
   isAdventureUpcomming,
+  useBanxTokenCirculatingAmount,
 } from '@banx/pages/AdventuresPage'
 import { bnToHuman, formatCompact, formatNumbersWithCommas } from '@banx/utils'
 
@@ -94,19 +94,16 @@ export const WalletParticipationColumn: FC<WalletParticipationColumnProps> = ({
 
 type TotalParticipationColumnProps = {
   banxAdventure: BanxAdventureBN
-  banxStakingSettings: BanxStakingSettingsBN
 }
-export const TotalParticipationColumn: FC<TotalParticipationColumnProps> = ({
-  banxAdventure,
-  banxStakingSettings,
-}) => {
+export const TotalParticipationColumn: FC<TotalParticipationColumnProps> = ({ banxAdventure }) => {
+  const { amount: maxTokensToSubscribe } = useBanxTokenCirculatingAmount()
+
   const {
     totalTokensStaked: tokensSubscribed,
     totalBanxSubscribed: nftsSubscribed,
     tokensPerPoints,
     totalPartnerPoints: totalNftsPartnerPoints,
   } = banxAdventure
-  const { maxTokenStakeAmount: maxTokensToSubscribe } = banxStakingSettings
 
   const maxTokensToSubscribeFloat = bnToHuman(maxTokensToSubscribe, BANX_TOKEN_DECIMALS)
   const tokensPerPointsFloat = bnToHuman(tokensPerPoints, BANX_TOKEN_DECIMALS)

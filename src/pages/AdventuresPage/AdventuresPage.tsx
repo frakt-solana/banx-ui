@@ -34,7 +34,6 @@ export const AdventuresPage: FC = () => {
             <Tabs value={currentTabValue} {...tabProps} />
             <AdventuresList
               banxStakeInfo={banxStakeInfo}
-              banxStakingSettings={banxStakeSettings}
               historyMode={currentTabValue === AdventureTab.HISTORY}
               className={styles.adventuresList}
             />
