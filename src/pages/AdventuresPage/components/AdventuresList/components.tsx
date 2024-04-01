@@ -1,5 +1,6 @@
 import { FC, useMemo } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
 
@@ -208,10 +209,11 @@ export const AdventureEndedRewardsResult: FC<AdventureEndedRewardsResultProps> =
   banxAdventure,
   banxAdventureSubscription,
 }) => {
+  const { connected } = useWallet()
   const isSubscribed = !!banxAdventureSubscription && checkIsSubscribed(banxAdventureSubscription)
 
   const rewards: string = useMemo(() => {
-    if (!banxAdventureSubscription || !isSubscribed) return '0'
+    if (!banxAdventureSubscription || !isSubscribed || !connected) return '0'
 
     return banxTokenBNToFixed(
       calculateAdventureRewards([
@@ -219,15 +221,23 @@ export const AdventureEndedRewardsResult: FC<AdventureEndedRewardsResultProps> =
       ]),
       0,
     )
-  }, [banxAdventure, banxAdventureSubscription, isSubscribed])
+  }, [banxAdventure, banxAdventureSubscription, isSubscribed, connected])
+
+  const amountOfTokensHarvested = useMemo(() => {
+    return banxTokenBNToFixed(banxAdventure.amountOfTokensHarvested, 0)
+  }, [banxAdventure.amountOfTokensHarvested])
 
   return (
     <div className={styles.endedRewards}>
       <div className={styles.endedRewardsValue}>
-        <p>{formatNumbersWithCommas(rewards)}</p>
+        <p>
+          {connected
+            ? formatNumbersWithCommas(rewards)
+            : formatNumbersWithCommas(amountOfTokensHarvested)}
+        </p>
         <BanxLogo className={styles.endedRewardsBanxLogo} />
       </div>
-      <p className={styles.endedRewardsText}>You received</p>
+      <p className={styles.endedRewardsText}> {connected ? 'You received' : 'Total distributed'}</p>
     </div>
   )
 }
