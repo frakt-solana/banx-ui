@@ -78,9 +78,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
 
   const isEnded = isAdventureEnded(banxAdventure)
 
-  const isSubscribed = banxAdventureSubscription
-    ? checkIsSubscribed(banxAdventureSubscription)
-    : false
+  const isSubscribed = !!banxAdventureSubscription && checkIsSubscribed(banxAdventureSubscription)
 
   const status = getAdventureStatus(banxAdventure)
 

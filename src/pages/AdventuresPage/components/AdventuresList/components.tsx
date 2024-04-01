@@ -248,11 +248,9 @@ export const ParticipateButton: FC<ParticipateButtonProps> = ({
   banxTokenStake,
   onClick,
 }) => {
-  const isUserStaking = banxTokenStake ? checkIsUserStaking(banxTokenStake) : false
+  const isUserStaking = !!banxTokenStake && checkIsUserStaking(banxTokenStake)
 
-  const isSubscribed = banxAdventureSubscription
-    ? checkIsSubscribed(banxAdventureSubscription)
-    : false
+  const isSubscribed = !!banxAdventureSubscription && checkIsSubscribed(banxAdventureSubscription)
 
   const isUpcomming = isAdventureUpcomming(banxAdventure)
   const isLive = isAdventureLive(banxAdventure)
