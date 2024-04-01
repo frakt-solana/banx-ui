@@ -1,9 +1,10 @@
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
+import { Plug } from './assets'
 import BanxRewardsTab from './components/BanxRewardsTab'
 import EarnTab from './components/EarnTab'
 import Header from './components/LeaderboardHeader'
-import LeaderboardTab from './components/LeaderboardTab'
+// import LeaderboardTab from './components/LeaderboardTab'
 import RewardsTab from './components/RewardsTab'
 
 import styles from './LeaderboardPage.module.less'
@@ -26,9 +27,19 @@ export const LeaderboardPage = () => {
       <Header />
       <Tabs className={styles.tabs} value={currentTabValue} {...tabsProps} />
       {currentTabValue === LeaderboardTabName.REWARDS && <RewardsTab />}
-      {currentTabValue === LeaderboardTabName.LEADERBOARD && <LeaderboardTab />}
+      {/* {currentTabValue === LeaderboardTabName.LEADERBOARD && <LeaderboardTab />} */}
+      {currentTabValue === LeaderboardTabName.LEADERBOARD && <LeaderboardPlug />}
       {currentTabValue === LeaderboardTabName.EARN && <EarnTab />}
       {currentTabValue === LeaderboardTabName.BAND_REWARDS && <BanxRewardsTab />}
+    </div>
+  )
+}
+
+const LeaderboardPlug = () => {
+  return (
+    <div className={styles.leaderboardPlug}>
+      <Plug />
+      <h4>Season 3 coming soon</h4>
     </div>
   )
 }
