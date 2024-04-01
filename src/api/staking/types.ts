@@ -83,7 +83,7 @@ export type BanxAdventureBN = {
   rewardsToBeDistributed: BN
   tokensPerPoints: BN
   totalBanxSubscribed: number
-  totalPartnerPoints: number
+  totalPartnerPoints: number //? sum of partner points of all subscribed nfts
   totalPlayerPoints: number
   totalTokensStaked: BN
   periodEndingAt: number
@@ -108,12 +108,16 @@ export type BanxStakeBN = {
   placeholderOne: string
 }
 
+export type BanxAdventureAndSubscription = {
+  adventure: BanxAdventureBN
+  adventureSubscription: BanxAdventureSubscriptionBN | null
+}
+
+export type BanxAdventureAndSubscriptionArray = ReadonlyArray<BanxAdventureAndSubscription>
+
 export type BanxInfoBN = {
   banxWalletBalance: BN | null
   banxTokenStake: BanxStakeBN | null
-  banxAdventures: ReadonlyArray<{
-    adventure: BanxAdventureBN
-    adventureSubscription: BanxAdventureSubscriptionBN | null
-  }>
+  banxAdventures: BanxAdventureAndSubscriptionArray
   nfts: ReadonlyArray<BanxStakeNft> | null
 }
