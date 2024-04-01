@@ -12,7 +12,7 @@ import {
   TokenInputField,
   TotalStakedInfo,
 } from './components'
-import { ModalTabs, useStakeTokensModal, useTokenTransactions } from './hooks'
+import { useStakeTokensModal, useTokenTransactions } from './hooks'
 
 import styles from './StakeTokensModal.module.less'
 
@@ -33,11 +33,11 @@ export const StakeTokensModal = () => {
     tabProps,
     totalTokenStaked,
     onTabClick,
+    showErrorMessage,
+    isStakeTab,
   } = useStakeTokensModal()
 
   const { onStake, onUnstake } = useTokenTransactions(inputTokenAmount)
-
-  const isStakeTab = currentTabValue === ModalTabs.STAKE
 
   return (
     <Modal open onCancel={close} className={styles.modal} width={572}>
@@ -46,7 +46,12 @@ export const StakeTokensModal = () => {
         {isStakeTab && <BanxWalletBalance banxWalletBalance={banxWalletBalance} />}
         {!isStakeTab && <TotalStakedInfo tokensStaked={totalTokenStaked} />}
 
-        <TokenInputField value={inputTokenAmount} onChange={handleChangeValue} onMax={onSetMax} />
+        <TokenInputField
+          value={inputTokenAmount}
+          onChange={handleChangeValue}
+          onMax={onSetMax}
+          showErrorMessage={showErrorMessage}
+        />
 
         <div className={styles.content}>
           <div className={styles.stakeContainer}>

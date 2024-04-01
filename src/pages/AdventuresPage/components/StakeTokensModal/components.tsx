@@ -5,6 +5,7 @@ import classNames from 'classnames'
 import { Button } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import Tooltip from '@banx/components/Tooltip'
+import { InputErrorMessage } from '@banx/components/inputs'
 import NumericInput, { NumericInputProps } from '@banx/components/inputs/NumericInput'
 
 import { BanxToken } from '@banx/icons'
@@ -82,15 +83,24 @@ export const Title: FC<{ title: string }> = ({ title }) => (
 
 interface TokenInputFieldProps extends NumericInputProps {
   onMax: () => void
+  showErrorMessage?: boolean
 }
 
-export const TokenInputField: FC<TokenInputFieldProps> = ({ value, onChange, onMax }) => {
+export const TokenInputField: FC<TokenInputFieldProps> = ({
+  value,
+  onChange,
+  onMax,
+  showErrorMessage = false,
+}) => {
   return (
-    <div className={styles.input}>
-      <NumericInput value={value} onChange={onChange} placeholder="0" positiveOnly />
-      <Button onClick={onMax} size="small" variant="secondary">
-        Use max
-      </Button>
+    <div className={styles.field}>
+      <div className={styles.input}>
+        <NumericInput value={value} onChange={onChange} placeholder="0" positiveOnly />
+        <Button onClick={onMax} size="small" variant="secondary">
+          Use max
+        </Button>
+      </div>
+      <InputErrorMessage message={showErrorMessage ? 'Insufficient funds' : ''} />
     </div>
   )
 }

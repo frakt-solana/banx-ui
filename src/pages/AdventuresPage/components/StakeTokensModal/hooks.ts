@@ -22,6 +22,8 @@ export const useStakeTokensModal = () => {
     defaultValue: MODAL_TABS[0].value,
   })
 
+  const isStakeTab = currentTabValue === ModalTabs.STAKE
+
   const tokensPerPartnerPointsBN = banxStakeSettings?.tokensPerPartnerPoints ?? ZERO_BN
   const banxWalletBalance = bnToHuman(banxStakeInfo?.banxWalletBalance ?? ZERO_BN)
   const totalTokenStaked = bnToHuman(banxStakeInfo?.banxTokenStake?.tokensStaked ?? ZERO_BN)
@@ -33,7 +35,7 @@ export const useStakeTokensModal = () => {
   }
 
   const onSetMax = () => {
-    if (currentTabValue === ModalTabs.STAKE) {
+    if (isStakeTab) {
       return setInputTokenAmount(limitDecimalPlaces(String(banxWalletBalance)))
     }
     return setInputTokenAmount(limitDecimalPlaces(String(totalTokenStaked)))
@@ -49,9 +51,15 @@ export const useStakeTokensModal = () => {
   const partnerPoints = calcPartnerPoints(stringToBN(inputTokenAmount), tokensPerPartnerPointsBN)
   const playerPoints = calcPlayerPoints(inputTokenAmount)
 
-  const parsedInputTokenAmount = parseFloat(inputTokenAmount)
-  const isStakeDisabled = !parsedInputTokenAmount || banxWalletBalance < parsedInputTokenAmount
-  const isUnstakeDisabled = !parsedInputTokenAmount || totalTokenStaked < parsedInputTokenAmount
+  const parsedInputTokenAmount = parseFloat(inputTokenAmount) || 0
+
+  const isInsufficientFundsToStake = parsedInputTokenAmount > banxWalletBalance
+  const isInsufficientFundsToUnstake = parsedInputTokenAmount > totalTokenStaked
+
+  const isStakeDisabled = !parsedInputTokenAmount || isInsufficientFundsToStake
+  const isUnstakeDisabled = !parsedInputTokenAmount || isInsufficientFundsToUnstake
+
+  const showErrorMessage = isStakeTab ? isInsufficientFundsToStake : isInsufficientFundsToUnstake
 
   return {
     onSetMax,
@@ -68,6 +76,8 @@ export const useStakeTokensModal = () => {
     tabProps,
     onTabClick,
     totalTokenStaked,
+    showErrorMessage,
+    isStakeTab,
   }
 }
 
