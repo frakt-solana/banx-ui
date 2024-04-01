@@ -113,3 +113,9 @@ export const toDecimals = (v: string | number, decimals = 1e9) => {
 export const fromDecimals = (v: string | number, decimals = 1e9, toFixed = 2): any => {
   return (parseFloat(v.toString()) / decimals).toFixed(toFixed)
 }
+
+export const limitDecimalPlaces = (inputValue: string, decimalPlaces = 3) => {
+  const regex = new RegExp(`^-?\\d*(\\.\\d{0,${decimalPlaces}})?`)
+  const match = inputValue.match(regex)
+  return match ? match[0] : ''
+}
