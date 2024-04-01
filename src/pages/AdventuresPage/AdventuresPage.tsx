@@ -4,6 +4,7 @@ import { FC } from 'react'
 import classNames from 'classnames'
 
 import { Loader } from '@banx/components/Loader'
+import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
 import { AdventuresList, Header } from './components'
 import { useBanxStakeInfo, useBanxStakeSettings } from './hooks'
@@ -19,17 +20,25 @@ export const AdventuresPage: FC = () => {
   const isLoading = isBanxStakeSettingsLoading || isBanxTokenStakeLoading
   const isDataReady = !!banxStakeInfo && !!banxStakeSettings
 
+  const { value: currentTabValue, ...tabProps } = useTabs({
+    tabs: ADVENTURES_TABS,
+    defaultValue: ADVENTURES_TABS[0].value,
+  })
+
   return (
     <div className={styles.pageWrapper}>
       <div className={classNames(styles.content, styles.active)}>
         <Header />
         {isLoading && <Loader className={styles.loader} />}
         {isDataReady && (
-          <AdventuresList
-            banxStakeInfo={banxStakeInfo}
-            banxStakingSettings={banxStakeSettings}
-            className={styles.adventuresList}
-          />
+          <>
+            <Tabs value={currentTabValue} {...tabProps} />
+            <AdventuresList
+              banxStakeInfo={banxStakeInfo}
+              historyMode={currentTabValue === AdventureTab.HISTORY}
+              className={styles.adventuresList}
+            />
+          </>
         )}
       </div>
 
@@ -43,3 +52,19 @@ export const AdventuresPage: FC = () => {
     </div>
   )
 }
+
+enum AdventureTab {
+  ADVENTURES = 'adventures',
+  HISTORY = 'history',
+}
+
+const ADVENTURES_TABS: Tab[] = [
+  {
+    label: 'Adventures',
+    value: AdventureTab.ADVENTURES,
+  },
+  {
+    label: 'History',
+    value: AdventureTab.HISTORY,
+  },
+]

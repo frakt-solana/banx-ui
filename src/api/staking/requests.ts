@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { BN } from 'fbonds-core'
 
 import {
   BanxStakeInfoResponse,
@@ -6,7 +7,8 @@ import {
   BanxStakingSettings,
   BanxStakingSettingsSchema,
 } from '@banx/api/staking/schemas'
-import { BACKEND_BASE_URL } from '@banx/constants'
+import { BACKEND_BASE_URL, BANX_TOKEN_DECIMALS } from '@banx/constants'
+import { ZERO_BN } from '@banx/utils'
 
 import { convertToBanxInfoBN, convertToBanxStakingSettingsBN } from './converters'
 import { BanxInfoBN, BanxStakingSettingsBN } from './types'
@@ -43,4 +45,12 @@ export const fetchBanxStakeSettings: FetchBanxStakeSettings = async () => {
   if (!data?.data) return null
 
   return convertToBanxStakingSettingsBN(data.data)
+}
+
+export const fetchBanxTokenCirculatingAmount = async () => {
+  const { data } = await axios.get<number>(`${BACKEND_BASE_URL}/tokenStake/token/circulating`)
+
+  if (!data || isNaN(data)) return ZERO_BN
+
+  return new BN(data).mul(new BN(10 ** BANX_TOKEN_DECIMALS))
 }
