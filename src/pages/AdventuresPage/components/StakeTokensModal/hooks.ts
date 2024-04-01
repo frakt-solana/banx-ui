@@ -5,6 +5,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Tab, useTabs } from '@banx/components/Tabs'
 
+import { SEND_TXN_MAX_RETRIES } from '@banx/constants'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxTokenAction, unstakeBanxTokenAction } from '@banx/transactions/staking'
 import {
@@ -98,7 +99,13 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
   const onStake = () => {
     const txnParam = { tokensToStake: formatBanxTokensStrToBN(inputTokenAmount), priorityFees }
 
-    new TxnExecutor(stakeBanxTokenAction, { wallet, connection })
+    new TxnExecutor(
+      stakeBanxTokenAction,
+      { wallet, connection },
+      {
+        maxRetries: SEND_TXN_MAX_RETRIES,
+      },
+    )
       .addTxnParam(txnParam)
       .on('pfSuccessEach', (results) => {
         const { txnHash } = results[0]
@@ -124,7 +131,13 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
   const onUnstake = () => {
     const txnParam = { tokensToUnstake: formatBanxTokensStrToBN(inputTokenAmount), priorityFees }
 
-    new TxnExecutor(unstakeBanxTokenAction, { wallet, connection })
+    new TxnExecutor(
+      unstakeBanxTokenAction,
+      { wallet, connection },
+      {
+        maxRetries: SEND_TXN_MAX_RETRIES,
+      },
+    )
       .addTxnParam(txnParam)
       .on('pfSuccessEach', (results) => {
         const { txnHash } = results[0]

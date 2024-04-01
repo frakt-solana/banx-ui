@@ -10,7 +10,7 @@ import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { BanxStakeNft } from '@banx/api/staking'
-import { BANX_STAKING } from '@banx/constants'
+import { BANX_STAKING, SEND_TXN_MAX_RETRIES } from '@banx/constants'
 import { TensorFilled } from '@banx/icons'
 import { useBanxStakeInfo, useBanxStakeSettings } from '@banx/pages/AdventuresPage'
 import { NftCheckbox, NftsStats } from '@banx/pages/AdventuresPage/components'
@@ -87,7 +87,13 @@ export const StakeNftsModal = () => {
         priorityFees,
       }))
 
-      new TxnExecutor(stakeBanxNftAction, { wallet, connection })
+      new TxnExecutor(
+        stakeBanxNftAction,
+        { wallet, connection },
+        {
+          maxRetries: SEND_TXN_MAX_RETRIES,
+        },
+      )
         .addTxnParams(params)
         .on('pfSuccessEach', (results) => {
           const { txnHash } = results[0]
@@ -125,7 +131,13 @@ export const StakeNftsModal = () => {
         nftStakePublicKey: nft.stake?.publicKey ?? '',
       }))
 
-      new TxnExecutor(unstakeBanxNftsAction, { wallet, connection })
+      new TxnExecutor(
+        unstakeBanxNftsAction,
+        { wallet, connection },
+        {
+          maxRetries: SEND_TXN_MAX_RETRIES,
+        },
+      )
         .addTxnParams(params)
         .on('pfSuccessEach', (results) => {
           const { txnHash } = results[0]

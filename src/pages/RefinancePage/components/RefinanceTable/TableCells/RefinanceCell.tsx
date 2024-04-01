@@ -15,6 +15,7 @@ import {
 } from '@banx/components/modals'
 
 import { Loan } from '@banx/api/core'
+import { SEND_TXN_MAX_RETRIES } from '@banx/constants'
 // import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
@@ -94,7 +95,11 @@ const useRefinanceTransaction = (loan: Loan) => {
   }
 
   const refinance = () => {
-    new TxnExecutor(makeRefinanceAction, { wallet, connection })
+    new TxnExecutor(
+      makeRefinanceAction,
+      { wallet, connection },
+      { maxRetries: SEND_TXN_MAX_RETRIES },
+    )
       .addTxnParam({ loan, priorityFees })
       // .on('pfSuccessEach', (results) => {
       //   const { txnHash } = results[0]
