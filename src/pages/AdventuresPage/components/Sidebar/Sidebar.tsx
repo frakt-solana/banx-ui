@@ -73,7 +73,28 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
     return rewardsBN
   }, [banxAdventures])
 
-  const { tokensPerPartnerPoints /*rewardsHarvested*/ } = banxStakingSettings
+  const totalRewardsHarvested: BN = useMemo(() => {
+    if (!banxAdventures) return ZERO_BN
+
+    const rewardsBN = calculateAdventureRewards(
+      banxAdventures //? Claim only from active subscriptions
+        .filter(
+          ({ adventureSubscription }) =>
+            adventureSubscription?.adventureSubscriptionState ===
+            BanxAdventureSubscriptionState.Claimed,
+        )
+        //? Claim only from ended adventures
+        .filter(({ adventure }) => isAdventureEnded(adventure))
+        .map(({ adventure, adventureSubscription }) => ({
+          adventure,
+          subscription: adventureSubscription ?? undefined,
+        })),
+    )
+
+    return rewardsBN
+  }, [banxAdventures])
+
+  const { tokensPerPartnerPoints } = banxStakingSettings
 
   const tokensPts = calcPartnerPoints(
     banxTokenStake?.tokensStaked ?? ZERO_BN,
@@ -224,14 +245,14 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
             </Button>
           </div>
 
-          {/* <div className={styles.divider} />
+          <div className={styles.divider} />
 
           <StakingStat
             label="Total claimed"
-            value={formatNumbersWithCommas(banxTokenBNToFixed(rewardsHarvested, 2))}
+            value={formatNumbersWithCommas(banxTokenBNToFixed(totalRewardsHarvested, 2))}
             icon={BanxToken}
             flexType="row"
-          /> */}
+          />
         </div>
       </div>
 
