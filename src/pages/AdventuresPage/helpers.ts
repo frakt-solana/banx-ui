@@ -4,7 +4,6 @@ import {
   calculatePlayerPointsForTokens,
   calculateRewardsFromSubscriptions,
 } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
-import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
 import moment from 'moment'
 
@@ -58,16 +57,14 @@ export const calcPartnerPoints = (tokensAmount: BN, tokensPerPartnerPoints?: BN)
 export const checkIsUserStaking = (banxTokenStake: BanxStakeBN) => {
   const { tokensStaked, banxNftsStakedQuantity } = banxTokenStake
 
-  if (!tokensStaked.eq(ZERO_BN) || !banxNftsStakedQuantity) return false
+  if (!tokensStaked.eq(ZERO_BN)) return true
+  if (banxNftsStakedQuantity > 0) return true
 
-  return true
+  return false
 }
 
 export const checkIsSubscribed = (banxAdventureSubscription: BanxAdventureSubscriptionBN) => {
-  const { adventureSubscriptionState, stakeTokensAmount, stakeNftAmount } =
-    banxAdventureSubscription
-
-  if (adventureSubscriptionState === BanxAdventureSubscriptionState.None) return false
+  const { stakeTokensAmount, stakeNftAmount } = banxAdventureSubscription
 
   if (stakeNftAmount !== 0) return true
   if (!stakeTokensAmount.eq(ZERO_BN)) return true

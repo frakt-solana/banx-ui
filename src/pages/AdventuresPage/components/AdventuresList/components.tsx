@@ -259,7 +259,7 @@ export const ParticipateButton: FC<ParticipateButtonProps> = ({
   if (showSubscribeBtn) {
     return (
       <Button
-        disabled={isSubscribed || !isUserStaking}
+        disabled={!isUserStaking || isSubscribed}
         onClick={onClick}
         className={styles.subscribeBtn}
       >
