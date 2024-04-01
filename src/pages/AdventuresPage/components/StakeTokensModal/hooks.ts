@@ -12,13 +12,12 @@ import {
   bnToHuman,
   enqueueSnackbar,
   limitDecimalPlaces,
-  stringToBN,
   usePriorityFees,
 } from '@banx/utils'
 
 import { calcPartnerPoints } from '../../helpers'
 import { useBanxStakeInfo, useBanxStakeSettings } from '../../hooks'
-import { calcIdleBalance, calcPlayerPoints } from './helpers'
+import { calcIdleBalance, calcPlayerPoints, formatBanxTokensStrToBN } from './helpers'
 
 export const useStakeTokensModal = () => {
   const { banxStakeSettings } = useBanxStakeSettings()
@@ -43,9 +42,9 @@ export const useStakeTokensModal = () => {
 
   const onSetMax = () => {
     if (isStakeTab) {
-      return setInputTokenAmount(limitDecimalPlaces(String(banxWalletBalance)))
+      return setInputTokenAmount(limitDecimalPlaces(banxWalletBalance.toString()))
     }
-    return setInputTokenAmount(limitDecimalPlaces(String(totalTokenStaked)))
+    return setInputTokenAmount(limitDecimalPlaces(totalTokenStaked.toString()))
   }
 
   const onTabClick = () => {
@@ -55,7 +54,10 @@ export const useStakeTokensModal = () => {
   const idleBanxWalletBalance = calcIdleBalance(banxWalletBalance, inputTokenAmount)
   const idleStakedTokens = calcIdleBalance(totalTokenStaked, inputTokenAmount)
 
-  const partnerPoints = calcPartnerPoints(stringToBN(inputTokenAmount), tokensPerPartnerPointsBN)
+  const partnerPoints = calcPartnerPoints(
+    formatBanxTokensStrToBN(inputTokenAmount),
+    tokensPerPartnerPointsBN,
+  )
   const playerPoints = calcPlayerPoints(inputTokenAmount)
 
   const parsedInputTokenAmount = parseFloat(inputTokenAmount) || 0
@@ -94,7 +96,7 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
   const priorityFees = usePriorityFees()
 
   const onStake = () => {
-    const txnParam = { tokensToStake: stringToBN(inputTokenAmount), priorityFees }
+    const txnParam = { tokensToStake: formatBanxTokensStrToBN(inputTokenAmount), priorityFees }
 
     new TxnExecutor(stakeBanxTokenAction, { wallet, connection })
       .addTxnParam(txnParam)
@@ -120,7 +122,7 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
   }
 
   const onUnstake = () => {
-    const txnParam = { tokensToUnstake: stringToBN(inputTokenAmount), priorityFees }
+    const txnParam = { tokensToUnstake: formatBanxTokensStrToBN(inputTokenAmount), priorityFees }
 
     new TxnExecutor(unstakeBanxTokenAction, { wallet, connection })
       .addTxnParam(txnParam)
