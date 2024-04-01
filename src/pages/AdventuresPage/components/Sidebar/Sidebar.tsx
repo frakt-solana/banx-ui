@@ -73,7 +73,7 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
     return rewardsBN
   }, [banxAdventures])
 
-  const { tokensPerPartnerPoints, rewardsHarvested } = banxStakingSettings
+  const { tokensPerPartnerPoints /*rewardsHarvested*/ } = banxStakingSettings
 
   const tokensPts = calcPartnerPoints(
     banxTokenStake?.tokensStaked ?? ZERO_BN,
@@ -216,21 +216,22 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
             />
             <Button
               onClick={claimAction}
-              disabled={rewards.eq(ZERO_BN)}
+              disabled
+              // disabled={rewards.eq(ZERO_BN)}
               className={styles.manageButton}
             >
               Claim
             </Button>
           </div>
 
-          <div className={styles.divider} />
+          {/* <div className={styles.divider} />
 
           <StakingStat
             label="Total claimed"
             value={formatNumbersWithCommas(banxTokenBNToFixed(rewardsHarvested, 2))}
             icon={BanxToken}
             flexType="row"
-          />
+          /> */}
         </div>
       </div>
 
