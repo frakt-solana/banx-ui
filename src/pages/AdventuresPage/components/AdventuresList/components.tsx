@@ -1,87 +1,155 @@
-import React, { FC, useMemo } from 'react'
+import { FC, useMemo } from 'react'
 
+import classNames from 'classnames'
 import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Button } from '@banx/components/Buttons'
 import Tooltip from '@banx/components/Tooltip'
 
-import { AdventureStatus, BanxAdventureBN, BanxAdventureSubscriptionBN } from '@banx/api/staking'
+import {
+  AdventureStatus,
+  BanxAdventureBN,
+  BanxAdventureSubscriptionBN,
+  BanxStakeBN,
+} from '@banx/api/staking'
+import {
+  BANX_TOKEN_DECIMALS,
+  TOTAL_BANX_NFTS,
+  TOTAL_BANX_NFTS_PARTNER_POINTS,
+} from '@banx/constants'
 import { useCountdown } from '@banx/hooks'
-import { Alert, BanxToken, Clock, MoneyBill, SuccessIcon, Timer } from '@banx/icons'
+import { Alert, BanxLogo, BanxToken, Clock, MoneyBill, SuccessIcon, Timer } from '@banx/icons'
 import {
   banxTokenBNToFixed,
+  calcPartnerPoints,
   calculateAdventureRewards,
+  checkIsSubscribed,
+  checkIsUserStaking,
   getAdventureEndTime,
   getAdventureStatus,
+  isAdventureLive,
+  isAdventureUpcomming,
+  useBanxTokenCirculatingAmount,
 } from '@banx/pages/AdventuresPage'
-import { formatNumbersWithCommas } from '@banx/utils'
+import { bnToHuman, formatCompact, formatNumbersWithCommas } from '@banx/utils'
 
 import styles from './AdventuresList.module.less'
 
-export const NotParticipatedColumn: FC<{ status: AdventureStatus }> = ({ status }) => {
-  const TEXT_BY_STATUS = {
-    [AdventureStatus.ENDED]: "You didn't participate",
+type NotParticipatedColumnProps = {
+  banxAdventure: BanxAdventureBN
+}
+export const NotParticipatedColumn: FC<NotParticipatedColumnProps> = ({ banxAdventure }) => {
+  const status = getAdventureStatus(banxAdventure)
+
+  const TITLE_BY_STATUS: Record<AdventureStatus, string> = {
     [AdventureStatus.LIVE]: 'You are not subscribed',
-    DEFAULT: 'You are currently not subscribed',
+    [AdventureStatus.ENDED]: "You didn't participate",
+    [AdventureStatus.UPCOMING]: 'You are currently not subscribed',
   }
 
   return (
     <div className={styles.statsColWarn}>
       <Alert />
-      <p>{TEXT_BY_STATUS[status as keyof typeof TEXT_BY_STATUS] || TEXT_BY_STATUS.DEFAULT}</p>
+      <p>{TITLE_BY_STATUS[status]}</p>
     </div>
   )
 }
 
-export const WalletParticipationColumn: FC<{
-  banxTokenAmount: string
-  banxAmount: string
-  partnerPts: string | number
-  status: BanxAdventureSubscriptionState
-}> = (props) => {
-  const TITLE_BY_STATUS = {
-    [BanxAdventureSubscriptionState.Active]: 'You subscribed with',
-    [BanxAdventureSubscriptionState.None]: 'You are participating with',
-    DEFAULT: 'You subscribed with',
+type WalletParticipationColumnProps = {
+  banxAdventure: BanxAdventureBN
+  banxAdventureSubscription: BanxAdventureSubscriptionBN
+}
+export const WalletParticipationColumn: FC<WalletParticipationColumnProps> = ({
+  banxAdventure,
+  banxAdventureSubscription,
+}) => {
+  const { tokensPerPoints } = banxAdventure
+  const {
+    stakePartnerPointsAmount: stakedNftsPartnerPoints,
+    stakeTokensAmount: userStakedTokensAmount,
+    stakeNftAmount: userStakedNftsAmount,
+  } = banxAdventureSubscription
+
+  const userTokensPartnerPoints = calcPartnerPoints(userStakedTokensAmount, tokensPerPoints)
+
+  const userPartnerPoints = userTokensPartnerPoints + stakedNftsPartnerPoints
+
+  const TITLE_BY_STATUS: Record<AdventureStatus, string> = {
+    [AdventureStatus.ENDED]: 'You participated with',
+    [AdventureStatus.LIVE]: 'You are participating with',
+    [AdventureStatus.UPCOMING]: 'You subscribed with',
   }
 
-  const { status, partnerPts, banxAmount, banxTokenAmount } = props
+  const status = getAdventureStatus(banxAdventure)
 
   return (
     <div className={styles.statsCol}>
-      <h5>{TITLE_BY_STATUS[status as keyof typeof TITLE_BY_STATUS] || TITLE_BY_STATUS.DEFAULT}</h5>
-      <p>{banxAmount} Banx NFTs</p>
-      <p>{banxTokenAmount} $BANX</p>
-      <p>{partnerPts} Partner pts</p>
+      <h5>{TITLE_BY_STATUS[status]}</h5>
+      <p>{formatNumbersWithCommas(userStakedNftsAmount)} Banx NFTs</p>
+      <p>{formatCompact(banxTokenBNToFixed(userStakedTokensAmount))} $BANX</p>
+      <p>{formatNumbersWithCommas(userPartnerPoints.toFixed(2))} Partner pts</p>
     </div>
   )
 }
 
-export const TotalParticipationColumn: FC<{
-  totalBanxSubscribed: string
-  totalBanxTokensSubscribed: string
-  totalPartnerPoints: string
-}> = ({ totalBanxSubscribed, totalPartnerPoints, totalBanxTokensSubscribed }) => {
+type TotalParticipationColumnProps = {
+  banxAdventure: BanxAdventureBN
+}
+export const TotalParticipationColumn: FC<TotalParticipationColumnProps> = ({ banxAdventure }) => {
+  const { amount: maxTokensToSubscribe } = useBanxTokenCirculatingAmount()
+
+  const {
+    totalTokensStaked: tokensSubscribed,
+    totalBanxSubscribed: nftsSubscribed,
+    tokensPerPoints,
+    totalPartnerPoints: totalNftsPartnerPoints,
+  } = banxAdventure
+
+  const maxTokensToSubscribeFloat = bnToHuman(maxTokensToSubscribe, BANX_TOKEN_DECIMALS)
+  const tokensPerPointsFloat = bnToHuman(tokensPerPoints, BANX_TOKEN_DECIMALS)
+  const totalTokensPartnerPoints = calcPartnerPoints(tokensSubscribed, tokensPerPoints)
+
+  const partnerPointsSubscribed = totalTokensPartnerPoints + totalNftsPartnerPoints
+
+  const maxPartnerPoints =
+    maxTokensToSubscribeFloat / tokensPerPointsFloat + TOTAL_BANX_NFTS_PARTNER_POINTS
+
+  const nftsSubscribedStr = `${formatNumbersWithCommas(nftsSubscribed)}/${formatNumbersWithCommas(
+    TOTAL_BANX_NFTS,
+  )}`
+
+  const banxTokensSubscribedStr = `${formatCompact(
+    banxTokenBNToFixed(tokensSubscribed, 0),
+  )}/${formatCompact(banxTokenBNToFixed(maxTokensToSubscribe, 0))}`
+
+  const partnerPointsStr = `${formatCompact(partnerPointsSubscribed.toFixed(0))}/${formatCompact(
+    maxPartnerPoints.toFixed(0),
+  )}`
+
   return (
     <div className={styles.statsCol}>
       <h5>Total participation</h5>
-      <p>{totalBanxSubscribed} Banx NFTs</p>
-      <p>{totalBanxTokensSubscribed} $BANX</p>
-      <p>{totalPartnerPoints} Partner pts</p>
+      <p>{nftsSubscribedStr} Banx NFTs</p>
+      <p>{banxTokensSubscribedStr} $BANX</p>
+      <p>{partnerPointsStr} Partner pts</p>
     </div>
   )
 }
 
-const TIMER_TEXT_BY_STATUS = {
-  [AdventureStatus.LIVE]: 'Before rewards distribution',
-  [AdventureStatus.UPCOMING]: 'Deadline to subscribe',
-  DEFAULT: 'Before rewards distribution',
-}
-
-export const AdventuresTimer: FC<{
+type AdventuresTimerProps = {
   banxAdventure: BanxAdventureBN
   banxAdventureSubscription?: BanxAdventureSubscriptionBN
-}> = ({ banxAdventure, banxAdventureSubscription }) => {
+}
+export const AdventuresTimer: FC<AdventuresTimerProps> = ({
+  banxAdventure,
+  banxAdventureSubscription,
+}) => {
+  const TIMER_TEXT_BY_STATUS = {
+    [AdventureStatus.LIVE]: 'Before rewards distribution',
+    [AdventureStatus.UPCOMING]: 'Deadline to subscribe',
+    DEFAULT: 'Before rewards distribution',
+  }
+
   const isSubscribed =
     banxAdventureSubscription?.adventureSubscriptionState === BanxAdventureSubscriptionState.Active
 
@@ -132,32 +200,67 @@ export const AdventuresTimer: FC<{
   )
 }
 
-interface ParticipateProps {
-  isStarted: boolean
-  isSubscribed: boolean
-  isDisabled: boolean
-  isParticipating: boolean
-  isNone: boolean
-  onSubmit: () => void
+type AdventureEndedRewardsResultProps = {
+  banxAdventure: BanxAdventureBN
+  banxAdventureSubscription?: BanxAdventureSubscriptionBN
+}
+export const AdventureEndedRewardsResult: FC<AdventureEndedRewardsResultProps> = ({
+  banxAdventure,
+  banxAdventureSubscription,
+}) => {
+  const isSubscribed =
+    banxAdventureSubscription?.adventureSubscriptionState === BanxAdventureSubscriptionState.Active
+
+  const rewards: string = useMemo(() => {
+    if (!banxAdventureSubscription || !isSubscribed) return '0'
+
+    return banxTokenBNToFixed(
+      calculateAdventureRewards([
+        { adventure: banxAdventure, subscription: banxAdventureSubscription },
+      ]),
+      0,
+    )
+  }, [banxAdventure, banxAdventureSubscription, isSubscribed])
+
+  return (
+    <div className={styles.endedRewards}>
+      <div className={styles.endedRewardsValue}>
+        <p>{formatNumbersWithCommas(rewards)}</p>
+        <BanxLogo className={styles.endedRewardsBanxLogo} />
+      </div>
+      <p className={styles.endedRewardsText}>You received</p>
+    </div>
+  )
 }
 
-export const Participate: FC<ParticipateProps> = ({
-  isStarted,
-  isSubscribed,
-  isDisabled,
-  isNone,
-  isParticipating,
-  onSubmit,
+type ParticipateButtonProps = {
+  banxAdventure: BanxAdventureBN
+  banxAdventureSubscription?: BanxAdventureSubscriptionBN
+  banxTokenStake?: BanxStakeBN
+  onClick: () => void
+}
+export const ParticipateButton: FC<ParticipateButtonProps> = ({
+  banxAdventure,
+  banxAdventureSubscription,
+  banxTokenStake,
+  onClick,
 }) => {
-  const showParticipating = isStarted && isSubscribed
-  const showSubscribeBtn = (!isStarted && !isSubscribed) || (isNone && !isStarted)
-  const showSubscribed = !isStarted && isSubscribed
+  const isUserStaking = !!banxTokenStake && checkIsUserStaking(banxTokenStake)
+
+  const isSubscribed = !!banxAdventureSubscription && checkIsSubscribed(banxAdventureSubscription)
+
+  const isUpcomming = isAdventureUpcomming(banxAdventure)
+  const isLive = isAdventureLive(banxAdventure)
+
+  const showSubscribeBtn = isUpcomming && !isSubscribed
+  const showParticipating = isLive && isSubscribed
+  const showSubscribed = isUpcomming && isSubscribed
 
   if (showSubscribeBtn) {
     return (
       <Button
-        disabled={isDisabled || !isParticipating}
-        onClick={onSubmit}
+        disabled={!isUserStaking || isSubscribed}
+        onClick={onClick}
         className={styles.subscribeBtn}
       >
         Subscribe to participate
@@ -167,7 +270,10 @@ export const Participate: FC<ParticipateProps> = ({
 
   if (showParticipating) {
     return (
-      <Button disabled className={styles.subscribeBtn}>
+      <Button
+        disabled
+        className={classNames(styles.subscribeBtn, styles.subscribeBtnParticipating)}
+      >
         <div>
           <Clock />
           <span>Participating</span>

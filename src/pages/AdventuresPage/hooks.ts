@@ -6,7 +6,9 @@ import {
   BanxStakingSettings,
   fetchBanxStakeInfo,
   fetchBanxStakeSettings,
+  fetchBanxTokenCirculatingAmount,
 } from '@banx/api/staking'
+import { BANX_TOKEN_APPROX_CIRCULATING_AMOUNT } from '@banx/constants'
 import { queryClient } from '@banx/utils'
 
 const createBanxStakeInfoQueryKey = (walletPubkey: string) => ['fetchBanxStakeInfo', walletPubkey]
@@ -71,5 +73,21 @@ export const useBanxStakeSettings = () => {
     setOptimistic: setBanxStakeSettingsOptimistic,
     isLoading,
     refetch,
+  }
+}
+
+export const useBanxTokenCirculatingAmount = () => {
+  const { data: amount, isLoading } = useQuery(
+    ['banxTokenCirculatingAmount'],
+    () => fetchBanxTokenCirculatingAmount(),
+    {
+      staleTime: Infinity,
+      refetchOnWindowFocus: false,
+    },
+  )
+
+  return {
+    amount: amount ?? BANX_TOKEN_APPROX_CIRCULATING_AMOUNT,
+    isLoading,
   }
 }

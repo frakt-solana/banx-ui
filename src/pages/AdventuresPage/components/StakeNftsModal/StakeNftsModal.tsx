@@ -57,7 +57,7 @@ export const StakeNftsModal = () => {
       return setSelectedNfts([])
     }
 
-    return setSelectedNfts(filteredNfts)
+    return setSelectedNfts(filteredNfts.filter((nft) => !nft?.isLoaned))
   }
 
   const filteredNfts = useMemo(() => {
@@ -84,7 +84,6 @@ export const StakeNftsModal = () => {
         nftMint: nft.mint,
         whitelistEntry: new web3.PublicKey(BANX_STAKING.WHITELIST_ENTRY_PUBKEY),
         hadoRegistry: new web3.PublicKey(BANX_STAKING.HADO_REGISTRY_PUBKEY),
-        banxPointsMap: nft.pointsMap,
         priorityFees,
       }))
 
@@ -119,13 +118,11 @@ export const StakeNftsModal = () => {
         return
       }
 
-      const { banxTokenStake } = banxStakeInfo
-
       const params = selectedNfts.map((nft) => ({
         nftMint: nft.mint,
         userPubkey: wallet.publicKey as web3.PublicKey,
         priorityFees,
-        banxStakePublicKey: banxTokenStake?.publicKey ?? '',
+        banxStakePublicKey: nft.stake?.publicKey ?? '',
       }))
 
       new TxnExecutor(unstakeBanxNftsAction, { wallet, connection })
