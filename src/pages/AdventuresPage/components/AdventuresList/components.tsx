@@ -208,8 +208,7 @@ export const AdventureEndedRewardsResult: FC<AdventureEndedRewardsResultProps> =
   banxAdventure,
   banxAdventureSubscription,
 }) => {
-  const isSubscribed =
-    banxAdventureSubscription?.adventureSubscriptionState === BanxAdventureSubscriptionState.Active
+  const isSubscribed = !!banxAdventureSubscription && checkIsSubscribed(banxAdventureSubscription)
 
   const rewards: string = useMemo(() => {
     if (!banxAdventureSubscription || !isSubscribed) return '0'

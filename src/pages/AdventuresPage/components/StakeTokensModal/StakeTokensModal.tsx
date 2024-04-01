@@ -1,321 +1,79 @@
-import { useEffect, useMemo, useState } from 'react'
-
-import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { BN } from 'fbonds-core'
-import { parseInt } from 'lodash'
-import { TxnExecutor } from 'solana-transactions-executor'
-
 import { Button } from '@banx/components/Buttons'
-import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
-import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
-import Tooltip from '@banx/components/Tooltip'
-import NumericInput from '@banx/components/inputs/NumericInput'
+import { Tabs } from '@banx/components/Tabs'
 import { Modal } from '@banx/components/modals/BaseModal'
 
-import { BANX_TOKEN_DECIMALS, BANX_TOKEN_STAKE_DECIMAL } from '@banx/constants'
-import { BanxToken } from '@banx/icons'
-import {
-  banxTokenBNToFixed,
-  calcPartnerPoints,
-  calculatePlayerPointsForBanxTokens,
-  useBanxStakeInfo,
-  useBanxStakeSettings,
-} from '@banx/pages/AdventuresPage'
 import { useModal } from '@banx/store'
-import { defaultTxnErrorHandler } from '@banx/transactions'
-import { stakeBanxTokenAction, unstakeBanxTokenAction } from '@banx/transactions/staking'
+
 import {
-  ZERO_BN,
-  bnToHuman,
-  enqueueSnackbar,
-  formatNumbersWithCommas,
-  toDecimals,
-  usePriorityFees,
-} from '@banx/utils'
+  BanxPointsStats,
+  BanxWalletBalance,
+  IdleTokensBalance,
+  Title,
+  TokenInputField,
+  TotalStakedInfo,
+} from './components'
+import { useStakeTokensModal, useTokenTransactions } from './hooks'
 
 import styles from './StakeTokensModal.module.less'
 
-//TODO Refactor it completely
 export const StakeTokensModal = () => {
-  const wallet = useWallet()
-  const { connection } = useConnection()
-  const priorityFees = usePriorityFees()
-  const { banxStakeSettings } = useBanxStakeSettings()
-  const { banxStakeInfo } = useBanxStakeInfo()
-
-  const banxWalletBalance = bnToHuman(
-    banxStakeInfo?.banxWalletBalance ?? ZERO_BN,
-    BANX_TOKEN_DECIMALS,
-  )
-
   const { close } = useModal()
-  const [value, setValue] = useState('0')
+  const {
+    onSetMax,
+    handleChangeValue,
+    isUnstakeDisabled,
+    isStakeDisabled,
+    partnerPoints,
+    idleStakedTokens,
+    banxWalletBalance,
+    playerPoints,
+    idleBanxWalletBalance,
+    inputTokenAmount,
+    currentTabValue,
+    tabProps,
+    totalTokenStaked,
+    onTabClick,
+    showErrorMessage,
+    isStakeTab,
+  } = useStakeTokensModal()
 
-  const { value: currentTabValue, ...tabProps } = useTabs({
-    tabs: MODAL_TABS,
-    defaultValue: MODAL_TABS[0].value,
-  })
-
-  const handleChangeValue = (v: string) => {
-    const isMaxBanxBalance =
-      currentTabValue === ModalTabs.STAKE && parseFloat(v) < banxWalletBalance
-    const isMaxStaked =
-      currentTabValue === ModalTabs.UNSTAKE &&
-      parseFloat(v) <
-        bnToHuman(banxStakeInfo?.banxTokenStake?.tokensStaked ?? ZERO_BN, BANX_TOKEN_DECIMALS)
-
-    if (!v || isMaxBanxBalance || isMaxStaked) {
-      setValue(v || '0')
-    }
-  }
-
-  const calcPts = (value: string) =>
-    calcPartnerPoints(
-      //TODO Prevent assertion failed for big number (fix with normal string to BN parsing)
-      new BN(parseFloat(value)).mul(new BN(10 ** BANX_TOKEN_DECIMALS)),
-      banxStakeSettings?.tokensPerPartnerPoints,
-    )
-
-  const pointsToReceive = calcPts(value).toFixed(2)
-
-  const onStakeTokens = () => {
-    if (!wallet.publicKey || !banxStakeSettings || !value || !banxStakeInfo) {
-      return
-    }
-
-    const txnParam = {
-      tokensToStake: toDecimals(parseFloat(value), BANX_TOKEN_STAKE_DECIMAL),
-      userPubkey: wallet.publicKey,
-      priorityFees,
-    }
-
-    new TxnExecutor(stakeBanxTokenAction, { wallet, connection })
-      .addTxnParam(txnParam)
-      .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
-        enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
-          solanaExplorerPath: `tx/${txnHash}`,
-        })
-      })
-      .on('pfSuccessAll', () => {
-        close()
-      })
-      .on('pfError', (error) => {
-        defaultTxnErrorHandler(error, {
-          additionalData: txnParam,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'Stake banx token',
-        })
-      })
-      .execute()
-  }
-  const onUnstakeTokens = () => {
-    if (!wallet.publicKey || !banxStakeSettings || !value || !banxStakeInfo) {
-      return
-    }
-
-    const txnParam = {
-      tokensToUnstake: toDecimals(parseFloat(value), BANX_TOKEN_STAKE_DECIMAL),
-      userPubkey: wallet.publicKey,
-      priorityFees,
-    }
-
-    new TxnExecutor(unstakeBanxTokenAction, { wallet, connection })
-      .addTxnParam(txnParam)
-      .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
-        enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
-          solanaExplorerPath: `tx/${txnHash}`,
-        })
-      })
-      .on('pfSuccessAll', () => {
-        close()
-      })
-      .on('pfError', (error) => {
-        defaultTxnErrorHandler(error, {
-          additionalData: txnParam,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'Unstake banx token',
-        })
-      })
-      .execute()
-  }
-
-  const onSubmit = () => {
-    if (currentTabValue === ModalTabs.STAKE) {
-      return void onStakeTokens()
-    }
-
-    return void onUnstakeTokens()
-  }
-
-  const idleOnWallet = formatNumbersWithCommas(
-    (banxWalletBalance - parseFloat(value || '0')).toFixed(0),
-  )
-  const banxBalance = formatNumbersWithCommas(banxWalletBalance.toFixed(2))
-
-  const tokensStaked = formatNumbersWithCommas(
-    (
-      bnToHuman(banxStakeInfo?.banxTokenStake?.tokensStaked ?? ZERO_BN) - parseFloat(value || '0')
-    ).toFixed(0),
-  )
-
-  const ptsAmount = formatNumbersWithCommas(
-    calcPts(banxTokenBNToFixed(banxStakeInfo?.banxTokenStake?.tokensStaked ?? ZERO_BN, 2)).toFixed(
-      2,
-    ),
-  )
-
-  const isBtnDisabled = useMemo(() => {
-    const emptyValue = !parseFloat(value)
-    const notEnoughStake =
-      currentTabValue === ModalTabs.STAKE && banxWalletBalance < parseFloat(value)
-    const notEnoughUnStake =
-      currentTabValue === ModalTabs.UNSTAKE &&
-      bnToHuman(banxStakeSettings?.tokensStaked ?? ZERO_BN, BANX_TOKEN_DECIMALS) < parseFloat(value)
-
-    return emptyValue || notEnoughStake || notEnoughUnStake
-  }, [value, banxWalletBalance, currentTabValue, banxStakeSettings?.tokensStaked])
-
-  const onSetMax = () => {
-    if (currentTabValue === ModalTabs.STAKE) {
-      return setValue(banxWalletBalance.toFixed(2))
-    }
-    return setValue(banxTokenBNToFixed(banxStakeInfo?.banxTokenStake?.tokensStaked ?? ZERO_BN, 2))
-  }
-
-  useEffect(() => {
-    setValue('0')
-  }, [currentTabValue])
-
-  const calcTokensPlayersPoints = calculatePlayerPointsForBanxTokens(
-    new BN(toDecimals(parseFloat(value))),
-  ).toFixed(2)
+  const { onStake, onUnstake } = useTokenTransactions(inputTokenAmount)
 
   return (
-    <Modal className={styles.modal} open onCancel={close} footer={false} width={572} centered>
-      <Tabs value={currentTabValue} {...tabProps} />
+    <Modal open onCancel={close} className={styles.modal} width={572}>
+      <Tabs value={currentTabValue} onTabClick={onTabClick} {...tabProps} />
       <div className={styles.container}>
-        {currentTabValue === ModalTabs.STAKE && (
-          <div className={styles.row}>
-            <span className={styles.uppercaseText}>Wallet balance</span>
-            <span className={styles.valueText}>{banxBalance}</span>
-            <BanxToken />
-          </div>
-        )}
+        {isStakeTab && <BanxWalletBalance banxWalletBalance={banxWalletBalance} />}
+        {!isStakeTab && <TotalStakedInfo tokensStaked={totalTokenStaked} />}
 
-        {currentTabValue === ModalTabs.UNSTAKE && (
-          <div className={styles.row}>
-            <span className={styles.uppercaseText}>Total staked</span>
-            <span className={styles.valueText}>{tokensStaked}</span>
-            <BanxToken />
-            <span className={styles.valueText}>{ptsAmount} pts</span>
-          </div>
-        )}
+        <TokenInputField
+          value={inputTokenAmount}
+          onChange={handleChangeValue}
+          onMax={onSetMax}
+          showErrorMessage={showErrorMessage}
+        />
 
-        <div className={styles.input}>
-          <NumericInput
-            positiveOnly
-            onChange={handleChangeValue}
-            value={parseInt(value).toFixed(0)}
-          />
-          <Button size="small" variant="secondary" onClick={onSetMax}>
-            Use max
-          </Button>
+        <div className={styles.content}>
+          <div className={styles.stakeContainer}>
+            <Title title={isStakeTab ? 'You will stake' : 'You will unstake'} />
+            <BanxPointsStats partnerPoints={partnerPoints} playerPoints={playerPoints} />
+          </div>
+
+          {isStakeTab && <IdleTokensBalance label="Idle on wallet" value={idleBanxWalletBalance} />}
+          {!isStakeTab && <IdleTokensBalance label="Staked" value={idleStakedTokens} />}
         </div>
 
-        {currentTabValue === ModalTabs.STAKE && (
-          <div className={styles.stats}>
-            <div className={styles.youWillStake}>
-              <p className={styles.title}>
-                <span>You will stake</span>
-                <Tooltip title="The Banx ecosystem is governed by Partner and Player points. These points determine holder benefits, proportional to total amount of points staked." />
-              </p>
-
-              <div className={styles.valuesRaw}>
-                <div className={styles.values}>
-                  <span>{pointsToReceive}</span>
-                  <span>PARTNER POINTS</span>
-                </div>
-                <div className={styles.values}>
-                  <span>{calcTokensPlayersPoints}</span>
-                  <span>player POINTS</span>
-                </div>
-              </div>
-            </div>
-            <StatInfo
-              label="Idle on wallet"
-              value={idleOnWallet}
-              valueType={VALUES_TYPES.STRING}
-              classNamesProps={{ value: styles.value }}
-              icon={BanxToken}
-              flexType="row"
-            />
-          </div>
+        {isStakeTab && (
+          <Button onClick={onStake} disabled={isStakeDisabled} className={styles.stakeButton}>
+            Stake
+          </Button>
         )}
-
-        {currentTabValue === ModalTabs.UNSTAKE && (
-          <div className={styles.stats}>
-            <div className={styles.youWillStake}>
-              <p className={styles.title}>
-                <span>You will unstake</span>
-                <Tooltip title="The Banx ecosystem is governed by Partner and Player points. These points determine holder benefits, proportional to total amount of points staked." />
-              </p>
-
-              <div className={styles.valuesRaw}>
-                <div className={styles.values}>
-                  <span>{pointsToReceive}</span>
-                  <span>PARTNER POINTS</span>
-                </div>
-                <div className={styles.values}>
-                  <span>{calcTokensPlayersPoints}</span>
-                  <span>player POINTS</span>
-                </div>
-              </div>
-            </div>
-
-            <StatInfo
-              label="Staked"
-              value={tokensStaked}
-              valueType={VALUES_TYPES.STRING}
-              classNamesProps={{ value: styles.value }}
-              icon={BanxToken}
-              flexType="row"
-            />
-          </div>
+        {!isStakeTab && (
+          <Button onClick={onUnstake} disabled={isUnstakeDisabled} className={styles.unstakeButton}>
+            Unstake
+          </Button>
         )}
-
-        <Button
-          disabled={isBtnDisabled}
-          size="default"
-          variant="primary"
-          className={styles.btn}
-          onClick={onSubmit}
-        >
-          {currentTabValue === ModalTabs.STAKE && 'Stake'}
-          {currentTabValue === ModalTabs.UNSTAKE && 'Unstake'}
-        </Button>
       </div>
     </Modal>
   )
 }
-
-enum ModalTabs {
-  STAKE = 'stake',
-  UNSTAKE = 'unstake',
-}
-
-const MODAL_TABS: Tab[] = [
-  {
-    label: 'Stake',
-    value: ModalTabs.STAKE,
-  },
-  {
-    label: 'Unstake',
-    value: ModalTabs.UNSTAKE,
-  },
-]

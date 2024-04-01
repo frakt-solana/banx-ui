@@ -11,6 +11,7 @@ import {
   BanxInfoBN,
   BanxStakeBN,
 } from '@banx/api/staking'
+import { SEND_TXN_MAX_RETRIES } from '@banx/constants'
 import { checkIsSubscribed, getAdventureStatus, isAdventureEnded } from '@banx/pages/AdventuresPage'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { subscribeBanxAdventureAction } from '@banx/transactions/staking'
@@ -87,7 +88,13 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
       priorityFees,
     }
 
-    new TxnExecutor(subscribeBanxAdventureAction, { wallet, connection })
+    new TxnExecutor(
+      subscribeBanxAdventureAction,
+      { wallet, connection },
+      {
+        maxRetries: SEND_TXN_MAX_RETRIES,
+      },
+    )
       .addTxnParam(params)
       .on('pfSuccessEach', (results) => {
         const { txnHash } = results[0]

@@ -10,6 +10,7 @@ import { Loader } from '@banx/components/Loader'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan } from '@banx/api/core'
+import { SEND_TXN_MAX_RETRIES } from '@banx/constants'
 import { useMarketOffers } from '@banx/pages/LendPage'
 import { calculateClaimValue } from '@banx/pages/OffersPage'
 import { useModal } from '@banx/store'
@@ -115,7 +116,11 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const formattedClaimValue = `+${formatDecimal(totalClaimValue / 1e9)}◎`
 
   const terminateLoan = () => {
-    new TxnExecutor(makeTerminateAction, { wallet, connection })
+    new TxnExecutor(
+      makeTerminateAction,
+      { wallet, connection },
+      { maxRetries: SEND_TXN_MAX_RETRIES },
+    )
       .addTxnParam({ loan })
       // .on('pfSuccessEach', (results) => {
       //   const { result, txnHash } = results[0]
@@ -152,7 +157,11 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const instantLoan = () => {
     if (!bestOffer) return
 
-    new TxnExecutor(makeInstantRefinanceAction, { wallet, connection })
+    new TxnExecutor(
+      makeInstantRefinanceAction,
+      { wallet, connection },
+      { maxRetries: SEND_TXN_MAX_RETRIES },
+    )
       .addTxnParam({ loan, bestOffer, priorityFees })
       // .on('pfSuccessEach', (results) => {
       //   const { result, txnHash } = results[0]

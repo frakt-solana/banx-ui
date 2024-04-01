@@ -3,6 +3,7 @@ import { chunk, groupBy } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
+import { SEND_TXN_MAX_RETRIES } from '@banx/constants'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
 import { useIsLedger, useLoansOptimistic } from '@banx/store'
 import { BorrowType, defaultTxnErrorHandler } from '@banx/transactions'
@@ -27,7 +28,11 @@ export const useLoansTransactions = () => {
   const repayLoan = async (loan: Loan) => {
     const txnParam = { loans: [loan], priorityFees }
 
-    await new TxnExecutor(makeRepayLoansAction, { wallet, connection })
+    await new TxnExecutor(
+      makeRepayLoansAction,
+      { wallet, connection },
+      { maxRetries: SEND_TXN_MAX_RETRIES },
+    )
       .addTxnParam(txnParam)
       // .on('pfSuccessAll', (results) => {
       //   const { txnHash, result } = results[0]
@@ -65,7 +70,11 @@ export const useLoansTransactions = () => {
   const repayPartialLoan = async (loan: Loan, fractionToRepay: number) => {
     const txnParam = { loan, fractionToRepay, priorityFees }
 
-    await new TxnExecutor(makeRepayPartialLoanAction, { wallet, connection })
+    await new TxnExecutor(
+      makeRepayPartialLoanAction,
+      { wallet, connection },
+      { maxRetries: SEND_TXN_MAX_RETRIES },
+    )
       .addTxnParam(txnParam)
       // .on('pfSuccessAll', (results) => {
       //   const { txnHash, result } = results[0]
@@ -111,7 +120,11 @@ export const useLoansTransactions = () => {
     await new TxnExecutor(
       makeRepayLoansAction,
       { wallet, connection },
-      { signAllChunks: isLedger ? 1 : 40, rejectQueueOnFirstPfError: false },
+      {
+        signAllChunks: isLedger ? 1 : 40,
+        rejectQueueOnFirstPfError: false,
+        maxRetries: SEND_TXN_MAX_RETRIES,
+      },
     )
       .addTxnParams(txnParams)
       // .on('pfSuccessEach', (results) => {
@@ -161,7 +174,7 @@ export const useLoansTransactions = () => {
     await new TxnExecutor(
       makeRepayPartialLoanAction,
       { wallet, connection },
-      { signAllChunks: isLedger ? 5 : 40 },
+      { signAllChunks: isLedger ? 5 : 40, maxRetries: SEND_TXN_MAX_RETRIES },
     )
       .addTxnParams(txnParams)
       .on('pfSuccessEach', (results) => {

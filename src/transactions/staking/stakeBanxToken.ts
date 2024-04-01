@@ -8,34 +8,31 @@ import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type StakeBanxTokenActionParams = {
-  userPubkey: web3.PublicKey
-  tokensToStake: string
+  tokensToStake: BN
   priorityFees: number
 }
 
 export type StakeBanxTokenAction = MakeActionFn<StakeBanxTokenActionParams, null>
 
-export const stakeBanxTokenAction: StakeBanxTokenAction = async (ixnParams, { connection }) => {
-  const params = {
+export const stakeBanxTokenAction: StakeBanxTokenAction = async (
+  ixnParams,
+  { wallet, connection },
+) => {
+  const { tokensToStake, priorityFees } = ixnParams
+
+  const { instructions, signers } = await stakeBanxToken({
     connection: connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-    priorityFees: ixnParams.priorityFees,
     accounts: {
-      userPubkey: ixnParams.userPubkey,
+      userPubkey: wallet.publicKey as web3.PublicKey,
       tokenMint: BANX_TOKEN_MINT,
     },
     args: {
-      tokensToStake: new BN(ixnParams.tokensToStake),
+      tokensToStake,
     },
+    priorityFees,
     sendTxn: sendTxnPlaceHolder,
-  }
+  })
 
-  const { instructions, signers } = await stakeBanxToken(params)
-
-  return {
-    instructions: instructions,
-    additionalResult: null,
-    signers: signers,
-    lookupTables: [],
-  }
+  return { instructions, signers, lookupTables: [] }
 }
