@@ -7,11 +7,18 @@ import { Tab, useTabs } from '@banx/components/Tabs'
 
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxTokenAction, unstakeBanxTokenAction } from '@banx/transactions/staking'
-import { ZERO_BN, bnToHuman, enqueueSnackbar, stringToBN, usePriorityFees } from '@banx/utils'
+import {
+  ZERO_BN,
+  bnToHuman,
+  enqueueSnackbar,
+  limitDecimalPlaces,
+  stringToBN,
+  usePriorityFees,
+} from '@banx/utils'
 
 import { calcPartnerPoints } from '../../helpers'
 import { useBanxStakeInfo, useBanxStakeSettings } from '../../hooks'
-import { calcIdleBalance, calcPlayerPoints, limitDecimalPlaces } from './helpers'
+import { calcIdleBalance, calcPlayerPoints } from './helpers'
 
 export const useStakeTokensModal = () => {
   const { banxStakeSettings } = useBanxStakeSettings()

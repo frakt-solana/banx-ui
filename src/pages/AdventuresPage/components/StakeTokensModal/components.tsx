@@ -9,9 +9,7 @@ import { InputErrorMessage } from '@banx/components/inputs'
 import NumericInput, { NumericInputProps } from '@banx/components/inputs/NumericInput'
 
 import { BanxToken } from '@banx/icons'
-import { formatNumbersWithCommas } from '@banx/utils'
-
-import { limitDecimalPlaces } from './helpers'
+import { formatNumbersWithCommas, limitDecimalPlaces } from '@banx/utils'
 
 import styles from './StakeTokensModal.module.less'
 
