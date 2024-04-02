@@ -11371,10 +11371,10 @@ socks@^2.6.2:
     ip "^2.0.0"
     smart-buffer "^4.2.0"
 
-solana-transactions-executor@2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/solana-transactions-executor/-/solana-transactions-executor-2.1.0.tgz#15705ab8c749bf9405f57092463fa40bfbf0ec85"
-  integrity sha512-PwE+8GBKSOPo4s6ZyZCXzJlYqd0bt+kztv++dCth/3SONqpVCBJhxB6u9RuBdap+l7pvS4Ti/jaTRrg1ip4CVA==
+solana-transactions-executor@2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/solana-transactions-executor/-/solana-transactions-executor-2.0.1.tgz#5b349bf7323e97ddc0aa9203b568dbdf482e0817"
+  integrity sha512-PcURBSZlZbvx/hjvJFp/Oxr1lnOldP+rq/GoDmVf0whlMTkwjQf+vRGwVm/N8dy1t7Ekdq3f9j+rTya85zuJzA==
   dependencies:
     "@solana/web3.js" "^1.68.0"
     lodash "^4.17.21"

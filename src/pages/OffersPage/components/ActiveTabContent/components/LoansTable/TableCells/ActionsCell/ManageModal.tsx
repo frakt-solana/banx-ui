@@ -10,7 +10,6 @@ import { Loader } from '@banx/components/Loader'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan } from '@banx/api/core'
-import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useMarketOffers } from '@banx/pages/LendPage'
 import { calculateClaimValue, useLenderLoans } from '@banx/pages/OffersPage'
 import { useModal } from '@banx/store'
@@ -120,11 +119,7 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const terminateLoan = () => {
     const loadingSnackbarId = uniqueId()
 
-    new TxnExecutor(
-      makeTerminateAction,
-      { wallet: createWalletInstance(wallet), connection },
-      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
-    )
+    new TxnExecutor(makeTerminateAction, { wallet: createWalletInstance(wallet), connection })
       .addTransactionParam({ loan })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -169,14 +164,10 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
 
     const loadingSnackbarId = uniqueId()
 
-    new TxnExecutor(
-      makeInstantRefinanceAction,
-      {
-        wallet: createWalletInstance(wallet),
-        connection,
-      },
-      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
-    )
+    new TxnExecutor(makeInstantRefinanceAction, {
+      wallet: createWalletInstance(wallet),
+      connection,
+    })
       .addTransactionParam({ loan, bestOffer })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
