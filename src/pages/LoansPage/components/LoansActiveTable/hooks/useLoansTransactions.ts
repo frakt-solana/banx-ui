@@ -3,7 +3,6 @@ import { chunk, groupBy, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
-import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
 import { useIsLedger, useLoansOptimistic } from '@banx/store'
 import { BorrowType, createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
@@ -36,14 +35,10 @@ export const useLoansTransactions = () => {
 
     const txnParam = { loans: [loan] }
 
-    await new TxnExecutor(
-      makeRepayLoansAction,
-      {
-        wallet: createWalletInstance(wallet),
-        connection,
-      },
-      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
-    )
+    await new TxnExecutor(makeRepayLoansAction, {
+      wallet: createWalletInstance(wallet),
+      connection,
+    })
       .addTransactionParam(txnParam)
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -87,14 +82,10 @@ export const useLoansTransactions = () => {
 
     const txnParam = { loan, fractionToRepay }
 
-    await new TxnExecutor(
-      makeRepayPartialLoanAction,
-      {
-        wallet: createWalletInstance(wallet),
-        connection,
-      },
-      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
-    )
+    await new TxnExecutor(makeRepayPartialLoanAction, {
+      wallet: createWalletInstance(wallet),
+      connection,
+    })
       .addTransactionParam(txnParam)
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -146,7 +137,7 @@ export const useLoansTransactions = () => {
     await new TxnExecutor(
       makeRepayLoansAction,
       { wallet: createWalletInstance(wallet), connection },
-      { signAllChunkSize: isLedger ? 1 : 40, confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
+      { signAllChunkSize: isLedger ? 1 : 40 },
     )
       .addTransactionParams(txnParams)
       .on('sentAll', () => {
@@ -198,7 +189,7 @@ export const useLoansTransactions = () => {
     await new TxnExecutor(
       makeRepayPartialLoanAction,
       { wallet: createWalletInstance(wallet), connection },
-      { signAllChunkSize: isLedger ? 5 : 40, confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
+      { signAllChunkSize: isLedger ? 5 : 40 },
     )
       .addTransactionParams(txnParams)
       .on('sentAll', () => {

@@ -11,7 +11,6 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useIsLedger } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimAction, makeTerminateAction } from '@banx/transactions/loans'
@@ -64,7 +63,7 @@ export const Summary: FC<SummaryProps> = ({
     new TxnExecutor(
       makeTerminateAction,
       { wallet: createWalletInstance(wallet), connection },
-      { signAllChunkSize: isLedger ? 5 : 40, confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
+      { signAllChunkSize: isLedger ? 5 : 40 },
     )
       .addTransactionParams(txnParams)
       .on('sentAll', () => {
@@ -106,7 +105,7 @@ export const Summary: FC<SummaryProps> = ({
     new TxnExecutor(
       makeClaimAction,
       { wallet: createWalletInstance(wallet), connection },
-      { signAllChunkSize: isLedger ? 5 : 40, confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
+      { signAllChunkSize: isLedger ? 5 : 40 },
     )
       .addTransactionParams(txnParams)
       .on('sentAll', () => {

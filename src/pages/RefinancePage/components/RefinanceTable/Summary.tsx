@@ -17,7 +17,6 @@ import {
 } from '@banx/components/modals'
 
 import { Loan } from '@banx/api/core'
-import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useModal } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeRefinanceAction } from '@banx/transactions/loans'
@@ -86,11 +85,7 @@ export const Summary: FC<SummaryProps> = ({
 
     const txnParams = selectedLoans.map((loan) => ({ loan }))
 
-    new TxnExecutor(
-      makeRefinanceAction,
-      { wallet: createWalletInstance(wallet), connection },
-      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
-    )
+    new TxnExecutor(makeRefinanceAction, { wallet: createWalletInstance(wallet), connection })
       .addTransactionParams(txnParams)
       .on('sentAll', () => {
         enqueueTransactionsSent()

@@ -8,7 +8,6 @@ import { Button } from '@banx/components/Buttons'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Offer, UserOffer } from '@banx/api/core'
-import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimBondOfferInterestAction } from '@banx/transactions/bonds'
 import {
@@ -43,14 +42,10 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
 
     const txnParams = offers.map(({ offer }) => ({ optimisticOffer: offer }))
 
-    new TxnExecutor(
-      makeClaimBondOfferInterestAction,
-      {
-        wallet: createWalletInstance(wallet),
-        connection,
-      },
-      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
-    )
+    new TxnExecutor(makeClaimBondOfferInterestAction, {
+      wallet: createWalletInstance(wallet),
+      connection,
+    })
       .addTransactionParams(txnParams)
       .on('sentAll', () => {
         enqueueTransactionsSent()
