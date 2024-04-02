@@ -2,6 +2,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan, Offer } from '@banx/api/core'
+import { SEND_TXN_MAX_RETRIES } from '@banx/constants'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import {
@@ -28,7 +29,11 @@ export const useLendLoansTransactions = ({
   const priorityFees = usePriorityFees()
 
   const terminateLoan = () => {
-    new TxnExecutor(makeTerminateAction, { wallet, connection })
+    new TxnExecutor(
+      makeTerminateAction,
+      { wallet, connection },
+      { maxRetries: SEND_TXN_MAX_RETRIES },
+    )
       .addTxnParam({ loan })
       // .on('pfSuccessEach', (results) => {
       //   const { result, txnHash } = results[0]
@@ -61,7 +66,7 @@ export const useLendLoansTransactions = ({
   }
 
   const claimLoan = () => {
-    new TxnExecutor(makeClaimAction, { wallet, connection })
+    new TxnExecutor(makeClaimAction, { wallet, connection }, { maxRetries: SEND_TXN_MAX_RETRIES })
       .addTxnParam({ loan, priorityFees })
       // .on('pfSuccessEach', (results) => {
       //   addMints(loan.nft.mint)
@@ -89,7 +94,11 @@ export const useLendLoansTransactions = ({
   }
 
   const instantLoan = () => {
-    new TxnExecutor(makeInstantRefinanceAction, { wallet, connection })
+    new TxnExecutor(
+      makeInstantRefinanceAction,
+      { wallet, connection },
+      { maxRetries: SEND_TXN_MAX_RETRIES },
+    )
       .addTxnParam({ loan, bestOffer, priorityFees })
       // .on('pfSuccessEach', (results) => {
       //   const { result, txnHash } = results[0]

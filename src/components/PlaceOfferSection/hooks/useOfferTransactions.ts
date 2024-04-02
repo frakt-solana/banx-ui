@@ -2,6 +2,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
+import { SEND_TXN_MAX_RETRIES } from '@banx/constants'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import {
   makeCreateBondingOfferAction,
@@ -35,7 +36,13 @@ export const useOfferTransactions = ({
   const onCreateOffer = async () => {
     const txnParam = { marketPubkey, loansAmount, loanValue, deltaValue }
 
-    await new TxnExecutor(makeCreateBondingOfferAction, { wallet, connection })
+    await new TxnExecutor(
+      makeCreateBondingOfferAction,
+      { wallet, connection },
+      {
+        maxRetries: SEND_TXN_MAX_RETRIES,
+      },
+    )
       .addTxnParam(txnParam)
       .on('pfSuccessEach', (results) => {
         const { txnHash } = results[0]
@@ -73,7 +80,13 @@ export const useOfferTransactions = ({
 
     const txnParam = { loanValue, optimisticOffer, loansAmount, deltaValue }
 
-    await new TxnExecutor(makeUpdateBondingOfferAction, { wallet, connection })
+    await new TxnExecutor(
+      makeUpdateBondingOfferAction,
+      { wallet, connection },
+      {
+        maxRetries: SEND_TXN_MAX_RETRIES,
+      },
+    )
       .addTxnParam(txnParam)
       .on('pfSuccessEach', (results) => {
         const { txnHash } = results[0]
@@ -107,7 +120,13 @@ export const useOfferTransactions = ({
   const onRemoveOffer = () => {
     if (!optimisticOffer) return
 
-    new TxnExecutor(makeRemoveOfferAction, { wallet, connection })
+    new TxnExecutor(
+      makeRemoveOfferAction,
+      { wallet, connection },
+      {
+        maxRetries: SEND_TXN_MAX_RETRIES,
+      },
+    )
       .addTxnParam({ optimisticOffer })
       // .on('pfSuccessEach', (results) => {
       //   const { result, txnHash } = results[0]

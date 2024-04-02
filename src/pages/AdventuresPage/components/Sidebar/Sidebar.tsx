@@ -12,7 +12,7 @@ import { Button } from '@banx/components/Buttons'
 import { StatInfo, StatsInfoProps, VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { BanxInfoBN, BanxStakingSettingsBN } from '@banx/api/staking'
-import { BANX_TOKEN_DECIMALS } from '@banx/constants'
+import { BANX_TOKEN_DECIMALS, SEND_TXN_MAX_RETRIES } from '@banx/constants'
 import { BanxToken, Gamepad, MoneyBill } from '@banx/icons'
 import {
   banxTokenBNToFixed,
@@ -125,7 +125,13 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
       weeks,
     }
 
-    new TxnExecutor(stakeBanxClaimAction, { wallet, connection })
+    new TxnExecutor(
+      stakeBanxClaimAction,
+      { wallet, connection },
+      {
+        maxRetries: SEND_TXN_MAX_RETRIES,
+      },
+    )
       .addTxnParam(params)
       .on('pfSuccessEach', (results) => {
         const { txnHash } = results[0]
@@ -134,9 +140,6 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
           type: 'info',
           solanaExplorerPath: `tx/${txnHash}`,
         })
-      })
-      .on('pfSuccessAll', () => {
-        close()
       })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error, {

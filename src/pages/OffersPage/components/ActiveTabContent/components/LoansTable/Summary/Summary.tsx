@@ -10,6 +10,7 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
+import { SEND_TXN_MAX_RETRIES } from '@banx/constants'
 import { useIsLedger } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimAction, makeTerminateAction } from '@banx/transactions/loans'
@@ -59,7 +60,7 @@ export const Summary: FC<SummaryProps> = ({
     new TxnExecutor(
       makeTerminateAction,
       { wallet, connection },
-      { signAllChunks: isLedger ? 5 : 40 },
+      { signAllChunks: isLedger ? 5 : 40, maxRetries: SEND_TXN_MAX_RETRIES },
     )
       .addTxnParams(txnParams)
       // .on('pfSuccessEach', (results) => {
@@ -100,7 +101,11 @@ export const Summary: FC<SummaryProps> = ({
   const claimLoans = () => {
     const txnParams = loansToClaim.map((loan) => ({ loan, priorityFees }))
 
-    new TxnExecutor(makeClaimAction, { wallet, connection }, { signAllChunks: isLedger ? 5 : 40 })
+    new TxnExecutor(
+      makeClaimAction,
+      { wallet, connection },
+      { signAllChunks: isLedger ? 5 : 40, maxRetries: SEND_TXN_MAX_RETRIES },
+    )
       .addTxnParams(txnParams)
       // .on('pfSuccessEach', (results) => {
       //   enqueueSnackbar({
