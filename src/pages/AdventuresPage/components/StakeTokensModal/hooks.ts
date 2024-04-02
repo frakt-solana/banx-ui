@@ -6,6 +6,12 @@ import { TxnExecutor } from 'solana-transactions-executor'
 import { Tab, useTabs } from '@banx/components/Tabs'
 
 import { SEND_TXN_MAX_RETRIES } from '@banx/constants'
+import {
+  calcPartnerPoints,
+  useBanxStakeInfo,
+  useBanxStakeSettings,
+} from '@banx/pages/AdventuresPage'
+import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxTokenAction, unstakeBanxTokenAction } from '@banx/transactions/staking'
 import {
@@ -16,8 +22,6 @@ import {
   usePriorityFees,
 } from '@banx/utils'
 
-import { calcPartnerPoints } from '../../helpers'
-import { useBanxStakeInfo, useBanxStakeSettings } from '../../hooks'
 import { calcIdleBalance, calcPlayerPoints, formatBanxTokensStrToBN } from './helpers'
 
 export const useStakeTokensModal = () => {
@@ -95,6 +99,7 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
   const wallet = useWallet()
   const { connection } = useConnection()
   const priorityFees = usePriorityFees()
+  const { close } = useModal()
 
   const onStake = () => {
     const txnParam = { tokensToStake: formatBanxTokensStrToBN(inputTokenAmount), priorityFees }
