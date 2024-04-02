@@ -89,7 +89,6 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
       .addTransactionParam(params)
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
-        close()
       })
       .on('error', (error) => {
         defaultTxnErrorHandler(error, {
