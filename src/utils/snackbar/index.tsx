@@ -79,3 +79,38 @@ export const enqueueSnackbar: EnqueueSnackbar = ({
 
   return key
 }
+
+export const destroySnackbar = (key?: Key) => notification.destroy(key)
+
+export const enqueueTransactionSent = (signature: string) =>
+  enqueueSnackbar({
+    message: 'Transaction sent',
+    type: 'info',
+    solanaExplorerPath: `tx/${signature}`,
+  })
+
+export const enqueueWaitingConfirmation = (key: string) =>
+  enqueueSnackbar({
+    customKey: key,
+    message: 'Waiting for confirmation',
+    type: 'loading',
+    persist: true,
+  })
+
+export const enqueueTranactionError = () =>
+  enqueueSnackbar({
+    message: 'Transaction failed. Please try again',
+    type: 'error',
+  })
+
+export const enqueueTranactionsError = (count: number) =>
+  enqueueSnackbar({
+    message: `${count} transaction${count > 1 ? 's' : ''} failed. Please try again`,
+    type: 'error',
+  })
+
+export const enqueueTransactionsSent = () =>
+  enqueueSnackbar({
+    message: 'Transactions sent',
+    type: 'info',
+  })

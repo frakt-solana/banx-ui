@@ -1,17 +1,24 @@
 import { FC, useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { sumBy } from 'lodash'
+import { sumBy, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Offer, UserOffer } from '@banx/api/core'
-import { SEND_TXN_MAX_RETRIES } from '@banx/constants'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
+import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimBondOfferInterestAction } from '@banx/transactions/bonds'
-import { enqueueSnackbar, formatDecimal } from '@banx/utils'
+import {
+  destroySnackbar,
+  enqueueSnackbar,
+  enqueueTranactionsError,
+  enqueueTransactionsSent,
+  enqueueWaitingConfirmation,
+  formatDecimal,
+} from '@banx/utils'
 
 import styles from './Summary.module.less'
 
@@ -20,7 +27,7 @@ interface SummaryProps {
   offers: UserOffer[]
 }
 
-const Summary: FC<SummaryProps> = ({ /*updateOrAddOffer */ offers }) => {
+const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
 
@@ -32,33 +39,40 @@ const Summary: FC<SummaryProps> = ({ /*updateOrAddOffer */ offers }) => {
   const claimInterest = () => {
     if (!offers.length) return
 
+    const loadingSnackbarId = uniqueId()
+
     const txnParams = offers.map(({ offer }) => ({ optimisticOffer: offer }))
 
     new TxnExecutor(
       makeClaimBondOfferInterestAction,
-      { wallet, connection },
-      { maxRetries: SEND_TXN_MAX_RETRIES },
+      {
+        wallet: createWalletInstance(wallet),
+        connection,
+      },
+      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
-      .addTxnParams(txnParams)
-      // .on('pfSuccessEach', (results) => {
-      //   results.forEach(({ result }) => {
-      //     if (result) updateOrAddOffer([result.bondOffer])
-      //   })
-      // })
-
-      // .on('pfSuccessAll', () => {
-      //   enqueueSnackbar({
-      //     message: 'Interest successfully claimed',
-      //     type: 'success',
-      //   })
-      // })
-      .on('pfSuccessAll', () => {
-        enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
-        })
+      .addTransactionParams(txnParams)
+      .on('sentAll', () => {
+        enqueueTransactionsSent()
+        enqueueWaitingConfirmation(loadingSnackbarId)
       })
-      .on('pfError', (error) => {
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
+        const failedTransactionsCount = failed.length
+
+        destroySnackbar(loadingSnackbarId)
+
+        if (confirmed.length) {
+          enqueueSnackbar({ message: 'Interest successfully claimed', type: 'success' })
+          confirmed.forEach(({ result }) => result && updateOrAddOffer([result.bondOffer]))
+        }
+
+        if (failedTransactionsCount) {
+          return enqueueTranactionsError(failedTransactionsCount)
+        }
+      })
+      .on('error', (error) => {
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: offers,
           walletPubkey: wallet?.publicKey?.toBase58(),

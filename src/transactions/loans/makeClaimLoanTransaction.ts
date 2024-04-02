@@ -6,23 +6,23 @@ import {
   claimPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
-import { MakeActionFn } from 'solana-transactions-executor'
+import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { fetchRuleset } from '../functions'
+import { createInstructionsWithPriorityFees } from '../helpers'
 
 export type MakeClaimActionParams = {
   loan: Loan
-  priorityFees: number
 }
 
-export type MakeClaimAction = MakeActionFn<MakeClaimActionParams, BondAndTransactionOptimistic>
+export type MakeClaimAction = CreateTransactionDataFn<MakeClaimActionParams, Loan>
 
 export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, wallet }) => {
-  const { loan, priorityFees } = ixnParams
+  const { loan } = ixnParams
   const { bondTradeTransaction, fraktBond } = loan
 
   if (ixnParams.loan.nft.compression) {
@@ -46,13 +46,23 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
-      priorityFees,
     })
 
-    return {
+    const optimisticLoan = {
+      ...loan,
+      fraktBond: optimisticResult.fraktBond,
+      bondTradeTransaction: optimisticResult.bondTradeTransaction,
+    }
+
+    const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
       instructions,
+      connection,
+    )
+
+    return {
+      instructions: instructionsWithPriorityFees,
       signers,
-      additionalResult: optimisticResult,
+      result: optimisticLoan,
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
     }
   } else {
@@ -84,13 +94,23 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       } as BondAndTransactionOptimistic,
       connection,
       sendTxn: sendTxnPlaceHolder,
-      priorityFees,
     })
 
-    return {
+    const optimisticLoan = {
+      ...loan,
+      fraktBond: optimisticResult.fraktBond,
+      bondTradeTransaction: optimisticResult.bondTradeTransaction,
+    }
+
+    const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
       instructions,
+      connection,
+    )
+
+    return {
+      instructions: instructionsWithPriorityFees,
       signers,
-      additionalResult: optimisticResult,
+      result: optimisticLoan,
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
     }
   }

@@ -1,63 +1,78 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { chunk, groupBy } from 'lodash'
+import { chunk, groupBy, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
-import { SEND_TXN_MAX_RETRIES } from '@banx/constants'
+import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
 import { useIsLedger, useLoansOptimistic } from '@banx/store'
-import { BorrowType, defaultTxnErrorHandler } from '@banx/transactions'
+import { BorrowType, createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
   REPAY_NFT_PER_TXN,
   getLoanBorrowType,
   makeRepayLoansAction,
   makeRepayPartialLoanAction,
 } from '@banx/transactions/loans'
-import { enqueueSnackbar, usePriorityFees } from '@banx/utils'
+import {
+  destroySnackbar,
+  enqueueSnackbar,
+  enqueueTranactionError,
+  enqueueTranactionsError,
+  enqueueTransactionSent,
+  enqueueTransactionsSent,
+  enqueueWaitingConfirmation,
+} from '@banx/utils'
 
 export const useLoansTransactions = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
   const { isLedger } = useIsLedger()
 
-  const priorityFees = usePriorityFees()
-
   const { update: updateLoansOptimistic } = useLoansOptimistic()
   const { clear: clearSelection } = useSelectedLoans()
 
   const repayLoan = async (loan: Loan) => {
-    const txnParam = { loans: [loan], priorityFees }
+    const loadingSnackbarId = uniqueId()
+
+    const txnParam = { loans: [loan] }
 
     await new TxnExecutor(
       makeRepayLoansAction,
-      { wallet, connection },
-      { maxRetries: SEND_TXN_MAX_RETRIES },
+      {
+        wallet: createWalletInstance(wallet),
+        connection,
+      },
+      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
-      .addTxnParam(txnParam)
-      // .on('pfSuccessAll', (results) => {
-      //   const { txnHash, result } = results[0]
-      //   if (result && wallet.publicKey) {
-      //     enqueueSnackbar({
-      //       message: 'Repaid successfully',
-      //       type: 'success',
-      //       solanaExplorerPath: `tx/${txnHash}`,
-      //     })
-      //     updateLoansOptimistic(result, wallet.publicKey.toBase58())
-      //   }
-      //   clearSelection()
-      // })
-      .on('pfSuccessAll', (results) => {
-        const { txnHash, result } = results[0]
-        if (result && wallet.publicKey) {
-          enqueueSnackbar({
-            message: 'Transactions sent',
-            type: 'info',
-            solanaExplorerPath: `tx/${txnHash}`,
-          })
-        }
-        clearSelection()
+      .addTransactionParam(txnParam)
+      .on('sentSome', (results) => {
+        results.forEach(({ signature }) => enqueueTransactionSent(signature))
+        enqueueWaitingConfirmation(loadingSnackbarId)
       })
-      .on('pfError', (error) => {
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
+
+        destroySnackbar(loadingSnackbarId)
+
+        if (failed.length) {
+          return enqueueTranactionError()
+        }
+
+        return confirmed.forEach(({ result, signature }) => {
+          if (result && wallet.publicKey) {
+            enqueueSnackbar({
+              message: 'Repaid successfully',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
+
+            updateLoansOptimistic(result, wallet.publicKey.toBase58())
+            clearSelection()
+          }
+        })
+      })
+      .on('error', (error) => {
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),
@@ -68,38 +83,47 @@ export const useLoansTransactions = () => {
   }
 
   const repayPartialLoan = async (loan: Loan, fractionToRepay: number) => {
-    const txnParam = { loan, fractionToRepay, priorityFees }
+    const loadingSnackbarId = uniqueId()
+
+    const txnParam = { loan, fractionToRepay }
 
     await new TxnExecutor(
       makeRepayPartialLoanAction,
-      { wallet, connection },
-      { maxRetries: SEND_TXN_MAX_RETRIES },
+      {
+        wallet: createWalletInstance(wallet),
+        connection,
+      },
+      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
-      .addTxnParam(txnParam)
-      // .on('pfSuccessAll', (results) => {
-      //   const { txnHash, result } = results[0]
-      //   if (result && wallet.publicKey) {
-      //     enqueueSnackbar({
-      //       message: 'Repaid successfully',
-      //       type: 'success',
-      //       solanaExplorerPath: `tx/${txnHash}`,
-      //     })
-      //     updateLoansOptimistic([result], wallet.publicKey.toBase58())
-      //   }
-      //   clearSelection()
-      // })
-      .on('pfSuccessAll', (results) => {
-        const { txnHash, result } = results[0]
-        if (result && wallet.publicKey) {
-          enqueueSnackbar({
-            message: 'Transaction sent',
-            type: 'info',
-            solanaExplorerPath: `tx/${txnHash}`,
-          })
-        }
-        clearSelection()
+      .addTransactionParam(txnParam)
+      .on('sentSome', (results) => {
+        results.forEach(({ signature }) => enqueueTransactionSent(signature))
+        enqueueWaitingConfirmation(loadingSnackbarId)
       })
-      .on('pfError', (error) => {
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
+
+        destroySnackbar(loadingSnackbarId)
+
+        if (failed.length) {
+          return enqueueTranactionError()
+        }
+
+        return confirmed.forEach(({ result, signature }) => {
+          if (result && wallet.publicKey) {
+            enqueueSnackbar({
+              message: 'Repaid successfully',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
+
+            updateLoansOptimistic([result], wallet.publicKey.toBase58())
+            clearSelection()
+          }
+        })
+      })
+      .on('error', (error) => {
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: txnParam,
           walletPubkey: wallet?.publicKey?.toBase58(),
@@ -112,48 +136,46 @@ export const useLoansTransactions = () => {
   const { selection } = useSelectedLoans()
 
   const repayBulkLoan = async () => {
+    const loadingSnackbarId = uniqueId()
+
     const selectedLoans = selection.map((loan) => loan.loan)
     const loansChunks = chunkRepayIxnsParams(selectedLoans)
 
-    const txnParams = loansChunks.map((chunk) => ({ loans: chunk, priorityFees: priorityFees }))
+    const txnParams = loansChunks.map((chunk) => ({ loans: chunk }))
 
     await new TxnExecutor(
       makeRepayLoansAction,
-      { wallet, connection },
-      {
-        signAllChunks: isLedger ? 1 : 40,
-        rejectQueueOnFirstPfError: false,
-        maxRetries: SEND_TXN_MAX_RETRIES,
-      },
+      { wallet: createWalletInstance(wallet), connection },
+      { signAllChunkSize: isLedger ? 1 : 40, confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
-      .addTxnParams(txnParams)
-      // .on('pfSuccessEach', (results) => {
-      //   results.forEach(({ txnHash, result }) => {
-      //     if (result && wallet.publicKey) {
-      //       enqueueSnackbar({
-      //         message: 'Repaid successfully',
-      //         type: 'success',
-      //         solanaExplorerPath: `tx/${txnHash}`,
-      //       })
-      //       updateLoansOptimistic(result, wallet.publicKey.toBase58())
-      //     }
-      //   })
-      // })
-      .on('pfSuccessEach', (results) => {
-        results.forEach(({ txnHash, result }) => {
-          if (result && wallet.publicKey) {
-            enqueueSnackbar({
-              message: 'Transaction sent',
-              type: 'info',
-              solanaExplorerPath: `tx/${txnHash}`,
-            })
-          }
-        })
+      .addTransactionParams(txnParams)
+      .on('sentAll', () => {
+        enqueueTransactionsSent()
+        enqueueWaitingConfirmation(loadingSnackbarId)
       })
-      .on('pfSuccessAll', () => {
-        clearSelection()
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
+        const failedTransactionsCount = failed.length
+
+        destroySnackbar(loadingSnackbarId)
+
+        if (confirmed.length) {
+          enqueueSnackbar({ message: 'Loans successfully repaid', type: 'success' })
+
+          confirmed.forEach(({ result }) => {
+            if (result && wallet.publicKey) {
+              updateLoansOptimistic(result, wallet.publicKey.toBase58())
+            }
+          })
+          clearSelection()
+        }
+
+        if (failedTransactionsCount) {
+          return enqueueTranactionsError(failedTransactionsCount)
+        }
       })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: loansChunks,
           walletPubkey: wallet?.publicKey?.toBase58(),
@@ -169,33 +191,43 @@ export const useLoansTransactions = () => {
   }
 
   const repayUnpaidLoansInterest = async (loans: LoanWithFractionToRepay[]) => {
-    const txnParams = loans.map((loan) => ({ ...loan, priorityFees }))
+    const loadingSnackbarId = uniqueId()
+
+    const txnParams = loans.map((loan) => ({ ...loan }))
 
     await new TxnExecutor(
       makeRepayPartialLoanAction,
-      { wallet, connection },
-      { signAllChunks: isLedger ? 5 : 40, maxRetries: SEND_TXN_MAX_RETRIES },
+      { wallet: createWalletInstance(wallet), connection },
+      { signAllChunkSize: isLedger ? 5 : 40, confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
-      .addTxnParams(txnParams)
-      .on('pfSuccessEach', (results) => {
-        results.forEach(({ txnHash, result }) => {
-          if (result && wallet.publicKey) {
-            enqueueSnackbar({
-              message: 'Loan interest paid successfully',
-              type: 'success',
-              solanaExplorerPath: `tx/${txnHash}`,
-            })
+      .addTransactionParams(txnParams)
+      .on('sentAll', () => {
+        enqueueTransactionsSent()
+        enqueueWaitingConfirmation(loadingSnackbarId)
+      })
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
+        const failedTransactionsCount = failed.length
 
-            if (result) {
+        destroySnackbar(loadingSnackbarId)
+
+        if (confirmed.length) {
+          enqueueSnackbar({ message: 'Loans interest successfully paid', type: 'success' })
+
+          confirmed.forEach(({ result }) => {
+            if (result && wallet.publicKey) {
               updateLoansOptimistic([result], wallet.publicKey.toBase58())
             }
-          }
-        })
+          })
+          clearSelection()
+        }
+
+        if (failedTransactionsCount) {
+          return enqueueTranactionsError(failedTransactionsCount)
+        }
       })
-      .on('pfSuccessAll', () => {
-        clearSelection()
-      })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: loans,
           walletPubkey: wallet?.publicKey?.toBase58(),

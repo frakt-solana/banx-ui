@@ -4,17 +4,22 @@ import {
   removePerpetualOffer,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV2, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
-import { MakeActionFn } from 'solana-transactions-executor'
+import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
+import { createInstructionsWithPriorityFees } from '../helpers'
+
 export type MakeClaimActionParams = {
   optimisticOffer: Offer
 }
 
-export type MakeRemoveOfferAction = MakeActionFn<MakeClaimActionParams, BondOfferOptimistic>
+export type MakeRemoveOfferAction = CreateTransactionDataFn<
+  MakeClaimActionParams,
+  BondOfferOptimistic
+>
 
 export const makeRemoveOfferAction: MakeRemoveOfferAction = async (
   ixnParams,
@@ -38,10 +43,14 @@ export const makeRemoveOfferAction: MakeRemoveOfferAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  return {
+  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
     instructions,
+    connection,
+  )
+
+  return {
+    instructions: instructionsWithPriorityFees,
     signers,
-    additionalResult: optimisticResult,
-    lookupTables: [],
+    result: optimisticResult,
   }
 }

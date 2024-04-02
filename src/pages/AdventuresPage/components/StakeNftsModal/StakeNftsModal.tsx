@@ -10,14 +10,14 @@ import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { BanxStakeNft } from '@banx/api/staking'
-import { BANX_STAKING, SEND_TXN_MAX_RETRIES } from '@banx/constants'
+import { BANX_STAKING, TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { TensorFilled } from '@banx/icons'
 import { useBanxStakeInfo, useBanxStakeSettings } from '@banx/pages/AdventuresPage'
 import { NftCheckbox, NftsStats } from '@banx/pages/AdventuresPage/components'
 import { useModal } from '@banx/store'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxNftAction, unstakeBanxNftsAction } from '@banx/transactions/staking'
-import { enqueueSnackbar, usePriorityFees } from '@banx/utils'
+import { enqueueTransactionsSent } from '@banx/utils'
 
 import styles from './StakeNftsModal.module.less'
 
@@ -27,7 +27,6 @@ export const StakeNftsModal = () => {
   const wallet = useWallet()
 
   const { close } = useModal()
-  const priorityFees = usePriorityFees()
   const { banxStakeSettings /* setBanxTokenSettingsOptimistic */ } = useBanxStakeSettings()
   const { banxStakeInfo /* setBanxTokenStakeOptimistic */ } = useBanxStakeInfo()
 
@@ -84,29 +83,19 @@ export const StakeNftsModal = () => {
         nftMint: nft.mint,
         whitelistEntry: new web3.PublicKey(BANX_STAKING.WHITELIST_ENTRY_PUBKEY),
         hadoRegistry: new web3.PublicKey(BANX_STAKING.HADO_REGISTRY_PUBKEY),
-        priorityFees,
       }))
 
       new TxnExecutor(
         stakeBanxNftAction,
-        { wallet, connection },
-        {
-          maxRetries: SEND_TXN_MAX_RETRIES,
-        },
+        { wallet: createWalletInstance(wallet), connection },
+        { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
       )
-        .addTxnParams(params)
-        .on('pfSuccessEach', (results) => {
-          const { txnHash } = results[0]
-          enqueueSnackbar({
-            message: 'Transaction sent',
-            type: 'info',
-            solanaExplorerPath: `tx/${txnHash}`,
-          })
-        })
-        .on('pfSuccessAll', () => {
+        .addTransactionParams(params)
+        .on('sentAll', () => {
+          enqueueTransactionsSent()
           close()
         })
-        .on('pfError', (error) => {
+        .on('error', (error) => {
           defaultTxnErrorHandler(error, {
             additionalData: params,
             walletPubkey: wallet?.publicKey?.toBase58(),
@@ -127,30 +116,20 @@ export const StakeNftsModal = () => {
       const params = selectedNfts.map((nft) => ({
         nftMint: nft.mint,
         userPubkey: wallet.publicKey as web3.PublicKey,
-        priorityFees,
         nftStakePublicKey: nft.stake?.publicKey ?? '',
       }))
 
       new TxnExecutor(
         unstakeBanxNftsAction,
-        { wallet, connection },
-        {
-          maxRetries: SEND_TXN_MAX_RETRIES,
-        },
+        { wallet: createWalletInstance(wallet), connection },
+        { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
       )
-        .addTxnParams(params)
-        .on('pfSuccessEach', (results) => {
-          const { txnHash } = results[0]
-          enqueueSnackbar({
-            message: 'Transaction sent',
-            type: 'info',
-            solanaExplorerPath: `tx/${txnHash}`,
-          })
-        })
-        .on('pfSuccessAll', () => {
+        .addTransactionParams(params)
+        .on('sentAll', () => {
+          enqueueTransactionsSent()
           close()
         })
-        .on('pfError', (error) => {
+        .on('error', (error) => {
           defaultTxnErrorHandler(error, {
             additionalData: params,
             walletPubkey: wallet?.publicKey?.toBase58(),

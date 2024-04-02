@@ -2,23 +2,27 @@ import { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { TensorLink } from '@banx/components/SolanaLinks'
 
 import { Loan } from '@banx/api/core'
-import { SEND_TXN_MAX_RETRIES } from '@banx/constants'
-// import { useHiddenNftsMints } from '@banx/pages/OffersPage'
+import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
+import { useHiddenNftsMints } from '@banx/pages/OffersPage'
 import { useModal } from '@banx/store'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimAction } from '@banx/transactions/loans'
 import {
+  destroySnackbar,
   enqueueSnackbar,
+  enqueueTranactionError,
+  enqueueTransactionSent,
+  enqueueWaitingConfirmation,
   isLoanLiquidated,
   isLoanTerminating,
   trackPageEvent,
-  usePriorityFees,
 } from '@banx/utils'
 
 import { ManageModal } from './ManageModal'
@@ -35,30 +39,46 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
   const { connection } = useConnection()
   const { open } = useModal()
 
-  const priorityFees = usePriorityFees()
-
-  // const { addMints: hideLoans } = useHiddenNftsMints()
+  const { addMints: hideLoans } = useHiddenNftsMints()
 
   const onClaim = () => {
     trackPageEvent('myoffers', 'activetab-claim')
-    new TxnExecutor(makeClaimAction, { wallet, connection }, { maxRetries: SEND_TXN_MAX_RETRIES })
-      .addTxnParam({ loan, priorityFees })
-      // .on('pfSuccessEach', (results) => {
-      //   hideLoans(loan.nft.mint)
-      //   enqueueSnackbar({
-      //     message: 'Collateral successfully claimed',
-      //     type: 'success',
-      //     solanaExplorerPath: `tx/${results[0].txnHash}`,
-      //   })
-      // })
-      .on('pfSuccessEach', (results) => {
-        enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
-          solanaExplorerPath: `tx/${results[0].txnHash}`,
+
+    const loadingSnackbarId = uniqueId()
+
+    new TxnExecutor(
+      makeClaimAction,
+      { wallet: createWalletInstance(wallet), connection },
+      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
+    )
+      .addTransactionParam({ loan })
+      .on('sentSome', (results) => {
+        results.forEach(({ signature }) => enqueueTransactionSent(signature))
+        enqueueWaitingConfirmation(loadingSnackbarId)
+      })
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
+
+        destroySnackbar(loadingSnackbarId)
+
+        if (failed.length) {
+          return enqueueTranactionError()
+        }
+
+        return confirmed.forEach(({ result, signature }) => {
+          if (result) {
+            enqueueSnackbar({
+              message: 'Collateral successfully claimed',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
+
+            hideLoans(loan.nft.mint)
+          }
         })
       })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),

@@ -3,10 +3,12 @@ import {
   BondOfferOptimistic,
   createPerpetualBondOffer,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { MakeActionFn } from 'solana-transactions-executor'
+import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
+
+import { createInstructionsWithPriorityFees } from '../helpers'
 
 export type MakeCreateOfferActionParams = {
   marketPubkey: string
@@ -14,7 +16,10 @@ export type MakeCreateOfferActionParams = {
   loansAmount: number
 }
 
-export type MakeCreateOfferAction = MakeActionFn<MakeCreateOfferActionParams, BondOfferOptimistic>
+export type MakeCreateOfferAction = CreateTransactionDataFn<
+  MakeCreateOfferActionParams,
+  BondOfferOptimistic
+>
 
 export const makeCreateOfferAction: MakeCreateOfferAction = async (
   ixnParams,
@@ -36,10 +41,15 @@ export const makeCreateOfferAction: MakeCreateOfferAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  return {
+  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
     instructions,
+    connection,
+  )
+
+  return {
+    instructions: instructionsWithPriorityFees,
     signers,
-    additionalResult: optimisticResult,
+    result: optimisticResult,
     lookupTables: [],
   }
 }
