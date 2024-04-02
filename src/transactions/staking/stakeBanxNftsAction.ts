@@ -5,6 +5,8 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
+import { createInstructionsWithPriorityFees } from '../helpers'
+
 export type StakeBanxNftsTokenActionParams = {
   nftMint: string
   whitelistEntry: web3.PublicKey
@@ -15,19 +17,12 @@ export type StakeBanxNftsTokenAction = CreateTransactionDataFn<StakeBanxNftsToke
 
 export const stakeBanxNftAction: StakeBanxNftsTokenAction = async (
   ixnParams,
-  { connection, wallet },
+  { wallet, connection },
 ) => {
-  if (!wallet.publicKey?.toBase58()) {
-    throw 'Wallet not connected!'
-  }
-
-  // const priorityFees = await calculatePriorityFees(connection)
-
-  const params = {
-    connection: connection,
+  const { instructions, signers } = await stakeBanxNft({
+    connection,
     addComputeUnits: true,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-    priorityFees: 0,
     accounts: {
       tokenMint: new web3.PublicKey(ixnParams.nftMint),
       whitelistEntry: ixnParams.whitelistEntry,
@@ -35,11 +30,15 @@ export const stakeBanxNftAction: StakeBanxNftsTokenAction = async (
       userPubkey: wallet.publicKey,
     },
     sendTxn: sendTxnPlaceHolder,
-  }
+  })
 
-  const { instructions, signers } = await stakeBanxNft(params)
+  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
+    instructions,
+    connection,
+  )
+
   return {
-    instructions: instructions,
+    instructions: instructionsWithPriorityFees,
     signers: signers,
     lookupTables: [],
   }

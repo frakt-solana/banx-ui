@@ -17,6 +17,8 @@ import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
+import { createInstructionsWithPriorityFees } from '../helpers'
+
 export interface RefinanceOptimisticResult {
   oldBondTradeTransaction: BondTradeTransactionV2
   fraktBond: FraktBond
@@ -38,8 +40,6 @@ export const makeRefinanceAction: MakeRefinanceAction = async (
   ixnParams,
   { connection, wallet },
 ) => {
-  // const priorityFees = await calculatePriorityFees(connection)
-
   const { loan } = ixnParams || {}
   const { bondTradeTransaction, fraktBond } = loan
 
@@ -64,7 +64,6 @@ export const makeRefinanceAction: MakeRefinanceAction = async (
     } as OptimisticResult,
     connection,
     sendTxn: sendTxnPlaceHolder,
-    priorityFees: 0,
   })
 
   const optimisticLoan = {
@@ -73,8 +72,13 @@ export const makeRefinanceAction: MakeRefinanceAction = async (
     bondTradeTransaction: optimisticResult.newBondTradeTransaction,
   }
 
-  return {
+  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
     instructions,
+    connection,
+  )
+
+  return {
+    instructions: instructionsWithPriorityFees,
     signers,
     result: optimisticLoan,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],

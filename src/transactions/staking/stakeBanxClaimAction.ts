@@ -6,6 +6,8 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
+import { createInstructionsWithPriorityFees } from '../helpers'
+
 export type StakeBanxClaimActionParams = {
   weeks: number[]
 }
@@ -16,17 +18,10 @@ export const stakeBanxClaimAction: StakeBanxClaimAction = async (
   ixnParams,
   { connection, wallet },
 ) => {
-  if (!wallet.publicKey?.toBase58()) {
-    throw 'Wallet not connected!'
-  }
-
-  // const priorityFees = await calculatePriorityFees(connection)
-
-  const params = {
-    connection: connection,
+  const { instructions, signers } = await claimStakingRewards({
+    connection,
     addComputeUnits: true,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-    priorityFees: 0,
     args: {
       weeks: ixnParams.weeks,
     },
@@ -35,12 +30,16 @@ export const stakeBanxClaimAction: StakeBanxClaimAction = async (
       userPubkey: wallet.publicKey,
     },
     sendTxn: sendTxnPlaceHolder,
-  }
+  })
 
-  const { instructions, signers } = await claimStakingRewards(params)
+  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
+    instructions,
+    connection,
+  )
+
   return {
-    instructions: instructions,
-    signers: signers,
+    instructions: instructionsWithPriorityFees,
+    signers,
     lookupTables: [],
   }
 }

@@ -3,8 +3,6 @@ import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { web3 } from 'fbonds-core'
 
-import { BONDS } from '@banx/constants'
-
 type UseNativeAccount = ({ isLive }: { isLive?: boolean }) => web3.AccountInfo<Buffer> | null
 
 const useNativeAccount: UseNativeAccount = ({ isLive = true }) => {
@@ -58,28 +56,10 @@ export const calculatePriorityFees = async (
     })
 
     const { result } = response.data
-    return Math.trunc(result.priorityFeeLevels.veryHigh)
+
+    return Math.trunc(result.priorityFeeLevels.high)
   } catch (error) {
     console.error('Error calculating priority fees:', error)
     throw error
   }
-}
-
-const DEFAULT_ACCOUNT_KEYS = [BONDS.PROGRAM_PUBKEY]
-
-export const usePriorityFees = (params?: { accountKeys: string[] }) => {
-  const { accountKeys = DEFAULT_ACCOUNT_KEYS } = params || {}
-
-  const { connection } = useConnection()
-
-  const { data: priorityFees } = useQuery(
-    ['priorityFees', accountKeys],
-    () => calculatePriorityFees(connection, accountKeys),
-    {
-      refetchInterval: 5000,
-      cacheTime: 5000,
-    },
-  )
-
-  return priorityFees || 0
 }

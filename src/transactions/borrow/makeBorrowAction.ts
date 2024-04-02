@@ -5,7 +5,7 @@ import {
   borrowPerpetual,
   borrowStakedBanxPerpetual,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { calculatePriorityFees, getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
+import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { BondOfferV2, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { first, uniq } from 'lodash'
 import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transactions-executor'
@@ -16,6 +16,7 @@ import { calculateApr, sendTxnPlaceHolder } from '@banx/utils'
 
 import { BorrowType } from '../constants'
 import { fetchRuleset } from '../functions'
+import { createInstructionsWithPriorityFees } from '../helpers'
 
 export type MakeBorrowActionParams = {
   nft: BorrowNft
@@ -58,8 +59,13 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndCon
     }
   })
 
-  return {
+  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
     instructions,
+    walletAndConnection.connection,
+  )
+
+  return {
+    instructions: instructionsWithPriorityFees,
     signers,
     result: loansAndOffers,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
@@ -76,8 +82,6 @@ const getIxnsAndSignersByBorrowType = async ({
   walletAndConnection: WalletAndConnection
 }) => {
   const { connection, wallet } = walletAndConnection
-
-  const priorityFees = await calculatePriorityFees(connection)
 
   const optimizeIntoReserves =
     ixnParams[0]?.optimizeIntoReserves === undefined ? true : ixnParams[0]?.optimizeIntoReserves
@@ -121,7 +125,6 @@ const getIxnsAndSignersByBorrowType = async ({
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
-      priorityFees,
     })
     return { instructions, signers, optimisticResults }
   }
@@ -163,7 +166,6 @@ const getIxnsAndSignersByBorrowType = async ({
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
-      priorityFees,
     })
 
     return { instructions, signers, optimisticResults }
@@ -202,7 +204,6 @@ const getIxnsAndSignersByBorrowType = async ({
     },
     connection,
     sendTxn: sendTxnPlaceHolder,
-    priorityFees,
   })
 
   return { instructions, signers, optimisticResults }

@@ -7,6 +7,8 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
+import { createInstructionsWithPriorityFees } from '../helpers'
+
 export type StakeBanxTokenActionParams = {
   tokensToStake: BN
 }
@@ -17,10 +19,8 @@ export const stakeBanxTokenAction: StakeBanxTokenAction = async (
   ixnParams,
   { wallet, connection },
 ) => {
-  // const priorityFees = await calculatePriorityFees(connection)
-
   const params = {
-    connection: connection,
+    connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     priorityFees: 0,
     accounts: {
@@ -35,9 +35,14 @@ export const stakeBanxTokenAction: StakeBanxTokenAction = async (
 
   const { instructions, signers } = await stakeBanxToken(params)
 
+  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
+    instructions,
+    connection,
+  )
+
   return {
-    instructions: instructions,
-    signers: signers,
+    instructions: instructionsWithPriorityFees,
+    signers,
     lookupTables: [],
   }
 }

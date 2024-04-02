@@ -5,7 +5,7 @@ import {
   claimCnftPerpetualLoanCanopy,
   claimPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { calculatePriorityFees, getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
+import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
@@ -13,6 +13,7 @@ import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { fetchRuleset } from '../functions'
+import { createInstructionsWithPriorityFees } from '../helpers'
 
 export type MakeClaimActionParams = {
   loan: Loan
@@ -21,8 +22,6 @@ export type MakeClaimActionParams = {
 export type MakeClaimAction = CreateTransactionDataFn<MakeClaimActionParams, Loan>
 
 export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, wallet }) => {
-  const priorityFees = await calculatePriorityFees(connection)
-
   const { loan } = ixnParams
   const { bondTradeTransaction, fraktBond } = loan
 
@@ -47,7 +46,6 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
-      priorityFees,
     })
 
     const optimisticLoan = {
@@ -56,8 +54,13 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       bondTradeTransaction: optimisticResult.bondTradeTransaction,
     }
 
-    return {
+    const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
       instructions,
+      connection,
+    )
+
+    return {
+      instructions: instructionsWithPriorityFees,
       signers,
       result: optimisticLoan,
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
@@ -91,7 +94,6 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       } as BondAndTransactionOptimistic,
       connection,
       sendTxn: sendTxnPlaceHolder,
-      priorityFees,
     })
 
     const optimisticLoan = {
@@ -100,8 +102,13 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       bondTradeTransaction: optimisticResult.bondTradeTransaction,
     }
 
-    return {
+    const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
       instructions,
+      connection,
+    )
+
+    return {
+      instructions: instructionsWithPriorityFees,
       signers,
       result: optimisticLoan,
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],

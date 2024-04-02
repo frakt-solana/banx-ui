@@ -12,6 +12,8 @@ import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
+import { createInstructionsWithPriorityFees } from '../helpers'
+
 export type MakeRepayPartialLoanActionParams = {
   loan: Loan
   fractionToRepay: number //? F.E 50% => 5000
@@ -33,7 +35,6 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
   walletAndConnection,
 ) => {
   const { connection, wallet } = walletAndConnection
-  // const priorityFees = await calculatePriorityFees(connection)
 
   const { loan, fractionToRepay } = ixnParams
 
@@ -60,7 +61,6 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
     },
     connection,
     sendTxn: sendTxnPlaceHolder,
-    priorityFees: 0,
   })
 
   const optimisticResult = optimisticResults.map((optimistic) => ({
@@ -70,8 +70,13 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
     nft,
   }))[0]
 
-  return {
+  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
     instructions,
+    connection,
+  )
+
+  return {
+    instructions: instructionsWithPriorityFees,
     signers,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
     result: optimisticResult,

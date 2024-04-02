@@ -5,6 +5,8 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
+import { createInstructionsWithPriorityFees } from '../helpers'
+
 export type SubscribeBanxAdventureParams = {
   weeks: number[]
 }
@@ -18,26 +20,26 @@ export const subscribeBanxAdventureAction: SubscribeBanxAdventureAction = async 
   ixnParams,
   { wallet, connection },
 ) => {
-  // const priorityFees = await calculatePriorityFees(connection)
-
-  const params = {
-    connection: connection,
+  const { instructions, signers } = await subscribeBanxAdventure({
+    connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     addComputeUnits: true,
-    priorityFees: 0,
     args: {
       weeks: ixnParams.weeks,
     },
     accounts: {
-      userPubkey: wallet.publicKey as web3.PublicKey,
+      userPubkey: wallet.publicKey,
     },
     sendTxn: sendTxnPlaceHolder,
-  }
+  })
 
-  const { instructions, signers } = await subscribeBanxAdventure(params)
+  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
+    instructions,
+    connection,
+  )
 
   return {
-    instructions: instructions,
+    instructions: instructionsWithPriorityFees,
     signers: signers,
     lookupTables: [],
   }
