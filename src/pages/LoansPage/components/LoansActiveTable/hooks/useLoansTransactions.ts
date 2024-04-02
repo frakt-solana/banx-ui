@@ -35,13 +35,10 @@ export const useLoansTransactions = () => {
 
     const txnParam = { loans: [loan] }
 
-    await new TxnExecutor(
-      makeRepayLoansAction,
-      {
-        wallet: createWalletInstance(wallet),
-        connection,
-      },
-    )
+    await new TxnExecutor(makeRepayLoansAction, {
+      wallet: createWalletInstance(wallet),
+      connection,
+    })
       .addTransactionParam(txnParam)
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -85,13 +82,10 @@ export const useLoansTransactions = () => {
 
     const txnParam = { loan, fractionToRepay }
 
-    await new TxnExecutor(
-      makeRepayPartialLoanAction,
-      {
-        wallet: createWalletInstance(wallet),
-        connection,
-      },
-    )
+    await new TxnExecutor(makeRepayPartialLoanAction, {
+      wallet: createWalletInstance(wallet),
+      connection,
+    })
       .addTransactionParam(txnParam)
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))

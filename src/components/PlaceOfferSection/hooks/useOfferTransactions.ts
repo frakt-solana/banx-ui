@@ -44,13 +44,10 @@ export const useOfferTransactions = ({
 
     const txnParam = { marketPubkey, loansAmount, loanValue, deltaValue }
 
-    await new TxnExecutor(
-      makeCreateBondingOfferAction,
-      {
-        wallet: createWalletInstance(wallet),
-        connection,
-      },
-    )
+    await new TxnExecutor(makeCreateBondingOfferAction, {
+      wallet: createWalletInstance(wallet),
+      connection,
+    })
       .addTransactionParam(txnParam)
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -96,13 +93,10 @@ export const useOfferTransactions = ({
 
     const txnParam = { loanValue, optimisticOffer, loansAmount, deltaValue }
 
-    await new TxnExecutor(
-      makeUpdateBondingOfferAction,
-      {
-        wallet: createWalletInstance(wallet),
-        connection,
-      },
-    )
+    await new TxnExecutor(makeUpdateBondingOfferAction, {
+      wallet: createWalletInstance(wallet),
+      connection,
+    })
       .addTransactionParam(txnParam)
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -145,10 +139,7 @@ export const useOfferTransactions = ({
 
     const loadingSnackbarId = uniqueId()
 
-    new TxnExecutor(
-      makeRemoveOfferAction,
-      { wallet: createWalletInstance(wallet), connection },
-    )
+    new TxnExecutor(makeRemoveOfferAction, { wallet: createWalletInstance(wallet), connection })
       .addTransactionParam({ optimisticOffer })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
