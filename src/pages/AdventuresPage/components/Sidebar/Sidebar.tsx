@@ -141,9 +141,6 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
           solanaExplorerPath: `tx/${txnHash}`,
         })
       })
-      .on('pfSuccessAll', () => {
-        close()
-      })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: params,

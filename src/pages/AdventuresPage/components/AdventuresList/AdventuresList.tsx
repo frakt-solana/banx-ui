@@ -104,9 +104,6 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
           solanaExplorerPath: `tx/${txnHash}`,
         })
       })
-      .on('pfSuccessAll', () => {
-        close()
-      })
       .on('pfError', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: params,
