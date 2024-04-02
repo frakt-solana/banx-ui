@@ -3,7 +3,7 @@ import {
   BondOfferOptimistic,
   removePerpetualOffer,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
+import { BondOfferV2, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { MakeActionFn } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
@@ -27,6 +27,9 @@ export const makeRemoveOfferAction: MakeRemoveOfferAction = async (
     accounts: {
       bondOfferV2: new web3.PublicKey(optimisticOffer.publicKey),
       userPubkey: wallet.publicKey as web3.PublicKey,
+    },
+    args: {
+      lendingTokenType: LendingTokenType.NativeSOL,
     },
     optimistic: {
       bondOffer: optimisticOffer as BondOfferV2,

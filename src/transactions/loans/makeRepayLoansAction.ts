@@ -8,7 +8,7 @@ import {
   repayStakedBanxPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
-import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
+import { BondOfferV2, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { first, uniq } from 'lodash'
 import { MakeActionFn, WalletAndConnection } from 'solana-transactions-executor'
 
@@ -110,6 +110,7 @@ const getIxnsAndSignersByBorrowType = async ({
             oldBondOffer: getMockBondOffer(),
           } as OptimisticResult,
         })),
+        lendingTokenType: LendingTokenType.NativeSOL,
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
@@ -152,6 +153,7 @@ const getIxnsAndSignersByBorrowType = async ({
           bondTradeTransaction: loan.bondTradeTransaction,
           oldBondOffer: getMockBondOffer(),
         } as OptimisticResult,
+        lendingTokenType: LendingTokenType.NativeSOL,
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
@@ -196,6 +198,7 @@ const getIxnsAndSignersByBorrowType = async ({
           bondTradeTransaction,
         } as OptimisticResult,
       })),
+      lendingTokenType: LendingTokenType.NativeSOL,
     },
     connection,
     sendTxn: sendTxnPlaceHolder,
