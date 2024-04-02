@@ -1,7 +1,7 @@
 import React, { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { map, sumBy } from 'lodash'
+import { chain, map, sumBy, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
@@ -17,17 +17,20 @@ import {
 } from '@banx/components/modals'
 
 import { Loan } from '@banx/api/core'
-import { SEND_TXN_MAX_RETRIES } from '@banx/constants'
+import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useModal } from '@banx/store'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeRefinanceAction } from '@banx/transactions/loans'
 import {
   calcWeightedAverage,
   calculateLoanRepayValue,
+  destroySnackbar,
   enqueueSnackbar,
+  enqueueTranactionsError,
+  enqueueTransactionsSent,
+  enqueueWaitingConfirmation,
   getDialectAccessToken,
   trackPageEvent,
-  usePriorityFees,
 } from '@banx/utils'
 
 import { useAuctionsLoans } from '../../hooks'
@@ -56,8 +59,6 @@ export const Summary: FC<SummaryProps> = ({
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
-  const priorityFees = usePriorityFees()
-
   const totalDebt = sumBy(selectedLoans, (loan) => calculateLoanRepayValue(loan))
   const totalLoanValue = map(selectedLoans, (loan) => loan.fraktBond.borrowedAmount)
   const totalWeeklyInterest = sumBy(selectedLoans, (loan) => calcWeeklyInterestFee(loan))
@@ -66,53 +67,60 @@ export const Summary: FC<SummaryProps> = ({
   const weightedApr = calcWeightedAverage(totalApr, totalLoanValue)
   const cappedWeightedApr = Math.min(weightedApr, MAX_APY_INCREASE_PERCENT)
 
-  const refinanceAll = () => {
-    const txnParams = selectedLoans.map((loan) => ({ loan, priorityFees }))
-
-    const onSuccess = () => {
-      if (!getDialectAccessToken(wallet.publicKey?.toBase58())) {
-        open(SubscribeNotificationsModal, {
-          title: createRefinanceSubscribeNotificationsTitle(selectedLoans.length),
-          message: createRefinanceSubscribeNotificationsContent(),
-          onActionClick: () => {
-            close()
-            setBanxNotificationsSiderVisibility(true)
-          },
-          onCancel: close,
-        })
-      }
+  const onSuccess = (loansAmount: number) => {
+    if (!getDialectAccessToken(wallet.publicKey?.toBase58())) {
+      open(SubscribeNotificationsModal, {
+        title: createRefinanceSubscribeNotificationsTitle(loansAmount),
+        message: createRefinanceSubscribeNotificationsContent(),
+        onActionClick: () => {
+          close()
+          setBanxNotificationsSiderVisibility(true)
+        },
+        onCancel: close,
+      })
     }
+  }
+
+  const refinanceAll = () => {
+    const loadingSnackbarId = uniqueId()
+
+    const txnParams = selectedLoans.map((loan) => ({ loan }))
 
     new TxnExecutor(
       makeRefinanceAction,
-      { wallet, connection },
-      { maxRetries: SEND_TXN_MAX_RETRIES },
+      { wallet: createWalletInstance(wallet), connection },
+      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
-      .addTxnParams(txnParams)
-      // .on('pfSuccessEach', (results) => {
-      //   const { txnHash } = results[0]
-
-      //   enqueueSnackbar({
-      //     message: 'Loan successfully refinanced',
-      //     type: 'success',
-      //     solanaExplorerPath: `tx/${txnHash}`,
-      //   })
-      // })
-      .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
-
-        enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
-          solanaExplorerPath: `tx/${txnHash}`,
-        })
+      .addTransactionParams(txnParams)
+      .on('sentAll', () => {
+        enqueueTransactionsSent()
+        enqueueWaitingConfirmation(loadingSnackbarId)
       })
-      .on('pfSuccessAll', () => {
-        onDeselectAllLoans()
-        addMints(...selectedLoans.map(({ nft }) => nft.mint))
-        onSuccess()
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
+        const failedTransactionsCount = failed.length
+
+        destroySnackbar(loadingSnackbarId)
+
+        if (confirmed.length) {
+          enqueueSnackbar({ message: 'Loans successfully refinanced', type: 'success' })
+
+          const mintsToHidden = chain(confirmed)
+            .map(({ result }) => result?.nft.mint)
+            .compact()
+            .value()
+
+          addMints(...mintsToHidden)
+          onDeselectAllLoans()
+          onSuccess(mintsToHidden.length)
+        }
+
+        if (failedTransactionsCount) {
+          return enqueueTranactionsError(failedTransactionsCount)
+        }
       })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: txnParams,
           walletPubkey: wallet?.publicKey?.toBase58(),

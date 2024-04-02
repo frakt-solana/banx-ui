@@ -1,20 +1,30 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan, Offer } from '@banx/api/core'
-import { SEND_TXN_MAX_RETRIES } from '@banx/constants'
+import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useModal } from '@banx/store'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
   makeClaimAction,
   makeInstantRefinanceAction,
   makeTerminateAction,
 } from '@banx/transactions/loans'
-import { enqueueSnackbar, usePriorityFees } from '@banx/utils'
+import {
+  destroySnackbar,
+  enqueueSnackbar,
+  enqueueTranactionError,
+  enqueueTransactionSent,
+  enqueueWaitingConfirmation,
+} from '@banx/utils'
 
 export const useLendLoansTransactions = ({
   loan,
   bestOffer,
+  updateOrAddLoan,
+  updateOrAddOffer,
+  addMints,
 }: {
   loan: Loan
   bestOffer: Offer
@@ -26,36 +36,43 @@ export const useLendLoansTransactions = ({
   const { connection } = useConnection()
   const { close } = useModal()
 
-  const priorityFees = usePriorityFees()
-
   const terminateLoan = () => {
+    const loadingSnackbarId = uniqueId()
+
     new TxnExecutor(
       makeTerminateAction,
-      { wallet, connection },
-      { maxRetries: SEND_TXN_MAX_RETRIES },
+      { wallet: createWalletInstance(wallet), connection },
+      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
-      .addTxnParam({ loan })
-      // .on('pfSuccessEach', (results) => {
-      //   const { result, txnHash } = results[0]
-      //   updateOrAddLoan({ ...loan, ...result })
-      //   enqueueSnackbar({
-      //     message: 'Offer termination successfully initialized',
-      //     type: 'success',
-      //     solanaExplorerPath: `tx/${txnHash}`,
-      //   })
-      // })
-      .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
-        enqueueSnackbar({
-          message: 'Transactions sent',
-          type: 'info',
-          solanaExplorerPath: `tx/${txnHash}`,
+      .addTransactionParam({ loan })
+      .on('sentSome', (results) => {
+        results.forEach(({ signature }) => enqueueTransactionSent(signature))
+        enqueueWaitingConfirmation(loadingSnackbarId)
+      })
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
+
+        destroySnackbar(loadingSnackbarId)
+
+        if (failed.length) {
+          return enqueueTranactionError()
+        }
+
+        return confirmed.forEach(({ result, signature }) => {
+          if (result) {
+            enqueueSnackbar({
+              message: 'Offer successfully terminated',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
+
+            updateOrAddLoan({ ...loan, ...result })
+            close()
+          }
         })
       })
-      .on('pfSuccessAll', () => {
-        close()
-      })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),
@@ -66,24 +83,41 @@ export const useLendLoansTransactions = ({
   }
 
   const claimLoan = () => {
-    new TxnExecutor(makeClaimAction, { wallet, connection }, { maxRetries: SEND_TXN_MAX_RETRIES })
-      .addTxnParam({ loan, priorityFees })
-      // .on('pfSuccessEach', (results) => {
-      //   addMints(loan.nft.mint)
-      //   enqueueSnackbar({
-      //     message: 'Collateral successfully claimed',
-      //     type: 'success',
-      //     solanaExplorerPath: `tx/${results[0].txnHash}`,
-      //   })
-      // })
-      .on('pfSuccessEach', (results) => {
-        enqueueSnackbar({
-          message: 'Trasaction sent',
-          type: 'info',
-          solanaExplorerPath: `tx/${results[0].txnHash}`,
+    const loadingSnackbarId = uniqueId()
+
+    new TxnExecutor(
+      makeClaimAction,
+      { wallet: createWalletInstance(wallet), connection },
+      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
+    )
+      .addTransactionParam({ loan })
+      .on('sentSome', (results) => {
+        results.forEach(({ signature }) => enqueueTransactionSent(signature))
+        enqueueWaitingConfirmation(loadingSnackbarId)
+      })
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
+
+        destroySnackbar(loadingSnackbarId)
+
+        if (failed.length) {
+          return enqueueTranactionError()
+        }
+
+        return confirmed.forEach(({ result, signature }) => {
+          if (result) {
+            enqueueSnackbar({
+              message: 'Collateral successfully claimed',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
+
+            addMints(loan.nft.mint)
+          }
         })
       })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),
@@ -94,35 +128,46 @@ export const useLendLoansTransactions = ({
   }
 
   const instantLoan = () => {
+    const loadingSnackbarId = uniqueId()
+
     new TxnExecutor(
       makeInstantRefinanceAction,
-      { wallet, connection },
-      { maxRetries: SEND_TXN_MAX_RETRIES },
+      {
+        wallet: createWalletInstance(wallet),
+        connection,
+      },
+      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
-      .addTxnParam({ loan, bestOffer, priorityFees })
-      // .on('pfSuccessEach', (results) => {
-      //   const { result, txnHash } = results[0]
-      //   result?.bondOffer && updateOrAddOffer(result.bondOffer)
-      //   addMints(loan.nft.mint)
-      //   enqueueSnackbar({
-      //     message: 'Offer successfully sold',
-      //     type: 'success',
-      //     solanaExplorerPath: `tx/${txnHash}`,
-      //   })
-      // })
-      .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
+      .addTransactionParam({ loan, bestOffer })
+      .on('sentSome', (results) => {
+        results.forEach(({ signature }) => enqueueTransactionSent(signature))
+        enqueueWaitingConfirmation(loadingSnackbarId)
+      })
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
 
-        enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
-          solanaExplorerPath: `tx/${txnHash}`,
+        destroySnackbar(loadingSnackbarId)
+
+        if (failed.length) {
+          return enqueueTranactionError()
+        }
+
+        return confirmed.forEach(({ result, signature }) => {
+          if (result) {
+            enqueueSnackbar({
+              message: 'Offer successfully sold',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
+
+            updateOrAddOffer(result.bondOffer)
+            addMints(loan.nft.mint)
+            close()
+          }
         })
       })
-      .on('pfSuccessAll', () => {
-        close()
-      })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),

@@ -4,7 +4,7 @@ import {
   createPerpetualBondOfferBonding,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondingCurveType } from 'fbonds-core/lib/fbond-protocol/types'
-import { MakeActionFn } from 'solana-transactions-executor'
+import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
@@ -17,7 +17,7 @@ export type MakeCreateBondingOfferActionParams = {
   bondingCurveType?: BondingCurveType
 }
 
-export type MakeCreateBondingOfferAction = MakeActionFn<
+export type MakeCreateBondingOfferAction = CreateTransactionDataFn<
   MakeCreateBondingOfferActionParams,
   BondOfferOptimistic
 >
@@ -53,7 +53,7 @@ export const makeCreateBondingOfferAction: MakeCreateBondingOfferAction = async 
   return {
     instructions,
     signers,
-    additionalResult: optimisticResult,
+    result: optimisticResult,
     lookupTables: [],
   }
 }

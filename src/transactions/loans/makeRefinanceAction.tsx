@@ -11,11 +11,13 @@ import {
   FraktBond,
   LendingTokenType,
 } from 'fbonds-core/lib/fbond-protocol/types'
-import { MakeActionFn } from 'solana-transactions-executor'
+import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
+
+import { createInstructionsWithPriorityFees } from '../helpers'
 
 export interface RefinanceOptimisticResult {
   oldBondTradeTransaction: BondTradeTransactionV2
@@ -26,10 +28,9 @@ export interface RefinanceOptimisticResult {
 
 export type MakeRefinanceActionParams = {
   loan: Loan
-  priorityFees: number
 }
 
-export type MakeRefinanceAction = MakeActionFn<MakeRefinanceActionParams, RefinanceOptimisticResult>
+export type MakeRefinanceAction = CreateTransactionDataFn<MakeRefinanceActionParams, Loan>
 
 interface OptimisticResult extends BondAndTransactionOptimistic {
   oldBondOffer: BondOfferV2
@@ -39,7 +40,7 @@ export const makeRefinanceAction: MakeRefinanceAction = async (
   ixnParams,
   { connection, wallet },
 ) => {
-  const { loan, priorityFees } = ixnParams || {}
+  const { loan } = ixnParams || {}
   const { bondTradeTransaction, fraktBond } = loan
 
   const { instructions, signers, optimisticResult } = await refinancePerpetualLoan({
@@ -63,13 +64,23 @@ export const makeRefinanceAction: MakeRefinanceAction = async (
     } as OptimisticResult,
     connection,
     sendTxn: sendTxnPlaceHolder,
-    priorityFees,
   })
 
-  return {
+  const optimisticLoan = {
+    ...loan,
+    fraktBond: optimisticResult.fraktBond,
+    bondTradeTransaction: optimisticResult.newBondTradeTransaction,
+  }
+
+  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
     instructions,
+    connection,
+  )
+
+  return {
+    instructions: instructionsWithPriorityFees,
     signers,
-    additionalResult: optimisticResult,
+    result: optimisticLoan,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }

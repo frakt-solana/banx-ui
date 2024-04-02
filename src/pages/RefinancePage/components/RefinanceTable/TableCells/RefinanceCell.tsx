@@ -2,6 +2,7 @@ import React, { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
@@ -15,19 +16,23 @@ import {
 } from '@banx/components/modals'
 
 import { Loan } from '@banx/api/core'
-import { SEND_TXN_MAX_RETRIES } from '@banx/constants'
-// import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
+import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
+import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
 import { useModal } from '@banx/store'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeRefinanceAction } from '@banx/transactions/loans'
 import {
+  destroySnackbar,
   enqueueSnackbar,
+  enqueueTranactionError,
+  enqueueTransactionSent,
+  enqueueWaitingConfirmation,
   getDialectAccessToken,
   trackPageEvent,
-  usePriorityFees,
 } from '@banx/utils'
 
-// import { useLoansState } from '../hooks'
+import { useLoansState } from '../hooks'
+
 import styles from '../RefinanceTable.module.less'
 
 interface RefinanceCellProps {
@@ -73,12 +78,10 @@ export const RefinanceCell: FC<RefinanceCellProps> = ({ loan, isCardView, disabl
 const useRefinanceTransaction = (loan: Loan) => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  // const { addMints } = useAuctionsLoans()
-  // const { deselectLoan } = useLoansState()
+  const { addMints } = useAuctionsLoans()
+  const { deselectLoan } = useLoansState()
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
-
-  const priorityFees = usePriorityFees()
 
   const onSuccess = () => {
     if (!getDialectAccessToken(wallet.publicKey?.toBase58())) {
@@ -95,34 +98,43 @@ const useRefinanceTransaction = (loan: Loan) => {
   }
 
   const refinance = () => {
+    const loadingSnackbarId = uniqueId()
+
     new TxnExecutor(
       makeRefinanceAction,
-      { wallet, connection },
-      { maxRetries: SEND_TXN_MAX_RETRIES },
+      { wallet: createWalletInstance(wallet), connection },
+      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
-      .addTxnParam({ loan, priorityFees })
-      // .on('pfSuccessEach', (results) => {
-      //   const { txnHash } = results[0]
-      //   addMints(loan.nft.mint)
-      //   deselectLoan(loan.publicKey)
-      //   enqueueSnackbar({
-      //     message: 'Loan successfully refinanced',
-      //     type: 'success',
-      //     solanaExplorerPath: `tx/${txnHash}`,
-      //   })
-      //   onSuccess()
-      // })
-      .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
-
-        enqueueSnackbar({
-          message: 'Transactions sent',
-          type: 'info',
-          solanaExplorerPath: `tx/${txnHash}`,
-        })
-        onSuccess()
+      .addTransactionParam({ loan })
+      .on('sentSome', (results) => {
+        results.forEach(({ signature }) => enqueueTransactionSent(signature))
+        enqueueWaitingConfirmation(loadingSnackbarId)
       })
-      .on('pfError', (error) => {
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
+
+        destroySnackbar(loadingSnackbarId)
+
+        if (failed.length) {
+          return enqueueTranactionError()
+        }
+
+        return confirmed.forEach(({ result, signature }) => {
+          if (result) {
+            enqueueSnackbar({
+              message: 'Loan successfully refinanced',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
+
+            addMints(loan.nft.mint)
+            deselectLoan(loan.publicKey)
+            onSuccess()
+          }
+        })
+      })
+      .on('error', (error) => {
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: loan,
           walletPubkey: wallet?.publicKey?.toBase58(),

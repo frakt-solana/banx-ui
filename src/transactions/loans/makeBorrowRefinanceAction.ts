@@ -12,11 +12,13 @@ import {
   LendingTokenType,
   PairState,
 } from 'fbonds-core/lib/fbond-protocol/types'
-import { MakeActionFn, WalletAndConnection } from 'solana-transactions-executor'
+import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transactions-executor'
 
 import { Loan, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
+
+import { createInstructionsWithPriorityFees } from '../helpers'
 
 export interface BorrowRefinanceActionOptimisticResult {
   loan: Loan
@@ -29,10 +31,9 @@ export type MakeBorrowRefinanceActionParams = {
   offer: Offer
   solToRefinance: number
   aprRate: number //? Base points
-  priorityFees: number
 }
 
-export type MakeBorrowRefinanceAction = MakeActionFn<
+export type MakeBorrowRefinanceAction = CreateTransactionDataFn<
   MakeBorrowRefinanceActionParams,
   BorrowRefinanceActionOptimisticResult
 >
@@ -62,10 +63,15 @@ export const makeBorrowRefinanceAction: MakeBorrowRefinanceAction = async (
     nft: loan.nft,
   }
 
-  return {
+  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
     instructions,
+    walletAndConnection.connection,
+  )
+
+  return {
+    instructions: instructionsWithPriorityFees,
     signers,
-    additionalResult: {
+    result: {
       loan: optimisticLoan,
       oldLoan,
       offer: optimisticResult.bondOffer,
@@ -82,12 +88,12 @@ const getIxnsAndSigners = async ({
   walletAndConnection: WalletAndConnection
 }) => {
   const { connection, wallet } = walletAndConnection
+
   const {
     loan: { bondTradeTransaction, fraktBond },
     offer,
     solToRefinance,
     aprRate,
-    priorityFees,
   } = ixnParams
 
   const accounts = {
@@ -118,7 +124,6 @@ const getIxnsAndSigners = async ({
       connection,
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       sendTxn: sendTxnPlaceHolder,
-      priorityFees,
     })
 
     return { instructions, signers, optimisticResult }
@@ -140,7 +145,6 @@ const getIxnsAndSigners = async ({
       connection,
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       sendTxn: sendTxnPlaceHolder,
-      priorityFees,
     })
 
     return { instructions, signers, optimisticResult }

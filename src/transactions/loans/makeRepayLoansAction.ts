@@ -10,7 +10,7 @@ import {
 import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { BondOfferV2, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { first, uniq } from 'lodash'
-import { MakeActionFn, WalletAndConnection } from 'solana-transactions-executor'
+import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BANX_STAKING, BONDS } from '@banx/constants'
@@ -18,15 +18,18 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { BorrowType } from '../constants'
 import { fetchRuleset } from '../functions'
+import { createInstructionsWithPriorityFees } from '../helpers'
 
 export type MakeRepayLoansActionParams = {
   loans: Loan[]
-  priorityFees: number
 }
 
 export type MakeRepayActionResult = Loan[]
 
-export type MakeRepayLoansAction = MakeActionFn<MakeRepayLoansActionParams, MakeRepayActionResult>
+export type MakeRepayLoansAction = CreateTransactionDataFn<
+  MakeRepayLoansActionParams,
+  MakeRepayActionResult
+>
 
 interface OptimisticResult extends BondAndTransactionOptimistic {
   oldBondOffer: BondOfferV2
@@ -63,7 +66,7 @@ export const makeRepayLoansAction: MakeRepayLoansAction = async (
     instructions,
     signers,
     lookupTables,
-    additionalResult: optimisticLoans,
+    result: optimisticLoans,
   }
 }
 
@@ -79,7 +82,7 @@ const getIxnsAndSignersByBorrowType = async ({
   const { connection, wallet } = walletAndConnection
 
   if (type === BorrowType.StakedBanx) {
-    const { loans, priorityFees } = ixnParams
+    const { loans } = ixnParams
     const loan = loans[0]
 
     if (
@@ -114,10 +117,15 @@ const getIxnsAndSignersByBorrowType = async ({
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
-      priorityFees,
     })
-    return {
+
+    const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
       instructions,
+      connection,
+    )
+
+    return {
+      instructions: instructionsWithPriorityFees,
       signers,
       optimisticResults,
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
@@ -125,7 +133,7 @@ const getIxnsAndSignersByBorrowType = async ({
   }
 
   if (type === BorrowType.CNft) {
-    const { loans, priorityFees } = ixnParams
+    const { loans } = ixnParams
     const loan = loans[0]
 
     if (!loan.nft.compression) {
@@ -157,18 +165,22 @@ const getIxnsAndSignersByBorrowType = async ({
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
-      priorityFees,
     })
 
-    return {
+    const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
       instructions,
+      connection,
+    )
+
+    return {
+      instructions: instructionsWithPriorityFees,
       signers,
       optimisticResults,
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
     }
   }
 
-  const { loans, priorityFees } = ixnParams
+  const { loans } = ixnParams
   const loan = loans[0]
 
   const ruleSets = await Promise.all(
@@ -202,11 +214,15 @@ const getIxnsAndSignersByBorrowType = async ({
     },
     connection,
     sendTxn: sendTxnPlaceHolder,
-    priorityFees,
   })
 
-  return {
+  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
     instructions,
+    connection,
+  )
+
+  return {
+    instructions: instructionsWithPriorityFees,
     signers,
     optimisticResults,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],

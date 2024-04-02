@@ -2,6 +2,7 @@ import { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { chain, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
@@ -10,15 +11,18 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import { SEND_TXN_MAX_RETRIES } from '@banx/constants'
+import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useIsLedger } from '@banx/store'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimAction, makeTerminateAction } from '@banx/transactions/loans'
 import {
   HealthColorIncreasing,
+  destroySnackbar,
   enqueueSnackbar,
+  enqueueTranactionsError,
+  enqueueTransactionsSent,
+  enqueueWaitingConfirmation,
   getColorByPercent,
-  usePriorityFees,
 } from '@banx/utils'
 
 import { useSelectedLoans } from '../loansState'
@@ -38,8 +42,8 @@ interface SummaryProps {
 export const Summary: FC<SummaryProps> = ({
   loansToTerminate,
   loansToClaim,
-  // updateOrAddLoan,
-  // hideLoans,
+  updateOrAddLoan,
+  hideLoans,
   selectedLoans,
   setSelection,
 }) => {
@@ -50,45 +54,41 @@ export const Summary: FC<SummaryProps> = ({
   const { connection } = useConnection()
   const { isLedger } = useIsLedger()
 
-  const priorityFees = usePriorityFees()
-
   const { totalLent, averageLtv, totalInterest } = getTerminateStatsInfo(selectedLoans)
 
   const terminateLoans = () => {
+    const loadingSnackbarId = uniqueId()
+
     const txnParams = selectedLoans.map((loan) => ({ loan }))
 
     new TxnExecutor(
       makeTerminateAction,
-      { wallet, connection },
-      { signAllChunks: isLedger ? 5 : 40, maxRetries: SEND_TXN_MAX_RETRIES },
+      { wallet: createWalletInstance(wallet), connection },
+      { signAllChunkSize: isLedger ? 5 : 40, confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
-      .addTxnParams(txnParams)
-      // .on('pfSuccessEach', (results) => {
-      //   results.forEach(({ txnHash, result }) => {
-      //     enqueueSnackbar({
-      //       message: 'Collateral successfully terminated',
-      //       type: 'success',
-      //       solanaExplorerPath: `tx/${txnHash}`,
-      //     })
+      .addTransactionParams(txnParams)
+      .on('sentAll', () => {
+        enqueueTransactionsSent()
+        enqueueWaitingConfirmation(loadingSnackbarId)
+      })
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
+        const failedTransactionsCount = failed.length
 
-      //     if (result) {
-      //       updateOrAddLoan(result)
-      //     }
-      //   })
-      // })
-      .on('pfSuccessEach', (results) => {
-        results.forEach(({ txnHash }) => {
-          enqueueSnackbar({
-            message: 'Transaction sent',
-            type: 'success',
-            solanaExplorerPath: `tx/${txnHash}`,
-          })
-        })
+        destroySnackbar(loadingSnackbarId)
+
+        if (confirmed.length) {
+          enqueueSnackbar({ message: 'Collaterals successfully terminated', type: 'success' })
+          confirmed.forEach(({ result }) => result && updateOrAddLoan(result))
+          clearSelection()
+        }
+
+        if (failedTransactionsCount) {
+          return enqueueTranactionsError(failedTransactionsCount)
+        }
       })
-      .on('pfSuccessAll', () => {
-        clearSelection()
-      })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: txnParams,
           walletPubkey: wallet?.publicKey?.toBase58(),
@@ -99,32 +99,43 @@ export const Summary: FC<SummaryProps> = ({
   }
 
   const claimLoans = () => {
-    const txnParams = loansToClaim.map((loan) => ({ loan, priorityFees }))
+    const loadingSnackbarId = uniqueId()
+
+    const txnParams = loansToClaim.map((loan) => ({ loan }))
 
     new TxnExecutor(
       makeClaimAction,
-      { wallet, connection },
-      { signAllChunks: isLedger ? 5 : 40, maxRetries: SEND_TXN_MAX_RETRIES },
+      { wallet: createWalletInstance(wallet), connection },
+      { signAllChunkSize: isLedger ? 5 : 40, confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
-      .addTxnParams(txnParams)
-      // .on('pfSuccessEach', (results) => {
-      //   enqueueSnackbar({
-      //     message: 'Collateral successfully claimed',
-      //     type: 'success',
-      //     solanaExplorerPath: `tx/${results[0].txnHash}`,
-      //   })
-      // })
-      .on('pfSuccessEach', (results) => {
-        enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
-          solanaExplorerPath: `tx/${results[0].txnHash}`,
-        })
+      .addTransactionParams(txnParams)
+      .on('sentAll', () => {
+        enqueueTransactionsSent()
+        enqueueWaitingConfirmation(loadingSnackbarId)
       })
-      // .on('pfSuccessAll', () => {
-      //   hideLoans(...loansToClaim.map(({ nft }) => nft.mint))
-      // })
-      .on('pfError', (error) => {
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
+        const failedTransactionsCount = failed.length
+
+        destroySnackbar(loadingSnackbarId)
+
+        if (confirmed.length) {
+          enqueueSnackbar({ message: 'Collaterals successfully claimed', type: 'success' })
+
+          const mintsToHidden = chain(confirmed)
+            .map(({ result }) => result?.nft.mint)
+            .compact()
+            .value()
+
+          hideLoans(...mintsToHidden)
+        }
+
+        if (failedTransactionsCount) {
+          return enqueueTranactionsError(failedTransactionsCount)
+        }
+      })
+      .on('error', (error) => {
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: txnParams,
           walletPubkey: wallet?.publicKey?.toBase58(),
