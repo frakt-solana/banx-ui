@@ -3,7 +3,6 @@ import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
-import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
   makeCreateBondingOfferAction,
@@ -51,7 +50,6 @@ export const useOfferTransactions = ({
         wallet: createWalletInstance(wallet),
         connection,
       },
-      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
       .addTransactionParam(txnParam)
       .on('sentSome', (results) => {
@@ -104,7 +102,6 @@ export const useOfferTransactions = ({
         wallet: createWalletInstance(wallet),
         connection,
       },
-      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
       .addTransactionParam(txnParam)
       .on('sentSome', (results) => {
@@ -151,7 +148,6 @@ export const useOfferTransactions = ({
     new TxnExecutor(
       makeRemoveOfferAction,
       { wallet: createWalletInstance(wallet), connection },
-      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
       .addTransactionParam({ optimisticOffer })
       .on('sentSome', (results) => {
