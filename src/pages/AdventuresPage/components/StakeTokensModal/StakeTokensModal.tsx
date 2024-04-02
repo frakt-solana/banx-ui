@@ -30,7 +30,6 @@ import {
   enqueueTransactionSent,
   formatNumbersWithCommas,
   toDecimals,
-  usePriorityFees,
 } from '@banx/utils'
 
 import styles from './StakeTokensModal.module.less'
@@ -39,7 +38,6 @@ import styles from './StakeTokensModal.module.less'
 export const StakeTokensModal = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const priorityFees = usePriorityFees()
   const { banxStakeSettings } = useBanxStakeSettings()
   const { banxStakeInfo } = useBanxStakeInfo()
 
@@ -86,7 +84,6 @@ export const StakeTokensModal = () => {
     const txnParam = {
       tokensToStake: toDecimals(parseFloat(value), BANX_TOKEN_STAKE_DECIMAL),
       userPubkey: wallet.publicKey,
-      priorityFees,
     }
 
     new TxnExecutor(stakeBanxTokenAction, { wallet: createWalletInstance(wallet), connection })
@@ -112,7 +109,6 @@ export const StakeTokensModal = () => {
     const txnParam = {
       tokensToUnstake: toDecimals(parseFloat(value), BANX_TOKEN_STAKE_DECIMAL),
       userPubkey: wallet.publicKey,
-      priorityFees,
     }
 
     new TxnExecutor(unstakeBanxTokenAction, { wallet: createWalletInstance(wallet), connection })

@@ -22,7 +22,6 @@ import {
   isLoanLiquidated,
   isLoanTerminating,
   trackPageEvent,
-  usePriorityFees,
 } from '@banx/utils'
 
 import { ManageModal } from './ManageModal'
@@ -39,8 +38,6 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
   const { connection } = useConnection()
   const { open } = useModal()
 
-  const priorityFees = usePriorityFees()
-
   const { addMints: hideLoans } = useHiddenNftsMints()
 
   const onClaim = () => {
@@ -49,7 +46,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
     const loadingSnackbarId = uniqueId()
 
     new TxnExecutor(makeClaimAction, { wallet: createWalletInstance(wallet), connection })
-      .addTransactionParam({ loan, priorityFees })
+      .addTransactionParam({ loan })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
         enqueueWaitingConfirmation(loadingSnackbarId)

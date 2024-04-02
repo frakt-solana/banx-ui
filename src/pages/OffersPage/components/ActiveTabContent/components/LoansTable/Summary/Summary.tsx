@@ -22,7 +22,6 @@ import {
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
   getColorByPercent,
-  usePriorityFees,
 } from '@banx/utils'
 
 import { useSelectedLoans } from '../loansState'
@@ -53,8 +52,6 @@ export const Summary: FC<SummaryProps> = ({
 
   const { connection } = useConnection()
   const { isLedger } = useIsLedger()
-
-  const priorityFees = usePriorityFees()
 
   const { totalLent, averageLtv, totalInterest } = getTerminateStatsInfo(selectedLoans)
 
@@ -103,7 +100,7 @@ export const Summary: FC<SummaryProps> = ({
   const claimLoans = () => {
     const loadingSnackbarId = uniqueId()
 
-    const txnParams = loansToClaim.map((loan) => ({ loan, priorityFees }))
+    const txnParams = loansToClaim.map((loan) => ({ loan }))
 
     new TxnExecutor(
       makeClaimAction,

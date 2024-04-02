@@ -5,12 +5,11 @@ import { unstakeBanxToken } from 'fbonds-core/lib/fbond-protocol/functions/banxS
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
-import { sendTxnPlaceHolder } from '@banx/utils'
+import { calculatePriorityFees, sendTxnPlaceHolder } from '@banx/utils'
 
 export type UnstakeBanxTokenParams = {
   userPubkey: web3.PublicKey
   tokensToUnstake: string
-  priorityFees: number
 }
 
 export type UnstakeBanxTokenParamsAction = CreateTransactionDataFn<UnstakeBanxTokenParams, null>
@@ -19,6 +18,8 @@ export const unstakeBanxTokenAction: UnstakeBanxTokenParamsAction = async (
   ixnParams,
   { connection },
 ) => {
+  const priorityFees = await calculatePriorityFees(connection)
+
   const params = {
     connection: connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
@@ -26,7 +27,7 @@ export const unstakeBanxTokenAction: UnstakeBanxTokenParamsAction = async (
       userPubkey: ixnParams.userPubkey,
       tokenMint: BANX_TOKEN_MINT,
     },
-    priorityFees: ixnParams.priorityFees,
+    priorityFees,
     args: {
       tokensToUnstake: new BN(ixnParams.tokensToUnstake),
     },

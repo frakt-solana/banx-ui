@@ -31,7 +31,6 @@ import {
   enqueueTransactionSent,
   formatCompact,
   formatNumbersWithCommas,
-  usePriorityFees,
 } from '@banx/utils'
 
 import styles from './Sidebar.module.less'
@@ -46,7 +45,6 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
   const { open } = useModal()
   const wallet = useWallet()
   const { connection } = useConnection()
-  const priorityFees = usePriorityFees()
 
   const { nfts, banxAdventures, banxTokenStake } = banxStakeInfo
 
@@ -99,7 +97,7 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
       .map(({ adventure }) => adventure.week)
       .value()
 
-    const params = { priorityFees, weeks }
+    const params = { weeks }
 
     new TxnExecutor(stakeBanxClaimAction, { wallet: createWalletInstance(wallet), connection })
       .addTransactionParam(params)

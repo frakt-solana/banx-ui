@@ -32,7 +32,6 @@ import {
   isLoanTerminating,
   isOfferNotEmpty,
   trackPageEvent,
-  usePriorityFees,
 } from '@banx/utils'
 
 import styles from './ActionsCell.module.less'
@@ -45,8 +44,6 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
   const { close } = useModal()
   const wallet = useWallet()
   const { connection } = useConnection()
-
-  const priorityFees = usePriorityFees()
 
   const { bondTradeTransaction, fraktBond, nft } = loan
 
@@ -131,7 +128,6 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
         offer: suitableOffer,
         solToRefinance: currentSpotPrice,
         aprRate: newApr,
-        priorityFees,
       })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))

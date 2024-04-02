@@ -27,7 +27,6 @@ import {
   formatDecimal,
   isLoanActiveOrRefinanced,
   isLoanTerminating,
-  usePriorityFees,
 } from '@banx/utils'
 
 import { useSelectedLoans } from '../../loansState'
@@ -82,8 +81,6 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
   const { close } = useModal()
-
-  const priorityFees = usePriorityFees()
 
   const { remove: removeLoan } = useSelectedLoans()
 
@@ -171,7 +168,7 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
       wallet: createWalletInstance(wallet),
       connection,
     })
-      .addTransactionParam({ loan, bestOffer, priorityFees })
+      .addTransactionParam({ loan, bestOffer })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
         enqueueWaitingConfirmation(loadingSnackbarId)

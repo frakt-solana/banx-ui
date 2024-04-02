@@ -30,7 +30,6 @@ import {
   enqueueWaitingConfirmation,
   getDialectAccessToken,
   trackPageEvent,
-  usePriorityFees,
 } from '@banx/utils'
 
 import { useAuctionsLoans } from '../../hooks'
@@ -59,8 +58,6 @@ export const Summary: FC<SummaryProps> = ({
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
-  const priorityFees = usePriorityFees()
-
   const totalDebt = sumBy(selectedLoans, (loan) => calculateLoanRepayValue(loan))
   const totalLoanValue = map(selectedLoans, (loan) => loan.fraktBond.borrowedAmount)
   const totalWeeklyInterest = sumBy(selectedLoans, (loan) => calcWeeklyInterestFee(loan))
@@ -86,7 +83,7 @@ export const Summary: FC<SummaryProps> = ({
   const refinanceAll = () => {
     const loadingSnackbarId = uniqueId()
 
-    const txnParams = selectedLoans.map((loan) => ({ loan, priorityFees }))
+    const txnParams = selectedLoans.map((loan) => ({ loan }))
 
     new TxnExecutor(makeRefinanceAction, { wallet: createWalletInstance(wallet), connection })
       .addTransactionParams(txnParams)

@@ -20,7 +20,6 @@ import {
   enqueueTransactionSent,
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
-  usePriorityFees,
 } from '@banx/utils'
 
 export const useLoansTransactions = () => {
@@ -28,15 +27,13 @@ export const useLoansTransactions = () => {
   const { connection } = useConnection()
   const { isLedger } = useIsLedger()
 
-  const priorityFees = usePriorityFees()
-
   const { update: updateLoansOptimistic } = useLoansOptimistic()
   const { clear: clearSelection } = useSelectedLoans()
 
   const repayLoan = async (loan: Loan) => {
     const loadingSnackbarId = uniqueId()
 
-    const txnParam = { loans: [loan], priorityFees }
+    const txnParam = { loans: [loan] }
 
     await new TxnExecutor(makeRepayLoansAction, {
       wallet: createWalletInstance(wallet),
@@ -83,7 +80,7 @@ export const useLoansTransactions = () => {
   const repayPartialLoan = async (loan: Loan, fractionToRepay: number) => {
     const loadingSnackbarId = uniqueId()
 
-    const txnParam = { loan, fractionToRepay, priorityFees }
+    const txnParam = { loan, fractionToRepay }
 
     await new TxnExecutor(makeRepayPartialLoanAction, {
       wallet: createWalletInstance(wallet),
@@ -135,7 +132,7 @@ export const useLoansTransactions = () => {
     const selectedLoans = selection.map((loan) => loan.loan)
     const loansChunks = chunkRepayIxnsParams(selectedLoans)
 
-    const txnParams = loansChunks.map((chunk) => ({ loans: chunk, priorityFees: priorityFees }))
+    const txnParams = loansChunks.map((chunk) => ({ loans: chunk }))
 
     await new TxnExecutor(
       makeRepayLoansAction,
@@ -187,7 +184,7 @@ export const useLoansTransactions = () => {
   const repayUnpaidLoansInterest = async (loans: LoanWithFractionToRepay[]) => {
     const loadingSnackbarId = uniqueId()
 
-    const txnParams = loans.map((loan) => ({ ...loan, priorityFees }))
+    const txnParams = loans.map((loan) => ({ ...loan }))
 
     await new TxnExecutor(
       makeRepayPartialLoanAction,

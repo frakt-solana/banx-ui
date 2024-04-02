@@ -28,7 +28,6 @@ import {
   enqueueWaitingConfirmation,
   getDialectAccessToken,
   trackPageEvent,
-  usePriorityFees,
 } from '@banx/utils'
 
 import { useLoansState } from '../hooks'
@@ -83,8 +82,6 @@ const useRefinanceTransaction = (loan: Loan) => {
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
-  const priorityFees = usePriorityFees()
-
   const onSuccess = () => {
     if (!getDialectAccessToken(wallet.publicKey?.toBase58())) {
       open(SubscribeNotificationsModal, {
@@ -103,7 +100,7 @@ const useRefinanceTransaction = (loan: Loan) => {
     const loadingSnackbarId = uniqueId()
 
     new TxnExecutor(makeRefinanceAction, { wallet: createWalletInstance(wallet), connection })
-      .addTransactionParam({ loan, priorityFees })
+      .addTransactionParam({ loan })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
         enqueueWaitingConfirmation(loadingSnackbarId)

@@ -16,7 +16,6 @@ import {
   enqueueTranactionError,
   enqueueTransactionSent,
   enqueueWaitingConfirmation,
-  usePriorityFees,
 } from '@banx/utils'
 
 export const useLendLoansTransactions = ({
@@ -35,8 +34,6 @@ export const useLendLoansTransactions = ({
   const wallet = useWallet()
   const { connection } = useConnection()
   const { close } = useModal()
-
-  const priorityFees = usePriorityFees()
 
   const terminateLoan = () => {
     const loadingSnackbarId = uniqueId()
@@ -84,7 +81,7 @@ export const useLendLoansTransactions = ({
     const loadingSnackbarId = uniqueId()
 
     new TxnExecutor(makeClaimAction, { wallet: createWalletInstance(wallet), connection })
-      .addTransactionParam({ loan, priorityFees })
+      .addTransactionParam({ loan })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
         enqueueWaitingConfirmation(loadingSnackbarId)
@@ -128,7 +125,7 @@ export const useLendLoansTransactions = ({
       wallet: createWalletInstance(wallet),
       connection,
     })
-      .addTransactionParam({ loan, bestOffer, priorityFees })
+      .addTransactionParam({ loan, bestOffer })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
         enqueueWaitingConfirmation(loadingSnackbarId)

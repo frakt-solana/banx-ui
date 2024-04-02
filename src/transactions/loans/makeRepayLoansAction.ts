@@ -7,7 +7,7 @@ import {
   repayPerpetualLoan,
   repayStakedBanxPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
+import { calculatePriorityFees, getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
 import { first, uniq } from 'lodash'
 import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transactions-executor'
@@ -21,7 +21,6 @@ import { fetchRuleset } from '../functions'
 
 export type MakeRepayLoansActionParams = {
   loans: Loan[]
-  priorityFees: number
 }
 
 export type MakeRepayActionResult = Loan[]
@@ -80,9 +79,10 @@ const getIxnsAndSignersByBorrowType = async ({
   walletAndConnection: WalletAndConnection
 }) => {
   const { connection, wallet } = walletAndConnection
+  const priorityFees = await calculatePriorityFees(connection)
 
   if (type === BorrowType.StakedBanx) {
-    const { loans, priorityFees } = ixnParams
+    const { loans } = ixnParams
     const loan = loans[0]
 
     if (
@@ -127,7 +127,7 @@ const getIxnsAndSignersByBorrowType = async ({
   }
 
   if (type === BorrowType.CNft) {
-    const { loans, priorityFees } = ixnParams
+    const { loans } = ixnParams
     const loan = loans[0]
 
     if (!loan.nft.compression) {
@@ -169,7 +169,7 @@ const getIxnsAndSignersByBorrowType = async ({
     }
   }
 
-  const { loans, priorityFees } = ixnParams
+  const { loans } = ixnParams
   const loan = loans[0]
 
   const ruleSets = await Promise.all(

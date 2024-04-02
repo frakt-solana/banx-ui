@@ -5,7 +5,7 @@ import {
   claimCnftPerpetualLoanCanopy,
   claimPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
+import { calculatePriorityFees, getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
@@ -16,13 +16,14 @@ import { fetchRuleset } from '../functions'
 
 export type MakeClaimActionParams = {
   loan: Loan
-  priorityFees: number
 }
 
 export type MakeClaimAction = CreateTransactionDataFn<MakeClaimActionParams, Loan>
 
 export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, wallet }) => {
-  const { loan, priorityFees } = ixnParams
+  const priorityFees = await calculatePriorityFees(connection)
+
+  const { loan } = ixnParams
   const { bondTradeTransaction, fraktBond } = loan
 
   if (ixnParams.loan.nft.compression) {

@@ -5,7 +5,7 @@ import {
   borrowPerpetual,
   borrowStakedBanxPerpetual,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
+import { calculatePriorityFees, getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
 import { first, uniq } from 'lodash'
 import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transactions-executor'
@@ -22,7 +22,6 @@ export type MakeBorrowActionParams = {
   loanValue: number
   offer: Offer
   optimizeIntoReserves?: boolean
-  priorityFees: number
 }[]
 
 export type MakeBorrowActionResult = { loan: Loan; offer: Offer }[]
@@ -78,7 +77,7 @@ const getIxnsAndSignersByBorrowType = async ({
 }) => {
   const { connection, wallet } = walletAndConnection
 
-  const priorityFees = ixnParams[0].priorityFees
+  const priorityFees = await calculatePriorityFees(connection)
 
   const optimizeIntoReserves =
     ixnParams[0]?.optimizeIntoReserves === undefined ? true : ixnParams[0]?.optimizeIntoReserves
@@ -121,7 +120,7 @@ const getIxnsAndSignersByBorrowType = async ({
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
-      priorityFees: params.priorityFees,
+      priorityFees,
     })
     return { instructions, signers, optimisticResults }
   }
@@ -162,7 +161,7 @@ const getIxnsAndSignersByBorrowType = async ({
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
-      priorityFees: params.priorityFees,
+      priorityFees,
     })
 
     return { instructions, signers, optimisticResults }

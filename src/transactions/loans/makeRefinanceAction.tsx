@@ -14,7 +14,7 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { sendTxnPlaceHolder } from '@banx/utils'
+import { calculatePriorityFees, sendTxnPlaceHolder } from '@banx/utils'
 
 export interface RefinanceOptimisticResult {
   oldBondTradeTransaction: BondTradeTransactionV2
@@ -25,7 +25,6 @@ export interface RefinanceOptimisticResult {
 
 export type MakeRefinanceActionParams = {
   loan: Loan
-  priorityFees: number
 }
 
 export type MakeRefinanceAction = CreateTransactionDataFn<MakeRefinanceActionParams, Loan>
@@ -38,7 +37,9 @@ export const makeRefinanceAction: MakeRefinanceAction = async (
   ixnParams,
   { connection, wallet },
 ) => {
-  const { loan, priorityFees } = ixnParams || {}
+  const priorityFees = await calculatePriorityFees(connection)
+
+  const { loan } = ixnParams || {}
   const { bondTradeTransaction, fraktBond } = loan
 
   const { instructions, signers, optimisticResult } = await refinancePerpetualLoan({

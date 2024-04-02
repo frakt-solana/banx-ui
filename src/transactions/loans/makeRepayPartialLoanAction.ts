@@ -10,12 +10,11 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { sendTxnPlaceHolder } from '@banx/utils'
+import { calculatePriorityFees, sendTxnPlaceHolder } from '@banx/utils'
 
 export type MakeRepayPartialLoanActionParams = {
   loan: Loan
   fractionToRepay: number //? F.E 50% => 5000
-  priorityFees: number
 }
 
 export type MakeRepayPartialActionResult = Loan
@@ -33,8 +32,10 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
   ixnParams,
   walletAndConnection,
 ) => {
-  const { loan, fractionToRepay, priorityFees } = ixnParams
   const { connection, wallet } = walletAndConnection
+  const priorityFees = await calculatePriorityFees(connection)
+
+  const { loan, fractionToRepay } = ixnParams
 
   const { fraktBond, bondTradeTransaction, nft } = loan
 

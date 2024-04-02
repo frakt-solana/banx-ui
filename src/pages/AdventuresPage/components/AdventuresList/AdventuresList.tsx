@@ -30,7 +30,6 @@ import {
   enqueueTransactionSent,
   formatCompact,
   formatNumbersWithCommas,
-  usePriorityFees,
 } from '@banx/utils'
 
 import {
@@ -90,7 +89,6 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
 }) => {
   const { connection } = useConnection()
   const wallet = useWallet()
-  const priorityFees = usePriorityFees()
 
   const { maxTokenStakeAmount } = banxStakingSettings
   const maxTokenStakeAmountStr = banxTokenBNToFixed(maxTokenStakeAmount)
@@ -134,7 +132,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
       return
     }
 
-    const params = { weeks: [banxAdventure.week], priorityFees }
+    const params = { weeks: [banxAdventure.week] }
 
     new TxnExecutor(subscribeBanxAdventureAction, {
       wallet: createWalletInstance(wallet),
