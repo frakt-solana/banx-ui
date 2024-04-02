@@ -3,6 +3,7 @@ import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan, Offer } from '@banx/api/core'
+import { TXN_EXECUTOR_OPTIONS } from '@banx/constants'
 import { useModal } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
@@ -38,7 +39,11 @@ export const useLendLoansTransactions = ({
   const terminateLoan = () => {
     const loadingSnackbarId = uniqueId()
 
-    new TxnExecutor(makeTerminateAction, { wallet: createWalletInstance(wallet), connection })
+    new TxnExecutor(
+      makeTerminateAction,
+      { wallet: createWalletInstance(wallet), connection },
+      { confirmOptions: TXN_EXECUTOR_OPTIONS },
+    )
       .addTransactionParam({ loan })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -80,7 +85,11 @@ export const useLendLoansTransactions = ({
   const claimLoan = () => {
     const loadingSnackbarId = uniqueId()
 
-    new TxnExecutor(makeClaimAction, { wallet: createWalletInstance(wallet), connection })
+    new TxnExecutor(
+      makeClaimAction,
+      { wallet: createWalletInstance(wallet), connection },
+      { confirmOptions: TXN_EXECUTOR_OPTIONS },
+    )
       .addTransactionParam({ loan })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -121,10 +130,14 @@ export const useLendLoansTransactions = ({
   const instantLoan = () => {
     const loadingSnackbarId = uniqueId()
 
-    new TxnExecutor(makeInstantRefinanceAction, {
-      wallet: createWalletInstance(wallet),
-      connection,
-    })
+    new TxnExecutor(
+      makeInstantRefinanceAction,
+      {
+        wallet: createWalletInstance(wallet),
+        connection,
+      },
+      { confirmOptions: TXN_EXECUTOR_OPTIONS },
+    )
       .addTransactionParam({ loan, bestOffer })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))

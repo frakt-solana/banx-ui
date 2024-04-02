@@ -3,6 +3,7 @@ import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
+import { TXN_EXECUTOR_OPTIONS } from '@banx/constants'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
   makeCreateBondingOfferAction,
@@ -44,10 +45,14 @@ export const useOfferTransactions = ({
 
     const txnParam = { marketPubkey, loansAmount, loanValue, deltaValue }
 
-    await new TxnExecutor(makeCreateBondingOfferAction, {
-      wallet: createWalletInstance(wallet),
-      connection,
-    })
+    await new TxnExecutor(
+      makeCreateBondingOfferAction,
+      {
+        wallet: createWalletInstance(wallet),
+        connection,
+      },
+      { confirmOptions: TXN_EXECUTOR_OPTIONS },
+    )
       .addTransactionParam(txnParam)
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -93,10 +98,14 @@ export const useOfferTransactions = ({
 
     const txnParam = { loanValue, optimisticOffer, loansAmount, deltaValue }
 
-    await new TxnExecutor(makeUpdateBondingOfferAction, {
-      wallet: createWalletInstance(wallet),
-      connection,
-    })
+    await new TxnExecutor(
+      makeUpdateBondingOfferAction,
+      {
+        wallet: createWalletInstance(wallet),
+        connection,
+      },
+      { confirmOptions: TXN_EXECUTOR_OPTIONS },
+    )
       .addTransactionParam(txnParam)
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -139,9 +148,12 @@ export const useOfferTransactions = ({
 
     const loadingSnackbarId = uniqueId()
 
-    new TxnExecutor(makeRemoveOfferAction, { wallet: createWalletInstance(wallet), connection })
+    new TxnExecutor(
+      makeRemoveOfferAction,
+      { wallet: createWalletInstance(wallet), connection },
+      { confirmOptions: TXN_EXECUTOR_OPTIONS },
+    )
       .addTransactionParam({ optimisticOffer })
-
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
         enqueueWaitingConfirmation(loadingSnackbarId)

@@ -16,6 +16,7 @@ import {
 } from '@banx/components/modals'
 
 import { Loan } from '@banx/api/core'
+import { TXN_EXECUTOR_OPTIONS } from '@banx/constants'
 import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
 import { useModal } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
@@ -99,7 +100,11 @@ const useRefinanceTransaction = (loan: Loan) => {
   const refinance = () => {
     const loadingSnackbarId = uniqueId()
 
-    new TxnExecutor(makeRefinanceAction, { wallet: createWalletInstance(wallet), connection })
+    new TxnExecutor(
+      makeRefinanceAction,
+      { wallet: createWalletInstance(wallet), connection },
+      { confirmOptions: TXN_EXECUTOR_OPTIONS },
+    )
       .addTransactionParam({ loan })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
