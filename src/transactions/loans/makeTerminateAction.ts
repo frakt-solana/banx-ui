@@ -6,17 +6,19 @@ import {
   terminatePerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
-import { MakeActionFn } from 'solana-transactions-executor'
+import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
+import { createInstructionsWithPriorityFees } from '../helpers'
+
 export type MakeTerminateActionParams = {
   loan: Loan
 }
 
-export type MakeTerminateAction = MakeActionFn<MakeTerminateActionParams, Loan>
+export type MakeTerminateAction = CreateTransactionDataFn<MakeTerminateActionParams, Loan>
 
 interface OptimisticResult extends BondAndTransactionOptimistic {
   bondOffer: BondOfferV2
@@ -50,10 +52,15 @@ export const makeTerminateAction: MakeTerminateAction = async (
     ...optimisticResult,
   }
 
-  return {
+  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
     instructions,
+    connection,
+  )
+
+  return {
+    instructions: instructionsWithPriorityFees,
     signers,
-    additionalResult: loanOptimisticResult,
+    result: loanOptimisticResult,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }

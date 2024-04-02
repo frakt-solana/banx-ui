@@ -3,18 +3,23 @@ import {
   BondOfferOptimistic,
   removePerpetualOffer,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
-import { MakeActionFn } from 'solana-transactions-executor'
+import { BondOfferV2, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
+import { createInstructionsWithPriorityFees } from '../helpers'
+
 export type MakeClaimActionParams = {
   optimisticOffer: Offer
 }
 
-export type MakeRemoveOfferAction = MakeActionFn<MakeClaimActionParams, BondOfferOptimistic>
+export type MakeRemoveOfferAction = CreateTransactionDataFn<
+  MakeClaimActionParams,
+  BondOfferOptimistic
+>
 
 export const makeRemoveOfferAction: MakeRemoveOfferAction = async (
   ixnParams,
@@ -28,6 +33,9 @@ export const makeRemoveOfferAction: MakeRemoveOfferAction = async (
       bondOfferV2: new web3.PublicKey(optimisticOffer.publicKey),
       userPubkey: wallet.publicKey as web3.PublicKey,
     },
+    args: {
+      lendingTokenType: LendingTokenType.NativeSOL,
+    },
     optimistic: {
       bondOffer: optimisticOffer as BondOfferV2,
     },
@@ -35,10 +43,14 @@ export const makeRemoveOfferAction: MakeRemoveOfferAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  return {
+  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
     instructions,
+    connection,
+  )
+
+  return {
+    instructions: instructionsWithPriorityFees,
     signers,
-    additionalResult: optimisticResult,
-    lookupTables: [],
+    result: optimisticResult,
   }
 }

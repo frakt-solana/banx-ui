@@ -12,7 +12,7 @@ import { Button } from '@banx/components/Buttons'
 import { StatInfo, StatsInfoProps, VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { BanxInfoBN, BanxStakingSettingsBN } from '@banx/api/staking'
-import { BANX_TOKEN_DECIMALS, SEND_TXN_MAX_RETRIES } from '@banx/constants'
+import { BANX_TOKEN_DECIMALS, TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { BanxToken, Gamepad, MoneyBill } from '@banx/icons'
 import {
   banxTokenBNToFixed,
@@ -23,15 +23,14 @@ import {
 } from '@banx/pages/AdventuresPage'
 import { StakeNftsModal, StakeTokensModal } from '@banx/pages/AdventuresPage/components'
 import { useModal } from '@banx/store'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxClaimAction } from '@banx/transactions/staking/stakeBanxClaimAction'
 import {
   ZERO_BN,
   bnToFixed,
-  enqueueSnackbar,
+  enqueueTransactionSent,
   formatCompact,
   formatNumbersWithCommas,
-  usePriorityFees,
 } from '@banx/utils'
 
 import styles from './Sidebar.module.less'
@@ -46,7 +45,6 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
   const { open } = useModal()
   const wallet = useWallet()
   const { connection } = useConnection()
-  const priorityFees = usePriorityFees()
 
   const { nfts, banxAdventures, banxTokenStake } = banxStakeInfo
 
@@ -120,28 +118,19 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
       .map(({ adventure }) => adventure.week)
       .value()
 
-    const params = {
-      priorityFees,
-      weeks,
-    }
+    const params = { weeks }
 
     new TxnExecutor(
       stakeBanxClaimAction,
-      { wallet, connection },
-      {
-        maxRetries: SEND_TXN_MAX_RETRIES,
-      },
+      { wallet: createWalletInstance(wallet), connection },
+      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
-      .addTxnParam(params)
-      .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
-        enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
-          solanaExplorerPath: `tx/${txnHash}`,
-        })
+      .addTransactionParam(params)
+      .on('sentSome', (results) => {
+        results.forEach(({ signature }) => enqueueTransactionSent(signature))
+        close()
       })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: params,
           walletPubkey: wallet?.publicKey?.toBase58(),

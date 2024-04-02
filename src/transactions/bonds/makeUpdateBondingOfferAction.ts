@@ -3,12 +3,14 @@ import {
   BondOfferOptimistic,
   updatePerpetualOfferBonding,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
-import { MakeActionFn } from 'solana-transactions-executor'
+import { BondOfferV2, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
+
+import { createInstructionsWithPriorityFees } from '../helpers'
 
 export type MakeUpdateBondingOfferActionParams = {
   loanValue: number //? value in sol
@@ -17,7 +19,7 @@ export type MakeUpdateBondingOfferActionParams = {
   optimisticOffer: Offer
 }
 
-export type MakeUpdateBondingOfferAction = MakeActionFn<
+export type MakeUpdateBondingOfferAction = CreateTransactionDataFn<
   MakeUpdateBondingOfferActionParams,
   BondOfferOptimistic
 >
@@ -42,14 +44,20 @@ export const makeUpdateBondingOfferAction: MakeUpdateBondingOfferAction = async 
       loanValue,
       delta: deltaValue,
       quantityOfLoans: loansAmount,
+      lendingTokenType: LendingTokenType.NativeSOL,
     },
     sendTxn: sendTxnPlaceHolder,
   })
 
-  return {
+  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
     instructions,
+    connection,
+  )
+
+  return {
+    instructions: instructionsWithPriorityFees,
     signers,
-    additionalResult: optimisticResult,
+    result: optimisticResult,
     lookupTables: [],
   }
 }

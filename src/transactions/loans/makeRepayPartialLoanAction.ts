@@ -5,22 +5,23 @@ import {
   BondAndTransactionOptimistic,
   repayPartialPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
-import { MakeActionFn } from 'solana-transactions-executor'
+import { BondOfferV2, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
+import { createInstructionsWithPriorityFees } from '../helpers'
+
 export type MakeRepayPartialLoanActionParams = {
   loan: Loan
   fractionToRepay: number //? F.E 50% => 5000
-  priorityFees: number
 }
 
 export type MakeRepayPartialActionResult = Loan
 
-export type MakeRepayPartialLoanAction = MakeActionFn<
+export type MakeRepayPartialLoanAction = CreateTransactionDataFn<
   MakeRepayPartialLoanActionParams,
   MakeRepayPartialActionResult
 >
@@ -33,8 +34,9 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
   ixnParams,
   walletAndConnection,
 ) => {
-  const { loan, fractionToRepay, priorityFees } = ixnParams
   const { connection, wallet } = walletAndConnection
+
+  const { loan, fractionToRepay } = ixnParams
 
   const { fraktBond, bondTradeTransaction, nft } = loan
 
@@ -47,6 +49,7 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
         bondTradeTransaction,
         oldBondOffer: getMockBondOffer(),
       } as OptimisticResult,
+      lendingTokenType: LendingTokenType.NativeSOL,
     },
     accounts: {
       oldBondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
@@ -58,7 +61,6 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
     },
     connection,
     sendTxn: sendTxnPlaceHolder,
-    priorityFees,
   })
 
   const optimisticResult = optimisticResults.map((optimistic) => ({
@@ -68,10 +70,15 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
     nft,
   }))[0]
 
-  return {
+  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
     instructions,
+    connection,
+  )
+
+  return {
+    instructions: instructionsWithPriorityFees,
     signers,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
-    additionalResult: optimisticResult,
+    result: optimisticResult,
   }
 }

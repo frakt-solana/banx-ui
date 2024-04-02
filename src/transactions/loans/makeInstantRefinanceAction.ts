@@ -6,12 +6,15 @@ import {
   BondOfferV2,
   BondTradeTransactionV3,
   FraktBond,
+  LendingTokenType,
 } from 'fbonds-core/lib/fbond-protocol/types'
-import { MakeActionFn } from 'solana-transactions-executor'
+import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
+
+import { createInstructionsWithPriorityFees } from '../helpers'
 
 export interface InstantRefinanceOptimisticResult {
   bondOffer: BondOfferV2
@@ -23,10 +26,9 @@ export interface InstantRefinanceOptimisticResult {
 export type MakeInstantRefinanceActionParams = {
   loan: Loan
   bestOffer: Offer
-  priorityFees: number
 }
 
-export type MakeInstantRefinanceAction = MakeActionFn<
+export type MakeInstantRefinanceAction = CreateTransactionDataFn<
   MakeInstantRefinanceActionParams,
   InstantRefinanceOptimisticResult
 >
@@ -35,7 +37,7 @@ export const makeInstantRefinanceAction: MakeInstantRefinanceAction = async (
   ixnParams,
   { connection, wallet },
 ) => {
-  const { loan, bestOffer, priorityFees } = ixnParams || {}
+  const { loan, bestOffer } = ixnParams || {}
   const { bondTradeTransaction, fraktBond } = loan
 
   const { instructions, signers, optimisticResult } = await instantRefinancePerpetualLoan({
@@ -50,6 +52,9 @@ export const makeInstantRefinanceAction: MakeInstantRefinanceAction = async (
       bondOffer: new web3.PublicKey(bestOffer.publicKey),
       oldBondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
     },
+    args: {
+      lendingTokenType: LendingTokenType.NativeSOL,
+    },
     optimistic: {
       oldBondTradeTransaction: bondTradeTransaction as BondTradeTransactionV3,
       bondOffer: bestOffer as BondOfferV2,
@@ -59,13 +64,17 @@ export const makeInstantRefinanceAction: MakeInstantRefinanceAction = async (
     },
     connection,
     sendTxn: sendTxnPlaceHolder,
-    priorityFees,
   })
 
-  return {
+  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
     instructions,
+    connection,
+  )
+
+  return {
+    instructions: instructionsWithPriorityFees,
     signers,
-    additionalResult: optimisticResult,
+    result: optimisticResult,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }

@@ -11,11 +11,11 @@ import {
   BanxInfoBN,
   BanxStakeBN,
 } from '@banx/api/staking'
-import { SEND_TXN_MAX_RETRIES } from '@banx/constants'
+import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { checkIsSubscribed, getAdventureStatus, isAdventureEnded } from '@banx/pages/AdventuresPage'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { subscribeBanxAdventureAction } from '@banx/transactions/staking'
-import { enqueueSnackbar, usePriorityFees } from '@banx/utils'
+import { enqueueTransactionSent } from '@banx/utils'
 
 import {
   AdventureEndedRewardsResult,
@@ -69,7 +69,6 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
 }) => {
   const { connection } = useConnection()
   const wallet = useWallet()
-  const priorityFees = usePriorityFees()
 
   const isEnded = isAdventureEnded(banxAdventure)
 
@@ -82,29 +81,22 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
       return
     }
 
-    const params = {
-      weeks: [banxAdventure.week],
-      userPubkey: wallet.publicKey,
-      priorityFees,
-    }
+    const params = { weeks: [banxAdventure.week] }
 
     new TxnExecutor(
       subscribeBanxAdventureAction,
-      { wallet, connection },
       {
-        maxRetries: SEND_TXN_MAX_RETRIES,
+        wallet: createWalletInstance(wallet),
+        connection,
       },
+      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
-      .addTxnParam(params)
-      .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
-        enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
-          solanaExplorerPath: `tx/${txnHash}`,
-        })
+      .addTransactionParam(params)
+      .on('sentSome', (results) => {
+        results.forEach(({ signature }) => enqueueTransactionSent(signature))
+        close()
       })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: params,
           walletPubkey: wallet?.publicKey?.toBase58(),

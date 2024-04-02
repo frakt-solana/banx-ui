@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { chain, filter, first, get, groupBy, includes, isEmpty, map, sortBy, sumBy } from 'lodash'
+import { chain, filter, first, get, groupBy, includes, isEmpty, map, sortBy } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
@@ -13,7 +13,6 @@ import {
 } from '@banx/components/modals'
 
 import { BorrowNft, Offer } from '@banx/api/core'
-import { SPECIAL_COLLECTIONS_MARKETS } from '@banx/constants'
 import { useBorrowBonkRewardsAvailability } from '@banx/hooks'
 import { PATHS } from '@banx/router'
 import {
@@ -25,7 +24,7 @@ import {
   useTableView,
 } from '@banx/store'
 import { createGlobalState } from '@banx/store/functions'
-import { getDialectAccessToken, trackPageEvent, usePriorityFees } from '@banx/utils'
+import { getDialectAccessToken, trackPageEvent } from '@banx/utils'
 
 import { useCartState } from '../../cartState'
 import { getTableColumns } from './columns'
@@ -55,8 +54,6 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
   const { isLedger } = useIsLedger()
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
-
-  const priorityFees = usePriorityFees()
 
   const bonkRewardsAvailable = useBorrowBonkRewardsAvailability()
 
@@ -121,60 +118,37 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
 
   const borrow = async (nft: TableNftData) => {
     const txnParams = createBorrowParams([nft], rawOffers)
-    const txnParamsWithPriorityFees = txnParams.map((innerArray) =>
-      innerArray.map((params) => ({ ...params, priorityFees })),
-    )
 
-    const showCongratsMessage = SPECIAL_COLLECTIONS_MARKETS.includes(nft.nft.loan.marketPubkey)
-
-    const txnResults = await executeBorrow({
-      walletAndConnection: {
-        wallet,
-        connection,
-      },
-      txnParams: txnParamsWithPriorityFees,
+    await executeBorrow({
+      wallet,
+      connection,
+      txnParams,
       addLoansOptimistic,
       updateOffersOptimistic,
-      onSuccessAll: () => onBorrowSuccess(1, showCongratsMessage),
+      onBorrowSuccess,
+      onSuccessAll: () => {
+        goToLoansPage()
+      },
       isLedger,
     })
-
-    if (txnResults?.length) {
-      goToLoansPage()
-    }
   }
 
   const borrowAll = async () => {
     const selectedNfts = tableNftsData.filter(({ mint }) => !!offerByMint[mint])
     const txnParams = createBorrowParams(selectedNfts, rawOffers)
 
-    const txnParamsWithPriorityFees = txnParams.map((innerArray) =>
-      innerArray.map((params) => ({ ...params, priorityFees })),
-    )
-
-    const showCongratsMessage = !!txnParams
-      .flat()
-      .find(({ offer }) => SPECIAL_COLLECTIONS_MARKETS.includes(offer.hadoMarket))
-
-    const txnsResults = await executeBorrow({
-      walletAndConnection: {
-        wallet,
-        connection,
-      },
-      txnParams: txnParamsWithPriorityFees,
+    await executeBorrow({
+      wallet,
+      connection,
+      txnParams,
       addLoansOptimistic,
       updateOffersOptimistic,
-      onSuccessAll: () =>
-        onBorrowSuccess(
-          sumBy(txnParams, (param) => param.length),
-          showCongratsMessage,
-        ),
+      onBorrowSuccess,
+      onSuccessAll: () => {
+        goToLoansPage()
+      },
       isLedger,
     })
-
-    if (txnsResults?.length) {
-      goToLoansPage()
-    }
   }
 
   const onNftSelect = useCallback(

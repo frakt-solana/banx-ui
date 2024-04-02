@@ -1,42 +1,46 @@
 import { web3 } from '@project-serum/anchor'
 import { subscribeBanxAdventure } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
-import { MakeActionFn } from 'solana-transactions-executor'
+import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
+import { createInstructionsWithPriorityFees } from '../helpers'
+
 export type SubscribeBanxAdventureParams = {
-  userPubkey: web3.PublicKey
   weeks: number[]
-  priorityFees: number
 }
 
-export type SubscribeBanxAdventureAction = MakeActionFn<SubscribeBanxAdventureParams, null>
+export type SubscribeBanxAdventureAction = CreateTransactionDataFn<
+  SubscribeBanxAdventureParams,
+  null
+>
 
 export const subscribeBanxAdventureAction: SubscribeBanxAdventureAction = async (
   ixnParams,
-  { connection },
+  { wallet, connection },
 ) => {
-  const params = {
-    connection: connection,
+  const { instructions, signers } = await subscribeBanxAdventure({
+    connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     addComputeUnits: true,
-    priorityFees: ixnParams.priorityFees,
     args: {
       weeks: ixnParams.weeks,
     },
     accounts: {
-      userPubkey: ixnParams.userPubkey,
+      userPubkey: wallet.publicKey,
     },
     sendTxn: sendTxnPlaceHolder,
-  }
+  })
 
-  const { instructions, signers } = await subscribeBanxAdventure(params)
+  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
+    instructions,
+    connection,
+  )
 
   return {
-    instructions: instructions,
+    instructions: instructionsWithPriorityFees,
     signers: signers,
-    additionalResult: null,
     lookupTables: [],
   }
 }

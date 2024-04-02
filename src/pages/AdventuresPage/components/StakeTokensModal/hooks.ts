@@ -5,22 +5,16 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Tab, useTabs } from '@banx/components/Tabs'
 
-import { SEND_TXN_MAX_RETRIES } from '@banx/constants'
+import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import {
   calcPartnerPoints,
   useBanxStakeInfo,
   useBanxStakeSettings,
 } from '@banx/pages/AdventuresPage'
 import { useModal } from '@banx/store'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxTokenAction, unstakeBanxTokenAction } from '@banx/transactions/staking'
-import {
-  ZERO_BN,
-  bnToHuman,
-  enqueueSnackbar,
-  limitDecimalPlaces,
-  usePriorityFees,
-} from '@banx/utils'
+import { ZERO_BN, bnToHuman, enqueueTransactionsSent, limitDecimalPlaces } from '@banx/utils'
 
 import { calcIdleBalance, calcPlayerPoints, formatBanxTokensStrToBN } from './helpers'
 
@@ -98,32 +92,22 @@ export const useStakeTokensModal = () => {
 export const useTokenTransactions = (inputTokenAmount: string) => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const priorityFees = usePriorityFees()
   const { close } = useModal()
 
   const onStake = () => {
-    const txnParam = { tokensToStake: formatBanxTokensStrToBN(inputTokenAmount), priorityFees }
+    const txnParam = { tokensToStake: formatBanxTokensStrToBN(inputTokenAmount) }
 
     new TxnExecutor(
       stakeBanxTokenAction,
-      { wallet, connection },
-      {
-        maxRetries: SEND_TXN_MAX_RETRIES,
-      },
+      { wallet: createWalletInstance(wallet), connection },
+      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
-      .addTxnParam(txnParam)
-      .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
-        enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
-          solanaExplorerPath: `tx/${txnHash}`,
-        })
-      })
-      .on('pfSuccessAll', () => {
+      .addTransactionParams([txnParam])
+      .on('sentAll', () => {
+        enqueueTransactionsSent()
         close()
       })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: txnParam,
           walletPubkey: wallet?.publicKey?.toBase58(),
@@ -134,28 +118,19 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
   }
 
   const onUnstake = () => {
-    const txnParam = { tokensToUnstake: formatBanxTokensStrToBN(inputTokenAmount), priorityFees }
+    const txnParam = { tokensToUnstake: formatBanxTokensStrToBN(inputTokenAmount) }
 
     new TxnExecutor(
       unstakeBanxTokenAction,
-      { wallet, connection },
-      {
-        maxRetries: SEND_TXN_MAX_RETRIES,
-      },
+      { wallet: createWalletInstance(wallet), connection },
+      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
-      .addTxnParam(txnParam)
-      .on('pfSuccessEach', (results) => {
-        const { txnHash } = results[0]
-        enqueueSnackbar({
-          message: 'Transaction sent',
-          type: 'info',
-          solanaExplorerPath: `tx/${txnHash}`,
-        })
-      })
-      .on('pfSuccessAll', () => {
+      .addTransactionParams([txnParam])
+      .on('sentAll', () => {
+        enqueueTransactionsSent()
         close()
       })
-      .on('pfError', (error) => {
+      .on('error', (error) => {
         defaultTxnErrorHandler(error, {
           additionalData: txnParam,
           walletPubkey: wallet?.publicKey?.toBase58(),
