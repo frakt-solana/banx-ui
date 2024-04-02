@@ -2,8 +2,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
-import { TXN_EXECUTOR_OPTIONS } from '@banx/constants'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { TXN_EXECUTOR_OPTIONS, defaultTxnErrorHandler } from '@banx/transactions'
 import {
   makeCreateBondingOfferAction,
   makeRemoveOfferAction,

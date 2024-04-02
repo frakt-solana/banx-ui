@@ -12,7 +12,7 @@ import { Button } from '@banx/components/Buttons'
 import { StatInfo, StatsInfoProps, VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { BanxInfoBN, BanxStakingSettingsBN } from '@banx/api/staking'
-import { BANX_TOKEN_DECIMALS, TXN_EXECUTOR_OPTIONS } from '@banx/constants'
+import { BANX_TOKEN_DECIMALS } from '@banx/constants'
 import { BanxToken, Gamepad, MoneyBill } from '@banx/icons'
 import {
   banxTokenBNToFixed,
@@ -23,7 +23,7 @@ import {
 } from '@banx/pages/AdventuresPage'
 import { StakeNftsModal, StakeTokensModal } from '@banx/pages/AdventuresPage/components'
 import { useModal } from '@banx/store'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { TXN_EXECUTOR_OPTIONS, defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxClaimAction } from '@banx/transactions/staking/stakeBanxClaimAction'
 import {
   ZERO_BN,

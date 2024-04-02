@@ -10,9 +10,9 @@ import { TxnExecutor, WalletAndConnection } from 'solana-transactions-executor'
 import { BorrowNft, Offer } from '@banx/api/core'
 import bonkTokenImg from '@banx/assets/BonkToken.png'
 import magicEdenLogoImg from '@banx/assets/MagicEdenLogo.png'
-import { BONDS, TXN_EXECUTOR_OPTIONS } from '@banx/constants'
+import { BONDS } from '@banx/constants'
 import { LoansOptimisticStore, OffersOptimisticStore } from '@banx/store'
-import { BorrowType, defaultTxnErrorHandler } from '@banx/transactions'
+import { BorrowType, TXN_EXECUTOR_OPTIONS, defaultTxnErrorHandler } from '@banx/transactions'
 import {
   BORROW_NFT_PER_TXN,
   MakeBorrowActionParams,

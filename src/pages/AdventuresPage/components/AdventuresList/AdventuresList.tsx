@@ -11,9 +11,8 @@ import {
   BanxInfoBN,
   BanxStakeBN,
 } from '@banx/api/staking'
-import { TXN_EXECUTOR_OPTIONS } from '@banx/constants'
 import { checkIsSubscribed, getAdventureStatus, isAdventureEnded } from '@banx/pages/AdventuresPage'
-import { defaultTxnErrorHandler } from '@banx/transactions'
+import { TXN_EXECUTOR_OPTIONS, defaultTxnErrorHandler } from '@banx/transactions'
 import { subscribeBanxAdventureAction } from '@banx/transactions/staking'
 import { enqueueSnackbar, usePriorityFees } from '@banx/utils'
 

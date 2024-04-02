@@ -3,10 +3,9 @@ import { chunk, groupBy } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
-import { TXN_EXECUTOR_OPTIONS } from '@banx/constants'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
 import { useIsLedger, useLoansOptimistic } from '@banx/store'
-import { BorrowType, defaultTxnErrorHandler } from '@banx/transactions'
+import { BorrowType, TXN_EXECUTOR_OPTIONS, defaultTxnErrorHandler } from '@banx/transactions'
 import {
   REPAY_NFT_PER_TXN,
   getLoanBorrowType,

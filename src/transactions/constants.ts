@@ -1,3 +1,5 @@
+import { web3 } from 'fbonds-core'
+
 import { TxnErrorDefinition, TxnErrorHumanName } from './types'
 
 export const TXN_ERROR_DEFINITIONS: Array<TxnErrorDefinition> = [
@@ -22,4 +24,16 @@ export enum BorrowType {
   StakedBanx = 'StakedBanx',
   CNft = 'CNft',
   Default = 'Default',
+}
+
+export const TXN_EXECUTOR_OPTIONS: {
+  skipPreflight: boolean
+  maxRetries: number
+  commitment: web3.Commitment
+  preflightCommitment: web3.Commitment
+} = {
+  skipPreflight: true,
+  maxRetries: 1,
+  commitment: 'confirmed',
+  preflightCommitment: 'confirmed',
 }

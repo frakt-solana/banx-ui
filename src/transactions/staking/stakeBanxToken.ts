@@ -28,6 +28,7 @@ export const stakeBanxTokenAction: StakeBanxTokenAction = async (
       tokenMint: BANX_TOKEN_MINT,
     },
     args: {
+      // tokensToStake: new BN('500000000000000'),
       tokensToStake,
     },
     priorityFees,
