@@ -213,7 +213,13 @@ export const AdventureEndedRewardsResult: FC<AdventureEndedRewardsResultProps> =
   const isSubscribed = !!banxAdventureSubscription && checkIsSubscribed(banxAdventureSubscription)
 
   const rewards: string = useMemo(() => {
-    if (!banxAdventureSubscription || !isSubscribed || !connected) return '0'
+    if (!connected) {
+      return banxTokenBNToFixed(banxAdventure.amountOfTokensHarvested, 0)
+    }
+
+    if (!banxAdventureSubscription || !isSubscribed) {
+      return '0'
+    }
 
     return banxTokenBNToFixed(
       calculateAdventureRewards([
@@ -223,16 +229,12 @@ export const AdventureEndedRewardsResult: FC<AdventureEndedRewardsResultProps> =
     )
   }, [banxAdventure, banxAdventureSubscription, isSubscribed, connected])
 
-  const amountOfTokensHarvested = banxTokenBNToFixed(banxAdventure.amountOfTokensHarvested, 0)
   const title = connected ? 'You received' : 'Total distributed'
-  const value = connected
-    ? formatNumbersWithCommas(rewards)
-    : formatNumbersWithCommas(amountOfTokensHarvested)
 
   return (
     <div className={styles.endedRewards}>
       <div className={styles.endedRewardsValue}>
-        <p>{value}</p>
+        <p>{formatNumbersWithCommas(rewards)}</p>
         <BanxLogo className={styles.endedRewardsBanxLogo} />
       </div>
       <p className={styles.endedRewardsText}>{title}</p>
