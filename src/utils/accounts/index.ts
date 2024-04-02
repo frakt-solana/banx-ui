@@ -57,7 +57,7 @@ export const calculatePriorityFees = async (
 
     const { result } = response.data
 
-    return Math.trunc(result.priorityFeeLevels.high)
+    return Math.trunc(result.priorityFeeLevels.veryHigh)
   } catch (error) {
     console.error('Error calculating priority fees:', error)
     throw error

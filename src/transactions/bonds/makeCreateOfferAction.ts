@@ -8,6 +8,8 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
+import { createInstructionsWithPriorityFees } from '../helpers'
+
 export type MakeCreateOfferActionParams = {
   marketPubkey: string
   loanValue: number
@@ -39,8 +41,13 @@ export const makeCreateOfferAction: MakeCreateOfferAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  return {
+  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
     instructions,
+    connection,
+  )
+
+  return {
+    instructions: instructionsWithPriorityFees,
     signers,
     result: optimisticResult,
     lookupTables: [],

@@ -10,6 +10,8 @@ import { Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
+import { createInstructionsWithPriorityFees } from '../helpers'
+
 export type MakeUpdateOfferActionParams = {
   offerPubkey: string
   loanValue: number
@@ -45,8 +47,13 @@ export const makeUpdateOfferAction: MakeUpdateOfferAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  return {
+  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
     instructions,
+    connection,
+  )
+
+  return {
+    instructions: instructionsWithPriorityFees,
     signers,
     result: optimisticResult,
     lookupTables: [],
