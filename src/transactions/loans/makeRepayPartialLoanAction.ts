@@ -5,12 +5,12 @@ import {
   BondAndTransactionOptimistic,
   repayPartialPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
+import { BondOfferV2, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { calculatePriorityFees, sendTxnPlaceHolder } from '@banx/utils'
+import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type MakeRepayPartialLoanActionParams = {
   loan: Loan
@@ -33,7 +33,7 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
   walletAndConnection,
 ) => {
   const { connection, wallet } = walletAndConnection
-  const priorityFees = await calculatePriorityFees(connection)
+  // const priorityFees = await calculatePriorityFees(connection)
 
   const { loan, fractionToRepay } = ixnParams
 
@@ -48,6 +48,7 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
         bondTradeTransaction,
         oldBondOffer: getMockBondOffer(),
       } as OptimisticResult,
+      lendingTokenType: LendingTokenType.NativeSOL,
     },
     accounts: {
       oldBondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
@@ -59,7 +60,7 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
     },
     connection,
     sendTxn: sendTxnPlaceHolder,
-    priorityFees,
+    priorityFees: 0,
   })
 
   const optimisticResult = optimisticResults.map((optimistic) => ({

@@ -6,7 +6,7 @@ import {
   borrowStakedBanxPerpetual,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { calculatePriorityFees, getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
-import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
+import { BondOfferV2, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { first, uniq } from 'lodash'
 import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transactions-executor'
 
@@ -115,6 +115,7 @@ const getIxnsAndSignersByBorrowType = async ({
             bondOffer: offer as BondOfferV2,
           },
         })),
+        lendingTokenType: LendingTokenType.NativeSOL,
         optimizeIntoReserves: optimizeIntoReserves,
         aprRate,
       },
@@ -157,6 +158,7 @@ const getIxnsAndSignersByBorrowType = async ({
           bondOffer: params.offer as BondOfferV2,
         },
         optimizeIntoReserves: optimizeIntoReserves,
+        lendingTokenType: LendingTokenType.NativeSOL,
         aprRate,
       },
       connection,
@@ -194,6 +196,7 @@ const getIxnsAndSignersByBorrowType = async ({
           bondOffer: offer as BondOfferV2,
         },
       })),
+      lendingTokenType: LendingTokenType.NativeSOL,
       optimizeIntoReserves: optimizeIntoReserves,
       aprRate,
     },

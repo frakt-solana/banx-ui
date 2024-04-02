@@ -9,13 +9,14 @@ import {
   BondOfferV2,
   BondTradeTransactionV3,
   FraktBond,
+  LendingTokenType,
   PairState,
 } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transactions-executor'
 
 import { Loan, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { calculatePriorityFees, sendTxnPlaceHolder } from '@banx/utils'
+import { sendTxnPlaceHolder } from '@banx/utils'
 
 export interface BorrowRefinanceActionOptimisticResult {
   loan: Loan
@@ -80,7 +81,6 @@ const getIxnsAndSigners = async ({
   walletAndConnection: WalletAndConnection
 }) => {
   const { connection, wallet } = walletAndConnection
-  const priorityFees = await calculatePriorityFees(connection)
 
   const {
     loan: { bondTradeTransaction, fraktBond },
@@ -111,13 +111,13 @@ const getIxnsAndSigners = async ({
     offer.pairState === PairState.PerpetualBondingCurveOnMarket
   ) {
     const { instructions, signers, optimisticResult } = await borrowerRefinanceToSame({
-      args: { solToRefinance, aprRate },
+      args: { solToRefinance, aprRate, lendingTokenType: LendingTokenType.NativeSOL },
       accounts,
       optimistic,
       connection,
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       sendTxn: sendTxnPlaceHolder,
-      priorityFees,
+      priorityFees: 0,
     })
 
     return { instructions, signers, optimisticResult }
@@ -126,6 +126,7 @@ const getIxnsAndSigners = async ({
       args: {
         solToRefinance,
         aprRate,
+        lendingTokenType: LendingTokenType.NativeSOL,
       },
       accounts: {
         ...accounts,
@@ -138,7 +139,7 @@ const getIxnsAndSigners = async ({
       connection,
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       sendTxn: sendTxnPlaceHolder,
-      priorityFees,
+      priorityFees: 0,
     })
 
     return { instructions, signers, optimisticResult }

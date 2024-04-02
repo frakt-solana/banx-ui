@@ -5,28 +5,30 @@ import { stakeBanxToken } from 'fbonds-core/lib/fbond-protocol/functions/banxSta
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
-import { calculatePriorityFees, sendTxnPlaceHolder } from '@banx/utils'
+import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type StakeBanxTokenActionParams = {
-  userPubkey: web3.PublicKey
-  tokensToStake: string
+  tokensToStake: BN
 }
 
 export type StakeBanxTokenAction = CreateTransactionDataFn<StakeBanxTokenActionParams, null>
 
-export const stakeBanxTokenAction: StakeBanxTokenAction = async (ixnParams, { connection }) => {
-  const priorityFees = await calculatePriorityFees(connection)
+export const stakeBanxTokenAction: StakeBanxTokenAction = async (
+  ixnParams,
+  { wallet, connection },
+) => {
+  // const priorityFees = await calculatePriorityFees(connection)
 
   const params = {
     connection: connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-    priorityFees,
+    priorityFees: 0,
     accounts: {
-      userPubkey: ixnParams.userPubkey,
+      userPubkey: wallet.publicKey,
       tokenMint: BANX_TOKEN_MINT,
     },
     args: {
-      tokensToStake: new BN(ixnParams.tokensToStake),
+      tokensToStake: ixnParams.tokensToStake,
     },
     sendTxn: sendTxnPlaceHolder,
   }

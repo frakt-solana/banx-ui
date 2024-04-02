@@ -16,3 +16,28 @@
     }
   }
 }
+
+.leaderboardPlug {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  gap: 16px;
+
+  h4 {
+    font: var(--title-3xl);
+    text-transform: uppercase;
+
+    @media (max-width: 960px) {
+      font: var(--title-xl);
+    }
+  }
+
+  svg {
+    @media (max-width: 960px) {
+      width: 264px;
+      height: 232px;
+    }
+  }
+}

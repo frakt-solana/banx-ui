@@ -3,7 +3,7 @@ import { subscribeBanxAdventure } from 'fbonds-core/lib/fbond-protocol/functions
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
-import { calculatePriorityFees, sendTxnPlaceHolder } from '@banx/utils'
+import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type SubscribeBanxAdventureParams = {
   weeks: number[]
@@ -18,13 +18,13 @@ export const subscribeBanxAdventureAction: SubscribeBanxAdventureAction = async 
   ixnParams,
   { wallet, connection },
 ) => {
-  const priorityFees = await calculatePriorityFees(connection)
+  // const priorityFees = await calculatePriorityFees(connection)
 
   const params = {
     connection: connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     addComputeUnits: true,
-    priorityFees,
+    priorityFees: 0,
     args: {
       weeks: ixnParams.weeks,
     },

@@ -6,12 +6,13 @@ import {
   BondOfferV2,
   BondTradeTransactionV3,
   FraktBond,
+  LendingTokenType,
 } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { calculatePriorityFees, sendTxnPlaceHolder } from '@banx/utils'
+import { sendTxnPlaceHolder } from '@banx/utils'
 
 export interface InstantRefinanceOptimisticResult {
   bondOffer: BondOfferV2
@@ -34,7 +35,7 @@ export const makeInstantRefinanceAction: MakeInstantRefinanceAction = async (
   ixnParams,
   { connection, wallet },
 ) => {
-  const priorityFees = await calculatePriorityFees(connection)
+  // const priorityFees = await calculatePriorityFees(connection)
 
   const { loan, bestOffer } = ixnParams || {}
   const { bondTradeTransaction, fraktBond } = loan
@@ -51,6 +52,9 @@ export const makeInstantRefinanceAction: MakeInstantRefinanceAction = async (
       bondOffer: new web3.PublicKey(bestOffer.publicKey),
       oldBondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
     },
+    args: {
+      lendingTokenType: LendingTokenType.NativeSOL,
+    },
     optimistic: {
       oldBondTradeTransaction: bondTradeTransaction as BondTradeTransactionV3,
       bondOffer: bestOffer as BondOfferV2,
@@ -60,7 +64,7 @@ export const makeInstantRefinanceAction: MakeInstantRefinanceAction = async (
     },
     connection,
     sendTxn: sendTxnPlaceHolder,
-    priorityFees,
+    priorityFees: 0,
   })
 
   return {

@@ -244,6 +244,11 @@
     }
   }
 }
+.subscribeBtnParticipating {
+  path {
+    fill: var(--content-primary);
+  }
+}
 
 .distributed {
   display: flex;
@@ -285,3 +290,47 @@
     }
   }
 }
+
+//? AdventureEndedRewardsResult
+.endedRewards {
+  min-width: 304px;
+}
+
+.endedRewardsValue {
+  display: flex;
+  align-items: center;
+  column-gap: 3px;
+
+  p {
+    font: var(--important-text-xl);
+
+    @media (max-width: 640px) {
+      font: var(--important-text-md);
+    }
+  }
+}
+
+.endedRewardsBanxLogo {
+  width: 16px;
+  height: 16px;
+
+  path {
+    fill: var(--content-primary);
+  }
+
+  @media (max-width: 640px) {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.endedRewardsText {
+  font: var(--title-sm);
+  text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--title-xs);
+  }
+}
+
+//? AdventureEndedRewardsResult

@@ -4,7 +4,7 @@ import { claimStakingRewards } from 'fbonds-core/lib/fbond-protocol/functions/ba
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
-import { calculatePriorityFees, sendTxnPlaceHolder } from '@banx/utils'
+import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type StakeBanxClaimActionParams = {
   weeks: number[]
@@ -20,13 +20,13 @@ export const stakeBanxClaimAction: StakeBanxClaimAction = async (
     throw 'Wallet not connected!'
   }
 
-  const priorityFees = await calculatePriorityFees(connection)
+  // const priorityFees = await calculatePriorityFees(connection)
 
   const params = {
     connection: connection,
     addComputeUnits: true,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-    priorityFees,
+    priorityFees: 0,
     args: {
       weeks: ixnParams.weeks,
     },

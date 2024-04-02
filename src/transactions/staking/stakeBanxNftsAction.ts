@@ -3,7 +3,7 @@ import { stakeBanxNft } from 'fbonds-core/lib/fbond-protocol/functions/banxStaki
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
-import { calculatePriorityFees, sendTxnPlaceHolder } from '@banx/utils'
+import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type StakeBanxNftsTokenActionParams = {
   nftMint: string
@@ -21,13 +21,13 @@ export const stakeBanxNftAction: StakeBanxNftsTokenAction = async (
     throw 'Wallet not connected!'
   }
 
-  const priorityFees = await calculatePriorityFees(connection)
+  // const priorityFees = await calculatePriorityFees(connection)
 
   const params = {
     connection: connection,
     addComputeUnits: true,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-    priorityFees,
+    priorityFees: 0,
     accounts: {
       tokenMint: new web3.PublicKey(ixnParams.nftMint),
       whitelistEntry: ixnParams.whitelistEntry,

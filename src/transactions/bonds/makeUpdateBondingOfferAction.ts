@@ -3,7 +3,7 @@ import {
   BondOfferOptimistic,
   updatePerpetualOfferBonding,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
+import { BondOfferV2, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
@@ -42,6 +42,7 @@ export const makeUpdateBondingOfferAction: MakeUpdateBondingOfferAction = async 
       loanValue,
       delta: deltaValue,
       quantityOfLoans: loansAmount,
+      lendingTokenType: LendingTokenType.NativeSOL,
     },
     sendTxn: sendTxnPlaceHolder,
   })
