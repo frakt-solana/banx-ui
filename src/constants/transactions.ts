@@ -1,8 +1,6 @@
 import { web3 } from 'fbonds-core'
 
-export const SEND_TXN_MAX_RETRIES = 5
-
-export const TXN_EXECUTOR_OPTIONS: {
+export const TXN_EXECUTOR_CONFIRM_OPTIONS: {
   skipPreflight: boolean
   maxRetries: number
   commitment: web3.Commitment

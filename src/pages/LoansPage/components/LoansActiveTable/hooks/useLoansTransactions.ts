@@ -3,7 +3,7 @@ import { chunk, groupBy, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
-import { TXN_EXECUTOR_OPTIONS } from '@banx/constants'
+import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
 import { useIsLedger, useLoansOptimistic } from '@banx/store'
 import { BorrowType, createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
@@ -42,7 +42,7 @@ export const useLoansTransactions = () => {
         wallet: createWalletInstance(wallet),
         connection,
       },
-      { confirmOptions: TXN_EXECUTOR_OPTIONS },
+      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
       .addTransactionParam(txnParam)
       .on('sentSome', (results) => {
@@ -93,7 +93,7 @@ export const useLoansTransactions = () => {
         wallet: createWalletInstance(wallet),
         connection,
       },
-      { confirmOptions: TXN_EXECUTOR_OPTIONS },
+      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
       .addTransactionParam(txnParam)
       .on('sentSome', (results) => {
@@ -146,7 +146,7 @@ export const useLoansTransactions = () => {
     await new TxnExecutor(
       makeRepayLoansAction,
       { wallet: createWalletInstance(wallet), connection },
-      { signAllChunkSize: isLedger ? 1 : 40, confirmOptions: TXN_EXECUTOR_OPTIONS },
+      { signAllChunkSize: isLedger ? 1 : 40, confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
       .addTransactionParams(txnParams)
       .on('sentAll', () => {
@@ -198,7 +198,7 @@ export const useLoansTransactions = () => {
     await new TxnExecutor(
       makeRepayPartialLoanAction,
       { wallet: createWalletInstance(wallet), connection },
-      { signAllChunkSize: isLedger ? 5 : 40, confirmOptions: TXN_EXECUTOR_OPTIONS },
+      { signAllChunkSize: isLedger ? 5 : 40, confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
       .addTransactionParams(txnParams)
       .on('sentAll', () => {

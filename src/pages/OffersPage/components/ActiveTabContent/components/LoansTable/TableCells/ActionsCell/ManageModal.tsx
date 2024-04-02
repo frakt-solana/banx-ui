@@ -10,7 +10,7 @@ import { Loader } from '@banx/components/Loader'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan } from '@banx/api/core'
-import { TXN_EXECUTOR_OPTIONS } from '@banx/constants'
+import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useMarketOffers } from '@banx/pages/LendPage'
 import { calculateClaimValue, useLenderLoans } from '@banx/pages/OffersPage'
 import { useModal } from '@banx/store'
@@ -123,7 +123,7 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
     new TxnExecutor(
       makeTerminateAction,
       { wallet: createWalletInstance(wallet), connection },
-      { confirmOptions: TXN_EXECUTOR_OPTIONS },
+      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
       .addTransactionParam({ loan })
       .on('sentSome', (results) => {
@@ -175,7 +175,7 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
         wallet: createWalletInstance(wallet),
         connection,
       },
-      { confirmOptions: TXN_EXECUTOR_OPTIONS },
+      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
       .addTransactionParam({ loan, bestOffer })
       .on('sentSome', (results) => {
