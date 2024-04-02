@@ -8,7 +8,7 @@ import { Button } from '@banx/components/Buttons'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Offer, UserOffer } from '@banx/api/core'
-import { SEND_TXN_MAX_RETRIES } from '@banx/constants'
+import { TXN_EXECUTOR_OPTIONS } from '@banx/constants'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimBondOfferInterestAction } from '@banx/transactions/bonds'
 import { enqueueSnackbar, formatDecimal } from '@banx/utils'
@@ -37,7 +37,7 @@ const Summary: FC<SummaryProps> = ({ /*updateOrAddOffer */ offers }) => {
     new TxnExecutor(
       makeClaimBondOfferInterestAction,
       { wallet, connection },
-      { maxRetries: SEND_TXN_MAX_RETRIES },
+      { ...TXN_EXECUTOR_OPTIONS },
     )
       .addTxnParams(txnParams)
       // .on('pfSuccessEach', (results) => {

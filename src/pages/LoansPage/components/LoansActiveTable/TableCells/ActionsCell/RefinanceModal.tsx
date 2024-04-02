@@ -12,7 +12,7 @@ import { createPercentValueJSX, createSolValueJSX } from '@banx/components/Table
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan } from '@banx/api/core'
-import { BONDS, SEND_TXN_MAX_RETRIES } from '@banx/constants'
+import { BONDS, TXN_EXECUTOR_OPTIONS } from '@banx/constants'
 import { useMarketOffers } from '@banx/pages/LendPage'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
 import { useModal } from '@banx/store'
@@ -119,11 +119,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
 
     if (!suitableOffer) return
 
-    new TxnExecutor(
-      makeBorrowRefinanceAction,
-      { connection, wallet },
-      { maxRetries: SEND_TXN_MAX_RETRIES },
-    )
+    new TxnExecutor(makeBorrowRefinanceAction, { connection, wallet }, { ...TXN_EXECUTOR_OPTIONS })
       .addTxnParam({
         loan,
         offer: suitableOffer,

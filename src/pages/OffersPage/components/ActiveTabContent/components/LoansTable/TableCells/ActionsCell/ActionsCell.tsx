@@ -8,7 +8,7 @@ import { Button } from '@banx/components/Buttons'
 import { TensorLink } from '@banx/components/SolanaLinks'
 
 import { Loan } from '@banx/api/core'
-import { SEND_TXN_MAX_RETRIES } from '@banx/constants'
+import { TXN_EXECUTOR_OPTIONS } from '@banx/constants'
 // import { useHiddenNftsMints } from '@banx/pages/OffersPage'
 import { useModal } from '@banx/store'
 import { defaultTxnErrorHandler } from '@banx/transactions'
@@ -41,7 +41,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
 
   const onClaim = () => {
     trackPageEvent('myoffers', 'activetab-claim')
-    new TxnExecutor(makeClaimAction, { wallet, connection }, { maxRetries: SEND_TXN_MAX_RETRIES })
+    new TxnExecutor(makeClaimAction, { wallet, connection }, { ...TXN_EXECUTOR_OPTIONS })
       .addTxnParam({ loan, priorityFees })
       // .on('pfSuccessEach', (results) => {
       //   hideLoans(loan.nft.mint)

@@ -5,7 +5,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Tab, useTabs } from '@banx/components/Tabs'
 
-import { SEND_TXN_MAX_RETRIES } from '@banx/constants'
+import { TXN_EXECUTOR_OPTIONS } from '@banx/constants'
 import {
   calcPartnerPoints,
   useBanxStakeInfo,
@@ -108,7 +108,7 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
       stakeBanxTokenAction,
       { wallet, connection },
       {
-        maxRetries: SEND_TXN_MAX_RETRIES,
+        ...TXN_EXECUTOR_OPTIONS,
       },
     )
       .addTxnParam(txnParam)
@@ -140,7 +140,7 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
       unstakeBanxTokenAction,
       { wallet, connection },
       {
-        maxRetries: SEND_TXN_MAX_RETRIES,
+        ...TXN_EXECUTOR_OPTIONS,
       },
     )
       .addTxnParam(txnParam)

@@ -2,7 +2,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
-import { SEND_TXN_MAX_RETRIES } from '@banx/constants'
+import { TXN_EXECUTOR_OPTIONS } from '@banx/constants'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import {
   makeCreateBondingOfferAction,
@@ -40,7 +40,7 @@ export const useOfferTransactions = ({
       makeCreateBondingOfferAction,
       { wallet, connection },
       {
-        maxRetries: SEND_TXN_MAX_RETRIES,
+        ...TXN_EXECUTOR_OPTIONS,
       },
     )
       .addTxnParam(txnParam)
@@ -84,7 +84,7 @@ export const useOfferTransactions = ({
       makeUpdateBondingOfferAction,
       { wallet, connection },
       {
-        maxRetries: SEND_TXN_MAX_RETRIES,
+        ...TXN_EXECUTOR_OPTIONS,
       },
     )
       .addTxnParam(txnParam)
@@ -124,7 +124,7 @@ export const useOfferTransactions = ({
       makeRemoveOfferAction,
       { wallet, connection },
       {
-        maxRetries: SEND_TXN_MAX_RETRIES,
+        ...TXN_EXECUTOR_OPTIONS,
       },
     )
       .addTxnParam({ optimisticOffer })
