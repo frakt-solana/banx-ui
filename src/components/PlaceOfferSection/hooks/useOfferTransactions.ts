@@ -3,7 +3,6 @@ import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
-import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
   makeCreateBondingOfferAction,
@@ -45,14 +44,10 @@ export const useOfferTransactions = ({
 
     const txnParam = { marketPubkey, loansAmount, loanValue, deltaValue }
 
-    await new TxnExecutor(
-      makeCreateBondingOfferAction,
-      {
-        wallet: createWalletInstance(wallet),
-        connection,
-      },
-      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
-    )
+    await new TxnExecutor(makeCreateBondingOfferAction, {
+      wallet: createWalletInstance(wallet),
+      connection,
+    })
       .addTransactionParam(txnParam)
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -98,14 +93,10 @@ export const useOfferTransactions = ({
 
     const txnParam = { loanValue, optimisticOffer, loansAmount, deltaValue }
 
-    await new TxnExecutor(
-      makeUpdateBondingOfferAction,
-      {
-        wallet: createWalletInstance(wallet),
-        connection,
-      },
-      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
-    )
+    await new TxnExecutor(makeUpdateBondingOfferAction, {
+      wallet: createWalletInstance(wallet),
+      connection,
+    })
       .addTransactionParam(txnParam)
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -148,11 +139,7 @@ export const useOfferTransactions = ({
 
     const loadingSnackbarId = uniqueId()
 
-    new TxnExecutor(
-      makeRemoveOfferAction,
-      { wallet: createWalletInstance(wallet), connection },
-      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
-    )
+    new TxnExecutor(makeRemoveOfferAction, { wallet: createWalletInstance(wallet), connection })
       .addTransactionParam({ optimisticOffer })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
