@@ -12,7 +12,6 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
 import bonkTokenImg from '@banx/assets/BonkToken.png'
-import magicEdenLogoImg from '@banx/assets/MagicEdenLogo.png'
 import { BONDS, SPECIAL_COLLECTIONS_MARKETS } from '@banx/constants'
 import { LoansOptimisticStore, OffersOptimisticStore } from '@banx/store'
 import { BorrowType, createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
@@ -321,16 +320,5 @@ export const showBonkRewardsSnack = () => {
     className: styles.bonkRewardsSnack,
     message: 'You got a 50% $BONK cashback claimable on the Rewards page!',
     icon: <img src={bonkTokenImg} alt="Bonk token" className={styles.bonkRewardsSnackIcon} />,
-  })
-}
-
-export const showMagicEdenRewardsSnack = () => {
-  enqueueSnackbar({
-    className: styles.magicEdenRewardsSnack,
-    closeIconClassName: styles.magicEdenCloseIcon,
-    message: 'You just got 100% cashback for using Magic wallet! Check out Rewards page!',
-    icon: (
-      <img src={magicEdenLogoImg} alt="Magic Eden" className={styles.magicEdenRewardsSnackIcon} />
-    ),
   })
 }
