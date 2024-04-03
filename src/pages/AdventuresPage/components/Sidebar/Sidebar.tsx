@@ -124,7 +124,6 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
       .addTransactionParam(params)
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
-        close()
       })
       .on('error', (error) => {
         defaultTxnErrorHandler(error, {
