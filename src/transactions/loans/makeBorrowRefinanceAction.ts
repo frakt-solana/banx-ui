@@ -18,7 +18,7 @@ import { Loan, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
-import { createInstructionsWithPriorityFees } from '../helpers'
+import { createPriorityFeesInstruction } from '../helpers'
 
 export interface BorrowRefinanceActionOptimisticResult {
   loan: Loan
@@ -63,13 +63,13 @@ export const makeBorrowRefinanceAction: MakeBorrowRefinanceAction = async (
     nft: loan.nft,
   }
 
-  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
+  const priorityFeeInstruction = await createPriorityFeesInstruction(
     instructions,
     walletAndConnection.connection,
   )
 
   return {
-    instructions: instructionsWithPriorityFees,
+    instructions: [...instructions, priorityFeeInstruction],
     signers,
     result: {
       loan: optimisticLoan,

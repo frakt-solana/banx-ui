@@ -18,7 +18,7 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { BorrowType } from '../constants'
 import { fetchRuleset } from '../functions'
-import { createInstructionsWithPriorityFees } from '../helpers'
+import { createPriorityFeesInstruction } from '../helpers'
 
 export type MakeRepayLoansActionParams = {
   loans: Loan[]
@@ -62,8 +62,13 @@ export const makeRepayLoansAction: MakeRepayLoansAction = async (
     nft: loans[idx].nft,
   }))
 
-  return {
+  const priorityFeeInstruction = await createPriorityFeesInstruction(
     instructions,
+    walletAndConnection.connection,
+  )
+
+  return {
+    instructions: [...instructions, priorityFeeInstruction],
     signers,
     lookupTables,
     result: optimisticLoans,
@@ -119,13 +124,8 @@ const getIxnsAndSignersByBorrowType = async ({
       sendTxn: sendTxnPlaceHolder,
     })
 
-    const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
-      instructions,
-      connection,
-    )
-
     return {
-      instructions: instructionsWithPriorityFees,
+      instructions,
       signers,
       optimisticResults,
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
@@ -167,13 +167,8 @@ const getIxnsAndSignersByBorrowType = async ({
       sendTxn: sendTxnPlaceHolder,
     })
 
-    const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
-      instructions,
-      connection,
-    )
-
     return {
-      instructions: instructionsWithPriorityFees,
+      instructions,
       signers,
       optimisticResults,
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
@@ -216,13 +211,8 @@ const getIxnsAndSignersByBorrowType = async ({
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
-    instructions,
-    connection,
-  )
-
   return {
-    instructions: instructionsWithPriorityFees,
+    instructions,
     signers,
     optimisticResults,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],

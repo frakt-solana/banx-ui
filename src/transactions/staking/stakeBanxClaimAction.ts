@@ -6,7 +6,7 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
-import { createInstructionsWithPriorityFees } from '../helpers'
+import { createPriorityFeesInstruction } from '../helpers'
 
 export type StakeBanxClaimActionParams = {
   weeks: number[]
@@ -32,13 +32,10 @@ export const stakeBanxClaimAction: StakeBanxClaimAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
-    instructions,
-    connection,
-  )
+  const priorityFeeInstruction = await createPriorityFeesInstruction(instructions, connection)
 
   return {
-    instructions: instructionsWithPriorityFees,
+    instructions: [...instructions, priorityFeeInstruction],
     signers,
     lookupTables: [],
   }

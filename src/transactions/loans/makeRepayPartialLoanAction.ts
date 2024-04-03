@@ -12,7 +12,7 @@ import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
-import { createInstructionsWithPriorityFees } from '../helpers'
+import { createPriorityFeesInstruction } from '../helpers'
 
 export type MakeRepayPartialLoanActionParams = {
   loan: Loan
@@ -70,13 +70,10 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
     nft,
   }))[0]
 
-  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
-    instructions,
-    connection,
-  )
+  const priorityFeeInstruction = await createPriorityFeesInstruction(instructions, connection)
 
   return {
-    instructions: instructionsWithPriorityFees,
+    instructions: [...instructions, priorityFeeInstruction],
     signers,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
     result: optimisticResult,
