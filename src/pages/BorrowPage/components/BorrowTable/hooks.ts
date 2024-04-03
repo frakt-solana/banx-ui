@@ -13,7 +13,6 @@ import {
 } from '@banx/components/modals'
 
 import { BorrowNft, Offer } from '@banx/api/core'
-import { MAGIC_EDEN_WALLET_NAME } from '@banx/constants'
 import { useBorrowBonkRewardsAvailability } from '@banx/hooks'
 import { PATHS } from '@banx/router'
 import {
@@ -35,7 +34,6 @@ import {
   createTableNftData,
   executeBorrow,
   showBonkRewardsSnack,
-  showMagicEdenRewardsSnack,
 } from './helpers'
 import { SortField, TableNftData } from './types'
 
@@ -94,11 +92,7 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
   }
 
   const onBorrowSuccess = (loansAmount = 1, showCongrats = false) => {
-    //? Show ME snack if wallet is ME
-    if (wallet.wallet?.adapter.name === MAGIC_EDEN_WALLET_NAME) {
-      showMagicEdenRewardsSnack()
-      //? Show bonk snack if bonkRewardsAvailable and wallet isnt ME
-    } else if (bonkRewardsAvailable) {
+    if (bonkRewardsAvailable) {
       showBonkRewardsSnack()
     }
 

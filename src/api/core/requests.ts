@@ -113,7 +113,7 @@ export const fetchWalletLoansAndOffers: FetchWalletLoansAndOffers = async ({
   })
 
   const { data } = await axios.get<WalletLoansAndOffersResponse>(
-    `${BACKEND_BASE_URL}/loans/v2/${walletPublicKey}?${queryParams.toString()}`,
+    `${BACKEND_BASE_URL}/loans/borrower/${walletPublicKey}?${queryParams.toString()}`,
   )
 
   try {
@@ -156,7 +156,7 @@ export const fetchLenderLoansByCertainOffer: FetchLenderLoansByCertainOffer = as
   })
 
   const { data } = await axios.get<LenderLoansResponse>(
-    `${BACKEND_BASE_URL}/loans/lender-loans/v3/?${queryParams.toString()}`,
+    `${BACKEND_BASE_URL}/loans/lender-chart/?${queryParams.toString()}`,
   )
 
   try {
