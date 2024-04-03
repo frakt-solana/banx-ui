@@ -14,11 +14,11 @@ import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transaction
 
 import { Loan } from '@banx/api/core'
 import { BANX_STAKING, BONDS } from '@banx/constants'
+import { createPriorityFeesInstruction } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { BorrowType } from '../constants'
 import { fetchRuleset } from '../functions'
-import { createPriorityFeesInstruction } from '../helpers'
 
 export type MakeRepayLoansActionParams = {
   loans: Loan[]

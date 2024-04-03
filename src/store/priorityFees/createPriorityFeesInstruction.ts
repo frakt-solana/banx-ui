@@ -2,7 +2,9 @@ import { web3 } from 'fbonds-core'
 import { concat, flatMap, map } from 'lodash'
 
 import { getHeliusPriorityFeeEstimate } from '@banx/api/helius'
-import { DEFAULT_PRIORITY_FEE, usePriorityFeesState } from '@banx/store'
+import { usePriorityFeesState } from '@banx/store'
+
+import { DEFAULT_PRIORITY_FEE } from './constants'
 
 const extractAccountKeysFromInstructions = (instructions: web3.TransactionInstruction[]) => {
   const accountsKeys = flatMap(instructions, (ixn) => map(ixn.keys, (key) => key.pubkey.toBase58()))

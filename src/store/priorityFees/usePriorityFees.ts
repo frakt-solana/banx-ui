@@ -3,8 +3,6 @@ import { create } from 'zustand'
 
 const BANX_PRIORITY_FEES_STATE_LS_KEY = '@banx.priorityFeesState'
 
-export const DEFAULT_PRIORITY_FEE = 300_000 //? Micro lamports
-
 export enum PriorityLevel {
   DEFAULT = 'Default',
   HIGH = 'High',

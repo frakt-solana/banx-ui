@@ -5,9 +5,8 @@ import { unstakeBanxToken } from 'fbonds-core/lib/fbond-protocol/functions/banxS
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
+import { createPriorityFeesInstruction } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
-
-import { createPriorityFeesInstruction } from '../helpers'
 
 export type UnstakeBanxTokenParams = {
   tokensToUnstake: BN

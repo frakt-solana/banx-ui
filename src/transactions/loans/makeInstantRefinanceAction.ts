@@ -12,9 +12,8 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
+import { createPriorityFeesInstruction } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
-
-import { createPriorityFeesInstruction } from '../helpers'
 
 export interface InstantRefinanceOptimisticResult {
   bondOffer: BondOfferV2

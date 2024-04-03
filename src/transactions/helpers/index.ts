@@ -1,4 +1,3 @@
-export * from './createPriorityFeesInstruction'
 export * from './enqueueErrorSnackbar'
 export * from './getTxnErrorDefinition'
 export * from './signAndConfirmTransaction'
