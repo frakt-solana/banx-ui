@@ -7,7 +7,6 @@ import { getDiscordAvatarUrl } from '@banx/utils'
 
 import { convertToSourcesNumber } from './helpers'
 import {
-  BanxNotification,
   BonkWithdrawal,
   BonkWithdrawalSchema,
   DiscordUserInfo,
@@ -46,43 +45,6 @@ export const fetchDiscordUser: FetchDiscordUser = async ({ publicKey }) => {
 type RemoveDiscordUser = (props: { publicKey: web3.PublicKey }) => Promise<void>
 export const removeDiscordUser: RemoveDiscordUser = async ({ publicKey }) => {
   await axios.get(`${BACKEND_BASE_URL}/discord/${publicKey.toBase58()}/delete`)
-}
-
-type GetBanxUserNotifications = (props: {
-  publicKey: web3.PublicKey
-}) => Promise<ReadonlyArray<BanxNotification>>
-export const getBanxUserNotifications: GetBanxUserNotifications = async ({ publicKey }) => {
-  const { data } = await axios.get<{ data: ReadonlyArray<BanxNotification> }>(
-    `${BACKEND_BASE_URL}/history/${publicKey.toBase58()}`,
-  )
-
-  return data?.data ?? []
-}
-
-type MarkBanxNotificationsAsRead = (props: {
-  publicKey: web3.PublicKey
-  notificationIds: string[]
-}) => Promise<void>
-export const markBanxNotificationsAsRead: MarkBanxNotificationsAsRead = async ({
-  publicKey,
-  notificationIds,
-}) => {
-  await axios.post(`${BACKEND_BASE_URL}/history/${publicKey.toBase58()}`, {
-    ids: notificationIds,
-  })
-}
-
-type DeleteBanxNotifications = (props: {
-  publicKey: web3.PublicKey
-  notificationIds: string[]
-}) => Promise<void>
-export const deleteBanxNotifications: DeleteBanxNotifications = async ({
-  publicKey,
-  notificationIds,
-}) => {
-  await axios.post(`${BACKEND_BASE_URL}/history/${publicKey.toBase58()}/delete`, {
-    ids: notificationIds,
-  })
 }
 
 type BanxSignIn = (params: {
