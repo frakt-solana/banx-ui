@@ -7,6 +7,7 @@ import { BondingCurveType } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
+import { createPriorityFeesInstruction } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type MakeCreateBondingOfferActionParams = {
@@ -50,8 +51,10 @@ export const makeCreateBondingOfferAction: MakeCreateBondingOfferAction = async 
     sendTxn: sendTxnPlaceHolder,
   })
 
+  const priorityFeeInstruction = await createPriorityFeesInstruction(instructions, connection)
+
   return {
-    instructions,
+    instructions: [...instructions, priorityFeeInstruction],
     signers,
     result: optimisticResult,
     lookupTables: [],
