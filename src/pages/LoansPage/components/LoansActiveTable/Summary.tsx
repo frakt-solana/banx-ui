@@ -86,7 +86,7 @@ export const Summary: FC<SummaryProps> = ({
           onClick={() => repayUnpaidLoansInterest(loansWithCalculatedUnpaidInterest)}
           disabled={!totalUnpaidAccruedInterest}
         >
-          Pay interest {createSolValueJSX(totalUnpaidAccruedInterest, 1e9, '0◎', formatDecimal)}
+          Pay interest {<DisplayValue value={totalUnpaidAccruedInterest} />}
         </Button> */}
         <Button onClick={repayBulkLoan} disabled={!totalSelectedLoans}>
           <DisplayValue value={totalDebt} />

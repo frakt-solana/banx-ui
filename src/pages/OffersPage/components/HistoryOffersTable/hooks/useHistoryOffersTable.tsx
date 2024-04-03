@@ -1,21 +1,21 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useNavigate } from 'react-router-dom'
 
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue } from '@banx/components/TableComponents'
 
 import { PATHS } from '@banx/router'
 
 import { EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
-import { useBorrowerActivity } from './useBorrowerActivity'
-import { useBorrowerActivityCollectionsList } from './useBorrowerActivityCollectionsList'
+import { useLenderActivity } from './useLenderActivity'
+import { useLenderActivityCollectionsList } from './useLenderActivityCollectionsList'
 
-import styles from '../LoansHistoryTable.module.less'
+import styles from '../HistoryOffersTable.module.less'
 
-export const useHistoryLoansTable = () => {
+export const useHistoryOffersTable = () => {
   const { connected } = useWallet()
   const navigate = useNavigate()
 
-  const { data: collectionsList } = useBorrowerActivityCollectionsList()
+  const { data: collectionsList } = useLenderActivityCollectionsList()
 
   const {
     loans,
@@ -25,7 +25,7 @@ export const useHistoryLoansTable = () => {
     setSelectedCollections,
     fetchNextPage,
     hasNextPage,
-  } = useBorrowerActivity()
+  } = useLenderActivity()
 
   const loadMore = () => {
     if (hasNextPage) {
@@ -40,12 +40,12 @@ export const useHistoryLoansTable = () => {
       valueKey: 'collectionName',
       imageKey: 'collectionImage',
       secondLabel: {
-        key: 'borrowed',
-        format: (value: number) => createSolValueJSX(value, 1e9),
+        key: 'received',
+        format: (value: number) => <DisplayValue value={value} />,
       },
     },
     selectedOptions: selectedCollections,
-    labels: ['Collection', 'Borrowed'],
+    labels: ['Collection', 'Received'],
     onChange: setSelectedCollections,
     className: styles.searchSelect,
   }
@@ -53,20 +53,20 @@ export const useHistoryLoansTable = () => {
   const showEmptyList = (!loans?.length && !isLoading) || !connected
   const showSummary = !!loans.length && !isLoading
 
-  const goToBorrowPage = () => {
-    navigate(PATHS.BORROW)
+  const goToLendPage = () => {
+    navigate(PATHS.LEND)
   }
 
   const emptyListParams = {
     message: connected ? EMPTY_MESSAGE : NOT_CONNECTED_MESSAGE,
-    buttonProps: connected ? { text: 'Borrow', onClick: goToBorrowPage } : undefined,
+    buttonProps: connected ? { text: 'Lend', onClick: goToLendPage } : undefined,
   }
 
   return {
     loans,
     loading: isLoading,
-    showSummary,
     showEmptyList,
+    showSummary,
     emptyListParams,
     sortViewParams: {
       searchSelectParams,

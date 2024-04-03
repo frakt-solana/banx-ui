@@ -5,7 +5,7 @@ import { filter, first, groupBy, includes, map } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue } from '@banx/components/TableComponents'
 import {
   SubscribeNotificationsModal,
   createLoanSubscribeNotificationsContent,
@@ -197,7 +197,7 @@ const useFilteredMarketsAndNFTs = (marketsPreview: MarketPreview[], nfts: Borrow
       valueKey: 'collectionName',
       secondLabel: {
         key: 'offerTvl',
-        format: (value: number) => createSolValueJSX(value, 1e9),
+        format: (value: number) => <DisplayValue value={value} />,
       },
     },
     labels: ['Collection', 'Liquidity'],

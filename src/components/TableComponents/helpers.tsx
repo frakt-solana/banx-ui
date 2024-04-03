@@ -17,23 +17,6 @@ const formatDisplayValue = (
   return initialValue ? `${formattedValue}${unit}` : zeroPlaceholder
 }
 
-export const createSolValueJSX = (
-  value: number = 0,
-  divider: number = 1,
-  zeroPlaceholder: string = '--',
-  formatValueFunction?: (value: number) => string,
-) => {
-  const valueToFormat = value / divider
-
-  const formattedValue = formatValueFunction
-    ? formatValueFunction(valueToFormat)
-    : valueToFormat.toFixed(2)
-
-  const displayValue = formatDisplayValue(value, formattedValue, '◎', zeroPlaceholder)
-
-  return <span className={styles.value}>{displayValue}</span>
-}
-
 export const createPercentValueJSX = (initialValue = 0, zeroPlaceholder = '--') => {
   const formattedValue = initialValue.toFixed(0)
   const displayValue = formatDisplayValue(initialValue, formattedValue, '%', zeroPlaceholder)

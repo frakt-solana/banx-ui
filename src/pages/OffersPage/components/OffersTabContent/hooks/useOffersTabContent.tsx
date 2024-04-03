@@ -5,11 +5,10 @@ import { filter, first, groupBy, includes, map, sumBy } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue } from '@banx/components/TableComponents'
 
 import { PATHS } from '@banx/router'
 import { createGlobalState } from '@banx/store/functions'
-import { formatDecimal } from '@banx/utils'
 
 import { useSortedOffers } from './useSortedOffers'
 import { useUserOffers } from './useUserOffers'
@@ -66,7 +65,7 @@ export const useOffersContent = () => {
       imageKey: 'collectionImage',
       secondLabel: {
         key: 'lent',
-        format: (value: number) => createSolValueJSX(value, 1e9, '0◎', formatDecimal),
+        format: (value: number) => <DisplayValue value={value} />,
       },
     },
     onChange: setSelectedCollections,
