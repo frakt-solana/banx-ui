@@ -21,6 +21,7 @@ import {
   useLoansOptimistic,
   useModal,
   useOffersOptimistic,
+  usePriorityFees,
   useTableView,
 } from '@banx/store'
 import { createGlobalState } from '@banx/store/functions'
@@ -50,6 +51,7 @@ const useCollectionsStore = createGlobalState<string[]>([])
 export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBorrowTableProps) => {
   const wallet = useWallet()
   const { connection } = useConnection()
+  const { priorityLevel } = usePriorityFees()
   const navigate = useNavigate()
   const { isLedger } = useIsLedger()
   const { open, close } = useModal()
@@ -117,7 +119,7 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
   }
 
   const borrow = async (nft: TableNftData) => {
-    const txnParams = createBorrowParams([nft], rawOffers)
+    const txnParams = createBorrowParams([nft], rawOffers, priorityLevel)
 
     await executeBorrow({
       wallet,
@@ -135,7 +137,7 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
 
   const borrowAll = async () => {
     const selectedNfts = tableNftsData.filter(({ mint }) => !!offerByMint[mint])
-    const txnParams = createBorrowParams(selectedNfts, rawOffers)
+    const txnParams = createBorrowParams(selectedNfts, rawOffers, priorityLevel)
 
     await executeBorrow({
       wallet,

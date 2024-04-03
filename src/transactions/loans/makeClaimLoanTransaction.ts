@@ -10,19 +10,20 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { createPriorityFeesInstruction } from '@banx/store'
+import { PriorityLevel, createPriorityFeesInstruction } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { fetchRuleset } from '../functions'
 
 export type MakeClaimActionParams = {
   loan: Loan
+  priorityFeeLevel: PriorityLevel
 }
 
 export type MakeClaimAction = CreateTransactionDataFn<MakeClaimActionParams, Loan>
 
 export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, wallet }) => {
-  const { loan } = ixnParams
+  const { loan, priorityFeeLevel } = ixnParams
   const { bondTradeTransaction, fraktBond } = loan
 
   if (ixnParams.loan.nft.compression) {
@@ -98,7 +99,12 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       fraktBond: optimisticResult.fraktBond,
       bondTradeTransaction: optimisticResult.bondTradeTransaction,
     }
-    const priorityFeeInstruction = await createPriorityFeesInstruction(instructions, connection)
+
+    const priorityFeeInstruction = await createPriorityFeesInstruction(
+      instructions,
+      connection,
+      priorityFeeLevel,
+    )
 
     return {
       instructions: [...instructions, priorityFeeInstruction],

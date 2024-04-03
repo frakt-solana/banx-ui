@@ -15,7 +15,7 @@ import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { useMarketOffers } from '@banx/pages/LendPage'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
-import { useLoansOptimistic, useModal } from '@banx/store'
+import { useLoansOptimistic, useModal, usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeBorrowRefinanceAction } from '@banx/transactions/loans'
 import {
@@ -44,6 +44,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
   const { close } = useModal()
   const wallet = useWallet()
   const { connection } = useConnection()
+  const { priorityLevel } = usePriorityFees()
 
   const { bondTradeTransaction, fraktBond, nft } = loan
 
@@ -128,6 +129,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
         offer: suitableOffer,
         solToRefinance: currentSpotPrice,
         aprRate: newApr,
+        priorityFeeLevel: priorityLevel,
       })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))

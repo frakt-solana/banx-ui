@@ -11,7 +11,7 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import { useIsLedger } from '@banx/store'
+import { useIsLedger, usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimAction, makeTerminateAction } from '@banx/transactions/loans'
 import {
@@ -47,6 +47,7 @@ export const Summary: FC<SummaryProps> = ({
   setSelection,
 }) => {
   const wallet = useWallet()
+  const { priorityLevel } = usePriorityFees()
   const walletPublicKeyString = wallet.publicKey?.toBase58() || ''
   const { clear: clearSelection } = useSelectedLoans()
 
@@ -58,7 +59,7 @@ export const Summary: FC<SummaryProps> = ({
   const terminateLoans = () => {
     const loadingSnackbarId = uniqueId()
 
-    const txnParams = selectedLoans.map((loan) => ({ loan }))
+    const txnParams = selectedLoans.map((loan) => ({ loan, priorityFeeLevel: priorityLevel }))
 
     new TxnExecutor(
       makeTerminateAction,
@@ -100,7 +101,7 @@ export const Summary: FC<SummaryProps> = ({
   const claimLoans = () => {
     const loadingSnackbarId = uniqueId()
 
-    const txnParams = loansToClaim.map((loan) => ({ loan }))
+    const txnParams = loansToClaim.map((loan) => ({ loan, priorityFeeLevel: priorityLevel }))
 
     new TxnExecutor(
       makeClaimAction,

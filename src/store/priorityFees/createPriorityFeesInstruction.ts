@@ -2,7 +2,7 @@ import { web3 } from 'fbonds-core'
 import { concat, flatMap, map } from 'lodash'
 
 import { getHeliusPriorityFeeEstimate } from '@banx/api/helius'
-import { usePriorityFeesState } from '@banx/store'
+import { PriorityLevel } from '@banx/store'
 
 import { DEFAULT_PRIORITY_FEE } from './constants'
 
@@ -16,11 +16,9 @@ const extractAccountKeysFromInstructions = (instructions: web3.TransactionInstru
 export const createPriorityFeesInstruction = async (
   instructions: web3.TransactionInstruction[],
   connection: web3.Connection,
+  priorityLevel: PriorityLevel = PriorityLevel.DEFAULT,
 ) => {
   try {
-    //? Get priorityLevel outside of components
-    const priorityLevel = usePriorityFeesState.getState().priorityLevel
-
     const accountKeys = extractAccountKeysFromInstructions(instructions)
 
     const priorityFee = await getHeliusPriorityFeeEstimate({
