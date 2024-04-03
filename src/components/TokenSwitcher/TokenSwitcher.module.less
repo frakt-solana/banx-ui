@@ -1,0 +1,29 @@
+.tokenSwitcher {
+  background: var(--bg-secondary);
+  border: var(--border-primary);
+  border-radius: 100px;
+
+  display: flex;
+  align-items: center;
+  padding: 2px;
+
+  height: 32px;
+  width: 60px;
+}
+
+.token {
+  border-radius: 100px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 100%;
+  width: 100%;
+
+  &.active {
+    background: var(--accent-primary);
+    pointer-events: none;
+  }
+}

@@ -7,6 +7,7 @@ import TextTransition, { presets } from 'react-text-transition'
 
 import { BanxNotificationsButton } from '@banx/components/BanxNotifications'
 import { Button, WalletConnectButton } from '@banx/components/Buttons'
+import TokenSwitcher from '@banx/components/TokenSwitcher'
 
 import { Cup, Logo, LogoFull } from '@banx/icons'
 import { PATHS } from '@banx/router'
@@ -27,6 +28,7 @@ export const Header = () => {
         <Logo className={styles.logoMobile} />
       </NavLink>
       <div className={styles.widgetContainer}>
+        <TokenSwitcher />
         <RewardsButton />
         <ThemeSwitcher />
         {connected && <BanxNotificationsButton />}
