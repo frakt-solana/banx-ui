@@ -14,7 +14,7 @@ import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transaction
 
 import { Loan } from '@banx/api/core'
 import { BANX_STAKING, BONDS } from '@banx/constants'
-import { createPriorityFeesInstruction } from '@banx/store'
+import { PriorityLevel, createPriorityFeesInstruction } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { BorrowType } from '../constants'
@@ -22,6 +22,7 @@ import { fetchRuleset } from '../functions'
 
 export type MakeRepayLoansActionParams = {
   loans: Loan[]
+  priorityFeeLevel: PriorityLevel
 }
 
 export type MakeRepayActionResult = Loan[]
@@ -41,7 +42,7 @@ export const makeRepayLoansAction: MakeRepayLoansAction = async (
   ixnParams,
   walletAndConnection,
 ) => {
-  const { loans } = ixnParams
+  const { loans, priorityFeeLevel } = ixnParams
   const borrowType = getChunkBorrowType(loans)
 
   if (loans.length > REPAY_NFT_PER_TXN[borrowType]) {
@@ -65,6 +66,7 @@ export const makeRepayLoansAction: MakeRepayLoansAction = async (
   const priorityFeeInstruction = await createPriorityFeesInstruction(
     instructions,
     walletAndConnection.connection,
+    priorityFeeLevel,
   )
 
   return {
