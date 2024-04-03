@@ -3,10 +3,10 @@ import { FC } from 'react'
 import { capitalize } from 'lodash'
 
 import {
+  DisplayValue,
   NftImage,
   PointsBanxBadge,
   createPercentValueJSX,
-  createSolValueJSX,
 } from '@banx/components/TableComponents'
 
 import { LenderActivity } from '@banx/api/activity'
@@ -67,7 +67,11 @@ interface LentCellProps {
 }
 
 export const LentCell: FC<LentCellProps> = ({ loan }) => {
-  return <span className={styles.lentCellTitle}>{createSolValueJSX(loan.lent, 1e9)}</span>
+  return (
+    <span className={styles.lentCellTitle}>
+      <DisplayValue value={loan.lent} />
+    </span>
+  )
 }
 
 interface AprCellProps {

@@ -6,10 +6,10 @@ import { sumBy } from 'lodash'
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
-import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import { calcWeeklyFeeWithRepayFee, calculateLoanRepayValue, formatDecimal } from '@banx/utils'
+import { calcWeeklyFeeWithRepayFee, calculateLoanRepayValue } from '@banx/utils'
 
 import { LoanOptimistic } from '../../loansState'
 import { calcUnpaidAccruedInterest, calcWeightedApr } from './helpers'
@@ -89,7 +89,7 @@ export const Summary: FC<SummaryProps> = ({
           Pay interest {createSolValueJSX(totalUnpaidAccruedInterest, 1e9, '0◎', formatDecimal)}
         </Button> */}
         <Button onClick={repayBulkLoan} disabled={!totalSelectedLoans}>
-          Repay {createSolValueJSX(totalDebt, 1e9, '0◎', formatDecimal)}
+          <DisplayValue value={totalDebt} />
         </Button>
       </div>
     </div>

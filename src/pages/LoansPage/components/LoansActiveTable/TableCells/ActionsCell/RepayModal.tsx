@@ -3,7 +3,7 @@ import { FC, useState } from 'react'
 import { Button } from '@banx/components/Buttons'
 import { Slider } from '@banx/components/Slider'
 import { StatInfo } from '@banx/components/StatInfo'
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue } from '@banx/components/TableComponents'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan } from '@banx/api/core'
@@ -69,7 +69,7 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
         <StatInfo flexType="row" label="Remaining debt" value={remainingValue} divider={1e9} />
       </div>
       <Button className={styles.repayModalButton} onClick={onSubmit} disabled={!partialPercent}>
-        Repay {createSolValueJSX(paybackValue, 1e9, '0◎')}
+        Repay <DisplayValue value={paybackValue} />
       </Button>
     </Modal>
   )

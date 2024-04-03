@@ -8,7 +8,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 import { Button } from '@banx/components/Buttons'
 import { Loader } from '@banx/components/Loader'
 import { Slider } from '@banx/components/Slider'
-import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan } from '@banx/api/core'
@@ -233,7 +233,9 @@ const LoanInfo: FC<LoanInfoProps> = ({ title, borrowedAmount, debt, apr, faded, 
       <h5 className={styles.loanInfoTitle}>{title}</h5>
       <div className={styles.loanInfoStats}>
         <div className={styles.loanInfoValue}>
-          <p>{createSolValueJSX(borrowedAmount, 1e9, '0◎')}</p>
+          <p>
+            <DisplayValue value={borrowedAmount} />
+          </p>
           <p>Borrowed</p>
         </div>
         <div className={styles.loanInfoValue}>
@@ -241,7 +243,9 @@ const LoanInfo: FC<LoanInfoProps> = ({ title, borrowedAmount, debt, apr, faded, 
           <p>APR</p>
         </div>
         <div className={styles.loanInfoValue}>
-          <p>{createSolValueJSX(debt, 1e9, '0◎')}</p>
+          <p>
+            <DisplayValue value={debt} />
+          </p>
           <p>Debt</p>
         </div>
       </div>
@@ -267,7 +271,7 @@ const LoanDifference: FC<LoanDifferenceProps> = ({ className, difference }) => {
           isDifferenceNegative && styles.loanDifferenceTitleRed,
         )}
       >
-        {createSolValueJSX(difference, 1e9, '0◎')}
+        <DisplayValue value={difference} />
       </p>
       <p className={styles.loanDifferenceSubtitle}>{subtitle}</p>
     </div>

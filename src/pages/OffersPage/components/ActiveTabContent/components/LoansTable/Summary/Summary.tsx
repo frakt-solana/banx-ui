@@ -8,7 +8,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
 import { useIsLedger } from '@banx/store'
@@ -158,7 +158,9 @@ export const Summary: FC<SummaryProps> = ({
 
       <div className={styles.content}>
         <div className={styles.mainStat}>
-          <p>{createSolValueJSX(totalLent, 1e9, '0◎')}</p>
+          <p>
+            <DisplayValue value={totalLent} />
+          </p>
           <p>Lent amount</p>
         </div>
 

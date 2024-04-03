@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue } from '@banx/components/TableComponents'
 
 import { BONDS } from '@banx/constants'
 
@@ -13,11 +13,11 @@ interface BorrowerMessageProps {
 export const BorrowerMessage: FC<BorrowerMessageProps> = ({ loanValue }) => {
   const loanValueToNumber = parseFloat(loanValue) || 0
   const loanValueWithProtocolFee =
-    loanValueToNumber - loanValueToNumber * (BONDS.PROTOCOL_FEE_PERCENT / 1e4)
+    (loanValueToNumber - loanValueToNumber * (BONDS.PROTOCOL_FEE_PERCENT / 1e4)) * 1e9
 
   return (
     <p className={styles.borrowerMessage}>
-      Borrower sees: {createSolValueJSX(loanValueWithProtocolFee)}
+      Borrower sees: {<DisplayValue value={loanValueWithProtocolFee} />}
     </p>
   )
 }

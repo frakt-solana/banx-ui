@@ -5,7 +5,7 @@ import { map, sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider, Slider, SliderProps } from '@banx/components/Slider'
-import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
 import { BorrowNft } from '@banx/api/core'
@@ -16,7 +16,6 @@ import {
   calcBorrowValueWithRentFee,
   calcWeightedAverage,
   calculateApr,
-  formatDecimal,
   getColorByPercent,
   trackPageEvent,
 } from '@banx/utils'
@@ -101,7 +100,7 @@ export const Summary: FC<SummaryProps> = ({
         <div className={styles.stats}>
           <p className={styles.statsTitle}>Upfront fee</p>
           <p className={styles.statsValue}>
-            {createSolValueJSX(totalUpfrontFee, 1e9, '0◎', formatDecimal)}
+            <DisplayValue value={totalUpfrontFee} />
           </p>
         </div>
         <div className={classNames(styles.stats, styles.hidden)}>
@@ -111,7 +110,7 @@ export const Summary: FC<SummaryProps> = ({
         <div className={styles.stats}>
           <p className={styles.statsTitle}>Weekly fee</p>
           <p className={styles.statsValue}>
-            {createSolValueJSX(totalWeeklyFee, 1e9, '0◎', formatDecimal)}
+            <DisplayValue value={totalWeeklyFee} />
           </p>
         </div>
       </div>
@@ -145,7 +144,7 @@ export const Summary: FC<SummaryProps> = ({
               <img src={bonkTokenImg} alt="Bonk token sticker" />
             </Tooltip>
           )}
-          Borrow {createSolValueJSX(totalBorrow, 1e9, '0◎')}
+          Borrow <DisplayValue value={totalBorrow} />
         </Button>
       </div>
     </div>

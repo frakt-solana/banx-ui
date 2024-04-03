@@ -4,9 +4,9 @@ import classNames from 'classnames'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 
 import {
+  DisplayValue,
   HorizontalCell,
   createPercentValueJSX,
-  createSolValueJSX,
 } from '@banx/components/TableComponents'
 
 import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
@@ -14,7 +14,6 @@ import {
   calcBorrowValueWithProtocolFee,
   calcBorrowValueWithRentFee,
   calculateApr,
-  formatDecimal,
 } from '@banx/utils'
 
 import { TableNftData } from './types'
@@ -29,7 +28,7 @@ const TooltipRow: FC<TooltipRowProps> = ({ label, value }) => (
   <div className={styles.tooltipRow}>
     <span className={styles.tooltipRowLabel}>{label}</span>
     <span className={styles.tooltipRowValue}>
-      {createSolValueJSX(value, 1e9, '0◎', formatDecimal)}
+      <DisplayValue value={value} />
     </span>
   </div>
 )
@@ -59,9 +58,12 @@ export const BorrowCell: FC<CellProps> = ({ nft }) => {
     nft.nft.loan.marketPubkey,
   )
 
-  const formattedBorrowValue = createSolValueJSX(borrowValueWithRentFee, 1e9, '--', formatDecimal)
-
-  return <HorizontalCell value={formattedBorrowValue} tooltipContent={tooltipContent} />
+  return (
+    <HorizontalCell
+      value={<DisplayValue value={borrowValueWithRentFee} placeholder="--" />}
+      tooltipContent={tooltipContent}
+    />
+  )
 }
 
 export const APRCell: FC<CellProps> = ({ nft }) => {

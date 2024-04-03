@@ -3,7 +3,7 @@ import { FC, useMemo } from 'react'
 import classNames from 'classnames'
 import { compact, first, isArray, last } from 'lodash'
 
-import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
 import { Loan } from '@banx/api/core'
@@ -13,7 +13,6 @@ import {
   HealthColorIncreasing,
   calcLoanBorrowedAmount,
   calculateLoanRepayValue,
-  formatDecimal,
   getColorByPercent,
 } from '@banx/utils'
 
@@ -31,7 +30,7 @@ const TooltipRow = ({ loan }: { loan: Loan }) => {
   return (
     <div className={styles.tooltipRowContent}>
       <ImageWithPlaceholder className={styles.nftImage} url={nft.meta.imageUrl} />
-      {createSolValueJSX(loanValue, 1e9, '0◎', formatDecimal)}
+      <DisplayValue value={loanValue} />
       <span style={{ color: getColorByPercent(ltv, HealthColorIncreasing) }}>
         {createPercentValueJSX(ltv)}
       </span>

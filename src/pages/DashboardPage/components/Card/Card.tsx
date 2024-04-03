@@ -6,12 +6,12 @@ import classNames from 'classnames'
 import { Button } from '@banx/components/Buttons'
 import ImageWithPreload from '@banx/components/ImageWithPreload'
 import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
-import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
 import { BorrowNft, MarketPreview, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { calculateApr, calculateLoanValue, formatDecimal } from '@banx/utils'
+import { calculateApr, calculateLoanValue } from '@banx/utils'
 
 import { calcLoanValueWithFees, calcWeeklyInterestFee } from './helpers'
 
@@ -64,7 +64,7 @@ export const LendCard: FC<LendCardProps> = ({ amountOfLoans, offerTvl, apr, ...p
   return (
     <CardBackdrop {...props} badgeElement={BadgeContentElement}>
       <div className={styles.lendCardFooter}>
-        {createSolValueJSX(offerTvl, 1e9, '0◎')}
+        <DisplayValue value={offerTvl} />
         <span>in {amountOfLoans} loans</span>
       </div>
     </CardBackdrop>
@@ -79,7 +79,11 @@ interface MarketCardProps {
 export const MarketCard: FC<MarketCardProps> = ({ market, onClick }) => {
   const { bestOffer, collectionFloor, collectionImage, marketPubkey } = market
 
-  const BadgeContentElement = <>+{createSolValueJSX(bestOffer, 1e9, '0◎', formatDecimal)}</>
+  const BadgeContentElement = (
+    <>
+      + <DisplayValue value={bestOffer} />
+    </>
+  )
 
   const ltv = (bestOffer / collectionFloor) * 100
   const ltvTooltipContent = createTooltipContent('Borrow up to', bestOffer)
@@ -132,7 +136,9 @@ export const BorrowCard: FC<BorrowCardProps> = ({ nft, onClick, findBestOffer })
         {!loanValue ? (
           'No offers'
         ) : (
-          <>Get {createSolValueJSX(loanValueWithFees, 1e9, '0◎', formatDecimal)}</>
+          <>
+            Get <DisplayValue value={loanValueWithFees} />
+          </>
         )}
       </Button>
     </CardBackdrop>
@@ -163,7 +169,7 @@ const TooltipRow: FC<TooltipRowProps> = ({ label, value }) => (
   <div className={styles.tooltipRow}>
     <span className={styles.tooltipRowLabel}>{label}</span>
     <span className={styles.tooltipRowValue}>
-      {createSolValueJSX(value, 1e9, '0◎', formatDecimal)}
+      <DisplayValue value={value} />
     </span>
   </div>
 )

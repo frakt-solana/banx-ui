@@ -5,7 +5,7 @@ import { sumBy, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue } from '@banx/components/TableComponents'
 
 import { Offer, UserOffer } from '@banx/api/core'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
@@ -16,7 +16,6 @@ import {
   enqueueTranactionsError,
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
-  formatDecimal,
 } from '@banx/utils'
 
 import styles from './Summary.module.less'
@@ -80,7 +79,9 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
   return (
     <div className={styles.container}>
       <div className={styles.mainStat}>
-        <p>{createSolValueJSX(totalAccruedInterest, 1e9, '0◎', formatDecimal)}</p>
+        <p>
+          <DisplayValue value={totalAccruedInterest} />
+        </p>
         <p>Accrued interest</p>
       </div>
       <Button

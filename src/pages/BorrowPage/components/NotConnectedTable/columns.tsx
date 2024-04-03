@@ -1,13 +1,12 @@
 import { ColumnType } from '@banx/components/Table'
 import {
+  DisplayValue,
   HeaderCell,
   HorizontalCell,
   NftInfoCell,
-  createSolValueJSX,
 } from '@banx/components/TableComponents'
 
 import { MarketPreview } from '@banx/api/core'
-import { formatDecimal } from '@banx/utils'
 
 export const getTableColumns = () => {
   const columns: ColumnType<MarketPreview>[] = [
@@ -25,18 +24,16 @@ export const getTableColumns = () => {
     {
       key: 'floorPrice',
       title: <HeaderCell label="Floor" />,
-      render: (market) => (
-        <HorizontalCell
-          value={createSolValueJSX(market.collectionFloor, 1e9, '--', formatDecimal)}
-        />
+      render: ({ collectionFloor }) => (
+        <HorizontalCell value={<DisplayValue value={collectionFloor} placeholder="--" />} />
       ),
     },
 
     {
       key: 'borrow',
       title: <HeaderCell label="Borrow up to" />,
-      render: (market) => (
-        <HorizontalCell value={createSolValueJSX(market.bestOffer, 1e9, '--', formatDecimal)} />
+      render: ({ bestOffer }) => (
+        <HorizontalCell value={<DisplayValue value={bestOffer} placeholder="--" />} />
       ),
     },
     {
@@ -44,7 +41,7 @@ export const getTableColumns = () => {
       title: <HeaderCell label="Liquidity" />,
       render: ({ offerTvl }) => (
         <HorizontalCell
-          value={createSolValueJSX(offerTvl, 1e9, '--', formatDecimal)}
+          value={<DisplayValue value={offerTvl} placeholder="--" />}
           isHighlighted={!!offerTvl}
         />
       ),

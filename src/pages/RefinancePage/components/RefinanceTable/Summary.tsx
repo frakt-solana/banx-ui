@@ -8,7 +8,7 @@ import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue } from '@banx/components/TableComponents'
 import { useWalletModal } from '@banx/components/WalletModal'
 import {
   SubscribeNotificationsModal,
@@ -146,8 +146,16 @@ export const Summary: FC<SummaryProps> = ({
         <p>Loans selected</p>
       </div>
       <div className={styles.statsContainer}>
-        <StatInfo label="Total to lend" value={totalDebt} divider={1e9} />
-        <StatInfo label="Weekly interest" value={totalWeeklyInterest} divider={1e9} />
+        <StatInfo
+          label="Total to lend"
+          value={<DisplayValue value={totalDebt} />}
+          valueType={VALUES_TYPES.STRING}
+        />
+        <StatInfo
+          label="Weekly interest"
+          value={<DisplayValue value={totalWeeklyInterest} />}
+          valueType={VALUES_TYPES.STRING}
+        />
         <StatInfo label="Weighted apr" value={cappedWeightedApr} valueType={VALUES_TYPES.PERCENT} />
       </div>
       <div className={styles.summaryControls}>
@@ -158,7 +166,7 @@ export const Summary: FC<SummaryProps> = ({
           className={styles.sliderContainer}
         />
         <Button onClick={onClickHandler} disabled={!selectedLoans.length}>
-          Refinance {createSolValueJSX(totalDebt, 1e9, '0◎')}
+          Refinance <DisplayValue value={totalDebt} />
         </Button>
       </div>
     </div>
