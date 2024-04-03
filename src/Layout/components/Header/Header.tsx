@@ -24,9 +24,10 @@ export const Header = () => {
       </NavLink>
       <div className={styles.widgetContainer}>
         <RewardsButton />
-        <ThemeSwitcher />
+
         {connected && <BanxNotificationsButton />}
         <PriorityFeesButton />
+        <ThemeSwitcher />
         <WalletConnectButton />
       </div>
       <BurgerIcon />
