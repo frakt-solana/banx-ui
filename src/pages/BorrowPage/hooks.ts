@@ -32,14 +32,14 @@ import { SimpleOffersByMarket } from './types'
 export const USE_BORROW_NFTS_V2_QUERY_KEY = 'walletBorrowNftsV2'
 
 export const useBorrowNfts = () => {
+  const { publicKey: walletPublicKey } = useWallet()
+  const walletPubkeyString = walletPublicKey?.toBase58() || ''
+
   const { setCart } = useCartState()
   const { loans: optimisticLoans, remove: removeOptimisticLoans } = useLoansOptimistic()
   const { optimisticOffers, remove: removeOptimisticOffers } = useOffersOptimistic()
-  const { publicKey: walletPublicKey } = useWallet()
 
   const { token: tokenType } = useToken()
-
-  const walletPubkeyString = walletPublicKey?.toBase58() || ''
 
   const { data, isLoading, isFetched, isFetching } = useQuery(
     [USE_BORROW_NFTS_V2_QUERY_KEY, tokenType, walletPubkeyString],
@@ -142,6 +142,8 @@ export const useBorrowNfts = () => {
   useEffect(() => {
     if (!isEmpty(simpleOffers)) {
       setCart({ offersByMarket: simpleOffers })
+    } else {
+      setCart({ offersByMarket: {} })
     }
   }, [setCart, simpleOffers])
 
