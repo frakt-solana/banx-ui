@@ -276,17 +276,3 @@ export const sendBonkWithdrawal: SendBonkWithdrawal = async ({ bonkWithdrawal, w
     bonkWithdrawal,
   )
 }
-
-type TrackWalletNameOnBorrow = (props: {
-  walletName: string
-  fraktBondPubkeys: string[]
-}) => Promise<void>
-export const trackWalletNameOnBorrow: TrackWalletNameOnBorrow = async ({
-  walletName,
-  fraktBondPubkeys,
-}) => {
-  await axios.post(`${BACKEND_BASE_URL}/bonk-rewards/new-loan`, {
-    walletName,
-    fbonds: fraktBondPubkeys,
-  })
-}
