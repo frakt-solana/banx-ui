@@ -15,7 +15,7 @@ export interface TabsProps {
   value: string
   setValue: (value: string) => void
   className?: string
-  type?: 'primary' | 'secondary'
+  type?: 'primary'
   onTabClick?: (tabProps: Tab) => void
 }
 

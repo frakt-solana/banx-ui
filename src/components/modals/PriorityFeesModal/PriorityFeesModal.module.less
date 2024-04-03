@@ -1,0 +1,45 @@
+.title {
+  font: var(--title-xl);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+
+  @media screen and (max-width: 640px) {
+    font: var(--title-lg);
+    margin-bottom: 16px;
+  }
+}
+
+.tabs {
+  background: var(--bg-secondary);
+  border: var(--border-primary);
+  border-radius: 100px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 1px;
+
+  margin-bottom: 24px;
+
+  @media screen and (max-width: 640px) {
+    margin-bottom: 16px;
+  }
+}
+
+.tab {
+  cursor: pointer;
+  background: unset;
+  outline: unset;
+  border: unset;
+  font: var(--body-text-md);
+  border-radius: 100px;
+  padding: 5px 5px;
+  color: var(--content-primary);
+}
+
+.tabActive {
+  color: var(--pure-black);
+  background: var(--accent-primary);
+}
+
+.saveButton {
+  width: 100%;
+}

@@ -12,11 +12,11 @@ import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transaction
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
+import { createPriorityFeesInstruction } from '@banx/store'
 import { calculateApr, sendTxnPlaceHolder } from '@banx/utils'
 
 import { BorrowType } from '../constants'
 import { fetchRuleset } from '../functions'
-import { createInstructionsWithPriorityFees } from '../helpers'
 
 export type MakeBorrowActionParams = {
   nft: BorrowNft
@@ -59,13 +59,13 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndCon
     }
   })
 
-  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
+  const priorityFeeInstruction = await createPriorityFeesInstruction(
     instructions,
     walletAndConnection.connection,
   )
 
   return {
-    instructions: instructionsWithPriorityFees,
+    instructions: [...instructions, priorityFeeInstruction],
     signers,
     result: loansAndOffers,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
@@ -126,6 +126,7 @@ const getIxnsAndSignersByBorrowType = async ({
       connection,
       sendTxn: sendTxnPlaceHolder,
     })
+
     return { instructions, signers, optimisticResults }
   }
 

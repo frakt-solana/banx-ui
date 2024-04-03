@@ -3,9 +3,8 @@ import { unstakeBanxNft } from 'fbonds-core/lib/fbond-protocol/functions/banxSta
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
+import { createPriorityFeesInstruction } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
-
-import { createInstructionsWithPriorityFees } from '../helpers'
 
 export type UnstakeBanxNftsActionParams = {
   userPubkey: web3.PublicKey
@@ -31,13 +30,10 @@ export const unstakeBanxNftsAction: UnstakeBanxNftsActionAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
-    instructions,
-    connection,
-  )
+  const priorityFeeInstruction = await createPriorityFeesInstruction(instructions, connection)
 
   return {
-    instructions: instructionsWithPriorityFees,
+    instructions: [...instructions, priorityFeeInstruction],
     signers: signers,
     lookupTables: [],
   }
