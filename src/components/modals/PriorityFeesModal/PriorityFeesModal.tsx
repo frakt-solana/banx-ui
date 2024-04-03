@@ -34,7 +34,7 @@ export const PriorityFeesModal: FC<PriorityFeesModalProps> = ({ onCancel }) => {
   }
 
   return (
-    <Modal open centered onCancel={onCancel} maskClosable={false} width={500} footer={false}>
+    <Modal open onCancel={onCancel} maskClosable={false} width={500}>
       <h2 className={styles.title}>Priority mode</h2>
       {/* //TODO Move styles into tabs component with specific type */}
       <div className={styles.tabs}>
