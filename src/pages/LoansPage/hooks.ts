@@ -15,6 +15,7 @@ import {
   purgeLoansWithSameMintByFreshness,
   useLoansOptimistic,
   useOffersOptimistic,
+  useToken,
 } from '@banx/store'
 import { isLoanRepaid, isLoanTerminating, isOfferClosed } from '@banx/utils'
 
@@ -26,11 +27,13 @@ export const useWalletLoansAndOffers = () => {
   const { publicKey: walletPublicKey } = useWallet()
   const publicKeyString = walletPublicKey?.toBase58() || ''
 
+  const { token: tokenType } = useToken()
+
   const { loans: optimisticLoans, remove: removeOptimisticLoans } = useLoansOptimistic()
 
   const { data, isLoading, isFetched, isFetching } = useQuery(
-    [USE_WALLET_LOANS_AND_OFFERS_QUERY_KEY, publicKeyString],
-    () => fetchWalletLoansAndOffers({ walletPublicKey: publicKeyString }),
+    [USE_WALLET_LOANS_AND_OFFERS_QUERY_KEY, publicKeyString, tokenType],
+    () => fetchWalletLoansAndOffers({ walletPublicKey: publicKeyString, marketType: tokenType }),
     {
       enabled: !!publicKeyString,
       staleTime: 5 * 1000,

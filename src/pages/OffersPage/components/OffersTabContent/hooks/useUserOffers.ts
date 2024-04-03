@@ -6,7 +6,7 @@ import { chain, map, maxBy } from 'lodash'
 
 import { fetchUserOffers } from '@banx/api/core'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
-import { isOfferNewer, isOptimisticOfferExpired, useOffersOptimistic } from '@banx/store'
+import { isOfferNewer, isOptimisticOfferExpired, useOffersOptimistic, useToken } from '@banx/store'
 import { isOfferClosed } from '@banx/utils'
 
 export const useUserOffers = () => {
@@ -17,9 +17,11 @@ export const useUserOffers = () => {
 
   const { marketsPreview } = useMarketsPreview()
 
+  const { token: tokenType } = useToken()
+
   const { data, isLoading, isFetching, isFetched } = useQuery(
-    [useUserOffers, publicKeyString],
-    () => fetchUserOffers({ walletPubkey: publicKeyString }),
+    [useUserOffers, publicKeyString, tokenType],
+    () => fetchUserOffers({ walletPubkey: publicKeyString, marketType: tokenType }),
     {
       enabled: !!publicKeyString,
       refetchOnWindowFocus: false,

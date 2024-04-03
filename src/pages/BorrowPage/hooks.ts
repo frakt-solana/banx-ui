@@ -13,6 +13,7 @@ import {
   isOptimisticOfferExpired,
   useLoansOptimistic,
   useOffersOptimistic,
+  useToken,
 } from '@banx/store'
 import { convertLoanToBorrowNft } from '@banx/transactions'
 import {
@@ -36,11 +37,13 @@ export const useBorrowNfts = () => {
   const { optimisticOffers, remove: removeOptimisticOffers } = useOffersOptimistic()
   const { publicKey: walletPublicKey } = useWallet()
 
+  const { token: tokenType } = useToken()
+
   const walletPubkeyString = walletPublicKey?.toBase58() || ''
 
   const { data, isLoading, isFetched, isFetching } = useQuery(
-    [USE_BORROW_NFTS_V2_QUERY_KEY, walletPubkeyString],
-    () => fetchBorrowNftsAndOffers({ walletPubkey: walletPubkeyString }),
+    [USE_BORROW_NFTS_V2_QUERY_KEY, tokenType, walletPubkeyString],
+    () => fetchBorrowNftsAndOffers({ walletPubkey: walletPubkeyString, marketType: tokenType }),
     {
       enabled: !!walletPublicKey,
       staleTime: 5 * 1000,

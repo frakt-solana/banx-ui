@@ -2,6 +2,7 @@ import axios from 'axios'
 import { web3 } from 'fbonds-core'
 
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
+import { TokenType } from '@banx/store'
 
 import {
   AuctionsLoansResponse,
@@ -26,11 +27,12 @@ import {
   WalletLoansAndOffersShema,
 } from './types'
 
-type FetchMarketsPreview = () => Promise<MarketPreview[]>
-export const fetchMarketsPreview: FetchMarketsPreview = async () => {
+type FetchMarketsPreview = (props: { marketType: TokenType }) => Promise<MarketPreview[]>
+export const fetchMarketsPreview: FetchMarketsPreview = async ({ marketType }) => {
   const queryParams = new URLSearchParams({
-    isPrivate: String(IS_PRIVATE_MARKETS),
     getAll: String(true),
+    marketType: String(marketType),
+    isPrivate: String(IS_PRIVATE_MARKETS),
   })
 
   const { data } = await axios.get<MarketPreviewResponse>(
@@ -48,6 +50,7 @@ export const fetchMarketsPreview: FetchMarketsPreview = async () => {
 
 type FetchMarketOffers = (props: {
   marketPubkey?: web3.PublicKey | null
+  marketType: TokenType
   order?: 'asc' | 'desc'
   skip?: number
   limit?: number
@@ -55,6 +58,7 @@ type FetchMarketOffers = (props: {
 }) => Promise<Offer[]>
 export const fetchMarketOffers: FetchMarketOffers = async ({
   marketPubkey,
+  marketType,
   order = 'desc',
   skip = 0,
   limit = 10,
@@ -65,6 +69,7 @@ export const fetchMarketOffers: FetchMarketOffers = async ({
     skip: String(skip),
     limit: String(limit),
     getAll: String(getAll),
+    marketType: String(marketType),
     isPrivate: String(IS_PRIVATE_MARKETS),
   })
 
@@ -83,6 +88,7 @@ export const fetchMarketOffers: FetchMarketOffers = async ({
 
 type FetchWalletLoansAndOffers = (props: {
   walletPublicKey: string
+  marketType: TokenType
   order?: 'asc' | 'desc'
   skip?: number
   limit?: number
@@ -91,6 +97,7 @@ type FetchWalletLoansAndOffers = (props: {
 
 export const fetchWalletLoansAndOffers: FetchWalletLoansAndOffers = async ({
   walletPublicKey,
+  marketType,
   order = 'desc',
   skip = 0,
   limit = 10,
@@ -101,6 +108,7 @@ export const fetchWalletLoansAndOffers: FetchWalletLoansAndOffers = async ({
     skip: String(skip),
     limit: String(limit),
     getAll: String(getAll),
+    marketType: String(marketType),
     isPrivate: String(IS_PRIVATE_MARKETS),
   })
 
@@ -119,6 +127,7 @@ export const fetchWalletLoansAndOffers: FetchWalletLoansAndOffers = async ({
 
 type FetchLenderLoansByCertainOffer = (props: {
   walletPublicKey: string
+  marketType: TokenType
   offerPubkey: string
   order?: 'asc' | 'desc'
   skip?: number
@@ -128,6 +137,7 @@ type FetchLenderLoansByCertainOffer = (props: {
 
 export const fetchLenderLoansByCertainOffer: FetchLenderLoansByCertainOffer = async ({
   walletPublicKey,
+  marketType,
   offerPubkey,
   order = 'desc',
   skip = 0,
@@ -141,6 +151,7 @@ export const fetchLenderLoansByCertainOffer: FetchLenderLoansByCertainOffer = as
     getAll: String(getAll),
     isPrivate: String(IS_PRIVATE_MARKETS),
     walletPubKey: String(walletPublicKey),
+    marketType: String(marketType),
     offerPubKey: String(offerPubkey),
   })
 
@@ -159,6 +170,7 @@ export const fetchLenderLoansByCertainOffer: FetchLenderLoansByCertainOffer = as
 
 type FetchLenderLoans = (props: {
   walletPublicKey: string
+  marketType: TokenType
   sortBy?: 'status' | 'apr'
   order?: 'asc' | 'desc'
   skip?: number
@@ -167,6 +179,7 @@ type FetchLenderLoans = (props: {
 }) => Promise<LendLoansResponse['data']>
 export const fetchLenderLoans: FetchLenderLoans = async ({
   walletPublicKey,
+  marketType,
   order = 'desc',
   skip = 0,
   limit = 50,
@@ -179,6 +192,7 @@ export const fetchLenderLoans: FetchLenderLoans = async ({
     limit: String(limit),
     getAll: String(getAll),
     sortBy: String(sortBy),
+    marketType: String(marketType),
     isPrivate: String(IS_PRIVATE_MARKETS),
   })
 
@@ -197,6 +211,7 @@ export const fetchLenderLoans: FetchLenderLoans = async ({
 
 type FetchBorrowNftsAndOffers = (props: {
   walletPubkey: string
+  marketType: TokenType
   order?: string
   getAll?: boolean
   skip?: number
@@ -204,6 +219,7 @@ type FetchBorrowNftsAndOffers = (props: {
 }) => Promise<BorrowNftsAndOffers>
 export const fetchBorrowNftsAndOffers: FetchBorrowNftsAndOffers = async ({
   walletPubkey,
+  marketType,
   getAll = true, //TODO Remove when normal pagination added
   order = 'desc',
   skip = 0,
@@ -214,6 +230,7 @@ export const fetchBorrowNftsAndOffers: FetchBorrowNftsAndOffers = async ({
     skip: String(skip),
     limit: String(limit),
     getAll: String(getAll),
+    marketType: String(marketType),
     isPrivate: String(IS_PRIVATE_MARKETS),
   })
 
@@ -231,8 +248,13 @@ export const fetchBorrowNftsAndOffers: FetchBorrowNftsAndOffers = async ({
   return data.data ?? { nfts: [], offers: {} }
 }
 
-export const fetchAuctionsLoans = async () => {
+type FetchAuctionsLoans = (props: {
+  marketType: TokenType
+}) => Promise<AuctionsLoansResponse['data']>
+
+export const fetchAuctionsLoans: FetchAuctionsLoans = async ({ marketType }) => {
   const queryParams = new URLSearchParams({
+    marketType: String(marketType),
     isPrivate: String(IS_PRIVATE_MARKETS),
   })
 
@@ -249,11 +271,21 @@ export const fetchAuctionsLoans = async () => {
   return data.data ?? []
 }
 
-type FetchUserOffers = (props: { walletPubkey: string; getAll?: boolean }) => Promise<UserOffer[]>
-export const fetchUserOffers: FetchUserOffers = async ({ walletPubkey, getAll = true }) => {
+type FetchUserOffers = (props: {
+  walletPubkey: string
+  marketType: TokenType
+  getAll?: boolean
+}) => Promise<UserOffer[]>
+
+export const fetchUserOffers: FetchUserOffers = async ({
+  walletPubkey,
+  marketType,
+  getAll = true,
+}) => {
   const queryParams = new URLSearchParams({
-    isPrivate: String(IS_PRIVATE_MARKETS),
     getAll: String(getAll),
+    marketType: String(marketType),
+    isPrivate: String(IS_PRIVATE_MARKETS),
   })
 
   const { data } = await axios.get<FetchUserOffersResponse>(
