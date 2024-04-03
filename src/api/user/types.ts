@@ -13,30 +13,6 @@ export interface DiscordUserInfo {
   isOnServer: boolean
 }
 
-export enum BanxNotificationType {
-  LOAN = 'loan',
-  DEPOSIT = 'deposit',
-  LOT_TICKET = 'lotTicket',
-  GRACE = 'grace',
-}
-
-export interface BanxNotification {
-  id: string
-  type: BanxNotificationType
-  user: string
-  message: {
-    title: string
-    body: string
-  }
-  image?: string
-  isRead: boolean
-  date: number
-}
-
-export interface UserLockedRewards {
-  rewards: number
-}
-
 export const SeasonUserRewardsSchema = z.object({
   totalClaimed: z.number(),
   availableToClaim: z.number(),

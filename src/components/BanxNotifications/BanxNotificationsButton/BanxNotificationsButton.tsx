@@ -6,11 +6,7 @@ import { Button } from '@banx/components/Buttons'
 import Tooltip from '@banx/components/Tooltip/Tooltip'
 
 import { useBurgerMenu } from '@banx/Layout/components/BurgerMenu/hooks'
-// import { useUserNotifications } from '@banx/hooks'
-import {
-  Bell,
-  /*BellWithBadge*/
-} from '@banx/icons'
+import { Bell } from '@banx/icons'
 
 import { useBanxNotificationsSider } from '../BanxNotificationsSider'
 import { BUTTON_ID } from '../constants'
@@ -24,7 +20,6 @@ interface BanxNotificationsButtonProps {
 export const BanxNotificationsButton: FC<BanxNotificationsButtonProps> = ({ className }) => {
   const { isVisible, toggleVisibility } = useBanxNotificationsSider()
   const { setVisibility: setBurgerMenuVisibility } = useBurgerMenu()
-  // const { hasUnread } = useUserNotifications()
 
   const onIconClick = () => {
     toggleVisibility()
@@ -43,7 +38,6 @@ export const BanxNotificationsButton: FC<BanxNotificationsButtonProps> = ({ clas
           className={classNames(className, { [styles.buttonActive]: isVisible })}
           onClick={onIconClick}
         >
-          {/* {hasUnread ? <BellWithBadge /> : <Bell />} */}
           <Bell />
         </Button>
       </>

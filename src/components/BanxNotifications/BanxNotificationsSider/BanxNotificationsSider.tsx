@@ -9,12 +9,7 @@ import { BUTTON_ID } from '../constants'
 import { useBanxNotificationsSider } from '../hooks'
 import { Header } from './Header'
 import { ScreenType } from './constants'
-import {
-  LoadingScreen,
-  /* NotificationsScreen,*/
-  SettingsScreen,
-  SignMessageScreen,
-} from './screens'
+import { LoadingScreen, SettingsScreen, SignMessageScreen } from './screens'
 
 import styles from './BanxNotificationsSider.module.less'
 
@@ -56,7 +51,6 @@ export const BanxNotificationsSider: FC<BanxNotificationsSiderProps> = ({ classN
         {screenType === ScreenType.SETTINGS && <SettingsScreen />}
         {screenType === ScreenType.LOADING && <LoadingScreen />}
         {screenType === ScreenType.SIGN_MESSAGE && <SignMessageScreen />}
-        {/* {screenType === ScreenType.NOTIFICATIONS && <NotificationsScreen />} */}
       </>
     </div>
   )
