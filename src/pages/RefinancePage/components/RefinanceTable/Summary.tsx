@@ -146,16 +146,8 @@ export const Summary: FC<SummaryProps> = ({
         <p>Loans selected</p>
       </div>
       <div className={styles.statsContainer}>
-        <StatInfo
-          label="Total to lend"
-          value={<DisplayValue value={totalDebt} />}
-          valueType={VALUES_TYPES.STRING}
-        />
-        <StatInfo
-          label="Weekly interest"
-          value={<DisplayValue value={totalWeeklyInterest} />}
-          valueType={VALUES_TYPES.STRING}
-        />
+        <StatInfo label="Total to lend" value={<DisplayValue value={totalDebt} />} />
+        <StatInfo label="Weekly interest" value={<DisplayValue value={totalWeeklyInterest} />} />
         <StatInfo label="Weighted apr" value={cappedWeightedApr} valueType={VALUES_TYPES.PERCENT} />
       </div>
       <div className={styles.summaryControls}>

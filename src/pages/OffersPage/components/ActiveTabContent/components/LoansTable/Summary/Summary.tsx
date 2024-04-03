@@ -168,8 +168,7 @@ export const Summary: FC<SummaryProps> = ({
           <StatInfo
             classNamesProps={{ container: styles.lentAmountStat }}
             label="Lent amount"
-            value={totalLent}
-            divider={1e9}
+            value={<DisplayValue value={totalLent} />}
           />
           <StatInfo
             label="Avg ltv"
@@ -179,7 +178,7 @@ export const Summary: FC<SummaryProps> = ({
               color: averageLtv ? getColorByPercent(averageLtv, HealthColorIncreasing) : '',
             }}
           />
-          <StatInfo label="interest" value={totalInterest} divider={1e9} />
+          <StatInfo label="interest" value={<DisplayValue value={totalInterest} />} />
         </div>
 
         <div className={styles.terminateControls}>

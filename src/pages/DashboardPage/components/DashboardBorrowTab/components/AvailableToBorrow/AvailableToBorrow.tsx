@@ -1,5 +1,5 @@
 import { Button } from '@banx/components/Buttons'
-import { VALUES_TYPES } from '@banx/components/StatInfo'
+import { DisplayValue } from '@banx/components/TableComponents'
 
 import { DashboardStatInfo, Heading } from '../../../components'
 import { useAvailableToBorrow } from './hooks'
@@ -23,7 +23,7 @@ const AvailableToBorrow = () => {
       <div className={styles.stats}>
         {isConnected && (
           <>
-            <DashboardStatInfo label="Borrow up to" value={maxBorrow} divider={1e9} />
+            <DashboardStatInfo label="Borrow up to" value={<DisplayValue value={maxBorrow} />} />
             <DashboardStatInfo
               classNamesProps={{ value: styles.userNFTsValue }}
               label="From your"
@@ -32,23 +32,16 @@ const AvailableToBorrow = () => {
                   {userNFTs} <span>NFTS</span>
                 </>
               }
-              valueType={VALUES_TYPES.STRING}
             />
           </>
         )}
 
         {!isConnected && (
           <>
-            <DashboardStatInfo
-              label="Collections whitelisted"
-              value={totalMarkets}
-              valueType={VALUES_TYPES.STRING}
-            />
+            <DashboardStatInfo label="Collections whitelisted" value={totalMarkets} />
             <DashboardStatInfo
               label="Total liquidity"
-              value={totalLiquidity}
-              decimalPlaces={0}
-              divider={1e9}
+              value={<DisplayValue value={totalLiquidity} />}
             />
           </>
         )}

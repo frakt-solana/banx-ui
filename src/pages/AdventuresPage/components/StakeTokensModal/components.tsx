@@ -3,7 +3,7 @@ import { FC } from 'react'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
-import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
+import { StatInfo } from '@banx/components/StatInfo'
 import Tooltip from '@banx/components/Tooltip'
 import { InputErrorMessage } from '@banx/components/inputs'
 import NumericInput, { NumericInputProps } from '@banx/components/inputs/NumericInput'
@@ -34,13 +34,11 @@ export const BanxPointsStats: FC<BanxPointsStatsProps> = ({ partnerPoints, playe
         label="Partner points"
         value={formattedPartnerPoints}
         classNamesProps={statClassNames}
-        valueType={VALUES_TYPES.STRING}
       />
       <StatInfo
         label="Player points"
         value={formattedPlayerPoints}
         classNamesProps={statClassNames}
-        valueType={VALUES_TYPES.STRING}
       />
     </div>
   )

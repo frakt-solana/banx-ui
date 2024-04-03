@@ -28,9 +28,8 @@ const AllocationBlock: FC<AllocationBlockProps> = ({ stats }) => {
           <div className={styles.allocationStats}>
             <DashboardStatInfo
               label="Weekly interest"
-              value={weeklyInterest}
+              value={<DisplayValue value={weeklyInterest} />}
               tooltipText="Extrapolated weekly interest based off your current active loans"
-              divider={1e9}
             />
             <DashboardStatInfo
               label="Weighted apr"

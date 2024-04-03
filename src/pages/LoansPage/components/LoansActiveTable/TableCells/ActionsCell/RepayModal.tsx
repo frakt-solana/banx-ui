@@ -53,11 +53,10 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
   return (
     <Modal open onCancel={close}>
       <StatInfo
-        flexType="row"
         label="Debt:"
-        value={initialRepayValue}
-        divider={1e9}
+        value={<DisplayValue value={initialRepayValue} />}
         classNamesProps={{ container: styles.repayModalInfo }}
+        flexType="row"
       />
       <Slider
         value={partialPercent}
@@ -65,8 +64,16 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
         className={styles.repayModalSlider}
       />
       <div className={styles.repayModalAdditionalInfo}>
-        <StatInfo flexType="row" label="Repay value" value={paybackValue} divider={1e9} />
-        <StatInfo flexType="row" label="Remaining debt" value={remainingValue} divider={1e9} />
+        <StatInfo
+          label="Repay value"
+          value={<DisplayValue value={paybackValue} />}
+          flexType="row"
+        />
+        <StatInfo
+          label="Remaining debt"
+          value={<DisplayValue value={remainingValue} />}
+          flexType="row"
+        />
       </div>
       <Button className={styles.repayModalButton} onClick={onSubmit} disabled={!partialPercent}>
         Repay <DisplayValue value={paybackValue} />

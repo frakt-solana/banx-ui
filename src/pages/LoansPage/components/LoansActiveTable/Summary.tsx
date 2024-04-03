@@ -59,12 +59,14 @@ export const Summary: FC<SummaryProps> = ({
       <div className={styles.statsContainer}>
         <StatInfo
           label="Debt"
-          value={totalDebt}
+          value={<DisplayValue value={totalDebt} />}
           classNamesProps={{ container: styles.debtInterestStat }}
-          divider={1e9}
         />
-        <StatInfo label="Accrued interest" value={totalUnpaidAccruedInterest} divider={1e9} />
-        <StatInfo label="Weekly interest" value={totalWeeklyFee} divider={1e9} />
+        <StatInfo
+          label="Accrued interest"
+          value={<DisplayValue value={totalUnpaidAccruedInterest} />}
+        />
+        <StatInfo label="Weekly interest" value={<DisplayValue value={totalWeeklyFee} />} />
         <StatInfo
           label="Weighted apr"
           value={calcWeightedApr(selectedLoans)}

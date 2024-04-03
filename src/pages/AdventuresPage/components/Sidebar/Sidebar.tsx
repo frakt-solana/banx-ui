@@ -288,7 +288,6 @@ const StakingStat: FC<StatsInfoProps> = ({
     <StatInfo
       label={label}
       value={value}
-      valueType={VALUES_TYPES.STRING}
       flexType={flexType}
       classNamesProps={stakingStatClassNames}
       {...props}

@@ -4,7 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 import { Button } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
-import { createPercentValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { fetchLenderActivityCSV } from '@banx/api/activity'
 import { createDownloadLink } from '@banx/utils'
@@ -42,15 +42,15 @@ export const Summary = () => {
         <p>Weighted apr</p>
       </div>
       <div className={styles.statsContainer}>
-        <StatInfo label="Lent" value={totalLent} divider={1e9} />
+        <StatInfo label="Lent" value={<DisplayValue value={totalLent} />} />
         <StatInfo
           classNamesProps={{ container: styles.weightedAprStat }}
           label="Weighted apr"
           value={weightedApr / 100}
           valueType={VALUES_TYPES.PERCENT}
         />
-        <StatInfo label="Pending interest" value={pendingInterest} divider={1e9} />
-        <StatInfo label="Earned interest" value={paidInterest} divider={1e9} />
+        <StatInfo label="Pending interest" value={<DisplayValue value={pendingInterest} />} />
+        <StatInfo label="Earned interest" value={<DisplayValue value={paidInterest} />} />
       </div>
       <Button onClick={download} className={styles.summaryButton} loading={isDownloading}>
         Download .CSV

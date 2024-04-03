@@ -22,7 +22,6 @@ export const ParticipantsInfo: FC<ParticipantsInfoProps> = ({ participants }) =>
   <StatInfo
     label="Participants"
     value={formatNumbersWithCommas(participants)}
-    valueType={VALUES_TYPES.STRING}
     classNamesProps={{
       container: styles.participantsInfo,
       value: styles.participantsValue,

@@ -50,7 +50,6 @@ export const useAllocationBlock = (stats?: AllocationStats) => {
     statInfoProps: {
       label: 'Total funds',
       value: totalFunds,
-      divider: 1e9,
     },
   }
 
