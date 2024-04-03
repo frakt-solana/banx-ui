@@ -6,13 +6,14 @@ import {
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
-import { createPriorityFeesInstruction } from '@banx/store'
+import { PriorityLevel, createPriorityFeesInstruction } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type MakeCreateOfferActionParams = {
   marketPubkey: string
   loanValue: number
   loansAmount: number
+  priorityFeeLevel: PriorityLevel
 }
 
 export type MakeCreateOfferAction = CreateTransactionDataFn<
@@ -24,7 +25,7 @@ export const makeCreateOfferAction: MakeCreateOfferAction = async (
   ixnParams,
   { connection, wallet },
 ) => {
-  const { marketPubkey, loanValue, loansAmount } = ixnParams
+  const { marketPubkey, loanValue, loansAmount, priorityFeeLevel } = ixnParams
 
   const { instructions, signers, optimisticResult } = await createPerpetualBondOffer({
     accounts: {
@@ -40,7 +41,11 @@ export const makeCreateOfferAction: MakeCreateOfferAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const priorityFeeInstruction = await createPriorityFeesInstruction(instructions, connection)
+  const priorityFeeInstruction = await createPriorityFeesInstruction(
+    instructions,
+    connection,
+    priorityFeeLevel,
+  )
 
   return {
     instructions: [...instructions, priorityFeeInstruction],

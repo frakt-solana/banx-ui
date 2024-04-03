@@ -10,11 +10,12 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { createPriorityFeesInstruction } from '@banx/store'
+import { PriorityLevel, createPriorityFeesInstruction } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type MakeTerminateActionParams = {
   loan: Loan
+  priorityFeeLevel: PriorityLevel
 }
 
 export type MakeTerminateAction = CreateTransactionDataFn<MakeTerminateActionParams, Loan>
@@ -51,7 +52,11 @@ export const makeTerminateAction: MakeTerminateAction = async (
     ...optimisticResult,
   }
 
-  const priorityFeeInstruction = await createPriorityFeesInstruction(instructions, connection)
+  const priorityFeeInstruction = await createPriorityFeesInstruction(
+    instructions,
+    connection,
+    ixnParams.priorityFeeLevel,
+  )
 
   return {
     instructions: [...instructions, priorityFeeInstruction],

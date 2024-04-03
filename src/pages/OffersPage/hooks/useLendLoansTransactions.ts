@@ -3,7 +3,7 @@ import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan, Offer } from '@banx/api/core'
-import { useModal } from '@banx/store'
+import { useModal, usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
   makeClaimAction,
@@ -34,12 +34,13 @@ export const useLendLoansTransactions = ({
   const wallet = useWallet()
   const { connection } = useConnection()
   const { close } = useModal()
+  const { priorityLevel } = usePriorityFees()
 
   const terminateLoan = () => {
     const loadingSnackbarId = uniqueId()
 
     new TxnExecutor(makeTerminateAction, { wallet: createWalletInstance(wallet), connection })
-      .addTransactionParam({ loan })
+      .addTransactionParam({ loan, priorityFeeLevel: priorityLevel })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
         enqueueWaitingConfirmation(loadingSnackbarId)
@@ -81,7 +82,7 @@ export const useLendLoansTransactions = ({
     const loadingSnackbarId = uniqueId()
 
     new TxnExecutor(makeClaimAction, { wallet: createWalletInstance(wallet), connection })
-      .addTransactionParam({ loan })
+      .addTransactionParam({ loan, priorityFeeLevel: priorityLevel })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
         enqueueWaitingConfirmation(loadingSnackbarId)
@@ -125,7 +126,7 @@ export const useLendLoansTransactions = ({
       wallet: createWalletInstance(wallet),
       connection,
     })
-      .addTransactionParam({ loan, bestOffer })
+      .addTransactionParam({ loan, bestOffer, priorityFeeLevel: priorityLevel })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
         enqueueWaitingConfirmation(loadingSnackbarId)

@@ -3,13 +3,14 @@ import { stakeBanxNft } from 'fbonds-core/lib/fbond-protocol/functions/banxStaki
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
-import { createPriorityFeesInstruction } from '@banx/store'
+import { PriorityLevel, createPriorityFeesInstruction } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type StakeBanxNftsTokenActionParams = {
   nftMint: string
   whitelistEntry: web3.PublicKey
   hadoRegistry: web3.PublicKey
+  priorityFeeLevel: PriorityLevel
 }
 
 export type StakeBanxNftsTokenAction = CreateTransactionDataFn<StakeBanxNftsTokenActionParams, null>
@@ -31,7 +32,11 @@ export const stakeBanxNftAction: StakeBanxNftsTokenAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const priorityFeeInstruction = await createPriorityFeesInstruction(instructions, connection)
+  const priorityFeeInstruction = await createPriorityFeesInstruction(
+    instructions,
+    connection,
+    ixnParams.priorityFeeLevel,
+  )
 
   return {
     instructions: [...instructions, priorityFeeInstruction],

@@ -5,17 +5,18 @@ import { unstakeBanxToken } from 'fbonds-core/lib/fbond-protocol/functions/banxS
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
-import { createPriorityFeesInstruction } from '@banx/store'
+import { PriorityLevel, createPriorityFeesInstruction } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type UnstakeBanxTokenParams = {
   tokensToUnstake: BN
+  priorityFeeLevel: PriorityLevel
 }
 
 export type UnstakeBanxTokenParamsAction = CreateTransactionDataFn<UnstakeBanxTokenParams, null>
 
 export const unstakeBanxTokenAction: UnstakeBanxTokenParamsAction = async (
-  { tokensToUnstake },
+  { tokensToUnstake, priorityFeeLevel },
   { wallet, connection },
 ) => {
   const { instructions, signers } = await unstakeBanxToken({
@@ -31,7 +32,11 @@ export const unstakeBanxTokenAction: UnstakeBanxTokenParamsAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const priorityFeeInstruction = await createPriorityFeesInstruction(instructions, connection)
+  const priorityFeeInstruction = await createPriorityFeesInstruction(
+    instructions,
+    connection,
+    priorityFeeLevel,
+  )
 
   return {
     instructions: [...instructions, priorityFeeInstruction],

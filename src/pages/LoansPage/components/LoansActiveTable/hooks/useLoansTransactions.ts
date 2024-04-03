@@ -4,7 +4,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
-import { useIsLedger, useLoansOptimistic } from '@banx/store'
+import { useIsLedger, useLoansOptimistic, usePriorityFees } from '@banx/store'
 import { BorrowType, createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
   REPAY_NFT_PER_TXN,
@@ -26,6 +26,7 @@ export const useLoansTransactions = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
   const { isLedger } = useIsLedger()
+  const { priorityLevel } = usePriorityFees()
 
   const { update: updateLoansOptimistic } = useLoansOptimistic()
   const { clear: clearSelection } = useSelectedLoans()
@@ -33,7 +34,7 @@ export const useLoansTransactions = () => {
   const repayLoan = async (loan: Loan) => {
     const loadingSnackbarId = uniqueId()
 
-    const txnParam = { loans: [loan] }
+    const txnParam = { loans: [loan], priorityFeeLevel: priorityLevel }
 
     await new TxnExecutor(makeRepayLoansAction, {
       wallet: createWalletInstance(wallet),
@@ -80,7 +81,7 @@ export const useLoansTransactions = () => {
   const repayPartialLoan = async (loan: Loan, fractionToRepay: number) => {
     const loadingSnackbarId = uniqueId()
 
-    const txnParam = { loan, fractionToRepay }
+    const txnParam = { loan, fractionToRepay, priorityFeeLevel: priorityLevel }
 
     await new TxnExecutor(makeRepayPartialLoanAction, {
       wallet: createWalletInstance(wallet),
@@ -132,7 +133,10 @@ export const useLoansTransactions = () => {
     const selectedLoans = selection.map((loan) => loan.loan)
     const loansChunks = chunkRepayIxnsParams(selectedLoans)
 
-    const txnParams = loansChunks.map((chunk) => ({ loans: chunk }))
+    const txnParams = loansChunks.map((chunk) => ({
+      loans: chunk,
+      priorityFeeLevel: priorityLevel,
+    }))
 
     await new TxnExecutor(
       makeRepayLoansAction,
@@ -184,7 +188,7 @@ export const useLoansTransactions = () => {
   const repayUnpaidLoansInterest = async (loans: LoanWithFractionToRepay[]) => {
     const loadingSnackbarId = uniqueId()
 
-    const txnParams = loans.map((loan) => ({ ...loan }))
+    const txnParams = loans.map((loan) => ({ ...loan, priorityFeeLevel: priorityLevel }))
 
     await new TxnExecutor(
       makeRepayPartialLoanAction,

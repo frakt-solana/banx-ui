@@ -3,6 +3,7 @@ import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
+import { usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
   makeCreateBondingOfferAction,
@@ -38,11 +39,18 @@ export const useOfferTransactions = ({
 }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
+  const { priorityLevel } = usePriorityFees()
 
   const onCreateOffer = async () => {
     const loadingSnackbarId = uniqueId()
 
-    const txnParam = { marketPubkey, loansAmount, loanValue, deltaValue }
+    const txnParam = {
+      marketPubkey,
+      loansAmount,
+      loanValue,
+      deltaValue,
+      priorityFeeLevel: priorityLevel,
+    }
 
     await new TxnExecutor(makeCreateBondingOfferAction, {
       wallet: createWalletInstance(wallet),
@@ -91,7 +99,13 @@ export const useOfferTransactions = ({
 
     const loadingSnackbarId = uniqueId()
 
-    const txnParam = { loanValue, optimisticOffer, loansAmount, deltaValue }
+    const txnParam = {
+      loanValue,
+      optimisticOffer,
+      loansAmount,
+      deltaValue,
+      priorityFeeLevel: priorityLevel,
+    }
 
     await new TxnExecutor(makeUpdateBondingOfferAction, {
       wallet: createWalletInstance(wallet),
@@ -140,7 +154,7 @@ export const useOfferTransactions = ({
     const loadingSnackbarId = uniqueId()
 
     new TxnExecutor(makeRemoveOfferAction, { wallet: createWalletInstance(wallet), connection })
-      .addTransactionParam({ optimisticOffer })
+      .addTransactionParam({ optimisticOffer, priorityFeeLevel: priorityLevel })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
         enqueueWaitingConfirmation(loadingSnackbarId)

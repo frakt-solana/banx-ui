@@ -12,7 +12,7 @@ import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transaction
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { createPriorityFeesInstruction } from '@banx/store'
+import { PriorityLevel, createPriorityFeesInstruction } from '@banx/store'
 import { calculateApr, sendTxnPlaceHolder } from '@banx/utils'
 
 import { BorrowType } from '../constants'
@@ -23,6 +23,7 @@ export type MakeBorrowActionParams = {
   loanValue: number
   offer: Offer
   optimizeIntoReserves?: boolean
+  priorityFeeLevel: PriorityLevel
 }[]
 
 export type MakeBorrowActionResult = { loan: Loan; offer: Offer }[]
@@ -62,6 +63,7 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndCon
   const priorityFeeInstruction = await createPriorityFeesInstruction(
     instructions,
     walletAndConnection.connection,
+    ixnParams?.[0].priorityFeeLevel,
   )
 
   return {

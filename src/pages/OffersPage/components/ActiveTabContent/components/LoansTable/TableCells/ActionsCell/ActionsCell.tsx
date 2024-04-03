@@ -10,7 +10,7 @@ import { TensorLink } from '@banx/components/SolanaLinks'
 
 import { Loan } from '@banx/api/core'
 import { useHiddenNftsMints } from '@banx/pages/OffersPage'
-import { useModal } from '@banx/store'
+import { useModal, usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimAction } from '@banx/transactions/loans'
 import {
@@ -36,6 +36,7 @@ interface ActionsCellProps {
 export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
+  const { priorityLevel } = usePriorityFees()
   const { open } = useModal()
 
   const { addMints: hideLoans } = useHiddenNftsMints()
@@ -46,7 +47,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
     const loadingSnackbarId = uniqueId()
 
     new TxnExecutor(makeClaimAction, { wallet: createWalletInstance(wallet), connection })
-      .addTransactionParam({ loan })
+      .addTransactionParam({ loan, priorityFeeLevel: priorityLevel })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
         enqueueWaitingConfirmation(loadingSnackbarId)

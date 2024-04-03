@@ -10,7 +10,7 @@ import {
   useBanxStakeInfo,
   useBanxStakeSettings,
 } from '@banx/pages/AdventuresPage'
-import { useModal } from '@banx/store'
+import { useModal, usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxTokenAction, unstakeBanxTokenAction } from '@banx/transactions/staking'
 import { ZERO_BN, bnToHuman, enqueueTransactionsSent, limitDecimalPlaces } from '@banx/utils'
@@ -91,10 +91,14 @@ export const useStakeTokensModal = () => {
 export const useTokenTransactions = (inputTokenAmount: string) => {
   const wallet = useWallet()
   const { connection } = useConnection()
+  const { priorityLevel } = usePriorityFees()
   const { close } = useModal()
 
   const onStake = () => {
-    const txnParam = { tokensToStake: formatBanxTokensStrToBN(inputTokenAmount) }
+    const txnParam = {
+      tokensToStake: formatBanxTokensStrToBN(inputTokenAmount),
+      priorityFeeLevel: priorityLevel,
+    }
 
     new TxnExecutor(stakeBanxTokenAction, { wallet: createWalletInstance(wallet), connection })
       .addTransactionParams([txnParam])
@@ -113,7 +117,10 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
   }
 
   const onUnstake = () => {
-    const txnParam = { tokensToUnstake: formatBanxTokensStrToBN(inputTokenAmount) }
+    const txnParam = {
+      tokensToUnstake: formatBanxTokensStrToBN(inputTokenAmount),
+      priorityFeeLevel: priorityLevel,
+    }
 
     new TxnExecutor(unstakeBanxTokenAction, { wallet: createWalletInstance(wallet), connection })
       .addTransactionParams([txnParam])
