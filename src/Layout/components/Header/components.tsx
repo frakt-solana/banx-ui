@@ -25,7 +25,12 @@ export const PriorityFeesButton = () => {
 
   return (
     <Button type="circle" variant="text" onClick={onClickHandler}>
-      Priority: {getHumanReadablePriorityLevel(priorityLevel)}
+      <div>
+        Priority
+        <span className={styles.priorityFeeLevel}>
+          {`: ${getHumanReadablePriorityLevel(priorityLevel)}`}
+        </span>
+      </div>
     </Button>
   )
 }
