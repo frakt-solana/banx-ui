@@ -2,7 +2,7 @@ import axios from 'axios'
 import { web3 } from 'fbonds-core'
 import { uniqueId } from 'lodash'
 
-export type HeliusPriorityFeeLevels =
+type HeliusPriorityFeeLevels =
   | 'Min'
   | 'Low'
   | 'Medium'
