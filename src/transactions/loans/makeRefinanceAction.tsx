@@ -15,9 +15,8 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
+import { createPriorityFeesInstruction } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
-
-import { createInstructionsWithPriorityFees } from '../helpers'
 
 export interface RefinanceOptimisticResult {
   oldBondTradeTransaction: BondTradeTransactionV2
@@ -72,13 +71,10 @@ export const makeRefinanceAction: MakeRefinanceAction = async (
     bondTradeTransaction: optimisticResult.newBondTradeTransaction,
   }
 
-  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
-    instructions,
-    connection,
-  )
+  const priorityFeeInstruction = await createPriorityFeesInstruction(instructions, connection)
 
   return {
-    instructions: instructionsWithPriorityFees,
+    instructions: [...instructions, priorityFeeInstruction],
     signers,
     result: optimisticLoan,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],

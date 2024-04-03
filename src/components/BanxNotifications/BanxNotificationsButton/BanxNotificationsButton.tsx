@@ -3,7 +3,6 @@ import { FC } from 'react'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
-import Tooltip from '@banx/components/Tooltip/Tooltip'
 
 import { useBurgerMenu } from '@banx/Layout/components/BurgerMenu/hooks'
 import { Bell } from '@banx/icons'
@@ -13,11 +12,7 @@ import { BUTTON_ID } from '../constants'
 
 import styles from './BanxNotificationsButton.module.less'
 
-interface BanxNotificationsButtonProps {
-  className?: string
-}
-
-export const BanxNotificationsButton: FC<BanxNotificationsButtonProps> = ({ className }) => {
+export const BanxNotificationsButton: FC = () => {
   const { isVisible, toggleVisibility } = useBanxNotificationsSider()
   const { setVisibility: setBurgerMenuVisibility } = useBurgerMenu()
 
@@ -29,18 +24,15 @@ export const BanxNotificationsButton: FC<BanxNotificationsButtonProps> = ({ clas
   }
 
   return (
-    <Tooltip title="Notifications">
-      <>
-        <Button
-          type="circle"
-          variant="secondary"
-          id={BUTTON_ID}
-          className={classNames(className, { [styles.buttonActive]: isVisible })}
-          onClick={onIconClick}
-        >
-          <Bell />
-        </Button>
-      </>
-    </Tooltip>
+    <Button
+      type="circle"
+      variant="text"
+      id={BUTTON_ID}
+      className={classNames(styles.button, { [styles.buttonActive]: isVisible })}
+      onClick={onIconClick}
+    >
+      <Bell />
+      <span className={styles.buttonText}>Notifications</span>
+    </Button>
   )
 }

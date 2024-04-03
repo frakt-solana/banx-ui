@@ -8,9 +8,8 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
+import { createPriorityFeesInstruction } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
-
-import { createInstructionsWithPriorityFees } from '../helpers'
 
 export type MakeClaimOfferInterestActionParams = {
   optimisticOffer: Offer
@@ -40,13 +39,10 @@ export const makeClaimBondOfferInterestAction: MakeClaimBondOfferInterestAction 
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
-    instructions,
-    connection,
-  )
+  const priorityFeeInstruction = await createPriorityFeesInstruction(instructions, connection)
 
   return {
-    instructions: instructionsWithPriorityFees,
+    instructions: [...instructions, priorityFeeInstruction],
     signers,
     result: optimisticResult,
     lookupTables: [],
