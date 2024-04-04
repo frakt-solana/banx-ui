@@ -21,7 +21,7 @@ export const useUserOffers = () => {
 
   const { data, isLoading, isFetching, isFetched } = useQuery(
     [useUserOffers, publicKeyString, tokenType],
-    () => fetchUserOffers({ walletPubkey: publicKeyString, marketType: tokenType }),
+    () => fetchUserOffers({ walletPubkey: publicKeyString, tokenType }),
     {
       enabled: !!publicKeyString,
       refetchOnWindowFocus: false,

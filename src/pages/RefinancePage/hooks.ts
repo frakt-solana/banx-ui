@@ -29,7 +29,7 @@ export const useAuctionsLoans = () => {
 
   const { data, isLoading } = useQuery(
     ['auctionsLoans', tokenType],
-    () => fetchAuctionsLoans({ marketType: tokenType }),
+    () => fetchAuctionsLoans({ tokenType }),
     {
       staleTime: 5 * 1000,
       refetchOnWindowFocus: false,

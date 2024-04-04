@@ -16,7 +16,7 @@ export const useMarketsPreview = () => {
 
   const { data, isLoading } = useQuery(
     [USE_MARKETS_PREVIEW_QUERY_KEY, tokenType],
-    () => fetchMarketsPreview({ marketType: tokenType }),
+    () => fetchMarketsPreview({ tokenType }),
     {
       staleTime: 5000,
       cacheTime: Infinity,
@@ -39,7 +39,7 @@ export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => 
     () =>
       fetchMarketOffers({
         marketPubkey: new web3.PublicKey(marketPubkey as string),
-        marketType: tokenType,
+        tokenType,
       }),
     {
       enabled: !!marketPubkey,

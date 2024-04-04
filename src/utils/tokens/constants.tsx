@@ -2,6 +2,11 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { USDC } from '@banx/icons'
 
+export enum MarketType {
+  SOL = 'sol',
+  USDC = 'usdc',
+}
+
 export const TOKEN_THRESHOLD = {
   [LendingTokenType.NativeSOL]: 0.001,
   [LendingTokenType.USDC]: 0.01,

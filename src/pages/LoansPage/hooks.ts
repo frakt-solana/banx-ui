@@ -33,7 +33,7 @@ export const useWalletLoansAndOffers = () => {
 
   const { data, isLoading, isFetched, isFetching } = useQuery(
     [USE_WALLET_LOANS_AND_OFFERS_QUERY_KEY, publicKeyString, tokenType],
-    () => fetchWalletLoansAndOffers({ walletPublicKey: publicKeyString, marketType: tokenType }),
+    () => fetchWalletLoansAndOffers({ walletPublicKey: publicKeyString, tokenType }),
     {
       enabled: !!publicKeyString,
       staleTime: 5 * 1000,

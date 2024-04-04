@@ -15,7 +15,7 @@ export const useLenderLoans = ({ offerPubkey }: { offerPubkey: string }) => {
 
   const { data, isLoading, refetch } = useQuery(
     ['lenderLoans', walletPublicKey, tokenType, offerPubkey],
-    () => fetchLenderLoansByCertainOffer({ walletPublicKey, offerPubkey, marketType: tokenType }),
+    () => fetchLenderLoansByCertainOffer({ walletPublicKey, offerPubkey, tokenType }),
     {
       staleTime: 60_000,
       enabled: !!offerPubkey,

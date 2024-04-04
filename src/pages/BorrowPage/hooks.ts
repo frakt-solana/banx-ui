@@ -43,7 +43,7 @@ export const useBorrowNfts = () => {
 
   const { data, isLoading, isFetched, isFetching } = useQuery(
     [USE_BORROW_NFTS_V2_QUERY_KEY, tokenType, walletPubkeyString],
-    () => fetchBorrowNftsAndOffers({ walletPubkey: walletPubkeyString, marketType: tokenType }),
+    () => fetchBorrowNftsAndOffers({ walletPubkey: walletPubkeyString, tokenType }),
     {
       enabled: !!walletPublicKey,
       staleTime: 5 * 1000,

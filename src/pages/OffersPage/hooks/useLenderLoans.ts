@@ -22,8 +22,7 @@ export const useLenderLoans = () => {
 
   const { data: loans, isLoading } = useQuery(
     [USE_LENDER_LOANS_QUERY_KEY, publicKeyString, tokenType],
-    () =>
-      fetchLenderLoans({ walletPublicKey: publicKeyString, marketType: tokenType, getAll: true }),
+    () => fetchLenderLoans({ walletPublicKey: publicKeyString, tokenType, getAll: true }),
     {
       enabled: !!publicKeyString,
       refetchOnWindowFocus: false,
