@@ -10,7 +10,7 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { PriorityLevel, createPriorityFeesInstruction } from '@banx/store'
+import { PriorityLevel, addComputeUnitsToInstuctions } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { fetchRuleset } from '../functions'
@@ -27,7 +27,11 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
   const { bondTradeTransaction, fraktBond } = loan
 
   if (ixnParams.loan.nft.compression) {
-    const { instructions, signers, optimisticResult } = await claimCnftPerpetualLoanCanopy({
+    const {
+      instructions: claimInstructions,
+      signers,
+      optimisticResult,
+    } = await claimCnftPerpetualLoanCanopy({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       addComputeUnits: true,
       accounts: {
@@ -55,16 +59,20 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       bondTradeTransaction: optimisticResult.bondTradeTransaction,
     }
 
-    const priorityFeeInstruction = await createPriorityFeesInstruction(instructions, connection)
+    const instructions = await addComputeUnitsToInstuctions(claimInstructions, connection)
 
     return {
-      instructions: [...instructions, priorityFeeInstruction],
+      instructions,
       signers,
       result: optimisticLoan,
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
     }
   } else {
-    const { instructions, signers, optimisticResult } = await claimPerpetualLoan({
+    const {
+      instructions: claimInstructions,
+      signers,
+      optimisticResult,
+    } = await claimPerpetualLoan({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       addComputeUnits: true,
       accounts: {
@@ -100,14 +108,14 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       bondTradeTransaction: optimisticResult.bondTradeTransaction,
     }
 
-    const priorityFeeInstruction = await createPriorityFeesInstruction(
-      instructions,
+    const instructions = await addComputeUnitsToInstuctions(
+      claimInstructions,
       connection,
       priorityFeeLevel,
     )
 
     return {
-      instructions: [...instructions, priorityFeeInstruction],
+      instructions,
       signers,
       result: optimisticLoan,
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],

@@ -14,7 +14,7 @@ import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transaction
 
 import { Loan } from '@banx/api/core'
 import { BANX_STAKING, BONDS } from '@banx/constants'
-import { PriorityLevel, createPriorityFeesInstruction } from '@banx/store'
+import { PriorityLevel, addComputeUnitsToInstuctions } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { BorrowType } from '../constants'
@@ -49,12 +49,16 @@ export const makeRepayLoansAction: MakeRepayLoansAction = async (
     throw new Error(`Maximum borrow per txn is ${REPAY_NFT_PER_TXN[borrowType]}`)
   }
 
-  const { instructions, signers, optimisticResults, lookupTables } =
-    await getIxnsAndSignersByBorrowType({
-      ixnParams,
-      type: borrowType,
-      walletAndConnection,
-    })
+  const {
+    instructions: repayInstructions,
+    signers,
+    optimisticResults,
+    lookupTables,
+  } = await getIxnsAndSignersByBorrowType({
+    ixnParams,
+    type: borrowType,
+    walletAndConnection,
+  })
 
   const optimisticLoans: Loan[] = optimisticResults.map((optimistic, idx) => ({
     publicKey: optimistic.fraktBond.publicKey,
@@ -63,14 +67,14 @@ export const makeRepayLoansAction: MakeRepayLoansAction = async (
     nft: loans[idx].nft,
   }))
 
-  const priorityFeeInstruction = await createPriorityFeesInstruction(
-    instructions,
+  const instructions = await addComputeUnitsToInstuctions(
+    repayInstructions,
     walletAndConnection.connection,
     priorityFeeLevel,
   )
 
   return {
-    instructions: [...instructions, priorityFeeInstruction],
+    instructions,
     signers,
     lookupTables,
     result: optimisticLoans,

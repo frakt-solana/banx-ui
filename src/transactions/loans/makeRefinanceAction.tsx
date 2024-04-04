@@ -15,7 +15,7 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { PriorityLevel, createPriorityFeesInstruction } from '@banx/store'
+import { PriorityLevel, addComputeUnitsToInstuctions } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export interface RefinanceOptimisticResult {
@@ -43,7 +43,11 @@ export const makeRefinanceAction: MakeRefinanceAction = async (
   const { loan, priorityFeeLevel } = ixnParams || {}
   const { bondTradeTransaction, fraktBond } = loan
 
-  const { instructions, signers, optimisticResult } = await refinancePerpetualLoan({
+  const {
+    instructions: refinanceInstructions,
+    signers,
+    optimisticResult,
+  } = await refinancePerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       fbond: new web3.PublicKey(fraktBond.publicKey),
@@ -72,14 +76,14 @@ export const makeRefinanceAction: MakeRefinanceAction = async (
     bondTradeTransaction: optimisticResult.newBondTradeTransaction,
   }
 
-  const priorityFeeInstruction = await createPriorityFeesInstruction(
-    instructions,
+  const instructions = await addComputeUnitsToInstuctions(
+    refinanceInstructions,
     connection,
     priorityFeeLevel,
   )
 
   return {
-    instructions: [...instructions, priorityFeeInstruction],
+    instructions,
     signers,
     result: optimisticLoan,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],

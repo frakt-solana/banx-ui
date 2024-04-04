@@ -8,7 +8,7 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { PriorityLevel, createPriorityFeesInstruction } from '@banx/store'
+import { PriorityLevel, addComputeUnitsToInstuctions } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type MakeClaimActionParams = {
@@ -27,7 +27,11 @@ export const makeRemoveOfferAction: MakeRemoveOfferAction = async (
 ) => {
   const { optimisticOffer } = ixnParams
 
-  const { instructions, signers, optimisticResult } = await removePerpetualOffer({
+  const {
+    instructions: removeOfferInstructions,
+    signers,
+    optimisticResult,
+  } = await removePerpetualOffer({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       bondOfferV2: new web3.PublicKey(optimisticOffer.publicKey),
@@ -43,14 +47,14 @@ export const makeRemoveOfferAction: MakeRemoveOfferAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const priorityFeeInstruction = await createPriorityFeesInstruction(
-    instructions,
+  const instructions = await addComputeUnitsToInstuctions(
+    removeOfferInstructions,
     connection,
     ixnParams.priorityFeeLevel,
   )
 
   return {
-    instructions: [...instructions, priorityFeeInstruction],
+    instructions,
     signers,
     result: optimisticResult,
   }

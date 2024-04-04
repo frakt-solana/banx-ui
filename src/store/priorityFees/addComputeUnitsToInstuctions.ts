@@ -13,7 +13,7 @@ const extractAccountKeysFromInstructions = (instructions: web3.TransactionInstru
   return concat(accountsKeys, programIds)
 }
 
-export const createPriorityFeesInstruction = async (
+export const addComputeUnitsToInstuctions = async (
   instructions: web3.TransactionInstruction[],
   connection: web3.Connection,
   priorityLevel: PriorityLevel = PriorityLevel.DEFAULT,
@@ -27,14 +27,17 @@ export const createPriorityFeesInstruction = async (
       priorityLevel,
     })
 
-    return web3.ComputeBudgetProgram.setComputeUnitPrice({
+    const setComputeUnitPriceIxn = web3.ComputeBudgetProgram.setComputeUnitPrice({
       microLamports: priorityFee,
     })
+
+    return [setComputeUnitPriceIxn, ...instructions]
   } catch (error) {
     console.error('Error calculating priority fees:', error)
     console.warn(`Using default prioity fee: ${DEFAULT_PRIORITY_FEE} micro lamports`)
-    return web3.ComputeBudgetProgram.setComputeUnitPrice({
+    const setComputeUnitPriceIxn = web3.ComputeBudgetProgram.setComputeUnitPrice({
       microLamports: DEFAULT_PRIORITY_FEE,
     })
+    return [setComputeUnitPriceIxn, ...instructions]
   }
 }

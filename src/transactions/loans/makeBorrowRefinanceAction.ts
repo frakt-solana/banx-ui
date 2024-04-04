@@ -16,7 +16,7 @@ import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transaction
 
 import { Loan, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { PriorityLevel, createPriorityFeesInstruction } from '@banx/store'
+import { PriorityLevel, addComputeUnitsToInstuctions } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export interface BorrowRefinanceActionOptimisticResult {
@@ -44,7 +44,11 @@ export const makeBorrowRefinanceAction: MakeBorrowRefinanceAction = async (
 ) => {
   const { loan } = ixnParams
 
-  const { instructions, signers, optimisticResult } = await getIxnsAndSigners({
+  const {
+    instructions: borrowRefinanceInstructions,
+    signers,
+    optimisticResult,
+  } = await getIxnsAndSigners({
     ixnParams,
     walletAndConnection,
   })
@@ -63,14 +67,14 @@ export const makeBorrowRefinanceAction: MakeBorrowRefinanceAction = async (
     nft: loan.nft,
   }
 
-  const priorityFeeInstruction = await createPriorityFeesInstruction(
-    instructions,
+  const instructions = await addComputeUnitsToInstuctions(
+    borrowRefinanceInstructions,
     walletAndConnection.connection,
     ixnParams.priorityFeeLevel,
   )
 
   return {
-    instructions: [...instructions, priorityFeeInstruction],
+    instructions,
     signers,
     result: {
       loan: optimisticLoan,

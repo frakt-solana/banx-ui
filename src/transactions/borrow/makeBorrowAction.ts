@@ -12,7 +12,7 @@ import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transaction
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { PriorityLevel, createPriorityFeesInstruction } from '@banx/store'
+import { PriorityLevel, addComputeUnitsToInstuctions } from '@banx/store'
 import { calculateApr, sendTxnPlaceHolder } from '@banx/utils'
 
 import { BorrowType } from '../constants'
@@ -40,7 +40,11 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndCon
     throw new Error(`Maximum borrow per txn is ${BORROW_NFT_PER_TXN[borrowType]}`)
   }
 
-  const { instructions, signers, optimisticResults } = await getIxnsAndSignersByBorrowType({
+  const {
+    instructions: borrowInstructions,
+    signers,
+    optimisticResults,
+  } = await getIxnsAndSignersByBorrowType({
     ixnParams,
     type: borrowType,
     walletAndConnection,
@@ -60,14 +64,14 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndCon
     }
   })
 
-  const priorityFeeInstruction = await createPriorityFeesInstruction(
-    instructions,
+  const instructions = await addComputeUnitsToInstuctions(
+    borrowInstructions,
     walletAndConnection.connection,
     ixnParams?.[0].priorityFeeLevel,
   )
 
   return {
-    instructions: [...instructions, priorityFeeInstruction],
+    instructions,
     signers,
     result: loansAndOffers,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],

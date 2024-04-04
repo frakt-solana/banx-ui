@@ -1,3 +1,3 @@
 export * from './usePriorityFees'
 export * from './constants'
-export * from './createPriorityFeesInstruction'
+export * from './addComputeUnitsToInstuctions'
