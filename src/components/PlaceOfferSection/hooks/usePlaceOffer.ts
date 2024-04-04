@@ -3,8 +3,8 @@ import { useEffect, useMemo } from 'react'
 import { chain } from 'lodash'
 
 import { MarketPreview, Offer } from '@banx/api/core'
-import { SyntheticOffer } from '@banx/store'
-import { convertOffersToSimple, useSolanaBalance } from '@banx/utils'
+import { SyntheticOffer, useToken } from '@banx/store'
+import { convertOffersToSimple, getDecimals, useSolanaBalance } from '@banx/utils'
 
 import { Mark } from '../PlaceOfferContent/components'
 import {
@@ -55,6 +55,7 @@ type UsePlaceOffer = (props: {
 
 export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOfferPubkey }) => {
   const solanaBalance = useSolanaBalance({ isLive: false })
+  const { token: tokenType } = useToken()
 
   const { offer, market, updateOrAddOffer } = useMarketAndOffer(offerPubkey, marketPubkey)
   const { syntheticOffer, removeSyntheticOffer, setSyntheticOffer } = useSyntheticOffer(
@@ -65,6 +66,8 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
   const isEditMode = syntheticOffer.isEdit
 
   const { lenderLoans, isLoading: isLoadingLenderLoans } = useLenderLoans({ offerPubkey })
+
+  const decimals = getDecimals(tokenType)
 
   const {
     loanValue: loanValueString,
@@ -77,8 +80,8 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
     resetFormValues,
   } = useOfferFormController(syntheticOffer)
 
-  const deltaValue = parseFloat(deltaValueString) * 1e9
-  const loanValue = parseFloat(loanValueString) * 1e9
+  const deltaValue = parseFloat(deltaValueString) * decimals
+  const loanValue = parseFloat(loanValueString) * decimals
   const loansAmount = parseFloat(loansAmountString)
 
   const exitEditMode = () => {

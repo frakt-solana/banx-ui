@@ -2,22 +2,33 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { clamp, trimStart } from 'lodash'
 
-import { SyntheticOffer } from '@banx/store'
+import { SyntheticOffer, useToken } from '@banx/store'
+import { getDecimals } from '@banx/utils'
 
 export const useOfferFormController = (syntheticOffer: SyntheticOffer) => {
+  const { token: tokenType } = useToken()
+
   const {
     deltaValue: syntheticDeltaValue,
     loanValue: syntheticLoanValue,
     loansAmount: syntheticLoansAmount,
   } = syntheticOffer
 
+  const decimals = getDecimals(tokenType)
+
   const initialValues = useMemo(() => {
     return {
-      deltaValue: formatNumber(syntheticDeltaValue / 1e9),
-      loanValue: formatNumber(syntheticLoanValue / 1e9),
+      deltaValue: formatNumber(syntheticDeltaValue / decimals),
+      loanValue: formatNumber(syntheticLoanValue / decimals),
       loansAmount: syntheticOffer.isEdit ? String(syntheticLoansAmount) : '1',
     }
-  }, [syntheticDeltaValue, syntheticLoanValue, syntheticLoansAmount, syntheticOffer])
+  }, [
+    decimals,
+    syntheticDeltaValue,
+    syntheticLoanValue,
+    syntheticLoansAmount,
+    syntheticOffer.isEdit,
+  ])
 
   const [loanValue, setLoanValue] = useState(initialValues.loanValue)
   const [loansAmount, setLoansAmount] = useState(initialValues.loansAmount)
