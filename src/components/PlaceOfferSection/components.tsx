@@ -4,7 +4,7 @@ import { DisplayValue } from '@banx/components/TableComponents'
 
 import { BONDS } from '@banx/constants'
 import { TokenType } from '@banx/store'
-import { getDecimals } from '@banx/utils'
+import { getTokenDecimals } from '@banx/utils'
 
 import styles from './PlaceOfferSection.module.less'
 
@@ -14,7 +14,7 @@ interface BorrowerMessageProps {
 }
 
 export const BorrowerMessage: FC<BorrowerMessageProps> = ({ loanValue, tokenType }) => {
-  const decimals = getDecimals(tokenType)
+  const decimals = getTokenDecimals(tokenType)
 
   const loanValueToNumber = parseFloat(loanValue) || 0
   const loanValueWithProtocolFee =

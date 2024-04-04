@@ -8,7 +8,7 @@ import { SyntheticOffer, useToken } from '@banx/store'
 import {
   TokenType,
   convertOffersToSimple,
-  getDecimals,
+  getTokenDecimals,
   useSolanaBalance,
   useTokenBalance,
 } from '@banx/utils'
@@ -78,7 +78,7 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
 
   const { lenderLoans, isLoading: isLoadingLenderLoans } = useLenderLoans({ offerPubkey })
 
-  const decimals = getDecimals(tokenType)
+  const decimals = getTokenDecimals(tokenType)
 
   const {
     loanValue: loanValueString,

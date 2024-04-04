@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { clamp, trimStart } from 'lodash'
 
 import { SyntheticOffer, useToken } from '@banx/store'
-import { getDecimals } from '@banx/utils'
+import { getTokenDecimals } from '@banx/utils'
 
 export const useOfferFormController = (syntheticOffer: SyntheticOffer) => {
   const { token: tokenType } = useToken()
@@ -14,7 +14,7 @@ export const useOfferFormController = (syntheticOffer: SyntheticOffer) => {
     loansAmount: syntheticLoansAmount,
   } = syntheticOffer
 
-  const decimals = getDecimals(tokenType)
+  const decimals = getTokenDecimals(tokenType)
 
   const initialValues = useMemo(() => {
     return {

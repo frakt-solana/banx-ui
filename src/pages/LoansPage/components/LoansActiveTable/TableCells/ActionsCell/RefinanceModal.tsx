@@ -22,7 +22,7 @@ import {
   calcLoanBorrowedAmount,
   calculateApr,
   calculateLoanRepayValue,
-  convertValue,
+  convertTokenValue,
   destroySnackbar,
   enqueueSnackbar,
   enqueueTranactionError,
@@ -273,7 +273,7 @@ const LoanDifference: FC<LoanDifferenceProps> = ({ className, difference, tokenT
 
   const subtitle = isDifferenceNegative ? 'Difference you will pay' : 'Difference you will receive'
 
-  const convertedValue = convertValue(difference, tokenType)
+  const convertedValue = convertTokenValue(difference, tokenType)
   const tokenDecimalPlaces = getDecimalPlaces(convertedValue, tokenType)
   const tokenUnit = getTokenUnit(tokenType)
 

@@ -4,27 +4,27 @@ import { TokenType } from '@banx/store'
 
 import { formatNumbersWithCommas } from '../common'
 import {
-  DECIMALS_MAP,
-  DECIMAL_PLACES_CONFIG,
+  DECIMAL_PLACES_LIMITS,
   DEFAULT_DECIMAL_PLACES,
-  THRESHOLD_MAP,
+  TOKEN_DECIMALS,
+  TOKEN_THRESHOLD,
   TOKEN_UNIT,
 } from './constants'
 
-export const convertValue = (value: number, tokenType: TokenType) => {
-  const decimals = DECIMALS_MAP[tokenType]
+const isValueBelowThreshold = (value: number, threshold: number) => value < threshold
+
+export const convertTokenValue = (value: number, tokenType: TokenType) => {
+  const decimals = TOKEN_DECIMALS[tokenType]
   return value / decimals
 }
-
-const isValueBelowThreshold = (value: number, threshold: number) => value < threshold
 
 export const formatValueByTokenType = (value: number, tokenType: TokenType) => {
   if (!value) return ''
 
-  const convertedValue = convertValue(value, tokenType)
+  const convertedValue = convertTokenValue(value, tokenType)
 
-  if (isValueBelowThreshold(convertedValue, THRESHOLD_MAP[tokenType])) {
-    return `<${THRESHOLD_MAP[tokenType]}`
+  if (isValueBelowThreshold(convertedValue, TOKEN_THRESHOLD[tokenType])) {
+    return `<${TOKEN_THRESHOLD[tokenType]}`
   }
 
   return formatTokenValue(convertedValue, tokenType)
@@ -39,12 +39,12 @@ const formatTokenValue = (value: number, tokenType: TokenType) => {
 export const getDecimalPlaces = (value: number, tokenType: TokenType) => {
   if (!value) return 0
 
-  const config = DECIMAL_PLACES_CONFIG[tokenType]
-  return find(config, ({ limit }) => value > limit)?.decimalPlaces ?? DEFAULT_DECIMAL_PLACES
+  const limits = DECIMAL_PLACES_LIMITS[tokenType]
+  return find(limits, ({ limit }) => value > limit)?.decimalPlaces ?? DEFAULT_DECIMAL_PLACES
 }
 
-export const getDecimals = (tokenType: TokenType) => {
-  return DECIMALS_MAP[tokenType]
+export const getTokenDecimals = (tokenType: TokenType) => {
+  return TOKEN_DECIMALS[tokenType]
 }
 
 export const getTokenUnit = (tokenType: TokenType) => {
