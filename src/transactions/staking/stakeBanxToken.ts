@@ -32,11 +32,13 @@ export const stakeBanxTokenAction: StakeBanxTokenAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const instructions = await mergeWithComputeUnits(
-    stakeBanxTokenInstructions,
-    connection,
-    ixnParams.priorityFeeLevel,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: stakeBanxTokenInstructions,
+    connection: connection,
+    lookupTables: [],
+    payer: wallet.publicKey,
+    priorityLevel: ixnParams.priorityFeeLevel,
+  })
 
   return {
     instructions,

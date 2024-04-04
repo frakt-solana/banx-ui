@@ -30,11 +30,13 @@ export const unstakeBanxNftsAction: UnstakeBanxNftsActionAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const instructions = await mergeWithComputeUnits(
-    unstakeBanxNftInstructions,
-    connection,
-    ixnParams.priorityFeeLevel,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: unstakeBanxNftInstructions,
+    connection: connection,
+    lookupTables: [],
+    payer: wallet.publicKey,
+    priorityLevel: ixnParams.priorityFeeLevel,
+  })
 
   return {
     instructions,

@@ -56,11 +56,13 @@ export const makeCreateBondingOfferAction: MakeCreateBondingOfferAction = async 
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const instructions = await mergeWithComputeUnits(
-    createBondingOfferInstructions,
-    connection,
-    ixnParams.priorityFeeLevel,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: createBondingOfferInstructions,
+    connection: connection,
+    lookupTables: [],
+    payer: wallet.publicKey,
+    priorityLevel: ixnParams.priorityFeeLevel,
+  })
 
   return {
     instructions,

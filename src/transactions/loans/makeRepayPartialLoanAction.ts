@@ -74,11 +74,13 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
     nft,
   }))[0]
 
-  const instructions = await mergeWithComputeUnits(
-    repayPartialLoanInstructions,
-    connection,
-    priorityFeeLevel,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: repayPartialLoanInstructions,
+    connection: connection,
+    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    payer: wallet.publicKey,
+    priorityLevel: priorityFeeLevel,
+  })
 
   return {
     instructions,

@@ -44,11 +44,13 @@ export const makeClaimBondOfferInterestAction: MakeClaimBondOfferInterestAction 
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const instructions = await mergeWithComputeUnits(
-    claimInstructions,
-    connection,
-    ixnParams.priorityFeeLevel,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: claimInstructions,
+    connection: connection,
+    lookupTables: [],
+    payer: wallet.publicKey,
+    priorityLevel: ixnParams.priorityFeeLevel,
+  })
 
   return {
     instructions,

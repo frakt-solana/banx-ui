@@ -32,11 +32,13 @@ export const subscribeBanxAdventureAction: SubscribeBanxAdventureAction = async 
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const instructions = await mergeWithComputeUnits(
-    subscribeInxtructions,
-    connection,
-    ixnParams.priorityFeeLevel,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: subscribeInxtructions,
+    connection: connection,
+    lookupTables: [],
+    payer: wallet.publicKey,
+    priorityLevel: ixnParams.priorityFeeLevel,
+  })
 
   return {
     instructions,

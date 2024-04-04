@@ -64,11 +64,13 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndCon
     }
   })
 
-  const instructions = await mergeWithComputeUnits(
-    borrowInstructions,
-    walletAndConnection.connection,
-    ixnParams?.[0].priorityFeeLevel,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: borrowInstructions,
+    connection: walletAndConnection.connection,
+    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    payer: walletAndConnection.wallet.publicKey,
+    priorityLevel: ixnParams?.[0].priorityFeeLevel,
+  })
 
   return {
     instructions,

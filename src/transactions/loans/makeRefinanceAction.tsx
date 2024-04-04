@@ -76,11 +76,13 @@ export const makeRefinanceAction: MakeRefinanceAction = async (
     bondTradeTransaction: optimisticResult.newBondTradeTransaction,
   }
 
-  const instructions = await mergeWithComputeUnits(
-    refinanceInstructions,
-    connection,
-    priorityFeeLevel,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: refinanceInstructions,
+    connection: connection,
+    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    payer: wallet.publicKey,
+    priorityLevel: priorityFeeLevel,
+  })
 
   return {
     instructions,

@@ -69,11 +69,13 @@ export const makeInstantRefinanceAction: MakeInstantRefinanceAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const instructions = await mergeWithComputeUnits(
-    instantRefinanceInstructions,
-    connection,
-    ixnParams.priorityFeeLevel,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: instantRefinanceInstructions,
+    connection: connection,
+    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    payer: wallet.publicKey,
+    priorityLevel: ixnParams.priorityFeeLevel,
+  })
 
   return {
     instructions,

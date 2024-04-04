@@ -32,11 +32,13 @@ export const unstakeBanxTokenAction: UnstakeBanxTokenParamsAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const instructions = await mergeWithComputeUnits(
-    unstakeBanxTokenInstructions,
-    connection,
-    priorityFeeLevel,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: unstakeBanxTokenInstructions,
+    connection: connection,
+    lookupTables: [],
+    payer: wallet.publicKey,
+    priorityLevel: priorityFeeLevel,
+  })
 
   return {
     instructions,

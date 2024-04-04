@@ -56,11 +56,13 @@ export const makeTerminateAction: MakeTerminateAction = async (
     ...optimisticResult,
   }
 
-  const instructions = await mergeWithComputeUnits(
-    terminateInstructions,
-    connection,
-    ixnParams.priorityFeeLevel,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: terminateInstructions,
+    connection: connection,
+    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    payer: wallet.publicKey,
+    priorityLevel: ixnParams.priorityFeeLevel,
+  })
 
   return {
     instructions,

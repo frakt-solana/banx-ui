@@ -53,11 +53,13 @@ export const makeUpdateBondingOfferAction: MakeUpdateBondingOfferAction = async 
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const instructions = await mergeWithComputeUnits(
-    updateBondingOfferInstructions,
-    connection,
-    priorityFeeLevel,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: updateBondingOfferInstructions,
+    connection: connection,
+    lookupTables: [],
+    payer: wallet.publicKey,
+    priorityLevel: priorityFeeLevel,
+  })
 
   return {
     instructions,

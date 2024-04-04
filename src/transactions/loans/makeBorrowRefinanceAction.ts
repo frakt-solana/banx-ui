@@ -67,11 +67,13 @@ export const makeBorrowRefinanceAction: MakeBorrowRefinanceAction = async (
     nft: loan.nft,
   }
 
-  const instructions = await mergeWithComputeUnits(
-    borrowRefinanceInstructions,
-    walletAndConnection.connection,
-    ixnParams.priorityFeeLevel,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: borrowRefinanceInstructions,
+    connection: walletAndConnection.connection,
+    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    payer: walletAndConnection.wallet.publicKey,
+    priorityLevel: ixnParams.priorityFeeLevel,
+  })
 
   return {
     instructions,

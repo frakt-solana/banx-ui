@@ -45,11 +45,13 @@ export const makeCreateOfferAction: MakeCreateOfferAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const instructions = await mergeWithComputeUnits(
-    createOfferInstructions,
-    connection,
-    priorityFeeLevel,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: createOfferInstructions,
+    connection: connection,
+    lookupTables: [],
+    payer: wallet.publicKey,
+    priorityLevel: priorityFeeLevel,
+  })
 
   return {
     instructions,

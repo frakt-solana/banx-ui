@@ -25,7 +25,7 @@ export const makeRemoveOfferAction: MakeRemoveOfferAction = async (
   ixnParams,
   { connection, wallet },
 ) => {
-  const { optimisticOffer } = ixnParams
+  const { optimisticOffer, priorityFeeLevel } = ixnParams
 
   const {
     instructions: removeOfferInstructions,
@@ -47,11 +47,13 @@ export const makeRemoveOfferAction: MakeRemoveOfferAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const instructions = await mergeWithComputeUnits(
-    removeOfferInstructions,
-    connection,
-    ixnParams.priorityFeeLevel,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: removeOfferInstructions,
+    connection: connection,
+    lookupTables: [],
+    payer: wallet.publicKey,
+    priorityLevel: priorityFeeLevel,
+  })
 
   return {
     instructions,

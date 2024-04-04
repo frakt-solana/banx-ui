@@ -58,7 +58,13 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       bondTradeTransaction: optimisticResult.bondTradeTransaction,
     }
 
-    const instructions = await mergeWithComputeUnits(claimInstructions, connection)
+    const instructions = await mergeWithComputeUnits({
+      instructions: claimInstructions,
+      connection: connection,
+      lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+      payer: wallet.publicKey,
+      priorityLevel: priorityFeeLevel,
+    })
 
     return {
       instructions,
@@ -106,11 +112,13 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       bondTradeTransaction: optimisticResult.bondTradeTransaction,
     }
 
-    const instructions = await mergeWithComputeUnits(
-      claimInstructions,
-      connection,
-      priorityFeeLevel,
-    )
+    const instructions = await mergeWithComputeUnits({
+      instructions: claimInstructions,
+      connection: connection,
+      lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+      payer: wallet.publicKey,
+      priorityLevel: priorityFeeLevel,
+    })
 
     return {
       instructions,

@@ -67,11 +67,13 @@ export const makeRepayLoansAction: MakeRepayLoansAction = async (
     nft: loans[idx].nft,
   }))
 
-  const instructions = await mergeWithComputeUnits(
-    repayInstructions,
-    walletAndConnection.connection,
-    priorityFeeLevel,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: repayInstructions,
+    connection: walletAndConnection.connection,
+    lookupTables,
+    payer: walletAndConnection.wallet.publicKey,
+    priorityLevel: priorityFeeLevel,
+  })
 
   return {
     instructions,
