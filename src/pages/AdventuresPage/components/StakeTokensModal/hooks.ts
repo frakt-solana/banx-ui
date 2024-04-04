@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Tab, useTabs } from '@banx/components/Tabs'
@@ -14,7 +15,16 @@ import {
 import { useModal, usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxTokenAction, unstakeBanxTokenAction } from '@banx/transactions/staking'
-import { ZERO_BN, bnToHuman, enqueueTransactionsSent, limitDecimalPlaces } from '@banx/utils'
+import {
+  ZERO_BN,
+  bnToHuman,
+  destroySnackbar,
+  enqueueSnackbar,
+  enqueueTranactionsError,
+  enqueueTransactionsSent,
+  enqueueWaitingConfirmationSingle,
+  limitDecimalPlaces,
+} from '@banx/utils'
 
 import { calcIdleBalance, calcPlayerPoints, formatBanxTokensStrToBN } from './helpers'
 
@@ -96,6 +106,8 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
   const { close } = useModal()
 
   const onStake = () => {
+    const loadingSnackbarId = uniqueId()
+
     const txnParam = {
       tokensToStake: formatBanxTokensStrToBN(inputTokenAmount),
       priorityFeeLevel: priorityLevel,
@@ -109,9 +121,24 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
       },
     )
       .addTransactionParams([txnParam])
-      .on('sentAll', () => {
+      .on('sentAll', (results) => {
         enqueueTransactionsSent()
+        enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)
         close()
+      })
+      .on('confirmedAll', (results) => {
+        destroySnackbar(loadingSnackbarId)
+
+        const { confirmed, failed } = results
+        const failedTransactionsCount = failed.length
+
+        if (confirmed.length) {
+          enqueueSnackbar({ message: 'Staked successfully', type: 'success' })
+        }
+
+        if (failedTransactionsCount) {
+          enqueueTranactionsError(failedTransactionsCount)
+        }
       })
       .on('error', (error) => {
         defaultTxnErrorHandler(error, {
@@ -124,6 +151,8 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
   }
 
   const onUnstake = () => {
+    const loadingSnackbarId = uniqueId()
+
     const txnParam = {
       tokensToUnstake: formatBanxTokensStrToBN(inputTokenAmount),
       priorityFeeLevel: priorityLevel,
@@ -137,9 +166,24 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
       },
     )
       .addTransactionParams([txnParam])
-      .on('sentAll', () => {
+      .on('sentAll', (results) => {
         enqueueTransactionsSent()
+        enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)
         close()
+      })
+      .on('confirmedAll', (results) => {
+        destroySnackbar(loadingSnackbarId)
+
+        const { confirmed, failed } = results
+        const failedTransactionsCount = failed.length
+
+        if (confirmed.length) {
+          enqueueSnackbar({ message: 'Unstaked successfully', type: 'success' })
+        }
+
+        if (failedTransactionsCount) {
+          enqueueTranactionsError(failedTransactionsCount)
+        }
       })
       .on('error', (error) => {
         defaultTxnErrorHandler(error, {
