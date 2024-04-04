@@ -53,7 +53,7 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
         bondTradeTransaction,
         oldBondOffer: getMockBondOffer(),
       } as OptimisticResult,
-      lendingTokenType: LendingTokenType.NativeSOL,
+      lendingTokenType: LendingTokenType.NativeSol,
     },
     accounts: {
       oldBondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),

@@ -59,7 +59,7 @@ export const makeRefinanceAction: MakeRefinanceAction = async (
       oldBondOffer: new web3.PublicKey(loan.bondTradeTransaction.bondOffer),
     },
     args: {
-      lendingTokenType: LendingTokenType.NativeSOL,
+      lendingTokenType: LendingTokenType.NativeSol,
     },
     optimistic: {
       fraktBond,

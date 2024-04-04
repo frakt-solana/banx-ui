@@ -125,7 +125,7 @@ const getIxnsAndSigners = async ({
     offer.pairState === PairState.PerpetualBondingCurveOnMarket
   ) {
     const { instructions, signers, optimisticResult } = await borrowerRefinanceToSame({
-      args: { solToRefinance, aprRate, lendingTokenType: LendingTokenType.NativeSOL },
+      args: { solToRefinance, aprRate, lendingTokenType: LendingTokenType.NativeSol },
       accounts,
       optimistic,
       connection,
@@ -139,7 +139,7 @@ const getIxnsAndSigners = async ({
       args: {
         solToRefinance,
         aprRate,
-        lendingTokenType: LendingTokenType.NativeSOL,
+        lendingTokenType: LendingTokenType.NativeSol,
       },
       accounts: {
         ...accounts,
