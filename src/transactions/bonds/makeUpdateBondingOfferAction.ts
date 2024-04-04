@@ -8,6 +8,7 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
+import { TokenType } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { createInstructionsWithPriorityFees } from '../helpers'
@@ -17,6 +18,7 @@ export type MakeUpdateBondingOfferActionParams = {
   loansAmount: number
   deltaValue: number //? value in sol
   optimisticOffer: Offer
+  tokenType: TokenType
 }
 
 export type MakeUpdateBondingOfferAction = CreateTransactionDataFn<
@@ -28,7 +30,10 @@ export const makeUpdateBondingOfferAction: MakeUpdateBondingOfferAction = async 
   ixnParams,
   { connection, wallet },
 ) => {
-  const { loanValue, loansAmount, deltaValue, optimisticOffer } = ixnParams
+  const { loanValue, loansAmount, deltaValue, tokenType, optimisticOffer } = ixnParams
+
+  const lendingTokenType =
+    tokenType === TokenType.SOL ? LendingTokenType.NativeSOL : LendingTokenType.USDC
 
   const { instructions, signers, optimisticResult } = await updatePerpetualOfferBonding({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
@@ -44,7 +49,7 @@ export const makeUpdateBondingOfferAction: MakeUpdateBondingOfferAction = async 
       loanValue,
       delta: deltaValue,
       quantityOfLoans: loansAmount,
-      lendingTokenType: LendingTokenType.NativeSOL,
+      lendingTokenType,
     },
     sendTxn: sendTxnPlaceHolder,
   })

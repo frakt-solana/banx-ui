@@ -18,7 +18,7 @@ import { executeBorrow } from '@banx/pages/BorrowPage/components/BorrowTable/hel
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { PATHS } from '@banx/router'
-import { useLoansOptimistic, useModal, useOffersOptimistic } from '@banx/store'
+import { useLoansOptimistic, useModal, useOffersOptimistic, useToken } from '@banx/store'
 import { createGlobalState } from '@banx/store/functions'
 import { calculateLoanValue, getDialectAccessToken, trackPageEvent } from '@banx/utils'
 
@@ -86,6 +86,8 @@ export const useSingleBorrow = () => {
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
+  const { token: tokenType } = useToken()
+
   const { update: updateOffersOptimistic } = useOffersOptimistic()
   const { add: addLoansOptimistic } = useLoansOptimistic()
   const { nfts, rawOffers, isLoading } = useBorrowNfts()
@@ -132,7 +134,7 @@ export const useSingleBorrow = () => {
     await executeBorrow({
       wallet,
       connection,
-      txnParams: [[{ nft, offer: rawOffer, loanValue: calculateLoanValue(offer) }]],
+      txnParams: [[{ nft, offer: rawOffer, loanValue: calculateLoanValue(offer), tokenType }]],
       addLoansOptimistic,
       updateOffersOptimistic,
       onBorrowSuccess: () => {

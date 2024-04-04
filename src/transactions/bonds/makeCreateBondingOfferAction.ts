@@ -7,6 +7,7 @@ import { BondingCurveType } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
+import { TokenType } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type MakeCreateBondingOfferActionParams = {
@@ -14,7 +15,7 @@ export type MakeCreateBondingOfferActionParams = {
   loanValue: number //? normal number
   loansAmount: number
   deltaValue: number //? normal number
-  bondingCurveType?: BondingCurveType
+  tokenType: TokenType
 }
 
 export type MakeCreateBondingOfferAction = CreateTransactionDataFn<
@@ -26,13 +27,10 @@ export const makeCreateBondingOfferAction: MakeCreateBondingOfferAction = async 
   ixnParams,
   { connection, wallet },
 ) => {
-  const {
-    marketPubkey,
-    loanValue,
-    loansAmount,
-    bondingCurveType = BondingCurveType.Linear,
-    deltaValue,
-  } = ixnParams
+  const { marketPubkey, loanValue, loansAmount, tokenType, deltaValue } = ixnParams
+
+  const bondingCurveType =
+    tokenType === TokenType.SOL ? BondingCurveType.Linear : BondingCurveType.LinearUsdc
 
   const { instructions, signers, optimisticResult } = await createPerpetualBondOfferBonding({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
