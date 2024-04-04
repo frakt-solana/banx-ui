@@ -6,7 +6,7 @@ export const TXN_EXECUTOR_CONFIRM_OPTIONS: {
   commitment: web3.Commitment
   preflightCommitment: web3.Commitment
 } = {
-  skipPreflight: true,
+  skipPreflight: false,
   maxRetries: 1,
   commitment: 'confirmed',
   preflightCommitment: 'confirmed',

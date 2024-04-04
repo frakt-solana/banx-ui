@@ -3,6 +3,7 @@ import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
+import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
@@ -52,10 +53,16 @@ export const useOfferTransactions = ({
       priorityFeeLevel: priorityLevel,
     }
 
-    await new TxnExecutor(makeCreateBondingOfferAction, {
-      wallet: createWalletInstance(wallet),
-      connection,
-    })
+    await new TxnExecutor(
+      makeCreateBondingOfferAction,
+      {
+        wallet: createWalletInstance(wallet),
+        connection,
+      },
+      {
+        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
+      },
+    )
       .addTransactionParam(txnParam)
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -107,10 +114,16 @@ export const useOfferTransactions = ({
       priorityFeeLevel: priorityLevel,
     }
 
-    await new TxnExecutor(makeUpdateBondingOfferAction, {
-      wallet: createWalletInstance(wallet),
-      connection,
-    })
+    await new TxnExecutor(
+      makeUpdateBondingOfferAction,
+      {
+        wallet: createWalletInstance(wallet),
+        connection,
+      },
+      {
+        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
+      },
+    )
       .addTransactionParam(txnParam)
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -153,7 +166,13 @@ export const useOfferTransactions = ({
 
     const loadingSnackbarId = uniqueId()
 
-    new TxnExecutor(makeRemoveOfferAction, { wallet: createWalletInstance(wallet), connection })
+    new TxnExecutor(
+      makeRemoveOfferAction,
+      { wallet: createWalletInstance(wallet), connection },
+      {
+        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
+      },
+    )
       .addTransactionParam({ optimisticOffer, priorityFeeLevel: priorityLevel })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))

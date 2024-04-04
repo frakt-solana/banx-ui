@@ -11,6 +11,7 @@ import {
   BanxInfoBN,
   BanxStakeBN,
 } from '@banx/api/staking'
+import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { checkIsSubscribed, getAdventureStatus, isAdventureEnded } from '@banx/pages/AdventuresPage'
 import { usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
@@ -84,10 +85,16 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
 
     const params = { weeks: [banxAdventure.week], priorityFeeLevel: priorityLevel }
 
-    new TxnExecutor(subscribeBanxAdventureAction, {
-      wallet: createWalletInstance(wallet),
-      connection,
-    })
+    new TxnExecutor(
+      subscribeBanxAdventureAction,
+      {
+        wallet: createWalletInstance(wallet),
+        connection,
+      },
+      {
+        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
+      },
+    )
       .addTransactionParam(params)
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
