@@ -48,7 +48,7 @@ export const makeUpdateBondingOfferAction: MakeUpdateBondingOfferAction = async 
       loanValue,
       delta: deltaValue,
       quantityOfLoans: loansAmount,
-      lendingTokenType: LendingTokenType.NativeSOL,
+      lendingTokenType: LendingTokenType.NativeSol,
     },
     sendTxn: sendTxnPlaceHolder,
   })
