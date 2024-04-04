@@ -5,6 +5,8 @@ export enum TokenType {
   SOL = 'sol',
 }
 
+const BANX_TOKEN_LS_KEY = '@banx.tokenType'
+
 interface TokenState {
   token: TokenType
   setToken: (nextToken: TokenType) => void
@@ -13,13 +15,18 @@ interface TokenState {
 
 export const useToken = create<TokenState>((set) => {
   const initialState: TokenState = {
-    token: TokenType.SOL,
-    setToken: (nextToken) => set((state) => ({ ...state, token: nextToken })),
-    toggleToken: () =>
-      set((state) => ({
-        ...state,
-        token: state.token === TokenType.SOL ? TokenType.USDC : TokenType.SOL,
-      })),
+    token: (localStorage.getItem(BANX_TOKEN_LS_KEY) as TokenType) || TokenType.SOL,
+    setToken: (nextToken) => {
+      localStorage.setItem(BANX_TOKEN_LS_KEY, nextToken)
+      set((state) => ({ ...state, token: nextToken }))
+    },
+    toggleToken: () => {
+      set((state) => {
+        const nextToken = state.token === TokenType.SOL ? TokenType.USDC : TokenType.SOL
+        localStorage.setItem(BANX_TOKEN_LS_KEY, nextToken)
+        return { ...state, token: nextToken }
+      })
+    },
   }
 
   return initialState
