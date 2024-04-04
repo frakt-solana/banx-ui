@@ -38,7 +38,7 @@ export const makeRemoveOfferAction: MakeRemoveOfferAction = async (
       userPubkey: wallet.publicKey as web3.PublicKey,
     },
     args: {
-      lendingTokenType: LendingTokenType.NativeSOL,
+      lendingTokenType: LendingTokenType.NativeSol,
     },
     optimistic: {
       bondOffer: optimisticOffer as BondOfferV2,
