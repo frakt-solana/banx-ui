@@ -1,6 +1,5 @@
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { find } from 'lodash'
-
-import { TokenType } from '@banx/store'
 
 import { formatNumbersWithCommas } from '../common'
 import {
@@ -13,12 +12,12 @@ import {
 
 const isValueBelowThreshold = (value: number, threshold: number) => value < threshold
 
-export const convertTokenValue = (value: number, tokenType: TokenType) => {
+export const convertTokenValue = (value: number, tokenType: LendingTokenType) => {
   const decimals = TOKEN_DECIMALS[tokenType]
   return value / decimals
 }
 
-export const formatValueByTokenType = (value: number, tokenType: TokenType) => {
+export const formatValueByLendingTokenType = (value: number, tokenType: LendingTokenType) => {
   if (!value) return ''
 
   const convertedValue = convertTokenValue(value, tokenType)
@@ -30,23 +29,28 @@ export const formatValueByTokenType = (value: number, tokenType: TokenType) => {
   return formatTokenValue(convertedValue, tokenType)
 }
 
-const formatTokenValue = (value: number, tokenType: TokenType) => {
+const formatTokenValue = (value: number, tokenType: LendingTokenType) => {
   const decimalPlaces = getDecimalPlaces(value, tokenType)
   const formattedValueWithDecimals = value.toFixed(decimalPlaces)
   return formatNumbersWithCommas(formattedValueWithDecimals)
 }
 
-export const getDecimalPlaces = (value: number, tokenType: TokenType) => {
+export const getDecimalPlaces = (value: number, tokenType: LendingTokenType) => {
   if (!value) return 0
 
   const limits = DECIMAL_PLACES_LIMITS[tokenType]
   return find(limits, ({ limit }) => value > limit)?.decimalPlaces ?? DEFAULT_DECIMAL_PLACES
 }
 
-export const getTokenDecimals = (tokenType: TokenType) => {
+export const getTokenDecimals = (tokenType: LendingTokenType) => {
   return TOKEN_DECIMALS[tokenType]
 }
 
-export const getTokenUnit = (tokenType: TokenType) => {
+export const getTokenUnit = (tokenType: LendingTokenType) => {
   return TOKEN_UNIT[tokenType]
 }
+
+export const isSolLendingTokenType = (tokenType: LendingTokenType) =>
+  tokenType === LendingTokenType.NativeSOL
+export const isUsdcLendingTokenType = (tokenType: LendingTokenType) =>
+  tokenType === LendingTokenType.USDC

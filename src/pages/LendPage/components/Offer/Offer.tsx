@@ -3,14 +3,15 @@ import { FC } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Button } from '@banx/components/Buttons'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
 import { Pencil } from '@banx/icons'
-import { SyntheticOffer, TokenType, useToken } from '@banx/store'
-import { calculateApr, formatValueByTokenType, getTokenUnit } from '@banx/utils'
+import { SyntheticOffer, useToken } from '@banx/store'
+import { calculateApr, formatValueByLendingTokenType, getTokenUnit } from '@banx/utils'
 
 import styles from './Offer.module.less'
 
@@ -90,13 +91,13 @@ const EditOfferButton: FC<{ onClick: () => void }> = ({ onClick }) => (
   </Button>
 )
 
-const getDisplayOfferRange = (offer: SyntheticOffer, tokenType: TokenType) => {
+const getDisplayOfferRange = (offer: SyntheticOffer, tokenType: LendingTokenType) => {
   const { loanValue, loansAmount, deltaValue } = offer
 
   const minDeltaValue = loanValue - (loansAmount - 1) * deltaValue
 
-  const formattedLoanValue = formatValueByTokenType(loanValue, tokenType)
-  const formattedMinLoanValue = formatValueByTokenType(minDeltaValue, tokenType)
+  const formattedLoanValue = formatValueByLendingTokenType(loanValue, tokenType)
+  const formattedMinLoanValue = formatValueByLendingTokenType(minDeltaValue, tokenType)
 
   const displayOfferRange = deltaValue
     ? `${formattedLoanValue} - ${formattedMinLoanValue}`

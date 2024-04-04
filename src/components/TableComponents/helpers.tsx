@@ -1,10 +1,11 @@
 import { FC } from 'react'
 
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import moment from 'moment'
 
 import { USDC } from '@banx/icons'
-import { TokenType, useToken } from '@banx/store'
-import { formatValueByTokenType, getTokenUnit } from '@banx/utils'
+import { useToken } from '@banx/store'
+import { formatValueByLendingTokenType, getTokenUnit } from '@banx/utils'
 
 import styles from './TableCells.module.less'
 
@@ -32,8 +33,8 @@ export const createTimeValueJSX = (initialValue: number, zeroPlaceholder = '--')
 }
 
 const DEFAULT_PLACEHOLDERS = {
-  [TokenType.SOL]: '0◎',
-  [TokenType.USDC]: (
+  [LendingTokenType.NativeSOL]: '0◎',
+  [LendingTokenType.USDC]: (
     <>
       0 <USDC />
     </>
@@ -46,7 +47,7 @@ export const DisplayValue: FC<{ value: number; placeholder?: string }> = ({
 }) => {
   const { token: tokenType } = useToken()
 
-  const formattedValue = formatValueByTokenType(value, tokenType)
+  const formattedValue = formatValueByLendingTokenType(value, tokenType)
 
   const defaultPlaceholder = placeholder || DEFAULT_PLACEHOLDERS[tokenType]
   const unit = getTokenUnit(tokenType)

@@ -1,11 +1,18 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { USDC_ADDRESS } from '@banx/constants'
 import { useDiscordUser } from '@banx/hooks'
 import { ChevronDown, Wallet } from '@banx/icons'
-import { TokenType, useToken } from '@banx/store'
-import { shortenAddress, useSolanaBalance, useTokenBalance } from '@banx/utils'
+import { useToken } from '@banx/store'
+import {
+  isSolLendingTokenType,
+  isUsdcLendingTokenType,
+  shortenAddress,
+  useSolanaBalance,
+  useTokenBalance,
+} from '@banx/utils'
 
 import { DisplayValue } from '../TableComponents'
 import UserAvatar from '../UserAvatar'
@@ -22,8 +29,8 @@ export const WalletConnectButton = () => {
 
   const { token: tokenType } = useToken()
 
-  const solanaBalance = useSolanaBalance({ isLive: tokenType === TokenType.SOL })
-  const usdcBalance = useTokenBalance(USDC_ADDRESS, { isLive: tokenType === TokenType.USDC })
+  const solanaBalance = useSolanaBalance({ isLive: isSolLendingTokenType(tokenType) })
+  const usdcBalance = useTokenBalance(USDC_ADDRESS, { isLive: isUsdcLendingTokenType(tokenType) })
 
   const ConnectedButton = () => (
     <div className={styles.connectedButton} onClick={toggleVisibility}>
@@ -33,8 +40,8 @@ export const WalletConnectButton = () => {
           {shortenAddress(publicKey?.toBase58() || '')}
         </span>
         <span className={styles.solanaBalance}>
-          {tokenType === TokenType.SOL && <DisplayValue value={solanaBalance} />}
-          {tokenType === TokenType.USDC && <DisplayValue value={usdcBalance} />}
+          {tokenType === LendingTokenType.NativeSOL && <DisplayValue value={solanaBalance} />}
+          {tokenType === LendingTokenType.USDC && <DisplayValue value={usdcBalance} />}
         </span>
       </div>
       <ChevronDown

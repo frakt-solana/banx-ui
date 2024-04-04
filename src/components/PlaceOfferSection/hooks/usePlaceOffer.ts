@@ -1,12 +1,12 @@
 import { useEffect, useMemo } from 'react'
 
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
 
 import { MarketPreview, Offer } from '@banx/api/core'
 import { USDC_ADDRESS } from '@banx/constants'
 import { SyntheticOffer, useToken } from '@banx/store'
 import {
-  TokenType,
   convertOffersToSimple,
   getTokenDecimals,
   useSolanaBalance,
@@ -63,10 +63,10 @@ type UsePlaceOffer = (props: {
 export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOfferPubkey }) => {
   const { token: tokenType } = useToken()
 
-  const solanaBalance = useSolanaBalance({ isLive: tokenType === TokenType.SOL })
-  const usdcBalance = useTokenBalance(USDC_ADDRESS, { isLive: tokenType === TokenType.USDC })
+  const solanaBalance = useSolanaBalance({ isLive: tokenType === LendingTokenType.NativeSOL })
+  const usdcBalance = useTokenBalance(USDC_ADDRESS, { isLive: tokenType === LendingTokenType.USDC })
 
-  const tokenBalance = tokenType === TokenType.SOL ? solanaBalance : usdcBalance
+  const tokenBalance = tokenType === LendingTokenType.NativeSOL ? solanaBalance : usdcBalance
 
   const { offer, market, updateOrAddOffer } = useMarketAndOffer(offerPubkey, marketPubkey)
   const { syntheticOffer, removeSyntheticOffer, setSyntheticOffer } = useSyntheticOffer(

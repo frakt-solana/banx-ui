@@ -1,16 +1,17 @@
 import { FC } from 'react'
 
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { BONDS } from '@banx/constants'
-import { TokenType } from '@banx/store'
 import { getTokenDecimals } from '@banx/utils'
 
 import styles from './PlaceOfferSection.module.less'
 
 interface BorrowerMessageProps {
   loanValue: string
-  tokenType: TokenType
+  tokenType: LendingTokenType
 }
 
 export const BorrowerMessage: FC<BorrowerMessageProps> = ({ loanValue, tokenType }) => {

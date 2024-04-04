@@ -2,6 +2,7 @@ import { FC, useEffect, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
@@ -15,7 +16,7 @@ import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { useMarketOffers } from '@banx/pages/LendPage'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
-import { TokenType, useLoansOptimistic, useModal, useToken } from '@banx/store'
+import { useLoansOptimistic, useModal, useToken } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeBorrowRefinanceAction } from '@banx/transactions/loans'
 import {
@@ -264,7 +265,7 @@ const LoanInfo: FC<LoanInfoProps> = ({ title, borrowedAmount, debt, apr, faded, 
 
 interface LoanDifferenceProps {
   difference: number //? lamports
-  tokenType: TokenType
+  tokenType: LendingTokenType
   className?: string
 }
 

@@ -1,6 +1,7 @@
 import { FC, useMemo } from 'react'
 
 import classNames from 'classnames'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { compact, first, isArray, last } from 'lodash'
 
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
@@ -9,12 +10,11 @@ import Tooltip from '@banx/components/Tooltip'
 import { Loan } from '@banx/api/core'
 import { useImagePreload } from '@banx/hooks'
 import { PlaceholderPFP } from '@banx/icons'
-import { TokenType } from '@banx/store'
 import {
   HealthColorIncreasing,
   calcLoanBorrowedAmount,
   calculateLoanRepayValue,
-  formatValueByTokenType,
+  formatValueByLendingTokenType,
   getColorByPercent,
 } from '@banx/utils'
 
@@ -75,11 +75,11 @@ export const DiagramMark: FC<DiagramMarkProps> = ({ mark, left }) => {
 
   const displayOfferValue =
     markers.length > 1 && firstValue !== lastValue
-      ? `${formatValueByTokenType(firstValue, TokenType.SOL)} - ${formatValueByTokenType(
-          lastValue,
-          TokenType.SOL,
-        )}◎`
-      : `${formatValueByTokenType(firstValue, TokenType.SOL)}◎`
+      ? `${formatValueByLendingTokenType(
+          firstValue,
+          LendingTokenType.NativeSOL,
+        )} - ${formatValueByLendingTokenType(lastValue, LendingTokenType.NativeSOL)}◎`
+      : `${formatValueByLendingTokenType(firstValue, LendingTokenType.NativeSOL)}◎`
 
   const MarkContent = (
     <div className={styles.mark} style={{ left: calculateStyle(left) }}>

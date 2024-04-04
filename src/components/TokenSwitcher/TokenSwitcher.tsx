@@ -1,15 +1,16 @@
 import classNames from 'classnames'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { SOL, USDC } from '@banx/icons'
-import { TokenType, useToken } from '@banx/store'
+import { useToken } from '@banx/store'
 
 import styles from './TokenSwitcher.module.less'
 
 const TokenSwitcher = () => {
   const { token, toggleToken } = useToken()
 
-  const tokens = [TokenType.USDC, TokenType.SOL]
-  const tokenIcon = { [TokenType.USDC]: USDC, [TokenType.SOL]: SOL }
+  const tokens = [LendingTokenType.USDC, LendingTokenType.NativeSOL]
+  const tokenIcon = { [LendingTokenType.USDC]: USDC, [LendingTokenType.NativeSOL]: SOL }
 
   return (
     <div className={styles.tokenSwitcher}>

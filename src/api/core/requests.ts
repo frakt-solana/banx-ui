@@ -1,8 +1,8 @@
 import axios from 'axios'
 import { web3 } from 'fbonds-core'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
-import { TokenType } from '@banx/store'
 
 import {
   AuctionsLoansResponse,
@@ -27,7 +27,7 @@ import {
   WalletLoansAndOffersShema,
 } from './types'
 
-type FetchMarketsPreview = (props: { marketType: TokenType }) => Promise<MarketPreview[]>
+type FetchMarketsPreview = (props: { marketType: LendingTokenType }) => Promise<MarketPreview[]>
 export const fetchMarketsPreview: FetchMarketsPreview = async ({ marketType }) => {
   const queryParams = new URLSearchParams({
     getAll: String(true),
@@ -50,7 +50,7 @@ export const fetchMarketsPreview: FetchMarketsPreview = async ({ marketType }) =
 
 type FetchMarketOffers = (props: {
   marketPubkey?: web3.PublicKey | null
-  marketType: TokenType
+  marketType: LendingTokenType
   order?: 'asc' | 'desc'
   skip?: number
   limit?: number
@@ -88,7 +88,7 @@ export const fetchMarketOffers: FetchMarketOffers = async ({
 
 type FetchWalletLoansAndOffers = (props: {
   walletPublicKey: string
-  marketType: TokenType
+  marketType: LendingTokenType
   order?: 'asc' | 'desc'
   skip?: number
   limit?: number
@@ -127,7 +127,7 @@ export const fetchWalletLoansAndOffers: FetchWalletLoansAndOffers = async ({
 
 type FetchLenderLoansByCertainOffer = (props: {
   walletPublicKey: string
-  marketType: TokenType
+  marketType: LendingTokenType
   offerPubkey: string
   order?: 'asc' | 'desc'
   skip?: number
@@ -170,7 +170,7 @@ export const fetchLenderLoansByCertainOffer: FetchLenderLoansByCertainOffer = as
 
 type FetchLenderLoans = (props: {
   walletPublicKey: string
-  marketType: TokenType
+  marketType: LendingTokenType
   sortBy?: 'status' | 'apr'
   order?: 'asc' | 'desc'
   skip?: number
@@ -211,7 +211,7 @@ export const fetchLenderLoans: FetchLenderLoans = async ({
 
 type FetchBorrowNftsAndOffers = (props: {
   walletPubkey: string
-  marketType: TokenType
+  marketType: LendingTokenType
   order?: string
   getAll?: boolean
   skip?: number
@@ -249,7 +249,7 @@ export const fetchBorrowNftsAndOffers: FetchBorrowNftsAndOffers = async ({
 }
 
 type FetchAuctionsLoans = (props: {
-  marketType: TokenType
+  marketType: LendingTokenType
 }) => Promise<AuctionsLoansResponse['data']>
 
 export const fetchAuctionsLoans: FetchAuctionsLoans = async ({ marketType }) => {
@@ -273,7 +273,7 @@ export const fetchAuctionsLoans: FetchAuctionsLoans = async ({ marketType }) => 
 
 type FetchUserOffers = (props: {
   walletPubkey: string
-  marketType: TokenType
+  marketType: LendingTokenType
   getAll?: boolean
 }) => Promise<UserOffer[]>
 

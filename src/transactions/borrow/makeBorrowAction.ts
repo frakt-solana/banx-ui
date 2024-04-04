@@ -12,7 +12,6 @@ import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transaction
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { TokenType } from '@banx/store'
 import { calculateApr, sendTxnPlaceHolder } from '@banx/utils'
 
 import { BorrowType } from '../constants'
@@ -24,7 +23,7 @@ export type MakeBorrowActionParams = {
   loanValue: number
   offer: Offer
   optimizeIntoReserves?: boolean
-  tokenType: TokenType
+  tokenType: LendingTokenType
 }[]
 
 export type MakeBorrowActionResult = { loan: Loan; offer: Offer }[]
@@ -85,8 +84,7 @@ const getIxnsAndSignersByBorrowType = async ({
 }) => {
   const { connection, wallet } = walletAndConnection
 
-  const lendingTokenType =
-    ixnParams[0].tokenType === TokenType.SOL ? LendingTokenType.NativeSOL : LendingTokenType.USDC
+  const lendingTokenType = ixnParams[0].tokenType
 
   const optimizeIntoReserves =
     ixnParams[0]?.optimizeIntoReserves === undefined ? true : ixnParams[0]?.optimizeIntoReserves

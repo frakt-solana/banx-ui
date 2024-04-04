@@ -8,14 +8,13 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { TokenType } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { createInstructionsWithPriorityFees } from '../helpers'
 
 export type MakeClaimActionParams = {
   optimisticOffer: Offer
-  tokenType: TokenType
+  tokenType: LendingTokenType
 }
 
 export type MakeRemoveOfferAction = CreateTransactionDataFn<
@@ -29,9 +28,6 @@ export const makeRemoveOfferAction: MakeRemoveOfferAction = async (
 ) => {
   const { optimisticOffer, tokenType } = ixnParams
 
-  const lendingTokenType =
-    tokenType === TokenType.SOL ? LendingTokenType.NativeSOL : LendingTokenType.USDC
-
   const { instructions, signers, optimisticResult } = await removePerpetualOffer({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
@@ -39,7 +35,7 @@ export const makeRemoveOfferAction: MakeRemoveOfferAction = async (
       userPubkey: wallet.publicKey as web3.PublicKey,
     },
     args: {
-      lendingTokenType,
+      lendingTokenType: tokenType,
     },
     optimistic: {
       bondOffer: optimisticOffer as BondOfferV2,

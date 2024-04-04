@@ -8,7 +8,7 @@ import { create } from 'zustand'
 
 import { Loan } from '@banx/api/core'
 
-import { TokenType, useToken } from '../useToken'
+import { useToken } from '../useToken'
 
 const BANX_LOANS_OPTIMISTICS_LS_KEY = '@banx.loansOptimistics'
 const LOANS_CACHE_TIME_UNIX = 2 * 60 //? Auto clear optimistic after 2 minutes
@@ -98,17 +98,17 @@ export const useLoansOptimistic = () => {
     setInitialState()
   }, [setState])
 
-  const loansByTokenType = useMemo(() => {
-    const filterLoansByTokenType = (tokenType: LendingTokenType) =>
+  const loansByLendingTokenType = useMemo(() => {
+    const filterLoansByLendingTokenType = (tokenType: LendingTokenType) =>
       filter(optimisticLoans, (loan) => loan.loan.bondTradeTransaction.lendingToken === tokenType)
 
-    const solLoans = filterLoansByTokenType(LendingTokenType.NativeSOL)
-    const usdcLoans = filterLoansByTokenType(LendingTokenType.USDC)
+    const solLoans = filterLoansByLendingTokenType(LendingTokenType.NativeSOL)
+    const usdcLoans = filterLoansByLendingTokenType(LendingTokenType.USDC)
 
-    return tokenType === TokenType.SOL ? solLoans : usdcLoans
+    return tokenType === LendingTokenType.NativeSOL ? solLoans : usdcLoans
   }, [optimisticLoans, tokenType])
 
-  return { loans: loansByTokenType, add, remove, find, update }
+  return { loans: loansByLendingTokenType, add, remove, find, update }
 }
 
 export const isOptimisticLoanExpired = (loan: LoanOptimistic, walletPublicKey: string) =>
