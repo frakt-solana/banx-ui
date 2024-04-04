@@ -19,8 +19,8 @@ import { makeInstantRefinanceAction, makeTerminateAction } from '@banx/transacti
 import {
   calculateLoanRepayValue,
   destroySnackbar,
+  enqueueConfirmationError,
   enqueueSnackbar,
-  enqueueTranactionError,
   enqueueTransactionSent,
   enqueueWaitingConfirmation,
   filterOutWalletLoans,
@@ -139,7 +139,9 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
         destroySnackbar(loadingSnackbarId)
 
         if (failed.length) {
-          return enqueueTranactionError()
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
 
         return confirmed.forEach(({ result, signature }) => {
@@ -193,7 +195,9 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
         destroySnackbar(loadingSnackbarId)
 
         if (failed.length) {
-          return enqueueTranactionError()
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
 
         return confirmed.forEach(({ result, signature }) => {

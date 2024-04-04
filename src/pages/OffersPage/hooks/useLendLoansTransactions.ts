@@ -13,8 +13,8 @@ import {
 } from '@banx/transactions/loans'
 import {
   destroySnackbar,
+  enqueueConfirmationError,
   enqueueSnackbar,
-  enqueueTranactionError,
   enqueueTransactionSent,
   enqueueWaitingConfirmation,
 } from '@banx/utils'
@@ -58,7 +58,9 @@ export const useLendLoansTransactions = ({
         destroySnackbar(loadingSnackbarId)
 
         if (failed.length) {
-          return enqueueTranactionError()
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
 
         return confirmed.forEach(({ result, signature }) => {
@@ -106,7 +108,9 @@ export const useLendLoansTransactions = ({
         destroySnackbar(loadingSnackbarId)
 
         if (failed.length) {
-          return enqueueTranactionError()
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
 
         return confirmed.forEach(({ result, signature }) => {
@@ -156,7 +160,9 @@ export const useLendLoansTransactions = ({
         destroySnackbar(loadingSnackbarId)
 
         if (failed.length) {
-          return enqueueTranactionError()
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
 
         return confirmed.forEach(({ result, signature }) => {

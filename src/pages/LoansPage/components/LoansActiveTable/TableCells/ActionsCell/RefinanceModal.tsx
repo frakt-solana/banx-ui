@@ -23,8 +23,8 @@ import {
   calculateApr,
   calculateLoanRepayValue,
   destroySnackbar,
+  enqueueConfirmationError,
   enqueueSnackbar,
-  enqueueTranactionError,
   enqueueTransactionSent,
   enqueueWaitingConfirmation,
   filterOutWalletLoans,
@@ -153,7 +153,9 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
         destroySnackbar(loadingSnackbarId)
 
         if (failed.length) {
-          return enqueueTranactionError()
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
 
         return confirmed.forEach(({ result, signature }) => {

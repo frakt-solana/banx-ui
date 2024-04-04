@@ -23,8 +23,8 @@ import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions
 import { makeRefinanceAction } from '@banx/transactions/loans'
 import {
   destroySnackbar,
+  enqueueConfirmationError,
   enqueueSnackbar,
-  enqueueTranactionError,
   enqueueTransactionSent,
   enqueueWaitingConfirmation,
   getDialectAccessToken,
@@ -117,7 +117,9 @@ const useRefinanceTransaction = (loan: Loan) => {
         destroySnackbar(loadingSnackbarId)
 
         if (failed.length) {
-          return enqueueTranactionError()
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
 
         return confirmed.forEach(({ result, signature }) => {

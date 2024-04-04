@@ -18,8 +18,8 @@ import { makeClaimAction, makeTerminateAction } from '@banx/transactions/loans'
 import {
   HealthColorIncreasing,
   destroySnackbar,
+  enqueueConfirmationError,
   enqueueSnackbar,
-  enqueueTranactionsError,
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
   getColorByPercent,
@@ -74,7 +74,6 @@ export const Summary: FC<SummaryProps> = ({
       })
       .on('confirmedAll', (results) => {
         const { confirmed, failed } = results
-        const failedTransactionsCount = failed.length
 
         destroySnackbar(loadingSnackbarId)
 
@@ -84,8 +83,10 @@ export const Summary: FC<SummaryProps> = ({
           clearSelection()
         }
 
-        if (failedTransactionsCount) {
-          return enqueueTranactionsError(failedTransactionsCount)
+        if (failed.length) {
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
       })
       .on('error', (error) => {
@@ -116,7 +117,6 @@ export const Summary: FC<SummaryProps> = ({
       })
       .on('confirmedAll', (results) => {
         const { confirmed, failed } = results
-        const failedTransactionsCount = failed.length
 
         destroySnackbar(loadingSnackbarId)
 
@@ -131,8 +131,10 @@ export const Summary: FC<SummaryProps> = ({
           hideLoans(...mintsToHidden)
         }
 
-        if (failedTransactionsCount) {
-          return enqueueTranactionsError(failedTransactionsCount)
+        if (failed.length) {
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
       })
       .on('error', (error) => {

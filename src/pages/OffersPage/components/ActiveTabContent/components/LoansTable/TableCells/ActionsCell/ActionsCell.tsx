@@ -16,8 +16,8 @@ import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions
 import { makeClaimAction } from '@banx/transactions/loans'
 import {
   destroySnackbar,
+  enqueueConfirmationError,
   enqueueSnackbar,
-  enqueueTranactionError,
   enqueueTransactionSent,
   enqueueWaitingConfirmation,
   isLoanLiquidated,
@@ -65,7 +65,9 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
         destroySnackbar(loadingSnackbarId)
 
         if (failed.length) {
-          return enqueueTranactionError()
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
 
         return confirmed.forEach(({ result, signature }) => {

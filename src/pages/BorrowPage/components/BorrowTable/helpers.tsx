@@ -24,8 +24,8 @@ import {
 import {
   convertOffersToSimple,
   destroySnackbar,
+  enqueueConfirmationError,
   enqueueSnackbar,
-  enqueueTranactionsError,
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
   offerNeedsReservesOptimizationOnBorrow,
@@ -109,7 +109,6 @@ export const executeBorrow = async (props: {
     })
     .on('confirmedAll', (results) => {
       const { confirmed, failed } = results
-      const failedTransactionsCount = failed.length
 
       destroySnackbar(loadingSnackbarId)
 
@@ -160,8 +159,10 @@ export const executeBorrow = async (props: {
         onBorrowSuccess?.(loansFlat.length, showCongratsMessage)
       }
 
-      if (failedTransactionsCount) {
-        return enqueueTranactionsError(failedTransactionsCount)
+      if (failed.length) {
+        return failed.forEach(({ signature, reason }) =>
+          enqueueConfirmationError(signature, reason),
+        )
       }
     })
     .on('error', (error) => {

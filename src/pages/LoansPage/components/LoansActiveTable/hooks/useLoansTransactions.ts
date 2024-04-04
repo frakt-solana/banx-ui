@@ -15,9 +15,8 @@ import {
 } from '@banx/transactions/loans'
 import {
   destroySnackbar,
+  enqueueConfirmationError,
   enqueueSnackbar,
-  enqueueTranactionError,
-  enqueueTranactionsError,
   enqueueTransactionSent,
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
@@ -58,7 +57,9 @@ export const useLoansTransactions = () => {
         destroySnackbar(loadingSnackbarId)
 
         if (failed.length) {
-          return enqueueTranactionError()
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
 
         return confirmed.forEach(({ result, signature }) => {
@@ -111,7 +112,9 @@ export const useLoansTransactions = () => {
         destroySnackbar(loadingSnackbarId)
 
         if (failed.length) {
-          return enqueueTranactionError()
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
 
         return confirmed.forEach(({ result, signature }) => {
@@ -163,7 +166,6 @@ export const useLoansTransactions = () => {
       })
       .on('confirmedAll', (results) => {
         const { confirmed, failed } = results
-        const failedTransactionsCount = failed.length
 
         destroySnackbar(loadingSnackbarId)
 
@@ -178,8 +180,10 @@ export const useLoansTransactions = () => {
           clearSelection()
         }
 
-        if (failedTransactionsCount) {
-          return enqueueTranactionsError(failedTransactionsCount)
+        if (failed.length) {
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
       })
       .on('error', (error) => {
@@ -215,7 +219,6 @@ export const useLoansTransactions = () => {
       })
       .on('confirmedAll', (results) => {
         const { confirmed, failed } = results
-        const failedTransactionsCount = failed.length
 
         destroySnackbar(loadingSnackbarId)
 
@@ -230,8 +233,10 @@ export const useLoansTransactions = () => {
           clearSelection()
         }
 
-        if (failedTransactionsCount) {
-          return enqueueTranactionsError(failedTransactionsCount)
+        if (failed.length) {
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
       })
       .on('error', (error) => {

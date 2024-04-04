@@ -19,8 +19,8 @@ import {
   ZERO_BN,
   bnToHuman,
   destroySnackbar,
+  enqueueConfirmationError,
   enqueueSnackbar,
-  enqueueTranactionsError,
   enqueueTransactionsSent,
   enqueueWaitingConfirmationSingle,
   limitDecimalPlaces,
@@ -130,14 +130,15 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
         destroySnackbar(loadingSnackbarId)
 
         const { confirmed, failed } = results
-        const failedTransactionsCount = failed.length
 
         if (confirmed.length) {
           enqueueSnackbar({ message: 'Staked successfully', type: 'success' })
         }
 
-        if (failedTransactionsCount) {
-          enqueueTranactionsError(failedTransactionsCount)
+        if (failed.length) {
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
       })
       .on('error', (error) => {
@@ -175,14 +176,15 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
         destroySnackbar(loadingSnackbarId)
 
         const { confirmed, failed } = results
-        const failedTransactionsCount = failed.length
 
         if (confirmed.length) {
           enqueueSnackbar({ message: 'Unstaked successfully', type: 'success' })
         }
 
-        if (failedTransactionsCount) {
-          enqueueTranactionsError(failedTransactionsCount)
+        if (failed.length) {
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
       })
       .on('error', (error) => {

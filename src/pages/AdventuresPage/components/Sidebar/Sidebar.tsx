@@ -5,7 +5,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { BN } from 'fbonds-core'
 import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
-import { chain } from 'lodash'
+import { chain, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
@@ -28,7 +28,11 @@ import { stakeBanxClaimAction } from '@banx/transactions/staking/stakeBanxClaimA
 import {
   ZERO_BN,
   bnToFixed,
-  enqueueTransactionSent,
+  destroySnackbar,
+  enqueueConfirmationError,
+  enqueueSnackbar,
+  enqueueTransactionsSent,
+  enqueueWaitingConfirmationSingle,
   formatCompact,
   formatNumbersWithCommas,
 } from '@banx/utils'
@@ -121,6 +125,8 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
 
     const params = { weeks, priorityFeeLevel: priorityLevel }
 
+    const loadingSnackbarId = uniqueId()
+
     new TxnExecutor(
       stakeBanxClaimAction,
       { wallet: createWalletInstance(wallet), connection },
@@ -129,8 +135,24 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
       },
     )
       .addTransactionParam(params)
-      .on('sentSome', (results) => {
-        results.forEach(({ signature }) => enqueueTransactionSent(signature))
+      .on('sentAll', (results) => {
+        enqueueTransactionsSent()
+        enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)
+      })
+      .on('confirmedAll', (results) => {
+        destroySnackbar(loadingSnackbarId)
+
+        const { confirmed, failed } = results
+
+        if (confirmed.length) {
+          enqueueSnackbar({ message: 'Claimed successfully', type: 'success' })
+        }
+
+        if (failed.length) {
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
+        }
       })
       .on('error', (error) => {
         defaultTxnErrorHandler(error, {

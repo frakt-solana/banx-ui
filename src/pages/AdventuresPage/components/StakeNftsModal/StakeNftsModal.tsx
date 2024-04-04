@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { web3 } from 'fbonds-core'
 import { BanxStakeState } from 'fbonds-core/lib/fbond-protocol/types'
+import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
@@ -17,7 +18,13 @@ import { NftCheckbox, NftsStats } from '@banx/pages/AdventuresPage/components'
 import { useModal, usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxNftAction, unstakeBanxNftsAction } from '@banx/transactions/staking'
-import { enqueueTransactionsSent } from '@banx/utils'
+import {
+  destroySnackbar,
+  enqueueConfirmationError,
+  enqueueSnackbar,
+  enqueueTransactionsSent,
+  enqueueWaitingConfirmation,
+} from '@banx/utils'
 
 import styles from './StakeNftsModal.module.less'
 
@@ -87,6 +94,8 @@ export const StakeNftsModal = () => {
         priorityFeeLevel: priorityLevel,
       }))
 
+      const loadingSnackbarId = uniqueId()
+
       new TxnExecutor(
         stakeBanxNftAction,
         { wallet: createWalletInstance(wallet), connection },
@@ -97,7 +106,23 @@ export const StakeNftsModal = () => {
         .addTransactionParams(params)
         .on('sentAll', () => {
           enqueueTransactionsSent()
+          enqueueWaitingConfirmation(loadingSnackbarId)
           close()
+        })
+        .on('confirmedAll', (results) => {
+          destroySnackbar(loadingSnackbarId)
+
+          const { confirmed, failed } = results
+
+          if (confirmed.length) {
+            enqueueSnackbar({ message: 'Staked successfully', type: 'success' })
+          }
+
+          if (failed.length) {
+            return failed.forEach(({ signature, reason }) =>
+              enqueueConfirmationError(signature, reason),
+            )
+          }
         })
         .on('error', (error) => {
           defaultTxnErrorHandler(error, {
@@ -124,6 +149,8 @@ export const StakeNftsModal = () => {
         priorityFeeLevel: priorityLevel,
       }))
 
+      const loadingSnackbarId = uniqueId()
+
       new TxnExecutor(
         unstakeBanxNftsAction,
         { wallet: createWalletInstance(wallet), connection },
@@ -134,7 +161,23 @@ export const StakeNftsModal = () => {
         .addTransactionParams(params)
         .on('sentAll', () => {
           enqueueTransactionsSent()
+          enqueueWaitingConfirmation(loadingSnackbarId)
           close()
+        })
+        .on('confirmedAll', (results) => {
+          destroySnackbar(loadingSnackbarId)
+
+          const { confirmed, failed } = results
+
+          if (confirmed.length) {
+            enqueueSnackbar({ message: 'Unstaked successfully', type: 'success' })
+          }
+
+          if (failed.length) {
+            return failed.forEach(({ signature, reason }) =>
+              enqueueConfirmationError(signature, reason),
+            )
+          }
         })
         .on('error', (error) => {
           defaultTxnErrorHandler(error, {

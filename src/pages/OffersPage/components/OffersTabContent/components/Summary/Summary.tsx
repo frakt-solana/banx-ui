@@ -14,8 +14,8 @@ import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions
 import { makeClaimBondOfferInterestAction } from '@banx/transactions/bonds'
 import {
   destroySnackbar,
+  enqueueConfirmationError,
   enqueueSnackbar,
-  enqueueTranactionsError,
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
   formatDecimal,
@@ -65,7 +65,6 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
       })
       .on('confirmedAll', (results) => {
         const { confirmed, failed } = results
-        const failedTransactionsCount = failed.length
 
         destroySnackbar(loadingSnackbarId)
 
@@ -74,8 +73,10 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
           confirmed.forEach(({ result }) => result && updateOrAddOffer([result.bondOffer]))
         }
 
-        if (failedTransactionsCount) {
-          return enqueueTranactionsError(failedTransactionsCount)
+        if (failed.length) {
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
       })
       .on('error', (error) => {

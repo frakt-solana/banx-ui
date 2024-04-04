@@ -25,8 +25,8 @@ import {
   calcWeightedAverage,
   calculateLoanRepayValue,
   destroySnackbar,
+  enqueueConfirmationError,
   enqueueSnackbar,
-  enqueueTranactionsError,
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
   getDialectAccessToken,
@@ -99,7 +99,6 @@ export const Summary: FC<SummaryProps> = ({
       })
       .on('confirmedAll', (results) => {
         const { confirmed, failed } = results
-        const failedTransactionsCount = failed.length
 
         destroySnackbar(loadingSnackbarId)
 
@@ -116,8 +115,10 @@ export const Summary: FC<SummaryProps> = ({
           onSuccess(mintsToHidden.length)
         }
 
-        if (failedTransactionsCount) {
-          return enqueueTranactionsError(failedTransactionsCount)
+        if (failed.length) {
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
       })
       .on('error', (error) => {
