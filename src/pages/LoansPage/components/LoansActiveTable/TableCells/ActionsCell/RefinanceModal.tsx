@@ -15,13 +15,14 @@ import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { useMarketOffers } from '@banx/pages/LendPage'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
-import { useLoansOptimistic, useModal } from '@banx/store'
+import { TokenType, useLoansOptimistic, useModal, useToken } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeBorrowRefinanceAction } from '@banx/transactions/loans'
 import {
   calcLoanBorrowedAmount,
   calculateApr,
   calculateLoanRepayValue,
+  convertValue,
   destroySnackbar,
   enqueueSnackbar,
   enqueueTranactionError,
@@ -29,6 +30,8 @@ import {
   enqueueWaitingConfirmation,
   filterOutWalletLoans,
   findSuitableOffer,
+  getDecimalPlaces,
+  getTokenUnit,
   isLoanTerminating,
   isOfferNotEmpty,
   trackPageEvent,
@@ -41,11 +44,13 @@ interface RefinanceModalProps {
 }
 
 export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
-  const { close } = useModal()
+  const { bondTradeTransaction, fraktBond, nft } = loan
+
   const wallet = useWallet()
   const { connection } = useConnection()
 
-  const { bondTradeTransaction, fraktBond, nft } = loan
+  const { close } = useModal()
+  const { token: tokenType } = useToken()
 
   const { offers, updateOrAddOffer, isLoading } = useMarketOffers({
     marketPubkey: fraktBond.hadoMarket,
@@ -189,7 +194,11 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
             className={styles.newLoanInfo}
           />
 
-          <LoanDifference difference={differenceToPay} className={styles.difference} />
+          <LoanDifference
+            difference={differenceToPay}
+            tokenType={tokenType}
+            className={styles.difference}
+          />
 
           <Slider
             label="Loan"
@@ -255,13 +264,18 @@ const LoanInfo: FC<LoanInfoProps> = ({ title, borrowedAmount, debt, apr, faded, 
 
 interface LoanDifferenceProps {
   difference: number //? lamports
+  tokenType: TokenType
   className?: string
 }
 
-const LoanDifference: FC<LoanDifferenceProps> = ({ className, difference }) => {
+const LoanDifference: FC<LoanDifferenceProps> = ({ className, difference, tokenType }) => {
   const isDifferenceNegative = difference < 0
 
   const subtitle = isDifferenceNegative ? 'Difference you will pay' : 'Difference you will receive'
+
+  const convertedValue = convertValue(difference, tokenType)
+  const tokenDecimalPlaces = getDecimalPlaces(convertedValue, tokenType)
+  const tokenUnit = getTokenUnit(tokenType)
 
   return (
     <div className={classNames(styles.loanDifference, className)}>
@@ -271,7 +285,8 @@ const LoanDifference: FC<LoanDifferenceProps> = ({ className, difference }) => {
           isDifferenceNegative && styles.loanDifferenceTitleRed,
         )}
       >
-        <DisplayValue value={difference} />
+        {convertedValue?.toFixed(tokenDecimalPlaces)}
+        {tokenUnit}
       </p>
       <p className={styles.loanDifferenceSubtitle}>{subtitle}</p>
     </div>

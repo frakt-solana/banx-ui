@@ -11,7 +11,7 @@ import {
   TOKEN_UNIT,
 } from './constants'
 
-const convertValue = (value: number, tokenType: TokenType) => {
+export const convertValue = (value: number, tokenType: TokenType) => {
   const decimals = DECIMALS_MAP[tokenType]
   return value / decimals
 }
@@ -36,7 +36,7 @@ const formatTokenValue = (value: number, tokenType: TokenType) => {
   return formatNumbersWithCommas(formattedValueWithDecimals)
 }
 
-const getDecimalPlaces = (value: number, tokenType: TokenType) => {
+export const getDecimalPlaces = (value: number, tokenType: TokenType) => {
   if (!value) return 0
 
   const config = DECIMAL_PLACES_CONFIG[tokenType]
