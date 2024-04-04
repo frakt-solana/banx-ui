@@ -4,12 +4,12 @@ import { claimStakingRewards } from 'fbonds-core/lib/fbond-protocol/functions/ba
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
+import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
-
-import { createInstructionsWithPriorityFees } from '../helpers'
 
 export type StakeBanxClaimActionParams = {
   weeks: number[]
+  priorityFeeLevel: PriorityLevel
 }
 
 export type StakeBanxClaimAction = CreateTransactionDataFn<StakeBanxClaimActionParams, null>
@@ -18,7 +18,7 @@ export const stakeBanxClaimAction: StakeBanxClaimAction = async (
   ixnParams,
   { connection, wallet },
 ) => {
-  const { instructions, signers } = await claimStakingRewards({
+  const { instructions: claimInstructions, signers } = await claimStakingRewards({
     connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     args: {
@@ -31,13 +31,16 @@ export const stakeBanxClaimAction: StakeBanxClaimAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
-    instructions,
-    connection,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: claimInstructions,
+    connection: connection,
+    lookupTables: [],
+    payer: wallet.publicKey,
+    priorityLevel: ixnParams.priorityFeeLevel,
+  })
 
   return {
-    instructions: instructionsWithPriorityFees,
+    instructions,
     signers,
     lookupTables: [],
   }

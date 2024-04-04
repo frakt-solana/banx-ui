@@ -14,7 +14,7 @@ import { BANX_STAKING } from '@banx/constants'
 import { TensorFilled } from '@banx/icons'
 import { useBanxStakeInfo, useBanxStakeSettings } from '@banx/pages/AdventuresPage'
 import { NftCheckbox, NftsStats } from '@banx/pages/AdventuresPage/components'
-import { useModal } from '@banx/store'
+import { useModal, usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxNftAction, unstakeBanxNftsAction } from '@banx/transactions/staking'
 import { enqueueTransactionsSent } from '@banx/utils'
@@ -25,6 +25,7 @@ import styles from './StakeNftsModal.module.less'
 export const StakeNftsModal = () => {
   const { connection } = useConnection()
   const wallet = useWallet()
+  const { priorityLevel } = usePriorityFees()
 
   const { close } = useModal()
   const { banxStakeSettings /* setBanxTokenSettingsOptimistic */ } = useBanxStakeSettings()
@@ -83,6 +84,7 @@ export const StakeNftsModal = () => {
         nftMint: nft.mint,
         whitelistEntry: new web3.PublicKey(BANX_STAKING.WHITELIST_ENTRY_PUBKEY),
         hadoRegistry: new web3.PublicKey(BANX_STAKING.HADO_REGISTRY_PUBKEY),
+        priorityFeeLevel: priorityLevel,
       }))
 
       new TxnExecutor(stakeBanxNftAction, { wallet: createWalletInstance(wallet), connection })
@@ -113,6 +115,7 @@ export const StakeNftsModal = () => {
         nftMint: nft.mint,
         userPubkey: wallet.publicKey as web3.PublicKey,
         nftStakePublicKey: nft.stake?.publicKey ?? '',
+        priorityFeeLevel: priorityLevel,
       }))
 
       new TxnExecutor(unstakeBanxNftsAction, { wallet: createWalletInstance(wallet), connection })

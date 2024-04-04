@@ -14,14 +14,15 @@ import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transaction
 
 import { Loan } from '@banx/api/core'
 import { BANX_STAKING, BONDS } from '@banx/constants'
+import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { BorrowType } from '../constants'
 import { fetchRuleset } from '../functions'
-import { createInstructionsWithPriorityFees } from '../helpers'
 
 export type MakeRepayLoansActionParams = {
   loans: Loan[]
+  priorityFeeLevel: PriorityLevel
 }
 
 export type MakeRepayActionResult = Loan[]
@@ -41,19 +42,23 @@ export const makeRepayLoansAction: MakeRepayLoansAction = async (
   ixnParams,
   walletAndConnection,
 ) => {
-  const { loans } = ixnParams
+  const { loans, priorityFeeLevel } = ixnParams
   const borrowType = getChunkBorrowType(loans)
 
   if (loans.length > REPAY_NFT_PER_TXN[borrowType]) {
     throw new Error(`Maximum borrow per txn is ${REPAY_NFT_PER_TXN[borrowType]}`)
   }
 
-  const { instructions, signers, optimisticResults, lookupTables } =
-    await getIxnsAndSignersByBorrowType({
-      ixnParams,
-      type: borrowType,
-      walletAndConnection,
-    })
+  const {
+    instructions: repayInstructions,
+    signers,
+    optimisticResults,
+    lookupTables,
+  } = await getIxnsAndSignersByBorrowType({
+    ixnParams,
+    type: borrowType,
+    walletAndConnection,
+  })
 
   const optimisticLoans: Loan[] = optimisticResults.map((optimistic, idx) => ({
     publicKey: optimistic.fraktBond.publicKey,
@@ -61,6 +66,14 @@ export const makeRepayLoansAction: MakeRepayLoansAction = async (
     bondTradeTransaction: optimistic.bondTradeTransaction,
     nft: loans[idx].nft,
   }))
+
+  const instructions = await mergeWithComputeUnits({
+    instructions: repayInstructions,
+    connection: walletAndConnection.connection,
+    lookupTables,
+    payer: walletAndConnection.wallet.publicKey,
+    priorityLevel: priorityFeeLevel,
+  })
 
   return {
     instructions,
@@ -119,13 +132,8 @@ const getIxnsAndSignersByBorrowType = async ({
       sendTxn: sendTxnPlaceHolder,
     })
 
-    const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
-      instructions,
-      connection,
-    )
-
     return {
-      instructions: instructionsWithPriorityFees,
+      instructions,
       signers,
       optimisticResults,
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
@@ -167,13 +175,8 @@ const getIxnsAndSignersByBorrowType = async ({
       sendTxn: sendTxnPlaceHolder,
     })
 
-    const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
-      instructions,
-      connection,
-    )
-
     return {
-      instructions: instructionsWithPriorityFees,
+      instructions,
       signers,
       optimisticResults,
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
@@ -215,13 +218,8 @@ const getIxnsAndSignersByBorrowType = async ({
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
-    instructions,
-    connection,
-  )
-
   return {
-    instructions: instructionsWithPriorityFees,
+    instructions,
     signers,
     optimisticResults,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],

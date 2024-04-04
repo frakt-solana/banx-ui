@@ -18,7 +18,13 @@ import { executeBorrow } from '@banx/pages/BorrowPage/components/BorrowTable/hel
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { PATHS } from '@banx/router'
-import { useLoansOptimistic, useModal, useOffersOptimistic, useToken } from '@banx/store'
+import {
+  useLoansOptimistic,
+  useModal,
+  useOffersOptimistic,
+  usePriorityFees,
+  useToken,
+} from '@banx/store'
 import { createGlobalState } from '@banx/store/functions'
 import { calculateLoanValue, getDialectAccessToken, trackPageEvent } from '@banx/utils'
 
@@ -82,6 +88,7 @@ export const useDashboardBorrowTab = () => {
 export const useSingleBorrow = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
+  const { priorityLevel } = usePriorityFees()
   const navigate = useNavigate()
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
@@ -134,7 +141,17 @@ export const useSingleBorrow = () => {
     await executeBorrow({
       wallet,
       connection,
-      txnParams: [[{ nft, offer: rawOffer, loanValue: calculateLoanValue(offer), tokenType }]],
+      txnParams: [
+        [
+          {
+            nft,
+            offer: rawOffer,
+            loanValue: calculateLoanValue(offer),
+            priorityFeeLevel: priorityLevel,
+            tokenType,
+          },
+        ],
+      ],
       addLoansOptimistic,
       updateOffersOptimistic,
       onBorrowSuccess: () => {

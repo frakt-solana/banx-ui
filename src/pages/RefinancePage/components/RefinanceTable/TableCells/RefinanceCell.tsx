@@ -17,7 +17,7 @@ import {
 
 import { Loan } from '@banx/api/core'
 import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
-import { useModal } from '@banx/store'
+import { useModal, usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeRefinanceAction } from '@banx/transactions/loans'
 import {
@@ -77,6 +77,7 @@ export const RefinanceCell: FC<RefinanceCellProps> = ({ loan, isCardView, disabl
 const useRefinanceTransaction = (loan: Loan) => {
   const wallet = useWallet()
   const { connection } = useConnection()
+  const { priorityLevel } = usePriorityFees()
   const { addMints } = useAuctionsLoans()
   const { deselectLoan } = useLoansState()
   const { open, close } = useModal()
@@ -100,7 +101,7 @@ const useRefinanceTransaction = (loan: Loan) => {
     const loadingSnackbarId = uniqueId()
 
     new TxnExecutor(makeRefinanceAction, { wallet: createWalletInstance(wallet), connection })
-      .addTransactionParam({ loan })
+      .addTransactionParam({ loan, priorityFeeLevel: priorityLevel })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
         enqueueWaitingConfirmation(loadingSnackbarId)

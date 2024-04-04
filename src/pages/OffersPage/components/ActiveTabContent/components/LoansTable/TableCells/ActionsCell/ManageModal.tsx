@@ -13,7 +13,7 @@ import { Modal } from '@banx/components/modals/BaseModal'
 import { Loan } from '@banx/api/core'
 import { useMarketOffers } from '@banx/pages/LendPage'
 import { calculateClaimValue, useLenderLoans } from '@banx/pages/OffersPage'
-import { useModal } from '@banx/store'
+import { useModal, usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeInstantRefinanceAction, makeTerminateAction } from '@banx/transactions/loans'
 import {
@@ -80,6 +80,7 @@ interface ClosureContentProps {
 const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
+  const { priorityLevel } = usePriorityFees()
   const { close } = useModal()
 
   const { remove: removeLoan } = useSelectedLoans()
@@ -120,7 +121,7 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
     const loadingSnackbarId = uniqueId()
 
     new TxnExecutor(makeTerminateAction, { wallet: createWalletInstance(wallet), connection })
-      .addTransactionParam({ loan })
+      .addTransactionParam({ loan, priorityFeeLevel: priorityLevel })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
         enqueueWaitingConfirmation(loadingSnackbarId)
@@ -168,7 +169,7 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
       wallet: createWalletInstance(wallet),
       connection,
     })
-      .addTransactionParam({ loan, bestOffer })
+      .addTransactionParam({ loan, bestOffer, priorityFeeLevel: priorityLevel })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
         enqueueWaitingConfirmation(loadingSnackbarId)

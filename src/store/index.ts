@@ -3,6 +3,7 @@ export { useBanxLogin, getBanxJwtFromLS } from './useBanxLogin'
 export * from './useModal'
 export * from './useTableView'
 export * from './useToken'
+export * from './priorityFees'
 
 export * from './markets'
 export * from './offers'

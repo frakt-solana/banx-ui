@@ -10,23 +10,28 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
+import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { fetchRuleset } from '../functions'
-import { createInstructionsWithPriorityFees } from '../helpers'
 
 export type MakeClaimActionParams = {
   loan: Loan
+  priorityFeeLevel: PriorityLevel
 }
 
 export type MakeClaimAction = CreateTransactionDataFn<MakeClaimActionParams, Loan>
 
 export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, wallet }) => {
-  const { loan } = ixnParams
+  const { loan, priorityFeeLevel } = ixnParams
   const { bondTradeTransaction, fraktBond } = loan
 
   if (ixnParams.loan.nft.compression) {
-    const { instructions, signers, optimisticResult } = await claimCnftPerpetualLoanCanopy({
+    const {
+      instructions: claimInstructions,
+      signers,
+      optimisticResult,
+    } = await claimCnftPerpetualLoanCanopy({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
@@ -53,19 +58,26 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       bondTradeTransaction: optimisticResult.bondTradeTransaction,
     }
 
-    const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
-      instructions,
-      connection,
-    )
+    const instructions = await mergeWithComputeUnits({
+      instructions: claimInstructions,
+      connection: connection,
+      lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+      payer: wallet.publicKey,
+      priorityLevel: priorityFeeLevel,
+    })
 
     return {
-      instructions: instructionsWithPriorityFees,
+      instructions,
       signers,
       result: optimisticLoan,
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
     }
   } else {
-    const { instructions, signers, optimisticResult } = await claimPerpetualLoan({
+    const {
+      instructions: claimInstructions,
+      signers,
+      optimisticResult,
+    } = await claimPerpetualLoan({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
@@ -100,13 +112,16 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       bondTradeTransaction: optimisticResult.bondTradeTransaction,
     }
 
-    const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
-      instructions,
-      connection,
-    )
+    const instructions = await mergeWithComputeUnits({
+      instructions: claimInstructions,
+      connection: connection,
+      lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+      payer: wallet.publicKey,
+      priorityLevel: priorityFeeLevel,
+    })
 
     return {
-      instructions: instructionsWithPriorityFees,
+      instructions,
       signers,
       result: optimisticLoan,
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],

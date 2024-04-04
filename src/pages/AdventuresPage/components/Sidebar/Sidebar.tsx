@@ -22,7 +22,7 @@ import {
   isAdventureEnded,
 } from '@banx/pages/AdventuresPage'
 import { StakeNftsModal, StakeTokensModal } from '@banx/pages/AdventuresPage/components'
-import { useModal } from '@banx/store'
+import { useModal, usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxClaimAction } from '@banx/transactions/staking/stakeBanxClaimAction'
 import {
@@ -45,6 +45,7 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
   const { open } = useModal()
   const wallet = useWallet()
   const { connection } = useConnection()
+  const { priorityLevel } = usePriorityFees()
 
   const { nfts, banxAdventures, banxTokenStake } = banxStakeInfo
 
@@ -118,7 +119,7 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
       .map(({ adventure }) => adventure.week)
       .value()
 
-    const params = { weeks }
+    const params = { weeks, priorityFeeLevel: priorityLevel }
 
     new TxnExecutor(stakeBanxClaimAction, { wallet: createWalletInstance(wallet), connection })
       .addTransactionParam(params)

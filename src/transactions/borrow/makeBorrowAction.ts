@@ -12,11 +12,11 @@ import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transaction
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
+import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { calculateApr, sendTxnPlaceHolder } from '@banx/utils'
 
 import { BorrowType } from '../constants'
 import { fetchRuleset } from '../functions'
-import { createInstructionsWithPriorityFees } from '../helpers'
 
 export type MakeBorrowActionParams = {
   nft: BorrowNft
@@ -24,6 +24,7 @@ export type MakeBorrowActionParams = {
   offer: Offer
   optimizeIntoReserves?: boolean
   tokenType: LendingTokenType
+  priorityFeeLevel: PriorityLevel
 }[]
 
 export type MakeBorrowActionResult = { loan: Loan; offer: Offer }[]
@@ -40,7 +41,11 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndCon
     throw new Error(`Maximum borrow per txn is ${BORROW_NFT_PER_TXN[borrowType]}`)
   }
 
-  const { instructions, signers, optimisticResults } = await getIxnsAndSignersByBorrowType({
+  const {
+    instructions: borrowInstructions,
+    signers,
+    optimisticResults,
+  } = await getIxnsAndSignersByBorrowType({
     ixnParams,
     type: borrowType,
     walletAndConnection,
@@ -60,13 +65,16 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndCon
     }
   })
 
-  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
-    instructions,
-    walletAndConnection.connection,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: borrowInstructions,
+    connection: walletAndConnection.connection,
+    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    payer: walletAndConnection.wallet.publicKey,
+    priorityLevel: ixnParams?.[0].priorityFeeLevel,
+  })
 
   return {
-    instructions: instructionsWithPriorityFees,
+    instructions,
     signers,
     result: loansAndOffers,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
@@ -128,6 +136,7 @@ const getIxnsAndSignersByBorrowType = async ({
       connection,
       sendTxn: sendTxnPlaceHolder,
     })
+
     return { instructions, signers, optimisticResults }
   }
 

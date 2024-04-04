@@ -12,6 +12,7 @@ import {
   BanxStakeBN,
 } from '@banx/api/staking'
 import { checkIsSubscribed, getAdventureStatus, isAdventureEnded } from '@banx/pages/AdventuresPage'
+import { usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { subscribeBanxAdventureAction } from '@banx/transactions/staking'
 import { enqueueTransactionSent } from '@banx/utils'
@@ -68,6 +69,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
 }) => {
   const { connection } = useConnection()
   const wallet = useWallet()
+  const { priorityLevel } = usePriorityFees()
 
   const isEnded = isAdventureEnded(banxAdventure)
 
@@ -80,7 +82,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
       return
     }
 
-    const params = { weeks: [banxAdventure.week] }
+    const params = { weeks: [banxAdventure.week], priorityFeeLevel: priorityLevel }
 
     new TxnExecutor(subscribeBanxAdventureAction, {
       wallet: createWalletInstance(wallet),
@@ -117,7 +119,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
             banxAdventure={banxAdventure}
           />
         )}
-        {isEnded && wallet.connected && (
+        {isEnded && (
           <AdventureEndedRewardsResult
             banxAdventureSubscription={banxAdventureSubscription}
             banxAdventure={banxAdventure}

@@ -13,7 +13,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
 import bonkTokenImg from '@banx/assets/BonkToken.png'
 import { BONDS, SPECIAL_COLLECTIONS_MARKETS } from '@banx/constants'
-import { LoansOptimisticStore, OffersOptimisticStore } from '@banx/store'
+import { LoansOptimisticStore, OffersOptimisticStore, PriorityLevel } from '@banx/store'
 import { BorrowType, createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
   BORROW_NFT_PER_TXN,
@@ -177,7 +177,11 @@ export const executeBorrow = async (props: {
   return txnsResults
 }
 
-export const createBorrowParams = (nfts: TableNftData[], rawOffers: Record<string, Offer[]>) => {
+export const createBorrowParams = (
+  nfts: TableNftData[],
+  rawOffers: Record<string, Offer[]>,
+  priorityLevel: PriorityLevel,
+) => {
   const nftsByMarket = groupBy(nfts, ({ nft }) => nft.loan.marketPubkey)
 
   const txnData = chain(nftsByMarket)
@@ -185,6 +189,7 @@ export const createBorrowParams = (nfts: TableNftData[], rawOffers: Record<strin
     //? Match nfts and offers to borrow from the most suitable offers
     .map(([marketPubkey, nfts]) => matchNftsAndOffers({ nfts, rawOffers: rawOffers[marketPubkey] }))
     .flatten()
+    .map((txnData) => ({ ...txnData, priorityFeeLevel: priorityLevel }))
     .value()
 
   return chunkBorrowIxnsParams(txnData)

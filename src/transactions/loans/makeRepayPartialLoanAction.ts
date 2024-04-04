@@ -10,13 +10,13 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
+import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
-
-import { createInstructionsWithPriorityFees } from '../helpers'
 
 export type MakeRepayPartialLoanActionParams = {
   loan: Loan
   fractionToRepay: number //? F.E 50% => 5000
+  priorityFeeLevel: PriorityLevel
 }
 
 export type MakeRepayPartialActionResult = Loan
@@ -36,11 +36,15 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
 ) => {
   const { connection, wallet } = walletAndConnection
 
-  const { loan, fractionToRepay } = ixnParams
+  const { loan, fractionToRepay, priorityFeeLevel } = ixnParams
 
   const { fraktBond, bondTradeTransaction, nft } = loan
 
-  const { instructions, signers, optimisticResults } = await repayPartialPerpetualLoan({
+  const {
+    instructions: repayPartialLoanInstructions,
+    signers,
+    optimisticResults,
+  } = await repayPartialPerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     args: {
       fractionToRepay,
@@ -70,13 +74,16 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
     nft,
   }))[0]
 
-  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
-    instructions,
-    connection,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: repayPartialLoanInstructions,
+    connection: connection,
+    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    payer: wallet.publicKey,
+    priorityLevel: priorityFeeLevel,
+  })
 
   return {
-    instructions: instructionsWithPriorityFees,
+    instructions,
     signers,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
     result: optimisticResult,

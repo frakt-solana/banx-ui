@@ -8,6 +8,7 @@ import { Button } from '@banx/components/Buttons'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { Offer, UserOffer } from '@banx/api/core'
+import { usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimBondOfferInterestAction } from '@banx/transactions/bonds'
 import {
@@ -28,6 +29,7 @@ interface SummaryProps {
 const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
+  const { priorityLevel } = usePriorityFees()
 
   const totalAccruedInterest = useMemo(
     () => sumBy(offers, ({ offer }) => offer.concentrationIndex),
@@ -39,7 +41,10 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
 
     const loadingSnackbarId = uniqueId()
 
-    const txnParams = offers.map(({ offer }) => ({ optimisticOffer: offer }))
+    const txnParams = offers.map(({ offer }) => ({
+      optimisticOffer: offer,
+      priorityFeeLevel: priorityLevel,
+    }))
 
     new TxnExecutor(makeClaimBondOfferInterestAction, {
       wallet: createWalletInstance(wallet),

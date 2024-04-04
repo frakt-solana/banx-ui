@@ -16,7 +16,7 @@ import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { useMarketOffers } from '@banx/pages/LendPage'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
-import { useLoansOptimistic, useModal, useToken } from '@banx/store'
+import { useLoansOptimistic, useModal, useToken, usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeBorrowRefinanceAction } from '@banx/transactions/loans'
 import {
@@ -49,6 +49,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
 
   const wallet = useWallet()
   const { connection } = useConnection()
+  const { priorityLevel } = usePriorityFees()
 
   const { close } = useModal()
   const { token: tokenType } = useToken()
@@ -60,11 +61,17 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
   const bestOffer = useMemo(() => {
     return chain(offers)
       .sortBy(({ currentSpotPrice }) => currentSpotPrice)
+      .thru((offers) =>
+        filterOutWalletLoans({
+          offers,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+        }),
+      )
       .filter(isOfferNotEmpty)
       .reverse()
       .value()
       .at(0)
-  }, [offers])
+  }, [offers, wallet])
 
   const initialCurrentSpotPrice = useMemo(() => {
     if (!bestOffer) return 0
@@ -134,6 +141,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
         offer: suitableOffer,
         solToRefinance: currentSpotPrice,
         aprRate: newApr,
+        priorityFeeLevel: priorityLevel,
       })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))

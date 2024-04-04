@@ -17,7 +17,7 @@ import {
 } from '@banx/components/modals'
 
 import { Loan } from '@banx/api/core'
-import { useModal } from '@banx/store'
+import { useModal, usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeRefinanceAction } from '@banx/transactions/loans'
 import {
@@ -53,6 +53,7 @@ export const Summary: FC<SummaryProps> = ({
 }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
+  const { priorityLevel } = usePriorityFees()
   const { addMints } = useAuctionsLoans()
   const { toggleVisibility } = useWalletModal()
   const { open, close } = useModal()
@@ -83,7 +84,7 @@ export const Summary: FC<SummaryProps> = ({
   const refinanceAll = () => {
     const loadingSnackbarId = uniqueId()
 
-    const txnParams = selectedLoans.map((loan) => ({ loan }))
+    const txnParams = selectedLoans.map((loan) => ({ loan, priorityFeeLevel: priorityLevel }))
 
     new TxnExecutor(makeRefinanceAction, { wallet: createWalletInstance(wallet), connection })
       .addTransactionParams(txnParams)

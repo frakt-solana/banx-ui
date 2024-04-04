@@ -8,13 +8,13 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
+import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
-
-import { createInstructionsWithPriorityFees } from '../helpers'
 
 export type MakeClaimActionParams = {
   optimisticOffer: Offer
   tokenType: LendingTokenType
+  priorityFeeLevel: PriorityLevel
 }
 
 export type MakeRemoveOfferAction = CreateTransactionDataFn<
@@ -26,9 +26,13 @@ export const makeRemoveOfferAction: MakeRemoveOfferAction = async (
   ixnParams,
   { connection, wallet },
 ) => {
-  const { optimisticOffer, tokenType } = ixnParams
+  const { optimisticOffer, tokenType, priorityFeeLevel } = ixnParams
 
-  const { instructions, signers, optimisticResult } = await removePerpetualOffer({
+  const {
+    instructions: removeOfferInstructions,
+    signers,
+    optimisticResult,
+  } = await removePerpetualOffer({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       bondOfferV2: new web3.PublicKey(optimisticOffer.publicKey),
@@ -44,13 +48,16 @@ export const makeRemoveOfferAction: MakeRemoveOfferAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
-    instructions,
-    connection,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: removeOfferInstructions,
+    connection: connection,
+    lookupTables: [],
+    payer: wallet.publicKey,
+    priorityLevel: priorityFeeLevel,
+  })
 
   return {
-    instructions: instructionsWithPriorityFees,
+    instructions,
     signers,
     result: optimisticResult,
   }

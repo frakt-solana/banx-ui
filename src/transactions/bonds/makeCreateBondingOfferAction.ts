@@ -7,6 +7,7 @@ import { BondingCurveType, LendingTokenType } from 'fbonds-core/lib/fbond-protoc
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
+import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type MakeCreateBondingOfferActionParams = {
@@ -15,6 +16,7 @@ export type MakeCreateBondingOfferActionParams = {
   loansAmount: number
   deltaValue: number //? normal number
   tokenType: LendingTokenType
+  priorityFeeLevel: PriorityLevel
 }
 
 export type MakeCreateBondingOfferAction = CreateTransactionDataFn<
@@ -31,7 +33,11 @@ export const makeCreateBondingOfferAction: MakeCreateBondingOfferAction = async 
   const bondingCurveType =
     tokenType === LendingTokenType.NativeSol ? BondingCurveType.Linear : BondingCurveType.LinearUsdc
 
-  const { instructions, signers, optimisticResult } = await createPerpetualBondOfferBonding({
+  const {
+    instructions: createBondingOfferInstructions,
+    signers,
+    optimisticResult,
+  } = await createPerpetualBondOfferBonding({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     connection,
     accounts: {
@@ -45,6 +51,14 @@ export const makeCreateBondingOfferAction: MakeCreateBondingOfferAction = async 
       bondingCurveType,
     },
     sendTxn: sendTxnPlaceHolder,
+  })
+
+  const instructions = await mergeWithComputeUnits({
+    instructions: createBondingOfferInstructions,
+    connection: connection,
+    lookupTables: [],
+    payer: wallet.publicKey,
+    priorityLevel: ixnParams.priorityFeeLevel,
   })
 
   return {

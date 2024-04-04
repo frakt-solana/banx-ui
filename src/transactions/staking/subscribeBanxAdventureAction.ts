@@ -3,12 +3,12 @@ import { subscribeBanxAdventure } from 'fbonds-core/lib/fbond-protocol/functions
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
+import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
-
-import { createInstructionsWithPriorityFees } from '../helpers'
 
 export type SubscribeBanxAdventureParams = {
   weeks: number[]
+  priorityFeeLevel: PriorityLevel
 }
 
 export type SubscribeBanxAdventureAction = CreateTransactionDataFn<
@@ -20,7 +20,7 @@ export const subscribeBanxAdventureAction: SubscribeBanxAdventureAction = async 
   ixnParams,
   { wallet, connection },
 ) => {
-  const { instructions, signers } = await subscribeBanxAdventure({
+  const { instructions: subscribeInxtructions, signers } = await subscribeBanxAdventure({
     connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     args: {
@@ -32,13 +32,16 @@ export const subscribeBanxAdventureAction: SubscribeBanxAdventureAction = async 
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const instructionsWithPriorityFees = await createInstructionsWithPriorityFees(
-    instructions,
-    connection,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: subscribeInxtructions,
+    connection: connection,
+    lookupTables: [],
+    payer: wallet.publicKey,
+    priorityLevel: ixnParams.priorityFeeLevel,
+  })
 
   return {
-    instructions: instructionsWithPriorityFees,
+    instructions,
     signers: signers,
     lookupTables: [],
   }
