@@ -1,11 +1,14 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { get, set } from 'idb-keyval'
-import { groupBy, map, maxBy, uniqBy } from 'lodash'
+import { filter, groupBy, map, maxBy, uniqBy } from 'lodash'
 import moment from 'moment'
 import { create } from 'zustand'
 
 import { Loan } from '@banx/api/core'
+
+import { TokenType, useToken } from '../useToken'
 
 const BANX_LOANS_OPTIMISTICS_LS_KEY = '@banx.loansOptimistics'
 const LOANS_CACHE_TIME_UNIX = 2 * 60 //? Auto clear optimistic after 2 minutes
@@ -78,6 +81,8 @@ export const useLoansOptimistic = () => {
     setState,
   } = useOptimisticLoansStore()
 
+  const { token: tokenType } = useToken()
+
   useEffect(() => {
     const setInitialState = async () => {
       try {
@@ -93,7 +98,17 @@ export const useLoansOptimistic = () => {
     setInitialState()
   }, [setState])
 
-  return { loans: optimisticLoans, add, remove, find, update }
+  const loansByTokenType = useMemo(() => {
+    const filterLoansByTokenType = (tokenType: LendingTokenType) =>
+      filter(optimisticLoans, (loan) => loan.loan.bondTradeTransaction.lendingToken === tokenType)
+
+    const solLoans = filterLoansByTokenType(LendingTokenType.NativeSOL)
+    const usdcLoans = filterLoansByTokenType(LendingTokenType.USDC)
+
+    return tokenType === TokenType.SOL ? solLoans : usdcLoans
+  }, [optimisticLoans, tokenType])
+
+  return { loans: loansByTokenType, add, remove, find, update }
 }
 
 export const isOptimisticLoanExpired = (loan: LoanOptimistic, walletPublicKey: string) =>
