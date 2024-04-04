@@ -12,7 +12,7 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { PriorityLevel, createPriorityFeesInstruction } from '@banx/store'
+import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export interface InstantRefinanceOptimisticResult {
@@ -40,9 +40,12 @@ export const makeInstantRefinanceAction: MakeInstantRefinanceAction = async (
   const { loan, bestOffer } = ixnParams || {}
   const { bondTradeTransaction, fraktBond } = loan
 
-  const { instructions, signers, optimisticResult } = await instantRefinancePerpetualLoan({
+  const {
+    instructions: instantRefinanceInstructions,
+    signers,
+    optimisticResult,
+  } = await instantRefinancePerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-    addComputeUnits: true,
     accounts: {
       fbond: new web3.PublicKey(fraktBond.publicKey),
       userPubkey: wallet.publicKey as web3.PublicKey,
@@ -66,14 +69,16 @@ export const makeInstantRefinanceAction: MakeInstantRefinanceAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const priorityFeeInstruction = await createPriorityFeesInstruction(
-    instructions,
-    connection,
-    ixnParams.priorityFeeLevel,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: instantRefinanceInstructions,
+    connection: connection,
+    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    payer: wallet.publicKey,
+    priorityLevel: ixnParams.priorityFeeLevel,
+  })
 
   return {
-    instructions: [...instructions, priorityFeeInstruction],
+    instructions,
     signers,
     result: optimisticResult,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
