@@ -3,8 +3,15 @@ import { useEffect, useMemo } from 'react'
 import { chain } from 'lodash'
 
 import { MarketPreview, Offer } from '@banx/api/core'
+import { USDC_ADDRESS } from '@banx/constants'
 import { SyntheticOffer, useToken } from '@banx/store'
-import { convertOffersToSimple, getDecimals, useSolanaBalance } from '@banx/utils'
+import {
+  TokenType,
+  convertOffersToSimple,
+  getDecimals,
+  useSolanaBalance,
+  useTokenBalance,
+} from '@banx/utils'
 
 import { Mark } from '../PlaceOfferContent/components'
 import {
@@ -54,8 +61,12 @@ type UsePlaceOffer = (props: {
 }) => PlaceOfferParams
 
 export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOfferPubkey }) => {
-  const solanaBalance = useSolanaBalance({ isLive: false })
   const { token: tokenType } = useToken()
+
+  const solanaBalance = useSolanaBalance({ isLive: tokenType === TokenType.SOL })
+  const usdcBalance = useTokenBalance(USDC_ADDRESS, { isLive: tokenType === TokenType.USDC })
+
+  const tokenBalance = tokenType === TokenType.SOL ? solanaBalance : usdcBalance
 
   const { offer, market, updateOrAddOffer } = useMarketAndOffer(offerPubkey, marketPubkey)
   const { syntheticOffer, removeSyntheticOffer, setSyntheticOffer } = useSyntheticOffer(
@@ -119,7 +130,7 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
 
   const offerErrorMessage = getErrorMessage({
     syntheticOffer,
-    solanaBalance,
+    tokenBalance,
     offerSize,
     loanValue,
     loansAmount,
