@@ -33,7 +33,6 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       optimisticResult,
     } = await claimCnftPerpetualLoanCanopy({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-      addComputeUnits: true,
       accounts: {
         bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
         fbond: new web3.PublicKey(fraktBond.publicKey),
@@ -74,7 +73,6 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       optimisticResult,
     } = await claimPerpetualLoan({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-      addComputeUnits: true,
       accounts: {
         bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
         fbond: new web3.PublicKey(fraktBond.publicKey),

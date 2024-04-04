@@ -22,7 +22,6 @@ export const unstakeBanxNftsAction: UnstakeBanxNftsActionAction = async (
   const { instructions: unstakeBanxNftInstructions, signers } = await unstakeBanxNft({
     connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-    addComputeUnits: true,
     accounts: {
       userPubkey: wallet.publicKey,
       tokenMint: new web3.PublicKey(ixnParams.nftMint),

@@ -106,7 +106,6 @@ const getIxnsAndSignersByBorrowType = async ({
 
     const { instructions, signers, optimisticResults } = await borrowStakedBanxPerpetual({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-      addComputeUnits: true,
 
       accounts: {
         userPubkey: wallet.publicKey as web3.PublicKey,
@@ -146,7 +145,6 @@ const getIxnsAndSignersByBorrowType = async ({
 
     const { instructions, signers, optimisticResults } = await borrowCnftPerpetualCanopy({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-      addComputeUnits: true,
 
       accounts: {
         userPubkey: wallet.publicKey as web3.PublicKey,
@@ -186,7 +184,6 @@ const getIxnsAndSignersByBorrowType = async ({
 
   const { instructions, signers, optimisticResults } = await borrowPerpetual({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-    addComputeUnits: true,
 
     accounts: {
       userPubkey: wallet.publicKey as web3.PublicKey,

@@ -46,7 +46,6 @@ export const makeInstantRefinanceAction: MakeInstantRefinanceAction = async (
     optimisticResult,
   } = await instantRefinancePerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-    addComputeUnits: true,
     accounts: {
       fbond: new web3.PublicKey(fraktBond.publicKey),
       userPubkey: wallet.publicKey as web3.PublicKey,
