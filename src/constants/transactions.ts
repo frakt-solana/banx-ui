@@ -5,5 +5,5 @@ export const TXN_EXECUTOR_CONFIRM_OPTIONS: ExecutorOptions['confirmOptions'] = {
   maxRetries: 0,
   commitment: 'processed',
   preflightCommitment: 'processed',
-  confirmationTimeout: 20,
+  confirmationTimeout: 15,
 }
