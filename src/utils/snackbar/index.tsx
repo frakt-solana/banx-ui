@@ -133,7 +133,7 @@ export const enqueueConfirmationError = (
   if (reason === ConfirmTransactionErrorReason.TimeoutError) {
     return enqueueSnackbar({
       message: 'Unable to find out transaction result. Please check in explorer and try again',
-      type: 'error',
+      type: 'warning',
       autoHideDuration: 7,
       solanaExplorerPath: `tx/${signature}`,
     })
