@@ -77,9 +77,9 @@ export const DiagramMark: FC<DiagramMarkProps> = ({ mark, left }) => {
     markers.length > 1 && firstValue !== lastValue
       ? `${formatValueByLendingTokenType(
           firstValue,
-          LendingTokenType.NativeSOL,
-        )} - ${formatValueByLendingTokenType(lastValue, LendingTokenType.NativeSOL)}◎`
-      : `${formatValueByLendingTokenType(firstValue, LendingTokenType.NativeSOL)}◎`
+          LendingTokenType.NativeSol,
+        )} - ${formatValueByLendingTokenType(lastValue, LendingTokenType.NativeSol)}◎`
+      : `${formatValueByLendingTokenType(firstValue, LendingTokenType.NativeSol)}◎`
 
   const MarkContent = (
     <div className={styles.mark} style={{ left: calculateStyle(left) }}>

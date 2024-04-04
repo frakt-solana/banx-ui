@@ -9,8 +9,8 @@ import styles from './TokenSwitcher.module.less'
 const TokenSwitcher = () => {
   const { token, toggleToken } = useToken()
 
-  const tokens = [LendingTokenType.USDC, LendingTokenType.NativeSOL]
-  const tokenIcon = { [LendingTokenType.USDC]: USDC, [LendingTokenType.NativeSOL]: SOL }
+  const tokens = [LendingTokenType.Usdc, LendingTokenType.NativeSol]
+  const tokenIcon = { [LendingTokenType.Usdc]: USDC, [LendingTokenType.NativeSol]: SOL }
 
   return (
     <div className={styles.tokenSwitcher}>

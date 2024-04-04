@@ -20,7 +20,6 @@ export const stakeBanxClaimAction: StakeBanxClaimAction = async (
 ) => {
   const { instructions, signers } = await claimStakingRewards({
     connection,
-    addComputeUnits: true,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     args: {
       weeks: ixnParams.weeks,

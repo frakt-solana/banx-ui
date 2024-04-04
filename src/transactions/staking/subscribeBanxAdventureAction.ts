@@ -23,7 +23,6 @@ export const subscribeBanxAdventureAction: SubscribeBanxAdventureAction = async 
   const { instructions, signers } = await subscribeBanxAdventure({
     connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-    addComputeUnits: true,
     args: {
       weeks: ixnParams.weeks,
     },

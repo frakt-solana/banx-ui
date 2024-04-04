@@ -40,8 +40,8 @@ export const WalletConnectButton = () => {
           {shortenAddress(publicKey?.toBase58() || '')}
         </span>
         <span className={styles.solanaBalance}>
-          {tokenType === LendingTokenType.NativeSOL && <DisplayValue value={solanaBalance} />}
-          {tokenType === LendingTokenType.USDC && <DisplayValue value={usdcBalance} />}
+          {tokenType === LendingTokenType.NativeSol && <DisplayValue value={solanaBalance} />}
+          {tokenType === LendingTokenType.Usdc && <DisplayValue value={usdcBalance} />}
         </span>
       </div>
       <ChevronDown

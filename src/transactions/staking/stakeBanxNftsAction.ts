@@ -21,7 +21,6 @@ export const stakeBanxNftAction: StakeBanxNftsTokenAction = async (
 ) => {
   const { instructions, signers } = await stakeBanxNft({
     connection,
-    addComputeUnits: true,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       tokenMint: new web3.PublicKey(ixnParams.nftMint),

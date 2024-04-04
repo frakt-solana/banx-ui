@@ -12,7 +12,7 @@ interface TokenState {
 export const useToken = create<TokenState>((set) => {
   const initialState: TokenState = {
     token:
-      (localStorage.getItem(BANX_TOKEN_LS_KEY) as LendingTokenType) || LendingTokenType.NativeSOL,
+      (localStorage.getItem(BANX_TOKEN_LS_KEY) as LendingTokenType) || LendingTokenType.NativeSol,
     setToken: (nextToken) => {
       localStorage.setItem(BANX_TOKEN_LS_KEY, nextToken)
       set((state) => ({ ...state, token: nextToken }))
@@ -20,9 +20,9 @@ export const useToken = create<TokenState>((set) => {
     toggleToken: () => {
       set((state) => {
         const nextToken =
-          state.token === LendingTokenType.NativeSOL
-            ? LendingTokenType.USDC
-            : LendingTokenType.NativeSOL
+          state.token === LendingTokenType.NativeSol
+            ? LendingTokenType.Usdc
+            : LendingTokenType.NativeSol
         localStorage.setItem(BANX_TOKEN_LS_KEY, nextToken)
         return { ...state, token: nextToken }
       })

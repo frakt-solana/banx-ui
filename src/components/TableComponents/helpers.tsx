@@ -33,8 +33,8 @@ export const createTimeValueJSX = (initialValue: number, zeroPlaceholder = '--')
 }
 
 const DEFAULT_PLACEHOLDERS = {
-  [LendingTokenType.NativeSOL]: '0◎',
-  [LendingTokenType.USDC]: (
+  [LendingTokenType.NativeSol]: '0◎',
+  [LendingTokenType.Usdc]: (
     <>
       0 <USDC />
     </>

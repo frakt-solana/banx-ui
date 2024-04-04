@@ -90,7 +90,7 @@ export const useOffersOptimistic = () => {
     const solOffers = filterLoansByLendingTokenType(BondingCurveType.Linear)
     const usdcOffers = filterLoansByLendingTokenType(BondingCurveType.LinearUsdc)
 
-    return tokenType === LendingTokenType.NativeSOL ? solOffers : usdcOffers
+    return tokenType === LendingTokenType.NativeSol ? solOffers : usdcOffers
   }, [optimisticOffers, tokenType])
 
   return { optimisticOffers: offersByLendingTokenType, add, remove, find, update }

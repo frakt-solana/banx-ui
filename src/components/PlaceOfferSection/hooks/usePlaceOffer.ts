@@ -63,10 +63,10 @@ type UsePlaceOffer = (props: {
 export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOfferPubkey }) => {
   const { token: tokenType } = useToken()
 
-  const solanaBalance = useSolanaBalance({ isLive: tokenType === LendingTokenType.NativeSOL })
-  const usdcBalance = useTokenBalance(USDC_ADDRESS, { isLive: tokenType === LendingTokenType.USDC })
+  const solanaBalance = useSolanaBalance({ isLive: tokenType === LendingTokenType.NativeSol })
+  const usdcBalance = useTokenBalance(USDC_ADDRESS, { isLive: tokenType === LendingTokenType.Usdc })
 
-  const tokenBalance = tokenType === LendingTokenType.NativeSOL ? solanaBalance : usdcBalance
+  const tokenBalance = tokenType === LendingTokenType.NativeSol ? solanaBalance : usdcBalance
 
   const { offer, market, updateOrAddOffer } = useMarketAndOffer(offerPubkey, marketPubkey)
   const { syntheticOffer, removeSyntheticOffer, setSyntheticOffer } = useSyntheticOffer(

@@ -102,10 +102,10 @@ export const useLoansOptimistic = () => {
     const filterLoansByLendingTokenType = (tokenType: LendingTokenType) =>
       filter(optimisticLoans, (loan) => loan.loan.bondTradeTransaction.lendingToken === tokenType)
 
-    const solLoans = filterLoansByLendingTokenType(LendingTokenType.NativeSOL)
-    const usdcLoans = filterLoansByLendingTokenType(LendingTokenType.USDC)
+    const solLoans = filterLoansByLendingTokenType(LendingTokenType.NativeSol)
+    const usdcLoans = filterLoansByLendingTokenType(LendingTokenType.Usdc)
 
-    return tokenType === LendingTokenType.NativeSOL ? solLoans : usdcLoans
+    return tokenType === LendingTokenType.NativeSol ? solLoans : usdcLoans
   }, [optimisticLoans, tokenType])
 
   return { loans: loansByLendingTokenType, add, remove, find, update }
