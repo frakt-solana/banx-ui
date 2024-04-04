@@ -1,14 +1,7 @@
-import { BN, web3 } from 'fbonds-core'
+import { BN } from 'fbonds-core'
 import { flatMap, map, reduce, uniq } from 'lodash'
 
-import {
-  BONDS,
-  DECIMAL_THRESHOLD,
-  MIN_DISPLAY_VALUE,
-  THREE_DECIMAL_PLACES,
-  TWO_DECIMAL_PLACES,
-} from '@banx/constants'
-import { TokenType } from '@banx/store'
+import { BONDS } from '@banx/constants'
 
 // shorten the checksummed version of the input address to have 4 characters at start and end
 export const shortenAddress = (address: string, chars = 4): string => {
@@ -104,59 +97,4 @@ export const limitDecimalPlaces = (inputValue: string, decimalPlaces = 3) => {
   const regex = new RegExp(`^-?\\d*(\\.\\d{0,${decimalPlaces}})?`)
   const match = inputValue.match(regex)
   return match ? match[0] : ''
-}
-
-const formatLamportsToSol = (value: number) => value / web3.LAMPORTS_PER_SOL
-
-const checkIsValueLessThanTreshold = (value: number, treshold: number) => {
-  return value < treshold
-}
-
-const SOL_VALUE_TRESHOLD = 0.001
-const USDC_VALUE_TRESHOLD = 1
-
-export const formatValueByTokenType = (value: number, tokenType: TokenType) => {
-  if (!value) return ''
-
-  if (tokenType === TokenType.SOL) {
-    const formattedLamportsToSol = formatLamportsToSol(value)
-
-    const isValueLessThanTreshold = checkIsValueLessThanTreshold(
-      formattedLamportsToSol,
-      SOL_VALUE_TRESHOLD,
-    )
-
-    if (isValueLessThanTreshold) return `<${SOL_VALUE_TRESHOLD}`
-
-    const decimalPlaces = getDecimalPlaces(formattedLamportsToSol)
-    const formattedValueWithDecimals = limitDecimalPlaces(
-      String(formattedLamportsToSol),
-      decimalPlaces,
-    )
-
-    return formatNumbersWithCommas(formattedValueWithDecimals)
-  }
-
-  const isValueLessThanTreshold = checkIsValueLessThanTreshold(value, USDC_VALUE_TRESHOLD)
-  if (isValueLessThanTreshold) return `<${USDC_VALUE_TRESHOLD}`
-
-  const decimalPlaces = getDecimalPlaces(value)
-  const formattedValueWithDecimals = limitDecimalPlaces(String(value), decimalPlaces)
-  return formatNumbersWithCommas(formattedValueWithDecimals)
-}
-
-export const getDecimalPlaces = (value: number) => {
-  if (!value) return TWO_DECIMAL_PLACES
-
-  //? Show three decimals for values less than 0.1,
-  return value < DECIMAL_THRESHOLD ? THREE_DECIMAL_PLACES : TWO_DECIMAL_PLACES
-}
-
-export const formatDecimal = (value: number, minDisplayValue = MIN_DISPLAY_VALUE) => {
-  if (value === 0 || isNaN(value)) return '0'
-
-  if (value < minDisplayValue) return `<${minDisplayValue}`
-
-  const decimalPlaces = getDecimalPlaces(value)
-  return value.toFixed(decimalPlaces)
 }
