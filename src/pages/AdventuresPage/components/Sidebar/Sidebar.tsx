@@ -155,6 +155,7 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
         }
       })
       .on('error', (error) => {
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: params,
           walletPubkey: wallet?.publicKey?.toBase58(),

@@ -124,6 +124,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
         }
       })
       .on('error', (error) => {
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: params,
           walletPubkey: wallet?.publicKey?.toBase58(),

@@ -142,6 +142,7 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
         }
       })
       .on('error', (error) => {
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: txnParam,
           walletPubkey: wallet?.publicKey?.toBase58(),
@@ -188,6 +189,7 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
         }
       })
       .on('error', (error) => {
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: txnParam,
           walletPubkey: wallet?.publicKey?.toBase58(),
