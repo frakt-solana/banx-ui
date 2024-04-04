@@ -114,3 +114,13 @@ export const enqueueTransactionsSent = () =>
     message: 'Transactions sent',
     type: 'info',
   })
+
+export const enqueueWaitingConfirmationSingle = (key: string, signature: string) => {
+  enqueueSnackbar({
+    customKey: key,
+    message: 'Waiting for confirmation',
+    type: 'loading',
+    persist: true,
+    solanaExplorerPath: `tx/${signature}`,
+  })
+}
