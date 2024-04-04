@@ -1,3 +1,4 @@
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { z } from 'zod'
 
 import { PaginationMeta } from '@banx/types'
@@ -107,6 +108,7 @@ const BondTradeTransactionSchema = z.object({
   seller: z.string(),
   isDirectSell: z.boolean(),
   publicKey: z.string(),
+  lendingToken: z.nativeEnum(LendingTokenType),
 })
 
 const FraktBondSchema = z.object({

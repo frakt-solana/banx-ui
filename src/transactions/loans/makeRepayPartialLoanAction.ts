@@ -5,7 +5,7 @@ import {
   BondAndTransactionOptimistic,
   repayPartialPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondOfferV2, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
@@ -49,7 +49,7 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
         bondTradeTransaction,
         oldBondOffer: getMockBondOffer(),
       } as OptimisticResult,
-      lendingTokenType: LendingTokenType.NativeSOL,
+      lendingTokenType: bondTradeTransaction.lendingToken,
     },
     accounts: {
       oldBondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
