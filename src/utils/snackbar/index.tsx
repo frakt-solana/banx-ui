@@ -4,6 +4,7 @@ import { notification } from 'antd'
 import { NotificationPlacement } from 'antd/es/notification/interface'
 import classNames from 'classnames'
 import { uniqueId } from 'lodash'
+import { ConfirmTransactionErrorReason } from 'solana-transactions-executor'
 
 import { CloseModal, LoaderCircle } from '@banx/icons'
 
@@ -123,4 +124,19 @@ export const enqueueWaitingConfirmationSingle = (key: string, signature: string)
     persist: true,
     solanaExplorerPath: `tx/${signature}`,
   })
+}
+
+export const enqueueConfirmationError = (
+  signature: string,
+  reason: ConfirmTransactionErrorReason,
+) => {
+  if (reason === ConfirmTransactionErrorReason.TimeoutError) {
+    return enqueueSnackbar({
+      message: 'Unable to find out transaction result. Please check in explorer and try again',
+      type: 'error',
+      autoHideDuration: 7,
+      solanaExplorerPath: `tx/${signature}`,
+    })
+  }
+  return enqueueTranactionError()
 }
