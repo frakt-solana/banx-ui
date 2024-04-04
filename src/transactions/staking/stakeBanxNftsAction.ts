@@ -3,7 +3,7 @@ import { stakeBanxNft } from 'fbonds-core/lib/fbond-protocol/functions/banxStaki
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
-import { PriorityLevel, addComputeUnitsToInstuctions } from '@banx/store'
+import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type StakeBanxNftsTokenActionParams = {
@@ -32,7 +32,7 @@ export const stakeBanxNftAction: StakeBanxNftsTokenAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const instructions = await addComputeUnitsToInstuctions(
+  const instructions = await mergeWithComputeUnits(
     stakeBanxNftInstructions,
     connection,
     ixnParams.priorityFeeLevel,

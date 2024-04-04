@@ -12,7 +12,7 @@ import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transaction
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { PriorityLevel, addComputeUnitsToInstuctions } from '@banx/store'
+import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { calculateApr, sendTxnPlaceHolder } from '@banx/utils'
 
 import { BorrowType } from '../constants'
@@ -64,7 +64,7 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndCon
     }
   })
 
-  const instructions = await addComputeUnitsToInstuctions(
+  const instructions = await mergeWithComputeUnits(
     borrowInstructions,
     walletAndConnection.connection,
     ixnParams?.[0].priorityFeeLevel,

@@ -6,7 +6,7 @@ import {
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
-import { PriorityLevel, addComputeUnitsToInstuctions } from '@banx/store'
+import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type MakeCreateOfferActionParams = {
@@ -45,7 +45,7 @@ export const makeCreateOfferAction: MakeCreateOfferAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const instructions = await addComputeUnitsToInstuctions(
+  const instructions = await mergeWithComputeUnits(
     createOfferInstructions,
     connection,
     priorityFeeLevel,

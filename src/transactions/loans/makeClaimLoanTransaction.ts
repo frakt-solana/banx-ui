@@ -10,7 +10,7 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { PriorityLevel, addComputeUnitsToInstuctions } from '@banx/store'
+import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { fetchRuleset } from '../functions'
@@ -59,7 +59,7 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       bondTradeTransaction: optimisticResult.bondTradeTransaction,
     }
 
-    const instructions = await addComputeUnitsToInstuctions(claimInstructions, connection)
+    const instructions = await mergeWithComputeUnits(claimInstructions, connection)
 
     return {
       instructions,
@@ -108,7 +108,7 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       bondTradeTransaction: optimisticResult.bondTradeTransaction,
     }
 
-    const instructions = await addComputeUnitsToInstuctions(
+    const instructions = await mergeWithComputeUnits(
       claimInstructions,
       connection,
       priorityFeeLevel,

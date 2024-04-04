@@ -8,7 +8,7 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { PriorityLevel, addComputeUnitsToInstuctions } from '@banx/store'
+import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type MakeClaimOfferInterestActionParams = {
@@ -44,7 +44,7 @@ export const makeClaimBondOfferInterestAction: MakeClaimBondOfferInterestAction 
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const instructions = await addComputeUnitsToInstuctions(
+  const instructions = await mergeWithComputeUnits(
     claimInstructions,
     connection,
     ixnParams.priorityFeeLevel,

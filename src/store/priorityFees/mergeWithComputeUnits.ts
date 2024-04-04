@@ -13,7 +13,7 @@ const extractAccountKeysFromInstructions = (instructions: web3.TransactionInstru
   return concat(accountsKeys, programIds)
 }
 
-export const addComputeUnitsToInstuctions = async (
+export const mergeWithComputeUnits = async (
   instructions: web3.TransactionInstruction[],
   connection: web3.Connection,
   priorityLevel: PriorityLevel = PriorityLevel.DEFAULT,
