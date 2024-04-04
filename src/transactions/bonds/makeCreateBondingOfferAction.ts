@@ -7,7 +7,7 @@ import { BondingCurveType } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
-import { PriorityLevel, createPriorityFeesInstruction } from '@banx/store'
+import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type MakeCreateBondingOfferActionParams = {
@@ -36,7 +36,11 @@ export const makeCreateBondingOfferAction: MakeCreateBondingOfferAction = async 
     deltaValue,
   } = ixnParams
 
-  const { instructions, signers, optimisticResult } = await createPerpetualBondOfferBonding({
+  const {
+    instructions: createBondingOfferInstructions,
+    signers,
+    optimisticResult,
+  } = await createPerpetualBondOfferBonding({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     connection,
     accounts: {
@@ -52,14 +56,16 @@ export const makeCreateBondingOfferAction: MakeCreateBondingOfferAction = async 
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const priorityFeeInstruction = await createPriorityFeesInstruction(
-    instructions,
-    connection,
-    ixnParams.priorityFeeLevel,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: createBondingOfferInstructions,
+    connection: connection,
+    lookupTables: [],
+    payer: wallet.publicKey,
+    priorityLevel: ixnParams.priorityFeeLevel,
+  })
 
   return {
-    instructions: [...instructions, priorityFeeInstruction],
+    instructions,
     signers,
     result: optimisticResult,
     lookupTables: [],

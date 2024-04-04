@@ -3,7 +3,7 @@ import { unstakeBanxNft } from 'fbonds-core/lib/fbond-protocol/functions/banxSta
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
-import { PriorityLevel, createPriorityFeesInstruction } from '@banx/store'
+import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type UnstakeBanxNftsActionParams = {
@@ -19,10 +19,9 @@ export const unstakeBanxNftsAction: UnstakeBanxNftsActionAction = async (
   ixnParams,
   { wallet, connection },
 ) => {
-  const { instructions, signers } = await unstakeBanxNft({
+  const { instructions: unstakeBanxNftInstructions, signers } = await unstakeBanxNft({
     connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-    addComputeUnits: true,
     accounts: {
       userPubkey: wallet.publicKey,
       tokenMint: new web3.PublicKey(ixnParams.nftMint),
@@ -31,14 +30,16 @@ export const unstakeBanxNftsAction: UnstakeBanxNftsActionAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const priorityFeeInstruction = await createPriorityFeesInstruction(
-    instructions,
-    connection,
-    ixnParams.priorityFeeLevel,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: unstakeBanxNftInstructions,
+    connection: connection,
+    lookupTables: [],
+    payer: wallet.publicKey,
+    priorityLevel: ixnParams.priorityFeeLevel,
+  })
 
   return {
-    instructions: [...instructions, priorityFeeInstruction],
+    instructions,
     signers: signers,
     lookupTables: [],
   }

@@ -10,7 +10,7 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { PriorityLevel, createPriorityFeesInstruction } from '@banx/store'
+import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type MakeTerminateActionParams = {
@@ -30,7 +30,11 @@ export const makeTerminateAction: MakeTerminateAction = async (
 ) => {
   const { bondTradeTransaction, fraktBond } = ixnParams.loan || {}
 
-  const { instructions, signers, optimisticResult } = await terminatePerpetualLoan({
+  const {
+    instructions: terminateInstructions,
+    signers,
+    optimisticResult,
+  } = await terminatePerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
@@ -52,14 +56,16 @@ export const makeTerminateAction: MakeTerminateAction = async (
     ...optimisticResult,
   }
 
-  const priorityFeeInstruction = await createPriorityFeesInstruction(
-    instructions,
-    connection,
-    ixnParams.priorityFeeLevel,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: terminateInstructions,
+    connection: connection,
+    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    payer: wallet.publicKey,
+    priorityLevel: ixnParams.priorityFeeLevel,
+  })
 
   return {
-    instructions: [...instructions, priorityFeeInstruction],
+    instructions,
     signers,
     result: loanOptimisticResult,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],

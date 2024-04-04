@@ -5,7 +5,7 @@ import { stakeBanxToken } from 'fbonds-core/lib/fbond-protocol/functions/banxSta
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
-import { PriorityLevel, createPriorityFeesInstruction } from '@banx/store'
+import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type StakeBanxTokenActionParams = {
@@ -19,10 +19,9 @@ export const stakeBanxTokenAction: StakeBanxTokenAction = async (
   ixnParams,
   { wallet, connection },
 ) => {
-  const params = {
+  const { instructions: stakeBanxTokenInstructions, signers } = await stakeBanxToken({
     connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-    priorityFees: 0,
     accounts: {
       userPubkey: wallet.publicKey,
       tokenMint: BANX_TOKEN_MINT,
@@ -31,18 +30,18 @@ export const stakeBanxTokenAction: StakeBanxTokenAction = async (
       tokensToStake: ixnParams.tokensToStake,
     },
     sendTxn: sendTxnPlaceHolder,
-  }
+  })
 
-  const { instructions, signers } = await stakeBanxToken(params)
-
-  const priorityFeeInstruction = await createPriorityFeesInstruction(
-    instructions,
-    connection,
-    ixnParams.priorityFeeLevel,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: stakeBanxTokenInstructions,
+    connection: connection,
+    lookupTables: [],
+    payer: wallet.publicKey,
+    priorityLevel: ixnParams.priorityFeeLevel,
+  })
 
   return {
-    instructions: [...instructions, priorityFeeInstruction],
+    instructions,
     signers,
     lookupTables: [],
   }

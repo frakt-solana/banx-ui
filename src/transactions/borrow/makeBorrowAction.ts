@@ -12,7 +12,7 @@ import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transaction
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { PriorityLevel, createPriorityFeesInstruction } from '@banx/store'
+import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { calculateApr, sendTxnPlaceHolder } from '@banx/utils'
 
 import { BorrowType } from '../constants'
@@ -40,7 +40,11 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndCon
     throw new Error(`Maximum borrow per txn is ${BORROW_NFT_PER_TXN[borrowType]}`)
   }
 
-  const { instructions, signers, optimisticResults } = await getIxnsAndSignersByBorrowType({
+  const {
+    instructions: borrowInstructions,
+    signers,
+    optimisticResults,
+  } = await getIxnsAndSignersByBorrowType({
     ixnParams,
     type: borrowType,
     walletAndConnection,
@@ -60,14 +64,16 @@ export const makeBorrowAction: MakeBorrowAction = async (ixnParams, walletAndCon
     }
   })
 
-  const priorityFeeInstruction = await createPriorityFeesInstruction(
-    instructions,
-    walletAndConnection.connection,
-    ixnParams?.[0].priorityFeeLevel,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: borrowInstructions,
+    connection: walletAndConnection.connection,
+    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    payer: walletAndConnection.wallet.publicKey,
+    priorityLevel: ixnParams?.[0].priorityFeeLevel,
+  })
 
   return {
-    instructions: [...instructions, priorityFeeInstruction],
+    instructions,
     signers,
     result: loansAndOffers,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
@@ -102,7 +108,6 @@ const getIxnsAndSignersByBorrowType = async ({
 
     const { instructions, signers, optimisticResults } = await borrowStakedBanxPerpetual({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-      addComputeUnits: true,
 
       accounts: {
         userPubkey: wallet.publicKey as web3.PublicKey,
@@ -142,7 +147,6 @@ const getIxnsAndSignersByBorrowType = async ({
 
     const { instructions, signers, optimisticResults } = await borrowCnftPerpetualCanopy({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-      addComputeUnits: true,
 
       accounts: {
         userPubkey: wallet.publicKey as web3.PublicKey,
@@ -182,7 +186,6 @@ const getIxnsAndSignersByBorrowType = async ({
 
   const { instructions, signers, optimisticResults } = await borrowPerpetual({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-    addComputeUnits: true,
 
     accounts: {
       userPubkey: wallet.publicKey as web3.PublicKey,
