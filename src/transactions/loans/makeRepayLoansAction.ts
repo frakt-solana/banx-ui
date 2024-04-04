@@ -14,7 +14,7 @@ import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transaction
 
 import { Loan } from '@banx/api/core'
 import { BANX_STAKING, BONDS } from '@banx/constants'
-import { PriorityLevel, createPriorityFeesInstruction } from '@banx/store'
+import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { BorrowType } from '../constants'
@@ -49,12 +49,16 @@ export const makeRepayLoansAction: MakeRepayLoansAction = async (
     throw new Error(`Maximum borrow per txn is ${REPAY_NFT_PER_TXN[borrowType]}`)
   }
 
-  const { instructions, signers, optimisticResults, lookupTables } =
-    await getIxnsAndSignersByBorrowType({
-      ixnParams,
-      type: borrowType,
-      walletAndConnection,
-    })
+  const {
+    instructions: repayInstructions,
+    signers,
+    optimisticResults,
+    lookupTables,
+  } = await getIxnsAndSignersByBorrowType({
+    ixnParams,
+    type: borrowType,
+    walletAndConnection,
+  })
 
   const optimisticLoans: Loan[] = optimisticResults.map((optimistic, idx) => ({
     publicKey: optimistic.fraktBond.publicKey,
@@ -63,14 +67,16 @@ export const makeRepayLoansAction: MakeRepayLoansAction = async (
     nft: loans[idx].nft,
   }))
 
-  const priorityFeeInstruction = await createPriorityFeesInstruction(
-    instructions,
-    walletAndConnection.connection,
-    priorityFeeLevel,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: repayInstructions,
+    connection: walletAndConnection.connection,
+    lookupTables,
+    payer: walletAndConnection.wallet.publicKey,
+    priorityLevel: priorityFeeLevel,
+  })
 
   return {
-    instructions: [...instructions, priorityFeeInstruction],
+    instructions,
     signers,
     lookupTables,
     result: optimisticLoans,
@@ -193,7 +199,6 @@ const getIxnsAndSignersByBorrowType = async ({
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
       oldBondOffer: new web3.PublicKey(loan.bondTradeTransaction.bondOffer),
     },
-    addComputeUnits: true,
     args: {
       repayAccounts: loans.map(({ fraktBond, bondTradeTransaction }, idx) => ({
         bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),

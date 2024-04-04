@@ -8,7 +8,7 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { PriorityLevel, createPriorityFeesInstruction } from '@banx/store'
+import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type MakeUpdateOfferActionParams = {
@@ -33,7 +33,11 @@ export const makeUpdateOfferAction: MakeUpdateOfferAction = async (
   const bondOfferV2 = new web3.PublicKey(offerPubkey)
   const userPubkey = wallet.publicKey as web3.PublicKey
 
-  const { instructions, signers, optimisticResult } = await updatePerpetualOffer({
+  const {
+    instructions: updateOfferInstructions,
+    signers,
+    optimisticResult,
+  } = await updatePerpetualOffer({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: { bondOfferV2, userPubkey },
     args: {
@@ -47,14 +51,16 @@ export const makeUpdateOfferAction: MakeUpdateOfferAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const priorityFeeInstruction = await createPriorityFeesInstruction(
-    instructions,
-    connection,
-    priorityFeeLevel,
-  )
+  const instructions = await mergeWithComputeUnits({
+    instructions: updateOfferInstructions,
+    connection: connection,
+    lookupTables: [],
+    payer: wallet.publicKey,
+    priorityLevel: priorityFeeLevel,
+  })
 
   return {
-    instructions: [...instructions, priorityFeeInstruction],
+    instructions,
     signers,
     result: optimisticResult,
     lookupTables: [],

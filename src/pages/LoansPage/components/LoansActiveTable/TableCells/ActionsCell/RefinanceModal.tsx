@@ -55,11 +55,17 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
   const bestOffer = useMemo(() => {
     return chain(offers)
       .sortBy(({ currentSpotPrice }) => currentSpotPrice)
+      .thru((offers) =>
+        filterOutWalletLoans({
+          offers,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+        }),
+      )
       .filter(isOfferNotEmpty)
       .reverse()
       .value()
       .at(0)
-  }, [offers])
+  }, [offers, wallet])
 
   const initialCurrentSpotPrice = useMemo(() => {
     if (!bestOffer) return 0

@@ -66,3 +66,22 @@ export const fetchRuleset: FetchRuleset = ({ nftMint, marketPubkey, connection }
 
   return rulesetsCache.get(marketPubkey)!
 }
+
+const lookupTablesCache = new Map<
+  string,
+  Promise<web3.RpcResponseAndContext<web3.AddressLookupTableAccount | null>>
+>()
+export const fetchLookupTableAccount = (
+  lookupTable: web3.PublicKey,
+  connection: web3.Connection,
+): Promise<web3.RpcResponseAndContext<web3.AddressLookupTableAccount | null>> => {
+  const lookupTableAddressStr = lookupTable.toBase58()
+
+  if (!lookupTablesCache.has(lookupTableAddressStr)) {
+    const lookupTableAccountPromise = connection.getAddressLookupTable(lookupTable)
+
+    lookupTablesCache.set(lookupTableAddressStr, lookupTableAccountPromise)
+  }
+
+  return lookupTablesCache.get(lookupTableAddressStr)!
+}
