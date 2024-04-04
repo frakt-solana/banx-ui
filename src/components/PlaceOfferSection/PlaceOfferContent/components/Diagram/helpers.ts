@@ -1,7 +1,7 @@
 import { chain, chunk, clamp, concat, filter, uniqBy } from 'lodash'
 
 import { Loan } from '@banx/api/core'
-import { SimpleOffer, calcLoanBorrowedAmount, formatDecimal } from '@banx/utils'
+import { SimpleOffer, calcLoanBorrowedAmount } from '@banx/utils'
 
 import { Mark } from './Diagram'
 import { MAX_BOUND_PERCENTAGE, MAX_GROUP_SIZE, MIN_BOUND_PERCENTAGE } from './constants'
@@ -49,10 +49,3 @@ export const groupMarks = (markers: Mark[]): Mark[] | Mark[][] => {
 }
 
 export const calculateStyle = (left: number) => `calc(${left}% - 24px)`
-
-export const formatMarkValue = (value: number) => {
-  if (!value) return '0'
-
-  const formattedDecimalValue = formatDecimal(value / 1e9)
-  return formattedDecimalValue.replace(/\.?0+$/, '')
-}

@@ -7,6 +7,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { Loader } from '@banx/components/Loader'
+import { DisplayValue } from '@banx/components/TableComponents'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan } from '@banx/api/core'
@@ -24,7 +25,6 @@ import {
   enqueueWaitingConfirmation,
   filterOutWalletLoans,
   findSuitableOffer,
-  formatDecimal,
   isLoanActiveOrRefinanced,
   isLoanTerminating,
 } from '@banx/utils'
@@ -114,7 +114,7 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const canTerminate = !isLoanTerminating(loan) && loanActiveOrRefinanced
 
   const totalClaimValue = calculateClaimValue(loan)
-  const formattedClaimValue = `+${formatDecimal(totalClaimValue / 1e9)}◎`
+  const formattedClaimValue = `+ ${(<DisplayValue value={totalClaimValue} />)}`
 
   const terminateLoan = () => {
     const loadingSnackbarId = uniqueId()

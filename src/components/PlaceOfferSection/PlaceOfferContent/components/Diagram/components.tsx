@@ -9,15 +9,17 @@ import Tooltip from '@banx/components/Tooltip'
 import { Loan } from '@banx/api/core'
 import { useImagePreload } from '@banx/hooks'
 import { PlaceholderPFP } from '@banx/icons'
+import { TokenType } from '@banx/store'
 import {
   HealthColorIncreasing,
   calcLoanBorrowedAmount,
   calculateLoanRepayValue,
+  formatValueByTokenType,
   getColorByPercent,
 } from '@banx/utils'
 
 import { Mark } from './Diagram'
-import { calculateStyle, formatMarkValue } from './helpers'
+import { calculateStyle } from './helpers'
 
 import styles from './Diagram.module.less'
 
@@ -73,8 +75,11 @@ export const DiagramMark: FC<DiagramMarkProps> = ({ mark, left }) => {
 
   const displayOfferValue =
     markers.length > 1 && firstValue !== lastValue
-      ? `${formatMarkValue(firstValue)} - ${formatMarkValue(lastValue)}◎`
-      : `${formatMarkValue(firstValue)}◎`
+      ? `${formatValueByTokenType(firstValue, TokenType.SOL)} - ${formatValueByTokenType(
+          lastValue,
+          TokenType.SOL,
+        )}◎`
+      : `${formatValueByTokenType(firstValue, TokenType.SOL)}◎`
 
   const MarkContent = (
     <div className={styles.mark} style={{ left: calculateStyle(left) }}>

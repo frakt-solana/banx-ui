@@ -4,7 +4,7 @@ import moment from 'moment'
 
 import { USDC } from '@banx/icons'
 import { TokenType, useToken } from '@banx/store'
-import { formatValueByTokenType } from '@banx/utils'
+import { formatValueByTokenType, getTokenUnit } from '@banx/utils'
 
 import styles from './TableCells.module.less'
 
@@ -40,11 +40,6 @@ const DEFAULT_PLACEHOLDERS = {
   ),
 }
 
-const DEFAULT_UNITS = {
-  [TokenType.SOL]: '◎',
-  [TokenType.USDC]: <USDC />,
-}
-
 export const DisplayValue: FC<{ value: number; placeholder?: string }> = ({
   value,
   placeholder,
@@ -54,7 +49,7 @@ export const DisplayValue: FC<{ value: number; placeholder?: string }> = ({
   const formattedValue = formatValueByTokenType(value, tokenType)
 
   const defaultPlaceholder = placeholder || DEFAULT_PLACEHOLDERS[tokenType]
-  const unit = DEFAULT_UNITS[tokenType]
+  const unit = getTokenUnit(tokenType)
 
   const displayValue = formattedValue ? (
     <>

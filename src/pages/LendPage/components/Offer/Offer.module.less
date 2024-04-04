@@ -81,12 +81,19 @@
   }
 }
 
-.value {
+.value,
+.displayOfferValue {
   color: var(--content-primary);
   font: var(--body-text-sm);
   line-height: 24px;
   overflow: auto;
   white-space: nowrap;
+}
+
+.displayOfferValue {
+  display: flex;
+  align-items: center;
+  gap: 2px;
 
   &.hightlight {
     margin-left: 4px;
