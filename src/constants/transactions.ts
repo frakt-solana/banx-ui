@@ -1,13 +1,9 @@
-import { web3 } from 'fbonds-core'
+import { ExecutorOptions } from 'solana-transactions-executor'
 
-export const TXN_EXECUTOR_CONFIRM_OPTIONS: {
-  skipPreflight: boolean
-  maxRetries: number | undefined
-  commitment: web3.Commitment
-  preflightCommitment: web3.Commitment
-} = {
+export const TXN_EXECUTOR_CONFIRM_OPTIONS: ExecutorOptions['confirmOptions'] = {
   skipPreflight: true,
   maxRetries: 0,
   commitment: 'processed',
   preflightCommitment: 'processed',
+  confirmationTimeout: 20,
 }
