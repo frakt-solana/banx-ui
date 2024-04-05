@@ -9,7 +9,7 @@ import { chain } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
-import { StatInfo, StatsInfoProps, VALUES_TYPES } from '@banx/components/StatInfo'
+import { StatInfo, StatsInfoProps } from '@banx/components/StatInfo'
 
 import { BanxInfoBN, BanxStakingSettingsBN } from '@banx/api/staking'
 import { BANX_TOKEN_DECIMALS } from '@banx/constants'

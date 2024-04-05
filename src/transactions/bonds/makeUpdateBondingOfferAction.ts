@@ -29,7 +29,8 @@ export const makeUpdateBondingOfferAction: MakeUpdateBondingOfferAction = async 
   ixnParams,
   { connection, wallet },
 ) => {
-  const { loanValue, loansAmount, deltaValue, optimisticOffer, tokenType, priorityFeeLevel } = ixnParams
+  const { loanValue, loansAmount, deltaValue, optimisticOffer, tokenType, priorityFeeLevel } =
+    ixnParams
 
   const {
     instructions: updateBondingOfferInstructions,
