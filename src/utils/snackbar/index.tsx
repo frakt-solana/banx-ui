@@ -4,6 +4,7 @@ import { notification } from 'antd'
 import { NotificationPlacement } from 'antd/es/notification/interface'
 import classNames from 'classnames'
 import { uniqueId } from 'lodash'
+import { ConfirmTransactionErrorReason } from 'solana-transactions-executor'
 
 import { CloseModal, LoaderCircle } from '@banx/icons'
 
@@ -114,3 +115,28 @@ export const enqueueTransactionsSent = () =>
     message: 'Transactions sent',
     type: 'info',
   })
+
+export const enqueueWaitingConfirmationSingle = (key: string, signature: string) => {
+  enqueueSnackbar({
+    customKey: key,
+    message: 'Waiting for confirmation',
+    type: 'loading',
+    persist: true,
+    solanaExplorerPath: `tx/${signature}`,
+  })
+}
+
+export const enqueueConfirmationError = (
+  signature: string,
+  reason: ConfirmTransactionErrorReason,
+) => {
+  if (reason === ConfirmTransactionErrorReason.TimeoutError) {
+    return enqueueSnackbar({
+      message: 'Unable to ensure transaction result. Please try again',
+      type: 'warning',
+      autoHideDuration: 7,
+      solanaExplorerPath: `tx/${signature}`,
+    })
+  }
+  return enqueueTranactionError()
+}

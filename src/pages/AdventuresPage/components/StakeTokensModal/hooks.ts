@@ -1,10 +1,12 @@
 import { useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Tab, useTabs } from '@banx/components/Tabs'
 
+import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import {
   calcPartnerPoints,
   useBanxStakeInfo,
@@ -13,7 +15,16 @@ import {
 import { useModal, usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { stakeBanxTokenAction, unstakeBanxTokenAction } from '@banx/transactions/staking'
-import { ZERO_BN, bnToHuman, enqueueTransactionsSent, limitDecimalPlaces } from '@banx/utils'
+import {
+  ZERO_BN,
+  bnToHuman,
+  destroySnackbar,
+  enqueueConfirmationError,
+  enqueueSnackbar,
+  enqueueTransactionsSent,
+  enqueueWaitingConfirmationSingle,
+  limitDecimalPlaces,
+} from '@banx/utils'
 
 import { calcIdleBalance, calcPlayerPoints, formatBanxTokensStrToBN } from './helpers'
 
@@ -95,18 +106,43 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
   const { close } = useModal()
 
   const onStake = () => {
+    const loadingSnackbarId = uniqueId()
+
     const txnParam = {
       tokensToStake: formatBanxTokensStrToBN(inputTokenAmount),
       priorityFeeLevel: priorityLevel,
     }
 
-    new TxnExecutor(stakeBanxTokenAction, { wallet: createWalletInstance(wallet), connection })
+    new TxnExecutor(
+      stakeBanxTokenAction,
+      { wallet: createWalletInstance(wallet), connection },
+      {
+        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
+      },
+    )
       .addTransactionParams([txnParam])
-      .on('sentAll', () => {
+      .on('sentAll', (results) => {
         enqueueTransactionsSent()
+        enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)
         close()
       })
+      .on('confirmedAll', (results) => {
+        destroySnackbar(loadingSnackbarId)
+
+        const { confirmed, failed } = results
+
+        if (confirmed.length) {
+          enqueueSnackbar({ message: 'Staked successfully', type: 'success' })
+        }
+
+        if (failed.length) {
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
+        }
+      })
       .on('error', (error) => {
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: txnParam,
           walletPubkey: wallet?.publicKey?.toBase58(),
@@ -117,18 +153,43 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
   }
 
   const onUnstake = () => {
+    const loadingSnackbarId = uniqueId()
+
     const txnParam = {
       tokensToUnstake: formatBanxTokensStrToBN(inputTokenAmount),
       priorityFeeLevel: priorityLevel,
     }
 
-    new TxnExecutor(unstakeBanxTokenAction, { wallet: createWalletInstance(wallet), connection })
+    new TxnExecutor(
+      unstakeBanxTokenAction,
+      { wallet: createWalletInstance(wallet), connection },
+      {
+        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
+      },
+    )
       .addTransactionParams([txnParam])
-      .on('sentAll', () => {
+      .on('sentAll', (results) => {
         enqueueTransactionsSent()
+        enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)
         close()
       })
+      .on('confirmedAll', (results) => {
+        destroySnackbar(loadingSnackbarId)
+
+        const { confirmed, failed } = results
+
+        if (confirmed.length) {
+          enqueueSnackbar({ message: 'Unstaked successfully', type: 'success' })
+        }
+
+        if (failed.length) {
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
+        }
+      })
       .on('error', (error) => {
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: txnParam,
           walletPubkey: wallet?.publicKey?.toBase58(),
