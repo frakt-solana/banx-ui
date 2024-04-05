@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { capitalize } from 'lodash'
+import { capitalize, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import {
@@ -11,11 +11,18 @@ import {
   BanxInfoBN,
   BanxStakeBN,
 } from '@banx/api/staking'
+import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { checkIsSubscribed, getAdventureStatus, isAdventureEnded } from '@banx/pages/AdventuresPage'
 import { usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { subscribeBanxAdventureAction } from '@banx/transactions/staking'
-import { enqueueTransactionSent } from '@banx/utils'
+import {
+  destroySnackbar,
+  enqueueConfirmationError,
+  enqueueSnackbar,
+  enqueueTransactionsSent,
+  enqueueWaitingConfirmationSingle,
+} from '@banx/utils'
 
 import {
   AdventureEndedRewardsResult,
@@ -84,15 +91,40 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
 
     const params = { weeks: [banxAdventure.week], priorityFeeLevel: priorityLevel }
 
-    new TxnExecutor(subscribeBanxAdventureAction, {
-      wallet: createWalletInstance(wallet),
-      connection,
-    })
-      .addTransactionParam(params)
-      .on('sentSome', (results) => {
-        results.forEach(({ signature }) => enqueueTransactionSent(signature))
+    const loadingSnackbarId = uniqueId()
+
+    new TxnExecutor(
+      subscribeBanxAdventureAction,
+      {
+        wallet: createWalletInstance(wallet),
+        connection,
+      },
+      {
+        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
+      },
+    )
+
+      .on('sentAll', (results) => {
+        enqueueTransactionsSent()
+        enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)
+      })
+      .on('confirmedAll', (results) => {
+        destroySnackbar(loadingSnackbarId)
+
+        const { confirmed, failed } = results
+
+        if (confirmed.length) {
+          enqueueSnackbar({ message: 'Subscribed successfully', type: 'success' })
+        }
+
+        if (failed.length) {
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
+        }
       })
       .on('error', (error) => {
+        destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
           additionalData: params,
           walletPubkey: wallet?.publicKey?.toBase58(),

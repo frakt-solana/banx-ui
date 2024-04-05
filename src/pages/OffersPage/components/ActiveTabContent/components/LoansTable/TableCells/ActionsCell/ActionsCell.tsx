@@ -9,14 +9,15 @@ import { Button } from '@banx/components/Buttons'
 import { TensorLink } from '@banx/components/SolanaLinks'
 
 import { Loan } from '@banx/api/core'
+import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useHiddenNftsMints } from '@banx/pages/OffersPage'
 import { useModal, usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimAction } from '@banx/transactions/loans'
 import {
   destroySnackbar,
+  enqueueConfirmationError,
   enqueueSnackbar,
-  enqueueTranactionError,
   enqueueTransactionSent,
   enqueueWaitingConfirmation,
   isLoanLiquidated,
@@ -46,7 +47,13 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
 
     const loadingSnackbarId = uniqueId()
 
-    new TxnExecutor(makeClaimAction, { wallet: createWalletInstance(wallet), connection })
+    new TxnExecutor(
+      makeClaimAction,
+      { wallet: createWalletInstance(wallet), connection },
+      {
+        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
+      },
+    )
       .addTransactionParam({ loan, priorityFeeLevel: priorityLevel })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -58,7 +65,9 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
         destroySnackbar(loadingSnackbarId)
 
         if (failed.length) {
-          return enqueueTranactionError()
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
 
         return confirmed.forEach(({ result, signature }) => {

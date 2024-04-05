@@ -12,7 +12,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
 import bonkTokenImg from '@banx/assets/BonkToken.png'
-import { BONDS, SPECIAL_COLLECTIONS_MARKETS } from '@banx/constants'
+import { BONDS, SPECIAL_COLLECTIONS_MARKETS, TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { LoansOptimisticStore, OffersOptimisticStore, PriorityLevel } from '@banx/store'
 import { BorrowType, createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
@@ -24,8 +24,8 @@ import {
 import {
   convertOffersToSimple,
   destroySnackbar,
+  enqueueConfirmationError,
   enqueueSnackbar,
-  enqueueTranactionsError,
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
   offerNeedsReservesOptimizationOnBorrow,
@@ -100,7 +100,7 @@ export const executeBorrow = async (props: {
   const txnsResults = await new TxnExecutor(
     makeBorrowAction,
     { wallet: createWalletInstance(wallet), connection },
-    { signAllChunkSize: isLedger ? 1 : 40 },
+    { signAllChunkSize: isLedger ? 1 : 40, confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
   )
     .addTransactionParams(txnParams)
     .on('sentSome', () => {
@@ -109,7 +109,6 @@ export const executeBorrow = async (props: {
     })
     .on('confirmedAll', (results) => {
       const { confirmed, failed } = results
-      const failedTransactionsCount = failed.length
 
       destroySnackbar(loadingSnackbarId)
 
@@ -160,8 +159,10 @@ export const executeBorrow = async (props: {
         onBorrowSuccess?.(loansFlat.length, showCongratsMessage)
       }
 
-      if (failedTransactionsCount) {
-        return enqueueTranactionsError(failedTransactionsCount)
+      if (failed.length) {
+        return failed.forEach(({ signature, reason }) =>
+          enqueueConfirmationError(signature, reason),
+        )
       }
     })
     .on('error', (error) => {

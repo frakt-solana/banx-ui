@@ -3,6 +3,7 @@ import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan, Offer } from '@banx/api/core'
+import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useModal, usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
@@ -12,8 +13,8 @@ import {
 } from '@banx/transactions/loans'
 import {
   destroySnackbar,
+  enqueueConfirmationError,
   enqueueSnackbar,
-  enqueueTranactionError,
   enqueueTransactionSent,
   enqueueWaitingConfirmation,
 } from '@banx/utils'
@@ -39,7 +40,13 @@ export const useLendLoansTransactions = ({
   const terminateLoan = () => {
     const loadingSnackbarId = uniqueId()
 
-    new TxnExecutor(makeTerminateAction, { wallet: createWalletInstance(wallet), connection })
+    new TxnExecutor(
+      makeTerminateAction,
+      { wallet: createWalletInstance(wallet), connection },
+      {
+        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
+      },
+    )
       .addTransactionParam({ loan, priorityFeeLevel: priorityLevel })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -51,7 +58,9 @@ export const useLendLoansTransactions = ({
         destroySnackbar(loadingSnackbarId)
 
         if (failed.length) {
-          return enqueueTranactionError()
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
 
         return confirmed.forEach(({ result, signature }) => {
@@ -81,7 +90,13 @@ export const useLendLoansTransactions = ({
   const claimLoan = () => {
     const loadingSnackbarId = uniqueId()
 
-    new TxnExecutor(makeClaimAction, { wallet: createWalletInstance(wallet), connection })
+    new TxnExecutor(
+      makeClaimAction,
+      { wallet: createWalletInstance(wallet), connection },
+      {
+        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
+      },
+    )
       .addTransactionParam({ loan, priorityFeeLevel: priorityLevel })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -93,7 +108,9 @@ export const useLendLoansTransactions = ({
         destroySnackbar(loadingSnackbarId)
 
         if (failed.length) {
-          return enqueueTranactionError()
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
 
         return confirmed.forEach(({ result, signature }) => {
@@ -122,10 +139,16 @@ export const useLendLoansTransactions = ({
   const instantLoan = () => {
     const loadingSnackbarId = uniqueId()
 
-    new TxnExecutor(makeInstantRefinanceAction, {
-      wallet: createWalletInstance(wallet),
-      connection,
-    })
+    new TxnExecutor(
+      makeInstantRefinanceAction,
+      {
+        wallet: createWalletInstance(wallet),
+        connection,
+      },
+      {
+        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
+      },
+    )
       .addTransactionParam({ loan, bestOffer, priorityFeeLevel: priorityLevel })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -137,7 +160,9 @@ export const useLendLoansTransactions = ({
         destroySnackbar(loadingSnackbarId)
 
         if (failed.length) {
-          return enqueueTranactionError()
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
 
         return confirmed.forEach(({ result, signature }) => {

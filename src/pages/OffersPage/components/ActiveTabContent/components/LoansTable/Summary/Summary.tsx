@@ -11,14 +11,15 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
+import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useIsLedger, usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimAction, makeTerminateAction } from '@banx/transactions/loans'
 import {
   HealthColorIncreasing,
   destroySnackbar,
+  enqueueConfirmationError,
   enqueueSnackbar,
-  enqueueTranactionsError,
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
   getColorByPercent,
@@ -64,7 +65,7 @@ export const Summary: FC<SummaryProps> = ({
     new TxnExecutor(
       makeTerminateAction,
       { wallet: createWalletInstance(wallet), connection },
-      { signAllChunkSize: isLedger ? 5 : 40 },
+      { signAllChunkSize: isLedger ? 5 : 40, confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
       .addTransactionParams(txnParams)
       .on('sentAll', () => {
@@ -73,7 +74,6 @@ export const Summary: FC<SummaryProps> = ({
       })
       .on('confirmedAll', (results) => {
         const { confirmed, failed } = results
-        const failedTransactionsCount = failed.length
 
         destroySnackbar(loadingSnackbarId)
 
@@ -83,8 +83,10 @@ export const Summary: FC<SummaryProps> = ({
           clearSelection()
         }
 
-        if (failedTransactionsCount) {
-          return enqueueTranactionsError(failedTransactionsCount)
+        if (failed.length) {
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
       })
       .on('error', (error) => {
@@ -106,7 +108,7 @@ export const Summary: FC<SummaryProps> = ({
     new TxnExecutor(
       makeClaimAction,
       { wallet: createWalletInstance(wallet), connection },
-      { signAllChunkSize: isLedger ? 5 : 40 },
+      { signAllChunkSize: isLedger ? 5 : 40, confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
       .addTransactionParams(txnParams)
       .on('sentAll', () => {
@@ -115,7 +117,6 @@ export const Summary: FC<SummaryProps> = ({
       })
       .on('confirmedAll', (results) => {
         const { confirmed, failed } = results
-        const failedTransactionsCount = failed.length
 
         destroySnackbar(loadingSnackbarId)
 
@@ -130,8 +131,10 @@ export const Summary: FC<SummaryProps> = ({
           hideLoans(...mintsToHidden)
         }
 
-        if (failedTransactionsCount) {
-          return enqueueTranactionsError(failedTransactionsCount)
+        if (failed.length) {
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
       })
       .on('error', (error) => {
