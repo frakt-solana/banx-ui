@@ -5002,6 +5002,15 @@ axios@^1.4.0:
     form-data "^4.0.0"
     proxy-from-env "^1.1.0"
 
+axios@^1.6.8:
+  version "1.6.8"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.8.tgz#66d294951f5d988a00e87a0ffb955316a619ea66"
+  integrity sha512-v/ZHtJDU39mDpyBoFVkETcd/uNdxrWRrg3bKpOKzXFA6Bvqopts6ALSMU3y6ijYxbw2B+wPrIv46egTzJXCLGQ==
+  dependencies:
+    follow-redirects "^1.15.6"
+    form-data "^4.0.0"
+    proxy-from-env "^1.1.0"
+
 babel-plugin-polyfill-corejs2@^0.4.4:
   version "0.4.5"
   resolved "https://registry.yarnpkg.com/babel-plugin-polyfill-corejs2/-/babel-plugin-polyfill-corejs2-0.4.5.tgz#8097b4cb4af5b64a1d11332b6fb72ef5e64a054c"
@@ -7082,6 +7091,11 @@ follow-redirects@^1.0.0, follow-redirects@^1.14.9, follow-redirects@^1.15.0:
   version "1.15.2"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.2.tgz#b460864144ba63f2681096f274c4e57026da2c13"
   integrity sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==
+
+follow-redirects@^1.15.6:
+  version "1.15.6"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.6.tgz#7f815c0cda4249c74ff09e95ef97c23b5fd0399b"
+  integrity sha512-wWN62YITEaOpSK584EZXJafH1AGpO8RVgElfkuXbTOrPX4fIfOyEpW/CsiNd8JdYrAoOvafRTOEnvsO++qCqFA==
 
 for-each@^0.3.3:
   version "0.3.3"
@@ -11364,12 +11378,14 @@ socks@^2.6.2:
     ip "^2.0.0"
     smart-buffer "^4.2.0"
 
-solana-transactions-executor@2.2.4:
-  version "2.2.4"
-  resolved "https://registry.yarnpkg.com/solana-transactions-executor/-/solana-transactions-executor-2.2.4.tgz#3c1836d2823dad7ef01dccfb998cbb408333d49c"
-  integrity sha512-T/e7XunNT6C8xNzX0ToTfIP+qqgud5gVYHe2gAV17YKm/6PeW4yzZGsoWobU+702FXdkM/oHgrXNO93EEq6fEg==
+solana-transactions-executor@2.3.0-beta.1:
+  version "2.3.0-beta.1"
+  resolved "https://registry.yarnpkg.com/solana-transactions-executor/-/solana-transactions-executor-2.3.0-beta.1.tgz#20bfcff9203521060e4b98d0384ca2ded22ee485"
+  integrity sha512-Up8VeRdVkQnGjnAe6zCV3svCGTE3YJ8IcXnXywVDUbMetLB8hpgJ3OR8Xw3ZIUPeUH9nyYvDO775hXiwwef+ig==
   dependencies:
     "@solana/web3.js" "^1.68.0"
+    axios "^1.6.8"
+    bs58 "^5.0.0"
     lodash "^4.17.21"
 
 sonic-boom@^2.2.1:
