@@ -61,7 +61,7 @@
     "react-router-dom": "^6.14.2",
     "react-text-transition": "^3.1.0",
     "react-virtuoso": "^4.6.2",
-    "solana-transactions-executor": "2.2.4",
+    "solana-transactions-executor": "2.3.0-beta.1",
     "zod": "^3.21.4",
     "zustand": "^4.3.9"
   },
