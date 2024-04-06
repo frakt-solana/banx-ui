@@ -16,6 +16,7 @@ import {
   calculateLoanRepayValue,
   formatValueByLendingTokenType,
   getColorByPercent,
+  getTokenUnit,
 } from '@banx/utils'
 
 import { Mark } from './Diagram'
@@ -61,31 +62,30 @@ const createTooltipContent = (loans: Loan[]) => {
 interface DiagramMarkProps {
   left: number
   mark: Mark[] | Mark
+  tokenType: LendingTokenType
 }
 
-export const DiagramMark: FC<DiagramMarkProps> = ({ mark, left }) => {
+export const DiagramMark: FC<DiagramMarkProps> = ({ mark, left, tokenType }) => {
   const markers = isArray(mark) ? mark : [mark]
 
-  const { loan: firstLoan, value: firstValue = 0 } = first(markers) || {}
-  const { value: lastValue = 0 } = last(markers) || {}
-
+  const firstLoan = markers[0]?.loan
   const nftImageUrl = firstLoan?.nft.meta.imageUrl
+
   const loans = compact(markers.map((marker) => marker.loan))
   const tooltipContent = createTooltipContent(loans)
 
-  const displayOfferValue =
-    markers.length > 1 && firstValue !== lastValue
-      ? `${formatValueByLendingTokenType(
-          firstValue,
-          LendingTokenType.NativeSol,
-        )} - ${formatValueByLendingTokenType(lastValue, LendingTokenType.NativeSol)}◎`
-      : `${formatValueByLendingTokenType(firstValue, LendingTokenType.NativeSol)}◎`
+  const tokenUnit = getTokenUnit(tokenType)
+
+  const displayOfferValue = getDisplayOfferValue(markers, tokenType)
 
   const MarkContent = (
     <div className={styles.mark} style={{ left: calculateStyle(left) }}>
       <CollateralImage markers={markers} url={nftImageUrl} />
       <div className={styles.dot} />
-      <div className={styles.value}>{displayOfferValue}</div>
+      <div className={styles.value}>
+        {displayOfferValue}
+        {tokenUnit}
+      </div>
     </div>
   )
 
@@ -94,6 +94,21 @@ export const DiagramMark: FC<DiagramMarkProps> = ({ mark, left }) => {
   }
 
   return MarkContent
+}
+
+const getDisplayOfferValue = (markers: Mark[], tokenType: LendingTokenType) => {
+  const { value: firstValue = 0 } = first(markers) || {}
+  const { value: lastValue = 0 } = last(markers) || {}
+
+  const formattedFirstValue = formatValueByLendingTokenType(firstValue, tokenType)
+
+  if (markers.length > 1 && firstValue !== lastValue) {
+    const formattedLastValue = formatValueByLendingTokenType(lastValue, tokenType)
+
+    return `${formattedFirstValue} - ${formattedLastValue}`
+  }
+
+  return formattedFirstValue
 }
 
 interface CollateralImageProps {
