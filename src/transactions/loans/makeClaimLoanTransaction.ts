@@ -3,7 +3,7 @@ import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/const
 import {
   BondAndTransactionOptimistic,
   claimCnftPerpetualLoanCanopy,
-  claimPerpetualLoan,
+  claimPerpetualLoanv2,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
@@ -77,7 +77,7 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       instructions: claimInstructions,
       signers,
       optimisticResult,
-    } = await claimPerpetualLoan({
+    } = await claimPerpetualLoanv2({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
