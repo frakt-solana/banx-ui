@@ -3,6 +3,7 @@ import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
+import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { usePriorityFees, useToken } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
@@ -12,8 +13,8 @@ import {
 } from '@banx/transactions/bonds'
 import {
   destroySnackbar,
+  enqueueConfirmationError,
   enqueueSnackbar,
-  enqueueTranactionError,
   enqueueTransactionSent,
   enqueueWaitingConfirmation,
 } from '@banx/utils'
@@ -54,10 +55,16 @@ export const useOfferTransactions = ({
       priorityFeeLevel: priorityLevel,
     }
 
-    await new TxnExecutor(makeCreateBondingOfferAction, {
-      wallet: createWalletInstance(wallet),
-      connection,
-    })
+    await new TxnExecutor(
+      makeCreateBondingOfferAction,
+      {
+        wallet: createWalletInstance(wallet),
+        connection,
+      },
+      {
+        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
+      },
+    )
       .addTransactionParam(txnParam)
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -69,7 +76,9 @@ export const useOfferTransactions = ({
         destroySnackbar(loadingSnackbarId)
 
         if (failed.length) {
-          return enqueueTranactionError()
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
 
         return confirmed.forEach(({ result, signature }) => {
@@ -110,10 +119,16 @@ export const useOfferTransactions = ({
       priorityFeeLevel: priorityLevel,
     }
 
-    await new TxnExecutor(makeUpdateBondingOfferAction, {
-      wallet: createWalletInstance(wallet),
-      connection,
-    })
+    await new TxnExecutor(
+      makeUpdateBondingOfferAction,
+      {
+        wallet: createWalletInstance(wallet),
+        connection,
+      },
+      {
+        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
+      },
+    )
       .addTransactionParam(txnParam)
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -125,7 +140,9 @@ export const useOfferTransactions = ({
         destroySnackbar(loadingSnackbarId)
 
         if (failed.length) {
-          return enqueueTranactionError()
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
 
         return confirmed.forEach(({ result, signature }) => {
@@ -156,8 +173,14 @@ export const useOfferTransactions = ({
 
     const loadingSnackbarId = uniqueId()
 
-    new TxnExecutor(makeRemoveOfferAction, { wallet: createWalletInstance(wallet), connection })
-      .addTransactionParam({ optimisticOffer, tokenType, priorityFeeLevel: priorityLevel })
+    new TxnExecutor(
+      makeRemoveOfferAction,
+      { wallet: createWalletInstance(wallet), connection },
+      {
+        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
+      },
+    )
+      .addTransactionParam({ optimisticOffer, priorityFeeLevel: priorityLevel, tokenType })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
         enqueueWaitingConfirmation(loadingSnackbarId)
@@ -168,7 +191,9 @@ export const useOfferTransactions = ({
         destroySnackbar(loadingSnackbarId)
 
         if (failed.length) {
-          return enqueueTranactionError()
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
 
         return confirmed.forEach(({ result, signature }) => {

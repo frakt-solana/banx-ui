@@ -16,14 +16,15 @@ import {
 } from '@banx/components/modals'
 
 import { Loan } from '@banx/api/core'
+import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
 import { useModal, usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeRefinanceAction } from '@banx/transactions/loans'
 import {
   destroySnackbar,
+  enqueueConfirmationError,
   enqueueSnackbar,
-  enqueueTranactionError,
   enqueueTransactionSent,
   enqueueWaitingConfirmation,
   getDialectAccessToken,
@@ -100,7 +101,11 @@ const useRefinanceTransaction = (loan: Loan) => {
   const refinance = () => {
     const loadingSnackbarId = uniqueId()
 
-    new TxnExecutor(makeRefinanceAction, { wallet: createWalletInstance(wallet), connection })
+    new TxnExecutor(
+      makeRefinanceAction,
+      { wallet: createWalletInstance(wallet), connection },
+      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
+    )
       .addTransactionParam({ loan, priorityFeeLevel: priorityLevel })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -112,7 +117,9 @@ const useRefinanceTransaction = (loan: Loan) => {
         destroySnackbar(loadingSnackbarId)
 
         if (failed.length) {
-          return enqueueTranactionError()
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
         }
 
         return confirmed.forEach(({ result, signature }) => {
