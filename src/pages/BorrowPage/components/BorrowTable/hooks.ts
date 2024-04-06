@@ -248,6 +248,7 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
     findOfferInCart,
     hasSelectedNfts: !isEmpty(offerByMint),
     onSelectAll,
+    tokenType,
   })
 
   return {

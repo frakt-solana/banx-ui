@@ -1,21 +1,20 @@
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Offer } from '@banx/api/core'
 import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
 import {
-  // calcBorrowValueWithProtocolFee,
-  // calcBorrowValueWithRentFee,
+  calcBorrowValueWithProtocolFee,
+  calcBorrowValueWithRentFee,
   calculateLoanValue,
 } from '@banx/utils'
 
-export const calcLoanValueWithFees = (offer: Offer | null) => {
+export const calcLoanValueWithFees = (offer: Offer | null, tokenType: LendingTokenType) => {
   if (!offer) return 0
 
-  //TODO: Recalc fees for usdc loans
-  return calculateLoanValue(offer)
-  // const loanValue = calculateLoanValue(offer)
-  // const loanValueWithProtocolFee = calcBorrowValueWithProtocolFee(loanValue)
-  // return calcBorrowValueWithRentFee(loanValueWithProtocolFee, offer.hadoMarket)
+  const loanValue = calculateLoanValue(offer)
+  const loanValueWithProtocolFee = calcBorrowValueWithProtocolFee(loanValue)
+  return calcBorrowValueWithRentFee(loanValueWithProtocolFee, offer.hadoMarket, tokenType)
 }
 
 type CalcWeeklyInterestFee = (props: { loanValue: number; apr: number }) => number

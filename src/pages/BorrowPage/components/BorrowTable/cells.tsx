@@ -2,6 +2,7 @@ import { FC } from 'react'
 
 import classNames from 'classnames'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import {
   DisplayValue,
@@ -11,7 +12,8 @@ import {
 
 import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
 import {
-  calcBorrowValueWithProtocolFee, // calcBorrowValueWithRentFee,
+  calcBorrowValueWithProtocolFee,
+  calcBorrowValueWithRentFee,
   calculateApr,
 } from '@banx/utils'
 
@@ -32,11 +34,12 @@ const TooltipRow: FC<TooltipRowProps> = ({ label, value }) => (
   </div>
 )
 
-interface CellProps {
+interface BorrowCellProps {
   nft: TableNftData
+  tokenType: LendingTokenType
 }
-export const BorrowCell: FC<CellProps> = ({ nft }) => {
-  //TODO: Recalc fees for usdc loans
+
+export const BorrowCell: FC<BorrowCellProps> = ({ nft, tokenType }) => {
   const loanValueWithProtocolFee = calcBorrowValueWithProtocolFee(nft.loanValue)
   const collectionFloor = nft.nft.nft.collectionFloor
   const ltv = (loanValueWithProtocolFee / collectionFloor) * 100
@@ -53,20 +56,25 @@ export const BorrowCell: FC<CellProps> = ({ nft }) => {
     </div>
   )
 
-  // const borrowValueWithRentFee = calcBorrowValueWithRentFee(
-  //   loanValueWithProtocolFee,
-  //   nft.nft.loan.marketPubkey,
-  // )
+  const borrowValueWithRentFee = calcBorrowValueWithRentFee(
+    loanValueWithProtocolFee,
+    nft.nft.loan.marketPubkey,
+    tokenType,
+  )
 
   return (
     <HorizontalCell
-      value={<DisplayValue value={nft.loanValue} placeholder="--" />}
+      value={<DisplayValue value={borrowValueWithRentFee} placeholder="--" />}
       tooltipContent={tooltipContent}
     />
   )
 }
 
-export const APRCell: FC<CellProps> = ({ nft }) => {
+interface APRCellProps {
+  nft: TableNftData
+}
+
+export const APRCell: FC<APRCellProps> = ({ nft }) => {
   const apr = calculateApr({
     loanValue: nft.loanValue,
     collectionFloor: nft.nft.nft.collectionFloor,

@@ -1,6 +1,7 @@
 import { FC, useMemo, useState } from 'react'
 
 import classNames from 'classnames'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { map, sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
@@ -11,8 +12,10 @@ import Tooltip from '@banx/components/Tooltip'
 import { BorrowNft } from '@banx/api/core'
 import bonkTokenImg from '@banx/assets/BonkToken.png'
 import { BONDS } from '@banx/constants'
+import { useToken } from '@banx/store'
 import {
   calcBorrowValueWithProtocolFee,
+  calcBorrowValueWithRentFee,
   calcWeightedAverage,
   calculateApr,
   getColorByPercent,
@@ -35,11 +38,9 @@ interface SummaryProps {
   bonkRewardsAvailable: boolean
 }
 
-const calcLoanValueWithFees = (nft: TableNftData) => {
-  // TODO: Recalc fees for usdc loans
-  return nft.loanValue
-  // const loanValueWithProtocolFee = calcBorrowValueWithProtocolFee(nft.loanValue)
-  // return calcBorrowValueWithRentFee(loanValueWithProtocolFee, nft.nft.loan.marketPubkey)
+const calcLoanValueWithFees = (nft: TableNftData, tokenType: LendingTokenType) => {
+  const loanValueWithProtocolFee = calcBorrowValueWithProtocolFee(nft.loanValue)
+  return calcBorrowValueWithRentFee(loanValueWithProtocolFee, nft.nft.loan.marketPubkey, tokenType)
 }
 
 const caclAprValue = (nft: BorrowNft, loanValue: number) => {
@@ -59,7 +60,9 @@ export const Summary: FC<SummaryProps> = ({
   setMaxBorrowPercent,
   bonkRewardsAvailable,
 }) => {
-  const totalBorrow = sumBy(nftsInCart, calcLoanValueWithFees)
+  const { token: tokenType } = useToken()
+
+  const totalBorrow = sumBy(nftsInCart, (nft) => calcLoanValueWithFees(nft, tokenType))
 
   const totalUpfrontFee = sumBy(nftsInCart, ({ loanValue }) => {
     return loanValue - calcBorrowValueWithProtocolFee(loanValue)
@@ -75,10 +78,10 @@ export const Summary: FC<SummaryProps> = ({
       nftsInCart,
       ({ nft, loanValue }) => (caclAprValue(nft, loanValue) + BONDS.PROTOCOL_REPAY_FEE) / 100,
     )
-    const totalLoanValue = map(nftsInCart, calcLoanValueWithFees)
+    const totalLoanValue = map(nftsInCart, (nft) => calcLoanValueWithFees(nft, tokenType))
 
     return calcWeightedAverage(totalApr, totalLoanValue)
-  }, [nftsInCart])
+  }, [nftsInCart, tokenType])
 
   const [isBorrowing, setIsBorrowing] = useState(false)
   const onBorrow = async () => {

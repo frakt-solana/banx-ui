@@ -1,3 +1,5 @@
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+
 export const IS_DEVELOPMENT = process.env.NODE_ENV !== 'production'
 
 export const BACKEND_BASE_URL = 'https://api.banx.gg'
@@ -30,10 +32,14 @@ export const RAFFLE_PROGRAM_PUBKEY = 'raffyhEJMx59iDx778Y9gdaVcP2XDeusPcPBxwr3qA
 export const BONDS = {
   PROGRAM_PUBKEY: '4tdmkuY6EStxbS6Y8s5ueznL3VPMSugrvQuDeAHGZhSt',
   ADMIN_PUBKEY: 'revJ8QJgQ3xCcZ6CMykjsmGMYdg8Pj9WnqgJZBHBwSK',
-  BORROW_RENT_FEE: 4621440, //? Solana lamports
   PROTOCOL_FEE_PERCENT: 100, //? Base points
   PROTOCOL_REPAY_FEE: 620, //? Base points
   FACELESS_MARKET_PUBKEY: 'BzxKw3JLmPt7aagkHnRQEMQ4Le1rZdwEib5Viuig42hu',
+}
+
+export const TOKEN_RENT_FEE = {
+  [LendingTokenType.NativeSol]: 4621440, //? Solana rent fee (lamports)
+  [LendingTokenType.Usdc]: 0, //TODO: Need ask about usdc rent fee
 }
 
 export const DIALECT = {

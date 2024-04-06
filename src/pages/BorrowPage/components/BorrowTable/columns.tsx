@@ -1,3 +1,5 @@
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+
 import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
 import {
@@ -22,6 +24,7 @@ interface GetTableColumnsProps {
   isCardView: boolean
   hasSelectedNfts: boolean
   onSelectAll: () => void
+  tokenType: LendingTokenType
 }
 
 export const getTableColumns = ({
@@ -31,6 +34,7 @@ export const getTableColumns = ({
   isCardView,
   hasSelectedNfts,
   onSelectAll,
+  tokenType,
 }: GetTableColumnsProps) => {
   const columns: ColumnType<TableNftData>[] = [
     {
@@ -58,7 +62,7 @@ export const getTableColumns = ({
     {
       key: 'loanValue',
       title: <HeaderCell label="Borrow" />,
-      render: (nft) => <BorrowCell nft={nft} />,
+      render: (nft) => <BorrowCell nft={nft} tokenType={tokenType} />,
     },
     {
       key: 'fee',

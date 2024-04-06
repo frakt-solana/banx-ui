@@ -2,6 +2,7 @@ import { FC, PropsWithChildren, useMemo } from 'react'
 
 import { InfoCircleOutlined } from '@ant-design/icons'
 import classNames from 'classnames'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Button } from '@banx/components/Buttons'
 import ImageWithPreload from '@banx/components/ImageWithPreload'
@@ -104,9 +105,10 @@ interface BorrowCardProps {
   nft: BorrowNft
   onClick: () => void
   findBestOffer: (marketPubkey: string) => Offer | null
+  tokenType: LendingTokenType
 }
 
-export const BorrowCard: FC<BorrowCardProps> = ({ nft, onClick, findBestOffer }) => {
+export const BorrowCard: FC<BorrowCardProps> = ({ nft, onClick, findBestOffer, tokenType }) => {
   const {
     nft: { collectionFloor, meta },
     loan: { marketPubkey },
@@ -115,7 +117,7 @@ export const BorrowCard: FC<BorrowCardProps> = ({ nft, onClick, findBestOffer })
   const bestOffer = useMemo(() => findBestOffer(marketPubkey), [findBestOffer, marketPubkey])
 
   const loanValue = bestOffer ? calculateLoanValue(bestOffer) : 0
-  const loanValueWithFees = calcLoanValueWithFees(bestOffer)
+  const loanValueWithFees = calcLoanValueWithFees(bestOffer, tokenType)
 
   const ltv = Math.max((loanValueWithFees / collectionFloor) * 100, 0)
   const apr = calculateApr({ loanValue, collectionFloor, marketPubkey })
