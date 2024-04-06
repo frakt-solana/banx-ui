@@ -2,6 +2,8 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 
 import { fetchAllTotalStats, fetchBorrowerStats, fetchLenderStats } from '@banx/api/stats'
+import { useToken } from '@banx/store'
+import { isSolLendingTokenType } from '@banx/utils'
 
 const QUERY_OPTIONS = {
   staleTime: 60 * 1000, // 60 seconds
@@ -10,7 +12,15 @@ const QUERY_OPTIONS = {
 }
 
 export const useAllTotalStats = () => {
-  const { data, isLoading } = useQuery(['allTotalStats'], () => fetchAllTotalStats(), QUERY_OPTIONS)
+  const { token: tokenType } = useToken()
+
+  const marketType = isSolLendingTokenType(tokenType) ? 'allInSol' : 'allInUsdc'
+
+  const { data, isLoading } = useQuery(
+    ['allTotalStats', tokenType],
+    () => fetchAllTotalStats(marketType),
+    QUERY_OPTIONS,
+  )
 
   return { data, isLoading }
 }

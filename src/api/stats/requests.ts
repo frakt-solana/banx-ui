@@ -49,9 +49,11 @@ export const fetchUserLoansStats: FetchUserLoansStats = async (walletPubkey) => 
   return data.data ?? null
 }
 
-type FetchAllTotalStats = () => Promise<AllTotalStats | null>
-export const fetchAllTotalStats: FetchAllTotalStats = async () => {
-  const { data } = await axios.get<{ data: AllTotalStats }>(`${BACKEND_BASE_URL}/stats/all`)
+type FetchAllTotalStats = (marketType: 'allInSol' | 'allInUsdc') => Promise<AllTotalStats | null>
+export const fetchAllTotalStats: FetchAllTotalStats = async (marketType) => {
+  const { data } = await axios.get<{ data: AllTotalStats }>(
+    `${BACKEND_BASE_URL}/stats/all?${marketType}`,
+  )
 
   try {
     await AllTotalStatsSchema.parseAsync(data.data)
