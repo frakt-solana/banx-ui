@@ -51,10 +51,9 @@ export const getTokenUnit = (tokenType: LendingTokenType) => {
   return TOKEN_UNIT[tokenType]
 }
 
-export const isSolLendingTokenType = (tokenType: LendingTokenType) =>
+export const isSolTokenType = (tokenType: LendingTokenType) =>
   tokenType === LendingTokenType.NativeSol
-export const isUsdcLendingTokenType = (tokenType: LendingTokenType) =>
-  tokenType === LendingTokenType.Usdc
+export const isUsdcTokenType = (tokenType: LendingTokenType) => tokenType === LendingTokenType.Usdc
 
 const LENDING_TOKEN_TO_MARKET_MAP: Record<LendingTokenType, MarketType> = {
   [LendingTokenType.NativeSol]: MarketType.SOL,

@@ -91,7 +91,7 @@ export const Summary: FC<SummaryProps> = ({
           Pay interest {<DisplayValue value={totalUnpaidAccruedInterest} />}
         </Button> */}
         <Button onClick={repayBulkLoan} disabled={!totalSelectedLoans}>
-          <DisplayValue value={totalDebt} />
+          Repay <DisplayValue value={totalDebt} />
         </Button>
       </div>
     </div>

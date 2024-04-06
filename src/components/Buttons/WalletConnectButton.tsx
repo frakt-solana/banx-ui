@@ -7,8 +7,8 @@ import { useDiscordUser } from '@banx/hooks'
 import { ChevronDown, Wallet } from '@banx/icons'
 import { useToken } from '@banx/store'
 import {
-  isSolLendingTokenType,
-  isUsdcLendingTokenType,
+  isSolTokenType,
+  isUsdcTokenType,
   shortenAddress,
   useSolanaBalance,
   useTokenBalance,
@@ -29,8 +29,8 @@ export const WalletConnectButton = () => {
 
   const { token: tokenType } = useToken()
 
-  const solanaBalance = useSolanaBalance({ isLive: isSolLendingTokenType(tokenType) })
-  const usdcBalance = useTokenBalance(USDC_ADDRESS, { isLive: isUsdcLendingTokenType(tokenType) })
+  const solanaBalance = useSolanaBalance({ isLive: isSolTokenType(tokenType) })
+  const usdcBalance = useTokenBalance(USDC_ADDRESS, { isLive: isUsdcTokenType(tokenType) })
 
   const ConnectedButton = () => (
     <div className={styles.connectedButton} onClick={toggleVisibility}>
