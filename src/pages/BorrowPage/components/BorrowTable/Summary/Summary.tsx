@@ -13,7 +13,6 @@ import bonkTokenImg from '@banx/assets/BonkToken.png'
 import { BONDS } from '@banx/constants'
 import {
   calcBorrowValueWithProtocolFee,
-  calcBorrowValueWithRentFee,
   calcWeightedAverage,
   calculateApr,
   getColorByPercent,
@@ -37,8 +36,10 @@ interface SummaryProps {
 }
 
 const calcLoanValueWithFees = (nft: TableNftData) => {
-  const loanValueWithProtocolFee = calcBorrowValueWithProtocolFee(nft.loanValue)
-  return calcBorrowValueWithRentFee(loanValueWithProtocolFee, nft.nft.loan.marketPubkey)
+  // TODO: Recalc fees for usdc loans
+  return nft.loanValue
+  // const loanValueWithProtocolFee = calcBorrowValueWithProtocolFee(nft.loanValue)
+  // return calcBorrowValueWithRentFee(loanValueWithProtocolFee, nft.nft.loan.marketPubkey)
 }
 
 const caclAprValue = (nft: BorrowNft, loanValue: number) => {

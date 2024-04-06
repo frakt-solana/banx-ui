@@ -5,7 +5,7 @@ import {
   calculateCurrentInterestSolPure,
   optimisticBorrowUpdateBondingBondOffer,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
+import { BondOfferV2, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, chunk, groupBy, sumBy, uniqueId } from 'lodash'
 import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
@@ -181,6 +181,7 @@ export const createBorrowParams = (
   nfts: TableNftData[],
   rawOffers: Record<string, Offer[]>,
   priorityLevel: PriorityLevel,
+  tokenType: LendingTokenType,
 ) => {
   const nftsByMarket = groupBy(nfts, ({ nft }) => nft.loan.marketPubkey)
 
@@ -189,7 +190,7 @@ export const createBorrowParams = (
     //? Match nfts and offers to borrow from the most suitable offers
     .map(([marketPubkey, nfts]) => matchNftsAndOffers({ nfts, rawOffers: rawOffers[marketPubkey] }))
     .flatten()
-    .map((txnData) => ({ ...txnData, priorityFeeLevel: priorityLevel }))
+    .map((txnData) => ({ ...txnData, priorityFeeLevel: priorityLevel, tokenType }))
     .value()
 
   return chunkBorrowIxnsParams(txnData)

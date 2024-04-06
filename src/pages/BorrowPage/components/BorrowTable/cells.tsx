@@ -11,8 +11,7 @@ import {
 
 import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
 import {
-  calcBorrowValueWithProtocolFee,
-  calcBorrowValueWithRentFee,
+  calcBorrowValueWithProtocolFee, // calcBorrowValueWithRentFee,
   calculateApr,
 } from '@banx/utils'
 
@@ -37,6 +36,7 @@ interface CellProps {
   nft: TableNftData
 }
 export const BorrowCell: FC<CellProps> = ({ nft }) => {
+  //TODO: Recalc fees for usdc loans
   const loanValueWithProtocolFee = calcBorrowValueWithProtocolFee(nft.loanValue)
   const collectionFloor = nft.nft.nft.collectionFloor
   const ltv = (loanValueWithProtocolFee / collectionFloor) * 100
@@ -53,14 +53,14 @@ export const BorrowCell: FC<CellProps> = ({ nft }) => {
     </div>
   )
 
-  const borrowValueWithRentFee = calcBorrowValueWithRentFee(
-    loanValueWithProtocolFee,
-    nft.nft.loan.marketPubkey,
-  )
+  // const borrowValueWithRentFee = calcBorrowValueWithRentFee(
+  //   loanValueWithProtocolFee,
+  //   nft.nft.loan.marketPubkey,
+  // )
 
   return (
     <HorizontalCell
-      value={<DisplayValue value={borrowValueWithRentFee} placeholder="--" />}
+      value={<DisplayValue value={nft.loanValue} placeholder="--" />}
       tooltipContent={tooltipContent}
     />
   )
