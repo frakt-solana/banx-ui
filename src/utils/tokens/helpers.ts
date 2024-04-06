@@ -18,7 +18,7 @@ export const convertTokenValue = (value: number, tokenType: LendingTokenType) =>
   return value / decimals
 }
 
-export const formatValueByLendingTokenType = (value: number, tokenType: LendingTokenType) => {
+export const formatValueByTokenType = (value: number, tokenType: LendingTokenType) => {
   if (!value) return ''
 
   const convertedValue = convertTokenValue(value, tokenType)

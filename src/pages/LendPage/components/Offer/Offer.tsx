@@ -11,7 +11,7 @@ import Tooltip from '@banx/components/Tooltip'
 
 import { Pencil } from '@banx/icons'
 import { SyntheticOffer, useToken } from '@banx/store'
-import { calculateApr, formatValueByLendingTokenType, getTokenUnit } from '@banx/utils'
+import { calculateApr, formatValueByTokenType, getTokenUnit } from '@banx/utils'
 
 import styles from './Offer.module.less'
 
@@ -47,7 +47,7 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, collectionFloor }) => {
   const displayOfferValue = getDisplayOfferRange(offer, tokenType)
   const maxDynamicApr = calculateApr({ loanValue, collectionFloor, marketPubkey }) / 100
 
-  const unit = getTokenUnit(tokenType)
+  const tokenUnit = getTokenUnit(tokenType)
 
   return (
     <li className={classNames(styles.listItem, commonHighlightClassNames)}>
@@ -62,7 +62,7 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, collectionFloor }) => {
           })}
         >
           {displayOfferValue}
-          {unit}
+          {tokenUnit}
         </p>
         <p className={styles.value}>{createPercentValueJSX(maxDynamicApr)}</p>
         <p className={styles.value}>{loansAmount}</p>
@@ -96,8 +96,8 @@ const getDisplayOfferRange = (offer: SyntheticOffer, tokenType: LendingTokenType
 
   const minDeltaValue = loanValue - (loansAmount - 1) * deltaValue
 
-  const formattedLoanValue = formatValueByLendingTokenType(loanValue, tokenType)
-  const formattedMinLoanValue = formatValueByLendingTokenType(minDeltaValue, tokenType)
+  const formattedLoanValue = formatValueByTokenType(loanValue, tokenType)
+  const formattedMinLoanValue = formatValueByTokenType(minDeltaValue, tokenType)
 
   const displayOfferRange = deltaValue
     ? `${formattedLoanValue} - ${formattedMinLoanValue}`

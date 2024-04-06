@@ -14,7 +14,7 @@ import {
   HealthColorIncreasing,
   calcLoanBorrowedAmount,
   calculateLoanRepayValue,
-  formatValueByLendingTokenType,
+  formatValueByTokenType,
   getColorByPercent,
   getTokenUnit,
 } from '@banx/utils'
@@ -100,10 +100,10 @@ const getDisplayOfferValue = (markers: Mark[], tokenType: LendingTokenType) => {
   const { value: firstValue = 0 } = first(markers) || {}
   const { value: lastValue = 0 } = last(markers) || {}
 
-  const formattedFirstValue = formatValueByLendingTokenType(firstValue, tokenType)
+  const formattedFirstValue = formatValueByTokenType(firstValue, tokenType)
 
   if (markers.length > 1 && firstValue !== lastValue) {
-    const formattedLastValue = formatValueByLendingTokenType(lastValue, tokenType)
+    const formattedLastValue = formatValueByTokenType(lastValue, tokenType)
 
     return `${formattedFirstValue} - ${formattedLastValue}`
   }
