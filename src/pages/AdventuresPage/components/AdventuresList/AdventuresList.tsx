@@ -103,7 +103,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
         confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
       },
     )
-
+      .addTransactionParam(params)
       .on('sentAll', (results) => {
         enqueueTransactionsSent()
         enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)

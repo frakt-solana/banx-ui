@@ -42,7 +42,7 @@ export const subscribeBanxAdventureAction: SubscribeBanxAdventureAction = async 
 
   return {
     instructions,
-    signers: signers,
+    signers,
     lookupTables: [],
   }
 }
