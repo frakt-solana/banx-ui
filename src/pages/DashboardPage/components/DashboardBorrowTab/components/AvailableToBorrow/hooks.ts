@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { sumBy } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
@@ -9,6 +10,7 @@ import { useWalletModal } from '@banx/components/WalletModal'
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { PATHS } from '@banx/router'
+import { useToken } from '@banx/store'
 import { trackPageEvent } from '@banx/utils'
 
 import styles from './AvailableToBorrow.module.less'
@@ -20,6 +22,8 @@ export const useAvailableToBorrow = () => {
 
   const { marketsPreview } = useMarketsPreview()
   const { nfts, maxBorrow } = useBorrowNfts()
+
+  const { token: tokenType } = useToken()
 
   const { totalMarkets, totalLiquidity, userNFTs } = useMemo(() => {
     return {
@@ -41,7 +45,7 @@ export const useAvailableToBorrow = () => {
   const buttonProps = {
     className: styles.button,
     onClick: connected ? goToBorrowPage : connectWalletHandler,
-    text: connected ? 'Borrow SOL in bulk' : 'Connect wallet to borrow SOL',
+    text: BUTTON_TEXT[tokenType][connected ? 'connected' : 'notConnected'],
   }
 
   const headingText = connected ? 'Borrow in bulk' : 'Available to borrow'
@@ -55,4 +59,15 @@ export const useAvailableToBorrow = () => {
     headingText,
     isConnected: connected,
   }
+}
+
+const BUTTON_TEXT = {
+  [LendingTokenType.NativeSol]: {
+    connected: 'Borrow SOL in bulk',
+    notConnected: 'Connect wallet to borrow SOL',
+  },
+  [LendingTokenType.Usdc]: {
+    connected: 'Borrow USDC in bulk',
+    notConnected: 'Connect wallet to borrow USDC',
+  },
 }

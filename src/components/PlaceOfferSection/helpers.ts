@@ -4,7 +4,11 @@ import {
   optimisticInitializeBondOfferBonding,
   optimisticUpdateBondOfferBonding,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondOfferV2, BondingCurveType } from 'fbonds-core/lib/fbond-protocol/types'
+import {
+  BondOfferV2,
+  BondingCurveType,
+  LendingTokenType,
+} from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
 
 import { SyntheticOffer } from '@banx/store'
@@ -47,10 +51,14 @@ type GetErrorMessage = (props: {
   loansAmount: number
   deltaValue: number
   hasFormChanges: boolean
+  tokenType: LendingTokenType
 }) => string
 
 const ERROR_MESSAGES = {
-  INSUFFICIENT_BALANCE: 'Not enough SOL in wallet',
+  INSUFFICIENT_BALANCE: {
+    [LendingTokenType.NativeSol]: 'Not enough SOL in wallet',
+    [LendingTokenType.Usdc]: 'Not enough USDC in wallet',
+  },
   INVALID_OFFER: 'Offer imbalance. Increase Max Offer, or reduce Delta and/or Number of Offers',
   EMPTY_LOANS_AMOUNT: 'Please enter a valid number of loans. The number of loans cannot be empty',
 }
@@ -63,6 +71,7 @@ export const getErrorMessage: GetErrorMessage = ({
   deltaValue,
   syntheticOffer,
   hasFormChanges,
+  tokenType,
 }) => {
   const initialOfferSize = calcOfferSize({
     syntheticOffer,
@@ -79,7 +88,7 @@ export const getErrorMessage: GetErrorMessage = ({
 
   const errorConditions: Array<[boolean, string]> = [
     [isOfferInvalid, ERROR_MESSAGES.INVALID_OFFER],
-    [isBalanceInsufficient, ERROR_MESSAGES.INSUFFICIENT_BALANCE],
+    [isBalanceInsufficient, ERROR_MESSAGES.INSUFFICIENT_BALANCE[tokenType]],
     [isEmptyLoansAmount, ERROR_MESSAGES.EMPTY_LOANS_AMOUNT],
   ]
 
