@@ -108,7 +108,7 @@ const getDisplayOfferValue = (markers: Mark[], tokenType: LendingTokenType) => {
     return `${formattedFirstValue} - ${formattedLastValue}`
   }
 
-  return formattedFirstValue
+  return formattedFirstValue || '0'
 }
 
 interface CollateralImageProps {
