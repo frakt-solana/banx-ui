@@ -7,6 +7,7 @@ import moment from 'moment'
 import { create } from 'zustand'
 
 import { Loan } from '@banx/api/core'
+import { isSolTokenType } from '@banx/utils'
 
 import { useToken } from '../useToken'
 
@@ -98,17 +99,17 @@ export const useLoansOptimistic = () => {
     setInitialState()
   }, [setState])
 
-  const loansByLendingTokenType = useMemo(() => {
-    const filterLoansByLendingTokenType = (tokenType: LendingTokenType) =>
-      filter(optimisticLoans, (loan) => loan.loan.bondTradeTransaction.lendingToken === tokenType)
+  const filteredLoansByTokenType = useMemo(() => {
+    const filterLoans = (tokenType: LendingTokenType) =>
+      filter(optimisticLoans, ({ loan }) => loan.bondTradeTransaction.lendingToken === tokenType)
 
-    const solLoans = filterLoansByLendingTokenType(LendingTokenType.NativeSol)
-    const usdcLoans = filterLoansByLendingTokenType(LendingTokenType.Usdc)
+    const solLoans = filterLoans(LendingTokenType.NativeSol)
+    const usdcLoans = filterLoans(LendingTokenType.Usdc)
 
-    return tokenType === LendingTokenType.NativeSol ? solLoans : usdcLoans
+    return isSolTokenType(tokenType) ? solLoans : usdcLoans
   }, [optimisticLoans, tokenType])
 
-  return { loans: loansByLendingTokenType, add, remove, find, update }
+  return { loans: filteredLoansByTokenType, add, remove, find, update }
 }
 
 export const isOptimisticLoanExpired = (loan: LoanOptimistic, walletPublicKey: string) =>

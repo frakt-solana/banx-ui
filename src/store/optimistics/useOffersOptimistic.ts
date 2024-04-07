@@ -1,12 +1,13 @@
 import { useEffect, useMemo } from 'react'
 
-import { BondingCurveType, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { BondingCurveType } from 'fbonds-core/lib/fbond-protocol/types'
 import { get, set } from 'idb-keyval'
 import { filter, map, uniqBy } from 'lodash'
 import moment from 'moment'
 import { create } from 'zustand'
 
 import { Offer } from '@banx/api/core'
+import { isSolTokenType } from '@banx/utils'
 
 import { useToken } from '../useToken'
 
@@ -83,17 +84,17 @@ export const useOffersOptimistic = () => {
     setInitialState()
   }, [setState])
 
-  const offersByLendingTokenType = useMemo(() => {
-    const filterLoansByLendingTokenType = (bondingCurve: BondingCurveType) =>
-      filter(optimisticOffers, (offer) => offer.offer.bondingCurve.bondingType === bondingCurve)
+  const filteredOffersByTokenType = useMemo(() => {
+    const filterOffers = (bondingCurve: BondingCurveType) =>
+      filter(optimisticOffers, ({ offer }) => offer.bondingCurve.bondingType === bondingCurve)
 
-    const solOffers = filterLoansByLendingTokenType(BondingCurveType.Linear)
-    const usdcOffers = filterLoansByLendingTokenType(BondingCurveType.LinearUsdc)
+    const solOffers = filterOffers(BondingCurveType.Linear)
+    const usdcOffers = filterOffers(BondingCurveType.LinearUsdc)
 
-    return tokenType === LendingTokenType.NativeSol ? solOffers : usdcOffers
+    return isSolTokenType(tokenType) ? solOffers : usdcOffers
   }, [optimisticOffers, tokenType])
 
-  return { optimisticOffers: offersByLendingTokenType, add, remove, find, update }
+  return { optimisticOffers: filteredOffersByTokenType, add, remove, find, update }
 }
 
 export const isOptimisticOfferExpired = (loan: OfferOptimistic) => loan.expiredAt < moment().unix()
