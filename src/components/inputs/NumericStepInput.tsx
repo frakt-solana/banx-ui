@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, ReactNode } from 'react'
 
 import classNames from 'classnames'
 
@@ -14,7 +14,7 @@ interface NumericStepInputProps extends NumericInputProps {
   tooltipText?: string
   label?: string
   step?: number
-  postfix?: string | JSX.Element
+  postfix?: ReactNode
 }
 
 export const NumericStepInput: FC<NumericStepInputProps> = ({
