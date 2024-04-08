@@ -1,13 +1,11 @@
 import { useEffect, useMemo } from 'react'
 
-import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { get, set } from 'idb-keyval'
 import { filter, groupBy, map, maxBy, uniqBy } from 'lodash'
 import moment from 'moment'
 import { create } from 'zustand'
 
 import { Loan } from '@banx/api/core'
-import { isSolTokenType } from '@banx/utils'
 
 import { useToken } from '../useToken'
 
@@ -100,13 +98,10 @@ export const useLoansOptimistic = () => {
   }, [setState])
 
   const filteredLoansByTokenType = useMemo(() => {
-    const filterLoans = (tokenType: LendingTokenType) =>
-      filter(optimisticLoans, ({ loan }) => loan.bondTradeTransaction.lendingToken === tokenType)
-
-    const solLoans = filterLoans(LendingTokenType.NativeSol)
-    const usdcLoans = filterLoans(LendingTokenType.Usdc)
-
-    return isSolTokenType(tokenType) ? solLoans : usdcLoans
+    return filter(
+      optimisticLoans,
+      ({ loan }) => loan.bondTradeTransaction.lendingToken === tokenType,
+    )
   }, [optimisticLoans, tokenType])
 
   return { loans: filteredLoansByTokenType, add, remove, find, update }

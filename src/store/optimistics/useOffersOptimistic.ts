@@ -85,13 +85,14 @@ export const useOffersOptimistic = () => {
   }, [setState])
 
   const filteredOffersByTokenType = useMemo(() => {
-    const filterOffers = (bondingCurve: BondingCurveType) =>
-      filter(optimisticOffers, ({ offer }) => offer.bondingCurve.bondingType === bondingCurve)
+    const bondingCurveType = isSolTokenType(tokenType)
+      ? BondingCurveType.Linear
+      : BondingCurveType.LinearUsdc
 
-    const solOffers = filterOffers(BondingCurveType.Linear)
-    const usdcOffers = filterOffers(BondingCurveType.LinearUsdc)
-
-    return isSolTokenType(tokenType) ? solOffers : usdcOffers
+    return filter(
+      optimisticOffers,
+      ({ offer }) => offer.bondingCurve.bondingType === bondingCurveType,
+    )
   }, [optimisticOffers, tokenType])
 
   return { optimisticOffers: filteredOffersByTokenType, add, remove, find, update }
