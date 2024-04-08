@@ -3,8 +3,8 @@ import { web3 } from 'fbonds-core'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
-import { convertToMarketType } from '@banx/utils'
 
+import { convertToMarketType } from './helpers'
 import {
   AuctionsLoansResponse,
   BorrowNftsAndOffers,

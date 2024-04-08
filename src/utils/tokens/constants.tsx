@@ -2,19 +2,9 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { USDC } from '@banx/icons'
 
-enum MarketType {
-  SOL = 'sol',
-  USDC = 'usdc',
-}
-
 export const RENT_FEE_BORROW_AMOUNT_IMPACT = {
   [LendingTokenType.NativeSol]: 4621440, //? Solana rent fee (lamports)
   [LendingTokenType.Usdc]: 0,
-}
-
-export const LENDING_TOKEN_TO_MARKET_MAP: Record<LendingTokenType, MarketType> = {
-  [LendingTokenType.NativeSol]: MarketType.SOL,
-  [LendingTokenType.Usdc]: MarketType.USDC,
 }
 
 export const MINIMUM_DISPLAYABLE_TOKEN_VALUE = {
