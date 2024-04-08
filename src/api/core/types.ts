@@ -1,4 +1,11 @@
-import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import {
+  BondTradeTransactionV2State,
+  BondTradeTransactionV2Type,
+  FraktBondState,
+  LendingTokenType,
+  RedeemResult,
+  RepayDestination,
+} from 'fbonds-core/lib/fbond-protocol/types'
 import { z } from 'zod'
 
 import { PaginationMeta } from '@banx/types'
@@ -97,8 +104,8 @@ const BondTradeTransactionSchema = z.object({
   publicKey: z.string(),
   amountOfBonds: z.number(),
   bondOffer: z.string(),
-  bondTradeTransactionState: z.string(),
-  bondTradeTransactionType: z.string(),
+  bondTradeTransactionState: z.nativeEnum(BondTradeTransactionV2State),
+  bondTradeTransactionType: z.nativeEnum(BondTradeTransactionV2Type),
   borrowerFullRepaidAmount: z.number(),
   borrowerOriginalLent: z.number(),
   currentRemainingLent: z.number(),
@@ -110,9 +117,9 @@ const BondTradeTransactionSchema = z.object({
   lenderOriginalLent: z.number(),
   lendingToken: z.nativeEnum(LendingTokenType),
   partialRepaySnapshot: z.number(),
-  redeemResult: z.string(),
+  redeemResult: z.nativeEnum(RedeemResult),
   redeemedAt: z.number(),
-  repayDestination: z.string(),
+  repayDestination: z.nativeEnum(RepayDestination),
   seller: z.string(),
   solAmount: z.number(),
   soldAt: z.number(),
@@ -132,7 +139,7 @@ const FraktBondSchema = z.object({
   fbondIssuer: z.string(),
   fbondTokenMint: z.string(),
   fbondTokenSupply: z.number(),
-  fraktBondState: z.string(),
+  fraktBondState: z.nativeEnum(FraktBondState),
   fraktMarket: z.string(),
   lastTransactedAt: z.number(),
   liquidatingAt: z.number(),
