@@ -6,16 +6,20 @@ import { useToken } from '@banx/store'
 
 import styles from './TokenSwitcher.module.less'
 
+const TOKENS = [LendingTokenType.Usdc, LendingTokenType.NativeSol]
+
+const TOKEN_ICON = {
+  [LendingTokenType.Usdc]: USDC,
+  [LendingTokenType.NativeSol]: SOL,
+}
+
 const TokenSwitcher = () => {
   const { token, toggleToken } = useToken()
 
-  const tokens = [LendingTokenType.Usdc, LendingTokenType.NativeSol]
-  const tokenIcon = { [LendingTokenType.Usdc]: USDC, [LendingTokenType.NativeSol]: SOL }
-
   return (
     <div className={styles.tokenSwitcher}>
-      {tokens.map((tokenType) => {
-        const TokenIcon = tokenIcon[tokenType]
+      {TOKENS.map((tokenType) => {
+        const TokenIcon = TOKEN_ICON[tokenType]
 
         return (
           <div
