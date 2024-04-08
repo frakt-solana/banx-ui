@@ -1,6 +1,5 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { USDC_ADDRESS } from '@banx/constants'
 import { useDiscordUser } from '@banx/hooks'
@@ -40,8 +39,8 @@ export const WalletConnectButton = () => {
           {shortenAddress(publicKey?.toBase58() || '')}
         </span>
         <span className={styles.solanaBalance}>
-          {tokenType === LendingTokenType.NativeSol && <DisplayValue value={solanaBalance} />}
-          {tokenType === LendingTokenType.Usdc && <DisplayValue value={usdcBalance} />}
+          {isSolTokenType(tokenType) && <DisplayValue value={solanaBalance} />}
+          {isUsdcTokenType(tokenType) && <DisplayValue value={usdcBalance} />}
         </span>
       </div>
       <ChevronDown

@@ -8,7 +8,7 @@ import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
 import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
-import { sendTxnPlaceHolder } from '@banx/utils'
+import { isSolTokenType, sendTxnPlaceHolder } from '@banx/utils'
 
 export type MakeCreateBondingOfferActionParams = {
   marketPubkey: string
@@ -30,8 +30,9 @@ export const makeCreateBondingOfferAction: MakeCreateBondingOfferAction = async 
 ) => {
   const { marketPubkey, loanValue, loansAmount, tokenType, deltaValue } = ixnParams
 
-  const bondingCurveType =
-    tokenType === LendingTokenType.NativeSol ? BondingCurveType.Linear : BondingCurveType.LinearUsdc
+  const bondingCurveType = isSolTokenType(tokenType)
+    ? BondingCurveType.Linear
+    : BondingCurveType.LinearUsdc
 
   const {
     instructions: createBondingOfferInstructions,
