@@ -1,5 +1,3 @@
-import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
-
 export const IS_DEVELOPMENT = process.env.NODE_ENV !== 'production'
 
 export const BACKEND_BASE_URL = 'https://api.banx.gg'
@@ -35,11 +33,6 @@ export const BONDS = {
   PROTOCOL_FEE_PERCENT: 100, //? Base points
   PROTOCOL_REPAY_FEE: 620, //? Base points
   FACELESS_MARKET_PUBKEY: 'BzxKw3JLmPt7aagkHnRQEMQ4Le1rZdwEib5Viuig42hu',
-}
-
-export const TOKEN_RENT_FEE = {
-  [LendingTokenType.NativeSol]: 4621440, //? Solana rent fee (lamports)
-  [LendingTokenType.Usdc]: 0, //TODO: Need ask about usdc rent fee
 }
 
 export const DIALECT = {

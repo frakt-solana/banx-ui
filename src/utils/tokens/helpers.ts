@@ -6,8 +6,8 @@ import {
   DECIMAL_PLACES_LIMITS,
   DEFAULT_DECIMAL_PLACES,
   LENDING_TOKEN_TO_MARKET_MAP,
+  MINIMUM_DISPLAYABLE_TOKEN_VALUE,
   TOKEN_DECIMALS,
-  TOKEN_THRESHOLD,
   TOKEN_UNIT,
 } from './constants'
 
@@ -23,8 +23,8 @@ export const formatValueByTokenType = (value: number, tokenType: LendingTokenTyp
 
   const convertedValue = convertTokenValue(value, tokenType)
 
-  if (isValueBelowThreshold(convertedValue, TOKEN_THRESHOLD[tokenType])) {
-    return `<${TOKEN_THRESHOLD[tokenType]}`
+  if (isValueBelowThreshold(convertedValue, MINIMUM_DISPLAYABLE_TOKEN_VALUE[tokenType])) {
+    return `<${MINIMUM_DISPLAYABLE_TOKEN_VALUE[tokenType]}`
   }
 
   return formatTokenValue(convertedValue, tokenType)

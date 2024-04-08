@@ -2,7 +2,9 @@ import { BN } from 'fbonds-core'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { flatMap, map, reduce, uniq } from 'lodash'
 
-import { BONDS, TOKEN_RENT_FEE } from '@banx/constants'
+import { BONDS } from '@banx/constants'
+
+import { RENT_FEE_BORROW_AMOUNT_IMPACT } from './tokens'
 
 // shorten the checksummed version of the input address to have 4 characters at start and end
 export const shortenAddress = (address: string, chars = 4): string => {
@@ -48,7 +50,7 @@ export const calcBorrowValueWithRentFee = (
   if (loanValue === 0) return 0
   if (marketPubkey === BONDS.FACELESS_MARKET_PUBKEY) return loanValue
 
-  const rentFee = TOKEN_RENT_FEE[tokenType]
+  const rentFee = RENT_FEE_BORROW_AMOUNT_IMPACT[tokenType]
   return loanValue - rentFee
 }
 
