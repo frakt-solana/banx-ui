@@ -1,17 +1,10 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 
-import { USDC_ADDRESS } from '@banx/constants'
 import { useDiscordUser } from '@banx/hooks'
 import { ChevronDown, Wallet } from '@banx/icons'
 import { useTokenType } from '@banx/store'
-import {
-  isSolTokenType,
-  isUsdcTokenType,
-  shortenAddress,
-  useSolanaBalance,
-  useTokenBalance,
-} from '@banx/utils'
+import { shortenAddress, useWalletBalance } from '@banx/utils'
 
 import { DisplayValue } from '../TableComponents'
 import UserAvatar from '../UserAvatar'
@@ -28,8 +21,7 @@ export const WalletConnectButton = () => {
 
   const { tokenType } = useTokenType()
 
-  const solanaBalance = useSolanaBalance({ isLive: isSolTokenType(tokenType) })
-  const usdcBalance = useTokenBalance(USDC_ADDRESS, { isLive: isUsdcTokenType(tokenType) })
+  const walletBalance = useWalletBalance(tokenType, { isLive: true })
 
   const ConnectedButton = () => (
     <div className={styles.connectedButton} onClick={toggleVisibility}>
@@ -39,8 +31,7 @@ export const WalletConnectButton = () => {
           {shortenAddress(publicKey?.toBase58() || '')}
         </span>
         <span className={styles.solanaBalance}>
-          {isSolTokenType(tokenType) && <DisplayValue value={solanaBalance} />}
-          {isUsdcTokenType(tokenType) && <DisplayValue value={usdcBalance} />}
+          <DisplayValue value={walletBalance} />
         </span>
       </div>
       <ChevronDown

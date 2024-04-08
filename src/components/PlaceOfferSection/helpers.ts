@@ -45,7 +45,7 @@ export const getUpdatedBondOffer: GetUpdatedBondOffer = ({
 
 type GetErrorMessage = (props: {
   syntheticOffer: SyntheticOffer
-  tokenBalance: number
+  walletBalance: number
   offerSize: number
   loanValue: number
   loansAmount: number
@@ -64,7 +64,7 @@ const ERROR_MESSAGES = {
 }
 
 export const getErrorMessage: GetErrorMessage = ({
-  tokenBalance,
+  walletBalance,
   offerSize,
   loanValue,
   loansAmount,
@@ -80,10 +80,10 @@ export const getErrorMessage: GetErrorMessage = ({
     loansAmount: syntheticOffer.loansAmount,
   })
 
-  const totalFundsAvailable = initialOfferSize + tokenBalance
+  const totalFundsAvailable = initialOfferSize + walletBalance
 
   const isOfferInvalid = deltaValue && hasFormChanges ? deltaValue * loansAmount > loanValue : false
-  const isBalanceInsufficient = !!tokenBalance && offerSize > totalFundsAvailable
+  const isBalanceInsufficient = !!walletBalance && offerSize > totalFundsAvailable
   const isEmptyLoansAmount = hasFormChanges && !loansAmount
 
   const errorConditions: Array<[boolean, string]> = [

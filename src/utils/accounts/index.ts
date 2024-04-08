@@ -1,11 +1,13 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 import { web3 } from 'fbonds-core'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { BONDS } from '@banx/constants'
+import { BONDS, USDC_ADDRESS } from '@banx/constants'
+
+import { isSolTokenType, isUsdcTokenType } from '../tokens'
 
 type UseNativeAccount = ({ isLive }: { isLive?: boolean }) => web3.AccountInfo<Buffer> | null
-
 const useNativeAccount: UseNativeAccount = ({ isLive = true }) => {
   const { connection } = useConnection()
   const { publicKey } = useWallet()
@@ -28,7 +30,47 @@ const useNativeAccount: UseNativeAccount = ({ isLive = true }) => {
   return nativeAccount
 }
 
-export const useTokenBalance = (tokenAddress: string, { isLive = true }) => {
+type Options = {
+  isLive?: boolean
+}
+
+type UseTokenBalance = (options?: Options) => number
+
+export const useSolanaBalance: UseTokenBalance = (options) => {
+  const { isLive = false } = options || {}
+
+  const account = useNativeAccount({ isLive })
+
+  const balance = account?.lamports || 0
+  return balance
+}
+
+export const useUsdcBalance: UseTokenBalance = (options) => {
+  const { isLive = false } = options || {}
+
+  return useTokenBalance(USDC_ADDRESS, { isLive })
+}
+
+export const useWalletBalance = (tokenType: LendingTokenType, options?: Options) => {
+  const { isLive = false } = options || {}
+
+  const usdcBalance = useUsdcBalance({ isLive })
+  const solanaBalance = useSolanaBalance({ isLive })
+
+  if (isSolTokenType(tokenType)) {
+    return solanaBalance
+  }
+
+  if (isUsdcTokenType(tokenType)) {
+    return usdcBalance
+  }
+
+  throw new Error(`Unsupported token type: ${tokenType}`)
+}
+
+export const useTokenBalance = (tokenAddress: string, options?: Options) => {
+  const { isLive = false } = options || {}
+
   const { connection } = useConnection()
   const { publicKey } = useWallet()
 
@@ -55,13 +97,4 @@ export const useTokenBalance = (tokenAddress: string, { isLive = true }) => {
   )
 
   return tokenBalance || 0
-}
-
-type UseSolanaBalance = (options?: { isLive?: boolean }) => number
-export const useSolanaBalance: UseSolanaBalance = ({ isLive = true } = {}) => {
-  const account = useNativeAccount({ isLive })
-
-  const balance = account?.lamports || 0
-
-  return balance
 }

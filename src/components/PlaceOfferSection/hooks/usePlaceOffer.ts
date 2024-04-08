@@ -3,16 +3,8 @@ import { useEffect, useMemo } from 'react'
 import { chain } from 'lodash'
 
 import { MarketPreview, Offer } from '@banx/api/core'
-import { USDC_ADDRESS } from '@banx/constants'
 import { SyntheticOffer, useTokenType } from '@banx/store'
-import {
-  convertOffersToSimple,
-  getTokenDecimals,
-  isSolTokenType,
-  isUsdcTokenType,
-  useSolanaBalance,
-  useTokenBalance,
-} from '@banx/utils'
+import { convertOffersToSimple, getTokenDecimals, useWalletBalance } from '@banx/utils'
 
 import { Mark } from '../PlaceOfferContent/components'
 import {
@@ -64,10 +56,7 @@ type UsePlaceOffer = (props: {
 export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOfferPubkey }) => {
   const { tokenType } = useTokenType()
 
-  const solanaBalance = useSolanaBalance({ isLive: isSolTokenType(tokenType) })
-  const usdcBalance = useTokenBalance(USDC_ADDRESS, { isLive: isUsdcTokenType(tokenType) })
-
-  const tokenBalance = isSolTokenType(tokenType) ? solanaBalance : usdcBalance
+  const walletBalance = useWalletBalance(tokenType)
 
   const { offer, market, updateOrAddOffer } = useMarketAndOffer(offerPubkey, marketPubkey)
   const { syntheticOffer, removeSyntheticOffer, setSyntheticOffer } = useSyntheticOffer(
@@ -131,7 +120,7 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
 
   const offerErrorMessage = getErrorMessage({
     syntheticOffer,
-    tokenBalance,
+    walletBalance,
     offerSize,
     loanValue,
     loansAmount,
