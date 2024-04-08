@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { web3 } from 'fbonds-core'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
@@ -50,7 +49,7 @@ export const fetchMarketsPreview: FetchMarketsPreview = async ({ tokenType }) =>
 }
 
 type FetchMarketOffers = (props: {
-  marketPubkey?: web3.PublicKey | null
+  marketPubkey?: string
   tokenType: LendingTokenType
   order?: 'asc' | 'desc'
   skip?: number
@@ -75,7 +74,7 @@ export const fetchMarketOffers: FetchMarketOffers = async ({
   })
 
   const { data } = await axios.get<FetchMarketOffersResponse>(
-    `${BACKEND_BASE_URL}/bond-offers/${marketPubkey?.toBase58() || ''}?${queryParams.toString()}`,
+    `${BACKEND_BASE_URL}/bond-offers/${marketPubkey}?${queryParams.toString()}`,
   )
 
   try {
