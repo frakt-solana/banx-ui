@@ -280,7 +280,7 @@ const LoanInfo: FC<LoanInfoProps> = ({ title, borrowedAmount, debt, apr, faded, 
 }
 
 interface LoanDifferenceProps {
-  difference: number //? lamports
+  difference: number //? Integer representation of value
   tokenType: LendingTokenType
   className?: string
 }
