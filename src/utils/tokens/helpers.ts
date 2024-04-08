@@ -5,7 +5,7 @@ import { formatNumbersWithCommas } from '../common'
 import {
   DECIMAL_PLACES_LIMITS,
   DEFAULT_DECIMAL_PLACES,
-  MarketType,
+  LENDING_TOKEN_TO_MARKET_MAP,
   TOKEN_DECIMALS,
   TOKEN_THRESHOLD,
   TOKEN_UNIT,
@@ -55,11 +55,6 @@ export const isSolTokenType = (tokenType: LendingTokenType) =>
   tokenType === LendingTokenType.NativeSol
 export const isUsdcTokenType = (tokenType: LendingTokenType) => tokenType === LendingTokenType.Usdc
 
-const LENDING_TOKEN_TO_MARKET_MAP: Record<LendingTokenType, MarketType> = {
-  [LendingTokenType.NativeSol]: MarketType.SOL,
-  [LendingTokenType.Usdc]: MarketType.USDC,
-}
-
-export const convertToMarketType = (tokenType: LendingTokenType): MarketType => {
+export const convertToMarketType = (tokenType: LendingTokenType) => {
   return LENDING_TOKEN_TO_MARKET_MAP[tokenType]
 }

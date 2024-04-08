@@ -2,9 +2,14 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { USDC } from '@banx/icons'
 
-export enum MarketType {
+enum MarketType {
   SOL = 'sol',
   USDC = 'usdc',
+}
+
+export const LENDING_TOKEN_TO_MARKET_MAP: Record<LendingTokenType, MarketType> = {
+  [LendingTokenType.NativeSol]: MarketType.SOL,
+  [LendingTokenType.Usdc]: MarketType.USDC,
 }
 
 export const TOKEN_THRESHOLD = {
