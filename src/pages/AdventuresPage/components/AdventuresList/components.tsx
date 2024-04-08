@@ -2,11 +2,10 @@ import { FC, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Button } from '@banx/components/Buttons'
-import Tooltip from '@banx/components/Tooltip'
 
+// import Tooltip from '@banx/components/Tooltip'
 import {
   AdventureStatus,
   BanxAdventureBN,
@@ -19,7 +18,15 @@ import {
   TOTAL_BANX_NFTS_PARTNER_POINTS,
 } from '@banx/constants'
 import { useCountdown } from '@banx/hooks'
-import { Alert, BanxLogo, BanxToken, Clock, MoneyBill, SuccessIcon, Timer } from '@banx/icons'
+import {
+  Alert,
+  BanxLogo,
+  /*BanxToken,*/
+  Clock,
+  MoneyBill,
+  SuccessIcon,
+  Timer,
+} from '@banx/icons'
 import {
   banxTokenBNToFixed,
   calcPartnerPoints,
@@ -143,34 +150,33 @@ type AdventuresTimerProps = {
 }
 export const AdventuresTimer: FC<AdventuresTimerProps> = ({
   banxAdventure,
-  banxAdventureSubscription,
+  // banxAdventureSubscription,
 }) => {
-  const TIMER_TEXT_BY_STATUS = {
+  const TIMER_TITLE_BY_STATUS: Record<AdventureStatus, string> = {
     [AdventureStatus.LIVE]: 'Before rewards distribution',
     [AdventureStatus.UPCOMING]: 'Deadline to subscribe',
-    DEFAULT: 'Before rewards distribution',
+    [AdventureStatus.ENDED]: '',
   }
-
-  const isSubscribed =
-    banxAdventureSubscription?.adventureSubscriptionState === BanxAdventureSubscriptionState.Active
-
   const status = getAdventureStatus(banxAdventure)
+  const title = TIMER_TITLE_BY_STATUS[status]
 
   const endsAt = getAdventureEndTime(banxAdventure)
 
-  const isLive = status === AdventureStatus.LIVE
+  const isLive = isAdventureLive(banxAdventure)
+
   const { timeLeft } = useCountdown(endsAt)
 
-  const rewards: string = useMemo(() => {
-    if (!banxAdventureSubscription || !isSubscribed) return '0'
+  // const isSubscribed = !!banxAdventureSubscription && checkIsSubscribed(banxAdventureSubscription)
+  // const rewards: string = useMemo(() => {
+  //   if (!isSubscribed) return '0'
 
-    return banxTokenBNToFixed(
-      calculateAdventureRewards([
-        { adventure: banxAdventure, subscription: banxAdventureSubscription },
-      ]),
-      0,
-    )
-  }, [banxAdventure, banxAdventureSubscription, isSubscribed])
+  //   return banxTokenBNToFixed(
+  //     calculateAdventureRewards([
+  //       { adventure: banxAdventure, subscription: banxAdventureSubscription },
+  //     ]),
+  //     0,
+  //   )
+  // }, [banxAdventure, banxAdventureSubscription, isSubscribed])
 
   return (
     <div className={styles.timerWrapper}>
@@ -181,11 +187,8 @@ export const AdventuresTimer: FC<AdventuresTimerProps> = ({
         <span className={styles.timer}>
           {timeLeft.days}d : {timeLeft.hours}h : {timeLeft.minutes}m
         </span>
-        <p className={styles.timerText}>
-          {TIMER_TEXT_BY_STATUS[status as keyof typeof TIMER_TEXT_BY_STATUS] ||
-            TIMER_TEXT_BY_STATUS.DEFAULT}
-        </p>
-        {isSubscribed && status === AdventureStatus.LIVE && (
+        <p className={styles.timerText}>{title}</p>
+        {/* {isSubscribed && isLive && (
           <div className={styles.distributed}>
             <span>you will receive</span>
             <span className={styles.value}>{formatNumbersWithCommas(rewards)}</span>
@@ -195,7 +198,7 @@ export const AdventuresTimer: FC<AdventuresTimerProps> = ({
               title="Every week Banx purchases $BANX from the market using 100% of its revenue and then distribute these tokens to stakers, proportionally to their partner points"
             />
           </div>
-        )}
+        )} */}
       </div>
     </div>
   )
