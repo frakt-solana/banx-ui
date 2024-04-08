@@ -3,24 +3,24 @@ import { create } from 'zustand'
 
 const BANX_TOKEN_LS_KEY = '@banx.tokenType'
 
-interface TokenState {
-  token: LendingTokenType
-  setToken: (nextToken: LendingTokenType) => void
-  toggleToken: () => void
+interface TokenTypeState {
+  tokenType: LendingTokenType
+  setTokenType: (nextToken: LendingTokenType) => void
+  toggleTokenType: () => void
 }
 
-export const useToken = create<TokenState>((set) => {
-  const initialState: TokenState = {
-    token:
+export const useTokenType = create<TokenTypeState>((set) => {
+  const initialState: TokenTypeState = {
+    tokenType:
       (localStorage.getItem(BANX_TOKEN_LS_KEY) as LendingTokenType) || LendingTokenType.NativeSol,
-    setToken: (nextToken) => {
+    setTokenType: (nextToken) => {
       localStorage.setItem(BANX_TOKEN_LS_KEY, nextToken)
-      set((state) => ({ ...state, token: nextToken }))
+      set((state) => ({ ...state, tokenType: nextToken }))
     },
-    toggleToken: () => {
+    toggleTokenType: () => {
       set((state) => {
         const nextToken =
-          state.token === LendingTokenType.NativeSol
+          state.tokenType === LendingTokenType.NativeSol
             ? LendingTokenType.Usdc
             : LendingTokenType.NativeSol
         localStorage.setItem(BANX_TOKEN_LS_KEY, nextToken)

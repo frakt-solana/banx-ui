@@ -4,7 +4,7 @@ import classNames from 'classnames'
 import { USDC_ADDRESS } from '@banx/constants'
 import { useDiscordUser } from '@banx/hooks'
 import { ChevronDown, Wallet } from '@banx/icons'
-import { useToken } from '@banx/store'
+import { useTokenType } from '@banx/store'
 import {
   isSolTokenType,
   isUsdcTokenType,
@@ -26,7 +26,7 @@ export const WalletConnectButton = () => {
 
   const { data: discordUserData } = useDiscordUser()
 
-  const { token: tokenType } = useToken()
+  const { tokenType } = useTokenType()
 
   const solanaBalance = useSolanaBalance({ isLive: isSolTokenType(tokenType) })
   const usdcBalance = useTokenBalance(USDC_ADDRESS, { isLive: isUsdcTokenType(tokenType) })

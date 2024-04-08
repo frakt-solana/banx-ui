@@ -23,7 +23,7 @@ import {
   useOffersOptimistic,
   usePriorityFees,
   useTableView,
-  useToken,
+  useTokenType,
 } from '@banx/store'
 import { createGlobalState } from '@banx/store/functions'
 import { getDialectAccessToken, trackPageEvent } from '@banx/utils'
@@ -57,7 +57,7 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
   const { isLedger } = useIsLedger()
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
-  const { token: tokenType } = useToken()
+  const { tokenType } = useTokenType()
 
   const bonkRewardsAvailable = useBorrowBonkRewardsAvailability()
 

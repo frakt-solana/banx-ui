@@ -4,7 +4,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
 import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
-import { usePriorityFees, useToken } from '@banx/store'
+import { usePriorityFees, useTokenType } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
   makeCreateBondingOfferAction,
@@ -40,7 +40,7 @@ export const useOfferTransactions = ({
 }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { token: tokenType } = useToken()
+  const { tokenType } = useTokenType()
   const { priorityLevel } = usePriorityFees()
 
   const onCreateOffer = async () => {

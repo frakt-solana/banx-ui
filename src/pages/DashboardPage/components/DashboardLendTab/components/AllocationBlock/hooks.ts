@@ -5,7 +5,7 @@ import { DoughnutChartProps } from '@banx/components/Charts'
 
 import { TotalLenderStats } from '@banx/api/stats'
 import { PATHS } from '@banx/router'
-import { useToken } from '@banx/store'
+import { useTokenType } from '@banx/store'
 import { getTokenDecimals, trackPageEvent } from '@banx/utils'
 
 import {
@@ -19,7 +19,7 @@ export type AllocationStats = TotalLenderStats['allocation']
 
 export const useAllocationBlock = (stats?: AllocationStats) => {
   const navigate = useNavigate()
-  const { token: tokenType } = useToken()
+  const { tokenType } = useTokenType()
 
   const {
     activeLoans = 0,

@@ -9,7 +9,7 @@ import { create } from 'zustand'
 import { Offer } from '@banx/api/core'
 import { isSolTokenType } from '@banx/utils'
 
-import { useToken } from '../useToken'
+import { useTokenType } from '../useTokenType'
 
 const BANX_OFFERS_OPTIMISTICS_LS_KEY = '@banx.offersOptimistics'
 const OFFERS_CACHE_TIME_UNIX = 2 * 60 //? Auto purge optimistic after 2 minutes
@@ -67,7 +67,7 @@ const useOptimisticOffersStore = create<OffersOptimisticStore>((set, get) => ({
 export const useOffersOptimistic = () => {
   const { optimisticOffers, add, remove, find, update, setState } = useOptimisticOffersStore()
 
-  const { token: tokenType } = useToken()
+  const { tokenType } = useTokenType()
 
   useEffect(() => {
     const setInitialState = async () => {

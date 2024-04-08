@@ -10,7 +10,7 @@ import { createPercentValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
 import { Pencil } from '@banx/icons'
-import { SyntheticOffer, useToken } from '@banx/store'
+import { SyntheticOffer, useTokenType } from '@banx/store'
 import { calculateApr, formatValueByTokenType, getTokenUnit } from '@banx/utils'
 
 import styles from './Offer.module.less'
@@ -32,7 +32,7 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, collectionFloor }) => {
   } = offer
 
   const { connected, publicKey } = useWallet()
-  const { token: tokenType } = useToken()
+  const { tokenType } = useTokenType()
 
   const isOwnOffer = assetReceiver === publicKey?.toBase58()
   const isNewOffer = connected && offerPubkey === PUBKEY_PLACEHOLDER

@@ -4,7 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 import { InputErrorMessage, NumericStepInput } from '@banx/components/inputs'
 
-import { useToken } from '@banx/store'
+import { useTokenType } from '@banx/store'
 import { getTokenUnit } from '@banx/utils'
 
 import { BorrowerMessage } from '../components'
@@ -33,7 +33,7 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
   isLoadingDiagram,
   updatedOffer,
 }) => {
-  const { token: tokenType } = useToken()
+  const { tokenType } = useTokenType()
   const { connected } = useWallet()
 
   const isEditMode = syntheticOffer.isEdit

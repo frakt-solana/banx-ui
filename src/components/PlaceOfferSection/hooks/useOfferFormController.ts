@@ -2,11 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { clamp, trimStart } from 'lodash'
 
-import { SyntheticOffer, useToken } from '@banx/store'
+import { SyntheticOffer, useTokenType } from '@banx/store'
 import { getTokenDecimals } from '@banx/utils'
 
 export const useOfferFormController = (syntheticOffer: SyntheticOffer) => {
-  const { token: tokenType } = useToken()
+  const { tokenType } = useTokenType()
 
   const {
     deltaValue: syntheticDeltaValue,

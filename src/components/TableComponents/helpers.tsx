@@ -4,7 +4,7 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import moment from 'moment'
 
 import { USDC } from '@banx/icons'
-import { useToken } from '@banx/store'
+import { useTokenType } from '@banx/store'
 import { formatValueByTokenType, getTokenUnit } from '@banx/utils'
 
 import styles from './TableCells.module.less'
@@ -45,7 +45,7 @@ export const DisplayValue: FC<{ value: number; placeholder?: string }> = ({
   value,
   placeholder,
 }) => {
-  const { token: tokenType } = useToken()
+  const { tokenType } = useTokenType()
 
   const formattedValue = formatValueByTokenType(value, tokenType)
 

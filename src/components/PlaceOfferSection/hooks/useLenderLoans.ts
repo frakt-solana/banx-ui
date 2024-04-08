@@ -4,14 +4,14 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 
 import { fetchLenderLoansByCertainOffer } from '@banx/api/core'
-import { useToken } from '@banx/store'
+import { useTokenType } from '@banx/store'
 import { isLoanTerminating } from '@banx/utils'
 
 export const useLenderLoans = ({ offerPubkey }: { offerPubkey: string }) => {
   const { publicKey } = useWallet()
   const walletPublicKey = publicKey?.toBase58() || ''
 
-  const { token: tokenType } = useToken()
+  const { tokenType } = useTokenType()
 
   const { data, isLoading, refetch } = useQuery(
     ['lenderLoans', walletPublicKey, tokenType, offerPubkey],

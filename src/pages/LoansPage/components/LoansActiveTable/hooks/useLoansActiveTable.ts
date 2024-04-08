@@ -7,7 +7,7 @@ import { SearchSelectProps } from '@banx/components/SearchSelect'
 
 import { Loan } from '@banx/api/core'
 import { PATHS } from '@banx/router'
-import { useToken } from '@banx/store'
+import { useTokenType } from '@banx/store'
 
 import { useFilterLoans } from './useFilteredLoans'
 import { useSortLoans } from './useSortLoans'
@@ -29,7 +29,7 @@ export const useLoansActiveTable = ({ loans, isLoading }: UseLoansActiveTablePro
   const { connected } = useWallet()
   const navigate = useNavigate()
 
-  const { token: tokenType } = useToken()
+  const { tokenType } = useTokenType()
 
   const {
     filteredLoansBySelectedCollection,

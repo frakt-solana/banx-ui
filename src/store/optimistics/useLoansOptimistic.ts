@@ -7,7 +7,7 @@ import { create } from 'zustand'
 
 import { Loan } from '@banx/api/core'
 
-import { useToken } from '../useToken'
+import { useTokenType } from '../useTokenType'
 
 const BANX_LOANS_OPTIMISTICS_LS_KEY = '@banx.loansOptimistics'
 const LOANS_CACHE_TIME_UNIX = 2 * 60 //? Auto clear optimistic after 2 minutes
@@ -80,7 +80,7 @@ export const useLoansOptimistic = () => {
     setState,
   } = useOptimisticLoansStore()
 
-  const { token: tokenType } = useToken()
+  const { tokenType } = useTokenType()
 
   useEffect(() => {
     const setInitialState = async () => {

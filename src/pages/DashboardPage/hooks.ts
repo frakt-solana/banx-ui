@@ -2,7 +2,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 
 import { fetchAllTotalStats, fetchBorrowerStats, fetchLenderStats } from '@banx/api/stats'
-import { useToken } from '@banx/store'
+import { useTokenType } from '@banx/store'
 import { isSolTokenType } from '@banx/utils'
 
 const QUERY_OPTIONS = {
@@ -12,7 +12,7 @@ const QUERY_OPTIONS = {
 }
 
 export const useAllTotalStats = () => {
-  const { token: tokenType } = useToken()
+  const { tokenType } = useTokenType()
 
   const marketType = isSolTokenType(tokenType) ? 'allInSol' : 'allInUsdc'
 

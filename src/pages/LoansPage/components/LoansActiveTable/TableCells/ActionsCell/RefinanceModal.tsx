@@ -16,7 +16,7 @@ import { Loan } from '@banx/api/core'
 import { BONDS, TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useMarketOffers } from '@banx/pages/LendPage'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
-import { useLoansOptimistic, useModal, usePriorityFees, useToken } from '@banx/store'
+import { useLoansOptimistic, useModal, usePriorityFees, useTokenType } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeBorrowRefinanceAction } from '@banx/transactions/loans'
 import {
@@ -52,7 +52,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
   const { priorityLevel } = usePriorityFees()
 
   const { close } = useModal()
-  const { token: tokenType } = useToken()
+  const { tokenType } = useTokenType()
 
   const { offers, updateOrAddOffer, isLoading } = useMarketOffers({
     marketPubkey: fraktBond.hadoMarket,

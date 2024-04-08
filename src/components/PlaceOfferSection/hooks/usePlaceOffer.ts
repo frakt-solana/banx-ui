@@ -4,7 +4,7 @@ import { chain } from 'lodash'
 
 import { MarketPreview, Offer } from '@banx/api/core'
 import { USDC_ADDRESS } from '@banx/constants'
-import { SyntheticOffer, useToken } from '@banx/store'
+import { SyntheticOffer, useTokenType } from '@banx/store'
 import {
   convertOffersToSimple,
   getTokenDecimals,
@@ -62,7 +62,7 @@ type UsePlaceOffer = (props: {
 }) => PlaceOfferParams
 
 export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOfferPubkey }) => {
-  const { token: tokenType } = useToken()
+  const { tokenType } = useTokenType()
 
   const solanaBalance = useSolanaBalance({ isLive: isSolTokenType(tokenType) })
   const usdcBalance = useTokenBalance(USDC_ADDRESS, { isLive: isUsdcTokenType(tokenType) })

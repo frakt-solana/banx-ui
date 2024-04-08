@@ -23,7 +23,7 @@ import {
   useModal,
   useOffersOptimistic,
   usePriorityFees,
-  useToken,
+  useTokenType,
 } from '@banx/store'
 import { createGlobalState } from '@banx/store/functions'
 import { calculateLoanValue, getDialectAccessToken, trackPageEvent } from '@banx/utils'
@@ -93,7 +93,7 @@ export const useSingleBorrow = () => {
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
-  const { token: tokenType } = useToken()
+  const { tokenType } = useTokenType()
 
   const { update: updateOffersOptimistic } = useOffersOptimistic()
   const { add: addLoansOptimistic } = useLoansOptimistic()

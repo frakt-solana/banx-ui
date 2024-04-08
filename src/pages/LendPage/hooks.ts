@@ -6,13 +6,18 @@ import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, map, maxBy } from 'lodash'
 
 import { Offer, fetchMarketOffers, fetchMarketsPreview } from '@banx/api/core'
-import { isOfferNewer, isOptimisticOfferExpired, useOffersOptimistic, useToken } from '@banx/store'
+import {
+  isOfferNewer,
+  isOptimisticOfferExpired,
+  useOffersOptimistic,
+  useTokenType,
+} from '@banx/store'
 import { isOfferClosed } from '@banx/utils'
 
 export const USE_MARKETS_PREVIEW_QUERY_KEY = 'marketsPreview'
 
 export const useMarketsPreview = () => {
-  const { token: tokenType } = useToken()
+  const { tokenType } = useTokenType()
 
   const { data, isLoading } = useQuery(
     [USE_MARKETS_PREVIEW_QUERY_KEY, tokenType],
@@ -32,7 +37,7 @@ export const useMarketsPreview = () => {
 
 export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => {
   const { optimisticOffers, update: updateOffer, remove: removeOffers } = useOffersOptimistic()
-  const { token: tokenType } = useToken()
+  const { tokenType } = useTokenType()
 
   const { data, isLoading, isFetching, isFetched } = useQuery(
     ['marketPairs', marketPubkey, tokenType],

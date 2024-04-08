@@ -13,7 +13,7 @@ import { Loan } from '@banx/api/core'
 import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useMarketOffers } from '@banx/pages/LendPage'
 import { calculateClaimValue, useLenderLoans } from '@banx/pages/OffersPage'
-import { useModal, usePriorityFees, useToken } from '@banx/store'
+import { useModal, usePriorityFees, useTokenType } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeInstantRefinanceAction, makeTerminateAction } from '@banx/transactions/loans'
 import {
@@ -85,7 +85,7 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const { priorityLevel } = usePriorityFees()
   const { close } = useModal()
 
-  const { token: tokenType } = useToken()
+  const { tokenType } = useTokenType()
 
   const { remove: removeLoan } = useSelectedLoans()
 
