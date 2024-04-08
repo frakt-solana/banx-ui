@@ -3,6 +3,7 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { SOL, USDC } from '@banx/icons'
 import { useTokenType } from '@banx/store'
+import { isSolTokenType } from '@banx/utils'
 
 import styles from './TokenSwitcher.module.less'
 
@@ -14,8 +15,15 @@ const TOKEN_ICON = {
 }
 
 const TokenSwitcher = () => {
-  const { tokenType, toggleTokenType } = useTokenType()
+  const { tokenType, setTokenType } = useTokenType()
 
+  const toggleTokenType = () => {
+    const nextTokenType = isSolTokenType(tokenType)
+      ? LendingTokenType.Usdc
+      : LendingTokenType.NativeSol
+
+    setTokenType(nextTokenType)
+  }
   return (
     <div className={styles.tokenSwitcher}>
       {TOKENS.map((token) => {
