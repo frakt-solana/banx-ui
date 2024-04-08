@@ -38,7 +38,7 @@ export const useWalletLoansAndOffers = () => {
       enabled: !!publicKeyString,
       staleTime: 5 * 1000,
       refetchOnWindowFocus: false,
-      refetchInterval: 60 * 1000,
+      refetchInterval: 5 * 60 * 1000, //? 5 minutes
     },
   )
 
