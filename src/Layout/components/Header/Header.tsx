@@ -28,8 +28,8 @@ export const Header = () => {
         <RewardsButton />
 
         {connected && <BanxNotificationsButton />}
-        <PriorityFeesButton />
-        <ThemeSwitcher />
+        {connected && <PriorityFeesButton />}
+        <ThemeSwitcher className={styles.hiddenThemeSwitcher} />
         <WalletConnectButton />
       </div>
       <BurgerIcon />

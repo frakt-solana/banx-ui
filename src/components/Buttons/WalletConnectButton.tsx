@@ -17,6 +17,8 @@ export const WalletConnectButton = () => {
   const { toggleVisibility, visible } = useWalletModal()
   const { publicKey, connected } = useWallet()
 
+  const walletPubkeyString = publicKey?.toBase58() || ''
+
   const { data: discordUserData } = useDiscordUser()
 
   const { tokenType } = useTokenType()
@@ -27,8 +29,9 @@ export const WalletConnectButton = () => {
     <div className={styles.connectedButton} onClick={toggleVisibility}>
       <UserAvatar imageUrl={discordUserData?.avatarUrl ?? undefined} />
       <div className={styles.connectedWalletInfo}>
-        <span className={styles.connectedWalletAddress}>
-          {shortenAddress(publicKey?.toBase58() || '')}
+        <span className={styles.connectedWalletAddress}>{shortenAddress(walletPubkeyString)}</span>
+        <span className={styles.connectedMobileWalletAddress}>
+          {walletPubkeyString.slice(0, 4)}
         </span>
         <span className={styles.solanaBalance}>
           <DisplayValue value={walletBalance} />
