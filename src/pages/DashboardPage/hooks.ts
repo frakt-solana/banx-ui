@@ -29,9 +29,11 @@ export const useLenderStats = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
+  const { tokenType } = useTokenType()
+
   const { data, isLoading } = useQuery(
-    ['lenderStats', publicKeyString],
-    () => fetchLenderStats(publicKeyString),
+    ['lenderStats', publicKeyString, tokenType],
+    () => fetchLenderStats({ walletPubkey: publicKeyString, tokenType }),
     {
       enabled: !!publicKey,
       ...QUERY_OPTIONS,
@@ -44,9 +46,11 @@ export const useBorrowerStats = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
+  const { tokenType } = useTokenType()
+
   const { data, isLoading } = useQuery(
-    ['borrowerStats', publicKeyString],
-    () => fetchBorrowerStats(publicKeyString),
+    ['borrowerStats', publicKeyString, tokenType],
+    () => fetchBorrowerStats({ walletPubkey: publicKeyString, tokenType }),
     {
       enabled: !!publicKey,
       ...QUERY_OPTIONS,

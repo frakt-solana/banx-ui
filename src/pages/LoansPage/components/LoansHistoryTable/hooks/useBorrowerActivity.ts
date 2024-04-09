@@ -6,6 +6,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { SortOption } from '@banx/components/SortDropdown'
 
 import { fetchBorrowerActivity } from '@banx/api/activity'
+import { useTokenType } from '@banx/store'
 import { createGlobalState } from '@banx/store/functions'
 
 import { DEFAULT_SORT_OPTION } from '../constants'
@@ -17,6 +18,8 @@ const useCollectionsStore = createGlobalState<string[]>([])
 export const useBorrowerActivity = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
+
+  const { tokenType } = useTokenType()
 
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
@@ -31,13 +34,14 @@ export const useBorrowerActivity = () => {
       order,
       walletPubkey: publicKeyString,
       collection: selectedCollections,
+      tokenType,
     })
 
     return { pageParam, data }
   }
 
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage, isLoading } = useInfiniteQuery({
-    queryKey: ['borrowerActivity', publicKey, sortOption, selectedCollections],
+    queryKey: ['borrowerActivity', publicKey, sortOption, selectedCollections, tokenType],
     queryFn: ({ pageParam = 0 }) => fetchData(pageParam),
     getPreviousPageParam: (firstPage) => {
       return firstPage.pageParam - 1 ?? undefined

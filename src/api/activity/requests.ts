@@ -2,6 +2,7 @@ import axios from 'axios'
 
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
+import { convertToMarketType } from '../helpers'
 import {
   ActivityCollectionsList,
   ActivityCollectionsListSchema,
@@ -16,6 +17,7 @@ import {
 
 export const fetchLenderActivity: FetchLenderActivity = async ({
   walletPubkey,
+  tokenType,
   order,
   state = 'all',
   sortBy,
@@ -31,6 +33,7 @@ export const fetchLenderActivity: FetchLenderActivity = async ({
     sortBy,
     state,
     getAll: String(getAll),
+    marketType: String(convertToMarketType(tokenType)),
     isPrivate: String(IS_PRIVATE_MARKETS),
   })
 
@@ -51,6 +54,7 @@ export const fetchLenderActivity: FetchLenderActivity = async ({
 
 export const fetchBorrowerActivity: FetchBorrowerActivity = async ({
   walletPubkey,
+  tokenType,
   order,
   sortBy,
   state = 'all',
@@ -66,6 +70,7 @@ export const fetchBorrowerActivity: FetchBorrowerActivity = async ({
     sortBy,
     isPrivate: String(IS_PRIVATE_MARKETS),
     getAll: String(getAll),
+    marketType: String(convertToMarketType(tokenType)),
     state,
   })
 
@@ -86,10 +91,12 @@ export const fetchBorrowerActivity: FetchBorrowerActivity = async ({
 
 export const fetchActivityCollectionsList: FetchActivityCollectionsList = async ({
   walletPubkey,
+  tokenType,
   userType,
 }) => {
   const queryParams = new URLSearchParams({
     userType: String(userType),
+    marketType: String(convertToMarketType(tokenType)),
   })
 
   const { data } = await axios.get<{ data: { collections: ActivityCollectionsList[] } }>(

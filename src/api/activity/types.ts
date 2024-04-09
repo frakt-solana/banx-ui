@@ -1,3 +1,4 @@
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { z } from 'zod'
 
 import { BasePaginationRequest, PaginationMeta } from '@banx/types'
@@ -26,6 +27,7 @@ export type LenderActivity = z.infer<typeof LenderActivitySchema>
 
 interface LenderActivityRequest extends BasePaginationRequest {
   walletPubkey: string
+  tokenType: LendingTokenType
   collection?: string[]
   getAll?: boolean
 }
@@ -62,6 +64,7 @@ export type BorrowerActivity = z.infer<typeof BorrowerActivitySchema>
 
 interface BorrowerActivityRequest extends BasePaginationRequest {
   walletPubkey: string
+  tokenType: LendingTokenType
   collection?: string[]
   getAll?: boolean
 }
@@ -84,5 +87,6 @@ export type ActivityCollectionsList = z.infer<typeof ActivityCollectionsListSche
 
 export type FetchActivityCollectionsList = (props: {
   walletPubkey: string
+  tokenType: LendingTokenType
   userType: 'borrower' | 'lender'
 }) => Promise<ActivityCollectionsList[]>

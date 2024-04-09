@@ -188,9 +188,11 @@ export const useUserLoansStats = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
+  const { tokenType } = useTokenType()
+
   const { data, isLoading } = useQuery(
-    ['userLoansStats', publicKeyString],
-    () => fetchUserLoansStats(publicKeyString),
+    ['userLoansStats', publicKeyString, tokenType],
+    () => fetchUserLoansStats({ walletPubkey: publicKeyString, tokenType }),
     {
       enabled: !!publicKeyString,
       staleTime: 5 * 1000,
