@@ -2,6 +2,7 @@ import { every, map, sum, values } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
 import { DoughnutChartProps } from '@banx/components/Charts'
+import { DisplayValue } from '@banx/components/TableComponents'
 
 import { TotalLenderStats } from '@banx/api/stats'
 import { PATHS } from '@banx/router'
@@ -35,13 +36,13 @@ export const useAllocationBlock = (stats?: AllocationStats) => {
     [AllocationStatus.Terminating]: terminatingLoans,
   }
 
-  const totalFunds = sum(values(allocationStatusToValueMap))
-
   const allocationData = map(allocationStatusToValueMap, (value, status) => ({
     label: STATUS_DISPLAY_NAMES[status as AllocationStatus],
     key: status,
     value,
   }))
+
+  const totalFunds = sum(values(allocationStatusToValueMap))
 
   const decimals = getTokenDecimals(tokenType)
 
@@ -53,7 +54,7 @@ export const useAllocationBlock = (stats?: AllocationStats) => {
     colors: isDataEmpty ? NO_DATA_CHART_DATA.colors : Object.values(STATUS_COLOR_MAP),
     statInfoProps: {
       label: 'Total funds',
-      value: totalFunds,
+      value: <DisplayValue value={totalFunds} />,
     },
   }
 
