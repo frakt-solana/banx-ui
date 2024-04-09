@@ -8,7 +8,9 @@ import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { PATHS } from '@banx/router'
+import { useTokenType } from '@banx/store'
 import { createGlobalState } from '@banx/store/functions'
+import { isSolTokenType } from '@banx/utils'
 
 import { useSortedOffers } from './useSortedOffers'
 import { useUserOffers } from './useUserOffers'
@@ -24,6 +26,8 @@ const useCollectionsStore = createGlobalState<string[]>([])
 export const useOffersContent = () => {
   const { connected } = useWallet()
   const navigate = useNavigate()
+
+  const { tokenType } = useTokenType()
 
   const { offers, updateOrAddOffer, isLoading } = useUserOffers()
 
@@ -75,9 +79,11 @@ export const useOffersContent = () => {
     navigate(PATHS.LEND)
   }
 
+  const tokenName = isSolTokenType(tokenType) ? 'SOL' : 'USDC'
+
   const emptyListParams = {
     message: connected
-      ? 'Lend SOL to view your pending offers'
+      ? `Lend ${tokenName} to view your pending offers`
       : 'Connect wallet to view your offers',
     buttonProps: connected ? { text: 'Lend', onClick: goToLendPage } : undefined,
   }
