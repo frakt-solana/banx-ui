@@ -68,7 +68,7 @@ export const fetchUserLoansStats: FetchUserLoansStats = async ({ walletPubkey, t
 type FetchAllTotalStats = (marketType: 'allInSol' | 'allInUsdc') => Promise<AllTotalStats | null>
 export const fetchAllTotalStats: FetchAllTotalStats = async (marketType) => {
   const { data } = await axios.get<{ data: AllTotalStats }>(
-    `${BACKEND_BASE_URL}/stats/all?${marketType}`,
+    `${BACKEND_BASE_URL}/stats/all?marketType=${marketType}`,
   )
 
   try {

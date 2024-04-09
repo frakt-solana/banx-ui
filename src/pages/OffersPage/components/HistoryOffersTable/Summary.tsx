@@ -7,6 +7,7 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { fetchLenderActivityCSV } from '@banx/api/activity'
+import { useTokenType } from '@banx/store'
 import { createDownloadLink } from '@banx/utils'
 
 import { useUserOffersStats } from '../../hooks'
@@ -18,6 +19,8 @@ export const Summary = () => {
   const { data } = useUserOffersStats()
   const { publicKey } = useWallet()
 
+  const { tokenType } = useTokenType()
+
   const { totalLent = 0, pendingInterest = 0, paidInterest = 0, weightedApr = 0 } = data || {}
 
   const [isDownloading, setIsDownloading] = useState(false)
@@ -25,7 +28,10 @@ export const Summary = () => {
     try {
       setIsDownloading(true)
 
-      const data = await fetchLenderActivityCSV({ walletPubkey: publicKey?.toBase58() || '' })
+      const data = await fetchLenderActivityCSV({
+        walletPubkey: publicKey?.toBase58() || '',
+        tokenType,
+      })
       createDownloadLink(data, ACTIVITY_CSV_FILENAME)
       return data
     } catch (error) {

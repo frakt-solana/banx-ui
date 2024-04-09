@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
@@ -122,17 +123,37 @@ export const fetchBorrowBonkRewardsAvailability = async () => {
   return data?.data?.rewardsAvailable || false
 }
 
-export const fetchLenderActivityCSV = async ({ walletPubkey }: { walletPubkey: string }) => {
+export const fetchLenderActivityCSV = async ({
+  walletPubkey,
+  tokenType,
+}: {
+  walletPubkey: string
+  tokenType: LendingTokenType
+}) => {
+  const queryParams = new URLSearchParams({
+    marketType: String(convertToMarketType(tokenType)),
+  })
+
   const { data } = await axios.get<string>(
-    `${BACKEND_BASE_URL}/activity/lender/${walletPubkey}/csv`,
+    `${BACKEND_BASE_URL}/activity/lender/${walletPubkey}/csv?${queryParams.toString()}`,
   )
 
   return data ?? ''
 }
 
-export const fetchBorrowerActivityCSV = async ({ walletPubkey }: { walletPubkey: string }) => {
+export const fetchBorrowerActivityCSV = async ({
+  walletPubkey,
+  tokenType,
+}: {
+  walletPubkey: string
+  tokenType: LendingTokenType
+}) => {
+  const queryParams = new URLSearchParams({
+    marketType: String(convertToMarketType(tokenType)),
+  })
+
   const { data } = await axios.get<string>(
-    `${BACKEND_BASE_URL}/activity/borrower/${walletPubkey}/csv`,
+    `${BACKEND_BASE_URL}/activity/borrower/${walletPubkey}/csv?${queryParams.toString()}`,
   )
 
   return data ?? ''
