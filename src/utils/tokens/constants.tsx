@@ -7,7 +7,7 @@ export const RENT_FEE_BORROW_AMOUNT_IMPACT = {
   [LendingTokenType.Usdc]: 0,
 }
 
-export const MINIMUM_DISPLAYABLE_TOKEN_VALUE = {
+export const MIN_VALUE_TO_DISPLAY = {
   [LendingTokenType.NativeSol]: 0.001,
   [LendingTokenType.Usdc]: 0.01,
 }

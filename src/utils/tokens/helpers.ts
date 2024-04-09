@@ -1,3 +1,5 @@
+import { ReactNode } from 'react'
+
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { find } from 'lodash'
 
@@ -5,7 +7,7 @@ import { formatNumbersWithCommas } from '../common'
 import {
   DECIMAL_PLACES_LIMITS,
   DEFAULT_DECIMAL_PLACES,
-  MINIMUM_DISPLAYABLE_TOKEN_VALUE,
+  MIN_VALUE_TO_DISPLAY,
   TOKEN_DECIMALS,
   TOKEN_UNIT,
 } from './constants'
@@ -22,8 +24,8 @@ export const formatValueByTokenType = (value: number, tokenType: LendingTokenTyp
 
   const convertedValue = convertToHumanNumber(value, tokenType)
 
-  if (isValueBelowThreshold(convertedValue, MINIMUM_DISPLAYABLE_TOKEN_VALUE[tokenType])) {
-    return `<${MINIMUM_DISPLAYABLE_TOKEN_VALUE[tokenType]}`
+  if (isValueBelowThreshold(convertedValue, MIN_VALUE_TO_DISPLAY[tokenType])) {
+    return `<${MIN_VALUE_TO_DISPLAY[tokenType]}`
   }
 
   return formatTokenValue(convertedValue, tokenType)
@@ -46,7 +48,7 @@ export const getTokenDecimals = (tokenType: LendingTokenType): number => {
   return TOKEN_DECIMALS[tokenType]
 }
 
-export const getTokenUnit = (tokenType: LendingTokenType): string | JSX.Element => {
+export const getTokenUnit = (tokenType: LendingTokenType): ReactNode => {
   return TOKEN_UNIT[tokenType]
 }
 
