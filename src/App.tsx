@@ -48,7 +48,7 @@ const App = () => {
 
 export default App
 
-const CODE_CONSTANT = ['banxpower', '111']
+const CODE_CONSTANT = ['?devs', '?timur']
 const BANX_BETA_CODE_LS_KEY = '@banx.usdcBetaCode'
 
 const useCode = () => {
