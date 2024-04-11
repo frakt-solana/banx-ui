@@ -70,10 +70,10 @@ export const determineLoanStatus = (loan: Loan) => {
   return mappedStatus
 }
 
-export const calculateLoanRepayValue = (loan: Loan) => {
+export const calculateLoanRepayValue = (loan: Loan, includeFee = true) => {
   const { solAmount, feeAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction || {}
 
-  const loanValueWithFee = solAmount + feeAmount
+  const loanValueWithFee = includeFee ? solAmount + feeAmount : solAmount
 
   const calculatedInterest = calculateCurrentInterestSolPure({
     loanValue: loanValueWithFee,
