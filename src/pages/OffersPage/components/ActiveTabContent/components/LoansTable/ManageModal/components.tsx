@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react'
+import { FC, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
@@ -7,7 +7,8 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { Loader } from '@banx/components/Loader'
-import { Modal } from '@banx/components/modals/BaseModal'
+import { Slider } from '@banx/components/Slider'
+import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { Loan } from '@banx/api/core'
 import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
@@ -17,6 +18,7 @@ import { useModal, usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeInstantRefinanceAction, makeTerminateAction } from '@banx/transactions/loans'
 import {
+  HealthColorIncreasing,
   calculateLoanRepayValue,
   destroySnackbar,
   enqueueConfirmationError,
@@ -26,61 +28,23 @@ import {
   filterOutWalletLoans,
   findSuitableOffer,
   formatDecimal,
+  getColorByPercent,
   isLoanActiveOrRefinanced,
   isLoanTerminating,
+  trackPageEvent,
 } from '@banx/utils'
 
-import { useSelectedLoans } from '../../loansState'
+import { useSelectedLoans } from '../loansState'
 
-import styles from './ActionsCell.module.less'
-
-interface ManageModalProps {
-  loan: Loan
-}
-
-export const ManageModal: FC<ManageModalProps> = ({ loan }) => {
-  const { close } = useModal()
-
-  //? Uncomment when repayment call ready
-  // const modalTabs: Tab[] = [
-  //   {
-  //     label: 'Repayment call',
-  //     value: 'repayment',
-  //     disabled: true, //TODO enable when repayment call implemented
-  //   },
-  //   {
-  //     label: 'Closure',
-  //     value: 'closure',
-  //     // disabled: !onTerminate && !onInstant,
-  //   },
-  // ]
-  // const defaultTabValue = modalTabs[1].value
-  // const {
-  //   tabs,
-  //   value: tabValue,
-  //   setValue: setTabValue,
-  // } = useTabs({
-  //   tabs: modalTabs,
-  //   defaultValue: defaultTabValue,
-  // })
-
-  return (
-    <Modal className={styles.modal} open onCancel={close} width={572}>
-      {/* //? Uncomment when repayment call ready */}
-      {/* <Tabs className={styles.tabs} tabs={tabs} value={tabValue} setValue={setTabValue} />
-      {tabValue === modalTabs[0].value && <RepaymentCallContent loan={loan} close={close} />}
-      {tabValue === modalTabs[1].value && <ClosureContent loan={loan} />} */}
-      <ClosureContent loan={loan} />
-    </Modal>
-  )
-}
+import styles from './ManageModal.module.less'
 
 interface ClosureContentProps {
   loan: Loan
 }
-const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
-  const wallet = useWallet()
+export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const { connection } = useConnection()
+  const wallet = useWallet()
+
   const { priorityLevel } = usePriorityFees()
   const { close } = useModal()
 
@@ -95,17 +59,9 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const bestOffer = useMemo(() => {
     return chain(offers)
       .thru((offers) =>
-        filterOutWalletLoans({
-          offers,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-        }),
+        filterOutWalletLoans({ offers, walletPubkey: wallet?.publicKey?.toBase58() }),
       )
-      .thru((offers) =>
-        findSuitableOffer({
-          loanValue: calculateLoanRepayValue(loan),
-          offers,
-        }),
-      )
+      .thru((offers) => findSuitableOffer({ loanValue: calculateLoanRepayValue(loan), offers }))
       .value()
   }, [offers, loan, wallet])
 
@@ -180,9 +136,7 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
         wallet: createWalletInstance(wallet),
         connection,
       },
-      {
-        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
-      },
+      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
       .addTransactionParam({ loan, bestOffer, priorityFeeLevel: priorityLevel })
       .on('sentSome', (results) => {
@@ -238,7 +192,6 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
           SOL in your wallet. If unsuccessful after 72 hours you will receive the collateral instead
         </p>
       </div>
-
       <div className={styles.modalContent}>
         {isLoading && <Loader />}
         {!isLoading && (
@@ -261,63 +214,62 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   )
 }
 
-//? Uncomment when repayment call ready
-// interface RepaymentCallContentProps {
-//   loan: Loan
-//   close: () => void
-// }
-// const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, close }) => {
-//   const DEFAULT_PERCENT_VALUE = 25
+interface RepaymentCallContentProps {
+  loan: Loan
+  close: () => void
+}
+export const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, close }) => {
+  const DEFAULT_PERCENT_VALUE = 25
 
-//   const totalClaim = calculateLoanRepayValue(loan)
-//   const initialRepayValue = totalClaim * (DEFAULT_PERCENT_VALUE / 100)
+  const totalClaim = calculateLoanRepayValue(loan)
+  const initialRepayValue = totalClaim * (DEFAULT_PERCENT_VALUE / 100)
 
-//   const [partialPercent, setPartialPercent] = useState<number>(DEFAULT_PERCENT_VALUE)
-//   const [paybackValue, setPaybackValue] = useState<number>(initialRepayValue)
+  const [partialPercent, setPartialPercent] = useState<number>(DEFAULT_PERCENT_VALUE)
+  const [paybackValue, setPaybackValue] = useState<number>(initialRepayValue)
 
-//   const onPartialPercentChange = (percentValue: number) => {
-//     setPartialPercent(percentValue)
-//     setPaybackValue((totalClaim * percentValue) / 100)
-//   }
+  const onPartialPercentChange = (percentValue: number) => {
+    setPartialPercent(percentValue)
+    setPaybackValue((totalClaim * percentValue) / 100)
+  }
 
-//   const remainingDebt = totalClaim - paybackValue
+  const remainingDebt = totalClaim - paybackValue
 
-//   const ltv = (remainingDebt / loan.nft.collectionFloor) * 100
-//   const colorLTV = getColorByPercent(ltv, HealthColorIncreasing)
+  const ltv = (remainingDebt / loan.nft.collectionFloor) * 100
+  const colorLTV = getColorByPercent(ltv, HealthColorIncreasing)
 
-//   const onSend = () => {
-//     try {
-//       //TODO send repayment call logic here
-//       trackPageEvent('myoffers', 'activetab-repaymentcall')
-//     } finally {
-//       close()
-//     }
-//   }
+  const onSend = () => {
+    try {
+      //TODO send repayment call logic here
+      trackPageEvent('myoffers', 'activetab-repaymentcall')
+    } finally {
+      close()
+    }
+  }
 
-//   return (
-//     <div className={styles.modalContent}>
-//       <StatInfo
-//         flexType="row"
-//         label="Total claim:"
-//         value={totalClaim}
-//         divider={1e9}
-//         classNamesProps={{ container: styles.repaymentCallInfo }}
-//       />
-//       <Slider value={partialPercent} onChange={onPartialPercentChange} />
-//       <div className={styles.repaimentCallAdditionalInfo}>
-//         <StatInfo flexType="row" label="Repay value" value={paybackValue} divider={1e9} />
-//         <StatInfo flexType="row" label="Remaining debt" value={remainingDebt} divider={1e9} />
-//         <StatInfo
-//           flexType="row"
-//           label="New LTV"
-//           value={ltv}
-//           valueStyles={{ color: colorLTV }}
-//           valueType={VALUES_TYPES.PERCENT}
-//         />
-//       </div>
-//       <Button className={styles.repaymentCallButton} onClick={onSend} disabled={!partialPercent}>
-//         Send
-//       </Button>
-//     </div>
-//   )
-// }
+  return (
+    <div className={styles.modalContent}>
+      <StatInfo
+        flexType="row"
+        label="Total claim:"
+        value={totalClaim}
+        divider={1e9}
+        classNamesProps={{ container: styles.repaymentCallInfo }}
+      />
+      <Slider value={partialPercent} onChange={onPartialPercentChange} />
+      <div className={styles.repaimentCallAdditionalInfo}>
+        <StatInfo flexType="row" label="Repay value" value={paybackValue} divider={1e9} />
+        <StatInfo flexType="row" label="Remaining debt" value={remainingDebt} divider={1e9} />
+        <StatInfo
+          flexType="row"
+          label="New LTV"
+          value={ltv}
+          valueStyles={{ color: colorLTV }}
+          valueType={VALUES_TYPES.PERCENT}
+        />
+      </div>
+      <Button className={styles.repaymentCallButton} onClick={onSend} disabled={!partialPercent}>
+        Send
+      </Button>
+    </div>
+  )
+}
