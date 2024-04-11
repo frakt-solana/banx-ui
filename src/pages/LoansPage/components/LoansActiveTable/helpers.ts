@@ -1,44 +1,44 @@
+import { calculatePartOfLoanBodyFromInterest } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { map } from 'lodash'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { calcWeightedAverage, calculateLoanRepayValue } from '@banx/utils'
 
-export const calcAccruedInterest = (loan: Loan) => {
-  const { accruedInterest = 0, bondTradeTransaction } = loan
-  const { solAmount, feeAmount } = bondTradeTransaction || {}
 
-  const repayValue = calculateLoanRepayValue(loan)
-  const totalAccruedInterest = repayValue - solAmount - feeAmount + accruedInterest
+//? Fee for creating an account
+export const ACCOUNT_CREATION_FEE = 3229 * 1e3
+
+
+export const calcAccruedInterest = (loan: Loan) => {
+  const { bondTradeTransaction } = loan
+
+  const repayValue = calculateLoanRepayValue(loan, false)
+  const totalAccruedInterest = repayValue - bondTradeTransaction.solAmount
 
   return totalAccruedInterest
 }
 
-export const calcUnpaidAccruedInterest = (loan: Loan) => {
-  //TODO: uncomment when the "Pay interst" feature is ready
-  // const totalRepaidAmount = loan.totalRepaidAmount || 0
-
+export const calculateUnpaidInterest = (loan: Loan) => {
+  const totalRepaidAmount = loan.bondTradeTransaction.borrowerFullRepaidAmount
   const accruedInterest = calcAccruedInterest(loan)
-  const upfrontFee = calcUpfrontFee(loan)
 
-  const totalAccruedInterest = accruedInterest + upfrontFee
-  return totalAccruedInterest
-  // const unpaidAccruedInterest = Math.max(0, totalAccruedInterest - totalRepaidAmount)
-  // return unpaidAccruedInterest
+  const unpaidInterest = Math.max(0, accruedInterest - totalRepaidAmount)
+  return unpaidInterest + ACCOUNT_CREATION_FEE
 }
 
 export const caclFractionToRepay = (loan: Loan) => {
-  const percentToRepay =
-    (calcUnpaidAccruedInterest(loan) / loan.bondTradeTransaction.solAmount) * 100
+  const { bondTradeTransaction } = loan
+  const { solAmount, soldAt, amountOfBonds } = bondTradeTransaction
 
+  const interestBasedLoanPart = calculatePartOfLoanBodyFromInterest({
+    soldAt,
+    rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
+    iterestToPay: calculateUnpaidInterest(loan) - ACCOUNT_CREATION_FEE,
+  })
+
+  const percentToRepay = (interestBasedLoanPart / solAmount) * 100
   return Math.floor(percentToRepay * 100)
-}
-
-export const calcUpfrontFee = (loan: Loan) => {
-  const { bondTradeTransaction, fraktBond } = loan
-  const upfrontFee = fraktBond.fbondTokenSupply || bondTradeTransaction.feeAmount
-
-  return upfrontFee
 }
 
 export const calcWeightedApr = (loans: Loan[]) => {

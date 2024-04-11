@@ -37,7 +37,7 @@ interface CellProps {
 }
 
 export const DebtCell: FC<CellProps> = ({ loan }) => {
-  const { totalRepaidAmount = 0, fraktBond } = loan
+  const { fraktBond, bondTradeTransaction } = loan
 
   const debtValue = calculateLoanRepayValue(loan)
   const borrowedValue = fraktBond.borrowedAmount
@@ -50,7 +50,7 @@ export const DebtCell: FC<CellProps> = ({ loan }) => {
   const tooltipContent = (
     <div className={styles.tooltipContent}>
       <TooltipRow label="Principal" value={borrowedValue} />
-      <TooltipRow label="Repaid" value={totalRepaidAmount} />
+      <TooltipRow label="Repaid" value={bondTradeTransaction.borrowerFullRepaidAmount} />
       <TooltipRow label="Accrued interest" value={totalAccruedInterest + upfrontFee} />
       <TooltipRow label="Upfront fee" value={upfrontFee} />
       <TooltipRow label="Est. weekly interest" value={weeklyFee} />
