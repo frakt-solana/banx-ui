@@ -12,7 +12,7 @@ import { createPercentValueJSX, createSolValueJSX } from '@banx/components/Table
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan } from '@banx/api/core'
-import { BONDS, TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
+import { BONDS, TXN_EXECUTOR_BASE_OPTIONS } from '@banx/constants'
 import { useMarketOffers } from '@banx/pages/LendPage'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
 import { useLoansOptimistic, useModal, usePriorityFees } from '@banx/store'
@@ -133,7 +133,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
       makeBorrowRefinanceAction,
       { wallet: createWalletInstance(wallet), connection },
       {
-        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
+        ...TXN_EXECUTOR_BASE_OPTIONS,
       },
     )
       .addTransactionParam({

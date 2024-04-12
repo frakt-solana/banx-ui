@@ -3,7 +3,7 @@ import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan, Offer } from '@banx/api/core'
-import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
+import { TXN_EXECUTOR_BASE_OPTIONS } from '@banx/constants'
 import { useModal, usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
@@ -44,7 +44,7 @@ export const useLendLoansTransactions = ({
       makeTerminateAction,
       { wallet: createWalletInstance(wallet), connection },
       {
-        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
+        ...TXN_EXECUTOR_BASE_OPTIONS,
       },
     )
       .addTransactionParam({ loan, priorityFeeLevel: priorityLevel })
@@ -94,7 +94,7 @@ export const useLendLoansTransactions = ({
       makeClaimAction,
       { wallet: createWalletInstance(wallet), connection },
       {
-        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
+        ...TXN_EXECUTOR_BASE_OPTIONS,
       },
     )
       .addTransactionParam({ loan, priorityFeeLevel: priorityLevel })
@@ -146,7 +146,7 @@ export const useLendLoansTransactions = ({
         connection,
       },
       {
-        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
+        ...TXN_EXECUTOR_BASE_OPTIONS,
       },
     )
       .addTransactionParam({ loan, bestOffer, priorityFeeLevel: priorityLevel })

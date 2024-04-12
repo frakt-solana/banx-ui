@@ -6,7 +6,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Tab, useTabs } from '@banx/components/Tabs'
 
-import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
+import { TXN_EXECUTOR_BASE_OPTIONS } from '@banx/constants'
 import {
   calcPartnerPoints,
   useBanxStakeInfo,
@@ -117,7 +117,7 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
       stakeBanxTokenAction,
       { wallet: createWalletInstance(wallet), connection },
       {
-        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
+        ...TXN_EXECUTOR_BASE_OPTIONS,
       },
     )
       .addTransactionParams([txnParam])
@@ -164,7 +164,7 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
       unstakeBanxTokenAction,
       { wallet: createWalletInstance(wallet), connection },
       {
-        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
+        ...TXN_EXECUTOR_BASE_OPTIONS,
       },
     )
       .addTransactionParams([txnParam])

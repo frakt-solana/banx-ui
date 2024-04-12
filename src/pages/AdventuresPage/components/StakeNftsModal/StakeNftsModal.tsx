@@ -11,7 +11,7 @@ import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { BanxStakeNft } from '@banx/api/staking'
-import { BANX_STAKING, TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
+import { BANX_STAKING, TXN_EXECUTOR_BASE_OPTIONS } from '@banx/constants'
 import { TensorFilled } from '@banx/icons'
 import { useBanxStakeInfo, useBanxStakeSettings } from '@banx/pages/AdventuresPage'
 import { NftCheckbox, NftsStats } from '@banx/pages/AdventuresPage/components'
@@ -100,7 +100,7 @@ export const StakeNftsModal = () => {
         stakeBanxNftAction,
         { wallet: createWalletInstance(wallet), connection },
         {
-          confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
+          ...TXN_EXECUTOR_BASE_OPTIONS,
         },
       )
         .addTransactionParams(params)
@@ -156,7 +156,7 @@ export const StakeNftsModal = () => {
         unstakeBanxNftsAction,
         { wallet: createWalletInstance(wallet), connection },
         {
-          confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
+          ...TXN_EXECUTOR_BASE_OPTIONS,
         },
       )
         .addTransactionParams(params)

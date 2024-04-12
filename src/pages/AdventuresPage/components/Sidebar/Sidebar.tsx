@@ -12,7 +12,7 @@ import { Button } from '@banx/components/Buttons'
 import { StatInfo, StatsInfoProps, VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { BanxInfoBN, BanxStakingSettingsBN } from '@banx/api/staking'
-import { BANX_TOKEN_DECIMALS, TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
+import { BANX_TOKEN_DECIMALS, TXN_EXECUTOR_BASE_OPTIONS } from '@banx/constants'
 import { BanxToken, Gamepad, MoneyBill } from '@banx/icons'
 import {
   banxTokenBNToFixed,
@@ -131,7 +131,7 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
       stakeBanxClaimAction,
       { wallet: createWalletInstance(wallet), connection },
       {
-        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
+        ...TXN_EXECUTOR_BASE_OPTIONS,
       },
     )
       .addTransactionParam(params)

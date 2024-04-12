@@ -12,7 +12,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
 import bonkTokenImg from '@banx/assets/BonkToken.png'
-import { BONDS, SPECIAL_COLLECTIONS_MARKETS, TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
+import { BONDS, SPECIAL_COLLECTIONS_MARKETS, TXN_EXECUTOR_BASE_OPTIONS } from '@banx/constants'
 import { LoansOptimisticStore, OffersOptimisticStore, PriorityLevel } from '@banx/store'
 import { BorrowType, createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
@@ -100,7 +100,7 @@ export const executeBorrow = async (props: {
   const txnsResults = await new TxnExecutor(
     makeBorrowAction,
     { wallet: createWalletInstance(wallet), connection },
-    { signAllChunkSize: isLedger ? 1 : 40, confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
+    { signAllChunkSize: isLedger ? 1 : 40, ...TXN_EXECUTOR_BASE_OPTIONS },
   )
     .addTransactionParams(txnParams)
     .on('sentSome', () => {

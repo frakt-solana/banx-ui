@@ -8,7 +8,7 @@ import { Button } from '@banx/components/Buttons'
 import { createSolValueJSX } from '@banx/components/TableComponents'
 
 import { Offer, UserOffer } from '@banx/api/core'
-import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
+import { TXN_EXECUTOR_BASE_OPTIONS } from '@banx/constants'
 import { usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeClaimBondOfferInterestAction } from '@banx/transactions/bonds'
@@ -55,7 +55,7 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
         connection,
       },
       {
-        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
+        ...TXN_EXECUTOR_BASE_OPTIONS,
       },
     )
       .addTransactionParams(txnParams)
