@@ -16,6 +16,12 @@ interface ClassNamesProps {
   labelWrapper: string
 }
 
+interface OnClickProps {
+  onContainerClick: () => void
+  onLabelClick: () => void
+  onValueClick: () => void
+}
+
 export interface StatsInfoProps {
   value: number | string | JSX.Element
 
@@ -30,6 +36,7 @@ export interface StatsInfoProps {
   flexType?: 'row' | 'column'
   valueStyles?: CSSProperties
   classNamesProps?: Partial<ClassNamesProps>
+  onClickProps?: Partial<OnClickProps>
 }
 
 export const StatInfo: FC<StatsInfoProps> = ({
@@ -45,6 +52,7 @@ export const StatInfo: FC<StatsInfoProps> = ({
   classNamesProps,
   valueStyles,
   icon: Icon,
+  onClickProps,
 }) => {
   const formattedValue = formatValue(value, valueType, decimalPlaces, divider)
   const dimension = DIMENSION_BY_VALUE_TYPE[valueType]
@@ -56,12 +64,14 @@ export const StatInfo: FC<StatsInfoProps> = ({
   const valueClasses = classNames(styles.value, classNamesProps?.value)
 
   return (
-    <div className={containerClasses}>
+    <div className={containerClasses} onClick={onClickProps?.onContainerClick}>
       <div className={labelWrapperClasses}>
-        <span className={labelClasses}>{label}</span>
+        <span className={labelClasses} onClick={onClickProps?.onLabelClick}>
+          {label}
+        </span>
         {tooltipText && <Tooltip title={tooltipText} placement={tooltipPlacement} />}
       </div>
-      <span className={valueClasses} style={valueStyles}>
+      <span className={valueClasses} style={valueStyles} onClick={onClickProps?.onValueClick}>
         {formattedValue}
         {dimension}
         {Icon && <Icon className={styles.valueIcon} />}
