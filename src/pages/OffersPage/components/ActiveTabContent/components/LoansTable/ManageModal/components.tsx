@@ -17,7 +17,11 @@ import { useMarketOffers } from '@banx/pages/LendPage'
 import { calculateClaimValue, useLenderLoans } from '@banx/pages/OffersPage'
 import { useModal, usePriorityFees, useTokenType } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
-import { makeInstantRefinanceAction, makeTerminateAction } from '@banx/transactions/loans'
+import {
+  makeInstantRefinanceAction,
+  makeRepaymentCallAction,
+  makeTerminateAction,
+} from '@banx/transactions/loans'
 import {
   HealthColorIncreasing,
   calculateLoanRepayValue,
@@ -229,8 +233,14 @@ interface RepaymentCallContentProps {
   loan: Loan
   close: () => void
 }
+
+const DEFAULT_PERCENT_VALUE = 25
+
 export const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, close }) => {
-  const DEFAULT_PERCENT_VALUE = 25
+  const wallet = useWallet()
+  const { connection } = useConnection()
+
+  const { updateOrAddLoan } = useLenderLoans()
 
   const totalClaim = calculateLoanRepayValue(loan)
   const initialRepayValue = totalClaim * (DEFAULT_PERCENT_VALUE / 100)
@@ -248,13 +258,56 @@ export const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, clos
   const ltv = (remainingDebt / loan.nft.collectionFloor) * 100
   const colorLTV = getColorByPercent(ltv, HealthColorIncreasing)
 
-  const onSend = () => {
-    try {
-      //TODO send repayment call logic here
-      trackPageEvent('myoffers', 'activetab-repaymentcall')
-    } finally {
-      close()
-    }
+  const onSend = async () => {
+    trackPageEvent('myoffers', 'activetab-repaymentcall')
+
+    const loadingSnackbarId = uniqueId()
+
+    const txnParam = { loan, callAmount: paybackValue }
+
+    await new TxnExecutor(
+      makeRepaymentCallAction,
+      { wallet: createWalletInstance(wallet), connection },
+      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
+    )
+      .addTransactionParam(txnParam)
+      .on('sentSome', (results) => {
+        results.forEach(({ signature }) => enqueueTransactionSent(signature))
+        enqueueWaitingConfirmation(loadingSnackbarId)
+      })
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
+
+        destroySnackbar(loadingSnackbarId)
+
+        if (failed.length) {
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
+        }
+
+        return confirmed.forEach(({ result, signature }) => {
+          if (result && wallet.publicKey) {
+            enqueueSnackbar({
+              message: 'Repayment call initialized',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
+
+            updateOrAddLoan(result)
+            close()
+          }
+        })
+      })
+      .on('error', (error) => {
+        destroySnackbar(loadingSnackbarId)
+        defaultTxnErrorHandler(error, {
+          additionalData: txnParam,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'RepaymentCall',
+        })
+      })
+      .execute()
   }
 
   return (
