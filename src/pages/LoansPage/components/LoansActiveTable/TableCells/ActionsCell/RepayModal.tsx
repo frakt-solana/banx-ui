@@ -8,7 +8,12 @@ import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan } from '@banx/api/core'
 import { useModal } from '@banx/store'
-import { calculateLoanRepayValue, trackPageEvent } from '@banx/utils'
+import {
+  calculateLoanRepayValue,
+  getColorByPercent,
+  isLoanRepaymentCallActive,
+  trackPageEvent,
+} from '@banx/utils'
 
 import { useLoansTransactions } from '../../hooks'
 
@@ -22,19 +27,21 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
   const { repayLoan, repayPartialLoan } = useLoansTransactions()
   const { close } = useModal()
 
-  const initialDebt = calculateLoanRepayValue(loan)
+  const { repaymentCallActive, totalRepayValue, initialRepayPercent, initialRepayValue } =
+    calculateRepaymentStaticValues(loan)
 
-  //? For partial repayment loans, feeAmount is not included in the debt calculation.
-  const initialDebtWithoutFee = calculateLoanRepayValue(loan, false)
-
-  const [repaymentPercent, setRepaymentPercent] = useState<number>(100)
-
+  const [repaymentPercent, setRepaymentPercent] = useState<number>(initialRepayPercent)
   const isFullRepayment = repaymentPercent === 100
 
-  const baseDebtValue = isFullRepayment ? initialDebt : initialDebtWithoutFee
+  const baseDebtValue = isFullRepayment ? totalRepayValue : initialRepayValue
   const paybackValue = (baseDebtValue * repaymentPercent) / 100
 
-  const remainingDebt = initialDebt - paybackValue
+  const remainingDebt = totalRepayValue - paybackValue
+
+  const colorClassNameByValue = {
+    [Math.ceil(initialRepayPercent)]: styles.repayModalSliderYellow,
+    100: styles.repayModalSliderGreen,
+  }
 
   const onSubmit = async () => {
     try {
@@ -55,7 +62,7 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
     <Modal open onCancel={close}>
       <StatInfo
         label="Debt:"
-        value={<DisplayValue value={initialDebt} />}
+        value={<DisplayValue value={totalRepayValue} />}
         classNamesProps={{ container: styles.repayModalInfo }}
         flexType="row"
       />
@@ -63,8 +70,20 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
         value={repaymentPercent}
         onChange={setRepaymentPercent}
         className={styles.repayModalSlider}
+        rootClassName={getColorByPercent(repaymentPercent, colorClassNameByValue)}
       />
       <div className={styles.repayModalAdditionalInfo}>
+        {repaymentCallActive && (
+          <StatInfo
+            flexType="row"
+            label="Repayment call"
+            value={<DisplayValue value={loan.bondTradeTransaction.repaymentCallAmount} />}
+            classNamesProps={{ label: styles.repayModalRepaymentCall }}
+            onClickProps={{
+              onLabelClick: () => setRepaymentPercent(initialRepayPercent),
+            }}
+          />
+        )}
         <StatInfo
           label="Repay value"
           value={<DisplayValue value={paybackValue} />}
@@ -81,4 +100,33 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
       </Button>
     </Modal>
   )
+}
+
+export const calculateRepaymentStaticValues = (loan: Loan) => {
+  const DEFAULT_REPAY_PERCENT = 100
+
+  const repaymentCallActive = isLoanRepaymentCallActive(loan)
+  const repaymentCallAmount = loan.bondTradeTransaction.repaymentCallAmount
+
+  const totalRepayValue = calculateLoanRepayValue(loan)
+
+  const repayValueWithoutProtocolFee = calculateLoanRepayValue(loan) //TODO: Need to exclude protocol fee
+
+  const initialRepayPercent =
+    Math.ceil(
+      repaymentCallActive
+        ? (repaymentCallAmount / repayValueWithoutProtocolFee) * 100
+        : DEFAULT_REPAY_PERCENT,
+    ) + 1
+
+  //? For partial repayment loans, feeAmount is not included in the debt calculation.
+  const initialDebtWithoutFee = calculateLoanRepayValue(loan, false)
+  const initialRepayValue = repaymentCallActive ? repaymentCallAmount : initialDebtWithoutFee
+
+  return {
+    repaymentCallActive,
+    totalRepayValue,
+    initialRepayPercent,
+    initialRepayValue,
+  }
 }
