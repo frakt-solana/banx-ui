@@ -11,7 +11,7 @@ import Tooltip from '@banx/components/Tooltip'
 import { Loan, Offer } from '@banx/api/core'
 import { Warning } from '@banx/icons'
 import { ViewState, useTableView } from '@banx/store'
-import { isLoanTerminating } from '@banx/utils'
+import { isLoanRepaymentCallActive, isLoanTerminating } from '@banx/utils'
 
 import { useSelectedLoans } from '../../loansState'
 import { Summary } from './Summary'
@@ -102,6 +102,11 @@ export const LoansActiveTable: FC<LoansActiveTableProps> = ({
           condition: isLoanTerminating,
           className: styles.terminated,
           cardClassName: styles.terminated,
+        },
+        {
+          condition: isLoanRepaymentCallActive,
+          className: styles.repaymentCallActive,
+          cardClassName: styles.repaymentCallActive,
         },
       ],
     }
