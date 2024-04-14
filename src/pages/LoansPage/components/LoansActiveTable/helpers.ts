@@ -5,10 +5,8 @@ import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { calcWeightedAverage, calculateLoanRepayValue } from '@banx/utils'
 
-
 //? Fee for creating an account
 export const ACCOUNT_CREATION_FEE = 3229 * 1e3
-
 
 export const calcAccruedInterest = (loan: Loan) => {
   const { bondTradeTransaction } = loan
