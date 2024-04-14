@@ -2,7 +2,9 @@ import { FC, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { chain, isEmpty, uniqueId } from 'lodash'
+import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
@@ -36,6 +38,7 @@ import {
   getColorByPercent,
   getTokenUnit,
   isLoanActiveOrRefinanced,
+  isLoanRepaymentCallActive,
   isLoanTerminating,
   trackPageEvent,
 } from '@banx/utils'
@@ -137,10 +140,7 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
 
     new TxnExecutor(
       makeInstantRefinanceAction,
-      {
-        wallet: createWalletInstance(wallet),
-        connection,
-      },
+      { wallet: createWalletInstance(wallet), connection },
       { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
       .addTransactionParam({ loan, bestOffer, priorityFeeLevel: priorityLevel })
@@ -234,29 +234,29 @@ interface RepaymentCallContentProps {
   close: () => void
 }
 
-const DEFAULT_PERCENT_VALUE = 25
-
 export const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, close }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
-
   const { updateOrAddLoan } = useLenderLoans()
 
-  const totalClaim = calculateLoanRepayValue(loan)
-  const initialRepayValue = totalClaim * (DEFAULT_PERCENT_VALUE / 100)
+  const { repaymentCallActive, totalClaim, initialRepayPercent, initialRepayValue } =
+    calculateRepaymentStaticValues(loan)
 
-  const [partialPercent, setPartialPercent] = useState<number>(DEFAULT_PERCENT_VALUE)
+  const [repayPercent, setRepayPercent] = useState<number>(initialRepayPercent)
   const [paybackValue, setPaybackValue] = useState<number>(initialRepayValue)
 
   const onPartialPercentChange = (percentValue: number) => {
-    setPartialPercent(percentValue)
-    setPaybackValue((totalClaim * percentValue) / 100)
+    setRepayPercent(percentValue)
+    setPaybackValue(Math.floor((totalClaim * percentValue) / 100))
   }
 
   const remainingDebt = totalClaim - paybackValue
 
   const ltv = (remainingDebt / loan.nft.collectionFloor) * 100
   const colorLTV = getColorByPercent(ltv, HealthColorIncreasing)
+
+  const sendBtnDisabled =
+    !repayPercent || (repaymentCallActive && initialRepayValue === paybackValue)
 
   const onSend = async () => {
     trackPageEvent('myoffers', 'activetab-repaymentcall')
@@ -312,35 +312,61 @@ export const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, clos
 
   return (
     <div className={styles.modalContent}>
-      <StatInfo
-        flexType="row"
-        label="Total claim:"
-        value={<DisplayValue value={totalClaim} />}
-        classNamesProps={{ container: styles.repaymentCallInfo }}
-      />
-      <Slider value={partialPercent} onChange={onPartialPercentChange} />
+      <Slider value={repayPercent} onChange={onPartialPercentChange} />
       <div className={styles.repaimentCallAdditionalInfo}>
         <StatInfo
-          flexType="row"
-          label="Repay value"
+          label="Ask borrower to repay"
           value={<DisplayValue value={paybackValue} />}
+          flexType="row"
         />
         <StatInfo
-          flexType="row"
-          label="Remaining debt"
+          label="Debt after repayment"
           value={<DisplayValue value={remainingDebt} />}
+          flexType="row"
         />
         <StatInfo
-          flexType="row"
-          label="New LTV"
+          label="Ltv after repayment"
           value={ltv}
           valueStyles={{ color: colorLTV }}
           valueType={VALUES_TYPES.PERCENT}
+          flexType="row"
         />
       </div>
-      <Button className={styles.repaymentCallButton} onClick={onSend} disabled={!partialPercent}>
-        Send
+      <Button className={styles.repaymentCallButton} onClick={onSend} disabled={sendBtnDisabled}>
+        {!repaymentCallActive ? 'Send' : 'Update'}
       </Button>
     </div>
   )
+}
+
+export const calculateRepaymentStaticValues = (loan: Loan) => {
+  const repaymentCallActive = isLoanRepaymentCallActive(loan)
+  const repaymentCallAmount = loan.bondTradeTransaction.repaymentCallAmount
+
+  const totalClaim = calculateLoanRepayValue(loan)
+
+  const { solAmount, feeAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction
+  const accuredInterest = calculateCurrentInterestSolPure({
+    loanValue: solAmount + feeAmount,
+    startTime: soldAt,
+    currentTime: moment().unix(),
+    rateBasePoints: amountOfBonds,
+  })
+
+  const DEFAULT_REPAY_PERCENT = 50
+  const initialRepayPercent = repaymentCallActive
+    ? (repaymentCallAmount / totalClaim) * 100
+    : DEFAULT_REPAY_PERCENT
+
+  const initialRepayValue = repaymentCallActive
+    ? repaymentCallAmount
+    : totalClaim * (initialRepayPercent / 100)
+
+  return {
+    repaymentCallActive,
+    accuredInterest,
+    totalClaim,
+    initialRepayPercent,
+    initialRepayValue,
+  }
 }
