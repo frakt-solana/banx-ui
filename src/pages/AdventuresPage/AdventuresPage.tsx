@@ -25,9 +25,11 @@ export const AdventuresPage: FC = () => {
     defaultValue: ADVENTURES_TABS[0].value,
   })
 
+  const sidebarVisible = connected && isDataReady
+
   return (
     <div className={styles.pageWrapper}>
-      <div className={classNames(styles.content, styles.active)}>
+      <div className={styles.content}>
         <Header />
         {isLoading && <Loader className={styles.loader} />}
         {isDataReady && (
@@ -36,13 +38,15 @@ export const AdventuresPage: FC = () => {
             <AdventuresList
               banxStakeInfo={banxStakeInfo}
               historyMode={currentTabValue === AdventureTab.HISTORY}
-              className={styles.adventuresList}
+              className={classNames(styles.adventuresList, {
+                [styles.adventuresListSidebarVisible]: sidebarVisible,
+              })}
             />
           </>
         )}
       </div>
 
-      {connected && isDataReady && (
+      {sidebarVisible && (
         <Sidebar
           banxStakeInfo={banxStakeInfo}
           banxStakingSettings={banxStakeSettings}
