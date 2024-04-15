@@ -2,9 +2,7 @@ import { FC, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { chain, isEmpty, uniqueId } from 'lodash'
-import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
@@ -340,20 +338,13 @@ export const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, clos
 }
 
 export const calculateRepaymentStaticValues = (loan: Loan) => {
+  const DEFAULT_REPAY_PERCENT = 50
+
   const repaymentCallActive = isLoanRepaymentCallActive(loan)
   const repaymentCallAmount = loan.bondTradeTransaction.repaymentCallAmount
 
   const totalClaim = calculateLoanRepayValue(loan)
 
-  const { solAmount, feeAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction
-  const accuredInterest = calculateCurrentInterestSolPure({
-    loanValue: solAmount + feeAmount,
-    startTime: soldAt,
-    currentTime: moment().unix(),
-    rateBasePoints: amountOfBonds,
-  })
-
-  const DEFAULT_REPAY_PERCENT = 50
   const initialRepayPercent = repaymentCallActive
     ? (repaymentCallAmount / totalClaim) * 100
     : DEFAULT_REPAY_PERCENT
@@ -364,7 +355,6 @@ export const calculateRepaymentStaticValues = (loan: Loan) => {
 
   return {
     repaymentCallActive,
-    accuredInterest,
     totalClaim,
     initialRepayPercent,
     initialRepayValue,
