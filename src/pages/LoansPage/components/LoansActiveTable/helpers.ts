@@ -47,6 +47,6 @@ export const calcWeightedApr = (loans: Loan[]) => {
     (loan) => (loan.bondTradeTransaction.amountOfBonds + BONDS.PROTOCOL_REPAY_FEE) / 100,
   )
 
-  const totalRepayValues = map(loans, calculateLoanRepayValue)
+  const totalRepayValues = map(loans, (loan) => calculateLoanRepayValue(loan))
   return calcWeightedAverage(totalAprValues, totalRepayValues)
 }

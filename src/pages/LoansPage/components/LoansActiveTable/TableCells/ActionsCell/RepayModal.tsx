@@ -19,29 +19,30 @@ interface RepayModalProps {
 }
 
 export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
+  const { repayLoan, repayPartialLoan } = useLoansTransactions()
   const { close } = useModal()
 
-  const { repayLoan, repayPartialLoan } = useLoansTransactions()
+  const initialDebt = calculateLoanRepayValue(loan)
 
-  const initialRepayValue = calculateLoanRepayValue(loan)
+  //? For partial repayment loans, feeAmount is not included in the debt calculation.
+  const initialDebtWithoutFee = calculateLoanRepayValue(loan, false)
 
-  const [partialPercent, setPartialPercent] = useState<number>(100)
-  const [paybackValue, setPaybackValue] = useState<number>(initialRepayValue)
+  const [repaymentPercent, setRepaymentPercent] = useState<number>(100)
 
-  const onPartialPercentChange = (percentValue: number) => {
-    setPartialPercent(percentValue)
-    setPaybackValue((initialRepayValue * percentValue) / 100)
-  }
+  const isFullRepayment = repaymentPercent === 100
 
-  const remainingValue = initialRepayValue - paybackValue
+  const baseDebtValue = isFullRepayment ? initialDebt : initialDebtWithoutFee
+  const paybackValue = (baseDebtValue * repaymentPercent) / 100
+
+  const remainingDebt = initialDebt - paybackValue
 
   const onSubmit = async () => {
     try {
       trackPageEvent('myloans', `repay`)
-      if (partialPercent === 100) {
+      if (isFullRepayment) {
         await repayLoan(loan)
       } else {
-        await repayPartialLoan(loan, partialPercent * 100)
+        await repayPartialLoan(loan, repaymentPercent * 100)
       }
     } catch (error) {
       console.error(error)
@@ -54,13 +55,13 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
     <Modal open onCancel={close}>
       <StatInfo
         label="Debt:"
-        value={<DisplayValue value={initialRepayValue} />}
+        value={<DisplayValue value={initialDebt} />}
         classNamesProps={{ container: styles.repayModalInfo }}
         flexType="row"
       />
       <Slider
-        value={partialPercent}
-        onChange={onPartialPercentChange}
+        value={repaymentPercent}
+        onChange={setRepaymentPercent}
         className={styles.repayModalSlider}
       />
       <div className={styles.repayModalAdditionalInfo}>
@@ -71,11 +72,11 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
         />
         <StatInfo
           label="Remaining debt"
-          value={<DisplayValue value={remainingValue} />}
+          value={<DisplayValue value={remainingDebt} />}
           flexType="row"
         />
       </div>
-      <Button className={styles.repayModalButton} onClick={onSubmit} disabled={!partialPercent}>
+      <Button className={styles.repayModalButton} onClick={onSubmit} disabled={!repaymentPercent}>
         Repay <DisplayValue value={paybackValue} />
       </Button>
     </Modal>
