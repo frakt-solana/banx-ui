@@ -12,7 +12,7 @@ import { Loan } from '@banx/api/core'
 import { calcWeeklyFeeWithRepayFee, calculateLoanRepayValue } from '@banx/utils'
 
 import { LoanOptimistic } from '../../loansState'
-import { caclFractionToRepay, calcWeightedApr, calculateUnpaidInterest } from './helpers'
+import { calcWeightedApr, calculateUnpaidInterest } from './helpers'
 import { useLoansTransactions } from './hooks'
 
 import styles from './LoansActiveTable.module.less'
@@ -39,12 +39,6 @@ export const Summary: FC<SummaryProps> = ({
   const totalDebt = sumBy(selectedLoans, calculateLoanRepayValue)
   const totalWeeklyFee = sumBy(selectedLoans, calcWeeklyFeeWithRepayFee)
   const totalUnpaidInterest = sumBy(selectedLoans, calculateUnpaidInterest)
-
-  const loansWithCalculatedUnpaidInterest = useMemo(() => {
-    return selectedLoans
-      .map((loan) => ({ loan, fractionToRepay: caclFractionToRepay(loan) }))
-      .filter(({ fractionToRepay }) => fractionToRepay > 0)
-  }, [selectedLoans])
 
   const handleLoanSelection = (value = 0) => {
     setSelection(loans.slice(0, value), walletPublicKey?.toBase58() || '')
@@ -86,7 +80,7 @@ export const Summary: FC<SummaryProps> = ({
         />
         <Button
           variant="secondary"
-          onClick={() => repayUnpaidLoansInterest(loansWithCalculatedUnpaidInterest)}
+          onClick={repayUnpaidLoansInterest}
           disabled={!totalUnpaidInterest}
         >
           Pay interest {<DisplayValue value={totalUnpaidInterest} />}

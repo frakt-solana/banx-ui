@@ -5,7 +5,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 import { Loan } from '@banx/api/core'
 import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
-import { useIsLedger, useLoansOptimistic, usePriorityFees } from '@banx/store'
+import { useIsLedger, useLoansOptimistic, useModal, usePriorityFees } from '@banx/store'
 import { BorrowType, createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
   REPAY_NFT_PER_TXN,
@@ -22,11 +22,14 @@ import {
   enqueueWaitingConfirmation,
 } from '@banx/utils'
 
+import { caclFractionToRepay } from '../helpers'
+
 export const useLoansTransactions = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
   const { isLedger } = useIsLedger()
   const { priorityLevel } = usePriorityFees()
+  const { close } = useModal()
 
   const { update: updateLoansOptimistic } = useLoansOptimistic()
   const { clear: clearSelection } = useSelectedLoans()
@@ -72,6 +75,7 @@ export const useLoansTransactions = () => {
 
             updateLoansOptimistic(result, wallet.publicKey.toBase58())
             clearSelection()
+            close()
           }
         })
       })
@@ -127,6 +131,7 @@ export const useLoansTransactions = () => {
 
             updateLoansOptimistic([result], wallet.publicKey.toBase58())
             clearSelection()
+            close()
           }
         })
       })
@@ -197,15 +202,17 @@ export const useLoansTransactions = () => {
       .execute()
   }
 
-  interface LoanWithFractionToRepay {
-    loan: Loan
-    fractionToRepay: number
-  }
-
-  const repayUnpaidLoansInterest = async (loans: LoanWithFractionToRepay[]) => {
+  const repayUnpaidLoansInterest = async () => {
     const loadingSnackbarId = uniqueId()
 
-    const txnParams = loans.map((loan) => ({ ...loan, priorityFeeLevel: priorityLevel }))
+    const loansWithCalculatedUnpaidInterest = selection
+      .map(({ loan }) => ({ loan, fractionToRepay: caclFractionToRepay(loan) }))
+      .filter(({ fractionToRepay }) => fractionToRepay > 0)
+
+    const txnParams = loansWithCalculatedUnpaidInterest.map((loan) => ({
+      ...loan,
+      priorityFeeLevel: priorityLevel,
+    }))
 
     await new TxnExecutor(
       makeRepayPartialLoanAction,
@@ -242,7 +249,7 @@ export const useLoansTransactions = () => {
       .on('error', (error) => {
         destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
-          additionalData: loans,
+          additionalData: loansWithCalculatedUnpaidInterest,
           walletPubkey: wallet?.publicKey?.toBase58(),
           transactionName: 'RepayUnpaidLoansInterest',
         })

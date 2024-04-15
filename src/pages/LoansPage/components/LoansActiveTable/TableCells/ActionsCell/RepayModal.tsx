@@ -7,6 +7,7 @@ import { DisplayValue } from '@banx/components/TableComponents'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan } from '@banx/api/core'
+import { BONDS } from '@banx/constants'
 import { useModal } from '@banx/store'
 import {
   calculateLoanRepayValue,
@@ -31,14 +32,14 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
     repaymentCallActive,
     repaymentCallAmount,
     initialRepayPercent,
-    initialRepayValue,
+    debtWithoutFee,
     debtValue,
   } = calculateRepaymentStaticValues(loan)
 
   const [repaymentPercent, setRepaymentPercent] = useState<number>(initialRepayPercent)
   const isFullRepayment = repaymentPercent === 100
 
-  const baseDebtValue = isFullRepayment ? debtValue : initialRepayValue
+  const baseDebtValue = isFullRepayment ? debtValue : debtWithoutFee
   const paybackValue = (baseDebtValue * repaymentPercent) / 100
 
   const remainingDebt = debtValue - paybackValue
@@ -102,30 +103,36 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
   )
 }
 
+const DEFAULT_REPAY_PERCENT = 100
+
 export const calculateRepaymentStaticValues = (loan: Loan) => {
-  const DEFAULT_REPAY_PERCENT = 100
+  const { bondTradeTransaction } = loan
 
   const repaymentCallActive = isLoanRepaymentCallActive(loan)
-  const repaymentCallAmount = loan.bondTradeTransaction.repaymentCallAmount
-
-  const debtValue = calculateLoanRepayValue(loan)
-
-  //TODO: Need to exclude protocol fee
-  const repayValueWithoutProtocolFee = calculateLoanRepayValue(loan)
-
-  const initialRepayPercent = repaymentCallActive
-    ? Math.ceil((repaymentCallAmount / repayValueWithoutProtocolFee) * 100) + 1
-    : DEFAULT_REPAY_PERCENT
+  const repaymentCallAmount = bondTradeTransaction.repaymentCallAmount
 
   //? For partial repayment loans, feeAmount is not included in the debt calculation.
-  const initialDebtWithoutFee = calculateLoanRepayValue(loan, false)
-  const initialRepayValue = repaymentCallActive ? repaymentCallAmount : initialDebtWithoutFee
+  const debtWithoutFee = calculateLoanRepayValue(loan, false)
+  const debtValue = calculateLoanRepayValue(loan)
+
+  //? Calculate the debt without protocol fee
+  const newAmountOfBonds = bondTradeTransaction.amountOfBonds - BONDS.PROTOCOL_REPAY_FEE
+  const newBondTradeTransaction = { ...bondTradeTransaction, amountOfBonds: newAmountOfBonds }
+
+  const debtWithoutProtocolFee = calculateLoanRepayValue({
+    ...loan,
+    bondTradeTransaction: newBondTradeTransaction,
+  })
+
+  const initialRepayPercent = repaymentCallActive
+    ? Math.ceil((repaymentCallAmount / debtWithoutProtocolFee) * 100)
+    : DEFAULT_REPAY_PERCENT
 
   return {
     repaymentCallActive,
     debtValue,
     initialRepayPercent,
-    initialRepayValue,
+    debtWithoutFee,
     repaymentCallAmount,
   }
 }
