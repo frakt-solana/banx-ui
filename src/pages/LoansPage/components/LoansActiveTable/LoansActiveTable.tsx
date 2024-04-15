@@ -9,7 +9,7 @@ import Table from '@banx/components/Table'
 import Tooltip from '@banx/components/Tooltip'
 
 import { Loan, Offer } from '@banx/api/core'
-import { Warning } from '@banx/icons'
+import { Call, Warning } from '@banx/icons'
 import { ViewState, useTableView } from '@banx/store'
 import { isLoanRepaymentCallActive, isLoanTerminating } from '@banx/utils'
 
@@ -44,6 +44,9 @@ export const LoansActiveTable: FC<LoansActiveTableProps> = ({
     isTerminationFilterEnabled,
     countOfTerminatingLoans,
     toggleTerminationFilter,
+    countOfRepaymentCallLoans,
+    isRepaymentCallFilterEnabled,
+    toggleRepaymentCallFilter,
   } = useLoansActiveTable({ loans: rawLoans, isLoading })
 
   const {
@@ -113,25 +116,18 @@ export const LoansActiveTable: FC<LoansActiveTableProps> = ({
   }, [onRowClick])
 
   const customJSX = (
-    <Tooltip
-      title={countOfTerminatingLoans ? 'Terminating loans' : 'No terminating loans currently'}
-    >
-      <div className={styles.filterButtonWrapper} data-count-of-loans={countOfTerminatingLoans}>
-        <Button
-          className={classNames(
-            styles.filterButton,
-            { [styles.active]: isTerminationFilterEnabled },
-            { [styles.disabled]: !countOfTerminatingLoans },
-          )}
-          disabled={!countOfTerminatingLoans}
-          onClick={toggleTerminationFilter}
-          variant="secondary"
-          type="circle"
-        >
-          <Warning />
-        </Button>
-      </div>
-    </Tooltip>
+    <div className={styles.filterButtons}>
+      <TerminatingFilterButton
+        countOfLoans={countOfTerminatingLoans}
+        isActive={isTerminationFilterEnabled}
+        onClick={toggleTerminationFilter}
+      />
+      <RepaymentCallFilterButton
+        countOfLoans={countOfRepaymentCallLoans}
+        isActive={isRepaymentCallFilterEnabled}
+        onClick={toggleRepaymentCallFilter}
+      />
+    </div>
   )
 
   if (showEmptyList) return <EmptyList {...emptyListParams} />
@@ -154,3 +150,55 @@ export const LoansActiveTable: FC<LoansActiveTableProps> = ({
     </div>
   )
 }
+
+interface FilterButtonProps {
+  onClick: () => void
+  isActive: boolean
+  countOfLoans: number | null
+}
+
+const RepaymentCallFilterButton: FC<FilterButtonProps> = ({ isActive, onClick, countOfLoans }) => (
+  <Tooltip title={countOfLoans ? 'Repayment call loans' : 'No repayment call loans currently'}>
+    <div
+      className={classNames(styles.filterButtonWrapper, styles.repaymentCall)}
+      data-count-of-loans={countOfLoans}
+    >
+      <Button
+        className={classNames(
+          styles.filterButton,
+          { [styles.active]: isActive },
+          { [styles.disabled]: !countOfLoans },
+        )}
+        disabled={!countOfLoans}
+        onClick={onClick}
+        variant="secondary"
+        type="circle"
+      >
+        <Call />
+      </Button>
+    </div>
+  </Tooltip>
+)
+
+const TerminatingFilterButton: FC<FilterButtonProps> = ({ isActive, onClick, countOfLoans }) => (
+  <Tooltip title={countOfLoans ? 'Terminating loans' : 'No terminating loans currently'}>
+    <div
+      className={classNames(styles.filterButtonWrapper, styles.terminating)}
+      data-count-of-loans={countOfLoans}
+    >
+      <Button
+        className={classNames(
+          styles.filterButton,
+          { [styles.active]: isActive },
+          { [styles.disabled]: !countOfLoans },
+        )}
+        disabled={!countOfLoans}
+        onClick={onClick}
+        variant="secondary"
+        type="circle"
+      >
+        <Warning />
+      </Button>
+    </div>
+  </Tooltip>
+)

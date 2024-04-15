@@ -217,11 +217,16 @@
   }
 }
 
+.filterButtons {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
 .filterButtonWrapper {
   position: relative;
 
   &[data-count-of-loans]::after {
-    background: var(--additional-lava-primary);
     border-radius: 100px;
     content: attr(data-count-of-loans);
     color: var(--pure-black);
@@ -238,20 +243,23 @@
     min-width: 8px;
     height: 16px;
   }
+
+  &.terminating[data-count-of-loans]::after {
+    background: var(--additional-lava-primary);
+  }
+
+  &.repaymentCall[data-count-of-loans]::after {
+    background: var(--additional-yellow-primary);
+  }
 }
 
 .filterButton {
-  svg {
-    path:first-child {
-      fill: var(--additional-lava-primary);
-    }
-    path:last-child {
-      fill: var(--pure-black);
-    }
-  }
-
   &.active {
     border-color: var(--content-primary);
+  }
+
+  svg path {
+    fill: revert-layer;
   }
 
   &.disabled {
