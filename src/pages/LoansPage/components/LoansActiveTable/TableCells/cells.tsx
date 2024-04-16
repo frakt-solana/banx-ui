@@ -43,7 +43,8 @@ export const DebtCell: FC<CellProps> = ({ loan }) => {
   const borrowedValue = fraktBond.borrowedAmount
 
   const totalAccruedInterest = calcAccruedInterest(loan)
-  const upfrontFee = borrowedValue / 100
+
+  const upfrontFee = bondTradeTransaction.borrowerOriginalLent / 100
 
   const weeklyFee = calcWeeklyFeeWithRepayFee(loan)
 

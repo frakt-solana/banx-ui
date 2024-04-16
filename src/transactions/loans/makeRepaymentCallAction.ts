@@ -9,7 +9,7 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type MakeRepaymentCallParams = {
   loan: Loan
-  callAmount: number //? SOL lamports
+  callAmount: number
 }
 
 export type MakeRepaymentCallAction = CreateTransactionDataFn<MakeRepaymentCallParams, Loan>
