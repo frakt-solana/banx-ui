@@ -8,7 +8,7 @@ import { NavLink } from 'react-router-dom'
 
 import { Button } from '@banx/components/Buttons'
 import EmptyList from '@banx/components/EmptyList/EmptyList'
-import { StatInfo, StatsInfoProps, VALUES_TYPES } from '@banx/components/StatInfo'
+import { StatInfo, StatsInfoProps } from '@banx/components/StatInfo'
 import Timer from '@banx/components/Timer'
 import Tooltip from '@banx/components/Tooltip'
 import { useFetchUserRewards } from '@banx/components/WalletModal'
@@ -52,16 +52,13 @@ interface RewardsStatProps extends StatsInfoProps {
 }
 
 const RewardsStat: FC<RewardsStatProps> = ({ value, disabled, ...props }) => {
-  const formattedValue = formatNumbersWithCommas((value / 1e9)?.toFixed(0))
-
   return (
     <div className={classNames(styles.statRewardWrapper, { [styles.disabled]: disabled })}>
       <CircleCheckIcon
         className={classNames(styles.circleCheckIcon, { [styles.disabled]: disabled })}
       />
       <StatInfo
-        value={formattedValue}
-        valueType={VALUES_TYPES.STRING}
+        value={formatNumbersWithCommas((value / 1e9)?.toFixed(0))}
         classNamesProps={{ container: styles.stat, value: styles.value }}
         icon={BanxTokenIcon}
         {...props}
@@ -115,7 +112,6 @@ const RewardsBlock = () => {
           <StatInfo
             label="Total rewards"
             value={formatNumbersWithCommas((totalRewards / 1e9)?.toFixed(0))}
-            valueType={VALUES_TYPES.STRING}
             icon={BanxTokenIcon}
             classNamesProps={{
               container: styles.totalRewardsStat,

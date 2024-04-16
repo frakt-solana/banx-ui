@@ -1,7 +1,7 @@
 import { clear, get, set } from 'idb-keyval'
 import moment from 'moment'
 
-const BANX_LAST_IDB_PURGE_TIMESTAMP = '@banx.lastIdbPurgeTimestampV1'
+const BANX_LAST_IDB_PURGE_TIMESTAMP = '@banx.lastIdbPurgeTimestampV2'
 
 export const purgeIdb = async () => {
   try {

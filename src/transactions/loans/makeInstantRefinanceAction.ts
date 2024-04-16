@@ -6,7 +6,6 @@ import {
   BondOfferV2,
   BondTradeTransactionV3,
   FraktBond,
-  LendingTokenType,
 } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
@@ -56,7 +55,7 @@ export const makeInstantRefinanceAction: MakeInstantRefinanceAction = async (
       oldBondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
     },
     args: {
-      lendingTokenType: LendingTokenType.NativeSol,
+      lendingTokenType: bondTradeTransaction.lendingToken,
     },
     optimistic: {
       oldBondTradeTransaction: bondTradeTransaction as BondTradeTransactionV3,

@@ -13,7 +13,7 @@ import { Loan } from '@banx/api/core'
 import { TXN_EXECUTOR_BASE_OPTIONS } from '@banx/constants'
 import { useMarketOffers } from '@banx/pages/LendPage'
 import { calculateClaimValue, useLenderLoans } from '@banx/pages/OffersPage'
-import { useModal, usePriorityFees } from '@banx/store'
+import { useModal, usePriorityFees, useTokenType } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeInstantRefinanceAction, makeTerminateAction } from '@banx/transactions/loans'
 import {
@@ -25,7 +25,8 @@ import {
   enqueueWaitingConfirmation,
   filterOutWalletLoans,
   findSuitableOffer,
-  formatDecimal,
+  formatValueByTokenType,
+  getTokenUnit,
   isLoanActiveOrRefinanced,
   isLoanTerminating,
 } from '@banx/utils'
@@ -84,6 +85,8 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const { priorityLevel } = usePriorityFees()
   const { close } = useModal()
 
+  const { tokenType } = useTokenType()
+
   const { remove: removeLoan } = useSelectedLoans()
 
   const { updateOrAddLoan, addMints: hideLoans } = useLenderLoans()
@@ -114,9 +117,6 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
 
   const canRefinance = hasRefinanceOffer && loanActiveOrRefinanced
   const canTerminate = !isLoanTerminating(loan) && loanActiveOrRefinanced
-
-  const totalClaimValue = calculateClaimValue(loan)
-  const formattedClaimValue = `+${formatDecimal(totalClaimValue / 1e9)}◎`
 
   const terminateLoan = () => {
     const loadingSnackbarId = uniqueId()
@@ -225,6 +225,9 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
       .execute()
   }
 
+  const totalClaimValue = calculateClaimValue(loan)
+  const tokenUnit = getTokenUnit(tokenType)
+
   return (
     <div className={styles.closureContent}>
       <div
@@ -244,7 +247,14 @@ const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
         {!isLoading && (
           <div className={styles.twoColumnsContent}>
             <Button onClick={instantLoan} disabled={!canRefinance} variant="secondary">
-              {canRefinance ? `Exit ${formattedClaimValue}` : 'No suitable offers yet'}
+              {canRefinance ? (
+                <div className={styles.exitValue}>
+                  Exit +{formatValueByTokenType(totalClaimValue, tokenType)}
+                  {tokenUnit}
+                </div>
+              ) : (
+                'No suitable offers yet'
+              )}
             </Button>
             <Button
               className={styles.terminateButton}

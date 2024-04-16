@@ -1,9 +1,9 @@
 import { FC } from 'react'
 
 import {
+  DisplayValue,
   HorizontalCell,
   createPercentValueJSX,
-  createSolValueJSX,
 } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
@@ -12,7 +12,6 @@ import {
   HealthColorIncreasing,
   calcWeeklyFeeWithRepayFee,
   calculateLoanRepayValue,
-  formatDecimal,
   getColorByPercent,
 } from '@banx/utils'
 
@@ -28,7 +27,7 @@ const TooltipRow: FC<TooltipRowProps> = ({ label, value }) => (
   <div className={styles.tooltipRow}>
     <span className={styles.tooltipRowLabel}>{label}</span>
     <span className={styles.tooltipRowValue}>
-      {createSolValueJSX(value, 1e9, '0◎', formatDecimal)}
+      <DisplayValue value={value} />
     </span>
   </div>
 )
@@ -38,17 +37,16 @@ interface CellProps {
 }
 
 export const DebtCell: FC<CellProps> = ({ loan }) => {
-  const { totalRepaidAmount = 0, fraktBond } = loan
+  const { totalRepaidAmount = 0, fraktBond, bondTradeTransaction } = loan
 
   const debtValue = calculateLoanRepayValue(loan)
   const borrowedValue = fraktBond.borrowedAmount
 
   const totalAccruedInterest = calcAccruedInterest(loan)
-  const upfrontFee = borrowedValue / 100
+
+  const upfrontFee = bondTradeTransaction.borrowerOriginalLent / 100
 
   const weeklyFee = calcWeeklyFeeWithRepayFee(loan)
-
-  const formattedDebtValue = createSolValueJSX(debtValue, 1e9, '0◎', formatDecimal)
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>
@@ -60,7 +58,9 @@ export const DebtCell: FC<CellProps> = ({ loan }) => {
     </div>
   )
 
-  return <HorizontalCell tooltipContent={tooltipContent} value={formattedDebtValue} />
+  return (
+    <HorizontalCell tooltipContent={tooltipContent} value={<DisplayValue value={debtValue} />} />
+  )
 }
 
 export const LTVCell: FC<CellProps> = ({ loan }) => {

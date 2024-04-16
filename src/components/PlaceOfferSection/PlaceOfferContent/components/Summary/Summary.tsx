@@ -1,9 +1,10 @@
 import { FC } from 'react'
 
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
+import { DisplayValue } from '@banx/components/TableComponents'
 
 import { MarketPreview, Offer } from '@banx/api/core'
-import { HealthColorIncreasing, calculateApr, formatDecimal, getColorByPercent } from '@banx/utils'
+import { HealthColorIncreasing, calculateApr, getColorByPercent } from '@banx/utils'
 
 import { calcMaxLtv, calcOfferSize } from './helpers'
 
@@ -70,22 +71,18 @@ export const AdditionalSummary: FC<OfferSummaryProps> = ({
   const loansQuantity = updatedOffer?.buyOrdersQuantity || 0
   const offerSize = calcOfferSize({ initialOffer, updatedOffer, hasFormChanges })
 
-  const formattedOfferSize = formatDecimal(offerSize / 1e9)
-
   return (
     <div className={styles.additionalSummary}>
       <StatInfo
         label="Funding at least"
         value={`${loansQuantity} loans`}
         tooltipText="The minimum amount of loans you will fund if the entire liquidity in offer is lent at the Max Offer value. As borrowers can borrow at loan values equal to or less than your Max Offer, you may end up funding more loans"
-        valueType={VALUES_TYPES.STRING}
         flexType="row"
       />
 
       <StatInfo
         label="Total liquidity in offer"
-        value={`${formattedOfferSize}◎`}
-        valueType={VALUES_TYPES.STRING}
+        value={<DisplayValue value={offerSize} />}
         tooltipText="Your total liquidity currently available in offer"
         flexType="row"
       />

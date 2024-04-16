@@ -1,4 +1,11 @@
+import { FC } from 'react'
+
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import moment from 'moment'
+
+import { USDC } from '@banx/icons'
+import { useTokenType } from '@banx/store'
+import { formatValueByTokenType, getTokenUnit } from '@banx/utils'
 
 import styles from './TableCells.module.less'
 
@@ -9,23 +16,6 @@ const formatDisplayValue = (
   zeroPlaceholder = '--',
 ) => {
   return initialValue ? `${formattedValue}${unit}` : zeroPlaceholder
-}
-
-export const createSolValueJSX = (
-  value: number = 0,
-  divider: number = 1,
-  zeroPlaceholder: string = '--',
-  formatValueFunction?: (value: number) => string,
-) => {
-  const valueToFormat = value / divider
-
-  const formattedValue = formatValueFunction
-    ? formatValueFunction(valueToFormat)
-    : valueToFormat.toFixed(2)
-
-  const displayValue = formatDisplayValue(value, formattedValue, '◎', zeroPlaceholder)
-
-  return <span className={styles.value}>{displayValue}</span>
 }
 
 export const createPercentValueJSX = (initialValue = 0, zeroPlaceholder = '--') => {
@@ -40,4 +30,36 @@ export const createTimeValueJSX = (initialValue: number, zeroPlaceholder = '--')
   const displayValue = formatDisplayValue(initialValue, formattedValue, '', zeroPlaceholder)
 
   return <span className={styles.value}>{displayValue}</span>
+}
+
+const DEFAULT_PLACEHOLDERS = {
+  [LendingTokenType.NativeSol]: '0◎',
+  [LendingTokenType.Usdc]: (
+    <>
+      0 <USDC />
+    </>
+  ),
+}
+
+export const DisplayValue: FC<{ value: number; placeholder?: string }> = ({
+  value,
+  placeholder,
+}) => {
+  const { tokenType } = useTokenType()
+
+  const formattedValue = formatValueByTokenType(value, tokenType)
+
+  const defaultPlaceholder = placeholder || DEFAULT_PLACEHOLDERS[tokenType]
+  const tokenUnit = getTokenUnit(tokenType)
+
+  const displayValue = formattedValue ? (
+    <>
+      {formattedValue}
+      {tokenUnit}
+    </>
+  ) : (
+    defaultPlaceholder
+  )
+
+  return <span className={styles.displayValue}>{displayValue}</span>
 }

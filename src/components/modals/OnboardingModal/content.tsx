@@ -4,8 +4,6 @@ import dashboardImg1 from './assets/dashboard1.png'
 import dashboardImg1_dark from './assets/dashboard1_dark.png'
 import dashboardImg2 from './assets/dashboard2.png'
 import dashboardImg2_dark from './assets/dashboard2_dark.png'
-import dashboardImg3 from './assets/dashboard3.png'
-import dashboardImg3_dark from './assets/dashboard3_dark.png'
 import lendImg1 from './assets/lend1.png'
 import lendImg1_dark from './assets/lend1_dark.png'
 import loansImg1 from './assets/loans1.png'
@@ -42,20 +40,6 @@ const DASHBOARD_CONTENT = {
           <p>
             <span className={styles.slideTextImportant}>Loans are perpetual:</span> they last at
             least 3 days and don&apos;t expire if you keep them healthy with small repayments.
-          </p>
-        </div>
-      ),
-    },
-    {
-      img: <img className={styles.slideImg} src={dashboardImg3} alt="dashboard 3" />,
-      imgDark: <img className={styles.slideImg} src={dashboardImg3_dark} alt="dashboard 3" />,
-      text: (
-        <div className={styles.slideText}>
-          <p>
-            The $BANX token will hit the market in Q1&apos;24 and{' '}
-            <span className={styles.slideTextImportant}>
-              you can farm it on banx.gg with no vesting.
-            </span>
           </p>
         </div>
       ),

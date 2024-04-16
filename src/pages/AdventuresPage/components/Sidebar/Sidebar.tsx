@@ -9,7 +9,7 @@ import { chain, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
-import { StatInfo, StatsInfoProps, VALUES_TYPES } from '@banx/components/StatInfo'
+import { StatInfo, StatsInfoProps } from '@banx/components/StatInfo'
 
 import { BanxInfoBN, BanxStakingSettingsBN } from '@banx/api/staking'
 import { BANX_TOKEN_DECIMALS, TXN_EXECUTOR_BASE_OPTIONS } from '@banx/constants'
@@ -317,7 +317,6 @@ const StakingStat: FC<StatsInfoProps> = ({
     <StatInfo
       label={label}
       value={value}
-      valueType={VALUES_TYPES.STRING}
       flexType={flexType}
       classNamesProps={stakingStatClassNames}
       {...props}

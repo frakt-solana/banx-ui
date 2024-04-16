@@ -1,20 +1,26 @@
 import { useEffect, useMemo } from 'react'
 
 import { useQuery } from '@tanstack/react-query'
-import { web3 } from 'fbonds-core'
 import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, map, maxBy } from 'lodash'
 
 import { Offer, fetchMarketOffers, fetchMarketsPreview } from '@banx/api/core'
-import { isOfferNewer, isOptimisticOfferExpired, useOffersOptimistic } from '@banx/store'
+import {
+  isOfferNewer,
+  isOptimisticOfferExpired,
+  useOffersOptimistic,
+  useTokenType,
+} from '@banx/store'
 import { isOfferClosed } from '@banx/utils'
 
 export const USE_MARKETS_PREVIEW_QUERY_KEY = 'marketsPreview'
 
 export const useMarketsPreview = () => {
+  const { tokenType } = useTokenType()
+
   const { data, isLoading } = useQuery(
-    [USE_MARKETS_PREVIEW_QUERY_KEY],
-    () => fetchMarketsPreview(),
+    [USE_MARKETS_PREVIEW_QUERY_KEY, tokenType],
+    () => fetchMarketsPreview({ tokenType }),
     {
       staleTime: 5000,
       cacheTime: Infinity,
@@ -30,10 +36,11 @@ export const useMarketsPreview = () => {
 
 export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => {
   const { optimisticOffers, update: updateOffer, remove: removeOffers } = useOffersOptimistic()
+  const { tokenType } = useTokenType()
 
   const { data, isLoading, isFetching, isFetched } = useQuery(
-    ['marketPairs', marketPubkey],
-    () => fetchMarketOffers({ marketPubkey: new web3.PublicKey(marketPubkey as string) }),
+    ['marketPairs', marketPubkey, tokenType],
+    () => fetchMarketOffers({ marketPubkey, tokenType }),
     {
       enabled: !!marketPubkey,
       staleTime: 30 * 1000, //? 30sec

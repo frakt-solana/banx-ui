@@ -19,11 +19,17 @@
   gap: 12px;
 
   @media (max-width: 640px) {
-    gap: 8px;
+    gap: 4px;
   }
 
   a {
     text-decoration: none;
+  }
+}
+
+.rewardsButtonWrapper {
+  @media (max-width: 960px) {
+    display: none;
   }
 }
 
@@ -35,16 +41,6 @@
   svg,
   svg path {
     fill: var(--additional-gold-primary);
-  }
-
-  @media (max-width: 640px) {
-    padding: 6px !important;
-    width: 32px;
-    height: 32px;
-
-    span {
-      display: none;
-    }
   }
 
   &.active {
@@ -89,6 +85,12 @@
 
 .priorityFeeLevel {
   @media screen and (max-width: 640px) {
+    display: none;
+  }
+}
+
+.hiddenThemeSwitcher {
+  @media (max-width: 640px) {
     display: none;
   }
 }

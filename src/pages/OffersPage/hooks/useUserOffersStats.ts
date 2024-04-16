@@ -2,14 +2,17 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 
 import { fetchUserOffersStats } from '@banx/api/stats'
+import { useTokenType } from '@banx/store'
 
 export const useUserOffersStats = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
+  const { tokenType } = useTokenType()
+
   const { data, isLoading } = useQuery(
-    ['userOffersStats', publicKeyString],
-    () => fetchUserOffersStats(publicKeyString),
+    ['userOffersStats', publicKeyString, tokenType],
+    () => fetchUserOffersStats({ walletPubkey: publicKeyString, tokenType }),
     {
       enabled: !!publicKeyString,
       staleTime: 5 * 1000,
