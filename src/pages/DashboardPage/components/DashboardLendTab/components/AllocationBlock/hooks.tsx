@@ -6,7 +6,7 @@ import { DisplayValue } from '@banx/components/TableComponents'
 
 import { TotalLenderStats } from '@banx/api/stats'
 import { PATHS } from '@banx/router'
-import { useTokenType } from '@banx/store'
+import { createPathWithTokenParam, useTokenType } from '@banx/store'
 import { getTokenDecimals, trackPageEvent } from '@banx/utils'
 
 import {
@@ -60,11 +60,11 @@ export const useAllocationBlock = (stats?: AllocationStats) => {
 
   const goToLendPage = () => {
     trackPageEvent('dashboard', 'lendtab-lend')
-    navigate(PATHS.LEND)
+    navigate(createPathWithTokenParam(PATHS.LEND, tokenType))
   }
   const goToOffersPage = () => {
     trackPageEvent('dashboard', 'lendtab-manage')
-    navigate(PATHS.OFFERS)
+    navigate(createPathWithTokenParam(PATHS.OFFERS, tokenType))
   }
 
   const buttonProps = {

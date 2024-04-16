@@ -1,9 +1,11 @@
 import { FC } from 'react'
 
 import classNames from 'classnames'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { NavLink } from 'react-router-dom'
 
 import { PATHS } from '@banx/router'
+import { createPathWithTokenParam, useTokenType } from '@banx/store'
 import { toLowerCaseNoSpaces, trackNavigationEvent } from '@banx/utils'
 
 import { isActivePath } from './helpers'
@@ -11,12 +13,13 @@ import { ExternalLinkProps, InternalLinkProps } from './types'
 
 import styles from './Navbar.module.less'
 
-export const InternalLink: FC<InternalLinkProps> = ({
+export const InternalLink: FC<InternalLinkProps & { tokenType: LendingTokenType }> = ({
   label,
   pathname = '',
   icon: Icon,
   className,
   primary,
+  tokenType,
 }) => {
   const onLinkClickHandler = () => {
     trackNavigationEvent(toLowerCaseNoSpaces(label))
@@ -24,7 +27,7 @@ export const InternalLink: FC<InternalLinkProps> = ({
 
   return (
     <NavLink
-      to={pathname}
+      to={createPathWithTokenParam(pathname, tokenType)}
       onClick={onLinkClickHandler}
       className={classNames(styles.link, className, {
         [styles.active]: isActivePath(pathname),
@@ -51,13 +54,17 @@ const ExternalLink: FC<ExternalLinkProps> = ({ label, icon: Icon, href }) => {
   )
 }
 
-export const NavigationsLinks: FC<{ links: InternalLinkProps[] }> = ({ links }) => (
-  <div className={styles.internalLinks}>
-    {links.map((option) => (
-      <InternalLink key={option.label} {...option} />
-    ))}
-  </div>
-)
+export const NavigationsLinks: FC<{ links: InternalLinkProps[] }> = ({ links }) => {
+  const { tokenType } = useTokenType()
+
+  return (
+    <div className={styles.internalLinks}>
+      {links.map((option) => (
+        <InternalLink key={option.label} {...option} tokenType={tokenType} />
+      ))}
+    </div>
+  )
+}
 
 export const ExternalLinks: FC<{ links: ExternalLinkProps[] }> = ({ links }) => (
   <div className={styles.externalLinks}>

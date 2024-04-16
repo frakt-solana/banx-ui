@@ -6,7 +6,7 @@ import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 
 import { PATHS } from '@banx/router'
-import { ViewState, useTableView } from '@banx/store'
+import { ViewState, createPathWithTokenParam, useTableView, useTokenType } from '@banx/store'
 
 import { Summary } from './Summary'
 import { getTableColumns } from './columns'
@@ -18,6 +18,7 @@ import styles from './RefinanceTable.module.less'
 export const RefinanceTable = () => {
   const { loans, sortViewParams, loading, showEmptyList } = useRefinanceTable()
   const navigate = useNavigate()
+  const { tokenType } = useTokenType()
 
   const { selectedLoans, onSelectLoan, findSelectedLoan, onSelectLoans, onDeselectAllLoans } =
     useLoansState()
@@ -42,7 +43,7 @@ export const RefinanceTable = () => {
   })
 
   const goToLendPage = () => {
-    navigate(PATHS.LEND)
+    navigate(createPathWithTokenParam(PATHS.LEND, tokenType))
   }
 
   const rowParams = useMemo(() => {

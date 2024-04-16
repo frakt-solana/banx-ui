@@ -8,7 +8,7 @@ import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { PATHS } from '@banx/router'
-import { useTokenType } from '@banx/store'
+import { createPathWithTokenParam, useTokenType } from '@banx/store'
 import { createGlobalState } from '@banx/store/functions'
 import { isSolTokenType } from '@banx/utils'
 
@@ -76,7 +76,7 @@ export const useOffersContent = () => {
   }
 
   const goToLendPage = () => {
-    navigate(PATHS.LEND)
+    navigate(createPathWithTokenParam(PATHS.LEND, tokenType))
   }
 
   const tokenName = isSolTokenType(tokenType) ? 'SOL' : 'USDC'
