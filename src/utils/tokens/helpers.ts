@@ -34,7 +34,8 @@ export const formatValueByTokenType = (value: number, tokenType: LendingTokenTyp
 const formatTokenValue = (value: number, tokenType: LendingTokenType): string => {
   const decimalPlaces = getDecimalPlaces(value, tokenType)
   const formattedValueWithDecimals = value.toFixed(decimalPlaces)
-  return formatNumbersWithCommas(formattedValueWithDecimals)
+  const formattedValueWithoutTrailingZeros = formattedValueWithDecimals.replace(/\.00$/, '')
+  return formatNumbersWithCommas(formattedValueWithoutTrailingZeros)
 }
 
 export const getDecimalPlaces = (value: number, tokenType: LendingTokenType): number => {
