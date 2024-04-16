@@ -25,8 +25,6 @@ export interface StatsInfoProps {
   tooltipText?: string
   tooltipPlacement?: TooltipPlacement
   valueType?: VALUES_TYPES
-  decimalPlaces?: number
-  divider?: number
   flexType?: 'row' | 'column'
   valueStyles?: CSSProperties
   classNamesProps?: Partial<ClassNamesProps>
@@ -38,15 +36,13 @@ export const StatInfo: FC<StatsInfoProps> = ({
   tooltipText,
   tooltipPlacement,
   secondValue,
-  valueType = VALUES_TYPES.SOLPRICE,
-  decimalPlaces = 2,
-  divider,
+  valueType = VALUES_TYPES.STRING,
   flexType = 'column',
   classNamesProps,
   valueStyles,
   icon: Icon,
 }) => {
-  const formattedValue = formatValue(value, valueType, decimalPlaces, divider)
+  const formattedValue = formatValue(value, valueType)
   const dimension = DIMENSION_BY_VALUE_TYPE[valueType]
   const flexStyle = flexType === 'row' ? styles.rowFlex : styles.columnFlex
 

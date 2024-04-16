@@ -1,16 +1,15 @@
 import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
 import {
+  DisplayValue,
   HeaderCell,
   HorizontalCell,
   NftInfoCell,
   createPercentValueJSX,
-  createSolValueJSX,
 } from '@banx/components/TableComponents'
 import Timer from '@banx/components/Timer/Timer'
 
 import { Loan } from '@banx/api/core'
-import { formatDecimal } from '@banx/utils'
 
 import { DebtCell, LTVCell, RefinanceCell } from './TableCells'
 import { SECONDS_IN_72_HOURS } from './constants'
@@ -71,11 +70,10 @@ export const getTableColumns = ({
     {
       key: 'interest',
       title: <HeaderCell label="Weekly interest" />,
-      render: (loan) => (
-        <HorizontalCell
-          value={createSolValueJSX(calcWeeklyInterestFee(loan), 1e9, '--', formatDecimal)}
-        />
-      ),
+      render: (loan) => {
+        const weeklyFee = calcWeeklyInterestFee(loan)
+        return <HorizontalCell value={<DisplayValue value={weeklyFee} placeholder="--" />} />
+      },
     },
     {
       key: 'apr',

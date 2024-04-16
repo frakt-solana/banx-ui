@@ -3,6 +3,7 @@ import { FC } from 'react'
 import { Button } from '@banx/components/Buttons'
 import { Doughnut } from '@banx/components/Charts'
 import { StatInfo } from '@banx/components/StatInfo'
+import { DisplayValue } from '@banx/components/TableComponents'
 
 import { TotalBorrowerStats } from '@banx/api/stats'
 
@@ -28,19 +29,21 @@ const MyLoans: FC<MyLoansProps> = ({ stats }) => {
         <div className={styles.loansStatsContainer}>
           <div className={styles.loansStats}>
             <DashboardStatInfo
-              label="Total debt"
-              value={totalDebt}
               classNamesProps={{ container: styles.totalDebt }}
-              divider={1e9}
+              label="Total debt"
+              value={<DisplayValue value={totalDebt} />}
             />
             <div className={styles.separateLine} />
             <div className={styles.additionalStats}>
-              <StatInfo flexType="row" label="Total borrowed" value={totalBorrowed} divider={1e9} />
               <StatInfo
+                label="Total borrowed"
+                value={<DisplayValue value={totalBorrowed} />}
                 flexType="row"
+              />
+              <StatInfo
                 label="Weekly interest"
-                value={totalWeeklyInterest}
-                divider={1e9}
+                value={<DisplayValue value={totalWeeklyInterest} />}
+                flexType="row"
               />
             </div>
           </div>

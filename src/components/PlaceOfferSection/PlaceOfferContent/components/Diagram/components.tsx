@@ -1,9 +1,10 @@
 import { FC, useMemo } from 'react'
 
 import classNames from 'classnames'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { compact, first, isArray, last } from 'lodash'
 
-import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
 import { Loan } from '@banx/api/core'
@@ -13,12 +14,13 @@ import {
   HealthColorIncreasing,
   calcLoanBorrowedAmount,
   calculateLoanRepayValue,
-  formatDecimal,
+  formatValueByTokenType,
   getColorByPercent,
+  getTokenUnit,
 } from '@banx/utils'
 
 import { Mark } from './Diagram'
-import { calculateStyle, formatMarkValue } from './helpers'
+import { calculateStyle } from './helpers'
 
 import styles from './Diagram.module.less'
 
@@ -31,7 +33,7 @@ const TooltipRow = ({ loan }: { loan: Loan }) => {
   return (
     <div className={styles.tooltipRowContent}>
       <ImageWithPlaceholder className={styles.nftImage} url={nft.meta.imageUrl} />
-      {createSolValueJSX(loanValue, 1e9, '0◎', formatDecimal)}
+      <DisplayValue value={loanValue} />
       <span style={{ color: getColorByPercent(ltv, HealthColorIncreasing) }}>
         {createPercentValueJSX(ltv)}
       </span>
@@ -60,28 +62,30 @@ const createTooltipContent = (loans: Loan[]) => {
 interface DiagramMarkProps {
   left: number
   mark: Mark[] | Mark
+  tokenType: LendingTokenType
 }
 
-export const DiagramMark: FC<DiagramMarkProps> = ({ mark, left }) => {
+export const DiagramMark: FC<DiagramMarkProps> = ({ mark, left, tokenType }) => {
   const markers = isArray(mark) ? mark : [mark]
 
-  const { loan: firstLoan, value: firstValue = 0 } = first(markers) || {}
-  const { value: lastValue = 0 } = last(markers) || {}
-
+  const firstLoan = markers[0]?.loan
   const nftImageUrl = firstLoan?.nft.meta.imageUrl
+
   const loans = compact(markers.map((marker) => marker.loan))
   const tooltipContent = createTooltipContent(loans)
 
-  const displayOfferValue =
-    markers.length > 1 && firstValue !== lastValue
-      ? `${formatMarkValue(firstValue)} - ${formatMarkValue(lastValue)}◎`
-      : `${formatMarkValue(firstValue)}◎`
+  const tokenUnit = getTokenUnit(tokenType)
+
+  const displayOfferValue = getDisplayOfferValue(markers, tokenType)
 
   const MarkContent = (
     <div className={styles.mark} style={{ left: calculateStyle(left) }}>
       <CollateralImage markers={markers} url={nftImageUrl} />
       <div className={styles.dot} />
-      <div className={styles.value}>{displayOfferValue}</div>
+      <div className={styles.value}>
+        {displayOfferValue}
+        {tokenUnit}
+      </div>
     </div>
   )
 
@@ -90,6 +94,21 @@ export const DiagramMark: FC<DiagramMarkProps> = ({ mark, left }) => {
   }
 
   return MarkContent
+}
+
+const getDisplayOfferValue = (markers: Mark[], tokenType: LendingTokenType) => {
+  const { value: firstValue = 0 } = first(markers) || {}
+  const { value: lastValue = 0 } = last(markers) || {}
+
+  const formattedFirstValue = formatValueByTokenType(firstValue, tokenType)
+
+  if (markers.length > 1 && firstValue !== lastValue) {
+    const formattedLastValue = formatValueByTokenType(lastValue, tokenType)
+
+    return `${formattedFirstValue} - ${formattedLastValue}`
+  }
+
+  return formattedFirstValue || '0'
 }
 
 interface CollateralImageProps {

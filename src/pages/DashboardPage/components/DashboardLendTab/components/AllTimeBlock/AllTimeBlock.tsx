@@ -4,6 +4,7 @@ import { every, map } from 'lodash'
 
 import { SingleBar } from '@banx/components/Charts'
 import { StatInfo } from '@banx/components/StatInfo'
+import { DisplayValue } from '@banx/components/TableComponents'
 
 import { TotalLenderStats } from '@banx/api/stats'
 
@@ -37,18 +38,20 @@ const AllTimeBlock: FC<AllTimeBlockProps> = ({ stats }) => {
             <DashboardStatInfo
               classNamesProps={{ container: styles.totalLent }}
               label="Total lent"
-              value={totalLent}
-              divider={1e9}
+              value={<DisplayValue value={totalLent} />}
             />
             <div className={styles.separateLine} />
             <div className={styles.interestStats}>
               <StatInfo
                 flexType="row"
                 label="Pending interest"
-                value={pendingInterest}
-                divider={1e9}
+                value={<DisplayValue value={pendingInterest} />}
               />
-              <StatInfo flexType="row" label="Earned interest" value={paidInterest} divider={1e9} />
+              <StatInfo
+                label="Earned interest"
+                value={<DisplayValue value={paidInterest} />}
+                flexType="row"
+              />
             </div>
           </div>
           <div className={styles.allTimeChartStats}>

@@ -13,6 +13,7 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type MakeClaimActionParams = {
   optimisticOffer: Offer
+  tokenType: LendingTokenType
   priorityFeeLevel: PriorityLevel
 }
 
@@ -25,7 +26,7 @@ export const makeRemoveOfferAction: MakeRemoveOfferAction = async (
   ixnParams,
   { connection, wallet },
 ) => {
-  const { optimisticOffer, priorityFeeLevel } = ixnParams
+  const { optimisticOffer, tokenType, priorityFeeLevel } = ixnParams
 
   const {
     instructions: removeOfferInstructions,
@@ -38,7 +39,7 @@ export const makeRemoveOfferAction: MakeRemoveOfferAction = async (
       userPubkey: wallet.publicKey as web3.PublicKey,
     },
     args: {
-      lendingTokenType: LendingTokenType.NativeSol,
+      lendingTokenType: tokenType,
     },
     optimistic: {
       bondOffer: optimisticOffer as BondOfferV2,

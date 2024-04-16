@@ -1,9 +1,10 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useNavigate } from 'react-router-dom'
 
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue } from '@banx/components/TableComponents'
 
 import { PATHS } from '@banx/router'
+import { useTokenType } from '@banx/store'
 
 import { EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
 import { useLenderActivity } from './useLenderActivity'
@@ -14,6 +15,8 @@ import styles from '../HistoryOffersTable.module.less'
 export const useHistoryOffersTable = () => {
   const { connected } = useWallet()
   const navigate = useNavigate()
+
+  const { tokenType } = useTokenType()
 
   const { data: collectionsList } = useLenderActivityCollectionsList()
 
@@ -41,7 +44,7 @@ export const useHistoryOffersTable = () => {
       imageKey: 'collectionImage',
       secondLabel: {
         key: 'received',
-        format: (value: number) => createSolValueJSX(value, 1e9),
+        format: (value: number) => <DisplayValue value={value} />,
       },
     },
     selectedOptions: selectedCollections,
@@ -58,7 +61,7 @@ export const useHistoryOffersTable = () => {
   }
 
   const emptyListParams = {
-    message: connected ? EMPTY_MESSAGE : NOT_CONNECTED_MESSAGE,
+    message: connected ? EMPTY_MESSAGE[tokenType] : NOT_CONNECTED_MESSAGE,
     buttonProps: connected ? { text: 'Lend', onClick: goToLendPage } : undefined,
   }
 

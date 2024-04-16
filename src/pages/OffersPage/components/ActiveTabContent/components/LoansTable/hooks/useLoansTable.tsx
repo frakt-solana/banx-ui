@@ -5,7 +5,7 @@ import { first, groupBy, map, sumBy } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
 import {
@@ -15,7 +15,7 @@ import {
   useLenderLoans,
 } from '@banx/pages/OffersPage'
 import { createGlobalState } from '@banx/store/functions'
-import { formatDecimal, isUnderWaterLoan } from '@banx/utils'
+import { isUnderWaterLoan } from '@banx/utils'
 
 import { DEFAULT_SORT_OPTION, SORT_OPTIONS, useSortedLoans } from './useSortedLoans'
 
@@ -120,7 +120,7 @@ const createSearchSelectParams = ({
       imageKey: 'collectionImage',
       secondLabel: {
         key: 'claim',
-        format: (value: number) => createSolValueJSX(value, 1e9, '0◎', formatDecimal),
+        format: (value: number) => <DisplayValue value={value} />,
       },
     },
     onChange,

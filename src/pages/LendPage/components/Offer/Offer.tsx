@@ -3,14 +3,15 @@ import { FC } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Button } from '@banx/components/Buttons'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
 import { Pencil } from '@banx/icons'
-import { SyntheticOffer } from '@banx/store'
-import { calculateApr, formatDecimal } from '@banx/utils'
+import { SyntheticOffer, useTokenType } from '@banx/store'
+import { calculateApr, formatValueByTokenType, getTokenUnit } from '@banx/utils'
 
 import styles from './Offer.module.less'
 
@@ -31,6 +32,7 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, collectionFloor }) => {
   } = offer
 
   const { connected, publicKey } = useWallet()
+  const { tokenType } = useTokenType()
 
   const isOwnOffer = assetReceiver === publicKey?.toBase58()
   const isNewOffer = connected && offerPubkey === PUBKEY_PLACEHOLDER
@@ -42,24 +44,28 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, collectionFloor }) => {
     [styles.hidden]: !isEdit && !isNewOffer,
   }
 
-  const listItemClassNames = classNames(styles.listItem, commonHighlightClassNames)
-  const highlightItemClassNames = classNames(styles.highlightItem, commonHighlightClassNames)
-
-  const displayOfferValue = getDisplayOfferRange(offer)
+  const displayOfferValue = getDisplayOfferRange(offer, tokenType)
   const maxDynamicApr = calculateApr({ loanValue, collectionFloor, marketPubkey }) / 100
 
+  const tokenUnit = getTokenUnit(tokenType)
+
   return (
-    <li className={listItemClassNames}>
-      <div className={highlightItemClassNames}>
+    <li className={classNames(styles.listItem, commonHighlightClassNames)}>
+      <div className={classNames(styles.highlightItem, commonHighlightClassNames)}>
         <Pencil />
       </div>
 
       <div className={styles.values}>
         <p
-          className={classNames(styles.value, { [styles.hightlight]: isEdit || isNewOffer })}
-        >{`${displayOfferValue}◎`}</p>
+          className={classNames(styles.displayOfferValue, {
+            [styles.hightlight]: isEdit || isNewOffer,
+          })}
+        >
+          {displayOfferValue}
+          {tokenUnit}
+        </p>
         <p className={styles.value}>{createPercentValueJSX(maxDynamicApr)}</p>
-        <p className={styles.value}>{loansAmount || 0}</p>
+        <p className={styles.value}>{loansAmount}</p>
       </div>
 
       {showEditOfferButton && <EditOfferButton onClick={editOffer} />}
@@ -85,17 +91,17 @@ const EditOfferButton: FC<{ onClick: () => void }> = ({ onClick }) => (
   </Button>
 )
 
-const getDisplayOfferRange = (offer: SyntheticOffer) => {
+const getDisplayOfferRange = (offer: SyntheticOffer, tokenType: LendingTokenType) => {
   const { loanValue, loansAmount, deltaValue } = offer
 
   const minDeltaValue = loanValue - (loansAmount - 1) * deltaValue
 
-  const formattedLoanValue = formatDecimal(loanValue / 1e9)
-  const formattedMinLoanValue = formatDecimal(minDeltaValue / 1e9)
+  const formattedLoanValue = formatValueByTokenType(loanValue, tokenType)
+  const formattedMinLoanValue = formatValueByTokenType(minDeltaValue, tokenType)
 
   const displayOfferRange = deltaValue
     ? `${formattedLoanValue} - ${formattedMinLoanValue}`
     : formattedLoanValue
 
-  return displayOfferRange
+  return displayOfferRange || '0'
 }

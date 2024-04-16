@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, ReactNode } from 'react'
 
 import classNames from 'classnames'
 
@@ -14,7 +14,7 @@ interface NumericStepInputProps extends NumericInputProps {
   tooltipText?: string
   label?: string
   step?: number
-  postfix?: boolean
+  postfix?: ReactNode
 }
 
 export const NumericStepInput: FC<NumericStepInputProps> = ({
@@ -66,7 +66,7 @@ export const NumericStepInput: FC<NumericStepInputProps> = ({
         disabled={disabled}
         positiveOnly
       />
-      {postfix && <div className={styles.postfix}>◎</div>}
+      {postfix && <div className={styles.postfix}>{postfix}</div>}
       <div className={styles.customCounterControls}>
         <InputArrowUp
           className={classNames(styles.arrow, { [styles.disabled]: isIncrementDisabled })}

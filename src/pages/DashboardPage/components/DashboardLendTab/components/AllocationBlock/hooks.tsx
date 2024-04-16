@@ -2,10 +2,12 @@ import { every, map, sum, values } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
 import { DoughnutChartProps } from '@banx/components/Charts'
+import { DisplayValue } from '@banx/components/TableComponents'
 
 import { TotalLenderStats } from '@banx/api/stats'
 import { PATHS } from '@banx/router'
-import { trackPageEvent } from '@banx/utils'
+import { useTokenType } from '@banx/store'
+import { getTokenDecimals, trackPageEvent } from '@banx/utils'
 
 import {
   AllocationStatus,
@@ -18,6 +20,7 @@ export type AllocationStats = TotalLenderStats['allocation']
 
 export const useAllocationBlock = (stats?: AllocationStats) => {
   const navigate = useNavigate()
+  const { tokenType } = useTokenType()
 
   const {
     activeLoans = 0,
@@ -33,15 +36,17 @@ export const useAllocationBlock = (stats?: AllocationStats) => {
     [AllocationStatus.Terminating]: terminatingLoans,
   }
 
-  const totalFunds = sum(values(allocationStatusToValueMap))
-
   const allocationData = map(allocationStatusToValueMap, (value, status) => ({
     label: STATUS_DISPLAY_NAMES[status as AllocationStatus],
     key: status,
     value,
   }))
 
-  const allocationValues = map(allocationData, ({ value }) => value / 1e9)
+  const totalFunds = sum(values(allocationStatusToValueMap))
+
+  const decimals = getTokenDecimals(tokenType)
+
+  const allocationValues = map(allocationData, ({ value }) => value / decimals)
   const isDataEmpty = every(allocationValues, (value) => value === 0)
 
   const chartData: DoughnutChartProps = {
@@ -49,8 +54,7 @@ export const useAllocationBlock = (stats?: AllocationStats) => {
     colors: isDataEmpty ? NO_DATA_CHART_DATA.colors : Object.values(STATUS_COLOR_MAP),
     statInfoProps: {
       label: 'Total funds',
-      value: totalFunds,
-      divider: 1e9,
+      value: <DisplayValue value={totalFunds} />,
     },
   }
 

@@ -3,6 +3,7 @@ import React, { FC, useRef, useState } from 'react'
 import { Skeleton } from 'antd'
 
 import { Loan } from '@banx/api/core'
+import { useTokenType } from '@banx/store'
 
 import { DiagramMark } from './components'
 import { calcLeftPercentage, groupMarks } from './helpers'
@@ -20,6 +21,7 @@ interface DiagramProps {
 }
 
 export const Diagram: FC<DiagramProps> = ({ marks = [], isLoading }) => {
+  const { tokenType } = useTokenType()
   const groupedMarks = groupMarks(marks)
 
   const [isScrolling, setIsScrolling] = useState(false)
@@ -58,7 +60,7 @@ export const Diagram: FC<DiagramProps> = ({ marks = [], isLoading }) => {
           <div className={styles.diagramLine}>
             {groupedMarks.map((mark, index) => {
               const left = calcLeftPercentage(groupedMarks, index)
-              return <DiagramMark key={index} mark={mark} left={left} />
+              return <DiagramMark key={index} mark={mark} left={left} tokenType={tokenType} />
             })}
           </div>
         )}

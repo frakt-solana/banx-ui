@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import { chain, maxBy } from 'lodash'
 
 import { Loan, fetchLenderLoans } from '@banx/api/core'
+import { useTokenType } from '@banx/store'
 
 import { useHiddenNftsMints, useLenderLoansOptimistic } from '.'
 
@@ -14,12 +15,14 @@ export const useLenderLoans = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
+  const { tokenType } = useTokenType()
+
   const { mints: hiddenLoansMints, addMints } = useHiddenNftsMints()
   const { loans: optimisticLoans, addLoans, findLoan, updateLoans } = useLenderLoansOptimistic()
 
   const { data: loans, isLoading } = useQuery(
-    [USE_LENDER_LOANS_QUERY_KEY, publicKeyString],
-    () => fetchLenderLoans({ walletPublicKey: publicKeyString, getAll: true }),
+    [USE_LENDER_LOANS_QUERY_KEY, publicKeyString, tokenType],
+    () => fetchLenderLoans({ walletPublicKey: publicKeyString, tokenType, getAll: true }),
     {
       enabled: !!publicKeyString,
       refetchOnWindowFocus: false,

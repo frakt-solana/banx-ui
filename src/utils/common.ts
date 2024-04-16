@@ -1,13 +1,10 @@
 import { BN } from 'fbonds-core'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { flatMap, map, reduce, uniq } from 'lodash'
 
-import {
-  BONDS,
-  DECIMAL_THRESHOLD,
-  MIN_DISPLAY_VALUE,
-  THREE_DECIMAL_PLACES,
-  TWO_DECIMAL_PLACES,
-} from '@banx/constants'
+import { BONDS } from '@banx/constants'
+
+import { RENT_FEE_BORROW_AMOUNT_IMPACT } from './tokens'
 
 // shorten the checksummed version of the input address to have 4 characters at start and end
 export const shortenAddress = (address: string, chars = 4): string => {
@@ -24,21 +21,6 @@ export const convertAprToApy = (apr: number) => {
   // const apr = Math.pow(compoundedInterest, WEEKS_IN_YEAR) - 1
 
   return Math.round(apr * 100)
-}
-
-export const getDecimalPlaces = (value: number) => {
-  if (!value) return TWO_DECIMAL_PLACES
-
-  return value < DECIMAL_THRESHOLD ? THREE_DECIMAL_PLACES : TWO_DECIMAL_PLACES
-}
-
-export const formatDecimal = (value: number, minDisplayValue = MIN_DISPLAY_VALUE) => {
-  if (value === 0 || isNaN(value)) return '0'
-
-  if (value < minDisplayValue) return `<${minDisplayValue}`
-
-  const decimalPlaces = getDecimalPlaces(value)
-  return value.toFixed(decimalPlaces)
 }
 
 export const formatNumbersWithCommas = (value: number | string) =>
@@ -60,10 +42,16 @@ export const generateCSVContent = <T extends object>(dataList: T[]): string => {
   return csvContent
 }
 
-export const calcBorrowValueWithRentFee = (loanValue: number, marketPubkey: string) => {
+export const calcBorrowValueWithRentFee = (
+  loanValue: number,
+  marketPubkey: string,
+  tokenType: LendingTokenType,
+) => {
   if (loanValue === 0) return 0
   if (marketPubkey === BONDS.FACELESS_MARKET_PUBKEY) return loanValue
-  return loanValue - BONDS.BORROW_RENT_FEE
+
+  const rentFee = RENT_FEE_BORROW_AMOUNT_IMPACT[tokenType]
+  return loanValue - rentFee
 }
 
 export const formatCompact = (value: string, maximumFractionDigits = 1) => {

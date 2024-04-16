@@ -8,7 +8,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
 import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
@@ -162,7 +162,9 @@ export const Summary: FC<SummaryProps> = ({
 
       <div className={styles.content}>
         <div className={styles.mainStat}>
-          <p>{createSolValueJSX(totalLent, 1e9, '0◎')}</p>
+          <p>
+            <DisplayValue value={totalLent} />
+          </p>
           <p>Lent amount</p>
         </div>
 
@@ -170,8 +172,7 @@ export const Summary: FC<SummaryProps> = ({
           <StatInfo
             classNamesProps={{ container: styles.lentAmountStat }}
             label="Lent amount"
-            value={totalLent}
-            divider={1e9}
+            value={<DisplayValue value={totalLent} />}
           />
           <StatInfo
             label="Avg ltv"
@@ -181,7 +182,7 @@ export const Summary: FC<SummaryProps> = ({
               color: averageLtv ? getColorByPercent(averageLtv, HealthColorIncreasing) : '',
             }}
           />
-          <StatInfo label="interest" value={totalInterest} divider={1e9} />
+          <StatInfo label="interest" value={<DisplayValue value={totalInterest} />} />
         </div>
 
         <div className={styles.terminateControls}>

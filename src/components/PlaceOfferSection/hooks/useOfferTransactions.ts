@@ -4,7 +4,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
 import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
-import { usePriorityFees } from '@banx/store'
+import { usePriorityFees, useTokenType } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
   makeCreateBondingOfferAction,
@@ -40,6 +40,7 @@ export const useOfferTransactions = ({
 }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
+  const { tokenType } = useTokenType()
   const { priorityLevel } = usePriorityFees()
 
   const onCreateOffer = async () => {
@@ -50,6 +51,7 @@ export const useOfferTransactions = ({
       loansAmount,
       loanValue,
       deltaValue,
+      tokenType,
       priorityFeeLevel: priorityLevel,
     }
 
@@ -113,6 +115,7 @@ export const useOfferTransactions = ({
       optimisticOffer,
       loansAmount,
       deltaValue,
+      tokenType,
       priorityFeeLevel: priorityLevel,
     }
 
@@ -177,7 +180,7 @@ export const useOfferTransactions = ({
         confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
       },
     )
-      .addTransactionParam({ optimisticOffer, priorityFeeLevel: priorityLevel })
+      .addTransactionParam({ optimisticOffer, priorityFeeLevel: priorityLevel, tokenType })
       .on('sentSome', (results) => {
         results.forEach(({ signature }) => enqueueTransactionSent(signature))
         enqueueWaitingConfirmation(loadingSnackbarId)

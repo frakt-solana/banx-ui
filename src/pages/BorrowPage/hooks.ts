@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { produce } from 'immer'
 import { chain, filter, groupBy, isEmpty, map, maxBy, sortBy, sumBy, uniqBy } from 'lodash'
 import { create } from 'zustand'
@@ -13,6 +14,7 @@ import {
   isOptimisticOfferExpired,
   useLoansOptimistic,
   useOffersOptimistic,
+  useTokenType,
 } from '@banx/store'
 import { convertLoanToBorrowNft } from '@banx/transactions'
 import {
@@ -31,16 +33,18 @@ import { SimpleOffersByMarket } from './types'
 export const USE_BORROW_NFTS_V2_QUERY_KEY = 'walletBorrowNftsV2'
 
 export const useBorrowNfts = () => {
+  const { publicKey: walletPublicKey } = useWallet()
+  const walletPubkeyString = walletPublicKey?.toBase58() || ''
+
   const { setCart } = useCartState()
   const { loans: optimisticLoans, remove: removeOptimisticLoans } = useLoansOptimistic()
   const { optimisticOffers, remove: removeOptimisticOffers } = useOffersOptimistic()
-  const { publicKey: walletPublicKey } = useWallet()
 
-  const walletPubkeyString = walletPublicKey?.toBase58() || ''
+  const { tokenType } = useTokenType()
 
   const { data, isLoading, isFetched, isFetching } = useQuery(
-    [USE_BORROW_NFTS_V2_QUERY_KEY, walletPubkeyString],
-    () => fetchBorrowNftsAndOffers({ walletPubkey: walletPubkeyString }),
+    [USE_BORROW_NFTS_V2_QUERY_KEY, tokenType, walletPubkeyString],
+    () => fetchBorrowNftsAndOffers({ walletPubkey: walletPubkeyString, tokenType }),
     {
       enabled: !!walletPublicKey,
       staleTime: 5 * 1000,
@@ -139,6 +143,8 @@ export const useBorrowNfts = () => {
   useEffect(() => {
     if (!isEmpty(simpleOffers)) {
       setCart({ offersByMarket: simpleOffers })
+    } else {
+      setCart({ offersByMarket: {} })
     }
   }, [setCart, simpleOffers])
 
@@ -203,8 +209,8 @@ export const useBorrowNfts = () => {
   }, [data, walletPublicKey, walletOptimisticLoans, optimisticLoansActive])
 
   const maxBorrow = useMemo(() => {
-    return calcMaxBorrow(nfts, simpleOffers)
-  }, [nfts, simpleOffers])
+    return calcMaxBorrow(nfts, simpleOffers, tokenType)
+  }, [nfts, simpleOffers, tokenType])
 
   return {
     nfts: nfts || [],
@@ -215,7 +221,11 @@ export const useBorrowNfts = () => {
   }
 }
 
-const calcMaxBorrow = (nfts: BorrowNft[], offers: SimpleOffersByMarket) => {
+const calcMaxBorrow = (
+  nfts: BorrowNft[],
+  offers: SimpleOffersByMarket,
+  tokenType: LendingTokenType,
+) => {
   return chain(nfts)
     .countBy(({ loan }) => loan.marketPubkey)
     .entries()
@@ -224,7 +234,7 @@ const calcMaxBorrow = (nfts: BorrowNft[], offers: SimpleOffersByMarket) => {
         (offers[marketPubkey] || []).slice(0, nftsAmount),
         ({ loanValue, hadoMarket }) => {
           const loanValueWithProtocolFee = calcBorrowValueWithProtocolFee(loanValue)
-          return calcBorrowValueWithRentFee(loanValueWithProtocolFee, hadoMarket)
+          return calcBorrowValueWithRentFee(loanValueWithProtocolFee, hadoMarket, tokenType)
         },
       )
 
