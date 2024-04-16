@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { PATHS } from '@banx/router'
+import { createPathWithTokenParam, useTokenType } from '@banx/store'
 
 import { EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
 import { useBorrowerActivity } from './useBorrowerActivity'
@@ -14,6 +15,7 @@ import styles from '../LoansHistoryTable.module.less'
 export const useHistoryLoansTable = () => {
   const { connected } = useWallet()
   const navigate = useNavigate()
+  const { tokenType } = useTokenType()
 
   const { data: collectionsList } = useBorrowerActivityCollectionsList()
 
@@ -54,7 +56,7 @@ export const useHistoryLoansTable = () => {
   const showSummary = !!loans.length && !isLoading
 
   const goToBorrowPage = () => {
-    navigate(PATHS.BORROW)
+    navigate(createPathWithTokenParam(PATHS.BORROW, tokenType))
   }
 
   const emptyListParams = {

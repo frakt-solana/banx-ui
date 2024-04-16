@@ -6,6 +6,7 @@ import { VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { TotalBorrowerStats } from '@banx/api/stats'
 import { PATHS } from '@banx/router'
+import { createPathWithTokenParam, useTokenType } from '@banx/store'
 import { trackPageEvent } from '@banx/utils'
 
 import {
@@ -19,6 +20,7 @@ import styles from './MyLoans.module.less'
 
 export const useMyLoans = (stats?: TotalBorrowerStats | null) => {
   const navigate = useNavigate()
+  const { tokenType } = useTokenType()
 
   const { activeLoansCount = 0, terminatingLoansCount = 0, liquidationLoansCount = 0 } = stats || {}
 
@@ -53,7 +55,7 @@ export const useMyLoans = (stats?: TotalBorrowerStats | null) => {
 
   const goToLoansPage = () => {
     trackPageEvent('dashboard', 'borrowtab-manage')
-    navigate(PATHS.LOANS)
+    navigate(createPathWithTokenParam(PATHS.LOANS, tokenType))
   }
 
   const buttonProps = {
