@@ -161,7 +161,7 @@ export const calcWeeklyFeeWithRepayFee = (loan: Loan) => {
 
 const IGNORE_REPAYMENT_CALL_THESHOLD = 0.005
 export const isLoanRepaymentCallActive = (loan: Loan) => {
-  if (!loan.bondTradeTransaction.repaymentCallAmount) return false
+  if (!loan.bondTradeTransaction.repaymentCallAmount || isLoanTerminating(loan)) return false
 
   const repayValueWithoutProtocolFee = calculateLoanRepayValue(loan)
 
