@@ -25,7 +25,6 @@ const ManageModal: FC<ManageModalProps> = ({ loan }) => {
     {
       label: 'Closure',
       value: 'closure',
-      // disabled: !onTerminate && !onInstant,
     },
   ]
 
