@@ -7,6 +7,7 @@ import Table from '@banx/components/Table'
 
 import { PATHS } from '@banx/router'
 import { ViewState, createPathWithTokenParam, useTableView, useTokenType } from '@banx/store'
+import { isSolTokenType } from '@banx/utils'
 
 import { Summary } from './Summary'
 import { getTableColumns } from './columns'
@@ -52,11 +53,13 @@ export const RefinanceTable = () => {
     }
   }, [onSelectLoan])
 
+  const emptyButtonText = isSolTokenType(tokenType) ? 'Lend SOL' : 'Lend USDC'
+
   if (showEmptyList)
     return (
       <EmptyList
         message={EMPTY_MESSAGE}
-        buttonProps={{ text: 'Lend SOL', onClick: goToLendPage }}
+        buttonProps={{ text: emptyButtonText, onClick: goToLendPage }}
       />
     )
 
