@@ -1,4 +1,5 @@
 export * from './stakeBanxToken'
+export * from './claimBanxAction'
 export * from './stakeBanxNftsAction'
 export * from './subscribeBanxAdventureAction'
 export * from './unstakeBanxNftsAction'
