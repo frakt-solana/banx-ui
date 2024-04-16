@@ -2,16 +2,17 @@ import { FC, PropsWithChildren, useMemo } from 'react'
 
 import { InfoCircleOutlined } from '@ant-design/icons'
 import classNames from 'classnames'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Button } from '@banx/components/Buttons'
 import ImageWithPreload from '@banx/components/ImageWithPreload'
 import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
-import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
 import { BorrowNft, MarketPreview, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { calculateApr, calculateLoanValue, formatDecimal } from '@banx/utils'
+import { calculateApr, calculateLoanValue } from '@banx/utils'
 
 import { calcLoanValueWithFees, calcWeeklyInterestFee } from './helpers'
 
@@ -64,7 +65,7 @@ export const LendCard: FC<LendCardProps> = ({ amountOfLoans, offerTvl, apr, ...p
   return (
     <CardBackdrop {...props} badgeElement={BadgeContentElement}>
       <div className={styles.lendCardFooter}>
-        {createSolValueJSX(offerTvl, 1e9, '0◎')}
+        <DisplayValue value={offerTvl} />
         <span>in {amountOfLoans} loans</span>
       </div>
     </CardBackdrop>
@@ -79,7 +80,11 @@ interface MarketCardProps {
 export const MarketCard: FC<MarketCardProps> = ({ market, onClick }) => {
   const { bestOffer, collectionFloor, collectionImage, marketPubkey } = market
 
-  const BadgeContentElement = <>+{createSolValueJSX(bestOffer, 1e9, '0◎', formatDecimal)}</>
+  const BadgeContentElement = (
+    <>
+      + <DisplayValue value={bestOffer} />
+    </>
+  )
 
   const ltv = (bestOffer / collectionFloor) * 100
   const ltvTooltipContent = createTooltipContent('Borrow up to', bestOffer)
@@ -100,9 +105,10 @@ interface BorrowCardProps {
   nft: BorrowNft
   onClick: () => void
   findBestOffer: (marketPubkey: string) => Offer | null
+  tokenType: LendingTokenType
 }
 
-export const BorrowCard: FC<BorrowCardProps> = ({ nft, onClick, findBestOffer }) => {
+export const BorrowCard: FC<BorrowCardProps> = ({ nft, onClick, findBestOffer, tokenType }) => {
   const {
     nft: { collectionFloor, meta },
     loan: { marketPubkey },
@@ -111,7 +117,7 @@ export const BorrowCard: FC<BorrowCardProps> = ({ nft, onClick, findBestOffer })
   const bestOffer = useMemo(() => findBestOffer(marketPubkey), [findBestOffer, marketPubkey])
 
   const loanValue = bestOffer ? calculateLoanValue(bestOffer) : 0
-  const loanValueWithFees = calcLoanValueWithFees(bestOffer)
+  const loanValueWithFees = calcLoanValueWithFees(bestOffer, tokenType)
 
   const ltv = Math.max((loanValueWithFees / collectionFloor) * 100, 0)
   const apr = calculateApr({ loanValue, collectionFloor, marketPubkey })
@@ -132,7 +138,9 @@ export const BorrowCard: FC<BorrowCardProps> = ({ nft, onClick, findBestOffer })
         {!loanValue ? (
           'No offers'
         ) : (
-          <>Get {createSolValueJSX(loanValueWithFees, 1e9, '0◎', formatDecimal)}</>
+          <>
+            Get <DisplayValue value={loanValueWithFees} />
+          </>
         )}
       </Button>
     </CardBackdrop>
@@ -163,7 +171,7 @@ const TooltipRow: FC<TooltipRowProps> = ({ label, value }) => (
   <div className={styles.tooltipRow}>
     <span className={styles.tooltipRowLabel}>{label}</span>
     <span className={styles.tooltipRowValue}>
-      {createSolValueJSX(value, 1e9, '0◎', formatDecimal)}
+      <DisplayValue value={value} />
     </span>
   </div>
 )

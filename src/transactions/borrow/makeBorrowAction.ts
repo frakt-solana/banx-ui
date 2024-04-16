@@ -23,6 +23,7 @@ export type MakeBorrowActionParams = {
   loanValue: number
   offer: Offer
   optimizeIntoReserves?: boolean
+  tokenType: LendingTokenType
   priorityFeeLevel: PriorityLevel
 }[]
 
@@ -91,6 +92,8 @@ const getIxnsAndSignersByBorrowType = async ({
 }) => {
   const { connection, wallet } = walletAndConnection
 
+  const lendingTokenType = ixnParams[0].tokenType
+
   const optimizeIntoReserves =
     ixnParams[0]?.optimizeIntoReserves === undefined ? true : ixnParams[0]?.optimizeIntoReserves
 
@@ -126,7 +129,7 @@ const getIxnsAndSignersByBorrowType = async ({
             bondOffer: offer as BondOfferV2,
           },
         })),
-        lendingTokenType: LendingTokenType.NativeSol,
+        lendingTokenType,
         optimizeIntoReserves: optimizeIntoReserves,
         aprRate,
       },
@@ -168,7 +171,7 @@ const getIxnsAndSignersByBorrowType = async ({
           bondOffer: params.offer as BondOfferV2,
         },
         optimizeIntoReserves: optimizeIntoReserves,
-        lendingTokenType: LendingTokenType.NativeSol,
+        lendingTokenType,
         aprRate,
       },
       connection,
@@ -204,7 +207,7 @@ const getIxnsAndSignersByBorrowType = async ({
           bondOffer: offer as BondOfferV2,
         },
       })),
-      lendingTokenType: LendingTokenType.NativeSol,
+      lendingTokenType,
       optimizeIntoReserves: optimizeIntoReserves,
       aprRate,
     },

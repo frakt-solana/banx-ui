@@ -4,7 +4,7 @@ import { get, sortBy } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue } from '@banx/components/TableComponents'
 
 import { MarketPreview } from '@banx/api/core'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
@@ -44,7 +44,7 @@ export const useNotConnectedBorrow = () => {
       imageKey: 'collectionImage',
       secondLabel: {
         key: 'offerTvl',
-        format: (value: number) => createSolValueJSX(value, 1e9),
+        format: (value: number) => <DisplayValue value={value} />,
       },
     },
     onChange: setSelectedCollections,

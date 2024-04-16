@@ -1,16 +1,16 @@
 import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
 import {
+  DisplayValue,
   HeaderCell,
   HorizontalCell,
   NftInfoCell,
   createPercentValueJSX,
-  createSolValueJSX,
 } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
 import { calculateClaimValue, isLoanAbleToTerminate } from '@banx/pages/OffersPage'
-import { HealthColorIncreasing, formatDecimal, getColorByPercent } from '@banx/utils'
+import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
 
 import { ActionsCell, ClaimCell, StatusCell } from './TableCells'
 import { LoanOptimistic } from './loansState'
@@ -92,10 +92,8 @@ export const getTableColumns = ({
           tooltipText="Repayments returned to pending offer if open, or wallet if closed"
         />
       ),
-      render: (loan) => (
-        <HorizontalCell
-          value={createSolValueJSX(loan.totalRepaidAmount, 1e9, '0◎', formatDecimal)}
-        />
+      render: ({ totalRepaidAmount = 0 }) => (
+        <HorizontalCell value={<DisplayValue value={totalRepaidAmount} />} />
       ),
     },
     {

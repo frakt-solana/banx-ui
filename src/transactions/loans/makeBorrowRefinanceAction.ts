@@ -9,7 +9,6 @@ import {
   BondOfferV2,
   BondTradeTransactionV3,
   FraktBond,
-  LendingTokenType,
   PairState,
 } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transactions-executor'
@@ -125,7 +124,11 @@ const getIxnsAndSigners = async ({
     offer.pairState === PairState.PerpetualBondingCurveOnMarket
   ) {
     const { instructions, signers, optimisticResult } = await borrowerRefinanceToSame({
-      args: { solToRefinance, aprRate, lendingTokenType: LendingTokenType.NativeSol },
+      args: {
+        solToRefinance,
+        aprRate,
+        lendingTokenType: bondTradeTransaction.lendingToken,
+      },
       accounts,
       optimistic,
       connection,
@@ -139,7 +142,7 @@ const getIxnsAndSigners = async ({
       args: {
         solToRefinance,
         aprRate,
-        lendingTokenType: LendingTokenType.NativeSol,
+        lendingTokenType: bondTradeTransaction.lendingToken,
       },
       accounts: {
         ...accounts,

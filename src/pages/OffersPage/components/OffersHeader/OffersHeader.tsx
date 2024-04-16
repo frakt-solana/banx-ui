@@ -1,5 +1,6 @@
 import { OnboardButton } from '@banx/components/Buttons'
 import { AdditionalStat, PageHeaderBackdrop } from '@banx/components/PageHeader'
+import { DisplayValue } from '@banx/components/TableComponents'
 
 import { useUserOffersStats } from '../../hooks'
 
@@ -13,8 +14,8 @@ const OffersHeader = () => {
       title="My offers"
       titleBtn={<OnboardButton contentType="offers" title="My offers" />}
     >
-      <AdditionalStat label="Loan TVL" value={loansVolume} divider={1e9} />
-      <AdditionalStat label="Offer TVL" value={offersVolume} divider={1e9} />
+      <AdditionalStat label="Loan TVL" value={<DisplayValue value={loansVolume} />} />
+      <AdditionalStat label="Offer TVL" value={<DisplayValue value={offersVolume} />} />
     </PageHeaderBackdrop>
   )
 }

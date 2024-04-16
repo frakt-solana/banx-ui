@@ -9,7 +9,7 @@ import {
   PageHeaderBackdrop,
   SeparateStatsLine,
 } from '@banx/components/PageHeader'
-import { VALUES_TYPES } from '@banx/components/StatInfo'
+import { DisplayValue } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
 import { calcWeeklyFeeWithRepayFee, calculateLoanRepayValue } from '@banx/utils'
@@ -29,17 +29,16 @@ const LoansHeader: FC<LoansHeaderProps> = ({ loans }) => {
       title="My loans"
       titleBtn={<OnboardButton contentType="loans" title="My loans" />}
     >
-      <AdditionalStat label="Loans" value={numberOfLoans} valueType={VALUES_TYPES.STRING} />
-      <AdditionalStat label="Borrowed" value={totalBorrowed} divider={1e9} />
+      <AdditionalStat label="Loans" value={numberOfLoans} />
+      <AdditionalStat label="Borrowed" value={<DisplayValue value={totalBorrowed} />} />
       <AdditionalStat
         label="Weekly interest"
+        value={<DisplayValue value={totalWeeklyFee} />}
         tooltipText="Expected weekly interest on your loans. Interest is added to your debt balance"
         tooltipPlacement="bottomLeft"
-        value={totalWeeklyFee}
-        divider={1e9}
       />
       <SeparateStatsLine />
-      <MainStat label="Debt" value={totalDebt} divider={1e9} />
+      <MainStat label="Debt" value={<DisplayValue value={totalDebt} />} />
     </PageHeaderBackdrop>
   )
 }

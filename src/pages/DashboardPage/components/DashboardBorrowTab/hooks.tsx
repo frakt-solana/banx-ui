@@ -5,7 +5,7 @@ import { filter, first, groupBy, includes, map } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue } from '@banx/components/TableComponents'
 import {
   SubscribeNotificationsModal,
   createLoanSubscribeNotificationsContent,
@@ -18,7 +18,13 @@ import { executeBorrow } from '@banx/pages/BorrowPage/components/BorrowTable/hel
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { PATHS } from '@banx/router'
-import { useLoansOptimistic, useModal, useOffersOptimistic, usePriorityFees } from '@banx/store'
+import {
+  useLoansOptimistic,
+  useModal,
+  useOffersOptimistic,
+  usePriorityFees,
+  useTokenType,
+} from '@banx/store'
 import { createGlobalState } from '@banx/store/functions'
 import { calculateLoanValue, getDialectAccessToken, trackPageEvent } from '@banx/utils'
 
@@ -87,6 +93,8 @@ export const useSingleBorrow = () => {
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
+  const { tokenType } = useTokenType()
+
   const { update: updateOffersOptimistic } = useOffersOptimistic()
   const { add: addLoansOptimistic } = useLoansOptimistic()
   const { nfts, rawOffers, isLoading } = useBorrowNfts()
@@ -140,6 +148,7 @@ export const useSingleBorrow = () => {
             offer: rawOffer,
             loanValue: calculateLoanValue(offer),
             priorityFeeLevel: priorityLevel,
+            tokenType,
           },
         ],
       ],
@@ -207,7 +216,7 @@ const useFilteredMarketsAndNFTs = (marketsPreview: MarketPreview[], nfts: Borrow
       valueKey: 'collectionName',
       secondLabel: {
         key: 'offerTvl',
-        format: (value: number) => createSolValueJSX(value, 1e9),
+        format: (value: number) => <DisplayValue value={value} />,
       },
     },
     labels: ['Collection', 'Liquidity'],
