@@ -1,6 +1,6 @@
-import { FC, PropsWithChildren, useEffect } from 'react'
+import { FC, PropsWithChildren } from 'react'
 
-import { ConnectionProvider, WalletProvider, useLocalStorage } from '@solana/wallet-adapter-react'
+import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react'
 
 import { ErrorBoundary } from '@banx/components/ErrorBoundary'
 
@@ -30,8 +30,6 @@ const SolanaConnectionWalletProvider: FC<PropsWithChildren> = ({ children }) => 
 }
 
 const App = () => {
-  useCode()
-
   return (
     <ErrorBoundary>
       <QueryProvider>
@@ -47,22 +45,3 @@ const App = () => {
 }
 
 export default App
-
-const CODE_CONSTANT = ['?devs', '?timur']
-const BANX_BETA_CODE_LS_KEY = '@banx.usdcBetaCode'
-
-const useCode = () => {
-  const [code, setCode] = useLocalStorage(BANX_BETA_CODE_LS_KEY, '')
-
-  useEffect(() => {
-    if (!code) {
-      let userCode = window.prompt('Enter code:') || ''
-      while (!CODE_CONSTANT.includes(userCode)) {
-        userCode = window.prompt('Incorrect code. Please try again:') || ''
-      }
-      setCode(userCode)
-    }
-  }, [code, setCode])
-
-  return { code, setCode }
-}
