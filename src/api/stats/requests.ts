@@ -1,7 +1,9 @@
 import axios from 'axios'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { BACKEND_BASE_URL } from '@banx/constants'
 
+import { convertToMarketType } from '../helpers'
 import {
   AllTotalStats,
   AllTotalStatsSchema,
@@ -17,11 +19,18 @@ import {
   UserOffersStatsSchema,
 } from './types'
 
-type FetchUserOffersStats = (walletPubkey: string) => Promise<UserOffersStats | null>
+type FetchUserOffersStats = (props: {
+  walletPubkey: string
+  tokenType: LendingTokenType
+}) => Promise<UserOffersStats | null>
 
-export const fetchUserOffersStats: FetchUserOffersStats = async (walletPubkey) => {
+export const fetchUserOffersStats: FetchUserOffersStats = async ({ walletPubkey, tokenType }) => {
+  const queryParams = new URLSearchParams({
+    marketType: String(convertToMarketType(tokenType)),
+  })
+
   const { data } = await axios.get<UserOffersStatsResponse>(
-    `${BACKEND_BASE_URL}/stats/my-offers/${walletPubkey}`,
+    `${BACKEND_BASE_URL}/stats/my-offers/${walletPubkey}?${queryParams.toString()}`,
   )
 
   try {
@@ -33,11 +42,18 @@ export const fetchUserOffersStats: FetchUserOffersStats = async (walletPubkey) =
   return data.data ?? null
 }
 
-type FetchUserLoansStats = (walletPubkey: string) => Promise<UserLoansStats | null>
+type FetchUserLoansStats = (props: {
+  walletPubkey: string
+  tokenType: LendingTokenType
+}) => Promise<UserLoansStats | null>
 
-export const fetchUserLoansStats: FetchUserLoansStats = async (walletPubkey) => {
+export const fetchUserLoansStats: FetchUserLoansStats = async ({ walletPubkey, tokenType }) => {
+  const queryParams = new URLSearchParams({
+    marketType: String(convertToMarketType(tokenType)),
+  })
+
   const { data } = await axios.get<UserLoansStatsResponse>(
-    `${BACKEND_BASE_URL}/stats/my-loans/${walletPubkey}`,
+    `${BACKEND_BASE_URL}/stats/my-loans/${walletPubkey}?${queryParams.toString()}`,
   )
 
   try {
@@ -49,9 +65,11 @@ export const fetchUserLoansStats: FetchUserLoansStats = async (walletPubkey) => 
   return data.data ?? null
 }
 
-type FetchAllTotalStats = () => Promise<AllTotalStats | null>
-export const fetchAllTotalStats: FetchAllTotalStats = async () => {
-  const { data } = await axios.get<{ data: AllTotalStats }>(`${BACKEND_BASE_URL}/stats/all`)
+type FetchAllTotalStats = (marketType: 'allInSol' | 'allInUsdc') => Promise<AllTotalStats | null>
+export const fetchAllTotalStats: FetchAllTotalStats = async (marketType) => {
+  const { data } = await axios.get<{ data: AllTotalStats }>(
+    `${BACKEND_BASE_URL}/stats/all?marketType=${marketType}`,
+  )
 
   try {
     await AllTotalStatsSchema.parseAsync(data.data)
@@ -62,10 +80,17 @@ export const fetchAllTotalStats: FetchAllTotalStats = async () => {
   return data.data ?? null
 }
 
-type FetchLenderStats = (walletPubkey: string) => Promise<TotalLenderStats | null>
-export const fetchLenderStats: FetchLenderStats = async (walletPubkey) => {
+type FetchLenderStats = (props: {
+  walletPubkey: string
+  tokenType: LendingTokenType
+}) => Promise<TotalLenderStats | null>
+export const fetchLenderStats: FetchLenderStats = async ({ walletPubkey, tokenType }) => {
+  const queryParams = new URLSearchParams({
+    marketType: String(convertToMarketType(tokenType)),
+  })
+
   const { data } = await axios.get<{ data: TotalLenderStats }>(
-    `${BACKEND_BASE_URL}/stats/lend/${walletPubkey}`,
+    `${BACKEND_BASE_URL}/stats/lend/${walletPubkey}?${queryParams.toString()}`,
   )
 
   try {
@@ -77,10 +102,17 @@ export const fetchLenderStats: FetchLenderStats = async (walletPubkey) => {
   return data.data ?? null
 }
 
-type FetchBorrowerStats = (walletPubkey: string) => Promise<TotalBorrowerStats | null>
-export const fetchBorrowerStats: FetchBorrowerStats = async (walletPubkey) => {
+type FetchBorrowerStats = (props: {
+  walletPubkey: string
+  tokenType: LendingTokenType
+}) => Promise<TotalBorrowerStats | null>
+export const fetchBorrowerStats: FetchBorrowerStats = async ({ walletPubkey, tokenType }) => {
+  const queryParams = new URLSearchParams({
+    marketType: String(convertToMarketType(tokenType)),
+  })
+
   const { data } = await axios.get<{ data: TotalBorrowerStats }>(
-    `${BACKEND_BASE_URL}/stats/borrow/${walletPubkey}`,
+    `${BACKEND_BASE_URL}/stats/borrow/${walletPubkey}?${queryParams.toString()}`,
   )
 
   try {

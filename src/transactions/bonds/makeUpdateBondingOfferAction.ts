@@ -16,6 +16,7 @@ export type MakeUpdateBondingOfferActionParams = {
   loansAmount: number
   deltaValue: number //? value in sol
   optimisticOffer: Offer
+  tokenType: LendingTokenType
   priorityFeeLevel: PriorityLevel
 }
 
@@ -28,7 +29,8 @@ export const makeUpdateBondingOfferAction: MakeUpdateBondingOfferAction = async 
   ixnParams,
   { connection, wallet },
 ) => {
-  const { loanValue, loansAmount, deltaValue, optimisticOffer, priorityFeeLevel } = ixnParams
+  const { loanValue, loansAmount, deltaValue, optimisticOffer, tokenType, priorityFeeLevel } =
+    ixnParams
 
   const {
     instructions: updateBondingOfferInstructions,
@@ -48,7 +50,7 @@ export const makeUpdateBondingOfferAction: MakeUpdateBondingOfferAction = async 
       loanValue,
       delta: deltaValue,
       quantityOfLoans: loansAmount,
-      lendingTokenType: LendingTokenType.NativeSol,
+      lendingTokenType: tokenType,
     },
     sendTxn: sendTxnPlaceHolder,
   })

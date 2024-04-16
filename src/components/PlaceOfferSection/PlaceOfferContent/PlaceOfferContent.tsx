@@ -4,6 +4,9 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 import { InputErrorMessage, NumericStepInput } from '@banx/components/inputs'
 
+import { useTokenType } from '@banx/store'
+import { getTokenUnit } from '@banx/utils'
+
 import { BorrowerMessage } from '../components'
 import { PlaceOfferParams } from '../hooks'
 import { ActionsButtons, AdditionalSummary, Diagram, MainSummary } from './components'
@@ -30,6 +33,7 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
   isLoadingDiagram,
   updatedOffer,
 }) => {
+  const { tokenType } = useTokenType()
   const { connected } = useWallet()
 
   const isEditMode = syntheticOffer.isEdit
@@ -47,7 +51,7 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
           className={styles.maxOfferInput}
           disabled={!connected}
           tooltipText="Your max offer, given sufficient liquidity in your offer. Actual loan amount taken can be less depending on the amount of SOL borrowers choose to borrow"
-          postfix
+          postfix={getTokenUnit(tokenType)}
         />
         <NumericStepInput
           label="Number of offers"
@@ -64,11 +68,12 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
           disabled={!connected}
           className={styles.deltaInput}
           tooltipText="Max Offer will decrease by this amount every time a borrower takes your max offer (AKA “delta”)"
+          postfix={getTokenUnit(tokenType)}
         />
       </div>
       <div className={styles.messageContainer}>
         {offerErrorMessage && <InputErrorMessage message={offerErrorMessage} />}
-        {showBorrowerMessage && <BorrowerMessage loanValue={loanValue} />}
+        {showBorrowerMessage && <BorrowerMessage loanValue={loanValue} tokenType={tokenType} />}
       </div>
 
       <MainSummary

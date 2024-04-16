@@ -9,6 +9,7 @@ import {
   NavigationsLinks,
   SECONDARY_NAVIGATION_LINKS,
 } from '../Navbar'
+import ThemeSwitcher from '../ThemeSwitcher'
 import { useBurgerMenu } from './hooks'
 
 import styles from './BurgerMenu.module.less'
@@ -27,6 +28,7 @@ const BurgerMenu = () => {
         <NavigationsLinks links={SECONDARY_NAVIGATION_LINKS} />
 
         <div className={styles.communityContainer}>
+          <ThemeSwitcher className={styles.themeSwitcher} />
           <ExternalLinks links={EXTERNAL_LINKS} />
         </div>
       </div>

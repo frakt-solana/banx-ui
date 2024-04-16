@@ -2,11 +2,12 @@ import { FC } from 'react'
 
 import classNames from 'classnames'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import {
+  DisplayValue,
   HorizontalCell,
   createPercentValueJSX,
-  createSolValueJSX,
 } from '@banx/components/TableComponents'
 
 import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
@@ -14,7 +15,6 @@ import {
   calcBorrowValueWithProtocolFee,
   calcBorrowValueWithRentFee,
   calculateApr,
-  formatDecimal,
 } from '@banx/utils'
 
 import { TableNftData } from './types'
@@ -29,15 +29,17 @@ const TooltipRow: FC<TooltipRowProps> = ({ label, value }) => (
   <div className={styles.tooltipRow}>
     <span className={styles.tooltipRowLabel}>{label}</span>
     <span className={styles.tooltipRowValue}>
-      {createSolValueJSX(value, 1e9, '0◎', formatDecimal)}
+      <DisplayValue value={value} />
     </span>
   </div>
 )
 
-interface CellProps {
+interface BorrowCellProps {
   nft: TableNftData
+  tokenType: LendingTokenType
 }
-export const BorrowCell: FC<CellProps> = ({ nft }) => {
+
+export const BorrowCell: FC<BorrowCellProps> = ({ nft, tokenType }) => {
   const loanValueWithProtocolFee = calcBorrowValueWithProtocolFee(nft.loanValue)
   const collectionFloor = nft.nft.nft.collectionFloor
   const ltv = (loanValueWithProtocolFee / collectionFloor) * 100
@@ -57,14 +59,22 @@ export const BorrowCell: FC<CellProps> = ({ nft }) => {
   const borrowValueWithRentFee = calcBorrowValueWithRentFee(
     loanValueWithProtocolFee,
     nft.nft.loan.marketPubkey,
+    tokenType,
   )
 
-  const formattedBorrowValue = createSolValueJSX(borrowValueWithRentFee, 1e9, '--', formatDecimal)
-
-  return <HorizontalCell value={formattedBorrowValue} tooltipContent={tooltipContent} />
+  return (
+    <HorizontalCell
+      value={<DisplayValue value={borrowValueWithRentFee} placeholder="--" />}
+      tooltipContent={tooltipContent}
+    />
+  )
 }
 
-export const APRCell: FC<CellProps> = ({ nft }) => {
+interface APRCellProps {
+  nft: TableNftData
+}
+
+export const APRCell: FC<APRCellProps> = ({ nft }) => {
   const apr = calculateApr({
     loanValue: nft.loanValue,
     collectionFloor: nft.nft.nft.collectionFloor,

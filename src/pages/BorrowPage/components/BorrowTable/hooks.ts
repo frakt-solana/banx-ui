@@ -23,6 +23,7 @@ import {
   useOffersOptimistic,
   usePriorityFees,
   useTableView,
+  useTokenType,
 } from '@banx/store'
 import { createGlobalState } from '@banx/store/functions'
 import { getDialectAccessToken, trackPageEvent } from '@banx/utils'
@@ -56,6 +57,7 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
   const { isLedger } = useIsLedger()
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
+  const { tokenType } = useTokenType()
 
   const bonkRewardsAvailable = useBorrowBonkRewardsAvailability()
 
@@ -119,7 +121,7 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
   }
 
   const borrow = async (nft: TableNftData) => {
-    const txnParams = createBorrowParams([nft], rawOffers, priorityLevel)
+    const txnParams = createBorrowParams([nft], rawOffers, priorityLevel, tokenType)
 
     await executeBorrow({
       wallet,
@@ -137,7 +139,7 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
 
   const borrowAll = async () => {
     const selectedNfts = tableNftsData.filter(({ mint }) => !!offerByMint[mint])
-    const txnParams = createBorrowParams(selectedNfts, rawOffers, priorityLevel)
+    const txnParams = createBorrowParams(selectedNfts, rawOffers, priorityLevel, tokenType)
 
     await executeBorrow({
       wallet,
@@ -246,6 +248,7 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
     findOfferInCart,
     hasSelectedNfts: !isEmpty(offerByMint),
     onSelectAll,
+    tokenType,
   })
 
   return {

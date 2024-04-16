@@ -3,13 +3,10 @@ import classNames from 'classnames'
 
 import { useDiscordUser } from '@banx/hooks'
 import { ChevronDown, Wallet } from '@banx/icons'
-import {
-  formatDecimal,
-  formatNumbersWithCommas,
-  shortenAddress,
-  useSolanaBalance,
-} from '@banx/utils'
+import { useTokenType } from '@banx/store'
+import { shortenAddress, useWalletBalance } from '@banx/utils'
 
+import { DisplayValue } from '../TableComponents'
 import UserAvatar from '../UserAvatar'
 import { useWalletModal } from '../WalletModal'
 import { Button } from './Button'
@@ -20,17 +17,25 @@ export const WalletConnectButton = () => {
   const { toggleVisibility, visible } = useWalletModal()
   const { publicKey, connected } = useWallet()
 
+  const walletPubkeyString = publicKey?.toBase58() || ''
+
   const { data: discordUserData } = useDiscordUser()
-  const solanaBalance = useSolanaBalance()
+
+  const { tokenType } = useTokenType()
+
+  const walletBalance = useWalletBalance(tokenType, { isLive: true })
 
   const ConnectedButton = () => (
     <div className={styles.connectedButton} onClick={toggleVisibility}>
       <UserAvatar imageUrl={discordUserData?.avatarUrl ?? undefined} />
       <div className={styles.connectedWalletInfo}>
-        <span className={styles.connectedWalletAddress}>
-          {shortenAddress(publicKey?.toBase58() || '')}
+        <span className={styles.connectedWalletAddress}>{shortenAddress(walletPubkeyString)}</span>
+        <span className={styles.connectedMobileWalletAddress}>
+          {walletPubkeyString.slice(0, 4)}
         </span>
-        <span className={styles.solanaBalance}>{`${formatBalance(solanaBalance)}◎`}</span>
+        <span className={styles.solanaBalance}>
+          <DisplayValue value={walletBalance} />
+        </span>
       </div>
       <ChevronDown
         className={classNames(styles.connectedWalletChevron, { [styles.active]: visible })}
@@ -46,16 +51,4 @@ export const WalletConnectButton = () => {
   )
 
   return connected ? <ConnectedButton /> : <DisconnectedButton />
-}
-
-const THRESHOLD_LARGE_BALANCE = 1000
-const formatBalance = (balance = 0) => {
-  if (!balance) return '0.00'
-
-  if (balance > THRESHOLD_LARGE_BALANCE) {
-    return formatNumbersWithCommas(balance.toFixed(0))
-  }
-
-  const formattedDecimalValue = formatDecimal(balance)
-  return formattedDecimalValue.replace(/\.?0+$/, '')
 }

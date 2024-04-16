@@ -1,7 +1,7 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useNavigate } from 'react-router-dom'
 
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue } from '@banx/components/TableComponents'
 
 import { PATHS } from '@banx/router'
 
@@ -41,7 +41,7 @@ export const useHistoryLoansTable = () => {
       imageKey: 'collectionImage',
       secondLabel: {
         key: 'borrowed',
-        format: (value: number) => createSolValueJSX(value, 1e9),
+        format: (value: number) => <DisplayValue value={value} />,
       },
     },
     selectedOptions: selectedCollections,

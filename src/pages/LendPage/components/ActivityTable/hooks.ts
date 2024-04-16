@@ -6,6 +6,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { RBOption } from '@banx/components/RadioButton'
 
 import { fetchLenderActivity } from '@banx/api/activity'
+import { useTokenType } from '@banx/store'
 
 import { useMarketsPreview } from '../../hooks'
 import { ActivityEvent, RADIO_BUTTONS_OPTIONS } from './constants'
@@ -16,6 +17,8 @@ const PAGINATION_LIMIT = 15
 export const useAllLenderActivity = (marketPubkey: string) => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
+
+  const { tokenType } = useTokenType()
 
   const { marketsPreview } = useMarketsPreview()
 
@@ -37,13 +40,14 @@ export const useAllLenderActivity = (marketPubkey: string) => {
       order: 'desc',
       collection: [currentMarket?.collectionName ?? ''],
       walletPubkey: checked ? publicKeyString : '',
+      tokenType,
     })
 
     return { pageParam, data }
   }
 
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage, isLoading } = useInfiniteQuery({
-    queryKey: ['allLenderActivity', publicKey, checked, currentOption],
+    queryKey: ['allLenderActivity', publicKey, checked, currentOption, tokenType],
     queryFn: ({ pageParam = 0 }) => fetchData(pageParam),
     getPreviousPageParam: (firstPage) => {
       return firstPage.pageParam - 1 ?? undefined

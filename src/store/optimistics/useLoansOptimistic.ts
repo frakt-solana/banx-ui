@@ -1,11 +1,13 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 
 import { get, set } from 'idb-keyval'
-import { groupBy, map, maxBy, uniqBy } from 'lodash'
+import { filter, groupBy, map, maxBy, uniqBy } from 'lodash'
 import moment from 'moment'
 import { create } from 'zustand'
 
 import { Loan } from '@banx/api/core'
+
+import { useTokenType } from '../useTokenType'
 
 const BANX_LOANS_OPTIMISTICS_LS_KEY = '@banx.loansOptimistics'
 const LOANS_CACHE_TIME_UNIX = 2 * 60 //? Auto clear optimistic after 2 minutes
@@ -78,6 +80,8 @@ export const useLoansOptimistic = () => {
     setState,
   } = useOptimisticLoansStore()
 
+  const { tokenType } = useTokenType()
+
   useEffect(() => {
     const setInitialState = async () => {
       try {
@@ -93,7 +97,14 @@ export const useLoansOptimistic = () => {
     setInitialState()
   }, [setState])
 
-  return { loans: optimisticLoans, add, remove, find, update }
+  const filteredLoansByTokenType = useMemo(() => {
+    return filter(
+      optimisticLoans,
+      ({ loan }) => loan.bondTradeTransaction.lendingToken === tokenType,
+    )
+  }, [optimisticLoans, tokenType])
+
+  return { loans: filteredLoansByTokenType, add, remove, find, update }
 }
 
 export const isOptimisticLoanExpired = (loan: LoanOptimistic, walletPublicKey: string) =>

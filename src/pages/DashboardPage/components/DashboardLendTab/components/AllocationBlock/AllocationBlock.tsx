@@ -3,7 +3,7 @@ import { FC } from 'react'
 import { Button } from '@banx/components/Buttons'
 import { Doughnut } from '@banx/components/Charts'
 import { VALUES_TYPES } from '@banx/components/StatInfo'
-import { createSolValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue } from '@banx/components/TableComponents'
 
 import { ChartStatInfo, DashboardStatInfo, Heading } from '../../../components'
 import { AllocationStatus, STATUS_COLOR_MAP } from './constants'
@@ -28,9 +28,8 @@ const AllocationBlock: FC<AllocationBlockProps> = ({ stats }) => {
           <div className={styles.allocationStats}>
             <DashboardStatInfo
               label="Weekly interest"
-              value={weeklyInterest}
+              value={<DisplayValue value={weeklyInterest} />}
               tooltipText="Extrapolated weekly interest based off your current active loans"
-              divider={1e9}
             />
             <DashboardStatInfo
               label="Weighted apr"
@@ -47,7 +46,7 @@ const AllocationBlock: FC<AllocationBlockProps> = ({ stats }) => {
               <ChartStatInfo
                 key={key}
                 label={label}
-                value={createSolValueJSX(value, 1e9, '0◎')}
+                value={<DisplayValue value={value} />}
                 indicatorColor={STATUS_COLOR_MAP[key as AllocationStatus]}
               />
             ))}

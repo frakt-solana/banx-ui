@@ -6,10 +6,10 @@ import { sumBy } from 'lodash'
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
-import { createPercentValueJSX, createSolValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import { calcWeeklyFeeWithRepayFee, calculateLoanRepayValue, formatDecimal } from '@banx/utils'
+import { calcWeeklyFeeWithRepayFee, calculateLoanRepayValue } from '@banx/utils'
 
 import { LoanOptimistic } from '../../loansState'
 import { calcUnpaidAccruedInterest, calcWeightedApr } from './helpers'
@@ -59,12 +59,14 @@ export const Summary: FC<SummaryProps> = ({
       <div className={styles.statsContainer}>
         <StatInfo
           label="Debt"
-          value={totalDebt}
+          value={<DisplayValue value={totalDebt} />}
           classNamesProps={{ container: styles.debtInterestStat }}
-          divider={1e9}
         />
-        <StatInfo label="Accrued interest" value={totalUnpaidAccruedInterest} divider={1e9} />
-        <StatInfo label="Weekly interest" value={totalWeeklyFee} divider={1e9} />
+        <StatInfo
+          label="Accrued interest"
+          value={<DisplayValue value={totalUnpaidAccruedInterest} />}
+        />
+        <StatInfo label="Weekly interest" value={<DisplayValue value={totalWeeklyFee} />} />
         <StatInfo
           label="Weighted apr"
           value={calcWeightedApr(selectedLoans)}
@@ -86,10 +88,10 @@ export const Summary: FC<SummaryProps> = ({
           onClick={() => repayUnpaidLoansInterest(loansWithCalculatedUnpaidInterest)}
           disabled={!totalUnpaidAccruedInterest}
         >
-          Pay interest {createSolValueJSX(totalUnpaidAccruedInterest, 1e9, '0◎', formatDecimal)}
+          Pay interest {<DisplayValue value={totalUnpaidAccruedInterest} />}
         </Button> */}
         <Button onClick={repayBulkLoan} disabled={!totalSelectedLoans}>
-          Repay {createSolValueJSX(totalDebt, 1e9, '0◎', formatDecimal)}
+          Repay <DisplayValue value={totalDebt} />
         </Button>
       </div>
     </div>

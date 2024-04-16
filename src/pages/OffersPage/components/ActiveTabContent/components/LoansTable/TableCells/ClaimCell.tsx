@@ -3,11 +3,11 @@ import { FC } from 'react'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import moment from 'moment'
 
-import { HorizontalCell, createSolValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue, HorizontalCell } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
 import { calculateClaimValue, calculateLentValue } from '@banx/pages/OffersPage'
-import { calcLoanBorrowedAmount, formatDecimal } from '@banx/utils'
+import { calcLoanBorrowedAmount } from '@banx/utils'
 
 import styles from '../LoansTable.module.less'
 
@@ -39,16 +39,15 @@ export const ClaimCell: FC<ClaimCellProps> = ({ loan }) => {
   )
 
   return (
-    <HorizontalCell
-      tooltipContent={tooltopContent}
-      value={createSolValueJSX(claimValue, 1e9, '0◎', formatDecimal)}
-    />
+    <HorizontalCell tooltipContent={tooltopContent} value={<DisplayValue value={claimValue} />} />
   )
 }
 
 const createTooltipContent = (label: string, value: number) => (
   <div className={styles.tooltipContent}>
     <span>{label}</span>
-    <span>{createSolValueJSX(value, 1e9, '0◎', formatDecimal)}</span>
+    <span>
+      <DisplayValue value={value} />
+    </span>
   </div>
 )

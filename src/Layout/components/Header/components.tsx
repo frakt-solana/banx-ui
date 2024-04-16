@@ -48,22 +48,24 @@ export const RewardsButton = () => {
   const currentToken = TOKENS[index % 2]
 
   return (
-    <NavLink to={PATHS.LEADERBOARD}>
-      <Button
-        type="circle"
-        variant="text"
-        className={classNames(styles.rewardsButton, {
-          [styles.active]: isActivePath(PATHS.LEADERBOARD),
-        })}
-      >
-        <Cup />
-        <div className={styles.rewardsButtonText}>
-          Farm{' '}
-          <TextTransition springConfig={presets.wobbly} className={currentToken.style}>
-            {currentToken.text}
-          </TextTransition>
-        </div>
-      </Button>
-    </NavLink>
+    <div className={styles.rewardsButtonWrapper}>
+      <NavLink to={PATHS.LEADERBOARD}>
+        <Button
+          type="circle"
+          variant="text"
+          className={classNames(styles.rewardsButton, {
+            [styles.active]: isActivePath(PATHS.LEADERBOARD),
+          })}
+        >
+          <Cup />
+          <div className={styles.rewardsButtonText}>
+            Farm{' '}
+            <TextTransition springConfig={presets.wobbly} className={currentToken.style}>
+              {currentToken.text}
+            </TextTransition>
+          </div>
+        </Button>
+      </NavLink>
+    </div>
   )
 }

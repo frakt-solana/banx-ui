@@ -1,15 +1,14 @@
 import { ColumnType } from '@banx/components/Table'
 import {
+  DisplayValue,
   DurationCell,
   HeaderCell,
   HorizontalCell,
   NftInfoCell,
   createPercentValueJSX,
-  createSolValueJSX,
 } from '@banx/components/TableComponents'
 
 import { LenderActivity } from '@banx/api/activity'
-import { formatDecimal } from '@banx/utils'
 
 import { ReceivedCell, StatusCell } from './TableCells'
 
@@ -35,7 +34,7 @@ export const getTableColumns = () => {
       title: <HeaderCell label="Lent" />,
       render: (loan) => (
         <HorizontalCell
-          value={createSolValueJSX(loan.currentRemainingLentAmount, 1e9, '--', formatDecimal)}
+          value={<DisplayValue value={loan.currentRemainingLentAmount} placeholder="--" />}
         />
       ),
       sorter: true,
@@ -44,7 +43,7 @@ export const getTableColumns = () => {
       key: 'interest',
       title: <HeaderCell label="Interest" />,
       render: (loan) => (
-        <HorizontalCell value={createSolValueJSX(loan.interest, 1e9, '--', formatDecimal)} />
+        <HorizontalCell value={<DisplayValue value={loan.interest} placeholder="--" />} />
       ),
       sorter: true,
     },
