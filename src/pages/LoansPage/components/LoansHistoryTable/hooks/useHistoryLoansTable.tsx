@@ -60,7 +60,7 @@ export const useHistoryLoansTable = () => {
   }
 
   const emptyListParams = {
-    message: connected ? EMPTY_MESSAGE : NOT_CONNECTED_MESSAGE,
+    message: connected ? EMPTY_MESSAGE[tokenType] : NOT_CONNECTED_MESSAGE,
     buttonProps: connected ? { text: 'Borrow', onClick: goToBorrowPage } : undefined,
   }
 
