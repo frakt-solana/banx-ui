@@ -16,19 +16,15 @@ interface CollectionsCardListProps {
 }
 
 const CollectionsCardList: FC<CollectionsCardListProps> = ({ marketsPreview }) => {
-  const { setSelectedMarkets, setMarketVisibility } = useMarketsURLControl()
+  const { setSelectedMarkets } = useMarketsURLControl()
 
   const navigate = useNavigate()
 
   const goToSelectedMarket = (collectionName: string) => {
     trackPageEvent('dashboard', 'lendtab-collection')
-    setMarketVisibility(collectionName, true)
     setSelectedMarkets([collectionName])
 
-    return navigate({
-      pathname: PATHS.LEND,
-      search: `?opened=${collectionName}&collections=${collectionName}`,
-    })
+    return navigate({ pathname: PATHS.LEND, search: `?collections=${collectionName}` })
   }
 
   return (
