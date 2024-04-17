@@ -19,11 +19,11 @@ export const calcAccruedInterest = (loan: Loan) => {
 
 export const calculateUnpaidInterest = (loan: Loan) => {
   const { bondTradeTransaction } = loan
-  const { borrowerFullRepaidAmount, lendingToken } = bondTradeTransaction
+  const { lenderFullRepaidAmount, lendingToken } = bondTradeTransaction
   const accruedInterest = calcAccruedInterest(loan)
 
   const additionalFee = isSolTokenType(lendingToken) ? ACCOUNT_CREATION_FEE : 0
-  const unpaidInterest = Math.max(0, accruedInterest - borrowerFullRepaidAmount)
+  const unpaidInterest = Math.max(0, accruedInterest - lenderFullRepaidAmount)
   return unpaidInterest + additionalFee
 }
 

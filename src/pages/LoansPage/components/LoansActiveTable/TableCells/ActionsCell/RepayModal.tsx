@@ -7,7 +7,6 @@ import { DisplayValue } from '@banx/components/TableComponents'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan } from '@banx/api/core'
-import { BONDS } from '@banx/constants'
 import { useModal } from '@banx/store'
 import {
   calculateLoanRepayValue,
@@ -34,13 +33,23 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
     initialRepayPercent,
     debtWithoutFee,
     debtValue,
+    roundedRepaymentPercentage,
+    unroundedRepaymentPercentage,
   } = calculateRepaymentStaticValues(loan)
 
   const [repaymentPercent, setRepaymentPercent] = useState<number>(initialRepayPercent)
   const isFullRepayment = repaymentPercent === 100
 
   const baseDebtValue = isFullRepayment ? debtValue : debtWithoutFee
-  const paybackValue = (baseDebtValue * repaymentPercent) / 100
+
+  //? Check if repaymentPercent equals roundedRepaymentPercentage to handle rounding issues (Uses for repaymet call feature)
+  const isRoundedRepayment = repaymentPercent === roundedRepaymentPercentage
+
+  const selectedRepaymentPercentage = isRoundedRepayment
+    ? unroundedRepaymentPercentage
+    : repaymentPercent
+
+  const paybackValue = (baseDebtValue * selectedRepaymentPercentage) / 100
 
   const remainingDebt = debtValue - paybackValue
 
@@ -49,6 +58,11 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
 
     if (isFullRepayment) {
       return await repayLoan(loan)
+    }
+
+    //? If repaymentPercent equals roundedRepaymentPercentage, repay a partial loan with rounded up percentage
+    if (isRoundedRepayment) {
+      return await repayPartialLoan(loan, Math.ceil(unroundedRepaymentPercentage * 100))
     }
 
     return await repayPartialLoan(loan, repaymentPercent * 100)
@@ -115,17 +129,11 @@ export const calculateRepaymentStaticValues = (loan: Loan) => {
   const debtWithoutFee = calculateLoanRepayValue(loan, false)
   const debtValue = calculateLoanRepayValue(loan)
 
-  //? Calculate the debt without protocol fee
-  const newAmountOfBonds = bondTradeTransaction.amountOfBonds - BONDS.PROTOCOL_REPAY_FEE
-  const newBondTradeTransaction = { ...bondTradeTransaction, amountOfBonds: newAmountOfBonds }
-
-  const debtWithoutProtocolFee = calculateLoanRepayValue({
-    ...loan,
-    bondTradeTransaction: newBondTradeTransaction,
-  })
+  const unroundedRepaymentPercentage = (repaymentCallAmount / debtWithoutFee) * 100
+  const roundedRepaymentPercentage = Math.ceil(unroundedRepaymentPercentage)
 
   const initialRepayPercent = repaymentCallActive
-    ? Math.ceil((repaymentCallAmount / debtWithoutProtocolFee) * 100) + 1
+    ? roundedRepaymentPercentage
     : DEFAULT_REPAY_PERCENT
 
   return {
@@ -134,5 +142,7 @@ export const calculateRepaymentStaticValues = (loan: Loan) => {
     initialRepayPercent,
     debtWithoutFee,
     repaymentCallAmount,
+    roundedRepaymentPercentage,
+    unroundedRepaymentPercentage,
   }
 }
