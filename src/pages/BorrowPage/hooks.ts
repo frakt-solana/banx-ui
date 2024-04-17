@@ -27,8 +27,8 @@ import {
   isOfferClosed,
 } from '@banx/utils'
 
-import { useCartState } from './cartState'
-import { SimpleOffersByMarket } from './types'
+import { useCartState } from './InstantLoansContent/cartState'
+import { SimpleOffersByMarket } from './InstantLoansContent/types'
 
 export const USE_BORROW_NFTS_V2_QUERY_KEY = 'walletBorrowNftsV2'
 

@@ -1,36 +1,42 @@
-import { useWallet } from '@solana/wallet-adapter-react'
+import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
 import { useMixpanelLocationTrack } from '@banx/utils'
 
-import BorrowHeader from './components/BorrowHeader'
-import BorrowTable from './components/BorrowTable'
-import NotConnectedTable from './components/NotConnectedTable'
-import { useBorrowNfts } from './hooks'
+import { InstantLoansContent } from './InstantLoansContent'
+import BorrowHeader from './BorrowHeader'
 
 import styles from './BorrowPage.module.less'
 
 export const BorrowPage = () => {
   useMixpanelLocationTrack('borrow')
 
-  const { connected } = useWallet()
-
-  const { nfts, isLoading, rawOffers, maxLoanValueByMarket } = useBorrowNfts()
-
-  const showEmptyList = !nfts?.length && !isLoading
+  const { value: currentTabValue, ...tabsProps } = useTabs({
+    tabs: OFFERS_TABS,
+    defaultValue: BorrowTabName.INSTANT,
+  })
 
   return (
     <div className={styles.pageWrapper}>
       <BorrowHeader />
-      {connected && !showEmptyList ? (
-        <BorrowTable
-          nfts={nfts}
-          isLoading={isLoading}
-          rawOffers={rawOffers}
-          maxLoanValueByMarket={maxLoanValueByMarket}
-        />
-      ) : (
-        <NotConnectedTable />
-      )}
+      <Tabs value={currentTabValue} {...tabsProps} />
+      {currentTabValue === BorrowTabName.INSTANT && <InstantLoansContent />}
+      {currentTabValue === BorrowTabName.REQUEST && <div>Request loans content here</div>}
     </div>
   )
 }
+
+enum BorrowTabName {
+  INSTANT = 'instant',
+  REQUEST = 'request',
+}
+
+const OFFERS_TABS: Tab[] = [
+  {
+    label: 'Instant loans',
+    value: BorrowTabName.INSTANT,
+  },
+  {
+    label: 'Request loans',
+    value: BorrowTabName.REQUEST,
+  },
+]

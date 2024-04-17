@@ -1,0 +1,1 @@
+export { InstantLoansContent } from './InstantLoansContent'

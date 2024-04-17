@@ -13,7 +13,7 @@ import { DisplayValue } from '@banx/components/TableComponents'
 import { Snowflake } from '@banx/icons'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 
-import { useBorrowNfts } from '../../hooks'
+import { useBorrowNfts } from '../hooks'
 
 const Header = () => {
   const { connected } = useWallet()

@@ -14,7 +14,7 @@ import {
 
 import { BorrowNft, MarketPreview } from '@banx/api/core'
 import { SPECIAL_COLLECTIONS_MARKETS } from '@banx/constants'
-import { executeBorrow } from '@banx/pages/BorrowPage/components/BorrowTable/helpers'
+import { executeBorrow } from '@banx/pages/BorrowPage/InstantLoansContent/components/BorrowTable/helpers'
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { PATHS } from '@banx/router'
