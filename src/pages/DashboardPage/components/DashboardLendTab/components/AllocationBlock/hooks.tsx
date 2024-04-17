@@ -6,8 +6,8 @@ import { DisplayValue } from '@banx/components/TableComponents'
 
 import { TotalLenderStats } from '@banx/api/stats'
 import { PATHS } from '@banx/router'
-import { useTokenType } from '@banx/store'
-import { getTokenDecimals, trackPageEvent } from '@banx/utils'
+import { createPathWithTokenParam, useTokenType } from '@banx/store'
+import { getTokenDecimals, isSolTokenType, trackPageEvent } from '@banx/utils'
 
 import {
   AllocationStatus,
@@ -60,16 +60,18 @@ export const useAllocationBlock = (stats?: AllocationStats) => {
 
   const goToLendPage = () => {
     trackPageEvent('dashboard', 'lendtab-lend')
-    navigate(PATHS.LEND)
+    navigate(createPathWithTokenParam(PATHS.LEND, tokenType))
   }
   const goToOffersPage = () => {
     trackPageEvent('dashboard', 'lendtab-manage')
-    navigate(PATHS.OFFERS)
+    navigate(createPathWithTokenParam(PATHS.OFFERS, tokenType))
   }
+
+  const emptyButtonText = isSolTokenType(tokenType) ? 'Lend SOL' : 'Lend USDC'
 
   const buttonProps = {
     onClick: isDataEmpty ? goToLendPage : goToOffersPage,
-    text: isDataEmpty ? 'Lend SOL' : 'Manage my offers',
+    text: isDataEmpty ? emptyButtonText : 'Manage my offers',
   }
 
   return {

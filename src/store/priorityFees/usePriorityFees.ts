@@ -38,7 +38,7 @@ export const usePriorityFees = () => {
         const priorityLevelJSON = localStorage.getItem(BANX_PRIORITY_FEES_STATE_LS_KEY)
         const priorityLevel = priorityLevelJSON
           ? (JSON.parse(priorityLevelJSON) as PriorityLevel)
-          : PriorityLevel.VERY_HIGH
+          : PriorityLevel.HIGH
 
         //? Check LS data validity
         z.nativeEnum(PriorityLevel).parse(priorityLevel)
@@ -52,7 +52,7 @@ export const usePriorityFees = () => {
         localStorage.removeItem(BANX_PRIORITY_FEES_STATE_LS_KEY)
         return {
           ...state,
-          priorityLevel: PriorityLevel.VERY_HIGH,
+          priorityLevel: PriorityLevel.HIGH,
         }
       }
     },

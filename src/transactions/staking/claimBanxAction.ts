@@ -7,17 +7,14 @@ import { BONDS } from '@banx/constants'
 import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
-export type StakeBanxClaimActionParams = {
+export type ClaimBanxActionParams = {
   weeks: number[]
   priorityFeeLevel: PriorityLevel
 }
 
-export type StakeBanxClaimAction = CreateTransactionDataFn<StakeBanxClaimActionParams, null>
+export type ClaimBanxAction = CreateTransactionDataFn<ClaimBanxActionParams, null>
 
-export const stakeBanxClaimAction: StakeBanxClaimAction = async (
-  ixnParams,
-  { connection, wallet },
-) => {
+export const claimBanxAction: ClaimBanxAction = async (ixnParams, { connection, wallet }) => {
   const { instructions: claimInstructions, signers } = await claimStakingRewards({
     connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),

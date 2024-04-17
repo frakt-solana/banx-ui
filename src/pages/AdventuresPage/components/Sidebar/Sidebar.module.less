@@ -11,181 +11,97 @@
   }
 }
 
-.content {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+.sidebarContent {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(7, auto);
 
   @media screen and (max-width: 1280px) {
-    flex-direction: row;
-  }
-
-  @media screen and (max-width: 640px) {
-    gap: 16px;
+    column-gap: 24px;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(5, auto);
   }
 }
 
-.squadSection,
-.claimSection {
-  display: flex;
-  flex-direction: column;
-
+.mySquadTitle {
   @media screen and (max-width: 1280px) {
-    width: 100%;
-  }
-
-  .totalPointsStaked {
-    width: 105px;
+    grid-column: 1;
+    grid-row: 1;
   }
 }
 
-.totalValues {
-  text-align: right;
-}
-
-.labelWrapper {
-  align-items: flex-start !important;
-}
-
-.stakedInfoContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-
-  .stakedInfo {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
+.rewardsTitle {
   @media screen and (max-width: 1280px) {
-    padding-bottom: 8px;
+    grid-column: 2;
+    grid-row: 1;
   }
 }
 
-.titleWrapper {
-  display: flex;
-  align-items: center;
-  margin-bottom: 12px;
-  column-gap: 6px;
-
-  span {
-    color: var(--content-primary);
-    font: var(--card-header-lg);
-
-    @media screen and (max-width: 640px) {
-      font: var(--card-header-md);
-    }
-  }
-
-  @media screen and (max-width: 640px) {
-    margin-bottom: 8px;
-  }
-
-  .icon {
-    width: 32px;
-    height: 32px;
-    background: var(--bg-secondary);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    @media screen and (max-width: 640px) {
-      width: 24px;
-      height: 24px;
-
-      svg {
-        width: 16px;
-        height: 16px;
-      }
-    }
+.manageNftsSection {
+  margin-bottom: 8px;
+  @media screen and (max-width: 1280px) {
+    grid-column: 1;
+    grid-row: 2;
   }
 }
 
-.divider {
-  background: var(--bg-border);
-  margin: 8px 0;
-  height: 1px;
-  width: 100%;
-
-  @media (max-width: 1280px) {
-    margin-top: auto;
+.manageTokensSection {
+  margin-bottom: 8px;
+  @media screen and (max-width: 1280px) {
+    grid-column: 1;
+    grid-row: 3;
   }
 }
 
-.claimStatsContainer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.walletStakedStatsSectionAdditional {
+  border-top: var(--border-less-primary);
+  padding-top: 8px;
+  margin-bottom: 8px;
+  @media screen and (max-width: 1280px) {
+    align-items: flex-start;
+    grid-column: 1;
+    grid-row: 4;
+    margin-bottom: 0;
+  }
 }
 
-.infoSection {
-  border: 1px dashed var(--content-secondary);
-  font: var(--body-text-md);
-  display: flex;
-  flex-direction: column;
+.claimSectionAdditional {
+  margin-bottom: 8px;
+  @media screen and (max-width: 1280px) {
+    grid-column: 2;
+    grid-row: 2;
+  }
+}
+
+.totalClaimedSectionAdditional {
+  border-top: var(--border-less-primary);
+  padding-top: 8px;
+  margin-bottom: 8px;
+  @media screen and (max-width: 1280px) {
+    align-items: flex-start;
+    margin-bottom: 0;
+    grid-column: 2;
+    grid-row: 4;
+  }
+}
+
+.infoSectionAdditional {
   margin-top: 24px;
-  padding: 16px;
 
-  p {
-    display: flex;
-    gap: 8px;
-
-    svg {
-      fill: var(--content-secondary);
-      height: 18px;
-      width: 18px;
-    }
+  @media screen and (max-width: 1280px) {
+    grid-column: 1 / -1;
   }
 
   @media (max-width: 640px) {
-    padding: 8px 16px;
+    border: unset;
+    border-top: 1px dashed var(--content-secondary);
+
+    p {
+      padding: 8px 16px;
+      border: unset;
+    }
+
     margin: -16px;
     margin-top: 16px;
-  }
-}
-
-.manageButton {
-  width: 168px;
-
-  @media (max-width: 960px) {
-    width: 128px;
-  }
-
-  @media (max-width: 640px) {
-    height: 24px !important;
-    width: 64px;
-  }
-}
-
-.stakingStatInfo {
-  &.col {
-    flex-direction: column-reverse;
-    gap: 0;
-  }
-
-  .label {
-    color: var(--content-primary);
-  }
-
-  .value {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font: var(--important-text-lg);
-
-    path {
-      fill: #1b1b1b !important;
-    }
-
-    @media screen and (max-width: 640px) {
-      font: var(--important-text-sm);
-
-      svg {
-        height: 12px;
-        width: 12px;
-      }
-    }
   }
 }

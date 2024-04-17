@@ -18,7 +18,7 @@ import { useSortMarkets } from './useSortMarkets'
 export const useLendPageContent = () => {
   const { marketsPreview, isLoading } = useMarketsPreview()
 
-  const { selectedMarkets, setSelectedMarkets } = useMarketsURLControl()
+  const { selectedMarkets, setSelectedMarkets } = useMarketsURLControl(true)
   const [isHotFilterActive, setIsHotFilterActive] = useState(false)
 
   const handleFilterChange = (filteredOptions: string[]) => {
@@ -33,7 +33,7 @@ export const useLendPageContent = () => {
     filteredMarkets.length ? filteredMarkets : marketsPreview,
   )
 
-  const hotMarkets = filter(sortedMarkets, 'isHot')
+  const hotMarkets = filter(sortedMarkets, (market) => market.isHot)
   const filteredHotMarkets = isHotFilterActive ? hotMarkets : sortedMarkets
 
   const showEmptyList = !isLoading && !filteredHotMarkets?.length

@@ -1,8 +1,9 @@
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 import { create } from 'zustand'
 
-const BANX_TOKEN_LS_KEY = '@banx.tokenType'
+import { isSolTokenType } from '@banx/utils'
 
 type TokenTypeState = {
   tokenType: LendingTokenType
@@ -15,33 +16,37 @@ export const useTokenTypeState = create<TokenTypeState>((set) => ({
 }))
 
 export const useTokenType = () => {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const params = new URLSearchParams(location.search)
+
+  const tokenTypeFromUrl = params.get('token') as LendingTokenType
+
   const { tokenType, setTokenType: setTokenTypeState } = useTokenTypeState((state) => {
     try {
-      const tokenTypeJSON = localStorage.getItem(BANX_TOKEN_LS_KEY)
-      const tokenType = tokenTypeJSON
-        ? (JSON.parse(tokenTypeJSON) as LendingTokenType)
-        : LendingTokenType.NativeSol
+      const tokenType = tokenTypeFromUrl || LendingTokenType.NativeSol
 
-      //? Check LS data validity
+      //? Check URL data validity
       z.nativeEnum(LendingTokenType).parse(tokenType)
 
       return { ...state, tokenType }
     } catch (error) {
-      console.error('Error getting token type from LS')
-      localStorage.removeItem(BANX_TOKEN_LS_KEY)
+      console.error('Error getting token type from URL')
 
       return { ...state, tokenType: LendingTokenType.NativeSol }
     }
   })
 
   const setTokenType = (tokenType: LendingTokenType) => {
-    try {
-      setTokenTypeState(tokenType)
-      localStorage.setItem(BANX_TOKEN_LS_KEY, JSON.stringify(tokenType))
-    } catch (error) {
-      console.error(error)
-    }
+    setTokenTypeState(tokenType)
+    navigate(createPathWithTokenParam(location.pathname, tokenType))
   }
 
   return { tokenType, setTokenType }
+}
+
+export const createPathWithTokenParam = (pathname: string, tokenType: LendingTokenType) => {
+  if (isSolTokenType(tokenType)) return pathname
+
+  return `${pathname}?token=${tokenType}`
 }

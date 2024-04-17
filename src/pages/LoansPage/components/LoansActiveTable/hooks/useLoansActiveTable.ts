@@ -7,7 +7,7 @@ import { SearchSelectProps } from '@banx/components/SearchSelect'
 
 import { Loan } from '@banx/api/core'
 import { PATHS } from '@banx/router'
-import { useTokenType } from '@banx/store'
+import { createPathWithTokenParam, useTokenType } from '@banx/store'
 
 import { useFilterLoans } from './useFilteredLoans'
 import { useSortLoans } from './useSortLoans'
@@ -56,7 +56,7 @@ export const useLoansActiveTable = ({ loans, isLoading }: UseLoansActiveTablePro
   const showSummary = !!loans.length && !isLoading
 
   const goToBorrowPage = () => {
-    navigate(PATHS.BORROW)
+    navigate(createPathWithTokenParam(PATHS.BORROW, tokenType))
   }
 
   const emptyListParams = {

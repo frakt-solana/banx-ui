@@ -17,6 +17,7 @@ import { useBorrowBonkRewardsAvailability } from '@banx/hooks'
 import { PATHS } from '@banx/router'
 import {
   ViewState,
+  createPathWithTokenParam,
   useIsLedger,
   useLoansOptimistic,
   useModal,
@@ -92,7 +93,7 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
   )
 
   const goToLoansPage = () => {
-    navigate(PATHS.LOANS)
+    navigate(createPathWithTokenParam(PATHS.LOANS, tokenType))
   }
 
   const onBorrowSuccess = (loansAmount = 1, showCongrats = false) => {

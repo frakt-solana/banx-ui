@@ -19,6 +19,7 @@ import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { PATHS } from '@banx/router'
 import {
+  createPathWithTokenParam,
   useLoansOptimistic,
   useModal,
   useOffersOptimistic,
@@ -33,6 +34,7 @@ import { useBorrowerStats } from '../../hooks'
 export const useDashboardBorrowTab = () => {
   const { connected } = useWallet()
   const navigate = useNavigate()
+  const { tokenType } = useTokenType()
 
   const { borrow, nfts, isLoading: isLoadingNFTs, findBestOffer } = useSingleBorrow()
 
@@ -58,7 +60,7 @@ export const useDashboardBorrowTab = () => {
   const headingText = connected ? 'Click to borrow' : '1 click loan'
 
   const goToBorrowPage = () => {
-    navigate(PATHS.BORROW)
+    navigate(createPathWithTokenParam(PATHS.BORROW, tokenType))
     trackPageEvent('dashboard', 'borrowtab-collection')
   }
 
@@ -104,7 +106,7 @@ export const useSingleBorrow = () => {
   }
 
   const goToLoansPage = () => {
-    navigate(PATHS.LOANS)
+    navigate(createPathWithTokenParam(PATHS.LOANS, tokenType))
   }
 
   const onBorrowSuccess = (showCongrats = false) => {

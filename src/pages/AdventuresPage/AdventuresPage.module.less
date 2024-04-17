@@ -21,16 +21,6 @@
   height: 100%;
   width: 100%;
   overflow-y: scroll;
-
-  &.active {
-    @media screen and (max-width: 1280px) {
-      padding-bottom: 302px;
-    }
-
-    @media screen and (max-width: 640px) {
-      padding-bottom: 242px;
-    }
-  }
 }
 
 .adventuresList {
@@ -41,10 +31,20 @@
   }
 }
 
+.adventuresListSidebarVisible {
+  @media screen and (max-width: 1280px) {
+    padding-bottom: calc(12px + 324px);
+  }
+
+  @media screen and (max-width: 640px) {
+    padding-bottom: calc(8px + 253px);
+  }
+}
+
 .sidebar {
   height: 100%;
   max-width: 344px;
-  border-left: 0.5px solid var(--bg-border);
+  border-left: var(--border-less-primary);
 
   @media screen and (max-width: 1280px) {
     position: absolute;
@@ -54,11 +54,10 @@
     max-width: unset;
     height: unset;
     border-left: unset;
-    border-top: 0.5px solid var(--bg-border);
+    border-top: var(--border-less-primary);
   }
 
-  //? Prevent zIndex bug on phantom mobile app
-  @media screen and (max-width: 640px) {
+  @media screen and (max-width: 960px) {
     position: fixed;
   }
 }
