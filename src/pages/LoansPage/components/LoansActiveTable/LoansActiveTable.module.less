@@ -253,7 +253,8 @@
   }
 }
 
-.filterButton {
+.repaymentCallFilterButton,
+.terminatingFilterButton {
   &.active {
     border-color: var(--content-primary);
   }
@@ -261,9 +262,19 @@
   svg path {
     fill: revert-layer;
   }
+}
 
+.terminatingFilterButton {
   &.disabled {
     svg path:first-child {
+      fill: var(--content-secondary);
+    }
+  }
+}
+
+.repaymentCallFilterButton {
+  &.disabled {
+    svg path {
       fill: var(--content-secondary);
     }
   }

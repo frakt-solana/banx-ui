@@ -165,7 +165,7 @@ const RepaymentCallFilterButton: FC<FilterButtonProps> = ({ isActive, onClick, c
     >
       <Button
         className={classNames(
-          styles.filterButton,
+          styles.repaymentCallFilterButton,
           { [styles.active]: isActive },
           { [styles.disabled]: !countOfLoans },
         )}
@@ -188,7 +188,7 @@ const TerminatingFilterButton: FC<FilterButtonProps> = ({ isActive, onClick, cou
     >
       <Button
         className={classNames(
-          styles.filterButton,
+          styles.terminatingFilterButton,
           { [styles.active]: isActive },
           { [styles.disabled]: !countOfLoans },
         )}
