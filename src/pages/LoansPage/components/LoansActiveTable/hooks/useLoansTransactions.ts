@@ -5,7 +5,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 import { Loan } from '@banx/api/core'
 import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
-import { useIsLedger, useLoansOptimistic, usePriorityFees } from '@banx/store'
+import { useIsLedger, useLoansOptimistic, useModal, usePriorityFees } from '@banx/store'
 import { BorrowType, createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
   REPAY_NFT_PER_TXN,
@@ -29,6 +29,8 @@ export const useLoansTransactions = () => {
   const { connection } = useConnection()
   const { isLedger } = useIsLedger()
   const { priorityLevel } = usePriorityFees()
+
+  const { close } = useModal()
 
   const { update: updateLoansOptimistic } = useLoansOptimistic()
   const { clear: clearSelection } = useSelectedLoans()
@@ -74,6 +76,7 @@ export const useLoansTransactions = () => {
 
             updateLoansOptimistic(result, wallet.publicKey.toBase58())
             clearSelection()
+            close()
           }
         })
       })
@@ -129,6 +132,7 @@ export const useLoansTransactions = () => {
 
             updateLoansOptimistic([result], wallet.publicKey.toBase58())
             clearSelection()
+            close()
           }
         })
       })
