@@ -2,8 +2,8 @@ import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
 import { useMixpanelLocationTrack } from '@banx/utils'
 
-import { InstantLoansContent } from './InstantLoansContent'
 import BorrowHeader from './BorrowHeader'
+import { InstantLoansContent } from './InstantLoansContent'
 
 import styles from './BorrowPage.module.less'
 
