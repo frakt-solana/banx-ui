@@ -207,12 +207,15 @@ export const useLoansTransactions = () => {
   const repayUnpaidLoansInterest = async () => {
     const loadingSnackbarId = uniqueId()
 
-    const loansWithCalculatedUnpaidInterest = selection.map(({ loan }) => ({
-      loan,
-      fractionToRepay: isLoanRepaymentCallActive(loan)
-        ? caclFractionToRepayForRepaymentCall(loan)
-        : caclFractionToRepay(loan),
-    }))
+    const loansWithCalculatedUnpaidInterest = selection
+      .map(({ loan }) => ({
+        loan,
+        fractionToRepay: isLoanRepaymentCallActive(loan)
+          ? caclFractionToRepayForRepaymentCall(loan)
+          : caclFractionToRepay(loan),
+      }))
+      //? Check that the percentageToRepay is greater than 1, since the minimum loan payment is one percent.
+      .filter(({ fractionToRepay }) => fractionToRepay >= 1)
 
     const allLoansAreWithoutRepaymentCall = every(
       selection,

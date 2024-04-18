@@ -31,7 +31,10 @@ const calculateUnpaidInterest = (loan: Loan) => {
   const additionalFee = getAdditionalFee(loan)
 
   const unpaidInterest = Math.max(0, accruedInterest - lenderFullRepaidAmount)
-  return unpaidInterest + additionalFee
+
+  const percentToRepay = calcPercentToPay(loan, unpaidInterest)
+  //? Check that the percentageToRepay is greater than 1, since the minimum loan payment is one percent.
+  return percentToRepay >= 1 ? unpaidInterest + additionalFee : 0
 }
 
 const calcPercentToPay = (loan: Loan, iterestToPay: number) => {
