@@ -1,7 +1,7 @@
 import { FC, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { sumBy } from 'lodash'
+import { every, sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider } from '@banx/components/Slider'
@@ -9,10 +9,14 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import { calcWeeklyFeeWithRepayFee, calculateLoanRepayValue } from '@banx/utils'
+import {
+  calcWeeklyFeeWithRepayFee,
+  calculateLoanRepayValue,
+  isLoanRepaymentCallActive,
+} from '@banx/utils'
 
 import { LoanOptimistic } from '../../loansState'
-import { calcWeightedApr, calculateUnpaidInterest } from './helpers'
+import { calcTotalValueToPay, calcWeightedApr } from './helpers'
 import { useLoansTransactions } from './hooks'
 
 import styles from './LoansActiveTable.module.less'
@@ -38,7 +42,7 @@ export const Summary: FC<SummaryProps> = ({
   const totalSelectedLoans = selectedLoans.length
   const totalDebt = sumBy(selectedLoans, calculateLoanRepayValue)
   const totalWeeklyFee = sumBy(selectedLoans, calcWeeklyFeeWithRepayFee)
-  const totalUnpaidInterest = sumBy(selectedLoans, calculateUnpaidInterest)
+  const totalValueToPay = sumBy(selectedLoans, calcTotalValueToPay)
 
   const handleLoanSelection = (value = 0) => {
     setSelection(loans.slice(0, value), walletPublicKey?.toBase58() || '')
@@ -57,8 +61,8 @@ export const Summary: FC<SummaryProps> = ({
           classNamesProps={{ container: styles.debtInterestStat }}
         />
         <StatInfo
-          label="Accrued interest"
-          value={<DisplayValue value={totalUnpaidInterest} />}
+          label={getLoansStatusActionText(selectedLoans)}
+          value={<DisplayValue value={totalValueToPay} />}
           classNamesProps={{ container: styles.accruedInterestStat }}
         />
         <StatInfo label="Weekly interest" value={<DisplayValue value={totalWeeklyFee} />} />
@@ -79,16 +83,37 @@ export const Summary: FC<SummaryProps> = ({
           max={loans.length}
         />
         <Button
+          className={styles.payButton}
           variant="secondary"
           onClick={repayUnpaidLoansInterest}
-          disabled={!totalUnpaidInterest}
+          disabled={!totalValueToPay}
         >
-          Pay interest {<DisplayValue value={totalUnpaidInterest} />}
+          {getLoansStatusActionText(selectedLoans)}
+          {<DisplayValue value={totalValueToPay} />}
         </Button>
-        <Button onClick={repayBulkLoan} disabled={!totalSelectedLoans}>
+        <Button
+          className={styles.repayButton}
+          onClick={repayBulkLoan}
+          disabled={!totalSelectedLoans}
+        >
           Repay <DisplayValue value={totalDebt} />
         </Button>
       </div>
     </div>
   )
+}
+
+const getLoansStatusActionText = (selectedLoans: Loan[]) => {
+  const hasSelectedLoans = selectedLoans.length > 0
+
+  const allAreRepaymentCallLoans =
+    hasSelectedLoans && every(selectedLoans, isLoanRepaymentCallActive)
+
+  const allAreWithoutRepaymentCallLoans =
+    hasSelectedLoans && every(selectedLoans, (loan) => !isLoanRepaymentCallActive(loan))
+
+  if (allAreRepaymentCallLoans) return 'Repayment call'
+  if (allAreWithoutRepaymentCallLoans) return 'Pay interest'
+
+  return 'Pay'
 }

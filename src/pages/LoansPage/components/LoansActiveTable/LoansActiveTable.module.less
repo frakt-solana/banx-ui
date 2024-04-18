@@ -132,9 +132,24 @@
     gap: 8px;
   }
 }
-.summaryControls button {
-  min-width: 170px;
 
+.sliderContainer {
+  @media (max-width: 1240px) {
+    order: 2;
+    flex-direction: row-reverse;
+  }
+}
+
+.repayButton {
+  min-width: 170px;
+}
+
+.payButton {
+  min-width: 192px;
+}
+
+.payButton,
+.repayButton {
   @media (max-width: 1240px) {
     min-width: unset;
     width: 100%;
@@ -142,13 +157,6 @@
     span {
       display: none;
     }
-  }
-}
-
-.sliderContainer {
-  @media (max-width: 1240px) {
-    order: 2;
-    flex-direction: row-reverse;
   }
 }
 

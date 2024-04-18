@@ -20,9 +20,10 @@ import {
   enqueueTransactionSent,
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
+  isLoanRepaymentCallActive,
 } from '@banx/utils'
 
-import { caclFractionToRepay } from '../helpers'
+import { caclFractionToRepay, caclFractionToRepayForRepaymentCall } from '../helpers'
 
 export const useLoansTransactions = () => {
   const wallet = useWallet()
@@ -206,9 +207,12 @@ export const useLoansTransactions = () => {
   const repayUnpaidLoansInterest = async () => {
     const loadingSnackbarId = uniqueId()
 
-    const loansWithCalculatedUnpaidInterest = selection
-      .map(({ loan }) => ({ loan, fractionToRepay: caclFractionToRepay(loan) }))
-      .filter(({ fractionToRepay }) => fractionToRepay > 0)
+    const loansWithCalculatedUnpaidInterest = selection.map(({ loan }) => ({
+      loan,
+      fractionToRepay: isLoanRepaymentCallActive(loan)
+        ? caclFractionToRepayForRepaymentCall(loan)
+        : caclFractionToRepay(loan),
+    }))
 
     const txnParams = loansWithCalculatedUnpaidInterest.map((loan) => ({
       ...loan,
