@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, ReactNode } from 'react'
 
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import moment from 'moment'
@@ -32,13 +32,16 @@ export const createTimeValueJSX = (initialValue: number, zeroPlaceholder = '--')
   return <span className={styles.value}>{displayValue}</span>
 }
 
+const createPlaceholderJSX = (value: number, tokenUnit: ReactNode) => (
+  <>
+    <span className={styles.value}>{value}</span>
+    <span className={styles.tokenUnit}>{tokenUnit}</span>
+  </>
+)
+
 const DEFAULT_PLACEHOLDERS = {
-  [LendingTokenType.NativeSol]: '0◎',
-  [LendingTokenType.Usdc]: (
-    <>
-      0 <USDC />
-    </>
-  ),
+  [LendingTokenType.NativeSol]: createPlaceholderJSX(0, '◎'),
+  [LendingTokenType.Usdc]: createPlaceholderJSX(0, <USDC />),
 }
 
 export const DisplayValue: FC<{ value: number; placeholder?: string }> = ({
@@ -54,12 +57,12 @@ export const DisplayValue: FC<{ value: number; placeholder?: string }> = ({
 
   const displayValue = formattedValue ? (
     <>
-      {formattedValue}
-      {tokenUnit}
+      <span className={styles.value}>{formattedValue}</span>
+      <span className={styles.tokenUnit}>{tokenUnit}</span>
     </>
   ) : (
     defaultPlaceholder
   )
 
-  return <span className={styles.displayValue}>{displayValue}</span>
+  return <div className={styles.displayValue}>{displayValue}</div>
 }
