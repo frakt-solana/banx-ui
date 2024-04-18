@@ -164,7 +164,11 @@ export const Summary: FC<SummaryProps> = ({
           max={loans.length}
           className={styles.sliderContainer}
         />
-        <Button onClick={onClickHandler} disabled={!selectedLoans.length}>
+        <Button
+          className={styles.refinanceButton}
+          onClick={onClickHandler}
+          disabled={!selectedLoans.length}
+        >
           Refinance <DisplayValue value={totalDebt} />
         </Button>
       </div>

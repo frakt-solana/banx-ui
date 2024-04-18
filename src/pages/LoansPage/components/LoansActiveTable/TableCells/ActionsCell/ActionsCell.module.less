@@ -27,6 +27,14 @@
   width: 100%;
 }
 
+.repayModalButton {
+  &:disabled {
+    svg path:first-child {
+      fill: var(--content-secondary);
+    }
+  }
+}
+
 .currentLoanInfo {
   margin-bottom: 18px;
 }
