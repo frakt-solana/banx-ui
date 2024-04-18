@@ -1,5 +1,5 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { chunk, groupBy, uniqueId } from 'lodash'
+import { chunk, every, groupBy, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
@@ -126,7 +126,7 @@ export const useLoansTransactions = () => {
         return confirmed.forEach(({ result, signature }) => {
           if (result && wallet.publicKey) {
             enqueueSnackbar({
-              message: 'Repaid successfully',
+              message: 'Paid successfully',
               type: 'success',
               solanaExplorerPath: `tx/${signature}`,
             })
@@ -214,6 +214,11 @@ export const useLoansTransactions = () => {
         : caclFractionToRepay(loan),
     }))
 
+    const allLoansAreWithoutRepaymentCall = every(
+      selection,
+      ({ loan }) => !isLoanRepaymentCallActive(loan),
+    )
+
     const txnParams = loansWithCalculatedUnpaidInterest.map((loan) => ({
       ...loan,
       priorityFeeLevel: priorityLevel,
@@ -235,7 +240,11 @@ export const useLoansTransactions = () => {
         destroySnackbar(loadingSnackbarId)
 
         if (confirmed.length) {
-          enqueueSnackbar({ message: 'Loans interest successfully paid', type: 'success' })
+          const message = allLoansAreWithoutRepaymentCall
+            ? 'Loans interest successfully paid'
+            : 'Paid successfully'
+
+          enqueueSnackbar({ message, type: 'success' })
 
           confirmed.forEach(({ result }) => {
             if (result && wallet.publicKey) {

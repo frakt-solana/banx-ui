@@ -106,14 +106,14 @@ export const Summary: FC<SummaryProps> = ({
 const getLoansStatusActionText = (selectedLoans: Loan[]) => {
   const hasSelectedLoans = selectedLoans.length > 0
 
-  const allAreRepaymentCallLoans =
+  const allLoansAreRepaymentCall =
     hasSelectedLoans && every(selectedLoans, isLoanRepaymentCallActive)
 
-  const allAreWithoutRepaymentCallLoans =
+  const allLoansAreWithoutRepaymentCall =
     hasSelectedLoans && every(selectedLoans, (loan) => !isLoanRepaymentCallActive(loan))
 
-  if (allAreRepaymentCallLoans) return 'Repayment call'
-  if (allAreWithoutRepaymentCallLoans) return 'Pay interest'
+  if (allLoansAreRepaymentCall) return 'Repayment call'
+  if (allLoansAreWithoutRepaymentCall) return 'Pay interest'
 
   return 'Pay'
 }
