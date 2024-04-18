@@ -108,7 +108,7 @@ export const LoansTable = () => {
           cardClassName: styles.liquidated,
         },
         {
-          condition: (loan: Loan) => isUnderWaterLoan(loan),
+          condition: (loan: Loan) => isUnderWaterLoan(loan) && !isLoanRepaymentCallActive(loan),
           className: styles.underwater,
           cardClassName: styles.underwater,
         },
