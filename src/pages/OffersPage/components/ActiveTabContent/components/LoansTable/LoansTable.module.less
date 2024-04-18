@@ -90,7 +90,7 @@
   &[data-underwater-loans]::after {
     content: attr(data-underwater-loans);
     border-radius: 100px;
-    background: var(--additional-blue-primary);
+    background: var(--additional-lava-primary);
     color: var(--pure-black);
     font: var(--body-text-xs);
 
@@ -109,7 +109,7 @@
 
 .filterButton {
   svg path:nth-child(2) {
-    fill: var(--additional-blue-primary);
+    fill: var(--additional-lava-primary);
   }
 
   &.active {
@@ -124,16 +124,13 @@
 }
 
 //? Active row styles
-.terminated {
-  background: var(--additional-lava-secondary) !important;
-}
-
+.terminated,
 .liquidated {
   background: var(--additional-red-secondary) !important;
 }
 
 .underwater {
-  background: var(--additional-blue-secondary) !important;
+  background: var(--additional-lava-secondary) !important;
 }
 
 .activeRepaymentCall {
