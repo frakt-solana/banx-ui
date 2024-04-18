@@ -1,0 +1,52 @@
+.container {
+  cursor: default;
+  display: flex;
+  overflow: hidden;
+  height: 348px;
+  width: 100%;
+}
+
+// * Form * //
+.form {
+  padding: 12px 24px;
+}
+
+.fields {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  max-width: 220px;
+
+  & > div {
+    max-width: 104px;
+  }
+}
+
+.sliderContainer {
+  max-width: unset;
+}
+
+.summary {
+  border-color: var(--bg-border);
+  border-style: dotted;
+  border-width: 1px 0 1px 0;
+
+  display: flex;
+  flex-direction: column;
+  margin: 12px -24px;
+  padding: 12px 24px;
+  gap: 8px;
+
+  @media (max-width: 640px) {
+    border-left: 0;
+    border-right: 0;
+    gap: 4px;
+    margin: 0 -16px 8px;
+  }
+}
+
+.submitButton {
+  width: 100%;
+}
+// * Form * //

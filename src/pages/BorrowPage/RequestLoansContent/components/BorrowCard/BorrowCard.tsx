@@ -10,6 +10,8 @@ import { DisplayValue } from '@banx/components/TableComponents'
 import { MarketPreview } from '@banx/api/core'
 import { ChevronDown } from '@banx/icons'
 
+import ExpandedCardContent from '../ExpandedCardContent'
+
 import styles from './BorrowCard.module.less'
 
 interface BorrowCardProps {
@@ -33,6 +35,7 @@ const BorrowCard: FC<BorrowCardProps> = ({ market, onClick, isOpen }) => {
           </Button>
         </div>
       </div>
+      {isOpen && <ExpandedCardContent market={market} />}
     </div>
   )
 }
