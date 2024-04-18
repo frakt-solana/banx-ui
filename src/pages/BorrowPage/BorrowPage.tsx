@@ -4,6 +4,7 @@ import { useMixpanelLocationTrack } from '@banx/utils'
 
 import BorrowHeader from './BorrowHeader'
 import { InstantLoansContent } from './InstantLoansContent'
+import { RequestLoansContent } from './RequestLoansContent'
 
 import styles from './BorrowPage.module.less'
 
@@ -20,7 +21,7 @@ export const BorrowPage = () => {
       <BorrowHeader />
       <Tabs value={currentTabValue} {...tabsProps} />
       {currentTabValue === BorrowTabName.INSTANT && <InstantLoansContent />}
-      {currentTabValue === BorrowTabName.REQUEST && <div>Request loans content here</div>}
+      {currentTabValue === BorrowTabName.REQUEST && <RequestLoansContent />}
     </div>
   )
 }
