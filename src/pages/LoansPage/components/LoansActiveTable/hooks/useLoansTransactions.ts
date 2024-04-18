@@ -214,7 +214,6 @@ export const useLoansTransactions = () => {
           ? caclFractionToRepayForRepaymentCall(loan)
           : caclFractionToRepay(loan),
       }))
-      //? Check that the percentageToRepay is greater than 1, since the minimum loan payment is one percent.
       .filter(({ fractionToRepay }) => fractionToRepay >= 1)
 
     const allLoansAreWithoutRepaymentCall = every(
