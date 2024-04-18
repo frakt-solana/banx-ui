@@ -89,8 +89,8 @@
 
   &[data-underwater-loans]::after {
     content: attr(data-underwater-loans);
-    color: var(--additional-yellow-primary-deep);
-    background: var(--additional-yellow-secondary);
+    color: var(--pure-black);
+    background: var(--additional-blue-primary);
     border-radius: 100px;
     display: flex;
     align-items: center;
@@ -107,7 +107,7 @@
 
 .filterButton {
   svg path:nth-child(2) {
-    fill: var(--additional-yellow-primary-deep);
+    fill: var(--additional-blue-primary);
   }
 
   &.active {
@@ -131,6 +131,10 @@
 }
 
 .underwater {
+  background: var(--additional-blue-secondary) !important;
+}
+
+.activeRepaymentCall {
   background: var(--additional-yellow-secondary) !important;
 }
 
@@ -163,4 +167,8 @@
       font: var(--body-text-sm);
     }
   }
+}
+
+.repaymentCallTooltipContent {
+  margin-bottom: 14px;
 }

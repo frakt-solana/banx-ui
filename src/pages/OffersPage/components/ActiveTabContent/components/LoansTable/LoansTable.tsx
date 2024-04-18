@@ -12,7 +12,12 @@ import { Loan } from '@banx/api/core'
 import { Underwater } from '@banx/icons'
 import { isLoanAbleToTerminate } from '@banx/pages/OffersPage'
 import { ViewState, useTableView } from '@banx/store'
-import { isLoanLiquidated, isLoanTerminating, isUnderWaterLoan } from '@banx/utils'
+import {
+  isLoanLiquidated,
+  isLoanRepaymentCallActive,
+  isLoanTerminating,
+  isUnderWaterLoan,
+} from '@banx/utils'
 
 import { Summary } from './Summary'
 import { getTableColumns } from './columns'
@@ -106,6 +111,11 @@ export const LoansTable = () => {
           condition: (loan: Loan) => isUnderWaterLoan(loan),
           className: styles.underwater,
           cardClassName: styles.underwater,
+        },
+        {
+          condition: (loan: Loan) => isLoanRepaymentCallActive(loan),
+          className: styles.activeRepaymentCall,
+          cardClassName: styles.activeRepaymentCall,
         },
       ],
     }

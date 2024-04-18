@@ -7,10 +7,12 @@ import {
   NftInfoCell,
   createPercentValueJSX,
 } from '@banx/components/TableComponents'
+import Tooltip from '@banx/components/Tooltip'
 
 import { Loan } from '@banx/api/core'
+import { Call } from '@banx/icons'
 import { calculateClaimValue, isLoanAbleToTerminate } from '@banx/pages/OffersPage'
-import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
+import { HealthColorIncreasing, getColorByPercent, isLoanRepaymentCallActive } from '@banx/utils'
 
 import { ActionsCell, ClaimCell, StatusCell } from './TableCells'
 import { LoanOptimistic } from './loansState'
@@ -57,6 +59,13 @@ export const getTableColumns = ({
             onCheckboxClick={() => toggleLoanInSelection(loan)}
             banxPoints={{ partnerPoints, playerPoints }}
             checkboxClassName={!canSelect ? styles.nftCellCheckbox : ''}
+            rightContentJSX={
+              isLoanRepaymentCallActive(loan) ? (
+                <Tooltip className={styles.repaymentCallTooltipContent} title="Repayment call sent">
+                  <Call />
+                </Tooltip>
+              ) : null
+            }
           />
         )
       },
