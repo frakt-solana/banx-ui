@@ -6,12 +6,14 @@ import { Button } from '@banx/components/Buttons'
 import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
+import { Tabs, useTabs } from '@banx/components/Tabs'
 import { NumericStepInput } from '@banx/components/inputs'
 
 import { MarketPreview } from '@banx/api/core'
 import { useTokenType } from '@banx/store'
-import { getTokenUnit, isSolTokenType } from '@banx/utils'
+import { getTokenUnit } from '@banx/utils'
 
+import { DEFAULT_TAB_VALUE, INPUT_TOKEN_STEP, TABS, TabName } from './constants'
 import { useRequestLoansForm } from './hooks'
 
 import styles from './ExpandedCardContent.module.less'
@@ -30,7 +32,10 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
     loanToValuePercent,
   } = useRequestLoansForm(market)
 
-  const inputStepByTokenType = isSolTokenType(tokenType) ? 0.1 : 1
+  const { value: currentTabValue, ...tabsProps } = useTabs({
+    tabs: TABS,
+    defaultValue: DEFAULT_TAB_VALUE,
+  })
 
   return (
     <div className={styles.container}>
@@ -44,7 +49,7 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
             disabled={!connected}
             placeholder="0"
             postfix={getTokenUnit(tokenType)}
-            step={inputStepByTokenType}
+            step={INPUT_TOKEN_STEP[tokenType]}
           />
           <NumericStepInput
             label="Apr"
@@ -84,6 +89,11 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
           <StatInfo label="Weekly interest" value={<DisplayValue value={10} />} flexType="row" />
         </div>
         <Button className={styles.submitButton}>List 3 requests</Button>
+      </div>
+      <div className={styles.tabsContent}>
+        <Tabs value={currentTabValue} {...tabsProps} />
+        {currentTabValue === TabName.NFTS && <></>}
+        {currentTabValue === TabName.ACTIVITY && <></>}
       </div>
     </div>
   )
