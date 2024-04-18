@@ -24,7 +24,7 @@ export const TOKEN_DECIMALS = {
 
 export const DECIMAL_PLACES_LIMITS = {
   [LendingTokenType.Usdc]: [
-    { limit: 10000, decimalPlaces: 0 }, //? Values up to 10000 have 0 decimal places
+    { limit: 100, decimalPlaces: 0 }, //? Values up to 100 have 0 decimal places
     { limit: 0.1, decimalPlaces: 2 }, //? Values up to 0.1 have 2 decimal places
     { limit: 0, decimalPlaces: 3 }, //? Values greater than 0 but less than 0.1 have 3 decimal places
   ],
