@@ -1,13 +1,13 @@
 import { FC } from 'react'
 
 import { Button } from '@banx/components/Buttons'
+import ActivityTable from '@banx/components/CommonTables'
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { useModal } from '@banx/store'
 import { toLowerCaseNoSpaces, trackPageEvent } from '@banx/utils'
 
-import ActivityTable from '../ActivityTable'
 import OrderBook from '../OrderBook'
 
 import styles from './ExpandableCardContent.module.less'

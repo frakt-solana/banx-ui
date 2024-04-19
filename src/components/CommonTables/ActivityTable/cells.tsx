@@ -18,11 +18,7 @@ import {
 
 import styles from './ActivityTable.module.less'
 
-interface StatusCellProps {
-  loan: LenderActivity
-}
-
-export const StatusCell: FC<StatusCellProps> = ({ loan }) => {
+export const StatusCell: FC<{ loan: LenderActivity }> = ({ loan }) => {
   const loanStatus = STATUS_LOANS_MAP_WITH_REFINANCED_ACTIVE[loan.status]
   const statusColor = STATUS_LOANS_COLOR_MAP[loanStatus as LoanStatus]
 
@@ -33,11 +29,7 @@ export const StatusCell: FC<StatusCellProps> = ({ loan }) => {
   )
 }
 
-interface CollateralCellProps {
-  loan: LenderActivity
-}
-
-export const CollateralCell: FC<CollateralCellProps> = ({ loan }) => {
+export const CollateralCell: FC<{ loan: LenderActivity }> = ({ loan }) => {
   const { name, imageUrl, partnerPoints = 0, playerPoints = 0 } = loan.nft.meta
 
   const [nftCollectionName, nftNumber] = name.split('#')
@@ -62,24 +54,14 @@ export const CollateralCell: FC<CollateralCellProps> = ({ loan }) => {
   )
 }
 
-interface LentCellProps {
-  loan: LenderActivity
-}
+export const LentCell: FC<{ loan: LenderActivity }> = ({ loan }) => (
+  <span className={styles.lentCellTitle}>
+    <DisplayValue value={loan.lent} />
+  </span>
+)
 
-export const LentCell: FC<LentCellProps> = ({ loan }) => {
-  return (
-    <span className={styles.lentCellTitle}>
-      <DisplayValue value={loan.lent} />
-    </span>
-  )
-}
+export const AprCell: FC<{ loan: LenderActivity }> = ({ loan }) => {
+  const aprInPercent = loan.apr / 100
 
-interface AprCellProps {
-  loan: LenderActivity
-}
-
-export const AprCell: FC<AprCellProps> = ({ loan }) => {
-  const formattedApr = loan.apr / 100
-
-  return <span className={styles.aprCellTitle}>{createPercentValueJSX(formattedApr)}</span>
+  return <span className={styles.aprCellTitle}>{createPercentValueJSX(aprInPercent)}</span>
 }

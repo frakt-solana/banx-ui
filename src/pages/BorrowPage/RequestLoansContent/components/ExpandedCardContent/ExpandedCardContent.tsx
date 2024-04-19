@@ -3,6 +3,7 @@ import { FC } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 
 import { Button } from '@banx/components/Buttons'
+import ActivityTable from '@banx/components/CommonTables'
 import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
@@ -93,7 +94,9 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
       <div className={styles.tabsContent}>
         <Tabs value={currentTabValue} {...tabsProps} />
         {currentTabValue === TabName.NFTS && <></>}
-        {currentTabValue === TabName.ACTIVITY && <></>}
+        {currentTabValue === TabName.ACTIVITY && (
+          <ActivityTable marketPubkey={market.marketPubkey} />
+        )}
       </div>
     </div>
   )
