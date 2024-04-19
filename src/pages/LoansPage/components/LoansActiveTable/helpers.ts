@@ -56,8 +56,8 @@ export const caclFractionToRepayForRepaymentCall = (loan: Loan) => {
   const debtWithoutFee = calculateLoanRepayValue(loan, false)
   const repaymentCallAmount = loan.bondTradeTransaction.repaymentCallAmount
 
-  const repaymentPercentage = (repaymentCallAmount / debtWithoutFee) * 100
-  return Math.ceil(repaymentPercentage * 100)
+  const unroundedRepaymentPercentage = (repaymentCallAmount / debtWithoutFee) * 100
+  return Math.ceil(unroundedRepaymentPercentage * 100)
 }
 
 export const calcTotalValueToPay = (loan: Loan) => {

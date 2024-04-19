@@ -261,7 +261,8 @@ export const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, clos
 
     const loadingSnackbarId = uniqueId()
 
-    const txnParam = { loan, callAmount: paybackValue }
+    const callAmount = Math.floor((calculateLoanRepayValue(loan) * repayPercent) / 100)
+    const txnParam = { loan, callAmount }
 
     await new TxnExecutor(
       makeRepaymentCallAction,
@@ -343,7 +344,7 @@ export const calculateRepaymentStaticValues = (loan: Loan) => {
   const repaymentCallActive = isLoanRepaymentCallActive(loan)
   const repaymentCallAmount = loan.bondTradeTransaction.repaymentCallAmount
 
-  const totalClaim = calculateLoanRepayValue(loan)
+  const totalClaim = calculateClaimValue(loan)
 
   const initialRepayPercent = repaymentCallActive
     ? (repaymentCallAmount / totalClaim) * 100
