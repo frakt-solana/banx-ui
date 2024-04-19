@@ -1,38 +1,28 @@
-import { useState } from 'react'
-
-import { isEmpty } from 'lodash'
-
 import { Loader } from '@banx/components/Loader'
 
 import { useFakeInfinityScroll } from '@banx/hooks'
-import { useMarketsPreview } from '@banx/pages/LendPage'
 
 import BorrowCard from './components/BorrowCard'
+import FilterSection from './components/FilterSection'
+import { useRequestLoansContent } from './hooks'
 
 import styles from './RequestLoansContent.module.less'
 
 export const RequestLoansContent = () => {
-  const { marketsPreview, isLoading: isLoadingMarkets } = useMarketsPreview()
+  const { visibleMarketPubkey, searchSelectParams, sortParams, isLoading, onCardClick, markets } =
+    useRequestLoansContent()
 
-  const { data: markets, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: marketsPreview })
-
-  const [visibleMarketPubkey, setMarketPubkey] = useState('')
-
-  const onCardClick = (marketPubkey: string) => {
-    const isSameMarketPubkey = visibleMarketPubkey === marketPubkey
-    const nextValue = !isSameMarketPubkey ? marketPubkey : ''
-    return setMarketPubkey(nextValue)
-  }
-
-  const isLoading = isLoadingMarkets && isEmpty(marketsPreview)
+  const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: markets })
 
   return (
     <div className={styles.content}>
+      <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
+
       {isLoading && <Loader />}
 
       {!isLoading && (
         <div className={styles.marketsList}>
-          {markets.map((market) => (
+          {data.map((market) => (
             <BorrowCard
               key={market.marketPubkey}
               market={market}
