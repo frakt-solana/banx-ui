@@ -124,6 +124,7 @@ const BondTradeTransactionSchema = z.object({
   seller: z.string(),
   solAmount: z.number(),
   soldAt: z.number(),
+  terminationFreeze: z.number(),
   terminationStartedAt: z.number(),
   user: z.string(),
 })
