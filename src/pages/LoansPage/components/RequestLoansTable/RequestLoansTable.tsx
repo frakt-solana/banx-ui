@@ -8,9 +8,9 @@ import Table from '@banx/components/Table'
 import { Loan } from '@banx/api/core'
 import { ViewState, useTableView } from '@banx/store'
 
-import { useLoansActiveTable } from '../LoansActiveTable'
 import { Summary } from './Summary'
 import { getTableColumns } from './columns'
+import { useRequestsLoansTable } from './hooks'
 import { useSelectedLoans } from './loansState'
 
 import styles from './RequestLoansTable.module.less'
@@ -27,7 +27,7 @@ export const RequestsTable: FC<LoansActiveTableProps> = ({ loans: rawLoans, isLo
   const { viewState } = useTableView()
 
   const { sortViewParams, loans, loading, showEmptyList, emptyListParams, showSummary } =
-    useLoansActiveTable({ loans: rawLoans, isLoading })
+    useRequestsLoansTable({ loans: rawLoans, isLoading })
 
   const {
     selection,
@@ -53,16 +53,12 @@ export const RequestsTable: FC<LoansActiveTableProps> = ({ loans: rawLoans, isLo
   }, [clearSelection, hasSelectedLoans, loans, setSelection, walletPublicKeyString])
 
   const findLoanInSelection = useCallback(
-    (loanPubkey: string) => {
-      return find(loanPubkey, walletPublicKeyString)
-    },
+    (loanPubkey: string) => find(loanPubkey, walletPublicKeyString),
     [find, walletPublicKeyString],
   )
 
   const onRowClick = useCallback(
-    (loan: Loan) => {
-      toggleLoanInSelection(loan, walletPublicKeyString)
-    },
+    (loan: Loan) => toggleLoanInSelection(loan, walletPublicKeyString),
     [toggleLoanInSelection, walletPublicKeyString],
   )
 

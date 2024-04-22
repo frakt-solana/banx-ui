@@ -7,7 +7,7 @@ import { SortOption } from '@banx/components/SortDropdown'
 import { Loan } from '@banx/api/core'
 import { calculateLoanRepayValue } from '@banx/utils'
 
-import styles from '../LoansActiveTable.module.less'
+import styles from '../RequestLoansTable.module.less'
 
 enum SortField {
   BORROW = 'borrow',
@@ -25,6 +25,7 @@ const SORT_OPTIONS = [
   { label: 'Borrow', value: SortField.BORROW },
   { label: 'APR', value: SortField.APR },
   { label: 'LTV', value: SortField.LTV },
+  { label: 'Freeze', value: SortField.FREEZE },
 ]
 
 const DEFAULT_SORT_OPTION = { label: 'Borrow', value: `${SortField.BORROW}_desc` }

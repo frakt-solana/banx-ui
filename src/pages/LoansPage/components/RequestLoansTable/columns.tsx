@@ -9,7 +9,7 @@ import {
 
 import { Loan } from '@banx/api/core'
 
-import { APRCell, ActionsCell, LTVCell } from './TableCells'
+import { APRCell, ActionsCell, FreezeCell, LTVCell } from './TableCells'
 import { LoanOptimistic } from './loansState'
 
 import styles from './RequestLoansTable.module.less'
@@ -74,7 +74,7 @@ export const getTableColumns: GetTableColumns = ({
     {
       key: 'freeze',
       title: <HeaderCell label="Freeze" tooltipText="Freeze" />,
-      render: () => <>14 D</>,
+      render: (loan) => <FreezeCell loan={loan} />,
     },
     {
       key: 'actionsCell',

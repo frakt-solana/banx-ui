@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import React, { FC } from 'react'
 
 import { Button } from '@banx/components/Buttons'
 import { HorizontalCell, createPercentValueJSX } from '@banx/components/TableComponents'
@@ -6,6 +6,8 @@ import { HorizontalCell, createPercentValueJSX } from '@banx/components/TableCom
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { HealthColorIncreasing, calculateLoanRepayValue, getColorByPercent } from '@banx/utils'
+
+import { useRequestLoansTransactions } from '../hooks'
 
 import styles from '../RequestLoansTable.module.less'
 
@@ -33,15 +35,27 @@ export const APRCell: FC<{ loan: Loan }> = ({ loan }) => {
   return <HorizontalCell value={createPercentValueJSX(aprInPercent)} isHighlighted />
 }
 
+export const FreezeCell: FC<{ loan: Loan }> = () => {
+  return <HorizontalCell value={`${14} D`} />
+}
+
 interface ActionsCellProps {
   loan: Loan
   disabled: boolean
   isCardView: boolean
 }
 
-export const ActionsCell: FC<ActionsCellProps> = ({ disabled, isCardView }) => {
+export const ActionsCell: FC<ActionsCellProps> = ({ loan, disabled, isCardView }) => {
+  const { delistLoan } = useRequestLoansTransactions()
+
+  const onButtonClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    delistLoan(loan)
+    event.stopPropagation()
+  }
+
   return (
     <Button
+      onClick={onButtonClick}
       size={isCardView ? 'default' : 'small'}
       className={styles.delistButton}
       disabled={disabled}

@@ -1,3 +1,4 @@
+// * RequestLoansTable *//
 .tableRoot {
   flex-grow: 1;
   display: flex;
@@ -33,18 +34,9 @@
 .searchSelect {
   max-width: 456px;
 }
+// * RequestLoansTable *//
 
-.headerTitleRow {
-  display: flex;
-  align-items: center;
-  gap: 16px !important;
-}
-
-.checkbox {
-  height: 18px;
-  padding-left: 18px;
-}
-
+// * Summary * //
 .summary {
   border-top: 1px solid var(--bg-border);
   display: flex;
@@ -144,13 +136,25 @@
   }
 }
 
-.weightedAprStat,
-.debtInterestStat {
+.weightedAprStat {
   display: none;
 
   @media (max-width: 1240px) {
     display: flex;
   }
+}
+// * Summary * //
+
+// * TableCells * //
+.headerTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 16px !important;
+}
+
+.checkbox {
+  height: 18px;
+  padding-left: 18px;
 }
 
 .delistButton {
@@ -162,4 +166,10 @@
   &:hover {
     border: 1px solid var(--additional-red-primary-deep);
   }
+
+  &:disabled {
+    background-color: var(--bg-secondary) !important;
+    color: var(--content-secondary) !important;
+  }
 }
+// * TableCells * //
