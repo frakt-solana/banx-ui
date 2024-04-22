@@ -11,9 +11,9 @@ import { DisplayValue, createPercentValueJSX } from '@banx/components/TableCompo
 import { Loan } from '@banx/api/core'
 import { calcWeeklyFeeWithRepayFee, calculateLoanRepayValue } from '@banx/utils'
 
-import { LoanOptimistic } from '../../loansState'
 import { calcUnpaidAccruedInterest, calcWeightedApr } from './helpers'
 import { useLoansTransactions } from './hooks'
+import { LoanOptimistic } from './loansState'
 
 import styles from './LoansActiveTable.module.less'
 

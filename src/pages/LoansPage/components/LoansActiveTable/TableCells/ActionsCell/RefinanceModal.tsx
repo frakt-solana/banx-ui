@@ -15,7 +15,6 @@ import { Modal } from '@banx/components/modals/BaseModal'
 import { Loan } from '@banx/api/core'
 import { BONDS, TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useMarketOffers } from '@banx/pages/LendPage'
-import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
 import { useLoansOptimistic, useModal, usePriorityFees, useTokenType } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeBorrowRefinanceAction } from '@banx/transactions/loans'
@@ -37,6 +36,8 @@ import {
   isOfferNotEmpty,
   trackPageEvent,
 } from '@banx/utils'
+
+import { useSelectedLoans } from '../../loansState'
 
 import styles from './ActionsCell.module.less'
 

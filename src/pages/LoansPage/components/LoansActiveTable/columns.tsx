@@ -4,8 +4,8 @@ import { HeaderCell, NftInfoCell } from '@banx/components/TableComponents'
 
 import { Loan, Offer } from '@banx/api/core'
 
-import { LoanOptimistic } from '../../loansState'
 import { APRCell, ActionsCell, DebtCell, LTVCell, StatusCell } from './TableCells'
+import { LoanOptimistic } from './loansState'
 
 import styles from './LoansActiveTable.module.less'
 

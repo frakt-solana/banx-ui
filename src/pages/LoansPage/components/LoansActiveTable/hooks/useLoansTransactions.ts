@@ -4,7 +4,6 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
-import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
 import { useIsLedger, useLoansOptimistic, usePriorityFees } from '@banx/store'
 import { BorrowType, createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
@@ -21,6 +20,8 @@ import {
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
 } from '@banx/utils'
+
+import { useSelectedLoans } from '../loansState'
 
 export const useLoansTransactions = () => {
   const wallet = useWallet()
