@@ -34,7 +34,7 @@ export const NftInfoCell: FC<NftInfoCellProps> = ({
   selected = false,
   banxPoints,
   checkboxClassName,
-  rightContentJSX = null,
+  rightContentJSX,
 }) => {
   const { viewState } = useTableView()
   const isCardView = viewState === ViewState.CARD

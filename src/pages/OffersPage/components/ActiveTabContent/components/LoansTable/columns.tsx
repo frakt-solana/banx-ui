@@ -64,7 +64,7 @@ export const getTableColumns = ({
                 <Tooltip className={styles.repaymentCallTooltipContent} title="Repayment call sent">
                   <Call />
                 </Tooltip>
-              ) : null
+              ) : undefined
             }
           />
         )
