@@ -311,7 +311,12 @@ export const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, clos
 
   return (
     <div className={styles.modalContent}>
-      <Slider value={repayPercent} onChange={onPartialPercentChange} />
+      <Slider
+        value={repayPercent}
+        onChange={onPartialPercentChange}
+        marks={DEFAULT_SLIDER_MARKS}
+        max={MAX_SLIDER_VALUE}
+      />
       <div className={styles.repaimentCallAdditionalInfo}>
         <StatInfo
           label="Ask borrower to repay"
@@ -360,4 +365,13 @@ export const calculateRepaymentStaticValues = (loan: Loan) => {
     initialRepayPercent,
     initialRepayValue,
   }
+}
+
+const MAX_SLIDER_VALUE = 90
+const DEFAULT_SLIDER_MARKS = {
+  0: '0%',
+  25: '25%',
+  50: '50%',
+  75: '75%',
+  90: '90%',
 }
