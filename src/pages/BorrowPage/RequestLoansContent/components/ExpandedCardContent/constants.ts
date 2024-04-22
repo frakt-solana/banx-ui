@@ -22,3 +22,5 @@ export const INPUT_TOKEN_STEP = {
   [LendingTokenType.NativeSol]: 0.1, //? 0.1 SOL
   [LendingTokenType.Usdc]: 1, //? 1 USDC
 }
+
+export const DEFAULT_FREEZE_VALUE = 14

@@ -11,9 +11,10 @@ import { Tabs, useTabs } from '@banx/components/Tabs'
 import { NumericStepInput } from '@banx/components/inputs'
 
 import { MarketPreview } from '@banx/api/core'
-import { useTokenType } from '@banx/store'
+import { DAYS_IN_YEAR } from '@banx/constants'
 import { getTokenUnit } from '@banx/utils'
 
+import RequestLoansTable from '../RequestLoansTable'
 import { DEFAULT_TAB_VALUE, INPUT_TOKEN_STEP, TABS, TabName } from './constants'
 import { useRequestLoansForm } from './hooks'
 
@@ -21,7 +22,6 @@ import styles from './ExpandedCardContent.module.less'
 
 const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
   const { connected } = useWallet()
-  const { tokenType } = useTokenType()
 
   const {
     inputLoanValue,
@@ -30,7 +30,15 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
     setInputLoanValue,
     setInputAprValue,
     setInputFreezeValue,
-    loanToValuePercent,
+    handleNftsSelection,
+    requestedLoanValue,
+    totalNftsToRequest,
+    nfts,
+    isLoadingNfts,
+    ltv,
+    upfrontFee,
+    weeklyInterest,
+    tokenType,
   } = useRequestLoansForm(market)
 
   const { value: currentTabValue, ...tabsProps } = useTabs({
@@ -47,7 +55,7 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
             label="Borrow"
             value={inputLoanValue}
             onChange={setInputLoanValue}
-            disabled={!connected}
+            disabled={!connected || !nfts.length}
             placeholder="0"
             postfix={getTokenUnit(tokenType)}
             step={INPUT_TOKEN_STEP[tokenType]}
@@ -56,8 +64,8 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
             label="Apr"
             value={inputAprValue}
             onChange={setInputAprValue}
-            disabled={!connected}
-            placeholder="104"
+            disabled={!connected || !nfts.length}
+            placeholder="0"
             postfix="%"
             step={1}
           />
@@ -65,35 +73,39 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
             label="Freeze"
             value={inputFreezeValue}
             onChange={setInputFreezeValue}
-            disabled={!connected}
-            placeholder="14"
+            disabled={!connected || !nfts.length}
+            placeholder="0"
             postfix="D" //? D => Days
+            max={DAYS_IN_YEAR}
             step={1}
           />
           <CounterSlider
             label="# NFTs"
-            value={10} //? nftsInCart.length
-            onChange={() => null} //? selectAmount
+            value={totalNftsToRequest}
+            onChange={handleNftsSelection}
             rootClassName={styles.slider}
             className={styles.sliderContainer}
-            // max={maxBorrowAmount}
+            max={nfts.length}
+            disabled={!connected || !nfts.length}
           />
         </div>
-        <div className={styles.summary}>
-          <StatInfo
-            label="LTV"
-            value={loanToValuePercent}
-            valueType={VALUES_TYPES.PERCENT}
-            flexType="row"
-          />
-          <StatInfo label="Upfront fee" value={<DisplayValue value={10} />} flexType="row" />
-          <StatInfo label="Weekly interest" value={<DisplayValue value={10} />} flexType="row" />
-        </div>
-        <Button className={styles.submitButton}>List 3 requests</Button>
+
+        <Summary ltv={ltv} upfrontFee={upfrontFee} weeklyInterest={weeklyInterest} />
+
+        <Button className={styles.submitButton} disabled={!totalNftsToRequest}>
+          List {totalNftsToRequest} requests
+        </Button>
       </div>
+
       <div className={styles.tabsContent}>
         <Tabs value={currentTabValue} {...tabsProps} />
-        {currentTabValue === TabName.NFTS && <></>}
+        {currentTabValue === TabName.NFTS && (
+          <RequestLoansTable
+            nfts={nfts}
+            isLoading={isLoadingNfts}
+            requestedLoanValue={requestedLoanValue}
+          />
+        )}
         {currentTabValue === TabName.ACTIVITY && (
           <ActivityTable marketPubkey={market.marketPubkey} />
         )}
@@ -103,3 +115,23 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
 }
 
 export default ExpandedCardContent
+
+interface SummaryProps {
+  ltv: number
+  upfrontFee: number
+  weeklyInterest: number
+}
+
+const Summary: FC<SummaryProps> = ({ ltv, upfrontFee, weeklyInterest }) => {
+  return (
+    <div className={styles.summary}>
+      <StatInfo label="LTV" value={ltv} valueType={VALUES_TYPES.PERCENT} flexType="row" />
+      <StatInfo label="Upfront fee" value={<DisplayValue value={upfrontFee} />} flexType="row" />
+      <StatInfo
+        label="Weekly interest"
+        value={<DisplayValue value={weeklyInterest} />}
+        flexType="row"
+      />
+    </div>
+  )
+}
