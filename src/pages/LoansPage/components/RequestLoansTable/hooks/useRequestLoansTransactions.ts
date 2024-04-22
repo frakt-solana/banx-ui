@@ -4,14 +4,15 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
-import { useLoansOptimistic, usePriorityFees } from '@banx/store'
+import { usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
-import { makeRepayLoansAction } from '@banx/transactions/loans'
+import { makeDelistAction } from '@banx/transactions/listing'
 import {
   destroySnackbar,
   enqueueConfirmationError,
   enqueueSnackbar,
   enqueueTransactionSent,
+  enqueueTransactionsSent,
   enqueueWaitingConfirmation,
 } from '@banx/utils'
 
@@ -22,16 +23,15 @@ export const useRequestLoansTransactions = () => {
   const { connection } = useConnection()
   const { priorityLevel } = usePriorityFees()
 
-  const { update: updateLoansOptimistic } = useLoansOptimistic()
-  const { clear: clearSelection } = useSelectedLoans()
+  const { selection, clear: clearSelection } = useSelectedLoans()
 
   const delistLoan = async (loan: Loan) => {
     const loadingSnackbarId = uniqueId()
 
-    const txnParam = { loans: [loan], priorityFeeLevel: priorityLevel }
+    const txnParam = { loan, priorityFeeLevel: priorityLevel }
 
     await new TxnExecutor(
-      makeRepayLoansAction,
+      makeDelistAction,
       { wallet: createWalletInstance(wallet), connection },
       { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
@@ -54,12 +54,11 @@ export const useRequestLoansTransactions = () => {
         return confirmed.forEach(({ result, signature }) => {
           if (result && wallet.publicKey) {
             enqueueSnackbar({
-              message: 'Repaid successfully',
+              message: 'Delist successfully',
               type: 'success',
               solanaExplorerPath: `tx/${signature}`,
             })
 
-            updateLoansOptimistic(result, wallet.publicKey.toBase58())
             clearSelection()
           }
         })
@@ -75,7 +74,53 @@ export const useRequestLoansTransactions = () => {
       .execute()
   }
 
+  const delistBulkLoan = async () => {
+    const loadingSnackbarId = uniqueId()
+
+    const txnParams = selection.map(({ loan }) => ({
+      loan,
+      priorityFeeLevel: priorityLevel,
+    }))
+
+    await new TxnExecutor(
+      makeDelistAction,
+      { wallet: createWalletInstance(wallet), connection },
+      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
+    )
+      .addTransactionParams(txnParams)
+      .on('sentAll', () => {
+        enqueueTransactionsSent()
+        enqueueWaitingConfirmation(loadingSnackbarId)
+      })
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
+
+        destroySnackbar(loadingSnackbarId)
+
+        if (failed.length) {
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
+        }
+
+        if (confirmed.length) {
+          enqueueSnackbar({ message: 'Loans delisted successfully', type: 'success' })
+          clearSelection()
+        }
+      })
+      .on('error', (error) => {
+        destroySnackbar(loadingSnackbarId)
+        defaultTxnErrorHandler(error, {
+          additionalData: selection,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'DelistBulk',
+        })
+      })
+      .execute()
+  }
+
   return {
     delistLoan,
+    delistBulkLoan,
   }
 }

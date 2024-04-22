@@ -9,7 +9,7 @@ import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { usePriorityFees, useTokenType } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
-import { makeListingAction } from '@banx/transactions/listing'
+import { makeListAction } from '@banx/transactions/listing'
 import {
   destroySnackbar,
   enqueueConfirmationError,
@@ -79,7 +79,7 @@ export const useRequestLoansForm = (market: MarketPreview) => {
     })
 
     await new TxnExecutor(
-      makeListingAction,
+      makeListAction,
       { wallet: createWalletInstance(wallet), connection },
       { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )

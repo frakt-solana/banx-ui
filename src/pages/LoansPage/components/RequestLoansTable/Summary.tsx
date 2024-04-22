@@ -5,7 +5,7 @@ import { sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider } from '@banx/components/Slider'
-import { StatInfo } from '@banx/components/StatInfo'
+import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
@@ -13,6 +13,7 @@ import { calcWeeklyFeeWithRepayFee, calculateLoanRepayValue } from '@banx/utils'
 
 import { calcWeightedApr } from '../LoansActiveTable/helpers'
 import { LoanOptimistic } from '../LoansActiveTable/loansState'
+import { useRequestLoansTransactions } from './hooks'
 
 import styles from './RequestLoansTable.module.less'
 
@@ -29,6 +30,8 @@ export const Summary: FC<SummaryProps> = ({
 }) => {
   const { publicKey: walletPublicKey } = useWallet()
 
+  const { delistBulkLoan } = useRequestLoansTransactions()
+
   const selectedLoans = useMemo(() => {
     return rawSelectedLoans.map(({ loan }) => loan)
   }, [rawSelectedLoans])
@@ -41,18 +44,22 @@ export const Summary: FC<SummaryProps> = ({
     setSelection(loans.slice(0, value), walletPublicKey?.toBase58() || '')
   }
 
+  const weightedApr = calcWeightedApr(selectedLoans)
+
   return (
     <div className={styles.summary}>
       <div className={styles.mainStat}>
-        <p>{createPercentValueJSX(calcWeightedApr(selectedLoans), '0%')}</p>
+        <p>{createPercentValueJSX(weightedApr, '0%')}</p>
         <p>Weighted apr</p>
       </div>
       <div className={styles.statsContainer}>
         <StatInfo
-          label="Borrow"
-          value={<DisplayValue value={totalBorrow} />}
-          classNamesProps={{ container: styles.debtInterestStat }}
+          label="Weighted apr"
+          value={weightedApr}
+          valueType={VALUES_TYPES.PERCENT}
+          classNamesProps={{ container: styles.weightedAprStat }}
         />
+        <StatInfo label="Borrow" value={<DisplayValue value={totalBorrow} />} />
         <StatInfo label="Weekly interest" value={<DisplayValue value={totalWeeklyFee} />} />
       </div>
       <div className={styles.summaryControls}>
@@ -64,8 +71,8 @@ export const Summary: FC<SummaryProps> = ({
           className={styles.sliderContainer}
           max={loans.length}
         />
-        <Button onClick={() => null} disabled={!totalSelectedLoans}>
-          Delist <DisplayValue value={totalBorrow} />
+        <Button onClick={delistBulkLoan} disabled={!totalSelectedLoans}>
+          Delist
         </Button>
       </div>
     </div>

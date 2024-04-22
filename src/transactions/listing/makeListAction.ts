@@ -26,9 +26,9 @@ export type MakeListingActionParams = {
   priorityFeeLevel: PriorityLevel
 }
 
-export type MakeBorrowAction = CreateTransactionDataFn<MakeListingActionParams, Loan>
+export type MakeListAction = CreateTransactionDataFn<MakeListingActionParams, Loan>
 
-export const makeListingAction: MakeBorrowAction = async (ixnParams, walletAndConnection) => {
+export const makeListAction: MakeListAction = async (ixnParams, walletAndConnection) => {
   const { nft, priorityFeeLevel } = ixnParams
 
   const listingType = getNftListingType(nft)

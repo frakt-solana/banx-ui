@@ -34,7 +34,7 @@ export const useLoansTransactions = () => {
   const { close } = useModal()
 
   const { update: updateLoansOptimistic } = useLoansOptimistic()
-  const { clear: clearSelection } = useSelectedLoans()
+  const { selection, clear: clearSelection } = useSelectedLoans()
 
   const repayLoan = async (loan: Loan) => {
     const loadingSnackbarId = uniqueId()
@@ -147,8 +147,6 @@ export const useLoansTransactions = () => {
       })
       .execute()
   }
-
-  const { selection } = useSelectedLoans()
 
   const repayBulkLoan = async () => {
     const loadingSnackbarId = uniqueId()
