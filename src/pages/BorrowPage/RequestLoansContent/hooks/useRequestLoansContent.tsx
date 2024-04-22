@@ -9,12 +9,14 @@ import { MarketPreview } from '@banx/api/core'
 import { useMarketsPreview } from '@banx/pages/LendPage'
 import { createGlobalState } from '@banx/store/functions'
 
+import { useBorrowNfts } from '../../hooks'
 import { useSortedMarkets } from './useSortedMarkets'
 
 const useCollectionsStore = createGlobalState<string[]>([])
 
 export const useRequestLoansContent = () => {
   const { marketsPreview, isLoading: isLoadingMarkets } = useMarketsPreview()
+  const { maxLoanValueByMarket } = useBorrowNfts()
 
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
   const [visibleMarketPubkey, setMarketPubkey] = useState('')
@@ -25,18 +27,20 @@ export const useRequestLoansContent = () => {
     return setMarketPubkey(nextValue)
   }
 
-  const filteredMarkets = useMemo(() => {
-    if (!selectedCollections.length) return marketsPreview
+  const userMarkets = useMemo(() => {
+    return marketsPreview.filter((market) => maxLoanValueByMarket[market.marketPubkey])
+  }, [marketsPreview, maxLoanValueByMarket])
 
-    return marketsPreview.filter(({ collectionName }) =>
-      selectedCollections.includes(collectionName),
-    )
-  }, [marketsPreview, selectedCollections])
+  const filteredMarkets = useMemo(() => {
+    if (!selectedCollections.length) return userMarkets
+
+    return userMarkets.filter(({ collectionName }) => selectedCollections.includes(collectionName))
+  }, [selectedCollections, userMarkets])
 
   const { sortedMarkets, sortParams } = useSortedMarkets(filteredMarkets)
 
   const searchSelectParams = createSearchSelectParams({
-    options: marketsPreview,
+    options: userMarkets,
     selectedOptions: selectedCollections,
     onChange: setSelectedCollections,
   })
@@ -45,13 +49,10 @@ export const useRequestLoansContent = () => {
 
   return {
     markets: sortedMarkets,
-
     visibleMarketPubkey,
     onCardClick,
-
     searchSelectParams,
     sortParams,
-
     isLoading,
   }
 }

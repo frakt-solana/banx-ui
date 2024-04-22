@@ -23,3 +23,8 @@ export enum BorrowType {
   CNft = 'CNft',
   Default = 'Default',
 }
+
+export enum ListingType {
+  CNft = 'CNft',
+  Default = 'Default',
+}

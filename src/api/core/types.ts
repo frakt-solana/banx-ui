@@ -108,6 +108,7 @@ const BondTradeTransactionSchema = z.object({
   bondTradeTransactionType: z.nativeEnum(BondTradeTransactionV2Type),
   borrowerFullRepaidAmount: z.number(),
   borrowerOriginalLent: z.number(),
+  repaymentCallAmount: z.number(),
   currentRemainingLent: z.number(),
   fbondTokenMint: z.string(),
   feeAmount: z.number(),
@@ -123,6 +124,7 @@ const BondTradeTransactionSchema = z.object({
   seller: z.string(),
   solAmount: z.number(),
   soldAt: z.number(),
+  terminationFreeze: z.number(),
   terminationStartedAt: z.number(),
   user: z.string(),
 })

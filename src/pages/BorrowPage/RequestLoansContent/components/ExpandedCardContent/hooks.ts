@@ -1,15 +1,33 @@
 import { useEffect, useMemo, useState } from 'react'
 
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { uniqueId } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
+
 import { MarketPreview } from '@banx/api/core'
+import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
-import { useTokenType } from '@banx/store'
-import { convertToHumanNumber, getTokenDecimals } from '@banx/utils'
+import { PriorityLevel, useTokenType } from '@banx/store'
+import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
+import { makeListingAction } from '@banx/transactions/listing'
+import {
+  convertToHumanNumber,
+  destroySnackbar,
+  enqueueConfirmationError,
+  enqueueSnackbar,
+  enqueueTransactionsSent,
+  enqueueWaitingConfirmation,
+  getTokenDecimals,
+} from '@banx/utils'
 
 import { useSelectedNfts } from '../../nftsState'
 import { DEFAULT_FREEZE_VALUE } from './constants'
 import { calculateSummaryInfo } from './helpers'
 
 export const useRequestLoansForm = (market: MarketPreview) => {
+  const wallet = useWallet()
+  const { connection } = useConnection()
+
   const { nfts, isLoading: isLoadingNfts, maxLoanValueByMarket } = useBorrowNfts()
   const { selection: selectedNfts, set: setSelection } = useSelectedNfts()
   const { tokenType } = useTokenType()
@@ -44,6 +62,62 @@ export const useRequestLoansForm = (market: MarketPreview) => {
   const inputLoanValueToNumber = parseFloat(inputLoanValue)
   const requestedLoanValue = inputLoanValueToNumber * tokenDecimals
 
+  const onSubmit = async () => {
+    const loadingSnackbarId = uniqueId()
+
+    const txnParams = selectedNfts.map((nft) => {
+      return {
+        nft,
+        aprRate: parseFloat(inputAprValue),
+        loanValue: parseFloat(inputLoanValue),
+        freeze: parseFloat(inputFreezeValue),
+        tokenType,
+        priorityFeeLevel: PriorityLevel.DEFAULT,
+      }
+    })
+
+    await new TxnExecutor(
+      makeListingAction,
+      { wallet: createWalletInstance(wallet), connection },
+      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
+    )
+      .addTransactionParams(txnParams)
+      .on('sentAll', () => {
+        enqueueTransactionsSent()
+        enqueueWaitingConfirmation(loadingSnackbarId)
+      })
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
+
+        destroySnackbar(loadingSnackbarId)
+
+        if (failed.length) {
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
+        }
+
+        return confirmed.forEach(({ result, signature }) => {
+          if (result) {
+            enqueueSnackbar({
+              message: 'Listings successfully initialized',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
+          }
+        })
+      })
+      .on('error', (error) => {
+        destroySnackbar(loadingSnackbarId)
+        defaultTxnErrorHandler(error, {
+          additionalData: txnParams,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'Listing',
+        })
+      })
+      .execute()
+  }
+
   const { ltv, upfrontFee, weeklyInterest } = calculateSummaryInfo({
     requestedLoanValue,
     inputAprValue,
@@ -72,5 +146,7 @@ export const useRequestLoansForm = (market: MarketPreview) => {
     weeklyInterest,
 
     tokenType,
+
+    onSubmit,
   }
 }

@@ -39,6 +39,7 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
     upfrontFee,
     weeklyInterest,
     tokenType,
+    onSubmit,
   } = useRequestLoansForm(market)
 
   const { value: currentTabValue, ...tabsProps } = useTabs({
@@ -92,7 +93,7 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
 
         <Summary ltv={ltv} upfrontFee={upfrontFee} weeklyInterest={weeklyInterest} />
 
-        <Button className={styles.submitButton} disabled={!totalNftsToRequest}>
+        <Button onClick={onSubmit} className={styles.submitButton} disabled={!totalNftsToRequest}>
           List {totalNftsToRequest} requests
         </Button>
       </div>
