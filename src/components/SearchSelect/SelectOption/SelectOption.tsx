@@ -95,6 +95,8 @@ interface AdditionalValueProps {
 }
 
 const AdditionalValue: FC<AdditionalValueProps> = ({ option, additionalInfo }) => {
+  if (!additionalInfo) return null
+
   const value = additionalInfo ? option[additionalInfo.key] : ''
 
   if (!value) {

@@ -1,4 +1,4 @@
-import { FC, useCallback } from 'react'
+import { FC, useCallback, useMemo } from 'react'
 
 import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
@@ -44,6 +44,10 @@ const RequestLoansTable: FC<RequestLoansTableProps> = ({ nfts, isLoading, reques
     findNftInSelection,
   })
 
+  const rowParams = useMemo(() => {
+    return { onRowClick }
+  }, [onRowClick])
+
   const showEmptyList = !isLoading && !nfts.length
 
   return showEmptyList ? (
@@ -52,7 +56,7 @@ const RequestLoansTable: FC<RequestLoansTableProps> = ({ nfts, isLoading, reques
     <Table
       data={nfts}
       columns={columns}
-      rowParams={{ onRowClick }}
+      rowParams={rowParams}
       loading={isLoading}
       className={styles.tableRoot}
       classNameTableWrapper={styles.tableWrapper}
