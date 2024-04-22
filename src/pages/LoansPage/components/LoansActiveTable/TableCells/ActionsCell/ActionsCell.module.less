@@ -66,6 +66,13 @@
   color: var(--pure-black);
   cursor: pointer;
 }
+.repayModalButton {
+  &:disabled {
+    svg path:first-child {
+      fill: var(--content-secondary);
+    }
+  }
+}
 
 .currentLoanInfo {
   margin-bottom: 18px;

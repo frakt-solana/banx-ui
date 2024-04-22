@@ -9,7 +9,7 @@ import Table from '@banx/components/Table'
 import Tooltip from '@banx/components/Tooltip'
 
 import { Loan, Offer } from '@banx/api/core'
-import { Call, Warning } from '@banx/icons'
+import { Coin, Warning } from '@banx/icons'
 import { ViewState, useTableView } from '@banx/store'
 import { isLoanRepaymentCallActive, isLoanTerminating } from '@banx/utils'
 
@@ -158,7 +158,7 @@ interface FilterButtonProps {
 }
 
 const RepaymentCallFilterButton: FC<FilterButtonProps> = ({ isActive, onClick, countOfLoans }) => (
-  <Tooltip title={countOfLoans ? 'Repayment call loans' : 'No repayment call loans currently'}>
+  <Tooltip title={countOfLoans ? 'Repayment calls' : 'No repayment calls currently'}>
     <div
       className={classNames(styles.filterButtonWrapper, styles.repaymentCall)}
       data-count-of-loans={countOfLoans}
@@ -174,7 +174,7 @@ const RepaymentCallFilterButton: FC<FilterButtonProps> = ({ isActive, onClick, c
         variant="secondary"
         type="circle"
       >
-        <Call />
+        <Coin />
       </Button>
     </div>
   </Tooltip>
