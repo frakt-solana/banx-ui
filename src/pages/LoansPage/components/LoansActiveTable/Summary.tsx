@@ -1,7 +1,7 @@
 import { FC, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { sumBy } from 'lodash'
+import { every, sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider } from '@banx/components/Slider'
@@ -9,10 +9,14 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import { calcWeeklyFeeWithRepayFee, calculateLoanRepayValue } from '@banx/utils'
+import {
+  calcWeeklyFeeWithRepayFee,
+  calculateLoanRepayValue,
+  isLoanRepaymentCallActive,
+} from '@banx/utils'
 
 import { LoanOptimistic } from '../../loansState'
-import { calcUnpaidAccruedInterest, calcWeightedApr } from './helpers'
+import { calcTotalValueToPay, calcWeightedApr } from './helpers'
 import { useLoansTransactions } from './hooks'
 
 import styles from './LoansActiveTable.module.less'
@@ -29,7 +33,7 @@ export const Summary: FC<SummaryProps> = ({
   setSelection,
 }) => {
   const { publicKey: walletPublicKey } = useWallet()
-  const { repayBulkLoan /* repayUnpaidLoansInterest */ } = useLoansTransactions()
+  const { repayBulkLoan, repayUnpaidLoansInterest } = useLoansTransactions()
 
   const selectedLoans = useMemo(() => {
     return rawSelectedLoans.map(({ loan }) => loan)
@@ -38,13 +42,7 @@ export const Summary: FC<SummaryProps> = ({
   const totalSelectedLoans = selectedLoans.length
   const totalDebt = sumBy(selectedLoans, calculateLoanRepayValue)
   const totalWeeklyFee = sumBy(selectedLoans, calcWeeklyFeeWithRepayFee)
-  const totalUnpaidAccruedInterest = sumBy(selectedLoans, (loan) => calcUnpaidAccruedInterest(loan))
-
-  // const loansWithCalculatedUnpaidInterest = useMemo(() => {
-  //   return selectedLoans
-  //     .map((loan) => ({ loan, fractionToRepay: caclFractionToRepay(loan) }))
-  //     .filter(({ fractionToRepay }) => fractionToRepay > 0)
-  // }, [selectedLoans])
+  const totalValueToPay = sumBy(selectedLoans, calcTotalValueToPay)
 
   const handleLoanSelection = (value = 0) => {
     setSelection(loans.slice(0, value), walletPublicKey?.toBase58() || '')
@@ -63,8 +61,9 @@ export const Summary: FC<SummaryProps> = ({
           classNamesProps={{ container: styles.debtInterestStat }}
         />
         <StatInfo
-          label="Accrued interest"
-          value={<DisplayValue value={totalUnpaidAccruedInterest} />}
+          label={getLoansStatusActionText(selectedLoans)}
+          value={<DisplayValue value={totalValueToPay} />}
+          classNamesProps={{ container: styles.accruedInterestStat }}
         />
         <StatInfo label="Weekly interest" value={<DisplayValue value={totalWeeklyFee} />} />
         <StatInfo
@@ -83,13 +82,15 @@ export const Summary: FC<SummaryProps> = ({
           className={styles.sliderContainer}
           max={loans.length}
         />
-        {/* <Button
+        <Button
+          className={styles.payButton}
           variant="secondary"
-          onClick={() => repayUnpaidLoansInterest(loansWithCalculatedUnpaidInterest)}
-          disabled={!totalUnpaidAccruedInterest}
+          onClick={repayUnpaidLoansInterest}
+          disabled={!totalValueToPay}
         >
-          Pay interest {<DisplayValue value={totalUnpaidAccruedInterest} />}
-        </Button> */}
+          {getLoansStatusActionText(selectedLoans)}
+          {<DisplayValue value={totalValueToPay} />}
+        </Button>
         <Button
           className={styles.repayButton}
           onClick={repayBulkLoan}
@@ -100,4 +101,19 @@ export const Summary: FC<SummaryProps> = ({
       </div>
     </div>
   )
+}
+
+const getLoansStatusActionText = (selectedLoans: Loan[]) => {
+  const hasSelectedLoans = selectedLoans.length > 0
+
+  const allLoansAreRepaymentCall =
+    hasSelectedLoans && every(selectedLoans, isLoanRepaymentCallActive)
+
+  const allLoansAreWithoutRepaymentCall =
+    hasSelectedLoans && every(selectedLoans, (loan) => !isLoanRepaymentCallActive(loan))
+
+  if (allLoansAreRepaymentCall) return 'Repayment call'
+  if (allLoansAreWithoutRepaymentCall) return 'Pay interest'
+
+  return 'Pay'
 }
