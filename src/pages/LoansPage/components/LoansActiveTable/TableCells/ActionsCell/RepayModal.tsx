@@ -42,7 +42,7 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
 
   const baseDebtValue = isFullRepayment ? debtValue : debtWithoutFee
 
-  //? Check if repaymentPercent equals roundedRepaymentPercentage to handle rounding issues (Uses for repaymet call feature)
+  //? Check if repaymentPercent equals roundedRepaymentPercentage to handle rounding issues (Uses for repayment call feature)
   const isRoundedRepayment = repaymentPercent === roundedRepaymentPercentage
 
   const selectedRepaymentPercentage = isRoundedRepayment
@@ -125,11 +125,13 @@ export const calculateRepaymentStaticValues = (loan: Loan) => {
   const repaymentCallActive = isLoanRepaymentCallActive(loan)
   const repaymentCallAmount = bondTradeTransaction.repaymentCallAmount
 
-  //? For partial repayment loans, feeAmount is not included in the debt calculation.
+  //? For partial repayment loans, feeAmount is not included in the debt calculation
   const debtWithoutFee = calculateLoanRepayValue(loan, false)
   const debtValue = calculateLoanRepayValue(loan)
 
   const unroundedRepaymentPercentage = (repaymentCallAmount / debtWithoutFee) * 100
+
+  //? Round up the repayment percentage to the nearest whole number to ensure all debt is covered when repaying (Uses for repayment call feature)
   const roundedRepaymentPercentage = Math.ceil(unroundedRepaymentPercentage)
 
   const initialRepayPercent = repaymentCallActive
