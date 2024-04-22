@@ -12,3 +12,34 @@
 .selectButton {
   width: 96px;
 }
+
+.cellText {
+  font: var(--body-text-sm);
+}
+
+.tableWrapper {
+  @media (max-width: 640px) {
+    height: 270px;
+  }
+}
+
+.tableRoot {
+  min-width: 464px;
+  width: 100%;
+
+  tr > td,
+  tr > th {
+    &:first-child {
+      width: 156px;
+    }
+    &:nth-child(2) {
+      width: 76px;
+    }
+    &:nth-child(3) {
+      width: 124px;
+    }
+    &:last-child {
+      width: 108px;
+    }
+  }
+}

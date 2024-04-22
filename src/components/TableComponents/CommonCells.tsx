@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, ReactNode } from 'react'
 
 import { InfoCircleOutlined } from '@ant-design/icons'
 import classNames from 'classnames'
@@ -10,21 +10,23 @@ import styles from './TableCells.module.less'
 interface HorizontalCellProps {
   value: string | number | JSX.Element
 
-  tooltipContent?: string | JSX.Element
+  className?: string
+  tooltipContent?: ReactNode
   isHighlighted?: boolean
   textColor?: string
 }
 
 export const HorizontalCell: FC<HorizontalCellProps> = ({
-  tooltipContent,
   value,
+  className,
+  tooltipContent,
   textColor = '',
   isHighlighted = false,
 }) => {
   const cellContent = (
     <span
       style={{ color: textColor }}
-      className={classNames(styles.rowCellTitle, { [styles.highlight]: isHighlighted })}
+      className={classNames(styles.rowCellTitle, className, { [styles.highlight]: isHighlighted })}
     >
       {value}
     </span>

@@ -55,6 +55,7 @@ const RequestLoansTable: FC<RequestLoansTableProps> = ({ nfts, isLoading, reques
       rowParams={{ onRowClick }}
       loading={isLoading}
       className={styles.tableRoot}
+      classNameTableWrapper={styles.tableWrapper}
     />
   )
 }

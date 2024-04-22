@@ -56,7 +56,10 @@ export const getTableColumns = ({
       key: 'loanValue',
       title: <HeaderCell label="Borrow" />,
       render: () => (
-        <HorizontalCell value={<DisplayValue value={requestedLoanValue} placeholder="--" />} />
+        <HorizontalCell
+          value={<DisplayValue value={requestedLoanValue} placeholder="--" />}
+          className={styles.cellText}
+        />
       ),
     },
     {
@@ -69,7 +72,12 @@ export const getTableColumns = ({
       ),
       render: () => {
         const upfrontFee = requestedLoanValue - calcBorrowValueWithProtocolFee(requestedLoanValue)
-        return <HorizontalCell value={<DisplayValue value={upfrontFee} placeholder="--" />} />
+        return (
+          <HorizontalCell
+            value={<DisplayValue value={upfrontFee} placeholder="--" />}
+            className={styles.cellText}
+          />
+        )
       },
     },
     {
