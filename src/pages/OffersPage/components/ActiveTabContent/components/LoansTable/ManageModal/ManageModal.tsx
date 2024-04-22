@@ -17,34 +17,34 @@ interface ManageModalProps {
 const ManageModal: FC<ManageModalProps> = ({ loan }) => {
   const { close } = useModal()
 
-  const modalTabs: Tab[] = [
-    {
-      label: 'Repayment call',
-      value: 'repayment',
-    },
-    {
-      label: 'Closure',
-      value: 'closure',
-    },
-  ]
-
-  const defaultTabValue = modalTabs[1].value
-  const {
-    tabs,
-    value: tabValue,
-    setValue: setTabValue,
-  } = useTabs({
-    tabs: modalTabs,
-    defaultValue: defaultTabValue,
+  const { value: currentTabValue, ...tabProps } = useTabs({
+    tabs: TABS,
+    defaultValue: TABS[1].value,
   })
 
   return (
     <Modal className={styles.modal} open onCancel={close} width={572}>
-      <Tabs className={styles.tabs} tabs={tabs} value={tabValue} setValue={setTabValue} />
-      {tabValue === modalTabs[0].value && <RepaymentCallContent loan={loan} close={close} />}
-      {tabValue === modalTabs[1].value && <ClosureContent loan={loan} />}
+      <Tabs className={styles.tabs} value={currentTabValue} {...tabProps} />
+      {currentTabValue === TabName.REPAYMENT && <RepaymentCallContent loan={loan} close={close} />}
+      {currentTabValue === TabName.CLOSURE && <ClosureContent loan={loan} />}
     </Modal>
   )
 }
 
 export default ManageModal
+
+enum TabName {
+  REPAYMENT = 'repayment',
+  CLOSURE = 'closure',
+}
+
+const TABS: Tab[] = [
+  {
+    label: 'Repayment call',
+    value: TabName.REPAYMENT,
+  },
+  {
+    label: 'Closure',
+    value: TabName.CLOSURE,
+  },
+]

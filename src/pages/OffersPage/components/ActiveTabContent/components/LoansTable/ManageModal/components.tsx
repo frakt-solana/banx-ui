@@ -38,7 +38,6 @@ import {
   isLoanActiveOrRefinanced,
   isLoanRepaymentCallActive,
   isLoanTerminating,
-  trackPageEvent,
 } from '@banx/utils'
 
 import { useSelectedLoans } from '../loansState'
@@ -257,8 +256,6 @@ export const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, clos
     !repayPercent || (repaymentCallActive && initialRepayValue === paybackValue)
 
   const onSend = async () => {
-    trackPageEvent('myoffers', 'activetab-repaymentcall')
-
     const loadingSnackbarId = uniqueId()
 
     const callAmount = Math.floor((calculateLoanRepayValue(loan) * repayPercent) / 100)
