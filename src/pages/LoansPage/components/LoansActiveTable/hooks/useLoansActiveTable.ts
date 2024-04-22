@@ -38,10 +38,10 @@ export const useLoansActiveTable = ({ loans, isLoading }: UseLoansActiveTablePro
     toggleTerminationFilter,
     selectedCollections,
     setSelectedCollections,
-    countOfTerminatingLoans,
+    terminatingLoansAmount,
     isRepaymentCallFilterEnabled,
     toggleRepaymentCallFilter,
-    countOfRepaymentCallLoans,
+    repaymentCallsAmount,
   } = useFilterLoans(loans)
 
   const { sortedLoans, sortParams } = useSortLoans(filteredLoansBySelectedCollection)
@@ -68,11 +68,11 @@ export const useLoansActiveTable = ({ loans, isLoading }: UseLoansActiveTablePro
     loans: sortedLoans,
     loading: isLoading,
 
-    countOfTerminatingLoans,
+    terminatingLoansAmount,
     isTerminationFilterEnabled,
     toggleTerminationFilter,
 
-    countOfRepaymentCallLoans,
+    repaymentCallsAmount,
     isRepaymentCallFilterEnabled,
     toggleRepaymentCallFilter,
 

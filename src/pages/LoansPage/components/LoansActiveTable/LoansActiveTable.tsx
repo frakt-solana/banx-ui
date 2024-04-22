@@ -42,9 +42,9 @@ export const LoansActiveTable: FC<LoansActiveTableProps> = ({
     emptyListParams,
     showSummary,
     isTerminationFilterEnabled,
-    countOfTerminatingLoans,
+    terminatingLoansAmount,
     toggleTerminationFilter,
-    countOfRepaymentCallLoans,
+    repaymentCallsAmount,
     isRepaymentCallFilterEnabled,
     toggleRepaymentCallFilter,
   } = useLoansActiveTable({ loans: rawLoans, isLoading })
@@ -118,12 +118,12 @@ export const LoansActiveTable: FC<LoansActiveTableProps> = ({
   const customJSX = (
     <div className={styles.filterButtons}>
       <TerminatingFilterButton
-        countOfLoans={countOfTerminatingLoans}
+        loansAmount={terminatingLoansAmount}
         isActive={isTerminationFilterEnabled}
         onClick={toggleTerminationFilter}
       />
       <RepaymentCallFilterButton
-        countOfLoans={countOfRepaymentCallLoans}
+        loansAmount={repaymentCallsAmount}
         isActive={isRepaymentCallFilterEnabled}
         onClick={toggleRepaymentCallFilter}
       />
@@ -154,22 +154,22 @@ export const LoansActiveTable: FC<LoansActiveTableProps> = ({
 interface FilterButtonProps {
   onClick: () => void
   isActive: boolean
-  countOfLoans: number | null
+  loansAmount: number | null
 }
 
-const RepaymentCallFilterButton: FC<FilterButtonProps> = ({ isActive, onClick, countOfLoans }) => (
-  <Tooltip title={countOfLoans ? 'Repayment calls' : 'No repayment calls currently'}>
+const RepaymentCallFilterButton: FC<FilterButtonProps> = ({ isActive, onClick, loansAmount }) => (
+  <Tooltip title={loansAmount ? 'Repayment calls' : 'No repayment calls currently'}>
     <div
       className={classNames(styles.filterButtonWrapper, styles.repaymentCall)}
-      data-count-of-loans={countOfLoans}
+      data-loans-amount={loansAmount}
     >
       <Button
         className={classNames(
           styles.repaymentCallFilterButton,
           { [styles.active]: isActive },
-          { [styles.disabled]: !countOfLoans },
+          { [styles.disabled]: !loansAmount },
         )}
-        disabled={!countOfLoans}
+        disabled={!loansAmount}
         onClick={onClick}
         variant="secondary"
         type="circle"
@@ -180,19 +180,19 @@ const RepaymentCallFilterButton: FC<FilterButtonProps> = ({ isActive, onClick, c
   </Tooltip>
 )
 
-const TerminatingFilterButton: FC<FilterButtonProps> = ({ isActive, onClick, countOfLoans }) => (
-  <Tooltip title={countOfLoans ? 'Terminating loans' : 'No terminating loans currently'}>
+const TerminatingFilterButton: FC<FilterButtonProps> = ({ isActive, onClick, loansAmount }) => (
+  <Tooltip title={loansAmount ? 'Terminating loans' : 'No terminating loans currently'}>
     <div
       className={classNames(styles.filterButtonWrapper, styles.terminating)}
-      data-count-of-loans={countOfLoans}
+      data-loans-amount={loansAmount}
     >
       <Button
         className={classNames(
           styles.terminatingFilterButton,
           { [styles.active]: isActive },
-          { [styles.disabled]: !countOfLoans },
+          { [styles.disabled]: !loansAmount },
         )}
-        disabled={!countOfLoans}
+        disabled={!loansAmount}
         onClick={onClick}
         variant="secondary"
         type="circle"

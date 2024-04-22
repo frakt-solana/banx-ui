@@ -48,12 +48,12 @@ export const useFilterLoans = (loans: Loan[]) => {
     isRepaymentCallFilterEnabled,
   ])
 
-  const countOfTerminatingLoans = useMemo(
+  const terminatingLoansAmount = useMemo(
     () => size(filter(filteredLoansBySelectedCollections, isLoanTerminating)) || null,
     [filteredLoansBySelectedCollections],
   )
 
-  const countOfRepaymentCallLoans = useMemo(
+  const repaymentCallsAmount = useMemo(
     () => size(filter(filteredLoansBySelectedCollections, isLoanRepaymentCallActive)) || null,
     [filteredLoansBySelectedCollections],
   )
@@ -62,8 +62,8 @@ export const useFilterLoans = (loans: Loan[]) => {
     filteredLoansBySelectedCollection,
     filteredAllLoans,
 
-    countOfTerminatingLoans,
-    countOfRepaymentCallLoans,
+    terminatingLoansAmount,
+    repaymentCallsAmount,
 
     isTerminationFilterEnabled,
     toggleTerminationFilter,

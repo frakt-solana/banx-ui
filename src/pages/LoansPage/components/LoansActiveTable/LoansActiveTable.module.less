@@ -234,9 +234,9 @@
 .filterButtonWrapper {
   position: relative;
 
-  &[data-count-of-loans]::after {
+  &[data-loans-amount]::after {
     border-radius: 100px;
-    content: attr(data-count-of-loans);
+    content: attr(data-loans-amount);
     color: var(--pure-black);
     font: var(--body-text-xs);
 
@@ -252,11 +252,11 @@
     height: 16px;
   }
 
-  &.terminating[data-count-of-loans]::after {
+  &.terminating[data-loans-amount]::after {
     background: var(--additional-lava-primary);
   }
 
-  &.repaymentCall[data-count-of-loans]::after {
+  &.repaymentCall[data-loans-amount]::after {
     background: var(--additional-yellow-primary);
   }
 }
