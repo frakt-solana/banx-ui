@@ -14,7 +14,7 @@ import { calcWeeklyFeeWithRepayFee, calculateLoanRepayValue } from '@banx/utils'
 import { calcWeightedApr } from '../LoansActiveTable/helpers'
 import { LoanOptimistic } from '../LoansActiveTable/loansState'
 
-import styles from './RequestsTable.module.less'
+import styles from './RequestLoansTable.module.less'
 
 interface SummaryProps {
   loans: Loan[]

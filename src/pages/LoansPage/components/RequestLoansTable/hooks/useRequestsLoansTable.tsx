@@ -1,16 +1,18 @@
+import { useMemo } from 'react'
+
 import { useWallet } from '@solana/wallet-adapter-react'
-import { first, groupBy, map } from 'lodash'
+import { filter, first, groupBy, map } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 
 import { Loan } from '@banx/api/core'
-import { ACTIVE_LOANS_TABLE_MESSAGES } from '@banx/pages/LoansPage/constants'
+import { REQUEST_LOANS_TABLE_MESSAGES } from '@banx/pages/LoansPage/constants'
 import { PATHS } from '@banx/router'
 import { createPathWithTokenParam, useTokenType } from '@banx/store'
+import { createGlobalState } from '@banx/store/functions'
 
-import { useFilterLoans } from './useFilteredLoans'
-import { useSortLoans } from './useSortLoans'
+import { useSortedLoans } from './useSortedLoans'
 
 import styles from '../LoansActiveTable.module.less'
 
@@ -25,26 +27,26 @@ interface UseLoansActiveTableProps {
   isLoading: boolean
 }
 
-export const useLoansActiveTable = ({ loans, isLoading }: UseLoansActiveTableProps) => {
+const useCollectionsStore = createGlobalState<string[]>([])
+
+export const useRequestsLoansTable = ({ loans, isLoading }: UseLoansActiveTableProps) => {
   const { connected } = useWallet()
   const navigate = useNavigate()
 
   const { tokenType } = useTokenType()
 
-  const {
-    filteredLoansBySelectedCollection,
-    filteredAllLoans,
-    isTerminationFilterEnabled,
-    toggleTerminationFilter,
-    selectedCollections,
-    setSelectedCollections,
-    countOfTerminatingLoans,
-  } = useFilterLoans(loans)
+  const [selectedCollections, setSelectedCollections] = useCollectionsStore()
 
-  const { sortedLoans, sortParams } = useSortLoans(filteredLoansBySelectedCollection)
+  const filteredLoansBySelectedCollections = useMemo(() => {
+    if (!selectedCollections.length) return loans
+
+    return filter(loans, ({ nft }) => selectedCollections.includes(nft.meta.collectionName))
+  }, [loans, selectedCollections])
+
+  const { sortedLoans, sortParams } = useSortedLoans(filteredLoansBySelectedCollections)
 
   const searchSelectParams = createSearchSelectParams({
-    loans: filteredAllLoans,
+    loans: filteredLoansBySelectedCollections,
     selectedOptions: selectedCollections,
     onChange: setSelectedCollections,
   })
@@ -57,17 +59,13 @@ export const useLoansActiveTable = ({ loans, isLoading }: UseLoansActiveTablePro
   }
 
   const emptyListParams = {
-    message: ACTIVE_LOANS_TABLE_MESSAGES[tokenType][connected ? 'connected' : 'notConnected'],
+    message: REQUEST_LOANS_TABLE_MESSAGES[tokenType][connected ? 'connected' : 'notConnected'],
     buttonProps: connected ? { text: 'Borrow', onClick: goToBorrowPage } : undefined,
   }
 
   return {
     loans: sortedLoans,
     loading: isLoading,
-    countOfTerminatingLoans,
-
-    isTerminationFilterEnabled,
-    toggleTerminationFilter,
 
     showSummary,
     showEmptyList,

@@ -7,7 +7,7 @@ import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { HealthColorIncreasing, calculateLoanRepayValue, getColorByPercent } from '@banx/utils'
 
-import styles from '../RequestsTable.module.less'
+import styles from '../RequestLoansTable.module.less'
 
 export const LTVCell: FC<{ loan: Loan }> = ({ loan }) => {
   const debtValue = calculateLoanRepayValue(loan)

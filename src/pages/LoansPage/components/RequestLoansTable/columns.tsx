@@ -9,26 +9,26 @@ import {
 
 import { Loan } from '@banx/api/core'
 
-import { LoanOptimistic } from '../LoansActiveTable/loansState'
 import { APRCell, ActionsCell, LTVCell } from './TableCells'
+import { LoanOptimistic } from './loansState'
 
-import styles from './RequestsTable.module.less'
+import styles from './RequestLoansTable.module.less'
 
-interface GetTableColumnsProps {
+type GetTableColumns = (props: {
   onSelectAll: () => void
   findLoanInSelection: (loanPubkey: string) => LoanOptimistic | null
   toggleLoanInSelection: (loan: Loan) => void
   hasSelectedLoans: boolean
   isCardView: boolean
-}
+}) => ColumnType<Loan>[]
 
-export const getTableColumns = ({
+export const getTableColumns: GetTableColumns = ({
   onSelectAll,
   findLoanInSelection,
   toggleLoanInSelection,
   hasSelectedLoans,
   isCardView,
-}: GetTableColumnsProps): ColumnType<Loan>[] => {
+}) => {
   const columns: ColumnType<Loan>[] = [
     {
       key: 'collateral',

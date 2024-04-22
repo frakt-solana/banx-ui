@@ -3,7 +3,7 @@ import { Tabs, useTabs } from '@banx/components/Tabs'
 import { LoansActiveTable } from './components/LoansActiveTable'
 import LoansHeader from './components/LoansHeader'
 import { LoansHistoryTable } from './components/LoansHistoryTable'
-import { RequestsTable } from './components/RequestsTable'
+import { RequestsTable } from './components/RequestLoansTable'
 import { DEFAULT_TAB_VALUE, LOANS_TABS, LoansTabsNames } from './constants'
 import { useWalletLoansAndOffers } from './hooks'
 

@@ -13,7 +13,7 @@ import { Summary } from './Summary'
 import { getTableColumns } from './columns'
 import { useSelectedLoans } from './loansState'
 
-import styles from './RequestsTable.module.less'
+import styles from './RequestLoansTable.module.less'
 
 interface LoansActiveTableProps {
   loans: Loan[]
