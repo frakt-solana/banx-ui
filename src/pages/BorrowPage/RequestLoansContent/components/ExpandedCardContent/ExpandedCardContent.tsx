@@ -4,6 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 import { Button } from '@banx/components/Buttons'
 import ActivityTable from '@banx/components/CommonTables'
+import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
@@ -27,9 +28,9 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
     inputLoanValue,
     inputAprValue,
     inputFreezeValue,
-    setInputLoanValue,
-    setInputAprValue,
-    setInputFreezeValue,
+    handleChangeLoanValue,
+    handleChangeAprValue,
+    handleChangeFreezeValue,
     handleNftsSelection,
     requestedLoanValue,
     totalNftsToRequest,
@@ -40,6 +41,7 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
     weeklyInterest,
     tokenType,
     onSubmit,
+    disabledListRequest,
   } = useRequestLoansForm(market)
 
   const { value: currentTabValue, ...tabsProps } = useTabs({
@@ -55,7 +57,7 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
           <NumericStepInput
             label="Borrow"
             value={inputLoanValue}
-            onChange={setInputLoanValue}
+            onChange={handleChangeLoanValue}
             disabled={!connected || !nfts.length}
             placeholder="0"
             postfix={getTokenUnit(tokenType)}
@@ -64,16 +66,17 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
           <NumericStepInput
             label="Apr"
             value={inputAprValue}
-            onChange={setInputAprValue}
+            onChange={handleChangeAprValue}
             disabled={!connected || !nfts.length}
             placeholder="0"
             postfix="%"
+            max={MAX_APR_VALUE}
             step={1}
           />
           <NumericStepInput
             label="Freeze"
             value={inputFreezeValue}
-            onChange={setInputFreezeValue}
+            onChange={handleChangeFreezeValue}
             disabled={!connected || !nfts.length}
             placeholder="0"
             postfix="D" //? D => Days
@@ -93,8 +96,8 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
 
         <Summary ltv={ltv} upfrontFee={upfrontFee} weeklyInterest={weeklyInterest} />
 
-        <Button onClick={onSubmit} className={styles.submitButton} disabled={!totalNftsToRequest}>
-          List {totalNftsToRequest} requests
+        <Button onClick={onSubmit} className={styles.submitButton} disabled={disabledListRequest}>
+          List {totalNftsToRequest <= 1 ? 'request' : `${totalNftsToRequest} requests`}
         </Button>
       </div>
 

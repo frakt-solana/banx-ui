@@ -1,5 +1,7 @@
 import { FC, useCallback, useMemo } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
+
 import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 
@@ -17,6 +19,8 @@ interface RequestLoansTableProps {
 }
 
 const RequestLoansTable: FC<RequestLoansTableProps> = ({ nfts, isLoading, requestedLoanValue }) => {
+  const { connected } = useWallet()
+
   const {
     selection,
     toggle: toggleNftInSelection,
@@ -49,6 +53,8 @@ const RequestLoansTable: FC<RequestLoansTableProps> = ({ nfts, isLoading, reques
   }, [onRowClick])
 
   const showEmptyList = !isLoading && !nfts.length
+
+  if (!connected) return <EmptyList message="Connect wallet to see your NFTs" />
 
   return showEmptyList ? (
     <EmptyList message="You don't have NFTs of this collection" />

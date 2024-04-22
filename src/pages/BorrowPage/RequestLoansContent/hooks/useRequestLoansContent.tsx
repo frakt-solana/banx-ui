@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
 import { chain, first, isEmpty } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
@@ -17,6 +18,7 @@ const useCollectionsStore = createGlobalState<string[]>([])
 export const useRequestLoansContent = () => {
   const { marketsPreview, isLoading: isLoadingMarkets } = useMarketsPreview()
   const { nfts } = useBorrowNfts()
+  const { connected } = useWallet()
 
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
   const [visibleMarketPubkey, setMarketPubkey] = useState('')
@@ -28,13 +30,15 @@ export const useRequestLoansContent = () => {
   }
 
   const userMarkets = useMemo(() => {
+    if (!connected) return marketsPreview
+
     const marketsPubkeys = chain(nfts)
       .groupBy((nft) => nft.loan.marketPubkey)
       .map((groupedNfts) => first(groupedNfts)?.loan.marketPubkey)
       .value()
 
     return marketsPreview.filter(({ marketPubkey }) => marketsPubkeys.includes(marketPubkey))
-  }, [marketsPreview, nfts])
+  }, [connected, marketsPreview, nfts])
 
   const filteredMarkets = useMemo(() => {
     if (!selectedCollections.length) return userMarkets

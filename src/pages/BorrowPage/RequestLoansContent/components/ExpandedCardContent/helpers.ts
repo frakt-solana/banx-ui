@@ -1,4 +1,5 @@
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { clamp } from 'lodash'
 import moment from 'moment'
 
 import { BONDS, ONE_WEEK_IN_SECONDS } from '@banx/constants'
@@ -33,4 +34,12 @@ export const calculateSummaryInfo = ({
   })
 
   return { ltv, upfrontFee, weeklyInterest }
+}
+
+export const clampInputValue = (value: string, max: number) => {
+  if (!value) return ''
+
+  const valueToNumber = parseFloat(value)
+  const clampedValue = clamp(valueToNumber, 0, max)
+  return String(clampedValue)
 }

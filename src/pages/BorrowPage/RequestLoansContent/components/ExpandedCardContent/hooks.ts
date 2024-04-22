@@ -4,8 +4,10 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
+import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
+
 import { MarketPreview } from '@banx/api/core'
-import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
+import { DAYS_IN_YEAR, TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { usePriorityFees, useTokenType } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
@@ -22,7 +24,7 @@ import {
 
 import { useSelectedNfts } from '../../nftsState'
 import { DEFAULT_FREEZE_VALUE } from './constants'
-import { calculateSummaryInfo } from './helpers'
+import { calculateSummaryInfo, clampInputValue } from './helpers'
 
 export const useRequestLoansForm = (market: MarketPreview) => {
   const wallet = useWallet()
@@ -48,6 +50,16 @@ export const useRequestLoansForm = (market: MarketPreview) => {
     (value = 0) => setSelection(filteredNfts.slice(0, value)),
     [filteredNfts, setSelection],
   )
+
+  const handleChangeFreezeValue = (value: string) => {
+    const clampedValue = clampInputValue(value, DAYS_IN_YEAR)
+    return setInputFreezeValue(clampedValue)
+  }
+
+  const handleChangeAprValue = (value: string) => {
+    const clampedValue = clampInputValue(value, MAX_APR_VALUE)
+    return setInputAprValue(clampedValue)
+  }
 
   useEffect(() => {
     const maxLoanValue = maxLoanValueByMarket[market.marketPubkey]
@@ -127,14 +139,20 @@ export const useRequestLoansForm = (market: MarketPreview) => {
     collectionFloor: market.collectionFloor,
   })
 
+  const disabledListRequest =
+    !parseFloat(inputLoanValue) ||
+    !parseFloat(inputAprValue) ||
+    !parseFloat(inputFreezeValue) ||
+    !totalNftsToRequest
+
   return {
     inputLoanValue,
     inputAprValue,
     inputFreezeValue,
 
-    setInputLoanValue,
-    setInputAprValue,
-    setInputFreezeValue,
+    handleChangeLoanValue: setInputLoanValue,
+    handleChangeAprValue,
+    handleChangeFreezeValue,
     handleNftsSelection,
 
     requestedLoanValue,
@@ -150,5 +168,6 @@ export const useRequestLoansForm = (market: MarketPreview) => {
     tokenType,
 
     onSubmit,
+    disabledListRequest,
   }
 }

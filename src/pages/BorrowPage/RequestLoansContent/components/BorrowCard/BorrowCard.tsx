@@ -1,8 +1,9 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
+import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { TensorLink } from '@banx/components/SolanaLinks'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
@@ -70,9 +71,6 @@ interface MarketAdditionalInfoProps {
 const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isOpen }) => {
   const { loansTvl, activeBondsAmount } = market
 
-  //TODO: ask about apr
-  const MAX_APR = 104
-
   return (
     <div className={classNames(styles.additionalInfoStats, { [styles.opened]: isOpen })}>
       <StatInfo
@@ -83,8 +81,8 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isOpen })
         classNamesProps={{ container: styles.additionalStat }}
       />
       <StatInfo
-        label="Apr"
-        value={MAX_APR}
+        label="Max apr"
+        value={MAX_APR_VALUE}
         tooltipText="Maximum annual interest rate. Ranges between 34-104% APR depending on the loan-to-value (LTV) offered, and becomes fixed once offer is taken"
         valueType={VALUES_TYPES.PERCENT}
         classNamesProps={{ container: styles.additionalStat, value: styles.additionalAprStat }}
