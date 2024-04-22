@@ -10,7 +10,7 @@ import {
 import Tooltip from '@banx/components/Tooltip'
 
 import { Loan } from '@banx/api/core'
-import { Call } from '@banx/icons'
+import { Coin } from '@banx/icons'
 import { calculateClaimValue, isLoanAbleToTerminate } from '@banx/pages/OffersPage'
 import { HealthColorIncreasing, getColorByPercent, isLoanRepaymentCallActive } from '@banx/utils'
 
@@ -62,7 +62,7 @@ export const getTableColumns = ({
             rightContentJSX={
               isLoanRepaymentCallActive(loan) ? (
                 <Tooltip className={styles.repaymentCallTooltipContent} title="Repayment call sent">
-                  <Call />
+                  <Coin />
                 </Tooltip>
               ) : undefined
             }
