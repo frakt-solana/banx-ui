@@ -1,18 +1,23 @@
 import { Tab } from '@banx/components/Tabs'
 
 export enum LoansTabsNames {
+  REQUESTS = 'requests',
+  LOANS = 'loans',
   HISTORY = 'history',
-  ACTIVE = 'active',
 }
 
 export const LOANS_TABS: Tab[] = [
   {
-    label: 'Active',
-    value: 'active',
+    label: 'Requests',
+    value: LoansTabsNames.REQUESTS,
+  },
+  {
+    label: 'Loans',
+    value: LoansTabsNames.LOANS,
   },
   {
     label: 'History',
-    value: 'history',
+    value: LoansTabsNames.HISTORY,
   },
 ]
 
