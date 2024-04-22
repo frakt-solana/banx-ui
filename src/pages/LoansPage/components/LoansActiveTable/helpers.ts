@@ -11,7 +11,7 @@ import {
 } from '@banx/utils'
 
 //? This fee is associated with account creation. It's used to display the correct value when the SOL token type is used.
-const getAdditionalFee = (loan: Loan) => {
+const getPartialRepayRentFee = (loan: Loan) => {
   const ACCOUNT_CREATION_FEE = 3229 * 1e3
   return isSolTokenType(loan.bondTradeTransaction.lendingToken) ? ACCOUNT_CREATION_FEE : 0
 }
@@ -28,13 +28,13 @@ const calculateUnpaidInterest = (loan: Loan) => {
   const { lenderFullRepaidAmount } = loan.bondTradeTransaction
 
   const accruedInterest = calcAccruedInterest(loan)
-  const additionalFee = getAdditionalFee(loan)
+  const rentFee = getPartialRepayRentFee(loan)
 
   const unpaidInterest = Math.max(0, accruedInterest - lenderFullRepaidAmount)
 
   const percentToRepay = calcPercentToPay(loan, unpaidInterest)
   //? Check that the percentageToRepay is greater than 1, since the minimum loan payment is one percent.
-  return percentToRepay >= 1 ? unpaidInterest + additionalFee : 0
+  return percentToRepay >= 1 ? unpaidInterest + rentFee : 0
 }
 
 const calcPercentToPay = (loan: Loan, iterestToPay: number) => {
