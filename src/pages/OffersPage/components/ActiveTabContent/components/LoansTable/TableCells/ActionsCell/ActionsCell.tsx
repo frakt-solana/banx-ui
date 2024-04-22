@@ -25,7 +25,7 @@ import {
   trackPageEvent,
 } from '@banx/utils'
 
-import { ManageModal } from './ManageModal'
+import ManageModal from '../../ManageModal'
 
 import styles from './ActionsCell.module.less'
 
