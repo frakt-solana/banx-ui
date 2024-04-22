@@ -1,10 +1,10 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { chunk, groupBy, uniqueId } from 'lodash'
+import { chunk, every, groupBy, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
-import { useIsLedger, useLoansOptimistic, usePriorityFees } from '@banx/store'
+import { useIsLedger, useLoansOptimistic, useModal, usePriorityFees } from '@banx/store'
 import { BorrowType, createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import {
   REPAY_NFT_PER_TXN,
@@ -19,8 +19,10 @@ import {
   enqueueTransactionSent,
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
+  isLoanRepaymentCallActive,
 } from '@banx/utils'
 
+import { caclFractionToRepay, caclFractionToRepayForRepaymentCall } from '../helpers'
 import { useSelectedLoans } from '../loansState'
 
 export const useLoansTransactions = () => {
@@ -28,6 +30,8 @@ export const useLoansTransactions = () => {
   const { connection } = useConnection()
   const { isLedger } = useIsLedger()
   const { priorityLevel } = usePriorityFees()
+
+  const { close } = useModal()
 
   const { update: updateLoansOptimistic } = useLoansOptimistic()
   const { clear: clearSelection } = useSelectedLoans()
@@ -73,6 +77,7 @@ export const useLoansTransactions = () => {
 
             updateLoansOptimistic(result, wallet.publicKey.toBase58())
             clearSelection()
+            close()
           }
         })
       })
@@ -121,13 +126,14 @@ export const useLoansTransactions = () => {
         return confirmed.forEach(({ result, signature }) => {
           if (result && wallet.publicKey) {
             enqueueSnackbar({
-              message: 'Repaid successfully',
+              message: 'Paid successfully',
               type: 'success',
               solanaExplorerPath: `tx/${signature}`,
             })
 
             updateLoansOptimistic([result], wallet.publicKey.toBase58())
             clearSelection()
+            close()
           }
         })
       })
@@ -198,15 +204,27 @@ export const useLoansTransactions = () => {
       .execute()
   }
 
-  interface LoanWithFractionToRepay {
-    loan: Loan
-    fractionToRepay: number
-  }
-
-  const repayUnpaidLoansInterest = async (loans: LoanWithFractionToRepay[]) => {
+  const repayUnpaidLoansInterest = async () => {
     const loadingSnackbarId = uniqueId()
 
-    const txnParams = loans.map((loan) => ({ ...loan, priorityFeeLevel: priorityLevel }))
+    const loansWithCalculatedUnpaidInterest = selection
+      .map(({ loan }) => ({
+        loan,
+        fractionToRepay: isLoanRepaymentCallActive(loan)
+          ? caclFractionToRepayForRepaymentCall(loan)
+          : caclFractionToRepay(loan),
+      }))
+      .filter(({ fractionToRepay }) => fractionToRepay >= 1)
+
+    const allLoansAreWithoutRepaymentCall = every(
+      selection,
+      ({ loan }) => !isLoanRepaymentCallActive(loan),
+    )
+
+    const txnParams = loansWithCalculatedUnpaidInterest.map((loan) => ({
+      ...loan,
+      priorityFeeLevel: priorityLevel,
+    }))
 
     await new TxnExecutor(
       makeRepayPartialLoanAction,
@@ -224,7 +242,11 @@ export const useLoansTransactions = () => {
         destroySnackbar(loadingSnackbarId)
 
         if (confirmed.length) {
-          enqueueSnackbar({ message: 'Loans interest successfully paid', type: 'success' })
+          const message = allLoansAreWithoutRepaymentCall
+            ? 'Loans interest successfully paid'
+            : 'Paid successfully'
+
+          enqueueSnackbar({ message, type: 'success' })
 
           confirmed.forEach(({ result }) => {
             if (result && wallet.publicKey) {
@@ -243,7 +265,7 @@ export const useLoansTransactions = () => {
       .on('error', (error) => {
         destroySnackbar(loadingSnackbarId)
         defaultTxnErrorHandler(error, {
-          additionalData: loans,
+          additionalData: loansWithCalculatedUnpaidInterest,
           walletPubkey: wallet?.publicKey?.toBase58(),
           transactionName: 'RepayUnpaidLoansInterest',
         })

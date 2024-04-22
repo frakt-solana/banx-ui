@@ -136,11 +136,18 @@
     width: 100%;
   }
 }
-.summaryControls button {
+
+.refinanceButton {
   min-width: 190px;
 
   @media (max-width: 1240px) {
     min-width: 176px;
+  }
+
+  &:disabled {
+    svg path:first-child {
+      fill: var(--content-secondary);
+    }
   }
 }
 

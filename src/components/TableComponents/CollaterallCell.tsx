@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, ReactNode } from 'react'
 
 import classNames from 'classnames'
 
@@ -24,6 +24,7 @@ interface NftInfoCellProps {
     playerPoints: number
   }
 
+  rightContentJSX?: ReactNode
   hiddenCollectionName?: boolean
 }
 
@@ -57,6 +58,7 @@ export const NftInfoCell: FC<NftInfoCellProps> = ({
   banxPoints,
   checkboxClassName,
   hiddenCollectionName = false,
+  rightContentJSX,
 }) => {
   const { viewState } = useTableView()
   const isCardView = viewState === ViewState.CARD
@@ -78,6 +80,7 @@ export const NftInfoCell: FC<NftInfoCellProps> = ({
       </div>
 
       {createDisplayNftNamesJSX(nftName, isCardView, hiddenCollectionName)}
+      {rightContentJSX}
     </div>
   )
 }

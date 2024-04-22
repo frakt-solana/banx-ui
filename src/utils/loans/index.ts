@@ -158,3 +158,11 @@ export const calcWeeklyFeeWithRepayFee = (loan: Loan) => {
     rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
   })
 }
+
+export const isLoanRepaymentCallActive = (loan: Loan) => {
+  if (!loan.bondTradeTransaction.repaymentCallAmount || isLoanTerminating(loan)) return false
+
+  const repayValueWithoutProtocolFee = calculateLoanRepayValue(loan)
+
+  return !!(loan.bondTradeTransaction.repaymentCallAmount / repayValueWithoutProtocolFee)
+}

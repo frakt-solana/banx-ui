@@ -4,16 +4,24 @@ import { filter, size } from 'lodash'
 
 import { Loan } from '@banx/api/core'
 import { createGlobalState } from '@banx/store/functions'
-import { isLoanTerminating } from '@banx/utils'
+import { isLoanRepaymentCallActive, isLoanTerminating } from '@banx/utils'
 
 const useCollectionsStore = createGlobalState<string[]>([])
 
 export const useFilterLoans = (loans: Loan[]) => {
   const [isTerminationFilterEnabled, setTerminationFilterState] = useState(false)
+  const [isRepaymentCallFilterEnabled, setIsRepaymentCallFilterState] = useState(false)
+
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
 
   const toggleTerminationFilter = () => {
+    setIsRepaymentCallFilterState(false)
     setTerminationFilterState(!isTerminationFilterEnabled)
+  }
+
+  const toggleRepaymentCallFilter = () => {
+    setTerminationFilterState(false)
+    setIsRepaymentCallFilterState(!isRepaymentCallFilterEnabled)
   }
 
   const filteredLoansBySelectedCollections = useMemo(() => {
@@ -23,17 +31,30 @@ export const useFilterLoans = (loans: Loan[]) => {
   }, [loans, selectedCollections])
 
   const { filteredLoansBySelectedCollection, filteredAllLoans } = useMemo(() => {
-    const applyTerminationFilter = (loans: Loan[]) =>
-      isTerminationFilterEnabled ? filter(loans, isLoanTerminating) : loans
+    const applyFilter = (loans: Loan[]) => {
+      if (isTerminationFilterEnabled) return filter(loans, isLoanTerminating)
+      if (isRepaymentCallFilterEnabled) return filter(loans, isLoanRepaymentCallActive)
+      return loans
+    }
 
     return {
-      filteredLoansBySelectedCollection: applyTerminationFilter(filteredLoansBySelectedCollections),
-      filteredAllLoans: applyTerminationFilter(loans),
+      filteredLoansBySelectedCollection: applyFilter(filteredLoansBySelectedCollections),
+      filteredAllLoans: applyFilter(loans),
     }
-  }, [filteredLoansBySelectedCollections, loans, isTerminationFilterEnabled])
+  }, [
+    filteredLoansBySelectedCollections,
+    loans,
+    isTerminationFilterEnabled,
+    isRepaymentCallFilterEnabled,
+  ])
 
-  const countOfTerminatingLoans = useMemo(
+  const terminatingLoansAmount = useMemo(
     () => size(filter(filteredLoansBySelectedCollections, isLoanTerminating)) || null,
+    [filteredLoansBySelectedCollections],
+  )
+
+  const repaymentCallsAmount = useMemo(
+    () => size(filter(filteredLoansBySelectedCollections, isLoanRepaymentCallActive)) || null,
     [filteredLoansBySelectedCollections],
   )
 
@@ -41,10 +62,14 @@ export const useFilterLoans = (loans: Loan[]) => {
     filteredLoansBySelectedCollection,
     filteredAllLoans,
 
-    countOfTerminatingLoans,
+    terminatingLoansAmount,
+    repaymentCallsAmount,
 
     isTerminationFilterEnabled,
     toggleTerminationFilter,
+
+    isRepaymentCallFilterEnabled,
+    toggleRepaymentCallFilter,
 
     selectedCollections,
     setSelectedCollections,

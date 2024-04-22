@@ -89,25 +89,27 @@
 
   &[data-underwater-loans]::after {
     content: attr(data-underwater-loans);
-    color: var(--additional-yellow-primary-deep);
-    background: var(--additional-yellow-secondary);
     border-radius: 100px;
+    background: var(--additional-lava-primary);
+    color: var(--pure-black);
+    font: var(--body-text-xs);
+
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 0 4px;
+
     position: absolute;
-    top: 7px;
-    right: -14px;
-    min-width: 12px;
+    top: -2px;
+    right: -8px;
+    min-width: 8px;
     height: 16px;
-    padding: 0 6px;
-    font: var(--body-text-xs);
   }
 }
 
 .filterButton {
   svg path:nth-child(2) {
-    fill: var(--additional-yellow-primary-deep);
+    fill: var(--additional-lava-primary);
   }
 
   &.active {
@@ -122,15 +124,16 @@
 }
 
 //? Active row styles
-.terminated {
-  background: var(--additional-lava-secondary) !important;
-}
-
+.terminated,
 .liquidated {
   background: var(--additional-red-secondary) !important;
 }
 
 .underwater {
+  background: var(--additional-lava-secondary) !important;
+}
+
+.activeRepaymentCall {
   background: var(--additional-yellow-secondary) !important;
 }
 
@@ -163,4 +166,8 @@
       font: var(--body-text-sm);
     }
   }
+}
+
+.repaymentCallTooltipContent {
+  margin-bottom: 14px;
 }
