@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { uniqueId } from 'lodash'
@@ -7,16 +7,16 @@ import { TxnExecutor } from 'solana-transactions-executor'
 import { MarketPreview } from '@banx/api/core'
 import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
-import { PriorityLevel, useTokenType } from '@banx/store'
+import { usePriorityFees, useTokenType } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeListingAction } from '@banx/transactions/listing'
 import {
-  convertToHumanNumber,
   destroySnackbar,
   enqueueConfirmationError,
   enqueueSnackbar,
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
+  formatValueByTokenType,
   getTokenDecimals,
 } from '@banx/utils'
 
@@ -27,6 +27,7 @@ import { calculateSummaryInfo } from './helpers'
 export const useRequestLoansForm = (market: MarketPreview) => {
   const wallet = useWallet()
   const { connection } = useConnection()
+  const { priorityLevel } = usePriorityFees()
 
   const { nfts, isLoading: isLoadingNfts, maxLoanValueByMarket } = useBorrowNfts()
   const { selection: selectedNfts, set: setSelection } = useSelectedNfts()
@@ -43,18 +44,19 @@ export const useRequestLoansForm = (market: MarketPreview) => {
     return nfts.filter((nft) => nft.loan.marketPubkey === market.marketPubkey)
   }, [nfts, market])
 
-  const handleNftsSelection = (value = 0) => {
-    setSelection(filteredNfts.slice(0, value))
-  }
+  const handleNftsSelection = useCallback(
+    (value = 0) => setSelection(filteredNfts.slice(0, value)),
+    [filteredNfts, setSelection],
+  )
 
   useEffect(() => {
     const maxLoanValue = maxLoanValueByMarket[market.marketPubkey]
     if (!maxLoanValue) return
 
-    const convertedMaxLoanValue = convertToHumanNumber(maxLoanValue, tokenType)
+    const formattedMaxLoanValue = formatValueByTokenType(maxLoanValue, tokenType)
     const roundedAprValueInPercent = (market.marketApr / 100)?.toFixed(0)
 
-    setInputLoanValue(String(convertedMaxLoanValue))
+    setInputLoanValue(formattedMaxLoanValue)
     setInputAprValue(roundedAprValueInPercent)
     setInputFreezeValue(String(DEFAULT_FREEZE_VALUE))
   }, [market, maxLoanValueByMarket, tokenType])
@@ -72,7 +74,7 @@ export const useRequestLoansForm = (market: MarketPreview) => {
         loanValue: parseFloat(inputLoanValue),
         freeze: parseFloat(inputFreezeValue),
         tokenType,
-        priorityFeeLevel: PriorityLevel.DEFAULT,
+        priorityFeeLevel: priorityLevel,
       }
     })
 

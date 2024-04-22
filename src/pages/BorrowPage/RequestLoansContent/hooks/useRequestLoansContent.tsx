@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-import { isEmpty } from 'lodash'
+import { chain, first, isEmpty } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
@@ -16,7 +16,7 @@ const useCollectionsStore = createGlobalState<string[]>([])
 
 export const useRequestLoansContent = () => {
   const { marketsPreview, isLoading: isLoadingMarkets } = useMarketsPreview()
-  const { maxLoanValueByMarket } = useBorrowNfts()
+  const { nfts } = useBorrowNfts()
 
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
   const [visibleMarketPubkey, setMarketPubkey] = useState('')
@@ -28,8 +28,13 @@ export const useRequestLoansContent = () => {
   }
 
   const userMarkets = useMemo(() => {
-    return marketsPreview.filter((market) => maxLoanValueByMarket[market.marketPubkey])
-  }, [marketsPreview, maxLoanValueByMarket])
+    const marketsPubkeys = chain(nfts)
+      .groupBy((nft) => nft.loan.marketPubkey)
+      .map((groupedNfts) => first(groupedNfts)?.loan.marketPubkey)
+      .value()
+
+    return marketsPreview.filter(({ marketPubkey }) => marketsPubkeys.includes(marketPubkey))
+  }, [marketsPreview, nfts])
 
   const filteredMarkets = useMemo(() => {
     if (!selectedCollections.length) return userMarkets
