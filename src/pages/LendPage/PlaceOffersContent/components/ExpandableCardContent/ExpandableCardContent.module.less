@@ -2,11 +2,15 @@
   cursor: default;
   display: flex;
   overflow: hidden;
-  height: 430px;
+  height: 436px;
   width: 100%;
 
+  @media (max-width: 960px) {
+    height: 368px;
+  }
+
   @media (max-width: 640px) {
-    height: 342px;
+    height: 302px;
   }
 }
 
@@ -16,7 +20,7 @@
   border-bottom: 0;
   width: 100%;
 
-  @media (max-width: 1240px) {
+  @media (max-width: 960px) {
     display: none;
   }
 }
@@ -32,9 +36,15 @@
 }
 
 .content {
-  padding: 12px 24px 24px;
+  padding: 12px 24px 12px;
   cursor: default;
-  width: 100%;
+  min-width: 344px;
+  max-width: 344px;
+
+  @media (max-width: 960px) {
+    max-width: unset;
+    width: 100%;
+  }
 
   @media (max-width: 640px) {
     padding: 8px 16px 8px;
@@ -65,7 +75,7 @@
 .offersButton {
   margin-left: auto;
 
-  @media (min-width: 1241px) {
+  @media (min-width: 961px) {
     display: none !important;
   }
 }

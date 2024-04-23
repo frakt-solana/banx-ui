@@ -21,23 +21,25 @@
 .fields {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 12px;
   width: 100%;
   margin-top: 16px;
+  flex-wrap: wrap;
 
   @media (max-width: 640px) {
+    flex-wrap: nowrap;
     margin-top: 8px;
-    gap: 16px;
+    gap: 8px;
   }
 }
 .maxOfferInput {
-  max-width: 144px;
+  max-width: 138px;
 }
 .offersAmountInput {
-  max-width: 124px;
+  max-width: 146px;
 }
 .deltaInput {
-  max-width: 96px;
+  max-width: 116px;
 }
 
 .messageContainer {

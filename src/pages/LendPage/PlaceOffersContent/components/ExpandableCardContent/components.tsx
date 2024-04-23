@@ -2,11 +2,10 @@ import { FC } from 'react'
 
 import { Button } from '@banx/components/Buttons'
 import ActivityTable from '@banx/components/CommonTables'
-import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
+import { Tabs, useTabs } from '@banx/components/Tabs'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { useModal } from '@banx/store'
-import { toLowerCaseNoSpaces, trackPageEvent } from '@banx/utils'
 
 import OrderBook from '../OrderBook'
 
@@ -24,13 +23,9 @@ export const TabsContent: FC<MarketParams> = ({ marketPubkey, offerPubkey, setOf
     defaultValue: BONDS_TABS[0].value,
   })
 
-  const onTabClick = (tabProps: Tab) => {
-    trackPageEvent('lend', `${toLowerCaseNoSpaces(tabProps.label)}tab`)
-  }
-
   return (
     <>
-      <Tabs value={currentTabValue} onTabClick={onTabClick} {...tabsProps} />
+      <Tabs value={currentTabValue} {...tabsProps} />
       {currentTabValue === TabName.OFFERS && (
         <OrderBook
           marketPubkey={marketPubkey}

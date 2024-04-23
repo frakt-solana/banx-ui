@@ -1,9 +1,14 @@
 import { FC } from 'react'
 
+import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import moment from 'moment'
+
+import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { MarketPreview, Offer } from '@banx/api/core'
+import { MARKETS_WITH_CUSTOM_APR, SECONDS_IN_DAY } from '@banx/constants'
 import { HealthColorIncreasing, calculateApr, getColorByPercent } from '@banx/utils'
 
 import { calcMaxLtv, calcOfferSize } from './helpers'
@@ -49,7 +54,7 @@ export const MainSummary: FC<MainSummaryProps> = ({
         tooltipText="Your max offer expressed as loan-to-value, given sufficient liquidity in your offer. Actual loan amount taken can be less depending on the amount of SOL borrowers choose to borrow"
         valueType={VALUES_TYPES.PERCENT}
         valueStyles={{ color: getColorByPercent(maxLtv, HealthColorIncreasing) }}
-        classNamesProps={{ container: styles.mainSummaryStat }}
+        classNamesProps={{ container: styles.mainSummaryStat, value: styles.fixedValueContent }}
       />
       <div className={styles.separateLine} />
       <StatInfo
@@ -71,6 +76,16 @@ export const AdditionalSummary: FC<OfferSummaryProps> = ({
   const loansQuantity = updatedOffer?.buyOrdersQuantity || 0
   const offerSize = calcOfferSize({ initialOffer, updatedOffer, hasFormChanges })
 
+  const customApr = MARKETS_WITH_CUSTOM_APR[updatedOffer?.hadoMarket as string]
+  const apr = customApr !== undefined ? customApr / 100 : MAX_APR_VALUE
+
+  const weeklyFee = calculateCurrentInterestSolPure({
+    loanValue: offerSize,
+    startTime: moment().unix(),
+    currentTime: moment().unix() + SECONDS_IN_DAY * 7,
+    rateBasePoints: apr * 100,
+  })
+
   return (
     <div className={styles.additionalSummary}>
       <StatInfo
@@ -79,11 +94,18 @@ export const AdditionalSummary: FC<OfferSummaryProps> = ({
         tooltipText="The minimum amount of loans you will fund if the entire liquidity in offer is lent at the Max Offer value. As borrowers can borrow at loan values equal to or less than your Max Offer, you may end up funding more loans"
         flexType="row"
       />
-
       <StatInfo
         label="Total liquidity in offer"
         value={<DisplayValue value={offerSize} />}
         tooltipText="Your total liquidity currently available in offer"
+        classNamesProps={{ value: styles.fixedValueContent }}
+        flexType="row"
+      />
+      <StatInfo
+        label="Est. weekly interest"
+        value={<DisplayValue value={weeklyFee} />}
+        tooltipText="Tooltip text"
+        classNamesProps={{ value: styles.fixedValueContent }}
         flexType="row"
       />
     </div>

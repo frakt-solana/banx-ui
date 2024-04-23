@@ -5,7 +5,6 @@ import { isEmpty } from 'lodash'
 import { Loader } from '@banx/components/Loader'
 
 import { useFakeInfinityScroll } from '@banx/hooks'
-import { trackPageEvent } from '@banx/utils'
 
 import FilterSection from './components/FilterSection'
 import LendCard from './components/LendCard'
@@ -28,8 +27,6 @@ const PlaceOfferContent = () => {
   const [visibleMarketPubkey, setMarketPubkey] = useState('')
 
   const onLendCardClick = (marketPubkey: string) => {
-    trackPageEvent('lend', `collection`)
-
     const isSameMarketPubkey = visibleMarketPubkey === marketPubkey
     const nextValue = !isSameMarketPubkey ? marketPubkey : ''
     return setMarketPubkey(nextValue)
