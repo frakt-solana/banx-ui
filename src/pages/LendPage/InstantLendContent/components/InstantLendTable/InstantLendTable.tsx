@@ -138,7 +138,7 @@ const AuctionFilterButton: FC<FilterButtonProps> = ({ isActive, onClick, loansAm
         variant="secondary"
         type="circle"
       >
-        <Hourglass />
+        <Hourglass className={styles.hourglassIcon} />
       </Button>
     </div>
   </Tooltip>
@@ -161,7 +161,7 @@ const FreezeFilterButton: FC<FilterButtonProps> = ({ isActive, onClick, loansAmo
         variant="secondary"
         type="circle"
       >
-        <Snowflake />
+        <Snowflake className={styles.snowflakeIcon} />
       </Button>
     </div>
   </Tooltip>

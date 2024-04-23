@@ -25,23 +25,18 @@
     tr > td,
     tr > th {
       width: 110px;
-
-      //? Weekly interest cell
-      &:nth-child(4) {
-        width: 136px;
-      }
     }
   }
 
   @media (max-width: 640px) {
-    min-width: 848px;
+    min-width: 900px;
 
     tr > td,
     tr > th {
       width: 96px;
 
       &:first-child {
-        width: 168px;
+        width: 220px;
       }
     }
   }
@@ -84,16 +79,34 @@
     background: var(--additional-yellow-primary);
   }
 }
-
 .freezeFilterButton,
 .auctionFilterButton {
   &.active {
     border-color: var(--content-primary);
   }
 
+  &.disabled {
+    svg path {
+      fill: var(--content-secondary);
+    }
+  }
+
   svg path {
     fill: revert-layer;
   }
+}
+
+.snowflakeIcon,
+.hourglassIcon {
+  min-width: 16px;
+  min-height: 16px;
+}
+.snowflakeIcon path:first-child {
+  fill: var(--content-primary);
+}
+
+.hourglassIcon path:last-child {
+  fill: var(--content-primary);
 }
 // * FilterButtons * //
 
@@ -156,6 +169,10 @@
   &.cardView {
     gap: unset;
   }
+}
+
+.actionButton {
+  width: 96px;
 }
 
 .tensorButtonLink {

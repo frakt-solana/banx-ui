@@ -108,11 +108,14 @@ const createRightContentJSX = (loan: Loan) => {
   const isFreezeLoan = loan.bondTradeTransaction.terminationFreeze
 
   const tooltipText = isFreezeLoan ? 'Tooltip text' : 'Tooltip text'
-  const Icon = isFreezeLoan ? Snowflake : Hourglass
 
   return (
     <Tooltip className={styles.loanTypeTooltipContent} title={tooltipText}>
-      <Icon />
+      {isFreezeLoan ? (
+        <Snowflake className={styles.snowflakeIcon} />
+      ) : (
+        <Hourglass className={styles.hourglassIcon} />
+      )}
     </Tooltip>
   )
 }
