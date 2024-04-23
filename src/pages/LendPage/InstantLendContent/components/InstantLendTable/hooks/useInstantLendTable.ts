@@ -1,33 +1,33 @@
-import { useMemo } from 'react'
-
-import { filter, first, groupBy, includes, map } from 'lodash'
+import { first, groupBy, map } from 'lodash'
 
 import { Loan } from '@banx/api/core'
-import { createGlobalState } from '@banx/store/functions'
 
 import { useAuctionsLoans } from '../../../hooks'
+import { useFilterLoans } from './useFilterLoans'
 import { useSortedLoans } from './useSortedLoans'
 
 import styles from '../InstantLendTable.module.less'
 
-const useCollectionsStore = createGlobalState<string[]>([])
-
 export const useInstantLendTable = () => {
   const { loans, isLoading } = useAuctionsLoans()
 
-  const [selectedCollections, setSelectedCollections] = useCollectionsStore()
+  const {
+    filteredLoansBySelectedCollection,
+    filteredAllLoans,
+    auctionLoansAmount,
+    freezeLoansAmount,
+    isAuctionFilterEnabled,
+    toggleAuctionFilter,
+    isFreezeFilterEnabled,
+    toggleFreezeFilter,
+    selectedCollections,
+    setSelectedCollections,
+  } = useFilterLoans(loans)
 
-  const filteredLoans = useMemo(() => {
-    if (selectedCollections.length) {
-      return filter(loans, ({ nft }) => includes(selectedCollections, nft.meta.collectionName))
-    }
-    return loans
-  }, [loans, selectedCollections])
-
-  const { sortedLoans, sortParams } = useSortedLoans(filteredLoans)
+  const { sortedLoans, sortParams } = useSortedLoans(filteredLoansBySelectedCollection)
 
   const searchSelectParams = createSearchSelectParams({
-    options: loans,
+    options: filteredAllLoans,
     selectedOptions: selectedCollections,
     onChange: setSelectedCollections,
   })
@@ -37,6 +37,12 @@ export const useInstantLendTable = () => {
   return {
     loans: sortedLoans,
     loading: isLoading,
+    auctionLoansAmount,
+    freezeLoansAmount,
+    isAuctionFilterEnabled,
+    toggleAuctionFilter,
+    isFreezeFilterEnabled,
+    toggleFreezeFilter,
     showEmptyList,
     sortViewParams: {
       searchSelectParams,

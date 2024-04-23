@@ -7,9 +7,11 @@ import {
   createPercentValueJSX,
 } from '@banx/components/TableComponents'
 import Timer from '@banx/components/Timer/Timer'
+import Tooltip from '@banx/components/Tooltip'
 
 import { Loan } from '@banx/api/core'
 import { SECONDS_IN_72_HOURS } from '@banx/constants'
+import { Hourglass, Snowflake } from '@banx/icons'
 
 import { ActionsCell, DebtCell, LTVCell } from './TableCells'
 
@@ -50,6 +52,7 @@ export const getTableColumns = ({
             partnerPoints: loan.nft.meta.partnerPoints || 0,
             playerPoints: loan.nft.meta.playerPoints || 0,
           }}
+          rightContentJSX={createRightContentJSX(loan)}
         />
       ),
     },
@@ -99,4 +102,17 @@ export const getTableColumns = ({
   ]
 
   return columns
+}
+
+const createRightContentJSX = (loan: Loan) => {
+  const isFreezeLoan = loan.bondTradeTransaction.terminationFreeze
+
+  const tooltipText = isFreezeLoan ? 'Tooltip text' : 'Tooltip text'
+  const Icon = isFreezeLoan ? Snowflake : Hourglass
+
+  return (
+    <Tooltip className={styles.loanTypeTooltipContent} title={tooltipText}>
+      <Icon />
+    </Tooltip>
+  )
 }

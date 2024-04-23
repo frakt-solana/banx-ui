@@ -1,10 +1,14 @@
-import { useMemo } from 'react'
+import { FC, useMemo } from 'react'
 
+import classNames from 'classnames'
 import { useNavigate } from 'react-router-dom'
 
+import { Button } from '@banx/components/Buttons'
 import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
+import Tooltip from '@banx/components/Tooltip'
 
+import { Hourglass, Snowflake } from '@banx/icons'
 import { PATHS } from '@banx/router'
 import { ViewState, createPathWithTokenParam, useTableView, useTokenType } from '@banx/store'
 import { isSolTokenType } from '@banx/utils'
@@ -21,7 +25,18 @@ export const InstantLendTable = () => {
   const { tokenType } = useTokenType()
   const { viewState } = useTableView()
 
-  const { loans, sortViewParams, loading, showEmptyList } = useInstantLendTable()
+  const {
+    loans,
+    sortViewParams,
+    loading,
+    showEmptyList,
+    auctionLoansAmount,
+    freezeLoansAmount,
+    isAuctionFilterEnabled,
+    toggleAuctionFilter,
+    isFreezeFilterEnabled,
+    toggleFreezeFilter,
+  } = useInstantLendTable()
 
   const { selectedLoans, onSelectLoan, findSelectedLoan, onSelectLoans, onDeselectAllLoans } =
     useLoansState()
@@ -55,10 +70,25 @@ export const InstantLendTable = () => {
 
   const emptyButtonText = isSolTokenType(tokenType) ? 'Lend SOL' : 'Lend USDC'
 
+  const customJSX = (
+    <div className={styles.filterButtons}>
+      <AuctionFilterButton
+        loansAmount={auctionLoansAmount}
+        isActive={isAuctionFilterEnabled}
+        onClick={toggleAuctionFilter}
+      />
+      <FreezeFilterButton
+        loansAmount={freezeLoansAmount}
+        isActive={isFreezeFilterEnabled}
+        onClick={toggleFreezeFilter}
+      />
+    </div>
+  )
+
   if (showEmptyList)
     return (
       <EmptyList
-        message="No offers to refinance. Create an offer if you want to fund some loans"
+        message="No offers to lend. Create an offer if you want to fund some loans"
         buttonProps={{ text: emptyButtonText, onClick: goToLendPage }}
       />
     )
@@ -72,6 +102,7 @@ export const InstantLendTable = () => {
         rowParams={rowParams}
         sortViewParams={sortViewParams}
         loading={loading}
+        customJSX={customJSX}
         showCard
       />
       <Summary
@@ -83,3 +114,55 @@ export const InstantLendTable = () => {
     </div>
   )
 }
+
+interface FilterButtonProps {
+  onClick: () => void
+  isActive: boolean
+  loansAmount: number | null
+}
+
+const AuctionFilterButton: FC<FilterButtonProps> = ({ isActive, onClick, loansAmount }) => (
+  <Tooltip title={loansAmount ? 'Auction loans' : 'No auction loans currently'}>
+    <div
+      className={classNames(styles.filterButtonWrapper, styles.auction)}
+      data-loans-amount={loansAmount}
+    >
+      <Button
+        className={classNames(
+          styles.auctionFilterButton,
+          { [styles.active]: isActive },
+          { [styles.disabled]: !loansAmount },
+        )}
+        disabled={!loansAmount}
+        onClick={onClick}
+        variant="secondary"
+        type="circle"
+      >
+        <Hourglass />
+      </Button>
+    </div>
+  </Tooltip>
+)
+
+const FreezeFilterButton: FC<FilterButtonProps> = ({ isActive, onClick, loansAmount }) => (
+  <Tooltip title={loansAmount ? 'Freeze loans' : 'No freeze loans currently'}>
+    <div
+      className={classNames(styles.filterButtonWrapper, styles.freeze)}
+      data-loans-amount={loansAmount}
+    >
+      <Button
+        className={classNames(
+          styles.freezeFilterButton,
+          { [styles.active]: isActive },
+          { [styles.disabled]: !loansAmount },
+        )}
+        disabled={!loansAmount}
+        onClick={onClick}
+        variant="secondary"
+        type="circle"
+      >
+        <Snowflake />
+      </Button>
+    </div>
+  </Tooltip>
+)
