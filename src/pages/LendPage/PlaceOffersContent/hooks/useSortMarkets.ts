@@ -6,14 +6,19 @@ import { SortOption } from '@banx/components/SortDropdown'
 
 import { MarketPreview } from '@banx/api/core'
 
-import { DEFAULT_SORT_OPTION, SORT_OPTIONS } from '../constants'
-
 enum SortField {
   OFFER_TVL = 'offerTvl',
   LOANS_TVL = 'loansTvl',
   ACTIVE_LOANS = 'activeLoans',
-  // APR = 'apr',
 }
+
+const SORT_OPTIONS = [
+  { label: 'Offers TVL', value: 'offerTvl' },
+  { label: 'Loans TVL', value: 'loansTvl' },
+  { label: 'Active loans', value: 'activeLoans' },
+]
+
+const DEFAULT_SORT_OPTION = { label: 'Loans TVL', value: 'loansTvl_desc' }
 
 export const useSortMarkets = (markets: MarketPreview[]) => {
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
@@ -31,7 +36,6 @@ export const useSortMarkets = (markets: MarketPreview[]) => {
       [SortField.OFFER_TVL]: 'offerTvl',
       [SortField.LOANS_TVL]: 'loansTvl',
       [SortField.ACTIVE_LOANS]: 'activeBondsAmount',
-      // [SortField.APR]: 'marketApr',
     }
 
     const sorted = sortBy(markets, (loan) => {

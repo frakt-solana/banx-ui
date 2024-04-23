@@ -9,7 +9,7 @@ import { DisplayValue } from '@banx/components/TableComponents'
 import { MarketPreview } from '@banx/api/core'
 import { formatNumbersWithCommas } from '@banx/utils'
 
-import { useMarketsPreview } from '../../hooks'
+import { useMarketsPreview } from '../../../hooks'
 
 import styles from './LendHeader.module.less'
 

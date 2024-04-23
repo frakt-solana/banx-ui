@@ -1,7 +1,7 @@
 import { useMixpanelLocationTrack } from '@banx/utils'
 
-import LendHeader from './components/LendHeader'
-import LendPageContent from './components/LendPageContent'
+import PlaceOffersContent from './PlaceOffersContent'
+import LendHeader from './PlaceOffersContent/components/LendHeader'
 
 import styles from './LendPage.module.less'
 
@@ -11,7 +11,7 @@ export const LendPage = () => {
   return (
     <div className={styles.pageWrapper}>
       <LendHeader />
-      <LendPageContent />
+      <PlaceOffersContent />
     </div>
   )
 }

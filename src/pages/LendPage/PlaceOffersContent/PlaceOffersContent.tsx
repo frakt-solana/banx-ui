@@ -7,13 +7,13 @@ import { Loader } from '@banx/components/Loader'
 import { useFakeInfinityScroll } from '@banx/hooks'
 import { trackPageEvent } from '@banx/utils'
 
-import FilterSection from '../FilterSection'
-import LendCard from '../LendCard'
+import FilterSection from './components/FilterSection'
+import LendCard from './components/LendCard'
 import { useLendPageContent } from './hooks'
 
-import styles from './LendPageContent.module.less'
+import styles from './PlaceOffersContent.module.less'
 
-const LendPageContent = () => {
+const PlaceOfferContent = () => {
   const {
     marketsPreview,
     isLoading,
@@ -66,7 +66,7 @@ const LendPageContent = () => {
   )
 }
 
-export default LendPageContent
+export default PlaceOfferContent
 
 const EmptyList = () => (
   <div className={styles.emptyList}>
