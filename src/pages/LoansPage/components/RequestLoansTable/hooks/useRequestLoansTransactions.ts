@@ -97,15 +97,15 @@ export const useRequestLoansTransactions = () => {
 
         destroySnackbar(loadingSnackbarId)
 
+        if (confirmed.length) {
+          enqueueSnackbar({ message: 'Loans delisted successfully', type: 'success' })
+          clearSelection()
+        }
+
         if (failed.length) {
           return failed.forEach(({ signature, reason }) =>
             enqueueConfirmationError(signature, reason),
           )
-        }
-
-        if (confirmed.length) {
-          enqueueSnackbar({ message: 'Loans delisted successfully', type: 'success' })
-          clearSelection()
         }
       })
       .on('error', (error) => {

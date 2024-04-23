@@ -40,7 +40,7 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
     upfrontFee,
     weeklyInterest,
     tokenType,
-    onSubmit,
+    requestLoans,
     disabledListRequest,
   } = useRequestLoansForm(market)
 
@@ -96,7 +96,11 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
 
         <Summary ltv={ltv} upfrontFee={upfrontFee} weeklyInterest={weeklyInterest} />
 
-        <Button onClick={onSubmit} className={styles.submitButton} disabled={disabledListRequest}>
+        <Button
+          onClick={requestLoans}
+          className={styles.submitButton}
+          disabled={disabledListRequest}
+        >
           List {totalNftsToRequest <= 1 ? 'request' : `${totalNftsToRequest} requests`}
         </Button>
       </div>

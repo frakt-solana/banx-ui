@@ -69,3 +69,18 @@ export const createRefinanceSubscribeNotificationsTitle = (loansAmount = 1) => {
 
 export const createRefinanceSubscribeNotificationsContent = () =>
   'Please use the notifications to check the status of your offers'
+
+//? Loans requests
+export const createRequestLoanSubscribeNotificationsTitle = (loansAmount = 1) => {
+  if (loansAmount > 1) {
+    return `You have successfully placed ${loansAmount} requests`
+  }
+
+  return `You have successfully placed the loan request`
+}
+
+export const createRequestLoanSubscribeNotificationsContent = (showSubscribe = true) => {
+  return showSubscribe
+    ? 'Please use the notifications so that you will know lenders accepts your requests or makes counteroffer'
+    : ''
+}

@@ -96,7 +96,7 @@ const getIxnsAndSignersByListingType = async ({
       accounts: {
         protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
         hadoMarket: new web3.PublicKey(nft.loan.marketPubkey),
-        userPubkey: wallet.publicKey as web3.PublicKey,
+        userPubkey: wallet.publicKey,
         nftMint: new web3.PublicKey(nft.mint),
         fraktMarket: new web3.PublicKey(nft.loan.fraktMarket),
         tree: new web3.PublicKey(nft.nft.compression.tree),
@@ -104,7 +104,7 @@ const getIxnsAndSignersByListingType = async ({
       },
       args: {
         amountToGet: new BN(loanValue),
-        aprRate: new BN(aprRate * 100),
+        aprRate: new BN(aprRate),
         isBorrowerListing: true,
         lendingTokenType,
         terminationFreeze: new BN(freeze),
@@ -130,13 +130,13 @@ const getIxnsAndSignersByListingType = async ({
     accounts: {
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
       hadoMarket: new web3.PublicKey(nft.loan.marketPubkey),
-      userPubkey: wallet.publicKey as web3.PublicKey,
+      userPubkey: wallet.publicKey,
       nftMint: new web3.PublicKey(nft.mint),
       fraktMarket: new web3.PublicKey(nft.loan.fraktMarket),
     },
     args: {
       amountToGet: new BN(loanValue),
-      aprRate: new BN(aprRate * 100),
+      aprRate: new BN(aprRate),
       isBorrowerListing: true,
       terminationFreeze: new BN(freeze),
       lendingTokenType,
