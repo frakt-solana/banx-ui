@@ -1,14 +1,8 @@
-import React, { FC } from 'react'
-
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import classNames from 'classnames'
-import { uniqueId } from 'lodash'
+import { chain, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
-import { Button } from '@banx/components/Buttons'
-import { TensorLink } from '@banx/components/SolanaLinks'
-import { useWalletModal } from '@banx/components/WalletModal'
 import {
   SubscribeNotificationsModal,
   createRefinanceSubscribeNotificationsContent,
@@ -25,69 +19,29 @@ import {
   enqueueConfirmationError,
   enqueueSnackbar,
   enqueueTransactionSent,
+  enqueueTransactionsSent,
   enqueueWaitingConfirmation,
   getDialectAccessToken,
-  trackPageEvent,
 } from '@banx/utils'
 
 import { useAuctionsLoans } from '../../../hooks'
-import { useLoansState } from '../hooks'
+import { useLoansState } from '../loansState'
 
-import styles from '../RefinanceTable.module.less'
-
-interface RefinanceCellProps {
-  loan: Loan
-  isCardView: boolean
-  disabledAction: boolean
-}
-
-export const RefinanceCell: FC<RefinanceCellProps> = ({ loan, isCardView, disabledAction }) => {
-  const { connected } = useWallet()
-  const { toggleVisibility } = useWalletModal()
-
-  const refinance = useRefinanceTransaction(loan)
-  const buttonSize = isCardView ? 'default' : 'small'
-
-  const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    if (connected) {
-      trackPageEvent('refinance', `refinance-lateral`)
-      refinance()
-    } else {
-      toggleVisibility()
-    }
-    event.stopPropagation()
-  }
-
-  return (
-    <div className={classNames(styles.refinanceCell, { [styles.cardView]: isCardView })}>
-      <Button onClick={onClickHandler} size={buttonSize} disabled={disabledAction}>
-        Refinance
-      </Button>
-      <Button
-        className={classNames(styles.tensorButtonLink, { [styles.cardView]: isCardView })}
-        variant="secondary"
-        type="circle"
-        size="small"
-      >
-        <TensorLink mint={loan.nft.mint} />
-      </Button>
-    </div>
-  )
-}
-
-const useRefinanceTransaction = (loan: Loan) => {
+export const useInstantTransactions = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
   const { priorityLevel } = usePriorityFees()
-  const { addMints } = useAuctionsLoans()
-  const { deselectLoan } = useLoansState()
-  const { open, close } = useModal()
-  const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
-  const onSuccess = () => {
+  const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
+  const { addMints } = useAuctionsLoans()
+  const { open, close } = useModal()
+
+  const { selectedLoans, onDeselectAllLoans, deselectLoan } = useLoansState()
+
+  const onSuccess = (loansAmount: number) => {
     if (!getDialectAccessToken(wallet.publicKey?.toBase58())) {
       open(SubscribeNotificationsModal, {
-        title: createRefinanceSubscribeNotificationsTitle(1),
+        title: createRefinanceSubscribeNotificationsTitle(loansAmount),
         message: createRefinanceSubscribeNotificationsContent(),
         onActionClick: () => {
           close()
@@ -98,7 +52,7 @@ const useRefinanceTransaction = (loan: Loan) => {
     }
   }
 
-  const refinance = () => {
+  const refinance = (loan: Loan) => {
     const loadingSnackbarId = uniqueId()
 
     new TxnExecutor(
@@ -132,7 +86,7 @@ const useRefinanceTransaction = (loan: Loan) => {
 
             addMints(loan.nft.mint)
             deselectLoan(loan.publicKey)
-            onSuccess()
+            onSuccess(1)
           }
         })
       })
@@ -147,5 +101,58 @@ const useRefinanceTransaction = (loan: Loan) => {
       .execute()
   }
 
-  return refinance
+  const refinanceAll = () => {
+    const loadingSnackbarId = uniqueId()
+
+    const txnParams = selectedLoans.map((loan) => ({ loan, priorityFeeLevel: priorityLevel }))
+
+    new TxnExecutor(
+      makeRefinanceAction,
+      { wallet: createWalletInstance(wallet), connection },
+      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
+    )
+      .addTransactionParams(txnParams)
+      .on('sentAll', () => {
+        enqueueTransactionsSent()
+        enqueueWaitingConfirmation(loadingSnackbarId)
+      })
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
+
+        destroySnackbar(loadingSnackbarId)
+
+        if (confirmed.length) {
+          enqueueSnackbar({ message: 'Loans successfully refinanced', type: 'success' })
+
+          const mintsToHidden = chain(confirmed)
+            .map(({ result }) => result?.nft.mint)
+            .compact()
+            .value()
+
+          addMints(...mintsToHidden)
+          onDeselectAllLoans()
+          onSuccess(mintsToHidden.length)
+        }
+
+        if (failed.length) {
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
+          )
+        }
+      })
+      .on('error', (error) => {
+        destroySnackbar(loadingSnackbarId)
+        defaultTxnErrorHandler(error, {
+          additionalData: txnParams,
+          walletPubkey: wallet?.publicKey?.toBase58(),
+          transactionName: 'Refinance',
+        })
+      })
+      .execute()
+  }
+
+  return {
+    refinance,
+    refinanceAll,
+  }
 }

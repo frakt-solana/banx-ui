@@ -1,7 +1,6 @@
 import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
 import {
-  DisplayValue,
   HeaderCell,
   HorizontalCell,
   NftInfoCell,
@@ -10,12 +9,11 @@ import {
 import Timer from '@banx/components/Timer/Timer'
 
 import { Loan } from '@banx/api/core'
+import { SECONDS_IN_72_HOURS } from '@banx/constants'
 
-import { DebtCell, LTVCell, RefinanceCell } from './TableCells'
-import { SECONDS_IN_72_HOURS } from './constants'
-import { calcWeeklyInterestFee } from './helpers'
+import { ActionsCell, DebtCell, LTVCell } from './TableCells'
 
-import styles from './RefinanceTable.module.less'
+import styles from './InstantLendTable.module.less'
 
 interface GetTableColumnsProps {
   onSelectLoan: (loan: Loan) => void
@@ -59,21 +57,23 @@ export const getTableColumns = ({
       key: 'repayValue',
       title: <HeaderCell label="Debt" />,
       render: (loan) => <DebtCell loan={loan} />,
-      sorter: true,
     },
     {
       key: 'ltv',
       title: <HeaderCell label="LTV" />,
       render: (loan) => <LTVCell loan={loan} />,
-      sorter: true,
     },
     {
-      key: 'interest',
-      title: <HeaderCell label="Weekly interest" />,
-      render: (loan) => {
-        const weeklyFee = calcWeeklyInterestFee(loan)
-        return <HorizontalCell value={<DisplayValue value={weeklyFee} placeholder="--" />} />
-      },
+      key: 'freeze',
+      title: <HeaderCell label="Freeze" />,
+      render: () => <>14 D</>,
+    },
+    {
+      key: 'duration',
+      title: <HeaderCell label="Ends in" />,
+      render: ({ fraktBond }) => (
+        <Timer expiredAt={fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS} />
+      ),
     },
     {
       key: 'apr',
@@ -84,22 +84,12 @@ export const getTableColumns = ({
           isHighlighted
         />
       ),
-      sorter: true,
-    },
-
-    {
-      key: 'duration',
-      title: <HeaderCell label="Ends in" />,
-      render: ({ fraktBond }) => (
-        <Timer expiredAt={fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS} />
-      ),
-      sorter: true,
     },
     {
       key: 'refinanceCell',
       title: <HeaderCell label="" />,
       render: (loan) => (
-        <RefinanceCell
+        <ActionsCell
           loan={loan}
           isCardView={isCardView}
           disabledAction={!!findSelectedLoan(loan.publicKey)}

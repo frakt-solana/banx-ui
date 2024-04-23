@@ -1,3 +1,4 @@
+// * InstantLendTable * //
 .tableRoot {
   flex-grow: 1;
   display: flex;
@@ -45,8 +46,54 @@
     }
   }
 }
+// * InstantLendTable * //
 
-.refinanceCell {
+// * Cells * //
+.headerTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.checkbox {
+  height: 18px;
+  padding-left: 18px;
+}
+
+.tooltipContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tooltipContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 200px;
+
+  span:first-child {
+    color: var(--content-secondary);
+    font: var(--title-sm);
+    text-transform: uppercase;
+
+    @media (max-width: 640px) {
+      font: var(--title-xs);
+    }
+  }
+
+  span:last-child {
+    color: var(--pure-white);
+    font: var(--body-text-md);
+
+    @media (max-width: 640px) {
+      font: var(--body-text-sm);
+    }
+  }
+}
+// * Cells * //
+
+// * ActionsCell * //
+.actionsCell {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -65,11 +112,9 @@
     right: 16px;
   }
 }
+// * ActionsCell * //
 
-.searchSelect {
-  max-width: 456px;
-}
-
+// * Summary * //
 .summary {
   border-top: 1px solid var(--bg-border);
   display: flex;
@@ -137,7 +182,14 @@
   }
 }
 
-.refinanceButton {
+.sliderContainer {
+  @media (max-width: 1240px) {
+    flex-direction: row-reverse;
+    order: 2;
+  }
+}
+
+.lendButton {
   min-width: 190px;
 
   @media (max-width: 1240px) {
@@ -150,51 +202,8 @@
     }
   }
 }
+// * Summary * //
 
-.sliderContainer {
-  @media (max-width: 1240px) {
-    flex-direction: row-reverse;
-    order: 2;
-  }
-}
-
-.headerTitleRow {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.checkbox {
-  height: 18px;
-  padding-left: 18px;
-}
-
-.tooltipContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.tooltipContent {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-width: 200px;
-
-  span:first-child {
-    color: var(--content-secondary);
-    font: var(--title-sm);
-    text-transform: uppercase;
-
-    @media (max-width: 640px) {
-      font: var(--title-xs);
-    }
-  }
-
-  span:last-child {
-    color: var(--pure-white);
-    font: var(--body-text-md);
-
-    @media (max-width: 640px) {
-      font: var(--body-text-sm);
-    }
-  }
+.searchSelect {
+  max-width: 456px;
 }

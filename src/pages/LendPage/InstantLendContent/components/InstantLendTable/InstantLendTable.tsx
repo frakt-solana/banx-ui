@@ -11,20 +11,20 @@ import { isSolTokenType } from '@banx/utils'
 
 import { Summary } from './Summary'
 import { getTableColumns } from './columns'
-import { EMPTY_MESSAGE } from './constants'
-import { useLoansState, useRefinanceTable } from './hooks'
+import { useInstantLendTable } from './hooks'
+import { useLoansState } from './loansState'
 
-import styles from './RefinanceTable.module.less'
+import styles from './InstantLendTable.module.less'
 
 export const InstantLendTable = () => {
-  const { loans, sortViewParams, loading, showEmptyList } = useRefinanceTable()
   const navigate = useNavigate()
   const { tokenType } = useTokenType()
+  const { viewState } = useTableView()
+
+  const { loans, sortViewParams, loading, showEmptyList } = useInstantLendTable()
 
   const { selectedLoans, onSelectLoan, findSelectedLoan, onSelectLoans, onDeselectAllLoans } =
     useLoansState()
-
-  const { viewState } = useTableView()
 
   const hasSelectedLoans = !!selectedLoans.length
   const onSelectAll = () => {
@@ -58,7 +58,7 @@ export const InstantLendTable = () => {
   if (showEmptyList)
     return (
       <EmptyList
-        message={EMPTY_MESSAGE}
+        message="No offers to refinance. Create an offer if you want to fund some loans"
         buttonProps={{ text: emptyButtonText, onClick: goToLendPage }}
       />
     )

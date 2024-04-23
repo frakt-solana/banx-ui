@@ -1,43 +1,21 @@
 import React, { FC } from 'react'
 
-import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { chain, map, sumBy, uniqueId } from 'lodash'
-import { TxnExecutor } from 'solana-transactions-executor'
+import { useWallet } from '@solana/wallet-adapter-react'
+import { map, sumBy } from 'lodash'
 
-import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 import { useWalletModal } from '@banx/components/WalletModal'
-import {
-  SubscribeNotificationsModal,
-  createRefinanceSubscribeNotificationsContent,
-  createRefinanceSubscribeNotificationsTitle,
-} from '@banx/components/modals'
 
 import { Loan } from '@banx/api/core'
-import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
-import { useModal, usePriorityFees } from '@banx/store'
-import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
-import { makeRefinanceAction } from '@banx/transactions/loans'
-import {
-  calcWeightedAverage,
-  calculateLoanRepayValue,
-  destroySnackbar,
-  enqueueConfirmationError,
-  enqueueSnackbar,
-  enqueueTransactionsSent,
-  enqueueWaitingConfirmation,
-  getDialectAccessToken,
-  trackPageEvent,
-} from '@banx/utils'
+import { calcWeightedAverage, calculateLoanRepayValue } from '@banx/utils'
 
-import { useAuctionsLoans } from '../../hooks'
-import { MAX_APY_INCREASE_PERCENT } from './constants'
 import { calcWeeklyInterestFee } from './helpers'
+import { useInstantTransactions } from './hooks'
 
-import styles from './RefinanceTable.module.less'
+import styles from './InstantLendTable.module.less'
 
 interface SummaryProps {
   loans: Loan[]
@@ -46,19 +24,12 @@ interface SummaryProps {
   onDeselectAllLoans: () => void
 }
 
-export const Summary: FC<SummaryProps> = ({
-  loans,
-  selectedLoans,
-  onSelectLoans,
-  onDeselectAllLoans,
-}) => {
+export const Summary: FC<SummaryProps> = ({ loans, selectedLoans, onSelectLoans }) => {
   const wallet = useWallet()
-  const { connection } = useConnection()
-  const { priorityLevel } = usePriorityFees()
-  const { addMints } = useAuctionsLoans()
+
   const { toggleVisibility } = useWalletModal()
-  const { open, close } = useModal()
-  const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
+
+  const { refinanceAll } = useInstantTransactions()
 
   const totalDebt = sumBy(selectedLoans, (loan) => calculateLoanRepayValue(loan))
   const totalLoanValue = map(selectedLoans, (loan) => loan.fraktBond.borrowedAmount)
@@ -66,75 +37,10 @@ export const Summary: FC<SummaryProps> = ({
 
   const totalApr = map(selectedLoans, (loan) => loan.bondTradeTransaction.amountOfBonds / 100)
   const weightedApr = calcWeightedAverage(totalApr, totalLoanValue)
-  const cappedWeightedApr = Math.min(weightedApr, MAX_APY_INCREASE_PERCENT)
-
-  const onSuccess = (loansAmount: number) => {
-    if (!getDialectAccessToken(wallet.publicKey?.toBase58())) {
-      open(SubscribeNotificationsModal, {
-        title: createRefinanceSubscribeNotificationsTitle(loansAmount),
-        message: createRefinanceSubscribeNotificationsContent(),
-        onActionClick: () => {
-          close()
-          setBanxNotificationsSiderVisibility(true)
-        },
-        onCancel: close,
-      })
-    }
-  }
-
-  const refinanceAll = () => {
-    const loadingSnackbarId = uniqueId()
-
-    const txnParams = selectedLoans.map((loan) => ({ loan, priorityFeeLevel: priorityLevel }))
-
-    new TxnExecutor(
-      makeRefinanceAction,
-      { wallet: createWalletInstance(wallet), connection },
-      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
-    )
-      .addTransactionParams(txnParams)
-      .on('sentAll', () => {
-        enqueueTransactionsSent()
-        enqueueWaitingConfirmation(loadingSnackbarId)
-      })
-      .on('confirmedAll', (results) => {
-        const { confirmed, failed } = results
-
-        destroySnackbar(loadingSnackbarId)
-
-        if (confirmed.length) {
-          enqueueSnackbar({ message: 'Loans successfully refinanced', type: 'success' })
-
-          const mintsToHidden = chain(confirmed)
-            .map(({ result }) => result?.nft.mint)
-            .compact()
-            .value()
-
-          addMints(...mintsToHidden)
-          onDeselectAllLoans()
-          onSuccess(mintsToHidden.length)
-        }
-
-        if (failed.length) {
-          return failed.forEach(({ signature, reason }) =>
-            enqueueConfirmationError(signature, reason),
-          )
-        }
-      })
-      .on('error', (error) => {
-        destroySnackbar(loadingSnackbarId)
-        defaultTxnErrorHandler(error, {
-          additionalData: txnParams,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'Refinance',
-        })
-      })
-      .execute()
-  }
+  const cappedWeightedApr = weightedApr
 
   const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (wallet.connected) {
-      trackPageEvent('refinance', `refinance-bottom`)
       refinanceAll()
     } else {
       toggleVisibility()
@@ -165,11 +71,11 @@ export const Summary: FC<SummaryProps> = ({
           className={styles.sliderContainer}
         />
         <Button
-          className={styles.refinanceButton}
+          className={styles.lendButton}
           onClick={onClickHandler}
           disabled={!selectedLoans.length}
         >
-          Refinance <DisplayValue value={totalDebt} />
+          Lend <DisplayValue value={totalDebt} />
         </Button>
       </div>
     </div>
