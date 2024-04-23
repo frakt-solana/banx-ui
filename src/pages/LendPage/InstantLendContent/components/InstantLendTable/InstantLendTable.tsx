@@ -16,7 +16,7 @@ import { useLoansState, useRefinanceTable } from './hooks'
 
 import styles from './RefinanceTable.module.less'
 
-export const RefinanceTable = () => {
+export const InstantLendTable = () => {
   const { loans, sortViewParams, loading, showEmptyList } = useRefinanceTable()
   const navigate = useNavigate()
   const { tokenType } = useTokenType()

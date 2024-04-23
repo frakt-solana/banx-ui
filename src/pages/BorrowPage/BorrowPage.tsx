@@ -1,7 +1,5 @@
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
-import { useMixpanelLocationTrack } from '@banx/utils'
-
 import BorrowHeader from './BorrowHeader'
 import { InstantLoansContent } from './InstantLoansContent'
 import { RequestLoansContent } from './RequestLoansContent'
@@ -9,8 +7,6 @@ import { RequestLoansContent } from './RequestLoansContent'
 import styles from './BorrowPage.module.less'
 
 export const BorrowPage = () => {
-  useMixpanelLocationTrack('borrow')
-
   const { value: currentTabValue, ...tabsProps } = useTabs({
     tabs: OFFERS_TABS,
     defaultValue: BorrowTabName.INSTANT,

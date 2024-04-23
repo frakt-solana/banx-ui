@@ -17,7 +17,6 @@ import {
 
 import { Loan } from '@banx/api/core'
 import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
-import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
 import { useModal, usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeRefinanceAction } from '@banx/transactions/loans'
@@ -31,6 +30,7 @@ import {
   trackPageEvent,
 } from '@banx/utils'
 
+import { useAuctionsLoans } from '../../../hooks'
 import { useLoansState } from '../hooks'
 
 import styles from '../RefinanceTable.module.less'

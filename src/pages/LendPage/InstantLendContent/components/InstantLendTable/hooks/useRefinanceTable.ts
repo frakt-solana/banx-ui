@@ -1,16 +1,15 @@
 import { useMemo, useState } from 'react'
 
-import { first, groupBy, map } from 'lodash'
+import { filter, first, groupBy, includes, map } from 'lodash'
 import { create } from 'zustand'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
 import { Loan } from '@banx/api/core'
-import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
 import { createGlobalState } from '@banx/store/functions'
 
+import { useAuctionsLoans } from '../../../hooks'
 import { DEFAULT_SORT_OPTION } from '../constants'
-import { useFilteredLoans } from './useFilteredLoans'
 import { useSortedLoans } from './useSortedLoans'
 
 import styles from '../RefinanceTable.module.less'
@@ -24,7 +23,13 @@ export const useRefinanceTable = () => {
 
   const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
 
-  const filteredLoans = useFilteredLoans(loans, selectedCollections)
+  const filteredLoans = useMemo(() => {
+    if (selectedCollections.length) {
+      return filter(loans, ({ nft }) => includes(selectedCollections, nft.meta.collectionName))
+    }
+    return loans
+  }, [loans, selectedCollections])
+
   const sortedLoans = useSortedLoans(filteredLoans, sortOption.value)
 
   const searchSelectOptions = useMemo(() => {
