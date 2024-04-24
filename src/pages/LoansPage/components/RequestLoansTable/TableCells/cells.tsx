@@ -46,10 +46,10 @@ interface ActionsCellProps {
 }
 
 export const ActionsCell: FC<ActionsCellProps> = ({ loan, disabled, isCardView }) => {
-  const { delistLoan } = useRequestLoansTransactions()
+  const { delist } = useRequestLoansTransactions()
 
   const onButtonClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    delistLoan(loan)
+    delist(loan)
     event.stopPropagation()
   }
 

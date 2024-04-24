@@ -25,7 +25,7 @@ export const useRequestLoansTransactions = () => {
 
   const { selection, clear: clearSelection } = useSelectedLoans()
 
-  const delistLoan = async (loan: Loan) => {
+  const delist = async (loan: Loan) => {
     const loadingSnackbarId = uniqueId()
 
     const txnParam = { loan, priorityFeeLevel: priorityLevel }
@@ -74,7 +74,7 @@ export const useRequestLoansTransactions = () => {
       .execute()
   }
 
-  const delistBulkLoan = async () => {
+  const delistAll = async () => {
     const loadingSnackbarId = uniqueId()
 
     const txnParams = selection.map(({ loan }) => ({
@@ -120,7 +120,7 @@ export const useRequestLoansTransactions = () => {
   }
 
   return {
-    delistLoan,
-    delistBulkLoan,
+    delist,
+    delistAll,
   }
 }

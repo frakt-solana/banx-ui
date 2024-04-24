@@ -17,7 +17,7 @@ import { ChevronDown, SOL } from '@banx/icons'
 import { getTokenUnit } from '@banx/utils'
 
 import RequestLoansTable from '../RequestLoansTable'
-import { DEFAULT_TAB_VALUE, INPUT_TOKEN_STEP, TABS, TabName } from './constants'
+import { INPUT_TOKEN_STEP, TABS, TabName } from './constants'
 import { useRequestLoansForm } from './hooks'
 
 import styles from './ExpandedCardContent.module.less'
@@ -42,12 +42,12 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
     weeklyInterest,
     tokenType,
     requestLoans,
-    disabledListRequest,
+    disabledListAction,
   } = useRequestLoansForm(market)
 
   const { value: currentTabValue, ...tabsProps } = useTabs({
     tabs: TABS,
-    defaultValue: DEFAULT_TAB_VALUE,
+    defaultValue: TabName.NFTS,
   })
 
   return (
@@ -100,7 +100,7 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
         <Button
           onClick={requestLoans}
           className={styles.submitButton}
-          disabled={disabledListRequest}
+          disabled={disabledListAction}
         >
           List {totalNftsToRequest <= 1 ? 'request' : `${totalNftsToRequest} requests`}
         </Button>

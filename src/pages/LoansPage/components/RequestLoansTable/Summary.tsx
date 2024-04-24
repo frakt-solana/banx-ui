@@ -30,7 +30,7 @@ export const Summary: FC<SummaryProps> = ({
 }) => {
   const { publicKey: walletPublicKey } = useWallet()
 
-  const { delistBulkLoan } = useRequestLoansTransactions()
+  const { delistAll } = useRequestLoansTransactions()
 
   const selectedLoans = useMemo(() => {
     return rawSelectedLoans.map(({ loan }) => loan)
@@ -71,7 +71,7 @@ export const Summary: FC<SummaryProps> = ({
           className={styles.sliderContainer}
           max={loans.length}
         />
-        <Button onClick={delistBulkLoan} disabled={!totalSelectedLoans}>
+        <Button onClick={delistAll} disabled={!totalSelectedLoans}>
           Delist
         </Button>
       </div>

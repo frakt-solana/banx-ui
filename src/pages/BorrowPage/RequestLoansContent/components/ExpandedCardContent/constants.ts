@@ -16,8 +16,6 @@ export const TABS = [
   },
 ]
 
-export const DEFAULT_TAB_VALUE = TABS[0].value
-
 export const INPUT_TOKEN_STEP = {
   [LendingTokenType.NativeSol]: 0.1, //? 0.1 SOL
   [LendingTokenType.Usdc]: 1, //? 1 USDC

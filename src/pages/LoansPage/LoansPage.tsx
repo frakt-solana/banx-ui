@@ -4,7 +4,7 @@ import { LoansActiveTable } from './components/LoansActiveTable'
 import LoansHeader from './components/LoansHeader'
 import { LoansHistoryTable } from './components/LoansHistoryTable'
 import { RequestsTable } from './components/RequestLoansTable'
-import { DEFAULT_TAB_VALUE, LOANS_TABS, LoansTabsNames } from './constants'
+import { LOANS_TABS, LoansTabsNames } from './constants'
 import { useWalletLoansAndOffers } from './hooks'
 
 import styles from './LoansPage.module.less'
@@ -12,7 +12,7 @@ import styles from './LoansPage.module.less'
 export const LoansPage = () => {
   const { value: currentTabValue, ...tabProps } = useTabs({
     tabs: LOANS_TABS,
-    defaultValue: DEFAULT_TAB_VALUE,
+    defaultValue: LoansTabsNames.REQUESTS,
   })
 
   const { loans, offers, isLoading } = useWalletLoansAndOffers()

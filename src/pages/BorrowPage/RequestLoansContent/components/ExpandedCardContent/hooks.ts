@@ -13,20 +13,27 @@ import {
   createRequestLoanSubscribeNotificationsTitle,
 } from '@banx/components/modals'
 
-import { BorrowNft, MarketPreview } from '@banx/api/core'
+import { BorrowNft, Loan, MarketPreview } from '@banx/api/core'
 import { DAYS_IN_YEAR, TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { PATHS } from '@banx/router'
-import { createPathWithTokenParam, useModal, usePriorityFees, useTokenType } from '@banx/store'
+import {
+  createPathWithTokenParam,
+  useLoansOptimistic,
+  useModal,
+  usePriorityFees,
+  useTokenType,
+} from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeListAction } from '@banx/transactions/listing'
 import {
+  convertToHumanNumber,
   destroySnackbar,
   enqueueConfirmationError,
   enqueueSnackbar,
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
-  formatValueByTokenType,
+  getDecimalPlaces,
   getDialectAccessToken,
   getTokenDecimals,
 } from '@banx/utils'
@@ -39,6 +46,7 @@ export const useRequestLoansForm = (market: MarketPreview) => {
   const { nfts, isLoading: isLoadingNfts, maxLoanValueByMarket } = useBorrowNfts()
   const { selection: selectedNfts, set: setSelection } = useSelectedNfts()
   const { tokenType } = useTokenType()
+  const { connected } = useWallet()
 
   const [inputLoanValue, setInputLoanValue] = useState('')
   const [inputAprValue, setInputAprValue] = useState('')
@@ -67,16 +75,20 @@ export const useRequestLoansForm = (market: MarketPreview) => {
   }
 
   useEffect(() => {
+    if (!connected) return
+    const roundedAprValueInPercent = (market.marketApr / 100)?.toFixed(0)
+    setInputAprValue(roundedAprValueInPercent)
+    setInputFreezeValue(String(DEFAULT_FREEZE_VALUE))
+
     const maxLoanValue = maxLoanValueByMarket[market.marketPubkey]
     if (!maxLoanValue) return
 
-    const formattedMaxLoanValue = formatValueByTokenType(maxLoanValue, tokenType)
-    const roundedAprValueInPercent = (market.marketApr / 100)?.toFixed(0)
+    const formattedMaxLoanValue = convertToHumanNumber(maxLoanValue, tokenType)
+    const tokenDecimalPlaces = getDecimalPlaces(formattedMaxLoanValue, tokenType)
+    const maxLoanValueStr = formattedMaxLoanValue?.toFixed(tokenDecimalPlaces)
 
-    setInputLoanValue(formattedMaxLoanValue)
-    setInputAprValue(roundedAprValueInPercent)
-    setInputFreezeValue(String(DEFAULT_FREEZE_VALUE))
-  }, [market, maxLoanValueByMarket, tokenType])
+    setInputLoanValue(maxLoanValueStr)
+  }, [market, maxLoanValueByMarket, tokenType, connected])
 
   //? Clear selection when marketPubkey changes
   useEffect(() => {
@@ -100,7 +112,7 @@ export const useRequestLoansForm = (market: MarketPreview) => {
     collectionFloor: market.collectionFloor,
   })
 
-  const disabledListRequest =
+  const disabledListAction =
     !parseFloat(inputLoanValue) ||
     !parseFloat(inputAprValue) ||
     !parseFloat(inputFreezeValue) ||
@@ -129,7 +141,7 @@ export const useRequestLoansForm = (market: MarketPreview) => {
     tokenType,
 
     requestLoans,
-    disabledListRequest,
+    disabledListAction,
   }
 }
 
@@ -148,6 +160,7 @@ const useRequestLoansTransaction = (props: {
   const navigate = useNavigate()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
   const { open: openModal, close: closeModal } = useModal()
+  const { add: addLoansOptimistic } = useLoansOptimistic()
 
   const { tokenType } = useTokenType()
 
@@ -204,8 +217,15 @@ const useRequestLoansTransaction = (props: {
 
         if (confirmed.length) {
           enqueueSnackbar({ message: 'Listings successfully initialized', type: 'success' })
+
+          const loans = confirmed.map(({ result }) => result).filter(Boolean) as Loan[]
+
+          if (wallet.publicKey) {
+            addLoansOptimistic(loans, wallet.publicKey?.toBase58())
+          }
+
           goToLoansPage()
-          onBorrowSuccess(confirmed.length)
+          onBorrowSuccess(loans.length)
         }
 
         if (failed.length) {
