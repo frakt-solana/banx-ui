@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
@@ -23,6 +23,12 @@ export const RefinanceTable = () => {
 
   const { selectedLoans, onSelectLoan, findSelectedLoan, onSelectLoans, onDeselectAllLoans } =
     useLoansState()
+
+  //? Clear selection when tokenType changes
+  //? To prevent selection transfering from one tokenType to another
+  useEffect(() => {
+    onDeselectAllLoans()
+  }, [onDeselectAllLoans, tokenType])
 
   const { viewState } = useTableView()
 
