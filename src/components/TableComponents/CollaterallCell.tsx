@@ -35,7 +35,8 @@ const createDisplayNftNamesJSX = (
 ) => {
   const [collectionName, nftId] = nftName.split('#')
 
-  const displayNftId = nftId ? `#${nftId}` : collectionName
+  const defaultNftIdName = hiddenCollectionName ? collectionName : ''
+  const displayNftId = nftId ? `#${nftId}` : defaultNftIdName
 
   const ellipsisClass = { [styles.ellipsis]: !isCardView }
 
