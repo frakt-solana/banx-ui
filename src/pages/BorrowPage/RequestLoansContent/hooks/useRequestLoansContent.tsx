@@ -3,9 +3,11 @@ import { useMemo, useState } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { chain, first, isEmpty } from 'lodash'
 
-import { SearchSelectProps } from '@banx/components/SearchSelect'
+import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
+import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { MarketPreview } from '@banx/api/core'
+import { MARKETS_WITH_CUSTOM_APR } from '@banx/constants'
 import { useMarketsPreview } from '@banx/pages/LendPage'
 import { createGlobalState } from '@banx/store/functions'
 
@@ -65,27 +67,36 @@ export const useRequestLoansContent = () => {
   }
 }
 
-type CreateSearchSelectParams = (props: {
+interface CreateSearchSelectProps {
   options: MarketPreview[]
   selectedOptions: string[]
   onChange: (option: string[]) => void
-}) => SearchSelectProps<MarketPreview>
+}
 
-const createSearchSelectParams: CreateSearchSelectParams = ({
+const createSearchSelectParams = ({
   options,
   selectedOptions,
   onChange,
-}) => {
+}: CreateSearchSelectProps) => {
   const searchSelectParams = {
     options,
     selectedOptions,
-    labels: ['Collection'],
+    onChange,
+    labels: ['Collection', 'Max APR'],
     optionKeys: {
       labelKey: 'collectionName',
       valueKey: 'marketPubkey',
       imageKey: 'collectionImage',
+      secondLabel: {
+        key: 'marketPubkey',
+        //TODO Refactor this piece of shit (code)
+        format: (marketPubkey: unknown) => {
+          const customApr = MARKETS_WITH_CUSTOM_APR[marketPubkey as string]
+          const apr = customApr !== undefined ? customApr / 100 : MAX_APR_VALUE
+          return createPercentValueJSX(apr)
+        },
+      },
     },
-    onChange,
   }
 
   return searchSelectParams
