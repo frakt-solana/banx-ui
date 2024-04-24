@@ -33,7 +33,7 @@ import {
   enqueueSnackbar,
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
-  getDecimalPlaces,
+  formatDecimalWithoutTrailingZeros,
   getDialectAccessToken,
   getTokenDecimals,
 } from '@banx/utils'
@@ -83,11 +83,8 @@ export const useRequestLoansForm = (market: MarketPreview) => {
     const maxLoanValue = maxLoanValueByMarket[market.marketPubkey]
     if (!maxLoanValue) return
 
-    const formattedMaxLoanValue = convertToHumanNumber(maxLoanValue, tokenType)
-    const tokenDecimalPlaces = getDecimalPlaces(formattedMaxLoanValue, tokenType)
-    const maxLoanValueStr = formattedMaxLoanValue?.toFixed(tokenDecimalPlaces)
-
-    setInputLoanValue(maxLoanValueStr)
+    const convertedValue = convertToHumanNumber(maxLoanValue, tokenType)
+    setInputLoanValue(formatDecimalWithoutTrailingZeros(convertedValue, tokenType))
   }, [market, maxLoanValueByMarket, tokenType, connected])
 
   //? Clear selection when marketPubkey changes
