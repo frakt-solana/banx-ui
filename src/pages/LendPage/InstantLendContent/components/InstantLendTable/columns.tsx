@@ -12,6 +12,7 @@ import Tooltip from '@banx/components/Tooltip'
 import { Loan } from '@banx/api/core'
 import { SECONDS_IN_72_HOURS } from '@banx/constants'
 import { Hourglass, Snowflake } from '@banx/icons'
+import { isFreezeLoan } from '@banx/utils'
 
 import { ActionsCell, DebtCell, LTVCell } from './TableCells'
 
@@ -69,7 +70,10 @@ export const getTableColumns = ({
     {
       key: 'freeze',
       title: <HeaderCell label="Freeze" />,
-      render: () => <>14 D</>,
+      render: (loan) => {
+        const freezeValue = isFreezeLoan(loan) ? loan.bondTradeTransaction.terminationFreeze : 0
+        return <HorizontalCell value={`${freezeValue} D`} />
+      },
     },
     {
       key: 'duration',
@@ -105,13 +109,11 @@ export const getTableColumns = ({
 }
 
 const createRightContentJSX = (loan: Loan) => {
-  const isFreezeLoan = loan.bondTradeTransaction.terminationFreeze
-
-  const tooltipText = isFreezeLoan ? 'Tooltip text' : 'Tooltip text'
+  const tooltipText = isFreezeLoan(loan) ? 'Tooltip text' : 'Tooltip text'
 
   return (
     <Tooltip className={styles.loanTypeTooltipContent} title={tooltipText}>
-      {isFreezeLoan ? (
+      {isFreezeLoan(loan) ? (
         <Snowflake className={styles.snowflakeIcon} />
       ) : (
         <Hourglass className={styles.hourglassIcon} />

@@ -4,6 +4,7 @@ import { filter, size } from 'lodash'
 
 import { Loan } from '@banx/api/core'
 import { createGlobalState } from '@banx/store/functions'
+import { isFreezeLoan } from '@banx/utils'
 
 const useCollectionsStore = createGlobalState<string[]>([])
 
@@ -69,5 +70,3 @@ export const useFilterLoans = (loans: Loan[]) => {
     setSelectedCollections,
   }
 }
-
-const isFreezeLoan = (loan: Loan) => !!loan.bondTradeTransaction.terminationFreeze

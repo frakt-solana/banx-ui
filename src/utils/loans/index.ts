@@ -166,3 +166,7 @@ export const isLoanRepaymentCallActive = (loan: Loan) => {
 
   return !!(loan.bondTradeTransaction.repaymentCallAmount / repayValueWithoutProtocolFee)
 }
+
+export const isFreezeLoan = (loan: Loan) => {
+  return !!loan.bondTradeTransaction.terminationFreeze
+}
