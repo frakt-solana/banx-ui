@@ -78,6 +78,11 @@ export const useRequestLoansForm = (market: MarketPreview) => {
     setInputFreezeValue(String(DEFAULT_FREEZE_VALUE))
   }, [market, maxLoanValueByMarket, tokenType])
 
+  //? Clear selection when marketPubkey changes
+  useEffect(() => {
+    setSelection([])
+  }, [market.marketPubkey, setSelection])
+
   const inputLoanValueToNumber = parseFloat(inputLoanValue)
   const requestedLoanValue = inputLoanValueToNumber * tokenDecimals
 
