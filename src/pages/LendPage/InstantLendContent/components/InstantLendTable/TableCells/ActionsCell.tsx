@@ -77,7 +77,7 @@ const WarningModal: FC<WarningModalProps> = ({ loan, refinance }) => {
   const nftName = loan.nft.meta.name
 
   return (
-    <Modal className={styles.modal} open onCancel={close} width={572}>
+    <Modal className={styles.modal} open onCancel={close} width={496}>
       <h3>Please pay attention!</h3>
       <p>
         Are you sure you want to fund the loan against{' '}

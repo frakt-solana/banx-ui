@@ -9,7 +9,7 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import { calcWeeklyFeeWithRepayFee, calculateLoanRepayValue } from '@banx/utils'
+import { calcWeeklyFeeWithRepayFee } from '@banx/utils'
 
 import { calcWeightedApr } from '../LoansActiveTable/helpers'
 import { LoanOptimistic } from '../LoansActiveTable/loansState'
@@ -37,7 +37,7 @@ export const Summary: FC<SummaryProps> = ({
   }, [rawSelectedLoans])
 
   const totalSelectedLoans = selectedLoans.length
-  const totalBorrow = sumBy(selectedLoans, calculateLoanRepayValue)
+  const totalBorrow = sumBy(selectedLoans, (loan) => loan.fraktBond.borrowedAmount)
   const totalWeeklyFee = sumBy(selectedLoans, calcWeeklyFeeWithRepayFee)
 
   const handleLoanSelection = (value = 0) => {

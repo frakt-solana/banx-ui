@@ -5,7 +5,6 @@ import { chain } from 'lodash'
 import { SortOption } from '@banx/components/SortDropdown'
 
 import { Loan } from '@banx/api/core'
-import { calculateLoanRepayValue } from '@banx/utils'
 
 import styles from '../RequestLoansTable.module.less'
 
@@ -31,9 +30,9 @@ const SORT_OPTIONS = [
 const DEFAULT_SORT_OPTION = { label: 'Borrow', value: `${SortField.BORROW}_desc` }
 
 const STATUS_VALUE_MAP: StatusValueMap = {
-  [SortField.BORROW]: calculateLoanRepayValue,
+  [SortField.BORROW]: (loan) => loan.fraktBond.borrowedAmount,
   [SortField.APR]: (loan) => loan.bondTradeTransaction.amountOfBonds,
-  [SortField.LTV]: (loan) => calculateLoanRepayValue(loan) / loan.nft.collectionFloor,
+  [SortField.LTV]: (loan) => loan.fraktBond.borrowedAmount / loan.nft.collectionFloor,
   [SortField.FREEZE]: (loan) => loan.bondTradeTransaction.terminationFreeze,
 }
 
