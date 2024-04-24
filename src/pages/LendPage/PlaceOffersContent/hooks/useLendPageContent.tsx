@@ -41,7 +41,6 @@ export const useLendPageContent = () => {
   const searchSelectParams: SearchSelectProps<MarketPreview> = {
     options: isHotFilterActive ? hotMarkets : marketsPreview,
     selectedOptions: selectedMarkets,
-    placeholder: 'Select a collection',
     labels: ['Collection', 'Max APR'],
     favoriteKey: 'lend',
     optionKeys: {

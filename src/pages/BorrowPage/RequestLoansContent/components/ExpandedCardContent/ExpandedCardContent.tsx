@@ -115,7 +115,10 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
           />
         )}
         {currentTabValue === TabName.ACTIVITY && (
-          <ActivityTable marketPubkey={market.marketPubkey} />
+          <ActivityTable
+            marketPubkey={market.marketPubkey}
+            classNamesProps={{ tableWrapper: styles.activityTableWrapper }}
+          />
         )}
       </div>
     </div>

@@ -4,7 +4,6 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { chain, first, isEmpty } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
-import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { MarketPreview } from '@banx/api/core'
 import { useMarketsPreview } from '@banx/pages/LendPage'
@@ -80,16 +79,11 @@ const createSearchSelectParams: CreateSearchSelectParams = ({
   const searchSelectParams = {
     options,
     selectedOptions,
-    placeholder: 'Select a collection',
-    labels: ['Collection', 'Max APR'],
+    labels: ['Collection'],
     optionKeys: {
       labelKey: 'collectionName',
       valueKey: 'marketPubkey',
       imageKey: 'collectionImage',
-      secondLabel: {
-        key: 'marketApr',
-        format: (value: number) => createPercentValueJSX(value),
-      },
     },
     onChange,
   }

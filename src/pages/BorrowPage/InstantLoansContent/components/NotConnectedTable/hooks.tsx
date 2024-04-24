@@ -36,7 +36,6 @@ export const useNotConnectedBorrow = () => {
   const searchSelectParams: SearchSelectProps<MarketPreview> = {
     options: marketsPreview,
     selectedOptions: selectedCollections,
-    placeholder: 'Select a collection',
     labels: ['Collection', 'Liquidity'],
     optionKeys: {
       labelKey: 'collectionName',
