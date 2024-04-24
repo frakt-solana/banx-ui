@@ -53,6 +53,11 @@ export const getTableColumns = ({
       ),
     },
     {
+      key: 'rarity',
+      title: <HeaderCell label="Rarity" />,
+      render: () => <HorizontalCell value={1000} className={styles.cellText} />,
+    },
+    {
       key: 'loanValue',
       title: <HeaderCell label="Borrow" />,
       render: () => (

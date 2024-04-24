@@ -22,22 +22,22 @@
 }
 
 .tableRoot {
-  min-width: 464px;
+  min-width: 564px;
   width: 100%;
 
   tr > td,
   tr > th {
-    &:first-child {
-      width: 156px;
-    }
-    &:nth-child(2) {
-      width: 76px;
-    }
-    &:nth-child(3) {
-      width: 124px;
-    }
-    &:last-child {
-      width: 108px;
+    @media (max-width: 1240px) {
+      width: 72px;
+
+      &:first-child {
+        width: 164px;
+      }
+
+      &:last-child,
+      &:nth-child(4) {
+        width: 128px;
+      }
     }
   }
 }
