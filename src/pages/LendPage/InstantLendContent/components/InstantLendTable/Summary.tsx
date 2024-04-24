@@ -6,7 +6,7 @@ import { map, sumBy } from 'lodash'
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
-import { DisplayValue } from '@banx/components/TableComponents'
+import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import { useWalletModal } from '@banx/components/WalletModal'
 
 import { Loan } from '@banx/api/core'
@@ -37,7 +37,6 @@ export const Summary: FC<SummaryProps> = ({ loans, selectedLoans, onSelectLoans 
 
   const totalApr = map(selectedLoans, (loan) => loan.bondTradeTransaction.amountOfBonds / 100)
   const weightedApr = calcWeightedAverage(totalApr, totalLoanValue)
-  const cappedWeightedApr = weightedApr
 
   const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (wallet.connected) {
@@ -55,20 +54,26 @@ export const Summary: FC<SummaryProps> = ({ loans, selectedLoans, onSelectLoans 
   return (
     <div className={styles.summary}>
       <div className={styles.mainStat}>
-        <p>{selectedLoans.length}</p>
-        <p>Loans selected</p>
+        <p>{createPercentValueJSX(weightedApr, '0%')}</p>
+        <p>Weighted apr</p>
       </div>
       <div className={styles.statsContainer}>
-        <StatInfo label="Total to lend" value={<DisplayValue value={totalDebt} />} />
         <StatInfo label="Weekly interest" value={<DisplayValue value={totalWeeklyInterest} />} />
-        <StatInfo label="Weighted apr" value={cappedWeightedApr} valueType={VALUES_TYPES.PERCENT} />
+        <StatInfo
+          label="Weighted apr"
+          value={weightedApr}
+          valueType={VALUES_TYPES.PERCENT}
+          classNamesProps={{ container: styles.weightedAprStat }}
+        />
       </div>
       <div className={styles.summaryControls}>
         <CounterSlider
+          label="# Loans"
           value={selectedLoans.length}
           onChange={(value) => handleLoanSelection(value)}
           max={loans.length}
           className={styles.sliderContainer}
+          rootClassName={styles.slider}
         />
         <Button
           className={styles.lendButton}

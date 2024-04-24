@@ -72,11 +72,11 @@
   }
 
   &.auction[data-loans-amount]::after {
-    background: var(--additional-lava-primary);
+    background: var(--additional-orange-primary);
   }
 
   &.freeze[data-loans-amount]::after {
-    background: var(--additional-yellow-primary);
+    background: var(--additional-blue-primary);
   }
 }
 .freezeFilterButton,
@@ -221,6 +221,14 @@
   }
 }
 
+.weightedAprStat {
+  display: none;
+
+  @media (max-width: 1240px) {
+    display: flex;
+  }
+}
+
 .statsContainer {
   display: flex;
   justify-content: space-around;
@@ -257,6 +265,10 @@
     flex-direction: row-reverse;
     order: 2;
   }
+}
+
+.slider {
+  padding-bottom: 18px;
 }
 
 .lendButton {
