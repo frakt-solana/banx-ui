@@ -46,6 +46,7 @@ export const getTableColumns = ({
       ),
       render: (loan) => {
         const { partnerPoints = 0, playerPoints = 0, name, imageUrl } = loan.nft.meta
+        const { repaymentCallAmount } = loan.bondTradeTransaction
 
         const canSelect = isLoanAbleToTerminate(loan)
         const selected = canSelect ? !!findLoanInSelection(loan.publicKey) : undefined
@@ -61,7 +62,14 @@ export const getTableColumns = ({
             checkboxClassName={!canSelect ? styles.nftCellCheckbox : ''}
             rightContentJSX={
               isLoanRepaymentCallActive(loan) ? (
-                <Tooltip className={styles.repaymentCallTooltipContent} title="Repayment call sent">
+                <Tooltip
+                  className={styles.repaymentCallTooltipContent}
+                  title={
+                    <p className={styles.repaymentCallTooltipValue}>
+                      <DisplayValue value={repaymentCallAmount} /> requested
+                    </p>
+                  }
+                >
                   <Coin />
                 </Tooltip>
               ) : undefined
