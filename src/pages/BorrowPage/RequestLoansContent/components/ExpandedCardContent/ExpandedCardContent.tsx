@@ -13,6 +13,7 @@ import { NumericStepInput } from '@banx/components/inputs'
 
 import { MarketPreview } from '@banx/api/core'
 import { DAYS_IN_YEAR } from '@banx/constants'
+import { ChevronDown, SOL } from '@banx/icons'
 import { getTokenUnit } from '@banx/utils'
 
 import RequestLoansTable from '../RequestLoansTable'
@@ -53,7 +54,7 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
     <div className={styles.container}>
       <div className={styles.form}>
         <div className={styles.fields}>
-          <NumericStepInput label="Currency" value="" onChange={() => null} />
+          <CurrencyInputPlug />
           <NumericStepInput
             label="Borrow"
             value={inputLoanValue}
@@ -136,13 +137,40 @@ interface SummaryProps {
 const Summary: FC<SummaryProps> = ({ ltv, upfrontFee, weeklyInterest }) => {
   return (
     <div className={styles.summary}>
-      <StatInfo label="LTV" value={ltv} valueType={VALUES_TYPES.PERCENT} flexType="row" />
-      <StatInfo label="Upfront fee" value={<DisplayValue value={upfrontFee} />} flexType="row" />
+      <StatInfo
+        label="LTV"
+        value={ltv}
+        valueType={VALUES_TYPES.PERCENT}
+        classNamesProps={{ value: styles.fixedValueContent }}
+        flexType="row"
+      />
+      <StatInfo
+        label="Upfront fee"
+        value={<DisplayValue value={upfrontFee} />}
+        classNamesProps={{ value: styles.fixedValueContent }}
+        flexType="row"
+      />
       <StatInfo
         label="Weekly interest"
         value={<DisplayValue value={weeklyInterest} />}
+        classNamesProps={{ value: styles.fixedValueContent }}
         flexType="row"
       />
+    </div>
+  )
+}
+
+export const CurrencyInputPlug = () => {
+  return (
+    <div className={styles.currencyInputPlugWrapper}>
+      <p className={styles.currencyLabelPlug}>Currency</p>
+      <div className={styles.currencyInputPlug}>
+        <div className={styles.currencyPlug}>
+          <SOL />
+          <span>SOL</span>
+        </div>
+        <ChevronDown className={styles.chevronIconPlug} />
+      </div>
     </div>
   )
 }

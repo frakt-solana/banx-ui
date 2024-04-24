@@ -11,6 +11,17 @@
   }
 }
 
+.tabsContent {
+  border: var(--border-less-primary);
+  border-right: 0;
+  border-bottom: 0;
+  width: 100%;
+}
+
+.activityTableWrapper {
+  height: 250px;
+}
+
 // * Form * //
 .form {
   padding: 12px 24px;
@@ -51,18 +62,65 @@
   }
 }
 
+.fixedValueContent {
+  max-width: 74px;
+  white-space: nowrap;
+  overflow: auto;
+
+  @media (max-width: 960px) {
+    max-width: 144px;
+  }
+}
+
 .submitButton {
   width: 100%;
 }
 // * Form * //
 
-.tabsContent {
-  border: var(--border-less-primary);
-  border-right: 0;
-  border-bottom: 0;
-  width: 100%;
+// * CurrencyInputPlug * //
+.currencyInputPlugWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
+.currencyLabelPlug {
+  color: var(--content-secondary);
+  font: var(--table-header-sm);
+  text-transform: uppercase;
+  white-space: nowrap;
 
-.activityTableWrapper {
-  height: 250px;
+  @media (max-width: 640px) {
+    font: var(--table-header-xs);
+  }
 }
+.currencyInputPlug {
+  background: var(--bg-action);
+  border: var(--border-primary);
+  border-radius: 6px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 4px 8px;
+}
+.currencyPlug {
+  border: var(--border-primary);
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  height: 24px;
+
+  span {
+    color: var(--content-secondary);
+    font: var(--card-header-sm);
+  }
+}
+.chevronIconPlug {
+  path {
+    fill: var(--content-secondary);
+  }
+}
+// * CurrencyInputPlug * //
