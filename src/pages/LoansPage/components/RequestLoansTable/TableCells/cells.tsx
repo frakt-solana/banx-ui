@@ -4,18 +4,17 @@ import { Button } from '@banx/components/Buttons'
 import { HorizontalCell, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import { BONDS } from '@banx/constants'
-import { HealthColorIncreasing, calculateLoanRepayValue, getColorByPercent } from '@banx/utils'
+import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
 
 import { useRequestLoansTransactions } from '../hooks'
 
 import styles from '../RequestLoansTable.module.less'
 
 export const LTVCell: FC<{ loan: Loan }> = ({ loan }) => {
-  const debtValue = calculateLoanRepayValue(loan)
+  const borrowedValue = loan.fraktBond.borrowedAmount
   const collectionFloor = loan.nft.collectionFloor
 
-  const ltvPercent = (debtValue / collectionFloor) * 100
+  const ltvPercent = (borrowedValue / collectionFloor) * 100
   const formattedLtvValue = createPercentValueJSX(ltvPercent)
 
   return (
@@ -27,10 +26,7 @@ export const LTVCell: FC<{ loan: Loan }> = ({ loan }) => {
 }
 
 export const APRCell: FC<{ loan: Loan }> = ({ loan }) => {
-  const amountOfBondsWithProtocolFee =
-    loan.bondTradeTransaction.amountOfBonds + BONDS.PROTOCOL_REPAY_FEE
-
-  const aprInPercent = amountOfBondsWithProtocolFee / 100
+  const aprInPercent = loan.bondTradeTransaction.amountOfBonds / 100
 
   return <HorizontalCell value={createPercentValueJSX(aprInPercent)} isHighlighted />
 }

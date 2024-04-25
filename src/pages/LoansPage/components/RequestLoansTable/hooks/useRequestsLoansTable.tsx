@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { filter, first, groupBy, map } from 'lodash'
+import { filter, first, groupBy, isEmpty, map } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
 import { Loan } from '@banx/api/core'
@@ -43,8 +43,8 @@ export const useRequestsLoansTable = ({ loans, isLoading }: UseLoansActiveTableP
     onChange: setSelectedCollections,
   })
 
-  const showEmptyList = (!loans?.length && !isLoading) || !connected
-  const showSummary = !!loans.length && !isLoading
+  const showEmptyList = (isEmpty(loans) && !isLoading) || !connected
+  const showSummary = !isEmpty(loans) && !isLoading
 
   const goToBorrowPage = () => {
     navigate(createPathWithTokenParam(PATHS.BORROW, tokenType))

@@ -24,16 +24,16 @@ import { useLoansState } from './loansState'
 import styles from './InstantLendTable.module.less'
 
 export const Summary: FC<{ loans: Loan[] }> = ({ loans }) => {
-  const wallet = useWallet()
+  const { connected } = useWallet()
   const { toggleVisibility } = useWalletModal()
   const { refinanceAll } = useInstantTransactions()
-  const { selectedLoans, onSelectLoans } = useLoansState()
+  const { selection, set: setSelection } = useLoansState()
 
   const { totalDebt, totalWeeklyInterest, weightedApr, weightedLtv } =
-    calculateSummaryInfo(selectedLoans)
+    calculateSummaryInfo(selection)
 
   const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    if (wallet.connected) {
+    if (connected) {
       refinanceAll()
     } else {
       toggleVisibility()
@@ -42,7 +42,7 @@ export const Summary: FC<{ loans: Loan[] }> = ({ loans }) => {
   }
 
   const handleLoanSelection = (value = 0) => {
-    onSelectLoans(loans.slice(0, value))
+    setSelection(loans.slice(0, value))
   }
 
   return (
@@ -69,17 +69,13 @@ export const Summary: FC<{ loans: Loan[] }> = ({ loans }) => {
       <div className={styles.summaryControls}>
         <CounterSlider
           label="# Loans"
-          value={selectedLoans.length}
+          value={selection.length}
           onChange={(value) => handleLoanSelection(value)}
           max={loans.length}
           className={styles.sliderContainer}
           rootClassName={styles.slider}
         />
-        <Button
-          className={styles.lendButton}
-          onClick={onClickHandler}
-          disabled={!selectedLoans.length}
-        >
+        <Button className={styles.lendButton} onClick={onClickHandler} disabled={!selection.length}>
           Lend <DisplayValue value={totalDebt} />
         </Button>
       </div>

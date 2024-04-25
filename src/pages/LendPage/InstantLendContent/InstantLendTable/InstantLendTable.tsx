@@ -38,28 +38,34 @@ export const InstantLendTable = () => {
     toggleFreezeFilter,
   } = useInstantLendTable()
 
-  const { selectedLoans, onSelectLoan, findSelectedLoan, onSelectLoans, onDeselectAllLoans } =
-    useLoansState()
+  const {
+    selection,
+    toggle: toggleLoanInSelection,
+    find: findLoanInSelection,
+    set: setSelection,
+    clear: clearSelection,
+  } = useLoansState()
 
   //? Clear selection when tokenType changes
   //? To prevent selection transfering from one tokenType to another
   useEffect(() => {
-    onDeselectAllLoans()
-  }, [onDeselectAllLoans, tokenType])
+    clearSelection()
+  }, [clearSelection, tokenType])
 
-  const hasSelectedLoans = !!selectedLoans.length
+  const hasSelectedLoans = !!selection.length
+  
   const onSelectAll = () => {
     if (hasSelectedLoans) {
-      onDeselectAllLoans()
+      clearSelection()
     } else {
-      onSelectLoans(loans)
+      setSelection(loans)
     }
   }
 
   const columns = getTableColumns({
     isCardView: viewState === ViewState.CARD,
-    onSelectLoan,
-    findSelectedLoan,
+    toggleLoanInSelection,
+    findLoanInSelection,
     onSelectAll,
     hasSelectedLoans,
   })
@@ -70,9 +76,9 @@ export const InstantLendTable = () => {
 
   const rowParams = useMemo(() => {
     return {
-      onRowClick: onSelectLoan,
+      onRowClick: toggleLoanInSelection,
     }
-  }, [onSelectLoan])
+  }, [toggleLoanInSelection])
 
   const emptyButtonText = isSolTokenType(tokenType) ? 'Lend SOL' : 'Lend USDC'
 

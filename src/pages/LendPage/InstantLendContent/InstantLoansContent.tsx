@@ -1,4 +1,4 @@
-import { InstantLendTable } from './components/InstantLendTable'
+import { InstantLendTable } from './InstantLendTable'
 
 const InstantLoansContent = () => {
   return <InstantLendTable />

@@ -2,7 +2,7 @@ import { first, groupBy, map } from 'lodash'
 
 import { Loan } from '@banx/api/core'
 
-import { useAuctionsLoans } from '../../../hooks'
+import { useAuctionsLoans } from '../../hooks'
 import { useFilterLoans } from './useFilterLoans'
 import { useSortedLoans } from './useSortedLoans'
 

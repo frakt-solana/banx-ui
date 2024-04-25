@@ -19,8 +19,8 @@ import { ActionsCell, DebtCell, LTVCell } from './TableCells'
 import styles from './InstantLendTable.module.less'
 
 interface GetTableColumnsProps {
-  onSelectLoan: (loan: Loan) => void
-  findSelectedLoan: (loanPubkey: string) => Loan | undefined
+  toggleLoanInSelection: (loan: Loan) => void
+  findLoanInSelection: (loanPubkey: string) => Loan | null
   onSelectAll: () => void
   isCardView: boolean
   hasSelectedLoans: boolean
@@ -28,8 +28,8 @@ interface GetTableColumnsProps {
 
 export const getTableColumns = ({
   isCardView,
-  onSelectLoan,
-  findSelectedLoan,
+  toggleLoanInSelection,
+  findLoanInSelection,
   onSelectAll,
   hasSelectedLoans,
 }: GetTableColumnsProps) => {
@@ -45,8 +45,8 @@ export const getTableColumns = ({
       render: (loan) => (
         <NftInfoCell
           key={loan.publicKey}
-          selected={!!findSelectedLoan(loan.publicKey)}
-          onCheckboxClick={() => onSelectLoan(loan)}
+          selected={!!findLoanInSelection(loan.publicKey)}
+          onCheckboxClick={() => toggleLoanInSelection(loan)}
           nftName={loan.nft.meta.name}
           nftImage={loan.nft.meta.imageUrl}
           banxPoints={{
@@ -99,7 +99,7 @@ export const getTableColumns = ({
         <ActionsCell
           loan={loan}
           isCardView={isCardView}
-          disabledAction={!!findSelectedLoan(loan.publicKey)}
+          disabledAction={!!findLoanInSelection(loan.publicKey)}
         />
       ),
     },

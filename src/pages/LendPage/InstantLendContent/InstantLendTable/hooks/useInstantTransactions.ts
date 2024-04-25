@@ -24,7 +24,7 @@ import {
   getDialectAccessToken,
 } from '@banx/utils'
 
-import { useAuctionsLoans } from '../../../hooks'
+import { useAuctionsLoans } from '../../hooks'
 import { useLoansState } from '../loansState'
 
 export const useInstantTransactions = () => {
@@ -36,7 +36,7 @@ export const useInstantTransactions = () => {
   const { addMints } = useAuctionsLoans()
   const { open, close } = useModal()
 
-  const { selectedLoans, onDeselectAllLoans, deselectLoan } = useLoansState()
+  const { selection, clear: clearSelection, remove: removeSelection } = useLoansState()
 
   const onSuccess = (loansAmount: number) => {
     if (!getDialectAccessToken(wallet.publicKey?.toBase58())) {
@@ -85,7 +85,7 @@ export const useInstantTransactions = () => {
             })
 
             addMints(loan.nft.mint)
-            deselectLoan(loan.publicKey)
+            removeSelection(loan.publicKey)
             onSuccess(1)
           }
         })
@@ -104,7 +104,7 @@ export const useInstantTransactions = () => {
   const refinanceAll = () => {
     const loadingSnackbarId = uniqueId()
 
-    const txnParams = selectedLoans.map((loan) => ({ loan, priorityFeeLevel: priorityLevel }))
+    const txnParams = selection.map((loan) => ({ loan, priorityFeeLevel: priorityLevel }))
 
     new TxnExecutor(
       makeRefinanceAction,
@@ -130,7 +130,7 @@ export const useInstantTransactions = () => {
             .value()
 
           addMints(...mintsToHidden)
-          onDeselectAllLoans()
+          clearSelection()
           onSuccess(mintsToHidden.length)
         }
 
