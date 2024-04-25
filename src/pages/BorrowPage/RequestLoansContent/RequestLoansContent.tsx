@@ -1,3 +1,4 @@
+import EmptyList from '@banx/components/EmptyList'
 import { Loader } from '@banx/components/Loader'
 
 import { useFakeInfinityScroll } from '@banx/hooks'
@@ -9,10 +10,19 @@ import { useRequestLoansContent } from './hooks'
 import styles from './RequestLoansContent.module.less'
 
 export const RequestLoansContent = () => {
-  const { visibleMarketPubkey, searchSelectParams, sortParams, isLoading, onCardClick, markets } =
-    useRequestLoansContent()
+  const {
+    visibleMarketPubkey,
+    searchSelectParams,
+    sortParams,
+    isLoading,
+    onCardClick,
+    markets,
+    showEmptyList,
+  } = useRequestLoansContent()
 
   const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: markets })
+
+  if (showEmptyList) return <EmptyList message="You don't have any whitelisted collections" />
 
   return (
     <div className={styles.content}>

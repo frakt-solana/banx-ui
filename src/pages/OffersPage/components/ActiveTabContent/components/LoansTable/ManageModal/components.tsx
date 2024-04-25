@@ -6,6 +6,7 @@ import { chain, isEmpty, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
+import EmptyList from '@banx/components/EmptyList'
 import { Loader } from '@banx/components/Loader'
 import { Slider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
@@ -35,6 +36,7 @@ import {
   formatValueByTokenType,
   getColorByPercent,
   getTokenUnit,
+  isFreezeLoan,
   isLoanActiveOrRefinanced,
   isLoanRepaymentCallActive,
   isLoanTerminating,
@@ -197,31 +199,39 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
           SOL in your wallet. If unsuccessful after 72 hours you will receive the collateral instead
         </p>
       </div>
-      <div className={styles.modalContent}>
-        {isLoading && <Loader />}
-        {!isLoading && (
-          <div className={styles.twoColumnsContent}>
-            <Button onClick={instantLoan} disabled={!canRefinance} variant="secondary">
-              {canRefinance ? (
-                <div className={styles.exitValue}>
-                  Exit +{formatValueByTokenType(totalClaimValue, tokenType)}
-                  {tokenUnit}
-                </div>
-              ) : (
-                'No suitable offers yet'
-              )}
-            </Button>
-            <Button
-              className={styles.terminateButton}
-              onClick={terminateLoan}
-              disabled={!canTerminate}
-              variant="secondary"
-            >
-              Terminate
-            </Button>
-          </div>
-        )}
-      </div>
+      {!isFreezeLoan(loan) && (
+        <div className={styles.modalContent}>
+          {isLoading && <Loader />}
+          {!isLoading && (
+            <div className={styles.twoColumnsContent}>
+              <Button onClick={instantLoan} disabled={!canRefinance} variant="secondary">
+                {canRefinance ? (
+                  <div className={styles.exitValue}>
+                    Exit +{formatValueByTokenType(totalClaimValue, tokenType)}
+                    {tokenUnit}
+                  </div>
+                ) : (
+                  'No suitable offers yet'
+                )}
+              </Button>
+              <Button
+                className={styles.terminateButton}
+                onClick={terminateLoan}
+                disabled={!canTerminate}
+                variant="secondary"
+              >
+                Terminate
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+      {isFreezeLoan(loan) && (
+        <EmptyList
+          className={styles.emptyList}
+          message="Exit and termination are frozen for 11d : 17m"
+        />
+      )}
     </div>
   )
 }

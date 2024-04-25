@@ -105,12 +105,7 @@ export const InstantLendTable = () => {
         customJSX={customJSX}
         showCard
       />
-      <Summary
-        loans={loans}
-        selectedLoans={selectedLoans}
-        onSelectLoans={onSelectLoans}
-        onDeselectAllLoans={onDeselectAllLoans}
-      />
+      <Summary loans={loans} />
     </div>
   )
 }

@@ -36,7 +36,7 @@ export const APRCell: FC<{ loan: Loan }> = ({ loan }) => {
 }
 
 export const FreezeCell: FC<{ loan: Loan }> = () => {
-  return <HorizontalCell value={`${14} D`} />
+  return <HorizontalCell value={`${14} days`} />
 }
 
 interface ActionsCellProps {

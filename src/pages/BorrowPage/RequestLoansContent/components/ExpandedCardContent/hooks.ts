@@ -55,13 +55,13 @@ export const useRequestLoansForm = (market: MarketPreview) => {
   const totalNftsToRequest = selectedNfts.length
   const tokenDecimals = getTokenDecimals(tokenType)
 
-  const filteredNfts = useMemo(() => {
+  const filteredNftsByMarket = useMemo(() => {
     return nfts.filter((nft) => nft.loan.marketPubkey === market.marketPubkey)
   }, [nfts, market])
 
   const handleNftsSelection = useCallback(
-    (value = 0) => setSelection(filteredNfts.slice(0, value)),
-    [filteredNfts, setSelection],
+    (value = 0) => setSelection(filteredNftsByMarket.slice(0, value)),
+    [filteredNftsByMarket, setSelection],
   )
 
   const handleChangeFreezeValue = (value: string) => {
@@ -76,10 +76,13 @@ export const useRequestLoansForm = (market: MarketPreview) => {
 
   useEffect(() => {
     if (!connected) return
-    const roundedAprValueInPercent = (market.marketApr / 100)?.toFixed(0)
-    setInputAprValue(roundedAprValueInPercent)
+
+    //? Set the default APR and freeze values
+    const aprValueInPercentStr = (market.marketApr / 100)?.toFixed(0)
+    setInputAprValue(aprValueInPercentStr)
     setInputFreezeValue(String(DEFAULT_FREEZE_VALUE))
 
+    //? Set the default max loan value, if available
     const maxLoanValue = maxLoanValueByMarket[market.marketPubkey]
     if (!maxLoanValue) return
 
@@ -93,13 +96,16 @@ export const useRequestLoansForm = (market: MarketPreview) => {
   }, [market.marketPubkey, setSelection])
 
   const inputLoanValueToNumber = parseFloat(inputLoanValue)
+  const inputAprValueToNumber = parseFloat(inputAprValue)
+  const inputFreezeValueToNumber = parseFloat(inputLoanValue)
+
   const requestedLoanValue = inputLoanValueToNumber * tokenDecimals
 
   const requestLoans = useRequestLoansTransaction({
     nfts: selectedNfts,
-    aprValue: parseFloat(inputAprValue),
-    loanValue: parseFloat(inputLoanValue),
-    freezeValue: parseFloat(inputFreezeValue),
+    aprValue: inputAprValueToNumber,
+    loanValue: inputLoanValueToNumber,
+    freezeValue: inputFreezeValueToNumber,
   })
 
   const { ltv, upfrontFee, weeklyInterest } = calculateSummaryInfo({
@@ -109,12 +115,12 @@ export const useRequestLoansForm = (market: MarketPreview) => {
     collectionFloor: market.collectionFloor,
   })
 
-  const aprInputValueIsLow = parseFloat(inputAprValue) < MIN_APR_VALUE
+  const aprInputValueIsLow = inputAprValueToNumber < MIN_APR_VALUE
   const disabledListAction =
-    !parseFloat(inputLoanValue) ||
-    !parseFloat(inputFreezeValue) ||
-    aprInputValueIsLow ||
-    !totalNftsToRequest
+    !inputLoanValueToNumber ||
+    !inputFreezeValueToNumber ||
+    !totalNftsToRequest ||
+    aprInputValueIsLow
 
   const actionButtonText = aprInputValueIsLow
     ? `The min APR is ${MIN_APR_VALUE}%`
@@ -133,7 +139,7 @@ export const useRequestLoansForm = (market: MarketPreview) => {
     requestedLoanValue,
     totalNftsToRequest,
 
-    nfts: filteredNfts,
+    nfts: filteredNftsByMarket,
     isLoadingNfts,
 
     ltv,

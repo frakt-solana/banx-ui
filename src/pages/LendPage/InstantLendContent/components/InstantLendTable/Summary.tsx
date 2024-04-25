@@ -10,33 +10,27 @@ import { DisplayValue, createPercentValueJSX } from '@banx/components/TableCompo
 import { useWalletModal } from '@banx/components/WalletModal'
 
 import { Loan } from '@banx/api/core'
-import { calcWeightedAverage, calculateLoanRepayValue } from '@banx/utils'
+import {
+  HealthColorIncreasing,
+  calcWeightedAverage,
+  calculateLoanRepayValue,
+  getColorByPercent,
+} from '@banx/utils'
 
 import { calcWeeklyInterestFee } from './helpers'
 import { useInstantTransactions } from './hooks'
+import { useLoansState } from './loansState'
 
 import styles from './InstantLendTable.module.less'
 
-interface SummaryProps {
-  loans: Loan[]
-  selectedLoans: Loan[]
-  onSelectLoans: (loans: Loan[]) => void
-  onDeselectAllLoans: () => void
-}
-
-export const Summary: FC<SummaryProps> = ({ loans, selectedLoans, onSelectLoans }) => {
+export const Summary: FC<{ loans: Loan[] }> = ({ loans }) => {
   const wallet = useWallet()
-
   const { toggleVisibility } = useWalletModal()
-
   const { refinanceAll } = useInstantTransactions()
+  const { selectedLoans, onSelectLoans } = useLoansState()
 
-  const totalDebt = sumBy(selectedLoans, (loan) => calculateLoanRepayValue(loan))
-  const totalLoanValue = map(selectedLoans, (loan) => loan.fraktBond.borrowedAmount)
-  const totalWeeklyInterest = sumBy(selectedLoans, (loan) => calcWeeklyInterestFee(loan))
-
-  const totalApr = map(selectedLoans, (loan) => loan.bondTradeTransaction.amountOfBonds / 100)
-  const weightedApr = calcWeightedAverage(totalApr, totalLoanValue)
+  const { totalDebt, totalWeeklyInterest, weightedApr, weightedLtv } =
+    calculateSummaryInfo(selectedLoans)
 
   const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (wallet.connected) {
@@ -58,6 +52,12 @@ export const Summary: FC<SummaryProps> = ({ loans, selectedLoans, onSelectLoans 
         <p>Weighted apr</p>
       </div>
       <div className={styles.statsContainer}>
+        <StatInfo
+          label="Weighted ltv"
+          value={weightedLtv}
+          valueStyles={{ color: getColorByPercent(weightedLtv, HealthColorIncreasing) }}
+          valueType={VALUES_TYPES.PERCENT}
+        />
         <StatInfo label="Weekly interest" value={<DisplayValue value={totalWeeklyInterest} />} />
         <StatInfo
           label="Weighted apr"
@@ -85,4 +85,21 @@ export const Summary: FC<SummaryProps> = ({ loans, selectedLoans, onSelectLoans 
       </div>
     </div>
   )
+}
+
+const calculateSummaryInfo = (loans: Loan[]) => {
+  const totalDebt = sumBy(loans, (loan) => calculateLoanRepayValue(loan))
+  const totalLoanValue = map(loans, (loan) => loan.fraktBond.borrowedAmount)
+  const totalWeeklyInterest = sumBy(loans, (loan) => calcWeeklyInterestFee(loan))
+
+  const totalAprArray = map(loans, (loan) => loan.bondTradeTransaction.amountOfBonds / 100)
+  const totalLtvArray = map(
+    loans,
+    (loan) => (calculateLoanRepayValue(loan) / loan.nft.collectionFloor) * 100,
+  )
+
+  const weightedApr = calcWeightedAverage(totalAprArray, totalLoanValue)
+  const weightedLtv = calcWeightedAverage(totalLtvArray, totalLoanValue)
+
+  return { totalDebt, totalWeeklyInterest, weightedApr, weightedLtv }
 }

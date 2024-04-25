@@ -72,7 +72,7 @@ export const getTableColumns = ({
       title: <HeaderCell label="Freeze" />,
       render: (loan) => {
         const freezeValue = isFreezeLoan(loan) ? loan.bondTradeTransaction.terminationFreeze : 0
-        return <HorizontalCell value={`${freezeValue} D`} />
+        return <HorizontalCell value={`${freezeValue} days`} />
       },
     },
     {

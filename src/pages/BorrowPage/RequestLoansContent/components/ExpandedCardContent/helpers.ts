@@ -36,7 +36,7 @@ export const calculateSummaryInfo = ({
   return { ltv, upfrontFee, weeklyInterest }
 }
 
-export const clampInputValue = (value: string, max: number) => {
+export const clampInputValue = (value: string, max: number): string => {
   if (!value) return ''
 
   const valueToNumber = parseFloat(value)
