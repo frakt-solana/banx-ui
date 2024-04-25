@@ -19,14 +19,16 @@ export const Header = () => {
 
   return (
     <div className={styles.header}>
-      <NavLink to={PATHS.ROOT} className={styles.logoWrapper}>
-        <LogoFull className={styles.logo} />
-        <Logo className={styles.logoMobile} />
-      </NavLink>
-      <div className={styles.widgetContainer}>
-        <TokenSwitcher />
-        <RewardsButton />
+      <div className={styles.logoContainer}>
+        <NavLink to={PATHS.ROOT} className={styles.logoWrapper}>
+          <LogoFull className={styles.logo} />
+          <Logo className={styles.logoMobile} />
+        </NavLink>
+        <TokenSwitcher className={styles.tokenSwitcher} />
+      </div>
 
+      <div className={styles.widgetContainer}>
+        <RewardsButton />
         {connected && <BanxNotificationsButton />}
         {connected && <PriorityFeesButton />}
         <ThemeSwitcher className={styles.hiddenThemeSwitcher} />
