@@ -157,6 +157,8 @@ module.exports = () => {
     }
   } else {
     config.mode = 'development'
+    config.cache = true
+    config.devtool = 'eval-source-map'
 
     config.plugins.push(new ReactRefreshWebpackPlugin())
   }
