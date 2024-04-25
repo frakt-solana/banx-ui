@@ -12,7 +12,12 @@ import Tooltip from '@banx/components/Tooltip'
 import { Loan } from '@banx/api/core'
 import { Coin } from '@banx/icons'
 import { calculateClaimValue, isLoanAbleToTerminate } from '@banx/pages/OffersPage'
-import { HealthColorIncreasing, getColorByPercent, isLoanRepaymentCallActive } from '@banx/utils'
+import {
+  HealthColorIncreasing,
+  calculateRepaymentCallLenderReceivesAmount,
+  getColorByPercent,
+  isLoanRepaymentCallActive,
+} from '@banx/utils'
 
 import { ActionsCell, ClaimCell, StatusCell } from './TableCells'
 import { LoanOptimistic } from './loansState'
@@ -46,6 +51,7 @@ export const getTableColumns = ({
       ),
       render: (loan) => {
         const { partnerPoints = 0, playerPoints = 0, name, imageUrl } = loan.nft.meta
+        const repaymentCallLenderReceives = calculateRepaymentCallLenderReceivesAmount(loan)
 
         const canSelect = isLoanAbleToTerminate(loan)
         const selected = canSelect ? !!findLoanInSelection(loan.publicKey) : undefined
@@ -61,7 +67,14 @@ export const getTableColumns = ({
             checkboxClassName={!canSelect ? styles.nftCellCheckbox : ''}
             rightContentJSX={
               isLoanRepaymentCallActive(loan) ? (
-                <Tooltip className={styles.repaymentCallTooltipContent} title="Repayment call sent">
+                <Tooltip
+                  className={styles.repaymentCallTooltipContent}
+                  title={
+                    <p className={styles.repaymentCallTooltipValue}>
+                      <DisplayValue value={repaymentCallLenderReceives} /> requested
+                    </p>
+                  }
+                >
                   <Coin />
                 </Tooltip>
               ) : undefined

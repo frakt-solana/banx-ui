@@ -12,4 +12,10 @@
 
 ## Vercel preview
 
-<!-- Insert link here -->
+<!-- Feature template -->
+
+https://banx-ui-git-feature-ban-XXXX-frakt.vercel.app/
+
+<!-- Bugfix template -->
+
+https://banx-ui-git-bugfix-ban-XXXX-frakt.vercel.app/
