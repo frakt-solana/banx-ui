@@ -10,9 +10,12 @@ import {
   BanxInfoBN,
   BanxStakeBN,
 } from '@banx/api/staking'
-import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { checkIsSubscribed, getAdventureStatus, isAdventureEnded } from '@banx/pages/AdventuresPage'
-import { createExecutorWalletAndConnection, defaultTxnErrorHandler } from '@banx/transactions'
+import {
+  TXN_EXECUTOR_DEFAULT_OPTIONS,
+  createExecutorWalletAndConnection,
+  defaultTxnErrorHandler,
+} from '@banx/transactions'
 import { createSubscribeTxnData } from '@banx/transactions/staking'
 import {
   destroySnackbar,
@@ -97,9 +100,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
         walletAndConnection,
       })
 
-      await new TxnExecutor(walletAndConnection, {
-        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
-      })
+      await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
         .addTransactionParam(txnData)
         .on('sentAll', (results) => {
           enqueueTransactionsSent()

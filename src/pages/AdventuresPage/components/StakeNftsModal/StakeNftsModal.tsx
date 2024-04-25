@@ -9,12 +9,15 @@ import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { BanxStakeNft } from '@banx/api/staking'
-import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { TensorFilled } from '@banx/icons'
 import { useBanxStakeInfo, useBanxStakeSettings } from '@banx/pages/AdventuresPage'
 import { NftCheckbox, NftsStats } from '@banx/pages/AdventuresPage/components'
 import { useModal } from '@banx/store'
-import { createExecutorWalletAndConnection, defaultTxnErrorHandler } from '@banx/transactions'
+import {
+  TXN_EXECUTOR_DEFAULT_OPTIONS,
+  createExecutorWalletAndConnection,
+  defaultTxnErrorHandler,
+} from '@banx/transactions'
 import { createStakeBanxNftTxnData, createUnstakeBanxNftTxnData } from '@banx/transactions/staking'
 import {
   destroySnackbar,
@@ -98,9 +101,7 @@ export const StakeNftsModal = () => {
         ),
       )
 
-      await new TxnExecutor(walletAndConnection, {
-        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
-      })
+      await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
         .addTransactionParams(txnsData)
         .on('sentAll', () => {
           enqueueTransactionsSent()
@@ -155,9 +156,7 @@ export const StakeNftsModal = () => {
         ),
       )
 
-      new TxnExecutor(walletAndConnection, {
-        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
-      })
+      new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
         .addTransactionParams(txnsData)
         .on('sentAll', () => {
           enqueueTransactionsSent()

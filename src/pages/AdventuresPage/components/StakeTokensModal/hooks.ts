@@ -5,7 +5,6 @@ import { uniqueId } from 'lodash'
 
 import { Tab, useTabs } from '@banx/components/Tabs'
 
-import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import {
   calcPartnerPoints,
   useBanxStakeInfo,
@@ -13,6 +12,7 @@ import {
 } from '@banx/pages/AdventuresPage'
 import { useModal } from '@banx/store'
 import {
+  TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWallet,
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
@@ -124,9 +124,7 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
 
       await new TxnExecutor(
         { wallet: createExecutorWallet(wallet), connection },
-        {
-          confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
-        },
+        TXN_EXECUTOR_DEFAULT_OPTIONS,
       )
         .addTransactionParam(txnData)
         .on('sentAll', (results) => {
@@ -174,9 +172,7 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
         walletAndConnection,
       })
 
-      new TxnExecutor(walletAndConnection, {
-        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
-      })
+      new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
         .addTransactionParam(txnData)
         .on('sentAll', (results) => {
           enqueueTransactionsSent()
