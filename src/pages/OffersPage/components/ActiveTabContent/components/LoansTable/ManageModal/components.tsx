@@ -26,6 +26,7 @@ import {
 import {
   HealthColorIncreasing,
   calculateLoanRepayValue,
+  calculateRepaymentCallLenderReceivesAmount,
   destroySnackbar,
   enqueueConfirmationError,
   enqueueSnackbar,
@@ -354,16 +355,17 @@ export const calculateRepaymentStaticValues = (loan: Loan) => {
   const DEFAULT_REPAY_PERCENT = 50
 
   const repaymentCallActive = isLoanRepaymentCallActive(loan)
-  const repaymentCallAmount = loan.bondTradeTransaction.repaymentCallAmount
+
+  const repaymentCallLenderReceives = calculateRepaymentCallLenderReceivesAmount(loan)
 
   const totalClaim = calculateClaimValue(loan)
 
   const initialRepayPercent = repaymentCallActive
-    ? (repaymentCallAmount / totalClaim) * 100
+    ? (repaymentCallLenderReceives / totalClaim) * 100
     : DEFAULT_REPAY_PERCENT
 
   const initialRepayValue = repaymentCallActive
-    ? repaymentCallAmount
+    ? repaymentCallLenderReceives
     : totalClaim * (initialRepayPercent / 100)
 
   return {

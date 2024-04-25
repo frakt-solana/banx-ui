@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from 'react'
+import { FC, useCallback, useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
@@ -10,7 +10,7 @@ import Tooltip from '@banx/components/Tooltip'
 
 import { Loan, Offer } from '@banx/api/core'
 import { Coin, Warning } from '@banx/icons'
-import { ViewState, useTableView } from '@banx/store'
+import { ViewState, useTableView, useTokenType } from '@banx/store'
 import { isLoanRepaymentCallActive, isLoanTerminating } from '@banx/utils'
 
 import { Summary } from './Summary'
@@ -31,6 +31,8 @@ export const LoansActiveTable: FC<LoansActiveTableProps> = ({
   isLoading,
   offers,
 }) => {
+  const { tokenType } = useTokenType()
+
   const { publicKey: walletPublicKey } = useWallet()
   const walletPublicKeyString = walletPublicKey?.toBase58() || ''
 
@@ -56,6 +58,12 @@ export const LoansActiveTable: FC<LoansActiveTableProps> = ({
     clear: clearSelection,
     set: setSelection,
   } = useSelectedLoans()
+
+  //? Clear selection when tokenType changes
+  //? To prevent selection transfering from one tokenType to another
+  useEffect(() => {
+    clearSelection()
+  }, [clearSelection, tokenType])
 
   const walletSelectedLoans = useMemo(() => {
     if (!walletPublicKeyString) return []

@@ -6,14 +6,21 @@
   display: flex;
   align-items: center;
   padding: 2px;
-
   height: 32px;
-  width: 60px;
+
+  user-select: none;
+  -webkit-user-drag: none;
+  cursor: pointer;
 }
 
 .token {
   border-radius: 100px;
-  cursor: pointer;
+
+  padding: 4px 8px;
+
+  @media screen and (max-width: 960px) {
+    padding: 4px;
+  }
 
   display: flex;
   align-items: center;
@@ -21,8 +28,45 @@
 
   height: 100%;
   width: 100%;
+}
 
-  &.active {
-    background: var(--accent-primary);
+.tokenActive {
+  background: var(--accent-primary);
+
+  .tokenTicker {
+    color: var(--pure-black);
+  }
+}
+
+.tokenValue {
+  display: flex;
+  align-items: center;
+  column-gap: 4px;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+.tokenValueWrapper {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-self: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+.tokenValueSolWrapper {
+  background: var(--bg-primary);
+}
+
+.tokenTicker {
+  //? Compensate chakra font bottom margin to make an ideal horizontal alignment
+  padding-top: 1px;
+  font: var(--btn-text-sm);
+  color: var(--content-primary);
+
+  @media screen and (max-width: 960px) {
+    display: none;
   }
 }

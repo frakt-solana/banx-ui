@@ -8,14 +8,14 @@ export enum AllocationStatus {
 export const STATUS_COLOR_MAP: Record<AllocationStatus, string> = {
   [AllocationStatus.Pending]: 'var(--additional-blue-primary)',
   [AllocationStatus.Active]: 'var(--additional-green-primary)',
-  [AllocationStatus.Underwater]: 'var(--additional-orange-primary)',
-  [AllocationStatus.Terminating]: 'var(--additional-lava-primary)',
+  [AllocationStatus.Underwater]: 'var(--additional-lava-primary)',
+  [AllocationStatus.Terminating]: 'var(--additional-red-primary)',
 }
 
 export const STATUS_DISPLAY_NAMES: Record<AllocationStatus, string> = {
-  [AllocationStatus.Active]: 'Active healthy',
   [AllocationStatus.Pending]: 'Pending',
-  [AllocationStatus.Underwater]: 'Active underwater',
+  [AllocationStatus.Active]: 'Active',
+  [AllocationStatus.Underwater]: 'Underwater',
   [AllocationStatus.Terminating]: 'Terminating',
 }
 

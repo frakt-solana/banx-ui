@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react'
+import { FC, useEffect, useMemo } from 'react'
 
 import classNames from 'classnames'
 import { useNavigate } from 'react-router-dom'
@@ -40,6 +40,12 @@ export const InstantLendTable = () => {
 
   const { selectedLoans, onSelectLoan, findSelectedLoan, onSelectLoans, onDeselectAllLoans } =
     useLoansState()
+
+  //? Clear selection when tokenType changes
+  //? To prevent selection transfering from one tokenType to another
+  useEffect(() => {
+    onDeselectAllLoans()
+  }, [onDeselectAllLoans, tokenType])
 
   const hasSelectedLoans = !!selectedLoans.length
   const onSelectAll = () => {

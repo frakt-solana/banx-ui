@@ -1,27 +1,31 @@
+import { useMemo } from 'react'
+
 import { produce } from 'immer'
+import { filter } from 'lodash'
 import { create } from 'zustand'
 
 import { Loan } from '@banx/api/core'
+import { useTokenType } from '@banx/store'
 
 export interface LoanOptimistic {
   loan: Loan
   wallet: string
 }
 
-interface OptimisticLenderLoansState {
+interface LenderLoansOptimisticState {
   loans: LoanOptimistic[]
   addLoans: (loan: Loan, walletPublicKey: string) => void
   findLoan: (loanPubkey: string, walletPublicKey: string) => LoanOptimistic | null
   updateLoans: (loan: Loan, walletPublicKey: string) => void
 }
 
-export const useLenderLoansOptimistic = create<OptimisticLenderLoansState>((set, get) => ({
+const useLenderLoansOptimisticState = create<LenderLoansOptimisticState>((set, get) => ({
   loans: [],
   addLoans: (loan, walletPublicKey) => {
     if (!walletPublicKey) return
 
     return set(
-      produce((state: OptimisticLenderLoansState) => {
+      produce((state: LenderLoansOptimisticState) => {
         state.loans.push(convertLoanToOptimistic(loan, walletPublicKey))
       }),
     )
@@ -38,7 +42,7 @@ export const useLenderLoansOptimistic = create<OptimisticLenderLoansState>((set,
 
     loanExists &&
       set(
-        produce((state: OptimisticLenderLoansState) => {
+        produce((state: LenderLoansOptimisticState) => {
           state.loans = state.loans.map((existingLoan) =>
             existingLoan.loan.publicKey === loan.publicKey
               ? convertLoanToOptimistic(loan, walletPublicKey)
@@ -48,6 +52,25 @@ export const useLenderLoansOptimistic = create<OptimisticLenderLoansState>((set,
       )
   },
 }))
+
+export const useLenderLoansOptimistic = () => {
+  const { loans, addLoans, findLoan, updateLoans } = useLenderLoansOptimisticState()
+
+  const { tokenType } = useTokenType()
+
+  //? As zustand stores loans until user refreshes the page, we need to filter optimistics by tokenType
+  //? To prevent loans duplication on tokenType switching
+  const loansFilteredByTokenType = useMemo(() => {
+    return filter(loans, ({ loan }) => loan.bondTradeTransaction.lendingToken === tokenType)
+  }, [loans, tokenType])
+
+  return {
+    loans: loansFilteredByTokenType,
+    addLoans,
+    findLoan,
+    updateLoans,
+  }
+}
 
 const convertLoanToOptimistic = (loan: Loan, walletPublicKey: string) => {
   return {

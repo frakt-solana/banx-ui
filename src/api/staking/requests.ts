@@ -15,8 +15,12 @@ import { BanxInfoBN, BanxStakingSettingsBN } from './types'
 
 type FetchBanxStakeInfo = (props: { userPubkey?: string }) => Promise<BanxInfoBN | null>
 export const fetchBanxStakeInfo: FetchBanxStakeInfo = async ({ userPubkey }) => {
+  const queryParams = new URLSearchParams({
+    walletPubkey: userPubkey ?? '',
+  })
+
   const { data } = await axios.get<{ data: BanxStakeInfoResponse }>(
-    `${BACKEND_BASE_URL}/tokenStake/v2?walletPubkey=${userPubkey || ''}`,
+    `${BACKEND_BASE_URL}/staking/v2/info?${queryParams.toString()}`,
   )
 
   try {
@@ -33,7 +37,7 @@ export const fetchBanxStakeInfo: FetchBanxStakeInfo = async ({ userPubkey }) => 
 type FetchBanxStakeSettings = () => Promise<BanxStakingSettingsBN | null>
 export const fetchBanxStakeSettings: FetchBanxStakeSettings = async () => {
   const { data } = await axios.get<{ data: BanxStakingSettings }>(
-    `${BACKEND_BASE_URL}/tokenStake/settings`,
+    `${BACKEND_BASE_URL}/staking/v2/settings`,
   )
 
   try {
