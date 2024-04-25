@@ -5,6 +5,11 @@ import { getRuleset } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { Wallet } from 'solana-transactions-executor'
 
 import { BorrowNft, Loan } from '@banx/api/core'
+import { getHeliusPriorityFeeEstimate } from '@banx/api/helius'
+import { getPriorityFeeLevel } from '@banx/store'
+
+import { GetPriorityFee, WalletAndConnection } from '../../../solana-txn-executor/src'
+import { extractAccountKeysFromInstructions } from '../../../solana-txn-executor/src/base'
 
 export const convertLoanToBorrowNft = (loan: Loan): BorrowNft => {
   const { nft, fraktBond, bondTradeTransaction } = loan
@@ -23,7 +28,18 @@ export const convertLoanToBorrowNft = (loan: Loan): BorrowNft => {
   return borrowNft
 }
 
-export const createWalletInstance = (wallet: WalletContextState): Wallet => {
+type CreateExecutorWalletAndConnection = (params: {
+  wallet: WalletContextState
+  connection: web3.Connection
+}) => WalletAndConnection
+export const createExecutorWalletAndConnection: CreateExecutorWalletAndConnection = ({
+  wallet,
+  connection,
+}) => {
+  return { wallet: createExecutorWallet(wallet), connection }
+}
+
+export const createExecutorWallet = (wallet: WalletContextState): Wallet => {
   const { publicKey, signTransaction, signAllTransactions } = wallet
 
   if (!publicKey) {
@@ -84,4 +100,13 @@ export const fetchLookupTableAccount = (
   }
 
   return lookupTablesCache.get(lookupTableAddressStr)!
+}
+
+export const executorGetPriorityFee: GetPriorityFee = ({ txnParams, connection }) => {
+  const priorityLevel = getPriorityFeeLevel()
+
+  const { instructions } = txnParams
+  const accountKeys = extractAccountKeysFromInstructions(instructions).map((key) => key.toBase58())
+
+  return getHeliusPriorityFeeEstimate({ accountKeys, connection, priorityLevel })
 }
