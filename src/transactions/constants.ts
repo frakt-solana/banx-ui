@@ -1,3 +1,5 @@
+import { ExecutorOptions } from '../../../solana-txn-executor/src/index'
+import { executorGetPriorityFee } from './functions'
 import { TxnErrorDefinition, TxnErrorHumanName } from './types'
 
 export const TXN_ERROR_DEFINITIONS: Array<TxnErrorDefinition> = [
@@ -22,4 +24,23 @@ export enum BorrowType {
   StakedBanx = 'StakedBanx',
   CNft = 'CNft',
   Default = 'Default',
+}
+
+export const TXN_EXECUTOR_DEFAULT_OPTIONS: ExecutorOptions = {
+  sendOptions: {
+    maxRetries: 0,
+    preflightCommitment: 'processed',
+    resendInterval: 1,
+    resendTimeout: 60,
+    skipPreflight: true,
+  },
+  confirmOptions: {
+    commitment: 'processed',
+    confirmationTimeout: 60,
+    pollingSignatureInterval: 10,
+  },
+  transactionOptions: {
+    getPriorityFee: executorGetPriorityFee,
+  },
+  abortOnFirstError: false,
 }
