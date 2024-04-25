@@ -25,7 +25,7 @@ import {
   useTokenType,
 } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
-import { makeListAction } from '@banx/transactions/listing'
+import { makeListAction } from '@banx/transactions/loans'
 import {
   convertToHumanNumber,
   destroySnackbar,

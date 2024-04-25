@@ -6,7 +6,7 @@ import { Loan } from '@banx/api/core'
 import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
-import { makeDelistAction } from '@banx/transactions/listing'
+import { makeDelistAction } from '@banx/transactions/loans'
 import {
   destroySnackbar,
   enqueueConfirmationError,

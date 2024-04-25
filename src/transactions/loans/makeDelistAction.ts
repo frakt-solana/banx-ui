@@ -109,7 +109,7 @@ const getIxnsAndSignersByListingType = async ({
       fraktMarket: new web3.PublicKey(loan.fraktBond.fraktMarket),
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
       borrower: new web3.PublicKey(wallet.publicKey),
-      userPubkey: wallet.publicKey as web3.PublicKey,
+      userPubkey: wallet.publicKey,
       nftMint: new web3.PublicKey(loan.nft.mint),
     },
     args: {
