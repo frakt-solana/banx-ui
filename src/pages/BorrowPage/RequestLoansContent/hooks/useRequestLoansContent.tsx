@@ -31,15 +31,13 @@ export const useRequestLoansContent = () => {
   }
 
   const userMarkets = useMemo(() => {
-    if (!connected) return marketsPreview
-
     const marketsPubkeys = chain(nfts)
       .groupBy((nft) => nft.loan.marketPubkey)
       .map((groupedNfts) => first(groupedNfts)?.loan.marketPubkey)
       .value()
 
     return marketsPreview.filter(({ marketPubkey }) => marketsPubkeys.includes(marketPubkey))
-  }, [connected, marketsPreview, nfts])
+  }, [marketsPreview, nfts])
 
   const filteredMarkets = useMemo(() => {
     if (!selectedCollections.length) return userMarkets
@@ -47,7 +45,10 @@ export const useRequestLoansContent = () => {
     return userMarkets.filter(({ collectionName }) => selectedCollections.includes(collectionName))
   }, [selectedCollections, userMarkets])
 
-  const { sortedMarkets, sortParams } = useSortedMarkets(filteredMarkets)
+  const showAllMarkets = !connected || (!isLoadingMarkets && isEmpty(filteredMarkets))
+  const marketsToSort = showAllMarkets ? marketsPreview : filteredMarkets
+
+  const { sortedMarkets, sortParams } = useSortedMarkets(marketsToSort)
 
   const searchSelectParams = createSearchSelectParams({
     options: userMarkets,

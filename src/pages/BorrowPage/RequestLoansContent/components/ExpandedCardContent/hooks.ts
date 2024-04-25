@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
-import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
+import { MAX_APR_VALUE, MIN_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import {
   SubscribeNotificationsModal,
   createRequestLoanSubscribeNotificationsContent,
@@ -109,11 +109,16 @@ export const useRequestLoansForm = (market: MarketPreview) => {
     collectionFloor: market.collectionFloor,
   })
 
+  const aprInputValueIsLow = parseFloat(inputAprValue) < MIN_APR_VALUE
   const disabledListAction =
     !parseFloat(inputLoanValue) ||
-    !parseFloat(inputAprValue) ||
     !parseFloat(inputFreezeValue) ||
+    aprInputValueIsLow ||
     !totalNftsToRequest
+
+  const actionButtonText = aprInputValueIsLow
+    ? `The min APR is ${MIN_APR_VALUE}%`
+    : `List ${totalNftsToRequest <= 1 ? 'request' : `${totalNftsToRequest} requests`}`
 
   return {
     inputLoanValue,
@@ -139,6 +144,7 @@ export const useRequestLoansForm = (market: MarketPreview) => {
 
     requestLoans,
     disabledListAction,
+    actionButtonText,
   }
 }
 

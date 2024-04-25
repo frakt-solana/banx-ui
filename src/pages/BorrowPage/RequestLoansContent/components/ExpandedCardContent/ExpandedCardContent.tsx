@@ -43,6 +43,7 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
     tokenType,
     requestLoans,
     disabledListAction,
+    actionButtonText,
   } = useRequestLoansForm(market)
 
   const { value: currentTabValue, ...tabsProps } = useTabs({
@@ -102,7 +103,7 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
           className={styles.submitButton}
           disabled={disabledListAction}
         >
-          List {totalNftsToRequest <= 1 ? 'request' : `${totalNftsToRequest} requests`}
+          {actionButtonText}
         </Button>
       </div>
 
