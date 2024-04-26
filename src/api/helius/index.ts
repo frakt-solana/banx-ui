@@ -44,7 +44,41 @@ export const getHeliusPriorityFeeEstimate: GetHeliusPriorityFeeEstimate = async 
   })
 
   if (!data?.result?.priorityFeeEstimate)
-    throw new Error('failed to fetch priority fees from helius rpc')
+    throw new Error('Failed to fetch priority fees from helius rpc')
 
   return Math.round(data.result.priorityFeeEstimate)
+}
+
+type GetHeliusAssetProof = (params: {
+  assetId: string
+  connection: web3.Connection
+}) => Promise<ProofType>
+
+type HeliusAssetProofResponse = {
+  id: string
+  jsonrpc: string
+  result?: ProofType
+}
+
+export type ProofType = {
+  leaf: string
+  node_index: number
+  proof: string[]
+  root: string
+  tree_id: string
+}
+
+export const getHeliusAssetProof: GetHeliusAssetProof = async ({ assetId, connection }) => {
+  const { data } = await axios.post<HeliusAssetProofResponse>(connection.rpcEndpoint, {
+    jsonrpc: '2.0',
+    id: uniqueId(),
+    method: 'getAssetProof',
+    params: {
+      id: assetId,
+    },
+  })
+
+  if (!data?.result) throw new Error('Failed to fetch asset proof from helius rpc')
+
+  return data.result
 }
