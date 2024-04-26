@@ -94,7 +94,7 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
       })
 
       await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
-        .addTransactionParam(txnData)
+        .addTxnData(txnData)
         .on('sentSome', (results) => {
           results.forEach(({ signature }) => enqueueTransactionSent(signature))
           enqueueWaitingConfirmation(loadingSnackbarId)
@@ -153,7 +153,7 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
       })
 
       await new TxnExecutor<Offer>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
-        .addTransactionParam(txnData)
+        .addTxnData(txnData)
         .on('sentSome', (results) => {
           results.forEach(({ signature }) => enqueueTransactionSent(signature))
           enqueueWaitingConfirmation(loadingSnackbarId)
@@ -286,7 +286,7 @@ export const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, clos
       })
 
       await new TxnExecutor<Loan>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
-        .addTransactionParam(txnData)
+        .addTxnData(txnData)
         .on('sentSome', (results) => {
           results.forEach(({ signature }) => enqueueTransactionSent(signature))
           enqueueWaitingConfirmation(loadingSnackbarId)

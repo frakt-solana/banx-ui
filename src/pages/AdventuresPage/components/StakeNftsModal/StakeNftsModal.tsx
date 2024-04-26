@@ -102,7 +102,7 @@ export const StakeNftsModal = () => {
       )
 
       await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
-        .addTransactionParams(txnsData)
+        .addTxnsData(txnsData)
         .on('sentAll', () => {
           enqueueTransactionsSent()
           enqueueWaitingConfirmation(loadingSnackbarId)
@@ -157,7 +157,7 @@ export const StakeNftsModal = () => {
       )
 
       await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
-        .addTransactionParams(txnsData)
+        .addTxnsData(txnsData)
         .on('sentAll', () => {
           enqueueTransactionsSent()
           enqueueWaitingConfirmation(loadingSnackbarId)

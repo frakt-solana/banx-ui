@@ -73,7 +73,7 @@ export const Summary: FC<SummaryProps> = ({
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
         chunkSize: isLedger ? 5 : 40,
       })
-        .addTransactionParams(txnsData)
+        .addTxnsData(txnsData)
         .on('sentAll', () => {
           enqueueTransactionsSent()
           enqueueWaitingConfirmation(loadingSnackbarId)
@@ -123,7 +123,7 @@ export const Summary: FC<SummaryProps> = ({
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
         chunkSize: isLedger ? 5 : 40,
       })
-        .addTransactionParams(txnsData)
+        .addTxnsData(txnsData)
         .on('sentAll', () => {
           enqueueTransactionsSent()
           enqueueWaitingConfirmation(loadingSnackbarId)

@@ -122,7 +122,7 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
       })
 
       await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
-        .addTransactionParam(txnData)
+        .addTxnData(txnData)
         .on('sentAll', (results) => {
           enqueueTransactionsSent()
           enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)
@@ -169,7 +169,7 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
       })
 
       new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
-        .addTransactionParam(txnData)
+        .addTxnData(txnData)
         .on('sentAll', (results) => {
           enqueueTransactionsSent()
           enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)

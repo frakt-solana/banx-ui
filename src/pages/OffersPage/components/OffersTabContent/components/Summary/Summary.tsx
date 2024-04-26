@@ -58,7 +58,7 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
 
       //TODO: Fix genric here
       await new TxnExecutor<BondOfferOptimistic>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
-        .addTransactionParams(txnsData)
+        .addTxnsData(txnsData)
         .on('sentAll', () => {
           enqueueTransactionsSent()
           enqueueWaitingConfirmation(loadingSnackbarId)

@@ -119,7 +119,7 @@ export const executeBorrow = async (props: {
       ...TXN_EXECUTOR_DEFAULT_OPTIONS,
       chunkSize: isLedger ? 1 : 40,
     })
-      .addTransactionParams(txnsData)
+      .addTxnsData(txnsData)
       .on('sentSome', () => {
         enqueueTransactionsSent()
         enqueueWaitingConfirmation(loadingSnackbarId)

@@ -43,7 +43,7 @@ export const useLoansTransactions = () => {
       const txnsData = await createRepayLoanTxnData({ loan, walletAndConnection })
 
       await new TxnExecutor<Loan>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
-        .addTransactionParam(txnsData)
+        .addTxnData(txnsData)
         .on('sentSome', (results) => {
           results.forEach(({ signature }) => enqueueTransactionSent(signature))
           enqueueWaitingConfirmation(loadingSnackbarId)
@@ -102,7 +102,7 @@ export const useLoansTransactions = () => {
       })
 
       await new TxnExecutor<Loan>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
-        .addTransactionParam(txnData)
+        .addTxnData(txnData)
         .on('sentSome', (results) => {
           results.forEach(({ signature }) => enqueueTransactionSent(signature))
           enqueueWaitingConfirmation(loadingSnackbarId)
@@ -169,7 +169,7 @@ export const useLoansTransactions = () => {
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
         chunkSize: isLedger ? 1 : 40,
       })
-        .addTransactionParams(txnsData)
+        .addTxnsData(txnsData)
         .on('sentAll', () => {
           enqueueTransactionsSent()
           enqueueWaitingConfirmation(loadingSnackbarId)
@@ -244,7 +244,7 @@ export const useLoansTransactions = () => {
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
         chunkSize: isLedger ? 5 : 40,
       })
-        .addTransactionParams(txnsData)
+        .addTxnsData(txnsData)
         .on('sentAll', () => {
           enqueueTransactionsSent()
           enqueueWaitingConfirmation(loadingSnackbarId)

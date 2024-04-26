@@ -112,7 +112,7 @@ const useRefinanceTransaction = (loan: Loan) => {
       })
 
       await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
-        .addTransactionParam(txnData)
+        .addTxnData(txnData)
         .on('sentSome', (results) => {
           results.forEach(({ signature }) => enqueueTransactionSent(signature))
           enqueueWaitingConfirmation(loadingSnackbarId)
