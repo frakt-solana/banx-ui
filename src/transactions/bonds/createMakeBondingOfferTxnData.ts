@@ -4,46 +4,40 @@ import {
   createPerpetualBondOfferBonding,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondingCurveType, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
-import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
-import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { isSolTokenType, sendTxnPlaceHolder } from '@banx/utils'
 
-export type MakeCreateBondingOfferActionParams = {
+import { WalletAndConnection } from '../../../../solana-txn-executor/src'
+import { CreateTxnData } from '../../../../solana-txn-executor/src/base'
+
+type CreateMakeBondingOfferTxnData = (params: {
   marketPubkey: string
   loanValue: number //? normal number
   loansAmount: number
   deltaValue: number //? normal number
   tokenType: LendingTokenType
-  priorityFeeLevel: PriorityLevel
-}
+  walletAndConnection: WalletAndConnection
+}) => Promise<CreateTxnData<BondOfferOptimistic>>
 
-export type MakeCreateBondingOfferAction = CreateTransactionDataFn<
-  MakeCreateBondingOfferActionParams,
-  BondOfferOptimistic
->
-
-export const makeCreateBondingOfferAction: MakeCreateBondingOfferAction = async (
-  ixnParams,
-  { connection, wallet },
-) => {
-  const { marketPubkey, loanValue, loansAmount, tokenType, deltaValue } = ixnParams
-
+export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = async ({
+  marketPubkey,
+  loanValue,
+  loansAmount,
+  tokenType,
+  deltaValue,
+  walletAndConnection,
+}) => {
   const bondingCurveType = isSolTokenType(tokenType)
     ? BondingCurveType.Linear
     : BondingCurveType.LinearUsdc
 
-  const {
-    instructions: createBondingOfferInstructions,
-    signers,
-    optimisticResult,
-  } = await createPerpetualBondOfferBonding({
+  const { instructions, signers, optimisticResult } = await createPerpetualBondOfferBonding({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-    connection,
+    connection: walletAndConnection.connection,
     accounts: {
       hadoMarket: new web3.PublicKey(marketPubkey),
-      userPubkey: wallet.publicKey as web3.PublicKey,
+      userPubkey: walletAndConnection.wallet.publicKey as web3.PublicKey,
     },
     args: {
       loanValue,
@@ -52,14 +46,6 @@ export const makeCreateBondingOfferAction: MakeCreateBondingOfferAction = async 
       bondingCurveType,
     },
     sendTxn: sendTxnPlaceHolder,
-  })
-
-  const instructions = await mergeWithComputeUnits({
-    instructions: createBondingOfferInstructions,
-    connection: connection,
-    lookupTables: [],
-    payer: wallet.publicKey,
-    priorityLevel: ixnParams.priorityFeeLevel,
   })
 
   return {
