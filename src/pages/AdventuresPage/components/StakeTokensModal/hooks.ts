@@ -13,7 +13,6 @@ import {
 import { useModal } from '@banx/store'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
-  createExecutorWallet,
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
@@ -122,10 +121,7 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
         walletAndConnection,
       })
 
-      await new TxnExecutor(
-        { wallet: createExecutorWallet(wallet), connection },
-        TXN_EXECUTOR_DEFAULT_OPTIONS,
-      )
+      await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
         .addTransactionParam(txnData)
         .on('sentAll', (results) => {
           enqueueTransactionsSent()

@@ -39,7 +39,7 @@ export const createExecutorWalletAndConnection: CreateExecutorWalletAndConnectio
   return { wallet: createExecutorWallet(wallet), connection }
 }
 
-export const createExecutorWallet = (wallet: WalletContextState): Wallet => {
+const createExecutorWallet = (wallet: WalletContextState): Wallet => {
   const { publicKey, signTransaction, signAllTransactions } = wallet
 
   if (!publicKey) {
