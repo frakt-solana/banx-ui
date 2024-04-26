@@ -1,7 +1,6 @@
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
 import { Plug } from './assets'
-import BanxRewardsTab from './components/BanxRewardsTab'
 import EarnTab from './components/EarnTab'
 import Header from './components/LeaderboardHeader'
 // import LeaderboardTab from './components/LeaderboardTab'
@@ -13,7 +12,6 @@ export enum LeaderboardTabName {
   REWARDS = 'rewards',
   LEADERBOARD = 'leaderboard',
   EARN = 'earn',
-  BAND_REWARDS = 'banxRewards',
 }
 
 export const LeaderboardPage = () => {
@@ -30,7 +28,6 @@ export const LeaderboardPage = () => {
       {/* {currentTabValue === LeaderboardTabName.LEADERBOARD && <LeaderboardTab />} */}
       {currentTabValue === LeaderboardTabName.LEADERBOARD && <LeaderboardPlug />}
       {currentTabValue === LeaderboardTabName.EARN && <EarnTab />}
-      {currentTabValue === LeaderboardTabName.BAND_REWARDS && <BanxRewardsTab />}
     </div>
   )
 }
@@ -56,9 +53,5 @@ export const LEADERBOARD_TABS: Tab[] = [
   {
     label: 'Earn points',
     value: LeaderboardTabName.EARN,
-  },
-  {
-    label: 'Banx rewards',
-    value: LeaderboardTabName.BAND_REWARDS,
   },
 ]
