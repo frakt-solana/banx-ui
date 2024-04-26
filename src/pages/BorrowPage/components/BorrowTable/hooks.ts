@@ -22,7 +22,6 @@ import {
   useLoansOptimistic,
   useModal,
   useOffersOptimistic,
-  usePriorityFees,
   useTableView,
   useTokenType,
 } from '@banx/store'
@@ -33,9 +32,9 @@ import { useCartState } from '../../cartState'
 import { getTableColumns } from './columns'
 import { DEFAULT_TABLE_SORT, SORT_OPTIONS } from './constants'
 import {
-  createBorrowParams,
   createTableNftData,
   executeBorrow,
+  makeCreateTxnsDataParams,
   showBonkRewardsSnack,
 } from './helpers'
 import { SortField, TableNftData } from './types'
@@ -53,7 +52,6 @@ const useCollectionsStore = createGlobalState<string[]>([])
 export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBorrowTableProps) => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { priorityLevel } = usePriorityFees()
   const navigate = useNavigate()
   const { isLedger } = useIsLedger()
   const { open, close } = useModal()
@@ -122,12 +120,12 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
   }
 
   const borrow = async (nft: TableNftData) => {
-    const txnParams = createBorrowParams([nft], rawOffers, priorityLevel, tokenType)
+    const createTxnsDataParams = makeCreateTxnsDataParams([nft], rawOffers, tokenType)
 
     await executeBorrow({
       wallet,
       connection,
-      txnParams,
+      createTxnsDataParams,
       addLoansOptimistic,
       updateOffersOptimistic,
       onBorrowSuccess,
@@ -140,12 +138,12 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
 
   const borrowAll = async () => {
     const selectedNfts = tableNftsData.filter(({ mint }) => !!offerByMint[mint])
-    const txnParams = createBorrowParams(selectedNfts, rawOffers, priorityLevel, tokenType)
+    const createTxnsDataParams = makeCreateTxnsDataParams(selectedNfts, rawOffers, tokenType)
 
     await executeBorrow({
       wallet,
       connection,
-      txnParams,
+      createTxnsDataParams,
       addLoansOptimistic,
       updateOffersOptimistic,
       onBorrowSuccess,
