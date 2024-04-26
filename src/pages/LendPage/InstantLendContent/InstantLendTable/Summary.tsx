@@ -10,12 +10,7 @@ import { DisplayValue, createPercentValueJSX } from '@banx/components/TableCompo
 import { useWalletModal } from '@banx/components/WalletModal'
 
 import { Loan } from '@banx/api/core'
-import {
-  HealthColorIncreasing,
-  calcWeightedAverage,
-  calculateLoanRepayValue,
-  getColorByPercent,
-} from '@banx/utils'
+import { calcWeightedAverage, calculateLoanRepayValue } from '@banx/utils'
 
 import { calcWeeklyInterestFee } from './helpers'
 import { useInstantTransactions } from './hooks'
@@ -52,12 +47,7 @@ export const Summary: FC<{ loans: Loan[] }> = ({ loans }) => {
         <p>Weighted apr</p>
       </div>
       <div className={styles.statsContainer}>
-        <StatInfo
-          label="Weighted ltv"
-          value={weightedLtv}
-          valueStyles={{ color: getColorByPercent(weightedLtv, HealthColorIncreasing) }}
-          valueType={VALUES_TYPES.PERCENT}
-        />
+        <StatInfo label="Weighted ltv" value={weightedLtv} valueType={VALUES_TYPES.PERCENT} />
         <StatInfo label="Weekly interest" value={<DisplayValue value={totalWeeklyInterest} />} />
         <StatInfo
           label="Weighted apr"
@@ -85,7 +75,7 @@ export const Summary: FC<{ loans: Loan[] }> = ({ loans }) => {
 
 const calculateSummaryInfo = (loans: Loan[]) => {
   const totalDebt = sumBy(loans, (loan) => calculateLoanRepayValue(loan))
-  const totalLoanValue = map(loans, (loan) => loan.fraktBond.borrowedAmount)
+  const totalLoanValue = map(loans, (loan) => calculateLoanRepayValue(loan))
   const totalWeeklyInterest = sumBy(loans, (loan) => calcWeeklyInterestFee(loan))
 
   const totalAprArray = map(loans, (loan) => loan.bondTradeTransaction.amountOfBonds / 100)

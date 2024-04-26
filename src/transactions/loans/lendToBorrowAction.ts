@@ -66,7 +66,7 @@ const getIxnsAndSignersByLoanType = async ({
       accounts: {
         hadoMarket: new web3.PublicKey(fraktBond.hadoMarket || ''),
         protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
-        borrower: new web3.PublicKey(wallet.publicKey),
+        borrower: new web3.PublicKey(loan.fraktBond.fbondIssuer),
         userPubkey: wallet.publicKey,
         nftMint: new web3.PublicKey(nft.mint),
         splTokenMint: new web3.PublicKey(nft.mint),
