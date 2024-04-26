@@ -4,7 +4,6 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, uniqueId } from 'lodash'
-import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { Loader } from '@banx/components/Loader'
@@ -13,12 +12,19 @@ import { DisplayValue, createPercentValueJSX } from '@banx/components/TableCompo
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan } from '@banx/api/core'
-import { BONDS, TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
+import { BONDS } from '@banx/constants'
 import { useMarketOffers } from '@banx/pages/LendPage'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
-import { useLoansOptimistic, useModal, usePriorityFees, useTokenType } from '@banx/store'
-import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
-import { makeBorrowRefinanceAction } from '@banx/transactions/loans'
+import { useLoansOptimistic, useModal, useTokenType } from '@banx/store'
+import {
+  TXN_EXECUTOR_DEFAULT_OPTIONS,
+  createExecutorWalletAndConnection,
+  defaultTxnErrorHandler,
+} from '@banx/transactions'
+import {
+  BorrowRefinanceActionOptimisticResult,
+  createBorrowRefinanceTxnData,
+} from '@banx/transactions/loans'
 import {
   calcLoanBorrowedAmount,
   calculateApr,
@@ -35,8 +41,9 @@ import {
   getTokenUnit,
   isLoanTerminating,
   isOfferNotEmpty,
-  trackPageEvent,
 } from '@banx/utils'
+
+import { TxnExecutor } from '../../../../../../../../solana-txn-executor/src'
 
 import styles from './ActionsCell.module.less'
 
@@ -49,7 +56,6 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
 
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { priorityLevel } = usePriorityFees()
 
   const { close } = useModal()
   const { tokenType } = useTokenType()
@@ -112,9 +118,8 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
 
   const differenceToPay = newLoanDebt - currentLoanDebt - upfrontFee
 
-  const refinance = () => {
+  const refinance = async () => {
     if (!bestOffer) return
-    trackPageEvent('myloans', isTerminatingStatus ? 'refinance' : 'reborrow')
 
     const suitableOffer = chain(offers)
       .thru((offers) =>
@@ -135,59 +140,64 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
 
     const loadingSnackbarId = uniqueId()
 
-    new TxnExecutor(
-      makeBorrowRefinanceAction,
-      { wallet: createWalletInstance(wallet), connection },
-      {
-        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
-      },
-    )
-      .addTransactionParam({
+    try {
+      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
+
+      const txnData = await createBorrowRefinanceTxnData({
         loan,
         offer: suitableOffer,
         solToRefinance: currentSpotPrice,
         aprRate: newApr,
-        priorityFeeLevel: priorityLevel,
+        walletAndConnection,
       })
-      .on('sentSome', (results) => {
-        results.forEach(({ signature }) => enqueueTransactionSent(signature))
-        enqueueWaitingConfirmation(loadingSnackbarId)
-      })
-      .on('confirmedAll', (results) => {
-        const { confirmed, failed } = results
 
-        destroySnackbar(loadingSnackbarId)
+      await new TxnExecutor<BorrowRefinanceActionOptimisticResult>(
+        walletAndConnection,
+        TXN_EXECUTOR_DEFAULT_OPTIONS,
+      )
+        .addTransactionParam(txnData)
+        .on('sentSome', (results) => {
+          results.forEach(({ signature }) => enqueueTransactionSent(signature))
+          enqueueWaitingConfirmation(loadingSnackbarId)
+        })
+        .on('confirmedAll', (results) => {
+          const { confirmed, failed } = results
 
-        if (failed.length) {
-          return failed.forEach(({ signature, reason }) =>
-            enqueueConfirmationError(signature, reason),
-          )
-        }
+          destroySnackbar(loadingSnackbarId)
 
-        return confirmed.forEach(({ result, signature }) => {
-          if (result && wallet?.publicKey) {
-            enqueueSnackbar({
-              message: 'Loan successfully refinanced',
-              type: 'success',
-              solanaExplorerPath: `tx/${signature}`,
-            })
-
-            updateOrAddOffer(result.offer)
-            updateLoansOptimistic([result.loan], wallet.publicKey.toBase58())
-            clearSelection()
-            close()
+          if (failed.length) {
+            return failed.forEach(({ signature, reason }) =>
+              enqueueConfirmationError(signature, reason),
+            )
           }
+
+          return confirmed.forEach(({ result, signature }) => {
+            if (result && wallet?.publicKey) {
+              enqueueSnackbar({
+                message: 'Loan successfully refinanced',
+                type: 'success',
+                solanaExplorerPath: `tx/${signature}`,
+              })
+
+              updateOrAddOffer(result.offer)
+              updateLoansOptimistic([result.loan], wallet.publicKey.toBase58())
+              clearSelection()
+              close()
+            }
+          })
         })
-      })
-      .on('error', (error) => {
-        destroySnackbar(loadingSnackbarId)
-        defaultTxnErrorHandler(error, {
-          additionalData: loan,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'RefinanceBorrow',
+        .on('error', (error) => {
+          throw error
         })
+        .execute()
+    } catch (error) {
+      destroySnackbar(loadingSnackbarId)
+      defaultTxnErrorHandler(error, {
+        additionalData: loan,
+        walletPubkey: wallet?.publicKey?.toBase58(),
+        transactionName: 'RefinanceBorrow',
       })
-      .execute()
+    }
   }
 
   return (

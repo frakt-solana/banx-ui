@@ -3,7 +3,6 @@ import { FC } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { uniqueId } from 'lodash'
-import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { TensorLink } from '@banx/components/SolanaLinks'
@@ -11,9 +10,9 @@ import { TensorLink } from '@banx/components/SolanaLinks'
 import { Loan } from '@banx/api/core'
 import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useHiddenNftsMints } from '@banx/pages/OffersPage'
-import { useModal, usePriorityFees } from '@banx/store'
-import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
-import { makeClaimAction } from '@banx/transactions/loans'
+import { useModal } from '@banx/store'
+import { createExecutorWalletAndConnection, defaultTxnErrorHandler } from '@banx/transactions'
+import { createClaimTxnData } from '@banx/transactions/loans'
 import {
   destroySnackbar,
   enqueueConfirmationError,
@@ -22,9 +21,9 @@ import {
   enqueueWaitingConfirmation,
   isLoanLiquidated,
   isLoanTerminating,
-  trackPageEvent,
 } from '@banx/utils'
 
+import { TxnExecutor } from '../../../../../../../../../../solana-txn-executor/src'
 import ManageModal from '../../ManageModal'
 
 import styles from './ActionsCell.module.less'
@@ -37,60 +36,64 @@ interface ActionsCellProps {
 export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { priorityLevel } = usePriorityFees()
   const { open } = useModal()
 
   const { addMints: hideLoans } = useHiddenNftsMints()
 
-  const onClaim = () => {
-    trackPageEvent('myoffers', 'activetab-claim')
-
+  const onClaim = async () => {
     const loadingSnackbarId = uniqueId()
 
-    new TxnExecutor(
-      makeClaimAction,
-      { wallet: createWalletInstance(wallet), connection },
-      {
+    try {
+      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
+
+      const txnData = await createClaimTxnData({
+        loan,
+        walletAndConnection,
+      })
+
+      await new TxnExecutor(walletAndConnection, {
         confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
-      },
-    )
-      .addTransactionParam({ loan, priorityFeeLevel: priorityLevel })
-      .on('sentSome', (results) => {
-        results.forEach(({ signature }) => enqueueTransactionSent(signature))
-        enqueueWaitingConfirmation(loadingSnackbarId)
       })
-      .on('confirmedAll', (results) => {
-        const { confirmed, failed } = results
+        .addTransactionParam(txnData)
+        .on('sentSome', (results) => {
+          results.forEach(({ signature }) => enqueueTransactionSent(signature))
+          enqueueWaitingConfirmation(loadingSnackbarId)
+        })
+        .on('confirmedAll', (results) => {
+          const { confirmed, failed } = results
 
-        destroySnackbar(loadingSnackbarId)
+          destroySnackbar(loadingSnackbarId)
 
-        if (failed.length) {
-          return failed.forEach(({ signature, reason }) =>
-            enqueueConfirmationError(signature, reason),
-          )
-        }
-
-        return confirmed.forEach(({ result, signature }) => {
-          if (result) {
-            enqueueSnackbar({
-              message: 'Collateral successfully claimed',
-              type: 'success',
-              solanaExplorerPath: `tx/${signature}`,
-            })
-
-            hideLoans(loan.nft.mint)
+          if (failed.length) {
+            return failed.forEach(({ signature, reason }) =>
+              enqueueConfirmationError(signature, reason),
+            )
           }
+
+          return confirmed.forEach(({ result, signature }) => {
+            if (result) {
+              enqueueSnackbar({
+                message: 'Collateral successfully claimed',
+                type: 'success',
+                solanaExplorerPath: `tx/${signature}`,
+              })
+
+              hideLoans(loan.nft.mint)
+            }
+          })
         })
-      })
-      .on('error', (error) => {
-        destroySnackbar(loadingSnackbarId)
-        defaultTxnErrorHandler(error, {
-          additionalData: loan,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'Claim',
+        .on('error', (error) => {
+          throw error
         })
+        .execute()
+    } catch (error) {
+      destroySnackbar(loadingSnackbarId)
+      defaultTxnErrorHandler(error, {
+        additionalData: loan,
+        walletPubkey: wallet?.publicKey?.toBase58(),
+        transactionName: 'Claim',
       })
-      .execute()
+    }
   }
 
   const buttonSize = isCardView ? 'default' : 'small'

@@ -156,7 +156,7 @@ export const StakeNftsModal = () => {
         ),
       )
 
-      new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
         .addTransactionParams(txnsData)
         .on('sentAll', () => {
           enqueueTransactionsSent()

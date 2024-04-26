@@ -2,7 +2,6 @@ import React, { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { chain, map, sumBy, uniqueId } from 'lodash'
-import { TxnExecutor } from 'solana-transactions-executor'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
 import { Button } from '@banx/components/Buttons'
@@ -17,10 +16,13 @@ import {
 } from '@banx/components/modals'
 
 import { Loan } from '@banx/api/core'
-import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
-import { useModal, usePriorityFees } from '@banx/store'
-import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
-import { makeRefinanceAction } from '@banx/transactions/loans'
+import { useIsLedger, useModal } from '@banx/store'
+import {
+  TXN_EXECUTOR_DEFAULT_OPTIONS,
+  createExecutorWalletAndConnection,
+  defaultTxnErrorHandler,
+} from '@banx/transactions'
+import { createRefinanceTxnData } from '@banx/transactions/loans'
 import {
   calcWeightedAverage,
   calculateLoanRepayValue,
@@ -33,6 +35,7 @@ import {
   trackPageEvent,
 } from '@banx/utils'
 
+import { TxnExecutor } from '../../../../../../solana-txn-executor/src'
 import { useAuctionsLoans } from '../../hooks'
 import { MAX_APY_INCREASE_PERCENT } from './constants'
 import { calcWeeklyInterestFee } from './helpers'
@@ -54,10 +57,10 @@ export const Summary: FC<SummaryProps> = ({
 }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { priorityLevel } = usePriorityFees()
   const { addMints } = useAuctionsLoans()
   const { toggleVisibility } = useWalletModal()
   const { open, close } = useModal()
+  const { isLedger } = useIsLedger()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
   const totalDebt = sumBy(selectedLoans, (loan) => calculateLoanRepayValue(loan))
@@ -82,54 +85,61 @@ export const Summary: FC<SummaryProps> = ({
     }
   }
 
-  const refinanceAll = () => {
+  const refinanceAll = async () => {
     const loadingSnackbarId = uniqueId()
 
-    const txnParams = selectedLoans.map((loan) => ({ loan, priorityFeeLevel: priorityLevel }))
+    try {
+      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-    new TxnExecutor(
-      makeRefinanceAction,
-      { wallet: createWalletInstance(wallet), connection },
-      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
-    )
-      .addTransactionParams(txnParams)
-      .on('sentAll', () => {
-        enqueueTransactionsSent()
-        enqueueWaitingConfirmation(loadingSnackbarId)
+      const txnsData = await Promise.all(
+        selectedLoans.map((loan) => createRefinanceTxnData({ loan, walletAndConnection })),
+      )
+
+      await new TxnExecutor<Loan>(walletAndConnection, {
+        ...TXN_EXECUTOR_DEFAULT_OPTIONS,
+        chunkSize: isLedger ? 1 : 40,
       })
-      .on('confirmedAll', (results) => {
-        const { confirmed, failed } = results
-
-        destroySnackbar(loadingSnackbarId)
-
-        if (confirmed.length) {
-          enqueueSnackbar({ message: 'Loans successfully refinanced', type: 'success' })
-
-          const mintsToHidden = chain(confirmed)
-            .map(({ result }) => result?.nft.mint)
-            .compact()
-            .value()
-
-          addMints(...mintsToHidden)
-          onDeselectAllLoans()
-          onSuccess(mintsToHidden.length)
-        }
-
-        if (failed.length) {
-          return failed.forEach(({ signature, reason }) =>
-            enqueueConfirmationError(signature, reason),
-          )
-        }
-      })
-      .on('error', (error) => {
-        destroySnackbar(loadingSnackbarId)
-        defaultTxnErrorHandler(error, {
-          additionalData: txnParams,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'Refinance',
+        .addTransactionParams(txnsData)
+        .on('sentAll', () => {
+          enqueueTransactionsSent()
+          enqueueWaitingConfirmation(loadingSnackbarId)
         })
+        .on('confirmedAll', (results) => {
+          const { confirmed, failed } = results
+
+          destroySnackbar(loadingSnackbarId)
+
+          if (confirmed.length) {
+            enqueueSnackbar({ message: 'Loans successfully refinanced', type: 'success' })
+
+            const mintsToHidden = chain(confirmed)
+              .map(({ result }) => result?.nft.mint)
+              .compact()
+              .value()
+
+            addMints(...mintsToHidden)
+            onDeselectAllLoans()
+            onSuccess(mintsToHidden.length)
+          }
+
+          if (failed.length) {
+            return failed.forEach(({ signature, reason }) =>
+              enqueueConfirmationError(signature, reason),
+            )
+          }
+        })
+        .on('error', (error) => {
+          throw error
+        })
+        .execute()
+    } catch (error) {
+      destroySnackbar(loadingSnackbarId)
+      defaultTxnErrorHandler(error, {
+        additionalData: selectedLoans,
+        walletPubkey: wallet?.publicKey?.toBase58(),
+        transactionName: 'Refinance',
       })
-      .execute()
+    }
   }
 
   const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {

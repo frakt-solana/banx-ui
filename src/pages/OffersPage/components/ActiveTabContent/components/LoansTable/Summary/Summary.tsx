@@ -3,7 +3,6 @@ import { FC } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { chain, uniqueId } from 'lodash'
-import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider } from '@banx/components/Slider'
@@ -11,10 +10,13 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
-import { useIsLedger, usePriorityFees } from '@banx/store'
-import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
-import { makeClaimAction, makeTerminateAction } from '@banx/transactions/loans'
+import { useIsLedger } from '@banx/store'
+import {
+  TXN_EXECUTOR_DEFAULT_OPTIONS,
+  createExecutorWalletAndConnection,
+  defaultTxnErrorHandler,
+} from '@banx/transactions'
+import { createClaimTxnData, createTerminateTxnData } from '@banx/transactions/loans'
 import {
   HealthColorIncreasing,
   destroySnackbar,
@@ -25,6 +27,7 @@ import {
   getColorByPercent,
 } from '@banx/utils'
 
+import { TxnExecutor } from '../../../../../../../../../solana-txn-executor/src'
 import { useSelectedLoans } from '../loansState'
 import { getTerminateStatsInfo } from './helpers'
 
@@ -48,7 +51,6 @@ export const Summary: FC<SummaryProps> = ({
   setSelection,
 }) => {
   const wallet = useWallet()
-  const { priorityLevel } = usePriorityFees()
   const walletPublicKeyString = wallet.publicKey?.toBase58() || ''
   const { clear: clearSelection } = useSelectedLoans()
 
@@ -57,95 +59,109 @@ export const Summary: FC<SummaryProps> = ({
 
   const { totalLent, averageLtv, totalInterest } = getTerminateStatsInfo(selectedLoans)
 
-  const terminateLoans = () => {
+  const terminateLoans = async () => {
     const loadingSnackbarId = uniqueId()
 
-    const txnParams = selectedLoans.map((loan) => ({ loan, priorityFeeLevel: priorityLevel }))
+    try {
+      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-    new TxnExecutor(
-      makeTerminateAction,
-      { wallet: createWalletInstance(wallet), connection },
-      { signAllChunkSize: isLedger ? 5 : 40, confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
-    )
-      .addTransactionParams(txnParams)
-      .on('sentAll', () => {
-        enqueueTransactionsSent()
-        enqueueWaitingConfirmation(loadingSnackbarId)
+      const txnsData = await Promise.all(
+        selectedLoans.map((loan) => createTerminateTxnData({ loan, walletAndConnection })),
+      )
+
+      await new TxnExecutor<Loan>(walletAndConnection, {
+        ...TXN_EXECUTOR_DEFAULT_OPTIONS,
+        chunkSize: isLedger ? 5 : 40,
       })
-      .on('confirmedAll', (results) => {
-        const { confirmed, failed } = results
-
-        destroySnackbar(loadingSnackbarId)
-
-        if (confirmed.length) {
-          enqueueSnackbar({ message: 'Collaterals successfully terminated', type: 'success' })
-          confirmed.forEach(({ result }) => result && updateOrAddLoan(result))
-          clearSelection()
-        }
-
-        if (failed.length) {
-          return failed.forEach(({ signature, reason }) =>
-            enqueueConfirmationError(signature, reason),
-          )
-        }
-      })
-      .on('error', (error) => {
-        destroySnackbar(loadingSnackbarId)
-        defaultTxnErrorHandler(error, {
-          additionalData: txnParams,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'TerminateLoans',
+        .addTransactionParams(txnsData)
+        .on('sentAll', () => {
+          enqueueTransactionsSent()
+          enqueueWaitingConfirmation(loadingSnackbarId)
         })
+        .on('confirmedAll', (results) => {
+          const { confirmed, failed } = results
+
+          destroySnackbar(loadingSnackbarId)
+
+          if (confirmed.length) {
+            enqueueSnackbar({ message: 'Collaterals successfully terminated', type: 'success' })
+            confirmed.forEach(({ result }) => result && updateOrAddLoan(result))
+            clearSelection()
+          }
+
+          if (failed.length) {
+            return failed.forEach(({ signature, reason }) =>
+              enqueueConfirmationError(signature, reason),
+            )
+          }
+        })
+        .on('error', (error) => {
+          throw error
+        })
+        .execute()
+    } catch (error) {
+      destroySnackbar(loadingSnackbarId)
+      defaultTxnErrorHandler(error, {
+        additionalData: selectedLoans,
+        walletPubkey: wallet?.publicKey?.toBase58(),
+        transactionName: 'TerminateLoans',
       })
-      .execute()
+    }
   }
 
-  const claimLoans = () => {
+  const claimLoans = async () => {
     const loadingSnackbarId = uniqueId()
 
-    const txnParams = loansToClaim.map((loan) => ({ loan, priorityFeeLevel: priorityLevel }))
+    try {
+      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-    new TxnExecutor(
-      makeClaimAction,
-      { wallet: createWalletInstance(wallet), connection },
-      { signAllChunkSize: isLedger ? 5 : 40, confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
-    )
-      .addTransactionParams(txnParams)
-      .on('sentAll', () => {
-        enqueueTransactionsSent()
-        enqueueWaitingConfirmation(loadingSnackbarId)
+      const txnsData = await Promise.all(
+        loansToClaim.map((loan) => createClaimTxnData({ loan, walletAndConnection })),
+      )
+
+      await new TxnExecutor<Loan>(walletAndConnection, {
+        ...TXN_EXECUTOR_DEFAULT_OPTIONS,
+        chunkSize: isLedger ? 5 : 40,
       })
-      .on('confirmedAll', (results) => {
-        const { confirmed, failed } = results
-
-        destroySnackbar(loadingSnackbarId)
-
-        if (confirmed.length) {
-          enqueueSnackbar({ message: 'Collaterals successfully claimed', type: 'success' })
-
-          const mintsToHidden = chain(confirmed)
-            .map(({ result }) => result?.nft.mint)
-            .compact()
-            .value()
-
-          hideLoans(...mintsToHidden)
-        }
-
-        if (failed.length) {
-          return failed.forEach(({ signature, reason }) =>
-            enqueueConfirmationError(signature, reason),
-          )
-        }
-      })
-      .on('error', (error) => {
-        destroySnackbar(loadingSnackbarId)
-        defaultTxnErrorHandler(error, {
-          additionalData: txnParams,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'ClaimLoans',
+        .addTransactionParams(txnsData)
+        .on('sentAll', () => {
+          enqueueTransactionsSent()
+          enqueueWaitingConfirmation(loadingSnackbarId)
         })
+        .on('confirmedAll', (results) => {
+          const { confirmed, failed } = results
+
+          destroySnackbar(loadingSnackbarId)
+
+          if (confirmed.length) {
+            enqueueSnackbar({ message: 'Collaterals successfully claimed', type: 'success' })
+
+            const mintsToHidden = chain(confirmed)
+              .map(({ result }) => result?.nft.mint)
+              .compact()
+              .value()
+
+            hideLoans(...mintsToHidden)
+          }
+
+          if (failed.length) {
+            return failed.forEach(({ signature, reason }) =>
+              enqueueConfirmationError(signature, reason),
+            )
+          }
+        })
+        .on('error', (error) => {
+          throw error
+        })
+        .execute()
+    } catch (error) {
+      destroySnackbar(loadingSnackbarId)
+      defaultTxnErrorHandler(error, {
+        additionalData: loansToClaim,
+        walletPubkey: wallet?.publicKey?.toBase58(),
+        transactionName: 'ClaimLoans',
       })
-      .execute()
+    }
   }
 
   const handleLoanSelection = (value = 0) => {
