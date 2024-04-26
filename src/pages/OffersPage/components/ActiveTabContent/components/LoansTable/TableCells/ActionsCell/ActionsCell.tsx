@@ -8,10 +8,13 @@ import { Button } from '@banx/components/Buttons'
 import { TensorLink } from '@banx/components/SolanaLinks'
 
 import { Loan } from '@banx/api/core'
-import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useHiddenNftsMints } from '@banx/pages/OffersPage'
 import { useModal } from '@banx/store'
-import { createExecutorWalletAndConnection, defaultTxnErrorHandler } from '@banx/transactions'
+import {
+  TXN_EXECUTOR_DEFAULT_OPTIONS,
+  createExecutorWalletAndConnection,
+  defaultTxnErrorHandler,
+} from '@banx/transactions'
 import { createClaimTxnData } from '@banx/transactions/loans'
 import {
   destroySnackbar,
@@ -51,9 +54,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
         walletAndConnection,
       })
 
-      await new TxnExecutor(walletAndConnection, {
-        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
-      })
+      await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
         .addTransactionParam(txnData)
         .on('sentSome', (results) => {
           results.forEach(({ signature }) => enqueueTransactionSent(signature))
