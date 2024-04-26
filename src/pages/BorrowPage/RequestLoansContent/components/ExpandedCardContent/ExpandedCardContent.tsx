@@ -1,6 +1,7 @@
 import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Button } from '@banx/components/Buttons'
 import ActivityTable from '@banx/components/CommonTables'
@@ -13,8 +14,8 @@ import { NumericStepInput } from '@banx/components/inputs'
 
 import { MarketPreview } from '@banx/api/core'
 import { DAYS_IN_YEAR } from '@banx/constants'
-import { ChevronDown, SOL } from '@banx/icons'
-import { getTokenUnit } from '@banx/utils'
+import { ChevronDown, SOL, USDC } from '@banx/icons'
+import { isSolTokenType } from '@banx/utils'
 
 import RequestLoansTable from '../RequestLoansTable'
 import { INPUT_TOKEN_STEP, TABS, TabName } from './constants'
@@ -54,16 +55,25 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
   return (
     <div className={styles.container}>
       <div className={styles.form}>
+        <Summary ltv={ltv} upfrontFee={upfrontFee} weeklyInterest={weeklyInterest} />
+
         <div className={styles.fields}>
-          <CurrencyInputPlug />
-          <NumericStepInput
+          <SelectCurrencyInput
             label="Borrow"
             value={inputLoanValue}
             onChange={handleChangeLoanValue}
             disabled={!connected || !nfts.length}
+            tokenType={tokenType}
+          />
+          <NumericStepInput
+            label="Freeze"
+            value={inputFreezeValue}
+            onChange={handleChangeFreezeValue}
+            disabled={!connected || !nfts.length}
             placeholder="0"
-            postfix={getTokenUnit(tokenType)}
-            step={INPUT_TOKEN_STEP[tokenType]}
+            postfix="d" //? d => days
+            max={DAYS_IN_YEAR}
+            step={1}
           />
           <NumericStepInput
             label="Apr"
@@ -75,16 +85,9 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
             max={MAX_APR_VALUE}
             step={1}
           />
-          <NumericStepInput
-            label="Freeze"
-            value={inputFreezeValue}
-            onChange={handleChangeFreezeValue}
-            disabled={!connected || !nfts.length}
-            placeholder="0"
-            postfix="D" //? D => Days
-            max={DAYS_IN_YEAR}
-            step={1}
-          />
+        </div>
+
+        <div className={styles.actionsContainer}>
           <CounterSlider
             label="# NFTs"
             value={totalNftsToRequest}
@@ -94,17 +97,15 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
             max={nfts.length}
             disabled={!connected || !nfts.length}
           />
+
+          <Button
+            onClick={requestLoans}
+            className={styles.submitButton}
+            disabled={disabledListAction}
+          >
+            {actionButtonText}
+          </Button>
         </div>
-
-        <Summary ltv={ltv} upfrontFee={upfrontFee} weeklyInterest={weeklyInterest} />
-
-        <Button
-          onClick={requestLoans}
-          className={styles.submitButton}
-          disabled={disabledListAction}
-        >
-          {actionButtonText}
-        </Button>
       </div>
 
       <div className={styles.tabsContent}>
@@ -136,42 +137,73 @@ interface SummaryProps {
 }
 
 const Summary: FC<SummaryProps> = ({ ltv, upfrontFee, weeklyInterest }) => {
+  const statClassNames = {
+    container: styles.statContainer,
+    value: styles.fixedValueContent,
+  }
+
   return (
     <div className={styles.summary}>
       <StatInfo
         label="LTV"
         value={ltv}
         valueType={VALUES_TYPES.PERCENT}
-        classNamesProps={{ value: styles.fixedValueContent }}
+        classNamesProps={statClassNames}
         flexType="row"
       />
       <StatInfo
         label="Upfront fee"
         value={<DisplayValue value={upfrontFee} />}
-        classNamesProps={{ value: styles.fixedValueContent }}
+        classNamesProps={statClassNames}
         flexType="row"
       />
       <StatInfo
         label="Weekly interest"
         value={<DisplayValue value={weeklyInterest} />}
-        classNamesProps={{ value: styles.fixedValueContent }}
+        classNamesProps={statClassNames}
         flexType="row"
       />
     </div>
   )
 }
 
-export const CurrencyInputPlug = () => {
+interface SelectCurrencyInputProps {
+  label: string
+  value: string
+  onChange: (value: string) => void
+  disabled: boolean
+  tokenType: LendingTokenType
+}
+
+//? Without the ability to select a token, it will be added in the future
+const SelectCurrencyInput: FC<SelectCurrencyInputProps> = ({
+  label,
+  value,
+  onChange,
+  disabled,
+  tokenType,
+}) => {
+  const isSol = isSolTokenType(tokenType)
+
+  const tokenTicker = isSol ? 'SOL' : 'USDC'
+  const Icon = isSol ? SOL : USDC
+
   return (
-    <div className={styles.currencyInputPlugWrapper}>
-      <p className={styles.currencyLabelPlug}>Currency</p>
-      <div className={styles.currencyInputPlug}>
-        <div className={styles.currencyPlug}>
-          <SOL />
-          <span>SOL</span>
-        </div>
-        <ChevronDown className={styles.chevronIconPlug} />
+    <div className={styles.selectCurrencyWrapper}>
+      <div className={styles.selectCurrencyInfo}>
+        <Icon />
+        <span>{tokenTicker}</span>
+        <ChevronDown className={styles.chevronIcon} />
       </div>
+      <NumericStepInput
+        label={label}
+        value={value}
+        onChange={onChange}
+        placeholder="0"
+        disabled={disabled}
+        className={styles.selectCurrencyInput}
+        step={INPUT_TOKEN_STEP[tokenType]}
+      />
     </div>
   )
 }

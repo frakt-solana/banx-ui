@@ -2,7 +2,7 @@
   cursor: default;
   display: flex;
   overflow: hidden;
-  height: 348px;
+  height: 332px;
   width: 100%;
 
   @media (max-width: 640px) {
@@ -16,15 +16,28 @@
   border-right: 0;
   border-bottom: 0;
   width: 100%;
+
+  @media (max-width: 640px) {
+    height: 296px;
+  }
 }
 
 .activityTableWrapper {
-  height: 250px;
+  height: 236px;
+
+  @media (max-width: 640px) {
+    height: 184px;
+  }
 }
 
 // * Form * //
 .form {
   padding: 12px 24px;
+
+  @media (max-width: 640px) {
+    border-top: var(--border-less-primary);
+    padding: 8px 16px;
+  }
 }
 
 .fields {
@@ -37,28 +50,67 @@
   & > div {
     max-width: 104px;
   }
+
+  @media (max-width: 640px) {
+    flex-wrap: nowrap;
+    width: 100%;
+
+    & > div {
+      max-width: unset;
+    }
+  }
 }
 
 .sliderContainer {
-  max-width: unset !important;
+  height: 32px;
+
+  @media (max-width: 640px) {
+    flex-direction: row-reverse;
+  }
 }
 
-.summary {
-  border-color: var(--bg-border);
-  border-style: dotted;
-  border-width: 1px 0 1px 0;
+.slider {
+  padding-bottom: 18px;
+}
 
+.actionsContainer {
   display: flex;
   flex-direction: column;
-  margin: 12px -24px;
-  padding: 12px 24px;
+  margin-top: 12px;
+  gap: 12px;
+
+  @media (max-width: 640px) {
+    flex-direction: row-reverse;
+  }
+}
+
+.submitButton {
+  width: 100%;
+}
+// * Form * //
+
+// * Summary * //
+.summary {
+  border-bottom: 1px dotted var(--bg-border);
+  display: flex;
+  flex-direction: column;
+  margin: 0 -24px 12px;
+  padding: 0 24px 12px;
   gap: 8px;
 
   @media (max-width: 640px) {
-    border-left: 0;
-    border-right: 0;
+    flex-direction: row;
+    justify-content: space-around;
+    border: 0;
     gap: 4px;
-    margin: 0 -16px 8px;
+    margin: 0 -16px 0;
+  }
+}
+
+.statContainer {
+  @media (max-width: 640px) {
+    flex-direction: column;
+    gap: 0;
   }
 }
 
@@ -71,56 +123,54 @@
     max-width: 144px;
   }
 }
-
-.submitButton {
-  width: 100%;
-}
-// * Form * //
+// * Summary * //
 
 // * CurrencyInputPlug * //
-.currencyInputPlugWrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+.selectCurrencyWrapper {
+  position: relative;
+  min-width: 168px;
+  max-width: unset !important;
+  width: 100%;
 }
-.currencyLabelPlug {
-  color: var(--content-secondary);
-  font: var(--table-header-sm);
-  text-transform: uppercase;
-  white-space: nowrap;
 
-  @media (max-width: 640px) {
-    font: var(--table-header-xs);
-  }
-}
-.currencyInputPlug {
-  background: var(--bg-action);
+.selectCurrencyInfo {
+  position: absolute;
+  top: 45%;
+  left: 4px;
+  z-index: 1;
+
   border: var(--border-primary);
-  border-radius: 6px;
-
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  padding: 4px 8px;
-}
-.currencyPlug {
-  border: var(--border-primary);
-  border-radius: 100px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 8px;
-  height: 24px;
+  padding: 4px 8px;
+  height: 26px;
+
+  @media (max-width: 640px) {
+    top: 43%;
+  }
 
   span {
     color: var(--content-secondary);
     font: var(--card-header-sm);
   }
 }
-.chevronIconPlug {
+
+.chevronIcon {
+  height: 16px;
+  width: 16px;
+
   path {
     fill: var(--content-secondary);
+  }
+}
+
+.selectCurrencyInput {
+  input {
+    padding-left: 104px;
+    padding-right: 30px;
+    text-align: right;
   }
 }
 // * CurrencyInputPlug * //
