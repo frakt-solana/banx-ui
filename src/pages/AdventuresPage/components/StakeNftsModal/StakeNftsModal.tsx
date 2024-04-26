@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BanxStakeState } from 'fbonds-core/lib/fbond-protocol/types'
 import { uniqueId } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
@@ -26,8 +27,6 @@ import {
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
 } from '@banx/utils'
-
-import { TxnExecutor } from '../../../../../../solana-txn-executor/src'
 
 import styles from './StakeNftsModal.module.less'
 

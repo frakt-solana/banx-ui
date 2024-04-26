@@ -3,6 +3,7 @@ import { FC } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { chain, uniqueId } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider } from '@banx/components/Slider'
@@ -27,7 +28,6 @@ import {
   getColorByPercent,
 } from '@banx/utils'
 
-import { TxnExecutor } from '../../../../../../../../../solana-txn-executor/src'
 import { useSelectedLoans } from '../loansState'
 import { getTerminateStatsInfo } from './helpers'
 

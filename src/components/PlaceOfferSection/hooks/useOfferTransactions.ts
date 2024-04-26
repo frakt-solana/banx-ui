@@ -1,6 +1,7 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BondOfferOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { uniqueId } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/core'
 import { useTokenType } from '@banx/store'
@@ -21,8 +22,6 @@ import {
   enqueueTransactionSent,
   enqueueWaitingConfirmation,
 } from '@banx/utils'
-
-import { TxnExecutor } from '../../../../../solana-txn-executor/src'
 
 export const useOfferTransactions = ({
   marketPubkey,

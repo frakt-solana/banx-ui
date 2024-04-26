@@ -5,14 +5,13 @@ import {
   claimCnftPerpetualLoanCanopy,
   claimPerpetualLoanv2,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { getHeliusAssetProof } from '@banx/api/helius'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
-import { WalletAndConnection } from '../../../../solana-txn-executor/src'
-import { CreateTxnData } from '../../../../solana-txn-executor/src/base'
 import { fetchRuleset } from '../functions'
 
 type CreateClaimTxnData = (params: {

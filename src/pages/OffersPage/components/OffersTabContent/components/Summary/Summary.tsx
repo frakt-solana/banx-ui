@@ -3,6 +3,7 @@ import { FC, useMemo } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BondOfferOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { sumBy, uniqueId } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { DisplayValue } from '@banx/components/TableComponents'
@@ -21,8 +22,6 @@ import {
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
 } from '@banx/utils'
-
-import { TxnExecutor } from '../../../../../../../../solana-txn-executor/src'
 
 import styles from './Summary.module.less'
 

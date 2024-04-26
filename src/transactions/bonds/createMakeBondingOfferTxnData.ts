@@ -4,12 +4,10 @@ import {
   createPerpetualBondOfferBonding,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondingCurveType, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
 import { isSolTokenType, sendTxnPlaceHolder } from '@banx/utils'
-
-import { WalletAndConnection } from '../../../../solana-txn-executor/src'
-import { CreateTxnData } from '../../../../solana-txn-executor/src/base'
 
 type CreateMakeBondingOfferTxnData = (params: {
   marketPubkey: string

@@ -3,6 +3,7 @@ import { FC, useMemo, useState } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { chain, isEmpty, uniqueId } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { Loader } from '@banx/components/Loader'
@@ -43,7 +44,6 @@ import {
   isLoanTerminating,
 } from '@banx/utils'
 
-import { TxnExecutor } from '../../../../../../../../../solana-txn-executor/src'
 import { useSelectedLoans } from '../loansState'
 
 import styles from './ManageModal.module.less'

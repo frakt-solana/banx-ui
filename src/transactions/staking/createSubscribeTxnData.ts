@@ -1,11 +1,9 @@
 import { web3 } from '@project-serum/anchor'
 import { subscribeBanxAdventure } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
+import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
-
-import { WalletAndConnection } from '../../../../solana-txn-executor/src'
-import { CreateTxnData } from '../../../../solana-txn-executor/src/base'
 
 type CreateSubscribeTxnData = (params: {
   weeks: number[]

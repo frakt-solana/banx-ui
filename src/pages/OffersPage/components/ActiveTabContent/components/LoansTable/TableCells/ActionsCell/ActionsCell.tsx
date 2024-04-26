@@ -3,6 +3,7 @@ import { FC } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { uniqueId } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { TensorLink } from '@banx/components/SolanaLinks'
@@ -26,7 +27,6 @@ import {
   isLoanTerminating,
 } from '@banx/utils'
 
-import { TxnExecutor } from '../../../../../../../../../../solana-txn-executor/src'
 import ManageModal from '../../ManageModal'
 
 import styles from './ActionsCell.module.less'

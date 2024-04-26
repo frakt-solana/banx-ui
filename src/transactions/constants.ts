@@ -1,4 +1,5 @@
-import { ExecutorOptions } from '../../../solana-txn-executor/src/index'
+import { ExecutorOptions } from 'solana-transactions-executor'
+
 import { executorGetPriorityFee } from './functions'
 import { TxnErrorDefinition, TxnErrorHumanName } from './types'
 

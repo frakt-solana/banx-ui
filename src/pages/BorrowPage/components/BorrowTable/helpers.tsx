@@ -7,6 +7,7 @@ import {
 import { BondOfferV2, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { Dictionary, chain, groupBy, sumBy, uniqueId } from 'lodash'
 import moment from 'moment'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { BorrowNft, Offer } from '@banx/api/core'
 import bonkTokenImg from '@banx/assets/BonkToken.png'
@@ -32,7 +33,6 @@ import {
   offerNeedsReservesOptimizationOnBorrow,
 } from '@banx/utils'
 
-import { TxnExecutor } from '../../../../../../solana-txn-executor/src'
 import { CartState } from '../../cartState'
 import { ONE_WEEK_IN_SECONDS } from './constants'
 import { OfferWithLoanValue, TableNftData } from './types'

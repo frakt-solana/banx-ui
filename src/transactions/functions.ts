@@ -2,14 +2,16 @@ import { WalletContextState } from '@solana/wallet-adapter-react'
 import { web3 } from 'fbonds-core'
 import { EMPTY_PUBKEY } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getRuleset } from 'fbonds-core/lib/fbond-protocol/helpers'
-import { Wallet } from 'solana-transactions-executor'
+import {
+  GetPriorityFee,
+  Wallet,
+  WalletAndConnection,
+  extractAccountKeysFromInstructions,
+} from 'solana-transactions-executor'
 
 import { BorrowNft, Loan } from '@banx/api/core'
 import { getHeliusPriorityFeeEstimate } from '@banx/api/helius'
 import { getPriorityFeeLevel } from '@banx/store'
-
-import { GetPriorityFee, WalletAndConnection } from '../../../solana-txn-executor/src'
-import { extractAccountKeysFromInstructions } from '../../../solana-txn-executor/src/base'
 
 export const convertLoanToBorrowNft = (loan: Loan): BorrowNft => {
   const { nft, fraktBond, bondTradeTransaction } = loan

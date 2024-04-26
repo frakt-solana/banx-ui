@@ -2,6 +2,7 @@ import React, { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { chain, map, sumBy, uniqueId } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
 import { Button } from '@banx/components/Buttons'
@@ -35,7 +36,6 @@ import {
   trackPageEvent,
 } from '@banx/utils'
 
-import { TxnExecutor } from '../../../../../../solana-txn-executor/src'
 import { useAuctionsLoans } from '../../hooks'
 import { MAX_APY_INCREASE_PERCENT } from './constants'
 import { calcWeeklyInterestFee } from './helpers'

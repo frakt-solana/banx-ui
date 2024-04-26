@@ -1,5 +1,6 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { every, uniqueId } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
@@ -20,7 +21,6 @@ import {
   isLoanRepaymentCallActive,
 } from '@banx/utils'
 
-import { TxnExecutor } from '../../../../../../../solana-txn-executor/src'
 import { caclFractionToRepay, caclFractionToRepayForRepaymentCall } from '../helpers'
 
 export const useLoansTransactions = () => {

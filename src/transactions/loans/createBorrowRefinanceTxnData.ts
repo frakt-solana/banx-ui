@@ -11,13 +11,11 @@ import {
   FraktBond,
   PairState,
 } from 'fbonds-core/lib/fbond-protocol/types'
-import { WalletAndConnection } from 'solana-transactions-executor'
+import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { Loan, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
-
-import { CreateTxnData } from '../../../../solana-txn-executor/src/base'
 
 export type BorrowRefinanceActionOptimisticResult = {
   loan: Loan

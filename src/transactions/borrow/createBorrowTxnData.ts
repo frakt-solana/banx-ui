@@ -6,14 +6,13 @@ import {
   borrowStakedBanxPerpetual,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV2, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { BorrowNft, Loan, Offer } from '@banx/api/core'
 import { getHeliusAssetProof } from '@banx/api/helius'
 import { BONDS } from '@banx/constants'
 import { calculateApr, sendTxnPlaceHolder } from '@banx/utils'
 
-import { WalletAndConnection } from '../../../../solana-txn-executor/src'
-import { CreateTxnData } from '../../../../solana-txn-executor/src/base'
 import { BorrowType } from '../constants'
 import { fetchRuleset } from '../functions'
 

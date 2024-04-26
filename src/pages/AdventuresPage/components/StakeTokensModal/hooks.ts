@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { uniqueId } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Tab, useTabs } from '@banx/components/Tabs'
 
@@ -31,7 +32,6 @@ import {
   limitDecimalPlaces,
 } from '@banx/utils'
 
-import { TxnExecutor } from '../../../../../../solana-txn-executor/src'
 import { calcIdleBalance, calcPlayerPoints, formatBanxTokensStrToBN } from './helpers'
 
 export const useStakeTokensModal = () => {

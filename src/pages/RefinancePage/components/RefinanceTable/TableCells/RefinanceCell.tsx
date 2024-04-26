@@ -3,6 +3,7 @@ import React, { FC } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { uniqueId } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
 import { Button } from '@banx/components/Buttons'
@@ -33,7 +34,6 @@ import {
   trackPageEvent,
 } from '@banx/utils'
 
-import { TxnExecutor } from '../../../../../../../solana-txn-executor/src'
 import { useLoansState } from '../hooks'
 
 import styles from '../RefinanceTable.module.less'

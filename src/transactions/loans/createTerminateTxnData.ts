@@ -2,13 +2,11 @@ import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import { terminatePerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
-
-import { WalletAndConnection } from '../../../../solana-txn-executor/src'
-import { CreateTxnData } from '../../../../solana-txn-executor/src/base'
 
 type CreateTerminateTxnData = (params: {
   loan: Loan

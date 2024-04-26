@@ -4,6 +4,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, uniqueId } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { Loader } from '@banx/components/Loader'
@@ -42,8 +43,6 @@ import {
   isLoanTerminating,
   isOfferNotEmpty,
 } from '@banx/utils'
-
-import { TxnExecutor } from '../../../../../../../../solana-txn-executor/src'
 
 import styles from './ActionsCell.module.less'
 

@@ -4,6 +4,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BN } from 'fbonds-core'
 import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, uniqueId } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { BanxInfoBN, BanxStakingSettingsBN } from '@banx/api/staking'
 import {
@@ -26,8 +27,6 @@ import {
   enqueueTransactionsSent,
   enqueueWaitingConfirmationSingle,
 } from '@banx/utils'
-
-import { TxnExecutor } from '../../../../../../solana-txn-executor/src'
 
 type useAdventuresSidebarProps = {
   banxStakingSettings: BanxStakingSettingsBN

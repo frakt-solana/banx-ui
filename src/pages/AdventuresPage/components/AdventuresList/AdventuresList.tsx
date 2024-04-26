@@ -3,6 +3,7 @@ import { FC } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { capitalize, uniqueId } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import {
   BanxAdventureBN,
@@ -25,7 +26,6 @@ import {
   enqueueWaitingConfirmationSingle,
 } from '@banx/utils'
 
-import { TxnExecutor } from '../../../../../../solana-txn-executor/src'
 import {
   AdventureEndedRewardsResult,
   AdventuresTimer,
