@@ -1,52 +1,28 @@
 import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
-import {
-  BondAndTransactionOptimistic,
-  refinancePerpetualLoan,
-} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import {
-  BondOfferV2,
-  BondTradeTransactionV2,
-  FraktBond,
-} from 'fbonds-core/lib/fbond-protocol/types'
-import { CreateTransactionDataFn } from 'solana-transactions-executor'
+import { refinancePerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
-export interface RefinanceOptimisticResult {
-  oldBondTradeTransaction: BondTradeTransactionV2
-  fraktBond: FraktBond
-  newBondOffer: BondOfferV2
-  newBondTradeTransaction: BondTradeTransactionV2
-}
+import { WalletAndConnection } from '../../../../solana-txn-executor/src'
+import { CreateTxnData } from '../../../../solana-txn-executor/src/base'
 
-export type MakeRefinanceActionParams = {
+type CreateRefinanceTxnData = (params: {
   loan: Loan
-  priorityFeeLevel: PriorityLevel
-}
+  walletAndConnection: WalletAndConnection
+}) => Promise<CreateTxnData<Loan>>
 
-export type MakeRefinanceAction = CreateTransactionDataFn<MakeRefinanceActionParams, Loan>
-
-interface OptimisticResult extends BondAndTransactionOptimistic {
-  oldBondOffer: BondOfferV2
-}
-
-export const makeRefinanceAction: MakeRefinanceAction = async (
-  ixnParams,
-  { connection, wallet },
-) => {
-  const { loan, priorityFeeLevel } = ixnParams || {}
+export const createRefinanceTxnData: CreateRefinanceTxnData = async ({
+  loan,
+  walletAndConnection,
+}) => {
+  const { wallet, connection } = walletAndConnection
   const { bondTradeTransaction, fraktBond } = loan
 
-  const {
-    instructions: refinanceInstructions,
-    signers,
-    optimisticResult,
-  } = await refinancePerpetualLoan({
+  const { instructions, signers, optimisticResult } = await refinancePerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       fbond: new web3.PublicKey(fraktBond.publicKey),
@@ -64,7 +40,7 @@ export const makeRefinanceAction: MakeRefinanceAction = async (
       fraktBond,
       oldBondOffer: getMockBondOffer(),
       bondTradeTransaction,
-    } as OptimisticResult,
+    },
     connection,
     sendTxn: sendTxnPlaceHolder,
   })
@@ -74,14 +50,6 @@ export const makeRefinanceAction: MakeRefinanceAction = async (
     fraktBond: optimisticResult.fraktBond,
     bondTradeTransaction: optimisticResult.newBondTradeTransaction,
   }
-
-  const instructions = await mergeWithComputeUnits({
-    instructions: refinanceInstructions,
-    connection: connection,
-    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
-    payer: wallet.publicKey,
-    priorityLevel: priorityFeeLevel,
-  })
 
   return {
     instructions,

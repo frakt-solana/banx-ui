@@ -1,23 +1,26 @@
 import { web3 } from 'fbonds-core'
 import { setRepaymentCall } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import moment from 'moment'
-import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
-export type MakeRepaymentCallParams = {
+import { WalletAndConnection } from '../../../../solana-txn-executor/src'
+import { CreateTxnData } from '../../../../solana-txn-executor/src/base'
+
+type CreateRepaymentCallTxnData = (params: {
   loan: Loan
   callAmount: number
-}
+  walletAndConnection: WalletAndConnection
+}) => Promise<CreateTxnData<Loan>>
 
-export type MakeRepaymentCallAction = CreateTransactionDataFn<MakeRepaymentCallParams, Loan>
-
-export const makeRepaymentCallAction: MakeRepaymentCallAction = async (
-  { loan, callAmount },
-  { connection, wallet },
-) => {
+export const createRepaymentCallTxnData: CreateRepaymentCallTxnData = async ({
+  loan,
+  callAmount,
+  walletAndConnection,
+}) => {
+  const { wallet, connection } = walletAndConnection
   const { bondTradeTransaction, fraktBond } = loan
 
   const {
@@ -38,7 +41,6 @@ export const makeRepaymentCallAction: MakeRepaymentCallAction = async (
       fraktBond: new web3.PublicKey(fraktBond.publicKey),
       userPubkey: wallet.publicKey,
     },
-
     connection,
     sendTxn: sendTxnPlaceHolder,
   })

@@ -1,50 +1,31 @@
 import { web3 } from 'fbonds-core'
 import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
-import {
-  BondAndTransactionOptimistic,
-  repayPartialPerpetualLoan,
-} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondOfferV2 } from 'fbonds-core/lib/fbond-protocol/types'
-import { CreateTransactionDataFn } from 'solana-transactions-executor'
+import { repayPartialPerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
-export type MakeRepayPartialLoanActionParams = {
+import { WalletAndConnection } from '../../../../solana-txn-executor/src'
+import { CreateTxnData } from '../../../../solana-txn-executor/src/base'
+
+type CreateRepayPartialLoanTxnData = (params: {
   loan: Loan
   fractionToRepay: number //? F.E 50% => 5000
-  priorityFeeLevel: PriorityLevel
-}
+  walletAndConnection: WalletAndConnection
+}) => Promise<CreateTxnData<Loan>>
 
-export type MakeRepayPartialActionResult = Loan
-
-export type MakeRepayPartialLoanAction = CreateTransactionDataFn<
-  MakeRepayPartialLoanActionParams,
-  MakeRepayPartialActionResult
->
-
-interface OptimisticResult extends BondAndTransactionOptimistic {
-  oldBondOffer: BondOfferV2
-}
-
-export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
-  ixnParams,
+export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = async ({
+  fractionToRepay,
+  loan,
   walletAndConnection,
-) => {
+}) => {
   const { connection, wallet } = walletAndConnection
-
-  const { loan, fractionToRepay, priorityFeeLevel } = ixnParams
 
   const { fraktBond, bondTradeTransaction, nft } = loan
 
-  const {
-    instructions: repayPartialLoanInstructions,
-    signers,
-    optimisticResults,
-  } = await repayPartialPerpetualLoan({
+  const { instructions, signers, optimisticResults } = await repayPartialPerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     args: {
       fractionToRepay,
@@ -52,7 +33,7 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
         fraktBond,
         bondTradeTransaction,
         oldBondOffer: getMockBondOffer(),
-      } as OptimisticResult,
+      },
       lendingTokenType: bondTradeTransaction.lendingToken,
     },
     accounts: {
@@ -67,20 +48,12 @@ export const makeRepayPartialLoanAction: MakeRepayPartialLoanAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const optimisticResult = optimisticResults.map((optimistic) => ({
+  const optimisticResult: Loan = optimisticResults.map((optimistic) => ({
     publicKey: optimistic.fraktBond.publicKey,
     fraktBond: optimistic.fraktBond,
     bondTradeTransaction: optimistic.bondTradeTransaction,
     nft,
   }))[0]
-
-  const instructions = await mergeWithComputeUnits({
-    instructions: repayPartialLoanInstructions,
-    connection: connection,
-    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
-    payer: wallet.publicKey,
-    priorityLevel: priorityFeeLevel,
-  })
 
   return {
     instructions,

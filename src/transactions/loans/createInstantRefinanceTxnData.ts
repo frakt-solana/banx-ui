@@ -7,43 +7,36 @@ import {
   BondTradeTransactionV3,
   FraktBond,
 } from 'fbonds-core/lib/fbond-protocol/types'
-import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan, Offer } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
-export interface InstantRefinanceOptimisticResult {
-  bondOffer: BondOfferV2
-  newBondTradeTransaction: BondTradeTransactionV3
-  fraktBond: FraktBond
-  oldBondTradeTransaction: BondTradeTransactionV3
-}
+import { WalletAndConnection } from '../../../../solana-txn-executor/src'
+import { CreateTxnData } from '../../../../solana-txn-executor/src/base'
 
-export type MakeInstantRefinanceActionParams = {
+// type InstantRefinanceOptimisticResult = {
+// bondOffer: BondOfferV2
+// newBondTradeTransaction: BondTradeTransactionV3
+// fraktBond: FraktBond
+// oldBondTradeTransaction: BondTradeTransactionV3
+// }
+
+type CreateInstantRefinanceTxnData = (params: {
   loan: Loan
   bestOffer: Offer
-  priorityFeeLevel: PriorityLevel
-}
+  walletAndConnection: WalletAndConnection
+}) => Promise<CreateTxnData<Offer>>
 
-export type MakeInstantRefinanceAction = CreateTransactionDataFn<
-  MakeInstantRefinanceActionParams,
-  InstantRefinanceOptimisticResult
->
-
-export const makeInstantRefinanceAction: MakeInstantRefinanceAction = async (
-  ixnParams,
-  { connection, wallet },
-) => {
-  const { loan, bestOffer } = ixnParams || {}
+export const createInstantRefinanceTxnData: CreateInstantRefinanceTxnData = async ({
+  loan,
+  bestOffer,
+  walletAndConnection,
+}) => {
+  const { wallet, connection } = walletAndConnection
   const { bondTradeTransaction, fraktBond } = loan
 
-  const {
-    instructions: instantRefinanceInstructions,
-    signers,
-    optimisticResult,
-  } = await instantRefinancePerpetualLoan({
+  const { instructions, signers, optimisticResult } = await instantRefinancePerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       fbond: new web3.PublicKey(fraktBond.publicKey),
@@ -68,18 +61,10 @@ export const makeInstantRefinanceAction: MakeInstantRefinanceAction = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const instructions = await mergeWithComputeUnits({
-    instructions: instantRefinanceInstructions,
-    connection: connection,
-    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
-    payer: wallet.publicKey,
-    priorityLevel: ixnParams.priorityFeeLevel,
-  })
-
   return {
     instructions,
     signers,
-    result: optimisticResult,
+    result: optimisticResult.bondOffer,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }

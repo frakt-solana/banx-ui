@@ -5,44 +5,38 @@ import {
   claimCnftPerpetualLoanCanopy,
   claimPerpetualLoanv2,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
-import { CreateTransactionDataFn } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
+import { getHeliusAssetProof } from '@banx/api/helius'
 import { BONDS } from '@banx/constants'
-import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
+import { WalletAndConnection } from '../../../../solana-txn-executor/src'
+import { CreateTxnData } from '../../../../solana-txn-executor/src/base'
 import { fetchRuleset } from '../functions'
 
-export type MakeClaimActionParams = {
+type CreateClaimTxnData = (params: {
   loan: Loan
-  priorityFeeLevel: PriorityLevel
-}
+  walletAndConnection: WalletAndConnection
+}) => Promise<CreateTxnData<Loan>>
 
-export type MakeClaimAction = CreateTransactionDataFn<MakeClaimActionParams, Loan>
-
-export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, wallet }) => {
-  const { loan, priorityFeeLevel } = ixnParams
+export const createClaimTxnData: CreateClaimTxnData = async ({ loan, walletAndConnection }) => {
+  const { wallet, connection } = walletAndConnection
   const { bondTradeTransaction, fraktBond } = loan
 
-  if (ixnParams.loan.nft.compression) {
-    const {
-      instructions: claimInstructions,
-      signers,
-      optimisticResult,
-    } = await claimCnftPerpetualLoanCanopy({
+  if (loan.nft.compression) {
+    const { instructions, signers, optimisticResult } = await claimCnftPerpetualLoanCanopy({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
         fbond: new web3.PublicKey(fraktBond.publicKey),
         userPubkey: wallet.publicKey as web3.PublicKey,
-        tree: new web3.PublicKey(ixnParams.loan.nft.compression.tree),
+        tree: new web3.PublicKey(loan.nft.compression.tree),
         bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
       },
       args: {
-        proof: await getAssetProof(ixnParams.loan.nft.mint, connection.rpcEndpoint),
-        cnftParams: ixnParams.loan.nft.compression,
+        proof: await getHeliusAssetProof({ assetId: loan.nft.mint, connection }),
+        cnftParams: loan.nft.compression,
         optimistic: {
           fraktBond,
           bondTradeTransaction,
@@ -58,14 +52,6 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       bondTradeTransaction: optimisticResult.bondTradeTransaction,
     }
 
-    const instructions = await mergeWithComputeUnits({
-      instructions: claimInstructions,
-      connection: connection,
-      lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
-      payer: wallet.publicKey,
-      priorityLevel: priorityFeeLevel,
-    })
-
     return {
       instructions,
       signers,
@@ -73,11 +59,7 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
     }
   } else {
-    const {
-      instructions: claimInstructions,
-      signers,
-      optimisticResult,
-    } = await claimPerpetualLoanv2({
+    const { instructions, signers, optimisticResult } = await claimPerpetualLoanv2({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
@@ -85,7 +67,7 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
         collateralTokenMint: new web3.PublicKey(fraktBond.fbondTokenMint),
         collateralOwner: new web3.PublicKey(fraktBond.fbondIssuer),
         ruleSet: await fetchRuleset({
-          nftMint: ixnParams.loan.nft.mint,
+          nftMint: loan.nft.mint,
           connection,
           marketPubkey: fraktBond.hadoMarket,
         }),
@@ -111,14 +93,6 @@ export const makeClaimAction: MakeClaimAction = async (ixnParams, { connection, 
       fraktBond: optimisticResult.fraktBond,
       bondTradeTransaction: optimisticResult.bondTradeTransaction,
     }
-
-    const instructions = await mergeWithComputeUnits({
-      instructions: claimInstructions,
-      connection: connection,
-      lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
-      payer: wallet.publicKey,
-      priorityLevel: priorityFeeLevel,
-    })
 
     return {
       instructions,
