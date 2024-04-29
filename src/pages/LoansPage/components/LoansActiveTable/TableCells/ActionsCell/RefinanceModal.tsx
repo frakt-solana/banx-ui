@@ -95,11 +95,12 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
     setCurrentSpotPrice(Math.max(Math.floor((initialCurrentSpotPrice * percentValue) / 100), 1000))
   }
 
-  const upfrontFee = currentSpotPrice / 100
-
-  const currentLoanBorrowedAmount = calcLoanBorrowedAmount(loan)
   const currentLoanDebt = calculateLoanRepayValue(loan)
+  const currentLoanBorrowedAmount = calcLoanBorrowedAmount(loan)
   const currentApr = bondTradeTransaction.amountOfBonds
+
+  //? Upfron fee on reborrow is calculated: (newDebt - prevDebt) / 100
+  const upfrontFee = Math.max((currentSpotPrice - currentLoanDebt) / 100, 0)
 
   const newLoanBorrowedAmount = currentSpotPrice - upfrontFee
   const newLoanDebt = currentSpotPrice
