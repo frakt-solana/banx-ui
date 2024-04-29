@@ -19,16 +19,23 @@ export type LendToBorrowActionParams = {
   priorityFeeLevel: PriorityLevel
 }
 
-export type LendToBorrowAction = CreateTransactionDataFn<LendToBorrowActionParams, null>
+export type MakeLendToBorrowAction = CreateTransactionDataFn<LendToBorrowActionParams, Loan>
 
 interface OptimisticResult extends BondAndTransactionOptimistic {
   oldBondOffer: BondOfferV2
 }
 
-export const lendToBorrowAction: LendToBorrowAction = async (ixnParams, walletAndConnection) => {
-  const { priorityFeeLevel } = ixnParams
+export const makeLendToBorrowAction: MakeLendToBorrowAction = async (
+  ixnParams,
+  walletAndConnection,
+) => {
+  const { loan, priorityFeeLevel } = ixnParams
 
-  const { instructions: lendToBorrowInstructions, signers } = await getIxnsAndSignersByLoanType({
+  const {
+    instructions: lendToBorrowInstructions,
+    signers,
+    optimisticResult,
+  } = await getIxnsAndSignersByLoanType({
     ixnParams,
     walletAndConnection,
   })
@@ -41,9 +48,16 @@ export const lendToBorrowAction: LendToBorrowAction = async (ixnParams, walletAn
     priorityLevel: priorityFeeLevel,
   })
 
+  const optimisticLoan = {
+    ...loan,
+    fraktBond: optimisticResult.fraktBond,
+    bondTradeTransaction: optimisticResult.bondTradeTransaction,
+  }
+
   return {
     instructions,
     signers,
+    result: optimisticLoan,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }
@@ -61,7 +75,7 @@ const getIxnsAndSignersByLoanType = async ({
   const { nft, bondTradeTransaction, fraktBond } = loan
 
   if (isFreezeLoan(loan)) {
-    const { instructions, signers } = await lendToBorrowerListing({
+    const { instructions, signers, optimisticResults } = await lendToBorrowerListing({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         hadoMarket: new web3.PublicKey(fraktBond.hadoMarket || ''),
@@ -69,7 +83,7 @@ const getIxnsAndSignersByLoanType = async ({
         borrower: new web3.PublicKey(loan.fraktBond.fbondIssuer),
         userPubkey: wallet.publicKey,
         nftMint: new web3.PublicKey(nft.mint),
-        splTokenMint: new web3.PublicKey(nft.mint),
+        splTokenMint: undefined,
       },
       args: {
         lendingTokenType: bondTradeTransaction.lendingToken,
@@ -82,10 +96,15 @@ const getIxnsAndSignersByLoanType = async ({
       sendTxn: sendTxnPlaceHolder,
     })
 
-    return { instructions, signers }
+    const newOptimisticResult = {
+      fraktBond: optimisticResults.fraktBond,
+      bondTradeTransaction: optimisticResults.bondTradeTransaction,
+    }
+
+    return { instructions, signers, optimisticResult: newOptimisticResult }
   }
 
-  const { instructions, signers } = await refinancePerpetualLoan({
+  const { instructions, signers, optimisticResult } = await refinancePerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       fbond: new web3.PublicKey(fraktBond.publicKey),
@@ -108,5 +127,10 @@ const getIxnsAndSignersByLoanType = async ({
     sendTxn: sendTxnPlaceHolder,
   })
 
-  return { instructions, signers }
+  const newOptimisticResult = {
+    fraktBond: optimisticResult.fraktBond,
+    bondTradeTransaction: optimisticResult.newBondTradeTransaction,
+  }
+
+  return { instructions, signers, optimisticResult: newOptimisticResult }
 }

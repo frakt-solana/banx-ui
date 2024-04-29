@@ -7,24 +7,24 @@ import { create } from 'zustand'
 import { fetchAllLoansRequests } from '@banx/api/core'
 import { useTokenType } from '@banx/store'
 
-interface HiddenNFTsMintsState {
+interface HiddenNftsMintsState {
   mints: string[]
-  addMints: (...mints: string[]) => void
+  addMints: (mints: string[]) => void
 }
 
-const useHiddenNFTsMint = create<HiddenNFTsMintsState>((set) => ({
+const useHiddenNftsMint = create<HiddenNftsMintsState>((set) => ({
   mints: [],
-  addMints: (...mints) => {
+  addMints: (mints) => {
     set(
-      produce((state: HiddenNFTsMintsState) => {
-        state.mints.push(...mints)
+      produce((state: HiddenNftsMintsState) => {
+        state.mints = mints.map((nft) => nft)
       }),
     )
   },
 }))
 
 export const useAllLoansRequests = () => {
-  const { mints, addMints } = useHiddenNFTsMint()
+  const { mints, addMints } = useHiddenNftsMint()
   const { tokenType } = useTokenType()
 
   const { data, isLoading } = useQuery(

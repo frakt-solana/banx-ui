@@ -13,7 +13,7 @@ import { Loan } from '@banx/api/core'
 import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useModal, usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
-import { makeRefinanceAction } from '@banx/transactions/loans'
+import { makeLendToBorrowAction } from '@banx/transactions/loans'
 import {
   destroySnackbar,
   enqueueConfirmationError,
@@ -56,7 +56,7 @@ export const useInstantTransactions = () => {
     const loadingSnackbarId = uniqueId()
 
     new TxnExecutor(
-      makeRefinanceAction,
+      makeLendToBorrowAction,
       { wallet: createWalletInstance(wallet), connection },
       { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
@@ -84,7 +84,7 @@ export const useInstantTransactions = () => {
               solanaExplorerPath: `tx/${signature}`,
             })
 
-            addMints(loan.nft.mint)
+            addMints([loan.nft.mint])
             removeSelection(loan.publicKey)
             onSuccess(1)
           }
@@ -107,7 +107,7 @@ export const useInstantTransactions = () => {
     const txnParams = selection.map((loan) => ({ loan, priorityFeeLevel: priorityLevel }))
 
     new TxnExecutor(
-      makeRefinanceAction,
+      makeLendToBorrowAction,
       { wallet: createWalletInstance(wallet), connection },
       { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
     )
@@ -129,7 +129,7 @@ export const useInstantTransactions = () => {
             .compact()
             .value()
 
-          addMints(...mintsToHidden)
+          addMints(mintsToHidden)
           clearSelection()
           onSuccess(mintsToHidden.length)
         }

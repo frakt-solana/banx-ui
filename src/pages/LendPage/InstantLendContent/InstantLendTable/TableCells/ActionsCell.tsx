@@ -30,7 +30,7 @@ export const ActionsCell: FC<RefinanceCellProps> = ({ loan, isCardView, disabled
   const { open } = useModal()
 
   const showModal = () => {
-    open(WarningModal, { loan, onConfrim: refinance })
+    open(WarningModal, { loan, refinance })
   }
 
   const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
