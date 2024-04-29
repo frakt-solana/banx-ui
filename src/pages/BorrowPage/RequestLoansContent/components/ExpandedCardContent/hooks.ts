@@ -97,7 +97,7 @@ export const useRequestLoansForm = (market: MarketPreview) => {
 
   const inputLoanValueToNumber = parseFloat(inputLoanValue)
   const inputAprValueToNumber = parseFloat(inputAprValue)
-  const inputFreezeValueToNumber = parseFloat(inputLoanValue)
+  const inputFreezeValueToNumber = parseFloat(inputFreezeValue)
 
   const requestedLoanValue = inputLoanValueToNumber * tokenDecimals
 
@@ -197,13 +197,14 @@ const useRequestLoansTransaction = (props: {
 
   const requestLoans = async () => {
     const loadingSnackbarId = uniqueId()
+    const tokenDecimals = getTokenDecimals(tokenType)
 
     const txnParams = nfts.map((nft) => {
       return {
         nft,
         aprRate: aprValue * 100,
-        loanValue,
-        freeze: freezeValue,
+        loanValue: loanValue * tokenDecimals,
+        freeze: freezeValue * 24 * 3600, //? days to seconds
         tokenType,
         priorityFeeLevel: priorityLevel,
       }
