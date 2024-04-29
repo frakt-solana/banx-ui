@@ -5,14 +5,17 @@ import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import { convertToMarketType } from '../helpers'
 import {
-  AuctionsLoansResponse,
+  AllLoansRequestsResponse,
   BorrowNftsAndOffers,
   BorrowNftsAndOffersResponse,
   BorrowNftsAndOffersSchema,
   FetchMarketOffersResponse,
   FetchUserOffersResponse,
   LendLoansResponse,
+  Loan,
   LoanSchema,
+  LoansRequests,
+  LoansRequestsSchema,
   MarketPreview,
   MarketPreviewResponse,
   MarketPreviewSchema,
@@ -203,18 +206,21 @@ export const fetchBorrowNftsAndOffers: FetchBorrowNftsAndOffers = async ({
   return data.data ?? { nfts: [], offers: {} }
 }
 
-type FetchAuctionsLoans = (props: {
+type FetchBorrowerLoansRequests = (props: {
+  walletPublicKey: string
   tokenType: LendingTokenType
-}) => Promise<AuctionsLoansResponse['data']>
-
-export const fetchAuctionsLoans: FetchAuctionsLoans = async ({ tokenType }) => {
+}) => Promise<Loan[]>
+export const fetchBorrowerLoansRequests: FetchBorrowerLoansRequests = async ({
+  walletPublicKey,
+  tokenType,
+}) => {
   const queryParams = new URLSearchParams({
     marketType: String(convertToMarketType(tokenType)),
     isPrivate: String(IS_PRIVATE_MARKETS),
   })
 
-  const { data } = await axios.get<AuctionsLoansResponse>(
-    `${BACKEND_BASE_URL}/auctions/?${queryParams.toString()}`,
+  const { data } = await axios.get<{ data: Loan[] }>(
+    `${BACKEND_BASE_URL}/loans/borrower-requests/${walletPublicKey}?${queryParams.toString()}`,
   )
 
   try {
@@ -224,6 +230,27 @@ export const fetchAuctionsLoans: FetchAuctionsLoans = async ({ tokenType }) => {
   }
 
   return data.data ?? []
+}
+
+type FetchAllLoansRequests = (props: { tokenType: LendingTokenType }) => Promise<LoansRequests>
+
+export const fetchAllLoansRequests: FetchAllLoansRequests = async ({ tokenType }) => {
+  const queryParams = new URLSearchParams({
+    marketType: String(convertToMarketType(tokenType)),
+    isPrivate: String(IS_PRIVATE_MARKETS),
+  })
+
+  const { data } = await axios.get<AllLoansRequestsResponse>(
+    `${BACKEND_BASE_URL}/loans/requests?${queryParams.toString()}`,
+  )
+
+  try {
+    await LoansRequestsSchema.parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
+  }
+
+  return data.data
 }
 
 type FetchUserOffers = (props: {

@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { produce } from 'immer'
 import { create } from 'zustand'
 
-import { fetchAuctionsLoans } from '@banx/api/core'
+import { fetchAllLoansRequests } from '@banx/api/core'
 import { useTokenType } from '@banx/store'
 
 interface HiddenNFTsMintsState {
@@ -23,13 +23,13 @@ const useHiddenNFTsMint = create<HiddenNFTsMintsState>((set) => ({
   },
 }))
 
-export const useAuctionsLoans = () => {
+export const useAllLoansRequests = () => {
   const { mints, addMints } = useHiddenNFTsMint()
   const { tokenType } = useTokenType()
 
   const { data, isLoading } = useQuery(
-    ['auctionsLoans', tokenType],
-    () => fetchAuctionsLoans({ tokenType }),
+    ['allLoansRequests', tokenType],
+    () => fetchAllLoansRequests({ tokenType }),
     {
       staleTime: 5 * 1000,
       refetchOnWindowFocus: false,
@@ -38,11 +38,10 @@ export const useAuctionsLoans = () => {
   )
 
   const loans = useMemo(() => {
-    if (!data?.length) {
-      return []
-    }
+    if (!data) return []
 
-    return data.filter(({ nft }) => !mints.includes(nft.mint))
+    const combinedLoans = [...data.auctions, ...data.listings]
+    return combinedLoans.filter(({ nft }) => !mints.includes(nft.mint))
   }, [data, mints])
 
   return {

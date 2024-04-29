@@ -2,14 +2,14 @@ import { first, groupBy, map } from 'lodash'
 
 import { Loan } from '@banx/api/core'
 
-import { useAuctionsLoans } from '../../hooks'
+import { useAllLoansRequests } from '../../hooks'
 import { useFilterLoans } from './useFilterLoans'
 import { useSortedLoans } from './useSortedLoans'
 
 import styles from '../InstantLendTable.module.less'
 
 export const useInstantLendTable = () => {
-  const { loans, isLoading } = useAuctionsLoans()
+  const { loans, isLoading } = useAllLoansRequests()
 
   const {
     filteredLoansBySelectedCollection,

@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
@@ -8,6 +8,7 @@ import Table from '@banx/components/Table'
 import { Loan } from '@banx/api/core'
 import { ViewState, useTableView } from '@banx/store'
 
+import { useBorrowerLoansRequests } from '../../hooks'
 import { Summary } from './Summary'
 import { getTableColumns } from './columns'
 import { useRequestsLoansTable } from './hooks'
@@ -15,12 +16,9 @@ import { useSelectedLoans } from './loansState'
 
 import styles from './RequestLoansTable.module.less'
 
-interface LoansActiveTableProps {
-  loans: Loan[]
-  isLoading: boolean
-}
+export const RequestsTable = () => {
+  const { loans: rawLoans, isLoading } = useBorrowerLoansRequests()
 
-export const RequestsTable: FC<LoansActiveTableProps> = ({ loans: rawLoans, isLoading }) => {
   const { publicKey: walletPublicKey } = useWallet()
   const walletPublicKeyString = walletPublicKey?.toBase58() || ''
 

@@ -24,7 +24,7 @@ import {
   getDialectAccessToken,
 } from '@banx/utils'
 
-import { useAuctionsLoans } from '../../hooks'
+import { useAllLoansRequests } from '../../hooks'
 import { useLoansState } from '../loansState'
 
 export const useInstantTransactions = () => {
@@ -33,7 +33,7 @@ export const useInstantTransactions = () => {
   const { priorityLevel } = usePriorityFees()
 
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
-  const { addMints } = useAuctionsLoans()
+  const { addMints } = useAllLoansRequests()
   const { open, close } = useModal()
 
   const { selection, clear: clearSelection, remove: removeSelection } = useLoansState()

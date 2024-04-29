@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import { chain, filter, groupBy, map } from 'lodash'
 import moment from 'moment'
 
-import { fetchWalletLoansAndOffers } from '@banx/api/core'
+import { fetchBorrowerLoansRequests, fetchWalletLoansAndOffers } from '@banx/api/core'
 import { fetchUserLoansStats } from '@banx/api/stats'
 import {
   isLoanNewer,
@@ -203,6 +203,79 @@ export const useUserLoansStats = () => {
 
   return {
     data,
+    isLoading,
+  }
+}
+
+export const useBorrowerLoansRequests = () => {
+  const { publicKey: walletPublicKey } = useWallet()
+  const publicKeyString = walletPublicKey?.toBase58() || ''
+
+  const { tokenType } = useTokenType()
+
+  const { loans: optimisticLoans, remove: removeOptimisticLoans } = useLoansOptimistic()
+
+  const { data, isLoading, isFetched, isFetching } = useQuery(
+    ['borrowerLoansRequests', walletPublicKey, tokenType],
+    () => fetchBorrowerLoansRequests({ walletPublicKey: publicKeyString, tokenType }),
+    {
+      staleTime: 5 * 1000,
+      refetchOnWindowFocus: false,
+      refetchInterval: 15 * 1000,
+    },
+  )
+
+  const walletOptimisticLoans = useMemo(() => {
+    if (!publicKeyString) return []
+    return optimisticLoans.filter(({ wallet }) => wallet === publicKeyString)
+  }, [optimisticLoans, publicKeyString])
+
+  //? Check same active loans (duplicated with BE) and purge them
+  useEffect(() => {
+    if (!data || isFetching || !isFetched || !publicKeyString) return
+
+    const expiredLoans = walletOptimisticLoans.filter((loan) =>
+      isOptimisticLoanExpired(loan, publicKeyString),
+    )
+
+    const optimisticsToRemove = walletOptimisticLoans.filter(({ loan }) => {
+      const sameLoanFromBE = (data || []).find(({ publicKey }) => publicKey === loan.publicKey)
+      if (!sameLoanFromBE) return false
+      const isBELoanNewer = isLoanNewer(sameLoanFromBE, loan)
+      return isBELoanNewer
+    })
+
+    if (optimisticsToRemove.length || expiredLoans.length) {
+      removeOptimisticLoans(
+        map([...expiredLoans, ...optimisticsToRemove], ({ loan }) => loan.publicKey),
+        publicKeyString,
+      )
+    }
+  }, [data, isFetched, publicKeyString, walletOptimisticLoans, removeOptimisticLoans, isFetching])
+
+  const loans = useMemo(() => {
+    if (!data) {
+      return []
+    }
+
+    const optimisticLoansPubkeys = walletOptimisticLoans.map(({ loan }) => loan.publicKey)
+
+    const dataFiltered = (data || []).filter(
+      ({ publicKey }) => !optimisticLoansPubkeys.includes(publicKey),
+    )
+
+    const purgedSameMint = purgeLoansWithSameMintByFreshness(
+      [...dataFiltered, ...map(walletOptimisticLoans, ({ loan }) => loan)],
+      (loan) => loan,
+    )
+
+    const loans = purgedSameMint.filter((loan) => !isLoanRepaid(loan))
+
+    return loans
+  }, [data, walletOptimisticLoans])
+
+  return {
+    loans,
     isLoading,
   }
 }

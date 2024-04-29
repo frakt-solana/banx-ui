@@ -217,8 +217,15 @@ export interface LendLoansResponse {
   meta: PaginationMeta
 }
 
-export interface AuctionsLoansResponse {
-  data: Loan[]
+export const LoansRequestsSchema = z.object({
+  auctions: LoanSchema.array(),
+  listings: LoanSchema.array(),
+})
+
+export type LoansRequests = z.infer<typeof LoansRequestsSchema>
+
+export interface AllLoansRequestsResponse {
+  data: LoansRequests
   meta: PaginationMeta
 }
 

@@ -21,9 +21,7 @@ export const LoansPage = () => {
     <div className={styles.pageWrapper}>
       <LoansHeader loans={loans} />
       <Tabs value={currentTabValue} {...tabProps} />
-      {currentTabValue === LoansTabsNames.REQUESTS && (
-        <RequestsTable loans={loans} isLoading={isLoading} />
-      )}
+      {currentTabValue === LoansTabsNames.REQUESTS && <RequestsTable />}
 
       {currentTabValue === LoansTabsNames.LOANS && (
         <LoansActiveTable loans={loans} isLoading={isLoading} offers={offers} />
