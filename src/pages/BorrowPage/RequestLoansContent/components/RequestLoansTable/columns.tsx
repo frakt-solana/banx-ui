@@ -90,7 +90,7 @@ export const getTableColumns = ({
       title: <HeaderCell label="" />,
       render: (nft) => (
         <Button className={styles.selectButton} size="small">
-          {findNftInSelection(nft.mint) ? 'Remove' : 'Select'}
+          {findNftInSelection(nft.mint) ? 'Deselect' : 'Select'}
         </Button>
       ),
     },

@@ -51,8 +51,8 @@ export const useRequestsLoansTable = ({ loans, isLoading }: UseLoansActiveTableP
   }
 
   const emptyListParams = {
-    message: REQUEST_LOANS_TABLE_MESSAGES[tokenType][connected ? 'connected' : 'notConnected'],
-    buttonProps: connected ? { text: 'Borrow', onClick: goToBorrowPage } : undefined,
+    message: REQUEST_LOANS_TABLE_MESSAGES[connected ? 'connected' : 'notConnected'],
+    buttonProps: connected ? { text: 'List loans requests', onClick: goToBorrowPage } : undefined,
   }
 
   return {

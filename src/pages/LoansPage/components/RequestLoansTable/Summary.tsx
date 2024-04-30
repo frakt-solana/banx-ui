@@ -1,7 +1,7 @@
 import { FC, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { sumBy } from 'lodash'
+import { map, sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider } from '@banx/components/Slider'
@@ -9,7 +9,7 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import { calcWeeklyFeeWithRepayFee } from '@banx/utils'
+import { calcWeightedAverage } from '@banx/utils'
 
 import { calcWeightedApr } from '../LoansActiveTable/helpers'
 import { LoanOptimistic } from '../LoansActiveTable/loansState'
@@ -38,13 +38,13 @@ export const Summary: FC<SummaryProps> = ({
 
   const totalSelectedLoans = selectedLoans.length
   const totalBorrow = sumBy(selectedLoans, (loan) => loan.fraktBond.borrowedAmount)
-  const totalWeeklyFee = sumBy(selectedLoans, calcWeeklyFeeWithRepayFee)
+
+  const weightedLtv = calculateWeightedLtv(selectedLoans)
+  const weightedApr = calcWeightedApr(selectedLoans)
 
   const handleLoanSelection = (value = 0) => {
     setSelection(loans.slice(0, value), walletPublicKey?.toBase58() || '')
   }
-
-  const weightedApr = calcWeightedApr(selectedLoans)
 
   return (
     <div className={styles.summary}>
@@ -59,8 +59,8 @@ export const Summary: FC<SummaryProps> = ({
           valueType={VALUES_TYPES.PERCENT}
           classNamesProps={{ container: styles.weightedAprStat }}
         />
+        <StatInfo label="Weighted ltv" value={weightedLtv} valueType={VALUES_TYPES.PERCENT} />
         <StatInfo label="Borrow" value={<DisplayValue value={totalBorrow} />} />
-        <StatInfo label="Weekly interest" value={<DisplayValue value={totalWeeklyFee} />} />
       </div>
       <div className={styles.summaryControls}>
         <CounterSlider
@@ -77,4 +77,16 @@ export const Summary: FC<SummaryProps> = ({
       </div>
     </div>
   )
+}
+
+const calculateWeightedLtv = (loans: Loan[]) => {
+  const totalBorrowArray = map(loans, (loan) => loan.fraktBond.borrowedAmount)
+  const totalLtvArray = map(
+    loans,
+    (loan) => (loan.fraktBond.borrowedAmount / loan.nft.collectionFloor) * 100,
+  )
+
+  const weightedLtv = calcWeightedAverage(totalLtvArray, totalBorrowArray)
+
+  return weightedLtv
 }
