@@ -16,7 +16,7 @@ export const calcWeeklyInterestFee: CalcWeeklyInterestFee = (loan) => {
 }
 
 export const calculateLendValue = (loan: Loan) => {
-  const borrowedValue = loan.bondTradeTransaction.solAmount
+  const borrowedValue = loan.fraktBond.currentPerpetualBorrowed
   const debtValue = calculateLoanRepayValue(loan)
 
   return isFreezeLoan(loan) ? borrowedValue : debtValue
