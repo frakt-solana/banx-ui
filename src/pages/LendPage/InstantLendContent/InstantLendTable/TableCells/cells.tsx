@@ -7,23 +7,26 @@ import {
 } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import { HealthColorIncreasing, calculateLoanRepayValue, getColorByPercent } from '@banx/utils'
+import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
+
+import { calculateLendValue } from '../helpers'
 
 import styles from '../InstantLendTable.module.less'
 
 export const DebtCell: FC<{ loan: Loan }> = ({ loan }) => {
-  const repayValue = calculateLoanRepayValue(loan)
+  const lendValue = calculateLendValue(loan)
+
   const collectionFloor = loan.nft.collectionFloor
 
   const tooltopContent = (
     <div className={styles.tooltipContainer}>
       {createTooltipContent('Floor', collectionFloor)}
-      {createTooltipContent('Debt', repayValue)}
+      {createTooltipContent('Debt', lendValue)}
     </div>
   )
 
   return (
-    <HorizontalCell tooltipContent={tooltopContent} value={<DisplayValue value={repayValue} />} />
+    <HorizontalCell tooltipContent={tooltopContent} value={<DisplayValue value={lendValue} />} />
   )
 }
 
@@ -35,10 +38,10 @@ const createTooltipContent = (label: string, value: number) => (
 )
 
 export const LTVCell: FC<{ loan: Loan }> = ({ loan }) => {
-  const repayValue = calculateLoanRepayValue(loan)
+  const lendValue = calculateLendValue(loan)
 
   const collectionFloor = loan.nft.collectionFloor
-  const ltv = (repayValue / collectionFloor) * 100
+  const ltv = (lendValue / collectionFloor) * 100
 
   return (
     <HorizontalCell

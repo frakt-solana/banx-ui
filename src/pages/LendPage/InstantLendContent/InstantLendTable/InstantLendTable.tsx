@@ -53,7 +53,7 @@ export const InstantLendTable = () => {
   }, [clearSelection, tokenType])
 
   const hasSelectedLoans = !!selection.length
-  
+
   const onSelectAll = () => {
     if (hasSelectedLoans) {
       clearSelection()

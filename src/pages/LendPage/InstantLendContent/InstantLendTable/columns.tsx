@@ -10,7 +10,7 @@ import Timer from '@banx/components/Timer/Timer'
 import Tooltip from '@banx/components/Tooltip'
 
 import { Loan } from '@banx/api/core'
-import { SECONDS_IN_72_HOURS } from '@banx/constants'
+import { SECONDS_IN_72_HOURS, SECONDS_IN_DAY } from '@banx/constants'
 import { Hourglass, Snowflake } from '@banx/icons'
 import { isFreezeLoan } from '@banx/utils'
 
@@ -71,16 +71,18 @@ export const getTableColumns = ({
       key: 'freeze',
       title: <HeaderCell label="Freeze" />,
       render: (loan) => {
-        const freezeValue = isFreezeLoan(loan) ? loan.bondTradeTransaction.terminationFreeze : 0
+        const terminationFreezeInDays = loan.bondTradeTransaction.terminationFreeze / SECONDS_IN_DAY
+        const freezeValue = isFreezeLoan(loan) ? terminationFreezeInDays : 0
         return <HorizontalCell value={`${freezeValue} days`} />
       },
     },
     {
       key: 'duration',
       title: <HeaderCell label="Ends in" />,
-      render: ({ fraktBond }) => (
-        <Timer expiredAt={fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS} />
-      ),
+      render: (loan) => {
+        const expiredAt = loan.fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS
+        return !isFreezeLoan(loan) ? <Timer expiredAt={expiredAt} /> : '--'
+      },
     },
     {
       key: 'apr',

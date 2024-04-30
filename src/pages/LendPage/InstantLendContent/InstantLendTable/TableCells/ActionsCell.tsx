@@ -9,6 +9,7 @@ import { useWalletModal } from '@banx/components/WalletModal'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan } from '@banx/api/core'
+import { SECONDS_IN_DAY } from '@banx/constants'
 import { useModal } from '@banx/store'
 import { isFreezeLoan } from '@banx/utils'
 
@@ -35,7 +36,10 @@ export const ActionsCell: FC<RefinanceCellProps> = ({ loan, isCardView, disabled
 
   const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.stopPropagation()
-    if (!connected) return toggleVisibility()
+
+    if (!connected) {
+      return toggleVisibility()
+    }
 
     if (isFreezeLoan(loan)) {
       return showModal()
@@ -76,12 +80,15 @@ const WarningModal: FC<WarningModalProps> = ({ loan, refinance }) => {
 
   const nftName = loan.nft.meta.name
 
+  const terminateFreezeInDays = loan.bondTradeTransaction.terminationFreeze / SECONDS_IN_DAY
+
   return (
     <Modal className={styles.modal} open onCancel={close} width={496}>
       <h3>Please pay attention!</h3>
       <p>
         Are you sure you want to fund the loan against{' '}
-        <span className={styles.nftName}>{nftName}</span> for 145 days with no termination option?
+        <span className={styles.nftName}>{nftName}</span> for {terminateFreezeInDays} days with no
+        termination option?
       </p>
       <div className={styles.actionsButtons}>
         <Button onClick={close} className={styles.cancelButton}>

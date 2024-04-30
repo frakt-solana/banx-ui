@@ -10,9 +10,9 @@ import { DisplayValue, createPercentValueJSX } from '@banx/components/TableCompo
 import { useWalletModal } from '@banx/components/WalletModal'
 
 import { Loan } from '@banx/api/core'
-import { calcWeightedAverage, calculateLoanRepayValue } from '@banx/utils'
+import { calcWeightedAverage } from '@banx/utils'
 
-import { calcWeeklyInterestFee } from './helpers'
+import { calcWeeklyInterestFee, calculateLendValue } from './helpers'
 import { useInstantTransactions } from './hooks'
 import { useLoansState } from './loansState'
 
@@ -74,14 +74,15 @@ export const Summary: FC<{ loans: Loan[] }> = ({ loans }) => {
 }
 
 const calculateSummaryInfo = (loans: Loan[]) => {
-  const totalDebt = sumBy(loans, (loan) => calculateLoanRepayValue(loan))
-  const totalLoanValue = map(loans, (loan) => calculateLoanRepayValue(loan))
+  const totalDebt = sumBy(loans, (loan) => calculateLendValue(loan))
+
+  const totalLoanValue = map(loans, (loan) => calculateLendValue(loan))
   const totalWeeklyInterest = sumBy(loans, (loan) => calcWeeklyInterestFee(loan))
 
   const totalAprArray = map(loans, (loan) => loan.bondTradeTransaction.amountOfBonds / 100)
   const totalLtvArray = map(
     loans,
-    (loan) => (calculateLoanRepayValue(loan) / loan.nft.collectionFloor) * 100,
+    (loan) => (calculateLendValue(loan) / loan.nft.collectionFloor) * 100,
   )
 
   const weightedApr = calcWeightedAverage(totalAprArray, totalLoanValue)
