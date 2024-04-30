@@ -13,6 +13,7 @@ enum SortField {
   DEBT = 'repayValue',
   LTV = 'ltv',
   APR = 'apr',
+  FREEZE = 'freeze',
 }
 
 type SortOrder = 'asc' | 'desc'
@@ -26,6 +27,7 @@ const SORT_OPTIONS = [
   { label: 'Debt', value: SortField.DEBT },
   { label: 'LTV', value: SortField.LTV },
   { label: 'APR', value: SortField.APR },
+  { label: 'Freeze', value: SortField.FREEZE },
 ]
 
 const DEFAULT_SORT_OPTION = { label: 'LTV', value: `${SortField.LTV}_asc` }
@@ -41,6 +43,7 @@ const STATUS_VALUE_MAP: StatusValueMap = {
 
     return repayValue / collectionFloor
   },
+  [SortField.FREEZE]: (loan) => loan.bondTradeTransaction.terminationFreeze,
 }
 
 export const useSortedLoans = (loans: Loan[]) => {

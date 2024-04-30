@@ -52,7 +52,7 @@ export const useInstantTransactions = () => {
     }
   }
 
-  const refinance = (loan: Loan) => {
+  const lendToBorrow = (loan: Loan) => {
     const loadingSnackbarId = uniqueId()
 
     new TxnExecutor(
@@ -101,7 +101,7 @@ export const useInstantTransactions = () => {
       .execute()
   }
 
-  const refinanceAll = () => {
+  const lendToBorrowAll = () => {
     const loadingSnackbarId = uniqueId()
 
     const txnParams = selection.map((loan) => ({ loan, priorityFeeLevel: priorityLevel }))
@@ -152,7 +152,7 @@ export const useInstantTransactions = () => {
   }
 
   return {
-    refinance,
-    refinanceAll,
+    lendToBorrow,
+    lendToBorrowAll,
   }
 }

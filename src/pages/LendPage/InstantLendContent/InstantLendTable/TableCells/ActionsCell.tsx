@@ -26,12 +26,12 @@ interface RefinanceCellProps {
 export const ActionsCell: FC<RefinanceCellProps> = ({ loan, isCardView, disabledAction }) => {
   const { connected } = useWallet()
   const { toggleVisibility } = useWalletModal()
-  const { refinance } = useInstantTransactions()
+  const { lendToBorrow } = useInstantTransactions()
 
   const { open } = useModal()
 
   const showModal = () => {
-    open(WarningModal, { loan, refinance })
+    open(WarningModal, { loan, lendToBorrow })
   }
 
   const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -45,7 +45,7 @@ export const ActionsCell: FC<RefinanceCellProps> = ({ loan, isCardView, disabled
       return showModal()
     }
 
-    return refinance(loan)
+    return lendToBorrow(loan)
   }
 
   return (
@@ -72,10 +72,10 @@ export const ActionsCell: FC<RefinanceCellProps> = ({ loan, isCardView, disabled
 
 interface WarningModalProps {
   loan: Loan
-  refinance: (loan: Loan) => void
+  lendToBorrow: (loan: Loan) => void
 }
 
-const WarningModal: FC<WarningModalProps> = ({ loan, refinance }) => {
+const WarningModal: FC<WarningModalProps> = ({ loan, lendToBorrow }) => {
   const { close } = useModal()
 
   const nftName = loan.nft.meta.name
@@ -94,7 +94,7 @@ const WarningModal: FC<WarningModalProps> = ({ loan, refinance }) => {
         <Button onClick={close} className={styles.cancelButton}>
           Cancel
         </Button>
-        <Button onClick={() => refinance(loan)} className={styles.confirmButton}>
+        <Button onClick={() => lendToBorrow(loan)} className={styles.confirmButton}>
           Confirm
         </Button>
       </div>

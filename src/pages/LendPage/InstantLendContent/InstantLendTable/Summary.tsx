@@ -21,7 +21,7 @@ import styles from './InstantLendTable.module.less'
 export const Summary: FC<{ loans: Loan[] }> = ({ loans }) => {
   const { connected } = useWallet()
   const { toggleVisibility } = useWalletModal()
-  const { refinanceAll } = useInstantTransactions()
+  const { lendToBorrowAll } = useInstantTransactions()
   const { selection, set: setSelection } = useLoansState()
 
   const { totalDebt, totalWeeklyInterest, weightedApr, weightedLtv } =
@@ -29,7 +29,7 @@ export const Summary: FC<{ loans: Loan[] }> = ({ loans }) => {
 
   const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (connected) {
-      refinanceAll()
+      lendToBorrowAll()
     } else {
       toggleVisibility()
     }
