@@ -4,6 +4,7 @@ import { Button } from '@banx/components/Buttons'
 import { HorizontalCell, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
+import { SECONDS_IN_DAY } from '@banx/constants'
 import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
 
 import { useRequestLoansTransactions } from '../hooks'
@@ -31,8 +32,9 @@ export const APRCell: FC<{ loan: Loan }> = ({ loan }) => {
   return <HorizontalCell value={createPercentValueJSX(aprInPercent)} isHighlighted />
 }
 
-export const FreezeCell: FC<{ loan: Loan }> = () => {
-  return <HorizontalCell value={`${14} days`} />
+export const FreezeCell: FC<{ loan: Loan }> = ({ loan }) => {
+  const terminationFreezeInDays = loan.bondTradeTransaction.terminationFreeze / SECONDS_IN_DAY
+  return <HorizontalCell value={`${terminationFreezeInDays} days`} />
 }
 
 interface ActionsCellProps {

@@ -19,7 +19,7 @@ import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { PATHS } from '@banx/router'
 import {
   createPathWithTokenParam,
-  useLoansOptimistic,
+  useLoansRequestsOptimistic,
   useModal,
   usePriorityFees,
   useTokenType,
@@ -169,7 +169,7 @@ const useRequestLoansTransaction = (props: {
   const navigate = useNavigate()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
   const { open: openModal, close: closeModal } = useModal()
-  const { add: addLoansOptimistic } = useLoansOptimistic()
+  const { add: addLoansOptimistic } = useLoansRequestsOptimistic()
 
   const { tokenType } = useTokenType()
 

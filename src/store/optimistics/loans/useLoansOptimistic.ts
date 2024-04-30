@@ -1,22 +1,23 @@
 import { useEffect, useMemo } from 'react'
 
 import { get, set } from 'idb-keyval'
-import { filter, groupBy, map, maxBy, uniqBy } from 'lodash'
-import moment from 'moment'
+import { map } from 'lodash'
 import { create } from 'zustand'
 
 import { Loan } from '@banx/api/core'
 
-import { useTokenType } from '../useTokenType'
+import { useTokenType } from '../../useTokenType'
+import {
+  LoanOptimistic,
+  addLoans,
+  convertLoanToOptimistic,
+  filterOptimisticLoansByTokenType,
+  findLoan,
+  removeLoans,
+  updateLoans,
+} from './helpers'
 
 const BANX_LOANS_OPTIMISTICS_LS_KEY = '@banx.loansOptimistics'
-const LOANS_CACHE_TIME_UNIX = 2 * 60 //? Auto clear optimistic after 2 minutes
-
-export interface LoanOptimistic {
-  loan: Loan
-  wallet: string
-  expiredAt: number
-}
 
 export interface LoansOptimisticStore {
   optimisticLoans: LoanOptimistic[]
@@ -98,17 +99,11 @@ export const useLoansOptimistic = () => {
   }, [setState])
 
   const filteredLoansByTokenType = useMemo(() => {
-    return filter(
-      optimisticLoans,
-      ({ loan }) => loan.bondTradeTransaction.lendingToken === tokenType,
-    )
+    return filterOptimisticLoansByTokenType(optimisticLoans, tokenType)
   }, [optimisticLoans, tokenType])
 
   return { loans: filteredLoansByTokenType, add, remove, find, update }
 }
-
-export const isOptimisticLoanExpired = (loan: LoanOptimistic, walletPublicKey: string) =>
-  loan.expiredAt < moment().unix() && loan.wallet === walletPublicKey
 
 const setOptimisticLoansIdb = async (loans: LoanOptimistic[]) => {
   try {
@@ -118,52 +113,10 @@ const setOptimisticLoansIdb = async (loans: LoanOptimistic[]) => {
   }
 }
 
-const convertLoanToOptimistic = (loan: Loan, walletPublicKey: string) => {
-  return {
-    loan,
-    wallet: walletPublicKey,
-    expiredAt: moment().unix() + LOANS_CACHE_TIME_UNIX,
-  }
-}
-
 const getOptimisticLoansIdb = async () => {
   try {
     return ((await get(BANX_LOANS_OPTIMISTICS_LS_KEY)) || []) as LoanOptimistic[]
   } catch {
     return []
   }
-}
-
-const addLoans = (loansState: LoanOptimistic[], loansToAdd: LoanOptimistic[]) => {
-  const sameLoansRemoved = uniqBy([...loansState, ...loansToAdd], ({ loan }) => loan.publicKey)
-
-  return purgeLoansWithSameMintByFreshness(sameLoansRemoved, ({ loan }) => loan)
-}
-
-const removeLoans = (loansState: LoanOptimistic[], loansPubkeysToRemove: string[]) =>
-  loansState.filter(({ loan }) => !loansPubkeysToRemove.includes(loan.publicKey))
-
-const findLoan = (loansState: LoanOptimistic[], loanPublicKey: string, walletPublicKey: string) =>
-  loansState.find(
-    ({ loan, wallet }) => loan.publicKey === loanPublicKey && wallet === walletPublicKey,
-  )
-
-const updateLoans = (loansState: LoanOptimistic[], loansToAddOrUpdate: LoanOptimistic[]) => {
-  const publicKeys = loansToAddOrUpdate.map(({ loan }) => loan.publicKey)
-  const sameLoansRemoved = removeLoans(loansState, publicKeys)
-  return addLoans(sameLoansRemoved, loansToAddOrUpdate)
-}
-
-export const isLoanNewer = (loanA: Loan, loanB: Loan) =>
-  loanA.fraktBond.lastTransactedAt >= loanB.fraktBond.lastTransactedAt
-
-//? Remove loans with same mint by priority of lastTransactedAt
-export const purgeLoansWithSameMintByFreshness = <L>(loans: L[], getLoan: (loan: L) => Loan) => {
-  const loansByMint = groupBy(loans, (loan) => getLoan(loan).nft.mint)
-
-  return Object.values(loansByMint)
-    .map((loansWithSameMint) =>
-      maxBy(loansWithSameMint, (loan) => getLoan(loan).fraktBond.lastTransactedAt),
-    )
-    .flat() as L[]
 }

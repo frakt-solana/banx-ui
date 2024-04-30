@@ -4,7 +4,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
-import { useLoansOptimistic, usePriorityFees } from '@banx/store'
+import { useLoansRequestsOptimistic, usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeDelistAction } from '@banx/transactions/loans'
 import {
@@ -23,7 +23,7 @@ export const useRequestLoansTransactions = () => {
   const { connection } = useConnection()
   const { priorityLevel } = usePriorityFees()
 
-  const { update: updateLoansOptimistic } = useLoansOptimistic()
+  const { update: updateLoansOptimistic } = useLoansRequestsOptimistic()
   const { selection, clear: clearSelection } = useSelectedLoans()
 
   const delist = async (loan: Loan) => {

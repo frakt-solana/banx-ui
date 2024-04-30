@@ -14,6 +14,7 @@ import {
   isOptimisticOfferExpired,
   purgeLoansWithSameMintByFreshness,
   useLoansOptimistic,
+  useLoansRequestsOptimistic,
   useOffersOptimistic,
   useTokenType,
 } from '@banx/store'
@@ -44,12 +45,7 @@ export const useWalletLoansAndOffers = () => {
 
   const walletOptimisticLoans = useMemo(() => {
     if (!publicKeyString) return []
-    return (
-      optimisticLoans
-        .filter(({ wallet }) => wallet === publicKeyString)
-        //? Filter out frozen loans from useLoansOptimistic to prevent their display in the Loans tab after "Delist" and "Loan requests" actions."
-        .filter(({ loan }) => !isFreezeLoan(loan))
-    )
+    return optimisticLoans.filter(({ wallet }) => wallet === publicKeyString)
   }, [optimisticLoans, publicKeyString])
 
   //? Check same active loans (duplicated with BE) and purge them
@@ -220,7 +216,7 @@ export const useBorrowerLoansRequests = () => {
 
   const { tokenType } = useTokenType()
 
-  const { loans: optimisticLoans, remove: removeOptimisticLoans } = useLoansOptimistic()
+  const { loans: optimisticLoans, remove: removeOptimisticLoans } = useLoansRequestsOptimistic()
 
   const { data, isLoading, isFetched, isFetching } = useQuery(
     [USE_BORROWER_LOANS_REQUESTS_QUERY_KEY, walletPublicKey, tokenType],
