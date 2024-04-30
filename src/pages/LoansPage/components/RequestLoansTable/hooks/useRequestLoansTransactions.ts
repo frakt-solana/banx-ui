@@ -4,7 +4,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
-import { usePriorityFees } from '@banx/store'
+import { useLoansOptimistic, usePriorityFees } from '@banx/store'
 import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
 import { makeDelistAction } from '@banx/transactions/loans'
 import {
@@ -23,6 +23,7 @@ export const useRequestLoansTransactions = () => {
   const { connection } = useConnection()
   const { priorityLevel } = usePriorityFees()
 
+  const { update: updateLoansOptimistic } = useLoansOptimistic()
   const { selection, clear: clearSelection } = useSelectedLoans()
 
   const delist = async (loan: Loan) => {
@@ -59,6 +60,7 @@ export const useRequestLoansTransactions = () => {
               solanaExplorerPath: `tx/${signature}`,
             })
 
+            updateLoansOptimistic([result], wallet.publicKey.toBase58())
             clearSelection()
           }
         })
@@ -99,6 +101,13 @@ export const useRequestLoansTransactions = () => {
 
         if (confirmed.length) {
           enqueueSnackbar({ message: 'Loans delisted successfully', type: 'success' })
+
+          confirmed.forEach(({ result }) => {
+            if (result && wallet.publicKey) {
+              updateLoansOptimistic([result], wallet.publicKey.toBase58())
+            }
+          })
+
           clearSelection()
         }
 

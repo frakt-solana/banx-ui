@@ -5,6 +5,7 @@ import {
   removePerpetualListingCnft,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
+import moment from 'moment'
 import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
@@ -20,7 +21,7 @@ export type MakeDelistActionParams = {
   priorityFeeLevel: PriorityLevel
 }
 
-export type MakeDelistAction = CreateTransactionDataFn<MakeDelistActionParams, null>
+export type MakeDelistAction = CreateTransactionDataFn<MakeDelistActionParams, Loan>
 
 export const makeDelistAction: MakeDelistAction = async (ixnParams, walletAndConnection) => {
   const { loan, priorityFeeLevel } = ixnParams
@@ -41,9 +42,22 @@ export const makeDelistAction: MakeDelistAction = async (ixnParams, walletAndCon
     priorityLevel: priorityFeeLevel,
   })
 
+  const optimisticLoan = {
+    ...loan,
+    bondTradeTransaction: {
+      ...loan.bondTradeTransaction,
+      terminationFreeze: 0, //? Set 0 to filter loan from list
+    },
+    fraktBond: {
+      ...loan.fraktBond,
+      lastTransactedAt: moment().unix(), //? Needs to prevent BE data overlap in optimistics logic
+    },
+  }
+
   return {
     instructions,
     signers,
+    result: optimisticLoan,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }

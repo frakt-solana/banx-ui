@@ -17,7 +17,7 @@ import {
   useOffersOptimistic,
   useTokenType,
 } from '@banx/store'
-import { isLoanRepaid, isLoanTerminating, isOfferClosed } from '@banx/utils'
+import { isFreezeLoan, isLoanRepaid, isLoanTerminating, isOfferClosed } from '@banx/utils'
 
 import { SECONDS_IN_72_HOURS } from './constants'
 
@@ -44,7 +44,12 @@ export const useWalletLoansAndOffers = () => {
 
   const walletOptimisticLoans = useMemo(() => {
     if (!publicKeyString) return []
-    return optimisticLoans.filter(({ wallet }) => wallet === publicKeyString)
+    return (
+      optimisticLoans
+        .filter(({ wallet }) => wallet === publicKeyString)
+        //? Filter out frozen loans from useLoansOptimistic to prevent their display in the Loans tab after "Delist" and "Loan requests" actions."
+        .filter(({ loan }) => !isFreezeLoan(loan))
+    )
   }, [optimisticLoans, publicKeyString])
 
   //? Check same active loans (duplicated with BE) and purge them
@@ -207,6 +212,8 @@ export const useUserLoansStats = () => {
   }
 }
 
+export const USE_BORROWER_LOANS_REQUESTS_QUERY_KEY = 'borrowerLoansRequests'
+
 export const useBorrowerLoansRequests = () => {
   const { publicKey: walletPublicKey } = useWallet()
   const publicKeyString = walletPublicKey?.toBase58() || ''
@@ -216,7 +223,7 @@ export const useBorrowerLoansRequests = () => {
   const { loans: optimisticLoans, remove: removeOptimisticLoans } = useLoansOptimistic()
 
   const { data, isLoading, isFetched, isFetching } = useQuery(
-    ['borrowerLoansRequests', walletPublicKey, tokenType],
+    [USE_BORROWER_LOANS_REQUESTS_QUERY_KEY, walletPublicKey, tokenType],
     () => fetchBorrowerLoansRequests({ walletPublicKey: publicKeyString, tokenType }),
     {
       staleTime: 5 * 1000,
@@ -274,8 +281,12 @@ export const useBorrowerLoansRequests = () => {
     return loans
   }, [data, walletOptimisticLoans])
 
+  const filteredLoans = useMemo(() => {
+    return loans.filter((loan) => isFreezeLoan(loan))
+  }, [loans])
+
   return {
-    loans,
+    loans: filteredLoans,
     isLoading,
   }
 }
