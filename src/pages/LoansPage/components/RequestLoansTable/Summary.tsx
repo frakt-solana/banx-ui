@@ -1,6 +1,7 @@
 import { FC, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import classNames from 'classnames'
 import { map, sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
@@ -71,7 +72,11 @@ export const Summary: FC<SummaryProps> = ({
           className={styles.sliderContainer}
           max={loans.length}
         />
-        <Button onClick={delistAll} disabled={!totalSelectedLoans}>
+        <Button
+          className={classNames(styles.delistButton, styles.delistAllButton)}
+          onClick={delistAll}
+          disabled={!totalSelectedLoans}
+        >
           Delist
         </Button>
       </div>
