@@ -93,7 +93,7 @@ export const useRequestLoansForm = (market: MarketPreview) => {
   //? Clear selection when marketPubkey changes
   useEffect(() => {
     setSelection([])
-  }, [market.marketPubkey, setSelection])
+  }, [market.marketPubkey, setSelection, tokenType])
 
   const inputLoanValueToNumber = parseFloat(inputLoanValue)
   const inputAprValueToNumber = parseFloat(inputAprValue)

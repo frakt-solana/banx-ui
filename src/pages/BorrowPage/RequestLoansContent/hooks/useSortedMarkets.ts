@@ -9,15 +9,15 @@ import { MarketPreview } from '@banx/api/core'
 type SortOrder = 'asc' | 'desc'
 
 enum SortField {
-  OFFER_TVL = 'offerTvl',
   LOANS_TVL = 'loansTvl',
   ACTIVE_LOANS = 'activeLoans',
+  FLOOR = 'floor',
 }
 
 const SORT_OPTIONS = [
   { label: 'Loans TVL', value: SortField.LOANS_TVL },
-  { label: 'Offers TVL', value: SortField.OFFER_TVL },
   { label: 'Active loans', value: SortField.ACTIVE_LOANS },
+  { label: 'Floor', value: SortField.FLOOR },
 ]
 const DEFAULT_SORT_OPTION = { label: 'Loans TVL', value: 'loansTvl_desc' }
 
@@ -25,9 +25,9 @@ type SortValueGetter = (market: MarketPreview) => number
 type StatusValueMap = Record<SortField, SortValueGetter>
 
 const STATUS_VALUE_MAP: StatusValueMap = {
-  [SortField.OFFER_TVL]: (market) => market.offerTvl,
   [SortField.LOANS_TVL]: (market) => market.loansTvl,
   [SortField.ACTIVE_LOANS]: (market) => market.activeBondsAmount,
+  [SortField.FLOOR]: (market) => market.collectionFloor,
 }
 
 export const useSortedMarkets = (markets: MarketPreview[]) => {
