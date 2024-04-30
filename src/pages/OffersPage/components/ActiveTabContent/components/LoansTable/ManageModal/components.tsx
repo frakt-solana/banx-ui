@@ -3,14 +3,15 @@ import { FC, useMemo, useState } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { chain, isEmpty, uniqueId } from 'lodash'
+import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
-import EmptyList from '@banx/components/EmptyList'
 import { Loader } from '@banx/components/Loader'
 import { Slider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
+import Timer from '@banx/components/Timer'
 
 import { Loan } from '@banx/api/core'
 import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
@@ -37,7 +38,6 @@ import {
   formatValueByTokenType,
   getColorByPercent,
   getTokenUnit,
-  isFreezeLoan,
   isLoanActiveOrRefinanced,
   isLoanRepaymentCallActive,
   isLoanTerminating,
@@ -187,6 +187,11 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const totalClaimValue = calculateClaimValue(loan)
   const tokenUnit = getTokenUnit(tokenType)
 
+  const freezeExpiredAt =
+    loan.bondTradeTransaction.soldAt + loan.bondTradeTransaction.terminationFreeze
+
+  const isFreezeExpired = moment().unix() > freezeExpiredAt
+
   return (
     <div className={styles.closureContent}>
       <div
@@ -200,7 +205,7 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
           SOL in your wallet. If unsuccessful after 72 hours you will receive the collateral instead
         </p>
       </div>
-      {!isFreezeLoan(loan) && (
+      {isFreezeExpired && (
         <div className={styles.modalContent}>
           {isLoading && <Loader />}
           {!isLoading && (
@@ -227,11 +232,10 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
           )}
         </div>
       )}
-      {isFreezeLoan(loan) && (
-        <EmptyList
-          className={styles.emptyList}
-          message="Exit and termination are frozen for 11d : 17m"
-        />
+      {!isFreezeExpired && (
+        <div className={styles.freezeTimerWrapper}>
+          Exit and termination are frozen for <Timer expiredAt={freezeExpiredAt} />
+        </div>
       )}
     </div>
   )
