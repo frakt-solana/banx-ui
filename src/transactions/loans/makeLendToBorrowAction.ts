@@ -72,7 +72,7 @@ const getIxnsAndSignersByLoanType = async ({
   const { connection, wallet } = walletAndConnection
   const { loan } = ixnParams
 
-  const { nft, bondTradeTransaction, fraktBond } = loan
+  const { bondTradeTransaction, fraktBond } = loan
 
   if (isFreezeLoan(loan)) {
     const { instructions, signers, optimisticResults } = await lendToBorrowerListing({
@@ -82,7 +82,9 @@ const getIxnsAndSignersByLoanType = async ({
         protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
         borrower: new web3.PublicKey(loan.fraktBond.fbondIssuer),
         userPubkey: wallet.publicKey,
-        nftMint: new web3.PublicKey(nft.mint),
+        bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
+        oldBondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
+        fraktBond: new web3.PublicKey(fraktBond.publicKey),
         splTokenMint: undefined,
       },
       args: {

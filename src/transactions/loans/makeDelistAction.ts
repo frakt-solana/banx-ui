@@ -95,6 +95,9 @@ const getIxnsAndSignersByListingType = async ({
         borrower: new web3.PublicKey(loan.fraktBond.fbondIssuer),
         userPubkey: wallet.publicKey,
         nftMint: new web3.PublicKey(loan.nft.mint),
+        bondOffer: new web3.PublicKey(loan.bondTradeTransaction.bondOffer),
+        oldBondTradeTransaction: new web3.PublicKey(loan.bondTradeTransaction.publicKey),
+        fraktBond: new web3.PublicKey(loan.fraktBond.publicKey),
         tree: new web3.PublicKey(loan.nft.compression.tree),
       },
       args: {
@@ -124,6 +127,9 @@ const getIxnsAndSignersByListingType = async ({
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
       borrower: new web3.PublicKey(loan.fraktBond.fbondIssuer),
       userPubkey: wallet.publicKey,
+      bondOffer: new web3.PublicKey(loan.bondTradeTransaction.bondOffer),
+      oldBondTradeTransaction: new web3.PublicKey(loan.bondTradeTransaction.publicKey),
+      fraktBond: new web3.PublicKey(loan.fraktBond.publicKey),
       nftMint: new web3.PublicKey(loan.nft.mint),
     },
     args: {
