@@ -56,7 +56,7 @@ export const getTableColumns: GetTableColumns = ({
       key: 'loanValue',
       title: <HeaderCell label="Borrow" />,
       render: (loan) => (
-        <HorizontalCell value={<DisplayValue value={loan.fraktBond.borrowedAmount} />} />
+        <HorizontalCell value={<DisplayValue value={loan.bondTradeTransaction.solAmount} />} />
       ),
     },
     {

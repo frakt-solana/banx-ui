@@ -4,7 +4,7 @@ import { Button } from '@banx/components/Buttons'
 import { HorizontalCell, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import { SECONDS_IN_DAY } from '@banx/constants'
+import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
 import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
 
 import { useRequestLoansTransactions } from '../hooks'
@@ -27,7 +27,7 @@ export const LTVCell: FC<{ loan: Loan }> = ({ loan }) => {
 }
 
 export const APRCell: FC<{ loan: Loan }> = ({ loan }) => {
-  const aprInPercent = loan.bondTradeTransaction.amountOfBonds / 100
+  const aprInPercent = (loan.bondTradeTransaction.amountOfBonds + BONDS.PROTOCOL_REPAY_FEE) / 100
 
   return <HorizontalCell value={createPercentValueJSX(aprInPercent)} isHighlighted />
 }
