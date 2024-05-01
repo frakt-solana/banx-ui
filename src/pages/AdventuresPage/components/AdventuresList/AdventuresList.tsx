@@ -11,11 +11,13 @@ import {
   BanxInfoBN,
   BanxStakeBN,
 } from '@banx/api/staking'
-import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { checkIsSubscribed, getAdventureStatus, isAdventureEnded } from '@banx/pages/AdventuresPage'
-import { usePriorityFees } from '@banx/store'
-import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
-import { subscribeBanxAdventureAction } from '@banx/transactions/staking'
+import {
+  TXN_EXECUTOR_DEFAULT_OPTIONS,
+  createExecutorWalletAndConnection,
+  defaultTxnErrorHandler,
+} from '@banx/transactions'
+import { createSubscribeTxnData } from '@banx/transactions/staking'
 import {
   destroySnackbar,
   enqueueConfirmationError,
@@ -76,7 +78,6 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
 }) => {
   const { connection } = useConnection()
   const wallet = useWallet()
-  const { priorityLevel } = usePriorityFees()
 
   const isEnded = isAdventureEnded(banxAdventure)
 
@@ -84,54 +85,54 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
 
   const status = getAdventureStatus(banxAdventure)
 
-  const onSubscribe = () => {
+  const onSubscribe = async () => {
     if (!wallet.publicKey?.toBase58() || !banxTokenStake) {
       return
     }
 
-    const params = { weeks: [banxAdventure.week], priorityFeeLevel: priorityLevel }
-
     const loadingSnackbarId = uniqueId()
 
-    new TxnExecutor(
-      subscribeBanxAdventureAction,
-      {
-        wallet: createWalletInstance(wallet),
-        connection,
-      },
-      {
-        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
-      },
-    )
-      .addTransactionParam(params)
-      .on('sentAll', (results) => {
-        enqueueTransactionsSent()
-        enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)
+    try {
+      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
+
+      const txnData = await createSubscribeTxnData({
+        weeks: [banxAdventure.week],
+        walletAndConnection,
       })
-      .on('confirmedAll', (results) => {
-        destroySnackbar(loadingSnackbarId)
 
-        const { confirmed, failed } = results
-
-        if (confirmed.length) {
-          enqueueSnackbar({ message: 'Subscribed successfully', type: 'success' })
-        }
-
-        if (failed.length) {
-          return failed.forEach(({ signature, reason }) =>
-            enqueueConfirmationError(signature, reason),
-          )
-        }
-      })
-      .on('error', (error) => {
-        destroySnackbar(loadingSnackbarId)
-        defaultTxnErrorHandler(error, {
-          additionalData: params,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'Subscribe',
+      await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+        .addTxnData(txnData)
+        .on('sentAll', (results) => {
+          enqueueTransactionsSent()
+          enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)
         })
+        .on('confirmedAll', (results) => {
+          destroySnackbar(loadingSnackbarId)
+
+          const { confirmed, failed } = results
+
+          if (confirmed.length) {
+            enqueueSnackbar({ message: 'Subscribed successfully', type: 'success' })
+          }
+
+          if (failed.length) {
+            return failed.forEach(({ signature, reason }) =>
+              enqueueConfirmationError(signature, reason),
+            )
+          }
+        })
+        .on('error', (error) => {
+          throw error
+        })
+        .execute()
+    } catch (error) {
+      destroySnackbar(loadingSnackbarId)
+      defaultTxnErrorHandler(error, {
+        additionalData: banxAdventure.week,
+        walletPubkey: wallet?.publicKey?.toBase58(),
+        transactionName: 'Subscribe',
       })
-      .execute()
+    }
   }
 
   return (

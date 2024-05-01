@@ -16,11 +16,14 @@ import {
 } from '@banx/components/modals'
 
 import { Loan } from '@banx/api/core'
-import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { useAuctionsLoans } from '@banx/pages/RefinancePage/hooks'
-import { useModal, usePriorityFees } from '@banx/store'
-import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
-import { makeRefinanceAction } from '@banx/transactions/loans'
+import { useModal } from '@banx/store'
+import {
+  TXN_EXECUTOR_DEFAULT_OPTIONS,
+  createExecutorWalletAndConnection,
+  defaultTxnErrorHandler,
+} from '@banx/transactions'
+import { createRefinanceTxnData } from '@banx/transactions/loans'
 import {
   destroySnackbar,
   enqueueConfirmationError,
@@ -78,7 +81,6 @@ export const RefinanceCell: FC<RefinanceCellProps> = ({ loan, isCardView, disabl
 const useRefinanceTransaction = (loan: Loan) => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { priorityLevel } = usePriorityFees()
   const { addMints } = useAuctionsLoans()
   const { deselectLoan } = useLoansState()
   const { open, close } = useModal()
@@ -98,53 +100,60 @@ const useRefinanceTransaction = (loan: Loan) => {
     }
   }
 
-  const refinance = () => {
+  const refinance = async () => {
     const loadingSnackbarId = uniqueId()
 
-    new TxnExecutor(
-      makeRefinanceAction,
-      { wallet: createWalletInstance(wallet), connection },
-      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
-    )
-      .addTransactionParam({ loan, priorityFeeLevel: priorityLevel })
-      .on('sentSome', (results) => {
-        results.forEach(({ signature }) => enqueueTransactionSent(signature))
-        enqueueWaitingConfirmation(loadingSnackbarId)
+    try {
+      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
+
+      const txnData = await createRefinanceTxnData({
+        loan,
+        walletAndConnection,
       })
-      .on('confirmedAll', (results) => {
-        const { confirmed, failed } = results
 
-        destroySnackbar(loadingSnackbarId)
+      await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+        .addTxnData(txnData)
+        .on('sentSome', (results) => {
+          results.forEach(({ signature }) => enqueueTransactionSent(signature))
+          enqueueWaitingConfirmation(loadingSnackbarId)
+        })
+        .on('confirmedAll', (results) => {
+          const { confirmed, failed } = results
 
-        if (failed.length) {
-          return failed.forEach(({ signature, reason }) =>
-            enqueueConfirmationError(signature, reason),
-          )
-        }
+          destroySnackbar(loadingSnackbarId)
 
-        return confirmed.forEach(({ result, signature }) => {
-          if (result) {
-            enqueueSnackbar({
-              message: 'Loan successfully refinanced',
-              type: 'success',
-              solanaExplorerPath: `tx/${signature}`,
-            })
-
-            addMints(loan.nft.mint)
-            deselectLoan(loan.publicKey)
-            onSuccess()
+          if (failed.length) {
+            return failed.forEach(({ signature, reason }) =>
+              enqueueConfirmationError(signature, reason),
+            )
           }
+
+          return confirmed.forEach(({ result, signature }) => {
+            if (result) {
+              enqueueSnackbar({
+                message: 'Loan successfully refinanced',
+                type: 'success',
+                solanaExplorerPath: `tx/${signature}`,
+              })
+
+              addMints(loan.nft.mint)
+              deselectLoan(loan.publicKey)
+              onSuccess()
+            }
+          })
         })
-      })
-      .on('error', (error) => {
-        destroySnackbar(loadingSnackbarId)
-        defaultTxnErrorHandler(error, {
-          additionalData: loan,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'Refinance',
+        .on('error', (error) => {
+          throw error
         })
+        .execute()
+    } catch (error) {
+      destroySnackbar(loadingSnackbarId)
+      defaultTxnErrorHandler(error, {
+        additionalData: loan,
+        walletPubkey: wallet?.publicKey?.toBase58(),
+        transactionName: 'Refinance',
       })
-      .execute()
+    }
   }
 
   return refinance

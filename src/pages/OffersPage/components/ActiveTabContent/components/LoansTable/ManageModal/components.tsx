@@ -11,16 +11,19 @@ import { Slider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { Loan } from '@banx/api/core'
-import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
+import { Loan, Offer } from '@banx/api/core'
 import { useMarketOffers } from '@banx/pages/LendPage'
 import { calculateClaimValue, useLenderLoans } from '@banx/pages/OffersPage'
-import { useModal, usePriorityFees, useTokenType } from '@banx/store'
-import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
+import { useModal, useTokenType } from '@banx/store'
 import {
-  makeInstantRefinanceAction,
-  makeRepaymentCallAction,
-  makeTerminateAction,
+  TXN_EXECUTOR_DEFAULT_OPTIONS,
+  createExecutorWalletAndConnection,
+  defaultTxnErrorHandler,
+} from '@banx/transactions'
+import {
+  createInstantRefinanceTxnData,
+  createRepaymentCallTxnData,
+  createTerminateTxnData,
 } from '@banx/transactions/loans'
 import {
   HealthColorIncreasing,
@@ -52,7 +55,6 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const { connection } = useConnection()
   const wallet = useWallet()
 
-  const { priorityLevel } = usePriorityFees()
   const { close } = useModal()
 
   const { tokenType } = useTokenType()
@@ -80,106 +82,119 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const canRefinance = hasRefinanceOffer && loanActiveOrRefinanced
   const canTerminate = !isLoanTerminating(loan) && loanActiveOrRefinanced
 
-  const terminateLoan = () => {
+  const terminateLoan = async () => {
     const loadingSnackbarId = uniqueId()
 
-    new TxnExecutor(
-      makeTerminateAction,
-      { wallet: createWalletInstance(wallet), connection },
-      {
-        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
-      },
-    )
-      .addTransactionParam({ loan, priorityFeeLevel: priorityLevel })
-      .on('sentSome', (results) => {
-        results.forEach(({ signature }) => enqueueTransactionSent(signature))
-        enqueueWaitingConfirmation(loadingSnackbarId)
+    try {
+      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
+
+      const txnData = await createTerminateTxnData({
+        loan,
+        walletAndConnection,
       })
-      .on('confirmedAll', (results) => {
-        const { confirmed, failed } = results
 
-        destroySnackbar(loadingSnackbarId)
+      await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+        .addTxnData(txnData)
+        .on('sentSome', (results) => {
+          results.forEach(({ signature }) => enqueueTransactionSent(signature))
+          enqueueWaitingConfirmation(loadingSnackbarId)
+        })
+        .on('confirmedAll', (results) => {
+          const { confirmed, failed } = results
 
-        if (failed.length) {
-          return failed.forEach(({ signature, reason }) =>
-            enqueueConfirmationError(signature, reason),
-          )
-        }
+          destroySnackbar(loadingSnackbarId)
 
-        return confirmed.forEach(({ result, signature }) => {
-          if (result && wallet?.publicKey) {
-            enqueueSnackbar({
-              message: 'Offer successfully terminated',
-              type: 'success',
-              solanaExplorerPath: `tx/${signature}`,
-            })
-
-            updateOrAddLoan({ ...loan, ...result })
-            removeLoan(loan.publicKey, wallet.publicKey.toBase58())
-            close()
+          if (failed.length) {
+            return failed.forEach(({ signature, reason }) =>
+              enqueueConfirmationError(signature, reason),
+            )
           }
+
+          return confirmed.forEach(({ result, signature }) => {
+            if (result && wallet?.publicKey) {
+              enqueueSnackbar({
+                message: 'Offer successfully terminated',
+                type: 'success',
+                solanaExplorerPath: `tx/${signature}`,
+              })
+
+              updateOrAddLoan({ ...loan, ...result })
+              removeLoan(loan.publicKey, wallet.publicKey.toBase58())
+              close()
+            }
+          })
         })
-      })
-      .on('error', (error) => {
-        destroySnackbar(loadingSnackbarId)
-        defaultTxnErrorHandler(error, {
-          additionalData: loan,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'Terminate',
+        .on('error', (error) => {
+          throw error
         })
+        .execute()
+    } catch (error) {
+      destroySnackbar(loadingSnackbarId)
+      defaultTxnErrorHandler(error, {
+        additionalData: loan,
+        walletPubkey: wallet?.publicKey?.toBase58(),
+        transactionName: 'Terminate',
       })
-      .execute()
+    }
   }
 
-  const instantLoan = () => {
+  const instantLoan = async () => {
     if (!bestOffer) return
 
     const loadingSnackbarId = uniqueId()
 
-    new TxnExecutor(
-      makeInstantRefinanceAction,
-      { wallet: createWalletInstance(wallet), connection },
-      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
-    )
-      .addTransactionParam({ loan, bestOffer, priorityFeeLevel: priorityLevel })
-      .on('sentSome', (results) => {
-        results.forEach(({ signature }) => enqueueTransactionSent(signature))
-        enqueueWaitingConfirmation(loadingSnackbarId)
+    try {
+      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
+
+      const txnData = await createInstantRefinanceTxnData({
+        loan,
+        bestOffer,
+        walletAndConnection,
       })
-      .on('confirmedAll', (results) => {
-        const { confirmed, failed } = results
 
-        destroySnackbar(loadingSnackbarId)
+      await new TxnExecutor<Offer>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+        .addTxnData(txnData)
+        .on('sentSome', (results) => {
+          results.forEach(({ signature }) => enqueueTransactionSent(signature))
+          enqueueWaitingConfirmation(loadingSnackbarId)
+        })
+        .on('confirmedAll', (results) => {
+          const { confirmed, failed } = results
 
-        if (failed.length) {
-          return failed.forEach(({ signature, reason }) =>
-            enqueueConfirmationError(signature, reason),
-          )
-        }
+          destroySnackbar(loadingSnackbarId)
 
-        return confirmed.forEach(({ result, signature }) => {
-          if (result) {
-            enqueueSnackbar({
-              message: 'Offer successfully sold',
-              type: 'success',
-              solanaExplorerPath: `tx/${signature}`,
-            })
-
-            updateOrAddOffer(result.bondOffer)
-            hideLoans(loan.nft.mint)
-            close()
+          if (failed.length) {
+            return failed.forEach(({ signature, reason }) =>
+              enqueueConfirmationError(signature, reason),
+            )
           }
+
+          return confirmed.forEach(({ result, signature }) => {
+            if (result) {
+              enqueueSnackbar({
+                message: 'Offer successfully sold',
+                type: 'success',
+                solanaExplorerPath: `tx/${signature}`,
+              })
+
+              updateOrAddOffer(result)
+              hideLoans(loan.nft.mint)
+              close()
+            }
+          })
         })
-      })
-      .on('error', (error) => {
-        destroySnackbar(loadingSnackbarId)
-        defaultTxnErrorHandler(error, {
-          additionalData: loan,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'RefinanceInstant',
+        .on('error', (error) => {
+          throw error
         })
+        .execute()
+    } catch (error) {
+      destroySnackbar(loadingSnackbarId)
+      defaultTxnErrorHandler(error, {
+        additionalData: loan,
+        walletPubkey: wallet?.publicKey?.toBase58(),
+        transactionName: 'RefinanceInstant',
       })
-      .execute()
+    }
   }
 
   const totalClaimValue = calculateClaimValue(loan)
@@ -257,54 +272,61 @@ export const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, clos
     !repayPercent || (repaymentCallActive && initialRepayValue === paybackValue)
 
   const onSend = async () => {
+    const callAmount = Math.floor((calculateLoanRepayValue(loan) * repayPercent) / 100)
+
     const loadingSnackbarId = uniqueId()
 
-    const callAmount = Math.floor((calculateLoanRepayValue(loan) * repayPercent) / 100)
-    const txnParam = { loan, callAmount }
+    try {
+      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-    await new TxnExecutor(
-      makeRepaymentCallAction,
-      { wallet: createWalletInstance(wallet), connection },
-      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
-    )
-      .addTransactionParam(txnParam)
-      .on('sentSome', (results) => {
-        results.forEach(({ signature }) => enqueueTransactionSent(signature))
-        enqueueWaitingConfirmation(loadingSnackbarId)
+      const txnData = await createRepaymentCallTxnData({
+        loan,
+        callAmount,
+        walletAndConnection,
       })
-      .on('confirmedAll', (results) => {
-        const { confirmed, failed } = results
 
-        destroySnackbar(loadingSnackbarId)
+      await new TxnExecutor<Loan>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+        .addTxnData(txnData)
+        .on('sentSome', (results) => {
+          results.forEach(({ signature }) => enqueueTransactionSent(signature))
+          enqueueWaitingConfirmation(loadingSnackbarId)
+        })
+        .on('confirmedAll', (results) => {
+          const { confirmed, failed } = results
 
-        if (failed.length) {
-          return failed.forEach(({ signature, reason }) =>
-            enqueueConfirmationError(signature, reason),
-          )
-        }
+          destroySnackbar(loadingSnackbarId)
 
-        return confirmed.forEach(({ result, signature }) => {
-          if (result && wallet.publicKey) {
-            enqueueSnackbar({
-              message: 'Repayment call initialized',
-              type: 'success',
-              solanaExplorerPath: `tx/${signature}`,
-            })
-
-            updateOrAddLoan(result)
-            close()
+          if (failed.length) {
+            return failed.forEach(({ signature, reason }) =>
+              enqueueConfirmationError(signature, reason),
+            )
           }
+
+          return confirmed.forEach(({ result, signature }) => {
+            if (result && wallet.publicKey) {
+              enqueueSnackbar({
+                message: 'Repayment call initialized',
+                type: 'success',
+                solanaExplorerPath: `tx/${signature}`,
+              })
+
+              updateOrAddLoan(result)
+              close()
+            }
+          })
         })
-      })
-      .on('error', (error) => {
-        destroySnackbar(loadingSnackbarId)
-        defaultTxnErrorHandler(error, {
-          additionalData: txnParam,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'RepaymentCall',
+        .on('error', (error) => {
+          throw error
         })
+        .execute()
+    } catch (error) {
+      destroySnackbar(loadingSnackbarId)
+      defaultTxnErrorHandler(error, {
+        additionalData: { loan, callAmount },
+        walletPubkey: wallet?.publicKey?.toBase58(),
+        transactionName: 'RepaymentCall',
       })
-      .execute()
+    }
   }
 
   return (

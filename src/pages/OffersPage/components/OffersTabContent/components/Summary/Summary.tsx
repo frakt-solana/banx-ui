@@ -1,6 +1,7 @@
 import { FC, useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { BondOfferOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { sumBy, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
@@ -8,10 +9,12 @@ import { Button } from '@banx/components/Buttons'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { Offer, UserOffer } from '@banx/api/core'
-import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
-import { usePriorityFees } from '@banx/store'
-import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
-import { makeClaimBondOfferInterestAction } from '@banx/transactions/bonds'
+import {
+  TXN_EXECUTOR_DEFAULT_OPTIONS,
+  createExecutorWalletAndConnection,
+  defaultTxnErrorHandler,
+} from '@banx/transactions'
+import { createClaimBondOfferInterestTxnData } from '@banx/transactions/bonds'
 import {
   destroySnackbar,
   enqueueConfirmationError,
@@ -30,63 +33,63 @@ interface SummaryProps {
 const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { priorityLevel } = usePriorityFees()
-
   const totalAccruedInterest = useMemo(
     () => sumBy(offers, ({ offer }) => offer.concentrationIndex),
     [offers],
   )
 
-  const claimInterest = () => {
+  const claimInterest = async () => {
     if (!offers.length) return
 
     const loadingSnackbarId = uniqueId()
 
-    const txnParams = offers.map(({ offer }) => ({
-      optimisticOffer: offer,
-      priorityFeeLevel: priorityLevel,
-    }))
+    try {
+      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-    new TxnExecutor(
-      makeClaimBondOfferInterestAction,
-      {
-        wallet: createWalletInstance(wallet),
-        connection,
-      },
-      {
-        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
-      },
-    )
-      .addTransactionParams(txnParams)
-      .on('sentAll', () => {
-        enqueueTransactionsSent()
-        enqueueWaitingConfirmation(loadingSnackbarId)
-      })
-      .on('confirmedAll', (results) => {
-        const { confirmed, failed } = results
+      const txnsData = await Promise.all(
+        offers.map(({ offer }) =>
+          createClaimBondOfferInterestTxnData({
+            offer,
+            walletAndConnection,
+          }),
+        ),
+      )
 
-        destroySnackbar(loadingSnackbarId)
-
-        if (confirmed.length) {
-          enqueueSnackbar({ message: 'Interest successfully claimed', type: 'success' })
-          confirmed.forEach(({ result }) => result && updateOrAddOffer([result.bondOffer]))
-        }
-
-        if (failed.length) {
-          return failed.forEach(({ signature, reason }) =>
-            enqueueConfirmationError(signature, reason),
-          )
-        }
-      })
-      .on('error', (error) => {
-        destroySnackbar(loadingSnackbarId)
-        defaultTxnErrorHandler(error, {
-          additionalData: offers,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'ClaimOfferInterest',
+      //TODO: Fix genric here
+      await new TxnExecutor<BondOfferOptimistic>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+        .addTxnsData(txnsData)
+        .on('sentAll', () => {
+          enqueueTransactionsSent()
+          enqueueWaitingConfirmation(loadingSnackbarId)
         })
+        .on('confirmedAll', (results) => {
+          const { confirmed, failed } = results
+
+          destroySnackbar(loadingSnackbarId)
+
+          if (confirmed.length) {
+            enqueueSnackbar({ message: 'Interest successfully claimed', type: 'success' })
+            confirmed.forEach(({ result }) => result && updateOrAddOffer([result.bondOffer]))
+          }
+
+          if (failed.length) {
+            return failed.forEach(({ signature, reason }) =>
+              enqueueConfirmationError(signature, reason),
+            )
+          }
+        })
+        .on('error', (error) => {
+          throw error
+        })
+        .execute()
+    } catch (error) {
+      destroySnackbar(loadingSnackbarId)
+      defaultTxnErrorHandler(error, {
+        additionalData: offers,
+        walletPubkey: wallet?.publicKey?.toBase58(),
+        transactionName: 'ClaimOfferInterest',
       })
-      .execute()
+    }
   }
 
   return (
