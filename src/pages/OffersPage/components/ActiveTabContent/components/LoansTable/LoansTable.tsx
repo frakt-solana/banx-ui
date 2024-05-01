@@ -13,6 +13,7 @@ import { Underwater } from '@banx/icons'
 import { isLoanAbleToTerminate } from '@banx/pages/OffersPage'
 import { ViewState, useTableView, useTokenType } from '@banx/store'
 import {
+  isFreezeLoan,
   isLoanLiquidated,
   isLoanRepaymentCallActive,
   isLoanTerminating,
@@ -86,7 +87,7 @@ export const LoansTable = () => {
 
   const onRowClick = useCallback(
     (loan: Loan) => {
-      if (!isLoanAbleToTerminate(loan)) return
+      if (!isLoanAbleToTerminate(loan) || isFreezeLoan(loan)) return
       toggleLoanInSelection(loan, walletPublicKeyString)
     },
     [toggleLoanInSelection, walletPublicKeyString],
