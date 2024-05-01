@@ -5,14 +5,11 @@ import { BACKEND_BASE_URL } from '@banx/constants'
 import { MutationResponse } from '@banx/types'
 import { getDiscordAvatarUrl } from '@banx/utils'
 
-import { convertToSourcesNumber } from './helpers'
 import {
   BonkWithdrawal,
   BonkWithdrawalSchema,
   DiscordUserInfo,
   DiscordUserInfoRaw,
-  FetchUserRewards,
-  FetchUserRewardsResponse,
   LeaderboardData,
   LeaderboardDataSchema,
   LeaderboardTimeRange,
@@ -152,20 +149,6 @@ export const unlinkWallet: UnlinkWallet = async ({ jwt, walletToUnlink }) => {
       message: 'Unable to unlink wallet',
       success: false,
     }
-  }
-}
-
-export const fetchUserRewards: FetchUserRewards = async ({ walletPubkey }) => {
-  const { data } = await axios.get<{ data: FetchUserRewardsResponse }>(
-    `${BACKEND_BASE_URL}/launch/user/${walletPubkey}`,
-  )
-
-  if (!data?.data) return null
-
-  const { sources } = data.data
-
-  return {
-    sources: sources ? convertToSourcesNumber(sources) : undefined,
   }
 }
 
