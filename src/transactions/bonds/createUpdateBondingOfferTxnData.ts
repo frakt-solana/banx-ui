@@ -11,9 +11,9 @@ import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 type CreateUpdateBondingOfferTxnData = (params: {
-  loanValue: number //? value in sol
+  loanValue: number //? human number
   loansAmount: number
-  deltaValue: number //? value in sol
+  deltaValue: number //? human number
   offer: Offer
   tokenType: LendingTokenType
   walletAndConnection: WalletAndConnection
