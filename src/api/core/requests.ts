@@ -232,12 +232,19 @@ export const fetchBorrowerLoansRequests: FetchBorrowerLoansRequests = async ({
   return data.data ?? []
 }
 
-type FetchAllLoansRequests = (props: { tokenType: LendingTokenType }) => Promise<LoansRequests>
+type FetchAllLoansRequests = (props: {
+  tokenType: LendingTokenType
+  getAll?: boolean
+}) => Promise<LoansRequests>
 
-export const fetchAllLoansRequests: FetchAllLoansRequests = async ({ tokenType }) => {
+export const fetchAllLoansRequests: FetchAllLoansRequests = async ({
+  tokenType,
+  getAll = true,
+}) => {
   const queryParams = new URLSearchParams({
     marketType: String(convertToMarketType(tokenType)),
     isPrivate: String(IS_PRIVATE_MARKETS),
+    getAll: String(getAll),
   })
 
   const { data } = await axios.get<AllLoansRequestsResponse>(
