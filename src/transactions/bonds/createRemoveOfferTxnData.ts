@@ -25,7 +25,7 @@ export const createRemoveOfferTxnData: CreateRemoveOfferTxnData = async ({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       bondOfferV2: new web3.PublicKey(offer.publicKey),
-      userPubkey: walletAndConnection.wallet.publicKey as web3.PublicKey,
+      userPubkey: walletAndConnection.wallet.publicKey,
     },
     args: {
       lendingTokenType: tokenType,

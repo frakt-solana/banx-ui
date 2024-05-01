@@ -35,7 +35,7 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
     connection: walletAndConnection.connection,
     accounts: {
       hadoMarket: new web3.PublicKey(marketPubkey),
-      userPubkey: walletAndConnection.wallet.publicKey as web3.PublicKey,
+      userPubkey: walletAndConnection.wallet.publicKey,
     },
     args: {
       loanValue,

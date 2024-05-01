@@ -38,7 +38,7 @@ export const createInstantRefinanceTxnData: CreateInstantRefinanceTxnData = asyn
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       fbond: new web3.PublicKey(fraktBond.publicKey),
-      userPubkey: wallet.publicKey as web3.PublicKey,
+      userPubkey: wallet.publicKey,
       hadoMarket: new web3.PublicKey(bestOffer.hadoMarket),
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
       previousBondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),

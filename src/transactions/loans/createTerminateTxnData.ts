@@ -25,7 +25,7 @@ export const createTerminateTxnData: CreateTerminateTxnData = async ({
       bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
       bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
       fbond: new web3.PublicKey(fraktBond.publicKey),
-      userPubkey: walletAndConnection.wallet.publicKey as web3.PublicKey,
+      userPubkey: walletAndConnection.wallet.publicKey,
     },
     optimistic: {
       fraktBond,

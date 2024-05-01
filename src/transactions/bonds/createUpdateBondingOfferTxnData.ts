@@ -32,7 +32,7 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
     connection: walletAndConnection.connection,
     accounts: {
       bondOfferV2: new web3.PublicKey(offer.publicKey),
-      userPubkey: walletAndConnection.wallet.publicKey as web3.PublicKey,
+      userPubkey: walletAndConnection.wallet.publicKey,
     },
     optimistic: {
       bondOffer: offer as BondOfferV2,

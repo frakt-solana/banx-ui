@@ -95,7 +95,7 @@ const getTxnDataByBorrowType = async ({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
 
       accounts: {
-        userPubkey: walletAndConnection.wallet.publicKey as web3.PublicKey,
+        userPubkey: walletAndConnection.wallet.publicKey,
         protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
       },
       args: {
@@ -138,7 +138,7 @@ const getTxnDataByBorrowType = async ({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
 
       accounts: {
-        userPubkey: walletAndConnection.wallet.publicKey as web3.PublicKey,
+        userPubkey: walletAndConnection.wallet.publicKey,
         protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
         nftMint: new web3.PublicKey(nft.mint),
         bondOfferV2: new web3.PublicKey(offer.publicKey),
@@ -177,7 +177,7 @@ const getTxnDataByBorrowType = async ({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
 
     accounts: {
-      userPubkey: walletAndConnection.wallet.publicKey as web3.PublicKey,
+      userPubkey: walletAndConnection.wallet.publicKey,
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
     },
     args: {

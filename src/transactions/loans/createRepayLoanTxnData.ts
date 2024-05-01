@@ -76,7 +76,7 @@ const getIxnsAndSignersByBorrowType = async ({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         oldBondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
-        userPubkey: wallet.publicKey as web3.PublicKey,
+        userPubkey: wallet.publicKey,
         protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
       },
       args: {
@@ -118,7 +118,7 @@ const getIxnsAndSignersByBorrowType = async ({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         oldBondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
-        userPubkey: wallet.publicKey as web3.PublicKey,
+        userPubkey: wallet.publicKey,
         bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
         lender: new web3.PublicKey(bondTradeTransaction.user),
         fbond: new web3.PublicKey(fraktBond.publicKey),
@@ -156,7 +156,7 @@ const getIxnsAndSignersByBorrowType = async ({
   const { instructions, signers, optimisticResults } = await repayPerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
-      userPubkey: wallet.publicKey as web3.PublicKey,
+      userPubkey: wallet.publicKey,
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
       oldBondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
     },

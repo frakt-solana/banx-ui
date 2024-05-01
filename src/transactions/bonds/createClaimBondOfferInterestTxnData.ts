@@ -22,7 +22,7 @@ export const createClaimBondOfferInterestTxnData: CreateClaimBondOfferInterestTx
   const { instructions, signers, optimisticResult } = await claimPerpetualBondOfferInterest({
     accounts: {
       bondOffer: new web3.PublicKey(offer.publicKey),
-      userPubkey: walletAndConnection.wallet.publicKey as web3.PublicKey,
+      userPubkey: walletAndConnection.wallet.publicKey,
     },
     optimistic: {
       bondOffer: offer as BondOfferV2,

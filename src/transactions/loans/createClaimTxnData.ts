@@ -29,7 +29,7 @@ export const createClaimTxnData: CreateClaimTxnData = async ({ loan, walletAndCo
       accounts: {
         bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
         fbond: new web3.PublicKey(fraktBond.publicKey),
-        userPubkey: wallet.publicKey as web3.PublicKey,
+        userPubkey: wallet.publicKey,
         tree: new web3.PublicKey(loan.nft.compression.tree),
         bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
       },
@@ -71,7 +71,7 @@ export const createClaimTxnData: CreateClaimTxnData = async ({ loan, walletAndCo
           marketPubkey: fraktBond.hadoMarket,
         }),
         bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
-        userPubkey: wallet.publicKey as web3.PublicKey,
+        userPubkey: wallet.publicKey,
         banxStake: new web3.PublicKey(
           fraktBond.banxStake !== EMPTY_PUBKEY.toBase58()
             ? fraktBond.banxStake
