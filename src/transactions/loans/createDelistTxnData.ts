@@ -6,40 +6,31 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 import moment from 'moment'
-import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transactions-executor'
+import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { ListingType } from '../constants'
 import { fetchRuleset } from '../functions'
 
-export type MakeDelistActionParams = {
+type CreateDelistTxnDataParams = {
   loan: Loan
-  priorityFeeLevel: PriorityLevel
+  walletAndConnection: WalletAndConnection
 }
 
-export type MakeDelistAction = CreateTransactionDataFn<MakeDelistActionParams, Loan>
+type CreateDelistTxnData = (params: CreateDelistTxnDataParams) => Promise<CreateTxnData<Loan>>
 
-export const makeDelistAction: MakeDelistAction = async (ixnParams, walletAndConnection) => {
-  const { loan, priorityFeeLevel } = ixnParams
+export const createDelistTxnData: CreateDelistTxnData = async (ixnParams) => {
+  const { loan, walletAndConnection } = ixnParams
 
   const listingType = getNftListingType(loan)
 
-  const { instructions: listingInstructions, signers } = await getIxnsAndSignersByListingType({
+  const { instructions, signers } = await getIxnsAndSignersByListingType({
     ixnParams,
     type: listingType,
     walletAndConnection,
-  })
-
-  const instructions = await mergeWithComputeUnits({
-    instructions: listingInstructions,
-    connection: walletAndConnection.connection,
-    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
-    payer: walletAndConnection.wallet.publicKey,
-    priorityLevel: priorityFeeLevel,
   })
 
   const optimisticLoan = {
@@ -67,7 +58,7 @@ const getIxnsAndSignersByListingType = async ({
   type = ListingType.Default,
   walletAndConnection,
 }: {
-  ixnParams: MakeDelistActionParams
+  ixnParams: CreateDelistTxnDataParams
   type?: ListingType
   walletAndConnection: WalletAndConnection
 }) => {

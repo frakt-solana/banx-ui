@@ -1,25 +1,27 @@
 import { WalletContextState } from '@solana/wallet-adapter-react'
 import { web3 } from 'fbonds-core'
-import { CONSTANT_BID_CAP } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   calculateCurrentInterestSolPure,
   optimisticBorrowUpdateBondingBondOffer,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV2, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
-import { chain, chunk, groupBy, sumBy, uniqueId } from 'lodash'
+import { Dictionary, chain, groupBy, sumBy, uniqueId } from 'lodash'
 import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
-import { BorrowNft, Loan, Offer } from '@banx/api/core'
+import { BorrowNft, Offer } from '@banx/api/core'
 import bonkTokenImg from '@banx/assets/BonkToken.png'
-import { BONDS, SPECIAL_COLLECTIONS_MARKETS, TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
-import { LoansOptimisticStore, OffersOptimisticStore, PriorityLevel } from '@banx/store'
-import { BorrowType, createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
+import { BONDS, SPECIAL_COLLECTIONS_MARKETS } from '@banx/constants'
+import { LoansOptimisticStore, OffersOptimisticStore } from '@banx/store'
 import {
-  BORROW_NFT_PER_TXN,
-  MakeBorrowActionParams,
-  getNftBorrowType,
-  makeBorrowAction,
+  TXN_EXECUTOR_DEFAULT_OPTIONS,
+  createExecutorWalletAndConnection,
+  defaultTxnErrorHandler,
+} from '@banx/transactions'
+import {
+  BorrowTxnOptimisticResult,
+  CreateBorrowTxnDataParams,
+  createBorrowTxnData,
 } from '@banx/transactions/borrow'
 import {
   convertOffersToSimple,
@@ -76,7 +78,7 @@ export const createTableNftData = ({
 
 export const executeBorrow = async (props: {
   isLedger?: boolean
-  txnParams: MakeBorrowActionParams[]
+  createTxnsDataParams: CreateBorrowTxnDataParams[]
   wallet: WalletContextState
   connection: web3.Connection
   addLoansOptimistic: LoansOptimisticStore['add']
@@ -86,7 +88,7 @@ export const executeBorrow = async (props: {
 }) => {
   const {
     isLedger = false,
-    txnParams,
+    createTxnsDataParams,
     wallet,
     connection,
     addLoansOptimistic,
@@ -97,198 +99,138 @@ export const executeBorrow = async (props: {
 
   const loadingSnackbarId = uniqueId()
 
-  const txnsResults = await new TxnExecutor(
-    makeBorrowAction,
-    { wallet: createWalletInstance(wallet), connection },
-    { signAllChunkSize: isLedger ? 1 : 40, confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
-  )
-    .addTransactionParams(txnParams)
-    .on('sentSome', () => {
-      enqueueTransactionsSent()
-      enqueueWaitingConfirmation(loadingSnackbarId)
+  try {
+    const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
+
+    const txnsData = await Promise.all(
+      createTxnsDataParams.map(({ loanValue, nft, offer, optimizeIntoReserves, tokenType }) =>
+        createBorrowTxnData({
+          loanValue,
+          nft,
+          offer,
+          optimizeIntoReserves,
+          tokenType,
+          walletAndConnection,
+        }),
+      ),
+    )
+
+    await new TxnExecutor<BorrowTxnOptimisticResult>(walletAndConnection, {
+      ...TXN_EXECUTOR_DEFAULT_OPTIONS,
+      chunkSize: isLedger ? 1 : 40,
     })
-    .on('confirmedAll', (results) => {
-      const { confirmed, failed } = results
+      .addTxnsData(txnsData)
+      .on('sentSome', () => {
+        enqueueTransactionsSent()
+        enqueueWaitingConfirmation(loadingSnackbarId)
+      })
+      .on('confirmedAll', (results) => {
+        const { confirmed, failed } = results
 
-      destroySnackbar(loadingSnackbarId)
+        destroySnackbar(loadingSnackbarId)
 
-      if (confirmed.length) {
-        enqueueSnackbar({ message: 'Borrowed successfully', type: 'success' })
+        if (confirmed.length) {
+          enqueueSnackbar({ message: 'Borrowed successfully', type: 'success' })
 
-        const loansFlat = confirmed
-          .map(({ result }) => result?.map(({ loan }) => loan))
-          .flat()
-          .filter(Boolean) as Loan[]
+          const loans = chain(confirmed)
+            .map(({ result }) => result?.loan)
+            .compact()
+            .value()
 
-        if (wallet.publicKey) {
-          addLoansOptimistic(loansFlat, wallet.publicKey?.toBase58())
+          if (wallet.publicKey) {
+            addLoansOptimistic(loans, wallet.publicKey?.toBase58())
+          }
+
+          const optimisticByPubkey: Dictionary<OfferWithLoanValue[]> = chain(confirmed)
+            .map(({ result }) => {
+              if (!result) return null
+              const {
+                offer,
+                loan: {
+                  bondTradeTransaction: { solAmount, feeAmount },
+                },
+              } = result
+
+              const loanValue = solAmount + feeAmount
+
+              return {
+                offer,
+                loanValue,
+              }
+            })
+            .compact()
+            .groupBy(({ offer }) => offer.publicKey)
+            .value()
+
+          const optimizeIntoReservesByOfferPubkey: Dictionary<boolean> = chain(createTxnsDataParams)
+            .map(({ offer, optimizeIntoReserves }) => [
+              offer.publicKey,
+              optimizeIntoReserves === undefined ? true : optimizeIntoReserves,
+            ])
+            .uniqBy(([publicKey]) => publicKey)
+            .fromPairs()
+            .value()
+
+          const optimisticsToAdd = chain(optimisticByPubkey)
+            .entries()
+            .map(([offerPubkey, offers]) => {
+              return mergeOffersWithLoanValue(
+                offers,
+                optimizeIntoReservesByOfferPubkey[offerPubkey],
+              )
+            })
+            .compact()
+            .value()
+
+          updateOffersOptimistic(optimisticsToAdd)
+
+          const showCongratsMessage = !!loans
+            .flat()
+            .find(({ fraktBond }) =>
+              SPECIAL_COLLECTIONS_MARKETS.includes(fraktBond.hadoMarket || ''),
+            )
+
+          onSuccessAll?.()
+          onBorrowSuccess?.(loans.length, showCongratsMessage)
         }
 
-        const optimisticOffers: OfferWithLoanValue[] = confirmed
-          ?.map(
-            (result) =>
-              result.result?.map(({ offer, loan }) => ({
-                offer,
-                loanValue:
-                  loan.bondTradeTransaction.solAmount + loan.bondTradeTransaction.feeAmount,
-              })) || [],
+        if (failed.length) {
+          return failed.forEach(({ signature, reason }) =>
+            enqueueConfirmationError(signature, reason),
           )
-          .flat()
-        const optimisticByPubkey = groupBy(optimisticOffers, ({ offer }) => offer.publicKey)
-        const optimizeIntoReservesByOfferPubkey = chain(txnParams)
-          .flatten()
-          .map(({ offer, optimizeIntoReserves }) => [
-            offer.publicKey,
-            optimizeIntoReserves === undefined ? true : optimizeIntoReserves,
-          ])
-          .uniqBy(([publicKey]) => publicKey)
-          .fromPairs()
-          .value() as Record<string, boolean>
-
-        const optimisticsToAdd = Object.entries(optimisticByPubkey).map(([offerPubkey, offers]) => {
-          return mergeOffersWithLoanValue(offers, optimizeIntoReservesByOfferPubkey[offerPubkey])
-        }) as Offer[]
-
-        updateOffersOptimistic(optimisticsToAdd)
-
-        const showCongratsMessage = !!loansFlat
-          .flat()
-          .find(({ fraktBond }) => SPECIAL_COLLECTIONS_MARKETS.includes(fraktBond.hadoMarket || ''))
-
-        onSuccessAll?.()
-        onBorrowSuccess?.(loansFlat.length, showCongratsMessage)
-      }
-
-      if (failed.length) {
-        return failed.forEach(({ signature, reason }) =>
-          enqueueConfirmationError(signature, reason),
-        )
-      }
-    })
-    .on('error', (error) => {
-      destroySnackbar(loadingSnackbarId)
-      defaultTxnErrorHandler(error, {
-        additionalData: txnParams,
-        walletPubkey: wallet?.publicKey?.toBase58(),
-        transactionName: 'Borrow',
+        }
       })
+      .on('error', (error) => {
+        throw error
+      })
+      .execute()
+  } catch (error) {
+    destroySnackbar(loadingSnackbarId)
+    defaultTxnErrorHandler(error, {
+      additionalData: createTxnsDataParams,
+      walletPubkey: wallet?.publicKey?.toBase58(),
+      transactionName: 'Borrow',
     })
-    .execute()
-
-  return txnsResults
+  }
 }
 
-export const createBorrowParams = (
+export const makeCreateTxnsDataParams = (
   nfts: TableNftData[],
   rawOffers: Record<string, Offer[]>,
-  priorityLevel: PriorityLevel,
   tokenType: LendingTokenType,
-) => {
+): CreateBorrowTxnDataParams[] => {
   const nftsByMarket = groupBy(nfts, ({ nft }) => nft.loan.marketPubkey)
 
-  const txnData = chain(nftsByMarket)
-    .entries()
-    //? Match nfts and offers to borrow from the most suitable offers
-    .map(([marketPubkey, nfts]) => matchNftsAndOffers({ nfts, rawOffers: rawOffers[marketPubkey] }))
-    .flatten()
-    .map((txnData) => ({ ...txnData, priorityFeeLevel: priorityLevel, tokenType }))
-    .value()
-
-  return chunkBorrowIxnsParams(txnData)
-}
-
-type MatchNftsAndOffers = (props: {
-  nfts: TableNftData[]
-  rawOffers: Offer[]
-}) => MakeBorrowActionParams
-const matchNftsAndOffers: MatchNftsAndOffers = ({ nfts, rawOffers }) => {
-  //? Create simple offers array sorted by loanValue (offerValue) asc
-  const simpleOffers = convertOffersToSimple(rawOffers, 'asc')
-
-  //? Generate MakeBorrowActionParams
-  const ixnsParams = chain(nfts)
-    .cloneDeep()
-    //? Sort by selected loanValue asc
-    .sort((a, b) => {
-      return a.loanValue - b.loanValue
-    })
-    .reduce(
-      (acc, nft) => {
-        //? Find index of offer. OfferValue must be greater than or equal to selected loanValue. And mustn't be used by prev iteration
-        const offerIndex = simpleOffers.findIndex(
-          ({ loanValue: offerValue }, idx) => nft.loanValue <= offerValue && acc.offerIndex <= idx,
-        )
-
-        const ixnParams = {
-          nft: nft.nft,
-          loanValue: nft.loanValue,
-          //? find normal offer using index
-          offer: rawOffers.find(
-            ({ publicKey }) => publicKey === simpleOffers[offerIndex].publicKey,
-          ),
-        }
-
-        return {
-          //? Increment offerIndex to use in next iteration (to reduce amount of iterations)
-          offerIndex: offerIndex + 1,
-          ixnParams: [...acc.ixnParams, ixnParams] as MakeBorrowActionParams,
-        }
-      },
-      { offerIndex: 0, ixnParams: [] } as { offerIndex: number; ixnParams: MakeBorrowActionParams },
-    )
-    .value().ixnParams
-
-  //? Calc total loanValue for every offer
-  const loanValueSumByOffer = chain(ixnsParams)
-    .groupBy(({ offer }) => offer.publicKey)
-    .entries()
-    .map(([offerPubkey, ixnParams]) => [
-      offerPubkey,
-      sumBy(ixnParams, ({ loanValue }) => loanValue),
-    ])
-    .fromPairs()
-    .value() as Record<string, number>
-
-  return ixnsParams.map(({ offer, ...restParams }) => ({
-    ...restParams,
-    offer,
-    optimizeIntoReserves: offerNeedsReservesOptimizationOnBorrow(
-      offer,
-      loanValueSumByOffer[offer.publicKey],
-    ),
-  }))
-}
-
-const chunkBorrowIxnsParams = (borrowIxnParams: MakeBorrowActionParams) => {
-  const ixnsByBorrowType = groupBy(borrowIxnParams, ({ nft }) => getNftBorrowType(nft))
-  return Object.entries(ixnsByBorrowType)
-    .map(([type, ixns]) => chunk(ixns, BORROW_NFT_PER_TXN[type as BorrowType]))
-    .flat()
-}
-
-type CalcInterest = (props: { loanValue: number; timeInterval: number; apr: number }) => number
-export const calcInterest: CalcInterest = ({ loanValue, timeInterval, apr }) => {
-  const currentTimeUnix = moment().unix()
-
-  return calculateCurrentInterestSolPure({
-    loanValue,
-    startTime: currentTimeUnix - timeInterval,
-    currentTime: currentTimeUnix,
-    rateBasePoints: apr + BONDS.PROTOCOL_REPAY_FEE,
-  })
-}
-
-export const optimisticWithdrawFromBondOffer = (
-  bondOffer: Offer,
-  amountOfSolToWithdraw: number,
-): Offer => {
-  const newFundsSolOrTokenBalance = bondOffer.fundsSolOrTokenBalance - amountOfSolToWithdraw
-  return {
-    ...bondOffer,
-    fundsSolOrTokenBalance: newFundsSolOrTokenBalance,
-    edgeSettlement: newFundsSolOrTokenBalance,
-    bidSettlement: CONSTANT_BID_CAP * -1 + newFundsSolOrTokenBalance,
-  }
+  return (
+    chain(nftsByMarket)
+      .entries()
+      //? Match nfts and offers to borrow from the most suitable offers
+      .map(([marketPubkey, nfts]) =>
+        matchNftsAndOffers({ nfts, rawOffers: rawOffers[marketPubkey], tokenType }),
+      )
+      .flatten()
+      .value()
+  )
 }
 
 const mergeOffersWithLoanValue = (
@@ -309,12 +251,93 @@ const mergeOffersWithLoanValue = (
   return offer
 }
 
+//TODO Simplity, refactor and move to utils
+type MatchNftsAndOffers = (props: {
+  nfts: TableNftData[]
+  rawOffers: Offer[]
+  tokenType: LendingTokenType
+}) => CreateBorrowTxnDataParams[]
+const matchNftsAndOffers: MatchNftsAndOffers = ({ nfts, rawOffers, tokenType }) => {
+  //? Create simple offers array sorted by loanValue (offerValue) asc
+  const simpleOffers = convertOffersToSimple(rawOffers, 'asc')
+
+  //? Generate MakeBorrowActionParams
+  const { txnsParams } = chain(nfts)
+    .cloneDeep()
+    //? Sort by selected loanValue asc
+    .sort((a, b) => {
+      return a.loanValue - b.loanValue
+    })
+    .reduce(
+      (acc, nft) => {
+        //? Find index of offer. OfferValue must be greater than or equal to selected loanValue. And mustn't be used by prev iteration
+        const offerIndex = simpleOffers.findIndex(
+          ({ loanValue: offerValue }, idx) => nft.loanValue <= offerValue && acc.offerIndex <= idx,
+        )
+
+        const txnParams: CreateBorrowTxnDataParams = {
+          nft: nft.nft,
+          loanValue: nft.loanValue,
+          //? find normal offer using index. Assume that offer always can be found
+          offer: rawOffers.find(
+            ({ publicKey }) => publicKey === simpleOffers[offerIndex].publicKey,
+          ) as Offer,
+          tokenType,
+          optimizeIntoReserves: true, //? Set optimizeIntoReserves to true
+        }
+
+        return {
+          //? Increment offerIndex to use in next iteration (to reduce amount of iterations)
+          offerIndex: offerIndex + 1,
+          txnsParams: [...acc.txnsParams, txnParams],
+        }
+      },
+      { offerIndex: 0, txnsParams: [] } as {
+        offerIndex: number
+        txnsParams: CreateBorrowTxnDataParams[]
+      },
+    )
+    .value()
+
+  //? Calc total loanValue for every offer
+  const loanValueSumByOffer = chain(txnsParams)
+    .groupBy(({ offer }) => offer.publicKey)
+    .entries()
+    .map(([offerPubkey, ixnParams]) => [
+      offerPubkey,
+      sumBy(ixnParams, ({ loanValue }) => loanValue),
+    ])
+    .fromPairs()
+    .value() as Record<string, number>
+
+  return txnsParams.map(({ offer, ...restParams }) => ({
+    ...restParams,
+    offer,
+    optimizeIntoReserves: offerNeedsReservesOptimizationOnBorrow(
+      offer,
+      loanValueSumByOffer[offer.publicKey],
+    ),
+  }))
+}
+
+type CalcInterest = (props: { loanValue: number; timeInterval: number; apr: number }) => number
+export const calcInterest: CalcInterest = ({ loanValue, timeInterval, apr }) => {
+  const currentTimeUnix = moment().unix()
+
+  return calculateCurrentInterestSolPure({
+    loanValue,
+    startTime: currentTimeUnix - timeInterval,
+    currentTime: currentTimeUnix,
+    rateBasePoints: apr + BONDS.PROTOCOL_REPAY_FEE,
+  })
+}
+
 type CalcAdjustedLoanValueByMaxByMarket = (props: {
   loanValue: number
   maxLoanValueOnMarket: number
   maxBorrowPercent: number
 }) => number
-export const calcAdjustedLoanValueByMaxByMarket: CalcAdjustedLoanValueByMaxByMarket = ({
+const calcAdjustedLoanValueByMaxByMarket: CalcAdjustedLoanValueByMaxByMarket = ({
   loanValue,
   maxLoanValueOnMarket,
   maxBorrowPercent,

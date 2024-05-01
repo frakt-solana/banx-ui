@@ -23,7 +23,6 @@ import {
   useLoansOptimistic,
   useModal,
   useOffersOptimistic,
-  usePriorityFees,
   useTokenType,
 } from '@banx/store'
 import { createGlobalState } from '@banx/store/functions'
@@ -90,7 +89,6 @@ export const useDashboardBorrowTab = () => {
 export const useSingleBorrow = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { priorityLevel } = usePriorityFees()
   const navigate = useNavigate()
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
@@ -143,16 +141,14 @@ export const useSingleBorrow = () => {
     await executeBorrow({
       wallet,
       connection,
-      txnParams: [
-        [
-          {
-            nft,
-            offer: rawOffer,
-            loanValue: calculateLoanValue(offer),
-            priorityFeeLevel: priorityLevel,
-            tokenType,
-          },
-        ],
+      createTxnsDataParams: [
+        {
+          nft,
+          offer: rawOffer,
+          loanValue: calculateLoanValue(offer),
+          tokenType,
+          optimizeIntoReserves: true,
+        },
       ],
       addLoansOptimistic,
       updateOffersOptimistic,

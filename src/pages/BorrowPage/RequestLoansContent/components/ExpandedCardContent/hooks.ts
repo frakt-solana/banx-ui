@@ -14,18 +14,22 @@ import {
 } from '@banx/components/modals'
 
 import { BorrowNft, Loan, MarketPreview } from '@banx/api/core'
-import { DAYS_IN_YEAR, TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
+import { DAYS_IN_YEAR } from '@banx/constants'
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { PATHS } from '@banx/router'
 import {
   createPathWithTokenParam,
+  useIsLedger,
   useLoansRequestsOptimistic,
   useModal,
-  usePriorityFees,
   useTokenType,
 } from '@banx/store'
-import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
-import { makeListAction } from '@banx/transactions/loans'
+import {
+  TXN_EXECUTOR_DEFAULT_OPTIONS,
+  createExecutorWalletAndConnection,
+  defaultTxnErrorHandler,
+} from '@banx/transactions'
+import { createListTxnData } from '@banx/transactions/loans'
 import {
   convertToHumanNumber,
   destroySnackbar,
@@ -164,7 +168,7 @@ const useRequestLoansTransaction = (props: {
 
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { priorityLevel } = usePriorityFees()
+  const { isLedger } = useIsLedger()
 
   const navigate = useNavigate()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
@@ -197,62 +201,69 @@ const useRequestLoansTransaction = (props: {
 
   const requestLoans = async () => {
     const loadingSnackbarId = uniqueId()
-    const tokenDecimals = getTokenDecimals(tokenType)
 
-    const txnParams = nfts.map((nft) => {
-      return {
-        nft,
-        aprRate: aprValue * 100,
-        loanValue: loanValue * tokenDecimals,
-        freeze: freezeValue * 24 * 3600, //? days to seconds
-        tokenType,
-        priorityFeeLevel: priorityLevel,
-      }
-    })
+    try {
+      const tokenDecimals = getTokenDecimals(tokenType)
+      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-    await new TxnExecutor(
-      makeListAction,
-      { wallet: createWalletInstance(wallet), connection },
-      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
-    )
-      .addTransactionParams(txnParams)
-      .on('sentAll', () => {
-        enqueueTransactionsSent()
-        enqueueWaitingConfirmation(loadingSnackbarId)
+      const txnsData = await Promise.all(
+        nfts.map((nft) =>
+          createListTxnData({
+            nft,
+            aprRate: aprValue * 100,
+            loanValue: loanValue * tokenDecimals,
+            freeze: freezeValue * 24 * 3600, //? days to seconds
+            tokenType,
+            walletAndConnection,
+          }),
+        ),
+      )
+
+      await new TxnExecutor(walletAndConnection, {
+        ...TXN_EXECUTOR_DEFAULT_OPTIONS,
+        chunkSize: isLedger ? 5 : 40,
       })
-      .on('confirmedAll', (results) => {
-        const { confirmed, failed } = results
+        .addTxnsData(txnsData)
+        .on('sentAll', () => {
+          enqueueTransactionsSent()
+          enqueueWaitingConfirmation(loadingSnackbarId)
+        })
+        .on('confirmedAll', (results) => {
+          const { confirmed, failed } = results
 
-        destroySnackbar(loadingSnackbarId)
+          destroySnackbar(loadingSnackbarId)
 
-        if (confirmed.length) {
-          enqueueSnackbar({ message: 'Listings successfully initialized', type: 'success' })
+          if (confirmed.length) {
+            enqueueSnackbar({ message: 'Listings successfully initialized', type: 'success' })
 
-          const loans = confirmed.map(({ result }) => result).filter(Boolean) as Loan[]
+            const loans = confirmed.map(({ result }) => result).filter(Boolean) as Loan[]
 
-          if (wallet.publicKey) {
-            addLoansOptimistic(loans, wallet.publicKey?.toBase58())
+            if (wallet.publicKey) {
+              addLoansOptimistic(loans, wallet.publicKey?.toBase58())
+            }
+
+            goToLoansPage()
+            onBorrowSuccess(loans.length)
           }
 
-          goToLoansPage()
-          onBorrowSuccess(loans.length)
-        }
-
-        if (failed.length) {
-          return failed.forEach(({ signature, reason }) =>
-            enqueueConfirmationError(signature, reason),
-          )
-        }
-      })
-      .on('error', (error) => {
-        destroySnackbar(loadingSnackbarId)
-        defaultTxnErrorHandler(error, {
-          additionalData: txnParams,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'Listing',
+          if (failed.length) {
+            return failed.forEach(({ signature, reason }) =>
+              enqueueConfirmationError(signature, reason),
+            )
+          }
         })
+        .on('error', (error) => {
+          throw error
+        })
+        .execute()
+    } catch (error) {
+      destroySnackbar(loadingSnackbarId)
+      defaultTxnErrorHandler(error, {
+        additionalData: nfts,
+        walletPubkey: wallet?.publicKey?.toBase58(),
+        transactionName: 'ListLoans',
       })
-      .execute()
+    }
   }
 
   return requestLoans

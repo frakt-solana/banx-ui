@@ -10,10 +10,13 @@ import {
 } from '@banx/components/modals'
 
 import { Loan } from '@banx/api/core'
-import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
-import { useModal, usePriorityFees } from '@banx/store'
-import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
-import { makeLendToBorrowAction } from '@banx/transactions/loans'
+import { useIsLedger, useModal } from '@banx/store'
+import {
+  TXN_EXECUTOR_DEFAULT_OPTIONS,
+  createExecutorWalletAndConnection,
+  defaultTxnErrorHandler,
+} from '@banx/transactions'
+import { createLendToBorrowTxnData } from '@banx/transactions/loans'
 import {
   destroySnackbar,
   enqueueConfirmationError,
@@ -30,7 +33,7 @@ import { useLoansState } from '../loansState'
 export const useInstantTransactions = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { priorityLevel } = usePriorityFees()
+  const { isLedger } = useIsLedger()
 
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
   const { addMints } = useAllLoansRequests()
@@ -52,103 +55,116 @@ export const useInstantTransactions = () => {
     }
   }
 
-  const lendToBorrow = (loan: Loan) => {
+  const lendToBorrow = async (loan: Loan) => {
     const loadingSnackbarId = uniqueId()
 
-    new TxnExecutor(
-      makeLendToBorrowAction,
-      { wallet: createWalletInstance(wallet), connection },
-      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
-    )
-      .addTransactionParam({ loan, priorityFeeLevel: priorityLevel })
-      .on('sentSome', (results) => {
-        results.forEach(({ signature }) => enqueueTransactionSent(signature))
-        enqueueWaitingConfirmation(loadingSnackbarId)
-      })
-      .on('confirmedAll', (results) => {
-        const { confirmed, failed } = results
+    try {
+      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-        destroySnackbar(loadingSnackbarId)
+      const txnData = await createLendToBorrowTxnData({ loan, walletAndConnection })
 
-        if (failed.length) {
-          return failed.forEach(({ signature, reason }) =>
-            enqueueConfirmationError(signature, reason),
-          )
-        }
+      await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+        .addTxnData(txnData)
+        .on('sentSome', (results) => {
+          results.forEach(({ signature }) => enqueueTransactionSent(signature))
+          enqueueWaitingConfirmation(loadingSnackbarId)
+        })
+        .on('confirmedAll', (results) => {
+          const { confirmed, failed } = results
 
-        return confirmed.forEach(({ result, signature }) => {
-          if (result) {
-            enqueueSnackbar({
-              message: 'Loan successfully refinanced',
-              type: 'success',
-              solanaExplorerPath: `tx/${signature}`,
+          destroySnackbar(loadingSnackbarId)
+
+          if (failed.length) {
+            return failed.forEach(({ signature, reason }) =>
+              enqueueConfirmationError(signature, reason),
+            )
+          }
+
+          if (confirmed.length) {
+            return confirmed.forEach(({ result, signature }) => {
+              if (result) {
+                enqueueSnackbar({
+                  message: 'Loan successfully refinanced',
+                  type: 'success',
+                  solanaExplorerPath: `tx/${signature}`,
+                })
+
+                addMints([loan.nft.mint])
+                removeSelection(loan.publicKey)
+                onSuccess(1)
+              }
             })
-
-            addMints([loan.nft.mint])
-            removeSelection(loan.publicKey)
-            onSuccess(1)
           }
         })
-      })
-      .on('error', (error) => {
-        destroySnackbar(loadingSnackbarId)
-        defaultTxnErrorHandler(error, {
-          additionalData: loan,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'Refinance',
+        .on('error', (error) => {
+          throw error
         })
+        .execute()
+    } catch (error) {
+      destroySnackbar(loadingSnackbarId)
+      defaultTxnErrorHandler(error, {
+        additionalData: loan,
+        walletPubkey: wallet?.publicKey?.toBase58(),
+        transactionName: 'LendToBorrow',
       })
-      .execute()
+    }
   }
 
-  const lendToBorrowAll = () => {
+  const lendToBorrowAll = async () => {
     const loadingSnackbarId = uniqueId()
 
-    const txnParams = selection.map((loan) => ({ loan, priorityFeeLevel: priorityLevel }))
+    try {
+      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-    new TxnExecutor(
-      makeLendToBorrowAction,
-      { wallet: createWalletInstance(wallet), connection },
-      { confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS },
-    )
-      .addTransactionParams(txnParams)
-      .on('sentAll', () => {
-        enqueueTransactionsSent()
-        enqueueWaitingConfirmation(loadingSnackbarId)
+      const txnsData = await Promise.all(
+        selection.map((loan) => createLendToBorrowTxnData({ loan, walletAndConnection })),
+      )
+
+      await new TxnExecutor<Loan>(walletAndConnection, {
+        ...TXN_EXECUTOR_DEFAULT_OPTIONS,
+        chunkSize: isLedger ? 5 : 40,
       })
-      .on('confirmedAll', (results) => {
-        const { confirmed, failed } = results
-
-        destroySnackbar(loadingSnackbarId)
-
-        if (confirmed.length) {
-          enqueueSnackbar({ message: 'Loans successfully refinanced', type: 'success' })
-
-          const mintsToHidden = chain(confirmed)
-            .map(({ result }) => result?.nft.mint)
-            .compact()
-            .value()
-
-          addMints(mintsToHidden)
-          clearSelection()
-          onSuccess(mintsToHidden.length)
-        }
-
-        if (failed.length) {
-          return failed.forEach(({ signature, reason }) =>
-            enqueueConfirmationError(signature, reason),
-          )
-        }
-      })
-      .on('error', (error) => {
-        destroySnackbar(loadingSnackbarId)
-        defaultTxnErrorHandler(error, {
-          additionalData: txnParams,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'Refinance',
+        .addTxnsData(txnsData)
+        .on('sentAll', () => {
+          enqueueTransactionsSent()
+          enqueueWaitingConfirmation(loadingSnackbarId)
         })
+        .on('confirmedAll', (results) => {
+          const { confirmed, failed } = results
+
+          destroySnackbar(loadingSnackbarId)
+
+          if (confirmed.length) {
+            enqueueSnackbar({ message: 'Loans successfully refinanced', type: 'success' })
+
+            const mintsToHidden = chain(confirmed)
+              .map(({ result }) => result?.nft.mint)
+              .compact()
+              .value()
+
+            addMints(mintsToHidden)
+            clearSelection()
+            onSuccess(mintsToHidden.length)
+          }
+
+          if (failed.length) {
+            return failed.forEach(({ signature, reason }) =>
+              enqueueConfirmationError(signature, reason),
+            )
+          }
+        })
+        .on('error', (error) => {
+          throw error
+        })
+        .execute()
+    } catch (error) {
+      destroySnackbar(loadingSnackbarId)
+      defaultTxnErrorHandler(error, {
+        additionalData: selection,
+        walletPubkey: wallet?.publicKey?.toBase58(),
+        transactionName: 'LendToBorrowAll',
       })
-      .execute()
+    }
   }
 
   return {

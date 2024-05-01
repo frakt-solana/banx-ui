@@ -6,15 +6,21 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Tab, useTabs } from '@banx/components/Tabs'
 
-import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import {
   calcPartnerPoints,
   useBanxStakeInfo,
   useBanxStakeSettings,
 } from '@banx/pages/AdventuresPage'
-import { useModal, usePriorityFees } from '@banx/store'
-import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
-import { stakeBanxTokenAction, unstakeBanxTokenAction } from '@banx/transactions/staking'
+import { useModal } from '@banx/store'
+import {
+  TXN_EXECUTOR_DEFAULT_OPTIONS,
+  createExecutorWalletAndConnection,
+  defaultTxnErrorHandler,
+} from '@banx/transactions'
+import {
+  createStakeBanxTokenTxnData,
+  createUnstakeBanxTokenTxnData,
+} from '@banx/transactions/staking'
 import {
   ZERO_BN,
   bnToHuman,
@@ -102,101 +108,100 @@ export const useStakeTokensModal = () => {
 export const useTokenTransactions = (inputTokenAmount: string) => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { priorityLevel } = usePriorityFees()
   const { close } = useModal()
 
-  const onStake = () => {
+  const onStake = async () => {
     const loadingSnackbarId = uniqueId()
 
-    const txnParam = {
-      tokensToStake: formatBanxTokensStrToBN(inputTokenAmount),
-      priorityFeeLevel: priorityLevel,
-    }
+    try {
+      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-    new TxnExecutor(
-      stakeBanxTokenAction,
-      { wallet: createWalletInstance(wallet), connection },
-      {
-        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
-      },
-    )
-      .addTransactionParams([txnParam])
-      .on('sentAll', (results) => {
-        enqueueTransactionsSent()
-        enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)
-        close()
+      const txnData = await createStakeBanxTokenTxnData({
+        tokensToStake: formatBanxTokensStrToBN(inputTokenAmount),
+        walletAndConnection,
       })
-      .on('confirmedAll', (results) => {
-        destroySnackbar(loadingSnackbarId)
 
-        const { confirmed, failed } = results
-
-        if (confirmed.length) {
-          enqueueSnackbar({ message: 'Staked successfully', type: 'success' })
-        }
-
-        if (failed.length) {
-          return failed.forEach(({ signature, reason }) =>
-            enqueueConfirmationError(signature, reason),
-          )
-        }
-      })
-      .on('error', (error) => {
-        destroySnackbar(loadingSnackbarId)
-        defaultTxnErrorHandler(error, {
-          additionalData: txnParam,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'Stake banx token',
+      await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+        .addTxnData(txnData)
+        .on('sentAll', (results) => {
+          enqueueTransactionsSent()
+          enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)
+          close()
         })
+        .on('confirmedAll', (results) => {
+          destroySnackbar(loadingSnackbarId)
+
+          const { confirmed, failed } = results
+
+          if (confirmed.length) {
+            enqueueSnackbar({ message: 'Staked successfully', type: 'success' })
+          }
+
+          if (failed.length) {
+            return failed.forEach(({ signature, reason }) =>
+              enqueueConfirmationError(signature, reason),
+            )
+          }
+        })
+        .on('error', (error) => {
+          throw error
+        })
+        .execute()
+    } catch (error) {
+      destroySnackbar(loadingSnackbarId)
+      defaultTxnErrorHandler(error, {
+        additionalData: inputTokenAmount,
+        walletPubkey: wallet?.publicKey?.toBase58(),
+        transactionName: 'Stake banx token',
       })
-      .execute()
+    }
   }
 
-  const onUnstake = () => {
+  const onUnstake = async () => {
     const loadingSnackbarId = uniqueId()
 
-    const txnParam = {
-      tokensToUnstake: formatBanxTokensStrToBN(inputTokenAmount),
-      priorityFeeLevel: priorityLevel,
-    }
+    try {
+      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-    new TxnExecutor(
-      unstakeBanxTokenAction,
-      { wallet: createWalletInstance(wallet), connection },
-      {
-        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
-      },
-    )
-      .addTransactionParams([txnParam])
-      .on('sentAll', (results) => {
-        enqueueTransactionsSent()
-        enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)
-        close()
+      const txnData = await createUnstakeBanxTokenTxnData({
+        tokensToUnstake: formatBanxTokensStrToBN(inputTokenAmount),
+        walletAndConnection,
       })
-      .on('confirmedAll', (results) => {
-        destroySnackbar(loadingSnackbarId)
 
-        const { confirmed, failed } = results
-
-        if (confirmed.length) {
-          enqueueSnackbar({ message: 'Unstaked successfully', type: 'success' })
-        }
-
-        if (failed.length) {
-          return failed.forEach(({ signature, reason }) =>
-            enqueueConfirmationError(signature, reason),
-          )
-        }
-      })
-      .on('error', (error) => {
-        destroySnackbar(loadingSnackbarId)
-        defaultTxnErrorHandler(error, {
-          additionalData: txnParam,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'Unstake banx token',
+      new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+        .addTxnData(txnData)
+        .on('sentAll', (results) => {
+          enqueueTransactionsSent()
+          enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)
+          close()
         })
+        .on('confirmedAll', (results) => {
+          destroySnackbar(loadingSnackbarId)
+
+          const { confirmed, failed } = results
+
+          if (confirmed.length) {
+            enqueueSnackbar({ message: 'Unstaked successfully', type: 'success' })
+          }
+
+          if (failed.length) {
+            return failed.forEach(({ signature, reason }) =>
+              enqueueConfirmationError(signature, reason),
+            )
+          }
+        })
+        .on('error', (error) => {
+          throw error
+        })
+        .execute()
+    } catch (error) {
+      destroySnackbar(loadingSnackbarId)
+      defaultTxnErrorHandler(error, {
+        additionalData: inputTokenAmount,
+        walletPubkey: wallet?.publicKey?.toBase58(),
+        transactionName: 'Unstake banx token',
       })
-      .execute()
+    }
   }
 
   return {

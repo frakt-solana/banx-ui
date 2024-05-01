@@ -7,48 +7,35 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
-import { CreateTransactionDataFn, WalletAndConnection } from 'solana-transactions-executor'
+import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { BorrowNft, Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { PriorityLevel, mergeWithComputeUnits } from '@banx/store'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { ListingType } from '../constants'
 import { fetchRuleset } from '../functions'
 
-export type MakeListingActionParams = {
+type CreateListTxnDataParams = {
   nft: BorrowNft
   aprRate: number
   loanValue: number
   freeze: number
   tokenType: LendingTokenType
-  priorityFeeLevel: PriorityLevel
+  walletAndConnection: WalletAndConnection
 }
 
-export type MakeListAction = CreateTransactionDataFn<MakeListingActionParams, Loan>
+type CreateListTxnData = (params: CreateListTxnDataParams) => Promise<CreateTxnData<Loan>>
 
-export const makeListAction: MakeListAction = async (ixnParams, walletAndConnection) => {
-  const { nft, priorityFeeLevel } = ixnParams
+export const createListTxnData: CreateListTxnData = async (ixnParams) => {
+  const { nft, walletAndConnection } = ixnParams
 
   const listingType = getNftListingType(nft)
 
-  const {
-    instructions: listingInstructions,
-    signers,
-    optimisticResults,
-  } = await getIxnsAndSignersByListingType({
+  const { instructions, signers, optimisticResults } = await getIxnsAndSignersByListingType({
     ixnParams,
     type: listingType,
     walletAndConnection,
-  })
-
-  const instructions = await mergeWithComputeUnits({
-    instructions: listingInstructions,
-    connection: walletAndConnection.connection,
-    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
-    payer: walletAndConnection.wallet.publicKey,
-    priorityLevel: priorityFeeLevel,
   })
 
   const optimisticLoan = {
@@ -71,7 +58,7 @@ const getIxnsAndSignersByListingType = async ({
   type = ListingType.Default,
   walletAndConnection,
 }: {
-  ixnParams: MakeListingActionParams
+  ixnParams: CreateListTxnDataParams
   type?: ListingType
   walletAndConnection: WalletAndConnection
 }) => {

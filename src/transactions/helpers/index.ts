@@ -1,5 +1,3 @@
 export * from './enqueueErrorSnackbar'
 export * from './getTxnErrorDefinition'
-export * from './signAndConfirmTransaction'
-export * from './signAndSendAllTransactions'
 export * from './defaultTxnErrorHandler'
