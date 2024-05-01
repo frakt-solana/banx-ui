@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { web3 } from 'fbonds-core'
 import { BanxStakeState } from 'fbonds-core/lib/fbond-protocol/types'
 import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
@@ -11,13 +10,16 @@ import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { BanxStakeNft } from '@banx/api/staking'
-import { BANX_STAKING, TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import { TensorFilled } from '@banx/icons'
 import { useBanxStakeInfo, useBanxStakeSettings } from '@banx/pages/AdventuresPage'
 import { NftCheckbox, NftsStats } from '@banx/pages/AdventuresPage/components'
-import { useModal, usePriorityFees } from '@banx/store'
-import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
-import { stakeBanxNftAction, unstakeBanxNftsAction } from '@banx/transactions/staking'
+import { useModal } from '@banx/store'
+import {
+  TXN_EXECUTOR_DEFAULT_OPTIONS,
+  createExecutorWalletAndConnection,
+  defaultTxnErrorHandler,
+} from '@banx/transactions'
+import { createStakeBanxNftTxnData, createUnstakeBanxNftTxnData } from '@banx/transactions/staking'
 import {
   destroySnackbar,
   enqueueConfirmationError,
@@ -28,15 +30,13 @@ import {
 
 import styles from './StakeNftsModal.module.less'
 
-//TODO Refactor
 export const StakeNftsModal = () => {
   const { connection } = useConnection()
   const wallet = useWallet()
-  const { priorityLevel } = usePriorityFees()
 
   const { close } = useModal()
-  const { banxStakeSettings /* setBanxTokenSettingsOptimistic */ } = useBanxStakeSettings()
-  const { banxStakeInfo /* setBanxTokenStakeOptimistic */ } = useBanxStakeInfo()
+  const { banxStakeSettings } = useBanxStakeSettings()
+  const { banxStakeInfo } = useBanxStakeInfo()
 
   const [selectedNfts, setSelectedNfts] = useState<BanxStakeNft[]>([])
 
@@ -81,29 +81,27 @@ export const StakeNftsModal = () => {
     return nfts.filter((nft) => nft?.stake?.banxStakeState === BanxStakeState.Staked)
   }, [banxStakeInfo, currentTab])
 
-  const onStake = () => {
+  const onStake = async () => {
+    if (!wallet.publicKey || !banxStakeSettings || !banxStakeInfo) {
+      return
+    }
+
+    const loadingSnackbarId = uniqueId()
+
     try {
-      if (!wallet.publicKey || !banxStakeSettings || !banxStakeInfo) {
-        return
-      }
+      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const params = selectedNfts.map((nft) => ({
-        nftMint: nft.mint,
-        whitelistEntry: new web3.PublicKey(BANX_STAKING.WHITELIST_ENTRY_PUBKEY),
-        hadoRegistry: new web3.PublicKey(BANX_STAKING.HADO_REGISTRY_PUBKEY),
-        priorityFeeLevel: priorityLevel,
-      }))
-
-      const loadingSnackbarId = uniqueId()
-
-      new TxnExecutor(
-        stakeBanxNftAction,
-        { wallet: createWalletInstance(wallet), connection },
-        {
-          confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
-        },
+      const txnsData = await Promise.all(
+        selectedNfts.map((nft) =>
+          createStakeBanxNftTxnData({
+            nftMint: nft.mint,
+            walletAndConnection,
+          }),
+        ),
       )
-        .addTransactionParams(params)
+
+      await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+        .addTxnsData(txnsData)
         .on('sentAll', () => {
           enqueueTransactionsSent()
           enqueueWaitingConfirmation(loadingSnackbarId)
@@ -125,41 +123,40 @@ export const StakeNftsModal = () => {
           }
         })
         .on('error', (error) => {
-          destroySnackbar(loadingSnackbarId)
-          defaultTxnErrorHandler(error, {
-            additionalData: params,
-            walletPubkey: wallet?.publicKey?.toBase58(),
-            transactionName: 'StakeBanx',
-          })
+          throw error
         })
         .execute()
     } catch (error) {
-      console.error(error)
+      destroySnackbar(loadingSnackbarId)
+      defaultTxnErrorHandler(error, {
+        additionalData: selectedNfts,
+        walletPubkey: wallet?.publicKey?.toBase58(),
+        transactionName: 'StakeBanx',
+      })
     }
   }
-  const onUnstake = () => {
+  const onUnstake = async () => {
+    if (!wallet.publicKey?.toBase58() || !banxStakeSettings || !banxStakeInfo) {
+      return
+    }
+
+    const loadingSnackbarId = uniqueId()
+
     try {
-      if (!wallet.publicKey?.toBase58() || !banxStakeSettings || !banxStakeInfo) {
-        return
-      }
+      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const params = selectedNfts.map((nft) => ({
-        nftMint: nft.mint,
-        userPubkey: wallet.publicKey as web3.PublicKey,
-        nftStakePublicKey: nft.stake?.publicKey ?? '',
-        priorityFeeLevel: priorityLevel,
-      }))
-
-      const loadingSnackbarId = uniqueId()
-
-      new TxnExecutor(
-        unstakeBanxNftsAction,
-        { wallet: createWalletInstance(wallet), connection },
-        {
-          confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
-        },
+      const txnsData = await Promise.all(
+        selectedNfts.map((nft) =>
+          createUnstakeBanxNftTxnData({
+            nftMint: nft.mint,
+            nftStakePublicKey: nft.stake?.publicKey ?? '',
+            walletAndConnection,
+          }),
+        ),
       )
-        .addTransactionParams(params)
+
+      await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+        .addTxnsData(txnsData)
         .on('sentAll', () => {
           enqueueTransactionsSent()
           enqueueWaitingConfirmation(loadingSnackbarId)
@@ -181,16 +178,16 @@ export const StakeNftsModal = () => {
           }
         })
         .on('error', (error) => {
-          destroySnackbar(loadingSnackbarId)
-          defaultTxnErrorHandler(error, {
-            additionalData: params,
-            walletPubkey: wallet?.publicKey?.toBase58(),
-            transactionName: 'UnstakeBanx',
-          })
+          throw error
         })
         .execute()
     } catch (error) {
-      console.error(error)
+      destroySnackbar(loadingSnackbarId)
+      defaultTxnErrorHandler(error, {
+        additionalData: selectedNfts,
+        walletPubkey: wallet?.publicKey?.toBase58(),
+        transactionName: 'UnstakeBanx',
+      })
     }
   }
 

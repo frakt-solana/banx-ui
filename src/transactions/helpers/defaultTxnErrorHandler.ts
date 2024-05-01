@@ -1,11 +1,9 @@
-import { TxnError } from 'solana-transactions-executor'
-
 import { captureSentryTxnError } from '@banx/utils'
 
 import { enqueueTxnErrorSnackbar } from './enqueueErrorSnackbar'
 
 type DefaultTxnErrorHandler = (
-  error: TxnError,
+  error: unknown,
   options?: Partial<{
     additionalData: unknown
     walletPubkey: string
@@ -14,12 +12,19 @@ type DefaultTxnErrorHandler = (
 ) => void
 
 export const defaultTxnErrorHandler: DefaultTxnErrorHandler = (error, options = {}) => {
-  const { walletPubkey, additionalData, transactionName } = options
-
   console.error(error)
-  if (error?.logs) {
-    console.error(error?.logs?.join('\n'))
+
+  if (error instanceof Error) {
+    enqueueTxnErrorSnackbar(error)
   }
+
+  //? If error has logs --> print them
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if ((error as any)?.logs) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    console.error((error as any)?.logs?.join('\n'))
+  }
+
+  const { walletPubkey, additionalData, transactionName } = options
   captureSentryTxnError({ error, additionalData, walletPubkey, transactionName })
-  enqueueTxnErrorSnackbar(error)
 }

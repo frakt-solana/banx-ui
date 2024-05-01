@@ -9,6 +9,8 @@ export enum PriorityLevel {
   VERY_HIGH = 'VeryHigh',
 }
 
+const DEFAULT_PRIORITY_FEE_LEVEL = PriorityLevel.HIGH
+
 const HUMAN_PRIORITY_LEVEL: Record<PriorityLevel, string> = {
   [PriorityLevel.DEFAULT]: 'Fast',
   [PriorityLevel.HIGH]: 'Turbo',
@@ -27,33 +29,16 @@ type PriorityFeesState = {
 export const usePriorityFeesState = create<PriorityFeesState>((set) => ({
   priorityLevel: PriorityLevel.DEFAULT,
   setPriorityLevel: (priorityLevel: PriorityLevel) => set((state) => ({ ...state, priorityLevel })),
-  // maxCap: DEFAULT_PRIORITY_FEE,
-  // exactFee: DEFAULT_PRIORITY_FEE,
 }))
 
 export const usePriorityFees = () => {
   const { priorityLevel, setPriorityLevel: setPriorityLevelState } = usePriorityFeesState(
     (state) => {
-      try {
-        const priorityLevelJSON = localStorage.getItem(BANX_PRIORITY_FEES_STATE_LS_KEY)
-        const priorityLevel = priorityLevelJSON
-          ? (JSON.parse(priorityLevelJSON) as PriorityLevel)
-          : PriorityLevel.HIGH
+      const priorityLevel = getPriorityFeeLevel()
 
-        //? Check LS data validity
-        z.nativeEnum(PriorityLevel).parse(priorityLevel)
-
-        return {
-          ...state,
-          priorityLevel,
-        }
-      } catch (error) {
-        console.error('Error getting priority fee from LS. Set DEFAULT')
-        localStorage.removeItem(BANX_PRIORITY_FEES_STATE_LS_KEY)
-        return {
-          ...state,
-          priorityLevel: PriorityLevel.HIGH,
-        }
+      return {
+        ...state,
+        priorityLevel,
       }
     },
   )
@@ -68,4 +53,26 @@ export const usePriorityFees = () => {
   }
 
   return { priorityLevel, setPriorityLevel }
+}
+
+export const getPriorityFeeLevel = () => {
+  try {
+    const priorityLevelJSON = localStorage.getItem(BANX_PRIORITY_FEES_STATE_LS_KEY)
+
+    //? If fee level isn't saved in LS --> return default
+    if (!priorityLevelJSON) {
+      return DEFAULT_PRIORITY_FEE_LEVEL
+    }
+
+    const priorityLevel: PriorityLevel = JSON.parse(priorityLevelJSON)
+
+    //? Check LS data validity
+    z.nativeEnum(PriorityLevel).parse(priorityLevel)
+
+    return priorityLevel
+  } catch (error) {
+    console.error('Invalid priorityFee value in LS. Value was removed')
+    localStorage.removeItem(BANX_PRIORITY_FEES_STATE_LS_KEY)
+    return PriorityLevel.HIGH
+  }
 }
