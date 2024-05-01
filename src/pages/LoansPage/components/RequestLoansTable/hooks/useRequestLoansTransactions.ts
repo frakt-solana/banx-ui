@@ -57,7 +57,7 @@ export const useRequestLoansTransactions = () => {
           return confirmed.forEach(({ result, signature }) => {
             if (result && wallet.publicKey) {
               enqueueSnackbar({
-                message: 'Delist successfully',
+                message: 'Delisted successfully',
                 type: 'success',
                 solanaExplorerPath: `tx/${signature}`,
               })
