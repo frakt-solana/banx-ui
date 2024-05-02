@@ -5,6 +5,7 @@ import { filter, first, groupBy, isEmpty, map } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
 import { Loan } from '@banx/api/core'
+import { BorrowTabName, useBorrowTabs } from '@banx/pages/BorrowPage'
 import { REQUEST_LOANS_TABLE_MESSAGES } from '@banx/pages/LoansPage/constants'
 import { PATHS } from '@banx/router'
 import { createPathWithTokenParam, useTokenType } from '@banx/store'
@@ -29,6 +30,8 @@ export const useRequestsLoansTable = ({ loans, isLoading }: UseLoansActiveTableP
 
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
 
+  const { setTab: setBorrowTab } = useBorrowTabs()
+
   const filteredLoansBySelectedCollections = useMemo(() => {
     if (!selectedCollections.length) return loans
 
@@ -47,12 +50,13 @@ export const useRequestsLoansTable = ({ loans, isLoading }: UseLoansActiveTableP
   const showSummary = !isEmpty(loans) && !isLoading
 
   const goToBorrowPage = () => {
+    setBorrowTab(BorrowTabName.REQUEST)
     navigate(createPathWithTokenParam(PATHS.BORROW, tokenType))
   }
 
   const emptyListParams = {
     message: REQUEST_LOANS_TABLE_MESSAGES[connected ? 'connected' : 'notConnected'],
-    buttonProps: connected ? { text: 'List loans requests', onClick: goToBorrowPage } : undefined,
+    buttonProps: connected ? { text: 'List loan request', onClick: goToBorrowPage } : undefined,
   }
 
   return {
