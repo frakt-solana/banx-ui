@@ -1,16 +1,19 @@
-import React, { FC } from 'react'
+import React, { FC, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { map, sumBy } from 'lodash'
+import { map, maxBy, sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import { useWalletModal } from '@banx/components/WalletModal'
+import { Modal } from '@banx/components/modals/BaseModal'
 
 import { Loan } from '@banx/api/core'
-import { calcWeightedAverage } from '@banx/utils'
+import { SECONDS_IN_DAY } from '@banx/constants'
+import { useModal } from '@banx/store'
+import { calcWeightedAverage, isFreezeLoan } from '@banx/utils'
 
 import { calcWeeklyInterestFee, calculateLendValue } from './helpers'
 import { useInstantTransactions } from './hooks'
@@ -24,16 +27,31 @@ export const Summary: FC<{ loans: Loan[] }> = ({ loans }) => {
   const { lendToBorrowAll } = useInstantTransactions()
   const { selection, set: setSelection } = useLoansState()
 
+  const { open } = useModal()
+
+  const freezeLoans = useMemo(() => {
+    return selection.filter(isFreezeLoan)
+  }, [selection])
+
   const { totalDebt, totalWeeklyInterest, weightedApr, weightedLtv } =
     calculateSummaryInfo(selection)
 
+  const showModal = () => {
+    open(WarningModal, { loans: freezeLoans, lendToBorrowAll })
+  }
+
   const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    if (connected) {
-      lendToBorrowAll()
-    } else {
-      toggleVisibility()
-    }
     event.stopPropagation()
+
+    if (!connected) {
+      return toggleVisibility()
+    }
+
+    if (freezeLoans.length) {
+      return showModal()
+    }
+
+    return lendToBorrowAll()
   }
 
   const handleLoanSelection = (value = 0) => {
@@ -70,6 +88,38 @@ export const Summary: FC<{ loans: Loan[] }> = ({ loans }) => {
         </Button>
       </div>
     </div>
+  )
+}
+
+interface WarningModalProps {
+  loans: Loan[]
+  lendToBorrowAll: () => Promise<void>
+}
+
+const WarningModal: FC<WarningModalProps> = ({ loans, lendToBorrowAll }) => {
+  const { close } = useModal()
+
+  const totalLoans = loans.length
+
+  const maxTerminateFreezeInDays =
+    maxBy(map(loans, (loan) => loan.bondTradeTransaction.terminationFreeze / SECONDS_IN_DAY)) || 0
+
+  return (
+    <Modal className={styles.modal} open onCancel={close} width={496}>
+      <h3>Please pay attention!</h3>
+      <p>
+        Are you sure you want to fund {totalLoans} loans for up to {maxTerminateFreezeInDays} days
+        with no termination option?
+      </p>
+      <div className={styles.actionsButtons}>
+        <Button onClick={close} className={styles.cancelButton}>
+          Cancel
+        </Button>
+        <Button onClick={lendToBorrowAll} className={styles.confirmButton}>
+          Confirm
+        </Button>
+      </div>
+    </Modal>
   )
 }
 
