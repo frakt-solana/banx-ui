@@ -52,6 +52,9 @@ export const useInstantTransactions = () => {
         },
         onCancel: close,
       })
+    } else {
+      //? Close warning modal
+      close()
     }
   }
 
