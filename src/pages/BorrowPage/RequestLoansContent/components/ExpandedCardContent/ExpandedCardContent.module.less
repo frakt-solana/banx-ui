@@ -2,7 +2,7 @@
   cursor: default;
   display: flex;
   overflow: hidden;
-  height: 332px;
+  height: 346px;
   width: 100%;
 
   @media (max-width: 640px) {
@@ -23,7 +23,7 @@
 }
 
 .activityTableWrapper {
-  height: 236px;
+  height: 250px;
 
   @media (max-width: 640px) {
     height: 184px;
@@ -42,22 +42,35 @@
 
 .fields {
   display: flex;
-  align-items: center;
   flex-wrap: wrap;
   gap: 12px;
   width: 220px;
 
-  & > div {
-    max-width: 104px;
-  }
-
   @media (max-width: 640px) {
     flex-wrap: nowrap;
     width: 100%;
+  }
+}
 
-    & > div {
-      max-width: unset;
-    }
+.selectCurrencyField {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.lenderSeesMessage {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font: var(--body-text-sm);
+  height: 14px;
+}
+
+.field {
+  max-width: 104px;
+
+  @media (max-width: 640px) {
+    max-width: unset;
   }
 }
 

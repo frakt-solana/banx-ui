@@ -31,6 +31,7 @@ import {
 } from '@banx/transactions'
 import { createListTxnData } from '@banx/transactions/loans'
 import {
+  calcBorrowValueWithProtocolFee,
   convertToHumanNumber,
   destroySnackbar,
   enqueueConfirmationError,
@@ -130,6 +131,10 @@ export const useRequestLoansForm = (market: MarketPreview) => {
     ? `The min APR is ${MIN_APR_VALUE}%`
     : `List ${totalNftsToRequest <= 1 ? 'request' : `${totalNftsToRequest} requests`}`
 
+  //? requestedLoanValue with upfront fee
+  const lenderSeesLoanValue =
+    requestedLoanValue + (requestedLoanValue - calcBorrowValueWithProtocolFee(requestedLoanValue))
+
   return {
     inputLoanValue,
     inputAprValue,
@@ -149,6 +154,7 @@ export const useRequestLoansForm = (market: MarketPreview) => {
     ltv,
     upfrontFee,
     weeklyInterest,
+    lenderSeesLoanValue,
 
     tokenType,
 

@@ -45,6 +45,7 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
     requestLoans,
     disabledListAction,
     actionButtonText,
+    lenderSeesLoanValue,
   } = useRequestLoansForm(market)
 
   const { value: currentTabValue, ...tabsProps } = useTabs({
@@ -58,18 +59,27 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
         <Summary ltv={ltv} upfrontFee={upfrontFee} weeklyInterest={weeklyInterest} />
 
         <div className={styles.fields}>
-          <SelectCurrencyInput
-            label="Borrow"
-            value={inputLoanValue}
-            onChange={handleChangeLoanValue}
-            disabled={!connected || !nfts.length}
-            tokenType={tokenType}
-          />
+          <div className={styles.selectCurrencyField}>
+            <SelectCurrencyInput
+              label="Borrow"
+              value={inputLoanValue}
+              onChange={handleChangeLoanValue}
+              disabled={!connected || !nfts.length}
+              tokenType={tokenType}
+            />
+            <p className={styles.lenderSeesMessage}>
+              {inputLoanValue ? (
+                <>Lender sees: {<DisplayValue value={lenderSeesLoanValue} />}</>
+              ) : null}
+            </p>
+          </div>
+
           <NumericStepInput
             label="Freeze"
             value={inputFreezeValue}
             onChange={handleChangeFreezeValue}
             disabled={!connected || !nfts.length}
+            className={styles.field}
             placeholder="0"
             postfix="d" //? d => days
             max={DAYS_IN_YEAR}
@@ -80,6 +90,7 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
             value={inputAprValue}
             onChange={handleChangeAprValue}
             disabled={!connected || !nfts.length}
+            className={styles.field}
             placeholder="0"
             postfix="%"
             max={MAX_APR_VALUE}
