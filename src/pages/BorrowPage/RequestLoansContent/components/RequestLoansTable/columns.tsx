@@ -48,7 +48,7 @@ export const getTableColumns = ({
             partnerPoints: nft.nft.meta.partnerPoints || 0,
             playerPoints: nft.nft.meta.playerPoints || 0,
           }}
-          hiddenCollectionName
+          hideCollectionName
         />
       ),
     },

@@ -25,24 +25,24 @@ interface NftInfoCellProps {
   }
 
   rightContentJSX?: ReactNode
-  hiddenCollectionName?: boolean
+  hideCollectionName?: boolean
 }
 
-const createDisplayNftNamesJSX = (
+const createDisplayNftNameJSX = (
   nftName: string,
   isCardView: boolean,
-  hiddenCollectionName: boolean,
+  hideCollectionName: boolean,
 ) => {
   const [collectionName, nftId] = nftName.split('#')
 
-  const defaultNftIdName = hiddenCollectionName ? collectionName : ''
+  const defaultNftIdName = hideCollectionName ? collectionName : ''
   const displayNftId = nftId ? `#${nftId}` : defaultNftIdName
 
   const ellipsisClass = { [styles.ellipsis]: !isCardView }
 
   return (
     <div className={styles.nftNames}>
-      {!hiddenCollectionName && (
+      {!hideCollectionName && (
         <p className={classNames(styles.nftCollectionName, ellipsisClass)}>{collectionName}</p>
       )}
 
@@ -58,7 +58,7 @@ export const NftInfoCell: FC<NftInfoCellProps> = ({
   selected = false,
   banxPoints,
   checkboxClassName,
-  hiddenCollectionName = false,
+  hideCollectionName = false,
   rightContentJSX,
 }) => {
   const { viewState } = useTableView()
@@ -80,7 +80,7 @@ export const NftInfoCell: FC<NftInfoCellProps> = ({
         {selected && isCardView && <div className={styles.selectedCollectionOverlay} />}
       </div>
 
-      {createDisplayNftNamesJSX(nftName, isCardView, hiddenCollectionName)}
+      {createDisplayNftNameJSX(nftName, isCardView, hideCollectionName)}
       {rightContentJSX}
     </div>
   )

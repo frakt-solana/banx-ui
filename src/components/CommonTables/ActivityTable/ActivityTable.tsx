@@ -15,8 +15,8 @@ import styles from './ActivityTable.module.less'
 interface ActivityTableProps {
   marketPubkey: string
   classNamesProps?: {
-    tableWrapper?: string
-    rootTable?: string
+    wrapper?: string
+    table?: string
   }
 }
 
@@ -46,9 +46,9 @@ const ActivityTable: FC<ActivityTableProps> = ({ marketPubkey, classNamesProps }
         <Table
           data={loans}
           columns={columns}
-          className={classNames(styles.tableRoot, classNamesProps?.rootTable)}
+          className={classNames(styles.tableRoot, classNamesProps?.table)}
           loadMore={hasNextPage ? fetchNextPage : undefined}
-          classNameTableWrapper={classNames(styles.tableWrapper, classNamesProps?.tableWrapper, {
+          classNameTableWrapper={classNames(styles.tableWrapper, classNamesProps?.wrapper, {
             [styles.notConnectedTableWrapper]: !connected,
           })}
           loading={isLoading}

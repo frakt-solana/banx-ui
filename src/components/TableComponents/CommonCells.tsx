@@ -26,7 +26,12 @@ export const HorizontalCell: FC<HorizontalCellProps> = ({
   const cellContent = (
     <span
       style={{ color: textColor }}
-      className={classNames(styles.rowCellTitle, className, { [styles.highlight]: isHighlighted })}
+      className={classNames(
+        styles.rowCellTitle,
+        className,
+        { [styles.highlight]: isHighlighted },
+        className,
+      )}
     >
       {value}
     </span>

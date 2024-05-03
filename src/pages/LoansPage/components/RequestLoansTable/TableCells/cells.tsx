@@ -27,9 +27,9 @@ export const LTVCell: FC<{ loan: Loan }> = ({ loan }) => {
 }
 
 export const APRCell: FC<{ loan: Loan }> = ({ loan }) => {
-  const aprInPercent = (loan.bondTradeTransaction.amountOfBonds + BONDS.PROTOCOL_REPAY_FEE) / 100
+  const aprPercent = (loan.bondTradeTransaction.amountOfBonds + BONDS.PROTOCOL_REPAY_FEE) / 100
 
-  return <HorizontalCell value={createPercentValueJSX(aprInPercent)} isHighlighted />
+  return <HorizontalCell value={createPercentValueJSX(aprPercent)} isHighlighted />
 }
 
 export const FreezeCell: FC<{ loan: Loan }> = ({ loan }) => {
