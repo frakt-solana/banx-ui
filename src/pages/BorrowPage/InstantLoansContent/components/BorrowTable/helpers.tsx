@@ -11,7 +11,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { BorrowNft, Offer } from '@banx/api/core'
 import bonkTokenImg from '@banx/assets/BonkToken.png'
-import { BONDS, SPECIAL_COLLECTIONS_MARKETS } from '@banx/constants'
+import { BONDS, ONE_WEEK_IN_SECONDS, SPECIAL_COLLECTIONS_MARKETS } from '@banx/constants'
 import { LoansOptimisticStore, OffersOptimisticStore } from '@banx/store'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -34,7 +34,6 @@ import {
 } from '@banx/utils'
 
 import { CartState } from '../../cartState'
-import { ONE_WEEK_IN_SECONDS } from './constants'
 import { OfferWithLoanValue, TableNftData } from './types'
 
 import styles from './BorrowTable.module.less'

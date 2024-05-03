@@ -14,7 +14,7 @@ import {
 } from '@banx/components/modals'
 
 import { BorrowNft, Loan, MarketPreview } from '@banx/api/core'
-import { BONDS, DAYS_IN_YEAR } from '@banx/constants'
+import { BONDS, DAYS_IN_YEAR, SECONDS_IN_DAY } from '@banx/constants'
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { PATHS } from '@banx/router'
 import {
@@ -221,7 +221,7 @@ const useRequestLoansTransaction = (props: {
             nft,
             aprRate: rateBasePointsWithoutProtocolFee,
             loanValue: loanValue * tokenDecimals,
-            freeze: freezeValue * 24 * 3600, //? days to seconds
+            freeze: freezeValue * SECONDS_IN_DAY, //? days to seconds
             tokenType,
             walletAndConnection,
           }),

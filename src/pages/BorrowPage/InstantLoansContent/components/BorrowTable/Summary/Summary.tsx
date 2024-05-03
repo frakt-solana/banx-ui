@@ -11,7 +11,7 @@ import Tooltip from '@banx/components/Tooltip'
 
 import { BorrowNft } from '@banx/api/core'
 import bonkTokenImg from '@banx/assets/BonkToken.png'
-import { BONDS } from '@banx/constants'
+import { BONDS, ONE_WEEK_IN_SECONDS } from '@banx/constants'
 import { useTokenType } from '@banx/store'
 import {
   calcBorrowValueWithProtocolFee,
@@ -22,7 +22,6 @@ import {
   trackPageEvent,
 } from '@banx/utils'
 
-import { ONE_WEEK_IN_SECONDS } from '../constants'
 import { calcInterest } from '../helpers'
 import { TableNftData } from '../types'
 
