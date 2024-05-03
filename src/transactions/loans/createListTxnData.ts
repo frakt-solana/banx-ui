@@ -27,13 +27,13 @@ type CreateListTxnDataParams = {
 
 type CreateListTxnData = (params: CreateListTxnDataParams) => Promise<CreateTxnData<Loan>>
 
-export const createListTxnData: CreateListTxnData = async (ixnParams) => {
-  const { nft, walletAndConnection } = ixnParams
+export const createListTxnData: CreateListTxnData = async (params) => {
+  const { nft, walletAndConnection } = params
 
   const listingType = getNftListingType(nft)
 
   const { instructions, signers, optimisticResults } = await getIxnsAndSignersByListingType({
-    ixnParams,
+    params,
     type: listingType,
     walletAndConnection,
   })
@@ -54,17 +54,17 @@ export const createListTxnData: CreateListTxnData = async (ixnParams) => {
 }
 
 const getIxnsAndSignersByListingType = async ({
-  ixnParams,
+  params,
   type = ListingType.Default,
   walletAndConnection,
 }: {
-  ixnParams: CreateListTxnDataParams
+  params: CreateListTxnDataParams
   type?: ListingType
   walletAndConnection: WalletAndConnection
 }) => {
   const { connection, wallet } = walletAndConnection
 
-  const { nft, tokenType: lendingTokenType, loanValue, aprRate, freeze } = ixnParams
+  const { nft, tokenType: lendingTokenType, loanValue, aprRate, freeze } = params
 
   if (type === ListingType.CNft) {
     if (!nft.nft.compression) {

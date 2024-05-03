@@ -20,10 +20,10 @@ type CreateLendToBorrowTxnData = (
   params: CreateLendToBorrowTxnDataParams,
 ) => Promise<CreateTxnData<Loan>>
 
-export const createLendToBorrowTxnData: CreateLendToBorrowTxnData = async (ixnParams) => {
-  const { loan } = ixnParams
+export const createLendToBorrowTxnData: CreateLendToBorrowTxnData = async (params) => {
+  const { loan } = params
 
-  const { instructions, signers, optimisticResult } = await getIxnsAndSignersByLoanType(ixnParams)
+  const { instructions, signers, optimisticResult } = await getIxnsAndSignersByLoanType(params)
 
   const optimisticLoan = {
     ...loan,
@@ -39,8 +39,8 @@ export const createLendToBorrowTxnData: CreateLendToBorrowTxnData = async (ixnPa
   }
 }
 
-const getIxnsAndSignersByLoanType = async (ixnParams: CreateLendToBorrowTxnDataParams) => {
-  const { loan, walletAndConnection } = ixnParams
+const getIxnsAndSignersByLoanType = async (params: CreateLendToBorrowTxnDataParams) => {
+  const { loan, walletAndConnection } = params
   const { connection, wallet } = walletAndConnection
 
   const { bondTradeTransaction, fraktBond } = loan

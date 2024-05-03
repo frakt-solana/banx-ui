@@ -22,13 +22,13 @@ type CreateDelistTxnDataParams = {
 
 type CreateDelistTxnData = (params: CreateDelistTxnDataParams) => Promise<CreateTxnData<Loan>>
 
-export const createDelistTxnData: CreateDelistTxnData = async (ixnParams) => {
-  const { loan, walletAndConnection } = ixnParams
+export const createDelistTxnData: CreateDelistTxnData = async (params) => {
+  const { loan, walletAndConnection } = params
 
   const listingType = getNftListingType(loan)
 
   const { instructions, signers } = await getIxnsAndSignersByListingType({
-    ixnParams,
+    params,
     type: listingType,
     walletAndConnection,
   })
@@ -54,16 +54,16 @@ export const createDelistTxnData: CreateDelistTxnData = async (ixnParams) => {
 }
 
 const getIxnsAndSignersByListingType = async ({
-  ixnParams,
+  params,
   type = ListingType.Default,
   walletAndConnection,
 }: {
-  ixnParams: CreateDelistTxnDataParams
+  params: CreateDelistTxnDataParams
   type?: ListingType
   walletAndConnection: WalletAndConnection
 }) => {
   const { connection, wallet } = walletAndConnection
-  const { loan } = ixnParams
+  const { loan } = params
 
   if (type === ListingType.CNft) {
     if (!loan.nft.compression) {
