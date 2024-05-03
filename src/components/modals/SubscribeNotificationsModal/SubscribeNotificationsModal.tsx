@@ -61,10 +61,10 @@ export const createLoanSubscribeNotificationsContent = (
 
 export const createRefinanceSubscribeNotificationsTitle = (loansAmount = 1) => {
   if (loansAmount > 1) {
-    return `You have successfully lend ${loansAmount} loans`
+    return `You have successfully lent ${loansAmount} loans`
   }
 
-  return 'You have successfully lend the loan'
+  return 'You have successfully lent the loan'
 }
 
 export const createRefinanceSubscribeNotificationsContent = () =>
