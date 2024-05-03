@@ -68,9 +68,7 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
               tokenType={tokenType}
             />
             <p className={styles.lenderSeesMessage}>
-              {inputLoanValue ? (
-                <>Lender sees: {<DisplayValue value={lenderSeesLoanValue} />}</>
-              ) : null}
+              {!!inputLoanValue && <>Lender sees: {<DisplayValue value={lenderSeesLoanValue} />}</>}
             </p>
           </div>
 
@@ -131,7 +129,7 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
         {currentTabValue === TabName.ACTIVITY && (
           <ActivityTable
             marketPubkey={market.marketPubkey}
-            classNamesProps={{ tableWrapper: styles.activityTableWrapper }}
+            classNamesProps={{ wrapper: styles.activityTableWrapper }}
           />
         )}
       </div>
