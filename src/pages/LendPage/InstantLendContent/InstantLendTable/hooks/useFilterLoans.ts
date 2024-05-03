@@ -4,7 +4,7 @@ import { filter, size } from 'lodash'
 
 import { Loan } from '@banx/api/core'
 import { createGlobalState } from '@banx/store/functions'
-import { isFreezeLoan } from '@banx/utils'
+import { isFreezeLoan, isLoanListed } from '@banx/utils'
 
 const useCollectionsStore = createGlobalState<string[]>([])
 
@@ -32,7 +32,7 @@ export const useFilterLoans = (loans: Loan[]) => {
 
   const { filteredLoansBySelectedCollection, filteredAllLoans } = useMemo(() => {
     const applyFilter = (loans: Loan[]) => {
-      if (isAuctionFilterEnabled) return filter(loans, (loan) => !isFreezeLoan(loan))
+      if (isAuctionFilterEnabled) return filter(loans, (loan) => !isLoanListed(loan))
       if (isFreezeFilterEnabled) return filter(loans, (loan) => isFreezeLoan(loan))
       return loans
     }
@@ -44,7 +44,7 @@ export const useFilterLoans = (loans: Loan[]) => {
   }, [filteredLoansBySelectedCollections, loans, isAuctionFilterEnabled, isFreezeFilterEnabled])
 
   const auctionLoansAmount = useMemo(
-    () => size(filter(filteredLoansBySelectedCollections, (loan) => !isFreezeLoan(loan))) || null,
+    () => size(filter(filteredLoansBySelectedCollections, (loan) => !isLoanListed(loan))) || null,
     [filteredLoansBySelectedCollections],
   )
 

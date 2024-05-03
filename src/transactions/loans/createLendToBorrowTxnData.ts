@@ -9,7 +9,7 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
-import { isFreezeLoan, sendTxnPlaceHolder } from '@banx/utils'
+import { isLoanListed, sendTxnPlaceHolder } from '@banx/utils'
 
 type CreateLendToBorrowTxnDataParams = {
   loan: Loan
@@ -45,7 +45,7 @@ const getIxnsAndSignersByLoanType = async (params: CreateLendToBorrowTxnDataPara
 
   const { bondTradeTransaction, fraktBond } = loan
 
-  if (isFreezeLoan(loan)) {
+  if (isLoanListed(loan)) {
     const { instructions, signers, optimisticResults } = await lendToBorrowerListing({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {

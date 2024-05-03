@@ -16,7 +16,7 @@ import {
   HealthColorIncreasing,
   calculateRepaymentCallLenderReceivesAmount,
   getColorByPercent,
-  isFreezeLoan,
+  isLoanListed,
   isLoanRepaymentCallActive,
 } from '@banx/utils'
 
@@ -54,7 +54,7 @@ export const getTableColumns = ({
         const { partnerPoints = 0, playerPoints = 0, name, imageUrl } = loan.nft.meta
         const repaymentCallLenderReceives = calculateRepaymentCallLenderReceivesAmount(loan)
 
-        const canSelect = isLoanAbleToTerminate(loan) && !isFreezeLoan(loan)
+        const canSelect = isLoanAbleToTerminate(loan) && !isLoanListed(loan)
         const selected = canSelect ? !!findLoanInSelection(loan.publicKey) : undefined
 
         return (

@@ -13,7 +13,7 @@ import { Modal } from '@banx/components/modals/BaseModal'
 import { Loan } from '@banx/api/core'
 import { SECONDS_IN_DAY } from '@banx/constants'
 import { useModal } from '@banx/store'
-import { calcWeightedAverage, isFreezeLoan } from '@banx/utils'
+import { calcWeightedAverage, isLoanListed } from '@banx/utils'
 
 import { calcWeeklyInterestFee, calculateLendValue } from './helpers'
 import { useInstantTransactions } from './hooks'
@@ -30,7 +30,7 @@ export const Summary: FC<{ loans: Loan[] }> = ({ loans }) => {
   const { open } = useModal()
 
   const freezeLoans = useMemo(() => {
-    return selection.filter(isFreezeLoan)
+    return selection.filter(isLoanListed)
   }, [selection])
 
   const { totalDebt, totalWeeklyInterest, weightedApr, weightedLtv } =

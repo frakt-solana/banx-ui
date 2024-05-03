@@ -121,11 +121,7 @@ export const useRequestLoansForm = (market: MarketPreview) => {
   })
 
   const aprInputValueIsLow = inputAprValueToNumber < MIN_APR_VALUE
-  const disabledListAction =
-    !inputLoanValueToNumber ||
-    !inputFreezeValueToNumber ||
-    !totalNftsToRequest ||
-    aprInputValueIsLow
+  const disabledListAction = !inputLoanValueToNumber || !totalNftsToRequest || aprInputValueIsLow
 
   const actionButtonText = aprInputValueIsLow
     ? `The min APR is ${MIN_APR_VALUE}%`

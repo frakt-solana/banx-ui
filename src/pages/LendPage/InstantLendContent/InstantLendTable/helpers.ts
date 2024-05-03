@@ -1,6 +1,6 @@
 import { Loan } from '@banx/api/core'
 import { BONDS, WEEKS_IN_YEAR } from '@banx/constants'
-import { calculateLoanRepayValue, isFreezeLoan } from '@banx/utils'
+import { calculateLoanRepayValue, isLoanListed } from '@banx/utils'
 
 type CalcWeeklyInterestFee = (Loan: Loan) => number
 export const calcWeeklyInterestFee: CalcWeeklyInterestFee = (loan) => {
@@ -19,5 +19,5 @@ export const calculateLendValue = (loan: Loan) => {
   const borrowedValue = loan.bondTradeTransaction.solAmount + loan.bondTradeTransaction.feeAmount
   const debtValue = calculateLoanRepayValue(loan)
 
-  return isFreezeLoan(loan) ? borrowedValue : debtValue
+  return isLoanListed(loan) ? borrowedValue : debtValue
 }

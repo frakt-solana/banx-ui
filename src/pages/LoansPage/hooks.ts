@@ -19,7 +19,7 @@ import {
   useOffersOptimistic,
   useTokenType,
 } from '@banx/store'
-import { isFreezeLoan, isLoanRepaid, isLoanTerminating, isOfferClosed } from '@banx/utils'
+import { isLoanListed, isLoanRepaid, isLoanTerminating, isOfferClosed } from '@banx/utils'
 
 import { LoansTabsNames, SECONDS_IN_72_HOURS } from './constants'
 
@@ -279,7 +279,7 @@ export const useBorrowerLoansRequests = () => {
   }, [data, walletOptimisticLoans])
 
   const filteredLoans = useMemo(() => {
-    return loans.filter((loan) => isFreezeLoan(loan))
+    return loans.filter((loan) => isLoanListed(loan))
   }, [loans])
 
   return {
