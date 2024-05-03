@@ -111,6 +111,10 @@ export const getTableColumns = ({
 }
 
 const createRightContentJSX = (loan: Loan) => {
+  if (isLoanListed(loan) && !isFreezeLoan(loan)) {
+    return null
+  }
+
   const tooltipText = isFreezeLoan(loan) ? 'Tooltip text' : 'Tooltip text'
 
   return (

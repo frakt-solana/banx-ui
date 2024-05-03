@@ -11,7 +11,7 @@ import { Modal } from '@banx/components/modals/BaseModal'
 import { Loan } from '@banx/api/core'
 import { SECONDS_IN_DAY } from '@banx/constants'
 import { useModal } from '@banx/store'
-import { isLoanListed } from '@banx/utils'
+import { isFreezeLoan } from '@banx/utils'
 
 import { useInstantTransactions } from '../hooks'
 
@@ -41,7 +41,7 @@ export const ActionsCell: FC<RefinanceCellProps> = ({ loan, isCardView, disabled
       return toggleVisibility()
     }
 
-    if (isLoanListed(loan)) {
+    if (isFreezeLoan(loan)) {
       return showModal()
     }
 

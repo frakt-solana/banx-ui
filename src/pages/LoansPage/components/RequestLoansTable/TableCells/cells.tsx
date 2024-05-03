@@ -5,7 +5,7 @@ import { HorizontalCell, createPercentValueJSX } from '@banx/components/TableCom
 
 import { Loan } from '@banx/api/core'
 import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
-import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
+import { HealthColorIncreasing, getColorByPercent, isFreezeLoan } from '@banx/utils'
 
 import { useRequestLoansTransactions } from '../hooks'
 
@@ -34,7 +34,9 @@ export const APRCell: FC<{ loan: Loan }> = ({ loan }) => {
 
 export const FreezeCell: FC<{ loan: Loan }> = ({ loan }) => {
   const terminationFreezeInDays = loan.bondTradeTransaction.terminationFreeze / SECONDS_IN_DAY
-  return <HorizontalCell value={`${terminationFreezeInDays} days`} />
+  const freezeValue = isFreezeLoan(loan) ? `${terminationFreezeInDays} days` : '--'
+
+  return <HorizontalCell value={freezeValue} />
 }
 
 interface ActionsCellProps {
