@@ -1,6 +1,7 @@
 import { FC } from 'react'
 
 import classNames from 'classnames'
+import { find, last } from 'lodash'
 
 import { BanxStakeNft } from '@banx/api/staking'
 
@@ -10,33 +11,37 @@ interface NftCheckboxProps {
   nft: BanxStakeNft
   selected?: boolean
   additionalText?: string
-  disabled?: boolean
-  onClick?: () => void
+  onClick: () => void
+  isLoaned?: boolean
+  isTerminationFreeze?: boolean
 }
 
 export const NftCheckbox: FC<NftCheckboxProps> = ({
   nft,
   selected = false,
   additionalText = '',
-  disabled = false,
   onClick,
+  isLoaned = false,
+  isTerminationFreeze = false,
 }) => {
   if (!nft?.meta) {
     return null
   }
 
+  const disabled = isLoaned || isTerminationFreeze
+
   return (
     <div
+      onClick={onClick}
       className={classNames(
         styles.nft,
-        { [styles.nftPointer]: onClick && !disabled },
+        { [styles.nftPointer]: !disabled },
         { [styles.nftDisabled]: disabled },
       )}
-      onClick={() => onClick?.()}
     >
       {disabled && (
         <div className={styles.cover}>
-          <span>Loaned</span>
+          <span>{getStatusText(nft)}</span>
         </div>
       )}
       <div className={styles.image}>
@@ -50,4 +55,23 @@ export const NftCheckbox: FC<NftCheckboxProps> = ({
       <p>{nft.meta.partnerPoints} Partner points</p>
     </div>
   )
+}
+
+enum NftStatus {
+  Loaned = 'Loaned',
+  Listed = 'Loan listed',
+  Default = '',
+}
+
+const getStatusText = (nft: BanxStakeNft) => {
+  const { isLoaned, isTerminationFreeze } = nft
+
+  const statusConditions: Array<[boolean, NftStatus]> = [
+    [isLoaned, NftStatus.Loaned],
+    [isTerminationFreeze, NftStatus.Listed],
+  ]
+
+  const status = find(statusConditions, ([condition]) => condition)
+  const statusText = last(status)
+  return status ? statusText : NftStatus.Default
 }

@@ -35,6 +35,7 @@ export type BanxNftStakeBN = {
   collateralTokenAccount: string
   farmedAmount: BN
   isLoaned: boolean
+  isTerminationFreeze: boolean
   nftMint: string
   partnerPoints: number
   playerPoints: number
@@ -54,6 +55,7 @@ export type BanxStakeNft = {
     rarity: string
   }
   isLoaned: boolean
+  isTerminationFreeze: boolean
   mint: string
   pointsMap: PointsMap
   stake?: BanxNftStakeBN
