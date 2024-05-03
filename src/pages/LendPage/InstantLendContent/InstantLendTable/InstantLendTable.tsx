@@ -1,7 +1,6 @@
 import { FC, useEffect, useMemo } from 'react'
 
 import classNames from 'classnames'
-import { useNavigate } from 'react-router-dom'
 
 import { Button } from '@banx/components/Buttons'
 import EmptyList from '@banx/components/EmptyList'
@@ -9,8 +8,7 @@ import Table from '@banx/components/Table'
 import Tooltip from '@banx/components/Tooltip'
 
 import { Hourglass, Snowflake } from '@banx/icons'
-import { PATHS } from '@banx/router'
-import { ViewState, createPathWithTokenParam, useTableView, useTokenType } from '@banx/store'
+import { ViewState, useTableView, useTokenType } from '@banx/store'
 import { isSolTokenType } from '@banx/utils'
 
 import { Summary } from './Summary'
@@ -20,8 +18,11 @@ import { useLoansState } from './loansState'
 
 import styles from './InstantLendTable.module.less'
 
-export const InstantLendTable = () => {
-  const navigate = useNavigate()
+interface InstantLendTableProps {
+  goToPlaceOfferTab: () => void
+}
+
+export const InstantLendTable: FC<InstantLendTableProps> = ({ goToPlaceOfferTab }) => {
   const { tokenType } = useTokenType()
   const { viewState } = useTableView()
 
@@ -70,10 +71,6 @@ export const InstantLendTable = () => {
     hasSelectedLoans,
   })
 
-  const goToLendPage = () => {
-    navigate(createPathWithTokenParam(PATHS.LEND, tokenType))
-  }
-
   const rowParams = useMemo(() => {
     return {
       onRowClick: toggleLoanInSelection,
@@ -101,7 +98,7 @@ export const InstantLendTable = () => {
     return (
       <EmptyList
         message="No offers to lend. Create an offer if you want to fund some loans"
-        buttonProps={{ text: emptyButtonText, onClick: goToLendPage }}
+        buttonProps={{ text: emptyButtonText, onClick: goToPlaceOfferTab }}
       />
     )
 
