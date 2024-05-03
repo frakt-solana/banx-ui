@@ -9,7 +9,7 @@ import { getTokenUnit, isSolTokenType } from '@banx/utils'
 
 import { BorrowerMessage } from '../components'
 import { PlaceOfferParams } from '../hooks'
-import { ActionsButtons, AdditionalSummary, MainSummary } from './components'
+import { ActionsButtons, AdditionalSummary, Diagram, MainSummary } from './components'
 
 import styles from './PlaceOfferContent.module.less'
 
@@ -30,6 +30,9 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
   offerSize,
   market,
   updatedOffer,
+  diagramData,
+  isLoadingDiagram,
+  setOfferPubkey,
 }) => {
   const { tokenType } = useTokenType()
   const { connected } = useWallet()
@@ -77,6 +80,8 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
         {offerErrorMessage && <InputErrorMessage message={offerErrorMessage} />}
         {showBorrowerMessage && <BorrowerMessage loanValue={loanValue} tokenType={tokenType} />}
       </div>
+
+      {!setOfferPubkey && <Diagram marks={diagramData} isLoading={isLoadingDiagram} />}
 
       <MainSummary
         hasFormChanges={hasFormChanges}

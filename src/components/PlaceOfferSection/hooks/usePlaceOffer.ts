@@ -1,10 +1,19 @@
 import { useEffect, useMemo } from 'react'
 
+import { chain } from 'lodash'
+
 import { MarketPreview, Offer } from '@banx/api/core'
 import { SyntheticOffer, useTokenType } from '@banx/store'
-import { getTokenDecimals, useWalletBalance } from '@banx/utils'
+import { convertOffersToSimple, getTokenDecimals, useWalletBalance } from '@banx/utils'
 
+import { Mark } from '../PlaceOfferContent/components'
+import {
+  convertLoanToMark,
+  convertOfferToMark,
+  convertSimpleOfferToMark,
+} from '../PlaceOfferContent/components/Diagram'
 import { calcOfferSize, getErrorMessage, getUpdatedBondOffer } from '../helpers'
+import { useLenderLoans } from './useLenderLoans'
 import { useMarketAndOffer } from './useMarketAndOffer'
 import { useOfferFormController } from './useOfferFormController'
 import { useOfferTransactions } from './useOfferTransactions'
@@ -16,6 +25,7 @@ export interface PlaceOfferParams {
   updatedOffer: Offer | undefined
   syntheticOffer: SyntheticOffer
 
+  setOfferPubkey?: (offerPubkey: string) => void
   exitEditMode: () => void
 
   offerErrorMessage: string
@@ -33,6 +43,9 @@ export interface PlaceOfferParams {
   onDeltaValueChange: (value: string) => void
   onLoanValueChange: (value: string) => void
   onLoanAmountChange: (value: string) => void
+
+  diagramData: Mark[]
+  isLoadingDiagram: boolean
 }
 
 type UsePlaceOffer = (props: {
@@ -51,6 +64,10 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
     offerPubkey,
     marketPubkey,
   )
+
+  const isEditMode = syntheticOffer.isEdit
+
+  const { lenderLoans, isLoading: isLoadingLenderLoans } = useLenderLoans({ offerPubkey })
 
   const decimals = getTokenDecimals(tokenType)
 
@@ -113,6 +130,45 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
     tokenType,
   })
 
+  const diagramData = useMemo(() => {
+    const isOfferInvalid =
+      deltaValue && hasFormChanges ? deltaValue * loansAmount > loanValue : false
+
+    if (isOfferInvalid) return []
+
+    if (!isEditMode) {
+      return chain(new Array(loansAmount))
+        .fill(loanValue)
+        .map((offerValue, index) => convertOfferToMark(offerValue, index, deltaValue))
+        .sortBy(({ value }) => value)
+        .reverse()
+        .value()
+    }
+
+    if (!offer) return []
+
+    const offerToUpdate = { syntheticOffer, loanValue, deltaValue, loansAmount }
+    const offerToUse = hasFormChanges ? getUpdatedBondOffer(offerToUpdate) : offer
+
+    const loansToMarks = lenderLoans.map(convertLoanToMark)
+    const simpleOffersToMarks = convertOffersToSimple([offerToUse]).map(convertSimpleOfferToMark)
+
+    return chain([...loansToMarks, ...simpleOffersToMarks])
+      .filter(({ value }) => value > 0)
+      .sortBy(({ value }) => value)
+      .reverse()
+      .value()
+  }, [
+    isEditMode,
+    loansAmount,
+    loanValue,
+    deltaValue,
+    offer,
+    hasFormChanges,
+    syntheticOffer,
+    lenderLoans,
+  ])
+
   return {
     market,
     optimisticOffer: offer,
@@ -135,5 +191,9 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
     onCreateOffer,
     onRemoveOffer,
     onUpdateOffer,
+
+    diagramData,
+    isLoadingDiagram: isEditMode ? isLoadingLenderLoans : false,
+    setOfferPubkey,
   }
 }

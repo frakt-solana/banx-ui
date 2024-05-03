@@ -12,6 +12,8 @@ import {
   FetchMarketOffersResponse,
   FetchUserOffersResponse,
   LendLoansResponse,
+  LenderLoansResponse,
+  LenderLoansSchema,
   Loan,
   LoanSchema,
   LoansRequests,
@@ -124,6 +126,49 @@ export const fetchWalletLoansAndOffers: FetchWalletLoansAndOffers = async ({
   }
 
   return data.data ?? { nfts: [], offers: {} }
+}
+
+type FetchLenderLoansByCertainOffer = (props: {
+  walletPublicKey: string
+  tokenType: LendingTokenType
+  offerPubkey: string
+  order?: 'asc' | 'desc'
+  skip?: number
+  limit?: number
+  getAll?: boolean
+}) => Promise<LenderLoansResponse['data']>
+
+export const fetchLenderLoansByCertainOffer: FetchLenderLoansByCertainOffer = async ({
+  walletPublicKey,
+  tokenType,
+  offerPubkey,
+  order = 'desc',
+  skip = 0,
+  limit = 10,
+  getAll = true,
+}) => {
+  const queryParams = new URLSearchParams({
+    order,
+    skip: String(skip),
+    limit: String(limit),
+    getAll: String(getAll),
+    isPrivate: String(IS_PRIVATE_MARKETS),
+    walletPubKey: String(walletPublicKey),
+    marketType: String(convertToMarketType(tokenType)),
+    offerPubKey: String(offerPubkey),
+  })
+
+  const { data } = await axios.get<LenderLoansResponse>(
+    `${BACKEND_BASE_URL}/loans/lender-chart/?${queryParams.toString()}`,
+  )
+
+  try {
+    await LenderLoansSchema.array().parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
+  }
+
+  return data.data ?? []
 }
 
 type FetchLenderLoans = (props: {
