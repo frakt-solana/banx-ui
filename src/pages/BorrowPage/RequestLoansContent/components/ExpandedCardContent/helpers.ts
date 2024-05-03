@@ -41,5 +41,5 @@ export const clampInputValue = (value: string, max: number): string => {
 
   const valueToNumber = parseFloat(value)
   const clampedValue = clamp(valueToNumber, 0, max)
-  return String(clampedValue)
+  return clampedValue.toString()
 }

@@ -76,8 +76,11 @@ export const AdditionalSummary: FC<OfferSummaryProps> = ({
   const loansQuantity = updatedOffer?.buyOrdersQuantity || 0
   const offerSize = calcOfferSize({ initialOffer, updatedOffer, hasFormChanges })
 
-  const customApr = MARKETS_WITH_CUSTOM_APR[updatedOffer?.hadoMarket as string]
-  const apr = customApr !== undefined ? customApr / 100 : MAX_APR_VALUE
+  const customApr = updatedOffer?.hadoMarket
+    ? MARKETS_WITH_CUSTOM_APR[updatedOffer.hadoMarket.toString()]
+    : undefined
+
+  const apr = customApr ? customApr / 100 : MAX_APR_VALUE
 
   const weeklyFee = calculateCurrentInterestSolPure({
     loanValue: offerSize,
