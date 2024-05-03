@@ -189,3 +189,12 @@ export const calculateRepaymentCallLenderReceivesAmount = (loan: Loan) => {
     }),
   })
 }
+
+export const calculateFreezeExpiredAt = (loan: Loan) => {
+  return loan.bondTradeTransaction.soldAt + loan.bondTradeTransaction.terminationFreeze
+}
+
+export const checkIfFreezeExpired = (loan: Loan) => {
+  const freezeExpiredAt = calculateFreezeExpiredAt(loan)
+  return moment().unix() > freezeExpiredAt
+}

@@ -3,7 +3,6 @@ import { FC, useMemo, useState } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { chain, isEmpty, uniqueId } from 'lodash'
-import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
@@ -29,8 +28,10 @@ import {
 } from '@banx/transactions/loans'
 import {
   HealthColorIncreasing,
+  calculateFreezeExpiredAt,
   calculateLoanRepayValue,
   calculateRepaymentCallLenderReceivesAmount,
+  checkIfFreezeExpired,
   destroySnackbar,
   enqueueConfirmationError,
   enqueueSnackbar,
@@ -202,10 +203,8 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const totalClaimValue = calculateClaimValue(loan)
   const tokenUnit = getTokenUnit(tokenType)
 
-  const freezeExpiredAt =
-    loan.bondTradeTransaction.soldAt + loan.bondTradeTransaction.terminationFreeze
-
-  const isFreezeExpired = moment().unix() > freezeExpiredAt
+  const freezeExpiredAt = calculateFreezeExpiredAt(loan)
+  const isFreezeExpired = checkIfFreezeExpired(loan)
 
   return (
     <div className={styles.closureContent}>
