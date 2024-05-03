@@ -1,3 +1,5 @@
+import { FC, ReactNode } from 'react'
+
 import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
 import {
@@ -7,15 +9,18 @@ import {
   NftInfoCell,
   createPercentValueJSX,
 } from '@banx/components/TableComponents'
+import Timer from '@banx/components/Timer'
 import Tooltip from '@banx/components/Tooltip'
 
 import { Loan } from '@banx/api/core'
-import { Coin } from '@banx/icons'
+import { Coin, Snowflake } from '@banx/icons'
 import { calculateClaimValue, isLoanAbleToTerminate } from '@banx/pages/OffersPage'
 import {
   HealthColorIncreasing,
+  calculateFreezeExpiredAt,
   calculateRepaymentCallLenderReceivesAmount,
   getColorByPercent,
+  isFreezeLoan,
   isLoanListed,
   isLoanRepaymentCallActive,
 } from '@banx/utils'
@@ -52,7 +57,6 @@ export const getTableColumns = ({
       ),
       render: (loan) => {
         const { partnerPoints = 0, playerPoints = 0, name, imageUrl } = loan.nft.meta
-        const repaymentCallLenderReceives = calculateRepaymentCallLenderReceivesAmount(loan)
 
         const canSelect = isLoanAbleToTerminate(loan) && !isLoanListed(loan)
         const selected = canSelect ? !!findLoanInSelection(loan.publicKey) : undefined
@@ -66,20 +70,7 @@ export const getTableColumns = ({
             onCheckboxClick={() => toggleLoanInSelection(loan)}
             banxPoints={{ partnerPoints, playerPoints }}
             checkboxClassName={!canSelect ? styles.nftCellCheckbox : ''}
-            rightContentJSX={
-              isLoanRepaymentCallActive(loan) ? (
-                <Tooltip
-                  className={styles.repaymentCallTooltipContent}
-                  title={
-                    <p className={styles.repaymentCallTooltipValue}>
-                      <DisplayValue value={repaymentCallLenderReceives} /> requested
-                    </p>
-                  }
-                >
-                  <Coin />
-                </Tooltip>
-              ) : undefined
-            }
+            rightContentJSX={createRightContentJSX(loan)}
           />
         )
       },
@@ -148,3 +139,51 @@ export const getTableColumns = ({
 
   return columns
 }
+
+const createRightContentJSX = (loan: Loan) => {
+  const repaymentCallLenderReceives = calculateRepaymentCallLenderReceivesAmount(loan)
+  const freezeExpiredAt = calculateFreezeExpiredAt(loan)
+
+  const repaymentCallContent = createTooltipContent({
+    icon: Coin,
+    content: (
+      <p className={styles.repaymentCallTooltipValue}>
+        <DisplayValue value={repaymentCallLenderReceives} /> requested
+      </p>
+    ),
+  })
+
+  const freezeLoanContent = createTooltipContent({
+    icon: Snowflake,
+    content: (
+      <p>
+        <Timer expiredAt={freezeExpiredAt} /> until the end of non termination period
+      </p>
+    ),
+  })
+
+  if (isLoanRepaymentCallActive(loan) && isFreezeLoan(loan)) {
+    return (
+      <div className={styles.iconsTooltipWrapper}>
+        {repaymentCallContent}
+        {freezeLoanContent}
+      </div>
+    )
+  }
+
+  if (isLoanRepaymentCallActive(loan)) return repaymentCallContent
+  if (isFreezeLoan(loan)) return freezeLoanContent
+
+  return ''
+}
+
+interface CreateTooltipContentProps {
+  content: ReactNode
+  icon: FC
+}
+
+const createTooltipContent: FC<CreateTooltipContentProps> = ({ content, icon: Icon }) => (
+  <Tooltip className={styles.iconTooltipContent} title={content}>
+    <Icon />
+  </Tooltip>
+)

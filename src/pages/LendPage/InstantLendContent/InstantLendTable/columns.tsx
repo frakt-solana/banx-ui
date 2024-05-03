@@ -115,7 +115,9 @@ const createRightContentJSX = (loan: Loan) => {
     return null
   }
 
-  const tooltipText = isFreezeLoan(loan) ? 'Tooltip text' : 'Tooltip text'
+  const tooltipText = isFreezeLoan(loan)
+    ? 'The loan with freeze period was requested by borrower'
+    : 'The loan was terminated by lender'
 
   return (
     <Tooltip className={styles.loanTypeTooltipContent} title={tooltipText}>

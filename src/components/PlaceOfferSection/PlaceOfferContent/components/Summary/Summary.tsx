@@ -107,7 +107,7 @@ export const AdditionalSummary: FC<OfferSummaryProps> = ({
       <StatInfo
         label="Est. weekly interest"
         value={<DisplayValue value={weeklyFee} />}
-        tooltipText="Tooltip text"
+        tooltipText="Expected interest on a loan over the course of a week"
         classNamesProps={{ value: styles.fixedValueContent }}
         flexType="row"
       />

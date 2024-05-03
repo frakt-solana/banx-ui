@@ -81,6 +81,7 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
             placeholder="0"
             postfix="d" //? d => days
             max={DAYS_IN_YEAR}
+            tooltipText="Set the number of days during which the loan cannot be terminated"
             step={1}
           />
           <NumericStepInput
@@ -158,18 +159,21 @@ const Summary: FC<SummaryProps> = ({ ltv, upfrontFee, weeklyInterest }) => {
         value={ltv}
         valueType={VALUES_TYPES.PERCENT}
         classNamesProps={statClassNames}
+        tooltipText="The ratio of a loan to the floor price of the asset"
         flexType="row"
       />
       <StatInfo
         label="Upfront fee"
         value={<DisplayValue value={upfrontFee} />}
         classNamesProps={statClassNames}
+        tooltipText="1% upfront fee charged on the principal amount"
         flexType="row"
       />
       <StatInfo
         label="Weekly interest"
         value={<DisplayValue value={weeklyInterest} />}
         classNamesProps={statClassNames}
+        tooltipText="Expected weekly interest on your loans. Interest is added to your debt balance"
         flexType="row"
       />
     </div>
