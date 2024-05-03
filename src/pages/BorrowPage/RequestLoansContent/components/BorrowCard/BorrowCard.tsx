@@ -57,7 +57,7 @@ const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
         <StatInfo
           label="Floor"
           value={<DisplayValue value={collectionFloor} />}
-          tooltipText="Highest offer among all lenders providing liquidity for this collection"
+          tooltipText="Lowest listing price on marketplaces, excluding taker royalties and fees"
         />
       </div>
     </div>

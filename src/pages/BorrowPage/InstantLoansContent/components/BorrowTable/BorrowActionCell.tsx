@@ -2,26 +2,31 @@ import React, { FC, useState } from 'react'
 
 import { Button } from '@banx/components/Buttons'
 
-import { trackPageEvent } from '@banx/utils'
-
 import styles from './BorrowTable.module.less'
 
 interface BorrowActionCellProps {
   onBorrow: () => Promise<void>
   disabled?: boolean
   isCardView?: boolean
+  goToRequestLoanTab: () => void
 }
 
 export const BorrowActionCell: FC<BorrowActionCellProps> = ({
   onBorrow,
   disabled = false,
   isCardView = false,
+  goToRequestLoanTab,
 }) => {
   const [isBorrowing, setIsBorrowing] = useState(false)
+
   const onClickHandler = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.stopPropagation()
+
+    if (disabled) {
+      return goToRequestLoanTab()
+    }
+
     setIsBorrowing(true)
-    trackPageEvent('borrow', `borrow-lateral`)
     await onBorrow()
     setIsBorrowing(false)
   }
@@ -30,11 +35,10 @@ export const BorrowActionCell: FC<BorrowActionCellProps> = ({
     <Button
       className={styles.borrowButton}
       size={isCardView ? 'default' : 'small'}
-      disabled={disabled}
       loading={isBorrowing}
       onClick={onClickHandler}
     >
-      Borrow
+      {disabled ? 'Request' : 'Borrow'}
     </Button>
   )
 }

@@ -72,10 +72,7 @@ export const getTableColumns: GetTableColumns = ({
     {
       key: 'freeze',
       title: (
-        <HeaderCell
-          label="Freeze"
-          tooltipText="Number of days during which the loan cannot be terminated"
-        />
+        <HeaderCell label="Freeze" tooltipText="Period during which loan can't be terminated" />
       ),
       render: (loan) => <FreezeCell loan={loan} />,
     },

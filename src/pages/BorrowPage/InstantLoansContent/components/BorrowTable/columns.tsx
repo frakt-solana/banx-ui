@@ -25,6 +25,7 @@ interface GetTableColumnsProps {
   hasSelectedNfts: boolean
   onSelectAll: () => void
   tokenType: LendingTokenType
+  goToRequestLoanTab: () => void
 }
 
 export const getTableColumns = ({
@@ -35,6 +36,7 @@ export const getTableColumns = ({
   hasSelectedNfts,
   onSelectAll,
   tokenType,
+  goToRequestLoanTab,
 }: GetTableColumnsProps) => {
   const columns: ColumnType<TableNftData>[] = [
     {
@@ -95,6 +97,7 @@ export const getTableColumns = ({
           isCardView={isCardView}
           disabled={!!findOfferInCart(nft) || !nft.loanValue}
           onBorrow={async () => await onBorrow(nft)}
+          goToRequestLoanTab={goToRequestLoanTab}
         />
       ),
     },

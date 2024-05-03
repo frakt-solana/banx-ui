@@ -116,8 +116,8 @@ const createRightContentJSX = (loan: Loan) => {
   }
 
   const tooltipText = isFreezeLoan(loan)
-    ? 'The loan with freeze period was requested by borrower'
-    : 'The loan was terminated by lender'
+    ? `This loan has a freeze period during which it can't be terminated`
+    : 'This loan is available for a limited amount of time'
 
   return (
     <Tooltip className={styles.loanTypeTooltipContent} title={tooltipText}>

@@ -47,11 +47,17 @@ export interface UseBorrowTableProps {
   nfts: BorrowNft[]
   rawOffers: Record<string, Offer[]>
   maxLoanValueByMarket: Record<string, number>
+  goToRequestLoanTab: () => void
 }
 
 const useCollectionsStore = createGlobalState<string[]>([])
 
-export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBorrowTableProps) => {
+export const useBorrowTable = ({
+  nfts,
+  rawOffers,
+  maxLoanValueByMarket,
+  goToRequestLoanTab,
+}: UseBorrowTableProps) => {
   const wallet = useWallet()
   const { connection } = useConnection()
   const navigate = useNavigate()
@@ -252,6 +258,7 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
     isCardView: viewState === ViewState.CARD,
     findOfferInCart,
     hasSelectedNfts: !isEmpty(offerByMint),
+    goToRequestLoanTab,
     onSelectAll,
     tokenType,
   })

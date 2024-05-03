@@ -13,7 +13,11 @@ export const BorrowPage = () => {
   //? Used to set default tab when user is redirected to BorrowPage.
   const { tab: storeTab, setTab } = useBorrowTabs()
 
-  const { value: currentTabValue, ...tabsProps } = useTabs({
+  const {
+    value: currentTabValue,
+    setValue,
+    tabs,
+  } = useTabs({
     tabs: OFFERS_TABS,
     defaultValue: storeTab ?? BorrowTabName.INSTANT,
   })
@@ -25,11 +29,17 @@ export const BorrowPage = () => {
     return () => setTab(null)
   }, [setTab, storeTab])
 
+  const goToRequestLoanTab = () => {
+    setValue(BorrowTabName.REQUEST)
+  }
+
   return (
     <div className={styles.pageWrapper}>
       <BorrowHeader />
-      <Tabs value={currentTabValue} {...tabsProps} />
-      {currentTabValue === BorrowTabName.INSTANT && <InstantLoansContent />}
+      <Tabs value={currentTabValue} tabs={tabs} setValue={setValue} />
+      {currentTabValue === BorrowTabName.INSTANT && (
+        <InstantLoansContent goToRequestLoanTab={goToRequestLoanTab} />
+      )}
       {currentTabValue === BorrowTabName.REQUEST && <RequestLoansContent />}
     </div>
   )
