@@ -11378,10 +11378,10 @@ socks@^2.6.2:
     ip "^2.0.0"
     smart-buffer "^4.2.0"
 
-solana-transactions-executor@4.3.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/solana-transactions-executor/-/solana-transactions-executor-4.3.0.tgz#49740953d64d20f7fd68606f3cd92e0229cabcf0"
-  integrity sha512-wtiO53xhUL6CmVFrkymj/kliEfW7t09Gtt8LW/Vv0U4tegclMs4aKcyALIqoj7bk5UPQlT0f+ey+6WanLozuLQ==
+solana-transactions-executor@4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/solana-transactions-executor/-/solana-transactions-executor-4.4.0.tgz#c6e7eed4d249e4b38e9c4648c4e1b749028adfc1"
+  integrity sha512-sXW3CgDywEpy9X2KeW3T9ka+MHL30sn4m0s/4YHtyEb/gr8wnuITj+Br2dFaDwjuoIdtxkY0JPNNc40SPFCkpw==
   dependencies:
     "@solana/web3.js" "1.91.1"
     axios "^1.6.8"
