@@ -132,7 +132,7 @@ export const enqueueConfirmationError = (
 ) => {
   if (reason === ConfirmTransactionErrorReason.TimeoutError) {
     return enqueueSnackbar({
-      message: 'Unable to ensure transaction result. Please try again',
+      message: 'Unable to ensure transaction result. Please try increasing priority fees.',
       type: 'warning',
       autoHideDuration: 7,
       solanaExplorerPath: `tx/${signature}`,
