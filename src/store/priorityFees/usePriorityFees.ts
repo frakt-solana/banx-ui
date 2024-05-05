@@ -73,6 +73,6 @@ export const getPriorityFeeLevel = () => {
   } catch (error) {
     console.error('Invalid priorityFee value in LS. Value was removed')
     localStorage.removeItem(BANX_PRIORITY_FEES_STATE_LS_KEY)
-    return PriorityLevel.HIGH
+    return DEFAULT_PRIORITY_FEE_LEVEL
   }
 }
