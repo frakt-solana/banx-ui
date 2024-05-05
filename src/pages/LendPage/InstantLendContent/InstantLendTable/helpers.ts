@@ -6,7 +6,7 @@ type CalcWeeklyInterestFee = (Loan: Loan) => number
 export const calcWeeklyInterestFee: CalcWeeklyInterestFee = (loan) => {
   const aprInPercent = loan.bondTradeTransaction.amountOfBonds / 100
   const aprWithProtocolFee = aprInPercent + BONDS.PROTOCOL_REPAY_FEE / 100
-  const repayValue = calculateLoanRepayValue(loan)
+  const repayValue = calculateLendValue(loan)
 
   const weeklyAprPercentage = aprWithProtocolFee / 100 / WEEKS_IN_YEAR
 
