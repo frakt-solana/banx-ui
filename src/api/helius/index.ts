@@ -30,23 +30,32 @@ export const getHeliusPriorityFeeEstimate: GetHeliusPriorityFeeEstimate = async 
   accountKeys,
   priorityLevel = 'Default',
 }): Promise<number> => {
-  const { data } = await axios.post<HeliusPriorityFeeEstimateResponse>(connection.rpcEndpoint, {
-    jsonrpc: '2.0',
-    id: uniqueId(),
-    method: 'getPriorityFeeEstimate',
-    params: [
-      {
-        accountKeys,
+  const MIN_PRIOIRY_FEE_THRESHOLD = 100_000
 
-        options: { priorityLevel },
-      },
-    ],
-  })
+  try {
+    const { data } = await axios.post<HeliusPriorityFeeEstimateResponse>(connection.rpcEndpoint, {
+      jsonrpc: '2.0',
+      id: uniqueId(),
+      method: 'getPriorityFeeEstimate',
+      params: [
+        {
+          accountKeys,
 
-  if (!data?.result?.priorityFeeEstimate)
-    throw new Error('Failed to fetch priority fees from helius rpc')
+          options: { priorityLevel },
+        },
+      ],
+    })
 
-  return Math.round(data.result.priorityFeeEstimate)
+    if (!data?.result?.priorityFeeEstimate)
+      throw new Error('Failed to fetch priority fees from helius rpc')
+
+    const fee = Math.round(data.result.priorityFeeEstimate) + MIN_PRIOIRY_FEE_THRESHOLD
+
+    return fee
+  } catch (error) {
+    console.error(error)
+    return MIN_PRIOIRY_FEE_THRESHOLD
+  }
 }
 
 type GetHeliusAssetProof = (params: {
