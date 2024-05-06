@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { chain, first, isEmpty } from 'lodash'
 
-import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
+import { MAX_BORROWER_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { MarketPreview } from '@banx/api/core'
@@ -95,7 +95,7 @@ const createSearchSelectParams = ({
         //TODO Refactor this piece of shit (code)
         format: (marketPubkey: unknown) => {
           const customApr = MARKETS_WITH_CUSTOM_APR[marketPubkey as string]
-          const apr = customApr !== undefined ? customApr / 100 : MAX_APR_VALUE
+          const apr = customApr !== undefined ? customApr / 100 : MAX_BORROWER_APR_VALUE
           return createPercentValueJSX(apr)
         },
       },

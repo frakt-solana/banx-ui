@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
-import { MAX_APR_VALUE, MIN_APR_VALUE } from '@banx/components/PlaceOfferSection'
+import { MAX_BORROWER_APR_VALUE, MIN_BORROWER_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import {
   SubscribeNotificationsModal,
   createRequestLoanSubscribeNotificationsContent,
@@ -75,7 +75,7 @@ export const useRequestLoansForm = (market: MarketPreview) => {
   }
 
   const handleChangeAprValue = (value: string) => {
-    const clampedValue = clampInputValue(value, MAX_APR_VALUE)
+    const clampedValue = clampInputValue(value, MAX_BORROWER_APR_VALUE)
     return setInputAprValue(clampedValue)
   }
 
@@ -120,11 +120,11 @@ export const useRequestLoansForm = (market: MarketPreview) => {
     collectionFloor: market.collectionFloor,
   })
 
-  const aprInputValueIsLow = inputAprValueToNumber < MIN_APR_VALUE
+  const aprInputValueIsLow = inputAprValueToNumber < MIN_BORROWER_APR_VALUE
   const disabledListAction = !inputLoanValueToNumber || !totalNftsToRequest || aprInputValueIsLow
 
   const actionButtonText = aprInputValueIsLow
-    ? `The min APR is ${MIN_APR_VALUE}%`
+    ? `The min APR is ${MIN_BORROWER_APR_VALUE}%`
     : `List ${totalNftsToRequest <= 1 ? 'request' : `${totalNftsToRequest} requests`}`
 
   //? requestedLoanValue with upfront fee

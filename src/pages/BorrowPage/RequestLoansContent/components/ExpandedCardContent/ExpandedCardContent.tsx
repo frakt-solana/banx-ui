@@ -5,7 +5,7 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Button } from '@banx/components/Buttons'
 import ActivityTable from '@banx/components/CommonTables'
-import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
+import { MAX_BORROWER_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
@@ -92,7 +92,7 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
             className={styles.field}
             placeholder="0"
             postfix="%"
-            max={MAX_APR_VALUE}
+            max={MAX_BORROWER_APR_VALUE}
             step={1}
           />
         </div>

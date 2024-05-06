@@ -3,7 +3,7 @@ import { FC } from 'react'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
-import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
+import { MIN_BORROWER_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { TensorLink } from '@banx/components/SolanaLinks'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
@@ -81,9 +81,9 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isOpen })
         classNamesProps={{ container: styles.additionalStat }}
       />
       <StatInfo
-        label="Max apr"
-        value={MAX_APR_VALUE}
-        tooltipText="Maximum annual interest rate. Ranges between 34-104% APR depending on the loan-to-value (LTV) offered, and becomes fixed once offer is taken"
+        label="Min apr"
+        value={MIN_BORROWER_APR_VALUE}
+        tooltipText="Minimum annual interest rate. Ranges between 16-110% APR depending on the loan-to-value (LTV) offered, and becomes fixed once offer is taken"
         valueType={VALUES_TYPES.PERCENT}
         classNamesProps={{ container: styles.additionalStat, value: styles.additionalAprStat }}
       />
