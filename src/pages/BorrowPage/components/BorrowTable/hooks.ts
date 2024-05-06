@@ -94,20 +94,17 @@ export const useBorrowTable = ({ nfts, rawOffers, maxLoanValueByMarket }: UseBor
     navigate(createPathWithTokenParam(PATHS.LOANS, tokenType))
   }
 
-  const onBorrowSuccess = (loansAmount = 1, showCongrats = false) => {
+  const onBorrowSuccess = (loansAmount = 1) => {
     if (bonkRewardsAvailable) {
       showBonkRewardsSnack()
     }
 
     //? Show notification with an offer to subscribe (if user not subscribed)
     const isUserSubscribedToNotifications = !!getDialectAccessToken(wallet.publicKey?.toBase58())
-    if (!isUserSubscribedToNotifications || showCongrats) {
+    if (!isUserSubscribedToNotifications) {
       open(SubscribeNotificationsModal, {
         title: createLoanSubscribeNotificationsTitle(loansAmount),
-        message: createLoanSubscribeNotificationsContent(
-          showCongrats,
-          !isUserSubscribedToNotifications,
-        ),
+        message: createLoanSubscribeNotificationsContent(!isUserSubscribedToNotifications),
         onActionClick: !isUserSubscribedToNotifications
           ? () => {
               close()

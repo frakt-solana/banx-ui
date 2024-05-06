@@ -1,7 +1,5 @@
 import { FC } from 'react'
 
-import { join } from 'lodash'
-
 import { Button } from '@banx/components/Buttons'
 import { Modal } from '@banx/components/modals/BaseModal'
 
@@ -44,19 +42,12 @@ export const createLoanSubscribeNotificationsTitle = (loansAmount = 1) => {
   return `You have successfully taken the loan`
 }
 
-export const createLoanSubscribeNotificationsContent = (
-  showCongrats = false,
-  showSubscribe = true,
-) => {
-  const congratsMessage = showCongrats
-    ? 'Congrats 🎉 Your first loan for each NFT from the top 12 collections get you 222 bonus points for the Leaderboard 🤑\n'
-    : ''
-
+export const createLoanSubscribeNotificationsContent = (showSubscribe = true) => {
   const subscribeMessage = showSubscribe
     ? "Please use the notifications so that you don't forget to repay your loans on time"
     : ''
 
-  return join([congratsMessage, subscribeMessage], '')
+  return subscribeMessage
 }
 
 export const createRefinanceSubscribeNotificationsTitle = (loansAmount = 1) => {
