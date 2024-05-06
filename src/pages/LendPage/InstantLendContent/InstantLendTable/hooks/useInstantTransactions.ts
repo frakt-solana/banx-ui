@@ -25,6 +25,7 @@ import {
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
   getDialectAccessToken,
+  isLoanListed,
 } from '@banx/utils'
 
 import { useAllLoansRequests } from '../../hooks'
@@ -66,7 +67,10 @@ export const useInstantTransactions = () => {
 
       const txnData = await createLendToBorrowTxnData({ loan, walletAndConnection })
 
-      await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor<{ loan: Loan; oldLoan: Loan }>(
+        walletAndConnection,
+        TXN_EXECUTOR_DEFAULT_OPTIONS,
+      )
         .addTxnData(txnData)
         .on('sentSome', (results) => {
           results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -86,8 +90,14 @@ export const useInstantTransactions = () => {
           if (confirmed.length) {
             return confirmed.forEach(({ result, signature }) => {
               if (result) {
+                const isOldLoanListed = isLoanListed(result.oldLoan)
+
+                const message = isOldLoanListed
+                  ? 'Loan successfully funded'
+                  : 'Loan successfully refinanced'
+
                 enqueueSnackbar({
-                  message: 'Loan successfully refinanced',
+                  message,
                   type: 'success',
                   solanaExplorerPath: `tx/${signature}`,
                 })
@@ -123,7 +133,7 @@ export const useInstantTransactions = () => {
         selection.map((loan) => createLendToBorrowTxnData({ loan, walletAndConnection })),
       )
 
-      await new TxnExecutor<Loan>(walletAndConnection, {
+      await new TxnExecutor<{ loan: Loan; oldLoan: Loan }>(walletAndConnection, {
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
         chunkSize: isLedger ? 5 : 40,
       })
@@ -138,10 +148,10 @@ export const useInstantTransactions = () => {
           destroySnackbar(loadingSnackbarId)
 
           if (confirmed.length) {
-            enqueueSnackbar({ message: 'Loans successfully refinanced', type: 'success' })
+            enqueueSnackbar({ message: 'Loans successfully funded', type: 'success' })
 
             const mintsToHidden = chain(confirmed)
-              .map(({ result }) => result?.nft.mint)
+              .map(({ result }) => result?.loan.nft.mint)
               .compact()
               .value()
 

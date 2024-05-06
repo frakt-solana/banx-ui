@@ -16,9 +16,14 @@ type CreateLendToBorrowTxnDataParams = {
   walletAndConnection: WalletAndConnection
 }
 
+export type CreateLendToBorrowActionOptimisticResult = {
+  loan: Loan
+  oldLoan: Loan
+}
+
 type CreateLendToBorrowTxnData = (
   params: CreateLendToBorrowTxnDataParams,
-) => Promise<CreateTxnData<Loan>>
+) => Promise<CreateTxnData<CreateLendToBorrowActionOptimisticResult>>
 
 export const createLendToBorrowTxnData: CreateLendToBorrowTxnData = async (params) => {
   const { loan } = params
@@ -34,7 +39,7 @@ export const createLendToBorrowTxnData: CreateLendToBorrowTxnData = async (param
   return {
     instructions,
     signers,
-    result: optimisticLoan,
+    result: { loan: optimisticLoan, oldLoan: loan },
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }
