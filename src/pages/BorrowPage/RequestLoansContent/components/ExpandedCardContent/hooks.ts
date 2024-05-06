@@ -131,6 +131,10 @@ export const useRequestLoansForm = (market: MarketPreview) => {
   const lenderSeesLoanValue =
     requestedLoanValue + (requestedLoanValue - calcBorrowValueWithProtocolFee(requestedLoanValue))
 
+  const lenderSeesAprValue = !aprInputValueIsLow
+    ? Math.floor(inputAprValueToNumber + BONDS.PROTOCOL_REPAY_FEE / 100)
+    : 0
+
   return {
     inputLoanValue,
     inputAprValue,
@@ -151,6 +155,7 @@ export const useRequestLoansForm = (market: MarketPreview) => {
     upfrontFee,
     weeklyInterest,
     lenderSeesLoanValue,
+    lenderSeesAprValue,
 
     tokenType,
 

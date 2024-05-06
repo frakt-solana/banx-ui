@@ -8,7 +8,7 @@ import ActivityTable from '@banx/components/CommonTables'
 import { MAX_BORROWER_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
-import { DisplayValue } from '@banx/components/TableComponents'
+import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import { Tabs, useTabs } from '@banx/components/Tabs'
 import { NumericStepInput } from '@banx/components/inputs'
 
@@ -46,6 +46,7 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
     disabledListAction,
     actionButtonText,
     lenderSeesLoanValue,
+    lenderSeesAprValue,
   } = useRequestLoansForm(market)
 
   const { value: currentTabValue, ...tabsProps } = useTabs({
@@ -59,7 +60,7 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
         <Summary ltv={ltv} upfrontFee={upfrontFee} weeklyInterest={weeklyInterest} />
 
         <div className={styles.fields}>
-          <div className={styles.selectCurrencyField}>
+          <div className={styles.borrowFieldWrapper}>
             <SelectCurrencyInput
               label="Borrow"
               value={inputLoanValue}
@@ -68,31 +69,38 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
               tokenType={tokenType}
             />
             <p className={styles.lenderSeesMessage}>
-              {!!inputLoanValue && <>Lender sees: {<DisplayValue value={lenderSeesLoanValue} />}</>}
+              {!!lenderSeesLoanValue && (
+                <>Lender sees: {<DisplayValue value={lenderSeesLoanValue} />}</>
+              )}
             </p>
           </div>
-
+          <div className={styles.aprFieldWrapper}>
+            <NumericStepInput
+              label="Apr"
+              value={inputAprValue}
+              onChange={handleChangeAprValue}
+              disabled={!connected || !nfts.length}
+              placeholder="0"
+              postfix="%"
+              max={MAX_BORROWER_APR_VALUE}
+              step={1}
+            />
+            <p className={styles.lenderSeesMessage}>
+              {!!lenderSeesAprValue && (
+                <>Lender sees: {createPercentValueJSX(lenderSeesAprValue)}</>
+              )}
+            </p>
+          </div>
           <NumericStepInput
             label="Freeze"
             value={inputFreezeValue}
             onChange={handleChangeFreezeValue}
             disabled={!connected || !nfts.length}
-            className={styles.field}
+            className={styles.freezeField}
             placeholder="0"
             postfix="d" //? d => days
             max={DAYS_IN_YEAR}
             tooltipText="Period during which loan can't be terminated"
-            step={1}
-          />
-          <NumericStepInput
-            label="Apr"
-            value={inputAprValue}
-            onChange={handleChangeAprValue}
-            disabled={!connected || !nfts.length}
-            className={styles.field}
-            placeholder="0"
-            postfix="%"
-            max={MAX_BORROWER_APR_VALUE}
             step={1}
           />
         </div>

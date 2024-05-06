@@ -2,7 +2,7 @@
   cursor: default;
   display: flex;
   overflow: hidden;
-  height: 346px;
+  height: 354px;
   width: 100%;
 
   @media (max-width: 640px) {
@@ -23,7 +23,7 @@
 }
 
 .activityTableWrapper {
-  height: 250px;
+  height: 258px;
 
   @media (max-width: 640px) {
     height: 184px;
@@ -52,10 +52,28 @@
   }
 }
 
-.selectCurrencyField {
+.borrowFieldWrapper {
   display: flex;
   flex-direction: column;
   width: 100%;
+}
+
+.aprFieldWrapper {
+  display: flex;
+  flex-direction: column;
+  max-width: 104px;
+
+  @media (max-width: 640px) {
+    max-width: unset;
+  }
+}
+
+.freezeField {
+  max-width: 104px;
+
+  @media (max-width: 640px) {
+    max-width: unset;
+  }
 }
 
 .lenderSeesMessage {
@@ -64,13 +82,10 @@
   gap: 4px;
   font: var(--body-text-sm);
   height: 14px;
-}
-
-.field {
-  max-width: 104px;
+  white-space: nowrap;
 
   @media (max-width: 640px) {
-    max-width: unset;
+    font: var(--body-text-xs);
   }
 }
 
