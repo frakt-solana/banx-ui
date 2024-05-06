@@ -11,7 +11,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { BorrowNft, Offer } from '@banx/api/core'
 import bonkTokenImg from '@banx/assets/BonkToken.png'
-import { BONDS, SPECIAL_COLLECTIONS_MARKETS } from '@banx/constants'
+import { BONDS } from '@banx/constants'
 import { LoansOptimisticStore, OffersOptimisticStore } from '@banx/store'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -84,7 +84,7 @@ export const executeBorrow = async (props: {
   addLoansOptimistic: LoansOptimisticStore['add']
   updateOffersOptimistic: OffersOptimisticStore['update']
   onSuccessAll?: () => void
-  onBorrowSuccess?: (loansAmount: number, showCongrats: boolean) => void
+  onBorrowSuccess?: (loansAmount: number) => void
 }) => {
   const {
     isLedger = false,
@@ -184,14 +184,8 @@ export const executeBorrow = async (props: {
 
           updateOffersOptimistic(optimisticsToAdd)
 
-          const showCongratsMessage = !!loans
-            .flat()
-            .find(({ fraktBond }) =>
-              SPECIAL_COLLECTIONS_MARKETS.includes(fraktBond.hadoMarket || ''),
-            )
-
           onSuccessAll?.()
-          onBorrowSuccess?.(loans.length, showCongratsMessage)
+          onBorrowSuccess?.(loans.length)
         }
 
         if (failed.length) {

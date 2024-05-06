@@ -13,7 +13,6 @@ import {
 } from '@banx/components/modals'
 
 import { BorrowNft, MarketPreview } from '@banx/api/core'
-import { SPECIAL_COLLECTIONS_MARKETS } from '@banx/constants'
 import { executeBorrow } from '@banx/pages/BorrowPage/components/BorrowTable/helpers'
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
@@ -107,16 +106,13 @@ export const useSingleBorrow = () => {
     navigate(createPathWithTokenParam(PATHS.LOANS, tokenType))
   }
 
-  const onBorrowSuccess = (showCongrats = false) => {
+  const onBorrowSuccess = () => {
     const isUserSubscribedToNotifications = !!getDialectAccessToken(wallet.publicKey?.toBase58())
 
-    if (!isUserSubscribedToNotifications || showCongrats) {
+    if (!isUserSubscribedToNotifications) {
       open(SubscribeNotificationsModal, {
         title: createLoanSubscribeNotificationsTitle(1),
-        message: createLoanSubscribeNotificationsContent(
-          showCongrats,
-          !isUserSubscribedToNotifications,
-        ),
+        message: createLoanSubscribeNotificationsContent(!isUserSubscribedToNotifications),
         onActionClick: !isUserSubscribedToNotifications
           ? () => {
               close()
@@ -153,7 +149,7 @@ export const useSingleBorrow = () => {
       addLoansOptimistic,
       updateOffersOptimistic,
       onBorrowSuccess: () => {
-        onBorrowSuccess(SPECIAL_COLLECTIONS_MARKETS.includes(marketPubkey))
+        onBorrowSuccess()
       },
       onSuccessAll: () => {
         goToLoansPage()
