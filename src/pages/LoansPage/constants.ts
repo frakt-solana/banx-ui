@@ -10,12 +10,12 @@ export enum LoansTabsNames {
 
 export const LOANS_TABS: Tab[] = [
   {
-    label: 'Requests',
-    value: LoansTabsNames.REQUESTS,
-  },
-  {
     label: 'Loans',
     value: LoansTabsNames.LOANS,
+  },
+  {
+    label: 'Requests',
+    value: LoansTabsNames.REQUESTS,
   },
   {
     label: 'History',

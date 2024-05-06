@@ -14,8 +14,6 @@ import {
 
 import { BorrowNft, Offer } from '@banx/api/core'
 import { useBorrowBonkRewardsAvailability } from '@banx/hooks'
-import { LoansTabsNames } from '@banx/pages/LoansPage/constants'
-import { useLoansTabs } from '@banx/pages/LoansPage/hooks'
 import { PATHS } from '@banx/router'
 import {
   ViewState,
@@ -102,8 +100,6 @@ export const useBorrowTable = ({
     navigate(createPathWithTokenParam(PATHS.LOANS, tokenType))
   }
 
-  const { setTab: setLoansTab } = useLoansTabs()
-
   const onBorrowSuccess = (loansAmount = 1, showCongrats = false) => {
     if (bonkRewardsAvailable) {
       showBonkRewardsSnack()
@@ -140,7 +136,6 @@ export const useBorrowTable = ({
       updateOffersOptimistic,
       onBorrowSuccess,
       onSuccessAll: () => {
-        setLoansTab(LoansTabsNames.LOANS)
         goToLoansPage()
       },
       isLedger,
@@ -159,7 +154,6 @@ export const useBorrowTable = ({
       updateOffersOptimistic,
       onBorrowSuccess,
       onSuccessAll: () => {
-        setLoansTab(LoansTabsNames.LOANS)
         goToLoansPage()
       },
       isLedger,
