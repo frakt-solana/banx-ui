@@ -81,6 +81,6 @@ export const createRequestLoanSubscribeNotificationsTitle = (loansAmount = 1) =>
 
 export const createRequestLoanSubscribeNotificationsContent = (showSubscribe = true) => {
   return showSubscribe
-    ? 'Please use the notifications so that you will know lenders accepts your requests'
+    ? 'Please use the notifications so that you will know lenders accept your requests'
     : ''
 }

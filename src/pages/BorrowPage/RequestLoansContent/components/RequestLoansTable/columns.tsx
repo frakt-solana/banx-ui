@@ -72,7 +72,7 @@ export const getTableColumns = ({
       title: (
         <HeaderCell
           label="Upfront fee"
-          tooltipText="1% upfront fee charged on the principal amount"
+          tooltipText="1% upfront fee charged on the loan principal amount, paid when loan is funded"
         />
       ),
       render: () => {
