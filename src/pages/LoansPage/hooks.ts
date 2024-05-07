@@ -4,6 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 import { chain, filter, groupBy, map } from 'lodash'
 import moment from 'moment'
+import { create } from 'zustand'
 
 import { fetchBorrowerLoansRequests, fetchWalletLoansAndOffers } from '@banx/api/core'
 import { fetchUserLoansStats } from '@banx/api/stats'
@@ -20,7 +21,7 @@ import {
 } from '@banx/store'
 import { isLoanListed, isLoanRepaid, isLoanTerminating, isOfferClosed } from '@banx/utils'
 
-import { SECONDS_IN_72_HOURS } from './constants'
+import { LoansTabsNames, SECONDS_IN_72_HOURS } from './constants'
 
 export const USE_WALLET_LOANS_AND_OFFERS_QUERY_KEY = 'walletLoansAndOffers'
 
@@ -286,3 +287,13 @@ export const useBorrowerLoansRequests = () => {
     isLoading,
   }
 }
+
+type LoansTabsState = {
+  tab: LoansTabsNames | null
+  setTab: (tab: LoansTabsNames | null) => void
+}
+
+export const useLoansTabs = create<LoansTabsState>((set) => ({
+  tab: null,
+  setTab: (tab) => set({ tab }),
+}))

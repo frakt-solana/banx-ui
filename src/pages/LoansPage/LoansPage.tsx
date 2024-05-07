@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+
 import { Tabs, useTabs } from '@banx/components/Tabs'
 
 import { LoansActiveTable } from './components/LoansActiveTable'
@@ -5,15 +7,25 @@ import LoansHeader from './components/LoansHeader'
 import { LoansHistoryTable } from './components/LoansHistoryTable'
 import { RequestsTable } from './components/RequestLoansTable'
 import { LOANS_TABS, LoansTabsNames } from './constants'
-import { useWalletLoansAndOffers } from './hooks'
+import { useLoansTabs, useWalletLoansAndOffers } from './hooks'
 
 import styles from './LoansPage.module.less'
 
 export const LoansPage = () => {
+  //? Used to set default tab when user is redirected to LoansPage.
+  const { tab: storeTab, setTab } = useLoansTabs()
+
   const { value: currentTabValue, ...tabsProps } = useTabs({
     tabs: LOANS_TABS,
-    defaultValue: LoansTabsNames.LOANS,
+    defaultValue: storeTab ?? LoansTabsNames.LOANS,
   })
+
+  //? Used hook to reset store when the component is unmounted
+  useEffect(() => {
+    if (!storeTab) return
+
+    return () => setTab(null)
+  }, [setTab, storeTab])
 
   const { loans, offers, isLoading } = useWalletLoansAndOffers()
 

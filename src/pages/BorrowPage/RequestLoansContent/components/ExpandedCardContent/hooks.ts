@@ -16,6 +16,7 @@ import {
 import { BorrowNft, Loan, MarketPreview } from '@banx/api/core'
 import { BONDS, DAYS_IN_YEAR, SECONDS_IN_DAY } from '@banx/constants'
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
+import { LoansTabsNames, useLoansTabs } from '@banx/pages/LoansPage'
 import { PATHS } from '@banx/router'
 import {
   createPathWithTokenParam,
@@ -184,7 +185,10 @@ const useRequestLoansTransaction = (props: {
 
   const { tokenType } = useTokenType()
 
+  const { setTab: setLoanTab } = useLoansTabs()
+
   const goToLoansPage = () => {
+    setLoanTab(LoansTabsNames.REQUESTS)
     navigate(createPathWithTokenParam(PATHS.LOANS, tokenType))
   }
 
