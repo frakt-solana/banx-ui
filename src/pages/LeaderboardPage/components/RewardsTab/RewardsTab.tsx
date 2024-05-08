@@ -13,7 +13,7 @@ import { fetchBonkWithdrawal, sendBonkWithdrawal } from '@banx/api/user'
 import { useBorrowBonkRewardsAvailability } from '@banx/hooks'
 import { CircleCheck } from '@banx/icons'
 import { PATHS } from '@banx/router'
-import { enqueueUnknownErrorSnackbar } from '@banx/transactions'
+import { defaultTxnErrorHandler } from '@banx/transactions'
 import { enqueueSnackbar } from '@banx/utils'
 
 import { updateBonkWithdrawOptimistic, useSeasonUserRewards } from '../../hooks'
@@ -126,8 +126,7 @@ const ClaimBlock: FC<ClaimBlockProps> = ({ availableToClaim, totalClaimed }) => 
       })
       updateBonkWithdrawOptimistic(walletPubkeyString)
     } catch (error) {
-      console.error(error)
-      enqueueUnknownErrorSnackbar(error as Error)
+      defaultTxnErrorHandler(error)
     } finally {
       setIsLoading(false)
     }
