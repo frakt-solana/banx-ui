@@ -139,6 +139,7 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
           <ActivityTable
             marketPubkey={market.marketPubkey}
             classNamesProps={{ wrapper: styles.activityTableWrapper }}
+            hideToggle
           />
         )}
       </div>

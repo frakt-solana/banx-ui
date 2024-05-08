@@ -14,13 +14,18 @@ import styles from './ActivityTable.module.less'
 
 interface ActivityTableProps {
   marketPubkey: string
+  hideToggle?: boolean
   classNamesProps?: {
     wrapper?: string
     table?: string
   }
 }
 
-const ActivityTable: FC<ActivityTableProps> = ({ marketPubkey, classNamesProps }) => {
+const ActivityTable: FC<ActivityTableProps> = ({
+  marketPubkey,
+  classNamesProps,
+  hideToggle = false,
+}) => {
   const {
     loans,
     isLoading,
@@ -41,6 +46,7 @@ const ActivityTable: FC<ActivityTableProps> = ({ marketPubkey, classNamesProps }
         {...filterParams}
         isRadioButtonDisabled={isRadioButtonDisabled}
         isToggleDisabled={isToggleDisabled}
+        hideToggle={hideToggle}
       />
       {!showEmptyList ? (
         <Table

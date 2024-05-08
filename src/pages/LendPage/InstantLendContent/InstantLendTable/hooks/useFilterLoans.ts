@@ -9,18 +9,16 @@ import { isFreezeLoan, isLoanListed } from '@banx/utils'
 const useCollectionsStore = createGlobalState<string[]>([])
 
 export const useFilterLoans = (loans: Loan[]) => {
-  const [isAuctionFilterEnabled, setAuctionFilterState] = useState(false)
-  const [isFreezeFilterEnabled, setFreezeFilterState] = useState(false)
+  const [isAuctionFilterEnabled, setAuctionFilterState] = useState(true)
+  const [isFreezeFilterEnabled, setFreezeFilterState] = useState(true)
 
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
 
   const toggleAuctionFilter = () => {
-    setFreezeFilterState(false)
     setAuctionFilterState(!isAuctionFilterEnabled)
   }
 
   const toggleFreezeFilter = () => {
-    setAuctionFilterState(false)
     setFreezeFilterState(!isFreezeFilterEnabled)
   }
 
@@ -32,8 +30,14 @@ export const useFilterLoans = (loans: Loan[]) => {
 
   const { filteredLoansBySelectedCollection, filteredAllLoans } = useMemo(() => {
     const applyFilter = (loans: Loan[]) => {
-      if (isAuctionFilterEnabled) return filter(loans, (loan) => !isLoanListed(loan))
-      if (isFreezeFilterEnabled) return filter(loans, (loan) => isFreezeLoan(loan))
+      const auctionLoans = filter(loans, (loan) => !isLoanListed(loan))
+      const listedLoans = filter(loans, (loan) => isLoanListed(loan))
+      const listedLoansWithoutFreeze = filter(listedLoans, (loan) => !isFreezeLoan(loan))
+
+      if (!isFreezeFilterEnabled && !isAuctionFilterEnabled) return listedLoansWithoutFreeze
+      if (!isAuctionFilterEnabled) return listedLoans
+      if (!isFreezeFilterEnabled) return [...listedLoansWithoutFreeze, ...auctionLoans]
+
       return loans
     }
 
