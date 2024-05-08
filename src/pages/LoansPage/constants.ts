@@ -14,7 +14,7 @@ export const LOANS_TABS: Tab[] = [
     value: LoansTabsNames.LOANS,
   },
   {
-    label: 'Requests',
+    label: 'Listings',
     value: LoansTabsNames.REQUESTS,
   },
   {

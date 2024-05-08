@@ -4,6 +4,7 @@ import {
   HeaderCell,
   HorizontalCell,
   NftInfoCell,
+  RarityCell,
   createPercentValueJSX,
 } from '@banx/components/TableComponents'
 import Timer from '@banx/components/Timer/Timer'
@@ -56,6 +57,11 @@ export const getTableColumns = ({
           rightContentJSX={createRightContentJSX(loan)}
         />
       ),
+    },
+    {
+      key: 'rarity',
+      title: <HeaderCell label="Rarity" />,
+      render: ({ nft }) => <RarityCell rarity={nft.rarity} />,
     },
     {
       key: 'repayValue',

@@ -52,7 +52,7 @@ export enum LendTabName {
 
 const OFFERS_TABS = [
   {
-    label: 'Lend instantly',
+    label: 'Lend now',
     value: LendTabName.INSTANT,
   },
   {

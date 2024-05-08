@@ -52,11 +52,11 @@ export enum BorrowTabName {
 
 const OFFERS_TABS: Tab[] = [
   {
-    label: 'Instant loans',
+    label: 'Borrow now',
     value: BorrowTabName.INSTANT,
   },
   {
-    label: 'Request loans',
+    label: 'List loans',
     value: BorrowTabName.REQUEST,
   },
 ]

@@ -7,6 +7,7 @@ import {
   HeaderCell,
   HorizontalCell,
   NftInfoCell,
+  RarityCell,
   createPercentValueJSX,
 } from '@banx/components/TableComponents'
 import Timer from '@banx/components/Timer'
@@ -74,6 +75,11 @@ export const getTableColumns = ({
           />
         )
       },
+    },
+    {
+      key: 'rarity',
+      title: <HeaderCell label="Rarity" />,
+      render: ({ nft }) => <RarityCell rarity={nft.rarity} />,
     },
     {
       key: 'interest',
@@ -145,7 +151,7 @@ const createRightContentJSX = (loan: Loan) => {
   const freezeExpiredAt = calculateFreezeExpiredAt(loan)
 
   const repaymentCallContent = createTooltipContent({
-    icon: Coin,
+    icon: <Coin />,
     content: (
       <p className={styles.repaymentCallTooltipValue}>
         <DisplayValue value={repaymentCallLenderReceives} /> requested
@@ -154,7 +160,7 @@ const createRightContentJSX = (loan: Loan) => {
   })
 
   const freezeLoanContent = createTooltipContent({
-    icon: Snowflake,
+    icon: <Snowflake className={styles.snowflakeIcon} />,
     content: (
       <p>
         <Timer expiredAt={freezeExpiredAt} /> until the end of non termination period
@@ -179,11 +185,11 @@ const createRightContentJSX = (loan: Loan) => {
 
 interface CreateTooltipContentProps {
   content: ReactNode
-  icon: FC
+  icon: ReactNode
 }
 
-const createTooltipContent: FC<CreateTooltipContentProps> = ({ content, icon: Icon }) => (
+const createTooltipContent: FC<CreateTooltipContentProps> = ({ content, icon }) => (
   <Tooltip className={styles.iconTooltipContent} title={content}>
-    <Icon />
+    {icon}
   </Tooltip>
 )

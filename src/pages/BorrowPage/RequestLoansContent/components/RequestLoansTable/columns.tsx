@@ -6,12 +6,11 @@ import {
   HeaderCell,
   HorizontalCell,
   NftInfoCell,
+  RarityCell,
 } from '@banx/components/TableComponents'
 
 import { BorrowNft } from '@banx/api/core'
 import { calcBorrowValueWithProtocolFee } from '@banx/utils'
-
-import { RarityCell } from './cells'
 
 import styles from './RequestLoansTable.module.less'
 
@@ -57,7 +56,7 @@ export const getTableColumns = ({
     {
       key: 'rarity',
       title: <HeaderCell label="Rarity" />,
-      render: (nft) => <RarityCell nft={nft} />,
+      render: ({ nft }) => <RarityCell rarity={nft.rarity} />,
     },
     {
       key: 'loanValue',
