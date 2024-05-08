@@ -66,7 +66,10 @@ export const RarityCell: FC<{ rarity: Rarity | undefined }> = ({ rarity }) => {
   const color = tier ? RARITY_TIER_COLOR_MAP[tier] : ''
 
   return (
-    <span className={styles.rarityText} style={{ background: color }}>
+    <span
+      className={classNames(styles.rarityText, { [styles.highlight]: tier })}
+      style={{ background: color }}
+    >
       {rank}
     </span>
   )
