@@ -174,6 +174,20 @@ export interface WalletLoansAndOffersResponse {
   meta: PaginationMeta
 }
 
+export enum RarityTier {
+  Common = 'common',
+  Uncommon = 'uncommon',
+  Rare = 'rare',
+  Epic = 'epic',
+  Legendary = 'legendary',
+  Mythic = 'mythic',
+}
+
+const RaritySchema = z.object({
+  tier: z.nativeEnum(RarityTier),
+  rank: z.number(),
+})
+
 const BorrowNftSchema = z.object({
   mint: z.string(),
   loan: z.object({
@@ -182,7 +196,7 @@ const BorrowNftSchema = z.object({
     marketApr: z.number(),
     banxStake: z.string().optional(),
   }),
-  nft: NFTSchema,
+  nft: NFTSchema.extend({ rarity: RaritySchema.optional() }),
 })
 
 export type BorrowNft = z.infer<typeof BorrowNftSchema>
