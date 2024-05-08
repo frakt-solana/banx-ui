@@ -84,6 +84,7 @@ const createSearchSelectParams = ({
     },
     labels: ['Collection', 'Available'],
     className: styles.searchSelect,
+    disabled: !options.length,
   }
 
   return searchSelectParams

@@ -113,6 +113,7 @@ export const InstantLendTable: FC<InstantLendTableProps> = ({ goToPlaceOfferTab 
         loading={loading}
         customJSX={customJSX}
         showCard
+        emptyMessage={!loans.length ? 'No loans found' : undefined}
       />
       <Summary loans={loans} />
     </div>
