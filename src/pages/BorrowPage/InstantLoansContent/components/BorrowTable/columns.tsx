@@ -95,7 +95,8 @@ export const getTableColumns = ({
       render: (nft) => (
         <BorrowActionCell
           isCardView={isCardView}
-          disabled={!!findOfferInCart(nft) || !nft.loanValue}
+          loanValue={nft.loanValue}
+          disabled={!!findOfferInCart(nft)}
           onBorrow={async () => await onBorrow(nft)}
           goToRequestLoanTab={goToRequestLoanTab}
         />
