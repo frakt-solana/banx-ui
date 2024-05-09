@@ -3,6 +3,7 @@ import { TxnError } from 'solana-transactions-executor'
 import { enqueueSnackbar } from '@banx/utils'
 
 import { createErrorLogsString } from '.'
+import { TxnErrorHumanName } from '../types'
 import { getTxnErrorDefinition } from './getTxnErrorDefinition'
 
 type EnqueueTxnErrorSnackbar = (
@@ -16,10 +17,15 @@ type EnqueueTxnErrorSnackbar = (
 export const enqueueTxnErrorSnackbar: EnqueueTxnErrorSnackbar = (error, options) => {
   const errorDefinition = getTxnErrorDefinition(error)
 
-  const copyButtonProps = {
-    label: 'Copy error logs',
-    textToCopy: createErrorLogsString(error, options),
-  }
+  const isTransactionRejectedByUser =
+    errorDefinition?.humanMessage === TxnErrorHumanName.TRANSACTION_REJECTED
+
+  const copyButtonProps = !isTransactionRejectedByUser
+    ? {
+        label: 'Copy error logs',
+        textToCopy: createErrorLogsString(error, options),
+      }
+    : undefined
 
   return enqueueSnackbar({
     message: errorDefinition?.humanMessage ?? 'Something went wrong',
