@@ -51,6 +51,7 @@ export const HorizontalCell: FC<HorizontalCellProps> = ({
   )
 }
 
+//TODO: Rewrite via classes
 const RARITY_TIER_COLOR_MAP: Record<RarityTier, string> = {
   [RarityTier.Common]: 'var(--additional-silver-primary)',
   [RarityTier.Uncommon]: 'var(--additional-green-primary)',
