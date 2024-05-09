@@ -6933,10 +6933,10 @@ faye-websocket@0.11.4, faye-websocket@^0.11.3:
   dependencies:
     websocket-driver ">=0.5.1"
 
-fbonds-core@0.5.372-beta8:
-  version "0.5.372-beta8"
-  resolved "https://registry.yarnpkg.com/fbonds-core/-/fbonds-core-0.5.372-beta8.tgz#1be84f11a123db8ba0f6647133fc3637dc6289ed"
-  integrity sha512-WH4d8SYRnUdPuMjoWNagJWA/4JRedNy2DudH7zVhcSoiOSr26AjdJtcWHfnfoSnCokYkf9eXZB6dGXnTKSoAWg==
+fbonds-core@0.5.373:
+  version "0.5.373"
+  resolved "https://registry.yarnpkg.com/fbonds-core/-/fbonds-core-0.5.373.tgz#e4126479fb09ad5253a53708f379077bb337720a"
+  integrity sha512-ZrqwkMOewt1KejHivZlY/yRaD4YCJEGRbyqwwxEE/kJaBWEymvOEPbd25B9FtXU92wUTosPZDQ3hNVOG0ULS0w==
   dependencies:
     "@metaplex-foundation/mpl-token-metadata" "^2.8.1"
     "@project-serum/anchor" "^0.26.0"
@@ -11378,10 +11378,10 @@ socks@^2.6.2:
     ip "^2.0.0"
     smart-buffer "^4.2.0"
 
-solana-transactions-executor@4.3.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/solana-transactions-executor/-/solana-transactions-executor-4.3.0.tgz#49740953d64d20f7fd68606f3cd92e0229cabcf0"
-  integrity sha512-wtiO53xhUL6CmVFrkymj/kliEfW7t09Gtt8LW/Vv0U4tegclMs4aKcyALIqoj7bk5UPQlT0f+ey+6WanLozuLQ==
+solana-transactions-executor@4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/solana-transactions-executor/-/solana-transactions-executor-4.4.0.tgz#c6e7eed4d249e4b38e9c4648c4e1b749028adfc1"
+  integrity sha512-sXW3CgDywEpy9X2KeW3T9ka+MHL30sn4m0s/4YHtyEb/gr8wnuITj+Br2dFaDwjuoIdtxkY0JPNNc40SPFCkpw==
   dependencies:
     "@solana/web3.js" "1.91.1"
     axios "^1.6.8"
