@@ -9,7 +9,7 @@ import { calculateLoanRepayValue } from '@banx/utils'
 
 enum SortField {
   DURATION = 'duration',
-  FLOOR = 'floorPrice',
+  RARITY = 'rarity',
   DEBT = 'repayValue',
   LTV = 'ltv',
   APR = 'apr',
@@ -23,7 +23,7 @@ type StatusValueMap = Record<SortField, SortValueGetter>
 
 const SORT_OPTIONS = [
   { label: 'Duration', value: SortField.DURATION },
-  { label: 'Floor', value: SortField.FLOOR },
+  { label: 'Rarity', value: SortField.RARITY },
   { label: 'Debt', value: SortField.DEBT },
   { label: 'LTV', value: SortField.LTV },
   { label: 'APR', value: SortField.APR },
@@ -34,7 +34,7 @@ const DEFAULT_SORT_OPTION = { label: 'LTV', value: `${SortField.LTV}_asc` }
 
 const STATUS_VALUE_MAP: StatusValueMap = {
   [SortField.DURATION]: (loan) => loan.fraktBond.refinanceAuctionStartedAt,
-  [SortField.FLOOR]: (loan) => loan.nft.collectionFloor,
+  [SortField.RARITY]: (loan) => loan.nft.rarity?.rank || 0,
   [SortField.DEBT]: (loan) => calculateLoanRepayValue(loan),
   [SortField.APR]: (loan) => loan.bondTradeTransaction.amountOfBonds,
   [SortField.LTV]: (loan) => {

@@ -9,6 +9,7 @@ import { calculateLoanRepayValue, isLoanLiquidated, isLoanTerminating } from '@b
 
 enum SortField {
   LENT = 'lent',
+  RARITY = 'rarity',
   APR = 'apr',
   LTV = 'ltv',
   STATUS = 'status',
@@ -20,6 +21,7 @@ type StatusValueMap = Record<SortField, string | SortValueGetter>
 
 export const SORT_OPTIONS = [
   { label: 'Lent', value: 'lent' },
+  { label: 'Rarity', value: 'rarity' },
   { label: 'APR', value: 'apr' },
   { label: 'LTV', value: 'ltv' },
   { label: 'Status', value: 'status' },
@@ -29,6 +31,7 @@ export const DEFAULT_SORT_OPTION = { label: 'LTV', value: 'ltv_desc' }
 
 const STATUS_VALUE_MAP: StatusValueMap = {
   [SortField.LENT]: (loan: Loan) => loan.fraktBond.currentPerpetualBorrowed,
+  [SortField.RARITY]: (loan) => loan.nft.rarity?.rank || 0,
   [SortField.APR]: (loan: Loan) => loan.bondTradeTransaction.amountOfBonds,
   [SortField.LTV]: (loan: Loan) => calculateLoanRepayValue(loan) / loan.nft.collectionFloor,
   [SortField.STATUS]: '',
