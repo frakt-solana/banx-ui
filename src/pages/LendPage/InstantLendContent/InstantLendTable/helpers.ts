@@ -1,6 +1,6 @@
 import { Loan } from '@banx/api/core'
 import { BONDS, WEEKS_IN_YEAR } from '@banx/constants'
-import { calculateLoanRepayValue, isLoanListed } from '@banx/utils'
+import { calculateApr, calculateLoanRepayValue, isLoanListed } from '@banx/utils'
 
 type CalcWeeklyInterestFee = (Loan: Loan) => number
 export const calcWeeklyInterestFee: CalcWeeklyInterestFee = (loan) => {
@@ -20,4 +20,12 @@ export const calculateLendValue = (loan: Loan) => {
   const debtValue = calculateLoanRepayValue(loan)
 
   return isLoanListed(loan) ? borrowedValue : debtValue
+}
+
+export const calculateLenderApr = (loan: Loan) => {
+  return calculateApr({
+    loanValue: calculateLendValue(loan),
+    collectionFloor: loan.nft.collectionFloor,
+    marketPubkey: loan.fraktBond.hadoMarket,
+  })
 }

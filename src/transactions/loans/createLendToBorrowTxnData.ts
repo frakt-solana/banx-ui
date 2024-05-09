@@ -13,6 +13,7 @@ import { isLoanListed, sendTxnPlaceHolder } from '@banx/utils'
 
 type CreateLendToBorrowTxnDataParams = {
   loan: Loan
+  aprRate: number
   walletAndConnection: WalletAndConnection
 }
 
@@ -45,7 +46,7 @@ export const createLendToBorrowTxnData: CreateLendToBorrowTxnData = async (param
 }
 
 const getIxnsAndSignersByLoanType = async (params: CreateLendToBorrowTxnDataParams) => {
-  const { loan, walletAndConnection } = params
+  const { loan, aprRate, walletAndConnection } = params
   const { connection, wallet } = walletAndConnection
 
   const { bondTradeTransaction, fraktBond } = loan
@@ -95,6 +96,7 @@ const getIxnsAndSignersByLoanType = async (params: CreateLendToBorrowTxnDataPara
     },
     args: {
       lendingTokenType: bondTradeTransaction.lendingToken,
+      newApr: aprRate,
     },
     optimistic: {
       fraktBond,

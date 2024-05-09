@@ -66,6 +66,10 @@ const BUTTON_TEXT = {
     connected: 'Borrow SOL in bulk',
     notConnected: 'Connect wallet to borrow SOL',
   },
+  [LendingTokenType.BanxSol]: {
+    connected: 'Borrow SOL in bulk',
+    notConnected: 'Connect wallet to borrow SOL',
+  },
   [LendingTokenType.Usdc]: {
     connected: 'Borrow USDC in bulk',
     notConnected: 'Connect wallet to borrow USDC',
