@@ -1,0 +1,47 @@
+.headerTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.checkbox {
+  height: 18px;
+  padding-left: 18px;
+}
+
+.selectButton {
+  width: 96px;
+}
+
+.cellText {
+  font: var(--body-text-sm);
+}
+
+.tableWrapper {
+  height: 320px;
+
+  @media (max-width: 640px) {
+    height: 264px;
+  }
+}
+
+.tableRoot {
+  min-width: 564px;
+  width: 100%;
+
+  tr > td,
+  tr > th {
+    @media (max-width: 1240px) {
+      width: 72px;
+
+      &:first-child {
+        width: 164px;
+      }
+
+      &:last-child,
+      &:nth-child(4) {
+        width: 128px;
+      }
+    }
+  }
+}

@@ -27,6 +27,7 @@ export const NumericStepInput: FC<NumericStepInputProps> = ({
   className,
   step = 0.1,
   postfix,
+  placeholder,
 }) => {
   const numericValue = parseFloat(value) || 0
   const canIncrement = numericValue < max
@@ -65,6 +66,7 @@ export const NumericStepInput: FC<NumericStepInputProps> = ({
         onChange={(value) => onChange(value)}
         disabled={disabled}
         positiveOnly
+        placeholder={placeholder}
       />
       {postfix && <div className={styles.postfix}>{postfix}</div>}
       <div className={styles.customCounterControls}>

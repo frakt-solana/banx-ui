@@ -31,17 +31,27 @@
 
 .additionalSummary {
   border: 1px dotted var(--bg-border);
+  border-left: 0;
+  border-right: 0;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 16px;
-  margin-bottom: 16px;
+  padding: 12px 24px;
+  margin: 12px -24px;
 
   @media (max-width: 640px) {
-    border-left: 0;
-    border-right: 0;
-    gap: 4px;
-    margin: 0 -16px 8px;
+    padding: 8px 16px;
+    margin: 8px -16px;
+  }
+}
+
+.fixedValueContent {
+  max-width: 86px;
+  white-space: nowrap;
+  overflow: auto;
+
+  @media (max-width: 960px) {
+    max-width: 144px;
   }
 }
 

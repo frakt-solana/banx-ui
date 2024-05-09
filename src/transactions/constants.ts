@@ -27,6 +27,11 @@ export enum BorrowType {
   Default = 'Default',
 }
 
+export enum ListingType {
+  CNft = 'CNft',
+  Default = 'Default',
+}
+
 export const TXN_EXECUTOR_DEFAULT_OPTIONS: ExecutorOptions = {
   sendOptions: {
     maxRetries: 0,

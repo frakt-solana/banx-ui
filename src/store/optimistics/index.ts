@@ -1,2 +1,2 @@
-export * from './useLoansOptimistic'
+export * from './loans'
 export * from './useOffersOptimistic'

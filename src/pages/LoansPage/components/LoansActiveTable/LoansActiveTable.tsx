@@ -13,10 +13,10 @@ import { Coin, Warning } from '@banx/icons'
 import { ViewState, useTableView, useTokenType } from '@banx/store'
 import { isLoanRepaymentCallActive, isLoanTerminating } from '@banx/utils'
 
-import { useSelectedLoans } from '../../loansState'
 import { Summary } from './Summary'
 import { getTableColumns } from './columns'
 import { useLoansActiveTable } from './hooks'
+import { useSelectedLoans } from './loansState'
 
 import styles from './LoansActiveTable.module.less'
 

@@ -54,7 +54,7 @@ export const useCountdown: UseCountdown = (endTimeUnix: number) => {
     return isExpired ? '00' : padStart(value.toString(), 2, '0')
   }
 
-  const days = formatWithLeadingZero(timeDifference.days())
+  const days = formatWithLeadingZero(Math.trunc(timeDifference.asDays()))
   const hours = formatWithLeadingZero(timeDifference.hours())
   const minutes = formatWithLeadingZero(timeDifference.minutes())
   const seconds = formatWithLeadingZero(timeDifference.seconds())

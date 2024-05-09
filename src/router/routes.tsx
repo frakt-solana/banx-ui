@@ -8,7 +8,6 @@ import {
   LendPage,
   LoansPage,
   OffersPage,
-  RefinancePage,
   RootPage,
 } from '@banx/pages'
 
@@ -47,10 +46,6 @@ export const routes: Route[] = [
   {
     path: PATHS.ADVENTURES,
     component: AdventuresPage,
-  },
-  {
-    path: PATHS.REFINANCE,
-    component: RefinancePage,
   },
   {
     path: PATHS.LEADERBOARD,

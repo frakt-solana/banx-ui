@@ -15,7 +15,7 @@ import {
   useLenderLoans,
 } from '@banx/pages/OffersPage'
 import { createGlobalState } from '@banx/store/functions'
-import { isUnderWaterLoan } from '@banx/utils'
+import { isLoanListed, isUnderWaterLoan } from '@banx/utils'
 
 import { DEFAULT_SORT_OPTION, SORT_OPTIONS, useSortedLoans } from './useSortedLoans'
 
@@ -47,7 +47,9 @@ export const useLoansTable = () => {
   const sortedLoans = useSortedLoans(filteredLoans, sortOption)
 
   const loansToClaim = useMemo(() => sortedLoans.filter(isLoanAbleToClaim), [sortedLoans])
-  const loansToTerminate = useMemo(() => sortedLoans.filter(isLoanAbleToTerminate), [sortedLoans])
+  const loansToTerminate = useMemo(() => {
+    return sortedLoans.filter((loan) => isLoanAbleToTerminate(loan) && !isLoanListed(loan))
+  }, [sortedLoans])
 
   const searchSelectParams = createSearchSelectParams({
     loans: filteredAllLoans,

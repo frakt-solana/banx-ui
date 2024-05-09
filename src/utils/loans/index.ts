@@ -168,6 +168,17 @@ export const isLoanRepaymentCallActive = (loan: Loan) => {
   return !!(loan.bondTradeTransaction.repaymentCallAmount / repayValueWithoutProtocolFee)
 }
 
+export const isFreezeLoan = (loan: Loan) => {
+  return !!loan.bondTradeTransaction.terminationFreeze
+}
+
+export const isLoanListed = (loan: Loan) => {
+  return (
+    loan.bondTradeTransaction.bondTradeTransactionState ===
+    BondTradeTransactionV2State.PerpetualBorrowerListing
+  )
+}
+
 /**
   As we need to show how much lender receives. We need to calculate this value from repaymentCallAmount (how much borrower should pay)
  */
@@ -185,4 +196,13 @@ export const calculateRepaymentCallLenderReceivesAmount = (loan: Loan) => {
       marketPubkey: loan.fraktBond.hadoMarket,
     }),
   })
+}
+
+export const calculateFreezeExpiredAt = (loan: Loan) => {
+  return loan.bondTradeTransaction.soldAt + loan.bondTradeTransaction.terminationFreeze
+}
+
+export const checkIfFreezeExpired = (loan: Loan) => {
+  const freezeExpiredAt = calculateFreezeExpiredAt(loan)
+  return moment().unix() > freezeExpiredAt
 }

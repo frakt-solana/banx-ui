@@ -3,9 +3,9 @@ import { FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { MarketPreview } from '@banx/api/core'
+import { LendTabName, useLendTabs } from '@banx/pages/LendPage'
 import { PATHS } from '@banx/router'
 import { useMarketsURLControl } from '@banx/store'
-import { trackPageEvent } from '@banx/utils'
 
 import { LendCard } from '../../Card'
 
@@ -19,11 +19,12 @@ const CollectionsCardList: FC<CollectionsCardListProps> = ({ marketsPreview }) =
   const { setSelectedMarkets } = useMarketsURLControl()
 
   const navigate = useNavigate()
+  const { setTab: setLendTab } = useLendTabs()
 
   const goToSelectedMarket = (collectionName: string) => {
-    trackPageEvent('dashboard', 'lendtab-collection')
     setSelectedMarkets([collectionName])
 
+    setLendTab(LendTabName.PLACE)
     return navigate({ pathname: PATHS.LEND, search: `?collections=${collectionName}` })
   }
 

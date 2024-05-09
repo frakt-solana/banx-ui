@@ -4,8 +4,9 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 import { chain, filter, groupBy, map } from 'lodash'
 import moment from 'moment'
+import { create } from 'zustand'
 
-import { fetchWalletLoansAndOffers } from '@banx/api/core'
+import { fetchBorrowerLoansRequests, fetchWalletLoansAndOffers } from '@banx/api/core'
 import { fetchUserLoansStats } from '@banx/api/stats'
 import {
   isLoanNewer,
@@ -14,12 +15,13 @@ import {
   isOptimisticOfferExpired,
   purgeLoansWithSameMintByFreshness,
   useLoansOptimistic,
+  useLoansRequestsOptimistic,
   useOffersOptimistic,
   useTokenType,
 } from '@banx/store'
-import { isLoanRepaid, isLoanTerminating, isOfferClosed } from '@banx/utils'
+import { isLoanListed, isLoanRepaid, isLoanTerminating, isOfferClosed } from '@banx/utils'
 
-import { SECONDS_IN_72_HOURS } from './constants'
+import { LoansTabsNames, SECONDS_IN_72_HOURS } from './constants'
 
 export const USE_WALLET_LOANS_AND_OFFERS_QUERY_KEY = 'walletLoansAndOffers'
 
@@ -206,3 +208,92 @@ export const useUserLoansStats = () => {
     isLoading,
   }
 }
+
+export const USE_BORROWER_LOANS_REQUESTS_QUERY_KEY = 'borrowerLoansRequests'
+
+export const useBorrowerLoansRequests = () => {
+  const { publicKey: walletPublicKey } = useWallet()
+  const publicKeyString = walletPublicKey?.toBase58() || ''
+
+  const { tokenType } = useTokenType()
+
+  const { loans: optimisticLoans, remove: removeOptimisticLoans } = useLoansRequestsOptimistic()
+
+  const { data, isLoading, isFetched, isFetching } = useQuery(
+    [USE_BORROWER_LOANS_REQUESTS_QUERY_KEY, walletPublicKey, tokenType],
+    () => fetchBorrowerLoansRequests({ walletPublicKey: publicKeyString, tokenType }),
+    {
+      staleTime: 5 * 1000,
+      refetchOnWindowFocus: false,
+      refetchInterval: 15 * 1000,
+    },
+  )
+
+  const walletOptimisticLoans = useMemo(() => {
+    if (!publicKeyString) return []
+    return optimisticLoans.filter(({ wallet }) => wallet === publicKeyString)
+  }, [optimisticLoans, publicKeyString])
+
+  //? Check same active loans (duplicated with BE) and purge them
+  useEffect(() => {
+    if (!data || isFetching || !isFetched || !publicKeyString) return
+
+    const expiredLoans = walletOptimisticLoans.filter((loan) =>
+      isOptimisticLoanExpired(loan, publicKeyString),
+    )
+
+    const optimisticsToRemove = walletOptimisticLoans.filter(({ loan }) => {
+      const sameLoanFromBE = (data || []).find(({ publicKey }) => publicKey === loan.publicKey)
+      if (!sameLoanFromBE) return false
+      const isBELoanNewer = isLoanNewer(sameLoanFromBE, loan)
+      return isBELoanNewer
+    })
+
+    if (optimisticsToRemove.length || expiredLoans.length) {
+      removeOptimisticLoans(
+        map([...expiredLoans, ...optimisticsToRemove], ({ loan }) => loan.publicKey),
+        publicKeyString,
+      )
+    }
+  }, [data, isFetched, publicKeyString, walletOptimisticLoans, removeOptimisticLoans, isFetching])
+
+  const loans = useMemo(() => {
+    if (!data) {
+      return []
+    }
+
+    const optimisticLoansPubkeys = walletOptimisticLoans.map(({ loan }) => loan.publicKey)
+
+    const dataFiltered = (data || []).filter(
+      ({ publicKey }) => !optimisticLoansPubkeys.includes(publicKey),
+    )
+
+    const purgedSameMint = purgeLoansWithSameMintByFreshness(
+      [...dataFiltered, ...map(walletOptimisticLoans, ({ loan }) => loan)],
+      (loan) => loan,
+    )
+
+    const loans = purgedSameMint.filter((loan) => !isLoanRepaid(loan))
+
+    return loans
+  }, [data, walletOptimisticLoans])
+
+  const filteredLoans = useMemo(() => {
+    return loans.filter((loan) => isLoanListed(loan))
+  }, [loans])
+
+  return {
+    loans: filteredLoans,
+    isLoading,
+  }
+}
+
+type LoansTabsState = {
+  tab: LoansTabsNames | null
+  setTab: (tab: LoansTabsNames | null) => void
+}
+
+export const useLoansTabs = create<LoansTabsState>((set) => ({
+  tab: null,
+  setTab: (tab) => set({ tab }),
+}))

@@ -1,36 +1,62 @@
-import { useWallet } from '@solana/wallet-adapter-react'
+import { useEffect } from 'react'
 
-import { useMixpanelLocationTrack } from '@banx/utils'
+import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
-import BorrowHeader from './components/BorrowHeader'
-import BorrowTable from './components/BorrowTable'
-import NotConnectedTable from './components/NotConnectedTable'
-import { useBorrowNfts } from './hooks'
+import BorrowHeader from './BorrowHeader'
+import { InstantLoansContent } from './InstantLoansContent'
+import { RequestLoansContent } from './RequestLoansContent'
+import { useBorrowTabs } from './hooks'
 
 import styles from './BorrowPage.module.less'
 
 export const BorrowPage = () => {
-  useMixpanelLocationTrack('borrow')
+  //? Used to set default tab when user is redirected to BorrowPage.
+  const { tab: storeTab, setTab } = useBorrowTabs()
 
-  const { connected } = useWallet()
+  const {
+    value: currentTabValue,
+    setValue,
+    tabs,
+  } = useTabs({
+    tabs: OFFERS_TABS,
+    defaultValue: storeTab ?? BorrowTabName.INSTANT,
+  })
 
-  const { nfts, isLoading, rawOffers, maxLoanValueByMarket } = useBorrowNfts()
+  //? Used hook to reset store when the component is unmounted
+  useEffect(() => {
+    if (!storeTab) return
 
-  const showEmptyList = !nfts?.length && !isLoading
+    return () => setTab(null)
+  }, [setTab, storeTab])
+
+  const goToRequestLoanTab = () => {
+    setValue(BorrowTabName.REQUEST)
+  }
 
   return (
     <div className={styles.pageWrapper}>
       <BorrowHeader />
-      {connected && !showEmptyList ? (
-        <BorrowTable
-          nfts={nfts}
-          isLoading={isLoading}
-          rawOffers={rawOffers}
-          maxLoanValueByMarket={maxLoanValueByMarket}
-        />
-      ) : (
-        <NotConnectedTable />
+      <Tabs value={currentTabValue} tabs={tabs} setValue={setValue} />
+      {currentTabValue === BorrowTabName.INSTANT && (
+        <InstantLoansContent goToRequestLoanTab={goToRequestLoanTab} />
       )}
+      {currentTabValue === BorrowTabName.REQUEST && <RequestLoansContent />}
     </div>
   )
 }
+
+export enum BorrowTabName {
+  INSTANT = 'instant',
+  REQUEST = 'request',
+}
+
+const OFFERS_TABS: Tab[] = [
+  {
+    label: 'Borrow now',
+    value: BorrowTabName.INSTANT,
+  },
+  {
+    label: 'List loans',
+    value: BorrowTabName.REQUEST,
+  },
+]

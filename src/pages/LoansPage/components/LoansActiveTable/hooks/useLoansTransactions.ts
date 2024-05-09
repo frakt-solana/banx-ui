@@ -3,7 +3,6 @@ import { every, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loan } from '@banx/api/core'
-import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
 import { useIsLedger, useLoansOptimistic, useModal, usePriorityFees } from '@banx/store'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -22,6 +21,7 @@ import {
 } from '@banx/utils'
 
 import { caclFractionToRepay, caclFractionToRepayForRepaymentCall } from '../helpers'
+import { useSelectedLoans } from '../loansState'
 
 export const useLoansTransactions = () => {
   const wallet = useWallet()
@@ -32,7 +32,7 @@ export const useLoansTransactions = () => {
   const { close } = useModal()
 
   const { update: updateLoansOptimistic } = useLoansOptimistic()
-  const { clear: clearSelection } = useSelectedLoans()
+  const { selection, clear: clearSelection } = useSelectedLoans()
 
   const repayLoan = async (loan: Loan) => {
     const loadingSnackbarId = uniqueId()
@@ -145,8 +145,6 @@ export const useLoansTransactions = () => {
       })
     }
   }
-
-  const { selection } = useSelectedLoans()
 
   const repayBulkLoan = async () => {
     const loadingSnackbarId = uniqueId()

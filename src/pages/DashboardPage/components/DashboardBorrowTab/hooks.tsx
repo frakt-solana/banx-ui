@@ -13,7 +13,7 @@ import {
 } from '@banx/components/modals'
 
 import { BorrowNft, MarketPreview } from '@banx/api/core'
-import { executeBorrow } from '@banx/pages/BorrowPage/components/BorrowTable/helpers'
+import { executeBorrow } from '@banx/pages/BorrowPage/InstantLoansContent/components/BorrowTable/helpers'
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { PATHS } from '@banx/router'
