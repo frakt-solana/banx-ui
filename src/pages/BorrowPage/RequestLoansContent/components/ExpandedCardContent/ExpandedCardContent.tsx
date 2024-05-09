@@ -57,8 +57,6 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
   return (
     <div className={styles.container}>
       <div className={styles.form}>
-        <Summary ltv={ltv} upfrontFee={upfrontFee} weeklyInterest={weeklyInterest} />
-
         <div className={styles.fields}>
           <div className={styles.borrowFieldWrapper}>
             <SelectCurrencyInput
@@ -115,15 +113,24 @@ const ExpandedCardContent: FC<{ market: MarketPreview }> = ({ market }) => {
             max={nfts.length}
             disabled={!connected || !nfts.length}
           />
-
           <Button
             onClick={requestLoans}
-            className={styles.submitButton}
+            className={styles.mobileSubmitButton}
             disabled={disabledListAction}
           >
             {actionButtonText}
           </Button>
         </div>
+
+        <Summary ltv={ltv} upfrontFee={upfrontFee} weeklyInterest={weeklyInterest} />
+
+        <Button
+          onClick={requestLoans}
+          className={styles.submitButton}
+          disabled={disabledListAction}
+        >
+          {actionButtonText}
+        </Button>
       </div>
 
       <div className={styles.tabsContent}>

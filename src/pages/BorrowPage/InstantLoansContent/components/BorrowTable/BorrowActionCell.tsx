@@ -6,14 +6,16 @@ import styles from './BorrowTable.module.less'
 
 interface BorrowActionCellProps {
   onBorrow: () => Promise<void>
-  disabled?: boolean
+  loanValue: number
+  disabled: boolean
   isCardView?: boolean
   goToRequestLoanTab: () => void
 }
 
 export const BorrowActionCell: FC<BorrowActionCellProps> = ({
   onBorrow,
-  disabled = false,
+  loanValue,
+  disabled,
   isCardView = false,
   goToRequestLoanTab,
 }) => {
@@ -22,7 +24,7 @@ export const BorrowActionCell: FC<BorrowActionCellProps> = ({
   const onClickHandler = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.stopPropagation()
 
-    if (disabled) {
+    if (!loanValue) {
       return goToRequestLoanTab()
     }
 
@@ -37,8 +39,9 @@ export const BorrowActionCell: FC<BorrowActionCellProps> = ({
       size={isCardView ? 'default' : 'small'}
       loading={isBorrowing}
       onClick={onClickHandler}
+      disabled={disabled}
     >
-      {disabled ? 'Request' : 'Borrow'}
+      {loanValue ? 'Borrow' : 'List'}
     </Button>
   )
 }
