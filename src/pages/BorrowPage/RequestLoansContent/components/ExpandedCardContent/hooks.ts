@@ -126,7 +126,7 @@ export const useRequestLoansForm = (market: MarketPreview) => {
 
   const actionButtonText = aprInputValueIsLow
     ? `The min APR is ${MIN_BORROWER_APR_VALUE}%`
-    : `List ${totalNftsToRequest <= 1 ? 'request' : `${totalNftsToRequest} requests`}`
+    : `List ${totalNftsToRequest <= 1 ? 'loan' : `${totalNftsToRequest} loans`}`
 
   //? requestedLoanValue with upfront fee
   const lenderSeesLoanValue =
