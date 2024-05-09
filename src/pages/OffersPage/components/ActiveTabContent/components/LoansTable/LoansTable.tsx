@@ -14,6 +14,7 @@ import { isLoanAbleToTerminate } from '@banx/pages/OffersPage'
 import { ViewState, useTableView, useTokenType } from '@banx/store'
 import {
   isLoanLiquidated,
+  isLoanListed,
   isLoanRepaymentCallActive,
   isLoanTerminating,
   isUnderWaterLoan,
@@ -86,7 +87,7 @@ export const LoansTable = () => {
 
   const onRowClick = useCallback(
     (loan: Loan) => {
-      if (!isLoanAbleToTerminate(loan)) return
+      if (!isLoanAbleToTerminate(loan) || isLoanListed(loan)) return
       toggleLoanInSelection(loan, walletPublicKeyString)
     },
     [toggleLoanInSelection, walletPublicKeyString],

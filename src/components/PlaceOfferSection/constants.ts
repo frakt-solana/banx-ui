@@ -1,3 +1,7 @@
-//TODO: Need to calc dynamic in the future
-export const MIN_APR_VALUE = 34
+//? Lender apr
+export const MIN_APR_VALUE = 9
 export const MAX_APR_VALUE = 104
+
+//? Borrower apr
+export const MIN_BORROWER_APR_VALUE = 16
+export const MAX_BORROWER_APR_VALUE = 110

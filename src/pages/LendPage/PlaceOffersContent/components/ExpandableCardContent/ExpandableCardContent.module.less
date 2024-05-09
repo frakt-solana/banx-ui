@@ -1,0 +1,90 @@
+.container {
+  cursor: default;
+  display: flex;
+  overflow: hidden;
+  height: 436px;
+  width: 100%;
+
+  @media (max-width: 960px) {
+    height: 368px;
+  }
+
+  @media (max-width: 640px) {
+    height: 302px;
+  }
+}
+
+.tabsContent {
+  border: var(--border-less-primary);
+  border-right: 0;
+  border-bottom: 0;
+  width: 100%;
+
+  @media (max-width: 960px) {
+    display: none;
+  }
+}
+
+.modal :global {
+  .ant-modal-body {
+    height: 440px;
+  }
+
+  .ant-modal-content {
+    padding: 0;
+  }
+}
+
+.content {
+  padding: 12px 24px 12px;
+  cursor: default;
+  min-width: 344px;
+  max-width: 344px;
+
+  @media (max-width: 960px) {
+    max-width: unset;
+    width: 100%;
+  }
+
+  @media (max-width: 640px) {
+    padding: 8px 16px 8px;
+  }
+}
+
+.offerHeaderContent {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  @media (max-width: 640px) {
+    margin-bottom: 0;
+    gap: 8px;
+  }
+}
+.offerHeaderTitle {
+  font: var(--card-header-lg);
+  text-transform: uppercase;
+  line-height: 38px;
+
+  @media (max-width: 640px) {
+    font-size: 12px;
+    line-height: 32px;
+  }
+}
+
+.offersButton {
+  margin-left: auto;
+
+  @media (min-width: 961px) {
+    display: none !important;
+  }
+}
+
+.editButton,
+.offersButton {
+  width: 104px;
+
+  @media (max-width: 640px) {
+    width: 80px;
+  }
+}

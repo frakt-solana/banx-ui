@@ -1,17 +1,62 @@
-import { useMixpanelLocationTrack } from '@banx/utils'
+import { useEffect } from 'react'
 
-import LendHeader from './components/LendHeader'
-import LendPageContent from './components/LendPageContent'
+import { Tabs, useTabs } from '@banx/components/Tabs'
+
+import InstantLoansContent from './InstantLendContent'
+import PlaceOffersContent from './PlaceOffersContent'
+import LendHeader from './PlaceOffersContent/components/LendHeader'
+import { useLendTabs } from './hooks'
 
 import styles from './LendPage.module.less'
 
 export const LendPage = () => {
-  useMixpanelLocationTrack('lend')
+  //? Used to set default tab when user is redirected to LendPage.
+  const { tab: storeTab, setTab } = useLendTabs()
+
+  const {
+    value: currentTabValue,
+    setValue,
+    tabs,
+  } = useTabs({
+    tabs: OFFERS_TABS,
+    defaultValue: storeTab ?? LendTabName.INSTANT,
+  })
+
+  //? Used hook to reset store when the component is unmounted
+  useEffect(() => {
+    if (!storeTab) return
+
+    return () => setTab(null)
+  }, [setTab, storeTab])
+
+  const goToPlaceOfferTab = () => {
+    setValue(LendTabName.PLACE)
+  }
 
   return (
     <div className={styles.pageWrapper}>
       <LendHeader />
-      <LendPageContent />
+      <Tabs value={currentTabValue} tabs={tabs} setValue={setValue} />
+      {currentTabValue === LendTabName.INSTANT && (
+        <InstantLoansContent goToPlaceOfferTab={goToPlaceOfferTab} />
+      )}
+      {currentTabValue === LendTabName.PLACE && <PlaceOffersContent />}
     </div>
   )
 }
+
+export enum LendTabName {
+  INSTANT = 'instant',
+  PLACE = 'place',
+}
+
+const OFFERS_TABS = [
+  {
+    label: 'Lend now',
+    value: LendTabName.INSTANT,
+  },
+  {
+    label: 'Place offers',
+    value: LendTabName.PLACE,
+  },
+]

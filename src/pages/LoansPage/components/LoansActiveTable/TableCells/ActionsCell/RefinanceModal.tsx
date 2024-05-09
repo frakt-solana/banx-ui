@@ -15,7 +15,6 @@ import { Modal } from '@banx/components/modals/BaseModal'
 import { Loan } from '@banx/api/core'
 import { BONDS } from '@banx/constants'
 import { useMarketOffers } from '@banx/pages/LendPage'
-import { useSelectedLoans } from '@banx/pages/LoansPage/loansState'
 import { useLoansOptimistic, useModal, useTokenType } from '@banx/store'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -43,6 +42,8 @@ import {
   isLoanTerminating,
   isOfferNotEmpty,
 } from '@banx/utils'
+
+import { useSelectedLoans } from '../../loansState'
 
 import styles from './ActionsCell.module.less'
 

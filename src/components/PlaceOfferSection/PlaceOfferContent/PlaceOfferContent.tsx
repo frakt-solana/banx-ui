@@ -29,9 +29,10 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
   hasFormChanges,
   offerSize,
   market,
+  updatedOffer,
   diagramData,
   isLoadingDiagram,
-  updatedOffer,
+  setOfferPubkey,
 }) => {
   const { tokenType } = useTokenType()
   const { connected } = useWallet()
@@ -80,14 +81,14 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
         {showBorrowerMessage && <BorrowerMessage loanValue={loanValue} tokenType={tokenType} />}
       </div>
 
+      {!setOfferPubkey && <Diagram marks={diagramData} isLoading={isLoadingDiagram} />}
+
       <MainSummary
         hasFormChanges={hasFormChanges}
         initialOffer={optimisticOffer}
         updatedOffer={updatedOffer}
         market={market}
       />
-
-      <Diagram marks={diagramData} isLoading={isLoadingDiagram} />
 
       <AdditionalSummary
         hasFormChanges={hasFormChanges}

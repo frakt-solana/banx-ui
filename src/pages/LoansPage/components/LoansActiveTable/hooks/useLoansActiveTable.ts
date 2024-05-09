@@ -1,11 +1,11 @@
 import { useWallet } from '@solana/wallet-adapter-react'
-import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { first, groupBy, map } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 
 import { Loan } from '@banx/api/core'
+import { ACTIVE_LOANS_TABLE_MESSAGES } from '@banx/pages/LoansPage/constants'
 import { PATHS } from '@banx/router'
 import { createPathWithTokenParam, useTokenType } from '@banx/store'
 
@@ -60,7 +60,7 @@ export const useLoansActiveTable = ({ loans, isLoading }: UseLoansActiveTablePro
   }
 
   const emptyListParams = {
-    message: MESSAGES[tokenType][connected ? 'connected' : 'notConnected'],
+    message: ACTIVE_LOANS_TABLE_MESSAGES[tokenType][connected ? 'connected' : 'notConnected'],
     buttonProps: connected ? { text: 'Borrow', onClick: goToBorrowPage } : undefined,
   }
 
@@ -79,20 +79,8 @@ export const useLoansActiveTable = ({ loans, isLoading }: UseLoansActiveTablePro
     showSummary,
     showEmptyList,
     emptyListParams,
-
     sortViewParams: { searchSelectParams, sortParams },
   }
-}
-
-export const MESSAGES = {
-  [LendingTokenType.NativeSol]: {
-    connected: 'Borrow SOL against your NFTs',
-    notConnected: 'Connect wallet to borrow SOL against your NFTs',
-  },
-  [LendingTokenType.Usdc]: {
-    connected: 'Borrow USDC against your NFTs',
-    notConnected: 'Connect wallet to borrow USDC against your NFTs',
-  },
 }
 
 interface CreateSearchSelectProps {

@@ -30,10 +30,6 @@ export const NAVIGATION_LINKS = [
     label: 'My offers',
     pathname: PATHS.OFFERS,
   },
-  {
-    label: 'Refinance',
-    pathname: PATHS.REFINANCE,
-  },
 ]
 
 export const SECONDARY_NAVIGATION_LINKS = [

@@ -43,11 +43,7 @@ body .input {
 .field {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-
-  @media (max-width: 640px) {
-    gap: 6px;
-  }
+  gap: 6px;
 }
 
 .labelWrapper {
@@ -58,9 +54,13 @@ body .input {
 
 .label {
   color: var(--content-secondary);
-  font: var(--table-header-xs);
+  font: var(--table-header-sm);
   text-transform: uppercase;
   white-space: nowrap;
+
+  @media (max-width: 640px) {
+    font: var(--table-header-xs);
+  }
 }
 
 /* Input counter styles */

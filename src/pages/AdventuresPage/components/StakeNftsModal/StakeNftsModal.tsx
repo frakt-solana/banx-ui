@@ -212,11 +212,12 @@ export const StakeNftsModal = () => {
           <ul className={styles.nfts}>
             {filteredNfts.map((nft) => (
               <NftCheckbox
-                disabled={nft?.isLoaned}
                 key={nft.mint}
                 nft={nft}
                 onClick={() => onSelect(nft)}
                 selected={isNftSelected(nft.mint)}
+                isLoaned={nft.isLoaned}
+                isTerminationFreeze={nft.isTerminationFreeze}
               />
             ))}
           </ul>

@@ -31,10 +31,17 @@ export const formatValueByTokenType = (value: number, tokenType: LendingTokenTyp
   return formatTokenValue(convertedValue, tokenType)
 }
 
-const formatTokenValue = (value: number, tokenType: LendingTokenType): string => {
+export const formatDecimalWithoutTrailingZeros = (
+  value: number,
+  tokenType: LendingTokenType,
+): string => {
   const decimalPlaces = getDecimalPlaces(value, tokenType)
   const formattedValueWithDecimals = value.toFixed(decimalPlaces)
-  const formattedValueWithoutTrailingZeros = formattedValueWithDecimals.replace(/\.00$/, '')
+  return formattedValueWithDecimals.replace(/\.00$/, '')
+}
+
+export const formatTokenValue = (value: number, tokenType: LendingTokenType): string => {
+  const formattedValueWithoutTrailingZeros = formatDecimalWithoutTrailingZeros(value, tokenType)
   return formatNumbersWithCommas(formattedValueWithoutTrailingZeros)
 }
 

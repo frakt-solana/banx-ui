@@ -10,6 +10,7 @@ import { Loader } from '@banx/components/Loader'
 import { Slider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
+import Timer from '@banx/components/Timer'
 
 import { Loan, Offer } from '@banx/api/core'
 import { useMarketOffers } from '@banx/pages/LendPage'
@@ -27,8 +28,10 @@ import {
 } from '@banx/transactions/loans'
 import {
   HealthColorIncreasing,
+  calculateFreezeExpiredAt,
   calculateLoanRepayValue,
   calculateRepaymentCallLenderReceivesAmount,
+  checkIfFreezeExpired,
   destroySnackbar,
   enqueueConfirmationError,
   enqueueSnackbar,
@@ -200,6 +203,9 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const totalClaimValue = calculateClaimValue(loan)
   const tokenUnit = getTokenUnit(tokenType)
 
+  const freezeExpiredAt = calculateFreezeExpiredAt(loan)
+  const isFreezeExpired = checkIfFreezeExpired(loan)
+
   return (
     <div className={styles.closureContent}>
       <div
@@ -213,31 +219,38 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
           SOL in your wallet. If unsuccessful after 72 hours you will receive the collateral instead
         </p>
       </div>
-      <div className={styles.modalContent}>
-        {isLoading && <Loader />}
-        {!isLoading && (
-          <div className={styles.twoColumnsContent}>
-            <Button onClick={instantLoan} disabled={!canRefinance} variant="secondary">
-              {canRefinance ? (
-                <div className={styles.exitValue}>
-                  Exit +{formatValueByTokenType(totalClaimValue, tokenType)}
-                  {tokenUnit}
-                </div>
-              ) : (
-                'No suitable offers yet'
-              )}
-            </Button>
-            <Button
-              className={styles.terminateButton}
-              onClick={terminateLoan}
-              disabled={!canTerminate}
-              variant="secondary"
-            >
-              Terminate
-            </Button>
-          </div>
-        )}
-      </div>
+      {isFreezeExpired && (
+        <div className={styles.modalContent}>
+          {isLoading && <Loader />}
+          {!isLoading && (
+            <div className={styles.twoColumnsContent}>
+              <Button onClick={instantLoan} disabled={!canRefinance} variant="secondary">
+                {canRefinance ? (
+                  <div className={styles.exitValue}>
+                    Exit +{formatValueByTokenType(totalClaimValue, tokenType)}
+                    {tokenUnit}
+                  </div>
+                ) : (
+                  'No suitable offers yet'
+                )}
+              </Button>
+              <Button
+                className={styles.terminateButton}
+                onClick={terminateLoan}
+                disabled={!canTerminate}
+                variant="secondary"
+              >
+                Terminate
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+      {!isFreezeExpired && (
+        <div className={styles.freezeTimerWrapper}>
+          Exit and termination are frozen for <Timer expiredAt={freezeExpiredAt} />
+        </div>
+      )}
     </div>
   )
 }

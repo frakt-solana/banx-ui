@@ -15,9 +15,9 @@ import {
   isLoanRepaymentCallActive,
 } from '@banx/utils'
 
-import { LoanOptimistic } from '../../loansState'
 import { calcTotalValueToPay, calcWeightedApr } from './helpers'
 import { useLoansTransactions } from './hooks'
+import { LoanOptimistic } from './loansState'
 
 import styles from './LoansActiveTable.module.less'
 
