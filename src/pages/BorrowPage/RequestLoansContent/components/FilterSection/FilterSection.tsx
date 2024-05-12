@@ -7,7 +7,7 @@ import styles from './FilterSection.module.less'
 
 interface FilterSectionProps<T> {
   searchSelectParams: SearchSelectProps<T>
-  sortParams: SortDropdownProps
+  sortParams: SortDropdownProps<T>
 }
 
 const FilterSection = <T extends object>({

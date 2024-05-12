@@ -1,4 +1,4 @@
-import { FC, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 
 import classNames from 'classnames'
 
@@ -8,38 +8,29 @@ import { DropdownButton, SortOptions } from './components'
 
 import styles from './SortDropdown.module.less'
 
-export type SortOption = {
-  label: string
-  value: string
-}
+export type SortOrder = 'asc' | 'desc'
+export type SortOption<T> = { label: string; value: [T, SortOrder] }
 
-export interface SortDropdownProps {
-  option: SortOption
-  onChange: (option: SortOption) => void
-  options: SortOption[]
+export interface SortDropdownProps<T> {
+  option: SortOption<T>
+  onChange: (option: SortOption<T>) => void
+  options: SortOption<T>[]
   className?: string
-  dropdownClassName?: string
 }
 
-export const SortDropdown: FC<SortDropdownProps> = ({
+export const SortDropdown = <T extends object>({
   option,
   onChange,
   options,
   className,
-  dropdownClassName,
-}) => {
+}: SortDropdownProps<T>) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false)
 
-  const dropdownRef = useRef<HTMLDivElement | null>(null)
+  const dropdownRef = useRef(null)
   useOnClickOutside(dropdownRef, () => setIsDropdownOpen(false))
 
   const toggleDropdown = () => {
     setIsDropdownOpen((prevOpen) => !prevOpen)
-  }
-
-  const handleChangeSort = (sortOrder: string, label: string) => {
-    const newSortOption = { value: sortOrder, label }
-    onChange(newSortOption)
   }
 
   return (
@@ -50,8 +41,8 @@ export const SortDropdown: FC<SortDropdownProps> = ({
         toggleDropdown={toggleDropdown}
       />
       {isDropdownOpen && (
-        <div className={classNames(styles.dropdown, dropdownClassName)}>
-          <SortOptions sortOption={option} options={options} onChange={handleChangeSort} />
+        <div className={styles.dropdown}>
+          <SortOptions selectedOption={option} options={options} onChange={onChange} />
         </div>
       )}
     </div>

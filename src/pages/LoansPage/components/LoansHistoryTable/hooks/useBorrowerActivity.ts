@@ -3,8 +3,6 @@ import { useMemo, useState } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
-import { SortOption } from '@banx/components/SortDropdown'
-
 import { fetchBorrowerActivity } from '@banx/api/activity'
 import { useTokenType } from '@banx/store'
 import { createGlobalState } from '@banx/store/functions'
@@ -21,7 +19,7 @@ export const useBorrowerActivity = () => {
 
   const { tokenType } = useTokenType()
 
-  const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
+  const [sortOption, setSortOption] = useState(DEFAULT_SORT_OPTION)
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
 
   const [sortBy, order] = sortOption.value.split('_')

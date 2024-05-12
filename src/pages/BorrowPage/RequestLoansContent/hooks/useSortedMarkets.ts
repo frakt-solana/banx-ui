@@ -1,12 +1,10 @@
 import { useMemo, useState } from 'react'
 
-import { chain } from 'lodash'
+import { orderBy } from 'lodash'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
 import { MarketPreview } from '@banx/api/core'
-
-type SortOrder = 'asc' | 'desc'
 
 enum SortField {
   LOANS_TVL = 'loansTvl',
@@ -14,43 +12,41 @@ enum SortField {
   FLOOR = 'floor',
 }
 
-const SORT_OPTIONS = [
-  { label: 'Loans TVL', value: SortField.LOANS_TVL },
-  { label: 'Active loans', value: SortField.ACTIVE_LOANS },
-  { label: 'Floor', value: SortField.FLOOR },
-]
-const DEFAULT_SORT_OPTION = { label: 'Loans TVL', value: 'loansTvl_desc' }
-
 type SortValueGetter = (market: MarketPreview) => number
-type StatusValueMap = Record<SortField, SortValueGetter>
 
-const STATUS_VALUE_MAP: StatusValueMap = {
+const SORT_OPTIONS: SortOption<SortField>[] = [
+  { label: 'Loans TVL', value: [SortField.LOANS_TVL, 'desc'] },
+  { label: 'Active loans', value: [SortField.ACTIVE_LOANS, 'desc'] },
+  { label: 'Floor', value: [SortField.FLOOR, 'desc'] },
+]
+
+const SORT_VALUE_MAP: Record<SortField, SortValueGetter> = {
   [SortField.LOANS_TVL]: (market) => market.loansTvl,
   [SortField.ACTIVE_LOANS]: (market) => market.activeBondsAmount,
   [SortField.FLOOR]: (market) => market.collectionFloor,
 }
 
 export const useSortedMarkets = (markets: MarketPreview[]) => {
-  const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
-
-  const sortOptionValue = sortOption?.value
+  const [sortOption, setSortOption] = useState(SORT_OPTIONS[0])
 
   const sortedMarkets = useMemo(() => {
-    if (!sortOptionValue) return markets
+    if (!sortOption) return markets
 
-    const [field, order] = sortOptionValue.split('_') as [SortField, SortOrder]
+    const [field, order] = sortOption.value
 
-    return chain(markets)
-      .sortBy((market) => STATUS_VALUE_MAP[field](market))
-      .thru((sorted) => (order === 'desc' ? sorted.reverse() : sorted))
-      .value()
-  }, [sortOptionValue, markets])
+    const sortValueGetter = SORT_VALUE_MAP[field]
+    return orderBy(markets, sortValueGetter, order)
+  }, [sortOption, markets])
+
+  const onChangeSortOption = (option: SortOption<SortField>) => {
+    setSortOption(option)
+  }
 
   return {
     sortedMarkets,
     sortParams: {
       option: sortOption,
-      onChange: setSortOption,
+      onChange: onChangeSortOption,
       options: SORT_OPTIONS,
     },
   }

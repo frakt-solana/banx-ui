@@ -8,12 +8,6 @@ export interface TableNftData {
   interest: number //? 1 week interest
 }
 
-export enum SortField {
-  BORROW = 'loanValue',
-  FLOOR = 'floorPrice',
-  FEE = 'weeklyFee',
-}
-
 export interface OfferWithLoanValue {
   offer: Offer
   loanValue: number

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-import { get, sortBy } from 'lodash'
+import { orderBy } from 'lodash'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
@@ -12,45 +12,41 @@ enum SortField {
   ACTIVE_LOANS = 'activeLoans',
 }
 
-const SORT_OPTIONS = [
-  { label: 'Offers TVL', value: 'offerTvl' },
-  { label: 'Loans TVL', value: 'loansTvl' },
-  { label: 'Active loans', value: 'activeLoans' },
+const SORT_OPTIONS: SortOption<SortField>[] = [
+  { label: 'Loans TVL', value: [SortField.LOANS_TVL, 'desc'] },
+  { label: 'Offers TVL', value: [SortField.OFFER_TVL, 'desc'] },
+  { label: 'Active loans', value: [SortField.ACTIVE_LOANS, 'desc'] },
 ]
 
-const DEFAULT_SORT_OPTION = { label: 'Loans TVL', value: 'loansTvl_desc' }
+type SortValueGetter = (market: MarketPreview) => number
+
+const SORT_VALUE_MAP: Record<SortField, SortValueGetter> = {
+  [SortField.OFFER_TVL]: (market) => market.offerTvl,
+  [SortField.LOANS_TVL]: (market) => market.loansTvl,
+  [SortField.ACTIVE_LOANS]: (market) => market.activeBondsAmount,
+}
 
 export const useSortMarkets = (markets: MarketPreview[]) => {
-  const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
-
-  const sortOptionValue = sortOption?.value
+  const [sortOption, setSortOption] = useState(SORT_OPTIONS[0])
 
   const sortedMarkets = useMemo(() => {
-    if (!sortOptionValue) {
-      return markets
-    }
+    if (!sortOption) return markets
 
-    const [name, order] = sortOptionValue.split('_')
+    const [field, order] = sortOption.value
 
-    const sortValueMapping: Record<SortField, string> = {
-      [SortField.OFFER_TVL]: 'offerTvl',
-      [SortField.LOANS_TVL]: 'loansTvl',
-      [SortField.ACTIVE_LOANS]: 'activeBondsAmount',
-    }
+    const sortValueGetter = SORT_VALUE_MAP[field]
+    return orderBy(markets, sortValueGetter, order)
+  }, [sortOption, markets])
 
-    const sorted = sortBy(markets, (loan) => {
-      const sortValue = sortValueMapping[name as SortField]
-      return get(loan, sortValue)
-    })
-
-    return order === 'desc' ? sorted.reverse() : sorted
-  }, [sortOptionValue, markets])
+  const onChangeSortOption = (option: SortOption<SortField>) => {
+    setSortOption(option)
+  }
 
   return {
     sortedMarkets,
     sortParams: {
       option: sortOption,
-      onChange: setSortOption,
+      onChange: onChangeSortOption,
       options: SORT_OPTIONS,
     },
   }

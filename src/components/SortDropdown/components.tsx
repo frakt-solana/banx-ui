@@ -5,13 +5,13 @@ import classNames from 'classnames'
 import { ArrowDown, ChevronDown } from '@banx/icons'
 
 import { Button } from '../Buttons'
-import { SortOption } from './SortDropdown'
+import { SortOption, SortOrder } from './SortDropdown'
 import { getSortOrderClassName } from './helpers'
 
 import styles from './SortDropdown.module.less'
 
 interface DropdownButtonProps {
-  sortOption: SortOption
+  sortOption: any // TODO: remove this any type
   isDropdownOpen: boolean
   toggleDropdown: () => void
 }
@@ -35,51 +35,44 @@ export const DropdownButton: FC<DropdownButtonProps> = ({
   </Button>
 )
 
-interface SortButtonProps {
-  option: SortOption
-  sortOrder: string
-  isActive: boolean
-  onClick: () => void
+interface SortOptionsProps<T> {
+  options: SortOption<T>[]
+  selectedOption: SortOption<T>
+  onChange: (option: SortOption<T>) => void
 }
 
-const SortButton: FC<SortButtonProps> = ({ option, sortOrder, isActive, onClick }) => (
-  <Button
-    className={classNames(styles.sortButton, { [styles.active]: isActive })}
-    type="circle"
-    variant="text"
-    onClick={onClick}
-  >
-    <ArrowDown className={getSortOrderClassName(sortOrder)} />
-    {option.label}
-  </Button>
-)
+const orders = ['asc', 'desc'] as Array<SortOrder>
 
-interface SortOptionsProps {
-  sortOption: SortOption | null
-  options: SortOption[]
-  onChange: (sortOrder: string, label: string) => void
-}
+export const SortOptions = <T extends object>({
+  options,
+  selectedOption,
+  onChange,
+}: SortOptionsProps<T>) => {
+  return options.map((option) => {
+    const [optionField] = option.value
+    const [selectedOptionField, selectedOptionOrder] = selectedOption.value
 
-//TODO: Need to refactor this code, try getting rid of ${value}_${order}
-export const SortOptions: FC<SortOptionsProps> = ({ sortOption, options, onChange }) => (
-  <>
-    {options.map(({ label, value }) => (
-      <div className={styles.sortButtons} key={label}>
-        {['desc', 'asc'].map((order) => {
-          const sortOrder = `${value}_${order}`
-          const isActive = sortOption?.value === sortOrder
+    const handleButtonClick = (order: SortOrder) => {
+      onChange({ label: option.label, value: [optionField, order] })
+    }
 
-          return (
-            <SortButton
-              key={sortOrder}
-              option={{ label, value }}
-              sortOrder={sortOrder}
-              isActive={isActive}
-              onClick={() => onChange(sortOrder, label)}
-            />
-          )
-        })}
+    return (
+      <div className={styles.sortButtons} key={option.label}>
+        {orders.map((order) => (
+          <Button
+            key={order}
+            onClick={() => handleButtonClick(order)}
+            className={classNames(styles.sortButton, {
+              [styles.active]: selectedOptionField === optionField && selectedOptionOrder === order,
+            })}
+            type="circle"
+            variant="text"
+          >
+            <ArrowDown className={getSortOrderClassName(order)} />
+            {option.label}
+          </Button>
+        ))}
       </div>
-    ))}
-  </>
-)
+    )
+  })
+}

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-import { get, sortBy } from 'lodash'
+import { orderBy } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
@@ -9,8 +9,6 @@ import { DisplayValue } from '@banx/components/TableComponents'
 import { MarketPreview } from '@banx/api/core'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { createGlobalState } from '@banx/store/functions'
-
-import { DEFAULT_SORT_OPTION } from './constants'
 
 import styles from './NotConnectedTable.module.less'
 
@@ -24,14 +22,14 @@ export const useNotConnectedBorrow = () => {
   const showEmptyList = !isLoading && !marketsPreview?.length
 
   const filteredMarkets = useMemo(() => {
+    if (!selectedCollections.length) return marketsPreview
+
     return marketsPreview.filter(({ collectionName }) =>
       selectedCollections.includes(collectionName),
     )
   }, [marketsPreview, selectedCollections])
 
-  const { sortedMarkets, sortParams } = useSortMarkets(
-    filteredMarkets.length ? filteredMarkets : marketsPreview,
-  )
+  const { sortedMarkets, sortParams } = useSortedMarkets(filteredMarkets)
 
   const searchSelectParams: SearchSelectProps<MarketPreview> = {
     options: marketsPreview,
@@ -64,44 +62,42 @@ enum SortField {
   FLOOR = 'collectionFloor',
 }
 
-const useSortMarkets = (markets: MarketPreview[]) => {
-  const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
+type SortValueGetter = (market: MarketPreview) => number
 
-  const sortOptionValue = sortOption?.value
+const SORT_OPTIONS: SortOption<SortField>[] = [
+  { label: 'Liquidity', value: [SortField.LIQUIDITY, 'desc'] },
+  { label: 'Borrow', value: [SortField.BORROW, 'desc'] },
+  { label: 'Floor', value: [SortField.FLOOR, 'desc'] },
+]
+
+const SORT_VALUE_MAP: Record<SortField, SortValueGetter> = {
+  [SortField.LIQUIDITY]: (market) => market.offerTvl,
+  [SortField.BORROW]: (market) => market.bestOffer,
+  [SortField.FLOOR]: (market) => market.collectionFloor,
+}
+
+const useSortedMarkets = (markets: MarketPreview[]) => {
+  const [sortOption, setSortOption] = useState(SORT_OPTIONS[0])
 
   const sortedMarkets = useMemo(() => {
-    if (!sortOptionValue) {
-      return markets
-    }
+    if (!sortOption) return markets
 
-    const [name, order] = sortOptionValue.split('_')
+    const [field, order] = sortOption.value
 
-    const sortValueMapping: Record<SortField, string> = {
-      [SortField.LIQUIDITY]: 'offerTvl',
-      [SortField.BORROW]: 'bestOffer',
-      [SortField.FLOOR]: 'collectionFloor',
-    }
+    const sortValueGetter = SORT_VALUE_MAP[field]
+    return orderBy(markets, sortValueGetter, order)
+  }, [sortOption, markets])
 
-    const sorted = sortBy(markets, (loan) => {
-      const sortValue = sortValueMapping[name as SortField]
-      return get(loan, sortValue)
-    })
-
-    return order === 'desc' ? sorted.reverse() : sorted
-  }, [sortOptionValue, markets])
+  const onChangeSortOption = (option: SortOption<SortField>) => {
+    setSortOption(option)
+  }
 
   return {
     sortedMarkets,
     sortParams: {
       option: sortOption,
-      onChange: setSortOption,
+      onChange: onChangeSortOption,
       options: SORT_OPTIONS,
     },
   }
 }
-
-const SORT_OPTIONS = [
-  { label: 'Floor', value: SortField.FLOOR },
-  { label: 'Borrow', value: SortField.BORROW },
-  { label: 'Liquidity', value: SortField.LIQUIDITY },
-]

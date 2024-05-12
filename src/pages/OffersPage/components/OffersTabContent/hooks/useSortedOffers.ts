@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-import { chain } from 'lodash'
+import { orderBy } from 'lodash'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
@@ -8,53 +8,47 @@ import { UserOffer } from '@banx/api/core'
 import { calcSyntheticLoanValue } from '@banx/store'
 
 enum SortField {
+  LTV = 'ltv',
   LENT = 'lent',
   INTEREST = 'interest',
-  LTV = 'ltv',
-}
-
-const SORT_OPTIONS = [
-  { label: 'LTV', value: SortField.LTV },
-  { label: 'Lent', value: SortField.LENT },
-  { label: 'Interest', value: SortField.INTEREST },
-]
-
-const DEFAULT_SORT_OPTION: SortOption = {
-  label: SORT_OPTIONS[0].label,
-  value: `${SORT_OPTIONS[0].value}_desc`,
 }
 
 type SortValueGetter = (offer: UserOffer) => number
-type StatusValueMap = Record<SortField, string | SortValueGetter>
 
-const STATUS_VALUE_MAP: StatusValueMap = {
-  [SortField.LENT]: ({ offer }) => offer.edgeSettlement,
-  [SortField.INTEREST]: ({ offer }) => offer.concentrationIndex,
-  [SortField.LTV]: ({ offer, collectionMeta }) =>
-    calcSyntheticLoanValue(offer) / collectionMeta.collectionFloor,
+const SORT_OPTIONS: SortOption<SortField>[] = [
+  { label: 'LTV', value: [SortField.LTV, 'desc'] },
+  { label: 'Lent', value: [SortField.LENT, 'desc'] },
+  { label: 'Interest', value: [SortField.INTEREST, 'desc'] },
+]
+
+const SORT_VALUE_MAP: Record<SortField, SortValueGetter> = {
+  [SortField.LENT]: (offer) => offer.offer.edgeSettlement,
+  [SortField.INTEREST]: (offer) => offer.offer.concentrationIndex,
+  [SortField.LTV]: (offer) =>
+    calcSyntheticLoanValue(offer.offer) / offer.collectionMeta.collectionFloor,
 }
 
 export const useSortedOffers = (offers: UserOffer[]) => {
-  const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
-
-  const sortOptionValue = sortOption?.value
+  const [sortOption, setSortOption] = useState(SORT_OPTIONS[0])
 
   const sortedOffers = useMemo(() => {
-    if (!sortOptionValue) return offers
+    if (!sortOption) return offers
 
-    const [field, order] = sortOptionValue.split('_')
+    const [field, order] = sortOption.value
 
-    return chain(offers)
-      .sortBy((offer) => (STATUS_VALUE_MAP[field as SortField] as SortValueGetter)(offer))
-      .thru((sorted) => (order === 'desc' ? sorted.reverse() : sorted))
-      .value()
-  }, [sortOptionValue, offers])
+    const sortValueGetter = SORT_VALUE_MAP[field]
+    return orderBy(offers, sortValueGetter, order)
+  }, [sortOption, offers])
+
+  const onChangeSortOption = (option: SortOption<SortField>) => {
+    setSortOption(option)
+  }
 
   return {
     sortedOffers,
     sortParams: {
       option: sortOption,
-      onChange: setSortOption,
+      onChange: onChangeSortOption,
       options: SORT_OPTIONS,
     },
   }

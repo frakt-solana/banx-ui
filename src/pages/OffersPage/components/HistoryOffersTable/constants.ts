@@ -1,8 +1,6 @@
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { SortOption } from '@banx/components/SortDropdown'
-
-export const DEFAULT_SORT_OPTION: SortOption = {
+export const DEFAULT_SORT_OPTION = {
   label: 'When',
   value: 'timestamp_desc',
 }
