@@ -11,22 +11,24 @@ import { SwitchModeButton } from './components'
 
 import styles from './SortView.module.less'
 
-interface SortViewProps<T, P> {
-  columns: ColumnType<T>[]
-  searchSelectParams: SearchSelectProps<P>
-  sortParams?: SortDropdownProps<any> //TODO: Remove this any type
+interface SortViewProps<DataType, SearchType, SortType> {
+  columns: ColumnType<DataType>[]
+
+  searchSelectParams: SearchSelectProps<SearchType>
+  sortParams?: SortDropdownProps<SortType>
   toggleParams?: ToggleProps
-  showCard?: boolean
+
   customJSX?: ReactNode
+  showCard?: boolean
 }
 
-export const SortView = <T extends object, P extends object>({
+export const SortView = <DataType extends object, SearchType extends object, SortType>({
   searchSelectParams,
   sortParams,
   toggleParams,
   showCard,
   customJSX,
-}: SortViewProps<T, P>) => {
+}: SortViewProps<DataType, SearchType, SortType>) => {
   const { viewState, setViewState } = useTableView()
   const [searchSelectCollapsed, setSearchSelectCollapsed] = useState(true)
 

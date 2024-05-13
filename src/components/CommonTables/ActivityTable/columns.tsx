@@ -40,7 +40,6 @@ export const getTableColumns = () => {
       render: ({ publicKey, timestamp }) => (
         <DurationCell className={styles.activityTime} publicKey={publicKey} timestamp={timestamp} />
       ),
-      sorter: true,
     },
   ]
 
