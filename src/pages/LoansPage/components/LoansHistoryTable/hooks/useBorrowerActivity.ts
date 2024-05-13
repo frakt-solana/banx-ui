@@ -3,11 +3,11 @@ import { useMemo, useState } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
+import { SortOption } from '@banx/components/SortDropdown'
+
 import { fetchBorrowerActivity } from '@banx/api/activity'
 import { useTokenType } from '@banx/store'
 import { createGlobalState } from '@banx/store/functions'
-
-import { DEFAULT_SORT_OPTION } from '../constants'
 
 const PAGINATION_LIMIT = 15
 
@@ -19,10 +19,10 @@ export const useBorrowerActivity = () => {
 
   const { tokenType } = useTokenType()
 
-  const [sortOption, setSortOption] = useState(DEFAULT_SORT_OPTION)
+  const [sortOption, setSortOption] = useState(SORT_OPTIONS[0])
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
 
-  const [sortBy, order] = sortOption.value.split('_')
+  const [sortBy, order] = sortOption.value
 
   const fetchData = async (pageParam: number) => {
     const data = await fetchBorrowerActivity({
@@ -57,6 +57,10 @@ export const useBorrowerActivity = () => {
     return data?.pages?.map((page) => page.data).flat() || []
   }, [data])
 
+  const onChangeSortOption = (option: SortOption<SortField>) => {
+    setSortOption(option)
+  }
+
   return {
     loans,
     fetchNextPage,
@@ -65,9 +69,22 @@ export const useBorrowerActivity = () => {
     isLoading,
     sortParams: {
       option: sortOption,
-      onChange: setSortOption,
+      onChange: onChangeSortOption,
+      options: SORT_OPTIONS,
     },
     selectedCollections,
     setSelectedCollections,
   }
 }
+
+enum SortField {
+  DURATION = 'timestamp',
+  BORROWED = 'borrowed',
+  REPAID = 'repaid',
+}
+
+const SORT_OPTIONS: SortOption<SortField>[] = [
+  { label: 'When', value: [SortField.DURATION, 'desc'] },
+  { label: 'Borrowed', value: [SortField.BORROWED, 'desc'] },
+  { label: 'Repaid', value: [SortField.REPAID, 'desc'] },
+]

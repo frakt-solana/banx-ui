@@ -3,11 +3,11 @@ import { useMemo, useState } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
+import { SortOption } from '@banx/components/SortDropdown'
+
 import { fetchLenderActivity } from '@banx/api/activity'
 import { useTokenType } from '@banx/store'
 import { createGlobalState } from '@banx/store/functions'
-
-import { DEFAULT_SORT_OPTION } from '../constants'
 
 const PAGINATION_LIMIT = 15
 
@@ -19,10 +19,10 @@ export const useLenderActivity = () => {
 
   const { tokenType } = useTokenType()
 
-  const [sortOption, setSortOption] = useState(DEFAULT_SORT_OPTION)
+  const [sortOption, setSortOption] = useState(SORT_OPTIONS[0])
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
 
-  const [sortBy, order] = sortOption.value.split('_')
+  const [sortBy, order] = sortOption.value
 
   const fetchData = async (pageParam: number) => {
     const data = await fetchLenderActivity({
@@ -66,8 +66,25 @@ export const useLenderActivity = () => {
     sortParams: {
       option: sortOption,
       onChange: setSortOption,
+      options: SORT_OPTIONS,
     },
     selectedCollections,
     setSelectedCollections,
   }
 }
+
+enum SortField {
+  DURATION = 'timestamp',
+  LENT = 'lent',
+  INTEREST = 'interest',
+  RECEIVED = 'received',
+  APR = 'apr',
+}
+
+const SORT_OPTIONS: SortOption<SortField>[] = [
+  { label: 'When', value: [SortField.DURATION, 'desc'] },
+  { label: 'Lent', value: [SortField.LENT, 'desc'] },
+  { label: 'Interest', value: [SortField.INTEREST, 'desc'] },
+  { label: 'Received', value: [SortField.RECEIVED, 'desc'] },
+  { label: 'APR', value: [SortField.APR, 'desc'] },
+]
