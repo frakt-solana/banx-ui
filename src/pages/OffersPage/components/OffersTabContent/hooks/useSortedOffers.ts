@@ -5,7 +5,6 @@ import { orderBy } from 'lodash'
 import { SortOption } from '@banx/components/SortDropdown'
 
 import { UserOffer } from '@banx/api/core'
-import { calcSyntheticLoanValue } from '@banx/store'
 
 export enum SortField {
   LTV = 'ltv',
@@ -25,7 +24,7 @@ const SORT_VALUE_MAP: Record<SortField, SortValueGetter> = {
   [SortField.LENT]: (offer) => offer.offer.edgeSettlement,
   [SortField.INTEREST]: (offer) => offer.offer.concentrationIndex,
   [SortField.LTV]: (offer) =>
-    calcSyntheticLoanValue(offer.offer) / offer.collectionMeta.collectionFloor,
+    offer.offer.validation.loanToValueFilter / offer.collectionMeta.collectionFloor,
 }
 
 export const useSortedOffers = (offers: UserOffer[]) => {
