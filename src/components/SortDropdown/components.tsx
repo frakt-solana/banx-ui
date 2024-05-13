@@ -44,7 +44,7 @@ interface SortOptionsProps<T> {
   onChange: (option: SortOption<T>) => void
 }
 
-const orders = ['asc', 'desc'] as Array<SortOrder>
+const orders: Array<SortOrder> = ['asc', 'desc']
 
 export const SortOptions = <T,>({ options, selectedOption, onChange }: SortOptionsProps<T>) => {
   return options.map((option) => {
