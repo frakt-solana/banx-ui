@@ -7,7 +7,7 @@ import { SortOption } from '@banx/components/SortDropdown'
 import { UserOffer } from '@banx/api/core'
 import { calcSyntheticLoanValue } from '@banx/store'
 
-enum SortField {
+export enum SortField {
   LTV = 'ltv',
   LENT = 'lent',
   INTEREST = 'interest',

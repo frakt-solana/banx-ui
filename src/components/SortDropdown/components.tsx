@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import classNames from 'classnames'
 
 import { ArrowDown, ChevronDown } from '@banx/icons'
@@ -10,30 +8,35 @@ import { getSortOrderClassName } from './helpers'
 
 import styles from './SortDropdown.module.less'
 
-interface DropdownButtonProps {
-  sortOption: any // TODO: remove this any type
+interface DropdownButtonProps<T> {
+  selectedOption: SortOption<T>
   isDropdownOpen: boolean
   toggleDropdown: () => void
 }
 
-export const DropdownButton: FC<DropdownButtonProps> = ({
-  sortOption,
+export const DropdownButton = <T,>({
+  selectedOption,
   isDropdownOpen,
   toggleDropdown,
-}) => (
-  <Button
-    type="circle"
-    variant="text"
-    className={classNames(styles.dropdownButton, { [styles.isOpen]: isDropdownOpen })}
-    onClick={toggleDropdown}
-  >
-    <div className={styles.dropdownButtonTextContainer}>
-      <ArrowDown className={getSortOrderClassName(sortOption.value)} />
-      <span className={styles.dropdownButtonText}>{sortOption?.label}</span>
-    </div>
-    <ChevronDown className={isDropdownOpen ? styles.rotate : ''} />
-  </Button>
-)
+}: DropdownButtonProps<T>) => {
+  const { label, value } = selectedOption
+  const [, selectedOptionOrder] = value
+
+  return (
+    <Button
+      type="circle"
+      variant="text"
+      className={classNames(styles.dropdownButton, { [styles.isOpen]: isDropdownOpen })}
+      onClick={toggleDropdown}
+    >
+      <div className={styles.dropdownButtonTextContainer}>
+        <ArrowDown className={getSortOrderClassName(selectedOptionOrder)} />
+        <span className={styles.dropdownButtonText}>{label}</span>
+      </div>
+      <ChevronDown className={isDropdownOpen ? styles.rotate : ''} />
+    </Button>
+  )
+}
 
 interface SortOptionsProps<T> {
   options: SortOption<T>[]
@@ -43,11 +46,7 @@ interface SortOptionsProps<T> {
 
 const orders = ['asc', 'desc'] as Array<SortOrder>
 
-export const SortOptions = <T extends object>({
-  options,
-  selectedOption,
-  onChange,
-}: SortOptionsProps<T>) => {
+export const SortOptions = <T,>({ options, selectedOption, onChange }: SortOptionsProps<T>) => {
   return options.map((option) => {
     const [optionField] = option.value
     const [selectedOptionField, selectedOptionOrder] = selectedOption.value

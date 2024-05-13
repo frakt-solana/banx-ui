@@ -6,7 +6,7 @@ import { SortOption } from '@banx/components/SortDropdown'
 
 import { MarketPreview } from '@banx/api/core'
 
-enum SortField {
+export enum SortField {
   OFFER_TVL = 'offerTvl',
   LOANS_TVL = 'loansTvl',
   ACTIVE_LOANS = 'activeLoans',
@@ -26,7 +26,7 @@ const SORT_VALUE_MAP: Record<SortField, SortValueGetter> = {
   [SortField.ACTIVE_LOANS]: (market) => market.activeBondsAmount,
 }
 
-export const useSortMarkets = (markets: MarketPreview[]) => {
+export const useSortedMarkets = (markets: MarketPreview[]) => {
   const [sortOption, setSortOption] = useState(SORT_OPTIONS[0])
 
   const sortedMarkets = useMemo(() => {

@@ -6,7 +6,7 @@ import { SortOption } from '@banx/components/SortDropdown'
 
 import { MarketPreview } from '@banx/api/core'
 
-enum SortField {
+export enum SortField {
   LOANS_TVL = 'loansTvl',
   ACTIVE_LOANS = 'activeLoans',
   FLOOR = 'floor',

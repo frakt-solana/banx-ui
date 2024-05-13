@@ -10,11 +10,13 @@ import Tooltip from '@banx/components/Tooltip'
 import { MarketPreview } from '@banx/api/core'
 import { Fire } from '@banx/icons'
 
+import { SortField } from '../../hooks'
+
 import styles from './FilterSection.module.less'
 
 interface FilterSectionProps<T> {
   searchSelectParams: SearchSelectProps<T>
-  sortParams: SortDropdownProps<T>
+  sortParams: SortDropdownProps<SortField>
   onToggleHotFilter: () => void
   isHotFilterActive: boolean
   hotMarkets: MarketPreview[]

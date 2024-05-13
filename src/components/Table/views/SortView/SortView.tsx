@@ -1,12 +1,12 @@
 import { ReactNode, useState } from 'react'
 
 import { SearchSelect, SearchSelectProps } from '@banx/components/SearchSelect'
-import { SortDropdown } from '@banx/components/SortDropdown'
+import { SortDropdown, SortDropdownProps } from '@banx/components/SortDropdown'
 import { Toggle, ToggleProps } from '@banx/components/Toggle'
 
 import { ViewState, useTableView } from '@banx/store'
 
-import { ColumnType,  } from '../../types'
+import { ColumnType } from '../../types'
 import { SwitchModeButton } from './components'
 
 import styles from './SortView.module.less'
@@ -14,7 +14,7 @@ import styles from './SortView.module.less'
 interface SortViewProps<T, P> {
   columns: ColumnType<T>[]
   searchSelectParams: SearchSelectProps<P>
-  sortParams?: any // TODO: remove this any type
+  sortParams?: SortDropdownProps<any> //TODO: Remove this any type
   toggleParams?: ToggleProps
   showCard?: boolean
   customJSX?: ReactNode

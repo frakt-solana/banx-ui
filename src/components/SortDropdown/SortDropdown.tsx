@@ -18,7 +18,7 @@ export interface SortDropdownProps<T> {
   className?: string
 }
 
-export const SortDropdown = <T extends object>({
+export const SortDropdown = <T,>({
   option,
   onChange,
   options,
@@ -36,7 +36,7 @@ export const SortDropdown = <T extends object>({
   return (
     <div ref={dropdownRef} className={classNames(styles.sortDropdownWrapper, className)}>
       <DropdownButton
-        sortOption={option}
+        selectedOption={option}
         isDropdownOpen={isDropdownOpen}
         toggleDropdown={toggleDropdown}
       />
