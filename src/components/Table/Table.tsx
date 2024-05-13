@@ -11,7 +11,7 @@ import { CardView, SortView, TableView } from './views'
 
 import styles from './Table.module.less'
 
-const Table = <T extends object, P extends object>({
+const Table = <DataType extends object, SearchType extends object, SortType>({
   data,
   columns,
   sortViewParams,
@@ -24,7 +24,7 @@ const Table = <T extends object, P extends object>({
   loadMore,
   customJSX,
   loaderSize,
-}: TableProps<T, P>) => {
+}: TableProps<DataType, SearchType, SortType>) => {
   const { viewState } = useTableView()
 
   const ViewComponent = showCard && ViewState.CARD === viewState ? CardView : TableView
