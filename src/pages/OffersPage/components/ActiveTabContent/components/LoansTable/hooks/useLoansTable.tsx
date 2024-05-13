@@ -4,7 +4,6 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { first, groupBy, map, sumBy } from 'lodash'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
-import { SortOption } from '@banx/components/SortDropdown'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
@@ -17,7 +16,7 @@ import {
 import { createGlobalState } from '@banx/store/functions'
 import { isLoanListed, isUnderWaterLoan } from '@banx/utils'
 
-import { DEFAULT_SORT_OPTION, SORT_OPTIONS, useSortedLoans } from './useSortedLoans'
+import { useSortedLoans } from './useSortedLoans'
 
 import styles from '../LoansTable.module.less'
 
@@ -42,9 +41,7 @@ export const useLoansTable = () => {
     underwaterLoansCount,
   } = useFilterLoans(loans)
 
-  const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
-
-  const sortedLoans = useSortedLoans(filteredLoans, sortOption)
+  const { sortedLoans, sortParams } = useSortedLoans(filteredLoans)
 
   const loansToClaim = useMemo(() => sortedLoans.filter(isLoanAbleToClaim), [sortedLoans])
   const loansToTerminate = useMemo(() => {
@@ -76,14 +73,7 @@ export const useLoansTable = () => {
     isUnderwaterFilterActive,
     onToggleUnderwaterFilter,
 
-    sortViewParams: {
-      searchSelectParams,
-      sortParams: {
-        option: sortOption,
-        onChange: setSortOption,
-        options: SORT_OPTIONS,
-      },
-    },
+    sortViewParams: { searchSelectParams, sortParams },
 
     showEmptyList,
     emptyMessage,

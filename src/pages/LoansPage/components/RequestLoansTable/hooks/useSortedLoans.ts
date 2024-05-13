@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-import { chain } from 'lodash'
+import { orderBy } from 'lodash'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
@@ -15,21 +15,16 @@ enum SortField {
   FREEZE = 'freeze',
 }
 
-type SortOrder = 'asc' | 'desc'
 type SortValueGetter = (loan: Loan) => number
 
-type StatusValueMap = Record<SortField, SortValueGetter>
-
-const SORT_OPTIONS = [
-  { label: 'Borrow', value: SortField.BORROW },
-  { label: 'APR', value: SortField.APR },
-  { label: 'LTV', value: SortField.LTV },
-  { label: 'Freeze', value: SortField.FREEZE },
+const SORT_OPTIONS: SortOption<SortField>[] = [
+  { label: 'Borrow', value: [SortField.BORROW, 'desc'] },
+  { label: 'APR', value: [SortField.APR, 'desc'] },
+  { label: 'LTV', value: [SortField.LTV, 'desc'] },
+  { label: 'Freeze', value: [SortField.FREEZE, 'desc'] },
 ]
 
-const DEFAULT_SORT_OPTION = { label: 'Borrow', value: `${SortField.BORROW}_desc` }
-
-const STATUS_VALUE_MAP: StatusValueMap = {
+const SORT_VALUE_MAP: Record<SortField, SortValueGetter> = {
   [SortField.BORROW]: (loan) => loan.fraktBond.borrowedAmount,
   [SortField.APR]: (loan) => loan.bondTradeTransaction.amountOfBonds,
   [SortField.LTV]: (loan) => loan.fraktBond.borrowedAmount / loan.nft.collectionFloor,
@@ -37,25 +32,26 @@ const STATUS_VALUE_MAP: StatusValueMap = {
 }
 
 export const useSortedLoans = (loans: Loan[]) => {
-  const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
-  const sortOptionValue = sortOption?.value
+  const [sortOption, setSortOption] = useState(SORT_OPTIONS[0])
 
   const sortedLoans = useMemo(() => {
-    if (!sortOptionValue) return loans
+    if (!sortOption) return loans
 
-    const [field, order] = sortOptionValue.split('_') as [SortField, SortOrder]
+    const [field, order] = sortOption.value
 
-    return chain(loans)
-      .sortBy((loan) => STATUS_VALUE_MAP[field](loan))
-      .thru((sorted) => (order === 'desc' ? sorted.reverse() : sorted))
-      .value()
-  }, [sortOptionValue, loans])
+    const sortValueGetter = SORT_VALUE_MAP[field]
+    return orderBy(loans, sortValueGetter, order)
+  }, [sortOption, loans])
+
+  const onChangeSortOption = (option: SortOption<SortField>) => {
+    setSortOption(option)
+  }
 
   return {
     sortedLoans,
     sortParams: {
       option: sortOption,
-      onChange: setSortOption,
+      onChange: onChangeSortOption,
       className: styles.sortDropdown,
       options: SORT_OPTIONS,
     },
