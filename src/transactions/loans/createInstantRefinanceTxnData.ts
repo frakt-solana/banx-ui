@@ -23,12 +23,14 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 type CreateInstantRefinanceTxnData = (params: {
   loan: Loan
   bestOffer: Offer
+  aprRate: number
   walletAndConnection: WalletAndConnection
 }) => Promise<CreateTxnData<Offer>>
 
 export const createInstantRefinanceTxnData: CreateInstantRefinanceTxnData = async ({
   loan,
   bestOffer,
+  aprRate,
   walletAndConnection,
 }) => {
   const { wallet, connection } = walletAndConnection
@@ -47,12 +49,12 @@ export const createInstantRefinanceTxnData: CreateInstantRefinanceTxnData = asyn
     },
     args: {
       lendingTokenType: bondTradeTransaction.lendingToken,
+      newApr: aprRate,
     },
     optimistic: {
       oldBondTradeTransaction: bondTradeTransaction as BondTradeTransactionV3,
       bondOffer: bestOffer as BondOfferV2,
       fraktBond: fraktBond as FraktBond,
-      minMarketFee: bondTradeTransaction.amountOfBonds,
       oldBondOffer: getMockBondOffer(),
     },
     connection,
