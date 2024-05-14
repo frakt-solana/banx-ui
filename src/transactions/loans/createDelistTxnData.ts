@@ -80,10 +80,6 @@ const getIxnsAndSignersByListingType = async ({
     const { instructions, signers } = await removePerpetualListingCnft({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
-        hadoMarket: new web3.PublicKey(loan.fraktBond.hadoMarket || ''),
-        fraktMarket: new web3.PublicKey(loan.fraktBond.fraktMarket),
-        protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
-        borrower: new web3.PublicKey(loan.fraktBond.fbondIssuer),
         userPubkey: wallet.publicKey,
         nftMint: new web3.PublicKey(loan.nft.mint),
         bondOffer: new web3.PublicKey(loan.bondTradeTransaction.bondOffer),
@@ -113,10 +109,7 @@ const getIxnsAndSignersByListingType = async ({
   const { instructions, signers } = await removePerpetualListing({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
-      hadoMarket: new web3.PublicKey(loan.fraktBond.hadoMarket || ''),
-      fraktMarket: new web3.PublicKey(loan.fraktBond.fraktMarket),
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
-      borrower: new web3.PublicKey(loan.fraktBond.fbondIssuer),
       userPubkey: wallet.publicKey,
       bondOffer: new web3.PublicKey(loan.bondTradeTransaction.bondOffer),
       oldBondTradeTransaction: new web3.PublicKey(loan.bondTradeTransaction.publicKey),
