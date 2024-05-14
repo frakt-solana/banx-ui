@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { chain, filter, first, get, groupBy, includes, isEmpty, map, sortBy } from 'lodash'
+import { chain, filter, first, get, groupBy, includes, isEmpty, map, orderBy, sortBy } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
@@ -30,14 +30,13 @@ import { getDialectAccessToken, trackPageEvent } from '@banx/utils'
 
 import { useCartState } from '../../cartState'
 import { getTableColumns } from './columns'
-import { DEFAULT_TABLE_SORT, SORT_OPTIONS } from './constants'
 import {
   createTableNftData,
   executeBorrow,
   makeCreateTxnsDataParams,
   showBonkRewardsSnack,
 } from './helpers'
-import { SortField, TableNftData } from './types'
+import { TableNftData } from './types'
 
 import styles from './BorrowTable.module.less'
 
@@ -175,10 +174,8 @@ export const useBorrowTable = ({
 
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
 
-  const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_TABLE_SORT)
-
   const filteredNfts = useFilteredNfts(tableNftsData, selectedCollections)
-  const sortedNfts = useSortedNfts(filteredNfts, sortOption.value)
+  const { sortedNfts, sortParams } = useSortedNfts(filteredNfts)
 
   const searchSelectOptions = useMemo(() => {
     const nftsGroupedByCollection = groupBy(nfts, (nft) => nft.nft.meta.collectionName)
@@ -275,11 +272,7 @@ export const useBorrowTable = ({
           setSelectedCollections(value)
         },
       },
-      sortParams: {
-        option: sortOption,
-        onChange: setSortOption,
-        options: SORT_OPTIONS,
-      },
+      sortParams,
     },
     borrow,
     borrowAll,
@@ -304,27 +297,44 @@ const useFilteredNfts = (nfts: TableNftData[], selectedOptions: string[]) => {
   return filteredLoans
 }
 
-const useSortedNfts = (nfts: TableNftData[], sortOptionValue: string) => {
-  const sortedLoans = useMemo(() => {
-    if (!sortOptionValue) {
-      return nfts
-    }
+export enum SortField {
+  BORROW = 'loanValue',
+  FLOOR = 'floorPrice',
+  FEE = 'weeklyFee',
+}
 
-    const [name, order] = sortOptionValue.split('_')
+type SortValueGetter = (nft: TableNftData) => number
 
-    const sortValueMapping: Record<SortField, string> = {
-      [SortField.BORROW]: 'loanValue',
-      [SortField.FLOOR]: 'nft.nft.collectionFloor',
-      [SortField.FEE]: 'interest',
-    }
+const SORT_OPTIONS: SortOption<SortField>[] = [
+  { label: 'Borrow', value: [SortField.BORROW, 'desc'] },
+  { label: 'Floor', value: [SortField.FLOOR, 'desc'] },
+  { label: 'Fee', value: [SortField.FEE, 'desc'] },
+]
 
-    const sorted = sortBy(nfts, (nft) => {
-      const sortValue = sortValueMapping[name as SortField]
-      return get(nft, sortValue)
-    })
+const SORT_VALUE_MAP: Record<SortField, SortValueGetter> = {
+  [SortField.BORROW]: (nft) => nft.loanValue,
+  [SortField.FLOOR]: (nft) => nft.nft.nft.collectionFloor,
+  [SortField.FEE]: (nft) => nft.interest,
+}
 
-    return order === 'desc' ? sorted.reverse() : sorted
-  }, [sortOptionValue, nfts])
+const useSortedNfts = (nfts: TableNftData[]) => {
+  const [sortOption, setSortOption] = useState(SORT_OPTIONS[0])
 
-  return sortedLoans
+  const sortedNfts = useMemo(() => {
+    if (!sortOption) return nfts
+
+    const [field, order] = sortOption.value
+
+    const sortValueGetter = SORT_VALUE_MAP[field]
+    return orderBy(nfts, sortValueGetter, order)
+  }, [sortOption, nfts])
+
+  return {
+    sortedNfts,
+    sortParams: {
+      option: sortOption,
+      onChange: setSortOption,
+      options: SORT_OPTIONS,
+    },
+  }
 }

@@ -13,7 +13,7 @@ import { Fire } from '@banx/icons'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { useMarketsURLControl } from '@banx/store'
 
-import { useSortMarkets } from './useSortMarkets'
+import { useSortedMarkets } from './useSortedMarkets'
 
 export const useLendPageContent = () => {
   const { marketsPreview, isLoading } = useMarketsPreview()
@@ -26,12 +26,11 @@ export const useLendPageContent = () => {
   }
 
   const filteredMarkets = useMemo(() => {
+    if (!selectedMarkets.length) return marketsPreview
     return marketsPreview.filter(({ collectionName }) => selectedMarkets.includes(collectionName))
   }, [marketsPreview, selectedMarkets])
 
-  const { sortedMarkets, sortParams } = useSortMarkets(
-    filteredMarkets.length ? filteredMarkets : marketsPreview,
-  )
+  const { sortedMarkets, sortParams } = useSortedMarkets(filteredMarkets)
 
   const hotMarkets = filter(sortedMarkets, (market) => market.isHot)
   const filteredHotMarkets = isHotFilterActive ? hotMarkets : sortedMarkets

@@ -37,7 +37,6 @@ export const getTableColumns = () => {
           value={<DisplayValue value={loan.currentRemainingLentAmount} placeholder="--" />}
         />
       ),
-      sorter: true,
     },
     {
       key: 'interest',
@@ -45,7 +44,6 @@ export const getTableColumns = () => {
       render: (loan) => (
         <HorizontalCell value={<DisplayValue value={loan.interest} placeholder="--" />} />
       ),
-      sorter: true,
     },
     {
       key: 'apr',
@@ -53,7 +51,6 @@ export const getTableColumns = () => {
       render: (loan) => (
         <HorizontalCell value={createPercentValueJSX(loan.apr / 100)} isHighlighted />
       ),
-      sorter: true,
     },
     {
       key: 'status',
@@ -64,7 +61,6 @@ export const getTableColumns = () => {
       key: 'received',
       title: <HeaderCell label="Received" />,
       render: (loan) => <ReceivedCell loan={loan} />,
-      sorter: true,
     },
     {
       key: 'timestamp',
@@ -72,7 +68,6 @@ export const getTableColumns = () => {
       render: ({ publicKey, timestamp }) => (
         <DurationCell publicKey={publicKey} timestamp={timestamp} />
       ),
-      sorter: true,
     },
   ]
 
