@@ -14,10 +14,10 @@ import { OptionKeys } from './types'
 
 import styles from './SearchSelect.module.less'
 
-export interface SearchSelectProps<P> {
-  options: P[]
+export interface SearchSelectProps<T> {
+  options: T[]
   labels: string[]
-  optionKeys: OptionKeys<P>
+  optionKeys: OptionKeys<T>
   selectedOptions: string[]
   onChange: (selectedOptions: string[]) => void
 
@@ -37,7 +37,7 @@ export interface SearchSelectProps<P> {
   sortOrder?: 'asc' | 'desc'
 }
 
-export const SearchSelect = <P extends object>({
+export const SearchSelect = <T,>({
   options = [],
   labels,
   optionKeys,
@@ -54,9 +54,9 @@ export const SearchSelect = <P extends object>({
   disabled = false,
   sortOrder = 'desc',
   favoriteKey = '',
-}: SearchSelectProps<P>) => {
+}: SearchSelectProps<T>) => {
   const { toggleFavorite, sortOptionsByFavoriteStatus, isOptionFavorite } =
-    useFavoriteOptions<P>(favoriteKey)
+    useFavoriteOptions<T>(favoriteKey)
 
   const sortedOptions = useMemo(() => {
     const sortBy = optionKeys.secondLabel?.key
@@ -117,7 +117,7 @@ export const SearchSelect = <P extends object>({
         )}
       >
         {sortedOptions.map((option, index) =>
-          renderOption({
+          renderOption<T>({
             option,
             optionKeys,
             selectedOptions,

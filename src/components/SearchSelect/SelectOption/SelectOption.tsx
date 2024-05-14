@@ -1,11 +1,11 @@
 import React, { FC } from 'react'
 
-import Select, { BaseOptionType } from 'antd/lib/select'
+import Select from 'antd/lib/select'
 import classNames from 'classnames'
 
 import { Star, StarActive } from '@banx/icons'
 
-// import { OptionKeys } from '../types'
+import { OptionKeys } from '../types'
 import { extractOptionValues, getOptionClassName } from './helpers'
 
 import styles from './SelectOption.module.less'
@@ -15,9 +15,9 @@ export type OptionClassNameProps = {
   value?: string
 }
 
-interface OptionProps {
-  option: BaseOptionType
-  optionKeys: any
+interface OptionProps<T> {
+  option: T
+  optionKeys: OptionKeys<T>
   selectedOptions?: string[]
   index: number
   optionClassNameProps?: OptionClassNameProps
@@ -26,7 +26,7 @@ interface OptionProps {
   isOptionFavorite?: boolean
 }
 
-export const renderOption: FC<OptionProps> = ({
+export const renderOption = <T,>({
   option,
   optionKeys,
   selectedOptions = [],
@@ -34,8 +34,8 @@ export const renderOption: FC<OptionProps> = ({
   optionClassNameProps,
   toggleFavorite,
   isOptionFavorite,
-}) => {
-  const { value, label, image, Icon, additionalInfo } = extractOptionValues(option, optionKeys)
+}: OptionProps<T>) => {
+  const { value, label, image, Icon } = extractOptionValues(option, optionKeys)
 
   const isSelected = selectedOptions.includes(label)
 
@@ -50,7 +50,7 @@ export const renderOption: FC<OptionProps> = ({
           <p className={classNames(styles.optionLabel, optionClassNameProps?.label)}>{label}</p>
           {Icon}
         </div>
-        <AdditionalValue option={option} additionalInfo={additionalInfo} />
+        <AdditionalValue option={option} optionKeys={optionKeys} />
       </div>
     </Select.Option>
   )
@@ -89,19 +89,23 @@ const ImageContainer: FC<ImageContainerProps> = ({ image, isSelected }) => (
   </div>
 )
 
-interface AdditionalValueProps {
-  option: BaseOptionType
-  additionalInfo: any
+interface AdditionalValueProps<T> {
+  option: T
+  optionKeys: OptionKeys<T>
 }
 
-const AdditionalValue: FC<AdditionalValueProps> = ({ option, additionalInfo }) => {
-  const value = additionalInfo ? option[additionalInfo.key] : ''
+const AdditionalValue = <T,>({ option, optionKeys }: AdditionalValueProps<T>) => {
+  const secondLabel = optionKeys.secondLabel
+
+  //TODO: need to replace this any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const value = (secondLabel ? option[secondLabel.key] : '') as any
 
   if (!value) {
     return <p>--</p>
   }
 
-  const formattedValue = additionalInfo?.format?.(value) ?? value
+  const formattedValue = secondLabel?.format?.(value) ?? value
 
   return <p className={styles.additionalValue}>{formattedValue}</p>
 }
