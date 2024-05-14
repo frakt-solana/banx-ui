@@ -3,12 +3,11 @@ import { FC } from 'react'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import moment from 'moment'
 
-import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { MarketPreview, Offer } from '@banx/api/core'
-import { MARKETS_WITH_CUSTOM_APR, SECONDS_IN_DAY } from '@banx/constants'
+import { SECONDS_IN_DAY } from '@banx/constants'
 import { HealthColorIncreasing, calculateApr, getColorByPercent } from '@banx/utils'
 
 import { calcMaxLtv, calcOfferSize } from './helpers'
@@ -19,13 +18,10 @@ interface OfferSummaryProps {
   initialOffer: Offer | undefined
   updatedOffer: Offer | undefined
   hasFormChanges: boolean
-}
-
-interface MainSummaryProps extends OfferSummaryProps {
   market: MarketPreview | undefined
 }
 
-export const MainSummary: FC<MainSummaryProps> = ({
+export const MainSummary: FC<OfferSummaryProps> = ({
   initialOffer,
   updatedOffer,
   market,
@@ -72,21 +68,23 @@ export const AdditionalSummary: FC<OfferSummaryProps> = ({
   initialOffer,
   updatedOffer,
   hasFormChanges,
+  market,
 }) => {
+  const { collectionFloor = 0 } = market || {}
   const loansQuantity = updatedOffer?.buyOrdersQuantity || 0
   const offerSize = calcOfferSize({ initialOffer, updatedOffer, hasFormChanges })
 
-  const customApr = updatedOffer?.hadoMarket
-    ? MARKETS_WITH_CUSTOM_APR[updatedOffer.hadoMarket.toString()]
-    : undefined
-
-  const apr = customApr ? customApr / 100 : MAX_APR_VALUE
+  const maxDynamicApr = calculateApr({
+    loanValue: offerSize,
+    collectionFloor,
+    marketPubkey: updatedOffer?.hadoMarket,
+  })
 
   const weeklyFee = calculateCurrentInterestSolPure({
     loanValue: offerSize,
     startTime: moment().unix(),
     currentTime: moment().unix() + SECONDS_IN_DAY * 7,
-    rateBasePoints: apr * 100,
+    rateBasePoints: maxDynamicApr,
   })
 
   return (

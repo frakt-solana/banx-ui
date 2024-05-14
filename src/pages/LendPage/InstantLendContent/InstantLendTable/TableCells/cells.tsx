@@ -7,9 +7,9 @@ import {
 } from '@banx/components/TableComponents'
 
 import { Loan } from '@banx/api/core'
-import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
+import { HealthColorIncreasing, getColorByPercent, isLoanTerminating } from '@banx/utils'
 
-import { calculateLendValue } from '../helpers'
+import { calculateLendValue, calculateLenderApr } from '../helpers'
 
 import styles from '../InstantLendTable.module.less'
 
@@ -49,4 +49,14 @@ export const LTVCell: FC<{ loan: Loan }> = ({ loan }) => {
       textColor={getColorByPercent(ltv, HealthColorIncreasing)}
     />
   )
+}
+
+export const APRCell: FC<{ loan: Loan }> = ({ loan }) => {
+  const isTerminatingStatus = isLoanTerminating(loan)
+
+  const apr = isTerminatingStatus
+    ? calculateLenderApr(loan)
+    : loan.bondTradeTransaction.amountOfBonds
+
+  return <HorizontalCell value={createPercentValueJSX(apr / 100)} isHighlighted />
 }
