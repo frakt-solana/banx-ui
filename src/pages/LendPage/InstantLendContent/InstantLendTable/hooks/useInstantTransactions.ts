@@ -29,6 +29,7 @@ import {
 } from '@banx/utils'
 
 import { useAllLoansRequests } from '../../hooks'
+import { calculateLenderApr } from '../helpers'
 import { useLoansState } from '../loansState'
 
 export const useInstantTransactions = () => {
@@ -65,7 +66,13 @@ export const useInstantTransactions = () => {
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const txnData = await createLendToBorrowTxnData({ loan, walletAndConnection })
+      const aprRate = calculateLenderApr(loan)
+
+      const txnData = await createLendToBorrowTxnData({
+        loan,
+        walletAndConnection,
+        aprRate,
+      })
 
       await new TxnExecutor<{ loan: Loan; oldLoan: Loan }>(
         walletAndConnection,
@@ -130,7 +137,13 @@ export const useInstantTransactions = () => {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const txnsData = await Promise.all(
-        selection.map((loan) => createLendToBorrowTxnData({ loan, walletAndConnection })),
+        selection.map((loan) =>
+          createLendToBorrowTxnData({
+            loan,
+            walletAndConnection,
+            aprRate: calculateLenderApr(loan),
+          }),
+        ),
       )
 
       await new TxnExecutor<{ loan: Loan; oldLoan: Loan }>(walletAndConnection, {
