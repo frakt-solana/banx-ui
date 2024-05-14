@@ -28,6 +28,7 @@ import {
 } from '@banx/transactions/loans'
 import {
   HealthColorIncreasing,
+  calculateApr,
   calculateFreezeExpiredAt,
   calculateLoanRepayValue,
   calculateRepaymentCallLenderReceivesAmount,
@@ -149,10 +150,17 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
+      const aprRate = calculateApr({
+        loanValue: calculateClaimValue(loan),
+        collectionFloor: loan.nft.collectionFloor,
+        marketPubkey: loan.fraktBond.hadoMarket,
+      })
+
       const txnData = await createInstantRefinanceTxnData({
         loan,
         bestOffer,
         walletAndConnection,
+        aprRate,
       })
 
       await new TxnExecutor<Offer>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)

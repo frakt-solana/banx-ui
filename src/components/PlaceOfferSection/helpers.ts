@@ -58,6 +58,7 @@ const ERROR_MESSAGES = {
   INSUFFICIENT_BALANCE: {
     [LendingTokenType.NativeSol]: 'Not enough SOL in wallet',
     [LendingTokenType.Usdc]: 'Not enough USDC in wallet',
+    [LendingTokenType.BanxSol]: 'Not enough SOL in wallet',
   },
   INVALID_OFFER: 'Offer imbalance. Increase Max Offer, or reduce Delta and/or Number of Offers',
   EMPTY_LOANS_AMOUNT: 'Please enter a valid number of loans. The number of loans cannot be empty',

@@ -9,6 +9,7 @@ import { Button } from '@banx/components/Buttons'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { Offer, UserOffer } from '@banx/api/core'
+import { useTokenType } from '@banx/store'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
@@ -38,6 +39,8 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
     [offers],
   )
 
+  const { tokenType } = useTokenType()
+
   const claimInterest = async () => {
     if (!offers.length) return
 
@@ -51,6 +54,7 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
           createClaimBondOfferInterestTxnData({
             offer,
             walletAndConnection,
+            tokenType,
           }),
         ),
       )
