@@ -1,5 +1,7 @@
 import { first, groupBy, map } from 'lodash'
 
+import { SearchSelectProps } from '@banx/components/SearchSelect'
+
 import { Loan } from '@banx/api/core'
 
 import { useAllLoansRequests } from '../../hooks'
@@ -57,6 +59,12 @@ type CreateSearchSelectProps = {
   onChange: (option: string[]) => void
 }
 
+interface SearchSelectOption {
+  collectionName: string
+  collectionImage: string
+  numberOfNFTs: number
+}
+
 const createSearchSelectParams = ({
   options,
   selectedOptions,
@@ -72,7 +80,7 @@ const createSearchSelectParams = ({
     return { collectionName, collectionImage, numberOfNFTs }
   })
 
-  const searchSelectParams = {
+  const searchSelectParams: SearchSelectProps<SearchSelectOption> = {
     options: searchSelectOptions,
     selectedOptions,
     onChange,

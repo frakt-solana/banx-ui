@@ -5,6 +5,7 @@ import { chain, filter, first, get, groupBy, includes, isEmpty, map, sortBy } fr
 import { useNavigate } from 'react-router-dom'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
+import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
 import {
   SubscribeNotificationsModal,
@@ -26,7 +27,7 @@ import {
   useTokenType,
 } from '@banx/store'
 import { createGlobalState } from '@banx/store/functions'
-import { getDialectAccessToken, trackPageEvent } from '@banx/utils'
+import { getDialectAccessToken } from '@banx/utils'
 
 import { useCartState } from '../../cartState'
 import { getTableColumns } from './columns'
@@ -46,6 +47,12 @@ export interface UseBorrowTableProps {
   rawOffers: Record<string, Offer[]>
   maxLoanValueByMarket: Record<string, number>
   goToRequestLoanTab: () => void
+}
+
+interface SearchSelectOption {
+  collectionName: string
+  collectionImage: string
+  numberOfNFTs: number
 }
 
 const useCollectionsStore = createGlobalState<string[]>([])
@@ -254,27 +261,26 @@ export const useBorrowTable = ({
     tokenType,
   })
 
+  const searchSelectParams: SearchSelectProps<SearchSelectOption> = {
+    options: searchSelectOptions,
+    optionKeys: {
+      labelKey: 'collectionName',
+      valueKey: 'collectionName',
+      imageKey: 'collectionImage',
+      secondLabel: { key: 'numberOfNFTs' },
+    },
+    className: styles.searchSelect,
+    selectedOptions: selectedCollections,
+    labels: ['Collection', 'Nfts'],
+    onChange: setSelectedCollections,
+  }
+
   return {
     tableNftData: sortedNfts,
     columns,
     onRowClick: onNftSelect,
     sortViewParams: {
-      searchSelectParams: {
-        options: searchSelectOptions,
-        optionKeys: {
-          labelKey: 'collectionName',
-          valueKey: 'collectionName',
-          imageKey: 'collectionImage',
-          secondLabel: { key: 'numberOfNFTs' },
-        },
-        className: styles.searchSelect,
-        selectedOptions: selectedCollections,
-        labels: ['Collection', 'Nfts'],
-        onChange: (value: string[]) => {
-          trackPageEvent('borrow', `filter`)
-          setSelectedCollections(value)
-        },
-      },
+      searchSelectParams,
       sortParams: {
         option: sortOption,
         onChange: setSortOption,

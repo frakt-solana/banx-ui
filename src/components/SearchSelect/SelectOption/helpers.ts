@@ -1,10 +1,9 @@
 import { BaseOptionType } from 'antd/lib/select'
 
-import { OptionKeys } from '../types'
-
+// import { OptionKeys } from '../types'
 import styles from '../SearchSelect.module.less'
 
-export const extractOptionValues = (option: BaseOptionType, optionKeys: OptionKeys) => {
+export const extractOptionValues = (option: BaseOptionType, optionKeys: any) => {
   const { labelKey, valueKey, imageKey, labelIcon, secondLabel: additionalInfo } = optionKeys
 
   const value = option[valueKey]

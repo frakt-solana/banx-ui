@@ -3,6 +3,7 @@ import { useMemo } from 'react'
 import { filter, includes } from 'lodash'
 
 import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
+import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { MarketPreview } from '@banx/api/core'
@@ -34,7 +35,7 @@ const useFilteredMarkets = (marketsPreview: MarketPreview[]) => {
     return marketsPreview
   }, [marketsPreview, selectedCollections])
 
-  const searchSelectParams = {
+  const searchSelectParams: SearchSelectProps<MarketPreview> = {
     onChange: setSelectedCollections,
     options: marketsPreview,
     selectedOptions: selectedCollections,

@@ -1,8 +1,10 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useNavigate } from 'react-router-dom'
 
+import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { DisplayValue } from '@banx/components/TableComponents'
 
+import { ActivityCollectionsList } from '@banx/api/activity'
 import { PATHS } from '@banx/router'
 import { createPathWithTokenParam, useTokenType } from '@banx/store'
 
@@ -36,7 +38,7 @@ export const useHistoryOffersTable = () => {
     }
   }
 
-  const searchSelectParams = {
+  const searchSelectParams: SearchSelectProps<ActivityCollectionsList> = {
     options: collectionsList,
     optionKeys: {
       labelKey: 'collectionName',
@@ -44,7 +46,7 @@ export const useHistoryOffersTable = () => {
       imageKey: 'collectionImage',
       secondLabel: {
         key: 'received',
-        format: (value: number) => <DisplayValue value={value} />,
+        format: (value) => value && <DisplayValue value={value} />,
       },
     },
     selectedOptions: selectedCollections,

@@ -4,6 +4,8 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { filter, first, groupBy, isEmpty, map } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
+import { SearchSelectProps } from '@banx/components/SearchSelect'
+
 import { Loan } from '@banx/api/core'
 import { BorrowTabName, useBorrowTabs } from '@banx/pages/BorrowPage'
 import { REQUEST_LOANS_TABLE_MESSAGES } from '@banx/pages/LoansPage/constants'
@@ -73,6 +75,12 @@ export const useRequestsLoansTable = ({ loans, isLoading }: UseLoansActiveTableP
   }
 }
 
+interface SearchSelectOption {
+  collectionName: string
+  collectionImage: string
+  numberOfNFTs: number
+}
+
 type CreateSearchSelectProps = {
   loans: Loan[]
   selectedOptions: string[]
@@ -94,7 +102,7 @@ const createSearchSelectParams = ({
     return { collectionName, collectionImage, numberOfNFTs }
   })
 
-  const searchSelectParams = {
+  const searchSelectParams: SearchSelectProps<SearchSelectOption> = {
     options: searchSelectOptions,
     selectedOptions,
     onChange,

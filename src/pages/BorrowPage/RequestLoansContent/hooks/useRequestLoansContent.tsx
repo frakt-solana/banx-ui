@@ -4,6 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { chain, first, isEmpty } from 'lodash'
 
 import { MAX_BORROWER_APR_VALUE } from '@banx/components/PlaceOfferSection'
+import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { MarketPreview } from '@banx/api/core'
@@ -81,7 +82,7 @@ const createSearchSelectParams = ({
   selectedOptions,
   onChange,
 }: CreateSearchSelectProps) => {
-  const searchSelectParams = {
+  const searchSelectParams: SearchSelectProps<MarketPreview> = {
     options,
     selectedOptions,
     onChange,
@@ -93,8 +94,8 @@ const createSearchSelectParams = ({
       secondLabel: {
         key: 'marketPubkey',
         //TODO Refactor this piece of shit (code)
-        format: (marketPubkey: unknown) => {
-          const customApr = MARKETS_WITH_CUSTOM_APR[marketPubkey as string]
+        format: (marketPubkey) => {
+          const customApr = MARKETS_WITH_CUSTOM_APR[marketPubkey]
           const apr = customApr !== undefined ? customApr / 100 : MAX_BORROWER_APR_VALUE
           return createPercentValueJSX(apr)
         },

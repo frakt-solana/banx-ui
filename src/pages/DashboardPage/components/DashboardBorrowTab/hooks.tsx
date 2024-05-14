@@ -5,6 +5,7 @@ import { filter, first, groupBy, includes, map } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
+import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { DisplayValue } from '@banx/components/TableComponents'
 import {
   SubscribeNotificationsModal,
@@ -162,6 +163,12 @@ export const useSingleBorrow = () => {
 
 const useCollectionsStore = createGlobalState<string[]>([])
 
+interface SearchSelectOption {
+  collectionName: string
+  collectionImage: string
+  offerTvl: number
+}
+
 const useFilteredMarketsAndNFTs = (marketsPreview: MarketPreview[], nfts: BorrowNft[]) => {
   const { connected } = useWallet()
 
@@ -188,9 +195,10 @@ const useFilteredMarketsAndNFTs = (marketsPreview: MarketPreview[], nfts: Borrow
     return map(nftsGroupedByCollection, (groupedNfts) => {
       const firstNftInGroup = first(groupedNfts)
       const { collectionName = '', collectionImage = '' } = firstNftInGroup?.nft.meta || {}
-      const offerTvl = marketsPreview.find(
-        ({ collectionName }) => firstNftInGroup?.nft.meta.collectionName === collectionName,
-      )?.offerTvl
+      const offerTvl =
+        marketsPreview.find(
+          ({ collectionName }) => firstNftInGroup?.nft.meta.collectionName === collectionName,
+        )?.offerTvl || 0
 
       return {
         collectionName,
@@ -200,7 +208,7 @@ const useFilteredMarketsAndNFTs = (marketsPreview: MarketPreview[], nfts: Borrow
     })
   }, [nfts, marketsPreview])
 
-  const searchSelectParams = {
+  const searchSelectParams: SearchSelectProps<MarketPreview | SearchSelectOption> = {
     onChange: setSelectedCollections,
     options: connected ? searchSelectOptions : marketsPreview,
     selectedOptions: selectedCollections,

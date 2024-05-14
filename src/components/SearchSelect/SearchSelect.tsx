@@ -17,7 +17,7 @@ import styles from './SearchSelect.module.less'
 export interface SearchSelectProps<P> {
   options: P[]
   labels: string[]
-  optionKeys: OptionKeys
+  optionKeys: OptionKeys<P>
   selectedOptions: string[]
   onChange: (selectedOptions: string[]) => void
 

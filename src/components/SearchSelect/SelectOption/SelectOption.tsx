@@ -5,7 +5,7 @@ import classNames from 'classnames'
 
 import { Star, StarActive } from '@banx/icons'
 
-import { OptionKeys } from '../types'
+// import { OptionKeys } from '../types'
 import { extractOptionValues, getOptionClassName } from './helpers'
 
 import styles from './SelectOption.module.less'
@@ -17,7 +17,7 @@ export type OptionClassNameProps = {
 
 interface OptionProps {
   option: BaseOptionType
-  optionKeys: OptionKeys
+  optionKeys: any
   selectedOptions?: string[]
   index: number
   optionClassNameProps?: OptionClassNameProps
@@ -91,7 +91,7 @@ const ImageContainer: FC<ImageContainerProps> = ({ image, isSelected }) => (
 
 interface AdditionalValueProps {
   option: BaseOptionType
-  additionalInfo: OptionKeys['secondLabel']
+  additionalInfo: any
 }
 
 const AdditionalValue: FC<AdditionalValueProps> = ({ option, additionalInfo }) => {
