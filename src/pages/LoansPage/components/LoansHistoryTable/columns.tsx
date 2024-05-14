@@ -34,7 +34,6 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
       render: ({ borrowed }) => (
         <HorizontalCell value={<DisplayValue value={borrowed} placeholder="--" />} />
       ),
-      sorter: true,
     },
     {
       key: 'debt',
@@ -50,7 +49,6 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
       key: 'repaid',
       title: <HeaderCell label="Repaid by" />,
       render: (loan) => <RepaidCell loan={loan} />,
-      sorter: true,
     },
     {
       key: 'timestamp',
@@ -58,7 +56,6 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
       render: ({ publicKey, timestamp }) => (
         <DurationCell publicKey={publicKey} timestamp={timestamp} />
       ),
-      sorter: true,
     },
   ]
 

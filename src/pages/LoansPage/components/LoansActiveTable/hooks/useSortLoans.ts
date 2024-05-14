@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 
-import { chain } from 'lodash'
+import { chain, orderBy } from 'lodash'
 
-import { SortOption } from '@banx/components/SortDropdown'
+import { SortOption, SortOrder } from '@banx/components/SortDropdown'
 
 import { Loan } from '@banx/api/core'
 import {
@@ -22,34 +22,22 @@ enum SortField {
   DURATION = 'duration',
 }
 
-type SortOrder = 'asc' | 'desc'
 type SortValueGetter = (loan: Loan) => number
 
-type StatusValueMap = Record<SortField, string | SortValueGetter>
-
-const SORT_OPTIONS = [
-  { label: 'Debt', value: SortField.DEBT },
-  { label: 'APR', value: SortField.APR },
-  { label: 'LTV', value: SortField.LTV },
-  { label: 'Status', value: SortField.STATUS },
-  { label: 'Duration', value: SortField.DURATION },
+const SORT_OPTIONS: SortOption<SortField>[] = [
+  { label: 'Status', value: [SortField.STATUS, 'desc'] },
+  { label: 'Debt', value: [SortField.DEBT, 'desc'] },
+  { label: 'APR', value: [SortField.APR, 'desc'] },
+  { label: 'LTV', value: [SortField.LTV, 'desc'] },
+  { label: 'Duration', value: [SortField.DURATION, 'desc'] },
 ]
 
-const DEFAULT_SORT_OPTION = { label: 'Status', value: `${SortField.STATUS}_desc` }
-
-const STATUS_VALUE_MAP: StatusValueMap = {
+const SORT_VALUE_MAP: Record<SortField, string | SortValueGetter> = {
   [SortField.DEBT]: calculateLoanRepayValue,
   [SortField.APR]: (loan) => loan.bondTradeTransaction.amountOfBonds,
   [SortField.LTV]: (loan) => calculateLoanRepayValue(loan) / loan.nft.collectionFloor,
   [SortField.DURATION]: (loan) => loan.fraktBond.activatedAt * -1,
   [SortField.STATUS]: '',
-}
-
-const sortLoansByField = (loans: Loan[], field: SortField, order: SortOrder) => {
-  return chain(loans)
-    .sortBy((loan) => (STATUS_VALUE_MAP[field] as SortValueGetter)(loan))
-    .thru((sorted) => (order === 'desc' ? sorted.reverse() : sorted))
-    .value()
 }
 
 const sortStatusLoans = (loans: Loan[], order: SortOrder) => {
@@ -80,24 +68,29 @@ const sortStatusLoans = (loans: Loan[], order: SortOrder) => {
 }
 
 export const useSortLoans = (loans: Loan[]) => {
-  const [sortOption, setSortOption] = useState<SortOption>(DEFAULT_SORT_OPTION)
-  const sortOptionValue = sortOption?.value
+  const [sortOption, setSortOption] = useState(SORT_OPTIONS[0])
 
   const sortedLoans = useMemo(() => {
-    if (!sortOptionValue) return loans
+    if (!sortOption) return loans
 
-    const [name, order] = sortOptionValue.split('_') as [SortField, SortOrder]
+    const [field, order] = sortOption.value
 
-    return name === SortField.STATUS
+    const sortValueGetter = SORT_VALUE_MAP[field]
+
+    return field === SortField.STATUS
       ? sortStatusLoans(loans, order)
-      : sortLoansByField(loans, name, order)
-  }, [sortOptionValue, loans])
+      : orderBy(loans, sortValueGetter, order)
+  }, [sortOption, loans])
+
+  const onChangeSortOption = (option: SortOption<SortField>) => {
+    setSortOption(option)
+  }
 
   return {
     sortedLoans,
     sortParams: {
       option: sortOption,
-      onChange: setSortOption,
+      onChange: onChangeSortOption,
       className: styles.sortDropdown,
       options: SORT_OPTIONS,
     },

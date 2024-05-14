@@ -36,6 +36,10 @@ export const ACTIVE_LOANS_TABLE_MESSAGES = {
     connected: 'Borrow SOL against your NFTs',
     notConnected: 'Connect wallet to borrow SOL against your NFTs',
   },
+  [LendingTokenType.BanxSol]: {
+    connected: 'Borrow SOL against your NFTs',
+    notConnected: 'Connect wallet to borrow SOL against your NFTs',
+  },
   [LendingTokenType.Usdc]: {
     connected: 'Borrow USDC against your NFTs',
     notConnected: 'Connect wallet to borrow USDC against your NFTs',

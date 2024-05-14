@@ -7,23 +7,23 @@ import { SortOption } from '@banx/components/SortDropdown'
 import { MarketPreview } from '@banx/api/core'
 
 export enum SortField {
+  OFFER_TVL = 'offerTvl',
   LOANS_TVL = 'loansTvl',
   ACTIVE_LOANS = 'activeLoans',
-  FLOOR = 'floor',
 }
-
-type SortValueGetter = (market: MarketPreview) => number
 
 const SORT_OPTIONS: SortOption<SortField>[] = [
   { label: 'Loans TVL', value: [SortField.LOANS_TVL, 'desc'] },
+  { label: 'Offers TVL', value: [SortField.OFFER_TVL, 'desc'] },
   { label: 'Active loans', value: [SortField.ACTIVE_LOANS, 'desc'] },
-  { label: 'Floor', value: [SortField.FLOOR, 'desc'] },
 ]
 
+type SortValueGetter = (market: MarketPreview) => number
+
 const SORT_VALUE_MAP: Record<SortField, SortValueGetter> = {
+  [SortField.OFFER_TVL]: (market) => market.offerTvl,
   [SortField.LOANS_TVL]: (market) => market.loansTvl,
   [SortField.ACTIVE_LOANS]: (market) => market.activeBondsAmount,
-  [SortField.FLOOR]: (market) => market.collectionFloor,
 }
 
 export const useSortedMarkets = (markets: MarketPreview[]) => {
