@@ -1,10 +1,12 @@
 import { web3 } from 'fbonds-core'
-import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
+import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   removePerpetualListing,
   removePerpetualListingCnft,
+  removePerpetualListingStakedBanx,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
+import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
 import moment from 'moment'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
@@ -37,7 +39,8 @@ export const createDelistTxnData: CreateDelistTxnData = async (params) => {
     ...loan,
     bondTradeTransaction: {
       ...loan.bondTradeTransaction,
-      terminationFreeze: 0, //? Set 0 to filter loan from list
+      //? Set not active state to filter out loan from list
+      bondTradeTransactionState: BondTradeTransactionV2State.NotActive,
     },
     fraktBond: {
       ...loan.fraktBond,
@@ -64,6 +67,36 @@ const getIxnsAndSignersByListingType = async ({
 }) => {
   const { connection, wallet } = walletAndConnection
   const { loan } = params
+
+  if (type === ListingType.StakedBanx) {
+    const ruleSet = await fetchRuleset({
+      nftMint: loan.nft.mint,
+      connection,
+      marketPubkey: loan.fraktBond.hadoMarket,
+    })
+
+    const { instructions, signers } = await removePerpetualListingStakedBanx({
+      programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
+      accounts: {
+        banxStake: new web3.PublicKey(loan.fraktBond.banxStake),
+        protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
+        borrower: new web3.PublicKey(loan.fraktBond.fbondIssuer),
+        userPubkey: wallet.publicKey,
+        nftMint: new web3.PublicKey(loan.nft.mint),
+        fraktBond: new web3.PublicKey(loan.fraktBond.publicKey),
+        bondOffer: new web3.PublicKey(loan.bondTradeTransaction.bondOffer),
+        oldBondTradeTransaction: new web3.PublicKey(loan.bondTradeTransaction.publicKey),
+      },
+      args: {
+        isBorrowerListing: true,
+        ruleSet,
+      },
+      connection,
+      sendTxn: sendTxnPlaceHolder,
+    })
+
+    return { instructions, signers }
+  }
 
   if (type === ListingType.CNft) {
     if (!loan.nft.compression) {
@@ -128,6 +161,10 @@ const getIxnsAndSignersByListingType = async ({
 }
 
 const getNftListingType = (loan: Loan) => {
+  if (!!loan.fraktBond.banxStake && loan.fraktBond.banxStake !== EMPTY_PUBKEY.toBase58()) {
+    return ListingType.StakedBanx
+  }
+
   if (loan.nft.compression) return ListingType.CNft
   return ListingType.Default
 }
