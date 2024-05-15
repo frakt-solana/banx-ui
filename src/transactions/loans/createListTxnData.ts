@@ -68,10 +68,6 @@ const getIxnsAndSignersByListingType = async ({
   const { nft, tokenType: lendingTokenType, loanValue, aprRate, freeze } = params
 
   if (type === ListingType.StakedBanx) {
-    if (!nft.loan.banxStake) {
-      throw new Error(`Not BanxStaked NFT`)
-    }
-
     const ruleSet = await fetchRuleset({
       nftMint: nft.mint,
       connection,
@@ -86,7 +82,7 @@ const getIxnsAndSignersByListingType = async ({
         userPubkey: wallet.publicKey,
         nftMint: new web3.PublicKey(nft.mint),
         fraktMarket: new web3.PublicKey(nft.loan.fraktMarket),
-        banxStake: new web3.PublicKey(nft.loan.banxStake),
+        banxStake: new web3.PublicKey(nft.loan.banxStake || ''),
       },
       args: {
         amountToGetBorrower: new BN(loanValue),

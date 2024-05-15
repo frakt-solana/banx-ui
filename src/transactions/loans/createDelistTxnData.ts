@@ -69,10 +69,6 @@ const getIxnsAndSignersByListingType = async ({
   const { loan } = params
 
   if (type === ListingType.StakedBanx) {
-    if (!loan.fraktBond.banxStake) {
-      throw new Error(`Not BanxStaked NFT`)
-    }
-
     const ruleSet = await fetchRuleset({
       nftMint: loan.nft.mint,
       connection,
