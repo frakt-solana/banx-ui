@@ -5,7 +5,7 @@ import moment from 'moment'
 
 import { USDC } from '@banx/icons'
 import { useTokenType } from '@banx/store'
-import { formatValueByTokenType, getTokenUnit } from '@banx/utils'
+import { formatValueByTokenType } from '@banx/utils'
 
 import styles from './TableCells.module.less'
 
@@ -39,10 +39,20 @@ const createPlaceholderJSX = (value: number, tokenUnit: ReactNode) => (
   </>
 )
 
-const DEFAULT_PLACEHOLDERS = {
-  [LendingTokenType.NativeSol]: createPlaceholderJSX(0, '◎'),
-  [LendingTokenType.BanxSol]: createPlaceholderJSX(0, '◎'),
-  [LendingTokenType.Usdc]: createPlaceholderJSX(0, <USDC />),
+const TOKEN_DETAILS = {
+  [LendingTokenType.NativeSol]: {
+    unit: '◎',
+    placeholder: createPlaceholderJSX(0, '◎'),
+  },
+  [LendingTokenType.BanxSol]: {
+    unit: '◎',
+    placeholder: createPlaceholderJSX(0, '◎'),
+  },
+  [LendingTokenType.Usdc]: {
+    //? Using viewBox to visually scale up icon without changing its size
+    unit: <USDC viewBox="0 1 15 15" />,
+    placeholder: createPlaceholderJSX(0, <USDC viewBox="0 1 15 15" />),
+  },
 }
 
 export const DisplayValue: FC<{ value: number; placeholder?: string }> = ({
@@ -53,8 +63,8 @@ export const DisplayValue: FC<{ value: number; placeholder?: string }> = ({
 
   const formattedValue = formatValueByTokenType(value, tokenType)
 
-  const defaultPlaceholder = placeholder || DEFAULT_PLACEHOLDERS[tokenType]
-  const tokenUnit = getTokenUnit(tokenType)
+  const defaultPlaceholder = placeholder || TOKEN_DETAILS[tokenType].placeholder
+  const tokenUnit = TOKEN_DETAILS[tokenType].unit
 
   const displayValue = formattedValue ? (
     <>
