@@ -5,7 +5,6 @@ import {
   HorizontalCell,
   NftInfoCell,
   RarityCell,
-  createPercentValueJSX,
 } from '@banx/components/TableComponents'
 import Timer from '@banx/components/Timer/Timer'
 import Tooltip from '@banx/components/Tooltip'
@@ -15,7 +14,7 @@ import { SECONDS_IN_72_HOURS, SECONDS_IN_DAY } from '@banx/constants'
 import { Hourglass, Snowflake } from '@banx/icons'
 import { isFreezeLoan, isLoanListed } from '@banx/utils'
 
-import { ActionsCell, DebtCell, LTVCell } from './TableCells'
+import { APRCell, ActionsCell, DebtCell, LTVCell } from './TableCells'
 
 import styles from './InstantLendTable.module.less'
 
@@ -93,12 +92,7 @@ export const getTableColumns = ({
     {
       key: 'apr',
       title: <HeaderCell label="APR" />,
-      render: (loan) => (
-        <HorizontalCell
-          value={createPercentValueJSX(loan.bondTradeTransaction.amountOfBonds / 100)}
-          isHighlighted
-        />
-      ),
+      render: (loan) => <APRCell loan={loan} />,
     },
     {
       key: 'refinanceCell',
