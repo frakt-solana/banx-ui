@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from 'react'
+import { FC, useCallback, useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
@@ -9,14 +9,14 @@ import Table from '@banx/components/Table'
 import Tooltip from '@banx/components/Tooltip'
 
 import { Loan, Offer } from '@banx/api/core'
-import { Warning } from '@banx/icons'
-import { ViewState, useTableView } from '@banx/store'
-import { isLoanTerminating } from '@banx/utils'
+import { Coin, Warning } from '@banx/icons'
+import { ViewState, useTableView, useTokenType } from '@banx/store'
+import { isLoanRepaymentCallActive, isLoanTerminating } from '@banx/utils'
 
-import { useSelectedLoans } from '../../loansState'
 import { Summary } from './Summary'
 import { getTableColumns } from './columns'
 import { useLoansActiveTable } from './hooks'
+import { useSelectedLoans } from './loansState'
 
 import styles from './LoansActiveTable.module.less'
 
@@ -31,6 +31,8 @@ export const LoansActiveTable: FC<LoansActiveTableProps> = ({
   isLoading,
   offers,
 }) => {
+  const { tokenType } = useTokenType()
+
   const { publicKey: walletPublicKey } = useWallet()
   const walletPublicKeyString = walletPublicKey?.toBase58() || ''
 
@@ -42,8 +44,11 @@ export const LoansActiveTable: FC<LoansActiveTableProps> = ({
     emptyListParams,
     showSummary,
     isTerminationFilterEnabled,
-    countOfTerminatingLoans,
+    terminatingLoansAmount,
     toggleTerminationFilter,
+    repaymentCallsAmount,
+    isRepaymentCallFilterEnabled,
+    toggleRepaymentCallFilter,
   } = useLoansActiveTable({ loans: rawLoans, isLoading })
 
   const {
@@ -53,6 +58,12 @@ export const LoansActiveTable: FC<LoansActiveTableProps> = ({
     clear: clearSelection,
     set: setSelection,
   } = useSelectedLoans()
+
+  //? Clear selection when tokenType changes
+  //? To prevent selection transfering from one tokenType to another
+  useEffect(() => {
+    clearSelection()
+  }, [clearSelection, tokenType])
 
   const walletSelectedLoans = useMemo(() => {
     if (!walletPublicKeyString) return []
@@ -103,30 +114,28 @@ export const LoansActiveTable: FC<LoansActiveTableProps> = ({
           className: styles.terminated,
           cardClassName: styles.terminated,
         },
+        {
+          condition: isLoanRepaymentCallActive,
+          className: styles.repaymentCallActive,
+          cardClassName: styles.repaymentCallActive,
+        },
       ],
     }
   }, [onRowClick])
 
   const customJSX = (
-    <Tooltip
-      title={countOfTerminatingLoans ? 'Terminating loans' : 'No terminating loans currently'}
-    >
-      <div className={styles.filterButtonWrapper} data-count-of-loans={countOfTerminatingLoans}>
-        <Button
-          className={classNames(
-            styles.filterButton,
-            { [styles.active]: isTerminationFilterEnabled },
-            { [styles.disabled]: !countOfTerminatingLoans },
-          )}
-          disabled={!countOfTerminatingLoans}
-          onClick={toggleTerminationFilter}
-          variant="secondary"
-          type="circle"
-        >
-          <Warning />
-        </Button>
-      </div>
-    </Tooltip>
+    <div className={styles.filterButtons}>
+      <TerminatingFilterButton
+        loansAmount={terminatingLoansAmount}
+        isActive={isTerminationFilterEnabled}
+        onClick={toggleTerminationFilter}
+      />
+      <RepaymentCallFilterButton
+        loansAmount={repaymentCallsAmount}
+        isActive={isRepaymentCallFilterEnabled}
+        onClick={toggleRepaymentCallFilter}
+      />
+    </div>
   )
 
   if (showEmptyList) return <EmptyList {...emptyListParams} />
@@ -149,3 +158,55 @@ export const LoansActiveTable: FC<LoansActiveTableProps> = ({
     </div>
   )
 }
+
+interface FilterButtonProps {
+  onClick: () => void
+  isActive: boolean
+  loansAmount: number | null
+}
+
+const RepaymentCallFilterButton: FC<FilterButtonProps> = ({ isActive, onClick, loansAmount }) => (
+  <Tooltip title={loansAmount ? 'Repayment calls' : 'No repayment calls currently'}>
+    <div
+      className={classNames(styles.filterButtonWrapper, styles.repaymentCall)}
+      data-loans-amount={loansAmount}
+    >
+      <Button
+        className={classNames(
+          styles.repaymentCallFilterButton,
+          { [styles.active]: isActive },
+          { [styles.disabled]: !loansAmount },
+        )}
+        disabled={!loansAmount}
+        onClick={onClick}
+        variant="secondary"
+        type="circle"
+      >
+        <Coin />
+      </Button>
+    </div>
+  </Tooltip>
+)
+
+const TerminatingFilterButton: FC<FilterButtonProps> = ({ isActive, onClick, loansAmount }) => (
+  <Tooltip title={loansAmount ? 'Terminating loans' : 'No terminating loans currently'}>
+    <div
+      className={classNames(styles.filterButtonWrapper, styles.terminating)}
+      data-loans-amount={loansAmount}
+    >
+      <Button
+        className={classNames(
+          styles.terminatingFilterButton,
+          { [styles.active]: isActive },
+          { [styles.disabled]: !loansAmount },
+        )}
+        disabled={!loansAmount}
+        onClick={onClick}
+        variant="secondary"
+        type="circle"
+      >
+        <Warning />
+      </Button>
+    </div>
+  </Tooltip>
+)

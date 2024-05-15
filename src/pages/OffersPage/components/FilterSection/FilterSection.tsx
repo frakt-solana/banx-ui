@@ -3,11 +3,13 @@ import { useState } from 'react'
 import { SearchSelect, SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortDropdown, SortDropdownProps } from '@banx/components/SortDropdown'
 
+import { SortField } from '../OffersTabContent/hooks'
+
 import styles from './FilterSection.module.less'
 
 interface FilterSectionProps<T> {
   searchSelectParams: SearchSelectProps<T>
-  sortParams: SortDropdownProps
+  sortParams: SortDropdownProps<SortField>
 }
 
 const FilterSection = <T extends object>({

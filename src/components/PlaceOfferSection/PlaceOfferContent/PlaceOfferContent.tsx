@@ -5,7 +5,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { InputErrorMessage, NumericStepInput } from '@banx/components/inputs'
 
 import { useTokenType } from '@banx/store'
-import { getTokenUnit } from '@banx/utils'
+import { getTokenUnit, isSolTokenType } from '@banx/utils'
 
 import { BorrowerMessage } from '../components'
 import { PlaceOfferParams } from '../hooks'
@@ -29,9 +29,10 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
   hasFormChanges,
   offerSize,
   market,
+  updatedOffer,
   diagramData,
   isLoadingDiagram,
-  updatedOffer,
+  setOfferPubkey,
 }) => {
   const { tokenType } = useTokenType()
   const { connected } = useWallet()
@@ -40,6 +41,8 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
   const showBorrowerMessage = !offerErrorMessage && !!offerSize
   const disablePlaceOffer = !!offerErrorMessage || !offerSize
   const disableUpdateOffer = !hasFormChanges || !!offerErrorMessage || !offerSize
+
+  const inputStepByTokenType = isSolTokenType(tokenType) ? 0.1 : 1
 
   return (
     <>
@@ -52,6 +55,7 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
           disabled={!connected}
           tooltipText="Your max offer, given sufficient liquidity in your offer. Actual loan amount taken can be less depending on the amount of SOL borrowers choose to borrow"
           postfix={getTokenUnit(tokenType)}
+          step={inputStepByTokenType}
         />
         <NumericStepInput
           label="Number of offers"
@@ -69,12 +73,15 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
           className={styles.deltaInput}
           tooltipText="Max Offer will decrease by this amount every time a borrower takes your max offer (AKA “delta”)"
           postfix={getTokenUnit(tokenType)}
+          step={inputStepByTokenType}
         />
       </div>
       <div className={styles.messageContainer}>
         {offerErrorMessage && <InputErrorMessage message={offerErrorMessage} />}
         {showBorrowerMessage && <BorrowerMessage loanValue={loanValue} tokenType={tokenType} />}
       </div>
+
+      {!setOfferPubkey && <Diagram marks={diagramData} isLoading={isLoadingDiagram} />}
 
       <MainSummary
         hasFormChanges={hasFormChanges}
@@ -83,12 +90,11 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
         market={market}
       />
 
-      <Diagram marks={diagramData} isLoading={isLoadingDiagram} />
-
       <AdditionalSummary
         hasFormChanges={hasFormChanges}
         initialOffer={optimisticOffer}
         updatedOffer={updatedOffer}
+        market={market}
       />
 
       <ActionsButtons

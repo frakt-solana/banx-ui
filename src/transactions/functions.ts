@@ -2,9 +2,16 @@ import { WalletContextState } from '@solana/wallet-adapter-react'
 import { web3 } from 'fbonds-core'
 import { EMPTY_PUBKEY } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getRuleset } from 'fbonds-core/lib/fbond-protocol/helpers'
-import { Wallet } from 'solana-transactions-executor'
+import {
+  GetPriorityFee,
+  Wallet,
+  WalletAndConnection,
+  extractAccountKeysFromInstructions,
+} from 'solana-transactions-executor'
 
 import { BorrowNft, Loan } from '@banx/api/core'
+import { getHeliusPriorityFeeEstimate } from '@banx/api/helius'
+import { getPriorityFeeLevel } from '@banx/store'
 
 export const convertLoanToBorrowNft = (loan: Loan): BorrowNft => {
   const { nft, fraktBond, bondTradeTransaction } = loan
@@ -23,7 +30,18 @@ export const convertLoanToBorrowNft = (loan: Loan): BorrowNft => {
   return borrowNft
 }
 
-export const createWalletInstance = (wallet: WalletContextState): Wallet => {
+type CreateExecutorWalletAndConnection = (params: {
+  wallet: WalletContextState
+  connection: web3.Connection
+}) => WalletAndConnection
+export const createExecutorWalletAndConnection: CreateExecutorWalletAndConnection = ({
+  wallet,
+  connection,
+}) => {
+  return { wallet: createExecutorWallet(wallet), connection }
+}
+
+const createExecutorWallet = (wallet: WalletContextState): Wallet => {
   const { publicKey, signTransaction, signAllTransactions } = wallet
 
   if (!publicKey) {
@@ -67,21 +85,11 @@ export const fetchRuleset: FetchRuleset = ({ nftMint, marketPubkey, connection }
   return rulesetsCache.get(marketPubkey)!
 }
 
-const lookupTablesCache = new Map<
-  string,
-  Promise<web3.RpcResponseAndContext<web3.AddressLookupTableAccount | null>>
->()
-export const fetchLookupTableAccount = (
-  lookupTable: web3.PublicKey,
-  connection: web3.Connection,
-): Promise<web3.RpcResponseAndContext<web3.AddressLookupTableAccount | null>> => {
-  const lookupTableAddressStr = lookupTable.toBase58()
+export const executorGetPriorityFee: GetPriorityFee = ({ txnParams, connection }) => {
+  const priorityLevel = getPriorityFeeLevel()
 
-  if (!lookupTablesCache.has(lookupTableAddressStr)) {
-    const lookupTableAccountPromise = connection.getAddressLookupTable(lookupTable)
+  const { instructions } = txnParams
+  const accountKeys = extractAccountKeysFromInstructions(instructions).map((key) => key.toBase58())
 
-    lookupTablesCache.set(lookupTableAddressStr, lookupTableAccountPromise)
-  }
-
-  return lookupTablesCache.get(lookupTableAddressStr)!
+  return getHeliusPriorityFeeEstimate({ accountKeys, connection, priorityLevel })
 }

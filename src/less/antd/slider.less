@@ -3,7 +3,7 @@
 
   .ant-slider-rail,
   &:hover .ant-slider-rail {
-    background: var(--accent-primary-sub) !important;
+    background: var(--accent-primary-sub);
     height: 4px;
   }
 
@@ -20,7 +20,7 @@
   .ant-slider-dot,
   &:hover .ant-slider-dot {
     background: var(--bg-primary);
-    border: 2px solid var(--accent-primary-sub) !important;
+    border: 2px solid var(--accent-primary-sub);
     height: 8px;
     width: 8px;
   }
@@ -28,7 +28,7 @@
   .ant-slider-dot-active,
   &:hover .ant-slider-dot-active {
     background: var(--bg-primary);
-    border: 2px solid var(--accent-primary) !important;
+    border: 2px solid var(--accent-primary);
   }
 
   .ant-slider-mark {
@@ -47,7 +47,7 @@
   .ant-slider-handle {
     background: var(--bg-primary);
     border: 2px solid var(--accent-primary);
-    box-shadow: unset !important;
+    box-shadow: unset;
   }
 
   .ant-slider-handle:after,
@@ -128,4 +128,8 @@
       content: attr(aria-valuenow) '%';
     }
   }
+}
+
+.ant-slider.ant-slider-disabled .ant-slider-rail {
+  background: var(--content-secondary) !important;
 }

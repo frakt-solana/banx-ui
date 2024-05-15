@@ -2,15 +2,28 @@ import { TxnError } from 'solana-transactions-executor'
 
 import { enqueueSnackbar } from '@banx/utils'
 
+import { createErrorLogsString } from '.'
+import { TxnErrorHumanName } from '../types'
 import { getTxnErrorDefinition } from './getTxnErrorDefinition'
 
-export const enqueueTxnErrorSnackbar = (error: TxnError) => {
+type EnqueueTxnErrorSnackbar = (
+  error: TxnError,
+  options?: Partial<{
+    additionalData: unknown
+    walletPubkey: string
+    transactionName: string
+  }>,
+) => ReturnType<typeof enqueueSnackbar>
+export const enqueueTxnErrorSnackbar: EnqueueTxnErrorSnackbar = (error, options) => {
   const errorDefinition = getTxnErrorDefinition(error)
 
-  const copyButtonProps = error?.logs
+  const isTransactionRejectedByUser =
+    errorDefinition?.humanMessage === TxnErrorHumanName.TRANSACTION_REJECTED
+
+  const copyButtonProps = !isTransactionRejectedByUser
     ? {
-        label: 'Copy logs',
-        textToCopy: `${error.message}\n${error?.logs?.join('\n')}`,
+        label: 'Copy error logs',
+        textToCopy: createErrorLogsString(error, options),
       }
     : undefined
 
@@ -18,16 +31,6 @@ export const enqueueTxnErrorSnackbar = (error: TxnError) => {
     message: errorDefinition?.humanMessage ?? 'Something went wrong',
     description: !errorDefinition?.humanMessage ? error.message : undefined,
     copyButtonProps,
-    type: errorDefinition?.type ?? 'error',
-  })
-}
-
-export const enqueueUnknownErrorSnackbar = (error: Error) => {
-  const errorDefinition = getTxnErrorDefinition(error)
-
-  return enqueueSnackbar({
-    message: errorDefinition?.humanMessage ?? 'Something went wrong',
-    description: !errorDefinition?.humanMessage ? error.message : undefined,
     type: errorDefinition?.type ?? 'error',
   })
 }

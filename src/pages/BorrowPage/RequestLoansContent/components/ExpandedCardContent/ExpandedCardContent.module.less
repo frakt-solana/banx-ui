@@ -1,0 +1,221 @@
+.container {
+  cursor: default;
+  display: flex;
+  overflow: hidden;
+  height: 360px;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    flex-direction: column-reverse;
+    height: unset;
+  }
+}
+
+.tabsContent {
+  border: var(--border-less-primary);
+  border-right: 0;
+  border-bottom: 0;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    height: 296px;
+  }
+}
+
+.activityTableWrapper {
+  height: 264px;
+
+  @media (max-width: 640px) {
+    height: 222px;
+  }
+}
+
+// * Form * //
+.form {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 24px;
+
+  @media (max-width: 640px) {
+    border-top: var(--border-less-primary);
+    padding: 8px 16px;
+  }
+}
+
+.fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 220px;
+
+  @media (max-width: 640px) {
+    flex-wrap: nowrap;
+    width: 100%;
+  }
+}
+
+.borrowFieldWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.aprFieldWrapper {
+  display: flex;
+  flex-direction: column;
+  max-width: 104px;
+
+  @media (max-width: 640px) {
+    max-width: unset;
+  }
+}
+
+.freezeField {
+  max-width: 104px;
+
+  @media (max-width: 640px) {
+    max-width: unset;
+  }
+}
+
+.lenderSeesMessage {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font: var(--body-text-sm);
+  height: 14px;
+  white-space: nowrap;
+
+  @media (max-width: 640px) {
+    font: var(--body-text-xs);
+  }
+}
+
+.sliderContainer {
+  height: 32px;
+
+  @media (max-width: 640px) {
+    flex-direction: row-reverse;
+  }
+}
+
+.slider {
+  padding-bottom: 18px;
+}
+
+.actionsContainer {
+  display: flex;
+  flex-direction: column;
+  margin-top: 12px;
+  gap: 12px;
+
+  @media (max-width: 640px) {
+    flex-direction: row-reverse;
+  }
+}
+
+.mobileSubmitButton {
+  display: none;
+
+  @media (max-width: 640px) {
+    display: unset;
+    min-width: 168px;
+  }
+}
+
+.submitButton {
+  width: 100%;
+
+  @media (max-width: 640px) {
+    display: none;
+  }
+}
+// * Form * //
+
+// * Summary * //
+.summary {
+  border-top: 1px dotted var(--bg-border);
+  display: flex;
+  flex-direction: column;
+  margin: 12px -24px 0;
+  padding: 12px 24px 12px;
+  gap: 8px;
+
+  @media (max-width: 640px) {
+    flex-direction: row;
+    justify-content: space-around;
+    border: 0;
+    gap: 4px;
+    margin: 0 -16px 0;
+    padding: 0 16px 12px;
+    order: -1;
+  }
+}
+
+.statContainer {
+  @media (max-width: 640px) {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+.fixedValueContent {
+  max-width: 74px;
+  white-space: nowrap;
+  overflow: auto;
+
+  @media (max-width: 960px) {
+    max-width: 144px;
+  }
+}
+// * Summary * //
+
+// * CurrencyInputPlug * //
+.selectCurrencyWrapper {
+  position: relative;
+  min-width: 172px;
+  max-width: unset !important;
+  width: 100%;
+}
+
+.selectCurrencyInfo {
+  position: absolute;
+  top: 45%;
+  left: 4px;
+  z-index: 1;
+
+  border: var(--border-primary);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  height: 26px;
+
+  @media (max-width: 640px) {
+    top: 43%;
+  }
+
+  span {
+    color: var(--content-secondary);
+    font: var(--card-header-sm);
+  }
+}
+
+.chevronIcon {
+  height: 16px;
+  width: 16px;
+
+  path {
+    fill: var(--content-secondary);
+  }
+}
+
+.selectCurrencyInput {
+  input {
+    padding-left: 104px;
+    padding-right: 28px;
+    text-align: right;
+  }
+}
+// * CurrencyInputPlug * //

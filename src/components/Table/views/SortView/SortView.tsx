@@ -1,39 +1,36 @@
 import { ReactNode, useState } from 'react'
 
 import { SearchSelect, SearchSelectProps } from '@banx/components/SearchSelect'
-import { SortDropdown } from '@banx/components/SortDropdown'
+import { SortDropdown, SortDropdownProps } from '@banx/components/SortDropdown'
 import { Toggle, ToggleProps } from '@banx/components/Toggle'
 
 import { ViewState, useTableView } from '@banx/store'
 
-import { ColumnType, SortParams } from '../../types'
+import { ColumnType } from '../../types'
 import { SwitchModeButton } from './components'
-import { parseTableColumn } from './helpers'
 
 import styles from './SortView.module.less'
 
-interface SortViewProps<T, P> {
-  columns: ColumnType<T>[]
-  searchSelectParams: SearchSelectProps<P>
-  sortParams?: SortParams
+interface SortViewProps<DataType, SearchType, SortType> {
+  columns: ColumnType<DataType>[]
+
+  searchSelectParams: SearchSelectProps<SearchType>
+  sortParams?: SortDropdownProps<SortType>
   toggleParams?: ToggleProps
-  showCard?: boolean
+
   customJSX?: ReactNode
+  showCard?: boolean
 }
 
-export const SortView = <T extends object, P extends object>({
-  columns,
+export const SortView = <DataType extends object, SearchType extends object, SortType>({
   searchSelectParams,
   sortParams,
   toggleParams,
   showCard,
   customJSX,
-}: SortViewProps<T, P>) => {
+}: SortViewProps<DataType, SearchType, SortType>) => {
   const { viewState, setViewState } = useTableView()
   const [searchSelectCollapsed, setSearchSelectCollapsed] = useState(true)
-
-  const sortableColumns = columns.filter((column) => !!column.sorter)
-  const sortDropdownOptions = sortableColumns.map(parseTableColumn)
 
   const handleViewStateChange = (state: ViewState) => {
     setViewState(state)
@@ -54,7 +51,7 @@ export const SortView = <T extends object, P extends object>({
         <div className={styles.rowGap}>
           {showCard && <SwitchModeButton viewState={viewState} onChange={handleViewStateChange} />}
           {toggleParams && <Toggle {...toggleParams} />}
-          {sortParams && <SortDropdown options={sortDropdownOptions} {...sortParams} />}
+          {sortParams && <SortDropdown {...sortParams} />}
         </div>
       )}
     </div>

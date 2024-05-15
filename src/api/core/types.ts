@@ -77,6 +77,22 @@ export interface FetchMarketOffersResponse {
   meta: PaginationMeta
 }
 
+export enum RarityTier {
+  Common = 'common',
+  Uncommon = 'uncommon',
+  Rare = 'rare',
+  Epic = 'epic',
+  Legendary = 'legendary',
+  Mythic = 'mythic',
+}
+
+const RaritySchema = z.object({
+  tier: z.nativeEnum(RarityTier),
+  rank: z.number(),
+})
+
+export type Rarity = z.infer<typeof RaritySchema>
+
 export const NFTSchema = z.object({
   mint: z.string(),
   meta: z.object({
@@ -98,6 +114,7 @@ export const NFTSchema = z.object({
     })
     .optional(),
   collectionFloor: z.number(),
+  rarity: RaritySchema.optional(),
 })
 
 const BondTradeTransactionSchema = z.object({
@@ -108,6 +125,7 @@ const BondTradeTransactionSchema = z.object({
   bondTradeTransactionType: z.nativeEnum(BondTradeTransactionV2Type),
   borrowerFullRepaidAmount: z.number(),
   borrowerOriginalLent: z.number(),
+  repaymentCallAmount: z.number(), //? Stores value that borrower needs to pay (NOT value that lender receives)
   currentRemainingLent: z.number(),
   fbondTokenMint: z.string(),
   feeAmount: z.number(),
@@ -123,6 +141,7 @@ const BondTradeTransactionSchema = z.object({
   seller: z.string(),
   solAmount: z.number(),
   soldAt: z.number(),
+  terminationFreeze: z.number(),
   terminationStartedAt: z.number(),
   user: z.string(),
 })
@@ -220,8 +239,15 @@ export interface LendLoansResponse {
   meta: PaginationMeta
 }
 
-export interface AuctionsLoansResponse {
-  data: Loan[]
+export const LoansRequestsSchema = z.object({
+  auctions: LoanSchema.array(),
+  listings: LoanSchema.array(),
+})
+
+export type LoansRequests = z.infer<typeof LoansRequestsSchema>
+
+export interface AllLoansRequestsResponse {
+  data: LoansRequests
   meta: PaginationMeta
 }
 

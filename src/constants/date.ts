@@ -6,3 +6,5 @@ export const WEEKS_IN_YEAR = 52
 
 export const DAYS_IN_YEAR = 365
 export const DAYS_IN_WEEK = 7
+
+export const ONE_WEEK_IN_SECONDS = DAYS_IN_WEEK * SECONDS_IN_DAY

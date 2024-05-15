@@ -13,8 +13,7 @@ import {
 } from '@banx/components/modals'
 
 import { BorrowNft, MarketPreview } from '@banx/api/core'
-import { SPECIAL_COLLECTIONS_MARKETS } from '@banx/constants'
-import { executeBorrow } from '@banx/pages/BorrowPage/components/BorrowTable/helpers'
+import { executeBorrow } from '@banx/pages/BorrowPage/InstantLoansContent/components/BorrowTable/helpers'
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { PATHS } from '@banx/router'
@@ -23,7 +22,6 @@ import {
   useLoansOptimistic,
   useModal,
   useOffersOptimistic,
-  usePriorityFees,
   useTokenType,
 } from '@banx/store'
 import { createGlobalState } from '@banx/store/functions'
@@ -90,7 +88,6 @@ export const useDashboardBorrowTab = () => {
 export const useSingleBorrow = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { priorityLevel } = usePriorityFees()
   const navigate = useNavigate()
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
@@ -109,16 +106,13 @@ export const useSingleBorrow = () => {
     navigate(createPathWithTokenParam(PATHS.LOANS, tokenType))
   }
 
-  const onBorrowSuccess = (showCongrats = false) => {
+  const onBorrowSuccess = () => {
     const isUserSubscribedToNotifications = !!getDialectAccessToken(wallet.publicKey?.toBase58())
 
-    if (!isUserSubscribedToNotifications || showCongrats) {
+    if (!isUserSubscribedToNotifications) {
       open(SubscribeNotificationsModal, {
         title: createLoanSubscribeNotificationsTitle(1),
-        message: createLoanSubscribeNotificationsContent(
-          showCongrats,
-          !isUserSubscribedToNotifications,
-        ),
+        message: createLoanSubscribeNotificationsContent(!isUserSubscribedToNotifications),
         onActionClick: !isUserSubscribedToNotifications
           ? () => {
               close()
@@ -143,21 +137,19 @@ export const useSingleBorrow = () => {
     await executeBorrow({
       wallet,
       connection,
-      txnParams: [
-        [
-          {
-            nft,
-            offer: rawOffer,
-            loanValue: calculateLoanValue(offer),
-            priorityFeeLevel: priorityLevel,
-            tokenType,
-          },
-        ],
+      createTxnsDataParams: [
+        {
+          nft,
+          offer: rawOffer,
+          loanValue: calculateLoanValue(offer),
+          tokenType,
+          optimizeIntoReserves: true,
+        },
       ],
       addLoansOptimistic,
       updateOffersOptimistic,
       onBorrowSuccess: () => {
-        onBorrowSuccess(SPECIAL_COLLECTIONS_MARKETS.includes(marketPubkey))
+        onBorrowSuccess()
       },
       onSuccessAll: () => {
         goToLoansPage()

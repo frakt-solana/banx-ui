@@ -27,8 +27,9 @@ import {
   isOfferClosed,
 } from '@banx/utils'
 
-import { useCartState } from './cartState'
-import { SimpleOffersByMarket } from './types'
+import { BorrowTabName } from './BorrowPage'
+import { useCartState } from './InstantLoansContent/cartState'
+import { SimpleOffersByMarket } from './InstantLoansContent/types'
 
 export const USE_BORROW_NFTS_V2_QUERY_KEY = 'walletBorrowNftsV2'
 
@@ -257,4 +258,14 @@ export const useHiddenNftsMints = create<HiddenNftsMintsState>((set) => ({
       }),
     )
   },
+}))
+
+type BorrowTabsState = {
+  tab: BorrowTabName | null
+  setTab: (tab: BorrowTabName | null) => void
+}
+
+export const useBorrowTabs = create<BorrowTabsState>((set) => ({
+  tab: null,
+  setTab: (tab) => set({ tab }),
 }))

@@ -4,6 +4,7 @@ import { Button } from '@banx/components/Buttons'
 
 import sadPepeImg from '@banx/assets/SadPepe.png'
 import { DISCORD } from '@banx/constants'
+import { errorLogsToString } from '@banx/transactions'
 import { copyToClipboard } from '@banx/utils'
 
 import styles from './ErrorBoundary.module.less'
@@ -47,7 +48,7 @@ interface ErrorPlaceholderProps {
   error: SolanaError
 }
 const ErrorPlaceholder: FC<ErrorPlaceholderProps> = ({ error }) => {
-  const errorText = [error.name, error.message, error?.logs?.join('\n')].filter(Boolean).join('\n')
+  const errorText = [error.name, error.message, errorLogsToString(error)].filter(Boolean).join('\n')
 
   const onBtnClick = () => copyToClipboard(errorText)
 

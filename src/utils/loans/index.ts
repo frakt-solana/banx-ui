@@ -2,6 +2,7 @@ import { BASE_POINTS, SECONDS_IN_DAY } from 'fbonds-core/lib/fbond-protocol/cons
 import {
   calculateCurrentInterestSolPure,
   calculateDynamicApr,
+  calculateLenderPartialPartFromBorrower,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
 import { isInteger } from 'lodash'
@@ -157,4 +158,51 @@ export const calcWeeklyFeeWithRepayFee = (loan: Loan) => {
     currentTime: soldAt + SECONDS_IN_DAY * 7,
     rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
   })
+}
+
+export const isLoanRepaymentCallActive = (loan: Loan) => {
+  if (!loan.bondTradeTransaction.repaymentCallAmount || isLoanTerminating(loan)) return false
+
+  const repayValueWithoutProtocolFee = calculateLoanRepayValue(loan)
+
+  return !!(loan.bondTradeTransaction.repaymentCallAmount / repayValueWithoutProtocolFee)
+}
+
+export const isFreezeLoan = (loan: Loan) => {
+  return !!loan.bondTradeTransaction.terminationFreeze
+}
+
+export const isLoanListed = (loan: Loan) => {
+  return (
+    loan.bondTradeTransaction.bondTradeTransactionState ===
+    BondTradeTransactionV2State.PerpetualBorrowerListing
+  )
+}
+
+/**
+  As we need to show how much lender receives. We need to calculate this value from repaymentCallAmount (how much borrower should pay)
+ */
+export const calculateRepaymentCallLenderReceivesAmount = (loan: Loan) => {
+  const { repaymentCallAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction
+
+  return calculateLenderPartialPartFromBorrower({
+    borrowerPart: repaymentCallAmount,
+    protocolRepayFeeApr: BONDS.PROTOCOL_REPAY_FEE,
+    soldAt,
+    //? Lender APR (without ProtocolFee)
+    lenderApr: calculateApr({
+      loanValue: amountOfBonds,
+      collectionFloor: loan.nft.collectionFloor,
+      marketPubkey: loan.fraktBond.hadoMarket,
+    }),
+  })
+}
+
+export const calculateFreezeExpiredAt = (loan: Loan) => {
+  return loan.bondTradeTransaction.soldAt + loan.bondTradeTransaction.terminationFreeze
+}
+
+export const checkIfFreezeExpired = (loan: Loan) => {
+  const freezeExpiredAt = calculateFreezeExpiredAt(loan)
+  return moment().unix() > freezeExpiredAt
 }

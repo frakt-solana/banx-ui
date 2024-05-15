@@ -3,6 +3,7 @@ import { useEffect, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, map, maxBy } from 'lodash'
+import { create } from 'zustand'
 
 import { Offer, fetchMarketOffers, fetchMarketsPreview } from '@banx/api/core'
 import {
@@ -12,6 +13,8 @@ import {
   useTokenType,
 } from '@banx/store'
 import { isOfferClosed } from '@banx/utils'
+
+import { LendTabName } from './LendPage'
 
 export const USE_MARKETS_PREVIEW_QUERY_KEY = 'marketsPreview'
 
@@ -96,3 +99,13 @@ export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => 
     isLoading,
   }
 }
+
+type LendTabsState = {
+  tab: LendTabName | null
+  setTab: (tab: LendTabName | null) => void
+}
+
+export const useLendTabs = create<LendTabsState>((set) => ({
+  tab: null,
+  setTab: (tab) => set({ tab }),
+}))

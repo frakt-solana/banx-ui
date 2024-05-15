@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
@@ -11,8 +11,14 @@ import Tooltip from '@banx/components/Tooltip'
 import { Loan } from '@banx/api/core'
 import { Underwater } from '@banx/icons'
 import { isLoanAbleToTerminate } from '@banx/pages/OffersPage'
-import { ViewState, useTableView } from '@banx/store'
-import { isLoanLiquidated, isLoanTerminating, isUnderWaterLoan } from '@banx/utils'
+import { ViewState, useTableView, useTokenType } from '@banx/store'
+import {
+  isLoanLiquidated,
+  isLoanListed,
+  isLoanRepaymentCallActive,
+  isLoanTerminating,
+  isUnderWaterLoan,
+} from '@banx/utils'
 
 import { Summary } from './Summary'
 import { getTableColumns } from './columns'
@@ -22,6 +28,7 @@ import { useSelectedLoans } from './loansState'
 import styles from './LoansTable.module.less'
 
 export const LoansTable = () => {
+  const { tokenType } = useTokenType()
   const { publicKey: walletPublicKey } = useWallet()
   const walletPublicKeyString = walletPublicKey?.toBase58() || ''
 
@@ -50,6 +57,12 @@ export const LoansTable = () => {
     set: setSelection,
   } = useSelectedLoans()
 
+  //? Clear selection when tokenType changes
+  //? To prevent selection transfering from one tokenType to another
+  useEffect(() => {
+    clearSelection()
+  }, [clearSelection, tokenType])
+
   const walletSelectedLoans = useMemo(() => {
     if (!walletPublicKeyString) return []
     return selection
@@ -74,7 +87,7 @@ export const LoansTable = () => {
 
   const onRowClick = useCallback(
     (loan: Loan) => {
-      if (!isLoanAbleToTerminate(loan)) return
+      if (!isLoanAbleToTerminate(loan) || isLoanListed(loan)) return
       toggleLoanInSelection(loan, walletPublicKeyString)
     },
     [toggleLoanInSelection, walletPublicKeyString],
@@ -103,9 +116,14 @@ export const LoansTable = () => {
           cardClassName: styles.liquidated,
         },
         {
-          condition: (loan: Loan) => isUnderWaterLoan(loan),
+          condition: (loan: Loan) => isUnderWaterLoan(loan) && !isLoanRepaymentCallActive(loan),
           className: styles.underwater,
           cardClassName: styles.underwater,
+        },
+        {
+          condition: (loan: Loan) => isLoanRepaymentCallActive(loan),
+          className: styles.activeRepaymentCall,
+          cardClassName: styles.activeRepaymentCall,
         },
       ],
     }

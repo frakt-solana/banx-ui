@@ -41,6 +41,7 @@ const createPlaceholderJSX = (value: number, tokenUnit: ReactNode) => (
 
 const DEFAULT_PLACEHOLDERS = {
   [LendingTokenType.NativeSol]: createPlaceholderJSX(0, '◎'),
+  [LendingTokenType.BanxSol]: createPlaceholderJSX(0, '◎'),
   [LendingTokenType.Usdc]: createPlaceholderJSX(0, <USDC />),
 }
 

@@ -25,6 +25,7 @@ export interface PlaceOfferParams {
   updatedOffer: Offer | undefined
   syntheticOffer: SyntheticOffer
 
+  setOfferPubkey?: (offerPubkey: string) => void
   exitEditMode: () => void
 
   offerErrorMessage: string
@@ -193,5 +194,6 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
 
     diagramData,
     isLoadingDiagram: isEditMode ? isLoadingLenderLoans : false,
+    setOfferPubkey,
   }
 }

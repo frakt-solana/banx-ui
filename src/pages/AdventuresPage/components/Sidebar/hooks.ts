@@ -7,16 +7,18 @@ import { chain, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { BanxInfoBN, BanxStakingSettingsBN } from '@banx/api/staking'
-import { TXN_EXECUTOR_CONFIRM_OPTIONS } from '@banx/constants'
 import {
   calcPartnerPoints,
   calculateAdventureRewards,
   calculatePlayerPointsForBanxTokens,
   isAdventureEnded,
 } from '@banx/pages/AdventuresPage'
-import { usePriorityFees } from '@banx/store'
-import { createWalletInstance, defaultTxnErrorHandler } from '@banx/transactions'
-import { claimBanxAction } from '@banx/transactions/staking'
+import {
+  TXN_EXECUTOR_DEFAULT_OPTIONS,
+  createExecutorWalletAndConnection,
+  defaultTxnErrorHandler,
+} from '@banx/transactions'
+import { createClaimBanxTxnData } from '@banx/transactions/staking'
 import {
   ZERO_BN,
   destroySnackbar,
@@ -36,7 +38,6 @@ export const useAdventuresSidebar = ({
 }: useAdventuresSidebarProps) => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { priorityLevel } = usePriorityFees()
 
   const { banxAdventures, banxTokenStake } = banxStakeInfo
 
@@ -96,10 +97,12 @@ export const useAdventuresSidebar = ({
   )
   const totalPlayersPoints = (banxTokenStake?.playerPointsStaked ?? 0) + tokensPlayersPoints
 
-  const claimBanx = () => {
+  const claimBanx = async () => {
     if (!wallet.publicKey?.toBase58() || !banxTokenStake) {
       return
     }
+
+    const loadingSnackbarId = uniqueId()
 
     const weeks = chain(banxAdventures)
       //? Claim only from active subscriptions
@@ -113,46 +116,47 @@ export const useAdventuresSidebar = ({
       .map(({ adventure }) => adventure.week)
       .value()
 
-    const params = { weeks, priorityFeeLevel: priorityLevel }
+    try {
+      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-    const loadingSnackbarId = uniqueId()
-
-    new TxnExecutor(
-      claimBanxAction,
-      { wallet: createWalletInstance(wallet), connection },
-      {
-        confirmOptions: TXN_EXECUTOR_CONFIRM_OPTIONS,
-      },
-    )
-      .addTransactionParam(params)
-      .on('sentAll', (results) => {
-        enqueueTransactionsSent()
-        enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)
+      const txnData = await createClaimBanxTxnData({
+        weeks,
+        walletAndConnection,
       })
-      .on('confirmedAll', (results) => {
-        destroySnackbar(loadingSnackbarId)
 
-        const { confirmed, failed } = results
-
-        if (confirmed.length) {
-          enqueueSnackbar({ message: 'Claimed successfully', type: 'success' })
-        }
-
-        if (failed.length) {
-          return failed.forEach(({ signature, reason }) =>
-            enqueueConfirmationError(signature, reason),
-          )
-        }
-      })
-      .on('error', (error) => {
-        destroySnackbar(loadingSnackbarId)
-        defaultTxnErrorHandler(error, {
-          additionalData: params,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-          transactionName: 'Claim StakeBanx',
+      await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+        .addTxnData(txnData)
+        .on('sentAll', (results) => {
+          enqueueTransactionsSent()
+          enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)
         })
+        .on('confirmedAll', (results) => {
+          destroySnackbar(loadingSnackbarId)
+
+          const { confirmed, failed } = results
+
+          if (confirmed.length) {
+            enqueueSnackbar({ message: 'Claimed successfully', type: 'success' })
+          }
+
+          if (failed.length) {
+            return failed.forEach(({ signature, reason }) =>
+              enqueueConfirmationError(signature, reason),
+            )
+          }
+        })
+        .on('error', (error) => {
+          throw error
+        })
+        .execute()
+    } catch (error) {
+      destroySnackbar(loadingSnackbarId)
+      defaultTxnErrorHandler(error, {
+        additionalData: weeks,
+        walletPubkey: wallet?.publicKey?.toBase58(),
+        transactionName: 'Claim StakeBanx',
       })
-      .execute()
+    }
   }
 
   return {
