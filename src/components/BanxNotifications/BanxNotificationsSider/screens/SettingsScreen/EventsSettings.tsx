@@ -47,6 +47,7 @@ const HIDDEN_SUBSCRIPTIONS_IDS = [
   '4d2a64e7-8c02-41af-84ab-7b86a78e1582',
   'c982a4a4-ee1a-4ee1-8940-cffefca705de',
   '24e57f20-c33c-4640-8f58-492542018449',
+  '2c64527f-822d-4040-8f44-59e087a2ce36',
 ]
 export const EventsSettings = () => {
   const { notificationSubscriptions, updateSettings } = useEventsSettings()

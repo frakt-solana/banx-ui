@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { chain, filter, first, get, groupBy, includes, isEmpty, map, orderBy, sortBy } from 'lodash'
+import { chain, filter, first, groupBy, includes, isEmpty, map, orderBy } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'

@@ -28,6 +28,7 @@ export enum BorrowType {
 }
 
 export enum ListingType {
+  StakedBanx = 'StakedBanx',
   CNft = 'CNft',
   Default = 'Default',
 }
