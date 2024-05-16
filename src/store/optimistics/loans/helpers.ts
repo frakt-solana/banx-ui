@@ -4,7 +4,7 @@ import moment from 'moment'
 
 import { Loan } from '@banx/api/core'
 
-const LOANS_CACHE_TIME_UNIX = 2 * 60 //? Auto clear optimistic after 2 minutes
+const LOANS_CACHE_TIME_UNIX = 1 //? Auto clear optimistic after 1 second
 
 export interface LoanOptimistic {
   loan: Loan
