@@ -5,7 +5,8 @@ import { orderBy } from 'lodash'
 import { SortOption } from '@banx/components/SortDropdown'
 
 import { Loan } from '@banx/api/core'
-import { calculateLoanRepayValue } from '@banx/utils'
+
+import { calculateLendValue } from '../helpers'
 
 enum SortField {
   DURATION = 'duration',
@@ -30,10 +31,10 @@ const SORT_OPTIONS: SortOption<SortField>[] = [
 const SORT_VALUE_MAP: Record<SortField, SortValueGetter> = {
   [SortField.DURATION]: (loan) => loan.fraktBond.refinanceAuctionStartedAt,
   [SortField.RARITY]: (loan) => loan.nft.rarity?.rank || 0,
-  [SortField.DEBT]: (loan) => calculateLoanRepayValue(loan),
+  [SortField.DEBT]: (loan) => calculateLendValue(loan),
   [SortField.APR]: (loan) => loan.bondTradeTransaction.amountOfBonds,
   [SortField.LTV]: (loan) => {
-    const repayValue = calculateLoanRepayValue(loan)
+    const repayValue = calculateLendValue(loan)
     const collectionFloor = loan.nft.collectionFloor
 
     return repayValue / collectionFloor
