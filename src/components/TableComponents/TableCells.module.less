@@ -158,8 +158,24 @@
 }
 
 .displayValue {
-  display: flex;
-  align-items: center;
+  line-height: 1;
+
+  .value,
+  .tokenUnit {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  //? Set the icon height equal to the line height
+  .tokenUnit {
+    height: 1em;
+    width: 1em;
+
+    svg {
+      height: 1em;
+      width: 1em;
+    }
+  }
 }
 
 .rarityText {
