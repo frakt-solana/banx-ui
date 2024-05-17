@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom'
 import { Button } from '@banx/components/Buttons'
 
 import { Theme, useTheme } from '@banx/hooks'
-import { InfinityIcon, Lightning, Shield } from '@banx/icons'
+import { InfinityIcon, Lightning, PencilLtv } from '@banx/icons'
 import { PATHS } from '@banx/router'
 import { useMixpanelLocationTrack } from '@banx/utils'
 
@@ -58,9 +58,9 @@ const AdvantagesSection = () => {
         </p>
       </div>
       <div className={styles.advantage}>
-        <Shield />
+        <PencilLtv />
         <p>
-          Low
+          Custom
           <br />
           risk
         </p>
