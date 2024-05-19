@@ -13,9 +13,9 @@ import { Modal } from '@banx/components/modals/BaseModal'
 import { Loan } from '@banx/api/core'
 import { SECONDS_IN_DAY } from '@banx/constants'
 import { useModal } from '@banx/store'
-import { calcWeightedAverage, isFreezeLoan } from '@banx/utils'
+import { calcWeightedAverage, isFreezeLoan, isLoanTerminating } from '@banx/utils'
 
-import { calcWeeklyInterestFee, calculateLendValue } from './helpers'
+import { calcWeeklyInterestFee, calculateLendValue, calculateLenderApr } from './helpers'
 import { useInstantTransactions } from './hooks'
 import { useLoansState } from './loansState'
 
@@ -129,7 +129,15 @@ const calculateSummaryInfo = (loans: Loan[]) => {
   const totalLoanValue = map(loans, (loan) => calculateLendValue(loan))
   const totalWeeklyInterest = sumBy(loans, (loan) => calcWeeklyInterestFee(loan))
 
-  const totalAprArray = map(loans, (loan) => loan.bondTradeTransaction.amountOfBonds / 100)
+  const totalAprArray = map(loans, (loan) => {
+    const isTerminatingStatus = isLoanTerminating(loan)
+    const aprRate = isTerminatingStatus
+      ? calculateLenderApr(loan)
+      : loan.bondTradeTransaction.amountOfBonds
+
+    return aprRate / 100
+  })
+
   const totalLtvArray = map(
     loans,
     (loan) => (calculateLendValue(loan) / loan.nft.collectionFloor) * 100,
