@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom'
 import { Button } from '@banx/components/Buttons'
 import EmptyList from '@banx/components/EmptyList'
 
-import { Borrow, CircleCheck, Lend } from '@banx/icons'
+import { BorrowFilled, CircleCheck, LendFilled } from '@banx/icons'
 import { PATHS } from '@banx/router'
 
 import styles from './EarnTab.module.less'
@@ -41,8 +41,8 @@ const ContentBlock: FC<ContentBlockProps> = ({ title, InfoBlock }) => {
   return (
     <div className={styles.contentBlockContainer}>
       <div className={styles.titleBlockWrapper}>
-        {title === 'Lend' && <Lend className={styles.titleBlockIcon} />}
-        {title === 'Borrow' && <Borrow className={styles.titleBlockIcon} />}
+        {title === 'Lend' && <LendFilled className={styles.titleBlockIcon} />}
+        {title === 'Borrow' && <BorrowFilled className={styles.titleBlockIcon} />}
         <span className={styles.titleBlock}>{title}</span>
       </div>
 
