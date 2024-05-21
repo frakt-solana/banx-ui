@@ -4,7 +4,7 @@ import { web3 } from 'fbonds-core'
 import moment from 'moment'
 import { create } from 'zustand'
 
-import { banxSignIn, checkBanxJwt } from '@banx/api/user'
+import { user } from '@banx/api/common'
 import { parseBanxLoginJwt } from '@banx/utils'
 
 const AUTH_MESSAGE = 'Hello! Please sign this message to proceed!'
@@ -34,7 +34,7 @@ export const useBanxLogin = () => {
       try {
         setIsLoggingIn(true)
 
-        const jwt = await banxSignIn({
+        const jwt = await user.banxSignIn({
           publicKey: walletPubkey,
           signature,
         })
@@ -86,7 +86,7 @@ export const useBanxLogin = () => {
         }
 
         //? Check jwt validity using BE
-        const isJwtValid = await checkBanxJwt(jwt)
+        const isJwtValid = await user.checkBanxJwt(jwt)
         if (!isJwtValid) {
           clearWalletJwt(walletPubkey)
           return

@@ -5,7 +5,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 
 import { RBOption } from '@banx/components/RadioButton'
 
-import { LeaderboardTimeRange, fetchLeaderboardData } from '@banx/api/user'
+import { user } from '@banx/api/common'
 
 const PAGINATION_LIMIT = 15
 
@@ -14,10 +14,10 @@ export const useLeaderboardData = () => {
   const publicKeyString = publicKey?.toBase58() || ''
 
   const [currentOption, setCurrentOption] = useState<RBOption>(options[0])
-  const [timeRangeType, setTimeRangeType] = useState<LeaderboardTimeRange>('week')
+  const [timeRangeType, setTimeRangeType] = useState<user.LeaderboardTimeRange>('week')
 
   const fetchData = async (pageParam: number) => {
-    const data = await fetchLeaderboardData({
+    const data = await user.fetchLeaderboardData({
       skip: PAGINATION_LIMIT * pageParam,
       limit: PAGINATION_LIMIT,
       userType: currentOption.value,

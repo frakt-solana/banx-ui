@@ -1,12 +1,7 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 
-import {
-  LinkedWallet,
-  SeasonUserRewards,
-  fetchLinkedWallets,
-  fetchSeasonUserRewards,
-} from '@banx/api/user'
+import { user } from '@banx/api/common'
 import { queryClient } from '@banx/utils'
 
 //? useSeasonUserRewards
@@ -21,7 +16,7 @@ export const useSeasonUserRewards = () => {
 
   const { data, isLoading } = useQuery(
     createSeasonUserRewardsQueryKey(publicKeyString),
-    () => fetchSeasonUserRewards({ walletPubkey: publicKeyString }),
+    () => user.fetchSeasonUserRewards({ walletPubkey: publicKeyString }),
     {
       refetchOnWindowFocus: false,
       staleTime: 30 * 1000, //? 30 seconds
@@ -37,7 +32,7 @@ export const useSeasonUserRewards = () => {
 export const updateBonkWithdrawOptimistic = (walletPubkey: string) =>
   queryClient.setQueryData(
     createSeasonUserRewardsQueryKey(walletPubkey),
-    (queryData: SeasonUserRewards | undefined) => {
+    (queryData: user.SeasonUserRewards | undefined) => {
       if (!queryData) return queryData
       const { available = 0, redeemed = 0, totalAccumulated = 0 } = queryData?.bonkRewards || {}
 
@@ -59,7 +54,7 @@ export const useLinkedWallets = () => {
 
   const { data: linkedWallets, isLoading } = useQuery(
     createFetchLinkedWalletsQueryKey(publicKey?.toBase58() || ''),
-    () => fetchLinkedWallets({ walletPublicKey: publicKey?.toBase58() || '' }),
+    () => user.fetchLinkedWallets({ walletPublicKey: publicKey?.toBase58() || '' }),
     {
       enabled: !!publicKey?.toBase58(),
       staleTime: 5 * 1000,
@@ -80,10 +75,10 @@ const createFetchLinkedWalletsQueryKey = (walletPubkey: string) => [
   walletPubkey,
 ]
 //? Optimistics based on queryData modification
-const setLinkedWalletsOptimistic = (walletPubkey: string, nextState: LinkedWallet[]) =>
+const setLinkedWalletsOptimistic = (walletPubkey: string, nextState: user.LinkedWallet[]) =>
   queryClient.setQueryData(
     createFetchLinkedWalletsQueryKey(walletPubkey),
-    (queryData: LinkedWallet[] | undefined) => {
+    (queryData: user.LinkedWallet[] | undefined) => {
       if (!queryData) return queryData
       return nextState
     },
@@ -91,14 +86,14 @@ const setLinkedWalletsOptimistic = (walletPubkey: string, nextState: LinkedWalle
 const removeLinkedWalletOptimistic = (walletPubkey: string, walletPubkeyToRemove: string) =>
   queryClient.setQueryData(
     createFetchLinkedWalletsQueryKey(walletPubkey),
-    (queryData: LinkedWallet[] | undefined) => {
+    (queryData: user.LinkedWallet[] | undefined) => {
       if (!queryData) return queryData
 
       //? If we remove connected wallet
       if (walletPubkeyToRemove === walletPubkey) {
         const removableWallet = queryData.find(({ wallet }) => wallet === walletPubkeyToRemove)
 
-        const nextState: LinkedWallet[] = removableWallet
+        const nextState: user.LinkedWallet[] = removableWallet
           ? [{ ...removableWallet, type: 'main' }]
           : []
 

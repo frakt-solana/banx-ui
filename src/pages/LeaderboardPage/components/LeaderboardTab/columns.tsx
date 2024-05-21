@@ -1,12 +1,12 @@
 import { ColumnType } from '@banx/components/Table'
 import { HeaderCell } from '@banx/components/TableComponents'
 
-import { LeaderboardData } from '@banx/api/user'
+import { user } from '@banx/api/common'
 
 import { PointsCell, UserInfoCell } from './components'
 
 export const getTableColumns = () => {
-  const columns: ColumnType<LeaderboardData>[] = [
+  const columns: ColumnType<user.LeaderboardData>[] = [
     {
       key: 'collateral',
       title: <HeaderCell label="Rank, Profile" align="left" />,

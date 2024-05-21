@@ -9,7 +9,7 @@ import { Button } from '@banx/components/Buttons'
 import EmptyList from '@banx/components/EmptyList'
 import { Loader } from '@banx/components/Loader'
 
-import { fetchBonkWithdrawal, sendBonkWithdrawal } from '@banx/api/user'
+import { user } from '@banx/api/common'
 import { useBorrowBonkRewardsAvailability } from '@banx/hooks'
 import { CircleCheck } from '@banx/icons'
 import { PATHS } from '@banx/router'
@@ -101,7 +101,7 @@ const ClaimBlock: FC<ClaimBlockProps> = ({ availableToClaim, totalClaimed }) => 
     try {
       if (!walletPubkeyString || !wallet.signTransaction) return
       setIsLoading(true)
-      const bonkWithdrawal = await fetchBonkWithdrawal({ walletPubkey: walletPubkeyString })
+      const bonkWithdrawal = await user.fetchBonkWithdrawal({ walletPubkey: walletPubkeyString })
 
       if (!bonkWithdrawal) throw new Error('BONK withdrawal fetching error')
 
@@ -112,7 +112,7 @@ const ClaimBlock: FC<ClaimBlockProps> = ({ availableToClaim, totalClaimed }) => 
         requireAllSignatures: false,
       })
 
-      await sendBonkWithdrawal({
+      await user.sendBonkWithdrawal({
         walletPubkey: walletPubkeyString,
         bonkWithdrawal: {
           requestId: bonkWithdrawal.requestId,

@@ -6,7 +6,7 @@ import EmptyList from '@banx/components/EmptyList'
 import { RadioButton } from '@banx/components/RadioButton'
 import Table from '@banx/components/Table'
 
-import { LeaderboardData } from '@banx/api/user'
+import { user } from '@banx/api/common'
 
 import { getTableColumns } from './columns'
 import { TimeRangeSwitcher } from './components'
@@ -40,7 +40,7 @@ const LeaderboardTab = () => {
     return {
       activeRowParams: [
         {
-          condition: ({ user }: LeaderboardData) => user === walletPublicKeyString,
+          condition: ({ user }: user.LeaderboardData) => user === walletPublicKeyString,
           className: styles.highlightUser,
         },
       ],

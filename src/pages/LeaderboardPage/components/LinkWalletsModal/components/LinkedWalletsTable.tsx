@@ -4,7 +4,7 @@ import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
 
-import { LinkedWallet } from '@banx/api/user'
+import { user } from '@banx/api/common'
 import { House, LoaderCircle, Unlink } from '@banx/icons'
 import { formatNumbersWithCommas, shortenAddress } from '@banx/utils'
 
@@ -19,7 +19,7 @@ export const LinkedWalletsTable: FC = () => {
 
   const isWalletActive = (walletPubkey: string) => walletPubkey === publicKey?.toBase58()
 
-  const isUnlinkAvailable = (wallet: LinkedWallet) =>
+  const isUnlinkAvailable = (wallet: user.LinkedWallet) =>
     wallet.type === 'linked' && canUnlink && !savedLinkingState.savedLinkingData
 
   return (
@@ -54,7 +54,7 @@ export const LinkedWalletsTable: FC = () => {
 }
 
 type LinkedWalletProps = {
-  linkedWallet: LinkedWallet
+  linkedWallet: user.LinkedWallet
   isActive?: boolean
   onUnlink?: () => Promise<void>
 }

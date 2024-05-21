@@ -3,7 +3,7 @@ import { useCallback, useMemo } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { create } from 'zustand'
 
-import { LinkedWallet, linkWallet, unlinkWallet } from '@banx/api/user'
+import { user } from '@banx/api/common'
 import { useLinkedWallets } from '@banx/pages/LeaderboardPage'
 import { useBanxLogin, useIsLedger, useModal } from '@banx/store'
 import { enqueueSnackbar, generateSignature } from '@banx/utils'
@@ -11,7 +11,7 @@ import { enqueueSnackbar, generateSignature } from '@banx/utils'
 type SavedLinkingData = {
   walletPubkey: string
   jwt: string
-  linkedWallets: LinkedWallet[] | null
+  linkedWallets: user.LinkedWallet[] | null
 }
 
 type SavedLinkingDataState = {
@@ -71,7 +71,7 @@ export const useLinkWalletsModal = () => {
       if (!signature) return
 
       //? Optimistic here
-      const linkResponse = await linkWallet({
+      const linkResponse = await user.linkWallet({
         linkedWalletJwt: savedLinkingData.jwt,
         wallet: publicKey.toBase58(),
         signature,
@@ -154,7 +154,7 @@ export const useLinkWalletsModal = () => {
 
       try {
         //? Optimistic here
-        const unlinkResponse = await unlinkWallet({
+        const unlinkResponse = await user.unlinkWallet({
           jwt,
           walletToUnlink,
         })

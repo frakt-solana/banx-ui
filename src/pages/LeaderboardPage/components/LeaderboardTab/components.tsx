@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import { LeaderboardTimeRange } from '@banx/api/user'
+import { user } from '@banx/api/common'
 import placeholderBanxImg from '@banx/assets/PlaceholderBanx.png'
 import { useImagePreload } from '@banx/hooks'
 import { formatNumbersWithCommas, shortenAddress } from '@banx/utils'
@@ -40,13 +40,13 @@ export const PointsCell: FC<{ points: number }> = ({ points = 0 }) => {
 }
 
 interface TimeRangeSwitcherProps {
-  selectedMode: LeaderboardTimeRange
-  onModeChange: (newMode: LeaderboardTimeRange) => void
+  selectedMode: user.LeaderboardTimeRange
+  onModeChange: (newMode: user.LeaderboardTimeRange) => void
 }
 
 interface ModeOption {
   label: string
-  value: LeaderboardTimeRange
+  value: user.LeaderboardTimeRange
 }
 
 export const TimeRangeSwitcher: FC<TimeRangeSwitcherProps> = ({ selectedMode, onModeChange }) => {
