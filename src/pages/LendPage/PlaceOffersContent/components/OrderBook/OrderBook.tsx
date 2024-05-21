@@ -3,7 +3,8 @@ import { FC } from 'react'
 import { Loader } from '@banx/components/Loader'
 import Tooltip from '@banx/components/Tooltip/Tooltip'
 
-import { SyntheticOffer, useModal, useSyntheticOffers } from '@banx/store/common'
+import { useModal } from '@banx/store/common'
+import { SyntheticOffer, useSyntheticOffers } from '@banx/store/nft'
 
 import Offer from '../Offer'
 import { useMarketOrders } from './hooks'

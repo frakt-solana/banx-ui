@@ -10,8 +10,7 @@ import { createPercentValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
 import { Pencil } from '@banx/icons'
-import { SyntheticOffer } from '@banx/store/common'
-import { useTokenType } from '@banx/store/nft'
+import { SyntheticOffer, useTokenType } from '@banx/store/nft'
 import { calculateApr, formatValueByTokenType, getTokenUnit } from '@banx/utils'
 
 import styles from './Offer.module.less'

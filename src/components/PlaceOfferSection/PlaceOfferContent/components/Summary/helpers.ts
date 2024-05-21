@@ -1,6 +1,6 @@
 import { core } from '@banx/api/nft'
 import { WEEKS_IN_YEAR } from '@banx/constants'
-import { calcSyntheticLoanValue } from '@banx/store/common'
+import { calcSyntheticLoanValue } from '@banx/store/nft'
 
 interface CalcOfferSizeProps {
   initialOffer: core.Offer | undefined

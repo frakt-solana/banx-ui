@@ -3,8 +3,7 @@ import { useEffect, useMemo } from 'react'
 import { chain } from 'lodash'
 
 import { core } from '@banx/api/nft'
-import { SyntheticOffer } from '@banx/store/common'
-import { useTokenType } from '@banx/store/nft'
+import { SyntheticOffer, useTokenType } from '@banx/store/nft'
 import { convertOffersToSimple, getTokenDecimals, useWalletBalance } from '@banx/utils'
 
 import { Mark } from '../PlaceOfferContent/components'
