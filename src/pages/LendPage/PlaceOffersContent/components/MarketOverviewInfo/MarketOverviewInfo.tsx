@@ -9,7 +9,7 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/nft'
-import { MARKETS_WITH_CUSTOM_APR } from '@banx/constants'
+import { NFT_MARKETS_WITH_CUSTOM_APR } from '@banx/constants'
 import { Fire } from '@banx/icons'
 
 import styles from './MarketOverviewInfo.module.less'
@@ -56,7 +56,7 @@ interface MarketAdditionalInfoProps {
 export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isCardOpen }) => {
   const { loansTvl, offerTvl, activeBondsAmount, marketPubkey } = market
 
-  const customApr = MARKETS_WITH_CUSTOM_APR[marketPubkey]
+  const customApr = NFT_MARKETS_WITH_CUSTOM_APR[marketPubkey]
   const apr = customApr !== undefined ? customApr / 100 : MAX_APR_VALUE
 
   return (

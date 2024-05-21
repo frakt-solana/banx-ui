@@ -7,7 +7,7 @@ import { MAX_BORROWER_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/nft'
-import { MARKETS_WITH_CUSTOM_APR } from '@banx/constants'
+import { NFT_MARKETS_WITH_CUSTOM_APR } from '@banx/constants'
 import { useMarketsPreview } from '@banx/pages/LendPage'
 import { createGlobalState } from '@banx/store'
 
@@ -94,7 +94,7 @@ const createSearchSelectParams = ({
         key: 'marketPubkey',
         //TODO Refactor this piece of shit (code)
         format: (marketPubkey: unknown) => {
-          const customApr = MARKETS_WITH_CUSTOM_APR[marketPubkey as string]
+          const customApr = NFT_MARKETS_WITH_CUSTOM_APR[marketPubkey as string]
           const apr = customApr !== undefined ? customApr / 100 : MAX_BORROWER_APR_VALUE
           return createPercentValueJSX(apr)
         },

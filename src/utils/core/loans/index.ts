@@ -9,7 +9,13 @@ import { isInteger } from 'lodash'
 import moment from 'moment'
 
 import { core } from '@banx/api/nft'
-import { BONDS, DYNAMIC_APR, MARKETS_WITH_CUSTOM_APR, SECONDS_IN_72_HOURS } from '@banx/constants'
+import {
+  BONDS,
+  DYNAMIC_APR,
+  FACELESS_MARKET_PUBKEY,
+  NFT_MARKETS_WITH_CUSTOM_APR,
+  SECONDS_IN_72_HOURS,
+} from '@banx/constants'
 
 import { RENT_FEE_BORROW_AMOUNT_IMPACT } from '../../tokens'
 
@@ -142,7 +148,7 @@ type CalculateApr = (params: {
 }) => number
 export const calculateApr: CalculateApr = ({ loanValue, collectionFloor, marketPubkey }) => {
   //? exceptions for some collections with hardcoded APR
-  const customApr = MARKETS_WITH_CUSTOM_APR[marketPubkey || '']
+  const customApr = NFT_MARKETS_WITH_CUSTOM_APR[marketPubkey || '']
   if (customApr !== undefined) {
     return customApr
   }
@@ -216,7 +222,7 @@ export const calcBorrowValueWithRentFee = (
   tokenType: LendingTokenType,
 ) => {
   if (loanValue === 0) return 0
-  if (marketPubkey === BONDS.FACELESS_MARKET_PUBKEY) return loanValue
+  if (marketPubkey === FACELESS_MARKET_PUBKEY) return loanValue
 
   const rentFee = RENT_FEE_BORROW_AMOUNT_IMPACT[tokenType]
   return loanValue - rentFee
