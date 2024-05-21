@@ -1,0 +1,74 @@
+.header {
+  width: 100%;
+  background: url('../../../../../assets/UrbanScene.png') no-repeat center;
+  padding: 24px 24px 0;
+  background-size: cover;
+  display: flex;
+  align-items: stretch;
+
+  @media screen and (max-width: 640px) {
+    padding: 16px 16px 0;
+  }
+}
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  color: #fff;
+  row-gap: 4px;
+  padding-bottom: 24px;
+  @media screen and (max-width: 640px) {
+    padding-bottom: 16px;
+  }
+
+  h1 {
+    font: var(--title-3xl);
+  }
+
+  p {
+    font: var(--body-text-xl);
+  }
+
+  @media (max-width: 1024px) {
+    h1 {
+      font: var(--title-2xl);
+    }
+  }
+
+  @media (max-width: 640px) {
+    h1 {
+      font: var(--title-lg);
+    }
+
+    p {
+      font: var(--body-text-lg);
+    }
+  }
+}
+
+.imageWrapper {
+  display: flex;
+  align-items: flex-end;
+
+  img {
+    height: 152px;
+
+    @media (max-width: 640px) {
+      height: 132px;
+    }
+  }
+}
+
+.headerConnectBtn {
+  margin-top: 4px;
+  width: unset;
+
+  @media (min-width: 1024px) {
+    gap: 5px;
+    &::after {
+      content: ' to send your Banx';
+    }
+  }
+}
