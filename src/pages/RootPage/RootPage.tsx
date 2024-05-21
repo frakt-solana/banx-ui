@@ -6,15 +6,12 @@ import { Button } from '@banx/components/Buttons'
 import { Theme, useTheme } from '@banx/hooks'
 import { InfinityIcon, Lightning, PencilLtv } from '@banx/icons'
 import { PATHS } from '@banx/router'
-import { useMixpanelLocationTrack } from '@banx/utils'
 
 import { Interest } from './icons'
 
 import styles from './RootPage.module.less'
 
 export const RootPage = () => {
-  useMixpanelLocationTrack('index')
-
   return (
     <div className={styles.pageWrapper}>
       <Header />

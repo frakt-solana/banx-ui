@@ -7,7 +7,6 @@ import { VALUES_TYPES } from '@banx/components/StatInfo'
 import { stats } from '@banx/api/nft'
 import { PATHS } from '@banx/router'
 import { createPathWithTokenParam, useTokenType } from '@banx/store/nft'
-import { trackPageEvent } from '@banx/utils'
 
 import {
   LoansStatus,
@@ -54,7 +53,6 @@ export const useMyLoans = (stats?: stats.TotalBorrowerStats | null) => {
   }
 
   const goToLoansPage = () => {
-    trackPageEvent('dashboard', 'borrowtab-manage')
     navigate(createPathWithTokenParam(PATHS.LOANS, tokenType))
   }
 

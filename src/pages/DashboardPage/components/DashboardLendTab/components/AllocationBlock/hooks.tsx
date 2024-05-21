@@ -7,7 +7,7 @@ import { DisplayValue } from '@banx/components/TableComponents'
 import { stats } from '@banx/api/nft'
 import { PATHS } from '@banx/router'
 import { createPathWithTokenParam, useTokenType } from '@banx/store/nft'
-import { getTokenDecimals, isSolTokenType, trackPageEvent } from '@banx/utils'
+import { getTokenDecimals, isSolTokenType } from '@banx/utils'
 
 import {
   AllocationStatus,
@@ -59,11 +59,9 @@ export const useAllocationBlock = (stats?: AllocationStats) => {
   }
 
   const goToLendPage = () => {
-    trackPageEvent('dashboard', 'lendtab-lend')
     navigate(createPathWithTokenParam(PATHS.LEND, tokenType))
   }
   const goToOffersPage = () => {
-    trackPageEvent('dashboard', 'lendtab-manage')
     navigate(createPathWithTokenParam(PATHS.OFFERS, tokenType))
   }
 

@@ -24,7 +24,6 @@ import {
   useOffersOptimistic,
   useTokenType,
 } from '@banx/store/nft'
-import { trackPageEvent } from '@banx/utils'
 
 import { useCartState } from '../../cartState'
 import { getTableColumns } from './columns'
@@ -266,7 +265,6 @@ export const useBorrowTable = ({
         selectedOptions: selectedCollections,
         labels: ['Collection', 'Nfts'],
         onChange: (value: string[]) => {
-          trackPageEvent('borrow', `filter`)
           setSelectedCollections(value)
         },
       },

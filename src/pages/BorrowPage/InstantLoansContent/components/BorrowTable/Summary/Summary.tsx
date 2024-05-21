@@ -19,7 +19,6 @@ import {
   calcWeightedAverage,
   calculateApr,
   getColorByPercent,
-  trackPageEvent,
 } from '@banx/utils'
 
 import { calcInterest } from '../helpers'
@@ -85,7 +84,6 @@ export const Summary: FC<SummaryProps> = ({
   const [isBorrowing, setIsBorrowing] = useState(false)
   const onBorrow = async () => {
     setIsBorrowing(true)
-    trackPageEvent('borrow', `borrow-bottom`)
     await borrowAll()
     setIsBorrowing(false)
   }

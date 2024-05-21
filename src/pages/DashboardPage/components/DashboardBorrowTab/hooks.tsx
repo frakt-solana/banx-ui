@@ -26,7 +26,7 @@ import {
   useOffersOptimistic,
   useTokenType,
 } from '@banx/store/nft'
-import { calculateLoanValue, trackPageEvent } from '@banx/utils'
+import { calculateLoanValue } from '@banx/utils'
 
 import { useBorrowerStats } from '../../hooks'
 
@@ -60,12 +60,10 @@ export const useDashboardBorrowTab = () => {
 
   const goToBorrowPage = () => {
     navigate(createPathWithTokenParam(PATHS.BORROW, tokenType))
-    trackPageEvent('dashboard', 'borrowtab-collection')
   }
 
   const onBorrow = (nft: core.BorrowNft) => {
     borrow(nft)
-    trackPageEvent('dashboard', 'borrowtab-borrow')
   }
 
   const sortedMarketsByOfferTvl = useMemo(() => {

@@ -8,12 +8,7 @@ import { Modal } from '@banx/components/modals/BaseModal'
 
 import { core } from '@banx/api/nft'
 import { useModal } from '@banx/store/common'
-import {
-  calculateLoanRepayValue,
-  getColorByPercent,
-  isLoanRepaymentCallActive,
-  trackPageEvent,
-} from '@banx/utils'
+import { calculateLoanRepayValue, getColorByPercent, isLoanRepaymentCallActive } from '@banx/utils'
 
 import { useLoansTransactions } from '../../hooks'
 
@@ -54,8 +49,6 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
   const remainingDebt = debtValue - paybackValue
 
   const onSubmit = async () => {
-    trackPageEvent('myloans', `repay`)
-
     if (isFullRepayment) {
       return await repayLoan(loan)
     }

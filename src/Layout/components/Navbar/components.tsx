@@ -6,7 +6,6 @@ import { NavLink } from 'react-router-dom'
 
 import { PATHS } from '@banx/router'
 import { createPathWithTokenParam, useTokenType } from '@banx/store/nft'
-import { toLowerCaseNoSpaces, trackNavigationEvent } from '@banx/utils'
 
 import { isActivePath } from './helpers'
 import { ExternalLinkProps, InternalLinkProps } from './types'
@@ -21,14 +20,9 @@ export const InternalLink: FC<InternalLinkProps & { tokenType: LendingTokenType 
   primary,
   tokenType,
 }) => {
-  const onLinkClickHandler = () => {
-    trackNavigationEvent(toLowerCaseNoSpaces(label))
-  }
-
   return (
     <NavLink
       to={createPathWithTokenParam(pathname, tokenType)}
-      onClick={onLinkClickHandler}
       className={classNames(styles.link, className, {
         [styles.active]: isActivePath(pathname),
         [styles.primary]: primary,
@@ -42,13 +36,9 @@ export const InternalLink: FC<InternalLinkProps & { tokenType: LendingTokenType 
   )
 }
 
-const ExternalLink: FC<ExternalLinkProps> = ({ label, icon: Icon, href }) => {
-  const onLinkClickHandler = () => {
-    trackNavigationEvent(toLowerCaseNoSpaces(label))
-  }
-
+const ExternalLink: FC<ExternalLinkProps> = ({ icon: Icon, href }) => {
   return (
-    <a href={href} rel="noopener noreferrer" target="_blank" onClick={onLinkClickHandler}>
+    <a href={href} rel="noopener noreferrer" target="_blank">
       {Icon && <Icon />}
     </a>
   )
