@@ -1,0 +1,31 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.container {
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+.content {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+}
+
+.notificationsSider {
+  z-index: 6;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 432px;
+  height: 100%;
+  border-left: 1px solid var(--bg-border);
+  @media screen and (max-width: 960px) {
+    width: 100%;
+    border-left: unset;
+  }
+}
