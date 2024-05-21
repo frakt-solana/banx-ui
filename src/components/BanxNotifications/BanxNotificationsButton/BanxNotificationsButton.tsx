@@ -5,7 +5,7 @@ import classNames from 'classnames'
 import { Button } from '@banx/components/Buttons'
 
 import { Bell } from '@banx/icons'
-import { useBurgerMenu } from '@banx/layout1/components/BurgerMenu/hooks'
+import { useBurgerMenu } from '@banx/layout/components/BurgerMenu/hooks'
 
 import { useBanxNotificationsSider } from '../BanxNotificationsSider'
 import { BUTTON_ID } from '../constants'
