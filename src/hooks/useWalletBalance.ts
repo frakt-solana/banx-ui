@@ -4,8 +4,7 @@ import { web3 } from 'fbonds-core'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { BONDS, USDC_ADDRESS } from '@banx/constants'
-
-import { isSolTokenType, isUsdcTokenType } from '../tokens'
+import { isSolTokenType, isUsdcTokenType } from '@banx/utils'
 
 type UseNativeAccount = ({ isLive }: { isLive?: boolean }) => web3.AccountInfo<Buffer> | null
 const useNativeAccount: UseNativeAccount = ({ isLive = true }) => {
@@ -36,7 +35,7 @@ type Options = {
 
 type UseTokenBalance = (options?: Options) => number
 
-export const useSolanaBalance: UseTokenBalance = (options) => {
+const useSolanaBalance: UseTokenBalance = (options) => {
   const { isLive = false } = options || {}
 
   const account = useNativeAccount({ isLive })
@@ -45,30 +44,13 @@ export const useSolanaBalance: UseTokenBalance = (options) => {
   return balance
 }
 
-export const useUsdcBalance: UseTokenBalance = (options) => {
+const useUsdcBalance: UseTokenBalance = (options) => {
   const { isLive = false } = options || {}
 
   return useTokenBalance(USDC_ADDRESS, { isLive })
 }
 
-export const useWalletBalance = (tokenType: LendingTokenType, options?: Options) => {
-  const { isLive = false } = options || {}
-
-  const usdcBalance = useUsdcBalance({ isLive })
-  const solanaBalance = useSolanaBalance({ isLive })
-
-  if (isSolTokenType(tokenType)) {
-    return solanaBalance
-  }
-
-  if (isUsdcTokenType(tokenType)) {
-    return usdcBalance
-  }
-
-  throw new Error(`Unsupported token type: ${tokenType}`)
-}
-
-export const useTokenBalance = (tokenAddress: string, options?: Options) => {
+const useTokenBalance = (tokenAddress: string, options?: Options) => {
   const { isLive = false } = options || {}
 
   const { connection } = useConnection()
@@ -97,4 +79,21 @@ export const useTokenBalance = (tokenAddress: string, options?: Options) => {
   )
 
   return tokenBalance || 0
+}
+
+export const useWalletBalance = (tokenType: LendingTokenType, options?: Options) => {
+  const { isLive = false } = options || {}
+
+  const usdcBalance = useUsdcBalance({ isLive })
+  const solanaBalance = useSolanaBalance({ isLive })
+
+  if (isSolTokenType(tokenType)) {
+    return solanaBalance
+  }
+
+  if (isUsdcTokenType(tokenType)) {
+    return usdcBalance
+  }
+
+  throw new Error(`Unsupported token type: ${tokenType}`)
 }
