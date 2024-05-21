@@ -6,7 +6,7 @@ import moment from 'moment'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { MarketPreview, Offer } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { SECONDS_IN_DAY } from '@banx/constants'
 import { HealthColorIncreasing, calculateApr, getColorByPercent } from '@banx/utils'
 
@@ -15,10 +15,10 @@ import { calcMaxLtv, calcOfferSize } from './helpers'
 import styles from './Summary.module.less'
 
 interface OfferSummaryProps {
-  initialOffer: Offer | undefined
-  updatedOffer: Offer | undefined
+  initialOffer: core.Offer | undefined
+  updatedOffer: core.Offer | undefined
   hasFormChanges: boolean
-  market: MarketPreview | undefined
+  market: core.MarketPreview | undefined
 }
 
 export const MainSummary: FC<OfferSummaryProps> = ({

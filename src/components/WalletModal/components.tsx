@@ -5,7 +5,7 @@ import classNames from 'classnames'
 
 import { useDiscordUser } from '@banx/hooks'
 import { ChangeWallet, Copy, SignOut } from '@banx/icons'
-import { useIsLedger } from '@banx/store'
+import { useIsLedger } from '@banx/store/common'
 import { copyToClipboard, shortenAddress } from '@banx/utils'
 
 import Checkbox from '../Checkbox'

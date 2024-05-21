@@ -23,16 +23,11 @@ export const SENTRY = {
   APP_DSN: 'https://cdf6f9ff65c94908b53c1dc8f071632e@o1288412.ingest.sentry.io/4505602108096512',
 }
 
-export const AUCTION_RECEIVER_PUBKEY = 'AYqVSa7zbAatGJ4MGbJsVQSrmLT2PqVMMihGyv6sRSXP'
-
-export const RAFFLE_PROGRAM_PUBKEY = 'raffyhEJMx59iDx778Y9gdaVcP2XDeusPcPBxwr3qAH'
-
 export const BONDS = {
   PROGRAM_PUBKEY: '4tdmkuY6EStxbS6Y8s5ueznL3VPMSugrvQuDeAHGZhSt',
   ADMIN_PUBKEY: 'revJ8QJgQ3xCcZ6CMykjsmGMYdg8Pj9WnqgJZBHBwSK',
   PROTOCOL_FEE_PERCENT: 100, //? Base points
   PROTOCOL_REPAY_FEE: 620, //? Base points
-  FACELESS_MARKET_PUBKEY: 'BzxKw3JLmPt7aagkHnRQEMQ4Le1rZdwEib5Viuig42hu',
 }
 
 export const DIALECT = {
@@ -46,7 +41,5 @@ export const BANX_STAKING = {
 }
 
 export const IS_PRIVATE_MARKETS = process.env.IS_PRIVATE_MARKETS === 'true'
-
-export const MIXPANEL_ACCESS_TOKEN = process.env.MIXPANEL_ACCESS_TOKEN
 
 export const DYNAMIC_APR = true

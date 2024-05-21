@@ -30,3 +30,6 @@ export const createErrorLogsString: CreateErrorLogsString = (error, options) => 
     2,
   )
 }
+
+//? Placeholder for sendTxn callback in SDK methods
+export const sendTxnPlaceHolder = async (): Promise<void> => await Promise.resolve()

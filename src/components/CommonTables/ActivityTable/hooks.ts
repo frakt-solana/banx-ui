@@ -5,9 +5,9 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 
 import { RBOption } from '@banx/components/RadioButton'
 
-import { fetchLenderActivity } from '@banx/api/activity'
-import { useMarketsPreview } from '@banx/pages/LendPage'
-import { useTokenType } from '@banx/store'
+import { activity } from '@banx/api/nft'
+import { useMarketsPreview } from '@banx/pages/nftLending/LendPage'
+import { useTokenType } from '@banx/store/nft'
 
 import { ActivityEvent, RADIO_BUTTONS_OPTIONS } from './constants'
 import { appendIdToOptions } from './helpers'
@@ -32,7 +32,7 @@ export const useAllLenderActivity = (marketPubkey: string) => {
   const currentMarket = marketsPreview.find((market) => market.marketPubkey === marketPubkey)
 
   const fetchData = async (pageParam: number) => {
-    const data = await fetchLenderActivity({
+    const data = await activity.fetchLenderActivity({
       skip: PAGINATION_LIMIT * pageParam,
       limit: PAGINATION_LIMIT,
       state: eventType,

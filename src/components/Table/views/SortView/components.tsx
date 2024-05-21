@@ -3,7 +3,7 @@ import { FC } from 'react'
 import { Button } from '@banx/components/Buttons'
 
 import { CardView, TableView } from '@banx/icons'
-import { ViewState } from '@banx/store'
+import { ViewState } from '@banx/store/common'
 
 interface SwitchModeButtonProps {
   viewState: ViewState

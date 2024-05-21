@@ -4,8 +4,8 @@ import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
 
-import { useBurgerMenu } from '@banx/Layout/components/BurgerMenu/hooks'
 import { Bell } from '@banx/icons'
+import { useBurgerMenu } from '@banx/layout/components/BurgerMenu/hooks'
 
 import { useBanxNotificationsSider } from '../BanxNotificationsSider'
 import { BUTTON_ID } from '../constants'

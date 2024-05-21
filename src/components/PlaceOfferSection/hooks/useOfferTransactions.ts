@@ -3,8 +3,8 @@ import { BondOfferOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/pe
 import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
-import { Offer } from '@banx/api/core'
-import { useTokenType } from '@banx/store'
+import { core } from '@banx/api/nft'
+import { useTokenType } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
@@ -14,7 +14,7 @@ import {
   createMakeBondingOfferTxnData,
   createRemoveOfferTxnData,
   createUpdateBondingOfferTxnData,
-} from '@banx/transactions/bonds'
+} from '@banx/transactions/nftLending'
 import {
   destroySnackbar,
   enqueueConfirmationError,
@@ -37,8 +37,8 @@ export const useOfferTransactions = ({
   loansAmount: number
   loanValue: number
   deltaValue: number
-  optimisticOffer?: Offer
-  updateOrAddOffer: (offer: Offer) => void
+  optimisticOffer?: core.Offer
+  updateOrAddOffer: (offer: core.Offer) => void
   resetFormValues: () => void
   exitEditMode: () => void
 }) => {

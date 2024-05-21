@@ -1,10 +1,10 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 
-import { useDiscordUser } from '@banx/hooks'
+import { useDiscordUser, useWalletBalance } from '@banx/hooks'
 import { ChevronDown, Wallet } from '@banx/icons'
-import { useTokenType } from '@banx/store'
-import { shortenAddress, useWalletBalance } from '@banx/utils'
+import { useTokenType } from '@banx/store/nft'
+import { shortenAddress } from '@banx/utils'
 
 import { DisplayValue } from '../TableComponents'
 import UserAvatar from '../UserAvatar'

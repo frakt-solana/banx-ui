@@ -6,7 +6,7 @@ import { Button } from '@banx/components/Buttons'
 import { Tab, useTabs } from '@banx/components/Tabs'
 import { Modal } from '@banx/components/modals/BaseModal'
 
-import { PriorityLevel, getHumanReadablePriorityLevel, usePriorityFees } from '@banx/store'
+import { PriorityLevel, getHumanReadablePriorityLevel, usePriorityFees } from '@banx/store/common'
 
 import styles from './PriorityFeesModal.module.less'
 

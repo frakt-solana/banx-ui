@@ -7,7 +7,7 @@ import { compact, first, isArray, last } from 'lodash'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { useImagePreload } from '@banx/hooks'
 import { PlaceholderPFP } from '@banx/icons'
 import {
@@ -24,7 +24,7 @@ import { calculateStyle } from './helpers'
 
 import styles from './Diagram.module.less'
 
-const TooltipRow = ({ loan }: { loan: Loan }) => {
+const TooltipRow = ({ loan }: { loan: core.Loan }) => {
   const { nft } = loan
 
   const ltv = (calculateLoanRepayValue(loan) / nft.collectionFloor) * 100
@@ -41,7 +41,7 @@ const TooltipRow = ({ loan }: { loan: Loan }) => {
   )
 }
 
-const createTooltipContent = (loans: Loan[]) => {
+const createTooltipContent = (loans: core.Loan[]) => {
   if (!loans.length) return null
 
   return (

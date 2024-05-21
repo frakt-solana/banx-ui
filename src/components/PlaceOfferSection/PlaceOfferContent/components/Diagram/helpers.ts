@@ -1,12 +1,12 @@
 import { chain, chunk, clamp, concat, filter, uniqBy } from 'lodash'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { SimpleOffer, calcLoanBorrowedAmount } from '@banx/utils'
 
 import { Mark } from './Diagram'
 import { MAX_BOUND_PERCENTAGE, MAX_GROUP_SIZE, MIN_BOUND_PERCENTAGE } from './constants'
 
-export const convertLoanToMark = (loan: Loan) => {
+export const convertLoanToMark = (loan: core.Loan) => {
   return { value: calcLoanBorrowedAmount(loan), loan }
 }
 
