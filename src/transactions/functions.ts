@@ -9,7 +9,7 @@ import {
   extractAccountKeysFromInstructions,
 } from 'solana-transactions-executor'
 
-import { getHeliusPriorityFeeEstimate } from '@banx/api/helius'
+import { helius } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { getPriorityFeeLevel } from '@banx/store'
 
@@ -91,5 +91,5 @@ export const executorGetPriorityFee: GetPriorityFee = ({ txnParams, connection }
   const { instructions } = txnParams
   const accountKeys = extractAccountKeysFromInstructions(instructions).map((key) => key.toBase58())
 
-  return getHeliusPriorityFeeEstimate({ accountKeys, connection, priorityLevel })
+  return helius.getHeliusPriorityFeeEstimate({ accountKeys, connection, priorityLevel })
 }

@@ -8,7 +8,7 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
-import { getHeliusAssetProof } from '@banx/api/helius'
+import { helius } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BANX_STAKING, BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
@@ -114,7 +114,7 @@ const getIxnsAndSignersByBorrowType = async ({
       throw new Error(`Not cNFT`)
     }
 
-    const proof = await getHeliusAssetProof({ assetId: nft.mint, connection })
+    const proof = await helius.getHeliusAssetProof({ assetId: nft.mint, connection })
 
     const { instructions, signers, optimisticResults } = await repayCnftPerpetualLoanCanopy({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),

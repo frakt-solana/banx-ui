@@ -8,7 +8,7 @@ import {
 import { BondOfferV2, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
-import { getHeliusAssetProof } from '@banx/api/helius'
+import { helius } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { calculateApr, sendTxnPlaceHolder } from '@banx/utils'
@@ -129,7 +129,7 @@ const getTxnDataByBorrowType = async ({
       throw new Error(`Not cNFT`)
     }
 
-    const proof = await getHeliusAssetProof({
+    const proof = await helius.getHeliusAssetProof({
       assetId: nft.mint,
       connection: walletAndConnection.connection,
     })

@@ -7,7 +7,7 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
-import { getHeliusAssetProof } from '@banx/api/helius'
+import { helius } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
@@ -34,7 +34,7 @@ export const createClaimTxnData: CreateClaimTxnData = async ({ loan, walletAndCo
         bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
       },
       args: {
-        proof: await getHeliusAssetProof({ assetId: loan.nft.mint, connection }),
+        proof: await helius.getHeliusAssetProof({ assetId: loan.nft.mint, connection }),
         cnftParams: loan.nft.compression,
         optimistic: {
           fraktBond,
