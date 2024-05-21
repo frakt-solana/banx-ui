@@ -2,8 +2,8 @@ import axios from 'axios'
 import { web3 } from 'fbonds-core'
 
 import { BACKEND_BASE_URL } from '@banx/constants'
-import { MutationResponse } from '@banx/types'
 
+import { MutationResponse } from '../../types'
 import { getDiscordAvatarUrl } from './helpers'
 import {
   BonkWithdrawal,

@@ -3,7 +3,7 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { BACKEND_BASE_URL } from '@banx/constants'
 
-import { convertToMarketType } from '../../helpers'
+import { convertToMarketType } from '../helpers'
 import {
   AllTotalStats,
   AllTotalStatsSchema,

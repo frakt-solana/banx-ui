@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { MutationResponse } from '@banx/types'
+import { MutationResponse } from '../../types'
 
 export interface DiscordUserInfoRaw {
   avatar: string

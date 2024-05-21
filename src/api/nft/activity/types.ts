@@ -1,8 +1,7 @@
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { z } from 'zod'
 
-import { BasePaginationRequest, PaginationMeta } from '@banx/types'
-
+import { BasePaginationRequest, PaginationMeta } from '../../types'
 import { NFTSchema } from '../core'
 
 export const LenderActivitySchema = z.object({

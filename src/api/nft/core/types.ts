@@ -8,7 +8,7 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/types'
 import { z } from 'zod'
 
-import { PaginationMeta } from '@banx/types'
+import { PaginationMeta } from '../../types'
 
 const MarketMetaSchema = z.object({
   marketApr: z.number(),
