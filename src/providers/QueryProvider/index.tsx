@@ -1,2 +1,2 @@
-export * from './queryProvider'
+export * from './QueryProvider'
 export * from './constants'
