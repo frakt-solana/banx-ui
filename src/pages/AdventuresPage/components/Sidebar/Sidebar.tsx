@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import classNames from 'classnames'
 
-import { BanxInfoBN, BanxStakingSettingsBN } from '@banx/api/staking'
+import { staking } from '@banx/api/common'
 import { BANX_TOKEN_DECIMALS } from '@banx/constants'
 import { Gamepad, MoneyBill } from '@banx/icons'
 import { banxTokenBNToFixed } from '@banx/pages/AdventuresPage'
@@ -24,8 +24,8 @@ import styles from './Sidebar.module.less'
 
 interface SidebarProps {
   className?: string
-  banxStakingSettings: BanxStakingSettingsBN
-  banxStakeInfo: BanxInfoBN
+  banxStakingSettings: staking.BanxStakingSettingsBN
+  banxStakeInfo: staking.BanxInfoBN
 }
 
 export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banxStakeInfo }) => {

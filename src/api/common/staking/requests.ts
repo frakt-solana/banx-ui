@@ -6,7 +6,7 @@ import {
   BanxStakeInfoResponseSchema,
   BanxStakingSettings,
   BanxStakingSettingsSchema,
-} from '@banx/api/staking/schemas'
+} from '@banx/api/common/staking/schemas'
 import { BACKEND_BASE_URL, BANX_TOKEN_DECIMALS } from '@banx/constants'
 import { ZERO_BN } from '@banx/utils'
 

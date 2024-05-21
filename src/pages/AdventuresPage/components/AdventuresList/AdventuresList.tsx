@@ -5,12 +5,7 @@ import classNames from 'classnames'
 import { capitalize, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
-import {
-  BanxAdventureBN,
-  BanxAdventureSubscriptionBN,
-  BanxInfoBN,
-  BanxStakeBN,
-} from '@banx/api/staking'
+import { staking } from '@banx/api/common'
 import { checkIsSubscribed, getAdventureStatus, isAdventureEnded } from '@banx/pages/AdventuresPage'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -39,7 +34,7 @@ import { useAdventuresAndSubscriptions } from './hooks'
 import styles from './AdventuresList.module.less'
 
 interface AdventuresListProps {
-  banxStakeInfo: BanxInfoBN
+  banxStakeInfo: staking.BanxInfoBN
   historyMode: boolean
   className?: string
 }
@@ -66,9 +61,9 @@ export const AdventuresList: FC<AdventuresListProps> = ({
 }
 
 interface AdventuresCardProps {
-  banxAdventure: BanxAdventureBN
-  banxAdventureSubscription?: BanxAdventureSubscriptionBN
-  banxTokenStake?: BanxStakeBN
+  banxAdventure: staking.BanxAdventureBN
+  banxAdventureSubscription?: staking.BanxAdventureSubscriptionBN
+  banxTokenStake?: staking.BanxStakeBN
 }
 
 const AdventuresCard: FC<AdventuresCardProps> = ({

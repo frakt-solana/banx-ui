@@ -2,12 +2,12 @@ import { FC, useMemo } from 'react'
 
 import { sumBy } from 'lodash'
 
-import { BanxStakeNft } from '@banx/api/staking'
+import { staking } from '@banx/api/common'
 
 import styles from './StakeNftsModal.module.less'
 
 interface NftsStatsProps {
-  nfts: BanxStakeNft[]
+  nfts: staking.BanxStakeNft[]
 }
 export const NftsStats: FC<NftsStatsProps> = ({ nfts = [] }) => {
   const walletPartnerPoints = useMemo(

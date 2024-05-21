@@ -9,7 +9,7 @@ import { Button } from '@banx/components/Buttons'
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 import { Modal } from '@banx/components/modals/BaseModal'
 
-import { BanxStakeNft } from '@banx/api/staking'
+import { staking } from '@banx/api/common'
 import { TensorFilled } from '@banx/icons'
 import { useBanxStakeInfo, useBanxStakeSettings } from '@banx/pages/AdventuresPage'
 import { NftCheckbox, NftsStats } from '@banx/pages/AdventuresPage/components'
@@ -38,7 +38,7 @@ export const StakeNftsModal = () => {
   const { banxStakeSettings } = useBanxStakeSettings()
   const { banxStakeInfo } = useBanxStakeInfo()
 
-  const [selectedNfts, setSelectedNfts] = useState<BanxStakeNft[]>([])
+  const [selectedNfts, setSelectedNfts] = useState<staking.BanxStakeNft[]>([])
 
   const { value: currentTab, ...tabsProps } = useTabs({
     tabs: MODAL_TABS,
@@ -48,7 +48,7 @@ export const StakeNftsModal = () => {
   const isNftSelected = (mint: string) =>
     !!selectedNfts.find(({ mint: nftMint }) => nftMint === mint)
 
-  const onSelect = (nft: BanxStakeNft) => {
+  const onSelect = (nft: staking.BanxStakeNft) => {
     const isSelected = isNftSelected(nft.mint)
 
     if (isSelected) {

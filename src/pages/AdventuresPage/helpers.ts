@@ -7,17 +7,15 @@ import {
 import { chain } from 'lodash'
 import moment from 'moment'
 
-import {
-  AdventureStatus,
-  BanxAdventureBN,
-  BanxAdventureSubscriptionBN,
-  BanxStakeBN,
-} from '@banx/api/staking'
+import { staking } from '@banx/api/common'
 import { BANX_TOKEN_DECIMALS } from '@banx/constants'
 import { ZERO_BN, bnToFixed, bnToHuman } from '@banx/utils'
 
 export const calculateAdventureRewards = (
-  params: Array<{ adventure: BanxAdventureBN; subscription?: BanxAdventureSubscriptionBN }>,
+  params: Array<{
+    adventure: staking.BanxAdventureBN
+    subscription?: staking.BanxAdventureSubscriptionBN
+  }>,
 ): BN => {
   if (!params.length) return ZERO_BN
 
@@ -54,7 +52,7 @@ export const calcPartnerPoints = (tokensAmount: BN, tokensPerPartnerPoints?: BN)
   return isNaN(partnerPoints) ? 0 : partnerPoints
 }
 
-export const checkIsUserStaking = (banxTokenStake: BanxStakeBN) => {
+export const checkIsUserStaking = (banxTokenStake: staking.BanxStakeBN) => {
   const { tokensStaked, banxNftsStakedQuantity } = banxTokenStake
 
   if (!tokensStaked.eq(ZERO_BN)) return true
@@ -63,7 +61,9 @@ export const checkIsUserStaking = (banxTokenStake: BanxStakeBN) => {
   return false
 }
 
-export const checkIsSubscribed = (banxAdventureSubscription: BanxAdventureSubscriptionBN) => {
+export const checkIsSubscribed = (
+  banxAdventureSubscription: staking.BanxAdventureSubscriptionBN,
+) => {
   const { stakeTokensAmount, stakeNftAmount } = banxAdventureSubscription
 
   if (stakeNftAmount !== 0) return true
@@ -72,49 +72,49 @@ export const checkIsSubscribed = (banxAdventureSubscription: BanxAdventureSubscr
   return false
 }
 
-export const isAdventureStarted = (adventure: BanxAdventureBN): boolean => {
+export const isAdventureStarted = (adventure: staking.BanxAdventureBN): boolean => {
   return adventure.periodStartedAt + BANX_ADVENTURE_GAP < moment().unix()
 }
 
-export const isAdventureLive = (adventure: BanxAdventureBN): boolean => {
+export const isAdventureLive = (adventure: staking.BanxAdventureBN): boolean => {
   const isStarted = isAdventureStarted(adventure)
   const isEnded = isAdventureEnded(adventure)
 
   return isStarted && !isEnded
 }
 
-export const isAdventureEnded = (adventure: BanxAdventureBN): boolean => {
+export const isAdventureEnded = (adventure: staking.BanxAdventureBN): boolean => {
   const endTime = getAdventureEndTime(adventure)
 
   return endTime < moment().unix()
 }
 
-export const isAdventureUpcomming = (adventure: BanxAdventureBN): boolean => {
+export const isAdventureUpcomming = (adventure: staking.BanxAdventureBN): boolean => {
   const isEnded = isAdventureEnded(adventure)
   const isLive = isAdventureLive(adventure)
 
   return !isEnded && !isLive
 }
 
-export const getAdventureEndTime = (adventure: BanxAdventureBN): number => {
+export const getAdventureEndTime = (adventure: staking.BanxAdventureBN): number => {
   const isStarted = isAdventureStarted(adventure)
 
   return isStarted ? adventure.periodEndingAt : adventure.periodStartedAt + BANX_ADVENTURE_GAP
 }
 
-export const getAdventureStatus = (adventure: BanxAdventureBN): AdventureStatus => {
+export const getAdventureStatus = (adventure: staking.BanxAdventureBN): staking.AdventureStatus => {
   const isEnded = isAdventureEnded(adventure)
   const isLive = isAdventureLive(adventure)
 
   if (isEnded) {
-    return AdventureStatus.ENDED
+    return staking.AdventureStatus.ENDED
   }
 
   if (isLive) {
-    return AdventureStatus.LIVE
+    return staking.AdventureStatus.LIVE
   }
 
-  return AdventureStatus.UPCOMING
+  return staking.AdventureStatus.UPCOMING
 }
 
 export const calculatePlayerPointsForBanxTokens = (tokensStaked: BN): number => {

@@ -3,12 +3,12 @@ import { FC } from 'react'
 import classNames from 'classnames'
 import { find, last } from 'lodash'
 
-import { BanxStakeNft } from '@banx/api/staking'
+import { staking } from '@banx/api/common'
 
 import styles from './StakeNftsModal.module.less'
 
 interface NftCheckboxProps {
-  nft: BanxStakeNft
+  nft: staking.BanxStakeNft
   selected?: boolean
   additionalText?: string
   onClick: () => void
@@ -63,7 +63,7 @@ enum NftStatus {
   Default = '',
 }
 
-const getStatusText = (nft: BanxStakeNft) => {
+const getStatusText = (nft: staking.BanxStakeNft) => {
   const { isLoaned, isTerminationFreeze } = nft
 
   const statusConditions: Array<[boolean, NftStatus]> = [

@@ -6,7 +6,7 @@ import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/t
 import { chain, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
-import { BanxInfoBN, BanxStakingSettingsBN } from '@banx/api/staking'
+import { staking } from '@banx/api/common'
 import {
   calcPartnerPoints,
   calculateAdventureRewards,
@@ -29,8 +29,8 @@ import {
 } from '@banx/utils'
 
 type useAdventuresSidebarProps = {
-  banxStakingSettings: BanxStakingSettingsBN
-  banxStakeInfo: BanxInfoBN
+  banxStakingSettings: staking.BanxStakingSettingsBN
+  banxStakeInfo: staking.BanxInfoBN
 }
 export const useAdventuresSidebar = ({
   banxStakingSettings,

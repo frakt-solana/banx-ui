@@ -2,11 +2,14 @@ import { useMemo } from 'react'
 
 import { chain } from 'lodash'
 
-import { BanxAdventureAndSubscriptionArray, BanxInfoBN } from '@banx/api/staking'
+import { staking } from '@banx/api/common'
 import { isAdventureEnded } from '@banx/pages/AdventuresPage'
 
-export const useAdventuresAndSubscriptions = (banxStakeInfo: BanxInfoBN, historyMode = false) => {
-  const adventuresAndSubscriptions: BanxAdventureAndSubscriptionArray = useMemo(() => {
+export const useAdventuresAndSubscriptions = (
+  banxStakeInfo: staking.BanxInfoBN,
+  historyMode = false,
+) => {
+  const adventuresAndSubscriptions: staking.BanxAdventureAndSubscriptionArray = useMemo(() => {
     if (!banxStakeInfo.banxAdventures.length) return []
 
     return chain(banxStakeInfo.banxAdventures)
