@@ -1,10 +1,10 @@
 import { reduce } from 'lodash'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { calculateClaimValue } from '@banx/pages/OffersPage'
 import { calcLoanBorrowedAmount } from '@banx/utils'
 
-export const getTerminateStatsInfo = (loans: Loan[]) => {
+export const getTerminateStatsInfo = (loans: core.Loan[]) => {
   return reduce(
     loans,
     (acc, loan) => {

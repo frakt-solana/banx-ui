@@ -13,7 +13,7 @@ import {
   createRequestLoanSubscribeNotificationsTitle,
 } from '@banx/components/modals'
 
-import { BorrowNft, Loan, MarketPreview } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { BONDS, DAYS_IN_YEAR, SECONDS_IN_DAY } from '@banx/constants'
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { LoansTabsNames, useLoansTabs } from '@banx/pages/LoansPage'
@@ -48,7 +48,7 @@ import { useSelectedNfts } from '../../nftsState'
 import { DEFAULT_FREEZE_VALUE } from './constants'
 import { calculateSummaryInfo, clampInputValue } from './helpers'
 
-export const useRequestLoansForm = (market: MarketPreview) => {
+export const useRequestLoansForm = (market: core.MarketPreview) => {
   const { nfts, isLoading: isLoadingNfts, maxLoanValueByMarket } = useBorrowNfts()
   const { selection: selectedNfts, set: setSelection } = useSelectedNfts()
   const { tokenType } = useTokenType()
@@ -167,7 +167,7 @@ export const useRequestLoansForm = (market: MarketPreview) => {
 }
 
 const useRequestLoansTransaction = (props: {
-  nfts: BorrowNft[]
+  nfts: core.BorrowNft[]
   aprValue: number
   loanValue: number
   freezeValue: number
@@ -250,7 +250,7 @@ const useRequestLoansTransaction = (props: {
           if (confirmed.length) {
             enqueueSnackbar({ message: 'Listings successfully initialized', type: 'success' })
 
-            const loans = confirmed.map(({ result }) => result).filter(Boolean) as Loan[]
+            const loans = confirmed.map(({ result }) => result).filter(Boolean) as core.Loan[]
 
             if (wallet.publicKey) {
               addLoansOptimistic(loans, wallet.publicKey?.toBase58())

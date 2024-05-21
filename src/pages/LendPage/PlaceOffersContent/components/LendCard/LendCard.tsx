@@ -4,7 +4,7 @@ import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
 
-import { MarketPreview } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { ChevronDown } from '@banx/icons'
 
 import ExpandableCardContent from '../ExpandableCardContent'
@@ -13,7 +13,7 @@ import { MarketAdditionalInfo, MarketMainInfo } from '../MarketOverviewInfo'
 import styles from './LendCard.module.less'
 
 interface LendCardProps {
-  market: MarketPreview
+  market: core.MarketPreview
   isCardOpen: boolean
   onCardClick: () => void
 }

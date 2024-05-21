@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
-import { MarketPreview } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { LendTabName, useLendTabs } from '@banx/pages/LendPage'
 import { PATHS } from '@banx/router'
 import { useMarketsURLControl } from '@banx/store'
@@ -12,7 +12,7 @@ import { LendCard } from '../../Card'
 import styles from '../DashboardLendTab.module.less'
 
 interface CollectionsCardListProps {
-  marketsPreview: MarketPreview[]
+  marketsPreview: core.MarketPreview[]
 }
 
 const CollectionsCardList: FC<CollectionsCardListProps> = ({ marketsPreview }) => {

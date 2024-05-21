@@ -3,15 +3,15 @@ import { setRepaymentCall } from 'fbonds-core/lib/fbond-protocol/functions/perpe
 import moment from 'moment'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 type CreateRepaymentCallTxnData = (params: {
-  loan: Loan
+  loan: core.Loan
   callAmount: number
   walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<Loan>>
+}) => Promise<CreateTxnData<core.Loan>>
 
 export const createRepaymentCallTxnData: CreateRepaymentCallTxnData = async ({
   loan,

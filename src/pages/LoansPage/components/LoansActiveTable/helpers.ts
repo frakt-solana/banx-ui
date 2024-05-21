@@ -1,7 +1,7 @@
 import { calculatePartOfLoanBodyFromInterest } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { map } from 'lodash'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import {
   calcWeightedAverage,
@@ -11,12 +11,12 @@ import {
 } from '@banx/utils'
 
 //? This fee is associated with account creation. It's used to display the correct value when the SOL token type is used.
-const getPartialRepayRentFee = (loan: Loan) => {
+const getPartialRepayRentFee = (loan: core.Loan) => {
   const ACCOUNT_CREATION_FEE = 3229 * 1e3
   return isSolTokenType(loan.bondTradeTransaction.lendingToken) ? ACCOUNT_CREATION_FEE : 0
 }
 
-export const calcAccruedInterest = (loan: Loan) => {
+export const calcAccruedInterest = (loan: core.Loan) => {
   //? For partial repayment loans, feeAmount is not included in the debt calculation.
   const repayValue = calculateLoanRepayValue(loan, false)
 
@@ -24,7 +24,7 @@ export const calcAccruedInterest = (loan: Loan) => {
   return accruedInterest
 }
 
-const calculateUnpaidInterest = (loan: Loan) => {
+const calculateUnpaidInterest = (loan: core.Loan) => {
   const { lenderFullRepaidAmount } = loan.bondTradeTransaction
 
   const accruedInterest = calcAccruedInterest(loan)
@@ -37,7 +37,7 @@ const calculateUnpaidInterest = (loan: Loan) => {
   return percentToRepay >= 1 ? unpaidInterest + rentFee : 0
 }
 
-const calcPercentToPay = (loan: Loan, iterestToPay: number) => {
+const calcPercentToPay = (loan: core.Loan, iterestToPay: number) => {
   const { soldAt, amountOfBonds, solAmount } = loan.bondTradeTransaction
   const rateBasePoints = amountOfBonds + BONDS.PROTOCOL_REPAY_FEE
 
@@ -45,14 +45,14 @@ const calcPercentToPay = (loan: Loan, iterestToPay: number) => {
   return (partOfLoan / solAmount) * 100
 }
 
-export const caclFractionToRepay = (loan: Loan) => {
+export const caclFractionToRepay = (loan: core.Loan) => {
   const iterestToPay = calculateUnpaidInterest(loan)
   const percentToRepay = calcPercentToPay(loan, iterestToPay)
 
   return Math.ceil(percentToRepay * 100)
 }
 
-export const caclFractionToRepayForRepaymentCall = (loan: Loan) => {
+export const caclFractionToRepayForRepaymentCall = (loan: core.Loan) => {
   const debtWithoutFee = calculateLoanRepayValue(loan, false)
   const repaymentCallAmount = loan.bondTradeTransaction.repaymentCallAmount
 
@@ -60,7 +60,7 @@ export const caclFractionToRepayForRepaymentCall = (loan: Loan) => {
   return Math.ceil(unroundedRepaymentPercentage * 100)
 }
 
-export const calcTotalValueToPay = (loan: Loan) => {
+export const calcTotalValueToPay = (loan: core.Loan) => {
   if (isLoanRepaymentCallActive(loan)) {
     return loan.bondTradeTransaction.repaymentCallAmount
   }
@@ -68,7 +68,7 @@ export const calcTotalValueToPay = (loan: Loan) => {
   return calculateUnpaidInterest(loan)
 }
 
-export const calcWeightedApr = (loans: Loan[]) => {
+export const calcWeightedApr = (loans: core.Loan[]) => {
   const totalAprValues = map(
     loans,
     (loan) => (loan.bondTradeTransaction.amountOfBonds + BONDS.PROTOCOL_REPAY_FEE) / 100,

@@ -9,7 +9,7 @@ import {
   createRefinanceSubscribeNotificationsTitle,
 } from '@banx/components/modals'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { useIsLedger, useModal } from '@banx/store'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -60,7 +60,7 @@ export const useInstantTransactions = () => {
     }
   }
 
-  const lendToBorrow = async (loan: Loan) => {
+  const lendToBorrow = async (loan: core.Loan) => {
     const loadingSnackbarId = uniqueId()
 
     try {
@@ -74,7 +74,7 @@ export const useInstantTransactions = () => {
         aprRate,
       })
 
-      await new TxnExecutor<{ loan: Loan; oldLoan: Loan }>(
+      await new TxnExecutor<{ loan: core.Loan; oldLoan: core.Loan }>(
         walletAndConnection,
         TXN_EXECUTOR_DEFAULT_OPTIONS,
       )
@@ -146,7 +146,7 @@ export const useInstantTransactions = () => {
         ),
       )
 
-      await new TxnExecutor<{ loan: Loan; oldLoan: Loan }>(walletAndConnection, {
+      await new TxnExecutor<{ loan: core.Loan; oldLoan: core.Loan }>(walletAndConnection, {
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
         chunkSize: isLedger ? 5 : 40,
       })

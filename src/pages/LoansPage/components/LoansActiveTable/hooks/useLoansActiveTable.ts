@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { ACTIVE_LOANS_TABLE_MESSAGES } from '@banx/pages/LoansPage/constants'
 import { PATHS } from '@banx/router'
 import { createPathWithTokenParam, useTokenType } from '@banx/store'
@@ -21,7 +21,7 @@ export interface SearchSelectOption {
 }
 
 interface UseLoansActiveTableProps {
-  loans: Loan[]
+  loans: core.Loan[]
   isLoading: boolean
 }
 
@@ -84,7 +84,7 @@ export const useLoansActiveTable = ({ loans, isLoading }: UseLoansActiveTablePro
 }
 
 interface CreateSearchSelectProps {
-  loans: Loan[]
+  loans: core.Loan[]
   selectedOptions: string[]
   onChange: (option: string[]) => void
 }

@@ -11,11 +11,11 @@ import {
 } from '@banx/components/PageHeader'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { calcWeeklyFeeWithRepayFee, calculateLoanRepayValue } from '@banx/utils'
 
 interface LoansHeaderProps {
-  loans: Loan[]
+  loans: core.Loan[]
 }
 
 const LoansHeader: FC<LoansHeaderProps> = ({ loans }) => {

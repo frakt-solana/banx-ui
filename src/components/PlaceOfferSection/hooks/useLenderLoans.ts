@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 
-import { fetchLenderLoansByCertainOffer } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { useTokenType } from '@banx/store'
 import { isLoanTerminating } from '@banx/utils'
 
@@ -15,7 +15,7 @@ export const useLenderLoans = ({ offerPubkey }: { offerPubkey: string }) => {
 
   const { data, isLoading, refetch } = useQuery(
     ['lenderLoans', walletPublicKey, tokenType, offerPubkey],
-    () => fetchLenderLoansByCertainOffer({ walletPublicKey, offerPubkey, tokenType }),
+    () => core.fetchLenderLoansByCertainOffer({ walletPublicKey, offerPubkey, tokenType }),
     {
       staleTime: 60_000,
       enabled: !!offerPubkey,

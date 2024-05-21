@@ -3,7 +3,7 @@ import React, { FC } from 'react'
 import { Button } from '@banx/components/Buttons'
 import { HorizontalCell, createPercentValueJSX } from '@banx/components/TableComponents'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
 import { HealthColorIncreasing, getColorByPercent, isFreezeLoan } from '@banx/utils'
 
@@ -11,7 +11,7 @@ import { useRequestLoansTransactions } from '../hooks'
 
 import styles from '../RequestLoansTable.module.less'
 
-export const LTVCell: FC<{ loan: Loan }> = ({ loan }) => {
+export const LTVCell: FC<{ loan: core.Loan }> = ({ loan }) => {
   const borrowedValue = loan.fraktBond.borrowedAmount
   const collectionFloor = loan.nft.collectionFloor
 
@@ -26,13 +26,13 @@ export const LTVCell: FC<{ loan: Loan }> = ({ loan }) => {
   )
 }
 
-export const APRCell: FC<{ loan: Loan }> = ({ loan }) => {
+export const APRCell: FC<{ loan: core.Loan }> = ({ loan }) => {
   const aprPercent = (loan.bondTradeTransaction.amountOfBonds + BONDS.PROTOCOL_REPAY_FEE) / 100
 
   return <HorizontalCell value={createPercentValueJSX(aprPercent)} isHighlighted />
 }
 
-export const FreezeCell: FC<{ loan: Loan }> = ({ loan }) => {
+export const FreezeCell: FC<{ loan: core.Loan }> = ({ loan }) => {
   const terminationFreezeInDays = loan.bondTradeTransaction.terminationFreeze / SECONDS_IN_DAY
   const freezeValue = isFreezeLoan(loan) ? `${terminationFreezeInDays} days` : '--'
 
@@ -40,7 +40,7 @@ export const FreezeCell: FC<{ loan: Loan }> = ({ loan }) => {
 }
 
 interface ActionsCellProps {
-  loan: Loan
+  loan: core.Loan
   disabled: boolean
   isCardView: boolean
 }

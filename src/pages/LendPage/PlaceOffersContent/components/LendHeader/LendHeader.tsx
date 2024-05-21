@@ -6,7 +6,7 @@ import { OnboardButton } from '@banx/components/Buttons'
 import { AdditionalStat, PageHeaderBackdrop } from '@banx/components/PageHeader'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { MarketPreview } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { formatNumbersWithCommas } from '@banx/utils'
 
 import { useMarketsPreview } from '../../../hooks'
@@ -17,7 +17,7 @@ const Header = () => {
   const { marketsPreview } = useMarketsPreview()
 
   const { loansTVL, offersTVL, totalLoans } = useMemo(() => {
-    const sumByKey = (key: keyof MarketPreview) => sumBy(marketsPreview, key)
+    const sumByKey = (key: keyof core.MarketPreview) => sumBy(marketsPreview, key)
 
     return {
       loansTVL: sumByKey('loansTvl'),

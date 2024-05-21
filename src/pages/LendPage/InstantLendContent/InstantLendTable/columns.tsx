@@ -9,7 +9,7 @@ import {
 import Timer from '@banx/components/Timer/Timer'
 import Tooltip from '@banx/components/Tooltip'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { SECONDS_IN_72_HOURS, SECONDS_IN_DAY } from '@banx/constants'
 import { Hourglass, Snowflake } from '@banx/icons'
 import { isFreezeLoan, isLoanListed } from '@banx/utils'
@@ -19,8 +19,8 @@ import { APRCell, ActionsCell, DebtCell, LTVCell } from './TableCells'
 import styles from './InstantLendTable.module.less'
 
 interface GetTableColumnsProps {
-  toggleLoanInSelection: (loan: Loan) => void
-  findLoanInSelection: (loanPubkey: string) => Loan | null
+  toggleLoanInSelection: (loan: core.Loan) => void
+  findLoanInSelection: (loanPubkey: string) => core.Loan | null
   onSelectAll: () => void
   isCardView: boolean
   hasSelectedLoans: boolean
@@ -33,7 +33,7 @@ export const getTableColumns = ({
   onSelectAll,
   hasSelectedLoans,
 }: GetTableColumnsProps) => {
-  const columns: ColumnType<Loan>[] = [
+  const columns: ColumnType<core.Loan>[] = [
     {
       key: 'collateral',
       title: (
@@ -110,7 +110,7 @@ export const getTableColumns = ({
   return columns
 }
 
-const createRightContentJSX = (loan: Loan) => {
+const createRightContentJSX = (loan: core.Loan) => {
   if (isLoanListed(loan) && !isFreezeLoan(loan)) {
     return null
   }

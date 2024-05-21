@@ -2,12 +2,12 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { filter, groupBy, maxBy, uniqBy } from 'lodash'
 import moment from 'moment'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 
 const LOANS_CACHE_TIME_UNIX = 2 * 60 //? Auto clear optimistic after 2 minutes
 
 export interface LoanOptimistic {
-  loan: Loan
+  loan: core.Loan
   wallet: string
   expiredAt: number
 }
@@ -39,11 +39,14 @@ export const updateLoans = (loansState: LoanOptimistic[], loansToAddOrUpdate: Lo
   return addLoans(sameLoansRemoved, loansToAddOrUpdate)
 }
 
-export const isLoanNewer = (loanA: Loan, loanB: Loan) =>
+export const isLoanNewer = (loanA: core.Loan, loanB: core.Loan) =>
   loanA.fraktBond.lastTransactedAt >= loanB.fraktBond.lastTransactedAt
 
 //? Remove loans with same mint by priority of lastTransactedAt
-export const purgeLoansWithSameMintByFreshness = <L>(loans: L[], getLoan: (loan: L) => Loan) => {
+export const purgeLoansWithSameMintByFreshness = <L>(
+  loans: L[],
+  getLoan: (loan: L) => core.Loan,
+) => {
   const loansByMint = groupBy(loans, (loan) => getLoan(loan).nft.mint)
 
   return Object.values(loansByMint)
@@ -53,7 +56,7 @@ export const purgeLoansWithSameMintByFreshness = <L>(loans: L[], getLoan: (loan:
     .flat() as L[]
 }
 
-export const convertLoanToOptimistic = (loan: Loan, walletPublicKey: string) => {
+export const convertLoanToOptimistic = (loan: core.Loan, walletPublicKey: string) => {
   return {
     loan,
     wallet: walletPublicKey,

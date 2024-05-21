@@ -3,11 +3,11 @@ import { getMaxLoanValueFromBondOffer } from 'fbonds-core/lib/fbond-protocol/hel
 import { BondOfferV2, BondingCurveType, PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, uniqueId } from 'lodash'
 
-import { Offer } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 
 import { SimpleOffer } from './types'
 
-const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
+const spreadToSimpleOffers = (offer: core.Offer): SimpleOffer[] => {
   const { baseSpotPrice, mathCounter, buyOrdersQuantity, bondingCurve, bidSettlement, validation } =
     offer
 
@@ -107,7 +107,7 @@ const spreadToSimpleOffers = (offer: Offer): SimpleOffer[] => {
   return simpleOffers
 }
 
-type ConvertOffersToSimple = (offers: Offer[], sort?: 'desc' | 'asc') => SimpleOffer[]
+type ConvertOffersToSimple = (offers: core.Offer[], sort?: 'desc' | 'asc') => SimpleOffer[]
 export const convertOffersToSimple: ConvertOffersToSimple = (offers, sort = 'desc') => {
   const convertedOffers = chain(offers)
     .map(spreadToSimpleOffers)
@@ -123,7 +123,7 @@ export const convertOffersToSimple: ConvertOffersToSimple = (offers, sort = 'des
   return convertedOffers
 }
 
-export const сalculateLoansAmount = (offer: Offer) => {
+export const сalculateLoansAmount = (offer: core.Offer) => {
   const { fundsSolOrTokenBalance, currentSpotPrice } = offer
 
   const loansAmount = fundsSolOrTokenBalance / currentSpotPrice
@@ -131,7 +131,7 @@ export const сalculateLoansAmount = (offer: Offer) => {
   return loansAmount
 }
 
-export const calculateLoanValue = (offer: Offer) => {
+export const calculateLoanValue = (offer: core.Offer) => {
   return getMaxLoanValueFromBondOffer(offer as BondOfferV2)
   // const { currentSpotPrice } = offer
 
@@ -150,16 +150,19 @@ export const isOfferClosed = (pairState: string) => {
 }
 
 //? Prevent orders wrong distibution on bulk borrow from same offer
-export const offerNeedsReservesOptimizationOnBorrow = (offer: Offer, loanValueSum: number) =>
+export const offerNeedsReservesOptimizationOnBorrow = (offer: core.Offer, loanValueSum: number) =>
   loanValueSum <= (offer.bidSettlement + offer.buyOrdersQuantity > 0 ? offer.currentSpotPrice : 0)
 
-type FilterOutWalletLoans = (props: { offers: Offer[]; walletPubkey?: string }) => Offer[]
+type FilterOutWalletLoans = (props: { offers: core.Offer[]; walletPubkey?: string }) => core.Offer[]
 export const filterOutWalletLoans: FilterOutWalletLoans = ({ offers, walletPubkey }) => {
   if (!walletPubkey) return offers
   return offers.filter((offer) => offer.assetReceiver !== walletPubkey)
 }
 
-type FindSuitableOffer = (props: { loanValue: number; offers: Offer[] }) => Offer | undefined
+type FindSuitableOffer = (props: {
+  loanValue: number
+  offers: core.Offer[]
+}) => core.Offer | undefined
 export const findSuitableOffer: FindSuitableOffer = ({ loanValue, offers }) => {
   //? Create simple offers array sorted by loanValue (offerValue) asc
   const simpleOffers = convertOffersToSimple(offers, 'asc')
@@ -170,7 +173,7 @@ export const findSuitableOffer: FindSuitableOffer = ({ loanValue, offers }) => {
   return offers.find(({ publicKey }) => publicKey === simpleOffer?.publicKey)
 }
 
-export const isOfferNotEmpty = (offer: Offer) => {
+export const isOfferNotEmpty = (offer: core.Offer) => {
   const { fundsSolOrTokenBalance, currentSpotPrice } = offer
   const fullOffersAmount = Math.floor(fundsSolOrTokenBalance / currentSpotPrice)
   if (fullOffersAmount >= 1) return true

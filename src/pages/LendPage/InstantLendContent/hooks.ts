@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { produce } from 'immer'
 import { create } from 'zustand'
 
-import { fetchAllLoansRequests } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { useTokenType } from '@banx/store'
 
 interface HiddenNftsMintsState {
@@ -29,7 +29,7 @@ export const useAllLoansRequests = () => {
 
   const { data, isLoading } = useQuery(
     ['allLoansRequests', tokenType],
-    () => fetchAllLoansRequests({ tokenType }),
+    () => core.fetchAllLoansRequests({ tokenType }),
     {
       staleTime: 5 * 1000,
       refetchOnWindowFocus: false,

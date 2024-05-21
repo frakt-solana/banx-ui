@@ -9,11 +9,11 @@ import {
   extractAccountKeysFromInstructions,
 } from 'solana-transactions-executor'
 
-import { BorrowNft, Loan } from '@banx/api/core'
 import { getHeliusPriorityFeeEstimate } from '@banx/api/helius'
+import { core } from '@banx/api/nft'
 import { getPriorityFeeLevel } from '@banx/store'
 
-export const convertLoanToBorrowNft = (loan: Loan): BorrowNft => {
+export const convertLoanToBorrowNft = (loan: core.Loan): core.BorrowNft => {
   const { nft, fraktBond, bondTradeTransaction } = loan
 
   const borrowNft = {

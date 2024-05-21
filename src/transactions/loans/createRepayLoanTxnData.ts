@@ -8,8 +8,8 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
-import { Loan } from '@banx/api/core'
 import { getHeliusAssetProof } from '@banx/api/helius'
+import { core } from '@banx/api/nft'
 import { BANX_STAKING, BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
@@ -17,11 +17,13 @@ import { BorrowType } from '../constants'
 import { fetchRuleset } from '../functions'
 
 type CreateRepayLoanTxnDataParams = {
-  loan: Loan
+  loan: core.Loan
   walletAndConnection: WalletAndConnection
 }
 
-type CreateRepayLoanTxnData = (params: CreateRepayLoanTxnDataParams) => Promise<CreateTxnData<Loan>>
+type CreateRepayLoanTxnData = (
+  params: CreateRepayLoanTxnDataParams,
+) => Promise<CreateTxnData<core.Loan>>
 
 export const createRepayLoanTxnData: CreateRepayLoanTxnData = async ({
   loan,
@@ -36,7 +38,7 @@ export const createRepayLoanTxnData: CreateRepayLoanTxnData = async ({
       walletAndConnection,
     })
 
-  const optimisticLoan: Loan = {
+  const optimisticLoan: core.Loan = {
     publicKey: optimisticResult.fraktBond.publicKey,
     fraktBond: optimisticResult.fraktBond,
     bondTradeTransaction: optimisticResult.bondTradeTransaction,
@@ -189,7 +191,7 @@ const getIxnsAndSignersByBorrowType = async ({
   }
 }
 
-export const getLoanBorrowType = (loan: Loan) => {
+export const getLoanBorrowType = (loan: core.Loan) => {
   if (
     loan.fraktBond.banxStake !== EMPTY_PUBKEY.toBase58() &&
     loan.fraktBond.fraktMarket === BANX_STAKING.FRAKT_MARKET

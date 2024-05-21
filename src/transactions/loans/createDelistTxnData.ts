@@ -10,7 +10,7 @@ import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/type
 import moment from 'moment'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
@@ -18,11 +18,11 @@ import { ListingType } from '../constants'
 import { fetchRuleset } from '../functions'
 
 type CreateDelistTxnDataParams = {
-  loan: Loan
+  loan: core.Loan
   walletAndConnection: WalletAndConnection
 }
 
-type CreateDelistTxnData = (params: CreateDelistTxnDataParams) => Promise<CreateTxnData<Loan>>
+type CreateDelistTxnData = (params: CreateDelistTxnDataParams) => Promise<CreateTxnData<core.Loan>>
 
 export const createDelistTxnData: CreateDelistTxnData = async (params) => {
   const { loan, walletAndConnection } = params
@@ -160,7 +160,7 @@ const getIxnsAndSignersByListingType = async ({
   return { instructions, signers }
 }
 
-const getNftListingType = (loan: Loan) => {
+const getNftListingType = (loan: core.Loan) => {
   if (!!loan.fraktBond.banxStake && loan.fraktBond.banxStake !== EMPTY_PUBKEY.toBase58()) {
     return ListingType.StakedBanx
   }

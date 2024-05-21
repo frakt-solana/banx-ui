@@ -4,14 +4,14 @@ import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/gette
 import { terminatePerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 type CreateTerminateTxnData = (params: {
-  loan: Loan
+  loan: core.Loan
   walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<Loan>>
+}) => Promise<CreateTxnData<core.Loan>>
 
 export const createTerminateTxnData: CreateTerminateTxnData = async ({
   loan,

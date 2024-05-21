@@ -8,7 +8,7 @@ import { TensorLink } from '@banx/components/SolanaLinks'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { MarketPreview } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { ChevronDown } from '@banx/icons'
 
 import ExpandedCardContent from '../ExpandedCardContent'
@@ -16,7 +16,7 @@ import ExpandedCardContent from '../ExpandedCardContent'
 import styles from './BorrowCard.module.less'
 
 interface BorrowCardProps {
-  market: MarketPreview
+  market: core.MarketPreview
   onClick: () => void
   isOpen: boolean
 }
@@ -43,7 +43,7 @@ const BorrowCard: FC<BorrowCardProps> = ({ market, onClick, isOpen }) => {
 
 export default BorrowCard
 
-const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
+const MarketMainInfo: FC<{ market: core.MarketPreview }> = ({ market }) => {
   const { collectionName, collectionImage, collectionFloor, tensorSlug } = market
 
   return (
@@ -65,7 +65,7 @@ const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
 }
 
 interface MarketAdditionalInfoProps {
-  market: MarketPreview
+  market: core.MarketPreview
   isOpen: boolean
 }
 const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isOpen }) => {

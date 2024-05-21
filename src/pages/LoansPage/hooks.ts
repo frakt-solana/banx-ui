@@ -6,7 +6,7 @@ import { chain, filter, groupBy, map } from 'lodash'
 import moment from 'moment'
 import { create } from 'zustand'
 
-import { fetchBorrowerLoansRequests, fetchWalletLoansAndOffers } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { fetchUserLoansStats } from '@banx/api/stats'
 import {
   isLoanNewer,
@@ -35,7 +35,7 @@ export const useWalletLoansAndOffers = () => {
 
   const { data, isLoading, isFetched, isFetching } = useQuery(
     [USE_WALLET_LOANS_AND_OFFERS_QUERY_KEY, publicKeyString, tokenType],
-    () => fetchWalletLoansAndOffers({ walletPublicKey: publicKeyString, tokenType }),
+    () => core.fetchWalletLoansAndOffers({ walletPublicKey: publicKeyString, tokenType }),
     {
       enabled: !!publicKeyString,
       staleTime: 5 * 1000,
@@ -221,7 +221,7 @@ export const useBorrowerLoansRequests = () => {
 
   const { data, isLoading, isFetched, isFetching } = useQuery(
     [USE_BORROWER_LOANS_REQUESTS_QUERY_KEY, walletPublicKey, tokenType],
-    () => fetchBorrowerLoansRequests({ walletPublicKey: publicKeyString, tokenType }),
+    () => core.fetchBorrowerLoansRequests({ walletPublicKey: publicKeyString, tokenType }),
     {
       staleTime: 5 * 1000,
       refetchOnWindowFocus: false,

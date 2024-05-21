@@ -4,7 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 import { chain, maxBy } from 'lodash'
 
-import { Loan, fetchLenderLoans } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { useTokenType } from '@banx/store'
 
 import { useHiddenNftsMints, useLenderLoansOptimistic } from '.'
@@ -22,7 +22,7 @@ export const useLenderLoans = () => {
 
   const { data: loans, isLoading } = useQuery(
     [USE_LENDER_LOANS_QUERY_KEY, publicKeyString, tokenType],
-    () => fetchLenderLoans({ walletPublicKey: publicKeyString, tokenType, getAll: true }),
+    () => core.fetchLenderLoans({ walletPublicKey: publicKeyString, tokenType, getAll: true }),
     {
       enabled: !!publicKeyString,
       refetchOnWindowFocus: false,
@@ -49,7 +49,7 @@ export const useLenderLoans = () => {
       .value()
   }, [loans, isLoading, walletOptimisticLoans, hiddenLoansMints])
 
-  const updateOrAddLoan = (loan: Loan) => {
+  const updateOrAddLoan = (loan: core.Loan) => {
     const loanExists = !!findLoan(loan.publicKey, publicKeyString)
     return loanExists ? updateLoans(loan, publicKeyString) : addLoans(loan, publicKeyString)
   }

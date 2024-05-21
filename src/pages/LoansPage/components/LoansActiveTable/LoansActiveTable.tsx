@@ -8,7 +8,7 @@ import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 import Tooltip from '@banx/components/Tooltip'
 
-import { Loan, Offer } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { Coin, Warning } from '@banx/icons'
 import { ViewState, useTableView, useTokenType } from '@banx/store'
 import { isLoanRepaymentCallActive, isLoanTerminating } from '@banx/utils'
@@ -21,9 +21,9 @@ import { useSelectedLoans } from './loansState'
 import styles from './LoansActiveTable.module.less'
 
 interface LoansActiveTableProps {
-  loans: Loan[]
+  loans: core.Loan[]
   isLoading: boolean
-  offers: Record<string, Offer[]>
+  offers: Record<string, core.Offer[]>
 }
 
 export const LoansActiveTable: FC<LoansActiveTableProps> = ({
@@ -90,7 +90,7 @@ export const LoansActiveTable: FC<LoansActiveTableProps> = ({
   )
 
   const onRowClick = useCallback(
-    (loan: Loan) => {
+    (loan: core.Loan) => {
       toggleLoanInSelection(loan, walletPublicKeyString)
     },
     [toggleLoanInSelection, walletPublicKeyString],

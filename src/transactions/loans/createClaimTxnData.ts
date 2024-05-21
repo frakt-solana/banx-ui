@@ -7,17 +7,17 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
-import { Loan } from '@banx/api/core'
 import { getHeliusAssetProof } from '@banx/api/helius'
+import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { fetchRuleset } from '../functions'
 
 type CreateClaimTxnData = (params: {
-  loan: Loan
+  loan: core.Loan
   walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<Loan>>
+}) => Promise<CreateTxnData<core.Loan>>
 
 export const createClaimTxnData: CreateClaimTxnData = async ({ loan, walletAndConnection }) => {
   const { wallet, connection } = walletAndConnection

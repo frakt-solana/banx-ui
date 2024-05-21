@@ -12,7 +12,7 @@ import {
   createLoanSubscribeNotificationsTitle,
 } from '@banx/components/modals'
 
-import { BorrowNft, MarketPreview } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { executeBorrow } from '@banx/pages/BorrowPage/InstantLoansContent/components/BorrowTable/helpers'
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
@@ -62,7 +62,7 @@ export const useDashboardBorrowTab = () => {
     trackPageEvent('dashboard', 'borrowtab-collection')
   }
 
-  const onBorrow = (nft: BorrowNft) => {
+  const onBorrow = (nft: core.BorrowNft) => {
     borrow(nft)
     trackPageEvent('dashboard', 'borrowtab-borrow')
   }
@@ -124,7 +124,7 @@ export const useSingleBorrow = () => {
     }
   }
 
-  const borrow = async (nft: BorrowNft) => {
+  const borrow = async (nft: core.BorrowNft) => {
     const { marketPubkey } = nft.loan
 
     const offer = findBestOffer(marketPubkey)
@@ -162,7 +162,10 @@ export const useSingleBorrow = () => {
 
 const useCollectionsStore = createGlobalState<string[]>([])
 
-const useFilteredMarketsAndNFTs = (marketsPreview: MarketPreview[], nfts: BorrowNft[]) => {
+const useFilteredMarketsAndNFTs = (
+  marketsPreview: core.MarketPreview[],
+  nfts: core.BorrowNft[],
+) => {
   const { connected } = useWallet()
 
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()

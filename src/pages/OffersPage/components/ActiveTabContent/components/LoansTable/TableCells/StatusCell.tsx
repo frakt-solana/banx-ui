@@ -5,7 +5,7 @@ import moment from 'moment'
 
 import Timer from '@banx/components/Timer'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { SECONDS_IN_72_HOURS } from '@banx/constants'
 import {
   LoanStatus,
@@ -18,7 +18,7 @@ import {
 import styles from '../LoansTable.module.less'
 
 interface StatusCellProps {
-  loan: Loan
+  loan: core.Loan
   isCardView?: boolean
 }
 
@@ -47,7 +47,7 @@ export const StatusCell: FC<StatusCellProps> = ({ loan, isCardView = false }) =>
   )
 }
 
-const calculateTimeInfo = (loan: Loan, status: string) => {
+const calculateTimeInfo = (loan: core.Loan, status: string) => {
   const { fraktBond, bondTradeTransaction } = loan
 
   const currentTimeInSeconds = moment().unix()

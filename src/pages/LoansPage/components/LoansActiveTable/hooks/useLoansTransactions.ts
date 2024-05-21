@@ -2,7 +2,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { every, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { useIsLedger, useLoansOptimistic, useModal, usePriorityFees } from '@banx/store'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -34,7 +34,7 @@ export const useLoansTransactions = () => {
   const { update: updateLoansOptimistic } = useLoansOptimistic()
   const { selection, clear: clearSelection } = useSelectedLoans()
 
-  const repayLoan = async (loan: Loan) => {
+  const repayLoan = async (loan: core.Loan) => {
     const loadingSnackbarId = uniqueId()
 
     try {
@@ -42,7 +42,7 @@ export const useLoansTransactions = () => {
 
       const txnsData = await createRepayLoanTxnData({ loan, walletAndConnection })
 
-      await new TxnExecutor<Loan>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor<core.Loan>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
         .addTxnData(txnsData)
         .on('sentSome', (results) => {
           results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -87,7 +87,7 @@ export const useLoansTransactions = () => {
     }
   }
 
-  const repayPartialLoan = async (loan: Loan, fractionToRepay: number) => {
+  const repayPartialLoan = async (loan: core.Loan, fractionToRepay: number) => {
     const loadingSnackbarId = uniqueId()
 
     const txnParam = { loan, fractionToRepay, priorityFeeLevel: priorityLevel }
@@ -101,7 +101,7 @@ export const useLoansTransactions = () => {
         walletAndConnection,
       })
 
-      await new TxnExecutor<Loan>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor<core.Loan>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
         .addTxnData(txnData)
         .on('sentSome', (results) => {
           results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -163,7 +163,7 @@ export const useLoansTransactions = () => {
         ),
       )
 
-      await new TxnExecutor<Loan>(walletAndConnection, {
+      await new TxnExecutor<core.Loan>(walletAndConnection, {
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
         chunkSize: isLedger ? 1 : 40,
       })
@@ -238,7 +238,7 @@ export const useLoansTransactions = () => {
         ),
       )
 
-      await new TxnExecutor<Loan>(walletAndConnection, {
+      await new TxnExecutor<core.Loan>(walletAndConnection, {
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
         chunkSize: isLedger ? 5 : 40,
       })

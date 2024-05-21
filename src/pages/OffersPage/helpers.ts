@@ -2,7 +2,7 @@ import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/
 import { chain, first } from 'lodash'
 import moment from 'moment'
 
-import { Loan, Offer } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import {
   calcLoanBorrowedAmount,
   calculateLoanRepayValue,
@@ -11,7 +11,7 @@ import {
   isLoanTerminating,
 } from '@banx/utils'
 
-type IsLoanAbleToClaim = (loan: Loan) => boolean
+type IsLoanAbleToClaim = (loan: core.Loan) => boolean
 export const isLoanAbleToClaim: IsLoanAbleToClaim = (loan) => {
   const isTerminatingStatus = isLoanTerminating(loan)
   const isLoanExpired = isLoanLiquidated(loan)
@@ -19,7 +19,7 @@ export const isLoanAbleToClaim: IsLoanAbleToClaim = (loan) => {
   return isLoanExpired && isTerminatingStatus
 }
 
-type IsLoanAbleToTerminate = (loan: Loan) => boolean
+type IsLoanAbleToTerminate = (loan: core.Loan) => boolean
 export const isLoanAbleToTerminate: IsLoanAbleToTerminate = (loan) => {
   const isLoanExpired = isLoanLiquidated(loan)
   const isTerminatingStatus = isLoanTerminating(loan)
@@ -27,7 +27,11 @@ export const isLoanAbleToTerminate: IsLoanAbleToTerminate = (loan) => {
   return !isLoanExpired && !isTerminatingStatus
 }
 
-type FindBestOffer = (props: { loan: Loan; offers: Offer[]; walletPubkey: string }) => Offer
+type FindBestOffer = (props: {
+  loan: core.Loan
+  offers: core.Offer[]
+  walletPubkey: string
+}) => core.Offer
 export const findBestOffer: FindBestOffer = ({ loan, offers, walletPubkey }) => {
   const filteredOffers = chain(offers)
     .filter(
@@ -38,10 +42,10 @@ export const findBestOffer: FindBestOffer = ({ loan, offers, walletPubkey }) => 
     .sortBy((offer) => offer.fundsSolOrTokenBalance)
     .value()
 
-  return first(filteredOffers) as Offer
+  return first(filteredOffers) as core.Offer
 }
 
-export const calculateLentValue = (loan: Loan) => {
+export const calculateLentValue = (loan: core.Loan) => {
   const totalRepaidAmount = loan.totalRepaidAmount || 0
 
   const loanBorrowedAmount = calcLoanBorrowedAmount(loan)
@@ -49,7 +53,7 @@ export const calculateLentValue = (loan: Loan) => {
   return loanBorrowedAmount + totalRepaidAmount
 }
 
-export const calculateClaimValue = (loan: Loan) => {
+export const calculateClaimValue = (loan: core.Loan) => {
   const { amountOfBonds, soldAt } = loan.bondTradeTransaction
 
   const loanBorrowedAmount = calcLoanBorrowedAmount(loan)

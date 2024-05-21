@@ -4,7 +4,7 @@ import { BondingCurveType } from 'fbonds-core/lib/fbond-protocol/types'
 import produce from 'immer'
 import { create } from 'zustand'
 
-import { Offer } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 
 export interface SyntheticOffer {
   isEdit: boolean //? if offer exits on blochain and in edit mode
@@ -69,7 +69,7 @@ export const createEmptySyntheticOffer: CreateEmptySyntheticOffer = ({
   deltaValue: 0,
 })
 
-export const convertToSynthetic = (offer: Offer, isEdit = false): SyntheticOffer => {
+export const convertToSynthetic = (offer: core.Offer, isEdit = false): SyntheticOffer => {
   const { publicKey, assetReceiver, hadoMarket, mathCounter, bondingCurve, buyOrdersQuantity } =
     offer
 
@@ -86,7 +86,7 @@ export const convertToSynthetic = (offer: Offer, isEdit = false): SyntheticOffer
   }
 }
 
-export const calcSyntheticLoanValue = (offer: Offer): number => {
+export const calcSyntheticLoanValue = (offer: core.Offer): number => {
   const {
     currentSpotPrice,
     baseSpotPrice,

@@ -6,7 +6,7 @@ import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortOption } from '@banx/components/SortDropdown'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { MarketPreview } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { createGlobalState } from '@banx/store/functions'
 
@@ -31,7 +31,7 @@ export const useNotConnectedBorrow = () => {
 
   const { sortedMarkets, sortParams } = useSortedMarkets(filteredMarkets)
 
-  const searchSelectParams: SearchSelectProps<MarketPreview> = {
+  const searchSelectParams: SearchSelectProps<core.MarketPreview> = {
     options: marketsPreview,
     selectedOptions: selectedCollections,
     labels: ['Collection', 'Liquidity'],
@@ -62,7 +62,7 @@ enum SortField {
   FLOOR = 'collectionFloor',
 }
 
-type SortValueGetter = (market: MarketPreview) => number
+type SortValueGetter = (market: core.MarketPreview) => number
 
 const SORT_OPTIONS: SortOption<SortField>[] = [
   { label: 'Liquidity', value: [SortField.LIQUIDITY, 'desc'] },
@@ -76,7 +76,7 @@ const SORT_VALUE_MAP: Record<SortField, SortValueGetter> = {
   [SortField.FLOOR]: (market) => market.collectionFloor,
 }
 
-const useSortedMarkets = (markets: MarketPreview[]) => {
+const useSortedMarkets = (markets: core.MarketPreview[]) => {
   const [sortOption, setSortOption] = useState(SORT_OPTIONS[0])
 
   const sortedMarkets = useMemo(() => {

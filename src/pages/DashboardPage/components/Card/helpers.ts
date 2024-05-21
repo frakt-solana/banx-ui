@@ -1,7 +1,7 @@
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { Offer } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
 import {
   calcBorrowValueWithProtocolFee,
@@ -9,7 +9,7 @@ import {
   calculateLoanValue,
 } from '@banx/utils'
 
-export const calcLoanValueWithFees = (offer: Offer | null, tokenType: LendingTokenType) => {
+export const calcLoanValueWithFees = (offer: core.Offer | null, tokenType: LendingTokenType) => {
   if (!offer) return 0
 
   const loanValue = calculateLoanValue(offer)

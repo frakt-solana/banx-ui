@@ -6,7 +6,7 @@ import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 import { Modal } from '@banx/components/modals/BaseModal'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { useModal } from '@banx/store'
 import {
   calculateLoanRepayValue,
@@ -20,7 +20,7 @@ import { useLoansTransactions } from '../../hooks'
 import styles from './ActionsCell.module.less'
 
 interface RepayModalProps {
-  loan: Loan
+  loan: core.Loan
 }
 
 export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
@@ -119,7 +119,7 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
 
 const DEFAULT_REPAY_PERCENT = 100
 
-export const calculateRepaymentStaticValues = (loan: Loan) => {
+export const calculateRepaymentStaticValues = (loan: core.Loan) => {
   const { bondTradeTransaction } = loan
 
   const repaymentCallActive = isLoanRepaymentCallActive(loan)

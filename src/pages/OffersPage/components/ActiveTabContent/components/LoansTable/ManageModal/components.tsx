@@ -12,7 +12,7 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 import Timer from '@banx/components/Timer'
 
-import { Loan, Offer } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { useMarketOffers } from '@banx/pages/LendPage'
 import { calculateClaimValue, useLenderLoans } from '@banx/pages/OffersPage'
 import { useModal, useTokenType } from '@banx/store'
@@ -53,7 +53,7 @@ import { useSelectedLoans } from '../loansState'
 import styles from './ManageModal.module.less'
 
 interface ClosureContentProps {
-  loan: Loan
+  loan: core.Loan
 }
 export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const { connection } = useConnection()
@@ -163,7 +163,7 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
         aprRate,
       })
 
-      await new TxnExecutor<Offer>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor<core.Offer>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
         .addTxnData(txnData)
         .on('sentSome', (results) => {
           results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -264,7 +264,7 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
 }
 
 interface RepaymentCallContentProps {
-  loan: Loan
+  loan: core.Loan
   close: () => void
 }
 
@@ -306,7 +306,7 @@ export const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, clos
         walletAndConnection,
       })
 
-      await new TxnExecutor<Loan>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor<core.Loan>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
         .addTxnData(txnData)
         .on('sentSome', (results) => {
           results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -384,7 +384,7 @@ export const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, clos
   )
 }
 
-export const calculateRepaymentStaticValues = (loan: Loan) => {
+export const calculateRepaymentStaticValues = (loan: core.Loan) => {
   const DEFAULT_REPAY_PERCENT = 50
 
   const repaymentCallActive = isLoanRepaymentCallActive(loan)

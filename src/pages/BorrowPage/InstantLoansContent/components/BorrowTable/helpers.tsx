@@ -9,7 +9,7 @@ import { Dictionary, chain, groupBy, sumBy, uniqueId } from 'lodash'
 import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
-import { BorrowNft, Offer } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import bonkTokenImg from '@banx/assets/BonkToken.png'
 import { BONDS, ONE_WEEK_IN_SECONDS } from '@banx/constants'
 import { LoansOptimisticStore, OffersOptimisticStore } from '@banx/store'
@@ -45,7 +45,7 @@ export const createTableNftData = ({
   maxLoanValueByMarket,
   maxBorrowPercent,
 }: {
-  nfts: BorrowNft[]
+  nfts: core.BorrowNft[]
   findOfferInCart: CartState['findOfferInCart']
   findBestOffer: CartState['findBestOffer']
   maxLoanValueByMarket: Record<string, number>
@@ -209,7 +209,7 @@ export const executeBorrow = async (props: {
 
 export const makeCreateTxnsDataParams = (
   nfts: TableNftData[],
-  rawOffers: Record<string, Offer[]>,
+  rawOffers: Record<string, core.Offer[]>,
   tokenType: LendingTokenType,
 ): CreateBorrowTxnDataParams[] => {
   const nftsByMarket = groupBy(nfts, ({ nft }) => nft.loan.marketPubkey)
@@ -229,7 +229,7 @@ export const makeCreateTxnsDataParams = (
 const mergeOffersWithLoanValue = (
   offers: OfferWithLoanValue[],
   optimizeIntoReserves = true,
-): Offer | null => {
+): core.Offer | null => {
   const { offer } = offers.reduce((acc, offer) => {
     return {
       offer: optimisticBorrowUpdateBondingBondOffer(
@@ -247,7 +247,7 @@ const mergeOffersWithLoanValue = (
 //TODO Simplity, refactor and move to utils
 type MatchNftsAndOffers = (props: {
   nfts: TableNftData[]
-  rawOffers: Offer[]
+  rawOffers: core.Offer[]
   tokenType: LendingTokenType
 }) => CreateBorrowTxnDataParams[]
 const matchNftsAndOffers: MatchNftsAndOffers = ({ nfts, rawOffers, tokenType }) => {
@@ -274,7 +274,7 @@ const matchNftsAndOffers: MatchNftsAndOffers = ({ nfts, rawOffers, tokenType }) 
           //? find normal offer using index. Assume that offer always can be found
           offer: rawOffers.find(
             ({ publicKey }) => publicKey === simpleOffers[offerIndex].publicKey,
-          ) as Offer,
+          ) as core.Offer,
           tokenType,
           optimizeIntoReserves: true, //? Set optimizeIntoReserves to true
         }

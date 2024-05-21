@@ -5,7 +5,7 @@ import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, map, maxBy } from 'lodash'
 import { create } from 'zustand'
 
-import { Offer, fetchMarketOffers, fetchMarketsPreview } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import {
   isOfferNewer,
   isOptimisticOfferExpired,
@@ -23,7 +23,7 @@ export const useMarketsPreview = () => {
 
   const { data, isLoading } = useQuery(
     [USE_MARKETS_PREVIEW_QUERY_KEY, tokenType],
-    () => fetchMarketsPreview({ tokenType }),
+    () => core.fetchMarketsPreview({ tokenType }),
     {
       staleTime: 5000,
       cacheTime: Infinity,
@@ -43,7 +43,7 @@ export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => 
 
   const { data, isLoading, isFetching, isFetched } = useQuery(
     ['marketPairs', marketPubkey, tokenType],
-    () => fetchMarketOffers({ marketPubkey, tokenType }),
+    () => core.fetchMarketOffers({ marketPubkey, tokenType }),
     {
       enabled: !!marketPubkey,
       staleTime: 30 * 1000, //? 30sec
@@ -89,7 +89,7 @@ export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => 
       .value()
   }, [optimisticOffers, data, marketPubkey])
 
-  const updateOrAddOffer = (offer: Offer) => {
+  const updateOrAddOffer = (offer: core.Offer) => {
     updateOffer([offer])
   }
 

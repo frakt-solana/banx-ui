@@ -2,7 +2,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { useIsLedger, useLoansRequestsOptimistic } from '@banx/store'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -29,7 +29,7 @@ export const useRequestLoansTransactions = () => {
   const { update: updateLoansOptimistic } = useLoansRequestsOptimistic()
   const { selection, clear: clearSelection } = useSelectedLoans()
 
-  const delist = async (loan: Loan) => {
+  const delist = async (loan: core.Loan) => {
     const loadingSnackbarId = uniqueId()
 
     try {
@@ -37,7 +37,7 @@ export const useRequestLoansTransactions = () => {
 
       const txnData = await createDelistTxnData({ loan, walletAndConnection })
 
-      await new TxnExecutor<Loan>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor<core.Loan>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
         .addTxnData(txnData)
         .on('sentSome', (results) => {
           results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -91,7 +91,7 @@ export const useRequestLoansTransactions = () => {
         selection.map(({ loan }) => createDelistTxnData({ loan, walletAndConnection })),
       )
 
-      await new TxnExecutor<Loan>(walletAndConnection, {
+      await new TxnExecutor<core.Loan>(walletAndConnection, {
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
         chunkSize: isLedger ? 5 : 40,
       })

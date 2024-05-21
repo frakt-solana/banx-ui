@@ -12,7 +12,7 @@ import { Slider } from '@banx/components/Slider'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import { Modal } from '@banx/components/modals/BaseModal'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { useMarketOffers } from '@banx/pages/LendPage'
 import { useLoansOptimistic, useModal, useTokenType } from '@banx/store'
@@ -48,7 +48,7 @@ import { useSelectedLoans } from '../../loansState'
 import styles from './ActionsCell.module.less'
 
 interface RefinanceModalProps {
-  loan: Loan
+  loan: core.Loan
 }
 
 export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {

@@ -8,7 +8,7 @@ import { TensorLink } from '@banx/components/SolanaLinks'
 import { useWalletModal } from '@banx/components/WalletModal'
 import { Modal } from '@banx/components/modals/BaseModal'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { SECONDS_IN_DAY } from '@banx/constants'
 import { useModal } from '@banx/store'
 import { isFreezeLoan } from '@banx/utils'
@@ -18,7 +18,7 @@ import { useInstantTransactions } from '../hooks'
 import styles from '../InstantLendTable.module.less'
 
 interface RefinanceCellProps {
-  loan: Loan
+  loan: core.Loan
   isCardView: boolean
   disabledAction: boolean
 }
@@ -71,8 +71,8 @@ export const ActionsCell: FC<RefinanceCellProps> = ({ loan, isCardView, disabled
 }
 
 interface WarningModalProps {
-  loan: Loan
-  lendToBorrow: (loan: Loan) => void
+  loan: core.Loan
+  lendToBorrow: (loan: core.Loan) => void
 }
 
 const WarningModal: FC<WarningModalProps> = ({ loan, lendToBorrow }) => {

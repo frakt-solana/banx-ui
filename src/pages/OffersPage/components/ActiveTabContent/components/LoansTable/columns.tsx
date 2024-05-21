@@ -13,7 +13,7 @@ import {
 import Timer from '@banx/components/Timer'
 import Tooltip from '@banx/components/Tooltip'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { Coin, Snowflake } from '@banx/icons'
 import { calculateClaimValue, isLoanAbleToTerminate } from '@banx/pages/OffersPage'
 import {
@@ -33,7 +33,7 @@ import styles from './LoansTable.module.less'
 
 interface GetTableColumnsProps {
   findLoanInSelection: (loanPubkey: string) => LoanOptimistic | null
-  toggleLoanInSelection: (loan: Loan) => void
+  toggleLoanInSelection: (loan: core.Loan) => void
   onSelectAll: () => void
 
   hasSelectedLoans: boolean
@@ -47,7 +47,7 @@ export const getTableColumns = ({
   hasSelectedLoans,
   isCardView,
 }: GetTableColumnsProps) => {
-  const columns: ColumnType<Loan>[] = [
+  const columns: ColumnType<core.Loan>[] = [
     {
       key: 'collateral',
       title: (
@@ -146,7 +146,7 @@ export const getTableColumns = ({
   return columns
 }
 
-const createRightContentJSX = (loan: Loan) => {
+const createRightContentJSX = (loan: core.Loan) => {
   const repaymentCallLenderReceives = calculateRepaymentCallLenderReceivesAmount(loan)
   const freezeExpiredAt = calculateFreezeExpiredAt(loan)
 

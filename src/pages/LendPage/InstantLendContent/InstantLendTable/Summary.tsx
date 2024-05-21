@@ -10,7 +10,7 @@ import { DisplayValue, createPercentValueJSX } from '@banx/components/TableCompo
 import { useWalletModal } from '@banx/components/WalletModal'
 import { Modal } from '@banx/components/modals/BaseModal'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { SECONDS_IN_DAY } from '@banx/constants'
 import { useModal } from '@banx/store'
 import { calcWeightedAverage, isFreezeLoan, isLoanTerminating } from '@banx/utils'
@@ -21,7 +21,7 @@ import { useLoansState } from './loansState'
 
 import styles from './InstantLendTable.module.less'
 
-export const Summary: FC<{ loans: Loan[] }> = ({ loans }) => {
+export const Summary: FC<{ loans: core.Loan[] }> = ({ loans }) => {
   const { connected } = useWallet()
   const { toggleVisibility } = useWalletModal()
   const { lendToBorrowAll } = useInstantTransactions()
@@ -92,7 +92,7 @@ export const Summary: FC<{ loans: Loan[] }> = ({ loans }) => {
 }
 
 interface WarningModalProps {
-  loans: Loan[]
+  loans: core.Loan[]
   lendToBorrowAll: () => Promise<void>
 }
 
@@ -123,7 +123,7 @@ const WarningModal: FC<WarningModalProps> = ({ loans, lendToBorrowAll }) => {
   )
 }
 
-const calculateSummaryInfo = (loans: Loan[]) => {
+const calculateSummaryInfo = (loans: core.Loan[]) => {
   const totalDebt = sumBy(loans, (loan) => calculateLendValue(loan))
 
   const totalLoanValue = map(loans, (loan) => calculateLendValue(loan))

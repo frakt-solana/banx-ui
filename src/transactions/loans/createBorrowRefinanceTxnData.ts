@@ -13,19 +13,19 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
-import { Loan, Offer } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 export type BorrowRefinanceActionOptimisticResult = {
-  loan: Loan
+  loan: core.Loan
   // oldLoan: Loan
-  offer: Offer
+  offer: core.Offer
 }
 
 type CreateBorrowRefinanceTxnDataParams = {
-  loan: Loan
-  offer: Offer
+  loan: core.Loan
+  offer: core.Offer
   solToRefinance: number
   aprRate: number //? Base points
   walletAndConnection: WalletAndConnection

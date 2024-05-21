@@ -5,14 +5,14 @@ import moment from 'moment'
 
 import { DisplayValue, HorizontalCell } from '@banx/components/TableComponents'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { calculateClaimValue, calculateLentValue } from '@banx/pages/OffersPage'
 import { calcLoanBorrowedAmount } from '@banx/utils'
 
 import styles from '../LoansTable.module.less'
 
 interface ClaimCellProps {
-  loan: Loan
+  loan: core.Loan
 }
 
 export const ClaimCell: FC<ClaimCellProps> = ({ loan }) => {

@@ -10,7 +10,7 @@ import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { useIsLedger } from '@banx/store'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -34,12 +34,12 @@ import { getTerminateStatsInfo } from './helpers'
 import styles from './Summary.module.less'
 
 interface SummaryProps {
-  loansToClaim: Loan[]
-  loansToTerminate: Loan[]
-  updateOrAddLoan: (loan: Loan) => void
+  loansToClaim: core.Loan[]
+  loansToTerminate: core.Loan[]
+  updateOrAddLoan: (loan: core.Loan) => void
   hideLoans: (...mints: string[]) => void
-  selectedLoans: Loan[]
-  setSelection: (loans: Loan[], walletPublicKey: string) => void
+  selectedLoans: core.Loan[]
+  setSelection: (loans: core.Loan[], walletPublicKey: string) => void
 }
 
 export const Summary: FC<SummaryProps> = ({
@@ -69,7 +69,7 @@ export const Summary: FC<SummaryProps> = ({
         selectedLoans.map((loan) => createTerminateTxnData({ loan, walletAndConnection })),
       )
 
-      await new TxnExecutor<Loan>(walletAndConnection, {
+      await new TxnExecutor<core.Loan>(walletAndConnection, {
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
         chunkSize: isLedger ? 5 : 40,
       })
@@ -119,7 +119,7 @@ export const Summary: FC<SummaryProps> = ({
         loansToClaim.map((loan) => createClaimTxnData({ loan, walletAndConnection })),
       )
 
-      await new TxnExecutor<Loan>(walletAndConnection, {
+      await new TxnExecutor<core.Loan>(walletAndConnection, {
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
         chunkSize: isLedger ? 5 : 40,
       })

@@ -8,7 +8,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 import { Button } from '@banx/components/Buttons'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { Offer, UserOffer } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { useTokenType } from '@banx/store'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -27,8 +27,8 @@ import {
 import styles from './Summary.module.less'
 
 interface SummaryProps {
-  updateOrAddOffer: (offer: Offer[]) => void
-  offers: UserOffer[]
+  updateOrAddOffer: (offer: core.Offer[]) => void
+  offers: core.UserOffer[]
 }
 
 const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {

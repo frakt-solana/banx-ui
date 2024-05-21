@@ -1,15 +1,15 @@
 import produce from 'immer'
 import { create } from 'zustand'
 
-import { BorrowNft } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 
 interface SelectedNFTsState {
-  selection: BorrowNft[]
-  set: (selection: BorrowNft[]) => void
-  find: (mint: string) => BorrowNft | null
-  add: (nft: BorrowNft) => void
+  selection: core.BorrowNft[]
+  set: (selection: core.BorrowNft[]) => void
+  find: (mint: string) => core.BorrowNft | null
+  add: (nft: core.BorrowNft) => void
   remove: (mint: string) => void
-  toggle: (nft: BorrowNft) => void
+  toggle: (nft: core.BorrowNft) => void
   clear: () => void
 }
 

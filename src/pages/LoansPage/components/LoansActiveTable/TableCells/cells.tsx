@@ -6,7 +6,7 @@ import {
   createPercentValueJSX,
 } from '@banx/components/TableComponents'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import {
   HealthColorIncreasing,
@@ -33,7 +33,7 @@ const TooltipRow: FC<TooltipRowProps> = ({ label, value }) => (
 )
 
 interface CellProps {
-  loan: Loan
+  loan: core.Loan
 }
 
 export const DebtCell: FC<CellProps> = ({ loan }) => {

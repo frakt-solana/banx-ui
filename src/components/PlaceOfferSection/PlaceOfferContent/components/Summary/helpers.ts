@@ -1,10 +1,10 @@
-import { Offer } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { WEEKS_IN_YEAR } from '@banx/constants'
 import { calcSyntheticLoanValue } from '@banx/store'
 
 interface CalcOfferSizeProps {
-  initialOffer: Offer | undefined
-  updatedOffer: Offer | undefined
+  initialOffer: core.Offer | undefined
+  updatedOffer: core.Offer | undefined
   hasFormChanges: boolean
 }
 
@@ -40,8 +40,8 @@ export const calcMaxLtv = ({
   collectionFloor,
   hasFormChanges,
 }: {
-  initialOffer: Offer | undefined
-  updatedOffer: Offer | undefined
+  initialOffer: core.Offer | undefined
+  updatedOffer: core.Offer | undefined
   collectionFloor: number
   hasFormChanges: boolean
 }) => {

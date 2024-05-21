@@ -2,7 +2,7 @@ import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
 import { HeaderCell, NftInfoCell } from '@banx/components/TableComponents'
 
-import { Loan, Offer } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 
 import { APRCell, ActionsCell, DebtCell, LTVCell, StatusCell } from './TableCells'
 import { LoanOptimistic } from './loansState'
@@ -12,10 +12,10 @@ import styles from './LoansActiveTable.module.less'
 interface GetTableColumnsProps {
   onSelectAll: () => void
   findLoanInSelection: (loanPubkey: string) => LoanOptimistic | null
-  toggleLoanInSelection: (loan: Loan) => void
+  toggleLoanInSelection: (loan: core.Loan) => void
   hasSelectedLoans: boolean
   isCardView: boolean
-  offers: Record<string, Offer[]>
+  offers: Record<string, core.Offer[]>
 }
 
 export const getTableColumns = ({
@@ -25,8 +25,8 @@ export const getTableColumns = ({
   hasSelectedLoans,
   isCardView,
   offers,
-}: GetTableColumnsProps): ColumnType<Loan>[] => {
-  const columns: ColumnType<Loan>[] = [
+}: GetTableColumnsProps): ColumnType<core.Loan>[] => {
+  const columns: ColumnType<core.Loan>[] = [
     {
       key: 'collateral',
       title: (

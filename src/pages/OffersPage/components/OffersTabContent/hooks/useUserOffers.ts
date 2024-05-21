@@ -4,7 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 import { chain, map, maxBy } from 'lodash'
 
-import { fetchUserOffers } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import {
   isOfferNewer,
@@ -26,7 +26,7 @@ export const useUserOffers = () => {
 
   const { data, isLoading, isFetching, isFetched } = useQuery(
     [useUserOffers, publicKeyString, tokenType],
-    () => fetchUserOffers({ walletPubkey: publicKeyString, tokenType }),
+    () => core.fetchUserOffers({ walletPubkey: publicKeyString, tokenType }),
     {
       enabled: !!publicKeyString,
       refetchOnWindowFocus: false,

@@ -8,20 +8,20 @@ import {
 import { BondOfferV2, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
-import { BorrowNft, Loan, Offer } from '@banx/api/core'
 import { getHeliusAssetProof } from '@banx/api/helius'
+import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { calculateApr, sendTxnPlaceHolder } from '@banx/utils'
 
 import { BorrowType } from '../constants'
 import { fetchRuleset } from '../functions'
 
-export type BorrowTxnOptimisticResult = { loan: Loan; offer: Offer }
+export type BorrowTxnOptimisticResult = { loan: core.Loan; offer: core.Offer }
 
 export type CreateBorrowTxnDataParams = {
-  nft: BorrowNft
+  nft: core.BorrowNft
   loanValue: number
-  offer: Offer
+  offer: core.Offer
   optimizeIntoReserves: boolean
   tokenType: LendingTokenType
 }
@@ -206,7 +206,7 @@ const getTxnDataByBorrowType = async ({
   return { instructions, signers, optimisticResult: optimisticResults[0] }
 }
 
-const getNftBorrowType = (nft: BorrowNft): BorrowType => {
+const getNftBorrowType = (nft: core.BorrowNft): BorrowType => {
   if (nft.loan.banxStake && nft.loan.banxStake !== EMPTY_PUBKEY.toBase58())
     return BorrowType.StakedBanx
   if (nft.nft.compression) return BorrowType.CNft

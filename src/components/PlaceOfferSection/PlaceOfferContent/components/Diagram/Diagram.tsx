@@ -2,7 +2,7 @@ import React, { FC, useRef, useState } from 'react'
 
 import { Skeleton } from 'antd'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { useTokenType } from '@banx/store'
 
 import { DiagramMark } from './components'
@@ -12,7 +12,7 @@ import styles from './Diagram.module.less'
 
 export interface Mark {
   value: number
-  loan?: Loan
+  loan?: core.Loan
 }
 
 interface DiagramProps {

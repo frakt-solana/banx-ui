@@ -3,7 +3,7 @@ import { BondOfferOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/pe
 import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
-import { Offer } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { useTokenType } from '@banx/store'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -37,8 +37,8 @@ export const useOfferTransactions = ({
   loansAmount: number
   loanValue: number
   deltaValue: number
-  optimisticOffer?: Offer
-  updateOrAddOffer: (offer: Offer) => void
+  optimisticOffer?: core.Offer
+  updateOrAddOffer: (offer: core.Offer) => void
   resetFormValues: () => void
   exitEditMode: () => void
 }) => {

@@ -8,13 +8,13 @@ import { TensorLink } from '@banx/components/SolanaLinks'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { MarketPreview } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { MARKETS_WITH_CUSTOM_APR } from '@banx/constants'
 import { Fire } from '@banx/icons'
 
 import styles from './MarketOverviewInfo.module.less'
 
-export const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
+export const MarketMainInfo: FC<{ market: core.MarketPreview }> = ({ market }) => {
   const { collectionName, isHot, collectionFloor, bestOffer, tensorSlug } = market
 
   return (
@@ -49,7 +49,7 @@ export const MarketMainInfo: FC<{ market: MarketPreview }> = ({ market }) => {
 }
 
 interface MarketAdditionalInfoProps {
-  market: MarketPreview
+  market: core.MarketPreview
   isCardOpen: boolean
 }
 

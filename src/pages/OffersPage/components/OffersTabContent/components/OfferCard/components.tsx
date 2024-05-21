@@ -6,14 +6,14 @@ import { TensorLink } from '@banx/components/SolanaLinks'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
-import { UserOffer } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { useMarketsPreview } from '@banx/pages/LendPage'
 import { HealthColorIncreasing, calculateApr, getColorByPercent } from '@banx/utils'
 
 import styles from './OfferCard.module.less'
 
 interface MainOfferOverviewProps {
-  offer: UserOffer
+  offer: core.UserOffer
 }
 
 export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer }) => {
@@ -49,7 +49,7 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer }) => {
 }
 
 interface AdditionalOfferOverviewProps {
-  offer: UserOffer
+  offer: core.UserOffer
   className?: string
 }
 

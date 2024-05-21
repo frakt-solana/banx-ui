@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 
-import { MarketPreview, Offer } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { SyntheticOffer, convertToSynthetic, useSyntheticOffers } from '@banx/store'
 
@@ -11,7 +11,7 @@ type UseMarketOrders = (props: { marketPubkey: string; offerPubkey: string }) =>
   offers: SyntheticOffer[]
   isLoading: boolean
   bestOffer: SyntheticOffer
-  market: MarketPreview | undefined
+  market: core.MarketPreview | undefined
 }
 
 export const useMarketOrders: UseMarketOrders = ({ marketPubkey, offerPubkey }) => {
@@ -47,7 +47,7 @@ export const useMarketOrders: UseMarketOrders = ({ marketPubkey, offerPubkey }) 
 }
 
 type UseProcessedOffers = (props: {
-  offers: Offer[]
+  offers: core.Offer[]
   marketPubkey: string
   editableOfferPubkey: string
 }) => SyntheticOffer[]

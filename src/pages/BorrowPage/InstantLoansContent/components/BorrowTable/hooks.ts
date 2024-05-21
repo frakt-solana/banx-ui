@@ -12,7 +12,7 @@ import {
   createLoanSubscribeNotificationsTitle,
 } from '@banx/components/modals'
 
-import { BorrowNft, Offer } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { useBorrowBonkRewardsAvailability } from '@banx/hooks'
 import { PATHS } from '@banx/router'
 import {
@@ -41,8 +41,8 @@ import { TableNftData } from './types'
 import styles from './BorrowTable.module.less'
 
 export interface UseBorrowTableProps {
-  nfts: BorrowNft[]
-  rawOffers: Record<string, Offer[]>
+  nfts: core.BorrowNft[]
+  rawOffers: Record<string, core.Offer[]>
   maxLoanValueByMarket: Record<string, number>
   goToRequestLoanTab: () => void
 }

@@ -9,7 +9,7 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
-import { Loan, Offer } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
@@ -21,11 +21,11 @@ import { sendTxnPlaceHolder } from '@banx/utils'
 // }
 
 type CreateInstantRefinanceTxnData = (params: {
-  loan: Loan
-  bestOffer: Offer
+  loan: core.Loan
+  bestOffer: core.Offer
   aprRate: number
   walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<Offer>>
+}) => Promise<CreateTxnData<core.Offer>>
 
 export const createInstantRefinanceTxnData: CreateInstantRefinanceTxnData = async ({
   loan,

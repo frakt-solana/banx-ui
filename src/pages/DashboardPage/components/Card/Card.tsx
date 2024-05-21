@@ -10,7 +10,7 @@ import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
-import { BorrowNft, MarketPreview, Offer } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { calculateApr, calculateLoanValue } from '@banx/utils'
 
@@ -73,7 +73,7 @@ export const LendCard: FC<LendCardProps> = ({ amountOfLoans, offerTvl, apr, ...p
 }
 
 interface MarketCardProps {
-  market: MarketPreview
+  market: core.MarketPreview
   onClick: () => void
 }
 
@@ -102,9 +102,9 @@ export const MarketCard: FC<MarketCardProps> = ({ market, onClick }) => {
 }
 
 interface BorrowCardProps {
-  nft: BorrowNft
+  nft: core.BorrowNft
   onClick: () => void
-  findBestOffer: (marketPubkey: string) => Offer | null
+  findBestOffer: (marketPubkey: string) => core.Offer | null
   tokenType: LendingTokenType
 }
 

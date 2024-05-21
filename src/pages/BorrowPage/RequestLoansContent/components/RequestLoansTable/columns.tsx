@@ -9,14 +9,14 @@ import {
   RarityCell,
 } from '@banx/components/TableComponents'
 
-import { BorrowNft } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { calcBorrowValueWithProtocolFee } from '@banx/utils'
 
 import styles from './RequestLoansTable.module.less'
 
 interface GetTableColumnsProps {
-  findNftInSelection: (mint: string) => BorrowNft | null
-  toggleNftInSelection: (nft: BorrowNft) => void
+  findNftInSelection: (mint: string) => core.BorrowNft | null
+  toggleNftInSelection: (nft: core.BorrowNft) => void
   hasSelectedNfts: boolean
   onSelectAll: () => void
   requestedLoanValue: number
@@ -29,7 +29,7 @@ export const getTableColumns = ({
   toggleNftInSelection,
   findNftInSelection,
 }: GetTableColumnsProps) => {
-  const columns: ColumnType<BorrowNft>[] = [
+  const columns: ColumnType<core.BorrowNft>[] = [
     {
       key: 'collateral',
       title: (

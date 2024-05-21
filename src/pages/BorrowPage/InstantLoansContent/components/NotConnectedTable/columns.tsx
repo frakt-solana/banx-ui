@@ -6,10 +6,10 @@ import {
   NftInfoCell,
 } from '@banx/components/TableComponents'
 
-import { MarketPreview } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 
 export const getTableColumns = () => {
-  const columns: ColumnType<MarketPreview>[] = [
+  const columns: ColumnType<core.MarketPreview>[] = [
     {
       key: 'collection',
       title: <HeaderCell label="Collection" align="left" />,

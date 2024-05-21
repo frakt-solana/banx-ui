@@ -7,7 +7,7 @@ import {
   NftInfoCell,
 } from '@banx/components/TableComponents'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 
 import { APRCell, ActionsCell, FreezeCell, LTVCell } from './TableCells'
 import { LoanOptimistic } from './loansState'
@@ -17,10 +17,10 @@ import styles from './RequestLoansTable.module.less'
 type GetTableColumns = (props: {
   onSelectAll: () => void
   findLoanInSelection: (loanPubkey: string) => LoanOptimistic | null
-  toggleLoanInSelection: (loan: Loan) => void
+  toggleLoanInSelection: (loan: core.Loan) => void
   hasSelectedLoans: boolean
   isCardView: boolean
-}) => ColumnType<Loan>[]
+}) => ColumnType<core.Loan>[]
 
 export const getTableColumns: GetTableColumns = ({
   onSelectAll,
@@ -29,7 +29,7 @@ export const getTableColumns: GetTableColumns = ({
   hasSelectedLoans,
   isCardView,
 }) => {
-  const columns: ColumnType<Loan>[] = [
+  const columns: ColumnType<core.Loan>[] = [
     {
       key: 'collateral',
       title: (

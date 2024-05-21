@@ -8,7 +8,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 import { Button } from '@banx/components/Buttons'
 import { TensorLink } from '@banx/components/SolanaLinks'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { useHiddenNftsMints } from '@banx/pages/OffersPage'
 import { useModal } from '@banx/store'
 import {
@@ -32,7 +32,7 @@ import ManageModal from '../../ManageModal'
 import styles from './ActionsCell.module.less'
 
 interface ActionsCellProps {
-  loan: Loan
+  loan: core.Loan
   isCardView?: boolean
 }
 

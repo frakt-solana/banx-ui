@@ -3,7 +3,7 @@ import { FC } from 'react'
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 import { Modal } from '@banx/components/modals/BaseModal'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { useModal } from '@banx/store'
 
 import { ClosureContent, RepaymentCallContent } from './components'
@@ -11,7 +11,7 @@ import { ClosureContent, RepaymentCallContent } from './components'
 import styles from './ManageModal.module.less'
 
 interface ManageModalProps {
-  loan: Loan
+  loan: core.Loan
 }
 
 const ManageModal: FC<ManageModalProps> = ({ loan }) => {

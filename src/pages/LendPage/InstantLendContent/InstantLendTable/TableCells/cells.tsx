@@ -6,14 +6,14 @@ import {
   createPercentValueJSX,
 } from '@banx/components/TableComponents'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { HealthColorIncreasing, getColorByPercent, isLoanTerminating } from '@banx/utils'
 
 import { calculateLendValue, calculateLenderApr } from '../helpers'
 
 import styles from '../InstantLendTable.module.less'
 
-export const DebtCell: FC<{ loan: Loan }> = ({ loan }) => {
+export const DebtCell: FC<{ loan: core.Loan }> = ({ loan }) => {
   const lendValue = calculateLendValue(loan)
 
   const collectionFloor = loan.nft.collectionFloor
@@ -37,7 +37,7 @@ const createTooltipContent = (label: string, value: number) => (
   </div>
 )
 
-export const LTVCell: FC<{ loan: Loan }> = ({ loan }) => {
+export const LTVCell: FC<{ loan: core.Loan }> = ({ loan }) => {
   const lendValue = calculateLendValue(loan)
 
   const collectionFloor = loan.nft.collectionFloor
@@ -51,7 +51,7 @@ export const LTVCell: FC<{ loan: Loan }> = ({ loan }) => {
   )
 }
 
-export const APRCell: FC<{ loan: Loan }> = ({ loan }) => {
+export const APRCell: FC<{ loan: core.Loan }> = ({ loan }) => {
   const isTerminatingStatus = isLoanTerminating(loan)
 
   const apr = isTerminatingStatus

@@ -6,7 +6,7 @@ import {
 import { BondOfferV2, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
-import { Offer } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
@@ -14,7 +14,7 @@ type CreateUpdateBondingOfferTxnData = (params: {
   loanValue: number //? human number
   loansAmount: number
   deltaValue: number //? human number
-  offer: Offer
+  offer: core.Offer
   tokenType: LendingTokenType
   walletAndConnection: WalletAndConnection
 }) => Promise<CreateTxnData<BondOfferOptimistic>>

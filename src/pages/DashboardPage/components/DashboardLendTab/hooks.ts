@@ -5,7 +5,7 @@ import { filter, includes } from 'lodash'
 import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 
-import { MarketPreview } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { createGlobalState } from '@banx/store/functions'
 
@@ -22,7 +22,7 @@ export const useDashboardLendTab = () => {
 
 const useCollectionsStore = createGlobalState<string[]>([])
 
-const useFilteredMarkets = (marketsPreview: MarketPreview[]) => {
+const useFilteredMarkets = (marketsPreview: core.MarketPreview[]) => {
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
 
   const filteredMarkets = useMemo(() => {

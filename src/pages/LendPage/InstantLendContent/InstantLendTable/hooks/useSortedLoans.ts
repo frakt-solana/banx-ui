@@ -4,7 +4,7 @@ import { orderBy } from 'lodash'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { isLoanTerminating } from '@banx/utils'
 
 import { calculateLendValue, calculateLenderApr } from '../helpers'
@@ -18,7 +18,7 @@ enum SortField {
   FREEZE = 'freeze',
 }
 
-type SortValueGetter = (loan: Loan) => number
+type SortValueGetter = (loan: core.Loan) => number
 
 const SORT_OPTIONS: SortOption<SortField>[] = [
   { label: 'LTV', value: [SortField.LTV, 'asc'] },
@@ -46,7 +46,7 @@ const SORT_VALUE_MAP: Record<SortField, SortValueGetter> = {
   [SortField.FREEZE]: (loan) => loan.bondTradeTransaction.terminationFreeze,
 }
 
-export const useSortedLoans = (loans: Loan[]) => {
+export const useSortedLoans = (loans: core.Loan[]) => {
   const [sortOption, setSortOption] = useState(SORT_OPTIONS[0])
 
   const sortedLoans = useMemo(() => {

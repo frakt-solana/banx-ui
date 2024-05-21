@@ -4,7 +4,7 @@ import { get, set } from 'idb-keyval'
 import { map } from 'lodash'
 import { create } from 'zustand'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 
 import { useTokenType } from '../../useTokenType'
 import {
@@ -22,9 +22,9 @@ const BANX_LOANS_REQUESTS_OPTIMISTICS_LS_KEY = '@banx.loansRequestsOptimistics'
 interface LoansRequestsOptimisticStore {
   optimisticLoans: LoanOptimistic[]
   find: (publicKey: string, walletPublicKey: string) => LoanOptimistic | undefined
-  add: (loans: Loan[], walletPublicKey: string) => void
+  add: (loans: core.Loan[], walletPublicKey: string) => void
   remove: (publicKeys: string[], walletPublicKey: string) => void
-  update: (loans: Loan[], walletPublicKey: string) => void
+  update: (loans: core.Loan[], walletPublicKey: string) => void
   setState: (optimisticLoans: LoanOptimistic[]) => void
 }
 
@@ -54,7 +54,7 @@ const useOptimisticLoansRequestsStore = create<LoansRequestsOptimisticStore>((se
     return findLoan(optimisticLoans, publicKey, walletPublicKey)
   },
 
-  update: (loans: Loan[], walletPublicKey) => {
+  update: (loans: core.Loan[], walletPublicKey) => {
     if (!walletPublicKey) return
     set((state) => {
       const nextLoans = updateLoans(

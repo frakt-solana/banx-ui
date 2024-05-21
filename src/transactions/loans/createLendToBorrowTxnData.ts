@@ -7,19 +7,19 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { isLoanListed, sendTxnPlaceHolder } from '@banx/utils'
 
 type CreateLendToBorrowTxnDataParams = {
-  loan: Loan
+  loan: core.Loan
   aprRate: number
   walletAndConnection: WalletAndConnection
 }
 
 export type CreateLendToBorrowActionOptimisticResult = {
-  loan: Loan
-  oldLoan: Loan
+  loan: core.Loan
+  oldLoan: core.Loan
 }
 
 type CreateLendToBorrowTxnData = (

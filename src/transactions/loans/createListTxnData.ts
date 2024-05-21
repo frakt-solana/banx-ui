@@ -10,7 +10,7 @@ import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
-import { BorrowNft, Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
@@ -18,7 +18,7 @@ import { ListingType } from '../constants'
 import { fetchRuleset } from '../functions'
 
 type CreateListTxnDataParams = {
-  nft: BorrowNft
+  nft: core.BorrowNft
   aprRate: number
   loanValue: number
   freeze: number
@@ -26,7 +26,7 @@ type CreateListTxnDataParams = {
   walletAndConnection: WalletAndConnection
 }
 
-type CreateListTxnData = (params: CreateListTxnDataParams) => Promise<CreateTxnData<Loan>>
+type CreateListTxnData = (params: CreateListTxnDataParams) => Promise<CreateTxnData<core.Loan>>
 
 export const createListTxnData: CreateListTxnData = async (params) => {
   const { nft, walletAndConnection } = params
@@ -172,7 +172,7 @@ const getIxnsAndSignersByListingType = async ({
   return { instructions, signers, optimisticResults }
 }
 
-export const getNftListingType = (nft: BorrowNft) => {
+export const getNftListingType = (nft: core.BorrowNft) => {
   if (nft.loan.banxStake && nft.loan.banxStake !== EMPTY_PUBKEY.toBase58()) {
     return ListingType.StakedBanx
   }

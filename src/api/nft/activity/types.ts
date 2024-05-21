@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 import { BasePaginationRequest, PaginationMeta } from '@banx/types'
 
-import { NFTSchema } from '../../core'
+import { NFTSchema } from '../core'
 
 export const LenderActivitySchema = z.object({
   id: z.string(),

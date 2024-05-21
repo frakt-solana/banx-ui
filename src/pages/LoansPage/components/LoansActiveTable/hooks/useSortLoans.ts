@@ -4,7 +4,7 @@ import { chain, orderBy } from 'lodash'
 
 import { SortOption, SortOrder } from '@banx/components/SortDropdown'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import {
   calculateLoanRepayValue,
   isLoanLiquidated,
@@ -22,7 +22,7 @@ enum SortField {
   DURATION = 'duration',
 }
 
-type SortValueGetter = (loan: Loan) => number
+type SortValueGetter = (loan: core.Loan) => number
 
 const SORT_OPTIONS: SortOption<SortField>[] = [
   { label: 'Status', value: [SortField.STATUS, 'desc'] },
@@ -40,7 +40,7 @@ const SORT_VALUE_MAP: Record<SortField, string | SortValueGetter> = {
   [SortField.STATUS]: '',
 }
 
-const sortStatusLoans = (loans: Loan[], order: SortOrder) => {
+const sortStatusLoans = (loans: core.Loan[], order: SortOrder) => {
   const terminatingLoans = chain(loans)
     .filter(isLoanTerminating)
     .sortBy((loan) => loan.fraktBond.refinanceAuctionStartedAt)
@@ -67,7 +67,7 @@ const sortStatusLoans = (loans: Loan[], order: SortOrder) => {
   return order === 'asc' ? combinedLoans : combinedLoans.reverse()
 }
 
-export const useSortLoans = (loans: Loan[]) => {
+export const useSortLoans = (loans: core.Loan[]) => {
   const [sortOption, setSortOption] = useState(SORT_OPTIONS[0])
 
   const sortedLoans = useMemo(() => {

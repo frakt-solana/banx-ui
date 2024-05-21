@@ -8,7 +8,7 @@ import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 import Tooltip from '@banx/components/Tooltip'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { Underwater } from '@banx/icons'
 import { isLoanAbleToTerminate } from '@banx/pages/OffersPage'
 import { ViewState, useTableView, useTokenType } from '@banx/store'
@@ -86,7 +86,7 @@ export const LoansTable = () => {
   )
 
   const onRowClick = useCallback(
-    (loan: Loan) => {
+    (loan: core.Loan) => {
       if (!isLoanAbleToTerminate(loan) || isLoanListed(loan)) return
       toggleLoanInSelection(loan, walletPublicKeyString)
     },
@@ -106,22 +106,23 @@ export const LoansTable = () => {
       onRowClick,
       activeRowParams: [
         {
-          condition: (loan: Loan) => isLoanTerminating(loan),
+          condition: (loan: core.Loan) => isLoanTerminating(loan),
           className: styles.terminated,
           cardClassName: styles.terminated,
         },
         {
-          condition: (loan: Loan) => isLoanLiquidated(loan),
+          condition: (loan: core.Loan) => isLoanLiquidated(loan),
           className: styles.liquidated,
           cardClassName: styles.liquidated,
         },
         {
-          condition: (loan: Loan) => isUnderWaterLoan(loan) && !isLoanRepaymentCallActive(loan),
+          condition: (loan: core.Loan) =>
+            isUnderWaterLoan(loan) && !isLoanRepaymentCallActive(loan),
           className: styles.underwater,
           cardClassName: styles.underwater,
         },
         {
-          condition: (loan: Loan) => isLoanRepaymentCallActive(loan),
+          condition: (loan: core.Loan) => isLoanRepaymentCallActive(loan),
           className: styles.activeRepaymentCall,
           cardClassName: styles.activeRepaymentCall,
         },

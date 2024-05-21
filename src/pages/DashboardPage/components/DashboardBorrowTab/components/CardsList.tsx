@@ -4,7 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 import EmptyList from '@banx/components/EmptyList'
 
-import { BorrowNft, MarketPreview, Offer } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { useFakeInfinityScroll } from '@banx/hooks'
 import { useTokenType } from '@banx/store'
 
@@ -13,10 +13,10 @@ import { BorrowCard, MarketCard } from '../../Card'
 import styles from '../DashboardBorrowTab.module.less'
 
 interface CardsListProps {
-  nfts: BorrowNft[]
-  marketsPreview: MarketPreview[]
-  borrow: (nft: BorrowNft) => void
-  findBestOffer: (marketPubkey: string) => Offer | null
+  nfts: core.BorrowNft[]
+  marketsPreview: core.MarketPreview[]
+  borrow: (nft: core.BorrowNft) => void
+  findBestOffer: (marketPubkey: string) => core.Offer | null
   goToBorrowPage: () => void
 }
 

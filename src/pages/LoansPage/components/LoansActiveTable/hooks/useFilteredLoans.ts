@@ -2,13 +2,13 @@ import { useMemo, useState } from 'react'
 
 import { filter, size } from 'lodash'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { createGlobalState } from '@banx/store/functions'
 import { isLoanRepaymentCallActive, isLoanTerminating } from '@banx/utils'
 
 const useCollectionsStore = createGlobalState<string[]>([])
 
-export const useFilterLoans = (loans: Loan[]) => {
+export const useFilterLoans = (loans: core.Loan[]) => {
   const [isTerminationFilterEnabled, setTerminationFilterState] = useState(false)
   const [isRepaymentCallFilterEnabled, setIsRepaymentCallFilterState] = useState(false)
 
@@ -31,7 +31,7 @@ export const useFilterLoans = (loans: Loan[]) => {
   }, [loans, selectedCollections])
 
   const { filteredLoansBySelectedCollection, filteredAllLoans } = useMemo(() => {
-    const applyFilter = (loans: Loan[]) => {
+    const applyFilter = (loans: core.Loan[]) => {
       if (isTerminationFilterEnabled) return filter(loans, isLoanTerminating)
       if (isRepaymentCallFilterEnabled) return filter(loans, isLoanRepaymentCallActive)
       return loans

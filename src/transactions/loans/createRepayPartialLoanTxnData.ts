@@ -4,15 +4,15 @@ import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/gette
 import { repayPartialPerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '@banx/utils'
 
 type CreateRepayPartialLoanTxnData = (params: {
-  loan: Loan
+  loan: core.Loan
   fractionToRepay: number //? F.E 50% => 5000
   walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<Loan>>
+}) => Promise<CreateTxnData<core.Loan>>
 
 export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = async ({
   fractionToRepay,
@@ -46,7 +46,7 @@ export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = asyn
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const optimisticResult: Loan = optimisticResults.map((optimistic) => ({
+  const optimisticResult: core.Loan = optimisticResults.map((optimistic) => ({
     publicKey: optimistic.fraktBond.publicKey,
     fraktBond: optimistic.fraktBond,
     bondTradeTransaction: optimistic.bondTradeTransaction,

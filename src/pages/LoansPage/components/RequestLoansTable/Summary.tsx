@@ -9,7 +9,7 @@ import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { calcWeightedAverage } from '@banx/utils'
 
 import { calcWeightedApr } from '../LoansActiveTable/helpers'
@@ -19,9 +19,9 @@ import { useRequestLoansTransactions } from './hooks'
 import styles from './RequestLoansTable.module.less'
 
 interface SummaryProps {
-  loans: Loan[]
+  loans: core.Loan[]
   selectedLoans: LoanOptimistic[]
-  setSelection: (loans: Loan[], walletPublicKey: string) => void
+  setSelection: (loans: core.Loan[], walletPublicKey: string) => void
 }
 
 export const Summary: FC<SummaryProps> = ({
@@ -84,7 +84,7 @@ export const Summary: FC<SummaryProps> = ({
   )
 }
 
-const calculateWeightedLtv = (loans: Loan[]) => {
+const calculateWeightedLtv = (loans: core.Loan[]) => {
   const totalBorrowArray = map(loans, (loan) => loan.fraktBond.borrowedAmount)
   const totalLtvArray = map(
     loans,

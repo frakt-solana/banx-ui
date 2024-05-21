@@ -2,7 +2,7 @@ import { FC, useMemo } from 'react'
 
 import { Button } from '@banx/components/Buttons'
 
-import { Loan, Offer } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { useModal } from '@banx/store'
 import { isLoanTerminating, isOfferNotEmpty } from '@banx/utils'
 
@@ -12,8 +12,8 @@ import { RepayModal } from './RepayModal'
 import styles from './ActionsCell.module.less'
 
 interface ActionsCellProps {
-  loan: Loan
-  offers: Record<string, Offer[]>
+  loan: core.Loan
+  offers: Record<string, core.Offer[]>
   isCardView: boolean
   disableActions: boolean
 }

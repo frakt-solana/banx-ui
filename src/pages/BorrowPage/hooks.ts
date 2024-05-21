@@ -7,7 +7,7 @@ import { produce } from 'immer'
 import { chain, filter, groupBy, isEmpty, map, maxBy, sortBy, sumBy, uniqBy } from 'lodash'
 import { create } from 'zustand'
 
-import { BorrowNft, Offer, fetchBorrowNftsAndOffers } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import {
   isOfferNewer,
   isOptimisticLoanExpired,
@@ -45,7 +45,7 @@ export const useBorrowNfts = () => {
 
   const { data, isLoading, isFetched, isFetching } = useQuery(
     [USE_BORROW_NFTS_V2_QUERY_KEY, tokenType, walletPubkeyString],
-    () => fetchBorrowNftsAndOffers({ walletPubkey: walletPubkeyString, tokenType }),
+    () => core.fetchBorrowNftsAndOffers({ walletPubkey: walletPubkeyString, tokenType }),
     {
       enabled: !!walletPublicKey,
       staleTime: 5 * 1000,
@@ -117,7 +117,7 @@ export const useBorrowNfts = () => {
         return [marketPubkey, mergedOffers]
       })
       .fromPairs()
-      .value() as Record<string, Offer[]>
+      .value() as Record<string, core.Offer[]>
   }, [data, optimisticOffers, walletPublicKey])
 
   const simpleOffers = useMemo(() => {
@@ -223,7 +223,7 @@ export const useBorrowNfts = () => {
 }
 
 const calcMaxBorrow = (
-  nfts: BorrowNft[],
+  nfts: core.BorrowNft[],
   offers: SimpleOffersByMarket,
   tokenType: LendingTokenType,
 ) => {

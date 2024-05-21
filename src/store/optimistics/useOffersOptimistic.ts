@@ -6,7 +6,7 @@ import { filter, map, uniqBy } from 'lodash'
 import moment from 'moment'
 import { create } from 'zustand'
 
-import { Offer } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import { isSolTokenType } from '@banx/utils'
 
 import { useTokenType } from '../useTokenType'
@@ -15,16 +15,16 @@ const BANX_OFFERS_OPTIMISTICS_LS_KEY = '@banx.offersOptimistics'
 const OFFERS_CACHE_TIME_UNIX = 2 * 60 //? Auto purge optimistic after 2 minutes
 
 export interface OfferOptimistic {
-  offer: Offer
+  offer: core.Offer
   expiredAt: number
 }
 
 export interface OffersOptimisticStore {
   optimisticOffers: OfferOptimistic[]
   find: (publicKey: string) => OfferOptimistic | undefined
-  add: (offers: Offer[]) => void
+  add: (offers: core.Offer[]) => void
   remove: (publicKeys: string[]) => void
-  update: (offers: Offer[]) => void
+  update: (offers: core.Offer[]) => void
   setState: (optimisticOffers: OfferOptimistic[]) => void
 }
 
@@ -49,7 +49,7 @@ const useOptimisticOffersStore = create<OffersOptimisticStore>((set, get) => ({
     const { optimisticOffers } = get()
     return findOffer(optimisticOffers, publicKey)
   },
-  update: (offers: Offer[]) =>
+  update: (offers: core.Offer[]) =>
     set((state) => {
       const nextOffers = updateOffers(
         state.optimisticOffers,
@@ -108,7 +108,7 @@ const setOptimisticOffersIdb = async (offers: OfferOptimistic[]) => {
   }
 }
 
-const convertOfferToOptimistic = (offer: Offer) => {
+const convertOfferToOptimistic = (offer: core.Offer) => {
   return {
     offer,
     expiredAt: moment().unix() + OFFERS_CACHE_TIME_UNIX,
@@ -138,5 +138,5 @@ const updateOffers = (offersState: OfferOptimistic[], offersToAddOrUpdate: Offer
   return addOffers(sameOffersRemoved, offersToAddOrUpdate)
 }
 
-export const isOfferNewer = (offerA: Offer, offerB: Offer) =>
+export const isOfferNewer = (offerA: core.Offer, offerB: core.Offer) =>
   offerA.lastTransactedAt >= offerB.lastTransactedAt

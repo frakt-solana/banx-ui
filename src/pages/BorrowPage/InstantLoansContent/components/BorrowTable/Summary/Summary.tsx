@@ -9,7 +9,7 @@ import { CounterSlider, Slider, SliderProps } from '@banx/components/Slider'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
-import { BorrowNft } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import bonkTokenImg from '@banx/assets/BonkToken.png'
 import { BONDS, ONE_WEEK_IN_SECONDS } from '@banx/constants'
 import { useTokenType } from '@banx/store'
@@ -42,7 +42,7 @@ const calcLoanValueWithFees = (nft: TableNftData, tokenType: LendingTokenType) =
   return calcBorrowValueWithRentFee(loanValueWithProtocolFee, nft.nft.loan.marketPubkey, tokenType)
 }
 
-const caclAprValue = (nft: BorrowNft, loanValue: number) => {
+const caclAprValue = (nft: core.BorrowNft, loanValue: number) => {
   return calculateApr({
     loanValue,
     collectionFloor: nft.nft.collectionFloor,

@@ -8,7 +8,7 @@ import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
-import { Loan } from '@banx/api/core'
+import { core } from '@banx/api/nft'
 import {
   calcWeeklyFeeWithRepayFee,
   calculateLoanRepayValue,
@@ -22,9 +22,9 @@ import { LoanOptimistic } from './loansState'
 import styles from './LoansActiveTable.module.less'
 
 interface SummaryProps {
-  loans: Loan[]
+  loans: core.Loan[]
   selectedLoans: LoanOptimistic[]
-  setSelection: (loans: Loan[], walletPublicKey: string) => void
+  setSelection: (loans: core.Loan[], walletPublicKey: string) => void
 }
 
 export const Summary: FC<SummaryProps> = ({
@@ -103,7 +103,7 @@ export const Summary: FC<SummaryProps> = ({
   )
 }
 
-const getLoansStatusActionText = (selectedLoans: Loan[]) => {
+const getLoansStatusActionText = (selectedLoans: core.Loan[]) => {
   const hasSelectedLoans = selectedLoans.length > 0
 
   const allLoansAreRepaymentCall =
