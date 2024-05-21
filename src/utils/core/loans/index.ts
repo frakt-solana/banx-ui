@@ -4,12 +4,14 @@ import {
   calculateDynamicApr,
   calculateLenderPartialPartFromBorrower,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
+import { BondTradeTransactionV2State, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { isInteger } from 'lodash'
 import moment from 'moment'
 
 import { core } from '@banx/api/nft'
 import { BONDS, DYNAMIC_APR, MARKETS_WITH_CUSTOM_APR, SECONDS_IN_72_HOURS } from '@banx/constants'
+
+import { RENT_FEE_BORROW_AMOUNT_IMPACT } from '../../tokens'
 
 export enum LoanStatus {
   Active = 'active',
@@ -206,3 +208,20 @@ export const checkIfFreezeExpired = (loan: core.Loan) => {
   const freezeExpiredAt = calculateFreezeExpiredAt(loan)
   return moment().unix() > freezeExpiredAt
 }
+
+export const calcBorrowValueWithRentFee = (
+  //TODO r: Move to loans
+  loanValue: number,
+  marketPubkey: string,
+  tokenType: LendingTokenType,
+) => {
+  if (loanValue === 0) return 0
+  if (marketPubkey === BONDS.FACELESS_MARKET_PUBKEY) return loanValue
+
+  const rentFee = RENT_FEE_BORROW_AMOUNT_IMPACT[tokenType]
+  return loanValue - rentFee
+}
+
+export const calcBorrowValueWithProtocolFee = (
+  loanValue: number, //TODO r: Move to loans
+) => Math.floor(loanValue * (1 - BONDS.PROTOCOL_FEE_PERCENT / 1e4))

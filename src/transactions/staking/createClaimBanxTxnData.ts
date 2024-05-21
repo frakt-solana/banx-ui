@@ -4,7 +4,7 @@ import { claimStakingRewards } from 'fbonds-core/lib/fbond-protocol/functions/ba
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
-import { sendTxnPlaceHolder } from '@banx/utils'
+import { sendTxnPlaceHolder } from '../helpers'
 
 type CreateClaimBanxTxnData = (params: {
   weeks: number[]

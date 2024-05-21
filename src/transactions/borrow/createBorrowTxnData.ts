@@ -11,10 +11,11 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 import { helius } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
-import { calculateApr, sendTxnPlaceHolder } from '@banx/utils'
+import { calculateApr } from '@banx/utils'
 
 import { BorrowType } from '../constants'
 import { fetchRuleset } from '../functions'
+import { sendTxnPlaceHolder } from '../helpers'
 
 export type BorrowTxnOptimisticResult = { loan: core.Loan; offer: core.Offer }
 

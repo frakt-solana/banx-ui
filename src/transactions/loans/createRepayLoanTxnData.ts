@@ -11,7 +11,7 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 import { helius } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BANX_STAKING, BONDS } from '@banx/constants'
-import { sendTxnPlaceHolder } from '@banx/utils'
+import { sendTxnPlaceHolder } from '../helpers'
 
 import { BorrowType } from '../constants'
 import { fetchRuleset } from '../functions'

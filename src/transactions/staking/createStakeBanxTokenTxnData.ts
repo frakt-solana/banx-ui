@@ -5,7 +5,7 @@ import { stakeBanxToken } from 'fbonds-core/lib/fbond-protocol/functions/banxSta
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
-import { sendTxnPlaceHolder } from '@banx/utils'
+import { sendTxnPlaceHolder } from '../helpers'
 
 type CreateStakeBanxTokenTxnData = (params: {
   tokensToStake: BN

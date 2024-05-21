@@ -8,7 +8,8 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
-import { sendTxnPlaceHolder } from '@banx/utils'
+
+import { sendTxnPlaceHolder } from '../helpers'
 
 type CreateUpdateBondingOfferTxnData = (params: {
   loanValue: number //? human number

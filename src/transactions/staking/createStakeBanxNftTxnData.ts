@@ -3,7 +3,7 @@ import { stakeBanxNft } from 'fbonds-core/lib/fbond-protocol/functions/banxStaki
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { BANX_STAKING, BONDS } from '@banx/constants'
-import { sendTxnPlaceHolder } from '@banx/utils'
+import { sendTxnPlaceHolder } from '../helpers'
 
 type CreateStakeBanxNftTxnData = (params: {
   nftMint: string

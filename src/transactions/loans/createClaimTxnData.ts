@@ -10,9 +10,9 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 import { helius } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
-import { sendTxnPlaceHolder } from '@banx/utils'
 
 import { fetchRuleset } from '../functions'
+import { sendTxnPlaceHolder } from '../helpers'
 
 type CreateClaimTxnData = (params: {
   loan: core.Loan

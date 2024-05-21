@@ -9,7 +9,9 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
-import { isLoanListed, sendTxnPlaceHolder } from '@banx/utils'
+import { isLoanListed } from '@banx/utils'
+
+import { sendTxnPlaceHolder } from '../helpers'
 
 type CreateLendToBorrowTxnDataParams = {
   loan: core.Loan

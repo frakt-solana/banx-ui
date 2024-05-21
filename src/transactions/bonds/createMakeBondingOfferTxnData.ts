@@ -7,7 +7,9 @@ import { BondingCurveType, LendingTokenType } from 'fbonds-core/lib/fbond-protoc
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
-import { isSolTokenType, sendTxnPlaceHolder } from '@banx/utils'
+import { isSolTokenType } from '@banx/utils'
+
+import { sendTxnPlaceHolder } from '../helpers'
 
 type CreateMakeBondingOfferTxnData = (params: {
   marketPubkey: string
