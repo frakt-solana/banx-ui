@@ -9,7 +9,7 @@ import { PriorityFeesModal } from '@banx/components/modals'
 
 import { Cup } from '@banx/icons'
 import { PATHS } from '@banx/router'
-import { getHumanReadablePriorityLevel, useModal, usePriorityFees } from '@banx/store'
+import { getHumanReadablePriorityLevel, useModal, usePriorityFees } from '@banx/store/common'
 
 import { isActivePath } from '../Navbar/helpers'
 

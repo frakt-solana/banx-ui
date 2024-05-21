@@ -8,8 +8,8 @@ import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { PATHS } from '@banx/router'
-import { createPathWithTokenParam, useTokenType } from '@banx/store'
-import { createGlobalState } from '@banx/store/functions'
+import { createGlobalState } from '@banx/store/createGlobalState'
+import { createPathWithTokenParam, useTokenType } from '@banx/store/nft'
 import { isSolTokenType } from '@banx/utils'
 
 import { useSortedOffers } from './useSortedOffers'

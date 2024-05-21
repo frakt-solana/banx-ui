@@ -8,7 +8,7 @@ import Tooltip from '@banx/components/Tooltip'
 
 import { Link as LinkIcon } from '@banx/icons'
 import { PATHS } from '@banx/router'
-import { useModal } from '@banx/store'
+import { useModal } from '@banx/store/common'
 import { formatNumbersWithCommas, shortenAddress } from '@banx/utils'
 
 import { LinkWalletsModal } from '../LinkWalletsModal'

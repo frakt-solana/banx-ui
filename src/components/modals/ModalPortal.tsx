@@ -1,4 +1,4 @@
-import { useModalState } from '@banx/store'
+import { useModalState } from '@banx/store/common'
 
 export const ModalPortal = () => {
   const { ModalComponent, props } = useModalState()

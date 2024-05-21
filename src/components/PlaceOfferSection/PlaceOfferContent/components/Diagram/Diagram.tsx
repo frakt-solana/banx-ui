@@ -3,7 +3,7 @@ import React, { FC, useRef, useState } from 'react'
 import { Skeleton } from 'antd'
 
 import { core } from '@banx/api/nft'
-import { useTokenType } from '@banx/store'
+import { useTokenType } from '@banx/store/nft'
 
 import { DiagramMark } from './components'
 import { calcLeftPercentage, groupMarks } from './helpers'

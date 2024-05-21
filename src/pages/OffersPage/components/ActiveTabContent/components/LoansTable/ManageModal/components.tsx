@@ -15,7 +15,8 @@ import Timer from '@banx/components/Timer'
 import { core } from '@banx/api/nft'
 import { useMarketOffers } from '@banx/pages/LendPage'
 import { calculateClaimValue, useLenderLoans } from '@banx/pages/OffersPage'
-import { useModal, useTokenType } from '@banx/store'
+import { useModal } from '@banx/store/common'
+import { useTokenType } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,

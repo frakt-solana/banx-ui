@@ -2,7 +2,7 @@ import { Button } from '@banx/components/Buttons'
 import { Tabs } from '@banx/components/Tabs'
 import { Modal } from '@banx/components/modals/BaseModal'
 
-import { useModal } from '@banx/store'
+import { useModal } from '@banx/store/common'
 
 import {
   BanxPointsStats,

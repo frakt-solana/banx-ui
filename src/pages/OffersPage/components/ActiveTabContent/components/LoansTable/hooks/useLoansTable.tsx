@@ -13,7 +13,7 @@ import {
   isLoanAbleToTerminate,
   useLenderLoans,
 } from '@banx/pages/OffersPage'
-import { createGlobalState } from '@banx/store/functions'
+import { createGlobalState } from '@banx/store'
 import { isLoanListed, isUnderWaterLoan } from '@banx/utils'
 
 import { useSortedLoans } from './useSortedLoans'

@@ -4,7 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 import { InputErrorMessage, NumericStepInput } from '@banx/components/inputs'
 
-import { useTokenType } from '@banx/store'
+import { useTokenType } from '@banx/store/nft'
 import { getTokenUnit, isSolTokenType } from '@banx/utils'
 
 import { BorrowerMessage } from '../components'

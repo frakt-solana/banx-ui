@@ -10,7 +10,7 @@ import { Modal } from '@banx/components/modals/BaseModal'
 
 import { core } from '@banx/api/nft'
 import { SECONDS_IN_DAY } from '@banx/constants'
-import { useModal } from '@banx/store'
+import { useModal } from '@banx/store/common'
 import { isFreezeLoan } from '@banx/utils'
 
 import { useInstantTransactions } from '../hooks'

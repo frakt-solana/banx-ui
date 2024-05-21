@@ -11,7 +11,8 @@ import Tooltip from '@banx/components/Tooltip'
 import { core } from '@banx/api/nft'
 import { Underwater } from '@banx/icons'
 import { isLoanAbleToTerminate } from '@banx/pages/OffersPage'
-import { ViewState, useTableView, useTokenType } from '@banx/store'
+import { ViewState, useTableView } from '@banx/store/common'
+import { useTokenType } from '@banx/store/nft'
 import {
   isLoanLiquidated,
   isLoanListed,

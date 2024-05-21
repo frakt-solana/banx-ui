@@ -8,8 +8,8 @@ import { core } from '@banx/api/nft'
 import { BorrowTabName, useBorrowTabs } from '@banx/pages/BorrowPage'
 import { REQUEST_LOANS_TABLE_MESSAGES } from '@banx/pages/LoansPage/constants'
 import { PATHS } from '@banx/router'
-import { createPathWithTokenParam, useTokenType } from '@banx/store'
-import { createGlobalState } from '@banx/store/functions'
+import { createGlobalState } from '@banx/store'
+import { createPathWithTokenParam, useTokenType } from '@banx/store/nft'
 
 import { useSortedLoans } from './useSortedLoans'
 

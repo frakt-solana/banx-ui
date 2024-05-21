@@ -4,7 +4,7 @@ import classNames from 'classnames'
 
 import { useImagePreload } from '@banx/hooks'
 import { PlaceholderPFP } from '@banx/icons'
-import { ViewState, useTableView } from '@banx/store'
+import { ViewState, useTableView } from '@banx/store/common'
 
 import Checkbox from '../Checkbox'
 import Tooltip from '../Tooltip/Tooltip'

@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react'
 import { filter, size } from 'lodash'
 
 import { core } from '@banx/api/nft'
-import { createGlobalState } from '@banx/store/functions'
+import { createGlobalState } from '@banx/store'
 import { isLoanRepaymentCallActive, isLoanTerminating } from '@banx/utils'
 
 const useCollectionsStore = createGlobalState<string[]>([])

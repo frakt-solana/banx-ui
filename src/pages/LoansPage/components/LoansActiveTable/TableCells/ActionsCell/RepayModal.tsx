@@ -7,7 +7,7 @@ import { DisplayValue } from '@banx/components/TableComponents'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { core } from '@banx/api/nft'
-import { useModal } from '@banx/store'
+import { useModal } from '@banx/store/common'
 import {
   calculateLoanRepayValue,
   getColorByPercent,

@@ -6,7 +6,7 @@ import EmptyList from '@banx/components/EmptyList'
 
 import { core } from '@banx/api/nft'
 import { useFakeInfinityScroll } from '@banx/hooks'
-import { useTokenType } from '@banx/store'
+import { useTokenType } from '@banx/store/nft'
 
 import { BorrowCard, MarketCard } from '../../Card'
 

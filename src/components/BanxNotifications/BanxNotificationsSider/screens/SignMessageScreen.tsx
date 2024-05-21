@@ -6,7 +6,7 @@ import classNames from 'classnames'
 import { Button } from '@banx/components/Buttons'
 import Checkbox from '@banx/components/Checkbox'
 
-import { useIsLedger } from '@banx/store'
+import { useIsLedger } from '@banx/store/common'
 
 import { useBanxNotificationsSider } from '../../hooks'
 

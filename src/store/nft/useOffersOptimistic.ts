@@ -9,7 +9,7 @@ import { create } from 'zustand'
 import { core } from '@banx/api/nft'
 import { isSolTokenType } from '@banx/utils'
 
-import { useTokenType } from '../useTokenType'
+import { useTokenType } from './useTokenType'
 
 const BANX_OFFERS_OPTIMISTICS_LS_KEY = '@banx.offersOptimistics'
 const OFFERS_CACHE_TIME_UNIX = 2 * 60 //? Auto purge optimistic after 2 minutes

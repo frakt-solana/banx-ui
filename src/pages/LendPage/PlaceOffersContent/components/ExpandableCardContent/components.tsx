@@ -5,7 +5,7 @@ import ActivityTable from '@banx/components/CommonTables'
 import { Tabs, useTabs } from '@banx/components/Tabs'
 import { Modal } from '@banx/components/modals/BaseModal'
 
-import { useModal } from '@banx/store'
+import { useModal } from '@banx/store/common'
 
 import OrderBook from '../OrderBook'
 

@@ -5,7 +5,7 @@ import { filter } from 'lodash'
 import { create } from 'zustand'
 
 import { core } from '@banx/api/nft'
-import { useTokenType } from '@banx/store'
+import { useTokenType } from '@banx/store/nft'
 
 export interface LoanOptimistic {
   loan: core.Loan

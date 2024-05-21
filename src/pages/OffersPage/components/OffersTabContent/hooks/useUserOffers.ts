@@ -11,7 +11,7 @@ import {
   isOptimisticOfferExpired,
   useOffersOptimistic,
   useTokenType,
-} from '@banx/store'
+} from '@banx/store/nft'
 import { isOfferClosed } from '@banx/utils'
 
 export const useUserOffers = () => {

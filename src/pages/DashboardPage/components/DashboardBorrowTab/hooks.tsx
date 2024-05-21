@@ -17,14 +17,14 @@ import { executeBorrow } from '@banx/pages/BorrowPage/InstantLoansContent/compon
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
 import { PATHS } from '@banx/router'
+import { createGlobalState } from '@banx/store'
+import { useModal } from '@banx/store/common'
 import {
   createPathWithTokenParam,
   useLoansOptimistic,
-  useModal,
   useOffersOptimistic,
   useTokenType,
-} from '@banx/store'
-import { createGlobalState } from '@banx/store/functions'
+} from '@banx/store/nft'
 import { calculateLoanValue, getDialectAccessToken, trackPageEvent } from '@banx/utils'
 
 import { useBorrowerStats } from '../../hooks'

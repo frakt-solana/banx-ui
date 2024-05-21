@@ -7,7 +7,7 @@ import PlaceOfferSection from '@banx/components/PlaceOfferSection'
 
 import { core } from '@banx/api/nft'
 import { Pencil } from '@banx/icons'
-import { convertToSynthetic, useSyntheticOffers } from '@banx/store'
+import { convertToSynthetic, useSyntheticOffers } from '@banx/store/common'
 
 import { AdditionalOfferOverview, MainOfferOverview } from './components'
 

@@ -34,7 +34,7 @@ type SeatchSelectedMarketsState = {
   setSelectedMarkets: (value: string[]) => void
 }
 
-export const useSearchSelectedMarkets = create<SeatchSelectedMarketsState>((set) => {
+const useSearchSelectedMarkets = create<SeatchSelectedMarketsState>((set) => {
   const initialState: SeatchSelectedMarketsState = {
     selectedMarkets: [],
     setSelectedMarkets: (value) => {

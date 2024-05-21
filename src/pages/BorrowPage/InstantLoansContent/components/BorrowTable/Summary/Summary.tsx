@@ -12,7 +12,7 @@ import Tooltip from '@banx/components/Tooltip'
 import { core } from '@banx/api/nft'
 import bonkTokenImg from '@banx/assets/BonkToken.png'
 import { BONDS, ONE_WEEK_IN_SECONDS } from '@banx/constants'
-import { useTokenType } from '@banx/store'
+import { useTokenType } from '@banx/store/nft'
 import {
   calcBorrowValueWithProtocolFee,
   calcBorrowValueWithRentFee,

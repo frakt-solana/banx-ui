@@ -6,7 +6,7 @@ import { VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { stats } from '@banx/api/nft'
 import { PATHS } from '@banx/router'
-import { createPathWithTokenParam, useTokenType } from '@banx/store'
+import { createPathWithTokenParam, useTokenType } from '@banx/store/nft'
 import { trackPageEvent } from '@banx/utils'
 
 import {

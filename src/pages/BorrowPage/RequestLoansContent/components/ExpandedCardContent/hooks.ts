@@ -18,13 +18,8 @@ import { BONDS, DAYS_IN_YEAR, SECONDS_IN_DAY } from '@banx/constants'
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { LoansTabsNames, useLoansTabs } from '@banx/pages/LoansPage'
 import { PATHS } from '@banx/router'
-import {
-  createPathWithTokenParam,
-  useIsLedger,
-  useLoansRequestsOptimistic,
-  useModal,
-  useTokenType,
-} from '@banx/store'
+import { useIsLedger, useModal } from '@banx/store/common'
+import { createPathWithTokenParam, useLoansRequestsOptimistic, useTokenType } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,

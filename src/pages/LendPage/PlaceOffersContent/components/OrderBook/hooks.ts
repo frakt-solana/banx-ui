@@ -5,7 +5,7 @@ import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 
 import { core } from '@banx/api/nft'
 import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage/hooks'
-import { SyntheticOffer, convertToSynthetic, useSyntheticOffers } from '@banx/store'
+import { SyntheticOffer, convertToSynthetic, useSyntheticOffers } from '@banx/store/common'
 
 type UseMarketOrders = (props: { marketPubkey: string; offerPubkey: string }) => {
   offers: SyntheticOffer[]

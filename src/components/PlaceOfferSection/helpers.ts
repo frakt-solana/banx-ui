@@ -11,7 +11,7 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
 
-import { SyntheticOffer } from '@banx/store'
+import { SyntheticOffer } from '@banx/store/common'
 
 type GetUpdatedBondOffer = (props: {
   loanValue: number //? lamports

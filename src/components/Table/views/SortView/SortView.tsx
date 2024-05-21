@@ -4,7 +4,7 @@ import { SearchSelect, SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortDropdown, SortDropdownProps } from '@banx/components/SortDropdown'
 import { Toggle, ToggleProps } from '@banx/components/Toggle'
 
-import { ViewState, useTableView } from '@banx/store'
+import { ViewState, useTableView } from '@banx/store/common'
 
 import { ColumnType } from '../../types'
 import { SwitchModeButton } from './components'

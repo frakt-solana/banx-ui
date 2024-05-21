@@ -7,7 +7,7 @@ import { RBOption } from '@banx/components/RadioButton'
 
 import { activity } from '@banx/api/nft'
 import { useMarketsPreview } from '@banx/pages/LendPage'
-import { useTokenType } from '@banx/store'
+import { useTokenType } from '@banx/store/nft'
 
 import { ActivityEvent, RADIO_BUTTONS_OPTIONS } from './constants'
 import { appendIdToOptions } from './helpers'

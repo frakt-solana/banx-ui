@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import { chain, maxBy } from 'lodash'
 
 import { core } from '@banx/api/nft'
-import { useTokenType } from '@banx/store'
+import { useTokenType } from '@banx/store/nft'
 
 import { useHiddenNftsMints, useLenderLoansOptimistic } from '.'
 

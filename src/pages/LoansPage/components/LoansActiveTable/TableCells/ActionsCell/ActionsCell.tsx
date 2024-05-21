@@ -3,7 +3,7 @@ import { FC, useMemo } from 'react'
 import { Button } from '@banx/components/Buttons'
 
 import { core } from '@banx/api/nft'
-import { useModal } from '@banx/store'
+import { useModal } from '@banx/store/common'
 import { isLoanTerminating, isOfferNotEmpty } from '@banx/utils'
 
 import { RefinanceModal } from './RefinanceModal'

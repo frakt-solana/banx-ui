@@ -6,7 +6,7 @@ import { create } from 'zustand'
 
 import { core } from '@banx/api/nft'
 
-import { useTokenType } from '../../useTokenType'
+import { useTokenType } from '../useTokenType'
 import {
   LoanOptimistic,
   addLoans,
@@ -17,9 +17,9 @@ import {
   updateLoans,
 } from './helpers'
 
-const BANX_LOANS_REQUESTS_OPTIMISTICS_LS_KEY = '@banx.loansRequestsOptimistics'
+const BANX_LOANS_OPTIMISTICS_LS_KEY = '@banx.loansOptimistics'
 
-interface LoansRequestsOptimisticStore {
+export interface LoansOptimisticStore {
   optimisticLoans: LoanOptimistic[]
   find: (publicKey: string, walletPublicKey: string) => LoanOptimistic | undefined
   add: (loans: core.Loan[], walletPublicKey: string) => void
@@ -28,7 +28,7 @@ interface LoansRequestsOptimisticStore {
   setState: (optimisticLoans: LoanOptimistic[]) => void
 }
 
-const useOptimisticLoansRequestsStore = create<LoansRequestsOptimisticStore>((set, get) => ({
+const useOptimisticLoansStore = create<LoansOptimisticStore>((set, get) => ({
   optimisticLoans: [],
   add: (loans, walletPublicKey) => {
     if (!walletPublicKey) return
@@ -71,7 +71,7 @@ const useOptimisticLoansRequestsStore = create<LoansRequestsOptimisticStore>((se
     }),
 }))
 
-export const useLoansRequestsOptimistic = () => {
+export const useLoansOptimistic = () => {
   const {
     optimisticLoans: optimisticLoans,
     add,
@@ -79,7 +79,7 @@ export const useLoansRequestsOptimistic = () => {
     remove,
     find,
     setState,
-  } = useOptimisticLoansRequestsStore()
+  } = useOptimisticLoansStore()
 
   const { tokenType } = useTokenType()
 
@@ -107,7 +107,7 @@ export const useLoansRequestsOptimistic = () => {
 
 const setOptimisticLoansIdb = async (loans: LoanOptimistic[]) => {
   try {
-    await set(BANX_LOANS_REQUESTS_OPTIMISTICS_LS_KEY, loans)
+    await set(BANX_LOANS_OPTIMISTICS_LS_KEY, loans)
   } catch {
     return
   }
@@ -115,7 +115,7 @@ const setOptimisticLoansIdb = async (loans: LoanOptimistic[]) => {
 
 const getOptimisticLoansIdb = async () => {
   try {
-    return ((await get(BANX_LOANS_REQUESTS_OPTIMISTICS_LS_KEY)) || []) as LoanOptimistic[]
+    return ((await get(BANX_LOANS_OPTIMISTICS_LS_KEY)) || []) as LoanOptimistic[]
   } catch {
     return []
   }

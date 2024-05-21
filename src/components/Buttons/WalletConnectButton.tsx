@@ -3,7 +3,7 @@ import classNames from 'classnames'
 
 import { useDiscordUser } from '@banx/hooks'
 import { ChevronDown, Wallet } from '@banx/icons'
-import { useTokenType } from '@banx/store'
+import { useTokenType } from '@banx/store/nft'
 import { shortenAddress, useWalletBalance } from '@banx/utils'
 
 import { DisplayValue } from '../TableComponents'

@@ -5,7 +5,7 @@ import { produce } from 'immer'
 import { create } from 'zustand'
 
 import { core } from '@banx/api/nft'
-import { useTokenType } from '@banx/store'
+import { useTokenType } from '@banx/store/nft'
 
 interface HiddenNftsMintsState {
   mints: string[]

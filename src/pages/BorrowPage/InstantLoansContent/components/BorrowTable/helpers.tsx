@@ -12,7 +12,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 import { core } from '@banx/api/nft'
 import bonkTokenImg from '@banx/assets/BonkToken.png'
 import { BONDS, ONE_WEEK_IN_SECONDS } from '@banx/constants'
-import { LoansOptimisticStore, OffersOptimisticStore } from '@banx/store'
+import { LoansOptimisticStore, OffersOptimisticStore } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,

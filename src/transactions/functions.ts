@@ -11,7 +11,7 @@ import {
 
 import { helius } from '@banx/api/common'
 import { core } from '@banx/api/nft'
-import { getPriorityFeeLevel } from '@banx/store'
+import { getPriorityFeeLevel } from '@banx/store/common'
 
 export const convertLoanToBorrowNft = (loan: core.Loan): core.BorrowNft => {
   const { nft, fraktBond, bondTradeTransaction } = loan

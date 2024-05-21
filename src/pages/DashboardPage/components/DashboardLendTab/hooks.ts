@@ -7,7 +7,7 @@ import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/nft'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
-import { createGlobalState } from '@banx/store/functions'
+import { createGlobalState } from '@banx/store'
 
 export const useDashboardLendTab = () => {
   const { marketsPreview } = useMarketsPreview()

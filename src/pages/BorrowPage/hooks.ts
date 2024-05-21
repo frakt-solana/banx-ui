@@ -15,7 +15,7 @@ import {
   useLoansOptimistic,
   useOffersOptimistic,
   useTokenType,
-} from '@banx/store'
+} from '@banx/store/nft'
 import { convertLoanToBorrowNft } from '@banx/transactions'
 import {
   calcBorrowValueWithProtocolFee,

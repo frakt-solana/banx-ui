@@ -8,7 +8,8 @@ import Table from '@banx/components/Table'
 import Tooltip from '@banx/components/Tooltip'
 
 import { Hourglass, Snowflake } from '@banx/icons'
-import { ViewState, useTableView, useTokenType } from '@banx/store'
+import { ViewState, useTableView } from '@banx/store/common'
+import { useTokenType } from '@banx/store/nft'
 import { isSolTokenType } from '@banx/utils'
 
 import { Summary } from './Summary'

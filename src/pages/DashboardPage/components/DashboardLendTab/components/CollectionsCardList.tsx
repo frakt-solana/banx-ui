@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { core } from '@banx/api/nft'
 import { LendTabName, useLendTabs } from '@banx/pages/LendPage'
 import { PATHS } from '@banx/router'
-import { useMarketsURLControl } from '@banx/store'
+import { useMarketsURLControl } from '@banx/store/common'
 
 import { LendCard } from '../../Card'
 

@@ -3,7 +3,8 @@ import { every, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
-import { useIsLedger, useLoansOptimistic, useModal, usePriorityFees } from '@banx/store'
+import { useIsLedger, useModal, usePriorityFees } from '@banx/store/common'
+import { useLoansOptimistic } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,

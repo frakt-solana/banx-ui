@@ -11,7 +11,7 @@ import { core } from '@banx/api/nft'
 import { MARKETS_WITH_CUSTOM_APR } from '@banx/constants'
 import { Fire } from '@banx/icons'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
-import { useMarketsURLControl } from '@banx/store'
+import { useMarketsURLControl } from '@banx/store/common'
 
 import { useSortedMarkets } from './useSortedMarkets'
 

@@ -9,7 +9,7 @@ import { createPercentValueJSX } from '@banx/components/TableComponents'
 import { core } from '@banx/api/nft'
 import { MARKETS_WITH_CUSTOM_APR } from '@banx/constants'
 import { useMarketsPreview } from '@banx/pages/LendPage'
-import { createGlobalState } from '@banx/store/functions'
+import { createGlobalState } from '@banx/store'
 
 import { useBorrowNfts } from '../../hooks'
 import { useSortedMarkets } from './useSortedMarkets'

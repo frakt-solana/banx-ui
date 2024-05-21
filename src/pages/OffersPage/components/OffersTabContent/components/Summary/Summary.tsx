@@ -9,7 +9,7 @@ import { Button } from '@banx/components/Buttons'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/nft'
-import { useTokenType } from '@banx/store'
+import { useTokenType } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,

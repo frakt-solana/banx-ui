@@ -5,7 +5,7 @@ import { create } from 'zustand'
 
 import { user } from '@banx/api/common'
 import { useLinkedWallets } from '@banx/pages/LeaderboardPage'
-import { useBanxLogin, useIsLedger, useModal } from '@banx/store'
+import { useBanxLogin, useIsLedger, useModal } from '@banx/store/common'
 import { enqueueSnackbar, generateSignature } from '@banx/utils'
 
 type SavedLinkingData = {

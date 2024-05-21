@@ -10,7 +10,7 @@ import { TensorLink } from '@banx/components/SolanaLinks'
 
 import { core } from '@banx/api/nft'
 import { useHiddenNftsMints } from '@banx/pages/OffersPage'
-import { useModal } from '@banx/store'
+import { useModal } from '@banx/store/common'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,

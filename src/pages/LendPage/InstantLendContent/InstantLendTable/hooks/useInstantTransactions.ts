@@ -10,7 +10,7 @@ import {
 } from '@banx/components/modals'
 
 import { core } from '@banx/api/nft'
-import { useIsLedger, useModal } from '@banx/store'
+import { useIsLedger, useModal } from '@banx/store/common'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,

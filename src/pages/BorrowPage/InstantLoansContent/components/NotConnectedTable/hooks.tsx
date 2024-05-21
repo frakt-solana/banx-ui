@@ -8,7 +8,7 @@ import { DisplayValue } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/nft'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
-import { createGlobalState } from '@banx/store/functions'
+import { createGlobalState } from '@banx/store'
 
 import styles from './NotConnectedTable.module.less'
 

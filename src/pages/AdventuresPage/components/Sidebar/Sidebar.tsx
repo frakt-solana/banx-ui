@@ -7,7 +7,7 @@ import { BANX_TOKEN_DECIMALS } from '@banx/constants'
 import { Gamepad, MoneyBill } from '@banx/icons'
 import { banxTokenBNToFixed } from '@banx/pages/AdventuresPage'
 import { StakeNftsModal, StakeTokensModal } from '@banx/pages/AdventuresPage/components'
-import { useModal } from '@banx/store'
+import { useModal } from '@banx/store/common'
 import { ZERO_BN, bnToFixed, formatCompact, formatNumbersWithCommas } from '@banx/utils'
 
 import {

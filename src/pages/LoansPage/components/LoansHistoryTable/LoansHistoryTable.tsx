@@ -1,7 +1,7 @@
 import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 
-import { ViewState, useTableView } from '@banx/store'
+import { ViewState, useTableView } from '@banx/store/common'
 
 import { Summary } from './Summary'
 import { getTableColumns } from './columns'

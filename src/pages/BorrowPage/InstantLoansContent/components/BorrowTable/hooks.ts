@@ -15,17 +15,14 @@ import {
 import { core } from '@banx/api/nft'
 import { useBorrowBonkRewardsAvailability } from '@banx/hooks'
 import { PATHS } from '@banx/router'
+import { createGlobalState } from '@banx/store'
+import { ViewState, useIsLedger, useModal, useTableView } from '@banx/store/common'
 import {
-  ViewState,
   createPathWithTokenParam,
-  useIsLedger,
   useLoansOptimistic,
-  useModal,
   useOffersOptimistic,
-  useTableView,
   useTokenType,
-} from '@banx/store'
-import { createGlobalState } from '@banx/store/functions'
+} from '@banx/store/nft'
 import { getDialectAccessToken, trackPageEvent } from '@banx/utils'
 
 import { useCartState } from '../../cartState'

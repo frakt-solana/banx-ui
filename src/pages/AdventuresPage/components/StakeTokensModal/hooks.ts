@@ -11,7 +11,7 @@ import {
   useBanxStakeInfo,
   useBanxStakeSettings,
 } from '@banx/pages/AdventuresPage'
-import { useModal } from '@banx/store'
+import { useModal } from '@banx/store/common'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,

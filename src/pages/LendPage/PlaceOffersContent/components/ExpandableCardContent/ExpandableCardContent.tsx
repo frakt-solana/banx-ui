@@ -5,7 +5,7 @@ import PlaceOfferSection, {
   useSyntheticOffer,
 } from '@banx/components/PlaceOfferSection'
 
-import { useModal } from '@banx/store'
+import { useModal } from '@banx/store/common'
 
 import { OfferHeader, OffersModal, TabsContent } from './components'
 

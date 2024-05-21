@@ -17,7 +17,7 @@ import {
   useLoansRequestsOptimistic,
   useOffersOptimistic,
   useTokenType,
-} from '@banx/store'
+} from '@banx/store/nft'
 import { isLoanListed, isLoanRepaid, isLoanTerminating, isOfferClosed } from '@banx/utils'
 
 import { LoansTabsNames, SECONDS_IN_72_HOURS } from './constants'

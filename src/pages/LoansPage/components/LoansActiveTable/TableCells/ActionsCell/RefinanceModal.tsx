@@ -15,7 +15,8 @@ import { Modal } from '@banx/components/modals/BaseModal'
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { useMarketOffers } from '@banx/pages/LendPage'
-import { useLoansOptimistic, useModal, useTokenType } from '@banx/store'
+import { useModal } from '@banx/store/common'
+import { useLoansOptimistic, useTokenType } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,

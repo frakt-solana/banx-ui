@@ -7,7 +7,7 @@ import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { activity } from '@banx/api/nft'
-import { useTokenType } from '@banx/store'
+import { useTokenType } from '@banx/store/nft'
 import { createDownloadLink } from '@banx/utils'
 
 import { useUserLoansStats } from '../../hooks'
