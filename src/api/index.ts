@@ -1,2 +1,7 @@
-export * as nft from './nft'
-export * as common from './common'
+import * as common from './common'
+import * as nft from './nft'
+
+export default {
+  nft,
+  common,
+}

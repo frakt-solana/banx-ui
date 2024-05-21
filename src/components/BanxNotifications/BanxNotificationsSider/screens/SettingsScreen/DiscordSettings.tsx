@@ -3,10 +3,11 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { Button } from '@banx/components/Buttons'
 import UserAvatar from '@banx/components/UserAvatar'
 
+import { user } from '@banx/api/common'
 import { DISCORD } from '@banx/constants'
 import { useDiscordUser } from '@banx/hooks'
 import { Alert } from '@banx/icons'
-import { getDiscordUri, shortenAddress } from '@banx/utils'
+import { shortenAddress } from '@banx/utils'
 
 import styles from './SettingsScreen.module.less'
 
@@ -22,7 +23,7 @@ export const DiscordSettings = () => {
       return
     }
 
-    window.location.href = getDiscordUri(publicKey?.toBase58() || '')
+    window.location.href = user.getDiscordUri(publicKey?.toBase58() || '')
   }
 
   return (
