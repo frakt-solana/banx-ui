@@ -10,7 +10,7 @@ import {
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
-import { createDelistTxnData } from '@banx/transactions/loans'
+import { createDelistTxnData } from '@banx/transactions/nftLending'
 import {
   destroySnackbar,
   enqueueConfirmationError,

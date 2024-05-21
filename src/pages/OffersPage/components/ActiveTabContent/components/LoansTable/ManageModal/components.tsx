@@ -26,7 +26,7 @@ import {
   createInstantRefinanceTxnData,
   createRepaymentCallTxnData,
   createTerminateTxnData,
-} from '@banx/transactions/loans'
+} from '@banx/transactions/nftLending'
 import {
   HealthColorIncreasing,
   calculateApr,

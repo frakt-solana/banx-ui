@@ -1,49 +1,48 @@
 import { web3 } from 'fbonds-core'
 import {
   BondOfferOptimistic,
-  createPerpetualBondOfferBonding,
+  updatePerpetualOfferBonding,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondingCurveType, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { BondOfferV2, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
+import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
-import { isSolTokenType } from '@banx/utils'
 
-import { sendTxnPlaceHolder } from '../helpers'
+import { sendTxnPlaceHolder } from '../../helpers'
 
-type CreateMakeBondingOfferTxnData = (params: {
-  marketPubkey: string
-  loanValue: number //? normal number
+type CreateUpdateBondingOfferTxnData = (params: {
+  loanValue: number //? human number
   loansAmount: number
-  deltaValue: number //? normal number
+  deltaValue: number //? human number
+  offer: core.Offer
   tokenType: LendingTokenType
   walletAndConnection: WalletAndConnection
 }) => Promise<CreateTxnData<BondOfferOptimistic>>
 
-export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = async ({
-  marketPubkey,
+export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = async ({
   loanValue,
   loansAmount,
-  tokenType,
   deltaValue,
+  offer,
+  tokenType,
   walletAndConnection,
 }) => {
-  const bondingCurveType = isSolTokenType(tokenType)
-    ? BondingCurveType.Linear
-    : BondingCurveType.LinearUsdc
-
-  const { instructions, signers, optimisticResult } = await createPerpetualBondOfferBonding({
+  const { instructions, signers, optimisticResult } = await updatePerpetualOfferBonding({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     connection: walletAndConnection.connection,
     accounts: {
-      hadoMarket: new web3.PublicKey(marketPubkey),
+      bondOfferV2: new web3.PublicKey(offer.publicKey),
       userPubkey: walletAndConnection.wallet.publicKey,
+    },
+    optimistic: {
+      bondOffer: offer as BondOfferV2,
     },
     args: {
       loanValue,
       delta: deltaValue,
       quantityOfLoans: loansAmount,
-      bondingCurveType,
+      lendingTokenType: tokenType,
     },
     sendTxn: sendTxnPlaceHolder,
   })

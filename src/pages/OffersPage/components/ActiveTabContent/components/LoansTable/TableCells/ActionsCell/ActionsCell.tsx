@@ -16,7 +16,7 @@ import {
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
-import { createClaimTxnData } from '@banx/transactions/loans'
+import { createClaimTxnData } from '@banx/transactions/nftLending'
 import {
   destroySnackbar,
   enqueueConfirmationError,

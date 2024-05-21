@@ -14,7 +14,7 @@ import {
   createMakeBondingOfferTxnData,
   createRemoveOfferTxnData,
   createUpdateBondingOfferTxnData,
-} from '@banx/transactions/bonds'
+} from '@banx/transactions/nftLending'
 import {
   destroySnackbar,
   enqueueConfirmationError,

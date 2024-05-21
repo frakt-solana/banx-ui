@@ -11,7 +11,8 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
-import { sendTxnPlaceHolder } from '../helpers'
+
+import { sendTxnPlaceHolder } from '../../helpers'
 
 // type InstantRefinanceOptimisticResult = {
 // bondOffer: BondOfferV2

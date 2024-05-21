@@ -22,7 +22,7 @@ import {
   BorrowTxnOptimisticResult,
   CreateBorrowTxnDataParams,
   createBorrowTxnData,
-} from '@banx/transactions/borrow'
+} from '@banx/transactions/nftLending'
 import {
   convertOffersToSimple,
   destroySnackbar,

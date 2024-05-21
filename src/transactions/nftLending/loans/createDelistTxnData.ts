@@ -12,10 +12,10 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
-import { sendTxnPlaceHolder } from '../helpers'
 
-import { ListingType } from '../constants'
-import { fetchRuleset } from '../functions'
+import { fetchRuleset } from '../../functions'
+import { sendTxnPlaceHolder } from '../../helpers'
+import { ListingType } from '../types'
 
 type CreateDelistTxnDataParams = {
   loan: core.Loan

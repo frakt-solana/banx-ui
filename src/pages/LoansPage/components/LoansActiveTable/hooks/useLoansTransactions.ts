@@ -10,7 +10,10 @@ import {
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
-import { createRepayLoanTxnData, createRepayPartialLoanTxnData } from '@banx/transactions/loans'
+import {
+  createRepayLoanTxnData,
+  createRepayPartialLoanTxnData,
+} from '@banx/transactions/nftLending'
 import {
   destroySnackbar,
   enqueueConfirmationError,

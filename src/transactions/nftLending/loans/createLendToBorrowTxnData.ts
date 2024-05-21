@@ -11,7 +11,7 @@ import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { isLoanListed } from '@banx/utils'
 
-import { sendTxnPlaceHolder } from '../helpers'
+import { sendTxnPlaceHolder } from '../../helpers'
 
 type CreateLendToBorrowTxnDataParams = {
   loan: core.Loan

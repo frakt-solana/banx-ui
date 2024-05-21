@@ -25,7 +25,7 @@ import {
 import {
   BorrowRefinanceActionOptimisticResult,
   createBorrowRefinanceTxnData,
-} from '@banx/transactions/loans'
+} from '@banx/transactions/nftLending'
 import {
   calcLoanBorrowedAmount,
   calculateApr,

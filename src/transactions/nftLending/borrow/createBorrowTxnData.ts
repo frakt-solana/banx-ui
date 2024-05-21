@@ -13,9 +13,9 @@ import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { calculateApr } from '@banx/utils'
 
-import { BorrowType } from '../constants'
-import { fetchRuleset } from '../functions'
-import { sendTxnPlaceHolder } from '../helpers'
+import { fetchRuleset } from '../../functions'
+import { sendTxnPlaceHolder } from '../../helpers'
+import { BorrowType } from '../types'
 
 export type BorrowTxnOptimisticResult = { loan: core.Loan; offer: core.Offer }
 

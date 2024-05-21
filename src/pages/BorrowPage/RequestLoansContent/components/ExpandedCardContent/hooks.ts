@@ -26,7 +26,7 @@ import {
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
-import { createListTxnData } from '@banx/transactions/loans'
+import { createListTxnData } from '@banx/transactions/nftLending'
 import {
   calcBorrowValueWithProtocolFee,
   convertToHumanNumber,

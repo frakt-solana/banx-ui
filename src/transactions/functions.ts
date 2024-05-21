@@ -1,6 +1,5 @@
 import { WalletContextState } from '@solana/wallet-adapter-react'
 import { web3 } from 'fbonds-core'
-import { EMPTY_PUBKEY } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getRuleset } from 'fbonds-core/lib/fbond-protocol/helpers'
 import {
   GetPriorityFee,
@@ -10,25 +9,7 @@ import {
 } from 'solana-transactions-executor'
 
 import { helius } from '@banx/api/common'
-import { core } from '@banx/api/nft'
 import { getPriorityFeeLevel } from '@banx/store/common'
-
-export const convertLoanToBorrowNft = (loan: core.Loan): core.BorrowNft => {
-  const { nft, fraktBond, bondTradeTransaction } = loan
-
-  const borrowNft = {
-    mint: nft.mint,
-    loan: {
-      marketPubkey: fraktBond.hadoMarket || EMPTY_PUBKEY.toBase58(),
-      fraktMarket: fraktBond.fraktMarket,
-      marketApr: bondTradeTransaction.amountOfBonds,
-      banxStake: fraktBond.banxStake || EMPTY_PUBKEY.toBase58(),
-    },
-    nft,
-  }
-
-  return borrowNft
-}
 
 type CreateExecutorWalletAndConnection = (params: {
   wallet: WalletContextState

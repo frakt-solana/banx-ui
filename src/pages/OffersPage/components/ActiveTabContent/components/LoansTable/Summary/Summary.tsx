@@ -17,7 +17,7 @@ import {
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
-import { createClaimTxnData, createTerminateTxnData } from '@banx/transactions/loans'
+import { createClaimTxnData, createTerminateTxnData } from '@banx/transactions/nftLending'
 import {
   HealthColorIncreasing,
   destroySnackbar,
