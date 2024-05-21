@@ -6,8 +6,6 @@ import classNames from 'classnames'
 import { Button } from '@banx/components/Buttons'
 import { useWalletModal } from '@banx/components/WalletModal'
 
-import { trackPageEvent } from '@banx/utils'
-
 import styles from '../PlaceOfferContent.module.less'
 
 interface ActionButtonsProps {
@@ -36,7 +34,6 @@ export const ActionsButtons: FC<ActionButtonsProps> = ({
     if (connected) {
       return onCreateOffer()
     }
-    trackPageEvent('lend', `connectwallet`)
     onToggleWalletModal()
   }
 

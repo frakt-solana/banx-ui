@@ -4,7 +4,7 @@ import classNames from 'classnames'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { SOL, USDC } from '@banx/icons'
-import { useTokenType } from '@banx/store'
+import { useTokenType } from '@banx/store/nft'
 import { isSolTokenType } from '@banx/utils'
 
 import styles from './TokenSwitcher.module.less'

@@ -1,14 +1,14 @@
 import { ColumnType } from '@banx/components/Table'
 import { DurationCell, HeaderCell } from '@banx/components/TableComponents'
 
-import { LenderActivity } from '@banx/api/activity'
+import { activity } from '@banx/api/nft'
 
 import { AprCell, CollateralCell, LentCell, StatusCell } from './cells'
 
 import styles from './ActivityTable.module.less'
 
 export const getTableColumns = () => {
-  const columns: ColumnType<LenderActivity>[] = [
+  const columns: ColumnType<activity.LenderActivity>[] = [
     {
       key: 'collateral',
       title: <HeaderCell label="Collateral" align="left" />,

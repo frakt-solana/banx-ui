@@ -4,7 +4,7 @@ import { chain } from 'lodash'
 
 import { OnboardingModal, OnboardingModalContentType } from '@banx/components/modals'
 
-import { useModal } from '@banx/store'
+import { useModal } from '@banx/store/common'
 
 import { useLocalStorage } from './useLocalStorage'
 

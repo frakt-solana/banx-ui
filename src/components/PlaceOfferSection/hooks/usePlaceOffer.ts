@@ -2,9 +2,10 @@ import { useEffect, useMemo } from 'react'
 
 import { chain } from 'lodash'
 
-import { MarketPreview, Offer } from '@banx/api/core'
-import { SyntheticOffer, useTokenType } from '@banx/store'
-import { convertOffersToSimple, getTokenDecimals, useWalletBalance } from '@banx/utils'
+import { core } from '@banx/api/nft'
+import { useWalletBalance } from '@banx/hooks'
+import { SyntheticOffer, useTokenType } from '@banx/store/nft'
+import { convertOffersToSimple, getTokenDecimals } from '@banx/utils'
 
 import { Mark } from '../PlaceOfferContent/components'
 import {
@@ -20,9 +21,9 @@ import { useOfferTransactions } from './useOfferTransactions'
 import { useSyntheticOffer } from './useSyntheticOffer'
 
 export interface PlaceOfferParams {
-  market: MarketPreview | undefined
-  optimisticOffer: Offer | undefined
-  updatedOffer: Offer | undefined
+  market: core.MarketPreview | undefined
+  optimisticOffer: core.Offer | undefined
+  updatedOffer: core.Offer | undefined
   syntheticOffer: SyntheticOffer
 
   setOfferPubkey?: (offerPubkey: string) => void

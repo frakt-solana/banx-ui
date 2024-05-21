@@ -1,6 +1,5 @@
 import { WalletContextState } from '@solana/wallet-adapter-react'
 import { web3 } from 'fbonds-core'
-import { EMPTY_PUBKEY } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getRuleset } from 'fbonds-core/lib/fbond-protocol/helpers'
 import {
   GetPriorityFee,
@@ -9,26 +8,8 @@ import {
   extractAccountKeysFromInstructions,
 } from 'solana-transactions-executor'
 
-import { BorrowNft, Loan } from '@banx/api/core'
-import { getHeliusPriorityFeeEstimate } from '@banx/api/helius'
-import { getPriorityFeeLevel } from '@banx/store'
-
-export const convertLoanToBorrowNft = (loan: Loan): BorrowNft => {
-  const { nft, fraktBond, bondTradeTransaction } = loan
-
-  const borrowNft = {
-    mint: nft.mint,
-    loan: {
-      marketPubkey: fraktBond.hadoMarket || EMPTY_PUBKEY.toBase58(),
-      fraktMarket: fraktBond.fraktMarket,
-      marketApr: bondTradeTransaction.amountOfBonds,
-      banxStake: fraktBond.banxStake || EMPTY_PUBKEY.toBase58(),
-    },
-    nft,
-  }
-
-  return borrowNft
-}
+import { helius } from '@banx/api/common'
+import { getPriorityFeeLevel } from '@banx/store/common'
 
 type CreateExecutorWalletAndConnection = (params: {
   wallet: WalletContextState
@@ -91,5 +72,5 @@ export const executorGetPriorityFee: GetPriorityFee = ({ txnParams, connection }
   const { instructions } = txnParams
   const accountKeys = extractAccountKeysFromInstructions(instructions).map((key) => key.toBase58())
 
-  return getHeliusPriorityFeeEstimate({ accountKeys, connection, priorityLevel })
+  return helius.getHeliusPriorityFeeEstimate({ accountKeys, connection, priorityLevel })
 }

@@ -3,7 +3,8 @@ import { subscribeBanxAdventure } from 'fbonds-core/lib/fbond-protocol/functions
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
-import { sendTxnPlaceHolder } from '@banx/utils'
+
+import { sendTxnPlaceHolder } from '../helpers'
 
 type CreateSubscribeTxnData = (params: {
   weeks: number[]

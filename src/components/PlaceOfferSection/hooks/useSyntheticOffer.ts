@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
-import { createEmptySyntheticOffer, useSyntheticOffers } from '@banx/store'
+import { createEmptySyntheticOffer, useSyntheticOffers } from '@banx/store/nft'
 
 export const useSyntheticOffer = (offerPubkey: string, marketPubkey: string) => {
   const { publicKey: walletPubkey } = useWallet()

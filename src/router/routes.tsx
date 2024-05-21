@@ -1,15 +1,7 @@
 import { FC } from 'react'
 
-import {
-  AdventuresPage,
-  BorrowPage,
-  DashboardPage,
-  LeaderboardPage,
-  LendPage,
-  LoansPage,
-  OffersPage,
-  RootPage,
-} from '@banx/pages'
+import { AdventuresPage, DashboardPage, LeaderboardPage, RootPage } from '@banx/pages/common'
+import { BorrowPage, LendPage, LoansPage, OffersPage } from '@banx/pages/nftLending'
 
 import { PATHS } from './paths'
 

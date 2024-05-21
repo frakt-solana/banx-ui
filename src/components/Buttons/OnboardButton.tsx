@@ -3,7 +3,7 @@ import { FC } from 'react'
 import { OnboardingModal, OnboardingModalContentType } from '@banx/components/modals'
 
 import { LifeRing } from '@banx/icons'
-import { useModal } from '@banx/store'
+import { useModal } from '@banx/store/common'
 
 import { Button } from './Button'
 

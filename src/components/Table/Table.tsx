@@ -3,7 +3,7 @@ import { memo } from 'react'
 import classNames from 'classnames'
 import { isEmpty } from 'lodash'
 
-import { ViewState, useTableView } from '@banx/store'
+import { ViewState, useTableView } from '@banx/store/common'
 
 import { Loader } from '../Loader'
 import { TableProps } from './types'

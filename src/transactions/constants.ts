@@ -21,18 +21,6 @@ export const TXN_ERROR_DEFINITIONS: Array<TxnErrorDefinition> = [
   },
 ]
 
-export enum BorrowType {
-  StakedBanx = 'StakedBanx',
-  CNft = 'CNft',
-  Default = 'Default',
-}
-
-export enum ListingType {
-  StakedBanx = 'StakedBanx',
-  CNft = 'CNft',
-  Default = 'Default',
-}
-
 export const TXN_EXECUTOR_DEFAULT_OPTIONS: ExecutorOptions = {
   sendOptions: {
     maxRetries: 0,

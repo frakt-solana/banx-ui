@@ -5,7 +5,8 @@ import { unstakeBanxToken } from 'fbonds-core/lib/fbond-protocol/functions/banxS
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
-import { sendTxnPlaceHolder } from '@banx/utils'
+
+import { sendTxnPlaceHolder } from '../helpers'
 
 type CreateUnstakeBanxTokenTxnData = (params: {
   tokensToUnstake: BN

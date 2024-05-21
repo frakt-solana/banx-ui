@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import { useModal } from '@banx/store'
+import { useModal } from '@banx/store/common'
 
 import { Modal } from './BaseModal'
 
