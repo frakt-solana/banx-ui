@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-import { useMarketOffers, useMarketsPreview } from '@banx/pages/nftLending/LendPage'
+import { useMarketOffers, useMarketsPreview } from '@banx/pages/LendPage'
 
 export const useMarketAndOffer = (offerPubkey: string, marketPubkey: string) => {
   const { offers, updateOrAddOffer } = useMarketOffers({ marketPubkey })
