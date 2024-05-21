@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { NotificationModal } from '@banx/components/modals'
 
-import { fetchModalNotification } from '@banx/api/common'
+import { notifications } from '@banx/api/common'
 import { useModal } from '@banx/store'
 
 import { useLocalStorage } from './useLocalStorage'
@@ -18,10 +18,14 @@ export const useNotificationModal = () => {
     null,
   )
 
-  const { data: modalHtmlContent } = useQuery(['modalNotification'], fetchModalNotification, {
-    staleTime: 30 * 60 * 1000, // 30 mins
-    refetchOnWindowFocus: false,
-  })
+  const { data: modalHtmlContent } = useQuery(
+    ['modalNotification'],
+    notifications.fetchModalNotification,
+    {
+      staleTime: 30 * 60 * 1000, // 30 mins
+      refetchOnWindowFocus: false,
+    },
+  )
 
   useEffect(() => {
     if (!modalHtmlContent) {

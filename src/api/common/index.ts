@@ -1,1 +1,2 @@
-export * from './requests'
+export * as notifications from './notifications'
+export * from './notifications'

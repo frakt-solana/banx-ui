@@ -3,7 +3,7 @@ import { useRef, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import classNames from 'classnames'
 
-import { fetchTopBarNotification } from '@banx/api/common'
+import { notifications } from '@banx/api/common'
 import { CloseModal } from '@banx/icons'
 
 import styles from './TopNotification.module.less'
@@ -14,7 +14,7 @@ const useTopNotification = () => {
 
   const { data: topbarNotificationHtml } = useQuery(
     ['topBarNotification'],
-    fetchTopBarNotification,
+    notifications.fetchTopBarNotification,
     {
       staleTime: 30 * 60 * 1000, // 30 mins
       refetchOnWindowFocus: false,
