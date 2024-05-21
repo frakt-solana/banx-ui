@@ -16,6 +16,7 @@ import { core } from '@banx/api/nft'
 import { executeBorrow } from '@banx/pages/BorrowPage/InstantLoansContent/components/BorrowTable/helpers'
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { useMarketsPreview } from '@banx/pages/LendPage/hooks'
+import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
 import { createGlobalState } from '@banx/store'
 import { useModal } from '@banx/store/common'
@@ -25,7 +26,7 @@ import {
   useOffersOptimistic,
   useTokenType,
 } from '@banx/store/nft'
-import { calculateLoanValue, getDialectAccessToken, trackPageEvent } from '@banx/utils'
+import { calculateLoanValue, trackPageEvent } from '@banx/utils'
 
 import { useBorrowerStats } from '../../hooks'
 

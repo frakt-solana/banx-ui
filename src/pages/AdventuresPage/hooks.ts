@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { staking } from '@banx/api/common'
 import { BANX_TOKEN_APPROX_CIRCULATING_AMOUNT } from '@banx/constants'
-import { queryClient } from '@banx/utils'
+import { queryClient } from '@banx/providers'
 
 const createBanxStakeInfoQueryKey = (walletPubkey: string) => ['fetchBanxStakeInfo', walletPubkey]
 const setBanxStakeInfoOptimistic = (walletPubkey: string, nextState: staking.BanxInfoBN) =>

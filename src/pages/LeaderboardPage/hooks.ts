@@ -2,7 +2,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 
 import { user } from '@banx/api/common'
-import { queryClient } from '@banx/utils'
+import { queryClient } from '@banx/providers'
 
 //? useSeasonUserRewards
 const USE_SEASON_USER_REWARDS_QUERY_KEY = 'seasonUserRewards'

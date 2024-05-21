@@ -17,6 +17,7 @@ import { core } from '@banx/api/nft'
 import { BONDS, DAYS_IN_YEAR, SECONDS_IN_DAY } from '@banx/constants'
 import { useBorrowNfts } from '@banx/pages/BorrowPage/hooks'
 import { LoansTabsNames, useLoansTabs } from '@banx/pages/LoansPage'
+import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
 import { useIsLedger, useModal } from '@banx/store/common'
 import { createPathWithTokenParam, useLoansRequestsOptimistic, useTokenType } from '@banx/store/nft'
@@ -35,7 +36,6 @@ import {
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
   formatDecimalWithoutTrailingZeros,
-  getDialectAccessToken,
   getTokenDecimals,
 } from '@banx/utils'
 

@@ -10,6 +10,7 @@ import {
 } from '@banx/components/modals'
 
 import { core } from '@banx/api/nft'
+import { getDialectAccessToken } from '@banx/providers'
 import { useIsLedger, useModal } from '@banx/store/common'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -24,7 +25,6 @@ import {
   enqueueTransactionSent,
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
-  getDialectAccessToken,
   isLoanListed,
 } from '@banx/utils'
 

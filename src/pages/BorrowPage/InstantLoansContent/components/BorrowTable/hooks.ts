@@ -14,6 +14,7 @@ import {
 
 import { core } from '@banx/api/nft'
 import { useBorrowBonkRewardsAvailability } from '@banx/hooks'
+import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
 import { createGlobalState } from '@banx/store'
 import { ViewState, useIsLedger, useModal, useTableView } from '@banx/store/common'
@@ -23,7 +24,7 @@ import {
   useOffersOptimistic,
   useTokenType,
 } from '@banx/store/nft'
-import { getDialectAccessToken, trackPageEvent } from '@banx/utils'
+import { trackPageEvent } from '@banx/utils'
 
 import { useCartState } from '../../cartState'
 import { getTableColumns } from './columns'
