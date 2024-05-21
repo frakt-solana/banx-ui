@@ -2,7 +2,8 @@ import { ErrorBoundary } from '@banx/components/ErrorBoundary'
 
 import { DialectProvider, QueryProvider, SolanaConnectionWalletProvider } from '@banx/providers'
 import { Router } from '@banx/router'
-import { initSentry, purgeIdb } from '@banx/utils'
+import { purgeIdb } from '@banx/store'
+import { initSentry } from '@banx/utils'
 
 initSentry()
 purgeIdb()
