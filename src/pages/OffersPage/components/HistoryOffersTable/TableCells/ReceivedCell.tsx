@@ -4,10 +4,10 @@ import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/type
 
 import { DisplayValue, HorizontalCell } from '@banx/components/TableComponents'
 
-import { LenderActivity } from '@banx/api/activity'
+import { activity } from '@banx/api/nft'
 
 interface ReceivedCellProps {
-  loan: LenderActivity
+  loan: activity.LenderActivity
 }
 
 export const ReceivedCell: FC<ReceivedCellProps> = ({ loan }) => {

@@ -5,7 +5,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
-import { fetchLenderActivity } from '@banx/api/activity'
+import { activity } from '@banx/api/nft'
 import { useTokenType } from '@banx/store'
 import { createGlobalState } from '@banx/store/functions'
 
@@ -25,7 +25,7 @@ export const useLenderActivity = () => {
   const [sortBy, order] = sortOption.value
 
   const fetchData = async (pageParam: number) => {
-    const data = await fetchLenderActivity({
+    const data = await activity.fetchLenderActivity({
       skip: PAGINATION_LIMIT * pageParam,
       limit: PAGINATION_LIMIT,
       sortBy,

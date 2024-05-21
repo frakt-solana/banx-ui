@@ -6,7 +6,7 @@ import { Button } from '@banx/components/Buttons'
 import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { fetchBorrowerActivityCSV } from '@banx/api/activity'
+import { activity } from '@banx/api/nft'
 import { useTokenType } from '@banx/store'
 import { createDownloadLink } from '@banx/utils'
 
@@ -28,7 +28,7 @@ export const Summary = () => {
     try {
       setIsDownloading(true)
 
-      const data = await fetchBorrowerActivityCSV({
+      const data = await activity.fetchBorrowerActivityCSV({
         walletPubkey: publicKey?.toBase58() || '',
         tokenType,
       })

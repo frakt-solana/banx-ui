@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import { capitalize } from 'lodash'
 
-import { BorrowerActivity } from '@banx/api/activity'
+import { activity } from '@banx/api/nft'
 import {
   LoanStatus,
   STATUS_LOANS_COLOR_MAP,
@@ -12,7 +12,7 @@ import {
 import styles from '../LoansHistoryTable.module.less'
 
 interface StatusCellProps {
-  loan: BorrowerActivity
+  loan: activity.BorrowerActivity
 }
 
 export const StatusCell: FC<StatusCellProps> = ({ loan }) => {

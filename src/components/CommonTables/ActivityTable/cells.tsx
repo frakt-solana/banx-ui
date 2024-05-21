@@ -9,7 +9,7 @@ import {
   createPercentValueJSX,
 } from '@banx/components/TableComponents'
 
-import { LenderActivity } from '@banx/api/activity'
+import { activity } from '@banx/api/nft'
 import {
   LoanStatus,
   STATUS_LOANS_COLOR_MAP,
@@ -18,7 +18,7 @@ import {
 
 import styles from './ActivityTable.module.less'
 
-export const StatusCell: FC<{ loan: LenderActivity }> = ({ loan }) => {
+export const StatusCell: FC<{ loan: activity.LenderActivity }> = ({ loan }) => {
   const loanStatus = STATUS_LOANS_MAP_WITH_REFINANCED_ACTIVE[loan.status]
   const statusColor = STATUS_LOANS_COLOR_MAP[loanStatus as LoanStatus]
 
@@ -29,7 +29,7 @@ export const StatusCell: FC<{ loan: LenderActivity }> = ({ loan }) => {
   )
 }
 
-export const CollateralCell: FC<{ loan: LenderActivity }> = ({ loan }) => {
+export const CollateralCell: FC<{ loan: activity.LenderActivity }> = ({ loan }) => {
   const { name, imageUrl, partnerPoints = 0, playerPoints = 0 } = loan.nft.meta
 
   const [nftCollectionName, nftNumber] = name.split('#')
@@ -54,13 +54,13 @@ export const CollateralCell: FC<{ loan: LenderActivity }> = ({ loan }) => {
   )
 }
 
-export const LentCell: FC<{ loan: LenderActivity }> = ({ loan }) => (
+export const LentCell: FC<{ loan: activity.LenderActivity }> = ({ loan }) => (
   <span className={styles.lentCellTitle}>
     <DisplayValue value={loan.lent} />
   </span>
 )
 
-export const AprCell: FC<{ loan: LenderActivity }> = ({ loan }) => {
+export const AprCell: FC<{ loan: activity.LenderActivity }> = ({ loan }) => {
   const aprInPercent = loan.apr / 100
 
   return <span className={styles.aprCellTitle}>{createPercentValueJSX(aprInPercent)}</span>

@@ -7,12 +7,12 @@ import {
   NftInfoCell,
 } from '@banx/components/TableComponents'
 
-import { BorrowerActivity } from '@banx/api/activity'
+import { activity } from '@banx/api/nft'
 
 import { DebtCell, RepaidCell, StatusCell } from './TableCells'
 
 export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
-  const columns: ColumnType<BorrowerActivity>[] = [
+  const columns: ColumnType<activity.BorrowerActivity>[] = [
     {
       key: 'collateral',
       title: <HeaderCell label="Collection" align="left" />,

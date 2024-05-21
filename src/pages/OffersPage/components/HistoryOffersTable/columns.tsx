@@ -8,12 +8,12 @@ import {
   createPercentValueJSX,
 } from '@banx/components/TableComponents'
 
-import { LenderActivity } from '@banx/api/activity'
+import { activity } from '@banx/api/nft'
 
 import { ReceivedCell, StatusCell } from './TableCells'
 
 export const getTableColumns = () => {
-  const columns: ColumnType<LenderActivity>[] = [
+  const columns: ColumnType<activity.LenderActivity>[] = [
     {
       key: 'collateral',
       title: <HeaderCell label="Collateral" align="left" />,

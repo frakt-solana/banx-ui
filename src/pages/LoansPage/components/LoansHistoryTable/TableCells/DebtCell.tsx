@@ -2,12 +2,12 @@ import { FC } from 'react'
 
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { BorrowerActivity } from '@banx/api/activity'
+import { activity } from '@banx/api/nft'
 
 import styles from '../LoansHistoryTable.module.less'
 
 interface DebtCellrops {
-  loan: BorrowerActivity
+  loan: activity.BorrowerActivity
   isCardView: boolean
 }
 

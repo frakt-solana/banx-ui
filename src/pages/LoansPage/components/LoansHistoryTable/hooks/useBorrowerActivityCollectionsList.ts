@@ -1,7 +1,7 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 
-import { fetchActivityCollectionsList } from '@banx/api/activity'
+import { activity } from '@banx/api/nft'
 import { useTokenType } from '@banx/store'
 
 export const useBorrowerActivityCollectionsList = () => {
@@ -13,7 +13,7 @@ export const useBorrowerActivityCollectionsList = () => {
   const { data, isLoading } = useQuery(
     ['borrowerActivityCollectionsList', publicKeyString, tokenType],
     () =>
-      fetchActivityCollectionsList({
+      activity.fetchActivityCollectionsList({
         walletPubkey: publicKeyString,
         userType: 'borrower',
         tokenType,
