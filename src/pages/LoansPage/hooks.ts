@@ -6,8 +6,7 @@ import { chain, filter, groupBy, map } from 'lodash'
 import moment from 'moment'
 import { create } from 'zustand'
 
-import { core } from '@banx/api/nft'
-import { fetchUserLoansStats } from '@banx/api/stats'
+import { core, stats } from '@banx/api/nft'
 import {
   isLoanNewer,
   isOfferNewer,
@@ -194,7 +193,7 @@ export const useUserLoansStats = () => {
 
   const { data, isLoading } = useQuery(
     ['userLoansStats', publicKeyString, tokenType],
-    () => fetchUserLoansStats({ walletPubkey: publicKeyString, tokenType }),
+    () => stats.fetchUserLoansStats({ walletPubkey: publicKeyString, tokenType }),
     {
       enabled: !!publicKeyString,
       staleTime: 5 * 1000,

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { DoughnutChartProps } from '@banx/components/Charts'
 import { VALUES_TYPES } from '@banx/components/StatInfo'
 
-import { TotalBorrowerStats } from '@banx/api/stats'
+import { stats } from '@banx/api/nft'
 import { PATHS } from '@banx/router'
 import { createPathWithTokenParam, useTokenType } from '@banx/store'
 import { trackPageEvent } from '@banx/utils'
@@ -18,7 +18,7 @@ import {
 
 import styles from './MyLoans.module.less'
 
-export const useMyLoans = (stats?: TotalBorrowerStats | null) => {
+export const useMyLoans = (stats?: stats.TotalBorrowerStats | null) => {
   const navigate = useNavigate()
   const { tokenType } = useTokenType()
 

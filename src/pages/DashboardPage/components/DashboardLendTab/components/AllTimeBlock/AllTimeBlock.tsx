@@ -6,7 +6,7 @@ import { SingleBar } from '@banx/components/Charts'
 import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { TotalLenderStats } from '@banx/api/stats'
+import { stats } from '@banx/api/nft'
 
 import { ChartStatInfo, DashboardStatInfo, Heading } from '../../../components'
 import {
@@ -18,7 +18,7 @@ import {
 
 import styles from './AllTimeBlock.module.less'
 
-type AllTimeStats = TotalLenderStats['allTime']
+type AllTimeStats = stats.TotalLenderStats['allTime']
 
 interface AllTimeBlockProps {
   stats?: AllTimeStats

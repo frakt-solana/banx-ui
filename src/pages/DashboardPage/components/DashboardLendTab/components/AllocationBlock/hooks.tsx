@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { DoughnutChartProps } from '@banx/components/Charts'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { TotalLenderStats } from '@banx/api/stats'
+import { stats } from '@banx/api/nft'
 import { PATHS } from '@banx/router'
 import { createPathWithTokenParam, useTokenType } from '@banx/store'
 import { getTokenDecimals, isSolTokenType, trackPageEvent } from '@banx/utils'
@@ -16,7 +16,7 @@ import {
   STATUS_DISPLAY_NAMES,
 } from './constants'
 
-export type AllocationStats = TotalLenderStats['allocation']
+export type AllocationStats = stats.TotalLenderStats['allocation']
 
 export const useAllocationBlock = (stats?: AllocationStats) => {
   const navigate = useNavigate()

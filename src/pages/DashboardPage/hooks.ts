@@ -1,7 +1,7 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 
-import { fetchAllTotalStats, fetchBorrowerStats, fetchLenderStats } from '@banx/api/stats'
+import { stats } from '@banx/api/nft'
 import { useTokenType } from '@banx/store'
 import { isSolTokenType } from '@banx/utils'
 
@@ -18,7 +18,7 @@ export const useAllTotalStats = () => {
 
   const { data, isLoading } = useQuery(
     ['allTotalStats', tokenType],
-    () => fetchAllTotalStats(marketType),
+    () => stats.fetchAllTotalStats(marketType),
     QUERY_OPTIONS,
   )
 
@@ -33,7 +33,7 @@ export const useLenderStats = () => {
 
   const { data, isLoading } = useQuery(
     ['lenderStats', publicKeyString, tokenType],
-    () => fetchLenderStats({ walletPubkey: publicKeyString, tokenType }),
+    () => stats.fetchLenderStats({ walletPubkey: publicKeyString, tokenType }),
     {
       enabled: !!publicKey,
       ...QUERY_OPTIONS,
@@ -50,7 +50,7 @@ export const useBorrowerStats = () => {
 
   const { data, isLoading } = useQuery(
     ['borrowerStats', publicKeyString, tokenType],
-    () => fetchBorrowerStats({ walletPubkey: publicKeyString, tokenType }),
+    () => stats.fetchBorrowerStats({ walletPubkey: publicKeyString, tokenType }),
     {
       enabled: !!publicKey,
       ...QUERY_OPTIONS,

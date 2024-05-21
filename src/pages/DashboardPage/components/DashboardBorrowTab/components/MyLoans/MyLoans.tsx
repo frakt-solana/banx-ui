@@ -5,7 +5,7 @@ import { Doughnut } from '@banx/components/Charts'
 import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { TotalBorrowerStats } from '@banx/api/stats'
+import { stats } from '@banx/api/nft'
 
 import { ChartStatInfo, DashboardStatInfo, Heading } from '../../../components'
 import { LoansStatus, STATUS_COLOR_MAP } from './constants'
@@ -14,7 +14,7 @@ import { useMyLoans } from './hooks'
 import styles from './MyLoans.module.less'
 
 interface MyLoansProps {
-  stats?: TotalBorrowerStats | null
+  stats?: stats.TotalBorrowerStats | null
 }
 
 const MyLoans: FC<MyLoansProps> = ({ stats }) => {
