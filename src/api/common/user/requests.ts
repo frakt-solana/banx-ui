@@ -15,6 +15,8 @@ import {
   LeaderboardTimeRange,
   LinkWalletResponse,
   LinkedWallet,
+  RefPersolanData,
+  RefPersolanDataSchema,
   SeasonUserRewards,
   SeasonUserRewardsSchema,
 } from './types'
@@ -220,4 +222,19 @@ export const sendBonkWithdrawal: SendBonkWithdrawal = async ({ bonkWithdrawal, w
     `${BACKEND_BASE_URL}/leaderboard/process-bonk-withdrawal/${walletPubkey}`,
     bonkWithdrawal,
   )
+}
+
+type FetchRefPersonalData = (props: { walletPubkey: string }) => Promise<RefPersolanData | null>
+export const fetchRefPersonalData: FetchRefPersonalData = async ({ walletPubkey }) => {
+  const { data } = await axios.get<{ data: RefPersolanData }>(
+    `${BACKEND_BASE_URL}/leaderboard/ref/personal-data/${walletPubkey}`,
+  )
+
+  try {
+    await RefPersolanDataSchema.parseAsync(data?.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
+  }
+
+  return data?.data ?? null
 }
