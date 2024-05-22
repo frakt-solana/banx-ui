@@ -132,6 +132,10 @@
   color: var(--content-secondary);
   font: var(--title-sm);
   text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--title-xs);
+  }
 }
 
 .referralInputWrapper {
@@ -165,15 +169,72 @@
 // * ReferralInput * //
 
 // * RefferralModal * //
+.modal :global {
+  .ant-modal-body {
+    padding: 0 !important;
+  }
+
+  .ant-modal-content {
+    padding: 0;
+  }
+}
+
 .referralModalContent {
   display: flex;
   flex-direction: column;
+  padding: 24px 24px 0;
   gap: 12px;
+
+  @media (max-width: 640px) {
+    padding: 16px 16px 0;
+    gap: 8px;
+  }
+
+  .title {
+    font: var(--title-xl);
+    text-align: center;
+    text-transform: uppercase;
+
+    @media (max-width: 640px) {
+      font: var(--title-lg);
+    }
+  }
+
+  .subtitle {
+    font: var(--body-text-md);
+    text-align: center;
+
+    @media (max-width: 640px) {
+      font: var(--body-text-sm);
+    }
+  }
+}
+
+.referralModalInfo {
+  display: flex;
+  align-items: center;
+}
+
+.banxImage {
+  margin-left: -24px;
+  height: 132px;
+  width: 132px;
+}
+
+.referralModalInfoRows {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .referralModalInfoRow {
+  background: var(--bg-primary);
+  border-radius: 12px;
+
   display: flex;
   align-items: center;
+  padding: 8px;
   gap: 8px;
 
   svg {
@@ -182,31 +243,41 @@
   }
 
   span {
-    font: var(--body-text-md);
+    font: var(--body-text-sm);
   }
 }
 
-.separateModalLine {
-  background: var(--bg-border);
-  margin: 24px -24px 12px;
-  height: 1px;
+.referrerModalInfo {
+  padding: 12px 24px 24px;
+
+  @media (max-width: 640px) {
+    padding: 8px 16px 16px;
+  }
 }
 
 .referrerWallet {
   font: var(--body-text-sm);
+
+  @media (max-width: 640px) {
+    font: var(--body-text-xs);
+  }
 }
 
 .confirmButton {
   margin: 12px 0;
   width: 100%;
+
+  @media (max-width: 640px) {
+    margin: 8px 0;
+  }
 }
 
 .warningMessage {
+  color: var(--content-secondary);
+  font: var(--body-text-sm);
+
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-
-  font: var(--body-text-sm);
 }
 // * RefferralModal * //
