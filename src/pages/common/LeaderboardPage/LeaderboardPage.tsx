@@ -3,6 +3,7 @@ import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 import { Plug } from './assets'
 import EarnTab from './components/EarnTab'
 import Header from './components/LeaderboardHeader'
+import ReferralTab from './components/ReferralTab'
 // import LeaderboardTab from './components/LeaderboardTab'
 import RewardsTab from './components/RewardsTab'
 
@@ -12,6 +13,7 @@ export enum LeaderboardTabName {
   REWARDS = 'rewards',
   LEADERBOARD = 'leaderboard',
   EARN = 'earn',
+  REFERRAL = 'referral',
 }
 
 export const LeaderboardPage = () => {
@@ -28,6 +30,7 @@ export const LeaderboardPage = () => {
       {/* {currentTabValue === LeaderboardTabName.LEADERBOARD && <LeaderboardTab />} */}
       {currentTabValue === LeaderboardTabName.LEADERBOARD && <LeaderboardPlug />}
       {currentTabValue === LeaderboardTabName.EARN && <EarnTab />}
+      {currentTabValue === LeaderboardTabName.REFERRAL && <ReferralTab />}
     </div>
   )
 }
@@ -53,5 +56,9 @@ export const LEADERBOARD_TABS: Tab[] = [
   {
     label: 'Earn points',
     value: LeaderboardTabName.EARN,
+  },
+  {
+    label: 'Referrals',
+    value: LeaderboardTabName.REFERRAL,
   },
 ]

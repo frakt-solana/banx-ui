@@ -1,0 +1,212 @@
+.container {
+  display: flex;
+  justify-content: center;
+  padding-top: 24px;
+  gap: 24px;
+}
+
+// * ReferralCodeSection * //
+.referralCodeSection {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 12px 0;
+  max-width: 232px;
+}
+
+.referralCodeEmptyList {
+  margin: 0;
+}
+
+.referralInviteInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.invitedStat,
+.referredStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.invitedLabel,
+.referredLabel {
+  font: var(--title-sm);
+  text-transform: uppercase;
+}
+
+.referredValue {
+  font: var(--important-text-md);
+}
+
+.customReferralLink {
+  font: var(--body-text-sm);
+
+  a {
+    cursor: pointer;
+    color: var(--content-primary);
+    text-decoration: underline;
+  }
+}
+// * ReferralCodeSection * //
+
+// * ReferralInfoSection * //
+.referralInfoSection {
+  border: var(--border-less-primary);
+  border-radius: 6px;
+  border-style: dashed;
+
+  display: flex;
+  flex-direction: column;
+
+  max-width: 340px;
+}
+
+.referralInfoContent {
+  border-bottom: var(--border-less-primary);
+  border-style: dashed;
+
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  gap: 12px;
+}
+
+.referralInfoRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  svg {
+    min-height: 24px;
+    min-width: 24px;
+  }
+
+  span {
+    font: var(--body-text-md);
+  }
+}
+
+.rewardsInfo {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 12px;
+  gap: 12px;
+}
+
+.rewardsStatInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.rewardsStatLabel {
+  font: var(--title-sm);
+  text-transform: uppercase;
+}
+
+.rewardsStatValue {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+
+  font: var(--important-text-md);
+}
+
+.claimRewardsButton {
+  min-width: 128px;
+}
+// * ReferralInfoSection * //
+
+// * ReferralInput * //
+.referralInputField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.referralInputLabel {
+  color: var(--content-secondary);
+  font: var(--title-sm);
+  text-transform: uppercase;
+}
+
+.referralInputWrapper {
+  position: relative;
+}
+
+.referralInput {
+  border: var(--border-primary) !important;
+}
+
+.referralInputButton {
+  background: var(--bg-primary);
+  border: var(--border-primary);
+  border-radius: 4px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 4px;
+
+  span {
+    font: var(--btn-text-sm);
+  }
+}
+// * ReferralInput * //
+
+// * RefferralModal * //
+.referralModalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.referralModalInfoRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  svg {
+    min-height: 24px;
+    min-width: 24px;
+  }
+
+  span {
+    font: var(--body-text-md);
+  }
+}
+
+.separateModalLine {
+  background: var(--bg-border);
+  margin: 24px -24px 12px;
+  height: 1px;
+}
+
+.referrerWallet {
+  font: var(--body-text-sm);
+}
+
+.confirmButton {
+  margin: 12px 0;
+  width: 100%;
+}
+
+.warningMessage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
+  font: var(--body-text-sm);
+}
+// * RefferralModal * //

@@ -7,6 +7,11 @@ export const copyToClipboard = (value: string): void => {
   navigator.clipboard.writeText(value)
 }
 
+export const pasteFromClipboard = async (): Promise<string> => {
+  const text = await navigator.clipboard.readText()
+  return text
+}
+
 export const formatNumbersWithCommas = (value: number | string) =>
   value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 
