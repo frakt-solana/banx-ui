@@ -238,3 +238,37 @@ export const fetchRefPersonalData: FetchRefPersonalData = async ({ walletPubkey 
 
   return data?.data ?? null
 }
+
+type FetchUserWalletByRefCode = (props: { refCode: string }) => Promise<string>
+export const fetchUserWalletByRefCode: FetchUserWalletByRefCode = async ({ refCode }) => {
+  const { data } = await axios.get<{ data: { user: string } }>(
+    `${BACKEND_BASE_URL}/leaderboard/ref/search/${refCode}`,
+  )
+
+  return data?.data.user ?? ''
+}
+
+type LinkRef = (params: { refCode: string; walletJwt: string }) => Promise<MutationResponse>
+
+export const linkRef: LinkRef = async ({ refCode, walletJwt }) => {
+  try {
+    const { data } = await axios.post<{ data: MutationResponse }>(
+      `${BACKEND_BASE_URL}/leaderboard/ref`,
+      { refCode },
+      {
+        headers: {
+          Authorization: `Bearer ${walletJwt}`,
+        },
+      },
+    )
+
+    return data.data
+  } catch (error) {
+    const errorResponse: MutationResponse = {
+      message: 'Unable to link ref code',
+      success: false,
+    }
+
+    return errorResponse
+  }
+}
