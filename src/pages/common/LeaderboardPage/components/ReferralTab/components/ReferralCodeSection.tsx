@@ -2,6 +2,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 import { Button } from '@banx/components/Buttons'
 import EmptyList from '@banx/components/EmptyList'
+import RefferralModal, { ReferralInput } from '@banx/components/RefferralModal'
 
 import { DISCORD } from '@banx/constants'
 import { Copy } from '@banx/icons'
@@ -9,8 +10,6 @@ import { useModal } from '@banx/store/common'
 import { copyToClipboard } from '@banx/utils'
 
 import { useRefPersonalData } from '../hooks'
-import { ReferralInput } from './ReferralInput'
-import { RefferralModal } from './RefferralModal'
 
 import styles from '../ReferralTab.module.less'
 

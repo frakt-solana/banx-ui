@@ -11,14 +11,14 @@ import { Cashback, Paste } from '@banx/icons'
 import { useModal } from '@banx/store/common'
 import { pasteFromClipboard } from '@banx/utils'
 
-import Background from '../assets/Background.png'
-import BanxImage from '../assets/Banx.png'
-import { useSearchUserWallet } from '../hooks'
-import { ReferralInput } from './ReferralInput'
+import Background from './assets/Background.png'
+import BanxImage from './assets/Banx.png'
+import { ReferralInput } from './components'
+import { useSearchUserWallet } from './hooks'
 
-import styles from '../ReferralTab.module.less'
+import styles from './RefferralModal.module.less'
 
-export const RefferralModal = () => {
+const RefferralModal = () => {
   const { connected } = useWallet()
   const { close } = useModal()
   const { toggleVisibility } = useWalletModal()
@@ -95,3 +95,5 @@ export const RefferralModal = () => {
     </Modal>
   )
 }
+
+export default RefferralModal

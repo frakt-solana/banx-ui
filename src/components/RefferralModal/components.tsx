@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import { Input, InputProps } from '@banx/components/inputs/Input'
 
-import styles from '../ReferralTab.module.less'
+import styles from './RefferralModal.module.less'
 
 interface ReferralInputProps extends InputProps {
   label: string

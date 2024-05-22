@@ -19,16 +19,3 @@ export const useRefPersonalData = () => {
 
   return { data, isLoading }
 }
-
-export const useSearchUserWallet = (refCode: string) => {
-  const { data, isLoading } = useQuery(
-    ['refPersonalData', refCode],
-    () => user.fetchUserWalletByRefCode({ refCode }),
-    {
-      staleTime: 5000,
-      refetchOnWindowFocus: false,
-    },
-  )
-
-  return { data, isLoading }
-}
