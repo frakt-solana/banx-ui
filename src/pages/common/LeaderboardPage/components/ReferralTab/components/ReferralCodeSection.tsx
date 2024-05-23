@@ -162,10 +162,10 @@ const RewardsContent: FC<RewardsSectionProps> = ({
 
 const CustomReferralLink = () => (
   <div className={styles.customReferralLink}>
-    Custom link is available to you, please join{' '}
+    For custom link please join{' '}
     <a href={DISCORD.SERVER_URL} rel="noopener noreferrer" target="_blank">
       our discord
     </a>{' '}
-    and create ticket
+    and create a ticket
   </div>
 )

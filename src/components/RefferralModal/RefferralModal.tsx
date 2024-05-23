@@ -69,7 +69,7 @@ const RefferralModal = () => {
           <h4 className={styles.title}>Welcome to Banx</h4>
           <span className={styles.subtitle}>
             Banx is pioneering the NFT lending space on Solana as the only perpetual P2P NFT lending
-            protocol, offering a true DeFi lending experience with benefits
+            protocol, offering a true DeFi lending experience
           </span>
 
           <div className={styles.referralModalInfo}>
@@ -77,11 +77,11 @@ const RefferralModal = () => {
             <div className={styles.referralModalInfoRows}>
               <div className={styles.referralModalInfoRow}>
                 <CircleCheck />
-                <span>50% cashback + 2X points multi on first Borrow</span>
+                <span>50% upfront fee cashback + 2X points on your first Borrow</span>
               </div>
               <div className={styles.referralModalInfoRow}>
                 <CircleCheck />
-                <span>4X points multi on first Lend</span>
+                <span>4X points on first your Lend</span>
               </div>
             </div>
           </div>
