@@ -51,6 +51,7 @@ export const ReferralCodeSection = () => {
             label="Your referral code"
             value={refCode}
             actionButton={{ text: 'Copy', icon: Copy, onClick: handleCopyRefCode }}
+            className={styles.referralInput}
           />
 
           <CustomReferralLink />

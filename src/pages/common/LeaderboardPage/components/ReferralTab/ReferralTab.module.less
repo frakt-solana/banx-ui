@@ -3,6 +3,11 @@
   justify-content: center;
   padding-top: 24px;
   gap: 24px;
+
+  @media (max-width: 960px) {
+    flex-direction: column;
+    align-items: center;
+  }
 }
 
 // * ReferralCodeSection * //
@@ -12,6 +17,18 @@
   justify-content: space-between;
   padding: 12px 0;
   max-width: 232px;
+
+  @media (max-width: 960px) {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+.referralInput {
+  @media (max-width: 960px) {
+    align-items: center;
+    width: 100%;
+  }
 }
 
 .referralCodeEmptyList {
@@ -29,16 +46,27 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 2px;
 }
 
 .invitedLabel,
 .referredLabel {
   font: var(--title-sm);
   text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--title-xs);
+  }
 }
 
 .referredValue {
   font: var(--important-text-md);
+  line-height: 24px;
+
+  @media (max-width: 640px) {
+    font: var(--important-text-sm);
+    line-height: 24px;
+  }
 }
 
 .customReferralLink {
@@ -48,6 +76,15 @@
     cursor: pointer;
     color: var(--content-primary);
     text-decoration: underline;
+  }
+
+  @media (max-width: 960px) {
+    margin: 8px 0 16px;
+    text-align: center;
+  }
+
+  @media (max-width: 640px) {
+    font: var(--body-text-xs);
   }
 }
 // * ReferralCodeSection * //
@@ -62,6 +99,13 @@
   flex-direction: column;
 
   max-width: 340px;
+
+  @media (max-width: 960px) {
+    border-right: 0;
+    border-left: 0;
+    max-width: unset;
+    width: 100%;
+  }
 }
 
 .referralInfoContent {
@@ -86,6 +130,10 @@
 
   span {
     font: var(--body-text-md);
+
+    @media (max-width: 640px) {
+      font: var(--body-text-sm);
+    }
   }
 }
 
@@ -106,6 +154,10 @@
 .rewardsStatLabel {
   font: var(--title-sm);
   text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--title-xs);
+  }
 }
 
 .rewardsStatValue {
@@ -114,6 +166,10 @@
   gap: 2px;
 
   font: var(--important-text-md);
+
+  @media (max-width: 640px) {
+    font: var(--important-text-sm);
+  }
 }
 
 .claimRewardsButton {

@@ -1,5 +1,7 @@
 import { FC } from 'react'
 
+import classNames from 'classnames'
+
 import { Input, InputProps } from '@banx/components/inputs/Input'
 
 import styles from './RefferralModal.module.less'
@@ -9,8 +11,13 @@ interface ReferralInputProps extends InputProps {
   actionButton: ActionButtonProps
 }
 
-export const ReferralInput: FC<ReferralInputProps> = ({ label, actionButton, ...inputProps }) => (
-  <div className={styles.referralInputField}>
+export const ReferralInput: FC<ReferralInputProps> = ({
+  label,
+  actionButton,
+  className,
+  ...inputProps
+}) => (
+  <div className={classNames(styles.referralInputField, className)}>
     <span className={styles.referralInputLabel}>{label}</span>
     <div className={styles.referralInputWrapper}>
       <Input className={styles.referralInput} {...inputProps} />
