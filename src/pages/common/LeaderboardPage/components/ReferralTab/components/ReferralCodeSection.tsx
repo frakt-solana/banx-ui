@@ -4,7 +4,7 @@ import { Button } from '@banx/components/Buttons'
 import EmptyList from '@banx/components/EmptyList'
 import RefferralModal, { ReferralInput } from '@banx/components/RefferralModal'
 
-import { DISCORD } from '@banx/constants'
+import { BASE_BANX_URL, DISCORD } from '@banx/constants'
 import { Copy } from '@banx/icons'
 import { useModal } from '@banx/store/common'
 import { copyToClipboard } from '@banx/utils'
@@ -29,6 +29,11 @@ export const ReferralCodeSection = () => {
     open(RefferralModal, {})
   }
 
+  const handleCopyRefCode = () => {
+    const textToCopy = `${BASE_BANX_URL}ref=${refCode}`
+    copyToClipboard(textToCopy)
+  }
+
   return (
     <div className={styles.referralCodeSection}>
       {!connected && (
@@ -43,7 +48,7 @@ export const ReferralCodeSection = () => {
           <ReferralInput
             label="Your referral code"
             value={refCode}
-            actionButton={{ text: 'Copy', icon: Copy, onClick: () => copyToClipboard(refCode) }}
+            actionButton={{ text: 'Copy', icon: Copy, onClick: handleCopyRefCode }}
           />
 
           <CustomReferralLink />

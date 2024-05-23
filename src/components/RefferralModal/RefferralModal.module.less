@@ -117,6 +117,29 @@
   align-items: center;
   justify-content: center;
 }
+
+.cancelButton {
+  background-color: var(--additional-red-secondary) !important;
+  border: 1px solid var(--additional-red-primary);
+
+  &:hover {
+    border: 1px solid var(--additional-red-primary-deep);
+  }
+
+  width: 100%;
+}
+
+.walletsList {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  overflow: auto;
+  gap: 24px;
+  margin: 12px 0;
+  width: 100%;
+}
+
 // * RefferralModal * //
 
 // * ReferralInput * //

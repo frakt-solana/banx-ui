@@ -1,13 +1,18 @@
-import { ChangeEvent, FC, useState } from 'react'
+import { ChangeEvent, FC, useEffect, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { Skeleton } from 'antd'
 
 import { Button } from '@banx/components/Buttons'
-import { useWalletModal } from '@banx/components/WalletModal'
+import { WalletItem } from '@banx/components/WalletModal'
 import { Modal } from '@banx/components/modals/BaseModal'
 
-import { useDebounceValue, useReferralLink } from '@banx/hooks'
+import {
+  extractReferralCodeFromPath,
+  useDebounceValue,
+  useReferralLink,
+  useWalletAdapters,
+} from '@banx/hooks'
 import { Cashback, Paste } from '@banx/icons'
 import { useModal } from '@banx/store/common'
 import { pasteFromClipboard } from '@banx/utils'
@@ -22,12 +27,21 @@ import styles from './RefferralModal.module.less'
 const RefferralModal = () => {
   const { connected } = useWallet()
   const { close } = useModal()
-  const { toggleVisibility } = useWalletModal()
+
+  const referralCode = extractReferralCodeFromPath(location.pathname)
+
+  const [visibleWalletList, setVisibleWalletList] = useState(false)
 
   const { onRefLink, removeRefFromPath } = useReferralLink()
 
   const [inputValue, setInputValue] = useState('')
   const debouncedRefCode = useDebounceValue(inputValue, 500)
+
+  useEffect(() => {
+    if (referralCode) {
+      setInputValue(referralCode)
+    }
+  }, [referralCode])
 
   const { data: referrerWallet, isLoading: isLoadingReferrerWallet } =
     useSearchUserWallet(debouncedRefCode)
@@ -35,14 +49,6 @@ const RefferralModal = () => {
   const onClickInputButton = async () => {
     const text = await pasteFromClipboard()
     setInputValue(text)
-  }
-
-  const onClickHandler = () => {
-    if (!connected) {
-      return toggleVisibility()
-    }
-
-    return onRefLink(inputValue)
   }
 
   const onChangeInput = (event: ChangeEvent<HTMLInputElement>) => {
@@ -95,13 +101,37 @@ const RefferralModal = () => {
           isLoading={isLoadingReferrerWallet}
         />
 
-        <Button onClick={onClickHandler} className={styles.confirmButton}>
-          {!connected ? 'Connect wallet' : 'LFG!'}
-        </Button>
+        {connected && (
+          <>
+            <Button
+              onClick={() => onRefLink(inputValue)}
+              className={styles.confirmButton}
+              disabled={!referrerWallet}
+            >
+              LFG!
+            </Button>
+            <span className={styles.warningMessage}>
+              Please be careful, this action cannot be canceled
+            </span>
+          </>
+        )}
 
-        <span className={styles.warningMessage}>
-          Please be careful, this action cannot be canceled
-        </span>
+        {!connected && (
+          <>
+            {visibleWalletList ? (
+              <>
+                <WalletsList />
+                <Button onClick={() => setVisibleWalletList(false)} className={styles.cancelButton}>
+                  Cancel
+                </Button>
+              </>
+            ) : (
+              <Button onClick={() => setVisibleWalletList(true)} className={styles.confirmButton}>
+                Connect wallet
+              </Button>
+            )}
+          </>
+        )}
       </div>
     </Modal>
   )
@@ -123,6 +153,24 @@ const ReferrerWallet: FC<ReferrerWalletProps> = ({ referrerWallet, inputValue, i
     <div className={styles.referrerWallet}>
       {showSkeleton && <Skeleton.Input size="small" className={styles.referrerWalletSkeleton} />}
       {showReferrerWallet && <span>Referrer wallet: {referrerWallet?.slice(0, 4)}</span>}
+    </div>
+  )
+}
+
+export const WalletsList = () => {
+  const wallets = useWalletAdapters()
+
+  return (
+    <div className={styles.walletsList}>
+      {wallets.map(({ adapter, select }, idx) => (
+        <WalletItem
+          key={idx}
+          onClick={select}
+          image={adapter.icon}
+          name={adapter.name}
+          className={styles.walletItem}
+        />
+      ))}
     </div>
   )
 }
