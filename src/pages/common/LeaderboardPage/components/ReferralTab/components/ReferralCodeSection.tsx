@@ -7,7 +7,7 @@ import RefferralModal, { ReferralInput } from '@banx/components/RefferralModal'
 import { BASE_BANX_URL, DISCORD } from '@banx/constants'
 import { Copy } from '@banx/icons'
 import { useModal } from '@banx/store/common'
-import { copyToClipboard } from '@banx/utils'
+import { copyToClipboard, enqueueSnackbar } from '@banx/utils'
 
 import { useRefPersonalData } from '../hooks'
 
@@ -32,6 +32,8 @@ export const ReferralCodeSection = () => {
   const handleCopyRefCode = () => {
     const textToCopy = `${BASE_BANX_URL}ref=${refCode}`
     copyToClipboard(textToCopy)
+
+    enqueueSnackbar({ message: 'Copied your referral link', type: 'success' })
   }
 
   return (

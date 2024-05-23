@@ -149,10 +149,15 @@ const ReferrerWallet: FC<ReferrerWalletProps> = ({ referrerWallet, inputValue, i
   const showReferrerWallet = !isLoading && !!referrerWallet
   const showSkeleton = isLoading && !!inputValue
 
+  const invalidReferralCode = !!inputValue && !isLoading && !referrerWallet
+
   return (
     <div className={styles.referrerWallet}>
       {showSkeleton && <Skeleton.Input size="small" className={styles.referrerWalletSkeleton} />}
       {showReferrerWallet && <span>Referrer wallet: {referrerWallet?.slice(0, 4)}</span>}
+      {invalidReferralCode && (
+        <span className={styles.referrerWalletError}>Invalid referral code</span>
+      )}
     </div>
   )
 }
