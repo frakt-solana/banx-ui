@@ -17,6 +17,11 @@ export const useReferralLink = () => {
 
   const { jwt, AUTH_MESSAGE, logIn } = useBanxLogin()
 
+  const removeRefFromPath = useCallback(() => {
+    const pathWithoutRef = location.pathname.replace(/ref=([^/]*)/, '')
+    navigate(pathWithoutRef, { replace: true })
+  }, [location.pathname, navigate])
+
   const getWalletJwt = useCallback(async () => {
     if (!wallet.publicKey) return
 
@@ -56,8 +61,7 @@ export const useReferralLink = () => {
           type: 'success',
         })
 
-        const pathWithoutRef = location.pathname.replace(/ref=([^/]*)/, '')
-        navigate(pathWithoutRef, { replace: true })
+        removeRefFromPath()
       } catch (error) {
         console.error({ error })
         if (error instanceof Error) {
@@ -65,10 +69,10 @@ export const useReferralLink = () => {
         }
       }
     },
-    [getWalletJwt, jwt, location.pathname, navigate],
+    [removeRefFromPath, getWalletJwt, jwt],
   )
 
-  return { onRefLink }
+  return { onRefLink, removeRefFromPath }
 }
 
 export const extractReferralCodeFromPath = (pathname: string) => {

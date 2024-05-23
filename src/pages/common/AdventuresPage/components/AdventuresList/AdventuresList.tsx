@@ -6,7 +6,11 @@ import { capitalize, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { staking } from '@banx/api/common'
-import { checkIsSubscribed, getAdventureStatus, isAdventureEnded } from '@banx/pages/common/AdventuresPage'
+import {
+  checkIsSubscribed,
+  getAdventureStatus,
+  isAdventureEnded,
+} from '@banx/pages/common/AdventuresPage'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,

@@ -36,6 +36,7 @@ export type SeasonUserRewards = z.infer<typeof SeasonUserRewardsSchema>
 export const RefPersolanDataSchema = z.object({
   user: z.string(),
   refCode: z.string(),
+  referredBy: z.string(),
   refUsers: z.string().array(),
 })
 

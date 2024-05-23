@@ -19,7 +19,7 @@ export const ReferralCodeSection = () => {
 
   const { data } = useRefPersonalData()
 
-  const { refCode = '', refUsers = [] } = data || {}
+  const { refCode = '', refUsers = [], referredBy = '' } = data || {}
 
   const totalReferred = refUsers.length || 0
 
@@ -54,10 +54,14 @@ export const ReferralCodeSection = () => {
         <div className={styles.invitedStat}>
           <span className={styles.invitedLabel}>Invited by</span>
 
-          {connected && (
+          {connected && !referredBy && (
             <Button onClick={showModal} size="small" variant="secondary">
               Add referrer
             </Button>
+          )}
+
+          {connected && !!referredBy && (
+            <span className={styles.referredValue}>{referredBy.slice(0, 4)}</span>
           )}
 
           {!connected && EmptyValueJSX}

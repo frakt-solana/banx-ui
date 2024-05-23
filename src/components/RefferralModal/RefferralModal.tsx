@@ -23,7 +23,7 @@ const RefferralModal = () => {
   const { close } = useModal()
   const { toggleVisibility } = useWalletModal()
 
-  const { onRefLink } = useReferralLink()
+  const { onRefLink, removeRefFromPath } = useReferralLink()
 
   const [inputValue, setInputValue] = useState('')
 
@@ -47,8 +47,13 @@ const RefferralModal = () => {
     setInputValue(event.target.value)
   }
 
+  const onCloseModal = () => {
+    close()
+    removeRefFromPath()
+  }
+
   return (
-    <Modal open onCancel={close} className={styles.modal} width={408}>
+    <Modal open onCancel={onCloseModal} className={styles.modal} width={408}>
       <div
         className={styles.referralModalContent}
         style={{ backgroundImage: `url(${Background})` }}
