@@ -36,7 +36,7 @@ const RefferralModal = () => {
   const { onRefLink, removeRefFromPath } = useReferralLink()
 
   const [inputValue, setInputValue] = useState('')
-  const debouncedRefCode = useDebounceValue(inputValue, 500)
+  const debouncedRefCode = useDebounceValue(inputValue, 600)
 
   useEffect(() => {
     if (referralCode) {
