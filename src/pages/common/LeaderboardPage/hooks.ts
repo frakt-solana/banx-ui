@@ -52,7 +52,7 @@ export const updateBanxWithdrawOptimistic = (walletPubkey: string) =>
     createSeasonUserRewardsQueryKey(walletPubkey),
     (queryData: user.SeasonUserRewards | undefined) => {
       if (!queryData) return queryData
-      const { available = 0, redeemed = 0, totalAccumulated = 0 } = queryData?.bonkRewards || {}
+      const { available = 0, redeemed = 0, totalAccumulated = 0 } = queryData?.banxRewards || {}
 
       return {
         ...queryData,
