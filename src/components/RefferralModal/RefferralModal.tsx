@@ -172,7 +172,7 @@ const ReferrerWallet: FC<ReferrerWalletProps> = ({ referrerWallet, inputValue, i
   )
 }
 
-export const WalletsList = () => {
+const WalletsList = () => {
   const wallets = useWalletAdapters()
 
   return (
