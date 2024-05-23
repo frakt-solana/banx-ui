@@ -9,7 +9,7 @@ import RefferralModal from '@banx/components/RefferralModal'
 import { Theme, extractReferralCodeFromPath, useTheme } from '@banx/hooks'
 import { InfinityIcon, Lightning, PencilLtv } from '@banx/icons'
 import { PATHS } from '@banx/router'
-import { useBanxLogin, useModal } from '@banx/store/common'
+import { useModal } from '@banx/store/common'
 
 import { Interest } from './icons'
 
@@ -17,15 +17,14 @@ import styles from './RootPage.module.less'
 
 export const RootPage = () => {
   const { open } = useModal()
-  const { jwt } = useBanxLogin()
 
   useEffect(() => {
     const referralCode = extractReferralCodeFromPath(location.pathname)
 
-    if (referralCode && !jwt) {
+    if (referralCode) {
       open(RefferralModal)
     }
-  }, [jwt, open])
+  }, [open])
 
   return (
     <div className={styles.pageWrapper}>

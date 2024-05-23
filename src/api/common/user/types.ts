@@ -66,7 +66,7 @@ export const BonkWithdrawalSchema = z.object({
 })
 export type BonkWithdrawal = z.infer<typeof BonkWithdrawalSchema>
 
-export type WithdrawalTokenType = 'bonk' | 'banx' | 'lgf'
+export type WithdrawalTokenType = 'bonk' | 'banx'
 
 export type LinkedWalletPoints = {
   borrowerPoints: number

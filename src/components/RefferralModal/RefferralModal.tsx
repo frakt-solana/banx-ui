@@ -31,12 +31,10 @@ const RefferralModal = () => {
 
   const referralCode = extractReferralCodeFromPath(location.pathname)
 
-  const [visibleWalletList, setVisibleWalletList] = useState(false)
-
   const { onRefLink, removeRefFromPath } = useReferralLink()
 
   const [inputValue, setInputValue] = useState('')
-  const debouncedRefCode = useDebounceValue(inputValue, 600)
+  const debouncedInputValue = useDebounceValue(inputValue, 600)
 
   useEffect(() => {
     if (referralCode) {
@@ -45,7 +43,7 @@ const RefferralModal = () => {
   }, [referralCode])
 
   const { data: referrerWallet, isLoading: isLoadingReferrerWallet } =
-    useSearchUserWallet(debouncedRefCode)
+    useSearchUserWallet(debouncedInputValue)
 
   const onClickInputButton = async () => {
     const text = await pasteFromClipboard()
@@ -118,25 +116,7 @@ const RefferralModal = () => {
             </>
           )}
 
-          {!connected && (
-            <>
-              {visibleWalletList ? (
-                <>
-                  <WalletsList />
-                  <Button
-                    onClick={() => setVisibleWalletList(false)}
-                    className={styles.cancelButton}
-                  >
-                    Cancel
-                  </Button>
-                </>
-              ) : (
-                <Button onClick={() => setVisibleWalletList(true)} className={styles.confirmButton}>
-                  Connect wallet
-                </Button>
-              )}
-            </>
-          )}
+          {!connected && <ConnectWalletContent />}
         </div>
       </div>
 
@@ -149,6 +129,27 @@ const RefferralModal = () => {
 
 export default RefferralModal
 
+const ConnectWalletContent = () => {
+  const [visibleWalletList, setVisibleWalletList] = useState(false)
+
+  if (visibleWalletList) {
+    return (
+      <>
+        <WalletsList />
+        <Button onClick={() => setVisibleWalletList(false)} className={styles.cancelButton}>
+          Cancel
+        </Button>
+      </>
+    )
+  }
+
+  return (
+    <Button onClick={() => setVisibleWalletList(true)} className={styles.confirmButton}>
+      Connect wallet
+    </Button>
+  )
+}
+
 interface ReferrerWalletProps {
   isLoading: boolean
   inputValue: string
@@ -158,14 +159,13 @@ interface ReferrerWalletProps {
 const ReferrerWallet: FC<ReferrerWalletProps> = ({ referrerWallet, inputValue, isLoading }) => {
   const showReferrerWallet = !isLoading && !!referrerWallet
   const showSkeleton = isLoading && !!inputValue
-
-  const invalidReferralCode = !!inputValue && !isLoading && !referrerWallet
+  const showErrorMessage = !!inputValue && !isLoading && !referrerWallet
 
   return (
     <div className={styles.referrerWallet}>
       {showSkeleton && <Skeleton.Input size="small" className={styles.referrerWalletSkeleton} />}
       {showReferrerWallet && <span>Referrer wallet: {referrerWallet?.slice(0, 4)}</span>}
-      {invalidReferralCode && (
+      {showErrorMessage && (
         <span className={styles.referrerWalletError}>Invalid referral code</span>
       )}
     </div>
