@@ -14,6 +14,7 @@ export const useRefPersonalData = () => {
     {
       staleTime: 5000,
       refetchOnWindowFocus: false,
+      enabled: !!walletPubkeyString,
     },
   )
 

@@ -80,7 +80,10 @@ export const ReferralInfoSection = () => {
         <div className={styles.rewardsStatInfo}>
           <span className={styles.rewardsStatLabel}>Rewards</span>
           <div className={styles.rewardsStatValue}>
-            <span>{formatNumbersWithCommas(availableToClaim.toFixed(0))}</span>
+            {wallet.connected && (
+              <span>{formatNumbersWithCommas(availableToClaim.toFixed(0))}</span>
+            )}
+            {!wallet.connected && <span>--</span>}
             <BanxToken />
           </div>
         </div>

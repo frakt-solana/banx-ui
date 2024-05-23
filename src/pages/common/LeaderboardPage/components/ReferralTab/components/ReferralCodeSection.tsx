@@ -24,8 +24,6 @@ export const ReferralCodeSection = () => {
 
   const totalReferred = refUsers.length || 0
 
-  const displayReferredValue = connected ? totalReferred : EmptyValueJSX
-
   const showModal = () => {
     open(RefferralModal, {})
   }
@@ -59,9 +57,9 @@ export const ReferralCodeSection = () => {
         </>
       )}
 
-      {isLoading && <Skeleton.Input className={styles.referralInviteInfoSkeleton} />}
+      {connected && isLoading && <Skeleton.Input className={styles.referralInviteInfoSkeleton} />}
 
-      {!isLoading && (
+      {(!isLoading || !connected) && (
         <div className={styles.referralInviteInfo}>
           <div className={styles.invitedStat}>
             <span className={styles.invitedLabel}>Invited by</span>
@@ -76,20 +74,18 @@ export const ReferralCodeSection = () => {
               <span className={styles.referredValue}>{referredBy.slice(0, 4)}</span>
             )}
 
-            {!connected && EmptyValueJSX}
+            {!connected && <span className={styles.referredValue}>--</span>}
           </div>
 
           <div className={styles.referredStat}>
             <span className={styles.referredLabel}>You referred</span>
-            <span className={styles.referredValue}>{displayReferredValue}</span>
+            <span className={styles.referredValue}>{connected ? totalReferred : '--'}</span>
           </div>
         </div>
       )}
     </div>
   )
 }
-
-const EmptyValueJSX = <>--</>
 
 const CustomReferralLink = () => (
   <div className={styles.customReferralLink}>
