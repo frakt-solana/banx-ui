@@ -188,12 +188,9 @@
 }
 
 .walletsList {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: nowrap;
-  overflow: auto;
-  gap: 24px;
+  display: grid;
+  row-gap: 12px;
+  grid-template-columns: repeat(5, 1fr);
   margin: 12px 0;
   width: 100%;
 }
