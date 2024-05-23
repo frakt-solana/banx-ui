@@ -26,7 +26,7 @@ import { useSearchUserWallet } from './hooks'
 import styles from './RefferralModal.module.less'
 
 const RefferralModal = () => {
-  const { connected } = useWallet()
+  const { connected, disconnect } = useWallet()
   const { close } = useModal()
 
   const referralCode = extractReferralCodeFromPath(location.pathname)
@@ -112,9 +112,9 @@ const RefferralModal = () => {
               >
                 LFG!
               </Button>
-              <span className={styles.warningMessage}>
-                Please be careful, this action cannot be canceled
-              </span>
+              <div className={styles.changeWallet}>
+                <span onClick={disconnect}>Change wallet</span>
+              </div>
             </>
           )}
 

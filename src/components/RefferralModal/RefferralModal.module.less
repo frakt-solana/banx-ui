@@ -159,13 +159,20 @@
   }
 }
 
-.warningMessage {
-  color: var(--content-secondary);
-  font: var(--body-text-sm);
-
+.changeWallet {
   display: flex;
-  align-items: center;
   justify-content: center;
+
+  span {
+    color: var(--content-secondary);
+    cursor: pointer;
+    font: var(--body-text-sm);
+    text-decoration: underline;
+
+    &:hover {
+      color: var(--content-primary);
+    }
+  }
 }
 
 .cancelButton {
