@@ -19,6 +19,7 @@ import {
   RefPersolanDataSchema,
   SeasonUserRewards,
   SeasonUserRewardsSchema,
+  WithdrawalTokenType,
 } from './types'
 
 type FetchDiscordUser = (props: { publicKey: web3.PublicKey }) => Promise<DiscordUserInfo | null>
@@ -198,10 +199,13 @@ export const fetchLeaderboardData: FetchLeaderboardData = async ({
   return data?.data ?? []
 }
 
-type FetchBonkWithdrawal = (props: { walletPubkey: string }) => Promise<BonkWithdrawal | null>
-export const fetchBonkWithdrawal: FetchBonkWithdrawal = async ({ walletPubkey }) => {
+type FetchBonkWithdrawal = (props: {
+  walletPubkey: string
+  tokenName?: WithdrawalTokenType
+}) => Promise<BonkWithdrawal | null>
+export const fetchBonkWithdrawal: FetchBonkWithdrawal = async ({ walletPubkey, tokenName }) => {
   const { data: bondWithdrawal } = await axios.get<BonkWithdrawal>(
-    `${BACKEND_BASE_URL}/leaderboard/request-bonk-withdrawal/${walletPubkey}`,
+    `${BACKEND_BASE_URL}/leaderboard/request-bonk-withdrawal/${walletPubkey}?${tokenName}`,
   )
 
   try {

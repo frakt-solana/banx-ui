@@ -1,8 +1,16 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
+
+import { useWallet } from '@solana/wallet-adapter-react'
+import { web3 } from 'fbonds-core'
 
 import { Button } from '@banx/components/Buttons'
 
+import { user } from '@banx/api/common'
 import { BanxToken, Cashback } from '@banx/icons'
+import { defaultTxnErrorHandler } from '@banx/transactions'
+import { enqueueSnackbar } from '@banx/utils'
+
+import { updateBanxWithdrawOptimistic, useSeasonUserRewards } from '../../../hooks'
 
 import styles from '../ReferralTab.module.less'
 
@@ -11,6 +19,54 @@ interface ReferralInfoSectionProps {
 }
 
 export const ReferralInfoSection: FC<ReferralInfoSectionProps> = ({ rewardsValue }) => {
+  const wallet = useWallet()
+  const walletPubkeyString = wallet.publicKey?.toBase58()
+
+  const { data } = useSeasonUserRewards()
+  const { available: availableToClaim = 0 } = data?.banxRewards || {}
+
+  const [isLoading, setIsLoading] = useState(false)
+
+  const onClaim = async () => {
+    try {
+      if (!walletPubkeyString || !wallet.signTransaction) return
+
+      setIsLoading(true)
+
+      const banxWithdrawal = await user.fetchBonkWithdrawal({
+        walletPubkey: walletPubkeyString,
+        tokenName: 'banx',
+      })
+
+      if (!banxWithdrawal) throw new Error('BANX withdrawal fetching error')
+
+      const transaction = web3.Transaction.from(banxWithdrawal.rawTransaction)
+      const signedTransaction = await wallet.signTransaction(transaction)
+      const signedTranactionBuffer = signedTransaction.serialize({
+        verifySignatures: false,
+        requireAllSignatures: false,
+      })
+
+      await user.sendBonkWithdrawal({
+        walletPubkey: walletPubkeyString,
+        bonkWithdrawal: {
+          requestId: banxWithdrawal.requestId,
+          rawTransaction: signedTranactionBuffer.toJSON().data,
+        },
+      })
+
+      enqueueSnackbar({
+        message: 'BANX successfully claimed',
+        type: 'success',
+      })
+      updateBanxWithdrawOptimistic(walletPubkeyString)
+    } catch (error) {
+      defaultTxnErrorHandler(error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className={styles.referralInfoSection}>
       <div className={styles.referralInfoContent}>
@@ -32,7 +88,13 @@ export const ReferralInfoSection: FC<ReferralInfoSectionProps> = ({ rewardsValue
             <BanxToken />
           </div>
         </div>
-        <Button className={styles.claimRewardsButton}>Claim</Button>
+        <Button
+          onClick={onClaim}
+          disabled={isLoading || !availableToClaim}
+          className={styles.claimRewardsButton}
+        >
+          Claim
+        </Button>
       </div>
     </div>
   )
