@@ -17,6 +17,7 @@ import { Cashback, Paste } from '@banx/icons'
 import { useModal } from '@banx/store/common'
 import { pasteFromClipboard } from '@banx/utils'
 
+import { Loader } from '../Loader'
 import Background from './assets/Background.png'
 import BanxImage from './assets/Banx.png'
 import { ReferralInput } from './components'
@@ -62,76 +63,85 @@ const RefferralModal = () => {
 
   return (
     <Modal open onCancel={onCloseModal} className={styles.modal} width={408}>
-      <div
-        className={styles.referralModalContent}
-        style={{ backgroundImage: `url(${Background})` }}
-      >
-        <h4 className={styles.title}>Welcome to Banx</h4>
-        <span className={styles.subtitle}>
-          Banx is pioneering the NFT lending space on Solana as the only perpetual P2P NFT lending
-          protocol, offering a true DeFi lending experience with benefits
-        </span>
+      <div className={styles.content}>
+        <div
+          className={styles.referralModalContent}
+          style={{ backgroundImage: `url(${Background})` }}
+        >
+          <h4 className={styles.title}>Welcome to Banx</h4>
+          <span className={styles.subtitle}>
+            Banx is pioneering the NFT lending space on Solana as the only perpetual P2P NFT lending
+            protocol, offering a true DeFi lending experience with benefits
+          </span>
 
-        <div className={styles.referralModalInfo}>
-          <img className={styles.banxImage} src={BanxImage} />
-          <div className={styles.referralModalInfoRows}>
-            <div className={styles.referralModalInfoRow}>
-              <Cashback />
-              <span>For the first loan you will receive a 100% cashback in $BANX</span>
-            </div>
-            <div className={styles.referralModalInfoRow}>
-              <Cashback />
-              <span>You will receive 10% every time your referral pays upfront fee </span>
+          <div className={styles.referralModalInfo}>
+            <img className={styles.banxImage} src={BanxImage} />
+            <div className={styles.referralModalInfoRows}>
+              <div className={styles.referralModalInfoRow}>
+                <Cashback />
+                <span>For the first loan you will receive a 100% cashback in $BANX</span>
+              </div>
+              <div className={styles.referralModalInfoRow}>
+                <Cashback />
+                <span>You will receive 10% every time your referral pays upfront fee </span>
+              </div>
             </div>
           </div>
         </div>
+
+        <div className={styles.referrerModalInfo}>
+          <ReferralInput
+            label="Add referrer code"
+            value={inputValue}
+            onChange={onChangeInput}
+            actionButton={{ text: 'Paste', icon: Paste, onClick: onClickInputButton }}
+          />
+
+          <ReferrerWallet
+            inputValue={inputValue}
+            referrerWallet={referrerWallet}
+            isLoading={isLoadingReferrerWallet}
+          />
+
+          {connected && (
+            <>
+              <Button
+                onClick={() => onRefLink(inputValue)}
+                className={styles.confirmButton}
+                disabled={!referrerWallet}
+              >
+                LFG!
+              </Button>
+              <span className={styles.warningMessage}>
+                Please be careful, this action cannot be canceled
+              </span>
+            </>
+          )}
+
+          {!connected && (
+            <>
+              {visibleWalletList ? (
+                <>
+                  <WalletsList />
+                  <Button
+                    onClick={() => setVisibleWalletList(false)}
+                    className={styles.cancelButton}
+                  >
+                    Cancel
+                  </Button>
+                </>
+              ) : (
+                <Button onClick={() => setVisibleWalletList(true)} className={styles.confirmButton}>
+                  Connect wallet
+                </Button>
+              )}
+            </>
+          )}
+        </div>
       </div>
 
-      <div className={styles.referrerModalInfo}>
-        <ReferralInput
-          label="Add referrer code"
-          value={inputValue}
-          onChange={onChangeInput}
-          actionButton={{ text: 'Paste', icon: Paste, onClick: onClickInputButton }}
-        />
-
-        <ReferrerWallet
-          inputValue={inputValue}
-          referrerWallet={referrerWallet}
-          isLoading={isLoadingReferrerWallet}
-        />
-
-        {connected && (
-          <>
-            <Button
-              onClick={() => onRefLink(inputValue)}
-              className={styles.confirmButton}
-              disabled={!referrerWallet}
-            >
-              LFG!
-            </Button>
-            <span className={styles.warningMessage}>
-              Please be careful, this action cannot be canceled
-            </span>
-          </>
-        )}
-
-        {!connected && (
-          <>
-            {visibleWalletList ? (
-              <>
-                <WalletsList />
-                <Button onClick={() => setVisibleWalletList(false)} className={styles.cancelButton}>
-                  Cancel
-                </Button>
-              </>
-            ) : (
-              <Button onClick={() => setVisibleWalletList(true)} className={styles.confirmButton}>
-                Connect wallet
-              </Button>
-            )}
-          </>
-        )}
+      <div className={styles.loaderWrapper}>
+        <Loader size="large" />
       </div>
     </Modal>
   )
