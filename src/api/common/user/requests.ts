@@ -203,9 +203,12 @@ type FetchBonkWithdrawal = (props: {
   walletPubkey: string
   tokenName?: WithdrawalTokenType
 }) => Promise<BonkWithdrawal | null>
-export const fetchBonkWithdrawal: FetchBonkWithdrawal = async ({ walletPubkey, tokenName }) => {
+export const fetchBonkWithdrawal: FetchBonkWithdrawal = async ({
+  walletPubkey,
+  tokenName = 'bonk',
+}) => {
   const { data: bondWithdrawal } = await axios.get<BonkWithdrawal>(
-    `${BACKEND_BASE_URL}/leaderboard/request-bonk-withdrawal/${walletPubkey}?${tokenName}`,
+    `${BACKEND_BASE_URL}/leaderboard/request-bonk-withdrawal/${walletPubkey}?tokenName=${tokenName}`,
   )
 
   try {

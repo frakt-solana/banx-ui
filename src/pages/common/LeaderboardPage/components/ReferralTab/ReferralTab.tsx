@@ -7,7 +7,7 @@ const ReferralTab = () => {
   return (
     <div className={styles.container}>
       <ReferralCodeSection />
-      <ReferralInfoSection rewardsValue={0} />
+      <ReferralInfoSection />
     </div>
   )
 }

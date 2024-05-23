@@ -1,4 +1,5 @@
 import { useWallet } from '@solana/wallet-adapter-react'
+import { Skeleton } from 'antd'
 
 import { Button } from '@banx/components/Buttons'
 import EmptyList from '@banx/components/EmptyList'
@@ -17,7 +18,7 @@ export const ReferralCodeSection = () => {
   const { connected } = useWallet()
   const { open } = useModal()
 
-  const { data } = useRefPersonalData()
+  const { data, isLoading } = useRefPersonalData()
 
   const { refCode = '', refUsers = [], referredBy = '' } = data || {}
 
@@ -58,28 +59,32 @@ export const ReferralCodeSection = () => {
         </>
       )}
 
-      <div className={styles.referralInviteInfo}>
-        <div className={styles.invitedStat}>
-          <span className={styles.invitedLabel}>Invited by</span>
+      {isLoading && <Skeleton.Input className={styles.referralInviteInfoSkeleton} />}
 
-          {connected && !referredBy && (
-            <Button onClick={showModal} size="small" variant="secondary">
-              Add referrer
-            </Button>
-          )}
+      {!isLoading && (
+        <div className={styles.referralInviteInfo}>
+          <div className={styles.invitedStat}>
+            <span className={styles.invitedLabel}>Invited by</span>
 
-          {connected && !!referredBy && (
-            <span className={styles.referredValue}>{referredBy.slice(0, 4)}</span>
-          )}
+            {connected && !referredBy && (
+              <Button onClick={showModal} size="small" variant="secondary">
+                Add referrer
+              </Button>
+            )}
 
-          {!connected && EmptyValueJSX}
+            {connected && !!referredBy && (
+              <span className={styles.referredValue}>{referredBy.slice(0, 4)}</span>
+            )}
+
+            {!connected && EmptyValueJSX}
+          </div>
+
+          <div className={styles.referredStat}>
+            <span className={styles.referredLabel}>You referred</span>
+            <span className={styles.referredValue}>{displayReferredValue}</span>
+          </div>
         </div>
-
-        <div className={styles.referredStat}>
-          <span className={styles.referredLabel}>You referred</span>
-          <span className={styles.referredValue}>{displayReferredValue}</span>
-        </div>
-      </div>
+      )}
     </div>
   )
 }

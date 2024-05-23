@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { web3 } from 'fbonds-core'
@@ -8,17 +8,13 @@ import { Button } from '@banx/components/Buttons'
 import { user } from '@banx/api/common'
 import { BanxToken, Cashback } from '@banx/icons'
 import { defaultTxnErrorHandler } from '@banx/transactions'
-import { enqueueSnackbar } from '@banx/utils'
+import { enqueueSnackbar, formatNumbersWithCommas } from '@banx/utils'
 
 import { updateBanxWithdrawOptimistic, useSeasonUserRewards } from '../../../hooks'
 
 import styles from '../ReferralTab.module.less'
 
-interface ReferralInfoSectionProps {
-  rewardsValue: number
-}
-
-export const ReferralInfoSection: FC<ReferralInfoSectionProps> = ({ rewardsValue }) => {
+export const ReferralInfoSection = () => {
   const wallet = useWallet()
   const walletPubkeyString = wallet.publicKey?.toBase58()
 
@@ -84,12 +80,13 @@ export const ReferralInfoSection: FC<ReferralInfoSectionProps> = ({ rewardsValue
         <div className={styles.rewardsStatInfo}>
           <span className={styles.rewardsStatLabel}>Rewards</span>
           <div className={styles.rewardsStatValue}>
-            <span>{rewardsValue}</span>
+            <span>{formatNumbersWithCommas(availableToClaim.toFixed(0))}</span>
             <BanxToken />
           </div>
         </div>
         <Button
           onClick={onClaim}
+          loading={isLoading}
           disabled={isLoading || !availableToClaim}
           className={styles.claimRewardsButton}
         >
