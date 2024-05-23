@@ -19,18 +19,18 @@ export enum LeaderboardTabName {
 export const LeaderboardPage = () => {
   const { value: currentTabValue, ...tabsProps } = useTabs({
     tabs: LEADERBOARD_TABS,
-    defaultValue: LEADERBOARD_TABS[1].value,
+    defaultValue: LeaderboardTabName.REFERRAL,
   })
 
   return (
     <div className={styles.pageWrapper}>
       <Header />
       <Tabs className={styles.tabs} value={currentTabValue} {...tabsProps} />
+      {currentTabValue === LeaderboardTabName.REFERRAL && <ReferralTab />}
       {currentTabValue === LeaderboardTabName.REWARDS && <RewardsTab />}
       {/* {currentTabValue === LeaderboardTabName.LEADERBOARD && <LeaderboardTab />} */}
       {currentTabValue === LeaderboardTabName.LEADERBOARD && <LeaderboardPlug />}
       {currentTabValue === LeaderboardTabName.EARN && <EarnTab />}
-      {currentTabValue === LeaderboardTabName.REFERRAL && <ReferralTab />}
     </div>
   )
 }
@@ -46,6 +46,10 @@ const LeaderboardPlug = () => {
 
 export const LEADERBOARD_TABS: Tab[] = [
   {
+    label: 'Referrals',
+    value: LeaderboardTabName.REFERRAL,
+  },
+  {
     label: 'BONK rewards',
     value: LeaderboardTabName.REWARDS,
   },
@@ -56,9 +60,5 @@ export const LEADERBOARD_TABS: Tab[] = [
   {
     label: 'Earn points',
     value: LeaderboardTabName.EARN,
-  },
-  {
-    label: 'Referrals',
-    value: LeaderboardTabName.REFERRAL,
   },
 ]

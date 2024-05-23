@@ -1,13 +1,13 @@
+import { InviteSection } from './components/InviteSection'
 import { ReferralCodeSection } from './components/ReferralCodeSection'
-import { ReferralInfoSection } from './components/ReferralInfoSection'
 
 import styles from './ReferralTab.module.less'
 
 const ReferralTab = () => {
   return (
     <div className={styles.container}>
+      <InviteSection />
       <ReferralCodeSection />
-      <ReferralInfoSection />
     </div>
   )
 }

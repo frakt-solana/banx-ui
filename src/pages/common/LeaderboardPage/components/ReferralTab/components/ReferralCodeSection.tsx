@@ -1,17 +1,20 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { Skeleton } from 'antd'
+import classNames from 'classnames'
+import { web3 } from 'fbonds-core'
 
 import { Button } from '@banx/components/Buttons'
-import EmptyList from '@banx/components/EmptyList'
-import RefferralModal, { ReferralInput } from '@banx/components/RefferralModal'
+import { ReferralInput } from '@banx/components/RefferralModal'
 
+import { user } from '@banx/api/common'
 import { BASE_BANX_URL, DISCORD } from '@banx/constants'
-import { Copy } from '@banx/icons'
-import { useModal } from '@banx/store/common'
-import { copyToClipboard, enqueueSnackbar } from '@banx/utils'
+import { BanxToken, Copy, Receive } from '@banx/icons'
+import { defaultTxnErrorHandler } from '@banx/transactions'
+import { copyToClipboard, enqueueSnackbar, formatNumbersWithCommas } from '@banx/utils'
 
+import { updateBanxWithdrawOptimistic, useSeasonUserRewards } from '../../../hooks'
 import { useRefPersonalData } from '../hooks'
 
 import styles from '../ReferralTab.module.less'
@@ -19,9 +22,12 @@ import styles from '../ReferralTab.module.less'
 export const ReferralCodeSection = () => {
   const { connected } = useWallet()
 
-  const { data, isLoading } = useRefPersonalData()
+  const { data: refPersonalData, isLoading: isLoadingPersonalData } = useRefPersonalData()
+  const { data } = useSeasonUserRewards()
 
-  const { refCode = '', refUsers = [], referredBy = '' } = data || {}
+  const { available: availableToClaim = 0 } = data?.banxRewards || {}
+  const { refCode = '', refUsers = [] } = refPersonalData || {}
+
   const totalReferred = refUsers.length || 0
 
   const handleCopyRefCode = () => {
@@ -31,19 +37,10 @@ export const ReferralCodeSection = () => {
     enqueueSnackbar({ message: 'Copied your referral link', type: 'success' })
   }
 
-  const displayTotalReferredValue = connected ? totalReferred : '--'
-
   return (
     <div className={styles.referralCodeSection}>
-      {!connected && (
-        <EmptyList
-          className={styles.referralCodeEmptyList}
-          message="Connect wallet to see claimable and ref info"
-        />
-      )}
-
       {connected && (
-        <>
+        <div className={styles.referralCodeContent}>
           <ReferralInput
             label="Your referral code"
             value={refCode}
@@ -52,51 +49,113 @@ export const ReferralCodeSection = () => {
           />
 
           <CustomReferralLink />
-
-          {isLoading && <Skeleton.Input className={styles.referralInviteInfoSkeleton} />}
-        </>
-      )}
-
-      {(!isLoading || !connected) && (
-        <div className={styles.referralInviteInfo}>
-          <ReferralInviteContent referredBy={referredBy} />
-
-          <div className={styles.referredStat}>
-            <span className={styles.referredLabel}>You referred</span>
-            <span className={styles.referredValue}>{displayTotalReferredValue}</span>
-          </div>
         </div>
       )}
+
+      <div className={styles.referralCodeBenefit}>
+        <Receive />
+        <span>10% of all referral upfront fees, forever</span>
+      </div>
+
+      <RewardsContent
+        totalReferred={totalReferred}
+        availableToClaim={availableToClaim}
+        isLoadingPersonalData={isLoadingPersonalData}
+      />
     </div>
   )
 }
 
-const ReferralInviteContent: FC<{ referredBy: string }> = ({ referredBy }) => {
-  const { connected } = useWallet()
-  const { open } = useModal()
+interface RewardsSectionProps {
+  totalReferred: number
+  availableToClaim: number
+  isLoadingPersonalData: boolean
+}
 
-  const showModal = () => {
-    open(RefferralModal)
+const RewardsContent: FC<RewardsSectionProps> = ({
+  totalReferred,
+  availableToClaim,
+  isLoadingPersonalData,
+}) => {
+  const { publicKey, connected, signTransaction } = useWallet()
+  const walletPubkeyString = publicKey?.toBase58()
+
+  const [isLoading, setIsLoading] = useState(false)
+
+  const onClaim = async () => {
+    try {
+      if (!walletPubkeyString || !signTransaction) return
+
+      setIsLoading(true)
+
+      const banxWithdrawal = await user.fetchBonkWithdrawal({
+        walletPubkey: walletPubkeyString,
+        tokenName: 'banx',
+      })
+
+      if (!banxWithdrawal) throw new Error('BANX withdrawal fetching error')
+
+      const transaction = web3.Transaction.from(banxWithdrawal.rawTransaction)
+      const signedTransaction = await signTransaction(transaction)
+      const signedTranactionBuffer = signedTransaction.serialize({
+        verifySignatures: false,
+        requireAllSignatures: false,
+      })
+
+      await user.sendBonkWithdrawal({
+        walletPubkey: walletPubkeyString,
+        bonkWithdrawal: {
+          requestId: banxWithdrawal.requestId,
+          rawTransaction: signedTranactionBuffer.toJSON().data,
+        },
+      })
+
+      enqueueSnackbar({
+        message: 'BANX successfully claimed',
+        type: 'success',
+      })
+      updateBanxWithdrawOptimistic(walletPubkeyString)
+    } catch (error) {
+      defaultTxnErrorHandler(error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const createReferredValueJSX = () => {
-    if (!connected) return '--'
+  const formattedAvailableToClaim = formatNumbersWithCommas(availableToClaim.toFixed(0))
 
-    if (!referredBy)
-      return (
-        <Button onClick={showModal} size="small" variant="secondary">
-          Add referrer
-        </Button>
-      )
-
-    //? Show shorten wallet address
-    return referredBy.slice(0, 4)
-  }
+  const displayAvailableToClaim = connected ? formattedAvailableToClaim : '--'
+  const displayTotalReferredValue = connected ? totalReferred : '--'
 
   return (
-    <div className={styles.invitedStat}>
-      <span className={styles.invitedLabel}>Invited by</span>
-      <span className={styles.referredValue}>{createReferredValueJSX()}</span>
+    <div className={styles.rewardsContent}>
+      {connected && isLoadingPersonalData && (
+        <Skeleton.Input className={styles.referralInviteInfoSkeleton} />
+      )}
+
+      {(!connected || !isLoadingPersonalData) && (
+        <>
+          <div className={styles.rewardStat}>
+            <span>You referred</span>
+            <span className={styles.referredValue}>{displayTotalReferredValue}</span>
+          </div>
+          <div className={classNames(styles.rewardStat, styles.rightAlign)}>
+            <span>Rewards</span>
+            <span className={styles.referredValue}>
+              {displayAvailableToClaim}
+              <BanxToken />
+            </span>
+          </div>
+          <Button
+            onClick={onClaim}
+            loading={isLoading}
+            disabled={isLoading || !availableToClaim}
+            className={styles.claimRewardsButton}
+          >
+            Claim
+          </Button>
+        </>
+      )}
     </div>
   )
 }

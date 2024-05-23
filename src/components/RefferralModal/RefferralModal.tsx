@@ -13,7 +13,7 @@ import {
   useReferralLink,
   useWalletAdapters,
 } from '@banx/hooks'
-import { Cashback, Paste, Receive } from '@banx/icons'
+import { CircleCheck, Paste } from '@banx/icons'
 import { useModal } from '@banx/store/common'
 import { pasteFromClipboard } from '@banx/utils'
 
@@ -76,12 +76,12 @@ const RefferralModal = () => {
             <img className={styles.banxImage} src={BanxImage} />
             <div className={styles.referralModalInfoRows}>
               <div className={styles.referralModalInfoRow}>
-                <Cashback />
-                <span>For the first loan you will receive a 100% cashback in $BANX</span>
+                <CircleCheck />
+                <span>50% cashback + 2X points multi on first Borrow</span>
               </div>
               <div className={styles.referralModalInfoRow}>
-                <Receive />
-                <span>You will receive 10% every time your referral pays upfront fee </span>
+                <CircleCheck />
+                <span>4X points multi on first Lend</span>
               </div>
             </div>
           </div>
