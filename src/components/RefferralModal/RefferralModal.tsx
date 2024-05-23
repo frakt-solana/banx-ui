@@ -13,7 +13,7 @@ import {
   useReferralLink,
   useWalletAdapters,
 } from '@banx/hooks'
-import { Cashback, Paste } from '@banx/icons'
+import { Cashback, Paste, Receive } from '@banx/icons'
 import { useModal } from '@banx/store/common'
 import { pasteFromClipboard } from '@banx/utils'
 
@@ -82,7 +82,7 @@ const RefferralModal = () => {
                 <span>For the first loan you will receive a 100% cashback in $BANX</span>
               </div>
               <div className={styles.referralModalInfoRow}>
-                <Cashback />
+                <Receive />
                 <span>You will receive 10% every time your referral pays upfront fee </span>
               </div>
             </div>

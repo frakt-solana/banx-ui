@@ -6,7 +6,7 @@ import { web3 } from 'fbonds-core'
 import { Button } from '@banx/components/Buttons'
 
 import { user } from '@banx/api/common'
-import { BanxToken, Cashback } from '@banx/icons'
+import { BanxToken, Cashback, Receive } from '@banx/icons'
 import { defaultTxnErrorHandler } from '@banx/transactions'
 import { enqueueSnackbar, formatNumbersWithCommas } from '@banx/utils'
 
@@ -71,7 +71,7 @@ export const ReferralInfoSection = () => {
           <span>For the first loan you will receive a 100% cashback in $BANX</span>
         </div>
         <div className={styles.referralInfoRow}>
-          <Cashback />
+          <Receive />
           <span>You will receive 10% every time your referral pays upfront fee</span>
         </div>
       </div>
