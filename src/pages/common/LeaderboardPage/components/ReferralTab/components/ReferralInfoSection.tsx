@@ -63,6 +63,9 @@ export const ReferralInfoSection = () => {
     }
   }
 
+  const formattedAvailableToClaim = formatNumbersWithCommas(availableToClaim.toFixed(0))
+  const displayAvailableToClaim = wallet.connected ? formattedAvailableToClaim : '--'
+
   return (
     <div className={styles.referralInfoSection}>
       <div className={styles.referralInfoContent}>
@@ -80,10 +83,7 @@ export const ReferralInfoSection = () => {
         <div className={styles.rewardsStatInfo}>
           <span className={styles.rewardsStatLabel}>Rewards</span>
           <div className={styles.rewardsStatValue}>
-            {wallet.connected && (
-              <span>{formatNumbersWithCommas(availableToClaim.toFixed(0))}</span>
-            )}
-            {!wallet.connected && <span>--</span>}
+            <span>{displayAvailableToClaim}</span>
             <BanxToken />
           </div>
         </div>

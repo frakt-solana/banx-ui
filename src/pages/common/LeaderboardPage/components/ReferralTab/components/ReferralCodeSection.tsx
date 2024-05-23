@@ -1,3 +1,5 @@
+import { FC } from 'react'
+
 import { useWallet } from '@solana/wallet-adapter-react'
 import { Skeleton } from 'antd'
 
@@ -16,24 +18,20 @@ import styles from '../ReferralTab.module.less'
 
 export const ReferralCodeSection = () => {
   const { connected } = useWallet()
-  const { open } = useModal()
 
   const { data, isLoading } = useRefPersonalData()
 
   const { refCode = '', refUsers = [], referredBy = '' } = data || {}
-
   const totalReferred = refUsers.length || 0
 
-  const showModal = () => {
-    open(RefferralModal, {})
-  }
-
   const handleCopyRefCode = () => {
-    const textToCopy = `${BASE_BANX_URL}ref=${refCode}`
-    copyToClipboard(textToCopy)
+    const referralLink = `${BASE_BANX_URL}ref=${refCode}`
+    copyToClipboard(referralLink)
 
     enqueueSnackbar({ message: 'Copied your referral link', type: 'success' })
   }
+
+  const displayTotalReferredValue = connected ? totalReferred : '--'
 
   return (
     <div className={styles.referralCodeSection}>
@@ -54,35 +52,51 @@ export const ReferralCodeSection = () => {
           />
 
           <CustomReferralLink />
+
+          {isLoading && <Skeleton.Input className={styles.referralInviteInfoSkeleton} />}
         </>
       )}
 
-      {connected && isLoading && <Skeleton.Input className={styles.referralInviteInfoSkeleton} />}
-
       {(!isLoading || !connected) && (
         <div className={styles.referralInviteInfo}>
-          <div className={styles.invitedStat}>
-            <span className={styles.invitedLabel}>Invited by</span>
-
-            {connected && !referredBy && (
-              <Button onClick={showModal} size="small" variant="secondary">
-                Add referrer
-              </Button>
-            )}
-
-            {connected && !!referredBy && (
-              <span className={styles.referredValue}>{referredBy.slice(0, 4)}</span>
-            )}
-
-            {!connected && <span className={styles.referredValue}>--</span>}
-          </div>
+          <ReferralInviteContent referredBy={referredBy} />
 
           <div className={styles.referredStat}>
             <span className={styles.referredLabel}>You referred</span>
-            <span className={styles.referredValue}>{connected ? totalReferred : '--'}</span>
+            <span className={styles.referredValue}>{displayTotalReferredValue}</span>
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+const ReferralInviteContent: FC<{ referredBy: string }> = ({ referredBy }) => {
+  const { connected } = useWallet()
+  const { open } = useModal()
+
+  const showModal = () => {
+    open(RefferralModal)
+  }
+
+  const createReferredValueJSX = () => {
+    if (!connected) return '--'
+
+    if (!referredBy)
+      return (
+        <Button onClick={showModal} size="small" variant="secondary">
+          Add referrer
+        </Button>
+      )
+
+    //? Show shorten wallet address
+    return referredBy.slice(0, 4)
+  }
+
+  return (
+    <div className={styles.invitedStat}>
+      <span className={styles.invitedLabel}>Invited by</span>
+      <span className={styles.referredValue}>{createReferredValueJSX()}</span>
     </div>
   )
 }
