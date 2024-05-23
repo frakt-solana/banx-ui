@@ -12,5 +12,5 @@ export const useSearchUserWallet = (refCode: string) => {
     },
   )
 
-  return { data, isLoading }
+  return { data: data ?? '', isLoading }
 }

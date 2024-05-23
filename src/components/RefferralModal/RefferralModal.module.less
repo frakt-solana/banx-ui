@@ -21,6 +21,7 @@
   }
 
   .title {
+    color: var(--pure-black);
     font: var(--title-xl);
     text-align: center;
     text-transform: uppercase;
@@ -31,6 +32,7 @@
   }
 
   .subtitle {
+    color: var(--pure-black);
     font: var(--body-text-md);
     text-align: center;
 
@@ -85,8 +87,13 @@
   }
 }
 
+.referrerWalletSkeleton {
+  height: 16px !important;
+}
+
 .referrerWallet {
   font: var(--body-text-sm);
+  height: 16px;
 
   @media (max-width: 640px) {
     font: var(--body-text-xs);
@@ -141,6 +148,7 @@
   background: var(--bg-primary);
   border: var(--border-primary);
   border-radius: 4px;
+  color: var(--content-primary);
   cursor: pointer;
 
   display: flex;
@@ -155,6 +163,10 @@
 
   span {
     font: var(--btn-text-sm);
+  }
+
+  svg path {
+    fill: var(--content-primary);
   }
 }
 // * ReferralInput * //

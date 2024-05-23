@@ -1,12 +1,13 @@
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, FC, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import { Skeleton } from 'antd'
 
 import { Button } from '@banx/components/Buttons'
 import { useWalletModal } from '@banx/components/WalletModal'
 import { Modal } from '@banx/components/modals/BaseModal'
 
-import { useReferralLink } from '@banx/hooks'
+import { useDebounceValue, useReferralLink } from '@banx/hooks'
 import { Cashback, Paste } from '@banx/icons'
 import { useModal } from '@banx/store/common'
 import { pasteFromClipboard } from '@banx/utils'
@@ -26,9 +27,10 @@ const RefferralModal = () => {
   const { onRefLink, removeRefFromPath } = useReferralLink()
 
   const [inputValue, setInputValue] = useState('')
+  const debouncedRefCode = useDebounceValue(inputValue, 500)
 
-  //TODO: Add debounce
-  const { data: referrerWallet } = useSearchUserWallet(inputValue)
+  const { data: referrerWallet, isLoading: isLoadingReferrerWallet } =
+    useSearchUserWallet(debouncedRefCode)
 
   const onClickInputButton = async () => {
     const text = await pasteFromClipboard()
@@ -87,7 +89,11 @@ const RefferralModal = () => {
           actionButton={{ text: 'Paste', icon: Paste, onClick: onClickInputButton }}
         />
 
-        <span className={styles.referrerWallet}>Referrer wallet: {referrerWallet}</span>
+        <ReferrerWallet
+          inputValue={inputValue}
+          referrerWallet={referrerWallet}
+          isLoading={isLoadingReferrerWallet}
+        />
 
         <Button onClick={onClickHandler} className={styles.confirmButton}>
           {!connected ? 'Connect wallet' : 'LFG!'}
@@ -102,3 +108,21 @@ const RefferralModal = () => {
 }
 
 export default RefferralModal
+
+interface ReferrerWalletProps {
+  isLoading: boolean
+  inputValue: string
+  referrerWallet: string
+}
+
+const ReferrerWallet: FC<ReferrerWalletProps> = ({ referrerWallet, inputValue, isLoading }) => {
+  const showReferrerWallet = !isLoading && !!referrerWallet
+  const showSkeleton = isLoading && !!inputValue
+
+  return (
+    <div className={styles.referrerWallet}>
+      {showSkeleton && <Skeleton.Input size="small" className={styles.referrerWalletSkeleton} />}
+      {showReferrerWallet && <span>Referrer wallet: {referrerWallet?.slice(0, 4)}</span>}
+    </div>
+  )
+}
