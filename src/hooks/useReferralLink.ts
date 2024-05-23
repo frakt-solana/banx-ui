@@ -4,7 +4,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { user } from '@banx/api/common'
-import { useBanxLogin, useIsLedger } from '@banx/store/common'
+import { useBanxLogin, useIsLedger, useModal } from '@banx/store/common'
 import { enqueueSnackbar, generateSignature } from '@banx/utils'
 
 export const useReferralLink = () => {
@@ -14,6 +14,8 @@ export const useReferralLink = () => {
 
   const location = useLocation()
   const navigate = useNavigate()
+
+  const { close } = useModal()
 
   const { jwt, AUTH_MESSAGE, logIn } = useBanxLogin()
 
@@ -62,6 +64,7 @@ export const useReferralLink = () => {
         })
 
         removeRefFromPath()
+        close()
       } catch (error) {
         console.error({ error })
         if (error instanceof Error) {
@@ -69,7 +72,7 @@ export const useReferralLink = () => {
         }
       }
     },
-    [removeRefFromPath, getWalletJwt, jwt],
+    [jwt, getWalletJwt, removeRefFromPath, close],
   )
 
   return { onRefLink, removeRefFromPath }
