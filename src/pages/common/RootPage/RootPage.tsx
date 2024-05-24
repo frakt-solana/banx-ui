@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom'
 
 import { Button } from '@banx/components/Buttons'
 
-import { Theme, useReferralCodeModalTrigger, useTheme } from '@banx/hooks'
+import { Theme, useTheme } from '@banx/hooks'
 import { InfinityIcon, Lightning, PencilLtv } from '@banx/icons'
 import { PATHS } from '@banx/router'
 
@@ -12,8 +12,6 @@ import { Interest } from './icons'
 import styles from './RootPage.module.less'
 
 export const RootPage = () => {
-  useReferralCodeModalTrigger()
-
   return (
     <div className={styles.pageWrapper}>
       <Header />
