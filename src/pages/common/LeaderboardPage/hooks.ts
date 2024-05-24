@@ -46,6 +46,24 @@ export const updateBonkWithdrawOptimistic = (walletPubkey: string) =>
       }
     },
   )
+
+export const updateBanxWithdrawOptimistic = (walletPubkey: string) =>
+  queryClient.setQueryData(
+    createSeasonUserRewardsQueryKey(walletPubkey),
+    (queryData: user.SeasonUserRewards | undefined) => {
+      if (!queryData) return queryData
+      const { available = 0, redeemed = 0, totalAccumulated = 0 } = queryData?.banxRewards || {}
+
+      return {
+        ...queryData,
+        banxRewards: {
+          totalAccumulated,
+          available: 0,
+          redeemed: redeemed + available,
+        },
+      }
+    },
+  )
 //? useSeasonUserRewards
 
 //? useLinkedWallets
