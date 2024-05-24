@@ -15,8 +15,11 @@ import {
   LeaderboardTimeRange,
   LinkWalletResponse,
   LinkedWallet,
+  RefPersonalData,
+  RefPersonalDataSchema,
   SeasonUserRewards,
   SeasonUserRewardsSchema,
+  WithdrawalTokenType,
 } from './types'
 
 type FetchDiscordUser = (props: { publicKey: web3.PublicKey }) => Promise<DiscordUserInfo | null>
@@ -196,10 +199,16 @@ export const fetchLeaderboardData: FetchLeaderboardData = async ({
   return data?.data ?? []
 }
 
-type FetchBonkWithdrawal = (props: { walletPubkey: string }) => Promise<BonkWithdrawal | null>
-export const fetchBonkWithdrawal: FetchBonkWithdrawal = async ({ walletPubkey }) => {
+type FetchBonkWithdrawal = (props: {
+  walletPubkey: string
+  tokenName?: WithdrawalTokenType
+}) => Promise<BonkWithdrawal | null>
+export const fetchBonkWithdrawal: FetchBonkWithdrawal = async ({
+  walletPubkey,
+  tokenName = 'bonk',
+}) => {
   const { data: bondWithdrawal } = await axios.get<BonkWithdrawal>(
-    `${BACKEND_BASE_URL}/leaderboard/request-bonk-withdrawal/${walletPubkey}`,
+    `${BACKEND_BASE_URL}/leaderboard/request-bonk-withdrawal/${walletPubkey}?tokenName=${tokenName}`,
   )
 
   try {
@@ -220,4 +229,53 @@ export const sendBonkWithdrawal: SendBonkWithdrawal = async ({ bonkWithdrawal, w
     `${BACKEND_BASE_URL}/leaderboard/process-bonk-withdrawal/${walletPubkey}`,
     bonkWithdrawal,
   )
+}
+
+type FetchRefPersonalData = (props: { walletPubkey: string }) => Promise<RefPersonalData | null>
+export const fetchRefPersonalData: FetchRefPersonalData = async ({ walletPubkey }) => {
+  const { data } = await axios.get<{ data: RefPersonalData }>(
+    `${BACKEND_BASE_URL}/leaderboard/ref/personal-data/${walletPubkey}`,
+  )
+
+  try {
+    await RefPersonalDataSchema.parseAsync(data?.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
+  }
+
+  return data?.data ?? null
+}
+
+type FetchUserWalletByRefCode = (props: { refCode: string }) => Promise<string>
+export const fetchUserWalletByRefCode: FetchUserWalletByRefCode = async ({ refCode }) => {
+  const { data } = await axios.get<{ data: { user: string } }>(
+    `${BACKEND_BASE_URL}/leaderboard/ref/search/${refCode}`,
+  )
+
+  return data?.data.user ?? ''
+}
+
+type LinkRef = (params: { refCode: string; walletJwt: string }) => Promise<MutationResponse>
+
+export const linkRef: LinkRef = async ({ refCode, walletJwt }) => {
+  try {
+    const { data } = await axios.post<{ data: MutationResponse }>(
+      `${BACKEND_BASE_URL}/leaderboard/ref`,
+      { refCode },
+      {
+        headers: {
+          Authorization: `Bearer ${walletJwt}`,
+        },
+      },
+    )
+
+    return data.data
+  } catch (error) {
+    const errorResponse: MutationResponse = {
+      message: 'Unable to link ref code',
+      success: false,
+    }
+
+    return errorResponse
+  }
 }

@@ -29,9 +29,25 @@ export const SeasonUserRewardsSchema = z.object({
       redeemed: z.number(),
     })
     .optional(),
+  banxRewards: z
+    .object({
+      totalAccumulated: z.number(),
+      available: z.number(),
+      redeemed: z.number(),
+    })
+    .optional(),
 })
 
 export type SeasonUserRewards = z.infer<typeof SeasonUserRewardsSchema>
+
+export const RefPersonalDataSchema = z.object({
+  user: z.string(),
+  refCode: z.string(),
+  referredBy: z.string(),
+  refUsers: z.string().array(),
+})
+
+export type RefPersonalData = z.infer<typeof RefPersonalDataSchema>
 
 export const LeaderboardDataSchema = z.object({
   rank: z.number(),
@@ -49,6 +65,8 @@ export const BonkWithdrawalSchema = z.object({
   rawTransaction: z.number().array(),
 })
 export type BonkWithdrawal = z.infer<typeof BonkWithdrawalSchema>
+
+export type WithdrawalTokenType = 'bonk' | 'banx'
 
 export type LinkedWalletPoints = {
   borrowerPoints: number

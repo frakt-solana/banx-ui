@@ -1,0 +1,252 @@
+@animation-duration: 0.3s;
+
+@keyframes hideLoader {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes modalAppear {
+  0% {
+    opacity: 0;
+    height: 430px;
+  }
+  99% {
+    opacity: 0;
+    height: 430px;
+  }
+  100% {
+    opacity: 100%;
+    height: unset;
+  }
+}
+
+// * RefferralModal * //
+
+.loaderWrapper {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+
+  animation: hideLoader @animation-duration forwards;
+}
+
+.content {
+  position: relative;
+  animation: @animation-duration linear modalAppear;
+  z-index: 2;
+}
+
+.modal {
+  :global {
+    .ant-modal-body {
+      padding: 0 !important;
+    }
+
+    .ant-modal-content {
+      padding: 0;
+    }
+  }
+}
+
+.referralModalContent {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 24px 0;
+  gap: 12px;
+
+  @media (max-width: 640px) {
+    padding: 16px 16px 0;
+    gap: 8px;
+  }
+
+  .title {
+    color: var(--pure-black);
+    font: var(--title-xl);
+    text-align: center;
+    text-transform: uppercase;
+
+    @media (max-width: 640px) {
+      font: var(--title-lg);
+    }
+  }
+
+  .subtitle {
+    color: var(--pure-black);
+    font: var(--body-text-md);
+    text-align: center;
+
+    @media (max-width: 640px) {
+      font: var(--body-text-sm);
+    }
+  }
+}
+
+.referralModalInfo {
+  display: flex;
+  align-items: center;
+}
+
+.banxImage {
+  margin-left: -24px;
+  height: 132px;
+  width: 132px;
+}
+
+.referralModalInfoRows {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.referralModalInfoRow {
+  background: var(--bg-primary);
+  border-radius: 12px;
+
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  gap: 8px;
+  width: 100%;
+
+  svg {
+    min-height: 24px;
+    min-width: 24px;
+  }
+
+  span {
+    font: var(--body-text-sm);
+  }
+}
+
+.referrerModalInfo {
+  padding: 12px 24px 24px;
+
+  @media (max-width: 640px) {
+    padding: 8px 16px 16px;
+  }
+}
+
+.referrerWalletSkeleton {
+  height: 16px !important;
+}
+
+.referrerWalletError {
+  color: var(--additional-red-primary);
+}
+
+.referrerWallet {
+  font: var(--body-text-sm);
+  height: 16px;
+
+  @media (max-width: 640px) {
+    font: var(--body-text-xs);
+  }
+}
+
+.confirmButton {
+  margin: 12px 0;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    margin: 8px 0;
+  }
+}
+
+.changeWallet {
+  display: flex;
+  justify-content: center;
+
+  span {
+    color: var(--content-secondary);
+    cursor: pointer;
+    font: var(--body-text-sm);
+    text-decoration: underline;
+
+    &:hover {
+      color: var(--content-primary);
+    }
+  }
+}
+
+.cancelButton {
+  color: var(--content-primary) !important;
+  background-color: var(--additional-red-secondary) !important;
+  border: 1px solid var(--additional-red-primary);
+
+  &:hover {
+    border: 1px solid var(--additional-red-primary-deep);
+  }
+
+  width: 100%;
+}
+
+.walletsList {
+  display: grid;
+  row-gap: 12px;
+  grid-template-columns: repeat(5, 1fr);
+  margin: 12px 0;
+  width: 100%;
+}
+
+// * RefferralModal * //
+
+// * ReferralInput * //
+.referralInputField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.referralInputLabel {
+  color: var(--content-secondary);
+  font: var(--title-sm);
+  text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--title-xs);
+  }
+}
+
+.referralInputWrapper {
+  position: relative;
+}
+
+.referralInput {
+  border: var(--border-primary) !important;
+}
+
+.referralInputButton {
+  background: var(--bg-primary);
+  border: var(--border-primary);
+  border-radius: 4px;
+  color: var(--content-primary);
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 4px;
+
+  span {
+    font: var(--btn-text-sm);
+  }
+
+  svg path {
+    fill: var(--content-primary);
+  }
+}
+// * ReferralInput * //
