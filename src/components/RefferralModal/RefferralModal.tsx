@@ -21,7 +21,7 @@ import { Loader } from '../Loader'
 import Background from './assets/Background.png'
 import BanxImage from './assets/Banx.png'
 import { ReferralInput } from './components'
-import { useSearchUserWallet } from './hooks'
+import { useGetUserWalletByRefCode } from './hooks'
 
 import styles from './RefferralModal.module.less'
 
@@ -43,7 +43,7 @@ const RefferralModal = () => {
   }, [referralCode])
 
   const { data: referrerWallet, isLoading: isLoadingReferrerWallet } =
-    useSearchUserWallet(debouncedInputValue)
+    useGetUserWalletByRefCode(debouncedInputValue)
 
   const onClickInputButton = async () => {
     const text = await pasteFromClipboard()
