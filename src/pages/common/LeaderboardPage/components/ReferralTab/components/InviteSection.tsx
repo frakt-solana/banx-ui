@@ -34,11 +34,11 @@ export const InviteSection = () => {
       <div className={styles.inviteBenefits}>
         <div className={styles.inviteBenefit}>
           <CircleCheck />
-          <span>50% cashback + 2X points multi on first Borrow</span>
+          <span>50% upfront fee cashback + 2X points on first Borrow</span>
         </div>
         <div className={styles.inviteBenefit}>
           <CircleCheck />
-          <span>4X points multi on first Lend</span>
+          <span>4X points on first Lend</span>
         </div>
       </div>
     </div>
