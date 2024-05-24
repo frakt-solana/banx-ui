@@ -9,16 +9,15 @@ export const useDebounce = <T>(callback: Callback<T>, delay: number = 2000): Cal
   return debouncedCallbackRef.current
 }
 
-export const useDebounceValue = (value: string, delay: number) => {
+export const useDebounceValue = <T>(value: T, delay: number): T => {
   const [debouncedValue, setDebouncedValue] = useState(value)
 
   useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value)
-    }, delay)
+    const debouncedFn = debounce(() => setDebouncedValue(value), delay)
+    debouncedFn()
 
     return () => {
-      clearTimeout(handler)
+      debouncedFn.cancel()
     }
   }, [value, delay])
 
