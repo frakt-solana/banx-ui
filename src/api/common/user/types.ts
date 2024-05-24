@@ -40,14 +40,14 @@ export const SeasonUserRewardsSchema = z.object({
 
 export type SeasonUserRewards = z.infer<typeof SeasonUserRewardsSchema>
 
-export const RefPersolanDataSchema = z.object({
+export const RefPersonalDataSchema = z.object({
   user: z.string(),
   refCode: z.string(),
   referredBy: z.string(),
   refUsers: z.string().array(),
 })
 
-export type RefPersolanData = z.infer<typeof RefPersolanDataSchema>
+export type RefPersonalData = z.infer<typeof RefPersonalDataSchema>
 
 export const LeaderboardDataSchema = z.object({
   rank: z.number(),
