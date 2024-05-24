@@ -7,6 +7,8 @@ import { Button } from '@banx/components/Buttons'
 import { WalletItem } from '@banx/components/WalletModal'
 import { Modal } from '@banx/components/modals/BaseModal'
 
+import BanxImage from '@banx/assets/BanxUrban1.png'
+import GreenGridBg from '@banx/assets/GreenGridBg.png'
 import {
   extractReferralCodeFromPath,
   useDebounceValue,
@@ -18,8 +20,6 @@ import { useModal } from '@banx/store/common'
 import { pasteFromClipboard } from '@banx/utils'
 
 import { Loader } from '../Loader'
-import Background from './assets/Background.png'
-import BanxImage from './assets/Banx.png'
 import { ReferralInput } from './components'
 import { useGetUserWalletByRefCode } from './hooks'
 
@@ -64,7 +64,7 @@ const RefferralModal = () => {
       <div className={styles.content}>
         <div
           className={styles.referralModalContent}
-          style={{ backgroundImage: `url(${Background})` }}
+          style={{ backgroundImage: `url(${GreenGridBg})` }}
         >
           <h4 className={styles.title}>Welcome to Banx</h4>
           <span className={styles.subtitle}>
