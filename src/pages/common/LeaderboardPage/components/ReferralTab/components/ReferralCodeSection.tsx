@@ -25,7 +25,7 @@ export const ReferralCodeSection = () => {
   const { data: refPersonalData, isLoading: isLoadingPersonalData } = useRefPersonalData()
   const { data } = useSeasonUserRewards()
 
-  const { totalAccumulated = 0, available: availableToClaim = 0 } = data?.banxRewards || {}
+  const { redeemed = 0, available: availableToClaim = 0 } = data?.banxRewards || {}
   const { refCode = '', refUsers = [] } = refPersonalData || {}
 
   const totalReferred = refUsers.length || 0
@@ -60,7 +60,7 @@ export const ReferralCodeSection = () => {
       <RewardsContent
         totalReferred={totalReferred}
         availableToClaim={availableToClaim}
-        totalClaimed={totalAccumulated}
+        totalClaimed={redeemed}
         isLoadingPersonalData={isLoadingPersonalData}
       />
     </div>
