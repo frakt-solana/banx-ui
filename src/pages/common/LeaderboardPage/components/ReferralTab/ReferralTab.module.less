@@ -22,7 +22,7 @@
   min-width: 364px;
   max-width: 364px;
 
-  @media (max-width: 960px) {
+  @media (max-width: 640px) {
     border-right: 0;
     border-left: 0;
     max-width: unset;
@@ -166,15 +166,15 @@
   }
 
   @media (max-width: 960px) {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  @media (max-width: 640px) {
     border-right: 0;
     border-left: 0;
     max-width: unset;
     width: 100%;
-  }
-
-  @media (max-width: 640px) {
-    padding: 16px;
-    gap: 16px;
   }
 }
 
@@ -207,7 +207,6 @@
 .inviteInfo {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 6px;
 
   span:first-child {
