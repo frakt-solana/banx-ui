@@ -61,7 +61,7 @@ export const useReferralLink = () => {
         }
 
         enqueueSnackbar({
-          message: 'Linked sucessfully',
+          message: 'Added referrer successfully',
           type: 'success',
         })
 
