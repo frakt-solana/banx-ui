@@ -12,7 +12,7 @@ import { user } from '@banx/api/common'
 import { BASE_BANX_URL, DISCORD } from '@banx/constants'
 import { BanxToken, Copy, Receive } from '@banx/icons'
 import { defaultTxnErrorHandler } from '@banx/transactions'
-import { copyToClipboard, enqueueSnackbar, formatNumbersWithCommas } from '@banx/utils'
+import { copyToClipboard, enqueueSnackbar } from '@banx/utils'
 
 import { updateBanxWithdrawOptimistic, useSeasonUserRewards } from '../../../hooks'
 import { useRefPersonalData } from '../hooks'
@@ -25,7 +25,7 @@ export const ReferralCodeSection = () => {
   const { data: refPersonalData, isLoading: isLoadingPersonalData } = useRefPersonalData()
   const { data } = useSeasonUserRewards()
 
-  const { available: availableToClaim = 0 } = data?.banxRewards || {}
+  const { totalAccumulated = 0, available: availableToClaim = 0 } = data?.banxRewards || {}
   const { refCode = '', refUsers = [] } = refPersonalData || {}
 
   const totalReferred = refUsers.length || 0
@@ -60,6 +60,7 @@ export const ReferralCodeSection = () => {
       <RewardsContent
         totalReferred={totalReferred}
         availableToClaim={availableToClaim}
+        totalClaimed={totalAccumulated}
         isLoadingPersonalData={isLoadingPersonalData}
       />
     </div>
@@ -69,12 +70,14 @@ export const ReferralCodeSection = () => {
 interface RewardsSectionProps {
   totalReferred: number
   availableToClaim: number
+  totalClaimed: number
   isLoadingPersonalData: boolean
 }
 
 const RewardsContent: FC<RewardsSectionProps> = ({
   totalReferred,
   availableToClaim,
+  totalClaimed,
   isLoadingPersonalData,
 }) => {
   const { publicKey, connected, signTransaction } = useWallet()
@@ -122,9 +125,8 @@ const RewardsContent: FC<RewardsSectionProps> = ({
     }
   }
 
-  const formattedAvailableToClaim = formatNumbersWithCommas(availableToClaim.toFixed(0))
-
-  const displayAvailableToClaim = connected ? formattedAvailableToClaim : '--'
+  const displayAvailableToClaim = connected ? formatNumber(availableToClaim) : null
+  const displayTotalClaimed = totalClaimed ? formatNumber(totalClaimed) : '--'
   const displayTotalReferredValue = connected ? totalReferred : '--'
 
   return (
@@ -140,9 +142,9 @@ const RewardsContent: FC<RewardsSectionProps> = ({
             <span className={styles.referredValue}>{displayTotalReferredValue}</span>
           </div>
           <div className={classNames(styles.rewardStat, styles.rightAlign)}>
-            <span>Rewards</span>
+            <span>Claimed</span>
             <span className={styles.referredValue}>
-              {displayAvailableToClaim}
+              {displayTotalClaimed}
               <BanxToken />
             </span>
           </div>
@@ -150,9 +152,10 @@ const RewardsContent: FC<RewardsSectionProps> = ({
             onClick={onClaim}
             loading={isLoading}
             disabled={isLoading || !availableToClaim}
-            className={styles.claimRewardsButton}
+            className={classNames(styles.claimRewardsButton, { [styles.loading]: isLoading })}
           >
-            Claim
+            Claim {displayAvailableToClaim}
+            <BanxToken />
           </Button>
         </>
       )}
@@ -169,3 +172,12 @@ const CustomReferralLink = () => (
     and create a ticket
   </div>
 )
+
+const formatNumber = (value = 0) => {
+  if (!value) return ''
+
+  return Intl.NumberFormat('en-US', {
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(value)
+}

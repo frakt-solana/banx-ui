@@ -108,7 +108,6 @@
 .rewardStat {
   display: flex;
   flex-direction: column;
-  gap: 8px;
 
   span:first-child {
     font: var(--title-sm);
@@ -137,11 +136,41 @@
 }
 
 .claimRewardsButton {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   min-width: 128px;
+
+  &:hover {
+    svg rect {
+      fill: var(--accent-secondary);
+    }
+  }
+
+  &.loading {
+    svg {
+      rect {
+        fill: var(--bg-secondary);
+      }
+
+      path {
+        fill: var(--content-secondary);
+      }
+    }
+  }
+
+  svg {
+    min-height: 16px;
+    min-width: 16px;
+
+    rect {
+      fill: var(--accent-primary);
+    }
+  }
 }
 
 .referralInviteInfoSkeleton {
-  min-height: 41px;
+  min-height: 32px;
 }
 
 // * RewardsContent * //
