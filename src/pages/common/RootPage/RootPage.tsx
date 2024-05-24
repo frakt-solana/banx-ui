@@ -1,30 +1,18 @@
-import { useEffect } from 'react'
-
 import classNames from 'classnames'
 import { NavLink } from 'react-router-dom'
 
 import { Button } from '@banx/components/Buttons'
-import RefferralModal from '@banx/components/RefferralModal'
 
-import { Theme, extractReferralCodeFromPath, useTheme } from '@banx/hooks'
+import { Theme, useReferralCodeModalTrigger, useTheme } from '@banx/hooks'
 import { InfinityIcon, Lightning, PencilLtv } from '@banx/icons'
 import { PATHS } from '@banx/router'
-import { useModal } from '@banx/store/common'
 
 import { Interest } from './icons'
 
 import styles from './RootPage.module.less'
 
 export const RootPage = () => {
-  const { open } = useModal()
-
-  useEffect(() => {
-    const referralCode = extractReferralCodeFromPath(location.pathname)
-
-    if (referralCode) {
-      open(RefferralModal)
-    }
-  }, [open])
+  useReferralCodeModalTrigger()
 
   return (
     <div className={styles.pageWrapper}>

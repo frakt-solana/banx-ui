@@ -1,7 +1,9 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { useLocation, useNavigate } from 'react-router-dom'
+
+import RefferralModal from '@banx/components/RefferralModal'
 
 import { user } from '@banx/api/common'
 import { useBanxLogin, useIsLedger, useModal } from '@banx/store/common'
@@ -76,6 +78,19 @@ export const useReferralLink = () => {
   )
 
   return { onRefLink, removeRefFromPath }
+}
+
+export const useReferralCodeModalTrigger = () => {
+  const { open } = useModal()
+  const location = useLocation()
+
+  useEffect(() => {
+    const referralCode = extractReferralCodeFromPath(location.pathname)
+
+    if (referralCode) {
+      open(RefferralModal)
+    }
+  }, [open, location])
 }
 
 export const extractReferralCodeFromPath = (pathname: string) => {
