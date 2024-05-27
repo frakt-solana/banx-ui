@@ -8,8 +8,9 @@ import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { PATHS } from '@banx/router'
+import { ModeType, createPathWithParams } from '@banx/store/common'
 import { createGlobalState } from '@banx/store/createGlobalState'
-import { createPathWithTokenParam, useTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/nft'
 import { isSolTokenType } from '@banx/utils'
 
 import { useSortedOffers } from './useSortedOffers'
@@ -76,7 +77,7 @@ export const useOffersContent = () => {
   }
 
   const goToLendPage = () => {
-    navigate(createPathWithTokenParam(PATHS.LEND, tokenType))
+    navigate(createPathWithParams(PATHS.LEND, ModeType.NFT, tokenType))
   }
 
   const tokenName = isSolTokenType(tokenType) ? 'SOL' : 'USDC'

@@ -19,13 +19,8 @@ import { useMarketsPreview } from '@banx/pages/nftLending/LendPage/hooks'
 import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
 import { createGlobalState } from '@banx/store'
-import { useModal } from '@banx/store/common'
-import {
-  createPathWithTokenParam,
-  useLoansOptimistic,
-  useOffersOptimistic,
-  useTokenType,
-} from '@banx/store/nft'
+import { ModeType, createPathWithParams, useModal } from '@banx/store/common'
+import { useLoansOptimistic, useOffersOptimistic, useTokenType } from '@banx/store/nft'
 import { calculateLoanValue } from '@banx/utils'
 
 import { useBorrowerStats } from '../../hooks'
@@ -59,7 +54,7 @@ export const useDashboardBorrowTab = () => {
   const headingText = connected ? 'Click to borrow' : '1 click loan'
 
   const goToBorrowPage = () => {
-    navigate(createPathWithTokenParam(PATHS.BORROW, tokenType))
+    navigate(createPathWithParams(PATHS.BORROW, ModeType.NFT, tokenType))
   }
 
   const onBorrow = (nft: core.BorrowNft) => {
@@ -102,7 +97,7 @@ export const useSingleBorrow = () => {
   }
 
   const goToLoansPage = () => {
-    navigate(createPathWithTokenParam(PATHS.LOANS, tokenType))
+    navigate(createPathWithParams(PATHS.LOANS, ModeType.NFT, tokenType))
   }
 
   const onBorrowSuccess = () => {

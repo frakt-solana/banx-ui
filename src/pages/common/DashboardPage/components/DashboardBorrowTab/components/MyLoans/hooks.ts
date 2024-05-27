@@ -6,7 +6,8 @@ import { VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { stats } from '@banx/api/nft'
 import { PATHS } from '@banx/router'
-import { createPathWithTokenParam, useTokenType } from '@banx/store/nft'
+import { ModeType, createPathWithParams } from '@banx/store/common'
+import { useTokenType } from '@banx/store/nft'
 
 import {
   LoansStatus,
@@ -53,7 +54,7 @@ export const useMyLoans = (stats?: stats.TotalBorrowerStats | null) => {
   }
 
   const goToLoansPage = () => {
-    navigate(createPathWithTokenParam(PATHS.LOANS, tokenType))
+    navigate(createPathWithParams(PATHS.LOANS, ModeType.NFT, tokenType))
   }
 
   const buttonProps = {

@@ -9,7 +9,8 @@ import { BorrowTabName, useBorrowTabs } from '@banx/pages/nftLending/BorrowPage'
 import { REQUEST_LOANS_TABLE_MESSAGES } from '@banx/pages/nftLending/LoansPage/constants'
 import { PATHS } from '@banx/router'
 import { createGlobalState } from '@banx/store'
-import { createPathWithTokenParam, useTokenType } from '@banx/store/nft'
+import { ModeType, createPathWithParams } from '@banx/store/common'
+import { useTokenType } from '@banx/store/nft'
 
 import { useSortedLoans } from './useSortedLoans'
 
@@ -51,7 +52,7 @@ export const useRequestsLoansTable = ({ loans, isLoading }: UseLoansActiveTableP
 
   const goToBorrowPage = () => {
     setBorrowTab(BorrowTabName.REQUEST)
-    navigate(createPathWithTokenParam(PATHS.BORROW, tokenType))
+    navigate(createPathWithParams(PATHS.BORROW, ModeType.NFT, tokenType))
   }
 
   const emptyListParams = {

@@ -6,7 +6,8 @@ import { DisplayValue } from '@banx/components/TableComponents'
 
 import { stats } from '@banx/api/nft'
 import { PATHS } from '@banx/router'
-import { createPathWithTokenParam, useTokenType } from '@banx/store/nft'
+import { ModeType, createPathWithParams } from '@banx/store/common'
+import { useTokenType } from '@banx/store/nft'
 import { getTokenDecimals, isSolTokenType } from '@banx/utils'
 
 import {
@@ -59,10 +60,10 @@ export const useAllocationBlock = (stats?: AllocationStats) => {
   }
 
   const goToLendPage = () => {
-    navigate(createPathWithTokenParam(PATHS.LEND, tokenType))
+    navigate(createPathWithParams(PATHS.LEND, ModeType.NFT, tokenType))
   }
   const goToOffersPage = () => {
-    navigate(createPathWithTokenParam(PATHS.OFFERS, tokenType))
+    navigate(createPathWithParams(PATHS.OFFERS, ModeType.NFT, tokenType))
   }
 
   const emptyButtonText = isSolTokenType(tokenType) ? 'Lend SOL' : 'Lend USDC'

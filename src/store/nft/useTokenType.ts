@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 import { create } from 'zustand'
 
-import { isSolTokenType } from '@banx/utils'
+import { ModeType, createPathWithParams } from '../common'
 
 type TokenTypeState = {
   tokenType: LendingTokenType
@@ -39,14 +39,8 @@ export const useTokenType = () => {
 
   const setTokenType = (tokenType: LendingTokenType) => {
     setTokenTypeState(tokenType)
-    navigate(createPathWithTokenParam(location.pathname, tokenType))
+    navigate(createPathWithParams(location.pathname, ModeType.NFT, tokenType))
   }
 
   return { tokenType, setTokenType }
-}
-
-export const createPathWithTokenParam = (pathname: string, tokenType: LendingTokenType) => {
-  if (isSolTokenType(tokenType)) return pathname
-
-  return `${pathname}?token=${tokenType}`
 }
