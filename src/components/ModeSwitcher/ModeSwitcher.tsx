@@ -6,13 +6,13 @@ import { ModeType, useModeType } from '@banx/store/common'
 
 import styles from './ModeSwitcher.module.less'
 
-const MODES = [ModeType.NFT, ModeType.Token]
-
 type ModeSwitcherProps = {
   className?: string
 }
 
 const ModeSwitcher: FC<ModeSwitcherProps> = ({ className }) => {
+  const MODES = [ModeType.NFT, ModeType.Token]
+
   const { modeType: storeModeType, setModeType } = useModeType()
 
   const toggleModeType = () => {
