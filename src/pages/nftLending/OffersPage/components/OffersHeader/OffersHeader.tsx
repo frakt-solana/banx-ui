@@ -14,7 +14,7 @@ const OffersHeader = () => {
     <PageHeaderBackdrop
       title="My offers"
       titleBtn={<OnboardButton contentType="offers" />}
-      tokenSwitcher={<NftTokenSwitcher />}
+      tokenSwitcher={<NftTokenSwitcher title="My offers" />}
     >
       <AdditionalStat label="Loan TVL" value={<DisplayValue value={loansVolume} />} />
       <AdditionalStat label="Offer TVL" value={<DisplayValue value={offersVolume} />} />

@@ -29,7 +29,7 @@ const LoansHeader: FC<LoansHeaderProps> = ({ loans }) => {
     <PageHeaderBackdrop
       title="My loans"
       titleBtn={<OnboardButton contentType="loans" />}
-      tokenSwitcher={<NftTokenSwitcher />}
+      tokenSwitcher={<NftTokenSwitcher title="My loans" />}
     >
       <AdditionalStat label="Loans" value={numberOfLoans} />
       <AdditionalStat label="Borrowed" value={<DisplayValue value={totalBorrowed} />} />

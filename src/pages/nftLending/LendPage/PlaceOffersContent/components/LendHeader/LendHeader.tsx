@@ -31,7 +31,7 @@ const Header = () => {
     <PageHeaderBackdrop
       title="Lend"
       titleBtn={<OnboardButton contentType="lend" />}
-      tokenSwitcher={<NftTokenSwitcher />}
+      tokenSwitcher={<NftTokenSwitcher title="Lend" />}
     >
       <AdditionalStat
         label="Loan TVL"
