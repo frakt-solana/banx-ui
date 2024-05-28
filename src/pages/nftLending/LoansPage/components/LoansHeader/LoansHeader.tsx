@@ -10,6 +10,7 @@ import {
   SeparateStatsLine,
 } from '@banx/components/PageHeader'
 import { DisplayValue } from '@banx/components/TableComponents'
+import { NftTokenSwitcher } from '@banx/components/TokenSwitcher'
 
 import { core } from '@banx/api/nft'
 import { calcWeeklyFeeWithRepayFee, calculateLoanRepayValue } from '@banx/utils'
@@ -28,6 +29,7 @@ const LoansHeader: FC<LoansHeaderProps> = ({ loans }) => {
     <PageHeaderBackdrop
       title="My loans"
       titleBtn={<OnboardButton contentType="loans" title="My loans" />}
+      tokenSwitcher={<NftTokenSwitcher />}
     >
       <AdditionalStat label="Loans" value={numberOfLoans} />
       <AdditionalStat label="Borrowed" value={<DisplayValue value={totalBorrowed} />} />

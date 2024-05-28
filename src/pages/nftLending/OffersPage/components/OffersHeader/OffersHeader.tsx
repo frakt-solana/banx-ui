@@ -1,6 +1,7 @@
 import { OnboardButton } from '@banx/components/Buttons'
 import { AdditionalStat, PageHeaderBackdrop } from '@banx/components/PageHeader'
 import { DisplayValue } from '@banx/components/TableComponents'
+import { NftTokenSwitcher } from '@banx/components/TokenSwitcher'
 
 import { useUserOffersStats } from '../../hooks'
 
@@ -13,6 +14,7 @@ const OffersHeader = () => {
     <PageHeaderBackdrop
       title="My offers"
       titleBtn={<OnboardButton contentType="offers" title="My offers" />}
+      tokenSwitcher={<NftTokenSwitcher />}
     >
       <AdditionalStat label="Loan TVL" value={<DisplayValue value={loansVolume} />} />
       <AdditionalStat label="Offer TVL" value={<DisplayValue value={offersVolume} />} />
