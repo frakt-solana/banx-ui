@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom'
+import { z } from 'zod'
 import { create } from 'zustand'
 
 import { ModeType } from '../common'
@@ -32,7 +33,7 @@ export const useTokenType = () => {
       const tokenType = tokenTypeFromUrl || TokenType.SOL
 
       // //? Check URL data validity
-      // z.nativeEnum(TokenType).parse(tokenType)
+      z.nativeEnum(TokenType).parse(tokenType)
 
       return { ...state, tokenType }
     } catch (error) {

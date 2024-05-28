@@ -8,10 +8,9 @@ export const createPathWithParams = (
   mode: ModeType,
   tokenType: LendingTokenType | TokenType | null,
 ) => {
-  const isDefaultTokenType = tokenType === TokenType.SOL || tokenType === LendingTokenType.NativeSol
-
   const modeQueryParam = mode === ModeType.Token ? `mode=${mode}` : ''
 
+  const isDefaultTokenType = tokenType === TokenType.SOL || tokenType === LendingTokenType.NativeSol
   const tokenQueryParam = tokenType && !isDefaultTokenType ? `token=${tokenType}` : ''
 
   const queryParams = [modeQueryParam, tokenQueryParam].filter(Boolean).join('&')
