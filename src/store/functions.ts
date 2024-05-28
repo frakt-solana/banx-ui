@@ -3,7 +3,7 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { ModeType } from './common'
 import { TokenType } from './token/useTokenType'
 
-export const createPathWithParams = (
+export const createPathWithModeParams = (
   pathname: string,
   mode: ModeType,
   tokenType: LendingTokenType | TokenType | null,

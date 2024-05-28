@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { create } from 'zustand'
 
 import { ModeType } from '../common'
-import { createPathWithParams } from '../functions'
+import { createPathWithModeParams } from '../functions'
 
 type TokenTypeState = {
   tokenType: LendingTokenType
@@ -40,7 +40,7 @@ export const useNftTokenType = () => {
 
   const setTokenType = (tokenType: LendingTokenType) => {
     setTokenTypeState(tokenType)
-    navigate(createPathWithParams(location.pathname, ModeType.NFT, tokenType))
+    navigate(createPathWithModeParams(location.pathname, ModeType.NFT, tokenType))
   }
 
   return { tokenType, setTokenType }

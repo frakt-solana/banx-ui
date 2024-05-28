@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { PATHS } from '@banx/router'
-import { createPathWithParams } from '@banx/store'
+import { createPathWithModeParams } from '@banx/store'
 import { ModeType } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
 
@@ -59,7 +59,7 @@ export const useHistoryOffersTable = () => {
   const showSummary = !!loans.length && !isLoading
 
   const goToLendPage = () => {
-    navigate(createPathWithParams(PATHS.LEND, ModeType.NFT, tokenType))
+    navigate(createPathWithModeParams(PATHS.LEND, ModeType.NFT, tokenType))
   }
 
   const emptyListParams = {

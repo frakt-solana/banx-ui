@@ -4,7 +4,7 @@ import { create } from 'zustand'
 
 import { PATHS } from '@banx/router'
 
-import { createPathWithParams } from '../functions'
+import { createPathWithModeParams } from '../functions'
 
 export enum ModeType {
   NFT = 'nft',
@@ -44,7 +44,7 @@ export const useModeType = () => {
 
   const setModeType = (mode: ModeType) => {
     setModeTypeState(mode)
-    navigate(createPathWithParams(PATHS.ROOT, mode, null))
+    navigate(createPathWithModeParams(PATHS.ROOT, mode, null))
   }
 
   return { modeType, setModeType }

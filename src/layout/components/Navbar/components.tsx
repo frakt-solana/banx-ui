@@ -5,7 +5,7 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { NavLink } from 'react-router-dom'
 
 import { PATHS } from '@banx/router'
-import { createPathWithParams } from '@banx/store'
+import { createPathWithModeParams } from '@banx/store'
 import { ModeType, useModeType } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
 
@@ -19,7 +19,7 @@ export const InternalLink: FC<
 > = ({ label, pathname = '', icon: Icon, className, primary, tokenType, modeType }) => {
   return (
     <NavLink
-      to={createPathWithParams(pathname, modeType, tokenType)}
+      to={createPathWithModeParams(pathname, modeType, tokenType)}
       className={classNames(styles.link, className, {
         [styles.active]: isActivePath(pathname),
         [styles.primary]: primary,

@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { create } from 'zustand'
 
 import { ModeType } from '../common'
-import { createPathWithParams } from '../functions'
+import { createPathWithModeParams } from '../functions'
 
 export enum TokenType {
   SOL = 'sol',
@@ -45,7 +45,7 @@ export const useTokenType = () => {
 
   const setTokenType = (tokenType: TokenType) => {
     setTokenTypeState(tokenType)
-    navigate(createPathWithParams(location.pathname, ModeType.Token, tokenType))
+    navigate(createPathWithModeParams(location.pathname, ModeType.Token, tokenType))
   }
 
   return { tokenType, setTokenType }

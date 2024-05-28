@@ -10,7 +10,7 @@ import { useWalletModal } from '@banx/components/WalletModal'
 import { useBorrowNfts } from '@banx/pages/nftLending/BorrowPage/hooks'
 import { useMarketsPreview } from '@banx/pages/nftLending/LendPage/hooks'
 import { PATHS } from '@banx/router'
-import { createPathWithParams } from '@banx/store'
+import { createPathWithModeParams } from '@banx/store'
 import { ModeType } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
 
@@ -35,7 +35,7 @@ export const useAvailableToBorrow = () => {
   }, [marketsPreview, nfts])
 
   const goToBorrowPage = () => {
-    navigate(createPathWithParams(PATHS.BORROW, ModeType.NFT, tokenType))
+    navigate(createPathWithModeParams(PATHS.BORROW, ModeType.NFT, tokenType))
   }
 
   const connectWalletHandler = () => {

@@ -19,7 +19,7 @@ import { useBorrowNfts } from '@banx/pages/nftLending/BorrowPage/hooks'
 import { LoansTabsNames, useLoansTabs } from '@banx/pages/nftLending/LoansPage'
 import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
-import { createPathWithParams } from '@banx/store'
+import { createPathWithModeParams } from '@banx/store'
 import { ModeType, useIsLedger, useModal } from '@banx/store/common'
 import { useLoansRequestsOptimistic, useNftTokenType } from '@banx/store/nft'
 import {
@@ -185,7 +185,7 @@ const useRequestLoansTransaction = (props: {
 
   const goToLoansPage = () => {
     setLoanTab(LoansTabsNames.REQUESTS)
-    navigate(createPathWithParams(PATHS.LOANS, ModeType.NFT, tokenType))
+    navigate(createPathWithModeParams(PATHS.LOANS, ModeType.NFT, tokenType))
   }
 
   const onBorrowSuccess = (loansAmount = 1) => {
