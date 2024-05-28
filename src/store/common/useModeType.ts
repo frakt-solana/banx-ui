@@ -1,10 +1,10 @@
-import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 import { create } from 'zustand'
 
 import { PATHS } from '@banx/router'
-import { isSolTokenType } from '@banx/utils'
+
+import { createPathWithParams } from '../functions'
 
 export enum ModeType {
   NFT = 'nft',
@@ -16,7 +16,7 @@ interface ModeState {
   setModeType: (nextValue: ModeType) => void
 }
 
-export const useModeState = create<ModeState>((set) => ({
+const useModeState = create<ModeState>((set) => ({
   modeType: ModeType.NFT,
   setModeType: (nextValue) => set((state) => ({ ...state, modeType: nextValue })),
 }))
@@ -44,19 +44,8 @@ export const useModeType = () => {
 
   const setModeType = (mode: ModeType) => {
     setModeTypeState(mode)
-    navigate(createPathWithParams(PATHS.ROOT, mode))
+    navigate(createPathWithParams(PATHS.ROOT, mode, null))
   }
 
   return { modeType, setModeType }
-}
-
-export const createPathWithParams = (
-  pathname: string,
-  mode: ModeType,
-  tokenType: LendingTokenType = LendingTokenType.NativeSol,
-) => {
-  const modeTypePath = mode === ModeType.Token ? `?mode=${mode}` : ''
-  const tokenTypePath = !isSolTokenType(tokenType) ? `?token=${tokenType}` : ''
-
-  return `${pathname}${modeTypePath}${tokenTypePath}`
 }

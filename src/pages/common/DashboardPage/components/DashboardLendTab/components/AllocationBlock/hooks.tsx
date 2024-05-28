@@ -6,7 +6,8 @@ import { DisplayValue } from '@banx/components/TableComponents'
 
 import { stats } from '@banx/api/nft'
 import { PATHS } from '@banx/router'
-import { ModeType, createPathWithParams } from '@banx/store/common'
+import { createPathWithParams } from '@banx/store'
+import { ModeType } from '@banx/store/common'
 import { useTokenType } from '@banx/store/nft'
 import { getTokenDecimals, isSolTokenType } from '@banx/utils'
 

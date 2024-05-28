@@ -5,7 +5,8 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { NavLink } from 'react-router-dom'
 
 import { PATHS } from '@banx/router'
-import { ModeType, createPathWithParams, useModeType } from '@banx/store/common'
+import { createPathWithParams } from '@banx/store'
+import { ModeType, useModeType } from '@banx/store/common'
 import { useTokenType } from '@banx/store/nft'
 
 import { isActivePath } from './helpers'

@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { PATHS } from '@banx/router'
-import { ModeType, createPathWithParams } from '@banx/store/common'
+import { createPathWithParams } from '@banx/store'
+import { ModeType } from '@banx/store/common'
 import { useTokenType } from '@banx/store/nft'
 
 import { EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'

@@ -19,7 +19,8 @@ import { useBorrowNfts } from '@banx/pages/nftLending/BorrowPage/hooks'
 import { LoansTabsNames, useLoansTabs } from '@banx/pages/nftLending/LoansPage'
 import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
-import { ModeType, createPathWithParams, useIsLedger, useModal } from '@banx/store/common'
+import { createPathWithParams } from '@banx/store'
+import { ModeType, useIsLedger, useModal } from '@banx/store/common'
 import { useLoansRequestsOptimistic, useTokenType } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,

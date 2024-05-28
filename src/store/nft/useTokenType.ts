@@ -3,7 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 import { create } from 'zustand'
 
-import { ModeType, createPathWithParams } from '../common'
+import { ModeType } from '../common'
+import { createPathWithParams } from '../functions'
 
 type TokenTypeState = {
   tokenType: LendingTokenType
