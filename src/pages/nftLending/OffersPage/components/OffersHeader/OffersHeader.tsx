@@ -13,7 +13,7 @@ const OffersHeader = () => {
   return (
     <PageHeaderBackdrop
       title="My offers"
-      titleBtn={<OnboardButton contentType="offers" title="My offers" />}
+      titleBtn={<OnboardButton contentType="offers" />}
       tokenSwitcher={<NftTokenSwitcher />}
     >
       <AdditionalStat label="Loan TVL" value={<DisplayValue value={loansVolume} />} />

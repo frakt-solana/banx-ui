@@ -6,7 +6,7 @@ const LendHeader = () => {
   return (
     <PageHeaderBackdrop
       title="Lend"
-      titleBtn={<OnboardButton contentType="lend" title="Lend" />}
+      titleBtn={<OnboardButton contentType="lend" />}
       tokenSwitcher={<TokenSwitcher />}
     ></PageHeaderBackdrop>
   )

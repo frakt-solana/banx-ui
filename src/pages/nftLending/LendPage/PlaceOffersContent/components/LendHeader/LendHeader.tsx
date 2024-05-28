@@ -30,7 +30,7 @@ const Header = () => {
   return (
     <PageHeaderBackdrop
       title="Lend"
-      titleBtn={<OnboardButton contentType="lend" title="Lend" />}
+      titleBtn={<OnboardButton contentType="lend" />}
       tokenSwitcher={<NftTokenSwitcher />}
     >
       <AdditionalStat

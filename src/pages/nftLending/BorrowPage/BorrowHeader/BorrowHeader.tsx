@@ -28,7 +28,7 @@ const Header = () => {
   return (
     <PageHeaderBackdrop
       title="Borrow"
-      titleBtn={<OnboardButton title="Borrow" contentType="borrow" />}
+      titleBtn={<OnboardButton contentType="borrow" />}
       tokenSwitcher={<NftTokenSwitcher />}
     >
       {connected && <AdditionalStat label="Your NFTs" value={nftsAmount} />}
