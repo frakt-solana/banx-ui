@@ -1,15 +1,19 @@
-import { web3 } from 'fbonds-core'
+import { BN, web3 } from 'fbonds-core'
+import { LOOKUP_TABLE, SANCTUM_PROGRAMM_ID } from 'fbonds-core/lib/fbond-protocol/constants'
+import { SwapMode } from 'fbonds-core/lib/fbond-protocol/functions/banxSol'
 import {
   BondOfferOptimistic,
   createPerpetualBondOfferBonding,
+  getBondingCurveTypeFromLendingToken,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondingCurveType, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
-import { isSolTokenType } from '@banx/utils'
+import { calculateOfferSize } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
+import { swapSolToBanxSol } from './swapSolToBanxSol'
 
 type CreateMakeBondingOfferTxnData = (params: {
   marketPubkey: string
@@ -24,15 +28,36 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
   marketPubkey,
   loanValue,
   loansAmount,
-  tokenType,
+  // tokenType,
   deltaValue,
   walletAndConnection,
 }) => {
-  const bondingCurveType = isSolTokenType(tokenType)
-    ? BondingCurveType.Linear
-    : BondingCurveType.LinearUsdc
+  //TODO BanxSol is hardcoded
+  const bondingCurveType = getBondingCurveTypeFromLendingToken(LendingTokenType.BanxSol)
 
-  const { instructions, signers, optimisticResult } = await createPerpetualBondOfferBonding({
+  const offerSize = calculateOfferSize({ loanValue, loansAmount, deltaValue })
+
+  const { instructions: swapInstructions, signers: swapSigners } = await swapSolToBanxSol({
+    programId: SANCTUM_PROGRAMM_ID,
+    connection: walletAndConnection.connection,
+    accounts: {
+      userPubkey: walletAndConnection.wallet.publicKey,
+    },
+    args: {
+      min_amount_out: new BN(0),
+      amount: new BN(Math.ceil(offerSize / 0.9986)),
+      banxSolLstIndex: 29,
+      wSolLstIndex: 1,
+      swapMode: SwapMode.SolToBanxSol,
+    },
+    sendTxn: sendTxnPlaceHolder,
+  })
+
+  const {
+    instructions: createInstructions,
+    signers: createSigners,
+    optimisticResult,
+  } = await createPerpetualBondOfferBonding({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     connection: walletAndConnection.connection,
     accounts: {
@@ -40,7 +65,7 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
       userPubkey: walletAndConnection.wallet.publicKey,
     },
     args: {
-      loanValue,
+      loanValue: loanValue,
       delta: deltaValue,
       quantityOfLoans: loansAmount,
       bondingCurveType,
@@ -49,9 +74,9 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
   })
 
   return {
-    instructions,
-    signers,
+    instructions: [...swapInstructions, ...createInstructions],
+    signers: [...swapSigners, ...createSigners],
     result: optimisticResult,
-    lookupTables: [],
+    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }
