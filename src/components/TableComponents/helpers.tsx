@@ -4,7 +4,7 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import moment from 'moment'
 
 import { USDC } from '@banx/icons'
-import { useTokenType } from '@banx/store/nft'
+import { useNftTokenType } from '@banx/store/nft'
 import { formatValueByTokenType } from '@banx/utils'
 
 import styles from './TableCells.module.less'
@@ -59,7 +59,7 @@ export const DisplayValue: FC<{ value: number; placeholder?: string }> = ({
   value,
   placeholder,
 }) => {
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const formattedValue = formatValueByTokenType(value, tokenType)
 

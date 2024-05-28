@@ -20,7 +20,7 @@ import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
 import { createGlobalState, createPathWithParams } from '@banx/store'
 import { ModeType, useModal } from '@banx/store/common'
-import { useLoansOptimistic, useOffersOptimistic, useTokenType } from '@banx/store/nft'
+import { useLoansOptimistic, useNftTokenType, useOffersOptimistic } from '@banx/store/nft'
 import { calculateLoanValue } from '@banx/utils'
 
 import { useBorrowerStats } from '../../hooks'
@@ -28,7 +28,7 @@ import { useBorrowerStats } from '../../hooks'
 export const useDashboardBorrowTab = () => {
   const { connected } = useWallet()
   const navigate = useNavigate()
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { borrow, nfts, isLoading: isLoadingNFTs, findBestOffer } = useSingleBorrow()
 
@@ -86,7 +86,7 @@ export const useSingleBorrow = () => {
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { update: updateOffersOptimistic } = useOffersOptimistic()
   const { add: addLoansOptimistic } = useLoansOptimistic()

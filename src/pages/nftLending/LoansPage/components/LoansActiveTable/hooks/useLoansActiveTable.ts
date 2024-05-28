@@ -9,7 +9,7 @@ import { ACTIVE_LOANS_TABLE_MESSAGES } from '@banx/pages/nftLending/LoansPage/co
 import { PATHS } from '@banx/router'
 import { createPathWithParams } from '@banx/store'
 import { ModeType } from '@banx/store/common'
-import { useTokenType } from '@banx/store/nft'
+import { useNftTokenType } from '@banx/store/nft'
 
 import { useFilterLoans } from './useFilteredLoans'
 import { useSortLoans } from './useSortLoans'
@@ -31,7 +31,7 @@ export const useLoansActiveTable = ({ loans, isLoading }: UseLoansActiveTablePro
   const { connected } = useWallet()
   const navigate = useNavigate()
 
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const {
     filteredLoansBySelectedCollection,

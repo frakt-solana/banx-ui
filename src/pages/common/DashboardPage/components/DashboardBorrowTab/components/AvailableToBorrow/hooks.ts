@@ -12,7 +12,7 @@ import { useMarketsPreview } from '@banx/pages/nftLending/LendPage/hooks'
 import { PATHS } from '@banx/router'
 import { createPathWithParams } from '@banx/store'
 import { ModeType } from '@banx/store/common'
-import { useTokenType } from '@banx/store/nft'
+import { useNftTokenType } from '@banx/store/nft'
 
 import styles from './AvailableToBorrow.module.less'
 
@@ -24,7 +24,7 @@ export const useAvailableToBorrow = () => {
   const { marketsPreview } = useMarketsPreview()
   const { nfts, maxBorrow } = useBorrowNfts()
 
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { totalMarkets, totalLiquidity, userNFTs } = useMemo(() => {
     return {

@@ -4,8 +4,8 @@ import classNames from 'classnames'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { SOL, USDC } from '@banx/icons'
-import { useTokenType } from '@banx/store/nft'
-import { TokenType, useTokenType1 } from '@banx/store/token/useTokenType'
+import { useNftTokenType } from '@banx/store/nft'
+import { TokenType, useTokenType } from '@banx/store/token'
 import { isSolTokenType } from '@banx/utils'
 
 import styles from './TokenSwitcher.module.less'
@@ -44,7 +44,7 @@ type NftTokenSwitcherProps = {
 }
 
 export const NftTokenSwitcher: FC<NftTokenSwitcherProps> = ({ className }) => {
-  const { tokenType, setTokenType } = useTokenType()
+  const { tokenType, setTokenType } = useNftTokenType()
 
   const toggleTokenType = () => {
     const nextTokenType = isSolTokenType(tokenType)
@@ -82,7 +82,7 @@ const TOKEN_DETAILS = {
 }
 
 export const TokenSwitcher: FC<TokenSwitcherProps> = ({ className }) => {
-  const { tokenType, setTokenType } = useTokenType1()
+  const { tokenType, setTokenType } = useTokenType()
 
   const tokens = Object.keys(TOKEN_DETAILS) as TokenType[]
 

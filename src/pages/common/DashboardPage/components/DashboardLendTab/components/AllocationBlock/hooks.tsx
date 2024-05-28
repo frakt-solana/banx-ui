@@ -8,7 +8,7 @@ import { stats } from '@banx/api/nft'
 import { PATHS } from '@banx/router'
 import { createPathWithParams } from '@banx/store'
 import { ModeType } from '@banx/store/common'
-import { useTokenType } from '@banx/store/nft'
+import { useNftTokenType } from '@banx/store/nft'
 import { getTokenDecimals, isSolTokenType } from '@banx/utils'
 
 import {
@@ -22,7 +22,7 @@ export type AllocationStats = stats.TotalLenderStats['allocation']
 
 export const useAllocationBlock = (stats?: AllocationStats) => {
   const navigate = useNavigate()
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const {
     activeLoans = 0,

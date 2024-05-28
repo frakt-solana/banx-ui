@@ -7,7 +7,7 @@ import { NavLink } from 'react-router-dom'
 import { PATHS } from '@banx/router'
 import { createPathWithParams } from '@banx/store'
 import { ModeType, useModeType } from '@banx/store/common'
-import { useTokenType } from '@banx/store/nft'
+import { useNftTokenType } from '@banx/store/nft'
 
 import { isActivePath } from './helpers'
 import { ExternalLinkProps, InternalLinkProps } from './types'
@@ -42,7 +42,7 @@ const ExternalLink: FC<ExternalLinkProps> = ({ icon: Icon, href }) => {
 }
 
 export const NavigationsLinks: FC<{ links: InternalLinkProps[] }> = ({ links }) => {
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
   const { modeType } = useModeType()
 
   return (

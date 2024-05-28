@@ -6,7 +6,7 @@ import { DisplayValue } from '@banx/components/TableComponents'
 import { PATHS } from '@banx/router'
 import { createPathWithParams } from '@banx/store'
 import { ModeType } from '@banx/store/common'
-import { useTokenType } from '@banx/store/nft'
+import { useNftTokenType } from '@banx/store/nft'
 
 import { EMPTY_MESSAGE, NOT_CONNECTED_MESSAGE } from '../constants'
 import { useBorrowerActivity } from './useBorrowerActivity'
@@ -17,7 +17,7 @@ import styles from '../LoansHistoryTable.module.less'
 export const useHistoryLoansTable = () => {
   const { connected } = useWallet()
   const navigate = useNavigate()
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { data: collectionsList } = useBorrowerActivityCollectionsList()
 

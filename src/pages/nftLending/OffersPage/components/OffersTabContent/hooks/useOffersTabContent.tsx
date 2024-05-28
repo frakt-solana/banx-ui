@@ -11,7 +11,7 @@ import { PATHS } from '@banx/router'
 import { createPathWithParams } from '@banx/store'
 import { ModeType } from '@banx/store/common'
 import { createGlobalState } from '@banx/store/createGlobalState'
-import { useTokenType } from '@banx/store/nft'
+import { useNftTokenType } from '@banx/store/nft'
 import { isSolTokenType } from '@banx/utils'
 
 import { useSortedOffers } from './useSortedOffers'
@@ -29,7 +29,7 @@ export const useOffersContent = () => {
   const { connected } = useWallet()
   const navigate = useNavigate()
 
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { offers, updateOrAddOffer, isLoading } = useUserOffers()
 

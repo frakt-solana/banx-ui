@@ -2,7 +2,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 
 import { stats } from '@banx/api/nft'
-import { useTokenType } from '@banx/store/nft'
+import { useNftTokenType } from '@banx/store/nft'
 import { isSolTokenType } from '@banx/utils'
 
 const QUERY_OPTIONS = {
@@ -12,7 +12,7 @@ const QUERY_OPTIONS = {
 }
 
 export const useAllTotalStats = () => {
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const marketType = isSolTokenType(tokenType) ? 'allInSol' : 'allInUsdc'
 
@@ -29,7 +29,7 @@ export const useLenderStats = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { data, isLoading } = useQuery(
     ['lenderStats', publicKeyString, tokenType],
@@ -46,7 +46,7 @@ export const useBorrowerStats = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { data, isLoading } = useQuery(
     ['borrowerStats', publicKeyString, tokenType],

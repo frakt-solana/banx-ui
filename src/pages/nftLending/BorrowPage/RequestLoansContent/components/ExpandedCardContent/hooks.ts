@@ -21,7 +21,7 @@ import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
 import { createPathWithParams } from '@banx/store'
 import { ModeType, useIsLedger, useModal } from '@banx/store/common'
-import { useLoansRequestsOptimistic, useTokenType } from '@banx/store/nft'
+import { useLoansRequestsOptimistic, useNftTokenType } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
@@ -47,7 +47,7 @@ import { calculateSummaryInfo, clampInputValue } from './helpers'
 export const useRequestLoansForm = (market: core.MarketPreview) => {
   const { nfts, isLoading: isLoadingNfts, maxLoanValueByMarket } = useBorrowNfts()
   const { selection: selectedNfts, set: setSelection } = useSelectedNfts()
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
   const { connected } = useWallet()
 
   const [inputLoanValue, setInputLoanValue] = useState('')
@@ -179,7 +179,7 @@ const useRequestLoansTransaction = (props: {
   const { open: openModal, close: closeModal } = useModal()
   const { add: addLoansOptimistic } = useLoansRequestsOptimistic()
 
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { setTab: setLoanTab } = useLoansTabs()
 

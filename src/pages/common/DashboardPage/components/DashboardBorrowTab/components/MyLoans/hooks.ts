@@ -8,7 +8,7 @@ import { stats } from '@banx/api/nft'
 import { PATHS } from '@banx/router'
 import { createPathWithParams } from '@banx/store'
 import { ModeType } from '@banx/store/common'
-import { useTokenType } from '@banx/store/nft'
+import { useNftTokenType } from '@banx/store/nft'
 
 import {
   LoansStatus,
@@ -21,7 +21,7 @@ import styles from './MyLoans.module.less'
 
 export const useMyLoans = (stats?: stats.TotalBorrowerStats | null) => {
   const navigate = useNavigate()
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { activeLoansCount = 0, terminatingLoansCount = 0, liquidationLoansCount = 0 } = stats || {}
 

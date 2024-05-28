@@ -9,8 +9,8 @@ import { useMarketsPreview } from '@banx/pages/nftLending/LendPage/hooks'
 import {
   isOfferNewer,
   isOptimisticOfferExpired,
+  useNftTokenType,
   useOffersOptimistic,
-  useTokenType,
 } from '@banx/store/nft'
 import { isOfferClosed } from '@banx/utils'
 
@@ -22,7 +22,7 @@ export const useUserOffers = () => {
 
   const { marketsPreview } = useMarketsPreview()
 
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { data, isLoading, isFetching, isFetched } = useQuery(
     [useUserOffers, publicKeyString, tokenType],

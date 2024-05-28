@@ -4,7 +4,7 @@ import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
-import { useTokenType } from '@banx/store/nft'
+import { useNftTokenType } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
@@ -44,7 +44,7 @@ export const useOfferTransactions = ({
 }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const onCreateOffer = async () => {
     const loadingSnackbarId = uniqueId()
