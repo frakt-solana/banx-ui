@@ -1,1 +1,0 @@
-export { LoansPage } from './LoansPage'

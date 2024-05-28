@@ -1,1 +1,0 @@
-export { LendPage } from './LendPage'

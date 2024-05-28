@@ -1,8 +1,8 @@
 import LendHeader from './LendHeader'
 
-import styles from './LendPage.module.less'
+import styles from './LendTokenPage.module.less'
 
-export const LendPage = () => {
+export const LendTokenPage = () => {
   return (
     <div className={styles.pageWrapper}>
       <LendHeader />
