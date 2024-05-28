@@ -64,7 +64,11 @@ export const StakeNftsModal = () => {
       return setSelectedNfts([])
     }
 
-    return setSelectedNfts(filteredNfts.filter((nft) => !nft?.isLoaned))
+    const nftsToSelect = filteredNfts
+      .filter((nft) => !nft?.isLoaned)
+      .filter((nft) => !nft?.isTerminationFreeze)
+
+    return setSelectedNfts(nftsToSelect)
   }
 
   const filteredNfts = useMemo(() => {
