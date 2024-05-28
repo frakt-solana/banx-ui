@@ -109,7 +109,7 @@ const TokenDropdownButton = <T,>({
       <span>{title}</span>
       {tokenIcon}
       <span>{label}</span>
-      <ChevronDown className={isOpen ? styles.rotate : ''} />
+      <ChevronDown className={classNames(styles.chevronIcon, { [styles.rotate]: isOpen })} />
     </Button>
   )
 }
