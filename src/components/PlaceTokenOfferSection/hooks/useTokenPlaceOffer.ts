@@ -3,25 +3,11 @@ import { getTokenDecimals } from '@banx/utils'
 
 import { useOfferFormController } from './useOfferFormController'
 
-export interface PlaceOfferParams {
-  loanValueString: string
-  offerSizeString: string
+export const useTokenPlaceOffer = (props: { offerPubkey?: string; marketPubkey: string }) => {
+  const { marketPubkey, offerPubkey } = props
 
-  onLoanValueChange: (nextValue: string) => void
-  onOfferSizeChange: (nextValue: string) => void
-}
+  const isEditMode = !!offerPubkey
 
-type UsePlaceOffer = (props: {
-  offerPubkey: string
-  marketPubkey: string
-  setOfferPubkey?: (offerPubkey: string) => void
-}) => PlaceOfferParams
-
-export const useTokenPlaceOffer: UsePlaceOffer = ({
-  marketPubkey,
-  offerPubkey,
-  setOfferPubkey,
-}) => {
   const { tokenType } = useNftTokenType()
 
   const decimals = getTokenDecimals(tokenType)
@@ -40,11 +26,26 @@ export const useTokenPlaceOffer: UsePlaceOffer = ({
   const loanValue = parseFloat(loanValueString) * decimals
   const offerSize = parseFloat(offerSizeString)
 
+  const offerErrorMessage = null
+
+  const disablePlaceOffer = !!offerErrorMessage || !offerSize
+  const disableUpdateOffer = !hasFormChanges || !!offerErrorMessage || !offerSize
+
+  const showBorrowerMessage = !offerErrorMessage && !!offerSize
+
   return {
+    isEditMode,
+
     loanValueString,
     offerSizeString,
 
     onLoanValueChange,
     onOfferSizeChange,
+
+    offerErrorMessage,
+    showBorrowerMessage,
+
+    disablePlaceOffer,
+    disableUpdateOffer,
   }
 }

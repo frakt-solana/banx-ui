@@ -8,8 +8,6 @@ import { TABS, TabName } from './constants'
 import styles from './ExpandedCardContent.module.less'
 
 const ExpandedCardContent: FC<{ marketPubkey: string }> = ({ marketPubkey }) => {
-  const [offerPubkey, setOfferPubkey] = useState('')
-
   const { value: currentTabValue, ...tabsProps } = useTabs({
     tabs: TABS,
     defaultValue: TabName.OFFERS,
@@ -20,7 +18,7 @@ const ExpandedCardContent: FC<{ marketPubkey: string }> = ({ marketPubkey }) => 
       <div className={styles.tabsContent}>
         <Tabs value={currentTabValue} {...tabsProps} />
         {currentTabValue === TabName.OFFERS && (
-          <PlaceTokenOfferSection marketPubkey={marketPubkey} offerPubkey={offerPubkey} />
+          <PlaceTokenOfferSection marketPubkey={marketPubkey} />
         )}
         {currentTabValue === TabName.ACTIVITY && <></>}
       </div>

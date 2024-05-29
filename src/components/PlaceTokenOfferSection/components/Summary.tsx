@@ -9,7 +9,7 @@ import { DisplayValue } from '@banx/components/TableComponents'
 import { SECONDS_IN_DAY } from '@banx/constants'
 import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
 
-import styles from './Summary.module.less'
+import styles from '../PlaceTokenOfferSection.module.less'
 
 export const MainSummary = () => {
   const ltv = 0
@@ -20,18 +20,18 @@ export const MainSummary = () => {
       <StatInfo
         label="LTV"
         value={ltv}
-        tooltipText="Your max offer expressed as loan-to-value, given sufficient liquidity in your offer. Actual loan amount taken can be less depending on the amount of SOL borrowers choose to borrow"
+        tooltipText="LTV"
         valueType={VALUES_TYPES.PERCENT}
         valueStyles={{ color: getColorByPercent(ltv, HealthColorIncreasing) }}
         classNamesProps={{ container: styles.mainSummaryStat, value: styles.fixedValueContent }}
       />
       <div className={styles.separateLine} />
       <StatInfo
-        label="Apr"
+        label="APR"
         value={apr}
         valueType={VALUES_TYPES.PERCENT}
         classNamesProps={{ value: styles.aprValue, container: styles.mainSummaryStat }}
-        tooltipText="Your maximum annual interest rate. Ranges between 34-104% APR depending on the loan-to-value (LTV) offered, and becomes fixed once offer is taken by a borrower"
+        tooltipText="APR"
       />
     </div>
   )
