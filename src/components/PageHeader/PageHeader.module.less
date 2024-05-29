@@ -7,6 +7,8 @@
   gap: 24px;
   width: 100%;
 
+  position: relative;
+
   @media (max-width: 640px) {
     padding: 8px 16px;
     gap: 16px;
@@ -16,7 +18,11 @@
 .titleWrapper {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 16px;
+
+  @media (max-width: 960px) {
+    gap: 8px;
+  }
 }
 
 .title {

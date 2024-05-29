@@ -3,26 +3,27 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 import { create } from 'zustand'
 
-import { isSolTokenType } from '@banx/utils'
+import { ModeType } from '../common'
+import { createPathWithModeParams } from '../functions'
 
 type TokenTypeState = {
   tokenType: LendingTokenType
   setTokenType: (nextToken: LendingTokenType) => void
 }
 
-export const useTokenTypeState = create<TokenTypeState>((set) => ({
+export const useNftTokenTypeState = create<TokenTypeState>((set) => ({
   tokenType: LendingTokenType.NativeSol,
   setTokenType: (tokenType: LendingTokenType) => set((state) => ({ ...state, tokenType })),
 }))
 
-export const useTokenType = () => {
+export const useNftTokenType = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const params = new URLSearchParams(location.search)
 
   const tokenTypeFromUrl = params.get('token') as LendingTokenType
 
-  const { tokenType, setTokenType: setTokenTypeState } = useTokenTypeState((state) => {
+  const { tokenType, setTokenType: setTokenTypeState } = useNftTokenTypeState((state) => {
     try {
       const tokenType = tokenTypeFromUrl || LendingTokenType.NativeSol
 
@@ -39,14 +40,8 @@ export const useTokenType = () => {
 
   const setTokenType = (tokenType: LendingTokenType) => {
     setTokenTypeState(tokenType)
-    navigate(createPathWithTokenParam(location.pathname, tokenType))
+    navigate(createPathWithModeParams(location.pathname, ModeType.NFT, tokenType))
   }
 
   return { tokenType, setTokenType }
-}
-
-export const createPathWithTokenParam = (pathname: string, tokenType: LendingTokenType) => {
-  if (isSolTokenType(tokenType)) return pathname
-
-  return `${pathname}?token=${tokenType}`
 }

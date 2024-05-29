@@ -3,35 +3,31 @@ import { FC } from 'react'
 import classNames from 'classnames'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { SOL, USDC } from '@banx/icons'
-import { useTokenType } from '@banx/store/nft'
+import { TABLET_WIDTH } from '@banx/constants'
+import { useWindowSize } from '@banx/hooks'
+import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/token'
 import { isSolTokenType } from '@banx/utils'
+
+import { TokenDropdown } from './TokenDropdown'
+import { NFT_TOKEN_OPTIONS, NFT_TOKEN_VALUE_DETAILS, TOKEN_OPTIONS } from './constants'
 
 import styles from './TokenSwitcher.module.less'
 
-const TOKENS = [LendingTokenType.NativeSol, LendingTokenType.Usdc]
-
-type TokenValueProps = {
+type NftTokenValueProps = {
   active?: boolean
   tokenType: LendingTokenType
 }
-const TokenValue: FC<TokenValueProps> = ({ tokenType, active }) => {
+
+const NftTokenValue: FC<NftTokenValueProps> = ({ tokenType, active }) => {
+  const { icon: tokenIcon, ticker: tokenTicker } = NFT_TOKEN_VALUE_DETAILS[tokenType]
   const isSol = isSolTokenType(tokenType)
 
-  //? Remove paddings in svg for USDC and SOL tokens. We need to do it in the svg files, but many views will be broken.
-  const tokenIcon = isSol ? <SOL viewBox="-1 -1 18 18" /> : <USDC viewBox="1 1 14 14" />
-
-  const tokenTicker = isSol ? 'SOL' : 'USDC'
-
   return (
-    <div
-      className={classNames(styles.token, {
-        [styles.tokenActive]: active,
-      })}
-    >
+    <div className={classNames(styles.nftTokenWrapper, { [styles.active]: active })}>
       <p className={styles.tokenValue}>
         <div
-          className={classNames(styles.tokenValueWrapper, { [styles.tokenValueSolWrapper]: isSol })}
+          className={classNames(styles.tokenIconWrapper, { [styles.tokenIconSolWrapper]: isSol })}
         >
           {tokenIcon}
         </div>
@@ -41,26 +37,86 @@ const TokenValue: FC<TokenValueProps> = ({ tokenType, active }) => {
   )
 }
 
-type TokenSwitcherProps = {
-  className?: string
+interface NftTokenSwitcherProps {
+  title: string
 }
-const TokenSwitcher: FC<TokenSwitcherProps> = ({ className }) => {
-  const { tokenType, setTokenType } = useTokenType()
+
+export const NftTokenSwitcher: FC<NftTokenSwitcherProps> = ({ title }) => {
+  const { tokenType, setTokenType } = useNftTokenType()
+
+  const { width } = useWindowSize()
+  const isTable = width < TABLET_WIDTH
 
   const toggleTokenType = () => {
-    const nextTokenType = isSolTokenType(tokenType)
-      ? LendingTokenType.Usdc
-      : LendingTokenType.NativeSol
-
-    setTokenType(nextTokenType)
+    const nextValue = isSolTokenType(tokenType) ? LendingTokenType.Usdc : LendingTokenType.NativeSol
+    return setTokenType(nextValue)
   }
+
   return (
-    <div className={classNames(styles.tokenSwitcher, className)} onClick={toggleTokenType}>
-      {TOKENS.map((token) => (
-        <TokenValue active={token === tokenType} key={token} tokenType={token} />
-      ))}
-    </div>
+    <>
+      {!isTable && (
+        <div className={styles.nftTokenSwitcher} onClick={toggleTokenType}>
+          {NFT_TOKEN_OPTIONS.map((token) => (
+            <NftTokenValue active={token.key === tokenType} key={token.key} tokenType={token.key} />
+          ))}
+        </div>
+      )}
+
+      {isTable && (
+        <TokenDropdown
+          title={title}
+          onChangeToken={setTokenType}
+          options={NFT_TOKEN_OPTIONS}
+          option={
+            NFT_TOKEN_OPTIONS.find((option) => option.key === tokenType) || NFT_TOKEN_OPTIONS[0]
+          }
+        />
+      )}
+    </>
   )
 }
 
-export default TokenSwitcher
+interface TokenSwitcherProps {
+  title: string
+}
+
+export const TokenSwitcher: FC<TokenSwitcherProps> = ({ title }) => {
+  const { tokenType, setTokenType } = useTokenType()
+
+  const { width } = useWindowSize()
+  const isTable = width < TABLET_WIDTH
+
+  return (
+    <>
+      {!isTable && (
+        <div className={styles.tokenSwitcher}>
+          {TOKEN_OPTIONS.map((tokenOption) => {
+            const { key, unit: tokenIcon, label } = tokenOption
+
+            return (
+              <div
+                key={key}
+                onClick={() => setTokenType(key)}
+                className={classNames(styles.tokenWrapper, { [styles.active]: key === tokenType })}
+              >
+                <p className={styles.tokenValue}>
+                  {tokenIcon && <div className={styles.tokenIconWrapper}>{tokenIcon}</div>}
+                  <span className={styles.tokenTicker}>{label}</span>
+                </p>
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {isTable && (
+        <TokenDropdown
+          title={title}
+          options={TOKEN_OPTIONS}
+          option={TOKEN_OPTIONS.find((option) => option.key === tokenType) || TOKEN_OPTIONS[0]}
+          onChangeToken={setTokenType}
+        />
+      )}
+    </>
+  )
+}

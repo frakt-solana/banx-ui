@@ -1,0 +1,43 @@
+.modeSwitcher {
+  background: var(--bg-secondary);
+  border: var(--border-primary);
+  border-radius: 100px;
+
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  height: 32px;
+
+  user-select: none;
+  -webkit-user-drag: none;
+  cursor: pointer;
+}
+
+.mode {
+  border-radius: 100px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+
+  height: 100%;
+  width: 100%;
+
+  @media screen and (max-width: 960px) {
+    padding: 4px;
+  }
+
+  &.active {
+    background: var(--accent-primary);
+
+    span {
+      color: var(--pure-black);
+    }
+  }
+}
+
+.label {
+  color: var(--content-primary);
+  font: var(--btn-text-sm);
+}

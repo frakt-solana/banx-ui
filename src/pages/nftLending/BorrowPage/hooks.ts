@@ -13,8 +13,8 @@ import {
   isOptimisticLoanExpired,
   isOptimisticOfferExpired,
   useLoansOptimistic,
+  useNftTokenType,
   useOffersOptimistic,
-  useTokenType,
 } from '@banx/store/nft'
 import { convertLoanToBorrowNft } from '@banx/transactions/nftLending'
 import {
@@ -41,7 +41,7 @@ export const useBorrowNfts = () => {
   const { loans: optimisticLoans, remove: removeOptimisticLoans } = useLoansOptimistic()
   const { optimisticOffers, remove: removeOptimisticOffers } = useOffersOptimistic()
 
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { data, isLoading, isFetched, isFetching } = useQuery(
     [USE_BORROW_NFTS_V2_QUERY_KEY, tokenType, walletPubkeyString],

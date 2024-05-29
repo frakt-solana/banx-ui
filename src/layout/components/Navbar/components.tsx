@@ -5,24 +5,21 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { NavLink } from 'react-router-dom'
 
 import { PATHS } from '@banx/router'
-import { createPathWithTokenParam, useTokenType } from '@banx/store/nft'
+import { createPathWithModeParams } from '@banx/store'
+import { ModeType, useModeType } from '@banx/store/common'
+import { useNftTokenType } from '@banx/store/nft'
 
 import { isActivePath } from './helpers'
 import { ExternalLinkProps, InternalLinkProps } from './types'
 
 import styles from './Navbar.module.less'
 
-export const InternalLink: FC<InternalLinkProps & { tokenType: LendingTokenType }> = ({
-  label,
-  pathname = '',
-  icon: Icon,
-  className,
-  primary,
-  tokenType,
-}) => {
+export const InternalLink: FC<
+  InternalLinkProps & { tokenType: LendingTokenType; modeType: ModeType }
+> = ({ label, pathname = '', icon: Icon, className, primary, tokenType, modeType }) => {
   return (
     <NavLink
-      to={createPathWithTokenParam(pathname, tokenType)}
+      to={createPathWithModeParams(pathname, modeType, tokenType)}
       className={classNames(styles.link, className, {
         [styles.active]: isActivePath(pathname),
         [styles.primary]: primary,
@@ -45,12 +42,13 @@ const ExternalLink: FC<ExternalLinkProps> = ({ icon: Icon, href }) => {
 }
 
 export const NavigationsLinks: FC<{ links: InternalLinkProps[] }> = ({ links }) => {
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
+  const { modeType } = useModeType()
 
   return (
     <div className={styles.internalLinks}>
       {links.map((option) => (
-        <InternalLink key={option.label} {...option} tokenType={tokenType} />
+        <InternalLink key={option.label} {...option} tokenType={tokenType} modeType={modeType} />
       ))}
     </div>
   )

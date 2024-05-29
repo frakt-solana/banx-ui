@@ -15,8 +15,8 @@ import {
   purgeLoansWithSameMintByFreshness,
   useLoansOptimistic,
   useLoansRequestsOptimistic,
+  useNftTokenType,
   useOffersOptimistic,
-  useTokenType,
 } from '@banx/store/nft'
 import { isLoanListed, isLoanRepaid, isLoanTerminating, isOfferClosed } from '@banx/utils'
 
@@ -28,7 +28,7 @@ export const useWalletLoansAndOffers = () => {
   const { publicKey: walletPublicKey } = useWallet()
   const publicKeyString = walletPublicKey?.toBase58() || ''
 
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { loans: optimisticLoans, remove: removeOptimisticLoans } = useLoansOptimistic()
 
@@ -189,7 +189,7 @@ export const useUserLoansStats = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { data, isLoading } = useQuery(
     ['userLoansStats', publicKeyString, tokenType],
@@ -214,7 +214,7 @@ export const useBorrowerLoansRequests = () => {
   const { publicKey: walletPublicKey } = useWallet()
   const publicKeyString = walletPublicKey?.toBase58() || ''
 
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { loans: optimisticLoans, remove: removeOptimisticLoans } = useLoansRequestsOptimistic()
 

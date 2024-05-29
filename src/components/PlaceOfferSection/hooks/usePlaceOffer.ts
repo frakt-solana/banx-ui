@@ -4,7 +4,7 @@ import { chain } from 'lodash'
 
 import { core } from '@banx/api/nft'
 import { useWalletBalance } from '@banx/hooks'
-import { SyntheticOffer, useTokenType } from '@banx/store/nft'
+import { SyntheticOffer, useNftTokenType } from '@banx/store/nft'
 import { convertOffersToSimple, getTokenDecimals } from '@banx/utils'
 
 import { Mark } from '../PlaceOfferContent/components'
@@ -56,7 +56,7 @@ type UsePlaceOffer = (props: {
 }) => PlaceOfferParams
 
 export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOfferPubkey }) => {
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const walletBalance = useWalletBalance(tokenType)
 

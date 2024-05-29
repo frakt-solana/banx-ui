@@ -3,7 +3,7 @@ import classNames from 'classnames'
 
 import { useDiscordUser, useWalletBalance } from '@banx/hooks'
 import { ChevronDown, Wallet } from '@banx/icons'
-import { useTokenType } from '@banx/store/nft'
+import { useNftTokenType } from '@banx/store/nft'
 import { shortenAddress } from '@banx/utils'
 
 import { DisplayValue } from '../TableComponents'
@@ -21,7 +21,7 @@ export const WalletConnectButton = () => {
 
   const { data: discordUserData } = useDiscordUser()
 
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const walletBalance = useWalletBalance(tokenType, { isLive: true })
 

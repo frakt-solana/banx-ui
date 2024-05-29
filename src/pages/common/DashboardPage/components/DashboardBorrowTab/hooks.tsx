@@ -18,14 +18,9 @@ import { useBorrowNfts } from '@banx/pages/nftLending/BorrowPage/hooks'
 import { useMarketsPreview } from '@banx/pages/nftLending/LendPage/hooks'
 import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
-import { createGlobalState } from '@banx/store'
-import { useModal } from '@banx/store/common'
-import {
-  createPathWithTokenParam,
-  useLoansOptimistic,
-  useOffersOptimistic,
-  useTokenType,
-} from '@banx/store/nft'
+import { createGlobalState, createPathWithModeParams } from '@banx/store'
+import { ModeType, useModal } from '@banx/store/common'
+import { useLoansOptimistic, useNftTokenType, useOffersOptimistic } from '@banx/store/nft'
 import { calculateLoanValue } from '@banx/utils'
 
 import { useBorrowerStats } from '../../hooks'
@@ -33,7 +28,7 @@ import { useBorrowerStats } from '../../hooks'
 export const useDashboardBorrowTab = () => {
   const { connected } = useWallet()
   const navigate = useNavigate()
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { borrow, nfts, isLoading: isLoadingNFTs, findBestOffer } = useSingleBorrow()
 
@@ -59,7 +54,7 @@ export const useDashboardBorrowTab = () => {
   const headingText = connected ? 'Click to borrow' : '1 click loan'
 
   const goToBorrowPage = () => {
-    navigate(createPathWithTokenParam(PATHS.BORROW, tokenType))
+    navigate(createPathWithModeParams(PATHS.BORROW, ModeType.NFT, tokenType))
   }
 
   const onBorrow = (nft: core.BorrowNft) => {
@@ -91,7 +86,7 @@ export const useSingleBorrow = () => {
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { update: updateOffersOptimistic } = useOffersOptimistic()
   const { add: addLoansOptimistic } = useLoansOptimistic()
@@ -102,7 +97,7 @@ export const useSingleBorrow = () => {
   }
 
   const goToLoansPage = () => {
-    navigate(createPathWithTokenParam(PATHS.LOANS, tokenType))
+    navigate(createPathWithModeParams(PATHS.LOANS, ModeType.NFT, tokenType))
   }
 
   const onBorrowSuccess = () => {

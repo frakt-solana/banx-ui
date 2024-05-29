@@ -7,7 +7,7 @@ import { RBOption } from '@banx/components/RadioButton'
 
 import { activity } from '@banx/api/nft'
 import { useMarketsPreview } from '@banx/pages/nftLending/LendPage'
-import { useTokenType } from '@banx/store/nft'
+import { useNftTokenType } from '@banx/store/nft'
 
 import { ActivityEvent, RADIO_BUTTONS_OPTIONS } from './constants'
 import { appendIdToOptions } from './helpers'
@@ -18,7 +18,7 @@ export const useAllLenderActivity = (marketPubkey: string) => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { marketsPreview } = useMarketsPreview()
 

@@ -6,7 +6,7 @@ import EmptyList from '@banx/components/EmptyList'
 
 import { core } from '@banx/api/nft'
 import { useFakeInfinityScroll } from '@banx/hooks'
-import { useTokenType } from '@banx/store/nft'
+import { useNftTokenType } from '@banx/store/nft'
 
 import { BorrowCard, MarketCard } from '../../Card'
 
@@ -28,7 +28,7 @@ const CardsList: FC<CardsListProps> = ({
   goToBorrowPage,
 }) => {
   const { connected } = useWallet()
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { data: nftsData, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: nfts })
 

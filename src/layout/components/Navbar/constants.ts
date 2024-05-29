@@ -3,13 +3,17 @@ import { Borrow, Dashboard, Discord, Docs, Github, Lend, Rewards, Twitter } from
 import { StakeFilled } from '@banx/icons/Stake'
 import { PATHS } from '@banx/router'
 
-export const NAVIGATION_LINKS = [
+const COMMON_NAVIGATION_LINKS = [
   {
     label: 'Dashboard',
     pathname: PATHS.DASHBOARD,
     icon: Dashboard,
     primary: true,
   },
+]
+
+export const NFT_NAVIGATION_LINKS = [
+  ...COMMON_NAVIGATION_LINKS,
   {
     label: 'Borrow',
     pathname: PATHS.BORROW,
@@ -29,6 +33,30 @@ export const NAVIGATION_LINKS = [
   {
     label: 'My offers',
     pathname: PATHS.OFFERS,
+  },
+]
+
+export const TOKEN_NAVIGATION_LINKS = [
+  ...COMMON_NAVIGATION_LINKS,
+  {
+    label: 'Borrow',
+    pathname: PATHS.BORROW_TOKEN,
+    icon: Borrow,
+    primary: true,
+  },
+  {
+    label: 'My loans',
+    pathname: PATHS.LOANS_TOKEN,
+  },
+  {
+    label: 'Lend',
+    pathname: PATHS.LEND_TOKEN,
+    icon: Lend,
+    primary: true,
+  },
+  {
+    label: 'My offers',
+    pathname: PATHS.OFFERS_TOKEN,
   },
 ]
 

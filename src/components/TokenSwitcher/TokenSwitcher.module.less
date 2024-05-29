@@ -1,3 +1,4 @@
+.nftTokenSwitcher,
 .tokenSwitcher {
   background: var(--bg-secondary);
   border: var(--border-primary);
@@ -13,14 +14,9 @@
   cursor: pointer;
 }
 
-.token {
+.nftTokenWrapper,
+.tokenWrapper {
   border-radius: 100px;
-
-  padding: 4px 8px;
-
-  @media screen and (max-width: 960px) {
-    padding: 4px;
-  }
 
   display: flex;
   align-items: center;
@@ -28,14 +24,22 @@
 
   height: 100%;
   width: 100%;
+
+  &.active {
+    background: var(--accent-primary);
+
+    span {
+      color: var(--pure-black);
+    }
+  }
 }
 
-.tokenActive {
-  background: var(--accent-primary);
+.nftTokenWrapper {
+  padding: 4px 8px;
+}
 
-  .tokenTicker {
-    color: var(--pure-black);
-  }
+.tokenWrapper {
+  padding: 5px 14px;
 }
 
 .tokenValue {
@@ -48,7 +52,8 @@
     height: 18px;
   }
 }
-.tokenValueWrapper {
+
+.tokenIconWrapper {
   width: 18px;
   height: 18px;
   display: flex;
@@ -56,7 +61,8 @@
   justify-content: center;
   border-radius: 50%;
 }
-.tokenValueSolWrapper {
+
+.tokenIconSolWrapper {
   background: var(--bg-primary);
 }
 
@@ -65,8 +71,88 @@
   padding-top: 1px;
   font: var(--btn-text-sm);
   color: var(--content-primary);
+}
 
-  @media screen and (max-width: 960px) {
-    display: none;
+// * TokenDropdown * //
+.dropdownButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+
+  &.isOpen {
+    border: 1px solid var(--content-primary);
+  }
+
+  span {
+    font: var(--btn-text-sm);
+  }
+
+  svg path {
+    fill: revert-layer;
   }
 }
+
+.chevronIcon {
+  path {
+    fill: var(--content-primary) !important;
+  }
+
+  &.rotate {
+    transform: rotate(180deg);
+  }
+}
+
+// * TokenDropdown * //
+.dropdown {
+  background: var(--bg-primary);
+  border-bottom: var(--border-primary);
+
+  position: absolute;
+  top: 48px;
+  right: 0;
+  z-index: 4;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+
+  padding: 16px;
+  width: 100%;
+}
+
+.dropdownItem {
+  background: var(--bg-secondary);
+  border: var(--border-primary);
+  border-radius: 100px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 14px;
+  height: 32px;
+
+  svg {
+    min-height: 16px;
+    min-width: 16px;
+  }
+
+  svg path {
+    fill: revert-layer;
+  }
+
+  &.active {
+    background: var(--accent-primary);
+
+    span {
+      color: var(--pure-black);
+    }
+  }
+}
+
+.dropdownItemLabel {
+  font: var(--btn-text-sm);
+}
+// * TokenDropdown * //

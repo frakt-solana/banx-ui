@@ -16,7 +16,7 @@ import { core } from '@banx/api/nft'
 import { useMarketOffers } from '@banx/pages/nftLending/LendPage'
 import { calculateClaimValue, useLenderLoans } from '@banx/pages/nftLending/OffersPage'
 import { useModal } from '@banx/store/common'
-import { useTokenType } from '@banx/store/nft'
+import { useNftTokenType } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
@@ -62,7 +62,7 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
 
   const { close } = useModal()
 
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { remove: removeLoan } = useSelectedLoans()
 
