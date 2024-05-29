@@ -254,14 +254,17 @@ export const fetchBorrowNftsAndOffers: FetchBorrowNftsAndOffers = async ({
 type FetchBorrowerLoansRequests = (props: {
   walletPublicKey: string
   tokenType: LendingTokenType
+  getAll?: boolean
 }) => Promise<Loan[]>
 export const fetchBorrowerLoansRequests: FetchBorrowerLoansRequests = async ({
   walletPublicKey,
   tokenType,
+  getAll = true,
 }) => {
   const queryParams = new URLSearchParams({
     marketType: String(convertToMarketType(tokenType)),
     isPrivate: String(IS_PRIVATE_MARKETS),
+    getAll: String(getAll),
   })
 
   const { data } = await axios.get<{ data: Loan[] }>(
