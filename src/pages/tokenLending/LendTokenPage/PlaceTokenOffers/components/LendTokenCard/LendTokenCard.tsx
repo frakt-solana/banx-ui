@@ -9,6 +9,8 @@ import { DisplayValue } from '@banx/components/TableComponents'
 import { core } from '@banx/api/tokens'
 import { ChevronDown } from '@banx/icons'
 
+import ExpandedCardContent from '../ExpandedCardContent'
+
 import styles from './LendTokenCard.module.less'
 
 interface LendTokenCardProps {
@@ -32,7 +34,7 @@ const LendTokenCard: FC<LendTokenCardProps> = ({ market, onClick, isOpen }) => {
           </Button>
         </div>
       </div>
-      {/* {isOpen && <ExpandedCardContent market={market} />} */}
+      {isOpen && <ExpandedCardContent marketPubkey={market.marketPubkey} />}
     </div>
   )
 }
