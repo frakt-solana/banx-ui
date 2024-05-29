@@ -1,4 +1,4 @@
-import { BN } from 'fbonds-core'
+// import { BN } from 'fbonds-core'
 import { BondTradeTransactionV3, FraktBond } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { PaginationMeta } from '@banx/api/types'
@@ -7,8 +7,13 @@ type TokenMeta = {
   mint: string
   imageUrl: string
   ticker: string
-  decimals: BN
-  priceUSDC: BN
+
+  decimals: number
+  priceUSDC: number
+
+  //TODO: uncomment when converter is ready
+  // decimals: BN
+  // priceUSDC: BN
 }
 
 export type TokenLoan = {
@@ -22,17 +27,30 @@ export type TokenMarketPreview = {
   marketPubkey: string
   tokenType: string
 
-  collateralPrice: BN
-  collateralDecimals: BN
-  bestOffer: BN
+  collateralPrice: number
+  collateralDecimals: number
+  bestOffer: number
 
-  activeOffersAmount: BN
-  offersTvl: BN
-  activeLoansAmount: BN
-  loansTvl: BN
+  activeOffersAmount: number
+  offersTvl: number
+  activeLoansAmount: number
+  loansTvl: number
 
-  marketApr: BN
-  marketApy: BN
+  marketApr: number
+  marketApy: number
+
+  //TODO: uncomment when converter is ready
+  // collateralPrice: BN
+  // collateralDecimals: BN
+  // bestOffer: BN
+
+  // activeOffersAmount: BN
+  // offersTvl: BN
+  // activeLoansAmount: BN
+  // loansTvl: BN
+
+  // marketApr: BN
+  // marketApy: BN
 
   collateralImageUrl: string
   collateralTicker: string

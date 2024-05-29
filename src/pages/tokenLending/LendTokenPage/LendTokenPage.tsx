@@ -4,6 +4,7 @@ import { Tabs, useTabs } from '@banx/components/Tabs'
 
 import InstantLendTokenTable from './InstantLendTokenTable'
 import LendHeader from './LendHeader'
+import PlaceTokenOffers from './PlaceTokenOffers'
 import { useLendTokenTabs } from './hooks'
 
 import styles from './LendTokenPage.module.less'
@@ -39,7 +40,7 @@ export const LendTokenPage = () => {
       {currentTabValue === LendTokenTabName.INSTANT && (
         <InstantLendTokenTable goToPlaceOfferTab={goToPlaceOfferTab} />
       )}
-      {currentTabValue === LendTokenTabName.PLACE && <></>}
+      {currentTabValue === LendTokenTabName.PLACE && <PlaceTokenOffers />}
     </div>
   )
 }

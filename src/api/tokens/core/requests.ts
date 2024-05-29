@@ -16,5 +16,27 @@ export const fetchTokenMarketsPreview: FetchTokenMarketsPreview = async () => {
     `${BACKEND_BASE_URL}/bonds/preview?${queryParams.toString()}`,
   )
 
-  return data.data
+  return MOCK_RESPONSE
 }
+
+const MOCK_RESPONSE: TokenMarketPreview[] = [
+  {
+    marketPubkey: 'bonk1672306100278',
+    tokenType: 'USDC',
+
+    collateralPrice: 0,
+    collateralDecimals: 8,
+    bestOffer: 0,
+
+    activeOffersAmount: 0,
+    offersTvl: 0,
+    activeLoansAmount: 0,
+    loansTvl: 0,
+
+    marketApr: 0,
+    marketApy: 0,
+
+    collateralImageUrl: 'https://img.cryptorank.io/coins/bonk1672306100278.png',
+    collateralTicker: 'BONK',
+  },
+]

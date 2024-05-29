@@ -1,0 +1,96 @@
+import { FC } from 'react'
+
+import classNames from 'classnames'
+
+import { Button } from '@banx/components/Buttons'
+import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
+import { DisplayValue } from '@banx/components/TableComponents'
+
+import { core } from '@banx/api/tokens'
+import { ChevronDown } from '@banx/icons'
+
+import styles from './LendTokenCard.module.less'
+
+interface LendTokenCardProps {
+  market: core.TokenMarketPreview
+  onClick: () => void
+  isOpen: boolean
+}
+
+const LendTokenCard: FC<LendTokenCardProps> = ({ market, onClick, isOpen }) => {
+  return (
+    <div className={styles.card}>
+      <div className={classNames(styles.cardBody, { [styles.opened]: isOpen })} onClick={onClick}>
+        <MarketMainInfo market={market} />
+        <div className={styles.additionalContentWrapper}>
+          <MarketAdditionalInfo market={market} isOpen={isOpen} />
+          <Button
+            type="circle"
+            className={classNames(styles.chevronButton, { [styles.opened]: isOpen })}
+          >
+            <ChevronDown />
+          </Button>
+        </div>
+      </div>
+      {/* {isOpen && <ExpandedCardContent market={market} />} */}
+    </div>
+  )
+}
+
+export default LendTokenCard
+
+const MarketMainInfo: FC<{ market: core.TokenMarketPreview }> = ({ market }) => {
+  const { collateralImageUrl, collateralTicker, collateralPrice, bestOffer } = market
+
+  return (
+    <div className={styles.mainInfoContainer}>
+      <img src={collateralImageUrl} className={styles.collateralImage} />
+      <div className={styles.mainInfoContent}>
+        <h4 className={styles.collateralName}>{collateralTicker}</h4>
+        <div className={styles.mainInfoStats}>
+          <StatInfo
+            label="Market"
+            value={<DisplayValue value={collateralPrice} />}
+            tooltipText=""
+          />
+          <StatInfo label="Top offer" value={<DisplayValue value={bestOffer} />} tooltipText="" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+interface MarketAdditionalInfoProps {
+  market: core.TokenMarketPreview
+  isOpen: boolean
+}
+
+const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isOpen }) => {
+  const { loansTvl, offersTvl, activeLoansAmount, activeOffersAmount, marketApr } = market
+
+  return (
+    <div className={classNames(styles.additionalInfoStats, { [styles.opened]: isOpen })}>
+      <StatInfo
+        label="In loans"
+        value={<DisplayValue value={loansTvl} />}
+        secondValue={`in ${activeLoansAmount} loans`}
+        tooltipText="Liquidity that is locked in active loans"
+        classNamesProps={{ container: styles.additionalStat }}
+      />
+      <StatInfo
+        label="In offers"
+        value={<DisplayValue value={offersTvl} />}
+        secondValue={`in ${activeOffersAmount} offers`}
+        tooltipText="Liquidity that is locked in active offers"
+        classNamesProps={{ container: styles.additionalStat }}
+      />
+      <StatInfo
+        label="Apr"
+        value={marketApr}
+        tooltipText=""
+        valueType={VALUES_TYPES.PERCENT}
+        classNamesProps={{ container: styles.additionalStat, value: styles.additionalAprStat }}
+      />
+    </div>
+  )
+}
