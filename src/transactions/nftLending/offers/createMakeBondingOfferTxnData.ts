@@ -28,12 +28,11 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
   marketPubkey,
   loanValue,
   loansAmount,
-  // tokenType,
+  tokenType,
   deltaValue,
   walletAndConnection,
 }) => {
-  //TODO BanxSol is hardcoded
-  const bondingCurveType = getBondingCurveTypeFromLendingToken(LendingTokenType.BanxSol)
+  const bondingCurveType = getBondingCurveTypeFromLendingToken(tokenType)
 
   const offerSize = calculateOfferSize({ loanValue, loansAmount, deltaValue })
 
