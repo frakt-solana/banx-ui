@@ -42,17 +42,17 @@ const LendTokenCard: FC<LendTokenCardProps> = ({ market, onClick, isOpen }) => {
 export default LendTokenCard
 
 const MarketMainInfo: FC<{ market: core.TokenMarketPreview }> = ({ market }) => {
-  const { collateralImageUrl, collateralTicker, collateralPrice, bestOffer } = market
+  const { collateralTokenImageUrl, collateralTokenTicker, collateralTokenPrice, bestOffer } = market
 
   return (
     <div className={styles.mainInfoContainer}>
-      <img src={collateralImageUrl} className={styles.collateralImage} />
+      <img src={collateralTokenImageUrl} className={styles.collateralImage} />
       <div className={styles.mainInfoContent}>
-        <h4 className={styles.collateralName}>{collateralTicker}</h4>
+        <h4 className={styles.collateralName}>{collateralTokenTicker}</h4>
         <div className={styles.mainInfoStats}>
           <StatInfo
             label="Market"
-            value={<DisplayValue value={collateralPrice} />}
+            value={<DisplayValue value={collateralTokenPrice} />}
             tooltipText=""
           />
           <StatInfo label="Top offer" value={<DisplayValue value={bestOffer} />} tooltipText="" />

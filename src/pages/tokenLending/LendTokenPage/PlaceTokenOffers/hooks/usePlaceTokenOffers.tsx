@@ -33,7 +33,9 @@ export const usePlaceTokenOffers = () => {
   const filteredMarkets = useMemo(() => {
     if (!selectedCollections.length) return marketsPreview
 
-    return marketsPreview.filter((market) => selectedCollections.includes(market.collateralTicker))
+    return marketsPreview.filter((market) =>
+      selectedCollections.includes(market.collateralTokenTicker),
+    )
   }, [marketsPreview, selectedCollections])
 
   const { sortedMarkets, sortParams } = useSortedMarkets(filteredMarkets)
@@ -75,11 +77,11 @@ const createSearchSelectParams = ({
     options,
     selectedOptions,
     onChange,
-    labels: ['Collateral', 'Max APR'],
+    labels: ['Collateral', 'APR'],
     optionKeys: {
-      labelKey: 'collateralTicker',
+      labelKey: 'collateralTokenTicker',
       valueKey: 'marketPubkey',
-      imageKey: 'collateralImageUrl',
+      imageKey: 'collateralTokenImageUrl',
       secondLabel: {
         key: 'marketPubkey',
         //TODO Refactor this piece of shit (code)

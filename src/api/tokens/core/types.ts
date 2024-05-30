@@ -27,8 +27,8 @@ export type TokenMarketPreview = {
   marketPubkey: string
   tokenType: string
 
-  collateralPrice: number
-  collateralDecimals: number
+  collateralTokenPrice: number
+  collateralTokenDecimals: number
   bestOffer: number
 
   activeOffersAmount: number
@@ -38,6 +38,9 @@ export type TokenMarketPreview = {
 
   marketApr: number
   marketApy: number
+
+  collateralTokenImageUrl: string
+  collateralTokenTicker: string
 
   //TODO: uncomment when converter is ready
   // collateralPrice: BN
@@ -51,9 +54,6 @@ export type TokenMarketPreview = {
 
   // marketApr: BN
   // marketApy: BN
-
-  collateralImageUrl: string
-  collateralTicker: string
 }
 
 export interface TokenMarketPreviewResponse {
