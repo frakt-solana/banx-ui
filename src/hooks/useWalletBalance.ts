@@ -4,7 +4,7 @@ import { web3 } from 'fbonds-core'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { BONDS, USDC_ADDRESS } from '@banx/constants'
-import { TokenType } from '@banx/store/token'
+import { isSolTokenType, isUsdcTokenType } from '@banx/utils'
 
 type UseNativeAccount = ({ isLive }: { isLive?: boolean }) => web3.AccountInfo<Buffer> | null
 const useNativeAccount: UseNativeAccount = ({ isLive = true }) => {
@@ -81,17 +81,17 @@ const useTokenBalance = (tokenAddress: string, options?: Options) => {
   return tokenBalance || 0
 }
 
-export const useWalletBalance = (tokenType: LendingTokenType | TokenType, options?: Options) => {
+export const useWalletBalance = (tokenType: LendingTokenType, options?: Options) => {
   const { isLive = false } = options || {}
 
   const usdcBalance = useUsdcBalance({ isLive })
   const solanaBalance = useSolanaBalance({ isLive })
 
-  if (tokenType === TokenType.SOL || tokenType === LendingTokenType.NativeSol) {
+  if (isSolTokenType(tokenType)) {
     return solanaBalance
   }
 
-  if (tokenType === TokenType.USDC || tokenType === LendingTokenType.Usdc) {
+  if (isUsdcTokenType(tokenType)) {
     return usdcBalance
   }
 

@@ -3,7 +3,7 @@ import { FC, useEffect, useMemo } from 'react'
 import Table from '@banx/components/Table'
 
 import { ViewState, useTableView } from '@banx/store/common'
-import { useTokenType } from '@banx/store/token'
+import { useNftTokenType } from '@banx/store/nft'
 
 import { Summary } from './Summary'
 import { getTableColumns } from './columns'
@@ -17,7 +17,7 @@ interface InstantLendTableProps {
 }
 
 const InstantLendTokenTable: FC<InstantLendTableProps> = () => {
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
   const { viewState } = useTableView()
 
   const { loans, isLoading } = useInstantLendTokenTable()

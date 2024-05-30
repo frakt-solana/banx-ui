@@ -2,14 +2,14 @@ import { useQuery } from '@tanstack/react-query'
 import { create } from 'zustand'
 
 import { core } from '@banx/api/tokens'
-import { useTokenType } from '@banx/store/token'
+import { useNftTokenType } from '@banx/store/nft'
 
 import { LendTokenTabName } from './LendTokenPage'
 
 export const USE_TOKEN_MARKETS_PREVIEW_QUERY_KEY = 'tokenMarketsPreview'
 
 export const useTokenMarketsPreview = () => {
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { data, isLoading } = useQuery(
     [USE_TOKEN_MARKETS_PREVIEW_QUERY_KEY, tokenType],

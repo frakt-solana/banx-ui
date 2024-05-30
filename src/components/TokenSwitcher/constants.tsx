@@ -3,7 +3,6 @@ import { ReactNode } from 'react'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { SOL, USDC } from '@banx/icons'
-import { TokenType } from '@banx/store/token'
 
 interface NftTokenOption {
   key: LendingTokenType
@@ -41,25 +40,20 @@ export const NFT_TOKEN_VALUE_DETAILS = {
 }
 
 export interface TokenOption {
-  key: TokenType
+  key: LendingTokenType
   label: string
   unit: ReactNode
 }
 
 export const TOKEN_OPTIONS: TokenOption[] = [
   {
-    key: TokenType.SOL,
+    key: LendingTokenType.NativeSol,
     label: 'SOL',
     unit: <SOL />,
   },
   {
-    key: TokenType.USDC,
+    key: LendingTokenType.Usdc,
     label: 'USDC',
     unit: <USDC />,
-  },
-  {
-    key: TokenType.ALL,
-    label: 'ALL',
-    unit: null,
   },
 ]
