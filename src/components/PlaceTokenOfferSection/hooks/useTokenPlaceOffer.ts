@@ -1,15 +1,18 @@
+import { useWalletBalance } from '@banx/hooks'
 import { useNftTokenType } from '@banx/store/nft'
 import { getTokenDecimals } from '@banx/utils'
 
+import { getErrorMessage } from '../helpers'
 import { useOfferFormController } from './useOfferFormController'
 import { useTokenOfferTransactions } from './useTokenOfferTransaction'
 
 export const useTokenPlaceOffer = (props: { offerPubkey?: string; marketPubkey: string }) => {
   const { marketPubkey, offerPubkey } = props
 
-  const isEditMode = !!offerPubkey
-
   const { tokenType } = useNftTokenType()
+  const walletBalance = useWalletBalance(tokenType)
+
+  const isEditMode = !!offerPubkey
 
   const decimals = getTokenDecimals(tokenType)
 
@@ -25,7 +28,7 @@ export const useTokenPlaceOffer = (props: { offerPubkey?: string; marketPubkey: 
   } = useOfferFormController(syntheticOffer)
 
   const loanValue = parseFloat(loanValueString) * decimals
-  const offerSize = parseFloat(offerSizeString)
+  const offerSize = parseFloat(offerSizeString) * decimals
 
   const { onCreateTokenOffer, onUpdateTokenOffer, onRemoveTokenOffer } = useTokenOfferTransactions({
     marketPubkey,
@@ -35,12 +38,20 @@ export const useTokenPlaceOffer = (props: { offerPubkey?: string; marketPubkey: 
     resetFormValues,
   })
 
-  const offerErrorMessage = null
+  const offerErrorMessage = getErrorMessage({
+    walletBalance,
+    syntheticOffer,
+    offerSize,
+    collateralsPerToken: loanValue,
+    tokenType,
+  })
 
-  const disablePlaceOffer = !!offerErrorMessage || !offerSize
-  const disableUpdateOffer = !hasFormChanges || !!offerErrorMessage || !offerSize
+  const allFieldsAreFilled = !!loanValue && !!offerSize
 
-  const showBorrowerMessage = !offerErrorMessage && !!offerSize
+  const disablePlaceOffer = !!offerErrorMessage || !allFieldsAreFilled
+  const disableUpdateOffer = !hasFormChanges || !!offerErrorMessage || !allFieldsAreFilled
+
+  const showBorrowerMessage = !offerErrorMessage && allFieldsAreFilled
 
   return {
     isEditMode,
