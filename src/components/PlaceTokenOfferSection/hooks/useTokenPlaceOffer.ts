@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 
 import { useWalletBalance } from '@banx/hooks'
+import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
 import { useNftTokenType } from '@banx/store/nft'
 import { getTokenDecimals } from '@banx/utils'
 
@@ -14,6 +15,7 @@ export const useTokenPlaceOffer = (marketPubkey: string, offerPubkey: string) =>
   const walletBalance = useWalletBalance(tokenType)
 
   const { syntheticOffer, setSyntheticOffer } = useSyntheticTokenOffer(offerPubkey, marketPubkey)
+  const { updateOrAddOffer } = useTokenMarketOffers(marketPubkey)
 
   const isEditMode = !!offerPubkey
 
@@ -42,7 +44,7 @@ export const useTokenPlaceOffer = (marketPubkey: string, offerPubkey: string) =>
     marketPubkey,
     collateralsPerToken,
     loanValue: offerSize,
-    updateOrAddOffer: () => null,
+    updateOrAddOffer,
     resetFormValues,
   })
 
