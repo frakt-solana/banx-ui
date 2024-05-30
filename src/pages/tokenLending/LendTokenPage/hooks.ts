@@ -27,6 +27,22 @@ export const useTokenMarketsPreview = () => {
   }
 }
 
+export const useTokenMarketOffers = (marketPubkey: string) => {
+  const { tokenType } = useNftTokenType()
+
+  const { data, isLoading } = useQuery(
+    ['marketTokentOffers', marketPubkey, tokenType],
+    () => core.fetchTokenMarketOffers({ marketPubkey, tokenType }),
+    {
+      enabled: !!marketPubkey,
+      staleTime: 30 * 1000,
+      refetchOnWindowFocus: false,
+    },
+  )
+
+  return { offers: data ?? [], isLoading }
+}
+
 type LendTokenTabsState = {
   tab: LendTokenTabName | null
   setTab: (tab: LendTokenTabName | null) => void

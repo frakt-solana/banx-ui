@@ -1,4 +1,3 @@
-// import { BN } from 'fbonds-core'
 import { BondTradeTransactionV3, FraktBond } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { PaginationMeta } from '@banx/api/types'
