@@ -5,7 +5,9 @@ import Table from '@banx/components/Table'
 import { ViewState, useTableView } from '@banx/store/common'
 import { useTokenType } from '@banx/store/token'
 
+import { Summary } from './Summary'
 import { getTableColumns } from './columns'
+import { useInstantLendTokenTable } from './hooks'
 import { useLoansState } from './loansState'
 
 import styles from './InstantLendTokenTable.module.less'
@@ -18,11 +20,14 @@ const InstantLendTokenTable: FC<InstantLendTableProps> = () => {
   const { tokenType } = useTokenType()
   const { viewState } = useTableView()
 
+  const { loans, isLoading } = useInstantLendTokenTable()
+
   const {
     selection,
     toggle: toggleLoanInSelection,
     find: findLoanInSelection,
     clear: clearSelection,
+    set: setSelection,
   } = useLoansState()
 
   //? Clear selection when tokenType changes
@@ -37,7 +42,7 @@ const InstantLendTokenTable: FC<InstantLendTableProps> = () => {
     if (hasSelectedLoans) {
       clearSelection()
     } else {
-      // setSelection(loans)
+      setSelection(loans)
     }
   }
 
@@ -57,7 +62,16 @@ const InstantLendTokenTable: FC<InstantLendTableProps> = () => {
 
   return (
     <div className={styles.tableRoot}>
-      <Table data={[]} columns={columns} rowParams={rowParams} showCard />
+      <Table
+        data={loans}
+        columns={columns}
+        rowParams={rowParams}
+        loading={isLoading}
+        className={styles.table}
+        emptyMessage={!loans.length ? 'No loans found' : undefined}
+        showCard
+      />
+      <Summary loans={loans} />
     </div>
   )
 }
