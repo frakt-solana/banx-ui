@@ -22,10 +22,13 @@ interface PlaceTokenOfferSectionProps {
   offerPubkey?: string
 }
 
-const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = (props) => {
+const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
+  marketPubkey,
+  offerPubkey = '',
+}) => {
   const {
     isEditMode,
-    loanValueString,
+    collateralsPerTokenString,
     offerSizeString,
     onLoanValueChange,
     onOfferSizeChange,
@@ -36,7 +39,7 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = (props) => {
     onRemoveTokenOffer,
     disablePlaceOffer,
     disableUpdateOffer,
-  } = useTokenPlaceOffer(props)
+  } = useTokenPlaceOffer(marketPubkey, offerPubkey)
 
   const { tokenType } = useNftTokenType()
   const { connected } = useWallet()
@@ -44,7 +47,7 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = (props) => {
   const { open } = useModal()
 
   const showModal = () => {
-    open(OffersModal, { props })
+    open(OffersModal, { marketPubkey, offerPubkey })
   }
 
   return (
@@ -62,7 +65,7 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = (props) => {
         <div className={styles.fields}>
           <NumericStepInput
             label="Offer"
-            value={loanValueString}
+            value={collateralsPerTokenString}
             onChange={onLoanValueChange}
             postfix={getTokenUnit(tokenType)}
             disabled={!connected}
@@ -96,8 +99,8 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = (props) => {
         />
       </div>
       <OrderBook
-        marketPubkey={props.marketPubkey}
-        offerPubkey={props.offerPubkey}
+        marketPubkey={marketPubkey}
+        offerPubkey={offerPubkey}
         className={styles.orderBook}
       />
     </div>

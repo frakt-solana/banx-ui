@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useNftTokenType } from '@banx/store/nft'
+import { SyntheticTokenOffer } from '@banx/store/token'
 import { getTokenDecimals } from '@banx/utils'
 
-export const useOfferFormController = (syntheticOffer: any) => {
-  const { loanValue: syntheticLoanValue, offerSize: syntheticOfferSize } = syntheticOffer
+export const useOfferFormController = (syntheticOffer: SyntheticTokenOffer) => {
+  const { collateralsPerToken: syntheticCollateralsPerToken, offerSize: syntheticOfferSize } =
+    syntheticOffer
 
   const { tokenType } = useNftTokenType()
 
@@ -12,16 +14,16 @@ export const useOfferFormController = (syntheticOffer: any) => {
 
   const initialValues = useMemo(() => {
     return {
-      loanValue: formatNumber(syntheticLoanValue / decimals),
+      collateralsPerToken: formatNumber(syntheticCollateralsPerToken / decimals),
       offerSize: formatNumber(syntheticOfferSize),
     }
-  }, [decimals, syntheticLoanValue, syntheticOfferSize])
+  }, [decimals, syntheticCollateralsPerToken, syntheticOfferSize])
 
-  const [loanValue, setLoanValue] = useState(initialValues.loanValue)
+  const [collateralsPerToken, setLoanValue] = useState(initialValues.collateralsPerToken)
   const [offerSize, setOfferSize] = useState(initialValues.offerSize)
 
   useEffect(() => {
-    setLoanValue(initialValues.loanValue)
+    setLoanValue(initialValues.collateralsPerToken)
     setOfferSize(initialValues.offerSize)
   }, [initialValues])
 
@@ -34,16 +36,19 @@ export const useOfferFormController = (syntheticOffer: any) => {
   }, [])
 
   const resetFormValues = () => {
-    setLoanValue(initialValues.loanValue)
+    setLoanValue(initialValues.collateralsPerToken)
     setOfferSize(initialValues.offerSize)
   }
 
   const hasFormChanges = useMemo(() => {
-    return offerSize !== initialValues.offerSize || loanValue !== initialValues.loanValue
-  }, [initialValues, offerSize, loanValue])
+    return (
+      offerSize !== initialValues.offerSize ||
+      collateralsPerToken !== initialValues.collateralsPerToken
+    )
+  }, [initialValues, offerSize, collateralsPerToken])
 
   return {
-    loanValue,
+    collateralsPerToken,
     offerSize,
 
     onLoanValueChange,

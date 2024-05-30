@@ -4,24 +4,21 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 
-import { createPercentValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { Pencil } from '@banx/icons'
-import { SyntheticOffer, useNftTokenType } from '@banx/store/nft'
-import { getTokenUnit } from '@banx/utils'
+import { SyntheticTokenOffer } from '@banx/store/token'
 
 import styles from './OrderBook.module.less'
 
 interface OfferProps {
-  offer: SyntheticOffer
-  collectionFloor: number
+  offer: SyntheticTokenOffer
 }
 
 const Offer: FC<OfferProps> = ({ offer }) => {
-  const { publicKey: offerPubkey, isEdit, loansAmount } = offer
+  const { publicKey: offerPubkey, collateralsPerToken, offerSize, isEdit } = offer
 
   const { connected } = useWallet()
-  const { tokenType } = useNftTokenType()
 
   const isNewOffer = connected && offerPubkey === PUBKEY_PLACEHOLDER
 
@@ -31,10 +28,8 @@ const Offer: FC<OfferProps> = ({ offer }) => {
     [styles.hidden]: !isEdit && !isNewOffer,
   }
 
-  const displayOfferValue = 0
+  //TODO: calculate apr
   const apr = 0
-
-  const tokenUnit = getTokenUnit(tokenType)
 
   return (
     <li className={classNames(styles.listItem, commonHighlightClassNames)}>
@@ -48,11 +43,12 @@ const Offer: FC<OfferProps> = ({ offer }) => {
             [styles.hightlight]: isEdit || isNewOffer,
           })}
         >
-          {displayOfferValue}
-          {tokenUnit}
+          <DisplayValue value={collateralsPerToken} />
         </p>
         <p className={styles.value}>{createPercentValueJSX(apr)}</p>
-        <p className={styles.value}>{loansAmount}</p>
+        <p className={styles.value}>
+          <DisplayValue value={offerSize} />
+        </p>
       </div>
     </li>
   )

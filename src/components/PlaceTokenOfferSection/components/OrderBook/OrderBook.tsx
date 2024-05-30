@@ -6,6 +6,7 @@ import { Loader } from '@banx/components/Loader'
 import Tooltip from '@banx/components/Tooltip/Tooltip'
 
 import Offer from './Offer'
+import { useMarketOrders } from './hooks'
 
 import styles from './OrderBook.module.less'
 
@@ -15,9 +16,8 @@ export interface OrderBookProps {
   className?: string
 }
 
-const OrderBook: FC<OrderBookProps> = ({ offerPubkey, marketPubkey, className }) => {
-  const offers = [] as any[]
-  const isLoading = false
+const OrderBook: FC<OrderBookProps> = ({ marketPubkey, offerPubkey = '', className }) => {
+  const { offers, isLoading } = useMarketOrders(marketPubkey, offerPubkey)
 
   return (
     <div className={classNames(styles.orderBook, className)}>
@@ -30,8 +30,7 @@ const OrderBook: FC<OrderBookProps> = ({ offerPubkey, marketPubkey, className })
       <ul className={styles.offersList}>
         {isLoading && <Loader size="small" />}
 
-        {!isLoading &&
-          offers.map((offer, index) => <Offer key={index} collectionFloor={0} offer={offer} />)}
+        {!isLoading && offers.map((offer) => <Offer key={offer.publicKey} offer={offer} />)}
       </ul>
     </div>
   )

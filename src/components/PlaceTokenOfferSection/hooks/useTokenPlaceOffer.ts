@@ -1,25 +1,24 @@
+import { useEffect } from 'react'
+
 import { useWalletBalance } from '@banx/hooks'
 import { useNftTokenType } from '@banx/store/nft'
 import { getTokenDecimals } from '@banx/utils'
 
 import { getErrorMessage } from '../helpers'
 import { useOfferFormController } from './useOfferFormController'
+import { useSyntheticTokenOffer } from './useSyntheticTokenOffer'
 import { useTokenOfferTransactions } from './useTokenOfferTransaction'
 
-export const useTokenPlaceOffer = (props: { offerPubkey?: string; marketPubkey: string }) => {
-  const { marketPubkey, offerPubkey } = props
-
+export const useTokenPlaceOffer = (marketPubkey: string, offerPubkey: string) => {
   const { tokenType } = useNftTokenType()
   const walletBalance = useWalletBalance(tokenType)
 
+  const { syntheticOffer, setSyntheticOffer } = useSyntheticTokenOffer(offerPubkey, marketPubkey)
+
   const isEditMode = !!offerPubkey
 
-  const decimals = getTokenDecimals(tokenType)
-
-  const syntheticOffer = { loanValue: 0, offerSize: 0 }
-
   const {
-    loanValue: loanValueString,
+    collateralsPerToken: collateralsPerTokenString,
     offerSize: offerSizeString,
     onLoanValueChange,
     onOfferSizeChange,
@@ -27,12 +26,21 @@ export const useTokenPlaceOffer = (props: { offerPubkey?: string; marketPubkey: 
     resetFormValues,
   } = useOfferFormController(syntheticOffer)
 
-  const loanValue = parseFloat(loanValueString) * decimals
+  const decimals = getTokenDecimals(tokenType)
+
+  const collateralsPerToken = parseFloat(collateralsPerTokenString) * decimals
   const offerSize = parseFloat(offerSizeString) * decimals
+
+  useEffect(() => {
+    if (!syntheticOffer) return
+    const newSyntheticOffer = { ...syntheticOffer, offerSize, collateralsPerToken }
+
+    setSyntheticOffer(newSyntheticOffer)
+  }, [syntheticOffer, setSyntheticOffer, collateralsPerToken, offerSize])
 
   const { onCreateTokenOffer, onUpdateTokenOffer, onRemoveTokenOffer } = useTokenOfferTransactions({
     marketPubkey,
-    collateralsPerToken: loanValue,
+    collateralsPerToken,
     loanValue: offerSize,
     updateOrAddOffer: () => null,
     resetFormValues,
@@ -42,11 +50,11 @@ export const useTokenPlaceOffer = (props: { offerPubkey?: string; marketPubkey: 
     walletBalance,
     syntheticOffer,
     offerSize,
-    collateralsPerToken: loanValue,
+    collateralsPerToken,
     tokenType,
   })
 
-  const allFieldsAreFilled = !!loanValue && !!offerSize
+  const allFieldsAreFilled = !!collateralsPerToken && !!offerSize
 
   const disablePlaceOffer = !!offerErrorMessage || !allFieldsAreFilled
   const disableUpdateOffer = !hasFormChanges || !!offerErrorMessage || !allFieldsAreFilled
@@ -56,7 +64,7 @@ export const useTokenPlaceOffer = (props: { offerPubkey?: string; marketPubkey: 
   return {
     isEditMode,
 
-    loanValueString,
+    collateralsPerTokenString,
     offerSizeString,
 
     onLoanValueChange,
