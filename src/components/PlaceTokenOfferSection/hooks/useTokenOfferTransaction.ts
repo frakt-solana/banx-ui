@@ -25,24 +25,20 @@ import {
   isSolTokenType,
 } from '@banx/utils'
 
-export const useOfferTransactions = ({
+export const useTokenOfferTransactions = ({
   marketPubkey,
-  loansAmount,
   loanValue,
-  deltaValue,
   optimisticOffer,
   updateOrAddOffer,
   resetFormValues,
-  exitEditMode,
+  collateralsPerToken,
 }: {
   marketPubkey: string
-  loansAmount: number
   loanValue: number
-  deltaValue: number
   optimisticOffer?: core.Offer
   updateOrAddOffer: (offer: core.Offer) => void
   resetFormValues: () => void
-  exitEditMode: () => void
+  collateralsPerToken: number
 }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
@@ -52,7 +48,7 @@ export const useOfferTransactions = ({
     ? BondingCurveType.Linear
     : BondingCurveType.LinearUsdc
 
-  const onCreateOffer = async () => {
+  const onCreateTokenOffer = async () => {
     const loadingSnackbarId = uniqueId()
 
     try {
@@ -60,15 +56,15 @@ export const useOfferTransactions = ({
 
       const txnData = await createMakeBondingOfferTxnData({
         marketPubkey,
-        loansAmount,
+        loansAmount: 1,
         loanValue,
-        deltaValue,
-        walletAndConnection,
-        bondFeature: BondFeatures.AutoReceiveAndReceiveNft,
+        deltaValue: 0,
+        collateralsPerToken,
+        bondFeature: BondFeatures.AutoReceiveAndReceiveSpl,
         bondingCurveType,
+        walletAndConnection,
       })
 
-      //TODO: Fix genric here
       await new TxnExecutor<BondOfferOptimistic>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
         .addTxnData(txnData)
         .on('sentSome', (results) => {
@@ -108,18 +104,16 @@ export const useOfferTransactions = ({
       defaultTxnErrorHandler(error, {
         additionalData: {
           marketPubkey,
-          loansAmount,
           loanValue,
-          deltaValue,
           tokenType,
         },
         walletPubkey: wallet?.publicKey?.toBase58(),
-        transactionName: 'CreateOffer',
+        transactionName: 'CreateTokenOffer',
       })
     }
   }
 
-  const onUpdateOffer = async () => {
+  const onUpdateTokenOffer = async () => {
     if (!optimisticOffer) return
 
     const loadingSnackbarId = uniqueId()
@@ -130,13 +124,12 @@ export const useOfferTransactions = ({
       const txnData = await createUpdateBondingOfferTxnData({
         loanValue,
         offer: optimisticOffer,
-        loansAmount,
-        deltaValue,
+        loansAmount: 1,
+        deltaValue: 0,
         tokenType,
         walletAndConnection,
       })
 
-      //TODO: Fix genric here
       await new TxnExecutor<BondOfferOptimistic>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
         .addTxnData(txnData)
         .on('sentSome', (results) => {
@@ -176,17 +169,15 @@ export const useOfferTransactions = ({
         additionalData: {
           loanValue,
           offer: optimisticOffer,
-          loansAmount,
-          deltaValue,
           tokenType,
         },
         walletPubkey: wallet?.publicKey?.toBase58(),
-        transactionName: 'UpdateOffer',
+        transactionName: 'UpdateTokenOffer',
       })
     }
   }
 
-  const onRemoveOffer = async () => {
+  const onRemoveTokenOffer = async () => {
     if (!optimisticOffer) return
 
     const loadingSnackbarId = uniqueId()
@@ -200,7 +191,6 @@ export const useOfferTransactions = ({
         walletAndConnection,
       })
 
-      //TODO: Fix genric here
       await new TxnExecutor<BondOfferOptimistic>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
         .addTxnData(txnData)
         .on('sentSome', (results) => {
@@ -227,7 +217,6 @@ export const useOfferTransactions = ({
               })
 
               updateOrAddOffer(result.bondOffer)
-              exitEditMode()
             }
           })
         })
@@ -240,14 +229,14 @@ export const useOfferTransactions = ({
       defaultTxnErrorHandler(error, {
         additionalData: { offer: optimisticOffer, tokenType },
         walletPubkey: wallet?.publicKey?.toBase58(),
-        transactionName: 'RemoveOffer',
+        transactionName: 'RemoveTokenOffer',
       })
     }
   }
 
   return {
-    onCreateOffer,
-    onUpdateOffer,
-    onRemoveOffer,
+    onCreateTokenOffer,
+    onUpdateTokenOffer,
+    onRemoveTokenOffer,
   }
 }

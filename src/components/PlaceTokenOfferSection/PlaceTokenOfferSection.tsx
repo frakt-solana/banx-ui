@@ -31,6 +31,9 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = (props) => {
     onOfferSizeChange,
     offerErrorMessage,
     showBorrowerMessage,
+    onCreateTokenOffer,
+    onUpdateTokenOffer,
+    onRemoveTokenOffer,
     disablePlaceOffer,
     disableUpdateOffer,
   } = useTokenPlaceOffer(props)
@@ -84,9 +87,9 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = (props) => {
         <AdditionalSummary offerSize={parseFloat(offerSizeString)} />
 
         <ActionsButtons
-          onCreateOffer={() => null}
-          onRemoveOffer={() => null}
-          onUpdateOffer={() => null}
+          onCreateOffer={onCreateTokenOffer}
+          onRemoveOffer={onRemoveTokenOffer}
+          onUpdateOffer={onUpdateTokenOffer}
           disablePlaceOffer={disablePlaceOffer}
           disableUpdateOffer={disableUpdateOffer}
           isEditMode={isEditMode}

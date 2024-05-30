@@ -2,6 +2,7 @@ import { useNftTokenType } from '@banx/store/nft'
 import { getTokenDecimals } from '@banx/utils'
 
 import { useOfferFormController } from './useOfferFormController'
+import { useTokenOfferTransactions } from './useTokenOfferTransaction'
 
 export const useTokenPlaceOffer = (props: { offerPubkey?: string; marketPubkey: string }) => {
   const { marketPubkey, offerPubkey } = props
@@ -26,6 +27,14 @@ export const useTokenPlaceOffer = (props: { offerPubkey?: string; marketPubkey: 
   const loanValue = parseFloat(loanValueString) * decimals
   const offerSize = parseFloat(offerSizeString)
 
+  const { onCreateTokenOffer, onUpdateTokenOffer, onRemoveTokenOffer } = useTokenOfferTransactions({
+    marketPubkey,
+    collateralsPerToken: loanValue,
+    loanValue: offerSize,
+    updateOrAddOffer: () => null,
+    resetFormValues,
+  })
+
   const offerErrorMessage = null
 
   const disablePlaceOffer = !!offerErrorMessage || !offerSize
@@ -45,6 +54,9 @@ export const useTokenPlaceOffer = (props: { offerPubkey?: string; marketPubkey: 
     offerErrorMessage,
     showBorrowerMessage,
 
+    onCreateTokenOffer,
+    onUpdateTokenOffer,
+    onRemoveTokenOffer,
     disablePlaceOffer,
     disableUpdateOffer,
   }
