@@ -4,7 +4,7 @@ import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
-import { DisplayValue } from '@banx/components/TableComponents'
+import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/tokens'
 import { ChevronDown } from '@banx/icons'
@@ -68,7 +68,8 @@ interface MarketAdditionalInfoProps {
 }
 
 const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isOpen }) => {
-  const { loansTvl, offersTvl, activeLoansAmount, activeOffersAmount, marketApr } = market
+  const { loansTvl, offersTvl, activeLoansAmount, activeOffersAmount, marketApr, marketApy } =
+    market
 
   return (
     <div className={classNames(styles.additionalInfoStats, { [styles.opened]: isOpen })}>
@@ -87,10 +88,14 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isOpen })
         classNamesProps={{ container: styles.additionalStat }}
       />
       <StatInfo
-        label="Apr"
-        value={marketApr}
-        tooltipText=""
-        valueType={VALUES_TYPES.PERCENT}
+        label="APR / APY"
+        value={
+          <>
+            {createPercentValueJSX(marketApr, '0%')} / {createPercentValueJSX(marketApy, '0%')}
+          </>
+        }
+        tooltipText="APR / APY"
+        valueType={VALUES_TYPES.STRING}
         classNamesProps={{ container: styles.additionalStat, value: styles.additionalAprStat }}
       />
     </div>

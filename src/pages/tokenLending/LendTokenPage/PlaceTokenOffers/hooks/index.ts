@@ -1,2 +1,2 @@
-export * from './usePlaceTokenOffers'
+export * from './usePlaceTokenOffersContent'
 export * from './useSortedMarkets'

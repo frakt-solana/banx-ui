@@ -2,6 +2,7 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
+import { TokenMarketPreview } from '@banx/api/tokens'
 import { useModal } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
 import { getTokenUnit } from '@banx/utils'
@@ -13,7 +14,7 @@ import { Modal } from '../modals/BaseModal'
 import { ActionsButtons } from './components/ActionsButtons'
 import OrderBook from './components/OrderBook'
 import { AdditionalSummary, MainSummary } from './components/Summary'
-import { useTokenPlaceOffer } from './hooks/useTokenPlaceOffer'
+import { usePlaceTokenOffer } from './hooks/usePlaceTokenOffer'
 
 import styles from './PlaceTokenOfferSection.module.less'
 
@@ -28,6 +29,7 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
 }) => {
   const {
     isEditMode,
+    market,
     collateralsPerTokenString,
     offerSizeString,
     onLoanValueChange,
@@ -39,7 +41,7 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
     onRemoveTokenOffer,
     disablePlaceOffer,
     disableUpdateOffer,
-  } = useTokenPlaceOffer(marketPubkey, offerPubkey)
+  } = usePlaceTokenOffer(marketPubkey, offerPubkey)
 
   const { tokenType } = useNftTokenType()
   const { connected } = useWallet()
@@ -47,7 +49,7 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
   const { open } = useModal()
 
   const showModal = () => {
-    open(OffersModal, { marketPubkey, offerPubkey })
+    open(OffersModal, { market, offerPubkey })
   }
 
   return (
@@ -86,7 +88,7 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
           {showBorrowerMessage && <BorrowerMessage />}
         </div>
 
-        <MainSummary />
+        <MainSummary market={market} collateralPerToken={parseFloat(collateralsPerTokenString)} />
         <AdditionalSummary offerSize={parseFloat(offerSizeString)} />
 
         <ActionsButtons
@@ -98,11 +100,7 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
           isEditMode={isEditMode}
         />
       </div>
-      <OrderBook
-        marketPubkey={marketPubkey}
-        offerPubkey={offerPubkey}
-        className={styles.orderBook}
-      />
+      <OrderBook market={market} offerPubkey={offerPubkey} className={styles.orderBook} />
     </div>
   )
 }
@@ -110,7 +108,7 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
 export default PlaceTokenOfferSection
 
 interface OffersModalProps {
-  marketPubkey: string
+  market: TokenMarketPreview | undefined
   offerPubkey: string
 }
 

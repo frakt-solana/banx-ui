@@ -5,18 +5,22 @@ import classNames from 'classnames'
 import { Loader } from '@banx/components/Loader'
 import Tooltip from '@banx/components/Tooltip/Tooltip'
 
+import { TokenMarketPreview } from '@banx/api/tokens'
+
 import Offer from './Offer'
 import { useMarketOrders } from './hooks'
 
 import styles from './OrderBook.module.less'
 
 export interface OrderBookProps {
-  marketPubkey: string
+  market: TokenMarketPreview | undefined
   offerPubkey?: string
   className?: string
 }
 
-const OrderBook: FC<OrderBookProps> = ({ marketPubkey, offerPubkey = '', className }) => {
+const OrderBook: FC<OrderBookProps> = ({ market, offerPubkey = '', className }) => {
+  const { marketPubkey = '' } = market || {}
+
   const { offers, isLoading } = useMarketOrders(marketPubkey, offerPubkey)
 
   return (

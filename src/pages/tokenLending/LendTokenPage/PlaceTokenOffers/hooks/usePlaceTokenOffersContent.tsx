@@ -15,7 +15,7 @@ import { useSortedMarkets } from './useSortedMarkets'
 
 const useCollectionsStore = createGlobalState<string[]>([])
 
-export const usePlaceTokenOffers = () => {
+export const usePlaceTokenOffersContent = () => {
   const { connected } = useWallet()
 
   const { marketsPreview, isLoading: isLoadingMarkets } = useTokenMarketsPreview()

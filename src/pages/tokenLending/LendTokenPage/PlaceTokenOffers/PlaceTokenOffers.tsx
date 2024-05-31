@@ -5,7 +5,7 @@ import { useFakeInfinityScroll } from '@banx/hooks'
 
 import FilterSection from './components/FilterSection'
 import LendTokenCard from './components/LendTokenCard'
-import { usePlaceTokenOffers } from './hooks'
+import { usePlaceTokenOffersContent } from './hooks'
 
 import styles from './PlaceTokenOffers.module.less'
 
@@ -18,11 +18,11 @@ const PlaceTokenOffers = () => {
     sortParams,
     showEmptyList,
     isLoading,
-  } = usePlaceTokenOffers()
+  } = usePlaceTokenOffersContent()
 
   const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: marketsPreview })
 
-  if (showEmptyList) return <EmptyList message="You don't have any whitelisted collections" />
+  if (showEmptyList) return <EmptyList message="No active markets yet" />
 
   return (
     <div className={styles.content}>

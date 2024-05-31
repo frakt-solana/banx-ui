@@ -1,11 +1,12 @@
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
 
+import { SyntheticTokenOffer } from '@banx/store/token'
+
 type GetErrorMessage = (props: {
   walletBalance: number
-  syntheticOffer: any
+  syntheticOffer: SyntheticTokenOffer
   offerSize: number
-  collateralsPerToken: number
   tokenType: LendingTokenType
 }) => string
 
@@ -13,17 +14,14 @@ export const getErrorMessage: GetErrorMessage = ({
   walletBalance,
   syntheticOffer,
   offerSize,
-  collateralsPerToken,
   tokenType,
 }) => {
-  const totalFundsAvailable = syntheticOffer.loanValue + walletBalance
+  const totalFundsAvailable = syntheticOffer.offerSize + walletBalance
 
-  const isOfferInvalid = collateralsPerToken > offerSize
   const isBalanceInsufficient = offerSize > totalFundsAvailable
 
   const errorConditions: Array<[boolean, string]> = [
     [isBalanceInsufficient, createInsufficientBalanceErrorMessage(tokenType)],
-    [isOfferInvalid, 'Size should be more than collaterals per token'],
   ]
 
   const errorMessage = chain(errorConditions)

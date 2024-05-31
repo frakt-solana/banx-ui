@@ -1,7 +1,10 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 
 import { useWalletBalance } from '@banx/hooks'
-import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
+import {
+  useTokenMarketOffers,
+  useTokenMarketsPreview,
+} from '@banx/pages/tokenLending/LendTokenPage'
 import { useNftTokenType } from '@banx/store/nft'
 import { getTokenDecimals } from '@banx/utils'
 
@@ -10,12 +13,17 @@ import { useOfferFormController } from './useOfferFormController'
 import { useSyntheticTokenOffer } from './useSyntheticTokenOffer'
 import { useTokenOfferTransactions } from './useTokenOfferTransaction'
 
-export const useTokenPlaceOffer = (marketPubkey: string, offerPubkey: string) => {
+export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) => {
   const { tokenType } = useNftTokenType()
   const walletBalance = useWalletBalance(tokenType)
 
   const { syntheticOffer, setSyntheticOffer } = useSyntheticTokenOffer(offerPubkey, marketPubkey)
   const { updateOrAddOffer } = useTokenMarketOffers(marketPubkey)
+  const { marketsPreview } = useTokenMarketsPreview()
+
+  const market = useMemo(() => {
+    return marketsPreview.find((market) => market.marketPubkey === marketPubkey)
+  }, [marketPubkey, marketsPreview])
 
   const isEditMode = !!offerPubkey
 
@@ -52,7 +60,6 @@ export const useTokenPlaceOffer = (marketPubkey: string, offerPubkey: string) =>
     walletBalance,
     syntheticOffer,
     offerSize,
-    collateralsPerToken,
     tokenType,
   })
 
@@ -65,6 +72,8 @@ export const useTokenPlaceOffer = (marketPubkey: string, offerPubkey: string) =>
 
   return {
     isEditMode,
+
+    market,
 
     collateralsPerTokenString,
     offerSizeString,
