@@ -43,3 +43,9 @@ export const BANX_STAKING = {
 export const IS_PRIVATE_MARKETS = process.env.IS_PRIVATE_MARKETS === 'true'
 
 export const DYNAMIC_APR = true
+
+//TODO Move to helpers
+export const BANX_SOL = {
+  BANXSOL_TO_SOL_RATIO: 0.999599,
+  SOL_TO_BANXSOL_RATIO: 0.9986,
+}
