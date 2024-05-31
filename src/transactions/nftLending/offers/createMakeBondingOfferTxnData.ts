@@ -1,6 +1,10 @@
 import { BN, web3 } from 'fbonds-core'
 import { LOOKUP_TABLE, SANCTUM_PROGRAMM_ID } from 'fbonds-core/lib/fbond-protocol/constants'
-import { SwapMode } from 'fbonds-core/lib/fbond-protocol/functions/banxSol'
+import {
+  SwapMode,
+  closeTokenAccountBanxSol,
+  swapSolToBanxSol,
+} from 'fbonds-core/lib/fbond-protocol/functions/banxSol'
 import {
   BondOfferOptimistic,
   createPerpetualBondOfferBonding,
@@ -9,11 +13,10 @@ import {
 import { BondFeatures, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
-import { BONDS } from '@banx/constants'
+import { BANX_SOL, BONDS } from '@banx/constants'
 import { calculateOfferSize } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
-import { swapSolToBanxSol } from './swapSolToBanxSol'
 
 type CreateMakeBondingOfferTxnData = (params: {
   marketPubkey: string
@@ -43,8 +46,7 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
       userPubkey: walletAndConnection.wallet.publicKey,
     },
     args: {
-      min_amount_out: new BN(0),
-      amount: new BN(Math.ceil(offerSize / 0.9986)),
+      amount: new BN(Math.ceil(offerSize / BANX_SOL.SOL_TO_BANXSOL_RATIO)),
       banxSolLstIndex: 29,
       wSolLstIndex: 1,
       swapMode: SwapMode.SolToBanxSol,
@@ -74,9 +76,21 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
     sendTxn: sendTxnPlaceHolder,
   })
 
+  const { instructions: closeInstructions, signers: closeSigners } = await closeTokenAccountBanxSol(
+    {
+      connection: walletAndConnection.connection,
+      programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
+      accounts: {
+        feeReciver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
+        userPubkey: walletAndConnection.wallet.publicKey,
+      },
+      sendTxn: sendTxnPlaceHolder,
+    },
+  )
+
   return {
-    instructions: [...swapInstructions, ...createInstructions],
-    signers: [...swapSigners, ...createSigners],
+    instructions: [...swapInstructions, ...createInstructions, ...closeInstructions],
+    signers: [...swapSigners, ...createSigners, ...closeSigners],
     result: optimisticResult,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }

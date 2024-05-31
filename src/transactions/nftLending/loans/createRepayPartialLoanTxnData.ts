@@ -1,11 +1,25 @@
-import { web3 } from 'fbonds-core'
-import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
+import { BN, web3 } from 'fbonds-core'
+import {
+  BASE_POINTS,
+  EMPTY_PUBKEY,
+  LOOKUP_TABLE,
+  SANCTUM_PROGRAMM_ID,
+} from 'fbonds-core/lib/fbond-protocol/constants'
+import {
+  SwapMode,
+  closeTokenAccountBanxSol,
+  swapSolToBanxSol,
+} from 'fbonds-core/lib/fbond-protocol/functions/banxSol'
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
-import { repayPartialPerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import {
+  calculateCurrentInterestSolPure,
+  repayPartialPerpetualLoan,
+} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import moment from 'moment'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
-import { BONDS } from '@banx/constants'
+import { BANX_SOL, BONDS } from '@banx/constants'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
@@ -14,6 +28,19 @@ type CreateRepayPartialLoanTxnData = (params: {
   fractionToRepay: number //? F.E 50% => 5000
   walletAndConnection: WalletAndConnection
 }) => Promise<CreateTxnData<core.Loan>>
+
+const calculateLoanRepayValueForPartialRepay = (loan: core.Loan) => {
+  const { solAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction || {}
+
+  const calculatedInterest = calculateCurrentInterestSolPure({
+    loanValue: solAmount,
+    startTime: soldAt,
+    currentTime: moment().unix() + 60,
+    rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
+  })
+
+  return solAmount + calculatedInterest
+}
 
 export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = async ({
   fractionToRepay,
@@ -24,7 +51,28 @@ export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = asyn
 
   const { fraktBond, bondTradeTransaction, nft } = loan
 
-  const { instructions, signers, optimisticResults } = await repayPartialPerpetualLoan({
+  const repayValue = (calculateLoanRepayValueForPartialRepay(loan) * fractionToRepay) / BASE_POINTS
+
+  const { instructions: swapInstructions, signers: swapSigners } = await swapSolToBanxSol({
+    programId: SANCTUM_PROGRAMM_ID,
+    connection: walletAndConnection.connection,
+    accounts: {
+      userPubkey: walletAndConnection.wallet.publicKey,
+    },
+    args: {
+      amount: new BN(Math.ceil(repayValue / BANX_SOL.SOL_TO_BANXSOL_RATIO)),
+      banxSolLstIndex: 29,
+      wSolLstIndex: 1,
+      swapMode: SwapMode.SolToBanxSol,
+    },
+    sendTxn: sendTxnPlaceHolder,
+  })
+
+  const {
+    instructions: repayInstructions,
+    signers: repaySigners,
+    optimisticResults,
+  } = await repayPartialPerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     args: {
       fractionToRepay,
@@ -54,9 +102,21 @@ export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = asyn
     nft,
   }))[0]
 
+  const { instructions: closeInstructions, signers: closeSigners } = await closeTokenAccountBanxSol(
+    {
+      connection: walletAndConnection.connection,
+      programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
+      accounts: {
+        feeReciver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
+        userPubkey: walletAndConnection.wallet.publicKey,
+      },
+      sendTxn: sendTxnPlaceHolder,
+    },
+  )
+
   return {
-    instructions,
-    signers,
+    instructions: [...swapInstructions, ...repayInstructions, ...closeInstructions],
+    signers: [...swapSigners, ...repaySigners, ...closeSigners],
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
     result: optimisticResult,
   }

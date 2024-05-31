@@ -1,16 +1,27 @@
-import { web3 } from 'fbonds-core'
-import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
+import { BN, web3 } from 'fbonds-core'
+import {
+  EMPTY_PUBKEY,
+  LOOKUP_TABLE,
+  SANCTUM_PROGRAMM_ID,
+} from 'fbonds-core/lib/fbond-protocol/constants'
+import {
+  SwapMode,
+  closeTokenAccountBanxSol,
+  swapSolToBanxSol,
+} from 'fbonds-core/lib/fbond-protocol/functions/banxSol'
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import {
+  calculateCurrentInterestSolPure,
   repayCnftPerpetualLoanCanopy,
   repayPerpetualLoan,
   repayStakedBanxPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import moment from 'moment'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { helius } from '@banx/api/common'
 import { core } from '@banx/api/nft'
-import { BANX_STAKING, BONDS } from '@banx/constants'
+import { BANX_SOL, BANX_STAKING, BONDS } from '@banx/constants'
 
 import { fetchRuleset } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
@@ -25,18 +36,66 @@ type CreateRepayLoanTxnData = (
   params: CreateRepayLoanTxnDataParams,
 ) => Promise<CreateTxnData<core.Loan>>
 
+const calculateLoanRepayValueForRepay = (loan: core.Loan) => {
+  const { solAmount, feeAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction || {}
+
+  const loanValue = solAmount + feeAmount
+
+  const calculatedInterest = calculateCurrentInterestSolPure({
+    loanValue,
+    startTime: soldAt,
+    currentTime: moment().unix() + 60,
+    rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
+  })
+
+  return loanValue + calculatedInterest
+}
+
 export const createRepayLoanTxnData: CreateRepayLoanTxnData = async ({
   loan,
   walletAndConnection,
 }) => {
   const borrowType = getLoanBorrowType(loan)
 
-  const { instructions, signers, optimisticResult, lookupTables } =
-    await getIxnsAndSignersByBorrowType({
-      loan,
-      borrowType,
-      walletAndConnection,
-    })
+  const loanValue = calculateLoanRepayValueForRepay(loan)
+
+  const { instructions: swapInstructions, signers: swapSigners } = await swapSolToBanxSol({
+    programId: SANCTUM_PROGRAMM_ID,
+    connection: walletAndConnection.connection,
+    accounts: {
+      userPubkey: walletAndConnection.wallet.publicKey,
+    },
+    args: {
+      amount: new BN(Math.ceil(loanValue / BANX_SOL.SOL_TO_BANXSOL_RATIO)),
+      banxSolLstIndex: 29,
+      wSolLstIndex: 1,
+      swapMode: SwapMode.SolToBanxSol,
+    },
+    sendTxn: sendTxnPlaceHolder,
+  })
+
+  const {
+    instructions: repayInstructions,
+    signers: repaySigners,
+    optimisticResult,
+    lookupTables,
+  } = await getIxnsAndSignersByBorrowType({
+    loan,
+    borrowType,
+    walletAndConnection,
+  })
+
+  const { instructions: closeInstructions, signers: closeSigners } = await closeTokenAccountBanxSol(
+    {
+      connection: walletAndConnection.connection,
+      programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
+      accounts: {
+        feeReciver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
+        userPubkey: walletAndConnection.wallet.publicKey,
+      },
+      sendTxn: sendTxnPlaceHolder,
+    },
+  )
 
   const optimisticLoan: core.Loan = {
     publicKey: optimisticResult.fraktBond.publicKey,
@@ -46,8 +105,8 @@ export const createRepayLoanTxnData: CreateRepayLoanTxnData = async ({
   }
 
   return {
-    instructions,
-    signers,
+    instructions: [...swapInstructions, ...repayInstructions, ...closeInstructions],
+    signers: [...swapSigners, ...repaySigners, ...closeSigners],
     lookupTables,
     result: optimisticLoan,
   }
