@@ -10,7 +10,7 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 
 import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
-import { calculateOfferSize, removeDuplicatedPublicKeys } from '@banx/utils'
+import { calculateNewOfferSize, removeDuplicatedPublicKeys } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
@@ -33,7 +33,7 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
 }) => {
   const bondingCurveType = getBondingCurveTypeFromLendingToken(tokenType)
 
-  const offerSize = calculateOfferSize({ loanValue, loansAmount, deltaValue })
+  const offerSize = calculateNewOfferSize({ loanValue, loansAmount, deltaValue })
 
   const { instructions: swapInstructions, lookupTable: swapLookupTable } =
     await banxSol.getSwapSolToBanxSolInstructions({

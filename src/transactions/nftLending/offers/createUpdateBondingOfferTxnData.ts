@@ -1,4 +1,4 @@
-import { BN, web3 } from 'fbonds-core'
+import { web3 } from 'fbonds-core'
 import {
   BondOfferOptimistic,
   updatePerpetualOfferBonding,
@@ -9,7 +9,7 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
-import { removeDuplicatedPublicKeys } from '@banx/utils'
+import { ZERO_BN, calculateIdleFundsInOffer, removeDuplicatedPublicKeys } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
@@ -58,23 +58,22 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
     throw new Error('Optimistic offer doesnt exist')
   }
 
-  const oldOfferSize = offer.fundsSolOrTokenBalance + offer.bidSettlement + offer.concentrationIndex
+  const oldOfferSize = calculateIdleFundsInOffer(offer)
 
   //? Optimistic offer is broken
-  const newOfferSize =
-    newOffer?.fundsSolOrTokenBalance + newOffer?.bidSettlement + newOffer?.concentrationIndex
+  const newOfferSize = calculateIdleFundsInOffer(newOffer)
 
-  const diff = newOfferSize - oldOfferSize
+  const diff = newOfferSize.sub(oldOfferSize)
 
   const { instructions: swapSolToBanxSolInstructions, lookupTable: swapSolToBanxSolLookupTable } =
     await banxSol.getSwapSolToBanxSolInstructions({
-      inputAmount: new BN(Math.abs(diff)),
+      inputAmount: diff.abs(),
       walletAndConnection,
     })
 
   const { instructions: swapBanxSolToSolInstructions, lookupTable: swapBanxSolToSolLookupTable } =
     await banxSol.getSwapBanxSolToSolInstructions({
-      inputAmount: new BN(Math.abs(diff)),
+      inputAmount: diff.abs(),
       walletAndConnection,
     })
 
@@ -85,14 +84,14 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
 
   //TODO: Refactor
   const instructions: web3.TransactionInstruction[] = []
-  if (diff > 0) instructions.push(...swapSolToBanxSolInstructions)
+  if (diff.gt(ZERO_BN)) instructions.push(...swapSolToBanxSolInstructions)
   instructions.push(...updateInstructions)
-  if (diff < 0) instructions.push(...swapBanxSolToSolInstructions)
+  if (diff.lt(ZERO_BN)) instructions.push(...swapBanxSolToSolInstructions)
   instructions.push(...closeInstructions)
 
   const lookupTables: web3.PublicKey[] = []
-  if (diff > 0) lookupTables.push(swapSolToBanxSolLookupTable)
-  if (diff < 0) lookupTables.push(swapBanxSolToSolLookupTable)
+  if (diff.gt(ZERO_BN)) lookupTables.push(swapSolToBanxSolLookupTable)
+  if (diff.lt(ZERO_BN)) lookupTables.push(swapBanxSolToSolLookupTable)
   lookupTables.push(closeLookupTable)
 
   return {

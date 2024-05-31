@@ -10,7 +10,7 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
-import { removeDuplicatedPublicKeys } from '@banx/utils'
+import { calculateIdleFundsInOffer, removeDuplicatedPublicKeys } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
@@ -45,7 +45,7 @@ export const createRemoveOfferTxnData: CreateRemoveOfferTxnData = async ({
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const offerSize = offer.fundsSolOrTokenBalance + offer.bidSettlement + offer.concentrationIndex
+  const offerSize = calculateIdleFundsInOffer(offer)
 
   const { instructions: swapInstructions, lookupTable: swapLookupTable } =
     await banxSol.getSwapBanxSolToSolInstructions({
