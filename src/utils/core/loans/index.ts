@@ -1,3 +1,4 @@
+import { BN } from 'fbonds-core'
 import { BASE_POINTS, SECONDS_IN_DAY } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   calculateCurrentInterestSolPure,
@@ -80,18 +81,37 @@ export const determineLoanStatus = (loan: core.Loan) => {
 }
 
 export const calculateLoanRepayValue = (loan: core.Loan, includeFee = true) => {
+  const repayValueBN = calculateLoanRepayValueOnCertainDate({
+    loan,
+    upfrontFeeIncluded: includeFee,
+    date: moment().unix(),
+  })
+
+  return repayValueBN.toNumber()
+}
+
+type CalculateLoanRepayValueOnCertainDate = (params: {
+  loan: core.Loan
+  upfrontFeeIncluded?: boolean
+  date: number //? Unix timestamp
+}) => BN
+export const calculateLoanRepayValueOnCertainDate: CalculateLoanRepayValueOnCertainDate = ({
+  loan,
+  upfrontFeeIncluded = true,
+  date,
+}) => {
   const { solAmount, feeAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction || {}
 
-  const loanValue = includeFee ? solAmount + feeAmount : solAmount
+  const loanValue = upfrontFeeIncluded ? solAmount + feeAmount : solAmount
 
   const calculatedInterest = calculateCurrentInterestSolPure({
     loanValue,
     startTime: soldAt,
-    currentTime: moment().unix(),
+    currentTime: date,
     rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
   })
 
-  return loanValue + calculatedInterest
+  return new BN(loanValue).add(new BN(calculatedInterest))
 }
 
 export const formatLoansAmount = (loansAmount = 0) => {
