@@ -1,10 +1,5 @@
 import { BN, web3 } from 'fbonds-core'
-import { LOOKUP_TABLE, SANCTUM_PROGRAMM_ID } from 'fbonds-core/lib/fbond-protocol/constants'
-import {
-  SwapMode,
-  closeTokenAccountBanxSol,
-  swapSolToBanxSol,
-} from 'fbonds-core/lib/fbond-protocol/functions/banxSol'
+import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   BondOfferOptimistic,
   createPerpetualBondOfferBonding,
@@ -13,8 +8,9 @@ import {
 import { BondFeatures, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
-import { BANX_SOL, BONDS } from '@banx/constants'
-import { calculateOfferSize } from '@banx/utils'
+import { BONDS } from '@banx/constants'
+import { banxSol } from '@banx/transactions'
+import { calculateOfferSize, removeDuplicatedPublicKeys } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
@@ -39,20 +35,11 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
 
   const offerSize = calculateOfferSize({ loanValue, loansAmount, deltaValue })
 
-  const { instructions: swapInstructions, signers: swapSigners } = await swapSolToBanxSol({
-    programId: SANCTUM_PROGRAMM_ID,
-    connection: walletAndConnection.connection,
-    accounts: {
-      userPubkey: walletAndConnection.wallet.publicKey,
-    },
-    args: {
-      amount: new BN(Math.ceil(offerSize / BANX_SOL.SOL_TO_BANXSOL_RATIO)),
-      banxSolLstIndex: 29,
-      wSolLstIndex: 1,
-      swapMode: SwapMode.SolToBanxSol,
-    },
-    sendTxn: sendTxnPlaceHolder,
-  })
+  const { instructions: swapInstructions, lookupTable: swapLookupTable } =
+    await banxSol.getSwapSolToBanxSolInstructions({
+      inputAmount: new BN(offerSize),
+      walletAndConnection,
+    })
 
   const {
     instructions: createInstructions,
@@ -76,22 +63,19 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const { instructions: closeInstructions, signers: closeSigners } = await closeTokenAccountBanxSol(
-    {
-      connection: walletAndConnection.connection,
-      programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-      accounts: {
-        feeReciver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
-        userPubkey: walletAndConnection.wallet.publicKey,
-      },
-      sendTxn: sendTxnPlaceHolder,
-    },
-  )
+  const { instructions: closeInstructions, lookupTable: closeLookupTable } =
+    await banxSol.getCloseBanxSolATAsInstructions({
+      walletAndConnection,
+    })
 
   return {
     instructions: [...swapInstructions, ...createInstructions, ...closeInstructions],
-    signers: [...swapSigners, ...createSigners, ...closeSigners],
+    signers: [...createSigners],
     result: optimisticResult,
-    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    lookupTables: removeDuplicatedPublicKeys([
+      swapLookupTable,
+      new web3.PublicKey(LOOKUP_TABLE),
+      closeLookupTable,
+    ]),
   }
 }
