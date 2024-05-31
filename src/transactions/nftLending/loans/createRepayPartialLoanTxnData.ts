@@ -1,17 +1,14 @@
 import { BN, web3 } from 'fbonds-core'
 import { BASE_POINTS, EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
-import {
-  calculateCurrentInterestSolPure,
-  repayPartialPerpetualLoan,
-} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { repayPartialPerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import moment from 'moment'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
-import { removeDuplicatedPublicKeys } from '@banx/utils'
+import { calculateLoanRepayValueOnCertainDate, removeDuplicatedPublicKeys } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
@@ -20,19 +17,6 @@ type CreateRepayPartialLoanTxnData = (params: {
   fractionToRepay: number //? F.E 50% => 5000
   walletAndConnection: WalletAndConnection
 }) => Promise<CreateTxnData<core.Loan>>
-
-const calculateLoanRepayValueForPartialRepay = (loan: core.Loan) => {
-  const { solAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction || {}
-
-  const calculatedInterest = calculateCurrentInterestSolPure({
-    loanValue: solAmount,
-    startTime: soldAt,
-    currentTime: moment().unix() + 60,
-    rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
-  })
-
-  return solAmount + calculatedInterest
-}
 
 export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = async ({
   fractionToRepay,
@@ -43,11 +27,17 @@ export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = asyn
 
   const { fraktBond, bondTradeTransaction, nft } = loan
 
-  const repayValue = (calculateLoanRepayValueForPartialRepay(loan) * fractionToRepay) / BASE_POINTS
+  const repayValue = calculateLoanRepayValueOnCertainDate({
+    loan,
+    upfrontFeeIncluded: false,
+    date: moment().unix() + 60,
+  })
+    .mul(new BN(fractionToRepay))
+    .div(new BN(BASE_POINTS))
 
   const { instructions: swapInstructions, lookupTable: swapLookupTable } =
     await banxSol.getSwapSolToBanxSolInstructions({
-      inputAmount: new BN(repayValue),
+      inputAmount: repayValue,
       walletAndConnection,
     })
 

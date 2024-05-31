@@ -1,8 +1,7 @@
-import { BN, web3 } from 'fbonds-core'
+import { web3 } from 'fbonds-core'
 import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import {
-  calculateCurrentInterestSolPure,
   repayCnftPerpetualLoanCanopy,
   repayPerpetualLoan,
   repayStakedBanxPerpetualLoan,
@@ -14,7 +13,7 @@ import { helius } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BANX_STAKING, BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
-import { removeDuplicatedPublicKeys } from '@banx/utils'
+import { calculateLoanRepayValueOnCertainDate, removeDuplicatedPublicKeys } from '@banx/utils'
 
 import { fetchRuleset } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
@@ -29,32 +28,21 @@ type CreateRepayLoanTxnData = (
   params: CreateRepayLoanTxnDataParams,
 ) => Promise<CreateTxnData<core.Loan>>
 
-const calculateLoanRepayValueForRepay = (loan: core.Loan) => {
-  const { solAmount, feeAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction || {}
-
-  const loanValue = solAmount + feeAmount
-
-  const calculatedInterest = calculateCurrentInterestSolPure({
-    loanValue,
-    startTime: soldAt,
-    currentTime: moment().unix() + 60,
-    rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
-  })
-
-  return loanValue + calculatedInterest
-}
-
 export const createRepayLoanTxnData: CreateRepayLoanTxnData = async ({
   loan,
   walletAndConnection,
 }) => {
   const borrowType = getLoanBorrowType(loan)
 
-  const loanValue = calculateLoanRepayValueForRepay(loan)
+  const repayValue = calculateLoanRepayValueOnCertainDate({
+    loan,
+    upfrontFeeIncluded: true,
+    date: moment().unix() + 60,
+  })
 
   const { instructions: swapInstructions, lookupTable: swapLookupTable } =
     await banxSol.getSwapSolToBanxSolInstructions({
-      inputAmount: new BN(loanValue),
+      inputAmount: repayValue,
       walletAndConnection,
     })
 
