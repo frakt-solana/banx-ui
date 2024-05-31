@@ -10,26 +10,30 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
-import { calculateIdleFundsInOffer, removeDuplicatedPublicKeys } from '@banx/utils'
+import {
+  calculateIdleFundsInOffer,
+  isBanxSolTokenType,
+  removeDuplicatedPublicKeys,
+} from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
-type CreateRemoveOfferTxnData = (params: {
+type CreateRemoveOfferTxnDataParams = {
   offer: core.Offer
   tokenType: LendingTokenType
   walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<BondOfferOptimistic>>
+}
+
+type CreateRemoveOfferTxnData = (
+  params: CreateRemoveOfferTxnDataParams,
+) => Promise<CreateTxnData<BondOfferOptimistic>>
 
 export const createRemoveOfferTxnData: CreateRemoveOfferTxnData = async ({
   offer,
   tokenType,
   walletAndConnection,
 }) => {
-  const {
-    instructions: removeInstructions,
-    signers: removeSigners,
-    optimisticResult,
-  } = await removePerpetualOffer({
+  const { instructions, signers, optimisticResult } = await removePerpetualOffer({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       bondOfferV2: new web3.PublicKey(offer.publicKey),
@@ -45,6 +49,38 @@ export const createRemoveOfferTxnData: CreateRemoveOfferTxnData = async ({
     sendTxn: sendTxnPlaceHolder,
   })
 
+  const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
+
+  if (isBanxSolTokenType(tokenType)) {
+    return await wrapWithBanxSolSwapInstructions({
+      offer,
+      tokenType,
+      walletAndConnection,
+      instructions,
+      signers,
+      lookupTables,
+      result: optimisticResult,
+    })
+  }
+
+  return {
+    instructions,
+    signers,
+    result: optimisticResult,
+    lookupTables,
+  }
+}
+
+const wrapWithBanxSolSwapInstructions = async ({
+  offer,
+  instructions,
+  lookupTables,
+  result,
+  signers,
+  walletAndConnection,
+}: CreateTxnData<BondOfferOptimistic> & CreateRemoveOfferTxnDataParams): Promise<
+  CreateTxnData<BondOfferOptimistic>
+> => {
   const offerSize = calculateIdleFundsInOffer(offer)
 
   const { instructions: swapInstructions, lookupTable: swapLookupTable } =
@@ -59,12 +95,12 @@ export const createRemoveOfferTxnData: CreateRemoveOfferTxnData = async ({
     })
 
   return {
-    instructions: [...removeInstructions, ...swapInstructions, ...closeInstructions],
-    signers: removeSigners,
-    result: optimisticResult,
+    instructions: [...instructions, ...swapInstructions, ...closeInstructions],
+    signers,
+    result,
     lookupTables: removeDuplicatedPublicKeys([
       swapLookupTable,
-      new web3.PublicKey(LOOKUP_TABLE),
+      ...(lookupTables ?? []),
       closeLookupTable,
     ]),
   }

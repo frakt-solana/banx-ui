@@ -12,7 +12,7 @@ import { helius } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
-import { calculateApr, removeDuplicatedPublicKeys } from '@banx/utils'
+import { calculateApr, isBanxSolTokenType, removeDuplicatedPublicKeys } from '@banx/utils'
 
 import { fetchRuleset } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
@@ -42,7 +42,7 @@ export const createBorrowTxnData: CreateBorrowTxnData = async ({
 }) => {
   const borrowType = getNftBorrowType(nft)
 
-  const { instructions, signers, optimisticResult } = await getTxnDataByBorrowType({
+  const { instructions, signers, lookupTables, optimisticResult } = await getTxnDataByBorrowType({
     nft,
     loanValue,
     offer,
@@ -62,27 +62,22 @@ export const createBorrowTxnData: CreateBorrowTxnData = async ({
     offer: optimisticResult.bondOffer,
   }
 
-  const { instructions: swapInstructions, lookupTable: swapLookupTable } =
-    await banxSol.getSwapBanxSolToSolInstructions({
-      //? 0.99 --> without upfront fee
-      inputAmount: new BN(loanValue).mul(new BN(99)).div(new BN(100)),
+  if (isBanxSolTokenType(tokenType)) {
+    return await wrapWithBanxSolSwapInstructions({
+      loanValue,
       walletAndConnection,
+      instructions,
+      signers,
+      lookupTables,
+      result: loanAndOffer,
     })
-
-  const { instructions: closeInstructions, lookupTable: closeLookupTable } =
-    await banxSol.getCloseBanxSolATAsInstructions({
-      walletAndConnection,
-    })
+  }
 
   return {
-    instructions: [...instructions, ...swapInstructions, ...closeInstructions],
-    signers: [...signers],
+    instructions,
+    signers,
     result: loanAndOffer,
-    lookupTables: removeDuplicatedPublicKeys([
-      swapLookupTable,
-      new web3.PublicKey(LOOKUP_TABLE),
-      closeLookupTable,
-    ]),
+    lookupTables,
   }
 }
 
@@ -139,7 +134,12 @@ const getTxnDataByBorrowType = async ({
       sendTxn: sendTxnPlaceHolder,
     })
 
-    return { instructions, signers, optimisticResult: optimisticResults[0] }
+    return {
+      instructions,
+      signers,
+      optimisticResult: optimisticResults[0],
+      lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    }
   }
 
   if (borrowType === BorrowType.CNft) {
@@ -182,7 +182,12 @@ const getTxnDataByBorrowType = async ({
       sendTxn: sendTxnPlaceHolder,
     })
 
-    return { instructions, signers, optimisticResult: optimisticResults[0] }
+    return {
+      instructions,
+      signers,
+      optimisticResult: optimisticResults[0],
+      lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    }
   }
 
   const ruleSet = await fetchRuleset({
@@ -221,7 +226,12 @@ const getTxnDataByBorrowType = async ({
     sendTxn: sendTxnPlaceHolder,
   })
 
-  return { instructions, signers, optimisticResult: optimisticResults[0] }
+  return {
+    instructions,
+    signers,
+    optimisticResult: optimisticResults[0],
+    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+  }
 }
 
 const getNftBorrowType = (nft: core.BorrowNft): BorrowType => {
@@ -229,4 +239,39 @@ const getNftBorrowType = (nft: core.BorrowNft): BorrowType => {
     return BorrowType.StakedBanx
   if (nft.nft.compression) return BorrowType.CNft
   return BorrowType.Default
+}
+
+const wrapWithBanxSolSwapInstructions = async ({
+  loanValue,
+  instructions,
+  lookupTables,
+  result,
+  signers,
+  walletAndConnection,
+}: CreateTxnData<BorrowTxnOptimisticResult> & {
+  loanValue: number
+  walletAndConnection: WalletAndConnection
+}): Promise<CreateTxnData<BorrowTxnOptimisticResult>> => {
+  const { instructions: swapInstructions, lookupTable: swapLookupTable } =
+    await banxSol.getSwapBanxSolToSolInstructions({
+      //? 0.99 --> without upfront fee
+      inputAmount: new BN(loanValue).mul(new BN(99)).div(new BN(100)),
+      walletAndConnection,
+    })
+
+  const { instructions: closeInstructions, lookupTable: closeLookupTable } =
+    await banxSol.getCloseBanxSolATAsInstructions({
+      walletAndConnection,
+    })
+
+  return {
+    instructions: [...instructions, ...swapInstructions, ...closeInstructions],
+    signers,
+    result,
+    lookupTables: removeDuplicatedPublicKeys([
+      swapLookupTable,
+      ...(lookupTables ?? []),
+      closeLookupTable,
+    ]),
+  }
 }

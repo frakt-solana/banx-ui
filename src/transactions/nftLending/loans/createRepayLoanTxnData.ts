@@ -13,7 +13,11 @@ import { helius } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BANX_STAKING, BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
-import { calculateLoanRepayValueOnCertainDate, removeDuplicatedPublicKeys } from '@banx/utils'
+import {
+  calculateLoanRepayValueOnCertainDate,
+  isBanxSolTokenType,
+  removeDuplicatedPublicKeys,
+} from '@banx/utils'
 
 import { fetchRuleset } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
@@ -34,18 +38,6 @@ export const createRepayLoanTxnData: CreateRepayLoanTxnData = async ({
 }) => {
   const borrowType = getLoanBorrowType(loan)
 
-  const repayValue = calculateLoanRepayValueOnCertainDate({
-    loan,
-    upfrontFeeIncluded: true,
-    date: moment().unix() + 60,
-  })
-
-  const { instructions: swapInstructions, lookupTable: swapLookupTable } =
-    await banxSol.getSwapSolToBanxSolInstructions({
-      inputAmount: repayValue,
-      walletAndConnection,
-    })
-
   const {
     instructions: repayInstructions,
     signers: repaySigners,
@@ -57,11 +49,6 @@ export const createRepayLoanTxnData: CreateRepayLoanTxnData = async ({
     walletAndConnection,
   })
 
-  const { instructions: closeInstructions, lookupTable: closeLookupTable } =
-    await banxSol.getCloseBanxSolATAsInstructions({
-      walletAndConnection,
-    })
-
   const optimisticLoan: core.Loan = {
     publicKey: optimisticResult.fraktBond.publicKey,
     fraktBond: optimisticResult.fraktBond,
@@ -69,11 +56,22 @@ export const createRepayLoanTxnData: CreateRepayLoanTxnData = async ({
     nft: loan.nft,
   }
 
+  if (isBanxSolTokenType(loan.bondTradeTransaction.lendingToken)) {
+    return await wrapWithBanxSolSwapInstructions({
+      loan,
+      walletAndConnection,
+      instructions: repayInstructions,
+      signers: repaySigners,
+      lookupTables,
+      result: optimisticLoan,
+    })
+  }
+
   return {
-    instructions: [...swapInstructions, ...repayInstructions, ...closeInstructions],
+    instructions: repayInstructions,
     signers: repaySigners,
     result: optimisticLoan,
-    lookupTables: removeDuplicatedPublicKeys([swapLookupTable, ...lookupTables, closeLookupTable]),
+    lookupTables,
   }
 }
 
@@ -223,4 +221,41 @@ export const getLoanBorrowType = (loan: core.Loan) => {
     return BorrowType.StakedBanx
   if (loan.nft.compression) return BorrowType.CNft
   return BorrowType.Default
+}
+
+const wrapWithBanxSolSwapInstructions = async ({
+  loan,
+  instructions,
+  lookupTables,
+  result,
+  signers,
+  walletAndConnection,
+}: CreateTxnData<core.Loan> & CreateRepayLoanTxnDataParams): Promise<CreateTxnData<core.Loan>> => {
+  const repayValue = calculateLoanRepayValueOnCertainDate({
+    loan,
+    upfrontFeeIncluded: true,
+    date: moment().unix() + 60,
+  })
+
+  const { instructions: swapInstructions, lookupTable: swapLookupTable } =
+    await banxSol.getSwapSolToBanxSolInstructions({
+      inputAmount: repayValue,
+      walletAndConnection,
+    })
+
+  const { instructions: closeInstructions, lookupTable: closeLookupTable } =
+    await banxSol.getCloseBanxSolATAsInstructions({
+      walletAndConnection,
+    })
+
+  return {
+    instructions: [...swapInstructions, ...instructions, ...closeInstructions],
+    signers,
+    result,
+    lookupTables: removeDuplicatedPublicKeys([
+      swapLookupTable,
+      ...(lookupTables ?? []),
+      closeLookupTable,
+    ]),
+  }
 }

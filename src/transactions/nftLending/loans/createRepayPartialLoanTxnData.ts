@@ -8,15 +8,23 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
-import { calculateLoanRepayValueOnCertainDate, removeDuplicatedPublicKeys } from '@banx/utils'
+import {
+  calculateLoanRepayValueOnCertainDate,
+  isBanxSolTokenType,
+  removeDuplicatedPublicKeys,
+} from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
-type CreateRepayPartialLoanTxnData = (params: {
+type CreateRepayPartialLoanTxnDataParams = {
   loan: core.Loan
   fractionToRepay: number //? F.E 50% => 5000
   walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<core.Loan>>
+}
+
+type CreateRepayPartialLoanTxnData = (
+  params: CreateRepayPartialLoanTxnDataParams,
+) => Promise<CreateTxnData<core.Loan>>
 
 export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = async ({
   fractionToRepay,
@@ -27,25 +35,7 @@ export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = asyn
 
   const { fraktBond, bondTradeTransaction, nft } = loan
 
-  const repayValue = calculateLoanRepayValueOnCertainDate({
-    loan,
-    upfrontFeeIncluded: false,
-    date: moment().unix() + 60,
-  })
-    .mul(new BN(fractionToRepay))
-    .div(new BN(BASE_POINTS))
-
-  const { instructions: swapInstructions, lookupTable: swapLookupTable } =
-    await banxSol.getSwapSolToBanxSolInstructions({
-      inputAmount: repayValue,
-      walletAndConnection,
-    })
-
-  const {
-    instructions: repayInstructions,
-    signers: repaySigners,
-    optimisticResults,
-  } = await repayPartialPerpetualLoan({
+  const { instructions, signers, optimisticResults } = await repayPartialPerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     args: {
       fractionToRepay,
@@ -68,10 +58,7 @@ export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = asyn
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const { instructions: closeInstructions, lookupTable: closeLookupTable } =
-    await banxSol.getCloseBanxSolATAsInstructions({
-      walletAndConnection,
-    })
+  const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
 
   const optimisticResult: core.Loan = optimisticResults.map((optimistic) => ({
     publicKey: optimistic.fraktBond.publicKey,
@@ -80,14 +67,64 @@ export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = asyn
     nft,
   }))[0]
 
+  if (isBanxSolTokenType(bondTradeTransaction.lendingToken)) {
+    return await wrapWithBanxSolSwapInstructions({
+      loan,
+      fractionToRepay,
+      walletAndConnection,
+      instructions,
+      signers,
+      lookupTables,
+      result: optimisticResult,
+    })
+  }
+
   return {
-    instructions: [...swapInstructions, ...repayInstructions, ...closeInstructions],
-    signers: repaySigners,
+    instructions,
+    signers,
+    lookupTables,
+    result: optimisticResult,
+  }
+}
+
+const wrapWithBanxSolSwapInstructions = async ({
+  loan,
+  fractionToRepay,
+  instructions,
+  lookupTables,
+  result,
+  signers,
+  walletAndConnection,
+}: CreateTxnData<core.Loan> & CreateRepayPartialLoanTxnDataParams): Promise<
+  CreateTxnData<core.Loan>
+> => {
+  const repayValue = calculateLoanRepayValueOnCertainDate({
+    loan,
+    upfrontFeeIncluded: false,
+    date: moment().unix() + 60,
+  })
+    .mul(new BN(fractionToRepay))
+    .div(new BN(BASE_POINTS))
+
+  const { instructions: swapInstructions, lookupTable: swapLookupTable } =
+    await banxSol.getSwapSolToBanxSolInstructions({
+      inputAmount: repayValue,
+      walletAndConnection,
+    })
+
+  const { instructions: closeInstructions, lookupTable: closeLookupTable } =
+    await banxSol.getCloseBanxSolATAsInstructions({
+      walletAndConnection,
+    })
+
+  return {
+    instructions: [...swapInstructions, ...instructions, ...closeInstructions],
+    signers,
     lookupTables: removeDuplicatedPublicKeys([
       swapLookupTable,
-      new web3.PublicKey(LOOKUP_TABLE),
+      ...(lookupTables ?? []),
       closeLookupTable,
     ]),
-    result: optimisticResult,
+    result,
   }
 }

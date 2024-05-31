@@ -1,4 +1,5 @@
 import { web3 } from 'fbonds-core'
+import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   BondOfferOptimistic,
   updatePerpetualOfferBonding,
@@ -9,18 +10,27 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
-import { ZERO_BN, calculateIdleFundsInOffer, removeDuplicatedPublicKeys } from '@banx/utils'
+import {
+  ZERO_BN,
+  calculateIdleFundsInOffer,
+  isBanxSolTokenType,
+  removeDuplicatedPublicKeys,
+} from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
-type CreateUpdateBondingOfferTxnData = (params: {
+type CreateUpdateBondingOfferTxnDataParams = {
   loanValue: number //? human number
   loansAmount: number
   deltaValue: number //? human number
   offer: core.Offer
   tokenType: LendingTokenType
   walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<BondOfferOptimistic>>
+}
+
+type CreateUpdateBondingOfferTxnData = (
+  params: CreateUpdateBondingOfferTxnDataParams,
+) => Promise<CreateTxnData<BondOfferOptimistic>>
 
 export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = async ({
   loanValue,
@@ -30,11 +40,7 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
   tokenType,
   walletAndConnection,
 }) => {
-  const {
-    instructions: updateInstructions,
-    signers: updateSigners,
-    optimisticResult,
-  } = await updatePerpetualOfferBonding({
+  const { instructions, signers, optimisticResult } = await updatePerpetualOfferBonding({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     connection: walletAndConnection.connection,
     accounts: {
@@ -53,51 +59,100 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const newOffer = optimisticResult?.bondOffer
+  const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
+
+  if (isBanxSolTokenType(tokenType)) {
+    return await wrapWithBanxSolSwapInstructions({
+      loanValue,
+      loansAmount,
+      deltaValue,
+      offer,
+      tokenType,
+      walletAndConnection,
+      instructions,
+      lookupTables,
+      result: optimisticResult,
+      signers,
+    })
+  }
+
+  return {
+    instructions,
+    signers,
+    result: optimisticResult,
+    lookupTables,
+  }
+}
+
+const wrapWithBanxSolSwapInstructions = async ({
+  offer,
+  instructions,
+  lookupTables,
+  result,
+  signers,
+  walletAndConnection,
+}: CreateTxnData<BondOfferOptimistic> & CreateUpdateBondingOfferTxnDataParams): Promise<
+  CreateTxnData<BondOfferOptimistic>
+> => {
+  const oldOfferSize = calculateIdleFundsInOffer(offer)
+
+  const newOffer = result?.bondOffer
   if (!newOffer) {
     throw new Error('Optimistic offer doesnt exist')
   }
-
-  const oldOfferSize = calculateIdleFundsInOffer(offer)
 
   //? Optimistic offer is broken
   const newOfferSize = calculateIdleFundsInOffer(newOffer)
 
   const diff = newOfferSize.sub(oldOfferSize)
 
-  const { instructions: swapSolToBanxSolInstructions, lookupTable: swapSolToBanxSolLookupTable } =
-    await banxSol.getSwapSolToBanxSolInstructions({
-      inputAmount: diff.abs(),
-      walletAndConnection,
-    })
-
-  const { instructions: swapBanxSolToSolInstructions, lookupTable: swapBanxSolToSolLookupTable } =
-    await banxSol.getSwapBanxSolToSolInstructions({
-      inputAmount: diff.abs(),
-      walletAndConnection,
-    })
-
   const { instructions: closeInstructions, lookupTable: closeLookupTable } =
     await banxSol.getCloseBanxSolATAsInstructions({
       walletAndConnection,
     })
 
-  //TODO: Refactor
-  const instructions: web3.TransactionInstruction[] = []
-  if (diff.gt(ZERO_BN)) instructions.push(...swapSolToBanxSolInstructions)
-  instructions.push(...updateInstructions)
-  if (diff.lt(ZERO_BN)) instructions.push(...swapBanxSolToSolInstructions)
-  instructions.push(...closeInstructions)
+  if (diff.gt(ZERO_BN)) {
+    const { instructions: swapSolToBanxSolInstructions, lookupTable: swapSolToBanxSolLookupTable } =
+      await banxSol.getSwapSolToBanxSolInstructions({
+        inputAmount: diff.abs(),
+        walletAndConnection,
+      })
 
-  const lookupTables: web3.PublicKey[] = []
-  if (diff.gt(ZERO_BN)) lookupTables.push(swapSolToBanxSolLookupTable)
-  if (diff.lt(ZERO_BN)) lookupTables.push(swapBanxSolToSolLookupTable)
-  lookupTables.push(closeLookupTable)
+    return {
+      instructions: [...swapSolToBanxSolInstructions, ...instructions, ...closeInstructions],
+      signers,
+      result,
+      lookupTables: removeDuplicatedPublicKeys([
+        swapSolToBanxSolLookupTable,
+        ...(lookupTables ?? []),
+        closeLookupTable,
+      ]),
+    }
+  }
+
+  if (diff.lt(ZERO_BN)) {
+    const { instructions: swapBanxSolToSolInstructions, lookupTable: swapBanxSolToSolLookupTable } =
+      await banxSol.getSwapBanxSolToSolInstructions({
+        inputAmount: diff.abs(),
+        walletAndConnection,
+      })
+
+    return {
+      instructions: [...instructions, ...swapBanxSolToSolInstructions, ...closeInstructions],
+      signers,
+      result,
+      lookupTables: removeDuplicatedPublicKeys([
+        ...(lookupTables ?? []),
+        swapBanxSolToSolLookupTable,
+        closeLookupTable,
+      ]),
+    }
+  }
 
   return {
     instructions,
-    signers: updateSigners,
-    result: optimisticResult,
-    lookupTables: removeDuplicatedPublicKeys(lookupTables),
+    signers,
+    result,
+    lookupTables,
   }
 }
