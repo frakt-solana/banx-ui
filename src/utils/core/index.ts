@@ -1,4 +1,7 @@
+import { BN } from 'fbonds-core'
 import { reduce } from 'lodash'
+
+import { core } from '@banx/api/nft'
 
 export const calcWeightedAverage = (nums: number[], weights: number[]) => {
   //TODO r: Move to somewhere
@@ -16,21 +19,26 @@ export const calcWeightedAverage = (nums: number[], weights: number[]) => {
   return weightedAverage || 0
 }
 
-type CalculateOfferSizeParams = {
+type CalculateNewOfferSizeParams = {
   loanValue: number
   loansAmount: number
   deltaValue: number
 }
-export const calculateOfferSize = ({
+export const calculateNewOfferSize = ({
   loanValue,
   loansAmount,
   deltaValue,
-}: CalculateOfferSizeParams): number => {
+}: CalculateNewOfferSizeParams): number => {
   //? Sum of arithmetic progression
   const a_n = loanValue - deltaValue * (loansAmount - 1)
   const S = ((loanValue + a_n) * loansAmount) / 2
 
   return S
+}
+
+export const calculateIdleFundsInOffer = (offer: core.Offer): BN => {
+  const { fundsSolOrTokenBalance, bidSettlement, concentrationIndex } = offer
+  return new BN(fundsSolOrTokenBalance).add(new BN(bidSettlement)).add(new BN(concentrationIndex))
 }
 
 export * from './loans'
