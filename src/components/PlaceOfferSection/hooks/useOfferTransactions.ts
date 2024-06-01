@@ -1,6 +1,9 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { BondOfferOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondFeatures, BondingCurveType } from 'fbonds-core/lib/fbond-protocol/types'
+import {
+  BondOfferOptimistic,
+  getBondingCurveTypeFromLendingToken,
+} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { BondFeatures } from 'fbonds-core/lib/fbond-protocol/types'
 import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
@@ -22,7 +25,6 @@ import {
   enqueueSnackbar,
   enqueueTransactionSent,
   enqueueWaitingConfirmation,
-  isSolTokenType,
 } from '@banx/utils'
 
 export const useOfferTransactions = ({
@@ -48,9 +50,7 @@ export const useOfferTransactions = ({
   const { connection } = useConnection()
   const { tokenType } = useNftTokenType()
 
-  const bondingCurveType = isSolTokenType(tokenType)
-    ? BondingCurveType.Linear
-    : BondingCurveType.LinearUsdc
+  const bondingCurveType = getBondingCurveTypeFromLendingToken(tokenType)
 
   const onCreateOffer = async () => {
     const loadingSnackbarId = uniqueId()
