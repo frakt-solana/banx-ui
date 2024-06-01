@@ -9,26 +9,39 @@ import { useOffersTokenContent } from './hooks'
 import styles from './OffersTokenTabContent.module.less'
 
 const OffersTokenTabContent = () => {
-  const { offers, isLoading, showEmptyList, searchSelectParams, sortParams, emptyListParams } =
-    useOffersTokenContent()
+  const {
+    offersPreview,
+    isLoading,
+    showEmptyList,
+    searchSelectParams,
+    sortParams,
+    emptyListParams,
+    visibleOfferPubkey,
+    onCardClick,
+  } = useOffersTokenContent()
 
   if (showEmptyList) return <EmptyList {...emptyListParams} />
 
   return (
     <div className={styles.content}>
-      {isLoading ? (
-        <Loader size="small" />
-      ) : (
-        <>
-          <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
+      <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
 
+      {isLoading && <Loader />}
+
+      {!isLoading && (
+        <>
           <div className={styles.offersList}>
-            {offers.map((offer) => (
-              <OfferTokenCard key={offer.publicKey} offerPreview={offer} />
+            {offersPreview.map((offerPreview) => (
+              <OfferTokenCard
+                key={offerPreview.publicKey}
+                offerPreview={offerPreview}
+                onClick={() => onCardClick(offerPreview.publicKey)}
+                isOpen={visibleOfferPubkey === offerPreview.publicKey}
+              />
             ))}
           </div>
 
-          <Summary offers={offers} />
+          <Summary offersPreview={offersPreview} />
         </>
       )}
     </div>

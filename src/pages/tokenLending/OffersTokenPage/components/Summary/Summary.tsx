@@ -10,13 +10,13 @@ import { core } from '@banx/api/tokens'
 import styles from './Summary.module.less'
 
 interface SummaryProps {
-  offers: core.TokenOfferPreview[]
+  offersPreview: core.TokenOfferPreview[]
 }
 
-const Summary: FC<SummaryProps> = ({ offers }) => {
+const Summary: FC<SummaryProps> = ({ offersPreview }) => {
   const totalAccruedInterest = useMemo(
-    () => sumBy(offers, (offer) => offer.tokenOfferPreview.accruedInterest),
-    [offers],
+    () => sumBy(offersPreview, (offer) => offer.tokenOfferPreview.accruedInterest),
+    [offersPreview],
   )
 
   return (

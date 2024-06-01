@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { filter, first, groupBy, includes, map, sumBy } from 'lodash'
@@ -28,6 +28,13 @@ export const useOffersTokenContent = () => {
   const { offersPreview, isLoading } = useTokenOffersPreview()
 
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
+  const [visibleOfferPubkey, setOfferPubkey] = useState('')
+
+  const onCardClick = (offerPubkey: string) => {
+    const isSameOfferPubkey = visibleOfferPubkey === offerPubkey
+    const nextValue = !isSameOfferPubkey ? offerPubkey : ''
+    return setOfferPubkey(nextValue)
+  }
 
   const filteredOffers = useMemo(() => {
     if (selectedCollections.length) {
@@ -62,12 +69,14 @@ export const useOffersTokenContent = () => {
   const showEmptyList = (!offersPreview.length && !isLoading) || !connected
 
   return {
-    offers: sortedOffers,
+    offersPreview: sortedOffers,
     isLoading,
     searchSelectParams,
     sortParams,
     showEmptyList,
     emptyListParams,
+    visibleOfferPubkey,
+    onCardClick,
   }
 }
 

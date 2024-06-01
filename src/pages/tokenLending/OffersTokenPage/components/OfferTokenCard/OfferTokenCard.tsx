@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from 'react'
+import { FC } from 'react'
 
 import classNames from 'classnames'
 
@@ -8,8 +8,6 @@ import { DisplayValue, createPercentValueJSX } from '@banx/components/TableCompo
 
 import { core } from '@banx/api/tokens'
 import { ChevronDown } from '@banx/icons'
-import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
-import { convertToSynthetic, useSyntheticTokenOffers } from '@banx/store/token'
 
 import ExpandedCardContent from '../ExpandedCardContent'
 
@@ -17,32 +15,14 @@ import styles from './OfferTokenCard.module.less'
 
 interface OfferTokenCardProps {
   offerPreview: core.TokenOfferPreview
+  onClick: () => void
+  isOpen: boolean
 }
 
-const OfferTokenCard: FC<OfferTokenCardProps> = ({ offerPreview }) => {
-  const [isOpen, setIsOpen] = useState(false)
-
-  const { offers } = useTokenMarketOffers(offerPreview.tokenMarketPreview.marketPubkey)
-
-  const offer = useMemo(() => {
-    return offers.find(({ publicKey }) => publicKey === offerPreview.publicKey)
-  }, [offerPreview.publicKey, offers])
-
-  const { setOffer: setSyntheticOffer } = useSyntheticTokenOffers()
-
-  const onCardClick = () => {
-    if (!offer) return
-
-    setSyntheticOffer(convertToSynthetic(offer, true))
-    setIsOpen(!isOpen)
-  }
-
+const OfferTokenCard: FC<OfferTokenCardProps> = ({ offerPreview, onClick, isOpen }) => {
   return (
     <div className={styles.card}>
-      <div
-        className={classNames(styles.cardBody, { [styles.opened]: isOpen })}
-        onClick={onCardClick}
-      >
+      <div className={classNames(styles.cardBody, { [styles.opened]: isOpen })} onClick={onClick}>
         <MarketMainInfo offerPreview={offerPreview} />
         <div className={styles.additionalContentWrapper}>
           <MarketAdditionalInfo offerPreview={offerPreview} isOpen={isOpen} />
@@ -76,11 +56,7 @@ const MarketMainInfo: FC<{ offerPreview: core.TokenOfferPreview }> = ({ offerPre
       <div className={styles.mainInfoContent}>
         <h4 className={styles.collateralName}>{collateralTokenTicker}</h4>
         <div className={styles.mainInfoStats}>
-          <StatInfo
-            label="Market"
-            value={<DisplayValue value={collateralTokenPrice} />}
-            tooltipText=""
-          />
+          <StatInfo label="Market" value={collateralTokenPrice} tooltipText="" />
           <StatInfo label="Top offer" value={<DisplayValue value={bestOffer} />} tooltipText="" />
         </div>
       </div>

@@ -1,30 +1,25 @@
 import { useEffect, useMemo } from 'react'
 
 import { useWalletBalance } from '@banx/hooks'
-import {
-  useTokenMarketOffers,
-  useTokenMarketsPreview,
-} from '@banx/pages/tokenLending/LendTokenPage'
+import { useTokenMarketsPreview } from '@banx/pages/tokenLending/LendTokenPage'
 import { useNftTokenType } from '@banx/store/nft'
 import { getTokenDecimals } from '@banx/utils'
 
 import { getErrorMessage } from '../helpers'
 import { useOfferFormController } from './useOfferFormController'
-import { useSyntheticTokenOffer } from './useSyntheticTokenOffer'
+import { useTokenOffer } from './useTokenOffer'
 import { useTokenOfferTransactions } from './useTokenOfferTransaction'
 
 export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) => {
   const { tokenType } = useNftTokenType()
   const walletBalance = useWalletBalance(tokenType)
 
-  const { syntheticOffer, setSyntheticOffer } = useSyntheticTokenOffer(offerPubkey, marketPubkey)
-  const { offers, updateOrAddOffer } = useTokenMarketOffers(marketPubkey)
+  const { syntheticOffer, setSyntheticOffer, offer, updateOrAddOffer } = useTokenOffer(
+    offerPubkey,
+    marketPubkey,
+  )
+
   const { marketsPreview } = useTokenMarketsPreview()
-
-  const offer = useMemo(() => {
-    return offers.find((offer) => offer.publicKey === offerPubkey)
-  }, [offers, offerPubkey])
-
   const market = useMemo(() => {
     return marketsPreview.find((market) => market.marketPubkey === marketPubkey)
   }, [marketPubkey, marketsPreview])
