@@ -59,3 +59,17 @@ export interface TokenMarketPreviewResponse {
   data: TokenMarketPreview[]
   meta: PaginationMeta
 }
+
+export interface TokenOfferPreview {
+  publicKey: string
+  tokenMarketPreview: TokenMarketPreview
+  tokenOfferPreview: {
+    publicKey: string
+    liquidatedLoansAmount: number
+    terminatingLoansAmount: number
+    repaymentCallsAmount: number
+    inLoans: number
+    offerSize: number
+    accruedInterest: number
+  }
+}

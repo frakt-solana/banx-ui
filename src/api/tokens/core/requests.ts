@@ -5,7 +5,7 @@ import { Offer, PairSchema } from '@banx/api/nft'
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import { convertToMarketType } from '../helpers'
-import { TokenMarketPreview, TokenMarketPreviewResponse } from './types'
+import { TokenMarketPreview, TokenMarketPreviewResponse, TokenOfferPreview } from './types'
 
 type FetchTokenMarketsPreview = (props: {
   tokenType: LendingTokenType
@@ -51,4 +51,25 @@ export const fetchTokenMarketOffers: FetchTokenMarketOffers = async ({
   }
 
   return data?.data
+}
+
+type FetchTokenOffersPreview = (props: {
+  walletPubkey: string
+  tokenType: LendingTokenType
+}) => Promise<TokenOfferPreview[]>
+export const fetchTokenOffersPreview: FetchTokenOffersPreview = async ({
+  walletPubkey,
+  tokenType,
+}) => {
+  const queryParams = new URLSearchParams({
+    getAll: String(true),
+    isPrivate: String(IS_PRIVATE_MARKETS),
+    marketType: String(convertToMarketType(tokenType)),
+  })
+
+  const { data } = await axios.get<{ data: TokenOfferPreview[] }>(
+    `${BACKEND_BASE_URL}/my-offers/${walletPubkey}?${queryParams.toString()}`,
+  )
+
+  return data.data ?? []
 }
