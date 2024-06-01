@@ -15,7 +15,7 @@ export const useOfferFormController = (syntheticOffer: SyntheticTokenOffer) => {
   const initialValues = useMemo(() => {
     return {
       collateralsPerToken: formatNumber(syntheticCollateralsPerToken / decimals),
-      offerSize: formatNumber(syntheticOfferSize),
+      offerSize: formatNumber(syntheticOfferSize / decimals),
     }
   }, [decimals, syntheticCollateralsPerToken, syntheticOfferSize])
 

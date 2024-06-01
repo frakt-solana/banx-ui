@@ -18,8 +18,12 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
   const walletBalance = useWalletBalance(tokenType)
 
   const { syntheticOffer, setSyntheticOffer } = useSyntheticTokenOffer(offerPubkey, marketPubkey)
-  const { updateOrAddOffer } = useTokenMarketOffers(marketPubkey)
+  const { offers, updateOrAddOffer } = useTokenMarketOffers(marketPubkey)
   const { marketsPreview } = useTokenMarketsPreview()
+
+  const offer = useMemo(() => {
+    return offers.find((offer) => offer.publicKey === offerPubkey)
+  }, [offers, offerPubkey])
 
   const market = useMemo(() => {
     return marketsPreview.find((market) => market.marketPubkey === marketPubkey)
@@ -54,6 +58,7 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
     loanValue: offerSize,
     updateOrAddOffer,
     resetFormValues,
+    optimisticOffer: offer,
   })
 
   const offerErrorMessage = getErrorMessage({
