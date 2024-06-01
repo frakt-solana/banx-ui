@@ -9,14 +9,16 @@
 }
 
 .cardBody {
-  border-bottom: var(--border-less-primary);
-
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: relative;
   padding: 12px 24px;
   width: 100%;
+
+  &.opened {
+    border-bottom: var(--border-less-primary);
+  }
 
   @media (max-width: 960px) {
     flex-direction: column;
@@ -138,11 +140,11 @@
 
 .additionalStat {
   align-items: flex-end;
-  max-width: 240px;
+  max-width: 196px;
   width: 100%;
 
   @media (max-width: 1380px) {
-    max-width: 200px;
+    max-width: 156px;
   }
 
   @media (max-width: 1240px) {
@@ -162,3 +164,18 @@
   color: var(--additional-green-primary-deep);
 }
 // * MarketAdditionalInfo * //
+
+// * LoansStatus * //
+.loansStatus {
+  display: flex;
+  align-items: center;
+}
+
+.loansStatusIcon {
+  display: flex;
+  align-items: center;
+
+  span {
+    font: var(--body-text-md);
+  }
+}

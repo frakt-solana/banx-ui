@@ -3,11 +3,11 @@ import { FC } from 'react'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
-import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
+import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/tokens'
-import { ChevronDown } from '@banx/icons'
+import { ChevronDown, Coin, CoinPlus, Warning } from '@banx/icons'
 
 import ExpandedCardContent from '../ExpandedCardContent'
 
@@ -70,7 +70,13 @@ interface MarketAdditionalInfoProps {
 }
 
 const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ offerPreview, isOpen }) => {
-  const { inLoans, offerSize } = offerPreview.tokenOfferPreview
+  const {
+    inLoans,
+    offerSize,
+    terminatingLoansAmount,
+    liquidatedLoansAmount,
+    repaymentCallsAmount,
+  } = offerPreview.tokenOfferPreview
   const { marketApr, marketApy } = offerPreview.tokenMarketPreview
 
   return (
@@ -95,9 +101,49 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ offerPreview, isO
           </>
         }
         tooltipText="APR / APY"
-        valueType={VALUES_TYPES.STRING}
         classNamesProps={{ container: styles.additionalStat, value: styles.additionalAprStat }}
       />
+      <StatInfo
+        label="Status"
+        value={
+          <LoansStatus
+            terminatingLoansAmount={terminatingLoansAmount}
+            liquidatedLoansAmount={liquidatedLoansAmount}
+            repaymentCallsAmount={repaymentCallsAmount}
+          />
+        }
+        tooltipText="Status"
+        classNamesProps={{ container: styles.additionalStat }}
+      />
+    </div>
+  )
+}
+
+interface LoansStatusProps {
+  terminatingLoansAmount: number
+  liquidatedLoansAmount: number
+  repaymentCallsAmount: number
+}
+
+const LoansStatus: FC<LoansStatusProps> = ({
+  terminatingLoansAmount,
+  liquidatedLoansAmount,
+  repaymentCallsAmount,
+}) => {
+  return (
+    <div className={styles.loansStatus}>
+      <div className={styles.loansStatusIcon}>
+        <CoinPlus />
+        <span>{terminatingLoansAmount}</span>,
+      </div>
+      <div className={styles.loansStatusIcon}>
+        <Warning />
+        <span>{liquidatedLoansAmount}</span>,
+      </div>
+      <div className={styles.loansStatusIcon}>
+        <Coin />
+        <span>{repaymentCallsAmount}</span>
+      </div>
     </div>
   )
 }
