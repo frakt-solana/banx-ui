@@ -21,7 +21,7 @@ export const MainSummary: FC<MainSummaryProps> = ({ market, collateralPerToken }
   const { collateralTokenPrice = 0 } = market || {}
 
   const ltv = (collateralPerToken / collateralTokenPrice) * 100 || 0
-  const apr = 0
+  const apr = 0 //TODO (TokenLending): Use rateBasePoints from market or calculate dynamically?
 
   return (
     <div className={styles.mainSummary}>
@@ -55,7 +55,7 @@ export const AdditionalSummary: FC<OfferSummaryProps> = ({ offerSize }) => {
     loanValue: offerSize,
     startTime: currentTimeUnix,
     currentTime: currentTimeUnix + SECONDS_IN_DAY * 7,
-    rateBasePoints: 0,
+    rateBasePoints: 0, //TODO (TokenLending): Use rateBasePoints from market or calculate dynamically?
   })
 
   return (

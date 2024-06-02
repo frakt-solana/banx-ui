@@ -33,7 +33,7 @@ const Offer: FC<OfferProps> = ({ offer }) => {
     [styles.hidden]: !isEdit && !isNewOffer,
   }
 
-  //TODO: calculate apr
+  //TODO (TokenLending): Use rateBasePoints from market or calculate dynamically?
   const apr = 0
 
   return (
