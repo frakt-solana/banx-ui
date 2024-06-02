@@ -9,14 +9,16 @@
 }
 
 .cardBody {
-  border-bottom: var(--border-less-primary);
-
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: relative;
   padding: 12px 24px;
   width: 100%;
+
+  &.opened {
+    border-bottom: var(--border-less-primary);
+  }
 
   @media (max-width: 960px) {
     flex-direction: column;
