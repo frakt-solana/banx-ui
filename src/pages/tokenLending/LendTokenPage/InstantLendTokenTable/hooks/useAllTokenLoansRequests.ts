@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { produce } from 'immer'
 import { create } from 'zustand'
 
+import { TokenLoan } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
 
 import { MOCK_RESPONSE } from './mockResponse'
@@ -46,7 +47,7 @@ export const useAllTokenLoansRequests = () => {
   }, [data, mints])
 
   return {
-    loans,
+    loans: loans as TokenLoan[],
     isLoading,
     addMints,
   }
