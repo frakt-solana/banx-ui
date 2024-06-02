@@ -127,6 +127,7 @@ export const useTokenOfferTransactions = ({
         loansAmount: 1,
         deltaValue: 0,
         tokenType,
+        collateralsPerToken,
         walletAndConnection,
       })
 

@@ -62,7 +62,6 @@ export const useOfferFormController = (syntheticOffer: SyntheticTokenOffer) => {
 const formatNumber = (value: number, defaultValue = '0') => {
   if (!value) return defaultValue
 
-  const formattedValue = value.toFixed(2)
   //? Remove trailing zeros
-  return formattedValue.replace(/\.?0+$/, '')
+  return value.toString().replace(/\.?0+$/, '')
 }

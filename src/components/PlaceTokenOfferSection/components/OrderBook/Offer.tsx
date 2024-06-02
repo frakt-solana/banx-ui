@@ -7,7 +7,9 @@ import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { Pencil } from '@banx/icons'
+import { useNftTokenType } from '@banx/store/nft'
 import { SyntheticTokenOffer } from '@banx/store/token'
+import { getTokenDecimals } from '@banx/utils'
 
 import styles from './OrderBook.module.less'
 
@@ -19,6 +21,9 @@ const Offer: FC<OfferProps> = ({ offer }) => {
   const { publicKey: offerPubkey, collateralsPerToken, offerSize, isEdit } = offer
 
   const { connected } = useWallet()
+  const { tokenType } = useNftTokenType()
+
+  const tokenDesimals = getTokenDecimals(tokenType)
 
   const isNewOffer = connected && offerPubkey === PUBKEY_PLACEHOLDER
 
@@ -43,7 +48,7 @@ const Offer: FC<OfferProps> = ({ offer }) => {
             [styles.hightlight]: isEdit || isNewOffer,
           })}
         >
-          <DisplayValue value={collateralsPerToken} />
+          {collateralsPerToken / tokenDesimals}
         </p>
         <p className={styles.value}>{createPercentValueJSX(apr)}</p>
         <p className={styles.value}>
