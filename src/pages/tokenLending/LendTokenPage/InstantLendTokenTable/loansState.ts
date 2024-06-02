@@ -3,7 +3,7 @@ import { create } from 'zustand'
 
 import { core } from '@banx/api/tokens'
 
-type LoansState = {
+type LoansTokenState = {
   selection: core.TokenLoan[]
   set: (loans: core.TokenLoan[]) => void
   find: (loanPubkey: string) => core.TokenLoan | null
@@ -13,12 +13,12 @@ type LoansState = {
   clear: () => void
 }
 
-export const useLoansState = create<LoansState>((set, get) => ({
+export const useLoansTokenState = create<LoansTokenState>((set, get) => ({
   selection: [],
 
   set: (loans) => {
     return set(
-      produce((state: LoansState) => {
+      produce((state: LoansTokenState) => {
         state.selection = loans.map((loan) => loan)
       }),
     )
@@ -30,7 +30,7 @@ export const useLoansState = create<LoansState>((set, get) => ({
 
   add: (loan) => {
     return set(
-      produce((state: LoansState) => {
+      produce((state: LoansTokenState) => {
         state.selection.push(loan)
       }),
     )
@@ -38,7 +38,7 @@ export const useLoansState = create<LoansState>((set, get) => ({
 
   remove: (loanPubkey) => {
     return set(
-      produce((state: LoansState) => {
+      produce((state: LoansTokenState) => {
         state.selection = state.selection.filter(({ publicKey }) => publicKey !== loanPubkey)
       }),
     )
@@ -46,7 +46,7 @@ export const useLoansState = create<LoansState>((set, get) => ({
 
   clear: () => {
     set(
-      produce((state: LoansState) => {
+      produce((state: LoansTokenState) => {
         state.selection = []
       }),
     )

@@ -4,19 +4,20 @@ import { useQuery } from '@tanstack/react-query'
 import { produce } from 'immer'
 import { create } from 'zustand'
 
-import { core } from '@banx/api/nft'
 import { useNftTokenType } from '@banx/store/nft'
 
-interface HiddenNftsMintsState {
+import { MOCK_RESPONSE } from './mockResponse'
+
+interface HiddenCollateralMintsState {
   mints: string[]
   addMints: (mints: string[]) => void
 }
 
-const useHiddenNftsMint = create<HiddenNftsMintsState>((set) => ({
+const useHiddenCollateralMint = create<HiddenCollateralMintsState>((set) => ({
   mints: [],
   addMints: (mints) => {
     set(
-      produce((state: HiddenNftsMintsState) => {
+      produce((state: HiddenCollateralMintsState) => {
         state.mints = mints.map((nft) => nft)
       }),
     )
@@ -24,12 +25,12 @@ const useHiddenNftsMint = create<HiddenNftsMintsState>((set) => ({
 }))
 
 export const useAllTokenLoansRequests = () => {
-  const { mints, addMints } = useHiddenNftsMint()
+  const { mints, addMints } = useHiddenCollateralMint()
   const { tokenType } = useNftTokenType()
 
   const { data, isLoading } = useQuery(
-    ['allLoansRequests', tokenType],
-    () => core.fetchAllLoansRequests({ tokenType }),
+    ['allTokenLoansRequests', tokenType],
+    () => Promise.resolve(MOCK_RESPONSE),
     {
       staleTime: 5 * 1000,
       refetchOnWindowFocus: false,
@@ -41,7 +42,7 @@ export const useAllTokenLoansRequests = () => {
     if (!data) return []
 
     const combinedLoans = [...data.auctions, ...data.listings]
-    return combinedLoans.filter(({ nft }) => !mints.includes(nft.mint))
+    return combinedLoans.filter(({ collateral }) => !mints.includes(collateral.mint))
   }, [data, mints])
 
   return {

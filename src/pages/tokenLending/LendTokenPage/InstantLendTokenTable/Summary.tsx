@@ -10,14 +10,14 @@ import { useWalletModal } from '@banx/components/WalletModal'
 
 import { core } from '@banx/api/tokens'
 
-import { useLoansState } from './loansState'
+import { useLoansTokenState } from './loansState'
 
 import styles from './InstantLendTokenTable.module.less'
 
 export const Summary: FC<{ loans: core.TokenLoan[] }> = ({ loans }) => {
   const { connected } = useWallet()
   const { toggleVisibility } = useWalletModal()
-  const { selection, set: setSelection } = useLoansState()
+  const { selection, set: setSelection } = useLoansTokenState()
 
   const totalDebt = 0
   const totalWeeklyInterest = 0
@@ -31,7 +31,7 @@ export const Summary: FC<{ loans: core.TokenLoan[] }> = ({ loans }) => {
       return toggleVisibility()
     }
 
-    return
+    return 
   }
 
   const handleLoanSelection = (value = 0) => {

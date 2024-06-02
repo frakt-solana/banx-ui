@@ -145,3 +145,139 @@
   }
 }
 // * Summary * //
+
+// * FilterButtons * //
+.filterButtons {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+
+  @media (max-width: 640px) {
+    gap: 16px;
+  }
+}
+
+.filterButtonWrapper {
+  position: relative;
+
+  &[data-loans-amount]::after {
+    border-radius: 100px;
+    content: attr(data-loans-amount);
+    color: var(--pure-black);
+    font: var(--body-text-xs);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+
+    position: absolute;
+    top: -2px;
+    right: -8px;
+    min-width: 8px;
+    height: 16px;
+  }
+
+  &.auction[data-loans-amount]::after {
+    background: var(--additional-orange-primary);
+  }
+
+  &.freeze[data-loans-amount]::after {
+    background: var(--additional-blue-primary);
+  }
+}
+.freezeFilterButton,
+.auctionFilterButton {
+  &.active {
+    border-color: var(--content-primary);
+  }
+
+  &.disabled {
+    border-color: var(--content-secondary);
+
+    svg path {
+      fill: var(--content-secondary);
+    }
+  }
+
+  svg path {
+    fill: revert-layer;
+  }
+}
+
+.snowflakeIcon,
+.hourglassIcon {
+  min-width: 16px;
+  min-height: 16px;
+}
+.snowflakeIcon path:first-child {
+  fill: var(--content-primary);
+}
+
+.hourglassIcon path:last-child {
+  fill: var(--content-primary);
+}
+// * FilterButtons * //
+
+// * Cells * //
+.headerTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.checkbox {
+  height: 18px;
+  padding-left: 18px;
+}
+
+.tooltipContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tooltipContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 200px;
+
+  span:first-child {
+    color: var(--content-secondary);
+    font: var(--title-sm);
+    text-transform: uppercase;
+
+    @media (max-width: 640px) {
+      font: var(--title-xs);
+    }
+  }
+
+  span:last-child {
+    color: var(--pure-white);
+    font: var(--body-text-md);
+
+    @media (max-width: 640px) {
+      font: var(--body-text-sm);
+    }
+  }
+}
+// * Cells * //
+
+// * ActionsCell * //
+.actionsCell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 100%;
+
+  &.cardView {
+    gap: unset;
+  }
+}
+
+.actionButton {
+  width: 96px;
+}
+
+// * ActionsCell * //

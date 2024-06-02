@@ -8,7 +8,7 @@ import { useNftTokenType } from '@banx/store/nft'
 import { Summary } from './Summary'
 import { getTableColumns } from './columns'
 import { useInstantLendTokenTable } from './hooks'
-import { useLoansState } from './loansState'
+import { useLoansTokenState } from './loansState'
 
 import styles from './InstantLendTokenTable.module.less'
 
@@ -28,7 +28,7 @@ const InstantLendTokenTable: FC<InstantLendTableProps> = () => {
     find: findLoanInSelection,
     clear: clearSelection,
     set: setSelection,
-  } = useLoansState()
+  } = useLoansTokenState()
 
   //? Clear selection when tokenType changes
   //? To prevent selection transfering from one tokenType to another
