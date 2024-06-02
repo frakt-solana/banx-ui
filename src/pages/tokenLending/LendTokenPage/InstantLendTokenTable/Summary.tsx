@@ -31,7 +31,7 @@ export const Summary: FC<{ loans: core.TokenLoan[] }> = ({ loans }) => {
       return toggleVisibility()
     }
 
-    return 
+    return
   }
 
   const handleLoanSelection = (value = 0) => {
