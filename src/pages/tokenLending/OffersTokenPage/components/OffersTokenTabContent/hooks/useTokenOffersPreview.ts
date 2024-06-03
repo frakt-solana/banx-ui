@@ -30,6 +30,7 @@ export const useTokenOffersPreview = () => {
   const offersPreview = useMemo(() => {
     if (!data) return []
 
+    //TODO (TokenLending): Filter out offers that are closed and not have active loans
     return data.filter(
       ({ publicKey }) =>
         !optimisticOffers.find(

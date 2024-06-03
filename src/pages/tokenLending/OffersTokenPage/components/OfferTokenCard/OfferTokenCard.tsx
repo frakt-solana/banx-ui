@@ -65,7 +65,11 @@ const MarketMainInfo: FC<{ offerPreview: core.TokenOfferPreview }> = ({ offerPre
       <div className={styles.mainInfoContent}>
         <h4 className={styles.collateralName}>{collateralTokenTicker}</h4>
         <div className={styles.mainInfoStats}>
-          <StatInfo label="Market" value={collateralTokenPrice} tooltipText="" />
+          <StatInfo
+            label="Market"
+            value={<DisplayValue value={collateralTokenPrice} />}
+            tooltipText=""
+          />
           <StatInfo label="Top offer" value={<DisplayValue value={bestOffer} />} tooltipText="" />
         </div>
       </div>

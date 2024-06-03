@@ -19,6 +19,8 @@ const Summary: FC<SummaryProps> = ({ offersPreview }) => {
     [offersPreview],
   )
 
+  //TODO (TokenLending): - Add a button to claim the interest. Offer issue with transaction
+
   return (
     <div className={styles.container}>
       <div className={styles.mainStat}>
