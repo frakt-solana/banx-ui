@@ -5,9 +5,10 @@ import {
   closeTokenAccountBanxSol,
   swapSolToBanxSol,
 } from 'fbonds-core/lib/fbond-protocol/functions/banxSol'
-import { WalletAndConnection } from 'solana-transactions-executor'
+import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
+import { removeDuplicatedPublicKeys } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../helpers'
 
@@ -25,7 +26,7 @@ type GetSwapInstuctions = (params: {
   walletAndConnection: WalletAndConnection
 }) => Promise<{ instructions: web3.TransactionInstruction[]; lookupTable: web3.PublicKey }>
 
-export const getSwapSolToBanxSolInstructions: GetSwapInstuctions = async ({
+const getSwapSolToBanxSolInstructions: GetSwapInstuctions = async ({
   inputAmount,
   walletAndConnection,
 }) => {
@@ -51,7 +52,7 @@ export const getSwapSolToBanxSolInstructions: GetSwapInstuctions = async ({
   return { instructions, lookupTable: new web3.PublicKey(LOOKUP_TABLE) }
 }
 
-export const getSwapBanxSolToSolInstructions: GetSwapInstuctions = async ({
+const getSwapBanxSolToSolInstructions: GetSwapInstuctions = async ({
   inputAmount,
   walletAndConnection,
 }) => {
@@ -77,7 +78,7 @@ type GetCloseBanxSolATAsInstructions = (params: {
   walletAndConnection: WalletAndConnection
 }) => Promise<{ instructions: web3.TransactionInstruction[]; lookupTable: web3.PublicKey }>
 
-export const getCloseBanxSolATAsInstructions: GetCloseBanxSolATAsInstructions = async ({
+const getCloseBanxSolATAsInstructions: GetCloseBanxSolATAsInstructions = async ({
   walletAndConnection,
 }) => {
   const { instructions } = await closeTokenAccountBanxSol({
@@ -91,4 +92,65 @@ export const getCloseBanxSolATAsInstructions: GetCloseBanxSolATAsInstructions = 
   })
 
   return { instructions, lookupTable: new web3.PublicKey(LOOKUP_TABLE) }
+}
+
+type CombineWithBanxSolInstructionsParams<TxnResult> = {
+  inputAmount: BN
+  walletAndConnection: WalletAndConnection
+} & CreateTxnData<TxnResult>
+
+export const combineWithBuyBanxSolInstructions = async <TxnResult>({
+  inputAmount,
+  walletAndConnection,
+  ...txnData
+}: CombineWithBanxSolInstructionsParams<TxnResult>): Promise<CreateTxnData<TxnResult>> => {
+  const { instructions: swapInstructions, lookupTable: swapLookupTable } =
+    await getSwapSolToBanxSolInstructions({
+      inputAmount,
+      walletAndConnection,
+    })
+
+  const { instructions: closeInstructions, lookupTable: closeLookupTable } =
+    await getCloseBanxSolATAsInstructions({
+      walletAndConnection,
+    })
+
+  return {
+    instructions: [...swapInstructions, ...txnData.instructions, ...closeInstructions],
+    signers: txnData.signers,
+    result: txnData.result,
+    lookupTables: removeDuplicatedPublicKeys([
+      swapLookupTable,
+      ...(txnData.lookupTables ?? []),
+      closeLookupTable,
+    ]),
+  }
+}
+
+export const combineWithSellBanxSolInstructions = async <TxnResult>({
+  inputAmount,
+  walletAndConnection,
+  ...txnData
+}: CombineWithBanxSolInstructionsParams<TxnResult>): Promise<CreateTxnData<TxnResult>> => {
+  const { instructions: swapInstructions, lookupTable: swapLookupTable } =
+    await getSwapBanxSolToSolInstructions({
+      inputAmount,
+      walletAndConnection,
+    })
+
+  const { instructions: closeInstructions, lookupTable: closeLookupTable } =
+    await getCloseBanxSolATAsInstructions({
+      walletAndConnection,
+    })
+
+  return {
+    instructions: [...txnData.instructions, ...swapInstructions, ...closeInstructions],
+    signers: txnData.signers,
+    result: txnData.result,
+    lookupTables: removeDuplicatedPublicKeys([
+      ...(txnData.lookupTables ?? []),
+      swapLookupTable,
+      closeLookupTable,
+    ]),
+  }
 }
