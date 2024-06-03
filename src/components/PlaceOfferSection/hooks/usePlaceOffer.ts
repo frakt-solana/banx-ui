@@ -113,12 +113,12 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
   })
 
   const offerSize = useMemo(() => {
-    return calcOfferSize({ syntheticOffer, loanValue, loansAmount, deltaValue })
-  }, [syntheticOffer, loanValue, loansAmount, deltaValue])
+    return calcOfferSize({ syntheticOffer, loanValue, loansAmount, deltaValue, tokenType })
+  }, [syntheticOffer, loanValue, loansAmount, deltaValue, tokenType])
 
   const updatedOffer = useMemo(() => {
-    return getUpdatedBondOffer({ syntheticOffer, loanValue, loansAmount, deltaValue })
-  }, [syntheticOffer, loanValue, loansAmount, deltaValue])
+    return getUpdatedBondOffer({ syntheticOffer, loanValue, loansAmount, deltaValue, tokenType })
+  }, [syntheticOffer, loanValue, loansAmount, deltaValue, tokenType])
 
   const offerErrorMessage = getErrorMessage({
     syntheticOffer,
@@ -148,7 +148,7 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
 
     if (!offer) return []
 
-    const offerToUpdate = { syntheticOffer, loanValue, deltaValue, loansAmount }
+    const offerToUpdate = { syntheticOffer, loanValue, deltaValue, loansAmount, tokenType }
     const offerToUse = hasFormChanges ? getUpdatedBondOffer(offerToUpdate) : offer
 
     const loansToMarks = lenderLoans.map(convertLoanToMark)
@@ -168,6 +168,7 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
     hasFormChanges,
     syntheticOffer,
     lenderLoans,
+    tokenType,
   ])
 
   return {
