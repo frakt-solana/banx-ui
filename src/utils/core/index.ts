@@ -28,12 +28,12 @@ export const calculateNewOfferSize = ({
   loanValue,
   loansAmount,
   deltaValue,
-}: CalculateNewOfferSizeParams): number => {
+}: CalculateNewOfferSizeParams): BN => {
   //? Sum of arithmetic progression
   const a_n = loanValue - deltaValue * (loansAmount - 1)
   const S = ((loanValue + a_n) * loansAmount) / 2
 
-  return S
+  return new BN(S)
 }
 
 export const calculateIdleFundsInOffer = (offer: core.Offer): BN => {
