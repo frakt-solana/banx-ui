@@ -56,7 +56,7 @@ export const createRepayLoanTxnData: CreateRepayLoanTxnData = async ({
     const repayValue = calculateLoanRepayValueOnCertainDate({
       loan,
       upfrontFeeIncluded: true,
-      date: moment().unix() + 60,
+      date: moment().unix() + 180,
     })
 
     return await banxSol.combineWithBuyBanxSolInstructions({

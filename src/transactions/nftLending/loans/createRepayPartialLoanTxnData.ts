@@ -67,7 +67,7 @@ export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = asyn
     const repayValue = calculateLoanRepayValueOnCertainDate({
       loan,
       upfrontFeeIncluded: false,
-      date: moment().unix() + 60,
+      date: moment().unix() + 180,
     })
       .mul(new BN(fractionToRepay))
       .div(new BN(BASE_POINTS))
