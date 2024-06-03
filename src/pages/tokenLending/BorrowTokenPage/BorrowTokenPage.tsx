@@ -1,3 +1,55 @@
+import { useEffect } from 'react'
+
+import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
+
+import BorrowHeader from './BorrowHeader'
+import InstantBorrowContent from './InstantBorrowContent'
+import { useBorrowTokenTabs } from './hooks'
+
+import styles from './BorrowTokenPage.module.less'
+
 export const BorrowTokenPage = () => {
-  return <div>BorrowTokenPage</div>
+  //? Used to set default tab when user is redirected to BorrowTokenPage.
+  const { tab: storeTab, setTab } = useBorrowTokenTabs()
+
+  const {
+    value: currentTabValue,
+    setValue,
+    tabs,
+  } = useTabs({
+    tabs: BORROW_TABS,
+    defaultValue: storeTab ?? BorrowTokenTabName.INSTANT,
+  })
+
+  //? Used hook to reset store when the component is unmounted
+  useEffect(() => {
+    if (!storeTab) return
+
+    return () => setTab(null)
+  }, [setTab, storeTab])
+
+  return (
+    <div className={styles.pageWrapper}>
+      <BorrowHeader />
+      <Tabs value={currentTabValue} tabs={tabs} setValue={setValue} />
+      {currentTabValue === BorrowTokenTabName.INSTANT && <InstantBorrowContent />}
+      {currentTabValue === BorrowTokenTabName.REQUEST && <></>}
+    </div>
+  )
 }
+
+export enum BorrowTokenTabName {
+  INSTANT = 'instant',
+  REQUEST = 'request',
+}
+
+const BORROW_TABS: Tab[] = [
+  {
+    label: 'Borrow now',
+    value: BorrowTokenTabName.INSTANT,
+  },
+  {
+    label: 'List loans',
+    value: BorrowTokenTabName.REQUEST,
+  },
+]
