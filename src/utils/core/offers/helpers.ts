@@ -1,6 +1,6 @@
 import { calculateNextSpotPrice } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { getMaxLoanValueFromBondOffer } from 'fbonds-core/lib/fbond-protocol/helpers'
-import { BondOfferV2, BondingCurveType, PairState } from 'fbonds-core/lib/fbond-protocol/types'
+import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, uniqueId } from 'lodash'
 
 import { core } from '@banx/api/nft'
@@ -14,7 +14,7 @@ const spreadToSimpleOffers = (offer: core.Offer): SimpleOffer[] => {
   const baseMathCounterInitial = mathCounter + 1
 
   const prevSpotPriceInitial = calculateNextSpotPrice({
-    bondingCurveType: bondingCurve.bondingType as BondingCurveType,
+    bondingCurveType: bondingCurve.bondingType,
     delta: bondingCurve.delta,
     spotPrice: baseSpotPrice,
     counter: baseMathCounterInitial + 1,
@@ -43,14 +43,14 @@ const spreadToSimpleOffers = (offer: core.Offer): SimpleOffer[] => {
         const baseMathCounter = mathCounter + 1 - idx
 
         const prevSpotPrice = calculateNextSpotPrice({
-          bondingCurveType: bondingCurve.bondingType as BondingCurveType,
+          bondingCurveType: bondingCurve.bondingType,
           delta: bondingCurve.delta,
           spotPrice: baseSpotPrice,
           counter: baseMathCounter + 1,
         })
 
         const nextSpotPrice = calculateNextSpotPrice({
-          bondingCurveType: bondingCurve.bondingType as BondingCurveType,
+          bondingCurveType: bondingCurve.bondingType,
           delta: bondingCurve.delta,
           spotPrice: baseSpotPrice,
           counter: baseMathCounter,
@@ -132,7 +132,7 @@ export const сalculateLoansAmount = (offer: core.Offer) => {
 }
 
 export const calculateLoanValue = (offer: core.Offer) => {
-  return getMaxLoanValueFromBondOffer(offer as BondOfferV2)
+  return getMaxLoanValueFromBondOffer(offer)
   // const { currentSpotPrice } = offer
 
   // const loansAmount = сalculateLoansAmount(offer)

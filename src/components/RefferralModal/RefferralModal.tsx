@@ -16,9 +16,10 @@ import {
   useWalletAdapters,
 } from '@banx/hooks'
 import { CircleCheck, Paste } from '@banx/icons'
-import { useModal } from '@banx/store/common'
+import { useIsLedger, useModal } from '@banx/store/common'
 import { pasteFromClipboard } from '@banx/utils'
 
+import Checkbox from '../Checkbox'
 import { Loader } from '../Loader'
 import { ReferralInput } from './components'
 import { useGetUserWalletByRefCode } from './hooks'
@@ -28,6 +29,7 @@ import styles from './RefferralModal.module.less'
 const RefferralModal = () => {
   const { connected, disconnect } = useWallet()
   const { close } = useModal()
+  const { isLedger, setIsLedger } = useIsLedger()
 
   const referralCode = extractReferralCodeFromPath(location.pathname)
 
@@ -103,6 +105,12 @@ const RefferralModal = () => {
 
           {connected && (
             <>
+              <Checkbox
+                onChange={() => setIsLedger(!isLedger)}
+                label="I use ledger"
+                checked={isLedger}
+                className={styles.ledgerCheckbox}
+              />
               <Button
                 onClick={() => onRefLink(inputValue)}
                 className={styles.confirmButton}

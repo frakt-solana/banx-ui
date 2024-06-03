@@ -22,7 +22,7 @@ import {
   MarketPreviewResponse,
   MarketPreviewSchema,
   Offer,
-  PairSchema,
+  OfferSchema,
   UserOffer,
   UserOfferSchema,
   WalletLoansAndOffers,
@@ -81,7 +81,7 @@ export const fetchMarketOffers: FetchMarketOffers = async ({
   )
 
   try {
-    await PairSchema.array().parseAsync(data?.data)
+    await OfferSchema.array().parseAsync(data?.data)
   } catch (validationError) {
     console.error('Schema validation error:', validationError)
   }
@@ -254,14 +254,17 @@ export const fetchBorrowNftsAndOffers: FetchBorrowNftsAndOffers = async ({
 type FetchBorrowerLoansRequests = (props: {
   walletPublicKey: string
   tokenType: LendingTokenType
+  getAll?: boolean
 }) => Promise<Loan[]>
 export const fetchBorrowerLoansRequests: FetchBorrowerLoansRequests = async ({
   walletPublicKey,
   tokenType,
+  getAll = true,
 }) => {
   const queryParams = new URLSearchParams({
     marketType: String(convertToMarketType(tokenType)),
     isPrivate: String(IS_PRIVATE_MARKETS),
+    getAll: String(getAll),
   })
 
   const { data } = await axios.get<{ data: Loan[] }>(

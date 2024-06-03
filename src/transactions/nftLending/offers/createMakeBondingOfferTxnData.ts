@@ -3,7 +3,11 @@ import {
   BondOfferOptimistic,
   createPerpetualBondOfferBonding,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondingCurveType, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import {
+  BondFeatures,
+  BondingCurveType,
+  LendingTokenType,
+} from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { BONDS } from '@banx/constants'
@@ -44,6 +48,8 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
       delta: deltaValue,
       quantityOfLoans: loansAmount,
       bondingCurveType,
+      bondFeature: BondFeatures.AutoReceiveAndReceiveNft,
+      collateralsPerToken: 0,
     },
     sendTxn: sendTxnPlaceHolder,
   })
