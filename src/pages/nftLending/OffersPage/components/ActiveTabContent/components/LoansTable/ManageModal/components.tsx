@@ -202,7 +202,7 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
     } catch (error) {
       destroySnackbar(loadingSnackbarId)
       defaultTxnErrorHandler(error, {
-        additionalData: loan,
+        additionalData: { bestOffer, loan },
         walletPubkey: wallet?.publicKey?.toBase58(),
         transactionName: 'RefinanceInstant',
       })

@@ -1,6 +1,5 @@
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 import { calculateNextSpotPrice } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondingCurveType } from 'fbonds-core/lib/fbond-protocol/types'
 import produce from 'immer'
 import { create } from 'zustand'
 
@@ -98,7 +97,7 @@ export const calcSyntheticLoanValue = (offer: core.Offer): number => {
   } = offer
 
   const prevSpotPrice = calculateNextSpotPrice({
-    bondingCurveType: bondingCurve.bondingType as BondingCurveType,
+    bondingCurveType: bondingCurve.bondingType,
     delta: bondingCurve.delta,
     spotPrice: baseSpotPrice,
     counter: mathCounter + 2,
