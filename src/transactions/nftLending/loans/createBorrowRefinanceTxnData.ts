@@ -5,12 +5,7 @@ import {
   borrowerRefinance,
   borrowerRefinanceToSame,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import {
-  BondOfferV2,
-  BondTradeTransactionV3,
-  FraktBond,
-  PairState,
-} from 'fbonds-core/lib/fbond-protocol/types'
+import { BondTradeTransactionV3, FraktBond, PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
@@ -99,7 +94,7 @@ const getIxnsAndSigners = async ({
 
   const optimistic = {
     oldBondTradeTransaction: bondTradeTransaction as BondTradeTransactionV3,
-    bondOffer: offer as BondOfferV2,
+    bondOffer: offer,
     fraktBond: fraktBond as FraktBond,
     minMarketFee: aprRate,
   }
