@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { Offer, PairSchema } from '@banx/api/nft'
+import { Offer, OfferSchema } from '@banx/api/nft'
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import { convertToMarketType } from '../helpers'
@@ -45,7 +45,7 @@ export const fetchTokenMarketOffers: FetchTokenMarketOffers = async ({
   )
 
   try {
-    await PairSchema.array().parseAsync(data?.data)
+    await OfferSchema.array().parseAsync(data?.data)
   } catch (validationError) {
     console.error('Schema validation error:', validationError)
   }
