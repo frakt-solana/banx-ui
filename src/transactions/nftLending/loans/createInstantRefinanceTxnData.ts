@@ -2,11 +2,7 @@ import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import { instantRefinancePerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import {
-  BondOfferV2,
-  BondTradeTransactionV3,
-  FraktBond,
-} from 'fbonds-core/lib/fbond-protocol/types'
+import { BondTradeTransactionV3, FraktBond } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
@@ -54,7 +50,7 @@ export const createInstantRefinanceTxnData: CreateInstantRefinanceTxnData = asyn
     },
     optimistic: {
       oldBondTradeTransaction: bondTradeTransaction as BondTradeTransactionV3,
-      bondOffer: bestOffer as BondOfferV2,
+      bondOffer: bestOffer,
       fraktBond: fraktBond as FraktBond,
       oldBondOffer: getMockBondOffer(),
     },

@@ -4,7 +4,7 @@ import {
   calculateCurrentInterestSolPure,
   optimisticBorrowUpdateBondingBondOffer,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondOfferV2, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { Dictionary, chain, groupBy, sumBy, uniqueId } from 'lodash'
 import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
@@ -233,7 +233,7 @@ const mergeOffersWithLoanValue = (
   const { offer } = offers.reduce((acc, offer) => {
     return {
       offer: optimisticBorrowUpdateBondingBondOffer(
-        acc.offer as BondOfferV2,
+        acc.offer,
         offer.loanValue,
         optimizeIntoReserves,
       ),
