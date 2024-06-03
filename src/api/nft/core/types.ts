@@ -1,8 +1,11 @@
 import {
+  BondFeatures,
   BondTradeTransactionV2State,
   BondTradeTransactionV2Type,
+  BondingCurveType,
   FraktBondState,
   LendingTokenType,
+  PairState,
   RedeemResult,
   RepayDestination,
 } from 'fbonds-core/lib/fbond-protocol/types'
@@ -40,17 +43,17 @@ export interface MarketPreviewResponse {
 
 const BondingCurveSchema = z.object({
   delta: z.number(),
-  bondingType: z.string(),
+  bondingType: z.nativeEnum(BondingCurveType),
 })
 
 const ValidationPairSchema = z.object({
   loanToValueFilter: z.number(),
   collateralsPerToken: z.number(),
   maxReturnAmountFilter: z.number(),
-  bondFeatures: z.string(),
+  bondFeatures: z.nativeEnum(BondFeatures),
 })
 
-export const PairSchema = z.object({
+export const OfferSchema = z.object({
   publicKey: z.string(),
   assetReceiver: z.string(),
   baseSpotPrice: z.number(),
@@ -64,13 +67,13 @@ export const PairSchema = z.object({
   fundsSolOrTokenBalance: z.number(),
   hadoMarket: z.string(),
   lastTransactedAt: z.number(),
-  marketApr: z.number().optional(), //TODO Make marketApr required
   mathCounter: z.number(),
-  pairState: z.string(),
+  pairState: z.nativeEnum(PairState),
   validation: ValidationPairSchema,
 })
 
-export type Offer = z.infer<typeof PairSchema>
+//? Same as BondOfferV2
+export type Offer = z.infer<typeof OfferSchema>
 
 export interface FetchMarketOffersResponse {
   data: Offer[]
@@ -181,7 +184,7 @@ export type Loan = z.infer<typeof LoanSchema>
 
 export const WalletLoansAndOffersShema = z.object({
   nfts: LoanSchema.array(),
-  offers: z.record(PairSchema.array()),
+  offers: z.record(OfferSchema.array()),
 })
 
 export type WalletLoansAndOffers = z.infer<typeof WalletLoansAndOffersShema>
@@ -206,7 +209,7 @@ export type BorrowNft = z.infer<typeof BorrowNftSchema>
 
 export const BorrowNftsAndOffersSchema = z.object({
   nfts: BorrowNftSchema.array(),
-  offers: z.record(PairSchema.array()),
+  offers: z.record(OfferSchema.array()),
 })
 
 export type BorrowNftsAndOffers = z.infer<typeof BorrowNftsAndOffersSchema>
@@ -225,7 +228,7 @@ export const CollectionMetaSchema = z.object({
 export type CollectionMeta = z.infer<typeof CollectionMetaSchema>
 
 export const LenderLoansSchema = z.object({
-  offer: PairSchema,
+  offer: OfferSchema,
   loans: LoanSchema.array(),
 })
 export type LenderLoans = z.infer<typeof LenderLoansSchema>
@@ -252,7 +255,7 @@ export interface AllLoansRequestsResponse {
 }
 
 export const UserOfferSchema = z.object({
-  offer: PairSchema,
+  offer: OfferSchema,
   collectionMeta: CollectionMetaSchema,
 })
 export type UserOffer = z.infer<typeof UserOfferSchema>

@@ -3,7 +3,7 @@ import {
   BondOfferOptimistic,
   updatePerpetualOfferBonding,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondOfferV2, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
@@ -36,7 +36,7 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
       userPubkey: walletAndConnection.wallet.publicKey,
     },
     optimistic: {
-      bondOffer: offer as BondOfferV2,
+      bondOffer: offer,
     },
     args: {
       loanValue,

@@ -22,7 +22,7 @@ import {
   MarketPreviewResponse,
   MarketPreviewSchema,
   Offer,
-  PairSchema,
+  OfferSchema,
   UserOffer,
   UserOfferSchema,
   WalletLoansAndOffers,
@@ -81,7 +81,7 @@ export const fetchMarketOffers: FetchMarketOffers = async ({
   )
 
   try {
-    await PairSchema.array().parseAsync(data?.data)
+    await OfferSchema.array().parseAsync(data?.data)
   } catch (validationError) {
     console.error('Schema validation error:', validationError)
   }
