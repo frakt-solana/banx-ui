@@ -10,12 +10,7 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
-import {
-  ZERO_BN,
-  calculateIdleFundsInOffer,
-  isBanxSolTokenType,
-  removeDuplicatedPublicKeys,
-} from '@banx/utils'
+import { ZERO_BN, calculateIdleFundsInOffer, isBanxSolTokenType } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
@@ -62,17 +57,35 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
 
   if (isBanxSolTokenType(tokenType)) {
-    return await wrapWithBanxSolSwapInstructions({
-      loanValue,
-      loansAmount,
-      deltaValue,
-      offer,
-      tokenType,
+    const oldOfferSize = calculateIdleFundsInOffer(offer)
+
+    const newOffer = optimisticResult?.bondOffer
+    if (!newOffer) {
+      throw new Error('Optimistic offer doesnt exist')
+    }
+    //? Optimistic offer is broken
+    const newOfferSize = calculateIdleFundsInOffer(newOffer)
+
+    const diff = newOfferSize.sub(oldOfferSize)
+
+    if (diff.gt(ZERO_BN)) {
+      return await banxSol.combineWithSellBanxSolInstructions({
+        inputAmount: diff.abs(),
+        walletAndConnection,
+        instructions,
+        signers,
+        lookupTables,
+        result: optimisticResult,
+      })
+    }
+
+    return await banxSol.combineWithBuyBanxSolInstructions({
+      inputAmount: diff.abs(),
       walletAndConnection,
       instructions,
+      signers,
       lookupTables,
       result: optimisticResult,
-      signers,
     })
   }
 
@@ -80,79 +93,6 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
     instructions,
     signers,
     result: optimisticResult,
-    lookupTables,
-  }
-}
-
-const wrapWithBanxSolSwapInstructions = async ({
-  offer,
-  instructions,
-  lookupTables,
-  result,
-  signers,
-  walletAndConnection,
-}: CreateTxnData<BondOfferOptimistic> & CreateUpdateBondingOfferTxnDataParams): Promise<
-  CreateTxnData<BondOfferOptimistic>
-> => {
-  const oldOfferSize = calculateIdleFundsInOffer(offer)
-
-  const newOffer = result?.bondOffer
-  if (!newOffer) {
-    throw new Error('Optimistic offer doesnt exist')
-  }
-
-  //? Optimistic offer is broken
-  const newOfferSize = calculateIdleFundsInOffer(newOffer)
-
-  const diff = newOfferSize.sub(oldOfferSize)
-
-  const { instructions: closeInstructions, lookupTable: closeLookupTable } =
-    await banxSol.getCloseBanxSolATAsInstructions({
-      walletAndConnection,
-    })
-
-  if (diff.gt(ZERO_BN)) {
-    const { instructions: swapSolToBanxSolInstructions, lookupTable: swapSolToBanxSolLookupTable } =
-      await banxSol.getSwapSolToBanxSolInstructions({
-        inputAmount: diff.abs(),
-        walletAndConnection,
-      })
-
-    return {
-      instructions: [...swapSolToBanxSolInstructions, ...instructions, ...closeInstructions],
-      signers,
-      result,
-      lookupTables: removeDuplicatedPublicKeys([
-        swapSolToBanxSolLookupTable,
-        ...(lookupTables ?? []),
-        closeLookupTable,
-      ]),
-    }
-  }
-
-  if (diff.lt(ZERO_BN)) {
-    const { instructions: swapBanxSolToSolInstructions, lookupTable: swapBanxSolToSolLookupTable } =
-      await banxSol.getSwapBanxSolToSolInstructions({
-        inputAmount: diff.abs(),
-        walletAndConnection,
-      })
-
-    return {
-      instructions: [...instructions, ...swapBanxSolToSolInstructions, ...closeInstructions],
-      signers,
-      result,
-      lookupTables: removeDuplicatedPublicKeys([
-        ...(lookupTables ?? []),
-        swapBanxSolToSolLookupTable,
-        closeLookupTable,
-      ]),
-    }
-  }
-
-  return {
-    instructions,
-    signers,
-    result,
     lookupTables,
   }
 }

@@ -8,11 +8,7 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
-import {
-  calculateLoanRepayValueOnCertainDate,
-  isBanxSolTokenType,
-  removeDuplicatedPublicKeys,
-} from '@banx/utils'
+import { calculateLoanRepayValueOnCertainDate, isBanxSolTokenType } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
@@ -68,9 +64,16 @@ export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = asyn
   }))[0]
 
   if (isBanxSolTokenType(bondTradeTransaction.lendingToken)) {
-    return await wrapWithBanxSolSwapInstructions({
+    const repayValue = calculateLoanRepayValueOnCertainDate({
       loan,
-      fractionToRepay,
+      upfrontFeeIncluded: false,
+      date: moment().unix() + 60,
+    })
+      .mul(new BN(fractionToRepay))
+      .div(new BN(BASE_POINTS))
+
+    return await banxSol.combineWithBuyBanxSolInstructions({
+      inputAmount: repayValue,
       walletAndConnection,
       instructions,
       signers,
@@ -84,47 +87,5 @@ export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = asyn
     signers,
     lookupTables,
     result: optimisticResult,
-  }
-}
-
-const wrapWithBanxSolSwapInstructions = async ({
-  loan,
-  fractionToRepay,
-  instructions,
-  lookupTables,
-  result,
-  signers,
-  walletAndConnection,
-}: CreateTxnData<core.Loan> & CreateRepayPartialLoanTxnDataParams): Promise<
-  CreateTxnData<core.Loan>
-> => {
-  const repayValue = calculateLoanRepayValueOnCertainDate({
-    loan,
-    upfrontFeeIncluded: false,
-    date: moment().unix() + 60,
-  })
-    .mul(new BN(fractionToRepay))
-    .div(new BN(BASE_POINTS))
-
-  const { instructions: swapInstructions, lookupTable: swapLookupTable } =
-    await banxSol.getSwapSolToBanxSolInstructions({
-      inputAmount: repayValue,
-      walletAndConnection,
-    })
-
-  const { instructions: closeInstructions, lookupTable: closeLookupTable } =
-    await banxSol.getCloseBanxSolATAsInstructions({
-      walletAndConnection,
-    })
-
-  return {
-    instructions: [...swapInstructions, ...instructions, ...closeInstructions],
-    signers,
-    lookupTables: removeDuplicatedPublicKeys([
-      swapLookupTable,
-      ...(lookupTables ?? []),
-      closeLookupTable,
-    ]),
-    result,
   }
 }

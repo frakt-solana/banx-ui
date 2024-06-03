@@ -1,4 +1,4 @@
-import { BN, web3 } from 'fbonds-core'
+import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   BondOfferOptimistic,
@@ -10,11 +10,7 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
-import {
-  calculateIdleFundsInOffer,
-  isBanxSolTokenType,
-  removeDuplicatedPublicKeys,
-} from '@banx/utils'
+import { calculateIdleFundsInOffer, isBanxSolTokenType } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
@@ -52,9 +48,10 @@ export const createRemoveOfferTxnData: CreateRemoveOfferTxnData = async ({
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
 
   if (isBanxSolTokenType(tokenType)) {
-    return await wrapWithBanxSolSwapInstructions({
-      offer,
-      tokenType,
+    const offerSize = calculateIdleFundsInOffer(offer)
+
+    return await banxSol.combineWithSellBanxSolInstructions({
+      inputAmount: offerSize,
       walletAndConnection,
       instructions,
       signers,
@@ -68,40 +65,5 @@ export const createRemoveOfferTxnData: CreateRemoveOfferTxnData = async ({
     signers,
     result: optimisticResult,
     lookupTables,
-  }
-}
-
-const wrapWithBanxSolSwapInstructions = async ({
-  offer,
-  instructions,
-  lookupTables,
-  result,
-  signers,
-  walletAndConnection,
-}: CreateTxnData<BondOfferOptimistic> & CreateRemoveOfferTxnDataParams): Promise<
-  CreateTxnData<BondOfferOptimistic>
-> => {
-  const offerSize = calculateIdleFundsInOffer(offer)
-
-  const { instructions: swapInstructions, lookupTable: swapLookupTable } =
-    await banxSol.getSwapBanxSolToSolInstructions({
-      inputAmount: new BN(offerSize),
-      walletAndConnection,
-    })
-
-  const { instructions: closeInstructions, lookupTable: closeLookupTable } =
-    await banxSol.getCloseBanxSolATAsInstructions({
-      walletAndConnection,
-    })
-
-  return {
-    instructions: [...instructions, ...swapInstructions, ...closeInstructions],
-    signers,
-    result,
-    lookupTables: removeDuplicatedPublicKeys([
-      swapLookupTable,
-      ...(lookupTables ?? []),
-      closeLookupTable,
-    ]),
   }
 }

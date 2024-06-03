@@ -1,4 +1,4 @@
-import { BN, web3 } from 'fbonds-core'
+import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   BondOfferOptimistic,
@@ -10,7 +10,7 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 
 import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
-import { calculateNewOfferSize, isBanxSolTokenType, removeDuplicatedPublicKeys } from '@banx/utils'
+import { calculateNewOfferSize, isBanxSolTokenType } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
@@ -58,12 +58,10 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
 
   if (isBanxSolTokenType(tokenType)) {
-    return await wrapWithBanxSolSwapInstructions({
-      marketPubkey,
-      loanValue,
-      loansAmount,
-      tokenType,
-      deltaValue,
+    const offerSize = calculateNewOfferSize({ loanValue, loansAmount, deltaValue })
+
+    return await banxSol.combineWithBuyBanxSolInstructions({
+      inputAmount: offerSize,
       walletAndConnection,
       instructions,
       signers,
@@ -77,42 +75,5 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
     signers,
     result: optimisticResult,
     lookupTables,
-  }
-}
-
-const wrapWithBanxSolSwapInstructions = async ({
-  loanValue,
-  loansAmount,
-  deltaValue,
-  instructions,
-  lookupTables,
-  result,
-  signers,
-  walletAndConnection,
-}: CreateTxnData<BondOfferOptimistic> & CreateMakeBondingOfferTxnDataParams): Promise<
-  CreateTxnData<BondOfferOptimistic>
-> => {
-  const offerSize = calculateNewOfferSize({ loanValue, loansAmount, deltaValue })
-
-  const { instructions: swapInstructions, lookupTable: swapLookupTable } =
-    await banxSol.getSwapSolToBanxSolInstructions({
-      inputAmount: new BN(offerSize),
-      walletAndConnection,
-    })
-
-  const { instructions: closeInstructions, lookupTable: closeLookupTable } =
-    await banxSol.getCloseBanxSolATAsInstructions({
-      walletAndConnection,
-    })
-
-  return {
-    instructions: [...swapInstructions, ...instructions, ...closeInstructions],
-    signers,
-    result,
-    lookupTables: removeDuplicatedPublicKeys([
-      swapLookupTable,
-      ...(lookupTables ?? []),
-      closeLookupTable,
-    ]),
   }
 }

@@ -12,7 +12,7 @@ import { helius } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
-import { calculateApr, isBanxSolTokenType, removeDuplicatedPublicKeys } from '@banx/utils'
+import { calculateApr, isBanxSolTokenType } from '@banx/utils'
 
 import { fetchRuleset } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
@@ -63,8 +63,9 @@ export const createBorrowTxnData: CreateBorrowTxnData = async ({
   }
 
   if (isBanxSolTokenType(tokenType)) {
-    return await wrapWithBanxSolSwapInstructions({
-      loanValue,
+    return await banxSol.combineWithSellBanxSolInstructions({
+      //? 0.99 --> without upfront fee
+      inputAmount: new BN(loanValue).mul(new BN(99)).div(new BN(100)),
       walletAndConnection,
       instructions,
       signers,
@@ -239,39 +240,4 @@ const getNftBorrowType = (nft: core.BorrowNft): BorrowType => {
     return BorrowType.StakedBanx
   if (nft.nft.compression) return BorrowType.CNft
   return BorrowType.Default
-}
-
-const wrapWithBanxSolSwapInstructions = async ({
-  loanValue,
-  instructions,
-  lookupTables,
-  result,
-  signers,
-  walletAndConnection,
-}: CreateTxnData<BorrowTxnOptimisticResult> & {
-  loanValue: number
-  walletAndConnection: WalletAndConnection
-}): Promise<CreateTxnData<BorrowTxnOptimisticResult>> => {
-  const { instructions: swapInstructions, lookupTable: swapLookupTable } =
-    await banxSol.getSwapBanxSolToSolInstructions({
-      //? 0.99 --> without upfront fee
-      inputAmount: new BN(loanValue).mul(new BN(99)).div(new BN(100)),
-      walletAndConnection,
-    })
-
-  const { instructions: closeInstructions, lookupTable: closeLookupTable } =
-    await banxSol.getCloseBanxSolATAsInstructions({
-      walletAndConnection,
-    })
-
-  return {
-    instructions: [...instructions, ...swapInstructions, ...closeInstructions],
-    signers,
-    result,
-    lookupTables: removeDuplicatedPublicKeys([
-      swapLookupTable,
-      ...(lookupTables ?? []),
-      closeLookupTable,
-    ]),
-  }
 }
