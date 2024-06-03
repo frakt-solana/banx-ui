@@ -69,7 +69,7 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
     const diff = newOfferSize.sub(oldOfferSize)
 
     if (diff.gt(ZERO_BN)) {
-      return await banxSol.combineWithSellBanxSolInstructions({
+      return await banxSol.combineWithBuyBanxSolInstructions({
         inputAmount: diff.abs(),
         walletAndConnection,
         instructions,
@@ -79,7 +79,7 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
       })
     }
 
-    return await banxSol.combineWithBuyBanxSolInstructions({
+    return await banxSol.combineWithSellBanxSolInstructions({
       inputAmount: diff.abs(),
       walletAndConnection,
       instructions,
