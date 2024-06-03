@@ -1,0 +1,152 @@
+.inputTokenSelectWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inputTokenSelectLabel {
+  color: var(--content-secondary);
+  font: var(--title-xs);
+  text-transform: uppercase;
+}
+
+.inputTokenSelect {
+  position: relative;
+}
+
+.numericStepInput input {
+  padding: 8px 32px 8px 96px;
+  text-align: right;
+}
+
+// * SelectTokenButton * //
+.selectTokenButton {
+  background: var(--bg-primary);
+  border: var(--border-primary);
+  border-radius: 4px;
+  color: var(--content-primary);
+  cursor: pointer;
+  font: var(--btn-text-sm);
+
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  height: 26px;
+}
+
+.selectTokenButtonIcon {
+  height: 16px;
+  width: 16px;
+}
+
+.selectTokenButtonChevronIcon {
+  height: 16px;
+  width: 16px;
+}
+// * SelectTokenButton * //
+
+// * SearchSelect * //
+.searchSelect {
+  background: var(--bg-primary);
+  border: 1px solid var(--bg-border-active);
+  border-radius: 6px;
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+}
+
+.selectTokenDropdownHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+
+  span {
+    color: var(--content-secondary);
+    font: var(--title-xs);
+    text-transform: uppercase;
+  }
+}
+
+.selectTokenDropdownList {
+  overflow-y: auto;
+  height: 200px;
+}
+
+.dropdownItem {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 16px;
+
+  &:hover,
+  &.highlight {
+    background: var(--bg-primary-deep);
+  }
+}
+
+.dropdownItemMainInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dropdownItemIcon {
+  height: 24px;
+  width: 24px;
+}
+
+.dropdownItemInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 76px;
+}
+
+.dropdownItemTicker {
+  font: var(--card-header-sm);
+}
+
+.dropdownItemAddress {
+  font: var(--body-text-sm);
+}
+
+.dropdownItemLink {
+  height: 24px;
+  width: 24px;
+}
+
+.dropdownItemAdditionalInfo {
+  font: var(--body-text-sm);
+}
+// * SearchSelect * //
+
+// * SearchInput * //
+.searchInputWrapper {
+  position: relative;
+}
+
+.searchInput {
+  border-radius: 6px 6px 0 0 !important;
+}
+
+.searchInputCloseIcon {
+  cursor: pointer;
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 10px;
+  width: 10px;
+}
+// * SearchInput * //
