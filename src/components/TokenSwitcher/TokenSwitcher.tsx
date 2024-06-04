@@ -21,13 +21,8 @@ const TokenValue: FC<TokenValueProps> = ({ tokenType, active, onClick }) => {
   const isBanxSol = isBanxSolTokenType(tokenType)
 
   //? Remove paddings in svg for USDC and SOL tokens. We need to do it in the svg files, but many views will be broken.
-  const tokenIcon = isSol ? (
-    <SOL viewBox="-1 -1 18 18" />
-  ) : isBanxSol ? (
-    ''
-  ) : (
-    <USDC viewBox="1 1 14 14" />
-  )
+  const tokenIcon =
+    isSol || isBanxSol ? <SOL viewBox="-1 -1 18 18" /> : <USDC viewBox="1 1 14 14" />
 
   const tokenTicker = isSol ? 'SOL' : isBanxSol ? 'banxSOL' : 'USDC'
 
@@ -40,7 +35,9 @@ const TokenValue: FC<TokenValueProps> = ({ tokenType, active, onClick }) => {
     >
       <p className={styles.tokenValue}>
         <div
-          className={classNames(styles.tokenValueWrapper, { [styles.tokenValueSolWrapper]: isSol })}
+          className={classNames(styles.tokenValueWrapper, {
+            [styles.tokenValueSolWrapper]: isSol || isBanxSol,
+          })}
         >
           {tokenIcon}
         </div>
