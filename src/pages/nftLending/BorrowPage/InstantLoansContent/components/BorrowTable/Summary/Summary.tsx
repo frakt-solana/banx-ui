@@ -16,9 +16,9 @@ import { BONDS, ONE_WEEK_IN_SECONDS } from '@banx/constants'
 import { useTokenType } from '@banx/store/nft'
 import {
   adjustBorrowValueWithSolanaRentFee,
-  calculateBorrowValueWithProtocolFee,
   calcWeightedAverage,
   calculateApr,
+  calculateBorrowValueWithProtocolFee,
   getColorByPercent,
 } from '@banx/utils'
 

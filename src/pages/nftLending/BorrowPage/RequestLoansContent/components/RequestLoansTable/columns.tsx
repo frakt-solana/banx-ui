@@ -77,7 +77,8 @@ export const getTableColumns = ({
         />
       ),
       render: () => {
-        const upfrontFee = requestedLoanValue - calculateBorrowValueWithProtocolFee(requestedLoanValue)
+        const upfrontFee =
+          requestedLoanValue - calculateBorrowValueWithProtocolFee(requestedLoanValue)
         return (
           <HorizontalCell
             value={<DisplayValue value={upfrontFee} placeholder="--" />}

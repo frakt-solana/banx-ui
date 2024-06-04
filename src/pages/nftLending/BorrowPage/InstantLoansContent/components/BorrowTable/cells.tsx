@@ -14,8 +14,8 @@ import {
 import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
 import {
   adjustBorrowValueWithSolanaRentFee,
-  calculateBorrowValueWithProtocolFee,
   calculateApr,
+  calculateBorrowValueWithProtocolFee,
 } from '@banx/utils'
 
 import { TableNftData } from './types'

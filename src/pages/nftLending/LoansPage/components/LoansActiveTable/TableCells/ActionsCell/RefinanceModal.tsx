@@ -27,8 +27,8 @@ import {
   createBorrowRefinanceTxnData,
 } from '@banx/transactions/nftLending'
 import {
-  calculateBorrowedAmount,
   calculateApr,
+  calculateBorrowedAmount,
   calculateLoanRepayValue,
   convertToHumanNumber,
   destroySnackbar,
