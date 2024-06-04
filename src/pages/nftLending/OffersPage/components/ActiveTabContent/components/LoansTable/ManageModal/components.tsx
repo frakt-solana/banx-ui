@@ -163,6 +163,7 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
         bestOffer,
         walletAndConnection,
         aprRate,
+        tokenType,
       })
 
       await new TxnExecutor<core.Offer>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)

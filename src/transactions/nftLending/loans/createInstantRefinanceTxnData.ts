@@ -1,26 +1,22 @@
-import { web3 } from 'fbonds-core'
+import { BN, web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import { instantRefinancePerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondTradeTransactionV3, FraktBond } from 'fbonds-core/lib/fbond-protocol/types'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
+import { banxSol } from '@banx/transactions'
+import { calculateClaimValue, isBanxSolTokenType } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
-
-// type InstantRefinanceOptimisticResult = {
-// bondOffer: BondOfferV2
-// newBondTradeTransaction: BondTradeTransactionV3
-// fraktBond: FraktBond
-// oldBondTradeTransaction: BondTradeTransactionV3
-// }
 
 type CreateInstantRefinanceTxnData = (params: {
   loan: core.Loan
   bestOffer: core.Offer
   aprRate: number
+  tokenType: LendingTokenType
   walletAndConnection: WalletAndConnection
 }) => Promise<CreateTxnData<core.Offer>>
 
@@ -28,6 +24,7 @@ export const createInstantRefinanceTxnData: CreateInstantRefinanceTxnData = asyn
   loan,
   bestOffer,
   aprRate,
+  tokenType,
   walletAndConnection,
 }) => {
   const { wallet, connection } = walletAndConnection
@@ -49,19 +46,36 @@ export const createInstantRefinanceTxnData: CreateInstantRefinanceTxnData = asyn
       newApr: aprRate,
     },
     optimistic: {
-      oldBondTradeTransaction: bondTradeTransaction as BondTradeTransactionV3,
+      oldBondTradeTransaction: bondTradeTransaction,
       bondOffer: bestOffer,
-      fraktBond: fraktBond as FraktBond,
+      fraktBond: fraktBond,
       oldBondOffer: getMockBondOffer(),
     },
     connection,
     sendTxn: sendTxnPlaceHolder,
   })
 
+  const result = optimisticResult.bondOffer
+
+  const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
+
+  if (isBanxSolTokenType(tokenType)) {
+    const claimValue = calculateClaimValue(loan)
+
+    return await banxSol.combineWithSellBanxSolInstructions({
+      inputAmount: new BN(claimValue),
+      walletAndConnection,
+      instructions,
+      signers,
+      lookupTables,
+      result,
+    })
+  }
+
   return {
     instructions,
     signers,
-    result: optimisticResult.bondOffer,
-    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    result,
+    lookupTables,
   }
 }
