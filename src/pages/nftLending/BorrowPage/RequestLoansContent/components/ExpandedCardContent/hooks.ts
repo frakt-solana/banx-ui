@@ -28,7 +28,7 @@ import {
 } from '@banx/transactions'
 import { createListTxnData } from '@banx/transactions/nftLending'
 import {
-  calcBorrowValueWithProtocolFee,
+  calculateBorrowValueWithProtocolFee,
   convertToHumanNumber,
   destroySnackbar,
   enqueueConfirmationError,
@@ -125,7 +125,7 @@ export const useRequestLoansForm = (market: core.MarketPreview) => {
 
   //? requestedLoanValue with upfront fee
   const lenderSeesLoanValue =
-    requestedLoanValue + (requestedLoanValue - calcBorrowValueWithProtocolFee(requestedLoanValue))
+    requestedLoanValue + (requestedLoanValue - calculateBorrowValueWithProtocolFee(requestedLoanValue))
 
   const lenderSeesAprValue = !aprInputValueIsLow
     ? Math.round(inputAprValueToNumber - BONDS.PROTOCOL_REPAY_FEE / 100)

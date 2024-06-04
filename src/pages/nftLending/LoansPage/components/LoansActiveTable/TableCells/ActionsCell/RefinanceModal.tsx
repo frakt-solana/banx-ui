@@ -27,7 +27,7 @@ import {
   createBorrowRefinanceTxnData,
 } from '@banx/transactions/nftLending'
 import {
-  calcLoanBorrowedAmount,
+  calculateBorrowedAmount,
   calculateApr,
   calculateLoanRepayValue,
   convertToHumanNumber,
@@ -103,7 +103,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
   }
 
   const currentLoanDebt = calculateLoanRepayValue(loan)
-  const currentLoanBorrowedAmount = calcLoanBorrowedAmount(loan)
+  const currentLoanBorrowedAmount = calculateBorrowedAmount(loan).toNumber()
   const currentApr = bondTradeTransaction.amountOfBonds
 
   //? Upfront fee on reborrow is calculated: (newDebt - prevDebt) / 100
