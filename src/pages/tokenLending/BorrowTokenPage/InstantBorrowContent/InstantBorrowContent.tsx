@@ -1,5 +1,7 @@
 import { FC, useState } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
+
 import { Button } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
@@ -14,7 +16,11 @@ import {
 
 import styles from './InstantBorrowContent.module.less'
 
+const MOCK_MAX_VALUE = '423000000'
+
 const InstantBorrowContent = () => {
+  const { connected } = useWallet()
+
   const [sliderValue, setSliderValue] = useState(0)
 
   const [collateralInputValue, setCollateralInputValue] = useState('')
@@ -35,6 +41,7 @@ const InstantBorrowContent = () => {
         onChangeToken={setCollateralToken}
         tokenList={COLLATERAL_MOCK_TOKENS_LIST}
         className={styles.collateralInput}
+        maxValue={MOCK_MAX_VALUE}
       />
 
       <LtvSlider value={sliderValue} onChange={setSliderValue} />
@@ -52,7 +59,9 @@ const InstantBorrowContent = () => {
       />
 
       <Summary apr={0.05} upfrontFee={0.001} weeklyInterest={0.01} />
-      <Button className={styles.borrowButton}>Borrow</Button>
+      <Button disabled={!connected} className={styles.borrowButton}>
+        {!connected ? 'Connect wallet to borrow' : 'Borrow'}
+      </Button>
     </div>
   )
 }

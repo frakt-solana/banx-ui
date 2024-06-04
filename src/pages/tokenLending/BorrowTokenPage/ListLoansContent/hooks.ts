@@ -10,8 +10,8 @@ import {
   MockTokenMetaType,
 } from '../constants'
 
-const MIN_BORROWER_APR_VALUE = 10
-const MAX_BORROWER_APR_VALUE = 140
+export const MIN_APR_VALUE = 10
+export const MAX_APR_VALUE = 140
 
 export const useListLoansContent = () => {
   const [collateralInputValue, setCollateralInputValue] = useState('')
@@ -32,11 +32,11 @@ export const useListLoansContent = () => {
   }
 
   const handleChangeAprValue = (value: string) => {
-    const clampedValue = clampInputValue(value, MAX_BORROWER_APR_VALUE)
+    const clampedValue = clampInputValue(value, MAX_APR_VALUE)
     return setInputAprValue(clampedValue)
   }
 
-  const aprInputValueIsLow = parseFloat(inputAprValue) < MIN_BORROWER_APR_VALUE
+  const aprInputValueIsLow = parseFloat(inputAprValue) < MIN_APR_VALUE
 
   const lenderSeesAprValue = !aprInputValueIsLow
     ? Math.round(parseFloat(inputAprValue) - BONDS.PROTOCOL_REPAY_FEE / 100)

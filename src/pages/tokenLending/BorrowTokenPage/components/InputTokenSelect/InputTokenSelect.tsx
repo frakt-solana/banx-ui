@@ -1,13 +1,15 @@
 import { ChangeEvent, FC, useMemo, useRef, useState } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 
+import { Button } from '@banx/components/Buttons'
 import { SolanaFMLink } from '@banx/components/SolanaLinks'
 import { NumericStepInput } from '@banx/components/inputs'
 import { Input, InputProps } from '@banx/components/inputs/Input'
 
 import { useOnClickOutside } from '@banx/hooks'
-import { ChevronDown, CloseModal } from '@banx/icons'
+import { ChevronDown, CloseModal, Wallet } from '@banx/icons'
 import { shortenAddress } from '@banx/utils'
 
 import { MockTokenMetaType } from '../../constants'
@@ -23,6 +25,8 @@ interface InputTokenSelectProps {
   selectedToken: MockTokenMetaType
   tokenList: MockTokenMetaType[]
   onChangeToken: (option: MockTokenMetaType) => void
+
+  maxValue?: string
 }
 
 const InputTokenSelect: FC<InputTokenSelectProps> = ({
@@ -33,7 +37,10 @@ const InputTokenSelect: FC<InputTokenSelectProps> = ({
   selectedToken,
   tokenList,
   onChangeToken,
+  maxValue = '0',
 }) => {
+  const { connected } = useWallet()
+
   const [visible, setVisible] = useState(false)
 
   const handleClick = () => {
@@ -42,7 +49,10 @@ const InputTokenSelect: FC<InputTokenSelectProps> = ({
 
   return (
     <div className={classNames(styles.inputTokenSelectWrapper, className)}>
-      <div className={styles.inputTokenSelectLabel}>{label}</div>
+      <div className={styles.inputTokenSelectHeader}>
+        <div className={styles.inputTokenSelectLabel}>{label}</div>
+        {connected && <ControlsButtons maxValue={maxValue} onChange={onChange} />}
+      </div>
       <div className={styles.inputTokenSelect}>
         <NumericStepInput
           value={value}
@@ -66,6 +76,31 @@ const InputTokenSelect: FC<InputTokenSelectProps> = ({
 }
 
 export default InputTokenSelect
+
+interface ControlsButtonsProps {
+  onChange: (value: string) => void
+  maxValue?: string
+}
+
+const ControlsButtons: FC<ControlsButtonsProps> = ({ onChange, maxValue = '0' }) => {
+  const onMaxClick = () => onChange(maxValue)
+  const onHalfClick = () => onChange((parseFloat(maxValue) / 2).toString())
+
+  return (
+    <div className={styles.inputTokenSelectControlButtons}>
+      <div className={styles.inputTokenSelectMaxValue}>
+        <Wallet /> {formatNumber(parseFloat(maxValue))}
+      </div>
+
+      <Button onClick={onHalfClick} variant="secondary" size="small">
+        Half
+      </Button>
+      <Button onClick={onMaxClick} variant="secondary" size="small">
+        Max
+      </Button>
+    </div>
+  )
+}
 
 interface SelectTokenButtonProps {
   selectedToken: MockTokenMetaType
@@ -160,4 +195,13 @@ const SearchInput: FC<SearchInputProps> = ({ onClose, ...inputProps }) => {
       <CloseModal onClick={onClose} className={styles.searchInputCloseIcon} />
     </div>
   )
+}
+
+const formatNumber = (value = 0) => {
+  if (!value) return '0'
+
+  return Intl.NumberFormat('en-US', {
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(value)
 }
