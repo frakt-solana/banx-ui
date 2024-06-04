@@ -253,8 +253,6 @@ export const adjustBorrowValueWithSolanaRentFee: AdjustBorrowValueWithSolanaRent
 export const calculateBorrowValueWithProtocolFee = (loanValue: number) =>
   Math.floor(loanValue * (1 - BONDS.PROTOCOL_FEE_PERCENT / 1e4))
 
-//TODO Refactor and rename
-
 export const calculateClaimValueOnCertainDate = (loan: core.Loan, date: number): BN => {
   const { amountOfBonds, soldAt } = loan.bondTradeTransaction
 
@@ -304,3 +302,7 @@ export const calculateLendValue = (loan: core.Loan) => {
     ? calculateBorrowedAmount(loan).toNumber()
     : calculateLoanRepayValue(loan)
 }
+
+//TODO Refactor all helpers for Borrower/Lender. Now
+//TODO It's realy difficult to understand what to use atm
+//TODO Spit to common, lender, borrower utils
