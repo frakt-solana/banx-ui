@@ -1,21 +1,24 @@
-import { web3 } from 'fbonds-core'
+import { BN, web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import {
   lendToBorrowerListing,
   refinancePerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
-import { isLoanListed } from '@banx/utils'
+import { banxSol } from '@banx/transactions'
+import { calculateLendValue, isBanxSolTokenType, isLoanListed } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
 type CreateLendToBorrowTxnDataParams = {
   loan: core.Loan
   aprRate: number
+  tokenType: LendingTokenType
   walletAndConnection: WalletAndConnection
 }
 
@@ -29,7 +32,7 @@ type CreateLendToBorrowTxnData = (
 ) => Promise<CreateTxnData<CreateLendToBorrowActionOptimisticResult>>
 
 export const createLendToBorrowTxnData: CreateLendToBorrowTxnData = async (params) => {
-  const { loan } = params
+  const { loan, tokenType } = params
 
   const { instructions, signers, optimisticResult } = await getIxnsAndSignersByLoanType(params)
 
@@ -39,11 +42,29 @@ export const createLendToBorrowTxnData: CreateLendToBorrowTxnData = async (param
     bondTradeTransaction: optimisticResult.bondTradeTransaction,
   }
 
+  const result = { loan: optimisticLoan, oldLoan: loan }
+
+  const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
+
+  //TODO Won't work with lendToBorrowerListing
+  if (isBanxSolTokenType(tokenType)) {
+    const totalClaimValue = calculateLendValue(loan)
+
+    return await banxSol.combineWithBuyBanxSolInstructions({
+      inputAmount: new BN(totalClaimValue),
+      walletAndConnection: params.walletAndConnection,
+      instructions,
+      signers,
+      lookupTables,
+      result,
+    })
+  }
+
   return {
     instructions,
     signers,
-    result: { loan: optimisticLoan, oldLoan: loan },
-    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    result,
+    lookupTables,
   }
 }
 
