@@ -30,6 +30,7 @@ export const getUpdatedBondOffer: GetUpdatedBondOffer = ({
     hadoMarket: syntheticOffer.marketPubkey,
     assetReceiver: syntheticOffer.assetReceiver,
     bondOffer: getMockBondOffer().publicKey,
+    isSplFeature: false,
   })
 
   const updatedBondOffer = optimisticUpdateBondOfferBonding({
@@ -37,6 +38,7 @@ export const getUpdatedBondOffer: GetUpdatedBondOffer = ({
     newLoanValue: loanValue,
     newDelta: deltaValue,
     newQuantityOfLoans: loansAmount,
+    collateralsPerToken: 0,
   })
 
   return updatedBondOffer
