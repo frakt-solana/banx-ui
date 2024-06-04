@@ -10,7 +10,7 @@ import { useOnClickOutside } from '@banx/hooks'
 import { ChevronDown, CloseModal } from '@banx/icons'
 import { shortenAddress } from '@banx/utils'
 
-import { MockTokenMetaType } from '../InstantBorrowContent/constants'
+import { MockTokenMetaType } from '../../constants'
 
 import styles from './InputTokenSelect.module.less'
 

@@ -22,6 +22,30 @@
   margin-bottom: 16px;
 }
 
+.fields {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.aprFieldWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.lenderSeesMessage {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font: var(--body-text-sm);
+  height: 14px;
+  white-space: nowrap;
+
+  @media (max-width: 640px) {
+    font: var(--body-text-xs);
+  }
+}
+
 // * Summary * //
 .summary {
   border-color: var(--bg-border);

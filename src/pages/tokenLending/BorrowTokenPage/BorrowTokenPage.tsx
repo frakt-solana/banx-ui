@@ -4,6 +4,7 @@ import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
 import BorrowHeader from './BorrowHeader'
 import InstantBorrowContent from './InstantBorrowContent'
+import ListLoansContent from './ListLoansContent'
 import { useBorrowTokenTabs } from './hooks'
 
 import styles from './BorrowTokenPage.module.less'
@@ -34,7 +35,7 @@ export const BorrowTokenPage = () => {
       <Tabs value={currentTabValue} tabs={tabs} setValue={setValue} />
       <div className={styles.content}>
         {currentTabValue === BorrowTokenTabName.INSTANT && <InstantBorrowContent />}
-        {currentTabValue === BorrowTokenTabName.REQUEST && <></>}
+        {currentTabValue === BorrowTokenTabName.LIST && <ListLoansContent />}
       </div>
     </>
   )
@@ -42,7 +43,7 @@ export const BorrowTokenPage = () => {
 
 export enum BorrowTokenTabName {
   INSTANT = 'instant',
-  REQUEST = 'request',
+  LIST = 'list',
 }
 
 const BORROW_TABS: Tab[] = [
@@ -52,6 +53,6 @@ const BORROW_TABS: Tab[] = [
   },
   {
     label: 'List loans',
-    value: BorrowTokenTabName.REQUEST,
+    value: BorrowTokenTabName.LIST,
   },
 ]
