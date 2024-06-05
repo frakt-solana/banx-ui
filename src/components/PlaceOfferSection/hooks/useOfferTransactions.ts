@@ -1,5 +1,9 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { BondOfferOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import {
+  BondOfferOptimistic,
+  getBondingCurveTypeFromLendingToken,
+} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { BondFeatures } from 'fbonds-core/lib/fbond-protocol/types'
 import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
@@ -46,6 +50,8 @@ export const useOfferTransactions = ({
   const { connection } = useConnection()
   const { tokenType } = useNftTokenType()
 
+  const bondingCurveType = getBondingCurveTypeFromLendingToken(tokenType)
+
   const onCreateOffer = async () => {
     const loadingSnackbarId = uniqueId()
 
@@ -57,8 +63,9 @@ export const useOfferTransactions = ({
         loansAmount,
         loanValue,
         deltaValue,
-        tokenType,
         walletAndConnection,
+        bondFeature: BondFeatures.AutoReceiveAndReceiveNft,
+        bondingCurveType,
       })
 
       //TODO: Fix genric here

@@ -1,0 +1,58 @@
+.container {
+  border-top: 1px solid var(--bg-border);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 8px 24px;
+  width: 100%;
+
+  @media (max-width: 960px) {
+    flex-direction: column;
+    padding: 16px;
+    gap: 8px;
+  }
+}
+
+.mainStat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  p:first-child {
+    font: var(--important-text-3xl);
+  }
+
+  p:last-child {
+    color: var(--content-secondary);
+    font: var(--title-sm);
+    text-transform: uppercase;
+    max-width: 80px;
+  }
+
+  @media (max-width: 960px) {
+    flex-direction: column-reverse;
+    gap: 2px;
+
+    p:first-child {
+      font: var(--body-text-md);
+    }
+
+    p:last-child {
+      max-width: unset;
+    }
+  }
+
+  @media (max-width: 640px) {
+    p:last-child {
+      font: var(--title-xs);
+    }
+  }
+}
+
+.claimButton {
+  width: 128px;
+
+  @media (max-width: 960px) {
+    width: 100%;
+  }
+}

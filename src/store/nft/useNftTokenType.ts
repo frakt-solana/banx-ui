@@ -22,12 +22,12 @@ export const useNftTokenType = () => {
   const params = new URLSearchParams(location.search)
 
   const tokenTypeFromUrl = params.get('token') as LendingTokenType
+  const modeTypeFromUrl = params.get('mode') as ModeType
 
   const { tokenType, setTokenType: setTokenTypeState } = useNftTokenTypeState((state) => {
     try {
       const tokenType = tokenTypeFromUrl || LendingTokenType.NativeSol
 
-      //? Check URL data validity
       z.nativeEnum(LendingTokenType).parse(tokenType)
 
       return { ...state, tokenType }
@@ -39,8 +39,10 @@ export const useNftTokenType = () => {
   })
 
   const setTokenType = (tokenType: LendingTokenType) => {
+    const modeType = modeTypeFromUrl || ModeType.NFT
+
     setTokenTypeState(tokenType)
-    navigate(createPathWithModeParams(location.pathname, ModeType.NFT, tokenType))
+    navigate(createPathWithModeParams(location.pathname, modeType, tokenType))
   }
 
   return { tokenType, setTokenType }

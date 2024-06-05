@@ -1,0 +1,159 @@
+.container {
+  display: flex;
+  width: 100%;
+}
+
+.showOffersMobileButton {
+  max-width: 96px;
+  margin-bottom: 8px;
+
+  @media (min-width: 961px) {
+    display: none;
+  }
+}
+
+.orderBook {
+  @media (max-width: 960px) {
+    display: none !important;
+  }
+}
+
+// * Form * //
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px 24px;
+  max-width: 344px;
+  width: 100%;
+
+  @media (max-width: 960px) {
+    padding: 8px 16px;
+    max-width: unset;
+  }
+}
+
+.fields {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.messageContainer {
+  height: 14px;
+}
+
+.borrowerMessage {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font: var(--body-text-sm);
+}
+// * Form * //
+
+// * ActionsButtons * //
+.actionsButtonsContainer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    gap: 8px;
+  }
+}
+.editModeButtons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+
+.actionButton {
+  width: 144px;
+
+  @media (max-width: 640px) {
+    width: 100%;
+  }
+}
+
+.placeOfferButton {
+  width: 100%;
+}
+
+.removeOfferButton {
+  background-color: var(--additional-red-secondary) !important;
+  border: 1px solid var(--additional-red-primary) !important;
+
+  &:hover {
+    border: 1px solid var(--additional-red-primary-deep) !important;
+  }
+}
+// * ActionsButtons * //
+
+// * Summary * //
+.mainSummary {
+  background: var(--bg-action);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-top: 16px;
+  gap: 16px;
+  padding: 8px;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    margin-top: 8px;
+    padding: 4px;
+  }
+}
+
+.mainSummaryStat {
+  align-items: center;
+  width: 100%;
+}
+
+.separateLine {
+  background: var(--bg-border);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 100%;
+  width: 1px;
+}
+
+.additionalSummary {
+  border: 1px dotted var(--bg-border);
+  border-left: 0;
+  border-right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 24px;
+  margin: 12px -24px;
+  width: calc(100% + 48px);
+
+  @media (max-width: 640px) {
+    padding: 8px 16px;
+    margin: 8px -16px;
+    width: calc(100% + 32px);
+  }
+}
+
+.fixedValueContent {
+  max-width: 86px;
+  white-space: nowrap;
+  overflow: auto;
+
+  @media (max-width: 960px) {
+    max-width: 144px;
+  }
+}
+
+.aprValue {
+  color: var(--additional-green-primary-deep);
+}
+// * Summary * //

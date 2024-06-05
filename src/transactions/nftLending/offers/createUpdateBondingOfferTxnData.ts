@@ -17,6 +17,7 @@ type CreateUpdateBondingOfferTxnData = (params: {
   deltaValue: number //? human number
   offer: core.Offer
   tokenType: LendingTokenType
+  collateralsPerToken?: number
   walletAndConnection: WalletAndConnection
 }) => Promise<CreateTxnData<BondOfferOptimistic>>
 
@@ -26,6 +27,7 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
   deltaValue,
   offer,
   tokenType,
+  collateralsPerToken = 0,
   walletAndConnection,
 }) => {
   const { instructions, signers, optimisticResult } = await updatePerpetualOfferBonding({
@@ -43,6 +45,7 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
       delta: deltaValue,
       quantityOfLoans: loansAmount,
       lendingTokenType: tokenType,
+      collateralsPerToken,
     },
     sendTxn: sendTxnPlaceHolder,
   })
