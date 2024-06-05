@@ -4,7 +4,7 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { Offer, OfferSchema } from '@banx/api/nft'
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
-import { convertToMarketType } from '../helpers'
+import { convertToMarketType } from '../../helpers'
 import { TokenMarketPreview, TokenMarketPreviewResponse, TokenOfferPreview } from './types'
 
 type FetchTokenMarketsPreview = (props: {
