@@ -76,6 +76,8 @@ export const createBorrowRefinanceTxnData: CreateBorrowRefinanceTxnData = async 
     const currentLoanDebt = calculateLoanRepayValueOnCertainDate({
       loan,
       upfrontFeeIncluded: true,
+      //? It is necessary to add some time because interest is accumulated even during the transaction processing.
+      //? There may not be enough funds for repayment. Therefore, we should add a small reserve for this dust.
       date: moment().unix() + 180,
     })
 
