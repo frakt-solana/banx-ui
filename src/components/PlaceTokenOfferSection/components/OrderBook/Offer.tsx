@@ -36,6 +36,8 @@ const Offer: FC<OfferProps> = ({ offer }) => {
   //TODO (TokenLending): Use rateBasePoints from market or calculate dynamically?
   const apr = 0
 
+  const offerValue = collateralsPerToken / tokenDesimals || 0
+
   return (
     <li className={classNames(styles.listItem, commonHighlightClassNames)}>
       <div className={classNames(styles.highlightItem, commonHighlightClassNames)}>
@@ -48,7 +50,7 @@ const Offer: FC<OfferProps> = ({ offer }) => {
             [styles.hightlight]: isEdit || isNewOffer,
           })}
         >
-          {collateralsPerToken / tokenDesimals}
+          {offerValue}
         </p>
         <p className={styles.value}>{createPercentValueJSX(apr)}</p>
         <p className={styles.value}>
