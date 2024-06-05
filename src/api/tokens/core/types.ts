@@ -1,19 +1,17 @@
 import { BondTradeTransactionV3, FraktBond } from 'fbonds-core/lib/fbond-protocol/types'
+import { z } from 'zod'
 
 import { PaginationMeta } from '@banx/api/types'
 
-type TokenMeta = {
-  mint: string
-  imageUrl: string
-  ticker: string
+const TokenMetaSchema = z.object({
+  mint: z.string(),
+  imageUrl: z.string(),
+  ticker: z.string(),
+  decimals: z.number(),
+  priceUSDC: z.number(),
+})
 
-  decimals: number
-  priceUSDC: number
-
-  //TODO: uncomment when converter is ready
-  // decimals: BN
-  // priceUSDC: BN
-}
+export type TokenMeta = z.infer<typeof TokenMetaSchema>
 
 export type TokenLoan = {
   publicKey: string
@@ -22,54 +20,45 @@ export type TokenLoan = {
   collateral: TokenMeta
 }
 
-export type TokenMarketPreview = {
-  marketPubkey: string
-  tokenType: string
+export const TokenMarketPreviewSchema = z.object({
+  marketPubkey: z.string(),
+  tokenType: z.string(),
 
-  collateralTokenPrice: number
-  collateralTokenDecimals: number
-  bestOffer: number
+  collateralTokenPrice: z.number(),
+  collateralTokenDecimals: z.number(),
+  bestOffer: z.number(),
 
-  activeOffersAmount: number
-  offersTvl: number
-  activeLoansAmount: number
-  loansTvl: number
+  activeOffersAmount: z.number(),
+  offersTvl: z.number(),
+  activeLoansAmount: z.number(),
+  loansTvl: z.number(),
 
-  marketApr: number
-  marketApy: number
+  marketApr: z.number(),
+  marketApy: z.number(),
 
-  collateralTokenImageUrl: string
-  collateralTokenTicker: string
+  collateralTokenImageUrl: z.string(),
+  collateralTokenTicker: z.string(),
+})
 
-  //TODO: uncomment when converter is ready
-  // collateralPrice: BN
-  // collateralDecimals: BN
-  // bestOffer: BN
-
-  // activeOffersAmount: BN
-  // offersTvl: BN
-  // activeLoansAmount: BN
-  // loansTvl: BN
-
-  // marketApr: BN
-  // marketApy: BN
-}
+export type TokenMarketPreview = z.infer<typeof TokenMarketPreviewSchema>
 
 export interface TokenMarketPreviewResponse {
   data: TokenMarketPreview[]
   meta: PaginationMeta
 }
 
-export interface TokenOfferPreview {
-  publicKey: string
-  tokenMarketPreview: TokenMarketPreview
-  tokenOfferPreview: {
-    publicKey: string
-    liquidatedLoansAmount: number
-    terminatingLoansAmount: number
-    repaymentCallsAmount: number
-    inLoans: number
-    offerSize: number
-    accruedInterest: number
-  }
-}
+export const TokenOfferPreviewSchema = z.object({
+  publicKey: z.string(),
+  tokenMarketPreview: TokenMarketPreviewSchema,
+  tokenOfferPreview: z.object({
+    publicKey: z.string(),
+    liquidatedLoansAmount: z.number(),
+    terminatingLoansAmount: z.number(),
+    repaymentCallsAmount: z.number(),
+    inLoans: z.number(),
+    offerSize: z.number(),
+    accruedInterest: z.number(),
+  }),
+})
+
+export type TokenOfferPreview = z.infer<typeof TokenOfferPreviewSchema>

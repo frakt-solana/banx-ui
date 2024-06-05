@@ -1,14 +1,11 @@
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import {
+  getBondingCurveTypeFromLendingToken,
   optimisticInitializeBondOfferBonding,
   optimisticUpdateBondOfferBonding,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import {
-  BondOfferV2,
-  BondingCurveType,
-  LendingTokenType,
-} from 'fbonds-core/lib/fbond-protocol/types'
+import { BondOfferV2, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
 
 import { SyntheticOffer } from '@banx/store/nft'
@@ -18,6 +15,7 @@ type GetUpdatedBondOffer = (props: {
   deltaValue: number //? lamports
   loansAmount: number //? integer number
   syntheticOffer: SyntheticOffer
+  tokenType: LendingTokenType
 }) => BondOfferV2
 
 export const getUpdatedBondOffer: GetUpdatedBondOffer = ({
@@ -25,9 +23,10 @@ export const getUpdatedBondOffer: GetUpdatedBondOffer = ({
   deltaValue,
   loansAmount,
   syntheticOffer,
+  tokenType,
 }) => {
   const initializedOffer = optimisticInitializeBondOfferBonding({
-    bondingType: BondingCurveType.Linear,
+    bondingType: getBondingCurveTypeFromLendingToken(tokenType),
     hadoMarket: syntheticOffer.marketPubkey,
     assetReceiver: syntheticOffer.assetReceiver,
     bondOffer: getMockBondOffer().publicKey,
@@ -79,6 +78,7 @@ export const getErrorMessage: GetErrorMessage = ({
     deltaValue: syntheticOffer.deltaValue,
     loanValue: syntheticOffer.loanValue,
     loansAmount: syntheticOffer.loansAmount,
+    tokenType,
   })
 
   const totalFundsAvailable = initialOfferSize + walletBalance
@@ -109,6 +109,7 @@ type CalcOfferSize = (props: {
   loanValue: number //? lamports
   deltaValue: number //? lamports
   loansAmount: number
+  tokenType: LendingTokenType
 }) => number
 
 export const calcOfferSize: CalcOfferSize = ({
@@ -116,8 +117,9 @@ export const calcOfferSize: CalcOfferSize = ({
   loanValue,
   loansAmount,
   deltaValue,
+  tokenType,
 }) => {
-  const offerToUpdate = { loanValue, deltaValue, loansAmount, syntheticOffer }
+  const offerToUpdate = { loanValue, deltaValue, loansAmount, syntheticOffer, tokenType }
   const updatedBondOffer = getUpdatedBondOffer(offerToUpdate)
 
   const offerSize = updatedBondOffer.fundsSolOrTokenBalance + updatedBondOffer.bidSettlement

@@ -5,7 +5,7 @@ import {
   borrowPerpetual,
   borrowStakedBanxPerpetual,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondOfferV2, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { helius } from '@banx/api/common'
@@ -110,7 +110,7 @@ const getTxnDataByBorrowType = async ({
             optimistic: {
               fraktMarket: nft.loan.fraktMarket,
               minMarketFee: nft.loan.marketApr,
-              bondOffer: offer as BondOfferV2,
+              bondOffer: offer,
             },
           },
         ],
@@ -155,7 +155,7 @@ const getTxnDataByBorrowType = async ({
         optimistic: {
           fraktMarket: nft.loan.fraktMarket,
           minMarketFee: nft.loan.marketApr,
-          bondOffer: offer as BondOfferV2,
+          bondOffer: offer,
         },
         optimizeIntoReserves: optimizeIntoReserves,
         lendingTokenType: tokenType,
@@ -192,7 +192,7 @@ const getTxnDataByBorrowType = async ({
           optimistic: {
             fraktMarket: nft.loan.fraktMarket,
             minMarketFee: nft.loan.marketApr,
-            bondOffer: offer as BondOfferV2,
+            bondOffer: offer,
           },
         },
       ],

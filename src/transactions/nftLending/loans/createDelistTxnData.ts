@@ -11,7 +11,7 @@ import moment from 'moment'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
-import { BONDS } from '@banx/constants'
+import { BANX_STAKING, BONDS } from '@banx/constants'
 
 import { fetchRuleset } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
@@ -161,10 +161,14 @@ const getIxnsAndSignersByListingType = async ({
 }
 
 const getNftListingType = (loan: core.Loan) => {
-  if (!!loan.fraktBond.banxStake && loan.fraktBond.banxStake !== EMPTY_PUBKEY.toBase58()) {
+  if (loan.nft.compression) return ListingType.CNft
+
+  if (
+    loan.fraktBond.banxStake !== EMPTY_PUBKEY.toBase58() &&
+    loan.fraktBond.fraktMarket === BANX_STAKING.FRAKT_MARKET
+  ) {
     return ListingType.StakedBanx
   }
 
-  if (loan.nft.compression) return ListingType.CNft
   return ListingType.Default
 }

@@ -3,6 +3,7 @@ import produce from 'immer'
 import { create } from 'zustand'
 
 import { core } from '@banx/api/nft'
+import { calculateIdleFundsInOffer } from '@banx/utils'
 
 export interface SyntheticTokenOffer {
   isEdit: boolean //? if offer exits on blochain and in edit mode
@@ -67,10 +68,12 @@ export const createEmptySyntheticTokenOffer: CreateEmptySyntheticTokenOffer = ({
 export const convertToSynthetic = (offer: core.Offer, isEdit = false): SyntheticTokenOffer => {
   const { publicKey, assetReceiver, hadoMarket } = offer
 
+  const offerSize = calculateIdleFundsInOffer(offer).toNumber()
+
   return {
     isEdit,
     publicKey,
-    offerSize: offer.currentSpotPrice,
+    offerSize,
     assetReceiver,
     marketPubkey: hadoMarket,
     collateralsPerToken: offer.validation.collateralsPerToken,

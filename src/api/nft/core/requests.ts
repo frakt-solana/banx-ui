@@ -3,7 +3,7 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
-import { convertToMarketType } from '../helpers'
+import { convertToMarketType } from '../../helpers'
 import {
   AllLoansRequestsResponse,
   BorrowNftsAndOffers,
@@ -22,7 +22,7 @@ import {
   MarketPreviewResponse,
   MarketPreviewSchema,
   Offer,
-  PairSchema,
+  OfferSchema,
   UserOffer,
   UserOfferSchema,
   WalletLoansAndOffers,
@@ -81,7 +81,7 @@ export const fetchMarketOffers: FetchMarketOffers = async ({
   )
 
   try {
-    await PairSchema.array().parseAsync(data?.data)
+    await OfferSchema.array().parseAsync(data?.data)
   } catch (validationError) {
     console.error('Schema validation error:', validationError)
   }

@@ -1,11 +1,17 @@
 import axios from 'axios'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { Offer, PairSchema } from '@banx/api/nft'
+import { Offer, OfferSchema } from '@banx/api/nft'
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
-import { convertToMarketType } from '../helpers'
-import { TokenMarketPreview, TokenMarketPreviewResponse, TokenOfferPreview } from './types'
+import { convertToMarketType } from '../../helpers'
+import {
+  TokenMarketPreview,
+  TokenMarketPreviewResponse,
+  TokenMarketPreviewSchema,
+  TokenOfferPreview,
+  TokenOfferPreviewSchema,
+} from './types'
 
 type FetchTokenMarketsPreview = (props: {
   tokenType: LendingTokenType
@@ -20,6 +26,12 @@ export const fetchTokenMarketsPreview: FetchTokenMarketsPreview = async ({ token
   const { data } = await axios.get<TokenMarketPreviewResponse>(
     `${BACKEND_BASE_URL}/bonds/spl/preview?${queryParams.toString()}`,
   )
+
+  try {
+    await TokenMarketPreviewSchema.array().parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
+  }
 
   return data.data
 }
@@ -45,7 +57,7 @@ export const fetchTokenMarketOffers: FetchTokenMarketOffers = async ({
   )
 
   try {
-    await PairSchema.array().parseAsync(data?.data)
+    await OfferSchema.array().parseAsync(data?.data)
   } catch (validationError) {
     console.error('Schema validation error:', validationError)
   }
@@ -71,5 +83,11 @@ export const fetchTokenOffersPreview: FetchTokenOffersPreview = async ({
     `${BACKEND_BASE_URL}/my-offers/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  return data.data ?? []
+  try {
+    await TokenOfferPreviewSchema.array().parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
+  }
+
+  return data.data
 }
