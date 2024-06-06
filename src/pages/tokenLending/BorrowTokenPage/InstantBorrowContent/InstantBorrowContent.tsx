@@ -56,7 +56,7 @@ const InstantBorrowContent = () => {
         className={styles.borrowInput}
       />
 
-      <LoanValueSlider value={sliderValue} onChange={setSliderValue} />
+      <LoanValueSlider label="Loan value" value={sliderValue} onChange={setSliderValue} />
 
       <Summary apr={0.05} upfrontFee={0.001} weeklyInterest={0.01} />
       <Button disabled={!connected} className={styles.borrowButton}>

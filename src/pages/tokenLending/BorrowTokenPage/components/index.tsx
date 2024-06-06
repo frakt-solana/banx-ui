@@ -12,10 +12,12 @@ export * from './InputTokenSelect'
 interface LoanValueSliderProps extends SliderProps {
   value: number
   onChange: (value: number) => void
+  label: string
   marketPrice?: number
 }
 
 export const LoanValueSlider: FC<LoanValueSliderProps> = ({
+  label,
   value,
   marketPrice,
   onChange,
@@ -32,7 +34,7 @@ export const LoanValueSlider: FC<LoanValueSliderProps> = ({
     <div className={styles.sliderContainer}>
       <div className={styles.sliderLabels}>
         <p className={styles.loanValueLabel}>
-          Loan value:{' '}
+          {label}:{' '}
           <span
             className={styles.loanValue}
             style={{ color: getColorByPercent(value, HealthColorIncreasing) }}

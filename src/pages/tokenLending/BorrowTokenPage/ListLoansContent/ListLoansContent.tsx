@@ -64,7 +64,7 @@ const ListLoansContent = () => {
         tokenList={BORROW_MOCK_TOKENS_LIST}
       />
 
-      <LoanValueSlider value={sliderValue} onChange={setSliderValue} marketPrice={50} />
+      <LoanValueSlider label="LTV" value={sliderValue} onChange={setSliderValue} marketPrice={50} />
 
       <div className={styles.fields}>
         <div className={styles.aprFieldWrapper}>
