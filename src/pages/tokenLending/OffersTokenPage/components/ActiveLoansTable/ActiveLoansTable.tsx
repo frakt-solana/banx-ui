@@ -2,13 +2,15 @@ import { useCallback, useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
+import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 
 import { core } from '@banx/api/tokens'
 import { ViewState, useTableView } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
-import { isTokenLoanListed } from '@banx/utils'
+import { isTokenLoanLiquidated, isTokenLoanListed, isTokenLoanTerminating } from '@banx/utils'
 
+import Summary from './Summary'
 import { getTableColumns } from './columns'
 import { useTokenLoansTable } from './hooks'
 import { useSelectedTokenLoans } from './loansState'
@@ -22,7 +24,17 @@ export const ActiveLoansTable = () => {
 
   const { viewState } = useTableView()
 
-  const { loans, loading, sortViewParams } = useTokenLoansTable()
+  const {
+    loans,
+    loading,
+    hideLoans,
+    updateOrAddLoan,
+    loansToClaim,
+    loansToTerminate,
+    sortViewParams,
+    showEmptyList,
+    emptyMessage,
+  } = useTokenLoansTable()
 
   const {
     selection,
@@ -48,8 +60,10 @@ export const ActiveLoansTable = () => {
   const hasSelectedLoans = useMemo(() => !!walletSelectedLoans?.length, [walletSelectedLoans])
 
   const onSelectAll = useCallback(() => {
-    return hasSelectedLoans ? clearSelection() : setSelection([], walletPublicKeyString)
-  }, [hasSelectedLoans, clearSelection, setSelection, walletPublicKeyString])
+    return hasSelectedLoans
+      ? clearSelection()
+      : setSelection(loansToTerminate, walletPublicKeyString)
+  }, [hasSelectedLoans, clearSelection, setSelection, loansToTerminate, walletPublicKeyString])
 
   const findLoanInSelection = useCallback(
     (loanPubkey: string) => {
@@ -60,7 +74,10 @@ export const ActiveLoansTable = () => {
 
   const onRowClick = useCallback(
     (loan: core.TokenLoan) => {
-      if (!isTokenLoanListed(loan)) return
+      const canSelect =
+        !isTokenLoanLiquidated(loan) && !isTokenLoanTerminating(loan) && !isTokenLoanListed(loan)
+
+      if (!canSelect) return
       toggleLoanInSelection(loan, walletPublicKeyString)
     },
     [toggleLoanInSelection, walletPublicKeyString],
@@ -81,6 +98,8 @@ export const ActiveLoansTable = () => {
     hasSelectedLoans,
   })
 
+  if (showEmptyList) return <EmptyList message={emptyMessage} />
+
   return (
     <div className={styles.tableRoot}>
       <Table
@@ -91,6 +110,14 @@ export const ActiveLoansTable = () => {
         loading={loading}
         className={styles.table}
         showCard
+      />
+      <Summary
+        loansToClaim={loansToClaim}
+        loansToTerminate={loansToTerminate}
+        updateOrAddLoan={updateOrAddLoan}
+        selectedLoans={walletSelectedLoans}
+        setSelection={setSelection}
+        hideLoans={hideLoans}
       />
     </div>
   )

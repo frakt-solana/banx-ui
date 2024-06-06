@@ -1,7 +1,10 @@
+import { useMemo } from 'react'
+
 import { useWallet } from '@solana/wallet-adapter-react'
 import { first, groupBy, map } from 'lodash'
 
 import { core } from '@banx/api/tokens'
+import { isTokenLoanLiquidated, isTokenLoanListed, isTokenLoanTerminating } from '@banx/utils'
 
 import { useFilterLoans, useSortedLoans, useTokenLenderLoans } from './index'
 
@@ -10,12 +13,24 @@ import styles from '../ActiveLoansTable.module.less'
 export const useTokenLoansTable = () => {
   const { connected } = useWallet()
 
-  const { loans, addMints: hideLoans, loading } = useTokenLenderLoans()
+  const { loans, addMints: hideLoans, updateOrAddLoan, loading } = useTokenLenderLoans()
 
   const { filteredLoans, filteredAllLoans, selectedCollections, setSelectedCollections } =
     useFilterLoans(loans)
 
   const { sortedLoans, sortParams } = useSortedLoans(filteredLoans)
+
+  const loansToClaim = useMemo(
+    () => sortedLoans.filter((loan) => isTokenLoanTerminating(loan) && isTokenLoanLiquidated(loan)),
+    [sortedLoans],
+  )
+
+  const loansToTerminate = useMemo(() => {
+    return sortedLoans.filter(
+      (loan) =>
+        !isTokenLoanLiquidated(loan) && !isTokenLoanTerminating(loan) && !isTokenLoanListed(loan),
+    )
+  }, [sortedLoans])
 
   const searchSelectParams = createSearchSelectParams({
     loans: filteredAllLoans,
@@ -32,6 +47,10 @@ export const useTokenLoansTable = () => {
     loans: sortedLoans,
     hideLoans,
     loading,
+    updateOrAddLoan,
+
+    loansToClaim,
+    loansToTerminate,
 
     sortViewParams: { searchSelectParams, sortParams },
 

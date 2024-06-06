@@ -13,6 +13,9 @@ import {
   HealthColorIncreasing,
   calculateLentTokenValueWithInterest,
   getColorByPercent,
+  isTokenLoanLiquidated,
+  isTokenLoanListed,
+  isTokenLoanTerminating,
 } from '@banx/utils'
 
 import { ActionsCell, ClaimCell, StatusCell } from './TableCells'
@@ -44,15 +47,23 @@ export const getTableColumns = ({
           <HeaderCell label="Collateral" />
         </div>
       ),
-      render: (loan) => (
-        <CollateralTokenCell
-          key={loan.publicKey}
-          selected={!!findLoanInSelection(loan.publicKey)}
-          onCheckboxClick={() => toggleLoanInSelection(loan)}
-          collateralTokenAmount={loan.collateral.priceUSDC}
-          collateralImageUrl={loan.collateral.imageUrl}
-        />
-      ),
+      render: (loan) => {
+        const canSelect =
+          !isTokenLoanLiquidated(loan) && !isTokenLoanTerminating(loan) && !isTokenLoanListed(loan)
+
+        const selected = canSelect ? !!findLoanInSelection(loan.publicKey) : undefined
+
+        return (
+          <CollateralTokenCell
+            key={loan.publicKey}
+            selected={selected}
+            onCheckboxClick={() => toggleLoanInSelection(loan)}
+            collateralTokenAmount={loan.collateral.priceUSDC}
+            checkboxClassName={!canSelect ? styles.collateralCellCheckbox : ''}
+            collateralImageUrl={loan.collateral.imageUrl}
+          />
+        )
+      },
     },
     {
       key: 'claim',
