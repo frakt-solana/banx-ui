@@ -1,0 +1,117 @@
+.content {
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+
+  @media (max-width: 640px) {
+    padding: 0;
+    padding-bottom: 96px;
+  }
+}
+
+// * LtvSlider * //
+.sliderContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 0;
+}
+
+.ltvSlider :global {
+  .ant-slider-rail {
+    background: linear-gradient(
+      to right,
+      var(--accent-primary),
+      var(--additional-gold-primary),
+      var(--additional-orange-primary),
+      var(--additional-red-primary)
+    ) !important;
+  }
+
+  .ant-slider-track {
+    border: 0 !important;
+    background: transparent !important;
+  }
+}
+
+.sliderLabels {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.loanValueLabel,
+.marketPriceLabel {
+  color: var(--content-secondary);
+  font: var(--title-sm);
+  text-transform: uppercase;
+
+  display: flex;
+  align-items: center;
+  gap: 2px;
+
+  @media (max-width: 640px) {
+    font: var(--title-xs);
+  }
+}
+
+.loanValue,
+.marketPriceValue {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font: var(--body-text-md);
+  white-space: nowrap;
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
+}
+
+.ltvSliderColor (@color: var(--accent-primary)) {
+  :global {
+    .ant-slider-handle {
+      border-color: @color !important;
+    }
+  }
+}
+
+.maxLtvSliderGreen {
+  .ltvSliderColor(var(--accent-primary));
+}
+.maxLtvSliderYellow {
+  .ltvSliderColor(var(--additional-gold-primary));
+}
+.maxLtvSliderOrange {
+  .ltvSliderColor(var(--additional-orange-primary));
+}
+.maxLtvSliderRed {
+  .ltvSliderColor(var(--additional-red-primary));
+}
+// * LTV Slider * //
+
+// * Separator * //
+.separator {
+  background: var(--bg-border);
+  position: relative;
+  margin: 16px -24px 24px;
+  height: 1px;
+  width: calc(100% + 48px);
+
+  @media (max-width: 640px) {
+    margin: 16px -16px 24px;
+    width: calc(100% + 32px);
+  }
+
+  &:after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
+
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid var(--bg-border);
+  }
+}
+// * Separator * //
