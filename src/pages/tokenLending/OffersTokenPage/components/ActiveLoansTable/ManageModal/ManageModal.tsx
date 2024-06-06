@@ -6,7 +6,8 @@ import { Modal } from '@banx/components/modals/BaseModal'
 import { core } from '@banx/api/tokens'
 import { useModal } from '@banx/store/common'
 
-import { ClosureContent, RepaymentCallContent } from './components'
+import { ClosureContent } from './ClosureContent'
+import { RepaymentCallContent } from './RepaymentCallContent'
 
 import styles from './ManageModal.module.less'
 

@@ -7,6 +7,7 @@ import { useModal } from '@banx/store/common'
 import { isTokenLoanLiquidated, isTokenLoanTerminating } from '@banx/utils'
 
 import ManageModal from '../../ManageModal'
+import { useTokenLenderLoansTransactions } from '../../hooks'
 
 import styles from './ActionsCell.module.less'
 
@@ -16,6 +17,7 @@ interface ActionsCellProps {
 }
 
 export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) => {
+  const { claimTokenLoan } = useTokenLenderLoansTransactions()
   const { open } = useModal()
 
   const isLoanTerminating = isTokenLoanTerminating(loan)
@@ -32,7 +34,11 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
   return (
     <div className={styles.actionsButtons}>
       {canClaim && (
-        <Button className={styles.actionButton} size={buttonSize}>
+        <Button
+          onClick={() => claimTokenLoan(loan)}
+          className={styles.actionButton}
+          size={buttonSize}
+        >
           Claim
         </Button>
       )}

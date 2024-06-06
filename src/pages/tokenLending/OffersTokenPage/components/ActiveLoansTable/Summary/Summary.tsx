@@ -1,9 +1,8 @@
 import { FC } from 'react'
 
-import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { chain, reduce, uniqueId } from 'lodash'
-import { TxnExecutor } from 'solana-transactions-executor'
+import { reduce } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider } from '@banx/components/Slider'
@@ -11,37 +10,20 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/tokens'
-import { useIsLedger } from '@banx/store/common'
-import {
-  TXN_EXECUTOR_DEFAULT_OPTIONS,
-  createExecutorWalletAndConnection,
-  defaultTxnErrorHandler,
-} from '@banx/transactions'
-import {
-  createClaimTokenTxnData,
-  createTerminateTokenTxnData,
-} from '@banx/transactions/tokenLending'
 import {
   HealthColorIncreasing,
   calculateLentTokenValueWithInterest,
   calculateTokenLoanValueWithUpfrontFee,
-  destroySnackbar,
-  enqueueConfirmationError,
-  enqueueSnackbar,
-  enqueueTransactionsSent,
-  enqueueWaitingConfirmation,
   getColorByPercent,
 } from '@banx/utils'
 
-import { useSelectedTokenLoans } from '../loansState'
+import { useTokenLenderLoansTransactions } from '../hooks'
 
 import styles from './Summary.module.less'
 
 interface SummaryProps {
   loansToClaim: core.TokenLoan[]
   loansToTerminate: core.TokenLoan[]
-  updateOrAddLoan: (loan: core.TokenLoan) => void
-  hideLoans: (mints: string[]) => void
   selectedLoans: core.TokenLoan[]
   setSelection: (loans: core.TokenLoan[], walletPublicKey: string) => void
 }
@@ -49,124 +31,15 @@ interface SummaryProps {
 const Summary: FC<SummaryProps> = ({
   loansToTerminate,
   loansToClaim,
-  updateOrAddLoan,
-  hideLoans,
   selectedLoans,
   setSelection,
 }) => {
   const wallet = useWallet()
   const walletPublicKeyString = wallet.publicKey?.toBase58() || ''
-  const { clear: clearSelection } = useSelectedTokenLoans()
 
-  const { connection } = useConnection()
-  const { isLedger } = useIsLedger()
+  const { claimTokenLoans, terminateTokenLoans } = useTokenLenderLoansTransactions()
 
   const { totalLent, averageLtv, totalInterest } = getTerminateStatsInfo(selectedLoans)
-
-  const terminateLoans = async () => {
-    const loadingSnackbarId = uniqueId()
-
-    try {
-      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
-
-      const txnsData = await Promise.all(
-        selectedLoans.map((loan) => createTerminateTokenTxnData({ loan, walletAndConnection })),
-      )
-
-      await new TxnExecutor<core.TokenLoan>(walletAndConnection, {
-        ...TXN_EXECUTOR_DEFAULT_OPTIONS,
-        chunkSize: isLedger ? 5 : 40,
-      })
-        .addTxnsData(txnsData)
-        .on('sentAll', () => {
-          enqueueTransactionsSent()
-          enqueueWaitingConfirmation(loadingSnackbarId)
-        })
-        .on('confirmedAll', (results) => {
-          const { confirmed, failed } = results
-
-          destroySnackbar(loadingSnackbarId)
-
-          if (confirmed.length) {
-            enqueueSnackbar({ message: 'Collaterals successfully terminated', type: 'success' })
-            confirmed.forEach(({ result }) => result && updateOrAddLoan(result))
-            clearSelection()
-          }
-
-          if (failed.length) {
-            return failed.forEach(({ signature, reason }) =>
-              enqueueConfirmationError(signature, reason),
-            )
-          }
-        })
-        .on('error', (error) => {
-          throw error
-        })
-        .execute()
-    } catch (error) {
-      destroySnackbar(loadingSnackbarId)
-      defaultTxnErrorHandler(error, {
-        additionalData: selectedLoans,
-        walletPubkey: wallet?.publicKey?.toBase58(),
-        transactionName: 'TerminateTokenLoans',
-      })
-    }
-  }
-
-  const claimLoans = async () => {
-    const loadingSnackbarId = uniqueId()
-
-    try {
-      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
-
-      const txnsData = await Promise.all(
-        loansToClaim.map((loan) => createClaimTokenTxnData({ loan, walletAndConnection })),
-      )
-
-      await new TxnExecutor<core.TokenLoan>(walletAndConnection, {
-        ...TXN_EXECUTOR_DEFAULT_OPTIONS,
-        chunkSize: isLedger ? 5 : 40,
-      })
-        .addTxnsData(txnsData)
-        .on('sentAll', () => {
-          enqueueTransactionsSent()
-          enqueueWaitingConfirmation(loadingSnackbarId)
-        })
-        .on('confirmedAll', (results) => {
-          const { confirmed, failed } = results
-
-          destroySnackbar(loadingSnackbarId)
-
-          if (confirmed.length) {
-            enqueueSnackbar({ message: 'Collaterals successfully claimed', type: 'success' })
-
-            const mintsToHidden = chain(confirmed)
-              .map(({ result }) => result?.collateral.mint)
-              .compact()
-              .value()
-
-            hideLoans(mintsToHidden)
-          }
-
-          if (failed.length) {
-            return failed.forEach(({ signature, reason }) =>
-              enqueueConfirmationError(signature, reason),
-            )
-          }
-        })
-        .on('error', (error) => {
-          throw error
-        })
-        .execute()
-    } catch (error) {
-      destroySnackbar(loadingSnackbarId)
-      defaultTxnErrorHandler(error, {
-        additionalData: loansToClaim,
-        walletPubkey: wallet?.publicKey?.toBase58(),
-        transactionName: 'ClaimTokenLoans',
-      })
-    }
-  }
 
   const handleLoanSelection = (value = 0) => {
     setSelection(loansToTerminate.slice(0, value), walletPublicKeyString)
@@ -175,7 +48,12 @@ const Summary: FC<SummaryProps> = ({
   return (
     <div className={styles.container}>
       {!!loansToClaim.length && (
-        <Button className={styles.claimButton} onClick={claimLoans} type="circle" variant="text">
+        <Button
+          className={styles.claimButton}
+          onClick={() => claimTokenLoans(loansToClaim)}
+          type="circle"
+          variant="text"
+        >
           Claim defaults
         </Button>
       )}
@@ -216,7 +94,7 @@ const Summary: FC<SummaryProps> = ({
           />
           <Button
             className={classNames(styles.summaryButton, styles.terminateButton)}
-            onClick={terminateLoans}
+            onClick={() => terminateTokenLoans(loansToTerminate)}
             disabled={!selectedLoans.length}
             variant="secondary"
           >

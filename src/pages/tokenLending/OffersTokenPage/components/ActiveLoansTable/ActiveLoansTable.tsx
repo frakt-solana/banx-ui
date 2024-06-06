@@ -27,8 +27,6 @@ export const ActiveLoansTable = () => {
   const {
     loans,
     loading,
-    hideLoans,
-    updateOrAddLoan,
     loansToClaim,
     loansToTerminate,
     sortViewParams,
@@ -114,10 +112,8 @@ export const ActiveLoansTable = () => {
       <Summary
         loansToClaim={loansToClaim}
         loansToTerminate={loansToTerminate}
-        updateOrAddLoan={updateOrAddLoan}
         selectedLoans={walletSelectedLoans}
         setSelection={setSelection}
-        hideLoans={hideLoans}
       />
     </div>
   )

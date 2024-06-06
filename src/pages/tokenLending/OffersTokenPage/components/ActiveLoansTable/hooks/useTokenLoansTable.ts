@@ -13,7 +13,7 @@ import styles from '../ActiveLoansTable.module.less'
 export const useTokenLoansTable = () => {
   const { connected } = useWallet()
 
-  const { loans, addMints: hideLoans, updateOrAddLoan, loading } = useTokenLenderLoans()
+  const { loans, loading } = useTokenLenderLoans()
 
   const { filteredLoans, filteredAllLoans, selectedCollections, setSelectedCollections } =
     useFilterLoans(loans)
@@ -45,9 +45,7 @@ export const useTokenLoansTable = () => {
 
   return {
     loans: sortedLoans,
-    hideLoans,
     loading,
-    updateOrAddLoan,
 
     loansToClaim,
     loansToTerminate,
