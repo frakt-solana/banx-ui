@@ -18,6 +18,7 @@ export type TokenLoan = {
   fraktBond: FraktBond
   bondTradeTransaction: BondTradeTransactionV3
   collateral: TokenMeta
+  collateralPrice: number
 }
 
 export const TokenMarketPreviewSchema = z.object({

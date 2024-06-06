@@ -45,9 +45,15 @@ export const useTokenLenderLoans = () => {
     return data.filter(({ collateral }) => !mints.includes(collateral.mint))
   }, [data, mints])
 
+  const updateOrAddLoan = (loan: core.TokenLoan) => {
+    return loan
+  }
+
   return {
     loans: loans as core.TokenLoan[],
     loading: isLoading,
     addMints,
+
+    updateOrAddLoan,
   }
 }

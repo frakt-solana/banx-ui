@@ -4,7 +4,7 @@ import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/type
 import moment from 'moment'
 
 import { core } from '@banx/api/tokens'
-import { SECONDS_IN_72_HOURS } from '@banx/constants'
+import { BONDS, SECONDS_IN_72_HOURS } from '@banx/constants'
 
 export const isTokenLoanFrozen = (loan: core.TokenLoan) => {
   return !!loan.bondTradeTransaction.terminationFreeze
@@ -39,6 +39,23 @@ export const isTokenLoanActive = (loan: core.TokenLoan) => {
     bondTradeTransactionState === BondTradeTransactionV2State.PerpetualActive ||
     bondTradeTransactionState === BondTradeTransactionV2State.PerpetualRefinancedActive
   )
+}
+
+export const caclulateBorrowTokenLoanValue = (loan: core.TokenLoan, includeFee = true) => {
+  const { solAmount, feeAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction
+
+  const loanValue = includeFee ? solAmount + feeAmount : solAmount
+
+  const currentTimeInSeconds = moment().unix()
+
+  const calculatedInterest = calculateCurrentInterestSolPure({
+    loanValue: amountOfBonds,
+    startTime: soldAt,
+    currentTime: currentTimeInSeconds,
+    rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
+  })
+
+  return new BN(loanValue).add(new BN(calculatedInterest))
 }
 
 export const calculateTokenLoanValueWithUpfrontFee = (loan: core.TokenLoan) => {

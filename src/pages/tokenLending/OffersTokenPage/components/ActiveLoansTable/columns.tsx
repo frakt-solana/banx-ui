@@ -9,7 +9,11 @@ import {
 } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/tokens'
-import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
+import {
+  HealthColorIncreasing,
+  calculateLentTokenValueWithInterest,
+  getColorByPercent,
+} from '@banx/utils'
 
 import { ActionsCell, ClaimCell, StatusCell } from './TableCells'
 import { TokenLoanOptimistic } from './loansState'
@@ -63,9 +67,9 @@ export const getTableColumns = ({
     {
       key: 'ltv',
       title: <HeaderCell label="LTV" />,
-      render: () => {
-        //TODO: Need to add price by tokenType to collateral model
-        const ltv = 0
+      render: (loan) => {
+        const lentTokenValueWithInterest = calculateLentTokenValueWithInterest(loan).toNumber()
+        const ltv = (lentTokenValueWithInterest / loan.collateralPrice) * 100
 
         return (
           <HorizontalCell
