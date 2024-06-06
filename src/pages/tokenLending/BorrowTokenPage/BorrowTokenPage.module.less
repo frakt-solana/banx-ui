@@ -10,10 +10,11 @@
 }
 
 // * LtvSlider * //
-.ltvSliderContainer {
+.sliderContainer {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  padding: 14px 0;
 }
 
 .ltvSlider :global {
@@ -33,13 +34,37 @@
   }
 }
 
-.ltvSliderLabel {
+.sliderLabels {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.loanValueLabel,
+.marketPriceLabel {
   color: var(--content-secondary);
   font: var(--title-sm);
   text-transform: uppercase;
 
-  span {
-    font: var(--body-text-md);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+
+  @media (max-width: 640px) {
+    font: var(--title-xs);
+  }
+}
+
+.loanValue,
+.marketPriceValue {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font: var(--body-text-md);
+  white-space: nowrap;
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
   }
 }
 

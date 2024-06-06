@@ -3,13 +3,13 @@ import { FC } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 
 import { Button } from '@banx/components/Buttons'
-import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
+import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import { NumericStepInput } from '@banx/components/inputs'
 
 import { DAYS_IN_YEAR } from '@banx/constants'
 
-import { LtvSlider, Separator } from '../components'
+import { LoanValueSlider, Separator } from '../components'
 import InputTokenSelect from '../components/InputTokenSelect'
 import { BORROW_MOCK_TOKENS_LIST, COLLATERAL_MOCK_TOKENS_LIST } from '../constants'
 import { MAX_APR_VALUE, useListLoansContent } from './hooks'
@@ -53,8 +53,6 @@ const ListLoansContent = () => {
         className={styles.collateralInput}
       />
 
-      <LtvSlider value={sliderValue} onChange={setSliderValue} />
-
       <Separator />
 
       <InputTokenSelect
@@ -64,8 +62,9 @@ const ListLoansContent = () => {
         selectedToken={borrowToken}
         onChangeToken={setBorrowToken}
         tokenList={BORROW_MOCK_TOKENS_LIST}
-        className={styles.borrowInput}
       />
+
+      <LoanValueSlider value={sliderValue} onChange={setSliderValue} marketPrice={50} />
 
       <div className={styles.fields}>
         <div className={styles.aprFieldWrapper}>
@@ -97,7 +96,7 @@ const ListLoansContent = () => {
         />
       </div>
 
-      <Summary apr={0.05} upfrontFee={0.001} />
+      <Summary weeklyFee={0.05} upfrontFee={0.001} />
       <Button disabled={!connected} className={styles.borrowButton}>
         {!connected ? 'Connect wallet to list request' : 'List request'}
       </Button>
@@ -107,11 +106,11 @@ const ListLoansContent = () => {
 
 export default ListLoansContent
 interface SummaryProps {
-  apr: number
+  weeklyFee: number
   upfrontFee: number
 }
 
-export const Summary: FC<SummaryProps> = ({ apr, upfrontFee }) => {
+export const Summary: FC<SummaryProps> = ({ weeklyFee, upfrontFee }) => {
   const statClassNames = {
     value: styles.fixedStatValue,
   }
@@ -126,10 +125,9 @@ export const Summary: FC<SummaryProps> = ({ apr, upfrontFee }) => {
         flexType="row"
       />
       <StatInfo
-        label="APR"
-        value={apr}
-        valueType={VALUES_TYPES.PERCENT}
-        tooltipText="APR"
+        label="Weekly fee"
+        value={weeklyFee}
+        tooltipText="Weekly fee"
         classNamesProps={statClassNames}
         flexType="row"
       />

@@ -22,7 +22,7 @@ export const useListLoansContent = () => {
   const [borrowInputValue, setBorrowlInputValue] = useState('')
   const [borrowToken, setBorrowToken] = useState<MockTokenMetaType>(BORROW_MOCK_TOKENS_LIST[0])
 
-  const [sliderValue, setSliderValue] = useState(0)
+  const [sliderValue, setSliderValue] = useState(100)
   const [inputAprValue, setInputAprValue] = useState('')
   const [inputFreezeValue, setInputFreezeValue] = useState('')
 

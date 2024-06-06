@@ -1,8 +1,7 @@
 import { FC } from 'react'
 
-import classNames from 'classnames'
-
 import { Slider, SliderProps } from '@banx/components/Slider'
+import { DisplayValue } from '@banx/components/TableComponents'
 
 import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
 
@@ -10,12 +9,18 @@ import styles from '../BorrowTokenPage.module.less'
 
 export * from './InputTokenSelect'
 
-interface LtvSliderProps extends SliderProps {
+interface LoanValueSliderProps extends SliderProps {
   value: number
   onChange: (value: number) => void
+  marketPrice?: number
 }
 
-export const LtvSlider: FC<LtvSliderProps> = ({ value, onChange, ...props }) => {
+export const LoanValueSlider: FC<LoanValueSliderProps> = ({
+  value,
+  marketPrice,
+  onChange,
+  ...props
+}) => {
   const colorClassNameByValue = {
     25: styles.maxLtvSliderGreen,
     50: styles.maxLtvSliderYellow,
@@ -24,11 +29,28 @@ export const LtvSlider: FC<LtvSliderProps> = ({ value, onChange, ...props }) => 
   }
 
   return (
-    <div className={styles.ltvSliderContainer}>
-      <p className={styles.ltvSliderLabel}>
-        LTV:{' '}
-        <span style={{ color: getColorByPercent(value, HealthColorIncreasing) }}>{value}%</span>
-      </p>
+    <div className={styles.sliderContainer}>
+      <div className={styles.sliderLabels}>
+        <p className={styles.loanValueLabel}>
+          Loan value:{' '}
+          <span
+            className={styles.loanValue}
+            style={{ color: getColorByPercent(value, HealthColorIncreasing) }}
+          >
+            {value}%
+          </span>
+        </p>
+
+        {marketPrice && (
+          <p className={styles.marketPriceLabel}>
+            Market price:{' '}
+            <span className={styles.marketPriceValue}>
+              <DisplayValue value={value} />
+            </span>
+          </p>
+        )}
+      </div>
+
       <Slider
         value={value}
         onChange={onChange}
@@ -36,7 +58,7 @@ export const LtvSlider: FC<LtvSliderProps> = ({ value, onChange, ...props }) => 
         max={100}
         marks={{}}
         rootClassName={getColorByPercent(value, colorClassNameByValue)}
-        className={classNames(styles.ltvSlider, styles.ltvSlider)}
+        className={styles.ltvSlider}
         {...props}
       />
     </div>

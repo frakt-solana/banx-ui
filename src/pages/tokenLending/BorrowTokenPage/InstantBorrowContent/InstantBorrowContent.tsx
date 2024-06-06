@@ -6,7 +6,7 @@ import { Button } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { LtvSlider, Separator } from '../components'
+import { LoanValueSlider, Separator } from '../components'
 import InputTokenSelect from '../components/InputTokenSelect'
 import {
   BORROW_MOCK_TOKENS_LIST,
@@ -21,7 +21,7 @@ const MOCK_MAX_VALUE = '423000000'
 const InstantBorrowContent = () => {
   const { connected } = useWallet()
 
-  const [sliderValue, setSliderValue] = useState(0)
+  const [sliderValue, setSliderValue] = useState(100)
 
   const [collateralInputValue, setCollateralInputValue] = useState('')
   const [collateralToken, setCollateralToken] = useState<MockTokenMetaType>(
@@ -44,8 +44,6 @@ const InstantBorrowContent = () => {
         maxValue={MOCK_MAX_VALUE}
       />
 
-      <LtvSlider value={sliderValue} onChange={setSliderValue} />
-
       <Separator />
 
       <InputTokenSelect
@@ -57,6 +55,8 @@ const InstantBorrowContent = () => {
         tokenList={BORROW_MOCK_TOKENS_LIST}
         className={styles.borrowInput}
       />
+
+      <LoanValueSlider value={sliderValue} onChange={setSliderValue} />
 
       <Summary apr={0.05} upfrontFee={0.001} weeklyInterest={0.01} />
       <Button disabled={!connected} className={styles.borrowButton}>
