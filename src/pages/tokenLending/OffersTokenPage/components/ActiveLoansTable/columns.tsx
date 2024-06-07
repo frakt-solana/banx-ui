@@ -1,3 +1,5 @@
+import { FC, ReactNode } from 'react'
+
 import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
 import {
@@ -7,17 +9,24 @@ import {
   HorizontalCell,
   createPercentValueJSX,
 } from '@banx/components/TableComponents'
+import Timer from '@banx/components/Timer'
+import Tooltip from '@banx/components/Tooltip'
 
 import { core } from '@banx/api/tokens'
+import { Coin, Snowflake } from '@banx/icons'
 import {
   HealthColorIncreasing,
   calculateLentTokenValueWithInterest,
+  calculateTokenRepaymentCallLenderReceivesAmount,
   getColorByPercent,
+  isTokenLoanFrozen,
   isTokenLoanLiquidated,
   isTokenLoanListed,
+  isTokenLoanRepaymentCallActive,
   isTokenLoanTerminating,
 } from '@banx/utils'
 
+import { calculateFreezeExpiredAt } from './ManageModal/helpers'
 import { ActionsCell, ClaimCell, StatusCell } from './TableCells'
 import { TokenLoanOptimistic } from './loansState'
 
@@ -61,6 +70,7 @@ export const getTableColumns = ({
             collateralTokenAmount={loan.collateral.priceUSDC}
             checkboxClassName={!canSelect ? styles.collateralCellCheckbox : ''}
             collateralImageUrl={loan.collateral.imageUrl}
+            rightContentJSX={createRightContentJSX(loan)}
           />
         )
       },
@@ -133,3 +143,51 @@ export const getTableColumns = ({
 
   return columns
 }
+
+const createRightContentJSX = (loan: core.TokenLoan) => {
+  const repaymentCallLenderReceives = calculateTokenRepaymentCallLenderReceivesAmount(loan)
+  const freezeExpiredAt = calculateFreezeExpiredAt(loan)
+
+  const repaymentCallContent = createTooltipContent({
+    icon: <Coin />,
+    content: (
+      <p className={styles.repaymentCallTooltipValue}>
+        <DisplayValue value={repaymentCallLenderReceives} /> requested
+      </p>
+    ),
+  })
+
+  const freezeLoanContent = createTooltipContent({
+    icon: <Snowflake className={styles.snowflakeIcon} />,
+    content: (
+      <p>
+        <Timer expiredAt={freezeExpiredAt} /> until the end of non termination period
+      </p>
+    ),
+  })
+
+  if (isTokenLoanRepaymentCallActive(loan) && isTokenLoanFrozen(loan)) {
+    return (
+      <div className={styles.iconsTooltipWrapper}>
+        {repaymentCallContent}
+        {freezeLoanContent}
+      </div>
+    )
+  }
+
+  if (isTokenLoanRepaymentCallActive(loan)) return repaymentCallContent
+  if (isTokenLoanFrozen(loan)) return freezeLoanContent
+
+  return ''
+}
+
+interface CreateTooltipContentProps {
+  content: ReactNode
+  icon: ReactNode
+}
+
+const createTooltipContent: FC<CreateTooltipContentProps> = ({ content, icon }) => (
+  <Tooltip className={styles.iconTooltipContent} title={content}>
+    {icon}
+  </Tooltip>
+)

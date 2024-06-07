@@ -1,10 +1,17 @@
 import { useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { first, groupBy, map } from 'lodash'
+import { first, groupBy, map, sumBy } from 'lodash'
+
+import { DisplayValue } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/tokens'
-import { isTokenLoanLiquidated, isTokenLoanListed, isTokenLoanTerminating } from '@banx/utils'
+import {
+  calculateLentTokenValueWithInterest,
+  isTokenLoanLiquidated,
+  isTokenLoanListed,
+  isTokenLoanTerminating,
+} from '@banx/utils'
 
 import { useFilterLoans, useSortedLoans, useTokenLenderLoans } from './index'
 
@@ -73,8 +80,11 @@ const createSearchSelectParams = ({
   const searchSelectOptions = map(loansGroupedByCollection, (groupedLoans) => {
     const firstLoanInGroup = first(groupedLoans)
     const { ticker = '', imageUrl = '' } = firstLoanInGroup?.collateral || {}
+    const claim = sumBy(groupedLoans, (loan) =>
+      calculateLentTokenValueWithInterest(loan).toNumber(),
+    )
 
-    return { ticker, imageUrl }
+    return { ticker, imageUrl, claim }
   })
 
   const searchSelectParams = {
@@ -86,6 +96,10 @@ const createSearchSelectParams = ({
       labelKey: 'ticker',
       valueKey: 'ticker',
       imageKey: 'imageUrl',
+      secondLabel: {
+        key: 'claim',
+        format: (value: number) => <DisplayValue value={value} />,
+      },
     },
     onChange,
   }

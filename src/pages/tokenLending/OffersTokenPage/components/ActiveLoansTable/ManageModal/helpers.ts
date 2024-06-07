@@ -1,7 +1,11 @@
 import moment from 'moment'
 
 import { core } from '@banx/api/tokens'
-import { calculateLentTokenValueWithInterest } from '@banx/utils'
+import {
+  calculateLentTokenValueWithInterest,
+  calculateTokenRepaymentCallLenderReceivesAmount,
+  isTokenLoanRepaymentCallActive,
+} from '@banx/utils'
 
 export const calculateFreezeExpiredAt = (loan: core.TokenLoan) => {
   return loan.bondTradeTransaction.soldAt + loan.bondTradeTransaction.terminationFreeze
@@ -16,9 +20,9 @@ export const checkIfFreezeExpired = (loan: core.TokenLoan) => {
 export const calculateRepaymentStaticValues = (loan: core.TokenLoan) => {
   const DEFAULT_REPAY_PERCENT = 50
 
-  const repaymentCallActive = false
+  const repaymentCallActive = isTokenLoanRepaymentCallActive(loan)
 
-  const repaymentCallLenderReceives = 0
+  const repaymentCallLenderReceives = calculateTokenRepaymentCallLenderReceivesAmount(loan)
 
   const totalClaim = calculateLentTokenValueWithInterest(loan).toNumber()
 

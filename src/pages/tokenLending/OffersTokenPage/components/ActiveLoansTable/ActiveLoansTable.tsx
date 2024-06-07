@@ -8,7 +8,13 @@ import Table from '@banx/components/Table'
 import { core } from '@banx/api/tokens'
 import { ViewState, useTableView } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
-import { isTokenLoanLiquidated, isTokenLoanListed, isTokenLoanTerminating } from '@banx/utils'
+import {
+  isTokenLoanLiquidated,
+  isTokenLoanListed,
+  isTokenLoanRepaymentCallActive,
+  isTokenLoanTerminating,
+  isTokenLoanUnderWater,
+} from '@banx/utils'
 
 import Summary from './Summary'
 import { getTableColumns } from './columns'
@@ -81,13 +87,6 @@ export const ActiveLoansTable = () => {
     [toggleLoanInSelection, walletPublicKeyString],
   )
 
-  const rowParams = useMemo(() => {
-    return {
-      onRowClick,
-      activeRowParams: [],
-    }
-  }, [onRowClick])
-
   const columns = getTableColumns({
     isCardView: viewState === ViewState.CARD,
     toggleLoanInSelection: onRowClick,
@@ -95,6 +94,35 @@ export const ActiveLoansTable = () => {
     onSelectAll,
     hasSelectedLoans,
   })
+
+  const rowParams = useMemo(() => {
+    return {
+      onRowClick,
+      activeRowParams: [
+        {
+          condition: (loan: core.TokenLoan) => isTokenLoanTerminating(loan),
+          className: styles.terminated,
+          cardClassName: styles.terminated,
+        },
+        {
+          condition: (loan: core.TokenLoan) => isTokenLoanLiquidated(loan),
+          className: styles.liquidated,
+          cardClassName: styles.liquidated,
+        },
+        {
+          condition: (loan: core.TokenLoan) =>
+            isTokenLoanUnderWater(loan) && !isTokenLoanRepaymentCallActive(loan),
+          className: styles.underwater,
+          cardClassName: styles.underwater,
+        },
+        {
+          condition: (loan: core.TokenLoan) => isTokenLoanRepaymentCallActive(loan),
+          className: styles.activeRepaymentCall,
+          cardClassName: styles.activeRepaymentCall,
+        },
+      ],
+    }
+  }, [onRowClick])
 
   if (showEmptyList) return <EmptyList message={emptyMessage} />
 

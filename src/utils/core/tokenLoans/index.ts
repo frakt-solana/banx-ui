@@ -1,10 +1,15 @@
 import { BN } from 'fbonds-core'
-import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import {
+  calculateCurrentInterestSolPure,
+  calculateLenderPartialPartFromBorrower,
+} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
 import moment from 'moment'
 
 import { core } from '@banx/api/tokens'
 import { BONDS, SECONDS_IN_72_HOURS } from '@banx/constants'
+
+import { calculateApr } from '../loans'
 
 export const isTokenLoanFrozen = (loan: core.TokenLoan) => {
   return !!loan.bondTradeTransaction.terminationFreeze
@@ -39,6 +44,39 @@ export const isTokenLoanActive = (loan: core.TokenLoan) => {
     bondTradeTransactionState === BondTradeTransactionV2State.PerpetualActive ||
     bondTradeTransactionState === BondTradeTransactionV2State.PerpetualRefinancedActive
   )
+}
+
+export const isTokenLoanUnderWater = (loan: core.TokenLoan) => {
+  const collectionFloor = loan.collateralPrice
+  const loanValue = calculateTokenLoanValueWithUpfrontFee(loan).toNumber()
+
+  return loanValue > collectionFloor
+}
+
+export const isTokenLoanRepaymentCallActive = (loan: core.TokenLoan) => {
+  if (!loan.bondTradeTransaction.repaymentCallAmount || isTokenLoanTerminating(loan)) return false
+
+  const repayValue = caclulateBorrowTokenLoanValue(loan).toNumber()
+  return !!(loan.bondTradeTransaction.repaymentCallAmount / repayValue)
+}
+
+/**
+  As we need to show how much lender receives. We need to calculate this value from repaymentCallAmount (how much borrower should pay)
+ */
+export const calculateTokenRepaymentCallLenderReceivesAmount = (loan: core.TokenLoan) => {
+  const { repaymentCallAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction
+
+  return calculateLenderPartialPartFromBorrower({
+    borrowerPart: repaymentCallAmount,
+    protocolRepayFeeApr: BONDS.PROTOCOL_REPAY_FEE,
+    soldAt,
+    //? Lender APR (without ProtocolFee)
+    lenderApr: calculateApr({
+      loanValue: amountOfBonds,
+      collectionFloor: loan.collateralPrice,
+      marketPubkey: loan.fraktBond.hadoMarket,
+    }),
+  })
 }
 
 export const caclulateBorrowTokenLoanValue = (loan: core.TokenLoan, includeFee = true) => {
