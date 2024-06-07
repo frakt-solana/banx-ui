@@ -33,11 +33,13 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
     onOfferSizeChange,
     hasFormChanges,
     resetFormValues,
-  } = useOfferFormController(syntheticOffer)
+  } = useOfferFormController(syntheticOffer, market)
 
   const decimals = getTokenDecimals(tokenType)
 
-  const collateralsPerToken = parseFloat(collateralsPerTokenString) * decimals
+  const collateralsPerToken =
+    (1 / parseFloat(collateralsPerTokenString)) * Math.pow(10, market?.collateralTokenDecimals || 0)
+
   const offerSize = parseFloat(offerSizeString) * decimals
 
   useEffect(() => {
