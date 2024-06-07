@@ -16,6 +16,7 @@ export const BanxStakingSettingsSchema = z.object({
   rewardsHarvested: z.string(),
   tokensPerPartnerPoints: z.string(),
   tokensPerWeek: z.string(),
+  hadesPerWeek: z.string(),
   tokensStaked: z.string(),
 })
 export type BanxStakingSettings = z.infer<typeof BanxStakingSettingsSchema>
@@ -78,6 +79,7 @@ export const BanxSubscriptionSchema = z.object({
   amountOfTokensHarvested: z.string(),
   publicKey: z.string(),
   stakeNftAmount: z.string(),
+  amountOfHadesTokensHarvested: z.string(),
 })
 export type BanxSubscription = z.infer<typeof BanxSubscriptionSchema>
 

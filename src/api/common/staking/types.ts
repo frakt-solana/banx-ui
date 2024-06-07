@@ -23,6 +23,7 @@ export type BanxStakingSettingsBN = {
   rewardsHarvested: BN
   tokensPerPartnerPoints: BN
   tokensPerWeek: BN
+  hadesPerWeek: BN
   tokensStaked: BN
   placeholderOne: string
 }
@@ -75,6 +76,7 @@ export type BanxAdventureSubscriptionBN = {
   subscribedAt: number
   unsubscribedAt: number
   harvestedAt: number
+  amountOfHadesTokensHarvested: BN
 }
 
 export type BanxAdventureBN = {
