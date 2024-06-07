@@ -63,7 +63,8 @@ export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = asyn
     nft,
   }))[0]
 
-  if (isBanxSolTokenType(bondTradeTransaction.lendingToken)) {
+  //? Add BanxSol instructions if offer wasn't closed!
+  if (isBanxSolTokenType(bondTradeTransaction.lendingToken) && !loan.offerWasClosed) {
     const repayValue = calculateLoanRepayValueOnCertainDate({
       loan,
       upfrontFeeIncluded: false,

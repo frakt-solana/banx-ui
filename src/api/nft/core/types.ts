@@ -178,6 +178,7 @@ export const LoanSchema = z.object({
   nft: NFTSchema,
   totalRepaidAmount: z.number().optional(), //? exist only in fetchLenderLoansAndOffers request
   accruedInterest: z.number().optional(),
+  offerWasClosed: z.boolean().optional(), //? true if loan offer was removed (state is PerpetualClosed). false if offer is active or it's listing
 })
 
 export type Loan = z.infer<typeof LoanSchema>

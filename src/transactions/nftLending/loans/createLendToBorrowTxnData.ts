@@ -46,8 +46,8 @@ export const createLendToBorrowTxnData: CreateLendToBorrowTxnData = async (param
 
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
 
-  //TODO Won't work with lendToBorrowerListing
-  if (isBanxSolTokenType(tokenType)) {
+  //? Add BanxSol instructions if it's not a listing and offer wasn't closed!
+  if (isBanxSolTokenType(tokenType) && !isLoanListed(loan) && !loan.offerWasClosed) {
     const totalClaimValue = calculateLendValue(loan)
 
     return await banxSol.combineWithBuyBanxSolInstructions({
