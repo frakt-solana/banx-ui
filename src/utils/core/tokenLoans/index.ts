@@ -47,10 +47,9 @@ export const isTokenLoanActive = (loan: core.TokenLoan) => {
 }
 
 export const isTokenLoanUnderWater = (loan: core.TokenLoan) => {
-  const collectionFloor = loan.collateralPrice
   const loanValue = calculateTokenLoanValueWithUpfrontFee(loan).toNumber()
 
-  return loanValue > collectionFloor
+  return loanValue > loan.collateralPrice
 }
 
 export const isTokenLoanRepaymentCallActive = (loan: core.TokenLoan) => {

@@ -114,11 +114,10 @@ const getTerminateStatsInfo = (loans: core.TokenLoan[]) => {
     (acc, loan) => {
       const claimValue = calculateLentTokenValueWithInterest(loan).toNumber()
       const borrowedAmount = calculateTokenLoanValueWithUpfrontFee(loan).toNumber()
-      const collectionFloor = loan.collateralPrice
 
       return {
         totalLent: acc.totalLent + borrowedAmount,
-        averageLtv: acc.averageLtv + (claimValue / collectionFloor / loans.length) * 100,
+        averageLtv: acc.averageLtv + (claimValue / loan.collateralPrice / loans.length) * 100,
         totalInterest: acc.totalInterest + claimValue - borrowedAmount,
       }
     },

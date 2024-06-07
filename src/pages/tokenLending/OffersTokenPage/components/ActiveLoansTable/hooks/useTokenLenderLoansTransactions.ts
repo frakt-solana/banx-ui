@@ -17,6 +17,7 @@ import {
   createTerminateTokenTxnData,
 } from '@banx/transactions/tokenLending'
 import {
+  caclulateBorrowTokenLoanValue,
   destroySnackbar,
   enqueueConfirmationError,
   enqueueSnackbar,
@@ -318,7 +319,9 @@ export const useTokenLenderLoansTransactions = () => {
   }
 
   const sendRepaymentCall = async (loan: core.TokenLoan, repayPercent: number) => {
-    const callAmount = Math.floor((0 * repayPercent) / 100)
+    const callAmount = Math.floor(
+      (caclulateBorrowTokenLoanValue(loan).toNumber() * repayPercent) / 100,
+    )
 
     const loadingSnackbarId = uniqueId()
 
