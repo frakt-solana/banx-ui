@@ -32,6 +32,7 @@ export const convertToBanxStakingSettingsBN = (
     rewardsHarvested,
     tokensPerPartnerPoints,
     tokensPerWeek,
+    hadesPerWeek,
     tokensStaked,
     placeholderOne,
   } = banxStakingSettings
@@ -44,6 +45,7 @@ export const convertToBanxStakingSettingsBN = (
     rewardsHarvested: new BN(rewardsHarvested),
     tokensPerPartnerPoints: new BN(tokensPerPartnerPoints),
     tokensPerWeek: new BN(tokensPerWeek),
+    hadesPerWeek: new BN(hadesPerWeek),
     tokensStaked: new BN(tokensStaked),
     placeholderOne,
   }
@@ -60,6 +62,7 @@ export const convertToBanxStakingSettingsString = (
     rewardsHarvested,
     tokensPerPartnerPoints,
     tokensPerWeek,
+    hadesPerWeek,
     tokensStaked,
     placeholderOne,
   } = banxStakingSettings
@@ -72,6 +75,7 @@ export const convertToBanxStakingSettingsString = (
     rewardsHarvested: rewardsHarvested.toString(),
     tokensPerPartnerPoints: tokensPerPartnerPoints.toString(),
     tokensPerWeek: tokensPerWeek.toString(),
+    hadesPerWeek: hadesPerWeek.toString(),
     tokensStaked: tokensStaked.toString(),
     placeholderOne,
   }
@@ -110,6 +114,7 @@ const convertToBanxAdventureSubscriptionBN = (
   const {
     stakeTokensAmount,
     amountOfTokensHarvested,
+    amountOfHadesTokensHarvested,
     stakePartnerPointsAmount,
     stakePlayerPointsAmount,
     subscribedAt,
@@ -122,6 +127,7 @@ const convertToBanxAdventureSubscriptionBN = (
   return {
     stakeTokensAmount: new BN(stakeTokensAmount),
     amountOfTokensHarvested: new BN(amountOfTokensHarvested),
+    amountOfHadesTokensHarvested: new BN(amountOfHadesTokensHarvested),
     stakePartnerPointsAmount: parseFloat(stakePartnerPointsAmount),
     stakePlayerPointsAmount: parseFloat(stakePlayerPointsAmount),
     subscribedAt: parseInt(subscribedAt),
@@ -138,6 +144,7 @@ export const convertToBanxSubscription = (
   const {
     stakeTokensAmount,
     amountOfTokensHarvested,
+    amountOfHadesTokensHarvested,
     stakePartnerPointsAmount,
     stakePlayerPointsAmount,
     subscribedAt,
@@ -150,6 +157,7 @@ export const convertToBanxSubscription = (
   return {
     stakeTokensAmount: stakeTokensAmount.toString(),
     amountOfTokensHarvested: amountOfTokensHarvested.toString(),
+    amountOfHadesTokensHarvested: amountOfHadesTokensHarvested.toString(),
     stakePartnerPointsAmount: stakePartnerPointsAmount.toString(),
     stakePlayerPointsAmount: stakePlayerPointsAmount.toString(),
     subscribedAt: subscribedAt.toString(),
