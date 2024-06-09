@@ -6,30 +6,43 @@ import { Button } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
+import { useDebounceValue } from '@banx/hooks'
+import { stringToHex } from '@banx/utils'
+
 import { LoanValueSlider, Separator } from '../components'
 import InputTokenSelect from '../components/InputTokenSelect'
 import {
   BORROW_MOCK_TOKENS_LIST,
-  COLLATERAL_MOCK_TOKENS_LIST,
-  MockTokenMetaType,
+  BorrowCollateralType,
+  COLLATERAL_TOKENS_LIST,
+  DEFAULT_COLLATERAL_TOKEN,
 } from '../constants'
+import { useBorrowSplTokenOffers, useBorrowSplTokenTransaction } from './hooks'
 
 import styles from './InstantBorrowContent.module.less'
 
-const MOCK_MAX_VALUE = '423000000'
-
 const InstantBorrowContent = () => {
-  const { connected } = useWallet()
+  const wallet = useWallet()
 
   const [sliderValue, setSliderValue] = useState(100)
 
   const [collateralInputValue, setCollateralInputValue] = useState('')
-  const [collateralToken, setCollateralToken] = useState<MockTokenMetaType>(
-    COLLATERAL_MOCK_TOKENS_LIST[0],
-  )
+  const [collateralToken, setCollateralToken] =
+    useState<BorrowCollateralType>(DEFAULT_COLLATERAL_TOKEN)
 
   const [borrowInputValue, setBorrowlInputValue] = useState('')
-  const [borrowToken, setBorrowToken] = useState<MockTokenMetaType>(BORROW_MOCK_TOKENS_LIST[0])
+  const [borrowToken, setBorrowToken] = useState<BorrowCollateralType>(BORROW_MOCK_TOKENS_LIST[0])
+
+  const debouncedInputValue = useDebounceValue(collateralInputValue, 1000)
+
+  const { data: splTokenOffers } = useBorrowSplTokenOffers({
+    market: collateralToken.marketPubkey || '',
+    outputToken: borrowToken.ticker,
+    type: 'input',
+    amount: stringToHex(debouncedInputValue),
+  })
+
+  const { executeBorrow } = useBorrowSplTokenTransaction(collateralToken, splTokenOffers)
 
   return (
     <div className={styles.content}>
@@ -39,9 +52,9 @@ const InstantBorrowContent = () => {
         onChange={setCollateralInputValue}
         selectedToken={collateralToken}
         onChangeToken={setCollateralToken}
-        tokenList={COLLATERAL_MOCK_TOKENS_LIST}
+        tokenList={COLLATERAL_TOKENS_LIST}
         className={styles.collateralInput}
-        maxValue={MOCK_MAX_VALUE}
+        maxValue="0"
       />
 
       <Separator />
@@ -59,8 +72,8 @@ const InstantBorrowContent = () => {
       <LoanValueSlider label="Loan value" value={sliderValue} onChange={setSliderValue} />
 
       <Summary apr={0.05} upfrontFee={0.001} weeklyInterest={0.01} />
-      <Button disabled={!connected} className={styles.borrowButton}>
-        {!connected ? 'Connect wallet to borrow' : 'Borrow'}
+      <Button onClick={executeBorrow} disabled={!wallet.connected} className={styles.borrowButton}>
+        {!wallet.connected ? 'Connect wallet to borrow' : 'Borrow'}
       </Button>
     </div>
   )

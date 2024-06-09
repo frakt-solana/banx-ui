@@ -12,7 +12,7 @@ import { useOnClickOutside } from '@banx/hooks'
 import { ChevronDown, CloseModal, Wallet } from '@banx/icons'
 import { shortenAddress } from '@banx/utils'
 
-import { MockTokenMetaType } from '../../constants'
+import { BorrowCollateralType } from '../../constants'
 
 import styles from './InputTokenSelect.module.less'
 
@@ -22,9 +22,9 @@ interface InputTokenSelectProps {
   onChange: (value: string) => void
   className?: string
 
-  selectedToken: MockTokenMetaType
-  tokenList: MockTokenMetaType[]
-  onChangeToken: (option: MockTokenMetaType) => void
+  selectedToken: BorrowCollateralType
+  tokenList: BorrowCollateralType[]
+  onChangeToken: (option: BorrowCollateralType) => void
 
   maxValue?: string
 }
@@ -103,7 +103,7 @@ const ControlsButtons: FC<ControlsButtonsProps> = ({ onChange, maxValue = '0' })
 }
 
 interface SelectTokenButtonProps {
-  selectedToken: MockTokenMetaType
+  selectedToken: BorrowCollateralType
   onClick: () => void
 }
 
@@ -120,8 +120,8 @@ const SelectTokenButton: FC<SelectTokenButtonProps> = ({ selectedToken, onClick 
 }
 
 interface SearchSelectProps {
-  options: MockTokenMetaType[]
-  onChangeToken: (token: MockTokenMetaType) => void
+  options: BorrowCollateralType[]
+  onChangeToken: (token: BorrowCollateralType) => void
   onClose: () => void
 }
 
@@ -132,7 +132,7 @@ const SearchSelect: FC<SearchSelectProps> = ({ options, onChangeToken, onClose }
     setSearchInput(event.target.value)
   }
 
-  const handleChangeToken = (token: MockTokenMetaType) => {
+  const handleChangeToken = (token: BorrowCollateralType) => {
     onChangeToken(token)
     onClose()
   }

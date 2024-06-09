@@ -1,76 +1,36 @@
-export interface MockTokenMetaType {
+export interface BorrowCollateralType {
   mint: string
   ticker: string
   imageUrl: string
-  available: number
+  decimals: number
+
+  available?: number
+
+  marketPubkey?: string
 }
 
-export const COLLATERAL_MOCK_TOKENS_LIST: MockTokenMetaType[] = [
+export const COLLATERAL_TOKENS_LIST: BorrowCollateralType[] = [
   {
     mint: 'BANXbTpN8U2cU41FjPxe2Ti37PiT5cCxLUKDQZuJeMMR',
     ticker: 'BANX',
     imageUrl:
       'https://statics.solscan.io/cdn/imgs/s60?ref=68747470733a2f2f617277656176652e6e65742f3551526974514750566a5077706a74343351655f5749536d7973346457774c4d715171514454306f736867',
     available: 7777,
-  },
-  {
-    mint: 'HaP8r3ksG76PhQLTqR8FYBeNiQpejcFbQmiHbg787Ut1',
-    ticker: 'MAGA',
-    imageUrl:
-      'https://statics.solscan.io/cdn/imgs/s60?ref=68747470733a2f2f6d6167616d656d65636f696e2e636f6d2f77702d636f6e74656e742f75706c6f6164732f63726f707065642d4d4147412d4d656d65636f696e2d46617669636f6e2e706e67',
-    available: 100000,
-  },
-  {
-    mint: 'ACerXDVdXZ4QoPYs7pq2mbbBUbBnE53zYvKHe7T9hmAt',
-    ticker: 'NIGGA',
-    imageUrl:
-      'https://statics.solscan.io/cdn/imgs/s60?ref=68747470733a2f2f6261667962656964726f723679657074676d6f356d76676462656f746e6572616562766d747235737769676532637061766c6274376e68357970752e697066732e6e667473746f726167652e6c696e6b',
-    available: 420000,
-  },
-  {
-    mint: 'wifq4CRwpXCK8NYtKNsQAYoDethT1aR7R1DaKCLFgAd',
-    ticker: 'WIF',
-    imageUrl:
-      'https://statics.solscan.io/cdn/imgs/s60?ref=68747470733a2f2f6261666b726569626b33636f7673356c7479717861323732756f646863756c6272366b656136626574696466777933616a73617632766a7a79756d2e697066732e6e667473746f726167652e6c696e6b',
-    available: 100,
-  },
-  {
-    mint: 'ABABxjH7p3pzAxmRdhzrcc4mQfMgvc4mteJT2YkENi1y',
-    ticker: 'ZLS',
-    imageUrl:
-      'https://statics.solscan.io/cdn/imgs/s60?ref=68747470733a2f2f73332e65752d63656e7472616c2d322e7761736162697379732e636f6d2f736f6c6369616c2d6d61696e6e65742f323032322f31322f31352f363639352d33303637332d6169313668746c726f376f2e6a7067',
-    available: 140088,
-  },
-  {
-    mint: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
-    ticker: 'BONK',
-    imageUrl:
-      'https://statics.solscan.io/cdn/imgs/s60?ref=68747470733a2f2f617277656176652e6e65742f685169505a4f73525a584758424a645f3832506856646c4d5f68414373545f713677717766356353593749',
-    available: 6500000,
-  },
-  {
-    mint: 'DxtssVdyYe4wWE5f5zEgx2NqtDFbVL3ABGY62WCycHWg',
-    ticker: 'BRETT',
-    imageUrl:
-      'https://statics.solscan.io/cdn/imgs/s60?ref=68747470733a2f2f676174657761792e697279732e78797a2f4c63317647594559343565657a50336e4a6348446255464f706e306a45516554766f4a38616b70526b5851',
-    available: 870000,
-  },
-  {
-    mint: 'WENWENvqqNya429ubCdR81ZmD69brwQaaBYY6p3LCpk',
-    ticker: 'WEN',
-    imageUrl:
-      'https://statics.solscan.io/cdn/imgs/s60?ref=68747470733a2f2f736864772d64726976652e67656e65737973676f2e6e65742f47774a617056485676664d344d77347357737a6b7a79776e63555775787850643673395675466658526769652f77656e5f6c6f676f2e706e67',
-    available: 100,
+    marketPubkey: '9vMKEMq8G36yrkqVUzQuAweieCsxU9ZaK1ob8GRegwmh',
+    decimals: 9,
   },
 ]
 
-export const BORROW_MOCK_TOKENS_LIST: MockTokenMetaType[] = [
+export const DEFAULT_COLLATERAL_TOKEN = COLLATERAL_TOKENS_LIST[0]
+
+export const BORROW_MOCK_TOKENS_LIST: BorrowCollateralType[] = [
   {
     mint: 'So11111111111111111111111111111111111111112',
     ticker: 'SOL',
     imageUrl:
       'https://statics.solscan.io/cdn/imgs/s60?ref=68747470733a2f2f7261772e67697468756275736572636f6e74656e742e636f6d2f736f6c616e612d6c6162732f746f6b656e2d6c6973742f6d61696e2f6173736574732f6d61696e6e65742f536f31313131313131313131313131313131313131313131313131313131313131313131313131313131322f6c6f676f2e706e67',
     available: 240,
+    decimals: 9,
   },
   {
     mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
@@ -78,5 +38,6 @@ export const BORROW_MOCK_TOKENS_LIST: MockTokenMetaType[] = [
     imageUrl:
       'https://statics.solscan.io/cdn/imgs/s60?ref=68747470733a2f2f7261772e67697468756275736572636f6e74656e742e636f6d2f736f6c616e612d6c6162732f746f6b656e2d6c6973742f6d61696e2f6173736574732f6d61696e6e65742f45506a465764643541756671535371654d32714e31787a7962617043384734774547476b5a777954447431762f6c6f676f2e706e67',
     available: 10000,
+    decimals: 6,
   },
 ]

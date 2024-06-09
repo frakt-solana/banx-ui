@@ -91,3 +91,29 @@ export const fetchTokenOffersPreview: FetchTokenOffersPreview = async ({
 
   return data.data
 }
+
+export enum OutputToken {
+  SOL = 'SOL',
+  USDC = 'USDC',
+  BanxSOL = 'BanxSOL',
+}
+
+export interface BorrowSplTokenOffers {
+  offerPublicKey: string
+  amountToGive: string
+  amountToGet: string
+}
+
+type FetchBorrowSplTokenOffers = (props: {
+  market: string
+  outputToken: string
+  type: 'input' | 'output'
+  amount: string //? hex number string
+}) => Promise<BorrowSplTokenOffers[]>
+export const fetchBorrowSplTokenOffers: FetchBorrowSplTokenOffers = async (props) => {
+  const { data } = await axios.post<BorrowSplTokenOffers[]>(`http://localhost:8080/borrow-token`, {
+    props,
+  })
+
+  return data ?? []
+}
