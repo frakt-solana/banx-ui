@@ -3,7 +3,8 @@ import { useEffect } from 'react'
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
 import LoansHeader from './LoansHeader'
-import { useLoansTokenTabs } from './hooks'
+import LoansTokenActiveTable from './LoansTokenActiveTable'
+import { useLoansTokenTabs, useWalletTokenLoansAndOffers } from './hooks'
 
 import styles from './LoansTokenPage.module.less'
 
@@ -23,11 +24,15 @@ export const LoansTokenPage = () => {
     return () => setTab(null)
   }, [setTab, storeTab])
 
+  const { loans, offers, isLoading } = useWalletTokenLoansAndOffers()
+
   return (
     <div className={styles.pageWrapper}>
       <LoansHeader />
       <Tabs value={currentTabValue} {...tabsProps} />
-      {currentTabValue === LoansTokenTabsName.LOANS && <></>}
+      {currentTabValue === LoansTokenTabsName.LOANS && (
+        <LoansTokenActiveTable loans={loans} offers={offers} isLoading={isLoading} />
+      )}
       {currentTabValue === LoansTokenTabsName.REQUESTS && <></>}
       {currentTabValue === LoansTokenTabsName.HISTORY && <></>}
     </div>
