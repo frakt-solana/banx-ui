@@ -16,6 +16,7 @@ import {
   HealthColorIncreasing,
   STATUS_LOANS_COLOR_MAP,
   STATUS_LOANS_MAP,
+  caclulateBorrowTokenLoanValue,
   calculateTimeFromNow,
   getColorByPercent,
   isTokenLoanActive,
@@ -38,19 +39,19 @@ const TooltipRow: FC<TooltipRowProps> = ({ label, value }) => (
 )
 
 export const DebtCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
-  const { bondTradeTransaction } = loan
+  const { bondTradeTransaction, fraktBond } = loan
 
-  const debtValue = 0
-  const borrowedValue = 0
-  const totalAccruedInterest = 0
-  const upfrontFee = 0
+  const debtValue = caclulateBorrowTokenLoanValue(loan).toNumber()
+  const borrowedValue = fraktBond.borrowedAmount
+  const totalAccruedInterest = debtValue - bondTradeTransaction.solAmount
+  const upfrontFee = bondTradeTransaction.borrowerOriginalLent / 100
   const weeklyFee = 0
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>
       <TooltipRow label="Principal" value={borrowedValue} />
       <TooltipRow label="Repaid" value={bondTradeTransaction.borrowerFullRepaidAmount} />
-      <TooltipRow label="Accrued interest" value={totalAccruedInterest + upfrontFee} />
+      <TooltipRow label="Accrued interest" value={totalAccruedInterest} />
       <TooltipRow label="Upfront fee" value={upfrontFee} />
       <TooltipRow label="Est. weekly interest" value={weeklyFee} />
     </div>
@@ -61,15 +62,13 @@ export const DebtCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
   )
 }
 
-export const LTVCell: FC<{ loan: core.TokenLoan }> = () => {
-  const debtValue = 0
-  const collectionFloor = 0
-
-  const ltvPercent = (debtValue / collectionFloor) * 100
+export const LTVCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
+  const debtValue = caclulateBorrowTokenLoanValue(loan).toNumber()
+  const ltvPercent = (debtValue / loan.collateralPrice) * 100
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>
-      <TooltipRow label="Floor" value={collectionFloor} />
+      <TooltipRow label="Price" value={loan.collateralPrice} />
       <TooltipRow label="Debt" value={debtValue} />
     </div>
   )

@@ -1,7 +1,7 @@
 import { FC, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { every, map } from 'lodash'
+import { every, map, sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider } from '@banx/components/Slider'
@@ -16,6 +16,7 @@ import {
   isTokenLoanRepaymentCallActive,
 } from '@banx/utils'
 
+import { useTokenLoansTransactions } from '../hooks'
 import { TokenLoanOptimistic } from '../loansState'
 
 import styles from './Summary.module.less'
@@ -28,14 +29,15 @@ interface SummaryProps {
 
 const Summary: FC<SummaryProps> = ({ loans, selectedLoans: rawSelectedLoans, setSelection }) => {
   const { publicKey: walletPublicKey } = useWallet()
-  //   const { repayBulkLoan, repayUnpaidLoansInterest } = useLoansTransactions()
+  const { repayAllLoans, repayUnpaidLoansInterest } = useTokenLoansTransactions()
 
   const selectedLoans = useMemo(() => {
     return rawSelectedLoans.map(({ loan }) => loan)
   }, [rawSelectedLoans])
 
   const totalSelectedLoans = selectedLoans.length
-  const totalDebt = 0
+  const totalDebt = sumBy(loans, (loan) => caclulateBorrowTokenLoanValue(loan).toNumber())
+  //TODO (TokenLending): Calculate the totalWeeklyFee and totalValueToPay.
   const totalWeeklyFee = 0
   const totalValueToPay = 0
 
@@ -80,7 +82,7 @@ const Summary: FC<SummaryProps> = ({ loans, selectedLoans: rawSelectedLoans, set
         <Button
           className={styles.payButton}
           variant="secondary"
-          //   onClick={repayUnpaidLoansInterest}
+          onClick={repayUnpaidLoansInterest}
           disabled={!totalValueToPay}
         >
           {getLoansStatusActionText(selectedLoans)}
@@ -88,7 +90,7 @@ const Summary: FC<SummaryProps> = ({ loans, selectedLoans: rawSelectedLoans, set
         </Button>
         <Button
           className={styles.repayButton}
-          //   onClick={repayBulkLoan}
+          onClick={repayAllLoans}
           disabled={!totalSelectedLoans}
         >
           Repay <DisplayValue value={totalDebt} />
