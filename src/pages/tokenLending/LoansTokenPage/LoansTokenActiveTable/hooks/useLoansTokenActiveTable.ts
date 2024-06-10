@@ -1,7 +1,12 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import { first, groupBy, map } from 'lodash'
+import { useNavigate } from 'react-router-dom'
 
 import { core } from '@banx/api/tokens'
+import { PATHS } from '@banx/router'
+import { createPathWithModeParams } from '@banx/store'
+import { ModeType } from '@banx/store/common'
+import { useNftTokenType } from '@banx/store/nft'
 
 import { useFilterLoans } from './useFilterLoans'
 import { useSortedLoans } from './useSortedLoans'
@@ -15,6 +20,9 @@ export const useLoansTokenActiveTable = (props: {
   const { loans, isLoading } = props
 
   const { connected } = useWallet()
+  const navigate = useNavigate()
+
+  const { tokenType } = useNftTokenType()
 
   const {
     filteredLoansBySelectedCollection,
@@ -40,6 +48,15 @@ export const useLoansTokenActiveTable = (props: {
   const showEmptyList = (!loans?.length && !isLoading) || !connected
   const showSummary = !!loans.length && !isLoading
 
+  const goToBorrowPage = () => {
+    navigate(createPathWithModeParams(PATHS.BORROW, ModeType.Token, tokenType))
+  }
+
+  const emptyListParams = {
+    message: connected ? createConnectedMessage(tokenType) : createNotConnectedMessage(tokenType),
+    buttonProps: connected ? { text: 'Borrow', onClick: goToBorrowPage } : undefined,
+  }
+
   return {
     loans: sortedLoans,
     loading: isLoading,
@@ -53,6 +70,7 @@ export const useLoansTokenActiveTable = (props: {
 
     showSummary,
     showEmptyList,
+    emptyListParams,
     sortViewParams: { searchSelectParams, sortParams },
   }
 }
@@ -94,3 +112,8 @@ const createSearchSelectParams = ({
 
   return searchSelectParams
 }
+
+const createNotConnectedMessage = (ticker: string) =>
+  `Connect wallet to borrow ${ticker} against your collaterals`
+
+const createConnectedMessage = (ticker: string) => `Borrow ${ticker} against your collaterals`

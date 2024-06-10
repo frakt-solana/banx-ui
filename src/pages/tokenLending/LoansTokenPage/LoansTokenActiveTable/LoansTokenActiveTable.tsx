@@ -4,6 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
+import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 import Tooltip from '@banx/components/Tooltip'
 
@@ -47,8 +48,9 @@ const LoansTokenActiveTable: FC<LoansTokenActiveTableProps> = ({
     toggleTerminationFilter,
     toggleRepaymentCallFilter,
     showSummary,
-    // showEmptyList,
+    showEmptyList,
     sortViewParams,
+    emptyListParams,
   } = useLoansTokenActiveTable({ loans: rawLoans, isLoading })
 
   const {
@@ -137,6 +139,8 @@ const LoansTokenActiveTable: FC<LoansTokenActiveTableProps> = ({
       />
     </div>
   )
+
+  if (showEmptyList) return <EmptyList {...emptyListParams} />
 
   return (
     <div className={styles.tableRoot}>
