@@ -10,7 +10,8 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
-import { calculateIdleFundsInOffer, isBanxSolTokenType } from '@banx/utils'
+import { getCloseBanxSolATAsInstructions } from '@banx/transactions/banxSol'
+import { ZERO_BN, calculateIdleFundsInOffer, isBanxSolTokenType } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
@@ -47,9 +48,9 @@ export const createRemoveOfferTxnData: CreateRemoveOfferTxnData = async ({
 
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
 
-  if (isBanxSolTokenType(tokenType)) {
-    const offerSize = calculateIdleFundsInOffer(offer)
+  const offerSize = calculateIdleFundsInOffer(offer)
 
+  if (isBanxSolTokenType(tokenType) && offerSize.gt(ZERO_BN)) {
     return await banxSol.combineWithSellBanxSolInstructions({
       inputAmount: offerSize,
       walletAndConnection,
@@ -58,6 +59,14 @@ export const createRemoveOfferTxnData: CreateRemoveOfferTxnData = async ({
       lookupTables,
       result: optimisticResult,
     })
+  }
+
+  if (offerSize.eq(ZERO_BN)) {
+    const { instructions: closeInstructions } = await getCloseBanxSolATAsInstructions({
+      walletAndConnection,
+    })
+
+    instructions.push(...closeInstructions)
   }
 
   return {

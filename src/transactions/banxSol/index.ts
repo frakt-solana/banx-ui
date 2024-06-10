@@ -13,7 +13,7 @@ import { removeDuplicatedPublicKeys } from '@banx/utils'
 import { sendTxnPlaceHolder } from '../helpers'
 
 const BANXSOL_ADJUSTMENTS = {
-  SELL_RATIO: new BN(999599),
+  SELL_RATIO: new BN(999500),
   BUY_RATIO: new BN(998600),
   PRECISION: new BN(1e6),
 }
@@ -78,7 +78,7 @@ type GetCloseBanxSolATAsInstructions = (params: {
   walletAndConnection: WalletAndConnection
 }) => Promise<{ instructions: web3.TransactionInstruction[]; lookupTable: web3.PublicKey }>
 
-const getCloseBanxSolATAsInstructions: GetCloseBanxSolATAsInstructions = async ({
+export const getCloseBanxSolATAsInstructions: GetCloseBanxSolATAsInstructions = async ({
   walletAndConnection,
 }) => {
   const { instructions } = await closeTokenAccountBanxSol({
