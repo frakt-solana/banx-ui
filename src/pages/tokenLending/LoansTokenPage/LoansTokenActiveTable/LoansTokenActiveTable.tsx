@@ -14,6 +14,7 @@ import { ViewState, useTableView } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
 import { isTokenLoanRepaymentCallActive, isTokenLoanTerminating } from '@banx/utils'
 
+import Summary from './Summary'
 import { getTableColumns } from './columns'
 import { useLoansTokenActiveTable } from './hooks'
 import { useSelectedTokenLoans } from './loansState'
@@ -45,7 +46,7 @@ const LoansTokenActiveTable: FC<LoansTokenActiveTableProps> = ({
     isRepaymentCallFilterEnabled,
     toggleTerminationFilter,
     toggleRepaymentCallFilter,
-    // showSummary,
+    showSummary,
     // showEmptyList,
     sortViewParams,
   } = useLoansTokenActiveTable({ loans: rawLoans, isLoading })
@@ -149,6 +150,9 @@ const LoansTokenActiveTable: FC<LoansTokenActiveTableProps> = ({
         loading={loading}
         showCard
       />
+      {showSummary && (
+        <Summary loans={loans} selectedLoans={walletSelectedLoans} setSelection={setSelection} />
+      )}
     </div>
   )
 }

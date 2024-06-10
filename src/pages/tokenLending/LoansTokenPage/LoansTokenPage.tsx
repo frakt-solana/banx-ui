@@ -33,15 +33,15 @@ export const LoansTokenPage = () => {
       {currentTabValue === LoansTokenTabsName.LOANS && (
         <LoansTokenActiveTable loans={loans} offers={offers} isLoading={isLoading} />
       )}
-      {currentTabValue === LoansTokenTabsName.REQUESTS && <></>}
+      {currentTabValue === LoansTokenTabsName.LISTINGS && <></>}
       {currentTabValue === LoansTokenTabsName.HISTORY && <></>}
     </div>
   )
 }
 
 export enum LoansTokenTabsName {
-  REQUESTS = 'requests',
   LOANS = 'loans',
+  LISTINGS = 'listings',
   HISTORY = 'history',
 }
 
@@ -52,7 +52,7 @@ const LOANS_TABS: Tab[] = [
   },
   {
     label: 'Listings',
-    value: LoansTokenTabsName.REQUESTS,
+    value: LoansTokenTabsName.LISTINGS,
   },
   {
     label: 'History',
