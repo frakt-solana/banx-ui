@@ -4,6 +4,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/tokens'
 import { useIsLedger, useModal } from '@banx/store/common'
+import { useTokenLoansOptimistic } from '@banx/store/token'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
@@ -34,6 +35,7 @@ export const useTokenLoansTransactions = () => {
 
   const { close } = useModal()
 
+  const { update: updateLoansOptimistic } = useTokenLoansOptimistic()
   const { selection, clear: clearSelection } = useSelectedTokenLoans()
 
   const repayLoan = async (loan: core.TokenLoan) => {
@@ -69,7 +71,7 @@ export const useTokenLoansTransactions = () => {
                 solanaExplorerPath: `tx/${signature}`,
               })
 
-              //   updateLoansOptimistic([result], wallet.publicKey.toBase58())
+              updateLoansOptimistic([result], wallet.publicKey.toBase58())
               clearSelection()
               close()
             }
@@ -120,7 +122,7 @@ export const useTokenLoansTransactions = () => {
 
             confirmed.forEach(({ result }) => {
               if (result && wallet.publicKey) {
-                // updateLoansOptimistic([result], wallet.publicKey.toBase58())
+                updateLoansOptimistic([result], wallet.publicKey.toBase58())
               }
             })
             clearSelection()
@@ -183,7 +185,7 @@ export const useTokenLoansTransactions = () => {
                 solanaExplorerPath: `tx/${signature}`,
               })
 
-              // updateLoansOptimistic([result], wallet.publicKey.toBase58())
+              updateLoansOptimistic([result], wallet.publicKey.toBase58())
               clearSelection()
               close()
             }
@@ -254,7 +256,7 @@ export const useTokenLoansTransactions = () => {
 
             confirmed.forEach(({ result }) => {
               if (result && wallet.publicKey) {
-                // updateLoansOptimistic([result], wallet.publicKey.toBase58())
+                updateLoansOptimistic([result], wallet.publicKey.toBase58())
               }
             })
             clearSelection()
