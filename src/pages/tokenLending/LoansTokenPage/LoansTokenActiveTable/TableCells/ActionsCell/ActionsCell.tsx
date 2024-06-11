@@ -7,7 +7,8 @@ import { core } from '@banx/api/tokens'
 import { useModal } from '@banx/store/common'
 import { isOfferNotEmpty, isTokenLoanTerminating } from '@banx/utils'
 
-import { RepayModal } from './RepayModal'
+import { RefinanceTokenModal } from './RefinanceTokenModal'
+import { RepayTokenModal } from './RepayTokenModal'
 
 import styles from './ActionsCell.module.less'
 
@@ -37,10 +38,10 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, offers, isCardView, di
         size={buttonSize}
         variant="secondary"
         disabled={disableActions || !refinanceAvailable}
-        // onClick={(event) => {
-        //   open(RefinanceModal, { loan })
-        //   event.stopPropagation()
-        // }}
+        onClick={(event) => {
+          open(RefinanceTokenModal, { loan })
+          event.stopPropagation()
+        }}
       >
         {isLoanTerminating ? 'Extend' : 'Reborrow'}
       </Button>
@@ -49,7 +50,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, offers, isCardView, di
         size={buttonSize}
         disabled={disableActions}
         onClick={(event) => {
-          open(RepayModal, { loan })
+          open(RepayTokenModal, { loan })
           event.stopPropagation()
         }}
       >

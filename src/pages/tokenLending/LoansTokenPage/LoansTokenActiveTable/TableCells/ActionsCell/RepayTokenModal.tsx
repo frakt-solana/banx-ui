@@ -18,11 +18,11 @@ import { useTokenLoansTransactions } from '../../hooks'
 
 import styles from './ActionsCell.module.less'
 
-interface RepayModalProps {
+interface RepayTokenModallProps {
   loan: core.TokenLoan
 }
 
-export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
+export const RepayTokenModal: FC<RepayTokenModallProps> = ({ loan }) => {
   const { repayLoan, repayPartialLoan } = useTokenLoansTransactions()
   const { close } = useModal()
 
