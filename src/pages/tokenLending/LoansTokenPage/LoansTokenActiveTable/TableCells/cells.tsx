@@ -64,7 +64,8 @@ export const DebtCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
 
 export const LTVCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
   const debtValue = caclulateBorrowTokenLoanValue(loan).toNumber()
-  const ltvPercent = (debtValue / loan.collateralPrice) * 100
+  const ltvPercent =
+    (debtValue / (loan.collateralPrice * Math.pow(10, loan.collateral.decimals))) * 100
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>

@@ -13,10 +13,10 @@ import { PaginationMeta } from '@banx/api/types'
 
 const TokenMetaSchema = z.object({
   mint: z.string(),
-  imageUrl: z.string(),
+  logoUrl: z.string(),
   ticker: z.string(),
   decimals: z.number(),
-  priceUSDC: z.number(),
+  priceUsd: z.number(),
 })
 
 export type TokenMeta = z.infer<typeof TokenMetaSchema>

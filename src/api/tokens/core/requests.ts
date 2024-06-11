@@ -103,7 +103,7 @@ type FetchWalletLoansAndOffers = (props: {
 export const fetchWalletTokenLoansAndOffers: FetchWalletLoansAndOffers = async ({
   walletPublicKey,
   tokenType,
-  getAll = true, //TODO Remove when normal pagination added
+  getAll = true,
 }) => {
   const queryParams = new URLSearchParams({
     getAll: String(getAll),
@@ -111,9 +111,8 @@ export const fetchWalletTokenLoansAndOffers: FetchWalletLoansAndOffers = async (
     isPrivate: String(IS_PRIVATE_MARKETS),
   })
 
-  //TODO (TokenLending): Replace url with real url
   const { data } = await axios.get<{ data: WalletTokenLoansAndOffers }>(
-    `${BACKEND_BASE_URL}/loans/borrower/${walletPublicKey}?${queryParams.toString()}`,
+    `${BACKEND_BASE_URL}/spl-loans/borrower/${walletPublicKey}?${queryParams.toString()}`,
   )
 
   try {

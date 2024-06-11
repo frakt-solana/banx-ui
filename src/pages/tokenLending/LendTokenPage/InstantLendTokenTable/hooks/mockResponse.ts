@@ -114,10 +114,10 @@ export const MOCK_RESPONSE = {
       },
       collateral: {
         mint: 'B9J44UFjBYy6p2TSx5t3YTbBzgjDLByPD7cJSDYL6NSr',
-        imageUrl: 'https://arweave.net/5QRitQGPVjPwpjt43Qe_WISmys4dWwLMqQqQDT0oshg',
+        logoUrl: 'https://arweave.net/5QRitQGPVjPwpjt43Qe_WISmys4dWwLMqQqQDT0oshg',
         ticker: 'BANX',
         decimals: 9,
-        priceUSDC: 0.001,
+        priceUsd: 0.001,
       },
     },
   ],
