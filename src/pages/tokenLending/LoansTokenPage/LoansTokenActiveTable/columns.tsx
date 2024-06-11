@@ -5,7 +5,7 @@ import { CollateralTokenCell, HeaderCell } from '@banx/components/TableComponent
 import { Offer } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
 
-import { APRCell, DebtCell, LTVCell, StatusCell } from './TableCells'
+import { APRCell, ActionsCell, DebtCell, LTVCell, StatusCell } from './TableCells'
 import { TokenLoanOptimistic } from './loansState'
 
 import styles from './LoansTokenActiveTable.module.less'
@@ -81,7 +81,14 @@ export const getTableColumns = ({
     {
       key: 'actionsCell',
       title: <HeaderCell label="" />,
-      render: (loan) => <></>,
+      render: (loan) => (
+        <ActionsCell
+          loan={loan}
+          offers={offers}
+          isCardView={isCardView}
+          disableActions={!!findLoanInSelection(loan.publicKey)}
+        />
+      ),
     },
   ]
 
