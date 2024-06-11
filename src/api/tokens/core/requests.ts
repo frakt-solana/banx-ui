@@ -11,6 +11,8 @@ import {
   TokenMarketPreviewSchema,
   TokenOfferPreview,
   TokenOfferPreviewSchema,
+  WalletTokenLoansAndOffers,
+  WalletTokenLoansAndOffersShema,
 } from './types'
 
 type FetchTokenMarketsPreview = (props: {
@@ -90,4 +92,35 @@ export const fetchTokenOffersPreview: FetchTokenOffersPreview = async ({
   }
 
   return data.data
+}
+
+type FetchWalletLoansAndOffers = (props: {
+  walletPublicKey: string
+  tokenType: LendingTokenType
+  getAll?: boolean
+}) => Promise<WalletTokenLoansAndOffers>
+
+export const fetchWalletTokenLoansAndOffers: FetchWalletLoansAndOffers = async ({
+  walletPublicKey,
+  tokenType,
+  getAll = true, //TODO Remove when normal pagination added
+}) => {
+  const queryParams = new URLSearchParams({
+    getAll: String(getAll),
+    marketType: String(convertToMarketType(tokenType)),
+    isPrivate: String(IS_PRIVATE_MARKETS),
+  })
+
+  //TODO (TokenLending): Replace url with real url
+  const { data } = await axios.get<{ data: WalletTokenLoansAndOffers }>(
+    `${BACKEND_BASE_URL}/loans/borrower/${walletPublicKey}?${queryParams.toString()}`,
+  )
+
+  try {
+    await WalletTokenLoansAndOffersShema.parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
+  }
+
+  return data.data ?? { loans: [], offers: {} }
 }

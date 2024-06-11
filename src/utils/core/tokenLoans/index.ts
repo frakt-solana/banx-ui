@@ -22,6 +22,13 @@ export const isTokenLoanListed = (loan: core.TokenLoan) => {
   )
 }
 
+export const isTokenLoanRepaid = (loan: core.TokenLoan) => {
+  return (
+    loan.bondTradeTransaction.bondTradeTransactionState ===
+    BondTradeTransactionV2State.PerpetualRepaid
+  )
+}
+
 export const isTokenLoanTerminating = (loan: core.TokenLoan) => {
   return (
     loan.bondTradeTransaction.bondTradeTransactionState ===
