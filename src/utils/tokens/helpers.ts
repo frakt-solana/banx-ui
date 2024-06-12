@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
-import { find } from 'lodash'
+import { find, findIndex, repeat } from 'lodash'
 
 import { formatNumbersWithCommas } from '../common'
 import {
@@ -65,3 +65,39 @@ export const isSolTokenType = (tokenType: LendingTokenType): boolean =>
 
 export const isUsdcTokenType = (tokenType: LendingTokenType): boolean =>
   tokenType === LendingTokenType.Usdc
+
+export const formatDecimalWithSubscript = (decimalNumber: number) => {
+  const decimalAsString = decimalNumber.toString()
+  const [, fractionalPart] = decimalAsString.split('.')
+
+  if (!fractionalPart) {
+    return decimalAsString
+  }
+
+  const countLeadingZeros = findIndex(fractionalPart, (digit) => digit !== '0')
+
+  const convertToSubscript = (value: number): string => {
+    const subscripts = '₀₁₂₃₄₅₆₇₈₉'
+    return value
+      .toString()
+      .split('')
+      .map((digit) => subscripts[Number(digit)])
+      .join('')
+  }
+
+  const MIN_LEADING_ZEROS_FOR_SUBSCRIPT = 2
+  const leadingZerosSubscript =
+    countLeadingZeros > MIN_LEADING_ZEROS_FOR_SUBSCRIPT
+      ? convertToSubscript(countLeadingZeros)
+      : repeat('0', countLeadingZeros - 1)
+
+  const remainingFraction = fractionalPart.slice(countLeadingZeros)
+
+  const MAX_FORMATTED_LENGTH = 8
+  const formattedDecimal = `0.0${leadingZerosSubscript}${remainingFraction}`.slice(
+    0,
+    MAX_FORMATTED_LENGTH,
+  )
+
+  return formattedDecimal
+}

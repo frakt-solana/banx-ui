@@ -5,7 +5,7 @@ import moment from 'moment'
 
 import { USDC } from '@banx/icons'
 import { useNftTokenType } from '@banx/store/nft'
-import { formatValueByTokenType } from '@banx/utils'
+import { formatDecimalWithSubscript, formatValueByTokenType } from '@banx/utils'
 
 import styles from './TableCells.module.less'
 
@@ -55,13 +55,22 @@ const TOKEN_DETAILS = {
   },
 }
 
-export const DisplayValue: FC<{ value: number; placeholder?: string }> = ({
+interface DisplayValueProps {
+  value: number
+  placeholder?: string
+  isSubscriptFormat?: boolean
+}
+
+export const DisplayValue: FC<DisplayValueProps> = ({
   value,
   placeholder,
+  isSubscriptFormat = false,
 }) => {
   const { tokenType } = useNftTokenType()
 
-  const formattedValue = formatValueByTokenType(value, tokenType)
+  const formattedValue = isSubscriptFormat
+    ? formatDecimalWithSubscript(value)
+    : formatValueByTokenType(value, tokenType)
 
   const defaultPlaceholder = placeholder || TOKEN_DETAILS[tokenType].placeholder
   const tokenUnit = TOKEN_DETAILS[tokenType].unit
