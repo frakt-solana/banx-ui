@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { isEmpty } from 'lodash'
+import { first, groupBy, isEmpty, map } from 'lodash'
 
 import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
@@ -33,9 +33,7 @@ export const usePlaceTokenOffersContent = () => {
   const filteredMarkets = useMemo(() => {
     if (!selectedCollections.length) return marketsPreview
 
-    return marketsPreview.filter((market) =>
-      selectedCollections.includes(market.collateralTokenTicker),
-    )
+    return marketsPreview.filter((market) => selectedCollections.includes(market.collateral.ticker))
   }, [marketsPreview, selectedCollections])
 
   const { sortedMarkets, sortParams } = useSortedMarkets(filteredMarkets)
@@ -73,15 +71,24 @@ const createSearchSelectParams = ({
   selectedOptions,
   onChange,
 }: CreateSearchSelectProps) => {
+  const marketsGroupedByTicker = groupBy(options, (market) => market.collateral.ticker)
+
+  const searchSelectOptions = map(marketsGroupedByTicker, (groupedMarkets) => {
+    const firstMarketInGroup = first(groupedMarkets)
+    const { ticker = '', logoUrl = '' } = firstMarketInGroup?.collateral || {}
+
+    return { ticker, logoUrl }
+  })
+
   const searchSelectParams = {
-    options,
+    options: searchSelectOptions,
     selectedOptions,
     onChange,
     labels: ['Collateral', 'APR'],
     optionKeys: {
-      labelKey: 'collateralTokenTicker',
+      labelKey: 'ticker',
       valueKey: 'marketPubkey',
-      imageKey: 'collateralTokenImageUrl',
+      imageKey: 'logoUrl',
       secondLabel: {
         key: 'marketPubkey',
         //TODO Refactor this piece of shit (code)

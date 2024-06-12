@@ -7,23 +7,19 @@ import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { Pencil } from '@banx/icons'
-import { useNftTokenType } from '@banx/store/nft'
 import { SyntheticTokenOffer } from '@banx/store/token'
-import { getTokenDecimals } from '@banx/utils'
 
 import styles from './OrderBook.module.less'
 
 interface OfferProps {
   offer: SyntheticTokenOffer
+  collateralTokenDecimals: number
 }
 
-const Offer: FC<OfferProps> = ({ offer }) => {
+const Offer: FC<OfferProps> = ({ offer, collateralTokenDecimals }) => {
   const { publicKey: offerPubkey, collateralsPerToken, offerSize, isEdit } = offer
 
   const { connected } = useWallet()
-  const { tokenType } = useNftTokenType()
-
-  const tokenDesimals = getTokenDecimals(tokenType)
 
   const isNewOffer = connected && offerPubkey === PUBKEY_PLACEHOLDER
 
@@ -35,8 +31,9 @@ const Offer: FC<OfferProps> = ({ offer }) => {
 
   //TODO (TokenLending): Use rateBasePoints from market or calculate dynamically?
   const apr = 0
-
-  const offerValue = collateralsPerToken / tokenDesimals || 0
+  const offerValue = collateralsPerToken
+    ? (1 / collateralsPerToken) * Math.pow(10, collateralTokenDecimals)
+    : 0
 
   return (
     <li className={classNames(styles.listItem, commonHighlightClassNames)}>

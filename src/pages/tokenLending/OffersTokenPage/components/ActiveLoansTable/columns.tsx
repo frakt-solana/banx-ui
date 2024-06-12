@@ -67,9 +67,9 @@ export const getTableColumns = ({
             key={loan.publicKey}
             selected={selected}
             onCheckboxClick={() => toggleLoanInSelection(loan)}
-            collateralTokenAmount={loan.collateral.priceUSDC}
+            collateralTokenAmount={loan.collateral.priceUsd}
             checkboxClassName={!canSelect ? styles.collateralCellCheckbox : ''}
-            collateralImageUrl={loan.collateral.imageUrl}
+            collateralImageUrl={loan.collateral.logoUrl}
             rightContentJSX={createRightContentJSX(loan)}
           />
         )

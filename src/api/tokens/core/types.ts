@@ -12,10 +12,10 @@ import { PaginationMeta } from '@banx/api/types'
 
 const TokenMetaSchema = z.object({
   mint: z.string(),
-  imageUrl: z.string(),
+  logoUrl: z.string(),
   ticker: z.string(),
   decimals: z.number(),
-  priceUSDC: z.number(),
+  priceUsd: z.number(),
 })
 
 export type TokenMeta = z.infer<typeof TokenMetaSchema>
@@ -71,6 +71,8 @@ const FraktBondSchema = z.object({
   hadoMarket: z.string().optional(),
 })
 
+export type TokenLoan = z.infer<typeof TokenLoanSchema>
+
 export const TokenLoanSchema = z.object({
   publicKey: z.string(),
   fraktBond: FraktBondSchema,
@@ -79,26 +81,26 @@ export const TokenLoanSchema = z.object({
   collateralPrice: z.number(),
 })
 
-export type TokenLoan = z.infer<typeof TokenLoanSchema>
-
 export const TokenMarketPreviewSchema = z.object({
   marketPubkey: z.string(),
-  tokenType: z.string(),
 
-  collateralTokenPrice: z.number(),
-  collateralTokenDecimals: z.number(),
-  bestOffer: z.number(),
+  collateral: TokenMetaSchema,
+  collateralPrice: z.number(),
+
+  offersTvl: z.number(),
+  loansTvl: z.number(),
 
   activeOffersAmount: z.number(),
-  offersTvl: z.number(),
   activeLoansAmount: z.number(),
-  loansTvl: z.number(),
+
+  bestOffer: z.number(),
+  bestLtv: z.number(), // TODO: remove from BE
 
   marketApr: z.number(),
   marketApy: z.number(),
+  marketUtilizationRate: z.number().nullable(),
 
-  collateralTokenImageUrl: z.string(),
-  collateralTokenTicker: z.string(),
+  isHot: z.boolean(),
 })
 
 export type TokenMarketPreview = z.infer<typeof TokenMarketPreviewSchema>

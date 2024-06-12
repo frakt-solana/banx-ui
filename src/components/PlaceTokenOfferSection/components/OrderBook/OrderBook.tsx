@@ -19,7 +19,7 @@ export interface OrderBookProps {
 }
 
 const OrderBook: FC<OrderBookProps> = ({ market, offerPubkey = '', className }) => {
-  const { marketPubkey = '' } = market || {}
+  const { marketPubkey = '', collateral } = market || {}
 
   const { offers, isLoading } = useMarketOrders(marketPubkey, offerPubkey)
 
@@ -34,7 +34,14 @@ const OrderBook: FC<OrderBookProps> = ({ market, offerPubkey = '', className }) 
       <ul className={styles.offersList}>
         {isLoading && <Loader size="small" />}
 
-        {!isLoading && offers.map((offer) => <Offer key={offer.publicKey} offer={offer} />)}
+        {!isLoading &&
+          offers.map((offer) => (
+            <Offer
+              key={offer.publicKey}
+              offer={offer}
+              collateralTokenDecimals={collateral?.decimals || 0}
+            />
+          ))}
       </ul>
     </div>
   )

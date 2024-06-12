@@ -79,12 +79,12 @@ const createSearchSelectParams = ({
 
   const searchSelectOptions = map(loansGroupedByCollection, (groupedLoans) => {
     const firstLoanInGroup = first(groupedLoans)
-    const { ticker = '', imageUrl = '' } = firstLoanInGroup?.collateral || {}
+    const { ticker = '', logoUrl = '' } = firstLoanInGroup?.collateral || {}
     const claim = sumBy(groupedLoans, (loan) =>
       calculateLentTokenValueWithInterest(loan).toNumber(),
     )
 
-    return { ticker, imageUrl, claim }
+    return { ticker, logoUrl, claim }
   })
 
   const searchSelectParams = {
@@ -95,7 +95,7 @@ const createSearchSelectParams = ({
     optionKeys: {
       labelKey: 'ticker',
       valueKey: 'ticker',
-      imageKey: 'imageUrl',
+      imageKey: 'logoUrl',
       secondLabel: {
         key: 'claim',
         format: (value: number) => <DisplayValue value={value} />,
