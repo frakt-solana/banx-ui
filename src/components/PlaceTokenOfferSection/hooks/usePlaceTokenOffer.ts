@@ -38,7 +38,7 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
   const decimals = getTokenDecimals(tokenType)
 
   const collateralsPerToken =
-    (1 / parseFloat(collateralsPerTokenString)) * Math.pow(10, market?.collateralTokenDecimals || 0)
+    (1 / parseFloat(collateralsPerTokenString)) * Math.pow(10, market?.collateral.decimals || 0)
 
   const offerSize = parseFloat(offerSizeString) * decimals
 
