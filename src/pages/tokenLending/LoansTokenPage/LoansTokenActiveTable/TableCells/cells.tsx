@@ -17,6 +17,7 @@ import {
   STATUS_LOANS_COLOR_MAP,
   STATUS_LOANS_MAP,
   caclulateBorrowTokenLoanValue,
+  calcTokenWeeklyFeeWithRepayFee,
   calculateTimeFromNow,
   getColorByPercent,
   isTokenLoanActive,
@@ -45,7 +46,7 @@ export const DebtCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
   const borrowedValue = fraktBond.borrowedAmount
   const totalAccruedInterest = debtValue - bondTradeTransaction.solAmount
   const upfrontFee = bondTradeTransaction.borrowerOriginalLent / 100
-  const weeklyFee = 0
+  const weeklyFee = calcTokenWeeklyFeeWithRepayFee(loan)
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>

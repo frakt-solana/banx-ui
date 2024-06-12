@@ -24,9 +24,8 @@ import {
   isTokenLoanRepaymentCallActive,
 } from '@banx/utils'
 
+import { caclFractionToRepay, caclFractionToRepayForRepaymentCall } from '../helpers'
 import { useSelectedTokenLoans } from '../loansState'
-
-//TODO (TokenLending): Add optimitics for each transaction.
 
 export const useTokenLoansTransactions = () => {
   const wallet = useWallet()
@@ -211,7 +210,9 @@ export const useTokenLoansTransactions = () => {
     const loansWithCalculatedUnpaidInterest = selection
       .map(({ loan }) => ({
         loan,
-        fractionToRepay: 0, //TODO (TokenLending): Calculate the fraction to repay.
+        fractionToRepay: isTokenLoanRepaymentCallActive(loan)
+          ? caclFractionToRepayForRepaymentCall(loan)
+          : caclFractionToRepay(loan),
       }))
       .filter(({ fractionToRepay }) => fractionToRepay >= 1)
 

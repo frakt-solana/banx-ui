@@ -42,7 +42,7 @@ export const getTableColumns = ({
             key={loan.publicKey}
             selected={!!findLoanInSelection(loan.publicKey)}
             onCheckboxClick={() => toggleLoanInSelection(loan)}
-            collateralTokenAmount={loan.collateral.priceUsd}
+            collateralTokenAmount={loan.bondTradeTransaction.borrowerOriginalLent}
             collateralImageUrl={loan.collateral.logoUrl}
           />
         )

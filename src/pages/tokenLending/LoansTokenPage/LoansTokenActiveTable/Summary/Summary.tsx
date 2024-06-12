@@ -12,6 +12,7 @@ import { core } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
 import {
   caclulateBorrowTokenLoanValue,
+  calcTokenWeeklyFeeWithRepayFee,
   calcWeightedAverage,
   isTokenLoanRepaymentCallActive,
 } from '@banx/utils'
@@ -20,6 +21,7 @@ import { useTokenLoansTransactions } from '../hooks'
 import { TokenLoanOptimistic } from '../loansState'
 
 import styles from './Summary.module.less'
+import { calcTotalValueToPay } from '../helpers'
 
 interface SummaryProps {
   loans: core.TokenLoan[]
@@ -37,9 +39,8 @@ const Summary: FC<SummaryProps> = ({ loans, selectedLoans: rawSelectedLoans, set
 
   const totalSelectedLoans = selectedLoans.length
   const totalDebt = sumBy(loans, (loan) => caclulateBorrowTokenLoanValue(loan).toNumber())
-  //TODO (TokenLending): Calculate the totalWeeklyFee and totalValueToPay.
-  const totalWeeklyFee = 0
-  const totalValueToPay = 0
+  const totalWeeklyFee = sumBy(selectedLoans, calcTokenWeeklyFeeWithRepayFee)
+  const totalValueToPay = sumBy(selectedLoans, calcTotalValueToPay)
 
   const handleLoanSelection = (value = 0) => {
     setSelection(loans.slice(0, value), walletPublicKey?.toBase58() || '')
