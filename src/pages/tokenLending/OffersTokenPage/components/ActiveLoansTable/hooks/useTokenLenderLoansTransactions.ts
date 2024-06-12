@@ -4,7 +4,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
-import { useIsLedger } from '@banx/store/common'
+import { useIsLedger, useModal } from '@banx/store/common'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
@@ -36,6 +36,8 @@ export const useTokenLenderLoansTransactions = () => {
 
   const { addMints: hideLoans, updateOrAddLoan } = useTokenLenderLoans()
   const { clear: clearSelection, remove: removeLoan } = useSelectedTokenLoans()
+
+  const { close } = useModal()
 
   const terminateTokenLoan = async (loan: core.TokenLoan) => {
     const loadingSnackbarId = uniqueId()
@@ -190,7 +192,7 @@ export const useTokenLenderLoansTransactions = () => {
               })
 
               updateOrAddOffer(result)
-              hideLoans([loan.collateral.mint])
+              hideLoans([loan.publicKey])
               close()
             }
           })
@@ -237,7 +239,7 @@ export const useTokenLenderLoansTransactions = () => {
             enqueueSnackbar({ message: 'Collaterals successfully claimed', type: 'success' })
 
             const mintsToHidden = chain(confirmed)
-              .map(({ result }) => result?.collateral.mint)
+              .map(({ result }) => result?.publicKey)
               .compact()
               .value()
 
@@ -300,7 +302,7 @@ export const useTokenLenderLoansTransactions = () => {
                 solanaExplorerPath: `tx/${signature}`,
               })
 
-              hideLoans([loan.collateral.mint])
+              hideLoans([loan.publicKey])
             }
           })
         })

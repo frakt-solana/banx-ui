@@ -67,7 +67,7 @@ export const getTableColumns = ({
             key={loan.publicKey}
             selected={selected}
             onCheckboxClick={() => toggleLoanInSelection(loan)}
-            collateralTokenAmount={loan.collateral.priceUsd}
+            collateralTokenAmount={loan.bondTradeTransaction.borrowerOriginalLent}
             checkboxClassName={!canSelect ? styles.collateralCellCheckbox : ''}
             collateralImageUrl={loan.collateral.logoUrl}
             rightContentJSX={createRightContentJSX(loan)}
@@ -90,7 +90,10 @@ export const getTableColumns = ({
       title: <HeaderCell label="LTV" />,
       render: (loan) => {
         const lentTokenValueWithInterest = calculateLentTokenValueWithInterest(loan).toNumber()
-        const ltv = (lentTokenValueWithInterest / loan.collateralPrice) * 100
+        const ltv =
+          (lentTokenValueWithInterest /
+            (loan.collateralPrice * Math.pow(10, loan.collateral.decimals))) *
+          100
 
         return (
           <HorizontalCell

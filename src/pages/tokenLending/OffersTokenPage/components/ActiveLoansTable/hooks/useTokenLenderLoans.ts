@@ -65,7 +65,7 @@ export const useTokenLenderLoans = () => {
       .groupBy((loan) => loan.publicKey)
       .map((loans) => maxBy(loans, (loan) => loan.fraktBond.lastTransactedAt))
       .compact()
-      .filter((loan) => !hiddenLoansMints.includes(loan.collateral.mint))
+      .filter((loan) => !hiddenLoansMints.includes(loan.publicKey))
       .value()
   }, [loans, isLoading, walletOptimisticLoans, hiddenLoansMints])
 

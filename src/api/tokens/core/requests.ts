@@ -123,7 +123,7 @@ export const fetchTokenLenderLoans: FetchTokenLenderLoans = async ({
   })
 
   const { data } = await axios.get<{ data: TokenLoan[] }>(
-    `${BACKEND_BASE_URL}/loans/lender/${walletPublicKey}?${queryParams.toString()}`,
+    `${BACKEND_BASE_URL}/spl-loans/lender/${walletPublicKey}?${queryParams.toString()}`,
   )
 
   try {
