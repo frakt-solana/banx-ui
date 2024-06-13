@@ -45,8 +45,10 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
+      const filteredOffets = offers.filter(({ offer }) => offer.concentrationIndex || offer.bidCap)
+
       const txnsData = await Promise.all(
-        offers.map(({ offer }) =>
+        filteredOffets.map(({ offer }) =>
           createClaimLenderVaultTxnData({
             offer,
             walletAndConnection,
