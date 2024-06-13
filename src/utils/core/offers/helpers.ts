@@ -3,7 +3,7 @@ import { getMaxLoanValueFromBondOffer } from 'fbonds-core/lib/fbond-protocol/hel
 import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, uniqueId } from 'lodash'
 
-import { core } from '@banx/api/nft'
+import { Offer, core } from '@banx/api/nft'
 
 import { SimpleOffer } from './types'
 
@@ -141,12 +141,18 @@ export const calculateLoanValue = (offer: core.Offer) => {
   // return loanValue
 }
 
-export const isOfferClosed = (pairState: string) => {
+export const isOfferStateClosed = (pairState: PairState) => {
   return (
     pairState === PairState.PerpetualClosed ||
     pairState === PairState.PerpetualBondingCurveClosed ||
     pairState === PairState.PerpetualMigrated
   )
+}
+
+export const isOfferClosed = (offer: Offer) => {
+  const isStateClosed = isOfferStateClosed(offer.pairState)
+
+  return isStateClosed && offer.bidCap === 0 && offer.concentrationIndex === 0
 }
 
 //? Prevent orders wrong distibution on bulk borrow from same offer

@@ -10,7 +10,7 @@ import { DisplayValue } from '@banx/components/TableComponents'
 import { PATHS } from '@banx/router'
 import { createGlobalState } from '@banx/store/createGlobalState'
 import { createPathWithTokenParam, useTokenType } from '@banx/store/nft'
-import { isSolTokenType } from '@banx/utils'
+import { isOfferStateClosed, isSolTokenType } from '@banx/utils'
 
 import { useSortedOffers } from './useSortedOffers'
 import { useUserOffers } from './useUserOffers'
@@ -33,20 +33,23 @@ export const useOffersContent = () => {
 
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
 
+  //? Don't show closed offers in the offers list (UI)
+  const filteredClosedOffers = offers.filter((offer) => !isOfferStateClosed(offer.offer.pairState))
+
   const filteredOffers = useMemo(() => {
     if (selectedCollections.length) {
-      return filter(offers, ({ collectionMeta }) =>
+      return filter(filteredClosedOffers, ({ collectionMeta }) =>
         includes(selectedCollections, collectionMeta.collectionName),
       )
     }
-    return offers
-  }, [offers, selectedCollections])
+    return filteredClosedOffers
+  }, [filteredClosedOffers, selectedCollections])
 
   const { sortParams, sortedOffers } = useSortedOffers(filteredOffers)
 
   const searchSelectOptions = useMemo(() => {
     const offersGroupedByCollection = groupBy(
-      offers,
+      filteredClosedOffers,
       ({ collectionMeta }) => collectionMeta.collectionName,
     )
 
@@ -57,7 +60,7 @@ export const useOffersContent = () => {
 
       return { collectionName, collectionImage, lent }
     })
-  }, [offers])
+  }, [filteredClosedOffers])
 
   const searchSelectParams: SearchSelectProps<SearchSelectOption> = {
     options: searchSelectOptions,
@@ -88,10 +91,12 @@ export const useOffersContent = () => {
     buttonProps: connected ? { text: 'Lend', onClick: goToLendPage } : undefined,
   }
 
-  const showEmptyList = (!offers.length && !isLoading) || !connected
+  const showEmptyList = (!filteredClosedOffers.length && !isLoading) || !connected
 
   return {
-    offers: sortedOffers,
+    offersToDisplay: sortedOffers,
+    offers,
+
     isLoading,
     searchSelectParams,
     sortParams,
