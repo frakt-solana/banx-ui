@@ -179,6 +179,7 @@ export const LoanSchema = z.object({
   totalRepaidAmount: z.number().optional(), //? exist only in fetchLenderLoansAndOffers request
   accruedInterest: z.number().optional(),
   offerWasClosed: z.boolean().optional(), //? true if loan offer was removed (state is PerpetualClosed). false if offer is active or it's listing
+  //TODO: offerWasClosed already don't use because of lender vault feature, need to remove it
 })
 
 export type Loan = z.infer<typeof LoanSchema>
