@@ -74,7 +74,7 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
 
   if (isBanxSolTokenType(tokenType) && (offer.bidCap || offer.concentrationIndex)) {
     return await banxSol.combineWithSellBanxSolInstructions({
-      inputAmount: new BN(offer.concentrationIndex).sub(new BN(offer.bidCap)),
+      inputAmount: new BN(offer.concentrationIndex).add(new BN(offer.bidCap)),
       walletAndConnection,
       instructions,
       signers,
