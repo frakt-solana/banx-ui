@@ -6,12 +6,13 @@ import {
   refinancePerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import moment from 'moment'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
-import { calculateLendValue, isBanxSolTokenType, isLoanListed } from '@banx/utils'
+import { calculateLoanRepayValueOnCertainDate, isBanxSolTokenType, isLoanListed } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
@@ -45,10 +46,16 @@ export const createLendToBorrowTxnData: CreateLendToBorrowTxnData = async (param
   }
 
   if (isBanxSolTokenType(tokenType) && !isLoanListed(loan)) {
-    const totalClaimValue = calculateLendValue(loan)
+    const repayValue = calculateLoanRepayValueOnCertainDate({
+      loan,
+      upfrontFeeIncluded: true,
+      //? It is necessary to add some time because interest is accumulated even during the transaction processing.
+      //? There may not be enough funds for repayment. Therefore, we should add a small reserve for this dust.
+      date: moment().unix() + 180,
+    })
 
     return await banxSol.combineWithBuyBanxSolInstructions({
-      inputAmount: new BN(totalClaimValue),
+      inputAmount: new BN(repayValue),
       walletAndConnection: params.walletAndConnection,
       instructions,
       signers,
