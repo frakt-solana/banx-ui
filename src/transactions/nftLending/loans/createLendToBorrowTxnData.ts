@@ -19,6 +19,7 @@ type CreateLendToBorrowTxnDataParams = {
   loan: core.Loan
   aprRate: number
   tokenType: LendingTokenType
+
   walletAndConnection: WalletAndConnection
 }
 
@@ -34,7 +35,8 @@ type CreateLendToBorrowTxnData = (
 export const createLendToBorrowTxnData: CreateLendToBorrowTxnData = async (params) => {
   const { loan, tokenType } = params
 
-  const { instructions, signers, optimisticResult } = await getIxnsAndSignersByLoanType(params)
+  const { instructions, signers, optimisticResult, lookupTables } =
+    await getIxnsAndSignersByLoanType(params)
 
   const optimisticLoan = {
     ...loan,
@@ -42,12 +44,7 @@ export const createLendToBorrowTxnData: CreateLendToBorrowTxnData = async (param
     bondTradeTransaction: optimisticResult.bondTradeTransaction,
   }
 
-  const result = { loan: optimisticLoan, oldLoan: loan }
-
-  const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
-
-  //? Add BanxSol instructions if it's not a listing and offer wasn't closed!
-  if (isBanxSolTokenType(tokenType) && !isLoanListed(loan) && !loan.offerWasClosed) {
+  if (isBanxSolTokenType(tokenType) && !isLoanListed(loan)) {
     const totalClaimValue = calculateLendValue(loan)
 
     return await banxSol.combineWithBuyBanxSolInstructions({
@@ -56,14 +53,14 @@ export const createLendToBorrowTxnData: CreateLendToBorrowTxnData = async (param
       instructions,
       signers,
       lookupTables,
-      result,
+      result: { loan: optimisticLoan, oldLoan: loan },
     })
   }
 
   return {
     instructions,
     signers,
-    result,
+    result: { loan: optimisticLoan, oldLoan: loan },
     lookupTables,
   }
 }
@@ -103,7 +100,12 @@ const getIxnsAndSignersByLoanType = async (params: CreateLendToBorrowTxnDataPara
       bondTradeTransaction: optimisticResults.bondTradeTransaction,
     }
 
-    return { instructions, signers, optimisticResult: newOptimisticResult }
+    return {
+      instructions,
+      signers,
+      optimisticResult: newOptimisticResult,
+      lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    }
   }
 
   const { instructions, signers, optimisticResult } = await refinancePerpetualLoan({
@@ -135,5 +137,10 @@ const getIxnsAndSignersByLoanType = async (params: CreateLendToBorrowTxnDataPara
     bondTradeTransaction: optimisticResult.newBondTradeTransaction,
   }
 
-  return { instructions, signers, optimisticResult: newOptimisticResult }
+  return {
+    instructions,
+    signers,
+    optimisticResult: newOptimisticResult,
+    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+  }
 }
