@@ -1,4 +1,4 @@
-import { web3 } from 'fbonds-core'
+import { BN, web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   BondOfferOptimistic,
@@ -48,7 +48,7 @@ export const createRemoveOfferTxnData: CreateRemoveOfferTxnData = async ({
 
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
 
-  const offerSize = calculateIdleFundsInOffer(offer)
+  const offerSize = calculateIdleFundsInOffer(offer).add(new BN(offer.bidCap))
 
   if (isBanxSolTokenType(tokenType) && offerSize.gt(ZERO_BN)) {
     return await banxSol.combineWithSellBanxSolInstructions({
