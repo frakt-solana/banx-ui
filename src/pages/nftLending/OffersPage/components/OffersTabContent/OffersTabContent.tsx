@@ -11,6 +11,7 @@ import styles from './OffersTabContent.module.less'
 const OffersTabContent = () => {
   const {
     offers,
+    offersToDisplay,
     isLoading,
     showEmptyList,
     emptyListParams,
@@ -30,7 +31,7 @@ const OffersTabContent = () => {
           <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
 
           <div className={styles.cardsList}>
-            {offers.map((offer) => (
+            {offersToDisplay.map((offer) => (
               <OfferCard key={offer.offer.publicKey} offer={offer} />
             ))}
           </div>

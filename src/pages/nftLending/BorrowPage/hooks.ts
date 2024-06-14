@@ -25,7 +25,7 @@ import {
   convertOffersToSimple,
   isLoanActiveOrRefinanced,
   isLoanRepaid,
-  isOfferClosed,
+  isOfferStateClosed,
 } from '@banx/utils'
 
 import { BorrowTabName } from './BorrowPage'
@@ -62,7 +62,7 @@ export const useBorrowNfts = () => {
 
     const optimisticsToRemove = chain(optimisticOffers)
       //? Filter closed offers from LS optimistics
-      .filter(({ offer }) => !isOfferClosed(offer?.pairState))
+      .filter(({ offer }) => !isOfferStateClosed(offer?.pairState))
       .filter(({ offer }) => {
         const sameOfferFromBE = data.offers[offer.hadoMarket]?.find(
           ({ publicKey }) => publicKey === offer.publicKey,
@@ -89,7 +89,7 @@ export const useBorrowNfts = () => {
 
     const optimisticsFiltered = chain(optimisticOffers)
       //? Filter closed offers from LS optimistics
-      .filter(({ offer }) => !isOfferClosed(offer?.pairState))
+      .filter(({ offer }) => !isOfferStateClosed(offer?.pairState))
       //? Filter own offers from LS optimistics
       .filter(({ offer }) => offer?.assetReceiver !== walletPublicKey?.toBase58())
       .value()
