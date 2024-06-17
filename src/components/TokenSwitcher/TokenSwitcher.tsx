@@ -14,9 +14,8 @@ const TOKENS = [LendingTokenType.BanxSol, LendingTokenType.Usdc]
 type TokenValueProps = {
   active?: boolean
   tokenType: LendingTokenType
-  onClick: () => void
 }
-const TokenValue: FC<TokenValueProps> = ({ tokenType, active, onClick }) => {
+const TokenValue: FC<TokenValueProps> = ({ tokenType, active }) => {
   const isSol = isSolTokenType(tokenType)
   const isBanxSol = isBanxSolTokenType(tokenType)
 
@@ -31,7 +30,6 @@ const TokenValue: FC<TokenValueProps> = ({ tokenType, active, onClick }) => {
       className={classNames(styles.token, {
         [styles.tokenActive]: active,
       })}
-      onClick={onClick}
     >
       <p className={styles.tokenValue}>
         <div
@@ -53,15 +51,18 @@ type TokenSwitcherProps = {
 const TokenSwitcher: FC<TokenSwitcherProps> = ({ className }) => {
   const { tokenType, setTokenType } = useTokenType()
 
+  const toggleTokenType = () => {
+    const nextTokenType = isBanxSolTokenType(tokenType)
+      ? LendingTokenType.Usdc
+      : LendingTokenType.BanxSol
+
+    setTokenType(nextTokenType)
+  }
+
   return (
-    <div className={classNames(styles.tokenSwitcher, className)}>
+    <div className={classNames(styles.tokenSwitcher, className)} onClick={toggleTokenType}>
       {TOKENS.map((token) => (
-        <TokenValue
-          active={token === tokenType}
-          key={token}
-          tokenType={token}
-          onClick={() => setTokenType(token)}
-        />
+        <TokenValue active={token === tokenType} key={token} tokenType={token} />
       ))}
     </div>
   )
