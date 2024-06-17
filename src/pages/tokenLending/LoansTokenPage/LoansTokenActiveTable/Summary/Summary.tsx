@@ -17,11 +17,11 @@ import {
   isTokenLoanRepaymentCallActive,
 } from '@banx/utils'
 
+import { calcTotalValueToPay } from '../helpers'
 import { useTokenLoansTransactions } from '../hooks'
 import { TokenLoanOptimistic } from '../loansState'
 
 import styles from './Summary.module.less'
-import { calcTotalValueToPay } from '../helpers'
 
 interface SummaryProps {
   loans: core.TokenLoan[]
