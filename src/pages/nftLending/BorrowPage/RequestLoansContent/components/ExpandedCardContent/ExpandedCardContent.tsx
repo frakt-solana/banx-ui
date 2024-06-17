@@ -215,7 +215,7 @@ const SelectCurrencyInput: FC<SelectCurrencyInputProps> = ({
   const isSol = isSolTokenType(tokenType)
   const isBanxSol = isBanxSolTokenType(tokenType)
 
-  const tokenTicker = isSol ? 'SOL' : isBanxSol ? 'banxSOL' : 'USDC'
+  const tokenTicker = isSol || isBanxSol ? 'SOL' : 'USDC'
 
   const Icon = isSol || isBanxSol ? SOL : USDC
 

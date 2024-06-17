@@ -9,7 +9,7 @@ import { isBanxSolTokenType, isSolTokenType } from '@banx/utils'
 
 import styles from './TokenSwitcher.module.less'
 
-const TOKENS = [LendingTokenType.BanxSol, LendingTokenType.NativeSol, LendingTokenType.Usdc]
+const TOKENS = [LendingTokenType.BanxSol, LendingTokenType.Usdc]
 
 type TokenValueProps = {
   active?: boolean
@@ -24,7 +24,7 @@ const TokenValue: FC<TokenValueProps> = ({ tokenType, active, onClick }) => {
   const tokenIcon =
     isSol || isBanxSol ? <SOL viewBox="-1 -1 18 18" /> : <USDC viewBox="1 1 14 14" />
 
-  const tokenTicker = isSol ? 'SOL' : isBanxSol ? 'banxSOL' : 'USDC'
+  const tokenTicker = isSol || isBanxSol ? 'SOL' : 'USDC'
 
   return (
     <div
