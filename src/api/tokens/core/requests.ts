@@ -94,13 +94,13 @@ export const fetchTokenOffersPreview: FetchTokenOffersPreview = async ({
   return data.data
 }
 
-type FetchWalletLoansAndOffers = (props: {
+type FetchWalletTokenLoansAndOffers = (props: {
   walletPublicKey: string
   tokenType: LendingTokenType
   getAll?: boolean
 }) => Promise<WalletTokenLoansAndOffers>
 
-export const fetchWalletTokenLoansAndOffers: FetchWalletLoansAndOffers = async ({
+export const fetchWalletTokenLoansAndOffers: FetchWalletTokenLoansAndOffers = async ({
   walletPublicKey,
   tokenType,
   getAll = true,
