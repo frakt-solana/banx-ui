@@ -10,7 +10,7 @@ import {
 } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/nft'
-import { calcBorrowValueWithProtocolFee } from '@banx/utils'
+import { calculateBorrowValueWithProtocolFee } from '@banx/utils'
 
 import styles from './RequestLoansTable.module.less'
 
@@ -77,7 +77,8 @@ export const getTableColumns = ({
         />
       ),
       render: () => {
-        const upfrontFee = requestedLoanValue - calcBorrowValueWithProtocolFee(requestedLoanValue)
+        const upfrontFee =
+          requestedLoanValue - calculateBorrowValueWithProtocolFee(requestedLoanValue)
         return (
           <HorizontalCell
             value={<DisplayValue value={upfrontFee} placeholder="--" />}

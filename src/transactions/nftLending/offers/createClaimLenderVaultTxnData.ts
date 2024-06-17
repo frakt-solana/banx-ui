@@ -1,4 +1,4 @@
-import { web3 } from 'fbonds-core'
+import { BN, web3 } from 'fbonds-core'
 import {
   claimPerpetualBondOfferInterest,
   claimPerpetualBondOfferRepayments,
@@ -8,6 +8,8 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 
 import { Offer, core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
+import { banxSol } from '@banx/transactions'
+import { isBanxSolTokenType } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
@@ -28,6 +30,12 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
   const accountsParams = {
     bondOffer: new web3.PublicKey(offer.publicKey),
     userPubkey: walletAndConnection.wallet.publicKey,
+  }
+
+  const optimiticResult = {
+    ...offer,
+    concentrationIndex: 0,
+    bidCap: 0,
   }
 
   if (offer.concentrationIndex) {
@@ -64,10 +72,14 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
     signers.push(...claimRepaymetsSigners)
   }
 
-  const optimiticResult = {
-    ...offer,
-    concentrationIndex: 0,
-    bidCap: 0,
+  if (isBanxSolTokenType(tokenType) && (offer.bidCap || offer.concentrationIndex)) {
+    return await banxSol.combineWithSellBanxSolInstructions({
+      inputAmount: new BN(offer.concentrationIndex).add(new BN(offer.bidCap)),
+      walletAndConnection,
+      instructions,
+      signers,
+      result: optimiticResult,
+    })
   }
 
   return {

@@ -8,13 +8,12 @@ import { DisplayValue } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/nft'
 import {
-  calculateClaimValue,
   isLoanAbleToClaim,
   isLoanAbleToTerminate,
   useLenderLoans,
 } from '@banx/pages/nftLending/OffersPage'
 import { createGlobalState } from '@banx/store'
-import { isLoanListed, isUnderWaterLoan } from '@banx/utils'
+import { calculateClaimValue, isLoanListed, isUnderWaterLoan } from '@banx/utils'
 
 import { useSortedLoans } from './useSortedLoans'
 
