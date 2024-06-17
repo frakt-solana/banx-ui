@@ -70,6 +70,13 @@ export const OfferSchema = z.object({
   mathCounter: z.number(),
   pairState: z.nativeEnum(PairState),
   validation: ValidationPairSchema,
+
+  fundsInCurrentEpoch: z.number(),
+  fundsInNextEpoch: z.number(),
+  lastCalculatedSlot: z.number(),
+  lastCalculatedTimestamp: z.number(),
+  rewardsToHarvest: z.number(),
+  rewardsToHarvested: z.number(),
 })
 
 //? Same as BondOfferV2
