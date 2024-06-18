@@ -5,7 +5,7 @@ import {
   optimisticInitializeBondOfferBonding,
   optimisticUpdateBondOfferBonding,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { BondOfferV2, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
 
 import { SyntheticOffer } from '@banx/store/nft'
@@ -16,7 +16,7 @@ type GetUpdatedBondOffer = (props: {
   loansAmount: number //? integer number
   syntheticOffer: SyntheticOffer
   tokenType: LendingTokenType
-}) => BondOfferV3
+}) => BondOfferV2
 
 export const getUpdatedBondOffer: GetUpdatedBondOffer = ({
   loanValue,

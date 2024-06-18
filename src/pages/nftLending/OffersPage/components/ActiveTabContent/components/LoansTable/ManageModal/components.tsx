@@ -14,7 +14,7 @@ import Timer from '@banx/components/Timer'
 
 import { core } from '@banx/api/nft'
 import { useMarketOffers } from '@banx/pages/nftLending/LendPage'
-import { useLenderLoans } from '@banx/pages/nftLending/OffersPage'
+import { calculateClaimValue, useLenderLoans } from '@banx/pages/nftLending/OffersPage'
 import { useModal } from '@banx/store/common'
 import { useTokenType } from '@banx/store/nft'
 import {
@@ -30,7 +30,6 @@ import {
 import {
   HealthColorIncreasing,
   calculateApr,
-  calculateClaimValue,
   calculateFreezeExpiredAt,
   calculateLoanRepayValue,
   calculateRepaymentCallLenderReceivesAmount,

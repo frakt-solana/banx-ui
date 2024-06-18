@@ -9,7 +9,7 @@ import {
   NftInfoCell,
 } from '@banx/components/TableComponents'
 
-import { SimpleOffer, calculateBorrowValueWithProtocolFee } from '@banx/utils'
+import { SimpleOffer, calcBorrowValueWithProtocolFee } from '@banx/utils'
 
 import { BorrowActionCell } from './BorrowActionCell'
 import { APRCell, BorrowCell } from './cells'
@@ -75,7 +75,7 @@ export const getTableColumns = ({
         />
       ),
       render: ({ loanValue }) => {
-        const upfrontFee = loanValue - calculateBorrowValueWithProtocolFee(loanValue)
+        const upfrontFee = loanValue - calcBorrowValueWithProtocolFee(loanValue)
         return <HorizontalCell value={<DisplayValue value={upfrontFee} placeholder="--" />} />
       },
     },

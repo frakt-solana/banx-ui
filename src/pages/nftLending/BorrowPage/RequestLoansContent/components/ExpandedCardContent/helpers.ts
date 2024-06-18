@@ -3,7 +3,7 @@ import { clamp } from 'lodash'
 import moment from 'moment'
 
 import { BONDS, ONE_WEEK_IN_SECONDS } from '@banx/constants'
-import { calculateBorrowValueWithProtocolFee } from '@banx/utils'
+import { calcBorrowValueWithProtocolFee } from '@banx/utils'
 
 interface CalculateSummaryInfoProps {
   requestedLoanValue: number
@@ -22,7 +22,7 @@ export const calculateSummaryInfo = ({
   const totalRequestedLoanValue = requestedLoanValue * totalNftsToRequest
 
   const upfrontFee =
-    totalRequestedLoanValue - calculateBorrowValueWithProtocolFee(totalRequestedLoanValue)
+    totalRequestedLoanValue - calcBorrowValueWithProtocolFee(totalRequestedLoanValue)
 
   const currentTimeUnix = moment().unix()
   const rateBasePoints = parseFloat(inputAprValue) * 100

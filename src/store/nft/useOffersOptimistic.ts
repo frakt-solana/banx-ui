@@ -1,12 +1,13 @@
 import { useEffect, useMemo } from 'react'
 
-import { getBondingCurveTypeFromLendingToken } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { BondingCurveType } from 'fbonds-core/lib/fbond-protocol/types'
 import { get, set } from 'idb-keyval'
 import { filter, map, uniqBy } from 'lodash'
 import moment from 'moment'
 import { create } from 'zustand'
 
 import { core } from '@banx/api/nft'
+import { isSolTokenType } from '@banx/utils'
 
 import { useTokenType } from './useTokenType'
 
@@ -84,7 +85,9 @@ export const useOffersOptimistic = () => {
   }, [setState])
 
   const filteredOffersByTokenType = useMemo(() => {
-    const bondingCurveType = getBondingCurveTypeFromLendingToken(tokenType)
+    const bondingCurveType = isSolTokenType(tokenType)
+      ? BondingCurveType.Linear
+      : BondingCurveType.LinearUsdc
 
     return filter(
       optimisticOffers,

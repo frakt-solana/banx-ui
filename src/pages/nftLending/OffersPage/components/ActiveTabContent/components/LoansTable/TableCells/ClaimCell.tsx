@@ -6,8 +6,8 @@ import moment from 'moment'
 import { DisplayValue, HorizontalCell } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/nft'
-import { calculateLentValue } from '@banx/pages/nftLending/OffersPage'
-import { calculateBorrowedAmount, calculateClaimValue } from '@banx/utils'
+import { calculateClaimValue, calculateLentValue } from '@banx/pages/nftLending/OffersPage'
+import { calcLoanBorrowedAmount } from '@banx/utils'
 
 import styles from '../LoansTable.module.less'
 
@@ -18,7 +18,7 @@ interface ClaimCellProps {
 export const ClaimCell: FC<ClaimCellProps> = ({ loan }) => {
   const { amountOfBonds, soldAt } = loan.bondTradeTransaction
 
-  const loanBorrowedAmount = calculateBorrowedAmount(loan).toNumber()
+  const loanBorrowedAmount = calcLoanBorrowedAmount(loan)
 
   const interestParameters = {
     loanValue: loanBorrowedAmount,

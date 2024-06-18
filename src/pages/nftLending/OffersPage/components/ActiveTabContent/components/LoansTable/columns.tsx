@@ -15,10 +15,9 @@ import Tooltip from '@banx/components/Tooltip'
 
 import { core } from '@banx/api/nft'
 import { Coin, Snowflake } from '@banx/icons'
-import { isLoanAbleToTerminate } from '@banx/pages/nftLending/OffersPage'
+import { calculateClaimValue, isLoanAbleToTerminate } from '@banx/pages/nftLending/OffersPage'
 import {
   HealthColorIncreasing,
-  calculateClaimValue,
   calculateFreezeExpiredAt,
   calculateRepaymentCallLenderReceivesAmount,
   getColorByPercent,

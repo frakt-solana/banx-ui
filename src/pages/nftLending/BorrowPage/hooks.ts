@@ -2,7 +2,6 @@ import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
-import { BN } from 'fbonds-core'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { produce } from 'immer'
 import { chain, filter, groupBy, isEmpty, map, maxBy, sortBy, sumBy, uniqBy } from 'lodash'
@@ -19,8 +18,8 @@ import {
 } from '@banx/store/nft'
 import { convertLoanToBorrowNft } from '@banx/transactions/nftLending'
 import {
-  adjustBorrowValueWithSolanaRentFee,
-  calculateBorrowValueWithProtocolFee,
+  calcBorrowValueWithProtocolFee,
+  calcBorrowValueWithRentFee,
   calculateLoanValue,
   convertOffersToSimple,
   isLoanActiveOrRefinanced,
@@ -235,13 +234,8 @@ const calcMaxBorrow = (
       const maxBorrowMarket = sumBy(
         (offers[marketPubkey] || []).slice(0, nftsAmount),
         ({ loanValue, hadoMarket }) => {
-          const loanValueWithProtocolFee = calculateBorrowValueWithProtocolFee(loanValue)
-
-          return adjustBorrowValueWithSolanaRentFee({
-            value: new BN(loanValueWithProtocolFee),
-            marketPubkey: hadoMarket,
-            tokenType,
-          }).toNumber()
+          const loanValueWithProtocolFee = calcBorrowValueWithProtocolFee(loanValue)
+          return calcBorrowValueWithRentFee(loanValueWithProtocolFee, hadoMarket, tokenType)
         },
       )
 

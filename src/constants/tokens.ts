@@ -1,2 +1,1 @@
 export const USDC_ADDRESS = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
-export const BANX_SOL_ADDRESS = 'BANXyWgPpa519e2MtQF1ecRbKYKKDMXPF1dyBxUq9NQG'

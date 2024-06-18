@@ -5,7 +5,9 @@ import { orderBy } from 'lodash'
 import { SortOption } from '@banx/components/SortDropdown'
 
 import { core } from '@banx/api/nft'
-import { calculateLendValue, calculateLenderApr, isLoanTerminating } from '@banx/utils'
+import { isLoanTerminating } from '@banx/utils'
+
+import { calculateLendValue, calculateLenderApr } from '../helpers'
 
 enum SortField {
   DURATION = 'duration',

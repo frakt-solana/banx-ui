@@ -12,7 +12,7 @@ import { useImagePreload } from '@banx/hooks'
 import { PlaceholderPFP } from '@banx/icons'
 import {
   HealthColorIncreasing,
-  calculateBorrowedAmount,
+  calcLoanBorrowedAmount,
   calculateLoanRepayValue,
   formatValueByTokenType,
   getColorByPercent,
@@ -28,7 +28,7 @@ const TooltipRow = ({ loan }: { loan: core.Loan }) => {
   const { nft } = loan
 
   const ltv = (calculateLoanRepayValue(loan) / nft.collectionFloor) * 100
-  const loanValue = calculateBorrowedAmount(loan).toNumber()
+  const loanValue = calcLoanBorrowedAmount(loan)
 
   return (
     <div className={styles.tooltipRowContent}>

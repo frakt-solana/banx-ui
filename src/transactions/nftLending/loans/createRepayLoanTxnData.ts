@@ -6,14 +6,11 @@ import {
   repayPerpetualLoan,
   repayStakedBanxPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import moment from 'moment'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { helius } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BANX_STAKING, BONDS } from '@banx/constants'
-import { banxSol } from '@banx/transactions'
-import { calculateLoanRepayValueOnCertainDate, isBanxSolTokenType } from '@banx/utils'
 
 import { fetchRuleset } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
@@ -34,16 +31,12 @@ export const createRepayLoanTxnData: CreateRepayLoanTxnData = async ({
 }) => {
   const borrowType = getLoanBorrowType(loan)
 
-  const {
-    instructions: repayInstructions,
-    signers: repaySigners,
-    optimisticResult,
-    lookupTables,
-  } = await getIxnsAndSignersByBorrowType({
-    loan,
-    borrowType,
-    walletAndConnection,
-  })
+  const { instructions, signers, optimisticResult, lookupTables } =
+    await getIxnsAndSignersByBorrowType({
+      loan,
+      borrowType,
+      walletAndConnection,
+    })
 
   const optimisticLoan: core.Loan = {
     publicKey: optimisticResult.fraktBond.publicKey,
@@ -52,31 +45,11 @@ export const createRepayLoanTxnData: CreateRepayLoanTxnData = async ({
     nft: loan.nft,
   }
 
-  //? Add BanxSol instructions if offer wasn't closed!
-  if (isBanxSolTokenType(loan.bondTradeTransaction.lendingToken)) {
-    const repayValue = calculateLoanRepayValueOnCertainDate({
-      loan,
-      upfrontFeeIncluded: true,
-      //? It is necessary to add some time because interest is accumulated even during the transaction processing.
-      //? There may not be enough funds for repayment. Therefore, we should add a small reserve for this dust.
-      date: moment().unix() + 180,
-    })
-
-    return await banxSol.combineWithBuyBanxSolInstructions({
-      inputAmount: repayValue,
-      walletAndConnection,
-      instructions: repayInstructions,
-      signers: repaySigners,
-      lookupTables,
-      result: optimisticLoan,
-    })
-  }
-
   return {
-    instructions: repayInstructions,
-    signers: repaySigners,
-    result: optimisticLoan,
+    instructions,
+    signers,
     lookupTables,
+    result: optimisticLoan,
   }
 }
 
