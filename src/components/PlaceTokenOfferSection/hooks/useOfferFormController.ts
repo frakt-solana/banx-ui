@@ -17,7 +17,7 @@ export const useOfferFormController = (
   const decimals = getTokenDecimals(tokenType)
 
   const initialValues = useMemo(() => {
-    const collateralsDecimals = market?.collateralTokenDecimals || 0
+    const collateralsDecimals = market?.collateral.decimals || 0
 
     const collateralsPerToken =
       (1 / syntheticCollateralsPerToken) * Math.pow(10, collateralsDecimals)
@@ -26,7 +26,7 @@ export const useOfferFormController = (
       collateralsPerToken: isFinite(collateralsPerToken) ? formatNumber(collateralsPerToken) : '0',
       offerSize: formatNumber(syntheticOfferSize / decimals),
     }
-  }, [decimals, market?.collateralTokenDecimals, syntheticCollateralsPerToken, syntheticOfferSize])
+  }, [decimals, market, syntheticCollateralsPerToken, syntheticOfferSize])
 
   const [collateralsPerToken, setLoanValue] = useState(initialValues.collateralsPerToken)
   const [offerSize, setOfferSize] = useState(initialValues.offerSize)

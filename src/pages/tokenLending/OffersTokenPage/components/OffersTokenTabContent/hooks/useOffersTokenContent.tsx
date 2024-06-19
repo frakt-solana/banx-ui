@@ -39,7 +39,7 @@ export const useOffersTokenContent = () => {
   const filteredOffers = useMemo(() => {
     if (selectedCollections.length) {
       return filter(offersPreview, ({ tokenMarketPreview }) =>
-        includes(selectedCollections, tokenMarketPreview.collateralTokenTicker),
+        includes(selectedCollections, tokenMarketPreview.collateral.ticker),
       )
     }
     return offersPreview
@@ -91,23 +91,18 @@ const createSearchSelectParams = ({
   selectedOptions,
   onChange,
 }: CreateSearchSelectProps) => {
-  const offersGroupedByCollection = groupBy(
+  const offersGroupedByTicker = groupBy(
     options,
-    (offer) => offer.tokenMarketPreview.collateralTokenTicker,
+    (offer) => offer.tokenMarketPreview.collateral.ticker,
   )
 
-  const searchSelectOptions = map(offersGroupedByCollection, (groupedOffer) => {
+  const searchSelectOptions = map(offersGroupedByTicker, (groupedOffer) => {
     const firstOfferInGroup = first(groupedOffer)
-    const { collateralTokenTicker = '', collateralTokenImageUrl = '' } =
-      firstOfferInGroup?.tokenMarketPreview || {}
+    const { ticker = '', logoUrl = '' } = firstOfferInGroup?.tokenMarketPreview.collateral || {}
 
     const accruedInterest = sumBy(groupedOffer, (offer) => offer.tokenOfferPreview.accruedInterest)
 
-    return {
-      collateralTokenTicker,
-      collateralTokenImageUrl,
-      accruedInterest,
-    }
+    return { ticker, logoUrl, accruedInterest }
   })
 
   const searchSelectParams = {
@@ -116,9 +111,9 @@ const createSearchSelectParams = ({
     onChange,
     labels: ['Collateral', 'Interest'],
     optionKeys: {
-      labelKey: 'collateralTokenTicker',
-      valueKey: 'collateralTokenTicker',
-      imageKey: 'collateralTokenImageUrl',
+      labelKey: 'ticker',
+      valueKey: 'ticker',
+      imageKey: 'logoUrl',
       secondLabel: {
         key: 'accruedInterest',
         format: (value: number) => <DisplayValue value={value} />,

@@ -1,43 +1,106 @@
-import { BondTradeTransactionV3, FraktBond } from 'fbonds-core/lib/fbond-protocol/types'
+import {
+  BondTradeTransactionV2State,
+  BondTradeTransactionV2Type,
+  FraktBondState,
+  LendingTokenType,
+  RedeemResult,
+  RepayDestination,
+} from 'fbonds-core/lib/fbond-protocol/types'
 import { z } from 'zod'
 
 import { PaginationMeta } from '@banx/api/types'
 
 const TokenMetaSchema = z.object({
   mint: z.string(),
-  imageUrl: z.string(),
+  logoUrl: z.string(),
   ticker: z.string(),
   decimals: z.number(),
-  priceUSDC: z.number(),
+  priceUsd: z.number(),
 })
 
 export type TokenMeta = z.infer<typeof TokenMetaSchema>
 
-export type TokenLoan = {
-  publicKey: string
-  fraktBond: FraktBond
-  bondTradeTransaction: BondTradeTransactionV3
-  collateral: TokenMeta
-}
+const BondTradeTransactionSchema = z.object({
+  publicKey: z.string(),
+  amountOfBonds: z.number(),
+  bondOffer: z.string(),
+  bondTradeTransactionState: z.nativeEnum(BondTradeTransactionV2State),
+  bondTradeTransactionType: z.nativeEnum(BondTradeTransactionV2Type),
+  borrowerFullRepaidAmount: z.number(),
+  borrowerOriginalLent: z.number(),
+  repaymentCallAmount: z.number(), //? Stores value that borrower needs to pay (NOT value that lender receives)
+  currentRemainingLent: z.number(),
+  fbondTokenMint: z.string(),
+  feeAmount: z.number(),
+  interestSnapshot: z.number(),
+  isDirectSell: z.boolean(),
+  lenderFullRepaidAmount: z.number(),
+  lenderOriginalLent: z.number(),
+  lendingToken: z.nativeEnum(LendingTokenType),
+  partialRepaySnapshot: z.number(),
+  redeemResult: z.nativeEnum(RedeemResult),
+  redeemedAt: z.number(),
+  repayDestination: z.nativeEnum(RepayDestination),
+  seller: z.string(),
+  solAmount: z.number(),
+  soldAt: z.number(),
+  terminationFreeze: z.number(),
+  terminationStartedAt: z.number(),
+  user: z.string(),
+})
+
+const FraktBondSchema = z.object({
+  publicKey: z.string(),
+  activatedAt: z.number(),
+  actualReturnedAmount: z.number(),
+  amountToReturn: z.number(),
+  banxStake: z.string(),
+  bondTradeTransactionsCounter: z.number(),
+  borrowedAmount: z.number(),
+  currentPerpetualBorrowed: z.number(),
+  fbondIssuer: z.string(),
+  fbondTokenMint: z.string(),
+  fbondTokenSupply: z.number(),
+  fraktBondState: z.nativeEnum(FraktBondState),
+  fraktMarket: z.string(),
+  lastTransactedAt: z.number(),
+  liquidatingAt: z.number(),
+  refinanceAuctionStartedAt: z.number(),
+  repaidOrLiquidatedAt: z.number(),
+  terminatedCounter: z.number(),
+  hadoMarket: z.string().optional(),
+})
+
+export type TokenLoan = z.infer<typeof TokenLoanSchema>
+
+export const TokenLoanSchema = z.object({
+  publicKey: z.string(),
+  fraktBond: FraktBondSchema,
+  bondTradeTransaction: BondTradeTransactionSchema,
+  collateral: TokenMetaSchema,
+  collateralPrice: z.number(),
+})
 
 export const TokenMarketPreviewSchema = z.object({
   marketPubkey: z.string(),
-  tokenType: z.string(),
 
-  collateralTokenPrice: z.number(),
-  collateralTokenDecimals: z.number(),
-  bestOffer: z.number(),
+  collateral: TokenMetaSchema,
+  collateralPrice: z.number(),
+
+  offersTvl: z.number(),
+  loansTvl: z.number(),
 
   activeOffersAmount: z.number(),
-  offersTvl: z.number(),
   activeLoansAmount: z.number(),
-  loansTvl: z.number(),
+
+  bestOffer: z.number(),
+  bestLtv: z.number(), // TODO: remove from BE
 
   marketApr: z.number(),
   marketApy: z.number(),
+  marketUtilizationRate: z.number().nullable(),
 
-  collateralTokenImageUrl: z.string(),
-  collateralTokenTicker: z.string(),
+  isHot: z.boolean(),
 })
 
 export type TokenMarketPreview = z.infer<typeof TokenMarketPreviewSchema>

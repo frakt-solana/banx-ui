@@ -18,9 +18,9 @@ interface MainSummaryProps {
 }
 
 export const MainSummary: FC<MainSummaryProps> = ({ market, collateralPerToken }) => {
-  const { collateralTokenPrice = 0 } = market || {}
+  const { collateralPrice = 0 } = market || {}
 
-  const ltv = (collateralPerToken / collateralTokenPrice) * 100 || 0
+  const ltv = (collateralPerToken / collateralPrice) * 100 || 0
   const apr = 0 //TODO (TokenLending): Use rateBasePoints from market or calculate dynamically?
 
   return (
