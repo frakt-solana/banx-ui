@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { BN } from 'fbonds-core'
@@ -19,11 +19,11 @@ import {
   DEFAULT_COLLATERAL_TOKEN,
   MOCK_APR_RATE,
 } from '../constants'
-import { useBorrowSplTokenOffers, useBorrowSplTokenTransaction } from './hooks'
+import { getErrorMessage } from './helpers'
+import { useBorrowSplTokenTransaction } from './hooks'
+import { useBorrowSplTokenOffers } from './hooks/useBorrowSplTokenOffers'
 
 import styles from './InstantBorrowContent.module.less'
-
-//TODO: Add error messages and disabled states
 
 const InstantBorrowContent = () => {
   const wallet = useWallet()
@@ -48,6 +48,16 @@ const InstantBorrowContent = () => {
 
   const { executeBorrow } = useBorrowSplTokenTransaction(collateralToken, splTokenOffers)
 
+  useEffect(() => {
+    if (!splTokenOffers.length) return
+
+    const totalBorrowAmount = splTokenOffers.reduce((acc, offer) => {
+      return acc.add(new BN(offer.amountToGet, 'hex'))
+    }, new BN(0))
+
+    setBorrowlInputValue(totalBorrowAmount.toString())
+  }, [splTokenOffers])
+
   const formattedCollateralTokenBalance = bnToHuman(
     new BN(collateralTokenBalance),
     collateralToken.meta.decimals,
@@ -57,6 +67,12 @@ const InstantBorrowContent = () => {
     new BN(borrowTokenBalance),
     borrowToken.meta.decimals,
   ).toString()
+
+  const errorMessage = getErrorMessage({
+    collateral: collateralToken,
+    collaretalInputValue: collateralInputValue,
+    maxTokenValue: formattedCollateralTokenBalance,
+  })
 
   return (
     <div className={styles.content}>
@@ -70,6 +86,7 @@ const InstantBorrowContent = () => {
         className={styles.collateralInput}
         maxValue={formattedCollateralTokenBalance}
         decimals={collateralToken.meta.decimals}
+        disabledInput={!wallet.connected}
       />
 
       <Separator />
@@ -90,8 +107,12 @@ const InstantBorrowContent = () => {
       {/* <LoanValueSlider label="Loan value" value={sliderValue} onChange={setSliderValue} /> */}
 
       <Summary apr={MOCK_APR_RATE} upfrontFee={0.001} weeklyInterest={0.01} />
-      <Button onClick={executeBorrow} disabled={!wallet.connected} className={styles.borrowButton}>
-        {!wallet.connected ? 'Connect wallet to borrow' : 'Borrow'}
+      <Button
+        onClick={executeBorrow}
+        disabled={!wallet.connected || !!errorMessage}
+        className={styles.borrowButton}
+      >
+        {!wallet.connected ? 'Connect wallet' : errorMessage || 'Borrow'}
       </Button>
     </div>
   )

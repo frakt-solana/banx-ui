@@ -111,9 +111,19 @@ type FetchBorrowSplTokenOffers = (props: {
   amount: string //? hex number string
 }) => Promise<BorrowSplTokenOffers[]>
 export const fetchBorrowSplTokenOffers: FetchBorrowSplTokenOffers = async (props) => {
-  const { data } = await axios.post<BorrowSplTokenOffers[]>(`http://localhost:8080/borrow-token`, {
-    props,
+  const { market, outputToken, type, amount } = props
+
+  const queryParams = new URLSearchParams({
+    isPrivate: String(IS_PRIVATE_MARKETS),
+    type: String(type),
+    amount: String(amount),
+    market: String(market),
+    outputToken: String(outputToken),
   })
 
-  return data ?? []
+  const { data } = await axios.post<{ data: BorrowSplTokenOffers[] }>(
+    `${BACKEND_BASE_URL}/lending/spl/borrow-token?${queryParams}`,
+  )
+
+  return data.data ?? []
 }

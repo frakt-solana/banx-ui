@@ -1,12 +1,12 @@
 import { useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { useQuery } from '@tanstack/react-query'
 import { BN } from 'fbonds-core'
 import { groupBy, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
-import { BorrowSplTokenOffers, core } from '@banx/api/tokens'
+import { BorrowSplTokenOffers } from '@banx/api/tokens'
+import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
 import { useIsLedger } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
 import {
@@ -23,8 +23,7 @@ import {
   enqueueWaitingConfirmation,
 } from '@banx/utils'
 
-import { useTokenMarketOffers } from '../../LendTokenPage'
-import { BorrowCollateral, MOCK_APR_RATE } from '../constants'
+import { BorrowCollateral, MOCK_APR_RATE } from '../../constants'
 
 export const useBorrowSplTokenTransaction = (
   collateral: BorrowCollateral,
@@ -109,23 +108,4 @@ export const useBorrowSplTokenTransaction = (
   }
 
   return { executeBorrow }
-}
-
-export const useBorrowSplTokenOffers = (props: {
-  market: string
-  outputToken: string
-  type: 'input' | 'output'
-  amount: string //? hex number string
-}) => {
-  const { data, isLoading } = useQuery(
-    ['borrowSplTokenOffers', props],
-    () => core.fetchBorrowSplTokenOffers(props),
-    {
-      staleTime: 5000,
-      refetchOnWindowFocus: false,
-      enabled: !!parseFloat(props.amount) && !!props.market,
-    },
-  )
-
-  return { data: data ?? [], isLoading }
 }
