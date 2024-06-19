@@ -2,6 +2,7 @@ import { ChangeEvent, FC, useMemo, useRef, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { BN } from 'fbonds-core'
 
 import { Button } from '@banx/components/Buttons'
 import { SolanaFMLink } from '@banx/components/SolanaLinks'
@@ -10,7 +11,7 @@ import { Input, InputProps } from '@banx/components/inputs/Input'
 
 import { useOnClickOutside } from '@banx/hooks'
 import { ChevronDown, CloseModal, Wallet } from '@banx/icons'
-import { shortenAddress } from '@banx/utils'
+import { bnToHuman, limitDecimalPlaces, shortenAddress, stringToBN } from '@banx/utils'
 
 import { BorrowCollateralType } from '../../constants'
 
@@ -26,7 +27,9 @@ interface InputTokenSelectProps {
   tokenList: BorrowCollateralType[]
   onChangeToken: (option: BorrowCollateralType) => void
 
+  disabledInput?: boolean
   maxValue?: string
+  decimals?: number
 }
 
 const InputTokenSelect: FC<InputTokenSelectProps> = ({
@@ -37,7 +40,9 @@ const InputTokenSelect: FC<InputTokenSelectProps> = ({
   selectedToken,
   tokenList,
   onChangeToken,
+  disabledInput,
   maxValue = '0',
+  decimals,
 }) => {
   const { connected } = useWallet()
 
@@ -51,7 +56,9 @@ const InputTokenSelect: FC<InputTokenSelectProps> = ({
     <div className={classNames(styles.inputTokenSelectWrapper, className)}>
       <div className={styles.inputTokenSelectHeader}>
         <div className={styles.inputTokenSelectLabel}>{label}</div>
-        {connected && <ControlsButtons maxValue={maxValue} onChange={onChange} />}
+        {connected && (
+          <ControlsButtons maxValue={maxValue} onChange={onChange} decimals={decimals} />
+        )}
       </div>
       <div className={styles.inputTokenSelect}>
         <NumericStepInput
@@ -59,6 +66,7 @@ const InputTokenSelect: FC<InputTokenSelectProps> = ({
           onChange={onChange}
           placeholder="0"
           className={styles.numericStepInput}
+          disabled={disabledInput}
         />
 
         <SelectTokenButton onClick={handleClick} selectedToken={selectedToken} />
@@ -80,11 +88,18 @@ export default InputTokenSelect
 interface ControlsButtonsProps {
   onChange: (value: string) => void
   maxValue?: string
+  decimals?: number
 }
 
-const ControlsButtons: FC<ControlsButtonsProps> = ({ onChange, maxValue = '0' }) => {
-  const onMaxClick = () => onChange(maxValue)
-  const onHalfClick = () => onChange((parseFloat(maxValue) / 2).toString())
+const ControlsButtons: FC<ControlsButtonsProps> = ({ onChange, maxValue = '0', decimals }) => {
+  const onMaxClick = () => {
+    onChange(limitDecimalPlaces(maxValue))
+  }
+
+  const onHalfClick = () => {
+    const nextValue = bnToHuman(stringToBN(maxValue, decimals).div(new BN(2)))
+    onChange(limitDecimalPlaces(nextValue.toString()))
+  }
 
   return (
     <div className={styles.inputTokenSelectControlButtons}>

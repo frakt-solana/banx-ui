@@ -1,15 +1,17 @@
 import { FC, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import { BN } from 'fbonds-core'
 
+// import BN from 'bn.js'
 import { Button } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { useDebounceValue } from '@banx/hooks'
-import { stringToHex } from '@banx/utils'
+import { useTokenBalance } from '@banx/hooks'
+import { bnToHuman, stringToHex } from '@banx/utils'
 
-import { LoanValueSlider, Separator } from '../components'
+import { Separator } from '../components'
 import InputTokenSelect from '../components/InputTokenSelect'
 import {
   BORROW_MOCK_TOKENS_LIST,
@@ -21,10 +23,12 @@ import { useBorrowSplTokenOffers, useBorrowSplTokenTransaction } from './hooks'
 
 import styles from './InstantBorrowContent.module.less'
 
+//TODO: Add error messages and disabled states 
+
 const InstantBorrowContent = () => {
   const wallet = useWallet()
 
-  const [sliderValue, setSliderValue] = useState(100)
+  // const [sliderValue, setSliderValue] = useState(100)
 
   const [collateralInputValue, setCollateralInputValue] = useState('')
   const [collateralToken, setCollateralToken] =
@@ -33,16 +37,27 @@ const InstantBorrowContent = () => {
   const [borrowInputValue, setBorrowlInputValue] = useState('')
   const [borrowToken, setBorrowToken] = useState<BorrowCollateralType>(BORROW_MOCK_TOKENS_LIST[0])
 
-  const debouncedInputValue = useDebounceValue(collateralInputValue, 1000)
+  const collateralTokenBalance = useTokenBalance(collateralToken.mint)
+  const borrowTokenBalance = useTokenBalance(borrowToken.mint)
 
   const { data: splTokenOffers } = useBorrowSplTokenOffers({
     market: collateralToken.marketPubkey || '',
     outputToken: borrowToken.ticker,
     type: 'input',
-    amount: stringToHex(debouncedInputValue),
+    amount: stringToHex(collateralInputValue, collateralToken.decimals),
   })
 
   const { executeBorrow } = useBorrowSplTokenTransaction(collateralToken, splTokenOffers)
+
+  const formattedCollateralTokenBalance = bnToHuman(
+    new BN(collateralTokenBalance),
+    collateralToken.decimals,
+  ).toString()
+
+  const formattedBorrowTokenBalance = bnToHuman(
+    new BN(borrowTokenBalance),
+    borrowToken.decimals,
+  ).toString()
 
   return (
     <div className={styles.content}>
@@ -54,7 +69,8 @@ const InstantBorrowContent = () => {
         onChangeToken={setCollateralToken}
         tokenList={COLLATERAL_TOKENS_LIST}
         className={styles.collateralInput}
-        maxValue="0"
+        maxValue={formattedCollateralTokenBalance}
+        decimals={collateralToken.decimals}
       />
 
       <Separator />
@@ -67,9 +83,12 @@ const InstantBorrowContent = () => {
         onChangeToken={setBorrowToken}
         tokenList={BORROW_MOCK_TOKENS_LIST}
         className={styles.borrowInput}
+        maxValue={formattedBorrowTokenBalance}
+        decimals={borrowToken.decimals}
+        disabledInput
       />
 
-      <LoanValueSlider label="Loan value" value={sliderValue} onChange={setSliderValue} />
+      {/* <LoanValueSlider label="Loan value" value={sliderValue} onChange={setSliderValue} /> */}
 
       <Summary apr={0.05} upfrontFee={0.001} weeklyInterest={0.01} />
       <Button onClick={executeBorrow} disabled={!wallet.connected} className={styles.borrowButton}>

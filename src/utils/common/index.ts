@@ -1,4 +1,4 @@
-import { BN } from 'fbonds-core'
+import { stringToBN } from '../bn'
 
 // shorten the checksummed version of the input address to have 4 characters at start and end
 export const shortenAddress = (address: string, chars = 4): string => {
@@ -47,6 +47,6 @@ export const limitDecimalPlaces = (inputValue: string, decimalPlaces = 3) => {
   return match ? match[0] : ''
 }
 
-export const stringToHex = (str: string): string => {
-  return new BN(str).toString(16).toUpperCase()
+export const stringToHex = (str: string, decimals?: number): string => {
+  return stringToBN(str, decimals).toString(16).toUpperCase()
 }
