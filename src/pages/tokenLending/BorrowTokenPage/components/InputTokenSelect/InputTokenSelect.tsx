@@ -13,7 +13,7 @@ import { useOnClickOutside } from '@banx/hooks'
 import { ChevronDown, CloseModal, Wallet } from '@banx/icons'
 import { bnToHuman, limitDecimalPlaces, shortenAddress, stringToBN } from '@banx/utils'
 
-import { BorrowCollateralType } from '../../constants'
+import { BorrowCollateral } from '../../constants'
 
 import styles from './InputTokenSelect.module.less'
 
@@ -23,9 +23,9 @@ interface InputTokenSelectProps {
   onChange: (value: string) => void
   className?: string
 
-  selectedToken: BorrowCollateralType
-  tokenList: BorrowCollateralType[]
-  onChangeToken: (option: BorrowCollateralType) => void
+  selectedToken: BorrowCollateral
+  tokenList: BorrowCollateral[]
+  onChangeToken: (option: BorrowCollateral) => void
 
   disabledInput?: boolean
   maxValue?: string
@@ -118,12 +118,12 @@ const ControlsButtons: FC<ControlsButtonsProps> = ({ onChange, maxValue = '0', d
 }
 
 interface SelectTokenButtonProps {
-  selectedToken: BorrowCollateralType
+  selectedToken: BorrowCollateral
   onClick: () => void
 }
 
 const SelectTokenButton: FC<SelectTokenButtonProps> = ({ selectedToken, onClick }) => {
-  const { ticker, imageUrl } = selectedToken
+  const { ticker, imageUrl } = selectedToken.meta
 
   return (
     <div onClick={onClick} className={styles.selectTokenButton}>
@@ -135,8 +135,8 @@ const SelectTokenButton: FC<SelectTokenButtonProps> = ({ selectedToken, onClick 
 }
 
 interface SearchSelectProps {
-  options: BorrowCollateralType[]
-  onChangeToken: (token: BorrowCollateralType) => void
+  options: BorrowCollateral[]
+  onChangeToken: (token: BorrowCollateral) => void
   onClose: () => void
 }
 
@@ -147,14 +147,14 @@ const SearchSelect: FC<SearchSelectProps> = ({ options, onChangeToken, onClose }
     setSearchInput(event.target.value)
   }
 
-  const handleChangeToken = (token: BorrowCollateralType) => {
+  const handleChangeToken = (token: BorrowCollateral) => {
     onChangeToken(token)
     onClose()
   }
 
   const filteredOptions = useMemo(() => {
     return options.filter((option) =>
-      option.ticker.toLowerCase().includes(searchInput.toLowerCase()),
+      option.meta.ticker.toLowerCase().includes(searchInput.toLowerCase()),
     )
   }, [options, searchInput])
 
@@ -178,17 +178,19 @@ const SearchSelect: FC<SearchSelectProps> = ({ options, onChangeToken, onClose }
         <div className={styles.selectTokenDropdownList}>
           {filteredOptions.map((option, index) => (
             <div
-              key={option.mint}
+              key={option.meta.mint}
               onClick={() => handleChangeToken(option)}
               className={classNames(styles.dropdownItem, { [styles.highlight]: index % 2 === 0 })}
             >
               <div className={styles.dropdownItemMainInfo}>
-                <img className={styles.dropdownItemIcon} src={option.imageUrl} />
+                <img className={styles.dropdownItemIcon} src={option.meta.imageUrl} />
                 <div className={styles.dropdownItemInfo}>
-                  <span className={styles.dropdownItemTicker}>{option.ticker}</span>
-                  <span className={styles.dropdownItemAddress}>{shortenAddress(option.mint)}</span>
+                  <span className={styles.dropdownItemTicker}>{option.meta.ticker}</span>
+                  <span className={styles.dropdownItemAddress}>
+                    {shortenAddress(option.meta.mint)}
+                  </span>
                 </div>
-                <SolanaFMLink path={`address/${option.mint}`} size="small" />
+                <SolanaFMLink path={`address/${option.meta.mint}`} size="small" />
               </div>
               <span className={styles.dropdownItemAdditionalInfo}>{option.available}</span>
             </div>

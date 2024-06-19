@@ -7,13 +7,13 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 import { Offer } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
-import { BorrowCollateralType } from '@banx/pages/tokenLending/BorrowTokenPage/constants'
+import { BorrowCollateral } from '@banx/pages/tokenLending/BorrowTokenPage/constants'
 import { sendTxnPlaceHolder } from '@banx/transactions'
 
 export type BorrowTxnOptimisticResult = { loan: core.TokenLoan; offer: Offer }
 
 export type CreateBorrowTokenTxnDataParams = {
-  collateral: BorrowCollateralType
+  collateral: BorrowCollateral
   loanValue: number
   offer: Offer
   optimizeIntoReserves: boolean
@@ -32,13 +32,13 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async ({
   tokenType,
   walletAndConnection,
 }) => {
-  const { instructions, signers } = await borrowPerpetualSpl({
+  const { instructions, signers, optimisticResults } = await borrowPerpetualSpl({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       userPubkey: walletAndConnection.wallet.publicKey,
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
       bondOffer: new web3.PublicKey(offer.publicKey),
-      tokenMint: new web3.PublicKey(collateral.mint),
+      tokenMint: new web3.PublicKey(collateral.meta.mint),
       hadoMarket: new web3.PublicKey(offer.hadoMarket),
       fraktMarket: new web3.PublicKey(offer.hadoMarket),
     },
@@ -50,17 +50,26 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async ({
     },
     optimistics: {
       bondOffer: offer,
-      lendingTokenDecimals: collateral.decimals,
+      lendingTokenDecimals: collateral.meta.decimals,
     },
     connection: walletAndConnection.connection,
     sendTxn: sendTxnPlaceHolder,
   })
 
-  //TODO (TokenLending): Add optimistic result
+  const loanAndOffer = {
+    loan: {
+      publicKey: optimisticResults.fraktBond.publicKey,
+      fraktBond: optimisticResults.fraktBond,
+      bondTradeTransaction: optimisticResults.bondTradeTransaction,
+      collateral: { ...collateral.meta },
+    },
+    offer: optimisticResults.bondOffer,
+  }
 
   return {
     instructions,
     signers,
+    result: loanAndOffer,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }

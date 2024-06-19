@@ -24,10 +24,10 @@ import {
 } from '@banx/utils'
 
 import { useTokenMarketOffers } from '../../LendTokenPage'
-import { BorrowCollateralType } from '../constants'
+import { BorrowCollateral } from '../constants'
 
 export const useBorrowSplTokenTransaction = (
-  collateral: BorrowCollateralType,
+  collateral: BorrowCollateral,
   splTokenOffers: BorrowSplTokenOffers[],
 ) => {
   const wallet = useWallet()
