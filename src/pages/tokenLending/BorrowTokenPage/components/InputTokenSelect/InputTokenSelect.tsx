@@ -123,11 +123,11 @@ interface SelectTokenButtonProps {
 }
 
 const SelectTokenButton: FC<SelectTokenButtonProps> = ({ selectedToken, onClick }) => {
-  const { ticker, imageUrl } = selectedToken.meta
+  const { ticker, logoUrl } = selectedToken.meta
 
   return (
     <div onClick={onClick} className={styles.selectTokenButton}>
-      <img src={imageUrl} className={styles.selectTokenButtonIcon} />
+      <img src={logoUrl} className={styles.selectTokenButtonIcon} />
       {ticker}
       <ChevronDown className={styles.selectTokenButtonChevronIcon} />
     </div>
@@ -183,7 +183,7 @@ const SearchSelect: FC<SearchSelectProps> = ({ options, onChangeToken, onClose }
               className={classNames(styles.dropdownItem, { [styles.highlight]: index % 2 === 0 })}
             >
               <div className={styles.dropdownItemMainInfo}>
-                <img className={styles.dropdownItemIcon} src={option.meta.imageUrl} />
+                <img className={styles.dropdownItemIcon} src={option.meta.logoUrl} />
                 <div className={styles.dropdownItemInfo}>
                   <span className={styles.dropdownItemTicker}>{option.meta.ticker}</span>
                   <span className={styles.dropdownItemAddress}>

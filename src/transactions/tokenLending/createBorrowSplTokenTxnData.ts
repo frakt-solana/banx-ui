@@ -62,6 +62,7 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async ({
       fraktBond: optimisticResults.fraktBond,
       bondTradeTransaction: optimisticResults.bondTradeTransaction,
       collateral: { ...collateral.meta },
+      collateralPrice: collateral.collateralPrice,
     },
     offer: optimisticResults.bondOffer,
   }
