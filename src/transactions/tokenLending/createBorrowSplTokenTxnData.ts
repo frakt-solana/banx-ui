@@ -18,6 +18,7 @@ export type CreateBorrowTokenTxnDataParams = {
   offer: Offer
   optimizeIntoReserves: boolean
   tokenType: LendingTokenType
+  aprRate: number
 }
 
 export type CreateBorrowTokenTxnData = (
@@ -31,6 +32,7 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async ({
   optimizeIntoReserves,
   tokenType,
   walletAndConnection,
+  aprRate,
 }) => {
   const { instructions, signers, optimisticResults } = await borrowPerpetualSpl({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
@@ -45,7 +47,7 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async ({
     args: {
       amountToget: Math.floor(loanValue),
       optimizeIntoReserves: optimizeIntoReserves,
-      aprRate: 34 * 1e2,
+      aprRate,
       lendingTokenType: tokenType,
     },
     optimistics: {

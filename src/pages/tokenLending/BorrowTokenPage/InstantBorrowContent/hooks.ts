@@ -24,7 +24,7 @@ import {
 } from '@banx/utils'
 
 import { useTokenMarketOffers } from '../../LendTokenPage'
-import { BorrowCollateral } from '../constants'
+import { BorrowCollateral, MOCK_APR_RATE } from '../constants'
 
 export const useBorrowSplTokenTransaction = (
   collateral: BorrowCollateral,
@@ -64,6 +64,7 @@ export const useBorrowSplTokenTransaction = (
             collateral,
             offer,
             optimizeIntoReserves: true,
+            aprRate: MOCK_APR_RATE, //TODO (TokenLending): Need to calc in the future
             tokenType,
             walletAndConnection,
           }),

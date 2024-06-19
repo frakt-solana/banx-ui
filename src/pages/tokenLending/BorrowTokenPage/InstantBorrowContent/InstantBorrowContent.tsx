@@ -17,6 +17,7 @@ import {
   BorrowCollateral,
   COLLATERAL_TOKENS_LIST,
   DEFAULT_COLLATERAL_TOKEN,
+  MOCK_APR_RATE,
 } from '../constants'
 import { useBorrowSplTokenOffers, useBorrowSplTokenTransaction } from './hooks'
 
@@ -88,7 +89,7 @@ const InstantBorrowContent = () => {
 
       {/* <LoanValueSlider label="Loan value" value={sliderValue} onChange={setSliderValue} /> */}
 
-      <Summary apr={0.05} upfrontFee={0.001} weeklyInterest={0.01} />
+      <Summary apr={MOCK_APR_RATE} upfrontFee={0.001} weeklyInterest={0.01} />
       <Button onClick={executeBorrow} disabled={!wallet.connected} className={styles.borrowButton}>
         {!wallet.connected ? 'Connect wallet to borrow' : 'Borrow'}
       </Button>
@@ -127,7 +128,7 @@ export const Summary: FC<SummaryProps> = ({ apr, upfrontFee, weeklyInterest }) =
       />
       <StatInfo
         label="APR"
-        value={apr}
+        value={apr / 100}
         valueType={VALUES_TYPES.PERCENT}
         classNamesProps={statClassNames}
         flexType="row"

@@ -9,6 +9,8 @@ export interface BorrowCollateral {
   available?: number
 }
 
+export const MOCK_APR_RATE = 34 * 100
+
 export const COLLATERAL_TOKENS_LIST: BorrowCollateral[] = [
   {
     meta: {
