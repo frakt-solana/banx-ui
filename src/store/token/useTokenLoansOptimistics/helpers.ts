@@ -1,5 +1,5 @@
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
-import { filter, groupBy, maxBy, uniqBy } from 'lodash'
+import { filter, uniqBy } from 'lodash'
 import moment from 'moment'
 
 import { core } from '@banx/api/tokens'
@@ -17,8 +17,7 @@ export const isOptimisticLoanExpired = (loan: TokenLoanOptimistic, walletPublicK
 
 export const addLoans = (loansState: TokenLoanOptimistic[], loansToAdd: TokenLoanOptimistic[]) => {
   const sameLoansRemoved = uniqBy([...loansState, ...loansToAdd], ({ loan }) => loan.publicKey)
-
-  return purgeLoansWithSameMintByFreshness(sameLoansRemoved, ({ loan }) => loan)
+  return sameLoansRemoved
 }
 
 export const removeLoans = (loansState: TokenLoanOptimistic[], loansPubkeysToRemove: string[]) =>
@@ -44,20 +43,6 @@ export const updateLoans = (
 
 export const isLoanNewer = (loanA: core.TokenLoan, loanB: core.TokenLoan) =>
   loanA.fraktBond.lastTransactedAt >= loanB.fraktBond.lastTransactedAt
-
-//? Remove loans with same mint by priority of lastTransactedAt
-export const purgeLoansWithSameMintByFreshness = <L>(
-  loans: L[],
-  getLoan: (loan: L) => core.TokenLoan,
-) => {
-  const loansByMint = groupBy(loans, (loan) => getLoan(loan).collateral.mint)
-
-  return Object.values(loansByMint)
-    .map((loansWithSameMint) =>
-      maxBy(loansWithSameMint, (loan) => getLoan(loan).fraktBond.lastTransactedAt),
-    )
-    .flat() as L[]
-}
 
 export const convertLoanToOptimistic = (loan: core.TokenLoan, walletPublicKey: string) => {
   return {

@@ -14,7 +14,6 @@ import {
   isOfferNewer,
   isOptimisticLoanExpired,
   isOptimisticOfferExpired,
-  purgeLoansWithSameMintByFreshness,
   useTokenLoansOptimistic,
   useTokenOffersOptimistic,
 } from '@banx/store/token'
@@ -84,12 +83,7 @@ export const useWalletTokenLoansAndOffers = () => {
       ({ publicKey }) => !optimisticLoansPubkeys.includes(publicKey),
     )
 
-    const purgedSameMint = purgeLoansWithSameMintByFreshness(
-      [...dataFiltered, ...map(walletOptimisticLoans, ({ loan }) => loan)],
-      (loan) => loan,
-    )
-
-    const loans = purgedSameMint.filter((loan) => !isTokenLoanRepaid(loan))
+    const loans = dataFiltered.filter((loan) => !isTokenLoanRepaid(loan))
 
     return loans
   }, [data, walletOptimisticLoans])
