@@ -19,7 +19,7 @@ import {
   DEFAULT_COLLATERAL_TOKEN,
   MOCK_APR_RATE,
 } from '../constants'
-import { getErrorMessage } from './helpers'
+import { calculateTotalAmountToGet, getErrorMessage } from './helpers'
 import { useBorrowSplTokenTransaction } from './hooks'
 import { useBorrowSplTokenOffers } from './hooks/useBorrowSplTokenOffers'
 
@@ -28,35 +28,61 @@ import styles from './InstantBorrowContent.module.less'
 const InstantBorrowContent = () => {
   const wallet = useWallet()
 
-  // const [sliderValue, setSliderValue] = useState(100)
-
   const [collateralInputValue, setCollateralInputValue] = useState('')
   const [collateralToken, setCollateralToken] = useState<BorrowCollateral>(DEFAULT_COLLATERAL_TOKEN)
 
-  const [borrowInputValue, setBorrowlInputValue] = useState('')
+  const [borrowInputValue, setBorrowInputValue] = useState('')
   const [borrowToken, setBorrowToken] = useState<BorrowCollateral>(BORROW_MOCK_TOKENS_LIST[0])
 
   const collateralTokenBalance = useTokenBalance(collateralToken.meta.mint)
   const borrowTokenBalance = useTokenBalance(borrowToken.meta.mint)
 
-  const { data: splTokenOffers } = useBorrowSplTokenOffers({
-    market: collateralToken.marketPubkey || '',
-    outputToken: borrowToken.meta.ticker,
-    type: 'input',
-    amount: stringToHex(collateralInputValue, collateralToken.meta.decimals),
+  const {
+    data: splTokenOffers,
+    setMarketPubkey,
+    setOutputTokenTicker,
+    setType,
+    setAmount,
+    type,
+  } = useBorrowSplTokenOffers({
+    marketPubkey: DEFAULT_COLLATERAL_TOKEN.marketPubkey,
+    outputTokenTicker: BORROW_MOCK_TOKENS_LIST[0].meta.ticker,
   })
 
-  const { executeBorrow } = useBorrowSplTokenTransaction(collateralToken, splTokenOffers)
+  const handleSelectCollateralToken = (token: BorrowCollateral) => {
+    setCollateralToken(token)
+    setMarketPubkey(token.marketPubkey || '')
+  }
+
+  const handleCollateralInputChange = (value: string) => {
+    setType('input')
+    setCollateralInputValue(value)
+    setOutputTokenTicker(borrowToken.meta.ticker)
+    setAmount(stringToHex(value, collateralToken.meta.decimals))
+  }
+
+  const handleBorrowInputChange = (value: string) => {
+    setType('output')
+    setBorrowInputValue(value)
+    setOutputTokenTicker(collateralToken.meta.ticker)
+    setAmount(stringToHex(value, borrowToken.meta.decimals))
+  }
+
+  const handleSelectBorrowToken = (token: BorrowCollateral) => {
+    setBorrowToken(token)
+    setOutputTokenTicker(token.meta.ticker)
+  }
 
   useEffect(() => {
-    if (!splTokenOffers.length) return
+    const totalAmountToGet = calculateTotalAmountToGet(splTokenOffers)
+    const totalAmountToGetString = totalAmountToGet.toString()
 
-    const totalBorrowAmount = splTokenOffers.reduce((acc, offer) => {
-      return acc.add(new BN(offer.amountToGet, 'hex'))
-    }, new BN(0))
-
-    setBorrowlInputValue(totalBorrowAmount.toString())
-  }, [splTokenOffers])
+    if (type === 'input' && totalAmountToGetString !== borrowInputValue) {
+      setBorrowInputValue(totalAmountToGetString)
+    } else if (type === 'output' && totalAmountToGetString !== collateralInputValue) {
+      setCollateralInputValue(totalAmountToGetString)
+    }
+  }, [splTokenOffers, borrowInputValue, type, collateralInputValue])
 
   const formattedCollateralTokenBalance = bnToHuman(
     new BN(collateralTokenBalance),
@@ -74,14 +100,16 @@ const InstantBorrowContent = () => {
     maxTokenValue: formattedCollateralTokenBalance,
   })
 
+  const { executeBorrow } = useBorrowSplTokenTransaction(collateralToken, splTokenOffers)
+
   return (
     <div className={styles.content}>
       <InputTokenSelect
         label="Collateralize"
         value={collateralInputValue}
-        onChange={setCollateralInputValue}
+        onChange={handleCollateralInputChange}
         selectedToken={collateralToken}
-        onChangeToken={setCollateralToken}
+        onChangeToken={handleSelectCollateralToken}
         tokenList={COLLATERAL_TOKENS_LIST}
         className={styles.collateralInput}
         maxValue={formattedCollateralTokenBalance}
@@ -94,17 +122,15 @@ const InstantBorrowContent = () => {
       <InputTokenSelect
         label="To borrow"
         value={borrowInputValue}
-        onChange={setBorrowlInputValue}
+        onChange={handleBorrowInputChange}
         selectedToken={borrowToken}
-        onChangeToken={setBorrowToken}
+        onChangeToken={handleSelectBorrowToken}
         tokenList={BORROW_MOCK_TOKENS_LIST}
         className={styles.borrowInput}
         maxValue={formattedBorrowTokenBalance}
         decimals={borrowToken.meta.decimals}
-        disabledInput
+        disabledInput={!wallet.connected}
       />
-
-      {/* <LoanValueSlider label="Loan value" value={sliderValue} onChange={setSliderValue} /> */}
 
       <Summary apr={MOCK_APR_RATE} upfrontFee={0.001} weeklyInterest={0.01} />
       <Button

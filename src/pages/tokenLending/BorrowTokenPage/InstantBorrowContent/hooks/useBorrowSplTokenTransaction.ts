@@ -2,9 +2,10 @@ import { useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BN } from 'fbonds-core'
-import { groupBy, uniqueId } from 'lodash'
+import { find, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
+import { Offer } from '@banx/api/nft'
 import { BorrowSplTokenOffers } from '@banx/api/tokens'
 import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
 import { useIsLedger } from '@banx/store/common'
@@ -25,6 +26,12 @@ import {
 
 import { BorrowCollateral, MOCK_APR_RATE } from '../../constants'
 
+type TransactionData = {
+  loanValue: string
+  collateral: BorrowCollateral
+  offer: Offer
+}
+
 export const useBorrowSplTokenTransaction = (
   collateral: BorrowCollateral,
   splTokenOffers: BorrowSplTokenOffers[],
@@ -37,21 +44,27 @@ export const useBorrowSplTokenTransaction = (
   const { offers } = useTokenMarketOffers(collateral.marketPubkey || '')
 
   const transactionsData = useMemo(() => {
-    const grouppedOffers = groupBy(offers, (offer) => offer.publicKey)
+    if (!offers.length) return []
 
-    return splTokenOffers.map((offer) => {
-      const [offerData] = grouppedOffers[offer.offerPublicKey]
+    return splTokenOffers.reduce<TransactionData[]>((acc, offer) => {
+      const offerData = find(offers, ({ publicKey }) => publicKey === offer.offerPublicKey)
 
-      return {
-        loanValue: offer.amountToGet,
-        collateral: collateral,
-        offer: offerData,
+      if (offerData) {
+        acc.push({
+          loanValue: offer.amountToGet,
+          collateral: collateral,
+          offer: offerData,
+        })
       }
-    })
+
+      return acc
+    }, [])
   }, [collateral, offers, splTokenOffers])
 
   const executeBorrow = async () => {
     const loadingSnackbarId = uniqueId()
+
+    if (!transactionsData.length) return
 
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })

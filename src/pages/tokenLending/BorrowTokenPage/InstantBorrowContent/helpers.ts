@@ -1,3 +1,6 @@
+import { BN } from 'fbonds-core'
+
+import { BorrowSplTokenOffers } from '@banx/api/tokens'
 import { ZERO_BN, stringToBN } from '@banx/utils'
 
 import { BorrowCollateral } from '../constants'
@@ -18,6 +21,10 @@ export const getErrorMessage = ({
   const isInvalidAmount = stringToBN(collaretalInputValue).lte(ZERO_BN)
   const isInsufficientBalance = stringToBN(collaretalInputValue).gt(stringToBN(maxTokenValue))
 
+  if (stringToBN(maxTokenValue).eq(ZERO_BN)) {
+    return `You don't have ${ticker} to borrow`
+  }
+
   if (isInvalidAmount) {
     return 'Enter an amount'
   }
@@ -27,4 +34,10 @@ export const getErrorMessage = ({
   }
 
   return ''
+}
+
+export const calculateTotalAmountToGet = (offers: BorrowSplTokenOffers[]) => {
+  return offers.reduce((acc, offer) => {
+    return acc.add(new BN(offer.amountToGet, 'hex'))
+  }, new BN(0))
 }
