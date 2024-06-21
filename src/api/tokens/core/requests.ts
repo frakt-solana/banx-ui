@@ -121,7 +121,7 @@ export const fetchBorrowSplTokenOffers: FetchBorrowSplTokenOffers = async (props
     outputToken: String(outputToken),
   })
 
-  const { data } = await axios.post<{ data: BorrowSplTokenOffers[] }>(
+  const { data } = await axios.get<{ data: BorrowSplTokenOffers[] }>(
     `${BACKEND_BASE_URL}/lending/spl/borrow-token?${queryParams?.toString()}`,
   )
 

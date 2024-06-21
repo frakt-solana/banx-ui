@@ -74,15 +74,27 @@ const InstantBorrowContent = () => {
   }
 
   useEffect(() => {
-    const totalAmountToGet = calculateTotalAmountToGet(splTokenOffers)
-    const totalAmountToGetString = totalAmountToGet.toString()
+    if (type === 'input') {
+      const totalAmountToGet = calculateTotalAmountToGet(splTokenOffers).div(
+        new BN(10 ** borrowToken.meta.decimals),
+      )
 
-    if (type === 'input' && totalAmountToGetString !== borrowInputValue) {
-      setBorrowInputValue(totalAmountToGetString)
-    } else if (type === 'output' && totalAmountToGetString !== collateralInputValue) {
-      setCollateralInputValue(totalAmountToGetString)
+      const totalAmountToGetString = totalAmountToGet.toString()
+
+      if (totalAmountToGetString !== borrowInputValue) {
+        setBorrowInputValue(totalAmountToGetString)
+      }
+    } else if (type === 'output') {
+      const totalAmountToGet = calculateTotalAmountToGet(splTokenOffers).div(
+        new BN(10 ** collateralToken.meta.decimals),
+      )
+      const totalAmountToGetString = totalAmountToGet.toString()
+
+      if (totalAmountToGetString !== collateralInputValue) {
+        setCollateralInputValue(totalAmountToGetString)
+      }
     }
-  }, [splTokenOffers, borrowInputValue, type, collateralInputValue])
+  }, [splTokenOffers, borrowInputValue, type, collateralInputValue, collateralToken, borrowToken])
 
   const formattedCollateralTokenBalance = bnToHuman(
     new BN(collateralTokenBalance),
