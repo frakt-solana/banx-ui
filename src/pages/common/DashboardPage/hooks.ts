@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { stats } from '@banx/api/nft'
 import { useTokenType } from '@banx/store/nft'
-import { isSolTokenType } from '@banx/utils'
+import { isBanxSolTokenType, isSolTokenType } from '@banx/utils'
 
 const QUERY_OPTIONS = {
   staleTime: 60 * 1000, // 60 seconds
@@ -14,7 +14,8 @@ const QUERY_OPTIONS = {
 export const useAllTotalStats = () => {
   const { tokenType } = useTokenType()
 
-  const marketType = isSolTokenType(tokenType) ? 'allInSol' : 'allInUsdc'
+  const marketType =
+    isSolTokenType(tokenType) || isBanxSolTokenType(tokenType) ? 'allInSol' : 'allInUsdc'
 
   const { data, isLoading } = useQuery(
     ['allTotalStats', tokenType],
