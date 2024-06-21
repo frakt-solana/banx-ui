@@ -1,9 +1,9 @@
 import { BN, web3 } from 'fbonds-core'
 import { LOOKUP_TABLE, SANCTUM_PROGRAMM_ID } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
-  SwapMode,
   closeTokenAccountBanxSol,
-  swapSolToBanxSol,
+  swapToBanxSol,
+  swapToSol,
 } from 'fbonds-core/lib/fbond-protocol/functions/banxSol'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
@@ -13,16 +13,9 @@ import { removeDuplicatedPublicKeys } from '@banx/utils'
 import { sendTxnPlaceHolder } from '../helpers'
 
 const BANXSOL_ADJUSTMENTS = {
-  SELL_RATIO: new BN(999500),
-  BUY_RATIO: new BN(998600),
+  BUY_RATIO: new BN(999000),
   PRECISION: new BN(1e6),
-  THRESHOLD_INCREMENT: new BN(4500), //? The value to be added if the input value is below the threshold
 }
-
-const SOL_THRESHOLD = new BN(1000000)
-
-const BANXSOL_LST_IDX = 29
-const WSOL_LST_IDX = 1
 
 type GetSwapInstuctions = (params: {
   inputAmount: BN
@@ -33,7 +26,7 @@ const getSwapSolToBanxSolInstructions: GetSwapInstuctions = async ({
   inputAmount,
   walletAndConnection,
 }) => {
-  const { instructions } = await swapSolToBanxSol({
+  const { instructions } = await swapToBanxSol({
     programId: SANCTUM_PROGRAMM_ID,
     connection: walletAndConnection.connection,
     accounts: {
@@ -45,9 +38,6 @@ const getSwapSolToBanxSolInstructions: GetSwapInstuctions = async ({
         .div(BANXSOL_ADJUSTMENTS.BUY_RATIO)
         //? add(1) --> Math.ceil analogue
         .add(new BN(1)),
-      banxSolLstIndex: BANXSOL_LST_IDX,
-      wSolLstIndex: WSOL_LST_IDX,
-      swapMode: SwapMode.SolToBanxSol,
     },
     sendTxn: sendTxnPlaceHolder,
   })
@@ -55,29 +45,18 @@ const getSwapSolToBanxSolInstructions: GetSwapInstuctions = async ({
   return { instructions, lookupTable: new web3.PublicKey(LOOKUP_TABLE) }
 }
 
-const isValueBelowThreshold = (inputAmount: BN, treshold: BN) => {
-  return inputAmount.lt(treshold)
-}
-
 const getSwapBanxSolToSolInstructions: GetSwapInstuctions = async ({
   inputAmount,
   walletAndConnection,
 }) => {
-  const SELL_RATION = isValueBelowThreshold(inputAmount, SOL_THRESHOLD)
-    ? BANXSOL_ADJUSTMENTS.SELL_RATIO.sub(new BN(BANXSOL_ADJUSTMENTS.THRESHOLD_INCREMENT))
-    : BANXSOL_ADJUSTMENTS.SELL_RATIO
-
-  const { instructions } = await swapSolToBanxSol({
+  const { instructions } = await swapToSol({
     programId: SANCTUM_PROGRAMM_ID,
     connection: walletAndConnection.connection,
     accounts: {
       userPubkey: walletAndConnection.wallet.publicKey,
     },
     args: {
-      amount: inputAmount.mul(SELL_RATION).div(BANXSOL_ADJUSTMENTS.PRECISION),
-      banxSolLstIndex: BANXSOL_LST_IDX,
-      wSolLstIndex: WSOL_LST_IDX,
-      swapMode: SwapMode.BanxSolToSol,
+      amount: inputAmount,
     },
     sendTxn: sendTxnPlaceHolder,
   })
