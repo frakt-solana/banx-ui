@@ -1,10 +1,8 @@
-import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { chain, first } from 'lodash'
-import moment from 'moment'
 
 import { core } from '@banx/api/nft'
 import {
-  calcLoanBorrowedAmount,
+  calculateBorrowedAmount,
   calculateLoanRepayValue,
   calculateLoanValue,
   isLoanLiquidated,
@@ -48,23 +46,7 @@ export const findBestOffer: FindBestOffer = ({ loan, offers, walletPubkey }) => 
 export const calculateLentValue = (loan: core.Loan) => {
   const totalRepaidAmount = loan.totalRepaidAmount || 0
 
-  const loanBorrowedAmount = calcLoanBorrowedAmount(loan)
+  const loanBorrowedAmount = calculateBorrowedAmount(loan).toNumber()
 
   return loanBorrowedAmount + totalRepaidAmount
-}
-
-export const calculateClaimValue = (loan: core.Loan) => {
-  const { amountOfBonds, soldAt } = loan.bondTradeTransaction
-
-  const loanBorrowedAmount = calcLoanBorrowedAmount(loan)
-
-  const interestParameters = {
-    loanValue: loanBorrowedAmount,
-    startTime: soldAt,
-    currentTime: moment().unix(),
-    rateBasePoints: amountOfBonds,
-  }
-
-  const currentInterest = calculateCurrentInterestSolPure(interestParameters)
-  return currentInterest + loanBorrowedAmount
 }

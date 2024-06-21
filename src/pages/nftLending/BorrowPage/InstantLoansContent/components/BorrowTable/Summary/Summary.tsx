@@ -1,6 +1,7 @@
 import { FC, useMemo, useState } from 'react'
 
 import classNames from 'classnames'
+import { BN } from 'fbonds-core'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { map, sumBy } from 'lodash'
 
@@ -14,10 +15,10 @@ import bonkTokenImg from '@banx/assets/BonkToken.png'
 import { BONDS, ONE_WEEK_IN_SECONDS } from '@banx/constants'
 import { useTokenType } from '@banx/store/nft'
 import {
-  calcBorrowValueWithProtocolFee,
-  calcBorrowValueWithRentFee,
+  adjustBorrowValueWithSolanaRentFee,
   calcWeightedAverage,
   calculateApr,
+  calculateBorrowValueWithProtocolFee,
   getColorByPercent,
 } from '@banx/utils'
 
@@ -37,8 +38,13 @@ interface SummaryProps {
 }
 
 const calcLoanValueWithFees = (nft: TableNftData, tokenType: LendingTokenType) => {
-  const loanValueWithProtocolFee = calcBorrowValueWithProtocolFee(nft.loanValue)
-  return calcBorrowValueWithRentFee(loanValueWithProtocolFee, nft.nft.loan.marketPubkey, tokenType)
+  const loanValueWithProtocolFee = calculateBorrowValueWithProtocolFee(nft.loanValue)
+
+  return adjustBorrowValueWithSolanaRentFee({
+    value: new BN(loanValueWithProtocolFee),
+    marketPubkey: nft.nft.loan.marketPubkey,
+    tokenType,
+  }).toNumber()
 }
 
 const caclAprValue = (nft: core.BorrowNft, loanValue: number) => {
@@ -63,7 +69,7 @@ export const Summary: FC<SummaryProps> = ({
   const totalBorrow = sumBy(nftsInCart, (nft) => calcLoanValueWithFees(nft, tokenType))
 
   const totalUpfrontFee = sumBy(nftsInCart, ({ loanValue }) => {
-    return loanValue - calcBorrowValueWithProtocolFee(loanValue)
+    return loanValue - calculateBorrowValueWithProtocolFee(loanValue)
   })
 
   const totalWeeklyFee = sumBy(nftsInCart, ({ nft, loanValue }) => {
