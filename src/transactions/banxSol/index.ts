@@ -99,19 +99,19 @@ export const combineWithBuyBanxSolInstructions = async <TxnResult>({
       walletAndConnection,
     })
 
-  const { instructions: closeInstructions, lookupTable: closeLookupTable } =
-    await getCloseBanxSolATAsInstructions({
-      walletAndConnection,
-    })
+  // const { instructions: closeInstructions, lookupTable: closeLookupTable } =
+  //   await getCloseBanxSolATAsInstructions({
+  //     walletAndConnection,
+  //   })
 
   return {
-    instructions: [...swapInstructions, ...txnData.instructions, ...closeInstructions],
+    instructions: [...swapInstructions, ...txnData.instructions /* ...closeInstructions */],
     signers: txnData.signers,
     result: txnData.result,
     lookupTables: removeDuplicatedPublicKeys([
       swapLookupTable,
       ...(txnData.lookupTables ?? []),
-      closeLookupTable,
+      // closeLookupTable,
     ]),
   }
 }
