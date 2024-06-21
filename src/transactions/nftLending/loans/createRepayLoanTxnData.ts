@@ -13,7 +13,11 @@ import { helius } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BANX_STAKING, BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
-import { calculateLoanRepayValueOnCertainDate, isBanxSolTokenType } from '@banx/utils'
+import {
+  calculateLoanRepayValueOnCertainDate,
+  isBanxSolTokenType,
+  isSolTokenType,
+} from '@banx/utils'
 
 import { fetchRuleset } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
@@ -53,7 +57,10 @@ export const createRepayLoanTxnData: CreateRepayLoanTxnData = async ({
   }
 
   //? Add BanxSol instructions if offer wasn't closed!
-  if (isBanxSolTokenType(loan.bondTradeTransaction.lendingToken)) {
+  if (
+    isBanxSolTokenType(loan.bondTradeTransaction.lendingToken) ||
+    isSolTokenType(loan.bondTradeTransaction.lendingToken)
+  ) {
     const repayValue = calculateLoanRepayValueOnCertainDate({
       loan,
       upfrontFeeIncluded: true,

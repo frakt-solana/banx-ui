@@ -8,7 +8,11 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
-import { calculateLoanRepayValueOnCertainDate, isBanxSolTokenType } from '@banx/utils'
+import {
+  calculateLoanRepayValueOnCertainDate,
+  isBanxSolTokenType,
+  isSolTokenType,
+} from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
@@ -64,7 +68,10 @@ export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = asyn
   }))[0]
 
   //? Add BanxSol instructions if offer wasn't closed!
-  if (isBanxSolTokenType(bondTradeTransaction.lendingToken)) {
+  if (
+    isBanxSolTokenType(bondTradeTransaction.lendingToken) ||
+    isSolTokenType(bondTradeTransaction.lendingToken)
+  ) {
     const repayValue = calculateLoanRepayValueOnCertainDate({
       loan,
       upfrontFeeIncluded: false,
