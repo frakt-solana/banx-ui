@@ -1,3 +1,4 @@
+//? trigger vercel
 import { ErrorBoundary } from '@banx/components/ErrorBoundary'
 
 import { DialectProvider, QueryProvider, SolanaConnectionWalletProvider } from '@banx/providers'
