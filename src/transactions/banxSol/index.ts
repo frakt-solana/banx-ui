@@ -2,8 +2,7 @@ import { BN, web3 } from 'fbonds-core'
 import { LOOKUP_TABLE, SANCTUM_PROGRAMM_ID } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   closeTokenAccountBanxSol,
-  swapToBanxSol,
-  swapToSol,
+  swapToBanxSol, // swapToSol,
 } from 'fbonds-core/lib/fbond-protocol/functions/banxSol'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
@@ -45,24 +44,24 @@ const getSwapSolToBanxSolInstructions: GetSwapInstuctions = async ({
   return { instructions, lookupTable: new web3.PublicKey(LOOKUP_TABLE) }
 }
 
-const getSwapBanxSolToSolInstructions: GetSwapInstuctions = async ({
-  inputAmount,
-  walletAndConnection,
-}) => {
-  const { instructions } = await swapToSol({
-    programId: SANCTUM_PROGRAMM_ID,
-    connection: walletAndConnection.connection,
-    accounts: {
-      userPubkey: walletAndConnection.wallet.publicKey,
-    },
-    args: {
-      amount: inputAmount,
-    },
-    sendTxn: sendTxnPlaceHolder,
-  })
+// const getSwapBanxSolToSolInstructions: GetSwapInstuctions = async ({
+//   inputAmount,
+//   walletAndConnection,
+// }) => {
+//   const { instructions } = await swapToSol({
+//     programId: SANCTUM_PROGRAMM_ID,
+//     connection: walletAndConnection.connection,
+//     accounts: {
+//       userPubkey: walletAndConnection.wallet.publicKey,
+//     },
+//     args: {
+//       amount: inputAmount,
+//     },
+//     sendTxn: sendTxnPlaceHolder,
+//   })
 
-  return { instructions, lookupTable: new web3.PublicKey(LOOKUP_TABLE) }
-}
+//   return { instructions, lookupTable: new web3.PublicKey(LOOKUP_TABLE) }
+// }
 
 type GetCloseBanxSolATAsInstructions = (params: {
   walletAndConnection: WalletAndConnection
@@ -117,30 +116,30 @@ export const combineWithBuyBanxSolInstructions = async <TxnResult>({
   }
 }
 
-export const combineWithSellBanxSolInstructions = async <TxnResult>({
+export const combineWithSellBanxSolInstructions = <TxnResult>({
   inputAmount,
   walletAndConnection,
   ...txnData
-}: CombineWithBanxSolInstructionsParams<TxnResult>): Promise<CreateTxnData<TxnResult>> => {
-  const { instructions: swapInstructions, lookupTable: swapLookupTable } =
-    await getSwapBanxSolToSolInstructions({
-      inputAmount,
-      walletAndConnection,
-    })
+}: CombineWithBanxSolInstructionsParams<TxnResult>): CreateTxnData<TxnResult> => {
+  // const { instructions: swapInstructions, lookupTable: swapLookupTable } =
+  //   await getSwapBanxSolToSolInstructions({
+  //     inputAmount,
+  //     walletAndConnection,
+  //   })
 
-  const { instructions: closeInstructions, lookupTable: closeLookupTable } =
-    await getCloseBanxSolATAsInstructions({
-      walletAndConnection,
-    })
+  // const { instructions: closeInstructions, lookupTable: closeLookupTable } =
+  //   await getCloseBanxSolATAsInstructions({
+  //     walletAndConnection,
+  //   })
 
   return {
-    instructions: [...txnData.instructions, ...swapInstructions, ...closeInstructions],
+    instructions: [...txnData.instructions /* ...swapInstructions, ...closeInstructions */],
     signers: txnData.signers,
     result: txnData.result,
     lookupTables: removeDuplicatedPublicKeys([
       ...(txnData.lookupTables ?? []),
-      swapLookupTable,
-      closeLookupTable,
+      // swapLookupTable,
+      // closeLookupTable,
     ]),
   }
 }
