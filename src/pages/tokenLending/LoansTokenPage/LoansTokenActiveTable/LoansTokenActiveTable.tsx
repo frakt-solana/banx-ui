@@ -105,6 +105,7 @@ const LoansTokenActiveTable: FC<LoansTokenActiveTableProps> = ({
     hasSelectedLoans,
     isCardView: viewState === ViewState.CARD,
     offers,
+    tokenType,
   })
 
   const rowParams = useMemo(() => {

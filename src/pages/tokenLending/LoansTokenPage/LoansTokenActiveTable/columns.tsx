@@ -1,3 +1,5 @@
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+
 import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
 import { CollateralTokenCell, HeaderCell } from '@banx/components/TableComponents'
@@ -17,6 +19,7 @@ interface GetTableColumnsProps {
   hasSelectedLoans: boolean
   isCardView: boolean
   offers: Record<string, Offer[]>
+  tokenType: LendingTokenType
 }
 
 export const getTableColumns = ({
@@ -26,6 +29,7 @@ export const getTableColumns = ({
   hasSelectedLoans,
   isCardView,
   offers,
+  tokenType,
 }: GetTableColumnsProps) => {
   const columns: ColumnType<core.TokenLoan>[] = [
     {
@@ -63,7 +67,7 @@ export const getTableColumns = ({
     {
       key: 'ltv',
       title: <HeaderCell label="LTV" />,
-      render: (loan) => <LTVCell loan={loan} />,
+      render: (loan) => <LTVCell loan={loan} tokenType={tokenType} />,
     },
     {
       key: 'apr',

@@ -1,5 +1,6 @@
 import { FC } from 'react'
 
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { capitalize } from 'lodash'
 import moment from 'moment'
 
@@ -20,6 +21,7 @@ import {
   calcTokenWeeklyFeeWithRepayFee,
   calculateTimeFromNow,
   getColorByPercent,
+  getTokenDecimals,
   isTokenLoanActive,
   isTokenLoanTerminating,
 } from '@banx/utils'
@@ -63,10 +65,19 @@ export const DebtCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
   )
 }
 
-export const LTVCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
+interface LTVCellProps {
+  loan: core.TokenLoan
+  tokenType: LendingTokenType
+}
+
+export const LTVCell: FC<LTVCellProps> = ({ loan, tokenType }) => {
+  const tokenDecimals = getTokenDecimals(tokenType)
+
+  const collateralSupply = loan.fraktBond.fbondTokenSupply / Math.pow(10, loan.collateral.decimals)
   const debtValue = caclulateBorrowTokenLoanValue(loan).toNumber()
-  const ltvPercent =
-    (debtValue / (loan.collateralPrice * Math.pow(10, loan.collateral.decimals))) * 100
+
+  const ltvRatio = debtValue / tokenDecimals / collateralSupply
+  const ltvPercent = (ltvRatio / loan.collateralPrice) * 100
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>
