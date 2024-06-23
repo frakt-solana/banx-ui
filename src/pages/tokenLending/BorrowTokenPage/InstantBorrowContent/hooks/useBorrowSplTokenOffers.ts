@@ -5,14 +5,14 @@ import { BN } from 'bn.js'
 
 import { core } from '@banx/api/tokens'
 import { useDebounceValue } from '@banx/hooks'
-import { ZERO_BN } from '@banx/utils'
+import { ZERO_BN, stringToHex } from '@banx/utils'
 
 export const useBorrowSplTokenOffers = (initialProps?: {
   marketPubkey?: string
-  outputTokenTicker?: string
+  outputTokenType?: string
 }) => {
   const [marketPubkey, setMarketPubkey] = useState(initialProps?.marketPubkey || '')
-  const [outputTokenTicker, setOutputTokenTicker] = useState(initialProps?.outputTokenTicker || '')
+  const [outputTokenType, setOutputTokenType] = useState(initialProps?.outputTokenType || '')
   const [inputPutType, setInputPutType] = useState<'input' | 'output'>('input')
   const [amount, setAmount] = useState('')
 
@@ -21,12 +21,12 @@ export const useBorrowSplTokenOffers = (initialProps?: {
   const { data, isLoading } = useQuery(
     [
       'borrowSplTokenOffers',
-      { marketPubkey, outputTokenTicker, type: inputPutType, amount: debouncedAmount },
+      { marketPubkey, outputTokenType, type: inputPutType, amount: debouncedAmount },
     ],
     () =>
       core.fetchBorrowSplTokenOffers({
         market: marketPubkey,
-        outputToken: outputTokenTicker,
+        outputToken: outputTokenType,
         type: inputPutType,
         amount: debouncedAmount,
       }),
@@ -37,15 +37,19 @@ export const useBorrowSplTokenOffers = (initialProps?: {
     },
   )
 
+  const handleAmountChange = (value: string, decimals: number) => {
+    setAmount(stringToHex(value, decimals))
+  }
+
   return {
     data: data ?? [],
     isLoading,
 
     inputPutType,
-
     setMarketPubkey,
-    setOutputTokenTicker,
+    setOutputTokenType,
     setInputPutType,
-    setAmount,
+
+    handleAmountChange,
   }
 }

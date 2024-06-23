@@ -8,7 +8,7 @@ import { DisplayValue } from '@banx/components/TableComponents'
 
 import { Separator } from '../components'
 import InputTokenSelect from '../components/InputTokenSelect'
-import { BORROW_MOCK_TOKENS_LIST, COLLATERAL_TOKENS_LIST, MOCK_APR_RATE } from '../constants'
+import { BORROW_TOKENS_LIST, COLLATERAL_TOKENS_LIST, MOCK_APR_RATE } from '../constants'
 import { useInstantBorrowContent } from './hooks/useInstantBorrowContent'
 
 import styles from './InstantBorrowContent.module.less'
@@ -58,7 +58,7 @@ const InstantBorrowContent = () => {
         onChange={handleBorrowInputChange}
         selectedToken={borrowToken}
         onChangeToken={handleBorrowTokenChange}
-        tokenList={BORROW_MOCK_TOKENS_LIST}
+        tokenList={BORROW_TOKENS_LIST}
         className={styles.borrowInput}
         maxValue={borrowTokenBalanceStr}
         disabledInput={!wallet.connected}

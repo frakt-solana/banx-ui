@@ -3,14 +3,22 @@ import { useEffect, useMemo, useState } from 'react'
 import { BN } from 'fbonds-core'
 
 import { useTokenBalance } from '@banx/hooks'
-import { bnToHuman, stringToHex } from '@banx/utils'
+import { useNftTokenType } from '@banx/store/nft'
+import { bnToHuman } from '@banx/utils'
 
-import { BorrowToken, DEFAULT_BORROW_TOKEN, DEFAULT_COLLATERAL_TOKEN } from '../../constants'
+import {
+  BORROW_TOKENS_LIST,
+  BorrowToken,
+  DEFAULT_BORROW_TOKEN,
+  DEFAULT_COLLATERAL_TOKEN,
+} from '../../constants'
 import { getErrorMessage } from '../helpers'
 import { useBorrowSplTokenOffers } from './useBorrowSplTokenOffers'
 import { useBorrowSplTokenTransaction } from './useBorrowSplTokenTransaction'
 
 export const useInstantBorrowContent = () => {
+  const { tokenType, setTokenType } = useNftTokenType()
+
   const [collateralInputValue, setCollateralInputValue] = useState('')
   const [collateralToken, setCollateralToken] = useState<BorrowToken>(DEFAULT_COLLATERAL_TOKEN)
 
@@ -24,38 +32,54 @@ export const useInstantBorrowContent = () => {
     data: splTokenOffers,
     isLoading: isLoadingSplTokenOffers,
     setMarketPubkey,
-    setOutputTokenTicker,
-    setInputPutType,
-    setAmount,
+    setOutputTokenType,
     inputPutType,
+    setInputPutType,
+
+    handleAmountChange,
   } = useBorrowSplTokenOffers({
     marketPubkey: DEFAULT_COLLATERAL_TOKEN.marketPubkey,
-    outputTokenTicker: DEFAULT_BORROW_TOKEN.meta.ticker,
+    outputTokenType: DEFAULT_BORROW_TOKEN.meta.ticker,
   })
+
+  const handleCollateralInputChange = (value: string) => {
+    if (inputPutType !== 'input') {
+      setInputPutType('input')
+      setOutputTokenType(borrowToken.meta.ticker)
+    }
+
+    setCollateralInputValue(value)
+    handleAmountChange(value, collateralToken.meta.decimals)
+  }
+
+  const handleBorrowInputChange = (value: string) => {
+    if (inputPutType !== 'output') {
+      setInputPutType('output')
+      setOutputTokenType(collateralToken.meta.ticker)
+    }
+
+    setBorrowInputValue(value)
+    handleAmountChange(value, borrowToken.meta.decimals)
+  }
 
   const handleCollateralTokenChange = (token: BorrowToken) => {
     setCollateralToken(token)
     setMarketPubkey(token.marketPubkey || '')
   }
 
-  const handleCollateralInputChange = (value: string) => {
-    setInputPutType('input')
-    setCollateralInputValue(value)
-    setOutputTokenTicker(borrowToken.meta.ticker)
-    setAmount(stringToHex(value, collateralToken.meta.decimals))
-  }
-
-  const handleBorrowInputChange = (value: string) => {
-    setInputPutType('output')
-    setBorrowInputValue(value)
-    setOutputTokenTicker(collateralToken.meta.ticker)
-    setAmount(stringToHex(value, borrowToken.meta.decimals))
-  }
-
   const handleBorrowTokenChange = (token: BorrowToken) => {
     setBorrowToken(token)
-    setOutputTokenTicker(token.meta.ticker)
+    setOutputTokenType(token.meta.ticker)
+    setTokenType(token.lendingTokenType)
   }
+
+  useEffect(() => {
+    const token = BORROW_TOKENS_LIST.find((token) => token.lendingTokenType === tokenType)
+    if (token) {
+      setBorrowToken(token)
+      setOutputTokenType(token.meta.ticker)
+    }
+  }, [setOutputTokenType, tokenType])
 
   const totalAmountToGet = useMemo(() => {
     return splTokenOffers.reduce((acc, offer) => {

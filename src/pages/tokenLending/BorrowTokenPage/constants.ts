@@ -1,9 +1,12 @@
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+
 import { core } from '@banx/api/tokens'
 
 export interface BorrowToken {
   meta: core.TokenMeta
 
   collateralPrice: number
+  lendingTokenType: LendingTokenType
   marketPubkey?: string
   fraktMarket?: string
   available?: number
@@ -16,13 +19,13 @@ export const COLLATERAL_TOKENS_LIST: BorrowToken[] = [
     meta: {
       mint: 'BANXbTpN8U2cU41FjPxe2Ti37PiT5cCxLUKDQZuJeMMR',
       ticker: 'BANX',
-      logoUrl:
-        'https://statics.solscan.io/cdn/imgs/s60?ref=68747470733a2f2f617277656176652e6e65742f3551526974514750566a5077706a74343351655f5749536d7973346457774c4d715171514454306f736867',
+      logoUrl: 'https://arweave.net/5QRitQGPVjPwpjt43Qe_WISmys4dWwLMqQqQDT0oshg',
       decimals: 9,
       priceUsd: 0.001,
     },
 
     marketPubkey: '9vMKEMq8G36yrkqVUzQuAweieCsxU9ZaK1ob8GRegwmh',
+    lendingTokenType: LendingTokenType.BanxSol,
     collateralPrice: 0,
     available: 7777,
   },
@@ -30,7 +33,7 @@ export const COLLATERAL_TOKENS_LIST: BorrowToken[] = [
 
 export const DEFAULT_COLLATERAL_TOKEN = COLLATERAL_TOKENS_LIST[0]
 
-export const BORROW_MOCK_TOKENS_LIST: BorrowToken[] = [
+export const BORROW_TOKENS_LIST: BorrowToken[] = [
   {
     meta: {
       mint: 'So11111111111111111111111111111111111111112',
@@ -40,6 +43,7 @@ export const BORROW_MOCK_TOKENS_LIST: BorrowToken[] = [
       decimals: 9,
       priceUsd: 0.001,
     },
+    lendingTokenType: LendingTokenType.NativeSol,
     collateralPrice: 0,
     available: 240,
   },
@@ -52,9 +56,10 @@ export const BORROW_MOCK_TOKENS_LIST: BorrowToken[] = [
       decimals: 6,
       priceUsd: 0.001,
     },
+    lendingTokenType: LendingTokenType.Usdc,
     collateralPrice: 0,
     available: 240,
   },
 ]
 
-export const DEFAULT_BORROW_TOKEN = BORROW_MOCK_TOKENS_LIST[0]
+export const DEFAULT_BORROW_TOKEN = BORROW_TOKENS_LIST[0]

@@ -4,7 +4,7 @@ import { clamp } from 'lodash'
 
 import { BONDS, DAYS_IN_YEAR } from '@banx/constants'
 
-import { BORROW_MOCK_TOKENS_LIST, BorrowToken, COLLATERAL_TOKENS_LIST } from '../constants'
+import { BORROW_TOKENS_LIST, BorrowToken, COLLATERAL_TOKENS_LIST } from '../constants'
 
 export const MIN_APR_VALUE = 10
 export const MAX_APR_VALUE = 140
@@ -14,7 +14,7 @@ export const useListLoansContent = () => {
   const [collateralToken, setCollateralToken] = useState<BorrowToken>(COLLATERAL_TOKENS_LIST[0])
 
   const [borrowInputValue, setBorrowlInputValue] = useState('')
-  const [borrowToken, setBorrowToken] = useState<BorrowToken>(BORROW_MOCK_TOKENS_LIST[0])
+  const [borrowToken, setBorrowToken] = useState<BorrowToken>(BORROW_TOKENS_LIST[0])
 
   const [sliderValue, setSliderValue] = useState(100)
   const [inputAprValue, setInputAprValue] = useState('')
