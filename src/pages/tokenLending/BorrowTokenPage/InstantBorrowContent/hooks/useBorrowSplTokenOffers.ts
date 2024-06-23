@@ -13,18 +13,21 @@ export const useBorrowSplTokenOffers = (initialProps?: {
 }) => {
   const [marketPubkey, setMarketPubkey] = useState(initialProps?.marketPubkey || '')
   const [outputTokenTicker, setOutputTokenTicker] = useState(initialProps?.outputTokenTicker || '')
-  const [type, setType] = useState<'input' | 'output'>('input')
+  const [inputPutType, setInputPutType] = useState<'input' | 'output'>('input')
   const [amount, setAmount] = useState('')
 
   const debouncedAmount = useDebounceValue(amount, 1000)
 
   const { data, isLoading } = useQuery(
-    ['borrowSplTokenOffers', { marketPubkey, outputTokenTicker, type, amount: debouncedAmount }],
+    [
+      'borrowSplTokenOffers',
+      { marketPubkey, outputTokenTicker, type: inputPutType, amount: debouncedAmount },
+    ],
     () =>
       core.fetchBorrowSplTokenOffers({
         market: marketPubkey,
         outputToken: outputTokenTicker,
-        type,
+        type: inputPutType,
         amount: debouncedAmount,
       }),
     {
@@ -38,11 +41,11 @@ export const useBorrowSplTokenOffers = (initialProps?: {
     data: data ?? [],
     isLoading,
 
-    type,
+    inputPutType,
 
     setMarketPubkey,
     setOutputTokenTicker,
+    setInputPutType,
     setAmount,
-    setType,
   }
 }

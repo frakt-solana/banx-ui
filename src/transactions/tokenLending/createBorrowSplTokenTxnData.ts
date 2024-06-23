@@ -7,13 +7,13 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 import { Offer } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
-import { BorrowCollateral } from '@banx/pages/tokenLending/BorrowTokenPage/constants'
+import { BorrowToken } from '@banx/pages/tokenLending/BorrowTokenPage/constants'
 import { sendTxnPlaceHolder } from '@banx/transactions'
 
 export type BorrowTxnOptimisticResult = { loan: core.TokenLoan; offer: Offer }
 
 export type CreateBorrowTokenTxnDataParams = {
-  collateral: BorrowCollateral
+  collateral: BorrowToken
   loanValue: number
   offer: Offer
   optimizeIntoReserves: boolean
@@ -45,7 +45,7 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async ({
       fraktMarket: new web3.PublicKey(offer.hadoMarket),
     },
     args: {
-      amountToget: Math.floor(loanValue),
+      amountToget: loanValue,
       optimizeIntoReserves: optimizeIntoReserves,
       aprRate,
       lendingTokenType: tokenType,

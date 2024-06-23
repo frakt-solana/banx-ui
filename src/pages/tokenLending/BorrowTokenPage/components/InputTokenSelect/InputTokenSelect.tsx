@@ -13,7 +13,7 @@ import { useOnClickOutside } from '@banx/hooks'
 import { ChevronDown, CloseModal, Wallet } from '@banx/icons'
 import { bnToHuman, limitDecimalPlaces, shortenAddress, stringToBN } from '@banx/utils'
 
-import { BorrowCollateral } from '../../constants'
+import { BorrowToken } from '../../constants'
 
 import styles from './InputTokenSelect.module.less'
 
@@ -23,13 +23,12 @@ interface InputTokenSelectProps {
   onChange: (value: string) => void
   className?: string
 
-  selectedToken: BorrowCollateral
-  tokenList: BorrowCollateral[]
-  onChangeToken: (option: BorrowCollateral) => void
+  selectedToken: BorrowToken
+  tokenList: BorrowToken[]
+  onChangeToken: (option: BorrowToken) => void
 
   disabledInput?: boolean
   maxValue?: string
-  decimals?: number
 }
 
 const InputTokenSelect: FC<InputTokenSelectProps> = ({
@@ -42,7 +41,6 @@ const InputTokenSelect: FC<InputTokenSelectProps> = ({
   onChangeToken,
   disabledInput,
   maxValue = '0',
-  decimals,
 }) => {
   const { connected } = useWallet()
 
@@ -57,7 +55,11 @@ const InputTokenSelect: FC<InputTokenSelectProps> = ({
       <div className={styles.inputTokenSelectHeader}>
         <div className={styles.inputTokenSelectLabel}>{label}</div>
         {connected && (
-          <ControlsButtons maxValue={maxValue} onChange={onChange} decimals={decimals} />
+          <ControlsButtons
+            maxValue={maxValue}
+            onChange={onChange}
+            decimals={selectedToken.meta.decimals}
+          />
         )}
       </div>
       <div className={styles.inputTokenSelect}>
@@ -118,7 +120,7 @@ const ControlsButtons: FC<ControlsButtonsProps> = ({ onChange, maxValue = '0', d
 }
 
 interface SelectTokenButtonProps {
-  selectedToken: BorrowCollateral
+  selectedToken: BorrowToken
   onClick: () => void
 }
 
@@ -135,8 +137,8 @@ const SelectTokenButton: FC<SelectTokenButtonProps> = ({ selectedToken, onClick 
 }
 
 interface SearchSelectProps {
-  options: BorrowCollateral[]
-  onChangeToken: (token: BorrowCollateral) => void
+  options: BorrowToken[]
+  onChangeToken: (token: BorrowToken) => void
   onClose: () => void
 }
 
@@ -147,7 +149,7 @@ const SearchSelect: FC<SearchSelectProps> = ({ options, onChangeToken, onClose }
     setSearchInput(event.target.value)
   }
 
-  const handleChangeToken = (token: BorrowCollateral) => {
+  const handleChangeToken = (token: BorrowToken) => {
     onChangeToken(token)
     onClose()
   }

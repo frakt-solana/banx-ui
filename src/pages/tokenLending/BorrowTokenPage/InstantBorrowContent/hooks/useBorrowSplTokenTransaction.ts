@@ -24,16 +24,16 @@ import {
   enqueueWaitingConfirmation,
 } from '@banx/utils'
 
-import { BorrowCollateral, MOCK_APR_RATE } from '../../constants'
+import { BorrowToken, MOCK_APR_RATE } from '../../constants'
 
 type TransactionData = {
-  loanValue: string
-  collateral: BorrowCollateral
   offer: Offer
+  loanValue: number
+  token: BorrowToken
 }
 
 export const useBorrowSplTokenTransaction = (
-  collateral: BorrowCollateral,
+  token: BorrowToken,
   splTokenOffers: BorrowSplTokenOffers[],
 ) => {
   const wallet = useWallet()
@@ -41,25 +41,26 @@ export const useBorrowSplTokenTransaction = (
   const { isLedger } = useIsLedger()
   const { tokenType } = useNftTokenType()
 
-  const { offers } = useTokenMarketOffers(collateral.marketPubkey || '')
+  const { offers } = useTokenMarketOffers(token.marketPubkey || '')
 
   const transactionsData = useMemo(() => {
     if (!offers.length) return []
 
     return splTokenOffers.reduce<TransactionData[]>((acc, offer) => {
       const offerData = find(offers, ({ publicKey }) => publicKey === offer.offerPublicKey)
+      const loanValueToNumber = new BN(offer.amountToGet, 'hex').toNumber()
 
       if (offerData) {
         acc.push({
-          loanValue: offer.amountToGet,
-          collateral: collateral,
           offer: offerData,
+          loanValue: loanValueToNumber,
+          token,
         })
       }
 
       return acc
     }, [])
-  }, [collateral, offers, splTokenOffers])
+  }, [token, offers, splTokenOffers])
 
   const executeBorrow = async () => {
     const loadingSnackbarId = uniqueId()
@@ -70,10 +71,10 @@ export const useBorrowSplTokenTransaction = (
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const txnsData = await Promise.all(
-        transactionsData.map(({ collateral, loanValue, offer }) =>
+        transactionsData.map(({ token, loanValue, offer }) =>
           createBorrowSplTokenTxnData({
-            loanValue: new BN(loanValue, 'hex').toNumber(),
-            collateral,
+            loanValue,
+            collateral: token,
             offer,
             optimizeIntoReserves: true,
             aprRate: MOCK_APR_RATE, //TODO (TokenLending): Need to calc in the future

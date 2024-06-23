@@ -1,6 +1,6 @@
 import { core } from '@banx/api/tokens'
 
-export interface BorrowCollateral {
+export interface BorrowToken {
   meta: core.TokenMeta
 
   collateralPrice: number
@@ -11,7 +11,7 @@ export interface BorrowCollateral {
 
 export const MOCK_APR_RATE = 34 * 100
 
-export const COLLATERAL_TOKENS_LIST: BorrowCollateral[] = [
+export const COLLATERAL_TOKENS_LIST: BorrowToken[] = [
   {
     meta: {
       mint: 'BANXbTpN8U2cU41FjPxe2Ti37PiT5cCxLUKDQZuJeMMR',
@@ -30,7 +30,7 @@ export const COLLATERAL_TOKENS_LIST: BorrowCollateral[] = [
 
 export const DEFAULT_COLLATERAL_TOKEN = COLLATERAL_TOKENS_LIST[0]
 
-export const BORROW_MOCK_TOKENS_LIST: BorrowCollateral[] = [
+export const BORROW_MOCK_TOKENS_LIST: BorrowToken[] = [
   {
     meta: {
       mint: 'So11111111111111111111111111111111111111112',
@@ -40,7 +40,6 @@ export const BORROW_MOCK_TOKENS_LIST: BorrowCollateral[] = [
       decimals: 9,
       priceUsd: 0.001,
     },
-
     collateralPrice: 0,
     available: 240,
   },
@@ -53,8 +52,9 @@ export const BORROW_MOCK_TOKENS_LIST: BorrowCollateral[] = [
       decimals: 6,
       priceUsd: 0.001,
     },
-
     collateralPrice: 0,
     available: 240,
   },
 ]
+
+export const DEFAULT_BORROW_TOKEN = BORROW_MOCK_TOKENS_LIST[0]
