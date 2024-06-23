@@ -17,7 +17,7 @@ import {
   useTokenLoansOptimistic,
   useTokenOffersOptimistic,
 } from '@banx/store/token'
-import { isOfferClosed, isTokenLoanRepaid, isTokenLoanTerminating } from '@banx/utils'
+import { isOfferStateClosed, isTokenLoanRepaid, isTokenLoanTerminating } from '@banx/utils'
 
 import { LoansTokenTabsName } from './LoansTokenPage'
 
@@ -118,7 +118,7 @@ export const useWalletTokenLoansAndOffers = () => {
 
     const optimisticsToRemove = chain(optimisticOffers)
       //? Filter closed offers from LS optimistics
-      .filter(({ offer }) => !isOfferClosed(offer?.pairState))
+      .filter(({ offer }) => !isOfferStateClosed(offer?.pairState))
       .filter(({ offer }) => {
         const sameOfferFromBE = data.offers[offer.hadoMarket]?.find(
           ({ publicKey }) => publicKey === offer.publicKey,
@@ -145,7 +145,7 @@ export const useWalletTokenLoansAndOffers = () => {
 
     const optimisticsFiltered = chain(optimisticOffers)
       //? Filter closed offers from LS optimistics
-      .filter(({ offer }) => !isOfferClosed(offer?.pairState))
+      .filter(({ offer }) => !isOfferStateClosed(offer?.pairState))
       //? Filter own offers from LS optimistics
       .filter(({ offer }) => offer?.assetReceiver !== publicKeyString)
       .value()
