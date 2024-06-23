@@ -10,7 +10,7 @@ import { useDiscordUser } from '@banx/hooks'
 import { ChangeWallet, Copy, SignOut } from '@banx/icons'
 import { useUserOffers } from '@banx/pages/nftLending/OffersPage/components/OffersTabContent/hooks'
 import { useIsLedger } from '@banx/store/common'
-import { useTokenType } from '@banx/store/nft'
+import { useNftTokenType } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
@@ -96,7 +96,7 @@ const TooltipRow: FC<TooltipRowProps> = ({ label, value }) => (
 const LenderVaultContent = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { offers, updateOrAddOffer } = useUserOffers()
 
