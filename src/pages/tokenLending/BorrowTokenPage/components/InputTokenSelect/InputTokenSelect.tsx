@@ -2,6 +2,7 @@ import { ChangeEvent, FC, useMemo, useRef, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { BN } from 'fbonds-core'
 
 import { Button } from '@banx/components/Buttons'
 import { SolanaFMLink } from '@banx/components/SolanaLinks'
@@ -10,9 +11,9 @@ import { Input, InputProps } from '@banx/components/inputs/Input'
 
 import { useOnClickOutside } from '@banx/hooks'
 import { ChevronDown, CloseModal, Wallet } from '@banx/icons'
-import { shortenAddress } from '@banx/utils'
+import { bnToHuman, limitDecimalPlaces, shortenAddress, stringToBN } from '@banx/utils'
 
-import { MockTokenMetaType } from '../../constants'
+import { BorrowToken } from '../../constants'
 
 import styles from './InputTokenSelect.module.less'
 
@@ -22,10 +23,11 @@ interface InputTokenSelectProps {
   onChange: (value: string) => void
   className?: string
 
-  selectedToken: MockTokenMetaType
-  tokenList: MockTokenMetaType[]
-  onChangeToken: (option: MockTokenMetaType) => void
+  selectedToken: BorrowToken
+  tokenList: BorrowToken[]
+  onChangeToken: (option: BorrowToken) => void
 
+  disabledInput?: boolean
   maxValue?: string
 }
 
@@ -37,6 +39,7 @@ const InputTokenSelect: FC<InputTokenSelectProps> = ({
   selectedToken,
   tokenList,
   onChangeToken,
+  disabledInput,
   maxValue = '0',
 }) => {
   const { connected } = useWallet()
@@ -51,7 +54,13 @@ const InputTokenSelect: FC<InputTokenSelectProps> = ({
     <div className={classNames(styles.inputTokenSelectWrapper, className)}>
       <div className={styles.inputTokenSelectHeader}>
         <div className={styles.inputTokenSelectLabel}>{label}</div>
-        {connected && <ControlsButtons maxValue={maxValue} onChange={onChange} />}
+        {connected && (
+          <ControlsButtons
+            maxValue={maxValue}
+            onChange={onChange}
+            decimals={selectedToken.meta.decimals}
+          />
+        )}
       </div>
       <div className={styles.inputTokenSelect}>
         <NumericStepInput
@@ -59,6 +68,7 @@ const InputTokenSelect: FC<InputTokenSelectProps> = ({
           onChange={onChange}
           placeholder="0"
           className={styles.numericStepInput}
+          disabled={disabledInput}
         />
 
         <SelectTokenButton onClick={handleClick} selectedToken={selectedToken} />
@@ -80,11 +90,18 @@ export default InputTokenSelect
 interface ControlsButtonsProps {
   onChange: (value: string) => void
   maxValue?: string
+  decimals?: number
 }
 
-const ControlsButtons: FC<ControlsButtonsProps> = ({ onChange, maxValue = '0' }) => {
-  const onMaxClick = () => onChange(maxValue)
-  const onHalfClick = () => onChange((parseFloat(maxValue) / 2).toString())
+const ControlsButtons: FC<ControlsButtonsProps> = ({ onChange, maxValue = '0', decimals }) => {
+  const onMaxClick = () => {
+    onChange(limitDecimalPlaces(maxValue))
+  }
+
+  const onHalfClick = () => {
+    const nextValue = bnToHuman(stringToBN(maxValue, decimals).div(new BN(2)))
+    onChange(limitDecimalPlaces(nextValue.toString()))
+  }
 
   return (
     <div className={styles.inputTokenSelectControlButtons}>
@@ -103,16 +120,16 @@ const ControlsButtons: FC<ControlsButtonsProps> = ({ onChange, maxValue = '0' })
 }
 
 interface SelectTokenButtonProps {
-  selectedToken: MockTokenMetaType
+  selectedToken: BorrowToken
   onClick: () => void
 }
 
 const SelectTokenButton: FC<SelectTokenButtonProps> = ({ selectedToken, onClick }) => {
-  const { ticker, imageUrl } = selectedToken
+  const { ticker, logoUrl } = selectedToken.meta
 
   return (
     <div onClick={onClick} className={styles.selectTokenButton}>
-      <img src={imageUrl} className={styles.selectTokenButtonIcon} />
+      <img src={logoUrl} className={styles.selectTokenButtonIcon} />
       {ticker}
       <ChevronDown className={styles.selectTokenButtonChevronIcon} />
     </div>
@@ -120,8 +137,8 @@ const SelectTokenButton: FC<SelectTokenButtonProps> = ({ selectedToken, onClick 
 }
 
 interface SearchSelectProps {
-  options: MockTokenMetaType[]
-  onChangeToken: (token: MockTokenMetaType) => void
+  options: BorrowToken[]
+  onChangeToken: (token: BorrowToken) => void
   onClose: () => void
 }
 
@@ -132,14 +149,14 @@ const SearchSelect: FC<SearchSelectProps> = ({ options, onChangeToken, onClose }
     setSearchInput(event.target.value)
   }
 
-  const handleChangeToken = (token: MockTokenMetaType) => {
+  const handleChangeToken = (token: BorrowToken) => {
     onChangeToken(token)
     onClose()
   }
 
   const filteredOptions = useMemo(() => {
     return options.filter((option) =>
-      option.ticker.toLowerCase().includes(searchInput.toLowerCase()),
+      option.meta.ticker.toLowerCase().includes(searchInput.toLowerCase()),
     )
   }, [options, searchInput])
 
@@ -163,17 +180,19 @@ const SearchSelect: FC<SearchSelectProps> = ({ options, onChangeToken, onClose }
         <div className={styles.selectTokenDropdownList}>
           {filteredOptions.map((option, index) => (
             <div
-              key={option.mint}
+              key={option.meta.mint}
               onClick={() => handleChangeToken(option)}
               className={classNames(styles.dropdownItem, { [styles.highlight]: index % 2 === 0 })}
             >
               <div className={styles.dropdownItemMainInfo}>
-                <img className={styles.dropdownItemIcon} src={option.imageUrl} />
+                <img className={styles.dropdownItemIcon} src={option.meta.logoUrl} />
                 <div className={styles.dropdownItemInfo}>
-                  <span className={styles.dropdownItemTicker}>{option.ticker}</span>
-                  <span className={styles.dropdownItemAddress}>{shortenAddress(option.mint)}</span>
+                  <span className={styles.dropdownItemTicker}>{option.meta.ticker}</span>
+                  <span className={styles.dropdownItemAddress}>
+                    {shortenAddress(option.meta.mint)}
+                  </span>
                 </div>
-                <SolanaFMLink path={`address/${option.mint}`} size="small" />
+                <SolanaFMLink path={`address/${option.meta.mint}`} size="small" />
               </div>
               <span className={styles.dropdownItemAdditionalInfo}>{option.available}</span>
             </div>

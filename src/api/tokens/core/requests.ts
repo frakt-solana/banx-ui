@@ -123,3 +123,39 @@ export const fetchWalletTokenLoansAndOffers: FetchWalletTokenLoansAndOffers = as
 
   return data.data ?? { loans: [], offers: {} }
 }
+
+export enum OutputToken {
+  SOL = 'SOL',
+  USDC = 'USDC',
+  BanxSOL = 'BanxSOL',
+}
+
+export interface BorrowSplTokenOffers {
+  offerPublicKey: string
+  amountToGive: string
+  amountToGet: string
+}
+
+type FetchBorrowSplTokenOffers = (props: {
+  market: string
+  outputToken: string
+  type: 'input' | 'output'
+  amount: string //? hex number string
+}) => Promise<BorrowSplTokenOffers[]>
+export const fetchBorrowSplTokenOffers: FetchBorrowSplTokenOffers = async (props) => {
+  const { market, outputToken, type, amount } = props
+
+  const queryParams = new URLSearchParams({
+    isPrivate: String(IS_PRIVATE_MARKETS),
+    type: String(type),
+    amount: String(amount),
+    market: String(market),
+    outputToken: String(outputToken),
+  })
+
+  const { data } = await axios.get<{ data: BorrowSplTokenOffers[] }>(
+    `${BACKEND_BASE_URL}/lending/spl/borrow-token?${queryParams?.toString()}`,
+  )
+
+  return data.data ?? []
+}

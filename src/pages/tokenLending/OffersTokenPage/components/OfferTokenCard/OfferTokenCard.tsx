@@ -49,8 +49,7 @@ const OfferTokenCard: FC<OfferTokenCardProps> = ({ offerPreview, onClick, isOpen
 export default OfferTokenCard
 
 const MarketMainInfo: FC<{ offerPreview: core.TokenOfferPreview }> = ({ offerPreview }) => {
-  const { collateralTokenImageUrl, collateralTokenTicker, collateralTokenPrice, bestOffer } =
-    offerPreview.tokenMarketPreview
+  const { collateral, collateralPrice, bestOffer } = offerPreview.tokenMarketPreview
 
   const { tokenType } = useNftTokenType()
 
@@ -59,15 +58,15 @@ const MarketMainInfo: FC<{ offerPreview: core.TokenOfferPreview }> = ({ offerPre
   return (
     <div className={styles.mainInfoContainer}>
       <div className={styles.collateralImageWrapper}>
-        <img src={collateralTokenImageUrl} className={styles.collateralImage} />
+        <img src={collateral.logoUrl} className={styles.collateralImage} />
         <Icon className={styles.collateralIcon} />
       </div>
       <div className={styles.mainInfoContent}>
-        <h4 className={styles.collateralName}>{collateralTokenTicker}</h4>
+        <h4 className={styles.collateralName}>{collateral.ticker}</h4>
         <div className={styles.mainInfoStats}>
           <StatInfo
             label="Market"
-            value={<DisplayValue value={collateralTokenPrice} />}
+            value={<DisplayValue value={collateralPrice} />}
             tooltipText=""
           />
           <StatInfo label="Top offer" value={<DisplayValue value={bestOffer} />} tooltipText="" />

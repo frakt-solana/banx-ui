@@ -84,22 +84,24 @@ export const TokenLoanSchema = z.object({
 
 export const TokenMarketPreviewSchema = z.object({
   marketPubkey: z.string(),
-  tokenType: z.string(),
 
-  collateralTokenPrice: z.number(),
-  collateralTokenDecimals: z.number(),
-  bestOffer: z.number(),
+  collateral: TokenMetaSchema,
+  collateralPrice: z.number(),
+
+  offersTvl: z.number(),
+  loansTvl: z.number(),
 
   activeOffersAmount: z.number(),
-  offersTvl: z.number(),
   activeLoansAmount: z.number(),
-  loansTvl: z.number(),
+
+  bestOffer: z.number(),
+  bestLtv: z.number(), // TODO: remove from BE
 
   marketApr: z.number(),
   marketApy: z.number(),
+  marketUtilizationRate: z.number().nullable(),
 
-  collateralTokenImageUrl: z.string(),
-  collateralTokenTicker: z.string(),
+  isHot: z.boolean(),
 })
 
 export type TokenMarketPreview = z.infer<typeof TokenMarketPreviewSchema>

@@ -50,7 +50,7 @@ const useUsdcBalance: UseTokenBalance = (options) => {
   return useTokenBalance(USDC_ADDRESS, { isLive })
 }
 
-const useTokenBalance = (tokenAddress: string, options?: Options) => {
+export const useTokenBalance = (tokenAddress: string, options?: Options) => {
   const { isLive = false } = options || {}
 
   const { connection } = useConnection()
@@ -67,6 +67,9 @@ const useTokenBalance = (tokenAddress: string, options?: Options) => {
         })
 
         const userTokenAccountAddress = tokenAccounts.value[0]?.pubkey
+
+        if (!userTokenAccountAddress) return 0
+
         const balance = await connection.getTokenAccountBalance(userTokenAccountAddress)
         return parseFloat(balance.value.amount)
       }
