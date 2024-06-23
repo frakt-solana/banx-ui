@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
+import { BN } from 'fbonds-core'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { produce } from 'immer'
 import { chain, filter, groupBy, isEmpty, map, maxBy, sortBy, sumBy, uniqBy } from 'lodash'
@@ -18,13 +19,13 @@ import {
 } from '@banx/store/nft'
 import { convertLoanToBorrowNft } from '@banx/transactions/nftLending'
 import {
-  calcBorrowValueWithProtocolFee,
-  calcBorrowValueWithRentFee,
+  adjustBorrowValueWithSolanaRentFee,
+  calculateBorrowValueWithProtocolFee,
   calculateLoanValue,
   convertOffersToSimple,
   isLoanActiveOrRefinanced,
   isLoanRepaid,
-  isOfferClosed,
+  isOfferStateClosed,
 } from '@banx/utils'
 
 import { BorrowTabName } from './BorrowPage'
@@ -61,7 +62,7 @@ export const useBorrowNfts = () => {
 
     const optimisticsToRemove = chain(optimisticOffers)
       //? Filter closed offers from LS optimistics
-      .filter(({ offer }) => !isOfferClosed(offer?.pairState))
+      .filter(({ offer }) => !isOfferStateClosed(offer?.pairState))
       .filter(({ offer }) => {
         const sameOfferFromBE = data.offers[offer.hadoMarket]?.find(
           ({ publicKey }) => publicKey === offer.publicKey,
@@ -88,7 +89,7 @@ export const useBorrowNfts = () => {
 
     const optimisticsFiltered = chain(optimisticOffers)
       //? Filter closed offers from LS optimistics
-      .filter(({ offer }) => !isOfferClosed(offer?.pairState))
+      .filter(({ offer }) => !isOfferStateClosed(offer?.pairState))
       //? Filter own offers from LS optimistics
       .filter(({ offer }) => offer?.assetReceiver !== walletPublicKey?.toBase58())
       .value()
@@ -234,8 +235,13 @@ const calcMaxBorrow = (
       const maxBorrowMarket = sumBy(
         (offers[marketPubkey] || []).slice(0, nftsAmount),
         ({ loanValue, hadoMarket }) => {
-          const loanValueWithProtocolFee = calcBorrowValueWithProtocolFee(loanValue)
-          return calcBorrowValueWithRentFee(loanValueWithProtocolFee, hadoMarket, tokenType)
+          const loanValueWithProtocolFee = calculateBorrowValueWithProtocolFee(loanValue)
+
+          return adjustBorrowValueWithSolanaRentFee({
+            value: new BN(loanValueWithProtocolFee),
+            marketPubkey: hadoMarket,
+            tokenType,
+          }).toNumber()
         },
       )
 

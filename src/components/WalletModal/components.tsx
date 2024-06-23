@@ -1,14 +1,36 @@
 import { FC } from 'react'
 
-import { useWallet } from '@solana/wallet-adapter-react'
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { sumBy, uniqueId } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
 
+import { Offer } from '@banx/api/nft'
 import { useDiscordUser } from '@banx/hooks'
 import { ChangeWallet, Copy, SignOut } from '@banx/icons'
+import { useUserOffers } from '@banx/pages/nftLending/OffersPage/components/OffersTabContent/hooks'
 import { useIsLedger } from '@banx/store/common'
-import { copyToClipboard, shortenAddress } from '@banx/utils'
+import { useTokenType } from '@banx/store/nft'
+import {
+  TXN_EXECUTOR_DEFAULT_OPTIONS,
+  createExecutorWalletAndConnection,
+  defaultTxnErrorHandler,
+} from '@banx/transactions'
+import { createClaimLenderVaultTxnData } from '@banx/transactions/nftLending'
+import {
+  copyToClipboard,
+  destroySnackbar,
+  enqueueConfirmationError,
+  enqueueSnackbar,
+  enqueueTransactionsSent,
+  enqueueWaitingConfirmation,
+  shortenAddress,
+} from '@banx/utils'
 
+import { Button } from '../Buttons'
 import Checkbox from '../Checkbox'
+import { DisplayValue } from '../TableComponents'
+import Tooltip from '../Tooltip'
 import UserAvatar from '../UserAvatar'
 import { iconComponents } from './constants'
 
@@ -43,6 +65,7 @@ interface UserInfoProps {
 export const UserInfo: FC<UserInfoProps> = ({ onChangeWallet, disconnect }) => (
   <div className={styles.userInfoContainer}>
     <UserGeneralInfo />
+    <LenderVaultContent />
     <div className={styles.buttonsWrapper}>
       <div className={styles.changeWalletButton} onClick={onChangeWallet}>
         <ChangeWallet />
@@ -55,6 +78,117 @@ export const UserInfo: FC<UserInfoProps> = ({ onChangeWallet, disconnect }) => (
     </div>
   </div>
 )
+
+interface TooltipRowProps {
+  label: string
+  value: number
+}
+
+const TooltipRow: FC<TooltipRowProps> = ({ label, value }) => (
+  <div className={styles.tooltipRow}>
+    <span className={styles.tooltipRowLabel}>{label}</span>
+    <span className={styles.tooltipRowValue}>
+      <DisplayValue value={value} />
+    </span>
+  </div>
+)
+
+const LenderVaultContent = () => {
+  const wallet = useWallet()
+  const { connection } = useConnection()
+  const { tokenType } = useTokenType()
+
+  const { offers, updateOrAddOffer } = useUserOffers()
+
+  const totalAccruedInterest = sumBy(offers, ({ offer }) => offer.concentrationIndex)
+  const totalRepaymets = sumBy(offers, ({ offer }) => offer.bidCap)
+  // const totalLstYeild = sumBy(offers, ({ offer }) => offer.bidCap)
+
+  const totalClaimableValue = totalAccruedInterest + totalRepaymets
+
+  const claimVault = async () => {
+    if (!offers.length) return
+
+    const loadingSnackbarId = uniqueId()
+
+    try {
+      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
+
+      const filteredOffets = offers.filter(({ offer }) => offer.concentrationIndex || offer.bidCap)
+
+      const txnsData = await Promise.all(
+        filteredOffets.map(({ offer }) =>
+          createClaimLenderVaultTxnData({
+            offer,
+            walletAndConnection,
+            tokenType,
+          }),
+        ),
+      )
+
+      await new TxnExecutor<Offer>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+        .addTxnsData(txnsData)
+        .on('sentAll', () => {
+          enqueueTransactionsSent()
+          enqueueWaitingConfirmation(loadingSnackbarId)
+        })
+        .on('confirmedAll', (results) => {
+          const { confirmed, failed } = results
+
+          destroySnackbar(loadingSnackbarId)
+
+          if (confirmed.length) {
+            enqueueSnackbar({ message: 'Successfully claimed', type: 'success' })
+            confirmed.forEach(({ result }) => result && updateOrAddOffer([result]))
+          }
+
+          if (failed.length) {
+            return failed.forEach(({ signature, reason }) =>
+              enqueueConfirmationError(signature, reason),
+            )
+          }
+        })
+        .on('error', (error) => {
+          throw error
+        })
+        .execute()
+    } catch (error) {
+      destroySnackbar(loadingSnackbarId)
+      defaultTxnErrorHandler(error, {
+        additionalData: offers,
+        walletPubkey: wallet?.publicKey?.toBase58(),
+        transactionName: 'ClaimLenderVault',
+      })
+    }
+  }
+
+  const tooltipContent = () => (
+    <div className={styles.tooltipContent}>
+      <TooltipRow label="Accrued interest" value={totalAccruedInterest} />
+      <TooltipRow label="Repaymets" value={totalRepaymets} />
+      {/* <TooltipRow label="Lst Yield" value={totalLstYeild} /> */}
+    </div>
+  )
+
+  return (
+    <div className={styles.lenderVaultContainer}>
+      <div className={styles.lenderVaultStat}>
+        <p className={styles.lenderVaultStatValue}>
+          <DisplayValue value={totalClaimableValue} />
+        </p>
+        <div className={styles.lenderVaultStatLabel}>
+          <span>Lender</span>
+          <span>
+            Vault <Tooltip title={tooltipContent}></Tooltip>
+          </span>
+        </div>
+      </div>
+      <Button onClick={claimVault} disabled={!totalClaimableValue} size="small">
+        Claim
+      </Button>
+    </div>
+  )
+}
 
 interface WalletItemProps {
   onClick: () => void

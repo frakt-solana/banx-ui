@@ -1,21 +1,21 @@
-import { FC, useMemo } from 'react'
+import { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { BondOfferOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { sumBy, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
+import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { core } from '@banx/api/nft'
+import { Offer, core } from '@banx/api/nft'
 import { useNftTokenType } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
-import { createClaimBondOfferInterestTxnData } from '@banx/transactions/nftLending'
+import { createClaimLenderVaultTxnData } from '@banx/transactions/nftLending'
 import {
   destroySnackbar,
   enqueueConfirmationError,
@@ -34,14 +34,10 @@ interface SummaryProps {
 const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const totalAccruedInterest = useMemo(
-    () => sumBy(offers, ({ offer }) => offer.concentrationIndex),
-    [offers],
-  )
 
   const { tokenType } = useNftTokenType()
 
-  const claimInterest = async () => {
+  const claimVault = async () => {
     if (!offers.length) return
 
     const loadingSnackbarId = uniqueId()
@@ -49,9 +45,11 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
+      const filteredOffets = offers.filter(({ offer }) => offer.concentrationIndex || offer.bidCap)
+
       const txnsData = await Promise.all(
-        offers.map(({ offer }) =>
-          createClaimBondOfferInterestTxnData({
+        filteredOffets.map(({ offer }) =>
+          createClaimLenderVaultTxnData({
             offer,
             walletAndConnection,
             tokenType,
@@ -59,8 +57,7 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
         ),
       )
 
-      //TODO: Fix genric here
-      await new TxnExecutor<BondOfferOptimistic>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor<Offer>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
         .addTxnsData(txnsData)
         .on('sentAll', () => {
           enqueueTransactionsSent()
@@ -72,8 +69,8 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
           destroySnackbar(loadingSnackbarId)
 
           if (confirmed.length) {
-            enqueueSnackbar({ message: 'Interest successfully claimed', type: 'success' })
-            confirmed.forEach(({ result }) => result && updateOrAddOffer([result.bondOffer]))
+            enqueueSnackbar({ message: 'Successfully claimed', type: 'success' })
+            confirmed.forEach(({ result }) => result && updateOrAddOffer([result]))
           }
 
           if (failed.length) {
@@ -91,24 +88,26 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
       defaultTxnErrorHandler(error, {
         additionalData: offers,
         walletPubkey: wallet?.publicKey?.toBase58(),
-        transactionName: 'ClaimOfferInterest',
+        transactionName: 'ClaimLenderVault',
       })
     }
   }
 
+  const totalAccruedInterest = sumBy(offers, ({ offer }) => offer.concentrationIndex)
+  const totalRepaymets = sumBy(offers, ({ offer }) => offer.bidCap)
+  // const totalLstYeild = sumBy(offers, ({ offer }) => offer.bidCap)
+
+  const totalClaimableValue = totalAccruedInterest + totalRepaymets
+
   return (
     <div className={styles.container}>
-      <div className={styles.mainStat}>
-        <p>
-          <DisplayValue value={totalAccruedInterest} />
-        </p>
-        <p>Accrued interest</p>
+      <div className={styles.stats}>
+        <StatInfo label="Repayments" value={<DisplayValue value={totalRepaymets} />} />
+        <StatInfo label="Accrued interest" value={<DisplayValue value={totalAccruedInterest} />} />
+        {/* <StatInfo label="LST yield" value={<DisplayValue value={totalLstYeild} />} /> */}
       </div>
-      <Button
-        className={styles.claimButton}
-        onClick={claimInterest}
-        disabled={!totalAccruedInterest}
-      >
+
+      <Button className={styles.claimButton} onClick={claimVault} disabled={!totalClaimableValue}>
         Claim
       </Button>
     </div>

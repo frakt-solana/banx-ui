@@ -1,15 +1,23 @@
-import { web3 } from 'fbonds-core'
+import { BN, web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import {
   borrowerRefinance,
   borrowerRefinanceToSame,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondTradeTransactionV3, FraktBond, PairState } from 'fbonds-core/lib/fbond-protocol/types'
+import {
+  BondTradeTransactionV3,
+  FraktBond,
+  LendingTokenType,
+  PairState,
+} from 'fbonds-core/lib/fbond-protocol/types'
+import moment from 'moment'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
+import { banxSol } from '@banx/transactions'
+import { ZERO_BN, calculateLoanRepayValueOnCertainDate, isBanxSolTokenType } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
@@ -24,6 +32,7 @@ type CreateBorrowRefinanceTxnDataParams = {
   offer: core.Offer
   solToRefinance: number
   aprRate: number //? Base points
+  tokenType: LendingTokenType
   walletAndConnection: WalletAndConnection
 }
 
@@ -36,6 +45,7 @@ export const createBorrowRefinanceTxnData: CreateBorrowRefinanceTxnData = async 
   offer,
   aprRate,
   solToRefinance,
+  tokenType,
   walletAndConnection,
 }) => {
   const { instructions, signers, optimisticResult } = await getIxnsAndSigners({
@@ -43,6 +53,7 @@ export const createBorrowRefinanceTxnData: CreateBorrowRefinanceTxnData = async 
     offer,
     aprRate,
     solToRefinance,
+    tokenType,
     walletAndConnection,
   })
 
@@ -53,22 +64,54 @@ export const createBorrowRefinanceTxnData: CreateBorrowRefinanceTxnData = async 
     nft: loan.nft,
   }
 
-  // const oldLoan = {
-  //   publicKey: loan.publicKey,
-  //   fraktBond: loan.fraktBond,
-  //   bondTradeTransaction: optimisticResult.oldBondTradeTransaction,
-  //   nft: loan.nft,
-  // }
+  const result = {
+    loan: optimisticLoan,
+    offer: optimisticResult.bondOffer,
+  }
+
+  const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
+
+  if (isBanxSolTokenType(tokenType)) {
+    const newLoanDebt = new BN(solToRefinance)
+    const currentLoanDebt = calculateLoanRepayValueOnCertainDate({
+      loan,
+      upfrontFeeIncluded: true,
+      //? It is necessary to add some time because interest is accumulated even during the transaction processing.
+      //? There may not be enough funds for repayment. Therefore, we should add a small reserve for this dust.
+      date: moment().unix() + 180,
+    })
+
+    const upfrontFee = BN.max(newLoanDebt.sub(currentLoanDebt).div(new BN(100)), ZERO_BN)
+
+    //? Upfront fee on reborrow is calculated: (newDebt - prevDebt) / 100
+    const diff = newLoanDebt.sub(currentLoanDebt).sub(upfrontFee)
+
+    if (diff.gt(ZERO_BN)) {
+      return await banxSol.combineWithSellBanxSolInstructions({
+        inputAmount: diff.abs(),
+        walletAndConnection,
+        instructions,
+        signers,
+        lookupTables,
+        result,
+      })
+    }
+
+    return await banxSol.combineWithBuyBanxSolInstructions({
+      inputAmount: diff.abs(),
+      walletAndConnection,
+      instructions,
+      signers,
+      lookupTables,
+      result,
+    })
+  }
 
   return {
     instructions,
     signers,
-    result: {
-      loan: optimisticLoan,
-      // oldLoan,
-      offer: optimisticResult.bondOffer,
-    },
-    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    result,
+    lookupTables,
   }
 }
 

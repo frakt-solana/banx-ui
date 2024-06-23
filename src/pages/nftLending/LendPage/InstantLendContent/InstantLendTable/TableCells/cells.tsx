@@ -7,9 +7,13 @@ import {
 } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/nft'
-import { HealthColorIncreasing, getColorByPercent, isLoanTerminating } from '@banx/utils'
-
-import { calculateLendValue, calculateLenderApr } from '../helpers'
+import {
+  HealthColorIncreasing,
+  calculateLendValue,
+  calculateLenderApr,
+  getColorByPercent,
+  isLoanTerminating,
+} from '@banx/utils'
 
 import styles from '../InstantLendTable.module.less'
 

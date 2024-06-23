@@ -44,7 +44,7 @@ export const useUserOffers = () => {
     const expiredOffersByTime = optimisticOffers.filter((offer) => isOptimisticOfferExpired(offer))
 
     const optimisticsToRemove = chain(optimisticOffers)
-      .filter(({ offer }) => !isOfferClosed(offer?.pairState))
+      .filter(({ offer }) => !isOfferClosed(offer))
       .filter(({ offer }) => {
         const sameOfferFromBE = userOffers?.find(({ publicKey }) => publicKey === offer.publicKey)
         if (!sameOfferFromBE) return false
@@ -85,7 +85,7 @@ export const useUserOffers = () => {
       .groupBy(({ offer }) => offer.publicKey)
       .map((groupedOffers) => maxBy(groupedOffers, ({ offer }) => offer.lastTransactedAt))
       .compact()
-      .filter(({ offer }) => !isOfferClosed(offer.pairState))
+      .filter(({ offer }) => !isOfferClosed(offer))
       .value()
   }, [marketsPreview, data, optimisticOffers, publicKey])
 

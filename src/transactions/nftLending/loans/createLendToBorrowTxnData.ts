@@ -1,21 +1,26 @@
-import { web3 } from 'fbonds-core'
+import { BN, web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import {
   lendToBorrowerListing,
   refinancePerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import moment from 'moment'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
-import { isLoanListed } from '@banx/utils'
+import { banxSol } from '@banx/transactions'
+import { calculateLoanRepayValueOnCertainDate, isBanxSolTokenType, isLoanListed } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
 type CreateLendToBorrowTxnDataParams = {
   loan: core.Loan
   aprRate: number
+  tokenType: LendingTokenType
+
   walletAndConnection: WalletAndConnection
 }
 
@@ -29,9 +34,10 @@ type CreateLendToBorrowTxnData = (
 ) => Promise<CreateTxnData<CreateLendToBorrowActionOptimisticResult>>
 
 export const createLendToBorrowTxnData: CreateLendToBorrowTxnData = async (params) => {
-  const { loan } = params
+  const { loan, tokenType } = params
 
-  const { instructions, signers, optimisticResult } = await getIxnsAndSignersByLoanType(params)
+  const { instructions, signers, optimisticResult, lookupTables } =
+    await getIxnsAndSignersByLoanType(params)
 
   const optimisticLoan = {
     ...loan,
@@ -39,11 +45,30 @@ export const createLendToBorrowTxnData: CreateLendToBorrowTxnData = async (param
     bondTradeTransaction: optimisticResult.bondTradeTransaction,
   }
 
+  if (isBanxSolTokenType(tokenType) && !isLoanListed(loan)) {
+    const repayValue = calculateLoanRepayValueOnCertainDate({
+      loan,
+      upfrontFeeIncluded: true,
+      //? It is necessary to add some time because interest is accumulated even during the transaction processing.
+      //? There may not be enough funds for repayment. Therefore, we should add a small reserve for this dust.
+      date: moment().unix() + 180,
+    })
+
+    return await banxSol.combineWithBuyBanxSolInstructions({
+      inputAmount: new BN(repayValue),
+      walletAndConnection: params.walletAndConnection,
+      instructions,
+      signers,
+      lookupTables,
+      result: { loan: optimisticLoan, oldLoan: loan },
+    })
+  }
+
   return {
     instructions,
     signers,
     result: { loan: optimisticLoan, oldLoan: loan },
-    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    lookupTables,
   }
 }
 
@@ -82,7 +107,12 @@ const getIxnsAndSignersByLoanType = async (params: CreateLendToBorrowTxnDataPara
       bondTradeTransaction: optimisticResults.bondTradeTransaction,
     }
 
-    return { instructions, signers, optimisticResult: newOptimisticResult }
+    return {
+      instructions,
+      signers,
+      optimisticResult: newOptimisticResult,
+      lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    }
   }
 
   const { instructions, signers, optimisticResult } = await refinancePerpetualLoan({
@@ -114,5 +144,10 @@ const getIxnsAndSignersByLoanType = async (params: CreateLendToBorrowTxnDataPara
     bondTradeTransaction: optimisticResult.newBondTradeTransaction,
   }
 
-  return { instructions, signers, optimisticResult: newOptimisticResult }
+  return {
+    instructions,
+    signers,
+    optimisticResult: newOptimisticResult,
+    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+  }
 }
