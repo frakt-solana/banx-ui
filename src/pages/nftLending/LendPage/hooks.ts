@@ -12,7 +12,7 @@ import {
   useNftTokenType,
   useOffersOptimistic,
 } from '@banx/store/nft'
-import { isOfferClosed } from '@banx/utils'
+import { isOfferStateClosed } from '@banx/utils'
 
 import { LendTabName } from './LendPage'
 
@@ -58,7 +58,7 @@ export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => 
     const expiredOffersByTime = optimisticOffers.filter((offer) => isOptimisticOfferExpired(offer))
 
     const optimisticsToRemove = chain(optimisticOffers)
-      .filter(({ offer }) => !isOfferClosed(offer?.pairState))
+      .filter(({ offer }) => !isOfferStateClosed(offer?.pairState))
       .filter(({ offer }) => {
         const sameOfferFromBE = data?.find(({ publicKey }) => publicKey === offer.publicKey)
         if (!sameOfferFromBE) return false
@@ -84,7 +84,8 @@ export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => 
     return chain(combinedOffers)
       .groupBy('publicKey')
       .map((offers) => maxBy(offers, 'lastTransactedAt'))
-      .filter((offer) => !isOfferClosed(offer?.pairState || PairState.PerpetualClosed))
+      .compact()
+      .filter((offer) => !isOfferStateClosed(offer?.pairState || PairState.PerpetualClosed))
       .compact()
       .value()
   }, [optimisticOffers, data, marketPubkey])

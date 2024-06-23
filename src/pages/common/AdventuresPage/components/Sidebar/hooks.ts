@@ -97,6 +97,7 @@ export const useAdventuresSidebar = ({
   )
   const totalPlayersPoints = (banxTokenStake?.playerPointsStaked ?? 0) + tokensPlayersPoints
 
+  const MAX_WEEKS_PER_TXN = 8
   const claimBanx = async () => {
     if (!wallet.publicKey?.toBase58() || !banxTokenStake) {
       return
@@ -104,7 +105,7 @@ export const useAdventuresSidebar = ({
 
     const loadingSnackbarId = uniqueId()
 
-    const weeks = chain(banxAdventures)
+    const chunkWeeks = chain(banxAdventures)
       //? Claim only from active subscriptions
       .filter(
         ({ adventureSubscription }) =>
@@ -114,18 +115,18 @@ export const useAdventuresSidebar = ({
       //? Claim only from ended adventures
       .filter(({ adventure }) => isAdventureEnded(adventure))
       .map(({ adventure }) => adventure.week)
+      .chunk(MAX_WEEKS_PER_TXN)
       .value()
 
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const txnData = await createClaimBanxTxnData({
-        weeks,
-        walletAndConnection,
-      })
+      const txnsData = await Promise.all(
+        chunkWeeks.map((weeks) => createClaimBanxTxnData({ weeks, walletAndConnection })),
+      )
 
       await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
-        .addTxnData(txnData)
+        .addTxnsData(txnsData)
         .on('sentAll', (results) => {
           enqueueTransactionsSent()
           enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)
@@ -152,7 +153,7 @@ export const useAdventuresSidebar = ({
     } catch (error) {
       destroySnackbar(loadingSnackbarId)
       defaultTxnErrorHandler(error, {
-        additionalData: weeks,
+        additionalData: chunkWeeks,
         walletPubkey: wallet?.publicKey?.toBase58(),
         transactionName: 'Claim StakeBanx',
       })

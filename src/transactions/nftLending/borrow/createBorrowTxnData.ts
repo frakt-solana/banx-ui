@@ -1,4 +1,4 @@
-import { web3 } from 'fbonds-core'
+import { BN, web3 } from 'fbonds-core'
 import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   borrowCnftPerpetualCanopy,
@@ -11,7 +11,8 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 import { helius } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
-import { calculateApr } from '@banx/utils'
+import { banxSol } from '@banx/transactions'
+import { calculateApr, isBanxSolTokenType } from '@banx/utils'
 
 import { fetchRuleset } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
@@ -41,7 +42,7 @@ export const createBorrowTxnData: CreateBorrowTxnData = async ({
 }) => {
   const borrowType = getNftBorrowType(nft)
 
-  const { instructions, signers, optimisticResult } = await getTxnDataByBorrowType({
+  const { instructions, signers, lookupTables, optimisticResult } = await getTxnDataByBorrowType({
     nft,
     loanValue,
     offer,
@@ -61,11 +62,23 @@ export const createBorrowTxnData: CreateBorrowTxnData = async ({
     offer: optimisticResult.bondOffer,
   }
 
+  if (isBanxSolTokenType(tokenType)) {
+    return await banxSol.combineWithSellBanxSolInstructions({
+      //? 0.99 --> without upfront fee
+      inputAmount: new BN(loanValue).mul(new BN(99)).div(new BN(100)),
+      walletAndConnection,
+      instructions,
+      signers,
+      lookupTables,
+      result: loanAndOffer,
+    })
+  }
+
   return {
     instructions,
     signers,
     result: loanAndOffer,
-    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    lookupTables,
   }
 }
 
@@ -122,7 +135,12 @@ const getTxnDataByBorrowType = async ({
       sendTxn: sendTxnPlaceHolder,
     })
 
-    return { instructions, signers, optimisticResult: optimisticResults[0] }
+    return {
+      instructions,
+      signers,
+      optimisticResult: optimisticResults[0],
+      lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    }
   }
 
   if (borrowType === BorrowType.CNft) {
@@ -165,7 +183,12 @@ const getTxnDataByBorrowType = async ({
       sendTxn: sendTxnPlaceHolder,
     })
 
-    return { instructions, signers, optimisticResult: optimisticResults[0] }
+    return {
+      instructions,
+      signers,
+      optimisticResult: optimisticResults[0],
+      lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    }
   }
 
   const ruleSet = await fetchRuleset({
@@ -204,7 +227,12 @@ const getTxnDataByBorrowType = async ({
     sendTxn: sendTxnPlaceHolder,
   })
 
-  return { instructions, signers, optimisticResult: optimisticResults[0] }
+  return {
+    instructions,
+    signers,
+    optimisticResult: optimisticResults[0],
+    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+  }
 }
 
 const getNftBorrowType = (nft: core.BorrowNft): BorrowType => {

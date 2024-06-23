@@ -18,7 +18,7 @@ import {
   useNftTokenType,
   useOffersOptimistic,
 } from '@banx/store/nft'
-import { isLoanListed, isLoanRepaid, isLoanTerminating, isOfferClosed } from '@banx/utils'
+import { isLoanListed, isLoanRepaid, isLoanTerminating, isOfferStateClosed } from '@banx/utils'
 
 import { LoansTabsNames, SECONDS_IN_72_HOURS } from './constants'
 
@@ -124,7 +124,7 @@ export const useWalletLoansAndOffers = () => {
 
     const optimisticsToRemove = chain(optimisticOffers)
       //? Filter closed offers from LS optimistics
-      .filter(({ offer }) => !isOfferClosed(offer?.pairState))
+      .filter(({ offer }) => !isOfferStateClosed(offer?.pairState))
       .filter(({ offer }) => {
         const sameOfferFromBE = data.offers[offer.hadoMarket]?.find(
           ({ publicKey }) => publicKey === offer.publicKey,
@@ -151,7 +151,7 @@ export const useWalletLoansAndOffers = () => {
 
     const optimisticsFiltered = chain(optimisticOffers)
       //? Filter closed offers from LS optimistics
-      .filter(({ offer }) => !isOfferClosed(offer?.pairState))
+      .filter(({ offer }) => !isOfferStateClosed(offer?.pairState))
       //? Filter own offers from LS optimistics
       .filter(({ offer }) => offer?.assetReceiver !== publicKeyString)
       .value()

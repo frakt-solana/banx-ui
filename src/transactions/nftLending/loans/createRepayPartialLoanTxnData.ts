@@ -1,19 +1,30 @@
-import { web3 } from 'fbonds-core'
-import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
+import { BN, web3 } from 'fbonds-core'
+import { BASE_POINTS, EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import { repayPartialPerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import moment from 'moment'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
+import { banxSol } from '@banx/transactions'
+import {
+  calculateLoanRepayValueOnCertainDate,
+  isBanxSolTokenType,
+  isSolTokenType,
+} from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
-type CreateRepayPartialLoanTxnData = (params: {
+type CreateRepayPartialLoanTxnDataParams = {
   loan: core.Loan
   fractionToRepay: number //? F.E 50% => 5000
   walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<core.Loan>>
+}
+
+type CreateRepayPartialLoanTxnData = (
+  params: CreateRepayPartialLoanTxnDataParams,
+) => Promise<CreateTxnData<core.Loan>>
 
 export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = async ({
   fractionToRepay,
@@ -47,6 +58,8 @@ export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = asyn
     sendTxn: sendTxnPlaceHolder,
   })
 
+  const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
+
   const optimisticResult: core.Loan = optimisticResults.map((optimistic) => ({
     publicKey: optimistic.fraktBond.publicKey,
     fraktBond: optimistic.fraktBond,
@@ -54,10 +67,35 @@ export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = asyn
     nft,
   }))[0]
 
+  //? Add BanxSol instructions if offer wasn't closed!
+  if (
+    isBanxSolTokenType(bondTradeTransaction.lendingToken) ||
+    isSolTokenType(bondTradeTransaction.lendingToken)
+  ) {
+    const repayValue = calculateLoanRepayValueOnCertainDate({
+      loan,
+      upfrontFeeIncluded: false,
+      //? It is necessary to add some time because interest is accumulated even during the transaction processing.
+      //? There may not be enough funds for repayment. Therefore, we should add a small reserve for this dust.
+      date: moment().unix() + 180,
+    })
+      .mul(new BN(fractionToRepay))
+      .div(new BN(BASE_POINTS))
+
+    return await banxSol.combineWithBuyBanxSolInstructions({
+      inputAmount: repayValue,
+      walletAndConnection,
+      instructions,
+      signers,
+      lookupTables,
+      result: optimisticResult,
+    })
+  }
+
   return {
     instructions,
     signers,
-    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    lookupTables,
     result: optimisticResult,
   }
 }
