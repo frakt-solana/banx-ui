@@ -1,3 +1,4 @@
+import { BN } from 'fbonds-core'
 import { BASE_POINTS, SECONDS_IN_DAY } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   calculateCurrentInterestSolPure,
@@ -5,7 +6,6 @@ import {
   calculateLenderPartialPartFromBorrower,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondTradeTransactionV2State, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
-import { isInteger } from 'lodash'
 import moment from 'moment'
 
 import { core } from '@banx/api/nft'
@@ -15,9 +15,10 @@ import {
   FACELESS_MARKET_PUBKEY,
   NFT_MARKETS_WITH_CUSTOM_APR,
   SECONDS_IN_72_HOURS,
+  WEEKS_IN_YEAR,
 } from '@banx/constants'
-
-import { RENT_FEE_BORROW_AMOUNT_IMPACT } from '../../tokens'
+import { SOLANA_RENT_FEE_BORROW_AMOUNT_IMPACT } from '@banx/utils'
+import { ZERO_BN } from '@banx/utils/bn'
 
 export enum LoanStatus {
   Active = 'active',
@@ -79,32 +80,49 @@ export const determineLoanStatus = (loan: core.Loan) => {
   return mappedStatus
 }
 
-export const calculateLoanRepayValue = (loan: core.Loan, includeFee = true) => {
-  const { solAmount, feeAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction || {}
+/**
+ * set upfrontFeeIncluded false for partial repay
+ */
+export const calculateLoanRepayValue = (loan: core.Loan, upfrontFeeIncluded = true) => {
+  const repayValueBN = calculateLoanRepayValueOnCertainDate({
+    loan,
+    upfrontFeeIncluded,
+    date: moment().unix(),
+  })
 
-  const loanValue = includeFee ? solAmount + feeAmount : solAmount
+  return repayValueBN.toNumber()
+}
+
+type CalculateLoanRepayValueOnCertainDate = (params: {
+  loan: core.Loan
+  upfrontFeeIncluded?: boolean
+  date: number //? Unix timestamp
+}) => BN
+/**
+ * set upfrontFeeIncluded false for partial repay
+ */
+export const calculateLoanRepayValueOnCertainDate: CalculateLoanRepayValueOnCertainDate = ({
+  loan,
+  upfrontFeeIncluded = true,
+  date,
+}): BN => {
+  const { solAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction || {}
+
+  const loanValue = upfrontFeeIncluded ? calculateBorrowedAmount(loan).toNumber() : solAmount
 
   const calculatedInterest = calculateCurrentInterestSolPure({
     loanValue,
     startTime: soldAt,
-    currentTime: moment().unix(),
+    currentTime: date,
     rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
   })
 
-  return loanValue + calculatedInterest
+  return new BN(loanValue).add(new BN(calculatedInterest))
 }
 
-export const formatLoansAmount = (loansAmount = 0) => {
-  if (isInteger(loansAmount)) {
-    return String(loansAmount)
-  }
-
-  return loansAmount.toFixed(2)
-}
-
-export const calcLoanBorrowedAmount = (loan: core.Loan) => {
+export const calculateBorrowedAmount = (loan: core.Loan): BN => {
   const { solAmount, feeAmount } = loan.bondTradeTransaction
-  return solAmount + feeAmount
+  return new BN(solAmount).add(new BN(feeAmount))
 }
 
 export const isLoanActive = (loan: core.Loan) => {
@@ -132,20 +150,20 @@ export const isLoanTerminating = (loan: core.Loan) => {
 }
 
 export const isUnderWaterLoan = (loan: core.Loan) => {
-  const { solAmount, feeAmount } = loan.bondTradeTransaction || {}
-
   const collectionFloor = loan.nft.collectionFloor
-  const totalLentValue = solAmount + feeAmount
+  const totalLentValue = calculateBorrowedAmount(loan).toNumber()
 
   return totalLentValue > collectionFloor
 }
 
-//? Returns apr value in base points: 7380 => 73.8%
 type CalculateApr = (params: {
   loanValue: number
   collectionFloor: number
   marketPubkey?: string
 }) => number
+/**
+ * Returns apr value in base points: 7380 => 73.8%
+ */
 export const calculateApr: CalculateApr = ({ loanValue, collectionFloor, marketPubkey }) => {
   //? exceptions for some collections with hardcoded APR
   const customApr = NFT_MARKETS_WITH_CUSTOM_APR[marketPubkey || '']
@@ -161,7 +179,7 @@ export const calcWeeklyFeeWithRepayFee = (loan: core.Loan) => {
   const { soldAt, amountOfBonds } = loan.bondTradeTransaction
 
   return calculateCurrentInterestSolPure({
-    loanValue: calcLoanBorrowedAmount(loan),
+    loanValue: calculateBorrowedAmount(loan).toNumber(),
     startTime: soldAt,
     currentTime: soldAt + SECONDS_IN_DAY * 7,
     rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
@@ -215,19 +233,76 @@ export const checkIfFreezeExpired = (loan: core.Loan) => {
   return moment().unix() > freezeExpiredAt
 }
 
-export const calcBorrowValueWithRentFee = (
-  //TODO r: Move to loans
-  loanValue: number,
-  marketPubkey: string,
-  tokenType: LendingTokenType,
-) => {
-  if (loanValue === 0) return 0
-  if (marketPubkey === FACELESS_MARKET_PUBKEY) return loanValue
+type AdjustBorrowValueWithSolanaRentFee = (params: {
+  value: BN
+  marketPubkey?: string
+  tokenType: LendingTokenType
+}) => BN
+export const adjustBorrowValueWithSolanaRentFee: AdjustBorrowValueWithSolanaRentFee = ({
+  value,
+  marketPubkey,
+  tokenType,
+}) => {
+  if (value.eq(ZERO_BN)) return ZERO_BN
+  if (!!marketPubkey && marketPubkey === FACELESS_MARKET_PUBKEY) return value
 
-  const rentFee = RENT_FEE_BORROW_AMOUNT_IMPACT[tokenType]
-  return loanValue - rentFee
+  const rentFee = SOLANA_RENT_FEE_BORROW_AMOUNT_IMPACT[tokenType]
+  return value.sub(new BN(rentFee))
 }
 
-export const calcBorrowValueWithProtocolFee = (
-  loanValue: number, //TODO r: Move to loans
-) => Math.floor(loanValue * (1 - BONDS.PROTOCOL_FEE_PERCENT / 1e4))
+export const calculateBorrowValueWithProtocolFee = (loanValue: number) =>
+  Math.floor(loanValue * (1 - BONDS.PROTOCOL_FEE_PERCENT / 1e4))
+
+export const calculateClaimValueOnCertainDate = (loan: core.Loan, date: number): BN => {
+  const { amountOfBonds, soldAt } = loan.bondTradeTransaction
+
+  const loanBorrowedAmount = calculateBorrowedAmount(loan).toNumber()
+
+  const currentInterest = calculateCurrentInterestSolPure({
+    loanValue: loanBorrowedAmount,
+    startTime: soldAt,
+    currentTime: date,
+    rateBasePoints: amountOfBonds,
+  })
+  return new BN(currentInterest).add(new BN(loanBorrowedAmount))
+}
+
+export const calculateClaimValue = (loan: core.Loan) => {
+  const claimValueBN = calculateClaimValueOnCertainDate(loan, moment().unix())
+
+  return claimValueBN.toNumber()
+}
+
+type CalcWeeklyInterestFee = (loan: core.Loan) => number
+export const calcWeeklyInterestFee: CalcWeeklyInterestFee = (loan) => {
+  const aprInPercent = loan.bondTradeTransaction.amountOfBonds / 100
+  const aprWithProtocolFee = aprInPercent + BONDS.PROTOCOL_REPAY_FEE / 100
+  const repayValue = calculateLendValue(loan)
+
+  const weeklyAprPercentage = aprWithProtocolFee / 100 / WEEKS_IN_YEAR
+
+  const weeklyFee = weeklyAprPercentage * repayValue
+
+  return weeklyFee
+}
+
+/**
+ * Returns apr value in base points: 7380 => 73.8%
+ */
+export const calculateLenderApr = (loan: core.Loan) => {
+  return calculateApr({
+    loanValue: calculateLendValue(loan),
+    collectionFloor: loan.nft.collectionFloor,
+    marketPubkey: loan.fraktBond.hadoMarket,
+  })
+}
+
+export const calculateLendValue = (loan: core.Loan) => {
+  return isLoanListed(loan)
+    ? calculateBorrowedAmount(loan).toNumber()
+    : calculateLoanRepayValue(loan)
+}
+
+//TODO Refactor all helpers for Borrower/Lender. Now
+//TODO It's realy difficult to understand what to use atm
+//TODO Spit to common, lender, borrower utils

@@ -13,9 +13,15 @@ import { Modal } from '@banx/components/modals/BaseModal'
 import { core } from '@banx/api/nft'
 import { SECONDS_IN_DAY } from '@banx/constants'
 import { useModal } from '@banx/store/common'
-import { calcWeightedAverage, isFreezeLoan, isLoanTerminating } from '@banx/utils'
+import {
+  calcWeeklyInterestFee,
+  calcWeightedAverage,
+  calculateLendValue,
+  calculateLenderApr,
+  isFreezeLoan,
+  isLoanTerminating,
+} from '@banx/utils'
 
-import { calcWeeklyInterestFee, calculateLendValue, calculateLenderApr } from './helpers'
 import { useInstantTransactions } from './hooks'
 import { useLoansState } from './loansState'
 

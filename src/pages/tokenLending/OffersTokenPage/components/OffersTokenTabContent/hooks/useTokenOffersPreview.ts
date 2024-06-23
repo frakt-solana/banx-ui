@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query'
 import { core } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
 import { useTokenOffersOptimistic } from '@banx/store/token'
-import { isOfferClosed } from '@banx/utils'
+import { isOfferStateClosed } from '@banx/utils'
 
 export const useTokenOffersPreview = () => {
   const { publicKey } = useWallet()
@@ -34,7 +34,7 @@ export const useTokenOffersPreview = () => {
     return data.filter(
       ({ publicKey }) =>
         !optimisticOffers.find(
-          ({ offer }) => offer.publicKey === publicKey && isOfferClosed(offer.pairState),
+          ({ offer }) => offer.publicKey === publicKey && isOfferStateClosed(offer.pairState),
         ),
     )
   }, [data, optimisticOffers])

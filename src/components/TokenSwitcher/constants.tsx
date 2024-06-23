@@ -12,7 +12,7 @@ interface NftTokenOption {
 
 export const NFT_TOKEN_OPTIONS: NftTokenOption[] = [
   {
-    key: LendingTokenType.NativeSol,
+    key: LendingTokenType.BanxSol,
     label: 'SOL',
     unit: <SOL />,
   },
@@ -47,7 +47,7 @@ export interface TokenOption {
 
 export const TOKEN_OPTIONS: TokenOption[] = [
   {
-    key: LendingTokenType.NativeSol,
+    key: LendingTokenType.BanxSol,
     label: 'SOL',
     unit: <SOL />,
   },

@@ -1,4 +1,5 @@
 import { web3 } from 'fbonds-core'
+import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   BondOfferOptimistic,
   updatePerpetualOfferBonding,
@@ -8,10 +9,12 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
+import { banxSol } from '@banx/transactions'
+import { ZERO_BN, calculateIdleFundsInOffer, isBanxSolTokenType } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
-type CreateUpdateBondingOfferTxnData = (params: {
+type CreateUpdateBondingOfferTxnDataParams = {
   loanValue: number //? human number
   loansAmount: number
   deltaValue: number //? human number
@@ -19,7 +22,11 @@ type CreateUpdateBondingOfferTxnData = (params: {
   tokenType: LendingTokenType
   collateralsPerToken?: number
   walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<BondOfferOptimistic>>
+}
+
+type CreateUpdateBondingOfferTxnData = (
+  params: CreateUpdateBondingOfferTxnDataParams,
+) => Promise<CreateTxnData<BondOfferOptimistic>>
 
 export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = async ({
   loanValue,
@@ -50,10 +57,45 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
     sendTxn: sendTxnPlaceHolder,
   })
 
+  const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
+
+  if (isBanxSolTokenType(tokenType)) {
+    const oldOfferSize = calculateIdleFundsInOffer(offer)
+
+    const newOffer = optimisticResult?.bondOffer
+    if (!newOffer) {
+      throw new Error('Optimistic offer doesnt exist')
+    }
+    //? Optimistic offer is broken
+    const newOfferSize = calculateIdleFundsInOffer(newOffer)
+
+    const diff = newOfferSize.sub(oldOfferSize)
+
+    if (diff.gt(ZERO_BN)) {
+      return await banxSol.combineWithBuyBanxSolInstructions({
+        inputAmount: diff.abs(),
+        walletAndConnection,
+        instructions,
+        signers,
+        lookupTables,
+        result: optimisticResult,
+      })
+    }
+
+    return await banxSol.combineWithSellBanxSolInstructions({
+      inputAmount: diff.abs(),
+      walletAndConnection,
+      instructions,
+      signers,
+      lookupTables,
+      result: optimisticResult,
+    })
+  }
+
   return {
     instructions,
     signers,
     result: optimisticResult,
-    lookupTables: [],
+    lookupTables,
   }
 }

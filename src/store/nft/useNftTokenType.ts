@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 import { create } from 'zustand'
 
+import { isBanxSolTokenType, isSolTokenType } from '@banx/utils'
+
 import { ModeType } from '../common'
 import { createPathWithModeParams } from '../functions'
 
@@ -12,7 +14,7 @@ type TokenTypeState = {
 }
 
 export const useNftTokenTypeState = create<TokenTypeState>((set) => ({
-  tokenType: LendingTokenType.NativeSol,
+  tokenType: LendingTokenType.BanxSol,
   setTokenType: (tokenType: LendingTokenType) => set((state) => ({ ...state, tokenType })),
 }))
 
@@ -26,7 +28,7 @@ export const useNftTokenType = () => {
 
   const { tokenType, setTokenType: setTokenTypeState } = useNftTokenTypeState((state) => {
     try {
-      const tokenType = tokenTypeFromUrl || LendingTokenType.NativeSol
+      const tokenType = tokenTypeFromUrl || LendingTokenType.BanxSol
 
       z.nativeEnum(LendingTokenType).parse(tokenType)
 
@@ -34,7 +36,7 @@ export const useNftTokenType = () => {
     } catch (error) {
       console.error('Error getting token type from URL')
 
-      return { ...state, tokenType: LendingTokenType.NativeSol }
+      return { ...state, tokenType: LendingTokenType.BanxSol }
     }
   })
 
@@ -46,4 +48,10 @@ export const useNftTokenType = () => {
   }
 
   return { tokenType, setTokenType }
+}
+
+export const createPathWithTokenParam = (pathname: string, tokenType: LendingTokenType) => {
+  if (isSolTokenType(tokenType) || isBanxSolTokenType(tokenType)) return pathname
+
+  return `${pathname}?token=${tokenType}`
 }

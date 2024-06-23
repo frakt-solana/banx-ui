@@ -6,7 +6,7 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { TABLET_WIDTH } from '@banx/constants'
 import { useWindowSize } from '@banx/hooks'
 import { useNftTokenType } from '@banx/store/nft'
-import { isSolTokenType } from '@banx/utils'
+import { isBanxSolTokenType, isSolTokenType } from '@banx/utils'
 
 import { TokenDropdown } from './TokenDropdown'
 import { NFT_TOKEN_OPTIONS, NFT_TOKEN_VALUE_DETAILS, TOKEN_OPTIONS } from './constants'
@@ -21,12 +21,15 @@ type NftTokenValueProps = {
 const NftTokenValue: FC<NftTokenValueProps> = ({ tokenType, active }) => {
   const { icon: tokenIcon, ticker: tokenTicker } = NFT_TOKEN_VALUE_DETAILS[tokenType]
   const isSol = isSolTokenType(tokenType)
+  const isBanxSol = isBanxSolTokenType(tokenType)
 
   return (
     <div className={classNames(styles.nftTokenWrapper, { [styles.active]: active })}>
       <p className={styles.tokenValue}>
         <div
-          className={classNames(styles.tokenIconWrapper, { [styles.tokenIconSolWrapper]: isSol })}
+          className={classNames(styles.tokenIconWrapper, {
+            [styles.tokenValueSolWrapper]: isSol || isBanxSol,
+          })}
         >
           {tokenIcon}
         </div>
@@ -47,7 +50,9 @@ export const NftTokenSwitcher: FC<NftTokenSwitcherProps> = ({ title }) => {
   const isTable = width < TABLET_WIDTH
 
   const toggleTokenType = () => {
-    const nextValue = isSolTokenType(tokenType) ? LendingTokenType.Usdc : LendingTokenType.NativeSol
+    const nextValue = isBanxSolTokenType(tokenType)
+      ? LendingTokenType.Usdc
+      : LendingTokenType.BanxSol
     return setTokenType(nextValue)
   }
 
