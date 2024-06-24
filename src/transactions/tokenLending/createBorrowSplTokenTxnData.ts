@@ -10,7 +10,7 @@ import { BONDS } from '@banx/constants'
 import { BorrowToken } from '@banx/pages/tokenLending/BorrowTokenPage/constants'
 import { sendTxnPlaceHolder } from '@banx/transactions'
 
-export type BorrowTxnOptimisticResult = { loan: core.TokenLoan; offer: Offer }
+export type BorrowTokenTxnOptimisticResult = { loan: core.TokenLoan; offer: Offer }
 
 export type CreateBorrowTokenTxnDataParams = {
   collateral: BorrowToken
@@ -23,7 +23,7 @@ export type CreateBorrowTokenTxnDataParams = {
 
 export type CreateBorrowTokenTxnData = (
   params: CreateBorrowTokenTxnDataParams & { walletAndConnection: WalletAndConnection },
-) => Promise<CreateTxnData<BorrowTxnOptimisticResult>>
+) => Promise<CreateTxnData<BorrowTokenTxnOptimisticResult>>
 
 export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async ({
   collateral,

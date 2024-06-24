@@ -2,20 +2,35 @@ import { useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BN } from 'fbonds-core'
-import { find, uniqueId } from 'lodash'
+import { chain, find, uniqueId } from 'lodash'
+import { useNavigate } from 'react-router-dom'
 import { TxnExecutor } from 'solana-transactions-executor'
+
+import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
+import {
+  SubscribeNotificationsModal,
+  createLoanSubscribeNotificationsContent,
+  createLoanSubscribeNotificationsTitle,
+} from '@banx/components/modals'
 
 import { Offer } from '@banx/api/nft'
 import { BorrowSplTokenOffers } from '@banx/api/tokens'
 import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
-import { useIsLedger } from '@banx/store/common'
+import { getDialectAccessToken } from '@banx/providers'
+import { PATHS } from '@banx/router'
+import { createPathWithModeParams } from '@banx/store'
+import { ModeType, useIsLedger, useModal } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
+import { useTokenLoansOptimistic } from '@banx/store/token'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
-import { createBorrowSplTokenTxnData } from '@banx/transactions/tokenLending'
+import {
+  BorrowTokenTxnOptimisticResult,
+  createBorrowSplTokenTxnData,
+} from '@banx/transactions/tokenLending'
 import {
   destroySnackbar,
   enqueueConfirmationError,
@@ -38,10 +53,39 @@ export const useBorrowSplTokenTransaction = (
 ) => {
   const wallet = useWallet()
   const { connection } = useConnection()
+  const navigate = useNavigate()
+  const { open, close } = useModal()
+
   const { isLedger } = useIsLedger()
   const { tokenType } = useNftTokenType()
 
-  const { offers } = useTokenMarketOffers(token.marketPubkey || '')
+  const { add: addLoansOptimistic } = useTokenLoansOptimistic()
+
+  const { offers, updateOrAddOffer } = useTokenMarketOffers(token.marketPubkey || '')
+
+  const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
+
+  const goToLoansPage = () => {
+    navigate(createPathWithModeParams(PATHS.LOANS_TOKEN, ModeType.Token, tokenType))
+  }
+
+  const onBorrowSuccess = (loansAmount = 1) => {
+    //? Show notification with an offer to subscribe (if user not subscribed)
+    const isUserSubscribedToNotifications = !!getDialectAccessToken(wallet.publicKey?.toBase58())
+    if (!isUserSubscribedToNotifications) {
+      open(SubscribeNotificationsModal, {
+        title: createLoanSubscribeNotificationsTitle(loansAmount),
+        message: createLoanSubscribeNotificationsContent(!isUserSubscribedToNotifications),
+        onActionClick: !isUserSubscribedToNotifications
+          ? () => {
+              close()
+              setBanxNotificationsSiderVisibility(true)
+            }
+          : undefined,
+        onCancel: close,
+      })
+    }
+  }
 
   const transactionsData = useMemo(() => {
     if (!offers.length) return []
@@ -84,7 +128,7 @@ export const useBorrowSplTokenTransaction = (
         ),
       )
 
-      await new TxnExecutor(walletAndConnection, {
+      await new TxnExecutor<BorrowTokenTxnOptimisticResult>(walletAndConnection, {
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
         chunkSize: isLedger ? 1 : 40,
       })
@@ -100,6 +144,24 @@ export const useBorrowSplTokenTransaction = (
 
           if (confirmed.length) {
             enqueueSnackbar({ message: 'Borrowed successfully', type: 'success' })
+
+            const loans = chain(confirmed)
+              .map(({ result }) => result?.loan)
+              .compact()
+              .value()
+
+            if (wallet.publicKey) {
+              addLoansOptimistic(loans, wallet.publicKey?.toBase58())
+            }
+
+            confirmed.forEach(({ result }) => {
+              if (result) {
+                updateOrAddOffer(result?.offer)
+              }
+            })
+
+            goToLoansPage()
+            onBorrowSuccess?.(loans.length)
           }
 
           if (failed.length) {

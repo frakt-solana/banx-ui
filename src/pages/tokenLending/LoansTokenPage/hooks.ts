@@ -83,7 +83,9 @@ export const useWalletTokenLoansAndOffers = () => {
       ({ publicKey }) => !optimisticLoansPubkeys.includes(publicKey),
     )
 
-    const loans = dataFiltered.filter((loan) => !isTokenLoanRepaid(loan))
+    //TODO: Should we add filter same pubkeys by freshness?
+    const combinedLoans = [...dataFiltered, ...map(walletOptimisticLoans, ({ loan }) => loan)]
+    const loans = combinedLoans.filter((loan) => !isTokenLoanRepaid(loan))
 
     return loans
   }, [data, walletOptimisticLoans])

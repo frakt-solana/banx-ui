@@ -3,6 +3,7 @@ import { filter, uniqBy } from 'lodash'
 import moment from 'moment'
 
 import { core } from '@banx/api/tokens'
+import { isBanxSolTokenType, isSolTokenType, isUsdcTokenType } from '@banx/utils'
 
 const LOANS_CACHE_TIME_UNIX = 2 * 60 //? Auto clear optimistic after 2 minutes
 
@@ -56,5 +57,13 @@ export const filterOptimisticLoansByTokenType = (
   loans: TokenLoanOptimistic[],
   tokenType: LendingTokenType,
 ) => {
-  return filter(loans, ({ loan }) => loan.bondTradeTransaction.lendingToken === tokenType)
+  const isUsdc = (loan: core.TokenLoan) => isUsdcTokenType(loan.bondTradeTransaction.lendingToken)
+
+  const isSolOrBanxSol = (loan: core.TokenLoan) =>
+    isSolTokenType(loan.bondTradeTransaction.lendingToken) ||
+    isBanxSolTokenType(loan.bondTradeTransaction.lendingToken)
+
+  return filter(loans, ({ loan }) =>
+    isUsdcTokenType(tokenType) ? isUsdc(loan) : isSolOrBanxSol(loan),
+  )
 }

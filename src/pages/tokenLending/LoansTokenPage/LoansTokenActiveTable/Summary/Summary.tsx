@@ -38,7 +38,7 @@ const Summary: FC<SummaryProps> = ({ loans, selectedLoans: rawSelectedLoans, set
   }, [rawSelectedLoans])
 
   const totalSelectedLoans = selectedLoans.length
-  const totalDebt = sumBy(loans, (loan) => caclulateBorrowTokenLoanValue(loan).toNumber())
+  const totalDebt = sumBy(selectedLoans, (loan) => caclulateBorrowTokenLoanValue(loan).toNumber())
   const totalWeeklyFee = sumBy(selectedLoans, calcTokenWeeklyFeeWithRepayFee)
   const totalValueToPay = sumBy(selectedLoans, calcTotalValueToPay)
 
