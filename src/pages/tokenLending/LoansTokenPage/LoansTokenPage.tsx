@@ -28,7 +28,7 @@ export const LoansTokenPage = () => {
 
   return (
     <div className={styles.pageWrapper}>
-      <LoansHeader />
+      <LoansHeader loans={loans} />
       <Tabs value={currentTabValue} {...tabsProps} />
       {currentTabValue === LoansTokenTabsName.LOANS && (
         <LoansTokenActiveTable loans={loans} offers={offers} isLoading={isLoading} />
