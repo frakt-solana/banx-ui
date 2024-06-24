@@ -1,6 +1,5 @@
 import { FC } from 'react'
 
-import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { capitalize } from 'lodash'
 import moment from 'moment'
 
@@ -65,13 +64,8 @@ export const DebtCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
   )
 }
 
-interface LTVCellProps {
-  loan: core.TokenLoan
-  tokenType: LendingTokenType
-}
-
-export const LTVCell: FC<LTVCellProps> = ({ loan, tokenType }) => {
-  const tokenDecimals = getTokenDecimals(tokenType)
+export const LTVCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
+  const tokenDecimals = getTokenDecimals(loan.bondTradeTransaction.lendingToken)
 
   const collateralSupply = loan.fraktBond.fbondTokenSupply / Math.pow(10, loan.collateral.decimals)
   const debtValue = caclulateBorrowTokenLoanValue(loan).toNumber()

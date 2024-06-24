@@ -6,6 +6,8 @@ import { SortOption, SortOrder } from '@banx/components/SortDropdown'
 
 import { core } from '@banx/api/tokens'
 import {
+  caclulateBorrowTokenLoanValue,
+  getTokenDecimals,
   isTokenLoanLiquidated,
   isTokenLoanRepaymentCallActive,
   isTokenLoanTerminating,
@@ -14,7 +16,9 @@ import {
 import styles from '../LoansTokenActiveTable.module.less'
 
 enum SortField {
+  DEBT = 'debt',
   APR = 'apr',
+  LTV = 'ltv',
   STATUS = 'status',
   DURATION = 'duration',
 }
@@ -23,12 +27,25 @@ type SortValueGetter = (loan: core.TokenLoan) => number
 
 const SORT_OPTIONS: SortOption<SortField>[] = [
   { label: 'Status', value: [SortField.STATUS, 'desc'] },
+  { label: 'Debt', value: [SortField.DEBT, 'desc'] },
   { label: 'APR', value: [SortField.APR, 'desc'] },
+  { label: 'LTV', value: [SortField.LTV, 'desc'] },
   { label: 'Duration', value: [SortField.DURATION, 'desc'] },
 ]
 
 const SORT_VALUE_MAP: Record<SortField, string | SortValueGetter> = {
   [SortField.APR]: (loan) => loan.bondTradeTransaction.amountOfBonds,
+  [SortField.DEBT]: (loan) => caclulateBorrowTokenLoanValue(loan).toNumber(),
+  [SortField.LTV]: (loan) => {
+    const tokenDecimals = getTokenDecimals(loan.bondTradeTransaction.lendingToken)
+
+    const collateralSupply =
+      loan.fraktBond.fbondTokenSupply / Math.pow(10, loan.collateral.decimals)
+    const debtValue = caclulateBorrowTokenLoanValue(loan).toNumber()
+
+    const ltvRatio = debtValue / tokenDecimals / collateralSupply
+    return (ltvRatio / loan.collateralPrice) * 100
+  },
   [SortField.DURATION]: (loan) => loan.fraktBond.activatedAt * -1,
   [SortField.STATUS]: '',
 }
