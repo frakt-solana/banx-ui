@@ -31,6 +31,7 @@ const InstantBorrowContent = () => {
     borrowTokenBalanceStr,
 
     upfrontFee,
+    weeklyFee,
 
     errorMessage,
     executeBorrow,
@@ -64,7 +65,7 @@ const InstantBorrowContent = () => {
         disabledInput={!wallet.connected}
       />
 
-      <Summary apr={MOCK_APR_RATE} upfrontFee={upfrontFee} weeklyInterest={0.01} />
+      <Summary apr={MOCK_APR_RATE} upfrontFee={upfrontFee} weeklyFee={weeklyFee} />
       <Button
         onClick={executeBorrow}
         disabled={!wallet.connected || !!errorMessage}
@@ -81,10 +82,10 @@ export default InstantBorrowContent
 interface SummaryProps {
   apr: number
   upfrontFee: number
-  weeklyInterest: number
+  weeklyFee: number
 }
 
-export const Summary: FC<SummaryProps> = ({ apr, upfrontFee, weeklyInterest }) => {
+export const Summary: FC<SummaryProps> = ({ apr, upfrontFee, weeklyFee }) => {
   const statClassNames = {
     value: styles.fixedStatValue,
   }
@@ -100,7 +101,7 @@ export const Summary: FC<SummaryProps> = ({ apr, upfrontFee, weeklyInterest }) =
       />
       <StatInfo
         label="Est weekly fee"
-        value={<DisplayValue value={weeklyInterest} />}
+        value={<DisplayValue value={weeklyFee} />}
         tooltipText="Expected weekly interest on your loans. Interest is added to your debt balance"
         classNamesProps={statClassNames}
         flexType="row"

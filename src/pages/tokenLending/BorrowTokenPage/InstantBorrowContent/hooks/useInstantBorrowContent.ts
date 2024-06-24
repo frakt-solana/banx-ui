@@ -1,7 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { BN } from 'fbonds-core'
+import { SECONDS_IN_DAY } from 'fbonds-core/lib/fbond-protocol/constants'
+import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import moment from 'moment'
 
+import { BONDS } from '@banx/constants'
 import { useTokenBalance } from '@banx/hooks'
 import { useNftTokenType } from '@banx/store/nft'
 import { bnToHuman } from '@banx/utils'
@@ -11,6 +15,7 @@ import {
   BorrowToken,
   DEFAULT_BORROW_TOKEN,
   DEFAULT_COLLATERAL_TOKEN,
+  MOCK_APR_RATE,
 } from '../../constants'
 import { getErrorMessage } from '../helpers'
 import { useBorrowSplTokenOffers } from './useBorrowSplTokenOffers'
@@ -132,6 +137,12 @@ export const useInstantBorrowContent = () => {
   const { executeBorrow } = useBorrowSplTokenTransaction(collateralToken, splTokenOffers)
 
   const upfrontFee = totalAmountToGet.div(new BN(100)).toNumber()
+  const weeklyFee = calculateCurrentInterestSolPure({
+    loanValue: totalAmountToGet.toNumber(),
+    startTime: moment().unix(),
+    currentTime: moment().unix() + SECONDS_IN_DAY * 7,
+    rateBasePoints: MOCK_APR_RATE + BONDS.PROTOCOL_REPAY_FEE,
+  })
 
   return {
     collateralInputValue,
@@ -151,5 +162,6 @@ export const useInstantBorrowContent = () => {
     errorMessage,
 
     upfrontFee,
+    weeklyFee,
   }
 }

@@ -43,7 +43,7 @@ export const BORROW_TOKENS_LIST: BorrowToken[] = [
       decimals: 9,
       priceUsd: 0.001,
     },
-    lendingTokenType: LendingTokenType.NativeSol,
+    lendingTokenType: LendingTokenType.BanxSol,
     collateralPrice: 0,
     available: 240,
   },
