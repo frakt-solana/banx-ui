@@ -35,7 +35,6 @@ export const useInstantBorrowContent = () => {
     setOutputTokenType,
     inputPutType,
     setInputPutType,
-
     handleAmountChange,
   } = useBorrowSplTokenOffers({
     marketPubkey: DEFAULT_COLLATERAL_TOKEN.marketPubkey,

@@ -54,13 +54,7 @@ const InputTokenSelect: FC<InputTokenSelectProps> = ({
     <div className={classNames(styles.inputTokenSelectWrapper, className)}>
       <div className={styles.inputTokenSelectHeader}>
         <div className={styles.inputTokenSelectLabel}>{label}</div>
-        {connected && (
-          <ControlsButtons
-            maxValue={maxValue}
-            onChange={onChange}
-            decimals={selectedToken.meta.decimals}
-          />
-        )}
+        {connected && <ControlsButtons maxValue={maxValue} onChange={onChange} />}
       </div>
       <div className={styles.inputTokenSelect}>
         <NumericStepInput
@@ -93,13 +87,13 @@ interface ControlsButtonsProps {
   decimals?: number
 }
 
-const ControlsButtons: FC<ControlsButtonsProps> = ({ onChange, maxValue = '0', decimals }) => {
+const ControlsButtons: FC<ControlsButtonsProps> = ({ onChange, maxValue = '0' }) => {
   const onMaxClick = () => {
     onChange(limitDecimalPlaces(maxValue))
   }
 
   const onHalfClick = () => {
-    const nextValue = bnToHuman(stringToBN(maxValue, decimals).div(new BN(2)))
+    const nextValue = bnToHuman(stringToBN(maxValue).div(new BN(2)))
     onChange(limitDecimalPlaces(nextValue.toString()))
   }
 

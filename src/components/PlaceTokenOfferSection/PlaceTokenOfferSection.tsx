@@ -5,7 +5,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { TokenMarketPreview } from '@banx/api/tokens'
 import { useModal } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
-import { getTokenUnit, isSolTokenType } from '@banx/utils'
+import { getTokenUnit, isBanxSolTokenType } from '@banx/utils'
 
 import { Button } from '../Buttons'
 import { DisplayValue } from '../TableComponents'
@@ -52,7 +52,7 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
     open(OffersModal, { market, offerPubkey })
   }
 
-  const inputStepByTokenType = isSolTokenType(tokenType) ? 0.1 : 1
+  const inputStepByTokenType = isBanxSolTokenType(tokenType) ? 0.1 : 1
 
   return (
     <div className={styles.container}>

@@ -9,7 +9,7 @@ import { DisplayValue, createPercentValueJSX } from '@banx/components/TableCompo
 import { core } from '@banx/api/tokens'
 import { ChevronDown, SOL, USDC } from '@banx/icons'
 import { useNftTokenType } from '@banx/store/nft'
-import { isSolTokenType } from '@banx/utils'
+import { isBanxSolTokenType } from '@banx/utils'
 
 import ExpandedCardContent from '../ExpandedCardContent'
 
@@ -48,7 +48,7 @@ const MarketMainInfo: FC<{ market: core.TokenMarketPreview }> = ({ market }) => 
 
   const { tokenType } = useNftTokenType()
 
-  const Icon = isSolTokenType(tokenType) ? SOL : USDC
+  const Icon = isBanxSolTokenType(tokenType) ? SOL : USDC
 
   return (
     <div className={styles.mainInfoContainer}>
