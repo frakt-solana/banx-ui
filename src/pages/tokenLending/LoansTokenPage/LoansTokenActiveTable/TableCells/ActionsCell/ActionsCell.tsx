@@ -20,9 +20,9 @@ interface ActionsCellProps {
 }
 
 export const ActionsCell: FC<ActionsCellProps> = ({ loan, offers, isCardView, disableActions }) => {
-  const isLoanTerminating = isTokenLoanTerminating(loan)
-
   const { open } = useModal()
+
+  const isLoanTerminating = isTokenLoanTerminating(loan)
 
   const refinanceAvailable = useMemo(() => {
     const offersByMarket = offers[loan.fraktBond.hadoMarket || '']

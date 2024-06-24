@@ -49,7 +49,7 @@ export const useLoansTokenActiveTable = (props: {
   const showSummary = !!loans.length && !isLoading
 
   const goToBorrowPage = () => {
-    navigate(createPathWithModeParams(PATHS.BORROW, ModeType.Token, tokenType))
+    navigate(createPathWithModeParams(PATHS.BORROW_TOKEN, ModeType.Token, tokenType))
   }
 
   const emptyListParams = {
