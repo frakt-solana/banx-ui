@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { BN } from 'fbonds-core'
 import { SECONDS_IN_DAY } from 'fbonds-core/lib/fbond-protocol/constants'
@@ -17,7 +17,7 @@ import {
   DEFAULT_COLLATERAL_TOKEN,
   MOCK_APR_RATE,
 } from '../../constants'
-import { getErrorMessage } from '../helpers'
+import { calculateAmountToGet, calculateAmountToGive, getErrorMessage } from '../helpers'
 import { useBorrowSplTokenOffers } from './useBorrowSplTokenOffers'
 import { useBorrowSplTokenTransaction } from './useBorrowSplTokenTransaction'
 
@@ -43,13 +43,13 @@ export const useInstantBorrowContent = () => {
     handleAmountChange,
   } = useBorrowSplTokenOffers({
     marketPubkey: DEFAULT_COLLATERAL_TOKEN.marketPubkey,
-    outputTokenType: DEFAULT_BORROW_TOKEN.meta.ticker,
+    outputTokenType: DEFAULT_BORROW_TOKEN.outputToken,
   })
 
   const handleCollateralInputChange = (value: string) => {
     if (inputPutType !== 'input') {
       setInputPutType('input')
-      setOutputTokenType(borrowToken.meta.ticker)
+      setOutputTokenType(borrowToken.outputToken)
     }
 
     setCollateralInputValue(value)
@@ -59,7 +59,7 @@ export const useInstantBorrowContent = () => {
   const handleBorrowInputChange = (value: string) => {
     if (inputPutType !== 'output') {
       setInputPutType('output')
-      setOutputTokenType(collateralToken.meta.ticker)
+      setOutputTokenType(borrowToken.outputToken)
     }
 
     setBorrowInputValue(value)
@@ -73,7 +73,7 @@ export const useInstantBorrowContent = () => {
 
   const handleBorrowTokenChange = (token: BorrowToken) => {
     setBorrowToken(token)
-    setOutputTokenType(token.meta.ticker)
+    setOutputTokenType(token.outputToken)
     setTokenType(token.lendingTokenType)
   }
 
@@ -81,34 +81,31 @@ export const useInstantBorrowContent = () => {
     const token = BORROW_TOKENS_LIST.find((token) => token.lendingTokenType === tokenType)
     if (token) {
       setBorrowToken(token)
-      setOutputTokenType(token.meta.ticker)
+      setOutputTokenType(token.outputToken)
     }
   }, [setOutputTokenType, tokenType])
 
-  const totalAmountToGet = useMemo(() => {
-    return splTokenOffers.reduce((acc, offer) => {
-      return acc.add(new BN(offer.amountToGet, 'hex'))
-    }, new BN(0))
-  }, [splTokenOffers])
-
   useEffect(() => {
     if (inputPutType === 'input') {
-      const decimals = borrowToken.meta.decimals
-      const totalAmountToGetStr = bnToHuman(totalAmountToGet, decimals).toString()
+      const totalAmountToGet = calculateAmountToGet(splTokenOffers)
+      const totalAmountToGetStr = bnToHuman(totalAmountToGet, borrowToken.meta.decimals).toString()
 
       if (totalAmountToGetStr !== borrowInputValue) {
         setBorrowInputValue(totalAmountToGetStr)
       }
     } else if (inputPutType === 'output') {
-      const decimals = collateralToken.meta.decimals
-      const totalAmountToGetStr = bnToHuman(totalAmountToGet, decimals).toString()
+      const totalAmountToGive = calculateAmountToGive(splTokenOffers)
+
+      const totalAmountToGetStr = bnToHuman(
+        totalAmountToGive,
+        collateralToken.meta.decimals,
+      ).toString()
 
       if (totalAmountToGetStr !== collateralInputValue) {
         setCollateralInputValue(totalAmountToGetStr)
       }
     }
   }, [
-    totalAmountToGet,
     splTokenOffers,
     borrowToken,
     borrowInputValue,
@@ -136,6 +133,7 @@ export const useInstantBorrowContent = () => {
 
   const { executeBorrow } = useBorrowSplTokenTransaction(collateralToken, splTokenOffers)
 
+  const totalAmountToGet = calculateAmountToGet(splTokenOffers)
   const upfrontFee = totalAmountToGet.div(new BN(100)).toNumber()
   const weeklyFee = calculateCurrentInterestSolPure({
     loanValue: totalAmountToGet.toNumber(),

@@ -1,12 +1,13 @@
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { core } from '@banx/api/tokens'
+import { OutputToken, core } from '@banx/api/tokens'
 
 export interface BorrowToken {
   meta: core.TokenMeta
 
   collateralPrice: number
   lendingTokenType: LendingTokenType
+  outputToken: OutputToken
   marketPubkey?: string
   fraktMarket?: string
   available?: number
@@ -14,6 +15,7 @@ export interface BorrowToken {
 
 export const MOCK_APR_RATE = 34 * 100
 
+//TODO: Remove outputToken, use only lendingTokenType
 export const COLLATERAL_TOKENS_LIST: BorrowToken[] = [
   {
     meta: {
@@ -26,6 +28,7 @@ export const COLLATERAL_TOKENS_LIST: BorrowToken[] = [
 
     marketPubkey: '9vMKEMq8G36yrkqVUzQuAweieCsxU9ZaK1ob8GRegwmh',
     lendingTokenType: LendingTokenType.BanxSol,
+    outputToken: OutputToken.BanxSOL,
     collateralPrice: 0,
     available: 7777,
   },
@@ -44,6 +47,7 @@ export const BORROW_TOKENS_LIST: BorrowToken[] = [
       priceUsd: 0.001,
     },
     lendingTokenType: LendingTokenType.BanxSol,
+    outputToken: OutputToken.SOL,
     collateralPrice: 0,
     available: 240,
   },
@@ -57,6 +61,7 @@ export const BORROW_TOKENS_LIST: BorrowToken[] = [
       priceUsd: 0.001,
     },
     lendingTokenType: LendingTokenType.Usdc,
+    outputToken: OutputToken.USDC,
     collateralPrice: 0,
     available: 240,
   },
