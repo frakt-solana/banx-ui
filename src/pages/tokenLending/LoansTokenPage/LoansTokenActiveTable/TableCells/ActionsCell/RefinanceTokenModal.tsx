@@ -30,6 +30,7 @@ import {
 import {
   caclulateBorrowTokenLoanValue,
   calculateApr,
+  calculateIdleFundsInOffer,
   calculateTokenLoanValueWithUpfrontFee,
   convertToHumanNumber,
   destroySnackbar,
@@ -41,7 +42,6 @@ import {
   findSuitableOffer,
   getDecimalPlaces,
   getTokenUnit,
-  isOfferNotEmpty,
   isTokenLoanTerminating,
 } from '@banx/utils'
 
@@ -65,23 +65,24 @@ export const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
   const { offers, updateOrAddOffer, isLoading } = useTokenMarketOffers(fraktBond.hadoMarket || '')
 
   const bestOffer = useMemo(() => {
-    return chain(offers)
-      .sortBy(({ currentSpotPrice }) => currentSpotPrice)
-      .thru((offers) =>
-        filterOutWalletLoans({
-          offers,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-        }),
-      )
-      .filter(isOfferNotEmpty)
-      .reverse()
-      .value()
-      .at(0)
+    return (
+      chain(offers)
+        .sortBy(({ validation }) => validation.collateralsPerToken)
+        .thru((offers) =>
+          filterOutWalletLoans({
+            offers,
+            walletPubkey: wallet?.publicKey?.toBase58(),
+          }),
+        )
+        // .filter(isOfferNotEmpty) //TODO (TokenLending): Rewrite filter for token lendign
+        .value()
+        .at(0)
+    )
   }, [offers, wallet])
 
   const initialCurrentSpotPrice = useMemo(() => {
     if (!bestOffer) return 0
-    return bestOffer.currentSpotPrice
+    return calculateIdleFundsInOffer(bestOffer).toNumber()
   }, [bestOffer])
 
   useEffect(() => {
