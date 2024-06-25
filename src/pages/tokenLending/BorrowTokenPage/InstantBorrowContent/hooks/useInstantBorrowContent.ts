@@ -17,7 +17,7 @@ import {
   DEFAULT_COLLATERAL_TOKEN,
   MOCK_APR_RATE,
 } from '../../constants'
-import { calculateAmountToGet, calculateAmountToGive, getErrorMessage } from '../helpers'
+import { calculateTotalAmount, getErrorMessage } from '../helpers'
 import { useBorrowSplTokenOffers } from './useBorrowSplTokenOffers'
 import { useBorrowSplTokenTransaction } from './useBorrowSplTokenTransaction'
 
@@ -34,8 +34,8 @@ export const useInstantBorrowContent = () => {
   const borrowTokenBalance = useTokenBalance(borrowToken.meta.mint)
 
   const {
-    data: splTokenOffers,
-    isLoading: isLoadingSplTokenOffers,
+    data: offers,
+    isLoading: isLoadingOffers,
     setMarketPubkey,
     setOutputTokenType,
     inputPutType,
@@ -87,14 +87,14 @@ export const useInstantBorrowContent = () => {
 
   useEffect(() => {
     if (inputPutType === 'input') {
-      const totalAmountToGet = calculateAmountToGet(splTokenOffers)
+      const totalAmountToGet = calculateTotalAmount(offers, 'amountToGet')
       const totalAmountToGetStr = bnToHuman(totalAmountToGet, borrowToken.meta.decimals).toString()
 
       if (totalAmountToGetStr !== borrowInputValue) {
         setBorrowInputValue(totalAmountToGetStr)
       }
     } else if (inputPutType === 'output') {
-      const totalAmountToGive = calculateAmountToGive(splTokenOffers)
+      const totalAmountToGive = calculateTotalAmount(offers, 'amountToGive')
 
       const totalAmountToGetStr = bnToHuman(
         totalAmountToGive,
@@ -105,14 +105,7 @@ export const useInstantBorrowContent = () => {
         setCollateralInputValue(totalAmountToGetStr)
       }
     }
-  }, [
-    splTokenOffers,
-    borrowToken,
-    borrowInputValue,
-    collateralToken,
-    collateralInputValue,
-    inputPutType,
-  ])
+  }, [offers, borrowToken, borrowInputValue, collateralToken, collateralInputValue, inputPutType])
 
   const collateralTokenBalanceStr = bnToHuman(
     new BN(collateralTokenBalance),
@@ -125,15 +118,16 @@ export const useInstantBorrowContent = () => {
   ).toString()
 
   const errorMessage = getErrorMessage({
-    collateral: collateralToken,
-    collaretalInputValue: collateralInputValue,
-    maxTokenValue: collateralTokenBalanceStr,
-    offersExist: !!splTokenOffers.length && !isLoadingSplTokenOffers,
+    offers,
+    isLoadingOffers,
+    collateralToken,
+    collateralInputValue,
+    tokenWalletBalance: collateralTokenBalanceStr,
   })
 
-  const { executeBorrow } = useBorrowSplTokenTransaction(collateralToken, splTokenOffers)
+  const { executeBorrow } = useBorrowSplTokenTransaction(collateralToken, offers)
 
-  const totalAmountToGet = calculateAmountToGet(splTokenOffers)
+  const totalAmountToGet = calculateTotalAmount(offers, 'amountToGet')
   const upfrontFee = totalAmountToGet.div(new BN(100)).toNumber()
   const weeklyFee = calculateCurrentInterestSolPure({
     loanValue: totalAmountToGet.toNumber(),

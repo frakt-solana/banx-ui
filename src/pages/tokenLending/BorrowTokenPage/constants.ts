@@ -2,6 +2,7 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { OutputToken, core } from '@banx/api/tokens'
 
+//TODO (TokenLending): Modify BorrowToken interface
 export interface BorrowToken {
   meta: core.TokenMeta
 
@@ -15,7 +16,7 @@ export interface BorrowToken {
 
 export const MOCK_APR_RATE = 34 * 100
 
-//TODO: Remove outputToken, use only lendingTokenType
+//TODO (TokenLending): Remove outputToken, use only lendingTokenType
 export const COLLATERAL_TOKENS_LIST: BorrowToken[] = [
   {
     meta: {

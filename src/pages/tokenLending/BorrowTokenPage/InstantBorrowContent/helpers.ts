@@ -6,24 +6,28 @@ import { ZERO_BN, stringToBN } from '@banx/utils'
 import { BorrowToken } from '../constants'
 
 interface GetErrorMessageProps {
-  collateral: BorrowToken | undefined
-  collaretalInputValue: string
-  maxTokenValue: string
-  offersExist: boolean
+  collateralToken: BorrowToken | undefined
+  collateralInputValue: string
+  tokenWalletBalance: string
+  offers: BorrowSplTokenOffers[]
+  isLoadingOffers: boolean
 }
 
 export const getErrorMessage = ({
-  collateral,
-  collaretalInputValue,
-  maxTokenValue,
-  offersExist,
+  collateralToken,
+  collateralInputValue,
+  tokenWalletBalance,
+  offers,
+  isLoadingOffers,
 }: GetErrorMessageProps) => {
-  const { ticker = '' } = collateral?.meta || {}
+  const ticker = collateralToken?.meta.ticker || ''
 
-  const isInvalidAmount = stringToBN(collaretalInputValue).lte(ZERO_BN)
-  const isInsufficientBalance = stringToBN(collaretalInputValue).gt(stringToBN(maxTokenValue))
+  const isInvalidAmount = stringToBN(collateralInputValue).eq(ZERO_BN)
+  const noEnoughtWalletBalance = stringToBN(tokenWalletBalance).eq(ZERO_BN)
+  const hasInsufficientBalance = stringToBN(collateralInputValue).gt(stringToBN(tokenWalletBalance))
+  const noOffersAvailable = offers.length === 0 || isLoadingOffers
 
-  if (stringToBN(maxTokenValue).eq(ZERO_BN)) {
+  if (noEnoughtWalletBalance) {
     return `You don't have ${ticker} to borrow`
   }
 
@@ -31,25 +35,23 @@ export const getErrorMessage = ({
     return 'Enter an amount'
   }
 
-  if (isInsufficientBalance) {
+  if (hasInsufficientBalance) {
     return ticker ? `Insufficient ${ticker}` : ''
   }
 
-  if (!offersExist) {
+  if (noOffersAvailable) {
     return 'No offers found'
   }
 
   return ''
 }
 
-export const calculateAmountToGet = (splTokenOffers: BorrowSplTokenOffers[]) => {
-  return splTokenOffers.reduce((acc, offer) => {
-    return acc.add(new BN(offer.amountToGet, 'hex'))
-  }, new BN(0))
-}
-
-export const calculateAmountToGive = (splTokenOffers: BorrowSplTokenOffers[]) => {
-  return splTokenOffers.reduce((acc, offer) => {
-    return acc.add(new BN(offer.amountToGive, 'hex'))
+//TODO (TokenLending): Reduce to one field amountToGet
+export const calculateTotalAmount = (
+  offers: BorrowSplTokenOffers[],
+  field: 'amountToGet' | 'amountToGive',
+) => {
+  return offers.reduce((acc, offer) => {
+    return acc.add(new BN(offer[field], 'hex'))
   }, new BN(0))
 }
