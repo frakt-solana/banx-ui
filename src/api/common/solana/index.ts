@@ -37,7 +37,8 @@ export const getClusterStats: GetClusterStats = async ({ connection }) => {
 
   const { slotIndex, slotsInEpoch, absoluteSlot, blockHeight, epoch } = epochInfo
 
-  const clusterTime = (await connection.getBlockTime(absoluteSlot)) ?? undefined
+  const clusterTime =
+    (await connection.getBlockTime(absoluteSlot).catch(() => undefined)) ?? undefined
 
   const samples = chain(performanceSamples)
     .filter((sample) => sample.numSlots !== 0)
