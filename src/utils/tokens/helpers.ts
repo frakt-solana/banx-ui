@@ -66,6 +66,9 @@ export const isSolTokenType = (tokenType: LendingTokenType): boolean =>
 export const isUsdcTokenType = (tokenType: LendingTokenType): boolean =>
   tokenType === LendingTokenType.Usdc
 
+export const isBanxSolTokenType = (tokenType: LendingTokenType): boolean =>
+  tokenType === LendingTokenType.BanxSol
+
 export const formatDecimalWithSubscript = (decimalNumber: number) => {
   const decimalAsString = decimalNumber.toString()
   const [, fractionalPart] = decimalAsString.split('.')

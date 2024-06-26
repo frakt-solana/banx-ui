@@ -4,6 +4,7 @@
   align-items: center;
   justify-content: flex-end;
   padding: 8px 24px;
+  gap: 16px;
   width: 100%;
 
   @media (max-width: 960px) {
@@ -13,39 +14,19 @@
   }
 }
 
-.mainStat {
+.stats {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 24px;
 
-  p:first-child {
-    font: var(--important-text-3xl);
-  }
-
-  p:last-child {
-    color: var(--content-secondary);
-    font: var(--title-sm);
-    text-transform: uppercase;
-    max-width: 80px;
+  & > div {
+    gap: 0;
   }
 
   @media (max-width: 960px) {
-    flex-direction: column-reverse;
-    gap: 2px;
-
-    p:first-child {
-      font: var(--body-text-md);
-    }
-
-    p:last-child {
-      max-width: unset;
-    }
-  }
-
-  @media (max-width: 640px) {
-    p:last-child {
-      font: var(--title-xs);
-    }
+    justify-content: space-evenly;
+    text-align: center;
+    width: 100%;
   }
 }
 

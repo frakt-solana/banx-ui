@@ -1,3 +1,5 @@
+import { stringToBN } from '../bn'
+
 // shorten the checksummed version of the input address to have 4 characters at start and end
 export const shortenAddress = (address: string, chars = 4): string => {
   return `${address?.slice(0, chars)}...${address?.slice(-chars)}`
@@ -43,4 +45,8 @@ export const limitDecimalPlaces = (inputValue: string, decimalPlaces = 3) => {
   const regex = new RegExp(`^-?\\d*(\\.\\d{0,${decimalPlaces}})?`)
   const match = inputValue.match(regex)
   return match ? match[0] : ''
+}
+
+export const stringToHex = (str: string, decimals?: number): string => {
+  return stringToBN(str, decimals).toString(16).toUpperCase()
 }

@@ -9,7 +9,7 @@ import { Offer } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
 import { isOfferNewer, isOptimisticOfferExpired, useTokenOffersOptimistic } from '@banx/store/token'
-import { isOfferClosed } from '@banx/utils'
+import { isOfferStateClosed } from '@banx/utils'
 
 import { LendTokenTabName } from './LendTokenPage'
 
@@ -55,7 +55,7 @@ export const useTokenMarketOffers = (marketPubkey: string) => {
     const expiredOffersByTime = optimisticOffers.filter((offer) => isOptimisticOfferExpired(offer))
 
     const optimisticsToRemove = chain(optimisticOffers)
-      .filter(({ offer }) => !isOfferClosed(offer?.pairState))
+      .filter(({ offer }) => !isOfferStateClosed(offer?.pairState))
       .filter(({ offer }) => {
         const sameOfferFromBE = data?.find(({ publicKey }) => publicKey === offer.publicKey)
         if (!sameOfferFromBE) return false
@@ -81,7 +81,7 @@ export const useTokenMarketOffers = (marketPubkey: string) => {
     return chain(combinedOffers)
       .groupBy((offer) => offer.publicKey)
       .map((offers) => maxBy(offers, (offer) => offer.lastTransactedAt))
-      .filter((offer) => !isOfferClosed(offer?.pairState || PairState.PerpetualClosed))
+      .filter((offer) => !isOfferStateClosed(offer?.pairState || PairState.PerpetualClosed))
       .compact()
       .value()
   }, [optimisticOffers, data, marketPubkey])

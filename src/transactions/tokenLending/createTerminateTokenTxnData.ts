@@ -7,7 +7,7 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 import { core } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
 
-import { sendTxnPlaceHolder } from '../../helpers'
+import { sendTxnPlaceHolder } from '../helpers'
 
 type CreateTerminateTokenTxnData = (params: {
   loan: core.TokenLoan

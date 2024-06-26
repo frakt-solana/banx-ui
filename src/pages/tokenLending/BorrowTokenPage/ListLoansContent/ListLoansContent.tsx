@@ -11,7 +11,7 @@ import { DAYS_IN_YEAR } from '@banx/constants'
 
 import { LoanValueSlider, Separator } from '../components'
 import InputTokenSelect from '../components/InputTokenSelect'
-import { BORROW_MOCK_TOKENS_LIST, COLLATERAL_MOCK_TOKENS_LIST } from '../constants'
+import { BORROW_TOKENS_LIST, COLLATERAL_TOKENS_LIST } from '../constants'
 import { MAX_APR_VALUE, useListLoansContent } from './hooks'
 
 import styles from './ListLoansContent.module.less'
@@ -49,7 +49,7 @@ const ListLoansContent = () => {
         onChange={setCollateralInputValue}
         selectedToken={collateralToken}
         onChangeToken={setCollateralToken}
-        tokenList={COLLATERAL_MOCK_TOKENS_LIST}
+        tokenList={COLLATERAL_TOKENS_LIST}
         className={styles.collateralInput}
       />
 
@@ -61,7 +61,7 @@ const ListLoansContent = () => {
         onChange={setBorrowlInputValue}
         selectedToken={borrowToken}
         onChangeToken={setBorrowToken}
-        tokenList={BORROW_MOCK_TOKENS_LIST}
+        tokenList={BORROW_TOKENS_LIST}
       />
 
       <LoanValueSlider label="LTV" value={sliderValue} onChange={setSliderValue} marketPrice={50} />

@@ -13,6 +13,8 @@ import {
   TokenMarketPreviewSchema,
   TokenOfferPreview,
   TokenOfferPreviewSchema,
+  WalletTokenLoansAndOffers,
+  WalletTokenLoansAndOffersShema,
 } from './types'
 
 type FetchTokenMarketsPreview = (props: {
@@ -94,6 +96,36 @@ export const fetchTokenOffersPreview: FetchTokenOffersPreview = async ({
   return data.data
 }
 
+type FetchWalletTokenLoansAndOffers = (props: {
+  walletPublicKey: string
+  tokenType: LendingTokenType
+  getAll?: boolean
+}) => Promise<WalletTokenLoansAndOffers>
+
+export const fetchWalletTokenLoansAndOffers: FetchWalletTokenLoansAndOffers = async ({
+  walletPublicKey,
+  tokenType,
+  getAll = true,
+}) => {
+  const queryParams = new URLSearchParams({
+    getAll: String(getAll),
+    marketType: String(convertToMarketType(tokenType)),
+    isPrivate: String(IS_PRIVATE_MARKETS),
+  })
+
+  const { data } = await axios.get<{ data: WalletTokenLoansAndOffers }>(
+    `${BACKEND_BASE_URL}/spl-loans/borrower/${walletPublicKey}?${queryParams.toString()}`,
+  )
+
+  try {
+    await WalletTokenLoansAndOffersShema.parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
+  }
+
+  return data.data ?? { loans: [], offers: {} }
+}
+
 type FetchTokenLenderLoans = (props: {
   walletPublicKey: string
   tokenType: LendingTokenType
@@ -131,6 +163,42 @@ export const fetchTokenLenderLoans: FetchTokenLenderLoans = async ({
   } catch (validationError) {
     console.error('Schema validation error:', validationError)
   }
+
+  return data.data ?? []
+}
+
+export enum OutputToken {
+  SOL = 'SOL',
+  USDC = 'USDC',
+  BanxSOL = 'BanxSOL',
+}
+
+export interface BorrowSplTokenOffers {
+  offerPublicKey: string
+  amountToGive: string
+  amountToGet: string
+}
+
+type FetchBorrowSplTokenOffers = (props: {
+  market: string
+  outputToken: string
+  type: 'input' | 'output'
+  amount: string //? hex number string
+}) => Promise<BorrowSplTokenOffers[]>
+export const fetchBorrowSplTokenOffers: FetchBorrowSplTokenOffers = async (props) => {
+  const { market, outputToken, type, amount } = props
+
+  const queryParams = new URLSearchParams({
+    isPrivate: String(IS_PRIVATE_MARKETS),
+    type: String(type),
+    amount: String(amount),
+    market: String(market),
+    outputToken: String(outputToken),
+  })
+
+  const { data } = await axios.get<{ data: BorrowSplTokenOffers[] }>(
+    `${BACKEND_BASE_URL}/lending/spl/borrow-token?${queryParams?.toString()}`,
+  )
 
   return data.data ?? []
 }

@@ -15,7 +15,7 @@ import { NumericStepInput } from '@banx/components/inputs'
 import { core } from '@banx/api/nft'
 import { DAYS_IN_YEAR } from '@banx/constants'
 import { ChevronDown, SOL, USDC } from '@banx/icons'
-import { isSolTokenType } from '@banx/utils'
+import { isBanxSolTokenType, isSolTokenType } from '@banx/utils'
 
 import RequestLoansTable from '../RequestLoansTable'
 import { INPUT_TOKEN_STEP, TABS, TabName } from './constants'
@@ -213,9 +213,11 @@ const SelectCurrencyInput: FC<SelectCurrencyInputProps> = ({
   tokenType,
 }) => {
   const isSol = isSolTokenType(tokenType)
+  const isBanxSol = isBanxSolTokenType(tokenType)
 
-  const tokenTicker = isSol ? 'SOL' : 'USDC'
-  const Icon = isSol ? SOL : USDC
+  const tokenTicker = isSol || isBanxSol ? 'SOL' : 'USDC'
+
+  const Icon = isSol || isBanxSol ? SOL : USDC
 
   return (
     <div className={styles.selectCurrencyWrapper}>

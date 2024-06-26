@@ -9,8 +9,8 @@ import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor
 import { core } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
 
-import { fetchRuleset } from '../../functions'
-import { sendTxnPlaceHolder } from '../../helpers'
+import { fetchRuleset } from '../functions'
+import { sendTxnPlaceHolder } from '../helpers'
 
 type CreateClaimTokenTxnData = (params: {
   loan: core.TokenLoan

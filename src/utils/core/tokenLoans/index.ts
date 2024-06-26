@@ -7,7 +7,7 @@ import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/type
 import moment from 'moment'
 
 import { core } from '@banx/api/tokens'
-import { BONDS, SECONDS_IN_72_HOURS } from '@banx/constants'
+import { BONDS, SECONDS_IN_72_HOURS, SECONDS_IN_DAY } from '@banx/constants'
 
 import { calculateApr } from '../loans'
 
@@ -19,6 +19,13 @@ export const isTokenLoanListed = (loan: core.TokenLoan) => {
   return (
     loan.bondTradeTransaction.bondTradeTransactionState ===
     BondTradeTransactionV2State.PerpetualBorrowerListing
+  )
+}
+
+export const isTokenLoanRepaid = (loan: core.TokenLoan) => {
+  return (
+    loan.bondTradeTransaction.bondTradeTransactionState ===
+    BondTradeTransactionV2State.PerpetualRepaid
   )
 }
 
@@ -120,4 +127,15 @@ export const calculateTokenLoanAccruedInterest = (loan: core.TokenLoan) => {
   })
 
   return new BN(accruedInterest)
+}
+
+export const calcTokenWeeklyFeeWithRepayFee = (loan: core.TokenLoan) => {
+  const { soldAt, amountOfBonds } = loan.bondTradeTransaction
+
+  return calculateCurrentInterestSolPure({
+    loanValue: calculateTokenLoanValueWithUpfrontFee(loan).toNumber(),
+    startTime: soldAt,
+    currentTime: soldAt + SECONDS_IN_DAY * 7,
+    rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
+  })
 }

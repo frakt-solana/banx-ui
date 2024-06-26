@@ -12,6 +12,7 @@ import {
 import { core } from '@banx/api/nft'
 import { getDialectAccessToken } from '@banx/providers'
 import { useIsLedger, useModal } from '@banx/store/common'
+import { useNftTokenType } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
@@ -19,6 +20,7 @@ import {
 } from '@banx/transactions'
 import { createLendToBorrowTxnData } from '@banx/transactions/nftLending'
 import {
+  calculateLenderApr,
   destroySnackbar,
   enqueueConfirmationError,
   enqueueSnackbar,
@@ -29,13 +31,13 @@ import {
 } from '@banx/utils'
 
 import { useAllLoansRequests } from '../../hooks'
-import { calculateLenderApr } from '../helpers'
 import { useLoansState } from '../loansState'
 
 export const useInstantTransactions = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
   const { isLedger } = useIsLedger()
+  const { tokenType } = useNftTokenType()
 
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
   const { addMints } = useAllLoansRequests()
@@ -72,6 +74,7 @@ export const useInstantTransactions = () => {
         loan,
         walletAndConnection,
         aprRate,
+        tokenType,
       })
 
       await new TxnExecutor<{ loan: core.Loan; oldLoan: core.Loan }>(
@@ -142,6 +145,7 @@ export const useInstantTransactions = () => {
             loan,
             walletAndConnection,
             aprRate: calculateLenderApr(loan),
+            tokenType,
           }),
         ),
       )

@@ -8,7 +8,7 @@ import { Offer } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
 
-import { sendTxnPlaceHolder } from '../../helpers'
+import { sendTxnPlaceHolder } from '../helpers'
 
 type CreateInstantRefinanceTokenTxnData = (params: {
   loan: core.TokenLoan
