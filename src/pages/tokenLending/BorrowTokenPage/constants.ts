@@ -26,7 +26,6 @@ export const COLLATERAL_TOKENS_LIST: BorrowToken[] = [
       decimals: 9,
       priceUsd: 0.001,
     },
-
     marketPubkey: '9vMKEMq8G36yrkqVUzQuAweieCsxU9ZaK1ob8GRegwmh',
     lendingTokenType: LendingTokenType.BanxSol,
     outputToken: OutputToken.BanxSOL,

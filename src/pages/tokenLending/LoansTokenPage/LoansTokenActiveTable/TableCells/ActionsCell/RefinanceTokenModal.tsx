@@ -53,6 +53,9 @@ interface RefinanceTokenModalProps {
   loan: core.TokenLoan
 }
 
+//TODO (TokenLending): Write new logic to find cuitable offer
+//? You can ignore this file
+
 export const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
   const { bondTradeTransaction, fraktBond } = loan
 
@@ -74,7 +77,7 @@ export const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
             walletPubkey: wallet?.publicKey?.toBase58(),
           }),
         )
-        // .filter(isOfferNotEmpty) //TODO (TokenLending): Rewrite filter for token lendign
+        // .filter(isOfferNotEmpty)
         .value()
         .at(0)
     )

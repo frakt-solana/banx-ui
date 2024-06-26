@@ -1,11 +1,11 @@
-import { FC, useMemo } from 'react'
+import { FC } from 'react'
 
 import { Button } from '@banx/components/Buttons'
 
 import { Offer } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
 import { useModal } from '@banx/store/common'
-import { isOfferNotEmpty, isTokenLoanTerminating } from '@banx/utils'
+import { isTokenLoanTerminating } from '@banx/utils'
 
 import { RefinanceTokenModal } from './RefinanceTokenModal'
 import { RepayTokenModal } from './RepayTokenModal'
@@ -19,15 +19,15 @@ interface ActionsCellProps {
   disableActions: boolean
 }
 
-export const ActionsCell: FC<ActionsCellProps> = ({ loan, offers, isCardView, disableActions }) => {
+export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView, disableActions }) => {
   const { open } = useModal()
 
   const isLoanTerminating = isTokenLoanTerminating(loan)
 
-  const refinanceAvailable = useMemo(() => {
-    const offersByMarket = offers[loan.fraktBond.hadoMarket || '']
-    return !!offersByMarket?.filter(isOfferNotEmpty).length
-  }, [offers, loan])
+  // const refinanceAvailable = useMemo(() => {
+  //   const offersByMarket = offers[loan.fraktBond.hadoMarket || '']
+  //   return !!offersByMarket?.filter(isOfferNotEmpty).length
+  // }, [offers, loan])
 
   const buttonSize = isCardView ? 'default' : 'small'
 
@@ -37,7 +37,8 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, offers, isCardView, di
         className={styles.refinanceButton}
         size={buttonSize}
         variant="secondary"
-        disabled={disableActions || !refinanceAvailable}
+        // disabled={disableActions || !refinanceAvailable}
+        disabled={true} // TODO (TokenLending): Enable when new refinance logic is implemented
         onClick={(event) => {
           open(RefinanceTokenModal, { loan })
           event.stopPropagation()
