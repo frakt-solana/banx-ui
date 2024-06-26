@@ -5,11 +5,13 @@ import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
+import { EpochProgressBar } from '@banx/components/EpochProgressBar'
 import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { Offer, core } from '@banx/api/nft'
 import { useClusterStats } from '@banx/hooks'
+import { BanxSOL } from '@banx/icons'
 import { useTokenType } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -23,6 +25,7 @@ import {
   enqueueSnackbar,
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
+  formatValueByTokenType,
 } from '@banx/utils'
 
 import { getSummaryInfo } from './helpers'
@@ -116,22 +119,44 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.stats}>
-        <StatInfo
-          label="LST yield"
-          tooltipText="LST yield"
-          value={<DisplayValue value={totalLstYeild} />}
-        />
-        <StatInfo
-          label="Liquidity"
-          tooltipText={tooltipContent}
-          value={<DisplayValue value={totalClaimableValue} />}
-        />
+      <div className={styles.epochContainer}>
+        <EpochProgressBar />
+        <div className={styles.epochStats}>
+          <StatInfo
+            label="This epoch rewards"
+            tooltipText="This epoch rewards"
+            value={formatValueByTokenType(1e9, tokenType)} //TODO: Replace with real value
+            icon={BanxSOL}
+            flexType="row"
+          />
+          <StatInfo
+            label="Next epoch rewards"
+            tooltipText="This epoch rewards"
+            value={formatValueByTokenType(2.3e9, tokenType)} //TODO: Replace with real value
+            icon={BanxSOL}
+            flexType="row"
+          />
+        </div>
       </div>
 
-      <Button className={styles.claimButton} onClick={claimVault} disabled={!totalClaimableValue}>
-        Claim
-      </Button>
+      <div className={styles.statsContainer}>
+        <div className={styles.stats}>
+          <StatInfo
+            label="LST yield"
+            tooltipText="LST yield"
+            value={<DisplayValue value={totalLstYeild} />}
+          />
+          <StatInfo
+            label="Liquidity"
+            tooltipText={tooltipContent}
+            value={<DisplayValue value={totalClaimableValue} />}
+          />
+        </div>
+
+        <Button className={styles.claimButton} onClick={claimVault} disabled={!totalClaimableValue}>
+          Claim
+        </Button>
+      </div>
     </div>
   )
 }

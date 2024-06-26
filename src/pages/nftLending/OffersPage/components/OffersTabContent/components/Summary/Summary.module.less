@@ -2,16 +2,56 @@
   border-top: 1px solid var(--bg-border);
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   padding: 8px 24px;
   gap: 24px;
   width: 100%;
 
-  @media (max-width: 960px) {
+  @media (max-width: 1240px) {
     flex-direction: column;
     padding: 16px;
     gap: 8px;
   }
+}
+
+.epochContainer {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+
+  @media (max-width: 1240px) {
+    justify-content: center;
+    gap: 16px;
+  }
+}
+
+.epochStats {
+  display: flex;
+  flex-direction: column;
+  white-space: nowrap;
+
+  & > div {
+    justify-content: flex-start;
+    gap: 4px;
+
+    span {
+      display: flex;
+      align-items: center;
+    }
+
+    svg path {
+      fill: revert-layer;
+    }
+  }
+}
+
+.statsContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 24px;
+  width: 100%;
 }
 
 .stats {
@@ -24,17 +64,21 @@
     gap: 0;
   }
 
-  @media (max-width: 960px) {
+  @media (max-width: 1240px) {
     justify-content: space-evenly;
     text-align: center;
     width: 100%;
+
+    & > div {
+      align-items: center;
+    }
   }
 }
 
 .claimButton {
   width: 128px;
 
-  @media (max-width: 960px) {
+  @media (max-width: 1240px) {
     width: 100%;
   }
 }
