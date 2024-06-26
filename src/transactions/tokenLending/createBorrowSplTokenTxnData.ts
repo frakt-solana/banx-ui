@@ -9,6 +9,7 @@ import { core } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
 import { BorrowToken } from '@banx/pages/tokenLending/BorrowTokenPage/constants'
 import { sendTxnPlaceHolder } from '@banx/transactions'
+import { getTokenDecimals } from '@banx/utils'
 
 export type BorrowTokenTxnOptimisticResult = { loan: core.TokenLoan; offer: Offer }
 
@@ -34,6 +35,8 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async ({
   walletAndConnection,
   aprRate,
 }) => {
+  const tokenDecimals = getTokenDecimals(tokenType)
+
   const { instructions, signers, optimisticResults } = await borrowPerpetualSpl({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
@@ -52,7 +55,7 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async ({
     },
     optimistics: {
       bondOffer: offer,
-      lendingTokenDecimals: collateral.meta.decimals,
+      lendingTokenDecimals: tokenDecimals, //? (1e9, 1e6, etc)
     },
     connection: walletAndConnection.connection,
     sendTxn: sendTxnPlaceHolder,
