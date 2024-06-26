@@ -70,10 +70,45 @@
 .lenderVaultContainer {
   background: var(--bg-action);
   display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 8px -16px 0;
+}
+
+.epochContainer {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 16px;
+  gap: 12px;
+}
+
+.epochStats {
+  display: flex;
+  flex-direction: column;
+  white-space: nowrap;
+
+  & > div {
+    justify-content: flex-start;
+    gap: 4px;
+
+    span {
+      display: flex;
+      align-items: center;
+    }
+
+    svg path {
+      fill: revert-layer;
+    }
+  }
+}
+
+.lenderValtStatsContainer {
+  border-top: 1px dotted var(--bg-border);
+  display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 8px 16px;
-  margin: 8px -16px 0;
+  width: 100%;
 }
 
 .lenderVaultStat {
@@ -88,11 +123,11 @@
 
 .lenderVaultStatLabel {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 2px;
   color: var(--content-secondary);
   font: var(--title-xs);
   text-transform: uppercase;
-  max-width: 56px;
 
   svg {
     height: 10px;

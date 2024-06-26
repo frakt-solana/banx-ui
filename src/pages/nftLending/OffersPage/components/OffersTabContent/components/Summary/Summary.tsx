@@ -8,6 +8,7 @@ import { Button } from '@banx/components/Buttons'
 import { EpochProgressBar } from '@banx/components/EpochProgressBar'
 import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
+import { getLenderVaultInfo } from '@banx/components/WalletModal'
 
 import { Offer, core } from '@banx/api/nft'
 import { useClusterStats } from '@banx/hooks'
@@ -26,9 +27,8 @@ import {
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
   formatValueByTokenType,
+  isBanxSolTokenType,
 } from '@banx/utils'
-
-import { getSummaryInfo } from './helpers'
 
 import styles from './Summary.module.less'
 
@@ -107,7 +107,7 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
     totalLstYeild,
     totalClosedOffersValue,
     totalClaimableValue,
-  } = getSummaryInfo(offers, clusterStats)
+  } = getLenderVaultInfo(offers, clusterStats)
 
   const totalFundsInCurrentEpoch = sumBy(offers, ({ offer }) => offer.fundsInCurrentEpoch)
   const totalFundsInNextEpoch = sumBy(offers, ({ offer }) => offer.fundsInNextEpoch)
@@ -122,25 +122,27 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.epochContainer}>
-        <EpochProgressBar />
-        <div className={styles.epochStats}>
-          <StatInfo
-            label="This epoch rewards"
-            tooltipText="This epoch rewards"
-            value={formatValueByTokenType(totalFundsInCurrentEpoch, tokenType)}
-            icon={BanxSOL}
-            flexType="row"
-          />
-          <StatInfo
-            label="Next epoch rewards"
-            tooltipText="This epoch rewards"
-            value={formatValueByTokenType(totalFundsInNextEpoch, tokenType)}
-            icon={BanxSOL}
-            flexType="row"
-          />
+      {isBanxSolTokenType(tokenType) && (
+        <div className={styles.epochContainer}>
+          <EpochProgressBar />
+          <div className={styles.epochStats}>
+            <StatInfo
+              label="This epoch rewards"
+              tooltipText="This epoch rewards"
+              value={formatValueByTokenType(totalFundsInCurrentEpoch, tokenType)}
+              icon={BanxSOL}
+              flexType="row"
+            />
+            <StatInfo
+              label="Next epoch rewards"
+              tooltipText="This epoch rewards"
+              value={formatValueByTokenType(totalFundsInNextEpoch, tokenType)}
+              icon={BanxSOL}
+              flexType="row"
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       <div className={styles.statsContainer}>
         <div className={styles.stats}>

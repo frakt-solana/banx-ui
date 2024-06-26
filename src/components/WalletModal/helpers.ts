@@ -6,7 +6,7 @@ import { ClusterStats } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { isOfferStateClosed } from '@banx/utils'
 
-export const getSummaryInfo = (
+export const getLenderVaultInfo = (
   offers: core.UserOffer[],
   clusterStats: ClusterStats | undefined,
 ) => {

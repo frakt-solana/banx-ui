@@ -6,8 +6,8 @@ import { sumBy, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/nft'
-import { useDiscordUser } from '@banx/hooks'
-import { ChangeWallet, Copy, SignOut } from '@banx/icons'
+import { useClusterStats, useDiscordUser } from '@banx/hooks'
+import { BanxSOL, ChangeWallet, Copy, SignOut } from '@banx/icons'
 import { useUserOffers } from '@banx/pages/nftLending/OffersPage/components/OffersTabContent/hooks'
 import { useIsLedger } from '@banx/store/common'
 import { useTokenType } from '@banx/store/nft'
@@ -24,15 +24,20 @@ import {
   enqueueSnackbar,
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
+  formatValueByTokenType,
+  isBanxSolTokenType,
   shortenAddress,
 } from '@banx/utils'
 
 import { Button } from '../Buttons'
 import Checkbox from '../Checkbox'
+import { EpochProgressBar } from '../EpochProgressBar'
+import { StatInfo } from '../StatInfo'
 import { DisplayValue } from '../TableComponents'
 import Tooltip from '../Tooltip'
 import UserAvatar from '../UserAvatar'
 import { iconComponents } from './constants'
+import { getLenderVaultInfo } from './helpers'
 
 import styles from './WalletModal.module.less'
 
@@ -99,12 +104,18 @@ const LenderVaultContent = () => {
   const { tokenType } = useTokenType()
 
   const { offers, updateOrAddOffer } = useUserOffers()
+  const { data: clusterStats } = useClusterStats()
 
-  const totalAccruedInterest = sumBy(offers, ({ offer }) => offer.concentrationIndex)
-  const totalRepaymets = sumBy(offers, ({ offer }) => offer.bidCap)
-  // const totalLstYeild = sumBy(offers, ({ offer }) => offer.bidCap)
+  const {
+    totalAccruedInterest,
+    totalRepaymets,
+    totalLstYeild,
+    totalClosedOffersValue,
+    totalClaimableValue,
+  } = getLenderVaultInfo(offers, clusterStats)
 
-  const totalClaimableValue = totalAccruedInterest + totalRepaymets
+  const totalFundsInCurrentEpoch = sumBy(offers, ({ offer }) => offer.fundsInCurrentEpoch)
+  const totalFundsInNextEpoch = sumBy(offers, ({ offer }) => offer.fundsInNextEpoch)
 
   const claimVault = async () => {
     if (!offers.length) return
@@ -164,28 +175,50 @@ const LenderVaultContent = () => {
 
   const tooltipContent = () => (
     <div className={styles.tooltipContent}>
+      <TooltipRow label="Repayments" value={totalRepaymets} />
+      <TooltipRow label="Closed offers" value={totalClosedOffersValue} />
       <TooltipRow label="Accrued interest" value={totalAccruedInterest} />
-      <TooltipRow label="Repaymets" value={totalRepaymets} />
-      {/* <TooltipRow label="Lst Yield" value={totalLstYeild} /> */}
+      <TooltipRow label="LST yield" value={totalLstYeild} />
     </div>
   )
 
   return (
     <div className={styles.lenderVaultContainer}>
-      <div className={styles.lenderVaultStat}>
-        <p className={styles.lenderVaultStatValue}>
-          <DisplayValue value={totalClaimableValue} />
-        </p>
-        <div className={styles.lenderVaultStatLabel}>
-          <span>Lender</span>
-          <span>
-            Vault <Tooltip title={tooltipContent}></Tooltip>
-          </span>
+      {isBanxSolTokenType(tokenType) && (
+        <div className={styles.epochContainer}>
+          <EpochProgressBar />
+          <div className={styles.epochStats}>
+            <StatInfo
+              label="This epoch rewards"
+              tooltipText="This epoch rewards"
+              value={formatValueByTokenType(totalFundsInCurrentEpoch, tokenType)}
+              icon={BanxSOL}
+              flexType="row"
+            />
+            <StatInfo
+              label="Next epoch rewards"
+              tooltipText="This epoch rewards"
+              value={formatValueByTokenType(totalFundsInNextEpoch, tokenType)}
+              icon={BanxSOL}
+              flexType="row"
+            />
+          </div>
         </div>
+      )}
+
+      <div className={styles.lenderValtStatsContainer}>
+        <div className={styles.lenderVaultStat}>
+          <p className={styles.lenderVaultStatValue}>
+            <DisplayValue value={totalClaimableValue} />
+          </p>
+          <div className={styles.lenderVaultStatLabel}>
+            Vault <Tooltip title={tooltipContent} />
+          </div>
+        </div>
+        <Button onClick={claimVault} disabled={!totalClaimableValue} size="small">
+          Claim
+        </Button>
       </div>
-      <Button onClick={claimVault} disabled={!totalClaimableValue} size="small">
-        Claim
-      </Button>
     </div>
   )
 }
