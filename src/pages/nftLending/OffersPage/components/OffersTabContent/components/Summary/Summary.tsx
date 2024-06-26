@@ -1,7 +1,7 @@
 import { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { sumBy, uniqueId } from 'lodash'
+import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
@@ -9,6 +9,7 @@ import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { Offer, core } from '@banx/api/nft'
+import { useClusterStats } from '@banx/hooks'
 import { useTokenType } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -24,6 +25,8 @@ import {
   enqueueWaitingConfirmation,
 } from '@banx/utils'
 
+import { getSummaryInfo } from './helpers'
+
 import styles from './Summary.module.less'
 
 interface SummaryProps {
@@ -36,6 +39,8 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
   const { connection } = useConnection()
 
   const { tokenType } = useTokenType()
+
+  const { data: clusterStats } = useClusterStats()
 
   const claimVault = async () => {
     if (!offers.length) return
@@ -93,18 +98,35 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
     }
   }
 
-  const totalAccruedInterest = sumBy(offers, ({ offer }) => offer.concentrationIndex)
-  const totalRepaymets = sumBy(offers, ({ offer }) => offer.bidCap)
-  // const totalLstYeild = sumBy(offers, ({ offer }) => offer.bidCap)
+  const {
+    totalAccruedInterest,
+    totalRepaymets,
+    totalLstYeild,
+    totalClosedOffersValue,
+    totalClaimableValue,
+  } = getSummaryInfo(offers, clusterStats)
 
-  const totalClaimableValue = totalAccruedInterest + totalRepaymets
+  const tooltipContent = (
+    <div className={styles.tooltipContent}>
+      <TooltipRow label="Repayments" value={totalRepaymets} />
+      <TooltipRow label="Closed offers" value={totalClosedOffersValue} />
+      <TooltipRow label="Accrued interest" value={totalAccruedInterest} />
+    </div>
+  )
 
   return (
     <div className={styles.container}>
       <div className={styles.stats}>
-        <StatInfo label="Repayments" value={<DisplayValue value={totalRepaymets} />} />
-        <StatInfo label="Accrued interest" value={<DisplayValue value={totalAccruedInterest} />} />
-        {/* <StatInfo label="LST yield" value={<DisplayValue value={totalLstYeild} />} /> */}
+        <StatInfo
+          label="LST yield"
+          tooltipText="LST yield"
+          value={<DisplayValue value={totalLstYeild} />}
+        />
+        <StatInfo
+          label="Liquidity"
+          tooltipText={tooltipContent}
+          value={<DisplayValue value={totalClaimableValue} />}
+        />
       </div>
 
       <Button className={styles.claimButton} onClick={claimVault} disabled={!totalClaimableValue}>
@@ -115,3 +137,17 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
 }
 
 export default Summary
+
+interface TooltipRowProps {
+  label: string
+  value: number
+}
+
+const TooltipRow: FC<TooltipRowProps> = ({ label, value }) => (
+  <div className={styles.tooltipRow}>
+    <span className={styles.tooltipRowLabel}>{label}</span>
+    <span className={styles.tooltipRowValue}>
+      <DisplayValue value={value} />
+    </span>
+  </div>
+)
