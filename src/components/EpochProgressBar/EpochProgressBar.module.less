@@ -1,0 +1,45 @@
+.epochProgressBarContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 208px;
+  width: 100%;
+}
+
+.epochProgressBarWrapper {
+  background: var(--content-secondary);
+  border-radius: 100px;
+  position: relative;
+  height: 8px;
+  width: 100%;
+}
+
+.epochProgressBar {
+  background: var(--accent-primary);
+  border-radius: 100px;
+  position: absolute;
+  left: 0;
+  height: 100%;
+}
+
+.epochProgressBarRemaining {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font: var(--body-text-sm);
+  white-space: nowrap;
+
+  @media (max-width: 640px) {
+    font: var(--body-text-xs);
+  }
+
+  span:first-child {
+    color: var(--content-secondary);
+    font: var(--title-sm);
+    text-transform: uppercase;
+
+    @media (max-width: 640px) {
+      font: var(--title-xs);
+    }
+  }
+}
