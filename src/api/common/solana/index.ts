@@ -13,6 +13,7 @@ export type ClusterStats = {
   epochProgress: number //? Fraction. F.e. 0.45, 0.99 etc.
   epochApproxTimeRemaining: number //? Amount in seconds
   blockHeight: number | undefined
+  epochStartedAt: number | undefined //? Unix timestamp
   clusterTime: number | undefined //? Unix timestamp
 }
 
@@ -24,6 +25,7 @@ export const EMPTY_CLUSTER_STATS: ClusterStats = {
   epochProgress: 0,
   epochApproxTimeRemaining: 0,
   blockHeight: undefined,
+  epochStartedAt: undefined,
   clusterTime: undefined,
 }
 
@@ -37,8 +39,10 @@ export const getClusterStats: GetClusterStats = async ({ connection }) => {
 
   const { slotIndex, slotsInEpoch, absoluteSlot, blockHeight, epoch } = epochInfo
 
-  const clusterTime =
-    (await connection.getBlockTime(absoluteSlot).catch(() => undefined)) ?? undefined
+  const [clusterTime, epochStartedAt] = await Promise.all([
+    connection.getBlockTime(absoluteSlot).catch(() => undefined),
+    connection.getBlockTime(absoluteSlot - slotIndex).catch(() => undefined),
+  ])
 
   const samples = chain(performanceSamples)
     .filter((sample) => sample.numSlots !== 0)
@@ -63,7 +67,8 @@ export const getClusterStats: GetClusterStats = async ({ connection }) => {
     epochProgress,
     epochApproxTimeRemaining,
     blockHeight,
-    clusterTime,
+    epochStartedAt: epochStartedAt ?? undefined,
+    clusterTime: clusterTime ?? undefined,
   }
 
   return stats
