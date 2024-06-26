@@ -1,7 +1,7 @@
 import { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { uniqueId } from 'lodash'
+import { sumBy, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
@@ -109,6 +109,9 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
     totalClaimableValue,
   } = getSummaryInfo(offers, clusterStats)
 
+  const totalFundsInCurrentEpoch = sumBy(offers, ({ offer }) => offer.fundsInCurrentEpoch)
+  const totalFundsInNextEpoch = sumBy(offers, ({ offer }) => offer.fundsInNextEpoch)
+
   const tooltipContent = (
     <div className={styles.tooltipContent}>
       <TooltipRow label="Repayments" value={totalRepaymets} />
@@ -125,14 +128,14 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
           <StatInfo
             label="This epoch rewards"
             tooltipText="This epoch rewards"
-            value={formatValueByTokenType(1e9, tokenType)} //TODO: Replace with real value
+            value={formatValueByTokenType(totalFundsInCurrentEpoch, tokenType)}
             icon={BanxSOL}
             flexType="row"
           />
           <StatInfo
             label="Next epoch rewards"
             tooltipText="This epoch rewards"
-            value={formatValueByTokenType(2.3e9, tokenType)} //TODO: Replace with real value
+            value={formatValueByTokenType(totalFundsInNextEpoch, tokenType)}
             icon={BanxSOL}
             flexType="row"
           />
