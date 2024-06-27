@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { sumBy, uniqueId } from 'lodash'
+import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/nft'
@@ -112,10 +112,9 @@ const LenderVaultContent = () => {
     totalLstYeild,
     totalClosedOffersValue,
     totalClaimableValue,
+    totalFundsInCurrentEpoch,
+    totalFundsInNextEpoch,
   } = getLenderVaultInfo(offers, clusterStats)
-
-  const totalFundsInCurrentEpoch = sumBy(offers, ({ offer }) => offer.fundsInCurrentEpoch)
-  const totalFundsInNextEpoch = sumBy(offers, ({ offer }) => offer.fundsInNextEpoch)
 
   const claimVault = async () => {
     if (!offers.length) return
@@ -125,10 +124,8 @@ const LenderVaultContent = () => {
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const filteredOffets = offers.filter(({ offer }) => offer.concentrationIndex || offer.bidCap)
-
       const txnsData = await Promise.all(
-        filteredOffets.map(({ offer }) =>
+        offers.map(({ offer }) =>
           createClaimLenderVaultTxnData({
             offer,
             walletAndConnection,
@@ -183,6 +180,14 @@ const LenderVaultContent = () => {
     </div>
   )
 
+  const formattedTotalFundsInCurrentEpoch = totalFundsInCurrentEpoch
+    ? formatValueByTokenType(totalFundsInCurrentEpoch, tokenType)
+    : 0
+
+  const formattedTotalFundsInNextEpoch = totalFundsInNextEpoch
+    ? formatValueByTokenType(totalFundsInNextEpoch, tokenType)
+    : 0
+
   return (
     <div className={styles.lenderVaultContainer}>
       {isBanxSolTokenType(tokenType) && (
@@ -192,14 +197,14 @@ const LenderVaultContent = () => {
             <StatInfo
               label="This epoch rewards"
               tooltipText="This epoch rewards"
-              value={formatValueByTokenType(totalFundsInCurrentEpoch, tokenType)}
+              value={formattedTotalFundsInCurrentEpoch}
               icon={BanxSOL}
               flexType="row"
             />
             <StatInfo
               label="Next epoch rewards"
               tooltipText="This epoch rewards"
-              value={formatValueByTokenType(totalFundsInNextEpoch, tokenType)}
+              value={formattedTotalFundsInNextEpoch}
               icon={BanxSOL}
               flexType="row"
             />

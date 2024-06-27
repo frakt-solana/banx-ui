@@ -1,6 +1,11 @@
 import { BN } from 'fbonds-core'
-import { calculateBanxSolStakingRewards } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { BANX_SOL_STAKING_YEILD_APR } from 'fbonds-core/lib/fbond-protocol/constants'
+import {
+  calculateBanxSolStakingRewards,
+  calculateCurrentInterestSolPure,
+} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { sumBy } from 'lodash'
+import moment from 'moment'
 
 import { ClusterStats } from '@banx/api/common'
 import { core } from '@banx/api/nft'
@@ -29,12 +34,22 @@ export const getLenderVaultInfo = (
   const totalClaimableValue =
     totalAccruedInterest + totalRepaymets + totalClosedOffersValue + totalLstYeild
 
+  const totalFundsInCurrentEpoch = sumBy(offers, ({ offer }) =>
+    calculateYieldInCurrentEpoch(offer, clusterStats),
+  )
+
+  const totalFundsInNextEpoch = sumBy(offers, ({ offer }) =>
+    calculateYieldInNextEpoch(offer, clusterStats),
+  )
+
   return {
     totalAccruedInterest,
     totalRepaymets,
     totalClosedOffersValue,
     totalClaimableValue,
     totalLstYeild,
+    totalFundsInCurrentEpoch,
+    totalFundsInNextEpoch,
   }
 }
 
@@ -44,5 +59,39 @@ const calculateLstYield: CalculateLstYield = ({ offer, slot, epochStartedAt }) =
     bondOffer: offer,
     nowSlot: new BN(slot),
     currentEpochStartAt: new BN(epochStartedAt),
+  })
+}
+
+export const calculateYieldInCurrentEpoch = (
+  offer: core.Offer,
+  clusterStats: ClusterStats | undefined,
+) => {
+  const { epochApproxTimeRemaining = 0, epochStartedAt = 0 } = clusterStats || {}
+
+  const currentTimeInUnix = moment().unix()
+  const currentTime = currentTimeInUnix + epochApproxTimeRemaining
+
+  return calculateCurrentInterestSolPure({
+    loanValue: offer.fundsInCurrentEpoch,
+    startTime: epochStartedAt,
+    currentTime,
+    rateBasePoints: BANX_SOL_STAKING_YEILD_APR,
+  })
+}
+
+export const calculateYieldInNextEpoch = (
+  offer: core.Offer,
+  clusterStats: ClusterStats | undefined,
+) => {
+  const { epochApproxTimeRemaining = 0, epochDuration = 0 } = clusterStats || {}
+
+  const currentTimeInUnix = moment().unix()
+  const epochStartedAt = currentTimeInUnix + epochApproxTimeRemaining
+
+  return calculateCurrentInterestSolPure({
+    loanValue: offer.fundsInNextEpoch,
+    startTime: epochStartedAt,
+    currentTime: epochStartedAt + epochDuration,
+    rateBasePoints: BANX_SOL_STAKING_YEILD_APR,
   })
 }

@@ -1,7 +1,7 @@
 import { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { sumBy, uniqueId } from 'lodash'
+import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
@@ -53,14 +53,13 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const filteredOffets = offers.filter(({ offer }) => offer.concentrationIndex || offer.bidCap)
-
       const txnsData = await Promise.all(
-        filteredOffets.map(({ offer }) =>
+        offers.map(({ offer }) =>
           createClaimLenderVaultTxnData({
             offer,
             walletAndConnection,
             tokenType,
+            clusterStats,
           }),
         ),
       )
@@ -107,10 +106,9 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
     totalLstYeild,
     totalClosedOffersValue,
     totalClaimableValue,
+    totalFundsInCurrentEpoch,
+    totalFundsInNextEpoch,
   } = getLenderVaultInfo(offers, clusterStats)
-
-  const totalFundsInCurrentEpoch = sumBy(offers, ({ offer }) => offer.fundsInCurrentEpoch)
-  const totalFundsInNextEpoch = sumBy(offers, ({ offer }) => offer.fundsInNextEpoch)
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>
@@ -119,6 +117,14 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
       <TooltipRow label="Accrued interest" value={totalAccruedInterest} />
     </div>
   )
+
+  const formattedTotalFundsInCurrentEpoch = totalFundsInCurrentEpoch
+    ? formatValueByTokenType(totalFundsInCurrentEpoch, tokenType)
+    : 0
+
+  const formattedTotalFundsInNextEpoch = totalFundsInNextEpoch
+    ? formatValueByTokenType(totalFundsInNextEpoch, tokenType)
+    : 0
 
   return (
     <div className={styles.container}>
@@ -129,14 +135,14 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
             <StatInfo
               label="This epoch rewards"
               tooltipText="This epoch rewards"
-              value={formatValueByTokenType(totalFundsInCurrentEpoch, tokenType)}
+              value={formattedTotalFundsInCurrentEpoch}
               icon={BanxSOL}
               flexType="row"
             />
             <StatInfo
               label="Next epoch rewards"
               tooltipText="This epoch rewards"
-              value={formatValueByTokenType(totalFundsInNextEpoch, tokenType)}
+              value={formattedTotalFundsInNextEpoch}
               icon={BanxSOL}
               flexType="row"
             />
