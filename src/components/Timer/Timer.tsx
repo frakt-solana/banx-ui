@@ -1,46 +1,34 @@
 import { FC } from 'react'
 
 import { useCountdown } from '@banx/hooks'
+import { CountdownUnits, formatCountdownUnits } from '@banx/utils'
 
 import styles from './Timer.module.less'
 
 interface TimerProps {
   expiredAt: number //? unix timestamp
+  formatCountdownUnits?: (countdownUnits: CountdownUnits) => string
 }
 
-const Timer: FC<TimerProps> = ({ expiredAt }) => {
-  const { timeLeft } = useCountdown(expiredAt)
+const defaultFormatCountdownUnits = (countdownUnits: CountdownUnits): string => {
+  const { days, hours } = countdownUnits
 
-  const { days, hours, minutes, seconds } = timeLeft
-
-  const formatTimeUnit = (value: string, unit: string) => (
-    <>
-      {value}
-      {unit} :
-    </>
-  )
-
-  if (!parseFloat(days) && !parseFloat(hours)) {
-    return (
-      <span className={styles.timer}>
-        {formatTimeUnit(minutes, 'm')} {seconds}s
-      </span>
-    )
+  if (!days && !hours) {
+    return formatCountdownUnits(countdownUnits, 'm:s')
   }
-
-  if (!parseFloat(days)) {
-    return (
-      <span className={styles.timer}>
-        {formatTimeUnit(hours, 'h')} {formatTimeUnit(minutes, 'm')} {seconds}s
-      </span>
-    )
+  if (!days) {
+    formatCountdownUnits(countdownUnits, 'h:m:s')
   }
+  return formatCountdownUnits(countdownUnits, 'd:h:m:s')
+}
 
-  return (
-    <span className={styles.timer}>
-      {formatTimeUnit(days, 'd')} {formatTimeUnit(hours, 'h')} {minutes}m
-    </span>
-  )
+const Timer: FC<TimerProps> = ({
+  expiredAt,
+  formatCountdownUnits = defaultFormatCountdownUnits,
+}) => {
+  const countdownUnits = useCountdown(expiredAt)
+
+  return <span className={styles.timer}>{formatCountdownUnits(countdownUnits)}</span>
 }
 
 export default Timer
