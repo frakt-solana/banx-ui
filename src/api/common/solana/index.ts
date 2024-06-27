@@ -1,4 +1,4 @@
-import { web3 } from 'fbonds-core'
+import { BN, web3 } from 'fbonds-core'
 import { chain, sum } from 'lodash'
 
 import { BONDS, MINUTES_IN_HOUR } from '@banx/constants'
@@ -93,6 +93,9 @@ export const fetchTokenBalance = async (props: {
   })
 
   const userTokenAccountAddress = tokenAccounts.value[0]?.pubkey
-  const balance = await connection.getTokenAccountBalance(userTokenAccountAddress)
-  return parseFloat(balance.value.amount)
+  const balanceInfo = await connection.getTokenAccountBalance(userTokenAccountAddress)
+  const decimals = balanceInfo.value.decimals
+  const uiAmount = balanceInfo.value.uiAmount || 0
+
+  return new BN(uiAmount * Math.pow(10, decimals))
 }

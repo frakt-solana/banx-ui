@@ -1,4 +1,4 @@
-import { BN, web3 } from 'fbonds-core'
+import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   BondOfferOptimistic,
@@ -73,7 +73,7 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
     //? Optimistic offer is broken
     const newOfferSize = calculateIdleFundsInOffer(newOffer)
 
-    const diff = newOfferSize.sub(oldOfferSize).sub(new BN(banxSolBalance))
+    const diff = newOfferSize.sub(oldOfferSize).sub(banxSolBalance)
 
     if (diff.gt(ZERO_BN)) {
       return await banxSol.combineWithBuyBanxSolInstructions({

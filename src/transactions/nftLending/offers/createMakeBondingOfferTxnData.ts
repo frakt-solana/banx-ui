@@ -1,4 +1,4 @@
-import { BN, web3 } from 'fbonds-core'
+import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   BondOfferOptimistic,
@@ -66,7 +66,7 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
     })
 
     const offerSize = calculateNewOfferSize({ loanValue, loansAmount, deltaValue })
-    const diff = offerSize.sub(new BN(banxSolBalance))
+    const diff = offerSize.sub(banxSolBalance)
 
     if (diff.gt(ZERO_BN)) {
       return await banxSol.combineWithBuyBanxSolInstructions({
