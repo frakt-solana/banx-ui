@@ -17,7 +17,7 @@ const defaultFormatCountdownUnits = (countdownUnits: CountdownUnits): string => 
     return formatCountdownUnits(countdownUnits, 'm:s')
   }
   if (!days) {
-    formatCountdownUnits(countdownUnits, 'h:m:s')
+    return formatCountdownUnits(countdownUnits, 'h:m:s')
   }
   return formatCountdownUnits(countdownUnits, 'd:h:m:s')
 }
