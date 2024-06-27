@@ -3,8 +3,8 @@ import { useQuery } from '@tanstack/react-query'
 import { web3 } from 'fbonds-core'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { BONDS, USDC_ADDRESS } from '@banx/constants'
-import { isBanxSolTokenType, isSolTokenType, isUsdcTokenType } from '@banx/utils'
+import { BANX_SOL_ADDRESS, BONDS, USDC_ADDRESS } from '@banx/constants'
+import { isBanxSolTokenType, isUsdcTokenType } from '@banx/utils'
 
 type UseNativeAccount = ({ isLive }: { isLive?: boolean }) => web3.AccountInfo<Buffer> | null
 const useNativeAccount: UseNativeAccount = ({ isLive = true }) => {
@@ -50,6 +50,12 @@ const useUsdcBalance: UseTokenBalance = (options) => {
   return useTokenBalance(USDC_ADDRESS, { isLive })
 }
 
+export const useBanxSolBalance: UseTokenBalance = (options) => {
+  const { isLive = false } = options || {}
+
+  return useTokenBalance(BANX_SOL_ADDRESS, { isLive })
+}
+
 const useTokenBalance = (tokenAddress: string, options?: Options) => {
   const { isLive = false } = options || {}
 
@@ -87,7 +93,7 @@ export const useWalletBalance = (tokenType: LendingTokenType, options?: Options)
   const usdcBalance = useUsdcBalance({ isLive })
   const solanaBalance = useSolanaBalance({ isLive })
 
-  if (isSolTokenType(tokenType) || isBanxSolTokenType(tokenType)) {
+  if (isBanxSolTokenType(tokenType)) {
     return solanaBalance
   }
 
