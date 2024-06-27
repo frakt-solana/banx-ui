@@ -1,7 +1,7 @@
 import { web3 } from 'fbonds-core'
 import { chain, sum } from 'lodash'
 
-import { MINUTES_IN_HOUR } from '@banx/constants'
+import { BONDS, MINUTES_IN_HOUR } from '@banx/constants'
 
 const SAMPLE_HISTORY_HOURS_AMOUNT = 6
 
@@ -11,6 +11,7 @@ export type ClusterStats = {
   avgSlotTime_1h: number //? Amount in seconds
   epoch: number
   epochProgress: number //? Fraction. F.e. 0.45, 0.99 etc.
+  epochDuration: number
   epochApproxTimeRemaining: number //? Amount in seconds
   blockHeight: number | undefined
   epochStartedAt: number | undefined //? Unix timestamp
@@ -23,6 +24,7 @@ export const EMPTY_CLUSTER_STATS: ClusterStats = {
   avgSlotTime_1h: 0,
   epoch: 0,
   epochProgress: 0,
+  epochDuration: 0,
   epochApproxTimeRemaining: 0,
   blockHeight: undefined,
   epochStartedAt: undefined,
@@ -59,12 +61,15 @@ export const getClusterStats: GetClusterStats = async ({ connection }) => {
 
   const epochApproxTimeRemaining = (slotsInEpoch - slotIndex) * avgSlotTime_1h
 
+  const epochDuration = slotsInEpoch * avgSlotTime_1h
+
   const stats: ClusterStats = {
     slot: absoluteSlot,
     avgSlotTime_1min,
     avgSlotTime_1h,
     epoch,
     epochProgress,
+    epochDuration,
     epochApproxTimeRemaining,
     blockHeight,
     epochStartedAt: epochStartedAt ?? undefined,
@@ -72,4 +77,22 @@ export const getClusterStats: GetClusterStats = async ({ connection }) => {
   }
 
   return stats
+}
+
+export const fetchTokenBalance = async (props: {
+  tokenAddress: string
+  publicKey: web3.PublicKey
+  connection: web3.Connection
+}) => {
+  const { tokenAddress, publicKey, connection } = props
+
+  const tokenPublicKey = new web3.PublicKey(tokenAddress)
+  const tokenAccounts = await connection.getTokenAccountsByOwner(publicKey, {
+    programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
+    mint: tokenPublicKey,
+  })
+
+  const userTokenAccountAddress = tokenAccounts.value[0]?.pubkey
+  const balance = await connection.getTokenAccountBalance(userTokenAccountAddress)
+  return parseFloat(balance.value.amount)
 }
