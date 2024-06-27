@@ -20,13 +20,13 @@ const OffersTabContent = () => {
     sortParams,
   } = useOffersContent()
 
-  if (showEmptyList) return <EmptyList {...emptyListParams} />
-
   return (
     <div className={styles.content}>
-      {isLoading ? (
-        <Loader size="small" />
-      ) : (
+      {showEmptyList && <EmptyList {...emptyListParams} />}
+
+      {!showEmptyList && isLoading && <Loader size="small" />}
+
+      {!showEmptyList && !isLoading && (
         <>
           <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
 
@@ -35,10 +35,10 @@ const OffersTabContent = () => {
               <OfferCard key={offer.offer.publicKey} offer={offer} />
             ))}
           </div>
-
-          <Summary updateOrAddOffer={updateOrAddOffer} offers={offers} />
         </>
       )}
+
+      <Summary updateOrAddOffer={updateOrAddOffer} offers={offers} />
     </div>
   )
 }

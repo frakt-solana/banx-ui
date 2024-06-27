@@ -24,6 +24,14 @@
     justify-content: center;
     gap: 16px;
   }
+
+  @media (max-width: 640px) {
+    justify-content: flex-start;
+    flex-direction: row-reverse;
+    overflow: auto hidden;
+    margin-right: -16px;
+    padding-right: 16px;
+  }
 }
 
 .epochStats {
@@ -52,6 +60,10 @@
   justify-content: flex-end;
   gap: 24px;
   width: 100%;
+
+  @media (max-width: 640px) {
+    gap: 16px;
+  }
 }
 
 .stats {
@@ -72,6 +84,11 @@
     & > div {
       align-items: center;
     }
+  }
+
+  @media (max-width: 640px) {
+    min-width: 180px;
+    gap: 16px;
   }
 }
 
