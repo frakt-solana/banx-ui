@@ -7,7 +7,7 @@ import { CountdownUnits, getTimeDifference, splitTimeDifferenceToUnits } from '@
 export const useCountdown = (endTimeUnix: number): CountdownUnits => {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  const [timeDifference, setTimeDifference] = useState<Duration | null>(null)
+  const [timeDifference, setTimeDifference] = useState<Duration>(getTimeDifference(endTimeUnix))
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {
