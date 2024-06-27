@@ -66,5 +66,5 @@ export const formatCountdownUnits = (countdownUnits: CountdownUnits, format: str
       return `${formatWithLeadingZero(seconds)}s`
     })
     .value()
-    .join(':')
+    .join(' : ')
 }
