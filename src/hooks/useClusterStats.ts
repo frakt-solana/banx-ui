@@ -10,8 +10,8 @@ export const useClusterStats = () => {
     ['clusterStats'],
     () => solana.getClusterStats({ connection }),
     {
-      staleTime: 15_000,
-      refetchInterval: 15_000,
+      staleTime: 60_000,
+      refetchInterval: 60_000,
       refetchOnWindowFocus: false,
     },
   )
