@@ -3,9 +3,9 @@ import { useEffect, useMemo } from 'react'
 import { chain } from 'lodash'
 
 import { core } from '@banx/api/nft'
-import { useBanxSolBalance, useWalletBalance } from '@banx/hooks'
+import { useWalletBalance } from '@banx/hooks'
 import { SyntheticOffer, useTokenType } from '@banx/store/nft'
-import { convertOffersToSimple, getTokenDecimals, isBanxSolTokenType } from '@banx/utils'
+import { convertOffersToSimple, getTokenDecimals } from '@banx/utils'
 
 import { Mark } from '../PlaceOfferContent/components'
 import {
@@ -59,7 +59,6 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
   const { tokenType } = useTokenType()
 
   const walletBalance = useWalletBalance(tokenType)
-  const banxSolBalance = useBanxSolBalance()
 
   const { offer, market, updateOrAddOffer } = useMarketAndOffer(offerPubkey, marketPubkey)
   const { syntheticOffer, removeSyntheticOffer, setSyntheticOffer } = useSyntheticOffer(
@@ -123,7 +122,7 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
 
   const offerErrorMessage = getErrorMessage({
     syntheticOffer,
-    walletBalance: isBanxSolTokenType(tokenType) ? banxSolBalance + walletBalance : walletBalance,
+    walletBalance,
     offerSize,
     loanValue,
     loansAmount,

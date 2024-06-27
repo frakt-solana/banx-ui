@@ -50,7 +50,7 @@ const useUsdcBalance: UseTokenBalance = (options) => {
   return useTokenBalance(USDC_ADDRESS, { isLive })
 }
 
-export const useBanxSolBalance: UseTokenBalance = (options) => {
+const useBanxSolBalance: UseTokenBalance = (options) => {
   const { isLive = false } = options || {}
 
   return useTokenBalance(BANX_SOL_ADDRESS, { isLive })
@@ -92,9 +92,10 @@ export const useWalletBalance = (tokenType: LendingTokenType, options?: Options)
 
   const usdcBalance = useUsdcBalance({ isLive })
   const solanaBalance = useSolanaBalance({ isLive })
+  const banxSolBalance = useBanxSolBalance({ isLive })
 
   if (isBanxSolTokenType(tokenType)) {
-    return solanaBalance
+    return solanaBalance + banxSolBalance
   }
 
   if (isUsdcTokenType(tokenType)) {
