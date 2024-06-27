@@ -1,6 +1,7 @@
 import moment from 'moment'
 
 import { useClusterStats } from '@banx/hooks'
+import { CountdownUnits, formatCountdownUnits } from '@banx/utils'
 
 import Timer from '../Timer'
 
@@ -20,11 +21,28 @@ export const EpochProgressBar = () => {
     <div className={styles.epochProgressBarContainer}>
       <div className={styles.epochProgressBarRemaining}>
         <span>Epoch ends in</span>
-        <Timer expiredAt={expiredAt} />
+        <Timer expiredAt={expiredAt} formatCountdownUnits={customEpochFormatCountdownUnits} />
       </div>
       <div className={styles.epochProgressBarWrapper}>
         <div className={styles.epochProgressBar} style={{ width: `${formattedEpochProgress}%` }} />
       </div>
     </div>
   )
+}
+
+export const customEpochFormatCountdownUnits = (countdownUnits: CountdownUnits): string => {
+  const { days, hours, minutes } = countdownUnits
+
+  if (!days && !hours && !minutes) {
+    return '<1m'
+  }
+  if (!days && !hours) {
+    return formatCountdownUnits(countdownUnits, 'm')
+  }
+
+  if (!days) {
+    return formatCountdownUnits(countdownUnits, 'h:m')
+  }
+
+  return formatCountdownUnits(countdownUnits, 'd:h')
 }

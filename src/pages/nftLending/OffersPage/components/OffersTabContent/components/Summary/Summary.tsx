@@ -2,6 +2,7 @@ import { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { uniqueId } from 'lodash'
+import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
@@ -9,10 +10,12 @@ import { EpochProgressBar } from '@banx/components/EpochProgressBar'
 import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 import { getLenderVaultInfo } from '@banx/components/WalletModal'
+import { BanxSolYieldWarningModal } from '@banx/components/modals'
 
 import { Offer, core } from '@banx/api/nft'
 import { useClusterStats } from '@banx/hooks'
 import { BanxSOL } from '@banx/icons'
+import { useModal } from '@banx/store/common'
 import { useTokenType } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -44,6 +47,8 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
   const { tokenType } = useTokenType()
 
   const { data: clusterStats } = useClusterStats()
+
+  const { open, close } = useModal()
 
   const claimVault = async () => {
     if (!offers.length) return
@@ -126,6 +131,33 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
     ? formatValueByTokenType(totalFundsInNextEpoch, tokenType)
     : 0
 
+  const currentTimeInUnix = moment().unix()
+  const currentEpochEndsAt = currentTimeInUnix + (clusterStats?.epochApproxTimeRemaining || 0)
+  const nextEpochEndsAt = currentEpochEndsAt + (clusterStats?.epochDuration || 0)
+
+  const openModal = () => {
+    open(BanxSolYieldWarningModal, {
+      onConfirm: claimVault,
+      onCancel: close,
+      currentEpochInfo: {
+        value: totalFundsInCurrentEpoch,
+        endsAt: currentEpochEndsAt,
+      },
+      nextEpochInfo: {
+        value: totalFundsInNextEpoch,
+        endsAt: nextEpochEndsAt,
+      },
+    })
+  }
+
+  const onClickClaimButton = () => {
+    if (totalLstYeild) {
+      openModal()
+    }
+
+    return claimVault()
+  }
+
   return (
     <div className={styles.container}>
       {isBanxSolTokenType(tokenType) && (
@@ -164,7 +196,11 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
           />
         </div>
 
-        <Button className={styles.claimButton} onClick={claimVault} disabled={!totalClaimableValue}>
+        <Button
+          className={styles.claimButton}
+          onClick={onClickClaimButton}
+          disabled={!totalClaimableValue}
+        >
           Claim
         </Button>
       </div>

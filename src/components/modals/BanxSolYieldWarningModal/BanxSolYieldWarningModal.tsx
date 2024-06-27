@@ -1,12 +1,12 @@
 import { FC } from 'react'
 
 import { Button } from '@banx/components/Buttons'
+import { customEpochFormatCountdownUnits } from '@banx/components/EpochProgressBar'
 import { StatInfo } from '@banx/components/StatInfo'
 import Timer from '@banx/components/Timer'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { BanxSOL } from '@banx/icons'
-import { CountdownUnits, formatCountdownUnits } from '@banx/utils'
 
 import styles from './BanxSolYieldWarningModal.module.less'
 
@@ -67,25 +67,8 @@ const EpochColumn: FC<{ title: string; info: EpochInfo }> = ({ title, info }) =>
       />
       <div className={styles.epochTimer}>
         <h5 className={styles.epochTimerTitle}>Available in:</h5>
-        <Timer expiredAt={info.endsAt} formatCountdownUnits={customFormatCountdownUnits} />
+        <Timer expiredAt={info.endsAt} formatCountdownUnits={customEpochFormatCountdownUnits} />
       </div>
     </div>
   )
-}
-
-const customFormatCountdownUnits = (countdownUnits: CountdownUnits): string => {
-  const { days, hours, minutes } = countdownUnits
-
-  if (!days && !hours && !minutes) {
-    return '<1m'
-  }
-  if (!days && !hours) {
-    return formatCountdownUnits(countdownUnits, 'm')
-  }
-
-  if (!days) {
-    return formatCountdownUnits(countdownUnits, 'h:m')
-  }
-
-  return formatCountdownUnits(countdownUnits, 'd:h')
 }
