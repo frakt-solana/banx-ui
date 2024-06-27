@@ -13,7 +13,7 @@ export const EpochProgressBar = () => {
 
   const { epochProgress = 0, epochApproxTimeRemaining = 0 } = clusterStats || {}
 
-  const formattedEpochProgress = Math.max(epochProgress, MIN_DISPLAY_PROGRESS_PERCENT)
+  const formattedEpochProgress = Math.max(epochProgress * 100, MIN_DISPLAY_PROGRESS_PERCENT)
   const expiredAt = moment().unix() + epochApproxTimeRemaining
 
   return (

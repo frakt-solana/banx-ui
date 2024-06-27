@@ -133,6 +133,7 @@ const LenderVaultContent = () => {
             offer,
             walletAndConnection,
             tokenType,
+            clusterStats,
           }),
         ),
       )
