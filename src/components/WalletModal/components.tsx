@@ -2,11 +2,12 @@ import { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/nft'
-import { useClusterStats, useDiscordUser } from '@banx/hooks'
+import { useBanxSolBalance, useClusterStats, useDiscordUser, useSolanaBalance } from '@banx/hooks'
 import { BanxSOL, ChangeWallet, Copy, SignOut } from '@banx/icons'
 import { useUserOffers } from '@banx/pages/nftLending/OffersPage/components/OffersTabContent/hooks'
 import { useIsLedger } from '@banx/store/common'
@@ -45,7 +46,11 @@ const UserGeneralInfo = () => {
   const publicKeyString = publicKey?.toBase58() || ''
   const { data: discordUserData } = useDiscordUser()
 
+  const solWalletBalance = useSolanaBalance({ isLive: true })
+  const banxSolWalletBalance = useBanxSolBalance({ isLive: true })
+
   const { isLedger, setIsLedger } = useIsLedger()
+  const { tokenType } = useTokenType()
 
   return (
     <div className={styles.userGeneralInfoContainer}>
@@ -57,6 +62,44 @@ const UserGeneralInfo = () => {
         </div>
         <Checkbox onChange={() => setIsLedger(!isLedger)} label="I use ledger" checked={isLedger} />
       </div>
+      <BalanceContent
+        solWalletBalance={solWalletBalance}
+        banxSolWalletBalance={banxSolWalletBalance}
+        tokenType={tokenType}
+      />
+    </div>
+  )
+}
+
+interface BalanceContentProps {
+  solWalletBalance: number
+  banxSolWalletBalance: number
+  tokenType: LendingTokenType
+}
+const BalanceContent: FC<BalanceContentProps> = ({
+  solWalletBalance,
+  banxSolWalletBalance,
+  tokenType,
+}) => {
+  const formattedBanxSolWalletBalance = formatValueByTokenType(banxSolWalletBalance, tokenType)
+
+  return (
+    <div className={styles.balanceContainer}>
+      <div className={styles.balanceContent}>
+        <StatInfo
+          value={formattedBanxSolWalletBalance}
+          classNamesProps={{ value: styles.balanceValue }}
+          icon={BanxSOL}
+          flexType="row"
+        />
+        <div className={styles.verticalLine} />
+        <StatInfo
+          value={<DisplayValue value={solWalletBalance} />}
+          classNamesProps={{ value: styles.balanceValue }}
+          flexType="row"
+        />
+      </div>
+      <span className={styles.balanceLabel}>Wallet balance</span>
     </div>
   )
 }

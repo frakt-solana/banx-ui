@@ -7,7 +7,7 @@
   top: 0;
   right: 0;
   padding: 16px;
-  width: 304px;
+  width: 312px;
   z-index: 100;
 
   @media (max-width: 767px) {
@@ -194,7 +194,7 @@
 .userGeneralInfoContainer {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
 }
 
 .userGeneralInfo {
@@ -207,7 +207,7 @@
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 
   svg path {
     fill: var(--content-primary);
@@ -254,3 +254,45 @@
   width: 14px;
   height: 14px;
 }
+
+// * BalanceContent * //
+.balanceContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: auto;
+}
+
+.balanceLabel {
+  color: var(--content-secondary);
+  font: var(--title-xs);
+  text-align: center;
+  text-transform: uppercase;
+  max-width: 88px;
+}
+
+.balanceContent {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+
+  & > div {
+    gap: 0;
+  }
+}
+
+.verticalLine {
+  background: var(--content-primary);
+  width: 1px;
+  height: 12px;
+}
+.balanceValue {
+  display: flex;
+  align-items: center;
+  font: var(--important-text-md);
+
+  svg path {
+    fill: revert-layer;
+  }
+}
+// * BalanceContent * //

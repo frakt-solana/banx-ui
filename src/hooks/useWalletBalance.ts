@@ -35,7 +35,7 @@ type Options = {
 
 type UseTokenBalance = (options?: Options) => number
 
-const useSolanaBalance: UseTokenBalance = (options) => {
+export const useSolanaBalance: UseTokenBalance = (options) => {
   const { isLive = false } = options || {}
 
   const account = useNativeAccount({ isLive })
@@ -50,7 +50,7 @@ const useUsdcBalance: UseTokenBalance = (options) => {
   return useTokenBalance(USDC_ADDRESS, { isLive })
 }
 
-const useBanxSolBalance: UseTokenBalance = (options) => {
+export const useBanxSolBalance: UseTokenBalance = (options) => {
   const { isLive = false } = options || {}
 
   return useTokenBalance(BANX_SOL_ADDRESS, { isLive })
