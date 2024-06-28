@@ -62,7 +62,7 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
     signers.push(...claimInterestSigners)
   }
 
-  if (offer.bidCap) {
+  if (offer.bidCap || offer.fundsSolOrTokenBalance || offer.bidSettlement) {
     const { instructions: claimRepaymetsInstructions, signers: claimRepaymetsSigners } =
       await claimPerpetualBondOfferRepayments({
         accounts: accountsParams,
