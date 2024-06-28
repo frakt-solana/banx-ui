@@ -5,7 +5,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { InputErrorMessage, NumericStepInput } from '@banx/components/inputs'
 
 import { useTokenType } from '@banx/store/nft'
-import { getTokenUnit, isSolTokenType } from '@banx/utils'
+import { getTokenUnit, isBanxSolTokenType } from '@banx/utils'
 
 import { BorrowerMessage } from '../components'
 import { PlaceOfferParams } from '../hooks'
@@ -42,7 +42,7 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
   const disablePlaceOffer = !!offerErrorMessage || !offerSize
   const disableUpdateOffer = !hasFormChanges || !!offerErrorMessage || !offerSize
 
-  const inputStepByTokenType = isSolTokenType(tokenType) ? 0.1 : 1
+  const inputStepByTokenType = isBanxSolTokenType(tokenType) ? 0.1 : 1
 
   return (
     <>
