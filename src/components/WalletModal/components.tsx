@@ -62,11 +62,13 @@ const UserGeneralInfo = () => {
         </div>
         <Checkbox onChange={() => setIsLedger(!isLedger)} label="I use ledger" checked={isLedger} />
       </div>
-      <BalanceContent
-        solWalletBalance={solWalletBalance}
-        banxSolWalletBalance={banxSolWalletBalance}
-        tokenType={tokenType}
-      />
+      {isBanxSolTokenType(tokenType) && (
+        <BalanceContent
+          solWalletBalance={solWalletBalance}
+          banxSolWalletBalance={banxSolWalletBalance}
+          tokenType={tokenType}
+        />
+      )}
     </div>
   )
 }
