@@ -9,3 +9,6 @@ export * from './helius'
 
 export * as user from './user'
 export * from './user'
+
+export * as solana from './solana'
+export * from './solana'

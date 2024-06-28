@@ -31,7 +31,7 @@ const TokenValue: FC<TokenValueProps> = ({ tokenType, active }) => {
         [styles.tokenActive]: active,
       })}
     >
-      <p className={styles.tokenValue}>
+      <div className={styles.tokenValue}>
         <div
           className={classNames(styles.tokenValueWrapper, {
             [styles.tokenValueSolWrapper]: isSol || isBanxSol,
@@ -40,7 +40,7 @@ const TokenValue: FC<TokenValueProps> = ({ tokenType, active }) => {
           {tokenIcon}
         </div>
         <span className={styles.tokenTicker}>{tokenTicker}</span>
-      </p>
+      </div>
     </div>
   )
 }
