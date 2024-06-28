@@ -43,7 +43,8 @@ export const getClusterStats: GetClusterStats = async ({ connection }) => {
 
   const [clusterTime, epochStartedAt] = await Promise.all([
     connection.getBlockTime(absoluteSlot).catch(() => undefined),
-    connection.getBlockTime(absoluteSlot - slotIndex).catch(() => undefined),
+    // eslint-disable-next-line no-console
+    connection.getBlockTime(absoluteSlot - slotIndex).catch((error) => console.log(error)),
   ])
 
   const samples = chain(performanceSamples)
