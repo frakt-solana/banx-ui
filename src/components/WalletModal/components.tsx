@@ -214,20 +214,26 @@ const LenderVaultContent = () => {
         </div>
       )}
 
-      <div className={styles.lenderValtStatsContainer}>
+      <div
+        className={classNames(styles.lenderValtStatsContainer, {
+          [styles.hiddenBorder]: !isBanxSolTokenType(tokenType),
+        })}
+      >
         <div className={styles.lenderVaultStats}>
           <StatInfo
             label="Liquidity"
             tooltipText={tooltipContent}
             value={<DisplayValue value={totalClaimableValue} />}
           />
-          <StatInfo
-            label="LST yield"
-            tooltipText="LST yield"
-            value={formattedLstYieldValue}
-            classNamesProps={{ value: styles.claimableValue }}
-            icon={BanxSOL}
-          />
+          {isBanxSolTokenType(tokenType) && (
+            <StatInfo
+              label="LST yield"
+              tooltipText="LST yield"
+              value={formattedLstYieldValue}
+              classNamesProps={{ value: styles.claimableValue }}
+              icon={BanxSOL}
+            />
+          )}
         </div>
         <Button onClick={claimVault} disabled={!totalClaimableValue} size="small">
           Claim

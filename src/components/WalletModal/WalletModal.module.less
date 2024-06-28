@@ -1,10 +1,11 @@
 .modal {
   border: var(--border-primary);
+  border-top: 0;
   background-color: var(--bg-primary);
 
   position: absolute;
-  top: 8px;
-  right: 24px;
+  top: 0;
+  right: 0;
   padding: 16px;
   width: 304px;
   z-index: 100;
@@ -12,10 +13,7 @@
   @media (max-width: 767px) {
     border: 0;
     border-bottom: var(--border-primary);
-
-    top: 0;
     left: 0;
-    right: 0;
     width: 100%;
   }
 }
@@ -109,6 +107,10 @@
   justify-content: space-between;
   padding: 8px 16px;
   width: 100%;
+
+  &.hiddenBorder {
+    border-top: 0;
+  }
 }
 
 .lenderVaultStats {
