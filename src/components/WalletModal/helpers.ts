@@ -90,7 +90,7 @@ export const calculateYieldInNextEpoch = (
   const epochStartedAt = currentTimeInUnix + epochApproxTimeRemaining
 
   return calculateCurrentInterestSolPure({
-    loanValue: offer.fundsInNextEpoch,
+    loanValue: offer.fundsInCurrentEpoch + offer.fundsInNextEpoch,
     startTime: epochStartedAt,
     currentTime: epochStartedAt + epochDuration,
     rateBasePoints: BANX_SOL_STAKING_YEILD_APR,
