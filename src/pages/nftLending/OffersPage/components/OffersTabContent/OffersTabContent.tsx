@@ -1,3 +1,5 @@
+import classNames from 'classnames'
+
 import EmptyList from '@banx/components/EmptyList'
 import { Loader } from '@banx/components/Loader'
 
@@ -21,7 +23,7 @@ const OffersTabContent = () => {
   } = useOffersContent()
 
   return (
-    <div className={styles.content}>
+    <div className={classNames(styles.content, { [styles.emptyContent]: showEmptyList })}>
       {showEmptyList && <EmptyList {...emptyListParams} />}
 
       {!showEmptyList && isLoading && <Loader size="small" />}

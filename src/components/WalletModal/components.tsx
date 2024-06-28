@@ -244,15 +244,15 @@ const LenderVaultContent = () => {
           <EpochProgressBar />
           <div className={styles.epochStats}>
             <StatInfo
-              label="This epoch rewards"
-              tooltipText="This epoch rewards"
+              label="Yield for this epoch"
+              tooltipText="Liquid staking profit, awarded as 6% APR, based on the $SOL you hold in Banx for the entire epoch (excluding taken loans)"
               value={formattedTotalFundsInCurrentEpoch}
               icon={BanxSOL}
               flexType="row"
             />
             <StatInfo
-              label="Next epoch rewards"
-              tooltipText="This epoch rewards"
+              label="Yield for next epoch"
+              tooltipText="Projected liquid staking profit, awarded as 6% APR, based on the $SOL you hold in Banx throughout the next epoch (excluding taken loans)"
               value={formattedTotalFundsInNextEpoch}
               icon={BanxSOL}
               flexType="row"
@@ -275,7 +275,7 @@ const LenderVaultContent = () => {
           {isBanxSolTokenType(tokenType) && (
             <StatInfo
               label="LST yield"
-              tooltipText="LST yield"
+              tooltipText="Yield generated from the BanxSOL integrated Liquid Staking Token, based on the $SOL you hold in Banx throughout a whole epoch, excluding $SOL in taken loans"
               value={formattedLstYieldValue}
               classNamesProps={{ value: styles.claimableValue }}
               icon={BanxSOL}
