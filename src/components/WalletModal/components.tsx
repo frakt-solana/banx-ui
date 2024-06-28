@@ -34,7 +34,6 @@ import Checkbox from '../Checkbox'
 import { EpochProgressBar } from '../EpochProgressBar'
 import { StatInfo } from '../StatInfo'
 import { DisplayValue } from '../TableComponents'
-import Tooltip from '../Tooltip'
 import UserAvatar from '../UserAvatar'
 import { iconComponents } from './constants'
 import { getLenderVaultInfo } from './helpers'
@@ -109,7 +108,7 @@ const LenderVaultContent = () => {
   const {
     totalAccruedInterest,
     totalRepaymets,
-    totalLstYeild,
+    totalLstYield,
     totalClosedOffersValue,
     totalClaimableValue,
     totalFundsInCurrentEpoch,
@@ -171,12 +170,11 @@ const LenderVaultContent = () => {
     }
   }
 
-  const tooltipContent = () => (
+  const tooltipContent = (
     <div className={styles.tooltipContent}>
       <TooltipRow label="Repayments" value={totalRepaymets} />
       <TooltipRow label="Closed offers" value={totalClosedOffersValue} />
       <TooltipRow label="Accrued interest" value={totalAccruedInterest} />
-      <TooltipRow label="LST yield" value={totalLstYeild} />
     </div>
   )
 
@@ -186,6 +184,10 @@ const LenderVaultContent = () => {
 
   const formattedTotalFundsInNextEpoch = totalFundsInNextEpoch
     ? formatValueByTokenType(totalFundsInNextEpoch, tokenType)
+    : 0
+
+  const formattedLstYieldValue = totalLstYield
+    ? formatValueByTokenType(totalLstYield, tokenType)
     : 0
 
   return (
@@ -213,13 +215,19 @@ const LenderVaultContent = () => {
       )}
 
       <div className={styles.lenderValtStatsContainer}>
-        <div className={styles.lenderVaultStat}>
-          <p className={styles.lenderVaultStatValue}>
-            <DisplayValue value={totalClaimableValue} />
-          </p>
-          <div className={styles.lenderVaultStatLabel}>
-            Vault <Tooltip title={tooltipContent} />
-          </div>
+        <div className={styles.lenderVaultStats}>
+          <StatInfo
+            label="Liquidity"
+            tooltipText={tooltipContent}
+            value={<DisplayValue value={totalClaimableValue} />}
+          />
+          <StatInfo
+            label="LST yield"
+            tooltipText="LST yield"
+            value={formattedLstYieldValue}
+            classNamesProps={{ value: styles.claimableValue }}
+            icon={BanxSOL}
+          />
         </div>
         <Button onClick={claimVault} disabled={!totalClaimableValue} size="small">
           Claim

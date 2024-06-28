@@ -27,12 +27,12 @@ export const getLenderVaultInfo = (
     ({ offer }) => offer.fundsSolOrTokenBalance + offer.bidSettlement,
   )
 
-  const totalLstYeild = sumBy(offers, ({ offer }) =>
+  const totalLstYield = sumBy(offers, ({ offer }) =>
     calculateLstYield({ offer, slot, epochStartedAt }).toNumber(),
   )
 
   const totalClaimableValue =
-    totalAccruedInterest + totalRepaymets + totalClosedOffersValue + totalLstYeild
+    totalAccruedInterest + totalRepaymets + totalClosedOffersValue + totalLstYield
 
   const totalFundsInCurrentEpoch = sumBy(offers, ({ offer }) =>
     calculateYieldInCurrentEpoch(offer, clusterStats),
@@ -47,7 +47,7 @@ export const getLenderVaultInfo = (
     totalRepaymets,
     totalClosedOffersValue,
     totalClaimableValue,
-    totalLstYeild,
+    totalLstYield,
     totalFundsInCurrentEpoch,
     totalFundsInNextEpoch,
   }

@@ -111,29 +111,26 @@
   width: 100%;
 }
 
-.lenderVaultStat {
+.lenderVaultStats {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 12px;
+
+  & > div {
+    gap: 0;
+  }
 }
 
-.lenderVaultStatValue {
-  font: var(--important-text-lg);
-}
-
-.lenderVaultStatLabel {
+.claimableValue {
   display: flex;
   align-items: center;
   gap: 2px;
-  color: var(--content-secondary);
-  font: var(--title-xs);
-  text-transform: uppercase;
 
-  svg {
-    height: 10px;
-    width: 10px;
+  svg path {
+    fill: revert-layer;
   }
 }
+
 // * LenderVaultContent * //
 
 // * TooltipContent * //

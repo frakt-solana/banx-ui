@@ -108,7 +108,7 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
   const {
     totalAccruedInterest,
     totalRepaymets,
-    totalLstYeild,
+    totalLstYield,
     totalClosedOffersValue,
     totalClaimableValue,
     totalFundsInCurrentEpoch,
@@ -151,7 +151,7 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
   }
 
   const onClickClaimButton = () => {
-    if (totalLstYeild) {
+    if (totalLstYield) {
       openModal()
     }
 
@@ -187,7 +187,7 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
           <StatInfo
             label="LST yield"
             tooltipText="LST yield"
-            value={<DisplayValue value={totalLstYeild} />}
+            value={<DisplayValue value={totalLstYield} />}
           />
           <StatInfo
             label="Liquidity"
