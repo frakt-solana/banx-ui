@@ -83,7 +83,9 @@ const BalanceContent: FC<BalanceContentProps> = ({
   banxSolWalletBalance,
   tokenType,
 }) => {
-  const formattedBanxSolWalletBalance = formatValueByTokenType(banxSolWalletBalance, tokenType)
+  const formattedBanxSolWalletBalance = banxSolWalletBalance
+    ? formatValueByTokenType(banxSolWalletBalance, tokenType)
+    : 0
 
   return (
     <div className={styles.balanceContainer}>
