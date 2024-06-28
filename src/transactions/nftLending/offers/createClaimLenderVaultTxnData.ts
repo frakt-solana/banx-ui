@@ -43,6 +43,8 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
     bidCap: 0,
     rewardsToHarvest: 0,
     lastCalculatedSlot: 0, //? current epoch * slotsInEpoch
+    fundsSolOrTokenBalance: 0,
+    bidSettlement: 0,
   }
 
   if (offer.concentrationIndex) {
