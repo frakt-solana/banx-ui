@@ -140,11 +140,11 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
       onConfirm: claimVault,
       onCancel: close,
       currentEpochInfo: {
-        value: totalFundsInCurrentEpoch,
+        value: formattedTotalFundsInCurrentEpoch,
         endsAt: currentEpochEndsAt,
       },
       nextEpochInfo: {
-        value: totalFundsInNextEpoch,
+        value: formattedTotalFundsInNextEpoch,
         endsAt: nextEpochEndsAt,
       },
     })
@@ -152,7 +152,7 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
 
   const onClickClaimButton = () => {
     if (totalLstYield) {
-      openModal()
+      return openModal()
     }
 
     return claimVault()
