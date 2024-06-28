@@ -109,6 +109,7 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
     totalAccruedInterest,
     totalRepaymets,
     totalLstYield,
+    totalLiquidityValue,
     totalClosedOffersValue,
     totalClaimableValue,
     totalFundsInCurrentEpoch,
@@ -151,7 +152,7 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
   }
 
   const onClickClaimButton = () => {
-    if (totalLstYield) {
+    if (totalLstYield > 0 && totalLiquidityValue > 0) {
       return openModal()
     }
 
@@ -194,7 +195,7 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
           <StatInfo
             label="Liquidity"
             tooltipText={tooltipContent}
-            value={<DisplayValue value={totalClaimableValue} />}
+            value={<DisplayValue value={totalLiquidityValue} />}
           />
         </div>
 

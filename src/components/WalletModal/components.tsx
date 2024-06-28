@@ -157,6 +157,7 @@ const LenderVaultContent = () => {
     totalRepaymets,
     totalLstYield,
     totalClosedOffersValue,
+    totalLiquidityValue,
     totalClaimableValue,
     totalFundsInCurrentEpoch,
     totalFundsInNextEpoch,
@@ -270,7 +271,7 @@ const LenderVaultContent = () => {
           <StatInfo
             label="Liquidity"
             tooltipText={tooltipContent}
-            value={<DisplayValue value={totalClaimableValue} />}
+            value={<DisplayValue value={totalLiquidityValue} />}
           />
           {isBanxSolTokenType(tokenType) && (
             <StatInfo
