@@ -42,6 +42,9 @@ export const getLenderVaultInfo = (
     calculateYieldInNextEpoch(offer, clusterStats),
   )
 
+  // eslint-disable-next-line no-console
+  console.log(offers, 'offers')
+
   return {
     totalAccruedInterest,
     totalRepaymets,
@@ -70,6 +73,16 @@ export const calculateYieldInCurrentEpoch = (
 
   const currentTimeInUnix = moment().unix()
   const currentTime = currentTimeInUnix + epochApproxTimeRemaining
+
+  // eslint-disable-next-line no-console
+  console.log({
+    currentTimeInUnix,
+    loanValue: offer.fundsInCurrentEpoch,
+    epochApproxTimeRemaining,
+    startTime: epochStartedAt,
+    epochEndedAt: currentTimeInUnix + epochApproxTimeRemaining,
+    rateBasePoints: BANX_SOL_STAKING_YEILD_APR,
+  })
 
   return calculateCurrentInterestSolPure({
     loanValue: offer.fundsInCurrentEpoch,
