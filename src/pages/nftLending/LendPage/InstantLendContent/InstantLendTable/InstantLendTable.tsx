@@ -100,6 +100,7 @@ export const InstantLendTable: FC<InstantLendTableProps> = ({ goToPlaceOfferTab 
       <EmptyList
         message="No offers to lend. Create an offer if you want to fund some loans"
         buttonProps={{ text: emptyButtonText, onClick: goToPlaceOfferTab }}
+        className={styles.emptyList}
       />
     )
 

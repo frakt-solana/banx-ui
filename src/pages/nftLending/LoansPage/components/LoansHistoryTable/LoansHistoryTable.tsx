@@ -17,7 +17,7 @@ export const LoansHistoryTable = () => {
 
   const columns = getTableColumns({ isCardView: viewState === ViewState.CARD })
 
-  if (showEmptyList) return <EmptyList {...emptyListParams} />
+  if (showEmptyList) return <EmptyList className={styles.emptyList} {...emptyListParams} />
 
   return (
     <div className={styles.tableRoot}>
