@@ -6,7 +6,7 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/tokens'
-import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
+import { HealthColorIncreasing, getColorByPercent, getTokenDecimals } from '@banx/utils'
 
 import { useTokenLenderLoansTransactions } from '../hooks'
 import { calculateRepaymentStaticValues } from './helpers'
@@ -28,7 +28,12 @@ export const RepaymentCallContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => 
   }
 
   const remainingDebt = totalClaim - paybackValue
-  const ltv = (remainingDebt / loan.collateralPrice) * 100
+
+  const tokenDecimals = getTokenDecimals(loan.bondTradeTransaction.lendingToken)
+  const collateralSupply = loan.fraktBond.fbondTokenSupply / Math.pow(10, loan.collateral.decimals)
+
+  const ltvRatio = remainingDebt / tokenDecimals / collateralSupply
+  const ltvPercent = (ltvRatio / loan.collateralPrice) * 100
 
   const sendBtnDisabled =
     !repayPercent || (repaymentCallActive && initialRepayValue === paybackValue)
@@ -54,8 +59,8 @@ export const RepaymentCallContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => 
         />
         <StatInfo
           label="Ltv after repayment"
-          value={ltv}
-          valueStyles={{ color: getColorByPercent(ltv, HealthColorIncreasing) }}
+          value={ltvPercent}
+          valueStyles={{ color: getColorByPercent(ltvPercent, HealthColorIncreasing) }}
           valueType={VALUES_TYPES.PERCENT}
           flexType="row"
         />
