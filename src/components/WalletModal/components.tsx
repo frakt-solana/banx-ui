@@ -50,7 +50,7 @@ const UserGeneralInfo = () => {
   const banxSolWalletBalance = useBanxSolBalance({ isLive: true })
 
   const { isLedger, setIsLedger } = useIsLedger()
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   return (
     <div className={styles.userGeneralInfoContainer}>
