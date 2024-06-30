@@ -12,7 +12,7 @@ import { createPathWithModeParams } from '@banx/store'
 import { ModeType } from '@banx/store/common'
 import { createGlobalState } from '@banx/store/createGlobalState'
 import { useNftTokenType } from '@banx/store/nft'
-import { isOfferStateClosed, isSolTokenType } from '@banx/utils'
+import { isBanxSolTokenType, isOfferStateClosed } from '@banx/utils'
 
 import { useSortedOffers } from './useSortedOffers'
 import { useUserOffers } from './useUserOffers'
@@ -84,7 +84,7 @@ export const useOffersContent = () => {
     navigate(createPathWithModeParams(PATHS.LEND, ModeType.NFT, tokenType))
   }
 
-  const tokenName = isSolTokenType(tokenType) ? 'SOL' : 'USDC'
+  const tokenName = isBanxSolTokenType(tokenType) ? 'SOL' : 'USDC'
 
   const emptyListParams = {
     message: connected

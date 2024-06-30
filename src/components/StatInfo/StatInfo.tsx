@@ -1,4 +1,4 @@
-import { CSSProperties, FC, SVGProps } from 'react'
+import { CSSProperties, FC, ReactNode, SVGProps } from 'react'
 
 import { TooltipPlacement } from 'antd/es/tooltip'
 import classNames from 'classnames'
@@ -28,7 +28,7 @@ export interface StatsInfoProps {
   icon?: FC<SVGProps<SVGSVGElement>>
   label?: string
   secondValue?: string | JSX.Element
-  tooltipText?: string
+  tooltipText?: ReactNode
   tooltipPlacement?: TooltipPlacement
   valueType?: VALUES_TYPES
   flexType?: 'row' | 'column'

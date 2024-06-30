@@ -152,7 +152,13 @@ export const isOfferStateClosed = (pairState: PairState) => {
 export const isOfferClosed = (offer: Offer) => {
   const isStateClosed = isOfferStateClosed(offer.pairState)
 
-  return isStateClosed && offer.bidCap === 0 && offer.concentrationIndex === 0
+  return (
+    isStateClosed &&
+    offer.bidCap === 0 &&
+    offer.concentrationIndex === 0 &&
+    offer.bidSettlement === 0 &&
+    offer.fundsSolOrTokenBalance === 0
+  )
 }
 
 //? Prevent orders wrong distibution on bulk borrow from same offer

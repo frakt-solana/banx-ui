@@ -7,8 +7,9 @@ import {
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
+import { fetchTokenBalance } from '@banx/api/common'
 import { core } from '@banx/api/nft'
-import { BONDS } from '@banx/constants'
+import { BANX_SOL_ADDRESS, BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
 import { ZERO_BN, calculateIdleFundsInOffer, isBanxSolTokenType } from '@banx/utils'
 
@@ -60,6 +61,12 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
 
   if (isBanxSolTokenType(tokenType)) {
+    const banxSolBalance = await fetchTokenBalance({
+      tokenAddress: BANX_SOL_ADDRESS,
+      publicKey: walletAndConnection.wallet.publicKey,
+      connection: walletAndConnection.connection,
+    })
+
     const oldOfferSize = calculateIdleFundsInOffer(offer)
 
     const newOffer = optimisticResult?.bondOffer
@@ -69,7 +76,7 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
     //? Optimistic offer is broken
     const newOfferSize = calculateIdleFundsInOffer(newOffer)
 
-    const diff = newOfferSize.sub(oldOfferSize)
+    const diff = newOfferSize.sub(oldOfferSize).sub(banxSolBalance)
 
     if (diff.gt(ZERO_BN)) {
       return await banxSol.combineWithBuyBanxSolInstructions({

@@ -173,9 +173,37 @@
     display: flex;
   }
 }
-.solanaBalance {
+
+// * BalanceContent * //
+.balanceContent {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.verticalLine {
+  background: var(--content-primary);
+  width: 1px;
+  height: 12px;
+
+  @media (max-width: 640px) {
+    display: none;
+  }
+}
+.balance {
   font: var(--body-text-sm);
 }
+
+.banxSolBalance {
+  font: var(--body-text-sm);
+
+  @media (max-width: 640px) {
+    display: none;
+  }
+}
+
+// * BalanceContent * //
+
 .connectedWalletChevron {
   path {
     fill: var(--content-primary);
