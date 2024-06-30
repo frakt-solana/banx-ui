@@ -1,21 +1,19 @@
 .modal {
   border: var(--border-primary);
+  border-top: 0;
   background-color: var(--bg-primary);
 
   position: absolute;
-  top: 8px;
-  right: 24px;
+  top: 0;
+  right: 0;
   padding: 16px;
-  width: 304px;
+  width: 312px;
   z-index: 100;
 
   @media (max-width: 767px) {
     border: 0;
     border-bottom: var(--border-primary);
-
-    top: 0;
     left: 0;
-    right: 0;
     width: 100%;
   }
 }
@@ -70,35 +68,71 @@
 .lenderVaultContainer {
   background: var(--bg-action);
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: space-between;
-  padding: 8px 16px;
   margin: 8px -16px 0;
 }
 
-.lenderVaultStat {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.lenderVaultStatValue {
-  font: var(--important-text-lg);
-}
-
-.lenderVaultStatLabel {
+.epochContainer {
   display: flex;
   flex-direction: column;
-  color: var(--content-secondary);
-  font: var(--title-xs);
-  text-transform: uppercase;
-  max-width: 56px;
+  padding: 8px 16px;
+  gap: 12px;
+}
 
-  svg {
-    height: 10px;
-    width: 10px;
+.epochStats {
+  display: flex;
+  flex-direction: column;
+  white-space: nowrap;
+
+  & > div {
+    justify-content: flex-start;
+    gap: 4px;
+
+    span {
+      display: flex;
+      align-items: center;
+    }
+
+    svg path {
+      fill: revert-layer;
+    }
   }
 }
+
+.lenderValtStatsContainer {
+  border-top: 1px dotted var(--bg-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  width: 100%;
+
+  &.hiddenBorder {
+    border-top: 0;
+  }
+}
+
+.lenderVaultStats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  & > div {
+    gap: 0;
+  }
+}
+
+.claimableValue {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+
+  svg path {
+    fill: revert-layer;
+  }
+}
+
 // * LenderVaultContent * //
 
 // * TooltipContent * //
@@ -160,7 +194,7 @@
 .userGeneralInfoContainer {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
 }
 
 .userGeneralInfo {
@@ -173,7 +207,7 @@
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 
   svg path {
     fill: var(--content-primary);
@@ -220,3 +254,45 @@
   width: 14px;
   height: 14px;
 }
+
+// * BalanceContent * //
+.balanceContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: auto;
+}
+
+.balanceLabel {
+  color: var(--content-secondary);
+  font: var(--title-xs);
+  text-align: center;
+  text-transform: uppercase;
+  max-width: 88px;
+}
+
+.balanceContent {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+
+  & > div {
+    gap: 0;
+  }
+}
+
+.verticalLine {
+  background: var(--content-primary);
+  width: 1px;
+  height: 12px;
+}
+.balanceValue {
+  display: flex;
+  align-items: center;
+  font: var(--important-text-md);
+
+  svg path {
+    fill: revert-layer;
+  }
+}
+// * BalanceContent * //
