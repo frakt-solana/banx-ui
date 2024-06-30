@@ -89,7 +89,6 @@ const getIxnsAndSignersByLoanType = async (params: CreateLendToBorrowTxnDataPara
         bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
         oldBondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
         fraktBond: new web3.PublicKey(fraktBond.publicKey),
-        splTokenMint: undefined,
       },
       args: {
         lendingTokenType: bondTradeTransaction.lendingToken,

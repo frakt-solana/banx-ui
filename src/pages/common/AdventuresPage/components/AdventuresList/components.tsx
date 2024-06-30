@@ -159,7 +159,7 @@ export const AdventuresTimer: FC<AdventuresTimerProps> = ({
 
   const isLive = isAdventureLive(banxAdventure)
 
-  const { timeLeft } = useCountdown(endsAt)
+  const timeLeft = useCountdown(endsAt)
 
   // const isSubscribed = !!banxAdventureSubscription && checkIsSubscribed(banxAdventureSubscription)
   // const rewards: string = useMemo(() => {

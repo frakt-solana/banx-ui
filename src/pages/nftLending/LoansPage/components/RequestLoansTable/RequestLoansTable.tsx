@@ -81,7 +81,7 @@ export const RequestsTable = () => {
     return { onRowClick }
   }, [onRowClick])
 
-  if (showEmptyList) return <EmptyList {...emptyListParams} />
+  if (showEmptyList) return <EmptyList className={styles.emptyList} {...emptyListParams} />
 
   return (
     <div className={styles.tableRoot}>

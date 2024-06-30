@@ -8,9 +8,10 @@ import {
 import { BondFeatures, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
-import { BONDS } from '@banx/constants'
+import { fetchTokenBalance } from '@banx/api/common'
+import { BANX_SOL_ADDRESS, BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
-import { calculateNewOfferSize, isBanxSolTokenType } from '@banx/utils'
+import { ZERO_BN, calculateNewOfferSize, isBanxSolTokenType } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
@@ -65,16 +66,31 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
 
   if (isBanxSolTokenType(tokenType)) {
-    const offerSize = calculateNewOfferSize({ loanValue, loansAmount, deltaValue })
+    const banxSolBalance = await fetchTokenBalance({
+      tokenAddress: BANX_SOL_ADDRESS,
+      publicKey: walletAndConnection.wallet.publicKey,
+      connection: walletAndConnection.connection,
+    })
 
-    return await banxSol.combineWithBuyBanxSolInstructions({
-      inputAmount: offerSize,
-      walletAndConnection,
+    const offerSize = calculateNewOfferSize({ loanValue, loansAmount, deltaValue })
+    const diff = offerSize.sub(banxSolBalance)
+
+    if (diff.gt(ZERO_BN)) {
+      return await banxSol.combineWithBuyBanxSolInstructions({
+        inputAmount: diff.abs(),
+        walletAndConnection,
+        instructions,
+        signers,
+        lookupTables,
+        result: optimisticResult,
+      })
+    }
+    return {
       instructions,
       signers,
-      lookupTables,
       result: optimisticResult,
-    })
+      lookupTables,
+    }
   }
 
   return {

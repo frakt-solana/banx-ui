@@ -139,7 +139,7 @@ export const LoansActiveTable: FC<LoansActiveTableProps> = ({
     </div>
   )
 
-  if (showEmptyList) return <EmptyList {...emptyListParams} />
+  if (showEmptyList) return <EmptyList className={styles.emptyList} {...emptyListParams} />
 
   return (
     <div className={styles.tableRoot}>

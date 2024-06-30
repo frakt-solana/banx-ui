@@ -151,7 +151,7 @@ export const LoansTable = () => {
     </Tooltip>
   )
 
-  if (showEmptyList) return <EmptyList message={emptyMessage} />
+  if (showEmptyList) return <EmptyList className={styles.emptyList} message={emptyMessage} />
 
   return (
     <div className={styles.tableRoot}>
