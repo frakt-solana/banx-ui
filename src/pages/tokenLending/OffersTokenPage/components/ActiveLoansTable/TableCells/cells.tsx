@@ -3,17 +3,24 @@ import { FC } from 'react'
 import { capitalize } from 'lodash'
 import moment from 'moment'
 
-import { DisplayValue, HorizontalCell } from '@banx/components/TableComponents'
+import {
+  DisplayValue,
+  HorizontalCell,
+  createPercentValueJSX,
+} from '@banx/components/TableComponents'
 import Timer from '@banx/components/Timer'
 
 import { core } from '@banx/api/tokens'
 import { SECONDS_IN_72_HOURS } from '@banx/constants'
 import {
+  HealthColorIncreasing,
   STATUS_LOANS_COLOR_MAP,
   STATUS_LOANS_MAP,
   calculateLentTokenValueWithInterest,
   calculateTimeFromNow,
   calculateTokenLoanAccruedInterest,
+  getColorByPercent,
+  getTokenDecimals,
   isTokenLoanActive,
   isTokenLoanLiquidated,
   isTokenLoanTerminating,
@@ -45,12 +52,29 @@ export const ClaimCell: FC<ClaimCellProps> = ({ loan }) => {
 
 const createTooltipContent = (label: string, value: number) => (
   <div className={styles.tooltipContent}>
-    <span>{label}</span>
-    <span>
+    <span className={styles.tooltipRowLabel}>{label}</span>
+    <span className={styles.tooltipRowValue}>
       <DisplayValue value={value} />
     </span>
   </div>
 )
+
+export const LTVCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
+  const tokenDecimals = getTokenDecimals(loan.bondTradeTransaction.lendingToken)
+
+  const collateralSupply = loan.fraktBond.fbondTokenSupply / Math.pow(10, loan.collateral.decimals)
+  const lentTokenValueWithInterest = calculateLentTokenValueWithInterest(loan).toNumber()
+
+  const ltvRatio = lentTokenValueWithInterest / tokenDecimals / collateralSupply
+  const ltvPercent = (ltvRatio / loan.collateralPrice) * 100
+
+  return (
+    <HorizontalCell
+      textColor={getColorByPercent(ltvPercent, HealthColorIncreasing)}
+      value={createPercentValueJSX(ltvPercent, '0%')}
+    />
+  )
+}
 
 interface StatusCellProps {
   loan: core.TokenLoan

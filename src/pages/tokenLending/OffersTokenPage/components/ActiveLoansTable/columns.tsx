@@ -15,10 +15,7 @@ import Tooltip from '@banx/components/Tooltip'
 import { core } from '@banx/api/tokens'
 import { Coin, Snowflake } from '@banx/icons'
 import {
-  HealthColorIncreasing,
-  calculateLentTokenValueWithInterest,
   calculateTokenRepaymentCallLenderReceivesAmount,
-  getColorByPercent,
   isTokenLoanFrozen,
   isTokenLoanLiquidated,
   isTokenLoanListed,
@@ -27,7 +24,7 @@ import {
 } from '@banx/utils'
 
 import { calculateFreezeExpiredAt } from './ManageModal/helpers'
-import { ActionsCell, ClaimCell, StatusCell } from './TableCells'
+import { ActionsCell, ClaimCell, LTVCell, StatusCell } from './TableCells'
 import { TokenLoanOptimistic } from './loansState'
 
 import styles from './ActiveLoansTable.module.less'
@@ -67,7 +64,9 @@ export const getTableColumns = ({
             key={loan.publicKey}
             selected={selected}
             onCheckboxClick={() => toggleLoanInSelection(loan)}
-            collateralTokenAmount={loan.bondTradeTransaction.borrowerOriginalLent}
+            collateralTokenAmount={Math.trunc(
+              loan.fraktBond.fbondTokenSupply / Math.pow(10, loan.collateral.decimals),
+            )}
             checkboxClassName={!canSelect ? styles.collateralCellCheckbox : ''}
             collateralImageUrl={loan.collateral.logoUrl}
             rightContentJSX={createRightContentJSX(loan)}
@@ -88,20 +87,7 @@ export const getTableColumns = ({
     {
       key: 'ltv',
       title: <HeaderCell label="LTV" />,
-      render: (loan) => {
-        const lentTokenValueWithInterest = calculateLentTokenValueWithInterest(loan).toNumber()
-        const ltv =
-          (lentTokenValueWithInterest /
-            (loan.collateralPrice * Math.pow(10, loan.collateral.decimals))) *
-          100
-
-        return (
-          <HorizontalCell
-            textColor={getColorByPercent(ltv, HealthColorIncreasing)}
-            value={createPercentValueJSX(ltv, '0%')}
-          />
-        )
-      },
+      render: (loan) => <LTVCell loan={loan} />,
     },
     {
       key: 'repaid',
