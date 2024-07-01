@@ -20,7 +20,9 @@ export const useMarketOrders = (marketPubkey: string, offerPubkey: string) => {
   })
 
   const sortedOffers = useMemo(() => {
-    return [...processedOffers].sort((orderA, orderB) => orderB.offerSize - orderA.offerSize)
+    return [...processedOffers].sort(
+      (orderA, orderB) => orderA.collateralsPerToken - orderB.collateralsPerToken,
+    )
   }, [processedOffers])
 
   const bestOffer = useMemo(() => {

@@ -4,19 +4,19 @@ import { useQuery } from '@tanstack/react-query'
 import { stats } from '@banx/api/nft'
 import { useNftTokenType } from '@banx/store/nft'
 
-export const useUserOffersStats = () => {
+export const useUserTokenOffersStats = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
   const { tokenType } = useNftTokenType()
 
   const { data, isLoading } = useQuery(
-    ['userOffersStats', publicKeyString, tokenType],
+    ['userTokenOffersStats', publicKeyString, tokenType],
     () =>
       stats.fetchUserOffersStats({
         walletPubkey: publicKeyString,
         marketType: tokenType,
-        tokenType: 'nft',
+        tokenType: 'spl',
       }),
     {
       enabled: !!publicKeyString,
