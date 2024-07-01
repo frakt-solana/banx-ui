@@ -10,7 +10,7 @@ import Tooltip from '@banx/components/Tooltip'
 import { Hourglass, Snowflake } from '@banx/icons'
 import { ViewState, useTableView } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
-import { isSolTokenType } from '@banx/utils'
+import { isBanxSolTokenType } from '@banx/utils'
 
 import { Summary } from './Summary'
 import { getTableColumns } from './columns'
@@ -78,7 +78,7 @@ const InstantLendTokenTable: FC<InstantLendTableProps> = ({ goToPlaceOfferTab })
     }
   }, [toggleLoanInSelection])
 
-  const emptyButtonText = isSolTokenType(tokenType) ? 'Lend SOL' : 'Lend USDC'
+  const emptyButtonText = isBanxSolTokenType(tokenType) ? 'Lend SOL' : 'Lend USDC'
 
   const customJSX = (
     <div className={styles.filterButtons}>
