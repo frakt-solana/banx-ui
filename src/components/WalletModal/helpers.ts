@@ -56,26 +56,40 @@ export const getLenderVaultInfo = (
 
 type CalculateLstYield = (props: { offer: core.Offer; slot: number; epochStartedAt: number }) => BN
 const calculateLstYield: CalculateLstYield = ({ offer, slot, epochStartedAt }) => {
-  return calculateBanxSolStakingRewards({
+  const totalYield = calculateBanxSolStakingRewards({
     bondOffer: offer,
     nowSlot: new BN(slot),
     currentEpochStartAt: new BN(epochStartedAt),
   })
+
+  return totalYield
 }
 
 export const calculateYieldInCurrentEpoch = (
   offer: core.Offer,
   clusterStats: ClusterStats | undefined,
 ) => {
-  const { epochApproxTimeRemaining = 0, epochStartedAt = 0 } = clusterStats || {}
+  const {
+    epochApproxTimeRemaining = 0,
+    epochStartedAt = 0,
+    epoch = 0,
+    slotsInEpoch = 0,
+  } = clusterStats || {}
+
+  const epochWhenOfferChanged = offer.lastCalculatedSlot / slotsInEpoch
+
+  const loanValue =
+    epochWhenOfferChanged < epoch
+      ? offer.fundsInCurrentEpoch + offer.fundsInNextEpoch
+      : offer.fundsInCurrentEpoch
 
   const currentTimeInUnix = moment().unix()
-  const currentTime = currentTimeInUnix + epochApproxTimeRemaining
+  const epochEndedAt = currentTimeInUnix + epochApproxTimeRemaining
 
   return calculateCurrentInterestSolPure({
-    loanValue: offer.fundsInCurrentEpoch,
+    loanValue,
     startTime: epochStartedAt,
-    currentTime,
+    currentTime: epochEndedAt,
     rateBasePoints: BANX_SOL_STAKING_YEILD_APR,
   })
 }
