@@ -1,5 +1,6 @@
 import { BN, web3 } from 'fbonds-core'
 import { chain, sum } from 'lodash'
+import moment from 'moment'
 
 import { BONDS, MINUTES_IN_HOUR } from '@banx/constants'
 
@@ -56,7 +57,9 @@ export const getClusterStats: GetClusterStats = async ({ connection }) => {
 
   const [clusterTime, epochStartedAt] = await Promise.all([
     connection.getBlockTime(absoluteSlot).catch(() => undefined),
-    getEpochStartedAtWithRetries(connection, absoluteSlot - slotIndex, slotIndex, avgSlotTime_1h),
+    connection
+      .getBlockTime(absoluteSlot - slotIndex)
+      .catch(() => moment().unix() - slotIndex * avgSlotTime_1h),
   ])
 
   const epochProgress = slotIndex / slotsInEpoch
@@ -101,38 +104,4 @@ export const fetchTokenBalance = async (props: {
   const uiAmount = balanceInfo.value.uiAmount || 0
 
   return new BN(uiAmount * Math.pow(10, decimals))
-}
-
-const SLOTS_PER_STEP = 1000
-let retryCount = 0
-
-const getEpochStartedAtWithRetries = async (
-  connection: web3.Connection,
-  absoluteSlot: number,
-  slotIndex: number,
-  avgSlotTime_1h: number,
-): Promise<number | null> => {
-  if (retryCount > 5) {
-    throw new Error('Max retries exceeded')
-  }
-
-  try {
-    const epochStartedAt = await connection.getBlockTime(absoluteSlot - slotIndex)
-    return epochStartedAt
-  } catch (error) {
-    console.error(error)
-
-    retryCount++
-
-    const adjustedEpochTime = await getEpochStartedAtWithRetries(
-      connection,
-      absoluteSlot + SLOTS_PER_STEP,
-      slotIndex,
-      avgSlotTime_1h,
-    )
-
-    if (!adjustedEpochTime) return null
-    const backOffEpochTime = SLOTS_PER_STEP * retryCount * avgSlotTime_1h
-    return adjustedEpochTime - backOffEpochTime
-  }
 }
