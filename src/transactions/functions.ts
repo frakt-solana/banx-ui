@@ -7,9 +7,17 @@ import {
   WalletAndConnection,
   extractAccountKeysFromInstructions,
 } from 'solana-transactions-executor'
+import {
+  convertValuesInAccount,
+  decodeAccountDataSafe,
+  getAccountName,
+  parseEnumsInAccount,
+} from 'solana-transactions-parser'
 
 import { helius } from '@banx/api/common'
 import { getPriorityFeeLevel } from '@banx/store/common'
+
+import { BANX_ACCOUNTS_NAMES_AND_DISCRIMINATORS, banxCoder } from './constants'
 
 type CreateExecutorWalletAndConnection = (params: {
   wallet: WalletContextState
@@ -73,4 +81,34 @@ export const executorGetPriorityFee: GetPriorityFee = ({ txnParams, connection }
   const accountKeys = extractAccountKeysFromInstructions(instructions).map((key) => key.toBase58())
 
   return helius.getHeliusPriorityFeeEstimate({ accountKeys, connection, priorityLevel })
+}
+
+export const parseBanxAccountInfo = <T>(
+  publicKey: web3.PublicKey,
+  info: web3.SimulatedTransactionAccountInfo | null,
+): [string, T] | null => {
+  if (!info || !info.data) return null
+
+  const bufferData = Buffer.from(info.data[0], 'base64')
+
+  const accountName = getAccountName(BANX_ACCOUNTS_NAMES_AND_DISCRIMINATORS, bufferData) ?? ''
+
+  const parsedData = decodeAccountDataSafe<unknown>(banxCoder, accountName, bufferData)
+
+  const parsedDataWithEnums = parsedData
+    ? { publicKey, ...parseEnumsInAccount<object>(parsedData) }
+    : null
+
+  const convertedAccount = convertValuesInAccount<T>(parsedDataWithEnums, {
+    bnParser: (v) => {
+      try {
+        return v.toNumber()
+      } catch (err) {
+        return 0
+      }
+    },
+    pubkeyParser: (v) => v.toBase58(),
+  })
+
+  return [accountName, convertedAccount]
 }

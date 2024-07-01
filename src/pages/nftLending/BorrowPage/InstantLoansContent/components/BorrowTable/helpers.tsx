@@ -7,8 +7,8 @@ import {
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { Dictionary, chain, groupBy, sumBy, uniqueId } from 'lodash'
 import moment from 'moment'
-import { TxnExecutor } from 'solana-transactions-executor'
 
+import { TxnExecutor } from '@banx/../../solana-txn-executor/src'
 import { core } from '@banx/api/nft'
 import bonkTokenImg from '@banx/assets/BonkToken.png'
 import { BONDS, ONE_WEEK_IN_SECONDS } from '@banx/constants'
@@ -19,9 +19,9 @@ import {
   defaultTxnErrorHandler,
 } from '@banx/transactions'
 import {
-  BorrowTxnOptimisticResult,
   CreateBorrowTxnDataParams,
   createBorrowTxnData,
+  parseBorrowSimulatedAccounts,
 } from '@banx/transactions/nftLending'
 import {
   convertOffersToSimple,
@@ -114,7 +114,7 @@ export const executeBorrow = async (props: {
       ),
     )
 
-    await new TxnExecutor<BorrowTxnOptimisticResult>(walletAndConnection, {
+    await new TxnExecutor<CreateBorrowTxnDataParams>(walletAndConnection, {
       ...TXN_EXECUTOR_DEFAULT_OPTIONS,
       chunkSize: isLedger ? 1 : 40,
     })
@@ -131,24 +131,46 @@ export const executeBorrow = async (props: {
         if (confirmed.length) {
           enqueueSnackbar({ message: 'Borrowed successfully', type: 'success' })
 
-          const loans = chain(confirmed)
-            .map(({ result }) => result?.loan)
-            .compact()
-            .value()
+          const loanAndOfferArray = confirmed.map((txnResult) => {
+            const { accountInfoByPubkey, params } = txnResult
+
+            if (!accountInfoByPubkey) return
+
+            const { bondOffer, bondTradeTransaction, fraktBond } =
+              parseBorrowSimulatedAccounts(accountInfoByPubkey)
+
+            const loanAndOffer: { loan: core.Loan; offer: core.Offer } = {
+              loan: {
+                publicKey: fraktBond.publicKey,
+                fraktBond: fraktBond,
+                bondTradeTransaction: bondTradeTransaction,
+                nft: params.nft.nft,
+              },
+              offer: bondOffer,
+            }
+
+            return loanAndOffer
+          })
 
           if (wallet.publicKey) {
-            addLoansOptimistic(loans, wallet.publicKey?.toBase58())
+            addLoansOptimistic(
+              chain(loanAndOfferArray)
+                .compact()
+                .map(({ loan }) => loan)
+                .value(),
+              wallet.publicKey?.toBase58(),
+            )
           }
 
-          const optimisticByPubkey: Dictionary<OfferWithLoanValue[]> = chain(confirmed)
-            .map(({ result }) => {
-              if (!result) return null
+          const optimisticByPubkey: Dictionary<OfferWithLoanValue[]> = chain(loanAndOfferArray)
+            .map((loanAndOffer) => {
+              if (!loanAndOffer) return null
               const {
                 offer,
                 loan: {
                   bondTradeTransaction: { solAmount, feeAmount },
                 },
-              } = result
+              } = loanAndOffer
 
               const loanValue = solAmount + feeAmount
 
@@ -184,7 +206,7 @@ export const executeBorrow = async (props: {
           updateOffersOptimistic(optimisticsToAdd)
 
           onSuccessAll?.()
-          onBorrowSuccess?.(loans.length)
+          onBorrowSuccess?.(loanAndOfferArray.length)
         }
 
         if (failed.length) {
