@@ -14,13 +14,14 @@ import { core } from '@banx/api/tokens'
 import { SECONDS_IN_72_HOURS } from '@banx/constants'
 import {
   HealthColorIncreasing,
+  LoanStatus,
   STATUS_LOANS_COLOR_MAP,
   STATUS_LOANS_MAP,
   calculateLentTokenValueWithInterest,
   calculateTimeFromNow,
   calculateTokenLoanAccruedInterest,
+  calculateTokenLoanLtvByLoanValue,
   getColorByPercent,
-  getTokenDecimals,
   isTokenLoanActive,
   isTokenLoanLiquidated,
   isTokenLoanTerminating,
@@ -60,13 +61,8 @@ const createTooltipContent = (label: string, value: number) => (
 )
 
 export const LTVCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
-  const tokenDecimals = getTokenDecimals(loan.bondTradeTransaction.lendingToken)
-
-  const collateralSupply = loan.fraktBond.fbondTokenSupply / Math.pow(10, loan.collateral.decimals)
   const lentTokenValueWithInterest = calculateLentTokenValueWithInterest(loan).toNumber()
-
-  const ltvRatio = lentTokenValueWithInterest / tokenDecimals / collateralSupply
-  const ltvPercent = (ltvRatio / loan.collateralPrice) * 100
+  const ltvPercent = calculateTokenLoanLtvByLoanValue(loan, lentTokenValueWithInterest)
 
   return (
     <HorizontalCell
@@ -82,9 +78,8 @@ interface StatusCellProps {
 }
 
 export const StatusCell: FC<StatusCellProps> = ({ loan, isCardView = false }) => {
-  const loanStatus = STATUS_LOANS_MAP[loan.bondTradeTransaction.bondTradeTransactionState]
+  const loanStatus = getLoanStatus(loan)
   const loanStatusColor = STATUS_LOANS_COLOR_MAP[loanStatus]
-
   const timeContent = getTimeContent(loan)
 
   const statusInfoTitle = <span className={styles.statusInfoTitle}>{timeContent}</span>
@@ -104,6 +99,14 @@ export const StatusCell: FC<StatusCellProps> = ({ loan, isCardView = false }) =>
       {statusInfoSubtitle} ({statusInfoTitle})
     </span>
   )
+}
+
+const getLoanStatus = (loan: core.TokenLoan) => {
+  if (isTokenLoanLiquidated(loan)) {
+    return LoanStatus.Liquidated
+  }
+
+  return STATUS_LOANS_MAP[loan.bondTradeTransaction.bondTradeTransactionState]
 }
 
 const getTimeContent = (loan: core.TokenLoan) => {

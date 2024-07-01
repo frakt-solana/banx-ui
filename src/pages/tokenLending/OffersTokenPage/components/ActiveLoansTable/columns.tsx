@@ -16,6 +16,7 @@ import { core } from '@banx/api/tokens'
 import { Coin, Snowflake } from '@banx/icons'
 import {
   calculateTokenRepaymentCallLenderReceivesAmount,
+  getHumanReadableTokenSupply,
   isTokenLoanFrozen,
   isTokenLoanLiquidated,
   isTokenLoanListed,
@@ -64,9 +65,7 @@ export const getTableColumns = ({
             key={loan.publicKey}
             selected={selected}
             onCheckboxClick={() => toggleLoanInSelection(loan)}
-            collateralTokenAmount={Math.trunc(
-              loan.fraktBond.fbondTokenSupply / Math.pow(10, loan.collateral.decimals),
-            )}
+            collateralTokenAmount={Math.trunc(getHumanReadableTokenSupply(loan))}
             checkboxClassName={!canSelect ? styles.collateralCellCheckbox : ''}
             collateralImageUrl={loan.collateral.logoUrl}
             rightContentJSX={createRightContentJSX(loan)}
