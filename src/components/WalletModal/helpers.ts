@@ -76,20 +76,20 @@ export const calculateYieldInCurrentEpoch = (
     slotsInEpoch = 0,
   } = clusterStats || {}
 
-  const lastEpochWhenOfferChanged = offer.lastCalculatedSlot / slotsInEpoch
+  const epochWhenOfferChanged = offer.lastCalculatedSlot / slotsInEpoch
 
   const loanValue =
-    lastEpochWhenOfferChanged < epoch
+    epochWhenOfferChanged < epoch
       ? offer.fundsInCurrentEpoch + offer.fundsInNextEpoch
       : offer.fundsInCurrentEpoch
 
   const currentTimeInUnix = moment().unix()
-  const currentTime = currentTimeInUnix + epochApproxTimeRemaining
+  const epochEndedAt = currentTimeInUnix + epochApproxTimeRemaining
 
   return calculateCurrentInterestSolPure({
     loanValue,
     startTime: epochStartedAt,
-    currentTime,
+    currentTime: epochEndedAt,
     rateBasePoints: BANX_SOL_STAKING_YEILD_APR,
   })
 }

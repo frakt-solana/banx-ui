@@ -35,41 +35,6 @@ export const EMPTY_CLUSTER_STATS: ClusterStats = {
 
 type GetClusterStats = (params: { connection: web3.Connection }) => Promise<ClusterStats>
 
-const SLOTS_PER_STEP = 1000
-
-let retries = 0
-
-const retryWithIncreasedSlot = async (
-  connection: web3.Connection,
-  absoluteSlot: number,
-  slotIndex: number,
-  avgSlotTime_1h: number,
-): Promise<number> => {
-  if (retries > 10) {
-    throw new Error('Error')
-  }
-
-  try {
-    const epochStartedAt = (await connection.getBlockTime(absoluteSlot - slotIndex)) || 0
-    return epochStartedAt
-  } catch (error) {
-    console.error('Error:', error)
-
-    retries++
-
-    const x: number | null = await retryWithIncreasedSlot(
-      connection,
-      absoluteSlot + SLOTS_PER_STEP,
-      slotIndex,
-      avgSlotTime_1h,
-    )
-
-    if (!x) return 0
-
-    return x - SLOTS_PER_STEP * retries * avgSlotTime_1h
-  }
-}
-
 export const getClusterStats: GetClusterStats = async ({ connection }) => {
   const [epochInfo, performanceSamples] = await Promise.all([
     connection.getEpochInfo(),
@@ -91,7 +56,7 @@ export const getClusterStats: GetClusterStats = async ({ connection }) => {
 
   const [clusterTime, epochStartedAt] = await Promise.all([
     connection.getBlockTime(absoluteSlot).catch(() => undefined),
-    retryWithIncreasedSlot(connection, absoluteSlot - slotIndex, slotIndex, avgSlotTime_1h),
+    getEpochStartedAtWithRetries(connection, absoluteSlot - slotIndex, slotIndex, avgSlotTime_1h),
   ])
 
   const epochProgress = slotIndex / slotsInEpoch
@@ -136,4 +101,38 @@ export const fetchTokenBalance = async (props: {
   const uiAmount = balanceInfo.value.uiAmount || 0
 
   return new BN(uiAmount * Math.pow(10, decimals))
+}
+
+const SLOTS_PER_STEP = 1000
+let retryCount = 0
+
+const getEpochStartedAtWithRetries = async (
+  connection: web3.Connection,
+  absoluteSlot: number,
+  slotIndex: number,
+  avgSlotTime_1h: number,
+): Promise<number | null> => {
+  if (retryCount > 5) {
+    throw new Error('Max retries exceeded')
+  }
+
+  try {
+    const epochStartedAt = await connection.getBlockTime(absoluteSlot - slotIndex)
+    return epochStartedAt
+  } catch (error) {
+    console.error(error)
+
+    retryCount++
+
+    const adjustedEpochTime = await getEpochStartedAtWithRetries(
+      connection,
+      absoluteSlot + SLOTS_PER_STEP,
+      slotIndex,
+      avgSlotTime_1h,
+    )
+
+    if (!adjustedEpochTime) return null
+    const backOffEpochTime = SLOTS_PER_STEP * retryCount * avgSlotTime_1h
+    return adjustedEpochTime - backOffEpochTime
+  }
 }
