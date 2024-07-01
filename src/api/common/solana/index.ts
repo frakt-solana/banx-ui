@@ -1,5 +1,6 @@
 import { BN, web3 } from 'fbonds-core'
 import { chain, sum } from 'lodash'
+import moment from 'moment'
 
 import { BONDS, MINUTES_IN_HOUR } from '@banx/constants'
 import { ZERO_BN } from '@banx/utils'
@@ -17,6 +18,7 @@ export type ClusterStats = {
   blockHeight: number | undefined
   epochStartedAt: number | undefined //? Unix timestamp
   clusterTime: number | undefined //? Unix timestamp
+  slotsInEpoch: number
 }
 
 export const EMPTY_CLUSTER_STATS: ClusterStats = {
@@ -27,6 +29,7 @@ export const EMPTY_CLUSTER_STATS: ClusterStats = {
   epochProgress: 0,
   epochDuration: 0,
   epochApproxTimeRemaining: 0,
+  slotsInEpoch: 0,
   blockHeight: undefined,
   epochStartedAt: undefined,
   clusterTime: undefined,
@@ -42,11 +45,6 @@ export const getClusterStats: GetClusterStats = async ({ connection }) => {
 
   const { slotIndex, slotsInEpoch, absoluteSlot, blockHeight, epoch } = epochInfo
 
-  const [clusterTime, epochStartedAt] = await Promise.all([
-    connection.getBlockTime(absoluteSlot).catch(() => undefined),
-    connection.getBlockTime(absoluteSlot - slotIndex).catch(() => undefined),
-  ])
-
   const samples = chain(performanceSamples)
     .filter((sample) => sample.numSlots !== 0)
     .map((sample) => sample.samplePeriodSecs / sample.numSlots)
@@ -57,6 +55,13 @@ export const getClusterStats: GetClusterStats = async ({ connection }) => {
 
   const samplesInHour = samples.length < MINUTES_IN_HOUR ? samples.length : MINUTES_IN_HOUR
   const avgSlotTime_1h = sum(samples) / samplesInHour
+
+  const [clusterTime, epochStartedAt] = await Promise.all([
+    connection.getBlockTime(absoluteSlot).catch(() => undefined),
+    connection
+      .getBlockTime(absoluteSlot - slotIndex)
+      .catch(() => moment().unix() - slotIndex * avgSlotTime_1h),
+  ])
 
   const epochProgress = slotIndex / slotsInEpoch
 
@@ -73,6 +78,7 @@ export const getClusterStats: GetClusterStats = async ({ connection }) => {
     epochDuration,
     epochApproxTimeRemaining,
     blockHeight,
+    slotsInEpoch: slotsInEpoch,
     epochStartedAt: epochStartedAt ?? undefined,
     clusterTime: clusterTime ?? undefined,
   }
