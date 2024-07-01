@@ -2,6 +2,7 @@ import { BN, web3 } from 'fbonds-core'
 import { chain, sum } from 'lodash'
 
 import { BONDS, MINUTES_IN_HOUR } from '@banx/constants'
+import { ZERO_BN } from '@banx/utils'
 
 const SAMPLE_HISTORY_HOURS_AMOUNT = 6
 
@@ -86,6 +87,8 @@ export const fetchTokenBalance = async (props: {
 }) => {
   const { tokenAddress, publicKey, connection } = props
 
+  if (!publicKey?.toBase58() || !tokenAddress) return ZERO_BN
+
   const tokenPublicKey = new web3.PublicKey(tokenAddress)
   const tokenAccounts = await connection.getTokenAccountsByOwner(publicKey, {
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
@@ -93,6 +96,9 @@ export const fetchTokenBalance = async (props: {
   })
 
   const userTokenAccountAddress = tokenAccounts.value[0]?.pubkey
+
+  if (!userTokenAccountAddress?.toBase58()) return ZERO_BN
+
   const balanceInfo = await connection.getTokenAccountBalance(userTokenAccountAddress)
   const decimals = balanceInfo.value.decimals
   const uiAmount = balanceInfo.value.uiAmount || 0
