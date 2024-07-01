@@ -16,6 +16,7 @@ export type ClusterStats = {
   blockHeight: number | undefined
   epochStartedAt: number | undefined //? Unix timestamp
   clusterTime: number | undefined //? Unix timestamp
+  slotsInEpoch: number
 }
 
 export const EMPTY_CLUSTER_STATS: ClusterStats = {
@@ -26,12 +27,48 @@ export const EMPTY_CLUSTER_STATS: ClusterStats = {
   epochProgress: 0,
   epochDuration: 0,
   epochApproxTimeRemaining: 0,
+  slotsInEpoch: 0,
   blockHeight: undefined,
   epochStartedAt: undefined,
   clusterTime: undefined,
 }
 
 type GetClusterStats = (params: { connection: web3.Connection }) => Promise<ClusterStats>
+
+const SLOTS_PER_STEP = 1000
+
+let retries = 0
+
+const retryWithIncreasedSlot = async (
+  connection: web3.Connection,
+  absoluteSlot: number,
+  slotIndex: number,
+  avgSlotTime_1h: number,
+): Promise<number> => {
+  if (retries > 10) {
+    throw new Error('Error')
+  }
+
+  try {
+    const epochStartedAt = (await connection.getBlockTime(absoluteSlot - slotIndex)) || 0
+    return epochStartedAt
+  } catch (error) {
+    console.error('Error:', error)
+
+    retries++
+
+    const x: number | null = await retryWithIncreasedSlot(
+      connection,
+      absoluteSlot + SLOTS_PER_STEP,
+      slotIndex,
+      avgSlotTime_1h,
+    )
+
+    if (!x) return 0
+
+    return x - SLOTS_PER_STEP * retries * avgSlotTime_1h
+  }
+}
 
 export const getClusterStats: GetClusterStats = async ({ connection }) => {
   const [epochInfo, performanceSamples] = await Promise.all([
@@ -40,11 +77,6 @@ export const getClusterStats: GetClusterStats = async ({ connection }) => {
   ])
 
   const { slotIndex, slotsInEpoch, absoluteSlot, blockHeight, epoch } = epochInfo
-
-  const [clusterTime, epochStartedAt] = await Promise.all([
-    connection.getBlockTime(absoluteSlot).catch(() => undefined),
-    connection.getBlockTime(absoluteSlot - slotIndex).catch(() => undefined),
-  ])
 
   const samples = chain(performanceSamples)
     .filter((sample) => sample.numSlots !== 0)
@@ -56,6 +88,11 @@ export const getClusterStats: GetClusterStats = async ({ connection }) => {
 
   const samplesInHour = samples.length < MINUTES_IN_HOUR ? samples.length : MINUTES_IN_HOUR
   const avgSlotTime_1h = sum(samples) / samplesInHour
+
+  const [clusterTime, epochStartedAt] = await Promise.all([
+    connection.getBlockTime(absoluteSlot).catch(() => undefined),
+    retryWithIncreasedSlot(connection, absoluteSlot - slotIndex, slotIndex, avgSlotTime_1h),
+  ])
 
   const epochProgress = slotIndex / slotsInEpoch
 
@@ -72,6 +109,7 @@ export const getClusterStats: GetClusterStats = async ({ connection }) => {
     epochDuration,
     epochApproxTimeRemaining,
     blockHeight,
+    slotsInEpoch: slotsInEpoch,
     epochStartedAt: epochStartedAt ?? undefined,
     clusterTime: clusterTime ?? undefined,
   }
