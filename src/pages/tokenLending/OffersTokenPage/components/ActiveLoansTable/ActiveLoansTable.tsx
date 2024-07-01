@@ -1,11 +1,15 @@
 import { useCallback, useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import classNames from 'classnames'
 
+import { Button } from '@banx/components/Buttons'
 import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
+import Tooltip from '@banx/components/Tooltip'
 
 import { core } from '@banx/api/tokens'
+import { Underwater } from '@banx/icons'
 import { ViewState, useTableView } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
 import {
@@ -38,6 +42,9 @@ export const ActiveLoansTable = () => {
     sortViewParams,
     showEmptyList,
     emptyMessage,
+    isUnderwaterFilterActive,
+    onToggleUnderwaterFilter,
+    underwaterLoansCount,
   } = useTokenLoansTable()
 
   const {
@@ -124,6 +131,26 @@ export const ActiveLoansTable = () => {
     }
   }, [onRowClick])
 
+  const customJSX = (
+    <Tooltip title={underwaterLoansCount ? 'Underwater loans' : 'No underwater loans currently'}>
+      <div className={styles.filterButtonWrapper} data-underwater-loans={underwaterLoansCount}>
+        <Button
+          className={classNames(
+            styles.filterButton,
+            { [styles.active]: isUnderwaterFilterActive },
+            { [styles.disabled]: !underwaterLoansCount },
+          )}
+          disabled={!underwaterLoansCount}
+          onClick={onToggleUnderwaterFilter}
+          type="circle"
+          variant="secondary"
+        >
+          <Underwater />
+        </Button>
+      </div>
+    </Tooltip>
+  )
+
   if (showEmptyList) return <EmptyList message={emptyMessage} />
 
   return (
@@ -134,6 +161,7 @@ export const ActiveLoansTable = () => {
         rowParams={rowParams}
         sortViewParams={sortViewParams}
         loading={loading}
+        customJSX={customJSX}
         className={styles.table}
         showCard
       />

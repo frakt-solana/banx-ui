@@ -22,8 +22,15 @@ export const useTokenLoansTable = () => {
 
   const { loans, loading } = useTokenLenderLoans()
 
-  const { filteredLoans, filteredAllLoans, selectedCollections, setSelectedCollections } =
-    useFilterLoans(loans)
+  const {
+    filteredLoans,
+    isUnderwaterFilterActive,
+    onToggleUnderwaterFilter,
+    selectedCollections,
+    setSelectedCollections,
+    filteredAllLoans,
+    underwaterLoansCount,
+  } = useFilterLoans(loans)
 
   const { sortedLoans, sortParams } = useSortedLoans(filteredLoans)
 
@@ -56,6 +63,10 @@ export const useTokenLoansTable = () => {
 
     loansToClaim,
     loansToTerminate,
+
+    isUnderwaterFilterActive,
+    onToggleUnderwaterFilter,
+    underwaterLoansCount,
 
     sortViewParams: { searchSelectParams, sortParams },
 
