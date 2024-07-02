@@ -56,14 +56,16 @@ export const executeBorrow = async (props: {
 
     const txnsData = await Promise.all(
       createTxnsDataParams.map(({ loanValue, nft, offer, optimizeIntoReserves, tokenType }) =>
-        createBorrowTxnData({
-          loanValue,
-          nft,
-          offer,
-          optimizeIntoReserves,
-          tokenType,
+        createBorrowTxnData(
+          {
+            loanValue,
+            nft,
+            offer,
+            optimizeIntoReserves,
+            tokenType,
+          },
           walletAndConnection,
-        }),
+        ),
       ),
     )
 

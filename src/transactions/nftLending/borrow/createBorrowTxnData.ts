@@ -37,18 +37,12 @@ export type CreateBorrowTxnDataParams = {
 }
 
 export type CreateBorrowTxnData = (
-  params: CreateBorrowTxnDataParams & { walletAndConnection: WalletAndConnection },
+  params: CreateBorrowTxnDataParams,
+  walletAndConnection: WalletAndConnection,
 ) => Promise<CreateTxnData<CreateBorrowTxnDataParams>>
 
-export const createBorrowTxnData: CreateBorrowTxnData = async ({
-  nft,
-  loanValue,
-  offer,
-  optimizeIntoReserves,
-  tokenType,
-  walletAndConnection,
-}) => {
-  const params = { nft, loanValue, offer, optimizeIntoReserves, tokenType }
+export const createBorrowTxnData: CreateBorrowTxnData = async (params, walletAndConnection) => {
+  const { nft, loanValue, offer, optimizeIntoReserves, tokenType } = params
 
   const borrowType = getNftBorrowType(nft)
 
