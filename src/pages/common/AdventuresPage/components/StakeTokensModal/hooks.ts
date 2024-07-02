@@ -2,10 +2,10 @@ import { useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { uniqueId } from 'lodash'
-import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Tab, useTabs } from '@banx/components/Tabs'
 
+import { TxnExecutor } from '@banx/../../solana-txn-executor/src'
 import {
   calcPartnerPoints,
   useBanxStakeInfo,
@@ -163,10 +163,10 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const txnData = await createUnstakeBanxTokenTxnData({
-        tokensToUnstake: formatBanxTokensStrToBN(inputTokenAmount),
+      const txnData = await createUnstakeBanxTokenTxnData(
+        { tokensToUnstake: formatBanxTokensStrToBN(inputTokenAmount) },
         walletAndConnection,
-      })
+      )
 
       new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
         .addTxnData(txnData)

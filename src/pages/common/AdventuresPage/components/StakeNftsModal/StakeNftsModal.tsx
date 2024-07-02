@@ -3,12 +3,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BanxStakeState } from 'fbonds-core/lib/fbond-protocol/types'
 import { uniqueId } from 'lodash'
-import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 import { Modal } from '@banx/components/modals/BaseModal'
 
+import { TxnExecutor } from '@banx/../../solana-txn-executor/src'
 import { staking } from '@banx/api/common'
 import { TensorFilled } from '@banx/icons'
 import { useBanxStakeInfo, useBanxStakeSettings } from '@banx/pages/common/AdventuresPage'
@@ -148,11 +148,13 @@ export const StakeNftsModal = () => {
 
       const txnsData = await Promise.all(
         selectedNfts.map((nft) =>
-          createUnstakeBanxNftTxnData({
-            nftMint: nft.mint,
-            nftStakePublicKey: nft.stake?.publicKey ?? '',
+          createUnstakeBanxNftTxnData(
+            {
+              nftMint: nft.mint,
+              nftStakePublicKey: nft.stake?.publicKey ?? '',
+            },
             walletAndConnection,
-          }),
+          ),
         ),
       )
 

@@ -2,21 +2,27 @@ import { web3 } from '@project-serum/anchor'
 import { BN } from 'fbonds-core'
 import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
 import { unstakeBanxToken } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
-import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
+import { CreateTxnData, WalletAndConnection } from '@banx/../../solana-txn-executor/src'
 import { BONDS } from '@banx/constants'
 
 import { sendTxnPlaceHolder } from '../helpers'
 
-type CreateUnstakeBanxTokenTxnData = (params: {
+type CreateUnstakeBanxTokenTxnDataParams = {
   tokensToUnstake: BN
-  walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<undefined>>
+}
 
-export const createUnstakeBanxTokenTxnData: CreateUnstakeBanxTokenTxnData = async ({
-  tokensToUnstake,
+type CreateUnstakeBanxTokenTxnData = (
+  params: CreateUnstakeBanxTokenTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateUnstakeBanxTokenTxnDataParams>>
+
+export const createUnstakeBanxTokenTxnData: CreateUnstakeBanxTokenTxnData = async (
+  params,
   walletAndConnection,
-}) => {
+) => {
+  const { tokensToUnstake } = params
+
   const { instructions, signers } = await unstakeBanxToken({
     connection: walletAndConnection.connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
@@ -31,6 +37,7 @@ export const createUnstakeBanxTokenTxnData: CreateUnstakeBanxTokenTxnData = asyn
   })
 
   return {
+    params,
     instructions,
     signers,
     lookupTables: [],
