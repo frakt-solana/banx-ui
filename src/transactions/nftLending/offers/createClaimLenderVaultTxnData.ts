@@ -5,46 +5,45 @@ import {
   claimPerpetualBondOfferRepayments,
   claimPerpetualBondOfferStakingRewards, // claimPerpetualBondOfferStakingRewards,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
-import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
+import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { chain } from 'lodash'
 
+import {
+  CreateTxnData,
+  SimulatedAccountInfoByPubkey,
+  WalletAndConnection,
+} from '@banx/../../solana-txn-executor/src'
 import { ClusterStats } from '@banx/api/common'
-import { Offer, core } from '@banx/api/nft'
+import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
-import { banxSol } from '@banx/transactions'
+import { banxSol, parseBanxAccountInfo } from '@banx/transactions'
 import { ZERO_BN, isBanxSolTokenType } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
-type CreateClaimLenderVaultTxnData = (params: {
+export type CreateClaimLenderVaultTxnDataParams = {
   offer: core.Offer
   tokenType: LendingTokenType
   clusterStats: ClusterStats | undefined
-  walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<Offer>>
+}
 
-export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = async ({
-  offer,
-  tokenType,
-  clusterStats,
+type CreateClaimLenderVaultTxnData = (
+  params: CreateClaimLenderVaultTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateClaimLenderVaultTxnDataParams>>
+
+export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = async (
+  params,
   walletAndConnection,
-}) => {
+) => {
+  const { offer, tokenType, clusterStats } = params
+
   const instructions: web3.TransactionInstruction[] = []
   const signers: web3.Signer[] = []
 
   const accountsParams = {
     bondOffer: new web3.PublicKey(offer.publicKey),
     userPubkey: walletAndConnection.wallet.publicKey,
-  }
-
-  const optimiticResult = {
-    ...offer,
-    concentrationIndex: 0,
-    bidCap: 0,
-    rewardsToHarvest: 0,
-    lastCalculatedSlot: 0, //? current epoch * slotsInEpoch
-    fundsSolOrTokenBalance: 0,
-    bidSettlement: 0,
   }
 
   if (offer.concentrationIndex) {
@@ -108,22 +107,50 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
     signers.push(...claimYieldSigners)
   }
 
+  const accounts = [new web3.PublicKey(offer.publicKey)]
+
   if (isBanxSolTokenType(tokenType) && (offer.bidCap || offer.concentrationIndex)) {
     const inputAmount = new BN(offer.concentrationIndex).add(new BN(offer.bidCap))
 
-    return await banxSol.combineWithSellBanxSolInstructions({
+    //TODO Refactor combineWithSellBanxSolInstructions for new TxnData type
+    const combineWithSellBanxSolResult = await banxSol.combineWithSellBanxSolInstructions({
       inputAmount,
       walletAndConnection,
       instructions,
       signers,
-      result: optimiticResult,
+      result: undefined,
     })
+
+    return {
+      params,
+      instructions: combineWithSellBanxSolResult.instructions,
+      signers: combineWithSellBanxSolResult.signers,
+      accounts,
+      lookupTables: combineWithSellBanxSolResult.lookupTables,
+    }
   }
 
   return {
+    params,
+    accounts,
     instructions,
     signers,
-    result: optimiticResult,
     lookupTables: [],
   }
+}
+
+//TODO Move results logic into shared separate function?
+export const parseClaimLenderVaultSimulatedAccounts = (
+  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
+) => {
+  const results = chain(accountInfoByPubkey)
+    .toPairs()
+    .filter(([, info]) => !!info)
+    .map(([publicKey, info]) => {
+      return parseBanxAccountInfo(new web3.PublicKey(publicKey), info)
+    })
+    .fromPairs()
+    .value()
+
+  return results?.['bondOfferV3'] as BondOfferV3
 }

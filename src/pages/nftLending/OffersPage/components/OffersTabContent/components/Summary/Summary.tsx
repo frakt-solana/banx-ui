@@ -3,7 +3,6 @@ import { FC } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { uniqueId } from 'lodash'
 import moment from 'moment'
-import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { EpochProgressBar } from '@banx/components/EpochProgressBar'
@@ -12,6 +11,7 @@ import { DisplayValue } from '@banx/components/TableComponents'
 import { getLenderVaultInfo } from '@banx/components/WalletModal'
 import { BanxSolYieldWarningModal } from '@banx/components/modals'
 
+import { TxnExecutor } from '@banx/../../solana-txn-executor/src'
 import { Offer, core } from '@banx/api/nft'
 import { useClusterStats } from '@banx/hooks'
 import { BanxSOL } from '@banx/icons'
@@ -22,7 +22,11 @@ import {
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
-import { createClaimLenderVaultTxnData } from '@banx/transactions/nftLending'
+import {
+  CreateClaimLenderVaultTxnDataParams,
+  createClaimLenderVaultTxnData,
+  parseClaimLenderVaultSimulatedAccounts,
+} from '@banx/transactions/nftLending'
 import {
   destroySnackbar,
   enqueueConfirmationError,
@@ -60,16 +64,21 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
 
       const txnsData = await Promise.all(
         offers.map(({ offer }) =>
-          createClaimLenderVaultTxnData({
-            offer,
+          createClaimLenderVaultTxnData(
+            {
+              offer,
+              tokenType,
+              clusterStats,
+            },
             walletAndConnection,
-            tokenType,
-            clusterStats,
-          }),
+          ),
         ),
       )
 
-      await new TxnExecutor<Offer>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor<CreateClaimLenderVaultTxnDataParams>(
+        walletAndConnection,
+        TXN_EXECUTOR_DEFAULT_OPTIONS,
+      )
         .addTxnsData(txnsData)
         .on('sentAll', () => {
           enqueueTransactionsSent()
@@ -82,7 +91,12 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
 
           if (confirmed.length) {
             enqueueSnackbar({ message: 'Successfully claimed', type: 'success' })
-            confirmed.forEach(({ result }) => result && updateOrAddOffer([result]))
+
+            confirmed.forEach(({ accountInfoByPubkey }) => {
+              if (!accountInfoByPubkey) return
+              const offer = parseClaimLenderVaultSimulatedAccounts(accountInfoByPubkey)
+              updateOrAddOffer([offer])
+            })
           }
 
           if (failed.length) {
