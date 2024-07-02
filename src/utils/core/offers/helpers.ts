@@ -193,3 +193,59 @@ export const isOfferNotEmpty = (offer: core.Offer) => {
   if (decimalLoanValue > 0) return true
   return false
 }
+
+type NftWithLoanValue = {
+  nft: core.BorrowNft
+  loanValue: number
+}
+type NftWithOffer = {
+  nft: NftWithLoanValue
+  offer: core.Offer
+}
+type MatchNftsAndOffers = (props: {
+  nfts: NftWithLoanValue[]
+  rawOffers: core.Offer[]
+}) => NftWithOffer[]
+/**
+ * Recalculates the cart. Matches selected nfts with selected offers
+ * to make pairs (nft+offer) as effective as possible.
+ */
+export const matchNftsAndOffers: MatchNftsAndOffers = ({ nfts, rawOffers }) => {
+  //? Create simple offers array sorted by loanValue (offerValue) asc
+  const simpleOffers = convertOffersToSimple(rawOffers, 'asc')
+
+  const { nftsWithOffers } = chain(nfts)
+    .cloneDeep()
+    //? Sort by selected loanValue asc
+    .sort((a, b) => {
+      return a.loanValue - b.loanValue
+    })
+    .reduce(
+      (acc, nft) => {
+        //? Find index of offer. OfferValue must be greater than or equal to selected loanValue. And mustn't be used by prev iteration
+        const offerIndex = simpleOffers.findIndex(
+          ({ loanValue: offerValue }, idx) => nft.loanValue <= offerValue && acc.offerIndex <= idx,
+        )
+
+        const nftAndOffer: NftWithOffer = {
+          nft,
+          offer: rawOffers.find(
+            ({ publicKey }) => publicKey === simpleOffers[offerIndex].publicKey,
+          ) as core.Offer,
+        }
+
+        return {
+          //? Increment offerIndex to use in next iteration (to reduce amount of iterations)
+          offerIndex: offerIndex + 1,
+          nftsWithOffers: [...acc.nftsWithOffers, nftAndOffer],
+        }
+      },
+      { offerIndex: 0, nftsWithOffers: [] } as {
+        offerIndex: number
+        nftsWithOffers: NftWithOffer[]
+      },
+    )
+    .value()
+
+  return nftsWithOffers
+}
