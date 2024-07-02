@@ -116,10 +116,10 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const txnData = await createStakeBanxTokenTxnData({
-        tokensToStake: formatBanxTokensStrToBN(inputTokenAmount),
+      const txnData = await createStakeBanxTokenTxnData(
+        { tokensToStake: formatBanxTokensStrToBN(inputTokenAmount) },
         walletAndConnection,
-      })
+      )
 
       await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
         .addTxnData(txnData)
