@@ -1,41 +1,43 @@
 import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
-  BondOfferOptimistic,
   createPerpetualBondOfferBonding,
   getBondingCurveTypeFromLendingToken,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondFeatures, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
-import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
+import { BondFeatures, BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { chain } from 'lodash'
 
+import {
+  CreateTxnData,
+  SimulatedAccountInfoByPubkey,
+  WalletAndConnection,
+} from '@banx/../../solana-txn-executor/src'
 import { fetchTokenBalance } from '@banx/api/common'
 import { BANX_SOL_ADDRESS, BONDS } from '@banx/constants'
-import { banxSol } from '@banx/transactions'
+import { banxSol, parseBanxAccountInfo } from '@banx/transactions'
 import { ZERO_BN, calculateNewOfferSize, isBanxSolTokenType } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
-type CreateMakeBondingOfferTxnDataParams = {
+export type CreateMakeBondingOfferTxnDataParams = {
   marketPubkey: string
   loanValue: number //? normal number
   loansAmount: number
   deltaValue: number //? normal number
   tokenType: LendingTokenType
-  walletAndConnection: WalletAndConnection
 }
 
 type CreateMakeBondingOfferTxnData = (
   params: CreateMakeBondingOfferTxnDataParams,
-) => Promise<CreateTxnData<BondOfferOptimistic>>
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateMakeBondingOfferTxnDataParams>>
 
-export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = async ({
-  marketPubkey,
-  loanValue,
-  loansAmount,
-  tokenType,
-  deltaValue,
+export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = async (
+  params,
   walletAndConnection,
-}) => {
+) => {
+  const { marketPubkey, loanValue, loansAmount, tokenType, deltaValue } = params
+
   const bondingCurveType = getBondingCurveTypeFromLendingToken(tokenType)
 
   const { instructions, signers, optimisticResult } = await createPerpetualBondOfferBonding({
@@ -57,6 +59,7 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
   })
 
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
+  const accounts = [new web3.PublicKey(optimisticResult.bondOffer.publicKey)]
 
   if (isBanxSolTokenType(tokenType)) {
     const banxSolBalance = await fetchTokenBalance({
@@ -69,7 +72,8 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
     const diff = offerSize.sub(banxSolBalance)
 
     if (diff.gt(ZERO_BN)) {
-      return await banxSol.combineWithBuyBanxSolInstructions({
+      //TODO Refactor combineWithBuyBanxSolInstructions for new TxnData type
+      const combineWithBuyBanxSolResult = await banxSol.combineWithBuyBanxSolInstructions({
         inputAmount: diff.abs(),
         walletAndConnection,
         instructions,
@@ -77,19 +81,38 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
         lookupTables,
         result: optimisticResult,
       })
-    }
-    return {
-      instructions,
-      signers,
-      result: optimisticResult,
-      lookupTables,
+
+      return {
+        params,
+        accounts,
+        instructions: combineWithBuyBanxSolResult.instructions,
+        signers: combineWithBuyBanxSolResult.signers,
+        lookupTables: combineWithBuyBanxSolResult.lookupTables,
+      }
     }
   }
 
   return {
+    params,
+    accounts,
     instructions,
     signers,
-    result: optimisticResult,
     lookupTables,
   }
+}
+
+//TODO Move results logic into shared separate function?
+export const parseMakeOfferSimulatedAccounts = (
+  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
+) => {
+  const results = chain(accountInfoByPubkey)
+    .toPairs()
+    .filter(([, info]) => !!info)
+    .map(([publicKey, info]) => {
+      return parseBanxAccountInfo(new web3.PublicKey(publicKey), info)
+    })
+    .fromPairs()
+    .value()
+
+  return results?.['bondOfferV3'] as BondOfferV3
 }
