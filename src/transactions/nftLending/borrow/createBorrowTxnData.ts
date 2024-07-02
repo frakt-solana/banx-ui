@@ -65,16 +65,6 @@ export const createBorrowTxnData: CreateBorrowTxnData = async (params, walletAnd
   ]
 
   if (isBanxSolTokenType(tokenType)) {
-    const loanAndOffer = {
-      loan: {
-        publicKey: optimisticResult.fraktBond.publicKey,
-        fraktBond: optimisticResult.fraktBond,
-        bondTradeTransaction: optimisticResult.bondTradeTransaction,
-        nft: nft.nft,
-      },
-      offer: optimisticResult.bondOffer,
-    }
-
     //TODO Refactor combineWithSellBanxSolInstructions for new TxnData type
     const combineWithSellBanxSolResult = await banxSol.combineWithSellBanxSolInstructions({
       //? 0.99 --> without upfront fee
@@ -83,7 +73,7 @@ export const createBorrowTxnData: CreateBorrowTxnData = async (params, walletAnd
       instructions,
       signers,
       lookupTables,
-      result: loanAndOffer,
+      result: undefined,
     })
 
     return {
