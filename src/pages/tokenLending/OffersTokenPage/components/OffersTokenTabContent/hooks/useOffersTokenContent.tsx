@@ -100,22 +100,22 @@ const createSearchSelectParams = ({
     const firstOfferInGroup = first(groupedOffer)
     const { ticker = '', logoUrl = '' } = firstOfferInGroup?.tokenMarketPreview.collateral || {}
 
-    const accruedInterest = sumBy(groupedOffer, (offer) => offer.tokenOfferPreview.accruedInterest)
+    const lent = sumBy(groupedOffer, (offer) => offer.tokenOfferPreview.inLoans)
 
-    return { ticker, logoUrl, accruedInterest }
+    return { ticker, logoUrl, lent }
   })
 
   const searchSelectParams = {
     options: searchSelectOptions,
     selectedOptions,
     onChange,
-    labels: ['Collateral', 'Interest'],
+    labels: ['Collateral', 'Lent'],
     optionKeys: {
       labelKey: 'ticker',
       valueKey: 'ticker',
       imageKey: 'logoUrl',
       secondLabel: {
-        key: 'accruedInterest',
+        key: 'lent',
         format: (value: number) => <DisplayValue value={value} />,
       },
     },

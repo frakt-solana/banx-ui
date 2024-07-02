@@ -30,12 +30,13 @@ import styles from '../LoansTokenActiveTable.module.less'
 interface TooltipRowProps {
   label: string
   value: number
+  isSubscriptFormat?: boolean
 }
-const TooltipRow: FC<TooltipRowProps> = ({ label, value }) => (
+const TooltipRow: FC<TooltipRowProps> = ({ label, value, isSubscriptFormat = false }) => (
   <div className={styles.tooltipRow}>
     <span className={styles.tooltipRowLabel}>{label}</span>
     <span className={styles.tooltipRowValue}>
-      <DisplayValue value={value} />
+      <DisplayValue value={value} isSubscriptFormat={isSubscriptFormat} />
     </span>
   </div>
 )
@@ -75,7 +76,7 @@ export const LTVCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>
-      <TooltipRow label="Price" value={loan.collateralPrice} />
+      <TooltipRow label="Price" value={loan.collateralPrice} isSubscriptFormat />
       <TooltipRow label="Debt" value={debtValue} />
     </div>
   )

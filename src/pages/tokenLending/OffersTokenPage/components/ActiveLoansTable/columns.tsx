@@ -65,7 +65,7 @@ export const getTableColumns = ({
             key={loan.publicKey}
             selected={selected}
             onCheckboxClick={() => toggleLoanInSelection(loan)}
-            collateralTokenAmount={Math.trunc(getHumanReadableTokenSupply(loan))}
+            collateralTokenAmount={Math.round(getHumanReadableTokenSupply(loan))}
             checkboxClassName={!canSelect ? styles.collateralCellCheckbox : ''}
             collateralImageUrl={loan.collateral.logoUrl}
             rightContentJSX={createRightContentJSX(loan)}

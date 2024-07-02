@@ -13,6 +13,7 @@ import { core } from '@banx/api/tokens'
 import {
   HealthColorIncreasing,
   calculateLentTokenValueWithInterest,
+  calculateTokenLoanLtvByLoanValue,
   calculateTokenLoanValueWithUpfrontFee,
   getColorByPercent,
 } from '@banx/utils'
@@ -114,10 +115,11 @@ const getTerminateStatsInfo = (loans: core.TokenLoan[]) => {
     (acc, loan) => {
       const claimValue = calculateLentTokenValueWithInterest(loan).toNumber()
       const borrowedAmount = calculateTokenLoanValueWithUpfrontFee(loan).toNumber()
+      const ltvPercent = calculateTokenLoanLtvByLoanValue(loan, claimValue)
 
       return {
         totalLent: acc.totalLent + borrowedAmount,
-        averageLtv: acc.averageLtv + (claimValue / loan.collateralPrice / loans.length) * 100,
+        averageLtv: acc.averageLtv + ltvPercent,
         totalInterest: acc.totalInterest + claimValue - borrowedAmount,
       }
     },
