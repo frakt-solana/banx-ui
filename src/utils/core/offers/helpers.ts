@@ -194,7 +194,7 @@ export const isOfferNotEmpty = (offer: core.Offer) => {
   return false
 }
 
-type NftWithLoanValue = {
+export type NftWithLoanValue = {
   nft: core.BorrowNft
   loanValue: number
 }

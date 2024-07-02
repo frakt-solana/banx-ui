@@ -105,6 +105,7 @@ export const executeBorrow = async (props: {
             return loanAndOffer
           })
 
+          //? Add optimistic loans
           if (wallet.publicKey) {
             addLoansOptimistic(
               chain(loanAndOfferArray)
@@ -115,6 +116,7 @@ export const executeBorrow = async (props: {
             )
           }
 
+          //? Add optimistic offers
           updateOffersOptimistic(
             chain(loanAndOfferArray)
               .compact()
