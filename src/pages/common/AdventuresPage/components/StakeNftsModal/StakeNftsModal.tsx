@@ -97,10 +97,7 @@ export const StakeNftsModal = () => {
 
       const txnsData = await Promise.all(
         selectedNfts.map((nft) =>
-          createStakeBanxNftTxnData({
-            nftMint: nft.mint,
-            walletAndConnection,
-          }),
+          createStakeBanxNftTxnData({ nftMint: nft.mint }, walletAndConnection),
         ),
       )
 
