@@ -4,8 +4,8 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BN } from 'fbonds-core'
 import { BanxAdventureSubscriptionState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, uniqueId } from 'lodash'
-import { TxnExecutor } from 'solana-transactions-executor'
 
+import { TxnExecutor } from '@banx/../../solana-txn-executor/src'
 import { staking } from '@banx/api/common'
 import {
   calcPartnerPoints,
@@ -122,7 +122,7 @@ export const useAdventuresSidebar = ({
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const txnsData = await Promise.all(
-        chunkWeeks.map((weeks) => createClaimBanxTxnData({ weeks, walletAndConnection })),
+        chunkWeeks.map((weeks) => createClaimBanxTxnData({ weeks }, walletAndConnection)),
       )
 
       await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
