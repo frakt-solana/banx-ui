@@ -151,7 +151,7 @@ const Summary: FC<SummaryProps> = ({ offers, updateOrAddOffer }) => {
   }
 
   const onClickClaimButton = () => {
-    if (totalLstYield > 0 && totalLiquidityValue > 0) {
+    if (isBanxSolTokenType(tokenType) && totalLstYield > 0 && totalLiquidityValue > 0) {
       return openModal()
     }
 
