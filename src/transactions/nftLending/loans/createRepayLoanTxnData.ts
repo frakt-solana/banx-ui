@@ -6,9 +6,15 @@ import {
   repayPerpetualLoan,
   repayStakedBanxPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { BondTradeTransactionV3, FraktBond } from 'fbonds-core/lib/fbond-protocol/types'
+import { chain } from 'lodash'
 import moment from 'moment'
-import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
+import {
+  CreateTxnData,
+  SimulatedAccountInfoByPubkey,
+  WalletAndConnection,
+} from '@banx/../../solana-txn-executor/src'
 import { helius } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BANX_STAKING, BONDS } from '@banx/constants'
@@ -19,23 +25,25 @@ import {
   isSolTokenType,
 } from '@banx/utils'
 
-import { fetchRuleset } from '../../functions'
+import { fetchRuleset, parseBanxAccountInfo } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 import { BorrowType } from '../types'
 
-type CreateRepayLoanTxnDataParams = {
+export type CreateRepayLoanTxnDataParams = {
   loan: core.Loan
-  walletAndConnection: WalletAndConnection
 }
 
 type CreateRepayLoanTxnData = (
   params: CreateRepayLoanTxnDataParams,
-) => Promise<CreateTxnData<core.Loan>>
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateRepayLoanTxnDataParams>>
 
-export const createRepayLoanTxnData: CreateRepayLoanTxnData = async ({
-  loan,
+export const createRepayLoanTxnData: CreateRepayLoanTxnData = async (
+  params,
   walletAndConnection,
-}) => {
+) => {
+  const { loan } = params
+
   const borrowType = getLoanBorrowType(loan)
 
   const {
@@ -43,18 +51,18 @@ export const createRepayLoanTxnData: CreateRepayLoanTxnData = async ({
     signers: repaySigners,
     optimisticResult,
     lookupTables,
-  } = await getIxnsAndSignersByBorrowType({
-    loan,
-    borrowType,
+  } = await getIxnsAndSignersByBorrowType(
+    {
+      loan,
+      borrowType,
+    },
     walletAndConnection,
-  })
+  )
 
-  const optimisticLoan: core.Loan = {
-    publicKey: optimisticResult.fraktBond.publicKey,
-    fraktBond: optimisticResult.fraktBond,
-    bondTradeTransaction: optimisticResult.bondTradeTransaction,
-    nft: loan.nft,
-  }
+  const accounts = [
+    new web3.PublicKey(optimisticResult.fraktBond.publicKey),
+    new web3.PublicKey(optimisticResult.bondTradeTransaction.publicKey),
+  ]
 
   //? Add BanxSol instructions if offer wasn't closed!
   if (
@@ -69,31 +77,41 @@ export const createRepayLoanTxnData: CreateRepayLoanTxnData = async ({
       date: moment().unix() + 180,
     })
 
-    return await banxSol.combineWithBuyBanxSolInstructions({
+    //TODO Refactor combineWithBuyBanxSolInstructions for new TxnData type
+    const combineWithBuyBanxSolResult = await banxSol.combineWithBuyBanxSolInstructions({
       inputAmount: repayValue,
       walletAndConnection,
       instructions: repayInstructions,
       signers: repaySigners,
       lookupTables,
-      result: optimisticLoan,
+      result: undefined,
     })
+
+    return {
+      params,
+      accounts,
+      instructions: combineWithBuyBanxSolResult.instructions,
+      signers: combineWithBuyBanxSolResult.signers,
+      lookupTables: combineWithBuyBanxSolResult.lookupTables,
+    }
   }
 
   return {
+    params,
+    accounts,
     instructions: repayInstructions,
     signers: repaySigners,
-    result: optimisticLoan,
     lookupTables,
   }
 }
 
-const getIxnsAndSignersByBorrowType = async ({
-  loan,
-  borrowType,
-  walletAndConnection,
-}: CreateRepayLoanTxnDataParams & {
-  borrowType: BorrowType
-}) => {
+const getIxnsAndSignersByBorrowType = async (
+  params: CreateRepayLoanTxnDataParams & {
+    borrowType: BorrowType
+  },
+  walletAndConnection: WalletAndConnection,
+) => {
+  const { loan, borrowType } = params
   const { connection, wallet } = walletAndConnection
 
   const { bondTradeTransaction, fraktBond, nft } = loan
@@ -233,4 +251,22 @@ export const getLoanBorrowType = (loan: core.Loan) => {
     return BorrowType.StakedBanx
   if (loan.nft.compression) return BorrowType.CNft
   return BorrowType.Default
+}
+
+export const parseRepayLoanSimulatedAccounts = (
+  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
+) => {
+  const results = chain(accountInfoByPubkey)
+    .toPairs()
+    .filter(([, info]) => !!info)
+    .map(([publicKey, info]) => {
+      return parseBanxAccountInfo(new web3.PublicKey(publicKey), info)
+    })
+    .fromPairs()
+    .value()
+
+  return {
+    bondTradeTransaction: results?.['bondTradeTransactionV3'] as BondTradeTransactionV3,
+    fraktBond: results?.['fraktBond'] as FraktBond,
+  }
 }
