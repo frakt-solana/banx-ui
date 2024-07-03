@@ -14,13 +14,16 @@ import { core } from '@banx/api/tokens'
 import { SECONDS_IN_DAY } from '@banx/constants'
 import { useModal } from '@banx/store/common'
 import {
-  calcTokenWeeklyFeeWithRepayFee,
   calcWeightedAverage,
   calculateTokenLoanLtvByLoanValue,
   isTokenLoanFrozen,
 } from '@banx/utils'
 
-import { calculateLendToBorrowApr, calculateLendToBorrowValue } from './helpers'
+import {
+  calcTokenWeeklyInterest,
+  calculateLendToBorrowApr,
+  calculateLendToBorrowValue,
+} from './helpers'
 import { useInstantTokenTransactions } from './hooks'
 import { useLoansTokenState } from './loansState'
 
@@ -132,10 +135,9 @@ const calculateSummaryInfo = (loans: core.TokenLoan[]) => {
   const totalDebt = sumBy(loans, (loan) => calculateLendToBorrowValue(loan))
 
   const totalLoanValue = map(loans, (loan) => calculateLendToBorrowValue(loan))
-  const totalWeeklyInterest = sumBy(loans, (loan) => calcTokenWeeklyFeeWithRepayFee(loan)) //? Recalc calcTokenWeeklyFeeWithRepayFee
+  const totalWeeklyInterest = sumBy(loans, (loan) => calcTokenWeeklyInterest(loan))
 
   const totalAprArray = map(loans, (loan) => calculateLendToBorrowApr(loan) / 100)
-
   const totalLtvArray = map(loans, (loan) =>
     calculateTokenLoanLtvByLoanValue(loan, calculateLendToBorrowValue(loan)),
   )
