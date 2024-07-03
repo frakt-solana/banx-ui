@@ -1,6 +1,7 @@
 import React, { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import { map, sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider } from '@banx/components/Slider'
@@ -9,7 +10,13 @@ import { DisplayValue, createPercentValueJSX } from '@banx/components/TableCompo
 import { useWalletModal } from '@banx/components/WalletModal'
 
 import { core } from '@banx/api/tokens'
+import {
+  calcTokenWeeklyFeeWithRepayFee,
+  calcWeightedAverage,
+  calculateTokenLoanLtvByLoanValue,
+} from '@banx/utils'
 
+import { calculateLendToBorrowApr, calculateLendToBorrowValue } from './helpers'
 import { useLoansTokenState } from './loansState'
 
 import styles from './InstantLendTokenTable.module.less'
@@ -19,10 +26,8 @@ export const Summary: FC<{ loans: core.TokenLoan[] }> = ({ loans }) => {
   const { toggleVisibility } = useWalletModal()
   const { selection, set: setSelection } = useLoansTokenState()
 
-  const totalDebt = 0
-  const totalWeeklyInterest = 0
-  const weightedApr = 0
-  const weightedLtv = 0
+  const { totalDebt, totalWeeklyInterest, weightedApr, weightedLtv } =
+    calculateSummaryInfo(selection)
 
   const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.stopPropagation()
@@ -69,4 +74,22 @@ export const Summary: FC<{ loans: core.TokenLoan[] }> = ({ loans }) => {
       </div>
     </div>
   )
+}
+
+const calculateSummaryInfo = (loans: core.TokenLoan[]) => {
+  const totalDebt = sumBy(loans, (loan) => calculateLendToBorrowValue(loan))
+
+  const totalLoanValue = map(loans, (loan) => calculateLendToBorrowValue(loan))
+  const totalWeeklyInterest = sumBy(loans, (loan) => calcTokenWeeklyFeeWithRepayFee(loan)) //? Recalc calcTokenWeeklyFeeWithRepayFee
+
+  const totalAprArray = map(loans, (loan) => calculateLendToBorrowApr(loan) / 100)
+
+  const totalLtvArray = map(loans, (loan) =>
+    calculateTokenLoanLtvByLoanValue(loan, calculateLendToBorrowValue(loan)),
+  )
+
+  const weightedApr = calcWeightedAverage(totalAprArray, totalLoanValue)
+  const weightedLtv = calcWeightedAverage(totalLtvArray, totalLoanValue)
+
+  return { totalDebt, totalWeeklyInterest, weightedApr, weightedLtv }
 }

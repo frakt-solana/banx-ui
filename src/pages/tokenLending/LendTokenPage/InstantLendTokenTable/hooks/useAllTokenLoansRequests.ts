@@ -4,10 +4,8 @@ import { useQuery } from '@tanstack/react-query'
 import { produce } from 'immer'
 import { create } from 'zustand'
 
-import { TokenLoan } from '@banx/api/tokens'
+import { core } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
-
-import { MOCK_RESPONSE } from './mockResponse'
 
 interface HiddenCollateralMintsState {
   mints: string[]
@@ -31,7 +29,7 @@ export const useAllTokenLoansRequests = () => {
 
   const { data, isLoading } = useQuery(
     ['allTokenLoansRequests', tokenType],
-    () => Promise.resolve(MOCK_RESPONSE),
+    () => core.fetchAllTokenLoansRequests({ tokenType }),
     {
       staleTime: 5 * 1000,
       refetchOnWindowFocus: false,
@@ -47,7 +45,7 @@ export const useAllTokenLoansRequests = () => {
   }, [data, mints])
 
   return {
-    loans: loans as TokenLoan[],
+    loans,
     isLoading,
     addMints,
   }

@@ -133,3 +133,15 @@ export const WalletTokenLoansAndOffersShema = z.object({
 })
 
 export type WalletTokenLoansAndOffers = z.infer<typeof WalletTokenLoansAndOffersShema>
+
+export const TokenLoansRequestsSchema = z.object({
+  auctions: TokenLoanSchema.array(),
+  listings: TokenLoanSchema.array(),
+})
+
+export type TokenLoansRequests = z.infer<typeof TokenLoansRequestsSchema>
+
+export interface AllTokenLoansRequestsResponse {
+  data: TokenLoansRequests
+  meta: PaginationMeta
+}
