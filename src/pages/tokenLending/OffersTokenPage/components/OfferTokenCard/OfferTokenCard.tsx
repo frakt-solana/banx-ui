@@ -9,6 +9,7 @@ import { DisplayValue, createPercentValueJSX } from '@banx/components/TableCompo
 import { core } from '@banx/api/tokens'
 import { ChevronDown, Coin, CoinPlus, SOL, USDC, Warning } from '@banx/icons'
 import { useNftTokenType } from '@banx/store/nft'
+import { convertToSynthetic, useSyntheticTokenOffers } from '@banx/store/token'
 import { isBanxSolTokenType } from '@banx/utils'
 
 import ExpandedCardContent from '../ExpandedCardContent'
@@ -17,14 +18,24 @@ import styles from './OfferTokenCard.module.less'
 
 interface OfferTokenCardProps {
   offerPreview: core.TokenOfferPreview
-  onClick: () => void
   isOpen: boolean
+  onToggleCard: () => void
 }
 
-const OfferTokenCard: FC<OfferTokenCardProps> = ({ offerPreview, onClick, isOpen }) => {
+const OfferTokenCard: FC<OfferTokenCardProps> = ({ offerPreview, isOpen, onToggleCard }) => {
+  const { setOffer: setSyntheticOffer } = useSyntheticTokenOffers()
+
+  const onCardClick = () => {
+    onToggleCard()
+    setSyntheticOffer(convertToSynthetic(offerPreview.bondOffer, true))
+  }
+
   return (
     <div className={styles.card}>
-      <div className={classNames(styles.cardBody, { [styles.opened]: isOpen })} onClick={onClick}>
+      <div
+        className={classNames(styles.cardBody, { [styles.opened]: isOpen })}
+        onClick={onCardClick}
+      >
         <MarketMainInfo offerPreview={offerPreview} />
         <div className={styles.additionalContentWrapper}>
           <MarketAdditionalInfo offerPreview={offerPreview} isOpen={isOpen} />

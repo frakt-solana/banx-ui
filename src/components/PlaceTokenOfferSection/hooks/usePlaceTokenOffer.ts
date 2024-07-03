@@ -1,12 +1,12 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 
 import { useWalletBalance } from '@banx/hooks'
-import { useTokenMarketsPreview } from '@banx/pages/tokenLending/LendTokenPage'
 import { useNftTokenType } from '@banx/store/nft'
 import { getTokenDecimals } from '@banx/utils'
 
 import { getErrorMessage } from '../helpers'
 import { useOfferFormController } from './useOfferFormController'
+import { useTokenMarketAndOffer } from './useTokenMarketAndOffer'
 import { useTokenOffer } from './useTokenOffer'
 import { useTokenOfferTransactions } from './useTokenOfferTransaction'
 
@@ -14,15 +14,8 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
   const { tokenType } = useNftTokenType()
   const walletBalance = useWalletBalance(tokenType)
 
-  const { syntheticOffer, setSyntheticOffer, offer, updateOrAddOffer } = useTokenOffer(
-    offerPubkey,
-    marketPubkey,
-  )
-
-  const { marketsPreview } = useTokenMarketsPreview()
-  const market = useMemo(() => {
-    return marketsPreview.find((market) => market.marketPubkey === marketPubkey)
-  }, [marketPubkey, marketsPreview])
+  const { offer, market, updateOrAddOffer } = useTokenMarketAndOffer(offerPubkey, marketPubkey)
+  const { syntheticOffer, setSyntheticOffer } = useTokenOffer(offerPubkey, marketPubkey)
 
   const isEditMode = !!offerPubkey
 

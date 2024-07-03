@@ -39,7 +39,7 @@ const OffersTokenTabContent = () => {
               <OfferTokenCard
                 key={offerPreview.publicKey}
                 offerPreview={offerPreview}
-                onClick={() => onCardClick(offerPreview.publicKey)}
+                onToggleCard={() => onCardClick(offerPreview.publicKey)}
                 isOpen={visibleOfferPubkey === offerPreview.publicKey}
               />
             ))}
