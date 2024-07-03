@@ -71,6 +71,5 @@ export const useOfferFormController = (
 const formatNumber = (value: number, defaultValue = '0') => {
   if (!value) return defaultValue
 
-  //? Remove trailing zeros
-  return value.toString().replace(/\.?0+$/, '')
+  return value.toString()
 }
