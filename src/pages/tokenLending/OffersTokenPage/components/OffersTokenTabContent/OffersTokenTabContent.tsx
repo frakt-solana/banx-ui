@@ -1,3 +1,5 @@
+import classNames from 'classnames'
+
 import EmptyList from '@banx/components/EmptyList'
 import { Loader } from '@banx/components/Loader'
 
@@ -11,6 +13,8 @@ import styles from './OffersTokenTabContent.module.less'
 const OffersTokenTabContent = () => {
   const {
     offersPreview,
+    rawOffers,
+    updateOrAddOffer,
     isLoading,
     showEmptyList,
     searchSelectParams,
@@ -20,16 +24,16 @@ const OffersTokenTabContent = () => {
     onCardClick,
   } = useOffersTokenContent()
 
-  if (showEmptyList) return <EmptyList {...emptyListParams} />
-
   return (
-    <div className={styles.content}>
-      <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
+    <div className={classNames(styles.content, { [styles.emptyContent]: showEmptyList })}>
+      {showEmptyList && <EmptyList {...emptyListParams} />}
 
-      {isLoading && <Loader />}
+      {!showEmptyList && isLoading && <Loader size="small" />}
 
-      {!isLoading && (
+      {!showEmptyList && !isLoading && (
         <>
+          <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
+
           <div className={styles.offersList}>
             {offersPreview.map((offerPreview) => (
               <OfferTokenCard
@@ -40,10 +44,10 @@ const OffersTokenTabContent = () => {
               />
             ))}
           </div>
-
-          <Summary offersPreview={offersPreview} />
         </>
       )}
+
+      <Summary offers={rawOffers} updateOrAddOffer={updateOrAddOffer} />
     </div>
   )
 }

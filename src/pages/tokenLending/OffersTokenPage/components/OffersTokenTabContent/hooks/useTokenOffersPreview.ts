@@ -12,7 +12,7 @@ export const useTokenOffersPreview = () => {
   const { publicKey } = useWallet()
   const walletPubkeyString = publicKey?.toBase58() || ''
 
-  const { optimisticOffers } = useTokenOffersOptimistic()
+  const { optimisticOffers, update: updateOrAddOffer } = useTokenOffersOptimistic()
 
   const { tokenType } = useNftTokenType()
 
@@ -42,5 +42,6 @@ export const useTokenOffersPreview = () => {
   return {
     offersPreview,
     isLoading,
+    updateOrAddOffer,
   }
 }

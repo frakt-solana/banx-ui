@@ -25,7 +25,7 @@ export const useOffersTokenContent = () => {
 
   const { tokenType } = useNftTokenType()
 
-  const { offersPreview, isLoading } = useTokenOffersPreview()
+  const { offersPreview, updateOrAddOffer, isLoading } = useTokenOffersPreview()
 
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
   const [visibleOfferPubkey, setOfferPubkey] = useState('')
@@ -46,6 +46,8 @@ export const useOffersTokenContent = () => {
   }, [offersPreview, selectedCollections])
 
   const { sortParams, sortedOffers } = useSortedOffers(filteredOffers)
+
+  const rawOffers = useMemo(() => map(sortedOffers, ({ bondOffer }) => bondOffer), [sortedOffers])
 
   const searchSelectParams = createSearchSelectParams({
     options: offersPreview,
@@ -70,6 +72,8 @@ export const useOffersTokenContent = () => {
 
   return {
     offersPreview: sortedOffers,
+    rawOffers,
+    updateOrAddOffer,
     isLoading,
     searchSelectParams,
     sortParams,
