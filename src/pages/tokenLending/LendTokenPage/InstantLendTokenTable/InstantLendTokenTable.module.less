@@ -285,3 +285,56 @@
 }
 
 // * ActionsCell * //
+
+// * WarningModal * //
+.modal {
+  :global {
+    z-index: 2;
+
+    .ant-modal-body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0;
+    }
+  }
+
+  h3 {
+    font: var(--title-xl);
+    text-transform: uppercase;
+  }
+
+  p {
+    font: var(--body-text-lg);
+    margin-top: 12px;
+    text-align: center;
+  }
+
+  .actionsButtons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 24px;
+    width: 100%;
+  }
+
+  .cancelButton,
+  .confirmButton {
+    width: 100%;
+  }
+
+  .cancelButton {
+    background-color: var(--additional-red-secondary) !important;
+    border: 1px solid var(--additional-red-primary) !important;
+    color: var(--content-primary);
+
+    &:hover {
+      border: 1px solid var(--additional-red-primary-deep) !important;
+    }
+  }
+
+  .collateralName {
+    text-decoration: underline;
+  }
+}
+// * WarningModal * //

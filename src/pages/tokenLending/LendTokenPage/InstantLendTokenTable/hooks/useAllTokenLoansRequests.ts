@@ -7,24 +7,24 @@ import { create } from 'zustand'
 import { core } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
 
-interface HiddenCollateralMintsState {
-  mints: string[]
-  addMints: (mints: string[]) => void
+interface HiddenLoansPubkeysState {
+  pubkeys: string[]
+  addLoansPubkeys: (pubkeys: string[]) => void
 }
 
-const useHiddenCollateralMint = create<HiddenCollateralMintsState>((set) => ({
-  mints: [],
-  addMints: (mints) => {
+const useHiddenLoansPubkeys = create<HiddenLoansPubkeysState>((set) => ({
+  pubkeys: [],
+  addLoansPubkeys: (pubkeys) => {
     set(
-      produce((state: HiddenCollateralMintsState) => {
-        state.mints = mints.map((nft) => nft)
+      produce((state: HiddenLoansPubkeysState) => {
+        state.pubkeys = pubkeys.map((pubkey) => pubkey)
       }),
     )
   },
 }))
 
 export const useAllTokenLoansRequests = () => {
-  const { mints, addMints } = useHiddenCollateralMint()
+  const { pubkeys, addLoansPubkeys } = useHiddenLoansPubkeys()
   const { tokenType } = useNftTokenType()
 
   const { data, isLoading } = useQuery(
@@ -41,12 +41,12 @@ export const useAllTokenLoansRequests = () => {
     if (!data) return []
 
     const combinedLoans = [...data.auctions, ...data.listings]
-    return combinedLoans.filter(({ collateral }) => !mints.includes(collateral.mint))
-  }, [data, mints])
+    return combinedLoans.filter(({ collateral }) => !pubkeys.includes(collateral.mint))
+  }, [data, pubkeys])
 
   return {
     loans,
     isLoading,
-    addMints,
+    addLoansPubkeys,
   }
 }
