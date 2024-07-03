@@ -3,12 +3,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BanxStakeState } from 'fbonds-core/lib/fbond-protocol/types'
 import { uniqueId } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 import { Modal } from '@banx/components/modals/BaseModal'
 
-import { TxnExecutor } from 'solana-transactions-executor'
 import { staking } from '@banx/api/common'
 import { TensorFilled } from '@banx/icons'
 import { useBanxStakeInfo, useBanxStakeSettings } from '@banx/pages/common/AdventuresPage'

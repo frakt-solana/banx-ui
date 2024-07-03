@@ -3,8 +3,8 @@ import { FC } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { capitalize, uniqueId } from 'lodash'
-
 import { TxnExecutor } from 'solana-transactions-executor'
+
 import { staking } from '@banx/api/common'
 import {
   checkIsSubscribed,

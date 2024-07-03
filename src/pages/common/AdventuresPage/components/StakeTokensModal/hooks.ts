@@ -2,10 +2,10 @@ import { useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { uniqueId } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Tab, useTabs } from '@banx/components/Tabs'
 
-import { TxnExecutor } from 'solana-transactions-executor'
 import {
   calcPartnerPoints,
   useBanxStakeInfo,

@@ -4,8 +4,8 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { uniqueId } from 'lodash'
-
 import { TxnExecutor } from 'solana-transactions-executor'
+
 import { useBanxSolBalance, useClusterStats, useDiscordUser, useSolanaBalance } from '@banx/hooks'
 import { BanxSOL, ChangeWallet, Copy, SignOut } from '@banx/icons'
 import { useUserOffers } from '@banx/pages/nftLending/OffersPage/components/OffersTabContent/hooks'

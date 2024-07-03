@@ -1,7 +1,7 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { uniqueId } from 'lodash'
-
 import { TxnExecutor } from 'solana-transactions-executor'
+
 import { core } from '@banx/api/nft'
 import { useTokenType } from '@banx/store/nft'
 import {

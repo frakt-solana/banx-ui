@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { chain, uniqueId } from 'lodash'
 import { useNavigate } from 'react-router-dom'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
 import { MAX_BORROWER_APR_VALUE, MIN_BORROWER_APR_VALUE } from '@banx/components/PlaceOfferSection'
@@ -12,7 +13,6 @@ import {
   createRequestLoanSubscribeNotificationsTitle,
 } from '@banx/components/modals'
 
-import { TxnExecutor } from 'solana-transactions-executor'
 import { core } from '@banx/api/nft'
 import { BONDS, DAYS_IN_YEAR, SECONDS_IN_DAY } from '@banx/constants'
 import { useBorrowNfts } from '@banx/pages/nftLending/BorrowPage/hooks'
