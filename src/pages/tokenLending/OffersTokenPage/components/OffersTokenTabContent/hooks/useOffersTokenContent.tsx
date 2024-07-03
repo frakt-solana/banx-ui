@@ -12,7 +12,7 @@ import { createPathWithModeParams } from '@banx/store'
 import { ModeType } from '@banx/store/common'
 import { createGlobalState } from '@banx/store/createGlobalState'
 import { useNftTokenType } from '@banx/store/nft'
-import { isBanxSolTokenType } from '@banx/utils'
+import { isBanxSolTokenType, isOfferStateClosed } from '@banx/utils'
 
 import { useSortedOffers } from './useSortedOffers'
 import { useTokenOffersPreview } from './useTokenOffersPreview'
@@ -36,21 +36,28 @@ export const useOffersTokenContent = () => {
     return setOfferPubkey(nextValue)
   }
 
+  //? Don't show closed offers in the offers list (UI)
+  const filteredClosedOffers = offersPreview.filter(
+    (offer) => !isOfferStateClosed(offer.bondOffer.pairState),
+  )
+
+  const rawOffers = useMemo(() => {
+    return map(offersPreview, ({ bondOffer }) => bondOffer)
+  }, [offersPreview])
+
   const filteredOffers = useMemo(() => {
     if (selectedCollections.length) {
-      return filter(offersPreview, ({ tokenMarketPreview }) =>
+      return filter(filteredClosedOffers, ({ tokenMarketPreview }) =>
         includes(selectedCollections, tokenMarketPreview.collateral.ticker),
       )
     }
-    return offersPreview
-  }, [offersPreview, selectedCollections])
+    return filteredClosedOffers
+  }, [filteredClosedOffers, selectedCollections])
 
   const { sortParams, sortedOffers } = useSortedOffers(filteredOffers)
 
-  const rawOffers = useMemo(() => map(sortedOffers, ({ bondOffer }) => bondOffer), [sortedOffers])
-
   const searchSelectParams = createSearchSelectParams({
-    options: offersPreview,
+    options: filteredClosedOffers,
     selectedOptions: selectedCollections,
     onChange: setSelectedCollections,
   })
@@ -71,7 +78,7 @@ export const useOffersTokenContent = () => {
   const showEmptyList = (!offersPreview.length && !isLoading) || !connected
 
   return {
-    offersPreview: sortedOffers,
+    offersToDisplay: sortedOffers,
     rawOffers,
     updateOrAddOffer,
     isLoading,

@@ -12,7 +12,7 @@ import styles from './OffersTokenTabContent.module.less'
 
 const OffersTokenTabContent = () => {
   const {
-    offersPreview,
+    offersToDisplay,
     rawOffers,
     updateOrAddOffer,
     isLoading,
@@ -35,7 +35,7 @@ const OffersTokenTabContent = () => {
           <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
 
           <div className={styles.offersList}>
-            {offersPreview.map((offerPreview) => (
+            {offersToDisplay.map((offerPreview) => (
               <OfferTokenCard
                 key={offerPreview.publicKey}
                 offerPreview={offerPreview}
