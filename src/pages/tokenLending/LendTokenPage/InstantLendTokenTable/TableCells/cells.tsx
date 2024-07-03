@@ -34,8 +34,10 @@ export const DebtCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
 
 const createTooltipContent = (label: string, value: number, isSubscriptFormat = false) => (
   <div className={styles.tooltipContent}>
-    <span>{label}</span>
-    <DisplayValue value={value} isSubscriptFormat={isSubscriptFormat} />
+    <span className={styles.tooltipLabel}>{label}</span>
+    <span className={styles.tooltipValue}>
+      <DisplayValue value={value} isSubscriptFormat={isSubscriptFormat} />
+    </span>
   </div>
 )
 

@@ -41,7 +41,7 @@ export const useAllTokenLoansRequests = () => {
     if (!data) return []
 
     const combinedLoans = [...data.auctions, ...data.listings]
-    return combinedLoans.filter(({ collateral }) => !pubkeys.includes(collateral.mint))
+    return combinedLoans.filter((loan) => !pubkeys.includes(loan.publicKey))
   }, [data, pubkeys])
 
   return {
