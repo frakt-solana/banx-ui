@@ -12,33 +12,33 @@ import { core } from '@banx/api/nft'
 import { isOfferStateClosed } from '@banx/utils'
 
 export const getLenderVaultInfo = (
-  offers: core.UserOffer[],
+  offers: core.Offer[],
   clusterStats: ClusterStats | undefined,
 ) => {
   const { slot = 0, epochStartedAt = 0 } = clusterStats || {}
 
-  const closedOffers = offers.filter(({ offer }) => isOfferStateClosed(offer.pairState))
+  const closedOffers = offers.filter((offer) => isOfferStateClosed(offer.pairState))
 
-  const totalAccruedInterest = sumBy(offers, ({ offer }) => offer.concentrationIndex)
-  const totalRepaymets = sumBy(offers, ({ offer }) => offer.bidCap)
+  const totalAccruedInterest = sumBy(offers, (offer) => offer.concentrationIndex)
+  const totalRepaymets = sumBy(offers, (offer) => offer.bidCap)
 
   const totalClosedOffersValue = sumBy(
     closedOffers,
-    ({ offer }) => offer.fundsSolOrTokenBalance + offer.bidSettlement,
+    (offer) => offer.fundsSolOrTokenBalance + offer.bidSettlement,
   )
 
-  const totalLstYield = sumBy(offers, ({ offer }) =>
+  const totalLstYield = sumBy(offers, (offer) =>
     calculateLstYield({ offer, slot, epochStartedAt }).toNumber(),
   )
 
   const totalLiquidityValue = totalAccruedInterest + totalRepaymets + totalClosedOffersValue
   const totalClaimableValue = totalLiquidityValue + totalLstYield
 
-  const totalFundsInCurrentEpoch = sumBy(offers, ({ offer }) =>
+  const totalFundsInCurrentEpoch = sumBy(offers, (offer) =>
     calculateYieldInCurrentEpoch(offer, clusterStats),
   )
 
-  const totalFundsInNextEpoch = sumBy(offers, ({ offer }) =>
+  const totalFundsInNextEpoch = sumBy(offers, (offer) =>
     calculateYieldInNextEpoch(offer, clusterStats),
   )
 

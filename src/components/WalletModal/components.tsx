@@ -37,7 +37,7 @@ import { StatInfo } from '../StatInfo'
 import { DisplayValue } from '../TableComponents'
 import UserAvatar from '../UserAvatar'
 import { iconComponents } from './constants'
-import { getLenderVaultInfo } from './helpers'
+import { useLenderVaultInfo } from './hooks'
 
 import styles from './WalletModal.module.less'
 
@@ -161,7 +161,7 @@ const LenderVaultContent = () => {
     totalClaimableValue,
     totalFundsInCurrentEpoch,
     totalFundsInNextEpoch,
-  } = getLenderVaultInfo(offers, clusterStats)
+  } = useLenderVaultInfo()
 
   const claimVault = async () => {
     if (!offers.length) return

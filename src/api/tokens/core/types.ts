@@ -113,6 +113,7 @@ export interface TokenMarketPreviewResponse {
 
 export const TokenOfferPreviewSchema = z.object({
   publicKey: z.string(),
+  bondOffer: OfferSchema,
   tokenMarketPreview: TokenMarketPreviewSchema,
   tokenOfferPreview: z.object({
     publicKey: z.string(),
