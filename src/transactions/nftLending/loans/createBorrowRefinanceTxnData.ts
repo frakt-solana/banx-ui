@@ -6,68 +6,62 @@ import {
   borrowerRefinanceToSame,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import {
+  BondOfferV3,
   BondTradeTransactionV3,
   FraktBond,
   LendingTokenType,
   PairState,
 } from 'fbonds-core/lib/fbond-protocol/types'
+import { chain } from 'lodash'
 import moment from 'moment'
-import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
+import {
+  CreateTxnData,
+  SimulatedAccountInfoByPubkey,
+  WalletAndConnection,
+} from '@banx/../../solana-txn-executor/src'
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
-import { banxSol } from '@banx/transactions'
+import { banxSol, parseBanxAccountInfo } from '@banx/transactions'
 import { ZERO_BN, calculateLoanRepayValueOnCertainDate, isBanxSolTokenType } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
-export type BorrowRefinanceActionOptimisticResult = {
-  loan: core.Loan
-  // oldLoan: Loan
-  offer: core.Offer
-}
-
-type CreateBorrowRefinanceTxnDataParams = {
+export type CreateBorrowRefinanceTxnDataParams = {
   loan: core.Loan
   offer: core.Offer
   solToRefinance: number
   aprRate: number //? Base points
   tokenType: LendingTokenType
-  walletAndConnection: WalletAndConnection
 }
 
 type CreateBorrowRefinanceTxnData = (
   params: CreateBorrowRefinanceTxnDataParams,
-) => Promise<CreateTxnData<BorrowRefinanceActionOptimisticResult>>
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateBorrowRefinanceTxnDataParams>>
 
-export const createBorrowRefinanceTxnData: CreateBorrowRefinanceTxnData = async ({
-  loan,
-  offer,
-  aprRate,
-  solToRefinance,
-  tokenType,
+export const createBorrowRefinanceTxnData: CreateBorrowRefinanceTxnData = async (
+  params,
   walletAndConnection,
-}) => {
-  const { instructions, signers, optimisticResult } = await getIxnsAndSigners({
-    loan,
-    offer,
-    aprRate,
-    solToRefinance,
-    tokenType,
+) => {
+  const { loan, offer, aprRate, solToRefinance, tokenType } = params
+
+  const { instructions, signers, optimisticResult } = await getIxnsAndSigners(
+    {
+      loan,
+      offer,
+      aprRate,
+      solToRefinance,
+      tokenType,
+    },
     walletAndConnection,
-  })
+  )
 
-  const optimisticLoan = {
-    publicKey: optimisticResult.fraktBond.publicKey,
-    fraktBond: optimisticResult.fraktBond,
-    bondTradeTransaction: optimisticResult.newBondTradeTransaction,
-    nft: loan.nft,
-  }
-
-  const result = {
-    loan: optimisticLoan,
-    offer: optimisticResult.bondOffer,
-  }
+  const accounts = [
+    new web3.PublicKey(optimisticResult.bondOffer.publicKey),
+    new web3.PublicKey(optimisticResult.fraktBond.publicKey),
+    new web3.PublicKey(optimisticResult.newBondTradeTransaction),
+  ]
 
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
 
@@ -87,41 +81,58 @@ export const createBorrowRefinanceTxnData: CreateBorrowRefinanceTxnData = async 
     const diff = newLoanDebt.sub(currentLoanDebt).sub(upfrontFee)
 
     if (diff.gt(ZERO_BN)) {
-      return await banxSol.combineWithSellBanxSolInstructions({
+      //TODO Refactor combineWithSellBanxSolInstructions for new TxnData type
+      const combineWithSellBanxSolResult = await banxSol.combineWithSellBanxSolInstructions({
         inputAmount: diff.abs(),
         walletAndConnection,
         instructions,
         signers,
         lookupTables,
-        result,
+        result: undefined,
       })
+
+      return {
+        params,
+        accounts,
+        instructions: combineWithSellBanxSolResult.instructions,
+        signers: combineWithSellBanxSolResult.signers,
+        lookupTables: combineWithSellBanxSolResult.lookupTables,
+      }
     }
 
-    return await banxSol.combineWithBuyBanxSolInstructions({
+    //TODO Refactor combineWithBuyBanxSolInstructions for new TxnData type
+    const combineWithBuyBanxSolResult = await banxSol.combineWithBuyBanxSolInstructions({
       inputAmount: diff.abs(),
       walletAndConnection,
       instructions,
       signers,
       lookupTables,
-      result,
+      result: undefined,
     })
+
+    return {
+      params,
+      accounts,
+      instructions: combineWithBuyBanxSolResult.instructions,
+      signers: combineWithBuyBanxSolResult.signers,
+      lookupTables: combineWithBuyBanxSolResult.lookupTables,
+    }
   }
 
   return {
+    params,
+    accounts,
     instructions,
     signers,
-    result,
     lookupTables,
   }
 }
 
-const getIxnsAndSigners = async ({
-  loan,
-  offer,
-  solToRefinance,
-  aprRate,
-  walletAndConnection,
-}: CreateBorrowRefinanceTxnDataParams) => {
+const getIxnsAndSigners = async (
+  params: CreateBorrowRefinanceTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => {
+  const { loan, offer, solToRefinance, aprRate } = params
   const { connection, wallet } = walletAndConnection
   const { bondTradeTransaction, fraktBond } = loan
 
@@ -136,7 +147,7 @@ const getIxnsAndSigners = async ({
   }
 
   const optimistic = {
-    oldBondTradeTransaction: bondTradeTransaction as BondTradeTransactionV3,
+    oldBondTradeTransaction: bondTradeTransaction,
     bondOffer: offer,
     fraktBond: fraktBond as FraktBond,
     minMarketFee: aprRate,
@@ -181,5 +192,24 @@ const getIxnsAndSigners = async ({
     })
 
     return { instructions, signers, optimisticResult }
+  }
+}
+
+export const parseBorrowRefinanceSimulatedAccounts = (
+  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
+) => {
+  const results = chain(accountInfoByPubkey)
+    .toPairs()
+    .filter(([, info]) => !!info)
+    .map(([publicKey, info]) => {
+      return parseBanxAccountInfo(new web3.PublicKey(publicKey), info)
+    })
+    .fromPairs()
+    .value()
+
+  return {
+    bondOffer: results?.['bondOfferV3'] as BondOfferV3,
+    bondTradeTransaction: results?.['bondTradeTransactionV3'] as BondTradeTransactionV3,
+    fraktBond: results?.['fraktBond'] as FraktBond,
   }
 }

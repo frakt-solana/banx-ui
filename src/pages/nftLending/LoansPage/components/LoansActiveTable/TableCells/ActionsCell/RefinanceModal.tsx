@@ -4,7 +4,6 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, uniqueId } from 'lodash'
-import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { Loader } from '@banx/components/Loader'
@@ -12,6 +11,7 @@ import { Slider } from '@banx/components/Slider'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import { Modal } from '@banx/components/modals/BaseModal'
 
+import { TxnExecutor } from '@banx/../../solana-txn-executor/src'
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { useMarketOffers } from '@banx/pages/nftLending/LendPage'
@@ -23,8 +23,9 @@ import {
   defaultTxnErrorHandler,
 } from '@banx/transactions'
 import {
-  BorrowRefinanceActionOptimisticResult,
+  CreateBorrowRefinanceTxnDataParams,
   createBorrowRefinanceTxnData,
+  parseBorrowRefinanceSimulatedAccounts,
 } from '@banx/transactions/nftLending'
 import {
   calculateApr,
@@ -145,16 +146,18 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const txnData = await createBorrowRefinanceTxnData({
-        loan,
-        offer: suitableOffer,
-        solToRefinance: currentSpotPrice,
-        aprRate: newApr,
-        tokenType,
+      const txnData = await createBorrowRefinanceTxnData(
+        {
+          loan,
+          offer: suitableOffer,
+          solToRefinance: currentSpotPrice,
+          aprRate: newApr,
+          tokenType,
+        },
         walletAndConnection,
-      })
+      )
 
-      await new TxnExecutor<BorrowRefinanceActionOptimisticResult>(
+      await new TxnExecutor<CreateBorrowRefinanceTxnDataParams>(
         walletAndConnection,
         TXN_EXECUTOR_DEFAULT_OPTIONS,
       )
@@ -174,16 +177,26 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
             )
           }
 
-          return confirmed.forEach(({ result, signature }) => {
-            if (result && wallet?.publicKey) {
+          return confirmed.forEach(({ params, accountInfoByPubkey, signature }) => {
+            if (accountInfoByPubkey && wallet?.publicKey) {
               enqueueSnackbar({
                 message: 'Loan successfully refinanced',
                 type: 'success',
                 solanaExplorerPath: `tx/${signature}`,
               })
 
-              updateOrAddOffer(result.offer)
-              updateLoansOptimistic([result.loan], wallet.publicKey.toBase58())
+              const { bondOffer, bondTradeTransaction, fraktBond } =
+                parseBorrowRefinanceSimulatedAccounts(accountInfoByPubkey)
+
+              const optimisticLoan = {
+                publicKey: fraktBond.publicKey,
+                fraktBond: fraktBond,
+                bondTradeTransaction,
+                nft: params.loan.nft,
+              }
+
+              updateOrAddOffer(bondOffer)
+              updateLoansOptimistic([optimisticLoan], wallet.publicKey.toBase58())
               clearSelection()
               close()
             }
