@@ -2,12 +2,12 @@ import { web3 } from 'fbonds-core'
 import { setRepaymentCall } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondTradeTransactionV3 } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
-
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
   WalletAndConnection,
 } from 'solana-transactions-executor'
+
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { parseBanxAccountInfo } from '@banx/transactions/functions'

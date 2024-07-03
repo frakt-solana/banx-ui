@@ -2,8 +2,8 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
 import { uniqueId } from 'lodash'
 import moment from 'moment'
-
 import { TxnExecutor } from 'solana-transactions-executor'
+
 import { core } from '@banx/api/nft'
 import { useIsLedger } from '@banx/store/common'
 import { useLoansRequestsOptimistic } from '@banx/store/nft'

@@ -6,8 +6,8 @@ import {
   removePerpetualListingStakedBanx,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
-
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
+
 import { core } from '@banx/api/nft'
 import { BANX_STAKING, BONDS } from '@banx/constants'
 

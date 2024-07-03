@@ -3,11 +3,11 @@ import { FC } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { uniqueId } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { TensorLink } from '@banx/components/SolanaLinks'
 
-import { TxnExecutor } from 'solana-transactions-executor'
 import { core } from '@banx/api/nft'
 import { useHiddenNftsMints } from '@banx/pages/nftLending/OffersPage'
 import { useModal } from '@banx/store/common'

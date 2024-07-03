@@ -2,8 +2,8 @@ import { web3 } from '@project-serum/anchor'
 import { BN } from 'fbonds-core'
 import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
 import { stakeBanxToken } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
-
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
+
 import { BONDS } from '@banx/constants'
 
 import { sendTxnPlaceHolder } from '../helpers'

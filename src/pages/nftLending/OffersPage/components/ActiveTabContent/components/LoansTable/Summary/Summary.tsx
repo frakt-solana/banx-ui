@@ -3,13 +3,13 @@ import { FC } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { chain, uniqueId } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { TxnExecutor } from 'solana-transactions-executor'
 import { core } from '@banx/api/nft'
 import { useIsLedger } from '@banx/store/common'
 import {

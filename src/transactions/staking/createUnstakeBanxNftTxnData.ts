@@ -1,7 +1,7 @@
 import { web3 } from '@project-serum/anchor'
 import { unstakeBanxNft } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
-
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
+
 import { BONDS } from '@banx/constants'
 
 import { sendTxnPlaceHolder } from '../helpers'

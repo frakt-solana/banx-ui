@@ -1,5 +1,6 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { chain, uniqueId } from 'lodash'
+import { TxnExecutor } from 'solana-transactions-executor'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
 import {
@@ -8,7 +9,6 @@ import {
   createRefinanceSubscribeNotificationsTitle,
 } from '@banx/components/modals'
 
-import { TxnExecutor } from 'solana-transactions-executor'
 import { core } from '@banx/api/nft'
 import { getDialectAccessToken } from '@banx/providers'
 import { useIsLedger, useModal } from '@banx/store/common'
