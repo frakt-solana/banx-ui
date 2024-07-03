@@ -7,8 +7,8 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import moment from 'moment'
-import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
+import { CreateTxnData, WalletAndConnection } from '@banx/../../solana-txn-executor/src'
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
@@ -16,34 +16,33 @@ import { calculateLoanRepayValueOnCertainDate, isBanxSolTokenType, isLoanListed 
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
-type CreateLendToBorrowTxnDataParams = {
+export type CreateLendToBorrowTxnDataParams = {
   loan: core.Loan
   aprRate: number
   tokenType: LendingTokenType
-
-  walletAndConnection: WalletAndConnection
-}
-
-export type CreateLendToBorrowActionOptimisticResult = {
-  loan: core.Loan
-  oldLoan: core.Loan
 }
 
 type CreateLendToBorrowTxnData = (
   params: CreateLendToBorrowTxnDataParams,
-) => Promise<CreateTxnData<CreateLendToBorrowActionOptimisticResult>>
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateLendToBorrowTxnDataParams>>
 
-export const createLendToBorrowTxnData: CreateLendToBorrowTxnData = async (params) => {
+export const createLendToBorrowTxnData: CreateLendToBorrowTxnData = async (
+  params,
+  walletAndConnection,
+) => {
   const { loan, tokenType } = params
 
   const { instructions, signers, optimisticResult, lookupTables } =
-    await getIxnsAndSignersByLoanType(params)
+    await getIxnsAndSignersByLoanType(params, walletAndConnection)
 
   const optimisticLoan = {
     ...loan,
     fraktBond: optimisticResult.fraktBond,
     bondTradeTransaction: optimisticResult.bondTradeTransaction,
   }
+
+  const accounts: web3.PublicKey[] = []
 
   if (isBanxSolTokenType(tokenType) && !isLoanListed(loan)) {
     const repayValue = calculateLoanRepayValueOnCertainDate({
@@ -54,26 +53,38 @@ export const createLendToBorrowTxnData: CreateLendToBorrowTxnData = async (param
       date: moment().unix() + 180,
     })
 
-    return await banxSol.combineWithBuyBanxSolInstructions({
+    const combineWithBuyBanxSolResult = await banxSol.combineWithBuyBanxSolInstructions({
       inputAmount: new BN(repayValue),
-      walletAndConnection: params.walletAndConnection,
+      walletAndConnection,
       instructions,
       signers,
       lookupTables,
       result: { loan: optimisticLoan, oldLoan: loan },
     })
+
+    return {
+      params,
+      accounts,
+      instructions: combineWithBuyBanxSolResult.instructions,
+      signers: combineWithBuyBanxSolResult.signers,
+      lookupTables: combineWithBuyBanxSolResult.lookupTables,
+    }
   }
 
   return {
+    params,
+    accounts,
     instructions,
     signers,
-    result: { loan: optimisticLoan, oldLoan: loan },
     lookupTables,
   }
 }
 
-const getIxnsAndSignersByLoanType = async (params: CreateLendToBorrowTxnDataParams) => {
-  const { loan, aprRate, walletAndConnection } = params
+const getIxnsAndSignersByLoanType = async (
+  params: CreateLendToBorrowTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => {
+  const { loan, aprRate } = params
   const { connection, wallet } = walletAndConnection
 
   const { bondTradeTransaction, fraktBond } = loan
