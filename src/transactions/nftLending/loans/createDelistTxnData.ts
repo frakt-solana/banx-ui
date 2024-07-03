@@ -6,10 +6,8 @@ import {
   removePerpetualListingStakedBanx,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
-import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
-import moment from 'moment'
-import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
+import { CreateTxnData, WalletAndConnection } from '@banx/../../solana-txn-executor/src'
 import { core } from '@banx/api/nft'
 import { BANX_STAKING, BONDS } from '@banx/constants'
 
@@ -17,15 +15,17 @@ import { fetchRuleset } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 import { ListingType } from '../types'
 
-type CreateDelistTxnDataParams = {
+export type CreateDelistTxnDataParams = {
   loan: core.Loan
-  walletAndConnection: WalletAndConnection
 }
 
-type CreateDelistTxnData = (params: CreateDelistTxnDataParams) => Promise<CreateTxnData<core.Loan>>
+type CreateDelistTxnData = (
+  params: CreateDelistTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateDelistTxnDataParams>>
 
-export const createDelistTxnData: CreateDelistTxnData = async (params) => {
-  const { loan, walletAndConnection } = params
+export const createDelistTxnData: CreateDelistTxnData = async (params, walletAndConnection) => {
+  const { loan } = params
 
   const listingType = getNftListingType(loan)
 
@@ -35,23 +35,11 @@ export const createDelistTxnData: CreateDelistTxnData = async (params) => {
     walletAndConnection,
   })
 
-  const optimisticLoan = {
-    ...loan,
-    bondTradeTransaction: {
-      ...loan.bondTradeTransaction,
-      //? Set not active state to filter out loan from list
-      bondTradeTransactionState: BondTradeTransactionV2State.NotActive,
-    },
-    fraktBond: {
-      ...loan.fraktBond,
-      lastTransactedAt: moment().unix(), //? Needs to prevent BE data overlap in optimistics logic
-    },
-  }
-
   return {
+    params,
+    accounts: [],
     instructions,
     signers,
-    result: optimisticLoan,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }
