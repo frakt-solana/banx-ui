@@ -12,7 +12,6 @@ import {
   FraktBond,
   LendingTokenType,
 } from 'fbonds-core/lib/fbond-protocol/types'
-import { chain } from 'lodash'
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
@@ -22,7 +21,7 @@ import {
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 
-import { fetchRuleset, parseBanxAccountInfo } from '../../functions'
+import { fetchRuleset, parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 import { ListingType } from '../types'
 
@@ -195,14 +194,7 @@ export const getNftListingType = (nft: core.BorrowNft) => {
 export const parseListNftSimulatedAccounts = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ) => {
-  const results = chain(accountInfoByPubkey)
-    .toPairs()
-    .filter(([, info]) => !!info)
-    .map(([publicKey, info]) => {
-      return parseBanxAccountInfo(new web3.PublicKey(publicKey), info)
-    })
-    .fromPairs()
-    .value()
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
   return {
     bondTradeTransaction: results?.['bondTradeTransactionV3'] as BondTradeTransactionV3,

@@ -7,7 +7,6 @@ import {
   repayStakedBanxPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondTradeTransactionV3, FraktBond } from 'fbonds-core/lib/fbond-protocol/types'
-import { chain } from 'lodash'
 import moment from 'moment'
 import {
   CreateTxnData,
@@ -25,7 +24,7 @@ import {
   isSolTokenType,
 } from '@banx/utils'
 
-import { fetchRuleset, parseBanxAccountInfo } from '../../functions'
+import { fetchRuleset, parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 import { BorrowType } from '../types'
 
@@ -251,14 +250,7 @@ export const getLoanBorrowType = (loan: core.Loan) => {
 export const parseRepayLoanSimulatedAccounts = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ) => {
-  const results = chain(accountInfoByPubkey)
-    .toPairs()
-    .filter(([, info]) => !!info)
-    .map(([publicKey, info]) => {
-      return parseBanxAccountInfo(new web3.PublicKey(publicKey), info)
-    })
-    .fromPairs()
-    .value()
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
   return {
     bondTradeTransaction: results?.['bondTradeTransactionV3'] as BondTradeTransactionV3,

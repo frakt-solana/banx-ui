@@ -12,7 +12,6 @@ import {
   LendingTokenType,
   PairState,
 } from 'fbonds-core/lib/fbond-protocol/types'
-import { chain } from 'lodash'
 import moment from 'moment'
 import {
   CreateTxnData,
@@ -22,7 +21,7 @@ import {
 
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
-import { banxSol, parseBanxAccountInfo } from '@banx/transactions'
+import { banxSol, parseAccountInfoByPubkey } from '@banx/transactions'
 import { ZERO_BN, calculateLoanRepayValueOnCertainDate, isBanxSolTokenType } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
@@ -179,14 +178,7 @@ const getIxnsAndSigners = async (
 export const parseBorrowRefinanceSimulatedAccounts = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ) => {
-  const results = chain(accountInfoByPubkey)
-    .toPairs()
-    .filter(([, info]) => !!info)
-    .map(([publicKey, info]) => {
-      return parseBanxAccountInfo(new web3.PublicKey(publicKey), info)
-    })
-    .fromPairs()
-    .value()
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
   return {
     bondOffer: results?.['bondOfferV3'] as BondOfferV3,

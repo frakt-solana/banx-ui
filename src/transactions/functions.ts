@@ -1,8 +1,10 @@
 import { WalletContextState } from '@solana/wallet-adapter-react'
 import { web3 } from 'fbonds-core'
 import { getRuleset } from 'fbonds-core/lib/fbond-protocol/helpers'
+import { chain } from 'lodash'
 import {
   GetPriorityFee,
+  SimulatedAccountInfoByPubkey,
   Wallet,
   WalletAndConnection,
   extractAccountKeysFromInstructions,
@@ -111,4 +113,21 @@ export const parseBanxAccountInfo = <T>(
   })
 
   return [accountName, convertedAccount]
+}
+
+/**
+ * @param accountInfoByPubkey - default solana-transactions-executor result for simulations
+ * @returns Dictionary<accountName, parsedAccount> accountName same as in IDL
+ */
+export const parseAccountInfoByPubkey = (
+  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
+): Record<string, unknown> => {
+  return chain(accountInfoByPubkey)
+    .toPairs()
+    .filter(([, info]) => !!info)
+    .map(([publicKey, info]) => {
+      return parseBanxAccountInfo(new web3.PublicKey(publicKey), info)
+    })
+    .fromPairs()
+    .value()
 }

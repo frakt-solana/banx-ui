@@ -1,7 +1,6 @@
 import { web3 } from 'fbonds-core'
 import { setRepaymentCall } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondTradeTransactionV3 } from 'fbonds-core/lib/fbond-protocol/types'
-import { chain } from 'lodash'
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
@@ -10,8 +9,8 @@ import {
 
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
-import { parseBanxAccountInfo } from '@banx/transactions/functions'
 
+import { parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
 export type CreateRepaymentCallTxnDataParams = {
@@ -64,18 +63,10 @@ export const createRepaymentCallTxnData: CreateRepaymentCallTxnData = async (
   }
 }
 
-//TODO Move results logic into shared separate function?
 export const parseRepaymentCallSimulatedAccounts = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ) => {
-  const results = chain(accountInfoByPubkey)
-    .toPairs()
-    .filter(([, info]) => !!info)
-    .map(([publicKey, info]) => {
-      return parseBanxAccountInfo(new web3.PublicKey(publicKey), info)
-    })
-    .fromPairs()
-    .value()
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
   return results?.['bondTradeTransactionV3'] as BondTradeTransactionV3
 }

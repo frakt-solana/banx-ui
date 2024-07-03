@@ -3,7 +3,6 @@ import { BASE_POINTS, EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-p
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import { repayPartialPerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondTradeTransactionV3, FraktBond } from 'fbonds-core/lib/fbond-protocol/types'
-import { chain } from 'lodash'
 import moment from 'moment'
 import {
   CreateTxnData,
@@ -13,13 +12,14 @@ import {
 
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
-import { banxSol, parseBanxAccountInfo } from '@banx/transactions'
+import { banxSol } from '@banx/transactions'
 import {
   calculateLoanRepayValueOnCertainDate,
   isBanxSolTokenType,
   isSolTokenType,
 } from '@banx/utils'
 
+import { parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
 export type CreateRepayPartialLoanTxnDataParams = {
@@ -112,14 +112,7 @@ export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = asyn
 export const parseRepayPartialLoanSimulatedAccounts = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ) => {
-  const results = chain(accountInfoByPubkey)
-    .toPairs()
-    .filter(([, info]) => !!info)
-    .map(([publicKey, info]) => {
-      return parseBanxAccountInfo(new web3.PublicKey(publicKey), info)
-    })
-    .fromPairs()
-    .value()
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
   return {
     bondTradeTransaction: results?.['bondTradeTransactionV3'] as BondTradeTransactionV3,

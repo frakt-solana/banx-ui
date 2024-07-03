@@ -6,7 +6,6 @@ import {
   claimPerpetualLoanv2,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondTradeTransactionV3, FraktBond } from 'fbonds-core/lib/fbond-protocol/types'
-import { chain } from 'lodash'
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
@@ -17,7 +16,7 @@ import { helius } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 
-import { fetchRuleset, parseBanxAccountInfo } from '../../functions'
+import { fetchRuleset, parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
 export type CreateClaimTxnDataParams = {
@@ -115,18 +114,10 @@ export const createClaimTxnData: CreateClaimTxnData = async (params, walletAndCo
   }
 }
 
-//TODO Move results logic into shared separate function?
 export const parseClaimNftSimulatedAccounts = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ) => {
-  const results = chain(accountInfoByPubkey)
-    .toPairs()
-    .filter(([, info]) => !!info)
-    .map(([publicKey, info]) => {
-      return parseBanxAccountInfo(new web3.PublicKey(publicKey), info)
-    })
-    .fromPairs()
-    .value()
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
   return {
     bondTradeTransaction: results?.['bondTradeTransactionV3'] as BondTradeTransactionV3,

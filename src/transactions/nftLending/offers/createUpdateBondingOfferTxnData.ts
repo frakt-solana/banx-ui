@@ -2,7 +2,6 @@ import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { updatePerpetualOfferBonding } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
-import { chain } from 'lodash'
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
@@ -12,9 +11,10 @@ import {
 import { fetchTokenBalance } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BANX_SOL_ADDRESS, BONDS } from '@banx/constants'
-import { banxSol, parseBanxAccountInfo } from '@banx/transactions'
+import { banxSol } from '@banx/transactions'
 import { ZERO_BN, calculateIdleFundsInOffer, isBanxSolTokenType } from '@banx/utils'
 
+import { parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
 export type CreateUpdateBondingOfferTxnDataParams = {
@@ -114,18 +114,10 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
   }
 }
 
-//TODO Move results logic into shared separate function?
 export const parseUpdateOfferSimulatedAccounts = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ) => {
-  const results = chain(accountInfoByPubkey)
-    .toPairs()
-    .filter(([, info]) => !!info)
-    .map(([publicKey, info]) => {
-      return parseBanxAccountInfo(new web3.PublicKey(publicKey), info)
-    })
-    .fromPairs()
-    .value()
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
   return results?.['bondOfferV3'] as BondOfferV3
 }

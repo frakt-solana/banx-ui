@@ -5,7 +5,6 @@ import {
   getBondingCurveTypeFromLendingToken,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondFeatures, BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
-import { chain } from 'lodash'
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
@@ -14,9 +13,10 @@ import {
 
 import { fetchTokenBalance } from '@banx/api/common'
 import { BANX_SOL_ADDRESS, BONDS } from '@banx/constants'
-import { banxSol, parseBanxAccountInfo } from '@banx/transactions'
+import { banxSol } from '@banx/transactions'
 import { ZERO_BN, calculateNewOfferSize, isBanxSolTokenType } from '@banx/utils'
 
+import { parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
 export type CreateMakeBondingOfferTxnDataParams = {
@@ -96,18 +96,10 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
   }
 }
 
-//TODO Move results logic into shared separate function?
 export const parseMakeOfferSimulatedAccounts = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ) => {
-  const results = chain(accountInfoByPubkey)
-    .toPairs()
-    .filter(([, info]) => !!info)
-    .map(([publicKey, info]) => {
-      return parseBanxAccountInfo(new web3.PublicKey(publicKey), info)
-    })
-    .fromPairs()
-    .value()
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
   return results?.['bondOfferV3'] as BondOfferV3
 }
