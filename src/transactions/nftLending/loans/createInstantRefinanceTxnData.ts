@@ -2,26 +2,37 @@ import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import { instantRefinancePerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
+import { BondOfferV3 } from 'fbonds-core/lib/fbond-protocol/types'
+import { chain } from 'lodash'
 
+import {
+  CreateTxnData,
+  SimulatedAccountInfoByPubkey,
+  WalletAndConnection,
+} from '@banx/../../solana-txn-executor/src'
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
+import { parseBanxAccountInfo } from '@banx/transactions/functions'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
-type CreateInstantRefinanceTxnData = (params: {
+export type CreateInstantRefinanceTxnDataParams = {
   loan: core.Loan
   bestOffer: core.Offer
   aprRate: number
-  walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<core.Offer>>
+}
 
-export const createInstantRefinanceTxnData: CreateInstantRefinanceTxnData = async ({
-  loan,
-  bestOffer,
-  aprRate,
+type CreateInstantRefinanceTxnData = (
+  params: CreateInstantRefinanceTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateInstantRefinanceTxnDataParams>>
+
+export const createInstantRefinanceTxnData: CreateInstantRefinanceTxnData = async (
+  params,
   walletAndConnection,
-}) => {
+) => {
+  const { loan, bestOffer, aprRate } = params
+
   const { wallet, connection } = walletAndConnection
   const { bondTradeTransaction, fraktBond } = loan
 
@@ -50,14 +61,31 @@ export const createInstantRefinanceTxnData: CreateInstantRefinanceTxnData = asyn
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const result = optimisticResult.bondOffer
+  const accounts = [new web3.PublicKey(optimisticResult.bondOffer.publicKey)]
 
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
 
   return {
+    params,
+    accounts,
     instructions,
     signers,
-    result,
     lookupTables,
   }
+}
+
+//TODO Move results logic into shared separate function?
+export const parseInstantRefinanceSimulatedAccounts = (
+  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
+) => {
+  const results = chain(accountInfoByPubkey)
+    .toPairs()
+    .filter(([, info]) => !!info)
+    .map(([publicKey, info]) => {
+      return parseBanxAccountInfo(new web3.PublicKey(publicKey), info)
+    })
+    .fromPairs()
+    .value()
+
+  return results?.['bondOfferV3'] as BondOfferV3
 }

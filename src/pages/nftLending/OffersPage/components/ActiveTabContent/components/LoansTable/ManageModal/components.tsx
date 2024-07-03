@@ -3,7 +3,7 @@ import { FC, useMemo, useState } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { chain, isEmpty, uniqueId } from 'lodash'
-import { TxnExecutor } from 'solana-transactions-executor'
+import moment from 'moment'
 
 import { Button } from '@banx/components/Buttons'
 import { Loader } from '@banx/components/Loader'
@@ -12,6 +12,7 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 import Timer from '@banx/components/Timer'
 
+import { TxnExecutor } from '@banx/../../solana-txn-executor/src'
 import { core } from '@banx/api/nft'
 import { useMarketOffers } from '@banx/pages/nftLending/LendPage'
 import { useLenderLoans } from '@banx/pages/nftLending/OffersPage'
@@ -23,9 +24,15 @@ import {
   defaultTxnErrorHandler,
 } from '@banx/transactions'
 import {
+  CreateInstantRefinanceTxnDataParams,
+  CreateRepaymentCallTxnDataParams,
+  CreateTerminateTxnDataParams,
   createInstantRefinanceTxnData,
   createRepaymentCallTxnData,
   createTerminateTxnData,
+  parseInstantRefinanceSimulatedAccounts,
+  parseRepaymentCallSimulatedAccounts,
+  parseTerminateSimulatedAccounts,
 } from '@banx/transactions/nftLending'
 import {
   HealthColorIncreasing,
@@ -94,12 +101,12 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const txnData = await createTerminateTxnData({
-        loan,
-        walletAndConnection,
-      })
+      const txnData = await createTerminateTxnData({ loan }, walletAndConnection)
 
-      await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor<CreateTerminateTxnDataParams>(
+        walletAndConnection,
+        TXN_EXECUTOR_DEFAULT_OPTIONS,
+      )
         .addTxnData(txnData)
         .on('sentSome', (results) => {
           results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -116,15 +123,19 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
             )
           }
 
-          return confirmed.forEach(({ result, signature }) => {
-            if (result && wallet?.publicKey) {
+          return confirmed.forEach(({ accountInfoByPubkey, params, signature }) => {
+            if (accountInfoByPubkey && wallet?.publicKey) {
               enqueueSnackbar({
                 message: 'Offer successfully terminated',
                 type: 'success',
                 solanaExplorerPath: `tx/${signature}`,
               })
 
-              updateOrAddLoan({ ...loan, ...result })
+              const { loan } = params
+              const { bondTradeTransaction, fraktBond } =
+                parseTerminateSimulatedAccounts(accountInfoByPubkey)
+
+              updateOrAddLoan({ ...loan, fraktBond, bondTradeTransaction })
               removeLoan(loan.publicKey, wallet.publicKey.toBase58())
               close()
             }
@@ -158,14 +169,19 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
         marketPubkey: loan.fraktBond.hadoMarket,
       })
 
-      const txnData = await createInstantRefinanceTxnData({
-        loan,
-        bestOffer,
+      const txnData = await createInstantRefinanceTxnData(
+        {
+          loan,
+          bestOffer,
+          aprRate,
+        },
         walletAndConnection,
-        aprRate,
-      })
+      )
 
-      await new TxnExecutor<core.Offer>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor<CreateInstantRefinanceTxnDataParams>(
+        walletAndConnection,
+        TXN_EXECUTOR_DEFAULT_OPTIONS,
+      )
         .addTxnData(txnData)
         .on('sentSome', (results) => {
           results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -182,15 +198,17 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
             )
           }
 
-          return confirmed.forEach(({ result, signature }) => {
-            if (result) {
+          return confirmed.forEach(({ accountInfoByPubkey, signature }) => {
+            if (accountInfoByPubkey) {
               enqueueSnackbar({
                 message: 'Offer successfully sold',
                 type: 'success',
                 solanaExplorerPath: `tx/${signature}`,
               })
 
-              updateOrAddOffer(result)
+              const offer = parseInstantRefinanceSimulatedAccounts(accountInfoByPubkey)
+
+              updateOrAddOffer(offer)
               hideLoans(loan.nft.mint)
               close()
             }
@@ -302,13 +320,12 @@ export const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, clos
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const txnData = await createRepaymentCallTxnData({
-        loan,
-        callAmount,
-        walletAndConnection,
-      })
+      const txnData = await createRepaymentCallTxnData({ loan, callAmount }, walletAndConnection)
 
-      await new TxnExecutor<core.Loan>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor<CreateRepaymentCallTxnDataParams>(
+        walletAndConnection,
+        TXN_EXECUTOR_DEFAULT_OPTIONS,
+      )
         .addTxnData(txnData)
         .on('sentSome', (results) => {
           results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -325,15 +342,27 @@ export const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, clos
             )
           }
 
-          return confirmed.forEach(({ result, signature }) => {
-            if (result && wallet.publicKey) {
+          return confirmed.forEach(({ accountInfoByPubkey, params, signature }) => {
+            if (accountInfoByPubkey) {
               enqueueSnackbar({
                 message: 'Repayment call initialized',
                 type: 'success',
                 solanaExplorerPath: `tx/${signature}`,
               })
 
-              updateOrAddLoan(result)
+              const { loan } = params
+              const bondTradeTransaction = parseRepaymentCallSimulatedAccounts(accountInfoByPubkey)
+
+              const optimisticLoan = {
+                ...loan,
+                fraktBond: {
+                  ...loan.fraktBond,
+                  lastTransactedAt: moment().unix(), //? Needs to prevent BE data overlap in optimistics logic
+                },
+                bondTradeTransaction,
+              }
+
+              updateOrAddLoan(optimisticLoan)
               close()
             }
           })

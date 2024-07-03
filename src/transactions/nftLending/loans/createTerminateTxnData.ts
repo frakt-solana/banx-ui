@@ -2,22 +2,39 @@ import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import { terminatePerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
+import {
+  BondOfferV3,
+  BondTradeTransactionV3,
+  FraktBond,
+} from 'fbonds-core/lib/fbond-protocol/types'
+import { chain } from 'lodash'
 
+import {
+  CreateTxnData,
+  SimulatedAccountInfoByPubkey,
+  WalletAndConnection,
+} from '@banx/../../solana-txn-executor/src'
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
+import { parseBanxAccountInfo } from '@banx/transactions/functions'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
-type CreateTerminateTxnData = (params: {
+export type CreateTerminateTxnDataParams = {
   loan: core.Loan
-  walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<core.Loan>>
+}
 
-export const createTerminateTxnData: CreateTerminateTxnData = async ({
-  loan,
+type CreateTerminateTxnData = (
+  params: CreateTerminateTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateTerminateTxnDataParams>>
+
+export const createTerminateTxnData: CreateTerminateTxnData = async (
+  params,
   walletAndConnection,
-}) => {
+) => {
+  const { loan } = params
+
   const { bondTradeTransaction, fraktBond } = loan
 
   const { instructions, signers, optimisticResult } = await terminatePerpetualLoan({
@@ -37,15 +54,37 @@ export const createTerminateTxnData: CreateTerminateTxnData = async ({
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const loanOptimisticResult = {
-    ...loan,
-    ...optimisticResult,
-  }
+  const accounts = [
+    new web3.PublicKey(optimisticResult.bondOffer.publicKey),
+    new web3.PublicKey(optimisticResult.bondTradeTransaction.publicKey),
+    new web3.PublicKey(optimisticResult.fraktBond.publicKey),
+  ]
 
   return {
+    params,
+    accounts,
     instructions,
     signers,
-    result: loanOptimisticResult,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+  }
+}
+
+//TODO Move results logic into shared separate function?
+export const parseTerminateSimulatedAccounts = (
+  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
+) => {
+  const results = chain(accountInfoByPubkey)
+    .toPairs()
+    .filter(([, info]) => !!info)
+    .map(([publicKey, info]) => {
+      return parseBanxAccountInfo(new web3.PublicKey(publicKey), info)
+    })
+    .fromPairs()
+    .value()
+
+  return {
+    bondOffer: results?.['bondOfferV3'] as BondOfferV3,
+    bondTradeTransaction: results?.['bondTradeTransactionV3'] as BondTradeTransactionV3,
+    fraktBond: results?.['fraktBond'] as FraktBond,
   }
 }

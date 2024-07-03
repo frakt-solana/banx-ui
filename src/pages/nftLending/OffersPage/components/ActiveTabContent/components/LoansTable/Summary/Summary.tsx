@@ -3,13 +3,13 @@ import { FC } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { chain, uniqueId } from 'lodash'
-import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
+import { TxnExecutor } from '@banx/../../solana-txn-executor/src'
 import { core } from '@banx/api/nft'
 import { useIsLedger } from '@banx/store/common'
 import {
@@ -17,7 +17,13 @@ import {
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
-import { createClaimTxnData, createTerminateTxnData } from '@banx/transactions/nftLending'
+import {
+  CreateClaimTxnDataParams,
+  CreateTerminateTxnDataParams,
+  createClaimTxnData,
+  createTerminateTxnData,
+  parseTerminateSimulatedAccounts,
+} from '@banx/transactions/nftLending'
 import {
   HealthColorIncreasing,
   destroySnackbar,
@@ -66,10 +72,10 @@ export const Summary: FC<SummaryProps> = ({
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const txnsData = await Promise.all(
-        selectedLoans.map((loan) => createTerminateTxnData({ loan, walletAndConnection })),
+        selectedLoans.map((loan) => createTerminateTxnData({ loan }, walletAndConnection)),
       )
 
-      await new TxnExecutor<core.Loan>(walletAndConnection, {
+      await new TxnExecutor<CreateTerminateTxnDataParams>(walletAndConnection, {
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
         chunkSize: isLedger ? 5 : 40,
       })
@@ -85,7 +91,15 @@ export const Summary: FC<SummaryProps> = ({
 
           if (confirmed.length) {
             enqueueSnackbar({ message: 'Collaterals successfully terminated', type: 'success' })
-            confirmed.forEach(({ result }) => result && updateOrAddLoan(result))
+            confirmed.forEach(({ accountInfoByPubkey, params }) => {
+              if (!accountInfoByPubkey) return
+
+              const { loan } = params
+              const { bondTradeTransaction, fraktBond } =
+                parseTerminateSimulatedAccounts(accountInfoByPubkey)
+
+              updateOrAddLoan({ ...loan, fraktBond, bondTradeTransaction })
+            })
             clearSelection()
           }
 
@@ -116,10 +130,10 @@ export const Summary: FC<SummaryProps> = ({
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const txnsData = await Promise.all(
-        loansToClaim.map((loan) => createClaimTxnData({ loan, walletAndConnection })),
+        loansToClaim.map((loan) => createClaimTxnData({ loan }, walletAndConnection)),
       )
 
-      await new TxnExecutor<core.Loan>(walletAndConnection, {
+      await new TxnExecutor<CreateClaimTxnDataParams>(walletAndConnection, {
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
         chunkSize: isLedger ? 5 : 40,
       })
@@ -137,7 +151,7 @@ export const Summary: FC<SummaryProps> = ({
             enqueueSnackbar({ message: 'Collaterals successfully claimed', type: 'success' })
 
             const mintsToHidden = chain(confirmed)
-              .map(({ result }) => result?.nft.mint)
+              .map(({ params }) => params.loan.nft.mint)
               .compact()
               .value()
 
