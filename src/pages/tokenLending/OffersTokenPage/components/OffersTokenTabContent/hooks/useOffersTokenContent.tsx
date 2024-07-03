@@ -63,19 +63,19 @@ export const useOffersTokenContent = () => {
   })
 
   const goToLendPage = () => {
-    navigate(createPathWithModeParams(PATHS.LEND, ModeType.Token, tokenType))
+    navigate(createPathWithModeParams(PATHS.LEND_TOKEN, ModeType.Token, tokenType))
   }
 
   const tokenName = isBanxSolTokenType(tokenType) ? 'SOL' : 'USDC'
 
   const emptyListParams = {
     message: connected
-      ? `Lend ${tokenName} to view your your offers`
+      ? `Lend ${tokenName} to view your offers`
       : 'Connect wallet to view your offers',
     buttonProps: connected ? { text: 'Lend', onClick: goToLendPage } : undefined,
   }
 
-  const showEmptyList = (!offersPreview.length && !isLoading) || !connected
+  const showEmptyList = (!filteredClosedOffers.length && !isLoading) || !connected
 
   return {
     offersToDisplay: sortedOffers,
