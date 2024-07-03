@@ -3,7 +3,7 @@ import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/type
 import { uniqueId } from 'lodash'
 import moment from 'moment'
 
-import { TxnExecutor } from '@banx/../../solana-txn-executor/src'
+import { TxnExecutor } from 'solana-transactions-executor'
 import { core } from '@banx/api/nft'
 import { useIsLedger } from '@banx/store/common'
 import { useLoansRequestsOptimistic } from '@banx/store/nft'

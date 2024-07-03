@@ -2,7 +2,7 @@ import { web3 } from '@project-serum/anchor'
 import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
 import { claimStakingRewards } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking/claimStakingRewards'
 
-import { CreateTxnData, WalletAndConnection } from '@banx/../../solana-txn-executor/src'
+import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 import { BONDS } from '@banx/constants'
 
 import { sendTxnPlaceHolder } from '../helpers'

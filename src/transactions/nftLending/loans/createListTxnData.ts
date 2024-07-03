@@ -18,7 +18,7 @@ import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
   WalletAndConnection,
-} from '@banx/../../solana-txn-executor/src'
+} from 'solana-transactions-executor'
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 

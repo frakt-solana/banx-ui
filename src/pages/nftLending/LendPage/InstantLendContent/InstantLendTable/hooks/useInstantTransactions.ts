@@ -8,7 +8,7 @@ import {
   createRefinanceSubscribeNotificationsTitle,
 } from '@banx/components/modals'
 
-import { TxnExecutor } from '@banx/../../solana-txn-executor/src'
+import { TxnExecutor } from 'solana-transactions-executor'
 import { core } from '@banx/api/nft'
 import { getDialectAccessToken } from '@banx/providers'
 import { useIsLedger, useModal } from '@banx/store/common'

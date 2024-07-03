@@ -12,7 +12,7 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 import Timer from '@banx/components/Timer'
 
-import { TxnExecutor } from '@banx/../../solana-txn-executor/src'
+import { TxnExecutor } from 'solana-transactions-executor'
 import { core } from '@banx/api/nft'
 import { useMarketOffers } from '@banx/pages/nftLending/LendPage'
 import { useLenderLoans } from '@banx/pages/nftLending/OffersPage'

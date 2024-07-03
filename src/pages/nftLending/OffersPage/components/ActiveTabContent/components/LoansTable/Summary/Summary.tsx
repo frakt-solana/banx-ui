@@ -9,7 +9,7 @@ import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { TxnExecutor } from '@banx/../../solana-txn-executor/src'
+import { TxnExecutor } from 'solana-transactions-executor'
 import { core } from '@banx/api/nft'
 import { useIsLedger } from '@banx/store/common'
 import {

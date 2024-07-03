@@ -12,12 +12,12 @@ import {
   LendingTokenType,
 } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
-
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
   WalletAndConnection,
-} from '@banx/../../solana-txn-executor/src'
+} from 'solana-transactions-executor'
+
 import { helius } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
@@ -65,24 +65,18 @@ export const createBorrowTxnData: CreateBorrowTxnData = async (params, walletAnd
   ]
 
   if (isBanxSolTokenType(tokenType)) {
-    //TODO Refactor combineWithSellBanxSolInstructions for new TxnData type
-    const combineWithSellBanxSolResult = await banxSol.combineWithSellBanxSolInstructions({
-      //? 0.99 --> without upfront fee
-      inputAmount: new BN(loanValue).mul(new BN(99)).div(new BN(100)),
+    return await banxSol.combineWithSellBanxSolInstructions(
+      {
+        params,
+        accounts,
+        //? 0.99 --> without upfront fee
+        inputAmount: new BN(loanValue).mul(new BN(99)).div(new BN(100)),
+        instructions,
+        signers,
+        lookupTables,
+      },
       walletAndConnection,
-      instructions,
-      signers,
-      lookupTables,
-      result: undefined,
-    })
-
-    return {
-      params,
-      instructions: combineWithSellBanxSolResult.instructions,
-      signers: combineWithSellBanxSolResult.signers,
-      accounts,
-      lookupTables: combineWithSellBanxSolResult.lookupTables,
-    }
+    )
   }
 
   return {

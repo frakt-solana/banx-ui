@@ -3,7 +3,7 @@ import { web3 } from 'fbonds-core'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, groupBy, sumBy, uniqueId } from 'lodash'
 
-import { TxnExecutor } from '@banx/../../solana-txn-executor/src'
+import { TxnExecutor } from 'solana-transactions-executor'
 import { core } from '@banx/api/nft'
 import { LoansOptimisticStore, OffersOptimisticStore } from '@banx/store/nft'
 import {

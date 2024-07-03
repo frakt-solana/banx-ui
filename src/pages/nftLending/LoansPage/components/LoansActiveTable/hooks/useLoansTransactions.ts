@@ -1,7 +1,7 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { every, uniqueId } from 'lodash'
 
-import { TxnExecutor } from '@banx/../../solana-txn-executor/src'
+import { TxnExecutor } from 'solana-transactions-executor'
 import { core } from '@banx/api/nft'
 import { useIsLedger, useModal, usePriorityFees } from '@banx/store/common'
 import { useLoansOptimistic } from '@banx/store/nft'

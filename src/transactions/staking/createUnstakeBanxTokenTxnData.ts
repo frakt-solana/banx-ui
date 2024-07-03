@@ -3,7 +3,7 @@ import { BN } from 'fbonds-core'
 import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
 import { unstakeBanxToken } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking'
 
-import { CreateTxnData, WalletAndConnection } from '@banx/../../solana-txn-executor/src'
+import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 import { BONDS } from '@banx/constants'
 
 import { sendTxnPlaceHolder } from '../helpers'

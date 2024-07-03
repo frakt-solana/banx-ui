@@ -12,7 +12,7 @@ import {
   createRequestLoanSubscribeNotificationsTitle,
 } from '@banx/components/modals'
 
-import { TxnExecutor } from '@banx/../../solana-txn-executor/src'
+import { TxnExecutor } from 'solana-transactions-executor'
 import { core } from '@banx/api/nft'
 import { BONDS, DAYS_IN_YEAR, SECONDS_IN_DAY } from '@banx/constants'
 import { useBorrowNfts } from '@banx/pages/nftLending/BorrowPage/hooks'

@@ -3,12 +3,12 @@ import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { updatePerpetualOfferBonding } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
-
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
   WalletAndConnection,
-} from '@banx/../../solana-txn-executor/src'
+} from 'solana-transactions-executor'
+
 import { fetchTokenBalance } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BANX_SOL_ADDRESS, BONDS } from '@banx/constants'
@@ -78,40 +78,31 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
     const diff = newOfferSize.sub(oldOfferSize).sub(banxSolBalance)
 
     if (diff.gt(ZERO_BN)) {
-      const combineWithBuyBanxSolResult = await banxSol.combineWithBuyBanxSolInstructions({
-        inputAmount: diff.abs(),
+      return await banxSol.combineWithBuyBanxSolInstructions(
+        {
+          params,
+          accounts,
+          inputAmount: diff.abs(),
+          instructions,
+          signers,
+          lookupTables,
+        },
         walletAndConnection,
+      )
+    }
+
+    return await banxSol.combineWithSellBanxSolInstructions(
+      {
+        params,
+        accounts,
+        inputAmount: diff.abs(),
+
         instructions,
         signers,
         lookupTables,
-        result: optimisticResult,
-      })
-
-      return {
-        params,
-        accounts,
-        instructions: combineWithBuyBanxSolResult.instructions,
-        signers: combineWithBuyBanxSolResult.signers,
-        lookupTables: combineWithBuyBanxSolResult.lookupTables,
-      }
-    }
-
-    const combineWithSellBanxSolResult = await banxSol.combineWithSellBanxSolInstructions({
-      inputAmount: diff.abs(),
+      },
       walletAndConnection,
-      instructions,
-      signers,
-      lookupTables,
-      result: optimisticResult,
-    })
-
-    return {
-      params,
-      accounts,
-      instructions: combineWithSellBanxSolResult.instructions,
-      signers: combineWithSellBanxSolResult.signers,
-      lookupTables: combineWithSellBanxSolResult.lookupTables,
-    }
+    )
   }
 
   return {

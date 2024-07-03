@@ -3,12 +3,12 @@ import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { removePerpetualOffer } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
-
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
   WalletAndConnection,
-} from '@banx/../../solana-txn-executor/src'
+} from 'solana-transactions-executor'
+
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { banxSol, parseBanxAccountInfo } from '@banx/transactions'
@@ -33,7 +33,7 @@ export const createRemoveOfferTxnData: CreateRemoveOfferTxnData = async (
 ) => {
   const { offer, tokenType } = params
 
-  const { instructions, signers, optimisticResult } = await removePerpetualOffer({
+  const { instructions, signers } = await removePerpetualOffer({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       bondOfferV2: new web3.PublicKey(offer.publicKey),
@@ -55,23 +55,18 @@ export const createRemoveOfferTxnData: CreateRemoveOfferTxnData = async (
   const offerSize = calculateIdleFundsInOffer(offer).add(new BN(offer.bidCap))
 
   if (isBanxSolTokenType(tokenType) && offerSize.gt(ZERO_BN)) {
-    //TODO Refactor combineWithSellBanxSolInstructions for new TxnData type
-    const combineWithSellBanxSolResult = await banxSol.combineWithSellBanxSolInstructions({
-      inputAmount: offerSize,
-      walletAndConnection,
-      instructions,
-      signers,
-      lookupTables,
-      result: optimisticResult,
-    })
+    return await banxSol.combineWithSellBanxSolInstructions(
+      {
+        params,
+        accounts,
+        inputAmount: offerSize,
 
-    return {
-      params,
-      accounts,
-      instructions: combineWithSellBanxSolResult.instructions,
-      signers: combineWithSellBanxSolResult.signers,
-      lookupTables: combineWithSellBanxSolResult.lookupTables,
-    }
+        instructions,
+        signers,
+        lookupTables,
+      },
+      walletAndConnection,
+    )
   }
 
   // if (offerSize.eq(ZERO_BN)) {

@@ -14,12 +14,12 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
 import moment from 'moment'
-
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
   WalletAndConnection,
-} from '@banx/../../solana-txn-executor/src'
+} from 'solana-transactions-executor'
+
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { banxSol, parseBanxAccountInfo } from '@banx/transactions'
@@ -81,42 +81,23 @@ export const createBorrowRefinanceTxnData: CreateBorrowRefinanceTxnData = async 
     const diff = newLoanDebt.sub(currentLoanDebt).sub(upfrontFee)
 
     if (diff.gt(ZERO_BN)) {
-      //TODO Refactor combineWithSellBanxSolInstructions for new TxnData type
-      const combineWithSellBanxSolResult = await banxSol.combineWithSellBanxSolInstructions({
-        inputAmount: diff.abs(),
+      return await banxSol.combineWithSellBanxSolInstructions(
+        {
+          params,
+          accounts,
+          inputAmount: diff.abs(),
+          instructions,
+          signers,
+          lookupTables,
+        },
         walletAndConnection,
-        instructions,
-        signers,
-        lookupTables,
-        result: undefined,
-      })
-
-      return {
-        params,
-        accounts,
-        instructions: combineWithSellBanxSolResult.instructions,
-        signers: combineWithSellBanxSolResult.signers,
-        lookupTables: combineWithSellBanxSolResult.lookupTables,
-      }
+      )
     }
 
-    //TODO Refactor combineWithBuyBanxSolInstructions for new TxnData type
-    const combineWithBuyBanxSolResult = await banxSol.combineWithBuyBanxSolInstructions({
-      inputAmount: diff.abs(),
+    return await banxSol.combineWithBuyBanxSolInstructions(
+      { params, accounts, inputAmount: diff.abs(), instructions, signers, lookupTables },
       walletAndConnection,
-      instructions,
-      signers,
-      lookupTables,
-      result: undefined,
-    })
-
-    return {
-      params,
-      accounts,
-      instructions: combineWithBuyBanxSolResult.instructions,
-      signers: combineWithBuyBanxSolResult.signers,
-      lookupTables: combineWithBuyBanxSolResult.lookupTables,
-    }
+    )
   }
 
   return {

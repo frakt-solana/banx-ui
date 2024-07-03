@@ -5,12 +5,12 @@ import { repayPartialPerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functi
 import { BondTradeTransactionV3, FraktBond } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
 import moment from 'moment'
-
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
   WalletAndConnection,
-} from '@banx/../../solana-txn-executor/src'
+} from 'solana-transactions-executor'
+
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { banxSol, parseBanxAccountInfo } from '@banx/transactions'
@@ -39,7 +39,7 @@ export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = asyn
   const { fractionToRepay, loan } = params
   const { connection, wallet } = walletAndConnection
 
-  const { fraktBond, bondTradeTransaction, nft } = loan
+  const { fraktBond, bondTradeTransaction } = loan
 
   const { instructions, signers, optimisticResults } = await repayPartialPerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
@@ -71,13 +71,6 @@ export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = asyn
     new web3.PublicKey(optimisticResults[0].bondTradeTransaction.publicKey),
   ]
 
-  const optimisticResult: core.Loan = optimisticResults.map((optimistic) => ({
-    publicKey: optimistic.fraktBond.publicKey,
-    fraktBond: optimistic.fraktBond,
-    bondTradeTransaction: optimistic.bondTradeTransaction,
-    nft,
-  }))[0]
-
   //? Add BanxSol instructions if offer wasn't closed!
   if (
     isBanxSolTokenType(bondTradeTransaction.lendingToken) ||
@@ -93,23 +86,18 @@ export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = asyn
       .mul(new BN(fractionToRepay))
       .div(new BN(BASE_POINTS))
 
-    //TODO Refactor combineWithBuyBanxSolInstructions for new TxnData type
-    const combineWithBuyBanxSolResult = await banxSol.combineWithBuyBanxSolInstructions({
-      inputAmount: repayValue,
-      walletAndConnection,
-      instructions,
-      signers,
-      lookupTables,
-      result: optimisticResult,
-    })
+    return await banxSol.combineWithBuyBanxSolInstructions(
+      {
+        params,
+        accounts,
+        inputAmount: repayValue,
 
-    return {
-      params,
-      accounts,
-      instructions: combineWithBuyBanxSolResult.instructions,
-      signers: combineWithBuyBanxSolResult.signers,
-      lookupTables: combineWithBuyBanxSolResult.lookupTables,
-    }
+        instructions,
+        signers,
+        lookupTables,
+      },
+      walletAndConnection,
+    )
   }
 
   return {

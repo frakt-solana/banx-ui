@@ -7,7 +7,7 @@ import { uniqueId } from 'lodash'
 import { Button } from '@banx/components/Buttons'
 import { TensorLink } from '@banx/components/SolanaLinks'
 
-import { TxnExecutor } from '@banx/../../solana-txn-executor/src'
+import { TxnExecutor } from 'solana-transactions-executor'
 import { core } from '@banx/api/nft'
 import { useHiddenNftsMints } from '@banx/pages/nftLending/OffersPage'
 import { useModal } from '@banx/store/common'

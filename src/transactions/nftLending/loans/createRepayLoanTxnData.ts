@@ -9,12 +9,12 @@ import {
 import { BondTradeTransactionV3, FraktBond } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
 import moment from 'moment'
-
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
   WalletAndConnection,
-} from '@banx/../../solana-txn-executor/src'
+} from 'solana-transactions-executor'
+
 import { helius } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BANX_STAKING, BONDS } from '@banx/constants'
@@ -77,23 +77,18 @@ export const createRepayLoanTxnData: CreateRepayLoanTxnData = async (
       date: moment().unix() + 180,
     })
 
-    //TODO Refactor combineWithBuyBanxSolInstructions for new TxnData type
-    const combineWithBuyBanxSolResult = await banxSol.combineWithBuyBanxSolInstructions({
-      inputAmount: repayValue,
-      walletAndConnection,
-      instructions: repayInstructions,
-      signers: repaySigners,
-      lookupTables,
-      result: undefined,
-    })
+    return await banxSol.combineWithBuyBanxSolInstructions(
+      {
+        params,
+        accounts,
+        inputAmount: repayValue,
 
-    return {
-      params,
-      accounts,
-      instructions: combineWithBuyBanxSolResult.instructions,
-      signers: combineWithBuyBanxSolResult.signers,
-      lookupTables: combineWithBuyBanxSolResult.lookupTables,
-    }
+        instructions: repayInstructions,
+        signers: repaySigners,
+        lookupTables,
+      },
+      walletAndConnection,
+    )
   }
 
   return {

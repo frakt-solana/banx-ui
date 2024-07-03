@@ -5,7 +5,7 @@ import { uniqueId } from 'lodash'
 
 import { Tab, useTabs } from '@banx/components/Tabs'
 
-import { TxnExecutor } from '@banx/../../solana-txn-executor/src'
+import { TxnExecutor } from 'solana-transactions-executor'
 import {
   calcPartnerPoints,
   useBanxStakeInfo,

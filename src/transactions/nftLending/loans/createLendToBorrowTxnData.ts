@@ -7,8 +7,8 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import moment from 'moment'
+import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
-import { CreateTxnData, WalletAndConnection } from '@banx/../../solana-txn-executor/src'
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
@@ -33,14 +33,10 @@ export const createLendToBorrowTxnData: CreateLendToBorrowTxnData = async (
 ) => {
   const { loan, tokenType } = params
 
-  const { instructions, signers, optimisticResult, lookupTables } =
-    await getIxnsAndSignersByLoanType(params, walletAndConnection)
-
-  const optimisticLoan = {
-    ...loan,
-    fraktBond: optimisticResult.fraktBond,
-    bondTradeTransaction: optimisticResult.bondTradeTransaction,
-  }
+  const { instructions, signers, lookupTables } = await getIxnsAndSignersByLoanType(
+    params,
+    walletAndConnection,
+  )
 
   const accounts: web3.PublicKey[] = []
 
@@ -53,22 +49,17 @@ export const createLendToBorrowTxnData: CreateLendToBorrowTxnData = async (
       date: moment().unix() + 180,
     })
 
-    const combineWithBuyBanxSolResult = await banxSol.combineWithBuyBanxSolInstructions({
-      inputAmount: new BN(repayValue),
+    return await banxSol.combineWithBuyBanxSolInstructions(
+      {
+        params,
+        accounts,
+        inputAmount: new BN(repayValue),
+        instructions,
+        signers,
+        lookupTables,
+      },
       walletAndConnection,
-      instructions,
-      signers,
-      lookupTables,
-      result: { loan: optimisticLoan, oldLoan: loan },
-    })
-
-    return {
-      params,
-      accounts,
-      instructions: combineWithBuyBanxSolResult.instructions,
-      signers: combineWithBuyBanxSolResult.signers,
-      lookupTables: combineWithBuyBanxSolResult.lookupTables,
-    }
+    )
   }
 
   return {

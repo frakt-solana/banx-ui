@@ -6,12 +6,12 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondFeatures, BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
-
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
   WalletAndConnection,
-} from '@banx/../../solana-txn-executor/src'
+} from 'solana-transactions-executor'
+
 import { fetchTokenBalance } from '@banx/api/common'
 import { BANX_SOL_ADDRESS, BONDS } from '@banx/constants'
 import { banxSol, parseBanxAccountInfo } from '@banx/transactions'
@@ -72,23 +72,18 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
     const diff = offerSize.sub(banxSolBalance)
 
     if (diff.gt(ZERO_BN)) {
-      //TODO Refactor combineWithBuyBanxSolInstructions for new TxnData type
-      const combineWithBuyBanxSolResult = await banxSol.combineWithBuyBanxSolInstructions({
-        inputAmount: diff.abs(),
-        walletAndConnection,
-        instructions,
-        signers,
-        lookupTables,
-        result: optimisticResult,
-      })
+      return await banxSol.combineWithBuyBanxSolInstructions(
+        {
+          params,
+          accounts,
+          inputAmount: diff.abs(),
 
-      return {
-        params,
-        accounts,
-        instructions: combineWithBuyBanxSolResult.instructions,
-        signers: combineWithBuyBanxSolResult.signers,
-        lookupTables: combineWithBuyBanxSolResult.lookupTables,
-      }
+          instructions,
+          signers,
+          lookupTables,
+        },
+        walletAndConnection,
+      )
     }
   }
 

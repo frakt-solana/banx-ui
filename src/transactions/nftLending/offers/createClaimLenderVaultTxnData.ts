@@ -7,12 +7,12 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
-
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
   WalletAndConnection,
-} from '@banx/../../solana-txn-executor/src'
+} from 'solana-transactions-executor'
+
 import { ClusterStats } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
@@ -112,22 +112,16 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
   if (isBanxSolTokenType(tokenType) && (offer.bidCap || offer.concentrationIndex)) {
     const inputAmount = new BN(offer.concentrationIndex).add(new BN(offer.bidCap))
 
-    //TODO Refactor combineWithSellBanxSolInstructions for new TxnData type
-    const combineWithSellBanxSolResult = await banxSol.combineWithSellBanxSolInstructions({
-      inputAmount,
+    return await banxSol.combineWithSellBanxSolInstructions(
+      {
+        params,
+        accounts,
+        inputAmount,
+        instructions,
+        signers,
+      },
       walletAndConnection,
-      instructions,
-      signers,
-      result: undefined,
-    })
-
-    return {
-      params,
-      instructions: combineWithSellBanxSolResult.instructions,
-      signers: combineWithSellBanxSolResult.signers,
-      accounts,
-      lookupTables: combineWithSellBanxSolResult.lookupTables,
-    }
+    )
   }
 
   return {
