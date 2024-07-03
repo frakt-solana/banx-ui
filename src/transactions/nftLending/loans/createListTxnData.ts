@@ -55,13 +55,6 @@ export const createListTxnData: CreateListTxnData = async (params, walletAndConn
     new web3.PublicKey(optimisticResults.bondTradeTransaction.publicKey),
   ]
 
-  // const optimisticLoan = {
-  //   publicKey: optimisticResults.fraktBond.publicKey,
-  //   fraktBond: optimisticResults.fraktBond,
-  //   bondTradeTransaction: optimisticResults.bondTradeTransaction,
-  //   nft: nft.nft,
-  // }
-
   return {
     params,
     accounts,
