@@ -1,5 +1,6 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { uniqueId } from 'lodash'
+import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
@@ -136,7 +137,6 @@ export const useOfferTransactions = ({
         walletAndConnection,
       )
 
-      //TODO: Fix genric here
       await new TxnExecutor<CreateUpdateBondingOfferTxnDataParams>(
         walletAndConnection,
         TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -165,7 +165,8 @@ export const useOfferTransactions = ({
             })
             if (accountInfoByPubkey) {
               const offer = parseUpdateOfferSimulatedAccounts(accountInfoByPubkey)
-              updateOrAddOffer(offer)
+              //? Needs to prevent BE data overlap in optimistics logic
+              updateOrAddOffer({ ...offer, lastTransactedAt: moment().unix() })
             }
           })
         })
@@ -203,10 +204,9 @@ export const useOfferTransactions = ({
       )
 
       //TODO: Fix genric here
-      await new TxnExecutor<CreateRemoveOfferTxnDataParams>(
-        walletAndConnection,
-        TXN_EXECUTOR_DEFAULT_OPTIONS,
-      )
+      await new TxnExecutor<CreateRemoveOfferTxnDataParams>(walletAndConnection, {
+        ...TXN_EXECUTOR_DEFAULT_OPTIONS,
+      })
         .addTxnData(txnData)
         .on('sentSome', (results) => {
           results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -233,7 +233,8 @@ export const useOfferTransactions = ({
             if (accountInfoByPubkey) {
               const offer = parseRemoveOfferSimulatedAccounts(accountInfoByPubkey)
 
-              updateOrAddOffer(offer)
+              //? Needs to prevent BE data overlap in optimistics logic
+              updateOrAddOffer({ ...offer, lastTransactedAt: moment().unix() })
               exitEditMode()
             }
           })
