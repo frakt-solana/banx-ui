@@ -55,7 +55,6 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-
   const { fraktBond, bondTradeTransaction, bondOffer } = optimisticResults
 
   const accounts = [
