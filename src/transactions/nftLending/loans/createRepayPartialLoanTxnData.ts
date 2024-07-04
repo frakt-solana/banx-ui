@@ -2,8 +2,13 @@ import { BN, web3 } from 'fbonds-core'
 import { BASE_POINTS, EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import { repayPartialPerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { BondTradeTransactionV3, FraktBond } from 'fbonds-core/lib/fbond-protocol/types'
 import moment from 'moment'
-import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
+import {
+  CreateTxnData,
+  SimulatedAccountInfoByPubkey,
+  WalletAndConnection,
+} from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
@@ -14,26 +19,27 @@ import {
   isSolTokenType,
 } from '@banx/utils'
 
+import { parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
-type CreateRepayPartialLoanTxnDataParams = {
+export type CreateRepayPartialLoanTxnDataParams = {
   loan: core.Loan
   fractionToRepay: number //? F.E 50% => 5000
-  walletAndConnection: WalletAndConnection
 }
 
 type CreateRepayPartialLoanTxnData = (
   params: CreateRepayPartialLoanTxnDataParams,
-) => Promise<CreateTxnData<core.Loan>>
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateRepayPartialLoanTxnDataParams>>
 
-export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = async ({
-  fractionToRepay,
-  loan,
+export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = async (
+  params,
   walletAndConnection,
-}) => {
+) => {
+  const { fractionToRepay, loan } = params
   const { connection, wallet } = walletAndConnection
 
-  const { fraktBond, bondTradeTransaction, nft } = loan
+  const { fraktBond, bondTradeTransaction } = loan
 
   const { instructions, signers, optimisticResults } = await repayPartialPerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
@@ -60,12 +66,10 @@ export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = asyn
 
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
 
-  const optimisticResult: core.Loan = optimisticResults.map((optimistic) => ({
-    publicKey: optimistic.fraktBond.publicKey,
-    fraktBond: optimistic.fraktBond,
-    bondTradeTransaction: optimistic.bondTradeTransaction,
-    nft,
-  }))[0]
+  const accounts = [
+    new web3.PublicKey(optimisticResults[0].fraktBond.publicKey),
+    new web3.PublicKey(optimisticResults[0].bondTradeTransaction.publicKey),
+  ]
 
   //? Add BanxSol instructions if offer wasn't closed!
   if (
@@ -82,20 +86,36 @@ export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = asyn
       .mul(new BN(fractionToRepay))
       .div(new BN(BASE_POINTS))
 
-    return await banxSol.combineWithBuyBanxSolInstructions({
-      inputAmount: repayValue,
+    return await banxSol.combineWithBuyBanxSolInstructions(
+      {
+        params,
+        accounts,
+        inputAmount: repayValue,
+
+        instructions,
+        signers,
+        lookupTables,
+      },
       walletAndConnection,
-      instructions,
-      signers,
-      lookupTables,
-      result: optimisticResult,
-    })
+    )
   }
 
   return {
+    params,
+    accounts,
     instructions,
     signers,
     lookupTables,
-    result: optimisticResult,
+  }
+}
+
+export const parseRepayPartialLoanSimulatedAccounts = (
+  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
+) => {
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey)
+
+  return {
+    bondTradeTransaction: results?.['bondTradeTransactionV3'] as BondTradeTransactionV3,
+    fraktBond: results?.['fraktBond'] as FraktBond,
   }
 }

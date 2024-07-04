@@ -1,11 +1,12 @@
 import { BN, web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
+import { removePerpetualOffer } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import {
-  BondOfferOptimistic,
-  removePerpetualOffer,
-} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
-import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
+  CreateTxnData,
+  SimulatedAccountInfoByPubkey,
+  WalletAndConnection,
+} from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
@@ -13,24 +14,26 @@ import { banxSol } from '@banx/transactions'
 // import { getCloseBanxSolATAsInstructions } from '@banx/transactions/banxSol'
 import { ZERO_BN, calculateIdleFundsInOffer, isBanxSolTokenType } from '@banx/utils'
 
+import { parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
-type CreateRemoveOfferTxnDataParams = {
+export type CreateRemoveOfferTxnDataParams = {
   offer: core.Offer
   tokenType: LendingTokenType
-  walletAndConnection: WalletAndConnection
 }
 
 type CreateRemoveOfferTxnData = (
   params: CreateRemoveOfferTxnDataParams,
-) => Promise<CreateTxnData<BondOfferOptimistic>>
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateRemoveOfferTxnDataParams>>
 
-export const createRemoveOfferTxnData: CreateRemoveOfferTxnData = async ({
-  offer,
-  tokenType,
+export const createRemoveOfferTxnData: CreateRemoveOfferTxnData = async (
+  params,
   walletAndConnection,
-}) => {
-  const { instructions, signers, optimisticResult } = await removePerpetualOffer({
+) => {
+  const { offer, tokenType } = params
+
+  const { instructions, signers } = await removePerpetualOffer({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       bondOfferV2: new web3.PublicKey(offer.publicKey),
@@ -47,18 +50,23 @@ export const createRemoveOfferTxnData: CreateRemoveOfferTxnData = async ({
   })
 
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
+  const accounts = [new web3.PublicKey(offer.publicKey)]
 
   const offerSize = calculateIdleFundsInOffer(offer).add(new BN(offer.bidCap))
 
   if (isBanxSolTokenType(tokenType) && offerSize.gt(ZERO_BN)) {
-    return await banxSol.combineWithSellBanxSolInstructions({
-      inputAmount: offerSize,
+    return await banxSol.combineWithSellBanxSolInstructions(
+      {
+        params,
+        accounts,
+        inputAmount: offerSize,
+
+        instructions,
+        signers,
+        lookupTables,
+      },
       walletAndConnection,
-      instructions,
-      signers,
-      lookupTables,
-      result: optimisticResult,
-    })
+    )
   }
 
   // if (offerSize.eq(ZERO_BN)) {
@@ -70,9 +78,18 @@ export const createRemoveOfferTxnData: CreateRemoveOfferTxnData = async ({
   // }
 
   return {
+    params,
+    accounts,
     instructions,
     signers,
-    result: optimisticResult,
     lookupTables,
   }
+}
+
+export const parseRemoveOfferSimulatedAccounts = (
+  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
+) => {
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey)
+
+  return results?.['bondOfferV3'] as BondOfferV3
 }
