@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
@@ -6,42 +6,49 @@ import { Button } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { LoanValueSlider, Separator } from '../components'
+import { Separator } from '../components'
 import InputTokenSelect from '../components/InputTokenSelect'
-import {
-  BORROW_MOCK_TOKENS_LIST,
-  COLLATERAL_MOCK_TOKENS_LIST,
-  MockTokenMetaType,
-} from '../constants'
+import { BORROW_TOKENS_LIST, COLLATERAL_TOKENS_LIST, MOCK_APR_RATE } from '../constants'
+import { useInstantBorrowContent } from './hooks/useInstantBorrowContent'
 
 import styles from './InstantBorrowContent.module.less'
 
-const MOCK_MAX_VALUE = '423000000'
-
 const InstantBorrowContent = () => {
-  const { connected } = useWallet()
+  const wallet = useWallet()
 
-  const [sliderValue, setSliderValue] = useState(100)
+  const {
+    collateralToken,
+    collateralInputValue,
+    handleCollateralInputChange,
+    handleCollateralTokenChange,
 
-  const [collateralInputValue, setCollateralInputValue] = useState('')
-  const [collateralToken, setCollateralToken] = useState<MockTokenMetaType>(
-    COLLATERAL_MOCK_TOKENS_LIST[0],
-  )
+    borrowToken,
+    borrowInputValue,
+    handleBorrowInputChange,
+    handleBorrowTokenChange,
 
-  const [borrowInputValue, setBorrowlInputValue] = useState('')
-  const [borrowToken, setBorrowToken] = useState<MockTokenMetaType>(BORROW_MOCK_TOKENS_LIST[0])
+    collateralTokenBalanceStr,
+    borrowTokenBalanceStr,
+
+    upfrontFee,
+    weeklyFee,
+
+    errorMessage,
+    executeBorrow,
+  } = useInstantBorrowContent()
 
   return (
     <div className={styles.content}>
       <InputTokenSelect
         label="Collateralize"
         value={collateralInputValue}
-        onChange={setCollateralInputValue}
+        onChange={handleCollateralInputChange}
         selectedToken={collateralToken}
-        onChangeToken={setCollateralToken}
-        tokenList={COLLATERAL_MOCK_TOKENS_LIST}
+        onChangeToken={handleCollateralTokenChange}
+        tokenList={COLLATERAL_TOKENS_LIST}
         className={styles.collateralInput}
-        maxValue={MOCK_MAX_VALUE}
+        maxValue={collateralTokenBalanceStr}
+        disabledInput={!wallet.connected}
       />
 
       <Separator />
@@ -49,18 +56,22 @@ const InstantBorrowContent = () => {
       <InputTokenSelect
         label="To borrow"
         value={borrowInputValue}
-        onChange={setBorrowlInputValue}
+        onChange={handleBorrowInputChange}
         selectedToken={borrowToken}
-        onChangeToken={setBorrowToken}
-        tokenList={BORROW_MOCK_TOKENS_LIST}
+        onChangeToken={handleBorrowTokenChange}
+        tokenList={BORROW_TOKENS_LIST}
         className={styles.borrowInput}
+        maxValue={borrowTokenBalanceStr}
+        disabledInput={!wallet.connected}
       />
 
-      <LoanValueSlider label="Loan value" value={sliderValue} onChange={setSliderValue} />
-
-      <Summary apr={0.05} upfrontFee={0.001} weeklyInterest={0.01} />
-      <Button disabled={!connected} className={styles.borrowButton}>
-        {!connected ? 'Connect wallet to borrow' : 'Borrow'}
+      <Summary apr={MOCK_APR_RATE} upfrontFee={upfrontFee} weeklyFee={weeklyFee} />
+      <Button
+        onClick={executeBorrow}
+        disabled={!wallet.connected || !!errorMessage}
+        className={styles.borrowButton}
+      >
+        {!wallet.connected ? 'Connect wallet' : errorMessage || 'Borrow'}
       </Button>
     </div>
   )
@@ -71,10 +82,10 @@ export default InstantBorrowContent
 interface SummaryProps {
   apr: number
   upfrontFee: number
-  weeklyInterest: number
+  weeklyFee: number
 }
 
-export const Summary: FC<SummaryProps> = ({ apr, upfrontFee, weeklyInterest }) => {
+export const Summary: FC<SummaryProps> = ({ apr, upfrontFee, weeklyFee }) => {
   const statClassNames = {
     value: styles.fixedStatValue,
   }
@@ -90,14 +101,14 @@ export const Summary: FC<SummaryProps> = ({ apr, upfrontFee, weeklyInterest }) =
       />
       <StatInfo
         label="Est weekly fee"
-        value={<DisplayValue value={weeklyInterest} />}
+        value={<DisplayValue value={weeklyFee} />}
         tooltipText="Expected weekly interest on your loans. Interest is added to your debt balance"
         classNamesProps={statClassNames}
         flexType="row"
       />
       <StatInfo
         label="APR"
-        value={apr}
+        value={apr / 100}
         valueType={VALUES_TYPES.PERCENT}
         classNamesProps={statClassNames}
         flexType="row"

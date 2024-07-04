@@ -8,6 +8,7 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/types'
 import { z } from 'zod'
 
+import { OfferSchema } from '@banx/api/nft'
 import { PaginationMeta } from '@banx/api/types'
 
 const TokenMetaSchema = z.object({
@@ -125,3 +126,10 @@ export const TokenOfferPreviewSchema = z.object({
 })
 
 export type TokenOfferPreview = z.infer<typeof TokenOfferPreviewSchema>
+
+export const WalletTokenLoansAndOffersShema = z.object({
+  loans: z.array(TokenLoanSchema),
+  offers: z.record(OfferSchema.array()),
+})
+
+export type WalletTokenLoansAndOffers = z.infer<typeof WalletTokenLoansAndOffersShema>

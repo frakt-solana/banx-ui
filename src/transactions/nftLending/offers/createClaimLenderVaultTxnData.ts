@@ -3,7 +3,7 @@ import {
   calculateBanxSolStakingRewards,
   claimPerpetualBondOfferInterest,
   claimPerpetualBondOfferRepayments,
-  claimPerpetualBondOfferStakingRewards, // claimPerpetualBondOfferStakingRewards,
+  claimPerpetualBondOfferStakingRewards,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'

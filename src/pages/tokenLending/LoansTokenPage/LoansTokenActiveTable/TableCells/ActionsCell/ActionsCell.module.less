@@ -1,0 +1,181 @@
+.actionsButtons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 100%;
+}
+
+.repayModalInfo {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.repayModalSlider {
+  margin-bottom: 24px;
+}
+
+.repayModalSliderColor (@color: var(--accent-primary)) {
+  :global {
+    .ant-slider-track {
+      background: @color !important;
+      border-color: @color !important;
+    }
+    .ant-slider-dot-active {
+      border-color: @color !important;
+    }
+
+    .ant-slider-handle {
+      border-color: @color !important;
+    }
+  }
+
+  &:hover {
+    :global {
+      .ant-slider-dot-active {
+        border-color: @color !important;
+      }
+      .ant-slider-track {
+        background: @color !important;
+        border-color: @color !important;
+      }
+    }
+  }
+}
+.repayModalSliderGreen {
+  .repayModalSliderColor(var(--accent-primary));
+}
+.repayModalSliderYellow {
+  .repayModalSliderColor(var(--additional-yellow-primary));
+}
+
+.repayModalAdditionalInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0 8px;
+}
+
+.repayModalButton,
+.refinanceModalButton {
+  width: 100%;
+}
+
+.repayModalRepaymentCall {
+  background: var(--additional-yellow-primary);
+  color: var(--pure-black);
+  cursor: pointer;
+}
+.repayModalButton {
+  &:disabled {
+    svg path:first-child {
+      fill: var(--content-secondary);
+    }
+  }
+}
+
+.currentLoanInfo {
+  margin-bottom: 18px;
+}
+
+.newLoanInfo {
+  margin-bottom: 24px;
+}
+
+.difference {
+  margin-bottom: 16px;
+}
+
+//? LoanInfo component
+.loanInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  color: var(--content-primary);
+}
+.loanInfoFaded {
+  color: var(--content-secondary);
+}
+
+.loanInfoTitle {
+  font: var(--title-xl);
+  text-transform: uppercase;
+  text-align: center;
+
+  @media (max-width: 640px) {
+    font: var(--title-lg);
+  }
+}
+
+.loanInfoStats {
+  display: flex;
+  justify-content: space-around;
+}
+
+.loanInfoValue {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+
+  p:first-child {
+    font: var(--important-text-xl);
+
+    @media (max-width: 640px) {
+      font: var(--important-text-md);
+    }
+  }
+
+  p:last-child {
+    font: var(--title-sm);
+    text-transform: uppercase;
+
+    @media (max-width: 640px) {
+      font: var(--title-xs);
+    }
+  }
+}
+
+//? LoanDifference component
+.loanDifference {
+  border: var(--border-less-primary);
+  border-style: dashed;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.loanDifferenceTitle {
+  display: flex;
+  align-items: center;
+  font: var(--important-text-xl);
+  color: var(--additional-green-primary-deep);
+
+  @media (max-width: 640px) {
+    font: var(--important-text-md);
+  }
+}
+.loanDifferenceTitleRed {
+  color: var(--additional-red-primary-deep);
+}
+
+.loanDifferenceSubtitle {
+  font: var(--title-sm);
+  text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--title-xs);
+  }
+}
+
+.refinanceButton,
+.repayButton {
+  width: 96px;
+}
+
+.refinanceModalSlider {
+  margin: 32px 8px;
+}

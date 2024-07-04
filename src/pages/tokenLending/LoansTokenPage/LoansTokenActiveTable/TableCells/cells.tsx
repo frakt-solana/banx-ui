@@ -1,0 +1,143 @@
+import { FC } from 'react'
+
+import { capitalize } from 'lodash'
+import moment from 'moment'
+
+import {
+  DisplayValue,
+  HorizontalCell,
+  createPercentValueJSX,
+} from '@banx/components/TableComponents'
+import Timer from '@banx/components/Timer'
+
+import { core } from '@banx/api/tokens'
+import { BONDS, SECONDS_IN_72_HOURS } from '@banx/constants'
+import {
+  HealthColorIncreasing,
+  STATUS_LOANS_COLOR_MAP,
+  STATUS_LOANS_MAP,
+  caclulateBorrowTokenLoanValue,
+  calcTokenWeeklyFeeWithRepayFee,
+  calculateTimeFromNow,
+  getColorByPercent,
+  getTokenDecimals,
+  isTokenLoanActive,
+  isTokenLoanTerminating,
+} from '@banx/utils'
+
+import styles from '../LoansTokenActiveTable.module.less'
+
+interface TooltipRowProps {
+  label: string
+  value: number
+}
+const TooltipRow: FC<TooltipRowProps> = ({ label, value }) => (
+  <div className={styles.tooltipRow}>
+    <span className={styles.tooltipRowLabel}>{label}</span>
+    <span className={styles.tooltipRowValue}>
+      <DisplayValue value={value} />
+    </span>
+  </div>
+)
+
+export const DebtCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
+  const { bondTradeTransaction, fraktBond } = loan
+
+  const debtValue = caclulateBorrowTokenLoanValue(loan).toNumber()
+  const borrowedValue = fraktBond.borrowedAmount
+  const totalAccruedInterest = debtValue - bondTradeTransaction.solAmount
+  const upfrontFee = bondTradeTransaction.borrowerOriginalLent / 100
+  const weeklyFee = calcTokenWeeklyFeeWithRepayFee(loan)
+
+  const tooltipContent = (
+    <div className={styles.tooltipContent}>
+      <TooltipRow label="Principal" value={borrowedValue} />
+      <TooltipRow label="Repaid" value={bondTradeTransaction.borrowerFullRepaidAmount} />
+      <TooltipRow label="Accrued interest" value={totalAccruedInterest} />
+      <TooltipRow label="Upfront fee" value={upfrontFee} />
+      <TooltipRow label="Est. weekly interest" value={weeklyFee} />
+    </div>
+  )
+
+  return (
+    <HorizontalCell tooltipContent={tooltipContent} value={<DisplayValue value={debtValue} />} />
+  )
+}
+
+export const LTVCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
+  const tokenDecimals = getTokenDecimals(loan.bondTradeTransaction.lendingToken)
+
+  const collateralSupply = loan.fraktBond.fbondTokenSupply / Math.pow(10, loan.collateral.decimals)
+  const debtValue = caclulateBorrowTokenLoanValue(loan).toNumber()
+
+  const ltvRatio = debtValue / tokenDecimals / collateralSupply
+  const ltvPercent = (ltvRatio / loan.collateralPrice) * 100
+
+  const tooltipContent = (
+    <div className={styles.tooltipContent}>
+      <TooltipRow label="Price" value={loan.collateralPrice} />
+      <TooltipRow label="Debt" value={debtValue} />
+    </div>
+  )
+
+  return (
+    <HorizontalCell
+      value={createPercentValueJSX(ltvPercent)}
+      tooltipContent={tooltipContent}
+      textColor={getColorByPercent(ltvPercent, HealthColorIncreasing)}
+    />
+  )
+}
+
+export const APRCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
+  const apr = (loan.bondTradeTransaction.amountOfBonds + BONDS.PROTOCOL_REPAY_FEE) / 100
+
+  return <HorizontalCell value={createPercentValueJSX(apr)} isHighlighted />
+}
+
+interface StatusCellProps {
+  loan: core.TokenLoan
+  isCardView?: boolean
+}
+
+export const StatusCell: FC<StatusCellProps> = ({ loan, isCardView = false }) => {
+  const loanStatus = STATUS_LOANS_MAP[loan.bondTradeTransaction.bondTradeTransactionState]
+  const loanStatusColor = STATUS_LOANS_COLOR_MAP[loanStatus]
+
+  const timeContent = getTimeContent(loan)
+
+  const statusInfoTitle = (
+    <span style={{ color: loanStatusColor }} className={styles.columnCellTitle}>
+      {capitalize(loanStatus)}
+    </span>
+  )
+  const statusInfoSubtitle = <span className={styles.columnCellSubtitle}>{timeContent}</span>
+
+  return !isCardView ? (
+    <div className={styles.columnCell}>
+      {statusInfoSubtitle}
+      {statusInfoTitle}
+    </div>
+  ) : (
+    <span>
+      {statusInfoSubtitle} ({statusInfoTitle})
+    </span>
+  )
+}
+
+const getTimeContent = (loan: core.TokenLoan) => {
+  const { fraktBond } = loan
+
+  if (isTokenLoanActive(loan)) {
+    const currentTimeInSeconds = moment().unix()
+    const timeSinceActivationInSeconds = currentTimeInSeconds - fraktBond.activatedAt
+    return calculateTimeFromNow(timeSinceActivationInSeconds)
+  }
+
+  if (isTokenLoanTerminating(loan)) {
+    const expiredAt = fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS
+    return <Timer expiredAt={expiredAt} />
+  }
+
+  return ''
+}

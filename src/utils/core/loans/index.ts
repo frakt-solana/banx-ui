@@ -30,7 +30,7 @@ export enum LoanStatus {
   Terminating = 'terminating',
 }
 
-export const STATUS_LOANS_MAP: Record<string, string> = {
+export const STATUS_LOANS_MAP: Record<string, LoanStatus> = {
   [BondTradeTransactionV2State.PerpetualActive]: LoanStatus.Active,
   [BondTradeTransactionV2State.PerpetualRefinancedActive]: LoanStatus.Active,
   [BondTradeTransactionV2State.PerpetualRepaid]: LoanStatus.Repaid,

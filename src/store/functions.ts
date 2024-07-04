@@ -9,7 +9,7 @@ export const createPathWithModeParams = (
 ) => {
   const modeQueryParam = mode === ModeType.Token ? `mode=${mode}` : ''
 
-  const isDefaultTokenType = tokenType === LendingTokenType.NativeSol
+  const isDefaultTokenType = tokenType === LendingTokenType.BanxSol
   const tokenQueryParam = tokenType && !isDefaultTokenType ? `token=${tokenType}` : ''
 
   const queryParams = [modeQueryParam, tokenQueryParam].filter(Boolean).join('&')
