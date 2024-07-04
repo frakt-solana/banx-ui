@@ -89,7 +89,7 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
     currentEpochStartAt,
   })
 
-  if (calculateLstYield.gt(ZERO_BN)) {
+  if (isBanxSolTokenType(tokenType) && calculateLstYield.gt(ZERO_BN)) {
     const { instructions: claimYieldInstructions, signers: claimYieldSigners } =
       await claimPerpetualBondOfferStakingRewards({
         accounts: accountsParams,
