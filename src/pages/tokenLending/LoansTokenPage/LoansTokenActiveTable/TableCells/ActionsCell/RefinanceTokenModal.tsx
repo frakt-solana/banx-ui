@@ -23,8 +23,9 @@ import {
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
+import { parseBorrowRefinanceSimulatedAccounts } from '@banx/transactions/nftLending'
 import {
-  BorrowTokenRefinanceActionOptimisticResult,
+  CreateBorrowTokenRefinanceTxnDataParams,
   createBorrowTokenRefinanceTxnData,
 } from '@banx/transactions/tokenLending'
 import {
@@ -148,15 +149,18 @@ export const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const txnData = await createBorrowTokenRefinanceTxnData({
-        loan,
-        offer: suitableOffer,
-        solToRefinance: currentSpotPrice,
-        aprRate: newApr,
+      const txnData = await createBorrowTokenRefinanceTxnData(
+        {
+          loan,
+          offer: suitableOffer,
+          solToRefinance: currentSpotPrice,
+          aprRate: newApr,
+          tokenType,
+        },
         walletAndConnection,
-      })
+      )
 
-      await new TxnExecutor<BorrowTokenRefinanceActionOptimisticResult>(
+      await new TxnExecutor<CreateBorrowTokenRefinanceTxnDataParams>(
         walletAndConnection,
         TXN_EXECUTOR_DEFAULT_OPTIONS,
       )
@@ -176,16 +180,26 @@ export const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
             )
           }
 
-          return confirmed.forEach(({ result, signature }) => {
-            if (result && wallet?.publicKey) {
+          return confirmed.forEach(({ params, accountInfoByPubkey, signature }) => {
+            if (accountInfoByPubkey && wallet?.publicKey) {
               enqueueSnackbar({
                 message: 'Loan successfully refinanced',
                 type: 'success',
                 solanaExplorerPath: `tx/${signature}`,
               })
 
-              updateOrAddOffer(result.offer)
-              updateLoansOptimistic([result.loan], wallet.publicKey.toBase58())
+              const { bondOffer, bondTradeTransaction, fraktBond } =
+                parseBorrowRefinanceSimulatedAccounts(accountInfoByPubkey)
+
+              const optimisticLoan = {
+                ...params.loan,
+                publicKey: fraktBond.publicKey,
+                fraktBond: fraktBond,
+                bondTradeTransaction,
+              }
+
+              updateOrAddOffer(bondOffer)
+              updateLoansOptimistic([optimisticLoan], wallet.publicKey.toBase58())
               clearSelection()
               close()
             }

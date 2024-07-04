@@ -5,36 +5,30 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/nft'
-import { core } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
 import { BorrowToken } from '@banx/pages/tokenLending/BorrowTokenPage/constants'
 import { sendTxnPlaceHolder } from '@banx/transactions'
 import { getTokenDecimals } from '@banx/utils'
 
-export type BorrowTokenTxnOptimisticResult = { loan: core.TokenLoan; offer: Offer }
-
 export type CreateBorrowTokenTxnDataParams = {
   collateral: BorrowToken
   loanValue: number
   offer: Offer
-  optimizeIntoReserves: boolean
   tokenType: LendingTokenType
   aprRate: number
 }
 
 export type CreateBorrowTokenTxnData = (
-  params: CreateBorrowTokenTxnDataParams & { walletAndConnection: WalletAndConnection },
-) => Promise<CreateTxnData<BorrowTokenTxnOptimisticResult>>
+  params: CreateBorrowTokenTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateBorrowTokenTxnDataParams>>
 
-export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async ({
-  collateral,
-  loanValue,
-  offer,
-  optimizeIntoReserves,
-  tokenType,
+export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async (
+  params,
   walletAndConnection,
-  aprRate,
-}) => {
+) => {
+  const { collateral, loanValue, offer, aprRate, tokenType } = params
+
   const tokenDecimals = getTokenDecimals(tokenType)
 
   const { instructions, signers, optimisticResults } = await borrowPerpetualSpl({
@@ -49,7 +43,7 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async ({
     },
     args: {
       amountToget: loanValue,
-      optimizeIntoReserves: optimizeIntoReserves,
+      optimizeIntoReserves: true,
       aprRate,
       lendingTokenType: tokenType,
     },
@@ -61,21 +55,20 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async ({
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const loanAndOffer = {
-    loan: {
-      publicKey: optimisticResults.fraktBond.publicKey,
-      fraktBond: optimisticResults.fraktBond,
-      bondTradeTransaction: optimisticResults.bondTradeTransaction,
-      collateral: { ...collateral.meta },
-      collateralPrice: collateral.collateralPrice,
-    },
-    offer: optimisticResults.bondOffer,
-  }
+
+  const { fraktBond, bondTradeTransaction, bondOffer } = optimisticResults
+
+  const accounts = [
+    new web3.PublicKey(fraktBond.publicKey),
+    new web3.PublicKey(bondTradeTransaction.publicKey),
+    new web3.PublicKey(bondOffer.publicKey),
+  ]
 
   return {
+    params,
     instructions,
     signers,
-    result: loanAndOffer,
+    accounts,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }

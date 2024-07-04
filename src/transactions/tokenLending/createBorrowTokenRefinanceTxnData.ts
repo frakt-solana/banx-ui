@@ -5,7 +5,7 @@ import {
   borrowerRefinance,
   borrowerRefinanceToSame,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
+import { LendingTokenType, PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/nft'
@@ -14,63 +14,56 @@ import { BONDS } from '@banx/constants'
 
 import { sendTxnPlaceHolder } from '../helpers'
 
-export type BorrowTokenRefinanceActionOptimisticResult = {
-  loan: core.TokenLoan
-  offer: Offer
-}
-
-type CreateBorrowTokenRefinanceTxnDataParams = {
+export type CreateBorrowTokenRefinanceTxnDataParams = {
   loan: core.TokenLoan
   offer: Offer
   solToRefinance: number
   aprRate: number //? Base points
-  walletAndConnection: WalletAndConnection
+  tokenType: LendingTokenType
 }
 
 type CreateBorrowTokenRefinanceTxnData = (
   params: CreateBorrowTokenRefinanceTxnDataParams,
-) => Promise<CreateTxnData<BorrowTokenRefinanceActionOptimisticResult>>
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateBorrowTokenRefinanceTxnDataParams>>
 
-export const createBorrowTokenRefinanceTxnData: CreateBorrowTokenRefinanceTxnData = async ({
-  loan,
-  offer,
-  aprRate,
-  solToRefinance,
+export const createBorrowTokenRefinanceTxnData: CreateBorrowTokenRefinanceTxnData = async (
+  params,
   walletAndConnection,
-}) => {
-  const { instructions, signers, optimisticResult } = await getIxnsAndSigners({
-    loan,
-    offer,
-    aprRate,
-    solToRefinance,
-    walletAndConnection,
-  })
+) => {
+  const { loan, offer, aprRate, solToRefinance, tokenType } = params
 
-  const optimisticLoan = {
-    ...loan,
-    publicKey: optimisticResult.fraktBond.publicKey,
-    fraktBond: optimisticResult.fraktBond,
-    bondTradeTransaction: optimisticResult.newBondTradeTransaction,
-  }
+  const { instructions, signers, optimisticResult } = await getIxnsAndSigners(
+    {
+      loan,
+      offer,
+      aprRate,
+      solToRefinance,
+      tokenType,
+    },
+    walletAndConnection,
+  )
+
+  const accounts = [
+    new web3.PublicKey(optimisticResult.bondOffer.publicKey),
+    new web3.PublicKey(optimisticResult.fraktBond.publicKey),
+    new web3.PublicKey(optimisticResult.newBondTradeTransaction.publicKey),
+  ]
 
   return {
+    params,
+    accounts,
     instructions,
     signers,
-    result: {
-      loan: optimisticLoan,
-      offer: optimisticResult.bondOffer,
-    },
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }
 
-const getIxnsAndSigners = async ({
-  loan,
-  offer,
-  solToRefinance,
-  aprRate,
-  walletAndConnection,
-}: CreateBorrowTokenRefinanceTxnDataParams) => {
+const getIxnsAndSigners = async (
+  params: CreateBorrowTokenRefinanceTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => {
+  const { loan, offer, solToRefinance, aprRate } = params
   const { connection, wallet } = walletAndConnection
   const { bondTradeTransaction, fraktBond } = loan
 
