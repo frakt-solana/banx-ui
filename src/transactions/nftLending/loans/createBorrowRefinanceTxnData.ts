@@ -59,7 +59,7 @@ export const createBorrowRefinanceTxnData: CreateBorrowRefinanceTxnData = async 
   const accounts = [
     new web3.PublicKey(optimisticResult.bondOffer.publicKey),
     new web3.PublicKey(optimisticResult.fraktBond.publicKey),
-    new web3.PublicKey(optimisticResult.newBondTradeTransaction),
+    new web3.PublicKey(optimisticResult.newBondTradeTransaction.publicKey),
   ]
 
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
