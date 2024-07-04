@@ -7,15 +7,20 @@ import { BONDS } from '@banx/constants'
 
 import { sendTxnPlaceHolder } from '../helpers'
 
-type CreateClaimBanxTxnData = (params: {
+type CreateClaimBanxTxnDataParams = {
   weeks: number[]
-  walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<undefined>>
+}
+type CreateClaimBanxTxnData = (
+  params: CreateClaimBanxTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateClaimBanxTxnDataParams>>
 
-export const createClaimBanxTxnData: CreateClaimBanxTxnData = async ({
-  weeks,
+export const createClaimBanxTxnData: CreateClaimBanxTxnData = async (
+  params,
   walletAndConnection,
-}) => {
+) => {
+  const { weeks } = params
+
   const { instructions, signers } = await claimStakingRewards({
     connection: walletAndConnection.connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
@@ -30,6 +35,7 @@ export const createClaimBanxTxnData: CreateClaimBanxTxnData = async ({
   })
 
   return {
+    params,
     instructions,
     signers,
     lookupTables: [],

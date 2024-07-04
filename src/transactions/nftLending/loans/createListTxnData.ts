@@ -7,29 +7,39 @@ import {
   createPerpetualListingStakedBanx,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
-import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
-import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
+import {
+  BondTradeTransactionV3,
+  FraktBond,
+  LendingTokenType,
+} from 'fbonds-core/lib/fbond-protocol/types'
+import {
+  CreateTxnData,
+  SimulatedAccountInfoByPubkey,
+  WalletAndConnection,
+} from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 
-import { fetchRuleset } from '../../functions'
+import { fetchRuleset, parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 import { ListingType } from '../types'
 
-type CreateListTxnDataParams = {
+export type CreateListTxnDataParams = {
   nft: core.BorrowNft
   aprRate: number
   loanValue: number
   freeze: number
   tokenType: LendingTokenType
-  walletAndConnection: WalletAndConnection
 }
 
-type CreateListTxnData = (params: CreateListTxnDataParams) => Promise<CreateTxnData<core.Loan>>
+type CreateListTxnData = (
+  params: CreateListTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateListTxnDataParams>>
 
-export const createListTxnData: CreateListTxnData = async (params) => {
-  const { nft, walletAndConnection } = params
+export const createListTxnData: CreateListTxnData = async (params, walletAndConnection) => {
+  const { nft } = params
 
   const listingType = getNftListingType(nft)
 
@@ -39,17 +49,16 @@ export const createListTxnData: CreateListTxnData = async (params) => {
     walletAndConnection,
   })
 
-  const optimisticLoan = {
-    publicKey: optimisticResults.fraktBond.publicKey,
-    fraktBond: optimisticResults.fraktBond,
-    bondTradeTransaction: optimisticResults.bondTradeTransaction,
-    nft: nft.nft,
-  }
+  const accounts = [
+    new web3.PublicKey(optimisticResults.fraktBond.publicKey),
+    new web3.PublicKey(optimisticResults.bondTradeTransaction.publicKey),
+  ]
 
   return {
+    params,
+    accounts,
     instructions,
     signers,
-    result: optimisticLoan,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }
@@ -180,4 +189,15 @@ export const getNftListingType = (nft: core.BorrowNft) => {
   if (nft.nft.compression) return ListingType.CNft
 
   return ListingType.Default
+}
+
+export const parseListNftSimulatedAccounts = (
+  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
+) => {
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey)
+
+  return {
+    bondTradeTransaction: results?.['bondTradeTransactionV3'] as BondTradeTransactionV3,
+    fraktBond: results?.['fraktBond'] as FraktBond,
+  }
 }

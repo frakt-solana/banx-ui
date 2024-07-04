@@ -5,46 +5,45 @@ import {
   claimPerpetualBondOfferRepayments,
   claimPerpetualBondOfferStakingRewards, // claimPerpetualBondOfferStakingRewards,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
-import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
+import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import {
+  CreateTxnData,
+  SimulatedAccountInfoByPubkey,
+  WalletAndConnection,
+} from 'solana-transactions-executor'
 
 import { ClusterStats } from '@banx/api/common'
-import { Offer, core } from '@banx/api/nft'
+import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
 import { ZERO_BN, isBanxSolTokenType } from '@banx/utils'
 
+import { parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
-type CreateClaimLenderVaultTxnData = (params: {
+export type CreateClaimLenderVaultTxnDataParams = {
   offer: core.Offer
   tokenType: LendingTokenType
   clusterStats: ClusterStats | undefined
-  walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<Offer>>
+}
 
-export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = async ({
-  offer,
-  tokenType,
-  clusterStats,
+type CreateClaimLenderVaultTxnData = (
+  params: CreateClaimLenderVaultTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateClaimLenderVaultTxnDataParams>>
+
+export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = async (
+  params,
   walletAndConnection,
-}) => {
+) => {
+  const { offer, tokenType, clusterStats } = params
+
   const instructions: web3.TransactionInstruction[] = []
   const signers: web3.Signer[] = []
 
   const accountsParams = {
     bondOffer: new web3.PublicKey(offer.publicKey),
     userPubkey: walletAndConnection.wallet.publicKey,
-  }
-
-  const optimiticResult = {
-    ...offer,
-    concentrationIndex: 0,
-    bidCap: 0,
-    rewardsToHarvest: 0,
-    lastCalculatedSlot: 0, //? current epoch * slotsInEpoch
-    fundsSolOrTokenBalance: 0,
-    bidSettlement: 0,
   }
 
   if (offer.concentrationIndex) {
@@ -108,22 +107,36 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
     signers.push(...claimYieldSigners)
   }
 
+  const accounts = [new web3.PublicKey(offer.publicKey)]
+
   if (isBanxSolTokenType(tokenType) && (offer.bidCap || offer.concentrationIndex)) {
     const inputAmount = new BN(offer.concentrationIndex).add(new BN(offer.bidCap))
 
-    return await banxSol.combineWithSellBanxSolInstructions({
-      inputAmount,
+    return await banxSol.combineWithSellBanxSolInstructions(
+      {
+        params,
+        accounts,
+        inputAmount,
+        instructions,
+        signers,
+      },
       walletAndConnection,
-      instructions,
-      signers,
-      result: optimiticResult,
-    })
+    )
   }
 
   return {
+    params,
+    accounts,
     instructions,
     signers,
-    result: optimiticResult,
     lookupTables: [],
   }
+}
+
+export const parseClaimLenderVaultSimulatedAccounts = (
+  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
+) => {
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey)
+
+  return results?.['bondOfferV3'] as BondOfferV3
 }
