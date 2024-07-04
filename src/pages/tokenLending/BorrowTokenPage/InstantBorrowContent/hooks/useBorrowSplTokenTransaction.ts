@@ -120,7 +120,7 @@ export const useBorrowSplTokenTransaction = (
             loanValue,
             collateral: token,
             offer,
-            optimizeIntoReserves: true, //TODO (TokenLending): Ask about optimizeIntoReserves
+            optimizeIntoReserves: true,
             aprRate: MOCK_APR_RATE, //TODO (TokenLending): Need to calc in the future
             tokenType,
             walletAndConnection,
