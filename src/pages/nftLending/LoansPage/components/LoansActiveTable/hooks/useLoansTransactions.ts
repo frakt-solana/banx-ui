@@ -1,5 +1,6 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { every, uniqueId } from 'lodash'
+import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
@@ -81,9 +82,11 @@ export const useLoansTransactions = () => {
               const { bondTradeTransaction, fraktBond } =
                 parseRepayLoanSimulatedAccounts(accountInfoByPubkey)
 
+              //TODO Move optimistics creation into a separate function
               const optimisticLoan: core.Loan = {
                 publicKey: fraktBond.publicKey,
-                fraktBond: fraktBond,
+                //? Needs to prevent BE data overlap in optimistics logic
+                fraktBond: { ...fraktBond, lastTransactedAt: moment().unix() },
                 bondTradeTransaction: bondTradeTransaction,
                 nft: params.loan.nft,
               }
@@ -121,10 +124,9 @@ export const useLoansTransactions = () => {
         walletAndConnection,
       )
 
-      await new TxnExecutor<CreateRepayPartialLoanTxnDataParams>(
-        walletAndConnection,
-        TXN_EXECUTOR_DEFAULT_OPTIONS,
-      )
+      await new TxnExecutor<CreateRepayPartialLoanTxnDataParams>(walletAndConnection, {
+        ...TXN_EXECUTOR_DEFAULT_OPTIONS,
+      })
         .addTxnData(txnData)
         .on('sentSome', (results) => {
           results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -152,9 +154,11 @@ export const useLoansTransactions = () => {
               const { bondTradeTransaction, fraktBond } =
                 parseRepayPartialLoanSimulatedAccounts(accountInfoByPubkey)
 
+              //TODO Move optimistics creation into a separate function
               const optimisticLoan: core.Loan = {
                 publicKey: fraktBond.publicKey,
-                fraktBond: fraktBond,
+                //? Needs to prevent BE data overlap in optimistics logic
+                fraktBond: { ...fraktBond, lastTransactedAt: moment().unix() },
                 bondTradeTransaction: bondTradeTransaction,
                 nft: params.loan.nft,
               }
@@ -220,9 +224,11 @@ export const useLoansTransactions = () => {
                 const { bondTradeTransaction, fraktBond } =
                   parseRepayLoanSimulatedAccounts(accountInfoByPubkey)
 
+                //TODO Move optimistics creation into a separate function
                 const optimisticLoan: core.Loan = {
                   publicKey: fraktBond.publicKey,
-                  fraktBond: fraktBond,
+                  //? Needs to prevent BE data overlap in optimistics logic
+                  fraktBond: { ...fraktBond, lastTransactedAt: moment().unix() },
                   bondTradeTransaction: bondTradeTransaction,
                   nft: params.loan.nft,
                 }
@@ -305,9 +311,11 @@ export const useLoansTransactions = () => {
                 const { bondTradeTransaction, fraktBond } =
                   parseRepayPartialLoanSimulatedAccounts(accountInfoByPubkey)
 
+                //TODO Move optimistics creation into a separate function
                 const optimisticLoan: core.Loan = {
                   publicKey: fraktBond.publicKey,
-                  fraktBond: fraktBond,
+                  //? Needs to prevent BE data overlap in optimistics logic
+                  fraktBond: { ...fraktBond, lastTransactedAt: moment().unix() },
                   bondTradeTransaction: bondTradeTransaction,
                   nft: params.loan.nft,
                 }
