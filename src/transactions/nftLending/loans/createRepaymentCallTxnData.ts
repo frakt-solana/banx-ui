@@ -1,24 +1,33 @@
 import { web3 } from 'fbonds-core'
 import { setRepaymentCall } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import moment from 'moment'
-import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
+import { BondTradeTransactionV3 } from 'fbonds-core/lib/fbond-protocol/types'
+import {
+  CreateTxnData,
+  SimulatedAccountInfoByPubkey,
+  WalletAndConnection,
+} from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 
+import { parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
-type CreateRepaymentCallTxnData = (params: {
+export type CreateRepaymentCallTxnDataParams = {
   loan: core.Loan
   callAmount: number
-  walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<core.Loan>>
+}
 
-export const createRepaymentCallTxnData: CreateRepaymentCallTxnData = async ({
-  loan,
-  callAmount,
+type CreateRepaymentCallTxnData = (
+  params: CreateRepaymentCallTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateRepaymentCallTxnDataParams>>
+
+export const createRepaymentCallTxnData: CreateRepaymentCallTxnData = async (
+  params,
   walletAndConnection,
-}) => {
+) => {
+  const { loan, callAmount } = params
   const { wallet, connection } = walletAndConnection
   const { bondTradeTransaction, fraktBond } = loan
 
@@ -28,7 +37,6 @@ export const createRepaymentCallTxnData: CreateRepaymentCallTxnData = async ({
     optimistic: optimisticResult,
   } = await setRepaymentCall({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-
     args: {
       callAmount,
     },
@@ -44,19 +52,21 @@ export const createRepaymentCallTxnData: CreateRepaymentCallTxnData = async ({
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const optimisticLoan = {
-    ...loan,
-    fraktBond: {
-      ...loan.fraktBond,
-      lastTransactedAt: moment().unix(), //? Needs to prevent BE data overlap in optimistics logic
-    },
-    bondTradeTransaction: optimisticResult.bondTradeTransaction,
-  }
+  const accounts = [new web3.PublicKey(optimisticResult.bondTradeTransaction.publicKey)]
 
   return {
+    params,
+    accounts,
     instructions,
     signers,
-    result: optimisticLoan,
     lookupTables: [],
   }
+}
+
+export const parseRepaymentCallSimulatedAccounts = (
+  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
+) => {
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey)
+
+  return results?.['bondTradeTransactionV3'] as BondTradeTransactionV3
 }

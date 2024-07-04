@@ -8,15 +8,21 @@ import { BONDS } from '@banx/constants'
 
 import { sendTxnPlaceHolder } from '../helpers'
 
-type CreateStakeBanxTokenTxnData = (params: {
+type CreateStakeBanxTokenTxnDataParams = {
   tokensToStake: BN
-  walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<undefined>>
+}
 
-export const createStakeBanxTokenTxnData: CreateStakeBanxTokenTxnData = async ({
-  tokensToStake,
+type CreateStakeBanxTokenTxnData = (
+  params: CreateStakeBanxTokenTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateStakeBanxTokenTxnDataParams>>
+
+export const createStakeBanxTokenTxnData: CreateStakeBanxTokenTxnData = async (
+  params,
   walletAndConnection,
-}) => {
+) => {
+  const { tokensToStake } = params
+
   const { instructions, signers } = await stakeBanxToken({
     connection: walletAndConnection.connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
@@ -31,6 +37,7 @@ export const createStakeBanxTokenTxnData: CreateStakeBanxTokenTxnData = async ({
   })
 
   return {
+    params,
     instructions,
     signers,
     lookupTables: [],

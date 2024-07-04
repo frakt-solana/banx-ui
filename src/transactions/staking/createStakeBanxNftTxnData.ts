@@ -6,15 +6,20 @@ import { BANX_STAKING, BONDS } from '@banx/constants'
 
 import { sendTxnPlaceHolder } from '../helpers'
 
-type CreateStakeBanxNftTxnData = (params: {
+type CreateStakeBanxNftTxnDataParams = {
   nftMint: string
-  walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<undefined>>
+}
+type CreateStakeBanxNftTxnData = (
+  params: CreateStakeBanxNftTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateStakeBanxNftTxnDataParams>>
 
-export const createStakeBanxNftTxnData: CreateStakeBanxNftTxnData = async ({
-  nftMint,
+export const createStakeBanxNftTxnData: CreateStakeBanxNftTxnData = async (
+  params,
   walletAndConnection,
-}) => {
+) => {
+  const { nftMint } = params
+
   const { instructions, signers } = await stakeBanxNft({
     connection: walletAndConnection.connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
@@ -28,6 +33,7 @@ export const createStakeBanxNftTxnData: CreateStakeBanxNftTxnData = async ({
   })
 
   return {
+    params,
     instructions,
     signers: signers,
     lookupTables: [],

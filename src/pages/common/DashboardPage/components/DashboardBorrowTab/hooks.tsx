@@ -13,7 +13,7 @@ import {
 } from '@banx/components/modals'
 
 import { core } from '@banx/api/nft'
-import { executeBorrow } from '@banx/pages/nftLending/BorrowPage/InstantLoansContent/components/BorrowTable/helpers'
+import { executeBorrow } from '@banx/pages/nftLending/BorrowPage/InstantLoansContent/components/BorrowTable'
 import { useBorrowNfts } from '@banx/pages/nftLending/BorrowPage/hooks'
 import { useMarketsPreview } from '@banx/pages/nftLending/LendPage/hooks'
 import { getDialectAccessToken } from '@banx/providers'

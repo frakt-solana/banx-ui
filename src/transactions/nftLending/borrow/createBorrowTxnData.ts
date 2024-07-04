@@ -5,8 +5,17 @@ import {
   borrowPerpetual,
   borrowStakedBanxPerpetual,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
-import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
+import {
+  BondOfferV3,
+  BondTradeTransactionV3,
+  FraktBond,
+  LendingTokenType,
+} from 'fbonds-core/lib/fbond-protocol/types'
+import {
+  CreateTxnData,
+  SimulatedAccountInfoByPubkey,
+  WalletAndConnection,
+} from 'solana-transactions-executor'
 
 import { helius } from '@banx/api/common'
 import { core } from '@banx/api/nft'
@@ -14,11 +23,9 @@ import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
 import { calculateApr, isBanxSolTokenType } from '@banx/utils'
 
-import { fetchRuleset } from '../../functions'
+import { fetchRuleset, parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 import { BorrowType } from '../types'
-
-export type BorrowTxnOptimisticResult = { loan: core.Loan; offer: core.Offer }
 
 export type CreateBorrowTxnDataParams = {
   nft: core.BorrowNft
@@ -29,17 +36,13 @@ export type CreateBorrowTxnDataParams = {
 }
 
 export type CreateBorrowTxnData = (
-  params: CreateBorrowTxnDataParams & { walletAndConnection: WalletAndConnection },
-) => Promise<CreateTxnData<BorrowTxnOptimisticResult>>
+  params: CreateBorrowTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateBorrowTxnDataParams>>
 
-export const createBorrowTxnData: CreateBorrowTxnData = async ({
-  nft,
-  loanValue,
-  offer,
-  optimizeIntoReserves,
-  tokenType,
-  walletAndConnection,
-}) => {
+export const createBorrowTxnData: CreateBorrowTxnData = async (params, walletAndConnection) => {
+  const { nft, loanValue, offer, optimizeIntoReserves, tokenType } = params
+
   const borrowType = getNftBorrowType(nft)
 
   const { instructions, signers, lookupTables, optimisticResult } = await getTxnDataByBorrowType({
@@ -52,32 +55,34 @@ export const createBorrowTxnData: CreateBorrowTxnData = async ({
     walletAndConnection,
   })
 
-  const loanAndOffer = {
-    loan: {
-      publicKey: optimisticResult.fraktBond.publicKey,
-      fraktBond: optimisticResult.fraktBond,
-      bondTradeTransaction: optimisticResult.bondTradeTransaction,
-      nft: nft.nft,
-    },
-    offer: optimisticResult.bondOffer,
-  }
+  const { fraktBond, bondTradeTransaction, bondOffer } = optimisticResult
+
+  const accounts = [
+    new web3.PublicKey(fraktBond.publicKey),
+    new web3.PublicKey(bondTradeTransaction.publicKey),
+    new web3.PublicKey(bondOffer.publicKey),
+  ]
 
   if (isBanxSolTokenType(tokenType)) {
-    return await banxSol.combineWithSellBanxSolInstructions({
-      //? 0.99 --> without upfront fee
-      inputAmount: new BN(loanValue).mul(new BN(99)).div(new BN(100)),
+    return await banxSol.combineWithSellBanxSolInstructions(
+      {
+        params,
+        accounts,
+        //? 0.99 --> without upfront fee
+        inputAmount: new BN(loanValue).mul(new BN(99)).div(new BN(100)),
+        instructions,
+        signers,
+        lookupTables,
+      },
       walletAndConnection,
-      instructions,
-      signers,
-      lookupTables,
-      result: loanAndOffer,
-    })
+    )
   }
 
   return {
+    params,
     instructions,
     signers,
-    result: loanAndOffer,
+    accounts,
     lookupTables,
   }
 }
@@ -240,4 +245,14 @@ const getNftBorrowType = (nft: core.BorrowNft): BorrowType => {
     return BorrowType.StakedBanx
   if (nft.nft.compression) return BorrowType.CNft
   return BorrowType.Default
+}
+
+export const parseBorrowSimulatedAccounts = (accountInfoByPubkey: SimulatedAccountInfoByPubkey) => {
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey)
+
+  return {
+    bondOffer: results?.['bondOfferV3'] as BondOfferV3,
+    bondTradeTransaction: results?.['bondTradeTransactionV3'] as BondTradeTransactionV3,
+    fraktBond: results?.['fraktBond'] as FraktBond,
+  }
 }
