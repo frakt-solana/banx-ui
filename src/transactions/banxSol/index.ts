@@ -83,16 +83,16 @@ export const getCloseBanxSolATAsInstructions: GetCloseBanxSolATAsInstructions = 
   return { instructions, lookupTable: new web3.PublicKey(LOOKUP_TABLE) }
 }
 
-type CombineWithBanxSolInstructionsParams<TxnResult> = {
+type CombineWithBanxSolInstructionsParams<Params> = {
   inputAmount: BN
-  walletAndConnection: WalletAndConnection
-} & CreateTxnData<TxnResult>
+} & CreateTxnData<Params>
 
-export const combineWithBuyBanxSolInstructions = async <TxnResult>({
-  inputAmount,
-  walletAndConnection,
-  ...txnData
-}: CombineWithBanxSolInstructionsParams<TxnResult>): Promise<CreateTxnData<TxnResult>> => {
+export const combineWithBuyBanxSolInstructions = async <Params>(
+  params: CombineWithBanxSolInstructionsParams<Params>,
+  walletAndConnection: WalletAndConnection,
+): Promise<CreateTxnData<Params>> => {
+  const { inputAmount, ...txnData } = params
+
   const { instructions: swapInstructions, lookupTable: swapLookupTable } =
     await getSwapSolToBanxSolInstructions({
       inputAmount,
@@ -105,9 +105,10 @@ export const combineWithBuyBanxSolInstructions = async <TxnResult>({
   //   })
 
   return {
+    params: txnData.params,
+    accounts: txnData.accounts,
     instructions: [...swapInstructions, ...txnData.instructions /* ...closeInstructions */],
     signers: txnData.signers,
-    result: txnData.result,
     lookupTables: removeDuplicatedPublicKeys([
       swapLookupTable,
       ...(txnData.lookupTables ?? []),
@@ -116,11 +117,13 @@ export const combineWithBuyBanxSolInstructions = async <TxnResult>({
   }
 }
 
-export const combineWithSellBanxSolInstructions = <TxnResult>({
-  inputAmount,
-  walletAndConnection,
-  ...txnData
-}: CombineWithBanxSolInstructionsParams<TxnResult>): CreateTxnData<TxnResult> => {
+export const combineWithSellBanxSolInstructions = <Params>(
+  params: CombineWithBanxSolInstructionsParams<Params>,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  walletAndConnection: WalletAndConnection,
+): CreateTxnData<Params> => {
+  const { inputAmount, ...txnData } = params
+
   // const { instructions: swapInstructions, lookupTable: swapLookupTable } =
   //   await getSwapBanxSolToSolInstructions({
   //     inputAmount,
@@ -133,9 +136,10 @@ export const combineWithSellBanxSolInstructions = <TxnResult>({
   //   })
 
   return {
+    params: txnData.params,
+    accounts: txnData.accounts,
     instructions: [...txnData.instructions /* ...swapInstructions, ...closeInstructions */],
     signers: txnData.signers,
-    result: txnData.result,
     lookupTables: removeDuplicatedPublicKeys([
       ...(txnData.lookupTables ?? []),
       // swapLookupTable,

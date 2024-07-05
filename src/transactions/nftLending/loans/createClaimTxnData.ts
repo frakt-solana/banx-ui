@@ -5,23 +5,35 @@ import {
   claimCnftPerpetualLoanCanopy,
   claimPerpetualLoanv2,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
+import { BondTradeTransactionV3, FraktBond } from 'fbonds-core/lib/fbond-protocol/types'
+import {
+  CreateTxnData,
+  SimulatedAccountInfoByPubkey,
+  WalletAndConnection,
+} from 'solana-transactions-executor'
 
 import { helius } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 
-import { fetchRuleset } from '../../functions'
+import { fetchRuleset, parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
-type CreateClaimTxnData = (params: {
+export type CreateClaimTxnDataParams = {
   loan: core.Loan
-  walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<core.Loan>>
+}
 
-export const createClaimTxnData: CreateClaimTxnData = async ({ loan, walletAndConnection }) => {
+type CreateClaimTxnData = (
+  params: CreateClaimTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateClaimTxnDataParams>>
+
+export const createClaimTxnData: CreateClaimTxnData = async (params, walletAndConnection) => {
+  const { loan } = params
   const { wallet, connection } = walletAndConnection
   const { bondTradeTransaction, fraktBond } = loan
+
+  const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
 
   if (loan.nft.compression) {
     const { instructions, signers, optimisticResult } = await claimCnftPerpetualLoanCanopy({
@@ -45,17 +57,17 @@ export const createClaimTxnData: CreateClaimTxnData = async ({ loan, walletAndCo
       sendTxn: sendTxnPlaceHolder,
     })
 
-    const optimisticLoan = {
-      ...loan,
-      fraktBond: optimisticResult.fraktBond,
-      bondTradeTransaction: optimisticResult.bondTradeTransaction,
-    }
+    const accounts = [
+      new web3.PublicKey(optimisticResult.fraktBond.publicKey),
+      new web3.PublicKey(optimisticResult.bondTradeTransaction.publicKey),
+    ]
 
     return {
+      params,
+      accounts,
       instructions,
       signers,
-      result: optimisticLoan,
-      lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+      lookupTables,
     }
   } else {
     const { instructions, signers, optimisticResult } = await claimPerpetualLoanv2({
@@ -87,17 +99,28 @@ export const createClaimTxnData: CreateClaimTxnData = async ({ loan, walletAndCo
       sendTxn: sendTxnPlaceHolder,
     })
 
-    const optimisticLoan = {
-      ...loan,
-      fraktBond: optimisticResult.fraktBond,
-      bondTradeTransaction: optimisticResult.bondTradeTransaction,
-    }
+    const accounts = [
+      new web3.PublicKey(optimisticResult.fraktBond.publicKey),
+      new web3.PublicKey(optimisticResult.bondTradeTransaction.publicKey),
+    ]
 
     return {
+      params,
+      accounts,
       instructions,
       signers,
-      result: optimisticLoan,
-      lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+      lookupTables,
     }
+  }
+}
+
+export const parseClaimNftSimulatedAccounts = (
+  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
+) => {
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey)
+
+  return {
+    bondTradeTransaction: results?.['bondTradeTransactionV3'] as BondTradeTransactionV3,
+    fraktBond: results?.['fraktBond'] as FraktBond,
   }
 }

@@ -122,7 +122,7 @@ export const useAdventuresSidebar = ({
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const txnsData = await Promise.all(
-        chunkWeeks.map((weeks) => createClaimBanxTxnData({ weeks, walletAndConnection })),
+        chunkWeeks.map((weeks) => createClaimBanxTxnData({ weeks }, walletAndConnection)),
       )
 
       await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)

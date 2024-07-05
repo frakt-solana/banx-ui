@@ -18,7 +18,10 @@ import {
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
-import { createLendToBorrowTxnData } from '@banx/transactions/nftLending'
+import {
+  CreateLendToBorrowTxnDataParams,
+  createLendToBorrowTxnData,
+} from '@banx/transactions/nftLending'
 import {
   calculateLenderApr,
   destroySnackbar,
@@ -70,14 +73,12 @@ export const useInstantTransactions = () => {
 
       const aprRate = calculateLenderApr(loan)
 
-      const txnData = await createLendToBorrowTxnData({
-        loan,
+      const txnData = await createLendToBorrowTxnData(
+        { loan, aprRate, tokenType },
         walletAndConnection,
-        aprRate,
-        tokenType,
-      })
+      )
 
-      await new TxnExecutor<{ loan: core.Loan; oldLoan: core.Loan }>(
+      await new TxnExecutor<CreateLendToBorrowTxnDataParams>(
         walletAndConnection,
         TXN_EXECUTOR_DEFAULT_OPTIONS,
       )
@@ -98,24 +99,22 @@ export const useInstantTransactions = () => {
           }
 
           if (confirmed.length) {
-            return confirmed.forEach(({ result, signature }) => {
-              if (result) {
-                const isOldLoanListed = isLoanListed(result.oldLoan)
+            return confirmed.forEach(({ params, signature }) => {
+              const isOldLoanListed = isLoanListed(params.loan)
 
-                const message = isOldLoanListed
-                  ? 'Loan successfully funded'
-                  : 'Loan successfully refinanced'
+              const message = isOldLoanListed
+                ? 'Loan successfully funded'
+                : 'Loan successfully refinanced'
 
-                enqueueSnackbar({
-                  message,
-                  type: 'success',
-                  solanaExplorerPath: `tx/${signature}`,
-                })
+              enqueueSnackbar({
+                message,
+                type: 'success',
+                solanaExplorerPath: `tx/${signature}`,
+              })
 
-                addMints([loan.nft.mint])
-                removeSelection(loan.publicKey)
-                onSuccess(1)
-              }
+              addMints([loan.nft.mint])
+              removeSelection(loan.publicKey)
+              onSuccess(1)
             })
           }
         })
@@ -141,16 +140,14 @@ export const useInstantTransactions = () => {
 
       const txnsData = await Promise.all(
         selection.map((loan) =>
-          createLendToBorrowTxnData({
-            loan,
+          createLendToBorrowTxnData(
+            { loan, aprRate: calculateLenderApr(loan), tokenType },
             walletAndConnection,
-            aprRate: calculateLenderApr(loan),
-            tokenType,
-          }),
+          ),
         ),
       )
 
-      await new TxnExecutor<{ loan: core.Loan; oldLoan: core.Loan }>(walletAndConnection, {
+      await new TxnExecutor<CreateLendToBorrowTxnDataParams>(walletAndConnection, {
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
         chunkSize: isLedger ? 5 : 40,
       })
@@ -168,7 +165,7 @@ export const useInstantTransactions = () => {
             enqueueSnackbar({ message: 'Loans successfully funded', type: 'success' })
 
             const mintsToHidden = chain(confirmed)
-              .map(({ result }) => result?.loan.nft.mint)
+              .map(({ params }) => params.loan.nft.mint)
               .compact()
               .value()
 

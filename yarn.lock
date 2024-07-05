@@ -8587,6 +8587,11 @@ js-base64@^3.7.2:
   resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-3.7.5.tgz#21e24cf6b886f76d6f5f165bfcd69cc55b9e3fca"
   integrity sha512-3MEt5DTINKqfScXKfJFrRbxkrnk2AxPWGBL/ycjz4dK8iqiSJ06UxD8jh8xuh6p10TX4t2+7FsBYVxxQbMg+qA==
 
+js-sha256@^0.11.0:
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/js-sha256/-/js-sha256-0.11.0.tgz#256a921d9292f7fe98905face82e367abaca9576"
+  integrity sha512-6xNlKayMZvds9h1Y1VWc0fQHQ82BxTXizWPEtEeGvmOUYpBRy4gbWroHLpzowe6xiQhHpelCQiE7HEdznyBL9Q==
+
 js-sha256@^0.9.0:
   version "0.9.0"
   resolved "https://registry.yarnpkg.com/js-sha256/-/js-sha256-0.9.0.tgz#0b89ac166583e91ef9123644bd3c5334ce9d0966"
@@ -11839,14 +11844,24 @@ socks@^2.6.2:
     ip "^2.0.0"
     smart-buffer "^4.2.0"
 
-solana-transactions-executor@4.4.0:
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/solana-transactions-executor/-/solana-transactions-executor-4.4.0.tgz#c6e7eed4d249e4b38e9c4648c4e1b749028adfc1"
-  integrity sha512-sXW3CgDywEpy9X2KeW3T9ka+MHL30sn4m0s/4YHtyEb/gr8wnuITj+Br2dFaDwjuoIdtxkY0JPNNc40SPFCkpw==
+solana-transactions-executor@5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/solana-transactions-executor/-/solana-transactions-executor-5.1.0.tgz#abdea575aac66cc338f281f01585346eda1f2c41"
+  integrity sha512-swOScmSQfaS56KEpwyirSk4aAwkH2Nk9DL8sdNiEmYkdxDuviH0W4nQobQ5wVVmHX81iK9HaVbFxzVoj/EPtGQ==
   dependencies:
     "@solana/web3.js" "1.91.1"
     axios "^1.6.8"
     bs58 "^5.0.0"
+    lodash "^4.17.21"
+
+solana-transactions-parser@1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/solana-transactions-parser/-/solana-transactions-parser-1.1.1.tgz#d947cd4cb43108f03e3a4ddd8348dc1406e264e5"
+  integrity sha512-4z3JBjhAD0vFaWyFr85J1KUC28wEOpCblLPHlPInk9zdEAYgxJuQEuM5X6Io7yI4IbCXqMImsrBx0HZijuiZYg==
+  dependencies:
+    "@project-serum/anchor" "^0.26.0"
+    bs58 "^5.0.0"
+    js-sha256 "^0.11.0"
     lodash "^4.17.21"
 
 sonic-boom@^2.2.1:

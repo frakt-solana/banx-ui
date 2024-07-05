@@ -1,7 +1,7 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { BondOfferOptimistic } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondFeatures } from 'fbonds-core/lib/fbond-protocol/types'
 import { uniqueId } from 'lodash'
+import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
@@ -12,9 +12,15 @@ import {
   defaultTxnErrorHandler,
 } from '@banx/transactions'
 import {
+  CreateMakeBondingOfferTxnDataParams,
+  CreateRemoveOfferTxnDataParams,
+  CreateUpdateBondingOfferTxnDataParams,
   createMakeBondingOfferTxnData,
   createRemoveOfferTxnData,
   createUpdateBondingOfferTxnData,
+  parseMakeOfferSimulatedAccounts,
+  parseRemoveOfferSimulatedAccounts,
+  parseUpdateOfferSimulatedAccounts,
 } from '@banx/transactions/nftLending'
 import {
   destroySnackbar,
@@ -49,18 +55,23 @@ export const useTokenOfferTransactions = ({
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const txnData = await createMakeBondingOfferTxnData({
-        marketPubkey,
-        loansAmount: 1,
-        loanValue,
-        deltaValue: 0,
-        collateralsPerToken,
-        bondFeature: BondFeatures.AutoReceiveAndReceiveSpl,
-        tokenType,
+      const txnData = await createMakeBondingOfferTxnData(
+        {
+          marketPubkey,
+          loansAmount: 1,
+          loanValue,
+          deltaValue: 0,
+          collateralsPerToken,
+          bondFeature: BondFeatures.AutoReceiveAndReceiveSpl,
+          tokenType,
+        },
         walletAndConnection,
-      })
+      )
 
-      await new TxnExecutor<BondOfferOptimistic>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor<CreateMakeBondingOfferTxnDataParams>(
+        walletAndConnection,
+        TXN_EXECUTOR_DEFAULT_OPTIONS,
+      )
         .addTxnData(txnData)
         .on('sentSome', (results) => {
           results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -77,15 +88,16 @@ export const useTokenOfferTransactions = ({
             )
           }
 
-          return confirmed.forEach(({ result, signature }) => {
-            if (result) {
-              enqueueSnackbar({
-                message: 'Offer successfully placed',
-                type: 'success',
-                solanaExplorerPath: `tx/${signature}`,
-              })
+          return confirmed.forEach(({ accountInfoByPubkey, signature }) => {
+            enqueueSnackbar({
+              message: 'Offer successfully placed',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
 
-              updateOrAddOffer(result.bondOffer)
+            if (accountInfoByPubkey) {
+              const offer = parseMakeOfferSimulatedAccounts(accountInfoByPubkey)
+              updateOrAddOffer(offer)
               resetFormValues()
             }
           })
@@ -116,17 +128,22 @@ export const useTokenOfferTransactions = ({
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const txnData = await createUpdateBondingOfferTxnData({
-        loanValue,
-        offer: optimisticOffer,
-        loansAmount: 1,
-        deltaValue: 0,
-        tokenType,
-        collateralsPerToken,
+      const txnData = await createUpdateBondingOfferTxnData(
+        {
+          loanValue,
+          offer: optimisticOffer,
+          loansAmount: 1,
+          deltaValue: 0,
+          tokenType,
+          collateralsPerToken,
+        },
         walletAndConnection,
-      })
+      )
 
-      await new TxnExecutor<BondOfferOptimistic>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor<CreateUpdateBondingOfferTxnDataParams>(
+        walletAndConnection,
+        TXN_EXECUTOR_DEFAULT_OPTIONS,
+      )
         .addTxnData(txnData)
         .on('sentSome', (results) => {
           results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -143,15 +160,18 @@ export const useTokenOfferTransactions = ({
             )
           }
 
-          return confirmed.forEach(({ result, signature }) => {
-            if (result) {
-              enqueueSnackbar({
-                message: 'Changes successfully applied',
-                type: 'success',
-                solanaExplorerPath: `tx/${signature}`,
-              })
-
-              updateOrAddOffer(result.bondOffer)
+          return confirmed.forEach(({ accountInfoByPubkey, signature }) => {
+            enqueueSnackbar({
+              message: 'Changes successfully applied',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
+            if (accountInfoByPubkey) {
+              if (accountInfoByPubkey) {
+                const offer = parseUpdateOfferSimulatedAccounts(accountInfoByPubkey)
+                //? Needs to prevent BE data overlap in optimistics logic
+                updateOrAddOffer({ ...offer, lastTransactedAt: moment().unix() })
+              }
             }
           })
         })
@@ -181,13 +201,15 @@ export const useTokenOfferTransactions = ({
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const txnData = await createRemoveOfferTxnData({
-        offer: optimisticOffer,
-        tokenType,
+      const txnData = await createRemoveOfferTxnData(
+        { offer: optimisticOffer, tokenType },
         walletAndConnection,
-      })
+      )
 
-      await new TxnExecutor<BondOfferOptimistic>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor<CreateRemoveOfferTxnDataParams>(
+        walletAndConnection,
+        TXN_EXECUTOR_DEFAULT_OPTIONS,
+      )
         .addTxnData(txnData)
         .on('sentSome', (results) => {
           results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -204,15 +226,17 @@ export const useTokenOfferTransactions = ({
             )
           }
 
-          return confirmed.forEach(({ result, signature }) => {
-            if (result) {
-              enqueueSnackbar({
-                message: 'Offer successfully removed',
-                type: 'success',
-                solanaExplorerPath: `tx/${signature}`,
-              })
+          return confirmed.forEach(({ accountInfoByPubkey, signature }) => {
+            enqueueSnackbar({
+              message: 'Offer successfully removed',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
 
-              updateOrAddOffer(result.bondOffer)
+            if (accountInfoByPubkey) {
+              const offer = parseRemoveOfferSimulatedAccounts(accountInfoByPubkey)
+              //? Needs to prevent BE data overlap in optimistics logic
+              updateOrAddOffer({ ...offer, lastTransactedAt: moment().unix() })
             }
           })
         })

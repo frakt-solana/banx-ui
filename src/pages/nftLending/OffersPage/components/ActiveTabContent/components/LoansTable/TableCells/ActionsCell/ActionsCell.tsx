@@ -16,7 +16,7 @@ import {
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
-import { createClaimTxnData } from '@banx/transactions/nftLending'
+import { CreateClaimTxnDataParams, createClaimTxnData } from '@banx/transactions/nftLending'
 import {
   destroySnackbar,
   enqueueConfirmationError,
@@ -49,12 +49,12 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const txnData = await createClaimTxnData({
-        loan,
-        walletAndConnection,
-      })
+      const txnData = await createClaimTxnData({ loan }, walletAndConnection)
 
-      await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor<CreateClaimTxnDataParams>(
+        walletAndConnection,
+        TXN_EXECUTOR_DEFAULT_OPTIONS,
+      )
         .addTxnData(txnData)
         .on('sentSome', (results) => {
           results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -71,16 +71,14 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
             )
           }
 
-          return confirmed.forEach(({ result, signature }) => {
-            if (result) {
-              enqueueSnackbar({
-                message: 'Collateral successfully claimed',
-                type: 'success',
-                solanaExplorerPath: `tx/${signature}`,
-              })
+          return confirmed.forEach(({ params, signature }) => {
+            enqueueSnackbar({
+              message: 'Collateral successfully claimed',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
 
-              hideLoans(loan.nft.mint)
-            }
+            hideLoans(params.loan.nft.mint)
           })
         })
         .on('error', (error) => {

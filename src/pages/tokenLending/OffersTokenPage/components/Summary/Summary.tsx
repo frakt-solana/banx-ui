@@ -22,7 +22,11 @@ import {
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
-import { createClaimLenderVaultTxnData } from '@banx/transactions/nftLending'
+import {
+  CreateClaimLenderVaultTxnDataParams,
+  createClaimLenderVaultTxnData,
+  parseClaimLenderVaultSimulatedAccounts,
+} from '@banx/transactions/nftLending'
 import {
   destroySnackbar,
   enqueueConfirmationError,
@@ -59,16 +63,14 @@ const Summary: FC<SummaryProps> = ({ offers, updateOrAddOffer }) => {
 
       const txnsData = await Promise.all(
         offers.map((offer) =>
-          createClaimLenderVaultTxnData({
-            offer,
-            walletAndConnection,
-            tokenType,
-            clusterStats,
-          }),
+          createClaimLenderVaultTxnData({ offer, tokenType, clusterStats }, walletAndConnection),
         ),
       )
 
-      await new TxnExecutor<Offer>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor<CreateClaimLenderVaultTxnDataParams>(
+        walletAndConnection,
+        TXN_EXECUTOR_DEFAULT_OPTIONS,
+      )
         .addTxnsData(txnsData)
         .on('sentAll', () => {
           enqueueTransactionsSent()
@@ -81,7 +83,11 @@ const Summary: FC<SummaryProps> = ({ offers, updateOrAddOffer }) => {
 
           if (confirmed.length) {
             enqueueSnackbar({ message: 'Successfully claimed', type: 'success' })
-            confirmed.forEach(({ result }) => result && updateOrAddOffer([result]))
+            confirmed.forEach(({ accountInfoByPubkey }) => {
+              if (!accountInfoByPubkey) return
+              const offer = parseClaimLenderVaultSimulatedAccounts(accountInfoByPubkey)
+              updateOrAddOffer([offer])
+            })
           }
 
           if (failed.length) {

@@ -94,10 +94,10 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const txnData = await createSubscribeTxnData({
-        weeks: [banxAdventure.week],
+      const txnData = await createSubscribeTxnData(
+        { weeks: [banxAdventure.week] },
         walletAndConnection,
-      })
+      )
 
       await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
         .addTxnData(txnData)
