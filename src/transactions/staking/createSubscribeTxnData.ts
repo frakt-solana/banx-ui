@@ -6,15 +6,21 @@ import { BONDS } from '@banx/constants'
 
 import { sendTxnPlaceHolder } from '../helpers'
 
-type CreateSubscribeTxnData = (params: {
+type CreateSubscribeTxnDataParams = {
   weeks: number[]
-  walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<undefined>>
+}
 
-export const createSubscribeTxnData: CreateSubscribeTxnData = async ({
-  weeks,
+type CreateSubscribeTxnData = (
+  params: CreateSubscribeTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateSubscribeTxnDataParams>>
+
+export const createSubscribeTxnData: CreateSubscribeTxnData = async (
+  params,
   walletAndConnection,
-}) => {
+) => {
+  const { weeks } = params
+
   const { instructions, signers } = await subscribeBanxAdventure({
     connection: walletAndConnection.connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
@@ -28,6 +34,7 @@ export const createSubscribeTxnData: CreateSubscribeTxnData = async ({
   })
 
   return {
+    params,
     instructions,
     signers,
     lookupTables: [],

@@ -6,17 +6,22 @@ import { BONDS } from '@banx/constants'
 
 import { sendTxnPlaceHolder } from '../helpers'
 
-type CreateUnstakeBanxNftTxnData = (params: {
+type CreateUnstakeBanxNftTxnDataParams = {
   nftMint: string
   nftStakePublicKey: string
-  walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<undefined>>
+}
 
-export const createUnstakeBanxNftTxnData: CreateUnstakeBanxNftTxnData = async ({
-  nftMint,
-  nftStakePublicKey,
+type CreateUnstakeBanxNftTxnData = (
+  params: CreateUnstakeBanxNftTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateUnstakeBanxNftTxnDataParams>>
+
+export const createUnstakeBanxNftTxnData: CreateUnstakeBanxNftTxnData = async (
+  params,
   walletAndConnection,
-}) => {
+) => {
+  const { nftMint, nftStakePublicKey } = params
+
   const { instructions, signers } = await unstakeBanxNft({
     connection: walletAndConnection.connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
@@ -29,6 +34,7 @@ export const createUnstakeBanxNftTxnData: CreateUnstakeBanxNftTxnData = async ({
   })
 
   return {
+    params,
     instructions,
     signers: signers,
     lookupTables: [],

@@ -4,7 +4,6 @@ import { reduce } from 'lodash'
 import { core } from '@banx/api/nft'
 
 export const calcWeightedAverage = (nums: number[], weights: number[]) => {
-  //TODO r: Move to somewhere
   const [sum, weightSum] = reduce(
     weights,
     (acc, weight, i) => {

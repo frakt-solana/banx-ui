@@ -14,7 +14,7 @@ import {
 } from '@banx/components/modals'
 
 import { Offer } from '@banx/api/nft'
-import { BorrowSplTokenOffers } from '@banx/api/tokens'
+import { BorrowSplTokenOffers, core } from '@banx/api/tokens'
 import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
 import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
@@ -27,8 +27,9 @@ import {
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
+import { parseBorrowSimulatedAccounts } from '@banx/transactions/nftLending'
 import {
-  BorrowTokenTxnOptimisticResult,
+  CreateBorrowTokenTxnDataParams,
   createBorrowSplTokenTxnData,
 } from '@banx/transactions/tokenLending'
 import {
@@ -116,19 +117,20 @@ export const useBorrowSplTokenTransaction = (
 
       const txnsData = await Promise.all(
         transactionsData.map(({ token, loanValue, offer }) =>
-          createBorrowSplTokenTxnData({
-            loanValue,
-            collateral: token,
-            offer,
-            optimizeIntoReserves: true,
-            aprRate: MOCK_APR_RATE, //TODO (TokenLending): Need to calc in the future
-            tokenType,
+          createBorrowSplTokenTxnData(
+            {
+              loanValue,
+              collateral: token,
+              offer,
+              aprRate: MOCK_APR_RATE, //TODO (TokenLending): Need to calc in the future
+              tokenType,
+            },
             walletAndConnection,
-          }),
+          ),
         ),
       )
 
-      await new TxnExecutor<BorrowTokenTxnOptimisticResult>(walletAndConnection, {
+      await new TxnExecutor<CreateBorrowTokenTxnDataParams>(walletAndConnection, {
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
         chunkSize: isLedger ? 1 : 40,
       })
@@ -145,23 +147,47 @@ export const useBorrowSplTokenTransaction = (
           if (confirmed.length) {
             enqueueSnackbar({ message: 'Borrowed successfully', type: 'success' })
 
-            const loans = chain(confirmed)
-              .map(({ result }) => result?.loan)
-              .compact()
-              .value()
+            const loanAndOfferArray = confirmed.map((txnResult) => {
+              const { accountInfoByPubkey, params } = txnResult
 
+              if (!accountInfoByPubkey) return
+
+              const { bondOffer, bondTradeTransaction, fraktBond } =
+                parseBorrowSimulatedAccounts(accountInfoByPubkey)
+
+              const loanAndOffer: { loan: core.TokenLoan; offer: Offer } = {
+                loan: {
+                  publicKey: fraktBond.publicKey,
+                  fraktBond: fraktBond,
+                  bondTradeTransaction: bondTradeTransaction,
+                  collateral: params.collateral.meta,
+                  collateralPrice: params.collateral.collateralPrice,
+                },
+                offer: bondOffer,
+              }
+
+              return loanAndOffer
+            })
+
+            //? Add optimistic loans
             if (wallet.publicKey) {
-              addLoansOptimistic(loans, wallet.publicKey?.toBase58())
+              addLoansOptimistic(
+                chain(loanAndOfferArray)
+                  .compact()
+                  .map(({ loan }) => loan)
+                  .value(),
+                wallet.publicKey.toBase58(),
+              )
             }
 
-            confirmed.forEach(({ result }) => {
-              if (result) {
-                updateOrAddOffer(result?.offer)
+            loanAndOfferArray.forEach((loanAndOffer) => {
+              if (loanAndOffer) {
+                updateOrAddOffer(loanAndOffer.offer)
               }
             })
 
             goToLoansPage()
-            onBorrowSuccess?.(loans.length)
+            onBorrowSuccess?.(loanAndOfferArray.length)
           }
 
           if (failed.length) {

@@ -9,17 +9,21 @@ import { BONDS } from '@banx/constants'
 
 import { sendTxnPlaceHolder } from '../helpers'
 
-type CreateRepayPartialTokenLoanTxnData = (params: {
+export type CreateRepayPartialTokenLoanTxnDataParams = {
   loan: core.TokenLoan
   fractionToRepay: number //? F.E 50% => 5000
-  walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<core.TokenLoan>>
+}
 
-export const createRepayPartialTokenLoanTxnData: CreateRepayPartialTokenLoanTxnData = async ({
-  fractionToRepay,
-  loan,
+type CreateRepayPartialTokenLoanTxnData = (
+  params: CreateRepayPartialTokenLoanTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateRepayPartialTokenLoanTxnDataParams>>
+
+export const createRepayPartialTokenLoanTxnData: CreateRepayPartialTokenLoanTxnData = async (
+  params,
   walletAndConnection,
-}) => {
+) => {
+  const { fractionToRepay, loan } = params
   const { connection, wallet } = walletAndConnection
 
   const { fraktBond, bondTradeTransaction } = loan
@@ -47,17 +51,16 @@ export const createRepayPartialTokenLoanTxnData: CreateRepayPartialTokenLoanTxnD
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const optimisticResult: core.TokenLoan = optimisticResults.map((optimistic) => ({
-    ...loan,
-    publicKey: optimistic.fraktBond.publicKey,
-    fraktBond: optimistic.fraktBond,
-    bondTradeTransaction: optimistic.bondTradeTransaction,
-  }))[0]
+  const accounts = [
+    new web3.PublicKey(optimisticResults[0].fraktBond.publicKey),
+    new web3.PublicKey(optimisticResults[0].bondTradeTransaction.publicKey),
+  ]
 
   return {
+    params,
+    accounts,
     instructions,
     signers,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
-    result: optimisticResult,
   }
 }
