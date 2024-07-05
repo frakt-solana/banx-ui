@@ -8,15 +8,20 @@ import { BONDS } from '@banx/constants'
 
 import { sendTxnPlaceHolder } from '../helpers'
 
-type CreateClaimTokenTxnData = (params: {
+export type CreateClaimTokenTxnDataParams = {
   loan: core.TokenLoan
-  walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<core.TokenLoan>>
+}
 
-export const createClaimTokenTxnData: CreateClaimTokenTxnData = async ({
-  loan,
+type CreateClaimTokenTxnData = (
+  params: CreateClaimTokenTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateClaimTokenTxnDataParams>>
+
+export const createClaimTokenTxnData: CreateClaimTokenTxnData = async (
+  params,
   walletAndConnection,
-}) => {
+) => {
+  const { loan } = params
   const { wallet, connection } = walletAndConnection
   const { bondTradeTransaction, fraktBond } = loan
 
@@ -38,16 +43,16 @@ export const createClaimTokenTxnData: CreateClaimTokenTxnData = async ({
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const optimisticLoan = {
-    ...loan,
-    fraktBond: optimisticResult.fraktBond,
-    bondTradeTransaction: optimisticResult.bondTradeTransaction,
-  }
+  const accounts = [
+    new web3.PublicKey(optimisticResult.fraktBond.publicKey),
+    new web3.PublicKey(optimisticResult.bondTradeTransaction.publicKey),
+  ]
 
   return {
+    params,
+    accounts,
     instructions,
     signers,
-    result: optimisticLoan,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }

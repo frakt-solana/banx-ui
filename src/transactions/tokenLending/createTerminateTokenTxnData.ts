@@ -9,15 +9,21 @@ import { BONDS } from '@banx/constants'
 
 import { sendTxnPlaceHolder } from '../helpers'
 
-type CreateTerminateTokenTxnData = (params: {
+export type CreateTerminateTokenTxnDataParams = {
   loan: core.TokenLoan
-  walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<core.TokenLoan>>
+}
 
-export const createTerminateTokenTxnData: CreateTerminateTokenTxnData = async ({
-  loan,
+type CreateTerminateTokenTxnData = (
+  params: CreateTerminateTokenTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateTerminateTokenTxnDataParams>>
+
+export const createTerminateTokenTxnData: CreateTerminateTokenTxnData = async (
+  params,
   walletAndConnection,
-}) => {
+) => {
+  const { loan } = params
+
   const { bondTradeTransaction, fraktBond } = loan
 
   const { instructions, signers, optimisticResult } = await terminatePerpetualLoan({
@@ -37,15 +43,17 @@ export const createTerminateTokenTxnData: CreateTerminateTokenTxnData = async ({
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const loanOptimisticResult = {
-    ...loan,
-    ...optimisticResult,
-  }
+  const accounts = [
+    new web3.PublicKey(optimisticResult.bondOffer.publicKey),
+    new web3.PublicKey(optimisticResult.bondTradeTransaction.publicKey),
+    new web3.PublicKey(optimisticResult.fraktBond.publicKey),
+  ]
 
   return {
+    params,
+    accounts,
     instructions,
     signers,
-    result: loanOptimisticResult,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }

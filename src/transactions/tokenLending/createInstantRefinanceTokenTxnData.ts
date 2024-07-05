@@ -10,19 +10,23 @@ import { BONDS } from '@banx/constants'
 
 import { sendTxnPlaceHolder } from '../helpers'
 
-type CreateInstantRefinanceTokenTxnData = (params: {
+export type CreateInstantRefinanceTokenTxnDataParams = {
   loan: core.TokenLoan
   bestOffer: Offer
   aprRate: number
-  walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<Offer>>
+}
 
-export const createInstantRefinanceTokenTxnData: CreateInstantRefinanceTokenTxnData = async ({
-  loan,
-  bestOffer,
-  aprRate,
+type CreateInstantRefinanceTokenTxnData = (
+  params: CreateInstantRefinanceTokenTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateInstantRefinanceTokenTxnDataParams>>
+
+export const createInstantRefinanceTokenTxnData: CreateInstantRefinanceTokenTxnData = async (
+  params,
   walletAndConnection,
-}) => {
+) => {
+  const { loan, bestOffer, aprRate } = params
+
   const { wallet, connection } = walletAndConnection
   const { bondTradeTransaction, fraktBond } = loan
 
@@ -51,10 +55,14 @@ export const createInstantRefinanceTokenTxnData: CreateInstantRefinanceTokenTxnD
     sendTxn: sendTxnPlaceHolder,
   })
 
+  const accounts = [new web3.PublicKey(optimisticResult.bondOffer.publicKey)]
+  const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
+
   return {
+    params,
+    accounts,
     instructions,
     signers,
-    result: optimisticResult.bondOffer,
-    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    lookupTables,
   }
 }

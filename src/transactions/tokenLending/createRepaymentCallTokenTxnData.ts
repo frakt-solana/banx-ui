@@ -1,6 +1,5 @@
 import { web3 } from 'fbonds-core'
 import { setRepaymentCall } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import moment from 'moment'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/tokens'
@@ -8,17 +7,21 @@ import { BONDS } from '@banx/constants'
 
 import { sendTxnPlaceHolder } from '../helpers'
 
-type CreateRepaymentCallTokenTxnData = (params: {
+export type CreateRepaymentCallTokenTxnDataParams = {
   loan: core.TokenLoan
   callAmount: number
-  walletAndConnection: WalletAndConnection
-}) => Promise<CreateTxnData<core.TokenLoan>>
+}
 
-export const createRepaymentCallTokenTxnData: CreateRepaymentCallTokenTxnData = async ({
-  loan,
-  callAmount,
+type CreateRepaymentCallTokenTxnData = (
+  params: CreateRepaymentCallTokenTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateRepaymentCallTokenTxnDataParams>>
+
+export const createRepaymentCallTokenTxnData: CreateRepaymentCallTokenTxnData = async (
+  params,
   walletAndConnection,
-}) => {
+) => {
+  const { loan, callAmount } = params
   const { wallet, connection } = walletAndConnection
   const { bondTradeTransaction, fraktBond } = loan
 
@@ -28,7 +31,6 @@ export const createRepaymentCallTokenTxnData: CreateRepaymentCallTokenTxnData = 
     optimistic: optimisticResult,
   } = await setRepaymentCall({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-
     args: {
       callAmount,
     },
@@ -44,19 +46,13 @@ export const createRepaymentCallTokenTxnData: CreateRepaymentCallTokenTxnData = 
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const optimisticLoan = {
-    ...loan,
-    fraktBond: {
-      ...loan.fraktBond,
-      lastTransactedAt: moment().unix(), //? Needs to prevent BE data overlap in optimistics logic
-    },
-    bondTradeTransaction: optimisticResult.bondTradeTransaction,
-  }
+  const accounts = [new web3.PublicKey(optimisticResult.bondTradeTransaction.publicKey)]
 
   return {
+    params,
+    accounts,
     instructions,
     signers,
-    result: optimisticLoan,
     lookupTables: [],
   }
 }
