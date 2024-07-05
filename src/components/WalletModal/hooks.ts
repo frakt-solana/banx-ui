@@ -3,8 +3,8 @@ import { useMemo } from 'react'
 import { create } from 'zustand'
 
 import { useClusterStats } from '@banx/hooks'
-import { useUserOffers } from '@banx/pages/nftLending/OffersPage/components/OffersTabContent/hooks'
-import { useTokenOffersPreview } from '@banx/pages/tokenLending/OffersTokenPage/components/OffersTokenTabContent/hooks'
+import { useUserOffers } from '@banx/pages/nftLending/OffersPage/components/OffersTabContent'
+import { useTokenOffersPreview } from '@banx/pages/tokenLending/OffersTokenPage/components/OffersTokenTabContent'
 import { ModeType, useModeType } from '@banx/store/common'
 
 import { getLenderVaultInfo } from './helpers'

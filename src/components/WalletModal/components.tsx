@@ -8,7 +8,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { useBanxSolBalance, useClusterStats, useDiscordUser, useSolanaBalance } from '@banx/hooks'
 import { BanxSOL, ChangeWallet, Copy, SignOut } from '@banx/icons'
-import { useUserOffers } from '@banx/pages/nftLending/OffersPage/components/OffersTabContent/hooks'
+import { useUserOffers } from '@banx/pages/nftLending/OffersPage/components/OffersTabContent'
 import { useIsLedger } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
 import {

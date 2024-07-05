@@ -22,9 +22,11 @@ export const useOfferFormController = (
     const collateralsPerToken =
       (1 / syntheticCollateralsPerToken) * Math.pow(10, collateralsDecimals)
 
+    const offerSize = syntheticOfferSize / decimals
+
     return {
-      collateralsPerToken: isFinite(collateralsPerToken) ? formatNumber(collateralsPerToken) : '0',
-      offerSize: formatNumber(syntheticOfferSize / decimals),
+      collateralsPerToken: isFinite(collateralsPerToken) ? String(collateralsPerToken) : '0',
+      offerSize: offerSize ? String(offerSize) : '0',
     }
   }, [decimals, market, syntheticCollateralsPerToken, syntheticOfferSize])
 
@@ -66,10 +68,4 @@ export const useOfferFormController = (
     hasFormChanges: Boolean(hasFormChanges),
     resetFormValues,
   }
-}
-
-const formatNumber = (value: number, defaultValue = '0') => {
-  if (!value) return defaultValue
-
-  return value.toString()
 }

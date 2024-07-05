@@ -132,29 +132,17 @@ export const fetchWalletTokenLoansAndOffers: FetchWalletTokenLoansAndOffers = as
 type FetchTokenLenderLoans = (props: {
   walletPublicKey: string
   tokenType: LendingTokenType
-  sortBy?: 'status' | 'apr'
-  order?: 'asc' | 'desc'
-  skip?: number
-  limit?: number
   getAll?: boolean
 }) => Promise<TokenLoan[]>
 export const fetchTokenLenderLoans: FetchTokenLenderLoans = async ({
   walletPublicKey,
   tokenType,
-  order = 'desc',
-  skip = 0,
-  limit = 50,
-  sortBy = 'status',
   getAll = true,
 }) => {
   const queryParams = new URLSearchParams({
-    order,
-    skip: String(skip),
-    limit: String(limit),
-    getAll: String(getAll),
-    sortBy: String(sortBy),
     marketType: String(convertToMarketType(tokenType)),
     isPrivate: String(IS_PRIVATE_MARKETS),
+    getAll: String(getAll),
   })
 
   const { data } = await axios.get<{ data: TokenLoan[] }>(
