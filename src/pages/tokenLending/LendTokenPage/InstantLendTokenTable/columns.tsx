@@ -9,7 +9,7 @@ import Tooltip from '@banx/components/Tooltip'
 import { core } from '@banx/api/tokens'
 import { SECONDS_IN_72_HOURS } from '@banx/constants'
 import { Hourglass, Snowflake } from '@banx/icons'
-import { isTokenLoanFrozen, isTokenLoanListed } from '@banx/utils'
+import { getHumanReadableTokenSupply, isTokenLoanFrozen, isTokenLoanListed } from '@banx/utils'
 
 import { APRCell, ActionsCell, DebtCell, LTVCell } from './TableCells'
 
@@ -44,7 +44,7 @@ export const getTableColumns = ({
           key={loan.publicKey}
           selected={!!findLoanInSelection(loan.publicKey)}
           onCheckboxClick={() => toggleLoanInSelection(loan)}
-          collateralTokenAmount={loan.collateral.priceUsd}
+          collateralTokenAmount={Math.round(getHumanReadableTokenSupply(loan))}
           collateralImageUrl={loan.collateral.logoUrl}
           rightContentJSX={createRightContentJSX(loan)}
         />

@@ -6,8 +6,11 @@ import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import { convertToMarketType } from '../../helpers'
 import {
+  AllTokenLoansRequestsResponse,
   TokenLoan,
   TokenLoanSchema,
+  TokenLoansRequests,
+  TokenLoansRequestsSchema,
   TokenMarketPreview,
   TokenMarketPreviewResponse,
   TokenMarketPreviewSchema,
@@ -201,4 +204,32 @@ export const fetchBorrowSplTokenOffers: FetchBorrowSplTokenOffers = async (props
   )
 
   return data.data ?? []
+}
+
+type FetchAllTokenLoansRequests = (props: {
+  tokenType: LendingTokenType
+  getAll?: boolean
+}) => Promise<TokenLoansRequests>
+
+export const fetchAllTokenLoansRequests: FetchAllTokenLoansRequests = async ({
+  tokenType,
+  getAll = true,
+}) => {
+  const queryParams = new URLSearchParams({
+    marketType: String(convertToMarketType(tokenType)),
+    isPrivate: String(IS_PRIVATE_MARKETS),
+    getAll: String(getAll),
+  })
+
+  const { data } = await axios.get<AllTokenLoansRequestsResponse>(
+    `${BACKEND_BASE_URL}/spl-loans/requests?${queryParams.toString()}`,
+  )
+
+  try {
+    await TokenLoansRequestsSchema.parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
+  }
+
+  return data.data
 }
