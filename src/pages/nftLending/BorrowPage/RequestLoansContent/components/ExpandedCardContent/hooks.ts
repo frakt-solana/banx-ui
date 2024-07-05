@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { uniqueId } from 'lodash'
+import { chain, uniqueId } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 import { TxnExecutor } from 'solana-transactions-executor'
 
@@ -27,7 +27,11 @@ import {
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
-import { createListTxnData } from '@banx/transactions/nftLending'
+import {
+  CreateListTxnDataParams,
+  createListTxnData,
+  parseListNftSimulatedAccounts,
+} from '@banx/transactions/nftLending'
 import {
   calculateBorrowValueWithProtocolFee,
   convertToHumanNumber,
@@ -219,18 +223,20 @@ const useRequestLoansTransaction = (props: {
 
       const txnsData = await Promise.all(
         nfts.map((nft) =>
-          createListTxnData({
-            nft,
-            aprRate: rateBasePointsWithoutProtocolFee,
-            loanValue: loanValue * tokenDecimals,
-            freeze: freezeValue * SECONDS_IN_DAY, //? days to seconds
-            tokenType,
+          createListTxnData(
+            {
+              nft,
+              aprRate: rateBasePointsWithoutProtocolFee,
+              loanValue: loanValue * tokenDecimals,
+              freeze: freezeValue * SECONDS_IN_DAY, //? days to seconds
+              tokenType,
+            },
             walletAndConnection,
-          }),
+          ),
         ),
       )
 
-      await new TxnExecutor(walletAndConnection, {
+      await new TxnExecutor<CreateListTxnDataParams>(walletAndConnection, {
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
         chunkSize: isLedger ? 5 : 40,
       })
@@ -247,7 +253,21 @@ const useRequestLoansTransaction = (props: {
           if (confirmed.length) {
             enqueueSnackbar({ message: 'Listings successfully initialized', type: 'success' })
 
-            const loans = confirmed.map(({ result }) => result).filter(Boolean) as core.Loan[]
+            const loans: core.Loan[] = chain(confirmed)
+              .map(({ params, accountInfoByPubkey }) => {
+                if (!accountInfoByPubkey) return
+                const { bondTradeTransaction, fraktBond } =
+                  parseListNftSimulatedAccounts(accountInfoByPubkey)
+
+                return {
+                  publicKey: fraktBond.publicKey,
+                  fraktBond: fraktBond,
+                  bondTradeTransaction: bondTradeTransaction,
+                  nft: params.nft.nft,
+                }
+              })
+              .compact()
+              .value()
 
             if (wallet.publicKey) {
               addLoansOptimistic(loans, wallet.publicKey?.toBase58())

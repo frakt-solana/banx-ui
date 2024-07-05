@@ -22,12 +22,8 @@ import { useLoansOptimistic, useNftTokenType, useOffersOptimistic } from '@banx/
 
 import { useCartState } from '../../cartState'
 import { getTableColumns } from './columns'
-import {
-  createTableNftData,
-  executeBorrow,
-  makeCreateTxnsDataParams,
-  showBonkRewardsSnack,
-} from './helpers'
+import { executeBorrow, makeCreateTxnsDataParams } from './core'
+import { createTableNftData, showBonkRewardsSnack } from './helpers'
 import { TableNftData } from './types'
 
 import styles from './BorrowTable.module.less'

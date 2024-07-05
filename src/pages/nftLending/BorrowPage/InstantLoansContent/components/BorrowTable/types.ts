@@ -1,9 +1,8 @@
 import { core } from '@banx/api/nft'
+import { NftWithLoanValue } from '@banx/utils'
 
-export interface TableNftData {
+export type TableNftData = NftWithLoanValue & {
   mint: string
-  nft: core.BorrowNft
-  loanValue: number
   selected: boolean
   interest: number //? 1 week interest
 }

@@ -9,56 +9,54 @@ import { BONDS } from '@banx/constants'
 
 import { sendTxnPlaceHolder } from '../helpers'
 
-type CreateRepayTokenLoanTxnDataParams = {
+export type CreateRepayTokenLoanTxnDataParams = {
   loan: core.TokenLoan
-  walletAndConnection: WalletAndConnection
 }
 
 type CreateRepayTokenLoanTxnData = (
   params: CreateRepayTokenLoanTxnDataParams,
-) => Promise<CreateTxnData<core.TokenLoan>>
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateRepayTokenLoanTxnDataParams>>
 
-export const createRepayTokenLoanTxnData: CreateRepayTokenLoanTxnData = async ({
-  loan,
+export const createRepayTokenLoanTxnData: CreateRepayTokenLoanTxnData = async (
+  params,
   walletAndConnection,
-}) => {
-  const { connection, wallet } = walletAndConnection
-  const { bondTradeTransaction, fraktBond } = loan
+) => {
+  const { loan } = params
 
   const { instructions, signers, optimisticResults } = await repayPerpetualLoanSpl({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
-      userPubkey: wallet.publicKey,
+      userPubkey: walletAndConnection.wallet.publicKey,
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
-      oldBondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
-      bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
-      lender: new web3.PublicKey(bondTradeTransaction.user),
-      fbond: new web3.PublicKey(fraktBond.publicKey),
-      collateralTokenMint: new web3.PublicKey(fraktBond.fbondTokenMint),
+      oldBondOffer: new web3.PublicKey(loan.bondTradeTransaction.bondOffer),
+      bondTradeTransaction: new web3.PublicKey(loan.bondTradeTransaction.publicKey),
+      lender: new web3.PublicKey(loan.bondTradeTransaction.user),
+      fbond: new web3.PublicKey(loan.fraktBond.publicKey),
+      collateralTokenMint: new web3.PublicKey(loan.fraktBond.fbondTokenMint),
     },
     args: {
-      lendingTokenType: bondTradeTransaction.lendingToken,
+      lendingTokenType: loan.bondTradeTransaction.lendingToken,
     },
     optimistic: {
       oldBondOffer: getMockBondOffer(),
       fraktBond: loan.fraktBond,
       bondTradeTransaction: loan.bondTradeTransaction,
     },
-    connection,
+    connection: walletAndConnection.connection,
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const optimisticLoan: core.TokenLoan = {
-    ...loan,
-    publicKey: optimisticResults.fraktBond.publicKey,
-    fraktBond: optimisticResults.fraktBond,
-    bondTradeTransaction: optimisticResults.bondTradeTransaction,
-  }
+  const accounts = [
+    new web3.PublicKey(optimisticResults.fraktBond.publicKey),
+    new web3.PublicKey(optimisticResults.bondTradeTransaction.publicKey),
+  ]
 
   return {
+    params,
+    accounts,
     instructions,
     signers,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
-    result: optimisticLoan,
   }
 }

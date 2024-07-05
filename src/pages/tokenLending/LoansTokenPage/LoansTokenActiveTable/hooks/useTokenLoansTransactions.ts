@@ -1,5 +1,6 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { every, uniqueId } from 'lodash'
+import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/tokens'
@@ -11,6 +12,12 @@ import {
   defaultTxnErrorHandler,
 } from '@banx/transactions'
 import {
+  parseRepayLoanSimulatedAccounts,
+  parseRepayPartialLoanSimulatedAccounts,
+} from '@banx/transactions/nftLending'
+import {
+  CreateRepayPartialTokenLoanTxnDataParams,
+  CreateRepayTokenLoanTxnDataParams,
   createRepayPartialTokenLoanTxnData,
   createRepayTokenLoanTxnData,
 } from '@banx/transactions/tokenLending'
@@ -43,9 +50,12 @@ export const useTokenLoansTransactions = () => {
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const txnsData = await createRepayTokenLoanTxnData({ loan, walletAndConnection })
+      const txnsData = await createRepayTokenLoanTxnData({ loan }, walletAndConnection)
 
-      await new TxnExecutor<core.TokenLoan>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor<CreateRepayTokenLoanTxnDataParams>(
+        walletAndConnection,
+        TXN_EXECUTOR_DEFAULT_OPTIONS,
+      )
         .addTxnData(txnsData)
         .on('sentSome', (results) => {
           results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -62,15 +72,27 @@ export const useTokenLoansTransactions = () => {
             )
           }
 
-          return confirmed.forEach(({ result, signature }) => {
-            if (result && wallet.publicKey) {
+          return confirmed.forEach(({ params, accountInfoByPubkey, signature }) => {
+            if (accountInfoByPubkey && wallet.publicKey) {
               enqueueSnackbar({
                 message: 'Repaid successfully',
                 type: 'success',
                 solanaExplorerPath: `tx/${signature}`,
               })
 
-              updateLoansOptimistic([result], wallet.publicKey.toBase58())
+              const { bondTradeTransaction, fraktBond } =
+                parseRepayLoanSimulatedAccounts(accountInfoByPubkey)
+
+              //TODO Move optimistics creation into a separate function
+              const optimisticLoan: core.TokenLoan = {
+                ...params.loan,
+                publicKey: fraktBond.publicKey,
+                //? Needs to prevent BE data overlap in optimistics logic
+                fraktBond: { ...fraktBond, lastTransactedAt: moment().unix() },
+                bondTradeTransaction: bondTradeTransaction,
+              }
+
+              updateLoansOptimistic([optimisticLoan], wallet.publicKey.toBase58())
               clearSelection()
               close()
             }
@@ -99,10 +121,10 @@ export const useTokenLoansTransactions = () => {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const txnsData = await Promise.all(
-        selectedLoans.map((loan) => createRepayTokenLoanTxnData({ loan, walletAndConnection })),
+        selectedLoans.map((loan) => createRepayTokenLoanTxnData({ loan }, walletAndConnection)),
       )
 
-      await new TxnExecutor<core.TokenLoan>(walletAndConnection, {
+      await new TxnExecutor<CreateRepayTokenLoanTxnDataParams>(walletAndConnection, {
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
         chunkSize: isLedger ? 1 : 40,
       })
@@ -119,9 +141,21 @@ export const useTokenLoansTransactions = () => {
           if (confirmed.length) {
             enqueueSnackbar({ message: 'Loans successfully repaid', type: 'success' })
 
-            confirmed.forEach(({ result }) => {
-              if (result && wallet.publicKey) {
-                updateLoansOptimistic([result], wallet.publicKey.toBase58())
+            confirmed.forEach(({ params, accountInfoByPubkey }) => {
+              if (accountInfoByPubkey && wallet.publicKey) {
+                const { bondTradeTransaction, fraktBond } =
+                  parseRepayLoanSimulatedAccounts(accountInfoByPubkey)
+
+                //TODO Move optimistics creation into a separate function
+                const optimisticLoan: core.TokenLoan = {
+                  ...params.loan,
+                  publicKey: fraktBond.publicKey,
+                  //? Needs to prevent BE data overlap in optimistics logic
+                  fraktBond: { ...fraktBond, lastTransactedAt: moment().unix() },
+                  bondTradeTransaction: bondTradeTransaction,
+                }
+
+                updateLoansOptimistic([optimisticLoan], wallet.publicKey.toBase58())
               }
             })
             clearSelection()
@@ -153,13 +187,15 @@ export const useTokenLoansTransactions = () => {
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const txnData = await createRepayPartialTokenLoanTxnData({
-        loan,
-        fractionToRepay,
+      const txnData = await createRepayPartialTokenLoanTxnData(
+        { loan, fractionToRepay },
         walletAndConnection,
-      })
+      )
 
-      await new TxnExecutor<core.TokenLoan>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor<CreateRepayPartialTokenLoanTxnDataParams>(
+        walletAndConnection,
+        TXN_EXECUTOR_DEFAULT_OPTIONS,
+      )
         .addTxnData(txnData)
         .on('sentSome', (results) => {
           results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -176,15 +212,27 @@ export const useTokenLoansTransactions = () => {
             )
           }
 
-          return confirmed.forEach(({ result, signature }) => {
-            if (result && wallet.publicKey) {
+          return confirmed.forEach(({ params, accountInfoByPubkey, signature }) => {
+            if (accountInfoByPubkey && wallet.publicKey) {
               enqueueSnackbar({
                 message: 'Paid successfully',
                 type: 'success',
                 solanaExplorerPath: `tx/${signature}`,
               })
 
-              updateLoansOptimistic([result], wallet.publicKey.toBase58())
+              const { bondTradeTransaction, fraktBond } =
+                parseRepayPartialLoanSimulatedAccounts(accountInfoByPubkey)
+
+              //TODO Move optimistics creation into a separate function
+              const optimisticLoan: core.TokenLoan = {
+                ...params.loan,
+                publicKey: fraktBond.publicKey,
+                //? Needs to prevent BE data overlap in optimistics logic
+                fraktBond: { ...fraktBond, lastTransactedAt: moment().unix() },
+                bondTradeTransaction: bondTradeTransaction,
+              }
+
+              updateLoansOptimistic([optimisticLoan], wallet.publicKey.toBase58())
               clearSelection()
               close()
             }
@@ -226,15 +274,11 @@ export const useTokenLoansTransactions = () => {
 
       const txnsData = await Promise.all(
         loansWithCalculatedUnpaidInterest.map(({ loan, fractionToRepay }) =>
-          createRepayPartialTokenLoanTxnData({
-            loan,
-            fractionToRepay,
-            walletAndConnection,
-          }),
+          createRepayPartialTokenLoanTxnData({ loan, fractionToRepay }, walletAndConnection),
         ),
       )
 
-      await new TxnExecutor<core.TokenLoan>(walletAndConnection, {
+      await new TxnExecutor<CreateRepayPartialTokenLoanTxnDataParams>(walletAndConnection, {
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
         chunkSize: isLedger ? 5 : 40,
       })
@@ -255,11 +299,24 @@ export const useTokenLoansTransactions = () => {
 
             enqueueSnackbar({ message, type: 'success' })
 
-            confirmed.forEach(({ result }) => {
-              if (result && wallet.publicKey) {
-                updateLoansOptimistic([result], wallet.publicKey.toBase58())
+            confirmed.forEach(({ params, accountInfoByPubkey }) => {
+              if (accountInfoByPubkey && wallet.publicKey) {
+                const { bondTradeTransaction, fraktBond } =
+                  parseRepayPartialLoanSimulatedAccounts(accountInfoByPubkey)
+
+                //TODO Move optimistics creation into a separate function
+                const optimisticLoan: core.TokenLoan = {
+                  ...params.loan,
+                  publicKey: fraktBond.publicKey,
+                  //? Needs to prevent BE data overlap in optimistics logic
+                  fraktBond: { ...fraktBond, lastTransactedAt: moment().unix() },
+                  bondTradeTransaction: bondTradeTransaction,
+                }
+
+                updateLoansOptimistic([optimisticLoan], wallet.publicKey.toBase58())
               }
             })
+
             clearSelection()
           }
 

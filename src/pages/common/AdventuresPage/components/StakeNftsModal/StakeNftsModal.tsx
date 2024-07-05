@@ -97,10 +97,7 @@ export const StakeNftsModal = () => {
 
       const txnsData = await Promise.all(
         selectedNfts.map((nft) =>
-          createStakeBanxNftTxnData({
-            nftMint: nft.mint,
-            walletAndConnection,
-          }),
+          createStakeBanxNftTxnData({ nftMint: nft.mint }, walletAndConnection),
         ),
       )
 
@@ -151,11 +148,13 @@ export const StakeNftsModal = () => {
 
       const txnsData = await Promise.all(
         selectedNfts.map((nft) =>
-          createUnstakeBanxNftTxnData({
-            nftMint: nft.mint,
-            nftStakePublicKey: nft.stake?.publicKey ?? '',
+          createUnstakeBanxNftTxnData(
+            {
+              nftMint: nft.mint,
+              nftStakePublicKey: nft.stake?.publicKey ?? '',
+            },
             walletAndConnection,
-          }),
+          ),
         ),
       )
 

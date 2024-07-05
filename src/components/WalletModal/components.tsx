@@ -6,7 +6,6 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
-import { Offer } from '@banx/api/nft'
 import { useBanxSolBalance, useClusterStats, useDiscordUser, useSolanaBalance } from '@banx/hooks'
 import { BanxSOL, ChangeWallet, Copy, SignOut } from '@banx/icons'
 import { useUserOffers } from '@banx/pages/nftLending/OffersPage/components/OffersTabContent/hooks'
@@ -17,7 +16,11 @@ import {
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
-import { createClaimLenderVaultTxnData } from '@banx/transactions/nftLending'
+import {
+  CreateClaimLenderVaultTxnDataParams,
+  createClaimLenderVaultTxnData,
+  parseClaimLenderVaultSimulatedAccounts,
+} from '@banx/transactions/nftLending'
 import {
   copyToClipboard,
   destroySnackbar,
@@ -173,16 +176,21 @@ const LenderVaultContent = () => {
 
       const txnsData = await Promise.all(
         offers.map(({ offer }) =>
-          createClaimLenderVaultTxnData({
-            offer,
+          createClaimLenderVaultTxnData(
+            {
+              offer,
+              tokenType,
+              clusterStats,
+            },
             walletAndConnection,
-            tokenType,
-            clusterStats,
-          }),
+          ),
         ),
       )
 
-      await new TxnExecutor<Offer>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor<CreateClaimLenderVaultTxnDataParams>(
+        walletAndConnection,
+        TXN_EXECUTOR_DEFAULT_OPTIONS,
+      )
         .addTxnsData(txnsData)
         .on('sentAll', () => {
           enqueueTransactionsSent()
@@ -195,7 +203,11 @@ const LenderVaultContent = () => {
 
           if (confirmed.length) {
             enqueueSnackbar({ message: 'Successfully claimed', type: 'success' })
-            confirmed.forEach(({ result }) => result && updateOrAddOffer([result]))
+            confirmed.forEach(({ accountInfoByPubkey }) => {
+              if (!accountInfoByPubkey) return
+              const offer = parseClaimLenderVaultSimulatedAccounts(accountInfoByPubkey)
+              updateOrAddOffer([offer])
+            })
           }
 
           if (failed.length) {

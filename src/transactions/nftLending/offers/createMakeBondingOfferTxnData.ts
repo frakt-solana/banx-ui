@@ -1,21 +1,25 @@
 import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
-  BondOfferOptimistic,
   createPerpetualBondOfferBonding,
   getBondingCurveTypeFromLendingToken,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondFeatures, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
-import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
+import { BondFeatures, BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import {
+  CreateTxnData,
+  SimulatedAccountInfoByPubkey,
+  WalletAndConnection,
+} from 'solana-transactions-executor'
 
 import { fetchTokenBalance } from '@banx/api/common'
 import { BANX_SOL_ADDRESS, BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
 import { ZERO_BN, calculateNewOfferSize, isBanxSolTokenType } from '@banx/utils'
 
+import { parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
-type CreateMakeBondingOfferTxnDataParams = {
+export type CreateMakeBondingOfferTxnDataParams = {
   marketPubkey: string
 
   loanValue: number //? normal number
@@ -25,24 +29,27 @@ type CreateMakeBondingOfferTxnDataParams = {
 
   bondFeature: BondFeatures
   tokenType: LendingTokenType
-
-  walletAndConnection: WalletAndConnection
 }
 
 type CreateMakeBondingOfferTxnData = (
   params: CreateMakeBondingOfferTxnDataParams,
-) => Promise<CreateTxnData<BondOfferOptimistic>>
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateMakeBondingOfferTxnDataParams>>
 
-export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = async ({
-  marketPubkey,
-  loanValue,
-  loansAmount,
-  deltaValue,
-  collateralsPerToken = 0,
-  bondFeature,
+export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = async (
+  params,
   walletAndConnection,
-  tokenType,
-}) => {
+) => {
+  const {
+    marketPubkey,
+    loanValue,
+    loansAmount,
+    tokenType,
+    collateralsPerToken = 0,
+    bondFeature,
+    deltaValue,
+  } = params
+
   const bondingCurveType = getBondingCurveTypeFromLendingToken(tokenType)
 
   const { instructions, signers, optimisticResult } = await createPerpetualBondOfferBonding({
@@ -64,6 +71,7 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
   })
 
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
+  const accounts = [new web3.PublicKey(optimisticResult.bondOffer.publicKey)]
 
   if (isBanxSolTokenType(tokenType)) {
     const banxSolBalance = await fetchTokenBalance({
@@ -76,27 +84,34 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
     const diff = offerSize.sub(banxSolBalance)
 
     if (diff.gt(ZERO_BN)) {
-      return await banxSol.combineWithBuyBanxSolInstructions({
-        inputAmount: diff.abs(),
+      return await banxSol.combineWithBuyBanxSolInstructions(
+        {
+          params,
+          accounts,
+          inputAmount: diff.abs(),
+
+          instructions,
+          signers,
+          lookupTables,
+        },
         walletAndConnection,
-        instructions,
-        signers,
-        lookupTables,
-        result: optimisticResult,
-      })
-    }
-    return {
-      instructions,
-      signers,
-      result: optimisticResult,
-      lookupTables,
+      )
     }
   }
 
   return {
+    params,
+    accounts,
     instructions,
     signers,
-    result: optimisticResult,
     lookupTables,
   }
+}
+
+export const parseMakeOfferSimulatedAccounts = (
+  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
+) => {
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey)
+
+  return results?.['bondOfferV3'] as BondOfferV3
 }

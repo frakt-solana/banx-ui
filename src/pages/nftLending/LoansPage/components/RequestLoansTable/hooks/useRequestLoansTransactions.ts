@@ -1,5 +1,7 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
 import { uniqueId } from 'lodash'
+import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
@@ -10,7 +12,7 @@ import {
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
-import { createDelistTxnData } from '@banx/transactions/nftLending'
+import { CreateDelistTxnDataParams, createDelistTxnData } from '@banx/transactions/nftLending'
 import {
   destroySnackbar,
   enqueueConfirmationError,
@@ -36,9 +38,12 @@ export const useRequestLoansTransactions = () => {
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const txnData = await createDelistTxnData({ loan, walletAndConnection })
+      const txnData = await createDelistTxnData({ loan }, walletAndConnection)
 
-      await new TxnExecutor<core.Loan>(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor<CreateDelistTxnDataParams>(
+        walletAndConnection,
+        TXN_EXECUTOR_DEFAULT_OPTIONS,
+      )
         .addTxnData(txnData)
         .on('sentSome', (results) => {
           results.forEach(({ signature }) => enqueueTransactionSent(signature))
@@ -55,15 +60,30 @@ export const useRequestLoansTransactions = () => {
             )
           }
 
-          return confirmed.forEach(({ result, signature }) => {
-            if (result && wallet.publicKey) {
+          return confirmed.forEach(({ params, signature }) => {
+            if (wallet.publicKey) {
               enqueueSnackbar({
                 message: 'Delisted successfully',
                 type: 'success',
                 solanaExplorerPath: `tx/${signature}`,
               })
 
-              updateLoansOptimistic([result], wallet.publicKey.toBase58())
+              const { loan } = params
+
+              const optimisticLoan = {
+                ...loan,
+                bondTradeTransaction: {
+                  ...loan.bondTradeTransaction,
+                  //? Set not active state to filter out loan from list
+                  bondTradeTransactionState: BondTradeTransactionV2State.NotActive,
+                },
+                fraktBond: {
+                  ...loan.fraktBond,
+                  lastTransactedAt: moment().unix(), //? Needs to prevent BE data overlap in optimistics logic
+                },
+              }
+
+              updateLoansOptimistic([optimisticLoan], wallet.publicKey.toBase58())
               clearSelection()
             }
           })
@@ -89,10 +109,10 @@ export const useRequestLoansTransactions = () => {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const txnsData = await Promise.all(
-        selection.map(({ loan }) => createDelistTxnData({ loan, walletAndConnection })),
+        selection.map(({ loan }) => createDelistTxnData({ loan }, walletAndConnection)),
       )
 
-      await new TxnExecutor<core.Loan>(walletAndConnection, {
+      await new TxnExecutor<CreateDelistTxnDataParams>(walletAndConnection, {
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
         chunkSize: isLedger ? 5 : 40,
       })
@@ -109,9 +129,24 @@ export const useRequestLoansTransactions = () => {
           if (confirmed.length) {
             enqueueSnackbar({ message: 'Loans delisted successfully', type: 'success' })
 
-            confirmed.forEach(({ result }) => {
-              if (result && wallet.publicKey) {
-                updateLoansOptimistic([result], wallet.publicKey.toBase58())
+            confirmed.forEach(({ params }) => {
+              if (wallet.publicKey) {
+                const { loan } = params
+
+                const optimisticLoan = {
+                  ...loan,
+                  bondTradeTransaction: {
+                    ...loan.bondTradeTransaction,
+                    //? Set not active state to filter out loan from list
+                    bondTradeTransactionState: BondTradeTransactionV2State.NotActive,
+                  },
+                  fraktBond: {
+                    ...loan.fraktBond,
+                    lastTransactedAt: moment().unix(), //? Needs to prevent BE data overlap in optimistics logic
+                  },
+                }
+
+                updateLoansOptimistic([optimisticLoan], wallet.publicKey.toBase58())
               }
             })
 
