@@ -20,33 +20,29 @@ import {
 
 import { sendTxnPlaceHolder } from '../helpers'
 
-type CreateLendToBorrowTokenTxnDataParams = {
+export type CreateLendToBorrowTokenTxnDataParams = {
   loan: core.TokenLoan
   aprRate: number
   tokenType: LendingTokenType
-  walletAndConnection: WalletAndConnection
-}
-
-export type CreateLendToBorrowActionOptimisticResult = {
-  loan: core.TokenLoan
-  oldLoan: core.TokenLoan
 }
 
 type CreateLendToBorrowTokenTxnData = (
   params: CreateLendToBorrowTokenTxnDataParams,
-) => Promise<CreateTxnData<CreateLendToBorrowActionOptimisticResult>>
+  walletAndConnection: WalletAndConnection,
+) => Promise<CreateTxnData<CreateLendToBorrowTokenTxnDataParams>>
 
-export const createLendToBorrowTokenTxnData: CreateLendToBorrowTokenTxnData = async (params) => {
+export const createLendToBorrowTokenTxnData: CreateLendToBorrowTokenTxnData = async (
+  params,
+  walletAndConnection,
+) => {
   const { loan, tokenType } = params
 
-  const { instructions, signers, optimisticResult, lookupTables } =
-    await getIxnsAndSignersByLoanType(params)
+  const { instructions, signers, lookupTables } = await getIxnsAndSignersByLoanType(
+    params,
+    walletAndConnection,
+  )
 
-  const optimisticLoan = {
-    ...loan,
-    fraktBond: optimisticResult.fraktBond,
-    bondTradeTransaction: optimisticResult.bondTradeTransaction,
-  }
+  const accounts: web3.PublicKey[] = []
 
   if (isBanxSolTokenType(tokenType) && !isTokenLoanListed(loan)) {
     const repayValue = calculateTokenLoanRepayValueOnCertainDate({
@@ -57,26 +53,33 @@ export const createLendToBorrowTokenTxnData: CreateLendToBorrowTokenTxnData = as
       date: moment().unix() + 180,
     })
 
-    return await banxSol.combineWithBuyBanxSolInstructions({
-      inputAmount: new BN(repayValue),
-      walletAndConnection: params.walletAndConnection,
-      instructions,
-      signers,
-      lookupTables,
-      result: { loan: optimisticLoan, oldLoan: loan },
-    })
+    return await banxSol.combineWithBuyBanxSolInstructions(
+      {
+        params,
+        accounts,
+        inputAmount: new BN(repayValue),
+        instructions,
+        signers,
+        lookupTables,
+      },
+      walletAndConnection,
+    )
   }
 
   return {
+    params,
+    accounts,
     instructions,
     signers,
-    result: { loan: optimisticLoan, oldLoan: loan },
     lookupTables,
   }
 }
 
-const getIxnsAndSignersByLoanType = async (params: CreateLendToBorrowTokenTxnDataParams) => {
-  const { loan, aprRate, walletAndConnection } = params
+const getIxnsAndSignersByLoanType = async (
+  params: CreateLendToBorrowTokenTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => {
+  const { loan, aprRate } = params
   const { connection, wallet } = walletAndConnection
 
   const { bondTradeTransaction, fraktBond } = loan
@@ -117,7 +120,7 @@ const getIxnsAndSignersByLoanType = async (params: CreateLendToBorrowTokenTxnDat
     }
   }
 
-  const { instructions, signers, optimisticResult } = await refinancePerpetualLoan({
+  const { instructions, signers } = await refinancePerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       fbond: new web3.PublicKey(fraktBond.publicKey),
@@ -141,15 +144,9 @@ const getIxnsAndSignersByLoanType = async (params: CreateLendToBorrowTokenTxnDat
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const newOptimisticResult = {
-    fraktBond: optimisticResult.fraktBond,
-    bondTradeTransaction: optimisticResult.newBondTradeTransaction,
-  }
-
   return {
     instructions,
     signers,
-    optimisticResult: newOptimisticResult,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }

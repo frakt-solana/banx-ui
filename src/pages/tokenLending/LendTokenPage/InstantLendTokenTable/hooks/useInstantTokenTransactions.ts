@@ -18,7 +18,10 @@ import {
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
-import { createLendToBorrowTokenTxnData } from '@banx/transactions/tokenLending'
+import {
+  CreateLendToBorrowTokenTxnDataParams,
+  createLendToBorrowTokenTxnData,
+} from '@banx/transactions/tokenLending'
 import {
   destroySnackbar,
   enqueueConfirmationError,
@@ -70,14 +73,12 @@ export const useInstantTokenTransactions = () => {
 
       const aprRate = calculateLendToBorrowApr(loan)
 
-      const txnData = await createLendToBorrowTokenTxnData({
-        loan,
+      const txnData = await createLendToBorrowTokenTxnData(
+        { loan, aprRate, tokenType },
         walletAndConnection,
-        aprRate,
-        tokenType,
-      })
+      )
 
-      await new TxnExecutor<{ loan: core.TokenLoan; oldLoan: core.TokenLoan }>(
+      await new TxnExecutor<CreateLendToBorrowTokenTxnDataParams>(
         walletAndConnection,
         TXN_EXECUTOR_DEFAULT_OPTIONS,
       )
@@ -98,24 +99,22 @@ export const useInstantTokenTransactions = () => {
           }
 
           if (confirmed.length) {
-            return confirmed.forEach(({ result, signature }) => {
-              if (result) {
-                const isOldLoanListed = isTokenLoanListed(result.oldLoan)
+            return confirmed.forEach(({ params, signature }) => {
+              const isOldLoanListed = isTokenLoanListed(params.loan)
 
-                const message = isOldLoanListed
-                  ? 'Loan successfully funded'
-                  : 'Loan successfully refinanced'
+              const message = isOldLoanListed
+                ? 'Loan successfully funded'
+                : 'Loan successfully refinanced'
 
-                enqueueSnackbar({
-                  message,
-                  type: 'success',
-                  solanaExplorerPath: `tx/${signature}`,
-                })
+              enqueueSnackbar({
+                message,
+                type: 'success',
+                solanaExplorerPath: `tx/${signature}`,
+              })
 
-                addLoansPubkeys([loan.publicKey])
-                removeSelection(loan.publicKey)
-                onSuccess(1)
-              }
+              addLoansPubkeys([loan.publicKey])
+              removeSelection(loan.publicKey)
+              onSuccess(1)
             })
           }
         })
@@ -141,22 +140,17 @@ export const useInstantTokenTransactions = () => {
 
       const txnsData = await Promise.all(
         selection.map((loan) =>
-          createLendToBorrowTokenTxnData({
-            loan,
+          createLendToBorrowTokenTxnData(
+            { loan, aprRate: calculateLendToBorrowApr(loan), tokenType },
             walletAndConnection,
-            aprRate: calculateLendToBorrowApr(loan),
-            tokenType,
-          }),
+          ),
         ),
       )
 
-      await new TxnExecutor<{ loan: core.TokenLoan; oldLoan: core.TokenLoan }>(
-        walletAndConnection,
-        {
-          ...TXN_EXECUTOR_DEFAULT_OPTIONS,
-          chunkSize: isLedger ? 5 : 40,
-        },
-      )
+      await new TxnExecutor<CreateLendToBorrowTokenTxnDataParams>(walletAndConnection, {
+        ...TXN_EXECUTOR_DEFAULT_OPTIONS,
+        chunkSize: isLedger ? 5 : 40,
+      })
         .addTxnsData(txnsData)
         .on('sentAll', () => {
           enqueueTransactionsSent()
@@ -171,7 +165,7 @@ export const useInstantTokenTransactions = () => {
             enqueueSnackbar({ message: 'Loans successfully funded', type: 'success' })
 
             const pubkeysToHidden = chain(confirmed)
-              .map(({ result }) => result?.loan.publicKey)
+              .map(({ params }) => params.loan.publicKey)
               .compact()
               .value()
 
