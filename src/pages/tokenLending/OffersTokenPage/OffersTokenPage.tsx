@@ -1,6 +1,7 @@
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
 import { ActiveLoansTable } from './components/ActiveLoansTable'
+import LenderTokenActivityTable from './components/LenderTokenActivityTable'
 import OffersHeader from './components/OffersHeader'
 import OffersTokenTabContent from './components/OffersTokenTabContent'
 
@@ -18,6 +19,7 @@ export const OffersTokenPage = () => {
       <Tabs value={currentTabValue} {...tabsProps} />
       {currentTabValue === OffersTabName.OFFERS && <OffersTokenTabContent />}
       {currentTabValue === OffersTabName.LOANS && <ActiveLoansTable />}
+      {currentTabValue === OffersTabName.HISTORY && <LenderTokenActivityTable />}
     </div>
   )
 }

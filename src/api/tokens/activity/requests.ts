@@ -6,12 +6,52 @@ import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 import { convertToMarketType } from '../../helpers'
 import {
   FetchBorrowerActivity,
+  FetchLenderTokenActivity,
   FetchTokenActivityCollectionsList,
+  LenderTokenActivityResponse,
+  LenderTokenActivitySchema,
   TokenActivityCollectionsList,
   TokenActivityCollectionsListSchema,
   TokenBorrowedActivityResponse,
   TokenBorrowerActivitySchema,
 } from './types'
+
+export const fetchLenderTokenActivity: FetchLenderTokenActivity = async ({
+  walletPubkey,
+  tokenType,
+  order,
+  state = 'all',
+  sortBy,
+  skip = 0,
+  limit = 10,
+  collection,
+  getAll = false,
+}) => {
+  const queryParams = new URLSearchParams({
+    order,
+    skip: String(skip),
+    limit: String(limit),
+    sortBy,
+    state,
+    getAll: String(getAll),
+    marketType: String(convertToMarketType(tokenType)),
+    isPrivate: String(IS_PRIVATE_MARKETS),
+  })
+
+  if (collection?.length) queryParams.append('collection', String(collection))
+
+  const { data } = await axios.get<LenderTokenActivityResponse>(
+    `${BACKEND_BASE_URL}/spl-activity/lender/${walletPubkey}?${queryParams.toString()}`,
+  )
+
+  try {
+    await LenderTokenActivitySchema.array().parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
+  }
+
+  return data.data ?? []
+}
 
 export const fetchTokenBorrowerActivity: FetchBorrowerActivity = async ({
   walletPubkey,
@@ -63,6 +103,24 @@ export const fetchTokenBorrowerActivityCSV = async ({
 
   const { data } = await axios.get<string>(
     `${BACKEND_BASE_URL}/spl-activity/borrower/${walletPubkey}/csv?${queryParams.toString()}`,
+  )
+
+  return data ?? ''
+}
+
+export const fetchLenderTokenActivityCSV = async ({
+  walletPubkey,
+  tokenType,
+}: {
+  walletPubkey: string
+  tokenType: LendingTokenType
+}) => {
+  const queryParams = new URLSearchParams({
+    marketType: String(convertToMarketType(tokenType)),
+  })
+
+  const { data } = await axios.get<string>(
+    `${BACKEND_BASE_URL}/spl-activity/lender/${walletPubkey}/csv?${queryParams.toString()}`,
   )
 
   return data ?? ''

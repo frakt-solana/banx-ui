@@ -4,6 +4,48 @@ import { z } from 'zod'
 import { BasePaginationRequest, PaginationMeta } from '../../types'
 import { TokenMetaSchema } from '../core'
 
+export const LenderTokenActivitySchema = z.object({
+  id: z.string(),
+  publicKey: z.string(),
+
+  collateral: TokenMetaSchema,
+
+  status: z.string(),
+  lent: z.number(),
+  currentRemainingLentAmount: z.number(),
+  interest: z.number(),
+  apr: z.number(),
+  duration: z.number(),
+  received: z.number(),
+  timestamp: z.number(),
+
+  //TODO (TokenLending): remove from BE
+  // user: z.string(),
+  // finalVersion: z.boolean(),
+  // lendingToken: z.nativeEnum(LendingTokenType),
+  // bondTradeTransactionType: z.nativeEnum(BondTradeTransactionV2Type),
+  // collectionName: z.string(),
+  // collateralPrice: z.number(),
+})
+
+export type LenderTokenActivity = z.infer<typeof LenderTokenActivitySchema>
+
+interface LenderTokenActivityRequest extends BasePaginationRequest {
+  walletPubkey: string
+  tokenType: LendingTokenType
+  collection?: string[]
+  getAll?: boolean
+}
+
+export type FetchLenderTokenActivity = (
+  props: LenderTokenActivityRequest,
+) => Promise<LenderTokenActivity[]>
+
+export interface LenderTokenActivityResponse {
+  data: LenderTokenActivity[]
+  meta: PaginationMeta
+}
+
 export const TokenBorrowerActivitySchema = z.object({
   id: z.string(),
   publicKey: z.string(),
