@@ -19,8 +19,8 @@ import {
   caclulateBorrowTokenLoanValue,
   calcTokenWeeklyFeeWithRepayFee,
   calculateTimeFromNow,
+  calculateTokenLoanLtvByLoanValue,
   getColorByPercent,
-  getTokenDecimals,
   isTokenLoanActive,
   isTokenLoanTerminating,
 } from '@banx/utils'
@@ -66,13 +66,8 @@ export const DebtCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
 }
 
 export const LTVCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
-  const tokenDecimals = getTokenDecimals(loan.bondTradeTransaction.lendingToken)
-
-  const collateralSupply = loan.fraktBond.fbondTokenSupply / Math.pow(10, loan.collateral.decimals)
   const debtValue = caclulateBorrowTokenLoanValue(loan).toNumber()
-
-  const ltvRatio = debtValue / tokenDecimals / collateralSupply
-  const ltvPercent = (ltvRatio / loan.collateralPrice) * 100
+  const ltvPercent = calculateTokenLoanLtvByLoanValue(loan, debtValue)
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>

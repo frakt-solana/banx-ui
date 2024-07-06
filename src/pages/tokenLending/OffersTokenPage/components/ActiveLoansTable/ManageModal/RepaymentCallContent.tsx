@@ -6,7 +6,11 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/tokens'
-import { HealthColorIncreasing, getColorByPercent, getTokenDecimals } from '@banx/utils'
+import {
+  HealthColorIncreasing,
+  calculateTokenLoanLtvByLoanValue,
+  getColorByPercent,
+} from '@banx/utils'
 
 import { useTokenLenderLoansTransactions } from '../hooks'
 import { calculateRepaymentStaticValues } from './helpers'
@@ -29,11 +33,7 @@ export const RepaymentCallContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => 
 
   const remainingDebt = totalClaim - paybackValue
 
-  const tokenDecimals = getTokenDecimals(loan.bondTradeTransaction.lendingToken)
-  const collateralSupply = loan.fraktBond.fbondTokenSupply / Math.pow(10, loan.collateral.decimals)
-
-  const ltvRatio = remainingDebt / tokenDecimals / collateralSupply
-  const ltvPercent = (ltvRatio / loan.collateralPrice) * 100
+  const ltvPercent = calculateTokenLoanLtvByLoanValue(loan, remainingDebt)
 
   const sendBtnDisabled =
     !repayPercent || (repaymentCallActive && initialRepayValue === paybackValue)
