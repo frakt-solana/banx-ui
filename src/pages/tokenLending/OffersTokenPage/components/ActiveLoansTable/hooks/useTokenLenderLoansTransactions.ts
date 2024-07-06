@@ -44,7 +44,7 @@ export const useTokenLenderLoansTransactions = () => {
   const { isLedger } = useIsLedger()
   const { connection } = useConnection()
 
-  const { addMints: hideLoans, updateOrAddLoan } = useTokenLenderLoans()
+  const { addLoansPubkeys, updateOrAddLoan } = useTokenLenderLoans()
   const { clear: clearSelection, remove: removeLoan } = useSelectedTokenLoans()
 
   const { close } = useModal()
@@ -217,7 +217,7 @@ export const useTokenLenderLoansTransactions = () => {
               const offer = parseInstantRefinanceSimulatedAccounts(accountInfoByPubkey)
 
               updateOrAddOffer(offer)
-              hideLoans([loan.publicKey])
+              addLoansPubkeys([loan.publicKey])
               close()
             }
           })
@@ -268,7 +268,7 @@ export const useTokenLenderLoansTransactions = () => {
               .compact()
               .value()
 
-            hideLoans(mintsToHidden)
+            addLoansPubkeys(mintsToHidden)
           }
 
           if (failed.length) {
@@ -326,7 +326,7 @@ export const useTokenLenderLoansTransactions = () => {
               solanaExplorerPath: `tx/${signature}`,
             })
 
-            hideLoans([params.loan.publicKey])
+            addLoansPubkeys([params.loan.publicKey])
           })
         })
         .on('error', (error) => {

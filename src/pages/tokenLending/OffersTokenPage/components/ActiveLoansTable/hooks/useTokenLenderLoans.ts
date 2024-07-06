@@ -11,17 +11,17 @@ import { useNftTokenType } from '@banx/store/nft'
 
 import { useTokenLenderLoansOptimistic } from './useTokenLenderLoansOptimistic'
 
-interface HiddenCollateralMintsState {
-  mints: string[]
-  addMints: (mints: string[]) => void
+interface HiddenLoansPubkeysState {
+  pubkeys: string[]
+  addLoansPubkeys: (pubkeys: string[]) => void
 }
 
-const useHiddenCollateralMint = create<HiddenCollateralMintsState>((set) => ({
-  mints: [],
-  addMints: (mints) => {
+const useHiddenLoansPubkeys = create<HiddenLoansPubkeysState>((set) => ({
+  pubkeys: [],
+  addLoansPubkeys: (pubkeys) => {
     set(
-      produce((state: HiddenCollateralMintsState) => {
-        state.mints = mints.map((nft) => nft)
+      produce((state: HiddenLoansPubkeysState) => {
+        state.pubkeys = pubkeys.map((pubkey) => pubkey)
       }),
     )
   },
@@ -37,7 +37,7 @@ export const useTokenLenderLoans = () => {
     findLoan,
     updateLoans,
   } = useTokenLenderLoansOptimistic()
-  const { mints: hiddenLoansMints, addMints } = useHiddenCollateralMint()
+  const { pubkeys: hiddenLoansPubkeys, addLoansPubkeys } = useHiddenLoansPubkeys()
   const { tokenType } = useNftTokenType()
 
   const { data: loans, isLoading } = useQuery(
@@ -65,9 +65,9 @@ export const useTokenLenderLoans = () => {
       .groupBy((loan) => loan.publicKey)
       .map((loans) => maxBy(loans, (loan) => loan.fraktBond.lastTransactedAt))
       .compact()
-      .filter((loan) => !hiddenLoansMints.includes(loan.publicKey))
+      .filter((loan) => !hiddenLoansPubkeys.includes(loan.publicKey))
       .value()
-  }, [loans, isLoading, walletOptimisticLoans, hiddenLoansMints])
+  }, [loans, isLoading, walletOptimisticLoans, hiddenLoansPubkeys])
 
   const updateOrAddLoan = (loan: core.TokenLoan) => {
     const loanExists = !!findLoan(loan.publicKey, walletPublicKeyString)
@@ -80,6 +80,6 @@ export const useTokenLenderLoans = () => {
     loans: mergedLoans || [],
     loading: isLoading,
     updateOrAddLoan,
-    addMints,
+    addLoansPubkeys,
   }
 }
