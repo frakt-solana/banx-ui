@@ -27,7 +27,7 @@ export const WalletConnectButton = () => {
 
   const { data: discordUserData } = useDiscordUser()
 
-  const { totalClaimableValue } = useLenderVaultInfo()
+  const { lenderVaultInfo } = useLenderVaultInfo()
 
   const ConnectedButton = () => (
     <div className={styles.connectedButton} onClick={toggleVisibility}>
@@ -37,7 +37,10 @@ export const WalletConnectButton = () => {
         <span className={styles.connectedMobileWalletAddress}>
           {walletPubkeyString.slice(0, 4)}
         </span>
-        <BalanceContent walletBalance={walletBalance} vaultBalance={totalClaimableValue} />
+        <BalanceContent
+          walletBalance={walletBalance}
+          vaultBalance={lenderVaultInfo.totalClaimableValue}
+        />
       </div>
       <ChevronDown
         className={classNames(styles.connectedWalletChevron, { [styles.active]: visible })}
