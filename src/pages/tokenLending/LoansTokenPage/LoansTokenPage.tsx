@@ -4,6 +4,7 @@ import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
 import LoansHeader from './LoansHeader'
 import LoansTokenActiveTable from './LoansTokenActiveTable'
+import LoansTokenHistoryTable from './LoansTokenHistoryTable'
 import { useLoansTokenTabs, useWalletTokenLoansAndOffers } from './hooks'
 
 import styles from './LoansTokenPage.module.less'
@@ -34,7 +35,7 @@ export const LoansTokenPage = () => {
         <LoansTokenActiveTable loans={loans} offers={offers} isLoading={isLoading} />
       )}
       {currentTabValue === LoansTokenTabsName.LISTINGS && <></>}
-      {currentTabValue === LoansTokenTabsName.HISTORY && <></>}
+      {currentTabValue === LoansTokenTabsName.HISTORY && <LoansTokenHistoryTable />}
     </div>
   )
 }
