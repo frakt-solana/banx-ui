@@ -3,6 +3,8 @@ import React from 'react'
 import PlaceTokenOfferSection from '@banx/components/PlaceTokenOfferSection'
 import { Tabs, useTabs } from '@banx/components/Tabs'
 
+import LendTokenActivityTable from '@banx/pages/tokenLending/LendTokenPage/PlaceTokenOffers/components/LendTokenActivityTable'
+
 interface ExpandedCardContentProps {
   marketPubkey: string
   offerPubkey: string
@@ -20,7 +22,9 @@ const ExpandedCardContent: React.FC<ExpandedCardContentProps> = ({ marketPubkey,
       {currentTabValue === TabName.OFFER && (
         <PlaceTokenOfferSection marketPubkey={marketPubkey} offerPubkey={offerPubkey} />
       )}
-      {currentTabValue === TabName.ACTIVITY && <></>}
+      {currentTabValue === TabName.ACTIVITY && (
+        <LendTokenActivityTable marketPubkey={marketPubkey} />
+      )}
     </>
   )
 }

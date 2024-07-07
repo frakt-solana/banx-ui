@@ -1,0 +1,87 @@
+.tableRoot {
+  width: 100%;
+
+  @media (max-width: 1240px) {
+    min-width: 490px;
+  }
+
+  tr > td,
+  tr > th {
+    @media (max-width: 1240px) {
+      width: 68px;
+
+      &:first-child,
+      &:nth-child(4),
+      &:last-child {
+        width: 118px;
+      }
+    }
+
+    td {
+      padding: 4px;
+      font: var(--body-text-sm);
+    }
+    th {
+      background: var(--bg-primary-deep);
+
+      & > div {
+        font: var(--title-xs);
+      }
+    }
+  }
+}
+
+.tableWrapper {
+  height: 200px;
+
+  &.notConnectedContent {
+    @media (max-width: 640px) {
+      height: 256px;
+    }
+  }
+
+  &.emptyContent {
+    height: 152px;
+  }
+}
+
+// * FilterTableSection * //
+.filterTableSection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    padding: 8px 16px;
+    flex-direction: column-reverse;
+    gap: 16px;
+  }
+}
+
+.radioButton {
+  label {
+    padding: 2px 12px;
+
+    @media (max-width: 640px) {
+      font: var(--tab-text-sm);
+    }
+  }
+
+  @media (max-width: 640px) {
+    justify-content: center;
+  }
+}
+// * FilterTableSection * //
+
+// * Cells * //
+.cellTitle {
+  font: var(--body-text-sm);
+  white-space: nowrap;
+}
+
+.lentCellTitle span {
+  justify-content: flex-end;
+}
+// * Cells * //

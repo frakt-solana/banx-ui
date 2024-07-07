@@ -3,6 +3,8 @@ import { FC } from 'react'
 import PlaceTokenOfferSection from '@banx/components/PlaceTokenOfferSection'
 import { Tabs, useTabs } from '@banx/components/Tabs'
 
+import LendTokenActivityTable from '../LendTokenActivityTable'
+
 const ExpandedCardContent: FC<{ marketPubkey: string }> = ({ marketPubkey }) => {
   const { value: currentTabValue, ...tabsProps } = useTabs({
     tabs: TABS,
@@ -13,7 +15,9 @@ const ExpandedCardContent: FC<{ marketPubkey: string }> = ({ marketPubkey }) => 
     <>
       <Tabs value={currentTabValue} {...tabsProps} />
       {currentTabValue === TabName.OFFERS && <PlaceTokenOfferSection marketPubkey={marketPubkey} />}
-      {currentTabValue === TabName.ACTIVITY && <></>}
+      {currentTabValue === TabName.ACTIVITY && (
+        <LendTokenActivityTable marketPubkey={marketPubkey} />
+      )}
     </>
   )
 }
