@@ -154,6 +154,7 @@ const LenderVaultContent = () => {
 
   const { offers, updateOrAddOffer } = useUserOffers()
   const { data: clusterStats } = useClusterStats()
+  const { isLedger } = useIsLedger()
 
   const {
     totalAccruedInterest,
@@ -187,10 +188,10 @@ const LenderVaultContent = () => {
         ),
       )
 
-      await new TxnExecutor<CreateClaimLenderVaultTxnDataParams>(
-        walletAndConnection,
-        TXN_EXECUTOR_DEFAULT_OPTIONS,
-      )
+      await new TxnExecutor<CreateClaimLenderVaultTxnDataParams>(walletAndConnection, {
+        ...TXN_EXECUTOR_DEFAULT_OPTIONS,
+        chunkSize: isLedger ? 5 : 40,
+      })
         .addTxnsData(txnsData)
         .on('sentAll', () => {
           enqueueTransactionsSent()
