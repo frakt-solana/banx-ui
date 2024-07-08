@@ -1,9 +1,8 @@
 import { FC } from 'react'
 
+import { LendTokenActivityTable } from '@banx/components/CommonTables'
 import PlaceTokenOfferSection from '@banx/components/PlaceTokenOfferSection'
 import { Tabs, useTabs } from '@banx/components/Tabs'
-
-import LendTokenActivityTable from '../LendTokenActivityTable'
 
 const ExpandedCardContent: FC<{ marketPubkey: string }> = ({ marketPubkey }) => {
   const { value: currentTabValue, ...tabsProps } = useTabs({

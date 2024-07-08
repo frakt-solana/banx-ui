@@ -1,9 +1,8 @@
 import React from 'react'
 
+import { LendTokenActivityTable } from '@banx/components/CommonTables'
 import PlaceTokenOfferSection from '@banx/components/PlaceTokenOfferSection'
 import { Tabs, useTabs } from '@banx/components/Tabs'
-
-import LendTokenActivityTable from '@banx/pages/tokenLending/LendTokenPage/PlaceTokenOffers/components/LendTokenActivityTable'
 
 interface ExpandedCardContentProps {
   marketPubkey: string
