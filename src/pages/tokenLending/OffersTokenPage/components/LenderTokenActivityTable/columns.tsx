@@ -1,10 +1,10 @@
 import { ColumnType } from '@banx/components/Table'
 import {
+  CollateralTokenCell,
   DisplayValue,
   DurationCell,
   HeaderCell,
   HorizontalCell,
-  NftInfoCell,
   createPercentValueJSX,
 } from '@banx/components/TableComponents'
 
@@ -17,8 +17,12 @@ export const getTableColumns = () => {
     {
       key: 'collateral',
       title: <HeaderCell label="Collateral" align="left" />,
-      render: ({ id, collateral }) => (
-        <NftInfoCell key={id} nftName={collateral.ticker} nftImage={collateral.logoUrl} />
+      render: ({ id, collateral, tokenSupply }) => (
+        <CollateralTokenCell
+          key={id}
+          collateralImageUrl={collateral.logoUrl}
+          collateralTokenAmount={Math.round(tokenSupply / Math.pow(10, collateral.decimals))}
+        />
       ),
     },
     {

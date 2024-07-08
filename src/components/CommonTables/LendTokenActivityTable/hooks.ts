@@ -8,8 +8,6 @@ import { RBOption } from '@banx/components/RadioButton'
 import { activity } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
 
-// import { useTokenMarketsPreview } from '../../../hooks'
-
 const PAGINATION_LIMIT = 15
 
 export const useLendTokenActivity = (marketPubkey: string) => {
@@ -18,8 +16,6 @@ export const useLendTokenActivity = (marketPubkey: string) => {
 
   const { tokenType } = useNftTokenType()
 
-  //   const { marketsPreview } = useTokenMarketsPreview()
-
   const options = appendIdToOptions(RADIO_BUTTONS_OPTIONS, marketPubkey)
   const loanedOption = options[1]
 
@@ -27,7 +23,6 @@ export const useLendTokenActivity = (marketPubkey: string) => {
   const [currentOption, setCurrentOption] = useState<RBOption>(loanedOption)
 
   const eventType = currentOption.value.split('_')[0]
-  //   const currentMarket = marketsPreview.find((market) => market.marketPubkey === marketPubkey)
 
   const fetchData = async (pageParam: number) => {
     const data = await activity.fetchLenderTokenActivity({
@@ -36,7 +31,6 @@ export const useLendTokenActivity = (marketPubkey: string) => {
       state: eventType,
       sortBy: 'timestamp',
       order: 'desc',
-      collection: ['Private BANX token market'],
       walletPubkey: checked ? publicKeyString : '',
       tokenType,
     })

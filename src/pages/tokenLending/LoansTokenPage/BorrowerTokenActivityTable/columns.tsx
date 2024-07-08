@@ -1,10 +1,10 @@
 import { ColumnType } from '@banx/components/Table'
 import {
+  CollateralTokenCell,
   DisplayValue,
   DurationCell,
   HeaderCell,
   HorizontalCell,
-  NftInfoCell,
 } from '@banx/components/TableComponents'
 
 import { activity } from '@banx/api/tokens'
@@ -16,8 +16,12 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
     {
       key: 'collateral',
       title: <HeaderCell label="Collection" align="left" />,
-      render: ({ id, collateral }) => (
-        <NftInfoCell key={id} nftName={collateral.ticker} nftImage={collateral.logoUrl} /> //TODO (TokenLending): Add new token cell
+      render: ({ id, collateral, tokenSupply }) => (
+        <CollateralTokenCell
+          key={id}
+          collateralImageUrl={collateral.logoUrl}
+          collateralTokenAmount={Math.round(tokenSupply / Math.pow(10, collateral.decimals))}
+        />
       ),
     },
     {

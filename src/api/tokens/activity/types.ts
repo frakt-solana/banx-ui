@@ -9,23 +9,14 @@ export const LenderTokenActivitySchema = z.object({
   publicKey: z.string(),
 
   collateral: TokenMetaSchema,
+  tokenSupply: z.number(),
 
-  status: z.string(),
-  lent: z.number(),
+  apr: z.number(),
   currentRemainingLentAmount: z.number(),
   interest: z.number(),
-  apr: z.number(),
-  duration: z.number(),
   received: z.number(),
+  status: z.string(),
   timestamp: z.number(),
-
-  //TODO (TokenLending): remove from BE
-  // user: z.string(),
-  // finalVersion: z.boolean(),
-  // lendingToken: z.nativeEnum(LendingTokenType),
-  // bondTradeTransactionType: z.nativeEnum(BondTradeTransactionV2Type),
-  // collectionName: z.string(),
-  // collateralPrice: z.number(),
 })
 
 export type LenderTokenActivity = z.infer<typeof LenderTokenActivitySchema>
@@ -51,6 +42,7 @@ export const TokenBorrowerActivitySchema = z.object({
   publicKey: z.string(),
 
   collateral: TokenMetaSchema,
+  tokenSupply: z.number(),
 
   borrowed: z.number(),
   currentRemainingLentAmount: z.number(),
@@ -58,18 +50,6 @@ export const TokenBorrowerActivitySchema = z.object({
   repaid: z.number(),
   status: z.string(),
   timestamp: z.number(),
-
-  //TODO (TokenLending): remove from BE
-  // lendingToken: z.nativeEnum(LendingTokenType),
-  // currentLentAmount: z.number(),
-  // apr: z.number(),
-  // duration: z.number(),
-  // user: z.string(),
-  // soldAt: z.number(),
-  // bondTradeTransaction: z.string(),
-  // collectionName: z.string(),
-  // bondTradeTransactionType: z.nativeEnum(BondTradeTransactionV2Type),
-  // collateralPrice: z.number(),
 })
 
 export type TokenBorrowerActivity = z.infer<typeof TokenBorrowerActivitySchema>

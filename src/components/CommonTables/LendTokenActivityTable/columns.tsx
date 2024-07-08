@@ -2,10 +2,10 @@ import classNames from 'classnames'
 
 import { ColumnType } from '@banx/components/Table'
 import {
+  CollateralTokenCell,
   DisplayValue,
   DurationCell,
   HeaderCell,
-  NftInfoCell,
 } from '@banx/components/TableComponents'
 
 import { activity } from '@banx/api/tokens'
@@ -19,8 +19,12 @@ export const getTableColumns = () => {
     {
       key: 'collateral',
       title: <HeaderCell label="Collateral" align="left" />,
-      render: ({ id, collateral }) => (
-        <NftInfoCell key={id} nftName={collateral.ticker} nftImage={collateral.logoUrl} /> //TODO (TokenLending): Add new token cell
+      render: ({ id, collateral, tokenSupply }) => (
+        <CollateralTokenCell
+          key={id}
+          collateralImageUrl={collateral.logoUrl}
+          collateralTokenAmount={Math.round(tokenSupply / Math.pow(10, collateral.decimals))}
+        />
       ),
     },
     {
@@ -28,7 +32,7 @@ export const getTableColumns = () => {
       title: <HeaderCell label="Lent" />,
       render: (loan) => (
         <span className={classNames(styles.cellTitle, styles.lentCellTitle)}>
-          <DisplayValue value={loan.lent} />
+          <DisplayValue value={loan.currentRemainingLentAmount} />
         </span>
       ),
     },
