@@ -2,9 +2,9 @@ import { useEffect } from 'react'
 
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
+import BorrowerTokenActivityTable from './BorrowerTokenActivityTable'
 import LoansHeader from './LoansHeader'
 import LoansTokenActiveTable from './LoansTokenActiveTable'
-import LoansTokenHistoryTable from './BorrowerTokenActivityTable'
 import { useLoansTokenTabs, useWalletTokenLoansAndOffers } from './hooks'
 
 import styles from './LoansTokenPage.module.less'
@@ -35,7 +35,7 @@ export const LoansTokenPage = () => {
         <LoansTokenActiveTable loans={loans} offers={offers} isLoading={isLoading} />
       )}
       {currentTabValue === LoansTokenTabsName.LISTINGS && <></>}
-      {currentTabValue === LoansTokenTabsName.HISTORY && <LoansTokenHistoryTable />}
+      {currentTabValue === LoansTokenTabsName.HISTORY && <BorrowerTokenActivityTable />}
     </div>
   )
 }
