@@ -81,11 +81,11 @@ interface BorrowerActivityRequest extends BasePaginationRequest {
   getAll?: boolean
 }
 
-export type FetchBorrowerActivity = (
+export type FetchBorrowerTokenActivity = (
   props: BorrowerActivityRequest,
 ) => Promise<TokenBorrowerActivity[]>
 
-export interface TokenBorrowedActivityResponse {
+export interface BorrowedTokenActivityResponse {
   data: TokenBorrowerActivity[]
   meta: PaginationMeta
 }

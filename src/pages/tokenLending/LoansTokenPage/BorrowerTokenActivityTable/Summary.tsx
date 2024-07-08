@@ -12,7 +12,7 @@ import { createDownloadLink } from '@banx/utils'
 
 import { useUserTokenLoansStats } from '../hooks'
 
-import styles from './LoansTokenHistoryTable.module.less'
+import styles from './BorrowerTokenActivityTable.module.less'
 
 const ACTIVITY_CSV_FILENAME = 'banx_borrower_spl_activity.csv'
 
@@ -29,7 +29,7 @@ export const Summary = () => {
     try {
       setIsDownloading(true)
 
-      const data = await activity.fetchTokenBorrowerActivityCSV({
+      const data = await activity.fetchBorrowerTokenActivityCSV({
         walletPubkey: publicKey?.toBase58() || '',
         tokenType,
       })

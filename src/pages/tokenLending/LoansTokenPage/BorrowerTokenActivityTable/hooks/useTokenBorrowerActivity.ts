@@ -13,7 +13,7 @@ const PAGINATION_LIMIT = 15
 
 const useCollectionsStore = createGlobalState<string[]>([])
 
-export const useTokenBorrowerActivity = () => {
+export const useBorrowerTokenActivity = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
@@ -25,7 +25,7 @@ export const useTokenBorrowerActivity = () => {
   const [sortBy, order] = sortOption.value
 
   const fetchData = async (pageParam: number) => {
-    const data = await activity.fetchTokenBorrowerActivity({
+    const data = await activity.fetchBorrowerTokenActivity({
       skip: PAGINATION_LIMIT * pageParam,
       limit: PAGINATION_LIMIT,
       sortBy,
@@ -89,7 +89,7 @@ const SORT_OPTIONS: SortOption<SortField>[] = [
   { label: 'Repaid', value: [SortField.REPAID, 'desc'] },
 ]
 
-export const useTokenBorrowerActivityCollectionsList = () => {
+export const useBorrowerTokenActivityCollectionsList = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 

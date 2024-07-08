@@ -10,18 +10,18 @@ import { ModeType } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
 
 import {
-  useTokenBorrowerActivity,
-  useTokenBorrowerActivityCollectionsList,
+  useBorrowerTokenActivity,
+  useBorrowerTokenActivityCollectionsList,
 } from './useTokenBorrowerActivity'
 
-import styles from '../LoansTokenHistoryTable.module.less'
+import styles from '../BorrowerTokenActivityTable.module.less'
 
-export const useTokenHistoryLoansTable = () => {
+export const useBorrowerTokenActivityTable = () => {
   const { connected } = useWallet()
   const navigate = useNavigate()
   const { tokenType } = useNftTokenType()
 
-  const { data: collectionsList } = useTokenBorrowerActivityCollectionsList()
+  const { data: collectionsList } = useBorrowerTokenActivityCollectionsList()
 
   const {
     loans,
@@ -31,7 +31,7 @@ export const useTokenHistoryLoansTable = () => {
     setSelectedCollections,
     fetchNextPage,
     hasNextPage,
-  } = useTokenBorrowerActivity()
+  } = useBorrowerTokenActivity()
 
   const loadMore = () => {
     if (hasNextPage) {

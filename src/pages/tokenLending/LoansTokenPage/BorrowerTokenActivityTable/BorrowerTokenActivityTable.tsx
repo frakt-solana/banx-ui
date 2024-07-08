@@ -5,13 +5,13 @@ import { ViewState, useTableView } from '@banx/store/common'
 
 import { Summary } from './Summary'
 import { getTableColumns } from './columns'
-import { useTokenHistoryLoansTable } from './hooks'
+import { useBorrowerTokenActivityTable } from './hooks'
 
-import styles from './LoansTokenHistoryTable.module.less'
+import styles from './BorrowerTokenActivityTable.module.less'
 
-const LoansTokenHistoryTable = () => {
+const BorrowerTokenActivityTable = () => {
   const { loans, loading, sortViewParams, showEmptyList, emptyListParams, showSummary, loadMore } =
-    useTokenHistoryLoansTable()
+    useBorrowerTokenActivityTable()
 
   const { viewState } = useTableView()
 
@@ -35,4 +35,4 @@ const LoansTokenHistoryTable = () => {
   )
 }
 
-export default LoansTokenHistoryTable
+export default BorrowerTokenActivityTable

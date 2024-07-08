@@ -5,14 +5,14 @@ import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import { convertToMarketType } from '../../helpers'
 import {
-  FetchBorrowerActivity,
+  BorrowedTokenActivityResponse,
+  FetchBorrowerTokenActivity,
   FetchLenderTokenActivity,
   FetchTokenActivityCollectionsList,
   LenderTokenActivityResponse,
   LenderTokenActivitySchema,
   TokenActivityCollectionsList,
   TokenActivityCollectionsListSchema,
-  TokenBorrowedActivityResponse,
   TokenBorrowerActivitySchema,
 } from './types'
 
@@ -53,7 +53,7 @@ export const fetchLenderTokenActivity: FetchLenderTokenActivity = async ({
   return data.data ?? []
 }
 
-export const fetchTokenBorrowerActivity: FetchBorrowerActivity = async ({
+export const fetchBorrowerTokenActivity: FetchBorrowerTokenActivity = async ({
   walletPubkey,
   tokenType,
   order,
@@ -77,7 +77,7 @@ export const fetchTokenBorrowerActivity: FetchBorrowerActivity = async ({
 
   if (collection?.length) queryParams.append('collection', String(collection))
 
-  const { data } = await axios.get<TokenBorrowedActivityResponse>(
+  const { data } = await axios.get<BorrowedTokenActivityResponse>(
     `${BACKEND_BASE_URL}/spl-activity/borrower/${walletPubkey}?${queryParams.toString()}`,
   )
 
@@ -90,7 +90,7 @@ export const fetchTokenBorrowerActivity: FetchBorrowerActivity = async ({
   return data.data ?? []
 }
 
-export const fetchTokenBorrowerActivityCSV = async ({
+export const fetchBorrowerTokenActivityCSV = async ({
   walletPubkey,
   tokenType,
 }: {

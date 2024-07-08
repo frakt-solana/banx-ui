@@ -4,7 +4,7 @@ import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
 import LoansHeader from './LoansHeader'
 import LoansTokenActiveTable from './LoansTokenActiveTable'
-import LoansTokenHistoryTable from './LoansTokenHistoryTable'
+import LoansTokenHistoryTable from './BorrowerTokenActivityTable'
 import { useLoansTokenTabs, useWalletTokenLoansAndOffers } from './hooks'
 
 import styles from './LoansTokenPage.module.less'
