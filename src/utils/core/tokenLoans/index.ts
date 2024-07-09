@@ -8,6 +8,7 @@ import moment from 'moment'
 
 import { core } from '@banx/api/tokens'
 import { BONDS, SECONDS_IN_72_HOURS, SECONDS_IN_DAY } from '@banx/constants'
+import { getTokenDecimals } from '@banx/utils/tokens'
 
 import { calculateApr } from '../loans'
 
@@ -53,10 +54,28 @@ export const isTokenLoanActive = (loan: core.TokenLoan) => {
   )
 }
 
-export const isTokenLoanUnderWater = (loan: core.TokenLoan) => {
-  const loanValue = calculateTokenLoanValueWithUpfrontFee(loan).toNumber()
+export const getHumanReadableTokenSupply = (loan: core.TokenLoan) => {
+  const collateralSupply = loan.fraktBond.fbondTokenSupply / Math.pow(10, loan.collateral.decimals)
+  return collateralSupply
+}
 
-  return loanValue > loan.collateralPrice
+export const calculateTokenLoanLtvByLoanValue = (loan: core.TokenLoan, value: number) => {
+  const tokenDecimals = getTokenDecimals(loan.bondTradeTransaction.lendingToken)
+  const collateralSupply = getHumanReadableTokenSupply(loan)
+
+  const ltvRatio = value / tokenDecimals / collateralSupply
+  const ltvPercent = (ltvRatio / loan.collateralPrice) * 100
+
+  return ltvPercent
+}
+
+export const isTokenLoanUnderWater = (loan: core.TokenLoan) => {
+  const LTV_THRESHOLD = 100
+
+  const loanValue = calculateTokenLoanValueWithUpfrontFee(loan).toNumber()
+  const ltvPercent = calculateTokenLoanLtvByLoanValue(loan, loanValue)
+
+  return ltvPercent > LTV_THRESHOLD
 }
 
 export const isTokenLoanRepaymentCallActive = (loan: core.TokenLoan) => {
@@ -85,22 +104,42 @@ export const calculateTokenRepaymentCallLenderReceivesAmount = (loan: core.Token
   })
 }
 
-export const caclulateBorrowTokenLoanValue = (loan: core.TokenLoan, includeFee = true) => {
-  const { solAmount, feeAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction
-
-  const loanValue = includeFee ? solAmount + feeAmount : solAmount
-
-  const currentTimeInSeconds = moment().unix()
-
-  const calculatedInterest = calculateCurrentInterestSolPure({
-    loanValue: amountOfBonds,
-    startTime: soldAt,
-    currentTime: currentTimeInSeconds,
-    rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
+export const caclulateBorrowTokenLoanValue = (loan: core.TokenLoan, upfrontFeeIncluded = true) => {
+  const repayValueBN = calculateTokenLoanRepayValueOnCertainDate({
+    loan,
+    upfrontFeeIncluded,
+    date: moment().unix(),
   })
 
-  return new BN(loanValue).add(new BN(calculatedInterest))
+  return repayValueBN
 }
+
+type CalculateTokenLoanRepayValueOnCertainDate = (params: {
+  loan: core.TokenLoan
+  upfrontFeeIncluded?: boolean
+  date: number //? Unix timestamp
+}) => BN
+/**
+ * set upfrontFeeIncluded false for partial repay
+ */
+
+export const calculateTokenLoanRepayValueOnCertainDate: CalculateTokenLoanRepayValueOnCertainDate =
+  ({ loan, upfrontFeeIncluded = true, date }): BN => {
+    const { solAmount, soldAt, amountOfBonds } = loan.bondTradeTransaction || {}
+
+    const loanValue = upfrontFeeIncluded
+      ? calculateTokenLoanValueWithUpfrontFee(loan).toNumber()
+      : solAmount
+
+    const calculatedInterest = calculateCurrentInterestSolPure({
+      loanValue,
+      startTime: soldAt,
+      currentTime: date,
+      rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
+    })
+
+    return new BN(loanValue).add(new BN(calculatedInterest))
+  }
 
 export const calculateTokenLoanValueWithUpfrontFee = (loan: core.TokenLoan) => {
   const { solAmount, feeAmount } = loan.bondTradeTransaction

@@ -4,6 +4,7 @@ import { CollateralTokenCell, HeaderCell } from '@banx/components/TableComponent
 
 import { Offer } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
+import { getHumanReadableTokenSupply } from '@banx/utils'
 
 import { APRCell, ActionsCell, DebtCell, LTVCell, StatusCell } from './TableCells'
 import { TokenLoanOptimistic } from './loansState'
@@ -42,9 +43,7 @@ export const getTableColumns = ({
             key={loan.publicKey}
             selected={!!findLoanInSelection(loan.publicKey)}
             onCheckboxClick={() => toggleLoanInSelection(loan)}
-            collateralTokenAmount={Math.trunc(
-              loan.fraktBond.fbondTokenSupply / Math.pow(10, loan.collateral.decimals),
-            )}
+            collateralTokenAmount={Math.round(getHumanReadableTokenSupply(loan))}
             collateralImageUrl={loan.collateral.logoUrl}
           />
         )

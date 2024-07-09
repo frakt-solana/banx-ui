@@ -7,17 +7,13 @@ import {
   caclulateBorrowTokenLoanValue,
   calcWeightedAverage,
   isBanxSolTokenType,
-  isSolTokenType,
   isTokenLoanRepaymentCallActive,
 } from '@banx/utils'
 
 //? This fee is associated with account creation. It's used to display the correct value when the SOL token type is used.
 const getPartialRepayRentFee = (loan: core.TokenLoan) => {
   const ACCOUNT_CREATION_FEE = 3229 * 1e3
-  return isSolTokenType(loan.bondTradeTransaction.lendingToken) ||
-    isBanxSolTokenType(loan.bondTradeTransaction.lendingToken)
-    ? ACCOUNT_CREATION_FEE
-    : 0
+  return isBanxSolTokenType(loan.bondTradeTransaction.lendingToken) ? ACCOUNT_CREATION_FEE : 0
 }
 
 export const calcAccruedInterest = (loan: core.TokenLoan) => {

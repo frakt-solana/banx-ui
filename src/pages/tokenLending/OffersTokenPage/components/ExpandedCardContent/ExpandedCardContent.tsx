@@ -20,7 +20,6 @@ const ExpandedCardContent: React.FC<ExpandedCardContentProps> = ({ marketPubkey,
       {currentTabValue === TabName.OFFER && (
         <PlaceTokenOfferSection marketPubkey={marketPubkey} offerPubkey={offerPubkey} />
       )}
-      {currentTabValue === TabName.LOANS && <></>}
       {currentTabValue === TabName.ACTIVITY && <></>}
     </>
   )
@@ -30,7 +29,6 @@ export default ExpandedCardContent
 
 export enum TabName {
   OFFER = 'offer',
-  LOANS = 'loans',
   ACTIVITY = 'activity',
 }
 
@@ -38,10 +36,6 @@ export const TABS = [
   {
     label: 'Offer',
     value: TabName.OFFER,
-  },
-  {
-    label: 'Loans',
-    value: TabName.LOANS,
   },
   {
     label: 'Activity',

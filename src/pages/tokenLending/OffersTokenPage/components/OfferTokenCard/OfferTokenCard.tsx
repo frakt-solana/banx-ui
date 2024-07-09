@@ -9,7 +9,8 @@ import { DisplayValue, createPercentValueJSX } from '@banx/components/TableCompo
 import { core } from '@banx/api/tokens'
 import { ChevronDown, Coin, CoinPlus, SOL, USDC, Warning } from '@banx/icons'
 import { useNftTokenType } from '@banx/store/nft'
-import { isSolTokenType } from '@banx/utils'
+import { convertToSynthetic, useSyntheticTokenOffers } from '@banx/store/token'
+import { isBanxSolTokenType } from '@banx/utils'
 
 import ExpandedCardContent from '../ExpandedCardContent'
 
@@ -17,14 +18,24 @@ import styles from './OfferTokenCard.module.less'
 
 interface OfferTokenCardProps {
   offerPreview: core.TokenOfferPreview
-  onClick: () => void
   isOpen: boolean
+  onToggleCard: () => void
 }
 
-const OfferTokenCard: FC<OfferTokenCardProps> = ({ offerPreview, onClick, isOpen }) => {
+const OfferTokenCard: FC<OfferTokenCardProps> = ({ offerPreview, isOpen, onToggleCard }) => {
+  const { setOffer: setSyntheticOffer } = useSyntheticTokenOffers()
+
+  const onCardClick = () => {
+    onToggleCard()
+    setSyntheticOffer(convertToSynthetic(offerPreview.bondOffer, true))
+  }
+
   return (
     <div className={styles.card}>
-      <div className={classNames(styles.cardBody, { [styles.opened]: isOpen })} onClick={onClick}>
+      <div
+        className={classNames(styles.cardBody, { [styles.opened]: isOpen })}
+        onClick={onCardClick}
+      >
         <MarketMainInfo offerPreview={offerPreview} />
         <div className={styles.additionalContentWrapper}>
           <MarketAdditionalInfo offerPreview={offerPreview} isOpen={isOpen} />
@@ -53,7 +64,7 @@ const MarketMainInfo: FC<{ offerPreview: core.TokenOfferPreview }> = ({ offerPre
 
   const { tokenType } = useNftTokenType()
 
-  const Icon = isSolTokenType(tokenType) ? SOL : USDC
+  const Icon = isBanxSolTokenType(tokenType) ? SOL : USDC
 
   return (
     <div className={styles.mainInfoContainer}>
@@ -66,10 +77,14 @@ const MarketMainInfo: FC<{ offerPreview: core.TokenOfferPreview }> = ({ offerPre
         <div className={styles.mainInfoStats}>
           <StatInfo
             label="Market"
-            value={<DisplayValue value={collateralPrice} />}
-            tooltipText=""
+            value={<DisplayValue value={collateralPrice} isSubscriptFormat />}
+            tooltipText="Market price"
           />
-          <StatInfo label="Top offer" value={<DisplayValue value={bestOffer} />} tooltipText="" />
+          <StatInfo
+            label="Top offer"
+            value={<DisplayValue value={bestOffer} />}
+            tooltipText="Top offer"
+          />
         </div>
       </div>
     </div>

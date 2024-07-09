@@ -7,17 +7,22 @@ import {
 } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/tokens'
-import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
+import {
+  HealthColorIncreasing,
+  calculateTokenLoanLtvByLoanValue,
+  getColorByPercent,
+} from '@banx/utils'
+
+import { calculateLendToBorrowApr, calculateLendToBorrowValue } from '../helpers'
 
 import styles from '../InstantLendTokenTable.module.less'
 
-export const DebtCell: FC<{ loan: core.TokenLoan }> = () => {
-  const lentValue = 0
-  const collectionFloor = 0
+export const DebtCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
+  const lentValue = calculateLendToBorrowValue(loan)
 
   const tooltopContent = (
     <div className={styles.tooltipContainer}>
-      {createTooltipContent('Floor', collectionFloor)}
+      {createTooltipContent('Price', loan.collateralPrice, true)}
       {createTooltipContent('Debt', lentValue)}
     </div>
   )
@@ -27,15 +32,18 @@ export const DebtCell: FC<{ loan: core.TokenLoan }> = () => {
   )
 }
 
-const createTooltipContent = (label: string, value: number) => (
+const createTooltipContent = (label: string, value: number, isSubscriptFormat = false) => (
   <div className={styles.tooltipContent}>
-    <span>{label}</span>
-    <DisplayValue value={value} />
+    <span className={styles.tooltipLabel}>{label}</span>
+    <span className={styles.tooltipValue}>
+      <DisplayValue value={value} isSubscriptFormat={isSubscriptFormat} />
+    </span>
   </div>
 )
 
-export const LTVCell: FC<{ loan: core.TokenLoan }> = () => {
-  const ltv = 0
+export const LTVCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
+  const lentValue = calculateLendToBorrowValue(loan)
+  const ltv = calculateTokenLoanLtvByLoanValue(loan, lentValue)
 
   return (
     <HorizontalCell
@@ -46,7 +54,10 @@ export const LTVCell: FC<{ loan: core.TokenLoan }> = () => {
 }
 
 export const APRCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
-  const apr = loan.bondTradeTransaction.amountOfBonds
-
-  return <HorizontalCell value={createPercentValueJSX(apr / 100)} isHighlighted />
+  return (
+    <HorizontalCell
+      value={createPercentValueJSX(calculateLendToBorrowApr(loan) / 100)}
+      isHighlighted
+    />
+  )
 }

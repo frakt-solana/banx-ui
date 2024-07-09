@@ -1,15 +1,30 @@
-import React, { FC } from 'react'
+import React, { FC, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import { map, maxBy, sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import { useWalletModal } from '@banx/components/WalletModal'
+import { Modal } from '@banx/components/modals/BaseModal'
 
 import { core } from '@banx/api/tokens'
+import { SECONDS_IN_DAY } from '@banx/constants'
+import { useModal } from '@banx/store/common'
+import {
+  calcWeightedAverage,
+  calculateTokenLoanLtvByLoanValue,
+  isTokenLoanFrozen,
+} from '@banx/utils'
 
+import {
+  calcTokenWeeklyInterest,
+  calculateLendToBorrowApr,
+  calculateLendToBorrowValue,
+} from './helpers'
+import { useInstantTokenTransactions } from './hooks'
 import { useLoansTokenState } from './loansState'
 
 import styles from './InstantLendTokenTable.module.less'
@@ -17,12 +32,21 @@ import styles from './InstantLendTokenTable.module.less'
 export const Summary: FC<{ loans: core.TokenLoan[] }> = ({ loans }) => {
   const { connected } = useWallet()
   const { toggleVisibility } = useWalletModal()
+  const { lendToBorrowAll } = useInstantTokenTransactions()
   const { selection, set: setSelection } = useLoansTokenState()
 
-  const totalDebt = 0
-  const totalWeeklyInterest = 0
-  const weightedApr = 0
-  const weightedLtv = 0
+  const { open } = useModal()
+
+  const frozenLoans = useMemo(() => {
+    return selection.filter(isTokenLoanFrozen)
+  }, [selection])
+
+  const showModal = () => {
+    open(WarningModal, { loans: frozenLoans, lendToBorrowAll })
+  }
+
+  const { totalDebt, totalWeeklyInterest, weightedApr, weightedLtv } =
+    calculateSummaryInfo(selection)
 
   const onClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.stopPropagation()
@@ -31,7 +55,11 @@ export const Summary: FC<{ loans: core.TokenLoan[] }> = ({ loans }) => {
       return toggleVisibility()
     }
 
-    return
+    if (frozenLoans.length) {
+      return showModal()
+    }
+
+    return lendToBorrowAll()
   }
 
   const handleLoanSelection = (value = 0) => {
@@ -69,4 +97,53 @@ export const Summary: FC<{ loans: core.TokenLoan[] }> = ({ loans }) => {
       </div>
     </div>
   )
+}
+
+interface WarningModalProps {
+  loans: core.TokenLoan[]
+  lendToBorrowAll: () => Promise<void>
+}
+
+const WarningModal: FC<WarningModalProps> = ({ loans, lendToBorrowAll }) => {
+  const { close } = useModal()
+
+  const totalLoans = loans.length
+
+  const maxTerminateFreezeInDays =
+    maxBy(map(loans, (loan) => loan.bondTradeTransaction.terminationFreeze / SECONDS_IN_DAY)) || 0
+
+  return (
+    <Modal className={styles.modal} open onCancel={close} width={496}>
+      <h3>Please pay attention!</h3>
+      <p>
+        Are you sure you want to fund {totalLoans} loans for up to {maxTerminateFreezeInDays} days
+        with no termination option?
+      </p>
+      <div className={styles.actionsButtons}>
+        <Button onClick={close} className={styles.cancelButton}>
+          Cancel
+        </Button>
+        <Button onClick={lendToBorrowAll} className={styles.confirmButton}>
+          Confirm
+        </Button>
+      </div>
+    </Modal>
+  )
+}
+
+const calculateSummaryInfo = (loans: core.TokenLoan[]) => {
+  const totalDebt = sumBy(loans, (loan) => calculateLendToBorrowValue(loan))
+
+  const totalLoanValue = map(loans, (loan) => calculateLendToBorrowValue(loan))
+  const totalWeeklyInterest = sumBy(loans, (loan) => calcTokenWeeklyInterest(loan))
+
+  const totalAprArray = map(loans, (loan) => calculateLendToBorrowApr(loan) / 100)
+  const totalLtvArray = map(loans, (loan) =>
+    calculateTokenLoanLtvByLoanValue(loan, calculateLendToBorrowValue(loan)),
+  )
+
+  const weightedApr = calcWeightedAverage(totalAprArray, totalLoanValue)
+  const weightedLtv = calcWeightedAverage(totalLtvArray, totalLoanValue)
+
+  return { totalDebt, totalWeeklyInterest, weightedApr, weightedLtv }
 }

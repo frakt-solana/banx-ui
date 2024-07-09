@@ -12,7 +12,12 @@ export const useUserOffersStats = () => {
 
   const { data, isLoading } = useQuery(
     ['userOffersStats', publicKeyString, tokenType],
-    () => stats.fetchUserOffersStats({ walletPubkey: publicKeyString, tokenType }),
+    () =>
+      stats.fetchUserOffersStats({
+        walletPubkey: publicKeyString,
+        marketType: tokenType,
+        tokenType: 'nft',
+      }),
     {
       enabled: !!publicKeyString,
       staleTime: 5 * 1000,

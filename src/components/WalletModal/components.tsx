@@ -8,7 +8,6 @@ import { TxnExecutor } from 'solana-transactions-executor'
 
 import { useBanxSolBalance, useClusterStats, useDiscordUser, useSolanaBalance } from '@banx/hooks'
 import { BanxSOL, ChangeWallet, Copy, SignOut } from '@banx/icons'
-import { useUserOffers } from '@banx/pages/nftLending/OffersPage/components/OffersTabContent/hooks'
 import { useIsLedger } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
 import {
@@ -40,7 +39,7 @@ import { StatInfo } from '../StatInfo'
 import { DisplayValue } from '../TableComponents'
 import UserAvatar from '../UserAvatar'
 import { iconComponents } from './constants'
-import { getLenderVaultInfo } from './helpers'
+import { useLenderVaultInfo } from './hooks'
 
 import styles from './WalletModal.module.less'
 
@@ -152,9 +151,9 @@ const LenderVaultContent = () => {
   const { connection } = useConnection()
   const { tokenType } = useNftTokenType()
 
-  const { offers, updateOrAddOffer } = useUserOffers()
   const { data: clusterStats } = useClusterStats()
 
+  const { rawOffers, updateOrAddOffer, lenderVaultInfo } = useLenderVaultInfo()
   const {
     totalAccruedInterest,
     totalRepaymets,
@@ -164,10 +163,10 @@ const LenderVaultContent = () => {
     totalClaimableValue,
     totalFundsInCurrentEpoch,
     totalFundsInNextEpoch,
-  } = getLenderVaultInfo(offers, clusterStats)
+  } = lenderVaultInfo
 
   const claimVault = async () => {
-    if (!offers.length) return
+    if (!rawOffers.length) return
 
     const loadingSnackbarId = uniqueId()
 
@@ -175,7 +174,7 @@ const LenderVaultContent = () => {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const txnsData = await Promise.all(
-        offers.map(({ offer }) =>
+        rawOffers.map((offer) =>
           createClaimLenderVaultTxnData(
             {
               offer,
@@ -223,7 +222,7 @@ const LenderVaultContent = () => {
     } catch (error) {
       destroySnackbar(loadingSnackbarId)
       defaultTxnErrorHandler(error, {
-        additionalData: offers,
+        additionalData: rawOffers,
         walletPubkey: wallet?.publicKey?.toBase58(),
         transactionName: 'ClaimLenderVault',
       })

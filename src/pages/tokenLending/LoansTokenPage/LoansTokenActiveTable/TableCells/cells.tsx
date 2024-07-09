@@ -19,8 +19,8 @@ import {
   caclulateBorrowTokenLoanValue,
   calcTokenWeeklyFeeWithRepayFee,
   calculateTimeFromNow,
+  calculateTokenLoanLtvByLoanValue,
   getColorByPercent,
-  getTokenDecimals,
   isTokenLoanActive,
   isTokenLoanTerminating,
 } from '@banx/utils'
@@ -30,12 +30,13 @@ import styles from '../LoansTokenActiveTable.module.less'
 interface TooltipRowProps {
   label: string
   value: number
+  isSubscriptFormat?: boolean
 }
-const TooltipRow: FC<TooltipRowProps> = ({ label, value }) => (
+const TooltipRow: FC<TooltipRowProps> = ({ label, value, isSubscriptFormat = false }) => (
   <div className={styles.tooltipRow}>
     <span className={styles.tooltipRowLabel}>{label}</span>
     <span className={styles.tooltipRowValue}>
-      <DisplayValue value={value} />
+      <DisplayValue value={value} isSubscriptFormat={isSubscriptFormat} />
     </span>
   </div>
 )
@@ -65,17 +66,12 @@ export const DebtCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
 }
 
 export const LTVCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
-  const tokenDecimals = getTokenDecimals(loan.bondTradeTransaction.lendingToken)
-
-  const collateralSupply = loan.fraktBond.fbondTokenSupply / Math.pow(10, loan.collateral.decimals)
   const debtValue = caclulateBorrowTokenLoanValue(loan).toNumber()
-
-  const ltvRatio = debtValue / tokenDecimals / collateralSupply
-  const ltvPercent = (ltvRatio / loan.collateralPrice) * 100
+  const ltvPercent = calculateTokenLoanLtvByLoanValue(loan, debtValue)
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>
-      <TooltipRow label="Price" value={loan.collateralPrice} />
+      <TooltipRow label="Price" value={loan.collateralPrice} isSubscriptFormat />
       <TooltipRow label="Debt" value={debtValue} />
     </div>
   )

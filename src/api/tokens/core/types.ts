@@ -113,6 +113,7 @@ export interface TokenMarketPreviewResponse {
 
 export const TokenOfferPreviewSchema = z.object({
   publicKey: z.string(),
+  bondOffer: OfferSchema,
   tokenMarketPreview: TokenMarketPreviewSchema,
   tokenOfferPreview: z.object({
     publicKey: z.string(),
@@ -133,3 +134,15 @@ export const WalletTokenLoansAndOffersShema = z.object({
 })
 
 export type WalletTokenLoansAndOffers = z.infer<typeof WalletTokenLoansAndOffersShema>
+
+export const TokenLoansRequestsSchema = z.object({
+  auctions: TokenLoanSchema.array(),
+  listings: TokenLoanSchema.array(),
+})
+
+export type TokenLoansRequests = z.infer<typeof TokenLoansRequestsSchema>
+
+export interface AllTokenLoansRequestsResponse {
+  data: TokenLoansRequests
+  meta: PaginationMeta
+}

@@ -12,7 +12,7 @@ import { createPathWithModeParams } from '@banx/store'
 import { ModeType } from '@banx/store/common'
 import { createGlobalState } from '@banx/store/createGlobalState'
 import { useNftTokenType } from '@banx/store/nft'
-import { isSolTokenType } from '@banx/utils'
+import { isBanxSolTokenType, isOfferStateClosed } from '@banx/utils'
 
 import { useSortedOffers } from './useSortedOffers'
 import { useTokenOffersPreview } from './useTokenOffersPreview'
@@ -25,7 +25,7 @@ export const useOffersTokenContent = () => {
 
   const { tokenType } = useNftTokenType()
 
-  const { offersPreview, isLoading } = useTokenOffersPreview()
+  const { offersPreview, updateOrAddOffer, isLoading } = useTokenOffersPreview()
 
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
   const [visibleOfferPubkey, setOfferPubkey] = useState('')
@@ -36,40 +36,51 @@ export const useOffersTokenContent = () => {
     return setOfferPubkey(nextValue)
   }
 
+  //? Don't show closed offers in the offers list (UI)
+  const filteredClosedOffers = offersPreview.filter(
+    (offer) => !isOfferStateClosed(offer.bondOffer.pairState),
+  )
+
+  const rawOffers = useMemo(() => {
+    return map(offersPreview, ({ bondOffer }) => bondOffer)
+  }, [offersPreview])
+
   const filteredOffers = useMemo(() => {
     if (selectedCollections.length) {
-      return filter(offersPreview, ({ tokenMarketPreview }) =>
+      return filter(filteredClosedOffers, ({ tokenMarketPreview }) =>
         includes(selectedCollections, tokenMarketPreview.collateral.ticker),
       )
     }
-    return offersPreview
-  }, [offersPreview, selectedCollections])
+    return filteredClosedOffers
+  }, [filteredClosedOffers, selectedCollections])
 
   const { sortParams, sortedOffers } = useSortedOffers(filteredOffers)
 
   const searchSelectParams = createSearchSelectParams({
-    options: offersPreview,
+    options: filteredClosedOffers,
     selectedOptions: selectedCollections,
     onChange: setSelectedCollections,
   })
 
   const goToLendPage = () => {
-    navigate(createPathWithModeParams(PATHS.LEND, ModeType.Token, tokenType))
+    navigate(createPathWithModeParams(PATHS.LEND_TOKEN, ModeType.Token, tokenType))
   }
 
-  const tokenName = isSolTokenType(tokenType) ? 'SOL' : 'USDC'
+  const tokenName = isBanxSolTokenType(tokenType) ? 'SOL' : 'USDC'
 
   const emptyListParams = {
     message: connected
-      ? `Lend ${tokenName} to view your your offers`
+      ? `Lend ${tokenName} to view your offers`
       : 'Connect wallet to view your offers',
     buttonProps: connected ? { text: 'Lend', onClick: goToLendPage } : undefined,
   }
 
-  const showEmptyList = (!offersPreview.length && !isLoading) || !connected
+  const showEmptyList = (!filteredClosedOffers.length && !isLoading) || !connected
 
   return {
-    offersPreview: sortedOffers,
+    offersToDisplay: sortedOffers,
+    rawOffers,
+    updateOrAddOffer,
     isLoading,
     searchSelectParams,
     sortParams,
@@ -100,22 +111,22 @@ const createSearchSelectParams = ({
     const firstOfferInGroup = first(groupedOffer)
     const { ticker = '', logoUrl = '' } = firstOfferInGroup?.tokenMarketPreview.collateral || {}
 
-    const accruedInterest = sumBy(groupedOffer, (offer) => offer.tokenOfferPreview.accruedInterest)
+    const lent = sumBy(groupedOffer, (offer) => offer.tokenOfferPreview.inLoans)
 
-    return { ticker, logoUrl, accruedInterest }
+    return { ticker, logoUrl, lent }
   })
 
   const searchSelectParams = {
     options: searchSelectOptions,
     selectedOptions,
     onChange,
-    labels: ['Collateral', 'Interest'],
+    labels: ['Collateral', 'Lent'],
     optionKeys: {
       labelKey: 'ticker',
       valueKey: 'ticker',
       imageKey: 'logoUrl',
       secondLabel: {
-        key: 'accruedInterest',
+        key: 'lent',
         format: (value: number) => <DisplayValue value={value} />,
       },
     },
