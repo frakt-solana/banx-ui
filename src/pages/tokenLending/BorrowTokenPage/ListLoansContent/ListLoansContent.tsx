@@ -11,7 +11,7 @@ import { DAYS_IN_YEAR } from '@banx/constants'
 
 import { LoanValueSlider, Separator } from '../components'
 import InputTokenSelect from '../components/InputTokenSelect'
-import { BORROW_TOKENS_LIST, COLLATERAL_TOKENS_LIST } from '../constants'
+import { BORROW_TOKENS_LIST } from '../constants'
 import { MAX_APR_VALUE, useListLoansContent } from './hooks'
 
 import styles from './ListLoansContent.module.less'
@@ -49,7 +49,7 @@ const ListLoansContent = () => {
         onChange={setCollateralInputValue}
         selectedToken={collateralToken}
         onChangeToken={setCollateralToken}
-        tokenList={COLLATERAL_TOKENS_LIST}
+        tokenList={[]}
         className={styles.collateralInput}
       />
 

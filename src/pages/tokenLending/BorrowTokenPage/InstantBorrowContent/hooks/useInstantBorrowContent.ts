@@ -5,10 +5,11 @@ import { SECONDS_IN_DAY } from 'fbonds-core/lib/fbond-protocol/constants'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import moment from 'moment'
 
+import { CollateralToken } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
 import { useTokenBalance } from '@banx/hooks'
 import { useNftTokenType } from '@banx/store/nft'
-import { bnToHuman } from '@banx/utils'
+import { bnToHuman, calculateApr } from '@banx/utils'
 
 import {
   BORROW_TOKENS_LIST,
@@ -25,7 +26,7 @@ export const useInstantBorrowContent = () => {
   const { tokenType, setTokenType } = useNftTokenType()
 
   const [collateralInputValue, setCollateralInputValue] = useState('')
-  const [collateralToken, setCollateralToken] = useState<BorrowToken>(DEFAULT_COLLATERAL_TOKEN)
+  const [collateralToken, setCollateralToken] = useState<CollateralToken>(DEFAULT_COLLATERAL_TOKEN)
 
   const [borrowInputValue, setBorrowInputValue] = useState('')
   const [borrowToken, setBorrowToken] = useState<BorrowToken>(DEFAULT_BORROW_TOKEN)
@@ -66,7 +67,7 @@ export const useInstantBorrowContent = () => {
     handleAmountChange(value, borrowToken.meta.decimals)
   }
 
-  const handleCollateralTokenChange = (token: BorrowToken) => {
+  const handleCollateralTokenChange = (token: CollateralToken) => {
     setCollateralToken(token)
     setMarketPubkey(token.marketPubkey || '')
   }
@@ -125,7 +126,11 @@ export const useInstantBorrowContent = () => {
     tokenWalletBalance: collateralTokenBalanceStr,
   })
 
-  const { executeBorrow } = useBorrowSplTokenTransaction(collateralToken, offers)
+  const { executeBorrow } = useBorrowSplTokenTransaction({
+    collateral: collateralToken,
+    collateralsToSend: parseFloat(collateralInputValue),
+    splTokenOffers: offers,
+  })
 
   const totalAmountToGet = calculateTotalAmount(offers, 'amountToGet')
   const upfrontFee = totalAmountToGet.div(new BN(100)).toNumber()
@@ -134,6 +139,12 @@ export const useInstantBorrowContent = () => {
     startTime: moment().unix(),
     currentTime: moment().unix() + SECONDS_IN_DAY * 7,
     rateBasePoints: MOCK_APR_RATE + BONDS.PROTOCOL_REPAY_FEE,
+  })
+
+  const apr = calculateApr({
+    loanValue: totalAmountToGet.toNumber(),
+    collectionFloor: collateralToken.collateralPrice,
+    marketPubkey: collateralToken.marketPubkey,
   })
 
   return {
@@ -155,5 +166,6 @@ export const useInstantBorrowContent = () => {
 
     upfrontFee,
     weeklyFee,
+    apr,
   }
 }

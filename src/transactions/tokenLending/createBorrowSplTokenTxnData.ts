@@ -1,17 +1,18 @@
-import { web3 } from 'fbonds-core'
+import { BN, web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { borrowPerpetualSpl } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/nft'
+import { CollateralToken } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
-import { BorrowToken } from '@banx/pages/tokenLending/BorrowTokenPage/constants'
 import { sendTxnPlaceHolder } from '@banx/transactions'
 import { getTokenDecimals } from '@banx/utils'
 
 export type CreateBorrowTokenTxnDataParams = {
-  collateral: BorrowToken
+  collateral: CollateralToken
+  collateralsToSend: number
   loanValue: number
   offer: Offer
   tokenType: LendingTokenType
@@ -27,9 +28,11 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async (
   params,
   walletAndConnection,
 ) => {
-  const { collateral, loanValue, offer, aprRate, tokenType } = params
+  const { collateral, collateralsToSend, loanValue, offer, aprRate, tokenType } = params
 
   const tokenDecimals = getTokenDecimals(tokenType)
+
+  const amountToSend = collateralsToSend * Math.pow(10, collateral.meta.decimals)
 
   const { instructions, signers, optimisticResults } = await borrowPerpetualSpl({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
@@ -42,7 +45,8 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async (
       fraktMarket: new web3.PublicKey(offer.hadoMarket),
     },
     args: {
-      amountToget: loanValue,
+      amountToGet: loanValue,
+      amountToSend,
       optimizeIntoReserves: true,
       aprRate,
       lendingTokenType: tokenType,

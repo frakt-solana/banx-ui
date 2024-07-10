@@ -2,16 +2,17 @@ import { useState } from 'react'
 
 import { clamp } from 'lodash'
 
+import { CollateralToken } from '@banx/api/tokens'
 import { BONDS, DAYS_IN_YEAR } from '@banx/constants'
 
-import { BORROW_TOKENS_LIST, BorrowToken, COLLATERAL_TOKENS_LIST } from '../constants'
+import { BORROW_TOKENS_LIST, BorrowToken, DEFAULT_COLLATERAL_TOKEN } from '../constants'
 
 export const MIN_APR_VALUE = 10
 export const MAX_APR_VALUE = 140
 
 export const useListLoansContent = () => {
   const [collateralInputValue, setCollateralInputValue] = useState('')
-  const [collateralToken, setCollateralToken] = useState<BorrowToken>(COLLATERAL_TOKENS_LIST[0])
+  const [collateralToken, setCollateralToken] = useState<CollateralToken>(DEFAULT_COLLATERAL_TOKEN)
 
   const [borrowInputValue, setBorrowlInputValue] = useState('')
   const [borrowToken, setBorrowToken] = useState<BorrowToken>(BORROW_TOKENS_LIST[0])

@@ -146,3 +146,12 @@ export interface AllTokenLoansRequestsResponse {
   data: TokenLoansRequests
   meta: PaginationMeta
 }
+
+export const CollateralTokenSchema = z.object({
+  marketPubkey: z.string(),
+  meta: TokenMetaSchema,
+  collateralPrice: z.number(),
+  amountInWallet: z.number(),
+})
+
+export type CollateralToken = z.infer<typeof CollateralTokenSchema>

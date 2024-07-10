@@ -1,12 +1,10 @@
 import { BN } from 'fbonds-core'
 
-import { BorrowSplTokenOffers } from '@banx/api/tokens'
+import { BorrowSplTokenOffers, CollateralToken } from '@banx/api/tokens'
 import { ZERO_BN, stringToBN } from '@banx/utils'
 
-import { BorrowToken } from '../constants'
-
 interface GetErrorMessageProps {
-  collateralToken: BorrowToken | undefined
+  collateralToken: CollateralToken | undefined
   collateralInputValue: string
   tokenWalletBalance: string
   offers: BorrowSplTokenOffers[]

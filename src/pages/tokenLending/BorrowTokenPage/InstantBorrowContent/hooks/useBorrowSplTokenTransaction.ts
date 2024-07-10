@@ -14,7 +14,7 @@ import {
 } from '@banx/components/modals'
 
 import { Offer } from '@banx/api/nft'
-import { BorrowSplTokenOffers, core } from '@banx/api/tokens'
+import { BorrowSplTokenOffers, CollateralToken, core } from '@banx/api/tokens'
 import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
 import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
@@ -40,18 +40,21 @@ import {
   enqueueWaitingConfirmation,
 } from '@banx/utils'
 
-import { BorrowToken, MOCK_APR_RATE } from '../../constants'
+import { MOCK_APR_RATE } from '../../constants'
 
 type TransactionData = {
   offer: Offer
   loanValue: number
-  token: BorrowToken
+  collateral: CollateralToken
 }
 
-export const useBorrowSplTokenTransaction = (
-  token: BorrowToken,
-  splTokenOffers: BorrowSplTokenOffers[],
-) => {
+export const useBorrowSplTokenTransaction = (props: {
+  collateral: CollateralToken
+  collateralsToSend: number
+  splTokenOffers: BorrowSplTokenOffers[]
+}) => {
+  const { collateral, collateralsToSend, splTokenOffers } = props
+
   const wallet = useWallet()
   const { connection } = useConnection()
   const navigate = useNavigate()
@@ -62,7 +65,7 @@ export const useBorrowSplTokenTransaction = (
 
   const { add: addLoansOptimistic } = useTokenLoansOptimistic()
 
-  const { offers, updateOrAddOffer } = useTokenMarketOffers(token.marketPubkey || '')
+  const { offers, updateOrAddOffer } = useTokenMarketOffers(collateral.marketPubkey || '')
 
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
@@ -99,13 +102,13 @@ export const useBorrowSplTokenTransaction = (
         acc.push({
           offer: offerData,
           loanValue: loanValueToNumber,
-          token,
+          collateral,
         })
       }
 
       return acc
     }, [])
-  }, [token, offers, splTokenOffers])
+  }, [collateral, offers, splTokenOffers])
 
   const executeBorrow = async () => {
     const loadingSnackbarId = uniqueId()
@@ -116,11 +119,12 @@ export const useBorrowSplTokenTransaction = (
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const txnsData = await Promise.all(
-        transactionsData.map(({ token, loanValue, offer }) =>
+        transactionsData.map(({ collateral, loanValue, offer }) =>
           createBorrowSplTokenTxnData(
             {
               loanValue,
-              collateral: token,
+              collateral,
+              collateralsToSend,
               offer,
               aprRate: MOCK_APR_RATE, //TODO (TokenLending): Need to calc in the future
               tokenType,
