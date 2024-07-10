@@ -8,7 +8,8 @@ import { DisplayValue } from '@banx/components/TableComponents'
 
 import { Separator } from '../components'
 import InputTokenSelect from '../components/InputTokenSelect'
-import { BORROW_TOKENS_LIST, COLLATERAL_TOKENS_LIST, MOCK_APR_RATE } from '../constants'
+import { BORROW_TOKENS_LIST } from '../constants'
+import { useCollateralsList } from './hooks/useCollateralsList'
 import { useInstantBorrowContent } from './hooks/useInstantBorrowContent'
 
 import styles from './InstantBorrowContent.module.less'
@@ -32,10 +33,13 @@ const InstantBorrowContent = () => {
 
     upfrontFee,
     weeklyFee,
+    apr,
 
     errorMessage,
     executeBorrow,
   } = useInstantBorrowContent()
+
+  const { collateralsList } = useCollateralsList()
 
   return (
     <div className={styles.content}>
@@ -45,7 +49,7 @@ const InstantBorrowContent = () => {
         onChange={handleCollateralInputChange}
         selectedToken={collateralToken}
         onChangeToken={handleCollateralTokenChange}
-        tokenList={COLLATERAL_TOKENS_LIST}
+        tokenList={collateralsList}
         className={styles.collateralInput}
         maxValue={collateralTokenBalanceStr}
         disabledInput={!wallet.connected}
@@ -65,7 +69,7 @@ const InstantBorrowContent = () => {
         disabledInput={!wallet.connected}
       />
 
-      <Summary apr={MOCK_APR_RATE} upfrontFee={upfrontFee} weeklyFee={weeklyFee} />
+      <Summary apr={apr} upfrontFee={upfrontFee} weeklyFee={weeklyFee} />
       <Button
         onClick={executeBorrow}
         disabled={!wallet.connected || !!errorMessage}

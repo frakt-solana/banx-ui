@@ -9,29 +9,31 @@ import { SolanaFMLink } from '@banx/components/SolanaLinks'
 import { NumericStepInput } from '@banx/components/inputs'
 import { Input, InputProps } from '@banx/components/inputs/Input'
 
+import { core } from '@banx/api/tokens'
 import { useOnClickOutside } from '@banx/hooks'
 import { ChevronDown, CloseModal, Wallet } from '@banx/icons'
 import { bnToHuman, limitDecimalPlaces, shortenAddress, stringToBN } from '@banx/utils'
 
-import { BorrowToken } from '../../constants'
-
 import styles from './InputTokenSelect.module.less'
 
-interface InputTokenSelectProps {
+interface BaseToken {
+  meta: core.TokenMeta
+  amountInWallet: number
+}
+
+interface InputTokenSelectProps<T extends BaseToken> {
   label: string
   value: string
   onChange: (value: string) => void
   className?: string
-
-  selectedToken: BorrowToken
-  tokenList: BorrowToken[]
-  onChangeToken: (option: BorrowToken) => void
-
+  selectedToken: T
+  tokenList: T[]
+  onChangeToken: (option: T) => void
   disabledInput?: boolean
   maxValue?: string
 }
 
-const InputTokenSelect: FC<InputTokenSelectProps> = ({
+const InputTokenSelect = <T extends BaseToken>({
   label,
   value,
   onChange,
@@ -41,7 +43,7 @@ const InputTokenSelect: FC<InputTokenSelectProps> = ({
   onChangeToken,
   disabledInput,
   maxValue = '0',
-}) => {
+}: InputTokenSelectProps<T>) => {
   const { connected } = useWallet()
 
   const [visible, setVisible] = useState(false)
@@ -113,12 +115,15 @@ const ControlsButtons: FC<ControlsButtonsProps> = ({ onChange, maxValue = '0' })
   )
 }
 
-interface SelectTokenButtonProps {
-  selectedToken: BorrowToken
+interface SelectTokenButtonProps<T extends BaseToken> {
+  selectedToken: T
   onClick: () => void
 }
 
-const SelectTokenButton: FC<SelectTokenButtonProps> = ({ selectedToken, onClick }) => {
+const SelectTokenButton = <T extends BaseToken>({
+  selectedToken,
+  onClick,
+}: SelectTokenButtonProps<T>) => {
   const { ticker, logoUrl } = selectedToken.meta
 
   return (
@@ -130,20 +135,24 @@ const SelectTokenButton: FC<SelectTokenButtonProps> = ({ selectedToken, onClick 
   )
 }
 
-interface SearchSelectProps {
-  options: BorrowToken[]
-  onChangeToken: (token: BorrowToken) => void
+interface SearchSelectProps<T extends BaseToken> {
+  options: T[]
+  onChangeToken: (token: T) => void
   onClose: () => void
 }
 
-const SearchSelect: FC<SearchSelectProps> = ({ options, onChangeToken, onClose }) => {
+const SearchSelect = <T extends BaseToken>({
+  options,
+  onChangeToken,
+  onClose,
+}: SearchSelectProps<T>) => {
   const [searchInput, setSearchInput] = useState('')
 
   const handleSearchInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchInput(event.target.value)
   }
 
-  const handleChangeToken = (token: BorrowToken) => {
+  const handleChangeToken = (token: T) => {
     onChangeToken(token)
     onClose()
   }
@@ -188,7 +197,7 @@ const SearchSelect: FC<SearchSelectProps> = ({ options, onChangeToken, onClose }
                 </div>
                 <SolanaFMLink path={`address/${option.meta.mint}`} size="small" />
               </div>
-              <span className={styles.dropdownItemAdditionalInfo}>{option.available}</span>
+              <span className={styles.dropdownItemAdditionalInfo}>{option.amountInWallet}</span>
             </div>
           ))}
         </div>
