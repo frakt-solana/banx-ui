@@ -1,11 +1,10 @@
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { OutputToken, core } from '@banx/api/tokens'
+import { core } from '@banx/api/tokens'
 
 export interface BorrowToken {
   meta: core.TokenMeta
   lendingTokenType: LendingTokenType
-  outputToken: OutputToken
   amountInWallet: number
 }
 
@@ -35,7 +34,6 @@ export const BORROW_TOKENS_LIST: BorrowToken[] = [
       priceUsd: 0.001,
     },
     lendingTokenType: LendingTokenType.BanxSol,
-    outputToken: OutputToken.SOL,
     amountInWallet: 240,
   },
   {
@@ -48,7 +46,6 @@ export const BORROW_TOKENS_LIST: BorrowToken[] = [
       priceUsd: 0.001,
     },
     lendingTokenType: LendingTokenType.Usdc,
-    outputToken: OutputToken.USDC,
     amountInWallet: 240,
   },
 ]

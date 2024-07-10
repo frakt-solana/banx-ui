@@ -42,15 +42,12 @@ export const useInstantBorrowContent = () => {
     inputPutType,
     setInputPutType,
     handleAmountChange,
-  } = useBorrowSplTokenOffers({
-    marketPubkey: DEFAULT_COLLATERAL_TOKEN.marketPubkey,
-    outputTokenType: DEFAULT_BORROW_TOKEN.outputToken,
-  })
+  } = useBorrowSplTokenOffers()
 
   const handleCollateralInputChange = (value: string) => {
     if (inputPutType !== 'input') {
       setInputPutType('input')
-      setOutputTokenType(borrowToken.outputToken)
+      setOutputTokenType(borrowToken.lendingTokenType)
     }
 
     setCollateralInputValue(value)
@@ -60,7 +57,7 @@ export const useInstantBorrowContent = () => {
   const handleBorrowInputChange = (value: string) => {
     if (inputPutType !== 'output') {
       setInputPutType('output')
-      setOutputTokenType(borrowToken.outputToken)
+      setOutputTokenType(borrowToken.lendingTokenType)
     }
 
     setBorrowInputValue(value)
@@ -74,7 +71,7 @@ export const useInstantBorrowContent = () => {
 
   const handleBorrowTokenChange = (token: BorrowToken) => {
     setBorrowToken(token)
-    setOutputTokenType(token.outputToken)
+    setOutputTokenType(token.lendingTokenType)
     setTokenType(token.lendingTokenType)
   }
 
@@ -82,7 +79,7 @@ export const useInstantBorrowContent = () => {
     const token = BORROW_TOKENS_LIST.find((token) => token.lendingTokenType === tokenType)
     if (token) {
       setBorrowToken(token)
-      setOutputTokenType(token.outputToken)
+      setOutputTokenType(token.lendingTokenType)
     }
   }, [setOutputTokenType, tokenType])
 

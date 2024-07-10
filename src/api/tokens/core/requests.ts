@@ -4,7 +4,7 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { Offer, OfferSchema } from '@banx/api/nft'
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
-import { convertToMarketType } from '../../helpers'
+import { convertToMarketType, convertToOutputToken } from '../../helpers'
 import {
   AllTokenLoansRequestsResponse,
   TokenLoan,
@@ -158,12 +158,6 @@ export const fetchTokenLenderLoans: FetchTokenLenderLoans = async ({
   return data.data ?? []
 }
 
-export enum OutputToken {
-  SOL = 'SOL',
-  USDC = 'USDC',
-  BanxSOL = 'BanxSOL',
-}
-
 export interface BorrowSplTokenOffers {
   offerPublicKey: string
   amountToGive: string
@@ -172,7 +166,7 @@ export interface BorrowSplTokenOffers {
 
 type FetchBorrowSplTokenOffers = (props: {
   market: string
-  outputToken: string
+  outputToken: LendingTokenType
   type: 'input' | 'output'
   amount: string //? hex number string
 }) => Promise<BorrowSplTokenOffers[]>
@@ -184,7 +178,7 @@ export const fetchBorrowSplTokenOffers: FetchBorrowSplTokenOffers = async (props
     type: String(type),
     amount: String(amount),
     market: String(market),
-    outputToken: String(outputToken),
+    outputToken: String(convertToOutputToken(outputToken)),
   })
 
   const { data } = await axios.get<{ data: BorrowSplTokenOffers[] }>(

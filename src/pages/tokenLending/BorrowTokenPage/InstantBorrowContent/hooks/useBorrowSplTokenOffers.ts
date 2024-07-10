@@ -2,17 +2,17 @@ import { useState } from 'react'
 
 import { useQuery } from '@tanstack/react-query'
 import { BN } from 'bn.js'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { core } from '@banx/api/tokens'
 import { useDebounceValue } from '@banx/hooks'
 import { ZERO_BN, stringToHex } from '@banx/utils'
 
-export const useBorrowSplTokenOffers = (initialProps?: {
-  marketPubkey?: string
-  outputTokenType?: string
-}) => {
-  const [marketPubkey, setMarketPubkey] = useState(initialProps?.marketPubkey || '')
-  const [outputTokenType, setOutputTokenType] = useState(initialProps?.outputTokenType || '')
+import { DEFAULT_COLLATERAL_TOKEN } from '../../constants'
+
+export const useBorrowSplTokenOffers = () => {
+  const [marketPubkey, setMarketPubkey] = useState(DEFAULT_COLLATERAL_TOKEN.marketPubkey)
+  const [outputTokenType, setOutputTokenType] = useState(LendingTokenType.BanxSol)
   const [inputPutType, setInputPutType] = useState<'input' | 'output'>('input')
   const [amount, setAmount] = useState('')
 
