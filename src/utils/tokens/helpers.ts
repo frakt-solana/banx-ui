@@ -69,9 +69,15 @@ export const isUsdcTokenType = (tokenType: LendingTokenType): boolean =>
 export const isBanxSolTokenType = (tokenType: LendingTokenType): boolean =>
   tokenType === LendingTokenType.BanxSol
 
+const MAX_FORMATTED_LENGTH = 4
+
 export const formatDecimalWithSubscript = (decimalNumber: number) => {
   const decimalAsString = decimalNumber.toString()
-  const [, fractionalPart] = decimalAsString.split('.')
+  const [integerPart, fractionalPart] = decimalAsString.split('.')
+
+  if (parseFloat(integerPart) > 0) {
+    return decimalNumber.toFixed(MAX_FORMATTED_LENGTH)
+  }
 
   if (!fractionalPart) {
     return decimalAsString
@@ -84,23 +90,22 @@ export const formatDecimalWithSubscript = (decimalNumber: number) => {
     return value
       .toString()
       .split('')
-      .map((digit) => subscripts[Number(digit)])
+      .map((digit) => subscripts[parseFloat(digit)])
       .join('')
   }
 
   const MIN_LEADING_ZEROS_FOR_SUBSCRIPT = 2
   const leadingZerosSubscript =
     countLeadingZeros > MIN_LEADING_ZEROS_FOR_SUBSCRIPT
-      ? convertToSubscript(countLeadingZeros)
+      ? `0${convertToSubscript(countLeadingZeros)}`
       : repeat('0', countLeadingZeros - 1)
 
   const remainingFraction = fractionalPart.slice(countLeadingZeros)
 
-  const MAX_FORMATTED_LENGTH = 8
-  const formattedDecimal = `0.0${leadingZerosSubscript}${remainingFraction}`.slice(
+  const formattedDecimal = `${leadingZerosSubscript}${remainingFraction}`.slice(
     0,
     MAX_FORMATTED_LENGTH,
   )
 
-  return formattedDecimal
+  return `0.${formattedDecimal}`
 }
