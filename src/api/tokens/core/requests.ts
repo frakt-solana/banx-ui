@@ -7,6 +7,8 @@ import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 import { convertToMarketType, convertToOutputToken } from '../../helpers'
 import {
   AllTokenLoansRequestsResponse,
+  CollateralToken,
+  CollateralTokenSchema,
   TokenLoan,
   TokenLoanSchema,
   TokenLoansRequests,
@@ -209,6 +211,24 @@ export const fetchAllTokenLoansRequests: FetchAllTokenLoansRequests = async ({
 
   try {
     await TokenLoansRequestsSchema.parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
+  }
+
+  return data.data
+}
+
+export const fetchCollateralsList = async (walletPubkey?: string) => {
+  const queryParams = new URLSearchParams({
+    isPrivate: String(IS_PRIVATE_MARKETS),
+  })
+
+  const { data } = await axios.get<{ data: CollateralToken[] }>(
+    `${BACKEND_BASE_URL}/spl-assets/${walletPubkey}?${queryParams?.toString()}`,
+  )
+
+  try {
+    await CollateralTokenSchema.array().parseAsync(data.data)
   } catch (validationError) {
     console.error('Schema validation error:', validationError)
   }

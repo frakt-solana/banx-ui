@@ -3,14 +3,14 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { core } from '@banx/api/tokens'
 
 export interface BorrowToken {
-  meta: core.TokenMeta
+  collateral: core.TokenMeta
   lendingTokenType: LendingTokenType
   amountInWallet: number
 }
 
 export const DEFAULT_COLLATERAL_TOKEN = {
   marketPubkey: '9vMKEMq8G36yrkqVUzQuAweieCsxU9ZaK1ob8GRegwmh',
-  meta: {
+  collateral: {
     mint: 'BANXbTpN8U2cU41FjPxe2Ti37PiT5cCxLUKDQZuJeMMR',
     ticker: 'BANX',
     logoUrl: 'https://arweave.net/5QRitQGPVjPwpjt43Qe_WISmys4dWwLMqQqQDT0oshg',
@@ -23,11 +23,9 @@ export const DEFAULT_COLLATERAL_TOKEN = {
   amountInWallet: 0,
 }
 
-export const MOCK_APR_RATE = 34 * 100
-
 export const BORROW_TOKENS_LIST: BorrowToken[] = [
   {
-    meta: {
+    collateral: {
       mint: 'So11111111111111111111111111111111111111112',
       ticker: 'SOL',
       logoUrl:
@@ -41,7 +39,7 @@ export const BORROW_TOKENS_LIST: BorrowToken[] = [
     amountInWallet: 240,
   },
   {
-    meta: {
+    collateral: {
       mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
       ticker: 'USDC',
       logoUrl:

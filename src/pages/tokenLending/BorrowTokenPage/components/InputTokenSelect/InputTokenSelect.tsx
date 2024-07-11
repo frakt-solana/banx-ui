@@ -17,7 +17,7 @@ import { bnToHuman, limitDecimalPlaces, shortenAddress, stringToBN } from '@banx
 import styles from './InputTokenSelect.module.less'
 
 interface BaseToken {
-  meta: core.TokenMeta
+  collateral: core.TokenMeta
   amountInWallet: number
 }
 
@@ -124,7 +124,7 @@ const SelectTokenButton = <T extends BaseToken>({
   selectedToken,
   onClick,
 }: SelectTokenButtonProps<T>) => {
-  const { ticker, logoUrl } = selectedToken.meta
+  const { ticker, logoUrl } = selectedToken.collateral
 
   return (
     <div onClick={onClick} className={styles.selectTokenButton}>
@@ -159,7 +159,7 @@ const SearchSelect = <T extends BaseToken>({
 
   const filteredOptions = useMemo(() => {
     return options.filter((option) =>
-      option.meta.ticker.toLowerCase().includes(searchInput.toLowerCase()),
+      option.collateral.ticker.toLowerCase().includes(searchInput.toLowerCase()),
     )
   }, [options, searchInput])
 
@@ -183,19 +183,19 @@ const SearchSelect = <T extends BaseToken>({
         <div className={styles.selectTokenDropdownList}>
           {filteredOptions.map((option, index) => (
             <div
-              key={option.meta.mint}
+              key={option.collateral.mint}
               onClick={() => handleChangeToken(option)}
               className={classNames(styles.dropdownItem, { [styles.highlight]: index % 2 === 0 })}
             >
               <div className={styles.dropdownItemMainInfo}>
-                <img className={styles.dropdownItemIcon} src={option.meta.logoUrl} />
+                <img className={styles.dropdownItemIcon} src={option.collateral.logoUrl} />
                 <div className={styles.dropdownItemInfo}>
-                  <span className={styles.dropdownItemTicker}>{option.meta.ticker}</span>
+                  <span className={styles.dropdownItemTicker}>{option.collateral.ticker}</span>
                   <span className={styles.dropdownItemAddress}>
-                    {shortenAddress(option.meta.mint)}
+                    {shortenAddress(option.collateral.mint)}
                   </span>
                 </div>
-                <SolanaFMLink path={`address/${option.meta.mint}`} size="small" />
+                <SolanaFMLink path={`address/${option.collateral.mint}`} size="small" />
               </div>
               <span className={styles.dropdownItemAdditionalInfo}>{option.amountInWallet}</span>
             </div>

@@ -24,7 +24,7 @@ export const getErrorMessage = ({
   offers,
   isLoadingOffers,
 }: GetErrorMessageProps) => {
-  const ticker = collateralToken?.meta.ticker || ''
+  const ticker = collateralToken?.collateral.ticker || ''
 
   const isInvalidAmount = stringToBN(collateralInputValue).eq(ZERO_BN)
   const noEnoughtWalletBalance = stringToBN(tokenWalletBalance).eq(ZERO_BN)
@@ -94,7 +94,7 @@ export const calculateTokenBorrowApr: CalculateTokenBorrowApr = ({ offer, collat
   const collateralPerToken = amountToGet.toNumber() / amountToGive.toNumber()
   const ltvPercent = collateralPerToken / collateralToken.collateralPrice
 
-  const { apr } = calculateAPRforOffer(ltvPercent, collateralToken.meta.FDV)
+  const { apr } = calculateAPRforOffer(ltvPercent, collateralToken.collateral.FDV)
   const aprRate = apr * 100
 
   return aprRate || 0

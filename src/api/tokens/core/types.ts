@@ -18,7 +18,7 @@ const TokenMetaSchema = z.object({
   decimals: z.number(),
   priceUsd: z.number(),
   totalSupply: z.number(),
-  FDV: z.number(),
+  FDV: z.number(), //? Rename to fullyDilutedValuation
 })
 
 export type TokenMeta = z.infer<typeof TokenMetaSchema>
@@ -151,7 +151,7 @@ export interface AllTokenLoansRequestsResponse {
 
 export const CollateralTokenSchema = z.object({
   marketPubkey: z.string(),
-  meta: TokenMetaSchema,
+  collateral: TokenMetaSchema,
   collateralPrice: z.number(),
   amountInWallet: z.number(),
 })

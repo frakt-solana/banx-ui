@@ -168,7 +168,7 @@ export const useBorrowSplTokenTransaction = (props: {
                   publicKey: fraktBond.publicKey,
                   fraktBond: fraktBond,
                   bondTradeTransaction: bondTradeTransaction,
-                  collateral: params.collateral.meta,
+                  collateral: params.collateral.collateral,
                   collateralPrice: params.collateral.collateralPrice,
                 },
                 offer: bondOffer,

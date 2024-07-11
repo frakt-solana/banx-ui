@@ -11,7 +11,8 @@ import { DisplayValue } from '@banx/components/TableComponents'
 
 import { TokenMarketPreview } from '@banx/api/tokens'
 import { SECONDS_IN_DAY } from '@banx/constants'
-import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
+import { useNftTokenType } from '@banx/store/nft'
+import { HealthColorIncreasing, getColorByPercent, getTokenDecimals } from '@banx/utils'
 
 import styles from '../PlaceTokenOfferSection.module.less'
 
@@ -49,16 +50,30 @@ export const MainSummary: FC<MainSummaryProps> = ({ market, collateralPerToken }
 }
 
 interface OfferSummaryProps {
+  market: TokenMarketPreview | undefined
+  collateralPerToken: number
   offerSize: number
 }
 
-export const AdditionalSummary: FC<OfferSummaryProps> = ({ offerSize }) => {
+export const AdditionalSummary: FC<OfferSummaryProps> = ({
+  market,
+  collateralPerToken,
+  offerSize,
+}) => {
+  const { tokenType } = useNftTokenType()
+  const tokenDecimals = getTokenDecimals(tokenType)
+
+  const { collateralPrice = 0, collateral } = market || {}
+
+  const ltvPercent = (collateralPerToken / collateralPrice) * 100 || 0
+  const { apr: aprPercent } = calculateAPRforOffer(ltvPercent, collateral?.FDV)
+
   const currentTimeUnix = moment().unix()
   const weeklyFee = calculateCurrentInterestSolPure({
-    loanValue: offerSize,
+    loanValue: offerSize * tokenDecimals,
     startTime: currentTimeUnix,
     currentTime: currentTimeUnix + SECONDS_IN_DAY * 7,
-    rateBasePoints: 0, //TODO (TokenLending): Use rateBasePoints from market or calculate dynamically?
+    rateBasePoints: aprPercent * 100,
   })
 
   return (

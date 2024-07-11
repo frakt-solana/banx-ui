@@ -26,8 +26,8 @@ export const useInstantBorrowContent = () => {
   const [borrowInputValue, setBorrowInputValue] = useState('')
   const [borrowToken, setBorrowToken] = useState<BorrowToken>(DEFAULT_BORROW_TOKEN)
 
-  const collateralTokenBalance = useTokenBalance(collateralToken.meta.mint)
-  const borrowTokenBalance = useTokenBalance(borrowToken.meta.mint)
+  const collateralTokenBalance = useTokenBalance(collateralToken.collateral.mint)
+  const borrowTokenBalance = useTokenBalance(borrowToken.collateral.mint)
 
   const {
     data: offers,
@@ -46,7 +46,7 @@ export const useInstantBorrowContent = () => {
     }
 
     setCollateralInputValue(value)
-    handleAmountChange(value, collateralToken.meta.decimals)
+    handleAmountChange(value, collateralToken.collateral.decimals)
   }
 
   const handleBorrowInputChange = (value: string) => {
@@ -56,7 +56,7 @@ export const useInstantBorrowContent = () => {
     }
 
     setBorrowInputValue(value)
-    handleAmountChange(value, borrowToken.meta.decimals)
+    handleAmountChange(value, borrowToken.collateral.decimals)
   }
 
   const handleCollateralTokenChange = (token: CollateralToken) => {
@@ -81,7 +81,10 @@ export const useInstantBorrowContent = () => {
   useEffect(() => {
     if (inputPutType === 'input') {
       const totalAmountToGet = calculateTotalAmount(offers, 'amountToGet')
-      const totalAmountToGetStr = bnToHuman(totalAmountToGet, borrowToken.meta.decimals).toString()
+      const totalAmountToGetStr = bnToHuman(
+        totalAmountToGet,
+        borrowToken.collateral.decimals,
+      ).toString()
 
       if (totalAmountToGetStr !== borrowInputValue) {
         setBorrowInputValue(totalAmountToGetStr)
@@ -91,7 +94,7 @@ export const useInstantBorrowContent = () => {
 
       const totalAmountToGetStr = bnToHuman(
         totalAmountToGive,
-        collateralToken.meta.decimals,
+        collateralToken.collateral.decimals,
       ).toString()
 
       if (totalAmountToGetStr !== collateralInputValue) {
@@ -102,12 +105,12 @@ export const useInstantBorrowContent = () => {
 
   const collateralTokenBalanceStr = bnToHuman(
     new BN(collateralTokenBalance),
-    collateralToken.meta.decimals,
+    collateralToken.collateral.decimals,
   ).toString()
 
   const borrowTokenBalanceStr = bnToHuman(
     new BN(borrowTokenBalance),
-    borrowToken.meta.decimals,
+    borrowToken.collateral.decimals,
   ).toString()
 
   const errorMessage = getErrorMessage({

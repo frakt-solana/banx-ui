@@ -98,7 +98,7 @@ export const formatDecimalWithSubscript = (decimalNumber: number) => {
   const leadingZerosSubscript =
     countLeadingZeros > MIN_LEADING_ZEROS_FOR_SUBSCRIPT
       ? `0${convertToSubscript(countLeadingZeros)}`
-      : repeat('0', countLeadingZeros - 1)
+      : repeat('0', countLeadingZeros)
 
   const remainingFraction = fractionalPart.slice(countLeadingZeros)
 

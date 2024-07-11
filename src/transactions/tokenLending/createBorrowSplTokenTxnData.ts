@@ -32,7 +32,7 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async (
 
   const tokenDecimals = getTokenDecimals(tokenType)
 
-  const amountToSend = collateralsToSend * Math.pow(10, collateral.meta.decimals)
+  const amountToSend = collateralsToSend * Math.pow(10, collateral.collateral.decimals)
   const loanValueWithUpfrontFee = Math.floor(loanValue + loanValue / 100)
 
   const { instructions, signers, optimisticResults } = await borrowPerpetualSpl({
@@ -41,7 +41,7 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async (
       userPubkey: walletAndConnection.wallet.publicKey,
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
       bondOffer: new web3.PublicKey(offer.publicKey),
-      tokenMint: new web3.PublicKey(collateral.meta.mint),
+      tokenMint: new web3.PublicKey(collateral.collateral.mint),
       hadoMarket: new web3.PublicKey(offer.hadoMarket),
       fraktMarket: new web3.PublicKey(offer.hadoMarket),
     },
