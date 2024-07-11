@@ -9,8 +9,10 @@ export const MOCK_COLLATERALS_LIST: CollateralToken[] = [
       logoUrl: 'https://arweave.net/5QRitQGPVjPwpjt43Qe_WISmys4dWwLMqQqQDT0oshg',
       decimals: 9,
       priceUsd: 0.001,
+      totalSupply: 15000000000,
+      FDV: 4.406543929325504,
     },
-    collateralPrice: 0,
+    collateralPrice: 0.00003,
     amountInWallet: 7777,
   },
   {
@@ -22,8 +24,10 @@ export const MOCK_COLLATERALS_LIST: CollateralToken[] = [
         'https://cdn.helius-rpc.com/cdn-cgi/image//https://bafkreibk3covs5ltyqxa272uodhculbr6kea6betidfwy3ajsav2vjzyum.ipfs.nftstorage.link',
       mint: 'EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm',
       priceUsd: 1.661578234151249,
+      totalSupply: 998845754167042,
+      FDV: 1651834697.915409,
     },
-    collateralPrice: 0,
+    collateralPrice: 1.661578234151249,
     amountInWallet: 7777,
   },
   {
@@ -34,8 +38,10 @@ export const MOCK_COLLATERALS_LIST: CollateralToken[] = [
       logoUrl: 'https://arweave.net/hQiPZOsRZXGXBJd_82PhVdlM_hACsT_q6wqwf5cSY7I?ext=png',
       mint: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
       priceUsd: 0.000025819707819612284,
+      totalSupply: 93526183276778,
+      FDV: 2399.1256709849063,
     },
-    collateralPrice: 0,
+    collateralPrice: 0.000025819707819612284,
     amountInWallet: 7777,
   },
   {
@@ -46,8 +52,10 @@ export const MOCK_COLLATERALS_LIST: CollateralToken[] = [
       decimals: 6,
       logoUrl: 'https://cdn.helius-rpc.com/cdn-cgi/image//https://static.jup.ag/jlp/icon.png',
       priceUsd: 2.900533042691461,
+      totalSupply: 144646649618782,
+      FDV: 419137596.6627747,
     },
-    collateralPrice: 0,
+    collateralPrice: 2.900533042691461,
     amountInWallet: 7777,
   },
   {
@@ -58,8 +66,10 @@ export const MOCK_COLLATERALS_LIST: CollateralToken[] = [
       decimals: 6,
       logoUrl: 'https://cdn.helius-rpc.com/cdn-cgi/image//https://static.jup.ag/jup/icon.png',
       priceUsd: 0.7786462684671692,
+      totalSupply: 144646649618782,
+      FDV: 7694162041.452791,
     },
-    collateralPrice: 0,
+    collateralPrice: 0.7786462684671692,
     amountInWallet: 7777,
   },
   {
@@ -71,8 +81,10 @@ export const MOCK_COLLATERALS_LIST: CollateralToken[] = [
       logoUrl:
         'https://cdn.helius-rpc.com/cdn-cgi/image//https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/LFNTYraetVioAPnGJht4yNg2aUZFXR776cMeN9VMjXp/logo.svg',
       priceUsd: 1.0935409325356216,
+      totalSupply: 99999786033788,
+      FDV: 108933329.29086582,
     },
-    collateralPrice: 0,
+    collateralPrice: 1.0935409325356216,
     amountInWallet: 7777,
   },
   {
@@ -84,8 +96,10 @@ export const MOCK_COLLATERALS_LIST: CollateralToken[] = [
       logoUrl:
         'https://cdn.helius-rpc.com/cdn-cgi/image//https://arweave.net/VRKOcXIvCxqp35RZ9I0-bDGk5qNfT46OTho-2oP9iGc',
       priceUsd: 0.3152918810333686,
+      totalSupply: 999984085211852,
+      FDV: 310660440.6196905,
     },
-    collateralPrice: 0,
+    collateralPrice: 0.3152918810333686,
     amountInWallet: 7777,
   },
   {
@@ -97,8 +111,10 @@ export const MOCK_COLLATERALS_LIST: CollateralToken[] = [
       logoUrl:
         'https://cdn.helius-rpc.com/cdn-cgi/image//https://arweave.net/beGAyeIzjV_UkyjFtxbkZyi_YqfOBWayiQ0B6wqWygY',
       priceUsd: 0.43918026923076925,
+      totalSupply: 999984085211852,
+      FDV: 447023203450.14856,
     },
-    collateralPrice: 0,
+    collateralPrice: 0.43918026923076925,
     amountInWallet: 7777,
   },
 ]
