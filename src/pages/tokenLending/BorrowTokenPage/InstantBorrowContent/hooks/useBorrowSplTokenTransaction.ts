@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BN } from 'fbonds-core'
@@ -64,6 +64,8 @@ export const useBorrowSplTokenTransaction = (props: {
   const { isLedger } = useIsLedger()
   const { tokenType } = useNftTokenType()
 
+  const [isBorrowing, setIsBorrowing] = useState(false)
+
   const { add: addLoansOptimistic } = useTokenLoansOptimistic()
 
   const { offers, updateOrAddOffer } = useTokenMarketOffers(collateral.marketPubkey || '')
@@ -114,12 +116,14 @@ export const useBorrowSplTokenTransaction = (props: {
     }, [])
   }, [collateral, offers, splTokenOffers])
 
-  const executeBorrow = async () => {
+  const borrow = async () => {
     const loadingSnackbarId = uniqueId()
 
     if (!transactionsData.length) return
 
     try {
+      setIsBorrowing(true)
+
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const txnsData = await Promise.all(
@@ -214,8 +218,10 @@ export const useBorrowSplTokenTransaction = (props: {
         walletPubkey: wallet?.publicKey?.toBase58(),
         transactionName: 'BorrowSplToken',
       })
+    } finally {
+      setIsBorrowing(false)
     }
   }
 
-  return { executeBorrow }
+  return { borrow, isBorrowing }
 }

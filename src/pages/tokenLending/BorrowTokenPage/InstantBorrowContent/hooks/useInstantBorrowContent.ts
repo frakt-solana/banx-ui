@@ -121,7 +121,7 @@ export const useInstantBorrowContent = () => {
     tokenWalletBalance: collateralTokenBalanceStr,
   })
 
-  const { executeBorrow } = useBorrowSplTokenTransaction({
+  const { borrow, isBorrowing } = useBorrowSplTokenTransaction({
     collateral: collateralToken,
     collateralsToSend: parseFloat(collateralInputValue),
     splTokenOffers: offers,
@@ -143,7 +143,8 @@ export const useInstantBorrowContent = () => {
     collateralTokenBalanceStr,
     borrowTokenBalanceStr,
 
-    executeBorrow,
+    borrow,
+    isBorrowing,
     errorMessage,
   }
 }

@@ -1,3 +1,5 @@
+import { useMemo } from 'react'
+
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 
@@ -19,7 +21,13 @@ export const useCollateralsList = () => {
     },
   )
 
-  return { collateralsList: data ?? [], isLoading }
+  const sortedCollateralsList = useMemo(() => {
+    if (!data) return []
+
+    return data.sort((a, b) => b.amountInWallet - a.amountInWallet)
+  }, [data])
+
+  return { collateralsList: sortedCollateralsList, isLoading }
 }
 
 export const useBorrowTokensList = () => {
