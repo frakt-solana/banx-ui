@@ -3,9 +3,11 @@ import { FC } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
+import { calculateAPRforOffer } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
+import { TokenMeta } from '@banx/api/tokens'
 import { Pencil } from '@banx/icons'
 import { SyntheticTokenOffer } from '@banx/store/token'
 
@@ -13,11 +15,13 @@ import styles from './OrderBook.module.less'
 
 interface OfferProps {
   offer: SyntheticTokenOffer
-  collateralTokenDecimals: number
+  collateral: TokenMeta | undefined
+  collateralPrice: number
 }
 
-const Offer: FC<OfferProps> = ({ offer, collateralTokenDecimals }) => {
+const Offer: FC<OfferProps> = ({ offer, collateral, collateralPrice }) => {
   const { publicKey: offerPubkey, collateralsPerToken, offerSize, isEdit } = offer
+  const { decimals: collateralTokenDecimals = 0, FDV: marketCap = 0 } = collateral || {}
 
   const { connected } = useWallet()
 
@@ -29,11 +33,11 @@ const Offer: FC<OfferProps> = ({ offer, collateralTokenDecimals }) => {
     [styles.hidden]: !isEdit && !isNewOffer,
   }
 
-  //TODO (TokenLending): Use rateBasePoints from market or calculate dynamically?
-  const apr = 0
   const offerValue = collateralsPerToken
     ? (1 / collateralsPerToken) * Math.pow(10, collateralTokenDecimals)
     : 0
+
+  const { apr: aprPercent } = calculateAPRforOffer(offerValue / collateralPrice, marketCap)
 
   return (
     <li className={classNames(styles.listItem, commonHighlightClassNames)}>
@@ -49,7 +53,7 @@ const Offer: FC<OfferProps> = ({ offer, collateralTokenDecimals }) => {
         >
           {offerValue}
         </p>
-        <p className={styles.value}>{createPercentValueJSX(apr)}</p>
+        <p className={styles.value}>{createPercentValueJSX(aprPercent)}</p>
         <p className={styles.value}>
           <DisplayValue value={offerSize} />
         </p>

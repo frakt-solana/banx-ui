@@ -1,6 +1,9 @@
 import { FC } from 'react'
 
-import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import {
+  calculateAPRforOffer,
+  calculateCurrentInterestSolPure,
+} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import moment from 'moment'
 
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
@@ -18,25 +21,25 @@ interface MainSummaryProps {
 }
 
 export const MainSummary: FC<MainSummaryProps> = ({ market, collateralPerToken }) => {
-  const { collateralPrice = 0 } = market || {}
+  const { collateralPrice = 0, collateral } = market || {}
 
-  const ltv = (collateralPerToken / collateralPrice) * 100 || 0
-  const apr = 0 //TODO (TokenLending): Use rateBasePoints from market or calculate dynamically?
+  const ltvPercent = (collateralPerToken / collateralPrice) * 100 || 0
+  const { apr: aprPercent } = calculateAPRforOffer(ltvPercent, collateral?.FDV)
 
   return (
     <div className={styles.mainSummary}>
       <StatInfo
         label="LTV"
-        value={ltv}
+        value={ltvPercent}
         tooltipText="LTV"
         valueType={VALUES_TYPES.PERCENT}
-        valueStyles={{ color: getColorByPercent(ltv, HealthColorIncreasing) }}
+        valueStyles={{ color: getColorByPercent(ltvPercent, HealthColorIncreasing) }}
         classNamesProps={{ container: styles.mainSummaryStat, value: styles.fixedValueContent }}
       />
       <div className={styles.separateLine} />
       <StatInfo
         label="APR"
-        value={apr}
+        value={aprPercent}
         valueType={VALUES_TYPES.PERCENT}
         classNamesProps={{ value: styles.aprValue, container: styles.mainSummaryStat }}
         tooltipText="APR"
