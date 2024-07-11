@@ -1,24 +1,19 @@
 import { useEffect, useState } from 'react'
 
 import { BN } from 'fbonds-core'
-import { SECONDS_IN_DAY } from 'fbonds-core/lib/fbond-protocol/constants'
-import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import moment from 'moment'
 
 import { CollateralToken } from '@banx/api/tokens'
-import { BONDS } from '@banx/constants'
 import { useTokenBalance } from '@banx/hooks'
 import { useNftTokenType } from '@banx/store/nft'
-import { bnToHuman, calculateApr } from '@banx/utils'
+import { bnToHuman } from '@banx/utils'
 
 import {
   BORROW_TOKENS_LIST,
   BorrowToken,
   DEFAULT_BORROW_TOKEN,
   DEFAULT_COLLATERAL_TOKEN,
-  MOCK_APR_RATE,
 } from '../../constants'
-import { calculateTotalAmount, getErrorMessage } from '../helpers'
+import { calculateTotalAmount, getErrorMessage, getSummaryInfo } from '../helpers'
 import { useBorrowSplTokenOffers } from './useBorrowSplTokenOffers'
 import { useBorrowSplTokenTransaction } from './useBorrowSplTokenTransaction'
 
@@ -123,25 +118,12 @@ export const useInstantBorrowContent = () => {
     tokenWalletBalance: collateralTokenBalanceStr,
   })
 
+  const { upfrontFee, weightedApr, weeklyFee } = getSummaryInfo(offers, collateralToken)
+
   const { executeBorrow } = useBorrowSplTokenTransaction({
     collateral: collateralToken,
     collateralsToSend: parseFloat(collateralInputValue),
     splTokenOffers: offers,
-  })
-
-  const totalAmountToGet = calculateTotalAmount(offers, 'amountToGet')
-  const upfrontFee = totalAmountToGet.div(new BN(100)).toNumber()
-  const weeklyFee = calculateCurrentInterestSolPure({
-    loanValue: totalAmountToGet.toNumber(),
-    startTime: moment().unix(),
-    currentTime: moment().unix() + SECONDS_IN_DAY * 7,
-    rateBasePoints: MOCK_APR_RATE + BONDS.PROTOCOL_REPAY_FEE,
-  })
-
-  const apr = calculateApr({
-    loanValue: totalAmountToGet.toNumber(),
-    collectionFloor: collateralToken.collateralPrice,
-    marketPubkey: collateralToken.marketPubkey,
   })
 
   return {
@@ -163,6 +145,6 @@ export const useInstantBorrowContent = () => {
 
     upfrontFee,
     weeklyFee,
-    apr,
+    weightedApr,
   }
 }

@@ -33,7 +33,7 @@ const InstantBorrowContent = () => {
 
     upfrontFee,
     weeklyFee,
-    apr,
+    weightedApr,
 
     errorMessage,
     executeBorrow,
@@ -69,7 +69,7 @@ const InstantBorrowContent = () => {
         disabledInput={!wallet.connected}
       />
 
-      <Summary apr={apr} upfrontFee={upfrontFee} weeklyFee={weeklyFee} />
+      <Summary weightedApr={weightedApr} upfrontFee={upfrontFee} weeklyFee={weeklyFee} />
       <Button
         onClick={executeBorrow}
         disabled={!wallet.connected || !!errorMessage}
@@ -84,12 +84,12 @@ const InstantBorrowContent = () => {
 export default InstantBorrowContent
 
 interface SummaryProps {
-  apr: number
+  weightedApr: number
   upfrontFee: number
   weeklyFee: number
 }
 
-export const Summary: FC<SummaryProps> = ({ apr, upfrontFee, weeklyFee }) => {
+export const Summary: FC<SummaryProps> = ({ weightedApr, upfrontFee, weeklyFee }) => {
   const statClassNames = {
     value: styles.fixedStatValue,
   }
@@ -111,8 +111,8 @@ export const Summary: FC<SummaryProps> = ({ apr, upfrontFee, weeklyFee }) => {
         flexType="row"
       />
       <StatInfo
-        label="APR"
-        value={apr / 100}
+        label="Weighted APR"
+        value={weightedApr / 100}
         valueType={VALUES_TYPES.PERCENT}
         classNamesProps={statClassNames}
         flexType="row"

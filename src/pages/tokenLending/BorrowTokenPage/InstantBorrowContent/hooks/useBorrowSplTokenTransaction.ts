@@ -40,12 +40,13 @@ import {
   enqueueWaitingConfirmation,
 } from '@banx/utils'
 
-import { MOCK_APR_RATE } from '../../constants'
+import { calculateTokenBorrowApr } from '../helpers'
 
 type TransactionData = {
   offer: Offer
   loanValue: number
   collateral: CollateralToken
+  aprRate: number
 }
 
 export const useBorrowSplTokenTransaction = (props: {
@@ -98,11 +99,14 @@ export const useBorrowSplTokenTransaction = (props: {
       const offerData = find(offers, ({ publicKey }) => publicKey === offer.offerPublicKey)
       const loanValueToNumber = new BN(offer.amountToGet, 'hex').toNumber()
 
+      const aprRate = calculateTokenBorrowApr({ offer, collateralToken: collateral })
+
       if (offerData) {
         acc.push({
           offer: offerData,
           loanValue: loanValueToNumber,
           collateral,
+          aprRate,
         })
       }
 
@@ -119,14 +123,14 @@ export const useBorrowSplTokenTransaction = (props: {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const txnsData = await Promise.all(
-        transactionsData.map(({ collateral, loanValue, offer }) =>
+        transactionsData.map(({ collateral, aprRate, loanValue, offer }) =>
           createBorrowSplTokenTxnData(
             {
               loanValue,
               collateral,
               collateralsToSend,
               offer,
-              aprRate: MOCK_APR_RATE, //TODO (TokenLending): Need to calc in the future
+              aprRate,
               tokenType,
             },
             walletAndConnection,
