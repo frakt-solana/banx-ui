@@ -1,4 +1,4 @@
-import { BN, web3 } from 'fbonds-core'
+import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { borrowPerpetualSpl } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
@@ -33,6 +33,7 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async (
   const tokenDecimals = getTokenDecimals(tokenType)
 
   const amountToSend = collateralsToSend * Math.pow(10, collateral.meta.decimals)
+  const loanValueWithUpfrontFee = Math.floor(loanValue + loanValue / 100)
 
   const { instructions, signers, optimisticResults } = await borrowPerpetualSpl({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
@@ -45,7 +46,7 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async (
       fraktMarket: new web3.PublicKey(offer.hadoMarket),
     },
     args: {
-      amountToGet: loanValue,
+      amountToGet: loanValueWithUpfrontFee,
       amountToSend,
       optimizeIntoReserves: true,
       aprRate,
