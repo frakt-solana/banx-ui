@@ -13,7 +13,7 @@ import {
   DEFAULT_BORROW_TOKEN,
   DEFAULT_COLLATERAL_TOKEN,
 } from '../../constants'
-import { calculateTotalAmount, getErrorMessage, getSummaryInfo } from '../helpers'
+import { calculateTotalAmount, getErrorMessage } from '../helpers'
 import { useBorrowSplTokenOffers } from './useBorrowSplTokenOffers'
 import { useBorrowSplTokenTransaction } from './useBorrowSplTokenTransaction'
 
@@ -121,8 +121,6 @@ export const useInstantBorrowContent = () => {
     tokenWalletBalance: collateralTokenBalanceStr,
   })
 
-  const { upfrontFee, weightedApr, weeklyFee } = getSummaryInfo(offers, collateralToken)
-
   const { executeBorrow } = useBorrowSplTokenTransaction({
     collateral: collateralToken,
     collateralsToSend: parseFloat(collateralInputValue),
@@ -130,6 +128,8 @@ export const useInstantBorrowContent = () => {
   })
 
   return {
+    offers,
+
     collateralInputValue,
     collateralToken,
     handleCollateralInputChange,
@@ -145,9 +145,5 @@ export const useInstantBorrowContent = () => {
 
     executeBorrow,
     errorMessage,
-
-    upfrontFee,
-    weeklyFee,
-    weightedApr,
   }
 }

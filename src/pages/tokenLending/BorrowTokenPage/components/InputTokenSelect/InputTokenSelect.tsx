@@ -146,6 +146,8 @@ const SearchSelect = <T extends BaseToken>({
   onChangeToken,
   onClose,
 }: SearchSelectProps<T>) => {
+  const { connected } = useWallet()
+
   const [searchInput, setSearchInput] = useState('')
 
   const handleSearchInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -178,7 +180,7 @@ const SearchSelect = <T extends BaseToken>({
       <div className={styles.selectTokenDropdown}>
         <div className={styles.selectTokenDropdownHeader}>
           <span>Token</span>
-          <span>Available</span>
+          {connected && <span>Available</span>}
         </div>
         <div className={styles.selectTokenDropdownList}>
           {filteredOptions.map((option, index) => (
@@ -197,7 +199,12 @@ const SearchSelect = <T extends BaseToken>({
                 </div>
                 <SolanaFMLink path={`address/${option.collateral.mint}`} size="small" />
               </div>
-              <span className={styles.dropdownItemAdditionalInfo}>{option.amountInWallet}</span>
+
+              {connected && (
+                <span className={styles.dropdownItemAdditionalInfo}>
+                  {option.amountInWallet / Math.pow(10, option.collateral.decimals)}
+                </span>
+              )}
             </div>
           ))}
         </div>

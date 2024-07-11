@@ -6,10 +6,12 @@ import { Button } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
+import { BorrowSplTokenOffers, CollateralToken } from '@banx/api/tokens'
+
 import { Separator } from '../components'
 import InputTokenSelect from '../components/InputTokenSelect'
-import { BORROW_TOKENS_LIST } from '../constants'
-import { useCollateralsList } from './hooks/useCollateralsList'
+import { getSummaryInfo } from './helpers'
+import { useBorrowTokensList, useCollateralsList } from './hooks/useCollateralsList'
 import { useInstantBorrowContent } from './hooks/useInstantBorrowContent'
 
 import styles from './InstantBorrowContent.module.less'
@@ -18,6 +20,7 @@ const InstantBorrowContent = () => {
   const wallet = useWallet()
 
   const {
+    offers,
     collateralToken,
     collateralInputValue,
     handleCollateralInputChange,
@@ -31,15 +34,12 @@ const InstantBorrowContent = () => {
     collateralTokenBalanceStr,
     borrowTokenBalanceStr,
 
-    upfrontFee,
-    weeklyFee,
-    weightedApr,
-
     errorMessage,
     executeBorrow,
   } = useInstantBorrowContent()
 
   const { collateralsList } = useCollateralsList()
+  const { borrowTokensList } = useBorrowTokensList()
 
   return (
     <div className={styles.content}>
@@ -63,13 +63,13 @@ const InstantBorrowContent = () => {
         onChange={handleBorrowInputChange}
         selectedToken={borrowToken}
         onChangeToken={handleBorrowTokenChange}
-        tokenList={BORROW_TOKENS_LIST}
+        tokenList={borrowTokensList}
         className={styles.borrowInput}
         maxValue={borrowTokenBalanceStr}
         disabledInput={!wallet.connected}
       />
 
-      <Summary weightedApr={weightedApr} upfrontFee={upfrontFee} weeklyFee={weeklyFee} />
+      <Summary collateralToken={collateralToken} offers={offers} />
       <Button
         onClick={executeBorrow}
         disabled={!wallet.connected || !!errorMessage}
@@ -84,12 +84,13 @@ const InstantBorrowContent = () => {
 export default InstantBorrowContent
 
 interface SummaryProps {
-  weightedApr: number
-  upfrontFee: number
-  weeklyFee: number
+  offers: BorrowSplTokenOffers[]
+  collateralToken: CollateralToken
 }
 
-export const Summary: FC<SummaryProps> = ({ weightedApr, upfrontFee, weeklyFee }) => {
+export const Summary: FC<SummaryProps> = ({ offers, collateralToken }) => {
+  const { upfrontFee, weightedApr, weeklyFee } = getSummaryInfo(offers, collateralToken)
+
   const statClassNames = {
     value: styles.fixedStatValue,
   }
