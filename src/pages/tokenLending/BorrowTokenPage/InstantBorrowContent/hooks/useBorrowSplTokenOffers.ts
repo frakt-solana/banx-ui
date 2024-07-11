@@ -8,11 +8,9 @@ import { core } from '@banx/api/tokens'
 import { useDebounceValue } from '@banx/hooks'
 import { ZERO_BN, stringToHex } from '@banx/utils'
 
-import { DEFAULT_COLLATERAL_TOKEN } from '../../constants'
-
 export const useBorrowSplTokenOffers = () => {
-  const [marketPubkey, setMarketPubkey] = useState(DEFAULT_COLLATERAL_TOKEN.marketPubkey)
-  const [outputTokenType, setOutputTokenType] = useState(LendingTokenType.BanxSol)
+  const [marketPubkey, setMarketPubkey] = useState('')
+  const [outputTokenType, setOutputTokenType] = useState<LendingTokenType>()
   const [inputPutType, setInputPutType] = useState<'input' | 'output'>('input')
   const [amount, setAmount] = useState('')
 
@@ -26,7 +24,7 @@ export const useBorrowSplTokenOffers = () => {
     () =>
       core.fetchBorrowSplTokenOffers({
         market: marketPubkey,
-        outputToken: outputTokenType,
+        outputToken: outputTokenType ?? LendingTokenType.BanxSol,
         type: inputPutType,
         amount: debouncedAmount,
       }),

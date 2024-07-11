@@ -8,20 +8,7 @@ export interface BorrowToken {
   amountInWallet: number
 }
 
-export const DEFAULT_COLLATERAL_TOKEN = {
-  marketPubkey: '9vMKEMq8G36yrkqVUzQuAweieCsxU9ZaK1ob8GRegwmh',
-  collateral: {
-    mint: 'BANXbTpN8U2cU41FjPxe2Ti37PiT5cCxLUKDQZuJeMMR',
-    ticker: 'BANX',
-    logoUrl: 'https://arweave.net/5QRitQGPVjPwpjt43Qe_WISmys4dWwLMqQqQDT0oshg',
-    decimals: 9,
-    priceUsd: 0,
-    totalSupply: 0,
-    FDV: 0,
-  },
-  collateralPrice: 0,
-  amountInWallet: 0,
-}
+export const DEFAULT_COLLATERAL_MARKET_PUBKEY = '9vMKEMq8G36yrkqVUzQuAweieCsxU9ZaK1ob8GRegwmh'
 
 export const BORROW_TOKENS_LIST: BorrowToken[] = [
   {
@@ -53,5 +40,3 @@ export const BORROW_TOKENS_LIST: BorrowToken[] = [
     amountInWallet: 0,
   },
 ]
-
-export const DEFAULT_BORROW_TOKEN = BORROW_TOKENS_LIST[0]

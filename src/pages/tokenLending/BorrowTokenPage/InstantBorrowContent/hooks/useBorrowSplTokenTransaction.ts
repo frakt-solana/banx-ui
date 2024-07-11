@@ -50,7 +50,7 @@ type TransactionData = {
 }
 
 export const useBorrowSplTokenTransaction = (props: {
-  collateral: CollateralToken
+  collateral: CollateralToken | undefined
   collateralsToSend: number
   splTokenOffers: BorrowSplTokenOffers[]
 }) => {
@@ -68,7 +68,7 @@ export const useBorrowSplTokenTransaction = (props: {
 
   const { add: addLoansOptimistic } = useTokenLoansOptimistic()
 
-  const { offers, updateOrAddOffer } = useTokenMarketOffers(collateral.marketPubkey || '')
+  const { offers, updateOrAddOffer } = useTokenMarketOffers(collateral?.marketPubkey || '')
 
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
@@ -100,6 +100,8 @@ export const useBorrowSplTokenTransaction = (props: {
     return splTokenOffers.reduce<TransactionData[]>((acc, offer) => {
       const offerData = find(offers, ({ publicKey }) => publicKey === offer.offerPublicKey)
       const loanValueToNumber = new BN(offer.amountToGet, 'hex').toNumber()
+
+      if (!collateral) return acc
 
       const aprRate = calculateTokenBorrowApr({ offer, collateralToken: collateral })
 

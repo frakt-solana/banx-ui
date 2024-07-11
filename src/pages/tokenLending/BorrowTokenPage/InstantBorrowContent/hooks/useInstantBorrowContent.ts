@@ -1,33 +1,26 @@
 import { useEffect, useState } from 'react'
 
-import { BN } from 'fbonds-core'
-
 import { CollateralToken } from '@banx/api/tokens'
-import { useTokenBalance } from '@banx/hooks'
 import { useNftTokenType } from '@banx/store/nft'
 import { bnToHuman } from '@banx/utils'
 
-import {
-  BORROW_TOKENS_LIST,
-  BorrowToken,
-  DEFAULT_BORROW_TOKEN,
-  DEFAULT_COLLATERAL_TOKEN,
-} from '../../constants'
+import { BorrowToken, DEFAULT_COLLATERAL_MARKET_PUBKEY } from '../../constants'
 import { calculateTotalAmount, getErrorMessage } from '../helpers'
 import { useBorrowSplTokenOffers } from './useBorrowSplTokenOffers'
 import { useBorrowSplTokenTransaction } from './useBorrowSplTokenTransaction'
+import { useBorrowTokensList, useCollateralsList } from './useCollateralsList'
 
 export const useInstantBorrowContent = () => {
   const { tokenType, setTokenType } = useNftTokenType()
 
   const [collateralInputValue, setCollateralInputValue] = useState('')
-  const [collateralToken, setCollateralToken] = useState<CollateralToken>(DEFAULT_COLLATERAL_TOKEN)
+  const [collateralToken, setCollateralToken] = useState<CollateralToken>()
 
   const [borrowInputValue, setBorrowInputValue] = useState('')
-  const [borrowToken, setBorrowToken] = useState<BorrowToken>(DEFAULT_BORROW_TOKEN)
+  const [borrowToken, setBorrowToken] = useState<BorrowToken>()
 
-  const collateralTokenBalance = useTokenBalance(collateralToken.collateral.mint)
-  const borrowTokenBalance = useTokenBalance(borrowToken.collateral.mint)
+  const { collateralsList } = useCollateralsList()
+  const { borrowTokensList } = useBorrowTokensList()
 
   const {
     data: offers,
@@ -39,7 +32,29 @@ export const useInstantBorrowContent = () => {
     handleAmountChange,
   } = useBorrowSplTokenOffers()
 
+  useEffect(() => {
+    const foundToken = collateralsList.find(
+      (token) => token.marketPubkey === DEFAULT_COLLATERAL_MARKET_PUBKEY,
+    )
+
+    if (!collateralToken && foundToken) {
+      setCollateralToken(foundToken)
+      setMarketPubkey(foundToken.marketPubkey)
+    }
+  }, [collateralToken, collateralsList, setMarketPubkey])
+
+  useEffect(() => {
+    const foundToken = borrowTokensList.find((token) => token.lendingTokenType === tokenType)
+
+    if (foundToken) {
+      setBorrowToken(foundToken)
+      setOutputTokenType(foundToken.lendingTokenType)
+    }
+  }, [borrowTokensList, tokenType, borrowToken, setOutputTokenType])
+
   const handleCollateralInputChange = (value: string) => {
+    if (!borrowToken || !collateralToken) return
+
     if (inputPutType !== 'input') {
       setInputPutType('input')
       setOutputTokenType(borrowToken.lendingTokenType)
@@ -50,6 +65,8 @@ export const useInstantBorrowContent = () => {
   }
 
   const handleBorrowInputChange = (value: string) => {
+    if (!borrowToken) return
+
     if (inputPutType !== 'output') {
       setInputPutType('output')
       setOutputTokenType(borrowToken.lendingTokenType)
@@ -71,15 +88,9 @@ export const useInstantBorrowContent = () => {
   }
 
   useEffect(() => {
-    const token = BORROW_TOKENS_LIST.find((token) => token.lendingTokenType === tokenType)
-    if (token) {
-      setBorrowToken(token)
-      setOutputTokenType(token.lendingTokenType)
-    }
-  }, [setOutputTokenType, tokenType])
-
-  useEffect(() => {
     if (inputPutType === 'input') {
+      if (!borrowToken) return
+
       const totalAmountToGet = calculateTotalAmount(offers, 'amountToGet')
       const totalAmountToGetStr = bnToHuman(
         totalAmountToGet,
@@ -90,6 +101,8 @@ export const useInstantBorrowContent = () => {
         setBorrowInputValue(totalAmountToGetStr)
       }
     } else if (inputPutType === 'output') {
+      if (!collateralToken) return
+
       const totalAmountToGive = calculateTotalAmount(offers, 'amountToGive')
 
       const totalAmountToGetStr = bnToHuman(
@@ -103,22 +116,12 @@ export const useInstantBorrowContent = () => {
     }
   }, [offers, borrowToken, borrowInputValue, collateralToken, collateralInputValue, inputPutType])
 
-  const collateralTokenBalanceStr = bnToHuman(
-    new BN(collateralTokenBalance),
-    collateralToken.collateral.decimals,
-  ).toString()
-
-  const borrowTokenBalanceStr = bnToHuman(
-    new BN(borrowTokenBalance),
-    borrowToken.collateral.decimals,
-  ).toString()
-
   const errorMessage = getErrorMessage({
     offers,
     isLoadingOffers,
     collateralToken,
     collateralInputValue,
-    tokenWalletBalance: collateralTokenBalanceStr,
+    borrowInputValue,
   })
 
   const { borrow, isBorrowing } = useBorrowSplTokenTransaction({
@@ -129,6 +132,8 @@ export const useInstantBorrowContent = () => {
 
   return {
     offers,
+    collateralsList,
+    borrowTokensList,
 
     collateralInputValue,
     collateralToken,
@@ -139,9 +144,6 @@ export const useInstantBorrowContent = () => {
     borrowInputValue,
     handleBorrowInputChange,
     handleBorrowTokenChange,
-
-    collateralTokenBalanceStr,
-    borrowTokenBalanceStr,
 
     borrow,
     isBorrowing,

@@ -7,12 +7,12 @@ import moment from 'moment'
 
 import { BorrowSplTokenOffers, CollateralToken } from '@banx/api/tokens'
 import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
-import { ZERO_BN, calcWeightedAverage, stringToBN } from '@banx/utils'
+import { ZERO_BN, bnToHuman, calcWeightedAverage, stringToBN } from '@banx/utils'
 
 interface GetErrorMessageProps {
   collateralToken: CollateralToken | undefined
   collateralInputValue: string
-  tokenWalletBalance: string
+  borrowInputValue: string
   offers: BorrowSplTokenOffers[]
   isLoadingOffers: boolean
 }
@@ -20,15 +20,24 @@ interface GetErrorMessageProps {
 export const getErrorMessage = ({
   collateralToken,
   collateralInputValue,
-  tokenWalletBalance,
+  borrowInputValue,
   offers,
   isLoadingOffers,
 }: GetErrorMessageProps) => {
   const ticker = collateralToken?.collateral.ticker || ''
 
-  const isInvalidAmount = stringToBN(collateralInputValue).eq(ZERO_BN)
-  const noEnoughtWalletBalance = stringToBN(tokenWalletBalance).eq(ZERO_BN)
-  const hasInsufficientBalance = stringToBN(collateralInputValue).gt(stringToBN(tokenWalletBalance))
+  const collateralTokenBalance = bnToHuman(
+    new BN(collateralToken?.amountInWallet || 0),
+    collateralToken?.collateral.decimals,
+  ).toString()
+
+  const isInvalidAmount =
+    stringToBN(collateralInputValue).eq(ZERO_BN) && stringToBN(borrowInputValue).eq(ZERO_BN)
+
+  const noEnoughtWalletBalance = stringToBN(collateralTokenBalance).eq(ZERO_BN)
+  const hasInsufficientBalance = stringToBN(collateralInputValue).gt(
+    stringToBN(collateralTokenBalance),
+  )
   const noOffersAvailable = offers.length === 0 || isLoadingOffers
 
   if (noEnoughtWalletBalance) {
