@@ -24,7 +24,7 @@ interface MainSummaryProps {
 export const MainSummary: FC<MainSummaryProps> = ({ market, collateralPerToken }) => {
   const { collateralPrice = 0, collateral } = market || {}
 
-  const ltvPercent = (collateralPerToken / collateralPrice) * 100 || 0
+  const ltvPercent = (collateralPerToken / collateralPrice) * 100
   const { apr: aprPercent } = calculateAPRforOffer(ltvPercent, collateral?.FDV)
 
   return (

@@ -20,7 +20,8 @@ export const useCollateralsList = () => {
       core.fetchCollateralsList({ walletPubkey: walletPubkey?.toBase58(), marketType: tokenType }),
     {
       refetchOnWindowFocus: false,
-      staleTime: 60_000,
+      refetchInterval: 10_000,
+      staleTime: 10_000,
     },
   )
 
@@ -66,7 +67,7 @@ export const useBorrowTokensList = () => {
 
   const { data, isLoading } = useQuery(['borrowTokensList', publicKey], fetchBorrowTokenList, {
     refetchOnWindowFocus: false,
-    staleTime: 60_000,
+    staleTime: 15_000,
   })
 
   return { borrowTokensList: data ?? [], isLoading }

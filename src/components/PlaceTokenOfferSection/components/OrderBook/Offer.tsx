@@ -37,7 +37,8 @@ const Offer: FC<OfferProps> = ({ offer, collateral, collateralPrice }) => {
     ? (1 / collateralsPerToken) * Math.pow(10, collateralTokenDecimals)
     : 0
 
-  const { apr: aprPercent } = calculateAPRforOffer(offerValue / collateralPrice, marketCap)
+  const ltvPercent = (offerValue / collateralPrice) * 100
+  const { apr: aprPercent } = calculateAPRforOffer(ltvPercent, marketCap)
 
   return (
     <li className={classNames(styles.listItem, commonHighlightClassNames)}>
