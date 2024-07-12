@@ -218,9 +218,15 @@ export const fetchAllTokenLoansRequests: FetchAllTokenLoansRequests = async ({
   return data.data
 }
 
-export const fetchCollateralsList = async (walletPubkey?: string) => {
+export const fetchCollateralsList = async (props: {
+  walletPubkey?: string
+  marketType: LendingTokenType
+}) => {
+  const { walletPubkey, marketType } = props
+
   const queryParams = new URLSearchParams({
     isPrivate: String(IS_PRIVATE_MARKETS),
+    marketType: String(convertToMarketType(marketType)),
   })
 
   const { data } = await axios.get<{ data: CollateralToken[] }>(

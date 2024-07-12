@@ -40,6 +40,10 @@ export const getErrorMessage = ({
   )
   const noOffersAvailable = offers.length === 0 || isLoadingOffers
 
+  if (noOffersAvailable) {
+    return 'Not enough liquidity'
+  }
+
   if (noEnoughtWalletBalance) {
     return `You don't have ${ticker} to borrow`
   }
@@ -50,10 +54,6 @@ export const getErrorMessage = ({
 
   if (hasInsufficientBalance) {
     return ticker ? `Not enough ${ticker}` : ''
-  }
-
-  if (noOffersAvailable) {
-    return 'Not enough liquidity'
   }
 
   return ''
@@ -77,7 +77,9 @@ export const getSummaryInfo = (
 
   const upfrontFee = totalAmountToGet.div(new BN(100)).toNumber()
 
-  const aprRateArray = offers.map((offer) => calculateTokenBorrowApr({ offer, collateralToken }))
+  const aprRateArray = offers.map(
+    (offer) => calculateTokenBorrowApr({ offer, collateralToken }) + BONDS.PROTOCOL_REPAY_FEE,
+  )
   const amountToGetArray = offers.map((offer) => new BN(offer.amountToGet, 'hex').toNumber())
   const weightedApr = calcWeightedAverage(aprRateArray, amountToGetArray)
 
@@ -101,7 +103,7 @@ export const calculateTokenBorrowApr: CalculateTokenBorrowApr = ({ offer, collat
   const amountToGive = new BN(offer.amountToGive, 'hex')
 
   const collateralPerToken = amountToGet.toNumber() / amountToGive.toNumber()
-  const ltvPercent = collateralPerToken / collateralToken.collateralPrice
+  const ltvPercent = (collateralPerToken / collateralToken.collateralPrice) * 100
 
   const { apr } = calculateAPRforOffer(ltvPercent, collateralToken.collateral.FDV)
   const aprRate = apr * 100

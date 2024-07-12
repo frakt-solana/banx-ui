@@ -6,15 +6,18 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchTokenBalance } from '@banx/api/common'
 import { core } from '@banx/api/tokens'
 import { SOL_ADDRESS } from '@banx/constants'
+import { useNftTokenType } from '@banx/store/nft'
 
 import { BORROW_TOKENS_LIST } from '../../constants'
 
 export const useCollateralsList = () => {
   const { publicKey: walletPubkey } = useWallet()
+  const { tokenType } = useNftTokenType()
 
   const { data, isLoading } = useQuery(
-    ['collateralsList', walletPubkey],
-    () => core.fetchCollateralsList(walletPubkey?.toBase58()),
+    ['collateralsList', walletPubkey, tokenType],
+    () =>
+      core.fetchCollateralsList({ walletPubkey: walletPubkey?.toBase58(), marketType: tokenType }),
     {
       refetchOnWindowFocus: false,
       staleTime: 60_000,
