@@ -11,7 +11,7 @@ import { z } from 'zod'
 import { OfferSchema } from '@banx/api/nft'
 import { PaginationMeta } from '@banx/api/types'
 
-const TokenMetaSchema = z.object({
+export const TokenMetaSchema = z.object({
   mint: z.string(),
   logoUrl: z.string(),
   ticker: z.string(),

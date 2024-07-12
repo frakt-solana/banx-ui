@@ -193,7 +193,12 @@ export const useUserLoansStats = () => {
 
   const { data, isLoading } = useQuery(
     ['userLoansStats', publicKeyString, tokenType],
-    () => stats.fetchUserLoansStats({ walletPubkey: publicKeyString, tokenType }),
+    () =>
+      stats.fetchUserLoansStats({
+        walletPubkey: publicKeyString,
+        marketType: tokenType,
+        tokenType: 'nft',
+      }),
     {
       enabled: !!publicKeyString,
       staleTime: 5 * 1000,

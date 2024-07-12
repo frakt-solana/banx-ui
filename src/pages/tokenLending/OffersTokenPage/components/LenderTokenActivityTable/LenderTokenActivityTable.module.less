@@ -1,0 +1,135 @@
+.tableRoot {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.table {
+  min-width: 990px;
+
+  tr > td,
+  tr > th {
+    &:first-child {
+      width: 220px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    min-width: 780px;
+
+    tr > td,
+    tr > th {
+      width: 96px;
+
+      &:nth-child(5),
+      &:last-child {
+        width: 114px;
+      }
+
+      &:first-child {
+        width: 168px;
+      }
+    }
+  }
+}
+
+.searchSelect {
+  max-width: 456px;
+}
+
+.emptyList {
+  padding-bottom: 148px;
+}
+
+// * Summary * //
+.summary {
+  border-top: 1px solid var(--bg-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 24px;
+  width: 100%;
+
+  @media (max-width: 960px) {
+    flex-direction: column;
+    padding: 16px;
+    gap: 8px;
+  }
+}
+
+.mainStat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  @media (max-width: 1240px) {
+    display: none;
+  }
+
+  p:first-child {
+    font: var(--important-text-3xl);
+  }
+
+  p:last-child {
+    color: var(--content-secondary);
+    font: var(--title-sm);
+    text-transform: uppercase;
+    max-width: 100px;
+  }
+}
+
+.weightedAprStat {
+  @media (min-width: 1241px) {
+    display: none;
+  }
+}
+
+.statsContainer {
+  display: flex;
+  justify-content: space-around;
+  flex-grow: 1;
+
+  & > div {
+    gap: unset;
+    align-items: end;
+  }
+
+  @media (max-width: 960px) {
+    margin-right: -16px;
+    padding-right: 16px;
+    overflow: auto hidden;
+    white-space: nowrap;
+    width: 100%;
+
+    & > div {
+      align-items: center;
+    }
+  }
+
+  @media (max-width: 640px) {
+    gap: 8px;
+  }
+
+  @media (max-width: 420px) {
+    justify-content: flex-start;
+  }
+}
+
+.summaryButton {
+  @media (max-width: 960px) {
+    width: 100%;
+  }
+}
+// * Summary * //
+
+// * Cells * //
+.statusCellTitle {
+  font: var(--body-text-md);
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
+}
+// * Cells * //
