@@ -3,8 +3,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { Button } from '@banx/components/Buttons'
 
 import { Separator } from '../components'
-import InputTokenSelect from '../components/InputTokenSelect'
-import { SkeletonInputTokenSelect } from '../components/InputTokenSelect/InputTokenSelect'
+import InputTokenSelect, { SkeletonInputTokenSelect } from '../components/InputTokenSelect'
 import { Summary, SummarySkeleton } from './Summary'
 import { useInstantBorrowContent } from './hooks/useInstantBorrowContent'
 
