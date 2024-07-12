@@ -10,6 +10,7 @@ import { BORROW_TOKENS_LIST, BorrowToken } from '../constants'
 export const MIN_APR_VALUE = 10
 export const MAX_APR_VALUE = 140
 
+// TODO (TokenLending): Remove this when intergrating with the API
 export const DEFAULT_COLLATERAL_TOKEN = {
   marketPubkey: '9vMKEMq8G36yrkqVUzQuAweieCsxU9ZaK1ob8GRegwmh',
   collateral: {
