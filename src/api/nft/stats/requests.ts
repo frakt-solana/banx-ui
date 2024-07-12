@@ -51,12 +51,18 @@ export const fetchUserOffersStats: FetchUserOffersStats = async ({
 
 type FetchUserLoansStats = (props: {
   walletPubkey: string
-  tokenType: LendingTokenType
+  marketType: LendingTokenType
+  tokenType: 'nft' | 'spl'
 }) => Promise<UserLoansStats | null>
 
-export const fetchUserLoansStats: FetchUserLoansStats = async ({ walletPubkey, tokenType }) => {
+export const fetchUserLoansStats: FetchUserLoansStats = async ({
+  walletPubkey,
+  marketType,
+  tokenType,
+}) => {
   const queryParams = new URLSearchParams({
-    marketType: String(convertToMarketType(tokenType)),
+    marketType: String(convertToMarketType(marketType)),
+    tokenType: String(tokenType),
   })
 
   const { data } = await axios.get<UserLoansStatsResponse>(

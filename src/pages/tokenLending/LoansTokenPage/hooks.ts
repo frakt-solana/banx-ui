@@ -6,6 +6,7 @@ import { chain, filter, groupBy, map } from 'lodash'
 import moment from 'moment'
 import { create } from 'zustand'
 
+import { stats } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
 import { SECONDS_IN_72_HOURS } from '@banx/constants'
 import { useNftTokenType } from '@banx/store/nft'
@@ -190,3 +191,31 @@ export const useLoansTokenTabs = create<LoansTokenTabsState>((set) => ({
   tab: null,
   setTab: (tab) => set({ tab }),
 }))
+
+export const useUserTokenLoansStats = () => {
+  const { publicKey } = useWallet()
+  const publicKeyString = publicKey?.toBase58() || ''
+
+  const { tokenType } = useNftTokenType()
+
+  const { data, isLoading } = useQuery(
+    ['userLoansStats', publicKeyString, tokenType],
+    () =>
+      stats.fetchUserLoansStats({
+        walletPubkey: publicKeyString,
+        marketType: tokenType,
+        tokenType: 'spl',
+      }),
+    {
+      enabled: !!publicKeyString,
+      staleTime: 5 * 1000,
+      refetchOnWindowFocus: false,
+      refetchInterval: 15 * 1000,
+    },
+  )
+
+  return {
+    data,
+    isLoading,
+  }
+}

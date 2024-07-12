@@ -1,7 +1,7 @@
 import { FC } from 'react'
 
 import { Button } from '@banx/components/Buttons'
-import ActivityTable from '@banx/components/CommonTables'
+import { ActivityTable } from '@banx/components/CommonTables'
 import { Tabs, useTabs } from '@banx/components/Tabs'
 import { Modal } from '@banx/components/modals/BaseModal'
 
