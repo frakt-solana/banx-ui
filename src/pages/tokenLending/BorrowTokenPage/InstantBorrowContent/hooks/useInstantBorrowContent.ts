@@ -126,7 +126,6 @@ export const useInstantBorrowContent = () => {
 
   const { borrow, isBorrowing } = useBorrowSplTokenTransaction({
     collateral: collateralToken,
-    collateralsToSend: parseFloat(collateralInputValue),
     splTokenOffers: offers,
   })
 
