@@ -3,7 +3,7 @@ import {
   calculateBanxSolStakingRewards,
   claimPerpetualBondOfferInterest,
   claimPerpetualBondOfferRepayments,
-  claimPerpetualBondOfferStakingRewards, // claimPerpetualBondOfferStakingRewards,
+  claimPerpetualBondOfferStakingRewards,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import {
@@ -16,7 +16,7 @@ import { ClusterStats } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
-import { ZERO_BN, isBanxSolTokenType } from '@banx/utils'
+import { ZERO_BN, isBanxSolTokenType, isOfferStateClosed } from '@banx/utils'
 
 import { parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
@@ -109,14 +109,21 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
 
   const accounts = [new web3.PublicKey(offer.publicKey)]
 
-  if (isBanxSolTokenType(tokenType) && (offer.bidCap || offer.concentrationIndex)) {
-    const inputAmount = new BN(offer.concentrationIndex).add(new BN(offer.bidCap))
+  const closedOffersValue = isOfferStateClosed(offer.pairState)
+    ? offer.fundsSolOrTokenBalance + offer.bidSettlement
+    : 0
 
+  const totalClaimableValue = new BN(offer.concentrationIndex)
+    .add(new BN(offer.bidCap))
+    .add(new BN(closedOffersValue))
+    .add(calculateLstYield)
+
+  if (isBanxSolTokenType(tokenType) && totalClaimableValue.gt(ZERO_BN)) {
     return await banxSol.combineWithSellBanxSolInstructions(
       {
         params,
         accounts,
-        inputAmount,
+        inputAmount: totalClaimableValue,
         instructions,
         signers,
       },
