@@ -1,4 +1,4 @@
-import { BN, web3 } from 'fbonds-core'
+import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { removePerpetualOffer } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
@@ -10,9 +10,6 @@ import {
 
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
-import { banxSol } from '@banx/transactions'
-// import { getCloseBanxSolATAsInstructions } from '@banx/transactions/banxSol'
-import { ZERO_BN, calculateIdleFundsInOffer, isBanxSolTokenType } from '@banx/utils'
 
 import { parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
@@ -51,31 +48,6 @@ export const createRemoveOfferTxnData: CreateRemoveOfferTxnData = async (
 
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
   const accounts = [new web3.PublicKey(offer.publicKey)]
-
-  const offerSize = calculateIdleFundsInOffer(offer).add(new BN(offer.bidCap))
-
-  if (isBanxSolTokenType(tokenType) && offerSize.gt(ZERO_BN)) {
-    return await banxSol.combineWithSellBanxSolInstructions(
-      {
-        params,
-        accounts,
-        inputAmount: offerSize,
-
-        instructions,
-        signers,
-        lookupTables,
-      },
-      walletAndConnection,
-    )
-  }
-
-  // if (offerSize.eq(ZERO_BN)) {
-  //   const { instructions: closeInstructions } = await getCloseBanxSolATAsInstructions({
-  //     walletAndConnection,
-  //   })
-
-  //   instructions.push(...closeInstructions)
-  // }
 
   return {
     params,
