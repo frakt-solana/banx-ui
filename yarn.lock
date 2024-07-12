@@ -7270,10 +7270,10 @@ faye-websocket@0.11.4, faye-websocket@^0.11.3:
   dependencies:
     websocket-driver ">=0.5.1"
 
-fbonds-core@0.5.395:
-  version "0.5.395"
-  resolved "https://registry.yarnpkg.com/fbonds-core/-/fbonds-core-0.5.395.tgz#def270fe9e202a1b5156614447fe4e59c05c8789"
-  integrity sha512-/k3Ku2uPPulQXJ+J5xgbqLXVHsxWb5rHg3Ic+cWYnrJwVR3m/hhwF5iyQ1iIFKii7S/maoiaY2jcaek/EHBpsA==
+fbonds-core@0.5.396:
+  version "0.5.396"
+  resolved "https://registry.yarnpkg.com/fbonds-core/-/fbonds-core-0.5.396.tgz#2962110ebc5b9c470712b8050b3052047d12213a"
+  integrity sha512-B6UJ971PDFM12Rw7nE/vEwaHqXky24BE2i4FkFqS5GkVeoStFeEwcq23AGut7WbDpxrBR8A1jPH3njrtKU5zmA==
   dependencies:
     "@metaplex-foundation/kinobi" "^0.19.2"
     "@metaplex-foundation/mpl-token-metadata" "^2.8.1"

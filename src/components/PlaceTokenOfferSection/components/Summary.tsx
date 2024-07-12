@@ -25,7 +25,7 @@ export const MainSummary: FC<MainSummaryProps> = ({ market, collateralPerToken }
   const { collateralPrice = 0, collateral } = market || {}
 
   const ltvPercent = (collateralPerToken / collateralPrice) * 100
-  const { apr: aprPercent } = calculateAPRforOffer(ltvPercent, collateral?.FDV)
+  const { apr: aprPercent } = calculateAPRforOffer(ltvPercent, collateral?.FDV || 0)
 
   return (
     <div className={styles.mainSummary}>
@@ -66,7 +66,7 @@ export const AdditionalSummary: FC<OfferSummaryProps> = ({
   const { collateralPrice = 0, collateral } = market || {}
 
   const ltvPercent = (collateralPerToken / collateralPrice) * 100 || 0
-  const { apr: aprPercent } = calculateAPRforOffer(ltvPercent, collateral?.FDV)
+  const { apr: aprPercent } = calculateAPRforOffer(ltvPercent, collateral?.FDV || 0)
 
   const currentTimeUnix = moment().unix()
   const weeklyFee = calculateCurrentInterestSolPure({

@@ -12,6 +12,7 @@ import { getTokenDecimals } from '@banx/utils'
 
 export type CreateBorrowTokenTxnDataParams = {
   collateral: CollateralToken
+  collateralsToSend: number
   loanValue: number
   offer: Offer
   tokenType: LendingTokenType
@@ -27,9 +28,12 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async (
   params,
   walletAndConnection,
 ) => {
-  const { collateral, loanValue, offer, aprRate, tokenType } = params
+  const { collateral, collateralsToSend, loanValue, offer, aprRate, tokenType } = params
 
   const tokenDecimals = getTokenDecimals(tokenType)
+
+  const amountToSend = collateralsToSend * Math.pow(10, collateral.collateral.decimals)
+  const loanValueWithUpfrontFee = loanValue + loanValue / 100
 
   const { instructions, signers, optimisticResults } = await borrowPerpetualSpl({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
@@ -42,8 +46,8 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async (
       fraktMarket: new web3.PublicKey(offer.hadoMarket),
     },
     args: {
-      amountToGet: loanValue,
-      amountToSend: 0,
+      amountToGet: loanValueWithUpfrontFee,
+      amountToSend: amountToSend,
       optimizeIntoReserves: true,
       aprRate,
       lendingTokenType: tokenType,

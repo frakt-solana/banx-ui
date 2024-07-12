@@ -5,7 +5,7 @@ import { useNftTokenType } from '@banx/store/nft'
 import { bnToHuman } from '@banx/utils'
 
 import { BorrowToken, DEFAULT_COLLATERAL_MARKET_PUBKEY } from '../../constants'
-import { calculateTotalAmount, getErrorMessage } from '../helpers'
+import { adjustAmountWithUpfrontFee, calculateTotalAmount, getErrorMessage } from '../helpers'
 import { useBorrowSplTokenOffers } from './useBorrowSplTokenOffers'
 import { useBorrowSplTokenTransaction } from './useBorrowSplTokenTransaction'
 import { useBorrowTokensList, useCollateralsList } from './useCollateralsList'
@@ -92,8 +92,10 @@ export const useInstantBorrowContent = () => {
       if (!borrowToken) return
 
       const totalAmountToGet = calculateTotalAmount(offers, 'amountToGet')
+      const adjectedAmountToGet = adjustAmountWithUpfrontFee(totalAmountToGet, 'input')
+
       const totalAmountToGetStr = bnToHuman(
-        totalAmountToGet,
+        adjectedAmountToGet,
         borrowToken.collateral.decimals,
       ).toString()
 
@@ -104,9 +106,10 @@ export const useInstantBorrowContent = () => {
       if (!collateralToken) return
 
       const totalAmountToGive = calculateTotalAmount(offers, 'amountToGive')
+      const adjectedAmountToGive = adjustAmountWithUpfrontFee(totalAmountToGive, 'output')
 
       const totalAmountToGetStr = bnToHuman(
-        totalAmountToGive,
+        adjectedAmountToGive,
         collateralToken.collateral.decimals,
       ).toString()
 
@@ -127,6 +130,7 @@ export const useInstantBorrowContent = () => {
   const { borrow, isBorrowing } = useBorrowSplTokenTransaction({
     collateral: collateralToken,
     splTokenOffers: offers,
+    collateralsToSend: parseFloat(collateralInputValue),
   })
 
   return {

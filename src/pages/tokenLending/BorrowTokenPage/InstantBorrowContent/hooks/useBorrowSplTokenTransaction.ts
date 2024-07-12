@@ -51,9 +51,10 @@ type TransactionData = {
 
 export const useBorrowSplTokenTransaction = (props: {
   collateral: CollateralToken | undefined
+  collateralsToSend: number
   splTokenOffers: BorrowSplTokenOffers[]
 }) => {
-  const { collateral, splTokenOffers } = props
+  const { collateral, collateralsToSend, splTokenOffers } = props
 
   const wallet = useWallet()
   const { connection } = useConnection()
@@ -133,6 +134,7 @@ export const useBorrowSplTokenTransaction = (props: {
             {
               loanValue,
               collateral,
+              collateralsToSend,
               offer,
               aprRate,
               tokenType,
