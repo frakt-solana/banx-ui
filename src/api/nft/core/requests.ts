@@ -5,29 +5,31 @@ import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import { convertToMarketType } from '../helpers'
 import {
+  BorrowNftsAndOffersSchema,
+  LenderLoansSchema,
+  LoanSchema,
+  LoansRequestsSchema,
+  MarketPreviewSchema,
+  OfferSchema,
+  UserOfferSchema,
+  WalletLoansAndOffersShema,
+} from './schemas'
+import {
   AllLoansRequestsResponse,
   BorrowNftsAndOffers,
   BorrowNftsAndOffersResponse,
-  BorrowNftsAndOffersSchema,
   FetchMarketOffersResponse,
   FetchUserOffersResponse,
   LendLoansResponse,
   LenderLoansResponse,
-  LenderLoansSchema,
   Loan,
-  LoanSchema,
   LoansRequests,
-  LoansRequestsSchema,
   MarketPreview,
   MarketPreviewResponse,
-  MarketPreviewSchema,
   Offer,
-  OfferSchema,
   UserOffer,
-  UserOfferSchema,
   WalletLoansAndOffers,
   WalletLoansAndOffersResponse,
-  WalletLoansAndOffersShema,
 } from './types'
 
 type FetchMarketsPreview = (props: { tokenType: LendingTokenType }) => Promise<MarketPreview[]>
