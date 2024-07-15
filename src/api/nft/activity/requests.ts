@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
+import { validateResponse } from '@banx/api/shared'
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import { convertToMarketType } from '../helpers'
@@ -44,11 +45,7 @@ export const fetchLenderActivity: FetchLenderActivity = async ({
     `${BACKEND_BASE_URL}/activity/lender/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  try {
-    await LenderActivitySchema.array().parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
+  await validateResponse(data.data, LenderActivitySchema.array())
 
   return data.data ?? []
 }
@@ -81,11 +78,7 @@ export const fetchBorrowerActivity: FetchBorrowerActivity = async ({
     `${BACKEND_BASE_URL}/activity/borrower/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  try {
-    await BorrowerActivitySchema.array().parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
+  await validateResponse(data.data, BorrowerActivitySchema.array())
 
   return data.data ?? []
 }
@@ -104,11 +97,7 @@ export const fetchActivityCollectionsList: FetchActivityCollectionsList = async 
     `${BACKEND_BASE_URL}/activity/collections-list/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  try {
-    await ActivityCollectionsListSchema.array().parseAsync(data.data.collections)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
+  await validateResponse(data.data.collections, ActivityCollectionsListSchema.array())
 
   return data.data.collections ?? []
 }
