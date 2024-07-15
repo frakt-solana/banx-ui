@@ -17,8 +17,9 @@ export const TokenMetaSchema = z.object({
   ticker: z.string(),
   decimals: z.number(),
   priceUsd: z.number(),
-  totalSupply: z.number(),
-  FDV: z.number(), //? Rename to fullyDilutedValuation
+  totalSupply: z.string(),
+  fullyDilutedValuation: z.string(),
+  fullyDilutedValuationInMillions: z.string(),
 })
 
 export type TokenMeta = z.infer<typeof TokenMetaSchema>

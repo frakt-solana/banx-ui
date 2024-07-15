@@ -21,7 +21,7 @@ interface OfferProps {
 
 const Offer: FC<OfferProps> = ({ offer, collateral, collateralPrice }) => {
   const { publicKey: offerPubkey, collateralsPerToken, offerSize, isEdit } = offer
-  const { decimals: collateralTokenDecimals = 0, FDV: marketCap = 0 } = collateral || {}
+  const { decimals: collateralTokenDecimals = 0 } = collateral || {}
 
   const { connected } = useWallet()
 
@@ -37,8 +37,9 @@ const Offer: FC<OfferProps> = ({ offer, collateral, collateralPrice }) => {
     ? (1 / collateralsPerToken) * Math.pow(10, collateralTokenDecimals)
     : 0
 
-  const ltvPercent = (offerValue / collateralPrice) * 100
-  const { apr: aprPercent } = calculateAPRforOffer(ltvPercent, marketCap)
+  const ltvPercent = (offerValue / collateralPrice) * 100 || 0
+  const fullyDilutedValuationNumber = collateral ? parseFloat(collateral.fullyDilutedValuation) : 0
+  const { apr: aprPercent } = calculateAPRforOffer(ltvPercent, fullyDilutedValuationNumber)
 
   return (
     <li className={classNames(styles.listItem, commonHighlightClassNames)}>

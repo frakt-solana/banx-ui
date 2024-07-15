@@ -106,7 +106,8 @@ export const calculateTokenBorrowApr: CalculateTokenBorrowApr = ({ offer, collat
   const collateralPerToken = amountToGet.toNumber() / amountToGive.toNumber()
   const ltvPercent = (collateralPerToken / collateralToken.collateralPrice) * 100
 
-  const { apr } = calculateAPRforOffer(ltvPercent, collateralToken.collateral.FDV)
+  const fullyDilutedValuationNumber = parseFloat(collateralToken.collateral.fullyDilutedValuation)
+  const { apr } = calculateAPRforOffer(ltvPercent, fullyDilutedValuationNumber)
   const aprRate = apr * 100
 
   return aprRate || 0
