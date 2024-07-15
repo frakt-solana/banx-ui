@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { ResponseWithPagination } from '../../types'
+import { ResponseWithPagination } from '../../shared'
 import {
   BorrowNftSchema,
   BorrowNftsAndOffersSchema,

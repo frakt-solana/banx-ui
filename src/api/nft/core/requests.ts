@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
+import { validateResponse } from '@banx/api/shared'
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import { convertToMarketType } from '../helpers'
@@ -44,11 +45,7 @@ export const fetchMarketsPreview: FetchMarketsPreview = async ({ tokenType }) =>
     `${BACKEND_BASE_URL}/bonds/preview?${queryParams.toString()}`,
   )
 
-  try {
-    await MarketPreviewSchema.array().parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
+  await validateResponse(data.data, MarketPreviewSchema.array())
 
   return data.data
 }
@@ -121,11 +118,7 @@ export const fetchWalletLoansAndOffers: FetchWalletLoansAndOffers = async ({
     `${BACKEND_BASE_URL}/loans/borrower/${walletPublicKey}?${queryParams.toString()}`,
   )
 
-  try {
-    await WalletLoansAndOffersShema.parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
+  await validateResponse(data.data, WalletLoansAndOffersShema)
 
   return data.data ?? { nfts: [], offers: {} }
 }
@@ -164,11 +157,7 @@ export const fetchLenderLoansByCertainOffer: FetchLenderLoansByCertainOffer = as
     `${BACKEND_BASE_URL}/loans/lender-chart/?${queryParams.toString()}`,
   )
 
-  try {
-    await LenderLoansSchema.array().parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
+  await validateResponse(data.data, LenderLoansSchema.array())
 
   return data.data ?? []
 }
@@ -205,11 +194,7 @@ export const fetchLenderLoans: FetchLenderLoans = async ({
     `${BACKEND_BASE_URL}/loans/lender/${walletPublicKey}?${queryParams.toString()}`,
   )
 
-  try {
-    await LoanSchema.array().parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
+  await validateResponse(data.data, LoanSchema.array())
 
   return data.data ?? []
 }
@@ -243,12 +228,7 @@ export const fetchBorrowNftsAndOffers: FetchBorrowNftsAndOffers = async ({
     `${BACKEND_BASE_URL}/nfts/borrow/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  //TODO: Remove it when BE satisfyies schema
-  try {
-    await BorrowNftsAndOffersSchema.parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
+  await validateResponse(data.data, BorrowNftsAndOffersSchema)
 
   return data.data ?? { nfts: [], offers: {} }
 }
@@ -273,11 +253,7 @@ export const fetchBorrowerLoansRequests: FetchBorrowerLoansRequests = async ({
     `${BACKEND_BASE_URL}/loans/borrower-requests/${walletPublicKey}?${queryParams.toString()}`,
   )
 
-  try {
-    await LoanSchema.array().parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
+  await validateResponse(data.data, LoanSchema.array())
 
   return data.data ?? []
 }
@@ -301,11 +277,7 @@ export const fetchAllLoansRequests: FetchAllLoansRequests = async ({
     `${BACKEND_BASE_URL}/loans/requests?${queryParams.toString()}`,
   )
 
-  try {
-    await LoansRequestsSchema.parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
+  await validateResponse(data.data, LoansRequestsSchema)
 
   return data.data
 }
@@ -331,11 +303,7 @@ export const fetchUserOffers: FetchUserOffers = async ({
     `${BACKEND_BASE_URL}/bond-offers/user/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  try {
-    await UserOfferSchema.array().parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
+  await validateResponse(data.data, UserOfferSchema.array())
 
   return data.data ?? []
 }
