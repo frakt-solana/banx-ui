@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 import { CollateralToken } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
-import { bnToHuman } from '@banx/utils'
+import { bnToHuman, stringToBN } from '@banx/utils'
 
 import { BorrowToken, DEFAULT_COLLATERAL_MARKET_PUBKEY } from '../../constants'
 import { adjustAmountWithUpfrontFee, calculateTotalAmount, getErrorMessage } from '../helpers'
@@ -67,7 +67,13 @@ export const useInstantBorrowContent = () => {
     }
 
     setBorrowInputValue(value)
-    setAmount(value)
+
+    const amountToGetStr = bnToHuman(
+      adjustAmountWithUpfrontFee(stringToBN(value, borrowToken.collateral.decimals), 'output'),
+      borrowToken.collateral.decimals,
+    ).toString()
+
+    setAmount(amountToGetStr)
   }
 
   const handleCollateralTokenChange = (token: CollateralToken) => {
@@ -98,10 +104,9 @@ export const useInstantBorrowContent = () => {
       if (!collateralToken) return
 
       const totalAmountToGive = calculateTotalAmount(offers, 'amountToGive')
-      const adjectedAmountToGive = adjustAmountWithUpfrontFee(totalAmountToGive, 'output')
 
       const totalAmountToGetStr = bnToHuman(
-        adjectedAmountToGive,
+        totalAmountToGive,
         collateralToken.collateral.decimals,
       ).toString()
 
@@ -122,7 +127,6 @@ export const useInstantBorrowContent = () => {
   const { borrow, isBorrowing } = useBorrowSplTokenTransaction({
     collateral: collateralToken,
     splTokenOffers: offers,
-    collateralsToSend: parseFloat(collateralInputValue),
   })
 
   return {
