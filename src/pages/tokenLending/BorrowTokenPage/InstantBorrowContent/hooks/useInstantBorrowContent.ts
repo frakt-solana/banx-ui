@@ -25,12 +25,10 @@ export const useInstantBorrowContent = () => {
   const {
     data: offers,
     isLoading: isLoadingOffers,
-    setMarketPubkey,
-    setOutputTokenType,
     inputPutType,
     setInputPutType,
-    handleAmountChange,
-  } = useBorrowSplTokenOffers()
+    setAmount,
+  } = useBorrowSplTokenOffers(collateralToken, borrowToken)
 
   useEffect(() => {
     const foundToken = collateralsList.find(
@@ -39,29 +37,26 @@ export const useInstantBorrowContent = () => {
 
     if (!collateralToken && foundToken) {
       setCollateralToken(foundToken)
-      setMarketPubkey(foundToken.marketPubkey)
     }
-  }, [collateralToken, collateralsList, setMarketPubkey])
+  }, [collateralToken, collateralsList])
 
   useEffect(() => {
     const foundToken = borrowTokensList.find((token) => token.lendingTokenType === tokenType)
 
     if (foundToken) {
       setBorrowToken(foundToken)
-      setOutputTokenType(foundToken.lendingTokenType)
     }
-  }, [borrowTokensList, tokenType, borrowToken, setOutputTokenType])
+  }, [borrowTokensList, tokenType, borrowToken])
 
   const handleCollateralInputChange = (value: string) => {
     if (!borrowToken || !collateralToken) return
 
     if (inputPutType !== 'input') {
       setInputPutType('input')
-      setOutputTokenType(borrowToken.lendingTokenType)
     }
 
     setCollateralInputValue(value)
-    handleAmountChange(value, collateralToken.collateral.decimals)
+    setAmount(value)
   }
 
   const handleBorrowInputChange = (value: string) => {
@@ -69,21 +64,18 @@ export const useInstantBorrowContent = () => {
 
     if (inputPutType !== 'output') {
       setInputPutType('output')
-      setOutputTokenType(borrowToken.lendingTokenType)
     }
 
     setBorrowInputValue(value)
-    handleAmountChange(value, borrowToken.collateral.decimals)
+    setAmount(value)
   }
 
   const handleCollateralTokenChange = (token: CollateralToken) => {
     setCollateralToken(token)
-    setMarketPubkey(token.marketPubkey || '')
   }
 
   const handleBorrowTokenChange = (token: BorrowToken) => {
     setBorrowToken(token)
-    setOutputTokenType(token.lendingTokenType)
     setTokenType(token.lendingTokenType)
   }
 
