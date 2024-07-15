@@ -5,18 +5,20 @@ import { BACKEND_BASE_URL } from '@banx/constants'
 
 import { convertToMarketType } from '../helpers'
 import {
-  AllTotalStats,
   AllTotalStatsSchema,
-  TotalBorrowerStats,
   TotalBorrowerStatsSchema,
-  TotalLenderStats,
   TotalLenderStatsSchema,
+  UserLoansStatsSchema,
+  UserOffersStatsSchema,
+} from './schemas'
+import {
+  AllTotalStats,
+  TotalBorrowerStats,
+  TotalLenderStats,
   UserLoansStats,
   UserLoansStatsResponse,
-  UserLoansStatsSchema,
   UserOffersStats,
   UserOffersStatsResponse,
-  UserOffersStatsSchema,
 } from './types'
 
 type FetchUserOffersStats = (props: {

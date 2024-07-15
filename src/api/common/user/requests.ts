@@ -3,22 +3,24 @@ import { web3 } from 'fbonds-core'
 
 import { BACKEND_BASE_URL } from '@banx/constants'
 
-import { MutationResponse } from '../../types'
+import { MutationResponse } from '../../shared'
 import { getDiscordAvatarUrl } from './helpers'
 import {
-  BonkWithdrawal,
   BonkWithdrawalSchema,
+  LeaderboardDataSchema,
+  RefPersonalDataSchema,
+  SeasonUserRewardsSchema,
+} from './schemas'
+import {
+  BonkWithdrawal,
   DiscordUserInfo,
   DiscordUserInfoRaw,
   LeaderboardData,
-  LeaderboardDataSchema,
   LeaderboardTimeRange,
   LinkWalletResponse,
   LinkedWallet,
   RefPersonalData,
-  RefPersonalDataSchema,
   SeasonUserRewards,
-  SeasonUserRewardsSchema,
   WithdrawalTokenType,
 } from './types'
 
