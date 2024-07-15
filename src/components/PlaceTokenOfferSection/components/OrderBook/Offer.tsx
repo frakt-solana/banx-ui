@@ -38,7 +38,9 @@ const Offer: FC<OfferProps> = ({ offer, collateral, collateralPrice }) => {
     : 0
 
   const ltvPercent = (offerValue / collateralPrice) * 100 || 0
-  const fullyDilutedValuationNumber = collateral ? parseFloat(collateral.fullyDilutedValuation) : 0
+  const fullyDilutedValuationNumber = collateral
+    ? parseFloat(collateral.fullyDilutedValuationInMillions)
+    : 0
   const { apr: aprPercent } = calculateAPRforOffer(ltvPercent, fullyDilutedValuationNumber)
 
   return (
