@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { validateResponse } from '@banx/api/shared'
+import { RequestWithPagination, validateResponse } from '@banx/api/shared'
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import { convertToMarketType } from '../helpers'
@@ -33,10 +33,12 @@ import {
   WalletLoansAndOffersResponse,
 } from './types'
 
-type FetchMarketsPreview = (props: { tokenType: LendingTokenType }) => Promise<MarketPreview[]>
-export const fetchMarketsPreview: FetchMarketsPreview = async ({ tokenType }) => {
+type FetchMarketsPreview = (
+  props: RequestWithPagination<{ tokenType: LendingTokenType }>,
+) => Promise<MarketPreview[]>
+export const fetchMarketsPreview: FetchMarketsPreview = async ({ tokenType, getAll = true }) => {
   const queryParams = new URLSearchParams({
-    getAll: String(true),
+    getAll: String(getAll),
     marketType: String(convertToMarketType(tokenType)),
     isPrivate: String(IS_PRIVATE_MARKETS),
   })
@@ -50,14 +52,12 @@ export const fetchMarketsPreview: FetchMarketsPreview = async ({ tokenType }) =>
   return data.data
 }
 
-type FetchMarketOffers = (props: {
-  marketPubkey?: string
-  tokenType: LendingTokenType
-  order?: 'asc' | 'desc'
-  skip?: number
-  limit?: number
-  getAll?: boolean
-}) => Promise<Offer[]>
+type FetchMarketOffers = (
+  props: RequestWithPagination<{
+    marketPubkey?: string
+    tokenType: LendingTokenType
+  }>,
+) => Promise<Offer[]>
 export const fetchMarketOffers: FetchMarketOffers = async ({
   marketPubkey,
   tokenType,
@@ -86,14 +86,12 @@ export const fetchMarketOffers: FetchMarketOffers = async ({
   return data?.data
 }
 
-type FetchWalletLoansAndOffers = (props: {
-  walletPublicKey: string
-  tokenType: LendingTokenType
-  order?: 'asc' | 'desc'
-  skip?: number
-  limit?: number
-  getAll?: boolean
-}) => Promise<WalletLoansAndOffers>
+type FetchWalletLoansAndOffers = (
+  props: RequestWithPagination<{
+    walletPublicKey: string
+    tokenType: LendingTokenType
+  }>,
+) => Promise<WalletLoansAndOffers>
 
 export const fetchWalletLoansAndOffers: FetchWalletLoansAndOffers = async ({
   walletPublicKey,
@@ -121,15 +119,13 @@ export const fetchWalletLoansAndOffers: FetchWalletLoansAndOffers = async ({
   return data.data ?? { nfts: [], offers: {} }
 }
 
-type FetchLenderLoansByCertainOffer = (props: {
-  walletPublicKey: string
-  tokenType: LendingTokenType
-  offerPubkey: string
-  order?: 'asc' | 'desc'
-  skip?: number
-  limit?: number
-  getAll?: boolean
-}) => Promise<LenderLoansResponse['data']>
+type FetchLenderLoansByCertainOffer = (
+  props: RequestWithPagination<{
+    walletPublicKey: string
+    tokenType: LendingTokenType
+    offerPubkey: string
+  }>,
+) => Promise<LenderLoansResponse['data']>
 
 export const fetchLenderLoansByCertainOffer: FetchLenderLoansByCertainOffer = async ({
   walletPublicKey,
@@ -160,15 +156,13 @@ export const fetchLenderLoansByCertainOffer: FetchLenderLoansByCertainOffer = as
   return data.data ?? []
 }
 
-type FetchLenderLoans = (props: {
-  walletPublicKey: string
-  tokenType: LendingTokenType
-  sortBy?: 'status' | 'apr'
-  order?: 'asc' | 'desc'
-  skip?: number
-  limit?: number
-  getAll?: boolean
-}) => Promise<LendLoansResponse['data']>
+type FetchLenderLoans = (
+  props: RequestWithPagination<{
+    walletPublicKey: string
+    tokenType: LendingTokenType
+    sortBy?: 'status' | 'apr'
+  }>,
+) => Promise<LendLoansResponse['data']>
 export const fetchLenderLoans: FetchLenderLoans = async ({
   walletPublicKey,
   tokenType,
@@ -197,14 +191,12 @@ export const fetchLenderLoans: FetchLenderLoans = async ({
   return data.data ?? []
 }
 
-type FetchBorrowNftsAndOffers = (props: {
-  walletPubkey: string
-  tokenType: LendingTokenType
-  order?: string
-  getAll?: boolean
-  skip?: number
-  limit?: number
-}) => Promise<BorrowNftsAndOffers>
+type FetchBorrowNftsAndOffers = (
+  props: RequestWithPagination<{
+    walletPubkey: string
+    tokenType: LendingTokenType
+  }>,
+) => Promise<BorrowNftsAndOffers>
 export const fetchBorrowNftsAndOffers: FetchBorrowNftsAndOffers = async ({
   walletPubkey,
   tokenType,
@@ -231,11 +223,12 @@ export const fetchBorrowNftsAndOffers: FetchBorrowNftsAndOffers = async ({
   return data.data ?? { nfts: [], offers: {} }
 }
 
-type FetchBorrowerLoansRequests = (props: {
-  walletPublicKey: string
-  tokenType: LendingTokenType
-  getAll?: boolean
-}) => Promise<Loan[]>
+type FetchBorrowerLoansRequests = (
+  props: RequestWithPagination<{
+    walletPublicKey: string
+    tokenType: LendingTokenType
+  }>,
+) => Promise<Loan[]>
 export const fetchBorrowerLoansRequests: FetchBorrowerLoansRequests = async ({
   walletPublicKey,
   tokenType,
@@ -256,11 +249,11 @@ export const fetchBorrowerLoansRequests: FetchBorrowerLoansRequests = async ({
   return data.data ?? []
 }
 
-type FetchAllLoansRequests = (props: {
-  tokenType: LendingTokenType
-  getAll?: boolean
-}) => Promise<LoansRequests>
-
+type FetchAllLoansRequests = (
+  props: RequestWithPagination<{
+    tokenType: LendingTokenType
+  }>,
+) => Promise<LoansRequests>
 export const fetchAllLoansRequests: FetchAllLoansRequests = async ({
   tokenType,
   getAll = true,
@@ -280,12 +273,12 @@ export const fetchAllLoansRequests: FetchAllLoansRequests = async ({
   return data.data
 }
 
-type FetchUserOffers = (props: {
-  walletPubkey: string
-  tokenType: LendingTokenType
-  getAll?: boolean
-}) => Promise<UserOffer[]>
-
+type FetchUserOffers = (
+  props: RequestWithPagination<{
+    walletPubkey: string
+    tokenType: LendingTokenType
+  }>,
+) => Promise<UserOffer[]>
 export const fetchUserOffers: FetchUserOffers = async ({
   walletPubkey,
   tokenType,

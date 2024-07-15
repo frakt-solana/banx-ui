@@ -3,7 +3,7 @@ import { web3 } from 'fbonds-core'
 
 import { BACKEND_BASE_URL } from '@banx/constants'
 
-import { MutationResponse, validateResponse } from '../../shared'
+import { MutationResponse, RequestWithPagination, validateResponse } from '../../shared'
 import { getDiscordAvatarUrl } from './helpers'
 import {
   BonkWithdrawalSchema,
@@ -172,14 +172,14 @@ export const fetchSeasonUserRewards: FetchSeasonUserRewards = async ({ walletPub
   return data?.data ?? null
 }
 
-type FetchLeaderboardData = (props: {
-  walletPubkey: string
-  userType: string
-  order?: string
-  skip: number
-  limit: number
-  timeRangeType: LeaderboardTimeRange
-}) => Promise<LeaderboardData[]>
+type FetchLeaderboardData = (
+  props: RequestWithPagination<{
+    walletPubkey: string
+    userType: string
+    limit: number
+    timeRangeType: LeaderboardTimeRange
+  }>,
+) => Promise<LeaderboardData[]>
 export const fetchLeaderboardData: FetchLeaderboardData = async ({
   walletPubkey,
   order = 'asc',

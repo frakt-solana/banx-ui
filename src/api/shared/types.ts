@@ -15,29 +15,23 @@ export type Rarity = z.infer<typeof RaritySchema>
 
 export type NFT = z.infer<typeof NFTSchema>
 
-export type ResponseWithPagination<T> = {
-  data: T
-  meta: PaginationMeta
-}
-
-export interface PaginationMeta {
+type ResponsePaginationMeta = {
   skip: number
   limit: number
   totalCount: number
 }
-
-interface SortingOptions {
-  sortBy: string
-  order: string
+export type ResponseWithPagination<T> = {
+  data: T
+  meta: ResponsePaginationMeta
 }
 
-interface PaginationOptions {
-  limit?: number
+type RequestPaginationParams = {
+  order?: 'desc' | 'asc'
   skip?: number
-  state?: string
+  limit?: number
+  getAll?: boolean
 }
-
-export type BasePaginationRequest = SortingOptions & PaginationOptions
+export type RequestWithPagination<T> = T & RequestPaginationParams
 
 export type MutationResponse = {
   message?: string
