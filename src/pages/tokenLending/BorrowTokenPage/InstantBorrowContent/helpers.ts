@@ -10,6 +10,8 @@ import { BorrowSplTokenOffers, CollateralToken } from '@banx/api/tokens'
 import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
 import { ZERO_BN, bnToHuman, calcWeightedAverage, stringToBN } from '@banx/utils'
 
+import { BorrowToken } from '../constants'
+
 interface GetErrorMessageProps {
   collateralToken: CollateralToken | undefined
   collateralInputValue: string
@@ -73,15 +75,18 @@ export const calculateTotalAmount = (
 export const getSummaryInfo = (
   offers: BorrowSplTokenOffers[],
   collateralToken: CollateralToken,
+  borrowToken: BorrowToken,
 ) => {
   const totalAmountToGet = calculateTotalAmount(offers, 'amountToGet')
 
   const upfrontFee = totalAmountToGet.div(new BN(100)).toNumber()
 
   const aprRateArray = offers.map(
-    (offer) => calculateTokenBorrowApr({ offer, collateralToken }) + BONDS.PROTOCOL_REPAY_FEE,
+    (offer) =>
+      calculateTokenBorrowApr({ offer, collateralToken, borrowToken }) + BONDS.PROTOCOL_REPAY_FEE,
   )
   const amountToGetArray = offers.map((offer) => new BN(offer.amountToGet, 'hex').toNumber())
+
   const weightedApr = calcWeightedAverage(aprRateArray, amountToGetArray)
 
   const weeklyFee = calculateCurrentInterestSolPure({
@@ -97,13 +102,23 @@ export const getSummaryInfo = (
 type CalculateTokenBorrowApr = (props: {
   offer: BorrowSplTokenOffers
   collateralToken: CollateralToken
+  borrowToken: BorrowToken
 }) => number
 
-export const calculateTokenBorrowApr: CalculateTokenBorrowApr = ({ offer, collateralToken }) => {
-  const amountToGet = new BN(offer.amountToGet, 'hex')
-  const amountToGive = new BN(offer.amountToGive, 'hex')
+export const calculateTokenBorrowApr: CalculateTokenBorrowApr = ({
+  offer,
+  collateralToken,
+  borrowToken,
+}) => {
+  const amountToGet = bnToHuman(new BN(offer.amountToGet, 'hex'), borrowToken.collateral.decimals)
 
-  const collateralPerToken = amountToGet.toNumber() / amountToGive.toNumber()
+  const amountToGive = bnToHuman(
+    new BN(offer.amountToGive, 'hex'),
+    collateralToken.collateral.decimals,
+  )
+
+  const collateralPerToken = amountToGet / amountToGive
+
   const ltvPercent = (collateralPerToken / collateralToken.collateralPrice) * 100
 
   const fullyDilutedValuationNumber = parseFloat(

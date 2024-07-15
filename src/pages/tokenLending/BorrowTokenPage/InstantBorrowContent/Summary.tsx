@@ -7,6 +7,7 @@ import { DisplayValue } from '@banx/components/TableComponents'
 
 import { BorrowSplTokenOffers, CollateralToken } from '@banx/api/tokens'
 
+import { BorrowToken } from '../constants'
 import { getSummaryInfo } from './helpers'
 
 import styles from './InstantBorrowContent.module.less'
@@ -14,10 +15,15 @@ import styles from './InstantBorrowContent.module.less'
 interface SummaryProps {
   offers: BorrowSplTokenOffers[]
   collateralToken: CollateralToken
+  borrowToken: BorrowToken
 }
 
-export const Summary: FC<SummaryProps> = ({ offers, collateralToken }) => {
-  const { upfrontFee, weightedApr, weeklyFee } = getSummaryInfo(offers, collateralToken)
+export const Summary: FC<SummaryProps> = ({ offers, collateralToken, borrowToken }) => {
+  const { upfrontFee, weightedApr, weeklyFee } = getSummaryInfo(
+    offers,
+    collateralToken,
+    borrowToken,
+  )
 
   const statClassNames = {
     value: styles.fixedStatValue,
