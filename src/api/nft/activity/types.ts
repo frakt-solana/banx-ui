@@ -1,9 +1,6 @@
-import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { z } from 'zod'
 
-import { NFTSchema } from '@banx/api/shared'
-
-import { BasePaginationRequest, PaginationMeta } from '../../shared'
+import { NFTSchema, ResponseWithPagination } from '../../shared'
 
 export const LenderActivitySchema = z.object({
   id: z.string(),
@@ -25,19 +22,7 @@ export const LenderActivitySchema = z.object({
 
 export type LenderActivity = z.infer<typeof LenderActivitySchema>
 
-interface LenderActivityRequest extends BasePaginationRequest {
-  walletPubkey: string
-  tokenType: LendingTokenType
-  collection?: string[]
-  getAll?: boolean
-}
-
-export type FetchLenderActivity = (props: LenderActivityRequest) => Promise<LenderActivity[]>
-
-export interface LenderActivityResponse {
-  data: LenderActivity[]
-  meta: PaginationMeta
-}
+export type LenderActivityResponse = ResponseWithPagination<LenderActivity[]>
 
 export const BorrowerActivitySchema = z.object({
   id: z.string(),
@@ -62,19 +47,7 @@ export const BorrowerActivitySchema = z.object({
 
 export type BorrowerActivity = z.infer<typeof BorrowerActivitySchema>
 
-interface BorrowerActivityRequest extends BasePaginationRequest {
-  walletPubkey: string
-  tokenType: LendingTokenType
-  collection?: string[]
-  getAll?: boolean
-}
-
-export type FetchBorrowerActivity = (props: BorrowerActivityRequest) => Promise<BorrowerActivity[]>
-
-export interface BorrowedActivityResponse {
-  data: BorrowerActivity[]
-  meta: PaginationMeta
-}
+export type BorrowedActivityResponse = ResponseWithPagination<BorrowerActivity[]>
 
 export const ActivityCollectionsListSchema = z.object({
   collectionName: z.string(),
@@ -84,9 +57,3 @@ export const ActivityCollectionsListSchema = z.object({
 })
 
 export type ActivityCollectionsList = z.infer<typeof ActivityCollectionsListSchema>
-
-export type FetchActivityCollectionsList = (props: {
-  walletPubkey: string
-  tokenType: LendingTokenType
-  userType: 'borrower' | 'lender'
-}) => Promise<ActivityCollectionsList[]>
