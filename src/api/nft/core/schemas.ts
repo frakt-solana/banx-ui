@@ -11,7 +11,10 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/types'
 import { z } from 'zod'
 
-import { NFTSchema } from '@banx/api/shared'
+import {
+  NFTSchema,
+  /*SerializedBNSchema, SerializedPublicKeySchema */
+} from '@banx/api/shared'
 
 const MarketMetaSchema = z.object({
   marketApr: z.number(), //? base points
@@ -71,6 +74,39 @@ export const OfferSchema = z.object({
   rewardsToHarvest: z.number(),
   rewardsToHarvested: z.number(),
 })
+
+// const ValidationPairSchema = z.object({
+//   loanToValueFilter: SerializedBNSchema,
+//   collateralsPerToken: SerializedBNSchema,
+//   maxReturnAmountFilter: SerializedBNSchema,
+//   bondFeatures: z.nativeEnum(BondFeatures),
+// })
+
+// export const OfferSchema = z.object({
+//   publicKey: SerializedPublicKeySchema,
+//   assetReceiver: SerializedPublicKeySchema,
+//   baseSpotPrice: SerializedBNSchema,
+//   bidCap: SerializedBNSchema,
+//   bidSettlement: SerializedBNSchema,
+//   bondingCurve: BondingCurveSchema,
+//   buyOrdersQuantity: SerializedBNSchema,
+//   concentrationIndex: SerializedBNSchema,
+//   currentSpotPrice: SerializedBNSchema,
+//   edgeSettlement: SerializedBNSchema,
+//   fundsSolOrTokenBalance: SerializedBNSchema,
+//   hadoMarket: SerializedPublicKeySchema,
+//   lastTransactedAt: SerializedBNSchema,
+//   mathCounter: SerializedBNSchema,
+//   pairState: z.nativeEnum(PairState),
+//   validation: ValidationPairSchema,
+
+//   fundsInCurrentEpoch: SerializedBNSchema,
+//   fundsInNextEpoch: SerializedBNSchema,
+//   lastCalculatedSlot: SerializedBNSchema,
+//   lastCalculatedTimestamp: SerializedBNSchema,
+//   rewardsToHarvest: SerializedBNSchema,
+//   rewardsToHarvested: SerializedBNSchema,
+// })
 
 const BondTradeTransactionSchema = z.object({
   publicKey: z.string(),
