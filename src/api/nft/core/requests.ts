@@ -79,11 +79,9 @@ export const fetchMarketOffers: FetchMarketOffers = async ({
     `${BACKEND_BASE_URL}/bond-offers/${marketPubkey}?${queryParams.toString()}`,
   )
 
-  try {
-    await OfferSchema.array().parseAsync(data?.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
+  await validateResponse(data?.data, OfferSchema.array())
+
+  // const offers = await OfferSchema.array().parseAsync(data?.data)
 
   return data?.data
 }

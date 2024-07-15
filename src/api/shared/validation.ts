@@ -1,11 +1,23 @@
-import { ZodArray, ZodObject } from 'zod'
+import { ZodType } from 'zod'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const validateResponse = async (data: unknown, schema: ZodObject<any> | ZodArray<any>) => {
+// //TODO What to do if BE data doesn't satisfy schema?
+// export const validateResponse = async <T>(
+//   data: unknown,
+//   schema: ZodType<T>,
+// ): Promise<T | undefined> => {
+//   try {
+//     return await schema.parseAsync(data)
+//   } catch (validationError) {
+//     console.error('Schema validation error:', validationError)
+//     return undefined
+//   }
+// }
+
+export const validateResponse = async (data: unknown, schema: ZodType<unknown>) => {
   try {
-    await schema.parseAsync(data)
+    return await schema.parseAsync(data)
   } catch (validationError) {
-    //TODO Throw error when BE satisfyies schema
     console.error('Schema validation error:', validationError)
+    return undefined
   }
 }
