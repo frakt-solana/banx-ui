@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
@@ -13,6 +14,9 @@ export const useBorrowSplTokenOffers = (
   collateralToken: CollateralToken | undefined,
   borrowToken: BorrowToken | undefined,
 ) => {
+  const { publicKey } = useWallet()
+  const walletPubkeyString = publicKey?.toString() || ''
+
   const [inputPutType, setInputPutType] = useState<'input' | 'output'>('input')
   const [amount, setAmount] = useState('')
 
@@ -21,7 +25,13 @@ export const useBorrowSplTokenOffers = (
   const { data, isLoading } = useQuery(
     [
       'borrowSplTokenOffers',
-      { collateralToken, borrowToken, type: inputPutType, amount: debouncedAmount },
+      {
+        collateralToken,
+        borrowToken,
+        type: inputPutType,
+        amount: debouncedAmount,
+        walletPubkeyString,
+      },
     ],
     () =>
       core.fetchBorrowSplTokenOffers({
@@ -29,6 +39,7 @@ export const useBorrowSplTokenOffers = (
         outputToken: borrowToken?.lendingTokenType ?? LendingTokenType.BanxSol,
         type: inputPutType,
         amount: stringToHex(debouncedAmount, getDecimals()),
+        walletPubkey: walletPubkeyString,
       }),
     {
       staleTime: 15 * 1000,
