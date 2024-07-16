@@ -32,6 +32,7 @@ interface InputTokenSelectProps<T extends BaseToken> {
   onChangeToken: (option: T) => void
   disabledInput?: boolean
   maxValue?: number //? (e.g. 1e6 for 1 USDC, 1e9 for 1 SOL)
+  showControls?: boolean
 }
 
 const InputTokenSelect = <T extends BaseToken>({
@@ -44,9 +45,8 @@ const InputTokenSelect = <T extends BaseToken>({
   onChangeToken,
   disabledInput,
   maxValue,
+  showControls = false,
 }: InputTokenSelectProps<T>) => {
-  const { connected } = useWallet()
-
   const [visible, setVisible] = useState(false)
 
   const handleClick = () => {
@@ -57,7 +57,7 @@ const InputTokenSelect = <T extends BaseToken>({
     <div className={classNames(styles.inputTokenSelectWrapper, className)}>
       <div className={styles.inputTokenSelectHeader}>
         <div className={styles.inputTokenSelectLabel}>{label}</div>
-        {connected && (
+        {showControls && (
           <ControlsButtons
             maxValue={maxValue}
             onChange={onChange}

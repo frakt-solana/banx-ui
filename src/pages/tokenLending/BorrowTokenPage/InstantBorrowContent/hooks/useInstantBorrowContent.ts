@@ -98,7 +98,8 @@ export const useInstantBorrowContent = () => {
       ).toString()
 
       if (totalAmountToGetStr !== borrowInputValue) {
-        setBorrowInputValue(totalAmountToGetStr)
+        const nextValue = parseFloat(totalAmountToGetStr) !== 0 ? totalAmountToGetStr : ''
+        setBorrowInputValue(nextValue)
       }
     } else if (inputPutType === 'output') {
       if (!collateralToken) return

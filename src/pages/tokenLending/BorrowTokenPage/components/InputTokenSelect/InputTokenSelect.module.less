@@ -49,6 +49,10 @@
 .numericStepInput input {
   padding: 8px 32px 8px 96px;
   text-align: right;
+
+  &:not(:placeholder-shown) {
+    color: var(--content-primary);
+  }
 }
 
 // * SelectTokenButton * //
