@@ -54,6 +54,7 @@ const LOANS_TABS: Tab[] = [
   {
     label: 'Listings',
     value: LoansTokenTabsName.LISTINGS,
+    disabled: true,
   },
   {
     label: 'History',

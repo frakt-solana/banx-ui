@@ -68,3 +68,73 @@ export const SOL: FC<SVGProps<SVGSVGElement>> = (props) => (
     </defs>
   </svg>
 )
+
+export const SOLFilled: FC<SVGProps<SVGSVGElement>> = (props) => (
+  <svg
+    width="32"
+    height="32"
+    viewBox="0 0 32 32"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <circle cx="16" cy="16" r="16" fill="#FEFEFF" />
+    <g clipPath="url(#clip0_17111_168433)">
+      <path
+        d="M9.87913 20.5323C9.99467 20.3997 10.1535 20.3223 10.322 20.3223H25.6017C25.8809 20.3223 26.0205 20.7092 25.8231 20.9359L22.8048 24.4019C22.6892 24.5346 22.5304 24.612 22.3619 24.612H7.08219C6.80298 24.612 6.66337 24.225 6.86075 23.9984L9.87913 20.5323Z"
+        fill="url(#paint0_linear_17111_168433)"
+      />
+      <path
+        d="M9.87913 7.59092C9.99948 7.45825 10.1583 7.38086 10.322 7.38086H25.6017C25.8809 7.38086 26.0205 7.76782 25.8231 7.99447L22.8048 11.4605C22.6892 11.5932 22.5304 11.6706 22.3619 11.6706H7.08219C6.80298 11.6706 6.66337 11.2836 6.86075 11.057L9.87913 7.59092Z"
+        fill="url(#paint1_linear_17111_168433)"
+      />
+      <path
+        d="M22.8048 14.0196C22.6892 13.887 22.5304 13.8096 22.3619 13.8096H7.08219C6.80298 13.8096 6.66337 14.1965 6.86075 14.4232L9.87913 17.8892C9.99467 18.0219 10.1535 18.0993 10.322 18.0993H25.6017C25.8809 18.0993 26.0205 17.7123 25.8231 17.4857L22.8048 14.0196Z"
+        fill="url(#paint2_linear_17111_168433)"
+      />
+    </g>
+    <defs>
+      <linearGradient
+        id="paint0_linear_17111_168433"
+        x1="24.142"
+        y1="5.31069"
+        x2="11.0887"
+        y2="27.0838"
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop stopColor="#00FFA3" />
+        <stop offset="1" stopColor="#DC1FFF" />
+      </linearGradient>
+      <linearGradient
+        id="paint1_linear_17111_168433"
+        x1="19.5182"
+        y1="2.53825"
+        x2="6.46489"
+        y2="24.3113"
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop stopColor="#00FFA3" />
+        <stop offset="1" stopColor="#DC1FFF" />
+      </linearGradient>
+      <linearGradient
+        id="paint2_linear_17111_168433"
+        x1="21.8154"
+        y1="3.91512"
+        x2="8.76209"
+        y2="25.6882"
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop stopColor="#00FFA3" />
+        <stop offset="1" stopColor="#DC1FFF" />
+      </linearGradient>
+      <clipPath id="clip0_17111_168433">
+        <rect
+          width="19.1453"
+          height="17.2308"
+          fill="white"
+          transform="translate(6.76929 7.38086)"
+        />
+      </clipPath>
+    </defs>
+  </svg>
+)
