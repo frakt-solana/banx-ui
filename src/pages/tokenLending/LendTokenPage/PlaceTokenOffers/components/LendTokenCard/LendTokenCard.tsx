@@ -7,7 +7,7 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/tokens'
-import { ChevronDown, SOL, USDC } from '@banx/icons'
+import { ChevronDown, SOLFilled, USDC } from '@banx/icons'
 import { useNftTokenType } from '@banx/store/nft'
 import { isBanxSolTokenType } from '@banx/utils'
 
@@ -48,13 +48,17 @@ const MarketMainInfo: FC<{ market: core.TokenMarketPreview }> = ({ market }) => 
 
   const { tokenType } = useNftTokenType()
 
-  const Icon = isBanxSolTokenType(tokenType) ? SOL : USDC
+  const Icon = isBanxSolTokenType(tokenType) ? (
+    <SOLFilled className={classNames(styles.collateralIcon, styles.solFilled)} />
+  ) : (
+    <USDC className={styles.collateralIcon} viewBox="1 1 14 14" />
+  )
 
   return (
     <div className={styles.mainInfoContainer}>
       <div className={styles.collateralImageWrapper}>
         <img src={collateral.logoUrl} className={styles.collateralImage} />
-        <Icon className={styles.collateralIcon} />
+        {Icon}
       </div>
       <div className={styles.mainInfoContent}>
         <h4 className={styles.collateralName}>{collateral.ticker}</h4>
