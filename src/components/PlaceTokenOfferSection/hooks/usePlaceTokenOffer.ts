@@ -63,8 +63,6 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
   const disablePlaceOffer = !!offerErrorMessage || !allFieldsAreFilled
   const disableUpdateOffer = !hasFormChanges || !!offerErrorMessage || !allFieldsAreFilled
 
-  const showBorrowerMessage = !offerErrorMessage && allFieldsAreFilled
-
   return {
     isEditMode,
 
@@ -77,7 +75,6 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
     onOfferSizeChange,
 
     offerErrorMessage,
-    showBorrowerMessage,
 
     onCreateTokenOffer,
     onUpdateTokenOffer,
