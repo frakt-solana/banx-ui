@@ -67,7 +67,7 @@ const InputTokenSelect = <T extends BaseToken>({
       </div>
       <div className={styles.inputTokenSelect}>
         <NumericStepInput
-          value={getFormattedInputValue(value)}
+          value={value}
           onChange={onChange}
           placeholder="0"
           className={styles.numericStepInput}
@@ -263,11 +263,4 @@ export const SkeletonInputTokenSelect: FC<SkeletonInputTokenSelectProps> = ({
       </div>
     </div>
   )
-}
-
-/**
- * Converts a numeric string to an empty string if the value is 0, otherwise returns the original value.
- */
-const getFormattedInputValue = (inputValue: string) => {
-  return parseFloat(inputValue) === 0 ? '' : inputValue
 }
