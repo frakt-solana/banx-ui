@@ -47,3 +47,11 @@ export const DECIMAL_PLACES_LIMITS = {
 }
 
 export const DEFAULT_DECIMAL_PLACES = 2
+
+export const MIN_COLLATERAL_VALUE_TO_DISPLAY = 0.001
+
+export const COLLATERAL_DECIMAL_PLACES_LIMITS = [
+  { limit: 1000, decimalPlaces: 0 }, //? Values up to 1000 have 0 decimal places
+  { limit: 0.01, decimalPlaces: 2 }, //? Values up to 0.01 have 2 decimal places
+  { limit: 0, decimalPlaces: 3 }, //? Values greater than 0 but less than 0.01 have 3 decimal places
+]
