@@ -41,7 +41,7 @@ const Offer: FC<OfferProps> = ({ offer, collateral, collateralPrice }) => {
   const fullyDilutedValuationNumber = collateral
     ? parseFloat(collateral.fullyDilutedValuationInMillions)
     : 0
-  const { apr: aprPercent } = calculateAPRforOffer(ltvPercent, fullyDilutedValuationNumber)
+  const { factoredApr: aprPercent } = calculateAPRforOffer(ltvPercent, fullyDilutedValuationNumber)
 
   return (
     <li className={classNames(styles.listItem, commonHighlightClassNames)}>

@@ -125,8 +125,8 @@ export const calculateTokenBorrowApr: CalculateTokenBorrowApr = ({
     collateralToken.collateral.fullyDilutedValuationInMillions,
   )
 
-  const { apr } = calculateAPRforOffer(ltvPercent, fullyDilutedValuationNumber)
-  const aprRate = apr * 100
+  const { factoredApr } = calculateAPRforOffer(ltvPercent, fullyDilutedValuationNumber)
+  const aprRate = factoredApr * 100
 
   return aprRate || 0
 }
