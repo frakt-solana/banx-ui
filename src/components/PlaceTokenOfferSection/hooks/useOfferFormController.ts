@@ -73,23 +73,14 @@ export const useOfferFormController = (
 }
 
 export const calculateTokensPerCollateral = (collateralsPerToken: number, decimals: number) => {
-  const ROUNDING_THRESHOLD = 1e-5
-  const ROUNDING_FACTOR_LOW = 1e9
-  const ROUNDING_FACTOR_HIGH = 1e5
-
   if (!collateralsPerToken) {
     return 0
   }
 
   const denominator = Math.pow(10, decimals)
-  const tokensPerCollateral = (1 / collateralsPerToken) * denominator
+  const tokensPerCollateral = (1 * denominator) / collateralsPerToken
 
-  if (tokensPerCollateral < ROUNDING_THRESHOLD) {
-    //? For very small collaterals (like BONK token), round to 9 decimal places
-    return Math.round(tokensPerCollateral * ROUNDING_FACTOR_LOW) / ROUNDING_FACTOR_LOW
-  }
-
-  return Math.round(tokensPerCollateral * ROUNDING_FACTOR_HIGH) / ROUNDING_FACTOR_HIGH
+  return parseFloat(tokensPerCollateral.toPrecision(decimals))
 }
 
 const calculateOfferSize = (syntheticOfferSize: number, decimals: number) => {
