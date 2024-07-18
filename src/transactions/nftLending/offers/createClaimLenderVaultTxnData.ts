@@ -119,7 +119,7 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
     .add(calculateLstYield)
 
   if (isBanxSolTokenType(tokenType) && totalClaimableValue.gt(ZERO_BN)) {
-    return await banxSol.combineWithSellBanxSolInstructions(
+    return await banxSol.combineWithSellBanxSolJupInstructions(
       {
         params,
         accounts,

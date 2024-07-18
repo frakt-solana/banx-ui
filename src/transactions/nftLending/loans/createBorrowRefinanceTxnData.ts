@@ -80,7 +80,7 @@ export const createBorrowRefinanceTxnData: CreateBorrowRefinanceTxnData = async 
     const diff = newLoanDebt.sub(currentLoanDebt).sub(upfrontFee)
 
     if (diff.gt(ZERO_BN)) {
-      return await banxSol.combineWithSellBanxSolInstructions(
+      return await banxSol.combineWithSellBanxSolJupInstructions(
         {
           params,
           accounts,
