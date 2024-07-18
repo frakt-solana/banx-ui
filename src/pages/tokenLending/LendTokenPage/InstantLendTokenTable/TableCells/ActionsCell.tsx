@@ -10,7 +10,7 @@ import { Modal } from '@banx/components/modals/BaseModal'
 import { core } from '@banx/api/tokens'
 import { SECONDS_IN_DAY } from '@banx/constants'
 import { useModal } from '@banx/store/common'
-import { getHumanReadableTokenSupply, isTokenLoanFrozen } from '@banx/utils'
+import { formatCollateralTokenValue, getTokenLoanSupply, isTokenLoanFrozen } from '@banx/utils'
 
 import { useInstantTokenTransactions } from '../hooks'
 
@@ -69,7 +69,7 @@ interface WarningModalProps {
 const WarningModal: FC<WarningModalProps> = ({ loan, lendToBorrow }) => {
   const { close } = useModal()
 
-  const collateralSupply = Math.round(getHumanReadableTokenSupply(loan))
+  const collateralSupply = formatCollateralTokenValue(getTokenLoanSupply(loan))
   const collateralTicker = loan.collateral.ticker
 
   const terminateFreezeInDays = loan.bondTradeTransaction.terminationFreeze / SECONDS_IN_DAY

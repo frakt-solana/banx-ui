@@ -8,7 +8,6 @@ import { useNftTokenType } from '@banx/store/nft'
 import { getTokenUnit, isBanxSolTokenType } from '@banx/utils'
 
 import { Button } from '../Buttons'
-import { DisplayValue } from '../TableComponents'
 import { InputErrorMessage, NumericStepInput } from '../inputs'
 import { Modal } from '../modals/BaseModal'
 import { ActionsButtons } from './components/ActionsButtons'
@@ -35,7 +34,6 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
     onLoanValueChange,
     onOfferSizeChange,
     offerErrorMessage,
-    showBorrowerMessage,
     onCreateTokenOffer,
     onUpdateTokenOffer,
     onRemoveTokenOffer,
@@ -87,7 +85,6 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
 
         <div className={styles.messageContainer}>
           {offerErrorMessage && <InputErrorMessage message={offerErrorMessage} />}
-          {showBorrowerMessage && <BorrowerMessage />}
         </div>
 
         <MainSummary market={market} collateralPerToken={parseFloat(collateralsPerTokenString)} />
@@ -126,8 +123,4 @@ export const OffersModal: FC<OffersModalProps> = (props) => {
       <OrderBook {...props} />
     </Modal>
   )
-}
-
-const BorrowerMessage = () => {
-  return <p className={styles.borrowerMessage}>Borrower sees: {<DisplayValue value={0} />}</p>
 }

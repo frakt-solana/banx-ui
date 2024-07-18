@@ -121,7 +121,7 @@ export const PointsBanxBadge: FC<PointsBanxBadgeProps> = ({
 }
 
 interface CollateralTokenCellProps {
-  collateralTokenAmount: number
+  collateralTokenAmount: ReactNode
   collateralImageUrl: string
 
   selected?: boolean

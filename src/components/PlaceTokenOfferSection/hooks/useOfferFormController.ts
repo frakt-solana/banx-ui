@@ -19,10 +19,12 @@ export const useOfferFormController = (
   const initialValues = useMemo(() => {
     const collateralsDecimals = market?.collateral.decimals || 0
 
-    const collateralsPerToken =
-      (1 / syntheticCollateralsPerToken) * Math.pow(10, collateralsDecimals)
+    const collateralsPerToken = calculateTokensPerCollateral(
+      syntheticCollateralsPerToken,
+      collateralsDecimals,
+    )
 
-    const offerSize = syntheticOfferSize / decimals
+    const offerSize = calculateOfferSize(syntheticOfferSize, decimals)
 
     return {
       collateralsPerToken: isFinite(collateralsPerToken) ? String(collateralsPerToken) : '0',
@@ -68,4 +70,23 @@ export const useOfferFormController = (
     hasFormChanges: Boolean(hasFormChanges),
     resetFormValues,
   }
+}
+
+export const calculateTokensPerCollateral = (collateralsPerToken: number, decimals: number) => {
+  if (!collateralsPerToken) {
+    return 0
+  }
+
+  const denominator = Math.pow(10, decimals)
+  const tokensPerCollateral = (1 * denominator) / collateralsPerToken
+
+  return parseFloat(tokensPerCollateral.toPrecision(decimals))
+}
+
+const calculateOfferSize = (syntheticOfferSize: number, decimals: number) => {
+  const offerSize = syntheticOfferSize / decimals
+
+  //? 1e4 is used for rounding the result to 4 decimal places
+  const roundedOfferSize = Math.round(offerSize * 1e4) / 1e4
+  return roundedOfferSize
 }

@@ -1,11 +1,18 @@
-import { web3 } from 'fbonds-core'
-import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
+import { BN, web3 } from 'fbonds-core'
+import { BASE_POINTS, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import { repayPartialPerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import moment from 'moment'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
+import { banxSol } from '@banx/transactions'
+import {
+  calculateTokenLoanRepayValueOnCertainDate,
+  isBanxSolTokenType,
+  isSolTokenType,
+} from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../helpers'
 
@@ -51,16 +58,46 @@ export const createRepayPartialTokenLoanTxnData: CreateRepayPartialTokenLoanTxnD
     sendTxn: sendTxnPlaceHolder,
   })
 
+  const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
+
   const accounts = [
     new web3.PublicKey(optimisticResults[0].fraktBond.publicKey),
     new web3.PublicKey(optimisticResults[0].bondTradeTransaction.publicKey),
   ]
+
+  if (
+    isBanxSolTokenType(bondTradeTransaction.lendingToken) ||
+    isSolTokenType(bondTradeTransaction.lendingToken)
+  ) {
+    const repayValue = calculateTokenLoanRepayValueOnCertainDate({
+      loan,
+      upfrontFeeIncluded: false,
+      //? It is necessary to add some time because interest is accumulated even during the transaction processing.
+      //? There may not be enough funds for repayment. Therefore, we should add a small reserve for this dust.
+      date: moment().unix() + 180,
+    })
+      .mul(new BN(fractionToRepay))
+      .div(new BN(BASE_POINTS))
+
+    return await banxSol.combineWithBuyBanxSolInstructions(
+      {
+        params,
+        accounts,
+        inputAmount: repayValue,
+
+        instructions,
+        signers,
+        lookupTables,
+      },
+      walletAndConnection,
+    )
+  }
 
   return {
     params,
     accounts,
     instructions,
     signers,
-    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    lookupTables,
   }
 }
