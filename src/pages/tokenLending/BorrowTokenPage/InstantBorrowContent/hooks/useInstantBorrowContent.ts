@@ -90,10 +90,10 @@ export const useInstantBorrowContent = () => {
       if (!borrowToken) return
 
       const totalAmountToGet = calculateTotalAmount(offers, 'amountToGet')
-      const adjectedAmountToGet = adjustAmountWithUpfrontFee(totalAmountToGet, 'input')
+      const adjustedAmountToGet = adjustAmountWithUpfrontFee(totalAmountToGet, 'input')
 
       const totalAmountToGetStr = bnToHuman(
-        adjectedAmountToGet,
+        adjustedAmountToGet,
         borrowToken.collateral.decimals,
       ).toString()
 
