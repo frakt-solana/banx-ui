@@ -5,8 +5,10 @@ import { find, findIndex, repeat } from 'lodash'
 
 import { formatNumbersWithCommas } from '../common'
 import {
+  COLLATERAL_DECIMAL_PLACES_LIMITS,
   DECIMAL_PLACES_LIMITS,
   DEFAULT_DECIMAL_PLACES,
+  MIN_COLLATERAL_VALUE_TO_DISPLAY,
   MIN_VALUE_TO_DISPLAY,
   TOKEN_DECIMALS,
   TOKEN_UNIT,
@@ -103,4 +105,17 @@ export const formatDecimalWithSubscript = (decimalNumber: number) => {
   )
 
   return formattedDecimal
+}
+
+export const formatCollateralTokenValue = (value: number) => {
+  if (isValueBelowThreshold(value, MIN_COLLATERAL_VALUE_TO_DISPLAY)) {
+    return value
+  }
+
+  const decimalPlaces =
+    find(COLLATERAL_DECIMAL_PLACES_LIMITS, ({ limit }) => value > limit)?.decimalPlaces ??
+    DEFAULT_DECIMAL_PLACES
+
+  const formattedValueWithDecimals = value.toFixed(decimalPlaces)
+  return formattedValueWithDecimals.replace(/\.00$/, '')
 }

@@ -9,6 +9,8 @@ import { DisplayValue, createPercentValueJSX } from '@banx/components/TableCompo
 import { Pencil } from '@banx/icons'
 import { SyntheticTokenOffer } from '@banx/store/token'
 
+import { calculateTokensPerCollateral } from '../../hooks/useOfferFormController'
+
 import styles from './OrderBook.module.less'
 
 interface OfferProps {
@@ -31,9 +33,8 @@ const Offer: FC<OfferProps> = ({ offer, collateralTokenDecimals }) => {
 
   //TODO (TokenLending): Use rateBasePoints from market or calculate dynamically?
   const apr = 0
-  const offerValue = collateralsPerToken
-    ? (1 / collateralsPerToken) * Math.pow(10, collateralTokenDecimals)
-    : 0
+
+  const offerValue = calculateTokensPerCollateral(collateralsPerToken, collateralTokenDecimals)
 
   return (
     <li className={classNames(styles.listItem, commonHighlightClassNames)}>

@@ -8,6 +8,7 @@ import {
 } from '@banx/components/TableComponents'
 
 import { activity } from '@banx/api/tokens'
+import { formatCollateralTokenValue } from '@banx/utils'
 
 import { DebtCell, RepaidCell, StatusCell } from './cells'
 
@@ -20,7 +21,9 @@ export const getTableColumns = ({ isCardView }: { isCardView: boolean }) => {
         <CollateralTokenCell
           key={id}
           collateralImageUrl={collateral.logoUrl}
-          collateralTokenAmount={Math.round(tokenSupply / Math.pow(10, collateral.decimals))}
+          collateralTokenAmount={formatCollateralTokenValue(
+            tokenSupply / Math.pow(10, collateral.decimals),
+          )}
         />
       ),
     },
