@@ -8,7 +8,7 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/functions/banxSol'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
-import { BANX_SOL_ADDRESS, BONDS, SOL_ADDRESS } from '@banx/constants'
+import { BANX_SOL_ADDRESS, BONDS, WSOL_ADDRESS } from '@banx/constants'
 import { removeDuplicatedPublicKeys } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../helpers'
@@ -74,7 +74,7 @@ const getSwapBanxSolToSolJupInstructions: GetSwapInstuctions = async ({
 
   const quote = await jupiterQuoteApi.quoteGet({
     inputMint: BANX_SOL_ADDRESS,
-    outputMint: SOL_ADDRESS,
+    outputMint: WSOL_ADDRESS,
     amount: inputAmount.toNumber(),
     slippageBps: 300,
     computeAutoSlippage: true,
