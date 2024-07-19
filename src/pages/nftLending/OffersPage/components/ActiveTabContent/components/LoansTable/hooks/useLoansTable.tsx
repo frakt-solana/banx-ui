@@ -6,7 +6,7 @@ import { first, groupBy, map, sumBy } from 'lodash'
 import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import {
   isLoanAbleToClaim,
   isLoanAbleToTerminate,
@@ -80,7 +80,7 @@ export const useLoansTable = () => {
 }
 
 interface CreateSearchSelectProps {
-  loans: core.Loan[]
+  loans: coreNew.Loan[]
   selectedOptions: string[]
   onChange: (option: string[]) => void
 }
@@ -122,7 +122,7 @@ const createSearchSelectParams = ({
 
 const useCollectionsStore = createGlobalState<string[]>([])
 
-const useFilterLoans = (loans: core.Loan[]) => {
+const useFilterLoans = (loans: coreNew.Loan[]) => {
   const [isUnderwaterFilterActive, setIsUnderwaterFilterActive] = useState(false)
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
 
@@ -143,7 +143,8 @@ const useFilterLoans = (loans: core.Loan[]) => {
   }
 
   const { filteredLoans, filteredAllLoans } = useMemo(() => {
-    const applyFilter = (loans: core.Loan[]) => (isUnderwaterFilterActive ? underwaterLoans : loans)
+    const applyFilter = (loans: coreNew.Loan[]) =>
+      isUnderwaterFilterActive ? underwaterLoans : loans
 
     return {
       filteredLoans: applyFilter(filteredLoansByCollection),

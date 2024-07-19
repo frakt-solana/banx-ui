@@ -1,14 +1,14 @@
 import produce from 'immer'
 import { create } from 'zustand'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 
 export interface LoanOptimistic {
-  loan: core.Loan
+  loan: coreNew.Loan
   wallet: string
 }
 
-const convertLoanToOptimistic = (loan: core.Loan, walletPublicKey: string) => {
+const convertLoanToOptimistic = (loan: coreNew.Loan, walletPublicKey: string) => {
   return {
     loan,
     wallet: walletPublicKey,
@@ -17,11 +17,11 @@ const convertLoanToOptimistic = (loan: core.Loan, walletPublicKey: string) => {
 
 interface SelectedLoansState {
   selection: LoanOptimistic[]
-  set: (selection: core.Loan[], walletPublicKey: string) => void
+  set: (selection: coreNew.Loan[], walletPublicKey: string) => void
   find: (loanPubkey: string, walletPublicKey: string) => LoanOptimistic | null
-  add: (loan: core.Loan, walletPublicKey: string) => void
+  add: (loan: coreNew.Loan, walletPublicKey: string) => void
   remove: (loanPubkey: string, walletPublicKey: string) => void
-  toggle: (loan: core.Loan, walletPublicKey: string) => void
+  toggle: (loan: coreNew.Loan, walletPublicKey: string) => void
   clear: () => void
 }
 
@@ -39,7 +39,7 @@ export const useSelectedLoans = create<SelectedLoansState>((set, get) => ({
   find: (loanPubkey, walletPublicKey) => {
     if (!walletPublicKey) return null
 
-    return get().selection.find(({ loan }) => loan.publicKey === loanPubkey) ?? null
+    return get().selection.find(({ loan }) => loan.publicKey.toBase58() === loanPubkey) ?? null
   },
   add: (loan, walletPublicKey) => {
     if (!walletPublicKey) return
@@ -55,7 +55,9 @@ export const useSelectedLoans = create<SelectedLoansState>((set, get) => ({
 
     set(
       produce((state: SelectedLoansState) => {
-        state.selection = state.selection.filter(({ loan }) => loan.publicKey !== loanPubkey)
+        state.selection = state.selection.filter(
+          ({ loan }) => loan.publicKey.toBase58() !== loanPubkey,
+        )
       }),
     )
   },
@@ -66,13 +68,15 @@ export const useSelectedLoans = create<SelectedLoansState>((set, get) => ({
       }),
     )
   },
-  toggle: (loan: core.Loan, walletPublicKey) => {
+  toggle: (loan: coreNew.Loan, walletPublicKey) => {
     if (!walletPublicKey) return
 
     const { find, add, remove } = get()
-    const isLoanInSelection = !!find(loan.publicKey, walletPublicKey)
+    const isLoanInSelection = !!find(loan.publicKey.toBase58(), walletPublicKey)
 
-    isLoanInSelection ? remove(loan.publicKey, walletPublicKey) : add(loan, walletPublicKey)
+    isLoanInSelection
+      ? remove(loan.publicKey.toBase58(), walletPublicKey)
+      : add(loan, walletPublicKey)
   },
 }))
 

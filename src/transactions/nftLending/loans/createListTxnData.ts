@@ -1,6 +1,6 @@
 import { BN } from 'bn.js'
 import { web3 } from 'fbonds-core'
-import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
+import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   createPerpetualListing,
   createPerpetualListingCnft,
@@ -18,7 +18,7 @@ import {
   WalletAndConnection,
 } from 'solana-transactions-executor'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 
 import { fetchRuleset, parseAccountInfoByPubkey } from '../../functions'
@@ -26,7 +26,7 @@ import { sendTxnPlaceHolder } from '../../helpers'
 import { ListingType } from '../types'
 
 export type CreateListTxnDataParams = {
-  nft: core.BorrowNft
+  nft: coreNew.BorrowNft
   aprRate: number
   loanValue: number
   freeze: number
@@ -43,16 +43,13 @@ export const createListTxnData: CreateListTxnData = async (params, walletAndConn
 
   const listingType = getNftListingType(nft)
 
-  const { instructions, signers, optimisticResults } = await getIxnsAndSignersByListingType({
+  const { instructions, signers, accountsCollection } = await getIxnsAndSignersByListingType({
     params,
     type: listingType,
     walletAndConnection,
   })
 
-  const accounts = [
-    new web3.PublicKey(optimisticResults.fraktBond.publicKey),
-    new web3.PublicKey(optimisticResults.bondTradeTransaction.publicKey),
-  ]
+  const accounts = [accountsCollection['fraktBond'], accountsCollection['bondTradeTransaction']]
 
   return {
     params,
@@ -78,12 +75,16 @@ const getIxnsAndSignersByListingType = async ({
 
   if (type === ListingType.StakedBanx) {
     const ruleSet = await fetchRuleset({
-      nftMint: nft.mint,
+      nftMint: nft.mint.toBase58(),
       connection,
-      marketPubkey: nft.loan.marketPubkey,
+      marketPubkey: nft.loan.marketPubkey.toBase58(),
     })
 
-    const { instructions, signers, optimisticResults } = await createPerpetualListingStakedBanx({
+    const {
+      instructions,
+      signers,
+      accounts: accountsCollection,
+    } = await createPerpetualListingStakedBanx({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
@@ -106,7 +107,7 @@ const getIxnsAndSignersByListingType = async ({
       sendTxn: sendTxnPlaceHolder,
     })
 
-    return { instructions, signers, optimisticResults }
+    return { instructions, signers, accountsCollection }
   }
 
   if (type === ListingType.CNft) {
@@ -116,12 +117,16 @@ const getIxnsAndSignersByListingType = async ({
 
     const proof = await getAssetProof(nft.mint, connection.rpcEndpoint)
     const ruleSet = await fetchRuleset({
-      nftMint: nft.mint,
+      nftMint: nft.mint.toBase58(),
       connection,
-      marketPubkey: nft.loan.marketPubkey,
+      marketPubkey: nft.loan.marketPubkey.toBase58(),
     })
 
-    const { instructions, signers, optimisticResults } = await createPerpetualListingCnft({
+    const {
+      instructions,
+      signers,
+      accounts: accountsCollection,
+    } = await createPerpetualListingCnft({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
@@ -147,16 +152,20 @@ const getIxnsAndSignersByListingType = async ({
       sendTxn: sendTxnPlaceHolder,
     })
 
-    return { instructions, signers, optimisticResults }
+    return { instructions, signers, accountsCollection }
   }
 
   const ruleSet = await fetchRuleset({
-    nftMint: nft.mint,
+    nftMint: nft.mint.toBase58(),
     connection,
-    marketPubkey: nft.loan.marketPubkey,
+    marketPubkey: nft.loan.marketPubkey.toBase58(),
   })
 
-  const { instructions, signers, optimisticResults } = await createPerpetualListing({
+  const {
+    instructions,
+    signers,
+    accounts: accountsCollection,
+  } = await createPerpetualListing({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
@@ -178,11 +187,11 @@ const getIxnsAndSignersByListingType = async ({
     sendTxn: sendTxnPlaceHolder,
   })
 
-  return { instructions, signers, optimisticResults }
+  return { instructions, signers, accountsCollection }
 }
 
-export const getNftListingType = (nft: core.BorrowNft) => {
-  if (nft.loan.banxStake && nft.loan.banxStake !== EMPTY_PUBKEY.toBase58()) {
+export const getNftListingType = (nft: coreNew.BorrowNft) => {
+  if (nft.loan.banxStake && !nft.loan.banxStake.equals(web3.PublicKey.default)) {
     return ListingType.StakedBanx
   }
 

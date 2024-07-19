@@ -4,7 +4,7 @@ import { orderBy } from 'lodash'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 
 export enum SortField {
   LTV = 'ltv',
@@ -12,7 +12,7 @@ export enum SortField {
   INTEREST = 'interest',
 }
 
-type SortValueGetter = (offer: core.UserOffer) => number
+type SortValueGetter = (offer: coreNew.UserOffer) => number
 
 const SORT_OPTIONS: SortOption<SortField>[] = [
   { label: 'LTV', value: [SortField.LTV, 'desc'] },
@@ -21,13 +21,14 @@ const SORT_OPTIONS: SortOption<SortField>[] = [
 ]
 
 const SORT_VALUE_MAP: Record<SortField, SortValueGetter> = {
-  [SortField.LENT]: (offer) => offer.offer.edgeSettlement,
-  [SortField.INTEREST]: (offer) => offer.offer.concentrationIndex,
+  [SortField.LENT]: (offer) => offer.offer.edgeSettlement.toNumber(),
+  [SortField.INTEREST]: (offer) => offer.offer.concentrationIndex.toNumber(),
   [SortField.LTV]: (offer) =>
-    offer.offer.validation.loanToValueFilter / offer.collectionMeta.collectionFloor,
+    offer.offer.validation.loanToValueFilter.toNumber() /
+    offer.collectionMeta.collectionFloor.toNumber(),
 }
 
-export const useSortedOffers = (offers: core.UserOffer[]) => {
+export const useSortedOffers = (offers: coreNew.UserOffer[]) => {
   const [sortOption, setSortOption] = useState(SORT_OPTIONS[0])
 
   const sortedOffers = useMemo(() => {

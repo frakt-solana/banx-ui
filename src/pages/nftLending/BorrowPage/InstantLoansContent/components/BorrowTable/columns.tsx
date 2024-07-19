@@ -9,8 +9,9 @@ import {
   NftInfoCell,
 } from '@banx/components/TableComponents'
 
-import { SimpleOffer, calculateBorrowValueWithProtocolFee } from '@banx/utils'
+import { calculateBorrowValueWithProtocolFee } from '@banx/utils'
 
+import { CartState } from '../../cartState'
 import { BorrowActionCell } from './BorrowActionCell'
 import { APRCell, BorrowCell } from './cells'
 import { TableNftData } from './types'
@@ -20,7 +21,7 @@ import styles from './BorrowTable.module.less'
 interface GetTableColumnsProps {
   onNftSelect: (nft: TableNftData) => void
   onBorrow: (nft: TableNftData) => Promise<void>
-  findOfferInCart: (nft: TableNftData) => SimpleOffer | null
+  findOfferInCart: CartState['findOfferInCart']
   isCardView: boolean
   hasSelectedNfts: boolean
   onSelectAll: () => void
@@ -49,7 +50,7 @@ export const getTableColumns = ({
       ),
       render: (nft) => (
         <NftInfoCell
-          key={nft.mint}
+          key={nft.mint.toBase58()}
           selected={nft.selected}
           onCheckboxClick={() => onNftSelect(nft)}
           nftName={nft.nft.nft.meta.name}
@@ -75,7 +76,7 @@ export const getTableColumns = ({
         />
       ),
       render: ({ loanValue }) => {
-        const upfrontFee = loanValue - calculateBorrowValueWithProtocolFee(loanValue)
+        const upfrontFee = loanValue.toNumber() - calculateBorrowValueWithProtocolFee(loanValue)
         return <HorizontalCell value={<DisplayValue value={upfrontFee} placeholder="--" />} />
       },
     },
@@ -95,8 +96,8 @@ export const getTableColumns = ({
       render: (nft) => (
         <BorrowActionCell
           isCardView={isCardView}
-          loanValue={nft.loanValue}
-          disabled={!!findOfferInCart(nft)}
+          loanValue={nft.loanValue.toNumber()}
+          disabled={!!findOfferInCart({ mint: nft.mint.toBase58() })}
           onBorrow={async () => await onBorrow(nft)}
           goToRequestLoanTab={goToRequestLoanTab}
         />

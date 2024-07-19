@@ -1,3 +1,5 @@
+import { BN } from 'fbonds-core'
+
 import { Button } from '@banx/components/Buttons'
 import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
@@ -9,14 +11,14 @@ import {
   RarityCell,
 } from '@banx/components/TableComponents'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { calculateBorrowValueWithProtocolFee } from '@banx/utils'
 
 import styles from './RequestLoansTable.module.less'
 
 interface GetTableColumnsProps {
-  findNftInSelection: (mint: string) => core.BorrowNft | null
-  toggleNftInSelection: (nft: core.BorrowNft) => void
+  findNftInSelection: (mint: string) => coreNew.BorrowNft | null
+  toggleNftInSelection: (nft: coreNew.BorrowNft) => void
   hasSelectedNfts: boolean
   onSelectAll: () => void
   requestedLoanValue: number
@@ -29,7 +31,7 @@ export const getTableColumns = ({
   toggleNftInSelection,
   findNftInSelection,
 }: GetTableColumnsProps) => {
-  const columns: ColumnType<core.BorrowNft>[] = [
+  const columns: ColumnType<coreNew.BorrowNft>[] = [
     {
       key: 'collateral',
       title: (
@@ -40,8 +42,8 @@ export const getTableColumns = ({
       ),
       render: (nft) => (
         <NftInfoCell
-          key={nft.mint}
-          selected={!!findNftInSelection(nft.mint)}
+          key={nft.mint.toBase58()}
+          selected={!!findNftInSelection(nft.mint.toBase58())}
           onCheckboxClick={() => toggleNftInSelection(nft)}
           nftName={nft.nft.meta.name}
           nftImage={nft.nft.meta.imageUrl}
@@ -78,7 +80,7 @@ export const getTableColumns = ({
       ),
       render: () => {
         const upfrontFee =
-          requestedLoanValue - calculateBorrowValueWithProtocolFee(requestedLoanValue)
+          requestedLoanValue - calculateBorrowValueWithProtocolFee(new BN(requestedLoanValue))
         return (
           <HorizontalCell
             value={<DisplayValue value={upfrontFee} placeholder="--" />}
@@ -92,7 +94,7 @@ export const getTableColumns = ({
       title: <HeaderCell label="" />,
       render: (nft) => (
         <Button className={styles.selectButton} size="small">
-          {findNftInSelection(nft.mint) ? 'Deselect' : 'Select'}
+          {findNftInSelection(nft.mint.toBase58()) ? 'Deselect' : 'Select'}
         </Button>
       ),
     },

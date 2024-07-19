@@ -7,11 +7,11 @@ export const useMarketAndOffer = (offerPubkey: string, marketPubkey: string) => 
   const { marketsPreview } = useMarketsPreview()
 
   const market = useMemo(() => {
-    return marketsPreview.find((market) => market.marketPubkey === marketPubkey)
+    return marketsPreview.find((market) => market.marketPubkey.toBase58() === marketPubkey)
   }, [marketPubkey, marketsPreview])
 
   const offer = useMemo(() => {
-    return offers.find((offer) => offer.publicKey === offerPubkey)
+    return offers.find((offer) => offer.publicKey.toBase58() === offerPubkey)
   }, [offers, offerPubkey])
 
   return { offer, market, updateOrAddOffer }

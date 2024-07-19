@@ -10,9 +10,9 @@ import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
-import { calculateApr, calculateLoanValue } from '@banx/utils'
+import { ZERO_BN, calculateApr, calculateLoanValue } from '@banx/utils'
 
 import { calcLoanValueWithFees, calcWeeklyInterestFee } from './helpers'
 
@@ -73,7 +73,7 @@ export const LendCard: FC<LendCardProps> = ({ amountOfLoans, offerTvl, apr, ...p
 }
 
 interface MarketCardProps {
-  market: core.MarketPreview
+  market: coreNew.MarketPreview
   onClick: () => void
 }
 
@@ -82,14 +82,15 @@ export const MarketCard: FC<MarketCardProps> = ({ market, onClick }) => {
 
   const BadgeContentElement = (
     <>
-      + <DisplayValue value={bestOffer} />
+      + <DisplayValue value={bestOffer.toNumber()} />
     </>
   )
 
-  const ltv = (bestOffer / collectionFloor) * 100
-  const ltvTooltipContent = createTooltipContent('Borrow up to', bestOffer)
+  const ltv = (bestOffer.toNumber() / collectionFloor.toNumber()) * 100
+  const ltvTooltipContent = createTooltipContent('Borrow up to', bestOffer.toNumber())
 
-  const apr = calculateApr({ loanValue: market.bestOffer, collectionFloor, marketPubkey }) / 100
+  const apr =
+    calculateApr({ loanValue: market.bestOffer, collectionFloor, marketPubkey }).toNumber() / 100
 
   return (
     <CardBackdrop image={collectionImage} onClick={onClick} badgeElement={BadgeContentElement}>
@@ -102,9 +103,9 @@ export const MarketCard: FC<MarketCardProps> = ({ market, onClick }) => {
 }
 
 interface BorrowCardProps {
-  nft: core.BorrowNft
+  nft: coreNew.BorrowNft
   onClick: () => void
-  findBestOffer: (marketPubkey: string) => core.Offer | null
+  findBestOffer: (marketPubkey: string) => coreNew.Offer | null
   tokenType: LendingTokenType
 }
 
@@ -114,19 +115,22 @@ export const BorrowCard: FC<BorrowCardProps> = ({ nft, onClick, findBestOffer, t
     loan: { marketPubkey },
   } = nft
 
-  const bestOffer = useMemo(() => findBestOffer(marketPubkey), [findBestOffer, marketPubkey])
+  const bestOffer = useMemo(
+    () => findBestOffer(marketPubkey.toBase58()),
+    [findBestOffer, marketPubkey],
+  )
 
-  const loanValue = bestOffer ? calculateLoanValue(bestOffer) : 0
+  const loanValue = bestOffer ? calculateLoanValue(bestOffer) : ZERO_BN
   const loanValueWithFees = calcLoanValueWithFees(bestOffer, tokenType)
 
-  const ltv = Math.max((loanValueWithFees / collectionFloor) * 100, 0)
+  const ltv = Math.max((loanValueWithFees / collectionFloor.toNumber()) * 100, 0)
   const apr = calculateApr({ loanValue, collectionFloor, marketPubkey })
   const weeklyFee = calcWeeklyInterestFee({ loanValue, apr })
 
-  const formattedAprValue = (apr + BONDS.PROTOCOL_REPAY_FEE) / 100
+  const formattedAprValue = apr.add(BONDS.PROTOCOL_REPAY_FEE_BN).toNumber() / 100
 
-  const aprTooltipContent = createTooltipContent('Weekly fee', weeklyFee)
-  const ltvTooltipContent = createTooltipContent('Floor', collectionFloor)
+  const aprTooltipContent = createTooltipContent('Weekly fee', weeklyFee.toNumber())
+  const ltvTooltipContent = createTooltipContent('Floor', collectionFloor.toNumber())
 
   return (
     <CardBackdrop image={meta.imageUrl} onClick={onClick} disabled={!loanValue}>

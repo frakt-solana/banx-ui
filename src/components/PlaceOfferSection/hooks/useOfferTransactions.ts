@@ -1,9 +1,10 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { BN } from 'fbonds-core'
 import { uniqueId } from 'lodash'
 import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { useTokenType } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -43,8 +44,8 @@ export const useOfferTransactions = ({
   loansAmount: number
   loanValue: number
   deltaValue: number
-  optimisticOffer?: core.Offer
-  updateOrAddOffer: (offer: core.Offer) => void
+  optimisticOffer?: coreNew.Offer
+  updateOrAddOffer: (offer: coreNew.Offer) => void
   resetFormValues: () => void
   exitEditMode: () => void
 }) => {
@@ -166,7 +167,7 @@ export const useOfferTransactions = ({
             if (accountInfoByPubkey) {
               const offer = parseUpdateOfferSimulatedAccounts(accountInfoByPubkey)
               //? Needs to prevent BE data overlap in optimistics logic
-              updateOrAddOffer({ ...offer, lastTransactedAt: moment().unix() })
+              updateOrAddOffer({ ...offer, lastTransactedAt: new BN(moment().unix()) })
             }
           })
         })
@@ -234,7 +235,7 @@ export const useOfferTransactions = ({
               const offer = parseRemoveOfferSimulatedAccounts(accountInfoByPubkey)
 
               //? Needs to prevent BE data overlap in optimistics logic
-              updateOrAddOffer({ ...offer, lastTransactedAt: moment().unix() })
+              updateOrAddOffer({ ...offer, lastTransactedAt: new BN(moment().unix()) })
               exitEditMode()
             }
           })

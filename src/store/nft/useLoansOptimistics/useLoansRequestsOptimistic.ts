@@ -1,10 +1,11 @@
 import { useEffect, useMemo } from 'react'
 
+import { web3 } from 'fbonds-core'
 import { get, set } from 'idb-keyval'
 import { map } from 'lodash'
 import { create } from 'zustand'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 
 import { useTokenType } from '../useTokenType'
 import {
@@ -17,14 +18,16 @@ import {
   updateLoans,
 } from './helpers'
 
-const BANX_LOANS_REQUESTS_OPTIMISTICS_LS_KEY = '@banx.loansRequestsOptimistics'
+//TODO Purge old key
+// const BANX_LOANS_REQUESTS_OPTIMISTICS_LS_KEY_OLD = '@banx.loansRequestsOptimistics'
+const BANX_LOANS_REQUESTS_OPTIMISTICS_LS_KEY = '@banx.loansRequestsOptimistics2'
 
 interface LoansRequestsOptimisticStore {
   optimisticLoans: LoanOptimistic[]
-  find: (publicKey: string, walletPublicKey: string) => LoanOptimistic | undefined
-  add: (loans: core.Loan[], walletPublicKey: string) => void
-  remove: (publicKeys: string[], walletPublicKey: string) => void
-  update: (loans: core.Loan[], walletPublicKey: string) => void
+  find: (publicKey: web3.PublicKey, walletPublicKey: string) => LoanOptimistic | undefined
+  add: (loans: coreNew.Loan[], walletPublicKey: string) => void
+  remove: (publicKeys: web3.PublicKey[], walletPublicKey: string) => void
+  update: (loans: coreNew.Loan[], walletPublicKey: string) => void
   setState: (optimisticLoans: LoanOptimistic[]) => void
 }
 
@@ -54,7 +57,7 @@ const useOptimisticLoansRequestsStore = create<LoansRequestsOptimisticStore>((se
     return findLoan(optimisticLoans, publicKey, walletPublicKey)
   },
 
-  update: (loans: core.Loan[], walletPublicKey) => {
+  update: (loans: coreNew.Loan[], walletPublicKey) => {
     if (!walletPublicKey) return
     set((state) => {
       const nextLoans = updateLoans(

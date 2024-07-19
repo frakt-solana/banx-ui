@@ -4,7 +4,7 @@ import { chain, orderBy } from 'lodash'
 
 import { SortOption, SortOrder } from '@banx/components/SortDropdown'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import {
   calculateLoanRepayValue,
   isLoanLiquidated,
@@ -22,7 +22,7 @@ enum SortField {
   DURATION = 'duration',
 }
 
-type SortValueGetter = (loan: core.Loan) => number
+type SortValueGetter = (loan: coreNew.Loan) => number
 
 const SORT_OPTIONS: SortOption<SortField>[] = [
   { label: 'Status', value: [SortField.STATUS, 'desc'] },
@@ -33,14 +33,15 @@ const SORT_OPTIONS: SortOption<SortField>[] = [
 ]
 
 const SORT_VALUE_MAP: Record<SortField, string | SortValueGetter> = {
-  [SortField.DEBT]: calculateLoanRepayValue,
-  [SortField.APR]: (loan) => loan.bondTradeTransaction.amountOfBonds,
-  [SortField.LTV]: (loan) => calculateLoanRepayValue(loan) / loan.nft.collectionFloor,
-  [SortField.DURATION]: (loan) => loan.fraktBond.activatedAt * -1,
+  [SortField.DEBT]: (loan) => calculateLoanRepayValue(loan).toNumber(),
+  [SortField.APR]: (loan) => loan.bondTradeTransaction.amountOfBonds.toNumber(),
+  [SortField.LTV]: (loan) =>
+    calculateLoanRepayValue(loan).toNumber() / loan.nft.collectionFloor.toNumber(),
+  [SortField.DURATION]: (loan) => loan.fraktBond.activatedAt.toNumber() * -1,
   [SortField.STATUS]: '',
 }
 
-const sortStatusLoans = (loans: core.Loan[], order: SortOrder) => {
+const sortStatusLoans = (loans: coreNew.Loan[], order: SortOrder) => {
   const terminatingLoans = chain(loans)
     .filter(isLoanTerminating)
     .sortBy((loan) => loan.fraktBond.refinanceAuctionStartedAt)
@@ -67,7 +68,7 @@ const sortStatusLoans = (loans: core.Loan[], order: SortOrder) => {
   return order === 'asc' ? combinedLoans : combinedLoans.reverse()
 }
 
-export const useSortLoans = (loans: core.Loan[]) => {
+export const useSortLoans = (loans: coreNew.Loan[]) => {
   const [sortOption, setSortOption] = useState(SORT_OPTIONS[0])
 
   const sortedLoans = useMemo(() => {

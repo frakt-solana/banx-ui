@@ -40,26 +40,27 @@ export const NFTSchema = z.object({
   rarity: RaritySchema.optional(),
 })
 
-// export const NFTSchema2 = z.object({
-//   mint: SerializedPublicKey,
-//   meta: z.object({
-//     imageUrl: z.string(),
-//     name: z.string(),
-//     collectionName: z.string(),
-//     collectionImage: z.string(),
-//     tensorSlug: z.string(),
-//     partnerPoints: z.number().optional(),
-//     playerPoints: z.number().optional(),
-//   }),
-//   compression: z
-//     .object({
-//       dataHash: z.string(),
-//       creatorHash: z.string(),
-//       leafId: z.number(),
-//       tree: z.string(),
-//       whitelistEntry: z.string(),
-//     })
-//     .optional(),
-//   collectionFloor: SerializedBN,
-//   rarity: RaritySchema.optional(),
-// })
+export const NFTSchemaNew = z.object({
+  mint: SerializedPublicKeySchema,
+  meta: z.object({
+    imageUrl: z.string(),
+    name: z.string(),
+    collectionName: z.string(),
+    collectionImage: z.string(),
+    tensorSlug: z.string(),
+    partnerPoints: z.number().optional(),
+    playerPoints: z.number().optional(),
+  }),
+  //? Change to BN and PublicKey?
+  compression: z
+    .object({
+      dataHash: z.string(),
+      creatorHash: z.string(),
+      leafId: z.number(),
+      tree: z.string(),
+      whitelistEntry: z.string(),
+    })
+    .optional(),
+  collectionFloor: SerializedBNSchema,
+  rarity: RaritySchema.optional(),
+})

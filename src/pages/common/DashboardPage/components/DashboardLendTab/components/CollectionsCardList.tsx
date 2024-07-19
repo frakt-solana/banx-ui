@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { LendTabName, useLendTabs } from '@banx/pages/nftLending/LendPage'
 import { PATHS } from '@banx/router'
 import { useMarketsURLControl } from '@banx/store/common'
@@ -12,7 +12,7 @@ import { LendCard } from '../../Card'
 import styles from '../DashboardLendTab.module.less'
 
 interface CollectionsCardListProps {
-  marketsPreview: core.MarketPreview[]
+  marketsPreview: coreNew.MarketPreview[]
 }
 
 const CollectionsCardList: FC<CollectionsCardListProps> = ({ marketsPreview }) => {
@@ -32,11 +32,11 @@ const CollectionsCardList: FC<CollectionsCardListProps> = ({ marketsPreview }) =
     <div className={styles.collectionsCardList}>
       {marketsPreview.map((market) => (
         <LendCard
-          key={market.marketPubkey}
+          key={market.marketPubkey.toBase58()}
           image={market.collectionImage}
           amountOfLoans={market.activeBondsAmount}
-          offerTvl={market.offerTvl}
-          apr={market.marketApr}
+          offerTvl={market.offerTvl.toNumber()}
+          apr={market.marketApr.toNumber()}
           onClick={() => goToSelectedMarket(market.collectionName)}
         />
       ))}

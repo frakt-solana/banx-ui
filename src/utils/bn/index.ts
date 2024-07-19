@@ -1,6 +1,7 @@
 import { BN } from 'fbonds-core'
 
 export const ZERO_BN = new BN(0)
+export const ONE_BN = new BN(1)
 
 export const bnToHuman = (value: BN, decimals = 9): number => {
   const valueStr = value.toString()
@@ -41,4 +42,20 @@ export const stringToBN = (value: string, decimals = 9): BN => {
   const fractional = calculateFractionalPart(fractionalPart)
 
   return integer.add(fractional)
+}
+
+export const sortAscCompareBN = (a: BN, b: BN) => {
+  const res = a.sub(b)
+
+  if (res.gt(ZERO_BN)) return 1
+  if (res.lt(ZERO_BN)) return -1
+  return 0
+}
+
+export const sortDescCompareBN = (a: BN, b: BN) => {
+  const res = a.sub(b)
+
+  if (res.gt(ZERO_BN)) return -1
+  if (res.lt(ZERO_BN)) return 1
+  return 0
 }

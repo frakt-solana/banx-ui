@@ -2,6 +2,7 @@ import { FC, useEffect, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { BN } from 'fbonds-core'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
@@ -12,7 +13,7 @@ import { Slider } from '@banx/components/Slider'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import { Modal } from '@banx/components/modals/BaseModal'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { useMarketOffers } from '@banx/pages/nftLending/LendPage'
 import { useModal } from '@banx/store/common'
@@ -50,7 +51,7 @@ import { useSelectedLoans } from '../../loansState'
 import styles from './ActionsCell.module.less'
 
 interface RefinanceModalProps {
-  loan: core.Loan
+  loan: coreNew.Loan
 }
 
 export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
@@ -63,7 +64,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
   const { tokenType } = useTokenType()
 
   const { offers, updateOrAddOffer, isLoading } = useMarketOffers({
-    marketPubkey: fraktBond.hadoMarket,
+    marketPubkey: fraktBond.hadoMarket?.toBase58(),
   })
 
   const bestOffer = useMemo(() => {
@@ -83,7 +84,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
 
   const initialCurrentSpotPrice = useMemo(() => {
     if (!bestOffer) return 0
-    return bestOffer.currentSpotPrice
+    return bestOffer.currentSpotPrice.toNumber()
   }, [bestOffer])
 
   useEffect(() => {
@@ -103,7 +104,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
     setCurrentSpotPrice(Math.max(Math.floor((initialCurrentSpotPrice * percentValue) / 100), 1000))
   }
 
-  const currentLoanDebt = calculateLoanRepayValue(loan)
+  const currentLoanDebt = calculateLoanRepayValue(loan).toNumber()
   const currentLoanBorrowedAmount = calculateBorrowedAmount(loan).toNumber()
   const currentApr = bondTradeTransaction.amountOfBonds
 
@@ -114,7 +115,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
   const newLoanDebt = currentSpotPrice
 
   const newApr = calculateApr({
-    loanValue: newLoanBorrowedAmount,
+    loanValue: new BN(newLoanBorrowedAmount),
     collectionFloor: nft.collectionFloor,
     marketPubkey: fraktBond.hadoMarket,
   })
@@ -133,7 +134,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
       )
       .thru((offers) =>
         findSuitableOffer({
-          loanValue: currentSpotPrice,
+          loanValue: new BN(currentSpotPrice),
           offers,
         }),
       )
@@ -225,7 +226,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
             title="Current loan"
             borrowedAmount={currentLoanBorrowedAmount}
             debt={currentLoanDebt}
-            apr={currentApr}
+            apr={currentApr.toNumber()}
             className={styles.currentLoanInfo}
             faded
           />
@@ -233,7 +234,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
             title="New loan"
             borrowedAmount={newLoanBorrowedAmount}
             debt={newLoanDebt}
-            apr={newApr}
+            apr={newApr.toNumber()}
             className={styles.newLoanInfo}
           />
 

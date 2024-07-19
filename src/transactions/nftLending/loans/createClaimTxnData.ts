@@ -1,7 +1,6 @@
 import { web3 } from 'fbonds-core'
-import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
+import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
-  BondAndTransactionOptimistic,
   claimCnftPerpetualLoanCanopy,
   claimPerpetualLoanv2,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
@@ -13,14 +12,14 @@ import {
 } from 'solana-transactions-executor'
 
 import { helius } from '@banx/api/common'
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 
 import { fetchRuleset, parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
 export type CreateClaimTxnDataParams = {
-  loan: core.Loan
+  loan: coreNew.Loan
 }
 
 type CreateClaimTxnData = (
@@ -36,7 +35,11 @@ export const createClaimTxnData: CreateClaimTxnData = async (params, walletAndCo
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
 
   if (loan.nft.compression) {
-    const { instructions, signers, optimisticResult } = await claimCnftPerpetualLoanCanopy({
+    const {
+      instructions,
+      signers,
+      accounts: accountsCollection,
+    } = await claimCnftPerpetualLoanCanopy({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
@@ -46,21 +49,14 @@ export const createClaimTxnData: CreateClaimTxnData = async (params, walletAndCo
         bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
       },
       args: {
-        proof: await helius.getHeliusAssetProof({ assetId: loan.nft.mint, connection }),
+        proof: await helius.getHeliusAssetProof({ assetId: loan.nft.mint.toBase58(), connection }),
         cnftParams: loan.nft.compression,
-        optimistic: {
-          fraktBond,
-          bondTradeTransaction,
-        } as BondAndTransactionOptimistic,
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
     })
 
-    const accounts = [
-      new web3.PublicKey(optimisticResult.fraktBond.publicKey),
-      new web3.PublicKey(optimisticResult.bondTradeTransaction.publicKey),
-    ]
+    const accounts = [accountsCollection['fraktBond'], accountsCollection['bondTradeTransaction']]
 
     return {
       params,
@@ -70,7 +66,11 @@ export const createClaimTxnData: CreateClaimTxnData = async (params, walletAndCo
       lookupTables,
     }
   } else {
-    const { instructions, signers, optimisticResult } = await claimPerpetualLoanv2({
+    const {
+      instructions,
+      signers,
+      accounts: accountsCollection,
+    } = await claimPerpetualLoanv2({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
@@ -78,31 +78,24 @@ export const createClaimTxnData: CreateClaimTxnData = async (params, walletAndCo
         collateralTokenMint: new web3.PublicKey(fraktBond.fbondTokenMint),
         collateralOwner: new web3.PublicKey(fraktBond.fbondIssuer),
         ruleSet: await fetchRuleset({
-          nftMint: loan.nft.mint,
+          nftMint: loan.nft.mint.toBase58(),
           connection,
-          marketPubkey: fraktBond.hadoMarket,
+          marketPubkey: fraktBond.hadoMarket?.toBase58(),
         }),
         bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
         userPubkey: wallet.publicKey,
         banxStake: new web3.PublicKey(
-          fraktBond.banxStake !== EMPTY_PUBKEY.toBase58()
+          !fraktBond.banxStake.equals(web3.PublicKey.default)
             ? fraktBond.banxStake
             : fraktBond.fraktMarket,
         ),
         subscriptionsAndAdventures: [],
       },
-      optimistic: {
-        fraktBond,
-        bondTradeTransaction,
-      } as BondAndTransactionOptimistic,
       connection,
       sendTxn: sendTxnPlaceHolder,
     })
 
-    const accounts = [
-      new web3.PublicKey(optimisticResult.fraktBond.publicKey),
-      new web3.PublicKey(optimisticResult.bondTradeTransaction.publicKey),
-    ]
+    const accounts = [accountsCollection['fraktBond'], accountsCollection['bondTradeTransaction']]
 
     return {
       params,

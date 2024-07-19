@@ -11,18 +11,18 @@ import {
 } from '@banx/components/PageHeader'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { calcWeeklyFeeWithRepayFee, calculateLoanRepayValue } from '@banx/utils'
 
 interface LoansHeaderProps {
-  loans: core.Loan[]
+  loans: coreNew.Loan[]
 }
 
 const LoansHeader: FC<LoansHeaderProps> = ({ loans }) => {
   const numberOfLoans = loans.length
-  const totalBorrowed = sumBy(loans, (loan) => loan.fraktBond.borrowedAmount)
-  const totalDebt = sumBy(loans, calculateLoanRepayValue)
-  const totalWeeklyFee = sumBy(loans, calcWeeklyFeeWithRepayFee)
+  const totalBorrowed = sumBy(loans, (loan) => loan.fraktBond.borrowedAmount.toNumber())
+  const totalDebt = sumBy(loans, (loan) => calculateLoanRepayValue(loan).toNumber())
+  const totalWeeklyFee = sumBy(loans, (loan) => calcWeeklyFeeWithRepayFee(loan).toNumber())
 
   return (
     <PageHeaderBackdrop

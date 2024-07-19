@@ -1,10 +1,10 @@
 import { WalletContextState } from '@solana/wallet-adapter-react'
-import { web3 } from 'fbonds-core'
+import { BN, web3 } from 'fbonds-core'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, groupBy, sumBy, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { LoansOptimisticStore, OffersOptimisticStore } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -94,7 +94,7 @@ export const executeBorrow = async (props: {
             const { bondOffer, bondTradeTransaction, fraktBond } =
               parseBorrowSimulatedAccounts(accountInfoByPubkey)
 
-            const loanAndOffer: { loan: core.Loan; offer: core.Offer } = {
+            const loanAndOffer: { loan: coreNew.Loan; offer: coreNew.Offer } = {
               loan: {
                 publicKey: fraktBond.publicKey,
                 fraktBond: fraktBond,
@@ -152,7 +152,7 @@ export const executeBorrow = async (props: {
 
 export const makeCreateTxnsDataParams = (
   nfts: TableNftData[],
-  rawOffers: Record<string, core.Offer[]>,
+  rawOffers: Record<string, coreNew.Offer[]>,
   tokenType: LendingTokenType,
 ): CreateBorrowTxnDataParams[] => {
   const nftsByMarket = groupBy(nfts, ({ nft }) => nft.loan.marketPubkey)
@@ -173,13 +173,14 @@ export const makeCreateTxnsDataParams = (
         }))
 
         //? Calc total loanValue for every offer
-        const loanValueSumByOffer: Record<string, number> = chain(nftWithOffer)
+        const loanValueSumByOffer: Record<string, BN> = chain(nftWithOffer)
           .groupBy(({ offer }) => offer.publicKey)
           .entries()
           .map(([offerPubkey, ixnParams]) => [
             offerPubkey,
-            sumBy(ixnParams, ({ nft }) => nft.loanValue),
+            sumBy(ixnParams, ({ nft }) => nft.loanValue.toNumber()),
           ])
+          .map(([offerPubkey, loanValue]) => [offerPubkey, new BN(loanValue)])
           .fromPairs()
           .value()
 
@@ -188,7 +189,7 @@ export const makeCreateTxnsDataParams = (
           offer,
           optimizeIntoReserves: offerNeedsReservesOptimizationOnBorrow(
             offer,
-            loanValueSumByOffer[offer.publicKey],
+            loanValueSumByOffer[offer.publicKey.toBase58()],
           ),
         }))
       })

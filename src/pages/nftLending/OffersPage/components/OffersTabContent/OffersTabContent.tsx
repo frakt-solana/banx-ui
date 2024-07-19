@@ -34,7 +34,7 @@ const OffersTabContent = () => {
 
           <div className={styles.cardsList}>
             {offersToDisplay.map((offer) => (
-              <OfferCard key={offer.offer.publicKey} offer={offer} />
+              <OfferCard key={offer.offer.publicKey.toBase58()} offer={offer} />
             ))}
           </div>
         </>

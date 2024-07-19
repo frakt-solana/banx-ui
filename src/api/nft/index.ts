@@ -6,3 +6,5 @@ export * from './core'
 
 export * as stats from './stats'
 export * from './stats'
+
+export * as coreNew from './coreNew'

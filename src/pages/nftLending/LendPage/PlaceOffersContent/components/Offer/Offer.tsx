@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
+import { BN, web3 } from 'fbonds-core'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Button } from '@banx/components/Buttons'
@@ -18,7 +18,7 @@ import styles from './Offer.module.less'
 interface OfferProps {
   offer: SyntheticOffer
   editOffer: () => void
-  collectionFloor: number
+  collectionFloor: BN
 }
 
 const Offer: FC<OfferProps> = ({ editOffer, offer, collectionFloor }) => {
@@ -34,8 +34,8 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, collectionFloor }) => {
   const { connected, publicKey } = useWallet()
   const { tokenType } = useTokenType()
 
-  const isOwnOffer = assetReceiver === publicKey?.toBase58()
-  const isNewOffer = connected && offerPubkey === PUBKEY_PLACEHOLDER
+  const isOwnOffer = assetReceiver.toBase58() === publicKey?.toBase58()
+  const isNewOffer = connected && offerPubkey.equals(web3.PublicKey.default)
   const showEditOfferButton = isOwnOffer && !isNewOffer
 
   const commonHighlightClassNames = {
@@ -45,7 +45,7 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, collectionFloor }) => {
   }
 
   const displayOfferValue = getDisplayOfferRange(offer, tokenType)
-  const maxDynamicApr = calculateApr({ loanValue, collectionFloor, marketPubkey }) / 100
+  const maxDynamicApr = calculateApr({ loanValue, collectionFloor, marketPubkey }).toNumber() / 100
 
   const tokenUnit = getTokenUnit(tokenType)
 
@@ -65,7 +65,7 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, collectionFloor }) => {
           {tokenUnit}
         </p>
         <p className={styles.value}>{createPercentValueJSX(maxDynamicApr)}</p>
-        <p className={styles.value}>{loansAmount}</p>
+        <p className={styles.value}>{loansAmount.toNumber()}</p>
       </div>
 
       {showEditOfferButton && <EditOfferButton onClick={editOffer} />}
@@ -94,9 +94,9 @@ const EditOfferButton: FC<{ onClick: () => void }> = ({ onClick }) => (
 const getDisplayOfferRange = (offer: SyntheticOffer, tokenType: LendingTokenType) => {
   const { loanValue, loansAmount, deltaValue } = offer
 
-  const minDeltaValue = loanValue - (loansAmount - 1) * deltaValue
+  const minDeltaValue = loanValue.toNumber() - (loansAmount.toNumber() - 1) * deltaValue.toNumber()
 
-  const formattedLoanValue = formatValueByTokenType(loanValue, tokenType)
+  const formattedLoanValue = formatValueByTokenType(loanValue.toNumber(), tokenType)
   const formattedMinLoanValue = formatValueByTokenType(minDeltaValue, tokenType)
 
   const displayOfferRange = deltaValue

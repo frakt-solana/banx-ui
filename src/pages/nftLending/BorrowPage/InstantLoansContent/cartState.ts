@@ -2,7 +2,7 @@ import produce from 'immer'
 import { groupBy, isEmpty } from 'lodash'
 import { create } from 'zustand'
 
-import { SimpleOffer } from '@banx/utils'
+import { SimpleOffer, sortDescCompareBN } from '@banx/utils'
 
 import { SimpleOffersByMarket } from './types'
 
@@ -22,7 +22,7 @@ export interface CartState {
   resetCart: () => void
 }
 
-const offersSorter = (a: SimpleOffer, b: SimpleOffer) => b.loanValue - a.loanValue
+const offersSorter = (a: SimpleOffer, b: SimpleOffer) => sortDescCompareBN(a.loanValue, b.loanValue)
 
 export const useCartState = create<CartState>((set, get) => ({
   offerByMint: {},
@@ -47,7 +47,9 @@ export const useCartState = create<CartState>((set, get) => ({
         const { hadoMarket: marketPubkey } = offer
         state.offersByMarket = {
           ...state.offersByMarket,
-          [marketPubkey]: state.offersByMarket[marketPubkey].filter(({ id }) => id !== offer.id),
+          [marketPubkey.toBase58()]: state.offersByMarket[marketPubkey.toBase58()].filter(
+            ({ id }) => id !== offer.id,
+          ),
         }
       }),
     )
@@ -67,7 +69,7 @@ export const useCartState = create<CartState>((set, get) => ({
         //? Find worstOffer with same market. If order of removable nft is better, then swap is needed
         const allOffers = Object.values(state.offerByMint).flat()
         const allOffersWithSameMarketSorted = allOffers
-          .filter((offer) => offer.hadoMarket === marketPubkey)
+          .filter((offer) => offer.hadoMarket.equals(marketPubkey))
           .sort(offersSorter)
         const worstOfferWithSameMarket = allOffersWithSameMarketSorted.at(-1)
 
@@ -79,7 +81,7 @@ export const useCartState = create<CartState>((set, get) => ({
           const nftMintWithWorstOffer =
             Object.entries(state.offerByMint).find(
               ([, offer]) =>
-                offer.publicKey === worstOfferWithSameMarket.publicKey &&
+                offer.publicKey.equals(worstOfferWithSameMarket.publicKey) &&
                 offer.id === worstOfferWithSameMarket.id,
             )?.[0] || ''
 
@@ -88,15 +90,19 @@ export const useCartState = create<CartState>((set, get) => ({
           //? Put worst order back to offersByMarket
           state.offersByMarket = {
             ...state.offersByMarket,
-            [marketPubkey]: [...state.offersByMarket[marketPubkey], worstOfferWithSameMarket].sort(
-              offersSorter,
-            ),
+            [marketPubkey.toBase58()]: [
+              ...state.offersByMarket[marketPubkey.toBase58()],
+              worstOfferWithSameMarket,
+            ].sort(offersSorter),
           }
         } else {
           //? Put offer from CartNft back to offersByMarket
           state.offersByMarket = {
             ...state.offersByMarket,
-            [marketPubkey]: [...state.offersByMarket[marketPubkey], offerInCart].sort(offersSorter),
+            [marketPubkey.toBase58()]: [
+              ...state.offersByMarket[marketPubkey.toBase58()],
+              offerInCart,
+            ].sort(offersSorter),
           }
         }
       }),
@@ -132,7 +138,7 @@ export const useCartState = create<CartState>((set, get) => ({
           })
           .flat()
           .slice(0, amount)
-          .sort(([, offerA], [, offerB]) => offerB.loanValue - offerA.loanValue)
+          .sort(([, offerA], [, offerB]) => offersSorter(offerA, offerB))
 
         const nextOffersByMarket = Object.fromEntries(
           Object.entries(state.offersByMarket).map(([marketPubkey, offers]) => {

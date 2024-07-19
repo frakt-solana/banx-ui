@@ -1,10 +1,13 @@
-import { core } from '@banx/api/nft'
+import { BN } from 'fbonds-core'
+
+import { coreNew } from '@banx/api/nft'
 import { WEEKS_IN_YEAR } from '@banx/constants'
 import { calcSyntheticLoanValue } from '@banx/store/nft'
+import { ZERO_BN } from '@banx/utils'
 
 interface CalcOfferSizeProps {
-  initialOffer: core.Offer | undefined
-  updatedOffer: core.Offer | undefined
+  initialOffer: coreNew.Offer | undefined
+  updatedOffer: coreNew.Offer | undefined
   hasFormChanges: boolean
 }
 
@@ -12,19 +15,19 @@ export const calcOfferSize = ({
   initialOffer,
   updatedOffer,
   hasFormChanges,
-}: CalcOfferSizeProps) => {
+}: CalcOfferSizeProps): BN => {
   const {
-    fundsSolOrTokenBalance: updatedFundsSolOrTokenBalance = 0,
-    bidSettlement: updatedBidSettlement = 0,
+    fundsSolOrTokenBalance: updatedFundsSolOrTokenBalance = ZERO_BN,
+    bidSettlement: updatedBidSettlement = ZERO_BN,
   } = updatedOffer || {}
 
   const {
-    fundsSolOrTokenBalance: initialFundsSolOrTokenBalance = 0,
-    bidSettlement: initialBidSettlement = 0,
+    fundsSolOrTokenBalance: initialFundsSolOrTokenBalance = ZERO_BN,
+    bidSettlement: initialBidSettlement = ZERO_BN,
   } = initialOffer || {}
 
-  const updatedOfferSize = updatedFundsSolOrTokenBalance + updatedBidSettlement
-  const initialOfferSize = initialFundsSolOrTokenBalance + initialBidSettlement
+  const updatedOfferSize = updatedFundsSolOrTokenBalance.add(updatedBidSettlement)
+  const initialOfferSize = initialFundsSolOrTokenBalance.add(initialBidSettlement)
 
   return hasFormChanges ? updatedOfferSize : initialOfferSize
 }
@@ -40,22 +43,22 @@ export const calcMaxLtv = ({
   collectionFloor,
   hasFormChanges,
 }: {
-  initialOffer: core.Offer | undefined
-  updatedOffer: core.Offer | undefined
+  initialOffer: coreNew.Offer | undefined
+  updatedOffer: coreNew.Offer | undefined
   collectionFloor: number
   hasFormChanges: boolean
 }) => {
   //? Calculate initial LTV based on the best offer in the pool
-  const bestLoanValue = initialOffer ? calcSyntheticLoanValue(initialOffer) : 0
-  const initialCurrentLtv = calcLtv(bestLoanValue, collectionFloor)
+  const bestLoanValue = initialOffer ? calcSyntheticLoanValue(initialOffer) : ZERO_BN
+  const initialCurrentLtv = calcLtv(bestLoanValue.toNumber(), collectionFloor)
 
   //? Calculate initial maximum LTV when the best offer in the pool was created
-  const initialMaxLoanValue = initialOffer?.validation.loanToValueFilter || 0
-  const initialMaxLtv = calcLtv(initialMaxLoanValue, collectionFloor)
+  const initialMaxLoanValue = initialOffer?.validation.loanToValueFilter || ZERO_BN
+  const initialMaxLtv = calcLtv(initialMaxLoanValue.toNumber(), collectionFloor)
 
   //? Calculate updated LTV based on the best offer in the pool when form has changes
-  const updatedBestLoanValue = updatedOffer ? calcSyntheticLoanValue(updatedOffer) : 0
-  const updatedCurrentLtv = calcLtv(updatedBestLoanValue, collectionFloor) || 0
+  const updatedBestLoanValue = updatedOffer ? calcSyntheticLoanValue(updatedOffer) : ZERO_BN
+  const updatedCurrentLtv = calcLtv(updatedBestLoanValue.toNumber(), collectionFloor) || 0
 
   const currentLtv = initialOffer && !hasFormChanges ? initialCurrentLtv : updatedCurrentLtv
 

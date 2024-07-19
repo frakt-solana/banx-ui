@@ -18,8 +18,8 @@ export const useOfferFormController = (syntheticOffer: SyntheticOffer) => {
 
   const initialValues = useMemo(() => {
     return {
-      deltaValue: formatNumber(syntheticDeltaValue / decimals),
-      loanValue: formatNumber(syntheticLoanValue / decimals),
+      deltaValue: formatNumber(syntheticDeltaValue.toNumber() / decimals),
+      loanValue: formatNumber(syntheticLoanValue.toNumber() / decimals),
       loansAmount: syntheticOffer.isEdit ? String(syntheticLoansAmount) : '1',
     }
   }, [

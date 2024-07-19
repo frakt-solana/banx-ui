@@ -5,7 +5,7 @@ import classNames from 'classnames'
 import { Button } from '@banx/components/Buttons'
 import PlaceOfferSection from '@banx/components/PlaceOfferSection'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { Pencil } from '@banx/icons'
 import { convertToSynthetic, useSyntheticOffers } from '@banx/store/nft'
 
@@ -14,7 +14,7 @@ import { AdditionalOfferOverview, MainOfferOverview } from './components'
 import styles from './OfferCard.module.less'
 
 interface OfferCardProps {
-  offer: core.UserOffer
+  offer: coreNew.UserOffer
 }
 
 const OfferCard: FC<OfferCardProps> = ({ offer }) => {
@@ -48,8 +48,8 @@ const OfferCard: FC<OfferCardProps> = ({ offer }) => {
       {isOpen && (
         <div className={styles.placeOfferContent}>
           <PlaceOfferSection
-            offerPubkey={offer.offer.publicKey}
-            marketPubkey={offer.offer.hadoMarket}
+            offerPubkey={offer.offer.publicKey.toBase58()}
+            marketPubkey={offer.offer.hadoMarket.toBase58()}
           />
         </div>
       )}

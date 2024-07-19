@@ -1,8 +1,9 @@
 import { useEffect, useMemo } from 'react'
 
+import { BN } from 'bn.js'
 import { chain } from 'lodash'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { useWalletBalance } from '@banx/hooks'
 import { SyntheticOffer, useTokenType } from '@banx/store/nft'
 import { convertOffersToSimple, getTokenDecimals } from '@banx/utils'
@@ -21,9 +22,9 @@ import { useOfferTransactions } from './useOfferTransactions'
 import { useSyntheticOffer } from './useSyntheticOffer'
 
 export interface PlaceOfferParams {
-  market: core.MarketPreview | undefined
-  optimisticOffer: core.Offer | undefined
-  updatedOffer: core.Offer | undefined
+  market: coreNew.MarketPreview | undefined
+  optimisticOffer: coreNew.Offer | undefined
+  updatedOffer: coreNew.Offer | undefined
   syntheticOffer: SyntheticOffer
 
   setOfferPubkey?: (offerPubkey: string) => void
@@ -96,7 +97,12 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
 
   useEffect(() => {
     if (!syntheticOffer) return
-    const newSyntheticOffer = { ...syntheticOffer, deltaValue, loanValue, loansAmount }
+    const newSyntheticOffer = {
+      ...syntheticOffer,
+      deltaValue: new BN(deltaValue),
+      loanValue: new BN(loanValue),
+      loansAmount: new BN(loansAmount),
+    }
 
     setSyntheticOffer(newSyntheticOffer)
   }, [syntheticOffer, setSyntheticOffer, deltaValue, loanValue, loansAmount])
@@ -113,17 +119,29 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
   })
 
   const offerSize = useMemo(() => {
-    return calcOfferSize({ syntheticOffer, loanValue, loansAmount, deltaValue, tokenType })
+    return calcOfferSize({
+      syntheticOffer,
+      loanValue: new BN(loanValue),
+      loansAmount: new BN(loansAmount),
+      deltaValue: new BN(deltaValue),
+      tokenType,
+    })
   }, [syntheticOffer, loanValue, loansAmount, deltaValue, tokenType])
 
   const updatedOffer = useMemo(() => {
-    return getUpdatedBondOffer({ syntheticOffer, loanValue, loansAmount, deltaValue, tokenType })
+    return getUpdatedBondOffer({
+      syntheticOffer,
+      loanValue: new BN(loanValue),
+      loansAmount: new BN(loansAmount),
+      deltaValue: new BN(deltaValue),
+      tokenType,
+    })
   }, [syntheticOffer, loanValue, loansAmount, deltaValue, tokenType])
 
   const offerErrorMessage = getErrorMessage({
     syntheticOffer,
     walletBalance,
-    offerSize,
+    offerSize: offerSize.toNumber(),
     loanValue,
     loansAmount,
     deltaValue,
@@ -148,7 +166,13 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
 
     if (!offer) return []
 
-    const offerToUpdate = { syntheticOffer, loanValue, deltaValue, loansAmount, tokenType }
+    const offerToUpdate = {
+      syntheticOffer,
+      loanValue: new BN(loanValue),
+      deltaValue: new BN(deltaValue),
+      loansAmount: new BN(loansAmount),
+      tokenType,
+    }
     const offerToUse = hasFormChanges ? getUpdatedBondOffer(offerToUpdate) : offer
 
     const loansToMarks = lenderLoans.map(convertLoanToMark)
@@ -180,7 +204,7 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
     loanValue: loanValueString,
     loansAmount: loansAmountString,
     deltaValue: deltaValueString,
-    offerSize,
+    offerSize: offerSize.toNumber(),
 
     onDeltaValueChange,
     onLoanValueChange,

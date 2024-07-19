@@ -8,7 +8,7 @@ import {
   WalletAndConnection,
 } from 'solana-transactions-executor'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
 // import { getCloseBanxSolATAsInstructions } from '@banx/transactions/banxSol'
@@ -18,7 +18,7 @@ import { parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
 export type CreateRemoveOfferTxnDataParams = {
-  offer: core.Offer
+  offer: coreNew.Offer
   tokenType: LendingTokenType
 }
 
@@ -41,9 +41,6 @@ export const createRemoveOfferTxnData: CreateRemoveOfferTxnData = async (
     },
     args: {
       lendingTokenType: tokenType,
-    },
-    optimistic: {
-      bondOffer: offer,
     },
     connection: walletAndConnection.connection,
     sendTxn: sendTxnPlaceHolder,

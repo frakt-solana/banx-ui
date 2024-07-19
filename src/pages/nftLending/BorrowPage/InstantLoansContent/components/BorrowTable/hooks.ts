@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { BN } from 'fbonds-core'
 import { chain, filter, first, groupBy, includes, isEmpty, map, orderBy } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
@@ -12,7 +13,7 @@ import {
   createLoanSubscribeNotificationsTitle,
 } from '@banx/components/modals'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { useBorrowBonkRewardsAvailability } from '@banx/hooks'
 import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
@@ -34,8 +35,8 @@ import { TableNftData } from './types'
 import styles from './BorrowTable.module.less'
 
 export interface UseBorrowTableProps {
-  nfts: core.BorrowNft[]
-  rawOffers: Record<string, core.Offer[]>
+  nfts: coreNew.BorrowNft[]
+  rawOffers: Record<string, coreNew.Offer[]>
   maxLoanValueByMarket: Record<string, number>
   goToRequestLoanTab: () => void
 }
@@ -132,7 +133,7 @@ export const useBorrowTable = ({
   }
 
   const borrowAll = async () => {
-    const selectedNfts = tableNftsData.filter(({ mint }) => !!offerByMint[mint])
+    const selectedNfts = tableNftsData.filter(({ mint }) => !!offerByMint[mint.toBase58()])
     const createTxnsDataParams = makeCreateTxnsDataParams(selectedNfts, rawOffers, tokenType)
 
     await executeBorrow({
@@ -151,15 +152,15 @@ export const useBorrowTable = ({
 
   const onNftSelect = useCallback(
     (nft: TableNftData) => {
-      const isInCart = !!findOfferInCart({ mint: nft.mint })
+      const isInCart = !!findOfferInCart({ mint: nft.mint.toBase58() })
 
       if (isInCart) {
-        return removeNft({ mint: nft.mint })
+        return removeNft({ mint: nft.mint.toBase58() })
       }
 
-      const bestOffer = findBestOffer({ marketPubkey: nft.nft.loan.marketPubkey })
+      const bestOffer = findBestOffer({ marketPubkey: nft.nft.loan.marketPubkey.toBase58() })
       if (bestOffer) {
-        addNft({ mint: nft.mint, offer: bestOffer })
+        addNft({ mint: nft.mint.toBase58(), offer: bestOffer })
       }
     },
     [addNft, findBestOffer, findOfferInCart, removeNft],
@@ -187,7 +188,7 @@ export const useBorrowTable = ({
 
   const nftsInCart = useMemo(() => {
     const mints = Object.keys(offerByMint)
-    return tableNftsData.filter(({ mint }) => mints.includes(mint))
+    return tableNftsData.filter(({ mint }) => mints.includes(mint.toBase58()))
   }, [offerByMint, tableNftsData])
 
   const maxBorrowAmount = useMemo(() => {
@@ -214,8 +215,8 @@ export const useBorrowTable = ({
   const onSelectNftsAmount = useCallback(
     (amount = 0) => {
       const mintAndMarketArr: Array<[string, string]> = sortedNfts.map(({ mint, nft }) => [
-        mint,
-        nft.loan.marketPubkey,
+        mint.toBase58(),
+        nft.loan.marketPubkey.toBase58(),
       ])
 
       addNfts({ mintAndMarketArr, amount })
@@ -295,7 +296,7 @@ export enum SortField {
   FEE = 'weeklyFee',
 }
 
-type SortValueGetter = (nft: TableNftData) => number
+type SortValueGetter = (nft: TableNftData) => BN
 
 const SORT_OPTIONS: SortOption<SortField>[] = [
   { label: 'Borrow', value: [SortField.BORROW, 'desc'] },

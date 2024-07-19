@@ -13,11 +13,12 @@ import {
 import Timer from '@banx/components/Timer'
 import Tooltip from '@banx/components/Tooltip'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { Coin, Snowflake } from '@banx/icons'
 import { isLoanAbleToTerminate } from '@banx/pages/nftLending/OffersPage'
 import {
   HealthColorIncreasing,
+  ZERO_BN,
   calculateClaimValue,
   calculateFreezeExpiredAt,
   calculateRepaymentCallLenderReceivesAmount,
@@ -34,7 +35,7 @@ import styles from './LoansTable.module.less'
 
 interface GetTableColumnsProps {
   findLoanInSelection: (loanPubkey: string) => LoanOptimistic | null
-  toggleLoanInSelection: (loan: core.Loan) => void
+  toggleLoanInSelection: (loan: coreNew.Loan) => void
   onSelectAll: () => void
 
   hasSelectedLoans: boolean
@@ -48,7 +49,7 @@ export const getTableColumns = ({
   hasSelectedLoans,
   isCardView,
 }: GetTableColumnsProps) => {
-  const columns: ColumnType<core.Loan>[] = [
+  const columns: ColumnType<coreNew.Loan>[] = [
     {
       key: 'collateral',
       title: (
@@ -61,11 +62,11 @@ export const getTableColumns = ({
         const { partnerPoints = 0, playerPoints = 0, name, imageUrl } = loan.nft.meta
 
         const canSelect = isLoanAbleToTerminate(loan) && !isLoanListed(loan)
-        const selected = canSelect ? !!findLoanInSelection(loan.publicKey) : undefined
+        const selected = canSelect ? !!findLoanInSelection(loan.publicKey.toBase58()) : undefined
 
         return (
           <NftInfoCell
-            key={loan.publicKey}
+            key={loan.publicKey.toBase58()}
             nftName={name}
             nftImage={imageUrl}
             selected={selected}
@@ -96,7 +97,7 @@ export const getTableColumns = ({
       key: 'ltv',
       title: <HeaderCell label="Ltv" />,
       render: (loan) => {
-        const ltv = (calculateClaimValue(loan) / loan.nft.collectionFloor) * 100
+        const ltv = (calculateClaimValue(loan) / loan.nft.collectionFloor.toNumber()) * 100
         return (
           <HorizontalCell
             textColor={getColorByPercent(ltv, HealthColorIncreasing)}
@@ -113,8 +114,8 @@ export const getTableColumns = ({
           tooltipText="Repayments returned to pending offer if open, or wallet if closed"
         />
       ),
-      render: ({ totalRepaidAmount = 0 }) => (
-        <HorizontalCell value={<DisplayValue value={totalRepaidAmount} />} />
+      render: ({ totalRepaidAmount = ZERO_BN }) => (
+        <HorizontalCell value={<DisplayValue value={totalRepaidAmount.toNumber()} />} />
       ),
     },
     {
@@ -122,7 +123,7 @@ export const getTableColumns = ({
       title: <HeaderCell label="APR" />,
       render: (loan) => (
         <HorizontalCell
-          value={createPercentValueJSX(loan.bondTradeTransaction.amountOfBonds / 100)}
+          value={createPercentValueJSX(loan.bondTradeTransaction.amountOfBonds.toNumber() / 100)}
           isHighlighted
         />
       ),
@@ -147,7 +148,7 @@ export const getTableColumns = ({
   return columns
 }
 
-const createRightContentJSX = (loan: core.Loan) => {
+const createRightContentJSX = (loan: coreNew.Loan) => {
   const repaymentCallLenderReceives = calculateRepaymentCallLenderReceivesAmount(loan)
   const freezeExpiredAt = calculateFreezeExpiredAt(loan)
 
@@ -155,7 +156,7 @@ const createRightContentJSX = (loan: core.Loan) => {
     icon: <Coin />,
     content: (
       <p className={styles.repaymentCallTooltipValue}>
-        <DisplayValue value={repaymentCallLenderReceives} /> requested
+        <DisplayValue value={repaymentCallLenderReceives.toNumber()} /> requested
       </p>
     ),
   })

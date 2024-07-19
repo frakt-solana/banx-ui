@@ -1,9 +1,10 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { BN } from 'fbonds-core'
 import { every, uniqueId } from 'lodash'
 import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { useIsLedger, useModal, usePriorityFees } from '@banx/store/common'
 import { useLoansOptimistic } from '@banx/store/nft'
 import {
@@ -43,7 +44,7 @@ export const useLoansTransactions = () => {
   const { update: updateLoansOptimistic } = useLoansOptimistic()
   const { selection, clear: clearSelection } = useSelectedLoans()
 
-  const repayLoan = async (loan: core.Loan) => {
+  const repayLoan = async (loan: coreNew.Loan) => {
     const loadingSnackbarId = uniqueId()
 
     try {
@@ -83,10 +84,10 @@ export const useLoansTransactions = () => {
                 parseRepayLoanSimulatedAccounts(accountInfoByPubkey)
 
               //TODO Move optimistics creation into a separate function
-              const optimisticLoan: core.Loan = {
+              const optimisticLoan: coreNew.Loan = {
                 publicKey: fraktBond.publicKey,
                 //? Needs to prevent BE data overlap in optimistics logic
-                fraktBond: { ...fraktBond, lastTransactedAt: moment().unix() },
+                fraktBond: { ...fraktBond, lastTransactedAt: new BN(moment().unix()) },
                 bondTradeTransaction: bondTradeTransaction,
                 nft: params.loan.nft,
               }
@@ -111,7 +112,7 @@ export const useLoansTransactions = () => {
     }
   }
 
-  const repayPartialLoan = async (loan: core.Loan, fractionToRepay: number) => {
+  const repayPartialLoan = async (loan: coreNew.Loan, fractionToRepay: number) => {
     const loadingSnackbarId = uniqueId()
 
     const txnParam = { loan, fractionToRepay, priorityFeeLevel: priorityLevel }
@@ -155,10 +156,10 @@ export const useLoansTransactions = () => {
                 parseRepayPartialLoanSimulatedAccounts(accountInfoByPubkey)
 
               //TODO Move optimistics creation into a separate function
-              const optimisticLoan: core.Loan = {
+              const optimisticLoan: coreNew.Loan = {
                 publicKey: fraktBond.publicKey,
                 //? Needs to prevent BE data overlap in optimistics logic
-                fraktBond: { ...fraktBond, lastTransactedAt: moment().unix() },
+                fraktBond: { ...fraktBond, lastTransactedAt: new BN(moment().unix()) },
                 bondTradeTransaction: bondTradeTransaction,
                 nft: params.loan.nft,
               }
@@ -225,10 +226,10 @@ export const useLoansTransactions = () => {
                   parseRepayLoanSimulatedAccounts(accountInfoByPubkey)
 
                 //TODO Move optimistics creation into a separate function
-                const optimisticLoan: core.Loan = {
+                const optimisticLoan: coreNew.Loan = {
                   publicKey: fraktBond.publicKey,
                   //? Needs to prevent BE data overlap in optimistics logic
-                  fraktBond: { ...fraktBond, lastTransactedAt: moment().unix() },
+                  fraktBond: { ...fraktBond, lastTransactedAt: new BN(moment().unix()) },
                   bondTradeTransaction: bondTradeTransaction,
                   nft: params.loan.nft,
                 }
@@ -312,10 +313,10 @@ export const useLoansTransactions = () => {
                   parseRepayPartialLoanSimulatedAccounts(accountInfoByPubkey)
 
                 //TODO Move optimistics creation into a separate function
-                const optimisticLoan: core.Loan = {
+                const optimisticLoan: coreNew.Loan = {
                   publicKey: fraktBond.publicKey,
                   //? Needs to prevent BE data overlap in optimistics logic
-                  fraktBond: { ...fraktBond, lastTransactedAt: moment().unix() },
+                  fraktBond: { ...fraktBond, lastTransactedAt: new BN(moment().unix()) },
                   bondTradeTransaction: bondTradeTransaction,
                   nft: params.loan.nft,
                 }

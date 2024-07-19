@@ -34,10 +34,10 @@ export const RequestLoansContent = () => {
         <div className={styles.marketsList}>
           {data.map((market) => (
             <BorrowCard
-              key={market.marketPubkey}
+              key={market.marketPubkey.toBase58()}
               market={market}
-              onClick={() => onCardClick(market.marketPubkey)}
-              isOpen={visibleMarketPubkey === market.marketPubkey}
+              onClick={() => onCardClick(market.marketPubkey.toBase58())}
+              isOpen={visibleMarketPubkey === market.marketPubkey.toBase58()}
             />
           ))}
           <div ref={fetchMoreTrigger} />

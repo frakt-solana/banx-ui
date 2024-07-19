@@ -1,10 +1,11 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { BN } from 'fbonds-core'
 import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
 import { uniqueId } from 'lodash'
 import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { useIsLedger } from '@banx/store/common'
 import { useLoansRequestsOptimistic } from '@banx/store/nft'
 import {
@@ -32,7 +33,7 @@ export const useRequestLoansTransactions = () => {
   const { update: updateLoansOptimistic } = useLoansRequestsOptimistic()
   const { selection, clear: clearSelection } = useSelectedLoans()
 
-  const delist = async (loan: core.Loan) => {
+  const delist = async (loan: coreNew.Loan) => {
     const loadingSnackbarId = uniqueId()
 
     try {
@@ -79,7 +80,7 @@ export const useRequestLoansTransactions = () => {
                 },
                 fraktBond: {
                   ...loan.fraktBond,
-                  lastTransactedAt: moment().unix(), //? Needs to prevent BE data overlap in optimistics logic
+                  lastTransactedAt: new BN(moment().unix()), //? Needs to prevent BE data overlap in optimistics logic
                 },
               }
 
@@ -133,7 +134,7 @@ export const useRequestLoansTransactions = () => {
               if (wallet.publicKey) {
                 const { loan } = params
 
-                const optimisticLoan = {
+                const optimisticLoan: coreNew.Loan = {
                   ...loan,
                   bondTradeTransaction: {
                     ...loan.bondTradeTransaction,
@@ -142,7 +143,7 @@ export const useRequestLoansTransactions = () => {
                   },
                   fraktBond: {
                     ...loan.fraktBond,
-                    lastTransactedAt: moment().unix(), //? Needs to prevent BE data overlap in optimistics logic
+                    lastTransactedAt: new BN(moment().unix()), //? Needs to prevent BE data overlap in optimistics logic
                   },
                 }
 

@@ -1,3 +1,4 @@
+import { BN } from 'fbonds-core'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { clamp } from 'lodash'
 import moment from 'moment'
@@ -22,7 +23,7 @@ export const calculateSummaryInfo = ({
   const totalRequestedLoanValue = requestedLoanValue * totalNftsToRequest
 
   const upfrontFee =
-    totalRequestedLoanValue - calculateBorrowValueWithProtocolFee(totalRequestedLoanValue)
+    totalRequestedLoanValue - calculateBorrowValueWithProtocolFee(new BN(totalRequestedLoanValue))
 
   const currentTimeUnix = moment().unix()
   const rateBasePoints = parseFloat(inputAprValue) * 100

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { BN } from 'fbonds-core'
 import { chain, uniqueId } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 import { TxnExecutor } from 'solana-transactions-executor'
@@ -13,7 +14,7 @@ import {
   createRequestLoanSubscribeNotificationsTitle,
 } from '@banx/components/modals'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { BONDS, DAYS_IN_YEAR, SECONDS_IN_DAY } from '@banx/constants'
 import { useBorrowNfts } from '@banx/pages/nftLending/BorrowPage/hooks'
 import { LoansTabsNames, useLoansTabs } from '@banx/pages/nftLending/LoansPage'
@@ -47,7 +48,7 @@ import { useSelectedNfts } from '../../nftsState'
 import { DEFAULT_FREEZE_VALUE } from './constants'
 import { calculateSummaryInfo, clampInputValue } from './helpers'
 
-export const useRequestLoansForm = (market: core.MarketPreview) => {
+export const useRequestLoansForm = (market: coreNew.MarketPreview) => {
   const { nfts, isLoading: isLoadingNfts, maxLoanValueByMarket } = useBorrowNfts()
   const { selection: selectedNfts, set: setSelection } = useSelectedNfts()
   const { tokenType } = useTokenType()
@@ -61,7 +62,7 @@ export const useRequestLoansForm = (market: core.MarketPreview) => {
   const tokenDecimals = getTokenDecimals(tokenType)
 
   const filteredNftsByMarket = useMemo(() => {
-    return nfts.filter((nft) => nft.loan.marketPubkey === market.marketPubkey)
+    return nfts.filter((nft) => nft.loan.marketPubkey.equals(market.marketPubkey))
   }, [nfts, market])
 
   const handleNftsSelection = useCallback(
@@ -83,12 +84,12 @@ export const useRequestLoansForm = (market: core.MarketPreview) => {
     if (!connected) return
 
     //? Set the default APR and freeze values
-    const aprValueInPercentStr = (market.marketApr / 100)?.toFixed(0)
+    const aprValueInPercentStr = (market.marketApr.toNumber() / 100)?.toFixed(0)
     setInputAprValue(aprValueInPercentStr)
     setInputFreezeValue(String(DEFAULT_FREEZE_VALUE))
 
     //? Set the default max loan value, if available
-    const maxLoanValue = maxLoanValueByMarket[market.marketPubkey]
+    const maxLoanValue = maxLoanValueByMarket[market.marketPubkey.toBase58()]
     if (!maxLoanValue) return
 
     const convertedValue = convertToHumanNumber(maxLoanValue, tokenType)
@@ -117,7 +118,7 @@ export const useRequestLoansForm = (market: core.MarketPreview) => {
     requestedLoanValue,
     inputAprValue,
     totalNftsToRequest,
-    collectionFloor: market.collectionFloor,
+    collectionFloor: market.collectionFloor.toNumber(),
   })
 
   const aprInputValueIsLow = inputAprValueToNumber < MIN_BORROWER_APR_VALUE
@@ -130,7 +131,7 @@ export const useRequestLoansForm = (market: core.MarketPreview) => {
   //? requestedLoanValue with upfront fee
   const lenderSeesLoanValue =
     requestedLoanValue +
-    (requestedLoanValue - calculateBorrowValueWithProtocolFee(requestedLoanValue))
+    (requestedLoanValue - calculateBorrowValueWithProtocolFee(new BN(requestedLoanValue)))
 
   const lenderSeesAprValue = !aprInputValueIsLow
     ? Math.round(inputAprValueToNumber - BONDS.PROTOCOL_REPAY_FEE / 100)
@@ -167,7 +168,7 @@ export const useRequestLoansForm = (market: core.MarketPreview) => {
 }
 
 const useRequestLoansTransaction = (props: {
-  nfts: core.BorrowNft[]
+  nfts: coreNew.BorrowNft[]
   aprValue: number
   loanValue: number
   freezeValue: number
@@ -252,7 +253,7 @@ const useRequestLoansTransaction = (props: {
           if (confirmed.length) {
             enqueueSnackbar({ message: 'Listings successfully initialized', type: 'success' })
 
-            const loans: core.Loan[] = chain(confirmed)
+            const loans: coreNew.Loan[] = chain(confirmed)
               .map(({ params, accountInfoByPubkey }) => {
                 if (!accountInfoByPubkey) return
                 const { bondTradeTransaction, fraktBond } =

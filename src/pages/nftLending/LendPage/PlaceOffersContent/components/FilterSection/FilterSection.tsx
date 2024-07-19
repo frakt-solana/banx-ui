@@ -7,7 +7,7 @@ import { SearchSelect, SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortDropdown, SortDropdownProps } from '@banx/components/SortDropdown'
 import Tooltip from '@banx/components/Tooltip'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { Fire } from '@banx/icons'
 
 import { SortField } from '../../hooks'
@@ -19,7 +19,7 @@ interface FilterSectionProps<T> {
   sortParams: SortDropdownProps<SortField>
   onToggleHotFilter: () => void
   isHotFilterActive: boolean
-  hotMarkets: core.MarketPreview[]
+  hotMarkets: coreNew.MarketPreview[]
 }
 
 const FilterSection = <T extends object>({

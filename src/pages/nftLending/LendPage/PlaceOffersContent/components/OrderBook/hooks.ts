@@ -1,17 +1,18 @@
 import { useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
+import { web3 } from 'fbonds-core'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { useMarketOffers, useMarketsPreview } from '@banx/pages/nftLending/LendPage/hooks'
 import { SyntheticOffer, convertToSynthetic, useSyntheticOffers } from '@banx/store/nft'
+import { ZERO_BN, sortDescCompareBN } from '@banx/utils'
 
 type UseMarketOrders = (props: { marketPubkey: string; offerPubkey: string }) => {
   offers: SyntheticOffer[]
   isLoading: boolean
   bestOffer: SyntheticOffer
-  market: core.MarketPreview | undefined
+  market: coreNew.MarketPreview | undefined
 }
 
 export const useMarketOrders: UseMarketOrders = ({ marketPubkey, offerPubkey }) => {
@@ -25,17 +26,20 @@ export const useMarketOrders: UseMarketOrders = ({ marketPubkey, offerPubkey }) 
   })
 
   const sortedOffers = useMemo(() => {
-    return [...processedOffers].sort((orderA, orderB) => orderB.loanValue - orderA.loanValue)
+    return [...processedOffers].sort((orderA, orderB) =>
+      sortDescCompareBN(orderA.loanValue, orderB.loanValue),
+    )
   }, [processedOffers])
 
   const bestOffer = useMemo(() => {
     const [firstOffer, secondOffer] = sortedOffers
-    const isFirstOfferEditable = firstOffer?.publicKey === PUBKEY_PLACEHOLDER || firstOffer?.isEdit
+    const isFirstOfferEditable =
+      firstOffer?.publicKey.equals(web3.PublicKey.default) || firstOffer?.isEdit
     return isFirstOfferEditable ? secondOffer : firstOffer
   }, [sortedOffers])
 
   const market = useMemo(() => {
-    return marketsPreview.find((market) => market.marketPubkey === marketPubkey)
+    return marketsPreview.find((market) => market.marketPubkey.toBase58() === marketPubkey)
   }, [marketPubkey, marketsPreview])
 
   return {
@@ -47,7 +51,7 @@ export const useMarketOrders: UseMarketOrders = ({ marketPubkey, offerPubkey }) 
 }
 
 type UseProcessedOffers = (props: {
-  offers: core.Offer[]
+  offers: coreNew.Offer[]
   marketPubkey: string
   editableOfferPubkey: string
 }) => SyntheticOffer[]
@@ -64,12 +68,21 @@ const useProcessedOffers: UseProcessedOffers = ({ marketPubkey, offers, editable
     const offersConvertedToSynthetic = offers.map((offer) => convertToSynthetic(offer))
 
     const processedEditableOffers = offersConvertedToSynthetic
-      .filter((offer) => offer.publicKey !== editableOfferPubkey)
+      .filter((offer) => offer.publicKey.toBase58() !== editableOfferPubkey)
       //? Filter empty offers. Show empty offers if assetReceiver === user
       .filter(
-        (offer) => !(offer.loansAmount === 0 && offer.assetReceiver !== publicKey?.toBase58()),
+        (offer) =>
+          !(
+            offer.loansAmount.eq(ZERO_BN) &&
+            offer.assetReceiver.toBase58() !== publicKey?.toBase58()
+          ),
       )
-      .filter((offer) => !(offer.loanValue === 0 && offer.assetReceiver !== publicKey?.toBase58()))
+      .filter(
+        (offer) =>
+          !(
+            offer.loanValue.eq(ZERO_BN) && offer.assetReceiver.toBase58() !== publicKey?.toBase58()
+          ),
+      )
 
     if (syntheticOffer) {
       processedEditableOffers.push(syntheticOffer)

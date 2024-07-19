@@ -4,7 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 import { chain, maxBy } from 'lodash'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { useTokenType } from '@banx/store/nft'
 
 import { useHiddenNftsMints, useLenderLoansOptimistic } from '.'
@@ -22,7 +22,7 @@ export const useLenderLoans = () => {
 
   const { data: loans, isLoading } = useQuery(
     [USE_LENDER_LOANS_QUERY_KEY, publicKeyString, tokenType],
-    () => core.fetchLenderLoans({ walletPublicKey: publicKeyString, tokenType, getAll: true }),
+    () => coreNew.fetchLenderLoans({ walletPublicKey: publicKeyString, tokenType, getAll: true }),
     {
       enabled: !!publicKeyString,
       refetchOnWindowFocus: false,
@@ -45,12 +45,12 @@ export const useLenderLoans = () => {
       .groupBy('publicKey')
       .map((loans) => maxBy(loans, ({ fraktBond }) => fraktBond.lastTransactedAt))
       .compact()
-      .filter((loan) => !hiddenLoansMints.includes(loan.nft.mint))
+      .filter((loan) => !hiddenLoansMints.includes(loan.nft.mint.toBase58()))
       .value()
   }, [loans, isLoading, walletOptimisticLoans, hiddenLoansMints])
 
-  const updateOrAddLoan = (loan: core.Loan) => {
-    const loanExists = !!findLoan(loan.publicKey, publicKeyString)
+  const updateOrAddLoan = (loan: coreNew.Loan) => {
+    const loanExists = !!findLoan(loan.publicKey.toBase58(), publicKeyString)
     return loanExists ? updateLoans(loan, publicKeyString) : addLoans(loan, publicKeyString)
   }
 

@@ -1,6 +1,6 @@
 import { first, groupBy, map } from 'lodash'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 
 import { useAllLoansRequests } from '../../hooks'
 import { useFilterLoans } from './useFilterLoans'
@@ -52,7 +52,7 @@ export const useInstantLendTable = () => {
 }
 
 type CreateSearchSelectProps = {
-  options: core.Loan[]
+  options: coreNew.Loan[]
   selectedOptions: string[]
   onChange: (option: string[]) => void
 }

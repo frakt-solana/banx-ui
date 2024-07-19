@@ -5,7 +5,7 @@ import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, map, maxBy } from 'lodash'
 import { create } from 'zustand'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import {
   isOfferNewer,
   isOptimisticOfferExpired,
@@ -23,7 +23,7 @@ export const useMarketsPreview = () => {
 
   const { data, isLoading } = useQuery(
     [USE_MARKETS_PREVIEW_QUERY_KEY, tokenType],
-    () => core.fetchMarketsPreview({ tokenType }),
+    () => coreNew.fetchMarketsPreview({ tokenType }),
     {
       staleTime: 5000,
       cacheTime: Infinity,
@@ -43,7 +43,7 @@ export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => 
 
   const { data, isLoading, isFetching, isFetched } = useQuery(
     ['marketPairs', marketPubkey, tokenType],
-    () => core.fetchMarketOffers({ marketPubkey, tokenType }),
+    () => coreNew.fetchMarketOffers({ marketPubkey, tokenType }),
     {
       enabled: !!marketPubkey,
       staleTime: 30 * 1000, //? 30sec
@@ -76,7 +76,7 @@ export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => 
 
   const offers = useMemo(() => {
     const filteredOptimisticOffers = optimisticOffers
-      .filter(({ offer }) => offer.hadoMarket === marketPubkey)
+      .filter(({ offer }) => offer.hadoMarket.toBase58() === marketPubkey)
       .map(({ offer }) => offer)
 
     const combinedOffers = [...filteredOptimisticOffers, ...(data ?? [])]
@@ -90,7 +90,7 @@ export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => 
       .value()
   }, [optimisticOffers, data, marketPubkey])
 
-  const updateOrAddOffer = (offer: core.Offer) => {
+  const updateOrAddOffer = (offer: coreNew.Offer) => {
     updateOffer([offer])
   }
 

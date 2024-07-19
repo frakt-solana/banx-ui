@@ -9,7 +9,7 @@ import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { calcWeightedAverage } from '@banx/utils'
 
 import { calcWeightedApr } from '../LoansActiveTable/helpers'
@@ -19,9 +19,9 @@ import { useRequestLoansTransactions } from './hooks'
 import styles from './RequestLoansTable.module.less'
 
 interface SummaryProps {
-  loans: core.Loan[]
+  loans: coreNew.Loan[]
   selectedLoans: LoanOptimistic[]
-  setSelection: (loans: core.Loan[], walletPublicKey: string) => void
+  setSelection: (loans: coreNew.Loan[], walletPublicKey: string) => void
 }
 
 export const Summary: FC<SummaryProps> = ({
@@ -38,7 +38,7 @@ export const Summary: FC<SummaryProps> = ({
   }, [rawSelectedLoans])
 
   const totalSelectedLoans = selectedLoans.length
-  const totalBorrow = sumBy(selectedLoans, (loan) => loan.fraktBond.borrowedAmount)
+  const totalBorrow = sumBy(selectedLoans, (loan) => loan.fraktBond.borrowedAmount.toNumber())
 
   const weightedLtv = calculateWeightedLtv(selectedLoans)
   const weightedApr = calcWeightedApr(selectedLoans)
@@ -84,11 +84,12 @@ export const Summary: FC<SummaryProps> = ({
   )
 }
 
-const calculateWeightedLtv = (loans: core.Loan[]) => {
-  const totalBorrowArray = map(loans, (loan) => loan.fraktBond.borrowedAmount)
+const calculateWeightedLtv = (loans: coreNew.Loan[]) => {
+  const totalBorrowArray = map(loans, (loan) => loan.fraktBond.borrowedAmount.toNumber())
   const totalLtvArray = map(
     loans,
-    (loan) => (loan.fraktBond.borrowedAmount / loan.nft.collectionFloor) * 100,
+    (loan) =>
+      (loan.fraktBond.borrowedAmount.toNumber() / loan.nft.collectionFloor.toNumber()) * 100,
   )
 
   const weightedLtv = calcWeightedAverage(totalLtvArray, totalBorrowArray)

@@ -6,7 +6,7 @@ import { chain, first, isEmpty } from 'lodash'
 import { MAX_BORROWER_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { NFT_MARKETS_WITH_CUSTOM_APR } from '@banx/constants'
 import { useMarketsPreview } from '@banx/pages/nftLending/LendPage'
 import { createGlobalState } from '@banx/store'
@@ -71,7 +71,7 @@ export const useRequestLoansContent = () => {
 }
 
 interface CreateSearchSelectProps {
-  options: core.MarketPreview[]
+  options: coreNew.MarketPreview[]
   selectedOptions: string[]
   onChange: (option: string[]) => void
 }

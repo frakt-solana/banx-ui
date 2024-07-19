@@ -1,24 +1,26 @@
-import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { BN } from 'fbonds-core'
+import { calculateCurrentInterestSolPureBN } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import moment from 'moment'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import bonkTokenImg from '@banx/assets/BonkToken.png'
 import { BONDS, ONE_WEEK_IN_SECONDS } from '@banx/constants'
-import { enqueueSnackbar } from '@banx/utils'
+import { ZERO_BN, enqueueSnackbar } from '@banx/utils'
 
 import { CartState } from '../../cartState'
+import { TableNftData } from './types'
 
 import styles from './BorrowTable.module.less'
 
-type CalcInterest = (props: { loanValue: number; timeInterval: number; apr: number }) => number
+type CalcInterest = (props: { loanValue: BN; timeInterval: number; apr: BN }) => BN
 export const calcInterest: CalcInterest = ({ loanValue, timeInterval, apr }) => {
   const currentTimeUnix = moment().unix()
 
-  return calculateCurrentInterestSolPure({
+  return calculateCurrentInterestSolPureBN({
     loanValue,
-    startTime: currentTimeUnix - timeInterval,
-    currentTime: currentTimeUnix,
-    rateBasePoints: apr + BONDS.PROTOCOL_REPAY_FEE,
+    startTime: new BN(currentTimeUnix - timeInterval),
+    currentTime: new BN(currentTimeUnix),
+    rateBasePoints: apr.add(BONDS.PROTOCOL_REPAY_FEE_BN),
   })
 }
 
@@ -42,21 +44,23 @@ export const createTableNftData = ({
   maxLoanValueByMarket,
   maxBorrowPercent,
 }: {
-  nfts: core.BorrowNft[]
+  nfts: coreNew.BorrowNft[]
   findOfferInCart: CartState['findOfferInCart']
   findBestOffer: CartState['findBestOffer']
   maxLoanValueByMarket: Record<string, number>
   maxBorrowPercent: number
-}) => {
+}): TableNftData[] => {
   return nfts.map((nft) => {
-    const offer = findOfferInCart({ mint: nft.mint })
+    const offer = findOfferInCart({ mint: nft.mint.toBase58() })
 
     const maxloanValue =
-      offer?.loanValue || findBestOffer({ marketPubkey: nft.loan.marketPubkey })?.loanValue || 0
+      offer?.loanValue ||
+      findBestOffer({ marketPubkey: nft.loan.marketPubkey.toBase58() })?.loanValue ||
+      ZERO_BN
 
     const loanValue = calcAdjustedLoanValueByMaxByMarket({
-      loanValue: maxloanValue,
-      maxLoanValueOnMarket: maxLoanValueByMarket[nft.loan.marketPubkey] || 0,
+      loanValue: maxloanValue.toNumber(),
+      maxLoanValueOnMarket: maxLoanValueByMarket[nft.loan.marketPubkey.toBase58()] || 0,
       maxBorrowPercent,
     })
 
@@ -64,11 +68,11 @@ export const createTableNftData = ({
 
     const interest = calcInterest({
       timeInterval: ONE_WEEK_IN_SECONDS,
-      loanValue: loanValue,
+      loanValue: new BN(loanValue),
       apr: nft.loan.marketApr,
     })
 
-    return { mint: nft.mint, nft, loanValue, selected, interest }
+    return { mint: nft.mint, nft, loanValue: new BN(loanValue), selected, interest }
   })
 }
 

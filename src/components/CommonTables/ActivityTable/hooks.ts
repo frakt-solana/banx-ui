@@ -29,7 +29,9 @@ export const useAllLenderActivity = (marketPubkey: string) => {
   const [currentOption, setCurrentOption] = useState<RBOption>(loanedOption)
 
   const eventType = currentOption.value.split('_')[0]
-  const currentMarket = marketsPreview.find((market) => market.marketPubkey === marketPubkey)
+  const currentMarket = marketsPreview.find(
+    (market) => market.marketPubkey.toBase58() === marketPubkey,
+  )
 
   const fetchData = async (pageParam: number) => {
     const data = await activity.fetchLenderActivity({

@@ -1,27 +1,28 @@
-import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
-import { calculateNextSpotPrice } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { BN, web3 } from 'fbonds-core'
+import { calculateNextSpotPriceBN } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import produce from 'immer'
 import { create } from 'zustand'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
+import { ONE_BN, ZERO_BN } from '@banx/utils'
 
 export interface SyntheticOffer {
   isEdit: boolean //? if offer exits on blochain and in edit mode
-  publicKey: string //? PUBKEY_PLACEHOLDER for offers to create
-  loanValue: number
-  loansAmount: number
-  deltaValue: number
-  assetReceiver: string
-  marketPubkey: string
-  mathCounter: number
+  publicKey: web3.PublicKey //? web3.PublicKey.default for offers to create
+  loanValue: BN
+  loansAmount: BN
+  deltaValue: BN
+  assetReceiver: web3.PublicKey
+  marketPubkey: web3.PublicKey
+  mathCounter: BN
 }
 
 interface SyntheticOffersState {
   offerByMarketPubkey: Record<string, SyntheticOffer>
   findOffer: (marketPubkey: string) => SyntheticOffer | undefined
-  findOfferByPubkey: (offerPubkey: string) => SyntheticOffer | undefined
+  findOfferByPubkey: (offerPubkey: web3.PublicKey) => SyntheticOffer | undefined
   setOffer: (offer: SyntheticOffer) => void
-  removeOffer: (marketPubkey: string) => void
+  removeOffer: (marketPubkey: web3.PublicKey) => void
 }
 
 export const useSyntheticOffers = create<SyntheticOffersState>((set, get) => ({
@@ -36,20 +37,20 @@ export const useSyntheticOffers = create<SyntheticOffersState>((set, get) => ({
   setOffer: (offer) =>
     set(
       produce((state: SyntheticOffersState) => {
-        delete state.offerByMarketPubkey[offer.marketPubkey]
-        state.offerByMarketPubkey[offer.marketPubkey] = offer
+        delete state.offerByMarketPubkey[offer.marketPubkey.toBase58()]
+        state.offerByMarketPubkey[offer.marketPubkey.toBase58()] = offer
       }),
     ),
   removeOffer: (marketPubkey) =>
     set(
       produce((state: SyntheticOffersState) => {
-        delete state.offerByMarketPubkey[marketPubkey]
+        delete state.offerByMarketPubkey[marketPubkey.toBase58()]
       }),
     ),
 }))
 
 type CreateEmptySyntheticOffer = (props: {
-  marketPubkey: string
+  marketPubkey: web3.PublicKey
   walletPubkey: string
   isEdit?: boolean
 }) => SyntheticOffer
@@ -59,16 +60,16 @@ export const createEmptySyntheticOffer: CreateEmptySyntheticOffer = ({
   isEdit = false,
 }) => ({
   isEdit,
-  publicKey: PUBKEY_PLACEHOLDER,
-  loanValue: 0,
-  loansAmount: 0,
-  assetReceiver: walletPubkey,
+  publicKey: web3.PublicKey.default,
+  loanValue: ZERO_BN,
+  loansAmount: ZERO_BN,
+  assetReceiver: new web3.PublicKey(walletPubkey),
   marketPubkey,
-  mathCounter: 0,
-  deltaValue: 0,
+  mathCounter: ZERO_BN,
+  deltaValue: ZERO_BN,
 })
 
-export const convertToSynthetic = (offer: core.Offer, isEdit = false): SyntheticOffer => {
+export const convertToSynthetic = (offer: coreNew.Offer, isEdit = false): SyntheticOffer => {
   const { publicKey, assetReceiver, hadoMarket, mathCounter, bondingCurve, buyOrdersQuantity } =
     offer
 
@@ -76,7 +77,7 @@ export const convertToSynthetic = (offer: core.Offer, isEdit = false): Synthetic
   return {
     isEdit,
     publicKey,
-    loansAmount: loanValue > 0 ? Math.max(buyOrdersQuantity, 1) : 0,
+    loansAmount: loanValue.gt(ZERO_BN) ? BN.max(buyOrdersQuantity, ONE_BN) : ZERO_BN,
     loanValue: loanValue,
     assetReceiver,
     marketPubkey: hadoMarket,
@@ -85,7 +86,7 @@ export const convertToSynthetic = (offer: core.Offer, isEdit = false): Synthetic
   }
 }
 
-export const calcSyntheticLoanValue = (offer: core.Offer): number => {
+export const calcSyntheticLoanValue = (offer: coreNew.Offer): BN => {
   const {
     currentSpotPrice,
     baseSpotPrice,
@@ -96,16 +97,18 @@ export const calcSyntheticLoanValue = (offer: core.Offer): number => {
     buyOrdersQuantity,
   } = offer
 
-  const prevSpotPrice = calculateNextSpotPrice({
+  const prevSpotPrice = calculateNextSpotPriceBN({
     bondingCurveType: bondingCurve.bondingType,
     delta: bondingCurve.delta,
     spotPrice: baseSpotPrice,
-    counter: mathCounter + 2,
+    counter: mathCounter.add(new BN(2)),
   })
 
-  return Math.min(
+  return BN.min(
     validation.loanToValueFilter,
-    (buyOrdersQuantity > 0 ? currentSpotPrice : 0) + bidSettlement,
-    prevSpotPrice,
+    BN.min(
+      (buyOrdersQuantity.gt(ZERO_BN) ? currentSpotPrice : ZERO_BN).add(bidSettlement),
+      prevSpotPrice,
+    ),
   )
 }

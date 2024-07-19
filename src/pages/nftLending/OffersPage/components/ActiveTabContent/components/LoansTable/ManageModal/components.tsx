@@ -2,6 +2,7 @@ import { FC, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { BN } from 'fbonds-core'
 import { chain, isEmpty, uniqueId } from 'lodash'
 import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
@@ -13,7 +14,7 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 import Timer from '@banx/components/Timer'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { useMarketOffers } from '@banx/pages/nftLending/LendPage'
 import { useLenderLoans } from '@banx/pages/nftLending/OffersPage'
 import { useModal } from '@banx/store/common'
@@ -62,7 +63,7 @@ import { useSelectedLoans } from '../loansState'
 import styles from './ManageModal.module.less'
 
 interface ClosureContentProps {
-  loan: core.Loan
+  loan: coreNew.Loan
 }
 export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const { connection } = useConnection()
@@ -77,7 +78,7 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const { updateOrAddLoan, addMints: hideLoans } = useLenderLoans()
 
   const { offers, updateOrAddOffer, isLoading } = useMarketOffers({
-    marketPubkey: loan.fraktBond.hadoMarket,
+    marketPubkey: loan.fraktBond.hadoMarket?.toBase58(),
   })
 
   const bestOffer = useMemo(() => {
@@ -136,7 +137,7 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
                 parseTerminateSimulatedAccounts(accountInfoByPubkey)
 
               updateOrAddLoan({ ...loan, fraktBond, bondTradeTransaction })
-              removeLoan(loan.publicKey, wallet.publicKey.toBase58())
+              removeLoan(loan.publicKey.toBase58(), wallet.publicKey.toBase58())
               close()
             }
           })
@@ -164,7 +165,7 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const aprRate = calculateApr({
-        loanValue: calculateClaimValue(loan),
+        loanValue: new BN(calculateClaimValue(loan)),
         collectionFloor: loan.nft.collectionFloor,
         marketPubkey: loan.fraktBond.hadoMarket,
       })
@@ -209,7 +210,7 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
               const offer = parseInstantRefinanceSimulatedAccounts(accountInfoByPubkey)
 
               updateOrAddOffer(offer)
-              hideLoans(loan.nft.mint)
+              hideLoans(loan.nft.mint.toBase58())
               close()
             }
           })
@@ -284,7 +285,7 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
 }
 
 interface RepaymentCallContentProps {
-  loan: core.Loan
+  loan: coreNew.Loan
   close: () => void
 }
 
@@ -306,21 +307,24 @@ export const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, clos
 
   const remainingDebt = totalClaim - paybackValue
 
-  const ltv = (remainingDebt / loan.nft.collectionFloor) * 100
+  const ltv = (remainingDebt / loan.nft.collectionFloor.toNumber()) * 100
   const colorLTV = getColorByPercent(ltv, HealthColorIncreasing)
 
   const sendBtnDisabled =
     !repayPercent || (repaymentCallActive && initialRepayValue === paybackValue)
 
   const onSend = async () => {
-    const callAmount = Math.floor((calculateLoanRepayValue(loan) * repayPercent) / 100)
+    const callAmount = Math.floor((calculateLoanRepayValue(loan).toNumber() * repayPercent) / 100)
 
     const loadingSnackbarId = uniqueId()
 
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const txnData = await createRepaymentCallTxnData({ loan, callAmount }, walletAndConnection)
+      const txnData = await createRepaymentCallTxnData(
+        { loan, callAmount: new BN(callAmount) },
+        walletAndConnection,
+      )
 
       await new TxnExecutor<CreateRepaymentCallTxnDataParams>(
         walletAndConnection,
@@ -357,7 +361,7 @@ export const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, clos
                 ...loan,
                 fraktBond: {
                   ...loan.fraktBond,
-                  lastTransactedAt: moment().unix(), //? Needs to prevent BE data overlap in optimistics logic
+                  lastTransactedAt: new BN(moment().unix()), //? Needs to prevent BE data overlap in optimistics logic
                 },
                 bondTradeTransaction,
               }
@@ -415,12 +419,12 @@ export const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, clos
   )
 }
 
-export const calculateRepaymentStaticValues = (loan: core.Loan) => {
+export const calculateRepaymentStaticValues = (loan: coreNew.Loan) => {
   const DEFAULT_REPAY_PERCENT = 50
 
   const repaymentCallActive = isLoanRepaymentCallActive(loan)
 
-  const repaymentCallLenderReceives = calculateRepaymentCallLenderReceivesAmount(loan)
+  const repaymentCallLenderReceives = calculateRepaymentCallLenderReceivesAmount(loan).toNumber()
 
   const totalClaim = calculateClaimValue(loan)
 

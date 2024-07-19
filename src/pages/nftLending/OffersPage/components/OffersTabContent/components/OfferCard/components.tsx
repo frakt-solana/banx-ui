@@ -1,27 +1,30 @@
 import { FC } from 'react'
 
 import classNames from 'classnames'
+import { BN } from 'fbonds-core'
 
 import { TensorLink } from '@banx/components/SolanaLinks'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { useMarketsPreview } from '@banx/pages/nftLending/LendPage'
-import { HealthColorIncreasing, calculateApr, getColorByPercent } from '@banx/utils'
+import { HealthColorIncreasing, ZERO_BN, calculateApr, getColorByPercent } from '@banx/utils'
 
 import styles from './OfferCard.module.less'
 
 interface MainOfferOverviewProps {
-  offer: core.UserOffer
+  offer: coreNew.UserOffer
 }
 
 export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer }) => {
   const { collectionName, collectionImage, collectionFloor } = offer.collectionMeta
 
   const { marketsPreview } = useMarketsPreview()
-  const { bestOffer = 0, tensorSlug } =
-    marketsPreview.find((market) => market.marketPubkey === offer.offer.hadoMarket) || {}
+  const { bestOffer = ZERO_BN, tensorSlug } =
+    marketsPreview.find(
+      (market) => market.marketPubkey.toBase58() === offer.offer.hadoMarket.toBase58(),
+    ) || {}
 
   return (
     <div className={styles.mainOfferContainer}>
@@ -34,12 +37,12 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer }) => {
         <div className={styles.mainOfferStats}>
           <StatInfo
             label="Floor"
-            value={<DisplayValue value={collectionFloor} />}
+            value={<DisplayValue value={collectionFloor.toNumber()} />}
             tooltipText="Lowest listing price on marketplaces, excluding taker royalties and fees"
           />
           <StatInfo
             label="Top offer"
-            value={<DisplayValue value={bestOffer} />}
+            value={<DisplayValue value={bestOffer.toNumber()} />}
             tooltipText="Highest offer among all lenders providing liquidity for this collection"
           />
         </div>
@@ -49,7 +52,7 @@ export const MainOfferOverview: FC<MainOfferOverviewProps> = ({ offer }) => {
 }
 
 interface AdditionalOfferOverviewProps {
-  offer: core.UserOffer
+  offer: coreNew.UserOffer
   className?: string
 }
 
@@ -59,26 +62,34 @@ export const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offe
 
   const collectionFloor = offer.collectionMeta.collectionFloor
   const maxOfferValue = validation.loanToValueFilter
-  const maxLtv = (maxOfferValue / collectionFloor) * 100
+  const maxLtv = maxOfferValue.mul(new BN(100)).div(collectionFloor)
 
   const maxDynamicApr =
-    calculateApr({ loanValue: maxOfferValue, collectionFloor, marketPubkey: hadoMarket }) / 100
-  const initialOfferSize = fundsSolOrTokenBalance + bidSettlement
+    calculateApr({
+      loanValue: maxOfferValue,
+      collectionFloor,
+      marketPubkey: hadoMarket,
+    }).toNumber() / 100
+  const initialOfferSize = fundsSolOrTokenBalance.add(bidSettlement)
 
   return (
     <div className={classNames(styles.additionalOfferContainer, className)}>
       <StatInfo
         label="In offer"
-        value={<DisplayValue value={initialOfferSize} />}
+        value={<DisplayValue value={initialOfferSize.toNumber()} />}
         tooltipText="Your total liquidity currently available in offer. Repayments from borrowers return here, close offer to stop"
         secondValue={`min ${buyOrdersQuantity} loans`}
       />
       <StatInfo
         label="Max offer"
-        value={<DisplayValue value={maxOfferValue} />}
+        value={<DisplayValue value={maxOfferValue.toNumber()} />}
         secondValue={
-          <span style={{ color: maxLtv ? getColorByPercent(maxLtv, HealthColorIncreasing) : '' }}>
-            {createPercentValueJSX(maxLtv, '0%')} LTV
+          <span
+            style={{
+              color: maxLtv ? getColorByPercent(maxLtv.toNumber(), HealthColorIncreasing) : '',
+            }}
+          >
+            {createPercentValueJSX(maxLtv.toNumber(), '0%')} LTV
           </span>
         }
         tooltipText="Your max offer given sufficient liquidity. Actual offer size taken can be less depending on the amount of SOL users choose to borrow"

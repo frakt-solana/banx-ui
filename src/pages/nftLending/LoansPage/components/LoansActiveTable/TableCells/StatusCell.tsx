@@ -5,7 +5,7 @@ import moment from 'moment'
 
 import Timer from '@banx/components/Timer'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { SECONDS_IN_72_HOURS } from '@banx/pages/nftLending/LoansPage/constants'
 import {
   LoanStatus,
@@ -17,7 +17,7 @@ import {
 import styles from '../LoansActiveTable.module.less'
 
 interface StatusCellProps {
-  loan: core.Loan
+  loan: coreNew.Loan
   isCardView: boolean
 }
 
@@ -48,18 +48,18 @@ export const StatusCell: FC<StatusCellProps> = ({ loan, isCardView }) => {
   )
 }
 
-const calculateTimeInfo = (loan: core.Loan, status: string) => {
+const calculateTimeInfo = (loan: coreNew.Loan, status: string) => {
   const { fraktBond } = loan
 
   const currentTimeInSeconds = moment().unix()
-  const timeSinceActivationInSeconds = currentTimeInSeconds - fraktBond.activatedAt
+  const timeSinceActivationInSeconds = currentTimeInSeconds - fraktBond.activatedAt.toNumber()
 
   if (status === LoanStatus.Active) {
     return calculateTimeFromNow(timeSinceActivationInSeconds)
   }
 
   if (status === LoanStatus.Terminating) {
-    const expiredAt = fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS
+    const expiredAt = fraktBond.refinanceAuctionStartedAt.toNumber() + SECONDS_IN_72_HOURS
     return <Timer expiredAt={expiredAt} />
   }
 

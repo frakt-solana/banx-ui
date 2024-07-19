@@ -9,7 +9,7 @@ import {
   createRefinanceSubscribeNotificationsTitle,
 } from '@banx/components/modals'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { getDialectAccessToken } from '@banx/providers'
 import { useIsLedger, useModal } from '@banx/store/common'
 import { useTokenType } from '@banx/store/nft'
@@ -65,7 +65,7 @@ export const useInstantTransactions = () => {
     }
   }
 
-  const lendToBorrow = async (loan: core.Loan) => {
+  const lendToBorrow = async (loan: coreNew.Loan) => {
     const loadingSnackbarId = uniqueId()
 
     try {
@@ -112,8 +112,8 @@ export const useInstantTransactions = () => {
                 solanaExplorerPath: `tx/${signature}`,
               })
 
-              addMints([loan.nft.mint])
-              removeSelection(loan.publicKey)
+              addMints([loan.nft.mint.toBase58()])
+              removeSelection(loan.publicKey.toBase58())
               onSuccess(1)
             })
           }
@@ -165,7 +165,7 @@ export const useInstantTransactions = () => {
             enqueueSnackbar({ message: 'Loans successfully funded', type: 'success' })
 
             const mintsToHidden = chain(confirmed)
-              .map(({ params }) => params.loan.nft.mint)
+              .map(({ params }) => params.loan.nft.mint.toBase58())
               .compact()
               .value()
 

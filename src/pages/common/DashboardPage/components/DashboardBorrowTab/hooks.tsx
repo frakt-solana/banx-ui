@@ -12,7 +12,7 @@ import {
   createLoanSubscribeNotificationsTitle,
 } from '@banx/components/modals'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { executeBorrow } from '@banx/pages/nftLending/BorrowPage/InstantLoansContent/components/BorrowTable'
 import { useBorrowNfts } from '@banx/pages/nftLending/BorrowPage/hooks'
 import { useMarketsPreview } from '@banx/pages/nftLending/LendPage/hooks'
@@ -26,7 +26,7 @@ import {
   useOffersOptimistic,
   useTokenType,
 } from '@banx/store/nft'
-import { calculateLoanValue } from '@banx/utils'
+import { ZERO_BN, calculateLoanValue, sortDescCompareBN } from '@banx/utils'
 
 import { useBorrowerStats } from '../../hooks'
 
@@ -47,13 +47,15 @@ export const useDashboardBorrowTab = () => {
 
   const sortedNFTsByLoanValue = useMemo(() => {
     const nftsWithLoanValue = filteredNFTs.map((nft) => {
-      const offer = findBestOffer(nft.loan.marketPubkey)
-      const loanValue = offer ? calculateLoanValue(offer) : 0
+      const offer = findBestOffer(nft.loan.marketPubkey.toBase58())
+      const loanValue = offer ? calculateLoanValue(offer) : ZERO_BN
 
       return { ...nft, loanValue }
     })
 
-    return [...nftsWithLoanValue].sort((nftA, nftB) => nftB.loanValue - nftA.loanValue)
+    return [...nftsWithLoanValue].sort((nftA, nftB) =>
+      sortDescCompareBN(nftA.loanValue, nftB.loanValue),
+    )
   }, [filteredNFTs, findBestOffer])
 
   const headingText = connected ? 'Click to borrow' : '1 click loan'
@@ -62,12 +64,14 @@ export const useDashboardBorrowTab = () => {
     navigate(createPathWithTokenParam(PATHS.BORROW, tokenType))
   }
 
-  const onBorrow = (nft: core.BorrowNft) => {
+  const onBorrow = (nft: coreNew.BorrowNft) => {
     borrow(nft)
   }
 
   const sortedMarketsByOfferTvl = useMemo(() => {
-    return [...filteredMarkets].sort((marketA, marketB) => marketB?.offerTvl - marketA?.offerTvl)
+    return [...filteredMarkets].sort((marketA, marketB) =>
+      sortDescCompareBN(marketA?.offerTvl, marketB?.offerTvl),
+    )
   }, [filteredMarkets])
 
   return {
@@ -123,11 +127,11 @@ export const useSingleBorrow = () => {
     }
   }
 
-  const borrow = async (nft: core.BorrowNft) => {
+  const borrow = async (nft: coreNew.BorrowNft) => {
     const { marketPubkey } = nft.loan
 
-    const offer = findBestOffer(marketPubkey)
-    const rawOffer = rawOffers[marketPubkey]?.find(
+    const offer = findBestOffer(marketPubkey.toBase58())
+    const rawOffer = rawOffers[marketPubkey.toBase58()]?.find(
       ({ publicKey }) => publicKey === offer?.publicKey,
     )
 
@@ -162,8 +166,8 @@ export const useSingleBorrow = () => {
 const useCollectionsStore = createGlobalState<string[]>([])
 
 const useFilteredMarketsAndNFTs = (
-  marketsPreview: core.MarketPreview[],
-  nfts: core.BorrowNft[],
+  marketsPreview: coreNew.MarketPreview[],
+  nfts: coreNew.BorrowNft[],
 ) => {
   const { connected } = useWallet()
 

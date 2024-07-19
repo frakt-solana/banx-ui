@@ -1,15 +1,15 @@
 import produce from 'immer'
 import { create } from 'zustand'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 
 interface SelectedNFTsState {
-  selection: core.BorrowNft[]
-  set: (selection: core.BorrowNft[]) => void
-  find: (mint: string) => core.BorrowNft | null
-  add: (nft: core.BorrowNft) => void
+  selection: coreNew.BorrowNft[]
+  set: (selection: coreNew.BorrowNft[]) => void
+  find: (mint: string) => coreNew.BorrowNft | null
+  add: (nft: coreNew.BorrowNft) => void
   remove: (mint: string) => void
-  toggle: (nft: core.BorrowNft) => void
+  toggle: (nft: coreNew.BorrowNft) => void
   clear: () => void
 }
 
@@ -23,7 +23,7 @@ export const useSelectedNfts = create<SelectedNFTsState>((set, get) => ({
     )
   },
   find: (mint) => {
-    return get().selection.find(({ nft }) => nft.mint === mint) ?? null
+    return get().selection.find(({ nft }) => nft.mint.toBase58() === mint) ?? null
   },
   add: (nft) => {
     set(
@@ -35,7 +35,7 @@ export const useSelectedNfts = create<SelectedNFTsState>((set, get) => ({
   remove: (mint) => {
     set(
       produce((state: SelectedNFTsState) => {
-        state.selection = state.selection.filter(({ nft }) => nft.mint !== mint)
+        state.selection = state.selection.filter(({ nft }) => nft.mint.toBase58() !== mint)
       }),
     )
   },
@@ -48,8 +48,8 @@ export const useSelectedNfts = create<SelectedNFTsState>((set, get) => ({
   },
   toggle: (nft) => {
     const { find, add, remove } = get()
-    const isNftInSelection = !!find(nft.mint)
+    const isNftInSelection = !!find(nft.mint.toBase58())
 
-    isNftInSelection ? remove(nft.mint) : add(nft)
+    isNftInSelection ? remove(nft.mint.toBase58()) : add(nft)
   },
 }))

@@ -1,7 +1,9 @@
+import { BN } from 'fbonds-core'
 import { chain, first } from 'lodash'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import {
+  ZERO_BN,
   calculateBorrowedAmount,
   calculateLoanRepayValue,
   calculateLoanValue,
@@ -9,7 +11,7 @@ import {
   isLoanTerminating,
 } from '@banx/utils'
 
-type IsLoanAbleToClaim = (loan: core.Loan) => boolean
+type IsLoanAbleToClaim = (loan: coreNew.Loan) => boolean
 export const isLoanAbleToClaim: IsLoanAbleToClaim = (loan) => {
   const isTerminatingStatus = isLoanTerminating(loan)
   const isLoanExpired = isLoanLiquidated(loan)
@@ -17,7 +19,7 @@ export const isLoanAbleToClaim: IsLoanAbleToClaim = (loan) => {
   return isLoanExpired && isTerminatingStatus
 }
 
-type IsLoanAbleToTerminate = (loan: core.Loan) => boolean
+type IsLoanAbleToTerminate = (loan: coreNew.Loan) => boolean
 export const isLoanAbleToTerminate: IsLoanAbleToTerminate = (loan) => {
   const isLoanExpired = isLoanLiquidated(loan)
   const isTerminatingStatus = isLoanTerminating(loan)
@@ -26,27 +28,28 @@ export const isLoanAbleToTerminate: IsLoanAbleToTerminate = (loan) => {
 }
 
 type FindBestOffer = (props: {
-  loan: core.Loan
-  offers: core.Offer[]
+  loan: coreNew.Loan
+  offers: coreNew.Offer[]
   walletPubkey: string
-}) => core.Offer
+}) => coreNew.Offer
 export const findBestOffer: FindBestOffer = ({ loan, offers, walletPubkey }) => {
-  const filteredOffers = chain(offers)
+  const filteredOffers: coreNew.Offer[] = chain(offers)
     .filter(
       (offer) =>
-        offer.hadoMarket === loan.fraktBond.hadoMarket && offer.assetReceiver !== walletPubkey,
+        offer.hadoMarket === loan.fraktBond.hadoMarket &&
+        offer.assetReceiver.toBase58() !== walletPubkey,
     )
-    .filter((offer) => calculateLoanValue(offer) > calculateLoanRepayValue(loan))
+    .filter((offer) => calculateLoanValue(offer).gt(calculateLoanRepayValue(loan)))
     .sortBy((offer) => offer.fundsSolOrTokenBalance)
     .value()
 
-  return first(filteredOffers) as core.Offer
+  return first(filteredOffers)!
 }
 
-export const calculateLentValue = (loan: core.Loan) => {
-  const totalRepaidAmount = loan.totalRepaidAmount || 0
+export const calculateLentValue = (loan: coreNew.Loan): BN => {
+  const totalRepaidAmount = loan.totalRepaidAmount || ZERO_BN
 
-  const loanBorrowedAmount = calculateBorrowedAmount(loan).toNumber()
+  const loanBorrowedAmount = calculateBorrowedAmount(loan)
 
-  return loanBorrowedAmount + totalRepaidAmount
+  return loanBorrowedAmount.add(totalRepaidAmount)
 }

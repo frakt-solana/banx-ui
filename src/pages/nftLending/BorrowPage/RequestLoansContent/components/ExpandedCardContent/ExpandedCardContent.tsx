@@ -12,7 +12,7 @@ import { DisplayValue, createPercentValueJSX } from '@banx/components/TableCompo
 import { Tabs, useTabs } from '@banx/components/Tabs'
 import { NumericStepInput } from '@banx/components/inputs'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { DAYS_IN_YEAR } from '@banx/constants'
 import { ChevronDown, SOL, USDC } from '@banx/icons'
 import { isBanxSolTokenType, isSolTokenType } from '@banx/utils'
@@ -23,7 +23,7 @@ import { useRequestLoansForm } from './hooks'
 
 import styles from './ExpandedCardContent.module.less'
 
-const ExpandedCardContent: FC<{ market: core.MarketPreview }> = ({ market }) => {
+const ExpandedCardContent: FC<{ market: coreNew.MarketPreview }> = ({ market }) => {
   const { connected } = useWallet()
 
   const {
@@ -144,7 +144,7 @@ const ExpandedCardContent: FC<{ market: core.MarketPreview }> = ({ market }) => 
         )}
         {currentTabValue === TabName.ACTIVITY && (
           <ActivityTable
-            marketPubkey={market.marketPubkey}
+            marketPubkey={market.marketPubkey.toBase58()}
             classNamesProps={{ wrapper: styles.activityTableWrapper }}
             hideToggle
           />

@@ -6,7 +6,7 @@ import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 import { Modal } from '@banx/components/modals/BaseModal'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { useModal } from '@banx/store/common'
 import { calculateLoanRepayValue, getColorByPercent, isLoanRepaymentCallActive } from '@banx/utils'
 
@@ -15,7 +15,7 @@ import { useLoansTransactions } from '../../hooks'
 import styles from './ActionsCell.module.less'
 
 interface RepayModalProps {
-  loan: core.Loan
+  loan: coreNew.Loan
 }
 
 export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
@@ -44,9 +44,9 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
     ? unroundedRepaymentPercentage
     : repaymentPercent
 
-  const paybackValue = (baseDebtValue * selectedRepaymentPercentage) / 100
+  const paybackValue = (baseDebtValue.toNumber() * selectedRepaymentPercentage) / 100
 
-  const remainingDebt = debtValue - paybackValue
+  const remainingDebt = debtValue.toNumber() - paybackValue
 
   const onSubmit = async () => {
     if (isFullRepayment) {
@@ -70,7 +70,7 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
     <Modal open onCancel={close}>
       <StatInfo
         label="Debt:"
-        value={<DisplayValue value={debtValue} />}
+        value={<DisplayValue value={debtValue.toNumber()} />}
         classNamesProps={{ container: styles.repayModalInfo }}
         flexType="row"
       />
@@ -85,7 +85,7 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
           <StatInfo
             flexType="row"
             label="Repayment call"
-            value={<DisplayValue value={repaymentCallAmount} />}
+            value={<DisplayValue value={repaymentCallAmount.toNumber()} />}
             classNamesProps={{ label: styles.repayModalRepaymentCall }}
             onClickProps={{
               onLabelClick: () => setRepaymentPercent(initialRepayPercent),
@@ -112,7 +112,7 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
 
 const DEFAULT_REPAY_PERCENT = 100
 
-export const calculateRepaymentStaticValues = (loan: core.Loan) => {
+export const calculateRepaymentStaticValues = (loan: coreNew.Loan) => {
   const { bondTradeTransaction } = loan
 
   const repaymentCallActive = isLoanRepaymentCallActive(loan)
@@ -122,7 +122,8 @@ export const calculateRepaymentStaticValues = (loan: core.Loan) => {
   const debtWithoutFee = calculateLoanRepayValue(loan, false)
   const debtValue = calculateLoanRepayValue(loan)
 
-  const unroundedRepaymentPercentage = (repaymentCallAmount / debtWithoutFee) * 100
+  const unroundedRepaymentPercentage =
+    (repaymentCallAmount.toNumber() / debtWithoutFee.toNumber()) * 100
 
   //? Round up the repayment percentage to the nearest whole number to ensure all debt is covered when repaying (Uses for repayment call feature)
   const roundedRepaymentPercentage = Math.ceil(unroundedRepaymentPercentage)

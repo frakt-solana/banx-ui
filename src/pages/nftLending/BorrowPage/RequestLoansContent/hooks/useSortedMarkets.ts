@@ -4,7 +4,7 @@ import { orderBy } from 'lodash'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 
 export enum SortField {
   LOANS_TVL = 'loansTvl',
@@ -12,7 +12,7 @@ export enum SortField {
   FLOOR = 'floor',
 }
 
-type SortValueGetter = (market: core.MarketPreview) => number
+type SortValueGetter = (market: coreNew.MarketPreview) => number
 
 const SORT_OPTIONS: SortOption<SortField>[] = [
   { label: 'Loans TVL', value: [SortField.LOANS_TVL, 'desc'] },
@@ -21,12 +21,12 @@ const SORT_OPTIONS: SortOption<SortField>[] = [
 ]
 
 const SORT_VALUE_MAP: Record<SortField, SortValueGetter> = {
-  [SortField.LOANS_TVL]: (market) => market.loansTvl,
+  [SortField.LOANS_TVL]: (market) => market.loansTvl.toNumber(),
   [SortField.ACTIVE_LOANS]: (market) => market.activeBondsAmount,
-  [SortField.FLOOR]: (market) => market.collectionFloor,
+  [SortField.FLOOR]: (market) => market.collectionFloor.toNumber(),
 }
 
-export const useSortedMarkets = (markets: core.MarketPreview[]) => {
+export const useSortedMarkets = (markets: coreNew.MarketPreview[]) => {
   const [sortOption, setSortOption] = useState(SORT_OPTIONS[0])
 
   const sortedMarkets = useMemo(() => {

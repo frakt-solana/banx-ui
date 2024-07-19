@@ -12,7 +12,7 @@ import { DisplayValue } from '@banx/components/TableComponents'
 import { getLenderVaultInfo } from '@banx/components/WalletModal'
 import { BanxSolYieldWarningModal } from '@banx/components/modals'
 
-import { Offer, core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { useClusterStats } from '@banx/hooks'
 import { BanxSOL } from '@banx/icons'
 import { useIsLedger, useModal } from '@banx/store/common'
@@ -40,8 +40,8 @@ import {
 import styles from './Summary.module.less'
 
 interface SummaryProps {
-  updateOrAddOffer: (offer: core.Offer[]) => void
-  offers: core.UserOffer[]
+  updateOrAddOffer: (offer: coreNew.Offer[]) => void
+  offers: coreNew.UserOffer[]
 }
 
 const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {

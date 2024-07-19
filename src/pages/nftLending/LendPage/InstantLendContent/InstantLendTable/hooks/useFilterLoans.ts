@@ -2,13 +2,13 @@ import { useMemo, useState } from 'react'
 
 import { filter, size } from 'lodash'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { createGlobalState } from '@banx/store'
 import { isFreezeLoan, isLoanListed } from '@banx/utils'
 
 const useCollectionsStore = createGlobalState<string[]>([])
 
-export const useFilterLoans = (loans: core.Loan[]) => {
+export const useFilterLoans = (loans: coreNew.Loan[]) => {
   const [isAuctionFilterEnabled, setAuctionFilterState] = useState(true)
   const [isFreezeFilterEnabled, setFreezeFilterState] = useState(true)
 
@@ -29,7 +29,7 @@ export const useFilterLoans = (loans: core.Loan[]) => {
   }, [loans, selectedCollections])
 
   const { filteredLoansBySelectedCollection, filteredAllLoans } = useMemo(() => {
-    const applyFilter = (loans: core.Loan[]) => {
+    const applyFilter = (loans: coreNew.Loan[]) => {
       const auctionLoans = filter(loans, (loan) => !isLoanListed(loan))
       const listedLoans = filter(loans, (loan) => isLoanListed(loan))
       const listedLoansWithoutFreeze = filter(listedLoans, (loan) => !isFreezeLoan(loan))

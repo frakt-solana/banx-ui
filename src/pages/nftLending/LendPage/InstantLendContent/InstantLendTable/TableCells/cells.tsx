@@ -6,7 +6,7 @@ import {
   createPercentValueJSX,
 } from '@banx/components/TableComponents'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import {
   HealthColorIncreasing,
   calculateLendValue,
@@ -17,20 +17,23 @@ import {
 
 import styles from '../InstantLendTable.module.less'
 
-export const DebtCell: FC<{ loan: core.Loan }> = ({ loan }) => {
+export const DebtCell: FC<{ loan: coreNew.Loan }> = ({ loan }) => {
   const lendValue = calculateLendValue(loan)
 
   const collectionFloor = loan.nft.collectionFloor
 
   const tooltopContent = (
     <div className={styles.tooltipContainer}>
-      {createTooltipContent('Floor', collectionFloor)}
-      {createTooltipContent('Debt', lendValue)}
+      {createTooltipContent('Floor', collectionFloor.toNumber())}
+      {createTooltipContent('Debt', lendValue.toNumber())}
     </div>
   )
 
   return (
-    <HorizontalCell tooltipContent={tooltopContent} value={<DisplayValue value={lendValue} />} />
+    <HorizontalCell
+      tooltipContent={tooltopContent}
+      value={<DisplayValue value={lendValue.toNumber()} />}
+    />
   )
 }
 
@@ -41,10 +44,10 @@ const createTooltipContent = (label: string, value: number) => (
   </div>
 )
 
-export const LTVCell: FC<{ loan: core.Loan }> = ({ loan }) => {
-  const lendValue = calculateLendValue(loan)
+export const LTVCell: FC<{ loan: coreNew.Loan }> = ({ loan }) => {
+  const lendValue = calculateLendValue(loan).toNumber()
 
-  const collectionFloor = loan.nft.collectionFloor
+  const collectionFloor = loan.nft.collectionFloor.toNumber()
   const ltv = (lendValue / collectionFloor) * 100
 
   return (
@@ -55,12 +58,12 @@ export const LTVCell: FC<{ loan: core.Loan }> = ({ loan }) => {
   )
 }
 
-export const APRCell: FC<{ loan: core.Loan }> = ({ loan }) => {
+export const APRCell: FC<{ loan: coreNew.Loan }> = ({ loan }) => {
   const isTerminatingStatus = isLoanTerminating(loan)
 
   const apr = isTerminatingStatus
     ? calculateLenderApr(loan)
     : loan.bondTradeTransaction.amountOfBonds
 
-  return <HorizontalCell value={createPercentValueJSX(apr / 100)} isHighlighted />
+  return <HorizontalCell value={createPercentValueJSX(apr.toNumber() / 100)} isHighlighted />
 }

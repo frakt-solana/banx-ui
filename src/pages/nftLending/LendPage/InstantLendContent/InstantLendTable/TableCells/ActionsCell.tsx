@@ -8,7 +8,7 @@ import { TensorLink } from '@banx/components/SolanaLinks'
 import { useWalletModal } from '@banx/components/WalletModal'
 import { Modal } from '@banx/components/modals/BaseModal'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { SECONDS_IN_DAY } from '@banx/constants'
 import { useModal } from '@banx/store/common'
 import { isFreezeLoan } from '@banx/utils'
@@ -18,7 +18,7 @@ import { useInstantTransactions } from '../hooks'
 import styles from '../InstantLendTable.module.less'
 
 interface RefinanceCellProps {
-  loan: core.Loan
+  loan: coreNew.Loan
   isCardView: boolean
   disabledAction: boolean
 }
@@ -64,15 +64,15 @@ export const ActionsCell: FC<RefinanceCellProps> = ({ loan, isCardView, disabled
         type="circle"
         size="small"
       >
-        <TensorLink mint={loan.nft.mint} />
+        <TensorLink mint={loan.nft.mint.toBase58()} />
       </Button>
     </div>
   )
 }
 
 interface WarningModalProps {
-  loan: core.Loan
-  lendToBorrow: (loan: core.Loan) => void
+  loan: coreNew.Loan
+  lendToBorrow: (loan: coreNew.Loan) => void
 }
 
 const WarningModal: FC<WarningModalProps> = ({ loan, lendToBorrow }) => {
@@ -80,7 +80,8 @@ const WarningModal: FC<WarningModalProps> = ({ loan, lendToBorrow }) => {
 
   const nftName = loan.nft.meta.name
 
-  const terminateFreezeInDays = loan.bondTradeTransaction.terminationFreeze / SECONDS_IN_DAY
+  const terminateFreezeInDays =
+    loan.bondTradeTransaction.terminationFreeze.toNumber() / SECONDS_IN_DAY
 
   return (
     <Modal className={styles.modal} open onCancel={close} width={496}>

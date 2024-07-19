@@ -4,7 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { filter, first, groupBy, isEmpty, map } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { BorrowTabName, useBorrowTabs } from '@banx/pages/nftLending/BorrowPage'
 import { REQUEST_LOANS_TABLE_MESSAGES } from '@banx/pages/nftLending/LoansPage/constants'
 import { PATHS } from '@banx/router'
@@ -16,7 +16,7 @@ import { useSortedLoans } from './useSortedLoans'
 import styles from '../RequestLoansTable.module.less'
 
 interface UseLoansActiveTableProps {
-  loans: core.Loan[]
+  loans: coreNew.Loan[]
   isLoading: boolean
 }
 
@@ -74,7 +74,7 @@ export const useRequestsLoansTable = ({ loans, isLoading }: UseLoansActiveTableP
 }
 
 type CreateSearchSelectProps = {
-  loans: core.Loan[]
+  loans: coreNew.Loan[]
   selectedOptions: string[]
   onChange: (option: string[]) => void
 }

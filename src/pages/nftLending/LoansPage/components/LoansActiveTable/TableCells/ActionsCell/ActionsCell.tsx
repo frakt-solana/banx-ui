@@ -2,7 +2,7 @@ import { FC, useMemo } from 'react'
 
 import { Button } from '@banx/components/Buttons'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { useModal } from '@banx/store/common'
 import { isLoanTerminating, isOfferNotEmpty } from '@banx/utils'
 
@@ -12,8 +12,8 @@ import { RepayModal } from './RepayModal'
 import styles from './ActionsCell.module.less'
 
 interface ActionsCellProps {
-  loan: core.Loan
-  offers: Record<string, core.Offer[]>
+  loan: coreNew.Loan
+  offers: Record<string, coreNew.Offer[]>
   isCardView: boolean
   disableActions: boolean
 }
@@ -26,7 +26,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, offers, isCardView, di
   const isTerminatingStatus = isLoanTerminating(loan)
 
   const refinanceAvailable = useMemo(() => {
-    const offersByMarket = offers[fraktBond.hadoMarket || '']
+    const offersByMarket = offers[fraktBond.hadoMarket?.toBase58() || '']
     return !!offersByMarket?.filter(isOfferNotEmpty).length
   }, [offers, fraktBond])
 

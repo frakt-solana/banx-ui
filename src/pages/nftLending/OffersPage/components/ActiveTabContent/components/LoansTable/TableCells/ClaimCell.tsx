@@ -1,40 +1,41 @@
 import { FC } from 'react'
 
-import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { BN } from 'fbonds-core'
+import { calculateCurrentInterestSolPureBN } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import moment from 'moment'
 
 import { DisplayValue, HorizontalCell } from '@banx/components/TableComponents'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { calculateLentValue } from '@banx/pages/nftLending/OffersPage'
 import { calculateBorrowedAmount, calculateClaimValue } from '@banx/utils'
 
 import styles from '../LoansTable.module.less'
 
 interface ClaimCellProps {
-  loan: core.Loan
+  loan: coreNew.Loan
 }
 
 export const ClaimCell: FC<ClaimCellProps> = ({ loan }) => {
   const { amountOfBonds, soldAt } = loan.bondTradeTransaction
 
-  const loanBorrowedAmount = calculateBorrowedAmount(loan).toNumber()
+  const loanBorrowedAmount = calculateBorrowedAmount(loan)
 
   const interestParameters = {
     loanValue: loanBorrowedAmount,
     startTime: soldAt,
-    currentTime: moment().unix(),
+    currentTime: new BN(moment().unix()),
     rateBasePoints: amountOfBonds,
   }
 
-  const currentInterest = calculateCurrentInterestSolPure(interestParameters)
+  const currentInterest = calculateCurrentInterestSolPureBN(interestParameters)
   const claimValue = calculateClaimValue(loan)
   const lentValue = calculateLentValue(loan)
 
   const tooltopContent = (
     <div className={styles.tooltipContainer}>
-      {createTooltipContent('Lent', lentValue)}
-      {createTooltipContent('Accrued interest', currentInterest)}
+      {createTooltipContent('Lent', lentValue.toNumber())}
+      {createTooltipContent('Accrued interest', currentInterest.toNumber())}
     </div>
   )
 

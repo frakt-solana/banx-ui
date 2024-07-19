@@ -1,4 +1,4 @@
-import { web3 } from 'fbonds-core'
+import { BN, web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   createPerpetualBondOfferBonding,
@@ -40,7 +40,11 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
 
   const bondingCurveType = getBondingCurveTypeFromLendingToken(tokenType)
 
-  const { instructions, signers, optimisticResult } = await createPerpetualBondOfferBonding({
+  const {
+    instructions,
+    signers,
+    accounts: accountsCollection,
+  } = await createPerpetualBondOfferBonding({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     connection: walletAndConnection.connection,
     accounts: {
@@ -48,18 +52,18 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
       userPubkey: walletAndConnection.wallet.publicKey,
     },
     args: {
-      loanValue: loanValue,
-      delta: deltaValue,
+      loanValue: new BN(loanValue),
+      delta: new BN(deltaValue),
       quantityOfLoans: loansAmount,
       bondingCurveType,
       bondFeature: BondFeatures.AutoReceiveAndReceiveNft,
-      collateralsPerToken: 0,
+      collateralsPerToken: ZERO_BN,
     },
     sendTxn: sendTxnPlaceHolder,
   })
 
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
-  const accounts = [new web3.PublicKey(optimisticResult.bondOffer.publicKey)]
+  const accounts = [accountsCollection['bondOffer']]
 
   if (isBanxSolTokenType(tokenType)) {
     const banxSolBalance = await fetchTokenBalance({

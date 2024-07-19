@@ -1,3 +1,5 @@
+import { BN } from 'fbonds-core'
+
 export const IS_DEVELOPMENT = process.env.NODE_ENV !== 'production'
 
 export const BACKEND_BASE_URL = 'https://api.banx.gg'
@@ -28,6 +30,7 @@ export const BONDS = {
   ADMIN_PUBKEY: 'revJ8QJgQ3xCcZ6CMykjsmGMYdg8Pj9WnqgJZBHBwSK',
   PROTOCOL_FEE_PERCENT: 100, //? Base points
   PROTOCOL_REPAY_FEE: 620, //? Base points
+  PROTOCOL_REPAY_FEE_BN: new BN(620),
 }
 
 export const DIALECT = {

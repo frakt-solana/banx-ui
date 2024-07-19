@@ -5,16 +5,19 @@ import { filter, includes } from 'lodash'
 import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { useMarketsPreview } from '@banx/pages/nftLending/LendPage/hooks'
 import { createGlobalState } from '@banx/store'
+import { sortDescCompareBN } from '@banx/utils'
 
 export const useDashboardLendTab = () => {
   const { marketsPreview } = useMarketsPreview()
   const { filteredMarkets, searchSelectParams } = useFilteredMarkets(marketsPreview)
 
   const sortedMarketsByOfferTvl = useMemo(() => {
-    return [...filteredMarkets].sort((marketA, marketB) => marketB?.offerTvl - marketA?.offerTvl)
+    return [...filteredMarkets].sort((marketA, marketB) =>
+      sortDescCompareBN(marketA?.offerTvl, marketB?.offerTvl),
+    )
   }, [filteredMarkets])
 
   return { marketsPreview: sortedMarketsByOfferTvl, searchSelectParams }
@@ -22,7 +25,7 @@ export const useDashboardLendTab = () => {
 
 const useCollectionsStore = createGlobalState<string[]>([])
 
-const useFilteredMarkets = (marketsPreview: core.MarketPreview[]) => {
+const useFilteredMarkets = (marketsPreview: coreNew.MarketPreview[]) => {
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
 
   const filteredMarkets = useMemo(() => {

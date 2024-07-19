@@ -22,7 +22,7 @@ const Header = () => {
   const { marketsPreview } = useMarketsPreview()
 
   const nftsAmount = nfts.length
-  const totalLiquidity = sumBy(marketsPreview, (offer) => offer.offerTvl)
+  const totalLiquidity = sumBy(marketsPreview, (offer) => offer.offerTvl.toNumber())
 
   return (
     <PageHeaderBackdrop

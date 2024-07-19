@@ -5,7 +5,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 
 import { useSelectedNfts } from '../../nftsState'
 import { getTableColumns } from './columns'
@@ -13,7 +13,7 @@ import { getTableColumns } from './columns'
 import styles from './RequestLoansTable.module.less'
 
 interface RequestLoansTableProps {
-  nfts: core.BorrowNft[]
+  nfts: coreNew.BorrowNft[]
   isLoading: boolean
   requestedLoanValue: number
 }
@@ -36,7 +36,7 @@ const RequestLoansTable: FC<RequestLoansTableProps> = ({ nfts, isLoading, reques
   }, [hasSelectedNfts, clearSelection, setSelection, nfts])
 
   const onRowClick = useCallback(
-    (nft: core.BorrowNft) => toggleNftInSelection(nft),
+    (nft: coreNew.BorrowNft) => toggleNftInSelection(nft),
     [toggleNftInSelection],
   )
 

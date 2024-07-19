@@ -4,7 +4,7 @@ import { orderBy } from 'lodash'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { calculateLendValue, calculateLenderApr, isLoanTerminating } from '@banx/utils'
 
 enum SortField {
@@ -16,7 +16,7 @@ enum SortField {
   FREEZE = 'freeze',
 }
 
-type SortValueGetter = (loan: core.Loan) => number
+type SortValueGetter = (loan: coreNew.Loan) => number
 
 const SORT_OPTIONS: SortOption<SortField>[] = [
   { label: 'LTV', value: [SortField.LTV, 'asc'] },
@@ -28,23 +28,25 @@ const SORT_OPTIONS: SortOption<SortField>[] = [
 ]
 
 const SORT_VALUE_MAP: Record<SortField, SortValueGetter> = {
-  [SortField.DURATION]: (loan) => loan.fraktBond.refinanceAuctionStartedAt,
+  [SortField.DURATION]: (loan) => loan.fraktBond.refinanceAuctionStartedAt.toNumber(),
   [SortField.RARITY]: (loan) => loan.nft.rarity?.rank || 0,
-  [SortField.DEBT]: (loan) => calculateLendValue(loan),
+  [SortField.DEBT]: (loan) => calculateLendValue(loan).toNumber(),
   [SortField.APR]: (loan) => {
     const isTerminatingStatus = isLoanTerminating(loan)
-    return isTerminatingStatus ? calculateLenderApr(loan) : loan.bondTradeTransaction.amountOfBonds
+    return (
+      isTerminatingStatus ? calculateLenderApr(loan) : loan.bondTradeTransaction.amountOfBonds
+    ).toNumber()
   },
   [SortField.LTV]: (loan) => {
-    const repayValue = calculateLendValue(loan)
-    const collectionFloor = loan.nft.collectionFloor
+    const repayValue = calculateLendValue(loan).toNumber()
+    const collectionFloor = loan.nft.collectionFloor.toNumber()
 
     return repayValue / collectionFloor
   },
-  [SortField.FREEZE]: (loan) => loan.bondTradeTransaction.terminationFreeze,
+  [SortField.FREEZE]: (loan) => loan.bondTradeTransaction.terminationFreeze.toNumber(),
 }
 
-export const useSortedLoans = (loans: core.Loan[]) => {
+export const useSortedLoans = (loans: coreNew.Loan[]) => {
   const [sortOption, setSortOption] = useState(SORT_OPTIONS[0])
 
   const sortedLoans = useMemo(() => {

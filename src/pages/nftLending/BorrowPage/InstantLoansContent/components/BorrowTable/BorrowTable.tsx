@@ -2,7 +2,7 @@ import { FC, useMemo } from 'react'
 
 import Table from '@banx/components/Table'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 
 import { Summary } from './Summary'
 import { useBorrowTable } from './hooks'
@@ -10,9 +10,9 @@ import { useBorrowTable } from './hooks'
 import styles from './BorrowTable.module.less'
 
 interface BorrowTableProps {
-  nfts: core.BorrowNft[]
+  nfts: coreNew.BorrowNft[]
   isLoading: boolean
-  rawOffers: Record<string, core.Offer[]>
+  rawOffers: Record<string, coreNew.Offer[]>
   maxLoanValueByMarket: Record<string, number>
   goToRequestLoanTab: () => void
 }

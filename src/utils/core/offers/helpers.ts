@@ -1,68 +1,57 @@
-import { calculateNextSpotPrice } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { getMaxLoanValueFromBondOffer } from 'fbonds-core/lib/fbond-protocol/helpers'
+import { BN } from 'fbonds-core'
+import { calculateNextSpotPriceBN } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { getMaxLoanValueFromBondOfferBN } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, uniqueId } from 'lodash'
 
-import { Offer, core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
+import { ONE_BN, ZERO_BN } from '@banx/utils/bn'
 
 import { SimpleOffer } from './types'
 
-const spreadToSimpleOffers = (offer: core.Offer): SimpleOffer[] => {
+const spreadToSimpleOffers = (offer: coreNew.Offer): SimpleOffer[] => {
   const { baseSpotPrice, mathCounter, buyOrdersQuantity, bondingCurve, bidSettlement, validation } =
     offer
 
-  const baseMathCounterInitial = mathCounter + 1
+  const baseMathCounterInitial = mathCounter.add(new BN(1))
 
-  const prevSpotPriceInitial = calculateNextSpotPrice({
+  const prevSpotPriceInitial = calculateNextSpotPriceBN({
     bondingCurveType: bondingCurve.bondingType,
     delta: bondingCurve.delta,
     spotPrice: baseSpotPrice,
-    counter: baseMathCounterInitial + 1,
+    counter: baseMathCounterInitial.add(ONE_BN),
   })
-  // if (buyOrdersQuantity === 0) {
-  //   const baseMathCounter = mathCounter + 1
 
-  //   const loanValue = Math.min(validation.loanToValueFilter, bidSettlement, prevSpotPrice)
-
-  //   const simpleOffer = {
-  //     id: uniqueId(),
-  //     loanValue,
-  //     hadoMarket: offer.hadoMarket,
-  //     publicKey: offer.publicKey,
-  //   }
-  //   return [simpleOffer]
-  // }
   const {
     reserve,
     simpleOffers: mainOffers,
     prevSpotPrice,
-  } = Array(buyOrdersQuantity)
+  } = Array(buyOrdersQuantity.toNumber())
     .fill(0)
     .reduce(
-      (acc: { reserve: number; simpleOffers: SimpleOffer[] }, _, idx) => {
-        const baseMathCounter = mathCounter + 1 - idx
+      (acc: { reserve: BN; simpleOffers: SimpleOffer[] }, _, idx) => {
+        const baseMathCounter = mathCounter.add(ONE_BN).sub(new BN(idx))
 
-        const prevSpotPrice = calculateNextSpotPrice({
+        const prevSpotPrice = calculateNextSpotPriceBN({
           bondingCurveType: bondingCurve.bondingType,
           delta: bondingCurve.delta,
           spotPrice: baseSpotPrice,
-          counter: baseMathCounter + 1,
+          counter: baseMathCounter.add(ONE_BN),
         })
 
-        const nextSpotPrice = calculateNextSpotPrice({
+        const nextSpotPrice = calculateNextSpotPriceBN({
           bondingCurveType: bondingCurve.bondingType,
           delta: bondingCurve.delta,
           spotPrice: baseSpotPrice,
           counter: baseMathCounter,
         })
 
-        const loanValue = Math.min(
+        const loanValue = BN.min(
           validation.loanToValueFilter,
-          nextSpotPrice + acc.reserve,
-          prevSpotPrice,
+          BN.min(nextSpotPrice.add(acc.reserve), prevSpotPrice),
         )
 
-        const nextReserve = acc.reserve - Math.max(loanValue - nextSpotPrice, 0)
+        const nextReserve = acc.reserve.sub(BN.max(loanValue.sub(nextSpotPrice), ZERO_BN))
 
         const simpleOffer = {
           id: uniqueId(),
@@ -80,21 +69,22 @@ const spreadToSimpleOffers = (offer: core.Offer): SimpleOffer[] => {
       { reserve: bidSettlement, simpleOffers: [], prevSpotPrice: prevSpotPriceInitial },
     )
 
-  const reserveDenominator = Math.min(validation.loanToValueFilter, prevSpotPrice)
-  const reserveOrdersCount = reserveDenominator > 0 ? Math.floor(reserve / reserveDenominator) : 0
-  const reserveOffers =
-    reserveOrdersCount > 0
-      ? Array(reserveOrdersCount)
-          .fill(0)
-          .map(() => ({
-            id: uniqueId(),
-            loanValue: reserveDenominator,
-            hadoMarket: offer.hadoMarket,
-            publicKey: offer.publicKey,
-          }))
-      : []
+  const reserveDenominator = BN.min(validation.loanToValueFilter, prevSpotPrice)
+  const reserveOrdersCount = reserveDenominator.gt(ZERO_BN)
+    ? reserve.div(reserveDenominator)
+    : ZERO_BN
+  const reserveOffers = reserveOrdersCount.gt(ZERO_BN)
+    ? Array(reserveOrdersCount)
+        .fill(ZERO_BN)
+        .map(() => ({
+          id: uniqueId(),
+          loanValue: reserveDenominator,
+          hadoMarket: offer.hadoMarket,
+          publicKey: offer.publicKey,
+        }))
+    : []
 
-  const lastOfferValue = reserve % reserveDenominator
+  const lastOfferValue = reserve.mod(reserveDenominator)
   const lastOffer = {
     id: uniqueId(),
     loanValue: lastOfferValue,
@@ -102,37 +92,48 @@ const spreadToSimpleOffers = (offer: core.Offer): SimpleOffer[] => {
     publicKey: offer.publicKey,
   }
 
-  const simpleOffers = [...mainOffers, ...reserveOffers, ...(lastOfferValue > 0 ? [lastOffer] : [])]
+  const simpleOffers = [
+    ...mainOffers,
+    ...reserveOffers,
+    ...(lastOfferValue.gt(ZERO_BN) ? [lastOffer] : []),
+  ]
 
   return simpleOffers
 }
 
-type ConvertOffersToSimple = (offers: core.Offer[], sort?: 'desc' | 'asc') => SimpleOffer[]
+type ConvertOffersToSimple = (offers: coreNew.Offer[], sort?: 'desc' | 'asc') => SimpleOffer[]
 export const convertOffersToSimple: ConvertOffersToSimple = (offers, sort = 'desc') => {
   const convertedOffers = chain(offers)
     .map(spreadToSimpleOffers)
     .flatten()
     .sort((a, b) => {
+      const res = a.loanValue.sub(b.loanValue)
+
       if (sort === 'desc') {
-        return b.loanValue - a.loanValue
+        if (res.gt(ZERO_BN)) return -1
+        if (res.lt(ZERO_BN)) return 1
+        return 0
       }
-      return a.loanValue - b.loanValue
+
+      if (res.gt(ZERO_BN)) return 1
+      if (res.lt(ZERO_BN)) return -1
+      return 0
     })
     .value()
 
   return convertedOffers
 }
 
-export const сalculateLoansAmount = (offer: core.Offer) => {
+export const сalculateLoansAmount = (offer: coreNew.Offer) => {
   const { fundsSolOrTokenBalance, currentSpotPrice } = offer
 
-  const loansAmount = fundsSolOrTokenBalance / currentSpotPrice
+  const loansAmount = fundsSolOrTokenBalance.div(currentSpotPrice)
 
   return loansAmount
 }
 
-export const calculateLoanValue = (offer: core.Offer) => {
-  return getMaxLoanValueFromBondOffer(offer)
+export const calculateLoanValue = (offer: coreNew.Offer) => {
+  return getMaxLoanValueFromBondOfferBN(offer)
   // const { currentSpotPrice } = offer
 
   // const loansAmount = сalculateLoansAmount(offer)
@@ -149,62 +150,70 @@ export const isOfferStateClosed = (pairState: PairState) => {
   )
 }
 
-export const isOfferClosed = (offer: Offer) => {
+export const isOfferClosed = (offer: coreNew.Offer) => {
   const isStateClosed = isOfferStateClosed(offer.pairState)
 
   return (
     isStateClosed &&
-    offer.bidCap === 0 &&
-    offer.concentrationIndex === 0 &&
-    offer.bidSettlement === 0 &&
-    offer.fundsSolOrTokenBalance === 0
+    offer.bidCap.eq(ZERO_BN) &&
+    offer.concentrationIndex.eq(ZERO_BN) &&
+    offer.bidSettlement.eq(ZERO_BN) &&
+    offer.fundsSolOrTokenBalance.eq(ZERO_BN)
   )
 }
 
 //? Prevent orders wrong distibution on bulk borrow from same offer
-export const offerNeedsReservesOptimizationOnBorrow = (offer: core.Offer, loanValueSum: number) =>
-  loanValueSum <= (offer.bidSettlement + offer.buyOrdersQuantity > 0 ? offer.currentSpotPrice : 0)
+export const offerNeedsReservesOptimizationOnBorrow = (offer: coreNew.Offer, loanValueSum: BN) => {
+  const isOfferNotEmpty = offer.bidSettlement.add(offer.buyOrdersQuantity).gt(ZERO_BN)
 
-type FilterOutWalletLoans = (props: { offers: core.Offer[]; walletPubkey?: string }) => core.Offer[]
+  return loanValueSum.lte(isOfferNotEmpty ? offer.currentSpotPrice : ZERO_BN)
+}
+
+type FilterOutWalletLoans = (props: {
+  offers: coreNew.Offer[]
+  walletPubkey?: string
+}) => coreNew.Offer[]
 export const filterOutWalletLoans: FilterOutWalletLoans = ({ offers, walletPubkey }) => {
   if (!walletPubkey) return offers
-  return offers.filter((offer) => offer.assetReceiver !== walletPubkey)
+  return offers.filter((offer) => offer.assetReceiver.toBase58() === walletPubkey)
 }
 
 type FindSuitableOffer = (props: {
-  loanValue: number
-  offers: core.Offer[]
-}) => core.Offer | undefined
+  loanValue: BN
+  offers: coreNew.Offer[]
+}) => coreNew.Offer | undefined
 export const findSuitableOffer: FindSuitableOffer = ({ loanValue, offers }) => {
   //? Create simple offers array sorted by loanValue (offerValue) asc
   const simpleOffers = convertOffersToSimple(offers, 'asc')
 
   //? Find offer. OfferValue must be greater than or equal to loanValue
-  const simpleOffer = simpleOffers.find(({ loanValue: offerValue }) => loanValue <= offerValue)
+  const simpleOffer = simpleOffers.find(({ loanValue: offerValue }) => loanValue.lte(offerValue))
 
-  return offers.find(({ publicKey }) => publicKey === simpleOffer?.publicKey)
+  return simpleOffer
+    ? offers.find(({ publicKey }) => publicKey.equals(simpleOffer.publicKey))
+    : undefined
 }
 
-export const isOfferNotEmpty = (offer: core.Offer) => {
+export const isOfferNotEmpty = (offer: coreNew.Offer) => {
   const { fundsSolOrTokenBalance, currentSpotPrice } = offer
-  const fullOffersAmount = Math.floor(fundsSolOrTokenBalance / currentSpotPrice)
-  if (fullOffersAmount >= 1) return true
-  const decimalLoanValue = fundsSolOrTokenBalance - currentSpotPrice * fullOffersAmount
-  if (decimalLoanValue > 0) return true
+  const fullOffersAmount = fundsSolOrTokenBalance.div(currentSpotPrice)
+  if (fullOffersAmount.gte(ONE_BN)) return true
+  const decimalLoanValue = fundsSolOrTokenBalance.sub(currentSpotPrice.mul(fullOffersAmount))
+  if (decimalLoanValue.gt(ZERO_BN)) return true
   return false
 }
 
 export type NftWithLoanValue = {
-  nft: core.BorrowNft
-  loanValue: number
+  nft: coreNew.BorrowNft
+  loanValue: BN
 }
 type NftWithOffer = {
   nft: NftWithLoanValue
-  offer: core.Offer
+  offer: coreNew.Offer
 }
 type MatchNftsAndOffers = (props: {
   nfts: NftWithLoanValue[]
-  rawOffers: core.Offer[]
+  rawOffers: coreNew.Offer[]
 }) => NftWithOffer[]
 /**
  * Recalculates the cart. Matches selected nfts with selected offers
@@ -218,20 +227,25 @@ export const matchNftsAndOffers: MatchNftsAndOffers = ({ nfts, rawOffers }) => {
     .cloneDeep()
     //? Sort by selected loanValue asc
     .sort((a, b) => {
-      return a.loanValue - b.loanValue
+      const res = a.loanValue.sub(b.loanValue)
+
+      if (res.gt(ZERO_BN)) return 1
+      if (res.lt(ZERO_BN)) return -1
+      return 0
     })
     .reduce(
       (acc, nft) => {
         //? Find index of offer. OfferValue must be greater than or equal to selected loanValue. And mustn't be used by prev iteration
         const offerIndex = simpleOffers.findIndex(
-          ({ loanValue: offerValue }, idx) => nft.loanValue <= offerValue && acc.offerIndex <= idx,
+          ({ loanValue: offerValue }, idx) =>
+            nft.loanValue.lte(offerValue) && acc.offerIndex <= idx,
         )
 
         const nftAndOffer: NftWithOffer = {
           nft,
           offer: rawOffers.find(
             ({ publicKey }) => publicKey === simpleOffers[offerIndex].publicKey,
-          ) as core.Offer,
+          ) as coreNew.Offer,
         }
 
         return {

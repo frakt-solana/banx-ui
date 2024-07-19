@@ -1,9 +1,9 @@
 import { reduce } from 'lodash'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { calculateBorrowedAmount, calculateClaimValue } from '@banx/utils'
 
-export const getTerminateStatsInfo = (loans: core.Loan[]) => {
+export const getTerminateStatsInfo = (loans: coreNew.Loan[]) => {
   return reduce(
     loans,
     (acc, loan) => {
@@ -13,7 +13,7 @@ export const getTerminateStatsInfo = (loans: core.Loan[]) => {
 
       return {
         totalLent: acc.totalLent + borrowedAmount,
-        averageLtv: acc.averageLtv + (claimValue / collectionFloor / loans.length) * 100,
+        averageLtv: acc.averageLtv + (claimValue / collectionFloor.toNumber() / loans.length) * 100,
         totalInterest: acc.totalInterest + claimValue - borrowedAmount,
       }
     },

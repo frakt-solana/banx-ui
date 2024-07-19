@@ -4,19 +4,19 @@ import { produce } from 'immer'
 import { filter } from 'lodash'
 import { create } from 'zustand'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { useTokenType } from '@banx/store/nft'
 
 export interface LoanOptimistic {
-  loan: core.Loan
+  loan: coreNew.Loan
   wallet: string
 }
 
 interface LenderLoansOptimisticState {
   loans: LoanOptimistic[]
-  addLoans: (loan: core.Loan, walletPublicKey: string) => void
+  addLoans: (loan: coreNew.Loan, walletPublicKey: string) => void
   findLoan: (loanPubkey: string, walletPublicKey: string) => LoanOptimistic | null
-  updateLoans: (loan: core.Loan, walletPublicKey: string) => void
+  updateLoans: (loan: coreNew.Loan, walletPublicKey: string) => void
 }
 
 const useLenderLoansOptimisticState = create<LenderLoansOptimisticState>((set, get) => ({
@@ -33,12 +33,12 @@ const useLenderLoansOptimisticState = create<LenderLoansOptimisticState>((set, g
   findLoan: (loanPubkey, walletPublicKey) => {
     if (!walletPublicKey) return null
 
-    return get().loans.find(({ loan }) => loan.publicKey === loanPubkey) ?? null
+    return get().loans.find(({ loan }) => loan.publicKey.toBase58() === loanPubkey) ?? null
   },
   updateLoans: (loan, walletPublicKey) => {
     if (!walletPublicKey) return
 
-    const loanExists = !!get().findLoan(loan.publicKey, walletPublicKey)
+    const loanExists = !!get().findLoan(loan.publicKey.toBase58(), walletPublicKey)
 
     loanExists &&
       set(
@@ -72,7 +72,7 @@ export const useLenderLoansOptimistic = () => {
   }
 }
 
-const convertLoanToOptimistic = (loan: core.Loan, walletPublicKey: string) => {
+const convertLoanToOptimistic = (loan: coreNew.Loan, walletPublicKey: string) => {
   return {
     loan,
     wallet: walletPublicKey,

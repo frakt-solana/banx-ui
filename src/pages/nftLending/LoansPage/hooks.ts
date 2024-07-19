@@ -6,7 +6,7 @@ import { chain, filter, groupBy, map } from 'lodash'
 import moment from 'moment'
 import { create } from 'zustand'
 
-import { core, stats } from '@banx/api/nft'
+import { coreNew, stats } from '@banx/api/nft'
 import {
   isLoanNewer,
   isOfferNewer,
@@ -34,7 +34,7 @@ export const useWalletLoansAndOffers = () => {
 
   const { data, isLoading, isFetched, isFetching } = useQuery(
     [USE_WALLET_LOANS_AND_OFFERS_QUERY_KEY, publicKeyString, tokenType],
-    () => core.fetchWalletLoansAndOffers({ walletPublicKey: publicKeyString, tokenType }),
+    () => coreNew.fetchWalletLoansAndOffers({ walletPublicKey: publicKeyString, tokenType }),
     {
       enabled: !!publicKeyString,
       staleTime: 5 * 1000,
@@ -57,8 +57,8 @@ export const useWalletLoansAndOffers = () => {
     )
 
     const optimisticsToRemove = walletOptimisticLoans.filter(({ loan }) => {
-      const sameLoanFromBE = (data?.nfts || []).find(
-        ({ publicKey }) => publicKey === loan.publicKey,
+      const sameLoanFromBE = (data?.nfts || []).find(({ publicKey }) =>
+        publicKey.equals(loan.publicKey),
       )
       if (!sameLoanFromBE) return false
       const isBELoanNewer = isLoanNewer(sameLoanFromBE, loan)
@@ -102,7 +102,7 @@ export const useWalletLoansAndOffers = () => {
 
       if (isTerminatingStatus) {
         const currentTimeInSeconds = moment().unix()
-        const expiredAt = fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS
+        const expiredAt = fraktBond.refinanceAuctionStartedAt.toNumber() + SECONDS_IN_72_HOURS
         return currentTimeInSeconds < expiredAt
       }
 
@@ -126,11 +126,11 @@ export const useWalletLoansAndOffers = () => {
       //? Filter closed offers from LS optimistics
       .filter(({ offer }) => !isOfferStateClosed(offer?.pairState))
       .filter(({ offer }) => {
-        const sameOfferFromBE = data.offers[offer.hadoMarket]?.find(
-          ({ publicKey }) => publicKey === offer.publicKey,
+        const sameOfferFromBE = data.offers[offer.hadoMarket.toBase58()]?.find(({ publicKey }) =>
+          publicKey.equals(offer.publicKey),
         )
         //TODO Offer may exist from Lend page. Prevent purging
-        if (!sameOfferFromBE && offer.assetReceiver === publicKeyString) return false
+        if (!sameOfferFromBE && offer.assetReceiver.toBase58() === publicKeyString) return false
         if (!sameOfferFromBE) return true
         const isBEOfferNewer = isOfferNewer(sameOfferFromBE, offer)
         return isBEOfferNewer
@@ -153,7 +153,7 @@ export const useWalletLoansAndOffers = () => {
       //? Filter closed offers from LS optimistics
       .filter(({ offer }) => !isOfferStateClosed(offer?.pairState))
       //? Filter own offers from LS optimistics
-      .filter(({ offer }) => offer?.assetReceiver !== publicKeyString)
+      .filter(({ offer }) => offer?.assetReceiver.toBase58() !== publicKeyString)
       .value()
 
     const optimisticsByMarket = groupBy(optimisticsFiltered, ({ offer }) => offer.hadoMarket)
@@ -161,8 +161,8 @@ export const useWalletLoansAndOffers = () => {
     return Object.fromEntries(
       Object.entries(data.offers).map(([marketPubkey, offers]) => {
         const nextOffers = offers.filter((offer) => {
-          const sameOptimistic = optimisticsByMarket[offer.hadoMarket]?.find(
-            ({ offer: optimisticOffer }) => optimisticOffer.publicKey === offer.publicKey,
+          const sameOptimistic = optimisticsByMarket[offer.hadoMarket.toBase58()]?.find(
+            ({ offer: optimisticOffer }) => optimisticOffer.publicKey.equals(offer.publicKey),
           )
           if (!sameOptimistic) return true
           return isOfferNewer(offer, sameOptimistic.offer)
@@ -220,7 +220,7 @@ export const useBorrowerLoansRequests = () => {
 
   const { data, isLoading, isFetched, isFetching } = useQuery(
     [USE_BORROWER_LOANS_REQUESTS_QUERY_KEY, walletPublicKey, tokenType],
-    () => core.fetchBorrowerLoansRequests({ walletPublicKey: publicKeyString, tokenType }),
+    () => coreNew.fetchBorrowerLoansRequests({ walletPublicKey: publicKeyString, tokenType }),
     {
       staleTime: 5 * 1000,
       refetchOnWindowFocus: false,
@@ -242,7 +242,7 @@ export const useBorrowerLoansRequests = () => {
     )
 
     const optimisticsToRemove = walletOptimisticLoans.filter(({ loan }) => {
-      const sameLoanFromBE = (data || []).find(({ publicKey }) => publicKey === loan.publicKey)
+      const sameLoanFromBE = (data || []).find(({ publicKey }) => publicKey.equals(loan.publicKey))
       if (!sameLoanFromBE) return false
       const isBELoanNewer = isLoanNewer(sameLoanFromBE, loan)
       return isBELoanNewer

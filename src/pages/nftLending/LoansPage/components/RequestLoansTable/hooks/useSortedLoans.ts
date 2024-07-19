@@ -4,7 +4,7 @@ import { orderBy } from 'lodash'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 
 import styles from '../RequestLoansTable.module.less'
 
@@ -15,7 +15,7 @@ enum SortField {
   FREEZE = 'freeze',
 }
 
-type SortValueGetter = (loan: core.Loan) => number
+type SortValueGetter = (loan: coreNew.Loan) => number
 
 const SORT_OPTIONS: SortOption<SortField>[] = [
   { label: 'Borrow', value: [SortField.BORROW, 'desc'] },
@@ -25,13 +25,14 @@ const SORT_OPTIONS: SortOption<SortField>[] = [
 ]
 
 const SORT_VALUE_MAP: Record<SortField, SortValueGetter> = {
-  [SortField.BORROW]: (loan) => loan.fraktBond.borrowedAmount,
-  [SortField.APR]: (loan) => loan.bondTradeTransaction.amountOfBonds,
-  [SortField.LTV]: (loan) => loan.fraktBond.borrowedAmount / loan.nft.collectionFloor,
-  [SortField.FREEZE]: (loan) => loan.bondTradeTransaction.terminationFreeze,
+  [SortField.BORROW]: (loan) => loan.fraktBond.borrowedAmount.toNumber(),
+  [SortField.APR]: (loan) => loan.bondTradeTransaction.amountOfBonds.toNumber(),
+  [SortField.LTV]: (loan) =>
+    loan.fraktBond.borrowedAmount.toNumber() / loan.nft.collectionFloor.toNumber(),
+  [SortField.FREEZE]: (loan) => loan.bondTradeTransaction.terminationFreeze.toNumber(),
 }
 
-export const useSortedLoans = (loans: core.Loan[]) => {
+export const useSortedLoans = (loans: coreNew.Loan[]) => {
   const [sortOption, setSortOption] = useState(SORT_OPTIONS[0])
 
   const sortedLoans = useMemo(() => {

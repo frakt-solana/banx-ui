@@ -7,7 +7,7 @@ import {
   NftInfoCell,
 } from '@banx/components/TableComponents'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 
 import { APRCell, ActionsCell, FreezeCell, LTVCell } from './TableCells'
 import { LoanOptimistic } from './loansState'
@@ -17,10 +17,10 @@ import styles from './RequestLoansTable.module.less'
 type GetTableColumns = (props: {
   onSelectAll: () => void
   findLoanInSelection: (loanPubkey: string) => LoanOptimistic | null
-  toggleLoanInSelection: (loan: core.Loan) => void
+  toggleLoanInSelection: (loan: coreNew.Loan) => void
   hasSelectedLoans: boolean
   isCardView: boolean
-}) => ColumnType<core.Loan>[]
+}) => ColumnType<coreNew.Loan>[]
 
 export const getTableColumns: GetTableColumns = ({
   onSelectAll,
@@ -29,7 +29,7 @@ export const getTableColumns: GetTableColumns = ({
   hasSelectedLoans,
   isCardView,
 }) => {
-  const columns: ColumnType<core.Loan>[] = [
+  const columns: ColumnType<coreNew.Loan>[] = [
     {
       key: 'collateral',
       title: (
@@ -40,8 +40,8 @@ export const getTableColumns: GetTableColumns = ({
       ),
       render: (loan) => (
         <NftInfoCell
-          key={loan.publicKey}
-          selected={!!findLoanInSelection(loan.publicKey)}
+          key={loan.publicKey.toBase58()}
+          selected={!!findLoanInSelection(loan.publicKey.toBase58())}
           onCheckboxClick={() => toggleLoanInSelection(loan)}
           nftName={loan.nft.meta.name}
           nftImage={loan.nft.meta.imageUrl}
@@ -56,7 +56,9 @@ export const getTableColumns: GetTableColumns = ({
       key: 'loanValue',
       title: <HeaderCell label="Borrow" />,
       render: (loan) => (
-        <HorizontalCell value={<DisplayValue value={loan.bondTradeTransaction.solAmount} />} />
+        <HorizontalCell
+          value={<DisplayValue value={loan.bondTradeTransaction.solAmount.toNumber()} />}
+        />
       ),
     },
     {
@@ -83,7 +85,7 @@ export const getTableColumns: GetTableColumns = ({
         <ActionsCell
           loan={loan}
           isCardView={isCardView}
-          disabled={!!findLoanInSelection(loan.publicKey)}
+          disabled={!!findLoanInSelection(loan.publicKey.toBase58())}
         />
       ),
     },

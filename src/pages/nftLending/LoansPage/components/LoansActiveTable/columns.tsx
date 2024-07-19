@@ -2,7 +2,7 @@ import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
 import { HeaderCell, NftInfoCell } from '@banx/components/TableComponents'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 
 import { APRCell, ActionsCell, DebtCell, LTVCell, StatusCell } from './TableCells'
 import { LoanOptimistic } from './loansState'
@@ -12,10 +12,10 @@ import styles from './LoansActiveTable.module.less'
 interface GetTableColumnsProps {
   onSelectAll: () => void
   findLoanInSelection: (loanPubkey: string) => LoanOptimistic | null
-  toggleLoanInSelection: (loan: core.Loan) => void
+  toggleLoanInSelection: (loan: coreNew.Loan) => void
   hasSelectedLoans: boolean
   isCardView: boolean
-  offers: Record<string, core.Offer[]>
+  offers: Record<string, coreNew.Offer[]>
 }
 
 export const getTableColumns = ({
@@ -25,8 +25,8 @@ export const getTableColumns = ({
   hasSelectedLoans,
   isCardView,
   offers,
-}: GetTableColumnsProps): ColumnType<core.Loan>[] => {
-  const columns: ColumnType<core.Loan>[] = [
+}: GetTableColumnsProps): ColumnType<coreNew.Loan>[] => {
+  const columns: ColumnType<coreNew.Loan>[] = [
     {
       key: 'collateral',
       title: (
@@ -37,8 +37,8 @@ export const getTableColumns = ({
       ),
       render: (loan) => (
         <NftInfoCell
-          key={loan.publicKey}
-          selected={!!findLoanInSelection(loan.publicKey)}
+          key={loan.publicKey.toBase58()}
+          selected={!!findLoanInSelection(loan.publicKey.toBase58())}
           onCheckboxClick={() => toggleLoanInSelection(loan)}
           nftName={loan.nft.meta.name}
           nftImage={loan.nft.meta.imageUrl}
@@ -87,7 +87,7 @@ export const getTableColumns = ({
           loan={loan}
           offers={offers}
           isCardView={isCardView}
-          disableActions={!!findLoanInSelection(loan.publicKey)}
+          disableActions={!!findLoanInSelection(loan.publicKey.toBase58())}
         />
       ),
     },

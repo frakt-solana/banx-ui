@@ -56,7 +56,7 @@ export const useOffersContent = () => {
     return map(offersGroupedByCollection, (groupedLoan) => {
       const firstLoanInGroup = first(groupedLoan)
       const { collectionName = '', collectionImage = '' } = firstLoanInGroup?.collectionMeta || {}
-      const lent = sumBy(groupedLoan, ({ offer }) => offer.edgeSettlement)
+      const lent = sumBy(groupedLoan, ({ offer }) => offer.edgeSettlement.toNumber())
 
       return { collectionName, collectionImage, lent }
     })

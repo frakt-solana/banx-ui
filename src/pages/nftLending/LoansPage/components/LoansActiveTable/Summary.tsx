@@ -8,7 +8,7 @@ import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import {
   calcWeeklyFeeWithRepayFee,
   calculateLoanRepayValue,
@@ -22,9 +22,9 @@ import { LoanOptimistic } from './loansState'
 import styles from './LoansActiveTable.module.less'
 
 interface SummaryProps {
-  loans: core.Loan[]
+  loans: coreNew.Loan[]
   selectedLoans: LoanOptimistic[]
-  setSelection: (loans: core.Loan[], walletPublicKey: string) => void
+  setSelection: (loans: coreNew.Loan[], walletPublicKey: string) => void
 }
 
 export const Summary: FC<SummaryProps> = ({
@@ -40,9 +40,9 @@ export const Summary: FC<SummaryProps> = ({
   }, [rawSelectedLoans])
 
   const totalSelectedLoans = selectedLoans.length
-  const totalDebt = sumBy(selectedLoans, calculateLoanRepayValue)
-  const totalWeeklyFee = sumBy(selectedLoans, calcWeeklyFeeWithRepayFee)
-  const totalValueToPay = sumBy(selectedLoans, calcTotalValueToPay)
+  const totalDebt = sumBy(selectedLoans, (l) => calculateLoanRepayValue(l).toNumber())
+  const totalWeeklyFee = sumBy(selectedLoans, (l) => calcWeeklyFeeWithRepayFee(l).toNumber())
+  const totalValueToPay = sumBy(selectedLoans, (l) => calcTotalValueToPay(l).toNumber())
 
   const handleLoanSelection = (value = 0) => {
     setSelection(loans.slice(0, value), walletPublicKey?.toBase58() || '')
@@ -103,7 +103,7 @@ export const Summary: FC<SummaryProps> = ({
   )
 }
 
-const getLoansStatusActionText = (selectedLoans: core.Loan[]) => {
+const getLoansStatusActionText = (selectedLoans: coreNew.Loan[]) => {
   const hasSelectedLoans = selectedLoans.length > 0
 
   const allLoansAreRepaymentCall =

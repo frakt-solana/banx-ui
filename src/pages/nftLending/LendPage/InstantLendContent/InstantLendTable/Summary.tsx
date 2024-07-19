@@ -10,7 +10,7 @@ import { DisplayValue, createPercentValueJSX } from '@banx/components/TableCompo
 import { useWalletModal } from '@banx/components/WalletModal'
 import { Modal } from '@banx/components/modals/BaseModal'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { SECONDS_IN_DAY } from '@banx/constants'
 import { useModal } from '@banx/store/common'
 import {
@@ -27,7 +27,7 @@ import { useLoansState } from './loansState'
 
 import styles from './InstantLendTable.module.less'
 
-export const Summary: FC<{ loans: core.Loan[] }> = ({ loans }) => {
+export const Summary: FC<{ loans: coreNew.Loan[] }> = ({ loans }) => {
   const { connected } = useWallet()
   const { toggleVisibility } = useWalletModal()
   const { lendToBorrowAll } = useInstantTransactions()
@@ -98,7 +98,7 @@ export const Summary: FC<{ loans: core.Loan[] }> = ({ loans }) => {
 }
 
 interface WarningModalProps {
-  loans: core.Loan[]
+  loans: coreNew.Loan[]
   lendToBorrowAll: () => Promise<void>
 }
 
@@ -108,7 +108,9 @@ const WarningModal: FC<WarningModalProps> = ({ loans, lendToBorrowAll }) => {
   const totalLoans = loans.length
 
   const maxTerminateFreezeInDays =
-    maxBy(map(loans, (loan) => loan.bondTradeTransaction.terminationFreeze / SECONDS_IN_DAY)) || 0
+    maxBy(
+      map(loans, (loan) => loan.bondTradeTransaction.terminationFreeze.toNumber() / SECONDS_IN_DAY),
+    ) || 0
 
   return (
     <Modal className={styles.modal} open onCancel={close} width={496}>
@@ -129,11 +131,11 @@ const WarningModal: FC<WarningModalProps> = ({ loans, lendToBorrowAll }) => {
   )
 }
 
-const calculateSummaryInfo = (loans: core.Loan[]) => {
-  const totalDebt = sumBy(loans, (loan) => calculateLendValue(loan))
+const calculateSummaryInfo = (loans: coreNew.Loan[]) => {
+  const totalDebt = sumBy(loans, (loan) => calculateLendValue(loan).toNumber())
 
-  const totalLoanValue = map(loans, (loan) => calculateLendValue(loan))
-  const totalWeeklyInterest = sumBy(loans, (loan) => calcWeeklyInterestFee(loan))
+  const totalLoanValue = map(loans, (loan) => calculateLendValue(loan).toNumber())
+  const totalWeeklyInterest = sumBy(loans, (loan) => calcWeeklyInterestFee(loan).toNumber())
 
   const totalAprArray = map(loans, (loan) => {
     const isTerminatingStatus = isLoanTerminating(loan)
@@ -141,12 +143,12 @@ const calculateSummaryInfo = (loans: core.Loan[]) => {
       ? calculateLenderApr(loan)
       : loan.bondTradeTransaction.amountOfBonds
 
-    return aprRate / 100
+    return aprRate.toNumber() / 100
   })
 
   const totalLtvArray = map(
     loans,
-    (loan) => (calculateLendValue(loan) / loan.nft.collectionFloor) * 100,
+    (loan) => (calculateLendValue(loan).toNumber() / loan.nft.collectionFloor.toNumber()) * 100,
   )
 
   const weightedApr = calcWeightedAverage(totalAprArray, totalLoanValue)

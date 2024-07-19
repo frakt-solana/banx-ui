@@ -1,5 +1,5 @@
 import { BN, web3 } from 'fbonds-core'
-import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
+import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   borrowCnftPerpetualCanopy,
   borrowPerpetual,
@@ -18,7 +18,7 @@ import {
 } from 'solana-transactions-executor'
 
 import { helius } from '@banx/api/common'
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
 import { calculateApr, isBanxSolTokenType } from '@banx/utils'
@@ -28,9 +28,9 @@ import { sendTxnPlaceHolder } from '../../helpers'
 import { BorrowType } from '../types'
 
 export type CreateBorrowTxnDataParams = {
-  nft: core.BorrowNft
-  loanValue: number
-  offer: core.Offer
+  nft: coreNew.BorrowNft
+  loanValue: BN
+  offer: coreNew.Offer
   optimizeIntoReserves: boolean
   tokenType: LendingTokenType
 }
@@ -45,7 +45,7 @@ export const createBorrowTxnData: CreateBorrowTxnData = async (params, walletAnd
 
   const borrowType = getNftBorrowType(nft)
 
-  const { instructions, signers, lookupTables, optimisticResult } = await getTxnDataByBorrowType({
+  const { instructions, signers, lookupTables, accountsCollection } = await getTxnDataByBorrowType({
     nft,
     loanValue,
     offer,
@@ -55,12 +55,10 @@ export const createBorrowTxnData: CreateBorrowTxnData = async (params, walletAnd
     walletAndConnection,
   })
 
-  const { fraktBond, bondTradeTransaction, bondOffer } = optimisticResult
-
   const accounts = [
-    new web3.PublicKey(fraktBond.publicKey),
-    new web3.PublicKey(bondTradeTransaction.publicKey),
-    new web3.PublicKey(bondOffer.publicKey),
+    accountsCollection['fraktBond'],
+    accountsCollection['bondTradeTransaction'],
+    accountsCollection['bondOffer'],
   ]
 
   if (isBanxSolTokenType(tokenType)) {
@@ -110,7 +108,11 @@ const getTxnDataByBorrowType = async ({
       throw new Error(`Not BanxStaked NFT`)
     }
 
-    const { instructions, signers, optimisticResults } = await borrowStakedBanxPerpetual({
+    const {
+      instructions,
+      signers,
+      accounts: accountsCollection,
+    } = await borrowStakedBanxPerpetual({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
 
       accounts: {
@@ -120,18 +122,14 @@ const getTxnDataByBorrowType = async ({
       args: {
         perpetualBorrowParamsAndAccounts: [
           {
-            amountOfSolToGet: Math.floor(loanValue),
+            amountOfSolToGet: loanValue.toNumber(),
             tokenMint: new web3.PublicKey(nft.mint),
             bondOfferV2: new web3.PublicKey(offer.publicKey),
             hadoMarket: new web3.PublicKey(offer.hadoMarket),
             banxStake: new web3.PublicKey(nft.loan.banxStake || ''),
-            optimistic: {
-              fraktMarket: nft.loan.fraktMarket,
-              minMarketFee: nft.loan.marketApr,
-              bondOffer: offer,
-            },
           },
         ],
+
         lendingTokenType: tokenType,
         optimizeIntoReserves,
         aprRate,
@@ -143,7 +141,7 @@ const getTxnDataByBorrowType = async ({
     return {
       instructions,
       signers,
-      optimisticResult: optimisticResults[0],
+      accountsCollection,
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
     }
   }
@@ -154,11 +152,15 @@ const getTxnDataByBorrowType = async ({
     }
 
     const proof = await helius.getHeliusAssetProof({
-      assetId: nft.mint,
+      assetId: nft.mint.toBase58(),
       connection: walletAndConnection.connection,
     })
 
-    const { instructions, signers, optimisticResults } = await borrowCnftPerpetualCanopy({
+    const {
+      instructions,
+      signers,
+      accounts: accountsCollection,
+    } = await borrowCnftPerpetualCanopy({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
 
       accounts: {
@@ -174,15 +176,9 @@ const getTxnDataByBorrowType = async ({
         proof,
         cnftParams: nft.nft.compression,
         amountOfSolToGet: loanValue,
-
-        optimistic: {
-          fraktMarket: nft.loan.fraktMarket,
-          minMarketFee: nft.loan.marketApr,
-          bondOffer: offer,
-        },
         optimizeIntoReserves: optimizeIntoReserves,
         lendingTokenType: tokenType,
-        aprRate,
+        aprRate: aprRate,
       },
       connection: walletAndConnection.connection,
       sendTxn: sendTxnPlaceHolder,
@@ -191,18 +187,22 @@ const getTxnDataByBorrowType = async ({
     return {
       instructions,
       signers,
-      optimisticResult: optimisticResults[0],
+      accountsCollection,
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
     }
   }
 
   const ruleSet = await fetchRuleset({
-    nftMint: nft.mint,
+    nftMint: nft.mint.toBase58(),
     connection: walletAndConnection.connection,
-    marketPubkey: nft.loan.marketPubkey,
+    marketPubkey: nft.loan.marketPubkey.toBase58(),
   })
 
-  const { instructions, signers, optimisticResults } = await borrowPerpetual({
+  const {
+    instructions,
+    signers,
+    accounts: accountsCollection,
+  } = await borrowPerpetual({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
 
     accounts: {
@@ -212,21 +212,16 @@ const getTxnDataByBorrowType = async ({
     args: {
       perpetualBorrowParamsAndAccounts: [
         {
-          amountOfSolToGet: Math.floor(loanValue),
+          amountOfSolToGet: loanValue,
           ruleSet: ruleSet,
           tokenMint: new web3.PublicKey(nft.mint),
           bondOfferV2: new web3.PublicKey(offer.publicKey),
           hadoMarket: new web3.PublicKey(offer.hadoMarket),
-          optimistic: {
-            fraktMarket: nft.loan.fraktMarket,
-            minMarketFee: nft.loan.marketApr,
-            bondOffer: offer,
-          },
         },
       ],
       lendingTokenType: tokenType,
       optimizeIntoReserves: optimizeIntoReserves,
-      aprRate,
+      aprRate: aprRate,
     },
     connection: walletAndConnection.connection,
     sendTxn: sendTxnPlaceHolder,
@@ -235,13 +230,13 @@ const getTxnDataByBorrowType = async ({
   return {
     instructions,
     signers,
-    optimisticResult: optimisticResults[0],
+    accountsCollection,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }
 
-const getNftBorrowType = (nft: core.BorrowNft): BorrowType => {
-  if (nft.loan.banxStake && nft.loan.banxStake !== EMPTY_PUBKEY.toBase58())
+const getNftBorrowType = (nft: coreNew.BorrowNft): BorrowType => {
+  if (nft.loan.banxStake && !nft.loan.banxStake.equals(web3.PublicKey.default))
     return BorrowType.StakedBanx
   if (nft.nft.compression) return BorrowType.CNft
   return BorrowType.Default

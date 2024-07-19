@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import classNames from 'classnames'
 import { BN } from 'fbonds-core'
-import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { calculateCurrentInterestSolPureBN } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import {
@@ -13,6 +13,7 @@ import {
 
 import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
 import {
+  ZERO_BN,
   adjustBorrowValueWithSolanaRentFee,
   calculateApr,
   calculateBorrowValueWithProtocolFee,
@@ -43,11 +44,11 @@ interface BorrowCellProps {
 export const BorrowCell: FC<BorrowCellProps> = ({ nft, tokenType }) => {
   const loanValueWithProtocolFee = calculateBorrowValueWithProtocolFee(nft.loanValue)
   const collectionFloor = nft.nft.nft.collectionFloor
-  const ltv = (loanValueWithProtocolFee / collectionFloor) * 100
+  const ltv = (loanValueWithProtocolFee / collectionFloor.toNumber()) * 100
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>
-      <TooltipRow label="Floor" value={collectionFloor} />
+      <TooltipRow label="Floor" value={collectionFloor.toNumber()} />
       <div className={styles.tooltipRow}>
         <span className={styles.tooltipRowLabel}>LTV</span>
         <span className={classNames(styles.ltvValue, styles.tooltipRowValue)}>
@@ -59,7 +60,7 @@ export const BorrowCell: FC<BorrowCellProps> = ({ nft, tokenType }) => {
 
   const borrowValueRentFeeAdjusted = adjustBorrowValueWithSolanaRentFee({
     value: new BN(loanValueWithProtocolFee),
-    marketPubkey: nft.nft.loan.marketPubkey,
+    marketPubkey: nft.nft.loan.marketPubkey.toBase58(),
     tokenType,
   }).toNumber()
 
@@ -82,18 +83,20 @@ export const APRCell: FC<APRCellProps> = ({ nft }) => {
     marketPubkey: nft.nft.loan.marketPubkey,
   })
 
-  const weeklyFee = calculateCurrentInterestSolPure({
+  const weeklyFee = calculateCurrentInterestSolPureBN({
     loanValue: nft.loanValue,
-    startTime: 0,
-    currentTime: SECONDS_IN_DAY * 7,
-    rateBasePoints: apr + BONDS.PROTOCOL_REPAY_FEE,
+    startTime: ZERO_BN,
+    currentTime: new BN(SECONDS_IN_DAY * 7),
+    rateBasePoints: apr.add(BONDS.PROTOCOL_REPAY_FEE_BN),
   })
 
-  const formattedAprValue = createPercentValueJSX((apr + BONDS.PROTOCOL_REPAY_FEE) / 100)
+  const formattedAprValue = createPercentValueJSX(
+    apr.add(BONDS.PROTOCOL_REPAY_FEE_BN).toNumber() / 100,
+  )
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>
-      <TooltipRow label="Weekly fee" value={weeklyFee} />
+      <TooltipRow label="Weekly fee" value={weeklyFee.toNumber()} />
     </div>
   )
 

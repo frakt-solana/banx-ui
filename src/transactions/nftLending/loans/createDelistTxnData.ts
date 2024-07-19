@@ -1,5 +1,5 @@
 import { web3 } from 'fbonds-core'
-import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
+import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   removePerpetualListing,
   removePerpetualListingCnft,
@@ -8,7 +8,7 @@ import {
 import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { BANX_STAKING, BONDS } from '@banx/constants'
 
 import { fetchRuleset } from '../../functions'
@@ -16,7 +16,7 @@ import { sendTxnPlaceHolder } from '../../helpers'
 import { ListingType } from '../types'
 
 export type CreateDelistTxnDataParams = {
-  loan: core.Loan
+  loan: coreNew.Loan
 }
 
 type CreateDelistTxnData = (
@@ -58,9 +58,9 @@ const getIxnsAndSignersByListingType = async ({
 
   if (type === ListingType.StakedBanx) {
     const ruleSet = await fetchRuleset({
-      nftMint: loan.nft.mint,
+      nftMint: loan.nft.mint.toBase58(),
       connection,
-      marketPubkey: loan.fraktBond.hadoMarket,
+      marketPubkey: loan.fraktBond.hadoMarket?.toBase58(),
     })
 
     const { instructions, signers } = await removePerpetualListingStakedBanx({
@@ -93,9 +93,9 @@ const getIxnsAndSignersByListingType = async ({
 
     const proof = await getAssetProof(loan.nft.mint, connection.rpcEndpoint)
     const ruleSet = await fetchRuleset({
-      nftMint: loan.nft.mint,
+      nftMint: loan.nft.mint.toBase58(),
       connection,
-      marketPubkey: loan.fraktBond.hadoMarket,
+      marketPubkey: loan.fraktBond.hadoMarket?.toBase58(),
     })
 
     const { instructions, signers } = await removePerpetualListingCnft({
@@ -122,9 +122,9 @@ const getIxnsAndSignersByListingType = async ({
   }
 
   const ruleSet = await fetchRuleset({
-    nftMint: loan.nft.mint,
+    nftMint: loan.nft.mint.toBase58(),
     connection,
-    marketPubkey: loan.fraktBond.hadoMarket,
+    marketPubkey: loan.fraktBond.hadoMarket?.toBase58(),
   })
 
   const { instructions, signers } = await removePerpetualListing({
@@ -148,12 +148,12 @@ const getIxnsAndSignersByListingType = async ({
   return { instructions, signers }
 }
 
-const getNftListingType = (loan: core.Loan) => {
+const getNftListingType = (loan: coreNew.Loan) => {
   if (loan.nft.compression) return ListingType.CNft
 
   if (
-    loan.fraktBond.banxStake !== EMPTY_PUBKEY.toBase58() &&
-    loan.fraktBond.fraktMarket === BANX_STAKING.FRAKT_MARKET
+    !loan.fraktBond.banxStake.equals(web3.PublicKey.default) &&
+    loan.fraktBond.fraktMarket.equals(new web3.PublicKey(BANX_STAKING.FRAKT_MARKET))
   ) {
     return ListingType.StakedBanx
   }

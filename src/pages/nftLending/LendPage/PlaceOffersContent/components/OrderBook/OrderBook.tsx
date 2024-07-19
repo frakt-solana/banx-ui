@@ -5,6 +5,7 @@ import Tooltip from '@banx/components/Tooltip/Tooltip'
 
 import { useModal } from '@banx/store/common'
 import { SyntheticOffer, useSyntheticOffers } from '@banx/store/nft'
+import { ZERO_BN } from '@banx/utils'
 
 import Offer from '../Offer'
 import { useMarketOrders } from './hooks'
@@ -26,7 +27,7 @@ const OrderBook: FC<OrderBookProps> = (props) => {
 
   const handleEditOffer = (offer: SyntheticOffer) => {
     setSyntheticOffer({ ...offer, isEdit: true })
-    setOfferPubkey(offer.publicKey)
+    setOfferPubkey(offer.publicKey.toBase58())
     close()
   }
 
@@ -47,10 +48,10 @@ const OrderBook: FC<OrderBookProps> = (props) => {
         {!isLoading &&
           offers.map((offer) => (
             <Offer
-              key={offer.publicKey}
+              key={offer.publicKey.toBase58()}
               offer={offer}
               editOffer={() => handleEditOffer(offer)}
-              collectionFloor={market?.collectionFloor || 0}
+              collectionFloor={market?.collectionFloor || ZERO_BN}
             />
           ))}
       </ul>

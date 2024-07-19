@@ -1,12 +1,14 @@
 import { FC } from 'react'
 
+import { BN } from 'fbonds-core'
+
 import {
   DisplayValue,
   HorizontalCell,
   createPercentValueJSX,
 } from '@banx/components/TableComponents'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import {
   HealthColorIncreasing,
@@ -33,7 +35,7 @@ const TooltipRow: FC<TooltipRowProps> = ({ label, value }) => (
 )
 
 interface CellProps {
-  loan: core.Loan
+  loan: coreNew.Loan
 }
 
 export const DebtCell: FC<CellProps> = ({ loan }) => {
@@ -44,22 +46,28 @@ export const DebtCell: FC<CellProps> = ({ loan }) => {
 
   const totalAccruedInterest = calcAccruedInterest(loan)
 
-  const upfrontFee = bondTradeTransaction.borrowerOriginalLent / 100
+  const upfrontFee = bondTradeTransaction.borrowerOriginalLent.toNumber() / 100
 
   const weeklyFee = calcWeeklyFeeWithRepayFee(loan)
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>
-      <TooltipRow label="Principal" value={borrowedValue} />
-      <TooltipRow label="Repaid" value={bondTradeTransaction.borrowerFullRepaidAmount} />
-      <TooltipRow label="Accrued interest" value={totalAccruedInterest + upfrontFee} />
+      <TooltipRow label="Principal" value={borrowedValue.toNumber()} />
+      <TooltipRow label="Repaid" value={bondTradeTransaction.borrowerFullRepaidAmount.toNumber()} />
+      <TooltipRow
+        label="Accrued interest"
+        value={totalAccruedInterest.add(new BN(upfrontFee)).toNumber()}
+      />
       <TooltipRow label="Upfront fee" value={upfrontFee} />
-      <TooltipRow label="Est. weekly interest" value={weeklyFee} />
+      <TooltipRow label="Est. weekly interest" value={weeklyFee.toNumber()} />
     </div>
   )
 
   return (
-    <HorizontalCell tooltipContent={tooltipContent} value={<DisplayValue value={debtValue} />} />
+    <HorizontalCell
+      tooltipContent={tooltipContent}
+      value={<DisplayValue value={debtValue.toNumber()} />}
+    />
   )
 }
 
@@ -67,13 +75,13 @@ export const LTVCell: FC<CellProps> = ({ loan }) => {
   const debtValue = calculateLoanRepayValue(loan)
   const collectionFloor = loan.nft.collectionFloor
 
-  const ltvPercent = (debtValue / collectionFloor) * 100
+  const ltvPercent = (debtValue.toNumber() / collectionFloor.toNumber()) * 100
   const formattedLtvValue = createPercentValueJSX(ltvPercent)
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>
-      <TooltipRow label="Floor" value={collectionFloor} />
-      <TooltipRow label="Debt" value={debtValue} />
+      <TooltipRow label="Floor" value={collectionFloor.toNumber()} />
+      <TooltipRow label="Debt" value={debtValue.toNumber()} />
     </div>
   )
 
@@ -87,7 +95,8 @@ export const LTVCell: FC<CellProps> = ({ loan }) => {
 }
 
 export const APRCell: FC<CellProps> = ({ loan }) => {
-  const apr = (loan.bondTradeTransaction.amountOfBonds + BONDS.PROTOCOL_REPAY_FEE) / 100
+  const apr =
+    loan.bondTradeTransaction.amountOfBonds.add(BONDS.PROTOCOL_REPAY_FEE_BN).toNumber() / 100
 
   return <HorizontalCell value={createPercentValueJSX(apr)} isHighlighted />
 }

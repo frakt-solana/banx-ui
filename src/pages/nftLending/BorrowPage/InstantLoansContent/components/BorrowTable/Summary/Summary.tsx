@@ -10,7 +10,7 @@ import { CounterSlider, Slider, SliderProps } from '@banx/components/Slider'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import bonkTokenImg from '@banx/assets/BonkToken.png'
 import { BONDS, ONE_WEEK_IN_SECONDS } from '@banx/constants'
 import { useTokenType } from '@banx/store/nft'
@@ -42,12 +42,12 @@ const calcLoanValueWithFees = (nft: TableNftData, tokenType: LendingTokenType) =
 
   return adjustBorrowValueWithSolanaRentFee({
     value: new BN(loanValueWithProtocolFee),
-    marketPubkey: nft.nft.loan.marketPubkey,
+    marketPubkey: nft.nft.loan.marketPubkey.toBase58(),
     tokenType,
   }).toNumber()
 }
 
-const caclAprValue = (nft: core.BorrowNft, loanValue: number) => {
+const caclAprValue = (nft: coreNew.BorrowNft, loanValue: BN) => {
   return calculateApr({
     loanValue,
     collectionFloor: nft.nft.collectionFloor,
@@ -69,18 +69,19 @@ export const Summary: FC<SummaryProps> = ({
   const totalBorrow = sumBy(nftsInCart, (nft) => calcLoanValueWithFees(nft, tokenType))
 
   const totalUpfrontFee = sumBy(nftsInCart, ({ loanValue }) => {
-    return loanValue - calculateBorrowValueWithProtocolFee(loanValue)
+    return loanValue.toNumber() - calculateBorrowValueWithProtocolFee(loanValue)
   })
 
   const totalWeeklyFee = sumBy(nftsInCart, ({ nft, loanValue }) => {
     const apr = caclAprValue(nft, loanValue)
-    return calcInterest({ timeInterval: ONE_WEEK_IN_SECONDS, loanValue, apr })
+    return calcInterest({ timeInterval: ONE_WEEK_IN_SECONDS, loanValue, apr }).toNumber()
   })
 
   const weightedApr = useMemo(() => {
     const totalApr = map(
       nftsInCart,
-      ({ nft, loanValue }) => (caclAprValue(nft, loanValue) + BONDS.PROTOCOL_REPAY_FEE) / 100,
+      ({ nft, loanValue }) =>
+        caclAprValue(nft, loanValue).add(BONDS.PROTOCOL_REPAY_FEE_BN).toNumber() / 100,
     )
     const totalLoanValue = map(nftsInCart, (nft) => calcLoanValueWithFees(nft, tokenType))
 

@@ -8,7 +8,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 import { Button } from '@banx/components/Buttons'
 import { TensorLink } from '@banx/components/SolanaLinks'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { useHiddenNftsMints } from '@banx/pages/nftLending/OffersPage'
 import { useModal } from '@banx/store/common'
 import {
@@ -32,7 +32,7 @@ import ManageModal from '../../ManageModal'
 import styles from './ActionsCell.module.less'
 
 interface ActionsCellProps {
-  loan: core.Loan
+  loan: coreNew.Loan
   isCardView?: boolean
 }
 
@@ -78,7 +78,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
               solanaExplorerPath: `tx/${signature}`,
             })
 
-            hideLoans(params.loan.nft.mint)
+            hideLoans(params.loan.nft.mint.toBase58())
           })
         })
         .on('error', (error) => {
@@ -135,7 +135,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
         type="circle"
         size="small"
       >
-        <TensorLink mint={loan.nft.mint} />
+        <TensorLink mint={loan.nft.mint.toBase58()} />
       </Button>
     </div>
   )

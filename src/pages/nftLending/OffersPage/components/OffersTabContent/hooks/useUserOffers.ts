@@ -4,7 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 import { chain, map, maxBy } from 'lodash'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { useMarketsPreview } from '@banx/pages/nftLending/LendPage/hooks'
 import {
   isOfferNewer,
@@ -12,7 +12,7 @@ import {
   useOffersOptimistic,
   useTokenType,
 } from '@banx/store/nft'
-import { isOfferClosed } from '@banx/utils'
+import { ZERO_BN, isOfferClosed } from '@banx/utils'
 
 export const useUserOffers = () => {
   const { publicKey } = useWallet()
@@ -26,7 +26,7 @@ export const useUserOffers = () => {
 
   const { data, isLoading, isFetching, isFetched } = useQuery(
     [useUserOffers, publicKeyString, tokenType],
-    () => core.fetchUserOffers({ walletPubkey: publicKeyString, tokenType }),
+    () => coreNew.fetchUserOffers({ walletPubkey: publicKeyString, tokenType }),
     {
       enabled: !!publicKeyString,
       refetchOnWindowFocus: false,
@@ -72,12 +72,12 @@ export const useUserOffers = () => {
         const {
           collectionName = '',
           collectionImage = '',
-          collectionFloor = 0,
+          collectionFloor = ZERO_BN,
         } = marketsPreview.find(({ marketPubkey }) => marketPubkey === offer.hadoMarket) ?? {}
 
         return { offer, collectionMeta: { collectionFloor, collectionName, collectionImage } }
       })
-      .filter(({ offer }) => offer.assetReceiver === publicKey?.toBase58())
+      .filter(({ offer }) => offer.assetReceiver.toBase58() === publicKey?.toBase58())
 
     const combinedOffers = [...optimisticUserOffers, ...userOffers]
 

@@ -1,3 +1,4 @@
+import { BN } from 'fbonds-core'
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import {
@@ -9,11 +10,12 @@ import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/ty
 import { chain } from 'lodash'
 
 import { SyntheticOffer } from '@banx/store/nft'
+import { ZERO_BN } from '@banx/utils'
 
 type GetUpdatedBondOffer = (props: {
-  loanValue: number //? lamports
-  deltaValue: number //? lamports
-  loansAmount: number //? integer number
+  loanValue: BN
+  deltaValue: BN
+  loansAmount: BN
   syntheticOffer: SyntheticOffer
   tokenType: LendingTokenType
 }) => BondOfferV3
@@ -38,7 +40,7 @@ export const getUpdatedBondOffer: GetUpdatedBondOffer = ({
     newLoanValue: loanValue,
     newDelta: deltaValue,
     newQuantityOfLoans: loansAmount,
-    collateralsPerToken: 0,
+    collateralsPerToken: ZERO_BN,
   })
 
   return updatedBondOffer
@@ -83,7 +85,7 @@ export const getErrorMessage: GetErrorMessage = ({
     tokenType,
   })
 
-  const totalFundsAvailable = initialOfferSize + walletBalance
+  const totalFundsAvailable = initialOfferSize.toNumber() + walletBalance
 
   const isOfferInvalid = deltaValue && hasFormChanges ? deltaValue * loansAmount > loanValue : false
   const isBalanceInsufficient = !!walletBalance && offerSize > totalFundsAvailable
@@ -108,11 +110,11 @@ export const checkIsEditMode = (offerPubkey: string) =>
 
 type CalcOfferSize = (props: {
   syntheticOffer: SyntheticOffer
-  loanValue: number //? lamports
-  deltaValue: number //? lamports
-  loansAmount: number
+  loanValue: BN
+  deltaValue: BN
+  loansAmount: BN
   tokenType: LendingTokenType
-}) => number
+}) => BN
 
 export const calcOfferSize: CalcOfferSize = ({
   syntheticOffer,
@@ -124,6 +126,6 @@ export const calcOfferSize: CalcOfferSize = ({
   const offerToUpdate = { loanValue, deltaValue, loansAmount, syntheticOffer, tokenType }
   const updatedBondOffer = getUpdatedBondOffer(offerToUpdate)
 
-  const offerSize = updatedBondOffer.fundsSolOrTokenBalance + updatedBondOffer.bidSettlement
+  const offerSize = updatedBondOffer.fundsSolOrTokenBalance.add(updatedBondOffer.bidSettlement)
   return offerSize
 }

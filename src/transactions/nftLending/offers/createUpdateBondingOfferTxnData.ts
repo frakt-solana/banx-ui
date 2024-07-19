@@ -1,6 +1,9 @@
-import { web3 } from 'fbonds-core'
+import { BN, web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
-import { updatePerpetualOfferBonding } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import {
+  optimisticUpdateBondOfferBonding,
+  updatePerpetualOfferBonding,
+} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import {
   CreateTxnData,
@@ -9,7 +12,7 @@ import {
 } from 'solana-transactions-executor'
 
 import { fetchTokenBalance } from '@banx/api/common'
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { BANX_SOL_ADDRESS, BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
 import { ZERO_BN, calculateIdleFundsInOffer, isBanxSolTokenType } from '@banx/utils'
@@ -21,7 +24,7 @@ export type CreateUpdateBondingOfferTxnDataParams = {
   loanValue: number //? human number
   loansAmount: number
   deltaValue: number //? human number
-  offer: core.Offer
+  offer: coreNew.Offer
   tokenType: LendingTokenType
 }
 
@@ -36,19 +39,20 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
 ) => {
   const { loanValue, loansAmount, deltaValue, offer, tokenType } = params
 
-  const { instructions, signers, optimisticResult } = await updatePerpetualOfferBonding({
+  const {
+    instructions,
+    signers,
+    accounts: accountsCollection,
+  } = await updatePerpetualOfferBonding({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     connection: walletAndConnection.connection,
     accounts: {
       bondOfferV2: new web3.PublicKey(offer.publicKey),
       userPubkey: walletAndConnection.wallet.publicKey,
     },
-    optimistic: {
-      bondOffer: offer,
-    },
     args: {
-      loanValue,
-      delta: deltaValue,
+      loanValue: new BN(loanValue),
+      delta: new BN(deltaValue),
       quantityOfLoans: loansAmount,
       lendingTokenType: tokenType,
     },
@@ -57,7 +61,7 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
 
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
 
-  const accounts = [new web3.PublicKey(offer.publicKey)]
+  const accounts = [accountsCollection['bondOffer']]
 
   if (isBanxSolTokenType(tokenType)) {
     const banxSolBalance = await fetchTokenBalance({
@@ -68,14 +72,18 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
 
     const oldOfferSize = calculateIdleFundsInOffer(offer)
 
-    const newOffer = optimisticResult?.bondOffer
-    if (!newOffer) {
-      throw new Error('Optimistic offer doesnt exist')
-    }
-    //? Optimistic offer is broken
-    const newOfferSize = calculateIdleFundsInOffer(newOffer)
+    const updatedOffer = optimisticUpdateBondOfferBonding({
+      bondOffer: offer,
+      newLoanValue: new BN(loanValue),
+      newDelta: new BN(deltaValue),
+      newQuantityOfLoans: new BN(loansAmount),
+      collateralsPerToken: ZERO_BN,
+    })
 
-    const diff = newOfferSize.sub(oldOfferSize).sub(banxSolBalance)
+    //? Optimistic offer is broken
+    const updatedOfferSize = calculateIdleFundsInOffer(updatedOffer)
+
+    const diff = updatedOfferSize.sub(oldOfferSize).sub(banxSolBalance)
 
     if (diff.gt(ZERO_BN)) {
       return await banxSol.combineWithBuyBanxSolInstructions(

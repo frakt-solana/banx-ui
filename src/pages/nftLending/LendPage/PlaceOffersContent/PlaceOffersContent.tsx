@@ -49,10 +49,10 @@ const PlaceOfferContent = () => {
         <div className={styles.marketsList}>
           {markets.map((market) => (
             <LendCard
-              key={market.marketPubkey}
+              key={market.marketPubkey.toBase58()}
               market={market}
-              onCardClick={() => onLendCardClick(market.marketPubkey)}
-              isCardOpen={visibleMarketPubkey === market.marketPubkey}
+              onCardClick={() => onLendCardClick(market.marketPubkey.toBase58())}
+              isCardOpen={visibleMarketPubkey === market.marketPubkey.toBase58()}
             />
           ))}
           <div ref={fetchMoreTrigger} />

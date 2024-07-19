@@ -8,13 +8,13 @@ import { TensorLink } from '@banx/components/SolanaLinks'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { NFT_MARKETS_WITH_CUSTOM_APR } from '@banx/constants'
 import { Fire } from '@banx/icons'
 
 import styles from './MarketOverviewInfo.module.less'
 
-export const MarketMainInfo: FC<{ market: core.MarketPreview }> = ({ market }) => {
+export const MarketMainInfo: FC<{ market: coreNew.MarketPreview }> = ({ market }) => {
   const { collectionName, isHot, collectionFloor, bestOffer, tensorSlug } = market
 
   return (
@@ -34,12 +34,12 @@ export const MarketMainInfo: FC<{ market: core.MarketPreview }> = ({ market }) =
         <div className={styles.mainInfoStats}>
           <StatInfo
             label="Floor"
-            value={<DisplayValue value={collectionFloor} />}
+            value={<DisplayValue value={collectionFloor.toNumber()} />}
             tooltipText="Lowest listing price on marketplaces, excluding taker royalties and fees"
           />
           <StatInfo
             label="Top offer"
-            value={<DisplayValue value={bestOffer} />}
+            value={<DisplayValue value={bestOffer.toNumber()} />}
             tooltipText="Highest offer among all lenders providing liquidity for this collection"
           />
         </div>
@@ -49,27 +49,27 @@ export const MarketMainInfo: FC<{ market: core.MarketPreview }> = ({ market }) =
 }
 
 interface MarketAdditionalInfoProps {
-  market: core.MarketPreview
+  market: coreNew.MarketPreview
   isCardOpen: boolean
 }
 
 export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isCardOpen }) => {
   const { loansTvl, offerTvl, activeBondsAmount, marketPubkey } = market
 
-  const customApr = NFT_MARKETS_WITH_CUSTOM_APR[marketPubkey]
+  const customApr = NFT_MARKETS_WITH_CUSTOM_APR[marketPubkey.toBase58()]
   const apr = customApr !== undefined ? customApr / 100 : MAX_APR_VALUE
 
   return (
     <div className={classNames(styles.additionalInfoStats, { [styles.hidden]: isCardOpen })}>
       <StatInfo
         label="In loans"
-        value={<DisplayValue value={loansTvl} />}
+        value={<DisplayValue value={loansTvl.toNumber()} />}
         secondValue={`in ${activeBondsAmount} loans`}
         tooltipText="Liquidity that is locked in active loans"
       />
       <StatInfo
         label="In offers"
-        value={<DisplayValue value={offerTvl} />}
+        value={<DisplayValue value={offerTvl.toNumber()} />}
         tooltipText="Total liquidity currently available in pending offers"
       />
       <StatInfo

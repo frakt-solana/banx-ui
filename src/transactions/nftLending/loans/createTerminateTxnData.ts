@@ -1,6 +1,5 @@
 import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
-import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import { terminatePerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import {
   BondOfferV3,
@@ -13,14 +12,14 @@ import {
   WalletAndConnection,
 } from 'solana-transactions-executor'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 
 import { parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
 export type CreateTerminateTxnDataParams = {
-  loan: core.Loan
+  loan: coreNew.Loan
 }
 
 type CreateTerminateTxnData = (
@@ -36,7 +35,11 @@ export const createTerminateTxnData: CreateTerminateTxnData = async (
 
   const { bondTradeTransaction, fraktBond } = loan
 
-  const { instructions, signers, optimisticResult } = await terminatePerpetualLoan({
+  const {
+    instructions,
+    signers,
+    accounts: accountsCollection,
+  } = await terminatePerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
@@ -44,19 +47,14 @@ export const createTerminateTxnData: CreateTerminateTxnData = async (
       fbond: new web3.PublicKey(fraktBond.publicKey),
       userPubkey: walletAndConnection.wallet.publicKey,
     },
-    optimistic: {
-      fraktBond,
-      bondOffer: getMockBondOffer(),
-      bondTradeTransaction,
-    },
     connection: walletAndConnection.connection,
     sendTxn: sendTxnPlaceHolder,
   })
 
   const accounts = [
-    new web3.PublicKey(optimisticResult.bondOffer.publicKey),
-    new web3.PublicKey(optimisticResult.bondTradeTransaction.publicKey),
-    new web3.PublicKey(optimisticResult.fraktBond.publicKey),
+    accountsCollection['bondOffer'],
+    accountsCollection['bondTradeTransaction'],
+    accountsCollection['fraktBond'],
   ]
 
   return {

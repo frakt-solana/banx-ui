@@ -3,28 +3,28 @@ import { BANX_SOL_STAKING_YEILD_APR } from 'fbonds-core/lib/fbond-protocol/const
 import {
   calculateBanxSolStakingRewards,
   calculateCurrentInterestSolPure,
+  calculateCurrentInterestSolPureBN,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { sumBy } from 'lodash'
 import moment from 'moment'
 
 import { ClusterStats } from '@banx/api/common'
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { isOfferStateClosed } from '@banx/utils'
 
 export const getLenderVaultInfo = (
-  offers: core.UserOffer[],
+  offers: coreNew.UserOffer[],
   clusterStats: ClusterStats | undefined,
 ) => {
   const { slot = 0, epochStartedAt = 0 } = clusterStats || {}
 
   const closedOffers = offers.filter(({ offer }) => isOfferStateClosed(offer.pairState))
 
-  const totalAccruedInterest = sumBy(offers, ({ offer }) => offer.concentrationIndex)
-  const totalRepaymets = sumBy(offers, ({ offer }) => offer.bidCap)
+  const totalAccruedInterest = sumBy(offers, ({ offer }) => offer.concentrationIndex.toNumber())
+  const totalRepaymets = sumBy(offers, ({ offer }) => offer.bidCap.toNumber())
 
-  const totalClosedOffersValue = sumBy(
-    closedOffers,
-    ({ offer }) => offer.fundsSolOrTokenBalance + offer.bidSettlement,
+  const totalClosedOffersValue = sumBy(closedOffers, ({ offer }) =>
+    offer.fundsSolOrTokenBalance.add(offer.bidSettlement).toNumber(),
   )
 
   const totalLstYield = sumBy(offers, ({ offer }) =>
@@ -39,7 +39,7 @@ export const getLenderVaultInfo = (
   )
 
   const totalFundsInNextEpoch = sumBy(offers, ({ offer }) =>
-    calculateYieldInNextEpoch(offer, clusterStats),
+    calculateYieldInNextEpoch(offer, clusterStats).toNumber(),
   )
 
   return {
@@ -54,7 +54,11 @@ export const getLenderVaultInfo = (
   }
 }
 
-type CalculateLstYield = (props: { offer: core.Offer; slot: number; epochStartedAt: number }) => BN
+type CalculateLstYield = (props: {
+  offer: coreNew.Offer
+  slot: number
+  epochStartedAt: number
+}) => BN
 const calculateLstYield: CalculateLstYield = ({ offer, slot, epochStartedAt }) => {
   const totalYield = calculateBanxSolStakingRewards({
     bondOffer: offer,
@@ -66,7 +70,7 @@ const calculateLstYield: CalculateLstYield = ({ offer, slot, epochStartedAt }) =
 }
 
 export const calculateYieldInCurrentEpoch = (
-  offer: core.Offer,
+  offer: coreNew.Offer,
   clusterStats: ClusterStats | undefined,
 ) => {
   const {
@@ -76,18 +80,18 @@ export const calculateYieldInCurrentEpoch = (
     slotsInEpoch = 0,
   } = clusterStats || {}
 
-  const epochWhenOfferChanged = offer.lastCalculatedSlot / slotsInEpoch
+  const epochWhenOfferChanged = offer.lastCalculatedSlot.toNumber() / slotsInEpoch
 
   const loanValue =
     epochWhenOfferChanged < epoch
-      ? offer.fundsInCurrentEpoch + offer.fundsInNextEpoch
+      ? offer.fundsInCurrentEpoch.add(offer.fundsInNextEpoch)
       : offer.fundsInCurrentEpoch
 
   const currentTimeInUnix = moment().unix()
   const epochEndedAt = currentTimeInUnix + epochApproxTimeRemaining
 
   return calculateCurrentInterestSolPure({
-    loanValue,
+    loanValue: loanValue.toNumber(),
     startTime: epochStartedAt,
     currentTime: epochEndedAt,
     rateBasePoints: BANX_SOL_STAKING_YEILD_APR,
@@ -95,7 +99,7 @@ export const calculateYieldInCurrentEpoch = (
 }
 
 export const calculateYieldInNextEpoch = (
-  offer: core.Offer,
+  offer: coreNew.Offer,
   clusterStats: ClusterStats | undefined,
 ) => {
   const { epochApproxTimeRemaining = 0, epochDuration = 0 } = clusterStats || {}
@@ -103,10 +107,10 @@ export const calculateYieldInNextEpoch = (
   const currentTimeInUnix = moment().unix()
   const epochStartedAt = currentTimeInUnix + epochApproxTimeRemaining
 
-  return calculateCurrentInterestSolPure({
-    loanValue: offer.fundsInCurrentEpoch + offer.fundsInNextEpoch,
-    startTime: epochStartedAt,
-    currentTime: epochStartedAt + epochDuration,
-    rateBasePoints: BANX_SOL_STAKING_YEILD_APR,
+  return calculateCurrentInterestSolPureBN({
+    loanValue: offer.fundsInCurrentEpoch.add(offer.fundsInNextEpoch),
+    startTime: new BN(epochStartedAt),
+    currentTime: new BN(epochStartedAt + epochDuration),
+    rateBasePoints: new BN(BANX_SOL_STAKING_YEILD_APR),
   })
 }

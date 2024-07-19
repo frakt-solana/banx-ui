@@ -10,7 +10,7 @@ import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { useIsLedger } from '@banx/store/common'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -40,12 +40,12 @@ import { getTerminateStatsInfo } from './helpers'
 import styles from './Summary.module.less'
 
 interface SummaryProps {
-  loansToClaim: core.Loan[]
-  loansToTerminate: core.Loan[]
-  updateOrAddLoan: (loan: core.Loan) => void
+  loansToClaim: coreNew.Loan[]
+  loansToTerminate: coreNew.Loan[]
+  updateOrAddLoan: (loan: coreNew.Loan) => void
   hideLoans: (...mints: string[]) => void
-  selectedLoans: core.Loan[]
-  setSelection: (loans: core.Loan[], walletPublicKey: string) => void
+  selectedLoans: coreNew.Loan[]
+  setSelection: (loans: coreNew.Loan[], walletPublicKey: string) => void
 }
 
 export const Summary: FC<SummaryProps> = ({
@@ -151,7 +151,7 @@ export const Summary: FC<SummaryProps> = ({
             enqueueSnackbar({ message: 'Collaterals successfully claimed', type: 'success' })
 
             const mintsToHidden = chain(confirmed)
-              .map(({ params }) => params.loan.nft.mint)
+              .map(({ params }) => params.loan.nft.mint.toBase58())
               .compact()
               .value()
 

@@ -8,7 +8,7 @@ import { TensorLink } from '@banx/components/SolanaLinks'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { ChevronDown } from '@banx/icons'
 
 import ExpandedCardContent from '../ExpandedCardContent'
@@ -16,7 +16,7 @@ import ExpandedCardContent from '../ExpandedCardContent'
 import styles from './BorrowCard.module.less'
 
 interface BorrowCardProps {
-  market: core.MarketPreview
+  market: coreNew.MarketPreview
   onClick: () => void
   isOpen: boolean
 }
@@ -43,7 +43,7 @@ const BorrowCard: FC<BorrowCardProps> = ({ market, onClick, isOpen }) => {
 
 export default BorrowCard
 
-const MarketMainInfo: FC<{ market: core.MarketPreview }> = ({ market }) => {
+const MarketMainInfo: FC<{ market: coreNew.MarketPreview }> = ({ market }) => {
   const { collectionName, collectionImage, collectionFloor, tensorSlug } = market
 
   return (
@@ -56,7 +56,7 @@ const MarketMainInfo: FC<{ market: core.MarketPreview }> = ({ market }) => {
         </div>
         <StatInfo
           label="Floor"
-          value={<DisplayValue value={collectionFloor} />}
+          value={<DisplayValue value={collectionFloor.toNumber()} />}
           tooltipText="Lowest listing price on marketplaces, excluding taker royalties and fees"
         />
       </div>
@@ -65,7 +65,7 @@ const MarketMainInfo: FC<{ market: core.MarketPreview }> = ({ market }) => {
 }
 
 interface MarketAdditionalInfoProps {
-  market: core.MarketPreview
+  market: coreNew.MarketPreview
   isOpen: boolean
 }
 const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isOpen }) => {
@@ -75,7 +75,7 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isOpen })
     <div className={classNames(styles.additionalInfoStats, { [styles.opened]: isOpen })}>
       <StatInfo
         label="In loans"
-        value={<DisplayValue value={loansTvl} />}
+        value={<DisplayValue value={loansTvl.toNumber()} />}
         secondValue={`in ${activeBondsAmount} loans`}
         tooltipText="Liquidity that is locked in active loans"
         classNamesProps={{ container: styles.additionalStat }}

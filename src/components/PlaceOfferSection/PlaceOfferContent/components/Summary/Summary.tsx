@@ -1,24 +1,25 @@
 import { FC } from 'react'
 
-import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { BN } from 'fbonds-core'
+import { calculateCurrentInterestSolPureBN } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import moment from 'moment'
 
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { SECONDS_IN_DAY } from '@banx/constants'
-import { HealthColorIncreasing, calculateApr, getColorByPercent } from '@banx/utils'
+import { HealthColorIncreasing, ZERO_BN, calculateApr, getColorByPercent } from '@banx/utils'
 
 import { calcMaxLtv, calcOfferSize } from './helpers'
 
 import styles from './Summary.module.less'
 
 interface OfferSummaryProps {
-  initialOffer: core.Offer | undefined
-  updatedOffer: core.Offer | undefined
+  initialOffer: coreNew.Offer | undefined
+  updatedOffer: coreNew.Offer | undefined
   hasFormChanges: boolean
-  market: core.MarketPreview | undefined
+  market: coreNew.MarketPreview | undefined
 }
 
 export const MainSummary: FC<OfferSummaryProps> = ({
@@ -27,20 +28,25 @@ export const MainSummary: FC<OfferSummaryProps> = ({
   market,
   hasFormChanges,
 }) => {
-  const { collectionFloor = 0 } = market || {}
+  const { collectionFloor = ZERO_BN } = market || {}
 
-  const initialMaxOfferValue = initialOffer?.validation.loanToValueFilter || 0
-  const updatedMaxOfferValue = updatedOffer?.validation.loanToValueFilter || 0
-  const maxOfferValue = Math.max(initialMaxOfferValue, updatedMaxOfferValue)
+  const initialMaxOfferValue = initialOffer?.validation.loanToValueFilter || ZERO_BN
+  const updatedMaxOfferValue = updatedOffer?.validation.loanToValueFilter || ZERO_BN
+  const maxOfferValue = BN.max(initialMaxOfferValue, updatedMaxOfferValue)
 
-  const maxLtv = calcMaxLtv({ initialOffer, updatedOffer, collectionFloor, hasFormChanges })
+  const maxLtv = calcMaxLtv({
+    initialOffer,
+    updatedOffer,
+    collectionFloor: collectionFloor.toNumber(),
+    hasFormChanges,
+  })
 
   const maxDynamicApr =
     calculateApr({
       loanValue: maxOfferValue,
       collectionFloor,
       marketPubkey: market?.marketPubkey,
-    }) / 100
+    }).toNumber() / 100
 
   return (
     <div className={styles.mainSummary}>
@@ -70,8 +76,8 @@ export const AdditionalSummary: FC<OfferSummaryProps> = ({
   hasFormChanges,
   market,
 }) => {
-  const { collectionFloor = 0 } = market || {}
-  const loansQuantity = updatedOffer?.buyOrdersQuantity || 0
+  const { collectionFloor = ZERO_BN } = market || {}
+  const loansQuantity = updatedOffer?.buyOrdersQuantity || ZERO_BN
   const offerSize = calcOfferSize({ initialOffer, updatedOffer, hasFormChanges })
 
   const maxDynamicApr = calculateApr({
@@ -80,10 +86,10 @@ export const AdditionalSummary: FC<OfferSummaryProps> = ({
     marketPubkey: updatedOffer?.hadoMarket,
   })
 
-  const weeklyFee = calculateCurrentInterestSolPure({
+  const weeklyFee = calculateCurrentInterestSolPureBN({
     loanValue: offerSize,
-    startTime: moment().unix(),
-    currentTime: moment().unix() + SECONDS_IN_DAY * 7,
+    startTime: new BN(moment().unix()),
+    currentTime: new BN(moment().unix() + SECONDS_IN_DAY * 7),
     rateBasePoints: maxDynamicApr,
   })
 
@@ -97,14 +103,14 @@ export const AdditionalSummary: FC<OfferSummaryProps> = ({
       />
       <StatInfo
         label="Total liquidity in offer"
-        value={<DisplayValue value={offerSize} />}
+        value={<DisplayValue value={offerSize.toNumber()} />}
         tooltipText="Your total liquidity currently available in offer"
         classNamesProps={{ value: styles.fixedValueContent }}
         flexType="row"
       />
       <StatInfo
         label="Est. weekly interest"
-        value={<DisplayValue value={weeklyFee} />}
+        value={<DisplayValue value={weeklyFee.toNumber()} />}
         tooltipText="Expected interest on a loan over the course of a week"
         classNamesProps={{ value: styles.fixedValueContent }}
         flexType="row"

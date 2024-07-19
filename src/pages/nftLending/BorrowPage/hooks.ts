@@ -8,7 +8,7 @@ import { produce } from 'immer'
 import { chain, filter, groupBy, isEmpty, map, maxBy, sortBy, sumBy, uniqBy } from 'lodash'
 import { create } from 'zustand'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import {
   isOfferNewer,
   isOptimisticLoanExpired,
@@ -32,7 +32,9 @@ import { BorrowTabName } from './BorrowPage'
 import { useCartState } from './InstantLoansContent/cartState'
 import { SimpleOffersByMarket } from './InstantLoansContent/types'
 
-export const USE_BORROW_NFTS_V2_QUERY_KEY = 'walletBorrowNftsV2'
+//TODO Remove old data
+// export const USE_BORROW_NFTS_V2_QUERY_KEY = 'walletBorrowNftsV2'
+export const USE_BORROW_NFTS_V2_QUERY_KEY = 'walletBorrowNftsV3'
 
 export const useBorrowNfts = () => {
   const { publicKey: walletPublicKey } = useWallet()
@@ -46,7 +48,7 @@ export const useBorrowNfts = () => {
 
   const { data, isLoading, isFetched, isFetching } = useQuery(
     [USE_BORROW_NFTS_V2_QUERY_KEY, tokenType, walletPubkeyString],
-    () => core.fetchBorrowNftsAndOffers({ walletPubkey: walletPubkeyString, tokenType }),
+    () => coreNew.fetchBorrowNftsAndOffers({ walletPubkey: walletPubkeyString, tokenType }),
     {
       enabled: !!walletPublicKey,
       staleTime: 5 * 1000,
@@ -64,11 +66,12 @@ export const useBorrowNfts = () => {
       //? Filter closed offers from LS optimistics
       .filter(({ offer }) => !isOfferStateClosed(offer?.pairState))
       .filter(({ offer }) => {
-        const sameOfferFromBE = data.offers[offer.hadoMarket]?.find(
-          ({ publicKey }) => publicKey === offer.publicKey,
+        const sameOfferFromBE = data.offers[offer.hadoMarket.toBase58()]?.find(({ publicKey }) =>
+          publicKey.equals(offer.publicKey),
         )
         //TODO Offer may exist from Lend page. Prevent purging
-        if (!sameOfferFromBE && offer.assetReceiver === walletPublicKey.toBase58()) return false
+        if (!sameOfferFromBE && offer.assetReceiver.toBase58() === walletPublicKey.toBase58())
+          return false
         if (!sameOfferFromBE) return true
         const isBEOfferNewer = isOfferNewer(sameOfferFromBE, offer)
         return isBEOfferNewer
@@ -91,7 +94,7 @@ export const useBorrowNfts = () => {
       //? Filter closed offers from LS optimistics
       .filter(({ offer }) => !isOfferStateClosed(offer?.pairState))
       //? Filter own offers from LS optimistics
-      .filter(({ offer }) => offer?.assetReceiver !== walletPublicKey?.toBase58())
+      .filter(({ offer }) => offer?.assetReceiver.toBase58() !== walletPublicKey?.toBase58())
       .value()
 
     const optimisticsByMarket = groupBy(optimisticsFiltered, ({ offer }) => offer.hadoMarket)
@@ -100,8 +103,8 @@ export const useBorrowNfts = () => {
       .entries()
       .map(([marketPubkey, offers]) => {
         const nextOffers = offers.filter((offer) => {
-          const sameOptimistic = optimisticsByMarket[offer.hadoMarket]?.find(
-            ({ offer: optimisticOffer }) => optimisticOffer.publicKey === offer.publicKey,
+          const sameOptimistic = optimisticsByMarket[offer.hadoMarket.toBase58()]?.find(
+            ({ offer: optimisticOffer }) => optimisticOffer.publicKey.equals(offer.publicKey),
           )
           if (!sameOptimistic) return true
           return isOfferNewer(offer, sameOptimistic.offer)
@@ -118,7 +121,7 @@ export const useBorrowNfts = () => {
         return [marketPubkey, mergedOffers]
       })
       .fromPairs()
-      .value() as Record<string, core.Offer[]>
+      .value() as Record<string, coreNew.Offer[]>
   }, [data, optimisticOffers, walletPublicKey])
 
   const simpleOffers = useMemo(() => {
@@ -224,7 +227,7 @@ export const useBorrowNfts = () => {
 }
 
 const calcMaxBorrow = (
-  nfts: core.BorrowNft[],
+  nfts: coreNew.BorrowNft[],
   offers: SimpleOffersByMarket,
   tokenType: LendingTokenType,
 ) => {
@@ -239,7 +242,7 @@ const calcMaxBorrow = (
 
           return adjustBorrowValueWithSolanaRentFee({
             value: new BN(loanValueWithProtocolFee),
-            marketPubkey: hadoMarket,
+            marketPubkey: hadoMarket.toBase58(),
             tokenType,
           }).toNumber()
         },

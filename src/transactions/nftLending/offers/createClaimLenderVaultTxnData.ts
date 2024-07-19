@@ -13,7 +13,7 @@ import {
 } from 'solana-transactions-executor'
 
 import { ClusterStats } from '@banx/api/common'
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
 import { ZERO_BN, isBanxSolTokenType } from '@banx/utils'
@@ -22,7 +22,7 @@ import { parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
 export type CreateClaimLenderVaultTxnDataParams = {
-  offer: core.Offer
+  offer: coreNew.Offer
   tokenType: LendingTokenType
   clusterStats: ClusterStats | undefined
 }
@@ -50,7 +50,6 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
     const { instructions: claimInterestInstructions, signers: claimInterestSigners } =
       await claimPerpetualBondOfferInterest({
         accounts: accountsParams,
-        optimistic: { bondOffer: offer },
         args: {
           lendingTokenType: tokenType,
         },
@@ -67,7 +66,6 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
     const { instructions: claimRepaymetsInstructions, signers: claimRepaymetsSigners } =
       await claimPerpetualBondOfferRepayments({
         accounts: accountsParams,
-        optimistic: { bondOffer: offer },
         args: {
           lendingTokenType: tokenType,
         },
@@ -93,11 +91,6 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
     const { instructions: claimYieldInstructions, signers: claimYieldSigners } =
       await claimPerpetualBondOfferStakingRewards({
         accounts: accountsParams,
-        optimistic: {
-          bondOffer: offer,
-          nowSlot,
-          currentEpochStartAt,
-        },
         programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
         connection: walletAndConnection.connection,
         sendTxn: sendTxnPlaceHolder,

@@ -7,7 +7,7 @@ import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { NFT_MARKETS_WITH_CUSTOM_APR } from '@banx/constants'
 import { Fire } from '@banx/icons'
 import { useMarketsPreview } from '@banx/pages/nftLending/LendPage/hooks'
@@ -37,7 +37,7 @@ export const useLendPageContent = () => {
 
   const showEmptyList = !isLoading && !filteredHotMarkets?.length
 
-  const searchSelectParams: SearchSelectProps<core.MarketPreview> = {
+  const searchSelectParams: SearchSelectProps<coreNew.MarketPreview> = {
     options: isHotFilterActive ? hotMarkets : marketsPreview,
     selectedOptions: selectedMarkets,
     labels: ['Collection', 'Max APR'],

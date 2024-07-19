@@ -5,7 +5,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 
-import { core } from '@banx/api/nft'
+import { coreNew } from '@banx/api/nft'
 import { ViewState, useTableView } from '@banx/store/common'
 import { useTokenType } from '@banx/store/nft'
 
@@ -65,7 +65,7 @@ export const RequestsTable = () => {
   )
 
   const onRowClick = useCallback(
-    (loan: core.Loan) => toggleLoanInSelection(loan, walletPublicKeyString),
+    (loan: coreNew.Loan) => toggleLoanInSelection(loan, walletPublicKeyString),
     [toggleLoanInSelection, walletPublicKeyString],
   )
 
