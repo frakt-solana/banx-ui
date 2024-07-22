@@ -119,24 +119,16 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
     .add(calculateLstYield)
 
   if (isBanxSolTokenType(tokenType) && totalClaimableValue.gt(ZERO_BN)) {
-    const instuctionsParams = {
-      params,
-      accounts,
-      inputAmount: totalClaimableValue,
-      instructions,
-      signers,
-    }
-
-    const MIN_BANX_SOL_FOR_JUP_SWAP = new BN(100 * 1e9) //? 100 banxSOL
-
-    if (totalClaimableValue.gt(MIN_BANX_SOL_FOR_JUP_SWAP)) {
-      return await banxSol.combineWithSellBanxSolJupInstructions(
-        instuctionsParams,
-        walletAndConnection,
-      )
-    }
-
-    return await banxSol.combineWithSellBanxSolInstructions(instuctionsParams, walletAndConnection)
+    return await banxSol.combineWithSellBanxSolInstructions(
+      {
+        params,
+        accounts,
+        inputAmount: totalClaimableValue,
+        instructions,
+        signers,
+      },
+      walletAndConnection,
+    )
   }
 
   return {
