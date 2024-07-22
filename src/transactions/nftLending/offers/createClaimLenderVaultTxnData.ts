@@ -15,8 +15,7 @@ import {
 import { ClusterStats } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
-import { banxSol } from '@banx/transactions'
-import { ZERO_BN, isBanxSolTokenType, isOfferStateClosed } from '@banx/utils'
+import { ZERO_BN, isBanxSolTokenType } from '@banx/utils'
 
 import { parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
@@ -108,36 +107,6 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
   }
 
   const accounts = [new web3.PublicKey(offer.publicKey)]
-
-  const closedOffersValue = isOfferStateClosed(offer.pairState)
-    ? offer.fundsSolOrTokenBalance + offer.bidSettlement
-    : 0
-
-  const totalClaimableValue = new BN(offer.concentrationIndex)
-    .add(new BN(offer.bidCap))
-    .add(new BN(closedOffersValue))
-    .add(calculateLstYield)
-
-  if (isBanxSolTokenType(tokenType) && totalClaimableValue.gt(ZERO_BN)) {
-    const instuctionsParams = {
-      params,
-      accounts,
-      inputAmount: totalClaimableValue,
-      instructions,
-      signers,
-    }
-
-    const MIN_BANX_SOL_FOR_JUP_SWAP = new BN(100 * 1e9) //? 100 banxSOL
-
-    if (totalClaimableValue.gt(MIN_BANX_SOL_FOR_JUP_SWAP)) {
-      return await banxSol.combineWithSellBanxSolJupInstructions(
-        instuctionsParams,
-        walletAndConnection,
-      )
-    }
-
-    return await banxSol.combineWithSellBanxSolInstructions(instuctionsParams, walletAndConnection)
-  }
 
   return {
     params,
