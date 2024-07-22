@@ -3,11 +3,9 @@ import { useMemo, useState } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { first, groupBy, isEmpty, map } from 'lodash'
 
-import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/tokens'
-import { NFT_MARKETS_WITH_CUSTOM_APR } from '@banx/constants'
 import { createGlobalState } from '@banx/store'
 
 import { useTokenMarketsPreview } from '../../hooks'
@@ -76,27 +74,23 @@ const createSearchSelectParams = ({
   const searchSelectOptions = map(marketsGroupedByTicker, (groupedMarkets) => {
     const firstMarketInGroup = first(groupedMarkets)
     const { ticker = '', logoUrl = '' } = firstMarketInGroup?.collateral || {}
+    const marketApr = firstMarketInGroup?.marketApr
 
-    return { ticker, logoUrl }
+    return { ticker, logoUrl, marketApr }
   })
 
   const searchSelectParams = {
     options: searchSelectOptions,
     selectedOptions,
     onChange,
-    labels: ['Collateral', 'APR'],
+    labels: ['Collateral', 'Max APR'],
     optionKeys: {
       labelKey: 'ticker',
       valueKey: 'marketPubkey',
       imageKey: 'logoUrl',
       secondLabel: {
-        key: 'marketPubkey',
-        //TODO Refactor this piece of shit (code)
-        format: (marketPubkey: unknown) => {
-          const customApr = NFT_MARKETS_WITH_CUSTOM_APR[marketPubkey as string]
-          const apr = customApr !== undefined ? customApr / 100 : MAX_APR_VALUE
-          return createPercentValueJSX(apr)
-        },
+        key: 'marketApr',
+        format: (value: number) => createPercentValueJSX(value),
       },
     },
   }

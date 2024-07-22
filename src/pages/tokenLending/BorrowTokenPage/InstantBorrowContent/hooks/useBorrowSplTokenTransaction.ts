@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BN } from 'fbonds-core'
@@ -14,7 +14,7 @@ import {
 } from '@banx/components/modals'
 
 import { Offer } from '@banx/api/nft'
-import { BorrowSplTokenOffers, core } from '@banx/api/tokens'
+import { BorrowSplTokenOffers, CollateralToken, core } from '@banx/api/tokens'
 import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
 import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
@@ -40,18 +40,23 @@ import {
   enqueueWaitingConfirmation,
 } from '@banx/utils'
 
-import { BorrowToken, MOCK_APR_RATE } from '../../constants'
+import { BorrowToken } from '../../constants'
+import { calculateTokenBorrowApr } from '../helpers'
 
 type TransactionData = {
   offer: Offer
   loanValue: number
-  token: BorrowToken
+  collateral: CollateralToken
+  aprRate: number
 }
 
-export const useBorrowSplTokenTransaction = (
-  token: BorrowToken,
-  splTokenOffers: BorrowSplTokenOffers[],
-) => {
+export const useBorrowSplTokenTransaction = (props: {
+  collateral: CollateralToken | undefined
+  borrowToken: BorrowToken | undefined
+  splTokenOffers: BorrowSplTokenOffers[]
+}) => {
+  const { collateral, borrowToken, splTokenOffers } = props
+
   const wallet = useWallet()
   const { connection } = useConnection()
   const navigate = useNavigate()
@@ -60,9 +65,11 @@ export const useBorrowSplTokenTransaction = (
   const { isLedger } = useIsLedger()
   const { tokenType } = useNftTokenType()
 
+  const [isBorrowing, setIsBorrowing] = useState(false)
+
   const { add: addLoansOptimistic } = useTokenLoansOptimistic()
 
-  const { offers, updateOrAddOffer } = useTokenMarketOffers(token.marketPubkey || '')
+  const { offers, updateOrAddOffer } = useTokenMarketOffers(collateral?.marketPubkey || '')
 
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
@@ -93,36 +100,48 @@ export const useBorrowSplTokenTransaction = (
 
     return splTokenOffers.reduce<TransactionData[]>((acc, offer) => {
       const offerData = find(offers, ({ publicKey }) => publicKey === offer.offerPublicKey)
+
       const loanValueToNumber = new BN(offer.amountToGet, 'hex').toNumber()
+
+      if (!collateral || !borrowToken) return acc
+
+      const aprRate = calculateTokenBorrowApr({
+        offer,
+        collateralToken: collateral,
+        borrowToken,
+      })
 
       if (offerData) {
         acc.push({
           offer: offerData,
           loanValue: loanValueToNumber,
-          token,
+          collateral,
+          aprRate,
         })
       }
 
       return acc
     }, [])
-  }, [token, offers, splTokenOffers])
+  }, [borrowToken, collateral, offers, splTokenOffers])
 
-  const executeBorrow = async () => {
+  const borrow = async () => {
     const loadingSnackbarId = uniqueId()
 
     if (!transactionsData.length) return
 
     try {
+      setIsBorrowing(true)
+
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const txnsData = await Promise.all(
-        transactionsData.map(({ token, loanValue, offer }) =>
+        transactionsData.map(({ collateral, aprRate, loanValue, offer }) =>
           createBorrowSplTokenTxnData(
             {
               loanValue,
-              collateral: token,
+              collateral,
               offer,
-              aprRate: MOCK_APR_RATE, //TODO (TokenLending): Need to calc in the future
+              aprRate,
               tokenType,
             },
             walletAndConnection,
@@ -160,7 +179,7 @@ export const useBorrowSplTokenTransaction = (
                   publicKey: fraktBond.publicKey,
                   fraktBond: fraktBond,
                   bondTradeTransaction: bondTradeTransaction,
-                  collateral: params.collateral.meta,
+                  collateral: params.collateral.collateral,
                   collateralPrice: params.collateral.collateralPrice,
                 },
                 offer: bondOffer,
@@ -206,8 +225,10 @@ export const useBorrowSplTokenTransaction = (
         walletPubkey: wallet?.publicKey?.toBase58(),
         transactionName: 'BorrowSplToken',
       })
+    } finally {
+      setIsBorrowing(false)
     }
   }
 
-  return { executeBorrow }
+  return { borrow, isBorrowing }
 }

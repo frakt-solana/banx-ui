@@ -4,9 +4,11 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { Offer, OfferSchema } from '@banx/api/nft'
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
-import { convertToMarketType } from '../../helpers'
+import { convertToMarketType, convertToOutputToken } from '../../helpers'
 import {
   AllTokenLoansRequestsResponse,
+  CollateralToken,
+  CollateralTokenSchema,
   TokenLoan,
   TokenLoanSchema,
   TokenLoansRequests,
@@ -158,12 +160,6 @@ export const fetchTokenLenderLoans: FetchTokenLenderLoans = async ({
   return data.data ?? []
 }
 
-export enum OutputToken {
-  SOL = 'SOL',
-  USDC = 'USDC',
-  BanxSOL = 'BanxSOL',
-}
-
 export interface BorrowSplTokenOffers {
   offerPublicKey: string
   amountToGive: string
@@ -172,19 +168,21 @@ export interface BorrowSplTokenOffers {
 
 type FetchBorrowSplTokenOffers = (props: {
   market: string
-  outputToken: string
+  outputToken: LendingTokenType
   type: 'input' | 'output'
   amount: string //? hex number string
+  walletPubkey?: string
 }) => Promise<BorrowSplTokenOffers[]>
 export const fetchBorrowSplTokenOffers: FetchBorrowSplTokenOffers = async (props) => {
-  const { market, outputToken, type, amount } = props
+  const { market, outputToken, type, amount, walletPubkey } = props
 
   const queryParams = new URLSearchParams({
     isPrivate: String(IS_PRIVATE_MARKETS),
     type: String(type),
     amount: String(amount),
     market: String(market),
-    outputToken: String(outputToken),
+    outputToken: String(convertToOutputToken(outputToken)),
+    excludeWallet: String(walletPubkey),
   })
 
   const { data } = await axios.get<{ data: BorrowSplTokenOffers[] }>(
@@ -215,6 +213,30 @@ export const fetchAllTokenLoansRequests: FetchAllTokenLoansRequests = async ({
 
   try {
     await TokenLoansRequestsSchema.parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
+  }
+
+  return data.data
+}
+
+export const fetchCollateralsList = async (props: {
+  walletPubkey?: string
+  marketType: LendingTokenType
+}) => {
+  const { walletPubkey, marketType } = props
+
+  const queryParams = new URLSearchParams({
+    isPrivate: String(IS_PRIVATE_MARKETS),
+    marketType: String(convertToMarketType(marketType)),
+  })
+
+  const { data } = await axios.get<{ data: CollateralToken[] }>(
+    `${BACKEND_BASE_URL}/spl-assets/${walletPubkey}?${queryParams?.toString()}`,
+  )
+
+  try {
+    await CollateralTokenSchema.array().parseAsync(data.data)
   } catch (validationError) {
     console.error('Schema validation error:', validationError)
   }

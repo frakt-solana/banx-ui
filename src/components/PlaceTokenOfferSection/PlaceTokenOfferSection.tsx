@@ -88,7 +88,11 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
         </div>
 
         <MainSummary market={market} collateralPerToken={parseFloat(collateralsPerTokenString)} />
-        <AdditionalSummary offerSize={parseFloat(offerSizeString)} />
+        <AdditionalSummary
+          market={market}
+          collateralPerToken={parseFloat(collateralsPerTokenString)}
+          offerSize={parseFloat(offerSizeString)}
+        />
 
         <ActionsButtons
           onCreateOffer={onCreateTokenOffer}

@@ -1,14 +1,10 @@
-import { FC } from 'react'
-
 import { useWallet } from '@solana/wallet-adapter-react'
 
 import { Button } from '@banx/components/Buttons'
-import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
-import { DisplayValue } from '@banx/components/TableComponents'
 
 import { Separator } from '../components'
-import InputTokenSelect from '../components/InputTokenSelect'
-import { BORROW_TOKENS_LIST, COLLATERAL_TOKENS_LIST, MOCK_APR_RATE } from '../constants'
+import InputTokenSelect, { SkeletonInputTokenSelect } from '../components/InputTokenSelect'
+import { Summary, SummarySkeleton } from './Summary'
 import { useInstantBorrowContent } from './hooks/useInstantBorrowContent'
 
 import styles from './InstantBorrowContent.module.less'
@@ -17,6 +13,10 @@ const InstantBorrowContent = () => {
   const wallet = useWallet()
 
   const {
+    offers,
+    collateralsList,
+    borrowTokensList,
+
     collateralToken,
     collateralInputValue,
     handleCollateralInputChange,
@@ -27,49 +27,65 @@ const InstantBorrowContent = () => {
     handleBorrowInputChange,
     handleBorrowTokenChange,
 
-    collateralTokenBalanceStr,
-    borrowTokenBalanceStr,
-
-    upfrontFee,
-    weeklyFee,
-
     errorMessage,
-    executeBorrow,
+    borrow,
+    isBorrowing,
   } = useInstantBorrowContent()
+
+  const showSkeleton = !(
+    !!collateralsList.length &&
+    !!borrowTokensList.length &&
+    !!collateralToken &&
+    !!borrowToken
+  )
 
   return (
     <div className={styles.content}>
-      <InputTokenSelect
-        label="Collateralize"
-        value={collateralInputValue}
-        onChange={handleCollateralInputChange}
-        selectedToken={collateralToken}
-        onChangeToken={handleCollateralTokenChange}
-        tokenList={COLLATERAL_TOKENS_LIST}
-        className={styles.collateralInput}
-        maxValue={collateralTokenBalanceStr}
-        disabledInput={!wallet.connected}
-      />
+      {showSkeleton ? (
+        <SkeletonInputTokenSelect label="Collateralize" />
+      ) : (
+        <InputTokenSelect
+          label="Collateralize"
+          value={collateralInputValue}
+          onChange={handleCollateralInputChange}
+          selectedToken={collateralToken}
+          onChangeToken={handleCollateralTokenChange}
+          tokenList={collateralsList}
+          className={styles.collateralInput}
+          maxValue={collateralToken.amountInWallet}
+          disabledInput={!wallet.connected}
+          showControls={wallet.connected}
+        />
+      )}
 
       <Separator />
 
-      <InputTokenSelect
-        label="To borrow"
-        value={borrowInputValue}
-        onChange={handleBorrowInputChange}
-        selectedToken={borrowToken}
-        onChangeToken={handleBorrowTokenChange}
-        tokenList={BORROW_TOKENS_LIST}
-        className={styles.borrowInput}
-        maxValue={borrowTokenBalanceStr}
-        disabledInput={!wallet.connected}
-      />
+      {showSkeleton ? (
+        <SkeletonInputTokenSelect label="To borrow" />
+      ) : (
+        <InputTokenSelect
+          label="To borrow"
+          value={borrowInputValue}
+          onChange={handleBorrowInputChange}
+          selectedToken={borrowToken}
+          onChangeToken={handleBorrowTokenChange}
+          tokenList={borrowTokensList}
+          className={styles.borrowInput}
+          disabledInput
+        />
+      )}
 
-      <Summary apr={MOCK_APR_RATE} upfrontFee={upfrontFee} weeklyFee={weeklyFee} />
+      {showSkeleton ? (
+        <SummarySkeleton />
+      ) : (
+        <Summary collateralToken={collateralToken} borrowToken={borrowToken} offers={offers} />
+      )}
+
       <Button
-        onClick={executeBorrow}
+        onClick={borrow}
         disabled={!wallet.connected || !!errorMessage}
         className={styles.borrowButton}
+        loading={isBorrowing}
       >
         {!wallet.connected ? 'Connect wallet' : errorMessage || 'Borrow'}
       </Button>
@@ -78,41 +94,3 @@ const InstantBorrowContent = () => {
 }
 
 export default InstantBorrowContent
-
-interface SummaryProps {
-  apr: number
-  upfrontFee: number
-  weeklyFee: number
-}
-
-export const Summary: FC<SummaryProps> = ({ apr, upfrontFee, weeklyFee }) => {
-  const statClassNames = {
-    value: styles.fixedStatValue,
-  }
-
-  return (
-    <div className={styles.summary}>
-      <StatInfo
-        label="Upfront fee"
-        value={<DisplayValue value={upfrontFee} />}
-        tooltipText="1% upfront fee charged on the loan principal amount, paid when loan is funded"
-        classNamesProps={statClassNames}
-        flexType="row"
-      />
-      <StatInfo
-        label="Est weekly fee"
-        value={<DisplayValue value={weeklyFee} />}
-        tooltipText="Expected weekly interest on your loans. Interest is added to your debt balance"
-        classNamesProps={statClassNames}
-        flexType="row"
-      />
-      <StatInfo
-        label="APR"
-        value={apr / 100}
-        valueType={VALUES_TYPES.PERCENT}
-        classNamesProps={statClassNames}
-        flexType="row"
-      />
-    </div>
-  )
-}

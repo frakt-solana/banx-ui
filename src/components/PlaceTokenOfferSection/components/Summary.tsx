@@ -1,6 +1,9 @@
 import { FC } from 'react'
 
-import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import {
+  calculateAPRforOffer,
+  calculateCurrentInterestSolPure,
+} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import moment from 'moment'
 
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
@@ -8,7 +11,8 @@ import { DisplayValue } from '@banx/components/TableComponents'
 
 import { TokenMarketPreview } from '@banx/api/tokens'
 import { SECONDS_IN_DAY } from '@banx/constants'
-import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
+import { useNftTokenType } from '@banx/store/nft'
+import { HealthColorIncreasing, getColorByPercent, getTokenDecimals } from '@banx/utils'
 
 import styles from '../PlaceTokenOfferSection.module.less'
 
@@ -18,25 +22,28 @@ interface MainSummaryProps {
 }
 
 export const MainSummary: FC<MainSummaryProps> = ({ market, collateralPerToken }) => {
-  const { collateralPrice = 0 } = market || {}
+  const { collateralPrice = 0, collateral } = market || {}
 
-  const ltv = (collateralPerToken / collateralPrice) * 100 || 0
-  const apr = 0 //TODO (TokenLending): Use rateBasePoints from market or calculate dynamically?
+  const ltvPercent = (collateralPerToken / collateralPrice) * 100 || 0
+  const fullyDilutedValuationNumber = collateral
+    ? parseFloat(collateral.fullyDilutedValuationInMillions)
+    : 0
+  const { factoredApr: aprPercent } = calculateAPRforOffer(ltvPercent, fullyDilutedValuationNumber)
 
   return (
     <div className={styles.mainSummary}>
       <StatInfo
         label="LTV"
-        value={ltv}
+        value={ltvPercent}
         tooltipText="LTV"
         valueType={VALUES_TYPES.PERCENT}
-        valueStyles={{ color: getColorByPercent(ltv, HealthColorIncreasing) }}
+        valueStyles={{ color: getColorByPercent(ltvPercent, HealthColorIncreasing) }}
         classNamesProps={{ container: styles.mainSummaryStat, value: styles.fixedValueContent }}
       />
       <div className={styles.separateLine} />
       <StatInfo
         label="APR"
-        value={apr}
+        value={aprPercent}
         valueType={VALUES_TYPES.PERCENT}
         classNamesProps={{ value: styles.aprValue, container: styles.mainSummaryStat }}
         tooltipText="APR"
@@ -46,16 +53,34 @@ export const MainSummary: FC<MainSummaryProps> = ({ market, collateralPerToken }
 }
 
 interface OfferSummaryProps {
+  market: TokenMarketPreview | undefined
+  collateralPerToken: number
   offerSize: number
 }
 
-export const AdditionalSummary: FC<OfferSummaryProps> = ({ offerSize }) => {
+export const AdditionalSummary: FC<OfferSummaryProps> = ({
+  market,
+  collateralPerToken,
+  offerSize,
+}) => {
+  const { tokenType } = useNftTokenType()
+  const tokenDecimals = getTokenDecimals(tokenType)
+
+  const { collateralPrice = 0, collateral } = market || {}
+
+  const ltvPercent = (collateralPerToken / collateralPrice) * 100 || 0
+
+  const fullyDilutedValuationNumber = collateral
+    ? parseFloat(collateral.fullyDilutedValuationInMillions)
+    : 0
+  const { factoredApr: aprPercent } = calculateAPRforOffer(ltvPercent, fullyDilutedValuationNumber)
+
   const currentTimeUnix = moment().unix()
   const weeklyFee = calculateCurrentInterestSolPure({
-    loanValue: offerSize,
+    loanValue: offerSize * tokenDecimals,
     startTime: currentTimeUnix,
     currentTime: currentTimeUnix + SECONDS_IN_DAY * 7,
-    rateBasePoints: 0, //TODO (TokenLending): Use rateBasePoints from market or calculate dynamically?
+    rateBasePoints: aprPercent * 100,
   })
 
   return (

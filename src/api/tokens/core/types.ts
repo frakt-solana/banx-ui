@@ -17,6 +17,9 @@ export const TokenMetaSchema = z.object({
   ticker: z.string(),
   decimals: z.number(),
   priceUsd: z.number(),
+  totalSupply: z.string(),
+  fullyDilutedValuation: z.string(),
+  fullyDilutedValuationInMillions: z.string(),
 })
 
 export type TokenMeta = z.infer<typeof TokenMetaSchema>
@@ -80,6 +83,7 @@ export const TokenLoanSchema = z.object({
   bondTradeTransaction: BondTradeTransactionSchema,
   collateral: TokenMetaSchema,
   collateralPrice: z.number(),
+  totalRepaidAmount: z.number().optional(),
 })
 
 export const TokenMarketPreviewSchema = z.object({
@@ -148,3 +152,12 @@ export interface AllTokenLoansRequestsResponse {
   data: TokenLoansRequests
   meta: PaginationMeta
 }
+
+export const CollateralTokenSchema = z.object({
+  marketPubkey: z.string(),
+  collateral: TokenMetaSchema,
+  collateralPrice: z.number(),
+  amountInWallet: z.number(),
+})
+
+export type CollateralToken = z.infer<typeof CollateralTokenSchema>

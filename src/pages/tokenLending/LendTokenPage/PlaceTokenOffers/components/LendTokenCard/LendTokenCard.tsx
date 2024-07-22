@@ -81,8 +81,7 @@ interface MarketAdditionalInfoProps {
 }
 
 const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isOpen }) => {
-  const { loansTvl, offersTvl, activeLoansAmount, activeOffersAmount, marketApr, marketApy } =
-    market
+  const { loansTvl, offersTvl, activeLoansAmount, activeOffersAmount, marketApr } = market
 
   return (
     <div className={classNames(styles.additionalInfoStats, { [styles.opened]: isOpen })}>
@@ -101,13 +100,9 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isOpen })
         classNamesProps={{ container: styles.additionalStat }}
       />
       <StatInfo
-        label="APR / APY"
-        value={
-          <>
-            {createPercentValueJSX(marketApr, '0%')} / {createPercentValueJSX(marketApy, '0%')}
-          </>
-        }
-        tooltipText="APR / APY"
+        label="Max APR"
+        value={createPercentValueJSX(marketApr, '0%')}
+        tooltipText="Max APR"
         valueType={VALUES_TYPES.STRING}
         classNamesProps={{ container: styles.additionalStat, value: styles.additionalAprStat }}
       />

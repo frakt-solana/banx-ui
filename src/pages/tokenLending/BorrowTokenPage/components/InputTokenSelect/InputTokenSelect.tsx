@@ -1,6 +1,7 @@
 import { ChangeEvent, FC, useMemo, useRef, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import { Skeleton } from 'antd'
 import classNames from 'classnames'
 import { BN } from 'fbonds-core'
 
@@ -9,29 +10,32 @@ import { SolanaFMLink } from '@banx/components/SolanaLinks'
 import { NumericStepInput } from '@banx/components/inputs'
 import { Input, InputProps } from '@banx/components/inputs/Input'
 
+import { core } from '@banx/api/tokens'
 import { useOnClickOutside } from '@banx/hooks'
 import { ChevronDown, CloseModal, Wallet } from '@banx/icons'
 import { bnToHuman, limitDecimalPlaces, shortenAddress, stringToBN } from '@banx/utils'
 
-import { BorrowToken } from '../../constants'
-
 import styles from './InputTokenSelect.module.less'
 
-interface InputTokenSelectProps {
+interface BaseToken {
+  collateral: core.TokenMeta
+  amountInWallet: number
+}
+
+interface InputTokenSelectProps<T extends BaseToken> {
   label: string
   value: string
   onChange: (value: string) => void
   className?: string
-
-  selectedToken: BorrowToken
-  tokenList: BorrowToken[]
-  onChangeToken: (option: BorrowToken) => void
-
+  selectedToken: T
+  tokenList: T[]
+  onChangeToken: (option: T) => void
   disabledInput?: boolean
-  maxValue?: string
+  maxValue?: number //? (e.g. 1e6 for 1 USDC, 1e9 for 1 SOL)
+  showControls?: boolean
 }
 
-const InputTokenSelect: FC<InputTokenSelectProps> = ({
+const InputTokenSelect = <T extends BaseToken>({
   label,
   value,
   onChange,
@@ -40,10 +44,9 @@ const InputTokenSelect: FC<InputTokenSelectProps> = ({
   tokenList,
   onChangeToken,
   disabledInput,
-  maxValue = '0',
-}) => {
-  const { connected } = useWallet()
-
+  maxValue,
+  showControls = false,
+}: InputTokenSelectProps<T>) => {
   const [visible, setVisible] = useState(false)
 
   const handleClick = () => {
@@ -54,7 +57,13 @@ const InputTokenSelect: FC<InputTokenSelectProps> = ({
     <div className={classNames(styles.inputTokenSelectWrapper, className)}>
       <div className={styles.inputTokenSelectHeader}>
         <div className={styles.inputTokenSelectLabel}>{label}</div>
-        {connected && <ControlsButtons maxValue={maxValue} onChange={onChange} />}
+        {showControls && (
+          <ControlsButtons
+            maxValue={maxValue}
+            onChange={onChange}
+            decimals={selectedToken.collateral.decimals}
+          />
+        )}
       </div>
       <div className={styles.inputTokenSelect}>
         <NumericStepInput
@@ -83,24 +92,26 @@ export default InputTokenSelect
 
 interface ControlsButtonsProps {
   onChange: (value: string) => void
-  maxValue?: string
-  decimals?: number
+  maxValue?: number
+  decimals: number
 }
 
-const ControlsButtons: FC<ControlsButtonsProps> = ({ onChange, maxValue = '0' }) => {
+const ControlsButtons: FC<ControlsButtonsProps> = ({ onChange, maxValue = 0, decimals }) => {
+  const maxValueStr = String(maxValue / Math.pow(10, decimals))
+
   const onMaxClick = () => {
-    onChange(limitDecimalPlaces(maxValue))
+    onChange(limitDecimalPlaces(maxValueStr))
   }
 
   const onHalfClick = () => {
-    const nextValue = bnToHuman(stringToBN(maxValue).div(new BN(2)))
+    const nextValue = bnToHuman(stringToBN(maxValueStr).div(new BN(2)))
     onChange(limitDecimalPlaces(nextValue.toString()))
   }
 
   return (
     <div className={styles.inputTokenSelectControlButtons}>
       <div className={styles.inputTokenSelectMaxValue}>
-        <Wallet /> {formatNumber(parseFloat(maxValue))}
+        <Wallet /> {formatNumber(parseFloat(maxValueStr))}
       </div>
 
       <Button onClick={onHalfClick} variant="secondary" size="small">
@@ -113,13 +124,16 @@ const ControlsButtons: FC<ControlsButtonsProps> = ({ onChange, maxValue = '0' })
   )
 }
 
-interface SelectTokenButtonProps {
-  selectedToken: BorrowToken
+interface SelectTokenButtonProps<T extends BaseToken> {
+  selectedToken: T
   onClick: () => void
 }
 
-const SelectTokenButton: FC<SelectTokenButtonProps> = ({ selectedToken, onClick }) => {
-  const { ticker, logoUrl } = selectedToken.meta
+const SelectTokenButton = <T extends BaseToken>({
+  selectedToken,
+  onClick,
+}: SelectTokenButtonProps<T>) => {
+  const { ticker, logoUrl } = selectedToken.collateral
 
   return (
     <div onClick={onClick} className={styles.selectTokenButton}>
@@ -130,27 +144,33 @@ const SelectTokenButton: FC<SelectTokenButtonProps> = ({ selectedToken, onClick 
   )
 }
 
-interface SearchSelectProps {
-  options: BorrowToken[]
-  onChangeToken: (token: BorrowToken) => void
+interface SearchSelectProps<T extends BaseToken> {
+  options: T[]
+  onChangeToken: (token: T) => void
   onClose: () => void
 }
 
-const SearchSelect: FC<SearchSelectProps> = ({ options, onChangeToken, onClose }) => {
+const SearchSelect = <T extends BaseToken>({
+  options,
+  onChangeToken,
+  onClose,
+}: SearchSelectProps<T>) => {
+  const { connected } = useWallet()
+
   const [searchInput, setSearchInput] = useState('')
 
   const handleSearchInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchInput(event.target.value)
   }
 
-  const handleChangeToken = (token: BorrowToken) => {
+  const handleChangeToken = (token: T) => {
     onChangeToken(token)
     onClose()
   }
 
   const filteredOptions = useMemo(() => {
     return options.filter((option) =>
-      option.meta.ticker.toLowerCase().includes(searchInput.toLowerCase()),
+      option.collateral.ticker.toLowerCase().includes(searchInput.toLowerCase()),
     )
   }, [options, searchInput])
 
@@ -169,26 +189,31 @@ const SearchSelect: FC<SearchSelectProps> = ({ options, onChangeToken, onClose }
       <div className={styles.selectTokenDropdown}>
         <div className={styles.selectTokenDropdownHeader}>
           <span>Token</span>
-          <span>Available</span>
+          {connected && <span>Available</span>}
         </div>
         <div className={styles.selectTokenDropdownList}>
           {filteredOptions.map((option, index) => (
             <div
-              key={option.meta.mint}
+              key={option.collateral.mint}
               onClick={() => handleChangeToken(option)}
               className={classNames(styles.dropdownItem, { [styles.highlight]: index % 2 === 0 })}
             >
               <div className={styles.dropdownItemMainInfo}>
-                <img className={styles.dropdownItemIcon} src={option.meta.logoUrl} />
+                <img className={styles.dropdownItemIcon} src={option.collateral.logoUrl} />
                 <div className={styles.dropdownItemInfo}>
-                  <span className={styles.dropdownItemTicker}>{option.meta.ticker}</span>
+                  <span className={styles.dropdownItemTicker}>{option.collateral.ticker}</span>
                   <span className={styles.dropdownItemAddress}>
-                    {shortenAddress(option.meta.mint)}
+                    {shortenAddress(option.collateral.mint)}
                   </span>
                 </div>
-                <SolanaFMLink path={`address/${option.meta.mint}`} size="small" />
+                <SolanaFMLink path={`address/${option.collateral.mint}`} size="small" />
               </div>
-              <span className={styles.dropdownItemAdditionalInfo}>{option.available}</span>
+
+              {connected && (
+                <span className={styles.dropdownItemAdditionalInfo}>
+                  {option.amountInWallet / Math.pow(10, option.collateral.decimals)}
+                </span>
+              )}
             </div>
           ))}
         </div>
@@ -217,4 +242,25 @@ const formatNumber = (value = 0) => {
     notation: 'compact',
     maximumFractionDigits: 1,
   }).format(value)
+}
+
+interface SkeletonInputTokenSelectProps {
+  label: string
+  className?: string
+}
+export const SkeletonInputTokenSelect: FC<SkeletonInputTokenSelectProps> = ({
+  label,
+  className,
+}) => {
+  return (
+    <div className={classNames(styles.inputTokenSelectWrapper, className)}>
+      <div className={styles.inputTokenSelectHeader}>
+        <div className={styles.inputTokenSelectLabel}>{label}</div>
+        <Skeleton.Input size="small" />
+      </div>
+      <div className={styles.inputTokenSelect}>
+        <Skeleton.Input className={styles.skeletonInputTokenSelect} />
+      </div>
+    </div>
+  )
 }

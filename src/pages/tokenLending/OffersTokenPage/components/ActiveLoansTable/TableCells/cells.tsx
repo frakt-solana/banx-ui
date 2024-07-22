@@ -21,6 +21,7 @@ import {
   calculateTimeFromNow,
   calculateTokenLoanAccruedInterest,
   calculateTokenLoanLtvByLoanValue,
+  calculateTokenLoanValueWithUpfrontFee,
   getColorByPercent,
   isTokenLoanActive,
   isTokenLoanLiquidated,
@@ -37,15 +38,19 @@ export const ClaimCell: FC<ClaimCellProps> = ({ loan }) => {
   const accruedInterest = calculateTokenLoanAccruedInterest(loan)
   const lentTokenValueWithInterest = calculateLentTokenValueWithInterest(loan)
 
-  const tooltopContent = (
+  const totalRepaidAmount = loan.totalRepaidAmount || 0
+  const lentValue = totalRepaidAmount + calculateTokenLoanValueWithUpfrontFee(loan).toNumber()
+
+  const tooltipContent = (
     <div className={styles.tooltipContainer}>
+      {createTooltipContent('Lent', lentValue)}
       {createTooltipContent('Accrued interest', accruedInterest.toNumber())}
     </div>
   )
 
   return (
     <HorizontalCell
-      tooltipContent={tooltopContent}
+      tooltipContent={tooltipContent}
       value={<DisplayValue value={lentTokenValueWithInterest.toNumber()} />}
     />
   )

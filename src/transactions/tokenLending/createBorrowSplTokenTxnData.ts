@@ -5,13 +5,13 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/nft'
+import { CollateralToken } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
-import { BorrowToken } from '@banx/pages/tokenLending/BorrowTokenPage/constants'
 import { sendTxnPlaceHolder } from '@banx/transactions'
 import { getTokenDecimals } from '@banx/utils'
 
 export type CreateBorrowTokenTxnDataParams = {
-  collateral: BorrowToken
+  collateral: CollateralToken
   loanValue: number
   offer: Offer
   tokenType: LendingTokenType
@@ -37,12 +37,13 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async (
       userPubkey: walletAndConnection.wallet.publicKey,
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
       bondOffer: new web3.PublicKey(offer.publicKey),
-      tokenMint: new web3.PublicKey(collateral.meta.mint),
+      tokenMint: new web3.PublicKey(collateral.collateral.mint),
       hadoMarket: new web3.PublicKey(offer.hadoMarket),
       fraktMarket: new web3.PublicKey(offer.hadoMarket),
     },
     args: {
-      amountToget: loanValue,
+      amountToGet: loanValue,
+      amountToSend: 0,
       optimizeIntoReserves: true,
       aprRate,
       lendingTokenType: tokenType,

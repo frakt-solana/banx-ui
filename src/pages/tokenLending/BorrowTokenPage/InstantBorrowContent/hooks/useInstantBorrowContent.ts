@@ -1,142 +1,140 @@
 import { useEffect, useState } from 'react'
 
-import { BN } from 'fbonds-core'
-import { SECONDS_IN_DAY } from 'fbonds-core/lib/fbond-protocol/constants'
-import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import moment from 'moment'
-
-import { BONDS } from '@banx/constants'
-import { useTokenBalance } from '@banx/hooks'
+import { CollateralToken } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
-import { bnToHuman } from '@banx/utils'
+import { bnToHuman, stringToBN } from '@banx/utils'
 
-import {
-  BORROW_TOKENS_LIST,
-  BorrowToken,
-  DEFAULT_BORROW_TOKEN,
-  DEFAULT_COLLATERAL_TOKEN,
-  MOCK_APR_RATE,
-} from '../../constants'
-import { calculateTotalAmount, getErrorMessage } from '../helpers'
+import { BorrowToken, DEFAULT_COLLATERAL_MARKET_PUBKEY } from '../../constants'
+import { adjustAmountWithUpfrontFee, calculateTotalAmount, getErrorMessage } from '../helpers'
 import { useBorrowSplTokenOffers } from './useBorrowSplTokenOffers'
 import { useBorrowSplTokenTransaction } from './useBorrowSplTokenTransaction'
+import { useBorrowTokensList, useCollateralsList } from './useCollateralsList'
 
 export const useInstantBorrowContent = () => {
   const { tokenType, setTokenType } = useNftTokenType()
 
   const [collateralInputValue, setCollateralInputValue] = useState('')
-  const [collateralToken, setCollateralToken] = useState<BorrowToken>(DEFAULT_COLLATERAL_TOKEN)
+  const [collateralToken, setCollateralToken] = useState<CollateralToken>()
 
   const [borrowInputValue, setBorrowInputValue] = useState('')
-  const [borrowToken, setBorrowToken] = useState<BorrowToken>(DEFAULT_BORROW_TOKEN)
+  const [borrowToken, setBorrowToken] = useState<BorrowToken>()
 
-  const collateralTokenBalance = useTokenBalance(collateralToken.meta.mint)
-  const borrowTokenBalance = useTokenBalance(borrowToken.meta.mint)
+  const { collateralsList } = useCollateralsList()
+  const { borrowTokensList } = useBorrowTokensList()
 
   const {
     data: offers,
     isLoading: isLoadingOffers,
-    setMarketPubkey,
-    setOutputTokenType,
-    inputPutType,
-    setInputPutType,
-    handleAmountChange,
-  } = useBorrowSplTokenOffers({
-    marketPubkey: DEFAULT_COLLATERAL_TOKEN.marketPubkey,
-    outputTokenType: DEFAULT_BORROW_TOKEN.outputToken,
-  })
+    inputType,
+    setInputType,
+    setAmount,
+  } = useBorrowSplTokenOffers(collateralToken, borrowToken)
+
+  useEffect(() => {
+    const foundToken = collateralsList.find(
+      (token) => token.marketPubkey === DEFAULT_COLLATERAL_MARKET_PUBKEY,
+    )
+
+    if (!collateralToken && foundToken) {
+      setCollateralToken(foundToken)
+    }
+  }, [collateralToken, collateralsList])
+
+  useEffect(() => {
+    const foundToken = borrowTokensList.find((token) => token.lendingTokenType === tokenType)
+
+    if (foundToken) {
+      setBorrowToken(foundToken)
+    }
+  }, [borrowTokensList, tokenType, borrowToken])
 
   const handleCollateralInputChange = (value: string) => {
-    if (inputPutType !== 'input') {
-      setInputPutType('input')
-      setOutputTokenType(borrowToken.outputToken)
+    if (!borrowToken || !collateralToken) return
+
+    if (inputType !== 'input') {
+      setInputType('input')
     }
 
     setCollateralInputValue(value)
-    handleAmountChange(value, collateralToken.meta.decimals)
+    setAmount(value)
   }
 
   const handleBorrowInputChange = (value: string) => {
-    if (inputPutType !== 'output') {
-      setInputPutType('output')
-      setOutputTokenType(borrowToken.outputToken)
+    if (!borrowToken) return
+
+    if (inputType !== 'output') {
+      setInputType('output')
     }
 
     setBorrowInputValue(value)
-    handleAmountChange(value, borrowToken.meta.decimals)
+
+    const amountToGetStr = bnToHuman(
+      adjustAmountWithUpfrontFee(stringToBN(value, borrowToken.collateral.decimals), 'output'),
+      borrowToken.collateral.decimals,
+    ).toString()
+
+    setAmount(amountToGetStr)
   }
 
-  const handleCollateralTokenChange = (token: BorrowToken) => {
+  const handleCollateralTokenChange = (token: CollateralToken) => {
     setCollateralToken(token)
-    setMarketPubkey(token.marketPubkey || '')
   }
 
   const handleBorrowTokenChange = (token: BorrowToken) => {
     setBorrowToken(token)
-    setOutputTokenType(token.outputToken)
     setTokenType(token.lendingTokenType)
   }
 
   useEffect(() => {
-    const token = BORROW_TOKENS_LIST.find((token) => token.lendingTokenType === tokenType)
-    if (token) {
-      setBorrowToken(token)
-      setOutputTokenType(token.outputToken)
-    }
-  }, [setOutputTokenType, tokenType])
+    if (inputType === 'input') {
+      if (!borrowToken) return
 
-  useEffect(() => {
-    if (inputPutType === 'input') {
       const totalAmountToGet = calculateTotalAmount(offers, 'amountToGet')
-      const totalAmountToGetStr = bnToHuman(totalAmountToGet, borrowToken.meta.decimals).toString()
+      const adjustedAmountToGet = adjustAmountWithUpfrontFee(totalAmountToGet, 'input')
+
+      const totalAmountToGetStr = bnToHuman(
+        adjustedAmountToGet,
+        borrowToken.collateral.decimals,
+      ).toString()
 
       if (totalAmountToGetStr !== borrowInputValue) {
         setBorrowInputValue(totalAmountToGetStr)
       }
-    } else if (inputPutType === 'output') {
+    } else if (inputType === 'output') {
+      if (!collateralToken) return
+
       const totalAmountToGive = calculateTotalAmount(offers, 'amountToGive')
 
       const totalAmountToGetStr = bnToHuman(
         totalAmountToGive,
-        collateralToken.meta.decimals,
+        collateralToken.collateral.decimals,
       ).toString()
 
       if (totalAmountToGetStr !== collateralInputValue) {
         setCollateralInputValue(totalAmountToGetStr)
       }
     }
-  }, [offers, borrowToken, borrowInputValue, collateralToken, collateralInputValue, inputPutType])
-
-  const collateralTokenBalanceStr = bnToHuman(
-    new BN(collateralTokenBalance),
-    collateralToken.meta.decimals,
-  ).toString()
-
-  const borrowTokenBalanceStr = bnToHuman(
-    new BN(borrowTokenBalance),
-    borrowToken.meta.decimals,
-  ).toString()
+  }, [offers, borrowToken, borrowInputValue, collateralToken, collateralInputValue, inputType])
 
   const errorMessage = getErrorMessage({
     offers,
     isLoadingOffers,
     collateralToken,
     collateralInputValue,
-    tokenWalletBalance: collateralTokenBalanceStr,
+    borrowInputValue,
   })
 
-  const { executeBorrow } = useBorrowSplTokenTransaction(collateralToken, offers)
-
-  const totalAmountToGet = calculateTotalAmount(offers, 'amountToGet')
-  const upfrontFee = totalAmountToGet.div(new BN(100)).toNumber()
-  const weeklyFee = calculateCurrentInterestSolPure({
-    loanValue: totalAmountToGet.toNumber(),
-    startTime: moment().unix(),
-    currentTime: moment().unix() + SECONDS_IN_DAY * 7,
-    rateBasePoints: MOCK_APR_RATE + BONDS.PROTOCOL_REPAY_FEE,
+  const { borrow, isBorrowing } = useBorrowSplTokenTransaction({
+    collateral: collateralToken,
+    borrowToken: borrowToken,
+    splTokenOffers: offers,
   })
 
   return {
+    offers,
+    collateralsList,
+    borrowTokensList,
+
     collateralInputValue,
     collateralToken,
     handleCollateralInputChange,
@@ -147,13 +145,8 @@ export const useInstantBorrowContent = () => {
     handleBorrowInputChange,
     handleBorrowTokenChange,
 
-    collateralTokenBalanceStr,
-    borrowTokenBalanceStr,
-
-    executeBorrow,
+    borrow,
+    isBorrowing,
     errorMessage,
-
-    upfrontFee,
-    weeklyFee,
   }
 }

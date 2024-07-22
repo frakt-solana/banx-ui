@@ -1,55 +1,62 @@
 import { useState } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
-import { BN } from 'bn.js'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { core } from '@banx/api/tokens'
+import { CollateralToken, core } from '@banx/api/tokens'
 import { useDebounceValue } from '@banx/hooks'
-import { ZERO_BN, stringToHex } from '@banx/utils'
+import { stringToHex } from '@banx/utils'
 
-export const useBorrowSplTokenOffers = (initialProps?: {
-  marketPubkey?: string
-  outputTokenType?: string
-}) => {
-  const [marketPubkey, setMarketPubkey] = useState(initialProps?.marketPubkey || '')
-  const [outputTokenType, setOutputTokenType] = useState(initialProps?.outputTokenType || '')
-  const [inputPutType, setInputPutType] = useState<'input' | 'output'>('input')
+import { BorrowToken } from '../../constants'
+
+export const useBorrowSplTokenOffers = (
+  collateralToken: CollateralToken | undefined,
+  borrowToken: BorrowToken | undefined,
+) => {
+  const { publicKey } = useWallet()
+  const walletPubkeyString = publicKey?.toString() || ''
+
+  const [inputType, setInputType] = useState<'input' | 'output'>('input')
   const [amount, setAmount] = useState('')
 
   const debouncedAmount = useDebounceValue(amount, 1000)
 
+  const tokenDecimals =
+    inputType === 'input' ? collateralToken?.collateral.decimals : borrowToken?.collateral.decimals
+
   const { data, isLoading } = useQuery(
     [
       'borrowSplTokenOffers',
-      { marketPubkey, outputTokenType, type: inputPutType, amount: debouncedAmount },
+      {
+        collateralToken,
+        borrowToken,
+        type: inputType,
+        amount: debouncedAmount,
+        walletPubkeyString,
+      },
     ],
     () =>
       core.fetchBorrowSplTokenOffers({
-        market: marketPubkey,
-        outputToken: outputTokenType,
-        type: inputPutType,
-        amount: debouncedAmount,
+        market: collateralToken?.marketPubkey ?? '',
+        outputToken: borrowToken?.lendingTokenType ?? LendingTokenType.BanxSol,
+        type: inputType,
+        amount: stringToHex(debouncedAmount, tokenDecimals),
+        walletPubkey: walletPubkeyString,
       }),
     {
       staleTime: 15 * 1000,
       refetchOnWindowFocus: false,
-      enabled: new BN(debouncedAmount, 'hex').gt(ZERO_BN) && !!marketPubkey,
+      enabled: !!parseFloat(amount) && !!collateralToken,
     },
   )
-
-  const handleAmountChange = (value: string, decimals: number) => {
-    setAmount(stringToHex(value, decimals))
-  }
 
   return {
     data: data ?? [],
     isLoading,
 
-    inputPutType,
-    setMarketPubkey,
-    setOutputTokenType,
-    setInputPutType,
-
-    handleAmountChange,
+    inputType,
+    setInputType,
+    setAmount,
   }
 }

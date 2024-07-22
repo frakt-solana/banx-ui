@@ -2,16 +2,34 @@ import { useState } from 'react'
 
 import { clamp } from 'lodash'
 
+import { CollateralToken } from '@banx/api/tokens'
 import { BONDS, DAYS_IN_YEAR } from '@banx/constants'
 
-import { BORROW_TOKENS_LIST, BorrowToken, COLLATERAL_TOKENS_LIST } from '../constants'
+import { BORROW_TOKENS_LIST, BorrowToken } from '../constants'
 
 export const MIN_APR_VALUE = 10
 export const MAX_APR_VALUE = 140
 
+// TODO (TokenLending): Remove this when intergrating with the API
+export const DEFAULT_COLLATERAL_TOKEN = {
+  marketPubkey: '9vMKEMq8G36yrkqVUzQuAweieCsxU9ZaK1ob8GRegwmh',
+  collateral: {
+    mint: 'BANXbTpN8U2cU41FjPxe2Ti37PiT5cCxLUKDQZuJeMMR',
+    ticker: 'BANX',
+    logoUrl: 'https://arweave.net/5QRitQGPVjPwpjt43Qe_WISmys4dWwLMqQqQDT0oshg',
+    decimals: 9,
+    priceUsd: 0,
+    totalSupply: '0',
+    fullyDilutedValuation: '0',
+    fullyDilutedValuationInMillions: '0',
+  },
+  collateralPrice: 0,
+  amountInWallet: 0,
+}
+
 export const useListLoansContent = () => {
   const [collateralInputValue, setCollateralInputValue] = useState('')
-  const [collateralToken, setCollateralToken] = useState<BorrowToken>(COLLATERAL_TOKENS_LIST[0])
+  const [collateralToken, setCollateralToken] = useState<CollateralToken>(DEFAULT_COLLATERAL_TOKEN)
 
   const [borrowInputValue, setBorrowlInputValue] = useState('')
   const [borrowToken, setBorrowToken] = useState<BorrowToken>(BORROW_TOKENS_LIST[0])
