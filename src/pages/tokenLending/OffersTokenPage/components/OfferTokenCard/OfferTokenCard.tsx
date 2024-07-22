@@ -108,7 +108,7 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ offerPreview, isO
     liquidatedLoansAmount,
     repaymentCallsAmount,
   } = offerPreview.tokenOfferPreview
-  const { marketApr, marketApy } = offerPreview.tokenMarketPreview
+  const { marketApr } = offerPreview.tokenMarketPreview
 
   return (
     <div className={classNames(styles.additionalInfoStats, { [styles.opened]: isOpen })}>
@@ -125,13 +125,9 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ offerPreview, isO
         classNamesProps={{ container: styles.additionalStat }}
       />
       <StatInfo
-        label="APR / APY"
-        value={
-          <>
-            {createPercentValueJSX(marketApr, '0%')} / {createPercentValueJSX(marketApy, '0%')}
-          </>
-        }
-        tooltipText="APR / APY"
+        label="Max APR"
+        value={createPercentValueJSX(marketApr, '0%')}
+        tooltipText="Max APR"
         classNamesProps={{ container: styles.additionalStat, value: styles.additionalAprStat }}
       />
       <StatInfo
