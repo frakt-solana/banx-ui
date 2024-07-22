@@ -80,7 +80,8 @@ export const formatDecimalWithSubscript = (decimalNumber: number) => {
   const [integerPart, fractionalPart] = decimalAsString.split('.')
 
   if (parseFloat(integerPart) > 0) {
-    return decimalNumber.toFixed(MAX_FORMATTED_LENGTH_FOR_INTEGER)
+    const formattedValueWithDecimals = decimalNumber.toFixed(MAX_FORMATTED_LENGTH_FOR_INTEGER)
+    return formattedValueWithDecimals.replace(/\.00$/, '')
   }
 
   if (!fractionalPart) {
