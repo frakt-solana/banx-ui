@@ -9,7 +9,7 @@ import { DisplayValue, createPercentValueJSX } from '@banx/components/TableCompo
 import { core } from '@banx/api/tokens'
 import { ChevronDown, SOLFilled, USDC } from '@banx/icons'
 import { useNftTokenType } from '@banx/store/nft'
-import { isBanxSolTokenType } from '@banx/utils'
+import { getTokenDecimals, isBanxSolTokenType } from '@banx/utils'
 
 import ExpandedCardContent from '../ExpandedCardContent'
 
@@ -47,6 +47,7 @@ const MarketMainInfo: FC<{ market: core.TokenMarketPreview }> = ({ market }) => 
   const { collateral, collateralPrice, bestOffer } = market
 
   const { tokenType } = useNftTokenType()
+  const decimals = getTokenDecimals(tokenType)
 
   const Icon = isBanxSolTokenType(tokenType) ? (
     <SOLFilled className={classNames(styles.collateralIcon, styles.solFilled)} />
@@ -68,7 +69,11 @@ const MarketMainInfo: FC<{ market: core.TokenMarketPreview }> = ({ market }) => 
             value={<DisplayValue value={collateralPrice} isSubscriptFormat />}
             tooltipText=""
           />
-          <StatInfo label="Top offer" value={<DisplayValue value={bestOffer} />} tooltipText="" />
+          <StatInfo
+            label="Top offer"
+            value={<DisplayValue value={bestOffer / decimals} isSubscriptFormat />}
+            tooltipText=""
+          />
         </div>
       </div>
     </div>

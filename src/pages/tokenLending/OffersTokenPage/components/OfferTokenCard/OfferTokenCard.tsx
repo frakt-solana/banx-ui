@@ -10,7 +10,7 @@ import { core } from '@banx/api/tokens'
 import { ChevronDown, Coin, CoinPlus, SOLFilled, USDC, Warning } from '@banx/icons'
 import { useNftTokenType } from '@banx/store/nft'
 import { convertToSynthetic, useSyntheticTokenOffers } from '@banx/store/token'
-import { isBanxSolTokenType } from '@banx/utils'
+import { getTokenDecimals, isBanxSolTokenType } from '@banx/utils'
 
 import ExpandedCardContent from '../ExpandedCardContent'
 
@@ -63,6 +63,7 @@ const MarketMainInfo: FC<{ offerPreview: core.TokenOfferPreview }> = ({ offerPre
   const { collateral, collateralPrice, bestOffer } = offerPreview.tokenMarketPreview
 
   const { tokenType } = useNftTokenType()
+  const decimals = getTokenDecimals(tokenType)
 
   const Icon = isBanxSolTokenType(tokenType) ? (
     <SOLFilled className={classNames(styles.collateralIcon, styles.solFilled)} />
@@ -86,7 +87,7 @@ const MarketMainInfo: FC<{ offerPreview: core.TokenOfferPreview }> = ({ offerPre
           />
           <StatInfo
             label="Top offer"
-            value={<DisplayValue value={bestOffer} />}
+            value={<DisplayValue value={bestOffer / decimals} isSubscriptFormat />}
             tooltipText="Top offer"
           />
         </div>
