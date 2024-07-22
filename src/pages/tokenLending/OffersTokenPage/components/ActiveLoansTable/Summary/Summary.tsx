@@ -119,7 +119,7 @@ const getTerminateStatsInfo = (loans: core.TokenLoan[]) => {
 
       return {
         totalLent: acc.totalLent + borrowedAmount,
-        averageLtv: acc.averageLtv + ltvPercent,
+        averageLtv: acc.averageLtv + ltvPercent / loans.length,
         totalInterest: acc.totalInterest + claimValue - borrowedAmount,
       }
     },
