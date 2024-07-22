@@ -71,14 +71,16 @@ export const isUsdcTokenType = (tokenType: LendingTokenType): boolean =>
 export const isBanxSolTokenType = (tokenType: LendingTokenType): boolean =>
   tokenType === LendingTokenType.BanxSol
 
-const MAX_FORMATTED_LENGTH = 4
-
 export const formatDecimalWithSubscript = (decimalNumber: number) => {
+  const MAX_FORMATTED_LENGTH = 4
+  const MAX_FORMATTED_LENGTH_FOR_INTEGER = 2
+  const MIN_LEADING_ZEROS_FOR_SUBSCRIPT = 2
+
   const decimalAsString = decimalNumber.toString()
   const [integerPart, fractionalPart] = decimalAsString.split('.')
 
   if (parseFloat(integerPart) > 0) {
-    return decimalNumber.toFixed(MAX_FORMATTED_LENGTH)
+    return decimalNumber.toFixed(MAX_FORMATTED_LENGTH_FOR_INTEGER)
   }
 
   if (!fractionalPart) {
@@ -96,7 +98,6 @@ export const formatDecimalWithSubscript = (decimalNumber: number) => {
       .join('')
   }
 
-  const MIN_LEADING_ZEROS_FOR_SUBSCRIPT = 2
   const leadingZerosSubscript =
     countLeadingZeros > MIN_LEADING_ZEROS_FOR_SUBSCRIPT
       ? `0${convertToSubscript(countLeadingZeros)}`
