@@ -17,15 +17,13 @@ export const useBorrowSplTokenOffers = (
   const { publicKey } = useWallet()
   const walletPubkeyString = publicKey?.toString() || ''
 
-  const [inputPutType, setInputPutType] = useState<'input' | 'output'>('input')
+  const [inputType, setInputType] = useState<'input' | 'output'>('input')
   const [amount, setAmount] = useState('')
 
   const debouncedAmount = useDebounceValue(amount, 1000)
 
   const tokenDecimals =
-    inputPutType === 'input'
-      ? collateralToken?.collateral.decimals
-      : borrowToken?.collateral.decimals
+    inputType === 'input' ? collateralToken?.collateral.decimals : borrowToken?.collateral.decimals
 
   const { data, isLoading } = useQuery(
     [
@@ -33,7 +31,7 @@ export const useBorrowSplTokenOffers = (
       {
         collateralToken,
         borrowToken,
-        type: inputPutType,
+        type: inputType,
         amount: debouncedAmount,
         walletPubkeyString,
       },
@@ -42,7 +40,7 @@ export const useBorrowSplTokenOffers = (
       core.fetchBorrowSplTokenOffers({
         market: collateralToken?.marketPubkey ?? '',
         outputToken: borrowToken?.lendingTokenType ?? LendingTokenType.BanxSol,
-        type: inputPutType,
+        type: inputType,
         amount: stringToHex(debouncedAmount, tokenDecimals),
         walletPubkey: walletPubkeyString,
       }),
@@ -57,8 +55,8 @@ export const useBorrowSplTokenOffers = (
     data: data ?? [],
     isLoading,
 
-    inputPutType,
-    setInputPutType,
+    inputType,
+    setInputType,
     setAmount,
   }
 }

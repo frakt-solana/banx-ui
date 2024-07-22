@@ -25,8 +25,8 @@ export const useInstantBorrowContent = () => {
   const {
     data: offers,
     isLoading: isLoadingOffers,
-    inputPutType,
-    setInputPutType,
+    inputType,
+    setInputType,
     setAmount,
   } = useBorrowSplTokenOffers(collateralToken, borrowToken)
 
@@ -51,8 +51,8 @@ export const useInstantBorrowContent = () => {
   const handleCollateralInputChange = (value: string) => {
     if (!borrowToken || !collateralToken) return
 
-    if (inputPutType !== 'input') {
-      setInputPutType('input')
+    if (inputType !== 'input') {
+      setInputType('input')
     }
 
     setCollateralInputValue(value)
@@ -62,8 +62,8 @@ export const useInstantBorrowContent = () => {
   const handleBorrowInputChange = (value: string) => {
     if (!borrowToken) return
 
-    if (inputPutType !== 'output') {
-      setInputPutType('output')
+    if (inputType !== 'output') {
+      setInputType('output')
     }
 
     setBorrowInputValue(value)
@@ -86,7 +86,7 @@ export const useInstantBorrowContent = () => {
   }
 
   useEffect(() => {
-    if (inputPutType === 'input') {
+    if (inputType === 'input') {
       if (!borrowToken) return
 
       const totalAmountToGet = calculateTotalAmount(offers, 'amountToGet')
@@ -100,7 +100,7 @@ export const useInstantBorrowContent = () => {
       if (totalAmountToGetStr !== borrowInputValue) {
         setBorrowInputValue(totalAmountToGetStr)
       }
-    } else if (inputPutType === 'output') {
+    } else if (inputType === 'output') {
       if (!collateralToken) return
 
       const totalAmountToGive = calculateTotalAmount(offers, 'amountToGive')
@@ -114,7 +114,7 @@ export const useInstantBorrowContent = () => {
         setCollateralInputValue(totalAmountToGetStr)
       }
     }
-  }, [offers, borrowToken, borrowInputValue, collateralToken, collateralInputValue, inputPutType])
+  }, [offers, borrowToken, borrowInputValue, collateralToken, collateralInputValue, inputType])
 
   const errorMessage = getErrorMessage({
     offers,
