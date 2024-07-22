@@ -90,6 +90,14 @@ export const TokenSwitcher: FC<TokenSwitcherProps> = ({ title }) => {
   const { width } = useWindowSize()
   const isTable = width < TABLET_WIDTH
 
+  const toggleTokenType = () => {
+    const nextValue = isBanxSolTokenType(tokenType)
+      ? LendingTokenType.Usdc
+      : LendingTokenType.BanxSol
+
+    return setTokenType(nextValue)
+  }
+
   return (
     <>
       {!isTable && (
@@ -100,7 +108,7 @@ export const TokenSwitcher: FC<TokenSwitcherProps> = ({ title }) => {
             return (
               <div
                 key={key}
-                onClick={() => setTokenType(key)}
+                onClick={toggleTokenType}
                 className={classNames(styles.tokenWrapper, { [styles.active]: key === tokenType })}
               >
                 <p className={styles.tokenValue}>
