@@ -88,6 +88,8 @@ export const TokenMarketPreviewSchema = z.object({
   collateral: TokenMetaSchema,
   collateralPrice: z.number(),
 
+  collectionName: z.string(),
+
   offersTvl: z.number(),
   loansTvl: z.number(),
 
