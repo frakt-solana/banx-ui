@@ -25,6 +25,8 @@ import {
   isTokenLoanTerminating,
 } from '@banx/utils'
 
+import { calcAccruedInterest } from '../helpers'
+
 import styles from '../LoansTokenActiveTable.module.less'
 
 interface TooltipRowProps {
@@ -46,15 +48,18 @@ export const DebtCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
 
   const debtValue = caclulateBorrowTokenLoanValue(loan).toNumber()
   const borrowedValue = fraktBond.borrowedAmount
-  const totalAccruedInterest = debtValue - bondTradeTransaction.solAmount
+
+  const totalAccruedInterest = calcAccruedInterest(loan)
+
   const upfrontFee = bondTradeTransaction.borrowerOriginalLent / 100
+
   const weeklyFee = calcTokenWeeklyFeeWithRepayFee(loan)
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>
       <TooltipRow label="Principal" value={borrowedValue} />
       <TooltipRow label="Repaid" value={bondTradeTransaction.borrowerFullRepaidAmount} />
-      <TooltipRow label="Accrued interest" value={totalAccruedInterest} />
+      <TooltipRow label="Accrued interest" value={totalAccruedInterest + upfrontFee} />
       <TooltipRow label="Upfront fee" value={upfrontFee} />
       <TooltipRow label="Est. weekly interest" value={weeklyFee} />
     </div>

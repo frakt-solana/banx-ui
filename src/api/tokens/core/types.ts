@@ -83,6 +83,7 @@ export const TokenLoanSchema = z.object({
   bondTradeTransaction: BondTradeTransactionSchema,
   collateral: TokenMetaSchema,
   collateralPrice: z.number(),
+  totalRepaidAmount: z.number().optional(),
 })
 
 export const TokenMarketPreviewSchema = z.object({
