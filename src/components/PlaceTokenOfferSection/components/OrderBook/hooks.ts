@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 
 import { core } from '@banx/api/nft'
@@ -51,6 +52,7 @@ type UseProcessedOffers = (props: {
 
 const useProcessedOffers: UseProcessedOffers = ({ marketPubkey, offers, editableOfferPubkey }) => {
   const { offerByMarketPubkey } = useSyntheticTokenOffers()
+  const { publicKey } = useWallet()
 
   const processedOffers = useMemo(() => {
     const syntheticOffer = offerByMarketPubkey[marketPubkey]
@@ -59,16 +61,17 @@ const useProcessedOffers: UseProcessedOffers = ({ marketPubkey, offers, editable
 
     const offersConvertedToSynthetic = offers.map((offer) => convertToSynthetic(offer))
 
-    const processedEditableOffers = offersConvertedToSynthetic.filter(
-      (offer) => offer.publicKey !== editableOfferPubkey,
-    )
+    const processedEditableOffers = offersConvertedToSynthetic
+      .filter((offer) => offer.publicKey !== editableOfferPubkey)
+      //? Filter empty offers, but alwaus show user offers
+      .filter((offer) => !(offer.offerSize === 0 && offer.assetReceiver !== publicKey?.toBase58()))
 
     if (syntheticOffer) {
       processedEditableOffers.push(syntheticOffer)
     }
 
     return processedEditableOffers
-  }, [offerByMarketPubkey, marketPubkey, offers, editableOfferPubkey])
+  }, [offerByMarketPubkey, marketPubkey, offers, editableOfferPubkey, publicKey])
 
   return processedOffers
 }
