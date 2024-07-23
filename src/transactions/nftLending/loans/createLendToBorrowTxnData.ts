@@ -1,4 +1,4 @@
-import { BN, web3 } from 'fbonds-core'
+import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import {
@@ -9,10 +9,16 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import moment from 'moment'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
+import { fetchTokenBalance } from '@banx/api/common'
 import { core } from '@banx/api/nft'
-import { BONDS } from '@banx/constants'
+import { BANX_SOL_ADDRESS, BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
-import { calculateLoanRepayValueOnCertainDate, isBanxSolTokenType, isLoanListed } from '@banx/utils'
+import {
+  ZERO_BN,
+  calculateLoanRepayValueOnCertainDate,
+  isBanxSolTokenType,
+  isLoanListed,
+} from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../../helpers'
 
@@ -41,6 +47,12 @@ export const createLendToBorrowTxnData: CreateLendToBorrowTxnData = async (
   const accounts: web3.PublicKey[] = []
 
   if (isBanxSolTokenType(tokenType) && !isLoanListed(loan)) {
+    const banxSolBalance = await fetchTokenBalance({
+      tokenAddress: BANX_SOL_ADDRESS,
+      publicKey: walletAndConnection.wallet.publicKey,
+      connection: walletAndConnection.connection,
+    })
+
     const repayValue = calculateLoanRepayValueOnCertainDate({
       loan,
       upfrontFeeIncluded: true,
@@ -49,17 +61,21 @@ export const createLendToBorrowTxnData: CreateLendToBorrowTxnData = async (
       date: moment().unix() + 180,
     })
 
-    return await banxSol.combineWithBuyBanxSolInstructions(
-      {
-        params,
-        accounts,
-        inputAmount: new BN(repayValue),
-        instructions,
-        signers,
-        lookupTables,
-      },
-      walletAndConnection,
-    )
+    const diff = repayValue.sub(banxSolBalance)
+
+    if (diff.gt(ZERO_BN)) {
+      return await banxSol.combineWithBuyBanxSolInstructions(
+        {
+          params,
+          accounts,
+          inputAmount: diff.abs(),
+          instructions,
+          signers,
+          lookupTables,
+        },
+        walletAndConnection,
+      )
+    }
   }
 
   return {
