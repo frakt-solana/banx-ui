@@ -50,7 +50,7 @@ export const Summary: FC<SummaryProps> = ({ offers, collateralToken, borrowToken
         value={weightedApr / 100}
         valueType={VALUES_TYPES.PERCENT}
         classNamesProps={statClassNames}
-        tooltipText="Weighted APR"
+        tooltipText="An annual percentage rate that accounts for different loan amounts and their respective interest rates, providing a comprehensive view of the overall interest cost"
         flexType="row"
       />
     </div>
@@ -77,7 +77,7 @@ export const SummarySkeleton = () => {
       <StatInfo
         label="Weighted APR"
         value={SkeletonStatValue}
-        tooltipText="Weighted APR"
+        tooltipText="An annual percentage rate that accounts for different loan amounts and their respective interest rates, providing a comprehensive view of the overall interest cost"
         flexType="row"
       />
     </div>

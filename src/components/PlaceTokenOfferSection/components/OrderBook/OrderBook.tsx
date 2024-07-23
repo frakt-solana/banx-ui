@@ -26,9 +26,15 @@ const OrderBook: FC<OrderBookProps> = ({ market, offerPubkey = '', className }) 
   return (
     <div className={classNames(styles.orderBook, className)}>
       <div className={styles.labelsWrapper}>
-        <Label title="Offer" tooltipText="Offer" />
-        <Label title="Apr" tooltipText="Apr" />
-        <Label title="Size" tooltipText="Size" />
+        <Label title="Offer" tooltipText="The price per token you propose for lending" />
+        <Label
+          title="Apr"
+          tooltipText="Annual interest rate. Depends on the loan-to-value (LTV) offered and market capitalization. Interest becomes fixed once offer is taken"
+        />
+        <Label
+          title="Size"
+          tooltipText="The total amount you are willing to lend at the proposed offer price"
+        />
       </div>
 
       <ul className={styles.offersList}>

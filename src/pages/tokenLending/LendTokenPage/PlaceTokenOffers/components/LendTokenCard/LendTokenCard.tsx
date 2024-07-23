@@ -65,14 +65,14 @@ const MarketMainInfo: FC<{ market: core.TokenMarketPreview }> = ({ market }) => 
         <h4 className={styles.collateralName}>{collateral.ticker}</h4>
         <div className={styles.mainInfoStats}>
           <StatInfo
-            label="Market"
+            label="Price"
             value={<DisplayValue value={collateralPrice} isSubscriptFormat />}
-            tooltipText=""
+            tooltipText="Token market price"
           />
           <StatInfo
             label="Top offer"
             value={<DisplayValue value={bestOffer / decimals} isSubscriptFormat />}
-            tooltipText=""
+            tooltipText="Highest offer among all lenders"
           />
         </div>
       </div>
@@ -107,7 +107,7 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isOpen })
       <StatInfo
         label="Max APR"
         value={createPercentValueJSX(marketApr, '0%')}
-        tooltipText="Max APR"
+        tooltipText="Maximum annual interest rate. Depends on the loan-to-value (LTV) offered and market capitalization. Interest becomes fixed once offer is taken"
         valueType={VALUES_TYPES.STRING}
         classNamesProps={{ container: styles.additionalStat, value: styles.additionalAprStat }}
       />
