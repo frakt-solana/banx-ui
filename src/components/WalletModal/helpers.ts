@@ -4,7 +4,8 @@ import {
   calculateBanxSolStakingRewards,
   calculateCurrentInterestSolPure,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { sumBy } from 'lodash'
+import { BondingCurveType } from 'fbonds-core/lib/fbond-protocol/types'
+import { chain, sumBy } from 'lodash'
 import moment from 'moment'
 
 import { ClusterStats } from '@banx/api/common'
@@ -27,9 +28,10 @@ export const getLenderVaultInfo = (
     (offer) => offer.fundsSolOrTokenBalance + offer.bidSettlement,
   )
 
-  const totalLstYield = sumBy(offers, (offer) =>
-    calculateLstYield({ offer, slot, epochStartedAt }).toNumber(),
-  )
+  const totalLstYield = chain(offers)
+    .filter((offer) => offer.bondingCurve.bondingType !== BondingCurveType.LinearUsdc)
+    .sumBy((offer) => calculateLstYield({ offer, slot, epochStartedAt }).toNumber())
+    .value()
 
   const totalLiquidityValue = totalAccruedInterest + totalRepaymets + totalClosedOffersValue
   const totalClaimableValue = totalLiquidityValue + totalLstYield
