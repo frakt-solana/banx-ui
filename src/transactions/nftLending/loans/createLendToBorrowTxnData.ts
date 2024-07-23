@@ -68,7 +68,7 @@ export const createLendToBorrowTxnData: CreateLendToBorrowTxnData = async (
         {
           params,
           accounts,
-          inputAmount: diff.abs(),
+          inputAmount: diff,
           instructions,
           signers,
           lookupTables,
