@@ -353,7 +353,7 @@ export const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, clos
               const { loan } = params
               const bondTradeTransaction = parseRepaymentCallSimulatedAccounts(accountInfoByPubkey)
 
-              const optimisticLoan = {
+              const optimisticLoan: core.Loan = {
                 ...loan,
                 fraktBond: {
                   ...loan.fraktBond,

@@ -68,5 +68,5 @@ export const NFTSchemaNew = z.object({
     })
     .optional(),
   collectionFloor: StringIntSchema,
-  rarity: RaritySchema.optional(),
+  rarity: RaritySchema.optional().nullable(),
 })

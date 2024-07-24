@@ -72,7 +72,7 @@ export const OfferSchema = z.object({
   rewardsToHarvested: StringIntSchema,
 })
 
-const BondTradeTransactionSchema = z.object({
+export const BondTradeTransactionSchema = z.object({
   publicKey: StringPublicKeySchema,
   amountOfBonds: StringIntSchema,
   bondOffer: StringPublicKeySchema,
@@ -101,7 +101,7 @@ const BondTradeTransactionSchema = z.object({
   user: StringPublicKeySchema,
 })
 
-const FraktBondSchema = z.object({
+export const FraktBondSchema = z.object({
   publicKey: StringPublicKeySchema,
   activatedAt: StringIntSchema,
   actualReturnedAmount: StringIntSchema,
@@ -130,6 +130,7 @@ export const LoanSchema = z.object({
   nft: NFTSchemaNew,
   totalRepaidAmount: StringIntSchema.optional(), //? exist only in fetchLenderLoansAndOffers request
   accruedInterest: StringIntSchema.optional(),
+  offerWasClosed: z.boolean().optional(), //? What for?
 })
 
 export const WalletLoansAndOffersShema = z.object({

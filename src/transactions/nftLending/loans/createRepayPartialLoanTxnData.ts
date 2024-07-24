@@ -1,8 +1,6 @@
 import { BN, web3 } from 'fbonds-core'
 import { BASE_POINTS, EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
-import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import { repayPartialPerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondTradeTransactionV3, FraktBond } from 'fbonds-core/lib/fbond-protocol/types'
 import moment from 'moment'
 import {
   CreateTxnData,
@@ -41,15 +39,14 @@ export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = asyn
 
   const { fraktBond, bondTradeTransaction } = loan
 
-  const { instructions, signers, optimisticResults } = await repayPartialPerpetualLoan({
+  const {
+    instructions,
+    signers,
+    accounts: accountsCollection,
+  } = await repayPartialPerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     args: {
       fractionToRepay,
-      optimistic: {
-        fraktBond,
-        bondTradeTransaction,
-        oldBondOffer: getMockBondOffer(),
-      },
       lendingTokenType: bondTradeTransaction.lendingToken,
     },
     accounts: {
@@ -67,8 +64,8 @@ export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = asyn
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
 
   const accounts = [
-    new web3.PublicKey(optimisticResults[0].fraktBond.publicKey),
-    new web3.PublicKey(optimisticResults[0].bondTradeTransaction.publicKey),
+    accountsCollection['fraktBond'],
+    accountsCollection['repaidBondTradeTransaction'],
   ]
 
   //? Add BanxSol instructions if offer wasn't closed!
@@ -115,7 +112,7 @@ export const parseRepayPartialLoanSimulatedAccounts = (
   const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
   return {
-    bondTradeTransaction: results?.['bondTradeTransactionV3'] as BondTradeTransactionV3,
-    fraktBond: results?.['fraktBond'] as FraktBond,
+    bondTradeTransaction: results?.['bondTradeTransactionV3'] as core.BondTradeTransaction,
+    fraktBond: results?.['fraktBond'] as core.FraktBond,
   }
 }

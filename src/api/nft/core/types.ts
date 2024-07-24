@@ -2,9 +2,11 @@ import { z } from 'zod'
 
 import { ResponseWithPagination } from '../../shared'
 import {
+  BondTradeTransactionSchema,
   BorrowNftSchema,
   BorrowNftsAndOffersSchema,
   CollectionMetaSchema,
+  FraktBondSchema,
   LenderLoansSchema,
   LoanSchema,
   LoansRequestsSchema,
@@ -17,6 +19,10 @@ import {
 export type MarketPreview = z.infer<typeof MarketPreviewSchema>
 
 export type MarketPreviewResponse = ResponseWithPagination<MarketPreview[]>
+
+export type FraktBond = z.infer<typeof FraktBondSchema>
+
+export type BondTradeTransaction = z.infer<typeof BondTradeTransactionSchema>
 
 //? Same as BondOfferV3
 export type Offer = z.infer<typeof OfferSchema>

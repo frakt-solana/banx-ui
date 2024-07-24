@@ -239,7 +239,7 @@ type FetchAllLoansRequests = (
   props: RequestWithPagination<{
     tokenType: LendingTokenType
   }>,
-) => Promise<LoansRequests>
+) => Promise<LoansRequests | null>
 export const fetchAllLoansRequests: FetchAllLoansRequests = async ({
   tokenType,
   getAll = true,
