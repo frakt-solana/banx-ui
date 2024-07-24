@@ -36,8 +36,10 @@ export const DebtCell: FC<{ loan: core.Loan }> = ({ loan }) => {
 
 const createTooltipContent = (label: string, value: number) => (
   <div className={styles.tooltipContent}>
-    <span>{label}</span>
-    <DisplayValue value={value} />
+    <span className={styles.tooltipContentLabel}>{label}</span>
+    <span className={styles.tooltipContentValue}>
+      <DisplayValue value={value} />
+    </span>
   </div>
 )
 

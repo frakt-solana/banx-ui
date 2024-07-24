@@ -1,5 +1,9 @@
-import { calculatePartOfLoanBodyFromInterest } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import {
+  calculateCurrentInterestSolPure,
+  calculatePartOfLoanBodyFromInterest,
+} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { map } from 'lodash'
+import moment from 'moment'
 
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
@@ -21,11 +25,16 @@ const getPartialRepayRentFee = (loan: core.Loan) => {
 }
 
 export const calcAccruedInterest = (loan: core.Loan) => {
-  //? For partial repayment loans, feeAmount is not included in the debt calculation.
-  const repayValue = calculateLoanRepayValue(loan, false)
+  const { amountOfBonds, solAmount, soldAt } = loan.bondTradeTransaction
 
-  const accruedInterest = repayValue - loan.bondTradeTransaction.solAmount
-  return accruedInterest
+  const interestParameters = {
+    loanValue: solAmount,
+    startTime: soldAt,
+    currentTime: moment().unix(),
+    rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
+  }
+
+  return calculateCurrentInterestSolPure(interestParameters)
 }
 
 const calculateUnpaidInterest = (loan: core.Loan) => {
