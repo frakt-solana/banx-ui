@@ -11,163 +11,125 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/types'
 import { z } from 'zod'
 
-import {
-  NFTSchema,
-  /*SerializedBNSchema, SerializedPublicKeySchema */
-} from '@banx/api/shared'
+import { NFTSchemaNew, StringIntSchema, StringPublicKeySchema } from '@banx/api/shared'
 
 const MarketMetaSchema = z.object({
-  marketApr: z.number(), //? base points
-  collectionName: z.string(), //? string
-  collectionImage: z.string(), //? string
+  marketApr: StringIntSchema,
+  collectionName: z.string(),
+  collectionImage: z.string(),
 })
 
 export const MarketPreviewSchema = z
   .object({
-    marketPubkey: z.string(), //? Public key
-    collectionFloor: z.number(), //? BN
-    offerTvl: z.number(), //? BN
-    bestOffer: z.number(), //? BN
-    bestLtv: z.number(), //? base points
-    activeBondsAmount: z.number(), //? BN
-    activeOfferAmount: z.number(), //? BN
-    loansTvl: z.number(), //? BN
-    isHot: z.boolean(), //? boolean
-    tensorSlug: z.string(), //? string
+    marketPubkey: StringPublicKeySchema,
+    collectionFloor: StringIntSchema,
+    offerTvl: StringIntSchema,
+    bestOffer: StringIntSchema,
+    bestLtv: StringIntSchema,
+    activeBondsAmount: z.number(),
+    activeOfferAmount: z.number(),
+    loansTvl: StringIntSchema,
+    isHot: z.boolean(),
+    tensorSlug: z.string(),
   })
   .merge(MarketMetaSchema)
 
 const BondingCurveSchema = z.object({
-  delta: z.number(),
+  delta: StringIntSchema,
   bondingType: z.nativeEnum(BondingCurveType),
 })
 
 const ValidationPairSchema = z.object({
-  loanToValueFilter: z.number(),
-  collateralsPerToken: z.number(),
-  maxReturnAmountFilter: z.number(),
+  loanToValueFilter: StringIntSchema,
+  collateralsPerToken: StringIntSchema,
+  maxReturnAmountFilter: StringIntSchema,
   bondFeatures: z.nativeEnum(BondFeatures),
 })
 
 export const OfferSchema = z.object({
-  publicKey: z.string(),
-  assetReceiver: z.string(),
-  baseSpotPrice: z.number(),
-  bidCap: z.number(),
-  bidSettlement: z.number(),
+  publicKey: StringPublicKeySchema,
+  assetReceiver: StringPublicKeySchema,
+  baseSpotPrice: StringIntSchema,
+  bidCap: StringIntSchema,
+  bidSettlement: StringIntSchema,
   bondingCurve: BondingCurveSchema,
-  buyOrdersQuantity: z.number(),
-  concentrationIndex: z.number(),
-  currentSpotPrice: z.number(),
-  edgeSettlement: z.number(),
-  fundsSolOrTokenBalance: z.number(),
-  hadoMarket: z.string(),
-  lastTransactedAt: z.number(),
-  mathCounter: z.number(),
+  buyOrdersQuantity: StringIntSchema,
+  concentrationIndex: StringIntSchema,
+  currentSpotPrice: StringIntSchema,
+  edgeSettlement: StringIntSchema,
+  fundsSolOrTokenBalance: StringIntSchema,
+  hadoMarket: StringPublicKeySchema,
+  lastTransactedAt: StringIntSchema,
+  mathCounter: StringIntSchema,
   pairState: z.nativeEnum(PairState),
   validation: ValidationPairSchema,
 
-  fundsInCurrentEpoch: z.number(),
-  fundsInNextEpoch: z.number(),
-  lastCalculatedSlot: z.number(),
-  lastCalculatedTimestamp: z.number(),
-  rewardsToHarvest: z.number(),
-  rewardsToHarvested: z.number(),
+  fundsInCurrentEpoch: StringIntSchema,
+  fundsInNextEpoch: StringIntSchema,
+  lastCalculatedSlot: StringIntSchema,
+  lastCalculatedTimestamp: StringIntSchema,
+  rewardsToHarvest: StringIntSchema,
+  rewardsToHarvested: StringIntSchema,
 })
 
-// const ValidationPairSchema = z.object({
-//   loanToValueFilter: SerializedBNSchema,
-//   collateralsPerToken: SerializedBNSchema,
-//   maxReturnAmountFilter: SerializedBNSchema,
-//   bondFeatures: z.nativeEnum(BondFeatures),
-// })
-
-// export const OfferSchema = z.object({
-//   publicKey: SerializedPublicKeySchema,
-//   assetReceiver: SerializedPublicKeySchema,
-//   baseSpotPrice: SerializedBNSchema,
-//   bidCap: SerializedBNSchema,
-//   bidSettlement: SerializedBNSchema,
-//   bondingCurve: BondingCurveSchema,
-//   buyOrdersQuantity: SerializedBNSchema,
-//   concentrationIndex: SerializedBNSchema,
-//   currentSpotPrice: SerializedBNSchema,
-//   edgeSettlement: SerializedBNSchema,
-//   fundsSolOrTokenBalance: SerializedBNSchema,
-//   hadoMarket: SerializedPublicKeySchema,
-//   lastTransactedAt: SerializedBNSchema,
-//   mathCounter: SerializedBNSchema,
-//   pairState: z.nativeEnum(PairState),
-//   validation: ValidationPairSchema,
-
-//   fundsInCurrentEpoch: SerializedBNSchema,
-//   fundsInNextEpoch: SerializedBNSchema,
-//   lastCalculatedSlot: SerializedBNSchema,
-//   lastCalculatedTimestamp: SerializedBNSchema,
-//   rewardsToHarvest: SerializedBNSchema,
-//   rewardsToHarvested: SerializedBNSchema,
-// })
-
 const BondTradeTransactionSchema = z.object({
-  publicKey: z.string(),
-  amountOfBonds: z.number(),
-  bondOffer: z.string(),
+  publicKey: StringPublicKeySchema,
+  amountOfBonds: StringIntSchema,
+  bondOffer: StringPublicKeySchema,
   bondTradeTransactionState: z.nativeEnum(BondTradeTransactionV2State),
   bondTradeTransactionType: z.nativeEnum(BondTradeTransactionV2Type),
-  borrowerFullRepaidAmount: z.number(),
-  borrowerOriginalLent: z.number(),
-  repaymentCallAmount: z.number(), //? Stores value that borrower needs to pay (NOT value that lender receives)
-  currentRemainingLent: z.number(),
-  fbondTokenMint: z.string(),
-  feeAmount: z.number(),
-  interestSnapshot: z.number(),
+  borrowerFullRepaidAmount: StringIntSchema,
+  borrowerOriginalLent: StringIntSchema,
+  repaymentCallAmount: StringIntSchema, //? Stores value that borrower needs to pay (NOT value that lender receives)
+  currentRemainingLent: StringIntSchema,
+  fbondTokenMint: StringPublicKeySchema,
+  feeAmount: StringIntSchema,
+  interestSnapshot: StringIntSchema,
   isDirectSell: z.boolean(),
-  lenderFullRepaidAmount: z.number(),
-  lenderOriginalLent: z.number(),
+  lenderFullRepaidAmount: StringIntSchema,
+  lenderOriginalLent: StringIntSchema,
   lendingToken: z.nativeEnum(LendingTokenType),
-  partialRepaySnapshot: z.number(),
+  partialRepaySnapshot: StringIntSchema,
   redeemResult: z.nativeEnum(RedeemResult),
-  redeemedAt: z.number(),
+  redeemedAt: StringIntSchema,
   repayDestination: z.nativeEnum(RepayDestination),
-  seller: z.string(),
-  solAmount: z.number(),
-  soldAt: z.number(),
-  terminationFreeze: z.number(),
-  terminationStartedAt: z.number(),
-  user: z.string(),
+  seller: StringPublicKeySchema,
+  solAmount: StringIntSchema,
+  soldAt: StringIntSchema,
+  terminationFreeze: StringIntSchema,
+  terminationStartedAt: StringIntSchema,
+  user: StringPublicKeySchema,
 })
 
 const FraktBondSchema = z.object({
-  publicKey: z.string(),
-  activatedAt: z.number(),
-  actualReturnedAmount: z.number(),
-  amountToReturn: z.number(),
-  banxStake: z.string(),
-  bondTradeTransactionsCounter: z.number(),
-  borrowedAmount: z.number(),
-  currentPerpetualBorrowed: z.number(),
-  fbondIssuer: z.string(),
-  fbondTokenMint: z.string(),
-  fbondTokenSupply: z.number(),
+  publicKey: StringPublicKeySchema,
+  activatedAt: StringIntSchema,
+  actualReturnedAmount: StringIntSchema,
+  amountToReturn: StringIntSchema,
+  banxStake: StringPublicKeySchema,
+  bondTradeTransactionsCounter: StringIntSchema,
+  borrowedAmount: StringIntSchema,
+  currentPerpetualBorrowed: StringIntSchema,
+  fbondIssuer: StringPublicKeySchema,
+  fbondTokenMint: StringPublicKeySchema,
+  fbondTokenSupply: StringIntSchema,
   fraktBondState: z.nativeEnum(FraktBondState),
-  fraktMarket: z.string(),
-  lastTransactedAt: z.number(),
-  liquidatingAt: z.number(),
-  refinanceAuctionStartedAt: z.number(),
-  repaidOrLiquidatedAt: z.number(),
-  terminatedCounter: z.number(),
-  hadoMarket: z.string().optional(),
+  fraktMarket: StringPublicKeySchema,
+  lastTransactedAt: StringIntSchema,
+  liquidatingAt: StringIntSchema,
+  refinanceAuctionStartedAt: StringIntSchema,
+  repaidOrLiquidatedAt: StringIntSchema,
+  terminatedCounter: StringIntSchema,
+  hadoMarket: StringPublicKeySchema.optional(), //? Why optional
 })
 
 export const LoanSchema = z.object({
-  publicKey: z.string(),
+  publicKey: StringPublicKeySchema,
   fraktBond: FraktBondSchema,
   bondTradeTransaction: BondTradeTransactionSchema,
-  nft: NFTSchema,
-  totalRepaidAmount: z.number().optional(), //? exist only in fetchLenderLoansAndOffers request
-  accruedInterest: z.number().optional(),
-  offerWasClosed: z.boolean().optional(), //? true if loan offer was removed (state is PerpetualClosed). false if offer is active or it's listing
-  //TODO: offerWasClosed already don't use because of lender vault feature, need to remove it
+  nft: NFTSchemaNew,
+  totalRepaidAmount: StringIntSchema.optional(), //? exist only in fetchLenderLoansAndOffers request
+  accruedInterest: StringIntSchema.optional(),
 })
 
 export const WalletLoansAndOffersShema = z.object({
@@ -176,14 +138,14 @@ export const WalletLoansAndOffersShema = z.object({
 })
 
 export const BorrowNftSchema = z.object({
-  mint: z.string(),
+  mint: StringPublicKeySchema,
   loan: z.object({
-    marketPubkey: z.string(),
-    fraktMarket: z.string(),
-    marketApr: z.number(),
-    banxStake: z.string().optional(),
+    marketPubkey: StringPublicKeySchema,
+    fraktMarket: StringPublicKeySchema,
+    marketApr: StringIntSchema,
+    banxStake: StringPublicKeySchema.optional(), //? exists when nft is banx and it's staked
   }),
-  nft: NFTSchema,
+  nft: NFTSchemaNew,
 })
 
 export const BorrowNftsAndOffersSchema = z.object({
@@ -192,7 +154,7 @@ export const BorrowNftsAndOffersSchema = z.object({
 })
 
 export const CollectionMetaSchema = z.object({
-  collectionFloor: z.number(),
+  collectionFloor: StringIntSchema,
   collectionName: z.string(),
   collectionImage: z.string(),
 })
