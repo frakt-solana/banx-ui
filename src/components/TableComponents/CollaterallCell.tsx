@@ -123,6 +123,7 @@ export const PointsBanxBadge: FC<PointsBanxBadgeProps> = ({
 interface CollateralTokenCellProps {
   collateralTokenAmount: ReactNode
   collateralImageUrl: string
+  collateralTokenTicker?: string
 
   selected?: boolean
   onCheckboxClick?: () => void
@@ -133,6 +134,7 @@ interface CollateralTokenCellProps {
 
 export const CollateralTokenCell: FC<CollateralTokenCellProps> = ({
   collateralTokenAmount,
+  collateralTokenTicker,
   collateralImageUrl,
   onCheckboxClick,
   checkboxClassName,
@@ -152,9 +154,14 @@ export const CollateralTokenCell: FC<CollateralTokenCellProps> = ({
         />
       )}
 
-      <div className={styles.collateralTokenInfo}>
-        <span className={styles.collateralTokenAmount}>{collateralTokenAmount}</span>
+      <div className={styles.collateralTokenContainer}>
         <img src={collateralImageUrl} className={styles.collateralImage} />
+        <div className={styles.collateralTokenInfo}>
+          <span className={styles.collateralTokenAmount}>{collateralTokenAmount}</span>
+          {collateralTokenTicker && (
+            <span className={styles.collateralTokenTicker}>{collateralTokenTicker}</span>
+          )}
+        </div>
         {rightContentJSX}
       </div>
     </div>

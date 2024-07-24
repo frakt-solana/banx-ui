@@ -45,6 +45,7 @@ export const getTableColumns = ({
             onCheckboxClick={() => toggleLoanInSelection(loan)}
             collateralTokenAmount={formatCollateralTokenValue(getTokenLoanSupply(loan))}
             collateralImageUrl={loan.collateral.logoUrl}
+            collateralTokenTicker={loan.collateral.ticker}
           />
         )
       },

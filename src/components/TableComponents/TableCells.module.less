@@ -196,20 +196,44 @@
   gap: 8px;
 }
 
-.collateralTokenInfo {
+.collateralTokenContainer {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 8px;
+}
+
+.collateralTokenInfo {
+  display: flex;
+  flex-direction: column;
 }
 
 .collateralTokenAmount {
   color: var(--content-secondary);
-  font: var(--important-text-xl);
+  font: var(--important-text-md);
+
+  @media (max-width: 640px) {
+    font: var(--important-text-sm);
+  }
+}
+
+.collateralTokenTicker {
+  color: var(--content-primary);
+  font: var(--body-text-sm);
+  text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--body-text-xs);
+  }
 }
 
 .collateralImage {
   border-radius: 100%;
-  height: 16px;
-  width: 16px;
+  height: 30px;
+  width: 30px;
+
+  @media (max-width: 640px) {
+    height: 24px;
+    width: 24px;
+  }
 }
 // * CollateralTokenCell * //

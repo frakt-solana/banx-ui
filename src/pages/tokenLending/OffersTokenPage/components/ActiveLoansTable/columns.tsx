@@ -69,6 +69,7 @@ export const getTableColumns = ({
             collateralTokenAmount={formatCollateralTokenValue(getTokenLoanSupply(loan))}
             checkboxClassName={!canSelect ? styles.collateralCellCheckbox : ''}
             collateralImageUrl={loan.collateral.logoUrl}
+            collateralTokenTicker={loan.collateral.ticker}
             rightContentJSX={createRightContentJSX(loan)}
           />
         )

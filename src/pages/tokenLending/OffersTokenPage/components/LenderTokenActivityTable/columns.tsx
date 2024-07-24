@@ -22,6 +22,7 @@ export const getTableColumns = () => {
         <CollateralTokenCell
           key={id}
           collateralImageUrl={collateral.logoUrl}
+          collateralTokenTicker={collateral.ticker}
           collateralTokenAmount={formatCollateralTokenValue(
             tokenSupply / Math.pow(10, collateral.decimals),
           )}
