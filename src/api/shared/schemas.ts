@@ -11,11 +11,11 @@ export const StringIntSchema = z.string().transform((value) => {
   return parseInt(value)
 })
 
-export const StringPublicKeySchema = z.string()
-
 export const SerializedPublicKeySchema = z.string().transform((value) => {
   return new web3.PublicKey(value)
 })
+
+export const StringPublicKeySchema = z.string()
 
 export const RaritySchema = z.object({
   tier: z.nativeEnum(RarityTier), //? string
