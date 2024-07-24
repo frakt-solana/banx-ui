@@ -30,7 +30,7 @@ export const MarketPreviewSchema = z
     activeOfferAmount: z.number(),
     loansTvl: StringIntSchema,
     isHot: z.boolean(),
-    tensorSlug: z.string(),
+    tensorSlug: z.string().optional(), //TODO Remove when BE fix this
   })
   .merge(MarketMetaSchema)
 
