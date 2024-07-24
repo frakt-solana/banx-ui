@@ -1743,6 +1743,11 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
+"@jup-ag/api@^6.0.24":
+  version "6.0.24"
+  resolved "https://registry.yarnpkg.com/@jup-ag/api/-/api-6.0.24.tgz#c311ea05c7b18a6372471c48e6508b68ad79271c"
+  integrity sha512-zIX4WIPb0Kb2UnK2wNIOQBWqPJyMJq/D9dQTf/2qvPb0hfa8XdgbrQAzomHMHnAzw9StMQoybBk+JK/A76xP3w==
+
 "@keystonehq/bc-ur-registry-sol@^0.3.1":
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/@keystonehq/bc-ur-registry-sol/-/bc-ur-registry-sol-0.3.1.tgz#5319c7c4a22cc83bbacfa6fe09aaa6fb21363f24"

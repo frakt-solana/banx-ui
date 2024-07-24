@@ -12,10 +12,10 @@ import { DisplayValue } from '@banx/components/TableComponents'
 import { getLenderVaultInfo } from '@banx/components/WalletModal'
 import { BanxSolYieldWarningModal } from '@banx/components/modals'
 
-import { Offer, core } from '@banx/api/nft'
+import { core } from '@banx/api/nft'
 import { useClusterStats } from '@banx/hooks'
 import { BanxSOL } from '@banx/icons'
-import { useModal } from '@banx/store/common'
+import { useIsLedger, useModal } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -47,6 +47,7 @@ interface SummaryProps {
 const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
+  const { isLedger } = useIsLedger()
 
   const { tokenType } = useNftTokenType()
 
@@ -77,10 +78,10 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
         ),
       )
 
-      await new TxnExecutor<CreateClaimLenderVaultTxnDataParams>(
-        walletAndConnection,
-        TXN_EXECUTOR_DEFAULT_OPTIONS,
-      )
+      await new TxnExecutor<CreateClaimLenderVaultTxnDataParams>(walletAndConnection, {
+        ...TXN_EXECUTOR_DEFAULT_OPTIONS,
+        chunkSize: isLedger ? 5 : 40,
+      })
         .addTxnsData(txnsData)
         .on('sentAll', () => {
           enqueueTransactionsSent()

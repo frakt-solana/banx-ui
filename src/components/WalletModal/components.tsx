@@ -152,6 +152,7 @@ const LenderVaultContent = () => {
   const { tokenType } = useNftTokenType()
 
   const { data: clusterStats } = useClusterStats()
+  const { isLedger } = useIsLedger()
 
   const { rawOffers, updateOrAddOffer, lenderVaultInfo } = useLenderVaultInfo()
   const {
@@ -186,10 +187,10 @@ const LenderVaultContent = () => {
         ),
       )
 
-      await new TxnExecutor<CreateClaimLenderVaultTxnDataParams>(
-        walletAndConnection,
-        TXN_EXECUTOR_DEFAULT_OPTIONS,
-      )
+      await new TxnExecutor<CreateClaimLenderVaultTxnDataParams>(walletAndConnection, {
+        ...TXN_EXECUTOR_DEFAULT_OPTIONS,
+        chunkSize: isLedger ? 5 : 40,
+      })
         .addTxnsData(txnsData)
         .on('sentAll', () => {
           enqueueTransactionsSent()
