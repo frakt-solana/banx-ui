@@ -63,10 +63,7 @@ export const createRepayPartialLoanTxnData: CreateRepayPartialLoanTxnData = asyn
 
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
 
-  const accounts = [
-    accountsCollection['fraktBond'],
-    accountsCollection['repaidBondTradeTransaction'],
-  ]
+  const accounts = [accountsCollection['fraktBond'], accountsCollection['oldBondTradeTransaction']]
 
   //? Add BanxSol instructions if offer wasn't closed!
   if (
