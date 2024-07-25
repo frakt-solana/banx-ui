@@ -92,19 +92,6 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
         walletAndConnection,
       )
     }
-
-    return await banxSol.combineWithSellBanxSolInstructions(
-      {
-        params,
-        accounts,
-        inputAmount: diff.abs(),
-
-        instructions,
-        signers,
-        lookupTables,
-      },
-      walletAndConnection,
-    )
   }
 
   return {

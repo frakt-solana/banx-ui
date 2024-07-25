@@ -15,7 +15,6 @@ import {
 import { ClusterStats } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
-import { banxSol } from '@banx/transactions'
 import { ZERO_BN, isBanxSolTokenType } from '@banx/utils'
 
 import { parseAccountInfoByPubkey } from '../../functions'
@@ -108,21 +107,6 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
   }
 
   const accounts = [new web3.PublicKey(offer.publicKey)]
-
-  if (isBanxSolTokenType(tokenType) && (offer.bidCap || offer.concentrationIndex)) {
-    const inputAmount = new BN(offer.concentrationIndex).add(new BN(offer.bidCap))
-
-    return await banxSol.combineWithSellBanxSolInstructions(
-      {
-        params,
-        accounts,
-        inputAmount,
-        instructions,
-        signers,
-      },
-      walletAndConnection,
-    )
-  }
 
   return {
     params,

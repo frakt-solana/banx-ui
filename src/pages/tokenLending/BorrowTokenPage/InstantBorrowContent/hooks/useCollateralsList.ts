@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { fetchTokenBalance } from '@banx/api/common'
 import { core } from '@banx/api/tokens'
-import { SOL_ADDRESS } from '@banx/constants'
+import { WSOL_ADDRESS } from '@banx/constants'
 import { useNftTokenType } from '@banx/store/nft'
 
 import { BORROW_TOKENS_LIST } from '../../constants'
@@ -45,7 +45,7 @@ export const useBorrowTokensList = () => {
 
     return await Promise.all(
       BORROW_TOKENS_LIST.map(async (token) => {
-        if (token.collateral.mint === SOL_ADDRESS) {
+        if (token.collateral.mint === WSOL_ADDRESS) {
           const account = await connection.getAccountInfo(publicKey)
           const amountInWallet = account?.lamports || 0
 
