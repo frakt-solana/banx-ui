@@ -59,7 +59,7 @@ export const DebtCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
     <div className={styles.tooltipContent}>
       <TooltipRow label="Principal" value={borrowedValue} />
       <TooltipRow label="Repaid" value={bondTradeTransaction.borrowerFullRepaidAmount} />
-      <TooltipRow label="Accrued interest" value={totalAccruedInterest + upfrontFee} />
+      <TooltipRow label="Accrued interest" value={totalAccruedInterest} />
       <TooltipRow label="Upfront fee" value={upfrontFee} />
       <TooltipRow label="Est. weekly interest" value={weeklyFee} />
     </div>
