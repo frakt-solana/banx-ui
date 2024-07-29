@@ -1,18 +1,21 @@
 import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { TokenMarketPreview } from '@banx/api/tokens'
 import { useModal } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
-import { getTokenUnit, isBanxSolTokenType } from '@banx/utils'
+import { getTokenDecimals, getTokenUnit, isBanxSolTokenType } from '@banx/utils'
 
 import { Button } from '../Buttons'
+import Tooltip from '../Tooltip'
 import { InputErrorMessage, NumericStepInput } from '../inputs'
 import { Modal } from '../modals/BaseModal'
 import { ActionsButtons } from './components/ActionsButtons'
 import OrderBook from './components/OrderBook'
 import { AdditionalSummary, MainSummary } from './components/Summary'
+import { formatLeadingZeros, getCollateralDecimalPlaces } from './helpers'
 import { usePlaceTokenOffer } from './hooks/usePlaceTokenOffer'
 
 import styles from './PlaceTokenOfferSection.module.less'
@@ -66,20 +69,28 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
 
         <div className={styles.fields}>
           <NumericStepInput
-            label="Offer"
+            label="Max offer"
             value={collateralsPerTokenString}
             onChange={onLoanValueChange}
             postfix={getTokenUnit(tokenType)}
             disabled={!connected}
             step={inputStepByTokenType}
+            rightLabelJSX={
+              <MaxOfferControls
+                market={market}
+                onChange={onLoanValueChange}
+                tokenType={tokenType}
+              />
+            }
           />
           <NumericStepInput
-            label="Size"
+            label="Offer size"
             value={offerSizeString}
             onChange={onOfferSizeChange}
             postfix={getTokenUnit(tokenType)}
             disabled={!connected}
             step={inputStepByTokenType}
+            labelClassName={styles.offerSizeLabel}
           />
         </div>
 
@@ -122,5 +133,64 @@ export const OffersModal: FC<OffersModalProps> = (props) => {
     <Modal className={styles.modal} open onCancel={close}>
       <OrderBook {...props} />
     </Modal>
+  )
+}
+
+interface MaxOfferControlsProps {
+  market: TokenMarketPreview | undefined
+  onChange: (value: string) => void
+  tokenType: LendingTokenType
+}
+
+const MaxOfferControls: FC<MaxOfferControlsProps> = ({ market, onChange, tokenType }) => {
+  const { collateralPrice = 0, bestOffer = 0 } = market || {}
+
+  const percentages = [60, 75, 90]
+
+  const handleChange = (value: number) => {
+    const decimalPlaces = getCollateralDecimalPlaces(value)
+    const formattedValue = formatLeadingZeros(value, decimalPlaces)
+    onChange(formattedValue)
+  }
+
+  const onChangePercent = (percent: number) => {
+    const value = (collateralPrice * percent) / 100
+    handleChange(value)
+  }
+
+  const onChangeTopOffer = () => {
+    const tokenDecimals = getTokenDecimals(tokenType)
+    const nextValue = bestOffer / tokenDecimals
+    handleChange(nextValue)
+  }
+
+  return (
+    <div className={styles.maxOfferControls}>
+      <div className={styles.labelWrapper}>
+        <span className={styles.label}>LTV</span>
+        <Tooltip title="LTV" />
+      </div>
+
+      {percentages.map((percent) => (
+        <Button
+          key={percent}
+          onClick={() => onChangePercent(percent)}
+          className={styles.maxOfferControlsButton}
+          variant="secondary"
+          size="small"
+        >
+          {percent}%
+        </Button>
+      ))}
+      <Button
+        onClick={onChangeTopOffer}
+        className={styles.maxOfferControlsButton}
+        disabled={!bestOffer}
+        variant="secondary"
+        size="small"
+      >
+        Top
+      </Button>
+    </div>
   )
 }

@@ -35,3 +35,20 @@ export const getErrorMessage: GetErrorMessage = ({
 const createInsufficientBalanceErrorMessage = (tokenType: LendingTokenType) => {
   return `Not enough ${tokenType} in wallet`
 }
+
+const DEFAULT_DECIMAL_PLACES = 2
+const DECIMAL_PLACES = [
+  { limit: 1, decimalPlaces: 2 }, //? Values up to 1 have 0 decimal places
+  { limit: 0.001, decimalPlaces: 4 }, //? Values up to 0.001 have 4 decimal places
+  { limit: 0, decimalPlaces: 6 }, //? Values greater than 0 but less than 0.001 have 6 decimal places
+]
+
+export const getCollateralDecimalPlaces = (value: number) => {
+  return DECIMAL_PLACES.find(({ limit }) => value > limit)?.decimalPlaces ?? DEFAULT_DECIMAL_PLACES
+}
+
+export const formatLeadingZeros = (value: number, decimals: number) =>
+  value
+    .toFixed(decimals)
+    .replace(/(\.\d*?)0+$/, '$1') //? Remove trailing zeros if they follow a decimal point
+    .replace(/\.$/, '') //? Remove the decimal point if it's the last character
