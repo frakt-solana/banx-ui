@@ -116,6 +116,7 @@
 .loanInfoValue {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   align-items: center;
   width: 100%;
 
@@ -157,6 +158,14 @@
   @media (max-width: 640px) {
     font: var(--important-text-md);
   }
+
+  span {
+    display: flex;
+  }
+}
+
+.loanDifferenceTitlePrimary {
+  color: var(--content-primary);
 }
 .loanDifferenceTitleRed {
   color: var(--additional-red-primary-deep);

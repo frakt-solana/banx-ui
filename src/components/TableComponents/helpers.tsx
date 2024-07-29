@@ -32,7 +32,7 @@ export const createTimeValueJSX = (initialValue: number, zeroPlaceholder = '--')
   return <span className={styles.value}>{displayValue}</span>
 }
 
-const createPlaceholderJSX = (value: number, tokenUnit: ReactNode) => (
+export const createPlaceholderJSX = (value: ReactNode, tokenUnit: ReactNode) => (
   <>
     <span className={styles.value}>{value}</span>
     <span className={styles.tokenUnit}>{tokenUnit}</span>
@@ -57,7 +57,7 @@ const TOKEN_DETAILS = {
 
 interface DisplayValueProps {
   value: number
-  placeholder?: string
+  placeholder?: ReactNode
   isSubscriptFormat?: boolean
 }
 

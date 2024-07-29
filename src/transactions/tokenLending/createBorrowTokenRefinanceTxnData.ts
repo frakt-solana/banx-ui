@@ -5,10 +5,9 @@ import {
   borrowerRefinance,
   borrowerRefinanceToSame,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { LendingTokenType, PairState } from 'fbonds-core/lib/fbond-protocol/types'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
-import { Offer } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
 
@@ -16,7 +15,7 @@ import { sendTxnPlaceHolder } from '../helpers'
 
 export type CreateBorrowTokenRefinanceTxnDataParams = {
   loan: core.TokenLoan
-  offer: Offer
+  offerPublicKey: string
   solToRefinance: number
   aprRate: number //? Base points
   tokenType: LendingTokenType
@@ -31,12 +30,12 @@ export const createBorrowTokenRefinanceTxnData: CreateBorrowTokenRefinanceTxnDat
   params,
   walletAndConnection,
 ) => {
-  const { loan, offer, aprRate, solToRefinance, tokenType } = params
+  const { loan, offerPublicKey, aprRate, solToRefinance, tokenType } = params
 
   const { instructions, signers, optimisticResult } = await getIxnsAndSigners(
     {
       loan,
-      offer,
+      offerPublicKey,
       aprRate,
       solToRefinance,
       tokenType,
@@ -45,7 +44,7 @@ export const createBorrowTokenRefinanceTxnData: CreateBorrowTokenRefinanceTxnDat
   )
 
   const accounts = [
-    new web3.PublicKey(optimisticResult.bondOffer.publicKey),
+    new web3.PublicKey(offerPublicKey),
     new web3.PublicKey(optimisticResult.fraktBond.publicKey),
     new web3.PublicKey(optimisticResult.newBondTradeTransaction.publicKey),
   ]
@@ -63,62 +62,58 @@ const getIxnsAndSigners = async (
   params: CreateBorrowTokenRefinanceTxnDataParams,
   walletAndConnection: WalletAndConnection,
 ) => {
-  const { loan, offer, solToRefinance, aprRate } = params
+  const { loan, offerPublicKey, solToRefinance, aprRate } = params
   const { connection, wallet } = walletAndConnection
-  const { bondTradeTransaction, fraktBond } = loan
 
   const accounts = {
-    fbond: new web3.PublicKey(fraktBond.publicKey),
+    fbond: new web3.PublicKey(loan.fraktBond.publicKey),
     userPubkey: wallet.publicKey,
-    hadoMarket: new web3.PublicKey(offer.hadoMarket),
+    hadoMarket: new web3.PublicKey(loan.fraktBond.hadoMarket ?? ''),
     protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
-    previousBondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
-    bondOffer: new web3.PublicKey(offer.publicKey),
-    previousLender: new web3.PublicKey(bondTradeTransaction.user),
+    previousBondTradeTransaction: new web3.PublicKey(loan.bondTradeTransaction.publicKey),
+    bondOffer: new web3.PublicKey(offerPublicKey),
+    previousLender: new web3.PublicKey(loan.bondTradeTransaction.user),
   }
 
   const optimistic = {
-    oldBondTradeTransaction: bondTradeTransaction,
-    bondOffer: offer,
-    fraktBond: fraktBond,
+    oldBondTradeTransaction: loan.bondTradeTransaction,
+    bondOffer: getMockBondOffer(),
+    fraktBond: loan.fraktBond,
     minMarketFee: aprRate,
   }
 
-  if (
-    offer.publicKey === bondTradeTransaction.bondOffer &&
-    offer.pairState === PairState.PerpetualBondingCurveOnMarket
-  ) {
+  if (offerPublicKey === loan.bondTradeTransaction.bondOffer) {
     const { instructions, signers, optimisticResult } = await borrowerRefinanceToSame({
+      programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       args: {
         solToRefinance,
         aprRate,
-        lendingTokenType: bondTradeTransaction.lendingToken,
+        lendingTokenType: loan.bondTradeTransaction.lendingToken,
       },
       accounts,
       optimistic,
       connection,
-      programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       sendTxn: sendTxnPlaceHolder,
     })
 
     return { instructions, signers, optimisticResult }
   } else {
     const { instructions, signers, optimisticResult } = await borrowerRefinance({
+      programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       args: {
         solToRefinance,
         aprRate,
-        lendingTokenType: bondTradeTransaction.lendingToken,
+        lendingTokenType: loan.bondTradeTransaction.lendingToken,
       },
       accounts: {
         ...accounts,
-        oldBondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
+        oldBondOffer: new web3.PublicKey(loan.bondTradeTransaction.bondOffer),
       },
       optimistic: {
         ...optimistic,
         oldBondOffer: getMockBondOffer(),
       },
       connection,
-      programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       sendTxn: sendTxnPlaceHolder,
     })
 

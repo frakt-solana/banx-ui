@@ -1,20 +1,24 @@
-import { FC, useEffect, useMemo, useState } from 'react'
+import { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { BN } from 'fbonds-core'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
-import { chain, uniqueId } from 'lodash'
+import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { Loader } from '@banx/components/Loader'
-import { Slider } from '@banx/components/Slider'
-import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
+import {
+  DisplayValue,
+  createPercentValueJSX,
+  createPlaceholderJSX,
+} from '@banx/components/TableComponents'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { core } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
-import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
+import { USDC } from '@banx/icons'
 import { useModal } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
 import { useTokenLoansOptimistic } from '@banx/store/token'
@@ -30,8 +34,6 @@ import {
 } from '@banx/transactions/tokenLending'
 import {
   caclulateBorrowTokenLoanValue,
-  calculateApr,
-  calculateIdleFundsInOffer,
   calculateTokenLoanValueWithUpfrontFee,
   convertToHumanNumber,
   destroySnackbar,
@@ -39,14 +41,14 @@ import {
   enqueueSnackbar,
   enqueueTransactionSent,
   enqueueWaitingConfirmation,
-  filterOutWalletLoans,
-  findSuitableOffer,
   getDecimalPlaces,
   getTokenUnit,
   isTokenLoanTerminating,
 } from '@banx/utils'
 
 import { useSelectedTokenLoans } from '../../loansState'
+import { calculateNewLoanInfo, calculateTokenBorrowApr } from './helpers'
+import { useRefinanceTokenOffer } from './hooks'
 
 import styles from './ActionsCell.module.less'
 
@@ -54,95 +56,33 @@ interface RefinanceTokenModalProps {
   loan: core.TokenLoan
 }
 
-//TODO (TokenLending): Write new logic to find cuitable offer
-//? You can ignore this file
-
 export const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
-  const { bondTradeTransaction, fraktBond } = loan
-
   const wallet = useWallet()
   const { connection } = useConnection()
 
-  const { close } = useModal()
   const { tokenType } = useNftTokenType()
+  const { close } = useModal()
 
-  const { offers, updateOrAddOffer, isLoading } = useTokenMarketOffers(fraktBond.hadoMarket || '')
-
-  const bestOffer = useMemo(() => {
-    return (
-      chain(offers)
-        .sortBy(({ validation }) => validation.collateralsPerToken)
-        .thru((offers) =>
-          filterOutWalletLoans({
-            offers,
-            walletPubkey: wallet?.publicKey?.toBase58(),
-          }),
-        )
-        // .filter(isOfferNotEmpty)
-        .value()
-        .at(0)
-    )
-  }, [offers, wallet])
-
-  const initialCurrentSpotPrice = useMemo(() => {
-    if (!bestOffer) return 0
-    return calculateIdleFundsInOffer(bestOffer).toNumber()
-  }, [bestOffer])
-
-  useEffect(() => {
-    setCurrentSpotPrice(initialCurrentSpotPrice)
-  }, [initialCurrentSpotPrice])
-
+  const { offer, updateOrAddOffer, isLoading } = useRefinanceTokenOffer(loan)
   const { update: updateLoansOptimistic } = useTokenLoansOptimistic()
   const { clear: clearSelection } = useSelectedTokenLoans()
 
   const isLoanTerminating = isTokenLoanTerminating(loan)
 
-  const [partialPercent, setPartialPercent] = useState<number>(100)
-  const [currentSpotPrice, setCurrentSpotPrice] = useState<number>(initialCurrentSpotPrice)
-
-  const onPartialPercentChange = (percentValue: number) => {
-    setPartialPercent(percentValue)
-    setCurrentSpotPrice(Math.max(Math.floor((initialCurrentSpotPrice * percentValue) / 100), 1000))
-  }
-
   const currentLoanDebt = caclulateBorrowTokenLoanValue(loan).toNumber()
   const currentLoanBorrowedAmount = calculateTokenLoanValueWithUpfrontFee(loan).toNumber()
-  const currentApr = bondTradeTransaction.amountOfBonds
+  const currentApr = loan.bondTradeTransaction.amountOfBonds
 
-  //? Upfron fee on reborrow is calculated: (newDebt - prevDebt) / 100
-  const upfrontFee = Math.max((currentSpotPrice - currentLoanDebt) / 100, 0)
-
-  const newLoanBorrowedAmount = currentSpotPrice - upfrontFee
-  const newLoanDebt = currentSpotPrice
-
-  const newApr = calculateApr({
-    loanValue: newLoanBorrowedAmount,
-    collectionFloor: loan.collateralPrice,
-    marketPubkey: fraktBond.hadoMarket,
+  const { newLoanDebt, newLoanBorrowed, newLoanApr, upfrontFee } = calculateNewLoanInfo({
+    loan,
+    offer,
+    currentLoanDebt,
   })
 
   const differenceToPay = newLoanDebt - currentLoanDebt - upfrontFee
 
   const refinance = async () => {
-    if (!bestOffer) return
-
-    const suitableOffer = chain(offers)
-      .thru((offers) =>
-        filterOutWalletLoans({
-          offers,
-          walletPubkey: wallet?.publicKey?.toBase58(),
-        }),
-      )
-      .thru((offers) =>
-        findSuitableOffer({
-          loanValue: currentSpotPrice,
-          offers,
-        }),
-      )
-      .value()
-
-    if (!suitableOffer) return
+    if (!offer) return
 
     const loadingSnackbarId = uniqueId()
 
@@ -152,9 +92,9 @@ export const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
       const txnData = await createBorrowTokenRefinanceTxnData(
         {
           loan,
-          offer: suitableOffer,
-          solToRefinance: currentSpotPrice,
-          aprRate: newApr,
+          offerPublicKey: offer.offerPublicKey,
+          solToRefinance: new BN(offer.amountToGet, 'hex').toNumber(),
+          aprRate: calculateTokenBorrowApr(loan, offer),
           tokenType,
         },
         walletAndConnection,
@@ -194,11 +134,11 @@ export const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
               const optimisticLoan = {
                 ...params.loan,
                 publicKey: fraktBond.publicKey,
-                fraktBond: fraktBond,
+                fraktBond: { ...fraktBond, hadoMarket: params.loan.fraktBond.hadoMarket },
                 bondTradeTransaction,
               }
 
-              updateOrAddOffer(bondOffer)
+              updateOrAddOffer([bondOffer])
               updateLoansOptimistic([optimisticLoan], wallet.publicKey.toBase58())
               clearSelection()
               close()
@@ -219,6 +159,8 @@ export const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
     }
   }
 
+  const actionButtonText = isLoanTerminating ? 'Extend' : 'Reborrow'
+
   return (
     <Modal open onCancel={close}>
       {isLoading && <Loader />}
@@ -230,47 +172,32 @@ export const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
             debt={currentLoanDebt}
             apr={currentApr}
             className={styles.currentLoanInfo}
+            tokenType={tokenType}
             faded
           />
           <LoanInfo
             title="New loan"
-            borrowedAmount={newLoanBorrowedAmount}
+            borrowedAmount={newLoanBorrowed}
             debt={newLoanDebt}
-            apr={newApr}
+            apr={newLoanApr}
             className={styles.newLoanInfo}
+            tokenType={tokenType}
           />
 
           <LoanDifference
+            offer={offer}
             difference={differenceToPay}
             tokenType={tokenType}
             className={styles.difference}
           />
 
-          <Slider
-            label="Loan"
-            value={partialPercent}
-            onChange={onPartialPercentChange}
-            className={styles.refinanceModalSlider}
-            marks={DEFAULT_SLIDER_MARKS}
-            min={10}
-            max={100}
-          />
-
-          <Button className={styles.refinanceModalButton} onClick={refinance} disabled={!bestOffer}>
-            {isLoanTerminating ? 'Extend' : 'Reborrow'}
+          <Button onClick={refinance} className={styles.refinanceModalButton} disabled={!offer}>
+            {!offer ? 'No suitable offers yet' : actionButtonText}
           </Button>
         </>
       )}
     </Modal>
   )
-}
-
-const DEFAULT_SLIDER_MARKS = {
-  10: '10%',
-  25: '25%',
-  50: '50%',
-  75: '75%',
-  100: '100%',
 }
 
 interface LoanInfoProps {
@@ -280,26 +207,49 @@ interface LoanInfoProps {
   apr: number //? base points
   faded?: boolean //? Make gray text color
   className?: string
+  tokenType: LendingTokenType
 }
 
-const LoanInfo: FC<LoanInfoProps> = ({ title, borrowedAmount, debt, apr, faded, className }) => {
+const TOKEN_PLACEHOLDER = {
+  [LendingTokenType.NativeSol]: createPlaceholderJSX('--', '◎'),
+  [LendingTokenType.BanxSol]: createPlaceholderJSX('--', '◎'),
+  //? Using viewBox to visually scale up icon without changing its size
+  [LendingTokenType.Usdc]: createPlaceholderJSX('--', <USDC viewBox="0 1 15 15" />),
+}
+
+const LoanInfo: FC<LoanInfoProps> = ({
+  title,
+  borrowedAmount,
+  debt,
+  apr,
+  faded,
+  className,
+  tokenType,
+}) => {
+  const placeholder = TOKEN_PLACEHOLDER[tokenType]
+
+  const aprPercentWithProtocolFee = (apr + BONDS.PROTOCOL_REPAY_FEE) / 100
+  const displayAprValue = apr ? createPercentValueJSX(aprPercentWithProtocolFee) : '--'
+
   return (
     <div className={classNames(styles.loanInfo, faded && styles.loanInfoFaded, className)}>
       <h5 className={styles.loanInfoTitle}>{title}</h5>
       <div className={styles.loanInfoStats}>
         <div className={styles.loanInfoValue}>
           <p>
-            <DisplayValue value={borrowedAmount} />
+            <DisplayValue value={borrowedAmount} placeholder={placeholder} />
           </p>
           <p>Borrowed</p>
         </div>
+
         <div className={styles.loanInfoValue}>
-          <p>{createPercentValueJSX((apr + BONDS.PROTOCOL_REPAY_FEE) / 100)}</p>
+          <p>{displayAprValue}</p>
           <p>APR</p>
         </div>
+
         <div className={styles.loanInfoValue}>
           <p>
-            <DisplayValue value={debt} />
+            <DisplayValue value={debt} placeholder={placeholder} />
           </p>
           <p>Debt</p>
         </div>
@@ -309,12 +259,13 @@ const LoanInfo: FC<LoanInfoProps> = ({ title, borrowedAmount, debt, apr, faded, 
 }
 
 interface LoanDifferenceProps {
+  offer: core.BorrowSplTokenOffers | undefined
   difference: number //? Integer representation of value
   tokenType: LendingTokenType
   className?: string
 }
 
-const LoanDifference: FC<LoanDifferenceProps> = ({ className, difference, tokenType }) => {
+const LoanDifference: FC<LoanDifferenceProps> = ({ offer, difference, className, tokenType }) => {
   const isDifferenceNegative = difference < 0
 
   const subtitle = isDifferenceNegative ? 'Difference you will pay' : 'Difference you will receive'
@@ -322,17 +273,27 @@ const LoanDifference: FC<LoanDifferenceProps> = ({ className, difference, tokenT
   const convertedValue = convertToHumanNumber(difference, tokenType)
   const tokenDecimalPlaces = getDecimalPlaces(convertedValue, tokenType)
   const tokenUnit = getTokenUnit(tokenType)
+  const placeholder = TOKEN_PLACEHOLDER[tokenType]
+
+  const displayValue = offer ? (
+    <>
+      {convertedValue?.toFixed(tokenDecimalPlaces)}
+      {tokenUnit}
+    </>
+  ) : (
+    placeholder
+  )
 
   return (
     <div className={classNames(styles.loanDifference, className)}>
       <p
         className={classNames(
           styles.loanDifferenceTitle,
-          isDifferenceNegative && styles.loanDifferenceTitleRed,
+          { [styles.loanDifferenceTitlePrimary]: !offer },
+          { [styles.loanDifferenceTitleRed]: offer && isDifferenceNegative },
         )}
       >
-        {convertedValue?.toFixed(tokenDecimalPlaces)}
-        {tokenUnit}
+        {displayValue}
       </p>
       <p className={styles.loanDifferenceSubtitle}>{subtitle}</p>
     </div>
