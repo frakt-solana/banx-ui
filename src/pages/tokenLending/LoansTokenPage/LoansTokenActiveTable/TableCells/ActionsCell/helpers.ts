@@ -7,7 +7,7 @@ import { bnToHuman, getTokenDecimals } from '@banx/utils'
 type CalculateTokenBorrowApr = (loan: core.TokenLoan, offer: core.BorrowSplTokenOffers) => number
 export const calculateTokenBorrowApr: CalculateTokenBorrowApr = (loan, offer) => {
   const tokenDesimals = getTokenDecimals(loan.bondTradeTransaction.lendingToken)
-  const desimalPlaces = Math.floor(Math.log10(tokenDesimals)) //? f.e 1e9 => 9, 1e6 => 6
+  const desimalPlaces = Math.log10(tokenDesimals) //? f.e 1e9 => 9, 1e6 => 6
 
   const amountToGet = bnToHuman(new BN(offer.amountToGet, 'hex'), desimalPlaces)
   const amountToGive = bnToHuman(new BN(offer.amountToGive, 'hex'), loan.collateral.decimals)
