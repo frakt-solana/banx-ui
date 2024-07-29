@@ -2,7 +2,7 @@ import axios from 'axios'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { RequestWithPagination } from '@banx/api/shared'
-import { IS_PRIVATE_MARKETS } from '@banx/constants'
+import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import { convertToMarketType } from '../helpers'
 import {
@@ -33,8 +33,6 @@ import {
   WalletLoansAndOffersResponse,
 } from './types'
 
-const TEST_BE_BASE = 'http://ec2-34-226-191-201.compute-1.amazonaws.com:3000'
-
 type FetchMarketsPreview = (
   props: RequestWithPagination<{ tokenType: LendingTokenType }>,
 ) => Promise<MarketPreview[]>
@@ -46,7 +44,7 @@ export const fetchMarketsPreview: FetchMarketsPreview = async ({ tokenType, getA
   })
 
   const { data } = await axios.get<MarketPreviewResponse>(
-    `${TEST_BE_BASE}/bonds/preview?${queryParams.toString()}`,
+    `${BACKEND_BASE_URL}/bonds/preview?${queryParams.toString()}`,
   )
 
   return await MarketPreviewSchema.array().parseAsync(data.data)
@@ -76,7 +74,7 @@ export const fetchMarketOffers: FetchMarketOffers = async ({
   })
 
   const { data } = await axios.get<FetchMarketOffersResponse>(
-    `${TEST_BE_BASE}/bond-offers/${marketPubkey}?${queryParams.toString()}`,
+    `${BACKEND_BASE_URL}/bond-offers/${marketPubkey}?${queryParams.toString()}`,
   )
 
   return await OfferSchema.array().parseAsync(data?.data)
@@ -107,7 +105,7 @@ export const fetchWalletLoansAndOffers: FetchWalletLoansAndOffers = async ({
   })
 
   const { data } = await axios.get<WalletLoansAndOffersResponse>(
-    `${TEST_BE_BASE}/loans/borrower/${walletPublicKey}?${queryParams.toString()}`,
+    `${BACKEND_BASE_URL}/loans/borrower/${walletPublicKey}?${queryParams.toString()}`,
   )
 
   return WalletLoansAndOffersShema.parseAsync(data.data)
@@ -142,7 +140,7 @@ export const fetchLenderLoansByCertainOffer: FetchLenderLoansByCertainOffer = as
   })
 
   const { data } = await axios.get<LenderLoansResponse>(
-    `${TEST_BE_BASE}/loans/lender-chart/?${queryParams.toString()}`,
+    `${BACKEND_BASE_URL}/loans/lender-chart/?${queryParams.toString()}`,
   )
 
   return LenderLoansSchema.array().parseAsync(data.data)
@@ -175,7 +173,7 @@ export const fetchLenderLoans: FetchLenderLoans = async ({
   })
 
   const { data } = await axios.get<LendLoansResponse>(
-    `${TEST_BE_BASE}/loans/lender/${walletPublicKey}?${queryParams.toString()}`,
+    `${BACKEND_BASE_URL}/loans/lender/${walletPublicKey}?${queryParams.toString()}`,
   )
 
   return LoanSchema.array().parseAsync(data.data)
@@ -205,7 +203,7 @@ export const fetchBorrowNftsAndOffers: FetchBorrowNftsAndOffers = async ({
   })
 
   const { data } = await axios.get<BorrowNftsAndOffersResponse>(
-    `${TEST_BE_BASE}/nfts/borrow/${walletPubkey}?${queryParams.toString()}`,
+    `${BACKEND_BASE_URL}/nfts/borrow/${walletPubkey}?${queryParams.toString()}`,
   )
 
   return BorrowNftsAndOffersSchema.parseAsync(data.data)
@@ -229,7 +227,7 @@ export const fetchBorrowerLoansRequests: FetchBorrowerLoansRequests = async ({
   })
 
   const { data } = await axios.get<{ data: Loan[] }>(
-    `${TEST_BE_BASE}/loans/borrower-requests/${walletPublicKey}?${queryParams.toString()}`,
+    `${BACKEND_BASE_URL}/loans/borrower-requests/${walletPublicKey}?${queryParams.toString()}`,
   )
 
   return LoanSchema.array().parseAsync(data.data)
@@ -251,7 +249,7 @@ export const fetchAllLoansRequests: FetchAllLoansRequests = async ({
   })
 
   const { data } = await axios.get<AllLoansRequestsResponse>(
-    `${TEST_BE_BASE}/loans/requests?${queryParams.toString()}`,
+    `${BACKEND_BASE_URL}/loans/requests?${queryParams.toString()}`,
   )
 
   return LoansRequestsSchema.parseAsync(data.data)
@@ -275,7 +273,7 @@ export const fetchUserOffers: FetchUserOffers = async ({
   })
 
   const { data } = await axios.get<FetchUserOffersResponse>(
-    `${TEST_BE_BASE}/bond-offers/user/${walletPubkey}?${queryParams.toString()}`,
+    `${BACKEND_BASE_URL}/bond-offers/user/${walletPubkey}?${queryParams.toString()}`,
   )
 
   return UserOfferSchema.array().parseAsync(data.data)
