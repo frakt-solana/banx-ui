@@ -166,8 +166,8 @@ const MaxOfferControls: FC<MaxOfferControlsProps> = ({ market, onChange, tokenTy
 
   return (
     <div className={styles.maxOfferControls}>
-      <div className={styles.labelWrapper}>
-        <span className={styles.label}>LTV</span>
+      <div className={styles.maxOfferlabelWrapper}>
+        <span className={styles.maxOfferLabel}>LTV</span>
         <Tooltip title="LTV" />
       </div>
 
