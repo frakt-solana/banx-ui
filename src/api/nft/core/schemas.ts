@@ -107,7 +107,7 @@ export const FraktBondSchema = z.object({
   actualReturnedAmount: StringIntSchema,
   amountToReturn: StringIntSchema,
   banxStake: StringPublicKeySchema,
-  bondTradeTransactionsCounter: StringIntSchema,
+  bondTradeTransactionsCounter: z.number(),
   borrowedAmount: StringIntSchema,
   currentPerpetualBorrowed: StringIntSchema,
   fbondIssuer: StringPublicKeySchema,
@@ -119,7 +119,7 @@ export const FraktBondSchema = z.object({
   liquidatingAt: StringIntSchema,
   refinanceAuctionStartedAt: StringIntSchema,
   repaidOrLiquidatedAt: StringIntSchema,
-  terminatedCounter: StringIntSchema,
+  terminatedCounter: z.number(),
   hadoMarket: StringPublicKeySchema.optional(), //? Why optional
 })
 
