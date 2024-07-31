@@ -9,7 +9,6 @@ import { useNftTokenType } from '@banx/store/nft'
 import { getTokenDecimals, getTokenUnit, isBanxSolTokenType } from '@banx/utils'
 
 import { Button } from '../Buttons'
-import Tooltip from '../Tooltip'
 import { InputErrorMessage, NumericStepInput } from '../inputs'
 import { Modal } from '../modals/BaseModal'
 import { ActionsButtons } from './components/ActionsButtons'
@@ -166,10 +165,7 @@ const MaxOfferControls: FC<MaxOfferControlsProps> = ({ market, onChange, tokenTy
 
   return (
     <div className={styles.maxOfferControls}>
-      <div className={styles.maxOfferlabelWrapper}>
-        <span className={styles.maxOfferLabel}>LTV</span>
-        <Tooltip title="LTV" />
-      </div>
+      <span className={styles.maxOfferLabel}>LTV</span>
 
       {percentages.map((percent) => (
         <Button
