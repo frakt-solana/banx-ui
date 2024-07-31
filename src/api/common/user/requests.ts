@@ -3,7 +3,7 @@ import { web3 } from 'fbonds-core'
 
 import { BACKEND_BASE_URL } from '@banx/constants'
 
-import { MutationResponse, RequestWithPagination, validateResponse } from '../../shared'
+import { MutationResponse, RequestWithPagination, parseResponseSafe } from '../../shared'
 import { getDiscordAvatarUrl } from './helpers'
 import {
   BonkWithdrawalSchema,
@@ -192,7 +192,7 @@ export const fetchLeaderboardData: FetchLeaderboardData = async ({
     `${BACKEND_BASE_URL}/leaderboard/list/v2/${walletPubkey}?order=${order}&skip=${skip}&limit=${limit}&userType=${userType}&timeRangeType=${timeRangeType}`,
   )
 
-  await validateResponse(data.data, LeaderboardDataSchema.array())
+  await parseResponseSafe(data.data, LeaderboardDataSchema.array())
 
   return data?.data ?? []
 }
@@ -209,7 +209,7 @@ export const fetchBonkWithdrawal: FetchBonkWithdrawal = async ({
     `${BACKEND_BASE_URL}/leaderboard/request-bonk-withdrawal/${walletPubkey}?tokenName=${tokenName}`,
   )
 
-  await validateResponse(bondWithdrawal, BonkWithdrawalSchema)
+  await parseResponseSafe(bondWithdrawal, BonkWithdrawalSchema)
 
   return bondWithdrawal ?? null
 }
@@ -231,7 +231,7 @@ export const fetchRefPersonalData: FetchRefPersonalData = async ({ walletPubkey 
     `${BACKEND_BASE_URL}/leaderboard/ref/personal-data/${walletPubkey}`,
   )
 
-  await validateResponse(data?.data, RefPersonalDataSchema)
+  await parseResponseSafe(data?.data, RefPersonalDataSchema)
 
   return data?.data ?? null
 }

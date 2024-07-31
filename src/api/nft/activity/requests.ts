@@ -1,20 +1,16 @@
 import axios from 'axios'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { RequestWithPagination, validateResponse } from '@banx/api/shared'
+import { RequestWithPagination, ResponseWithPagination, parseResponseSafe } from '@banx/api/shared'
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import { convertToMarketType } from '../helpers'
 import {
-  ActivityCollectionsList,
   ActivityCollectionsListSchema,
-  BorrowedActivityResponse,
-  BorrowerActivity,
   BorrowerActivitySchema,
-  LenderActivity,
-  LenderActivityResponse,
   LenderActivitySchema,
-} from './types'
+} from './schemas'
+import { ActivityCollectionsList, BorrowerActivity, LenderActivity } from './types'
 
 type FetchLenderActivity = (
   props: RequestWithPagination<{
@@ -49,13 +45,11 @@ export const fetchLenderActivity: FetchLenderActivity = async ({
 
   if (collection?.length) queryParams.append('collection', String(collection))
 
-  const { data } = await axios.get<LenderActivityResponse>(
+  const { data } = await axios.get<ResponseWithPagination<LenderActivity[]>>(
     `${BACKEND_BASE_URL}/activity/lender/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  await validateResponse(data.data, LenderActivitySchema.array())
-
-  return data.data ?? []
+  return LenderActivitySchema.array().parseAsync(data.data)
 }
 
 type FetchBorrowerActivity = (
@@ -91,13 +85,16 @@ export const fetchBorrowerActivity: FetchBorrowerActivity = async ({
 
   if (collection?.length) queryParams.append('collection', String(collection))
 
-  const { data } = await axios.get<BorrowedActivityResponse>(
+  const { data } = await axios.get<ResponseWithPagination<BorrowerActivity[]>>(
     `${BACKEND_BASE_URL}/activity/borrower/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  await validateResponse(data.data, BorrowerActivitySchema.array())
-
-  return data.data ?? []
+  try {
+    return await BorrowerActivitySchema.array().parseAsync(data.data)
+  } catch (err) {
+    console.error({ err })
+    return []
+  }
 }
 
 type FetchActivityCollectionsList = (props: {
@@ -119,7 +116,7 @@ export const fetchActivityCollectionsList: FetchActivityCollectionsList = async 
     `${BACKEND_BASE_URL}/activity/collections-list/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  await validateResponse(data.data.collections, ActivityCollectionsListSchema.array())
+  await parseResponseSafe(data.data.collections, ActivityCollectionsListSchema.array())
 
   return data.data.collections ?? []
 }

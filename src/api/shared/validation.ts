@@ -13,7 +13,7 @@ import { ZodType } from 'zod'
 //   }
 // }
 
-export const validateResponse = async (data: unknown, schema: ZodType<unknown>) => {
+export const parseResponseSafe = async (data: unknown, schema: ZodType<unknown>) => {
   try {
     return await schema.parseAsync(data)
   } catch (validationError) {

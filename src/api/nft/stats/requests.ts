@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { validateResponse } from '@banx/api/shared'
+import { parseResponseSafe } from '@banx/api/shared'
 import { BACKEND_BASE_URL } from '@banx/constants'
 
 import { convertToMarketType } from '../helpers'
@@ -36,7 +36,7 @@ export const fetchUserOffersStats: FetchUserOffersStats = async ({ walletPubkey,
     `${BACKEND_BASE_URL}/stats/my-offers/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  await validateResponse(data.data, UserOffersStatsSchema)
+  await parseResponseSafe(data.data, UserOffersStatsSchema)
 
   return data.data ?? null
 }
@@ -55,7 +55,7 @@ export const fetchUserLoansStats: FetchUserLoansStats = async ({ walletPubkey, t
     `${BACKEND_BASE_URL}/stats/my-loans/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  await validateResponse(data.data, UserLoansStatsSchema)
+  await parseResponseSafe(data.data, UserLoansStatsSchema)
 
   return data.data ?? null
 }
@@ -66,7 +66,7 @@ export const fetchAllTotalStats: FetchAllTotalStats = async (marketType) => {
     `${BACKEND_BASE_URL}/stats/all?marketType=${marketType}`,
   )
 
-  await validateResponse(data.data, AllTotalStatsSchema)
+  await parseResponseSafe(data.data, AllTotalStatsSchema)
 
   return data.data ?? null
 }
@@ -84,7 +84,7 @@ export const fetchLenderStats: FetchLenderStats = async ({ walletPubkey, tokenTy
     `${BACKEND_BASE_URL}/stats/lend/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  await validateResponse(data.data, TotalLenderStatsSchema)
+  await parseResponseSafe(data.data, TotalLenderStatsSchema)
 
   return data.data ?? null
 }
@@ -102,7 +102,7 @@ export const fetchBorrowerStats: FetchBorrowerStats = async ({ walletPubkey, tok
     `${BACKEND_BASE_URL}/stats/borrow/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  await validateResponse(data.data, TotalBorrowerStatsSchema)
+  await parseResponseSafe(data.data, TotalBorrowerStatsSchema)
 
   return data.data ?? null
 }
