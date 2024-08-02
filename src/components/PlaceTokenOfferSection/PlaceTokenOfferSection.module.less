@@ -1,5 +1,6 @@
 .container {
   display: flex;
+  cursor: default;
   width: 100%;
 }
 
@@ -23,21 +24,37 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 12px 24px;
-  max-width: 344px;
+  padding: 12px 24px 24px;
+  max-width: 432px;
   width: 100%;
 
   @media (max-width: 960px) {
-    padding: 8px 16px;
+    padding: 8px 16px 16px;
     max-width: unset;
   }
 }
 
 .fields {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+
+  @media (max-width: 960px) {
+    flex-direction: row;
+
+    & > div {
+      width: 100%;
+
+      &:first-child {
+        min-width: 368px;
+      }
+    }
+  }
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+  }
 }
 
 .messageContainer {
@@ -133,12 +150,12 @@
   flex-direction: column;
   gap: 8px;
   padding: 12px 24px;
-  margin: 12px -24px;
+  margin: 24px -24px;
   width: calc(100% + 48px);
 
   @media (max-width: 640px) {
     padding: 8px 16px;
-    margin: 8px -16px;
+    margin: 16px -16px;
     width: calc(100% + 32px);
   }
 }
@@ -157,3 +174,30 @@
   color: var(--additional-green-primary-deep);
 }
 // * Summary * //
+
+.offerSizeLabel {
+  height: 24px;
+}
+
+// * MaxOfferControls * //
+.maxOfferControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.maxOfferControlsButton {
+  padding: 2px 8px !important;
+  text-transform: uppercase;
+}
+
+.maxOfferLabel {
+  color: var(--content-secondary);
+  font: var(--table-header-sm);
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  @media (max-width: 640px) {
+    font: var(--table-header-xs);
+  }
+}
+// * MaxOfferControls * //

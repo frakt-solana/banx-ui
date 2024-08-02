@@ -56,11 +56,7 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, collectionFloor }) => {
       </div>
 
       <div className={styles.values}>
-        <p
-          className={classNames(styles.displayOfferValue, {
-            [styles.hightlight]: isEdit || isNewOffer,
-          })}
-        >
+        <p className={styles.displayOfferValue}>
           {displayOfferValue}
           {tokenUnit}
         </p>

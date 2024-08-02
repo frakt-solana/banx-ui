@@ -50,13 +50,7 @@ const Offer: FC<OfferProps> = ({ offer, collateral, collateralPrice }) => {
       </div>
 
       <div className={styles.values}>
-        <p
-          className={classNames(styles.displayOfferValue, {
-            [styles.hightlight]: isEdit || isNewOffer,
-          })}
-        >
-          {offerValue}
-        </p>
+        <p className={styles.displayOfferValue}>{offerValue}</p>
         <p className={styles.value}>{createPercentValueJSX(aprPercent)}</p>
         <p className={styles.value}>
           <DisplayValue value={offerSize} />

@@ -15,6 +15,8 @@ interface NumericStepInputProps extends NumericInputProps {
   label?: string
   step?: number
   postfix?: ReactNode
+  rightLabelJSX?: ReactNode
+  labelClassName?: string
 }
 
 export const NumericStepInput: FC<NumericStepInputProps> = ({
@@ -28,6 +30,8 @@ export const NumericStepInput: FC<NumericStepInputProps> = ({
   step = 0.1,
   postfix,
   placeholder,
+  rightLabelJSX,
+  labelClassName,
 }) => {
   const numericValue = parseFloat(value) || 0
   const canIncrement = numericValue < max
@@ -89,9 +93,12 @@ export const NumericStepInput: FC<NumericStepInputProps> = ({
 
   return label ? (
     <div className={styles.field}>
-      <div className={styles.labelWrapper}>
-        <span className={styles.label}>{label}</span>
-        {tooltipText && <Tooltip title={tooltipText} />}
+      <div className={classNames(styles.labelsContainer, labelClassName)}>
+        <div className={styles.labelWrapper}>
+          <span className={styles.label}>{label}</span>
+          {tooltipText && <Tooltip title={tooltipText} />}
+        </div>
+        {rightLabelJSX}
       </div>
       {inputElement}
     </div>
