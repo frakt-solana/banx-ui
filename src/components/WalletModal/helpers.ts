@@ -59,7 +59,7 @@ export const getLenderVaultInfo = (
 type CalculateLstYield = (props: { offer: core.Offer; slot: number; epochStartedAt: number }) => BN
 const calculateLstYield: CalculateLstYield = ({ offer, slot, epochStartedAt }) => {
   const totalYield = calculateBanxSolStakingRewards({
-    bondOffer: offer,
+    bondOffer: core.convertCoreOfferToBondOfferV3(offer),
     nowSlot: new BN(slot),
     currentEpochStartAt: new BN(epochStartedAt),
   })

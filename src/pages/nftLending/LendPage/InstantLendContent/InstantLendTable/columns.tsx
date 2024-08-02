@@ -60,7 +60,7 @@ export const getTableColumns = ({
     {
       key: 'rarity',
       title: <HeaderCell label="Rarity" />,
-      render: ({ nft }) => <RarityCell rarity={nft.rarity} />,
+      render: ({ nft }) => <RarityCell rarity={nft?.rarity || undefined} />,
     },
     {
       key: 'repayValue',

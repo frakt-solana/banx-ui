@@ -1,6 +1,5 @@
 import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
-import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import { repayPerpetualLoanSpl } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import moment from 'moment'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
@@ -31,7 +30,11 @@ export const createRepayTokenLoanTxnData: CreateRepayTokenLoanTxnData = async (
 ) => {
   const { loan } = params
 
-  const { instructions, signers, optimisticResults } = await repayPerpetualLoanSpl({
+  const {
+    instructions,
+    signers,
+    accounts: accountsCollection,
+  } = await repayPerpetualLoanSpl({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       userPubkey: walletAndConnection.wallet.publicKey,
@@ -45,21 +48,13 @@ export const createRepayTokenLoanTxnData: CreateRepayTokenLoanTxnData = async (
     args: {
       lendingTokenType: loan.bondTradeTransaction.lendingToken,
     },
-    optimistic: {
-      oldBondOffer: getMockBondOffer(),
-      fraktBond: loan.fraktBond,
-      bondTradeTransaction: loan.bondTradeTransaction,
-    },
     connection: walletAndConnection.connection,
     sendTxn: sendTxnPlaceHolder,
   })
 
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
 
-  const accounts = [
-    new web3.PublicKey(optimisticResults.fraktBond.publicKey),
-    new web3.PublicKey(optimisticResults.bondTradeTransaction.publicKey),
-  ]
+  const accounts = [accountsCollection['fraktBond'], accountsCollection['bondTradeTransaction']]
 
   if (
     isBanxSolTokenType(loan.bondTradeTransaction.lendingToken) ||

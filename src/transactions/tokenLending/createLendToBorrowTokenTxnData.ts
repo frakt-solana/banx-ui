@@ -1,6 +1,5 @@
 import { BN, web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
-import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import {
   lendToBorrowerListing,
   refinancePerpetualLoan,
@@ -85,7 +84,11 @@ const getIxnsAndSignersByLoanType = async (
   const { bondTradeTransaction, fraktBond } = loan
 
   if (isTokenLoanListed(loan)) {
-    const { instructions, signers, optimisticResults } = await lendToBorrowerListing({
+    const {
+      instructions,
+      signers,
+      accounts: accountsCollection,
+    } = await lendToBorrowerListing({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         hadoMarket: new web3.PublicKey(fraktBond.hadoMarket || ''),
@@ -99,28 +102,23 @@ const getIxnsAndSignersByLoanType = async (
       args: {
         lendingTokenType: bondTradeTransaction.lendingToken,
       },
-      optimistic: {
-        bondTradeTransaction,
-        fraktBond,
-      },
       connection,
       sendTxn: sendTxnPlaceHolder,
     })
 
-    const newOptimisticResult = {
-      fraktBond: optimisticResults.fraktBond,
-      bondTradeTransaction: optimisticResults.bondTradeTransaction,
-    }
-
     return {
       instructions,
       signers,
-      optimisticResult: newOptimisticResult,
+      accountsCollection,
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
     }
   }
 
-  const { instructions, signers } = await refinancePerpetualLoan({
+  const {
+    instructions,
+    signers,
+    accounts: accountsCollection,
+  } = await refinancePerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       fbond: new web3.PublicKey(fraktBond.publicKey),
@@ -133,12 +131,7 @@ const getIxnsAndSignersByLoanType = async (
     },
     args: {
       lendingTokenType: bondTradeTransaction.lendingToken,
-      newApr: aprRate,
-    },
-    optimistic: {
-      fraktBond,
-      oldBondOffer: getMockBondOffer(),
-      bondTradeTransaction,
+      newApr: new BN(aprRate),
     },
     connection,
     sendTxn: sendTxnPlaceHolder,
@@ -147,6 +140,7 @@ const getIxnsAndSignersByLoanType = async (
   return {
     instructions,
     signers,
+    accountsCollection,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }

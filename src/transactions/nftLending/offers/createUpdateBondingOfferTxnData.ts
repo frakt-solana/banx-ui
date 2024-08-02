@@ -1,7 +1,10 @@
-import { web3 } from 'fbonds-core'
+import { BN, web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
-import { updatePerpetualOfferBonding } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import {
+  optimisticUpdateBondOfferBonding,
+  updatePerpetualOfferBonding,
+} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
@@ -35,31 +38,33 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
   params,
   walletAndConnection,
 ) => {
-  const { loanValue, loansAmount, deltaValue, offer, tokenType, collateralsPerToken } = params
+  const { loanValue, loansAmount, deltaValue, offer, tokenType, collateralsPerToken = 0 } = params
 
-  const { instructions, signers, optimisticResult } = await updatePerpetualOfferBonding({
+  const {
+    instructions,
+    signers,
+    accounts: accountsCollection,
+  } = await updatePerpetualOfferBonding({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     connection: walletAndConnection.connection,
     accounts: {
       bondOfferV2: new web3.PublicKey(offer.publicKey),
       userPubkey: walletAndConnection.wallet.publicKey,
     },
-    optimistic: {
-      bondOffer: offer,
-    },
+
     args: {
-      loanValue,
-      delta: deltaValue,
+      loanValue: new BN(loanValue),
+      delta: new BN(deltaValue),
       quantityOfLoans: loansAmount,
       lendingTokenType: tokenType,
-      collateralsPerToken,
+      collateralsPerToken: new BN(collateralsPerToken),
     },
     sendTxn: sendTxnPlaceHolder,
   })
 
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
 
-  const accounts = [new web3.PublicKey(offer.publicKey)]
+  const accounts = [accountsCollection['bondOffer']]
 
   if (isBanxSolTokenType(tokenType)) {
     const banxSolBalance = await fetchTokenBalance({
@@ -70,14 +75,18 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
 
     const oldOfferSize = calculateIdleFundsInOffer(offer)
 
-    const newOffer = optimisticResult?.bondOffer
-    if (!newOffer) {
-      throw new Error('Optimistic offer doesnt exist')
-    }
-    //? Optimistic offer is broken
-    const newOfferSize = calculateIdleFundsInOffer(newOffer)
+    const updatedOffer = optimisticUpdateBondOfferBonding({
+      bondOffer: core.convertCoreOfferToBondOfferV3(offer),
+      newLoanValue: new BN(loanValue),
+      newDelta: new BN(deltaValue),
+      newQuantityOfLoans: new BN(loansAmount),
+      collateralsPerToken: ZERO_BN,
+    })
 
-    const diff = newOfferSize.sub(oldOfferSize).sub(banxSolBalance)
+    //? Optimistic offer is broken
+    const updatedOfferSize = calculateIdleFundsInOffer(core.convertBondOfferV3ToCore(updatedOffer))
+
+    const diff = updatedOfferSize.sub(oldOfferSize).sub(banxSolBalance)
 
     if (diff.gt(ZERO_BN)) {
       return await banxSol.combineWithBuyBanxSolInstructions(
@@ -108,5 +117,5 @@ export const parseUpdateOfferSimulatedAccounts = (
 ) => {
   const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
-  return results?.['bondOfferV3'] as BondOfferV3
+  return results?.['bondOfferV3'] as core.Offer
 }

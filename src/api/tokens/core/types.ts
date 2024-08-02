@@ -8,8 +8,8 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/types'
 import { z } from 'zod'
 
-import { OfferSchema } from '@banx/api/nft'
-import { PaginationMeta } from '@banx/api/types'
+import { OfferSchema } from '@banx/api/nft/core/schemas'
+import { ResponseWithPagination } from '@banx/api/shared'
 
 export const TokenMetaSchema = z.object({
   mint: z.string(),
@@ -111,11 +111,7 @@ export const TokenMarketPreviewSchema = z.object({
 })
 
 export type TokenMarketPreview = z.infer<typeof TokenMarketPreviewSchema>
-
-export interface TokenMarketPreviewResponse {
-  data: TokenMarketPreview[]
-  meta: PaginationMeta
-}
+export type TokenMarketPreviewResponse = ResponseWithPagination<TokenMarketPreview>
 
 export const TokenOfferPreviewSchema = z.object({
   publicKey: z.string(),
@@ -150,7 +146,6 @@ export type TokenLoansRequests = z.infer<typeof TokenLoansRequestsSchema>
 
 export interface AllTokenLoansRequestsResponse {
   data: TokenLoansRequests
-  meta: PaginationMeta
 }
 
 export const CollateralTokenSchema = z.object({

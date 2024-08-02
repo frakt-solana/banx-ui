@@ -1,69 +1,32 @@
 import { z } from 'zod'
 
-import { MutationResponse } from '../../types'
+import { MutationResponse } from '../../shared'
+import {
+  BonkWithdrawalSchema,
+  LeaderboardDataSchema,
+  RefPersonalDataSchema,
+  SeasonUserRewardsSchema,
+} from './schemas'
 
-export interface DiscordUserInfoRaw {
+export type DiscordUserInfoRaw = {
   avatar: string
   discordId: string
   isOnServer: boolean
 }
 
-export interface DiscordUserInfo {
+export type DiscordUserInfo = {
   avatarUrl: string | null
   isOnServer: boolean
 }
 
-export const SeasonUserRewardsSchema = z.object({
-  totalClaimed: z.number(),
-  availableToClaim: z.number(),
-  playerPoints: z.number(),
-  loyalty: z.number(), //? F.e 1 => 0 percentage, 2 => 100 percentage
-  earlyIncentives: z.number(),
-  firstSeasonRewards: z.number(),
-  secondSeasonRewards: z.number(),
-  totalParticipants: z.number(),
-  bonkRewards: z
-    .object({
-      totalAccumulated: z.number(),
-      available: z.number(),
-      redeemed: z.number(),
-    })
-    .optional(),
-  banxRewards: z
-    .object({
-      totalAccumulated: z.number(),
-      available: z.number(),
-      redeemed: z.number(),
-    })
-    .optional(),
-})
-
 export type SeasonUserRewards = z.infer<typeof SeasonUserRewardsSchema>
 
-export const RefPersonalDataSchema = z.object({
-  user: z.string(),
-  refCode: z.string(),
-  referredBy: z.string(),
-  refUsers: z.string().array(),
-})
-
 export type RefPersonalData = z.infer<typeof RefPersonalDataSchema>
-
-export const LeaderboardDataSchema = z.object({
-  rank: z.number(),
-  avatar: z.string().nullable(),
-  user: z.string(),
-  points: z.number(),
-})
 
 export type LeaderboardData = z.infer<typeof LeaderboardDataSchema>
 
 export type LeaderboardTimeRange = 'all' | 'week'
 
-export const BonkWithdrawalSchema = z.object({
-  requestId: z.string(),
-  rawTransaction: z.number().array(),
-})
 export type BonkWithdrawal = z.infer<typeof BonkWithdrawalSchema>
 
 export type WithdrawalTokenType = 'bonk' | 'banx'

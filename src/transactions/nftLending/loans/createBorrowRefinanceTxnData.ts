@@ -1,17 +1,10 @@
 import { BN, web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
-import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import {
   borrowerRefinance,
   borrowerRefinanceToSame,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import {
-  BondOfferV3,
-  BondTradeTransactionV3,
-  FraktBond,
-  LendingTokenType,
-  PairState,
-} from 'fbonds-core/lib/fbond-protocol/types'
+import { LendingTokenType, PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import moment from 'moment'
 import {
   CreateTxnData,
@@ -45,7 +38,7 @@ export const createBorrowRefinanceTxnData: CreateBorrowRefinanceTxnData = async 
 ) => {
   const { loan, offer, aprRate, solToRefinance, tokenType } = params
 
-  const { instructions, signers, optimisticResult } = await getIxnsAndSigners(
+  const { instructions, signers, accountsCollection } = await getIxnsAndSigners(
     {
       loan,
       offer,
@@ -57,9 +50,9 @@ export const createBorrowRefinanceTxnData: CreateBorrowRefinanceTxnData = async 
   )
 
   const accounts = [
-    new web3.PublicKey(optimisticResult.bondOffer.publicKey),
-    new web3.PublicKey(optimisticResult.fraktBond.publicKey),
-    new web3.PublicKey(optimisticResult.newBondTradeTransaction.publicKey),
+    accountsCollection['bondOffer'],
+    accountsCollection['fraktBond'],
+    accountsCollection['bondTradeTransaction'],
   ]
 
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
@@ -126,52 +119,49 @@ const getIxnsAndSigners = async (
     previousLender: new web3.PublicKey(bondTradeTransaction.user),
   }
 
-  const optimistic = {
-    oldBondTradeTransaction: bondTradeTransaction,
-    bondOffer: offer,
-    fraktBond: fraktBond as FraktBond,
-    minMarketFee: aprRate,
-  }
-
   if (
     offer.publicKey === bondTradeTransaction.bondOffer &&
     offer.pairState === PairState.PerpetualBondingCurveOnMarket
   ) {
-    const { instructions, signers, optimisticResult } = await borrowerRefinanceToSame({
+    const {
+      instructions,
+      signers,
+      accounts: accountsCollection,
+    } = await borrowerRefinanceToSame({
       args: {
-        solToRefinance,
-        aprRate,
+        solToRefinance: new BN(solToRefinance),
+        aprRate: new BN(aprRate),
         lendingTokenType: bondTradeTransaction.lendingToken,
       },
       accounts,
-      optimistic,
+
       connection,
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       sendTxn: sendTxnPlaceHolder,
     })
 
-    return { instructions, signers, optimisticResult }
+    return { instructions, signers, accountsCollection }
   } else {
-    const { instructions, signers, optimisticResult } = await borrowerRefinance({
+    const {
+      instructions,
+      signers,
+      accounts: accountsCollection,
+    } = await borrowerRefinance({
       args: {
-        solToRefinance,
-        aprRate,
+        solToRefinance: new BN(solToRefinance),
+        aprRate: new BN(aprRate),
         lendingTokenType: bondTradeTransaction.lendingToken,
       },
       accounts: {
         ...accounts,
         oldBondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
       },
-      optimistic: {
-        ...optimistic,
-        oldBondOffer: getMockBondOffer(),
-      },
       connection,
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       sendTxn: sendTxnPlaceHolder,
     })
 
-    return { instructions, signers, optimisticResult }
+    return { instructions, signers, accountsCollection }
   }
 }
 
@@ -181,8 +171,8 @@ export const parseBorrowRefinanceSimulatedAccounts = (
   const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
   return {
-    bondOffer: results?.['bondOfferV3'] as BondOfferV3,
-    bondTradeTransaction: results?.['bondTradeTransactionV3'] as BondTradeTransactionV3,
-    fraktBond: results?.['fraktBond'] as FraktBond,
+    bondOffer: results?.['bondOfferV3'] as core.Offer,
+    bondTradeTransaction: results?.['bondTradeTransactionV3'] as core.BondTradeTransaction,
+    fraktBond: results?.['fraktBond'] as core.FraktBond,
   }
 }

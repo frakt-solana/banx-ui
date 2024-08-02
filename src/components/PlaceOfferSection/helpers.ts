@@ -1,3 +1,4 @@
+import { BN, web3 } from 'fbonds-core'
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import {
@@ -5,10 +6,12 @@ import {
   optimisticInitializeBondOfferBonding,
   optimisticUpdateBondOfferBonding,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
 
+import { core } from '@banx/api/nft'
 import { SyntheticOffer } from '@banx/store/nft'
+import { ZERO_BN } from '@banx/utils'
 
 type GetUpdatedBondOffer = (props: {
   loanValue: number //? lamports
@@ -16,7 +19,7 @@ type GetUpdatedBondOffer = (props: {
   loansAmount: number //? integer number
   syntheticOffer: SyntheticOffer
   tokenType: LendingTokenType
-}) => BondOfferV3
+}) => core.Offer
 
 export const getUpdatedBondOffer: GetUpdatedBondOffer = ({
   loanValue,
@@ -27,21 +30,21 @@ export const getUpdatedBondOffer: GetUpdatedBondOffer = ({
 }) => {
   const initializedOffer = optimisticInitializeBondOfferBonding({
     bondingType: getBondingCurveTypeFromLendingToken(tokenType),
-    hadoMarket: syntheticOffer.marketPubkey,
-    assetReceiver: syntheticOffer.assetReceiver,
+    hadoMarket: new web3.PublicKey(syntheticOffer.marketPubkey),
+    assetReceiver: new web3.PublicKey(syntheticOffer.assetReceiver),
     bondOffer: getMockBondOffer().publicKey,
     isSplFeature: false,
   })
 
   const updatedBondOffer = optimisticUpdateBondOfferBonding({
     bondOffer: initializedOffer,
-    newLoanValue: loanValue,
-    newDelta: deltaValue,
-    newQuantityOfLoans: loansAmount,
-    collateralsPerToken: 0,
+    newLoanValue: new BN(loanValue),
+    newDelta: new BN(deltaValue),
+    newQuantityOfLoans: new BN(loansAmount),
+    collateralsPerToken: ZERO_BN,
   })
 
-  return updatedBondOffer
+  return core.convertBondOfferV3ToCore(updatedBondOffer)
 }
 
 type GetErrorMessage = (props: {

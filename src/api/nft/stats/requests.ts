@@ -1,22 +1,25 @@
 import axios from 'axios'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
+import { parseResponseSafe } from '@banx/api/shared'
 import { BACKEND_BASE_URL } from '@banx/constants'
 
 import { convertToMarketType } from '../../helpers'
 import {
-  AllTotalStats,
   AllTotalStatsSchema,
-  TotalBorrowerStats,
   TotalBorrowerStatsSchema,
-  TotalLenderStats,
   TotalLenderStatsSchema,
+  UserLoansStatsSchema,
+  UserOffersStatsSchema,
+} from './schemas'
+import {
+  AllTotalStats,
+  TotalBorrowerStats,
+  TotalLenderStats,
   UserLoansStats,
   UserLoansStatsResponse,
-  UserLoansStatsSchema,
   UserOffersStats,
   UserOffersStatsResponse,
-  UserOffersStatsSchema,
 } from './types'
 
 type FetchUserOffersStats = (props: {
@@ -40,11 +43,7 @@ export const fetchUserOffersStats: FetchUserOffersStats = async ({
     `${BACKEND_BASE_URL}/stats/my-offers/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  try {
-    await UserOffersStatsSchema.parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
+  await parseResponseSafe(data.data, UserOffersStatsSchema)
 
   return data.data ?? null
 }
@@ -69,11 +68,7 @@ export const fetchUserLoansStats: FetchUserLoansStats = async ({
     `${BACKEND_BASE_URL}/stats/my-loans/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  try {
-    await UserLoansStatsSchema.parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
+  await parseResponseSafe(data.data, UserLoansStatsSchema)
 
   return data.data ?? null
 }
@@ -84,11 +79,7 @@ export const fetchAllTotalStats: FetchAllTotalStats = async (marketType) => {
     `${BACKEND_BASE_URL}/stats/all?marketType=${marketType}`,
   )
 
-  try {
-    await AllTotalStatsSchema.parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
+  await parseResponseSafe(data.data, AllTotalStatsSchema)
 
   return data.data ?? null
 }
@@ -106,11 +97,7 @@ export const fetchLenderStats: FetchLenderStats = async ({ walletPubkey, tokenTy
     `${BACKEND_BASE_URL}/stats/lend/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  try {
-    await TotalLenderStatsSchema.parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
+  await parseResponseSafe(data.data, TotalLenderStatsSchema)
 
   return data.data ?? null
 }
@@ -128,11 +115,7 @@ export const fetchBorrowerStats: FetchBorrowerStats = async ({ walletPubkey, tok
     `${BACKEND_BASE_URL}/stats/borrow/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  try {
-    await TotalBorrowerStatsSchema.parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
+  await parseResponseSafe(data.data, TotalBorrowerStatsSchema)
 
   return data.data ?? null
 }
