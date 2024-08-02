@@ -1,25 +1,30 @@
 import axios from 'axios'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
+import { RequestWithPagination, ResponseWithPagination, parseResponseSafe } from '@banx/api/shared'
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import { convertToMarketType } from '../helpers'
 import {
-  ActivityCollectionsList,
   ActivityCollectionsListSchema,
-  BorrowedActivityResponse,
   BorrowerActivitySchema,
-  FetchActivityCollectionsList,
-  FetchBorrowerActivity,
-  FetchLenderActivity,
-  LenderActivityResponse,
   LenderActivitySchema,
-} from './types'
+} from './schemas'
+import { ActivityCollectionsList, BorrowerActivity, LenderActivity } from './types'
 
+type FetchLenderActivity = (
+  props: RequestWithPagination<{
+    walletPubkey: string
+    tokenType: LendingTokenType
+    collection?: string[]
+    sortBy: string
+    state?: string
+  }>,
+) => Promise<LenderActivity[]>
 export const fetchLenderActivity: FetchLenderActivity = async ({
   walletPubkey,
   tokenType,
-  order,
+  order = 'desc',
   state = 'all',
   sortBy,
   skip = 0,
@@ -40,23 +45,26 @@ export const fetchLenderActivity: FetchLenderActivity = async ({
 
   if (collection?.length) queryParams.append('collection', String(collection))
 
-  const { data } = await axios.get<LenderActivityResponse>(
+  const { data } = await axios.get<ResponseWithPagination<LenderActivity[]>>(
     `${BACKEND_BASE_URL}/activity/lender/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  try {
-    await LenderActivitySchema.array().parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
-
-  return data.data ?? []
+  return LenderActivitySchema.array().parseAsync(data.data)
 }
 
+type FetchBorrowerActivity = (
+  props: RequestWithPagination<{
+    walletPubkey: string
+    tokenType: LendingTokenType
+    collection?: string[]
+    sortBy: string
+    state?: string
+  }>,
+) => Promise<BorrowerActivity[]>
 export const fetchBorrowerActivity: FetchBorrowerActivity = async ({
   walletPubkey,
   tokenType,
-  order,
+  order = 'desc',
   sortBy,
   state = 'all',
   skip = 0,
@@ -77,19 +85,23 @@ export const fetchBorrowerActivity: FetchBorrowerActivity = async ({
 
   if (collection?.length) queryParams.append('collection', String(collection))
 
-  const { data } = await axios.get<BorrowedActivityResponse>(
+  const { data } = await axios.get<ResponseWithPagination<BorrowerActivity[]>>(
     `${BACKEND_BASE_URL}/activity/borrower/${walletPubkey}?${queryParams.toString()}`,
   )
 
   try {
-    await BorrowerActivitySchema.array().parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
+    return await BorrowerActivitySchema.array().parseAsync(data.data)
+  } catch (err) {
+    console.error({ err })
+    return []
   }
-
-  return data.data ?? []
 }
 
+type FetchActivityCollectionsList = (props: {
+  walletPubkey: string
+  tokenType: LendingTokenType
+  userType: 'borrower' | 'lender'
+}) => Promise<ActivityCollectionsList[]>
 export const fetchActivityCollectionsList: FetchActivityCollectionsList = async ({
   walletPubkey,
   tokenType,
@@ -104,16 +116,12 @@ export const fetchActivityCollectionsList: FetchActivityCollectionsList = async 
     `${BACKEND_BASE_URL}/activity/collections-list/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  try {
-    await ActivityCollectionsListSchema.array().parseAsync(data.data.collections)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
+  await parseResponseSafe(data.data.collections, ActivityCollectionsListSchema.array())
 
   return data.data.collections ?? []
 }
 
-export const fetchBorrowBonkRewardsAvailability = async () => {
+export const fetchBorrowBonkRewardsAvailability = async (): Promise<boolean> => {
   const { data } = await axios.get<{
     data: {
       rewardsAvailable: boolean
@@ -129,7 +137,7 @@ export const fetchLenderActivityCSV = async ({
 }: {
   walletPubkey: string
   tokenType: LendingTokenType
-}) => {
+}): Promise<string> => {
   const queryParams = new URLSearchParams({
     marketType: String(convertToMarketType(tokenType)),
   })
@@ -147,7 +155,7 @@ export const fetchBorrowerActivityCSV = async ({
 }: {
   walletPubkey: string
   tokenType: LendingTokenType
-}) => {
+}): Promise<string> => {
   const queryParams = new URLSearchParams({
     marketType: String(convertToMarketType(tokenType)),
   })

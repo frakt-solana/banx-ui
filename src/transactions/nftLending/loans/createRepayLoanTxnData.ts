@@ -1,12 +1,10 @@
 import { web3 } from 'fbonds-core'
 import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
-import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import {
   repayCnftPerpetualLoanCanopy,
   repayPerpetualLoan,
   repayStakedBanxPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondTradeTransactionV3, FraktBond } from 'fbonds-core/lib/fbond-protocol/types'
 import moment from 'moment'
 import {
   CreateTxnData,
@@ -48,7 +46,7 @@ export const createRepayLoanTxnData: CreateRepayLoanTxnData = async (
   const {
     instructions: repayInstructions,
     signers: repaySigners,
-    optimisticResult,
+    accountsCollection,
     lookupTables,
   } = await getIxnsAndSignersByBorrowType(
     {
@@ -58,10 +56,7 @@ export const createRepayLoanTxnData: CreateRepayLoanTxnData = async (
     walletAndConnection,
   )
 
-  const accounts = [
-    new web3.PublicKey(optimisticResult.fraktBond.publicKey),
-    new web3.PublicKey(optimisticResult.bondTradeTransaction.publicKey),
-  ]
+  const accounts = [accountsCollection['fraktBond'], accountsCollection['bondTradeTransaction']]
 
   //? Add BanxSol instructions if offer wasn't closed!
   if (
@@ -120,7 +115,11 @@ const getIxnsAndSignersByBorrowType = async (
       throw new Error(`Not BanxStaked NFT`)
     }
 
-    const { instructions, signers, optimisticResults } = await repayStakedBanxPerpetualLoan({
+    const {
+      instructions,
+      signers,
+      accounts: accountsCollection,
+    } = await repayStakedBanxPerpetualLoan({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         oldBondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
@@ -134,11 +133,6 @@ const getIxnsAndSignersByBorrowType = async (
             lender: new web3.PublicKey(bondTradeTransaction.user),
             fbond: new web3.PublicKey(fraktBond.publicKey),
             banxStake: new web3.PublicKey(fraktBond.banxStake),
-            optimistic: {
-              fraktBond,
-              bondTradeTransaction,
-              oldBondOffer: getMockBondOffer(),
-            },
           },
         ],
         lendingTokenType: bondTradeTransaction.lendingToken,
@@ -150,7 +144,7 @@ const getIxnsAndSignersByBorrowType = async (
     return {
       instructions,
       signers,
-      optimisticResult: optimisticResults[0],
+      accountsCollection,
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
     }
   }
@@ -162,7 +156,11 @@ const getIxnsAndSignersByBorrowType = async (
 
     const proof = await helius.getHeliusAssetProof({ assetId: nft.mint, connection })
 
-    const { instructions, signers, optimisticResults } = await repayCnftPerpetualLoanCanopy({
+    const {
+      instructions,
+      signers,
+      accounts: accountsCollection,
+    } = await repayCnftPerpetualLoanCanopy({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         oldBondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
@@ -176,11 +174,6 @@ const getIxnsAndSignersByBorrowType = async (
       args: {
         proof,
         cnftParams: nft.compression,
-        optimistic: {
-          fraktBond: fraktBond,
-          bondTradeTransaction: bondTradeTransaction,
-          oldBondOffer: getMockBondOffer(),
-        },
         lendingTokenType: bondTradeTransaction.lendingToken,
       },
       connection,
@@ -190,7 +183,7 @@ const getIxnsAndSignersByBorrowType = async (
     return {
       instructions,
       signers,
-      optimisticResult: optimisticResults[0],
+      accountsCollection,
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
     }
   }
@@ -201,7 +194,11 @@ const getIxnsAndSignersByBorrowType = async (
     marketPubkey: fraktBond.hadoMarket,
   })
 
-  const { instructions, signers, optimisticResults } = await repayPerpetualLoan({
+  const {
+    instructions,
+    signers,
+    accounts: accountsCollection,
+  } = await repayPerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       userPubkey: wallet.publicKey,
@@ -216,11 +213,6 @@ const getIxnsAndSignersByBorrowType = async (
           lender: new web3.PublicKey(bondTradeTransaction.user),
           fbond: new web3.PublicKey(fraktBond.publicKey),
           collateralTokenMint: new web3.PublicKey(fraktBond.fbondTokenMint),
-          optimistic: {
-            fraktBond,
-            oldBondOffer: getMockBondOffer(),
-            bondTradeTransaction,
-          },
         },
       ],
       lendingTokenType: bondTradeTransaction.lendingToken,
@@ -232,7 +224,7 @@ const getIxnsAndSignersByBorrowType = async (
   return {
     instructions,
     signers,
-    optimisticResult: optimisticResults[0],
+    accountsCollection,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }
@@ -253,7 +245,7 @@ export const parseRepayLoanSimulatedAccounts = (
   const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
   return {
-    bondTradeTransaction: results?.['bondTradeTransactionV3'] as BondTradeTransactionV3,
-    fraktBond: results?.['fraktBond'] as FraktBond,
+    bondTradeTransaction: results?.['bondTradeTransactionV3'] as core.BondTradeTransaction,
+    fraktBond: results?.['fraktBond'] as core.FraktBond,
   }
 }

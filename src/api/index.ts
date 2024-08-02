@@ -1,7 +1,7 @@
 import * as common from './common'
 import * as nft from './nft'
 
-export * from './types'
+export * from './shared'
 
 export default {
   nft,
