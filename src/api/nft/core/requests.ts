@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { RequestWithPagination } from '@banx/api/shared'
+import { RequestWithPagination, parseResponseSafe } from '@banx/api/shared'
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import { convertToMarketType } from '../helpers'
@@ -35,7 +35,7 @@ import {
 
 type FetchMarketsPreview = (
   props: RequestWithPagination<{ tokenType: LendingTokenType }>,
-) => Promise<MarketPreview[]>
+) => Promise<MarketPreview[] | undefined>
 export const fetchMarketsPreview: FetchMarketsPreview = async ({ tokenType, getAll = true }) => {
   const queryParams = new URLSearchParams({
     getAll: String(getAll),
@@ -47,7 +47,7 @@ export const fetchMarketsPreview: FetchMarketsPreview = async ({ tokenType, getA
     `${BACKEND_BASE_URL}/bonds/preview?${queryParams.toString()}`,
   )
 
-  return await MarketPreviewSchema.array().parseAsync(data.data)
+  return await parseResponseSafe<MarketPreview[]>(data.data, MarketPreviewSchema.array())
 }
 
 type FetchMarketOffers = (
@@ -55,7 +55,7 @@ type FetchMarketOffers = (
     marketPubkey?: string
     tokenType: LendingTokenType
   }>,
-) => Promise<Offer[]>
+) => Promise<Offer[] | undefined>
 export const fetchMarketOffers: FetchMarketOffers = async ({
   marketPubkey,
   tokenType,
@@ -77,7 +77,7 @@ export const fetchMarketOffers: FetchMarketOffers = async ({
     `${BACKEND_BASE_URL}/bond-offers/${marketPubkey}?${queryParams.toString()}`,
   )
 
-  return await OfferSchema.array().parseAsync(data?.data)
+  return await parseResponseSafe<Offer[]>(data?.data, OfferSchema.array())
 }
 
 type FetchWalletLoansAndOffers = (
@@ -85,8 +85,7 @@ type FetchWalletLoansAndOffers = (
     walletPublicKey: string
     tokenType: LendingTokenType
   }>,
-) => Promise<WalletLoansAndOffers>
-
+) => Promise<WalletLoansAndOffers | undefined>
 export const fetchWalletLoansAndOffers: FetchWalletLoansAndOffers = async ({
   walletPublicKey,
   tokenType,
@@ -108,7 +107,7 @@ export const fetchWalletLoansAndOffers: FetchWalletLoansAndOffers = async ({
     `${BACKEND_BASE_URL}/loans/borrower/${walletPublicKey}?${queryParams.toString()}`,
   )
 
-  return WalletLoansAndOffersShema.parseAsync(data.data)
+  return await parseResponseSafe<WalletLoansAndOffers>(data.data, WalletLoansAndOffersShema)
 }
 
 type FetchLenderLoansByCertainOffer = (
@@ -117,8 +116,7 @@ type FetchLenderLoansByCertainOffer = (
     tokenType: LendingTokenType
     offerPubkey: string
   }>,
-) => Promise<LenderLoansResponse['data']>
-
+) => Promise<LenderLoansResponse['data'] | undefined>
 export const fetchLenderLoansByCertainOffer: FetchLenderLoansByCertainOffer = async ({
   walletPublicKey,
   tokenType,
@@ -143,7 +141,7 @@ export const fetchLenderLoansByCertainOffer: FetchLenderLoansByCertainOffer = as
     `${BACKEND_BASE_URL}/loans/lender-chart/?${queryParams.toString()}`,
   )
 
-  return LenderLoansSchema.array().parseAsync(data.data)
+  return await parseResponseSafe<LenderLoansResponse['data']>(data.data, LenderLoansSchema.array())
 }
 
 type FetchLenderLoans = (
@@ -152,7 +150,7 @@ type FetchLenderLoans = (
     tokenType: LendingTokenType
     sortBy?: 'status' | 'apr'
   }>,
-) => Promise<LendLoansResponse['data']>
+) => Promise<LendLoansResponse['data'] | undefined>
 export const fetchLenderLoans: FetchLenderLoans = async ({
   walletPublicKey,
   tokenType,
@@ -176,7 +174,7 @@ export const fetchLenderLoans: FetchLenderLoans = async ({
     `${BACKEND_BASE_URL}/loans/lender/${walletPublicKey}?${queryParams.toString()}`,
   )
 
-  return LoanSchema.array().parseAsync(data.data)
+  return await parseResponseSafe<LendLoansResponse['data']>(data.data, LoanSchema.array())
 }
 
 type FetchBorrowNftsAndOffers = (
@@ -184,7 +182,7 @@ type FetchBorrowNftsAndOffers = (
     walletPubkey: string
     tokenType: LendingTokenType
   }>,
-) => Promise<BorrowNftsAndOffers>
+) => Promise<BorrowNftsAndOffers | undefined>
 export const fetchBorrowNftsAndOffers: FetchBorrowNftsAndOffers = async ({
   walletPubkey,
   tokenType,
@@ -206,7 +204,7 @@ export const fetchBorrowNftsAndOffers: FetchBorrowNftsAndOffers = async ({
     `${BACKEND_BASE_URL}/nfts/borrow/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  return BorrowNftsAndOffersSchema.parseAsync(data.data)
+  return await parseResponseSafe<BorrowNftsAndOffers>(data.data, BorrowNftsAndOffersSchema)
 }
 
 type FetchBorrowerLoansRequests = (
@@ -214,7 +212,7 @@ type FetchBorrowerLoansRequests = (
     walletPublicKey: string
     tokenType: LendingTokenType
   }>,
-) => Promise<Loan[]>
+) => Promise<Loan[] | undefined>
 export const fetchBorrowerLoansRequests: FetchBorrowerLoansRequests = async ({
   walletPublicKey,
   tokenType,
@@ -230,14 +228,14 @@ export const fetchBorrowerLoansRequests: FetchBorrowerLoansRequests = async ({
     `${BACKEND_BASE_URL}/loans/borrower-requests/${walletPublicKey}?${queryParams.toString()}`,
   )
 
-  return LoanSchema.array().parseAsync(data.data)
+  return await parseResponseSafe<Loan[]>(data.data, LoanSchema.array())
 }
 
 type FetchAllLoansRequests = (
   props: RequestWithPagination<{
     tokenType: LendingTokenType
   }>,
-) => Promise<LoansRequests | null>
+) => Promise<LoansRequests | undefined>
 export const fetchAllLoansRequests: FetchAllLoansRequests = async ({
   tokenType,
   getAll = true,
@@ -252,7 +250,7 @@ export const fetchAllLoansRequests: FetchAllLoansRequests = async ({
     `${BACKEND_BASE_URL}/loans/requests?${queryParams.toString()}`,
   )
 
-  return LoansRequestsSchema.parseAsync(data.data)
+  return await parseResponseSafe<LoansRequests>(data.data, LoansRequestsSchema)
 }
 
 type FetchUserOffers = (
@@ -260,7 +258,7 @@ type FetchUserOffers = (
     walletPubkey: string
     tokenType: LendingTokenType
   }>,
-) => Promise<UserOffer[]>
+) => Promise<UserOffer[] | undefined>
 export const fetchUserOffers: FetchUserOffers = async ({
   walletPubkey,
   tokenType,
@@ -276,5 +274,5 @@ export const fetchUserOffers: FetchUserOffers = async ({
     `${BACKEND_BASE_URL}/bond-offers/user/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  return UserOfferSchema.array().parseAsync(data.data)
+  return await parseResponseSafe<UserOffer[]>(data.data, UserOfferSchema.array())
 }

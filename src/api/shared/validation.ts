@@ -13,9 +13,12 @@ import { ZodType } from 'zod'
 //   }
 // }
 
-export const parseResponseSafe = async (data: unknown, schema: ZodType<unknown>) => {
+export const parseResponseSafe = async <T>(
+  data: unknown,
+  schema: ZodType<unknown>,
+): Promise<T | undefined> => {
   try {
-    return await schema.parseAsync(data)
+    return (await schema.parseAsync(data)) as T
   } catch (validationError) {
     console.error('Schema validation error:', { validationError })
     return undefined
