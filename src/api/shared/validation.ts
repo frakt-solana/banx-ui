@@ -17,7 +17,7 @@ export const parseResponseSafe = async (data: unknown, schema: ZodType<unknown>)
   try {
     return await schema.parseAsync(data)
   } catch (validationError) {
-    console.error('Schema validation error:', validationError)
+    console.error('Schema validation error:', { validationError })
     return undefined
   }
 }
