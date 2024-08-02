@@ -7,12 +7,13 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/types'
 import { z } from 'zod'
 
+import { StringIntSchema } from '@banx/api/shared'
+
 export const BanxStakingSettingsSchema = z.object({
   publicKey: z.string(),
   banxStaked: z.string(),
   banxStakingSettingsState: z.nativeEnum(BanxStakingSettingsState),
   maxTokenStakeAmount: z.string(),
-  placeholderOne: z.string(),
   rewardsHarvested: z.string(),
   tokensPerPartnerPoints: z.string(),
   tokensPerWeek: z.string(),
@@ -24,31 +25,31 @@ export type BanxStakingSettings = z.infer<typeof BanxStakingSettingsSchema>
 export const PointsMapSchema = z.object({
   publicKey: z.string(),
   banxMint: z.string(),
-  partnerPoints: z.number(),
-  playerPoints: z.number(),
+  partnerPoints: StringIntSchema,
+  playerPoints: StringIntSchema,
 })
 export type PointsMap = z.infer<typeof PointsMapSchema>
 
 export const StakeSchema = z.object({
   publicKey: z.string(),
-  adventureSubscriptionsQuantity: z.number(),
+  adventureSubscriptionsQuantity: StringIntSchema,
   banxStakeState: z.nativeEnum(BanxStakeState),
   bond: z.string(),
   collateralTokenAccount: z.string(),
-  farmedAmount: z.number(),
+  farmedAmount: StringIntSchema,
   isLoaned: z.boolean(),
-  isTerminationFreeze: z.boolean(),
+  isTerminationFreeze: z.boolean().optional(),
   nftMint: z.string(),
-  partnerPoints: z.number(),
-  placeholderOne: z.string(),
-  playerPoints: z.number(),
-  stakedAt: z.number(),
-  unstakedOrLiquidatedAt: z.number(),
+  partnerPoints: StringIntSchema,
+  playerPoints: StringIntSchema,
+  stakedAt: StringIntSchema,
+  unstakedOrLiquidatedAt: StringIntSchema,
   user: z.string(),
 })
 export type Stake = z.infer<typeof StakeSchema>
 
 export const NftSchema = z.object({
+  mint: z.string(),
   meta: z.object({
     imageUrl: z.string(),
     mint: z.string(),
@@ -59,7 +60,6 @@ export const NftSchema = z.object({
   }),
   isLoaned: z.boolean(),
   isTerminationFreeze: z.boolean(),
-  mint: z.string(),
   pointsMap: PointsMapSchema,
   stake: StakeSchema.optional(),
 })
@@ -91,7 +91,6 @@ export const BanxAdventureSchema = z.object({
   periodStartedAt: z.string(),
   publicKey: z.string(),
   rewardsToBeDistributed: z.string(),
-  placeholderOne: z.string(),
   tokensPerPoints: z.string(),
   totalBanxSubscribed: z.string(),
   totalPartnerPoints: z.string(),
@@ -111,7 +110,6 @@ export const BanxTokenStakeSchema = z.object({
   tokensStaked: z.string(),
   unstakedAt: z.string(),
   farmedAmount: z.string(),
-  placeholderOne: z.string(),
   publicKey: z.string(),
   nftsStakedAt: z.string(),
   nftsUnstakedAt: z.string(),

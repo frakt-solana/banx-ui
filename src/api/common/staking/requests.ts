@@ -26,9 +26,12 @@ export const fetchBanxStakeInfo: FetchBanxStakeInfo = async ({ userPubkey }) => 
 
   if (!data?.data) return null
 
-  await parseResponseSafe(data.data, BanxStakeInfoResponseSchema)
+  const parsedData = (await parseResponseSafe(
+    data.data,
+    BanxStakeInfoResponseSchema,
+  )) as BanxStakeInfoResponse
 
-  return convertToBanxInfoBN(data.data)
+  return convertToBanxInfoBN(parsedData)
 }
 
 type FetchBanxStakeSettings = () => Promise<BanxStakingSettingsBN | null>
