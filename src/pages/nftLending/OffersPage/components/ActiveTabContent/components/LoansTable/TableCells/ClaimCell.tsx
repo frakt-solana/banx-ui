@@ -45,8 +45,8 @@ export const ClaimCell: FC<ClaimCellProps> = ({ loan }) => {
 
 const createTooltipContent = (label: string, value: number) => (
   <div className={styles.tooltipContent}>
-    <span>{label}</span>
-    <span>
+    <span className={styles.tooltipContentLabel}>{label}</span>
+    <span className={styles.tooltipContentValue}>
       <DisplayValue value={value} />
     </span>
   </div>

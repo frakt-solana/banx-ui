@@ -146,24 +146,22 @@
   align-items: center;
   justify-content: space-between;
   min-width: 200px;
+}
+.tooltipContentLabel {
+  color: var(--content-secondary);
+  font: var(--title-sm);
+  text-transform: uppercase;
 
-  span:first-child {
-    color: var(--content-secondary);
-    font: var(--title-sm);
-    text-transform: uppercase;
-
-    @media (max-width: 640px) {
-      font: var(--title-xs);
-    }
+  @media (max-width: 640px) {
+    font: var(--title-xs);
   }
+}
+.tooltipContentValue {
+  color: var(--pure-white);
+  font: var(--body-text-md);
 
-  span:last-child {
-    color: var(--pure-white);
-    font: var(--body-text-md);
-
-    @media (max-width: 640px) {
-      font: var(--body-text-sm);
-    }
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
   }
 }
 // * Cells * //
