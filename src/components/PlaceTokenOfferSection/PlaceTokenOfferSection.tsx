@@ -141,10 +141,9 @@ interface MaxOfferControlsProps {
   tokenType: LendingTokenType
 }
 
+const PERCENTAGES = [60, 75, 90]
 const MaxOfferControls: FC<MaxOfferControlsProps> = ({ market, onChange, tokenType }) => {
   const { collateralPrice = 0, bestOffer = 0 } = market || {}
-
-  const percentages = [60, 75, 90]
 
   const handleChange = (value: number) => {
     const decimalPlaces = getCollateralDecimalPlaces(value)
@@ -167,7 +166,7 @@ const MaxOfferControls: FC<MaxOfferControlsProps> = ({ market, onChange, tokenTy
     <div className={styles.maxOfferControls}>
       <span className={styles.maxOfferLabel}>LTV</span>
 
-      {percentages.map((percent) => (
+      {PERCENTAGES.map((percent) => (
         <Button
           key={percent}
           onClick={() => onChangePercent(percent)}
