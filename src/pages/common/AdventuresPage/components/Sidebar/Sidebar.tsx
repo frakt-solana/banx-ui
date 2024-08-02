@@ -24,8 +24,8 @@ import styles from './Sidebar.module.less'
 
 interface SidebarProps {
   className?: string
-  banxStakingSettings: staking.BanxStakingSettingsBN
-  banxStakeInfo: staking.BanxInfoBN
+  banxStakingSettings: staking.BanxStakingSettings
+  banxStakeInfo: staking.BanxStakingInfo
 }
 
 export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banxStakeInfo }) => {

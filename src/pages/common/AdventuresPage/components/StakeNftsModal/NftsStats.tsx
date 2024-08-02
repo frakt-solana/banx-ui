@@ -7,7 +7,7 @@ import { staking } from '@banx/api/common'
 import styles from './StakeNftsModal.module.less'
 
 interface NftsStatsProps {
-  nfts: staking.BanxStakeNft[]
+  nfts: staking.BanxNftStake[]
 }
 export const NftsStats: FC<NftsStatsProps> = ({ nfts = [] }) => {
   const walletPartnerPoints = useMemo(
