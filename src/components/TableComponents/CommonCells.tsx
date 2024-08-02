@@ -3,7 +3,7 @@ import { FC, ReactNode } from 'react'
 import { InfoCircleOutlined } from '@ant-design/icons'
 import classNames from 'classnames'
 
-import { core } from '@banx/api/nft'
+import { Rarity, RarityTier } from '@banx/api'
 
 import Tooltip from '../Tooltip'
 
@@ -52,16 +52,16 @@ export const HorizontalCell: FC<HorizontalCellProps> = ({
 }
 
 //TODO: Rewrite via classes
-const RARITY_TIER_COLOR_MAP: Record<core.RarityTier, string> = {
-  [core.RarityTier.Common]: 'var(--additional-silver-primary)',
-  [core.RarityTier.Uncommon]: 'var(--additional-green-primary)',
-  [core.RarityTier.Rare]: 'var(--additional-blue-primary)',
-  [core.RarityTier.Epic]: 'var(--additional-violet-primary)',
-  [core.RarityTier.Legendary]: 'var(--additional-gold-primary)',
-  [core.RarityTier.Mythic]: 'var(--additional-red-primary)',
+const RARITY_TIER_COLOR_MAP: Record<RarityTier, string> = {
+  [RarityTier.Common]: 'var(--additional-silver-primary)',
+  [RarityTier.Uncommon]: 'var(--additional-green-primary)',
+  [RarityTier.Rare]: 'var(--additional-blue-primary)',
+  [RarityTier.Epic]: 'var(--additional-violet-primary)',
+  [RarityTier.Legendary]: 'var(--additional-gold-primary)',
+  [RarityTier.Mythic]: 'var(--additional-red-primary)',
 }
 
-export const RarityCell: FC<{ rarity: core.Rarity | undefined }> = ({ rarity }) => {
+export const RarityCell: FC<{ rarity: Rarity | undefined }> = ({ rarity }) => {
   const { tier = '', rank = 0 } = rarity || {}
 
   const color = tier ? RARITY_TIER_COLOR_MAP[tier] : ''

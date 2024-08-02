@@ -5,7 +5,7 @@ import {
   claimPerpetualBondOfferRepayments,
   claimPerpetualBondOfferStakingRewards,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
@@ -50,7 +50,6 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
     const { instructions: claimInterestInstructions, signers: claimInterestSigners } =
       await claimPerpetualBondOfferInterest({
         accounts: accountsParams,
-        optimistic: { bondOffer: offer },
         args: {
           lendingTokenType: tokenType,
         },
@@ -67,7 +66,6 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
     const { instructions: claimRepaymetsInstructions, signers: claimRepaymetsSigners } =
       await claimPerpetualBondOfferRepayments({
         accounts: accountsParams,
-        optimistic: { bondOffer: offer },
         args: {
           lendingTokenType: tokenType,
         },
@@ -84,7 +82,7 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
   const currentEpochStartAt = new BN(clusterStats?.epochStartedAt || 0)
 
   const calculateLstYield = calculateBanxSolStakingRewards({
-    bondOffer: offer,
+    bondOffer: core.convertCoreOfferToBondOfferV3(offer),
     nowSlot,
     currentEpochStartAt,
   })
@@ -93,11 +91,6 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
     const { instructions: claimYieldInstructions, signers: claimYieldSigners } =
       await claimPerpetualBondOfferStakingRewards({
         accounts: accountsParams,
-        optimistic: {
-          bondOffer: offer,
-          nowSlot,
-          currentEpochStartAt,
-        },
         programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
         connection: walletAndConnection.connection,
         sendTxn: sendTxnPlaceHolder,
@@ -145,5 +138,5 @@ export const parseClaimLenderVaultSimulatedAccounts = (
 ) => {
   const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
-  return results?.['bondOfferV3'] as BondOfferV3
+  return results?.['bondOfferV3'] as core.Offer
 }

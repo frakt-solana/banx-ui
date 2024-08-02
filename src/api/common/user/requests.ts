@@ -3,22 +3,24 @@ import { web3 } from 'fbonds-core'
 
 import { BACKEND_BASE_URL } from '@banx/constants'
 
-import { MutationResponse } from '../../types'
+import { MutationResponse, RequestWithPagination, parseResponseSafe } from '../../shared'
 import { getDiscordAvatarUrl } from './helpers'
 import {
-  BonkWithdrawal,
   BonkWithdrawalSchema,
+  LeaderboardDataSchema,
+  RefPersonalDataSchema,
+  SeasonUserRewardsSchema,
+} from './schemas'
+import {
+  BonkWithdrawal,
   DiscordUserInfo,
   DiscordUserInfoRaw,
   LeaderboardData,
-  LeaderboardDataSchema,
   LeaderboardTimeRange,
   LinkWalletResponse,
   LinkedWallet,
   RefPersonalData,
-  RefPersonalDataSchema,
   SeasonUserRewards,
-  SeasonUserRewardsSchema,
   WithdrawalTokenType,
 } from './types'
 
@@ -170,14 +172,14 @@ export const fetchSeasonUserRewards: FetchSeasonUserRewards = async ({ walletPub
   return data?.data ?? null
 }
 
-type FetchLeaderboardData = (props: {
-  walletPubkey: string
-  userType: string
-  order?: string
-  skip: number
-  limit: number
-  timeRangeType: LeaderboardTimeRange
-}) => Promise<LeaderboardData[]>
+type FetchLeaderboardData = (
+  props: RequestWithPagination<{
+    walletPubkey: string
+    userType: string
+    limit: number
+    timeRangeType: LeaderboardTimeRange
+  }>,
+) => Promise<LeaderboardData[]>
 export const fetchLeaderboardData: FetchLeaderboardData = async ({
   walletPubkey,
   order = 'asc',
@@ -190,11 +192,7 @@ export const fetchLeaderboardData: FetchLeaderboardData = async ({
     `${BACKEND_BASE_URL}/leaderboard/list/v2/${walletPubkey}?order=${order}&skip=${skip}&limit=${limit}&userType=${userType}&timeRangeType=${timeRangeType}`,
   )
 
-  try {
-    await LeaderboardDataSchema.array().parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
+  await parseResponseSafe(data.data, LeaderboardDataSchema.array())
 
   return data?.data ?? []
 }
@@ -211,11 +209,7 @@ export const fetchBonkWithdrawal: FetchBonkWithdrawal = async ({
     `${BACKEND_BASE_URL}/leaderboard/request-bonk-withdrawal/${walletPubkey}?tokenName=${tokenName}`,
   )
 
-  try {
-    await BonkWithdrawalSchema.parseAsync(bondWithdrawal)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
+  await parseResponseSafe(bondWithdrawal, BonkWithdrawalSchema)
 
   return bondWithdrawal ?? null
 }
@@ -237,11 +231,7 @@ export const fetchRefPersonalData: FetchRefPersonalData = async ({ walletPubkey 
     `${BACKEND_BASE_URL}/leaderboard/ref/personal-data/${walletPubkey}`,
   )
 
-  try {
-    await RefPersonalDataSchema.parseAsync(data?.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
+  await parseResponseSafe(data?.data, RefPersonalDataSchema)
 
   return data?.data ?? null
 }
