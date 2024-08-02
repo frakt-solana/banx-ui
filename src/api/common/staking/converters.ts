@@ -10,7 +10,7 @@ import {
   BanxTokenStake,
   NftType,
   Stake,
-} from './schemas'
+} from './schemasOld'
 import {
   BanxAdventureBN,
   BanxAdventureSubscriptionBN,
@@ -19,7 +19,7 @@ import {
   BanxStakeBN,
   BanxStakeNft,
   BanxStakingSettingsBN,
-} from './types'
+} from './typesOld'
 
 export const convertToBanxStakingSettingsBN = (
   banxStakingSettings: BanxStakingSettings,
