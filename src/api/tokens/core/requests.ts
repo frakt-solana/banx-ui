@@ -89,7 +89,7 @@ export const fetchTokenOffersPreview: FetchTokenOffersPreview = async ({
   })
 
   const { data } = await axios.get<{ data: TokenOfferPreview[] }>(
-    `${BACKEND_BASE_URL}/my-offers/${walletPubkey}?${queryParams.toString()}`,
+    `${BACKEND_BASE_URL}/spl-offers/my-offers/${walletPubkey}?${queryParams.toString()}`,
   )
 
   try {
