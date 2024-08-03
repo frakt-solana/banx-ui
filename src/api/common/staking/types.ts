@@ -25,7 +25,6 @@ export type BanxStakingSettingsBN = {
   tokensPerWeek: BN
   hadesPerWeek: BN
   tokensStaked: BN
-  placeholderOne: string
 }
 
 export type BanxNftStakeBN = {
@@ -36,14 +35,13 @@ export type BanxNftStakeBN = {
   collateralTokenAccount: string
   farmedAmount: BN
   isLoaned: boolean
-  isTerminationFreeze: boolean
+  isTerminationFreeze?: boolean
   nftMint: string
   partnerPoints: number
   playerPoints: number
   stakedAt: number
   unstakedOrLiquidatedAt: number
   user: string
-  placeholderOne: string
 }
 
 export type BanxStakeNft = {
@@ -92,7 +90,6 @@ export type BanxAdventureBN = {
   totalTokensStaked: BN
   periodEndingAt: number
   periodStartedAt: number
-  placeholderOne: string
 }
 
 export type BanxStakeBN = {
@@ -109,7 +106,6 @@ export type BanxStakeBN = {
   unstakedAt: number
   nftsStakedAt: number
   nftsUnstakedAt: number
-  placeholderOne: string
 }
 
 export type BanxAdventureAndSubscription = {
