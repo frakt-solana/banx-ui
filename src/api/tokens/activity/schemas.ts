@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { TokenMetaSchema } from '../core'
+import { TokenMetaSchema } from '../core/schemas'
 
 export const LenderTokenActivitySchema = z.object({
   id: z.string(),

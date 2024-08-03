@@ -2,26 +2,27 @@ import axios from 'axios'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Offer } from '@banx/api/nft'
-import { OfferSchema } from '@banx/api/nft/core/schemas'
-import { RequestWithPagination } from '@banx/api/shared'
+import { OfferSchema, RequestWithPagination } from '@banx/api/shared'
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import { convertToMarketType, convertToOutputToken } from '../../helpers'
 import {
+  CollateralTokenSchema,
+  TokenLoanSchema,
+  TokenLoansRequestsSchema,
+  TokenMarketPreviewSchema,
+  TokenOfferPreviewSchema,
+  WalletTokenLoansAndOffersShema,
+} from './schemas'
+import {
   AllTokenLoansRequestsResponse,
   CollateralToken,
-  CollateralTokenSchema,
   TokenLoan,
-  TokenLoanSchema,
   TokenLoansRequests,
-  TokenLoansRequestsSchema,
   TokenMarketPreview,
   TokenMarketPreviewResponse,
-  TokenMarketPreviewSchema,
   TokenOfferPreview,
-  TokenOfferPreviewSchema,
   WalletTokenLoansAndOffers,
-  WalletTokenLoansAndOffersShema,
 } from './types'
 
 type FetchTokenMarketsPreview = (

@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { RequestWithPagination, parseResponseSafe } from '@banx/api/shared'
+import { OfferSchema, RequestWithPagination, parseResponseSafe } from '@banx/api/shared'
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import { convertToMarketType } from '../../helpers'
@@ -11,7 +11,6 @@ import {
   LoanSchema,
   LoansRequestsSchema,
   MarketPreviewSchema,
-  OfferSchema,
   UserOfferSchema,
   WalletLoansAndOffersShema,
 } from './schemas'
