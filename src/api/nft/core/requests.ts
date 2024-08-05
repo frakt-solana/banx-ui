@@ -1,39 +1,43 @@
 import axios from 'axios'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
+import { OfferSchema, RequestWithPagination, parseResponseSafe } from '@banx/api/shared'
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import { convertToMarketType } from '../../helpers'
 import {
+  BorrowNftsAndOffersSchema,
+  LenderLoansSchema,
+  LoanSchema,
+  LoansRequestsSchema,
+  MarketPreviewSchema,
+  UserOfferSchema,
+  WalletLoansAndOffersShema,
+} from './schemas'
+import {
   AllLoansRequestsResponse,
   BorrowNftsAndOffers,
   BorrowNftsAndOffersResponse,
-  BorrowNftsAndOffersSchema,
   FetchMarketOffersResponse,
   FetchUserOffersResponse,
   LendLoansResponse,
   LenderLoansResponse,
-  LenderLoansSchema,
   Loan,
-  LoanSchema,
   LoansRequests,
-  LoansRequestsSchema,
   MarketPreview,
   MarketPreviewResponse,
-  MarketPreviewSchema,
   Offer,
-  OfferSchema,
   UserOffer,
-  UserOfferSchema,
   WalletLoansAndOffers,
   WalletLoansAndOffersResponse,
-  WalletLoansAndOffersShema,
 } from './types'
 
-type FetchMarketsPreview = (props: { tokenType: LendingTokenType }) => Promise<MarketPreview[]>
-export const fetchMarketsPreview: FetchMarketsPreview = async ({ tokenType }) => {
+type FetchMarketsPreview = (
+  props: RequestWithPagination<{ tokenType: LendingTokenType }>,
+) => Promise<MarketPreview[] | undefined>
+export const fetchMarketsPreview: FetchMarketsPreview = async ({ tokenType, getAll = true }) => {
   const queryParams = new URLSearchParams({
-    getAll: String(true),
+    getAll: String(getAll),
     marketType: String(convertToMarketType(tokenType)),
     isPrivate: String(IS_PRIVATE_MARKETS),
   })
@@ -42,23 +46,15 @@ export const fetchMarketsPreview: FetchMarketsPreview = async ({ tokenType }) =>
     `${BACKEND_BASE_URL}/bonds/preview?${queryParams.toString()}`,
   )
 
-  try {
-    await MarketPreviewSchema.array().parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
-
-  return data.data
+  return await parseResponseSafe<MarketPreview[]>(data.data, MarketPreviewSchema.array())
 }
 
-type FetchMarketOffers = (props: {
-  marketPubkey?: string
-  tokenType: LendingTokenType
-  order?: 'asc' | 'desc'
-  skip?: number
-  limit?: number
-  getAll?: boolean
-}) => Promise<Offer[]>
+type FetchMarketOffers = (
+  props: RequestWithPagination<{
+    marketPubkey?: string
+    tokenType: LendingTokenType
+  }>,
+) => Promise<Offer[] | undefined>
 export const fetchMarketOffers: FetchMarketOffers = async ({
   marketPubkey,
   tokenType,
@@ -80,24 +76,15 @@ export const fetchMarketOffers: FetchMarketOffers = async ({
     `${BACKEND_BASE_URL}/bond-offers/${marketPubkey}?${queryParams.toString()}`,
   )
 
-  try {
-    await OfferSchema.array().parseAsync(data?.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
-
-  return data?.data
+  return await parseResponseSafe<Offer[]>(data?.data, OfferSchema.array())
 }
 
-type FetchWalletLoansAndOffers = (props: {
-  walletPublicKey: string
-  tokenType: LendingTokenType
-  order?: 'asc' | 'desc'
-  skip?: number
-  limit?: number
-  getAll?: boolean
-}) => Promise<WalletLoansAndOffers>
-
+type FetchWalletLoansAndOffers = (
+  props: RequestWithPagination<{
+    walletPublicKey: string
+    tokenType: LendingTokenType
+  }>,
+) => Promise<WalletLoansAndOffers | undefined>
 export const fetchWalletLoansAndOffers: FetchWalletLoansAndOffers = async ({
   walletPublicKey,
   tokenType,
@@ -119,25 +106,16 @@ export const fetchWalletLoansAndOffers: FetchWalletLoansAndOffers = async ({
     `${BACKEND_BASE_URL}/loans/borrower/${walletPublicKey}?${queryParams.toString()}`,
   )
 
-  try {
-    await WalletLoansAndOffersShema.parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
-
-  return data.data ?? { nfts: [], offers: {} }
+  return await parseResponseSafe<WalletLoansAndOffers>(data.data, WalletLoansAndOffersShema)
 }
 
-type FetchLenderLoansByCertainOffer = (props: {
-  walletPublicKey: string
-  tokenType: LendingTokenType
-  offerPubkey: string
-  order?: 'asc' | 'desc'
-  skip?: number
-  limit?: number
-  getAll?: boolean
-}) => Promise<LenderLoansResponse['data']>
-
+type FetchLenderLoansByCertainOffer = (
+  props: RequestWithPagination<{
+    walletPublicKey: string
+    tokenType: LendingTokenType
+    offerPubkey: string
+  }>,
+) => Promise<LenderLoansResponse['data'] | undefined>
 export const fetchLenderLoansByCertainOffer: FetchLenderLoansByCertainOffer = async ({
   walletPublicKey,
   tokenType,
@@ -162,24 +140,16 @@ export const fetchLenderLoansByCertainOffer: FetchLenderLoansByCertainOffer = as
     `${BACKEND_BASE_URL}/loans/lender-chart/?${queryParams.toString()}`,
   )
 
-  try {
-    await LenderLoansSchema.array().parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
-
-  return data.data ?? []
+  return await parseResponseSafe<LenderLoansResponse['data']>(data.data, LenderLoansSchema.array())
 }
 
-type FetchLenderLoans = (props: {
-  walletPublicKey: string
-  tokenType: LendingTokenType
-  sortBy?: 'status' | 'apr'
-  order?: 'asc' | 'desc'
-  skip?: number
-  limit?: number
-  getAll?: boolean
-}) => Promise<LendLoansResponse['data']>
+type FetchLenderLoans = (
+  props: RequestWithPagination<{
+    walletPublicKey: string
+    tokenType: LendingTokenType
+    sortBy?: 'status' | 'apr'
+  }>,
+) => Promise<LendLoansResponse['data'] | undefined>
 export const fetchLenderLoans: FetchLenderLoans = async ({
   walletPublicKey,
   tokenType,
@@ -203,23 +173,15 @@ export const fetchLenderLoans: FetchLenderLoans = async ({
     `${BACKEND_BASE_URL}/loans/lender/${walletPublicKey}?${queryParams.toString()}`,
   )
 
-  try {
-    await LoanSchema.array().parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
-
-  return data.data ?? []
+  return await parseResponseSafe<LendLoansResponse['data']>(data.data, LoanSchema.array())
 }
 
-type FetchBorrowNftsAndOffers = (props: {
-  walletPubkey: string
-  tokenType: LendingTokenType
-  order?: string
-  getAll?: boolean
-  skip?: number
-  limit?: number
-}) => Promise<BorrowNftsAndOffers>
+type FetchBorrowNftsAndOffers = (
+  props: RequestWithPagination<{
+    walletPubkey: string
+    tokenType: LendingTokenType
+  }>,
+) => Promise<BorrowNftsAndOffers | undefined>
 export const fetchBorrowNftsAndOffers: FetchBorrowNftsAndOffers = async ({
   walletPubkey,
   tokenType,
@@ -241,21 +203,15 @@ export const fetchBorrowNftsAndOffers: FetchBorrowNftsAndOffers = async ({
     `${BACKEND_BASE_URL}/nfts/borrow/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  //TODO: Remove it when BE satisfyies schema
-  try {
-    await BorrowNftsAndOffersSchema.parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
-
-  return data.data ?? { nfts: [], offers: {} }
+  return await parseResponseSafe<BorrowNftsAndOffers>(data.data, BorrowNftsAndOffersSchema)
 }
 
-type FetchBorrowerLoansRequests = (props: {
-  walletPublicKey: string
-  tokenType: LendingTokenType
-  getAll?: boolean
-}) => Promise<Loan[]>
+type FetchBorrowerLoansRequests = (
+  props: RequestWithPagination<{
+    walletPublicKey: string
+    tokenType: LendingTokenType
+  }>,
+) => Promise<Loan[] | undefined>
 export const fetchBorrowerLoansRequests: FetchBorrowerLoansRequests = async ({
   walletPublicKey,
   tokenType,
@@ -271,20 +227,14 @@ export const fetchBorrowerLoansRequests: FetchBorrowerLoansRequests = async ({
     `${BACKEND_BASE_URL}/loans/borrower-requests/${walletPublicKey}?${queryParams.toString()}`,
   )
 
-  try {
-    await LoanSchema.array().parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
-
-  return data.data ?? []
+  return await parseResponseSafe<Loan[]>(data.data, LoanSchema.array())
 }
 
-type FetchAllLoansRequests = (props: {
-  tokenType: LendingTokenType
-  getAll?: boolean
-}) => Promise<LoansRequests>
-
+type FetchAllLoansRequests = (
+  props: RequestWithPagination<{
+    tokenType: LendingTokenType
+  }>,
+) => Promise<LoansRequests | undefined>
 export const fetchAllLoansRequests: FetchAllLoansRequests = async ({
   tokenType,
   getAll = true,
@@ -299,21 +249,15 @@ export const fetchAllLoansRequests: FetchAllLoansRequests = async ({
     `${BACKEND_BASE_URL}/loans/requests?${queryParams.toString()}`,
   )
 
-  try {
-    await LoansRequestsSchema.parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
-
-  return data.data
+  return await parseResponseSafe<LoansRequests>(data.data, LoansRequestsSchema)
 }
 
-type FetchUserOffers = (props: {
-  walletPubkey: string
-  tokenType: LendingTokenType
-  getAll?: boolean
-}) => Promise<UserOffer[]>
-
+type FetchUserOffers = (
+  props: RequestWithPagination<{
+    walletPubkey: string
+    tokenType: LendingTokenType
+  }>,
+) => Promise<UserOffer[] | undefined>
 export const fetchUserOffers: FetchUserOffers = async ({
   walletPubkey,
   tokenType,
@@ -329,11 +273,5 @@ export const fetchUserOffers: FetchUserOffers = async ({
     `${BACKEND_BASE_URL}/bond-offers/user/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  try {
-    await UserOfferSchema.array().parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
-
-  return data.data ?? []
+  return await parseResponseSafe<UserOffer[]>(data.data, UserOfferSchema.array())
 }

@@ -1,4 +1,4 @@
-import { web3 } from 'fbonds-core'
+import { BN, web3 } from 'fbonds-core'
 import { setRepaymentCall } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
@@ -23,30 +23,25 @@ export const createRepaymentCallTokenTxnData: CreateRepaymentCallTokenTxnData = 
 ) => {
   const { loan, callAmount } = params
   const { wallet, connection } = walletAndConnection
-  const { bondTradeTransaction, fraktBond } = loan
 
   const {
     instructions,
     signers,
-    optimistic: optimisticResult,
+    accounts: accountsCollection,
   } = await setRepaymentCall({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     args: {
-      callAmount,
-    },
-    optimistic: {
-      bondTradeTransaction,
+      callAmount: new BN(callAmount),
     },
     accounts: {
-      bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
-      fraktBond: new web3.PublicKey(fraktBond.publicKey),
+      bondTradeTransaction: new web3.PublicKey(loan.bondTradeTransaction.publicKey),
       userPubkey: wallet.publicKey,
     },
     connection,
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const accounts = [new web3.PublicKey(optimisticResult.bondTradeTransaction.publicKey)]
+  const accounts = [accountsCollection['bondTradeTransaction']]
 
   return {
     params,

@@ -25,7 +25,11 @@ export const createClaimTokenTxnData: CreateClaimTokenTxnData = async (
   const { wallet, connection } = walletAndConnection
   const { bondTradeTransaction, fraktBond } = loan
 
-  const { instructions, signers, optimisticResult } = await claimPerpetualLoanV2Spl({
+  const {
+    instructions,
+    signers,
+    accounts: accountsCollection,
+  } = await claimPerpetualLoanV2Spl({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
@@ -35,18 +39,11 @@ export const createClaimTokenTxnData: CreateClaimTokenTxnData = async (
       bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
       userPubkey: wallet.publicKey,
     },
-    optimistic: {
-      fraktBond,
-      bondTradeTransaction,
-    },
     connection,
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const accounts = [
-    new web3.PublicKey(optimisticResult.fraktBond.publicKey),
-    new web3.PublicKey(optimisticResult.bondTradeTransaction.publicKey),
-  ]
+  const accounts = [accountsCollection['fraktBond'], accountsCollection['bondTradeTransaction']]
 
   return {
     params,

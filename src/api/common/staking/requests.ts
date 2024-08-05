@@ -7,6 +7,7 @@ import {
   BanxStakingSettings,
   BanxStakingSettingsSchema,
 } from '@banx/api/common/staking/schemas'
+import { parseResponseSafe } from '@banx/api/shared'
 import { BACKEND_BASE_URL, BANX_TOKEN_DECIMALS } from '@banx/constants'
 import { ZERO_BN } from '@banx/utils'
 
@@ -23,15 +24,14 @@ export const fetchBanxStakeInfo: FetchBanxStakeInfo = async ({ userPubkey }) => 
     `${BACKEND_BASE_URL}/staking/v2/info?${queryParams.toString()}`,
   )
 
-  try {
-    await BanxStakeInfoResponseSchema.parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
-
   if (!data?.data) return null
 
-  return convertToBanxInfoBN(data.data)
+  const parsedData = (await parseResponseSafe(
+    data.data,
+    BanxStakeInfoResponseSchema,
+  )) as BanxStakeInfoResponse
+
+  return convertToBanxInfoBN(parsedData)
 }
 
 type FetchBanxStakeSettings = () => Promise<BanxStakingSettingsBN | null>
@@ -40,13 +40,9 @@ export const fetchBanxStakeSettings: FetchBanxStakeSettings = async () => {
     `${BACKEND_BASE_URL}/staking/v2/settings`,
   )
 
-  try {
-    await BanxStakingSettingsSchema.parseAsync(data.data)
-  } catch (validationError) {
-    console.error('BanxStakingSettings validation error:', validationError)
-  }
-
   if (!data?.data) return null
+
+  await parseResponseSafe(data.data, BanxStakingSettingsSchema)
 
   return convertToBanxStakingSettingsBN(data.data)
 }

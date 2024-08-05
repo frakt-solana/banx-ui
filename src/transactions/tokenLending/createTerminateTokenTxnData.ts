@@ -1,6 +1,5 @@
 import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
-import { getMockBondOffer } from 'fbonds-core/lib/fbond-protocol/functions/getters'
 import { terminatePerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
@@ -26,7 +25,7 @@ export const createTerminateTokenTxnData: CreateTerminateTokenTxnData = async (
 
   const { bondTradeTransaction, fraktBond } = loan
 
-  const { instructions, signers, optimisticResult } = await terminatePerpetualLoan({
+  const { instructions, signers, accounts } = await terminatePerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
@@ -34,24 +33,13 @@ export const createTerminateTokenTxnData: CreateTerminateTokenTxnData = async (
       fbond: new web3.PublicKey(fraktBond.publicKey),
       userPubkey: walletAndConnection.wallet.publicKey,
     },
-    optimistic: {
-      fraktBond,
-      bondOffer: getMockBondOffer(),
-      bondTradeTransaction,
-    },
     connection: walletAndConnection.connection,
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const accounts = [
-    new web3.PublicKey(optimisticResult.bondOffer.publicKey),
-    new web3.PublicKey(optimisticResult.bondTradeTransaction.publicKey),
-    new web3.PublicKey(optimisticResult.fraktBond.publicKey),
-  ]
-
   return {
     params,
-    accounts,
+    accounts: [accounts['bondOffer'], accounts['bondTradeTransaction'], accounts['fraktBond']],
     instructions,
     signers,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],

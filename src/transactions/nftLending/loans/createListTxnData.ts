@@ -7,11 +7,7 @@ import {
   createPerpetualListingStakedBanx,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
-import {
-  BondTradeTransactionV3,
-  FraktBond,
-  LendingTokenType,
-} from 'fbonds-core/lib/fbond-protocol/types'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
@@ -43,16 +39,13 @@ export const createListTxnData: CreateListTxnData = async (params, walletAndConn
 
   const listingType = getNftListingType(nft)
 
-  const { instructions, signers, optimisticResults } = await getIxnsAndSignersByListingType({
+  const { instructions, signers, accountsCollection } = await getIxnsAndSignersByListingType({
     params,
     type: listingType,
     walletAndConnection,
   })
 
-  const accounts = [
-    new web3.PublicKey(optimisticResults.fraktBond.publicKey),
-    new web3.PublicKey(optimisticResults.bondTradeTransaction.publicKey),
-  ]
+  const accounts = [accountsCollection['fraktBond'], accountsCollection['bondTradeTransaction']]
 
   return {
     params,
@@ -83,7 +76,11 @@ const getIxnsAndSignersByListingType = async ({
       marketPubkey: nft.loan.marketPubkey,
     })
 
-    const { instructions, signers, optimisticResults } = await createPerpetualListingStakedBanx({
+    const {
+      instructions,
+      signers,
+      accounts: accountsCollection,
+    } = await createPerpetualListingStakedBanx({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
@@ -106,7 +103,7 @@ const getIxnsAndSignersByListingType = async ({
       sendTxn: sendTxnPlaceHolder,
     })
 
-    return { instructions, signers, optimisticResults }
+    return { instructions, signers, accountsCollection }
   }
 
   if (type === ListingType.CNft) {
@@ -121,7 +118,11 @@ const getIxnsAndSignersByListingType = async ({
       marketPubkey: nft.loan.marketPubkey,
     })
 
-    const { instructions, signers, optimisticResults } = await createPerpetualListingCnft({
+    const {
+      instructions,
+      signers,
+      accounts: accountsCollection,
+    } = await createPerpetualListingCnft({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
@@ -147,7 +148,7 @@ const getIxnsAndSignersByListingType = async ({
       sendTxn: sendTxnPlaceHolder,
     })
 
-    return { instructions, signers, optimisticResults }
+    return { instructions, signers, accountsCollection }
   }
 
   const ruleSet = await fetchRuleset({
@@ -156,7 +157,11 @@ const getIxnsAndSignersByListingType = async ({
     marketPubkey: nft.loan.marketPubkey,
   })
 
-  const { instructions, signers, optimisticResults } = await createPerpetualListing({
+  const {
+    instructions,
+    signers,
+    accounts: accountsCollection,
+  } = await createPerpetualListing({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
@@ -178,7 +183,7 @@ const getIxnsAndSignersByListingType = async ({
     sendTxn: sendTxnPlaceHolder,
   })
 
-  return { instructions, signers, optimisticResults }
+  return { instructions, signers, accountsCollection }
 }
 
 export const getNftListingType = (nft: core.BorrowNft) => {
@@ -197,7 +202,7 @@ export const parseListNftSimulatedAccounts = (
   const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
   return {
-    bondTradeTransaction: results?.['bondTradeTransactionV3'] as BondTradeTransactionV3,
-    fraktBond: results?.['fraktBond'] as FraktBond,
+    bondTradeTransaction: results?.['bondTradeTransactionV3'] as core.BondTradeTransaction,
+    fraktBond: results?.['fraktBond'] as core.FraktBond,
   }
 }

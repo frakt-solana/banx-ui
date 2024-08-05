@@ -5,7 +5,7 @@ import {
   claimPerpetualBondOfferRepayments,
   claimPerpetualBondOfferStakingRewards,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
@@ -15,7 +15,8 @@ import {
 import { ClusterStats } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
-import { ZERO_BN, isBanxSolTokenType } from '@banx/utils'
+import { banxSol } from '@banx/transactions'
+import { ZERO_BN, isBanxSolTokenType, isOfferStateClosed } from '@banx/utils'
 
 import { parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
@@ -49,7 +50,6 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
     const { instructions: claimInterestInstructions, signers: claimInterestSigners } =
       await claimPerpetualBondOfferInterest({
         accounts: accountsParams,
-        optimistic: { bondOffer: offer },
         args: {
           lendingTokenType: tokenType,
         },
@@ -66,7 +66,6 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
     const { instructions: claimRepaymetsInstructions, signers: claimRepaymetsSigners } =
       await claimPerpetualBondOfferRepayments({
         accounts: accountsParams,
-        optimistic: { bondOffer: offer },
         args: {
           lendingTokenType: tokenType,
         },
@@ -83,7 +82,7 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
   const currentEpochStartAt = new BN(clusterStats?.epochStartedAt || 0)
 
   const calculateLstYield = calculateBanxSolStakingRewards({
-    bondOffer: offer,
+    bondOffer: core.convertCoreOfferToBondOfferV3(offer),
     nowSlot,
     currentEpochStartAt,
   })
@@ -92,11 +91,6 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
     const { instructions: claimYieldInstructions, signers: claimYieldSigners } =
       await claimPerpetualBondOfferStakingRewards({
         accounts: accountsParams,
-        optimistic: {
-          bondOffer: offer,
-          nowSlot,
-          currentEpochStartAt,
-        },
         programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
         connection: walletAndConnection.connection,
         sendTxn: sendTxnPlaceHolder,
@@ -107,6 +101,28 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
   }
 
   const accounts = [new web3.PublicKey(offer.publicKey)]
+
+  const closedOffersValue = isOfferStateClosed(offer.pairState)
+    ? offer.fundsSolOrTokenBalance + offer.bidSettlement
+    : 0
+
+  const totalClaimableValue = new BN(offer.concentrationIndex)
+    .add(new BN(offer.bidCap))
+    .add(new BN(closedOffersValue))
+    .add(calculateLstYield)
+
+  if (isBanxSolTokenType(tokenType) && totalClaimableValue.gt(ZERO_BN)) {
+    return await banxSol.combineWithSellBanxSolInstructions(
+      {
+        params,
+        accounts,
+        inputAmount: totalClaimableValue,
+        instructions,
+        signers,
+      },
+      walletAndConnection,
+    )
+  }
 
   return {
     params,
@@ -122,5 +138,5 @@ export const parseClaimLenderVaultSimulatedAccounts = (
 ) => {
   const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
-  return results?.['bondOfferV3'] as BondOfferV3
+  return results?.['bondOfferV3'] as core.Offer
 }

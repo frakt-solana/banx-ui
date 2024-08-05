@@ -1,11 +1,9 @@
 import { web3 } from 'fbonds-core'
 import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
-  BondAndTransactionOptimistic,
   claimCnftPerpetualLoanCanopy,
   claimPerpetualLoanv2,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondTradeTransactionV3, FraktBond } from 'fbonds-core/lib/fbond-protocol/types'
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
@@ -36,7 +34,11 @@ export const createClaimTxnData: CreateClaimTxnData = async (params, walletAndCo
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
 
   if (loan.nft.compression) {
-    const { instructions, signers, optimisticResult } = await claimCnftPerpetualLoanCanopy({
+    const {
+      instructions,
+      signers,
+      accounts: accountsCollection,
+    } = await claimCnftPerpetualLoanCanopy({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
@@ -48,19 +50,12 @@ export const createClaimTxnData: CreateClaimTxnData = async (params, walletAndCo
       args: {
         proof: await helius.getHeliusAssetProof({ assetId: loan.nft.mint, connection }),
         cnftParams: loan.nft.compression,
-        optimistic: {
-          fraktBond,
-          bondTradeTransaction,
-        } as BondAndTransactionOptimistic,
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
     })
 
-    const accounts = [
-      new web3.PublicKey(optimisticResult.fraktBond.publicKey),
-      new web3.PublicKey(optimisticResult.bondTradeTransaction.publicKey),
-    ]
+    const accounts = [accountsCollection['fraktBond'], accountsCollection['bondTradeTransaction']]
 
     return {
       params,
@@ -70,7 +65,11 @@ export const createClaimTxnData: CreateClaimTxnData = async (params, walletAndCo
       lookupTables,
     }
   } else {
-    const { instructions, signers, optimisticResult } = await claimPerpetualLoanv2({
+    const {
+      instructions,
+      signers,
+      accounts: accountsCollection,
+    } = await claimPerpetualLoanv2({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
@@ -91,18 +90,11 @@ export const createClaimTxnData: CreateClaimTxnData = async (params, walletAndCo
         ),
         subscriptionsAndAdventures: [],
       },
-      optimistic: {
-        fraktBond,
-        bondTradeTransaction,
-      } as BondAndTransactionOptimistic,
       connection,
       sendTxn: sendTxnPlaceHolder,
     })
 
-    const accounts = [
-      new web3.PublicKey(optimisticResult.fraktBond.publicKey),
-      new web3.PublicKey(optimisticResult.bondTradeTransaction.publicKey),
-    ]
+    const accounts = [accountsCollection['fraktBond'], accountsCollection['bondTradeTransaction']]
 
     return {
       params,
@@ -120,7 +112,7 @@ export const parseClaimNftSimulatedAccounts = (
   const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
   return {
-    bondTradeTransaction: results?.['bondTradeTransactionV3'] as BondTradeTransactionV3,
-    fraktBond: results?.['fraktBond'] as FraktBond,
+    bondTradeTransaction: results?.['bondTradeTransactionV3'] as core.BondTradeTransaction,
+    fraktBond: results?.['fraktBond'] as core.FraktBond,
   }
 }

@@ -1,6 +1,5 @@
-import { web3 } from 'fbonds-core'
+import { BN, web3 } from 'fbonds-core'
 import { setRepaymentCall } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondTradeTransactionV3 } from 'fbonds-core/lib/fbond-protocol/types'
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
@@ -29,30 +28,26 @@ export const createRepaymentCallTxnData: CreateRepaymentCallTxnData = async (
 ) => {
   const { loan, callAmount } = params
   const { wallet, connection } = walletAndConnection
-  const { bondTradeTransaction, fraktBond } = loan
+  const { bondTradeTransaction } = loan
 
   const {
     instructions,
     signers,
-    optimistic: optimisticResult,
+    accounts: accountsCollection,
   } = await setRepaymentCall({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     args: {
-      callAmount,
-    },
-    optimistic: {
-      bondTradeTransaction,
+      callAmount: new BN(callAmount),
     },
     accounts: {
       bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
-      fraktBond: new web3.PublicKey(fraktBond.publicKey),
       userPubkey: wallet.publicKey,
     },
     connection,
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const accounts = [new web3.PublicKey(optimisticResult.bondTradeTransaction.publicKey)]
+  const accounts = [accountsCollection['bondTradeTransaction']]
 
   return {
     params,
@@ -68,5 +63,5 @@ export const parseRepaymentCallSimulatedAccounts = (
 ) => {
   const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
-  return results?.['bondTradeTransactionV3'] as BondTradeTransactionV3
+  return results?.['bondTradeTransactionV3'] as core.BondTradeTransaction
 }
