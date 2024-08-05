@@ -118,5 +118,5 @@ export const BanxStakingInfoSchema = z.object({
   banxWalletBalance: SerializedBNSchema.nullable(),
   banxTokenStake: BanxTokenStakeSchema.nullable(),
   banxAdventures: BanxAdventuresWithSubscriptionSchema.array(),
-  nfts: BanxNftStakeSchema.array().nullable(),
+  nfts: BanxNftStakeSchema.array().nullable().optional(),
 })
