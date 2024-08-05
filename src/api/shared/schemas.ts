@@ -32,6 +32,7 @@ export const NFTSchema = z.object({
     tensorSlug: z.string(),
     partnerPoints: z.number().optional(),
     playerPoints: z.number().optional(),
+    tokenStandard: z.string().optional(),
   }),
   compression: z
     .object({
@@ -56,6 +57,7 @@ export const NFTSchemaNew = z.object({
     tensorSlug: z.string(),
     partnerPoints: z.number().optional(),
     playerPoints: z.number().optional(),
+    tokenStandard: z.string().optional(),
   }),
   //? Change to BN and PublicKey?
   compression: z

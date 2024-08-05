@@ -2,6 +2,7 @@ import { web3 } from 'fbonds-core'
 import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   claimCnftPerpetualLoanCanopy,
+  claimPerpetualLoanCore,
   claimPerpetualLoanv2,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import {
@@ -10,6 +11,7 @@ import {
   WalletAndConnection,
 } from 'solana-transactions-executor'
 
+import { TokenStandard } from '@banx/api'
 import { helius } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
@@ -64,31 +66,21 @@ export const createClaimTxnData: CreateClaimTxnData = async (params, walletAndCo
       signers,
       lookupTables,
     }
-  } else {
+  }
+
+  if (loan.nft.meta.tokenStandard === TokenStandard.CORE) {
     const {
       instructions,
       signers,
       accounts: accountsCollection,
-    } = await claimPerpetualLoanv2({
+    } = await claimPerpetualLoanCore({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
         fbond: new web3.PublicKey(fraktBond.publicKey),
-        collateralTokenMint: new web3.PublicKey(fraktBond.fbondTokenMint),
-        collateralOwner: new web3.PublicKey(fraktBond.fbondIssuer),
-        ruleSet: await fetchRuleset({
-          nftMint: loan.nft.mint,
-          connection,
-          marketPubkey: fraktBond.hadoMarket,
-        }),
-        bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
         userPubkey: wallet.publicKey,
-        banxStake: new web3.PublicKey(
-          fraktBond.banxStake !== EMPTY_PUBKEY.toBase58()
-            ? fraktBond.banxStake
-            : fraktBond.fraktMarket,
-        ),
-        subscriptionsAndAdventures: [],
+        bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
+        nftAsset: new web3.PublicKey(loan.nft.mint),
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
@@ -103,6 +95,45 @@ export const createClaimTxnData: CreateClaimTxnData = async (params, walletAndCo
       signers,
       lookupTables,
     }
+  }
+
+  const {
+    instructions,
+    signers,
+    accounts: accountsCollection,
+  } = await claimPerpetualLoanv2({
+    programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
+    accounts: {
+      bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
+      fbond: new web3.PublicKey(fraktBond.publicKey),
+      collateralTokenMint: new web3.PublicKey(fraktBond.fbondTokenMint),
+      collateralOwner: new web3.PublicKey(fraktBond.fbondIssuer),
+      ruleSet: await fetchRuleset({
+        nftMint: loan.nft.mint,
+        connection,
+        marketPubkey: fraktBond.hadoMarket,
+      }),
+      bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
+      userPubkey: wallet.publicKey,
+      banxStake: new web3.PublicKey(
+        fraktBond.banxStake !== EMPTY_PUBKEY.toBase58()
+          ? fraktBond.banxStake
+          : fraktBond.fraktMarket,
+      ),
+      subscriptionsAndAdventures: [],
+    },
+    connection,
+    sendTxn: sendTxnPlaceHolder,
+  })
+
+  const accounts = [accountsCollection['fraktBond'], accountsCollection['bondTradeTransaction']]
+
+  return {
+    params,
+    accounts,
+    instructions,
+    signers,
+    lookupTables,
   }
 }
 
