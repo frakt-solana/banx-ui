@@ -6,10 +6,10 @@ import { staking } from '@banx/api/common'
 import { isAdventureEnded } from '@banx/pages/common/AdventuresPage'
 
 export const useAdventuresAndSubscriptions = (
-  banxStakeInfo: staking.BanxInfoBN,
+  banxStakeInfo: staking.BanxStakingInfo,
   historyMode = false,
 ) => {
-  const adventuresAndSubscriptions: staking.BanxAdventureAndSubscriptionArray = useMemo(() => {
+  const adventuresAndSubscriptions: staking.BanxAdventuresWithSubscription[] = useMemo(() => {
     if (!banxStakeInfo.banxAdventures.length) return []
 
     return chain(banxStakeInfo.banxAdventures)

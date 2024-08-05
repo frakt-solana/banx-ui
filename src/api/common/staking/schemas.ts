@@ -7,52 +7,49 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/types'
 import { z } from 'zod'
 
-import { StringIntSchema } from '@banx/api/shared'
+import { SerializedBNSchema, StringIntSchema, StringPublicKeySchema } from '@banx/api/shared'
 
 export const BanxStakingSettingsSchema = z.object({
-  publicKey: z.string(),
-  banxStaked: z.string(),
+  publicKey: StringPublicKeySchema,
+  banxStaked: SerializedBNSchema,
   banxStakingSettingsState: z.nativeEnum(BanxStakingSettingsState),
-  maxTokenStakeAmount: z.string(),
-  rewardsHarvested: z.string(),
-  tokensPerPartnerPoints: z.string(),
-  tokensPerWeek: z.string(),
-  hadesPerWeek: z.string(),
-  tokensStaked: z.string(),
+  maxTokenStakeAmount: SerializedBNSchema,
+  rewardsHarvested: SerializedBNSchema,
+  tokensPerPartnerPoints: SerializedBNSchema,
+  tokensPerWeek: SerializedBNSchema,
+  hadesPerWeek: SerializedBNSchema,
+  tokensStaked: SerializedBNSchema,
 })
-export type BanxStakingSettings = z.infer<typeof BanxStakingSettingsSchema>
 
 export const PointsMapSchema = z.object({
-  publicKey: z.string(),
-  banxMint: z.string(),
+  publicKey: StringPublicKeySchema,
+  banxMint: StringPublicKeySchema,
   partnerPoints: StringIntSchema,
   playerPoints: StringIntSchema,
 })
-export type PointsMap = z.infer<typeof PointsMapSchema>
 
-export const StakeSchema = z.object({
-  publicKey: z.string(),
+export const BanxStakeSchema = z.object({
+  publicKey: StringPublicKeySchema,
   adventureSubscriptionsQuantity: StringIntSchema,
   banxStakeState: z.nativeEnum(BanxStakeState),
-  bond: z.string(),
-  collateralTokenAccount: z.string(),
-  farmedAmount: StringIntSchema,
+  bond: StringPublicKeySchema,
+  collateralTokenAccount: StringPublicKeySchema,
+  farmedAmount: SerializedBNSchema,
   isLoaned: z.boolean(),
   isTerminationFreeze: z.boolean().optional(),
-  nftMint: z.string(),
+  nftMint: StringPublicKeySchema,
   partnerPoints: StringIntSchema,
   playerPoints: StringIntSchema,
   stakedAt: StringIntSchema,
   unstakedOrLiquidatedAt: StringIntSchema,
-  user: z.string(),
+  user: StringPublicKeySchema,
 })
-export type Stake = z.infer<typeof StakeSchema>
 
-export const NftSchema = z.object({
-  mint: z.string(),
+export const BanxNftStakeSchema = z.object({
+  mint: StringPublicKeySchema,
   meta: z.object({
     imageUrl: z.string(),
-    mint: z.string(),
+    mint: StringPublicKeySchema,
     name: z.string(),
     partnerPoints: z.number(),
     playerPoints: z.number(),
@@ -61,70 +58,65 @@ export const NftSchema = z.object({
   isLoaned: z.boolean(),
   isTerminationFreeze: z.boolean(),
   pointsMap: PointsMapSchema,
-  stake: StakeSchema.optional(),
+  stake: BanxStakeSchema.optional(),
 })
-export type NftType = z.infer<typeof NftSchema>
 
-export const BanxSubscriptionSchema = z.object({
+export const BanxAdventureSubscriptionSchema = z.object({
   adventureSubscriptionState: z.nativeEnum(BanxAdventureSubscriptionState),
-  user: z.string(),
-  adventure: z.string(),
-  banxTokenStake: z.string(),
-  stakeTokensAmount: z.string(),
-  stakePartnerPointsAmount: z.string(),
-  stakePlayerPointsAmount: z.string(),
-  subscribedAt: z.string(),
-  unsubscribedAt: z.string(),
-  harvestedAt: z.string(),
-  amountOfTokensHarvested: z.string(),
-  publicKey: z.string(),
-  stakeNftAmount: z.string(),
-  amountOfHadesTokensHarvested: z.string(),
+  user: StringPublicKeySchema,
+  adventure: StringPublicKeySchema,
+  banxTokenStake: StringPublicKeySchema,
+  stakeTokensAmount: SerializedBNSchema,
+  stakePartnerPointsAmount: StringIntSchema,
+  stakePlayerPointsAmount: StringIntSchema,
+  subscribedAt: StringIntSchema,
+  unsubscribedAt: StringIntSchema,
+  harvestedAt: StringIntSchema,
+  amountOfTokensHarvested: SerializedBNSchema,
+  publicKey: StringPublicKeySchema,
+  stakeNftAmount: StringIntSchema,
+  amountOfHadesTokensHarvested: SerializedBNSchema,
 })
-export type BanxSubscription = z.infer<typeof BanxSubscriptionSchema>
 
 export const BanxAdventureSchema = z.object({
   adventureState: z.nativeEnum(BanxAdventureState),
-  week: z.string(),
-  amountOfTokensHarvested: z.string(),
-  periodEndingAt: z.string(),
-  periodStartedAt: z.string(),
-  publicKey: z.string(),
-  rewardsToBeDistributed: z.string(),
-  tokensPerPoints: z.string(),
-  totalBanxSubscribed: z.string(),
-  totalPartnerPoints: z.string(),
-  totalPlayerPoints: z.string(),
-  totalTokensStaked: z.string(),
+  week: StringIntSchema,
+  amountOfTokensHarvested: SerializedBNSchema,
+  periodEndingAt: StringIntSchema,
+  periodStartedAt: StringIntSchema,
+  publicKey: StringPublicKeySchema,
+  rewardsToBeDistributed: SerializedBNSchema,
+  tokensPerPoints: SerializedBNSchema,
+  totalBanxSubscribed: StringIntSchema,
+  totalPartnerPoints: StringIntSchema,
+  totalPlayerPoints: StringIntSchema,
+  totalTokensStaked: SerializedBNSchema,
 })
-export type BanxAdventure = z.infer<typeof BanxAdventureSchema>
 
 export const BanxTokenStakeSchema = z.object({
-  banxNftsStakedQuantity: z.string(),
-  partnerPointsStaked: z.string(),
-  playerPointsStaked: z.string(),
+  banxNftsStakedQuantity: StringIntSchema,
+  partnerPointsStaked: StringIntSchema,
+  playerPointsStaked: StringIntSchema,
   banxStakeState: z.nativeEnum(BanxTokenStakeState),
-  stakedAt: z.string(),
-  user: z.string(),
-  adventureSubscriptionsQuantity: z.string(),
-  tokensStaked: z.string(),
-  unstakedAt: z.string(),
-  farmedAmount: z.string(),
-  publicKey: z.string(),
-  nftsStakedAt: z.string(),
-  nftsUnstakedAt: z.string(),
+  stakedAt: StringIntSchema,
+  user: StringPublicKeySchema,
+  adventureSubscriptionsQuantity: StringIntSchema,
+  tokensStaked: SerializedBNSchema,
+  unstakedAt: StringIntSchema,
+  farmedAmount: SerializedBNSchema,
+  publicKey: StringPublicKeySchema,
+  nftsStakedAt: StringIntSchema,
+  nftsUnstakedAt: StringIntSchema,
 })
-export type BanxTokenStake = z.infer<typeof BanxTokenStakeSchema>
 
-export const BanxAdventuresSchema = z.object({
+export const BanxAdventuresWithSubscriptionSchema = z.object({
   adventure: BanxAdventureSchema,
-  adventureSubscription: BanxSubscriptionSchema.optional(),
+  adventureSubscription: BanxAdventureSubscriptionSchema.optional(),
 })
 
-export const BanxStakeInfoResponseSchema = z.object({
-  banxWalletBalance: z.string().nullable(),
+export const BanxStakingInfoSchema = z.object({
+  banxWalletBalance: SerializedBNSchema.nullable(),
   banxTokenStake: BanxTokenStakeSchema.nullable(),
-  banxAdventures: BanxAdventuresSchema.array(),
-  nfts: NftSchema.array().optional(),
+  banxAdventures: BanxAdventuresWithSubscriptionSchema.array(),
+  nfts: BanxNftStakeSchema.array().nullable().optional(),
 })
-export type BanxStakeInfoResponse = z.infer<typeof BanxStakeInfoResponseSchema>
