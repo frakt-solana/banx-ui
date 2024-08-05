@@ -38,7 +38,7 @@ import { useAdventuresAndSubscriptions } from './hooks'
 import styles from './AdventuresList.module.less'
 
 interface AdventuresListProps {
-  banxStakeInfo: staking.BanxInfoBN
+  banxStakeInfo: staking.BanxStakingInfo
   historyMode: boolean
   className?: string
 }
@@ -52,7 +52,7 @@ export const AdventuresList: FC<AdventuresListProps> = ({
 
   return (
     <ul className={classNames(styles.list, className)}>
-      {adventuresAndSubscriptions.map(({ adventure, adventureSubscription }) => (
+      {adventuresAndSubscriptions?.map(({ adventure, adventureSubscription }) => (
         <AdventuresCard
           key={adventure?.publicKey}
           banxAdventureSubscription={adventureSubscription ?? undefined}
@@ -65,9 +65,9 @@ export const AdventuresList: FC<AdventuresListProps> = ({
 }
 
 interface AdventuresCardProps {
-  banxAdventure: staking.BanxAdventureBN
-  banxAdventureSubscription?: staking.BanxAdventureSubscriptionBN
-  banxTokenStake?: staking.BanxStakeBN
+  banxAdventure: staking.BanxAdventure
+  banxAdventureSubscription?: staking.BanxAdventureSubscription
+  banxTokenStake?: staking.BanxTokenStake
 }
 
 const AdventuresCard: FC<AdventuresCardProps> = ({
