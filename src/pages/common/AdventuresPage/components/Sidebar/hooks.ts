@@ -12,13 +12,18 @@ import {
   calculateAdventureRewards,
   calculatePlayerPointsForBanxTokens,
   isAdventureEnded,
+  useBanxStakeInfo,
+  useBanxStakeSettings,
 } from '@banx/pages/common/AdventuresPage'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
-import { createClaimBanxTxnData } from '@banx/transactions/staking'
+import {
+  createClaimBanxTxnData,
+  parseAnyStakingSimulatedAccounts,
+} from '@banx/transactions/staking'
 import {
   ZERO_BN,
   destroySnackbar,
@@ -28,16 +33,18 @@ import {
   enqueueWaitingConfirmationSingle,
 } from '@banx/utils'
 
-type useAdventuresSidebarProps = {
+type UseAdventuresSidebarProps = {
   banxStakingSettings: staking.BanxStakingSettings
   banxStakeInfo: staking.BanxStakingInfo
 }
 export const useAdventuresSidebar = ({
   banxStakingSettings,
   banxStakeInfo,
-}: useAdventuresSidebarProps) => {
+}: UseAdventuresSidebarProps) => {
   const wallet = useWallet()
   const { connection } = useConnection()
+  const { setOptimistic: setBanxStakeSettingsOptimistic } = useBanxStakeSettings()
+  const { setOptimistic: setBanxStakeInfoOptimistic } = useBanxStakeInfo()
 
   const { banxAdventures, banxTokenStake } = banxStakeInfo
 
@@ -140,6 +147,22 @@ export const useAdventuresSidebar = ({
 
           if (confirmed.length) {
             enqueueSnackbar({ message: 'Claimed successfully', type: 'success' })
+
+            confirmed.forEach((result) => {
+              if (result.accountInfoByPubkey) {
+                const { banxStakingSettings, banxTokenStake, banxAdventuresWithSubscription } =
+                  parseAnyStakingSimulatedAccounts(result.accountInfoByPubkey)
+
+                setBanxStakeSettingsOptimistic(banxStakingSettings)
+                setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), {
+                  banxWalletBalance: (banxStakeInfo.banxWalletBalance || ZERO_BN).add(
+                    walletRewards,
+                  ),
+                  banxAdventuresWithSubscription,
+                  banxTokenStake,
+                })
+              }
+            })
           }
 
           if (failed.length) {

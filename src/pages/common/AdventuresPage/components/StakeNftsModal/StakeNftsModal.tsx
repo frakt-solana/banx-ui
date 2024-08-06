@@ -19,7 +19,11 @@ import {
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
-import { createStakeBanxNftTxnData, createUnstakeBanxNftTxnData } from '@banx/transactions/staking'
+import {
+  createStakeBanxNftTxnData,
+  createUnstakeBanxNftTxnData,
+  parseAnyStakingSimulatedAccounts,
+} from '@banx/transactions/staking'
 import {
   destroySnackbar,
   enqueueConfirmationError,
@@ -35,8 +39,9 @@ export const StakeNftsModal = () => {
   const wallet = useWallet()
 
   const { close } = useModal()
-  const { banxStakeSettings } = useBanxStakeSettings()
-  const { banxStakeInfo } = useBanxStakeInfo()
+  const { banxStakeSettings, setOptimistic: setBanxStakeSettingsOptimistic } =
+    useBanxStakeSettings()
+  const { banxStakeInfo, setOptimistic: setBanxStakeInfoOptimistic } = useBanxStakeInfo()
 
   const [selectedNfts, setSelectedNfts] = useState<staking.BanxNftStake[]>([])
 
@@ -101,7 +106,10 @@ export const StakeNftsModal = () => {
         ),
       )
 
-      await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor(walletAndConnection, {
+        ...TXN_EXECUTOR_DEFAULT_OPTIONS,
+        debug: { preventSending: true },
+      })
         .addTxnsData(txnsData)
         .on('sentAll', () => {
           enqueueTransactionsSent()
@@ -115,6 +123,24 @@ export const StakeNftsModal = () => {
 
           if (confirmed.length) {
             enqueueSnackbar({ message: 'Staked successfully', type: 'success' })
+
+            confirmed.forEach((result) => {
+              if (result.accountInfoByPubkey) {
+                const {
+                  banxStakingSettings,
+                  banxAdventuresWithSubscription,
+                  banxStake,
+                  banxTokenStake,
+                } = parseAnyStakingSimulatedAccounts(result.accountInfoByPubkey)
+
+                setBanxStakeSettingsOptimistic(banxStakingSettings)
+                setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), {
+                  banxAdventuresWithSubscription,
+                  banxStake,
+                  banxTokenStake,
+                })
+              }
+            })
           }
 
           if (failed.length) {
@@ -158,7 +184,10 @@ export const StakeNftsModal = () => {
         ),
       )
 
-      await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor(walletAndConnection, {
+        ...TXN_EXECUTOR_DEFAULT_OPTIONS,
+        debug: { preventSending: true },
+      })
         .addTxnsData(txnsData)
         .on('sentAll', () => {
           enqueueTransactionsSent()
@@ -172,6 +201,24 @@ export const StakeNftsModal = () => {
 
           if (confirmed.length) {
             enqueueSnackbar({ message: 'Unstaked successfully', type: 'success' })
+
+            confirmed.forEach((result) => {
+              if (result.accountInfoByPubkey) {
+                const {
+                  banxStakingSettings,
+                  banxAdventuresWithSubscription,
+                  banxStake,
+                  banxTokenStake,
+                } = parseAnyStakingSimulatedAccounts(result.accountInfoByPubkey)
+
+                setBanxStakeSettingsOptimistic(banxStakingSettings)
+                setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), {
+                  banxAdventuresWithSubscription,
+                  banxStake,
+                  banxTokenStake,
+                })
+              }
+            })
           }
 
           if (failed.length) {

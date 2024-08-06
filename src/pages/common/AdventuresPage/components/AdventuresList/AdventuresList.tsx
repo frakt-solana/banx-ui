@@ -10,13 +10,18 @@ import {
   checkIsSubscribed,
   getAdventureStatus,
   isAdventureEnded,
+  useBanxStakeInfo,
+  useBanxStakeSettings,
 } from '@banx/pages/common/AdventuresPage'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
-import { createSubscribeTxnData } from '@banx/transactions/staking'
+import {
+  createSubscribeTxnData,
+  parseAnyStakingSimulatedAccounts,
+} from '@banx/transactions/staking'
 import {
   destroySnackbar,
   enqueueConfirmationError,
@@ -77,6 +82,8 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
 }) => {
   const { connection } = useConnection()
   const wallet = useWallet()
+  const { setOptimistic: setBanxStakeSettingsOptimistic } = useBanxStakeSettings()
+  const { setOptimistic: setBanxStakeInfoOptimistic } = useBanxStakeInfo()
 
   const isEnded = isAdventureEnded(banxAdventure)
 
@@ -99,7 +106,10 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
         walletAndConnection,
       )
 
-      await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor(walletAndConnection, {
+        ...TXN_EXECUTOR_DEFAULT_OPTIONS,
+        debug: { preventSending: true },
+      })
         .addTxnData(txnData)
         .on('sentAll', (results) => {
           enqueueTransactionsSent()
@@ -112,6 +122,19 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
 
           if (confirmed.length) {
             enqueueSnackbar({ message: 'Subscribed successfully', type: 'success' })
+
+            confirmed.forEach((result) => {
+              if (result.accountInfoByPubkey) {
+                const { banxStakingSettings, banxTokenStake, banxAdventuresWithSubscription } =
+                  parseAnyStakingSimulatedAccounts(result.accountInfoByPubkey)
+
+                setBanxStakeSettingsOptimistic(banxStakingSettings)
+                setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), {
+                  banxAdventuresWithSubscription,
+                  banxTokenStake,
+                })
+              }
+            })
           }
 
           if (failed.length) {

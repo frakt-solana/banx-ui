@@ -1,19 +1,69 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
+import { BN } from 'fbonds-core'
+import { BanxStakeState } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { staking } from '@banx/api/common'
 import { BANX_TOKEN_APPROX_CIRCULATING_AMOUNT } from '@banx/constants'
 import { queryClient } from '@banx/providers'
 
 const createBanxStakeInfoQueryKey = (walletPubkey: string) => ['fetchBanxStakeInfo', walletPubkey]
-const setBanxStakeInfoOptimistic = (walletPubkey: string, nextState: staking.BanxStakingInfo) =>
+const setBanxStakeInfoOptimistic = (
+  walletPubkey: string,
+  stateToMerge: Partial<{
+    banxTokenStake: staking.BanxTokenStake
+    banxWalletBalance: BN
+    banxAdventuresWithSubscription: staking.BanxAdventuresWithSubscription[]
+    banxStake: staking.BanxStake
+  }>,
+) =>
   queryClient.setQueryData(
     createBanxStakeInfoQueryKey(walletPubkey),
     (queryData: staking.BanxStakingInfo | undefined) => {
       if (!queryData) return queryData
-      return nextState
+
+      return {
+        ...queryData,
+        banxTokenStake: stateToMerge.banxTokenStake ?? queryData.banxTokenStake,
+        banxWalletBalance: stateToMerge.banxWalletBalance ?? queryData.banxWalletBalance,
+        banxAdventures: stateToMerge.banxAdventuresWithSubscription
+          ? mergeBanxAdventuresWithSubscription(
+              queryData.banxAdventures,
+              stateToMerge.banxAdventuresWithSubscription,
+            )
+          : queryData.banxAdventures,
+        nfts:
+          stateToMerge.banxStake && queryData.nfts
+            ? mergeBanxNftStake(queryData.nfts, stateToMerge.banxStake)
+            : queryData.nfts,
+      }
     },
   )
+const mergeBanxAdventuresWithSubscription = (
+  prevState: staking.BanxAdventuresWithSubscription[],
+  newAdventures: staking.BanxAdventuresWithSubscription[],
+): staking.BanxAdventuresWithSubscription[] => {
+  return prevState.map((adventure) => {
+    const prevAdventurePubKey = adventure.adventure.publicKey
+    const sameNewAdventure = newAdventures.find(
+      ({ adventure: { publicKey } }) => publicKey === prevAdventurePubKey,
+    )
+    return sameNewAdventure ?? adventure
+  })
+}
+const mergeBanxNftStake = (
+  prevState: staking.BanxNftStake[],
+  newStake: staking.BanxStake,
+): staking.BanxNftStake[] => {
+  const isNewStakeActive = newStake.banxStakeState === BanxStakeState.Staked
+
+  return prevState.map((nft) => {
+    if (nft.mint === newStake.nftMint) {
+      return { ...nft, stake: isNewStakeActive ? newStake : undefined }
+    }
+    return nft
+  })
+}
 
 export const useBanxStakeInfo = () => {
   const { publicKey } = useWallet()
@@ -27,7 +77,6 @@ export const useBanxStakeInfo = () => {
     createBanxStakeInfoQueryKey(walletPubkey),
     () => staking.fetchBanxStakeInfo({ userPubkey: walletPubkey }),
     {
-      refetchInterval: 10_000,
       staleTime: 60_000,
       refetchOnWindowFocus: false,
     },
@@ -57,7 +106,6 @@ export const useBanxStakeSettings = () => {
     isLoading,
     refetch,
   } = useQuery(createBanxStakeSettingsQueryKey(), () => staking.fetchBanxStakeSettings(), {
-    refetchInterval: 10_000,
     staleTime: 60_000,
     refetchOnWindowFocus: false,
   })
