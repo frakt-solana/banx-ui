@@ -1,7 +1,7 @@
 import { BN, web3 } from 'fbonds-core'
 import { z } from 'zod'
 
-import { RarityTier, TokenStandard } from './types'
+import { RarityTier } from './types'
 
 export const SerializedBNSchema = z.string().transform((value) => {
   return new BN(value)
@@ -32,7 +32,7 @@ export const NFTSchema = z.object({
     tensorSlug: z.string(),
     partnerPoints: z.number().optional(),
     playerPoints: z.number().optional(),
-    tokenStandard: z.nativeEnum(TokenStandard).optional(),
+    tokenStandard: z.string().optional(),
     collectionId: z.string(),
   }),
   //? Change to BN and PublicKey?
