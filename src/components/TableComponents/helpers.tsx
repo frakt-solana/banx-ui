@@ -77,8 +77,8 @@ export const DisplayValue: FC<DisplayValueProps> = ({
 
   const displayValue = formattedValue ? (
     <>
-      <span className={styles.value}>{formattedValue}</span>
-      <span className={styles.tokenUnit}>{tokenUnit}</span>
+      <div className={styles.value}>{formattedValue}</div>
+      <div className={styles.tokenUnit}>{tokenUnit}</div>
     </>
   ) : (
     defaultPlaceholder

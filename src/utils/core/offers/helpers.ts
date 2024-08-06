@@ -1,5 +1,5 @@
 import { calculateNextSpotPrice } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { getMaxLoanValueFromBondOffer } from 'fbonds-core/lib/fbond-protocol/helpers'
+import { getMaxLoanValueFromBondOfferBN } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, uniqueId } from 'lodash'
 
@@ -131,8 +131,8 @@ export const сalculateLoansAmount = (offer: core.Offer) => {
   return loansAmount
 }
 
-export const calculateLoanValue = (offer: core.Offer) => {
-  return getMaxLoanValueFromBondOffer(offer)
+export const calculateLoanValue = (offer: core.Offer): number => {
+  return getMaxLoanValueFromBondOfferBN(core.convertCoreOfferToBondOfferV3(offer)).toNumber()
   // const { currentSpotPrice } = offer
 
   // const loansAmount = сalculateLoansAmount(offer)

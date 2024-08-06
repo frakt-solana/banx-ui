@@ -1,30 +1,33 @@
 import axios from 'axios'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { Offer, OfferSchema } from '@banx/api/nft'
+import { Offer } from '@banx/api/nft'
+import { OfferSchema, RequestWithPagination } from '@banx/api/shared'
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import { convertToMarketType, convertToOutputToken } from '../../helpers'
 import {
+  CollateralTokenSchema,
+  TokenLoanSchema,
+  TokenLoansRequestsSchema,
+  TokenMarketPreviewSchema,
+  TokenOfferPreviewSchema,
+  WalletTokenLoansAndOffersShema,
+} from './schemas'
+import {
   AllTokenLoansRequestsResponse,
   CollateralToken,
-  CollateralTokenSchema,
   TokenLoan,
-  TokenLoanSchema,
   TokenLoansRequests,
-  TokenLoansRequestsSchema,
   TokenMarketPreview,
   TokenMarketPreviewResponse,
-  TokenMarketPreviewSchema,
   TokenOfferPreview,
-  TokenOfferPreviewSchema,
   WalletTokenLoansAndOffers,
-  WalletTokenLoansAndOffersShema,
 } from './types'
 
-type FetchTokenMarketsPreview = (props: {
-  tokenType: LendingTokenType
-}) => Promise<TokenMarketPreview[]>
+type FetchTokenMarketsPreview = (
+  props: RequestWithPagination<{ tokenType: LendingTokenType }>,
+) => Promise<TokenMarketPreview[]>
 export const fetchTokenMarketsPreview: FetchTokenMarketsPreview = async ({ tokenType }) => {
   const queryParams = new URLSearchParams({
     getAll: String(true),
@@ -42,7 +45,7 @@ export const fetchTokenMarketsPreview: FetchTokenMarketsPreview = async ({ token
     console.error('Schema validation error:', validationError)
   }
 
-  return data.data
+  return await TokenMarketPreviewSchema.array().parseAsync(data.data)
 }
 
 type FetchTokenMarketOffers = (props: {
@@ -89,7 +92,7 @@ export const fetchTokenOffersPreview: FetchTokenOffersPreview = async ({
   })
 
   const { data } = await axios.get<{ data: TokenOfferPreview[] }>(
-    `${BACKEND_BASE_URL}/my-offers/${walletPubkey}?${queryParams.toString()}`,
+    `${BACKEND_BASE_URL}/spl-offers/my-offers/${walletPubkey}?${queryParams.toString()}`,
   )
 
   try {

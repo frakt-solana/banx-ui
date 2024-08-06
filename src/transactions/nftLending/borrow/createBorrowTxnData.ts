@@ -5,12 +5,7 @@ import {
   borrowPerpetual,
   borrowStakedBanxPerpetual,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import {
-  BondOfferV3,
-  BondTradeTransactionV3,
-  FraktBond,
-  LendingTokenType,
-} from 'fbonds-core/lib/fbond-protocol/types'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
@@ -45,7 +40,7 @@ export const createBorrowTxnData: CreateBorrowTxnData = async (params, walletAnd
 
   const borrowType = getNftBorrowType(nft)
 
-  const { instructions, signers, lookupTables, optimisticResult } = await getTxnDataByBorrowType({
+  const { instructions, signers, lookupTables, accountsCollection } = await getTxnDataByBorrowType({
     nft,
     loanValue,
     offer,
@@ -55,12 +50,10 @@ export const createBorrowTxnData: CreateBorrowTxnData = async (params, walletAnd
     walletAndConnection,
   })
 
-  const { fraktBond, bondTradeTransaction, bondOffer } = optimisticResult
-
   const accounts = [
-    new web3.PublicKey(fraktBond.publicKey),
-    new web3.PublicKey(bondTradeTransaction.publicKey),
-    new web3.PublicKey(bondOffer.publicKey),
+    accountsCollection['fraktBond'],
+    accountsCollection['bondTradeTransaction'],
+    accountsCollection['bondOffer'],
   ]
 
   if (isBanxSolTokenType(tokenType)) {
@@ -110,7 +103,11 @@ const getTxnDataByBorrowType = async ({
       throw new Error(`Not BanxStaked NFT`)
     }
 
-    const { instructions, signers, optimisticResults } = await borrowStakedBanxPerpetual({
+    const {
+      instructions,
+      signers,
+      accounts: accountsCollection,
+    } = await borrowStakedBanxPerpetual({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
 
       accounts: {
@@ -125,16 +122,11 @@ const getTxnDataByBorrowType = async ({
             bondOfferV2: new web3.PublicKey(offer.publicKey),
             hadoMarket: new web3.PublicKey(offer.hadoMarket),
             banxStake: new web3.PublicKey(nft.loan.banxStake || ''),
-            optimistic: {
-              fraktMarket: nft.loan.fraktMarket,
-              minMarketFee: nft.loan.marketApr,
-              bondOffer: offer,
-            },
           },
         ],
         lendingTokenType: tokenType,
         optimizeIntoReserves,
-        aprRate,
+        aprRate: new BN(aprRate),
       },
       connection: walletAndConnection.connection,
       sendTxn: sendTxnPlaceHolder,
@@ -143,7 +135,7 @@ const getTxnDataByBorrowType = async ({
     return {
       instructions,
       signers,
-      optimisticResult: optimisticResults[0],
+      accountsCollection,
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
     }
   }
@@ -158,7 +150,11 @@ const getTxnDataByBorrowType = async ({
       connection: walletAndConnection.connection,
     })
 
-    const { instructions, signers, optimisticResults } = await borrowCnftPerpetualCanopy({
+    const {
+      instructions,
+      signers,
+      accounts: accountsCollection,
+    } = await borrowCnftPerpetualCanopy({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
 
       accounts: {
@@ -173,16 +169,10 @@ const getTxnDataByBorrowType = async ({
       args: {
         proof,
         cnftParams: nft.nft.compression,
-        amountOfSolToGet: loanValue,
-
-        optimistic: {
-          fraktMarket: nft.loan.fraktMarket,
-          minMarketFee: nft.loan.marketApr,
-          bondOffer: offer,
-        },
+        amountOfSolToGet: new BN(loanValue),
         optimizeIntoReserves: optimizeIntoReserves,
         lendingTokenType: tokenType,
-        aprRate,
+        aprRate: new BN(aprRate),
       },
       connection: walletAndConnection.connection,
       sendTxn: sendTxnPlaceHolder,
@@ -191,7 +181,7 @@ const getTxnDataByBorrowType = async ({
     return {
       instructions,
       signers,
-      optimisticResult: optimisticResults[0],
+      accountsCollection,
       lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
     }
   }
@@ -202,7 +192,11 @@ const getTxnDataByBorrowType = async ({
     marketPubkey: nft.loan.marketPubkey,
   })
 
-  const { instructions, signers, optimisticResults } = await borrowPerpetual({
+  const {
+    instructions,
+    signers,
+    accounts: accountsCollection,
+  } = await borrowPerpetual({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
 
     accounts: {
@@ -212,21 +206,16 @@ const getTxnDataByBorrowType = async ({
     args: {
       perpetualBorrowParamsAndAccounts: [
         {
-          amountOfSolToGet: Math.floor(loanValue),
+          amountOfSolToGet: new BN(Math.floor(loanValue)),
           ruleSet: ruleSet,
           tokenMint: new web3.PublicKey(nft.mint),
           bondOfferV2: new web3.PublicKey(offer.publicKey),
           hadoMarket: new web3.PublicKey(offer.hadoMarket),
-          optimistic: {
-            fraktMarket: nft.loan.fraktMarket,
-            minMarketFee: nft.loan.marketApr,
-            bondOffer: offer,
-          },
         },
       ],
       lendingTokenType: tokenType,
       optimizeIntoReserves: optimizeIntoReserves,
-      aprRate,
+      aprRate: new BN(aprRate),
     },
     connection: walletAndConnection.connection,
     sendTxn: sendTxnPlaceHolder,
@@ -235,7 +224,7 @@ const getTxnDataByBorrowType = async ({
   return {
     instructions,
     signers,
-    optimisticResult: optimisticResults[0],
+    accountsCollection,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
   }
 }
@@ -251,8 +240,8 @@ export const parseBorrowSimulatedAccounts = (accountInfoByPubkey: SimulatedAccou
   const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
   return {
-    bondOffer: results?.['bondOfferV3'] as BondOfferV3,
-    bondTradeTransaction: results?.['bondTradeTransactionV3'] as BondTradeTransactionV3,
-    fraktBond: results?.['fraktBond'] as FraktBond,
+    bondOffer: results?.['bondOfferV3'] as core.Offer,
+    bondTradeTransaction: results?.['bondTradeTransactionV3'] as core.BondTradeTransaction,
+    fraktBond: results?.['fraktBond'] as core.FraktBond,
   }
 }

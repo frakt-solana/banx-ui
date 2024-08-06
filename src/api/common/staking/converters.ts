@@ -34,7 +34,6 @@ export const convertToBanxStakingSettingsBN = (
     tokensPerWeek,
     hadesPerWeek,
     tokensStaked,
-    placeholderOne,
   } = banxStakingSettings
 
   return {
@@ -47,7 +46,6 @@ export const convertToBanxStakingSettingsBN = (
     tokensPerWeek: new BN(tokensPerWeek),
     hadesPerWeek: new BN(hadesPerWeek),
     tokensStaked: new BN(tokensStaked),
-    placeholderOne,
   }
 }
 
@@ -64,7 +62,6 @@ export const convertToBanxStakingSettingsString = (
     tokensPerWeek,
     hadesPerWeek,
     tokensStaked,
-    placeholderOne,
   } = banxStakingSettings
 
   return {
@@ -77,7 +74,6 @@ export const convertToBanxStakingSettingsString = (
     tokensPerWeek: tokensPerWeek.toString(),
     hadesPerWeek: hadesPerWeek.toString(),
     tokensStaked: tokensStaked.toString(),
-    placeholderOne,
   }
 }
 
