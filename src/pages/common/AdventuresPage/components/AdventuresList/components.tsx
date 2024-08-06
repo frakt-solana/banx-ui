@@ -39,7 +39,7 @@ import { bnToHuman, formatCompact, formatNumbersWithCommas } from '@banx/utils'
 import styles from './AdventuresList.module.less'
 
 type NotParticipatedColumnProps = {
-  banxAdventure: staking.BanxAdventureBN
+  banxAdventure: staking.BanxAdventure
 }
 export const NotParticipatedColumn: FC<NotParticipatedColumnProps> = ({ banxAdventure }) => {
   const status = getAdventureStatus(banxAdventure)
@@ -59,8 +59,8 @@ export const NotParticipatedColumn: FC<NotParticipatedColumnProps> = ({ banxAdve
 }
 
 type WalletParticipationColumnProps = {
-  banxAdventure: staking.BanxAdventureBN
-  banxAdventureSubscription: staking.BanxAdventureSubscriptionBN
+  banxAdventure: staking.BanxAdventure
+  banxAdventureSubscription: staking.BanxAdventureSubscription
 }
 export const WalletParticipationColumn: FC<WalletParticipationColumnProps> = ({
   banxAdventure,
@@ -96,7 +96,7 @@ export const WalletParticipationColumn: FC<WalletParticipationColumnProps> = ({
 }
 
 type TotalParticipationColumnProps = {
-  banxAdventure: staking.BanxAdventureBN
+  banxAdventure: staking.BanxAdventure
 }
 export const TotalParticipationColumn: FC<TotalParticipationColumnProps> = ({ banxAdventure }) => {
   const { amount: maxTokensToSubscribe } = useBanxTokenCirculatingAmount()
@@ -140,8 +140,8 @@ export const TotalParticipationColumn: FC<TotalParticipationColumnProps> = ({ ba
 }
 
 type AdventuresTimerProps = {
-  banxAdventure: staking.BanxAdventureBN
-  banxAdventureSubscription?: staking.BanxAdventureSubscriptionBN
+  banxAdventure: staking.BanxAdventure
+  banxAdventureSubscription?: staking.BanxAdventureSubscription
 }
 export const AdventuresTimer: FC<AdventuresTimerProps> = ({
   banxAdventure,
@@ -200,8 +200,8 @@ export const AdventuresTimer: FC<AdventuresTimerProps> = ({
 }
 
 type AdventureEndedRewardsResultProps = {
-  banxAdventure: staking.BanxAdventureBN
-  banxAdventureSubscription?: staking.BanxAdventureSubscriptionBN
+  banxAdventure: staking.BanxAdventure
+  banxAdventureSubscription?: staking.BanxAdventureSubscription
 }
 export const AdventureEndedRewardsResult: FC<AdventureEndedRewardsResultProps> = ({
   banxAdventure,
@@ -241,9 +241,9 @@ export const AdventureEndedRewardsResult: FC<AdventureEndedRewardsResultProps> =
 }
 
 type ParticipateButtonProps = {
-  banxAdventure: staking.BanxAdventureBN
-  banxAdventureSubscription?: staking.BanxAdventureSubscriptionBN
-  banxTokenStake?: staking.BanxStakeBN
+  banxAdventure: staking.BanxAdventure
+  banxAdventureSubscription?: staking.BanxAdventureSubscription
+  banxTokenStake?: staking.BanxTokenStake
   onClick: () => void
 }
 export const ParticipateButton: FC<ParticipateButtonProps> = ({

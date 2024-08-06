@@ -29,8 +29,8 @@ import {
 } from '@banx/utils'
 
 type useAdventuresSidebarProps = {
-  banxStakingSettings: staking.BanxStakingSettingsBN
-  banxStakeInfo: staking.BanxInfoBN
+  banxStakingSettings: staking.BanxStakingSettings
+  banxStakeInfo: staking.BanxStakingInfo
 }
 export const useAdventuresSidebar = ({
   banxStakingSettings,

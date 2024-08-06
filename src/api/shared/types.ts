@@ -2,6 +2,10 @@ import { z } from 'zod'
 
 import { NFTSchema, RaritySchema } from './schemas'
 
+export enum TokenStandard {
+  CORE = 'MplCoreAsset',
+}
+
 export enum RarityTier {
   Common = 'common',
   Uncommon = 'uncommon',

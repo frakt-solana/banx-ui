@@ -6,10 +6,10 @@ import { BANX_TOKEN_APPROX_CIRCULATING_AMOUNT } from '@banx/constants'
 import { queryClient } from '@banx/providers'
 
 const createBanxStakeInfoQueryKey = (walletPubkey: string) => ['fetchBanxStakeInfo', walletPubkey]
-const setBanxStakeInfoOptimistic = (walletPubkey: string, nextState: staking.BanxInfoBN) =>
+const setBanxStakeInfoOptimistic = (walletPubkey: string, nextState: staking.BanxStakingInfo) =>
   queryClient.setQueryData(
     createBanxStakeInfoQueryKey(walletPubkey),
-    (queryData: staking.BanxInfoBN | undefined) => {
+    (queryData: staking.BanxStakingInfo | undefined) => {
       if (!queryData) return queryData
       return nextState
     },
