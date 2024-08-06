@@ -2,7 +2,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 import { Button } from '@banx/components/Buttons'
 
-import { Separator } from '../components'
+import { LoanValueSlider, Separator } from '../components'
 import InputTokenSelect, { SkeletonInputTokenSelect } from '../components/InputTokenSelect'
 import { Summary, SummarySkeleton } from './Summary'
 import { useInstantBorrowContent } from './hooks/useInstantBorrowContent'
@@ -30,6 +30,9 @@ const InstantBorrowContent = () => {
     errorMessage,
     borrow,
     isBorrowing,
+
+    ltvSliderValue,
+    onChangeLtvSlider,
   } = useInstantBorrowContent()
 
   const showSkeleton = !(
@@ -74,6 +77,8 @@ const InstantBorrowContent = () => {
           disabledInput
         />
       )}
+
+      <LoanValueSlider label="LTV" value={ltvSliderValue} onChange={onChangeLtvSlider} />
 
       {showSkeleton ? (
         <SummarySkeleton />

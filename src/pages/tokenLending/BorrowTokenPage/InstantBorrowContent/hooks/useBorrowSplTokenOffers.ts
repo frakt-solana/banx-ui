@@ -19,8 +19,10 @@ export const useBorrowSplTokenOffers = (
 
   const [inputType, setInputType] = useState<'input' | 'output'>('input')
   const [amount, setAmount] = useState('')
+  const [ltvSliderValue, setLtvSlider] = useState(10)
 
   const debouncedAmount = useDebounceValue(amount, 1000)
+  // const debouncedLtvSliderValue = useDebounceValue(ltvSliderValue, 1000)
 
   const tokenDecimals =
     inputType === 'input' ? collateralToken?.collateral.decimals : borrowToken?.collateral.decimals
@@ -51,6 +53,10 @@ export const useBorrowSplTokenOffers = (
     },
   )
 
+  const onChangeLtvSlider = (value: number) => {
+    setLtvSlider(value)
+  }
+
   return {
     data: data ?? [],
     isLoading,
@@ -58,5 +64,7 @@ export const useBorrowSplTokenOffers = (
     inputType,
     setInputType,
     setAmount,
+    ltvSliderValue,
+    onChangeLtvSlider,
   }
 }

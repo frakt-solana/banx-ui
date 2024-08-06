@@ -28,6 +28,8 @@ export const useInstantBorrowContent = () => {
     inputType,
     setInputType,
     setAmount,
+    ltvSliderValue,
+    onChangeLtvSlider,
   } = useBorrowSplTokenOffers(collateralToken, borrowToken)
 
   useEffect(() => {
@@ -148,5 +150,8 @@ export const useInstantBorrowContent = () => {
     borrow,
     isBorrowing,
     errorMessage,
+
+    ltvSliderValue,
+    onChangeLtvSlider,
   }
 }
