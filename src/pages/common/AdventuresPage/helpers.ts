@@ -58,7 +58,7 @@ export const checkIsUserStaking = (banxTokenStake: staking.BanxTokenStake) => {
   const { tokensStaked, banxNftsStakedQuantity } = banxTokenStake
 
   if (!tokensStaked.eq(ZERO_BN)) return true
-  if (banxNftsStakedQuantity > 0) return true
+  if (banxNftsStakedQuantity.gt(ZERO_BN)) return true
 
   return false
 }
@@ -66,14 +66,14 @@ export const checkIsUserStaking = (banxTokenStake: staking.BanxTokenStake) => {
 export const checkIsSubscribed = (banxAdventureSubscription: staking.BanxAdventureSubscription) => {
   const { stakeTokensAmount, stakeNftAmount } = banxAdventureSubscription
 
-  if (stakeNftAmount !== 0) return true
+  if (!stakeNftAmount.eq(ZERO_BN)) return true
   if (!stakeTokensAmount.eq(ZERO_BN)) return true
 
   return false
 }
 
 export const isAdventureStarted = (adventure: staking.BanxAdventure): boolean => {
-  return adventure.periodStartedAt + BANX_ADVENTURE_GAP < moment().unix()
+  return adventure.periodStartedAt.toNumber() + BANX_ADVENTURE_GAP < moment().unix()
 }
 
 export const isAdventureLive = (adventure: staking.BanxAdventure): boolean => {
@@ -99,7 +99,9 @@ export const isAdventureUpcomming = (adventure: staking.BanxAdventure): boolean 
 export const getAdventureEndTime = (adventure: staking.BanxAdventure): number => {
   const isStarted = isAdventureStarted(adventure)
 
-  return isStarted ? adventure.periodEndingAt : adventure.periodStartedAt + BANX_ADVENTURE_GAP
+  return isStarted
+    ? adventure.periodEndingAt.toNumber()
+    : adventure.periodStartedAt.toNumber() + BANX_ADVENTURE_GAP
 }
 
 export const getAdventureStatus = (adventure: staking.BanxAdventure): staking.AdventureStatus => {

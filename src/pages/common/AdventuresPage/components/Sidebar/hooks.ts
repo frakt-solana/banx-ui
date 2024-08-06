@@ -90,12 +90,14 @@ export const useAdventuresSidebar = ({
     tokensPerPartnerPoints,
   )
 
-  const totalPartnerPoints = tokensPartnerPoints + (banxTokenStake?.partnerPointsStaked ?? 0)
+  const totalPartnerPoints =
+    tokensPartnerPoints + (banxTokenStake?.partnerPointsStaked.toNumber() ?? 0)
 
   const tokensPlayersPoints = calculatePlayerPointsForBanxTokens(
     banxTokenStake?.tokensStaked ?? ZERO_BN,
   )
-  const totalPlayersPoints = (banxTokenStake?.playerPointsStaked ?? 0) + tokensPlayersPoints
+  const totalPlayersPoints =
+    (banxTokenStake?.playerPointsStaked.toNumber() ?? 0) + tokensPlayersPoints
 
   const MAX_WEEKS_PER_TXN = 8
   const claimBanx = async () => {

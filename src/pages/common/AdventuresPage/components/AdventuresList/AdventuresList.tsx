@@ -138,7 +138,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
     <li className={styles.card}>
       <div className={styles.header}>
         <h3 className={classNames(styles.title, { [styles.titleEnded]: isEnded })}>
-          Week {banxAdventure.week}
+          Week {banxAdventure.week.toNumber()}
         </h3>
         <p className={classNames(styles.status, styles[`status__${status}`])}>
           {capitalize(status)}
