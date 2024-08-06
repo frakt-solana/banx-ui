@@ -1,7 +1,7 @@
 import { BN, web3 } from 'fbonds-core'
 import { z } from 'zod'
 
-import { RarityTier } from './types'
+import { RarityTier, TokenStandard } from './types'
 
 export const SerializedBNSchema = z.string().transform((value) => {
   return new BN(value)
@@ -23,32 +23,6 @@ export const RaritySchema = z.object({
 })
 
 export const NFTSchema = z.object({
-  mint: z.string(),
-  meta: z.object({
-    imageUrl: z.string(),
-    name: z.string(),
-    collectionName: z.string(),
-    collectionImage: z.string(),
-    tensorSlug: z.string(),
-    partnerPoints: z.number().optional(),
-    playerPoints: z.number().optional(),
-    tokenStandard: z.string().optional(),
-    collectionId: z.string(),
-  }),
-  compression: z
-    .object({
-      dataHash: z.string(),
-      creatorHash: z.string(),
-      leafId: z.number(),
-      tree: z.string(),
-      whitelistEntry: z.string(),
-    })
-    .optional(),
-  collectionFloor: z.number(),
-  rarity: RaritySchema.optional(),
-})
-
-export const NFTSchemaNew = z.object({
   mint: StringPublicKeySchema,
   meta: z.object({
     imageUrl: z.string(),
@@ -58,7 +32,7 @@ export const NFTSchemaNew = z.object({
     tensorSlug: z.string(),
     partnerPoints: z.number().optional(),
     playerPoints: z.number().optional(),
-    tokenStandard: z.string().optional(),
+    tokenStandard: z.nativeEnum(TokenStandard).optional(),
     collectionId: z.string(),
   }),
   //? Change to BN and PublicKey?
