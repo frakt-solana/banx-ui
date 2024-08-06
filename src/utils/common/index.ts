@@ -41,10 +41,12 @@ export const createDownloadLink = (data: string, filename: string, type?: string
   window.URL.revokeObjectURL(blobURL)
 }
 
+const formatTrailingZeros = (value: string) => value.replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, '')
+
 export const limitDecimalPlaces = (inputValue: string, decimalPlaces = 3) => {
   const regex = new RegExp(`^-?\\d*(\\.\\d{0,${decimalPlaces}})?`)
   const match = inputValue.match(regex)
-  return match ? match[0] : ''
+  return match ? formatTrailingZeros(match[0]) : ''
 }
 
 export const stringToHex = (str: string, decimals?: number): string => {
