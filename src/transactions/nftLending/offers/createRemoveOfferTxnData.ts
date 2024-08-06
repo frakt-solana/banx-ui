@@ -60,5 +60,5 @@ export const parseRemoveOfferSimulatedAccounts = (
 ) => {
   const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
-  return results?.['bondOfferV3'] as core.Offer
+  return results?.['bondOfferV3']?.[0] as core.Offer
 }
