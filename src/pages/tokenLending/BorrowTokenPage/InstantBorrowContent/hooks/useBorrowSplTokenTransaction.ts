@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { BN } from 'fbonds-core'
 import { chain, find, uniqueId } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 import { TxnExecutor } from 'solana-transactions-executor'
@@ -44,9 +45,9 @@ import { calculateTokenBorrowApr } from '../helpers'
 
 type TransactionData = {
   offer: Offer
-  loanValue: number
+  loanValue: BN
   collateral: CollateralToken
-  aprRate: number
+  aprRate: BN
 }
 
 export const useBorrowSplTokenTransaction = (props: {
@@ -100,8 +101,6 @@ export const useBorrowSplTokenTransaction = (props: {
     return splTokenOffers.reduce<TransactionData[]>((acc, offer) => {
       const offerData = find(offers, ({ publicKey }) => publicKey === offer.offerPublicKey)
 
-      const loanValueToNumber = parseFloat(offer.amountToGet)
-
       if (!collateral || !borrowToken) return acc
 
       const aprRate = calculateTokenBorrowApr({
@@ -113,9 +112,9 @@ export const useBorrowSplTokenTransaction = (props: {
       if (offerData) {
         acc.push({
           offer: offerData,
-          loanValue: loanValueToNumber,
+          loanValue: new BN(offer.amountToGet),
           collateral,
-          aprRate,
+          aprRate: new BN(aprRate),
         })
       }
 

@@ -11,10 +11,10 @@ import { sendTxnPlaceHolder } from '@banx/transactions'
 
 export type CreateBorrowTokenTxnDataParams = {
   collateral: CollateralToken
-  loanValue: number
-  offer: Offer
   tokenType: LendingTokenType
-  aprRate: number
+  offer: Offer
+  loanValue: BN
+  aprRate: BN
 }
 
 export type CreateBorrowTokenTxnData = (
@@ -43,10 +43,10 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async (
       fraktMarket: new web3.PublicKey(offer.hadoMarket),
     },
     args: {
-      amountToGet: new BN(loanValue),
+      amountToGet: loanValue,
       amountToSend: new BN(0),
       optimizeIntoReserves: true,
-      aprRate: new BN(aprRate),
+      aprRate: aprRate,
       lendingTokenType: tokenType,
     },
     connection: walletAndConnection.connection,

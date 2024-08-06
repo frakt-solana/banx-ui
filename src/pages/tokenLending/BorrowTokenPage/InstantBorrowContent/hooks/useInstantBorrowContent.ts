@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 
 import { BN } from 'fbonds-core'
-import { sumBy } from 'lodash'
 
 import { CollateralToken } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
@@ -94,7 +93,11 @@ export const useInstantBorrowContent = () => {
     if (inputType === 'input') {
       if (!borrowToken) return
 
-      const totalAmountToGet = new BN(sumBy(offers, (offer) => parseFloat(offer.amountToGet)))
+      const totalAmountToGet = offers.reduce(
+        (acc, offer) => acc.add(new BN(offer.amountToGet)),
+        new BN(0),
+      )
+
       const adjustedAmountToGet = adjustAmountWithUpfrontFee(totalAmountToGet, 'input')
 
       const totalAmountToGetStr = bnToHuman(
@@ -108,7 +111,10 @@ export const useInstantBorrowContent = () => {
     } else if (inputType === 'output') {
       if (!collateralToken) return
 
-      const totalAmountToGive = new BN(sumBy(offers, (offer) => parseFloat(offer.amountToGive)))
+      const totalAmountToGive = offers.reduce(
+        (acc, offer) => acc.add(new BN(offer.amountToGive)),
+        new BN(0),
+      )
 
       const totalAmountToGetStr = bnToHuman(
         totalAmountToGive,
