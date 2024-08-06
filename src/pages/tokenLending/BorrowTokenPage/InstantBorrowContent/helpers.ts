@@ -4,6 +4,7 @@ import {
   calculateAPRforOffer,
   calculateCurrentInterestSolPure,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { sumBy } from 'lodash'
 import moment from 'moment'
 
 import { BorrowSplTokenOffers, CollateralToken } from '@banx/api/tokens'
@@ -62,22 +63,12 @@ export const getErrorMessage = ({
   return ''
 }
 
-//TODO (TokenLending): Reduce to one field amountToGet
-export const calculateTotalAmount = (
-  offers: BorrowSplTokenOffers[],
-  field: 'amountToGet' | 'amountToGive',
-) => {
-  return offers.reduce((acc, offer) => {
-    return acc.add(new BN(offer[field], 'hex'))
-  }, new BN(0))
-}
-
 export const getSummaryInfo = (
   offers: BorrowSplTokenOffers[],
   collateralToken: CollateralToken,
   borrowToken: BorrowToken,
 ) => {
-  const totalAmountToGet = calculateTotalAmount(offers, 'amountToGet')
+  const totalAmountToGet = new BN(sumBy(offers, (offer) => parseFloat(offer.amountToGet)))
 
   const upfrontFee = totalAmountToGet.div(new BN(100)).toNumber()
 
@@ -85,7 +76,7 @@ export const getSummaryInfo = (
     (offer) =>
       calculateTokenBorrowApr({ offer, collateralToken, borrowToken }) + BONDS.PROTOCOL_REPAY_FEE,
   )
-  const amountToGetArray = offers.map((offer) => new BN(offer.amountToGet, 'hex').toNumber())
+  const amountToGetArray = offers.map((offer) => parseFloat(offer.amountToGet))
 
   const weightedApr = calcWeightedAverage(aprRateArray, amountToGetArray)
 
@@ -110,10 +101,13 @@ export const calculateTokenBorrowApr: CalculateTokenBorrowApr = ({
   collateralToken,
   borrowToken,
 }) => {
-  const amountToGet = bnToHuman(new BN(offer.amountToGet, 'hex'), borrowToken.collateral.decimals)
+  const amountToGet = bnToHuman(
+    new BN(parseFloat(offer.amountToGet)),
+    borrowToken.collateral.decimals,
+  )
 
   const amountToGive = bnToHuman(
-    new BN(offer.amountToGive, 'hex'),
+    new BN(parseFloat(offer.amountToGive)),
     collateralToken.collateral.decimals,
   )
 

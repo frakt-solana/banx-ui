@@ -2,11 +2,12 @@ import { useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
-import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { getBondingCurveTypeFromLendingToken } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 
 import { CollateralToken, core } from '@banx/api/tokens'
 import { useDebounceValue } from '@banx/hooks'
-import { stringToHex } from '@banx/utils'
+import { useNftTokenType } from '@banx/store/nft'
+import { getTokenDecimals } from '@banx/utils'
 
 import { BorrowToken } from '../../constants'
 
@@ -21,11 +22,12 @@ export const useBorrowSplTokenOffers = (
   const [amount, setAmount] = useState('')
   const [ltvSliderValue, setLtvSlider] = useState(10)
 
-  const debouncedAmount = useDebounceValue(amount, 1000)
-  // const debouncedLtvSliderValue = useDebounceValue(ltvSliderValue, 1000)
+  const { tokenType } = useNftTokenType()
 
-  const tokenDecimals =
-    inputType === 'input' ? collateralToken?.collateral.decimals : borrowToken?.collateral.decimals
+  const debouncedAmount = useDebounceValue(amount, 1000)
+  const debouncedLtvSliderValue = useDebounceValue(ltvSliderValue, 1000)
+
+  const tokenDecimals = getTokenDecimals(tokenType) //? 1e9, 1e6
 
   const { data, isLoading } = useQuery(
     [
@@ -41,10 +43,11 @@ export const useBorrowSplTokenOffers = (
     () =>
       core.fetchBorrowSplTokenOffers({
         market: collateralToken?.marketPubkey ?? '',
-        outputToken: borrowToken?.lendingTokenType ?? LendingTokenType.BanxSol,
-        type: inputType,
-        amount: stringToHex(debouncedAmount, tokenDecimals),
-        walletPubkey: walletPubkeyString,
+        bondingCurveType: getBondingCurveTypeFromLendingToken(tokenType),
+        ltvLimit: debouncedLtvSliderValue * 100,
+        collateralsAmount: parseFloat(debouncedAmount) * tokenDecimals,
+        excludeWallet: walletPubkeyString,
+        disableMultiBorrow: false,
       }),
     {
       staleTime: 15 * 1000,
