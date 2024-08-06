@@ -108,7 +108,6 @@ export const StakeNftsModal = () => {
 
       await new TxnExecutor(walletAndConnection, {
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
-        debug: { preventSending: true },
       })
         .addTxnsData(txnsData)
         .on('sentAll', () => {
@@ -186,7 +185,6 @@ export const StakeNftsModal = () => {
 
       await new TxnExecutor(walletAndConnection, {
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
-        debug: { preventSending: true },
       })
         .addTxnsData(txnsData)
         .on('sentAll', () => {

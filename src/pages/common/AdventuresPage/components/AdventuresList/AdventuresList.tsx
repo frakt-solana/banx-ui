@@ -108,7 +108,6 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
 
       await new TxnExecutor(walletAndConnection, {
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
-        debug: { preventSending: true },
       })
         .addTxnData(txnData)
         .on('sentAll', (results) => {

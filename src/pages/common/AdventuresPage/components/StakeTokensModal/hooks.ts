@@ -136,9 +136,6 @@ export const useTokenTransactions = ({
 
       await new TxnExecutor(walletAndConnection, {
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
-        debug: {
-          preventSending: true,
-        },
       })
         .addTxnData(txnData)
         .on('sentAll', (results) => {
@@ -202,9 +199,6 @@ export const useTokenTransactions = ({
 
       new TxnExecutor(walletAndConnection, {
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
-        debug: {
-          preventSending: true,
-        },
       })
         .addTxnData(txnData)
         .on('sentAll', (results) => {
