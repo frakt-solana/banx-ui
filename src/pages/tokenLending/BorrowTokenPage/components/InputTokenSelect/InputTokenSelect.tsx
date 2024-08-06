@@ -247,16 +247,18 @@ const formatNumber = (value = 0) => {
 interface SkeletonInputTokenSelectProps {
   label: string
   className?: string
+  showRightLabel?: boolean
 }
 export const SkeletonInputTokenSelect: FC<SkeletonInputTokenSelectProps> = ({
   label,
   className,
+  showRightLabel = false,
 }) => {
   return (
     <div className={classNames(styles.inputTokenSelectWrapper, className)}>
       <div className={styles.inputTokenSelectHeader}>
         <div className={styles.inputTokenSelectLabel}>{label}</div>
-        <Skeleton.Input size="small" />
+        {showRightLabel && <Skeleton.Input size="small" />}
       </div>
       <div className={styles.inputTokenSelect}>
         <Skeleton.Input className={styles.skeletonInputTokenSelect} />

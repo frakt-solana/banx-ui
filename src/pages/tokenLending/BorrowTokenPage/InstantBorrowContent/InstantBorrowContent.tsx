@@ -45,7 +45,7 @@ const InstantBorrowContent = () => {
   return (
     <div className={styles.content}>
       {showSkeleton ? (
-        <SkeletonInputTokenSelect label="Collateralize" />
+        <SkeletonInputTokenSelect label="Collateralize" showRightLabel />
       ) : (
         <InputTokenSelect
           label="Collateralize"
