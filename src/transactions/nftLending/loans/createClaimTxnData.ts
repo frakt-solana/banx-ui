@@ -81,6 +81,7 @@ export const createClaimTxnData: CreateClaimTxnData = async (params, walletAndCo
         userPubkey: wallet.publicKey,
         bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
         nftAsset: new web3.PublicKey(loan.nft.mint),
+        collection: new web3.PublicKey(loan.nft.meta.collectionId),
       },
       connection,
       sendTxn: sendTxnPlaceHolder,

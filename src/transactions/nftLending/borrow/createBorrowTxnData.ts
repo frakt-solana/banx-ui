@@ -113,6 +113,7 @@ const getTxnDataByBorrowType = async ({
         bondOffer: new web3.PublicKey(offer.publicKey),
         nftAsset: new web3.PublicKey(nft.nft.mint),
         hadoMarket: new web3.PublicKey(offer.hadoMarket),
+        collection: new web3.PublicKey(nft.nft.meta.collectionId),
       },
       args: {
         amountToGet: new BN(loanValue),

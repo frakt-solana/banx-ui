@@ -7,6 +7,7 @@ export enum BorrowType {
 
 export enum ListingType {
   StakedBanx = 'StakedBanx',
+  CoreNft = 'CoreNft',
   CNft = 'CNft',
   Default = 'Default',
 }

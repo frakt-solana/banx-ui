@@ -205,6 +205,7 @@ const getIxnsAndSignersByBorrowType = async (
         lender: new web3.PublicKey(bondTradeTransaction.user),
         fbond: new web3.PublicKey(fraktBond.publicKey),
         nftAsset: new web3.PublicKey(nft.mint),
+        collection: new web3.PublicKey(nft.meta.collectionId),
       },
       args: {
         lendingTokenType: bondTradeTransaction.lendingToken,
