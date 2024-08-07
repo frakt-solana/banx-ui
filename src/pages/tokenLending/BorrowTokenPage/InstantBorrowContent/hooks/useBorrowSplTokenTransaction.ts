@@ -40,22 +40,20 @@ import {
   enqueueWaitingConfirmation,
 } from '@banx/utils'
 
-import { BorrowToken } from '../../constants'
 import { calculateTokenBorrowApr } from '../helpers'
 
 type TransactionData = {
   offer: Offer
-  loanValue: number
+  loanValue: BN
   collateral: CollateralToken
-  aprRate: number
+  aprRate: BN
 }
 
 export const useBorrowSplTokenTransaction = (props: {
   collateral: CollateralToken | undefined
-  borrowToken: BorrowToken | undefined
   splTokenOffers: BorrowSplTokenOffers[]
 }) => {
-  const { collateral, borrowToken, splTokenOffers } = props
+  const { collateral, splTokenOffers } = props
 
   const wallet = useWallet()
   const { connection } = useConnection()
@@ -101,28 +99,22 @@ export const useBorrowSplTokenTransaction = (props: {
     return splTokenOffers.reduce<TransactionData[]>((acc, offer) => {
       const offerData = find(offers, ({ publicKey }) => publicKey === offer.offerPublicKey)
 
-      const loanValueToNumber = new BN(offer.amountToGet, 'hex').toNumber()
+      if (!collateral) return acc
 
-      if (!collateral || !borrowToken) return acc
-
-      const aprRate = calculateTokenBorrowApr({
-        offer,
-        collateralToken: collateral,
-        borrowToken,
-      })
+      const aprRate = calculateTokenBorrowApr({ offer, collateralToken: collateral })
 
       if (offerData) {
         acc.push({
           offer: offerData,
-          loanValue: loanValueToNumber,
+          loanValue: new BN(offer.amountToGet),
           collateral,
-          aprRate,
+          aprRate: new BN(aprRate),
         })
       }
 
       return acc
     }, [])
-  }, [borrowToken, collateral, offers, splTokenOffers])
+  }, [collateral, offers, splTokenOffers])
 
   const borrow = async () => {
     const loadingSnackbarId = uniqueId()

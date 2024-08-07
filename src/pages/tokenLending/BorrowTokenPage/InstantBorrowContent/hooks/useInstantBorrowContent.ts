@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 
+import { BN } from 'fbonds-core'
+
 import { CollateralToken } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
 import { bnToHuman, stringToBN } from '@banx/utils'
 
 import { BorrowToken, DEFAULT_COLLATERAL_MARKET_PUBKEY } from '../../constants'
-import { adjustAmountWithUpfrontFee, calculateTotalAmount, getErrorMessage } from '../helpers'
+import { adjustAmountWithUpfrontFee, getErrorMessage } from '../helpers'
 import { useBorrowSplTokenOffers } from './useBorrowSplTokenOffers'
 import { useBorrowSplTokenTransaction } from './useBorrowSplTokenTransaction'
 import { useBorrowTokensList, useCollateralsList } from './useCollateralsList'
@@ -28,6 +30,8 @@ export const useInstantBorrowContent = () => {
     inputType,
     setInputType,
     setAmount,
+    ltvSliderValue,
+    onChangeLtvSlider,
   } = useBorrowSplTokenOffers(collateralToken, borrowToken)
 
   useEffect(() => {
@@ -89,7 +93,11 @@ export const useInstantBorrowContent = () => {
     if (inputType === 'input') {
       if (!borrowToken) return
 
-      const totalAmountToGet = calculateTotalAmount(offers, 'amountToGet')
+      const totalAmountToGet = offers.reduce(
+        (acc, offer) => acc.add(new BN(offer.amountToGet)),
+        new BN(0),
+      )
+
       const adjustedAmountToGet = adjustAmountWithUpfrontFee(totalAmountToGet, 'input')
 
       const totalAmountToGetStr = bnToHuman(
@@ -103,7 +111,10 @@ export const useInstantBorrowContent = () => {
     } else if (inputType === 'output') {
       if (!collateralToken) return
 
-      const totalAmountToGive = calculateTotalAmount(offers, 'amountToGive')
+      const totalAmountToGive = offers.reduce(
+        (acc, offer) => acc.add(new BN(offer.amountToGive)),
+        new BN(0),
+      )
 
       const totalAmountToGetStr = bnToHuman(
         totalAmountToGive,
@@ -126,7 +137,6 @@ export const useInstantBorrowContent = () => {
 
   const { borrow, isBorrowing } = useBorrowSplTokenTransaction({
     collateral: collateralToken,
-    borrowToken: borrowToken,
     splTokenOffers: offers,
   })
 
@@ -148,5 +158,8 @@ export const useInstantBorrowContent = () => {
     borrow,
     isBorrowing,
     errorMessage,
+
+    ltvSliderValue,
+    onChangeLtvSlider,
   }
 }

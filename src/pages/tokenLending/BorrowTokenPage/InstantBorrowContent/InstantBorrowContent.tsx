@@ -2,7 +2,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 import { Button } from '@banx/components/Buttons'
 
-import { Separator } from '../components'
+import { LoanValueSlider, Separator } from '../components'
 import InputTokenSelect, { SkeletonInputTokenSelect } from '../components/InputTokenSelect'
 import { Summary, SummarySkeleton } from './Summary'
 import { useInstantBorrowContent } from './hooks/useInstantBorrowContent'
@@ -30,6 +30,9 @@ const InstantBorrowContent = () => {
     errorMessage,
     borrow,
     isBorrowing,
+
+    ltvSliderValue,
+    onChangeLtvSlider,
   } = useInstantBorrowContent()
 
   const showSkeleton = !(
@@ -42,7 +45,7 @@ const InstantBorrowContent = () => {
   return (
     <div className={styles.content}>
       {showSkeleton ? (
-        <SkeletonInputTokenSelect label="Collateralize" />
+        <SkeletonInputTokenSelect label="Collateralize" showRightLabel />
       ) : (
         <InputTokenSelect
           label="Collateralize"
@@ -75,10 +78,12 @@ const InstantBorrowContent = () => {
         />
       )}
 
+      <LoanValueSlider label="Max LTV" value={ltvSliderValue} onChange={onChangeLtvSlider} />
+
       {showSkeleton ? (
         <SummarySkeleton />
       ) : (
-        <Summary collateralToken={collateralToken} borrowToken={borrowToken} offers={offers} />
+        <Summary collateralToken={collateralToken} offers={offers} />
       )}
 
       <Button

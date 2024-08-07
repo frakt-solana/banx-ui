@@ -1,11 +1,11 @@
 import axios from 'axios'
-import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { BondingCurveType, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Offer } from '@banx/api/nft'
 import { OfferSchema, RequestWithPagination } from '@banx/api/shared'
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
-import { convertToMarketType, convertToOutputToken } from '../../helpers'
+import { convertToMarketType } from '../../helpers'
 import {
   CollateralTokenSchema,
   TokenLoanSchema,
@@ -171,25 +171,34 @@ export interface BorrowSplTokenOffers {
 
 type FetchBorrowSplTokenOffers = (props: {
   market: string
-  outputToken: LendingTokenType
-  type: 'input' | 'output'
-  amount: string //? hex number string
-  walletPubkey?: string
+  bondingCurveType: BondingCurveType
+  ltvLimit: number //? base points
+  collateralsAmount: number
+  excludeWallet?: string
+  disableMultiBorrow: boolean
 }) => Promise<BorrowSplTokenOffers[]>
 export const fetchBorrowSplTokenOffers: FetchBorrowSplTokenOffers = async (props) => {
-  const { market, outputToken, type, amount, walletPubkey } = props
+  const {
+    market,
+    bondingCurveType,
+    ltvLimit,
+    collateralsAmount,
+    excludeWallet,
+    disableMultiBorrow,
+  } = props
 
   const queryParams = new URLSearchParams({
-    isPrivate: String(IS_PRIVATE_MARKETS),
-    type: String(type),
-    amount: String(amount),
     market: String(market),
-    outputToken: String(convertToOutputToken(outputToken)),
-    excludeWallet: String(walletPubkey),
+    bondingCurveType: String(bondingCurveType),
+    ltvLimit: String(ltvLimit),
+    collateralsAmount: String(collateralsAmount),
+    excludeWallet: String(excludeWallet),
+    disableMultiBorrow: String(disableMultiBorrow),
+    isPrivate: String(IS_PRIVATE_MARKETS),
   })
 
   const { data } = await axios.get<{ data: BorrowSplTokenOffers[] }>(
-    `${BACKEND_BASE_URL}/lending/spl/borrow-token?${queryParams?.toString()}`,
+    `${BACKEND_BASE_URL}/lending/spl/borrow-token-v2?${queryParams?.toString()}`,
   )
 
   return data.data ?? []
