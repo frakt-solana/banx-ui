@@ -83,7 +83,7 @@ const InstantBorrowContent = () => {
       {showSkeleton ? (
         <SummarySkeleton />
       ) : (
-        <Summary collateralToken={collateralToken} borrowToken={borrowToken} offers={offers} />
+        <Summary collateralToken={collateralToken} offers={offers} />
       )}
 
       <Button

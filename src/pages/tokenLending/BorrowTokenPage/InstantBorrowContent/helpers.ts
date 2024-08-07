@@ -11,8 +11,6 @@ import { BorrowSplTokenOffers, CollateralToken } from '@banx/api/tokens'
 import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
 import { ZERO_BN, bnToHuman, calcWeightedAverage, stringToBN } from '@banx/utils'
 
-import { BorrowToken } from '../constants'
-
 interface GetErrorMessageProps {
   collateralToken: CollateralToken | undefined
   collateralInputValue: string
@@ -66,19 +64,21 @@ export const getErrorMessage = ({
 export const getSummaryInfo = (
   offers: BorrowSplTokenOffers[],
   collateralToken: CollateralToken,
-  borrowToken: BorrowToken,
 ) => {
   const totalAmountToGet = new BN(sumBy(offers, (offer) => parseFloat(offer.amountToGet)))
 
   const upfrontFee = totalAmountToGet.div(new BN(100)).toNumber()
 
   const aprRateArray = offers.map(
-    (offer) =>
-      calculateTokenBorrowApr({ offer, collateralToken, borrowToken }) + BONDS.PROTOCOL_REPAY_FEE,
+    (offer) => calculateTokenBorrowApr({ offer, collateralToken }) + BONDS.PROTOCOL_REPAY_FEE,
   )
+
   const amountToGetArray = offers.map((offer) => parseFloat(offer.amountToGet))
 
   const weightedApr = calcWeightedAverage(aprRateArray, amountToGetArray)
+
+  const ltvRateArray = offers.map((offer) => calculateTokenBorrowLtv({ offer, collateralToken }))
+  const weightedLtv = calcWeightedAverage(ltvRateArray, amountToGetArray)
 
   const weeklyFee = calculateCurrentInterestSolPure({
     loanValue: totalAmountToGet.toNumber(),
@@ -87,33 +87,16 @@ export const getSummaryInfo = (
     rateBasePoints: weightedApr + BONDS.PROTOCOL_REPAY_FEE,
   })
 
-  return { upfrontFee, weightedApr, weeklyFee }
+  return { upfrontFee, weightedApr, weightedLtv, weeklyFee }
 }
 
 type CalculateTokenBorrowApr = (props: {
   offer: BorrowSplTokenOffers
   collateralToken: CollateralToken
-  borrowToken: BorrowToken
 }) => number
 
-export const calculateTokenBorrowApr: CalculateTokenBorrowApr = ({
-  offer,
-  collateralToken,
-  borrowToken,
-}) => {
-  const amountToGet = bnToHuman(
-    new BN(parseFloat(offer.amountToGet)),
-    borrowToken.collateral.decimals,
-  )
-
-  const amountToGive = bnToHuman(
-    new BN(parseFloat(offer.amountToGive)),
-    collateralToken.collateral.decimals,
-  )
-
-  const collateralPerToken = amountToGet / amountToGive
-
-  const ltvPercent = (collateralPerToken / collateralToken.collateralPrice) * 100
+export const calculateTokenBorrowApr: CalculateTokenBorrowApr = ({ offer, collateralToken }) => {
+  const ltvPercent = calculateTokenBorrowLtv({ offer, collateralToken })
 
   const fullyDilutedValuationNumber = parseFloat(
     collateralToken.collateral.fullyDilutedValuationInMillions,
@@ -123,6 +106,18 @@ export const calculateTokenBorrowApr: CalculateTokenBorrowApr = ({
   const aprRate = factoredApr * 100
 
   return aprRate || 0
+}
+
+type CalculateTokenBorrowLtv = (props: {
+  offer: BorrowSplTokenOffers
+  collateralToken: CollateralToken
+}) => number
+const calculateTokenBorrowLtv: CalculateTokenBorrowLtv = ({ offer, collateralToken }) => {
+  const collateralPerToken = parseFloat(offer.amountToGet) / parseFloat(offer.amountToGive)
+
+  const ltvPercent = (collateralPerToken / collateralToken.collateralPrice) * 100
+
+  return ltvPercent
 }
 
 const UPFRONT_FEE_BN = PROTOCOL_FEE_BN

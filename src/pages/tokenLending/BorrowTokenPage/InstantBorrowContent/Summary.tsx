@@ -7,7 +7,6 @@ import { DisplayValue } from '@banx/components/TableComponents'
 
 import { BorrowSplTokenOffers, CollateralToken } from '@banx/api/tokens'
 
-import { BorrowToken } from '../constants'
 import { getSummaryInfo } from './helpers'
 
 import styles from './InstantBorrowContent.module.less'
@@ -15,14 +14,12 @@ import styles from './InstantBorrowContent.module.less'
 interface SummaryProps {
   offers: BorrowSplTokenOffers[]
   collateralToken: CollateralToken
-  borrowToken: BorrowToken
 }
 
-export const Summary: FC<SummaryProps> = ({ offers, collateralToken, borrowToken }) => {
-  const { upfrontFee, weightedApr, weeklyFee } = getSummaryInfo(
+export const Summary: FC<SummaryProps> = ({ offers, collateralToken }) => {
+  const { upfrontFee, weightedApr, weightedLtv, weeklyFee } = getSummaryInfo(
     offers,
     collateralToken,
-    borrowToken,
   )
 
   const statClassNames = {
@@ -53,6 +50,13 @@ export const Summary: FC<SummaryProps> = ({ offers, collateralToken, borrowToken
         tooltipText="An annual percentage rate that accounts for different loan amounts and their respective interest rates, providing a comprehensive view of the overall interest cost"
         flexType="row"
       />
+      <StatInfo
+        label="Weighted LTV"
+        value={weightedLtv}
+        valueType={VALUES_TYPES.PERCENT}
+        tooltipText="Weighted LTV"
+        flexType="row"
+      />
     </div>
   )
 }
@@ -78,6 +82,12 @@ export const SummarySkeleton = () => {
         label="Weighted APR"
         value={SkeletonStatValue}
         tooltipText="An annual percentage rate that accounts for different loan amounts and their respective interest rates, providing a comprehensive view of the overall interest cost"
+        flexType="row"
+      />
+      <StatInfo
+        label="Weighted LTV"
+        value={SkeletonStatValue}
+        tooltipText="Weighted LTV"
         flexType="row"
       />
     </div>
