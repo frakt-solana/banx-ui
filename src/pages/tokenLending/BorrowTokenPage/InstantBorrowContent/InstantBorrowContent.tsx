@@ -78,7 +78,7 @@ const InstantBorrowContent = () => {
         />
       )}
 
-      <LoanValueSlider label="LTV" value={ltvSliderValue} onChange={onChangeLtvSlider} />
+      <LoanValueSlider label="Max LTV" value={ltvSliderValue} onChange={onChangeLtvSlider} />
 
       {showSkeleton ? (
         <SummarySkeleton />
