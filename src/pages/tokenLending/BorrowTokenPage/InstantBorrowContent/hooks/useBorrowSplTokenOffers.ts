@@ -20,7 +20,7 @@ export const useBorrowSplTokenOffers = (
 
   const [inputType, setInputType] = useState<'input' | 'output'>('input')
   const [amount, setAmount] = useState('')
-  const [ltvSliderValue, setLtvSlider] = useState(10)
+  const [ltvSliderValue, setLtvSlider] = useState(150)
 
   const { tokenType } = useNftTokenType()
 
