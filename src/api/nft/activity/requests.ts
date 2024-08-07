@@ -49,12 +49,7 @@ export const fetchLenderActivity: FetchLenderActivity = async ({
     `${BACKEND_BASE_URL}/activity/lender/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  try {
-    return await LenderActivitySchema.array().parseAsync(data.data)
-  } catch (err) {
-    console.error({ err })
-    return []
-  }
+  return LenderActivitySchema.array().parseAsync(data.data)
 }
 
 type FetchBorrowerActivity = (

@@ -3,7 +3,7 @@ import { z } from 'zod'
 import {
   BondTradeTransactionSchema,
   FraktBondSchema,
-  NFTSchemaNew,
+  NFTSchema,
   OfferSchema,
   StringIntSchema,
   StringPublicKeySchema,
@@ -34,7 +34,7 @@ export const LoanSchema = z.object({
   publicKey: StringPublicKeySchema,
   fraktBond: FraktBondSchema,
   bondTradeTransaction: BondTradeTransactionSchema,
-  nft: NFTSchemaNew,
+  nft: NFTSchema,
   totalRepaidAmount: StringIntSchema.optional(), //? exist only in fetchLenderLoansAndOffers request
   accruedInterest: StringIntSchema.optional(),
   offerWasClosed: z.boolean().optional(), //? What for?
@@ -53,7 +53,7 @@ export const BorrowNftSchema = z.object({
     marketApr: StringIntSchema,
     banxStake: StringPublicKeySchema.optional(), //? exists when nft is banx and it's staked
   }),
-  nft: NFTSchemaNew,
+  nft: NFTSchema,
 })
 
 export const BorrowNftsAndOffersSchema = z.object({

@@ -38,7 +38,7 @@ export const StakeNftsModal = () => {
   const { banxStakeSettings } = useBanxStakeSettings()
   const { banxStakeInfo } = useBanxStakeInfo()
 
-  const [selectedNfts, setSelectedNfts] = useState<staking.BanxStakeNft[]>([])
+  const [selectedNfts, setSelectedNfts] = useState<staking.BanxNftStake[]>([])
 
   const { value: currentTab, ...tabsProps } = useTabs({
     tabs: MODAL_TABS,
@@ -48,7 +48,7 @@ export const StakeNftsModal = () => {
   const isNftSelected = (mint: string) =>
     !!selectedNfts.find(({ mint: nftMint }) => nftMint === mint)
 
-  const onSelect = (nft: staking.BanxStakeNft) => {
+  const onSelect = (nft: staking.BanxNftStake) => {
     const isSelected = isNftSelected(nft.mint)
 
     if (isSelected) {
