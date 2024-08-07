@@ -191,6 +191,10 @@ const getIxnsAndSignersByBorrowType = async (
   }
 
   if (borrowType === BorrowType.CoreNft) {
+    if (!nft.meta.collectionId) {
+      throw new Error(`Not Core NFT`)
+    }
+
     const {
       instructions,
       signers,
