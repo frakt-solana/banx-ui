@@ -33,7 +33,7 @@ export const NFTSchema = z.object({
     partnerPoints: z.number().optional(),
     playerPoints: z.number().optional(),
     tokenStandard: z.nativeEnum(TokenStandard).or(z.string().optional()),
-    collectionId: z.string(),
+    collectionId: z.string().optional(),
   }),
   //? Change to BN and PublicKey?
   compression: z
