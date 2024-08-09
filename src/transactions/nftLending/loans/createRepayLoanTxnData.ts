@@ -3,6 +3,7 @@ import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/const
 import {
   repayCnftPerpetualLoanCanopy,
   repayPerpetualLoan,
+  repayPerpetualLoanCore,
   repayStakedBanxPerpetualLoan,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import moment from 'moment'
@@ -12,6 +13,7 @@ import {
   WalletAndConnection,
 } from 'solana-transactions-executor'
 
+import { TokenStandard } from '@banx/api'
 import { helius } from '@banx/api/common'
 import { core } from '@banx/api/nft'
 import { BANX_STAKING, BONDS } from '@banx/constants'
@@ -188,6 +190,42 @@ const getIxnsAndSignersByBorrowType = async (
     }
   }
 
+  if (borrowType === BorrowType.CoreNft) {
+    if (!nft.meta.collectionId) {
+      throw new Error(`Not Core NFT`)
+    }
+
+    const {
+      instructions,
+      signers,
+      accounts: accountsCollection,
+    } = await repayPerpetualLoanCore({
+      programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
+      accounts: {
+        userPubkey: wallet.publicKey,
+        protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
+        oldBondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
+        bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
+        lender: new web3.PublicKey(bondTradeTransaction.user),
+        fbond: new web3.PublicKey(fraktBond.publicKey),
+        nftAsset: new web3.PublicKey(nft.mint),
+        collection: new web3.PublicKey(nft.meta.collectionId),
+      },
+      args: {
+        lendingTokenType: bondTradeTransaction.lendingToken,
+      },
+      connection,
+      sendTxn: sendTxnPlaceHolder,
+    })
+
+    return {
+      instructions,
+      signers,
+      accountsCollection,
+      lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    }
+  }
+
   const ruleSet = await fetchRuleset({
     nftMint: nft.mint,
     connection,
@@ -230,12 +268,24 @@ const getIxnsAndSignersByBorrowType = async (
 }
 
 export const getLoanBorrowType = (loan: core.Loan) => {
-  if (
-    loan.fraktBond.banxStake !== EMPTY_PUBKEY.toBase58() &&
-    loan.fraktBond.fraktMarket === BANX_STAKING.FRAKT_MARKET
-  )
+  const { nft, fraktBond } = loan
+
+  const isStakedBanx =
+    fraktBond.banxStake !== EMPTY_PUBKEY.toBase58() &&
+    fraktBond.fraktMarket === BANX_STAKING.FRAKT_MARKET
+
+  if (isStakedBanx) {
     return BorrowType.StakedBanx
-  if (loan.nft.compression) return BorrowType.CNft
+  }
+
+  if (nft.compression) {
+    return BorrowType.CNft
+  }
+
+  if (nft.meta.tokenStandard === TokenStandard.CORE) {
+    return BorrowType.CoreNft
+  }
+
   return BorrowType.Default
 }
 

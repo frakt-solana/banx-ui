@@ -59,6 +59,7 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
       bondingCurveType,
       bondFeature: BondFeatures.AutoReceiveAndReceiveNft,
       collateralsPerToken: ZERO_BN,
+      tokenLendingApr: ZERO_BN,
     },
     sendTxn: sendTxnPlaceHolder,
   })

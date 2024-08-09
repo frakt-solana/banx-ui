@@ -11,7 +11,7 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/types'
 import { z } from 'zod'
 
-import { NFTSchemaNew, StringIntSchema, StringPublicKeySchema } from '@banx/api/shared'
+import { NFTSchema, StringIntSchema, StringPublicKeySchema } from '@banx/api/shared'
 
 const MarketMetaSchema = z.object({
   marketApr: StringIntSchema,
@@ -70,6 +70,7 @@ export const OfferSchema = z.object({
   lastCalculatedTimestamp: StringIntSchema,
   rewardsToHarvest: StringIntSchema,
   rewardsToHarvested: StringIntSchema,
+  loanApr: StringIntSchema,
 })
 
 export const BondTradeTransactionSchema = z.object({
@@ -127,7 +128,7 @@ export const LoanSchema = z.object({
   publicKey: StringPublicKeySchema,
   fraktBond: FraktBondSchema,
   bondTradeTransaction: BondTradeTransactionSchema,
-  nft: NFTSchemaNew,
+  nft: NFTSchema,
   totalRepaidAmount: StringIntSchema.optional(), //? exist only in fetchLenderLoansAndOffers request
   accruedInterest: StringIntSchema.optional(),
   offerWasClosed: z.boolean().optional(), //? What for?
@@ -146,7 +147,7 @@ export const BorrowNftSchema = z.object({
     marketApr: StringIntSchema,
     banxStake: StringPublicKeySchema.optional(), //? exists when nft is banx and it's staked
   }),
-  nft: NFTSchemaNew,
+  nft: NFTSchema,
 })
 
 export const BorrowNftsAndOffersSchema = z.object({

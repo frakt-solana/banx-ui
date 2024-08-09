@@ -56,6 +56,7 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
       delta: new BN(deltaValue),
       quantityOfLoans: loansAmount,
       lendingTokenType: tokenType,
+      tokenLendingApr: ZERO_BN,
     },
     sendTxn: sendTxnPlaceHolder,
   })
@@ -79,6 +80,7 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
       newDelta: new BN(deltaValue),
       newQuantityOfLoans: new BN(loansAmount),
       collateralsPerToken: ZERO_BN,
+      tokenLendingApr: ZERO_BN,
     })
 
     //? Optimistic offer is broken

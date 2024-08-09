@@ -61,4 +61,5 @@ const BondOfferV3Schema = z.object({
   lastCalculatedTimestamp: SerializedToNumberBNSchema,
   rewardsToHarvest: SerializedToNumberBNSchema,
   rewardsToHarvested: SerializedToNumberBNSchema,
+  loanApr: SerializedToNumberBNSchema.default(0),
 })

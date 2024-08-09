@@ -3,11 +3,13 @@ import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/const
 import {
   removePerpetualListing,
   removePerpetualListingCnft,
+  removePerpetualListingCore,
   removePerpetualListingStakedBanx,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { getAssetProof } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
+import { TokenStandard } from '@banx/api'
 import { core } from '@banx/api/nft'
 import { BANX_STAKING, BONDS } from '@banx/constants'
 
@@ -121,6 +123,29 @@ const getIxnsAndSignersByListingType = async ({
     return { instructions, signers }
   }
 
+  if (type === ListingType.CoreNft) {
+    if (!loan.nft.meta.collectionId) {
+      throw new Error(`Not Core NFT`)
+    }
+
+    const { instructions, signers } = await removePerpetualListingCore({
+      programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
+      accounts: {
+        protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
+        userPubkey: wallet.publicKey,
+        nftAsset: new web3.PublicKey(loan.nft.mint),
+        collection: new web3.PublicKey(loan.nft.meta.collectionId),
+        fraktBond: new web3.PublicKey(loan.fraktBond.publicKey),
+        bondOffer: new web3.PublicKey(loan.bondTradeTransaction.bondOffer),
+        oldBondTradeTransaction: new web3.PublicKey(loan.bondTradeTransaction.publicKey),
+      },
+      connection,
+      sendTxn: sendTxnPlaceHolder,
+    })
+
+    return { instructions, signers }
+  }
+
   const ruleSet = await fetchRuleset({
     nftMint: loan.nft.mint,
     connection,
@@ -149,13 +174,20 @@ const getIxnsAndSignersByListingType = async ({
 }
 
 const getNftListingType = (loan: core.Loan) => {
-  if (loan.nft.compression) return ListingType.CNft
-
-  if (
+  const isStakedBanx =
     loan.fraktBond.banxStake !== EMPTY_PUBKEY.toBase58() &&
     loan.fraktBond.fraktMarket === BANX_STAKING.FRAKT_MARKET
-  ) {
+
+  if (isStakedBanx) {
     return ListingType.StakedBanx
+  }
+
+  if (loan.nft.compression) {
+    return ListingType.CNft
+  }
+
+  if (loan.nft.meta.tokenStandard === TokenStandard.CORE) {
+    return ListingType.CoreNft
   }
 
   return ListingType.Default

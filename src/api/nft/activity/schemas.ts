@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { NFTSchemaNew, StringIntSchema, StringPublicKeySchema } from '@banx/api/shared'
+import { NFTSchema, StringIntSchema, StringPublicKeySchema } from '@banx/api/shared'
 
 export const BorrowerActivitySchema = z.object({
   id: z.string(),
@@ -16,7 +16,7 @@ export const BorrowerActivitySchema = z.object({
   repaid: StringIntSchema,
   timestamp: z.number(),
   user: StringPublicKeySchema,
-  nft: NFTSchemaNew,
+  nft: NFTSchema,
 
   currentRemainingLentAmount: StringIntSchema,
   currentLentAmount: StringIntSchema,
@@ -38,7 +38,7 @@ export const LenderActivitySchema = z.object({
   timestamp: z.number(),
   user: StringPublicKeySchema,
   currentRemainingLentAmount: StringIntSchema,
-  nft: NFTSchemaNew,
+  nft: NFTSchema,
 })
 
 export const ActivityCollectionsListSchema = z.object({
