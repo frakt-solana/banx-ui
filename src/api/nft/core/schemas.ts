@@ -70,6 +70,7 @@ export const OfferSchema = z.object({
   lastCalculatedTimestamp: StringIntSchema,
   rewardsToHarvest: StringIntSchema,
   rewardsToHarvested: StringIntSchema,
+  loanApr: StringIntSchema,
 })
 
 export const BondTradeTransactionSchema = z.object({
