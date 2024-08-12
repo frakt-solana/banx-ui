@@ -12,7 +12,7 @@ import { Offer } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
 
-import { parseAccountInfoByPubkeyBN } from '../functions'
+import { customBNConverter, parseAccountInfoByPubkey } from '../functions'
 import { sendTxnPlaceHolder } from '../helpers'
 
 export type CreateInstantRefinanceTokenTxnDataParams = {
@@ -68,7 +68,7 @@ export const createInstantRefinanceTokenTxnData: CreateInstantRefinanceTokenTxnD
 export const parseInstantRefinanceTokenSimulatedAccounts = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ) => {
-  const results = parseAccountInfoByPubkeyBN(accountInfoByPubkey)
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey, customBNConverter)
 
-  return results?.['bondOfferV3'] as BondOfferV3
+  return results?.['bondOfferV3']?.[0] as BondOfferV3
 }

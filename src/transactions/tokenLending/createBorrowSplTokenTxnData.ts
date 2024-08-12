@@ -11,7 +11,7 @@ import {
 import { Offer, core } from '@banx/api/nft'
 import { CollateralToken } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
-import { parseAccountInfoByPubkeyBN, sendTxnPlaceHolder } from '@banx/transactions'
+import { customBNConverter, parseAccountInfoByPubkey, sendTxnPlaceHolder } from '@banx/transactions'
 
 export type CreateBorrowTokenTxnDataParams = {
   collateral: CollateralToken
@@ -75,11 +75,11 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async (
 export const parseTokenBorrowSimulatedAccounts = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ) => {
-  const results = parseAccountInfoByPubkeyBN(accountInfoByPubkey)
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey, customBNConverter)
 
   return {
-    bondOffer: results?.['bondOfferV3'] as BondOfferV3,
-    bondTradeTransaction: results?.['bondTradeTransactionV3'] as core.BondTradeTransaction,
-    fraktBond: results?.['fraktBond'] as core.FraktBond,
+    bondOffer: results?.['bondOfferV3']?.[0] as BondOfferV3,
+    bondTradeTransaction: results?.['bondTradeTransactionV3']?.[0] as core.BondTradeTransaction,
+    fraktBond: results?.['fraktBond']?.[0] as core.FraktBond,
   }
 }

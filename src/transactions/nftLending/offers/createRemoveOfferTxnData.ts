@@ -11,7 +11,7 @@ import {
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 
-import { parseAccountInfoByPubkey, parseAccountInfoByPubkeyBN } from '../../functions'
+import { customBNConverter, parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
 export type CreateRemoveOfferTxnDataParams = {
@@ -60,13 +60,13 @@ export const parseRemoveOfferSimulatedAccounts = (
 ) => {
   const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
-  return results?.['bondOfferV3'] as core.Offer
+  return results?.['bondOfferV3']?.[0] as core.Offer
 }
 
 export const parseRemoveOfferSimulatedAccountsBN = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ) => {
-  const results = parseAccountInfoByPubkeyBN(accountInfoByPubkey)
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey, customBNConverter)
 
-  return results?.['bondOfferV3'] as BondOfferV3
+  return results?.['bondOfferV3']?.[0] as BondOfferV3
 }

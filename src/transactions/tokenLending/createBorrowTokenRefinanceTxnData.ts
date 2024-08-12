@@ -15,7 +15,7 @@ import { BondTradeTransaction, FraktBond, Offer } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
 
-import { parseAccountInfoByPubkeyBN } from '../functions'
+import { customBNConverter, parseAccountInfoByPubkey } from '../functions'
 import { sendTxnPlaceHolder } from '../helpers'
 
 export type CreateBorrowTokenRefinanceTxnDataParams = {
@@ -127,11 +127,11 @@ const getIxnsAndSigners = async (
 export const parseBorrowTokenRefinanceSimulatedAccounts = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ) => {
-  const results = parseAccountInfoByPubkeyBN(accountInfoByPubkey)
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey, customBNConverter)
 
   return {
-    bondOffer: results?.['bondOfferV3'] as BondOfferV3,
-    bondTradeTransaction: results?.['bondTradeTransactionV3'] as BondTradeTransaction,
-    fraktBond: results?.['fraktBond'] as FraktBond,
+    bondOffer: results?.['bondOfferV3']?.[0] as BondOfferV3,
+    bondTradeTransaction: results?.['bondTradeTransactionV3']?.[0] as BondTradeTransaction,
+    fraktBond: results?.['fraktBond']?.[0] as FraktBond,
   }
 }

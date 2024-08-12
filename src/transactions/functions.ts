@@ -1,5 +1,5 @@
 import { WalletContextState } from '@solana/wallet-adapter-react'
-import { web3 } from 'fbonds-core'
+import { BN, web3 } from 'fbonds-core'
 import { getRuleset } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { chain } from 'lodash'
 import {
@@ -86,9 +86,21 @@ export const executorGetPriorityFee: GetPriorityFee = ({ txnParams, connection }
   return helius.getHeliusPriorityFeeEstimate({ accountKeys, connection, priorityLevel })
 }
 
+export const customBNConverter = {
+  bnParser: (v: BN) => {
+    try {
+      return v
+    } catch (err) {
+      return ZERO_BN
+    }
+  },
+  pubkeyParser: (v: web3.PublicKey) => v,
+}
+
 export const parseBanxAccountInfo = <T>(
   publicKey: web3.PublicKey,
   info: web3.SimulatedTransactionAccountInfo | null,
+  customConverter?: Parameters<typeof convertValuesInAccount>[1],
 ): [string, T] | null => {
   if (!info || !info.data) return null
 
@@ -102,76 +114,43 @@ export const parseBanxAccountInfo = <T>(
     ? { publicKey, ...parseEnumsInAccount<object>(parsedData) }
     : null
 
-  const convertedAccount = convertValuesInAccount<T>(parsedDataWithEnums, {
-    bnParser: (v) => {
-      try {
-        return v.toNumber()
-      } catch (err) {
-        return 0
-      }
+  const convertedAccount = convertValuesInAccount<T>(
+    parsedDataWithEnums,
+    customConverter ?? {
+      bnParser: (v) => {
+        try {
+          return v.toNumber()
+        } catch (err) {
+          return 0
+        }
+      },
+      pubkeyParser: (v) => v.toBase58(),
     },
-    pubkeyParser: (v) => v.toBase58(),
-  })
+  )
 
   return [accountName, convertedAccount]
 }
 
 /**
  * @param accountInfoByPubkey - default solana-transactions-executor result for simulations
- * @returns Dictionary<accountName, parsedAccount> accountName same as in IDL
+ * @returns Dictionary<accountName, parsedAccount[]> accountName same as in IDL
  */
 export const parseAccountInfoByPubkey = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
-): Record<string, unknown> => {
+  customConverter?: Parameters<typeof convertValuesInAccount>[1],
+): Record<string, unknown[]> => {
   return chain(accountInfoByPubkey)
     .toPairs()
     .filter(([, info]) => !!info)
     .map(([publicKey, info]) => {
-      return parseBanxAccountInfo(new web3.PublicKey(publicKey), info)
+      return parseBanxAccountInfo(new web3.PublicKey(publicKey), info, customConverter)
+    })
+    .compact()
+    .groupBy(([name]) => name)
+    .entries()
+    .map(([name, nameAndAccountPairs]) => {
+      return [name, nameAndAccountPairs.map(([, account]) => account)]
     })
     .fromPairs()
     .value()
-}
-
-export const parseAccountInfoByPubkeyBN = (
-  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
-): Record<string, unknown> => {
-  return chain(accountInfoByPubkey)
-    .toPairs()
-    .filter(([, info]) => !!info)
-    .map(([publicKey, info]) => {
-      return parseBanxAccountInfoBN(new web3.PublicKey(publicKey), info)
-    })
-    .fromPairs()
-    .value()
-}
-
-export const parseBanxAccountInfoBN = <T>(
-  publicKey: web3.PublicKey,
-  info: web3.SimulatedTransactionAccountInfo | null,
-): [string, T] | null => {
-  if (!info || !info.data) return null
-
-  const bufferData = Buffer.from(info.data[0], 'base64')
-
-  const accountName = getAccountName(BANX_ACCOUNTS_NAMES_AND_DISCRIMINATORS, bufferData) ?? ''
-
-  const parsedData = decodeAccountDataSafe<unknown>(banxCoder, accountName, bufferData)
-
-  const parsedDataWithEnums = parsedData
-    ? { publicKey, ...parseEnumsInAccount<object>(parsedData) }
-    : null
-
-  const convertedAccount = convertValuesInAccount<T>(parsedDataWithEnums, {
-    bnParser: (v) => {
-      try {
-        return v
-      } catch (err) {
-        return ZERO_BN
-      }
-    },
-    pubkeyParser: (v) => v.toBase58(),
-  })
-
-  return [accountName, convertedAccount]
 }
