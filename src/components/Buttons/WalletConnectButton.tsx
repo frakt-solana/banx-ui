@@ -10,7 +10,7 @@ import { shortenAddress } from '@banx/utils'
 
 import { DisplayValue } from '../TableComponents'
 import UserAvatar from '../UserAvatar'
-import { useLenderVaultInfo, useWalletModal } from '../WalletModal'
+import { useWalletModal } from '../WalletModal'
 import { Button } from './Button'
 
 import styles from './Buttons.module.less'
@@ -27,7 +27,8 @@ export const WalletConnectButton = () => {
 
   const { data: discordUserData } = useDiscordUser()
 
-  const { lenderVaultInfo } = useLenderVaultInfo()
+  //TODO (Token lending): Uncomment when rewrite useLenderVaultInfo
+  // const { lenderVaultInfo } = useLenderVaultInfo()
 
   const ConnectedButton = () => (
     <div className={styles.connectedButton} onClick={toggleVisibility}>
@@ -37,10 +38,7 @@ export const WalletConnectButton = () => {
         <span className={styles.connectedMobileWalletAddress}>
           {walletPubkeyString.slice(0, 4)}
         </span>
-        <BalanceContent
-          walletBalance={walletBalance}
-          vaultBalance={lenderVaultInfo.totalClaimableValue}
-        />
+        <BalanceContent walletBalance={walletBalance} vaultBalance={0} />
       </div>
       <ChevronDown
         className={classNames(styles.connectedWalletChevron, { [styles.active]: visible })}

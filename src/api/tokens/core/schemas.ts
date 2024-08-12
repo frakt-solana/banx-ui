@@ -1,6 +1,7 @@
 import { BondFeatures, BondingCurveType, PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { z } from 'zod'
 
+import { BondOfferV3Schema } from '@banx/api/nft'
 import {
   BondTradeTransactionSchema,
   FraktBondSchema,
@@ -54,7 +55,7 @@ export const TokenMarketPreviewSchema = z.object({
 
 export const TokenOfferPreviewSchema = z.object({
   publicKey: z.string(),
-  bondOffer: OfferSchema,
+  bondOffer: BondOfferV3Schema,
   tokenMarketPreview: TokenMarketPreviewSchema,
   tokenOfferPreview: z.object({
     publicKey: z.string(),

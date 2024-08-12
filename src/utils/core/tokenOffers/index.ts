@@ -4,7 +4,7 @@ import { ZERO_BN } from '@banx/utils/bn'
 
 import { isOfferStateClosed } from '../offers'
 
-export const isTokenOfferClosed = (offer: BondOfferV3) => {
+export const isBondOfferV3Closed = (offer: BondOfferV3) => {
   const isStateClosed = isOfferStateClosed(offer.pairState)
 
   return (
