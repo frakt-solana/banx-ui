@@ -10,8 +10,8 @@ import { useNftTokenType } from '@banx/store/nft'
 import {
   isOfferNewer,
   isOptimisticOfferExpired,
-  useTokenOffersOptimisticBN,
-} from '@banx/store/token/useTokenOffersOptimisticBN'
+  useTokenOffersOptimistic,
+} from '@banx/store/token/useTokenOffersOptimistic'
 import { isOfferStateClosed } from '@banx/utils'
 
 import { LendTokenTabName } from './LendTokenPage'
@@ -38,11 +38,7 @@ export const useTokenMarketsPreview = () => {
 }
 
 export const useTokenMarketOffers = (marketPubkey: string) => {
-  const {
-    optimisticOffers,
-    update: updateOffer,
-    remove: removeOffers,
-  } = useTokenOffersOptimisticBN()
+  const { optimisticOffers, update: updateOffer, remove: removeOffers } = useTokenOffersOptimistic()
   const { tokenType } = useNftTokenType()
 
   const { data, isLoading, isFetching, isFetched } = useQuery(

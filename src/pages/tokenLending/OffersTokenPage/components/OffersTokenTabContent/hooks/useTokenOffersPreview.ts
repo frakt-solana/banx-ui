@@ -11,8 +11,8 @@ import { useNftTokenType } from '@banx/store/nft'
 import {
   isOfferNewer,
   isOptimisticOfferExpired,
-  useTokenOffersOptimisticBN,
-} from '@banx/store/token/useTokenOffersOptimisticBN'
+  useTokenOffersOptimistic,
+} from '@banx/store/token/useTokenOffersOptimistic'
 import { isBondOfferV3Closed } from '@banx/utils/core/tokenOffers'
 
 export const useTokenOffersPreview = () => {
@@ -23,7 +23,7 @@ export const useTokenOffersPreview = () => {
     optimisticOffers,
     remove: removeOffers,
     update: updateOrAddOffer,
-  } = useTokenOffersOptimisticBN()
+  } = useTokenOffersOptimistic()
 
   const { marketsPreview } = useTokenMarketsPreview()
 

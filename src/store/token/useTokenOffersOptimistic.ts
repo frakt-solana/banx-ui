@@ -1,12 +1,16 @@
 import { useEffect, useMemo } from 'react'
 
 import { getBondingCurveTypeFromLendingToken } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { BondOfferV3 } from 'fbonds-core/lib/fbond-protocol/types'
 import { get, set } from 'idb-keyval'
 import { filter, map, uniqBy } from 'lodash'
 import moment from 'moment'
 import { create } from 'zustand'
 
-import { core } from '@banx/api/nft'
+import { parseResponseSafe } from '@banx/api'
+import { BondOfferV3Schema } from '@banx/api/nft'
+import { DBOffer } from '@banx/api/tokens'
+import { DBOfferSchema } from '@banx/api/tokens/core/schemas'
 
 import { useNftTokenType } from '../nft'
 
@@ -14,16 +18,21 @@ const BANX_TOKEN_OFFERS_OPTIMISTICS_LS_KEY = '@banx.tokenOffersOptimistics'
 const OFFERS_CACHE_TIME_UNIX = 2 * 60 //? Auto purge optimistic after 2 minutes
 
 export interface TokenOfferOptimistic {
-  offer: core.Offer
+  offer: BondOfferV3
+  expiredAt: number
+}
+
+export interface DBOfferOptimistic {
+  offer: DBOffer
   expiredAt: number
 }
 
 export interface TokenOffersOptimisticStore {
   optimisticOffers: TokenOfferOptimistic[]
   find: (publicKey: string) => TokenOfferOptimistic | undefined
-  add: (offers: core.Offer[]) => void
+  add: (offers: BondOfferV3[]) => void
   remove: (publicKeys: string[]) => void
-  update: (offers: core.Offer[]) => void
+  update: (offers: BondOfferV3[]) => void
   setState: (optimisticOffers: TokenOfferOptimistic[]) => void
 }
 
@@ -48,7 +57,7 @@ const useOptimisticOffersStore = create<TokenOffersOptimisticStore>((set, get) =
     const { optimisticOffers } = get()
     return findOffer(optimisticOffers, publicKey)
   },
-  update: (offers: core.Offer[]) =>
+  update: (offers: BondOfferV3[]) =>
     set((state) => {
       const nextOffers = updateOffers(
         state.optimisticOffers,
@@ -72,6 +81,7 @@ export const useTokenOffersOptimistic = () => {
     const setInitialState = async () => {
       try {
         const optimisticOffers = await getOptimisticOffersIdb()
+
         await setOptimisticOffersIdb(optimisticOffers)
         setState(optimisticOffers)
       } catch (error) {
@@ -100,13 +110,24 @@ export const isOptimisticOfferExpired = (loan: TokenOfferOptimistic) =>
 
 const setOptimisticOffersIdb = async (offers: TokenOfferOptimistic[]) => {
   try {
-    await set(BANX_TOKEN_OFFERS_OPTIMISTICS_LS_KEY, offers)
+    const convertedOffers = (
+      await Promise.all(
+        offers.map(async (offer) => {
+          return {
+            offer: await parseResponseSafe<DBOffer>(offer.offer, DBOfferSchema),
+            expiredAt: offer.expiredAt,
+          }
+        }),
+      )
+    ).filter((offer) => offer.offer) as DBOfferOptimistic[]
+
+    await set(BANX_TOKEN_OFFERS_OPTIMISTICS_LS_KEY, convertedOffers)
   } catch {
     return
   }
 }
 
-const convertOfferToOptimistic = (offer: core.Offer) => {
+const convertOfferToOptimistic = (offer: BondOfferV3) => {
   return {
     offer,
     expiredAt: moment().unix() + OFFERS_CACHE_TIME_UNIX,
@@ -115,7 +136,18 @@ const convertOfferToOptimistic = (offer: core.Offer) => {
 
 const getOptimisticOffersIdb = async () => {
   try {
-    return ((await get(BANX_TOKEN_OFFERS_OPTIMISTICS_LS_KEY)) || []) as TokenOfferOptimistic[]
+    const offers = (await get(BANX_TOKEN_OFFERS_OPTIMISTICS_LS_KEY)) as DBOfferOptimistic[]
+
+    const convertedOffers = (await Promise.all(
+      offers.map(async (offer) => {
+        return {
+          offer: await parseResponseSafe<BondOfferV3>(offer.offer, BondOfferV3Schema),
+          expiredAt: offer.expiredAt,
+        }
+      }),
+    )) as TokenOfferOptimistic[]
+
+    return convertedOffers.filter((offer) => offer.offer)
   } catch {
     return []
   }
@@ -125,19 +157,21 @@ const addOffers = (offersState: TokenOfferOptimistic[], offersToAdd: TokenOfferO
   uniqBy([...offersState, ...offersToAdd], ({ offer }) => offer.publicKey)
 
 const removeOffers = (offersState: TokenOfferOptimistic[], offersPubkeysToRemove: string[]) =>
-  offersState.filter(({ offer }) => !offersPubkeysToRemove.includes(offer.publicKey))
+  offersState.filter(({ offer }) => !offersPubkeysToRemove.includes(offer.publicKey.toBase58()))
 
 const findOffer = (offersState: TokenOfferOptimistic[], offerPublicKey: string) =>
-  offersState.find(({ offer }) => offer.publicKey === offerPublicKey)
+  offersState.find(({ offer }) => offer.publicKey?.toBase58() === offerPublicKey)
 
 const updateOffers = (
   offersState: TokenOfferOptimistic[],
   offersToAddOrUpdate: TokenOfferOptimistic[],
 ) => {
-  const publicKeys = offersToAddOrUpdate.map(({ offer }) => offer.publicKey)
+  const publicKeys = offersToAddOrUpdate
+    .map(({ offer }) => offer.publicKey)
+    .map((pk) => pk?.toBase58())
   const sameOffersRemoved = removeOffers(offersState, publicKeys)
   return addOffers(sameOffersRemoved, offersToAddOrUpdate)
 }
 
-export const isOfferNewer = (offerA: core.Offer, offerB: core.Offer) =>
-  offerA.lastTransactedAt >= offerB.lastTransactedAt
+export const isOfferNewer = (offerA: BondOfferV3, offerB: BondOfferV3) =>
+  offerA.lastTransactedAt.gte(offerB.lastTransactedAt)

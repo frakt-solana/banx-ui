@@ -8,7 +8,6 @@ import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 import Tooltip from '@banx/components/Tooltip'
 
-import { Offer } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
 import { Coin, Warning } from '@banx/icons'
 import { ViewState, useTableView } from '@banx/store/common'
@@ -25,14 +24,9 @@ import styles from './LoansTokenActiveTable.module.less'
 interface LoansTokenActiveTableProps {
   loans: core.TokenLoan[]
   isLoading: boolean
-  offers: Record<string, Offer[]>
 }
 
-const LoansTokenActiveTable: FC<LoansTokenActiveTableProps> = ({
-  loans: rawLoans,
-  isLoading,
-  offers,
-}) => {
+const LoansTokenActiveTable: FC<LoansTokenActiveTableProps> = ({ loans: rawLoans, isLoading }) => {
   const { tokenType } = useNftTokenType()
 
   const { publicKey: walletPublicKey } = useWallet()
@@ -104,7 +98,6 @@ const LoansTokenActiveTable: FC<LoansTokenActiveTableProps> = ({
     toggleLoanInSelection: onRowClick,
     hasSelectedLoans,
     isCardView: viewState === ViewState.CARD,
-    offers,
   })
 
   const rowParams = useMemo(() => {

@@ -2,7 +2,6 @@ import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
 import { CollateralTokenCell, HeaderCell } from '@banx/components/TableComponents'
 
-import { Offer } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
 import { formatCollateralTokenValue, getTokenLoanSupply } from '@banx/utils'
 
@@ -17,7 +16,6 @@ interface GetTableColumnsProps {
   onSelectAll: () => void
   hasSelectedLoans: boolean
   isCardView: boolean
-  offers: Record<string, Offer[]>
 }
 
 export const getTableColumns = ({
@@ -26,7 +24,6 @@ export const getTableColumns = ({
   toggleLoanInSelection,
   hasSelectedLoans,
   isCardView,
-  offers,
 }: GetTableColumnsProps) => {
   const columns: ColumnType<core.TokenLoan>[] = [
     {
@@ -86,7 +83,6 @@ export const getTableColumns = ({
       render: (loan) => (
         <ActionsCell
           loan={loan}
-          offers={offers}
           isCardView={isCardView}
           disableActions={!!findLoanInSelection(loan.publicKey)}
         />
