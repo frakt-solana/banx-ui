@@ -30,7 +30,7 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async (
   params,
   walletAndConnection,
 ) => {
-  const { collateral, loanValue, offer, aprRate, tokenType } = params
+  const { collateral, loanValue, offer, tokenType } = params
 
   const {
     instructions,
@@ -50,7 +50,6 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async (
       amountToGet: loanValue,
       amountToSend: new BN(0),
       optimizeIntoReserves: true,
-      aprRate: aprRate,
       lendingTokenType: tokenType,
     },
     connection: walletAndConnection.connection,

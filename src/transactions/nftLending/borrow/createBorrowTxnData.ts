@@ -101,6 +101,10 @@ const getTxnDataByBorrowType = async ({
   })
 
   if (borrowType === BorrowType.CoreNft) {
+    if (!nft.nft.meta.collectionId) {
+      throw new Error(`Not Core NFT`)
+    }
+
     const {
       instructions,
       signers,

@@ -69,6 +69,10 @@ export const createClaimTxnData: CreateClaimTxnData = async (params, walletAndCo
   }
 
   if (loan.nft.meta.tokenStandard === TokenStandard.CORE) {
+    if (!loan.nft.meta.collectionId) {
+      throw new Error(`Not Core NFT`)
+    }
+
     const {
       instructions,
       signers,
