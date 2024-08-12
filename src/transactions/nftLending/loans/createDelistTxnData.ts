@@ -124,6 +124,10 @@ const getIxnsAndSignersByListingType = async ({
   }
 
   if (type === ListingType.CoreNft) {
+    if (!loan.nft.meta.collectionId) {
+      throw new Error(`Not Core NFT`)
+    }
+
     const { instructions, signers } = await removePerpetualListingCore({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {

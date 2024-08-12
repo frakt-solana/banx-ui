@@ -71,6 +71,7 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
       bondingCurveType,
       bondFeature,
       collateralsPerToken: new BN(collateralsPerToken),
+      tokenLendingApr: ZERO_BN,
     },
     sendTxn: sendTxnPlaceHolder,
   })

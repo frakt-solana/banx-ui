@@ -154,6 +154,10 @@ const getIxnsAndSignersByListingType = async ({
   }
 
   if (type === ListingType.CoreNft) {
+    if (!nft.nft.meta.collectionId) {
+      throw new Error(`Not Core NFT`)
+    }
+
     const {
       instructions,
       signers,

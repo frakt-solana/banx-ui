@@ -42,6 +42,7 @@ export const getUpdatedBondOffer: GetUpdatedBondOffer = ({
     newDelta: new BN(deltaValue),
     newQuantityOfLoans: new BN(loansAmount),
     collateralsPerToken: ZERO_BN,
+    tokenLendingApr: ZERO_BN,
   })
 
   return core.convertBondOfferV3ToCore(updatedBondOffer)
