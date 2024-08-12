@@ -7,10 +7,8 @@ import { filter, map, uniqBy } from 'lodash'
 import moment from 'moment'
 import { create } from 'zustand'
 
-import { parseResponseSafe } from '@banx/api'
-import { BondOfferV3Schema } from '@banx/api/nft'
 import { DBOffer } from '@banx/api/tokens'
-import { DBOfferSchema } from '@banx/api/tokens/core/schemas'
+import { convertBondOfferV3Strings, convertDBOfferToBondOfferV3 } from '@banx/api/tokens/core'
 
 import { useNftTokenType } from '../nft'
 
@@ -110,16 +108,12 @@ export const isOptimisticOfferExpired = (loan: TokenOfferOptimistic) =>
 
 const setOptimisticOffersIdb = async (offers: TokenOfferOptimistic[]) => {
   try {
-    const convertedOffers = (
-      await Promise.all(
-        offers.map(async (offer) => {
-          return {
-            offer: await parseResponseSafe<DBOffer>(offer.offer, DBOfferSchema),
-            expiredAt: offer.expiredAt,
-          }
-        }),
-      )
-    ).filter((offer) => offer.offer) as DBOfferOptimistic[]
+    const convertedOffers = map(offers, (offer) => {
+      return {
+        offer: convertBondOfferV3Strings(offer.offer),
+        expiredAt: offer.expiredAt,
+      }
+    })
 
     await set(BANX_TOKEN_OFFERS_OPTIMISTICS_LS_KEY, convertedOffers)
   } catch {
@@ -138,16 +132,14 @@ const getOptimisticOffersIdb = async () => {
   try {
     const offers = (await get(BANX_TOKEN_OFFERS_OPTIMISTICS_LS_KEY)) as DBOfferOptimistic[]
 
-    const convertedOffers = (await Promise.all(
-      offers.map(async (offer) => {
-        return {
-          offer: await parseResponseSafe<BondOfferV3>(offer.offer, BondOfferV3Schema),
-          expiredAt: offer.expiredAt,
-        }
-      }),
-    )) as TokenOfferOptimistic[]
+    const convertedOffers = map(offers, (offer) => {
+      return {
+        offer: convertDBOfferToBondOfferV3(offer.offer),
+        expiredAt: offer.expiredAt,
+      }
+    })
 
-    return convertedOffers.filter((offer) => offer.offer)
+    return convertedOffers
   } catch {
     return []
   }

@@ -1,11 +1,12 @@
 import { BondFeatures, BondingCurveType, PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { z } from 'zod'
 
-import { BondOfferV3Schema } from '@banx/api/nft'
 import {
   BondTradeTransactionSchema,
   FraktBondSchema,
   OfferSchema,
+  SerializedBNSchema,
+  SerializedPublicKeySchema,
   StringPublicKeySchema,
 } from '@banx/api/shared'
 
@@ -51,6 +52,41 @@ export const TokenMarketPreviewSchema = z.object({
   marketUtilizationRate: z.number().nullable(),
 
   isHot: z.boolean(),
+})
+
+export const BondOfferV3Schema = z.object({
+  publicKey: SerializedPublicKeySchema,
+  assetReceiver: SerializedPublicKeySchema,
+  baseSpotPrice: SerializedBNSchema,
+  bidCap: SerializedBNSchema,
+  bidSettlement: SerializedBNSchema,
+  bondingCurve: z.object({
+    delta: SerializedBNSchema,
+    bondingType: z.nativeEnum(BondingCurveType),
+  }),
+  buyOrdersQuantity: SerializedBNSchema,
+  concentrationIndex: SerializedBNSchema,
+  currentSpotPrice: SerializedBNSchema,
+  edgeSettlement: SerializedBNSchema,
+  fundsSolOrTokenBalance: SerializedBNSchema,
+  hadoMarket: SerializedPublicKeySchema,
+  lastTransactedAt: SerializedBNSchema,
+  mathCounter: SerializedBNSchema,
+  pairState: z.nativeEnum(PairState),
+  validation: z.object({
+    loanToValueFilter: SerializedBNSchema,
+    collateralsPerToken: SerializedBNSchema,
+    maxReturnAmountFilter: SerializedBNSchema,
+    bondFeatures: z.nativeEnum(BondFeatures),
+  }),
+
+  fundsInCurrentEpoch: SerializedBNSchema,
+  fundsInNextEpoch: SerializedBNSchema,
+  lastCalculatedSlot: SerializedBNSchema,
+  lastCalculatedTimestamp: SerializedBNSchema,
+  rewardsToHarvest: SerializedBNSchema,
+  rewardsToHarvested: SerializedBNSchema,
+  loanApr: SerializedBNSchema.default('0'),
 })
 
 export const TokenOfferPreviewSchema = z.object({
@@ -118,4 +154,6 @@ export const DBOfferSchema = z.object({
   lastCalculatedTimestamp: z.string(),
   rewardsToHarvest: z.string(),
   rewardsToHarvested: z.string(),
+
+  loanApr: z.string(),
 })

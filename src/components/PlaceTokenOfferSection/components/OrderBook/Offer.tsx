@@ -27,7 +27,7 @@ const Offer: FC<OfferProps> = ({ offer, collateral, collateralPrice }) => {
 
   const { connected } = useWallet()
 
-  const isNewOffer = connected && offerPubkey === PUBKEY_PLACEHOLDER
+  const isNewOffer = connected && offerPubkey.toBase58() === PUBKEY_PLACEHOLDER
 
   const commonHighlightClassNames = {
     [styles.creating]: isNewOffer,

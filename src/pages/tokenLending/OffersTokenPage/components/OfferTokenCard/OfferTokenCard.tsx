@@ -6,7 +6,6 @@ import { Button } from '@banx/components/Buttons'
 import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
-import { convertBondOfferV3ToCore } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
 import { ChevronDown, Coin, CoinPlus, SOLFilled, USDC, Warning } from '@banx/icons'
 import { useNftTokenType } from '@banx/store/nft'
@@ -28,7 +27,7 @@ const OfferTokenCard: FC<OfferTokenCardProps> = ({ offerPreview, isOpen, onToggl
 
   const onCardClick = () => {
     onToggleCard()
-    setSyntheticOffer(convertToSynthetic(convertBondOfferV3ToCore(offerPreview.bondOffer), true))
+    setSyntheticOffer(convertToSynthetic(offerPreview.bondOffer, true))
   }
 
   return (

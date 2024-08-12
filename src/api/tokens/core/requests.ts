@@ -5,13 +5,13 @@ import {
   LendingTokenType,
 } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { BondOfferV3Schema } from '@banx/api/nft'
 import { RequestWithPagination } from '@banx/api/shared'
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import { convertToMarketType } from '../../helpers'
 import { parseResponseSafe } from './../../shared/validation'
 import {
+  BondOfferV3Schema,
   CollateralTokenSchema,
   TokenLoanSchema,
   TokenLoansRequestsSchema,
@@ -29,6 +29,8 @@ import {
   TokenOfferPreview,
   WalletTokenLoansAndOffers,
 } from './types'
+
+const DEV_BACKEND_BASE_URL = 'http://ec2-52-87-120-232.compute-1.amazonaws.com:3000'
 
 type FetchTokenMarketsPreview = (
   props: RequestWithPagination<{ tokenType: LendingTokenType }>,
@@ -70,7 +72,7 @@ export const fetchTokenMarketOffers: FetchTokenMarketOffers = async ({
   })
 
   const { data } = await axios.get<{ data: BondOfferV3[] }>(
-    `${BACKEND_BASE_URL}/bond-offers/${marketPubkey}?${queryParams.toString()}`,
+    `${DEV_BACKEND_BASE_URL}/bond-offers/${marketPubkey}?${queryParams.toString()}`,
   )
 
   return await parseResponseSafe<BondOfferV3[]>(data?.data, BondOfferV3Schema.array())
@@ -79,7 +81,7 @@ export const fetchTokenMarketOffers: FetchTokenMarketOffers = async ({
 type FetchTokenOffersPreview = (props: {
   walletPubkey: string
   tokenType: LendingTokenType
-}) => Promise<TokenOfferPreview[]>
+}) => Promise<TokenOfferPreview[] | undefined>
 export const fetchTokenOffersPreview: FetchTokenOffersPreview = async ({
   walletPubkey,
   tokenType,
@@ -91,16 +93,10 @@ export const fetchTokenOffersPreview: FetchTokenOffersPreview = async ({
   })
 
   const { data } = await axios.get<{ data: TokenOfferPreview[] }>(
-    `${BACKEND_BASE_URL}/spl-offers/my-offers/${walletPubkey}?${queryParams.toString()}`,
+    `${DEV_BACKEND_BASE_URL}/spl-offers/my-offers/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  try {
-    await TokenOfferPreviewSchema.array().parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
-
-  return data.data
+  return await parseResponseSafe<TokenOfferPreview[]>(data?.data, TokenOfferPreviewSchema.array())
 }
 
 type FetchWalletTokenLoansAndOffers = (props: {
