@@ -1,6 +1,8 @@
+import { calculateAPRforOffer } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
 
+import { TokenMarketPreview } from '@banx/api/tokens'
 import { SyntheticTokenOffer } from '@banx/store/token'
 
 type GetErrorMessage = (props: {
@@ -52,3 +54,20 @@ export const formatLeadingZeros = (value: number, decimals: number) =>
     .toFixed(decimals)
     .replace(/(\.\d*?)0+$/, '$1') //? Remove trailing zeros if they follow a decimal point
     .replace(/\.$/, '') //? Remove the decimal point if it's the last character
+
+export const calculateTokenLendingApr = (
+  market: TokenMarketPreview | undefined,
+  collateralsPerToken: number,
+) => {
+  const { collateralPrice = 0, collateral } = market || {}
+
+  const ltvPercent = (collateralsPerToken / collateralPrice) * 100 || 0
+
+  const fullyDilutedValuationNumber = collateral
+    ? parseFloat(collateral.fullyDilutedValuationInMillions)
+    : 0
+
+  const { factoredApr: aprPercent } = calculateAPRforOffer(ltvPercent, fullyDilutedValuationNumber)
+
+  return aprPercent * 100
+}

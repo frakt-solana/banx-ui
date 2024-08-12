@@ -49,6 +49,7 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
     updateOrAddOffer,
     resetFormValues,
     optimisticOffer: offer,
+    market,
   })
 
   const offerErrorMessage = getErrorMessage({
