@@ -4,6 +4,7 @@ import { ResponseWithPagination } from '@banx/api/shared'
 
 import {
   CollateralTokenSchema,
+  DBOfferSchema,
   TokenLoanSchema,
   TokenLoansRequestsSchema,
   TokenMarketPreviewSchema,
@@ -27,3 +28,5 @@ export type TokenLoansRequests = z.infer<typeof TokenLoansRequestsSchema>
 export type AllTokenLoansRequestsResponse = ResponseWithPagination<TokenLoansRequests>
 
 export type CollateralToken = z.infer<typeof CollateralTokenSchema>
+
+export type DBOffer = z.infer<typeof DBOfferSchema>

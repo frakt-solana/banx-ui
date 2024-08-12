@@ -18,6 +18,7 @@ import {
 
 import { helius } from '@banx/api/common'
 import { getPriorityFeeLevel } from '@banx/store/common'
+import { ZERO_BN } from '@banx/utils'
 
 import { BANX_ACCOUNTS_NAMES_AND_DISCRIMINATORS, banxCoder } from './constants'
 
@@ -130,4 +131,47 @@ export const parseAccountInfoByPubkey = (
     })
     .fromPairs()
     .value()
+}
+
+export const parseAccountInfoByPubkeyBN = (
+  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
+): Record<string, unknown> => {
+  return chain(accountInfoByPubkey)
+    .toPairs()
+    .filter(([, info]) => !!info)
+    .map(([publicKey, info]) => {
+      return parseBanxAccountInfoBN(new web3.PublicKey(publicKey), info)
+    })
+    .fromPairs()
+    .value()
+}
+
+export const parseBanxAccountInfoBN = <T>(
+  publicKey: web3.PublicKey,
+  info: web3.SimulatedTransactionAccountInfo | null,
+): [string, T] | null => {
+  if (!info || !info.data) return null
+
+  const bufferData = Buffer.from(info.data[0], 'base64')
+
+  const accountName = getAccountName(BANX_ACCOUNTS_NAMES_AND_DISCRIMINATORS, bufferData) ?? ''
+
+  const parsedData = decodeAccountDataSafe<unknown>(banxCoder, accountName, bufferData)
+
+  const parsedDataWithEnums = parsedData
+    ? { publicKey, ...parseEnumsInAccount<object>(parsedData) }
+    : null
+
+  const convertedAccount = convertValuesInAccount<T>(parsedDataWithEnums, {
+    bnParser: (v) => {
+      try {
+        return v
+      } catch (err) {
+        return ZERO_BN
+      }
+    },
+    pubkeyParser: (v) => v.toBase58(),
+  })
+
+  return [accountName, convertedAccount]
 }

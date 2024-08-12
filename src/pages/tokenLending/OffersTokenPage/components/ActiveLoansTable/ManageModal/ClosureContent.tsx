@@ -8,6 +8,7 @@ import { Button } from '@banx/components/Buttons'
 import { Loader } from '@banx/components/Loader'
 import Timer from '@banx/components/Timer'
 
+import { convertBondOfferV3ToCore } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
 import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
 import { useNftTokenType } from '@banx/store/nft'
@@ -38,7 +39,10 @@ export const ClosureContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
   const bestOffer = useMemo(() => {
     return chain(offers)
       .thru((offers) =>
-        filterOutWalletLoans({ offers, walletPubkey: wallet?.publicKey?.toBase58() }),
+        filterOutWalletLoans({
+          offers: offers.map(convertBondOfferV3ToCore),
+          walletPubkey: wallet?.publicKey?.toBase58(),
+        }),
       )
       .thru((offers) =>
         findSuitableOffer({ loanValue: caclulateBorrowTokenLoanValue(loan).toNumber(), offers }),

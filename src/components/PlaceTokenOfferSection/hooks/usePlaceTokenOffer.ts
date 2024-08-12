@@ -5,6 +5,7 @@ import { useNftTokenType } from '@banx/store/nft'
 import { getTokenDecimals } from '@banx/utils'
 
 import { getErrorMessage } from '../helpers'
+import { convertBondOfferV3ToCore } from './../../../api/nft/core/converters'
 import { useOfferFormController } from './useOfferFormController'
 import { useTokenMarketAndOffer } from './useTokenMarketAndOffer'
 import { useTokenOffer } from './useTokenOffer'
@@ -48,7 +49,7 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
     loanValue: offerSize,
     updateOrAddOffer,
     resetFormValues,
-    optimisticOffer: offer,
+    optimisticOffer: offer ? convertBondOfferV3ToCore(offer) : undefined,
   })
 
   const offerErrorMessage = getErrorMessage({

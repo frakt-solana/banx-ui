@@ -1,11 +1,16 @@
 import axios from 'axios'
-import { BondingCurveType, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import {
+  BondOfferV3,
+  BondingCurveType,
+  LendingTokenType,
+} from 'fbonds-core/lib/fbond-protocol/types'
 
-import { Offer } from '@banx/api/nft'
-import { OfferSchema, RequestWithPagination } from '@banx/api/shared'
+import { BondOfferV3Schema } from '@banx/api/nft'
+import { RequestWithPagination } from '@banx/api/shared'
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import { convertToMarketType } from '../../helpers'
+import { parseResponseSafe } from './../../shared/validation'
 import {
   CollateralTokenSchema,
   TokenLoanSchema,
@@ -52,7 +57,7 @@ type FetchTokenMarketOffers = (props: {
   marketPubkey?: string
   tokenType: LendingTokenType
   getAll?: boolean
-}) => Promise<Offer[]>
+}) => Promise<BondOfferV3[] | undefined>
 export const fetchTokenMarketOffers: FetchTokenMarketOffers = async ({
   marketPubkey,
   tokenType,
@@ -64,17 +69,11 @@ export const fetchTokenMarketOffers: FetchTokenMarketOffers = async ({
     isPrivate: String(IS_PRIVATE_MARKETS),
   })
 
-  const { data } = await axios.get<{ data: Offer[] }>(
+  const { data } = await axios.get<{ data: BondOfferV3[] }>(
     `${BACKEND_BASE_URL}/bond-offers/${marketPubkey}?${queryParams.toString()}`,
   )
 
-  try {
-    await OfferSchema.array().parseAsync(data?.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
-
-  return data?.data
+  return await parseResponseSafe<BondOfferV3[]>(data?.data, BondOfferV3Schema.array())
 }
 
 type FetchTokenOffersPreview = (props: {

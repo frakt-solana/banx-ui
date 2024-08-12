@@ -1,13 +1,17 @@
 import { BN, web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { borrowPerpetualSpl } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
-import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
+import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import {
+  CreateTxnData,
+  SimulatedAccountInfoByPubkey,
+  WalletAndConnection,
+} from 'solana-transactions-executor'
 
-import { Offer } from '@banx/api/nft'
+import { Offer, core } from '@banx/api/nft'
 import { CollateralToken } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
-import { sendTxnPlaceHolder } from '@banx/transactions'
+import { parseAccountInfoByPubkeyBN, sendTxnPlaceHolder } from '@banx/transactions'
 
 export type CreateBorrowTokenTxnDataParams = {
   collateral: CollateralToken
@@ -65,5 +69,17 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async (
     signers,
     accounts,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+  }
+}
+
+export const parseTokenBorrowSimulatedAccounts = (
+  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
+) => {
+  const results = parseAccountInfoByPubkeyBN(accountInfoByPubkey)
+
+  return {
+    bondOffer: results?.['bondOfferV3'] as BondOfferV3,
+    bondTradeTransaction: results?.['bondTradeTransactionV3'] as core.BondTradeTransaction,
+    fraktBond: results?.['fraktBond'] as core.FraktBond,
   }
 }

@@ -1,10 +1,11 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { BondFeatures } from 'fbonds-core/lib/fbond-protocol/types'
+import { BN } from 'bn.js'
+import { BondFeatures, BondOfferV3 } from 'fbonds-core/lib/fbond-protocol/types'
 import { uniqueId } from 'lodash'
 import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
-import { core } from '@banx/api/nft'
+import { Offer } from '@banx/api/nft'
 import { useNftTokenType } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -18,9 +19,9 @@ import {
   createMakeBondingOfferTxnData,
   createRemoveOfferTxnData,
   createUpdateBondingOfferTxnData,
-  parseMakeOfferSimulatedAccounts,
-  parseRemoveOfferSimulatedAccounts,
-  parseUpdateOfferSimulatedAccounts,
+  parseMakeOfferSimulatedAccountsBN,
+  parseRemoveOfferSimulatedAccountsBN,
+  parseUpdateOfferSimulatedAccountsBN,
 } from '@banx/transactions/nftLending'
 import {
   destroySnackbar,
@@ -40,8 +41,8 @@ export const useTokenOfferTransactions = ({
 }: {
   marketPubkey: string
   loanValue: number
-  optimisticOffer?: core.Offer
-  updateOrAddOffer: (offer: core.Offer) => void
+  optimisticOffer?: Offer
+  updateOrAddOffer: (offer: BondOfferV3) => void
   resetFormValues: () => void
   collateralsPerToken: number
 }) => {
@@ -96,7 +97,7 @@ export const useTokenOfferTransactions = ({
             })
 
             if (accountInfoByPubkey) {
-              const offer = parseMakeOfferSimulatedAccounts(accountInfoByPubkey)
+              const offer = parseMakeOfferSimulatedAccountsBN(accountInfoByPubkey)
               updateOrAddOffer(offer)
               resetFormValues()
             }
@@ -168,9 +169,9 @@ export const useTokenOfferTransactions = ({
             })
             if (accountInfoByPubkey) {
               if (accountInfoByPubkey) {
-                const offer = parseUpdateOfferSimulatedAccounts(accountInfoByPubkey)
+                const offer = parseUpdateOfferSimulatedAccountsBN(accountInfoByPubkey)
                 //? Needs to prevent BE data overlap in optimistics logic
-                updateOrAddOffer({ ...offer, lastTransactedAt: moment().unix() })
+                updateOrAddOffer({ ...offer, lastTransactedAt: new BN(moment().unix()) })
               }
             }
           })
@@ -234,9 +235,9 @@ export const useTokenOfferTransactions = ({
             })
 
             if (accountInfoByPubkey) {
-              const offer = parseRemoveOfferSimulatedAccounts(accountInfoByPubkey)
+              const offer = parseRemoveOfferSimulatedAccountsBN(accountInfoByPubkey)
               //? Needs to prevent BE data overlap in optimistics logic
-              updateOrAddOffer({ ...offer, lastTransactedAt: moment().unix() })
+              updateOrAddOffer({ ...offer, lastTransactedAt: new BN(moment().unix()) })
             }
           })
         })

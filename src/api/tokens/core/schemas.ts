@@ -1,6 +1,12 @@
+import { BondFeatures, BondingCurveType, PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { z } from 'zod'
 
-import { BondTradeTransactionSchema, FraktBondSchema, OfferSchema } from '@banx/api/shared'
+import {
+  BondTradeTransactionSchema,
+  FraktBondSchema,
+  OfferSchema,
+  StringPublicKeySchema,
+} from '@banx/api/shared'
 
 export const TokenMetaSchema = z.object({
   mint: z.string(),
@@ -76,4 +82,39 @@ export const CollateralTokenSchema = z.object({
   collateral: TokenMetaSchema,
   collateralPrice: z.number(),
   amountInWallet: z.number(),
+})
+
+export const DBOfferSchema = z.object({
+  publicKey: StringPublicKeySchema,
+  assetReceiver: StringPublicKeySchema,
+  baseSpotPrice: z.string(),
+  bidCap: z.string(),
+  bidSettlement: z.string(),
+  bondingCurve: z.object({
+    delta: z.string(),
+    bondingType: z.nativeEnum(BondingCurveType),
+  }),
+  buyOrdersQuantity: z.string(),
+  concentrationIndex: z.string(),
+  currentSpotPrice: z.string(),
+  edgeSettlement: z.string(),
+  fundsSolOrTokenBalance: z.string(),
+  hadoMarket: StringPublicKeySchema,
+  lastTransactedAt: z.string(),
+  mathCounter: z.string(),
+  pairState: z.nativeEnum(PairState),
+
+  validation: z.object({
+    loanToValueFilter: z.string(),
+    collateralsPerToken: z.string(),
+    maxReturnAmountFilter: z.string(),
+    bondFeatures: z.nativeEnum(BondFeatures),
+  }),
+
+  fundsInCurrentEpoch: z.string(),
+  fundsInNextEpoch: z.string(),
+  lastCalculatedSlot: z.string(),
+  lastCalculatedTimestamp: z.string(),
+  rewardsToHarvest: z.string(),
+  rewardsToHarvested: z.string(),
 })

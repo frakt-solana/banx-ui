@@ -4,7 +4,7 @@ import {
   optimisticUpdateBondOfferBonding,
   updatePerpetualOfferBonding,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
@@ -17,7 +17,7 @@ import { BANX_SOL_ADDRESS, BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
 import { ZERO_BN, calculateIdleFundsInOffer, isBanxSolTokenType } from '@banx/utils'
 
-import { parseAccountInfoByPubkey } from '../../functions'
+import { parseAccountInfoByPubkey, parseAccountInfoByPubkeyBN } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
 export type CreateUpdateBondingOfferTxnDataParams = {
@@ -118,4 +118,12 @@ export const parseUpdateOfferSimulatedAccounts = (
   const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
   return results?.['bondOfferV3'] as core.Offer
+}
+
+export const parseUpdateOfferSimulatedAccountsBN = (
+  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
+) => {
+  const results = parseAccountInfoByPubkeyBN(accountInfoByPubkey)
+
+  return results?.['bondOfferV3'] as BondOfferV3
 }

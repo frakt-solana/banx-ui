@@ -29,7 +29,7 @@ const SerializedToNumberBNSchema = z.number().transform((value) => {
   return new BN(value)
 })
 
-const BondOfferV3Schema = z.object({
+export const BondOfferV3Schema = z.object({
   publicKey: SerializedPublicKeySchema,
   assetReceiver: SerializedPublicKeySchema,
   baseSpotPrice: SerializedToNumberBNSchema,

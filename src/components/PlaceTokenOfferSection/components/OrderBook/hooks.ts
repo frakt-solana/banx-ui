@@ -2,8 +2,9 @@ import { useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
+import { map } from 'lodash'
 
-import { core } from '@banx/api/nft'
+import { convertBondOfferV3ToCore, core } from '@banx/api/nft'
 import {
   useTokenMarketOffers,
   useTokenMarketsPreview,
@@ -16,7 +17,7 @@ export const useMarketOrders = (marketPubkey: string, offerPubkey: string) => {
 
   const processedOffers = useProcessedOffers({
     marketPubkey,
-    offers,
+    offers: map(offers, convertBondOfferV3ToCore),
     editableOfferPubkey: offerPubkey,
   })
 
