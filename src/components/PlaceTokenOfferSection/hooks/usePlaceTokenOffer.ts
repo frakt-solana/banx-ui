@@ -50,6 +50,7 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
     updateOrAddOffer,
     resetFormValues,
     optimisticOffer: offer ? convertBondOfferV3ToCore(offer) : undefined,
+    market,
   })
 
   const offerErrorMessage = getErrorMessage({

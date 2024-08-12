@@ -27,6 +27,7 @@ export type CreateUpdateBondingOfferTxnDataParams = {
   offer: core.Offer
   tokenType: LendingTokenType
   collateralsPerToken?: number
+  tokenLendingApr?: number
 }
 
 type CreateUpdateBondingOfferTxnData = (
@@ -38,7 +39,15 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
   params,
   walletAndConnection,
 ) => {
-  const { loanValue, loansAmount, deltaValue, offer, tokenType, collateralsPerToken = 0 } = params
+  const {
+    loanValue,
+    loansAmount,
+    deltaValue,
+    offer,
+    tokenType,
+    tokenLendingApr = 0,
+    collateralsPerToken = 0,
+  } = params
 
   const {
     instructions,
@@ -82,7 +91,7 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
       newDelta: new BN(deltaValue),
       newQuantityOfLoans: new BN(loansAmount),
       collateralsPerToken: ZERO_BN,
-      tokenLendingApr: ZERO_BN,
+      tokenLendingApr: new BN(tokenLendingApr),
     })
 
     //? Optimistic offer is broken
