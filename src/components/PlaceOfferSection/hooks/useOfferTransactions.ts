@@ -1,5 +1,4 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { BN } from 'fbonds-core'
 import { BondFeatures } from 'fbonds-core/lib/fbond-protocol/types'
 import { uniqueId } from 'lodash'
 import moment from 'moment'
@@ -64,7 +63,7 @@ export const useOfferTransactions = ({
         {
           marketPubkey,
           loansAmount,
-          loanValue: new BN(loanValue),
+          loanValue,
           deltaValue,
           tokenType,
           bondFeature: BondFeatures.AutoReceiveAndReceiveNft,
@@ -137,7 +136,7 @@ export const useOfferTransactions = ({
 
       const txnData = await createUpdateBondingOfferTxnData(
         {
-          loanValue: new BN(loanValue),
+          loanValue,
           offer: optimisticOffer,
           loansAmount,
           deltaValue,

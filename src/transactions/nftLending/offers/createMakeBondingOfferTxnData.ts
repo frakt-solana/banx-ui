@@ -23,7 +23,7 @@ import { sendTxnPlaceHolder } from '../../helpers'
 export type CreateMakeBondingOfferTxnDataParams = {
   marketPubkey: string
 
-  loanValue: BN //? normal number
+  loanValue: number //? normal number
   loansAmount: number
   deltaValue: number //? normal number
   collateralsPerToken?: number
@@ -67,7 +67,7 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
       userPubkey: walletAndConnection.wallet.publicKey,
     },
     args: {
-      loanValue: loanValue,
+      loanValue: new BN(loanValue),
       delta: new BN(deltaValue),
       quantityOfLoans: loansAmount,
       bondingCurveType,
@@ -89,7 +89,7 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
     })
 
     const offerSize = calculateNewOfferSize({
-      loanValue: loanValue.toNumber(),
+      loanValue: loanValue,
       loansAmount,
       deltaValue,
     })

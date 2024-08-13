@@ -44,7 +44,7 @@ export const useTokenOfferTransactions = ({
   market,
 }: {
   marketPubkey: string
-  loanValue: BN
+  loanValue: number
   optimisticOffer?: Offer
   updateOrAddOffer: (offer: BondOfferV3) => void
   resetFormValues: () => void

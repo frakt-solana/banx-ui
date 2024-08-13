@@ -10,7 +10,7 @@ import { ZERO_BN, calculateIdleFundsInOffer } from '@banx/utils'
 export interface SyntheticTokenOffer {
   isEdit: boolean //? if offer exits on blochain and in edit mode
   publicKey: web3.PublicKey //? PUBKEY_PLACEHOLDER for offers to create
-  offerSize: BN
+  offerSize: number
   assetReceiver: string
   marketPubkey: string
   collateralsPerToken: BN
@@ -65,7 +65,7 @@ export const createEmptySyntheticTokenOffer: CreateEmptySyntheticTokenOffer = ({
   publicKey: new web3.PublicKey(PUBKEY_PLACEHOLDER),
   assetReceiver: walletPubkey,
   marketPubkey,
-  offerSize: ZERO_BN,
+  offerSize: 0,
   collateralsPerToken: ZERO_BN,
 })
 
@@ -77,7 +77,7 @@ export const convertToSynthetic = (offer: BondOfferV3, isEdit = false): Syntheti
   return {
     isEdit,
     publicKey,
-    offerSize,
+    offerSize: offerSize.toNumber(),
     assetReceiver: assetReceiver.toBase58(),
     marketPubkey: hadoMarket.toBase58(),
     collateralsPerToken: offer.validation.collateralsPerToken,

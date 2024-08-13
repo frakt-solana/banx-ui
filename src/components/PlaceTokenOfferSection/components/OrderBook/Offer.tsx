@@ -53,7 +53,7 @@ const Offer: FC<OfferProps> = ({ offer, collateral, collateralPrice }) => {
         <p className={styles.displayOfferValue}>{offerValue}</p>
         <p className={styles.value}>{createPercentValueJSX(aprPercent)}</p>
         <p className={styles.value}>
-          <DisplayValue value={offerSize.toNumber()} />
+          <DisplayValue value={offerSize} />
         </p>
       </div>
     </li>

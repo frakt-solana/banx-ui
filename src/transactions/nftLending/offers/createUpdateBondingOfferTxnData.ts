@@ -21,7 +21,7 @@ import { customBNConverter, parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
 export type CreateUpdateBondingOfferTxnDataParams = {
-  loanValue: BN //? human number
+  loanValue: number //? human number
   loansAmount: number
   deltaValue: number //? human number
   offer: core.Offer
@@ -62,7 +62,7 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
     },
 
     args: {
-      loanValue,
+      loanValue: new BN(loanValue),
       delta: new BN(deltaValue),
       quantityOfLoans: loansAmount,
       lendingTokenType: tokenType,
@@ -87,7 +87,7 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
 
     const updatedOffer = optimisticUpdateBondOfferBonding({
       bondOffer: core.convertCoreOfferToBondOfferV3(offer),
-      newLoanValue: loanValue,
+      newLoanValue: new BN(loanValue),
       newDelta: new BN(deltaValue),
       newQuantityOfLoans: new BN(loansAmount),
       collateralsPerToken: ZERO_BN,

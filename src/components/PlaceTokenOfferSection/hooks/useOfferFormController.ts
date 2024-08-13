@@ -85,10 +85,10 @@ export const calculateTokensPerCollateral = (collateralsPerToken: BN, decimals: 
   return parseFloat(tokensPerCollateral.toPrecision(decimals))
 }
 
-const calculateOfferSize = (syntheticOfferSize: BN, decimals: number) => {
-  const offerSize = syntheticOfferSize.div(new BN(decimals))
+const calculateOfferSize = (syntheticOfferSize: number, decimals: number) => {
+  const offerSize = syntheticOfferSize / decimals
 
   //? 1e4 is used for rounding the result to 4 decimal places
-  const roundedOfferSize = Math.round(offerSize.mul(new BN(1e4)).div(new BN(1e4)).toNumber())
+  const roundedOfferSize = Math.round(offerSize * 1e4) / 1e4
   return roundedOfferSize
 }

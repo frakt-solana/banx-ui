@@ -9,7 +9,6 @@ import {
   useTokenMarketsPreview,
 } from '@banx/pages/tokenLending/LendTokenPage'
 import { SyntheticTokenOffer, convertToSynthetic, useSyntheticTokenOffers } from '@banx/store/token'
-import { ZERO_BN } from '@banx/utils'
 
 export const useMarketOrders = (marketPubkey: string, offerPubkey: string) => {
   const { offers, isLoading } = useTokenMarketOffers(marketPubkey)
@@ -66,9 +65,7 @@ const useProcessedOffers: UseProcessedOffers = ({ marketPubkey, offers, editable
     const processedEditableOffers = offersConvertedToSynthetic
       .filter((offer) => offer.publicKey.toBase58() !== editableOfferPubkey)
       //? Filter empty offers, but alwaus show user offers
-      .filter(
-        (offer) => !(offer.offerSize.eq(ZERO_BN) && offer.assetReceiver !== publicKey?.toBase58()),
-      )
+      .filter((offer) => !(offer.offerSize === 0 && offer.assetReceiver !== publicKey?.toBase58()))
 
     if (syntheticOffer) {
       processedEditableOffers.push(syntheticOffer)
