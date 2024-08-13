@@ -1,8 +1,10 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
+
+import { BN } from 'fbonds-core'
 
 import { useWalletBalance } from '@banx/hooks'
 import { useNftTokenType } from '@banx/store/nft'
-import { getTokenDecimals } from '@banx/utils'
+import { ZERO_BN, getTokenDecimals, stringToBN } from '@banx/utils'
 
 import { getErrorMessage } from '../helpers'
 import { convertBondOfferV3ToCore } from './../../../api/nft/core/converters'
@@ -31,14 +33,24 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
 
   const decimals = getTokenDecimals(tokenType)
 
-  const collateralsPerToken =
-    (1 / parseFloat(collateralsPerTokenString)) * Math.pow(10, market?.collateral.decimals || 0)
+  const collateralsPerToken = useMemo(() => {
+    const denominator = Math.pow(10, market?.collateral.decimals || 0)
 
-  const offerSize = parseFloat(offerSizeString) * decimals
+    return (1 / parseFloat(collateralsPerTokenString)) * denominator
+  }, [collateralsPerTokenString, market?.collateral.decimals])
+
+  const offerSize = useMemo(
+    () => stringToBN(offerSizeString, Math.log10(decimals)),
+    [offerSizeString, decimals],
+  )
 
   useEffect(() => {
     if (!syntheticOffer) return
-    const newSyntheticOffer = { ...syntheticOffer, offerSize, collateralsPerToken }
+    const newSyntheticOffer = {
+      ...syntheticOffer,
+      offerSize,
+      collateralsPerToken: collateralsPerToken ? new BN(collateralsPerToken) : ZERO_BN,
+    }
 
     setSyntheticOffer(newSyntheticOffer)
   }, [syntheticOffer, setSyntheticOffer, collateralsPerToken, offerSize])

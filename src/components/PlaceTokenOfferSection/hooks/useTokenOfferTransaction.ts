@@ -1,5 +1,5 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { BN } from 'bn.js'
+import { BN } from 'fbonds-core'
 import { BondFeatures, BondOfferV3 } from 'fbonds-core/lib/fbond-protocol/types'
 import { uniqueId } from 'lodash'
 import moment from 'moment'
@@ -44,7 +44,7 @@ export const useTokenOfferTransactions = ({
   market,
 }: {
   marketPubkey: string
-  loanValue: number
+  loanValue: BN
   optimisticOffer?: Offer
   updateOrAddOffer: (offer: BondOfferV3) => void
   resetFormValues: () => void

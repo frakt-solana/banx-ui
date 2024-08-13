@@ -1,19 +1,19 @@
-import { web3 } from 'fbonds-core'
+import { BN, web3 } from 'fbonds-core'
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 import { BondOfferV3 } from 'fbonds-core/lib/fbond-protocol/types'
 import produce from 'immer'
 import { create } from 'zustand'
 
 import { convertBondOfferV3ToCore } from '@banx/api/nft'
-import { calculateIdleFundsInOffer } from '@banx/utils'
+import { ZERO_BN, calculateIdleFundsInOffer } from '@banx/utils'
 
 export interface SyntheticTokenOffer {
   isEdit: boolean //? if offer exits on blochain and in edit mode
   publicKey: web3.PublicKey //? PUBKEY_PLACEHOLDER for offers to create
-  offerSize: number
+  offerSize: BN
   assetReceiver: string
   marketPubkey: string
-  collateralsPerToken: number
+  collateralsPerToken: BN
 }
 
 interface SyntheticTokenOffersState {
@@ -65,14 +65,14 @@ export const createEmptySyntheticTokenOffer: CreateEmptySyntheticTokenOffer = ({
   publicKey: new web3.PublicKey(PUBKEY_PLACEHOLDER),
   assetReceiver: walletPubkey,
   marketPubkey,
-  offerSize: 0,
-  collateralsPerToken: 0,
+  offerSize: ZERO_BN,
+  collateralsPerToken: ZERO_BN,
 })
 
 export const convertToSynthetic = (offer: BondOfferV3, isEdit = false): SyntheticTokenOffer => {
   const { publicKey, assetReceiver, hadoMarket } = offer
 
-  const offerSize = calculateIdleFundsInOffer(convertBondOfferV3ToCore(offer)).toNumber()
+  const offerSize = calculateIdleFundsInOffer(convertBondOfferV3ToCore(offer))
 
   return {
     isEdit,
@@ -80,6 +80,6 @@ export const convertToSynthetic = (offer: BondOfferV3, isEdit = false): Syntheti
     offerSize,
     assetReceiver: assetReceiver.toBase58(),
     marketPubkey: hadoMarket.toBase58(),
-    collateralsPerToken: offer.validation.collateralsPerToken.toNumber(),
+    collateralsPerToken: offer.validation.collateralsPerToken,
   }
 }

@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
+import BN from 'bn.js'
+
 import { TokenMarketPreview } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
 import { SyntheticTokenOffer } from '@banx/store/token'
-import { getTokenDecimals } from '@banx/utils'
+import { ZERO_BN, getTokenDecimals } from '@banx/utils'
 
 export const useOfferFormController = (
   syntheticOffer: SyntheticTokenOffer,
@@ -72,21 +74,21 @@ export const useOfferFormController = (
   }
 }
 
-export const calculateTokensPerCollateral = (collateralsPerToken: number, decimals: number) => {
-  if (!collateralsPerToken) {
+export const calculateTokensPerCollateral = (collateralsPerToken: BN, decimals: number) => {
+  if (!collateralsPerToken || collateralsPerToken.eq(ZERO_BN)) {
     return 0
   }
 
   const denominator = Math.pow(10, decimals)
-  const tokensPerCollateral = (1 * denominator) / collateralsPerToken
+  const tokensPerCollateral = (1 * denominator) / collateralsPerToken.toNumber()
 
   return parseFloat(tokensPerCollateral.toPrecision(decimals))
 }
 
-const calculateOfferSize = (syntheticOfferSize: number, decimals: number) => {
-  const offerSize = syntheticOfferSize / decimals
+const calculateOfferSize = (syntheticOfferSize: BN, decimals: number) => {
+  const offerSize = syntheticOfferSize.div(new BN(decimals))
 
   //? 1e4 is used for rounding the result to 4 decimal places
-  const roundedOfferSize = Math.round(offerSize * 1e4) / 1e4
+  const roundedOfferSize = Math.round(offerSize.mul(new BN(1e4)).div(new BN(1e4)).toNumber())
   return roundedOfferSize
 }

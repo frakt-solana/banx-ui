@@ -1,3 +1,4 @@
+import { BN } from 'fbonds-core'
 import { calculateAPRforOffer } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
@@ -8,7 +9,7 @@ import { SyntheticTokenOffer } from '@banx/store/token'
 type GetErrorMessage = (props: {
   walletBalance: number
   syntheticOffer: SyntheticTokenOffer
-  offerSize: number
+  offerSize: BN
   tokenType: LendingTokenType
 }) => string
 
@@ -18,9 +19,9 @@ export const getErrorMessage: GetErrorMessage = ({
   offerSize,
   tokenType,
 }) => {
-  const totalFundsAvailable = syntheticOffer.offerSize + walletBalance
+  const totalFundsAvailable = syntheticOffer.offerSize.add(new BN(walletBalance))
 
-  const isBalanceInsufficient = offerSize > totalFundsAvailable
+  const isBalanceInsufficient = offerSize.gt(totalFundsAvailable)
 
   const errorConditions: Array<[boolean, string]> = [
     [isBalanceInsufficient, createInsufficientBalanceErrorMessage(tokenType)],
