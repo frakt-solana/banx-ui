@@ -154,6 +154,5 @@ export const DBOfferSchema = z.object({
   lastCalculatedTimestamp: z.string(),
   rewardsToHarvest: z.string(),
   rewardsToHarvested: z.string(),
-
   loanApr: z.string(),
 })

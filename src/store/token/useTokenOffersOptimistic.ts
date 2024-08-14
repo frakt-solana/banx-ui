@@ -7,8 +7,7 @@ import { filter, map, uniqBy } from 'lodash'
 import moment from 'moment'
 import { create } from 'zustand'
 
-import { DBOffer } from '@banx/api/tokens'
-import { convertBondOfferV3ToDBOffer, convertDBOfferToBondOfferV3 } from '@banx/api/tokens/core'
+import { core } from '@banx/api/tokens'
 
 import { useNftTokenType } from '../nft'
 
@@ -21,7 +20,7 @@ export interface TokenOfferOptimistic {
 }
 
 export interface DBOfferOptimistic {
-  offer: DBOffer
+  offer: core.DBOffer
   expiredAt: number
 }
 
@@ -110,7 +109,7 @@ const setOptimisticOffersIdb = async (offers: TokenOfferOptimistic[]) => {
   try {
     const convertedOffers = map(offers, (offer) => {
       return {
-        offer: convertBondOfferV3ToDBOffer(offer.offer),
+        offer: core.convertBondOfferV3ToDBOffer(offer.offer),
         expiredAt: offer.expiredAt,
       }
     })
@@ -134,7 +133,7 @@ const getOptimisticOffersIdb = async () => {
 
     const convertedOffers = map(offers, (offer) => {
       return {
-        offer: convertDBOfferToBondOfferV3(offer.offer),
+        offer: core.convertDBOfferToBondOfferV3(offer.offer),
         expiredAt: offer.expiredAt,
       }
     })
@@ -161,6 +160,7 @@ const updateOffers = (
   const publicKeys = offersToAddOrUpdate
     .map(({ offer }) => offer.publicKey)
     .map((pk) => pk?.toBase58())
+
   const sameOffersRemoved = removeOffers(offersState, publicKeys)
   return addOffers(sameOffersRemoved, offersToAddOrUpdate)
 }

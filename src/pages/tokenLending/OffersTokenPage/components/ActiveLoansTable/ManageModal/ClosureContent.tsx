@@ -36,6 +36,7 @@ export const ClosureContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
 
   const { instantTokenLoan, terminateTokenLoan } = useTokenLenderLoansTransactions()
 
+  //TODO (Token Lending): Use BondOfferV3 type, replace other utils for BondOfferV3
   const bestOffer = useMemo(() => {
     return chain(offers)
       .thru((offers) =>
