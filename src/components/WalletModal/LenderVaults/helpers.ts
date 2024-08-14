@@ -4,12 +4,12 @@ import {
   calculateBanxSolStakingRewards,
   calculateCurrentInterestSolPure,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondOfferV3, BondingCurveType } from 'fbonds-core/lib/fbond-protocol/types'
+import { BondingCurveType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, sumBy } from 'lodash'
 import moment from 'moment'
 
 import { ClusterStats } from '@banx/api/common'
-import { convertBondOfferV3ToCore, core } from '@banx/api/nft'
+import { core } from '@banx/api/nft'
 import { isOfferStateClosed } from '@banx/utils'
 
 export const getLenderVaultInfo = (
@@ -42,55 +42,6 @@ export const getLenderVaultInfo = (
 
   const totalFundsInNextEpoch = sumBy(offers, (offer) =>
     calculateYieldInNextEpoch(offer, clusterStats),
-  )
-
-  return {
-    totalAccruedInterest,
-    totalRepaymets,
-    totalClosedOffersValue,
-    totalLiquidityValue,
-    totalLstYield,
-    totalClaimableValue,
-    totalFundsInCurrentEpoch,
-    totalFundsInNextEpoch,
-  }
-}
-
-export const getLenderVaultInfoBN = (
-  offers: BondOfferV3[],
-  clusterStats: ClusterStats | undefined,
-) => {
-  const { slot = 0, epochStartedAt = 0 } = clusterStats || {}
-
-  const closedOffers = offers.filter((offer) => isOfferStateClosed(offer.pairState))
-
-  const totalAccruedInterest = sumBy(offers, (offer) => offer.concentrationIndex.toNumber())
-  const totalRepaymets = sumBy(offers, (offer) => offer.bidCap.toNumber())
-
-  const totalClosedOffersValue = sumBy(closedOffers, (offer) =>
-    offer.fundsSolOrTokenBalance.add(offer.bidSettlement).toNumber(),
-  )
-
-  const totalLstYield = chain(offers)
-    .filter((offer) => offer.bondingCurve.bondingType !== BondingCurveType.LinearUsdc)
-    .sumBy((offer) =>
-      calculateLstYield({
-        offer: convertBondOfferV3ToCore(offer),
-        slot,
-        epochStartedAt,
-      }).toNumber(),
-    )
-    .value()
-
-  const totalLiquidityValue = totalAccruedInterest + totalRepaymets + totalClosedOffersValue
-  const totalClaimableValue = totalLiquidityValue + totalLstYield
-
-  const totalFundsInCurrentEpoch = sumBy(offers, (offer) =>
-    calculateYieldInCurrentEpoch(convertBondOfferV3ToCore(offer), clusterStats),
-  )
-
-  const totalFundsInNextEpoch = sumBy(offers, (offer) =>
-    calculateYieldInNextEpoch(convertBondOfferV3ToCore(offer), clusterStats),
   )
 
   return {

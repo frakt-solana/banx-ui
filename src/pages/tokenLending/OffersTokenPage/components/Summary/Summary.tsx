@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BondOfferV3 } from 'fbonds-core/lib/fbond-protocol/types'
@@ -10,7 +10,7 @@ import { Button } from '@banx/components/Buttons'
 import { EpochProgressBar } from '@banx/components/EpochProgressBar'
 import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
-import { getLenderVaultInfoBN } from '@banx/components/WalletModal/LenderVaults'
+import { getLenderVaultInfo } from '@banx/components/WalletModal/LenderVaults'
 import { BanxSolYieldWarningModal } from '@banx/components/modals'
 
 import { convertBondOfferV3ToCore } from '@banx/api/nft/core'
@@ -114,6 +114,10 @@ const Summary: FC<SummaryProps> = ({ offers, updateOrAddOffer }) => {
     }
   }
 
+  const convertedBondOffersV3ToCore = useMemo(() => {
+    return offers.map((offer) => convertBondOfferV3ToCore(offer))
+  }, [offers])
+
   const {
     totalAccruedInterest,
     totalRepaymets,
@@ -123,7 +127,7 @@ const Summary: FC<SummaryProps> = ({ offers, updateOrAddOffer }) => {
     totalClaimableValue,
     totalFundsInCurrentEpoch,
     totalFundsInNextEpoch,
-  } = getLenderVaultInfoBN(offers, clusterStats)
+  } = getLenderVaultInfo(convertedBondOffersV3ToCore, clusterStats)
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>

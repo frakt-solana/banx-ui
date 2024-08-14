@@ -1,20 +1,12 @@
-import { useMemo } from 'react'
-
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
-import { EpochProgressBar } from '@banx/components/EpochProgressBar'
 import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { convertBondOfferV3ToCore } from '@banx/api/nft'
-import { useClusterStats } from '@banx/hooks'
-import { BanxSOL } from '@banx/icons'
-import { useUserOffers } from '@banx/pages/nftLending/OffersPage/components/OffersTabContent'
-import { useTokenOffersPreview } from '@banx/pages/tokenLending/OffersTokenPage/components/OffersTokenTabContent'
 import { useIsLedger } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
 import {
@@ -34,12 +26,12 @@ import {
   enqueueSnackbar,
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
-  formatValueByTokenType,
   isBanxSolTokenType,
 } from '@banx/utils'
 
 import { TooltipRow } from '../components'
-import { getLenderVaultInfo, getLenderVaultInfoBN } from './helpers'
+import { BanxSolEpochContent, YieldStat } from './components'
+import { useLenderVaultInfo } from './hooks'
 
 import styles from '../WalletModal.module.less'
 
@@ -48,16 +40,9 @@ export const TokenLenderVault = () => {
   const { connection } = useConnection()
   const { tokenType } = useNftTokenType()
 
-  const { data: clusterStats } = useClusterStats()
   const { isLedger } = useIsLedger()
 
-  const { offersPreview: tokenOffersPreview, updateOrAddOffer } = useTokenOffersPreview()
-
-  const offers = useMemo(() => {
-    return tokenOffersPreview.map((offer) => offer.bondOffer)
-  }, [tokenOffersPreview])
-
-  const lenderVaultInfo = getLenderVaultInfoBN(offers, clusterStats)
+  const { offers, lenderVaultInfo, updateTokenOffer, clusterStats } = useLenderVaultInfo()
 
   const claimVault = async () => {
     if (!offers.length) return
@@ -69,14 +54,7 @@ export const TokenLenderVault = () => {
 
       const txnsData = await Promise.all(
         offers.map((offer) =>
-          createClaimLenderVaultTxnData(
-            {
-              offer: convertBondOfferV3ToCore(offer),
-              tokenType,
-              clusterStats,
-            },
-            walletAndConnection,
-          ),
+          createClaimLenderVaultTxnData({ offer, tokenType, clusterStats }, walletAndConnection),
         ),
       )
 
@@ -99,7 +77,7 @@ export const TokenLenderVault = () => {
             confirmed.forEach(({ accountInfoByPubkey }) => {
               if (!accountInfoByPubkey) return
               const offer = parseClaimTokenLenderVaultSimulatedAccounts(accountInfoByPubkey)
-              updateOrAddOffer([offer])
+              updateTokenOffer([offer])
             })
           }
 
@@ -142,42 +120,15 @@ export const TokenLenderVault = () => {
     </div>
   )
 
-  const formattedTotalFundsInCurrentEpoch = totalFundsInCurrentEpoch
-    ? formatValueByTokenType(totalFundsInCurrentEpoch, tokenType)
-    : 0
-
-  const formattedTotalFundsInNextEpoch = totalFundsInNextEpoch
-    ? formatValueByTokenType(totalFundsInNextEpoch, tokenType)
-    : 0
-
-  const formattedLstYieldValue = totalLstYield
-    ? formatValueByTokenType(totalLstYield, tokenType)
-    : 0
-
   return (
     <div className={styles.lenderVaultContainer}>
       {isBanxSolTokenType(tokenType) && (
-        <div className={styles.epochContainer}>
-          <EpochProgressBar />
-          <div className={styles.epochStats}>
-            <StatInfo
-              label="Yield for this epoch"
-              tooltipText="Liquid staking profit, awarded as 6% APR, based on the $SOL you hold in Banx for the entire epoch (excluding taken loans)"
-              value={formattedTotalFundsInCurrentEpoch}
-              icon={BanxSOL}
-              flexType="row"
-            />
-            <StatInfo
-              label="Yield for next epoch"
-              tooltipText="Projected liquid staking profit, awarded as 6% APR, based on the $SOL you hold in Banx throughout the next epoch (excluding taken loans)"
-              value={formattedTotalFundsInNextEpoch}
-              icon={BanxSOL}
-              flexType="row"
-            />
-          </div>
-        </div>
+        <BanxSolEpochContent
+          currentEpochYield={totalFundsInCurrentEpoch}
+          nextEpochYield={totalFundsInNextEpoch}
+          tokenType={tokenType}
+        />
       )}
-
       <div
         className={classNames(styles.lenderValtStatsContainer, {
           [styles.hiddenBorder]: !isBanxSolTokenType(tokenType),
@@ -190,13 +141,7 @@ export const TokenLenderVault = () => {
             value={<DisplayValue value={totalLiquidityValue} />}
           />
           {isBanxSolTokenType(tokenType) && (
-            <StatInfo
-              label="LST yield"
-              tooltipText="Yield generated from the BanxSOL integrated Liquid Staking Token, based on the $SOL you hold in Banx throughout a whole epoch, excluding $SOL in taken loans"
-              value={formattedLstYieldValue}
-              classNamesProps={{ value: styles.claimableValue }}
-              icon={BanxSOL}
-            />
+            <YieldStat totalYield={totalLstYield} tokenType={tokenType} />
           )}
         </div>
         <Button onClick={claimVault} disabled={!totalClaimableValue} size="small">
@@ -214,14 +159,7 @@ export const NftLenderVault = () => {
 
   const { isLedger } = useIsLedger()
 
-  const { data: clusterStats } = useClusterStats()
-  const { offers: nftsOffers, updateOrAddOffer } = useUserOffers()
-
-  const offers = useMemo(() => {
-    return nftsOffers.map((offer) => offer.offer)
-  }, [nftsOffers])
-
-  const lenderVaultInfo = getLenderVaultInfo(offers, clusterStats)
+  const { offers, lenderVaultInfo, updateNftOffer, clusterStats } = useLenderVaultInfo()
 
   const {
     totalAccruedInterest,
@@ -244,14 +182,7 @@ export const NftLenderVault = () => {
 
       const txnsData = await Promise.all(
         offers.map((offer) =>
-          createClaimLenderVaultTxnData(
-            {
-              offer: offer,
-              tokenType,
-              clusterStats,
-            },
-            walletAndConnection,
-          ),
+          createClaimLenderVaultTxnData({ offer, tokenType, clusterStats }, walletAndConnection),
         ),
       )
 
@@ -274,7 +205,7 @@ export const NftLenderVault = () => {
             confirmed.forEach(({ accountInfoByPubkey }) => {
               if (!accountInfoByPubkey) return
               const offer = parseClaimLenderVaultSimulatedAccounts(accountInfoByPubkey)
-              updateOrAddOffer([offer])
+              updateNftOffer([offer])
             })
           }
 
@@ -306,40 +237,14 @@ export const NftLenderVault = () => {
     </div>
   )
 
-  const formattedTotalFundsInCurrentEpoch = totalFundsInCurrentEpoch
-    ? formatValueByTokenType(totalFundsInCurrentEpoch, tokenType)
-    : 0
-
-  const formattedTotalFundsInNextEpoch = totalFundsInNextEpoch
-    ? formatValueByTokenType(totalFundsInNextEpoch, tokenType)
-    : 0
-
-  const formattedLstYieldValue = totalLstYield
-    ? formatValueByTokenType(totalLstYield, tokenType)
-    : 0
-
   return (
     <div className={styles.lenderVaultContainer}>
       {isBanxSolTokenType(tokenType) && (
-        <div className={styles.epochContainer}>
-          <EpochProgressBar />
-          <div className={styles.epochStats}>
-            <StatInfo
-              label="Yield for this epoch"
-              tooltipText="Liquid staking profit, awarded as 6% APR, based on the $SOL you hold in Banx for the entire epoch (excluding taken loans)"
-              value={formattedTotalFundsInCurrentEpoch}
-              icon={BanxSOL}
-              flexType="row"
-            />
-            <StatInfo
-              label="Yield for next epoch"
-              tooltipText="Projected liquid staking profit, awarded as 6% APR, based on the $SOL you hold in Banx throughout the next epoch (excluding taken loans)"
-              value={formattedTotalFundsInNextEpoch}
-              icon={BanxSOL}
-              flexType="row"
-            />
-          </div>
-        </div>
+        <BanxSolEpochContent
+          currentEpochYield={totalFundsInCurrentEpoch}
+          nextEpochYield={totalFundsInNextEpoch}
+          tokenType={tokenType}
+        />
       )}
 
       <div
@@ -354,13 +259,7 @@ export const NftLenderVault = () => {
             value={<DisplayValue value={totalLiquidityValue} />}
           />
           {isBanxSolTokenType(tokenType) && (
-            <StatInfo
-              label="LST yield"
-              tooltipText="Yield generated from the BanxSOL integrated Liquid Staking Token, based on the $SOL you hold in Banx throughout a whole epoch, excluding $SOL in taken loans"
-              value={formattedLstYieldValue}
-              classNamesProps={{ value: styles.claimableValue }}
-              icon={BanxSOL}
-            />
+            <YieldStat totalYield={totalLstYield} tokenType={tokenType} />
           )}
         </div>
         <Button onClick={claimVault} disabled={!totalClaimableValue} size="small">
