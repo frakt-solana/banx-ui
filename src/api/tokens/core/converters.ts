@@ -3,7 +3,7 @@ import { BondOfferV3 } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { DBOffer } from './types'
 
-export const convertBondOfferV3Strings = (offer: BondOfferV3) => {
+export const convertBondOfferV3ToDBOffer = (offer: BondOfferV3): DBOffer => {
   return {
     publicKey: offer.publicKey.toBase58(),
     assetReceiver: offer.assetReceiver.toBase58(),

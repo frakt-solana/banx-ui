@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import BN from 'bn.js'
+import { BN } from 'fbonds-core'
 
 import { TokenMarketPreview } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'

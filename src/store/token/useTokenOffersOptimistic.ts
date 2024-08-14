@@ -8,7 +8,7 @@ import moment from 'moment'
 import { create } from 'zustand'
 
 import { DBOffer } from '@banx/api/tokens'
-import { convertBondOfferV3Strings, convertDBOfferToBondOfferV3 } from '@banx/api/tokens/core'
+import { convertBondOfferV3ToDBOffer, convertDBOfferToBondOfferV3 } from '@banx/api/tokens/core'
 
 import { useNftTokenType } from '../nft'
 
@@ -110,7 +110,7 @@ const setOptimisticOffersIdb = async (offers: TokenOfferOptimistic[]) => {
   try {
     const convertedOffers = map(offers, (offer) => {
       return {
-        offer: convertBondOfferV3Strings(offer.offer),
+        offer: convertBondOfferV3ToDBOffer(offer.offer),
         expiredAt: offer.expiredAt,
       }
     })
