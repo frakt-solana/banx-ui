@@ -41,7 +41,8 @@ export const createDownloadLink = (data: string, filename: string, type?: string
   window.URL.revokeObjectURL(blobURL)
 }
 
-const formatTrailingZeros = (value: string) => value.replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, '')
+export const formatTrailingZeros = (value: string) =>
+  value.replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, '')
 
 export const limitDecimalPlaces = (inputValue: string, decimalPlaces = 3) => {
   const regex = new RegExp(`^-?\\d*(\\.\\d{0,${decimalPlaces}})?`)

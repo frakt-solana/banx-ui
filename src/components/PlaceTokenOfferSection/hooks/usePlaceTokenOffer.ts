@@ -34,22 +34,32 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
   const decimals = getTokenDecimals(tokenType)
 
   const collateralsPerToken = useMemo(() => {
-    const denominator = Math.pow(10, market?.collateral.decimals || 0)
+    if (!parseFloat(collateralsPerTokenString)) {
+      return ZERO_BN
+    }
 
-    return (1 / parseFloat(collateralsPerTokenString)) * denominator
-  }, [collateralsPerTokenString, market?.collateral.decimals])
+    const collateralDecimals = market?.collateral.decimals || 0
+    const adjustedDecimals = Math.max(collateralDecimals, 9)
 
-  const offerSize = useMemo(
-    () => stringToBN(offerSizeString, Math.log10(decimals)),
-    [offerSizeString, decimals],
-  )
+    const denominator = new BN(10).pow(new BN(collateralDecimals))
+
+    const collateralsPerTokenBN = stringToBN(collateralsPerTokenString, adjustedDecimals)
+
+    if (collateralsPerTokenBN.isZero()) {
+      return ZERO_BN
+    }
+
+    return denominator.mul(new BN(10).pow(new BN(adjustedDecimals))).div(collateralsPerTokenBN)
+  }, [collateralsPerTokenString, market])
+
+  const offerSize = parseFloat(offerSizeString) * decimals
 
   useEffect(() => {
     if (!syntheticOffer) return
     const newSyntheticOffer = {
       ...syntheticOffer,
       offerSize,
-      collateralsPerToken: collateralsPerToken ? new BN(collateralsPerToken) : ZERO_BN,
+      collateralsPerToken,
     }
 
     setSyntheticOffer(newSyntheticOffer)

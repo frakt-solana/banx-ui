@@ -11,7 +11,10 @@ import { TokenMeta } from '@banx/api/tokens'
 import { Pencil } from '@banx/icons'
 import { SyntheticTokenOffer } from '@banx/store/token'
 
-import { calculateTokensPerCollateral } from '../../hooks/useOfferFormController'
+import {
+  calculateTokensPerCollateral,
+  formatTokensPerCollateralToStr,
+} from '../../hooks/useOfferFormController'
 
 import styles from './OrderBook.module.less'
 
@@ -35,12 +38,19 @@ const Offer: FC<OfferProps> = ({ offer, collateral, collateralPrice }) => {
     [styles.hidden]: !isEdit && !isNewOffer,
   }
 
-  const offerValue = calculateTokensPerCollateral(collateralsPerToken, collateralTokenDecimals)
+  const tokensPerCollateralBN = calculateTokensPerCollateral(
+    collateralsPerToken,
+    collateralTokenDecimals,
+  )
 
-  const ltvPercent = (offerValue / collateralPrice) * 100 || 0
+  const offerValue = formatTokensPerCollateralToStr(tokensPerCollateralBN)
+
+  const ltvPercent = (parseFloat(offerValue) / collateralPrice) * 100 || 0
+
   const fullyDilutedValuationNumber = collateral
     ? parseFloat(collateral.fullyDilutedValuationInMillions)
     : 0
+
   const { factoredApr: aprPercent } = calculateAPRforOffer(ltvPercent, fullyDilutedValuationNumber)
 
   return (

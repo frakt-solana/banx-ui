@@ -1,9 +1,11 @@
+import { BN } from 'fbonds-core'
 import { calculateAPRforOffer } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
 
 import { TokenMarketPreview } from '@banx/api/tokens'
 import { SyntheticTokenOffer } from '@banx/store/token'
+import { ZERO_BN } from '@banx/utils'
 
 type GetErrorMessage = (props: {
   walletBalance: number
@@ -57,11 +59,15 @@ export const formatLeadingZeros = (value: number, decimals: number) =>
 
 export const calculateTokenLendingApr = (
   market: TokenMarketPreview | undefined,
-  collateralsPerToken: number,
+  collateralsPerToken: BN,
 ) => {
   const { collateralPrice = 0, collateral } = market || {}
 
-  const ltvPercent = (collateralsPerToken / collateralPrice) * 100 || 0
+  if (!collateralPrice || collateralsPerToken.eq(ZERO_BN)) {
+    return 0
+  }
+
+  const ltvPercent = (collateralsPerToken.toNumber() / collateralPrice) * 100
 
   const fullyDilutedValuationNumber = collateral
     ? parseFloat(collateral.fullyDilutedValuationInMillions)

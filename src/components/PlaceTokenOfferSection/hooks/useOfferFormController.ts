@@ -5,7 +5,7 @@ import BN from 'bn.js'
 import { TokenMarketPreview } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
 import { SyntheticTokenOffer } from '@banx/store/token'
-import { ZERO_BN, getTokenDecimals } from '@banx/utils'
+import { ZERO_BN, formatTrailingZeros, getTokenDecimals } from '@banx/utils'
 
 export const useOfferFormController = (
   syntheticOffer: SyntheticTokenOffer,
@@ -29,7 +29,7 @@ export const useOfferFormController = (
     const offerSize = calculateOfferSize(syntheticOfferSize, decimals)
 
     return {
-      collateralsPerToken: isFinite(collateralsPerToken) ? String(collateralsPerToken) : '0',
+      collateralsPerToken: formatTokensPerCollateralToStr(collateralsPerToken),
       offerSize: offerSize ? String(offerSize) : '0',
     }
   }, [decimals, market, syntheticCollateralsPerToken, syntheticOfferSize])
@@ -74,15 +74,25 @@ export const useOfferFormController = (
   }
 }
 
-export const calculateTokensPerCollateral = (collateralsPerToken: BN, decimals: number) => {
+export const calculateTokensPerCollateral = (collateralsPerToken: BN, decimals: number): BN => {
   if (!collateralsPerToken || collateralsPerToken.eq(ZERO_BN)) {
-    return 0
+    return ZERO_BN
   }
 
-  const denominator = Math.pow(10, decimals)
-  const tokensPerCollateral = (1 * denominator) / collateralsPerToken.toNumber()
+  const denominator = new BN(10).pow(new BN(decimals + 9))
+  const tokensPerCollateral = denominator.div(collateralsPerToken)
 
-  return parseFloat(tokensPerCollateral.toPrecision(decimals))
+  return tokensPerCollateral
+}
+
+export const formatTokensPerCollateralToStr = (tokensPerCollateral: BN) => {
+  const DECIMALS = 9
+
+  const tokensPerCollateralString = tokensPerCollateral.toString().padStart(DECIMALS, '0')
+  const integerPart = tokensPerCollateralString.slice(0, -DECIMALS) || '0'
+  const fractionalPart = tokensPerCollateralString.slice(-DECIMALS)
+
+  return formatTrailingZeros(`${integerPart}.${fractionalPart}`)
 }
 
 const calculateOfferSize = (syntheticOfferSize: number, decimals: number) => {
