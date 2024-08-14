@@ -26,7 +26,7 @@ export type CreateMakeBondingOfferTxnDataParams = {
   loanValue: number //? normal number
   loansAmount: number
   deltaValue: number //? normal number
-  collateralsPerToken?: number
+  collateralsPerToken?: BN
   tokenLendingApr?: number
 
   bondFeature: BondFeatures
@@ -47,7 +47,7 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
     loanValue,
     loansAmount,
     tokenType,
-    collateralsPerToken = 0,
+    collateralsPerToken = ZERO_BN,
     tokenLendingApr = 0,
     bondFeature,
     deltaValue,
@@ -72,7 +72,7 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
       quantityOfLoans: loansAmount,
       bondingCurveType,
       bondFeature,
-      collateralsPerToken: new BN(collateralsPerToken),
+      collateralsPerToken,
       tokenLendingApr: new BN(tokenLendingApr),
     },
     sendTxn: sendTxnPlaceHolder,

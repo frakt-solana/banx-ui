@@ -26,7 +26,7 @@ export type CreateUpdateBondingOfferTxnDataParams = {
   deltaValue: number //? human number
   offer: core.Offer
   tokenType: LendingTokenType
-  collateralsPerToken?: number
+  collateralsPerToken?: BN
   tokenLendingApr?: number
 }
 
@@ -46,7 +46,7 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
     offer,
     tokenType,
     tokenLendingApr = 0,
-    collateralsPerToken = 0,
+    collateralsPerToken = ZERO_BN,
   } = params
 
   const {
@@ -66,7 +66,7 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
       delta: new BN(deltaValue),
       quantityOfLoans: loansAmount,
       lendingTokenType: tokenType,
-      collateralsPerToken: new BN(collateralsPerToken),
+      collateralsPerToken,
       tokenLendingApr: ZERO_BN,
     },
     sendTxn: sendTxnPlaceHolder,
@@ -90,7 +90,7 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
       newLoanValue: new BN(loanValue),
       newDelta: new BN(deltaValue),
       newQuantityOfLoans: new BN(loansAmount),
-      collateralsPerToken: ZERO_BN,
+      collateralsPerToken,
       tokenLendingApr: new BN(tokenLendingApr),
     })
 

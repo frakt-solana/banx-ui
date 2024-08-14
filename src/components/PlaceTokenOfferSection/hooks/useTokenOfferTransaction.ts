@@ -48,7 +48,7 @@ export const useTokenOfferTransactions = ({
   optimisticOffer?: Offer
   updateOrAddOffer: (offer: BondOfferV3) => void
   resetFormValues: () => void
-  collateralsPerToken: number
+  collateralsPerToken: BN
   market: TokenMarketPreview | undefined
 }) => {
   const wallet = useWallet()
