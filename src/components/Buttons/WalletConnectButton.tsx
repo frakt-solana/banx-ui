@@ -10,8 +10,7 @@ import { shortenAddress } from '@banx/utils'
 
 import { DisplayValue } from '../TableComponents'
 import UserAvatar from '../UserAvatar'
-import { useWalletModal } from '../WalletModal'
-import { useLenderVaultInfo } from '../WalletModal/LenderVaults'
+import { useLenderVaultInfo, useWalletModal } from '../WalletModal'
 import { Button } from './Button'
 
 import styles from './Buttons.module.less'

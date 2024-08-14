@@ -5,7 +5,7 @@ import { uniqueId } from 'lodash'
 import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
-import { Offer } from '@banx/api/nft'
+import { convertBondOfferV3ToCore } from '@banx/api/nft'
 import { TokenMarketPreview } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
 import {
@@ -45,7 +45,7 @@ export const useTokenOfferTransactions = ({
 }: {
   marketPubkey: string
   loanValue: number
-  optimisticOffer?: Offer
+  optimisticOffer?: BondOfferV3
   updateOrAddOffer: (offer: BondOfferV3) => void
   resetFormValues: () => void
   collateralsPerToken: BN
@@ -142,7 +142,7 @@ export const useTokenOfferTransactions = ({
       const txnData = await createUpdateBondingOfferTxnData(
         {
           loanValue,
-          offer: optimisticOffer,
+          offer: convertBondOfferV3ToCore(optimisticOffer),
           loansAmount: 1,
           deltaValue: 0,
           tokenType,
@@ -214,7 +214,7 @@ export const useTokenOfferTransactions = ({
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const txnData = await createRemoveOfferTxnData(
-        { offer: optimisticOffer, tokenType },
+        { offer: convertBondOfferV3ToCore(optimisticOffer), tokenType },
         walletAndConnection,
       )
 

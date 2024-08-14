@@ -10,7 +10,7 @@ import { Button } from '@banx/components/Buttons'
 import { EpochProgressBar } from '@banx/components/EpochProgressBar'
 import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
-import { getLenderVaultInfo } from '@banx/components/WalletModal/LenderVaults'
+import { getLenderVaultInfo } from '@banx/components/WalletModal'
 import { BanxSolYieldWarningModal } from '@banx/components/modals'
 
 import { convertBondOfferV3ToCore } from '@banx/api/nft/core'
