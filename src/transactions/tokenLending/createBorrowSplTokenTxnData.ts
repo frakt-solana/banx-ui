@@ -74,11 +74,14 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async (
 export const parseTokenBorrowSimulatedAccounts = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ) => {
-  const results = parseAccountInfoByPubkey(accountInfoByPubkey, customBNConverter)
+  const parsedAccountsBN = parseAccountInfoByPubkey(accountInfoByPubkey, customBNConverter)
+  const parsedAccounts = parseAccountInfoByPubkey(accountInfoByPubkey)
 
   return {
-    bondOffer: results?.['bondOfferV3']?.[0] as BondOfferV3,
-    bondTradeTransaction: results?.['bondTradeTransactionV3']?.[0] as core.BondTradeTransaction,
-    fraktBond: results?.['fraktBond']?.[0] as core.FraktBond,
+    bondOffer: parsedAccountsBN?.['bondOfferV3']?.[0] as BondOfferV3,
+    bondTradeTransaction: parsedAccounts?.[
+      'bondTradeTransactionV3'
+    ]?.[0] as core.BondTradeTransaction,
+    fraktBond: parsedAccounts?.['fraktBond']?.[0] as core.FraktBond,
   }
 }

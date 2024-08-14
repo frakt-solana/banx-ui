@@ -63,7 +63,7 @@ export const parseRemoveOfferSimulatedAccounts = (
   return results?.['bondOfferV3']?.[0] as core.Offer
 }
 
-export const parseRemoveOfferSimulatedAccountsBN = (
+export const parseRemoveTokenOfferSimulatedAccounts = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ) => {
   const results = parseAccountInfoByPubkey(accountInfoByPubkey, customBNConverter)

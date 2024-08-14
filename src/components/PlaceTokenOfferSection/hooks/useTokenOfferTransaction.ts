@@ -20,9 +20,9 @@ import {
   createMakeBondingOfferTxnData,
   createRemoveOfferTxnData,
   createUpdateBondingOfferTxnData,
-  parseMakeOfferSimulatedAccountsBN,
-  parseRemoveOfferSimulatedAccountsBN,
-  parseUpdateOfferSimulatedAccountsBN,
+  parseMakeTokenOfferSimulatedAccounts,
+  parseRemoveTokenOfferSimulatedAccounts,
+  parseUpdateTokenOfferSimulatedAccounts,
 } from '@banx/transactions/nftLending'
 import {
   destroySnackbar,
@@ -105,7 +105,7 @@ export const useTokenOfferTransactions = ({
             })
 
             if (accountInfoByPubkey) {
-              const offer = parseMakeOfferSimulatedAccountsBN(accountInfoByPubkey)
+              const offer = parseMakeTokenOfferSimulatedAccounts(accountInfoByPubkey)
               updateOrAddOffer(offer)
               resetFormValues()
             }
@@ -180,7 +180,7 @@ export const useTokenOfferTransactions = ({
             })
             if (accountInfoByPubkey) {
               if (accountInfoByPubkey) {
-                const offer = parseUpdateOfferSimulatedAccountsBN(accountInfoByPubkey)
+                const offer = parseUpdateTokenOfferSimulatedAccounts(accountInfoByPubkey)
                 //? Needs to prevent BE data overlap in optimistics logic
                 updateOrAddOffer({ ...offer, lastTransactedAt: new BN(moment().unix()) })
               }
@@ -246,7 +246,7 @@ export const useTokenOfferTransactions = ({
             })
 
             if (accountInfoByPubkey) {
-              const offer = parseRemoveOfferSimulatedAccountsBN(accountInfoByPubkey)
+              const offer = parseRemoveTokenOfferSimulatedAccounts(accountInfoByPubkey)
               //? Needs to prevent BE data overlap in optimistics logic
               updateOrAddOffer({ ...offer, lastTransactedAt: new BN(moment().unix()) })
             }

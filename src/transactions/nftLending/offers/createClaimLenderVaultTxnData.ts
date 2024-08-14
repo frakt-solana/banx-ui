@@ -141,7 +141,7 @@ export const parseClaimLenderVaultSimulatedAccounts = (
   return results?.['bondOfferV3']?.[0] as core.Offer
 }
 
-export const parseClaimLenderVaultSimulatedAccountsBN = (
+export const parseClaimTokenLenderVaultSimulatedAccounts = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ) => {
   const results = parseAccountInfoByPubkey(accountInfoByPubkey, customBNConverter)

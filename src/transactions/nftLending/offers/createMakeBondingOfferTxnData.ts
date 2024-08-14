@@ -128,7 +128,7 @@ export const parseMakeOfferSimulatedAccounts = (
   return results?.['bondOfferV3']?.[0] as core.Offer
 }
 
-export const parseMakeOfferSimulatedAccountsBN = (
+export const parseMakeTokenOfferSimulatedAccounts = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ) => {
   const results = parseAccountInfoByPubkey(accountInfoByPubkey, customBNConverter)

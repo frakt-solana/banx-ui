@@ -26,7 +26,7 @@ import {
 import {
   CreateClaimLenderVaultTxnDataParams,
   createClaimLenderVaultTxnData,
-  parseClaimLenderVaultSimulatedAccountsBN,
+  parseClaimTokenLenderVaultSimulatedAccounts,
 } from '@banx/transactions/nftLending'
 import {
   destroySnackbar,
@@ -89,7 +89,7 @@ const Summary: FC<SummaryProps> = ({ offers, updateOrAddOffer }) => {
             enqueueSnackbar({ message: 'Successfully claimed', type: 'success' })
             confirmed.forEach(({ accountInfoByPubkey }) => {
               if (!accountInfoByPubkey) return
-              const offer = parseClaimLenderVaultSimulatedAccountsBN(accountInfoByPubkey)
+              const offer = parseClaimTokenLenderVaultSimulatedAccounts(accountInfoByPubkey)
               updateOrAddOffer([offer])
             })
           }
