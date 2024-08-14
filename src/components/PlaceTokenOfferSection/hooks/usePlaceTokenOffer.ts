@@ -55,11 +55,7 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
 
   useEffect(() => {
     if (!syntheticOffer) return
-    const newSyntheticOffer = {
-      ...syntheticOffer,
-      offerSize,
-      collateralsPerToken,
-    }
+    const newSyntheticOffer = { ...syntheticOffer, offerSize, collateralsPerToken }
 
     setSyntheticOffer(newSyntheticOffer)
   }, [syntheticOffer, setSyntheticOffer, collateralsPerToken, offerSize])

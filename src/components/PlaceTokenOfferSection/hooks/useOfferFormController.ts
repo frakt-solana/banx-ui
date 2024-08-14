@@ -74,25 +74,47 @@ export const useOfferFormController = (
   }
 }
 
-export const calculateTokensPerCollateral = (collateralsPerToken: BN, decimals: number): BN => {
+/**
+ * Calculates the number of tokens per collateral unit.
+ * @param {BN} collateralsPerToken - The amount of collateral per token.
+ * @param {number} collateralDecimals - The number of decimal places used by the collateral token.
+ * @returns {BN} -The result is scaled by 1e9 to maintain precision in calculations involving small fractional values
+ */
+
+export const calculateTokensPerCollateral = (
+  collateralsPerToken: BN,
+  collateralDecimals: number,
+): BN => {
+  const PRECISION_ADJUSTMENT = 9
+
   if (!collateralsPerToken || collateralsPerToken.eq(ZERO_BN)) {
     return ZERO_BN
   }
 
-  const denominator = new BN(10).pow(new BN(decimals + 9))
-  const tokensPerCollateral = denominator.div(collateralsPerToken)
+  const adjustedScale = collateralDecimals + PRECISION_ADJUSTMENT
+  const scaledValue = new BN(10).pow(new BN(adjustedScale))
+  const tokensPerCollateral = scaledValue.div(collateralsPerToken)
 
   return tokensPerCollateral
 }
 
-export const formatTokensPerCollateralToStr = (tokensPerCollateral: BN) => {
-  const DECIMALS = 9
+/**
+ * Formats the tokens per collateral into a string with fixed decimals
+ *
+ * @param {BN} tokensPerCollateral - The number of tokens per unit of collateral, scaled by 1e9.
+ * @returns {string} - The formatted tokens per collateral string.
+ */
 
-  const tokensPerCollateralString = tokensPerCollateral.toString().padStart(DECIMALS, '0')
-  const integerPart = tokensPerCollateralString.slice(0, -DECIMALS) || '0'
-  const fractionalPart = tokensPerCollateralString.slice(-DECIMALS)
+export const formatTokensPerCollateralToStr = (tokensPerCollateral: BN): string => {
+  const DECIMAL_PRECISION = 9
 
-  return formatTrailingZeros(`${integerPart}.${fractionalPart}`)
+  const tokensPerCollateralString = tokensPerCollateral.toString().padStart(DECIMAL_PRECISION, '0')
+  const integerPart = tokensPerCollateralString.slice(0, -DECIMAL_PRECISION) || '0'
+  const fractionalPart = tokensPerCollateralString.slice(-DECIMAL_PRECISION)
+
+  const value = `${integerPart}.${fractionalPart}`
+
+  return formatTrailingZeros(value.replace(/(\.\d*?[1-9]+0{2})\d*$/, '$1')) //? removing trailing zeros after two consecutive zeros.
 }
 
 const calculateOfferSize = (syntheticOfferSize: number, decimals: number) => {

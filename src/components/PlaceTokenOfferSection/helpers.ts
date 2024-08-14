@@ -7,6 +7,8 @@ import { TokenMarketPreview } from '@banx/api/tokens'
 import { SyntheticTokenOffer } from '@banx/store/token'
 import { ZERO_BN } from '@banx/utils'
 
+import { calculateTokensPerCollateral } from './hooks/useOfferFormController'
+
 type GetErrorMessage = (props: {
   walletBalance: number
   syntheticOffer: SyntheticTokenOffer
@@ -67,7 +69,13 @@ export const calculateTokenLendingApr = (
     return 0
   }
 
-  const ltvPercent = (collateralsPerToken.toNumber() / collateralPrice) * 100
+  const decimals = collateral?.decimals || 0
+
+  //TODO (TokenLending): Replace collateralPrice to string in BE
+  const tokensPerCollateralBN = calculateTokensPerCollateral(collateralsPerToken, decimals)
+  const tokensPerCollateralNumber = tokensPerCollateralBN.toNumber() / 1e9
+
+  const ltvPercent = (tokensPerCollateralNumber / collateralPrice) * 100 || 0
 
   const fullyDilutedValuationNumber = collateral
     ? parseFloat(collateral.fullyDilutedValuationInMillions)
