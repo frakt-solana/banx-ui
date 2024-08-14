@@ -14,7 +14,6 @@ import {
   createLoanSubscribeNotificationsTitle,
 } from '@banx/components/modals'
 
-import { Offer, convertBondOfferV3ToCore } from '@banx/api/nft'
 import { BorrowSplTokenOffers, CollateralToken, core } from '@banx/api/tokens'
 import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
 import { getDialectAccessToken } from '@banx/providers'
@@ -44,7 +43,7 @@ import {
 import { calculateTokenBorrowApr } from '../helpers'
 
 type TransactionData = {
-  offer: Offer
+  offer: BondOfferV3
   loanValue: BN
   collateral: CollateralToken
   aprRate: BN
@@ -109,7 +108,7 @@ export const useBorrowSplTokenTransaction = (props: {
 
       if (offerData) {
         acc.push({
-          offer: convertBondOfferV3ToCore(offerData),
+          offer: offerData,
           loanValue: new BN(offer.amountToGet),
           collateral,
           aprRate: new BN(aprRate),

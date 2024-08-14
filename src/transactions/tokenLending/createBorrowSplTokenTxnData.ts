@@ -8,7 +8,7 @@ import {
   WalletAndConnection,
 } from 'solana-transactions-executor'
 
-import { Offer, core } from '@banx/api/nft'
+import { core } from '@banx/api/nft'
 import { CollateralToken } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
 import { customBNConverter, parseAccountInfoByPubkey, sendTxnPlaceHolder } from '@banx/transactions'
@@ -16,7 +16,7 @@ import { customBNConverter, parseAccountInfoByPubkey, sendTxnPlaceHolder } from 
 export type CreateBorrowTokenTxnDataParams = {
   collateral: CollateralToken
   tokenType: LendingTokenType
-  offer: Offer
+  offer: BondOfferV3
   loanValue: BN
   aprRate: BN
 }
@@ -41,10 +41,10 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async (
     accounts: {
       userPubkey: walletAndConnection.wallet.publicKey,
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
-      bondOffer: new web3.PublicKey(offer.publicKey),
+      bondOffer: offer.publicKey,
       tokenMint: new web3.PublicKey(collateral.collateral.mint),
-      hadoMarket: new web3.PublicKey(offer.hadoMarket),
-      fraktMarket: new web3.PublicKey(offer.hadoMarket),
+      hadoMarket: offer.hadoMarket,
+      fraktMarket: offer.hadoMarket,
     },
     args: {
       amountToGet: loanValue,
