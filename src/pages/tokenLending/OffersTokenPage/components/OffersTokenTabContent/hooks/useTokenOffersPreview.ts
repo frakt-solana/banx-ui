@@ -90,8 +90,10 @@ export const useTokenOffersPreview = () => {
     const combinedOffers = [...optimisticUserOffers, ...userOffers]
 
     return chain(combinedOffers)
-      .groupBy(({ bondOffer }) => bondOffer.publicKey)
-      .map((groupedOffers) => maxBy(groupedOffers, ({ bondOffer }) => bondOffer.lastTransactedAt))
+      .groupBy(({ bondOffer }) => bondOffer.publicKey.toBase58())
+      .map((groupedOffers) =>
+        maxBy(groupedOffers, ({ bondOffer }) => bondOffer.lastTransactedAt.toNumber()),
+      )
       .compact()
       .filter(({ bondOffer }) => !isBondOfferV3Closed(bondOffer))
       .value()
