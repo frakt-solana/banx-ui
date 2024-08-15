@@ -80,6 +80,7 @@ const TableRowInner = <T,>(
       onClick={() => {
         rowParams?.onRowClick?.(item)
       }}
+      style={rowParams?.activeRowParams?.[0]?.style?.(item)}
       ref={ref as Ref<HTMLTableRowElement>}
       className={rowClassName}
     />

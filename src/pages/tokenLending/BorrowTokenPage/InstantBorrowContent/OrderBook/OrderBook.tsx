@@ -1,6 +1,7 @@
 import { FC, useCallback, useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import { maxBy } from 'lodash'
 
 import Table from '@banx/components/Table'
 
@@ -8,10 +9,11 @@ import { Offer } from '@banx/api/nft'
 import { CollateralToken } from '@banx/api/tokens'
 import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
 import { useNftTokenType } from '@banx/store/nft'
+import { calculateIdleFundsInOffer } from '@banx/utils'
 
 import { useSelectedOffers } from '../hooks/useSelectedOffers'
 import { getTableColumns } from './columns'
-import { calcOfferLtv } from './helpers'
+import { calcOfferLtv, createRowStyle } from './helpers'
 
 import styles from './OrderBook.module.less'
 
@@ -40,7 +42,10 @@ const OrderBook: FC<OrderBookProps> = ({ marketPubkey, collateral, ltvTreshold }
   const offers = useMemo(() => {
     return rawOffers
       .filter((offer) => calcOfferLtv(offer, collateral) <= ltvTreshold)
-      .sort((offerA, offerB) => calcOfferLtv(offerB, collateral) - calcOfferLtv(offerA, collateral))
+      .sort(
+        (offerA, offerB) =>
+          offerA.validation.collateralsPerToken - offerB.validation.collateralsPerToken,
+      )
   }, [collateral, ltvTreshold, rawOffers])
 
   //? Clear selection when tokenType changes
@@ -82,9 +87,22 @@ const OrderBook: FC<OrderBookProps> = ({ marketPubkey, collateral, ltvTreshold }
     collateral,
   })
 
+  const maxOffer = useMemo(
+    () => maxBy(offers, (offer) => calculateIdleFundsInOffer(offer).toNumber()),
+    [offers],
+  )
+
   const rowParams = useMemo(() => {
-    return { onRowClick }
-  }, [onRowClick])
+    return {
+      onRowClick,
+      activeRowParams: [
+        {
+          condition: () => true,
+          style: (offer: Offer) => (maxOffer ? createRowStyle(offer, maxOffer) : {}),
+        },
+      ],
+    }
+  }, [maxOffer, onRowClick])
 
   return (
     <div className={styles.container}>
