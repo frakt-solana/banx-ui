@@ -11,19 +11,21 @@ import { useNftTokenType } from '@banx/store/nft'
 
 import { useSelectedOffers } from '../hooks/useSelectedOffers'
 import { getTableColumns } from './columns'
+import { calcOfferLtv } from './helpers'
 
 import styles from './OrderBook.module.less'
 
 interface OrderBookProps {
   marketPubkey: string
   collateral: CollateralToken | undefined
+  ltvTreshold: number
 }
 
-const OrderBook: FC<OrderBookProps> = ({ marketPubkey, collateral }) => {
+const OrderBook: FC<OrderBookProps> = ({ marketPubkey, collateral, ltvTreshold }) => {
   const { publicKey: walletPublicKey } = useWallet()
   const walletPublicKeyString = walletPublicKey?.toBase58() || ''
 
-  const { offers, isLoading } = useTokenMarketOffers(marketPubkey)
+  const { offers: rawOffers, isLoading } = useTokenMarketOffers(marketPubkey)
 
   const { tokenType } = useNftTokenType()
 
@@ -34,6 +36,12 @@ const OrderBook: FC<OrderBookProps> = ({ marketPubkey, collateral }) => {
     clear: clearSelection,
     set: setSelection,
   } = useSelectedOffers()
+
+  const offers = useMemo(() => {
+    return rawOffers
+      .filter((offer) => calcOfferLtv(offer, collateral) <= ltvTreshold)
+      .sort((offerA, offerB) => calcOfferLtv(offerB, collateral) - calcOfferLtv(offerA, collateral))
+  }, [collateral, ltvTreshold, rawOffers])
 
   //? Clear selection when tokenType changes
   //? To prevent selection transfering from one tokenType to another
@@ -86,6 +94,7 @@ const OrderBook: FC<OrderBookProps> = ({ marketPubkey, collateral }) => {
         rowParams={rowParams}
         className={styles.table}
         classNameTableWrapper={styles.tableWrapper}
+        emptyMessage={!offers.length ? 'No offers' : ''}
         loading={isLoading}
       />
     </div>

@@ -97,7 +97,11 @@ const InstantBorrowContent = () => {
           {!wallet.connected ? 'Connect wallet' : errorMessage || 'Borrow'}
         </Button>
       </div>
-      <OrderBook marketPubkey={collateralToken?.marketPubkey || ''} collateral={collateralToken} />
+      <OrderBook
+        marketPubkey={collateralToken?.marketPubkey || ''}
+        collateral={collateralToken}
+        ltvTreshold={ltvSliderValue}
+      />
     </div>
   )
 }

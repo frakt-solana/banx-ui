@@ -7,6 +7,7 @@ import { CollateralToken } from '@banx/api/tokens'
 import { calculateIdleFundsInOffer } from '@banx/utils'
 
 import { OfferOptimistic } from '../hooks/useSelectedOffers'
+import { calcOfferLtv } from './helpers'
 
 import styles from './OrderBook.module.less'
 
@@ -40,7 +41,7 @@ export const getTableColumns: GetTableColumns = ({
         </div>
       ),
       render: (offer) => {
-        const ltvPercent = collateral?.collateral.decimals
+        const ltvPercent = calcOfferLtv(offer, collateral)
 
         return (
           <div className={styles.checkboxRow}>
@@ -59,8 +60,14 @@ export const getTableColumns: GetTableColumns = ({
     },
     {
       key: 'apr',
-      title: <HeaderCell label="APR" />,
-      render: (offer) => createPercentValueJSX(offer.loanApr / 100),
+      title: (
+        <div className={styles.aprRow}>
+          <HeaderCell label="APR" />
+        </div>
+      ),
+      render: (offer) => (
+        <div className={styles.aprRowValue}>{createPercentValueJSX(offer.loanApr / 100)}</div>
+      ),
     },
     {
       key: 'offerSize',
