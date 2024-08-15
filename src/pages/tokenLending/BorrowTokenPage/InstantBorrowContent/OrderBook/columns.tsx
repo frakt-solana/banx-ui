@@ -6,21 +6,43 @@ import { DisplayValue, HeaderCell, createPercentValueJSX } from '@banx/component
 import { Offer } from '@banx/api/nft'
 import { calculateIdleFundsInOffer } from '@banx/utils'
 
+import { OfferOptimistic } from '../hooks/useSelectedOffers'
+
 import styles from './OrderBook.module.less'
 
-export const getTableColumns = () => {
+type GetTableColumns = (props: {
+  onSelectAll: () => void
+  findOfferInSelection: (offerPubkey: string) => OfferOptimistic | null
+  toggleOfferInSelection: (offer: Offer) => void
+  hasSelectedOffers: boolean
+}) => ColumnType<Offer>[]
+
+export const getTableColumns: GetTableColumns = ({
+  onSelectAll,
+  findOfferInSelection,
+  toggleOfferInSelection,
+  hasSelectedOffers,
+}) => {
   const columns: ColumnType<Offer>[] = [
     {
       key: 'borrow',
       title: (
         <div className={styles.checkboxRow}>
-          <Checkbox className={styles.checkbox} onChange={() => null} checked={false} />
+          <Checkbox
+            className={styles.checkbox}
+            onChange={onSelectAll}
+            checked={hasSelectedOffers}
+          />
           <HeaderCell label="To borrow" />
         </div>
       ),
       render: (offer) => (
         <div className={styles.checkboxRow}>
-          <Checkbox className={styles.checkbox} onChange={() => null} checked={false} />
+          <Checkbox
+            className={styles.checkbox}
+            onChange={() => toggleOfferInSelection(offer)}
+            checked={!!findOfferInSelection(offer.publicKey)}
+          />
           <DisplayValue value={calculateIdleFundsInOffer(offer).toNumber()} />
         </div>
       ),
