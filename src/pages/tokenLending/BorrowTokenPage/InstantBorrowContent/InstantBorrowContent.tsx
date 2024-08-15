@@ -4,6 +4,7 @@ import { Button } from '@banx/components/Buttons'
 
 import { LoanValueSlider, Separator } from '../components'
 import InputTokenSelect, { SkeletonInputTokenSelect } from '../components/InputTokenSelect'
+import OrderBook from './OrderBook'
 import { Summary, SummarySkeleton } from './Summary'
 import { useInstantBorrowContent } from './hooks/useInstantBorrowContent'
 
@@ -43,57 +44,60 @@ const InstantBorrowContent = () => {
   )
 
   return (
-    <div className={styles.content}>
-      {showSkeleton ? (
-        <SkeletonInputTokenSelect label="Collateralize" showRightLabel />
-      ) : (
-        <InputTokenSelect
-          label="Collateralize"
-          value={collateralInputValue}
-          onChange={handleCollateralInputChange}
-          selectedToken={collateralToken}
-          onChangeToken={handleCollateralTokenChange}
-          tokenList={collateralsList}
-          className={styles.collateralInput}
-          maxValue={collateralToken.amountInWallet}
-          disabledInput={!wallet.connected}
-          showControls={wallet.connected}
-        />
-      )}
+    <div className={styles.container}>
+      <div className={styles.content}>
+        {showSkeleton ? (
+          <SkeletonInputTokenSelect label="Collateralize" showRightLabel />
+        ) : (
+          <InputTokenSelect
+            label="Collateralize"
+            value={collateralInputValue}
+            onChange={handleCollateralInputChange}
+            selectedToken={collateralToken}
+            onChangeToken={handleCollateralTokenChange}
+            tokenList={collateralsList}
+            className={styles.collateralInput}
+            maxValue={collateralToken.amountInWallet}
+            disabledInput={!wallet.connected}
+            showControls={wallet.connected}
+          />
+        )}
 
-      <Separator />
+        <Separator />
 
-      {showSkeleton ? (
-        <SkeletonInputTokenSelect label="To borrow" />
-      ) : (
-        <InputTokenSelect
-          label="To borrow"
-          value={borrowInputValue}
-          onChange={handleBorrowInputChange}
-          selectedToken={borrowToken}
-          onChangeToken={handleBorrowTokenChange}
-          tokenList={borrowTokensList}
-          className={styles.borrowInput}
-          disabledInput
-        />
-      )}
+        {showSkeleton ? (
+          <SkeletonInputTokenSelect label="To borrow" />
+        ) : (
+          <InputTokenSelect
+            label="To borrow"
+            value={borrowInputValue}
+            onChange={handleBorrowInputChange}
+            selectedToken={borrowToken}
+            onChangeToken={handleBorrowTokenChange}
+            tokenList={borrowTokensList}
+            className={styles.borrowInput}
+            disabledInput
+          />
+        )}
 
-      <LoanValueSlider label="Max LTV" value={ltvSliderValue} onChange={onChangeLtvSlider} />
+        <LoanValueSlider label="Max LTV" value={ltvSliderValue} onChange={onChangeLtvSlider} />
 
-      {showSkeleton ? (
-        <SummarySkeleton />
-      ) : (
-        <Summary collateralToken={collateralToken} offers={offers} />
-      )}
+        {showSkeleton ? (
+          <SummarySkeleton />
+        ) : (
+          <Summary collateralToken={collateralToken} offers={offers} />
+        )}
 
-      <Button
-        onClick={borrow}
-        disabled={!wallet.connected || !!errorMessage}
-        className={styles.borrowButton}
-        loading={isBorrowing}
-      >
-        {!wallet.connected ? 'Connect wallet' : errorMessage || 'Borrow'}
-      </Button>
+        <Button
+          onClick={borrow}
+          disabled={!wallet.connected || !!errorMessage}
+          className={styles.borrowButton}
+          loading={isBorrowing}
+        >
+          {!wallet.connected ? 'Connect wallet' : errorMessage || 'Borrow'}
+        </Button>
+      </div>
+      <OrderBook marketPubkey={collateralToken?.marketPubkey || ''} />
     </div>
   )
 }
