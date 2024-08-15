@@ -2,7 +2,7 @@ import axios from 'axios'
 import { BondingCurveType, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Offer } from '@banx/api/nft'
-import { OfferSchema, RequestWithPagination } from '@banx/api/shared'
+import { OfferSchema, RequestWithPagination, parseResponseSafe } from '@banx/api/shared'
 import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import { convertToMarketType } from '../../helpers'
@@ -52,7 +52,7 @@ type FetchTokenMarketOffers = (props: {
   marketPubkey?: string
   tokenType: LendingTokenType
   getAll?: boolean
-}) => Promise<Offer[]>
+}) => Promise<Offer[] | undefined>
 export const fetchTokenMarketOffers: FetchTokenMarketOffers = async ({
   marketPubkey,
   tokenType,
@@ -68,13 +68,7 @@ export const fetchTokenMarketOffers: FetchTokenMarketOffers = async ({
     `${BACKEND_BASE_URL}/bond-offers/${marketPubkey}?${queryParams.toString()}`,
   )
 
-  try {
-    await OfferSchema.array().parseAsync(data?.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
-
-  return data?.data
+  return await parseResponseSafe<Offer[]>(data?.data, OfferSchema.array())
 }
 
 type FetchTokenOffersPreview = (props: {
@@ -198,7 +192,7 @@ export const fetchBorrowSplTokenOffers: FetchBorrowSplTokenOffers = async (props
   })
 
   const { data } = await axios.get<{ data: BorrowSplTokenOffers[] }>(
-    `${BACKEND_BASE_URL}/lending/spl/borrow-token-v2?${queryParams?.toString()}`,
+    `${BACKEND_BASE_URL}/lending/spl/borrow-token-v3?${queryParams?.toString()}`,
   )
 
   return data.data ?? []

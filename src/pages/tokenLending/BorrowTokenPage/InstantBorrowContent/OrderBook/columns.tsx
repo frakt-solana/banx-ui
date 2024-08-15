@@ -1,9 +1,9 @@
 import Checkbox from '@banx/components/Checkbox'
-import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { ColumnType } from '@banx/components/Table'
 import { DisplayValue, HeaderCell, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { Offer } from '@banx/api/nft'
+import { CollateralToken } from '@banx/api/tokens'
 import { calculateIdleFundsInOffer } from '@banx/utils'
 
 import { OfferOptimistic } from '../hooks/useSelectedOffers'
@@ -15,6 +15,8 @@ type GetTableColumns = (props: {
   findOfferInSelection: (offerPubkey: string) => OfferOptimistic | null
   toggleOfferInSelection: (offer: Offer) => void
   hasSelectedOffers: boolean
+
+  collateral: CollateralToken | undefined
 }) => ColumnType<Offer>[]
 
 export const getTableColumns: GetTableColumns = ({
@@ -22,6 +24,7 @@ export const getTableColumns: GetTableColumns = ({
   findOfferInSelection,
   toggleOfferInSelection,
   hasSelectedOffers,
+  collateral,
 }) => {
   const columns: ColumnType<Offer>[] = [
     {
@@ -36,21 +39,28 @@ export const getTableColumns: GetTableColumns = ({
           <HeaderCell label="To borrow" />
         </div>
       ),
-      render: (offer) => (
-        <div className={styles.checkboxRow}>
-          <Checkbox
-            className={styles.checkbox}
-            onChange={() => toggleOfferInSelection(offer)}
-            checked={!!findOfferInSelection(offer.publicKey)}
-          />
-          <DisplayValue value={calculateIdleFundsInOffer(offer).toNumber()} />
-        </div>
-      ),
+      render: (offer) => {
+        const ltvPercent = collateral?.collateral.decimals
+
+        return (
+          <div className={styles.checkboxRow}>
+            <Checkbox
+              className={styles.checkbox}
+              onChange={() => toggleOfferInSelection(offer)}
+              checked={!!findOfferInSelection(offer.publicKey)}
+            />
+            <div className={styles.borrowValueContainer}>
+              <DisplayValue value={calculateIdleFundsInOffer(offer).toNumber()} />
+              <span className={styles.ltvValue}>{createPercentValueJSX(ltvPercent)} LTV</span>
+            </div>
+          </div>
+        )
+      },
     },
     {
       key: 'apr',
       title: <HeaderCell label="APR" />,
-      render: () => createPercentValueJSX(MAX_APR_VALUE),
+      render: (offer) => createPercentValueJSX(offer.loanApr / 100),
     },
     {
       key: 'offerSize',

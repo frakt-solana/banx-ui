@@ -5,6 +5,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import Table from '@banx/components/Table'
 
 import { Offer } from '@banx/api/nft'
+import { CollateralToken } from '@banx/api/tokens'
 import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
 import { useNftTokenType } from '@banx/store/nft'
 
@@ -15,9 +16,10 @@ import styles from './OrderBook.module.less'
 
 interface OrderBookProps {
   marketPubkey: string
+  collateral: CollateralToken | undefined
 }
 
-const OrderBook: FC<OrderBookProps> = ({ marketPubkey }) => {
+const OrderBook: FC<OrderBookProps> = ({ marketPubkey, collateral }) => {
   const { publicKey: walletPublicKey } = useWallet()
   const walletPublicKeyString = walletPublicKey?.toBase58() || ''
 
@@ -69,6 +71,7 @@ const OrderBook: FC<OrderBookProps> = ({ marketPubkey }) => {
     findOfferInSelection,
     toggleOfferInSelection: onRowClick,
     hasSelectedOffers,
+    collateral,
   })
 
   const rowParams = useMemo(() => {
