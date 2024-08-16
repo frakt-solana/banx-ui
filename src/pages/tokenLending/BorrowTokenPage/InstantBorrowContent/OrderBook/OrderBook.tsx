@@ -156,7 +156,7 @@ const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount,
         className={styles.table}
         classNameTableWrapper={styles.tableWrapper}
         emptyMessage={!offers.length ? 'No offers' : ''}
-        loading={isLoading}
+        loading={isLoading && !!maxCollateralAmount}
       />
     </div>
   )
