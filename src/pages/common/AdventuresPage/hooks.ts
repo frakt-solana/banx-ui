@@ -1,20 +1,24 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 import { BN } from 'fbonds-core'
-import { BanxStakeState } from 'fbonds-core/lib/fbond-protocol/types'
+import { reduce } from 'lodash'
 
 import { staking } from '@banx/api/common'
 import { BANX_TOKEN_APPROX_CIRCULATING_AMOUNT } from '@banx/constants'
 import { queryClient } from '@banx/providers'
+import { ZERO_BN } from '@banx/utils'
+
+import { mergeWithBanxStakingInfo } from './mergeWithBanxStakingInfo'
 
 const createBanxStakeInfoQueryKey = (walletPubkey: string) => ['fetchBanxStakeInfo', walletPubkey]
 const setBanxStakeInfoOptimistic = (
   walletPubkey: string,
   stateToMerge: Partial<{
-    banxTokenStake: staking.BanxTokenStake
-    banxWalletBalance: BN
-    banxAdventuresWithSubscription: staking.BanxAdventuresWithSubscription[]
-    banxStake: staking.BanxStake
+    banxTokenStakes: staking.BanxTokenStake[]
+    banxWalletBalances: BN[]
+    banxAdventures: staking.BanxAdventure[]
+    banxAdventureSubscriptions: staking.BanxAdventureSubscription[]
+    banxStakes: staking.BanxStake[]
   }>,
 ) =>
   queryClient.setQueryData(
@@ -22,48 +26,9 @@ const setBanxStakeInfoOptimistic = (
     (queryData: staking.BanxStakingInfo | undefined) => {
       if (!queryData) return queryData
 
-      return {
-        ...queryData,
-        banxTokenStake: stateToMerge.banxTokenStake ?? queryData.banxTokenStake,
-        banxWalletBalance: stateToMerge.banxWalletBalance ?? queryData.banxWalletBalance,
-        banxAdventures: stateToMerge.banxAdventuresWithSubscription
-          ? mergeBanxAdventuresWithSubscription(
-              queryData.banxAdventures,
-              stateToMerge.banxAdventuresWithSubscription,
-            )
-          : queryData.banxAdventures,
-        nfts:
-          stateToMerge.banxStake && queryData.nfts
-            ? mergeBanxNftStake(queryData.nfts, stateToMerge.banxStake)
-            : queryData.nfts,
-      }
+      return mergeWithBanxStakingInfo(queryData, stateToMerge)
     },
   )
-const mergeBanxAdventuresWithSubscription = (
-  prevState: staking.BanxAdventuresWithSubscription[],
-  newAdventures: staking.BanxAdventuresWithSubscription[],
-): staking.BanxAdventuresWithSubscription[] => {
-  return prevState.map((adventure) => {
-    const prevAdventurePubKey = adventure.adventure.publicKey
-    const sameNewAdventure = newAdventures.find(
-      ({ adventure: { publicKey } }) => publicKey === prevAdventurePubKey,
-    )
-    return sameNewAdventure ?? adventure
-  })
-}
-const mergeBanxNftStake = (
-  prevState: staking.BanxNftStake[],
-  newStake: staking.BanxStake,
-): staking.BanxNftStake[] => {
-  const isNewStakeActive = newStake.banxStakeState === BanxStakeState.Staked
-
-  return prevState.map((nft) => {
-    if (nft.mint === newStake.nftMint) {
-      return { ...nft, stake: isNewStakeActive ? newStake : undefined }
-    }
-    return nft
-  })
-}
 
 export const useBanxStakeInfo = () => {
   const { publicKey } = useWallet()
@@ -91,14 +56,49 @@ export const useBanxStakeInfo = () => {
 }
 
 const createBanxStakeSettingsQueryKey = () => ['fetchBanxStakeSettings']
-const setBanxStakeSettingsOptimistic = (nextState: staking.BanxStakingSettings) =>
+const setBanxStakeSettingsOptimistic = (nextBanxStakingSettings: staking.BanxStakingSettings[]) =>
   queryClient.setQueryData(
     createBanxStakeSettingsQueryKey(),
     (queryData: staking.BanxStakingSettings | undefined) => {
       if (!queryData) return queryData
-      return nextState
+
+      return mergeBanxSettings(queryData, nextBanxStakingSettings || [])
     },
   )
+
+const mergeBanxSettings = (
+  banxSettings: staking.BanxStakingSettings,
+  nextSettings: staking.BanxStakingSettings[],
+): staking.BanxStakingSettings => {
+  const {
+    banxStaked: banxStakedDiff,
+    rewardsHarvested: rewardsHarvestedDiff,
+    tokensStaked: tokensStakedDiff,
+  } = reduce(
+    nextSettings,
+    (diff, settings) => {
+      return {
+        banxStaked: diff.banxStaked.add(banxSettings.banxStaked.sub(settings.banxStaked)),
+        rewardsHarvested: diff.rewardsHarvested.add(
+          banxSettings.rewardsHarvested.sub(settings.rewardsHarvested),
+        ),
+        tokensStaked: diff.tokensStaked.add(banxSettings.tokensStaked.sub(settings.tokensStaked)),
+      }
+    },
+    {
+      banxStaked: ZERO_BN,
+      rewardsHarvested: ZERO_BN,
+      tokensStaked: ZERO_BN,
+    },
+  )
+
+  return {
+    ...nextSettings[0],
+    banxStaked: banxSettings.banxStaked.sub(banxStakedDiff),
+    rewardsHarvested: banxSettings.rewardsHarvested.sub(rewardsHarvestedDiff),
+    tokensStaked: banxSettings.tokensStaked.sub(tokensStakedDiff),
+  }
+}
 
 export const useBanxStakeSettings = () => {
   const {

@@ -113,26 +113,48 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
         .on('sentAll', (results) => {
           enqueueTransactionsSent()
           enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)
+
+          // //! ==============================================================================
+          // // For optimistics debug
+          // if (results?.[0]?.accountInfoByPubkey) {
+          //   const {
+          //     banxStakingSettings,
+          //     banxTokenStake,
+          //     banxAdventureSubscriptions,
+          //     banxAdventures,
+          //     banxStake,
+          //   } = parseAnyStakingSimulatedAccounts(results?.[0]?.accountInfoByPubkey)
+          //   setBanxStakeSettingsOptimistic([banxStakingSettings])
+          //   setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), {
+          //     banxTokenStakes: [banxTokenStake],
+          //     banxAdventureSubscriptions,
+          //     banxAdventures,
+          //     banxStakes: [banxStake],
+          //   })
+          // }
+          // //! ==============================================================================
         })
         .on('confirmedAll', (results) => {
           destroySnackbar(loadingSnackbarId)
 
           const { confirmed, failed } = results
 
-          if (confirmed.length) {
+          if (confirmed?.[0]?.accountInfoByPubkey) {
             enqueueSnackbar({ message: 'Subscribed successfully', type: 'success' })
 
-            confirmed.forEach((result) => {
-              if (result.accountInfoByPubkey) {
-                const { banxStakingSettings, banxTokenStake, banxAdventuresWithSubscription } =
-                  parseAnyStakingSimulatedAccounts(result.accountInfoByPubkey)
-
-                setBanxStakeSettingsOptimistic(banxStakingSettings)
-                setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), {
-                  banxAdventuresWithSubscription,
-                  banxTokenStake,
-                })
-              }
+            const {
+              banxStakingSettings,
+              banxTokenStake,
+              banxAdventureSubscriptions,
+              banxAdventures,
+              banxStake,
+            } = parseAnyStakingSimulatedAccounts(confirmed?.[0]?.accountInfoByPubkey)
+            setBanxStakeSettingsOptimistic([banxStakingSettings])
+            setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), {
+              banxTokenStakes: [banxTokenStake],
+              banxAdventureSubscriptions,
+              banxAdventures,
+              banxStakes: [banxStake],
             })
           }
 

@@ -3,7 +3,6 @@ import { SimulatedAccountInfoByPubkey } from 'solana-transactions-executor'
 import {
   BanxAdventure,
   BanxAdventureSubscription,
-  BanxAdventuresWithSubscription,
   BanxStake,
   BanxStakingSettings,
   BanxTokenStake,
@@ -11,32 +10,27 @@ import {
 
 import { parseAccountInfoByPubkey } from '../functions'
 
-export const parseAnyStakingSimulatedAccounts = (
-  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
-): {
+export type StakingSimulatedAccountsResult = {
   banxStakingSettings: BanxStakingSettings
-  banxAdventuresWithSubscription: BanxAdventuresWithSubscription[]
+  banxAdventures: BanxAdventure[]
+  banxAdventureSubscriptions: BanxAdventureSubscription[]
   banxTokenStake: BanxTokenStake
   banxStake: BanxStake
-} => {
+}
+export const parseAnyStakingSimulatedAccounts = (
+  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
+): StakingSimulatedAccountsResult => {
   const results = parseAccountInfoByPubkey(accountInfoByPubkey, {
     bnParser: (v) => v,
     pubkeyParser: (v) => v.toBase58(),
   })
 
-  const banxAdventureSubscriptions = results?.[
-    'banxAdventureSubscription'
-  ] as BanxAdventureSubscription[]
-  const banxAdventures = results?.['banxAdventure'] as BanxAdventure[]
-
   return {
     banxStakingSettings: results?.['banxStakingSettings']?.[0] as BanxStakingSettings,
-    banxAdventuresWithSubscription: banxAdventures.map((adventure) => ({
-      adventure,
-      adventureSubscription: banxAdventureSubscriptions.find(
-        ({ adventure: adventurePubkey }) => adventurePubkey === adventure.publicKey,
-      ),
-    })),
+    banxAdventures: results?.['banxAdventure'] as BanxAdventure[],
+    banxAdventureSubscriptions: results?.[
+      'banxAdventureSubscription'
+    ] as BanxAdventureSubscription[],
     banxTokenStake: results?.['banxTokenStake']?.[0] as BanxTokenStake,
     banxStake: (results?.['banxStake']?.[0] as BanxStake) || undefined,
   }

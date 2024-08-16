@@ -141,6 +141,28 @@ export const useTokenTransactions = ({
         .on('sentAll', (results) => {
           enqueueTransactionsSent()
           enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)
+
+          // //! ==============================================================================
+          // // For optimistics debug
+          // if (results?.[0]?.accountInfoByPubkey) {
+          //   const {
+          //     banxStakingSettings,
+          //     banxTokenStake,
+          //     banxAdventureSubscriptions,
+          //     banxAdventures,
+          //     banxStake,
+          //   } = parseAnyStakingSimulatedAccounts(results?.[0]?.accountInfoByPubkey)
+          //   setBanxStakeSettingsOptimistic([banxStakingSettings])
+          //   setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), {
+          //     banxTokenStakes: [banxTokenStake],
+          //     banxAdventureSubscriptions,
+          //     banxAdventures,
+          //     banxStakes: [banxStake],
+          //     banxWalletBalances: [banxWalletBalance.sub(inputTokenAmount)],
+          //   })
+          // }
+          // //! ==============================================================================
+
           close()
         })
         .on('confirmedAll', (results) => {
@@ -148,21 +170,23 @@ export const useTokenTransactions = ({
 
           const { confirmed, failed } = results
 
-          if (confirmed.length) {
+          if (confirmed?.[0]?.accountInfoByPubkey) {
             enqueueSnackbar({ message: 'Staked successfully', type: 'success' })
 
-            confirmed.forEach((result) => {
-              if (result.accountInfoByPubkey) {
-                const { banxStakingSettings, banxTokenStake, banxAdventuresWithSubscription } =
-                  parseAnyStakingSimulatedAccounts(result.accountInfoByPubkey)
-
-                setBanxStakeSettingsOptimistic(banxStakingSettings)
-                setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), {
-                  banxWalletBalance: banxWalletBalance.sub(inputTokenAmount),
-                  banxAdventuresWithSubscription,
-                  banxTokenStake,
-                })
-              }
+            const {
+              banxStakingSettings,
+              banxTokenStake,
+              banxAdventureSubscriptions,
+              banxAdventures,
+              banxStake,
+            } = parseAnyStakingSimulatedAccounts(confirmed?.[0]?.accountInfoByPubkey)
+            setBanxStakeSettingsOptimistic([banxStakingSettings])
+            setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), {
+              banxTokenStakes: [banxTokenStake],
+              banxAdventureSubscriptions,
+              banxAdventures,
+              banxStakes: [banxStake],
+              banxWalletBalances: [banxWalletBalance.sub(inputTokenAmount)],
             })
           }
 
@@ -204,6 +228,28 @@ export const useTokenTransactions = ({
         .on('sentAll', (results) => {
           enqueueTransactionsSent()
           enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)
+
+          // //! ==============================================================================
+          // // For optimistics debug
+          // if (results?.[0]?.accountInfoByPubkey) {
+          //   const {
+          //     banxStakingSettings,
+          //     banxTokenStake,
+          //     banxAdventureSubscriptions,
+          //     banxAdventures,
+          //     banxStake,
+          //   } = parseAnyStakingSimulatedAccounts(results?.[0]?.accountInfoByPubkey)
+          //   setBanxStakeSettingsOptimistic([banxStakingSettings])
+          //   setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), {
+          //     banxTokenStakes: [banxTokenStake],
+          //     banxAdventureSubscriptions,
+          //     banxAdventures,
+          //     banxStakes: [banxStake],
+          //     banxWalletBalances: [banxWalletBalance.add(inputTokenAmount)],
+          //   })
+          // }
+          // //! ==============================================================================
+
           close()
         })
         .on('confirmedAll', (results) => {
@@ -211,21 +257,23 @@ export const useTokenTransactions = ({
 
           const { confirmed, failed } = results
 
-          if (confirmed.length) {
+          if (confirmed?.[0]?.accountInfoByPubkey) {
             enqueueSnackbar({ message: 'Unstaked successfully', type: 'success' })
 
-            confirmed.forEach((result) => {
-              if (result.accountInfoByPubkey) {
-                const { banxStakingSettings, banxTokenStake, banxAdventuresWithSubscription } =
-                  parseAnyStakingSimulatedAccounts(result.accountInfoByPubkey)
-
-                setBanxStakeSettingsOptimistic(banxStakingSettings)
-                setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), {
-                  banxWalletBalance: banxWalletBalance.add(inputTokenAmount),
-                  banxAdventuresWithSubscription,
-                  banxTokenStake,
-                })
-              }
+            const {
+              banxStakingSettings,
+              banxTokenStake,
+              banxAdventureSubscriptions,
+              banxAdventures,
+              banxStake,
+            } = parseAnyStakingSimulatedAccounts(confirmed?.[0]?.accountInfoByPubkey)
+            setBanxStakeSettingsOptimistic([banxStakingSettings])
+            setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), {
+              banxTokenStakes: [banxTokenStake],
+              banxAdventureSubscriptions,
+              banxAdventures,
+              banxStakes: [banxStake],
+              banxWalletBalances: [banxWalletBalance.add(inputTokenAmount)],
             })
           }
 

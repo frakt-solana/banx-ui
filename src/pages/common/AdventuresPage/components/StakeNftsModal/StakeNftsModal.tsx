@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BanxStakeState } from 'fbonds-core/lib/fbond-protocol/types'
-import { uniqueId } from 'lodash'
+import { chain, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
@@ -31,6 +31,8 @@ import {
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
 } from '@banx/utils'
+
+import { convertStakingSimulatedAccountsToMergeData } from '../../mergeWithBanxStakingInfo'
 
 import styles from './StakeNftsModal.module.less'
 
@@ -114,6 +116,21 @@ export const StakeNftsModal = () => {
           enqueueTransactionsSent()
           enqueueWaitingConfirmation(loadingSnackbarId)
           close()
+
+          // //! ==============================================================================
+          // // For optimistics debug
+          // const optimisticParams = chain(results)
+          //   .map(({ accountInfoByPubkey }) => {
+          //     if (!accountInfoByPubkey) return null
+          //     return parseAnyStakingSimulatedAccounts(accountInfoByPubkey)
+          //   })
+          //   .compact()
+          //   .thru(convertStakingSimulatedAccountsToMergeData)
+          //   .value()
+
+          // setBanxStakeSettingsOptimistic(optimisticParams.banxStakingSettings)
+          // setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), optimisticParams)
+          // //! ==============================================================================
         })
         .on('confirmedAll', (results) => {
           destroySnackbar(loadingSnackbarId)
@@ -123,23 +140,17 @@ export const StakeNftsModal = () => {
           if (confirmed.length) {
             enqueueSnackbar({ message: 'Staked successfully', type: 'success' })
 
-            confirmed.forEach((result) => {
-              if (result.accountInfoByPubkey) {
-                const {
-                  banxStakingSettings,
-                  banxAdventuresWithSubscription,
-                  banxStake,
-                  banxTokenStake,
-                } = parseAnyStakingSimulatedAccounts(result.accountInfoByPubkey)
+            const optimisticParams = chain(confirmed)
+              .map(({ accountInfoByPubkey }) => {
+                if (!accountInfoByPubkey) return null
+                return parseAnyStakingSimulatedAccounts(accountInfoByPubkey)
+              })
+              .compact()
+              .thru(convertStakingSimulatedAccountsToMergeData)
+              .value()
 
-                setBanxStakeSettingsOptimistic(banxStakingSettings)
-                setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), {
-                  banxAdventuresWithSubscription,
-                  banxStake,
-                  banxTokenStake,
-                })
-              }
-            })
+            setBanxStakeSettingsOptimistic(optimisticParams.banxStakingSettings)
+            setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), optimisticParams)
           }
 
           if (failed.length) {
@@ -191,6 +202,21 @@ export const StakeNftsModal = () => {
           enqueueTransactionsSent()
           enqueueWaitingConfirmation(loadingSnackbarId)
           close()
+
+          // //! ==============================================================================
+          // // For optimistics debug
+          // const optimisticParams = chain(results)
+          //   .map(({ accountInfoByPubkey }) => {
+          //     if (!accountInfoByPubkey) return null
+          //     return parseAnyStakingSimulatedAccounts(accountInfoByPubkey)
+          //   })
+          //   .compact()
+          //   .thru(convertStakingSimulatedAccountsToMergeData)
+          //   .value()
+
+          // setBanxStakeSettingsOptimistic(optimisticParams.banxStakingSettings)
+          // setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), optimisticParams)
+          // //! ==============================================================================
         })
         .on('confirmedAll', (results) => {
           destroySnackbar(loadingSnackbarId)
@@ -200,23 +226,17 @@ export const StakeNftsModal = () => {
           if (confirmed.length) {
             enqueueSnackbar({ message: 'Unstaked successfully', type: 'success' })
 
-            confirmed.forEach((result) => {
-              if (result.accountInfoByPubkey) {
-                const {
-                  banxStakingSettings,
-                  banxAdventuresWithSubscription,
-                  banxStake,
-                  banxTokenStake,
-                } = parseAnyStakingSimulatedAccounts(result.accountInfoByPubkey)
+            const optimisticParams = chain(confirmed)
+              .map(({ accountInfoByPubkey }) => {
+                if (!accountInfoByPubkey) return null
+                return parseAnyStakingSimulatedAccounts(accountInfoByPubkey)
+              })
+              .compact()
+              .thru(convertStakingSimulatedAccountsToMergeData)
+              .value()
 
-                setBanxStakeSettingsOptimistic(banxStakingSettings)
-                setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), {
-                  banxAdventuresWithSubscription,
-                  banxStake,
-                  banxTokenStake,
-                })
-              }
-            })
+            setBanxStakeSettingsOptimistic(optimisticParams.banxStakingSettings)
+            setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), optimisticParams)
           }
 
           if (failed.length) {

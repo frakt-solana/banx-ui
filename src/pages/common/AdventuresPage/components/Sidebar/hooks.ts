@@ -33,6 +33,8 @@ import {
   enqueueWaitingConfirmationSingle,
 } from '@banx/utils'
 
+import { convertStakingSimulatedAccountsToMergeData } from '../../mergeWithBanxStakingInfo'
+
 type UseAdventuresSidebarProps = {
   banxStakingSettings: staking.BanxStakingSettings
   banxStakeInfo: staking.BanxStakingInfo
@@ -139,6 +141,21 @@ export const useAdventuresSidebar = ({
         .on('sentAll', (results) => {
           enqueueTransactionsSent()
           enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)
+
+          // //! ==============================================================================
+          // // For optimistics debug
+          // const optimisticParams = chain(results)
+          //   .map(({ accountInfoByPubkey }) => {
+          //     if (!accountInfoByPubkey) return null
+          //     return parseAnyStakingSimulatedAccounts(accountInfoByPubkey)
+          //   })
+          //   .compact()
+          //   .thru(convertStakingSimulatedAccountsToMergeData)
+          //   .value()
+
+          // setBanxStakeSettingsOptimistic(optimisticParams.banxStakingSettings)
+          // setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), optimisticParams)
+          // //! ==============================================================================
         })
         .on('confirmedAll', (results) => {
           destroySnackbar(loadingSnackbarId)
@@ -148,21 +165,17 @@ export const useAdventuresSidebar = ({
           if (confirmed.length) {
             enqueueSnackbar({ message: 'Claimed successfully', type: 'success' })
 
-            confirmed.forEach((result) => {
-              if (result.accountInfoByPubkey) {
-                const { banxStakingSettings, banxTokenStake, banxAdventuresWithSubscription } =
-                  parseAnyStakingSimulatedAccounts(result.accountInfoByPubkey)
+            const optimisticParams = chain(confirmed)
+              .map(({ accountInfoByPubkey }) => {
+                if (!accountInfoByPubkey) return null
+                return parseAnyStakingSimulatedAccounts(accountInfoByPubkey)
+              })
+              .compact()
+              .thru(convertStakingSimulatedAccountsToMergeData)
+              .value()
 
-                setBanxStakeSettingsOptimistic(banxStakingSettings)
-                setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), {
-                  banxWalletBalance: (banxStakeInfo.banxWalletBalance || ZERO_BN).add(
-                    walletRewards,
-                  ),
-                  banxAdventuresWithSubscription,
-                  banxTokenStake,
-                })
-              }
-            })
+            setBanxStakeSettingsOptimistic(optimisticParams.banxStakingSettings)
+            setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), optimisticParams)
           }
 
           if (failed.length) {
