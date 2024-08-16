@@ -59,51 +59,58 @@ export const mergeWithBanxStakingInfo = (
     banxStakes: staking.BanxStake[]
   }>,
 ): staking.BanxStakingInfo => {
-  const banxAdventures = dataToMerge?.banxAdventures
-    ? mergeBanxAdventures(
-        banxStakingInfo.banxAdventures.map(({ adventure }) => adventure),
-        dataToMerge.banxAdventures,
-      )
-    : banxStakingInfo.banxAdventures.map(({ adventure }) => adventure)
+  const {
+    banxTokenStakes,
+    banxWalletBalances,
+    banxAdventures,
+    banxAdventureSubscriptions,
+    banxStakes,
+  } = dataToMerge
 
-  const banxAdventureSubscriptions = dataToMerge?.banxAdventureSubscriptions
-    ? mergeBanxAdventureSubscriptions(
-        chain(banxStakingInfo.banxAdventures)
-          ?.map(({ adventureSubscription }) => adventureSubscription)
-          .compact()
-          .value(),
-        dataToMerge.banxAdventureSubscriptions,
-      )
-    : chain(banxStakingInfo.banxAdventures)
-        ?.map(({ adventureSubscription }) => adventureSubscription)
-        .compact()
-        .value()
+  const mergedBanxAdventures = mergeBanxAdventures(
+    banxStakingInfo.banxAdventures.map(({ adventure }) => adventure),
+    banxAdventures || [],
+  )
 
-  const banxAdventuresWithSubscription = banxAdventures.map((adventure) => ({
+  const mergedBanxAdventureSubscriptions = mergeBanxAdventureSubscriptions(
+    chain(banxStakingInfo.banxAdventures)
+      ?.map(({ adventureSubscription }) => adventureSubscription)
+      .compact()
+      .value() || [],
+    banxAdventureSubscriptions || [],
+  )
+
+  const banxAdventuresWithSubscription = mergedBanxAdventures.map((adventure) => ({
     adventure,
-    adventureSubscription: banxAdventureSubscriptions.find(
+    adventureSubscription: mergedBanxAdventureSubscriptions.find(
       ({ adventure: adventurePubkey }) => adventurePubkey === adventure.publicKey,
     ),
   }))
 
-  const banxStakes = dataToMerge.banxStakes && chain(dataToMerge.banxStakes).compact().value()
+  const banxStakesCompacted = chain(banxStakes || [])
+    .compact()
+    .value()
+  const mergedNfts = banxStakesCompacted.length
+    ? mergeBanxNftStakes(banxStakingInfo.nfts || [], banxStakesCompacted || [])
+    : banxStakingInfo.nfts
+
+  const mergedBanxWalletBalance = banxWalletBalances
+    ? mergeBanxWalletBalances(
+        banxStakingInfo.banxWalletBalance || ZERO_BN,
+        dataToMerge.banxWalletBalances || [],
+      )
+    : banxStakingInfo.banxWalletBalance
+
+  const mergedBanxTokenStake = banxStakingInfo.banxTokenStake
+    ? mergeBanxTokenStakes(banxStakingInfo.banxTokenStake, banxTokenStakes || [])
+    : null
 
   return {
     ...banxStakingInfo,
-    banxWalletBalance: dataToMerge.banxWalletBalances
-      ? mergeBanxWalletBalances(
-          banxStakingInfo.banxWalletBalance || ZERO_BN,
-          dataToMerge.banxWalletBalances || [],
-        )
-      : banxStakingInfo.banxWalletBalance,
+    banxWalletBalance: mergedBanxWalletBalance,
     banxAdventures: banxAdventuresWithSubscription,
-    banxTokenStake:
-      dataToMerge.banxTokenStakes && banxStakingInfo.banxTokenStake
-        ? mergeBanxTokenStakes(banxStakingInfo.banxTokenStake, dataToMerge?.banxTokenStakes)
-        : null,
-    nfts: banxStakes?.length
-      ? mergeBanxNftStakes(banxStakingInfo.nfts || [], dataToMerge.banxStakes || [])
-      : banxStakingInfo.nfts,
+    banxTokenStake: mergedBanxTokenStake,
+    nfts: mergedNfts,
   }
 }
 
@@ -113,23 +120,20 @@ const mergeBanxAdventures = (
 ): staking.BanxAdventure[] => {
   const nextBanxAdventuresByPublicKey = groupBy(nextBanxAdventures, ({ publicKey }) => publicKey)
 
-  return banxAdventures.map((adventure) => {
-    const nextBanxAdventures = nextBanxAdventuresByPublicKey[adventure.publicKey] || []
+  return chain(banxAdventures)
+    .map((adventure) => {
+      const nextBanxAdventures = nextBanxAdventuresByPublicKey[adventure.publicKey] || []
 
-    if (!nextBanxAdventures.length) return adventure
+      if (!nextBanxAdventures.length) return adventure
 
-    return mergeBanxAdventure(adventure, nextBanxAdventures)
-  })
-}
-const mergeBanxAdventure = (
-  banxAdventure: staking.BanxAdventure,
-  nextBanxAdventures: staking.BanxAdventure[], //? Same adventures as banxAdventure by publicKey
-): staking.BanxAdventure => {
-  return calcOptimisticBasedOnBulkSimulation<staking.BanxAdventure>(
-    banxAdventure,
-    nextBanxAdventures,
-    ['periodEndingAt', 'periodStartedAt'],
-  )
+      return calcOptimisticBasedOnBulkSimulation<staking.BanxAdventure>(
+        adventure,
+        nextBanxAdventures,
+        ['periodEndingAt', 'periodStartedAt'],
+      )
+    })
+    .unionWith(nextBanxAdventures, (a, b) => a.publicKey === b.publicKey)
+    .value()
 }
 
 const mergeBanxAdventureSubscriptions = (
@@ -147,20 +151,14 @@ const mergeBanxAdventureSubscriptions = (
 
       if (!nextBanxSubscriptions.length) return subscription
 
-      return mergeBanxAdventureSubscription(subscription, nextBanxSubscriptions)
+      return calcOptimisticBasedOnBulkSimulation<staking.BanxAdventureSubscription>(
+        subscription,
+        nextBanxSubscriptions,
+        ['subscribedAt', 'unsubscribedAt', 'harvestedAt'],
+      )
     })
     .unionWith(nextBanxSubscriptions, (a, b) => a.publicKey === b.publicKey)
     .value()
-}
-const mergeBanxAdventureSubscription = (
-  banxSubscription: staking.BanxAdventureSubscription,
-  nextBanxSubscriptions: staking.BanxAdventureSubscription[], //? Same subscriptions as banxSubscription by publicKey
-): staking.BanxAdventureSubscription => {
-  return calcOptimisticBasedOnBulkSimulation<staking.BanxAdventureSubscription>(
-    banxSubscription,
-    nextBanxSubscriptions,
-    ['subscribedAt', 'unsubscribedAt', 'harvestedAt'],
-  )
 }
 
 const mergeBanxTokenStakes = (
