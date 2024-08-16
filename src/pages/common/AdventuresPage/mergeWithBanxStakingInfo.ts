@@ -4,7 +4,7 @@ import { chain, groupBy, reduce } from 'lodash'
 
 import { staking } from '@banx/api/common'
 import { StakingSimulatedAccountsResult } from '@banx/transactions/staking'
-import { ZERO_BN } from '@banx/utils'
+import { ZERO_BN, calcOptimisticBasedOnBulkSimulation } from '@banx/utils'
 
 export const convertStakingSimulatedAccountsToMergeData = (
   stakingSimulatedAccountsResults: StakingSimulatedAccountsResult[],
@@ -125,48 +125,11 @@ const mergeBanxAdventure = (
   banxAdventure: staking.BanxAdventure,
   nextBanxAdventures: staking.BanxAdventure[], //? Same adventures as banxAdventure by publicKey
 ): staking.BanxAdventure => {
-  if (!nextBanxAdventures.length) {
-    return banxAdventure
-  }
-
-  const {
-    totalBanxSubscribed: totalBanxSubscribedDiff,
-    totalPartnerPoints: totalPartnerPointsDiff,
-    totalPlayerPoints: totalPlayerPointsDiff,
-    totalTokensStaked: totalTokensStakedDiff,
-  } = reduce(
+  return calcOptimisticBasedOnBulkSimulation<staking.BanxAdventure>(
+    banxAdventure,
     nextBanxAdventures,
-    (diff, adventure) => {
-      return {
-        totalBanxSubscribed: diff.totalBanxSubscribed.add(
-          banxAdventure.totalBanxSubscribed.sub(adventure.totalBanxSubscribed),
-        ),
-        totalPartnerPoints: diff.totalPartnerPoints.add(
-          banxAdventure.totalPartnerPoints.sub(adventure.totalPartnerPoints),
-        ),
-        totalPlayerPoints: diff.totalPlayerPoints.add(
-          banxAdventure.totalPlayerPoints.sub(adventure.totalPlayerPoints),
-        ),
-        totalTokensStaked: diff.totalPlayerPoints.add(
-          banxAdventure.totalPlayerPoints.sub(adventure.totalPlayerPoints),
-        ),
-      }
-    },
-    {
-      totalBanxSubscribed: ZERO_BN,
-      totalPartnerPoints: ZERO_BN,
-      totalPlayerPoints: ZERO_BN,
-      totalTokensStaked: ZERO_BN,
-    },
+    ['periodEndingAt', 'periodStartedAt'],
   )
-
-  return {
-    ...(nextBanxAdventures[0] || nextBanxAdventures[0]),
-    totalBanxSubscribed: banxAdventure.totalBanxSubscribed.sub(totalBanxSubscribedDiff),
-    totalPartnerPoints: banxAdventure.totalPartnerPoints.sub(totalPartnerPointsDiff),
-    totalPlayerPoints: banxAdventure.totalPlayerPoints.sub(totalPlayerPointsDiff),
-    totalTokensStaked: banxAdventure.totalTokensStaked.sub(totalTokensStakedDiff),
-  }
 }
 
 const mergeBanxAdventureSubscriptions = (
@@ -178,121 +141,37 @@ const mergeBanxAdventureSubscriptions = (
     ({ publicKey }) => publicKey,
   )
 
-  return banxSubscriptions.map((subscription) => {
-    const nextBanxSubscriptions = nextBanxSubscriptionsByPublicKey[subscription.publicKey] || []
+  return chain(banxSubscriptions)
+    .map((subscription) => {
+      const nextBanxSubscriptions = nextBanxSubscriptionsByPublicKey[subscription.publicKey] || []
 
-    if (!nextBanxSubscriptions.length) return subscription
+      if (!nextBanxSubscriptions.length) return subscription
 
-    return mergeBanxAdventureSubscription(subscription, nextBanxSubscriptions)
-  })
+      return mergeBanxAdventureSubscription(subscription, nextBanxSubscriptions)
+    })
+    .unionWith(nextBanxSubscriptions, (a, b) => a.publicKey === b.publicKey)
+    .value()
 }
 const mergeBanxAdventureSubscription = (
   banxSubscription: staking.BanxAdventureSubscription,
   nextBanxSubscriptions: staking.BanxAdventureSubscription[], //? Same subscriptions as banxSubscription by publicKey
 ): staking.BanxAdventureSubscription => {
-  const {
-    stakePartnerPointsAmount: stakePartnerPointsAmountDiff,
-    stakePlayerPointsAmount: stakePlayerPointsAmountDiff,
-    stakeTokensAmount: stakeTokensAmountDiff,
-    stakeNftAmount: stakeNftAmountDiff,
-  } = reduce(
+  return calcOptimisticBasedOnBulkSimulation<staking.BanxAdventureSubscription>(
+    banxSubscription,
     nextBanxSubscriptions,
-    (diff, subscription) => {
-      return {
-        stakePartnerPointsAmount: diff.stakePartnerPointsAmount.add(
-          banxSubscription.stakePartnerPointsAmount.sub(subscription.stakePartnerPointsAmount),
-        ),
-        stakePlayerPointsAmount: diff.stakePlayerPointsAmount.add(
-          banxSubscription.stakePlayerPointsAmount.sub(subscription.stakePlayerPointsAmount),
-        ),
-        stakeTokensAmount: diff.stakeTokensAmount.add(
-          banxSubscription.stakeTokensAmount.sub(subscription.stakeTokensAmount),
-        ),
-        stakeNftAmount: diff.stakeNftAmount.add(
-          banxSubscription.stakeNftAmount.sub(subscription.stakeNftAmount),
-        ),
-      }
-    },
-    {
-      stakePartnerPointsAmount: ZERO_BN,
-      stakePlayerPointsAmount: ZERO_BN,
-      stakeTokensAmount: ZERO_BN,
-      stakeNftAmount: ZERO_BN,
-    },
+    ['subscribedAt', 'unsubscribedAt', 'harvestedAt'],
   )
-
-  return {
-    ...nextBanxSubscriptions[0],
-    stakePartnerPointsAmount: banxSubscription.stakePartnerPointsAmount.sub(
-      stakePartnerPointsAmountDiff,
-    ),
-    stakePlayerPointsAmount: banxSubscription.stakePlayerPointsAmount.sub(
-      stakePlayerPointsAmountDiff,
-    ),
-    stakeTokensAmount: banxSubscription.stakeTokensAmount.sub(stakeTokensAmountDiff),
-    stakeNftAmount: banxSubscription.stakeNftAmount.sub(stakeNftAmountDiff),
-  }
 }
 
 const mergeBanxTokenStakes = (
   banxTokenStake: staking.BanxTokenStake,
   nextBanxTokenStakes: staking.BanxTokenStake[],
 ): staking.BanxTokenStake => {
-  const {
-    banxNftsStakedQuantity: banxNftsStakedQuantityDiff,
-    partnerPointsStaked: partnerPointsStakedDiff,
-    playerPointsStaked: playerPointsStakedDiff,
-    adventureSubscriptionsQuantity: adventureSubscriptionsQuantityDiff,
-    tokensStaked: tokensStakedDiff,
-    farmedAmount: farmedAmountDiff,
-  } = reduce(
+  return calcOptimisticBasedOnBulkSimulation<staking.BanxTokenStake>(
+    banxTokenStake,
     nextBanxTokenStakes,
-    (diff, tokenStake) => {
-      return {
-        banxNftsStakedQuantity: diff.banxNftsStakedQuantity.add(
-          banxTokenStake.banxNftsStakedQuantity.sub(tokenStake.banxNftsStakedQuantity),
-        ),
-        partnerPointsStaked: diff.partnerPointsStaked.add(
-          banxTokenStake.partnerPointsStaked.sub(tokenStake.partnerPointsStaked),
-        ),
-        playerPointsStaked: diff.playerPointsStaked.add(
-          banxTokenStake.playerPointsStaked.sub(tokenStake.playerPointsStaked),
-        ),
-        adventureSubscriptionsQuantity: diff.adventureSubscriptionsQuantity.add(
-          banxTokenStake.adventureSubscriptionsQuantity.sub(
-            tokenStake.adventureSubscriptionsQuantity,
-          ),
-        ),
-        tokensStaked: diff.tokensStaked.add(
-          banxTokenStake.tokensStaked.sub(tokenStake.tokensStaked),
-        ),
-        farmedAmount: diff.farmedAmount.add(
-          banxTokenStake.farmedAmount.sub(tokenStake.farmedAmount),
-        ),
-      }
-    },
-    {
-      banxNftsStakedQuantity: ZERO_BN,
-      partnerPointsStaked: ZERO_BN,
-      playerPointsStaked: ZERO_BN,
-      adventureSubscriptionsQuantity: ZERO_BN,
-      tokensStaked: ZERO_BN,
-      farmedAmount: ZERO_BN,
-    },
+    ['stakedAt', 'unstakedAt', 'nftsStakedAt', 'nftsUnstakedAt'],
   )
-
-  return {
-    ...nextBanxTokenStakes[0],
-
-    banxNftsStakedQuantity: banxTokenStake.banxNftsStakedQuantity.sub(banxNftsStakedQuantityDiff),
-    partnerPointsStaked: banxTokenStake.partnerPointsStaked.sub(partnerPointsStakedDiff),
-    playerPointsStaked: banxTokenStake.playerPointsStaked.sub(playerPointsStakedDiff),
-    adventureSubscriptionsQuantity: banxTokenStake.adventureSubscriptionsQuantity.sub(
-      adventureSubscriptionsQuantityDiff,
-    ),
-    tokensStaked: banxTokenStake.tokensStaked.sub(tokensStakedDiff),
-    farmedAmount: banxTokenStake.farmedAmount.sub(farmedAmountDiff),
-  }
 }
 
 const mergeBanxNftStakes = (
