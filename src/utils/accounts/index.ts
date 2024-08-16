@@ -23,7 +23,7 @@ const calcObjectsDiff = <T extends Record<string, unknown>>(
 
       if (isObject(fieldValue)) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return calcObjectsDiff<any>(fieldValue, objectB[fieldName], ignoreFields, 'add')
+        return calcObjectsDiff<any>(fieldValue, objectB[fieldName], ignoreFields, diffMethod)
       }
 
       return [fieldName, objectB[fieldName]]
