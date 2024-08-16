@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
@@ -10,6 +10,8 @@ import { useNftTokenType } from '@banx/store/nft'
 import { getTokenDecimals } from '@banx/utils'
 
 import { BorrowToken } from '../../constants'
+import { getUpdatedBorrowOffers } from '../OrderBook/helpers'
+import { useSelectedOffers } from './useSelectedOffers'
 
 export const useBorrowOffers = (
   collateralToken: CollateralToken | undefined,
@@ -60,6 +62,25 @@ export const useBorrowOffers = (
   const onChangeLtvSlider = (value: number) => {
     setLtvSlider(value)
   }
+
+  const { set } = useSelectedOffers()
+
+  useEffect(() => {
+    if (data) {
+      const marketTokenDecimals = borrowToken?.collateral.decimals || 0
+      const collateralTokenDecimals = collateralToken?.collateral.decimals || 0
+
+      const collateralsAmount = parseFloat(amount) * Math.pow(10, marketTokenDecimals)
+
+      const updatedOffers = getUpdatedBorrowOffers({
+        collateralsAmount,
+        offers: data,
+        tokenDecimals: collateralTokenDecimals,
+      })
+
+      set(updatedOffers, walletPubkeyString)
+    }
+  }, [amount, borrowToken, collateralToken, data, set, walletPubkeyString])
 
   return {
     data: data ?? [],
