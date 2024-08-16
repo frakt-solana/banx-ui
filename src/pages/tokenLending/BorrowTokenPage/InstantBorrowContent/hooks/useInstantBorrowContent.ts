@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { BN } from 'fbonds-core'
 
@@ -7,8 +7,9 @@ import { useNftTokenType } from '@banx/store/nft'
 import { bnToHuman, stringToBN } from '@banx/utils'
 
 import { BorrowToken, DEFAULT_COLLATERAL_MARKET_PUBKEY } from '../../constants'
+import { getUpdatedBorrowOffers } from '../OrderBook/helpers'
 import { adjustAmountWithUpfrontFee, getErrorMessage } from '../helpers'
-import { useBorrowSplTokenOffers } from './useBorrowSplTokenOffers'
+import { useBorrowOffers } from './useBorrowOffers'
 import { useBorrowSplTokenTransaction } from './useBorrowSplTokenTransaction'
 import { useBorrowTokensList, useCollateralsList } from './useCollateralsList'
 
@@ -32,7 +33,7 @@ export const useInstantBorrowContent = () => {
     setAmount,
     ltvSliderValue,
     onChangeLtvSlider,
-  } = useBorrowSplTokenOffers(collateralToken, borrowToken)
+  } = useBorrowOffers(collateralToken, borrowToken)
 
   useEffect(() => {
     const foundToken = collateralsList.find(
@@ -89,11 +90,27 @@ export const useInstantBorrowContent = () => {
     setTokenType(token.lendingTokenType)
   }
 
+  const offersInCart = useMemo(() => {
+    const marketTokenDecimals = borrowToken?.collateral.decimals || 0
+    const collateralTokenDecimals = collateralToken?.collateral.decimals || 0
+
+    const collateralsAmount =
+      parseFloat(collateralInputValue) * Math.pow(10, collateralTokenDecimals)
+
+    const updatedOffers = getUpdatedBorrowOffers({
+      collateralsAmount,
+      offers,
+      tokenDecimals: marketTokenDecimals,
+    })
+
+    return updatedOffers
+  }, [collateralInputValue, borrowToken, offers, collateralToken])
+
   useEffect(() => {
     if (inputType === 'input') {
       if (!borrowToken) return
 
-      const totalAmountToGet = offers.reduce(
+      const totalAmountToGet = offersInCart.reduce(
         (acc, offer) => acc.add(new BN(offer.maxTokenToGet)),
         new BN(0),
       )
@@ -111,7 +128,7 @@ export const useInstantBorrowContent = () => {
     } else if (inputType === 'output') {
       if (!collateralToken) return
 
-      const totalAmountToGive = offers.reduce(
+      const totalAmountToGive = offersInCart.reduce(
         (acc, offer) => acc.add(new BN(offer.maxTokenToGet)),
         new BN(0),
       )
@@ -125,23 +142,28 @@ export const useInstantBorrowContent = () => {
         setCollateralInputValue(totalAmountToGetStr)
       }
     }
-  }, [offers, borrowToken, borrowInputValue, collateralToken, collateralInputValue, inputType])
+  }, [
+    offersInCart,
+    borrowToken,
+    borrowInputValue,
+    collateralToken,
+    collateralInputValue,
+    inputType,
+  ])
 
   const errorMessage = getErrorMessage({
-    offers,
+    offers: offersInCart,
     isLoadingOffers,
     collateralToken,
     collateralInputValue,
     borrowInputValue,
   })
 
-  const { borrow, isBorrowing } = useBorrowSplTokenTransaction({
-    collateral: collateralToken,
-    splTokenOffers: offers,
-  })
+  const { borrow, isBorrowing } = useBorrowSplTokenTransaction(collateralToken)
 
   return {
     offers,
+    offersInCart,
     isLoading: isLoadingOffers,
 
     collateralsList,
