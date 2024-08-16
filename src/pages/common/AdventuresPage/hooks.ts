@@ -8,7 +8,7 @@ import { BANX_TOKEN_APPROX_CIRCULATING_AMOUNT } from '@banx/constants'
 import { queryClient } from '@banx/providers'
 import { ZERO_BN } from '@banx/utils'
 
-import { mergeWithBanxStakingInfo } from './mergeWithBanxStakingInfo'
+import { mergeWithBanxStakingInfo } from './optimistics'
 
 const createBanxStakeInfoQueryKey = (walletPubkey: string) => ['fetchBanxStakeInfo', walletPubkey]
 const setBanxStakeInfoOptimistic = (

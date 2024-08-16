@@ -33,7 +33,7 @@ import {
   enqueueWaitingConfirmationSingle,
 } from '@banx/utils'
 
-import { convertStakingSimulatedAccountsToMergeData } from '../../mergeWithBanxStakingInfo'
+import { convertStakingSimulatedAccountsToMergeData } from '../../optimistics'
 
 type UseAdventuresSidebarProps = {
   banxStakingSettings: staking.BanxStakingSettings

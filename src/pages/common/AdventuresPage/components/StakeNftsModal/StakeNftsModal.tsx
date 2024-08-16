@@ -32,7 +32,7 @@ import {
   enqueueWaitingConfirmation,
 } from '@banx/utils'
 
-import { convertStakingSimulatedAccountsToMergeData } from '../../mergeWithBanxStakingInfo'
+import { convertStakingSimulatedAccountsToMergeData } from '../../optimistics'
 
 import styles from './StakeNftsModal.module.less'
 
