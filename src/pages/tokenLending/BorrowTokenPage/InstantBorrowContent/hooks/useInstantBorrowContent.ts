@@ -94,13 +94,12 @@ export const useInstantBorrowContent = () => {
     const marketTokenDecimals = borrowToken?.collateral.decimals || 0
     const collateralTokenDecimals = collateralToken?.collateral.decimals || 0
 
-    const collateralsAmount =
-      parseFloat(collateralInputValue) * Math.pow(10, collateralTokenDecimals)
+    const collateralsAmount = parseFloat(collateralInputValue) * Math.pow(10, marketTokenDecimals)
 
     const updatedOffers = getUpdatedBorrowOffers({
       collateralsAmount,
       offers,
-      tokenDecimals: marketTokenDecimals,
+      tokenDecimals: collateralTokenDecimals,
     })
 
     return updatedOffers

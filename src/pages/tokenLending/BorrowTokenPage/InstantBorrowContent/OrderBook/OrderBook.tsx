@@ -11,7 +11,7 @@ import { getTokenDecimals } from '@banx/utils'
 
 import { useSelectedOffers } from '../hooks/useSelectedOffers'
 import { getTableColumns } from './columns'
-import { createRowStyle } from './helpers'
+import { createRowStyle, getUpdatedBorrowOffers } from './helpers'
 
 import styles from './OrderBook.module.less'
 
@@ -55,9 +55,28 @@ const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount,
     if (hasSelectedOffers) {
       clearSelection()
     } else {
-      setSelection(offers, walletPublicKeyString)
+      const collateralTokenDecimals = collateral?.collateral.decimals || 0
+
+      const collateralsAmount = maxCollateralAmount * marketTokenDecimals
+
+      const updatedOffers = getUpdatedBorrowOffers({
+        collateralsAmount,
+        offers,
+        tokenDecimals: collateralTokenDecimals,
+      })
+
+      setSelection(updatedOffers, walletPublicKeyString)
     }
-  }, [clearSelection, hasSelectedOffers, offers, setSelection, walletPublicKeyString])
+  }, [
+    clearSelection,
+    collateral?.collateral.decimals,
+    hasSelectedOffers,
+    marketTokenDecimals,
+    maxCollateralAmount,
+    offers,
+    setSelection,
+    walletPublicKeyString,
+  ])
 
   const findOfferInSelection = useCallback(
     (offerPubkey: string) => find(offerPubkey, walletPublicKeyString),
