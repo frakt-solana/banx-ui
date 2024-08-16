@@ -5,29 +5,23 @@ import { maxBy } from 'lodash'
 
 import Table from '@banx/components/Table'
 
-import { Offer } from '@banx/api/nft'
-import { CollateralToken } from '@banx/api/tokens'
-import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
+import { BorrowOffer } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
-import { calculateIdleFundsInOffer } from '@banx/utils'
 
 import { useSelectedOffers } from '../hooks/useSelectedOffers'
 import { getTableColumns } from './columns'
-import { calcOfferLtv, createRowStyle } from './helpers'
+import { createRowStyle } from './helpers'
 
 import styles from './OrderBook.module.less'
 
 interface OrderBookProps {
-  marketPubkey: string
-  collateral: CollateralToken | undefined
-  ltvTreshold: number
+  offers: BorrowOffer[]
+  isLoading: boolean
 }
 
-const OrderBook: FC<OrderBookProps> = ({ marketPubkey, collateral, ltvTreshold }) => {
+const OrderBook: FC<OrderBookProps> = ({ offers, isLoading }) => {
   const { publicKey: walletPublicKey } = useWallet()
   const walletPublicKeyString = walletPublicKey?.toBase58() || ''
-
-  const { offers: rawOffers, isLoading } = useTokenMarketOffers(marketPubkey)
 
   const { tokenType } = useNftTokenType()
 
@@ -38,15 +32,6 @@ const OrderBook: FC<OrderBookProps> = ({ marketPubkey, collateral, ltvTreshold }
     clear: clearSelection,
     set: setSelection,
   } = useSelectedOffers()
-
-  const offers = useMemo(() => {
-    return rawOffers
-      .filter((offer) => calcOfferLtv(offer, collateral) <= ltvTreshold)
-      .sort(
-        (offerA, offerB) =>
-          offerA.validation.collateralsPerToken - offerB.validation.collateralsPerToken,
-      )
-  }, [collateral, ltvTreshold, rawOffers])
 
   //? Clear selection when tokenType changes
   //? To prevent selection transfering from one tokenType to another
@@ -75,7 +60,7 @@ const OrderBook: FC<OrderBookProps> = ({ marketPubkey, collateral, ltvTreshold }
   )
 
   const onRowClick = useCallback(
-    (offer: Offer) => toggleOfferInSelection(offer, walletPublicKeyString),
+    (offer: BorrowOffer) => toggleOfferInSelection(offer, walletPublicKeyString),
     [toggleOfferInSelection, walletPublicKeyString],
   )
 
@@ -84,11 +69,10 @@ const OrderBook: FC<OrderBookProps> = ({ marketPubkey, collateral, ltvTreshold }
     findOfferInSelection,
     toggleOfferInSelection: onRowClick,
     hasSelectedOffers,
-    collateral,
   })
 
   const maxOffer = useMemo(
-    () => maxBy(offers, (offer) => calculateIdleFundsInOffer(offer).toNumber()),
+    () => maxBy(offers, (offer) => parseFloat(offer.maxTokenToGet)),
     [offers],
   )
 
@@ -98,7 +82,7 @@ const OrderBook: FC<OrderBookProps> = ({ marketPubkey, collateral, ltvTreshold }
       activeRowParams: [
         {
           condition: () => true,
-          style: (offer: Offer) => (maxOffer ? createRowStyle(offer, maxOffer) : {}),
+          style: (offer: BorrowOffer) => (maxOffer ? createRowStyle(offer, maxOffer) : {}),
         },
       ],
     }

@@ -14,7 +14,7 @@ import {
 } from '@banx/components/modals'
 
 import { Offer } from '@banx/api/nft'
-import { BorrowSplTokenOffers, CollateralToken, core } from '@banx/api/tokens'
+import { BorrowOffer, CollateralToken, core } from '@banx/api/tokens'
 import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
 import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
@@ -40,8 +40,6 @@ import {
   enqueueWaitingConfirmation,
 } from '@banx/utils'
 
-import { calculateTokenBorrowApr } from '../helpers'
-
 type TransactionData = {
   offer: Offer
   loanValue: BN
@@ -51,7 +49,7 @@ type TransactionData = {
 
 export const useBorrowSplTokenTransaction = (props: {
   collateral: CollateralToken | undefined
-  splTokenOffers: BorrowSplTokenOffers[]
+  splTokenOffers: BorrowOffer[]
 }) => {
   const { collateral, splTokenOffers } = props
 
@@ -97,18 +95,16 @@ export const useBorrowSplTokenTransaction = (props: {
     if (!offers.length) return []
 
     return splTokenOffers.reduce<TransactionData[]>((acc, offer) => {
-      const offerData = find(offers, ({ publicKey }) => publicKey === offer.offerPublicKey)
+      const offerData = find(offers, ({ publicKey }) => publicKey === offer.publicKey)
 
       if (!collateral) return acc
-
-      const aprRate = calculateTokenBorrowApr({ offer, collateralToken: collateral })
 
       if (offerData) {
         acc.push({
           offer: offerData,
-          loanValue: new BN(offer.amountToGet),
+          loanValue: new BN(offer.maxTokenToGet),
           collateral,
-          aprRate: new BN(aprRate),
+          aprRate: new BN(offer.apr),
         })
       }
 

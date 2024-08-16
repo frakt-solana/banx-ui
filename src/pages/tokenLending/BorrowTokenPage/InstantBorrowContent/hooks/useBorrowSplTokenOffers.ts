@@ -42,7 +42,7 @@ export const useBorrowSplTokenOffers = (
       },
     ],
     () =>
-      core.fetchBorrowSplTokenOffers({
+      core.fetchBorrowOffers({
         market: collateralToken?.marketPubkey ?? '',
         bondingCurveType: getBondingCurveTypeFromLendingToken(tokenType),
         ltvLimit: debouncedLtvSliderValue * 100,

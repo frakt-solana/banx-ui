@@ -94,7 +94,7 @@ export const useInstantBorrowContent = () => {
       if (!borrowToken) return
 
       const totalAmountToGet = offers.reduce(
-        (acc, offer) => acc.add(new BN(offer.amountToGet)),
+        (acc, offer) => acc.add(new BN(offer.maxTokenToGet)),
         new BN(0),
       )
 
@@ -112,7 +112,7 @@ export const useInstantBorrowContent = () => {
       if (!collateralToken) return
 
       const totalAmountToGive = offers.reduce(
-        (acc, offer) => acc.add(new BN(offer.amountToGive)),
+        (acc, offer) => acc.add(new BN(offer.maxTokenToGet)),
         new BN(0),
       )
 
@@ -142,6 +142,8 @@ export const useInstantBorrowContent = () => {
 
   return {
     offers,
+    isLoading: isLoadingOffers,
+
     collateralsList,
     borrowTokensList,
 

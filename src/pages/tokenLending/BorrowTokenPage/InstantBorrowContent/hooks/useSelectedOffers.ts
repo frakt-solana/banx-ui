@@ -1,14 +1,14 @@
 import produce from 'immer'
 import { create } from 'zustand'
 
-import { Offer } from '@banx/api/nft'
+import { BorrowOffer } from '@banx/api/tokens'
 
 export interface OfferOptimistic {
-  offer: Offer
+  offer: BorrowOffer
   wallet: string
 }
 
-const convertOfferToOptimistic = (offer: Offer, walletPublicKey: string) => {
+const convertOfferToOptimistic = (offer: BorrowOffer, walletPublicKey: string) => {
   return {
     offer,
     wallet: walletPublicKey,
@@ -17,11 +17,11 @@ const convertOfferToOptimistic = (offer: Offer, walletPublicKey: string) => {
 
 interface SelectedOffersState {
   selection: OfferOptimistic[]
-  set: (selection: Offer[], walletPublicKey: string) => void
+  set: (selection: BorrowOffer[], walletPublicKey: string) => void
   find: (offerPubkey: string, walletPublicKey: string) => OfferOptimistic | null
-  add: (offer: Offer, walletPublicKey: string) => void
+  add: (offer: BorrowOffer, walletPublicKey: string) => void
   remove: (offerPubkey: string, walletPublicKey: string) => void
-  toggle: (offer: Offer, walletPublicKey: string) => void
+  toggle: (offer: BorrowOffer, walletPublicKey: string) => void
   clear: () => void
 }
 
@@ -66,7 +66,7 @@ export const useSelectedOffers = create<SelectedOffersState>((set, get) => ({
       }),
     )
   },
-  toggle: (offer: Offer, walletPublicKey) => {
+  toggle: (offer, walletPublicKey) => {
     if (!walletPublicKey) return
 
     const { find, add, remove } = get()

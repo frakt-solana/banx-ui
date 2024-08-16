@@ -15,6 +15,8 @@ const InstantBorrowContent = () => {
 
   const {
     offers,
+    isLoading,
+
     collateralsList,
     borrowTokensList,
 
@@ -82,11 +84,7 @@ const InstantBorrowContent = () => {
 
         <LoanValueSlider label="Max LTV" value={ltvSliderValue} onChange={onChangeLtvSlider} />
 
-        {showSkeleton ? (
-          <SummarySkeleton />
-        ) : (
-          <Summary collateralToken={collateralToken} offers={offers} />
-        )}
+        {showSkeleton ? <SummarySkeleton /> : <Summary offers={offers} />}
 
         <Button
           onClick={borrow}
@@ -97,11 +95,7 @@ const InstantBorrowContent = () => {
           {!wallet.connected ? 'Connect wallet' : errorMessage || 'Borrow'}
         </Button>
       </div>
-      <OrderBook
-        marketPubkey={collateralToken?.marketPubkey || ''}
-        collateral={collateralToken}
-        ltvTreshold={ltvSliderValue}
-      />
+      <OrderBook offers={offers} isLoading={isLoading} />
     </div>
   )
 }

@@ -157,21 +157,25 @@ export const fetchTokenLenderLoans: FetchTokenLenderLoans = async ({
   return data.data ?? []
 }
 
-export interface BorrowSplTokenOffers {
-  offerPublicKey: string
-  amountToGive: string
-  amountToGet: string
+export interface BorrowOffer {
+  id: string
+  publicKey: string
+  maxTokenToGet: string
+  collateralsPerToken: string
+  maxCollateralToReceive: string
+  apr: string //? base points
+  ltv: string //? base points
 }
 
-type FetchBorrowSplTokenOffers = (props: {
+type FetchBorrowOffers = (props: {
   market: string
   bondingCurveType: BondingCurveType
   ltvLimit: number //? base points
   collateralsAmount: number
   excludeWallet?: string
   disableMultiBorrow: boolean
-}) => Promise<BorrowSplTokenOffers[]>
-export const fetchBorrowSplTokenOffers: FetchBorrowSplTokenOffers = async (props) => {
+}) => Promise<BorrowOffer[]>
+export const fetchBorrowOffers: FetchBorrowOffers = async (props) => {
   const {
     market,
     bondingCurveType,
@@ -191,7 +195,7 @@ export const fetchBorrowSplTokenOffers: FetchBorrowSplTokenOffers = async (props
     isPrivate: String(IS_PRIVATE_MARKETS),
   })
 
-  const { data } = await axios.get<{ data: BorrowSplTokenOffers[] }>(
+  const { data } = await axios.get<{ data: BorrowOffer[] }>(
     `${BACKEND_BASE_URL}/lending/spl/borrow-token-v3?${queryParams?.toString()}`,
   )
 
