@@ -3,7 +3,7 @@ import { create } from 'zustand'
 
 import { BorrowOffer } from '@banx/api/tokens'
 
-export interface OfferOptimistic {
+export interface BorrowOfferOptimistic {
   offer: BorrowOffer
   wallet: string
 }
@@ -16,9 +16,9 @@ const convertOfferToOptimistic = (offer: BorrowOffer, walletPublicKey: string) =
 }
 
 interface SelectedOffersState {
-  selection: OfferOptimistic[]
+  selection: BorrowOfferOptimistic[]
   set: (selection: BorrowOffer[], walletPublicKey: string) => void
-  find: (offerPubkey: string, walletPublicKey: string) => OfferOptimistic | null
+  find: (offerPubkey: string, walletPublicKey: string) => BorrowOfferOptimistic | null
   add: (offer: BorrowOffer, walletPublicKey: string) => void
   remove: (offerPubkey: string, walletPublicKey: string) => void
   toggle: (offer: BorrowOffer, walletPublicKey: string) => void

@@ -11,7 +11,7 @@ import { getTokenDecimals } from '@banx/utils'
 
 import { BorrowToken } from '../../constants'
 
-export const useBorrowSplTokenOffers = (
+export const useBorrowOffers = (
   collateralToken: CollateralToken | undefined,
   borrowToken: BorrowToken | undefined,
 ) => {

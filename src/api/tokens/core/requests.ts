@@ -196,7 +196,7 @@ export const fetchBorrowOffers: FetchBorrowOffers = async (props) => {
   })
 
   const { data } = await axios.get<{ data: BorrowOffer[] }>(
-    `${BACKEND_BASE_URL}/lending/spl/borrow-token-v3?${queryParams?.toString()}`,
+    `${BACKEND_BASE_URL}/lending/spl/borrow-token-v4?${queryParams?.toString()}`,
   )
 
   return data.data ?? []

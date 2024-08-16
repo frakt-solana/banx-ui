@@ -1,2 +1,2 @@
-export * from './useBorrowSplTokenOffers'
+export * from './useBorrowOffers'
 export * from './useBorrowSplTokenTransaction'

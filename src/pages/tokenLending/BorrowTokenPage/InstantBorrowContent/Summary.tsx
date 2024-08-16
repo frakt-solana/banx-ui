@@ -48,7 +48,7 @@ export const Summary: FC<SummaryProps> = ({ offers }) => {
       />
       <StatInfo
         label="Weighted LTV"
-        value={weightedLtv}
+        value={weightedLtv / 100}
         valueType={VALUES_TYPES.PERCENT}
         tooltipText="Weighted LTV"
         flexType="row"
