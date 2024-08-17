@@ -69,7 +69,7 @@ export const useBorrowOffers = (
   const { data: borrowOffers, isLoading } = useQuery([queryKey], () => fetchBorrowOffers(), {
     staleTime: 15 * 1000,
     refetchOnWindowFocus: false,
-    enabled: !!parseFloat(collateralsAmount) && !!collateralToken,
+    enabled: !!parseFloat(debouncedCollateralsAmount),
   })
 
   const onChangeLtvSlider = (value: number) => {

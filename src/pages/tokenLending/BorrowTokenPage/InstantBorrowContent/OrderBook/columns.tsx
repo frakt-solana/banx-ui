@@ -2,12 +2,12 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
-import { DisplayValue, HeaderCell, createPercentValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue, HeaderCell } from '@banx/components/TableComponents'
 
 import { BorrowOffer, CollateralToken } from '@banx/api/tokens'
 
 import { BorrowOfferOptimistic } from '../hooks/useSelectedOffers'
-import { AprCell } from './cells'
+import { AprCell, BorrowCell } from './cells'
 
 import styles from './OrderBook.module.less'
 
@@ -43,21 +43,7 @@ export const getTableColumns: GetTableColumns = ({
         </div>
       ),
       render: (offer) => {
-        const ltvPercent = parseFloat(offer.ltv) / 100
-
-        const collateralTokenDecimals = Math.pow(10, collateral?.collateral.decimals || 0)
         const selectedOffer = findOfferInSelection(offer.publicKey)
-
-        const tokenToGet = Math.min(
-          (restCollateralsAmount * collateralTokenDecimals) / parseFloat(offer.collateralsPerToken),
-          parseFloat(offer.maxTokenToGet),
-        )
-
-        const selectedOfferBorrowValue = selectedOffer
-          ? parseFloat(selectedOffer.offer.maxTokenToGet)
-          : 0
-
-        const displayBorrowValue = selectedOfferBorrowValue || tokenToGet
 
         return (
           <div className={styles.checkboxRow}>
@@ -66,10 +52,12 @@ export const getTableColumns: GetTableColumns = ({
               onChange={() => toggleOfferInSelection(offer)}
               checked={!!selectedOffer}
             />
-            <div className={styles.borrowValueContainer}>
-              <DisplayValue value={displayBorrowValue} />
-              <span className={styles.ltvValue}>{createPercentValueJSX(ltvPercent)} LTV</span>
-            </div>
+            <BorrowCell
+              offer={offer}
+              selectedOffer={selectedOffer}
+              collateral={collateral}
+              restCollateralsAmount={restCollateralsAmount}
+            />
           </div>
         )
       },

@@ -1,13 +1,57 @@
 import { FC } from 'react'
 
-import { createPercentValueJSX } from '@banx/components/TableComponents'
+import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
-import { BorrowOffer } from '@banx/api/tokens'
+import { BorrowOffer, CollateralToken } from '@banx/api/tokens'
+import { BONDS } from '@banx/constants'
+
+import { BorrowOfferOptimistic } from '../hooks/useSelectedOffers'
 
 import styles from './OrderBook.module.less'
 
+interface BorrowCellProps {
+  offer: BorrowOffer
+  selectedOffer: BorrowOfferOptimistic | null
+  collateral: CollateralToken | undefined
+  restCollateralsAmount: number
+}
+
+export const BorrowCell: FC<BorrowCellProps> = ({
+  offer,
+  selectedOffer,
+  collateral,
+  restCollateralsAmount,
+}) => {
+  const collateralDecimals = collateral?.collateral.decimals || 0
+  const collateralMultiplier = Math.pow(10, collateralDecimals)
+
+  const ltvPercent = parseFloat(offer.ltv) / 100
+
+  const maxTokenToGet = parseFloat(offer.maxTokenToGet)
+  const collateralPerToken = parseFloat(offer.collateralsPerToken)
+
+  const calculatedTokenToGet = Math.min(
+    (restCollateralsAmount * collateralMultiplier) / collateralPerToken,
+    maxTokenToGet,
+  )
+
+  const selectedOfferMaxTokenToGet = selectedOffer
+    ? parseFloat(selectedOffer.offer.maxTokenToGet)
+    : 0
+
+  const borrowValueToDisplay = selectedOfferMaxTokenToGet || calculatedTokenToGet
+
+  return (
+    <div className={styles.borrowValueContainer}>
+      <DisplayValue value={borrowValueToDisplay} />
+      <span className={styles.ltvValue}>{createPercentValueJSX(ltvPercent)} LTV</span>
+    </div>
+  )
+}
+
 export const AprCell: FC<{ offer: BorrowOffer }> = ({ offer }) => {
-  const aprPercent = parseFloat(offer.apr) / 100
+  const aprRateWithProtocolFee = parseFloat(offer.apr) + BONDS.PROTOCOL_REPAY_FEE
+  const aprPercent = aprRateWithProtocolFee / 100
 
   return (
     <div className={styles.aprRow}>
