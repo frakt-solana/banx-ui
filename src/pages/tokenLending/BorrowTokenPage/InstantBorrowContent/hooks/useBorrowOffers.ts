@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
@@ -13,6 +13,11 @@ import { BorrowToken } from '../../constants'
 import { getUpdatedBorrowOffers } from '../OrderBook/helpers'
 import { useSelectedOffers } from './useSelectedOffers'
 
+export enum BorrowInputType {
+  Input = 'input',
+  Output = 'output',
+}
+
 export const useBorrowOffers = (
   collateralToken: CollateralToken | undefined,
   borrowToken: BorrowToken | undefined,
@@ -20,75 +25,95 @@ export const useBorrowOffers = (
   const { publicKey } = useWallet()
   const walletPubkeyString = publicKey?.toString() || ''
 
-  const [inputType, setInputType] = useState<'input' | 'output'>('input')
-  const [amount, setAmount] = useState('')
+  const [inputType, setInputType] = useState<BorrowInputType>(BorrowInputType.Input)
+
+  const [collateralsAmount, setCollateralsAmount] = useState('') //? collateralAmount without decimals
   const [ltvSliderValue, setLtvSlider] = useState(100)
 
   const { tokenType } = useNftTokenType()
 
-  const debouncedAmount = useDebounceValue(amount, 1000)
+  const debouncedCollateralsAmount = useDebounceValue(collateralsAmount, 1000)
   const debouncedLtvSliderValue = useDebounceValue(ltvSliderValue, 1000)
 
-  const tokenDecimals = getTokenDecimals(tokenType) //? 1e9, 1e6
+  const marketTokenDecimals = getTokenDecimals(tokenType) //? 1e9, 1e6
 
-  const { data, isLoading } = useQuery(
-    [
-      'borrowSplTokenOffers',
-      {
-        collateralToken,
-        borrowToken,
-        type: inputType,
-        debouncedAmount,
-        debouncedLtvSliderValue,
-        walletPubkeyString,
-      },
-    ],
-    () =>
-      core.fetchBorrowOffers({
-        market: collateralToken?.marketPubkey ?? '',
-        bondingCurveType: getBondingCurveTypeFromLendingToken(tokenType),
-        ltvLimit: debouncedLtvSliderValue * 100,
-        collateralsAmount: parseFloat(debouncedAmount) * tokenDecimals,
-        excludeWallet: walletPubkeyString,
-        disableMultiBorrow: false,
-      }),
+  const queryKey = [
+    'borrowOffers',
     {
-      staleTime: 15 * 1000,
-      refetchOnWindowFocus: false,
-      enabled: !!parseFloat(amount) && !!collateralToken,
+      collateralToken,
+      borrowToken,
+      inputType,
+      debouncedCollateralsAmount,
+      debouncedLtvSliderValue,
+      walletPubkeyString,
     },
-  )
+  ]
+
+  const fetchBorrowOffers = () => {
+    const marketPubkey = collateralToken?.marketPubkey || ''
+    const bondingCurveType = getBondingCurveTypeFromLendingToken(tokenType)
+    const collateralsAmount = parseFloat(debouncedCollateralsAmount) * marketTokenDecimals
+
+    const ltvLimit = debouncedLtvSliderValue * 100 //? base points 50% => 5000
+
+    return core.fetchBorrowOffers({
+      market: marketPubkey,
+      bondingCurveType,
+      ltvLimit,
+      collateralsAmount,
+      excludeWallet: walletPubkeyString,
+      disableMultiBorrow: false,
+    })
+  }
+
+  const { data: borrowOffers, isLoading } = useQuery([queryKey], () => fetchBorrowOffers(), {
+    staleTime: 15 * 1000,
+    refetchOnWindowFocus: false,
+    enabled: !!parseFloat(collateralsAmount) && !!collateralToken,
+  })
 
   const onChangeLtvSlider = (value: number) => {
     setLtvSlider(value)
   }
 
-  const { set } = useSelectedOffers()
+  const { selection: offersInCart, set: setOffers } = useSelectedOffers()
 
   useEffect(() => {
-    if (data) {
-      const marketTokenDecimals = borrowToken?.collateral.decimals || 0
+    if (borrowOffers) {
       const collateralTokenDecimals = collateralToken?.collateral.decimals || 0
 
-      const collateralsAmount = parseFloat(amount) * Math.pow(10, marketTokenDecimals)
+      const formattedCollateralsAmount = parseFloat(collateralsAmount) * marketTokenDecimals
 
       const updatedOffers = getUpdatedBorrowOffers({
-        collateralsAmount,
-        offers: data,
+        collateralsAmount: formattedCollateralsAmount,
+        offers: borrowOffers,
         tokenDecimals: collateralTokenDecimals,
       })
 
-      set(updatedOffers, walletPubkeyString)
+      setOffers(updatedOffers, walletPubkeyString)
     }
-  }, [amount, borrowToken, collateralToken, data, set, walletPubkeyString])
+  }, [
+    collateralsAmount,
+    collateralToken,
+    borrowOffers,
+    setOffers,
+    walletPubkeyString,
+    marketTokenDecimals,
+  ])
+
+  const rawOffersInCart = useMemo(() => {
+    return offersInCart.map((offer) => offer.offer)
+  }, [offersInCart])
 
   return {
-    data: data ?? [],
+    data: borrowOffers ?? [],
     isLoading,
+
+    offersInCart: rawOffersInCart,
 
     inputType,
     setInputType,
-    setAmount,
+    setCollateralsAmount,
     ltvSliderValue,
     onChangeLtvSlider,
   }
