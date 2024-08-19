@@ -25,8 +25,8 @@ export const useBorrowOffers = (
 
   const { tokenType } = useNftTokenType()
 
-  const debouncedCollateralsAmount = useDebounceValue(inputCollateralsAmount, 1000)
-  const debouncedLtvSliderValue = useDebounceValue(ltvSliderValue, 1000)
+  const debouncedCollateralsAmount = useDebounceValue(inputCollateralsAmount, 600)
+  const debouncedLtvSliderValue = useDebounceValue(ltvSliderValue, 600)
 
   const marketTokenDecimals = getTokenDecimals(tokenType) //? 1e9, 1e6
 
@@ -59,7 +59,7 @@ export const useBorrowOffers = (
   }
 
   const { data: borrowOffers, isLoading } = useQuery([queryKey], () => fetchBorrowOffers(), {
-    staleTime: 15 * 1000,
+    staleTime: 5 * 1000,
     refetchOnWindowFocus: false,
     enabled: !!parseFloat(debouncedCollateralsAmount),
   })
