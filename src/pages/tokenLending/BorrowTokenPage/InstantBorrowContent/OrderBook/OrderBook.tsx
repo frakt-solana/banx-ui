@@ -43,20 +43,18 @@ const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount,
   const hasSelectedOffers = !!selection?.length
 
   const onSelectAll = useCallback(() => {
-    if (hasSelectedOffers) {
-      clearSelection()
-    } else {
-      const collateralTokenDecimals = collateral?.collateral.decimals || 0
-      const collateralsAmount = maxCollateralAmount * marketTokenDecimals
+    if (hasSelectedOffers) return clearSelection()
 
-      const updatedOffers = getUpdatedBorrowOffers({
-        collateralsAmount,
-        offers,
-        tokenDecimals: collateralTokenDecimals,
-      })
+    const collateralTokenDecimals = collateral?.collateral.decimals || 0
+    const collateralsAmount = maxCollateralAmount * marketTokenDecimals
 
-      setSelection(updatedOffers)
-    }
+    const updatedOffers = getUpdatedBorrowOffers({
+      collateralsAmount,
+      offers,
+      tokenDecimals: collateralTokenDecimals,
+    })
+
+    setSelection(updatedOffers)
   }, [
     clearSelection,
     collateral,
