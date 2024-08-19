@@ -33,7 +33,7 @@ export const convertStakingSimulatedAccountsToMergeData = (
       stakingSimulatedAccountsResults,
       'banxAdventureSubscriptions',
     ),
-    banxStakes: transformer(stakingSimulatedAccountsResults, 'banxAdventures'),
+    banxStakes: transformer(stakingSimulatedAccountsResults, 'banxStake'),
   }
 }
 
