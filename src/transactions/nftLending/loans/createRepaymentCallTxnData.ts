@@ -63,5 +63,5 @@ export const parseRepaymentCallSimulatedAccounts = (
 ) => {
   const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
-  return results?.['bondTradeTransactionV3'] as core.BondTradeTransaction
+  return results?.['bondTradeTransactionV3']?.[0] as core.BondTradeTransaction
 }

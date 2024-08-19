@@ -18,7 +18,8 @@ export const useAdventuresAndSubscriptions = (
         adventureSubscription,
       }))
       .sort(
-        ({ adventure: adventureA }, { adventure: adventureB }) => adventureA.week - adventureB.week,
+        ({ adventure: adventureA }, { adventure: adventureB }) =>
+          adventureA.week.toNumber() - adventureB.week.toNumber(),
       )
       .thru((adventureAndSubscriptions) =>
         historyMode ? adventureAndSubscriptions.reverse() : adventureAndSubscriptions,

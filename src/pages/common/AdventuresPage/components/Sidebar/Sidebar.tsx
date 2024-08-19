@@ -44,7 +44,7 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
   const { open } = useModal()
 
   const stakedNftsValue = `${formatNumbersWithCommas(
-    banxTokenStake?.banxNftsStakedQuantity || 0,
+    banxTokenStake?.banxNftsStakedQuantity.toNumber() || 0,
   )}/${formatNumbersWithCommas(nfts?.length.toString() || '0')}`
 
   const stakedTokensValue = `${formatCompact(
