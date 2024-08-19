@@ -1,10 +1,14 @@
 import { FC } from 'react'
 
+import { BN } from 'fbonds-core'
+
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { BorrowOffer, CollateralToken } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
 
+import { adjustAmountWithUpfrontFee } from '../helpers'
+import { BorrowInputType } from '../hooks'
 import { BorrowOfferOptimistic } from '../hooks/useSelectedOffers'
 
 import styles from './OrderBook.module.less'
@@ -41,9 +45,14 @@ export const BorrowCell: FC<BorrowCellProps> = ({
 
   const borrowValueToDisplay = selectedOfferMaxTokenToGet || calculatedTokenToGet
 
+  const adjustedBorrowValueToDisplay = adjustAmountWithUpfrontFee(
+    new BN(borrowValueToDisplay),
+    BorrowInputType.Input,
+  ).toNumber()
+
   return (
     <div className={styles.borrowValueContainer}>
-      <DisplayValue value={borrowValueToDisplay} />
+      <DisplayValue value={adjustedBorrowValueToDisplay} />
       <span className={styles.ltvValue}>{createPercentValueJSX(ltvPercent)} LTV</span>
     </div>
   )

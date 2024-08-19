@@ -56,7 +56,6 @@ const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount,
       clearSelection()
     } else {
       const collateralTokenDecimals = collateral?.collateral.decimals || 0
-
       const collateralsAmount = maxCollateralAmount * marketTokenDecimals
 
       const updatedOffers = getUpdatedBorrowOffers({
@@ -97,19 +96,15 @@ const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount,
     (offer: BorrowOffer) => {
       if (!findOfferInSelection(offer.publicKey) && restCollateralsAmount === 0) return
 
-      const collateralTokenDecimals = Math.pow(10, collateral?.collateral.decimals || 0)
+      const collateralTokenDecimals = collateral?.collateral.decimals || 0
 
-      const tokenToGet = Math.min(
-        (restCollateralsAmount * collateralTokenDecimals) / parseFloat(offer.collateralsPerToken),
-        parseFloat(offer.maxTokenToGet),
-      )
+      const updatedOffer = getUpdatedBorrowOffers({
+        collateralsAmount: restCollateralsAmount,
+        offers: [offer],
+        tokenDecimals: collateralTokenDecimals,
+      })[0]
 
-      const newOffer = {
-        ...offer,
-        maxTokenToGet: Math.floor(tokenToGet).toString(),
-      }
-
-      return toggleOfferInSelection(newOffer, walletPublicKeyString)
+      return toggleOfferInSelection(updatedOffer, walletPublicKeyString)
     },
     [
       collateral?.collateral.decimals,

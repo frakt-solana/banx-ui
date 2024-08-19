@@ -30,7 +30,7 @@ export const useInstantBorrowContent = () => {
     isLoading: isLoadingOffers,
     inputType,
     setInputType,
-    setCollateralsAmount,
+    setInputCollateralsAmount,
     ltvSliderValue,
     onChangeLtvSlider,
   } = useBorrowOffers(collateralToken, borrowToken)
@@ -61,7 +61,7 @@ export const useInstantBorrowContent = () => {
     }
 
     setCollateralInputValue(value)
-    setCollateralsAmount(value)
+    setInputCollateralsAmount(value)
   }
 
   const handleBorrowInputChange = (value: string) => {
@@ -78,7 +78,7 @@ export const useInstantBorrowContent = () => {
       borrowToken.collateral.decimals,
     ).toString()
 
-    setCollateralsAmount(amountToGetStr)
+    setInputCollateralsAmount(amountToGetStr)
   }
 
   const handleCollateralTokenChange = (token: CollateralToken) => {
@@ -91,7 +91,7 @@ export const useInstantBorrowContent = () => {
   }
 
   useEffect(() => {
-    if (inputType === 'input') {
+    if (inputType === BorrowInputType.Input) {
       if (!borrowToken) return
 
       const totalAmountToGet = offersInCart.reduce(
@@ -99,7 +99,10 @@ export const useInstantBorrowContent = () => {
         new BN(0),
       )
 
-      const adjustedAmountToGet = adjustAmountWithUpfrontFee(totalAmountToGet, 'input')
+      const adjustedAmountToGet = adjustAmountWithUpfrontFee(
+        totalAmountToGet,
+        BorrowInputType.Input,
+      )
 
       const totalAmountToGetStr = bnToHuman(
         adjustedAmountToGet,
@@ -109,7 +112,7 @@ export const useInstantBorrowContent = () => {
       if (totalAmountToGetStr !== borrowInputValue) {
         setBorrowInputValue(totalAmountToGetStr)
       }
-    } else if (inputType === 'output') {
+    } else if (inputType === BorrowInputType.Output) {
       if (!collateralToken) return
 
       const totalAmountToGive = offersInCart.reduce(

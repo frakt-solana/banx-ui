@@ -27,12 +27,12 @@ export const useBorrowOffers = (
 
   const [inputType, setInputType] = useState<BorrowInputType>(BorrowInputType.Input)
 
-  const [collateralsAmount, setCollateralsAmount] = useState('') //? collateralAmount without decimals
+  const [inputCollateralsAmount, setInputCollateralsAmount] = useState('')
   const [ltvSliderValue, setLtvSlider] = useState(100)
 
   const { tokenType } = useNftTokenType()
 
-  const debouncedCollateralsAmount = useDebounceValue(collateralsAmount, 1000)
+  const debouncedCollateralsAmount = useDebounceValue(inputCollateralsAmount, 1000)
   const debouncedLtvSliderValue = useDebounceValue(ltvSliderValue, 1000)
 
   const marketTokenDecimals = getTokenDecimals(tokenType) //? 1e9, 1e6
@@ -76,16 +76,15 @@ export const useBorrowOffers = (
     setLtvSlider(value)
   }
 
-  const { selection: offersInCart, set: setOffers } = useSelectedOffers()
+  const { selection: offersInCart, set: setOffers, clear: clearOffers } = useSelectedOffers()
 
   useEffect(() => {
     if (borrowOffers) {
       const collateralTokenDecimals = collateralToken?.collateral.decimals || 0
-
-      const formattedCollateralsAmount = parseFloat(collateralsAmount) * marketTokenDecimals
+      const collateralsAmount = parseFloat(inputCollateralsAmount) * marketTokenDecimals
 
       const updatedOffers = getUpdatedBorrowOffers({
-        collateralsAmount: formattedCollateralsAmount,
+        collateralsAmount,
         offers: borrowOffers,
         tokenDecimals: collateralTokenDecimals,
       })
@@ -93,12 +92,13 @@ export const useBorrowOffers = (
       setOffers(updatedOffers, walletPubkeyString)
     }
   }, [
-    collateralsAmount,
+    inputCollateralsAmount,
     collateralToken,
     borrowOffers,
     setOffers,
     walletPubkeyString,
     marketTokenDecimals,
+    clearOffers,
   ])
 
   const rawOffersInCart = useMemo(() => {
@@ -113,7 +113,7 @@ export const useBorrowOffers = (
 
     inputType,
     setInputType,
-    setCollateralsAmount,
+    setInputCollateralsAmount,
     ltvSliderValue,
     onChangeLtvSlider,
   }
