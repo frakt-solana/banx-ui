@@ -113,7 +113,7 @@ const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount,
       activeRowParams: [
         {
           condition: () => true,
-          style: (offer: BorrowOffer) => createRowStyle(offer, offerWithHighestOfferSize),
+          styles: (offer: BorrowOffer) => createRowStyle(offer, offerWithHighestOfferSize),
         },
       ],
     }
