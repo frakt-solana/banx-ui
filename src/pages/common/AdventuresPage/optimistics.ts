@@ -1,10 +1,11 @@
 import { BN } from 'fbonds-core'
+import { calcOptimisticBasedOnBulkSimulation } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BanxStakeState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, groupBy, reduce } from 'lodash'
 
 import { staking } from '@banx/api/common'
 import { StakingSimulatedAccountsResult } from '@banx/transactions/staking'
-import { ZERO_BN, calcOptimisticBasedOnBulkSimulation } from '@banx/utils'
+import { ZERO_BN } from '@banx/utils'
 
 export const convertStakingSimulatedAccountsToMergeData = (
   stakingSimulatedAccountsResults: StakingSimulatedAccountsResult[],
