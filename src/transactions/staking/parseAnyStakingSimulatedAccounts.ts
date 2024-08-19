@@ -17,6 +17,7 @@ export type StakingSimulatedAccountsResult = {
   banxTokenStake: BanxTokenStake
   banxStake: BanxStake
 }
+
 export const parseAnyStakingSimulatedAccounts = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ): StakingSimulatedAccountsResult => {

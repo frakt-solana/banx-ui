@@ -195,3 +195,14 @@ const mergeBanxWalletBalances = (prevWalletBalance: BN, nextWalletBalances: BN[]
 
   return prevWalletBalance.sub(totalDiff)
 }
+
+export const mergeBanxSettings = (
+  banxSettings: staking.BanxStakingSettings,
+  nextSettings: staking.BanxStakingSettings[],
+): staking.BanxStakingSettings => {
+  return calcOptimisticBasedOnBulkSimulation<staking.BanxStakingSettings>(
+    banxSettings,
+    nextSettings,
+    ['maxTokenStakeAmount', 'tokensPerPartnerPoints', 'tokensPerWeek', 'hadesPerWeek'],
+  )
+}
