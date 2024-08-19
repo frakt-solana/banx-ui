@@ -4,7 +4,7 @@ import { BN } from 'fbonds-core'
 
 import { CollateralToken } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
-import { bnToHuman, stringToBN } from '@banx/utils'
+import { bnToHuman } from '@banx/utils'
 
 import { BorrowToken, DEFAULT_COLLATERAL_MARKET_PUBKEY } from '../../constants'
 import { adjustAmountWithUpfrontFee, getErrorMessage } from '../helpers'
@@ -64,23 +64,6 @@ export const useInstantBorrowContent = () => {
     setInputCollateralsAmount(value)
   }
 
-  const handleBorrowInputChange = (value: string) => {
-    if (!borrowToken) return
-
-    if (inputType !== BorrowInputType.Output) {
-      setInputType(BorrowInputType.Output)
-    }
-
-    setBorrowInputValue(value)
-
-    const amountToGetStr = bnToHuman(
-      adjustAmountWithUpfrontFee(stringToBN(value, borrowToken.collateral.decimals), 'output'),
-      borrowToken.collateral.decimals,
-    ).toString()
-
-    setInputCollateralsAmount(amountToGetStr)
-  }
-
   const handleCollateralTokenChange = (token: CollateralToken) => {
     setCollateralToken(token)
   }
@@ -91,43 +74,22 @@ export const useInstantBorrowContent = () => {
   }
 
   useEffect(() => {
-    if (inputType === BorrowInputType.Input) {
-      if (!borrowToken) return
+    if (!borrowToken) return
 
-      const totalAmountToGet = offersInCart.reduce(
-        (acc, offer) => acc.add(new BN(offer.maxTokenToGet)),
-        new BN(0),
-      )
+    const totalAmountToGet = offersInCart.reduce(
+      (acc, offer) => acc.add(new BN(offer.maxTokenToGet)),
+      new BN(0),
+    )
 
-      const adjustedAmountToGet = adjustAmountWithUpfrontFee(
-        totalAmountToGet,
-        BorrowInputType.Input,
-      )
+    const adjustedAmountToGet = adjustAmountWithUpfrontFee(totalAmountToGet)
 
-      const totalAmountToGetStr = bnToHuman(
-        adjustedAmountToGet,
-        borrowToken.collateral.decimals,
-      ).toString()
+    const totalAmountToGetStr = bnToHuman(
+      adjustedAmountToGet,
+      borrowToken.collateral.decimals,
+    ).toString()
 
-      if (totalAmountToGetStr !== borrowInputValue) {
-        setBorrowInputValue(totalAmountToGetStr)
-      }
-    } else if (inputType === BorrowInputType.Output) {
-      if (!collateralToken) return
-
-      const totalAmountToGive = offersInCart.reduce(
-        (acc, offer) => acc.add(new BN(offer.maxTokenToGet)),
-        new BN(0),
-      )
-
-      const totalAmountToGetStr = bnToHuman(
-        totalAmountToGive,
-        collateralToken.collateral.decimals,
-      ).toString()
-
-      if (totalAmountToGetStr !== collateralInputValue) {
-        setCollateralInputValue(totalAmountToGetStr)
-      }
+    if (totalAmountToGetStr !== borrowInputValue) {
+      setBorrowInputValue(totalAmountToGetStr)
     }
   }, [
     offersInCart,
@@ -163,7 +125,6 @@ export const useInstantBorrowContent = () => {
 
     borrowToken,
     borrowInputValue,
-    handleBorrowInputChange,
     handleBorrowTokenChange,
 
     borrow,

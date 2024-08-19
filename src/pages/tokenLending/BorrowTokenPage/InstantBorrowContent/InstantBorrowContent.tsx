@@ -29,7 +29,6 @@ const InstantBorrowContent = () => {
 
     borrowToken,
     borrowInputValue,
-    handleBorrowInputChange,
     handleBorrowTokenChange,
 
     errorMessage,
@@ -75,7 +74,7 @@ const InstantBorrowContent = () => {
           <InputTokenSelect
             label="To borrow"
             value={borrowInputValue}
-            onChange={handleBorrowInputChange}
+            onChange={() => null}
             selectedToken={borrowToken}
             onChangeToken={handleBorrowTokenChange}
             tokenList={borrowTokensList}

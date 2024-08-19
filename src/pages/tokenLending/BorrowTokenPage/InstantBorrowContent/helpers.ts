@@ -86,13 +86,10 @@ export const getSummaryInfo = (offers: BorrowOffer[]) => {
 const UPFRONT_FEE_BN = PROTOCOL_FEE_BN
 const BASE_POINTS_BN = new BN(BASE_POINTS)
 
-export const adjustAmountWithUpfrontFee = (amount: BN, type: 'input' | 'output'): BN => {
+export const adjustAmountWithUpfrontFee = (amount: BN): BN => {
   const FRACTION = BASE_POINTS_BN.sub(UPFRONT_FEE_BN) //? 9900
 
-  if (type === 'input') {
-    return amount.mul(FRACTION).div(BASE_POINTS_BN)
-  }
-  return amount.mul(BASE_POINTS_BN).div(FRACTION)
+  return amount.mul(FRACTION).div(BASE_POINTS_BN)
 }
 
 type GetButtonActionTextProps = {

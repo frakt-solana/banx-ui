@@ -8,7 +8,6 @@ import { BorrowOffer, CollateralToken } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
 
 import { adjustAmountWithUpfrontFee } from '../helpers'
-import { BorrowInputType } from '../hooks'
 import { BorrowOfferOptimistic } from '../hooks/useSelectedOffers'
 
 import styles from './OrderBook.module.less'
@@ -47,7 +46,6 @@ export const BorrowCell: FC<BorrowCellProps> = ({
 
   const adjustedBorrowValueToDisplay = adjustAmountWithUpfrontFee(
     new BN(borrowValueToDisplay),
-    BorrowInputType.Input,
   ).toNumber()
 
   return (
