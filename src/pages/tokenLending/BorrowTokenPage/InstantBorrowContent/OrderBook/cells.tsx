@@ -8,13 +8,12 @@ import { BorrowOffer, CollateralToken } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
 
 import { adjustAmountWithUpfrontFee } from '../helpers'
-import { BorrowOfferOptimistic } from '../hooks/useSelectedOffers'
 
 import styles from './OrderBook.module.less'
 
 interface BorrowCellProps {
   offer: BorrowOffer
-  selectedOffer: BorrowOfferOptimistic | null
+  selectedOffer: BorrowOffer | null
   collateral: CollateralToken | undefined
   restCollateralsAmount: number
 }
@@ -38,9 +37,7 @@ export const BorrowCell: FC<BorrowCellProps> = ({
     maxTokenToGet,
   )
 
-  const selectedOfferMaxTokenToGet = selectedOffer
-    ? parseFloat(selectedOffer.offer.maxTokenToGet)
-    : 0
+  const selectedOfferMaxTokenToGet = selectedOffer ? parseFloat(selectedOffer.maxTokenToGet) : 0
 
   const borrowValueToDisplay = selectedOfferMaxTokenToGet || calculatedTokenToGet
 

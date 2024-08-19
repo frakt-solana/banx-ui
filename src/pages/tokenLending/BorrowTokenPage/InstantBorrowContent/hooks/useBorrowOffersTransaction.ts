@@ -64,7 +64,7 @@ export const useBorrowOffersTransaction = (collateral: CollateralToken | undefin
 
   const { add: addLoansOptimistic } = useTokenLoansOptimistic()
 
-  const { offers: offersByMarket, updateOrAddOffer } = useTokenMarketOffers(
+  const { offers: marketOffers, updateOrAddOffer } = useTokenMarketOffers(
     collateral?.marketPubkey || '',
   )
 
@@ -93,25 +93,25 @@ export const useBorrowOffersTransaction = (collateral: CollateralToken | undefin
   }
 
   const transactionsData = useMemo(() => {
-    if (!offersByMarket.length) return []
+    if (!marketOffers.length) return []
 
     return borrowOffers.reduce<TransactionParams[]>((acc, offer) => {
-      const offerData = find(offersByMarket, ({ publicKey }) => publicKey === offer.offer.publicKey)
+      const offerData = find(marketOffers, ({ publicKey }) => publicKey === offer.publicKey)
 
       if (!collateral) return acc
 
       if (offerData) {
         acc.push({
           offer: offerData,
-          loanValue: new BN(offer.offer.maxTokenToGet),
+          loanValue: new BN(offer.maxTokenToGet),
           collateral,
-          aprRate: new BN(offer.offer.apr),
+          aprRate: new BN(offer.apr),
         })
       }
 
       return acc
     }, [])
-  }, [offersByMarket, borrowOffers, collateral])
+  }, [marketOffers, borrowOffers, collateral])
 
   const borrow = async () => {
     const loadingSnackbarId = uniqueId()

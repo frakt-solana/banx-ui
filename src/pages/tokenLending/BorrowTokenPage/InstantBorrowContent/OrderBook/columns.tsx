@@ -6,14 +6,13 @@ import { DisplayValue, HeaderCell } from '@banx/components/TableComponents'
 
 import { BorrowOffer, CollateralToken } from '@banx/api/tokens'
 
-import { BorrowOfferOptimistic } from '../hooks/useSelectedOffers'
 import { AprCell, BorrowCell } from './cells'
 
 import styles from './OrderBook.module.less'
 
 type GetTableColumns = (props: {
   onSelectAll: () => void
-  findOfferInSelection: (offerPubkey: string) => BorrowOfferOptimistic | null
+  findOfferInSelection: (offerPubkey: string) => BorrowOffer | null
   toggleOfferInSelection: (offer: BorrowOffer) => void
   hasSelectedOffers: boolean
   restCollateralsAmount: number

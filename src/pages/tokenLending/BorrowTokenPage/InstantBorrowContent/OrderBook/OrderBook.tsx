@@ -1,6 +1,5 @@
 import { FC, useCallback, useEffect, useMemo } from 'react'
 
-import { useWallet } from '@solana/wallet-adapter-react'
 import { maxBy, sumBy } from 'lodash'
 
 import Table from '@banx/components/Table'
@@ -23,9 +22,6 @@ interface OrderBookProps {
 }
 
 const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount, collateral }) => {
-  const { publicKey: walletPublicKey } = useWallet()
-  const walletPublicKeyString = walletPublicKey?.toBase58() || ''
-
   const { tokenType } = useNftTokenType()
 
   const marketTokenDecimals = getTokenDecimals(tokenType)
@@ -33,7 +29,7 @@ const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount,
   const {
     selection,
     toggle: toggleOfferInSelection,
-    find,
+    find: findOfferInSelection,
     clear: clearSelection,
     set: setSelection,
   } = useSelectedOffers()
@@ -44,12 +40,7 @@ const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount,
     clearSelection()
   }, [clearSelection, tokenType])
 
-  const walletSelectedOffers = useMemo(() => {
-    if (!walletPublicKeyString) return []
-    return selection.filter(({ wallet }) => wallet === walletPublicKeyString)
-  }, [selection, walletPublicKeyString])
-
-  const hasSelectedOffers = !!walletSelectedOffers?.length
+  const hasSelectedOffers = !!selection?.length
 
   const onSelectAll = useCallback(() => {
     if (hasSelectedOffers) {
@@ -64,7 +55,7 @@ const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount,
         tokenDecimals: collateralTokenDecimals,
       })
 
-      setSelection(updatedOffers, walletPublicKeyString)
+      setSelection(updatedOffers)
     }
   }, [
     clearSelection,
@@ -74,17 +65,11 @@ const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount,
     maxCollateralAmount,
     offers,
     setSelection,
-    walletPublicKeyString,
   ])
-
-  const findOfferInSelection = useCallback(
-    (offerPubkey: string) => find(offerPubkey, walletPublicKeyString),
-    [find, walletPublicKeyString],
-  )
 
   const restCollateralsAmount = useMemo(() => {
     const collateralsAmountInCart = sumBy(selection, (offer) =>
-      parseFloat(offer.offer.maxCollateralToReceive),
+      parseFloat(offer.maxCollateralToReceive),
     )
 
     const maxCollateralAmountWithDecimals = maxCollateralAmount * marketTokenDecimals
@@ -104,15 +89,9 @@ const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount,
         tokenDecimals: collateralTokenDecimals,
       })[0]
 
-      return toggleOfferInSelection(updatedOffer, walletPublicKeyString)
+      return toggleOfferInSelection(updatedOffer)
     },
-    [
-      collateral,
-      findOfferInSelection,
-      restCollateralsAmount,
-      toggleOfferInSelection,
-      walletPublicKeyString,
-    ],
+    [collateral, findOfferInSelection, restCollateralsAmount, toggleOfferInSelection],
   )
 
   const columns = getTableColumns({

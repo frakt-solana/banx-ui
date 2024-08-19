@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
@@ -81,7 +81,7 @@ export const useBorrowOffers = (
         tokenDecimals: collateralTokenDecimals,
       })
 
-      setOffers(updatedOffers, walletPubkeyString)
+      setOffers(updatedOffers)
     } else {
       clearOffers()
     }
@@ -95,15 +95,11 @@ export const useBorrowOffers = (
     clearOffers,
   ])
 
-  const rawOffersInCart = useMemo(() => {
-    return offersInCart.map((offer) => offer.offer)
-  }, [offersInCart])
-
   return {
     data: borrowOffers ?? [],
     isLoading,
 
-    offersInCart: rawOffersInCart,
+    offersInCart,
 
     setInputCollateralsAmount,
     ltvSliderValue,

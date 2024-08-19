@@ -3,59 +3,39 @@ import { create } from 'zustand'
 
 import { BorrowOffer } from '@banx/api/tokens'
 
-export interface BorrowOfferOptimistic {
-  offer: BorrowOffer
-  wallet: string
-}
-
-const convertOfferToOptimistic = (offer: BorrowOffer, walletPublicKey: string) => {
-  return {
-    offer,
-    wallet: walletPublicKey,
-  }
-}
-
 interface SelectedOffersState {
-  selection: BorrowOfferOptimistic[]
-  set: (selection: BorrowOffer[], walletPublicKey: string) => void
-  find: (offerPubkey: string, walletPublicKey: string) => BorrowOfferOptimistic | null
-  add: (offer: BorrowOffer, walletPublicKey: string) => void
-  remove: (offerPubkey: string, walletPublicKey: string) => void
-  toggle: (offer: BorrowOffer, walletPublicKey: string) => void
+  selection: BorrowOffer[]
+  set: (selection: BorrowOffer[]) => void
+  find: (offerPubkey: string) => BorrowOffer | null
+  add: (offer: BorrowOffer) => void
+  remove: (offerPubkey: string) => void
+  toggle: (offer: BorrowOffer) => void
   clear: () => void
 }
 
 export const useSelectedOffers = create<SelectedOffersState>((set, get) => ({
   selection: [],
-  set: (selection, walletPublicKey) => {
-    if (!walletPublicKey) return
-
+  set: (selection) => {
     return set(
       produce((state: SelectedOffersState) => {
-        state.selection = selection.map((offer) => convertOfferToOptimistic(offer, walletPublicKey))
+        state.selection = selection.map((offer) => offer)
       }),
     )
   },
-  find: (offerPubkey, walletPublicKey) => {
-    if (!walletPublicKey) return null
-
-    return get().selection.find(({ offer }) => offer.publicKey === offerPubkey) ?? null
+  find: (offerPubkey) => {
+    return get().selection.find((offer) => offer.publicKey === offerPubkey) ?? null
   },
-  add: (offer, walletPublicKey) => {
-    if (!walletPublicKey) return
-
+  add: (offer) => {
     set(
       produce((state: SelectedOffersState) => {
-        state.selection.push(convertOfferToOptimistic(offer, walletPublicKey))
+        state.selection.push(offer)
       }),
     )
   },
-  remove: (offerPubkey, walletPublicKey) => {
-    if (!walletPublicKey) return
-
+  remove: (offerPubkey) => {
     set(
       produce((state: SelectedOffersState) => {
-        state.selection = state.selection.filter(({ offer }) => offer.publicKey !== offerPubkey)
+        state.selection = state.selection.filter((offer) => offer.publicKey !== offerPubkey)
       }),
     )
   },
@@ -66,12 +46,10 @@ export const useSelectedOffers = create<SelectedOffersState>((set, get) => ({
       }),
     )
   },
-  toggle: (offer, walletPublicKey) => {
-    if (!walletPublicKey) return
-
+  toggle: (offer) => {
     const { find, add, remove } = get()
-    const isOfferInSelection = !!find(offer.publicKey, walletPublicKey)
+    const isOfferInSelection = !!find(offer.publicKey)
 
-    isOfferInSelection ? remove(offer.publicKey, walletPublicKey) : add(offer, walletPublicKey)
+    isOfferInSelection ? remove(offer.publicKey) : add(offer)
   },
 }))
