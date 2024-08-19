@@ -73,6 +73,7 @@ const TableRowInner = <T,>(
   const { rowParams, item, ...restProps } = props
 
   const rowClassName = getCardOrRowClassName(item, rowParams?.activeRowParams)
+  const styles = rowParams?.activeRowParams?.[0]?.styles?.(item)
 
   return (
     <tr
@@ -80,7 +81,7 @@ const TableRowInner = <T,>(
       onClick={() => {
         rowParams?.onRowClick?.(item)
       }}
-      style={rowParams?.activeRowParams?.[0]?.style?.(item)}
+      style={styles}
       ref={ref as Ref<HTMLTableRowElement>}
       className={rowClassName}
     />

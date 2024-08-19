@@ -12,7 +12,7 @@ interface GetErrorMessageProps {
   collateralToken: CollateralToken | undefined
   collateralInputValue: string
   borrowInputValue: string
-  borrowOffers: BorrowOffer[]
+  offers: BorrowOffer[]
   isLoadingOffers: boolean
 }
 
@@ -20,7 +20,7 @@ export const getErrorMessage = ({
   collateralToken,
   collateralInputValue,
   borrowInputValue,
-  borrowOffers,
+  offers,
   isLoadingOffers,
 }: GetErrorMessageProps) => {
   const ticker = collateralToken?.collateral.ticker || ''
@@ -38,7 +38,7 @@ export const getErrorMessage = ({
     stringToBN(collateralTokenBalance),
   )
 
-  const noOffersAvailable = borrowOffers.length === 0 && !isLoadingOffers
+  const noOffersAvailable = offers.length === 0 && !isLoadingOffers
 
   if (isInvalidAmount) {
     return 'Enter an amount'

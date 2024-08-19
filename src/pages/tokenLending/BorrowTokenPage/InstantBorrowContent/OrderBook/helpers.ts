@@ -2,7 +2,7 @@ import { BN } from 'fbonds-core'
 
 import { BorrowOffer } from '@banx/api/tokens'
 
-const calculateOfferRatio = (offer: BorrowOffer, maxOffer: BorrowOffer) => {
+const calculateOfferFundingRatio = (offer: BorrowOffer, maxOffer: BorrowOffer) => {
   const offerFunds = parseFloat(offer.maxTokenToGet)
   const maxOfferFunds = parseFloat(maxOffer.maxTokenToGet)
 
@@ -11,29 +11,16 @@ const calculateOfferRatio = (offer: BorrowOffer, maxOffer: BorrowOffer) => {
   return (offerFunds / maxOfferFunds) * 100
 }
 
-export const createRowStyle = (offer: BorrowOffer, maxOffer: BorrowOffer) => {
-  const ratio = calculateOfferRatio(offer, maxOffer)
+export const createRowStyle = (offer: BorrowOffer, maxOffer: BorrowOffer | undefined) => {
+  if (!maxOffer) return {}
+
+  const ratio = calculateOfferFundingRatio(offer, maxOffer)
 
   const backgroundColorVariable = 'var(--bg-secondary)'
 
   return {
     background: `linear-gradient(to right, ${backgroundColorVariable} ${ratio}%, transparent ${ratio}%)`,
   }
-}
-
-type CalcTokenToGetParams = {
-  collateralToReceive: BN
-  tokenDecimals: number
-  collateralsPerToken: BN
-}
-
-export const calcTokenToGet = ({
-  collateralToReceive,
-  tokenDecimals,
-  collateralsPerToken,
-}: CalcTokenToGetParams) => {
-  const denominator = new BN(10 ** tokenDecimals)
-  return collateralToReceive.mul(denominator).div(collateralsPerToken)
 }
 
 export const getUpdatedBorrowOffers = ({

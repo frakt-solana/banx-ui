@@ -139,7 +139,7 @@ export const useInstantBorrowContent = () => {
   ])
 
   const errorMessage = getErrorMessage({
-    borrowOffers: offers,
+    offers,
     isLoadingOffers,
     collateralToken,
     collateralInputValue,

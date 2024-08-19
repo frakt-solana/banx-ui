@@ -21,7 +21,7 @@ export type ActiveRowParams<T> = Array<{
   condition: (record: T) => boolean
   cardClassName?: string
   className?: string
-  style?: (record: T) => CSSProperties
+  styles?: (record: T) => CSSProperties
 }>
 
 export interface TableRowParams<T> {

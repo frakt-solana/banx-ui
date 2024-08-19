@@ -68,7 +68,7 @@ const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount,
     }
   }, [
     clearSelection,
-    collateral?.collateral.decimals,
+    collateral,
     hasSelectedOffers,
     marketTokenDecimals,
     maxCollateralAmount,
@@ -107,7 +107,7 @@ const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount,
       return toggleOfferInSelection(updatedOffer, walletPublicKeyString)
     },
     [
-      collateral?.collateral.decimals,
+      collateral,
       findOfferInSelection,
       restCollateralsAmount,
       toggleOfferInSelection,
@@ -125,7 +125,7 @@ const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount,
     collateral,
   })
 
-  const maxOffer = useMemo(
+  const offerWithHighestOfferSize = useMemo(
     () => maxBy(offers, (offer) => parseFloat(offer.maxTokenToGet)),
     [offers],
   )
@@ -136,11 +136,13 @@ const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount,
       activeRowParams: [
         {
           condition: () => true,
-          style: (offer: BorrowOffer) => (maxOffer ? createRowStyle(offer, maxOffer) : {}),
+          style: (offer: BorrowOffer) => createRowStyle(offer, offerWithHighestOfferSize),
         },
       ],
     }
-  }, [maxOffer, onRowClick])
+  }, [offerWithHighestOfferSize, onRowClick])
+
+  const emptyMessage = !offers.length ? 'Not found suitable offers' : ''
 
   return (
     <div className={styles.container}>
@@ -150,7 +152,7 @@ const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount,
         rowParams={rowParams}
         className={styles.table}
         classNameTableWrapper={styles.tableWrapper}
-        emptyMessage={!offers.length ? 'No offers' : ''}
+        emptyMessage={emptyMessage}
         loading={isLoading && !!maxCollateralAmount}
       />
     </div>
