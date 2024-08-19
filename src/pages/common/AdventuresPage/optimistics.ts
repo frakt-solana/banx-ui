@@ -8,45 +8,33 @@ import { ZERO_BN, calcOptimisticBasedOnBulkSimulation } from '@banx/utils'
 
 export const convertStakingSimulatedAccountsToMergeData = (
   stakingSimulatedAccountsResults: StakingSimulatedAccountsResult[],
-) => {
-  return chain(stakingSimulatedAccountsResults)
-    .reduce(
-      (
-        acc: {
-          banxStakingSettings: staking.BanxStakingSettings[]
-          banxAdventures: staking.BanxAdventure[]
-          banxStakes: staking.BanxStake[]
-          banxTokenStakes: staking.BanxTokenStake[]
-          banxAdventureSubscriptions: staking.BanxAdventureSubscription[]
-        },
-        {
-          banxAdventureSubscriptions,
-          banxAdventures,
-          banxStake,
-          banxTokenStake,
-          banxStakingSettings,
-        },
-      ) => {
-        return {
-          banxStakingSettings: [...acc.banxStakingSettings, banxStakingSettings],
-          banxAdventures: [...acc.banxAdventures, ...banxAdventures],
-          banxStakes: [...acc.banxStakes, banxStake],
-          banxTokenStakes: [...acc.banxTokenStakes, banxTokenStake],
-          banxAdventureSubscriptions: [
-            ...acc.banxAdventureSubscriptions,
-            ...banxAdventureSubscriptions,
-          ],
-        }
-      },
-      {
-        banxStakingSettings: [],
-        banxAdventures: [],
-        banxStakes: [],
-        banxTokenStakes: [],
-        banxAdventureSubscriptions: [],
-      },
-    )
-    .value()
+): {
+  banxStakingSettings: staking.BanxStakingSettings[]
+  banxTokenStakes: staking.BanxTokenStake[]
+  banxAdventures: staking.BanxAdventure[]
+  banxAdventureSubscriptions: staking.BanxAdventureSubscription[]
+  banxStakes: staking.BanxStake[]
+} => {
+  const transformer = <T>(
+    simulations: StakingSimulatedAccountsResult[],
+    field: keyof StakingSimulatedAccountsResult,
+  ): T[] =>
+    chain(simulations)
+      .map((simulation) => simulation?.[field])
+      .flatten()
+      .compact()
+      .value() as T[]
+
+  return {
+    banxStakingSettings: transformer(stakingSimulatedAccountsResults, 'banxStakingSettings'),
+    banxTokenStakes: transformer(stakingSimulatedAccountsResults, 'banxTokenStake'),
+    banxAdventures: transformer(stakingSimulatedAccountsResults, 'banxAdventures'),
+    banxAdventureSubscriptions: transformer(
+      stakingSimulatedAccountsResults,
+      'banxAdventureSubscriptions',
+    ),
+    banxStakes: transformer(stakingSimulatedAccountsResults, 'banxAdventures'),
+  }
 }
 
 export const mergeWithBanxStakingInfo = (
