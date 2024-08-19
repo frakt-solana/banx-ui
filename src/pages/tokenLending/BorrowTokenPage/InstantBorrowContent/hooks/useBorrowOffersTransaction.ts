@@ -42,15 +42,15 @@ import {
 
 import { useSelectedOffers } from './useSelectedOffers'
 
-type TransactionData = {
+type TransactionParams = {
   offer: Offer
   loanValue: BN
   collateral: CollateralToken
   aprRate: BN
 }
 
-export const useBorrowSplTokenTransaction = (collateral: CollateralToken | undefined) => {
-  const { selection: splTokenOffers } = useSelectedOffers()
+export const useBorrowOffersTransaction = (collateral: CollateralToken | undefined) => {
+  const { selection: borrowOffers } = useSelectedOffers()
 
   const wallet = useWallet()
   const { connection } = useConnection()
@@ -64,7 +64,9 @@ export const useBorrowSplTokenTransaction = (collateral: CollateralToken | undef
 
   const { add: addLoansOptimistic } = useTokenLoansOptimistic()
 
-  const { offers, updateOrAddOffer } = useTokenMarketOffers(collateral?.marketPubkey || '')
+  const { offers: offersByMarket, updateOrAddOffer } = useTokenMarketOffers(
+    collateral?.marketPubkey || '',
+  )
 
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
@@ -91,10 +93,10 @@ export const useBorrowSplTokenTransaction = (collateral: CollateralToken | undef
   }
 
   const transactionsData = useMemo(() => {
-    if (!offers.length) return []
+    if (!offersByMarket.length) return []
 
-    return splTokenOffers.reduce<TransactionData[]>((acc, offer) => {
-      const offerData = find(offers, ({ publicKey }) => publicKey === offer.offer.publicKey)
+    return borrowOffers.reduce<TransactionParams[]>((acc, offer) => {
+      const offerData = find(offersByMarket, ({ publicKey }) => publicKey === offer.offer.publicKey)
 
       if (!collateral) return acc
 
@@ -109,7 +111,7 @@ export const useBorrowSplTokenTransaction = (collateral: CollateralToken | undef
 
       return acc
     }, [])
-  }, [collateral, offers, splTokenOffers])
+  }, [offersByMarket, borrowOffers, collateral])
 
   const borrow = async () => {
     const loadingSnackbarId = uniqueId()
@@ -122,17 +124,8 @@ export const useBorrowSplTokenTransaction = (collateral: CollateralToken | undef
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const txnsData = await Promise.all(
-        transactionsData.map(({ collateral, aprRate, loanValue, offer }) =>
-          createBorrowSplTokenTxnData(
-            {
-              loanValue,
-              collateral,
-              offer,
-              aprRate,
-              tokenType,
-            },
-            walletAndConnection,
-          ),
+        transactionsData.map((params) =>
+          createBorrowSplTokenTxnData({ ...params, tokenType }, walletAndConnection),
         ),
       )
 
@@ -164,8 +157,8 @@ export const useBorrowSplTokenTransaction = (collateral: CollateralToken | undef
               const loanAndOffer: { loan: core.TokenLoan; offer: Offer } = {
                 loan: {
                   publicKey: fraktBond.publicKey,
-                  fraktBond: fraktBond,
-                  bondTradeTransaction: bondTradeTransaction,
+                  fraktBond,
+                  bondTradeTransaction,
                   collateral: params.collateral.collateral,
                   collateralPrice: params.collateral.collateralPrice,
                 },

@@ -39,16 +39,16 @@ export const getErrorMessage = ({
   )
   const noOffersAvailable = offers.length === 0 || isLoadingOffers
 
+  if (isInvalidAmount) {
+    return 'Enter an amount'
+  }
+
   if (noOffersAvailable) {
     return 'Not enough liquidity'
   }
 
   if (noEnoughtWalletBalance) {
     return `You don't have ${ticker} to borrow`
-  }
-
-  if (isInvalidAmount) {
-    return 'Enter an amount'
   }
 
   if (hasInsufficientBalance) {

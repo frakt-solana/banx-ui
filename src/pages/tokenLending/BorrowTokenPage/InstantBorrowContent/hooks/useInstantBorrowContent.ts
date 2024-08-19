@@ -9,7 +9,7 @@ import { bnToHuman, stringToBN } from '@banx/utils'
 import { BorrowToken, DEFAULT_COLLATERAL_MARKET_PUBKEY } from '../../constants'
 import { adjustAmountWithUpfrontFee, getErrorMessage } from '../helpers'
 import { BorrowInputType, useBorrowOffers } from './useBorrowOffers'
-import { useBorrowSplTokenTransaction } from './useBorrowSplTokenTransaction'
+import { useBorrowOffersTransaction } from './useBorrowOffersTransaction'
 import { useBorrowTokensList, useCollateralsList } from './useCollateralsList'
 
 export const useInstantBorrowContent = () => {
@@ -143,7 +143,7 @@ export const useInstantBorrowContent = () => {
     borrowInputValue,
   })
 
-  const { borrow, isBorrowing } = useBorrowSplTokenTransaction(collateralToken)
+  const { borrow, isBorrowing } = useBorrowOffersTransaction(collateralToken)
 
   return {
     offers,
