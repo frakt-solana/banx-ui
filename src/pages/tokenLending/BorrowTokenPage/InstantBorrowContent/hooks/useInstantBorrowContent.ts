@@ -8,7 +8,7 @@ import { bnToHuman } from '@banx/utils'
 
 import { BorrowToken, DEFAULT_COLLATERAL_MARKET_PUBKEY } from '../../constants'
 import { adjustAmountWithUpfrontFee, getErrorMessage } from '../helpers'
-import { BorrowInputType, useBorrowOffers } from './useBorrowOffers'
+import { useBorrowOffers } from './useBorrowOffers'
 import { useBorrowOffersTransaction } from './useBorrowOffersTransaction'
 import { useBorrowTokensList, useCollateralsList } from './useCollateralsList'
 
@@ -28,8 +28,6 @@ export const useInstantBorrowContent = () => {
     data: offers,
     offersInCart,
     isLoading: isLoadingOffers,
-    inputType,
-    setInputType,
     setInputCollateralsAmount,
     ltvSliderValue,
     onChangeLtvSlider,
@@ -55,10 +53,6 @@ export const useInstantBorrowContent = () => {
 
   const handleCollateralInputChange = (value: string) => {
     if (!borrowToken || !collateralToken) return
-
-    if (inputType !== BorrowInputType.Input) {
-      setInputType(BorrowInputType.Input)
-    }
 
     setCollateralInputValue(value)
     setInputCollateralsAmount(value)
@@ -91,14 +85,7 @@ export const useInstantBorrowContent = () => {
     if (totalAmountToGetStr !== borrowInputValue) {
       setBorrowInputValue(totalAmountToGetStr)
     }
-  }, [
-    offersInCart,
-    borrowToken,
-    borrowInputValue,
-    collateralToken,
-    collateralInputValue,
-    inputType,
-  ])
+  }, [offersInCart, borrowToken, borrowInputValue, collateralToken, collateralInputValue])
 
   const errorMessage = getErrorMessage({
     offers,

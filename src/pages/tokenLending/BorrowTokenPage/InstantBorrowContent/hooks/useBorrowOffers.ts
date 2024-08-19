@@ -13,19 +13,12 @@ import { BorrowToken } from '../../constants'
 import { getUpdatedBorrowOffers } from '../OrderBook/helpers'
 import { useSelectedOffers } from './useSelectedOffers'
 
-export enum BorrowInputType {
-  Input = 'input',
-  Output = 'output',
-}
-
 export const useBorrowOffers = (
   collateralToken: CollateralToken | undefined,
   borrowToken: BorrowToken | undefined,
 ) => {
   const { publicKey } = useWallet()
   const walletPubkeyString = publicKey?.toString() || ''
-
-  const [inputType, setInputType] = useState<BorrowInputType>(BorrowInputType.Input)
 
   const [inputCollateralsAmount, setInputCollateralsAmount] = useState('')
   const [ltvSliderValue, setLtvSlider] = useState(100)
@@ -42,7 +35,6 @@ export const useBorrowOffers = (
     {
       collateralToken,
       borrowToken,
-      inputType,
       debouncedCollateralsAmount,
       debouncedLtvSliderValue,
       walletPubkeyString,
@@ -113,8 +105,6 @@ export const useBorrowOffers = (
 
     offersInCart: rawOffersInCart,
 
-    inputType,
-    setInputType,
     setInputCollateralsAmount,
     ltvSliderValue,
     onChangeLtvSlider,
