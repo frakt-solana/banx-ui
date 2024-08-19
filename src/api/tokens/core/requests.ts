@@ -7,6 +7,7 @@ import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import { convertToMarketType } from '../../helpers'
 import {
+  BorrowOfferSchema,
   CollateralTokenSchema,
   TokenLoanSchema,
   TokenLoansRequestsSchema,
@@ -16,6 +17,7 @@ import {
 } from './schemas'
 import {
   AllTokenLoansRequestsResponse,
+  BorrowOffer,
   CollateralToken,
   TokenLoan,
   TokenLoansRequests,
@@ -157,16 +159,6 @@ export const fetchTokenLenderLoans: FetchTokenLenderLoans = async ({
   return data.data ?? []
 }
 
-export interface BorrowOffer {
-  id: string
-  publicKey: string
-  maxTokenToGet: string
-  collateralsPerToken: string
-  maxCollateralToReceive: string
-  apr: string //? base points
-  ltv: string //? base points
-}
-
 type FetchBorrowOffers = (props: {
   market: string
   bondingCurveType: BondingCurveType
@@ -198,6 +190,12 @@ export const fetchBorrowOffers: FetchBorrowOffers = async (props) => {
   const { data } = await axios.get<{ data: BorrowOffer[] }>(
     `${BACKEND_BASE_URL}/lending/spl/borrow-token-v4?${queryParams?.toString()}`,
   )
+
+  try {
+    await BorrowOfferSchema.array().parseAsync(data.data)
+  } catch (validationError) {
+    console.error('Schema validation error:', validationError)
+  }
 
   return data.data ?? []
 }
