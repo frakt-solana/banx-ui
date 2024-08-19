@@ -12,7 +12,7 @@ interface GetErrorMessageProps {
   collateralToken: CollateralToken | undefined
   collateralInputValue: string
   borrowInputValue: string
-  offers: BorrowOffer[]
+  borrowOffers: BorrowOffer[]
   isLoadingOffers: boolean
 }
 
@@ -20,7 +20,7 @@ export const getErrorMessage = ({
   collateralToken,
   collateralInputValue,
   borrowInputValue,
-  offers,
+  borrowOffers,
   isLoadingOffers,
 }: GetErrorMessageProps) => {
   const ticker = collateralToken?.collateral.ticker || ''
@@ -37,14 +37,15 @@ export const getErrorMessage = ({
   const hasInsufficientBalance = stringToBN(collateralInputValue).gt(
     stringToBN(collateralTokenBalance),
   )
-  const noOffersAvailable = offers.length === 0 || isLoadingOffers
+
+  const noOffersAvailable = borrowOffers.length === 0 && !isLoadingOffers
 
   if (isInvalidAmount) {
     return 'Enter an amount'
   }
 
   if (noOffersAvailable) {
-    return 'Not enough liquidity'
+    return 'Not found suitable offers'
   }
 
   if (noEnoughtWalletBalance) {
@@ -92,4 +93,30 @@ export const adjustAmountWithUpfrontFee = (amount: BN, type: 'input' | 'output')
     return amount.mul(FRACTION).div(BASE_POINTS_BN)
   }
   return amount.mul(BASE_POINTS_BN).div(FRACTION)
+}
+
+type GetButtonActionTextProps = {
+  isLoading: boolean
+  isWalletConnected: boolean
+  errorMessage?: string
+}
+
+export const getButtonActionText = ({
+  isLoading,
+  isWalletConnected,
+  errorMessage,
+}: GetButtonActionTextProps) => {
+  if (!isWalletConnected) {
+    return 'Connect wallet'
+  }
+
+  if (errorMessage) {
+    return errorMessage
+  }
+
+  if (isLoading && !errorMessage) {
+    return 'Fetching...'
+  }
+
+  return 'Borrow'
 }

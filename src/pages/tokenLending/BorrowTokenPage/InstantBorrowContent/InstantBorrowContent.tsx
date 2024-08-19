@@ -6,6 +6,7 @@ import { LoanValueSlider, Separator } from '../components'
 import InputTokenSelect, { SkeletonInputTokenSelect } from '../components/InputTokenSelect'
 import OrderBook from './OrderBook'
 import { Summary, SummarySkeleton } from './Summary'
+import { getButtonActionText } from './helpers'
 import { useInstantBorrowContent } from './hooks/useInstantBorrowContent'
 
 import styles from './InstantBorrowContent.module.less'
@@ -91,9 +92,13 @@ const InstantBorrowContent = () => {
           onClick={borrow}
           disabled={!wallet.connected || !!errorMessage}
           className={styles.borrowButton}
-          loading={isBorrowing}
+          loading={!errorMessage && (isBorrowing || isLoading)}
         >
-          {!wallet.connected ? 'Connect wallet' : errorMessage || 'Borrow'}
+          {getButtonActionText({
+            isLoading: isBorrowing || isLoading,
+            isWalletConnected: wallet.connected,
+            errorMessage,
+          })}
         </Button>
       </div>
       <OrderBook

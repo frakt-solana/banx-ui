@@ -90,6 +90,8 @@ export const useBorrowOffers = (
       })
 
       setOffers(updatedOffers, walletPubkeyString)
+    } else {
+      clearOffers()
     }
   }, [
     inputCollateralsAmount,
