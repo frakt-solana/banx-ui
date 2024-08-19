@@ -20,7 +20,11 @@ export const createStakeBanxNftTxnData: CreateStakeBanxNftTxnData = async (
 ) => {
   const { nftMint } = params
 
-  const { instructions, signers } = await stakeBanxNft({
+  const {
+    instructions,
+    signers,
+    accounts: accountsCollection,
+  } = await stakeBanxNft({
     connection: walletAndConnection.connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
@@ -32,7 +36,16 @@ export const createStakeBanxNftTxnData: CreateStakeBanxNftTxnData = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
+  const accounts: web3.PublicKey[] = [
+    ...accountsCollection['adventures'],
+    ...accountsCollection['advenureSubscriptions'],
+    accountsCollection['banxStake'],
+    accountsCollection['banxStakingSettings'],
+    accountsCollection['banxTokenStake'],
+  ]
+
   return {
+    accounts,
     params,
     instructions,
     signers: signers,

@@ -10,13 +10,18 @@ import {
   checkIsSubscribed,
   getAdventureStatus,
   isAdventureEnded,
+  useBanxStakeInfo,
+  useBanxStakeSettings,
 } from '@banx/pages/common/AdventuresPage'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
-import { createSubscribeTxnData } from '@banx/transactions/staking'
+import {
+  createSubscribeTxnData,
+  parseAnyStakingSimulatedAccounts,
+} from '@banx/transactions/staking'
 import {
   destroySnackbar,
   enqueueConfirmationError,
@@ -77,6 +82,8 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
 }) => {
   const { connection } = useConnection()
   const wallet = useWallet()
+  const { setOptimistic: setBanxStakeSettingsOptimistic } = useBanxStakeSettings()
+  const { setOptimistic: setBanxStakeInfoOptimistic } = useBanxStakeInfo()
 
   const isEnded = isAdventureEnded(banxAdventure)
 
@@ -99,19 +106,56 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
         walletAndConnection,
       )
 
-      await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor(walletAndConnection, {
+        ...TXN_EXECUTOR_DEFAULT_OPTIONS,
+      })
         .addTxnData(txnData)
         .on('sentAll', (results) => {
           enqueueTransactionsSent()
           enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)
+
+          // //! ==============================================================================
+          // // For optimistics debug
+          // if (results?.[0]?.accountInfoByPubkey) {
+          //   const {
+          //     banxStakingSettings,
+          //     banxTokenStake,
+          //     banxAdventureSubscriptions,
+          //     banxAdventures,
+          //     banxStake,
+          //   } = parseAnyStakingSimulatedAccounts(results?.[0]?.accountInfoByPubkey)
+          //   setBanxStakeSettingsOptimistic([banxStakingSettings])
+          //   setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), {
+          //     banxTokenStakes: [banxTokenStake],
+          //     banxAdventureSubscriptions,
+          //     banxAdventures,
+          //     banxStakes: [banxStake],
+          //   })
+          // }
+          // //! ==============================================================================
         })
         .on('confirmedAll', (results) => {
           destroySnackbar(loadingSnackbarId)
 
           const { confirmed, failed } = results
 
-          if (confirmed.length) {
+          if (confirmed?.[0]?.accountInfoByPubkey) {
             enqueueSnackbar({ message: 'Subscribed successfully', type: 'success' })
+
+            const {
+              banxStakingSettings,
+              banxTokenStake,
+              banxAdventureSubscriptions,
+              banxAdventures,
+              banxStake,
+            } = parseAnyStakingSimulatedAccounts(confirmed?.[0]?.accountInfoByPubkey)
+            setBanxStakeSettingsOptimistic([banxStakingSettings])
+            setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), {
+              banxTokenStakes: [banxTokenStake],
+              banxAdventureSubscriptions,
+              banxAdventures,
+              banxStakes: [banxStake],
+            })
           }
 
           if (failed.length) {
@@ -138,7 +182,7 @@ const AdventuresCard: FC<AdventuresCardProps> = ({
     <li className={styles.card}>
       <div className={styles.header}>
         <h3 className={classNames(styles.title, { [styles.titleEnded]: isEnded })}>
-          Week {banxAdventure.week}
+          Week {banxAdventure.week.toNumber()}
         </h3>
         <p className={classNames(styles.status, styles[`status__${status}`])}>
           {capitalize(status)}
