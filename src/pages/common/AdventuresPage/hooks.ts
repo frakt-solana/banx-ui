@@ -1,17 +1,30 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
+import { BN } from 'fbonds-core'
 
 import { staking } from '@banx/api/common'
 import { BANX_TOKEN_APPROX_CIRCULATING_AMOUNT } from '@banx/constants'
 import { queryClient } from '@banx/providers'
 
+import { mergeBanxSettings, mergeWithBanxStakingInfo } from './optimistics'
+
 const createBanxStakeInfoQueryKey = (walletPubkey: string) => ['fetchBanxStakeInfo', walletPubkey]
-const setBanxStakeInfoOptimistic = (walletPubkey: string, nextState: staking.BanxStakingInfo) =>
+const setBanxStakeInfoOptimistic = (
+  walletPubkey: string,
+  stateToMerge: Partial<{
+    banxTokenStakes: staking.BanxTokenStake[]
+    banxWalletBalances: BN[]
+    banxAdventures: staking.BanxAdventure[]
+    banxAdventureSubscriptions: staking.BanxAdventureSubscription[]
+    banxStakes: staking.BanxStake[]
+  }>,
+) =>
   queryClient.setQueryData(
     createBanxStakeInfoQueryKey(walletPubkey),
     (queryData: staking.BanxStakingInfo | undefined) => {
       if (!queryData) return queryData
-      return nextState
+
+      return mergeWithBanxStakingInfo(queryData, stateToMerge)
     },
   )
 
@@ -27,7 +40,6 @@ export const useBanxStakeInfo = () => {
     createBanxStakeInfoQueryKey(walletPubkey),
     () => staking.fetchBanxStakeInfo({ userPubkey: walletPubkey }),
     {
-      refetchInterval: 10_000,
       staleTime: 60_000,
       refetchOnWindowFocus: false,
     },
@@ -42,12 +54,13 @@ export const useBanxStakeInfo = () => {
 }
 
 const createBanxStakeSettingsQueryKey = () => ['fetchBanxStakeSettings']
-const setBanxStakeSettingsOptimistic = (nextState: staking.BanxStakingSettings) =>
+const setBanxStakeSettingsOptimistic = (nextBanxStakingSettings: staking.BanxStakingSettings[]) =>
   queryClient.setQueryData(
     createBanxStakeSettingsQueryKey(),
     (queryData: staking.BanxStakingSettings | undefined) => {
       if (!queryData) return queryData
-      return nextState
+
+      return mergeBanxSettings(queryData, nextBanxStakingSettings || [])
     },
   )
 
@@ -57,7 +70,6 @@ export const useBanxStakeSettings = () => {
     isLoading,
     refetch,
   } = useQuery(createBanxStakeSettingsQueryKey(), () => staking.fetchBanxStakeSettings(), {
-    refetchInterval: 10_000,
     staleTime: 60_000,
     refetchOnWindowFocus: false,
   })

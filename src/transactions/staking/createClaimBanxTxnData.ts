@@ -1,4 +1,5 @@
 import { web3 } from '@project-serum/anchor'
+import { BN } from 'fbonds-core'
 import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
 import { claimStakingRewards } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxTokenStaking/claimStakingRewards'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
@@ -8,7 +9,7 @@ import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '../helpers'
 
 type CreateClaimBanxTxnDataParams = {
-  weeks: number[]
+  weeks: BN[]
 }
 type CreateClaimBanxTxnData = (
   params: CreateClaimBanxTxnDataParams,
@@ -21,11 +22,15 @@ export const createClaimBanxTxnData: CreateClaimBanxTxnData = async (
 ) => {
   const { weeks } = params
 
-  const { instructions, signers } = await claimStakingRewards({
+  const {
+    instructions,
+    signers,
+    accounts: accountsCollection,
+  } = await claimStakingRewards({
     connection: walletAndConnection.connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     args: {
-      weeks: weeks,
+      weeks: weeks.map((week) => week.toNumber()),
     },
     accounts: {
       tokenMint: BANX_TOKEN_MINT,
@@ -34,7 +39,15 @@ export const createClaimBanxTxnData: CreateClaimBanxTxnData = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
+  const accounts: web3.PublicKey[] = [
+    ...accountsCollection['adventures'],
+    ...accountsCollection['advenureSubscriptions'],
+    accountsCollection['banxStakingSettings'],
+    accountsCollection['banxTokenStake'],
+  ]
+
   return {
+    accounts,
     params,
     instructions,
     signers,

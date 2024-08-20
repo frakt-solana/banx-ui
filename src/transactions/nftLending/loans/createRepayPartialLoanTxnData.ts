@@ -109,7 +109,7 @@ export const parseRepayPartialLoanSimulatedAccounts = (
   const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
   return {
-    bondTradeTransaction: results?.['bondTradeTransactionV3'] as core.BondTradeTransaction,
-    fraktBond: results?.['fraktBond'] as core.FraktBond,
+    bondTradeTransaction: results?.['bondTradeTransactionV3']?.[0] as core.BondTradeTransaction,
+    fraktBond: results?.['fraktBond']?.[0] as core.FraktBond,
   }
 }

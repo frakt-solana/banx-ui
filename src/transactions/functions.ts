@@ -88,6 +88,7 @@ export const executorGetPriorityFee: GetPriorityFee = ({ txnParams, connection }
 export const parseBanxAccountInfo = <T>(
   publicKey: web3.PublicKey,
   info: web3.SimulatedTransactionAccountInfo | null,
+  customConverter?: Parameters<typeof convertValuesInAccount>[1],
 ): [string, T] | null => {
   if (!info || !info.data) return null
 
@@ -101,32 +102,42 @@ export const parseBanxAccountInfo = <T>(
     ? { publicKey, ...parseEnumsInAccount<object>(parsedData) }
     : null
 
-  const convertedAccount = convertValuesInAccount<T>(parsedDataWithEnums, {
-    bnParser: (v) => {
-      try {
-        return v.toNumber()
-      } catch (err) {
-        return 0
-      }
+  const convertedAccount = convertValuesInAccount<T>(
+    parsedDataWithEnums,
+    customConverter ?? {
+      bnParser: (v) => {
+        try {
+          return v.toNumber()
+        } catch (err) {
+          return 0
+        }
+      },
+      pubkeyParser: (v) => v.toBase58(),
     },
-    pubkeyParser: (v) => v.toBase58(),
-  })
+  )
 
   return [accountName, convertedAccount]
 }
 
 /**
  * @param accountInfoByPubkey - default solana-transactions-executor result for simulations
- * @returns Dictionary<accountName, parsedAccount> accountName same as in IDL
+ * @returns Dictionary<accountName, parsedAccount[]> accountName same as in IDL
  */
 export const parseAccountInfoByPubkey = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
-): Record<string, unknown> => {
+  customConverter?: Parameters<typeof convertValuesInAccount>[1],
+): Record<string, unknown[]> => {
   return chain(accountInfoByPubkey)
     .toPairs()
     .filter(([, info]) => !!info)
     .map(([publicKey, info]) => {
-      return parseBanxAccountInfo(new web3.PublicKey(publicKey), info)
+      return parseBanxAccountInfo(new web3.PublicKey(publicKey), info, customConverter)
+    })
+    .compact()
+    .groupBy(([name]) => name)
+    .entries()
+    .map(([name, nameAndAccountPairs]) => {
+      return [name, nameAndAccountPairs.map(([, account]) => account)]
     })
     .fromPairs()
     .value()

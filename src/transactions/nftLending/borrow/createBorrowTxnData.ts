@@ -290,8 +290,8 @@ export const parseBorrowSimulatedAccounts = (accountInfoByPubkey: SimulatedAccou
   const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
   return {
-    bondOffer: results?.['bondOfferV3'] as core.Offer,
-    bondTradeTransaction: results?.['bondTradeTransactionV3'] as core.BondTradeTransaction,
-    fraktBond: results?.['fraktBond'] as core.FraktBond,
+    bondOffer: results?.['bondOfferV3']?.[0] as core.Offer,
+    bondTradeTransaction: results?.['bondTradeTransactionV3']?.[0] as core.BondTradeTransaction,
+    fraktBond: results?.['fraktBond']?.[0] as core.FraktBond,
   }
 }
