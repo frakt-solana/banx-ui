@@ -163,7 +163,7 @@ type FetchBorrowOffers = (props: {
   market: string
   bondingCurveType: BondingCurveType
   ltvLimit: number //? base points
-  collateralsAmount: number
+  collateralsAmount: string
   excludeWallet?: string
   disableMultiBorrow: boolean
 }) => Promise<BorrowOffer[]>

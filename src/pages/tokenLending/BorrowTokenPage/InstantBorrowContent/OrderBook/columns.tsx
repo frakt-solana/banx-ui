@@ -1,3 +1,4 @@
+import { BN } from 'fbonds-core'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import Checkbox from '@banx/components/Checkbox'
@@ -15,7 +16,7 @@ type GetTableColumns = (props: {
   findOfferInSelection: (offerPubkey: string) => BorrowOffer | null
   toggleOfferInSelection: (offer: BorrowOffer) => void
   hasSelectedOffers: boolean
-  restCollateralsAmount: number
+  restCollateralsAmount: BN
   tokenType: LendingTokenType
   collateral: CollateralToken | undefined
 }) => ColumnType<BorrowOffer>[]

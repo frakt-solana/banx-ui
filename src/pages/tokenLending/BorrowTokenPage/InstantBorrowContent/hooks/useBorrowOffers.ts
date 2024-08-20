@@ -7,7 +7,7 @@ import { getBondingCurveTypeFromLendingToken } from 'fbonds-core/lib/fbond-proto
 import { CollateralToken, core } from '@banx/api/tokens'
 import { useDebounceValue } from '@banx/hooks'
 import { useNftTokenType } from '@banx/store/nft'
-import { getTokenDecimals } from '@banx/utils'
+import { getTokenDecimals, stringToBN } from '@banx/utils'
 
 import { BorrowToken } from '../../constants'
 import { getUpdatedBorrowOffers } from '../OrderBook/helpers'
@@ -28,7 +28,7 @@ export const useBorrowOffers = (
   const debouncedCollateralsAmount = useDebounceValue(inputCollateralsAmount, 600)
   const debouncedLtvSliderValue = useDebounceValue(ltvSliderValue, 600)
 
-  const marketTokenDecimals = getTokenDecimals(tokenType) //? 1e9, 1e6
+  const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6
 
   const queryKey = [
     'borrowOffers',
@@ -44,7 +44,7 @@ export const useBorrowOffers = (
   const fetchBorrowOffers = () => {
     const marketPubkey = collateralToken?.marketPubkey || ''
     const bondingCurveType = getBondingCurveTypeFromLendingToken(tokenType)
-    const collateralsAmount = parseFloat(debouncedCollateralsAmount) * marketTokenDecimals
+    const collateralsAmount = stringToBN(debouncedCollateralsAmount, marketTokenDecimals)
 
     const ltvLimit = debouncedLtvSliderValue * 100 //? base points 50% => 5000
 
@@ -52,7 +52,7 @@ export const useBorrowOffers = (
       market: marketPubkey,
       bondingCurveType,
       ltvLimit,
-      collateralsAmount,
+      collateralsAmount: collateralsAmount.toString(),
       excludeWallet: walletPubkeyString,
       disableMultiBorrow: false,
     })
@@ -73,7 +73,7 @@ export const useBorrowOffers = (
   useEffect(() => {
     if (borrowOffers) {
       const collateralTokenDecimals = collateralToken?.collateral.decimals || 0
-      const collateralsAmount = parseFloat(inputCollateralsAmount) * marketTokenDecimals
+      const collateralsAmount = stringToBN(inputCollateralsAmount, marketTokenDecimals)
 
       const updatedOffers = getUpdatedBorrowOffers({
         collateralsAmount,

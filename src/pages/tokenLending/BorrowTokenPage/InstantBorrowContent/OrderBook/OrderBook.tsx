@@ -1,12 +1,13 @@
 import { FC, useCallback, useEffect, useMemo } from 'react'
 
-import { maxBy, sumBy } from 'lodash'
+import { BN } from 'fbonds-core'
+import { maxBy } from 'lodash'
 
 import Table from '@banx/components/Table'
 
 import { BorrowOffer, CollateralToken } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
-import { getTokenDecimals } from '@banx/utils'
+import { ZERO_BN, getTokenDecimals, stringToBN, sumBNs } from '@banx/utils'
 
 import { useSelectedOffers } from '../hooks/useSelectedOffers'
 import { getTableColumns } from './columns'
@@ -17,14 +18,14 @@ import styles from './OrderBook.module.less'
 interface OrderBookProps {
   offers: BorrowOffer[]
   isLoading: boolean
-  maxCollateralAmount: number
+  maxCollateralAmount: string //? input value string
   collateral: CollateralToken | undefined
 }
 
 const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount, collateral }) => {
   const { tokenType } = useNftTokenType()
 
-  const marketTokenDecimals = getTokenDecimals(tokenType)
+  const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6
 
   const {
     selection,
@@ -46,7 +47,7 @@ const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount,
     if (hasSelectedOffers) return clearSelection()
 
     const collateralTokenDecimals = collateral?.collateral.decimals || 0
-    const collateralsAmount = maxCollateralAmount * marketTokenDecimals
+    const collateralsAmount = stringToBN(maxCollateralAmount, marketTokenDecimals)
 
     const updatedOffers = getUpdatedBorrowOffers({
       collateralsAmount,
@@ -56,28 +57,28 @@ const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount,
 
     setSelection(updatedOffers)
   }, [
-    clearSelection,
     collateral,
+    offers,
     hasSelectedOffers,
     marketTokenDecimals,
     maxCollateralAmount,
-    offers,
+    clearSelection,
     setSelection,
   ])
 
   const restCollateralsAmount = useMemo(() => {
-    const collateralsAmountInCart = sumBy(selection, (offer) =>
-      parseFloat(offer.maxCollateralToReceive),
+    const collateralsAmountInCart = sumBNs(
+      selection.map((offer) => new BN(offer.maxCollateralToReceive)),
     )
 
-    const maxCollateralAmountWithDecimals = maxCollateralAmount * marketTokenDecimals
+    const collateralsAmount = stringToBN(maxCollateralAmount, marketTokenDecimals)
 
-    return Math.max(maxCollateralAmountWithDecimals - collateralsAmountInCart, 0)
-  }, [marketTokenDecimals, maxCollateralAmount, selection])
+    return BN.max(collateralsAmount.sub(collateralsAmountInCart), ZERO_BN)
+  }, [maxCollateralAmount, marketTokenDecimals, selection])
 
   const onRowClick = useCallback(
     (offer: BorrowOffer) => {
-      if (!findOfferInSelection(offer.publicKey) && restCollateralsAmount === 0) return
+      if (!findOfferInSelection(offer.publicKey) && restCollateralsAmount.isZero()) return
 
       const collateralTokenDecimals = collateral?.collateral.decimals || 0
 
@@ -121,6 +122,8 @@ const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount,
 
   const emptyMessage = !offers.length ? 'Not found suitable offers' : ''
 
+  const loading = isLoading && !stringToBN(maxCollateralAmount, marketTokenDecimals).isZero()
+
   return (
     <div className={styles.container}>
       <Table
@@ -130,7 +133,7 @@ const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount,
         className={styles.table}
         classNameTableWrapper={styles.tableWrapper}
         emptyMessage={emptyMessage}
-        loading={isLoading && !!maxCollateralAmount}
+        loading={loading}
       />
     </div>
   )

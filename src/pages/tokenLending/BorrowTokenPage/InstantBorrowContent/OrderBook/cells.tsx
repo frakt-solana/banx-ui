@@ -6,6 +6,7 @@ import { DisplayValue, createPercentValueJSX } from '@banx/components/TableCompo
 
 import { BorrowOffer, CollateralToken } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
+import { ZERO_BN } from '@banx/utils'
 
 import { adjustAmountWithUpfrontFee } from '../helpers'
 
@@ -15,7 +16,7 @@ interface BorrowCellProps {
   offer: BorrowOffer
   selectedOffer: BorrowOffer | null
   collateral: CollateralToken | undefined
-  restCollateralsAmount: number
+  restCollateralsAmount: BN
 }
 
 export const BorrowCell: FC<BorrowCellProps> = ({
@@ -29,25 +30,22 @@ export const BorrowCell: FC<BorrowCellProps> = ({
 
   const ltvPercent = parseFloat(offer.ltv) / 100
 
-  const maxTokenToGet = parseFloat(offer.maxTokenToGet)
-  const collateralPerToken = parseFloat(offer.collateralsPerToken)
-
-  const calculatedTokenToGet = Math.min(
-    (restCollateralsAmount * collateralMultiplier) / collateralPerToken,
-    maxTokenToGet,
+  const calculatedTokenToGet = BN.min(
+    restCollateralsAmount.mul(new BN(collateralMultiplier)).div(new BN(offer.collateralsPerToken)),
+    new BN(offer.maxTokenToGet),
   )
 
-  const selectedOfferMaxTokenToGet = selectedOffer ? parseFloat(selectedOffer.maxTokenToGet) : 0
+  const selectedOfferMaxTokenToGet = selectedOffer ? new BN(selectedOffer.maxTokenToGet) : ZERO_BN
 
-  const borrowValueToDisplay = selectedOfferMaxTokenToGet || calculatedTokenToGet
+  const borrowValueBN = !selectedOfferMaxTokenToGet.isZero()
+    ? selectedOfferMaxTokenToGet
+    : calculatedTokenToGet
 
-  const adjustedBorrowValueToDisplay = adjustAmountWithUpfrontFee(
-    new BN(borrowValueToDisplay),
-  ).toNumber()
+  const adjustedBorrowValueToDisplay = adjustAmountWithUpfrontFee(borrowValueBN)
 
   return (
     <div className={styles.borrowValueContainer}>
-      <DisplayValue value={adjustedBorrowValueToDisplay} />
+      <DisplayValue value={adjustedBorrowValueToDisplay.toNumber()} />
       <span className={styles.ltvValue}>{createPercentValueJSX(ltvPercent)} LTV</span>
     </div>
   )

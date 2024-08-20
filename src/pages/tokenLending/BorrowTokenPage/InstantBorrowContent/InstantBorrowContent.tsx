@@ -103,7 +103,7 @@ const InstantBorrowContent = () => {
       <OrderBook
         offers={offers}
         isLoading={isLoading}
-        maxCollateralAmount={parseFloat(collateralInputValue)}
+        maxCollateralAmount={collateralInputValue}
         collateral={collateralToken}
       />
     </div>

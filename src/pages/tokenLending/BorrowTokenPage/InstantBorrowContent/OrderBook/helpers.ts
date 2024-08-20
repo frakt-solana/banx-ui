@@ -28,11 +28,11 @@ export const getUpdatedBorrowOffers = ({
   offers,
   tokenDecimals,
 }: {
-  collateralsAmount: number
+  collateralsAmount: BN
   offers: BorrowOffer[]
   tokenDecimals: number
 }) => {
-  let restInputAmount = new BN(collateralsAmount)
+  let restInputAmount = collateralsAmount
 
   const newOffers: BorrowOffer[] = []
 
