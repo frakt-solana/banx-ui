@@ -12,13 +12,18 @@ import {
   calculateAdventureRewards,
   calculatePlayerPointsForBanxTokens,
   isAdventureEnded,
+  useBanxStakeInfo,
+  useBanxStakeSettings,
 } from '@banx/pages/common/AdventuresPage'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
-import { createClaimBanxTxnData } from '@banx/transactions/staking'
+import {
+  createClaimBanxTxnData,
+  parseAnyStakingSimulatedAccounts,
+} from '@banx/transactions/staking'
 import {
   ZERO_BN,
   destroySnackbar,
@@ -28,16 +33,20 @@ import {
   enqueueWaitingConfirmationSingle,
 } from '@banx/utils'
 
-type useAdventuresSidebarProps = {
+import { convertStakingSimulatedAccountsToMergeData } from '../../optimistics'
+
+type UseAdventuresSidebarProps = {
   banxStakingSettings: staking.BanxStakingSettings
   banxStakeInfo: staking.BanxStakingInfo
 }
 export const useAdventuresSidebar = ({
   banxStakingSettings,
   banxStakeInfo,
-}: useAdventuresSidebarProps) => {
+}: UseAdventuresSidebarProps) => {
   const wallet = useWallet()
   const { connection } = useConnection()
+  const { setOptimistic: setBanxStakeSettingsOptimistic } = useBanxStakeSettings()
+  const { setOptimistic: setBanxStakeInfoOptimistic } = useBanxStakeInfo()
 
   const { banxAdventures, banxTokenStake } = banxStakeInfo
 
@@ -90,12 +99,14 @@ export const useAdventuresSidebar = ({
     tokensPerPartnerPoints,
   )
 
-  const totalPartnerPoints = tokensPartnerPoints + (banxTokenStake?.partnerPointsStaked ?? 0)
+  const totalPartnerPoints =
+    tokensPartnerPoints + (banxTokenStake?.partnerPointsStaked.toNumber() ?? 0)
 
   const tokensPlayersPoints = calculatePlayerPointsForBanxTokens(
     banxTokenStake?.tokensStaked ?? ZERO_BN,
   )
-  const totalPlayersPoints = (banxTokenStake?.playerPointsStaked ?? 0) + tokensPlayersPoints
+  const totalPlayersPoints =
+    (banxTokenStake?.playerPointsStaked.toNumber() ?? 0) + tokensPlayersPoints
 
   const MAX_WEEKS_PER_TXN = 8
   const claimBanx = async () => {
@@ -130,6 +141,21 @@ export const useAdventuresSidebar = ({
         .on('sentAll', (results) => {
           enqueueTransactionsSent()
           enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)
+
+          // //! ==============================================================================
+          // // For optimistics debug
+          // const optimisticParams = chain(results)
+          //   .map(({ accountInfoByPubkey }) => {
+          //     if (!accountInfoByPubkey) return null
+          //     return parseAnyStakingSimulatedAccounts(accountInfoByPubkey)
+          //   })
+          //   .compact()
+          //   .thru(convertStakingSimulatedAccountsToMergeData)
+          //   .value()
+
+          // setBanxStakeSettingsOptimistic(optimisticParams.banxStakingSettings)
+          // setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), optimisticParams)
+          // //! ==============================================================================
         })
         .on('confirmedAll', (results) => {
           destroySnackbar(loadingSnackbarId)
@@ -138,6 +164,18 @@ export const useAdventuresSidebar = ({
 
           if (confirmed.length) {
             enqueueSnackbar({ message: 'Claimed successfully', type: 'success' })
+
+            const optimisticParams = chain(confirmed)
+              .map(({ accountInfoByPubkey }) => {
+                if (!accountInfoByPubkey) return null
+                return parseAnyStakingSimulatedAccounts(accountInfoByPubkey)
+              })
+              .compact()
+              .thru(convertStakingSimulatedAccountsToMergeData)
+              .value()
+
+            setBanxStakeSettingsOptimistic(optimisticParams.banxStakingSettings)
+            setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), optimisticParams)
           }
 
           if (failed.length) {

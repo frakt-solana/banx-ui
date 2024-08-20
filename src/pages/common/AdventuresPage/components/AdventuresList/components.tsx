@@ -75,7 +75,7 @@ export const WalletParticipationColumn: FC<WalletParticipationColumnProps> = ({
 
   const userTokensPartnerPoints = calcPartnerPoints(userStakedTokensAmount, tokensPerPoints)
 
-  const userPartnerPoints = userTokensPartnerPoints + stakedNftsPartnerPoints
+  const userPartnerPoints = userTokensPartnerPoints + stakedNftsPartnerPoints.toNumber()
 
   const TITLE_BY_STATUS: Record<staking.AdventureStatus, string> = {
     [staking.AdventureStatus.ENDED]: 'You participated with',
@@ -88,7 +88,7 @@ export const WalletParticipationColumn: FC<WalletParticipationColumnProps> = ({
   return (
     <div className={styles.statsCol}>
       <h5>{TITLE_BY_STATUS[status]}</h5>
-      <p>{formatNumbersWithCommas(userStakedNftsAmount)} Banx NFTs</p>
+      <p>{formatNumbersWithCommas(userStakedNftsAmount.toNumber())} Banx NFTs</p>
       <p>{formatCompact(banxTokenBNToFixed(userStakedTokensAmount))} $BANX</p>
       <p>{formatNumbersWithCommas(userPartnerPoints.toFixed(2))} Partner pts</p>
     </div>
@@ -112,14 +112,14 @@ export const TotalParticipationColumn: FC<TotalParticipationColumnProps> = ({ ba
   const tokensPerPointsFloat = bnToHuman(tokensPerPoints, BANX_TOKEN_DECIMALS)
   const totalTokensPartnerPoints = calcPartnerPoints(tokensSubscribed, tokensPerPoints)
 
-  const partnerPointsSubscribed = totalTokensPartnerPoints + totalNftsPartnerPoints
+  const partnerPointsSubscribed = totalTokensPartnerPoints + totalNftsPartnerPoints.toNumber()
 
   const maxPartnerPoints =
     maxTokensToSubscribeFloat / tokensPerPointsFloat + TOTAL_BANX_NFTS_PARTNER_POINTS
 
-  const nftsSubscribedStr = `${formatNumbersWithCommas(nftsSubscribed)}/${formatNumbersWithCommas(
-    TOTAL_BANX_NFTS,
-  )}`
+  const nftsSubscribedStr = `${formatNumbersWithCommas(
+    nftsSubscribed.toNumber(),
+  )}/${formatNumbersWithCommas(TOTAL_BANX_NFTS)}`
 
   const banxTokensSubscribedStr = `${formatCompact(
     banxTokenBNToFixed(tokensSubscribed, 0),

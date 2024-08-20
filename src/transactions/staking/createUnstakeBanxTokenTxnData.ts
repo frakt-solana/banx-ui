@@ -23,7 +23,11 @@ export const createUnstakeBanxTokenTxnData: CreateUnstakeBanxTokenTxnData = asyn
 ) => {
   const { tokensToUnstake } = params
 
-  const { instructions, signers } = await unstakeBanxToken({
+  const {
+    instructions,
+    signers,
+    accounts: accountsCollection,
+  } = await unstakeBanxToken({
     connection: walletAndConnection.connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
@@ -36,7 +40,15 @@ export const createUnstakeBanxTokenTxnData: CreateUnstakeBanxTokenTxnData = asyn
     sendTxn: sendTxnPlaceHolder,
   })
 
+  const accounts: web3.PublicKey[] = [
+    ...accountsCollection['adventures'],
+    ...accountsCollection['advenureSubscriptions'],
+    accountsCollection['banxStakingSettings'],
+    accountsCollection['banxTokenStake'],
+  ]
+
   return {
+    accounts,
     params,
     instructions,
     signers,

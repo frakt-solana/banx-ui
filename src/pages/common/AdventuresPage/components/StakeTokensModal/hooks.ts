@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { BN } from 'fbonds-core'
 import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
@@ -20,6 +21,7 @@ import {
 import {
   createStakeBanxTokenTxnData,
   createUnstakeBanxTokenTxnData,
+  parseAnyStakingSimulatedAccounts,
 } from '@banx/transactions/staking'
 import {
   ZERO_BN,
@@ -46,7 +48,8 @@ export const useStakeTokensModal = () => {
   const isStakeTab = currentTabValue === ModalTabs.STAKE
 
   const tokensPerPartnerPointsBN = banxStakeSettings?.tokensPerPartnerPoints ?? ZERO_BN
-  const banxWalletBalance = bnToHuman(banxStakeInfo?.banxWalletBalance ?? ZERO_BN)
+  const banxWalletBalanceBN = banxStakeInfo?.banxWalletBalance ?? ZERO_BN
+  const banxWalletBalance = bnToHuman(banxWalletBalanceBN)
   const totalTokenStaked = bnToHuman(banxStakeInfo?.banxTokenStake?.tokensStaked ?? ZERO_BN)
 
   const [inputTokenAmount, setInputTokenAmount] = useState('')
@@ -92,6 +95,7 @@ export const useStakeTokensModal = () => {
     isStakeDisabled,
     idleStakedTokens,
     banxWalletBalance,
+    banxWalletBalanceBN,
     partnerPoints,
     playerPoints,
     idleBanxWalletBalance,
@@ -105,10 +109,19 @@ export const useStakeTokensModal = () => {
   }
 }
 
-export const useTokenTransactions = (inputTokenAmount: string) => {
+type UseTokenTransactionsParams = {
+  inputTokenAmount: BN
+  banxWalletBalance: BN
+}
+export const useTokenTransactions = ({
+  inputTokenAmount,
+  banxWalletBalance,
+}: UseTokenTransactionsParams) => {
   const wallet = useWallet()
   const { connection } = useConnection()
   const { close } = useModal()
+  const { setOptimistic: setBanxStakeSettingsOptimistic } = useBanxStakeSettings()
+  const { setOptimistic: setBanxStakeInfoOptimistic } = useBanxStakeInfo()
 
   const onStake = async () => {
     const loadingSnackbarId = uniqueId()
@@ -117,15 +130,39 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const txnData = await createStakeBanxTokenTxnData(
-        { tokensToStake: formatBanxTokensStrToBN(inputTokenAmount) },
+        { tokensToStake: inputTokenAmount },
         walletAndConnection,
       )
 
-      await new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      await new TxnExecutor(walletAndConnection, {
+        ...TXN_EXECUTOR_DEFAULT_OPTIONS,
+      })
         .addTxnData(txnData)
         .on('sentAll', (results) => {
           enqueueTransactionsSent()
           enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)
+
+          // //! ==============================================================================
+          // // For optimistics debug
+          // if (results?.[0]?.accountInfoByPubkey) {
+          //   const {
+          //     banxStakingSettings,
+          //     banxTokenStake,
+          //     banxAdventureSubscriptions,
+          //     banxAdventures,
+          //     banxStake,
+          //   } = parseAnyStakingSimulatedAccounts(results?.[0]?.accountInfoByPubkey)
+          //   setBanxStakeSettingsOptimistic([banxStakingSettings])
+          //   setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), {
+          //     banxTokenStakes: [banxTokenStake],
+          //     banxAdventureSubscriptions,
+          //     banxAdventures,
+          //     banxStakes: [banxStake],
+          //     banxWalletBalances: [banxWalletBalance.sub(inputTokenAmount)],
+          //   })
+          // }
+          // //! ==============================================================================
+
           close()
         })
         .on('confirmedAll', (results) => {
@@ -133,8 +170,24 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
 
           const { confirmed, failed } = results
 
-          if (confirmed.length) {
+          if (confirmed?.[0]?.accountInfoByPubkey) {
             enqueueSnackbar({ message: 'Staked successfully', type: 'success' })
+
+            const {
+              banxStakingSettings,
+              banxTokenStake,
+              banxAdventureSubscriptions,
+              banxAdventures,
+              banxStake,
+            } = parseAnyStakingSimulatedAccounts(confirmed?.[0]?.accountInfoByPubkey)
+            setBanxStakeSettingsOptimistic([banxStakingSettings])
+            setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), {
+              banxTokenStakes: [banxTokenStake],
+              banxAdventureSubscriptions,
+              banxAdventures,
+              banxStakes: [banxStake],
+              banxWalletBalances: [banxWalletBalance.sub(inputTokenAmount)],
+            })
           }
 
           if (failed.length) {
@@ -164,15 +217,39 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const txnData = await createUnstakeBanxTokenTxnData(
-        { tokensToUnstake: formatBanxTokensStrToBN(inputTokenAmount) },
+        { tokensToUnstake: inputTokenAmount },
         walletAndConnection,
       )
 
-      new TxnExecutor(walletAndConnection, TXN_EXECUTOR_DEFAULT_OPTIONS)
+      new TxnExecutor(walletAndConnection, {
+        ...TXN_EXECUTOR_DEFAULT_OPTIONS,
+      })
         .addTxnData(txnData)
         .on('sentAll', (results) => {
           enqueueTransactionsSent()
           enqueueWaitingConfirmationSingle(loadingSnackbarId, results[0].signature)
+
+          // //! ==============================================================================
+          // // For optimistics debug
+          // if (results?.[0]?.accountInfoByPubkey) {
+          //   const {
+          //     banxStakingSettings,
+          //     banxTokenStake,
+          //     banxAdventureSubscriptions,
+          //     banxAdventures,
+          //     banxStake,
+          //   } = parseAnyStakingSimulatedAccounts(results?.[0]?.accountInfoByPubkey)
+          //   setBanxStakeSettingsOptimistic([banxStakingSettings])
+          //   setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), {
+          //     banxTokenStakes: [banxTokenStake],
+          //     banxAdventureSubscriptions,
+          //     banxAdventures,
+          //     banxStakes: [banxStake],
+          //     banxWalletBalances: [banxWalletBalance.add(inputTokenAmount)],
+          //   })
+          // }
+          // //! ==============================================================================
+
           close()
         })
         .on('confirmedAll', (results) => {
@@ -180,8 +257,24 @@ export const useTokenTransactions = (inputTokenAmount: string) => {
 
           const { confirmed, failed } = results
 
-          if (confirmed.length) {
+          if (confirmed?.[0]?.accountInfoByPubkey) {
             enqueueSnackbar({ message: 'Unstaked successfully', type: 'success' })
+
+            const {
+              banxStakingSettings,
+              banxTokenStake,
+              banxAdventureSubscriptions,
+              banxAdventures,
+              banxStake,
+            } = parseAnyStakingSimulatedAccounts(confirmed?.[0]?.accountInfoByPubkey)
+            setBanxStakeSettingsOptimistic([banxStakingSettings])
+            setBanxStakeInfoOptimistic(wallet.publicKey!.toBase58(), {
+              banxTokenStakes: [banxTokenStake],
+              banxAdventureSubscriptions,
+              banxAdventures,
+              banxStakes: [banxStake],
+              banxWalletBalances: [banxWalletBalance.add(inputTokenAmount)],
+            })
           }
 
           if (failed.length) {

@@ -12,6 +12,7 @@ import {
   TokenInputField,
   TotalStakedInfo,
 } from './components'
+import { formatBanxTokensStrToBN } from './helpers'
 import { useStakeTokensModal, useTokenTransactions } from './hooks'
 
 import styles from './StakeTokensModal.module.less'
@@ -26,6 +27,7 @@ export const StakeTokensModal = () => {
     partnerPoints,
     idleStakedTokens,
     banxWalletBalance,
+    banxWalletBalanceBN,
     playerPoints,
     idleBanxWalletBalance,
     inputTokenAmount,
@@ -37,7 +39,10 @@ export const StakeTokensModal = () => {
     isStakeTab,
   } = useStakeTokensModal()
 
-  const { onStake, onUnstake } = useTokenTransactions(inputTokenAmount)
+  const { onStake, onUnstake } = useTokenTransactions({
+    inputTokenAmount: formatBanxTokensStrToBN(inputTokenAmount),
+    banxWalletBalance: banxWalletBalanceBN,
+  })
 
   return (
     <Modal open onCancel={close} className={styles.modal} width={572}>

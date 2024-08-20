@@ -1,4 +1,5 @@
 import { web3 } from '@project-serum/anchor'
+import { BN } from 'fbonds-core'
 import { subscribeBanxAdventure } from 'fbonds-core/lib/fbond-protocol/functions/banxStaking/banxAdventure'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
@@ -7,7 +8,7 @@ import { BONDS } from '@banx/constants'
 import { sendTxnPlaceHolder } from '../helpers'
 
 type CreateSubscribeTxnDataParams = {
-  weeks: number[]
+  weeks: BN[]
 }
 
 type CreateSubscribeTxnData = (
@@ -21,11 +22,15 @@ export const createSubscribeTxnData: CreateSubscribeTxnData = async (
 ) => {
   const { weeks } = params
 
-  const { instructions, signers } = await subscribeBanxAdventure({
+  const {
+    instructions,
+    signers,
+    accounts: accountsCollection,
+  } = await subscribeBanxAdventure({
     connection: walletAndConnection.connection,
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     args: {
-      weeks: weeks,
+      weeks: weeks.map((week) => week.toNumber()),
     },
     accounts: {
       userPubkey: walletAndConnection.wallet.publicKey,
@@ -33,7 +38,15 @@ export const createSubscribeTxnData: CreateSubscribeTxnData = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
+  const accounts: web3.PublicKey[] = [
+    ...accountsCollection['adventures'],
+    ...accountsCollection['advenureSubscriptions'],
+    accountsCollection['banxStakingSettings'],
+    accountsCollection['banxTokenStake'],
+  ]
+
   return {
+    accounts,
     params,
     instructions,
     signers,
