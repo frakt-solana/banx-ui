@@ -1,12 +1,11 @@
 import { BN } from 'fbonds-core'
 import { BASE_POINTS, PROTOCOL_FEE_BN } from 'fbonds-core/lib/fbond-protocol/constants'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { sumBy } from 'lodash'
 import moment from 'moment'
 
 import { BorrowOffer, CollateralToken } from '@banx/api/tokens'
 import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
-import { ZERO_BN, bnToHuman, calcWeightedAverage, stringToBN } from '@banx/utils'
+import { ZERO_BN, bnToHuman, calcWeightedAverage, stringToBN, sumBNs } from '@banx/utils'
 
 interface GetErrorMessageProps {
   collateralToken: CollateralToken | undefined
@@ -60,14 +59,14 @@ export const getErrorMessage = ({
 }
 
 export const getSummaryInfo = (offers: BorrowOffer[]) => {
-  const totalAmountToGet = new BN(sumBy(offers, (offer) => parseFloat(offer.maxTokenToGet)))
+  const totalAmountToGet = sumBNs(offers.map((offer) => new BN(offer.maxTokenToGet)))
+  const totalCollateralsAmount = sumBNs(offers.map((offer) => new BN(offer.maxCollateralToReceive)))
 
   const upfrontFee = totalAmountToGet.div(new BN(100)).toNumber()
 
-  const aprRateArray = offers.map((offer) => parseFloat(offer.apr) + BONDS.PROTOCOL_REPAY_FEE)
-
   const amountToGetArray = offers.map((offer) => parseFloat(offer.maxTokenToGet))
 
+  const aprRateArray = offers.map((offer) => parseFloat(offer.apr) + BONDS.PROTOCOL_REPAY_FEE)
   const weightedApr = calcWeightedAverage(aprRateArray, amountToGetArray)
 
   const ltvRateArray = offers.map((offer) => parseFloat(offer.ltv))
@@ -80,7 +79,16 @@ export const getSummaryInfo = (offers: BorrowOffer[]) => {
     rateBasePoints: weightedApr + BONDS.PROTOCOL_REPAY_FEE,
   })
 
-  return { upfrontFee, weightedApr, weightedLtv, weeklyFee }
+  const adjustedTotalAmountToGet = adjustAmountWithUpfrontFee(totalAmountToGet)
+
+  return {
+    upfrontFee,
+    weightedApr,
+    weightedLtv,
+    weeklyFee,
+    totalAmountToGet: adjustedTotalAmountToGet.toNumber(),
+    totalCollateralsAmount: totalCollateralsAmount.toNumber(),
+  }
 }
 
 const UPFRONT_FEE_BN = PROTOCOL_FEE_BN

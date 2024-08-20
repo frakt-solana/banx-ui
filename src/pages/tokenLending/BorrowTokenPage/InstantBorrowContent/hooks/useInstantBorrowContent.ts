@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { BN } from 'fbonds-core'
 
 import { CollateralToken } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
-import { bnToHuman } from '@banx/utils'
+import { bnToHuman, getTokenDecimals, stringToBN, sumBNs } from '@banx/utils'
 
 import { BorrowToken, DEFAULT_COLLATERAL_MARKET_PUBKEY } from '../../constants'
 import { adjustAmountWithUpfrontFee, getErrorMessage } from '../helpers'
@@ -23,6 +23,8 @@ export const useInstantBorrowContent = () => {
 
   const { collateralsList } = useCollateralsList()
   const { borrowTokensList } = useBorrowTokensList()
+
+  const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6
 
   const {
     data: offers,
@@ -97,10 +99,22 @@ export const useInstantBorrowContent = () => {
 
   const { borrow, isBorrowing } = useBorrowOffersTransaction(collateralToken)
 
+  const canFundAllCollaterals = useMemo(() => {
+    const totalMaxCollateralToFund = sumBNs(
+      offers.map((offer) => new BN(offer.maxCollateralToReceive)),
+    )
+
+    const requiredCollateral = stringToBN(collateralInputValue, marketTokenDecimals)
+
+    return totalMaxCollateralToFund.gt(requiredCollateral)
+  }, [offers, collateralInputValue, marketTokenDecimals])
+
   return {
     offers,
     offersInCart,
     isLoading: isLoadingOffers,
+
+    canFundAllCollaterals,
 
     collateralsList,
     borrowTokensList,

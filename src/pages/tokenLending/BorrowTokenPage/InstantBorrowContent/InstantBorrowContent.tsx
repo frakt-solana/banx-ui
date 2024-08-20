@@ -2,10 +2,13 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 import { Button } from '@banx/components/Buttons'
 
+import { useModal } from '@banx/store/common'
+
 import { LoanValueSlider, Separator } from '../components'
 import InputTokenSelect, { SkeletonInputTokenSelect } from '../components/InputTokenSelect'
 import OrderBook from './OrderBook'
 import { Summary, SummarySkeleton } from './Summary'
+import WarningModal from './WarningModal'
 import { getButtonActionText } from './helpers'
 import { useInstantBorrowContent } from './hooks/useInstantBorrowContent'
 
@@ -19,6 +22,8 @@ const InstantBorrowContent = () => {
     offersInCart,
     isLoading,
 
+    canFundAllCollaterals,
+
     collateralsList,
     borrowTokensList,
 
@@ -31,9 +36,9 @@ const InstantBorrowContent = () => {
     borrowInputValue,
     handleBorrowTokenChange,
 
-    errorMessage,
     borrow,
     isBorrowing,
+    errorMessage,
 
     ltvSliderValue,
     onChangeLtvSlider,
@@ -45,6 +50,21 @@ const InstantBorrowContent = () => {
     !!collateralToken &&
     !!borrowToken
   )
+
+  const { open: openModal, close: closeModal } = useModal()
+
+  const onSubmit = () => {
+    if (canFundAllCollaterals) {
+      return borrow()
+    }
+
+    return openModal(WarningModal, {
+      offers: offersInCart,
+      collateral: collateralToken,
+      onSubmit: borrow,
+      onCancel: closeModal,
+    })
+  }
 
   return (
     <div className={styles.container}>
@@ -88,7 +108,7 @@ const InstantBorrowContent = () => {
         {showSkeleton ? <SummarySkeleton /> : <Summary offers={offersInCart} />}
 
         <Button
-          onClick={borrow}
+          onClick={onSubmit}
           disabled={!wallet.connected || !!errorMessage}
           className={styles.borrowButton}
           loading={!errorMessage && (isBorrowing || isLoading)}
@@ -103,7 +123,7 @@ const InstantBorrowContent = () => {
       <OrderBook
         offers={offers}
         isLoading={isLoading}
-        maxCollateralAmount={collateralInputValue}
+        requiredCollateralsAmount={collateralInputValue}
         collateral={collateralToken}
       />
     </div>

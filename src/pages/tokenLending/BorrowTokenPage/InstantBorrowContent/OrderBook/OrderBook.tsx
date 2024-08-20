@@ -18,11 +18,16 @@ import styles from './OrderBook.module.less'
 interface OrderBookProps {
   offers: BorrowOffer[]
   isLoading: boolean
-  maxCollateralAmount: string //? input value string
+  requiredCollateralsAmount: string //? input value string
   collateral: CollateralToken | undefined
 }
 
-const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount, collateral }) => {
+const OrderBook: FC<OrderBookProps> = ({
+  offers,
+  isLoading,
+  requiredCollateralsAmount,
+  collateral,
+}) => {
   const { tokenType } = useNftTokenType()
 
   const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6
@@ -47,7 +52,7 @@ const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount,
     if (hasSelectedOffers) return clearSelection()
 
     const collateralTokenDecimals = collateral?.collateral.decimals || 0
-    const collateralsAmount = stringToBN(maxCollateralAmount, marketTokenDecimals)
+    const collateralsAmount = stringToBN(requiredCollateralsAmount, marketTokenDecimals)
 
     const updatedOffers = getUpdatedBorrowOffers({
       collateralsAmount,
@@ -61,7 +66,7 @@ const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount,
     offers,
     hasSelectedOffers,
     marketTokenDecimals,
-    maxCollateralAmount,
+    requiredCollateralsAmount,
     clearSelection,
     setSelection,
   ])
@@ -71,10 +76,10 @@ const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount,
       selection.map((offer) => new BN(offer.maxCollateralToReceive)),
     )
 
-    const collateralsAmount = stringToBN(maxCollateralAmount, marketTokenDecimals)
+    const collateralsAmount = stringToBN(requiredCollateralsAmount, marketTokenDecimals)
 
     return BN.max(collateralsAmount.sub(collateralsAmountInCart), ZERO_BN)
-  }, [maxCollateralAmount, marketTokenDecimals, selection])
+  }, [requiredCollateralsAmount, marketTokenDecimals, selection])
 
   const onRowClick = useCallback(
     (offer: BorrowOffer) => {
@@ -122,7 +127,7 @@ const OrderBook: FC<OrderBookProps> = ({ offers, isLoading, maxCollateralAmount,
 
   const emptyMessage = !offers.length ? 'Not found suitable offers' : ''
 
-  const loading = isLoading && !stringToBN(maxCollateralAmount, marketTokenDecimals).isZero()
+  const loading = isLoading && !stringToBN(requiredCollateralsAmount, marketTokenDecimals).isZero()
 
   return (
     <div className={styles.container}>
