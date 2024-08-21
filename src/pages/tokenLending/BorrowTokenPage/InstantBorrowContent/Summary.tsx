@@ -5,22 +5,18 @@ import Skeleton from 'antd/es/skeleton'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { BorrowSplTokenOffers, CollateralToken } from '@banx/api/tokens'
+import { BorrowOffer } from '@banx/api/tokens'
 
 import { getSummaryInfo } from './helpers'
 
 import styles from './InstantBorrowContent.module.less'
 
 interface SummaryProps {
-  offers: BorrowSplTokenOffers[]
-  collateralToken: CollateralToken
+  offers: BorrowOffer[]
 }
 
-export const Summary: FC<SummaryProps> = ({ offers, collateralToken }) => {
-  const { upfrontFee, weightedApr, weightedLtv, weeklyFee } = getSummaryInfo(
-    offers,
-    collateralToken,
-  )
+export const Summary: FC<SummaryProps> = ({ offers }) => {
+  const { upfrontFee, weightedApr, weightedLtv, weeklyFee } = getSummaryInfo(offers)
 
   const statClassNames = {
     value: styles.fixedStatValue,
@@ -52,7 +48,7 @@ export const Summary: FC<SummaryProps> = ({ offers, collateralToken }) => {
       />
       <StatInfo
         label="Weighted LTV"
-        value={weightedLtv}
+        value={weightedLtv / 100}
         valueType={VALUES_TYPES.PERCENT}
         tooltipText="Weighted LTV"
         flexType="row"

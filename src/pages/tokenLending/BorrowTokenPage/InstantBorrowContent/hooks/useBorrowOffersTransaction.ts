@@ -14,7 +14,7 @@ import {
 } from '@banx/components/modals'
 
 import { Offer } from '@banx/api/nft'
-import { BorrowSplTokenOffers, CollateralToken, core } from '@banx/api/tokens'
+import { CollateralToken, core } from '@banx/api/tokens'
 import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
 import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
@@ -40,20 +40,17 @@ import {
   enqueueWaitingConfirmation,
 } from '@banx/utils'
 
-import { calculateTokenBorrowApr } from '../helpers'
+import { useSelectedOffers } from './useSelectedOffers'
 
-type TransactionData = {
+type TransactionParams = {
   offer: Offer
   loanValue: BN
   collateral: CollateralToken
   aprRate: BN
 }
 
-export const useBorrowSplTokenTransaction = (props: {
-  collateral: CollateralToken | undefined
-  splTokenOffers: BorrowSplTokenOffers[]
-}) => {
-  const { collateral, splTokenOffers } = props
+export const useBorrowOffersTransaction = (collateral: CollateralToken | undefined) => {
+  const { selection: borrowOffers } = useSelectedOffers()
 
   const wallet = useWallet()
   const { connection } = useConnection()
@@ -67,7 +64,9 @@ export const useBorrowSplTokenTransaction = (props: {
 
   const { add: addLoansOptimistic } = useTokenLoansOptimistic()
 
-  const { offers, updateOrAddOffer } = useTokenMarketOffers(collateral?.marketPubkey || '')
+  const { offers: marketOffers, updateOrAddOffer } = useTokenMarketOffers(
+    collateral?.marketPubkey || '',
+  )
 
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
@@ -94,27 +93,25 @@ export const useBorrowSplTokenTransaction = (props: {
   }
 
   const transactionsData = useMemo(() => {
-    if (!offers.length) return []
+    if (!marketOffers.length) return []
 
-    return splTokenOffers.reduce<TransactionData[]>((acc, offer) => {
-      const offerData = find(offers, ({ publicKey }) => publicKey === offer.offerPublicKey)
+    return borrowOffers.reduce<TransactionParams[]>((acc, offer) => {
+      const offerData = find(marketOffers, ({ publicKey }) => publicKey === offer.publicKey)
 
       if (!collateral) return acc
-
-      const aprRate = calculateTokenBorrowApr({ offer, collateralToken: collateral })
 
       if (offerData) {
         acc.push({
           offer: offerData,
-          loanValue: new BN(offer.amountToGet),
+          loanValue: new BN(offer.maxTokenToGet),
           collateral,
-          aprRate: new BN(aprRate),
+          aprRate: new BN(offer.apr),
         })
       }
 
       return acc
     }, [])
-  }, [collateral, offers, splTokenOffers])
+  }, [marketOffers, borrowOffers, collateral])
 
   const borrow = async () => {
     const loadingSnackbarId = uniqueId()
@@ -127,17 +124,8 @@ export const useBorrowSplTokenTransaction = (props: {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const txnsData = await Promise.all(
-        transactionsData.map(({ collateral, aprRate, loanValue, offer }) =>
-          createBorrowSplTokenTxnData(
-            {
-              loanValue,
-              collateral,
-              offer,
-              aprRate,
-              tokenType,
-            },
-            walletAndConnection,
-          ),
+        transactionsData.map((params) =>
+          createBorrowSplTokenTxnData({ ...params, tokenType }, walletAndConnection),
         ),
       )
 
@@ -169,8 +157,8 @@ export const useBorrowSplTokenTransaction = (props: {
               const loanAndOffer: { loan: core.TokenLoan; offer: Offer } = {
                 loan: {
                   publicKey: fraktBond.publicKey,
-                  fraktBond: fraktBond,
-                  bondTradeTransaction: bondTradeTransaction,
+                  fraktBond,
+                  bondTradeTransaction,
                   collateral: params.collateral.collateral,
                   collateralPrice: params.collateral.collateralPrice,
                 },

@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
+import { MAX_APR_SPL } from 'fbonds-core/lib/fbond-protocol/constants'
+import { clamp } from 'lodash'
+
 import { TokenMarketPreview } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
 import { SyntheticTokenOffer } from '@banx/store/token'
@@ -9,8 +12,11 @@ export const useOfferFormController = (
   syntheticOffer: SyntheticTokenOffer,
   market: TokenMarketPreview | undefined,
 ) => {
-  const { collateralsPerToken: syntheticCollateralsPerToken, offerSize: syntheticOfferSize } =
-    syntheticOffer
+  const {
+    collateralsPerToken: syntheticCollateralsPerToken,
+    offerSize: syntheticOfferSize,
+    apr: syntheticApr,
+  } = syntheticOffer
 
   const { tokenType } = useNftTokenType()
 
@@ -29,15 +35,18 @@ export const useOfferFormController = (
     return {
       collateralsPerToken: isFinite(collateralsPerToken) ? String(collateralsPerToken) : '0',
       offerSize: offerSize ? String(offerSize) : '0',
+      apr: syntheticApr ? String(syntheticApr) : '0',
     }
-  }, [decimals, market, syntheticCollateralsPerToken, syntheticOfferSize])
+  }, [decimals, market, syntheticApr, syntheticCollateralsPerToken, syntheticOfferSize])
 
   const [collateralsPerToken, setLoanValue] = useState(initialValues.collateralsPerToken)
   const [offerSize, setOfferSize] = useState(initialValues.offerSize)
+  const [apr, setApr] = useState(initialValues.apr)
 
   useEffect(() => {
     setLoanValue(initialValues.collateralsPerToken)
     setOfferSize(initialValues.offerSize)
+    setApr(initialValues.apr)
   }, [initialValues])
 
   const onLoanValueChange = useCallback((nextValue: string) => {
@@ -48,24 +57,33 @@ export const useOfferFormController = (
     setOfferSize(nextValue)
   }, [])
 
+  const onAprChange = useCallback((nextValue: string) => {
+    const clampedValue = clampInputValue(nextValue, MAX_APR_SPL / 100)
+    setApr(clampedValue)
+  }, [])
+
   const resetFormValues = () => {
     setLoanValue(initialValues.collateralsPerToken)
     setOfferSize(initialValues.offerSize)
+    setApr(initialValues.apr)
   }
 
   const hasFormChanges = useMemo(() => {
     return (
       offerSize !== initialValues.offerSize ||
-      collateralsPerToken !== initialValues.collateralsPerToken
+      collateralsPerToken !== initialValues.collateralsPerToken ||
+      apr !== initialValues.apr
     )
-  }, [initialValues, offerSize, collateralsPerToken])
+  }, [offerSize, initialValues, collateralsPerToken, apr])
 
   return {
     collateralsPerToken,
     offerSize,
+    apr,
 
     onLoanValueChange,
     onOfferSizeChange,
+    onAprChange,
 
     hasFormChanges: Boolean(hasFormChanges),
     resetFormValues,
@@ -73,7 +91,7 @@ export const useOfferFormController = (
 }
 
 export const calculateTokensPerCollateral = (collateralsPerToken: number, decimals: number) => {
-  if (!collateralsPerToken) {
+  if (!collateralsPerToken || !decimals) {
     return 0
   }
 
@@ -89,4 +107,12 @@ const calculateOfferSize = (syntheticOfferSize: number, decimals: number) => {
   //? 1e4 is used for rounding the result to 4 decimal places
   const roundedOfferSize = Math.round(offerSize * 1e4) / 1e4
   return roundedOfferSize
+}
+
+const clampInputValue = (value: string, max: number): string => {
+  if (!value) return ''
+
+  const valueToNumber = parseFloat(value)
+  const clampedValue = clamp(valueToNumber, 0, max)
+  return clampedValue.toString()
 }

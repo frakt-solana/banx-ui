@@ -77,3 +77,13 @@ export const CollateralTokenSchema = z.object({
   collateralPrice: z.number(),
   amountInWallet: z.number(),
 })
+
+export const BorrowOfferSchema = z.object({
+  id: z.string(),
+  publicKey: z.string(),
+  maxTokenToGet: z.string(), //? BN serialized to decimal string
+  collateralsPerToken: z.string(), //? BN serialized to decimal string
+  maxCollateralToReceive: z.string(), //? BN serialized to decimal string
+  apr: z.string(), //?  BN serialized to decimal string (apr in base points)
+  ltv: z.string(), //? BN serialized to decimal string (ltv in base points)
+})

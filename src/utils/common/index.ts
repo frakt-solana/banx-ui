@@ -52,3 +52,8 @@ export const limitDecimalPlaces = (inputValue: string, decimalPlaces = 3) => {
 export const stringToHex = (str: string, decimals?: number): string => {
   return stringToBN(str, decimals).toString(16).toUpperCase()
 }
+
+export const convertAprToApy = (apr: number, compoundingPeriods = 1) => {
+  const apy = (1 + apr / compoundingPeriods) ** compoundingPeriods - 1
+  return apy * 100
+}

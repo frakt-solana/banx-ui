@@ -17,6 +17,15 @@
   gap: 8px;
 }
 
+.inputTokenSelectControlButton {
+  font: var(--btn-text-md);
+  text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--btn-text-sm);
+  }
+}
+
 .inputTokenSelectMaxValue {
   color: var(--content-secondary);
   font: var(--important-text-md);
@@ -38,8 +47,12 @@
 
 .inputTokenSelectLabel {
   color: var(--content-secondary);
-  font: var(--title-xs);
+  font: var(--title-sm);
   text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--title-xs);
+  }
 }
 
 .inputTokenSelect {

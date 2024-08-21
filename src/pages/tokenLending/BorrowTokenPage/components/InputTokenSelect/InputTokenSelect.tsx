@@ -114,10 +114,20 @@ const ControlsButtons: FC<ControlsButtonsProps> = ({ onChange, maxValue = 0, dec
         <Wallet /> {formatNumber(parseFloat(maxValueStr))}
       </div>
 
-      <Button onClick={onHalfClick} variant="secondary" size="small">
+      <Button
+        onClick={onHalfClick}
+        className={styles.inputTokenSelectControlButton}
+        variant="secondary"
+        size="small"
+      >
         Half
       </Button>
-      <Button onClick={onMaxClick} variant="secondary" size="small">
+      <Button
+        onClick={onMaxClick}
+        className={styles.inputTokenSelectControlButton}
+        variant="secondary"
+        size="small"
+      >
         Max
       </Button>
     </div>
@@ -182,7 +192,7 @@ const SearchSelect = <T extends BaseToken>({
       <SearchInput
         value={searchInput}
         onChange={handleSearchInputChange}
-        placeholder="Search token"
+        placeholder="Search tokens..."
         onClose={onClose}
       />
 
