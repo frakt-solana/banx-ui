@@ -166,7 +166,7 @@ type FetchBorrowOffers = (props: {
   collateralsAmount: string
   excludeWallet?: string
   disableMultiBorrow: boolean
-}) => Promise<BorrowOffer[]>
+}) => Promise<BorrowOffer[] | undefined>
 export const fetchBorrowOffers: FetchBorrowOffers = async (props) => {
   const {
     market,
@@ -191,13 +191,7 @@ export const fetchBorrowOffers: FetchBorrowOffers = async (props) => {
     `${BACKEND_BASE_URL}/lending/spl/borrow-token-v4?${queryParams?.toString()}`,
   )
 
-  try {
-    await BorrowOfferSchema.array().parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
-
-  return data.data ?? []
+  return await parseResponseSafe<BorrowOffer[]>(data?.data, BorrowOfferSchema.array())
 }
 
 type FetchAllTokenLoansRequests = (props: {
