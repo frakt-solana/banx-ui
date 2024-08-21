@@ -47,7 +47,7 @@ export const useOfferFormController = (
   useEffect(() => {
     setLoanValue(initialValues.collateralsPerToken)
     setOfferSize(initialValues.offerSize)
-    setOfferSize(initialValues.apr)
+    setApr(initialValues.apr)
   }, [initialValues])
 
   const onLoanValueChange = useCallback((nextValue: string) => {
@@ -66,6 +66,7 @@ export const useOfferFormController = (
   const resetFormValues = () => {
     setLoanValue(initialValues.collateralsPerToken)
     setOfferSize(initialValues.offerSize)
+    setApr(initialValues.apr)
   }
 
   const hasFormChanges = useMemo(() => {
