@@ -109,7 +109,8 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ offerPreview, isO
     liquidatedLoansAmount,
     repaymentCallsAmount,
   } = offerPreview.tokenOfferPreview
-  const { marketApr } = offerPreview.tokenMarketPreview
+
+  const aprPercent = offerPreview.bondOffer.loanApr / 100
 
   return (
     <div className={classNames(styles.additionalInfoStats, { [styles.opened]: isOpen })}>
@@ -126,8 +127,8 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ offerPreview, isO
         classNamesProps={{ container: styles.additionalStat }}
       />
       <StatInfo
-        label="Max APR"
-        value={createPercentValueJSX(marketApr, '0%')}
+        label="APR"
+        value={createPercentValueJSX(aprPercent, '0%')}
         tooltipText="Maximum annual interest rate. Depends on the loan-to-value (LTV) offered and market capitalization"
         classNamesProps={{ container: styles.additionalStat, value: styles.additionalAprStat }}
       />

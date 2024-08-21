@@ -83,7 +83,7 @@ const createSearchSelectParams = ({
     options: searchSelectOptions,
     selectedOptions,
     onChange,
-    labels: ['Collateral', 'Max APR'],
+    labels: ['Collateral', 'Average APR'],
     optionKeys: {
       labelKey: 'ticker',
       valueKey: 'marketPubkey',
