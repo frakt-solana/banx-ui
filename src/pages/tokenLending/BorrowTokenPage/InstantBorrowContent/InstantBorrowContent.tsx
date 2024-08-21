@@ -72,6 +72,8 @@ const InstantBorrowContent = () => {
     })
   }
 
+  const disabledBorrowButton = (wallet.connected && !!errorMessage) || !parseFloat(borrowInputValue)
+
   return (
     <div className={styles.container}>
       <div className={styles.content}>
@@ -115,7 +117,7 @@ const InstantBorrowContent = () => {
 
         <Button
           onClick={onSubmit}
-          disabled={wallet.connected && !!errorMessage}
+          disabled={disabledBorrowButton}
           className={styles.borrowButton}
           loading={!errorMessage && (isBorrowing || isLoading)}
         >
