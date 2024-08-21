@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
+import { MAX_APR_SPL } from 'fbonds-core/lib/fbond-protocol/constants'
 import { clamp } from 'lodash'
 
 import { TokenMarketPreview } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
 import { SyntheticTokenOffer } from '@banx/store/token'
 import { getTokenDecimals } from '@banx/utils'
-
-import { MAX_LENDING_APR_RATE } from './usePlaceTokenOffer'
 
 export const useOfferFormController = (
   syntheticOffer: SyntheticTokenOffer,
@@ -59,7 +58,7 @@ export const useOfferFormController = (
   }, [])
 
   const onAprChange = useCallback((nextValue: string) => {
-    const clampedValue = clampInputValue(nextValue, MAX_LENDING_APR_RATE / 100)
+    const clampedValue = clampInputValue(nextValue, MAX_APR_SPL / 100)
     setApr(clampedValue)
   }, [])
 

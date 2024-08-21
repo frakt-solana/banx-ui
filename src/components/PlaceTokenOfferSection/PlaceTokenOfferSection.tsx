@@ -1,6 +1,7 @@
 import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import { MAX_APR_SPL } from 'fbonds-core/lib/fbond-protocol/constants'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { TokenMarketPreview } from '@banx/api/tokens'
@@ -15,7 +16,7 @@ import { ActionsButtons } from './components/ActionsButtons'
 import OrderBook from './components/OrderBook'
 import { AdditionalSummary, MainSummary } from './components/Summary'
 import { formatLeadingZeros, getCollateralDecimalPlaces } from './helpers'
-import { MAX_LENDING_APR_RATE, usePlaceTokenOffer } from './hooks/usePlaceTokenOffer'
+import { usePlaceTokenOffer } from './hooks/usePlaceTokenOffer'
 
 import styles from './PlaceTokenOfferSection.module.less'
 
@@ -110,7 +111,7 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
                 postfix="%"
                 disabled={!connected}
                 step={1}
-                max={MAX_LENDING_APR_RATE / 100}
+                max={MAX_APR_SPL / 100}
               />
               <div className={styles.messageContainer}>
                 {aprErrorMessage && <InputErrorMessage message={aprErrorMessage} />}

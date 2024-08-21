@@ -10,10 +10,6 @@ import { useTokenMarketAndOffer } from './useTokenMarketAndOffer'
 import { useTokenOffer } from './useTokenOffer'
 import { useTokenOfferTransactions } from './useTokenOfferTransaction'
 
-// TODO (TokenLending): Get constants from SDK
-export const MAX_LENDING_APR_RATE = 50_000
-export const MIN_LENDING_APR_RATE = 500
-
 export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) => {
   const { tokenType } = useNftTokenType()
   const walletBalance = useWalletBalance(tokenType)
@@ -75,8 +71,9 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
 
   const allFieldsAreFilled = !!collateralsPerToken && !!offerSize && !!parseFloat(aprString)
 
-  const disablePlaceOffer = !!offerErrorMessage || !allFieldsAreFilled
-  const disableUpdateOffer = !hasFormChanges || !!offerErrorMessage || !allFieldsAreFilled
+  const disablePlaceOffer = !!offerErrorMessage || !allFieldsAreFilled || !!aprErrorMessage
+  const disableUpdateOffer =
+    !hasFormChanges || !!offerErrorMessage || !allFieldsAreFilled || !!aprErrorMessage
 
   return {
     isEditMode,

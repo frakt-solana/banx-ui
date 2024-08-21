@@ -1,9 +1,8 @@
+import { MIN_APR_SPL } from 'fbonds-core/lib/fbond-protocol/constants'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
 
 import { SyntheticTokenOffer } from '@banx/store/token'
-
-import { MIN_LENDING_APR_RATE } from './hooks/usePlaceTokenOffer'
 
 type GetErrorMessage = (props: {
   walletBalance: number
@@ -36,11 +35,11 @@ export const getErrorMessage: GetErrorMessage = ({
 
 export const getAprErrorMessage = (apr: number) => {
   const aprRate = apr * 100
-  const isAprRateTooLow = aprRate < MIN_LENDING_APR_RATE
+  const isAprRateTooLow = aprRate < MIN_APR_SPL
 
   if (!isAprRateTooLow || !apr) return ''
 
-  return createTooLowAprErrorMessage(MIN_LENDING_APR_RATE)
+  return createTooLowAprErrorMessage(MIN_APR_SPL)
 }
 
 const createInsufficientBalanceErrorMessage = (tokenType: LendingTokenType) => {
