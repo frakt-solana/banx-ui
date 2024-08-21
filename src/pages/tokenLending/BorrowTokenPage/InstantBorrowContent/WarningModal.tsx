@@ -51,7 +51,7 @@ const WarningModal: FC<WarningModalProps> = ({ offers, onSubmit, onCancel, colla
             {formattedTotalAmountToGet} {tokenUnit}
           </span>{' '}
           collateralized by{' '}
-          <span className={styles.warningModalTokenRaw}>
+          <span className={styles.warningModalTokenRow}>
             {formattedCollateralsValue}{' '}
             <img className={styles.collateralLogo} src={collateral?.collateral.logoUrl} />
           </span>{' '}

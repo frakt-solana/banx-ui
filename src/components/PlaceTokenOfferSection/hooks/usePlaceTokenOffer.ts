@@ -4,11 +4,14 @@ import { useWalletBalance } from '@banx/hooks'
 import { useNftTokenType } from '@banx/store/nft'
 import { getTokenDecimals } from '@banx/utils'
 
-import { getErrorMessage } from '../helpers'
+import { getAprErrorMessage, getErrorMessage } from '../helpers'
 import { useOfferFormController } from './useOfferFormController'
 import { useTokenMarketAndOffer } from './useTokenMarketAndOffer'
 import { useTokenOffer } from './useTokenOffer'
 import { useTokenOfferTransactions } from './useTokenOfferTransaction'
+
+export const MAX_LENDING_APR_RATE = 50_000
+export const MIN_LENDING_APR_RATE = 500
 
 export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) => {
   const { tokenType } = useNftTokenType()
@@ -67,6 +70,8 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
     tokenType,
   })
 
+  const aprErrorMessage = getAprErrorMessage(parseFloat(aprString))
+
   const allFieldsAreFilled = !!collateralsPerToken && !!offerSize && !!parseFloat(aprString)
 
   const disablePlaceOffer = !!offerErrorMessage || !allFieldsAreFilled
@@ -86,6 +91,7 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
     onOfferSizeChange,
 
     offerErrorMessage,
+    aprErrorMessage,
 
     onCreateTokenOffer,
     onUpdateTokenOffer,

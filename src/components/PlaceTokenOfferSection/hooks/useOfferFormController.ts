@@ -1,9 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
+import { clamp } from 'lodash'
+
 import { TokenMarketPreview } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
 import { SyntheticTokenOffer } from '@banx/store/token'
 import { getTokenDecimals } from '@banx/utils'
+
+import { MAX_LENDING_APR_RATE } from './usePlaceTokenOffer'
 
 export const useOfferFormController = (
   syntheticOffer: SyntheticTokenOffer,
@@ -55,7 +59,8 @@ export const useOfferFormController = (
   }, [])
 
   const onAprChange = useCallback((nextValue: string) => {
-    setApr(nextValue)
+    const clampedValue = clampInputValue(nextValue, MAX_LENDING_APR_RATE / 100)
+    setApr(clampedValue)
   }, [])
 
   const resetFormValues = () => {
@@ -102,4 +107,12 @@ const calculateOfferSize = (syntheticOfferSize: number, decimals: number) => {
   //? 1e4 is used for rounding the result to 4 decimal places
   const roundedOfferSize = Math.round(offerSize * 1e4) / 1e4
   return roundedOfferSize
+}
+
+const clampInputValue = (value: string, max: number): string => {
+  if (!value) return ''
+
+  const valueToNumber = parseFloat(value)
+  const clampedValue = clamp(valueToNumber, 0, max)
+  return clampedValue.toString()
 }

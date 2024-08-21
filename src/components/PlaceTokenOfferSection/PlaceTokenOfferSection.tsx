@@ -15,7 +15,7 @@ import { ActionsButtons } from './components/ActionsButtons'
 import OrderBook from './components/OrderBook'
 import { AdditionalSummary, MainSummary } from './components/Summary'
 import { formatLeadingZeros, getCollateralDecimalPlaces } from './helpers'
-import { usePlaceTokenOffer } from './hooks/usePlaceTokenOffer'
+import { MAX_LENDING_APR_RATE, usePlaceTokenOffer } from './hooks/usePlaceTokenOffer'
 
 import styles from './PlaceTokenOfferSection.module.less'
 
@@ -37,6 +37,7 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
     onAprChange,
     onLoanValueChange,
     onOfferSizeChange,
+    aprErrorMessage,
     offerErrorMessage,
     onCreateTokenOffer,
     onUpdateTokenOffer,
@@ -87,27 +88,35 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
             }
           />
           <div className={styles.fieldsRow}>
-            <NumericStepInput
-              label="Offer size"
-              value={offerSizeString}
-              onChange={onOfferSizeChange}
-              postfix={getTokenUnit(tokenType)}
-              disabled={!connected}
-              step={inputStepByTokenType}
-            />
-            <NumericStepInput
-              label="Apr"
-              value={aprString}
-              onChange={onAprChange}
-              postfix="%"
-              disabled={!connected}
-              step={1}
-            />
-          </div>
-        </div>
+            <div className={styles.fieldColumn}>
+              <NumericStepInput
+                label="Offer size"
+                value={offerSizeString}
+                onChange={onOfferSizeChange}
+                postfix={getTokenUnit(tokenType)}
+                disabled={!connected}
+                step={inputStepByTokenType}
+              />
+              <div className={styles.messageContainer}>
+                {offerErrorMessage && <InputErrorMessage message={offerErrorMessage} />}
+              </div>
+            </div>
 
-        <div className={styles.messageContainer}>
-          {offerErrorMessage && <InputErrorMessage message={offerErrorMessage} />}
+            <div className={styles.fieldColumn}>
+              <NumericStepInput
+                label="Apr"
+                value={aprString}
+                onChange={onAprChange}
+                postfix="%"
+                disabled={!connected}
+                step={1}
+                max={MAX_LENDING_APR_RATE / 100}
+              />
+              <div className={styles.messageContainer}>
+                {aprErrorMessage && <InputErrorMessage message={aprErrorMessage} />}
+              </div>
+            </div>
+          </div>
         </div>
 
         <MainSummary

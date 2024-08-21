@@ -3,6 +3,8 @@ import { chain } from 'lodash'
 
 import { SyntheticTokenOffer } from '@banx/store/token'
 
+import { MIN_LENDING_APR_RATE } from './hooks/usePlaceTokenOffer'
+
 type GetErrorMessage = (props: {
   walletBalance: number
   syntheticOffer: SyntheticTokenOffer
@@ -32,8 +34,21 @@ export const getErrorMessage: GetErrorMessage = ({
   return errorMessage
 }
 
+export const getAprErrorMessage = (apr: number) => {
+  const aprRate = apr * 100
+  const isAprRateTooLow = aprRate < MIN_LENDING_APR_RATE
+
+  if (!isAprRateTooLow) return ''
+
+  return createTooLowAprErrorMessage(MIN_LENDING_APR_RATE)
+}
+
 const createInsufficientBalanceErrorMessage = (tokenType: LendingTokenType) => {
   return `Not enough ${tokenType} in wallet`
+}
+
+const createTooLowAprErrorMessage = (aprRate: number) => {
+  return `Min APR is ${aprRate / 100}%`
 }
 
 const DEFAULT_DECIMAL_PLACES = 2
