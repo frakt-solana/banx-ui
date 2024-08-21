@@ -8,7 +8,7 @@ import { DisplayValue } from '@banx/components/TableComponents'
 
 import { TokenMarketPreview } from '@banx/api/tokens'
 import { SECONDS_IN_DAY } from '@banx/constants'
-import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
+import { HealthColorIncreasing, convertAprToApy, getColorByPercent } from '@banx/utils'
 
 import styles from '../PlaceTokenOfferSection.module.less'
 
@@ -18,9 +18,13 @@ interface MainSummaryProps {
   apr: number
 }
 
+const COMPOUNDING_PERIODS = 12
+
 export const MainSummary: FC<MainSummaryProps> = ({ market, collateralPerToken, apr }) => {
   const { collateralPrice = 0 } = market || {}
   const ltvPercent = (collateralPerToken / collateralPrice) * 100 || 0
+
+  const apy = apr ? convertAprToApy(apr / 100, COMPOUNDING_PERIODS) : 0
 
   return (
     <div className={styles.mainSummary}>
@@ -34,11 +38,11 @@ export const MainSummary: FC<MainSummaryProps> = ({ market, collateralPerToken, 
       />
       <div className={styles.separateLine} />
       <StatInfo
-        label="APR"
-        value={apr}
+        label="APY"
+        value={apy}
         valueType={VALUES_TYPES.PERCENT}
         classNamesProps={{ value: styles.aprValue, container: styles.mainSummaryStat }}
-        tooltipText="APR"
+        tooltipText="APY"
       />
     </div>
   )

@@ -38,7 +38,7 @@ export const getAprErrorMessage = (apr: number) => {
   const aprRate = apr * 100
   const isAprRateTooLow = aprRate < MIN_LENDING_APR_RATE
 
-  if (!isAprRateTooLow) return ''
+  if (!isAprRateTooLow || !apr) return ''
 
   return createTooLowAprErrorMessage(MIN_LENDING_APR_RATE)
 }
