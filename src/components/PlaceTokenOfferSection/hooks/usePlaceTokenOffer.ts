@@ -22,6 +22,9 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
   const {
     collateralsPerToken: collateralsPerTokenString,
     offerSize: offerSizeString,
+    apr: aprString,
+
+    onAprChange,
     onLoanValueChange,
     onOfferSizeChange,
     hasFormChanges,
@@ -37,10 +40,15 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
 
   useEffect(() => {
     if (!syntheticOffer) return
-    const newSyntheticOffer = { ...syntheticOffer, offerSize, collateralsPerToken }
+    const newSyntheticOffer = {
+      ...syntheticOffer,
+      offerSize,
+      collateralsPerToken,
+      apr: parseFloat(aprString),
+    }
 
     setSyntheticOffer(newSyntheticOffer)
-  }, [syntheticOffer, setSyntheticOffer, collateralsPerToken, offerSize])
+  }, [syntheticOffer, setSyntheticOffer, collateralsPerToken, offerSize, aprString])
 
   const { onCreateTokenOffer, onUpdateTokenOffer, onRemoveTokenOffer } = useTokenOfferTransactions({
     marketPubkey,
@@ -49,7 +57,7 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
     updateOrAddOffer,
     resetFormValues,
     optimisticOffer: offer,
-    market,
+    apr: parseFloat(aprString),
   })
 
   const offerErrorMessage = getErrorMessage({
@@ -59,7 +67,7 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
     tokenType,
   })
 
-  const allFieldsAreFilled = !!collateralsPerToken && !!offerSize
+  const allFieldsAreFilled = !!collateralsPerToken && !!offerSize && !!parseFloat(aprString)
 
   const disablePlaceOffer = !!offerErrorMessage || !allFieldsAreFilled
   const disableUpdateOffer = !hasFormChanges || !!offerErrorMessage || !allFieldsAreFilled
@@ -69,9 +77,11 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
 
     market,
 
+    aprString,
     collateralsPerTokenString,
     offerSizeString,
 
+    onAprChange,
     onLoanValueChange,
     onOfferSizeChange,
 

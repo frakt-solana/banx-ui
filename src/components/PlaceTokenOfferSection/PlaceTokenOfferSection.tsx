@@ -33,6 +33,8 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
     market,
     collateralsPerTokenString,
     offerSizeString,
+    aprString,
+    onAprChange,
     onLoanValueChange,
     onOfferSizeChange,
     offerErrorMessage,
@@ -43,14 +45,16 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
     disableUpdateOffer,
   } = usePlaceTokenOffer(marketPubkey, offerPubkey)
 
-  const { tokenType } = useNftTokenType()
   const { connected } = useWallet()
-
   const { open } = useModal()
+
+  const { tokenType } = useNftTokenType()
 
   const showModal = () => {
     open(OffersModal, { market, offerPubkey })
   }
+
+  const marketTokenDecimals = getTokenDecimals(tokenType) //? 1e6, 1e9
 
   const inputStepByTokenType = isBanxSolTokenType(tokenType) ? 0.1 : 1
 
@@ -66,7 +70,7 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
           See offers
         </Button>
 
-        <div className={styles.fields}>
+        <div className={styles.fieldsColumn}>
           <NumericStepInput
             label="Max offer"
             value={collateralsPerTokenString}
@@ -82,26 +86,38 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
               />
             }
           />
-          <NumericStepInput
-            label="Offer size"
-            value={offerSizeString}
-            onChange={onOfferSizeChange}
-            postfix={getTokenUnit(tokenType)}
-            disabled={!connected}
-            step={inputStepByTokenType}
-            labelClassName={styles.offerSizeLabel}
-          />
+          <div className={styles.fieldsRow}>
+            <NumericStepInput
+              label="Offer size"
+              value={offerSizeString}
+              onChange={onOfferSizeChange}
+              postfix={getTokenUnit(tokenType)}
+              disabled={!connected}
+              step={inputStepByTokenType}
+            />
+            <NumericStepInput
+              label="Apr"
+              value={aprString}
+              onChange={onAprChange}
+              postfix="%"
+              disabled={!connected}
+              step={1}
+            />
+          </div>
         </div>
 
         <div className={styles.messageContainer}>
           {offerErrorMessage && <InputErrorMessage message={offerErrorMessage} />}
         </div>
 
-        <MainSummary market={market} collateralPerToken={parseFloat(collateralsPerTokenString)} />
-        <AdditionalSummary
+        <MainSummary
           market={market}
           collateralPerToken={parseFloat(collateralsPerTokenString)}
-          offerSize={parseFloat(offerSizeString)}
+          apr={parseFloat(aprString)}
+        />
+        <AdditionalSummary
+          offerSize={parseFloat(offerSizeString) * marketTokenDecimals}
+          apr={parseFloat(aprString)}
         />
 
         <ActionsButtons

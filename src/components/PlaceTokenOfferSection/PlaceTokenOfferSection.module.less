@@ -34,26 +34,21 @@
   }
 }
 
-.fields {
+.fieldsColumn {
   display: flex;
   flex-direction: column;
   gap: 24px;
   width: 100%;
+}
 
-  @media (max-width: 960px) {
-    flex-direction: row;
-
-    & > div {
-      width: 100%;
-
-      &:first-child {
-        min-width: 368px;
-      }
-    }
-  }
+.fieldsRow {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
 
   @media (max-width: 640px) {
-    flex-direction: column;
+    gap: 16px;
   }
 }
 
@@ -174,10 +169,6 @@
   color: var(--additional-green-primary-deep);
 }
 // * Summary * //
-
-.offerSizeLabel {
-  height: 24px;
-}
 
 // * MaxOfferControls * //
 .maxOfferControls {

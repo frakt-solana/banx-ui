@@ -5,7 +5,6 @@ import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
-import { TokenMarketPreview } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -31,8 +30,6 @@ import {
   enqueueWaitingConfirmation,
 } from '@banx/utils'
 
-import { calculateTokenLendingApr } from '../helpers'
-
 export const useTokenOfferTransactions = ({
   marketPubkey,
   loanValue,
@@ -40,7 +37,7 @@ export const useTokenOfferTransactions = ({
   updateOrAddOffer,
   resetFormValues,
   collateralsPerToken,
-  market,
+  apr,
 }: {
   marketPubkey: string
   loanValue: number
@@ -48,7 +45,7 @@ export const useTokenOfferTransactions = ({
   updateOrAddOffer: (offer: core.Offer) => void
   resetFormValues: () => void
   collateralsPerToken: number
-  market: TokenMarketPreview | undefined
+  apr: number
 }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
@@ -60,8 +57,6 @@ export const useTokenOfferTransactions = ({
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const lendingTokenAprRate = calculateTokenLendingApr(market, collateralsPerToken)
-
       const txnData = await createMakeBondingOfferTxnData(
         {
           marketPubkey,
@@ -69,7 +64,7 @@ export const useTokenOfferTransactions = ({
           loanValue,
           deltaValue: 0,
           collateralsPerToken,
-          tokenLendingApr: lendingTokenAprRate,
+          tokenLendingApr: apr * 100,
           bondFeature: BondFeatures.AutoReceiveAndReceiveSpl,
           tokenType,
         },
@@ -136,8 +131,6 @@ export const useTokenOfferTransactions = ({
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const lendingTokenAprRate = calculateTokenLendingApr(market, collateralsPerToken)
-
       const txnData = await createUpdateBondingOfferTxnData(
         {
           loanValue,
@@ -146,7 +139,7 @@ export const useTokenOfferTransactions = ({
           deltaValue: 0,
           tokenType,
           collateralsPerToken,
-          tokenLendingApr: lendingTokenAprRate,
+          tokenLendingApr: apr * 100,
         },
         walletAndConnection,
       )

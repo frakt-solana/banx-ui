@@ -9,8 +9,11 @@ export const useOfferFormController = (
   syntheticOffer: SyntheticTokenOffer,
   market: TokenMarketPreview | undefined,
 ) => {
-  const { collateralsPerToken: syntheticCollateralsPerToken, offerSize: syntheticOfferSize } =
-    syntheticOffer
+  const {
+    collateralsPerToken: syntheticCollateralsPerToken,
+    offerSize: syntheticOfferSize,
+    apr: syntheticApr,
+  } = syntheticOffer
 
   const { tokenType } = useNftTokenType()
 
@@ -29,15 +32,18 @@ export const useOfferFormController = (
     return {
       collateralsPerToken: isFinite(collateralsPerToken) ? String(collateralsPerToken) : '0',
       offerSize: offerSize ? String(offerSize) : '0',
+      apr: syntheticApr ? String(syntheticApr) : '0',
     }
-  }, [decimals, market, syntheticCollateralsPerToken, syntheticOfferSize])
+  }, [decimals, market, syntheticApr, syntheticCollateralsPerToken, syntheticOfferSize])
 
   const [collateralsPerToken, setLoanValue] = useState(initialValues.collateralsPerToken)
   const [offerSize, setOfferSize] = useState(initialValues.offerSize)
+  const [apr, setApr] = useState(initialValues.apr)
 
   useEffect(() => {
     setLoanValue(initialValues.collateralsPerToken)
     setOfferSize(initialValues.offerSize)
+    setOfferSize(initialValues.apr)
   }, [initialValues])
 
   const onLoanValueChange = useCallback((nextValue: string) => {
@@ -48,6 +54,10 @@ export const useOfferFormController = (
     setOfferSize(nextValue)
   }, [])
 
+  const onAprChange = useCallback((nextValue: string) => {
+    setApr(nextValue)
+  }, [])
+
   const resetFormValues = () => {
     setLoanValue(initialValues.collateralsPerToken)
     setOfferSize(initialValues.offerSize)
@@ -56,16 +66,19 @@ export const useOfferFormController = (
   const hasFormChanges = useMemo(() => {
     return (
       offerSize !== initialValues.offerSize ||
-      collateralsPerToken !== initialValues.collateralsPerToken
+      collateralsPerToken !== initialValues.collateralsPerToken ||
+      apr !== initialValues.apr
     )
-  }, [initialValues, offerSize, collateralsPerToken])
+  }, [offerSize, initialValues, collateralsPerToken, apr])
 
   return {
     collateralsPerToken,
     offerSize,
+    apr,
 
     onLoanValueChange,
     onOfferSizeChange,
+    onAprChange,
 
     hasFormChanges: Boolean(hasFormChanges),
     resetFormValues,
