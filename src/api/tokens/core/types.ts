@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { ResponseWithPagination } from '@banx/api/shared'
 
 import {
+  BorrowOfferSchema,
   CollateralTokenSchema,
   DBOfferSchema,
   TokenLoanSchema,
@@ -30,3 +31,4 @@ export type AllTokenLoansRequestsResponse = ResponseWithPagination<TokenLoansReq
 export type CollateralToken = z.infer<typeof CollateralTokenSchema>
 
 export type DBOffer = z.infer<typeof DBOfferSchema>
+export type BorrowOffer = z.infer<typeof BorrowOfferSchema>

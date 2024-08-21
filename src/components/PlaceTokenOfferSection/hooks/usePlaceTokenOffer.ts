@@ -6,7 +6,7 @@ import { useWalletBalance } from '@banx/hooks'
 import { useNftTokenType } from '@banx/store/nft'
 import { ZERO_BN, getTokenDecimals, stringToBN } from '@banx/utils'
 
-import { getErrorMessage } from '../helpers'
+import { getAprErrorMessage, getErrorMessage } from '../helpers'
 import { useOfferFormController } from './useOfferFormController'
 import { useTokenMarketAndOffer } from './useTokenMarketAndOffer'
 import { useTokenOffer } from './useTokenOffer'
@@ -24,6 +24,9 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
   const {
     collateralsPerToken: collateralsPerTokenString,
     offerSize: offerSizeString,
+    apr: aprString,
+
+    onAprChange,
     onLoanValueChange,
     onOfferSizeChange,
     hasFormChanges,
@@ -55,10 +58,15 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
 
   useEffect(() => {
     if (!syntheticOffer) return
-    const newSyntheticOffer = { ...syntheticOffer, offerSize, collateralsPerToken }
+    const newSyntheticOffer = {
+      ...syntheticOffer,
+      offerSize,
+      collateralsPerToken,
+      apr: parseFloat(aprString),
+    }
 
     setSyntheticOffer(newSyntheticOffer)
-  }, [syntheticOffer, setSyntheticOffer, collateralsPerToken, offerSize])
+  }, [syntheticOffer, setSyntheticOffer, collateralsPerToken, offerSize, aprString])
 
   const { onCreateTokenOffer, onUpdateTokenOffer, onRemoveTokenOffer } = useTokenOfferTransactions({
     marketPubkey,
@@ -67,7 +75,7 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
     updateOrAddOffer,
     resetFormValues,
     optimisticOffer: offer,
-    market,
+    apr: parseFloat(aprString),
   })
 
   const offerErrorMessage = getErrorMessage({
@@ -77,23 +85,29 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
     tokenType,
   })
 
-  const allFieldsAreFilled = !!collateralsPerToken && !!offerSize
+  const aprErrorMessage = getAprErrorMessage(parseFloat(aprString))
 
-  const disablePlaceOffer = !!offerErrorMessage || !allFieldsAreFilled
-  const disableUpdateOffer = !hasFormChanges || !!offerErrorMessage || !allFieldsAreFilled
+  const allFieldsAreFilled = !!collateralsPerToken && !!offerSize && !!parseFloat(aprString)
+
+  const disablePlaceOffer = !!offerErrorMessage || !allFieldsAreFilled || !!aprErrorMessage
+  const disableUpdateOffer =
+    !hasFormChanges || !!offerErrorMessage || !allFieldsAreFilled || !!aprErrorMessage
 
   return {
     isEditMode,
 
     market,
 
+    aprString,
     collateralsPerTokenString,
     offerSizeString,
 
+    onAprChange,
     onLoanValueChange,
     onOfferSizeChange,
 
     offerErrorMessage,
+    aprErrorMessage,
 
     onCreateTokenOffer,
     onUpdateTokenOffer,

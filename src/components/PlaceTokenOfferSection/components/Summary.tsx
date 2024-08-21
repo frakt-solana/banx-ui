@@ -1,9 +1,6 @@
 import { FC } from 'react'
 
-import {
-  calculateAPRforOffer,
-  calculateCurrentInterestSolPure,
-} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import moment from 'moment'
 
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
@@ -11,24 +8,23 @@ import { DisplayValue } from '@banx/components/TableComponents'
 
 import { TokenMarketPreview } from '@banx/api/tokens'
 import { SECONDS_IN_DAY } from '@banx/constants'
-import { useNftTokenType } from '@banx/store/nft'
-import { HealthColorIncreasing, getColorByPercent, getTokenDecimals } from '@banx/utils'
+import { HealthColorIncreasing, convertAprToApy, getColorByPercent } from '@banx/utils'
 
 import styles from '../PlaceTokenOfferSection.module.less'
 
 interface MainSummaryProps {
   market: TokenMarketPreview | undefined
   collateralPerToken: number
+  apr: number
 }
 
-export const MainSummary: FC<MainSummaryProps> = ({ market, collateralPerToken }) => {
-  const { collateralPrice = 0, collateral } = market || {}
+const COMPOUNDING_PERIODS = 12
 
+export const MainSummary: FC<MainSummaryProps> = ({ market, collateralPerToken, apr }) => {
+  const { collateralPrice = 0 } = market || {}
   const ltvPercent = (collateralPerToken / collateralPrice) * 100 || 0
-  const fullyDilutedValuationNumber = collateral
-    ? parseFloat(collateral.fullyDilutedValuationInMillions)
-    : 0
-  const { factoredApr: aprPercent } = calculateAPRforOffer(ltvPercent, fullyDilutedValuationNumber)
+
+  const apy = apr ? convertAprToApy(apr / 100, COMPOUNDING_PERIODS) : 0
 
   return (
     <div className={styles.mainSummary}>
@@ -42,45 +38,28 @@ export const MainSummary: FC<MainSummaryProps> = ({ market, collateralPerToken }
       />
       <div className={styles.separateLine} />
       <StatInfo
-        label="APR"
-        value={aprPercent}
+        label="APY"
+        value={apy}
         valueType={VALUES_TYPES.PERCENT}
         classNamesProps={{ value: styles.aprValue, container: styles.mainSummaryStat }}
-        tooltipText="APR"
+        tooltipText="APY"
       />
     </div>
   )
 }
 
 interface OfferSummaryProps {
-  market: TokenMarketPreview | undefined
-  collateralPerToken: number
   offerSize: number
+  apr: number
 }
 
-export const AdditionalSummary: FC<OfferSummaryProps> = ({
-  market,
-  collateralPerToken,
-  offerSize,
-}) => {
-  const { tokenType } = useNftTokenType()
-  const tokenDecimals = getTokenDecimals(tokenType)
-
-  const { collateralPrice = 0, collateral } = market || {}
-
-  const ltvPercent = (collateralPerToken / collateralPrice) * 100 || 0
-
-  const fullyDilutedValuationNumber = collateral
-    ? parseFloat(collateral.fullyDilutedValuationInMillions)
-    : 0
-  const { factoredApr: aprPercent } = calculateAPRforOffer(ltvPercent, fullyDilutedValuationNumber)
-
+export const AdditionalSummary: FC<OfferSummaryProps> = ({ offerSize, apr }) => {
   const currentTimeUnix = moment().unix()
   const weeklyFee = calculateCurrentInterestSolPure({
-    loanValue: offerSize * tokenDecimals,
+    loanValue: offerSize,
     startTime: currentTimeUnix,
     currentTime: currentTimeUnix + SECONDS_IN_DAY * 7,
-    rateBasePoints: aprPercent * 100,
+    rateBasePoints: apr * 100,
   })
 
   return (

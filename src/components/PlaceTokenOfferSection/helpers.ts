@@ -1,13 +1,8 @@
-import { BN } from 'fbonds-core'
-import { calculateAPRforOffer } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { MIN_APR_SPL } from 'fbonds-core/lib/fbond-protocol/constants'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
 
-import { TokenMarketPreview } from '@banx/api/tokens'
 import { SyntheticTokenOffer } from '@banx/store/token'
-import { ZERO_BN } from '@banx/utils'
-
-import { calculateTokensPerCollateral } from './hooks/useOfferFormController'
 
 type GetErrorMessage = (props: {
   walletBalance: number
@@ -38,8 +33,21 @@ export const getErrorMessage: GetErrorMessage = ({
   return errorMessage
 }
 
+export const getAprErrorMessage = (apr: number) => {
+  const aprRate = apr * 100
+  const isAprRateTooLow = aprRate < MIN_APR_SPL
+
+  if (!isAprRateTooLow || !apr) return ''
+
+  return createTooLowAprErrorMessage(MIN_APR_SPL)
+}
+
 const createInsufficientBalanceErrorMessage = (tokenType: LendingTokenType) => {
   return `Not enough ${tokenType} in wallet`
+}
+
+const createTooLowAprErrorMessage = (aprRate: number) => {
+  return `Min APR is ${aprRate / 100}%`
 }
 
 const DEFAULT_DECIMAL_PLACES = 2
@@ -58,30 +66,3 @@ export const formatLeadingZeros = (value: number, decimals: number) =>
     .toFixed(decimals)
     .replace(/(\.\d*?)0+$/, '$1') //? Remove trailing zeros if they follow a decimal point
     .replace(/\.$/, '') //? Remove the decimal point if it's the last character
-
-export const calculateTokenLendingApr = (
-  market: TokenMarketPreview | undefined,
-  collateralsPerToken: BN,
-) => {
-  const { collateralPrice = 0, collateral } = market || {}
-
-  if (!collateralPrice || collateralsPerToken.eq(ZERO_BN)) {
-    return 0
-  }
-
-  const decimals = collateral?.decimals || 0
-
-  //TODO (TokenLending): Replace collateralPrice to string in BE
-  const tokensPerCollateralBN = calculateTokensPerCollateral(collateralsPerToken, decimals)
-  const tokensPerCollateralNumber = tokensPerCollateralBN.toNumber() / 1e9
-
-  const ltvPercent = (tokensPerCollateralNumber / collateralPrice) * 100 || 0
-
-  const fullyDilutedValuationNumber = collateral
-    ? parseFloat(collateral.fullyDilutedValuationInMillions)
-    : 0
-
-  const { factoredApr: aprPercent } = calculateAPRforOffer(ltvPercent, fullyDilutedValuationNumber)
-
-  return aprPercent * 100
-}

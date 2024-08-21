@@ -66,8 +66,8 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
       delta: new BN(deltaValue),
       quantityOfLoans: loansAmount,
       lendingTokenType: tokenType,
-      collateralsPerToken,
-      tokenLendingApr: ZERO_BN,
+      collateralsPerToken: new BN(collateralsPerToken),
+      tokenLendingApr: new BN(tokenLendingApr),
     },
     sendTxn: sendTxnPlaceHolder,
   })

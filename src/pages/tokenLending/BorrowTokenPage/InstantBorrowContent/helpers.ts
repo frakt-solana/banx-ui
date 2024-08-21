@@ -1,21 +1,17 @@
 import { BN } from 'fbonds-core'
 import { BASE_POINTS, PROTOCOL_FEE_BN } from 'fbonds-core/lib/fbond-protocol/constants'
-import {
-  calculateAPRforOffer,
-  calculateCurrentInterestSolPure,
-} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { sumBy } from 'lodash'
+import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import moment from 'moment'
 
-import { BorrowSplTokenOffers, CollateralToken } from '@banx/api/tokens'
+import { BorrowOffer, CollateralToken } from '@banx/api/tokens'
 import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
-import { ZERO_BN, bnToHuman, calcWeightedAverage, stringToBN } from '@banx/utils'
+import { ZERO_BN, bnToHuman, calcWeightedAverage, stringToBN, sumBNs } from '@banx/utils'
 
 interface GetErrorMessageProps {
   collateralToken: CollateralToken | undefined
   collateralInputValue: string
   borrowInputValue: string
-  offers: BorrowSplTokenOffers[]
+  offers: BorrowOffer[]
   isLoadingOffers: boolean
 }
 
@@ -40,18 +36,19 @@ export const getErrorMessage = ({
   const hasInsufficientBalance = stringToBN(collateralInputValue).gt(
     stringToBN(collateralTokenBalance),
   )
-  const noOffersAvailable = offers.length === 0 || isLoadingOffers
+
+  const noOffersAvailable = offers.length === 0 && !isLoadingOffers
+
+  if (isInvalidAmount) {
+    return 'Enter an amount'
+  }
 
   if (noOffersAvailable) {
-    return 'Not enough liquidity'
+    return 'Not found suitable offers'
   }
 
   if (noEnoughtWalletBalance) {
     return `You don't have ${ticker} to borrow`
-  }
-
-  if (isInvalidAmount) {
-    return 'Enter an amount'
   }
 
   if (hasInsufficientBalance) {
@@ -61,23 +58,18 @@ export const getErrorMessage = ({
   return ''
 }
 
-export const getSummaryInfo = (
-  offers: BorrowSplTokenOffers[],
-  collateralToken: CollateralToken,
-) => {
-  const totalAmountToGet = new BN(sumBy(offers, (offer) => parseFloat(offer.amountToGet)))
+export const getSummaryInfo = (offers: BorrowOffer[]) => {
+  const totalAmountToGet = sumBNs(offers.map((offer) => new BN(offer.maxTokenToGet)))
+  const totalCollateralsAmount = sumBNs(offers.map((offer) => new BN(offer.maxCollateralToReceive)))
 
   const upfrontFee = totalAmountToGet.div(new BN(100)).toNumber()
 
-  const aprRateArray = offers.map(
-    (offer) => calculateTokenBorrowApr({ offer, collateralToken }) + BONDS.PROTOCOL_REPAY_FEE,
-  )
+  const amountToGetArray = offers.map((offer) => parseFloat(offer.maxTokenToGet))
 
-  const amountToGetArray = offers.map((offer) => parseFloat(offer.amountToGet))
-
+  const aprRateArray = offers.map((offer) => parseFloat(offer.apr) + BONDS.PROTOCOL_REPAY_FEE)
   const weightedApr = calcWeightedAverage(aprRateArray, amountToGetArray)
 
-  const ltvRateArray = offers.map((offer) => calculateTokenBorrowLtv({ offer, collateralToken }))
+  const ltvRateArray = offers.map((offer) => parseFloat(offer.ltv))
   const weightedLtv = calcWeightedAverage(ltvRateArray, amountToGetArray)
 
   const weeklyFee = calculateCurrentInterestSolPure({
@@ -87,47 +79,49 @@ export const getSummaryInfo = (
     rateBasePoints: weightedApr + BONDS.PROTOCOL_REPAY_FEE,
   })
 
-  return { upfrontFee, weightedApr, weightedLtv, weeklyFee }
-}
+  const adjustedTotalAmountToGet = adjustAmountWithUpfrontFee(totalAmountToGet)
 
-type CalculateTokenBorrowApr = (props: {
-  offer: BorrowSplTokenOffers
-  collateralToken: CollateralToken
-}) => number
-
-export const calculateTokenBorrowApr: CalculateTokenBorrowApr = ({ offer, collateralToken }) => {
-  const ltvPercent = calculateTokenBorrowLtv({ offer, collateralToken })
-
-  const fullyDilutedValuationNumber = parseFloat(
-    collateralToken.collateral.fullyDilutedValuationInMillions,
-  )
-
-  const { factoredApr } = calculateAPRforOffer(ltvPercent, fullyDilutedValuationNumber)
-  const aprRate = factoredApr * 100
-
-  return aprRate || 0
-}
-
-type CalculateTokenBorrowLtv = (props: {
-  offer: BorrowSplTokenOffers
-  collateralToken: CollateralToken
-}) => number
-const calculateTokenBorrowLtv: CalculateTokenBorrowLtv = ({ offer, collateralToken }) => {
-  const collateralPerToken = parseFloat(offer.amountToGet) / parseFloat(offer.amountToGive)
-
-  const ltvPercent = (collateralPerToken / collateralToken.collateralPrice) * 100
-
-  return ltvPercent
+  return {
+    upfrontFee,
+    weightedApr,
+    weightedLtv,
+    weeklyFee,
+    totalAmountToGet: adjustedTotalAmountToGet.toNumber(),
+    totalCollateralsAmount: totalCollateralsAmount.toNumber(),
+  }
 }
 
 const UPFRONT_FEE_BN = PROTOCOL_FEE_BN
 const BASE_POINTS_BN = new BN(BASE_POINTS)
 
-export const adjustAmountWithUpfrontFee = (amount: BN, type: 'input' | 'output'): BN => {
+export const adjustAmountWithUpfrontFee = (amount: BN): BN => {
   const FRACTION = BASE_POINTS_BN.sub(UPFRONT_FEE_BN) //? 9900
 
-  if (type === 'input') {
-    return amount.mul(FRACTION).div(BASE_POINTS_BN)
+  return amount.mul(FRACTION).div(BASE_POINTS_BN)
+}
+
+type GetButtonActionTextProps = {
+  isLoading: boolean
+  isWalletConnected: boolean
+  errorMessage?: string
+}
+
+export const getButtonActionText = ({
+  isLoading,
+  isWalletConnected,
+  errorMessage,
+}: GetButtonActionTextProps) => {
+  if (!isWalletConnected) {
+    return 'Connect wallet'
   }
-  return amount.mul(BASE_POINTS_BN).div(FRACTION)
+
+  if (errorMessage) {
+    return errorMessage
+  }
+
+  if (isLoading && !errorMessage) {
+    return 'Fetching...'
+  }
+
+  return 'Borrow'
 }

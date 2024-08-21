@@ -14,6 +14,7 @@ export interface SyntheticTokenOffer {
   assetReceiver: string
   marketPubkey: string
   collateralsPerToken: BN
+  apr: number
 }
 
 interface SyntheticTokenOffersState {
@@ -67,12 +68,14 @@ export const createEmptySyntheticTokenOffer: CreateEmptySyntheticTokenOffer = ({
   marketPubkey,
   offerSize: 0,
   collateralsPerToken: ZERO_BN,
+  apr: 0,
 })
 
 export const convertToSynthetic = (offer: BondOfferV3, isEdit = false): SyntheticTokenOffer => {
   const { publicKey, assetReceiver, hadoMarket } = offer
 
   const offerSize = calculateIdleFundsInOffer(convertBondOfferV3ToCore(offer))
+  const apr = offer.loanApr.toNumber() / 100
 
   return {
     isEdit,
@@ -81,5 +84,6 @@ export const convertToSynthetic = (offer: BondOfferV3, isEdit = false): Syntheti
     assetReceiver: assetReceiver.toBase58(),
     marketPubkey: hadoMarket.toBase58(),
     collateralsPerToken: offer.validation.collateralsPerToken,
+    apr,
   }
 }

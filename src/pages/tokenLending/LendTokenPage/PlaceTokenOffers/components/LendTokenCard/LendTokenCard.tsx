@@ -105,9 +105,9 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isOpen })
         classNamesProps={{ container: styles.additionalStat }}
       />
       <StatInfo
-        label="Max APR"
+        label="Average APR"
         value={createPercentValueJSX(marketApr, '0%')}
-        tooltipText="Maximum annual interest rate. Depends on the loan-to-value (LTV) offered and market capitalization. Interest becomes fixed once offer is taken"
+        tooltipText="Maximum annual interest rate. Depends on the loan-to-value (LTV) offered and market capitalization"
         valueType={VALUES_TYPES.STRING}
         classNamesProps={{ container: styles.additionalStat, value: styles.additionalAprStat }}
       />
