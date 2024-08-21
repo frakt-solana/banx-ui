@@ -10,6 +10,7 @@ import { useTokenMarketAndOffer } from './useTokenMarketAndOffer'
 import { useTokenOffer } from './useTokenOffer'
 import { useTokenOfferTransactions } from './useTokenOfferTransaction'
 
+// TODO (TokenLending): Get constants from SDK
 export const MAX_LENDING_APR_RATE = 50_000
 export const MIN_LENDING_APR_RATE = 500
 

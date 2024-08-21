@@ -72,11 +72,7 @@ export const useInstantBorrowContent = () => {
   useEffect(() => {
     if (!borrowToken) return
 
-    const totalAmountToGet = offersInCart.reduce(
-      (acc, offer) => acc.add(new BN(offer.maxTokenToGet)),
-      new BN(0),
-    )
-
+    const totalAmountToGet = sumBNs(offersInCart.map((offer) => new BN(offer.maxTokenToGet)))
     const adjustedAmountToGet = adjustAmountWithUpfrontFee(totalAmountToGet)
 
     const totalAmountToGetStr = bnToHuman(
@@ -99,14 +95,11 @@ export const useInstantBorrowContent = () => {
 
   const { borrow, isBorrowing } = useBorrowOffersTransaction(collateralToken)
 
-  const canFundAllCollaterals = useMemo(() => {
-    const totalMaxCollateralToFund = sumBNs(
-      offers.map((offer) => new BN(offer.maxCollateralToReceive)),
-    )
+  const canFundRequiredCollaterals = useMemo(() => {
+    const maxCollateralsToFund = sumBNs(offers.map((offer) => new BN(offer.maxCollateralToReceive)))
+    const requiredCollaterals = stringToBN(collateralInputValue, marketTokenDecimals)
 
-    const requiredCollateral = stringToBN(collateralInputValue, marketTokenDecimals)
-
-    return totalMaxCollateralToFund.gt(requiredCollateral)
+    return maxCollateralsToFund.gt(requiredCollaterals)
   }, [offers, collateralInputValue, marketTokenDecimals])
 
   return {
@@ -114,7 +107,7 @@ export const useInstantBorrowContent = () => {
     offersInCart,
     isLoading: isLoadingOffers,
 
-    canFundAllCollaterals,
+    canFundRequiredCollaterals,
 
     collateralsList,
     borrowTokensList,

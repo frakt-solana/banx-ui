@@ -22,7 +22,7 @@ const InstantBorrowContent = () => {
     offersInCart,
     isLoading,
 
-    canFundAllCollaterals,
+    canFundRequiredCollaterals,
 
     collateralsList,
     borrowTokensList,
@@ -54,7 +54,7 @@ const InstantBorrowContent = () => {
   const { open: openModal, close: closeModal } = useModal()
 
   const onSubmit = () => {
-    if (canFundAllCollaterals) {
+    if (canFundRequiredCollaterals) {
       return borrow()
     }
 
