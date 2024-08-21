@@ -1,6 +1,7 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 
 import { Button } from '@banx/components/Buttons'
+import { useWalletModal } from '@banx/components/WalletModal'
 
 import { useModal } from '@banx/store/common'
 
@@ -52,8 +53,13 @@ const InstantBorrowContent = () => {
   )
 
   const { open: openModal, close: closeModal } = useModal()
+  const { setVisible } = useWalletModal()
 
   const onSubmit = () => {
+    if (!wallet.connected) {
+      return setVisible(true)
+    }
+
     if (canFundRequiredCollaterals) {
       return borrow()
     }
@@ -109,7 +115,7 @@ const InstantBorrowContent = () => {
 
         <Button
           onClick={onSubmit}
-          disabled={!wallet.connected || !!errorMessage}
+          disabled={wallet.connected && !!errorMessage}
           className={styles.borrowButton}
           loading={!errorMessage && (isBorrowing || isLoading)}
         >
