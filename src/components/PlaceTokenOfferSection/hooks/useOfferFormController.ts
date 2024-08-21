@@ -91,7 +91,7 @@ export const useOfferFormController = (
 }
 
 export const calculateTokensPerCollateral = (collateralsPerToken: number, decimals: number) => {
-  if (!collateralsPerToken) {
+  if (!collateralsPerToken || !decimals) {
     return 0
   }
 
