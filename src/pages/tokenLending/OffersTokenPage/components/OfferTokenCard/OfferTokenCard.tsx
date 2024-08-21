@@ -128,7 +128,7 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ offerPreview, isO
       <StatInfo
         label="Max APR"
         value={createPercentValueJSX(marketApr, '0%')}
-        tooltipText="Maximum annual interest rate. Depends on the loan-to-value (LTV) offered and market capitalization. Interest becomes fixed once offer is taken"
+        tooltipText="Maximum annual interest rate. Depends on the loan-to-value (LTV) offered and market capitalization"
         classNamesProps={{ container: styles.additionalStat, value: styles.additionalAprStat }}
       />
       <StatInfo

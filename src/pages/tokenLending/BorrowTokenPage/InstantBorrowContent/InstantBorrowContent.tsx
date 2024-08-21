@@ -73,7 +73,7 @@ const InstantBorrowContent = () => {
           <SkeletonInputTokenSelect label="Collateralize" showRightLabel />
         ) : (
           <InputTokenSelect
-            label="Collateralize"
+            label="Your collateral"
             value={collateralInputValue}
             onChange={handleCollateralInputChange}
             selectedToken={collateralToken}
