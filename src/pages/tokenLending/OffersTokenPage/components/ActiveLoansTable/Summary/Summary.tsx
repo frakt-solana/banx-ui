@@ -95,7 +95,7 @@ const Summary: FC<SummaryProps> = ({
           />
           <Button
             className={classNames(styles.summaryButton, styles.terminateButton)}
-            onClick={() => terminateTokenLoans(loansToTerminate)}
+            onClick={() => terminateTokenLoans(selectedLoans)}
             disabled={!selectedLoans.length}
             variant="secondary"
           >
