@@ -3,7 +3,7 @@ import { ReactNode } from 'react'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { find, findIndex, repeat } from 'lodash'
 
-import { formatNumbersWithCommas } from '../common'
+import { convertToDecimalString, formatNumbersWithCommas } from '../common'
 import {
   COLLATERAL_DECIMAL_PLACES_LIMITS,
   DECIMAL_PLACES_LIMITS,
@@ -76,7 +76,8 @@ export const formatDecimalWithSubscript = (decimalNumber: number) => {
   const MAX_FORMATTED_LENGTH_FOR_INTEGER = 2
   const MIN_LEADING_ZEROS_FOR_SUBSCRIPT = 2
 
-  const decimalAsString = decimalNumber.toString()
+  const decimalAsString = convertToDecimalString(decimalNumber)
+
   const [integerPart, fractionalPart] = decimalAsString.split('.')
 
   if (parseFloat(integerPart) > 0) {

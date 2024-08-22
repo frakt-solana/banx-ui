@@ -1,3 +1,5 @@
+import { flowRight } from 'lodash'
+
 import { stringToBN } from '../bn'
 
 // shorten the checksummed version of the input address to have 4 characters at start and end
@@ -57,4 +59,16 @@ export const stringToHex = (str: string, decimals?: number): string => {
 export const convertAprToApy = (apr: number, compoundingPeriods = 1) => {
   const apy = (1 + apr / compoundingPeriods) ** compoundingPeriods - 1
   return apy * 100
+}
+
+const isExponentialNotation = (n: number) => {
+  const numStr = n.toString()
+  return numStr.includes('e') || numStr.includes('E')
+}
+
+export const convertToDecimalString = (n: number, precision = 0) => {
+  if (!isExponentialNotation(n)) return n.toString()
+
+  const powOfE = flowRight(Math.abs, Math.floor, Math.log10, Math.abs)(n)
+  return n.toFixed(powOfE + precision)
 }
