@@ -1,8 +1,10 @@
+import { BN } from 'fbonds-core'
 import { MIN_APR_SPL } from 'fbonds-core/lib/fbond-protocol/constants'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
 
 import { SyntheticTokenOffer } from '@banx/store/token'
+import { stringToBN } from '@banx/utils'
 
 type GetErrorMessage = (props: {
   walletBalance: number
@@ -66,3 +68,29 @@ export const formatLeadingZeros = (value: number, decimals: number) =>
     .toFixed(decimals)
     .replace(/(\.\d*?)0+$/, '$1') //? Remove trailing zeros if they follow a decimal point
     .replace(/\.$/, '') //? Remove the decimal point if it's the last character
+
+export const calculateLtvPercent = (props: {
+  collateralPerToken: string
+  collateralPrice: number
+  marketTokenDecimals: number
+}): number => {
+  const { collateralPerToken, collateralPrice, marketTokenDecimals } = props
+
+  const PERCENTAGE_MULTIPLIER = 100
+  const BASE_DECIMALS = 12
+
+  if (!collateralPerToken || !collateralPrice) {
+    return 0
+  }
+
+  const collateralPerTokenBN = stringToBN(collateralPerToken, BASE_DECIMALS)
+
+  const marketTokenScaleFactor = new BN(10).pow(new BN(BASE_DECIMALS - marketTokenDecimals))
+
+  const ltvRatioBN = collateralPerTokenBN
+    .mul(new BN(PERCENTAGE_MULTIPLIER))
+    .div(new BN(collateralPrice))
+    .divRound(marketTokenScaleFactor)
+
+  return parseInt(ltvRatioBN.toString())
+}

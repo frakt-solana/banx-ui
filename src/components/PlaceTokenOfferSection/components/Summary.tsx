@@ -8,13 +8,21 @@ import { DisplayValue } from '@banx/components/TableComponents'
 
 import { TokenMarketPreview } from '@banx/api/tokens'
 import { SECONDS_IN_DAY } from '@banx/constants'
-import { HealthColorIncreasing, convertAprToApy, getColorByPercent } from '@banx/utils'
+import { useNftTokenType } from '@banx/store/nft'
+import {
+  HealthColorIncreasing,
+  convertAprToApy,
+  getColorByPercent,
+  getTokenDecimals,
+} from '@banx/utils'
+
+import { calculateLtvPercent } from '../helpers'
 
 import styles from '../PlaceTokenOfferSection.module.less'
 
 interface MainSummaryProps {
   market: TokenMarketPreview | undefined
-  collateralPerToken: number
+  collateralPerToken: string
   apr: number
 }
 
@@ -22,7 +30,15 @@ const COMPOUNDING_PERIODS = 12
 
 export const MainSummary: FC<MainSummaryProps> = ({ market, collateralPerToken, apr }) => {
   const { collateralPrice = 0 } = market || {}
-  const ltvPercent = (collateralPerToken / collateralPrice) * 100 || 0
+
+  const { tokenType } = useNftTokenType()
+  const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType))
+
+  const ltvPercent = calculateLtvPercent({
+    collateralPerToken,
+    collateralPrice,
+    marketTokenDecimals,
+  })
 
   const apy = apr ? convertAprToApy(apr / 100, COMPOUNDING_PERIODS) : 0
 
