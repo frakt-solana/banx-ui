@@ -7,7 +7,7 @@ export const createPathWithModeParams = (
   mode: ModeType,
   tokenType: LendingTokenType | null,
 ) => {
-  const modeQueryParam = mode === ModeType.Token ? `mode=${mode}` : ''
+  const modeQueryParam = mode === ModeType.NFT ? `mode=${mode}` : ''
 
   const isDefaultTokenType = tokenType === LendingTokenType.BanxSol
   const tokenQueryParam = tokenType && !isDefaultTokenType ? `token=${tokenType}` : ''
