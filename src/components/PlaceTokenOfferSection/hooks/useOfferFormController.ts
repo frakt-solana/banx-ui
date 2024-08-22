@@ -7,7 +7,7 @@ import { clamp } from 'lodash'
 import { TokenMarketPreview } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
 import { SyntheticTokenOffer } from '@banx/store/token'
-import { ZERO_BN, formatTrailingZeros, getTokenDecimals } from '@banx/utils'
+import { ZERO_BN, convertToDecimalString, getTokenDecimals } from '@banx/utils'
 
 export const useOfferFormController = (
   syntheticOffer: SyntheticTokenOffer,
@@ -115,23 +115,11 @@ export const calculateTokensPerCollateral = (
   return tokensPerCollateral
 }
 
-/**
- * Formats the tokens per collateral into a string with fixed decimals
- *
- * @param {BN} tokensPerCollateral - The number of tokens per unit of collateral, scaled by 1e9.
- * @returns {string} - The formatted tokens per collateral string.
- */
-
 export const formatTokensPerCollateralToStr = (tokensPerCollateral: BN): string => {
-  const DECIMAL_PRECISION = 9
+  const value = tokensPerCollateral.toNumber() / Math.pow(10, 9)
+  const adjustedValue = parseFloat(value.toPrecision(4))
 
-  const tokensPerCollateralString = tokensPerCollateral.toString().padStart(DECIMAL_PRECISION, '0')
-  const integerPart = tokensPerCollateralString.slice(0, -DECIMAL_PRECISION) || '0'
-  const fractionalPart = tokensPerCollateralString.slice(-DECIMAL_PRECISION)
-
-  const value = `${integerPart}.${fractionalPart}`
-
-  return formatTrailingZeros(value.replace(/(\.\d*?[1-9]+0{2})\d*$/, '$1')) //? removing trailing zeros after two consecutive zeros.
+  return convertToDecimalString(adjustedValue)
 }
 
 const calculateOfferSize = (syntheticOfferSize: number, decimals: number) => {
