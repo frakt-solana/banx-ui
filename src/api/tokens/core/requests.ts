@@ -45,14 +45,8 @@ export const fetchTokenMarketsPreview: FetchTokenMarketsPreview = async ({ token
   })
 
   const { data } = await axios.get<TokenMarketPreviewResponse>(
-    `${BACKEND_BASE_URL}/bonds/spl/preview?${queryParams.toString()}`,
+    `${DEV_BACKEND_BASE_URL}/bonds/spl/preview?${queryParams.toString()}`,
   )
-
-  try {
-    await TokenMarketPreviewSchema.array().parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
 
   return await TokenMarketPreviewSchema.array().parseAsync(data.data)
 }

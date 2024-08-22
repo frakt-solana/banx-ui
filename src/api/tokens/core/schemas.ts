@@ -7,6 +7,7 @@ import {
   OfferSchema,
   SerializedBNSchema,
   SerializedPublicKeySchema,
+  StringIntSchema,
   StringPublicKeySchema,
 } from '@banx/api/shared'
 
@@ -34,7 +35,7 @@ export const TokenMarketPreviewSchema = z.object({
   marketPubkey: z.string(),
 
   collateral: TokenMetaSchema,
-  collateralPrice: z.number(),
+  collateralPrice: StringIntSchema,
 
   collectionName: z.string(),
 
