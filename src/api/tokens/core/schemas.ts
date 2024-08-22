@@ -118,7 +118,7 @@ export const TokenLoansRequestsSchema = z.object({
 export const CollateralTokenSchema = z.object({
   marketPubkey: z.string(),
   collateral: TokenMetaSchema,
-  collateralPrice: z.number(),
+  collateralPrice: StringIntSchema,
   amountInWallet: z.number(),
 })
 

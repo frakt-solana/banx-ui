@@ -6,7 +6,7 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { RequestWithPagination } from '@banx/api/shared'
-import { IS_PRIVATE_MARKETS } from '@banx/constants'
+import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import { convertToMarketType } from '../../helpers'
 import { parseResponseSafe } from './../../shared/validation'
@@ -183,7 +183,7 @@ export const fetchBorrowOffers: FetchBorrowOffers = async (props) => {
   })
 
   const { data } = await axios.get<{ data: BorrowOffer[] }>(
-    `${DEV_BACKEND_BASE_URL}/lending/spl/borrow-token-v4?${queryParams?.toString()}`,
+    `${BACKEND_BASE_URL}/lending/spl/borrow-token-v4?${queryParams?.toString()}`,
   )
 
   return await parseResponseSafe<BorrowOffer[]>(data?.data, BorrowOfferSchema.array())
