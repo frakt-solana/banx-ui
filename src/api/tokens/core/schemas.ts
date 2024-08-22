@@ -27,7 +27,7 @@ export const TokenLoanSchema = z.object({
   fraktBond: FraktBondSchema,
   bondTradeTransaction: BondTradeTransactionSchema,
   collateral: TokenMetaSchema,
-  collateralPrice: z.number(),
+  collateralPrice: StringIntSchema,
   totalRepaidAmount: z.number().optional(),
 })
 

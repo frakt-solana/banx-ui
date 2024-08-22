@@ -8,7 +8,6 @@ import moment from 'moment'
 
 import { core } from '@banx/api/tokens'
 import { BONDS, SECONDS_IN_72_HOURS, SECONDS_IN_DAY } from '@banx/constants'
-import { getTokenDecimals } from '@banx/utils/tokens'
 
 import { calculateApr } from '../loans'
 
@@ -60,10 +59,9 @@ export const getTokenLoanSupply = (loan: core.TokenLoan) => {
 }
 
 export const calculateTokenLoanLtvByLoanValue = (loan: core.TokenLoan, value: number) => {
-  const tokenDecimals = getTokenDecimals(loan.bondTradeTransaction.lendingToken)
   const collateralSupply = getTokenLoanSupply(loan)
 
-  const ltvRatio = value / tokenDecimals / collateralSupply
+  const ltvRatio = value / collateralSupply
   const ltvPercent = (ltvRatio / loan.collateralPrice) * 100
 
   return ltvPercent

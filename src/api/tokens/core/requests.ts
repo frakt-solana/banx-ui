@@ -6,7 +6,7 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { RequestWithPagination } from '@banx/api/shared'
-import { BACKEND_BASE_URL, IS_PRIVATE_MARKETS } from '@banx/constants'
+import { IS_PRIVATE_MARKETS } from '@banx/constants'
 
 import { convertToMarketType } from '../../helpers'
 import { parseResponseSafe } from './../../shared/validation'
@@ -113,7 +113,7 @@ export const fetchWalletTokenLoansAndOffers: FetchWalletTokenLoansAndOffers = as
   })
 
   const { data } = await axios.get<{ data: WalletTokenLoansAndOffers }>(
-    `${BACKEND_BASE_URL}/spl-loans/borrower/${walletPublicKey}?${queryParams.toString()}`,
+    `${DEV_BACKEND_BASE_URL}/spl-loans/borrower/${walletPublicKey}?${queryParams.toString()}`,
   )
 
   try {
@@ -142,7 +142,7 @@ export const fetchTokenLenderLoans: FetchTokenLenderLoans = async ({
   })
 
   const { data } = await axios.get<{ data: TokenLoan[] }>(
-    `${BACKEND_BASE_URL}/spl-loans/lender/${walletPublicKey}?${queryParams.toString()}`,
+    `${DEV_BACKEND_BASE_URL}/spl-loans/lender/${walletPublicKey}?${queryParams.toString()}`,
   )
 
   try {
@@ -183,7 +183,7 @@ export const fetchBorrowOffers: FetchBorrowOffers = async (props) => {
   })
 
   const { data } = await axios.get<{ data: BorrowOffer[] }>(
-    `${BACKEND_BASE_URL}/lending/spl/borrow-token-v4?${queryParams?.toString()}`,
+    `${DEV_BACKEND_BASE_URL}/lending/spl/borrow-token-v4?${queryParams?.toString()}`,
   )
 
   return await parseResponseSafe<BorrowOffer[]>(data?.data, BorrowOfferSchema.array())
@@ -205,7 +205,7 @@ export const fetchAllTokenLoansRequests: FetchAllTokenLoansRequests = async ({
   })
 
   const { data } = await axios.get<AllTokenLoansRequestsResponse>(
-    `${BACKEND_BASE_URL}/spl-loans/requests?${queryParams.toString()}`,
+    `${DEV_BACKEND_BASE_URL}/spl-loans/requests?${queryParams.toString()}`,
   )
 
   try {
@@ -229,7 +229,7 @@ export const fetchCollateralsList = async (props: {
   })
 
   const { data } = await axios.get<{ data: CollateralToken[] }>(
-    `${BACKEND_BASE_URL}/spl-assets/${walletPubkey}?${queryParams?.toString()}`,
+    `${DEV_BACKEND_BASE_URL}/spl-assets/${walletPubkey}?${queryParams?.toString()}`,
   )
 
   try {
