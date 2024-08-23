@@ -72,6 +72,8 @@ export const isBanxSolTokenType = (tokenType: LendingTokenType): boolean =>
   tokenType === LendingTokenType.BanxSol
 
 export const formatDecimalWithSubscript = (decimalNumber: number) => {
+  if (!decimalNumber) return ''
+
   const MAX_FORMATTED_LENGTH = 4
   const MAX_FORMATTED_LENGTH_FOR_INTEGER = 2
   const MIN_LEADING_ZEROS_FOR_SUBSCRIPT = 2
