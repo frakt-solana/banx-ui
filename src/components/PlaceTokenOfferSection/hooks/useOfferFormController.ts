@@ -127,7 +127,7 @@ const calculateOfferSize = (syntheticOfferSize: number, decimals: number) => {
 
   //? 1e4 is used for rounding the result to 4 decimal places
   const roundedOfferSize = Math.round(offerSize * 1e4) / 1e4
-  return roundedOfferSize
+  return parseFloat(roundedOfferSize.toPrecision(4))
 }
 
 const clampInputValue = (value: string, max: number): string => {
