@@ -172,11 +172,9 @@ export const useTokenOfferTransactions = ({
               solanaExplorerPath: `tx/${signature}`,
             })
             if (accountInfoByPubkey) {
-              if (accountInfoByPubkey) {
-                const offer = parseUpdateTokenOfferSimulatedAccounts(accountInfoByPubkey)
-                //? Needs to prevent BE data overlap in optimistics logic
-                updateOrAddOffer({ ...offer, lastTransactedAt: new BN(moment().unix()) })
-              }
+              const offer = parseUpdateTokenOfferSimulatedAccounts(accountInfoByPubkey)
+              //? Needs to prevent BE data overlap in optimistics logic
+              updateOrAddOffer({ ...offer, lastTransactedAt: new BN(moment().unix()) })
             }
           })
         })

@@ -86,7 +86,7 @@ export const executorGetPriorityFee: GetPriorityFee = ({ txnParams, connection }
   return helius.getHeliusPriorityFeeEstimate({ accountKeys, connection, priorityLevel })
 }
 
-export const customBNConverter = {
+export const accountConverterBNAndPublicKey = {
   bnParser: (v: BN) => {
     try {
       return v

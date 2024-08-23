@@ -18,7 +18,7 @@ import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
 import { ZERO_BN, isBanxSolTokenType, isOfferStateClosed } from '@banx/utils'
 
-import { customBNConverter, parseAccountInfoByPubkey } from '../../functions'
+import { accountConverterBNAndPublicKey, parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
 export type CreateClaimLenderVaultTxnDataParams = {
@@ -144,7 +144,7 @@ export const parseClaimLenderVaultSimulatedAccounts = (
 export const parseClaimTokenLenderVaultSimulatedAccounts = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ) => {
-  const results = parseAccountInfoByPubkey(accountInfoByPubkey, customBNConverter)
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey, accountConverterBNAndPublicKey)
 
   return results?.['bondOfferV3']?.[0] as BondOfferV3
 }

@@ -17,7 +17,7 @@ import { BANX_SOL_ADDRESS, BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
 import { ZERO_BN, calculateNewOfferSize, isBanxSolTokenType } from '@banx/utils'
 
-import { customBNConverter, parseAccountInfoByPubkey } from '../../functions'
+import { accountConverterBNAndPublicKey, parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
 export type CreateMakeBondingOfferTxnDataParams = {
@@ -131,7 +131,7 @@ export const parseMakeOfferSimulatedAccounts = (
 export const parseMakeTokenOfferSimulatedAccounts = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ) => {
-  const results = parseAccountInfoByPubkey(accountInfoByPubkey, customBNConverter)
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey, accountConverterBNAndPublicKey)
 
   return results?.['bondOfferV3']?.[0] as BondOfferV3
 }

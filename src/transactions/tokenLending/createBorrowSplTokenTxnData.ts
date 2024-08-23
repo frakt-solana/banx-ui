@@ -11,7 +11,11 @@ import {
 import { core } from '@banx/api/nft'
 import { CollateralToken } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
-import { customBNConverter, parseAccountInfoByPubkey, sendTxnPlaceHolder } from '@banx/transactions'
+import {
+  accountConverterBNAndPublicKey,
+  parseAccountInfoByPubkey,
+  sendTxnPlaceHolder,
+} from '@banx/transactions'
 
 export type CreateBorrowTokenTxnDataParams = {
   collateral: CollateralToken
@@ -74,7 +78,10 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async (
 export const parseTokenBorrowSimulatedAccounts = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ) => {
-  const parsedAccountsBN = parseAccountInfoByPubkey(accountInfoByPubkey, customBNConverter)
+  const parsedAccountsBN = parseAccountInfoByPubkey(
+    accountInfoByPubkey,
+    accountConverterBNAndPublicKey,
+  )
   const parsedAccounts = parseAccountInfoByPubkey(accountInfoByPubkey)
 
   return {
