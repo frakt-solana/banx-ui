@@ -55,7 +55,7 @@ export const useLoansTable = () => {
 
   const showEmptyList = (!loans.length && !loading) || !connected
   const emptyMessage = connected
-    ? 'Your offers is waiting for a borrower'
+    ? 'Your offers are waiting for a borrower'
     : 'Connect wallet to view your active offers'
 
   return {
