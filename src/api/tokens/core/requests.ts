@@ -99,7 +99,7 @@ type FetchWalletTokenLoansAndOffers = (props: {
   walletPublicKey: string
   tokenType: LendingTokenType
   getAll?: boolean
-}) => Promise<WalletTokenLoansAndOffers>
+}) => Promise<WalletTokenLoansAndOffers | undefined>
 
 export const fetchWalletTokenLoansAndOffers: FetchWalletTokenLoansAndOffers = async ({
   walletPublicKey,
@@ -116,20 +116,17 @@ export const fetchWalletTokenLoansAndOffers: FetchWalletTokenLoansAndOffers = as
     `${DEV_BACKEND_BASE_URL}/spl-loans/borrower/${walletPublicKey}?${queryParams.toString()}`,
   )
 
-  try {
-    await WalletTokenLoansAndOffersShema.parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
-
-  return data.data ?? { loans: [], offers: {} }
+  return await parseResponseSafe<WalletTokenLoansAndOffers>(
+    data?.data,
+    WalletTokenLoansAndOffersShema,
+  )
 }
 
 type FetchTokenLenderLoans = (props: {
   walletPublicKey: string
   tokenType: LendingTokenType
   getAll?: boolean
-}) => Promise<TokenLoan[]>
+}) => Promise<TokenLoan[] | undefined>
 export const fetchTokenLenderLoans: FetchTokenLenderLoans = async ({
   walletPublicKey,
   tokenType,
@@ -145,13 +142,7 @@ export const fetchTokenLenderLoans: FetchTokenLenderLoans = async ({
     `${DEV_BACKEND_BASE_URL}/spl-loans/lender/${walletPublicKey}?${queryParams.toString()}`,
   )
 
-  try {
-    await TokenLoanSchema.array().parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
-
-  return data.data ?? []
+  return await parseResponseSafe<TokenLoan[]>(data.data, TokenLoanSchema.array())
 }
 
 type FetchBorrowOffers = (props: {
@@ -192,7 +183,7 @@ export const fetchBorrowOffers: FetchBorrowOffers = async (props) => {
 type FetchAllTokenLoansRequests = (props: {
   tokenType: LendingTokenType
   getAll?: boolean
-}) => Promise<TokenLoansRequests>
+}) => Promise<TokenLoansRequests | undefined>
 
 export const fetchAllTokenLoansRequests: FetchAllTokenLoansRequests = async ({
   tokenType,
@@ -208,13 +199,7 @@ export const fetchAllTokenLoansRequests: FetchAllTokenLoansRequests = async ({
     `${DEV_BACKEND_BASE_URL}/spl-loans/requests?${queryParams.toString()}`,
   )
 
-  try {
-    await TokenLoansRequestsSchema.parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
-
-  return data.data
+  return await parseResponseSafe<TokenLoansRequests>(data.data, TokenLoansRequestsSchema)
 }
 
 export const fetchCollateralsList = async (props: {
