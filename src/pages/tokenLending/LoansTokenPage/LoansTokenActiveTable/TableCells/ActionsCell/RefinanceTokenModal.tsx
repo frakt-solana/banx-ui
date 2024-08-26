@@ -1,14 +1,13 @@
-import { FC, useEffect, useMemo, useState } from 'react'
+import { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
-import { chain, map, uniqueId } from 'lodash'
+import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
 import { Loader } from '@banx/components/Loader'
-import { Slider } from '@banx/components/Slider'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import { Modal } from '@banx/components/modals/BaseModal'
 
@@ -30,24 +29,22 @@ import {
   parseBorrowTokenRefinanceSimulatedAccounts,
 } from '@banx/transactions/tokenLending'
 import {
-  caclulateBorrowTokenLoanValue,
-  calculateApr,
-  calculateIdleFundsInOffer,
-  calculateTokenLoanValueWithUpfrontFee,
   convertToHumanNumber,
   destroySnackbar,
   enqueueConfirmationError,
   enqueueSnackbar,
   enqueueTransactionSent,
   enqueueWaitingConfirmation,
-  filterOutWalletLoans,
-  findSuitableOffer,
   getDecimalPlaces,
+  getTokenDecimals,
   getTokenUnit,
   isTokenLoanTerminating,
 } from '@banx/utils'
 
 import { useSelectedTokenLoans } from '../../loansState'
+import OrderBook from './OrderBook'
+import { useSelectedOffer } from './OrderBook/useSelectedOffers'
+import { calculateTokenToGet, getCurrentLoanInfo } from './helpers'
 
 import styles from './ActionsCell.module.less'
 
@@ -55,95 +52,41 @@ interface RefinanceTokenModalProps {
   loan: core.TokenLoan
 }
 
-//TODO (TokenLending): Write new logic to find cuitable offer
-//? You can ignore this file
-
 export const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
-  const { bondTradeTransaction, fraktBond } = loan
-
   const wallet = useWallet()
   const { connection } = useConnection()
 
-  const { close } = useModal()
   const { tokenType } = useNftTokenType()
+  const { close: closeModal } = useModal()
 
-  const { offers, updateOrAddOffer, isLoading } = useTokenMarketOffers(fraktBond.hadoMarket || '')
+  const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6
 
-  const bestOffer = useMemo(() => {
-    return (
-      chain(offers)
-        .sortBy(({ validation }) => validation.collateralsPerToken)
-        .thru((offers) =>
-          filterOutWalletLoans({
-            offers: map(offers, convertBondOfferV3ToCore),
-            walletPubkey: wallet?.publicKey?.toBase58(),
-          }),
-        )
-        // .filter(isOfferNotEmpty)
-        .value()
-        .at(0)
-    )
-  }, [offers, wallet])
-
-  const initialCurrentSpotPrice = useMemo(() => {
-    if (!bestOffer) return 0
-    return calculateIdleFundsInOffer(bestOffer).toNumber()
-  }, [bestOffer])
-
-  useEffect(() => {
-    setCurrentSpotPrice(initialCurrentSpotPrice)
-  }, [initialCurrentSpotPrice])
+  const { offers, updateOrAddOffer, isLoading } = useTokenMarketOffers(
+    loan.fraktBond.hadoMarket || '',
+  )
 
   const { update: updateLoansOptimistic } = useTokenLoansOptimistic()
+
   const { clear: clearSelection } = useSelectedTokenLoans()
+  const { selection: selectedOffer } = useSelectedOffer()
 
-  const isLoanTerminating = isTokenLoanTerminating(loan)
+  const { currentLoanDebt, currentLoanBorrowedAmount, currentApr } = getCurrentLoanInfo(loan)
 
-  const [partialPercent, setPartialPercent] = useState<number>(100)
-  const [currentSpotPrice, setCurrentSpotPrice] = useState<number>(initialCurrentSpotPrice)
+  const tokensToRefinance = selectedOffer
+    ? calculateTokenToGet({ offer: selectedOffer, loan, marketTokenDecimals }).toNumber()
+    : 0
 
-  const onPartialPercentChange = (percentValue: number) => {
-    setPartialPercent(percentValue)
-    setCurrentSpotPrice(Math.max(Math.floor((initialCurrentSpotPrice * percentValue) / 100), 1000))
-  }
+  const diff = tokensToRefinance - currentLoanDebt
+  const upfrontFee = Math.max(diff / 100, 0)
 
-  const currentLoanDebt = caclulateBorrowTokenLoanValue(loan).toNumber()
-  const currentLoanBorrowedAmount = calculateTokenLoanValueWithUpfrontFee(loan).toNumber()
-  const currentApr = bondTradeTransaction.amountOfBonds
+  const newLoanBorrowedAmount = selectedOffer ? tokensToRefinance - upfrontFee : 0
+  const newLoanDebt = tokensToRefinance
+  const newApr = selectedOffer?.loanApr.toNumber() || 0
 
-  //? Upfron fee on reborrow is calculated: (newDebt - prevDebt) / 100
-  const upfrontFee = Math.max((currentSpotPrice - currentLoanDebt) / 100, 0)
-
-  const newLoanBorrowedAmount = currentSpotPrice - upfrontFee
-  const newLoanDebt = currentSpotPrice
-
-  const newApr = calculateApr({
-    loanValue: newLoanBorrowedAmount,
-    collectionFloor: loan.collateralPrice,
-    marketPubkey: fraktBond.hadoMarket,
-  })
-
-  const differenceToPay = newLoanDebt - currentLoanDebt - upfrontFee
+  const differenceToPay = tokensToRefinance - currentLoanDebt - upfrontFee
 
   const refinance = async () => {
-    if (!bestOffer) return
-
-    const suitableOffer = chain(offers)
-      .thru((offers) =>
-        filterOutWalletLoans({
-          offers: map(offers, convertBondOfferV3ToCore),
-          walletPubkey: wallet?.publicKey?.toBase58(),
-        }),
-      )
-      .thru((offers) =>
-        findSuitableOffer({
-          loanValue: currentSpotPrice,
-          offers,
-        }),
-      )
-      .value()
-
-    if (!suitableOffer) return
+    if (!selectedOffer) return
 
     const loadingSnackbarId = uniqueId()
 
@@ -153,8 +96,8 @@ export const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
       const txnData = await createBorrowTokenRefinanceTxnData(
         {
           loan,
-          offer: suitableOffer,
-          solToRefinance: currentSpotPrice,
+          offer: convertBondOfferV3ToCore(selectedOffer),
+          solToRefinance: tokensToRefinance,
           aprRate: newApr,
           tokenType,
         },
@@ -202,7 +145,7 @@ export const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
               updateOrAddOffer(bondOffer)
               updateLoansOptimistic([optimisticLoan], wallet.publicKey.toBase58())
               clearSelection()
-              close()
+              closeModal()
             }
           })
         })
@@ -221,7 +164,7 @@ export const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
   }
 
   return (
-    <Modal open onCancel={close}>
+    <Modal open onCancel={closeModal}>
       {isLoading && <Loader />}
       {!isLoading && (
         <>
@@ -247,7 +190,7 @@ export const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
             className={styles.difference}
           />
 
-          <Slider
+          {/* <Slider
             label="Loan"
             value={partialPercent}
             onChange={onPartialPercentChange}
@@ -255,10 +198,16 @@ export const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
             marks={DEFAULT_SLIDER_MARKS}
             min={10}
             max={100}
-          />
+          /> */}
 
-          <Button className={styles.refinanceModalButton} onClick={refinance} disabled={!bestOffer}>
-            {isLoanTerminating ? 'Extend' : 'Reborrow'}
+          <OrderBook loan={loan} offers={offers} isLoading={isLoading} />
+
+          <Button
+            className={styles.refinanceModalButton}
+            onClick={refinance}
+            disabled={!selectedOffer}
+          >
+            {isTokenLoanTerminating(loan) ? 'Extend' : 'Reborrow'}
           </Button>
         </>
       )}
@@ -266,13 +215,13 @@ export const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
   )
 }
 
-const DEFAULT_SLIDER_MARKS = {
-  10: '10%',
-  25: '25%',
-  50: '50%',
-  75: '75%',
-  100: '100%',
-}
+// const DEFAULT_SLIDER_MARKS = {
+//   10: '10%',
+//   25: '25%',
+//   50: '50%',
+//   75: '75%',
+//   100: '100%',
+// }
 
 interface LoanInfoProps {
   title: string

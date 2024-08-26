@@ -29,8 +29,6 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView, disableAct
         className={styles.refinanceButton}
         size={buttonSize}
         variant="secondary"
-        // disabled={disableActions || !refinanceAvailable}
-        disabled={true} // TODO (TokenLending): Enable when new refinance logic is implemented
         onClick={(event) => {
           open(RefinanceTokenModal, { loan })
           event.stopPropagation()
