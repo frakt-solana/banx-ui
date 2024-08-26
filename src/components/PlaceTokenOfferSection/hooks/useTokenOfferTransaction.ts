@@ -1,10 +1,11 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { BondFeatures } from 'fbonds-core/lib/fbond-protocol/types'
+import { BN } from 'fbonds-core'
+import { BondFeatures, BondOfferV3 } from 'fbonds-core/lib/fbond-protocol/types'
 import { uniqueId } from 'lodash'
 import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
-import { core } from '@banx/api/nft'
+import { convertBondOfferV3ToCore } from '@banx/api/nft'
 import { useNftTokenType } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -18,9 +19,9 @@ import {
   createMakeBondingOfferTxnData,
   createRemoveOfferTxnData,
   createUpdateBondingOfferTxnData,
-  parseMakeOfferSimulatedAccounts,
-  parseRemoveOfferSimulatedAccounts,
-  parseUpdateOfferSimulatedAccounts,
+  parseMakeTokenOfferSimulatedAccounts,
+  parseRemoveTokenOfferSimulatedAccounts,
+  parseUpdateTokenOfferSimulatedAccounts,
 } from '@banx/transactions/nftLending'
 import {
   destroySnackbar,
@@ -41,10 +42,10 @@ export const useTokenOfferTransactions = ({
 }: {
   marketPubkey: string
   loanValue: number
-  optimisticOffer?: core.Offer
-  updateOrAddOffer: (offer: core.Offer) => void
+  optimisticOffer?: BondOfferV3
+  updateOrAddOffer: (offer: BondOfferV3) => void
   resetFormValues: () => void
-  collateralsPerToken: number
+  collateralsPerToken: BN
   apr: number
 }) => {
   const wallet = useWallet()
@@ -99,7 +100,7 @@ export const useTokenOfferTransactions = ({
             })
 
             if (accountInfoByPubkey) {
-              const offer = parseMakeOfferSimulatedAccounts(accountInfoByPubkey)
+              const offer = parseMakeTokenOfferSimulatedAccounts(accountInfoByPubkey)
               updateOrAddOffer(offer)
               resetFormValues()
             }
@@ -134,7 +135,7 @@ export const useTokenOfferTransactions = ({
       const txnData = await createUpdateBondingOfferTxnData(
         {
           loanValue,
-          offer: optimisticOffer,
+          offer: convertBondOfferV3ToCore(optimisticOffer),
           loansAmount: 1,
           deltaValue: 0,
           tokenType,
@@ -171,11 +172,9 @@ export const useTokenOfferTransactions = ({
               solanaExplorerPath: `tx/${signature}`,
             })
             if (accountInfoByPubkey) {
-              if (accountInfoByPubkey) {
-                const offer = parseUpdateOfferSimulatedAccounts(accountInfoByPubkey)
-                //? Needs to prevent BE data overlap in optimistics logic
-                updateOrAddOffer({ ...offer, lastTransactedAt: moment().unix() })
-              }
+              const offer = parseUpdateTokenOfferSimulatedAccounts(accountInfoByPubkey)
+              //? Needs to prevent BE data overlap in optimistics logic
+              updateOrAddOffer({ ...offer, lastTransactedAt: new BN(moment().unix()) })
             }
           })
         })
@@ -206,7 +205,7 @@ export const useTokenOfferTransactions = ({
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const txnData = await createRemoveOfferTxnData(
-        { offer: optimisticOffer, tokenType },
+        { offer: convertBondOfferV3ToCore(optimisticOffer), tokenType },
         walletAndConnection,
       )
 
@@ -238,9 +237,9 @@ export const useTokenOfferTransactions = ({
             })
 
             if (accountInfoByPubkey) {
-              const offer = parseRemoveOfferSimulatedAccounts(accountInfoByPubkey)
+              const offer = parseRemoveTokenOfferSimulatedAccounts(accountInfoByPubkey)
               //? Needs to prevent BE data overlap in optimistics logic
-              updateOrAddOffer({ ...offer, lastTransactedAt: moment().unix() })
+              updateOrAddOffer({ ...offer, lastTransactedAt: new BN(moment().unix()) })
             }
           })
         })

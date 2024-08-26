@@ -42,7 +42,7 @@ const OrderBook: FC<OrderBookProps> = ({ market, offerPubkey = '', className }) 
 
         {!isLoading &&
           offers.map((offer) => (
-            <Offer key={offer.publicKey} offer={offer} collateral={collateral} />
+            <Offer key={offer.publicKey.toBase58()} offer={offer} collateral={collateral} />
           ))}
       </ul>
     </div>

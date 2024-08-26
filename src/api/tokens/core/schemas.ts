@@ -1,6 +1,15 @@
+import { BondFeatures, BondingCurveType, PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { z } from 'zod'
 
-import { BondTradeTransactionSchema, FraktBondSchema, OfferSchema } from '@banx/api/shared'
+import {
+  BondTradeTransactionSchema,
+  FraktBondSchema,
+  OfferSchema,
+  SerializedBNSchema,
+  SerializedPublicKeySchema,
+  StringIntSchema,
+  StringPublicKeySchema,
+} from '@banx/api/shared'
 
 export const TokenMetaSchema = z.object({
   mint: z.string(),
@@ -18,7 +27,7 @@ export const TokenLoanSchema = z.object({
   fraktBond: FraktBondSchema,
   bondTradeTransaction: BondTradeTransactionSchema,
   collateral: TokenMetaSchema,
-  collateralPrice: z.number(),
+  collateralPrice: StringIntSchema,
   totalRepaidAmount: z.number().optional(),
 })
 
@@ -26,7 +35,7 @@ export const TokenMarketPreviewSchema = z.object({
   marketPubkey: z.string(),
 
   collateral: TokenMetaSchema,
-  collateralPrice: z.number(),
+  collateralPrice: StringIntSchema,
 
   collectionName: z.string(),
 
@@ -46,9 +55,44 @@ export const TokenMarketPreviewSchema = z.object({
   isHot: z.boolean(),
 })
 
+export const BondOfferV3Schema = z.object({
+  publicKey: SerializedPublicKeySchema,
+  assetReceiver: SerializedPublicKeySchema,
+  baseSpotPrice: SerializedBNSchema,
+  bidCap: SerializedBNSchema,
+  bidSettlement: SerializedBNSchema,
+  bondingCurve: z.object({
+    delta: SerializedBNSchema,
+    bondingType: z.nativeEnum(BondingCurveType),
+  }),
+  buyOrdersQuantity: SerializedBNSchema,
+  concentrationIndex: SerializedBNSchema,
+  currentSpotPrice: SerializedBNSchema,
+  edgeSettlement: SerializedBNSchema,
+  fundsSolOrTokenBalance: SerializedBNSchema,
+  hadoMarket: SerializedPublicKeySchema,
+  lastTransactedAt: SerializedBNSchema,
+  mathCounter: SerializedBNSchema,
+  pairState: z.nativeEnum(PairState),
+  validation: z.object({
+    loanToValueFilter: SerializedBNSchema,
+    collateralsPerToken: SerializedBNSchema,
+    maxReturnAmountFilter: SerializedBNSchema,
+    bondFeatures: z.nativeEnum(BondFeatures),
+  }),
+
+  fundsInCurrentEpoch: SerializedBNSchema,
+  fundsInNextEpoch: SerializedBNSchema,
+  lastCalculatedSlot: SerializedBNSchema,
+  lastCalculatedTimestamp: SerializedBNSchema,
+  rewardsToHarvest: SerializedBNSchema,
+  rewardsToHarvested: SerializedBNSchema,
+  loanApr: SerializedBNSchema.default('0'),
+})
+
 export const TokenOfferPreviewSchema = z.object({
   publicKey: z.string(),
-  bondOffer: OfferSchema,
+  bondOffer: BondOfferV3Schema,
   tokenMarketPreview: TokenMarketPreviewSchema,
   tokenOfferPreview: z.object({
     publicKey: z.string(),
@@ -74,8 +118,44 @@ export const TokenLoansRequestsSchema = z.object({
 export const CollateralTokenSchema = z.object({
   marketPubkey: z.string(),
   collateral: TokenMetaSchema,
-  collateralPrice: z.number(),
+  collateralPrice: StringIntSchema,
   amountInWallet: z.number(),
+})
+
+export const DBOfferSchema = z.object({
+  publicKey: StringPublicKeySchema,
+  assetReceiver: StringPublicKeySchema,
+  baseSpotPrice: z.string(),
+  bidCap: z.string(),
+  bidSettlement: z.string(),
+  bondingCurve: z.object({
+    delta: z.string(),
+    bondingType: z.nativeEnum(BondingCurveType),
+  }),
+  buyOrdersQuantity: z.string(),
+  concentrationIndex: z.string(),
+  currentSpotPrice: z.string(),
+  edgeSettlement: z.string(),
+  fundsSolOrTokenBalance: z.string(),
+  hadoMarket: StringPublicKeySchema,
+  lastTransactedAt: z.string(),
+  mathCounter: z.string(),
+  pairState: z.nativeEnum(PairState),
+
+  validation: z.object({
+    loanToValueFilter: z.string(),
+    collateralsPerToken: z.string(),
+    maxReturnAmountFilter: z.string(),
+    bondFeatures: z.nativeEnum(BondFeatures),
+  }),
+
+  fundsInCurrentEpoch: z.string(),
+  fundsInNextEpoch: z.string(),
+  lastCalculatedSlot: z.string(),
+  lastCalculatedTimestamp: z.string(),
+  rewardsToHarvest: z.string(),
+  rewardsToHarvested: z.string(),
+  loanApr: z.string(),
 })
 
 export const BorrowOfferSchema = z.object({

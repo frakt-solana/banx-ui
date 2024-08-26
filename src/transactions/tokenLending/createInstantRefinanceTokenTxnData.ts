@@ -1,12 +1,18 @@
 import { BN, web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { instantRefinancePerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
+import { BondOfferV3 } from 'fbonds-core/lib/fbond-protocol/types'
+import {
+  CreateTxnData,
+  SimulatedAccountInfoByPubkey,
+  WalletAndConnection,
+} from 'solana-transactions-executor'
 
 import { Offer } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
 
+import { accountConverterBNAndPublicKey, parseAccountInfoByPubkey } from '../functions'
 import { sendTxnPlaceHolder } from '../helpers'
 
 export type CreateInstantRefinanceTokenTxnDataParams = {
@@ -57,4 +63,12 @@ export const createInstantRefinanceTokenTxnData: CreateInstantRefinanceTokenTxnD
     signers,
     lookupTables,
   }
+}
+
+export const parseInstantRefinanceTokenSimulatedAccounts = (
+  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
+) => {
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey, accountConverterBNAndPublicKey)
+
+  return results?.['bondOfferV3']?.[0] as BondOfferV3
 }

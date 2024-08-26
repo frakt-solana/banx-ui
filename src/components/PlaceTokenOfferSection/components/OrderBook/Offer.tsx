@@ -10,7 +10,10 @@ import { TokenMeta } from '@banx/api/tokens'
 import { Pencil } from '@banx/icons'
 import { SyntheticTokenOffer } from '@banx/store/token'
 
-import { calculateTokensPerCollateral } from '../../hooks/useOfferFormController'
+import {
+  calculateTokensPerCollateral,
+  formatTokensPerCollateralToStr,
+} from '../../hooks/useOfferFormController'
 
 import styles from './OrderBook.module.less'
 
@@ -25,7 +28,7 @@ const Offer: FC<OfferProps> = ({ offer, collateral }) => {
 
   const { connected } = useWallet()
 
-  const isNewOffer = connected && offerPubkey === PUBKEY_PLACEHOLDER
+  const isNewOffer = connected && offerPubkey.toBase58() === PUBKEY_PLACEHOLDER
 
   const commonHighlightClassNames = {
     [styles.creating]: isNewOffer,
@@ -33,7 +36,12 @@ const Offer: FC<OfferProps> = ({ offer, collateral }) => {
     [styles.hidden]: !isEdit && !isNewOffer,
   }
 
-  const offerValue = calculateTokensPerCollateral(collateralsPerToken, collateralTokenDecimals)
+  const tokensPerCollateralBN = calculateTokensPerCollateral(
+    collateralsPerToken,
+    collateralTokenDecimals,
+  )
+
+  const offerValue = formatTokensPerCollateralToStr(tokensPerCollateralBN)
 
   return (
     <li className={classNames(styles.listItem, commonHighlightClassNames)}>

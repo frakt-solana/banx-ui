@@ -7,7 +7,12 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { TokenMarketPreview } from '@banx/api/tokens'
 import { useModal } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
-import { getTokenDecimals, getTokenUnit, isBanxSolTokenType } from '@banx/utils'
+import {
+  convertToDecimalString,
+  getTokenDecimals,
+  getTokenUnit,
+  isBanxSolTokenType,
+} from '@banx/utils'
 
 import { Button } from '../Buttons'
 import { InputErrorMessage, NumericStepInput } from '../inputs'
@@ -122,7 +127,7 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
 
         <MainSummary
           market={market}
-          collateralPerToken={parseFloat(collateralsPerTokenString)}
+          collateralPerToken={collateralsPerTokenString}
           apr={parseFloat(aprString)}
         />
         <AdditionalSummary
@@ -171,21 +176,24 @@ const PERCENTAGES = [60, 75, 90]
 const MaxOfferControls: FC<MaxOfferControlsProps> = ({ market, onChange, tokenType }) => {
   const { collateralPrice = 0, bestOffer = 0 } = market || {}
 
-  const handleChange = (value: number) => {
-    const decimalPlaces = getCollateralDecimalPlaces(value)
-    const formattedValue = formatLeadingZeros(value, decimalPlaces)
-    onChange(formattedValue)
-  }
+  const tokenDecimals = getTokenDecimals(tokenType) //? 1e6, 1e9
 
   const onChangePercent = (percent: number) => {
-    const value = (collateralPrice * percent) / 100
-    handleChange(value)
+    const value = ((collateralPrice / tokenDecimals) * percent) / 100
+
+    const adjustedValue = parseFloat(value.toPrecision(4))
+    const decimalString = convertToDecimalString(adjustedValue, 2)
+
+    onChange(decimalString)
   }
 
   const onChangeTopOffer = () => {
-    const tokenDecimals = getTokenDecimals(tokenType)
-    const nextValue = bestOffer / tokenDecimals
-    handleChange(nextValue)
+    const value = bestOffer / tokenDecimals
+
+    const decimalPlaces = getCollateralDecimalPlaces(value)
+    const formattedValue = formatLeadingZeros(value, decimalPlaces)
+
+    onChange(formattedValue)
   }
 
   return (

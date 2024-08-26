@@ -1,14 +1,17 @@
 import { useEffect, useMemo } from 'react'
 
 import { useQuery } from '@tanstack/react-query'
-import { PairState } from 'fbonds-core/lib/fbond-protocol/types'
+import { BondOfferV3, PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, map, maxBy } from 'lodash'
 import { create } from 'zustand'
 
-import { Offer } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
-import { isOfferNewer, isOptimisticOfferExpired, useTokenOffersOptimistic } from '@banx/store/token'
+import {
+  isOfferNewer,
+  isOptimisticOfferExpired,
+  useTokenOffersOptimistic,
+} from '@banx/store/token/useTokenOffersOptimistic'
 import { isOfferStateClosed } from '@banx/utils'
 
 import { LendTokenTabName } from './LendTokenPage'
@@ -57,7 +60,9 @@ export const useTokenMarketOffers = (marketPubkey: string) => {
     const optimisticsToRemove = chain(optimisticOffers)
       .filter(({ offer }) => !isOfferStateClosed(offer?.pairState))
       .filter(({ offer }) => {
-        const sameOfferFromBE = data?.find(({ publicKey }) => publicKey === offer.publicKey)
+        const sameOfferFromBE = data?.find(
+          ({ publicKey }) => publicKey.toBase58() === offer.publicKey.toBase58(),
+        )
         if (!sameOfferFromBE) return false
         const isBEOfferNewer = isOfferNewer(sameOfferFromBE, offer)
         return isBEOfferNewer
@@ -66,27 +71,29 @@ export const useTokenMarketOffers = (marketPubkey: string) => {
 
     if (optimisticsToRemove.length || expiredOffersByTime.length) {
       removeOffers(
-        map([...expiredOffersByTime, ...optimisticsToRemove], ({ offer }) => offer.publicKey),
+        map([...expiredOffersByTime, ...optimisticsToRemove], ({ offer }) =>
+          offer.publicKey.toBase58(),
+        ),
       )
     }
   }, [data, isFetched, isFetching, optimisticOffers, removeOffers])
 
   const offers = useMemo(() => {
     const filteredOptimisticOffers = optimisticOffers
-      .filter(({ offer }) => offer.hadoMarket === marketPubkey)
+      .filter(({ offer }) => offer.hadoMarket?.toBase58() === marketPubkey)
       .map(({ offer }) => offer)
 
     const combinedOffers = [...filteredOptimisticOffers, ...(data ?? [])]
 
     return chain(combinedOffers)
       .groupBy((offer) => offer.publicKey)
-      .map((offers) => maxBy(offers, (offer) => offer.lastTransactedAt))
+      .map((offers) => maxBy(offers, (offer) => offer.lastTransactedAt.toNumber()))
       .filter((offer) => !isOfferStateClosed(offer?.pairState || PairState.PerpetualClosed))
       .compact()
       .value()
   }, [optimisticOffers, data, marketPubkey])
 
-  const updateOrAddOffer = (offer: Offer) => {
+  const updateOrAddOffer = (offer: BondOfferV3) => {
     updateOffer([offer])
   }
 

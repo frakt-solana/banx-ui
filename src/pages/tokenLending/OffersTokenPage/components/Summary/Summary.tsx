@@ -1,6 +1,7 @@
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { BondOfferV3 } from 'fbonds-core/lib/fbond-protocol/types'
 import { uniqueId } from 'lodash'
 import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
@@ -12,7 +13,7 @@ import { DisplayValue } from '@banx/components/TableComponents'
 import { getLenderVaultInfo } from '@banx/components/WalletModal'
 import { BanxSolYieldWarningModal } from '@banx/components/modals'
 
-import { Offer } from '@banx/api/nft/core'
+import { convertBondOfferV3ToCore } from '@banx/api/nft/core'
 import { useClusterStats } from '@banx/hooks'
 import { BanxSOL } from '@banx/icons'
 import { useModal } from '@banx/store/common'
@@ -25,7 +26,7 @@ import {
 import {
   CreateClaimLenderVaultTxnDataParams,
   createClaimLenderVaultTxnData,
-  parseClaimLenderVaultSimulatedAccounts,
+  parseClaimTokenLenderVaultSimulatedAccounts,
 } from '@banx/transactions/nftLending'
 import {
   destroySnackbar,
@@ -40,8 +41,8 @@ import {
 import styles from './Summary.module.less'
 
 interface SummaryProps {
-  offers: Offer[]
-  updateOrAddOffer: (offer: Offer[]) => void
+  offers: BondOfferV3[]
+  updateOrAddOffer: (offers: BondOfferV3[]) => void
 }
 
 const Summary: FC<SummaryProps> = ({ offers, updateOrAddOffer }) => {
@@ -63,7 +64,10 @@ const Summary: FC<SummaryProps> = ({ offers, updateOrAddOffer }) => {
 
       const txnsData = await Promise.all(
         offers.map((offer) =>
-          createClaimLenderVaultTxnData({ offer, tokenType, clusterStats }, walletAndConnection),
+          createClaimLenderVaultTxnData(
+            { offer: convertBondOfferV3ToCore(offer), tokenType, clusterStats },
+            walletAndConnection,
+          ),
         ),
       )
 
@@ -85,7 +89,7 @@ const Summary: FC<SummaryProps> = ({ offers, updateOrAddOffer }) => {
             enqueueSnackbar({ message: 'Successfully claimed', type: 'success' })
             confirmed.forEach(({ accountInfoByPubkey }) => {
               if (!accountInfoByPubkey) return
-              const offer = parseClaimLenderVaultSimulatedAccounts(accountInfoByPubkey)
+              const offer = parseClaimTokenLenderVaultSimulatedAccounts(accountInfoByPubkey)
               updateOrAddOffer([offer])
             })
           }
@@ -110,6 +114,10 @@ const Summary: FC<SummaryProps> = ({ offers, updateOrAddOffer }) => {
     }
   }
 
+  const convertedBondOffersV3ToCore = useMemo(() => {
+    return offers.map((offer) => convertBondOfferV3ToCore(offer))
+  }, [offers])
+
   const {
     totalAccruedInterest,
     totalRepaymets,
@@ -119,7 +127,7 @@ const Summary: FC<SummaryProps> = ({ offers, updateOrAddOffer }) => {
     totalClaimableValue,
     totalFundsInCurrentEpoch,
     totalFundsInNextEpoch,
-  } = getLenderVaultInfo(offers, clusterStats)
+  } = getLenderVaultInfo(convertedBondOffersV3ToCore, clusterStats)
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>

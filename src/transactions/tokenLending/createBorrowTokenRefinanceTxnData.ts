@@ -4,13 +4,18 @@ import {
   borrowerRefinance,
   borrowerRefinanceToSame,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { LendingTokenType, PairState } from 'fbonds-core/lib/fbond-protocol/types'
-import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
+import { BondOfferV3, LendingTokenType, PairState } from 'fbonds-core/lib/fbond-protocol/types'
+import {
+  CreateTxnData,
+  SimulatedAccountInfoByPubkey,
+  WalletAndConnection,
+} from 'solana-transactions-executor'
 
-import { Offer } from '@banx/api/nft'
+import { BondTradeTransaction, FraktBond, Offer } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
 
+import { accountConverterBNAndPublicKey, parseAccountInfoByPubkey } from '../functions'
 import { sendTxnPlaceHolder } from '../helpers'
 
 export type CreateBorrowTokenRefinanceTxnDataParams = {
@@ -116,5 +121,17 @@ const getIxnsAndSigners = async (
     })
 
     return { instructions, signers, accountsCollection }
+  }
+}
+
+export const parseBorrowTokenRefinanceSimulatedAccounts = (
+  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
+) => {
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey, accountConverterBNAndPublicKey)
+
+  return {
+    bondOffer: results?.['bondOfferV3']?.[0] as BondOfferV3,
+    bondTradeTransaction: results?.['bondTradeTransactionV3']?.[0] as BondTradeTransaction,
+    fraktBond: results?.['fraktBond']?.[0] as FraktBond,
   }
 }

@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
+import { BN } from 'fbonds-core'
 import { MAX_APR_SPL } from 'fbonds-core/lib/fbond-protocol/constants'
 import { clamp } from 'lodash'
 
 import { TokenMarketPreview } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
 import { SyntheticTokenOffer } from '@banx/store/token'
-import { getTokenDecimals } from '@banx/utils'
+import { ZERO_BN, convertToDecimalString, getTokenDecimals } from '@banx/utils'
 
 export const useOfferFormController = (
   syntheticOffer: SyntheticTokenOffer,
@@ -33,7 +34,7 @@ export const useOfferFormController = (
     const offerSize = calculateOfferSize(syntheticOfferSize, decimals)
 
     return {
-      collateralsPerToken: isFinite(collateralsPerToken) ? String(collateralsPerToken) : '0',
+      collateralsPerToken: formatTokensPerCollateralToStr(collateralsPerToken),
       offerSize: offerSize ? String(offerSize) : '0',
       apr: syntheticApr ? String(syntheticApr) : '0',
     }
@@ -90,15 +91,35 @@ export const useOfferFormController = (
   }
 }
 
-export const calculateTokensPerCollateral = (collateralsPerToken: number, decimals: number) => {
-  if (!collateralsPerToken || !decimals) {
-    return 0
+/**
+ * Calculates the number of tokens per collateral unit.
+ * @param {BN} collateralsPerToken - The amount of collateral per token.
+ * @param {number} collateralDecimals - The number of decimal places used by the collateral token.
+ * @returns {BN} -The result is scaled by 1e9 to maintain precision in calculations involving small fractional values
+ */
+
+export const calculateTokensPerCollateral = (
+  collateralsPerToken: BN,
+  collateralDecimals: number,
+): BN => {
+  const PRECISION_ADJUSTMENT = 9
+
+  if (!collateralsPerToken || collateralsPerToken.eq(ZERO_BN)) {
+    return ZERO_BN
   }
 
-  const denominator = Math.pow(10, decimals)
-  const tokensPerCollateral = (1 * denominator) / collateralsPerToken
+  const adjustedScale = collateralDecimals + PRECISION_ADJUSTMENT
+  const scaledValue = new BN(10).pow(new BN(adjustedScale))
+  const tokensPerCollateral = scaledValue.div(collateralsPerToken)
 
-  return parseFloat(tokensPerCollateral.toPrecision(decimals))
+  return tokensPerCollateral
+}
+
+export const formatTokensPerCollateralToStr = (tokensPerCollateral: BN): string => {
+  const value = tokensPerCollateral.toNumber() / Math.pow(10, 9)
+  const adjustedValue = parseFloat(value.toPrecision(4))
+
+  return convertToDecimalString(adjustedValue)
 }
 
 const calculateOfferSize = (syntheticOfferSize: number, decimals: number) => {
@@ -106,7 +127,7 @@ const calculateOfferSize = (syntheticOfferSize: number, decimals: number) => {
 
   //? 1e4 is used for rounding the result to 4 decimal places
   const roundedOfferSize = Math.round(offerSize * 1e4) / 1e4
-  return roundedOfferSize
+  return parseFloat(roundedOfferSize.toPrecision(4))
 }
 
 const clampInputValue = (value: string, max: number): string => {

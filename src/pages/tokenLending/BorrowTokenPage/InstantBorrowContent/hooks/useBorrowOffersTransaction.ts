@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BN } from 'fbonds-core'
+import { BondOfferV3 } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, find, uniqueId } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 import { TxnExecutor } from 'solana-transactions-executor'
@@ -13,7 +14,6 @@ import {
   createLoanSubscribeNotificationsTitle,
 } from '@banx/components/modals'
 
-import { Offer } from '@banx/api/nft'
 import { CollateralToken, core } from '@banx/api/tokens'
 import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
 import { getDialectAccessToken } from '@banx/providers'
@@ -27,10 +27,10 @@ import {
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
-import { parseBorrowSimulatedAccounts } from '@banx/transactions/nftLending'
 import {
   CreateBorrowTokenTxnDataParams,
   createBorrowSplTokenTxnData,
+  parseTokenBorrowSimulatedAccounts,
 } from '@banx/transactions/tokenLending'
 import {
   destroySnackbar,
@@ -43,7 +43,7 @@ import {
 import { useSelectedOffers } from './useSelectedOffers'
 
 type TransactionParams = {
-  offer: Offer
+  offer: BondOfferV3
   loanValue: BN
   collateral: CollateralToken
   aprRate: BN
@@ -96,7 +96,10 @@ export const useBorrowOffersTransaction = (collateral: CollateralToken | undefin
     if (!marketOffers.length) return []
 
     return borrowOffers.reduce<TransactionParams[]>((acc, offer) => {
-      const offerData = find(marketOffers, ({ publicKey }) => publicKey === offer.publicKey)
+      const offerData = find(
+        marketOffers,
+        ({ publicKey }) => publicKey.toBase58() === offer.publicKey,
+      )
 
       if (!collateral) return acc
 
@@ -152,9 +155,9 @@ export const useBorrowOffersTransaction = (collateral: CollateralToken | undefin
               if (!accountInfoByPubkey) return
 
               const { bondOffer, bondTradeTransaction, fraktBond } =
-                parseBorrowSimulatedAccounts(accountInfoByPubkey)
+                parseTokenBorrowSimulatedAccounts(accountInfoByPubkey)
 
-              const loanAndOffer: { loan: core.TokenLoan; offer: Offer } = {
+              const loanAndOffer: { loan: core.TokenLoan; offer: BondOfferV3 } = {
                 loan: {
                   publicKey: fraktBond.publicKey,
                   fraktBond,

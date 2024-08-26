@@ -1,8 +1,10 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
+
+import { BN } from 'fbonds-core'
 
 import { useWalletBalance } from '@banx/hooks'
 import { useNftTokenType } from '@banx/store/nft'
-import { getTokenDecimals } from '@banx/utils'
+import { ZERO_BN, getTokenDecimals, stringToBN } from '@banx/utils'
 
 import { getAprErrorMessage, getErrorMessage } from '../helpers'
 import { useOfferFormController } from './useOfferFormController'
@@ -33,8 +35,24 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
 
   const decimals = getTokenDecimals(tokenType)
 
-  const collateralsPerToken =
-    (1 / parseFloat(collateralsPerTokenString)) * Math.pow(10, market?.collateral.decimals || 0)
+  const collateralsPerToken = useMemo(() => {
+    if (!parseFloat(collateralsPerTokenString)) {
+      return ZERO_BN
+    }
+
+    const collateralDecimals = market?.collateral.decimals || 0
+    const adjustedDecimals = Math.max(collateralDecimals, 9)
+
+    const denominator = new BN(10).pow(new BN(collateralDecimals))
+
+    const collateralsPerTokenBN = stringToBN(collateralsPerTokenString, adjustedDecimals)
+
+    if (collateralsPerTokenBN.isZero()) {
+      return ZERO_BN
+    }
+
+    return denominator.mul(new BN(10).pow(new BN(adjustedDecimals))).div(collateralsPerTokenBN)
+  }, [collateralsPerTokenString, market])
 
   const offerSize = parseFloat(offerSizeString) * decimals
 

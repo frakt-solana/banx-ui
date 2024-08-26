@@ -3,7 +3,7 @@ import { FC, useEffect, useMemo, useState } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
-import { chain, uniqueId } from 'lodash'
+import { chain, map, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
@@ -12,6 +12,7 @@ import { Slider } from '@banx/components/Slider'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import { Modal } from '@banx/components/modals/BaseModal'
 
+import { convertBondOfferV3ToCore } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
 import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
@@ -23,10 +24,10 @@ import {
   createExecutorWalletAndConnection,
   defaultTxnErrorHandler,
 } from '@banx/transactions'
-import { parseBorrowRefinanceSimulatedAccounts } from '@banx/transactions/nftLending'
 import {
   CreateBorrowTokenRefinanceTxnDataParams,
   createBorrowTokenRefinanceTxnData,
+  parseBorrowTokenRefinanceSimulatedAccounts,
 } from '@banx/transactions/tokenLending'
 import {
   caclulateBorrowTokenLoanValue,
@@ -74,7 +75,7 @@ export const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
         .sortBy(({ validation }) => validation.collateralsPerToken)
         .thru((offers) =>
           filterOutWalletLoans({
-            offers,
+            offers: map(offers, convertBondOfferV3ToCore),
             walletPubkey: wallet?.publicKey?.toBase58(),
           }),
         )
@@ -130,7 +131,7 @@ export const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
     const suitableOffer = chain(offers)
       .thru((offers) =>
         filterOutWalletLoans({
-          offers,
+          offers: map(offers, convertBondOfferV3ToCore),
           walletPubkey: wallet?.publicKey?.toBase58(),
         }),
       )
@@ -189,7 +190,7 @@ export const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
               })
 
               const { bondOffer, bondTradeTransaction, fraktBond } =
-                parseBorrowRefinanceSimulatedAccounts(accountInfoByPubkey)
+                parseBorrowTokenRefinanceSimulatedAccounts(accountInfoByPubkey)
 
               const optimisticLoan = {
                 ...params.loan,

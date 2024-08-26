@@ -135,7 +135,13 @@ export const useOfferTransactions = ({
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const txnData = await createUpdateBondingOfferTxnData(
-        { loanValue, offer: optimisticOffer, loansAmount, deltaValue, tokenType },
+        {
+          loanValue,
+          offer: optimisticOffer,
+          loansAmount,
+          deltaValue,
+          tokenType,
+        },
         walletAndConnection,
       )
 

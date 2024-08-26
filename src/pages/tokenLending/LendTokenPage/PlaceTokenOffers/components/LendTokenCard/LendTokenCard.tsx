@@ -66,7 +66,7 @@ const MarketMainInfo: FC<{ market: core.TokenMarketPreview }> = ({ market }) => 
         <div className={styles.mainInfoStats}>
           <StatInfo
             label="Price"
-            value={<DisplayValue value={collateralPrice} isSubscriptFormat />}
+            value={<DisplayValue value={collateralPrice / decimals} isSubscriptFormat />}
             tooltipText="Token market price"
           />
           <StatInfo

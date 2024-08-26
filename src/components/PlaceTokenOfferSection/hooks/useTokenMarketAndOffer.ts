@@ -14,7 +14,7 @@ export const useTokenMarketAndOffer = (offerPubkey: string, marketPubkey: string
   }, [marketPubkey, marketsPreview])
 
   const offer = useMemo(() => {
-    return offers.find((offer) => offer.publicKey === offerPubkey)
+    return offers.find((offer) => offer.publicKey.toBase58() === offerPubkey)
   }, [offers, offerPubkey])
 
   return { offer, market, updateOrAddOffer }

@@ -1,45 +1,26 @@
 import { FC } from 'react'
 
-import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
-import { uniqueId } from 'lodash'
-import { TxnExecutor } from 'solana-transactions-executor'
 
-import { useBanxSolBalance, useClusterStats, useDiscordUser, useSolanaBalance } from '@banx/hooks'
+import { useBanxSolBalance, useDiscordUser, useSolanaBalance } from '@banx/hooks'
 import { BanxSOL, ChangeWallet, Copy, SignOut } from '@banx/icons'
-import { useIsLedger } from '@banx/store/common'
+import { ModeType, useIsLedger, useModeType } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
 import {
-  TXN_EXECUTOR_DEFAULT_OPTIONS,
-  createExecutorWalletAndConnection,
-  defaultTxnErrorHandler,
-} from '@banx/transactions'
-import {
-  CreateClaimLenderVaultTxnDataParams,
-  createClaimLenderVaultTxnData,
-  parseClaimLenderVaultSimulatedAccounts,
-} from '@banx/transactions/nftLending'
-import {
   copyToClipboard,
-  destroySnackbar,
-  enqueueConfirmationError,
-  enqueueSnackbar,
-  enqueueTransactionsSent,
-  enqueueWaitingConfirmation,
   formatValueByTokenType,
   isBanxSolTokenType,
   shortenAddress,
 } from '@banx/utils'
 
-import { Button } from '../Buttons'
 import Checkbox from '../Checkbox'
-import { EpochProgressBar } from '../EpochProgressBar'
 import { StatInfo } from '../StatInfo'
 import { DisplayValue } from '../TableComponents'
 import UserAvatar from '../UserAvatar'
+import { NftLenderVault, TokenLenderVault } from './LenderVaults'
 import { iconComponents } from './constants'
-import { useLenderVaultInfo } from './hooks'
 
 import styles from './WalletModal.module.less'
 
@@ -115,29 +96,33 @@ interface UserInfoProps {
   disconnect: () => Promise<void>
 }
 
-export const UserInfo: FC<UserInfoProps> = ({ onChangeWallet, disconnect }) => (
-  <div className={styles.userInfoContainer}>
-    <UserGeneralInfo />
-    <LenderVaultContent />
-    <div className={styles.buttonsWrapper}>
-      <div className={styles.changeWalletButton} onClick={onChangeWallet}>
-        <ChangeWallet />
-        Change wallet
-      </div>
-      <div className={styles.signOutButton} onClick={disconnect}>
-        <SignOut />
-        Disconnect
+export const UserInfo: FC<UserInfoProps> = ({ onChangeWallet, disconnect }) => {
+  const { modeType } = useModeType()
+
+  return (
+    <div className={styles.userInfoContainer}>
+      <UserGeneralInfo />
+      {modeType === ModeType.NFT ? <NftLenderVault /> : <TokenLenderVault />}
+      <div className={styles.buttonsWrapper}>
+        <div className={styles.changeWalletButton} onClick={onChangeWallet}>
+          <ChangeWallet />
+          Change wallet
+        </div>
+        <div className={styles.signOutButton} onClick={disconnect}>
+          <SignOut />
+          Disconnect
+        </div>
       </div>
     </div>
-  </div>
-)
+  )
+}
 
 interface TooltipRowProps {
   label: string
   value: number
 }
 
-const TooltipRow: FC<TooltipRowProps> = ({ label, value }) => (
+export const TooltipRow: FC<TooltipRowProps> = ({ label, value }) => (
   <div className={styles.tooltipRow}>
     <span className={styles.tooltipRowLabel}>{label}</span>
     <span className={styles.tooltipRowValue}>
@@ -145,163 +130,6 @@ const TooltipRow: FC<TooltipRowProps> = ({ label, value }) => (
     </span>
   </div>
 )
-
-const LenderVaultContent = () => {
-  const wallet = useWallet()
-  const { connection } = useConnection()
-  const { tokenType } = useNftTokenType()
-
-  const { data: clusterStats } = useClusterStats()
-  const { isLedger } = useIsLedger()
-
-  const { rawOffers, updateOrAddOffer, lenderVaultInfo } = useLenderVaultInfo()
-  const {
-    totalAccruedInterest,
-    totalRepaymets,
-    totalLstYield,
-    totalClosedOffersValue,
-    totalLiquidityValue,
-    totalClaimableValue,
-    totalFundsInCurrentEpoch,
-    totalFundsInNextEpoch,
-  } = lenderVaultInfo
-
-  const claimVault = async () => {
-    if (!rawOffers.length) return
-
-    const loadingSnackbarId = uniqueId()
-
-    try {
-      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
-
-      const txnsData = await Promise.all(
-        rawOffers.map((offer) =>
-          createClaimLenderVaultTxnData(
-            {
-              offer,
-              tokenType,
-              clusterStats,
-            },
-            walletAndConnection,
-          ),
-        ),
-      )
-
-      await new TxnExecutor<CreateClaimLenderVaultTxnDataParams>(walletAndConnection, {
-        ...TXN_EXECUTOR_DEFAULT_OPTIONS,
-        chunkSize: isLedger ? 5 : 40,
-      })
-        .addTxnsData(txnsData)
-        .on('sentAll', () => {
-          enqueueTransactionsSent()
-          enqueueWaitingConfirmation(loadingSnackbarId)
-        })
-        .on('confirmedAll', (results) => {
-          const { confirmed, failed } = results
-
-          destroySnackbar(loadingSnackbarId)
-
-          if (confirmed.length) {
-            enqueueSnackbar({ message: 'Successfully claimed', type: 'success' })
-            confirmed.forEach(({ accountInfoByPubkey }) => {
-              if (!accountInfoByPubkey) return
-              const offer = parseClaimLenderVaultSimulatedAccounts(accountInfoByPubkey)
-              updateOrAddOffer([offer])
-            })
-          }
-
-          if (failed.length) {
-            return failed.forEach(({ signature, reason }) =>
-              enqueueConfirmationError(signature, reason),
-            )
-          }
-        })
-        .on('error', (error) => {
-          throw error
-        })
-        .execute()
-    } catch (error) {
-      destroySnackbar(loadingSnackbarId)
-      defaultTxnErrorHandler(error, {
-        additionalData: rawOffers,
-        walletPubkey: wallet?.publicKey?.toBase58(),
-        transactionName: 'ClaimLenderVault',
-      })
-    }
-  }
-
-  const tooltipContent = (
-    <div className={styles.tooltipContent}>
-      <TooltipRow label="Repayments" value={totalRepaymets} />
-      <TooltipRow label="Closed offers" value={totalClosedOffersValue} />
-      <TooltipRow label="Accrued interest" value={totalAccruedInterest} />
-    </div>
-  )
-
-  const formattedTotalFundsInCurrentEpoch = totalFundsInCurrentEpoch
-    ? formatValueByTokenType(totalFundsInCurrentEpoch, tokenType)
-    : 0
-
-  const formattedTotalFundsInNextEpoch = totalFundsInNextEpoch
-    ? formatValueByTokenType(totalFundsInNextEpoch, tokenType)
-    : 0
-
-  const formattedLstYieldValue = totalLstYield
-    ? formatValueByTokenType(totalLstYield, tokenType)
-    : 0
-
-  return (
-    <div className={styles.lenderVaultContainer}>
-      {isBanxSolTokenType(tokenType) && (
-        <div className={styles.epochContainer}>
-          <EpochProgressBar />
-          <div className={styles.epochStats}>
-            <StatInfo
-              label="Yield for this epoch"
-              tooltipText="Liquid staking profit, awarded as 6% APR, based on the $SOL you hold in Banx for the entire epoch (excluding taken loans)"
-              value={formattedTotalFundsInCurrentEpoch}
-              icon={BanxSOL}
-              flexType="row"
-            />
-            <StatInfo
-              label="Yield for next epoch"
-              tooltipText="Projected liquid staking profit, awarded as 6% APR, based on the $SOL you hold in Banx throughout the next epoch (excluding taken loans)"
-              value={formattedTotalFundsInNextEpoch}
-              icon={BanxSOL}
-              flexType="row"
-            />
-          </div>
-        </div>
-      )}
-
-      <div
-        className={classNames(styles.lenderValtStatsContainer, {
-          [styles.hiddenBorder]: !isBanxSolTokenType(tokenType),
-        })}
-      >
-        <div className={styles.lenderVaultStats}>
-          <StatInfo
-            label="Liquidity"
-            tooltipText={tooltipContent}
-            value={<DisplayValue value={totalLiquidityValue} />}
-          />
-          {isBanxSolTokenType(tokenType) && (
-            <StatInfo
-              label="LST yield"
-              tooltipText="Yield generated from the BanxSOL integrated Liquid Staking Token, based on the $SOL you hold in Banx throughout a whole epoch, excluding $SOL in taken loans"
-              value={formattedLstYieldValue}
-              classNamesProps={{ value: styles.claimableValue }}
-              icon={BanxSOL}
-            />
-          )}
-        </div>
-        <Button onClick={claimVault} disabled={!totalClaimableValue} size="small">
-          Claim
-        </Button>
-      </div>
-    </div>
-  )
-}
 
 interface WalletItemProps {
   onClick: () => void

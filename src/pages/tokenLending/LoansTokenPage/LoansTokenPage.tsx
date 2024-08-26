@@ -25,14 +25,14 @@ export const LoansTokenPage = () => {
     return () => setTab(null)
   }, [setTab, storeTab])
 
-  const { loans, offers, isLoading } = useWalletTokenLoansAndOffers()
+  const { loans, isLoading } = useWalletTokenLoansAndOffers()
 
   return (
     <div className={styles.pageWrapper}>
       <LoansHeader loans={loans} />
       <Tabs value={currentTabValue} {...tabsProps} />
       {currentTabValue === LoansTokenTabsName.LOANS && (
-        <LoansTokenActiveTable loans={loans} offers={offers} isLoading={isLoading} />
+        <LoansTokenActiveTable loans={loans} isLoading={isLoading} />
       )}
       {currentTabValue === LoansTokenTabsName.LISTINGS && <></>}
       {currentTabValue === LoansTokenTabsName.HISTORY && <BorrowerTokenActivityTable />}

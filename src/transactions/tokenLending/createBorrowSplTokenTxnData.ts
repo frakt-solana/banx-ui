@@ -1,18 +1,26 @@
 import { BN, web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { borrowPerpetualSpl } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
-import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
+import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import {
+  CreateTxnData,
+  SimulatedAccountInfoByPubkey,
+  WalletAndConnection,
+} from 'solana-transactions-executor'
 
-import { Offer } from '@banx/api/nft'
+import { core } from '@banx/api/nft'
 import { CollateralToken } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
-import { sendTxnPlaceHolder } from '@banx/transactions'
+import {
+  accountConverterBNAndPublicKey,
+  parseAccountInfoByPubkey,
+  sendTxnPlaceHolder,
+} from '@banx/transactions'
 
 export type CreateBorrowTokenTxnDataParams = {
   collateral: CollateralToken
   tokenType: LendingTokenType
-  offer: Offer
+  offer: BondOfferV3
   loanValue: BN
   aprRate: BN
 }
@@ -37,10 +45,10 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async (
     accounts: {
       userPubkey: walletAndConnection.wallet.publicKey,
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
-      bondOffer: new web3.PublicKey(offer.publicKey),
+      bondOffer: offer.publicKey,
       tokenMint: new web3.PublicKey(collateral.collateral.mint),
-      hadoMarket: new web3.PublicKey(offer.hadoMarket),
-      fraktMarket: new web3.PublicKey(offer.hadoMarket),
+      hadoMarket: offer.hadoMarket,
+      fraktMarket: offer.hadoMarket,
     },
     args: {
       amountToGet: loanValue,
@@ -64,5 +72,23 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async (
     signers,
     accounts,
     lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+  }
+}
+
+export const parseTokenBorrowSimulatedAccounts = (
+  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
+) => {
+  const parsedAccountsBN = parseAccountInfoByPubkey(
+    accountInfoByPubkey,
+    accountConverterBNAndPublicKey,
+  )
+  const parsedAccounts = parseAccountInfoByPubkey(accountInfoByPubkey)
+
+  return {
+    bondOffer: parsedAccountsBN?.['bondOfferV3']?.[0] as BondOfferV3,
+    bondTradeTransaction: parsedAccounts?.[
+      'bondTradeTransactionV3'
+    ]?.[0] as core.BondTradeTransaction,
+    fraktBond: parsedAccounts?.['fraktBond']?.[0] as core.FraktBond,
   }
 }

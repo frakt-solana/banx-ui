@@ -1,17 +1,19 @@
+import { BN, web3 } from 'fbonds-core'
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
+import { BondOfferV3 } from 'fbonds-core/lib/fbond-protocol/types'
 import produce from 'immer'
 import { create } from 'zustand'
 
-import { core } from '@banx/api/nft'
-import { calculateIdleFundsInOffer } from '@banx/utils'
+import { convertBondOfferV3ToCore } from '@banx/api/nft'
+import { ZERO_BN, calculateIdleFundsInOffer } from '@banx/utils'
 
 export interface SyntheticTokenOffer {
   isEdit: boolean //? if offer exits on blochain and in edit mode
-  publicKey: string //? PUBKEY_PLACEHOLDER for offers to create
+  publicKey: web3.PublicKey //? PUBKEY_PLACEHOLDER for offers to create
   offerSize: number
   assetReceiver: string
   marketPubkey: string
-  collateralsPerToken: number
+  collateralsPerToken: BN
   apr: number
 }
 
@@ -30,7 +32,9 @@ export const useSyntheticTokenOffers = create<SyntheticTokenOffersState>((set, g
   },
   findOfferByPubkey: (offerPubkey) => {
     const { offerByMarketPubkey } = get()
-    return Object.values(offerByMarketPubkey).find(({ publicKey }) => publicKey === offerPubkey)
+    return Object.values(offerByMarketPubkey).find(
+      ({ publicKey }) => publicKey.toBase58() === offerPubkey,
+    )
   },
   setOffer: (offer) =>
     set(
@@ -59,26 +63,26 @@ export const createEmptySyntheticTokenOffer: CreateEmptySyntheticTokenOffer = ({
   isEdit = false,
 }) => ({
   isEdit,
-  publicKey: PUBKEY_PLACEHOLDER,
+  publicKey: new web3.PublicKey(PUBKEY_PLACEHOLDER),
   assetReceiver: walletPubkey,
   marketPubkey,
   offerSize: 0,
-  collateralsPerToken: 0,
+  collateralsPerToken: ZERO_BN,
   apr: 0,
 })
 
-export const convertToSynthetic = (offer: core.Offer, isEdit = false): SyntheticTokenOffer => {
+export const convertToSynthetic = (offer: BondOfferV3, isEdit = false): SyntheticTokenOffer => {
   const { publicKey, assetReceiver, hadoMarket } = offer
 
-  const offerSize = calculateIdleFundsInOffer(offer).toNumber()
-  const apr = offer.loanApr / 100
+  const offerSize = calculateIdleFundsInOffer(convertBondOfferV3ToCore(offer))
+  const apr = offer.loanApr.toNumber() / 100
 
   return {
     isEdit,
     publicKey,
-    offerSize,
-    assetReceiver,
-    marketPubkey: hadoMarket,
+    offerSize: offerSize.toNumber(),
+    assetReceiver: assetReceiver.toBase58(),
+    marketPubkey: hadoMarket.toBase58(),
     collateralsPerToken: offer.validation.collateralsPerToken,
     apr,
   }

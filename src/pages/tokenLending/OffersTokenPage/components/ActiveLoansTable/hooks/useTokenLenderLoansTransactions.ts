@@ -1,4 +1,5 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { BondOfferV3 } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, uniqueId } from 'lodash'
 import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
@@ -12,7 +13,6 @@ import {
   defaultTxnErrorHandler,
 } from '@banx/transactions'
 import {
-  parseInstantRefinanceSimulatedAccounts,
   parseRepaymentCallSimulatedAccounts,
   parseTerminateSimulatedAccounts,
 } from '@banx/transactions/nftLending'
@@ -25,6 +25,7 @@ import {
   createInstantRefinanceTokenTxnData,
   createRepaymentCallTokenTxnData,
   createTerminateTokenTxnData,
+  parseInstantRefinanceTokenSimulatedAccounts,
 } from '@banx/transactions/tokenLending'
 import {
   caclulateBorrowTokenLoanValue,
@@ -170,7 +171,7 @@ export const useTokenLenderLoansTransactions = () => {
   const instantTokenLoan = async (
     loan: core.TokenLoan,
     bestOffer: Offer,
-    updateOrAddOffer: (offer: Offer) => void,
+    updateOrAddOffer: (offer: BondOfferV3) => void,
   ) => {
     if (!bestOffer) return
 
@@ -214,7 +215,7 @@ export const useTokenLenderLoansTransactions = () => {
                 solanaExplorerPath: `tx/${signature}`,
               })
 
-              const offer = parseInstantRefinanceSimulatedAccounts(accountInfoByPubkey)
+              const offer = parseInstantRefinanceTokenSimulatedAccounts(accountInfoByPubkey)
 
               updateOrAddOffer(offer)
               addLoansPubkeys([loan.publicKey])

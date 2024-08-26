@@ -1,5 +1,5 @@
 import { WalletContextState } from '@solana/wallet-adapter-react'
-import { web3 } from 'fbonds-core'
+import { BN, web3 } from 'fbonds-core'
 import { getRuleset } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { chain } from 'lodash'
 import {
@@ -18,6 +18,7 @@ import {
 
 import { helius } from '@banx/api/common'
 import { getPriorityFeeLevel } from '@banx/store/common'
+import { ZERO_BN } from '@banx/utils'
 
 import { BANX_ACCOUNTS_NAMES_AND_DISCRIMINATORS, banxCoder } from './constants'
 
@@ -83,6 +84,17 @@ export const executorGetPriorityFee: GetPriorityFee = ({ txnParams, connection }
   const accountKeys = extractAccountKeysFromInstructions(instructions).map((key) => key.toBase58())
 
   return helius.getHeliusPriorityFeeEstimate({ accountKeys, connection, priorityLevel })
+}
+
+export const accountConverterBNAndPublicKey = {
+  bnParser: (v: BN) => {
+    try {
+      return v
+    } catch (err) {
+      return ZERO_BN
+    }
+  },
+  pubkeyParser: (v: web3.PublicKey) => v,
 }
 
 export const parseBanxAccountInfo = <T>(

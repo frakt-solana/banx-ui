@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
-import { chain, filter, groupBy, map } from 'lodash'
+import { map } from 'lodash'
 import moment from 'moment'
 import { create } from 'zustand'
 
@@ -10,15 +10,8 @@ import { stats } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
 import { SECONDS_IN_72_HOURS } from '@banx/constants'
 import { useNftTokenType } from '@banx/store/nft'
-import {
-  isLoanNewer,
-  isOfferNewer,
-  isOptimisticLoanExpired,
-  isOptimisticOfferExpired,
-  useTokenLoansOptimistic,
-  useTokenOffersOptimistic,
-} from '@banx/store/token'
-import { isOfferStateClosed, isTokenLoanRepaid, isTokenLoanTerminating } from '@banx/utils'
+import { isLoanNewer, isOptimisticLoanExpired, useTokenLoansOptimistic } from '@banx/store/token'
+import { isTokenLoanRepaid, isTokenLoanTerminating } from '@banx/utils'
 
 import { LoansTokenTabsName } from './LoansTokenPage'
 
@@ -107,77 +100,8 @@ export const useWalletTokenLoansAndOffers = () => {
     })
   }, [loans])
 
-  const {
-    optimisticOffers,
-    remove: removeOptimisticOffers,
-    update: updateOptimisticOffers,
-  } = useTokenOffersOptimistic()
-
-  //? Check expiredOffers and and purge them
-  useEffect(() => {
-    if (!data || isFetching || !isFetched || !publicKeyString) return
-
-    const expiredOffersByTime = filter(optimisticOffers, (offer) => isOptimisticOfferExpired(offer))
-
-    const optimisticsToRemove = chain(optimisticOffers)
-      //? Filter closed offers from LS optimistics
-      .filter(({ offer }) => !isOfferStateClosed(offer?.pairState))
-      .filter(({ offer }) => {
-        const sameOfferFromBE = data.offers[offer.hadoMarket]?.find(
-          ({ publicKey }) => publicKey === offer.publicKey,
-        )
-        //TODO Offer may exist from Lend page. Prevent purging
-        if (!sameOfferFromBE && offer.assetReceiver === publicKeyString) return false
-        if (!sameOfferFromBE) return true
-        const isBEOfferNewer = isOfferNewer(sameOfferFromBE, offer)
-        return isBEOfferNewer
-      })
-      .value()
-
-    if (optimisticsToRemove.length || expiredOffersByTime.length) {
-      removeOptimisticOffers(
-        map([...expiredOffersByTime, ...optimisticsToRemove], ({ offer }) => offer.publicKey),
-      )
-    }
-  }, [data, isFetched, optimisticOffers, isFetching, publicKeyString, removeOptimisticOffers])
-
-  const mergedRawOffers = useMemo(() => {
-    if (!data || !publicKeyString) {
-      return {}
-    }
-
-    const optimisticsFiltered = chain(optimisticOffers)
-      //? Filter closed offers from LS optimistics
-      .filter(({ offer }) => !isOfferStateClosed(offer?.pairState))
-      //? Filter own offers from LS optimistics
-      .filter(({ offer }) => offer?.assetReceiver !== publicKeyString)
-      .value()
-
-    const optimisticsByMarket = groupBy(optimisticsFiltered, ({ offer }) => offer.hadoMarket)
-
-    return Object.fromEntries(
-      Object.entries(data.offers).map(([marketPubkey, offers]) => {
-        const nextOffers = offers.filter((offer) => {
-          const sameOptimistic = optimisticsByMarket[offer.hadoMarket]?.find(
-            ({ offer: optimisticOffer }) => optimisticOffer.publicKey === offer.publicKey,
-          )
-          if (!sameOptimistic) return true
-          return isOfferNewer(offer, sameOptimistic.offer)
-        })
-
-        const optimisticsWithSameMarket =
-          optimisticsByMarket[marketPubkey]?.map(({ offer }) => offer) || []
-
-        return [marketPubkey, [...nextOffers, ...optimisticsWithSameMarket]]
-      }),
-    )
-  }, [data, optimisticOffers, publicKeyString])
-
   return {
     loans: filteredLiquidatedLoans,
-    offers: mergedRawOffers,
-    updateOptimisticOffers,
-    removeOptimisticOffers,
     isLoading,
   }
 }
