@@ -215,11 +215,5 @@ export const fetchCollateralsList = async (props: {
     `${BACKEND_BASE_URL}/spl-assets/${walletPubkey}?${queryParams?.toString()}`,
   )
 
-  try {
-    await CollateralTokenSchema.array().parseAsync(data.data)
-  } catch (validationError) {
-    console.error('Schema validation error:', validationError)
-  }
-
-  return data.data
+  return await parseResponseSafe<CollateralToken[]>(data.data, CollateralTokenSchema.array())
 }
