@@ -41,7 +41,7 @@ export const useNftTokenType = () => {
   })
 
   const setTokenType = (tokenType: LendingTokenType) => {
-    const modeType = modeTypeFromUrl || ModeType.NFT
+    const modeType = modeTypeFromUrl || ModeType.Token
 
     setTokenTypeState(tokenType)
     navigate(createPathWithModeParams(location.pathname, modeType, tokenType))

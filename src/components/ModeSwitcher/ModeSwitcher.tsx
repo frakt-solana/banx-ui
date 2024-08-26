@@ -11,7 +11,7 @@ type ModeSwitcherProps = {
 }
 
 const ModeSwitcher: FC<ModeSwitcherProps> = ({ className }) => {
-  const MODES = [ModeType.NFT, ModeType.Token]
+  const MODES = [ModeType.Token, ModeType.NFT]
 
   const { modeType: storeModeType, setModeType } = useModeType()
 

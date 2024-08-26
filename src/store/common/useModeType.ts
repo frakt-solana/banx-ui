@@ -17,7 +17,7 @@ interface ModeState {
 }
 
 const useModeState = create<ModeState>((set) => ({
-  modeType: ModeType.NFT,
+  modeType: ModeType.Token,
   setModeType: (nextValue) => set((state) => ({ ...state, modeType: nextValue })),
 }))
 
@@ -30,7 +30,7 @@ export const useModeType = () => {
 
   const { modeType, setModeType: setModeTypeState } = useModeState((state) => {
     try {
-      const modeType = modeTypeFromUrl || ModeType.NFT
+      const modeType = modeTypeFromUrl || ModeType.Token
 
       z.nativeEnum(ModeType).parse(modeType)
 
@@ -38,7 +38,7 @@ export const useModeType = () => {
     } catch (error) {
       console.error('Error getting mode type from URL')
 
-      return { ...state, modeType: ModeType.NFT }
+      return { ...state, modeType: ModeType.Token }
     }
   })
 
