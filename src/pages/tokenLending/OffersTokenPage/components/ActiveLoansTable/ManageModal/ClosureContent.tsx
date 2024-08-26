@@ -1,6 +1,5 @@
 import { FC, useMemo } from 'react'
 
-import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { chain, isEmpty } from 'lodash'
 
@@ -14,42 +13,50 @@ import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
 import { useNftTokenType } from '@banx/store/nft'
 import {
   caclulateBorrowTokenLoanValue,
+  calculateIdleFundsInOffer,
   calculateLentTokenValueWithInterest,
-  filterOutWalletLoans,
-  findSuitableOffer,
   formatValueByTokenType,
+  getTokenDecimals,
   getTokenUnit,
   isTokenLoanActive,
   isTokenLoanTerminating,
 } from '@banx/utils'
 
 import { useTokenLenderLoansTransactions } from '../hooks'
-import { calculateFreezeExpiredAt, checkIfFreezeExpired } from './helpers'
+import {
+  calculateCollateralsPerTokenByLoan,
+  calculateFreezeExpiredAt,
+  checkIfFreezeExpired,
+} from './helpers'
 
 import styles from './ManageModal.module.less'
 
 export const ClosureContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
-  const wallet = useWallet()
-
   const marketPubkey = loan.fraktBond.hadoMarket || ''
   const { offers, updateOrAddOffer, isLoading } = useTokenMarketOffers(marketPubkey)
 
   const { instantTokenLoan, terminateTokenLoan } = useTokenLenderLoansTransactions()
+  const { tokenType } = useNftTokenType()
 
-  //TODO (Token Lending): Use BondOfferV3 type, replace other utils for BondOfferV3
+  const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6
+
   const bestOffer = useMemo(() => {
     return chain(offers)
-      .thru((offers) =>
-        filterOutWalletLoans({
-          offers: offers.map(convertBondOfferV3ToCore),
-          walletPubkey: wallet?.publicKey?.toBase58(),
-        }),
+      .filter((offer) => {
+        const loanDebt = caclulateBorrowTokenLoanValue(loan)
+        const offerSize = calculateIdleFundsInOffer(convertBondOfferV3ToCore(offer))
+        return loanDebt.lt(offerSize)
+      })
+      .filter((offer) =>
+        offer.validation.collateralsPerToken.lte(
+          calculateCollateralsPerTokenByLoan(loan, marketTokenDecimals),
+        ),
       )
-      .thru((offers) =>
-        findSuitableOffer({ loanValue: caclulateBorrowTokenLoanValue(loan).toNumber(), offers }),
-      )
+      .filter((offer) => offer.loanApr.toNumber() <= loan.bondTradeTransaction.amountOfBonds)
+      .sortBy((offer) => offer.loanApr.toNumber())
+      .first()
       .value()
-  }, [loan, offers, wallet?.publicKey])
+  }, [loan, offers, marketTokenDecimals])
 
   const isLoanActive = isTokenLoanActive(loan)
   const hasRefinanceOffer = !isEmpty(bestOffer)

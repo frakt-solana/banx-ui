@@ -32,8 +32,6 @@ import {
   WalletTokenLoansAndOffers,
 } from './types'
 
-const DEV_BACKEND_BASE_URL = 'http://ec2-52-87-120-232.compute-1.amazonaws.com:3000'
-
 type FetchTokenMarketsPreview = (
   props: RequestWithPagination<{ tokenType: LendingTokenType }>,
 ) => Promise<TokenMarketPreview[]>
@@ -45,7 +43,7 @@ export const fetchTokenMarketsPreview: FetchTokenMarketsPreview = async ({ token
   })
 
   const { data } = await axios.get<TokenMarketPreviewResponse>(
-    `${DEV_BACKEND_BASE_URL}/bonds/spl/preview?${queryParams.toString()}`,
+    `${BACKEND_BASE_URL}/bonds/spl/preview?${queryParams.toString()}`,
   )
 
   return await TokenMarketPreviewSchema.array().parseAsync(data.data)
@@ -68,7 +66,7 @@ export const fetchTokenMarketOffers: FetchTokenMarketOffers = async ({
   })
 
   const { data } = await axios.get<{ data: BondOfferV3[] }>(
-    `${DEV_BACKEND_BASE_URL}/bond-offers/${marketPubkey}?${queryParams.toString()}`,
+    `${BACKEND_BASE_URL}/bond-offers/${marketPubkey}?${queryParams.toString()}`,
   )
 
   return await parseResponseSafe<BondOfferV3[]>(data?.data, BondOfferV3Schema.array())
@@ -89,7 +87,7 @@ export const fetchTokenOffersPreview: FetchTokenOffersPreview = async ({
   })
 
   const { data } = await axios.get<{ data: TokenOfferPreview[] }>(
-    `${DEV_BACKEND_BASE_URL}/spl-offers/my-offers/${walletPubkey}?${queryParams.toString()}`,
+    `${BACKEND_BASE_URL}/spl-offers/my-offers/${walletPubkey}?${queryParams.toString()}`,
   )
 
   return await parseResponseSafe<TokenOfferPreview[]>(data?.data, TokenOfferPreviewSchema.array())
@@ -113,7 +111,7 @@ export const fetchWalletTokenLoansAndOffers: FetchWalletTokenLoansAndOffers = as
   })
 
   const { data } = await axios.get<{ data: WalletTokenLoansAndOffers }>(
-    `${DEV_BACKEND_BASE_URL}/spl-loans/borrower/${walletPublicKey}?${queryParams.toString()}`,
+    `${BACKEND_BASE_URL}/spl-loans/borrower/${walletPublicKey}?${queryParams.toString()}`,
   )
 
   return await parseResponseSafe<WalletTokenLoansAndOffers>(
@@ -139,7 +137,7 @@ export const fetchTokenLenderLoans: FetchTokenLenderLoans = async ({
   })
 
   const { data } = await axios.get<{ data: TokenLoan[] }>(
-    `${DEV_BACKEND_BASE_URL}/spl-loans/lender/${walletPublicKey}?${queryParams.toString()}`,
+    `${BACKEND_BASE_URL}/spl-loans/lender/${walletPublicKey}?${queryParams.toString()}`,
   )
 
   return await parseResponseSafe<TokenLoan[]>(data.data, TokenLoanSchema.array())
@@ -196,7 +194,7 @@ export const fetchAllTokenLoansRequests: FetchAllTokenLoansRequests = async ({
   })
 
   const { data } = await axios.get<AllTokenLoansRequestsResponse>(
-    `${DEV_BACKEND_BASE_URL}/spl-loans/requests?${queryParams.toString()}`,
+    `${BACKEND_BASE_URL}/spl-loans/requests?${queryParams.toString()}`,
   )
 
   return await parseResponseSafe<TokenLoansRequests>(data.data, TokenLoansRequestsSchema)
@@ -214,7 +212,7 @@ export const fetchCollateralsList = async (props: {
   })
 
   const { data } = await axios.get<{ data: CollateralToken[] }>(
-    `${DEV_BACKEND_BASE_URL}/spl-assets/${walletPubkey}?${queryParams?.toString()}`,
+    `${BACKEND_BASE_URL}/spl-assets/${walletPubkey}?${queryParams?.toString()}`,
   )
 
   try {
