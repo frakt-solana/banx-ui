@@ -1,5 +1,6 @@
 import { FC, useMemo } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { chain, isEmpty } from 'lodash'
 
@@ -32,6 +33,8 @@ import {
 import styles from './ManageModal.module.less'
 
 export const ClosureContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
+  const { publicKey } = useWallet()
+
   const marketPubkey = loan.fraktBond.hadoMarket || ''
   const { offers, updateOrAddOffer, isLoading } = useTokenMarketOffers(marketPubkey)
 
@@ -41,22 +44,25 @@ export const ClosureContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
   const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6
 
   const bestOffer = useMemo(() => {
-    return chain(offers)
-      .filter((offer) => {
-        const loanDebt = caclulateBorrowTokenLoanValue(loan)
-        const offerSize = calculateIdleFundsInOffer(convertBondOfferV3ToCore(offer))
-        return loanDebt.lt(offerSize)
-      })
-      .filter((offer) =>
-        offer.validation.collateralsPerToken.lte(
-          calculateCollateralsPerTokenByLoan(loan, marketTokenDecimals),
-        ),
-      )
-      .filter((offer) => offer.loanApr.toNumber() <= loan.bondTradeTransaction.amountOfBonds)
-      .sortBy((offer) => offer.loanApr.toNumber())
-      .first()
-      .value()
-  }, [loan, offers, marketTokenDecimals])
+    const loanDebt = caclulateBorrowTokenLoanValue(loan)
+    const maxCollateralsPerToken = calculateCollateralsPerTokenByLoan(loan, marketTokenDecimals)
+    const loanApr = loan.bondTradeTransaction.amountOfBonds
+
+    return (
+      chain(offers)
+        //? Filter out user offers
+        .filter((offer) => offer.assetReceiver.toBase58() !== publicKey?.toBase58())
+        //? Filter out offers that can't fully cover the loan debt
+        .filter((offer) => loanDebt.lt(calculateIdleFundsInOffer(convertBondOfferV3ToCore(offer))))
+        //? Filter out offers with an LTV lower than the loan LTV
+        .filter((offer) => offer.validation.collateralsPerToken.lte(maxCollateralsPerToken))
+        //? Filter out offers with an APR greater than the loan APR
+        .filter((offer) => offer.loanApr.toNumber() <= loanApr)
+        .sortBy((offer) => offer.loanApr.toNumber())
+        .first()
+        .value()
+    )
+  }, [loan, offers, marketTokenDecimals, publicKey])
 
   const isLoanActive = isTokenLoanActive(loan)
   const hasRefinanceOffer = !isEmpty(bestOffer)
