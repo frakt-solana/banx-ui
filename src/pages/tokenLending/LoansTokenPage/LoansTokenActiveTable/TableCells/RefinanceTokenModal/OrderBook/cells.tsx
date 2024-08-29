@@ -5,7 +5,10 @@ import { BN } from 'fbonds-core'
 import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Button } from '@banx/components/Buttons'
-import { calculateLtvPercent } from '@banx/components/PlaceTokenOfferSection/helpers'
+import {
+  calculateLtvPercent,
+  formatLeadingZeros,
+} from '@banx/components/PlaceTokenOfferSection/helpers'
 import {
   calculateTokensPerCollateral,
   formatTokensPerCollateralToStr,
@@ -99,17 +102,22 @@ export const ActionCell: FC<ActionCellProps> = ({ loan, offer, tokenType, refina
   const newLoanDebt = calculateLoanDebt({ offer, loan, marketTokenDecimals })
   const newLoanDebtNumber = newLoanDebt.toNumber()
 
-  const difference = newLoanDebtNumber - currentLoanDebt
-  const upfrontFee = Math.max(difference / 100, 0)
-  const differenceToPay = difference - upfrontFee
+  const debtDifference = newLoanDebtNumber - currentLoanDebt
+  const upfrontFee = Math.max(debtDifference / 100, 0)
+  const payableDifference = debtDifference - upfrontFee
 
-  const isDifferenceNegative = differenceToPay < 0
-
-  const humanReadableDifference = convertToHumanNumber(differenceToPay, tokenType)
+  const humanReadableDifference = convertToHumanNumber(payableDifference, tokenType)
   const tokenDecimalPlaces = getDecimalPlaces(humanReadableDifference, tokenType)
   const tokenUnit = getTokenUnit(tokenType)
 
-  const displayDifferenceValue = humanReadableDifference.toFixed(tokenDecimalPlaces)
+  const formattedDifference = formatLeadingZeros(humanReadableDifference, tokenDecimalPlaces)
+
+  const formattedDifferenceNumber = parseFloat(formattedDifference)
+
+  const displayValue = Math.abs(formattedDifferenceNumber) !== 0 ? formattedDifferenceNumber : 0
+  const isNegativeDifference = displayValue < 0
+
+  const showPlusSign = !isNegativeDifference && displayValue !== 0
 
   return (
     <Button
@@ -117,13 +125,13 @@ export const ActionCell: FC<ActionCellProps> = ({ loan, offer, tokenType, refina
       variant="secondary"
       size="small"
       className={classNames(styles.refinanceModalButton, {
-        [styles.negative]: isDifferenceNegative,
+        [styles.negative]: isNegativeDifference,
       })}
     >
       Renew
       <p className={styles.differenceValue}>
-        {!isDifferenceNegative && '+'}
-        {displayDifferenceValue} {tokenUnit}
+        {showPlusSign && '+'}
+        {displayValue} {tokenUnit}
       </p>
     </Button>
   )
