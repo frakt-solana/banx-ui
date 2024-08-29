@@ -16,13 +16,13 @@ import {
 
 import { useTokenLoansTransactions } from '../../hooks'
 
-import styles from './ActionsCell.module.less'
+import styles from './RepayTokenModal.module.less'
 
 interface RepayTokenModallProps {
   loan: core.TokenLoan
 }
 
-export const RepayTokenModal: FC<RepayTokenModallProps> = ({ loan }) => {
+const RepayTokenModal: FC<RepayTokenModallProps> = ({ loan }) => {
   const { repayLoan, repayPartialLoan } = useTokenLoansTransactions()
   const { close } = useModal()
 
@@ -114,9 +114,11 @@ export const RepayTokenModal: FC<RepayTokenModallProps> = ({ loan }) => {
   )
 }
 
+export default RepayTokenModal
+
 const DEFAULT_REPAY_PERCENT = 100
 
-export const calculateRepaymentStaticValues = (loan: core.TokenLoan) => {
+const calculateRepaymentStaticValues = (loan: core.TokenLoan) => {
   const { bondTradeTransaction } = loan
 
   const repaymentCallActive = isTokenLoanRepaymentCallActive(loan)
