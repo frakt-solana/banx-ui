@@ -1,4 +1,4 @@
-import { BN } from 'bn.js'
+import { BN } from 'fbonds-core'
 
 export const BANX_TOKEN_STAKE_DECIMAL = 1e9
 export const TOTAL_BANX_NFTS = 7_777
