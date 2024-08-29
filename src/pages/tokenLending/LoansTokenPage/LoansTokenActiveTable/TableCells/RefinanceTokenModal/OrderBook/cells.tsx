@@ -24,7 +24,7 @@ import {
   getTokenUnit,
 } from '@banx/utils'
 
-import { calculateLoanDebt } from '../../../helpers'
+import { calculateTokensToGet } from '../../../helpers'
 
 import styles from './OrderBook.module.less'
 
@@ -37,7 +37,7 @@ interface BorrowCellProps {
 export const BorrowCell: FC<BorrowCellProps> = ({ loan, offer, tokenType }) => {
   const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType))
 
-  const loanDebt = calculateLoanDebt({ offer, loan, marketTokenDecimals })
+  const loanDebt = calculateTokensToGet({ offer, loan, marketTokenDecimals })
   const borrowValue = adjustAmountWithUpfrontFee(loanDebt)
 
   const tokensPerCollateral = formatTokensPerCollateralToStr(
@@ -77,7 +77,7 @@ interface DebtCellProps {
 
 export const DebtCell: FC<DebtCellProps> = ({ offer, loan, tokenType }) => {
   const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6
-  const loanDebt = calculateLoanDebt({ offer, loan, marketTokenDecimals })
+  const loanDebt = calculateTokensToGet({ offer, loan, marketTokenDecimals })
 
   return (
     <span className={styles.cellValue}>
@@ -97,7 +97,7 @@ export const ActionCell: FC<ActionCellProps> = ({ loan, offer, tokenType, refina
   const currentLoanDebt = caclulateBorrowTokenLoanValue(loan).toNumber()
   const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6
 
-  const newLoanDebt = calculateLoanDebt({ offer, loan, marketTokenDecimals })
+  const newLoanDebt = calculateTokensToGet({ offer, loan, marketTokenDecimals })
   const newLoanDebtNumber = newLoanDebt.toNumber()
 
   const debtDifference = newLoanDebtNumber - currentLoanDebt

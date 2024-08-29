@@ -85,11 +85,15 @@ export const LTVCell: FC<LTVCellProps> = ({ loan, tokenType }) => {
   const debtValue = caclulateBorrowTokenLoanValue(loan).toNumber()
   const ltvPercent = calculateTokenLoanLtvByLoanValue(loan, debtValue)
 
-  const marketDecimals = getTokenDecimals(tokenType)
+  const marketTokenDecimals = getTokenDecimals(tokenType) //? 1e9, 1e6
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>
-      <TooltipRow label="Price" value={loan.collateralPrice / marketDecimals} isSubscriptFormat />
+      <TooltipRow
+        label="Price"
+        value={loan.collateralPrice / marketTokenDecimals}
+        isSubscriptFormat
+      />
       <TooltipRow label="Debt" value={debtValue} />
     </div>
   )

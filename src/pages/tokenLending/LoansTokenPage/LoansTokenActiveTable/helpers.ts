@@ -92,13 +92,17 @@ export const calcWeightedApr = (loans: core.TokenLoan[]) => {
   return calcWeightedAverage(totalAprValues, totalRepayValues)
 }
 
-type CalculateLoanDebt = (props: {
+type CalculateTokensToGet = (props: {
   offer: BondOfferV3
   loan: core.TokenLoan
   marketTokenDecimals: number
 }) => BN
 
-export const calculateLoanDebt: CalculateLoanDebt = ({ offer, loan, marketTokenDecimals }) => {
+export const calculateTokensToGet: CalculateTokensToGet = ({
+  offer,
+  loan,
+  marketTokenDecimals,
+}) => {
   const maxTokenToGet = calculateIdleFundsInOffer(convertBondOfferV3ToCore(offer))
 
   const tokenSupply = loan.fraktBond.fbondTokenSupply
