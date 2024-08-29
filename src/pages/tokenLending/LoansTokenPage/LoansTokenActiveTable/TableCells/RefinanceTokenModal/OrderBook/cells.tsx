@@ -9,10 +9,6 @@ import {
   calculateLtvPercent,
   formatLeadingZeros,
 } from '@banx/components/PlaceTokenOfferSection/helpers'
-import {
-  calculateTokensPerCollateral,
-  formatTokensPerCollateralToStr,
-} from '@banx/components/PlaceTokenOfferSection/hooks/useOfferFormController'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/tokens'
@@ -20,7 +16,9 @@ import { BONDS } from '@banx/constants'
 import {
   adjustAmountWithUpfrontFee,
   caclulateBorrowTokenLoanValue,
+  calculateTokensPerCollateral,
   convertToHumanNumber,
+  formatTokensPerCollateralToStr,
   getDecimalPlaces,
   getTokenDecimals,
   getTokenUnit,
