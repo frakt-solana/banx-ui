@@ -1,4 +1,4 @@
-import { IDL } from 'fbonds-core/lib/fbond-protocol/idl/bonds'
+import { fbonds } from 'fbonds-core'
 import { ExecutorOptions } from 'solana-transactions-executor'
 import { BorshCoder, createAccountDiscriminators } from 'solana-transactions-parser'
 
@@ -42,6 +42,6 @@ export const TXN_EXECUTOR_DEFAULT_OPTIONS: ExecutorOptions = {
   abortOnFirstError: false,
 }
 
-export const BANX_ACCOUNTS_NAMES_AND_DISCRIMINATORS = createAccountDiscriminators(IDL)
+export const BANX_ACCOUNTS_NAMES_AND_DISCRIMINATORS = createAccountDiscriminators(fbonds.IDL)
 
-export const banxCoder = new BorshCoder(IDL)
+export const banxCoder = new BorshCoder(fbonds.IDL)
