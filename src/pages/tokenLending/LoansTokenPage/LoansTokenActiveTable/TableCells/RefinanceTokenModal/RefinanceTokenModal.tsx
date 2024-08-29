@@ -6,7 +6,6 @@ import { BondOfferV3 } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
-import { Loader } from '@banx/components/Loader'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 import { Modal } from '@banx/components/modals/BaseModal'
@@ -160,27 +159,17 @@ const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
 
   return (
     <Modal open onCancel={closeModal} width={572} className={styles.refinanceModal}>
-      {isLoading && <Loader />}
-      {!isLoading && (
-        <>
-          <h4 className={styles.refinanceModalTitle}>Current loan</h4>
+      <h4 className={styles.refinanceModalTitle}>Current loan</h4>
 
-          <LoansInfoStats
-            apr={currentApr}
-            borrowedAmount={currentLoanBorrowedAmount}
-            debt={currentLoanDebt}
-          />
+      <LoansInfoStats
+        apr={currentApr}
+        borrowedAmount={currentLoanBorrowedAmount}
+        debt={currentLoanDebt}
+      />
 
-          <h4 className={styles.refinanceModalSubtitle}>New loan</h4>
+      <h4 className={styles.refinanceModalSubtitle}>New loan</h4>
 
-          <OrderBook
-            loan={loan}
-            offers={filteredOffers}
-            refinance={refinance}
-            isLoading={isLoading}
-          />
-        </>
-      )}
+      <OrderBook loan={loan} offers={filteredOffers} refinance={refinance} isLoading={isLoading} />
     </Modal>
   )
 }

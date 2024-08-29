@@ -1,5 +1,6 @@
 import { FC } from 'react'
 
+import classNames from 'classnames'
 import { BN } from 'fbonds-core'
 import { BondOfferV3 } from 'fbonds-core/lib/fbond-protocol/types'
 
@@ -24,14 +25,20 @@ const OrderBook: FC<OrderBookProps> = ({ loan, offers, isLoading, refinance }) =
 
   const columns = getTableColumns({ refinance, tokenType, loan })
 
+  const showEmptyList = !offers.length && !isLoading
+
   return (
     <div className={styles.orderbook}>
       <Table
         data={offers}
         columns={columns}
         className={styles.table}
-        classNameTableWrapper={styles.tableWrapper}
+        classNameTableWrapper={classNames(styles.tableWrapper, {
+          [styles.emptyWrapper]: showEmptyList,
+        })}
         loading={isLoading}
+        loaderClassName={styles.loader}
+        emptyMessage={showEmptyList ? 'No offers available' : ''}
       />
     </div>
   )

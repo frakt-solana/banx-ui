@@ -1,5 +1,6 @@
 .orderbook {
   padding-top: 12px;
+  position: relative;
   height: 100%;
   width: 100%;
 }
@@ -26,6 +27,16 @@
 
 .tableWrapper {
   height: 292px;
+
+  &.emptyWrapper {
+    height: 244px;
+  }
+}
+
+.loader {
+  position: absolute;
+  left: 46%;
+  top: 30%;
 }
 // * Table * //
 
@@ -54,6 +65,7 @@
   width: 130px;
 
   @media (max-width: 640px) {
+    height: 18px !important;
     width: 118px;
   }
 
