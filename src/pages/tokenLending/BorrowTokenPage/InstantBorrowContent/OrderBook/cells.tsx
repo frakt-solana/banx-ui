@@ -6,9 +6,7 @@ import { DisplayValue, createPercentValueJSX } from '@banx/components/TableCompo
 
 import { BorrowOffer, CollateralToken } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
-import { ZERO_BN } from '@banx/utils'
-
-import { adjustAmountWithUpfrontFee } from '../helpers'
+import { ZERO_BN, adjustAmountWithUpfrontFee } from '@banx/utils'
 
 import styles from './OrderBook.module.less'
 
