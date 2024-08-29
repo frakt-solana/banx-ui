@@ -15,7 +15,6 @@ import {
   caclulateBorrowTokenLoanValue,
   calcWeightedAverage,
   calculateIdleFundsInOffer,
-  calculateTokenLoanValueWithUpfrontFee,
   isBanxSolTokenType,
   isTokenLoanRepaymentCallActive,
 } from '@banx/utils'
@@ -119,7 +118,7 @@ export const calculateLoanDebt: CalculateLoanDebt = ({ offer, loan, marketTokenD
 
 export const getCurrentLoanInfo = (loan: core.TokenLoan) => {
   const currentLoanDebt = caclulateBorrowTokenLoanValue(loan).toNumber()
-  const currentLoanBorrowedAmount = calculateTokenLoanValueWithUpfrontFee(loan).toNumber()
+  const currentLoanBorrowedAmount = loan.fraktBond.borrowedAmount
   const currentApr = loan.bondTradeTransaction.amountOfBonds
 
   return {

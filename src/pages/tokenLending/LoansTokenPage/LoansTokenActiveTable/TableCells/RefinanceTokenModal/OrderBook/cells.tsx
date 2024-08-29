@@ -50,11 +50,9 @@ export const BorrowCell: FC<BorrowCellProps> = ({ loan, offer, tokenType }) => {
   })
 
   return (
-    <div className={styles.borrowCell}>
-      <div className={styles.borrowValueInfo}>
-        <DisplayValue value={borrowValue.toNumber()} />
-        <span className={styles.cellValue}>{createPercentValueJSX(ltvPercent)} LTV</span>
-      </div>
+    <div className={styles.borrowValueInfo}>
+      <DisplayValue value={borrowValue.toNumber()} />
+      <span className={styles.cellValue}>{createPercentValueJSX(ltvPercent)} LTV</span>
     </div>
   )
 }
@@ -124,6 +122,7 @@ export const ActionCell: FC<ActionCellProps> = ({ loan, offer, tokenType, refina
     >
       Renew
       <p className={styles.differenceValue}>
+        {!isDifferenceNegative && '+'}
         {displayDifferenceValue} {tokenUnit}
       </p>
     </Button>
