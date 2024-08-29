@@ -21,8 +21,8 @@ import { sendTxnPlaceHolder } from '../helpers'
 export type CreateBorrowTokenRefinanceTxnDataParams = {
   loan: core.TokenLoan
   offer: Offer
-  solToRefinance: number
-  aprRate: number //? Base points
+  solToRefinance: BN
+  aprRate: BN
   tokenType: LendingTokenType
 }
 
@@ -89,8 +89,8 @@ const getIxnsAndSigners = async (
       accounts: accountsCollection,
     } = await borrowerRefinanceToSame({
       args: {
-        solToRefinance: new BN(solToRefinance),
-        aprRate: new BN(aprRate),
+        solToRefinance,
+        aprRate,
         lendingTokenType: bondTradeTransaction.lendingToken,
       },
       accounts,
@@ -107,8 +107,8 @@ const getIxnsAndSigners = async (
       accounts: accountsCollection,
     } = await borrowerRefinance({
       args: {
-        solToRefinance: new BN(solToRefinance),
-        aprRate: new BN(aprRate),
+        solToRefinance,
+        aprRate,
         lendingTokenType: bondTradeTransaction.lendingToken,
       },
       accounts: {
