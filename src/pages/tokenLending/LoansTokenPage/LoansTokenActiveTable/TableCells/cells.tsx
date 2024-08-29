@@ -3,6 +3,7 @@ import { FC } from 'react'
 import { capitalize } from 'lodash'
 import moment from 'moment'
 
+import { Button } from '@banx/components/Buttons'
 import {
   DisplayValue,
   HorizontalCell,
@@ -12,6 +13,7 @@ import Timer from '@banx/components/Timer'
 
 import { core } from '@banx/api/tokens'
 import { BONDS, SECONDS_IN_72_HOURS } from '@banx/constants'
+import { useModal } from '@banx/store/common'
 import {
   HealthColorIncreasing,
   STATUS_LOANS_COLOR_MAP,
@@ -26,6 +28,8 @@ import {
 } from '@banx/utils'
 
 import { calcAccruedInterest } from '../helpers'
+import RefinanceTokenModal from './RefinanceTokenModal'
+import RepayTokenModal from './RepayTokenModal'
 
 import styles from '../LoansTokenActiveTable.module.less'
 
@@ -141,4 +145,44 @@ const getTimeContent = (loan: core.TokenLoan) => {
   }
 
   return ''
+}
+
+interface ActionsCellProps {
+  loan: core.TokenLoan
+  isCardView: boolean
+  disableActions: boolean
+}
+
+export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView, disableActions }) => {
+  const { open } = useModal()
+
+  const isLoanTerminating = isTokenLoanTerminating(loan)
+  const buttonSize = isCardView ? 'default' : 'small'
+
+  return (
+    <div className={styles.actionsButtons}>
+      <Button
+        className={styles.refinanceButton}
+        size={buttonSize}
+        variant="secondary"
+        onClick={(event) => {
+          open(RefinanceTokenModal, { loan })
+          event.stopPropagation()
+        }}
+      >
+        {isLoanTerminating ? 'Extend' : 'Reborrow'}
+      </Button>
+      <Button
+        className={styles.repayButton}
+        size={buttonSize}
+        disabled={disableActions}
+        onClick={(event) => {
+          open(RepayTokenModal, { loan })
+          event.stopPropagation()
+        }}
+      >
+        Repay
+      </Button>
+    </div>
+  )
 }

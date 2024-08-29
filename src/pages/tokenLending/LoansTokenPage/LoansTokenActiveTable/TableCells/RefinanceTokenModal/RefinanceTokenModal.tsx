@@ -38,7 +38,7 @@ import {
 
 import { getCurrentLoanInfo } from '../../helpers'
 import { useSelectedTokenLoans } from '../../loansState'
-import OrderBook from '../ActionsCell/OrderBook'
+import OrderBook from './OrderBook'
 
 import styles from './RefinanceTokenModal.module.less'
 
