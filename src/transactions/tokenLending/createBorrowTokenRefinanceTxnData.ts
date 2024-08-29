@@ -127,10 +127,11 @@ const getIxnsAndSigners = async (
 export const parseBorrowTokenRefinanceSimulatedAccounts = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ) => {
-  const results = parseAccountInfoByPubkey(accountInfoByPubkey, accountConverterBNAndPublicKey)
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey)
+  const resultsBN = parseAccountInfoByPubkey(accountInfoByPubkey, accountConverterBNAndPublicKey)
 
   return {
-    bondOffer: results?.['bondOfferV3']?.[0] as BondOfferV3,
+    bondOffer: resultsBN?.['bondOfferV3']?.[0] as BondOfferV3,
     bondTradeTransaction: results?.['bondTradeTransactionV3']?.[0] as BondTradeTransaction,
     fraktBond: results?.['fraktBond']?.[0] as FraktBond,
   }

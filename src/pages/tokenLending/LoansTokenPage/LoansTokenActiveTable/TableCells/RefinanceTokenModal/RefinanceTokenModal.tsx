@@ -1,9 +1,9 @@
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BN } from 'fbonds-core'
 import { BondOfferV3 } from 'fbonds-core/lib/fbond-protocol/types'
-import { uniqueId } from 'lodash'
+import { chain, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Loader } from '@banx/components/Loader'
@@ -29,6 +29,8 @@ import {
   parseBorrowTokenRefinanceSimulatedAccounts,
 } from '@banx/transactions/tokenLending'
 import {
+  caclulateBorrowTokenLoanValue,
+  calculateIdleFundsInOffer,
   destroySnackbar,
   enqueueConfirmationError,
   enqueueSnackbar,
@@ -113,7 +115,10 @@ const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
                 ...params.loan,
                 publicKey: fraktBond.publicKey,
                 bondTradeTransaction,
-                fraktBond,
+                fraktBond: {
+                  ...fraktBond,
+                  hadoMarket: params.loan.fraktBond.hadoMarket,
+                },
               }
 
               updateOrAddOffer(bondOffer)
@@ -139,6 +144,20 @@ const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
 
   const { currentLoanDebt, currentLoanBorrowedAmount, currentApr } = getCurrentLoanInfo(loan)
 
+  const filteredOffers = useMemo(() => {
+    const loanDebt = caclulateBorrowTokenLoanValue(loan)
+
+    return (
+      chain(offers)
+        //? Filter out user offers
+        .filter((offer) => wallet?.publicKey?.toBase58() !== offer.assetReceiver.toBase58())
+        //? Filter out offers that can't fully cover the loan debt
+        .filter((offer) => loanDebt.lt(calculateIdleFundsInOffer(convertBondOfferV3ToCore(offer))))
+        .sortBy((offer) => offer.validation.collateralsPerToken.toNumber())
+        .value()
+    )
+  }, [offers, loan, wallet])
+
   return (
     <Modal open onCancel={closeModal} width={572} className={styles.refinanceModal}>
       {isLoading && <Loader />}
@@ -154,7 +173,12 @@ const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
 
           <h4 className={styles.refinanceModalSubtitle}>New loan</h4>
 
-          <OrderBook loan={loan} offers={offers} isLoading={isLoading} refinance={refinance} />
+          <OrderBook
+            loan={loan}
+            offers={filteredOffers}
+            refinance={refinance}
+            isLoading={isLoading}
+          />
         </>
       )}
     </Modal>

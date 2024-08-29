@@ -86,7 +86,7 @@ export const useTokenMarketOffers = (marketPubkey: string) => {
     const combinedOffers = [...filteredOptimisticOffers, ...(data ?? [])]
 
     return chain(combinedOffers)
-      .groupBy((offer) => offer.publicKey)
+      .groupBy((offer) => offer.publicKey.toBase58())
       .map((offers) => maxBy(offers, (offer) => offer.lastTransactedAt.toNumber()))
       .filter((offer) => !isOfferStateClosed(offer?.pairState || PairState.PerpetualClosed))
       .compact()
