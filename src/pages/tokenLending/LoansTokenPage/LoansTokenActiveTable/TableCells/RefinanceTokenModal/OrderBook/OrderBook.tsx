@@ -25,7 +25,7 @@ const OrderBook: FC<OrderBookProps> = ({ loan, offers, isLoading, refinance }) =
   const columns = getTableColumns({ refinance, tokenType, loan })
 
   return (
-    <div className={styles.container}>
+    <div className={styles.orderbook}>
       <Table
         data={offers}
         columns={columns}

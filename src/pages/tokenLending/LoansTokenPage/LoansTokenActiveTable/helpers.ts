@@ -12,7 +12,6 @@ import { core } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
 import {
   ZERO_BN,
-  adjustAmountWithUpfrontFee,
   caclulateBorrowTokenLoanValue,
   calcWeightedAverage,
   calculateIdleFundsInOffer,
@@ -94,13 +93,13 @@ export const calcWeightedApr = (loans: core.TokenLoan[]) => {
   return calcWeightedAverage(totalAprValues, totalRepayValues)
 }
 
-type CalculateTokenToGet = (props: {
+type CalculateLoanDebt = (props: {
   offer: BondOfferV3
   loan: core.TokenLoan
   marketTokenDecimals: number
 }) => BN
 
-export const calculateTokenToGet: CalculateTokenToGet = ({ offer, loan, marketTokenDecimals }) => {
+export const calculateLoanDebt: CalculateLoanDebt = ({ offer, loan, marketTokenDecimals }) => {
   const maxTokenToGet = calculateIdleFundsInOffer(convertBondOfferV3ToCore(offer))
 
   const tokenSupply = loan.fraktBond.fbondTokenSupply
@@ -110,14 +109,12 @@ export const calculateTokenToGet: CalculateTokenToGet = ({ offer, loan, marketTo
 
   const marketTokenDecimalsMultiplier = new BN(10).pow(new BN(marketTokenDecimals))
 
-  const tokenToGet = BN.min(
+  const tokensToGet = BN.min(
     new BN(tokenSupply).mul(marketTokenDecimalsMultiplier).div(collateralsPerToken),
     maxTokenToGet,
   )
 
-  const adjustedTokenToGet = adjustAmountWithUpfrontFee(tokenToGet)
-
-  return adjustedTokenToGet
+  return tokensToGet
 }
 
 export const getCurrentLoanInfo = (loan: core.TokenLoan) => {

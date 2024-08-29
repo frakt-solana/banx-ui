@@ -1,0 +1,75 @@
+.orderbook {
+  padding-top: 12px;
+  height: 100%;
+  width: 100%;
+}
+
+// * Table * //
+.table {
+  width: 100%;
+
+  tr > td,
+  tr > th {
+    height: 40px;
+  }
+}
+
+.tableWrapper {
+  height: 200px;
+}
+// * Table * //
+
+// * Cells * //
+.cellValue {
+  font: var(--body-text-md);
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
+}
+
+.borrowCell {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.borrowValueInfo {
+  display: flex;
+  flex-direction: column;
+
+  div {
+    color: var(--content-secondary);
+    font: var(--important-text-lg);
+
+    @media (max-width: 640px) {
+      font: var(--important-text-sm);
+    }
+  }
+}
+
+.refinanceModalButton {
+  padding: 2px 8px !important;
+  gap: 4px;
+  width: 130px;
+
+  @media (max-width: 640px) {
+    width: 104px;
+  }
+
+  &.negative {
+    color: var(--content-primary) !important;
+    background-color: var(--additional-red-secondary) !important;
+    border: 1px solid var(--additional-red-primary);
+
+    &:hover {
+      border: 1px solid var(--additional-red-primary-deep);
+    }
+  }
+}
+
+.differenceValue {
+  display: flex;
+  align-items: center;
+}
+// * Cells * //
