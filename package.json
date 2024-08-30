@@ -50,7 +50,7 @@
     "bs58": "^5.0.0",
     "chart.js": "^4.4.0",
     "classnames": "^2.3.2",
-    "fbonds-core": "0.5.409",
+    "fbonds-core": "0.6.19",
     "firebase": "^10.1.0",
     "idb-keyval": "^6.2.1",
     "immer": "9.0.19",
@@ -63,7 +63,7 @@
     "react-text-transition": "^3.1.0",
     "react-virtuoso": "^4.6.2",
     "solana-transactions-executor": "5.1.0",
-    "solana-transactions-parser": "1.1.1",
+    "solana-transactions-parser": "2.0.1",
     "zod": "^3.21.4",
     "zustand": "^4.3.9"
   },
