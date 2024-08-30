@@ -29,7 +29,7 @@ export const useOffersContent = () => {
 
   const { tokenType } = useTokenType()
 
-  const { offers, updateOrAddOffer, isLoading } = useUserOffers()
+  const { offers, updateOrAddOffer, isLoading } = useUserOffers({ refetchInterval: 30 * 1000 })
 
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
 
