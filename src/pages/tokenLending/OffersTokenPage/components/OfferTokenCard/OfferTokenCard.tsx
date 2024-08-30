@@ -7,10 +7,10 @@ import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/tokens'
-import { ChevronDown, Coin, CoinPlus, SOLFilled, USDC, Warning } from '@banx/icons'
+import { ChevronDown, Coin, CoinPlus, Warning } from '@banx/icons'
 import { useNftTokenType } from '@banx/store/nft'
 import { convertToSynthetic, useSyntheticTokenOffers } from '@banx/store/token'
-import { getTokenDecimals, isBanxSolTokenType } from '@banx/utils'
+import { getTokenDecimals } from '@banx/utils'
 
 import ExpandedCardContent from '../ExpandedCardContent'
 
@@ -65,18 +65,9 @@ const MarketMainInfo: FC<{ offerPreview: core.TokenOfferPreview }> = ({ offerPre
   const { tokenType } = useNftTokenType()
   const decimals = getTokenDecimals(tokenType)
 
-  const Icon = isBanxSolTokenType(tokenType) ? (
-    <SOLFilled className={classNames(styles.collateralIcon, styles.solFilled)} />
-  ) : (
-    <USDC className={styles.collateralIcon} viewBox="1 1 14 14" />
-  )
-
   return (
     <div className={styles.mainInfoContainer}>
-      <div className={styles.collateralImageWrapper}>
-        <img src={collateral.logoUrl} className={styles.collateralImage} />
-        {Icon}
-      </div>
+      <img src={collateral.logoUrl} className={styles.collateralImage} />
       <div className={styles.mainInfoContent}>
         <h4 className={styles.collateralName}>{collateral.ticker}</h4>
         <div className={styles.mainInfoStats}>
