@@ -14,42 +14,55 @@ import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
 import { useNftTokenType } from '@banx/store/nft'
 import {
   caclulateBorrowTokenLoanValue,
+  calculateIdleFundsInOffer,
   calculateLentTokenValueWithInterest,
-  filterOutWalletLoans,
-  findSuitableOffer,
   formatValueByTokenType,
+  getTokenDecimals,
   getTokenUnit,
   isTokenLoanActive,
   isTokenLoanTerminating,
 } from '@banx/utils'
 
 import { useTokenLenderLoansTransactions } from '../hooks'
-import { calculateFreezeExpiredAt, checkIfFreezeExpired } from './helpers'
+import {
+  calculateCollateralsPerTokenByLoan,
+  calculateFreezeExpiredAt,
+  checkIfFreezeExpired,
+} from './helpers'
 
 import styles from './ManageModal.module.less'
 
 export const ClosureContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
-  const wallet = useWallet()
+  const { publicKey } = useWallet()
 
   const marketPubkey = loan.fraktBond.hadoMarket || ''
   const { offers, updateOrAddOffer, isLoading } = useTokenMarketOffers(marketPubkey)
 
   const { instantTokenLoan, terminateTokenLoan } = useTokenLenderLoansTransactions()
+  const { tokenType } = useNftTokenType()
 
-  //TODO (Token Lending): Use BondOfferV3 type, replace other utils for BondOfferV3
+  const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6
+
   const bestOffer = useMemo(() => {
-    return chain(offers)
-      .thru((offers) =>
-        filterOutWalletLoans({
-          offers: offers.map(convertBondOfferV3ToCore),
-          walletPubkey: wallet?.publicKey?.toBase58(),
-        }),
-      )
-      .thru((offers) =>
-        findSuitableOffer({ loanValue: caclulateBorrowTokenLoanValue(loan).toNumber(), offers }),
-      )
-      .value()
-  }, [loan, offers, wallet?.publicKey])
+    const loanDebt = caclulateBorrowTokenLoanValue(loan)
+    const maxCollateralsPerToken = calculateCollateralsPerTokenByLoan(loan, marketTokenDecimals)
+    const loanApr = loan.bondTradeTransaction.amountOfBonds
+
+    return (
+      chain(offers)
+        //? Filter out user offers
+        .filter((offer) => offer.assetReceiver.toBase58() !== publicKey?.toBase58())
+        //? Filter out offers that can't fully cover the loan debt
+        .filter((offer) => loanDebt.lt(calculateIdleFundsInOffer(convertBondOfferV3ToCore(offer))))
+        //? Filter out offers with an LTV lower than the loan LTV
+        .filter((offer) => offer.validation.collateralsPerToken.lte(maxCollateralsPerToken))
+        //? Filter out offers with an APR greater than the loan APR
+        .filter((offer) => offer.loanApr.toNumber() <= loanApr)
+        .sortBy((offer) => offer.loanApr.toNumber())
+        .first()
+        .value()
+    )
+  }, [loan, offers, marketTokenDecimals, publicKey])
 
   const isLoanActive = isTokenLoanActive(loan)
   const hasRefinanceOffer = !isEmpty(bestOffer)
