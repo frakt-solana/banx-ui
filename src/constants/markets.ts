@@ -7,6 +7,9 @@ export const NFT_MARKETS_WITH_CUSTOM_APR: Record<string, number> = {
 
   ['4XNFTPM6v5fDySb3nsmfcozc2Cf12Xsmvy3nufNfoWUS']: 3000, //? Cloak DAO collection PUBLIC market
   ['HuKW1yTTLFcTdt9cKvGxSBjYhmQgyAXpgyEwqdxAZS7e']: 3000, //? Cloak DAO collection PRIVATE market
+
+  ['9pSp7ZSQ9RXcLFB6YRoVUYG8bfAf66m6sLy84sAxQ9xp']: 3380, //? Pathfinders collection PUBLIC market
+  ['C6KDBWrfzRoRRmEqwj1urhjepc8Wf28qd3AoZMAKPxiW']: 3380, //? Pathfinders collection PRIVATE market
 }
 
 export const FACELESS_MARKET_PUBKEY = 'BzxKw3JLmPt7aagkHnRQEMQ4Le1rZdwEib5Viuig42hu'
