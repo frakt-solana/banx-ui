@@ -28,7 +28,6 @@ import {
   parseBorrowTokenRefinanceSimulatedAccounts,
 } from '@banx/transactions/tokenLending'
 import {
-  caclulateBorrowTokenLoanValue,
   calculateIdleFundsInOffer,
   destroySnackbar,
   enqueueConfirmationError,
@@ -144,18 +143,16 @@ const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
   const { currentLoanDebt, currentLoanBorrowedAmount, currentApr } = getCurrentLoanInfo(loan)
 
   const filteredOffers = useMemo(() => {
-    const loanDebt = caclulateBorrowTokenLoanValue(loan)
-
     return (
       chain(offers)
         //? Filter out user offers
         .filter((offer) => wallet?.publicKey?.toBase58() !== offer.assetReceiver.toBase58())
-        //? Filter out offers that can't fully cover the loan debt
-        .filter((offer) => loanDebt.lt(calculateIdleFundsInOffer(convertBondOfferV3ToCore(offer))))
+        //? Filter out empty offers
+        .filter((offer) => !calculateIdleFundsInOffer(convertBondOfferV3ToCore(offer)).isZero())
         .sortBy((offer) => offer.validation.collateralsPerToken.toNumber())
         .value()
     )
-  }, [offers, loan, wallet])
+  }, [offers, wallet])
 
   return (
     <Modal open onCancel={closeModal} width={572} className={styles.refinanceModal}>
