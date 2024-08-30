@@ -105,6 +105,10 @@ export const calculateTokensToGet: CalculateTokensToGet = ({
 }) => {
   const maxTokenToGet = calculateIdleFundsInOffer(convertBondOfferV3ToCore(offer))
 
+  //? Adjust 'maxTokenToGet' by excluding the concentration index, as the borrow refinance instruction
+  //? now operates only with 'bidSettlement' + 'fundsSolOrTokenBalance'. Will be fixed in the future!
+  const adjustedMaxTokenToGet = maxTokenToGet.sub(offer.concentrationIndex)
+
   const tokenSupply = loan.fraktBond.fbondTokenSupply
   const collateralsPerToken = offer.validation.collateralsPerToken
 
@@ -114,7 +118,7 @@ export const calculateTokensToGet: CalculateTokensToGet = ({
 
   const tokensToGet = BN.min(
     new BN(tokenSupply).mul(marketTokenDecimalsMultiplier).div(collateralsPerToken),
-    maxTokenToGet,
+    adjustedMaxTokenToGet,
   )
 
   return tokensToGet
