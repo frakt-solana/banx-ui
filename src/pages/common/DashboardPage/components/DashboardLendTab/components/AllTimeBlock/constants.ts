@@ -17,5 +17,5 @@ export const NO_DATA_CHART_DATA = {
   key: 'empty',
   label: 'Empty',
   value: 100,
-  color: 'var(--bg-secondary)',
+  color: 'var(--bg-tertiary)',
 }

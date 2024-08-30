@@ -16,7 +16,7 @@ export const createRowStyle = (offer: BorrowOffer, maxOffer: BorrowOffer | undef
 
   const ratio = calculateOfferFundingRatio(offer, maxOffer)
 
-  const backgroundColorVariable = 'var(--bg-secondary)'
+  const backgroundColorVariable = 'var(--bg-tertiary)'
 
   return {
     background: `linear-gradient(to right, ${backgroundColorVariable} ${ratio}%, transparent ${ratio}%)`,
