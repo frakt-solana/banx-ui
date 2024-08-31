@@ -1,4 +1,4 @@
-// root styles for all buttons
+// * Root styles for all buttons * //
 .root {
   background: transparent;
   border: 0;
@@ -19,50 +19,9 @@
     pointer-events: none;
   }
 }
+// * Root styles for all buttons * //
 
-// standard buttons styles
-.standard {
-  border: 1px solid transparent;
-  border-radius: 4px;
-
-  &.primary {
-    background-color: var(--accent-primary);
-    color: var(--pure-black);
-
-    &:hover {
-      background-color: var(--accent-secondary);
-    }
-  }
-
-  &.secondary {
-    background-color: var(--additional-green-secondary);
-    border-color: var(--accent-primary);
-
-    &:hover {
-      border: 1px solid var(--accent-secondary);
-    }
-  }
-
-  &.default {
-    padding: 6px 12px;
-    height: 32px;
-  }
-
-  &.small {
-    padding: 2px 12px;
-    height: 24px;
-  }
-
-  &.loading,
-  &.loading:hover,
-  &:disabled {
-    background-color: var(--bg-tertiary);
-    border: 1px solid var(--bg-border);
-    color: var(--content-secondary);
-    pointer-events: none;
-  }
-}
-
+// * Loader styles * //
 .loader {
   width: 16px;
   height: 16px;
@@ -78,8 +37,52 @@
     transform: rotate(360deg);
   }
 }
+// * Loader styles * //
 
-// Circle button styles
+// * Standard button styles * //
+.standard {
+  border-radius: 4px;
+  color: var(--pure-black);
+
+  //? Sizes
+  &.default {
+    padding: 6px 12px;
+    height: 32px;
+  }
+
+  &.small {
+    padding: 2px 12px;
+    height: 24px;
+  }
+
+  &.primary {
+    background-color: var(--accent-primary);
+
+    &:hover {
+      background-color: var(--accent-secondary);
+    }
+  }
+
+  &.secondary {
+    background-color: var(--additional-green-secondary);
+
+    &:hover {
+      border: 1px solid var(--accent-primary);
+    }
+  }
+
+  //? Loading and disabled states
+  &.loading,
+  &.loading:hover,
+  &:disabled {
+    background-color: var(--action-tertiary);
+    color: var(--content-tertiary);
+    pointer-events: none;
+  }
+}
+// * Standard button styles * //
+
+// * Circle button styles * //
 .circle {
   border-radius: 100px;
 
@@ -88,7 +91,7 @@
     background-color: var(--bg-primary);
   }
 
-  // Icon styles
+  //? Icon styles
   svg {
     height: 16px;
     width: 16px;
@@ -145,6 +148,7 @@
     padding: 6px 10px;
   }
 }
+// * Circle button styles * //
 
 .connectedButton {
   cursor: pointer;

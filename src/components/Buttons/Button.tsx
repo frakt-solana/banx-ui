@@ -34,7 +34,7 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({
     styles.root,
     styles[type],
     styles[variant],
-    styles[size] || styles.medium,
+    styles[size],
     { [styles.loading]: applyLoadingStyle },
     className,
   )
