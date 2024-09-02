@@ -1,10 +1,9 @@
 import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import classNames from 'classnames'
 
 import { useDiscordUser, useWalletBalance } from '@banx/hooks'
-import { ChevronDown, Wallet } from '@banx/icons'
+import { HorizontalDots, Wallet } from '@banx/icons'
 import { useNftTokenType } from '@banx/store/nft'
 import { shortenAddress } from '@banx/utils'
 
@@ -16,7 +15,7 @@ import { Button } from './Button'
 import styles from './Buttons.module.less'
 
 export const WalletConnectButton = () => {
-  const { toggleVisibility, visible } = useWalletModal()
+  const { toggleVisibility } = useWalletModal()
   const { publicKey, connected } = useWallet()
 
   const walletPubkeyString = publicKey?.toBase58() || ''
@@ -42,9 +41,7 @@ export const WalletConnectButton = () => {
           vaultBalance={lenderVaultInfo.totalClaimableValue}
         />
       </div>
-      <ChevronDown
-        className={classNames(styles.connectedWalletChevron, { [styles.active]: visible })}
-      />
+      <HorizontalDots className={styles.connectedWalletIcon} />
     </div>
   )
 

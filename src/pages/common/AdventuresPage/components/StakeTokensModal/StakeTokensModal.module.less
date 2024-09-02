@@ -21,12 +21,16 @@
 }
 
 .input {
-  background: var(--action-tertiary);
+  background: var(--action-primary);
   border: 1px solid var(--bg-border);
   border-radius: 6px;
   display: flex;
   align-items: center;
   padding-right: 4px;
+
+  &:has(input:focus) {
+    background: var(--action-secondary);
+  }
 }
 
 .content {
