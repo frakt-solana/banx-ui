@@ -92,7 +92,7 @@ export const TokenInputField: FC<TokenInputFieldProps> = ({
     <div className={styles.field}>
       <div className={styles.input}>
         <NumericInput value={value} onChange={onChange} placeholder="0" positiveOnly />
-        <Button onClick={onMax} size="small" variant="secondary">
+        <Button onClick={onMax} size="medium" variant="secondary">
           Use max
         </Button>
       </div>

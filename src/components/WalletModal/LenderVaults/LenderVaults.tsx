@@ -144,7 +144,7 @@ export const TokenLenderVault = () => {
             <YieldStat totalYield={totalLstYield} tokenType={tokenType} />
           )}
         </div>
-        <Button onClick={claimVault} disabled={!totalClaimableValue} size="small">
+        <Button onClick={claimVault} disabled={!totalClaimableValue} size="medium">
           Claim
         </Button>
       </div>
@@ -262,7 +262,7 @@ export const NftLenderVault = () => {
             <YieldStat totalYield={totalLstYield} tokenType={tokenType} />
           )}
         </div>
-        <Button onClick={claimVault} disabled={!totalClaimableValue} size="small">
+        <Button onClick={claimVault} disabled={!totalClaimableValue} size="medium">
           Claim
         </Button>
       </div>

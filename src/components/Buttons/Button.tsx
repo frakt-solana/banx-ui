@@ -14,7 +14,7 @@ export interface ButtonProps {
   onClick?: (args: MouseEvent<HTMLButtonElement>) => void
   type?: 'standard' | 'circle'
   variant?: 'primary' | 'secondary' | 'tertiary'
-  size?: 'default' | 'small'
+  size?: 'large' | 'medium' | 'small'
 }
 
 export const Button: FC<PropsWithChildren<ButtonProps>> = ({
@@ -25,7 +25,7 @@ export const Button: FC<PropsWithChildren<ButtonProps>> = ({
   onClick,
   type = 'standard',
   variant = 'primary',
-  size = 'default',
+  size = 'large',
   children,
 }) => {
   const applyLoadingStyle = type === 'standard' && loading

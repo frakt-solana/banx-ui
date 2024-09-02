@@ -118,7 +118,7 @@ const ControlsButtons: FC<ControlsButtonsProps> = ({ onChange, maxValue = 0, dec
         onClick={onHalfClick}
         className={styles.inputTokenSelectControlButton}
         variant="tertiary"
-        size="small"
+        size="medium"
       >
         Half
       </Button>
@@ -126,7 +126,7 @@ const ControlsButtons: FC<ControlsButtonsProps> = ({ onChange, maxValue = 0, dec
         onClick={onMaxClick}
         className={styles.inputTokenSelectControlButton}
         variant="tertiary"
-        size="small"
+        size="medium"
       >
         Max
       </Button>

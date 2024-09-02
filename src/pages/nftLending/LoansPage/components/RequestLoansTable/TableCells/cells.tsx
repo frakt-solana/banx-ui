@@ -56,7 +56,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, disabled, isCardView }
   return (
     <Button
       onClick={onButtonClick}
-      size={isCardView ? 'default' : 'small'}
+      size={isCardView ? 'large' : 'medium'}
       className={styles.delistButton}
       disabled={disabled}
     >

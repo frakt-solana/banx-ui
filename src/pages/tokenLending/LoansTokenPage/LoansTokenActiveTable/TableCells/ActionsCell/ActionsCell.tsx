@@ -21,7 +21,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView, disableAct
   const { open } = useModal()
 
   const isLoanTerminating = isTokenLoanTerminating(loan)
-  const buttonSize = isCardView ? 'default' : 'small'
+  const buttonSize = isCardView ? 'large' : 'medium'
 
   return (
     <div className={styles.actionsButtons}>

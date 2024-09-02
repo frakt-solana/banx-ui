@@ -76,7 +76,7 @@ const EditOfferButton: FC<{ onClick: () => void }> = ({ onClick }) => (
     onClick={onClick}
     type="circle"
     variant="secondary"
-    size="small"
+    size="medium"
     className={styles.editButton}
   >
     <Tooltip title="Edit">
