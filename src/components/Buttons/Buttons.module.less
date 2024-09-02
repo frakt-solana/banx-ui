@@ -42,7 +42,6 @@
 // * Standard button styles * //
 .standard {
   border-radius: 4px;
-  color: var(--pure-black);
 
   //? Sizes
   &.default {
@@ -57,6 +56,7 @@
 
   &.primary {
     background-color: var(--accent-primary);
+    color: var(--pure-black);
 
     &:hover {
       background-color: var(--accent-secondary);
@@ -65,6 +65,7 @@
 
   &.secondary {
     background-color: var(--additional-green-secondary);
+    color: var(--content-primary);
 
     &:hover {
       border: 1px solid var(--accent-primary);
@@ -85,11 +86,6 @@
 // * Circle button styles * //
 .circle {
   border-radius: 100px;
-
-  &:disabled {
-    border: 1px solid var(--bg-border);
-    background-color: var(--bg-primary);
-  }
 
   //? Icon styles
   svg {
@@ -120,7 +116,6 @@
     }
   }
 
-  // Primary circle button
   &.primary {
     background-color: var(--accent-primary);
 
@@ -134,18 +129,28 @@
     }
   }
 
-  &.secondary,
-  &.text {
-    border: 1px solid var(--bg-border);
-    background-color: var(--bg-primary);
+  &.secondary {
+    background-color: var(--action-primary);
+    border: 1px solid transparent;
 
     &:hover {
-      border-color: var(--content-primary);
+      border: 1px solid var(--bg-border-active);
     }
   }
 
   &.text {
+    background-color: var(--action-primary);
+    border: 1px solid transparent;
     padding: 6px 10px;
+
+    &:hover {
+      border: 1px solid var(--bg-border-active);
+    }
+  }
+
+  &:disabled {
+    background-color: var(--action-tertiary);
+    color: 1px solid var(--content-tertiary);
   }
 }
 // * Circle button styles * //
