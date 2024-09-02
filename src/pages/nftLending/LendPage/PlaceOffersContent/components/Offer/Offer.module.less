@@ -1,14 +1,14 @@
 .listItem {
   position: relative;
   padding: 4px 64px 4px 24px;
-  background: var(--action-tertiary);
+  background: var(--bg-primary);
   display: flex;
   align-items: center;
   min-height: 32px;
   width: 100%;
 
-  &:not(:last-child) {
-    border-bottom: var(--border-primary);
+  &:nth-child(even) {
+    background: var(--bg-secondary);
   }
 
   &.creating,
