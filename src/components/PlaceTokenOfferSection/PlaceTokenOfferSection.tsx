@@ -203,7 +203,7 @@ const MaxOfferControls: FC<MaxOfferControlsProps> = ({ market, onChange, tokenTy
           onClick={() => onChangePercent(percent)}
           className={styles.maxOfferControlsButton}
           variant="tertiary"
-          size="medium"
+          size="small"
         >
           {percent}%
         </Button>
@@ -213,7 +213,7 @@ const MaxOfferControls: FC<MaxOfferControlsProps> = ({ market, onChange, tokenTy
         className={styles.maxOfferControlsButton}
         disabled={!bestOffer}
         variant="tertiary"
-        size="medium"
+        size="small"
       >
         Top
       </Button>

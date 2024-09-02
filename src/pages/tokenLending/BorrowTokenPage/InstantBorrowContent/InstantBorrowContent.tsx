@@ -5,7 +5,7 @@ import { useWalletModal } from '@banx/components/WalletModal'
 
 import { useModal } from '@banx/store/common'
 
-import { LoanValueSlider, Separator } from '../components'
+import { LoanValueSlider } from '../components'
 import InputTokenSelect, { SkeletonInputTokenSelect } from '../components/InputTokenSelect'
 import OrderBook from './OrderBook'
 import { Summary, SummarySkeleton } from './Summary'
@@ -78,7 +78,7 @@ const InstantBorrowContent = () => {
     <div className={styles.container}>
       <div className={styles.content}>
         {showSkeleton ? (
-          <SkeletonInputTokenSelect label="Collateralize" showRightLabel />
+          <SkeletonInputTokenSelect label="Your collateral" showRightLabel />
         ) : (
           <InputTokenSelect
             label="Your collateral"
@@ -93,8 +93,6 @@ const InstantBorrowContent = () => {
             showControls={wallet.connected}
           />
         )}
-
-        <Separator />
 
         {showSkeleton ? (
           <SkeletonInputTokenSelect label="To borrow" />

@@ -89,29 +89,3 @@
   .ltvSliderColor(var(--additional-red-primary));
 }
 // * LTV Slider * //
-
-// * Separator * //
-.separator {
-  background: var(--bg-border);
-  position: relative;
-  margin: 16px -24px 24px;
-  height: 1px;
-  width: calc(100% + 48px);
-
-  @media (max-width: 640px) {
-    margin: 16px -16px 24px;
-    width: calc(100% + 32px);
-  }
-
-  &:after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%);
-
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 8px solid var(--bg-border);
-  }
-}
-// * Separator * //
