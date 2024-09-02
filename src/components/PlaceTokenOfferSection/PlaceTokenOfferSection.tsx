@@ -19,7 +19,7 @@ import { InputErrorMessage, NumericStepInput } from '../inputs'
 import { Modal } from '../modals/BaseModal'
 import { ActionsButtons } from './components/ActionsButtons'
 import OrderBook from './components/OrderBook'
-import { AdditionalSummary, MainSummary } from './components/Summary'
+import { AdditionalSummary } from './components/Summary'
 import { formatLeadingZeros, getCollateralDecimalPlaces } from './helpers'
 import { usePlaceTokenOffer } from './hooks/usePlaceTokenOffer'
 
@@ -125,12 +125,9 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
           </div>
         </div>
 
-        <MainSummary
+        <AdditionalSummary
           market={market}
           collateralPerToken={collateralsPerTokenString}
-          apr={parseFloat(aprString)}
-        />
-        <AdditionalSummary
           offerSize={parseFloat(offerSizeString) * marketTokenDecimals}
           apr={parseFloat(aprString)}
         />

@@ -1,5 +1,6 @@
 import { FC } from 'react'
 
+import classNames from 'classnames'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import moment from 'moment'
 
@@ -20,15 +21,21 @@ import { calculateLtvPercent } from '../helpers'
 
 import styles from '../PlaceTokenOfferSection.module.less'
 
-interface MainSummaryProps {
+interface OfferSummaryProps {
   market: TokenMarketPreview | undefined
   collateralPerToken: string
+  offerSize: number
   apr: number
 }
 
 const COMPOUNDING_PERIODS = 12
 
-export const MainSummary: FC<MainSummaryProps> = ({ market, collateralPerToken, apr }) => {
+export const AdditionalSummary: FC<OfferSummaryProps> = ({
+  market,
+  offerSize,
+  apr,
+  collateralPerToken,
+}) => {
   const { collateralPrice = 0 } = market || {}
 
   const { tokenType } = useNftTokenType()
@@ -42,34 +49,6 @@ export const MainSummary: FC<MainSummaryProps> = ({ market, collateralPerToken, 
 
   const apy = apr ? convertAprToApy(apr / 100, COMPOUNDING_PERIODS) : 0
 
-  return (
-    <div className={styles.mainSummary}>
-      <StatInfo
-        label="LTV"
-        value={ltvPercent}
-        tooltipText="LTV"
-        valueType={VALUES_TYPES.PERCENT}
-        valueStyles={{ color: getColorByPercent(ltvPercent, HealthColorIncreasing) }}
-        classNamesProps={{ container: styles.mainSummaryStat, value: styles.fixedValueContent }}
-      />
-      <div className={styles.separateLine} />
-      <StatInfo
-        label="APY"
-        value={apy}
-        valueType={VALUES_TYPES.PERCENT}
-        classNamesProps={{ value: styles.aprValue, container: styles.mainSummaryStat }}
-        tooltipText="APY"
-      />
-    </div>
-  )
-}
-
-interface OfferSummaryProps {
-  offerSize: number
-  apr: number
-}
-
-export const AdditionalSummary: FC<OfferSummaryProps> = ({ offerSize, apr }) => {
   const currentTimeUnix = moment().unix()
   const weeklyFee = calculateCurrentInterestSolPure({
     loanValue: offerSize,
@@ -80,6 +59,21 @@ export const AdditionalSummary: FC<OfferSummaryProps> = ({ offerSize, apr }) => 
 
   return (
     <div className={styles.additionalSummary}>
+      <StatInfo
+        label="LTV"
+        value={ltvPercent}
+        valueType={VALUES_TYPES.PERCENT}
+        valueStyles={{ color: getColorByPercent(ltvPercent, HealthColorIncreasing) }}
+        classNamesProps={{ value: styles.fixedValueContent }}
+        flexType="row"
+      />
+      <StatInfo
+        label="APY"
+        value={apy}
+        valueType={VALUES_TYPES.PERCENT}
+        classNamesProps={{ value: classNames(styles.aprValue, styles.fixedValueContent) }}
+        flexType="row"
+      />
       <StatInfo
         label="Est. weekly interest"
         value={<DisplayValue value={weeklyFee} />}
