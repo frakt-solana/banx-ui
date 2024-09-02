@@ -1,5 +1,5 @@
 body .input {
-  background: var(--bg-action);
+  background: var(--action-primary);
   border-radius: 6px;
   color: var(--content-primary);
   font: var(--body-text-md);
@@ -21,12 +21,19 @@ body .input {
     box-shadow: unset;
   }
 
+  &:focus,
+  &:focus-visible,
+  &:global(.ant-input:focus),
+  &:global(.ant-input-focused) {
+    background: var(--action-secondary);
+  }
+
   &::placeholder {
     color: var(--content-secondary);
   }
 
   &:disabled {
-    background: var(--bg-action);
+    background: var(--action-tertiary);
     color: var(--content-secondary);
     pointer-events: none;
 
