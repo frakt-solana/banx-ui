@@ -102,7 +102,7 @@ const TokenDropdownButton = <T,>({
   return (
     <Button
       type="circle"
-      variant="text"
+      variant="tertiary"
       className={classNames(styles.dropdownButton, { [styles.isOpen]: isOpen })}
       onClick={onClick}
     >

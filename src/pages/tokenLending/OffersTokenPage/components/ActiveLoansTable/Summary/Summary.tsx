@@ -53,7 +53,7 @@ const Summary: FC<SummaryProps> = ({
           className={styles.claimButton}
           onClick={() => claimTokenLoans(loansToClaim)}
           type="circle"
-          variant="text"
+          variant="tertiary"
         >
           Claim defaults
         </Button>

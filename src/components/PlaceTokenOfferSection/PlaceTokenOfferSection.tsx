@@ -72,7 +72,7 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
           className={styles.showOffersMobileButton}
           onClick={showModal}
           type="circle"
-          variant="text"
+          variant="tertiary"
         >
           See offers
         </Button>

@@ -13,7 +13,7 @@ export interface ButtonProps {
   loading?: boolean //? Applies only for standard buttons
   onClick?: (args: MouseEvent<HTMLButtonElement>) => void
   type?: 'standard' | 'circle'
-  variant?: 'primary' | 'secondary' | 'text'
+  variant?: 'primary' | 'secondary' | 'tertiary'
   size?: 'default' | 'small'
 }
 
