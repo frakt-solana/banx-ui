@@ -143,16 +143,20 @@ const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
   const { currentLoanDebt, currentLoanBorrowedAmount, currentApr } = getCurrentLoanInfo(loan)
 
   const filteredOffers = useMemo(() => {
+    const upfrontFee = new BN(currentLoanDebt).div(new BN(100))
+
     return (
       chain(offers)
         //? Filter out user offers
         .filter((offer) => wallet?.publicKey?.toBase58() !== offer.assetReceiver.toBase58())
-        //? Filter out empty offers
-        .filter((offer) => !calculateIdleFundsInOffer(convertBondOfferV3ToCore(offer)).isZero())
+        //? Filter out offers which can't cover upfront fee of prev loan
+        .filter((offer) =>
+          upfrontFee.lte(calculateIdleFundsInOffer(convertBondOfferV3ToCore(offer))),
+        )
         .sortBy((offer) => offer.validation.collateralsPerToken.toNumber())
         .value()
     )
-  }, [offers, wallet])
+  }, [currentLoanDebt, offers, wallet])
 
   return (
     <Modal open onCancel={closeModal} width={572} className={styles.refinanceModal}>
