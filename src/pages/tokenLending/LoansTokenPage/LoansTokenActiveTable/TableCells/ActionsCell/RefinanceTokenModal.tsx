@@ -14,7 +14,6 @@ import { Modal } from '@banx/components/modals/BaseModal'
 
 import { convertBondOfferV3ToCore } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
-import { BONDS } from '@banx/constants'
 import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
 import { useModal } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
@@ -295,7 +294,7 @@ const LoanInfo: FC<LoanInfoProps> = ({ title, borrowedAmount, debt, apr, faded, 
           <p>Borrowed</p>
         </div>
         <div className={styles.loanInfoValue}>
-          <p>{createPercentValueJSX((apr + BONDS.PROTOCOL_REPAY_FEE) / 100)}</p>
+          <p>{createPercentValueJSX(apr / 100)}</p>
           <p>APR</p>
         </div>
         <div className={styles.loanInfoValue}>

@@ -9,7 +9,6 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/tokens'
-import { BONDS } from '@banx/constants'
 import {
   caclulateBorrowTokenLoanValue,
   calcTokenWeeklyFeeWithRepayFee,
@@ -119,10 +118,7 @@ const getLoansStatusActionText = (selectedLoans: core.TokenLoan[]) => {
 }
 
 const calcWeightedApr = (loans: core.TokenLoan[]) => {
-  const totalAprValues = map(
-    loans,
-    (loan) => (loan.bondTradeTransaction.amountOfBonds + BONDS.PROTOCOL_REPAY_FEE) / 100,
-  )
+  const totalAprValues = map(loans, (loan) => loan.bondTradeTransaction.amountOfBonds / 100)
 
   const totalRepayValues = map(loans, (loan) => caclulateBorrowTokenLoanValue(loan).toNumber())
   return calcWeightedAverage(totalAprValues, totalRepayValues)

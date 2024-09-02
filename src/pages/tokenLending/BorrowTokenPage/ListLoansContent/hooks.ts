@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { clamp } from 'lodash'
 
 import { CollateralToken } from '@banx/api/tokens'
-import { BONDS, DAYS_IN_YEAR } from '@banx/constants'
+import { DAYS_IN_YEAR } from '@banx/constants'
 
 import { BORROW_TOKENS_LIST, BorrowToken } from '../constants'
 
@@ -50,9 +50,7 @@ export const useListLoansContent = () => {
 
   const aprInputValueIsLow = parseFloat(inputAprValue) < MIN_APR_VALUE
 
-  const lenderSeesAprValue = !aprInputValueIsLow
-    ? Math.round(parseFloat(inputAprValue) - BONDS.PROTOCOL_REPAY_FEE / 100)
-    : 0
+  const lenderSeesAprValue = !aprInputValueIsLow ? Math.round(parseFloat(inputAprValue) / 100) : 0
 
   return {
     borrowToken,

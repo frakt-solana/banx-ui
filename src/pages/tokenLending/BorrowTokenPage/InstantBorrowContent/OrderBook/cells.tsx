@@ -5,7 +5,6 @@ import { BN } from 'fbonds-core'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { BorrowOffer, CollateralToken } from '@banx/api/tokens'
-import { BONDS } from '@banx/constants'
 import { ZERO_BN } from '@banx/utils'
 
 import { adjustAmountWithUpfrontFee } from '../helpers'
@@ -52,7 +51,7 @@ export const BorrowCell: FC<BorrowCellProps> = ({
 }
 
 export const AprCell: FC<{ offer: BorrowOffer }> = ({ offer }) => {
-  const aprRateWithProtocolFee = parseFloat(offer.apr) + BONDS.PROTOCOL_REPAY_FEE
+  const aprRateWithProtocolFee = parseFloat(offer.apr)
   const aprPercent = aprRateWithProtocolFee / 100
 
   return (
