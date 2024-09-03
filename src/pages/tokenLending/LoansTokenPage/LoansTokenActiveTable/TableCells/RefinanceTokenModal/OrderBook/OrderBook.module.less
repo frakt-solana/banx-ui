@@ -1,0 +1,87 @@
+.orderbook {
+  padding-top: 12px;
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+// * Table * //
+.table {
+  width: 100%;
+
+  tr > td,
+  tr > th {
+    height: 40px;
+
+    &:last-child {
+      width: 160px;
+    }
+
+    @media (max-width: 640px) {
+      &:last-child {
+        width: 148px;
+      }
+    }
+  }
+}
+
+.tableWrapper {
+  height: 292px;
+
+  &.emptyWrapper {
+    height: 244px;
+  }
+}
+
+.loader {
+  position: absolute;
+  left: 46%;
+  top: 30%;
+}
+// * Table * //
+
+// * Cells * //
+.cellValue {
+  color: var(--content-primary);
+  font: var(--body-text-md);
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
+}
+
+.borrowValueInfo {
+  color: var(--content-secondary);
+  font: var(--important-text-lg);
+
+  @media (max-width: 640px) {
+    font: var(--important-text-sm);
+  }
+}
+
+.refinanceModalButton {
+  padding: 2px 8px !important;
+  gap: 4px;
+  width: 130px;
+
+  @media (max-width: 640px) {
+    height: 18px !important;
+    width: 118px;
+  }
+
+  &.negative {
+    color: var(--content-primary) !important;
+    background-color: var(--additional-red-secondary) !important;
+    border: 1px solid var(--additional-red-primary);
+
+    &:hover {
+      border: 1px solid var(--additional-red-primary-deep);
+    }
+  }
+}
+
+.differenceValue {
+  display: flex;
+  align-items: center;
+}
+// * Cells * //

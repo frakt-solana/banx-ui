@@ -1,11 +1,17 @@
 import { BN } from 'fbonds-core'
-import { BASE_POINTS, PROTOCOL_FEE_BN } from 'fbonds-core/lib/fbond-protocol/constants'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import moment from 'moment'
 
 import { BorrowOffer, CollateralToken } from '@banx/api/tokens'
 import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
-import { ZERO_BN, bnToHuman, calcWeightedAverage, stringToBN, sumBNs } from '@banx/utils'
+import {
+  ZERO_BN,
+  adjustAmountWithUpfrontFee,
+  bnToHuman,
+  calcWeightedAverage,
+  stringToBN,
+  sumBNs,
+} from '@banx/utils'
 
 interface GetErrorMessageProps {
   collateralToken: CollateralToken | undefined
@@ -89,15 +95,6 @@ export const getSummaryInfo = (offers: BorrowOffer[]) => {
     totalAmountToGet: adjustedTotalAmountToGet.toNumber(),
     totalCollateralsAmount: totalCollateralsAmount.toNumber(),
   }
-}
-
-const UPFRONT_FEE_BN = PROTOCOL_FEE_BN
-const BASE_POINTS_BN = new BN(BASE_POINTS)
-
-export const adjustAmountWithUpfrontFee = (amount: BN): BN => {
-  const FRACTION = BASE_POINTS_BN.sub(UPFRONT_FEE_BN) //? 9900
-
-  return amount.mul(FRACTION).div(BASE_POINTS_BN)
 }
 
 type GetButtonActionTextProps = {
