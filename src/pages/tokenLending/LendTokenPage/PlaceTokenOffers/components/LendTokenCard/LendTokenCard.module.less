@@ -4,6 +4,10 @@
   border-top: var(--border-less-primary);
   cursor: pointer;
   width: 100%;
+
+  &:last-child {
+    border-bottom: var(--border-less-primary);
+  }
 }
 
 .cardBody {
@@ -11,7 +15,7 @@
   justify-content: space-between;
   align-items: center;
   position: relative;
-  padding: 4px 24px;
+  padding: 6px 24px;
   width: 100%;
 
   &.opened {
@@ -87,12 +91,13 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(2, auto);
+    gap: 8px;
   }
 }
 
 .additionalInfoStat {
   align-items: flex-end;
-  gap: 0;
+  gap: 2px;
   max-width: 180px;
   width: 100%;
 
