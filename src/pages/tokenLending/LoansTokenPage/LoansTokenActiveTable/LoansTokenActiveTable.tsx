@@ -98,6 +98,7 @@ const LoansTokenActiveTable: FC<LoansTokenActiveTableProps> = ({ loans: rawLoans
     toggleLoanInSelection: onRowClick,
     hasSelectedLoans,
     isCardView: viewState === ViewState.CARD,
+    tokenType,
   })
 
   const rowParams = useMemo(() => {

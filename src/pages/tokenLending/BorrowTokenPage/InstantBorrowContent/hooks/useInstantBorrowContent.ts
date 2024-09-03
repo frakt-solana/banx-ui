@@ -4,10 +4,16 @@ import { BN } from 'fbonds-core'
 
 import { CollateralToken } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
-import { bnToHuman, getTokenDecimals, stringToBN, sumBNs } from '@banx/utils'
+import {
+  adjustAmountWithUpfrontFee,
+  bnToHuman,
+  getTokenDecimals,
+  stringToBN,
+  sumBNs,
+} from '@banx/utils'
 
 import { BorrowToken, DEFAULT_COLLATERAL_MARKET_PUBKEY } from '../../constants'
-import { adjustAmountWithUpfrontFee, getErrorMessage } from '../helpers'
+import { getErrorMessage } from '../helpers'
 import { useBorrowOffers } from './useBorrowOffers'
 import { useBorrowOffersTransaction } from './useBorrowOffersTransaction'
 import { useBorrowTokensList, useCollateralsList } from './useCollateralsList'

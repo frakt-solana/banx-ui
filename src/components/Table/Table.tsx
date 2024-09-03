@@ -24,6 +24,7 @@ const Table = <DataType extends object, SearchType extends object, SortType>({
   loadMore,
   customJSX,
   loaderSize,
+  loaderClassName,
 }: TableProps<DataType, SearchType, SortType>) => {
   const { viewState } = useTableView()
 
@@ -37,7 +38,7 @@ const Table = <DataType extends object, SearchType extends object, SortType>({
         <SortView columns={columns} showCard={showCard} customJSX={customJSX} {...sortViewParams} />
       )}
 
-      {loading && <Loader size={loaderSize} />}
+      {loading && <Loader className={loaderClassName} size={loaderSize} />}
       {emptyMessage && !loading && <div className={styles.emptyList}>{emptyMessage}</div>}
       <div className={classNames(styles.tableWrapper, classNameTableWrapper)}>
         {hasData && (

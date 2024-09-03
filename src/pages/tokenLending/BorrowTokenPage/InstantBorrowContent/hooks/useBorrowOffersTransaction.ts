@@ -160,7 +160,10 @@ export const useBorrowOffersTransaction = (collateral: CollateralToken | undefin
               const loanAndOffer: { loan: core.TokenLoan; offer: BondOfferV3 } = {
                 loan: {
                   publicKey: fraktBond.publicKey,
-                  fraktBond,
+                  fraktBond: {
+                    ...fraktBond,
+                    hadoMarket: params.collateral.marketPubkey,
+                  },
                   bondTradeTransaction,
                   collateral: params.collateral.collateral,
                   collateralPrice: params.collateral.collateralPrice,

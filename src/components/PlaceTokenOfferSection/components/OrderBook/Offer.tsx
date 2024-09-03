@@ -9,11 +9,7 @@ import { DisplayValue, createPercentValueJSX } from '@banx/components/TableCompo
 import { TokenMeta } from '@banx/api/tokens'
 import { Pencil } from '@banx/icons'
 import { SyntheticTokenOffer } from '@banx/store/token'
-
-import {
-  calculateTokensPerCollateral,
-  formatTokensPerCollateralToStr,
-} from '../../hooks/useOfferFormController'
+import { calculateTokensPerCollateral, formatTokensPerCollateralToStr } from '@banx/utils'
 
 import styles from './OrderBook.module.less'
 

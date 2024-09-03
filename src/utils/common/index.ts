@@ -1,3 +1,5 @@
+import { BN } from 'fbonds-core'
+import { BASE_POINTS, PROTOCOL_FEE_BN } from 'fbonds-core/lib/fbond-protocol/constants'
 import { flowRight } from 'lodash'
 
 import { stringToBN } from '../bn'
@@ -71,4 +73,13 @@ export const convertToDecimalString = (n: number, precision = 0) => {
 
   const powOfE = flowRight(Math.abs, Math.floor, Math.log10, Math.abs)(n)
   return n.toFixed(powOfE + precision)
+}
+
+export const adjustAmountWithUpfrontFee = (amount: BN): BN => {
+  const UPFRONT_FEE_BN = PROTOCOL_FEE_BN
+  const BASE_POINTS_BN = new BN(BASE_POINTS)
+
+  const FRACTION = BASE_POINTS_BN.sub(UPFRONT_FEE_BN) //? 9900
+
+  return amount.mul(FRACTION).div(BASE_POINTS_BN)
 }

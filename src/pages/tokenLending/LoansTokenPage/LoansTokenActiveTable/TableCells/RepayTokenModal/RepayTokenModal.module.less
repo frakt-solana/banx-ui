@@ -1,0 +1,71 @@
+.repayModalInfo {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.repayModalSlider {
+  margin-bottom: 24px;
+}
+
+.repayModalSliderColor (@color: var(--accent-primary)) {
+  :global {
+    .ant-slider-track {
+      background: @color !important;
+      border-color: @color !important;
+    }
+    .ant-slider-dot-active {
+      border-color: @color !important;
+    }
+
+    .ant-slider-handle {
+      border-color: @color !important;
+    }
+  }
+
+  &:hover {
+    :global {
+      .ant-slider-dot-active {
+        border-color: @color !important;
+      }
+      .ant-slider-track {
+        background: @color !important;
+        border-color: @color !important;
+      }
+    }
+  }
+}
+.repayModalSliderGreen {
+  .repayModalSliderColor(var(--accent-primary));
+}
+.repayModalSliderYellow {
+  .repayModalSliderColor(var(--additional-yellow-primary));
+}
+
+.repayModalAdditionalInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0 8px;
+}
+
+.repayModalButton {
+  width: 100%;
+}
+
+.repayModalRepaymentCall {
+  background: var(--additional-yellow-primary);
+  color: var(--pure-black);
+  cursor: pointer;
+}
+
+.repayModalButton {
+  &:disabled {
+    svg path:first-child {
+      fill: var(--content-secondary);
+    }
+  }
+}
+
+.repayButton {
+  width: 96px;
+}

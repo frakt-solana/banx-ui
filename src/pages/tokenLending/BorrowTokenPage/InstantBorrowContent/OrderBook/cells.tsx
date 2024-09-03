@@ -5,9 +5,7 @@ import { BN } from 'fbonds-core'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { BorrowOffer, CollateralToken } from '@banx/api/tokens'
-import { ZERO_BN } from '@banx/utils'
-
-import { adjustAmountWithUpfrontFee } from '../helpers'
+import { ZERO_BN, adjustAmountWithUpfrontFee } from '@banx/utils'
 
 import styles from './OrderBook.module.less'
 

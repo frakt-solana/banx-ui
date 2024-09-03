@@ -46,5 +46,6 @@ export interface TableProps<DataType, SearchType, SortType> extends TableViewPro
   showCard?: boolean
 
   loaderSize?: 'large' | 'default' | 'small'
+  loaderClassName?: string
   loading?: boolean
 }
