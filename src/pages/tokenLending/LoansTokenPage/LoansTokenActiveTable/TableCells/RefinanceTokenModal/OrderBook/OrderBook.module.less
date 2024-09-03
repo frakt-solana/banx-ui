@@ -62,8 +62,12 @@
 }
 
 .refinanceModalButton {
-  width: 116px;
+  width: 120px;
   gap: 4px;
+
+  @media (max-width: 640px) {
+    height: 20px !important;
+  }
 
   &.negative {
     color: var(--content-primary);

@@ -121,7 +121,7 @@ export const ActionCell: FC<ActionCellProps> = ({ loan, offer, tokenType, refina
     <Button
       onClick={() => refinance(offer, newLoanDebt)}
       variant="secondary"
-      size="small"
+      size="medium"
       className={classNames(styles.refinanceModalButton, {
         [styles.negative]: isNegativeDifference,
       })}
