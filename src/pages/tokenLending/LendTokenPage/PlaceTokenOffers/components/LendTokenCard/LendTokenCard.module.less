@@ -1,12 +1,12 @@
 // * LendTokenCard * //
 .card {
   background: var(--bg-primary);
-  border-top: var(--border-less-primary);
+  border-bottom: var(--border-less-primary);
   cursor: pointer;
   width: 100%;
 
-  &:last-child {
-    border-bottom: var(--border-less-primary);
+  &:first-child {
+    border-top: var(--border-less-primary);
   }
 }
 
@@ -97,6 +97,7 @@
 
 .additionalInfoStat {
   align-items: flex-end;
+  justify-content: center;
   gap: 2px;
   max-width: 180px;
   width: 100%;
