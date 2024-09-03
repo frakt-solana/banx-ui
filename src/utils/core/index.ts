@@ -43,3 +43,4 @@ export const calculateIdleFundsInOffer = (offer: core.Offer): BN => {
 export * from './loans'
 export * from './offers'
 export * from './tokenLoans'
+export * from './tokenOffers'

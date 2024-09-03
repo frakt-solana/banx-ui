@@ -4,7 +4,7 @@ import { chain, uniqueId } from 'lodash'
 import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
-import { Offer } from '@banx/api/nft'
+import { convertBondOfferV3ToCore } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
 import { useIsLedger, useModal } from '@banx/store/common'
 import {
@@ -170,7 +170,7 @@ export const useTokenLenderLoansTransactions = () => {
 
   const instantTokenLoan = async (
     loan: core.TokenLoan,
-    bestOffer: Offer,
+    bestOffer: BondOfferV3,
     updateOrAddOffer: (offer: BondOfferV3) => void,
   ) => {
     if (!bestOffer) return
@@ -183,7 +183,7 @@ export const useTokenLenderLoansTransactions = () => {
       const aprRate = loan.bondTradeTransaction.amountOfBonds
 
       const txnData = await createInstantRefinanceTokenTxnData(
-        { loan, bestOffer, aprRate },
+        { loan, bestOffer: convertBondOfferV3ToCore(bestOffer), aprRate },
         walletAndConnection,
       )
 

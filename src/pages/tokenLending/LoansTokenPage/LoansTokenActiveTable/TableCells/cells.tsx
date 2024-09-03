@@ -1,8 +1,10 @@
 import { FC } from 'react'
 
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { capitalize } from 'lodash'
 import moment from 'moment'
 
+import { Button } from '@banx/components/Buttons'
 import {
   DisplayValue,
   HorizontalCell,
@@ -12,6 +14,7 @@ import Timer from '@banx/components/Timer'
 
 import { core } from '@banx/api/tokens'
 import { BONDS, SECONDS_IN_72_HOURS } from '@banx/constants'
+import { useModal } from '@banx/store/common'
 import {
   HealthColorIncreasing,
   STATUS_LOANS_COLOR_MAP,
@@ -21,11 +24,14 @@ import {
   calculateTimeFromNow,
   calculateTokenLoanLtvByLoanValue,
   getColorByPercent,
+  getTokenDecimals,
   isTokenLoanActive,
   isTokenLoanTerminating,
 } from '@banx/utils'
 
 import { calcAccruedInterest } from '../helpers'
+import RefinanceTokenModal from './RefinanceTokenModal'
+import RepayTokenModal from './RepayTokenModal'
 
 import styles from '../LoansTokenActiveTable.module.less'
 
@@ -70,13 +76,24 @@ export const DebtCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
   )
 }
 
-export const LTVCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
+interface LTVCellProps {
+  loan: core.TokenLoan
+  tokenType: LendingTokenType
+}
+
+export const LTVCell: FC<LTVCellProps> = ({ loan, tokenType }) => {
   const debtValue = caclulateBorrowTokenLoanValue(loan).toNumber()
   const ltvPercent = calculateTokenLoanLtvByLoanValue(loan, debtValue)
 
+  const marketTokenDecimals = getTokenDecimals(tokenType) //? 1e9, 1e6
+
   const tooltipContent = (
     <div className={styles.tooltipContent}>
-      <TooltipRow label="Price" value={loan.collateralPrice} isSubscriptFormat />
+      <TooltipRow
+        label="Price"
+        value={loan.collateralPrice / marketTokenDecimals}
+        isSubscriptFormat
+      />
       <TooltipRow label="Debt" value={debtValue} />
     </div>
   )
@@ -141,4 +158,44 @@ const getTimeContent = (loan: core.TokenLoan) => {
   }
 
   return ''
+}
+
+interface ActionsCellProps {
+  loan: core.TokenLoan
+  isCardView: boolean
+  disableActions: boolean
+}
+
+export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView, disableActions }) => {
+  const { open } = useModal()
+
+  const isLoanTerminating = isTokenLoanTerminating(loan)
+  const buttonSize = isCardView ? 'large' : 'medium'
+
+  return (
+    <div className={styles.actionsButtons}>
+      <Button
+        className={styles.refinanceButton}
+        size={buttonSize}
+        variant="secondary"
+        onClick={(event) => {
+          open(RefinanceTokenModal, { loan })
+          event.stopPropagation()
+        }}
+      >
+        {isLoanTerminating ? 'Extend' : 'Reborrow'}
+      </Button>
+      <Button
+        className={styles.repayButton}
+        size={buttonSize}
+        disabled={disableActions}
+        onClick={(event) => {
+          open(RepayTokenModal, { loan })
+          event.stopPropagation()
+        }}
+      >
+        Repay
+      </Button>
+    </div>
+  )
 }

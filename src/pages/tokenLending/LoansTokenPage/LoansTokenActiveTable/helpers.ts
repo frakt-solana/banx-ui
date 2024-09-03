@@ -1,15 +1,20 @@
+import { BN } from 'fbonds-core'
 import {
   calculateCurrentInterestSolPure,
   calculatePartOfLoanBodyFromInterest,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { BondOfferV3 } from 'fbonds-core/lib/fbond-protocol/types'
 import { map } from 'lodash'
 import moment from 'moment'
 
+import { convertBondOfferV3ToCore } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
 import {
+  ZERO_BN,
   caclulateBorrowTokenLoanValue,
   calcWeightedAverage,
+  calculateIdleFundsInOffer,
   isBanxSolTokenType,
   isTokenLoanRepaymentCallActive,
 } from '@banx/utils'
@@ -85,4 +90,48 @@ export const calcWeightedApr = (loans: core.TokenLoan[]) => {
 
   const totalRepayValues = map(loans, (loan) => caclulateBorrowTokenLoanValue(loan).toNumber())
   return calcWeightedAverage(totalAprValues, totalRepayValues)
+}
+
+type CalculateTokensToGet = (props: {
+  offer: BondOfferV3
+  loan: core.TokenLoan
+  marketTokenDecimals: number
+}) => BN
+
+export const calculateTokensToGet: CalculateTokensToGet = ({
+  offer,
+  loan,
+  marketTokenDecimals,
+}) => {
+  const maxTokenToGet = calculateIdleFundsInOffer(convertBondOfferV3ToCore(offer))
+
+  //? Adjust 'maxTokenToGet' by excluding the concentration index, as the borrow refinance instruction
+  //? now operates only with 'bidSettlement' + 'fundsSolOrTokenBalance'. Will be fixed in the future!
+  const adjustedMaxTokenToGet = maxTokenToGet.sub(offer.concentrationIndex)
+
+  const tokenSupply = loan.fraktBond.fbondTokenSupply
+  const collateralsPerToken = offer.validation.collateralsPerToken
+
+  if (!tokenSupply || !collateralsPerToken) return ZERO_BN
+
+  const marketTokenDecimalsMultiplier = new BN(10).pow(new BN(marketTokenDecimals))
+
+  const tokensToGet = BN.min(
+    new BN(tokenSupply).mul(marketTokenDecimalsMultiplier).div(collateralsPerToken),
+    adjustedMaxTokenToGet,
+  )
+
+  return tokensToGet
+}
+
+export const getCurrentLoanInfo = (loan: core.TokenLoan) => {
+  const currentLoanDebt = caclulateBorrowTokenLoanValue(loan).toNumber()
+  const currentLoanBorrowedAmount = loan.fraktBond.borrowedAmount
+  const currentApr = loan.bondTradeTransaction.amountOfBonds
+
+  return {
+    currentLoanDebt,
+    currentLoanBorrowedAmount,
+    currentApr,
+  }
 }
