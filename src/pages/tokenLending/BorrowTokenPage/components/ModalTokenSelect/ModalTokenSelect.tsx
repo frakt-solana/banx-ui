@@ -1,4 +1,4 @@
-import { ChangeEvent, useMemo, useState } from 'react'
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react'
 
 import { Input } from '@banx/components/inputs/Input'
 import { Modal } from '@banx/components/modals/BaseModal'
@@ -46,10 +46,19 @@ const ModalTokenSelect = <T extends BaseToken>({
     closeModal()
   }
 
+  const internalRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (internalRef.current) {
+      internalRef.current.focus()
+    }
+  }, [])
+
   return (
     <Modal className={styles.modal} open width={468} onCancel={closeModal}>
       <div className={styles.searchInputWrapper}>
         <Input
+          ref={internalRef}
           value={searchInput}
           onChange={handleSearchInputChange}
           placeholder="Search tokens..."
