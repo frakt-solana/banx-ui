@@ -1,20 +1,16 @@
-import { ChangeEvent, FC, useMemo, useRef, useState } from 'react'
+import { FC } from 'react'
 
-import { useWallet } from '@solana/wallet-adapter-react'
 import { Skeleton } from 'antd'
 import classNames from 'classnames'
 import { BN } from 'fbonds-core'
 
 import { Button } from '@banx/components/Buttons'
-import { SolanaFMLink } from '@banx/components/SolanaLinks'
 import { NumericStepInput } from '@banx/components/inputs'
-import { Input, InputProps } from '@banx/components/inputs/Input'
 
 import { core } from '@banx/api/tokens'
-import { useOnClickOutside } from '@banx/hooks'
-import { ChevronDown, CloseModal, Wallet } from '@banx/icons'
+import { ChevronDown, Wallet } from '@banx/icons'
 import { useModal } from '@banx/store/common'
-import { bnToHuman, limitDecimalPlaces, shortenAddress, stringToBN } from '@banx/utils'
+import { bnToHuman, limitDecimalPlaces, stringToBN } from '@banx/utils'
 
 import ModalTokenSelect from '../ModalTokenSelect'
 
@@ -50,8 +46,6 @@ const InputTokenSelect = <T extends BaseToken>({
   maxValue,
   showControls = false,
 }: InputTokenSelectProps<T>) => {
-  const [visible, setVisible] = useState(false)
-
   const { open: openModal } = useModal()
 
   const handleOpenModal = () => {
@@ -80,14 +74,6 @@ const InputTokenSelect = <T extends BaseToken>({
         />
 
         <SelectTokenButton onClick={handleOpenModal} selectedToken={selectedToken} />
-
-        {visible && (
-          <SearchSelect
-            options={tokenList}
-            onChangeToken={onChangeToken}
-            onClose={() => setVisible(false)}
-          />
-        )}
       </div>
     </div>
   )
@@ -155,97 +141,6 @@ const SelectTokenButton = <T extends BaseToken>({
       <img src={logoUrl} className={styles.selectTokenButtonIcon} />
       {ticker}
       <ChevronDown className={styles.selectTokenButtonChevronIcon} />
-    </div>
-  )
-}
-
-interface SearchSelectProps<T extends BaseToken> {
-  options: T[]
-  onChangeToken: (token: T) => void
-  onClose: () => void
-}
-
-const SearchSelect = <T extends BaseToken>({
-  options,
-  onChangeToken,
-  onClose,
-}: SearchSelectProps<T>) => {
-  const { connected } = useWallet()
-
-  const [searchInput, setSearchInput] = useState('')
-
-  const handleSearchInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSearchInput(event.target.value)
-  }
-
-  const handleChangeToken = (token: T) => {
-    onChangeToken(token)
-    onClose()
-  }
-
-  const filteredOptions = useMemo(() => {
-    return options.filter((option) =>
-      option.collateral.ticker.toLowerCase().includes(searchInput.toLowerCase()),
-    )
-  }, [options, searchInput])
-
-  const dropdownRef = useRef(null)
-  useOnClickOutside(dropdownRef, onClose)
-
-  return (
-    <div className={styles.searchSelect} ref={dropdownRef}>
-      <SearchInput
-        value={searchInput}
-        onChange={handleSearchInputChange}
-        placeholder="Search tokens..."
-        onClose={onClose}
-      />
-
-      <div className={styles.selectTokenDropdown}>
-        <div className={styles.selectTokenDropdownHeader}>
-          <span>Token</span>
-          {connected && <span>Available</span>}
-        </div>
-        <div className={styles.selectTokenDropdownList}>
-          {filteredOptions.map((option, index) => (
-            <div
-              key={option.collateral.mint}
-              onClick={() => handleChangeToken(option)}
-              className={classNames(styles.dropdownItem, { [styles.highlight]: index % 2 === 0 })}
-            >
-              <div className={styles.dropdownItemMainInfo}>
-                <img className={styles.dropdownItemIcon} src={option.collateral.logoUrl} />
-                <div className={styles.dropdownItemInfo}>
-                  <span className={styles.dropdownItemTicker}>{option.collateral.ticker}</span>
-                  <span className={styles.dropdownItemAddress}>
-                    {shortenAddress(option.collateral.mint)}
-                  </span>
-                </div>
-                <SolanaFMLink path={`address/${option.collateral.mint}`} size="small" />
-              </div>
-
-              {connected && (
-                <span className={styles.dropdownItemAdditionalInfo}>
-                  {option.amountInWallet / Math.pow(10, option.collateral.decimals)}
-                </span>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-interface SearchInputProps extends InputProps {
-  onClose: () => void
-}
-
-const SearchInput: FC<SearchInputProps> = ({ onClose, ...inputProps }) => {
-  return (
-    <div className={styles.searchInputWrapper}>
-      <Input className={styles.searchInput} {...inputProps} />
-      <CloseModal onClick={onClose} className={styles.searchInputCloseIcon} />
     </div>
   )
 }

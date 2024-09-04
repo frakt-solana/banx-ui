@@ -54,3 +54,10 @@ const TokenLink: FC<{ mint: string }> = ({ mint }) => {
     </a>
   )
 }
+
+export const TokensListLabels = () => (
+  <div className={styles.tokensListLabels}>
+    <span className={styles.tokenListLabel}>Token</span>
+    <span className={styles.tokenListLabel}>Available</span>
+  </div>
+)

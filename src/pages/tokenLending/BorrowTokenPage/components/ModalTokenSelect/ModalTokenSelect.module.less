@@ -11,17 +11,26 @@
 }
 // * Modal *//
 
+.searchInputWrapper {
+  padding: 12px 24px;
+
+  input {
+    border: var(--border-less-primary) !important;
+  }
+}
+
+// * TokensListLabels * //
 .tokensListLabels {
   display: flex;
   justify-content: space-between;
   padding: 6px 16px;
-
-  span {
-    color: var(--content-tertiary);
-    font: var(--title-xs);
-    text-transform: uppercase;
-  }
 }
+.tokenListLabel {
+  color: var(--content-tertiary);
+  font: var(--title-xs);
+  text-transform: uppercase;
+}
+// * TokensListLabels * //
 
 .tokensList {
   overflow: auto;
@@ -30,10 +39,12 @@
 
 // * TokenListItem * //
 .tokensListItem {
+  cursor: pointer;
   display: flex;
   justify-content: space-between;
   padding: 4px 0;
 
+  &:hover,
   &:nth-child(odd) {
     background: var(--bg-secondary);
   }
@@ -62,6 +73,7 @@
     text-decoration: underline;
 
     &:hover {
+      color: var(--content-primary);
       text-decoration: none;
     }
   }
