@@ -97,7 +97,7 @@ const InstantBorrowContent = () => {
         <Button
           onClick={onSubmit}
           className={styles.borrowButton}
-          disabled={wallet.connected && !!errorMessage}
+          disabled={wallet.connected && (!!errorMessage || !offersInCart.length)}
           loading={!errorMessage && (isBorrowing || isLoading)}
         >
           {wallet.connected ? 'Borrow' : 'Connect wallet'}
