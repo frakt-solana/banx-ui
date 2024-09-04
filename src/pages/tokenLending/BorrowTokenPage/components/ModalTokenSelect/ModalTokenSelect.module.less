@@ -41,6 +41,7 @@
 .tokensListItem {
   cursor: pointer;
   display: flex;
+  align-items: center;
   justify-content: space-between;
   padding: 4px 0;
 
@@ -83,14 +84,14 @@
     flex-direction: column;
     align-items: flex-end;
     padding-right: 16px;
+  }
 
-    span:first-child {
-      font: var(--body-text-sm);
-    }
+  &CollateralsAmount {
+    font: var(--body-text-sm);
+  }
 
-    span:last-child {
-      font: var(--body-text-xs);
-    }
+  &CollateralsAmountUsd {
+    font: var(--body-text-xs);
   }
 }
 // * TokenListItem * //

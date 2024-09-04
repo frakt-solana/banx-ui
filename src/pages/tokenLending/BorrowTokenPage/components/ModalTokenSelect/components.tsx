@@ -30,6 +30,8 @@ interface TokenBalanceInfoProps {
 }
 
 const TokenBalanceInfo: FC<TokenBalanceInfoProps> = ({ token }) => {
+  const USDC_BALANCE_TRESHOLD = 0.001
+
   const { amountInWallet, collateral } = token
 
   if (!amountInWallet) return null
@@ -39,8 +41,15 @@ const TokenBalanceInfo: FC<TokenBalanceInfoProps> = ({ token }) => {
 
   return (
     <div className={styles.tokensListItemBalanceInfo}>
-      <span>{formatCollateralTokenValue(tokensAmount)}</span>
-      <span>{formatCollateralTokenValue(tokensAmountInUsd)}$</span>
+      <span className={styles.tokensListItemCollateralsAmount}>
+        {formatCollateralTokenValue(tokensAmount)}
+      </span>
+
+      {!!tokensAmountInUsd && tokensAmountInUsd > USDC_BALANCE_TRESHOLD && (
+        <span className={styles.tokensListItemCollateralsAmountUsd}>
+          {formatCollateralTokenValue(tokensAmountInUsd)}$
+        </span>
+      )}
     </div>
   )
 }
