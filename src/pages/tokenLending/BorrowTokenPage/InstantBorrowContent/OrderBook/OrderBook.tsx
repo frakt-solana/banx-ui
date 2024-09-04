@@ -138,6 +138,7 @@ const OrderBook: FC<OrderBookProps> = ({
         className={styles.table}
         classNameTableWrapper={styles.tableWrapper}
         emptyMessage={emptyMessage}
+        loaderClassName={styles.tableLoader}
         loading={loading}
       />
     </div>
