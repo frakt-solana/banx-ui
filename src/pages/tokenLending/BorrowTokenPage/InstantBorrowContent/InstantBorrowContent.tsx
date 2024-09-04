@@ -76,7 +76,7 @@ const InstantBorrowContent = () => {
           onChange={handleCollateralInputChange}
           selectedToken={collateralToken}
           onChangeToken={handleCollateralTokenChange}
-          tokenList={collateralsList}
+          tokensList={collateralsList}
           className={styles.collateralInput}
           maxValue={collateralToken?.amountInWallet}
           disabled={!wallet.connected}
@@ -89,7 +89,7 @@ const InstantBorrowContent = () => {
           onChange={() => null}
           selectedToken={borrowToken}
           onChangeToken={handleBorrowTokenChange}
-          tokenList={borrowTokensList}
+          tokensList={borrowTokensList}
           className={styles.borrowInput}
           disabled
         />

@@ -49,7 +49,7 @@ const ListLoansContent = () => {
         onChange={setCollateralInputValue}
         selectedToken={collateralToken}
         onChangeToken={setCollateralToken}
-        tokenList={[]}
+        tokensList={[]}
         className={styles.collateralInput}
       />
 
@@ -61,7 +61,7 @@ const ListLoansContent = () => {
         onChange={setBorrowlInputValue}
         selectedToken={borrowToken}
         onChangeToken={setBorrowToken}
-        tokenList={BORROW_TOKENS_LIST}
+        tokensList={BORROW_TOKENS_LIST}
       />
 
       <LoanValueSlider label="LTV" value={sliderValue} onChange={setSliderValue} marketPrice={50} />

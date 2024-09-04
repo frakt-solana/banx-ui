@@ -70,3 +70,25 @@ export const TokensListLabels = () => (
     <span className={styles.tokenListLabel}>Available</span>
   </div>
 )
+
+interface PinnedTokensListProps {
+  onChange: (token: BaseToken) => void
+  tokensList: BaseToken[]
+}
+
+export const PinnedTokensList: FC<PinnedTokensListProps> = ({ onChange, tokensList }) => {
+  return (
+    <div className={styles.pinnedTokensList}>
+      {tokensList.map((token) => (
+        <div
+          key={token.collateral.mint}
+          onClick={() => onChange(token)}
+          className={styles.pinnedToken}
+        >
+          <img src={token.collateral.logoUrl} className={styles.pinnedTokenIcon} />
+          <span className={styles.pinnedTokenLabel}>{token.collateral.ticker}</span>
+        </div>
+      ))}
+    </div>
+  )
+}

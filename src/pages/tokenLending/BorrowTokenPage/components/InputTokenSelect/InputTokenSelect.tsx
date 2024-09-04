@@ -27,7 +27,7 @@ interface InputTokenSelectProps<T extends BaseToken> {
   onChange: (value: string) => void
 
   selectedToken: T | undefined
-  tokenList: T[]
+  tokensList: T[]
   onChangeToken: (option: T) => void
 
   className?: string
@@ -42,7 +42,7 @@ const InputTokenSelect = <T extends BaseToken>({
   onChange,
   className,
   selectedToken,
-  tokenList,
+  tokensList,
   onChangeToken,
   disabled,
   maxValue,
@@ -51,7 +51,7 @@ const InputTokenSelect = <T extends BaseToken>({
   const { open: openModal } = useModal()
 
   const handleOpenModal = () => {
-    openModal(ModalTokenSelect, { selectedToken, tokenList, onChangeToken })
+    openModal(ModalTokenSelect, { tokensList, onChangeToken })
   }
 
   return (

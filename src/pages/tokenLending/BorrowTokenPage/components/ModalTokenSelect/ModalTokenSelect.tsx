@@ -6,7 +6,8 @@ import { Modal } from '@banx/components/modals/BaseModal'
 import { core } from '@banx/api/tokens'
 import { useModal } from '@banx/store/common'
 
-import { TokenListItem, TokensListLabels } from './components'
+import { PinnedTokensList, TokenListItem, TokensListLabels } from './components'
+import { PINNED_TOKENS_MINTS } from './constants'
 
 import styles from './ModalTokenSelect.module.less'
 
@@ -16,12 +17,12 @@ export interface BaseToken {
 }
 
 interface ModalTokenSelectProps<T extends BaseToken> {
-  onChangeToken: (option: T) => void
-  tokenList: T[]
+  onChangeToken: (option: BaseToken) => void
+  tokensList: T[]
 }
 
 const ModalTokenSelect = <T extends BaseToken>({
-  tokenList,
+  tokensList,
   onChangeToken,
 }: ModalTokenSelectProps<T>) => {
   const { close: closeModal } = useModal()
@@ -35,13 +36,17 @@ const ModalTokenSelect = <T extends BaseToken>({
   const filteredTokensList = useMemo(() => {
     const normalizedSearchInput = searchInput.toLowerCase()
 
-    return tokenList.filter(({ collateral }) => {
+    return tokensList.filter(({ collateral }) => {
       const normalizedTicker = collateral.ticker.toLowerCase()
       return normalizedTicker.includes(normalizedSearchInput)
     })
-  }, [tokenList, searchInput])
+  }, [tokensList, searchInput])
 
-  const handleChangeToken = (token: T) => {
+  const pinnedTokensList = useMemo(() => {
+    return tokensList.filter((token) => PINNED_TOKENS_MINTS.includes(token.collateral.mint))
+  }, [tokensList])
+
+  const handleChangeToken = (token: BaseToken) => {
     onChangeToken(token)
     closeModal()
   }
@@ -65,6 +70,8 @@ const ModalTokenSelect = <T extends BaseToken>({
           className={styles.searchInput}
         />
       </div>
+
+      <PinnedTokensList onChange={handleChangeToken} tokensList={pinnedTokensList} />
 
       <TokensListLabels />
 

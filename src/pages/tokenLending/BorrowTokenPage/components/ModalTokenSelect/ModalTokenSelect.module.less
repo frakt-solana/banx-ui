@@ -95,3 +95,39 @@
   }
 }
 // * TokenListItem * //
+
+// * PinnedTokensList * //
+.pinnedTokensList {
+  display: flex;
+  align-items: center;
+  padding: 0 24px 12px;
+  gap: 12px;
+}
+
+.pinnedToken {
+  background-color: var(--action-primary);
+  border: 1px solid transparent;
+  border-radius: 100px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  padding: 2px 8px;
+  gap: 4px;
+
+  &:hover {
+    border: 1px solid var(--bg-border-active);
+  }
+
+  &Icon {
+    border-radius: 100px;
+    height: 16px;
+    width: 16px;
+  }
+
+  &Label {
+    color: var(--content-secondary);
+    font: var(--body-text-sm);
+  }
+}
+// * PinnedTokensList * //
