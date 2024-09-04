@@ -1,5 +1,7 @@
 import { FC } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
+
 import { SOLANAFM_URL } from '@banx/constants'
 import { formatCollateralTokenValue, shortenAddress } from '@banx/utils'
 
@@ -64,12 +66,16 @@ const TokenLink: FC<{ mint: string }> = ({ mint }) => {
   )
 }
 
-export const TokensListLabels = () => (
-  <div className={styles.tokensListLabels}>
-    <span className={styles.tokenListLabel}>Token</span>
-    <span className={styles.tokenListLabel}>Available</span>
-  </div>
-)
+export const TokensListLabels = () => {
+  const { connected } = useWallet()
+
+  return (
+    <div className={styles.tokensListLabels}>
+      <span className={styles.tokenListLabel}>Token</span>
+      {connected && <span className={styles.tokenListLabel}>Available</span>}
+    </div>
+  )
+}
 
 interface PinnedTokensListProps {
   onChange: (token: BaseToken) => void
