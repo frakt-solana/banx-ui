@@ -10,7 +10,6 @@ import InputTokenSelect from '../components/InputTokenSelect'
 import OrderBook from './OrderBook'
 import { Summary } from './Summary'
 import WarningModal from './WarningModal'
-import { getButtonActionText } from './helpers'
 import { useInstantBorrowContent } from './hooks/useInstantBorrowContent'
 
 import styles from './InstantBorrowContent.module.less'
@@ -65,8 +64,6 @@ const InstantBorrowContent = () => {
     })
   }
 
-  const disabledBorrowButton = (wallet.connected && !!errorMessage) || !parseFloat(borrowInputValue)
-
   return (
     <div className={styles.container}>
       <div className={styles.content}>
@@ -79,7 +76,6 @@ const InstantBorrowContent = () => {
           tokensList={collateralsList}
           className={styles.collateralInput}
           maxValue={collateralToken?.amountInWallet}
-          disabled={!wallet.connected}
           showControls={wallet.connected}
         />
 
@@ -100,15 +96,11 @@ const InstantBorrowContent = () => {
 
         <Button
           onClick={onSubmit}
-          disabled={disabledBorrowButton}
           className={styles.borrowButton}
+          disabled={wallet.connected && !!errorMessage}
           loading={!errorMessage && (isBorrowing || isLoading)}
         >
-          {getButtonActionText({
-            isLoading: isBorrowing || isLoading,
-            isWalletConnected: wallet.connected,
-            errorMessage,
-          })}
+          {wallet.connected ? 'Borrow' : 'Connect wallet'}
         </Button>
       </div>
       <OrderBook
@@ -116,6 +108,7 @@ const InstantBorrowContent = () => {
         isLoading={isLoading}
         requiredCollateralsAmount={collateralInputValue}
         collateral={collateralToken}
+        errorMessage={errorMessage}
       />
     </div>
   )
