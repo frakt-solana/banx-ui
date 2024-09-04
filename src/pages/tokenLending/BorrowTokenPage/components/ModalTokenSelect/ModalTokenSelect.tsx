@@ -1,5 +1,7 @@
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react'
 
+import { SearchOutlined } from '@ant-design/icons'
+
 import { Input } from '@banx/components/inputs/Input'
 import { Modal } from '@banx/components/modals/BaseModal'
 
@@ -62,11 +64,12 @@ const ModalTokenSelect = <T extends BaseToken>({
   return (
     <Modal className={styles.modal} open width={468} onCancel={closeModal}>
       <div className={styles.searchInputWrapper}>
+        <SearchOutlined className={styles.searchIcon} />
         <Input
           ref={internalRef}
           value={searchInput}
           onChange={handleSearchInputChange}
-          placeholder="Search tokens..."
+          placeholder="Search by token"
           className={styles.searchInput}
         />
       </div>

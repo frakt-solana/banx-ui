@@ -12,10 +12,24 @@
 // * Modal *//
 
 .searchInputWrapper {
-  padding: 12px 24px;
+  position: relative;
+  margin: 12px 24px;
 
   input {
     border: var(--border-less-primary) !important;
+    padding: 8px 12px 8px 32px;
+  }
+}
+
+.searchIcon {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+
+  path {
+    fill: var(--content-secondary);
   }
 }
 
