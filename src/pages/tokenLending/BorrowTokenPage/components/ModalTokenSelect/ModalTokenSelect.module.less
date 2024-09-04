@@ -1,0 +1,84 @@
+.flexCol {
+  display: flex;
+  flex-direction: column;
+}
+
+// * Modal *//
+.modal :global {
+  .ant-modal-content {
+    padding: 0;
+  }
+}
+// * Modal *//
+
+.tokensListLabels {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 16px;
+
+  span {
+    color: var(--content-tertiary);
+    font: var(--title-xs);
+    text-transform: uppercase;
+  }
+}
+
+.tokensList {
+  overflow: auto;
+  height: 380px;
+}
+
+// * TokenListItem * //
+.tokensListItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+
+  &:nth-child(odd) {
+    background: var(--bg-secondary);
+  }
+
+  &Info {
+    display: flex;
+    padding-left: 16px;
+    gap: 8px;
+  }
+
+  &Icon {
+    border-radius: 100px;
+    height: 30px;
+    width: 30px;
+  }
+
+  &Ticker {
+    color: var(--content-primary);
+    font: var(--title-sm);
+  }
+
+  &Link {
+    cursor: pointer;
+    color: var(--content-primary);
+    font: var(--body-text-sm);
+    text-decoration: underline;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+
+  &BalanceInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding-right: 16px;
+
+    span:first-child {
+      font: var(--body-text-sm);
+    }
+
+    span:last-child {
+      font: var(--body-text-xs);
+    }
+  }
+}
+// * TokenListItem * //

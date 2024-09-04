@@ -13,7 +13,10 @@ import { Input, InputProps } from '@banx/components/inputs/Input'
 import { core } from '@banx/api/tokens'
 import { useOnClickOutside } from '@banx/hooks'
 import { ChevronDown, CloseModal, Wallet } from '@banx/icons'
+import { useModal } from '@banx/store/common'
 import { bnToHuman, limitDecimalPlaces, shortenAddress, stringToBN } from '@banx/utils'
+
+import ModalTokenSelect from '../ModalTokenSelect'
 
 import styles from './InputTokenSelect.module.less'
 
@@ -49,8 +52,10 @@ const InputTokenSelect = <T extends BaseToken>({
 }: InputTokenSelectProps<T>) => {
   const [visible, setVisible] = useState(false)
 
-  const handleClick = () => {
-    setVisible(!visible)
+  const { open: openModal } = useModal()
+
+  const handleOpenModal = () => {
+    openModal(ModalTokenSelect, { selectedToken, tokenList, onChangeToken })
   }
 
   return (
@@ -74,7 +79,7 @@ const InputTokenSelect = <T extends BaseToken>({
           disabled={disabledInput}
         />
 
-        <SelectTokenButton onClick={handleClick} selectedToken={selectedToken} />
+        <SelectTokenButton onClick={handleOpenModal} selectedToken={selectedToken} />
 
         {visible && (
           <SearchSelect
