@@ -26,7 +26,7 @@ interface InputTokenSelectProps<T extends BaseToken> {
   value: string
   onChange: (value: string) => void
 
-  selectedToken: T
+  selectedToken: T | undefined
   tokenList: T[]
   onChangeToken: (option: T) => void
 
@@ -62,7 +62,7 @@ const InputTokenSelect = <T extends BaseToken>({
           <ControlsButtons
             maxValue={maxValue}
             onChange={onChange}
-            decimals={selectedToken.collateral.decimals}
+            decimals={selectedToken?.collateral.decimals}
           />
         )}
       </div>
@@ -74,7 +74,7 @@ const InputTokenSelect = <T extends BaseToken>({
           disabled={disabled}
           placeholder="0"
         />
-        <SelectTokenButton onClick={handleOpenModal} selectedToken={selectedToken} />
+        <SelectTokenButton onClick={handleOpenModal} token={selectedToken} />
       </div>
     </div>
   )
@@ -85,11 +85,11 @@ export default InputTokenSelect
 interface ControlsButtonsProps {
   onChange: (value: string) => void
   maxValue?: number
-  decimals: number
+  decimals: number | undefined
 }
 
 const ControlsButtons: FC<ControlsButtonsProps> = ({ onChange, maxValue = 0, decimals }) => {
-  const maxValueStr = String(maxValue / Math.pow(10, decimals))
+  const maxValueStr = decimals ? String(maxValue / Math.pow(10, decimals)) : String(maxValue)
 
   const onMaxClick = () => {
     onChange(limitDecimalPlaces(maxValueStr))
@@ -127,20 +127,19 @@ const ControlsButtons: FC<ControlsButtonsProps> = ({ onChange, maxValue = 0, dec
 }
 
 interface SelectTokenButtonProps<T extends BaseToken> {
-  selectedToken: T
+  token: T | undefined
   onClick: () => void
 }
 
-const SelectTokenButton = <T extends BaseToken>({
-  selectedToken,
-  onClick,
-}: SelectTokenButtonProps<T>) => {
-  const { ticker, logoUrl } = selectedToken.collateral
+const SelectTokenButton = <T extends BaseToken>({ token, onClick }: SelectTokenButtonProps<T>) => {
+  if (!token) {
+    return <Skeleton.Button className={styles.selectTokenButton} style={{ width: 100 }} />
+  }
 
   return (
     <Button variant="tertiary" onClick={onClick} className={styles.selectTokenButton}>
-      <img src={logoUrl} className={styles.selectTokenButtonIcon} />
-      {ticker}
+      <img src={token.collateral.logoUrl} className={styles.selectTokenButtonIcon} />
+      {token.collateral.ticker}
       <ChevronDown className={styles.selectTokenButtonChevronIcon} />
     </Button>
   )
@@ -153,27 +152,4 @@ const formatNumber = (value = 0) => {
     notation: 'compact',
     maximumFractionDigits: 1,
   }).format(value)
-}
-
-interface SkeletonInputTokenSelectProps {
-  label: string
-  className?: string
-  showRightLabel?: boolean
-}
-export const SkeletonInputTokenSelect: FC<SkeletonInputTokenSelectProps> = ({
-  label,
-  className,
-  showRightLabel = false,
-}) => {
-  return (
-    <div className={classNames(styles.inputTokenSelectWrapper, className)}>
-      <div className={styles.inputTokenSelectHeader}>
-        <div className={styles.inputTokenSelectLabel}>{label}</div>
-        {showRightLabel && <Skeleton.Input size="small" />}
-      </div>
-      <div className={styles.inputTokenSelect}>
-        <Skeleton.Input className={styles.skeletonInputTokenSelect} />
-      </div>
-    </div>
-  )
 }

@@ -28,7 +28,7 @@ export const useCollateralsList = () => {
   const sortedCollateralsList = useMemo(() => {
     if (!data) return []
 
-    return data.sort((a, b) => b.amountInWallet - a.amountInWallet)
+    return [...data].sort((a, b) => b.amountInWallet - a.amountInWallet)
   }, [data])
 
   return { collateralsList: sortedCollateralsList, isLoading }
