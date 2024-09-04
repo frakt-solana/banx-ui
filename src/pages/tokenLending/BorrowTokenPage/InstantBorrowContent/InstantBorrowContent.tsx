@@ -78,10 +78,10 @@ const InstantBorrowContent = () => {
     <div className={styles.container}>
       <div className={styles.content}>
         {showSkeleton ? (
-          <SkeletonInputTokenSelect label="Your collateral" showRightLabel />
+          <SkeletonInputTokenSelect label="Collateral" showRightLabel />
         ) : (
           <InputTokenSelect
-            label="Your collateral"
+            label="Collateral"
             value={collateralInputValue}
             onChange={handleCollateralInputChange}
             selectedToken={collateralToken}
@@ -89,7 +89,7 @@ const InstantBorrowContent = () => {
             tokenList={collateralsList}
             className={styles.collateralInput}
             maxValue={collateralToken.amountInWallet}
-            disabledInput={!wallet.connected}
+            disabled={!wallet.connected}
             showControls={wallet.connected}
           />
         )}
@@ -105,7 +105,7 @@ const InstantBorrowContent = () => {
             onChangeToken={handleBorrowTokenChange}
             tokenList={borrowTokensList}
             className={styles.borrowInput}
-            disabledInput
+            disabled
           />
         )}
 

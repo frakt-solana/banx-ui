@@ -5,7 +5,7 @@ import classNames from 'classnames'
 import { BN } from 'fbonds-core'
 
 import { Button } from '@banx/components/Buttons'
-import { NumericStepInput } from '@banx/components/inputs'
+import NumericInput from '@banx/components/inputs/NumericInput'
 
 import { core } from '@banx/api/tokens'
 import { ChevronDown, Wallet } from '@banx/icons'
@@ -25,11 +25,13 @@ interface InputTokenSelectProps<T extends BaseToken> {
   label: string
   value: string
   onChange: (value: string) => void
-  className?: string
+
   selectedToken: T
   tokenList: T[]
   onChangeToken: (option: T) => void
-  disabledInput?: boolean
+
+  className?: string
+  disabled?: boolean
   maxValue?: number //? (e.g. 1e6 for 1 USDC, 1e9 for 1 SOL)
   showControls?: boolean
 }
@@ -42,7 +44,7 @@ const InputTokenSelect = <T extends BaseToken>({
   selectedToken,
   tokenList,
   onChangeToken,
-  disabledInput,
+  disabled,
   maxValue,
   showControls = false,
 }: InputTokenSelectProps<T>) => {
@@ -53,9 +55,9 @@ const InputTokenSelect = <T extends BaseToken>({
   }
 
   return (
-    <div className={classNames(styles.inputTokenSelectWrapper, className)}>
+    <div className={classNames(styles.inputTokenSelect, className)}>
       <div className={styles.inputTokenSelectHeader}>
-        <div className={styles.inputTokenSelectLabel}>{label}</div>
+        <span className={styles.inputTokenSelectLabel}>{label}</span>
         {showControls && (
           <ControlsButtons
             maxValue={maxValue}
@@ -64,15 +66,14 @@ const InputTokenSelect = <T extends BaseToken>({
           />
         )}
       </div>
-      <div className={styles.inputTokenSelect}>
-        <NumericStepInput
+      <div className={styles.inputTokenSelectWrapper}>
+        <NumericInput
           value={value}
           onChange={onChange}
+          className={styles.numericInput}
+          disabled={disabled}
           placeholder="0"
-          className={styles.numericStepInput}
-          disabled={disabledInput}
         />
-
         <SelectTokenButton onClick={handleOpenModal} selectedToken={selectedToken} />
       </div>
     </div>
@@ -100,14 +101,14 @@ const ControlsButtons: FC<ControlsButtonsProps> = ({ onChange, maxValue = 0, dec
   }
 
   return (
-    <div className={styles.inputTokenSelectControlButtons}>
-      <div className={styles.inputTokenSelectMaxValue}>
+    <div className={styles.inputControlsButtons}>
+      <div className={styles.inputMaxTokenBalance}>
         <Wallet /> {formatNumber(parseFloat(maxValueStr))}
       </div>
 
       <Button
         onClick={onHalfClick}
-        className={styles.inputTokenSelectControlButton}
+        className={styles.inputControlButton}
         variant="tertiary"
         size="small"
       >
@@ -115,7 +116,7 @@ const ControlsButtons: FC<ControlsButtonsProps> = ({ onChange, maxValue = 0, dec
       </Button>
       <Button
         onClick={onMaxClick}
-        className={styles.inputTokenSelectControlButton}
+        className={styles.inputControlButton}
         variant="tertiary"
         size="small"
       >
@@ -137,11 +138,11 @@ const SelectTokenButton = <T extends BaseToken>({
   const { ticker, logoUrl } = selectedToken.collateral
 
   return (
-    <div onClick={onClick} className={styles.selectTokenButton}>
+    <Button variant="tertiary" onClick={onClick} className={styles.selectTokenButton}>
       <img src={logoUrl} className={styles.selectTokenButtonIcon} />
       {ticker}
       <ChevronDown className={styles.selectTokenButtonChevronIcon} />
-    </div>
+    </Button>
   )
 }
 

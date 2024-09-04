@@ -1,32 +1,61 @@
-.inputTokenSelectWrapper {
+.inputTokenSelect {
+  background-color: var(--action-primary);
+  border: var(--border-less-primary);
+  border-radius: 6px;
+
   display: flex;
   flex-direction: column;
+  padding: 6px 8px;
   gap: 8px;
-}
 
-.inputTokenSelectHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+  &Wrapper {
+    position: relative;
+  }
 
-// * ControlsButtons * //
-.inputTokenSelectControlButtons {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+  &Header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 
-.inputTokenSelectControlButton {
-  font: var(--btn-text-md);
-  text-transform: uppercase;
+  &Label {
+    color: var(--content-tertiary);
+    font: var(--title-sm);
+    text-transform: uppercase;
 
-  @media (max-width: 640px) {
-    font: var(--btn-text-sm);
+    @media (max-width: 640px) {
+      font: var(--title-xs);
+    }
   }
 }
 
-.inputTokenSelectMaxValue {
+.numericInput {
+  background: var(--action-primary) !important;
+  padding: 6px 0 6px 128px !important;
+  text-align: right;
+
+  &:disabled {
+    background: var(--bg-tertiary);
+  }
+
+  &:not(:placeholder-shown) {
+    color: var(--content-primary);
+  }
+}
+
+// * ControlsButtons * //
+.inputControlsButtons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inputControlButton {
+  background: var(--action-secondary) !important;
+  text-transform: uppercase;
+}
+
+.inputMaxTokenBalance {
   color: var(--content-secondary);
   font: var(--important-text-md);
 
@@ -45,63 +74,27 @@
 }
 // * ControlsButtons * //
 
-.inputTokenSelectLabel {
-  color: var(--content-secondary);
-  font: var(--title-sm);
-  text-transform: uppercase;
-
-  @media (max-width: 640px) {
-    font: var(--title-xs);
-  }
-}
-
-.inputTokenSelect {
-  position: relative;
-}
-
-.numericStepInput input {
-  padding: 8px 32px 8px 96px;
-  text-align: right;
-
-  &:disabled {
-    background: var(--bg-tertiary);
-  }
-
-  &:not(:placeholder-shown) {
-    color: var(--content-primary);
-  }
-}
-
 // * SelectTokenButton * //
 .selectTokenButton {
-  background: var(--bg-primary);
-  border: var(--border-primary);
-  border-radius: 4px;
-  color: var(--content-primary);
-  cursor: pointer;
-  font: var(--btn-text-sm);
-
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 4px;
+  background-color: var(--action-secondary) !important;
+  padding: 6px 10px !important;
 
   position: absolute;
-  left: 4px;
-  top: 50%;
-  transform: translateY(-50%);
-
-  height: 26px;
+  bottom: 0;
+  left: 0;
 }
 
 .selectTokenButtonIcon {
-  height: 16px;
-  width: 16px;
+  border-radius: 100px;
+  height: 14px;
+  width: 14px;
 }
 
 .selectTokenButtonChevronIcon {
-  height: 16px;
-  width: 16px;
+  min-height: 16px;
+  min-width: 16px;
+  max-height: 16px;
+  max-width: 16px;
 
   path {
     fill: var(--content-primary);
