@@ -2,7 +2,6 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
-import { SOLANAFM_URL } from '@banx/constants'
 import { formatCollateralTokenValue, shortenAddress } from '@banx/utils'
 
 import { BaseToken } from './ModalTokenSelect'
@@ -20,7 +19,9 @@ export const TokenListItem: FC<TokenListItemProps> = ({ token, onClick }) => (
       <img src={token.collateral.logoUrl} className={styles.tokensListItemIcon} />
       <div className={styles.flexCol}>
         <span className={styles.tokensListItemTicker}>{token.collateral.ticker}</span>
-        <TokenLink mint={token.collateral.mint} />
+        <span className={styles.tokensListItemAddress}>
+          {shortenAddress(token.collateral.mint)}
+        </span>
       </div>
     </div>
     <TokenBalanceInfo token={token} />
@@ -53,16 +54,6 @@ const TokenBalanceInfo: FC<TokenBalanceInfoProps> = ({ token }) => {
         </span>
       )}
     </div>
-  )
-}
-
-const TokenLink: FC<{ mint: string }> = ({ mint }) => {
-  const path = `${SOLANAFM_URL}address/${mint}`
-
-  return (
-    <a className={styles.tokensListItemLink} target="_blank" rel="noopener noreferrer" href={path}>
-      {shortenAddress(mint)}
-    </a>
   )
 }
 
