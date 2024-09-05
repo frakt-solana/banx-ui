@@ -13,7 +13,7 @@ import {
 import Timer from '@banx/components/Timer'
 
 import { core } from '@banx/api/tokens'
-import { BONDS, SECONDS_IN_72_HOURS } from '@banx/constants'
+import { SECONDS_IN_72_HOURS } from '@banx/constants'
 import { useModal } from '@banx/store/common'
 import {
   HealthColorIncreasing,
@@ -108,7 +108,7 @@ export const LTVCell: FC<LTVCellProps> = ({ loan, tokenType }) => {
 }
 
 export const APRCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
-  const apr = (loan.bondTradeTransaction.amountOfBonds + BONDS.PROTOCOL_REPAY_FEE) / 100
+  const apr = loan.bondTradeTransaction.amountOfBonds / 100
 
   return <HorizontalCell value={createPercentValueJSX(apr)} isHighlighted />
 }

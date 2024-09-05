@@ -12,7 +12,6 @@ import {
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/tokens'
-import { BONDS } from '@banx/constants'
 import {
   adjustAmountWithUpfrontFee,
   caclulateBorrowTokenLoanValue,
@@ -63,7 +62,7 @@ interface AprCellProps {
 }
 
 export const AprCell: FC<AprCellProps> = ({ offer }) => {
-  const aprRateWithProtocolFee = offer.loanApr.toNumber() + BONDS.PROTOCOL_REPAY_FEE
+  const aprRateWithProtocolFee = offer.loanApr.toNumber()
   const aprPercent = aprRateWithProtocolFee / 100
 
   return <span className={styles.cellValue}>{createPercentValueJSX(aprPercent)}</span>

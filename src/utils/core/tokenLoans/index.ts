@@ -7,7 +7,7 @@ import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/type
 import moment from 'moment'
 
 import { core } from '@banx/api/tokens'
-import { BONDS, SECONDS_IN_72_HOURS, SECONDS_IN_DAY } from '@banx/constants'
+import { SECONDS_IN_72_HOURS, SECONDS_IN_DAY } from '@banx/constants'
 
 import { calculateApr } from '../loans'
 
@@ -91,7 +91,7 @@ export const calculateTokenRepaymentCallLenderReceivesAmount = (loan: core.Token
 
   return calculateLenderPartialPartFromBorrower({
     borrowerPart: repaymentCallAmount,
-    protocolRepayFeeApr: BONDS.PROTOCOL_REPAY_FEE,
+    protocolRepayFeeApr: 0,
     soldAt,
     //? Lender APR (without ProtocolFee)
     lenderApr: calculateApr({
@@ -133,7 +133,7 @@ export const calculateTokenLoanRepayValueOnCertainDate: CalculateTokenLoanRepayV
       loanValue,
       startTime: soldAt,
       currentTime: date,
-      rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
+      rateBasePoints: amountOfBonds,
     })
 
     return new BN(loanValue).add(new BN(calculatedInterest))
@@ -173,6 +173,6 @@ export const calcTokenWeeklyFeeWithRepayFee = (loan: core.TokenLoan) => {
     loanValue: calculateTokenLoanValueWithUpfrontFee(loan).toNumber(),
     startTime: soldAt,
     currentTime: soldAt + SECONDS_IN_DAY * 7,
-    rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
+    rateBasePoints: amountOfBonds,
   })
 }

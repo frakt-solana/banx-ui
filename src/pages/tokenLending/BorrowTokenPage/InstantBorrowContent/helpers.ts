@@ -3,7 +3,7 @@ import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/
 import moment from 'moment'
 
 import { BorrowOffer, CollateralToken } from '@banx/api/tokens'
-import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
+import { SECONDS_IN_DAY } from '@banx/constants'
 import {
   ZERO_BN,
   adjustAmountWithUpfrontFee,
@@ -72,7 +72,7 @@ export const getSummaryInfo = (offers: BorrowOffer[]) => {
 
   const amountToGetArray = offers.map((offer) => parseFloat(offer.maxTokenToGet))
 
-  const aprRateArray = offers.map((offer) => parseFloat(offer.apr) + BONDS.PROTOCOL_REPAY_FEE)
+  const aprRateArray = offers.map((offer) => parseFloat(offer.apr))
   const weightedApr = calcWeightedAverage(aprRateArray, amountToGetArray)
 
   const ltvRateArray = offers.map((offer) => parseFloat(offer.ltv))
@@ -82,7 +82,7 @@ export const getSummaryInfo = (offers: BorrowOffer[]) => {
     loanValue: totalAmountToGet.toNumber(),
     startTime: moment().unix(),
     currentTime: moment().unix() + SECONDS_IN_DAY * 7,
-    rateBasePoints: weightedApr + BONDS.PROTOCOL_REPAY_FEE,
+    rateBasePoints: weightedApr,
   })
 
   const adjustedTotalAmountToGet = adjustAmountWithUpfrontFee(totalAmountToGet)

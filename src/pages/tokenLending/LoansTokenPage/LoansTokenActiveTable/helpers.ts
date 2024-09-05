@@ -9,7 +9,6 @@ import moment from 'moment'
 
 import { convertBondOfferV3ToCore } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
-import { BONDS } from '@banx/constants'
 import {
   ZERO_BN,
   caclulateBorrowTokenLoanValue,
@@ -32,7 +31,7 @@ export const calcAccruedInterest = (loan: core.TokenLoan) => {
     loanValue: solAmount,
     startTime: soldAt,
     currentTime: moment().unix(),
-    rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
+    rateBasePoints: amountOfBonds,
   }
 
   return calculateCurrentInterestSolPure(interestParameters)
@@ -53,9 +52,12 @@ const calculateUnpaidInterest = (loan: core.TokenLoan) => {
 
 const calcPercentToPay = (loan: core.TokenLoan, iterestToPay: number) => {
   const { soldAt, amountOfBonds, solAmount } = loan.bondTradeTransaction
-  const rateBasePoints = amountOfBonds + BONDS.PROTOCOL_REPAY_FEE
 
-  const partOfLoan = calculatePartOfLoanBodyFromInterest({ soldAt, rateBasePoints, iterestToPay })
+  const partOfLoan = calculatePartOfLoanBodyFromInterest({
+    soldAt,
+    rateBasePoints: amountOfBonds,
+    iterestToPay,
+  })
   return (partOfLoan / solAmount) * 100
 }
 
@@ -83,10 +85,7 @@ export const calcTokenTotalValueToPay = (loan: core.TokenLoan) => {
 }
 
 export const calcWeightedApr = (loans: core.TokenLoan[]) => {
-  const totalAprValues = map(
-    loans,
-    (loan) => (loan.bondTradeTransaction.amountOfBonds + BONDS.PROTOCOL_REPAY_FEE) / 100,
-  )
+  const totalAprValues = map(loans, (loan) => loan.bondTradeTransaction.amountOfBonds / 100)
 
   const totalRepayValues = map(loans, (loan) => caclulateBorrowTokenLoanValue(loan).toNumber())
   return calcWeightedAverage(totalAprValues, totalRepayValues)
