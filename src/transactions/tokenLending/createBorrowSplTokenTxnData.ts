@@ -13,9 +13,11 @@ import { CollateralToken } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
 import {
   accountConverterBNAndPublicKey,
+  banxSol,
   parseAccountInfoByPubkey,
   sendTxnPlaceHolder,
 } from '@banx/transactions'
+import { isBanxSolTokenType } from '@banx/utils'
 
 export type CreateBorrowTokenTxnDataParams = {
   collateral: CollateralToken
@@ -66,12 +68,29 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async (
     accountsCollection['bondTradeTransaction'],
   ]
 
+  const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
+
+  if (isBanxSolTokenType(tokenType)) {
+    return await banxSol.combineWithSellBanxSolInstructions(
+      {
+        params,
+        accounts,
+        //? 0.99 --> without upfront fee
+        inputAmount: new BN(loanValue).mul(new BN(99)).div(new BN(100)),
+        instructions,
+        signers,
+        lookupTables,
+      },
+      walletAndConnection,
+    )
+  }
+
   return {
     params,
     instructions,
     signers,
     accounts,
-    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    lookupTables,
   }
 }
 
