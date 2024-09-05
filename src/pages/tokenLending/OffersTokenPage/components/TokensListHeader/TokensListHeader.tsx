@@ -11,11 +11,7 @@ const TokensListHeader = () => {
 
       <div className={styles.stats}>
         <Stat label="Price" className={styles.additionalStat} tooltipText="Token market price" />
-        <Stat
-          label="Top offer"
-          className={styles.additionalStat}
-          tooltipText="Highest offer among all lenders"
-        />
+        <Stat label="My offer" className={styles.additionalStat} />
         <Stat
           label="In loans"
           className={styles.additionalStat}

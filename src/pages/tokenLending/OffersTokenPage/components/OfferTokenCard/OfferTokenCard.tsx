@@ -10,7 +10,11 @@ import { core } from '@banx/api/tokens'
 import { ChevronDown, Coin, CoinPlus, Warning } from '@banx/icons'
 import { useNftTokenType } from '@banx/store/nft'
 import { convertToSynthetic, useSyntheticTokenOffers } from '@banx/store/token'
-import { getTokenDecimals } from '@banx/utils'
+import {
+  calculateTokensPerCollateral,
+  formatTokensPerCollateralToStr,
+  getTokenDecimals,
+} from '@banx/utils'
 
 import ExpandedCardContent from '../ExpandedCardContent'
 
@@ -85,7 +89,7 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ offerPreview, isO
     repaymentCallsAmount,
   } = offerPreview.tokenOfferPreview
 
-  const { collateralPrice, bestOffer } = offerPreview.tokenMarketPreview
+  const { collateral, collateralPrice } = offerPreview.tokenMarketPreview
 
   const { tokenType } = useNftTokenType()
   const decimals = getTokenDecimals(tokenType)
@@ -97,6 +101,13 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ offerPreview, isO
     labelWrapper: styles.additionalInfoStatLabelWrapper,
   }
 
+  const tokensPerCollateral = formatTokensPerCollateralToStr(
+    calculateTokensPerCollateral(
+      offerPreview.bondOffer.validation.collateralsPerToken,
+      collateral.decimals,
+    ),
+  )
+
   return (
     <div className={classNames(styles.additionalInfoStats, { [styles.opened]: isOpen })}>
       <StatInfo
@@ -106,9 +117,8 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ offerPreview, isO
         classNamesProps={classNamesProps}
       />
       <StatInfo
-        label="Top offer"
-        value={<DisplayValue value={bestOffer / decimals} isSubscriptFormat />}
-        tooltipText="Highest offer among all lenders"
+        label="My offer"
+        value={<DisplayValue value={parseFloat(tokensPerCollateral)} isSubscriptFormat />}
         classNamesProps={classNamesProps}
       />
       <StatInfo
