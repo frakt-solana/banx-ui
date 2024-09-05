@@ -68,7 +68,7 @@ const InstantBorrowContent = () => {
     <div className={styles.container}>
       <div className={styles.content}>
         <InputTokenSelect
-          label="Collateral"
+          label="Your collateral"
           value={collateralInputValue}
           onChange={handleCollateralInputChange}
           selectedToken={collateralToken}
