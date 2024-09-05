@@ -128,9 +128,9 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ offerPreview, isO
         classNamesProps={classNamesProps}
       />
       <StatInfo
-        label="In offers"
+        label="In offer"
         value={<DisplayValue value={offerSize} />}
-        tooltipText="Liquidity that is locked in active offers"
+        tooltipText="Liquidity that is locked in offer"
         classNamesProps={classNamesProps}
       />
       <StatInfo
