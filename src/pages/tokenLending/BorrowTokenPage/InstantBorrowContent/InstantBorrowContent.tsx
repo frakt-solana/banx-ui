@@ -10,6 +10,7 @@ import InputTokenSelect from '../components/InputTokenSelect'
 import OrderBook from './OrderBook'
 import { Summary } from './Summary'
 import WarningModal from './WarningModal'
+import { getButtonActionText } from './helpers'
 import { useInstantBorrowContent } from './hooks/useInstantBorrowContent'
 
 import styles from './InstantBorrowContent.module.less'
@@ -100,7 +101,7 @@ const InstantBorrowContent = () => {
           disabled={wallet.connected && (!!errorMessage || !offersInCart.length)}
           loading={!errorMessage && (isBorrowing || isLoading)}
         >
-          {wallet.connected ? 'Borrow' : 'Connect wallet'}
+          {getButtonActionText({ isWalletConnected: wallet.connected, errorMessage })}
         </Button>
       </div>
       <OrderBook
