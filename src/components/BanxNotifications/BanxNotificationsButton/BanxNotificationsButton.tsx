@@ -26,7 +26,7 @@ export const BanxNotificationsButton: FC = () => {
   return (
     <Button
       type="circle"
-      variant="text"
+      variant="tertiary"
       id={BUTTON_ID}
       className={classNames(styles.button, { [styles.buttonActive]: isVisible })}
       onClick={onIconClick}

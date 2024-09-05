@@ -78,7 +78,7 @@ export const TelegramSettings = () => {
                 </a>{' '}
                 with command: /start
               </p>
-              <Button onClick={deleteAddress} size="small">
+              <Button onClick={deleteAddress} size="medium">
                 Cancel
               </Button>
             </div>

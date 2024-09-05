@@ -24,18 +24,16 @@
 }
 
 .collateralInput {
-  margin-bottom: 8px;
+  margin-bottom: 16px;
 }
 
 // * Summary * //
 .summary {
-  border-color: var(--bg-border);
-  border-style: dotted;
-  border-width: 1px 0 1px;
+  border-top: 1px dotted var(--bg-border);
 
   display: flex;
   flex-direction: column;
-  padding: 12px 24px 12px;
+  padding: 12px 24px 0;
   margin: 0 -24px 0;
   gap: 8px;
 
@@ -125,11 +123,10 @@
 
 .cancelButton {
   color: var(--content-primary) !important;
-  background-color: var(--additional-red-secondary) !important;
-  border: 1px solid var(--additional-red-primary);
+  background-color: var(--additional-red-primary-sub) !important;
 
   &:hover {
-    border: 1px solid var(--additional-red-primary-deep);
+    border: 1px solid var(--additional-red-primary) !important;
   }
 
   width: 100%;

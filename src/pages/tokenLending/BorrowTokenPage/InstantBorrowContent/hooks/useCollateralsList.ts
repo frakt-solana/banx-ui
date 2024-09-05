@@ -5,8 +5,9 @@ import { useQuery } from '@tanstack/react-query'
 
 import { fetchTokenBalance } from '@banx/api/common'
 import { core } from '@banx/api/tokens'
-import { WSOL_ADDRESS } from '@banx/constants'
+import { USDC_ADDRESS, WSOL_ADDRESS } from '@banx/constants'
 import { useNftTokenType } from '@banx/store/nft'
+import { isBanxSolTokenType } from '@banx/utils'
 
 import { BORROW_TOKENS_LIST } from '../../constants'
 
@@ -28,8 +29,12 @@ export const useCollateralsList = () => {
   const sortedCollateralsList = useMemo(() => {
     if (!data) return []
 
-    return data.sort((a, b) => b.amountInWallet - a.amountInWallet)
-  }, [data])
+    const collateralMintToRemove = isBanxSolTokenType(tokenType) ? WSOL_ADDRESS : USDC_ADDRESS
+
+    return [...data]
+      .filter((token) => token.collateral.mint !== collateralMintToRemove)
+      .sort((a, b) => b.amountInWallet - a.amountInWallet)
+  }, [data, tokenType])
 
   return { collateralsList: sortedCollateralsList, isLoading }
 }

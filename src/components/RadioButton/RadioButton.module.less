@@ -21,22 +21,25 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  font: var(--table-header-md);
+  font: var(--title-md);
   text-transform: uppercase;
 }
 
 .radioButton {
+  background: var(--action-primary);
+  border: 1px solid transparent;
+  border-radius: 100px;
+  cursor: pointer;
+
+  font: var(--body-text-md);
+
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-action);
-  border: var(--border-primary);
-  border-radius: 100px;
-  cursor: pointer;
-  font: var(--body-text-md);
   white-space: nowrap;
 
   label {
+    color: var(--content-secondary);
     padding: 7px 16px;
     text-align: center;
 
@@ -46,25 +49,21 @@
   }
 
   &:hover {
-    border: 1px solid var(--bg-border-active);
+    border-color: var(--bg-border-active);
   }
 
   &.disabled {
-    background: var(--bg-secondary);
+    background: var(--action-tertiary);
     pointer-events: none;
-
-    label {
-      color: var(--content-secondary);
-    }
   }
 
   &.active {
-    border-color: transparent;
-    background: var(--accent-primary);
+    background: var(--bg-primary);
+    border-color: var(--bg-border-active);
     pointer-events: none;
 
     label {
-      color: var(--pure-black);
+      color: var(--content-primary);
     }
   }
 }

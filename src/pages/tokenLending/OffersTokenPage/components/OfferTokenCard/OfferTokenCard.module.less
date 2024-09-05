@@ -1,11 +1,13 @@
 // * OfferTokenCard * //
 .card {
-  background: var(--bg-primary-deep);
-  border: var(--border-less-primary);
-  border-left: 0;
-  border-right: 0;
+  background: var(--bg-primary);
+  border-bottom: var(--border-less-primary);
   cursor: pointer;
   width: 100%;
+
+  &:first-child {
+    border-top: var(--border-less-primary);
+  }
 }
 
 .cardBody {
@@ -18,20 +20,21 @@
 
   &.opened {
     border-bottom: var(--border-less-primary);
+
+    @media (max-width: 640px) {
+      padding-bottom: 0;
+    }
   }
 
   @media (max-width: 960px) {
     flex-direction: column;
     align-items: flex-start;
+    padding: 8px 16px;
     gap: 16px;
   }
 
   @media (max-width: 640px) {
     padding: 8px 16px;
-
-    &.opened {
-      padding-bottom: 0;
-    }
   }
 }
 
@@ -51,12 +54,7 @@
 
   @media (max-width: 960px) {
     position: absolute;
-    top: 24px;
-    right: 24px;
-  }
-
-  @media (max-width: 640px) {
-    top: 16px;
+    top: 8px;
     right: 16px;
   }
 }
@@ -67,79 +65,22 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  min-width: 124px;
 
   @media (max-width: 640px) {
     gap: 8px;
   }
 }
 
-.mainInfoContent {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-
-  @media (max-width: 640px) {
-    gap: 2px;
-  }
-}
-
-.mainInfoStats {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  white-space: nowrap;
-}
-
-.collateralImageWrapper {
-  position: relative;
-}
-
 .collateralImage {
   border-radius: 100%;
-  height: 64px;
-  width: 64px;
-
-  @media (max-width: 640px) {
-    height: 48px;
-    width: 48px;
-  }
-}
-
-.collateralIcon {
-  position: absolute;
-  bottom: 0;
-  right: -2px;
-  height: 30px;
-  width: 30px;
-
-  @media (max-width: 640px) {
-    height: 24px;
-    width: 24px;
-  }
-}
-
-.solFilled {
-  circle {
-    fill: var(--bg-primary);
-  }
+  height: 22px;
+  width: 22px;
 }
 
 .collateralName {
-  font: var(--card-header-lg);
-  max-width: 290px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-
-  @media (min-width: 961px) and (max-width: 1240px), (max-width: 640px) {
-    max-width: 176px;
-  }
-
-  @media (max-width: 640px) {
-    font: var(--card-header-md);
-  }
+  font: var(--title-md);
 }
-
 // * MarketMainInfo * //
 
 // * MarketAdditionalInfo * //
@@ -151,36 +92,45 @@
   width: 100%;
 
   @media (max-width: 960px) {
-    justify-content: space-between;
-    gap: unset;
-  }
-
-  @media (max-width: 640px) {
-    &.opened {
-      display: none;
-    }
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, auto);
+    gap: 8px;
   }
 }
 
-.additionalStat {
+.additionalInfoStat {
   align-items: flex-end;
-  max-width: 196px;
+  max-width: 180px;
   width: 100%;
-
-  @media (max-width: 1380px) {
-    max-width: 156px;
-  }
 
   @media (max-width: 1240px) {
     max-width: 120px;
   }
 
   @media (max-width: 960px) {
-    align-items: flex-start;
-
-    &:last-child {
-      align-items: flex-end;
+    .opened &:nth-child(n + 3) {
+      visibility: hidden;
+      height: 0;
     }
+
+    &:nth-child(-n + 2) {
+      grid-row: 1;
+    }
+
+    &:nth-child(n + 3) {
+      grid-row: 2;
+    }
+
+    &:not(:last-child) {
+      align-items: flex-start;
+    }
+  }
+}
+
+.additionalInfoStatLabelWrapper {
+  @media (min-width: 961px) {
+    display: none;
   }
 }
 
@@ -201,5 +151,9 @@
 
   span {
     font: var(--body-text-md);
+
+    @media (max-width: 640px) {
+      font: var(--body-text-sm);
+    }
   }
 }

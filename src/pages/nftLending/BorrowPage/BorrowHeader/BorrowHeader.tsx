@@ -9,7 +9,7 @@ import {
   SeparateStatsLine,
 } from '@banx/components/PageHeader'
 import { DisplayValue } from '@banx/components/TableComponents'
-import { NftTokenSwitcher } from '@banx/components/TokenSwitcher'
+import { TokenSwitcher } from '@banx/components/TokenSwitcher'
 
 import { Snowflake } from '@banx/icons'
 import { useMarketsPreview } from '@banx/pages/nftLending/LendPage/hooks'
@@ -29,7 +29,7 @@ const Header = () => {
     <PageHeaderBackdrop
       title="Borrow"
       titleBtn={<OnboardButton contentType="borrow" />}
-      tokenSwitcher={<NftTokenSwitcher title="Borrow" />}
+      tokenSwitcher={<TokenSwitcher title="Borrow" />}
     >
       {connected && <AdditionalStat label="Your NFTs" value={nftsAmount} />}
 

@@ -1,0 +1,43 @@
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  width: 100%;
+
+  @media (max-width: 960px) {
+    display: none;
+  }
+}
+
+.stats {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 48px;
+  gap: 16px;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.mainStat {
+  min-width: 124px;
+}
+
+.additionalStat {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  max-width: 180px;
+  width: 100%;
+
+  @media (max-width: 1240px) {
+    max-width: 120px;
+  }
+}
+
+.statLabel {
+  color: var(--content-tertiary);
+  font: var(--title-sm);
+  text-transform: uppercase;
+}

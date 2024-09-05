@@ -29,7 +29,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
     open(ManageModal, { loan })
   }
 
-  const buttonSize = isCardView ? 'default' : 'small'
+  const buttonSize = isCardView ? 'large' : 'medium'
 
   return (
     <div className={styles.actionsButtons}>

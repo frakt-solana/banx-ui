@@ -7,10 +7,10 @@ import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/tokens'
-import { ChevronDown, Coin, CoinPlus, SOLFilled, USDC, Warning } from '@banx/icons'
+import { ChevronDown, Coin, CoinPlus, Warning } from '@banx/icons'
 import { useNftTokenType } from '@banx/store/nft'
 import { convertToSynthetic, useSyntheticTokenOffers } from '@banx/store/token'
-import { getTokenDecimals, isBanxSolTokenType } from '@banx/utils'
+import { getTokenDecimals } from '@banx/utils'
 
 import ExpandedCardContent from '../ExpandedCardContent'
 
@@ -41,6 +41,7 @@ const OfferTokenCard: FC<OfferTokenCardProps> = ({ offerPreview, isOpen, onToggl
           <MarketAdditionalInfo offerPreview={offerPreview} isOpen={isOpen} />
           <Button
             type="circle"
+            size="medium"
             className={classNames(styles.chevronButton, { [styles.opened]: isOpen })}
           >
             <ChevronDown />
@@ -60,38 +61,12 @@ const OfferTokenCard: FC<OfferTokenCardProps> = ({ offerPreview, isOpen, onToggl
 export default OfferTokenCard
 
 const MarketMainInfo: FC<{ offerPreview: core.TokenOfferPreview }> = ({ offerPreview }) => {
-  const { collateral, collateralPrice, bestOffer } = offerPreview.tokenMarketPreview
-
-  const { tokenType } = useNftTokenType()
-  const decimals = getTokenDecimals(tokenType)
-
-  const Icon = isBanxSolTokenType(tokenType) ? (
-    <SOLFilled className={classNames(styles.collateralIcon, styles.solFilled)} />
-  ) : (
-    <USDC className={styles.collateralIcon} viewBox="1 1 14 14" />
-  )
+  const { collateral } = offerPreview.tokenMarketPreview
 
   return (
     <div className={styles.mainInfoContainer}>
-      <div className={styles.collateralImageWrapper}>
-        <img src={collateral.logoUrl} className={styles.collateralImage} />
-        {Icon}
-      </div>
-      <div className={styles.mainInfoContent}>
-        <h4 className={styles.collateralName}>{collateral.ticker}</h4>
-        <div className={styles.mainInfoStats}>
-          <StatInfo
-            label="Price"
-            value={<DisplayValue value={collateralPrice / decimals} isSubscriptFormat />}
-            tooltipText="Token market price"
-          />
-          <StatInfo
-            label="Top offer"
-            value={<DisplayValue value={bestOffer / decimals} isSubscriptFormat />}
-            tooltipText="Highest offer among all lenders"
-          />
-        </div>
-      </div>
+      <img src={collateral.logoUrl} className={styles.collateralImage} />
+      <h4 className={styles.collateralName}>{collateral.ticker}</h4>
     </div>
   )
 }
@@ -110,27 +85,49 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ offerPreview, isO
     repaymentCallsAmount,
   } = offerPreview.tokenOfferPreview
 
+  const { collateralPrice, bestOffer } = offerPreview.tokenMarketPreview
+
+  const { tokenType } = useNftTokenType()
+  const decimals = getTokenDecimals(tokenType)
+
   const aprPercent = offerPreview.bondOffer.loanApr.toNumber() / 100
+
+  const classNamesProps = {
+    container: styles.additionalInfoStat,
+    labelWrapper: styles.additionalInfoStatLabelWrapper,
+  }
 
   return (
     <div className={classNames(styles.additionalInfoStats, { [styles.opened]: isOpen })}>
       <StatInfo
+        label="Price"
+        value={<DisplayValue value={collateralPrice / decimals} isSubscriptFormat />}
+        tooltipText="Token market price"
+        classNamesProps={classNamesProps}
+      />
+      <StatInfo
+        label="Top offer"
+        value={<DisplayValue value={bestOffer / decimals} isSubscriptFormat />}
+        tooltipText="Highest offer among all lenders"
+        classNamesProps={classNamesProps}
+      />
+      <StatInfo
         label="In loans"
         value={<DisplayValue value={inLoans} />}
         tooltipText="Liquidity that is locked in active loans"
-        classNamesProps={{ container: styles.additionalStat }}
+        classNamesProps={classNamesProps}
       />
       <StatInfo
         label="In offers"
         value={<DisplayValue value={offerSize} />}
         tooltipText="Liquidity that is locked in active offers"
-        classNamesProps={{ container: styles.additionalStat }}
+        classNamesProps={classNamesProps}
       />
       <StatInfo
         label="APR"
         value={createPercentValueJSX(aprPercent, '0%')}
         tooltipText="Maximum annual interest rate. Depends on the loan-to-value (LTV) offered and market capitalization"
-        classNamesProps={{ container: styles.additionalStat, value: styles.additionalAprStat }}
+        classNamesProps={{ ...classNamesProps, value: styles.additionalAprStat }}
       />
       <StatInfo
         label="Status"
@@ -142,7 +139,7 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ offerPreview, isO
           />
         }
         tooltipText="Status"
-        classNamesProps={{ container: styles.additionalStat }}
+        classNamesProps={classNamesProps}
       />
     </div>
   )

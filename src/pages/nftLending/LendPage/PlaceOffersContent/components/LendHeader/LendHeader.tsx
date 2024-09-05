@@ -5,7 +5,7 @@ import { sumBy } from 'lodash'
 import { OnboardButton } from '@banx/components/Buttons'
 import { AdditionalStat, PageHeaderBackdrop } from '@banx/components/PageHeader'
 import { DisplayValue } from '@banx/components/TableComponents'
-import { NftTokenSwitcher } from '@banx/components/TokenSwitcher'
+import { TokenSwitcher } from '@banx/components/TokenSwitcher'
 
 import { core } from '@banx/api/nft'
 import { formatNumbersWithCommas } from '@banx/utils'
@@ -31,7 +31,7 @@ const Header = () => {
     <PageHeaderBackdrop
       title="Lend"
       titleBtn={<OnboardButton contentType="lend" />}
-      tokenSwitcher={<NftTokenSwitcher title="Lend" />}
+      tokenSwitcher={<TokenSwitcher title="Lend" />}
     >
       <AdditionalStat
         label="Loan TVL"

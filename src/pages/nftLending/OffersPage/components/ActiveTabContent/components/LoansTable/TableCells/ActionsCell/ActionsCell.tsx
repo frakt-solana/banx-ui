@@ -95,7 +95,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
     }
   }
 
-  const buttonSize = isCardView ? 'default' : 'small'
+  const buttonSize = isCardView ? 'large' : 'medium'
 
   const isTerminatingStatus = isLoanTerminating(loan)
   const isLoanExpired = isLoanLiquidated(loan)
@@ -133,7 +133,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
         className={classNames(styles.tensorButtonLink, { [styles.cardView]: isCardView })}
         variant="secondary"
         type="circle"
-        size="small"
+        size="medium"
       >
         <TensorLink mint={loan.nft.mint} />
       </Button>

@@ -19,7 +19,7 @@ import { InputErrorMessage, NumericStepInput } from '../inputs'
 import { Modal } from '../modals/BaseModal'
 import { ActionsButtons } from './components/ActionsButtons'
 import OrderBook from './components/OrderBook'
-import { AdditionalSummary, MainSummary } from './components/Summary'
+import { AdditionalSummary } from './components/Summary'
 import { formatLeadingZeros, getCollateralDecimalPlaces } from './helpers'
 import { usePlaceTokenOffer } from './hooks/usePlaceTokenOffer'
 
@@ -72,7 +72,7 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
           className={styles.showOffersMobileButton}
           onClick={showModal}
           type="circle"
-          variant="text"
+          variant="tertiary"
         >
           See offers
         </Button>
@@ -125,12 +125,9 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
           </div>
         </div>
 
-        <MainSummary
+        <AdditionalSummary
           market={market}
           collateralPerToken={collateralsPerTokenString}
-          apr={parseFloat(aprString)}
-        />
-        <AdditionalSummary
           offerSize={parseFloat(offerSizeString) * marketTokenDecimals}
           apr={parseFloat(aprString)}
         />
@@ -205,7 +202,7 @@ const MaxOfferControls: FC<MaxOfferControlsProps> = ({ market, onChange, tokenTy
           key={percent}
           onClick={() => onChangePercent(percent)}
           className={styles.maxOfferControlsButton}
-          variant="secondary"
+          variant="tertiary"
           size="small"
         >
           {percent}%
@@ -215,7 +212,7 @@ const MaxOfferControls: FC<MaxOfferControlsProps> = ({ market, onChange, tokenTy
         onClick={onChangeTopOffer}
         className={styles.maxOfferControlsButton}
         disabled={!bestOffer}
-        variant="secondary"
+        variant="tertiary"
         size="small"
       >
         Top

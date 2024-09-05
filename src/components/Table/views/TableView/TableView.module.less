@@ -34,13 +34,13 @@
         background: var(--bg-primary);
         border-bottom: 0;
         color: var(--content-secondary);
-        font: var(--table-header-md);
+        font: var(--title-md);
         text-transform: uppercase;
         white-space: nowrap;
         vertical-align: middle;
 
         @media (max-width: 640px) {
-          font: var(--table-header-sm);
+          font: var(--title-sm);
         }
 
         &:first-child {
@@ -66,11 +66,11 @@
   tbody {
     tr {
       &:hover {
-        background: var(--bg-action) !important;
+        background: var(--bg-secondary) !important;
       }
 
       &:nth-child(even) {
-        background: var(--bg-primary-deep);
+        background: var(--bg-secondary);
       }
 
       td {

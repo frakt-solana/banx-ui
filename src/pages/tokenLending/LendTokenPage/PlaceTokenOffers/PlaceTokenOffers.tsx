@@ -5,6 +5,7 @@ import { useFakeInfinityScroll } from '@banx/hooks'
 
 import FilterSection from './components/FilterSection'
 import LendTokenCard from './components/LendTokenCard'
+import TokensListHeader from './components/TokensListHeader'
 import { usePlaceTokenOffersContent } from './hooks'
 
 import styles from './PlaceTokenOffers.module.less'
@@ -27,6 +28,8 @@ const PlaceTokenOffers = () => {
   return (
     <div className={styles.content}>
       <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
+
+      <TokensListHeader />
 
       {isLoading && <Loader />}
 

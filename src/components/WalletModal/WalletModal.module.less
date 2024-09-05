@@ -1,6 +1,9 @@
 .modal {
   border: var(--border-primary);
   border-top: 0;
+  border-right: 0;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
   background-color: var(--bg-primary);
 
   position: absolute;
@@ -66,7 +69,7 @@
 
 // * LenderVaultContent * //
 .lenderVaultContainer {
-  background: var(--bg-action);
+  background: var(--bg-secondary);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -233,7 +236,7 @@
 }
 .userBalanceLabel {
   color: var(--content-secondary);
-  font: var(--table-header-md);
+  font: var(--title-md);
   text-transform: uppercase;
 }
 .userBalanceValue {

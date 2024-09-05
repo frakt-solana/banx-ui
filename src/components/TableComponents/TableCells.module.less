@@ -22,7 +22,7 @@
 
 .nftPlaceholderIcon {
   rect {
-    fill: var(--bg-secondary);
+    fill: var(--bg-tertiary);
     stroke: var(--bg-border);
   }
   path {
@@ -59,7 +59,7 @@
   }
 }
 .nftCollectionName {
-  font: var(--card-header-sm);
+  font: var(--title-sm);
 }
 .ellipsis {
   max-width: 180px;
@@ -158,24 +158,7 @@
 }
 
 .displayValue {
-  line-height: 1;
-
-  .value,
-  .tokenUnit {
-    display: inline-block;
-    vertical-align: middle;
-  }
-
-  //? Set the icon height equal to the line height
-  .tokenUnit {
-    height: 1em;
-    width: 1em;
-
-    svg {
-      height: 1em;
-      width: 1em;
-    }
-  }
+  line-height: 1em;
 }
 
 .rarityText {

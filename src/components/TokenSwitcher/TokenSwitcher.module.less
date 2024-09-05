@@ -1,8 +1,8 @@
-.nftTokenSwitcher,
-.tokenSwitcher {
-  background: var(--bg-secondary);
-  border: var(--border-primary);
+// * TokenSwitcher * //
+.switcher {
+  background: var(--bg-tertiary);
   border-radius: 100px;
+  cursor: pointer;
 
   display: flex;
   align-items: center;
@@ -11,12 +11,12 @@
 
   user-select: none;
   -webkit-user-drag: none;
-  cursor: pointer;
 }
 
-.nftTokenWrapper,
-.tokenWrapper {
+.switcherOption {
   border-radius: 100px;
+  color: var(--content-secondary);
+  padding: 5px 14px;
 
   display: flex;
   align-items: center;
@@ -26,52 +26,26 @@
   width: 100%;
 
   &.active {
-    background: var(--accent-primary);
-
-    span {
-      color: var(--pure-black);
-    }
+    background: var(--bg-primary);
+    color: var(--content-primary);
   }
 }
 
-.nftTokenWrapper {
-  padding: 4px 8px;
-}
-
-.tokenWrapper {
-  padding: 5px 14px;
-}
-
-.tokenValue {
+.switcherOptionValue {
   display: flex;
   align-items: center;
-  column-gap: 4px;
-
-  svg {
-    width: 18px;
-    height: 18px;
-  }
+  gap: 4px;
 }
 
-.tokenIconWrapper {
-  width: 18px;
-  height: 18px;
-  display: flex;
-  align-self: center;
-  justify-content: center;
-  border-radius: 50%;
+.switcherOptionIcon {
+  height: 16px;
+  width: 16px;
 }
 
-.tokenIconSolWrapper {
-  background: var(--bg-primary);
+.switcherOptionLabel {
+  font: var(--btn-text-md);
 }
-
-.tokenTicker {
-  //? Compensate chakra font bottom margin to make an ideal horizontal alignment
-  padding-top: 1px;
-  font: var(--btn-text-sm);
-  color: var(--content-primary);
-}
+// * TokenSwitcher * //
 
 // * TokenDropdown * //
 .dropdownButton {
@@ -123,7 +97,7 @@
 }
 
 .dropdownItem {
-  background: var(--bg-secondary);
+  background: var(--bg-tertiary);
   border: var(--border-primary);
   border-radius: 100px;
   cursor: pointer;

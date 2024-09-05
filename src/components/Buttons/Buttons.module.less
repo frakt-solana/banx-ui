@@ -1,4 +1,4 @@
-// root styles for all buttons
+// * Root styles for all buttons * //
 .root {
   background: transparent;
   border: 0;
@@ -19,50 +19,9 @@
     pointer-events: none;
   }
 }
+// * Root styles for all buttons * //
 
-// standard buttons styles
-.standard {
-  border: 1px solid transparent;
-  border-radius: 4px;
-
-  &.primary {
-    background-color: var(--accent-primary);
-    color: var(--pure-black);
-
-    &:hover {
-      background-color: var(--accent-secondary);
-    }
-  }
-
-  &.secondary {
-    background-color: var(--additional-green-secondary);
-    border-color: var(--accent-primary);
-
-    &:hover {
-      border: 1px solid var(--accent-secondary);
-    }
-  }
-
-  &.default {
-    padding: 6px 12px;
-    height: 32px;
-  }
-
-  &.small {
-    padding: 2px 12px;
-    height: 24px;
-  }
-
-  &.loading,
-  &.loading:hover,
-  &:disabled {
-    background-color: var(--bg-secondary);
-    border: 1px solid var(--bg-border);
-    color: var(--content-secondary);
-    pointer-events: none;
-  }
-}
-
+// * Loader styles * //
 .loader {
   width: 16px;
   height: 16px;
@@ -78,17 +37,72 @@
     transform: rotate(360deg);
   }
 }
+// * Loader styles * //
 
-// Circle button styles
+// * Standard button styles * //
+.standard {
+  border-radius: 4px;
+  border: 1px solid transparent;
+
+  //? Sizes
+  &.large {
+    padding: 6px 12px;
+    height: 32px;
+  }
+
+  &.medium {
+    padding: 2px 12px;
+    height: 24px;
+  }
+
+  &.small {
+    font: var(--btn-text-sm);
+    padding: 2px 6px;
+    height: 20px;
+  }
+
+  &.primary {
+    background-color: var(--accent-primary);
+    color: var(--pure-black);
+
+    &:hover {
+      background-color: var(--accent-secondary);
+    }
+  }
+
+  &.secondary {
+    background-color: var(--additional-green-secondary);
+    color: var(--content-primary);
+
+    &:hover {
+      border-color: var(--accent-primary);
+    }
+  }
+
+  &.tertiary {
+    background-color: var(--action-primary);
+
+    &:hover {
+      border-color: var(--bg-border-active);
+    }
+  }
+
+  //? Loading and disabled states
+  &.loading,
+  &.loading:hover,
+  &:disabled {
+    background-color: var(--action-tertiary);
+    color: var(--content-tertiary);
+    pointer-events: none;
+  }
+}
+// * Standard button styles * //
+
+// * Circle button styles * //
 .circle {
   border-radius: 100px;
 
-  &:disabled {
-    border: 1px solid var(--bg-border);
-    background-color: var(--bg-primary);
-  }
-
-  // Icon styles
+  //? Icon styles
   svg {
     height: 16px;
     width: 16px;
@@ -102,22 +116,28 @@
   &.secondary {
     padding: 0;
 
-    &.default {
+    &.large {
       min-height: 32px;
       min-width: 32px;
       max-height: 32px;
       max-width: 32px;
     }
 
-    &.small {
+    &.medium {
       min-height: 24px;
       min-width: 24px;
       max-height: 24px;
       max-width: 24px;
     }
+
+    &.small {
+      min-height: 20px;
+      min-width: 20px;
+      max-height: 20px;
+      max-width: 20px;
+    }
   }
 
-  // Primary circle button
   &.primary {
     background-color: var(--accent-primary);
 
@@ -131,20 +151,31 @@
     }
   }
 
-  &.secondary,
-  &.text {
-    border: 1px solid var(--bg-border);
-    background-color: var(--bg-primary);
+  &.secondary {
+    background-color: var(--action-primary);
+    border: 1px solid transparent;
 
     &:hover {
-      border-color: var(--content-primary);
+      border: 1px solid var(--bg-border-active);
     }
   }
 
-  &.text {
+  &.tertiary {
+    background-color: var(--action-primary);
+    border: 1px solid transparent;
     padding: 6px 10px;
+
+    &:hover {
+      border: 1px solid var(--bg-border-active);
+    }
+  }
+
+  &:disabled {
+    background-color: var(--action-tertiary);
+    color: 1px solid var(--content-tertiary);
   }
 }
+// * Circle button styles * //
 
 .connectedButton {
   cursor: pointer;
@@ -204,13 +235,9 @@
 
 // * BalanceContent * //
 
-.connectedWalletChevron {
+.connectedWalletIcon {
   path {
     fill: var(--content-primary);
-  }
-
-  &.active {
-    transform: rotate(180deg);
   }
 
   @media (max-width: 640px) {

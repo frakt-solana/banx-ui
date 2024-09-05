@@ -22,7 +22,7 @@ export const OnboardButton: FC<OnboardButtonProps> = ({ title, contentType }) =>
   }
 
   return (
-    <Button type="circle" variant="text" className={styles.onboardBtn} onClick={openModal}>
+    <Button type="circle" variant="tertiary" className={styles.onboardBtn} onClick={openModal}>
       <Info />
       <span className={styles.instructionsLabel}>How it works?</span>
       {title && <span className={styles.pageTitle}>{title}</span>}

@@ -11,7 +11,7 @@ import styles from './TokenSwitcher.module.less'
 
 export interface Option<T> {
   key: T
-  unit: ReactNode
+  icon: ReactNode
   label: string
 }
 
@@ -68,7 +68,7 @@ interface TokenDropdownItemProps<T> {
   onClick: () => void
 }
 const TokenDropdownItem = <T,>({ option, isActive, onClick }: TokenDropdownItemProps<T>) => {
-  const { unit: tokenIcon, label } = option
+  const { icon, label } = option
 
   return (
     <div
@@ -78,7 +78,7 @@ const TokenDropdownItem = <T,>({ option, isActive, onClick }: TokenDropdownItemP
         [styles.active]: isActive,
       })}
     >
-      {tokenIcon}
+      {icon}
       <span className={styles.dropdownItemLabel}>{label}</span>
     </div>
   )
@@ -97,17 +97,17 @@ const TokenDropdownButton = <T,>({
   onClick,
   isOpen,
 }: TokenDropdownButtonProps<T>) => {
-  const { unit: tokenIcon, label } = option
+  const { icon, label } = option
 
   return (
     <Button
       type="circle"
-      variant="text"
+      variant="tertiary"
       className={classNames(styles.dropdownButton, { [styles.isOpen]: isOpen })}
       onClick={onClick}
     >
       <span>{title}</span>
-      {tokenIcon}
+      {icon}
       <span>{label}</span>
       <ChevronDown className={classNames(styles.chevronIcon, { [styles.rotate]: isOpen })} />
     </Button>

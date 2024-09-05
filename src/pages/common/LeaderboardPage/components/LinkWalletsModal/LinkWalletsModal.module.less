@@ -71,7 +71,7 @@
   tbody {
     tr {
       &:nth-child(odd) {
-        background: var(--bg-primary-deep);
+        background: var(--bg-secondary);
       }
     }
   }
@@ -125,11 +125,11 @@
 }
 
 .linkedWalletKey {
-  font: var(--card-header-md);
+  font: var(--title-md);
   position: relative;
 
   @media screen and (max-width: 640px) {
-    font: var(--card-header-sm);
+    font: var(--title-sm);
   }
 }
 .linkedWalletKeyActive {
@@ -189,7 +189,7 @@
 }
 .unlinkLoader {
   display: block;
-  background: var(--bg-secondary);
+  background: var(--bg-tertiary);
   width: 24px;
   height: 24px;
   display: flex;
@@ -272,12 +272,11 @@
 }
 
 .cancelLinkingBtn {
-  background-color: var(--additional-red-secondary) !important;
-  border: 1px solid var(--additional-red-primary) !important;
+  background-color: var(--additional-red-primary-sub) !important;
   color: var(--content-primary) !important;
 
   &:hover {
-    border: 1px solid var(--additional-red-primary-deep) !important;
+    border: 1px solid var(--additional-red-primary) !important;
   }
 }
 //? Linking block

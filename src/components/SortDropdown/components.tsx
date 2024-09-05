@@ -25,7 +25,7 @@ export const DropdownButton = <T,>({
   return (
     <Button
       type="circle"
-      variant="text"
+      variant="tertiary"
       className={classNames(styles.dropdownButton, { [styles.isOpen]: isDropdownOpen })}
       onClick={toggleDropdown}
     >
@@ -65,7 +65,7 @@ export const SortOptions = <T,>({ options, selectedOption, onChange }: SortOptio
               [styles.active]: selectedOptionField === optionField && selectedOptionOrder === order,
             })}
             type="circle"
-            variant="text"
+            variant="tertiary"
           >
             <ArrowDown className={getSortOrderClassName(order)} />
             {option.label}

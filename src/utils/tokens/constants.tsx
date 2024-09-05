@@ -1,7 +1,6 @@
 import { BN } from 'fbonds-core'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { USDC } from '@banx/icons'
 import { ZERO_BN } from '@banx/utils'
 
 export const SOLANA_RENT_FEE_BORROW_AMOUNT_IMPACT = {
@@ -18,7 +17,7 @@ export const MIN_VALUE_TO_DISPLAY = {
 
 export const TOKEN_UNIT = {
   [LendingTokenType.NativeSol]: '◎',
-  [LendingTokenType.Usdc]: <USDC />,
+  [LendingTokenType.Usdc]: '$',
   [LendingTokenType.BanxSol]: '◎',
 }
 

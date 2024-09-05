@@ -1,0 +1,140 @@
+.flexCol {
+  display: flex;
+  flex-direction: column;
+}
+
+// * Modal *//
+.modal :global {
+  .ant-modal-content {
+    padding: 0;
+  }
+}
+// * Modal *//
+
+.searchInputWrapper {
+  position: relative;
+  margin: 12px 24px;
+
+  input {
+    border: var(--border-less-primary) !important;
+    padding: 8px 12px 8px 32px;
+  }
+}
+
+.searchIcon {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+
+  path {
+    fill: var(--content-secondary);
+  }
+}
+
+// * TokensListLabels * //
+.tokensListLabels {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 16px;
+}
+.tokenListLabel {
+  color: var(--content-tertiary);
+  font: var(--title-xs);
+  text-transform: uppercase;
+}
+// * TokensListLabels * //
+
+.tokensList {
+  overflow: auto;
+  height: 380px;
+}
+
+// * TokenListItem * //
+.tokensListItem {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+
+  &:hover,
+  &:nth-child(odd) {
+    background: var(--bg-secondary);
+  }
+
+  &Info {
+    display: flex;
+    padding-left: 16px;
+    gap: 8px;
+  }
+
+  &Icon {
+    border-radius: 100px;
+    height: 30px;
+    width: 30px;
+  }
+
+  &Ticker {
+    color: var(--content-primary);
+    font: var(--title-sm);
+  }
+
+  &Address {
+    color: var(--content-secondary);
+    font: var(--body-text-xs);
+  }
+
+  &BalanceInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding-right: 16px;
+  }
+
+  &CollateralsAmount {
+    font: var(--body-text-sm);
+  }
+
+  &CollateralsAmountUsd {
+    font: var(--body-text-xs);
+  }
+}
+// * TokenListItem * //
+
+// * PinnedTokensList * //
+.pinnedTokensList {
+  display: flex;
+  align-items: center;
+  padding: 0 24px 12px;
+  gap: 12px;
+}
+
+.pinnedToken {
+  background-color: var(--action-primary);
+  border: 1px solid transparent;
+  border-radius: 100px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  padding: 2px 8px;
+  gap: 4px;
+
+  &:hover {
+    border: 1px solid var(--bg-border-active);
+  }
+
+  &Icon {
+    border-radius: 100px;
+    height: 16px;
+    width: 16px;
+  }
+
+  &Label {
+    color: var(--content-secondary);
+    font: var(--body-text-sm);
+  }
+}
+// * PinnedTokensList * //

@@ -20,7 +20,7 @@
 }
 
 .body {
-  background-color: var(--bg-action);
+  background-color: var(--action-tertiary);
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   padding: 8px 24px;
@@ -92,11 +92,10 @@
 .cancelBtn {
   &:not(&:disabled) {
     color: var(--content-primary);
-    background-color: var(--additional-red-secondary);
-    border: 1px solid var(--additional-red-primary);
+    background-color: var(--additional-red-primary-sub) !important;
 
     &:hover {
-      border: 1px solid var(--additional-red-primary-deep);
+      border: 1px solid var(--additional-red-primary) !important;
     }
   }
 }

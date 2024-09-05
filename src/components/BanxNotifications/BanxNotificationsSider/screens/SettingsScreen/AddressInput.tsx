@@ -65,7 +65,7 @@ export const AddressInput: FC<AddressInputProps> = ({
       />
       {rightAddonState === RightAddonState.LOADING && <div className={styles.addressInputLoader} />}
       {rightAddonState !== RightAddonState.LOADING && rightAddonState !== RightAddonState.EMPTY && (
-        <Button onClick={onRightAddonClick} size="small">
+        <Button onClick={onRightAddonClick} size="medium">
           {AddonStateNames[rightAddonState]}
         </Button>
       )}

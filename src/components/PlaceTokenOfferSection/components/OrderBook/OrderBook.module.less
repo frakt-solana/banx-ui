@@ -47,7 +47,7 @@
 }
 
 .offersList {
-  background: var(--bg-action);
+  background: var(--bg-primary);
   margin-top: 6px;
   overflow-y: auto;
   height: 100%;
@@ -57,14 +57,14 @@
 .listItem {
   position: relative;
   padding: 4px 64px 4px 24px;
-  background: var(--bg-action);
+  background: var(--bg-primary);
   display: flex;
   align-items: center;
   min-height: 38px;
   width: 100%;
 
-  &:not(:last-child) {
-    border-bottom: var(--border-primary);
+  &:nth-child(even) {
+    background: var(--bg-secondary);
   }
 
   &.creating,

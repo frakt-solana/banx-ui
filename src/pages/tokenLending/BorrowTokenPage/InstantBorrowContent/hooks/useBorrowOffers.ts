@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
+import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getBondingCurveTypeFromLendingToken } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 
 import { CollateralToken, core } from '@banx/api/tokens'
@@ -53,7 +54,7 @@ export const useBorrowOffers = (
       bondingCurveType,
       ltvLimit,
       collateralsAmount: collateralsAmount.toString(),
-      excludeWallet: walletPubkeyString,
+      excludeWallet: walletPubkeyString || PUBKEY_PLACEHOLDER,
       disableMultiBorrow: false,
     })
   }

@@ -21,12 +21,16 @@
 }
 
 .input {
-  background: var(--bg-action);
+  background: var(--action-primary);
   border: 1px solid var(--bg-border);
   border-radius: 6px;
   display: flex;
   align-items: center;
   padding-right: 4px;
+
+  &:has(input:focus) {
+    background: var(--action-secondary);
+  }
 }
 
 .content {
@@ -88,7 +92,7 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    font: var(--card-header-sm);
+    font: var(--title-sm);
     text-transform: uppercase;
   }
 
@@ -108,7 +112,7 @@
     }
     span:last-child {
       font: var(--body-text-xl);
-      font: var(--card-header-sm);
+      font: var(--title-sm);
       text-transform: uppercase;
       margin: 0 6px;
     }

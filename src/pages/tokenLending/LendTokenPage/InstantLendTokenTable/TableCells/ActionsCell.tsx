@@ -52,7 +52,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView, disabledAc
       <Button
         className={styles.actionButton}
         onClick={onClickHandler}
-        size={isCardView ? 'default' : 'small'}
+        size={isCardView ? 'large' : 'medium'}
         disabled={disabledAction}
       >
         Lend

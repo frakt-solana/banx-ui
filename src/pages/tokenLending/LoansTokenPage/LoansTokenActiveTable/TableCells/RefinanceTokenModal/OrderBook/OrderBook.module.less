@@ -51,6 +51,8 @@
 }
 
 .borrowValueInfo {
+  display: flex;
+  flex-direction: column;
   color: var(--content-secondary);
   font: var(--important-text-lg);
 
@@ -60,22 +62,19 @@
 }
 
 .refinanceModalButton {
-  padding: 2px 8px !important;
+  width: 120px;
   gap: 4px;
-  width: 130px;
 
   @media (max-width: 640px) {
-    height: 18px !important;
-    width: 118px;
+    height: 20px !important;
   }
 
   &.negative {
-    color: var(--content-primary) !important;
-    background-color: var(--additional-red-secondary) !important;
-    border: 1px solid var(--additional-red-primary);
+    color: var(--content-primary);
+    background-color: var(--additional-red-primary-sub) !important;
 
     &:hover {
-      border: 1px solid var(--additional-red-primary-deep);
+      border: 1px solid var(--additional-red-primary) !important;
     }
   }
 }
