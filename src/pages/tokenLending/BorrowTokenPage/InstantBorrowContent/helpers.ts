@@ -46,7 +46,7 @@ export const getErrorMessage = ({
   const noOffersAvailable = offers.length === 0 && !isLoadingOffers
 
   if (isInvalidAmount) {
-    return 'Enter an amount'
+    return 'Enter your amount of collateral'
   }
 
   if (noOffersAvailable) {
