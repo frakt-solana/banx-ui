@@ -7,7 +7,7 @@ import { SortOption } from '@banx/components/SortDropdown'
 import { core } from '@banx/api/tokens'
 import { calculateTokenLoanLtvByLoanValue } from '@banx/utils'
 
-import { calculateLendToBorrowApr, calculateLendToBorrowValue } from '../helpers'
+import { calculateLendToBorrowValue } from '../helpers'
 
 enum SortField {
   LTV = 'ltv',
@@ -34,7 +34,7 @@ const SORT_VALUE_MAP: Record<SortField, SortValueGetter> = {
   },
   [SortField.DURATION]: (loan) => loan.fraktBond.refinanceAuctionStartedAt,
   [SortField.DEBT]: (loan) => calculateLendToBorrowValue(loan),
-  [SortField.APR]: (loan) => calculateLendToBorrowApr(loan),
+  [SortField.APR]: (loan) => loan.bondTradeTransaction.amountOfBonds,
   [SortField.FREEZE]: (loan) => loan.bondTradeTransaction.terminationFreeze,
 }
 

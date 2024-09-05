@@ -13,7 +13,7 @@ import {
   getColorByPercent,
 } from '@banx/utils'
 
-import { calculateLendToBorrowApr, calculateLendToBorrowValue } from '../helpers'
+import { calculateLendToBorrowValue } from '../helpers'
 
 import styles from '../InstantLendTokenTable.module.less'
 
@@ -56,7 +56,7 @@ export const LTVCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
 export const APRCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
   return (
     <HorizontalCell
-      value={createPercentValueJSX(calculateLendToBorrowApr(loan) / 100)}
+      value={createPercentValueJSX(loan.bondTradeTransaction.amountOfBonds / 100)}
       isHighlighted
     />
   )

@@ -4,10 +4,8 @@ import { core } from '@banx/api/tokens'
 import { SECONDS_IN_DAY } from '@banx/constants'
 import {
   caclulateBorrowTokenLoanValue,
-  calculateApr,
   calculateTokenLoanValueWithUpfrontFee,
   isTokenLoanListed,
-  isTokenLoanTerminating,
 } from '@banx/utils'
 
 export const calculateLendToBorrowValue = (loan: core.TokenLoan) => {
@@ -16,23 +14,11 @@ export const calculateLendToBorrowValue = (loan: core.TokenLoan) => {
     : caclulateBorrowTokenLoanValue(loan).toNumber()
 }
 
-export const calculateLendToBorrowApr = (loan: core.TokenLoan) => {
-  const isTerminatingStatus = isTokenLoanTerminating(loan)
-
-  const calculatedApr = calculateApr({
-    loanValue: calculateLendToBorrowValue(loan),
-    collectionFloor: loan.collateralPrice,
-    marketPubkey: loan.fraktBond.hadoMarket,
-  })
-
-  return isTerminatingStatus ? calculatedApr : loan.bondTradeTransaction.amountOfBonds
-}
-
 export const calcTokenWeeklyInterest = (loan: core.TokenLoan) => {
   const { soldAt, amountOfBonds } = loan.bondTradeTransaction
 
   return calculateCurrentInterestSolPure({
-    loanValue: calculateLendToBorrowValue(loan),
+    loanValue: loan.bondTradeTransaction.amountOfBonds,
     startTime: soldAt,
     currentTime: soldAt + SECONDS_IN_DAY * 7,
     rateBasePoints: amountOfBonds,

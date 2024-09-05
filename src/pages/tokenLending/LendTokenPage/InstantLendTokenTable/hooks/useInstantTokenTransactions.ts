@@ -32,7 +32,6 @@ import {
   isTokenLoanListed,
 } from '@banx/utils'
 
-import { calculateLendToBorrowApr } from '../helpers'
 import { useLoansTokenState } from '../loansState'
 import { useAllTokenLoansRequests } from './useAllTokenLoansRequests'
 
@@ -71,7 +70,7 @@ export const useInstantTokenTransactions = () => {
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const aprRate = calculateLendToBorrowApr(loan)
+      const aprRate = loan.bondTradeTransaction.amountOfBonds
 
       const txnData = await createLendToBorrowTokenTxnData(
         { loan, aprRate, tokenType },
@@ -141,7 +140,7 @@ export const useInstantTokenTransactions = () => {
       const txnsData = await Promise.all(
         selection.map((loan) =>
           createLendToBorrowTokenTxnData(
-            { loan, aprRate: calculateLendToBorrowApr(loan), tokenType },
+            { loan, aprRate: loan.bondTradeTransaction.amountOfBonds, tokenType },
             walletAndConnection,
           ),
         ),

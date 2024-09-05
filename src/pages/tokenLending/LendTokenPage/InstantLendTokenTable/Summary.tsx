@@ -19,11 +19,7 @@ import {
   isTokenLoanFrozen,
 } from '@banx/utils'
 
-import {
-  calcTokenWeeklyInterest,
-  calculateLendToBorrowApr,
-  calculateLendToBorrowValue,
-} from './helpers'
+import { calcTokenWeeklyInterest, calculateLendToBorrowValue } from './helpers'
 import { useInstantTokenTransactions } from './hooks'
 import { useLoansTokenState } from './loansState'
 
@@ -137,7 +133,7 @@ const calculateSummaryInfo = (loans: core.TokenLoan[]) => {
   const totalLoanValue = map(loans, (loan) => calculateLendToBorrowValue(loan))
   const totalWeeklyInterest = sumBy(loans, (loan) => calcTokenWeeklyInterest(loan))
 
-  const totalAprArray = map(loans, (loan) => calculateLendToBorrowApr(loan) / 100)
+  const totalAprArray = map(loans, (loan) => loan.bondTradeTransaction.amountOfBonds / 100)
   const totalLtvArray = map(loans, (loan) =>
     calculateTokenLoanLtvByLoanValue(loan, calculateLendToBorrowValue(loan)),
   )
