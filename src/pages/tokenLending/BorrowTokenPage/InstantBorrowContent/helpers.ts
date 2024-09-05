@@ -98,13 +98,11 @@ export const getSummaryInfo = (offers: BorrowOffer[]) => {
 }
 
 type GetButtonActionTextProps = {
-  isLoading: boolean
   isWalletConnected: boolean
   errorMessage?: string
 }
 
 export const getButtonActionText = ({
-  isLoading,
   isWalletConnected,
   errorMessage,
 }: GetButtonActionTextProps) => {
@@ -114,10 +112,6 @@ export const getButtonActionText = ({
 
   if (errorMessage) {
     return errorMessage
-  }
-
-  if (isLoading && !errorMessage) {
-    return 'Fetching...'
   }
 
   return 'Borrow'

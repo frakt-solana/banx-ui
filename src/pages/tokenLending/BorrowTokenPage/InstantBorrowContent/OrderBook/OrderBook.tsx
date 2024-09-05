@@ -20,6 +20,7 @@ interface OrderBookProps {
   isLoading: boolean
   requiredCollateralsAmount: string //? input value string
   collateral: CollateralToken | undefined
+  errorMessage: string | undefined
 }
 
 const OrderBook: FC<OrderBookProps> = ({
@@ -27,6 +28,7 @@ const OrderBook: FC<OrderBookProps> = ({
   isLoading,
   requiredCollateralsAmount,
   collateral,
+  errorMessage,
 }) => {
   const { tokenType } = useNftTokenType()
 
@@ -125,8 +127,6 @@ const OrderBook: FC<OrderBookProps> = ({
     }
   }, [offerWithHighestOfferSize, onRowClick])
 
-  const emptyMessage = !offers.length ? 'Not found suitable offers' : ''
-
   const loading = isLoading && !stringToBN(requiredCollateralsAmount, marketTokenDecimals).isZero()
 
   return (
@@ -137,7 +137,8 @@ const OrderBook: FC<OrderBookProps> = ({
         rowParams={rowParams}
         className={styles.table}
         classNameTableWrapper={styles.tableWrapper}
-        emptyMessage={emptyMessage}
+        emptyMessage={!offers.length ? errorMessage : ''}
+        loaderClassName={styles.tableLoader}
         loading={loading}
       />
     </div>

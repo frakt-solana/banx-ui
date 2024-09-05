@@ -119,7 +119,7 @@ export const formatDecimalWithSubscript = (decimalNumber: number) => {
 
 export const formatCollateralTokenValue = (value: number) => {
   if (isValueBelowThreshold(value, MIN_COLLATERAL_VALUE_TO_DISPLAY)) {
-    return value
+    return value.toString()
   }
 
   const decimalPlaces =
