@@ -6,6 +6,7 @@ import { Loader } from '@banx/components/Loader'
 import FilterSection from '../FilterSection'
 import OfferTokenCard from '../OfferTokenCard'
 import Summary from '../Summary'
+import TokensListHeader from '../TokensListHeader'
 import { useOffersTokenContent } from './hooks'
 
 import styles from './OffersTokenTabContent.module.less'
@@ -33,6 +34,8 @@ const OffersTokenTabContent = () => {
       {!showEmptyList && !isLoading && (
         <>
           <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
+
+          <TokensListHeader />
 
           <div className={styles.offersList}>
             {offersToDisplay.map((offerPreview) => (
