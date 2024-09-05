@@ -1,4 +1,5 @@
 import { SECONDS_IN_DAY } from 'fbonds-core/lib/fbond-protocol/constants'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
@@ -26,6 +27,7 @@ interface GetTableColumnsProps {
   onSelectAll: () => void
   isCardView: boolean
   hasSelectedLoans: boolean
+  tokenType: LendingTokenType
 }
 
 export const getTableColumns = ({
@@ -34,6 +36,7 @@ export const getTableColumns = ({
   onSelectAll,
   hasSelectedLoans,
   toggleLoanInSelection,
+  tokenType,
 }: GetTableColumnsProps) => {
   const columns: ColumnType<core.TokenLoan>[] = [
     {
@@ -59,7 +62,7 @@ export const getTableColumns = ({
     {
       key: 'repayValue',
       title: <HeaderCell label="Debt" />,
-      render: (loan) => <DebtCell loan={loan} />,
+      render: (loan) => <DebtCell loan={loan} tokenType={tokenType} />,
     },
     {
       key: 'ltv',

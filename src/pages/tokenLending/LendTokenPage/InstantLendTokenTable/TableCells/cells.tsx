@@ -1,5 +1,7 @@
 import { FC } from 'react'
 
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+
 import {
   DisplayValue,
   HorizontalCell,
@@ -11,18 +13,25 @@ import {
   HealthColorIncreasing,
   calculateTokenLoanLtvByLoanValue,
   getColorByPercent,
+  getTokenDecimals,
 } from '@banx/utils'
 
 import { calculateLendToBorrowValue } from '../helpers'
 
 import styles from '../InstantLendTokenTable.module.less'
 
-export const DebtCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
+interface DebtCellProps {
+  loan: core.TokenLoan
+  tokenType: LendingTokenType
+}
+
+export const DebtCell: FC<DebtCellProps> = ({ loan, tokenType }) => {
+  const marketTokenDecimals = getTokenDecimals(tokenType) //? 1e9, 1e6
   const lentValue = calculateLendToBorrowValue(loan)
 
   const tooltopContent = (
     <div className={styles.tooltipContainer}>
-      {createTooltipContent('Price', loan.collateralPrice, true)}
+      {createTooltipContent('Price', loan.collateralPrice / marketTokenDecimals, true)}
       {createTooltipContent('Debt', lentValue)}
     </div>
   )

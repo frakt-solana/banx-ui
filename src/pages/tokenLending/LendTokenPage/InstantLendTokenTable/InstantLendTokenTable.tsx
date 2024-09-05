@@ -70,6 +70,7 @@ const InstantLendTokenTable: FC<InstantLendTableProps> = ({ goToPlaceOfferTab })
     findLoanInSelection,
     onSelectAll,
     hasSelectedLoans,
+    tokenType,
   })
 
   const rowParams = useMemo(() => {

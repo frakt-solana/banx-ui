@@ -19,7 +19,7 @@ export const LendTokenPage = () => {
     tabs,
   } = useTabs({
     tabs: OFFERS_TABS,
-    defaultValue: storeTab ?? LendTokenTabName.INSTANT,
+    defaultValue: storeTab ?? LendTokenTabName.PLACE,
   })
 
   //? Used hook to reset store when the component is unmounted
@@ -52,11 +52,11 @@ export enum LendTokenTabName {
 
 const OFFERS_TABS = [
   {
-    label: 'Lend now',
-    value: LendTokenTabName.INSTANT,
-  },
-  {
     label: 'Place offers',
     value: LendTokenTabName.PLACE,
+  },
+  {
+    label: 'Lend now',
+    value: LendTokenTabName.INSTANT,
   },
 ]
