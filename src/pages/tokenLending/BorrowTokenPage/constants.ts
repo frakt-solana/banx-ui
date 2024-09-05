@@ -8,7 +8,7 @@ export interface BorrowToken {
   amountInWallet: number
 }
 
-export const DEFAULT_COLLATERAL_MARKET_PUBKEY = '9vMKEMq8G36yrkqVUzQuAweieCsxU9ZaK1ob8GRegwmh'
+export const DEFAULT_COLLATERAL_MINT = 'BANXbTpN8U2cU41FjPxe2Ti37PiT5cCxLUKDQZuJeMMR'
 
 export const BORROW_TOKENS_LIST: BorrowToken[] = [
   {

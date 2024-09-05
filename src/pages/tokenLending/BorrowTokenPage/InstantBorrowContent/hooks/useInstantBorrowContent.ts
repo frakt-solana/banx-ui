@@ -12,7 +12,7 @@ import {
   sumBNs,
 } from '@banx/utils'
 
-import { BorrowToken, DEFAULT_COLLATERAL_MARKET_PUBKEY } from '../../constants'
+import { BorrowToken, DEFAULT_COLLATERAL_MINT } from '../../constants'
 import { getErrorMessage } from '../helpers'
 import { useBorrowOffers } from './useBorrowOffers'
 import { useBorrowOffersTransaction } from './useBorrowOffersTransaction'
@@ -43,7 +43,7 @@ export const useInstantBorrowContent = () => {
 
   useEffect(() => {
     const foundToken = collateralsList.find(
-      (token) => token.marketPubkey === DEFAULT_COLLATERAL_MARKET_PUBKEY,
+      (token) => token.collateral.mint === DEFAULT_COLLATERAL_MINT,
     )
 
     if (!collateralToken && foundToken) {
