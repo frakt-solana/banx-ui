@@ -10,7 +10,7 @@ import { Button } from '@banx/components/Buttons'
 import { Loader } from '@banx/components/Loader'
 import { Slider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
-import { DisplayValue } from '@banx/components/TableComponents'
+import { DisplayValue, createDisplayValueJSX } from '@banx/components/TableComponents'
 import Timer from '@banx/components/Timer'
 
 import { core } from '@banx/api/nft'
@@ -234,6 +234,8 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   const freezeExpiredAt = calculateFreezeExpiredAt(loan)
   const isFreezeExpired = checkIfFreezeExpired(loan)
 
+  const formattedExitValue = formatValueByTokenType(totalClaimValue, tokenType)
+
   return (
     <div className={styles.closureContent}>
       <div
@@ -255,8 +257,7 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
               <Button onClick={instantLoan} disabled={!canRefinance} variant="secondary">
                 {canRefinance ? (
                   <div className={styles.exitValue}>
-                    Exit +{formatValueByTokenType(totalClaimValue, tokenType)}
-                    {tokenUnit}
+                    Exit + {createDisplayValueJSX(formattedExitValue, tokenUnit)}
                   </div>
                 ) : (
                   'No suitable offers yet'

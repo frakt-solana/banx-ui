@@ -15,10 +15,15 @@ export const MIN_VALUE_TO_DISPLAY = {
   [LendingTokenType.Usdc]: 0.01,
 }
 
+export enum TokenUnit {
+  Usdc = '$',
+  Sol = '◎',
+}
+
 export const TOKEN_UNIT = {
-  [LendingTokenType.NativeSol]: '◎',
-  [LendingTokenType.Usdc]: '$',
-  [LendingTokenType.BanxSol]: '◎',
+  [LendingTokenType.NativeSol]: TokenUnit.Sol,
+  [LendingTokenType.BanxSol]: TokenUnit.Sol,
+  [LendingTokenType.Usdc]: TokenUnit.Usdc,
 }
 
 export const TOKEN_DECIMALS = {

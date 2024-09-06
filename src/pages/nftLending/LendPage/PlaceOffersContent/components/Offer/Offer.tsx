@@ -6,7 +6,7 @@ import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Button } from '@banx/components/Buttons'
-import { createPercentValueJSX } from '@banx/components/TableComponents'
+import { createDisplayValueJSX, createPercentValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
 import { Pencil } from '@banx/icons'
@@ -57,8 +57,7 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, collectionFloor }) => {
 
       <div className={styles.values}>
         <p className={styles.displayOfferValue}>
-          {displayOfferValue}
-          {tokenUnit}
+          {createDisplayValueJSX(displayOfferValue, tokenUnit)}
         </p>
         <p className={styles.value}>{createPercentValueJSX(maxDynamicApr)}</p>
         <p className={styles.value}>{loansAmount}</p>

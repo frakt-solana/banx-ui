@@ -6,6 +6,7 @@ import { chain, isEmpty } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 import { Loader } from '@banx/components/Loader'
+import { createDisplayValueJSX } from '@banx/components/TableComponents'
 import Timer from '@banx/components/Timer'
 
 import { convertBondOfferV3ToCore } from '@banx/api/nft'
@@ -124,7 +125,7 @@ const ActionsButton: FC<ActionsButtonProps> = ({
 
   const displayExitValueJSX = canRefinance ? (
     <div className={styles.exitValue}>
-      Exit +{formattedExitValue} {tokenUnit}
+      Exit + {createDisplayValueJSX(formattedExitValue, tokenUnit)}
     </div>
   ) : (
     <>No suitable offers yet</>

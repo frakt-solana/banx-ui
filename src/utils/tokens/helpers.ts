@@ -1,5 +1,3 @@
-import { ReactNode } from 'react'
-
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { find, findIndex, repeat } from 'lodash'
 
@@ -12,6 +10,7 @@ import {
   MIN_VALUE_TO_DISPLAY,
   TOKEN_DECIMALS,
   TOKEN_UNIT,
+  TokenUnit,
 } from './constants'
 
 const isValueBelowThreshold = (value: number, threshold: number) => value < threshold
@@ -58,7 +57,7 @@ export const getTokenDecimals = (tokenType: LendingTokenType): number => {
   return TOKEN_DECIMALS[tokenType]
 }
 
-export const getTokenUnit = (tokenType: LendingTokenType): ReactNode => {
+export const getTokenUnit = (tokenType: LendingTokenType): TokenUnit => {
   return TOKEN_UNIT[tokenType]
 }
 
