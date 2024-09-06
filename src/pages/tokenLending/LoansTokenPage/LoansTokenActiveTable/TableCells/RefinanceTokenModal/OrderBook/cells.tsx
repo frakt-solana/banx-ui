@@ -9,7 +9,11 @@ import {
   calculateLtvPercent,
   formatLeadingZeros,
 } from '@banx/components/PlaceTokenOfferSection/helpers'
-import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
+import {
+  DisplayValue,
+  createDisplayValueJSX,
+  createPercentValueJSX,
+} from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/tokens'
 import {
@@ -110,11 +114,12 @@ export const ActionCell: FC<ActionCellProps> = ({ loan, offer, tokenType, refina
   const formattedDifference = formatLeadingZeros(humanReadableDifference, tokenDecimalPlaces)
 
   const formattedDifferenceNumber = parseFloat(formattedDifference)
+  const isNegativeDifference = formattedDifferenceNumber < 0
 
-  const displayValue = Math.abs(formattedDifferenceNumber) !== 0 ? formattedDifferenceNumber : 0
-  const isNegativeDifference = displayValue < 0
+  const displayValue = Math.abs(formattedDifferenceNumber)
 
-  const showPlusSign = !isNegativeDifference && displayValue !== 0
+  const showSing = displayValue !== 0
+  const sign = isNegativeDifference ? '-' : '+'
 
   return (
     <Button
@@ -127,9 +132,8 @@ export const ActionCell: FC<ActionCellProps> = ({ loan, offer, tokenType, refina
     >
       Renew
       <p className={styles.differenceValue}>
-        {showPlusSign && '+'}
-        {displayValue}
-        {tokenUnit}
+        {showSing && sign}
+        {createDisplayValueJSX(displayValue.toString(), tokenUnit)}
       </p>
     </Button>
   )
