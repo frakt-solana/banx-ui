@@ -32,3 +32,15 @@ export type CollateralToken = z.infer<typeof CollateralTokenSchema>
 
 export type DBOffer = z.infer<typeof DBOfferSchema>
 export type BorrowOffer = z.infer<typeof BorrowOfferSchema>
+
+export enum MarketCategory {
+  All = 'All',
+  LST = 'LST',
+  DeFi = 'DeFi',
+  Meme = 'Meme',
+  Governance = 'Governance',
+  RWA = 'RWA',
+  LP = 'LP',
+  DePin = 'DePin',
+  Gaming = 'Gaming',
+}

@@ -19,17 +19,24 @@ const PlaceTokenOffers = () => {
     sortParams,
     showEmptyList,
     isLoading,
+    selectedCategory,
+    onChangeCategory,
   } = usePlaceTokenOffersContent()
 
   const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: marketsPreview })
 
-  if (showEmptyList) return <EmptyList message="No active markets yet" />
-
   return (
     <div className={styles.content}>
-      <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
+      <FilterSection
+        searchSelectParams={searchSelectParams}
+        sortParams={sortParams}
+        selectedCategory={selectedCategory}
+        onChangeCategory={onChangeCategory}
+      />
 
       <TokensListHeader />
+
+      {showEmptyList && <EmptyList message="No active markets yet" />}
 
       {isLoading && <Loader />}
 
