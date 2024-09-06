@@ -28,7 +28,7 @@ const FilterSection = <T extends object>({
   selectedCategory,
   onChangeCategory,
 }: FilterSectionProps<T>) => {
-  const [searchSelectCollapsed, setSearchSelectCollapsed] = useState(false)
+  const [searchSelectCollapsed, setSearchSelectCollapsed] = useState(true)
 
   return (
     <div className={styles.container}>
