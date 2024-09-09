@@ -27,6 +27,7 @@ export const getTableColumns = () => {
           collateralTokenAmount={formatCollateralTokenValue(
             tokenSupply / Math.pow(10, collateral.decimals),
           )}
+          className={styles.collateralTokenCell}
         />
       ),
     },
