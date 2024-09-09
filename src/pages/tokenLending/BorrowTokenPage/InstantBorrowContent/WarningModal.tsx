@@ -1,6 +1,7 @@
 import { FC } from 'react'
 
 import { Button } from '@banx/components/Buttons'
+import { createDisplayValueJSX } from '@banx/components/TableComponents'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { BorrowOffer, CollateralToken } from '@banx/api/tokens'
@@ -57,7 +58,7 @@ const WarningModal: FC<WarningModalProps> = ({ offers, onSubmit, onCancel, colla
           </span>{' '}
           with {formattedAprValue}% APR (est weekly fee is{' '}
           <span className={styles.warningModalTokenValue}>
-            {formattedWeeklyFee} {tokenUnit}
+            {createDisplayValueJSX(formattedWeeklyFee, tokenUnit)}
           </span>
           )
         </div>

@@ -5,7 +5,7 @@ import { first, groupBy, isEmpty, map } from 'lodash'
 
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 
-import { core } from '@banx/api/tokens'
+import { MarketCategory, core } from '@banx/api/tokens'
 import { createGlobalState } from '@banx/store'
 
 import { useTokenMarketsPreview } from '../../hooks'
@@ -19,6 +19,7 @@ export const usePlaceTokenOffersContent = () => {
   const { marketsPreview, isLoading: isLoadingMarkets } = useTokenMarketsPreview()
 
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
+  const [selectedCategory, setSelectedCategory] = useState<MarketCategory>(MarketCategory.All)
 
   const [visibleMarketPubkey, setMarketPubkey] = useState('')
 
@@ -28,16 +29,28 @@ export const usePlaceTokenOffersContent = () => {
     return setMarketPubkey(nextValue)
   }
 
-  const filteredMarkets = useMemo(() => {
-    if (!selectedCollections.length) return marketsPreview
+  const onChangeCategory = (category: MarketCategory) => {
+    setSelectedCategory(category)
+  }
 
-    return marketsPreview.filter((market) => selectedCollections.includes(market.collateral.ticker))
-  }, [marketsPreview, selectedCollections])
+  const filteredByCategory = useMemo(() => {
+    if (selectedCategory === MarketCategory.All) return marketsPreview
+
+    return marketsPreview.filter((market) => market.marketCategory.includes(selectedCategory))
+  }, [marketsPreview, selectedCategory])
+
+  const filteredMarkets = useMemo(() => {
+    if (!selectedCollections.length) return filteredByCategory
+
+    return filteredByCategory.filter((market) =>
+      selectedCollections.includes(market.collateral.ticker),
+    )
+  }, [filteredByCategory, selectedCollections])
 
   const { sortedMarkets, sortParams } = useSortedMarkets(filteredMarkets)
 
   const searchSelectParams = createSearchSelectParams({
-    options: marketsPreview,
+    options: filteredByCategory,
     selectedOptions: selectedCollections,
     onChange: setSelectedCollections,
   })
@@ -49,6 +62,9 @@ export const usePlaceTokenOffersContent = () => {
     marketsPreview: sortedMarkets,
     visibleMarketPubkey,
     onCardClick,
+
+    selectedCategory,
+    onChangeCategory,
 
     searchSelectParams,
     sortParams,

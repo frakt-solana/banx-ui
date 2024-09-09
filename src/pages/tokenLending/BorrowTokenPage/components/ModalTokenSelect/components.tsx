@@ -50,7 +50,7 @@ const TokenBalanceInfo: FC<TokenBalanceInfoProps> = ({ token }) => {
 
       {!!tokensAmountInUsd && tokensAmountInUsd > USDC_BALANCE_TRESHOLD && (
         <span className={styles.tokensListItemCollateralsAmountUsd}>
-          {formatCollateralTokenValue(tokensAmountInUsd)}$
+          ${formatCollateralTokenValue(tokensAmountInUsd)}
         </span>
       )}
     </div>

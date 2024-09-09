@@ -11,6 +11,8 @@ import {
   StringPublicKeySchema,
 } from '@banx/api/shared'
 
+import { MarketCategory } from './types'
+
 export const TokenMetaSchema = z.object({
   mint: z.string(),
   logoUrl: z.string(),
@@ -52,6 +54,7 @@ export const TokenMarketPreviewSchema = z.object({
   marketApy: z.number(),
   marketUtilizationRate: z.number().nullable(),
 
+  marketCategory: z.array(z.string().or(z.nativeEnum(MarketCategory))),
   isHot: z.boolean(),
 })
 
