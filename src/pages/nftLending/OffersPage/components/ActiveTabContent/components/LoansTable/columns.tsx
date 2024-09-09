@@ -110,7 +110,7 @@ export const getTableColumns = ({
       title: (
         <HeaderCell
           label="Repaid"
-          tooltipText="Repayments returned to pending offer if open, or wallet if closed"
+          tooltipText="Repayments returned to the vault and can be claimed from the pending tab or profile modal"
         />
       ),
       render: ({ totalRepaidAmount = 0 }) => (
