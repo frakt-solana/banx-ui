@@ -18,19 +18,17 @@
   padding: 6px 24px;
   width: 100%;
 
-  &.opened {
-    border-bottom: var(--border-less-primary);
-
-    @media (max-width: 640px) {
-      padding-bottom: 0;
-    }
-  }
-
   @media (max-width: 960px) {
     flex-direction: column;
     align-items: flex-start;
     padding: 8px 16px;
     gap: 16px;
+  }
+
+  @media (max-width: 640px) {
+    &.opened {
+      padding-bottom: 0;
+    }
   }
 }
 
