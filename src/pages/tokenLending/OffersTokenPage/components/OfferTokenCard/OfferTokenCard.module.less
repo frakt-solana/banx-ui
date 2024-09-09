@@ -18,14 +18,6 @@
   padding: 12px 24px;
   width: 100%;
 
-  &.opened {
-    border-bottom: var(--border-less-primary);
-
-    @media (max-width: 640px) {
-      padding-bottom: 0;
-    }
-  }
-
   @media (max-width: 960px) {
     flex-direction: column;
     align-items: flex-start;
@@ -35,6 +27,10 @@
 
   @media (max-width: 640px) {
     padding: 8px 16px;
+
+    &.opened {
+      padding-bottom: 0;
+    }
   }
 }
 

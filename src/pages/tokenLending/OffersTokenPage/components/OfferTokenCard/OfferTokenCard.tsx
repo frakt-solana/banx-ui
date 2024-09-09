@@ -54,7 +54,7 @@ const OfferTokenCard: FC<OfferTokenCardProps> = ({ offerPreview, isOpen, onToggl
       </div>
       {isOpen && (
         <ExpandedCardContent
-          marketPubkey={offerPreview.tokenMarketPreview.marketPubkey}
+          market={offerPreview.tokenMarketPreview}
           offerPubkey={offerPreview.publicKey}
         />
       )}

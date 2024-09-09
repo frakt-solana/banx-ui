@@ -47,7 +47,6 @@ const LendTokenActivityTable: FC<LendTokenActivityTableProps> = ({ marketPubkey 
         loaderSize="small"
         classNameTableWrapper={classNames(styles.tableWrapper, {
           [styles.notConnectedContent]: !connected,
-          [styles.emptyContent]: connected && showEmptyList,
         })}
         emptyMessage={
           showEmptyList

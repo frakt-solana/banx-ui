@@ -32,16 +32,14 @@
 }
 
 .tableWrapper {
-  height: 200px;
+  height: 228px;
 
-  &.notConnectedContent {
-    @media (max-width: 640px) {
+  @media (max-width: 640px) {
+    height: 330px;
+
+    &.notConnectedContent {
       height: 256px;
     }
-  }
-
-  &.emptyContent {
-    height: 152px;
   }
 }
 
