@@ -51,11 +51,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 180px;
+  gap: 124px;
   width: 100%;
 
   @media (max-width: 1240px) {
-    gap: 16px;
+    gap: 8px;
   }
 
   & > div {
@@ -65,7 +65,7 @@
     width: 100%;
 
     @media (max-width: 1240px) {
-      min-width: 104px;
+      white-space: nowrap;
     }
 
     @media (max-width: 960px) {
@@ -78,6 +78,10 @@
   @media (min-width: 1241px) {
     display: none;
   }
+}
+
+.aprValueStat {
+  color: var(--additional-green-primary-deep);
 }
 
 .terminateControls {
