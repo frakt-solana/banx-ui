@@ -5,10 +5,7 @@ import { BN } from 'fbonds-core'
 import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Button } from '@banx/components/Buttons'
-import {
-  calculateLtvPercent,
-  formatLeadingZeros,
-} from '@banx/components/PlaceTokenOfferSection/helpers'
+import { calculateLtvPercent, formatLeadingZeros } from '@banx/components/PlaceTokenOfferSection'
 import {
   DisplayValue,
   createDisplayValueJSX,

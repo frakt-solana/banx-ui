@@ -3,7 +3,7 @@ import { FC } from 'react'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
-import { calculateLtvPercent } from '@banx/components/PlaceTokenOfferSection/helpers'
+import { calculateLtvPercent } from '@banx/components/PlaceTokenOfferSection'
 import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'

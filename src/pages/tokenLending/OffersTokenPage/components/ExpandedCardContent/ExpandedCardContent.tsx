@@ -2,8 +2,7 @@ import { FC } from 'react'
 
 import { Button } from '@banx/components/Buttons'
 import { LendTokenActivityTable } from '@banx/components/CommonTables'
-import PlaceTokenOfferSection from '@banx/components/PlaceTokenOfferSection'
-import OrderBook from '@banx/components/PlaceTokenOfferSection/components/OrderBook'
+import PlaceTokenOfferSection, { OrderBook } from '@banx/components/PlaceTokenOfferSection'
 import { Tabs, useTabs } from '@banx/components/Tabs'
 import { Modal } from '@banx/components/modals/BaseModal'
 
