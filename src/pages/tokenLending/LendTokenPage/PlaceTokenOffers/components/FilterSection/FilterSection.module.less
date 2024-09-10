@@ -30,7 +30,8 @@
 
 // * CategoryFilter * //
 .categories {
-  background: var(--bg-tertiary);
+  background: var(--bg-primary);
+  border: var(--border-less-primary);
   border-radius: 100px;
   cursor: pointer;
 
@@ -61,11 +62,8 @@
   width: 100%;
 
   &.active {
-    background: var(--bg-primary);
-
-    span {
-      color: var(--content-primary);
-    }
+    background: var(--action-primary);
+    color: var(--content-primary);
   }
 
   @media screen and (max-width: 1080px) {
