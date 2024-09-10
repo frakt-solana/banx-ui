@@ -61,7 +61,7 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
     <>
       <div className={styles.fieldsColumn}>
         <NumericStepInput
-          label="Max offer"
+          label="Offer"
           value={collateralsPerTokenString}
           onChange={onLoanValueChange}
           postfix={getTokenUnit(tokenType)}
