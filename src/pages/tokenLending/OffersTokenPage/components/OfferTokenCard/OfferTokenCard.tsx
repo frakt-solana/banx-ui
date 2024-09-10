@@ -3,16 +3,20 @@ import { FC } from 'react'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
+import { calculateLtvPercent } from '@banx/components/PlaceTokenOfferSection/helpers'
 import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
+import Tooltip from '@banx/components/Tooltip'
 
 import { core } from '@banx/api/tokens'
 import { ChevronDown, Coin, CoinPlus, Warning } from '@banx/icons'
 import { useNftTokenType } from '@banx/store/nft'
 import { convertToSynthetic, useSyntheticTokenOffers } from '@banx/store/token'
 import {
+  HealthColorIncreasing,
   calculateTokensPerCollateral,
   formatTokensPerCollateralToStr,
+  getColorByPercent,
   getTokenDecimals,
 } from '@banx/utils'
 
@@ -92,7 +96,7 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ offerPreview, isO
   const { collateral, collateralPrice } = offerPreview.tokenMarketPreview
 
   const { tokenType } = useNftTokenType()
-  const decimals = getTokenDecimals(tokenType)
+  const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6
 
   const aprPercent = offerPreview.bondOffer.loanApr.toNumber() / 100
 
@@ -108,18 +112,31 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ offerPreview, isO
     ),
   )
 
+  const ltvPercent = calculateLtvPercent({
+    collateralPerToken: tokensPerCollateral,
+    collateralPrice,
+    marketTokenDecimals,
+  })
+
+  const formattedPrice = collateralPrice / Math.pow(10, marketTokenDecimals)
+
   return (
     <div className={classNames(styles.additionalInfoStats, { [styles.opened]: isOpen })}>
       <StatInfo
         label="Price"
-        value={<DisplayValue value={collateralPrice / decimals} isSubscriptFormat />}
+        value={<DisplayValue value={formattedPrice} isSubscriptFormat />}
         tooltipText="Token market price"
         classNamesProps={classNamesProps}
       />
       <StatInfo
         label="My offer"
         value={<DisplayValue value={parseFloat(tokensPerCollateral)} isSubscriptFormat />}
-        classNamesProps={classNamesProps}
+        classNamesProps={{ ...classNamesProps, value: styles.myOfferStat }}
+        secondValue={
+          <span style={{ color: getColorByPercent(ltvPercent, HealthColorIncreasing) }}>
+            {createPercentValueJSX(ltvPercent)} LTV
+          </span>
+        }
       />
       <StatInfo
         label="In loans"
@@ -148,7 +165,6 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ offerPreview, isO
             repaymentCallsAmount={repaymentCallsAmount}
           />
         }
-        tooltipText="Status"
         classNamesProps={classNamesProps}
       />
     </div>
@@ -168,18 +184,26 @@ const LoansStatus: FC<LoansStatusProps> = ({
 }) => {
   return (
     <div className={styles.loansStatus}>
-      <div className={styles.loansStatusIcon}>
-        <CoinPlus />
-        <span>{terminatingLoansAmount}</span>,
-      </div>
-      <div className={styles.loansStatusIcon}>
-        <Warning />
-        <span>{liquidatedLoansAmount}</span>,
-      </div>
-      <div className={styles.loansStatusIcon}>
-        <Coin />
-        <span>{repaymentCallsAmount}</span>
-      </div>
+      <Tooltip title="Terminating loans">
+        <div className={styles.loansStatusIcon}>
+          <CoinPlus />
+          <span>{terminatingLoansAmount}</span>,
+        </div>
+      </Tooltip>
+
+      <Tooltip title="Liquidated loans">
+        <div className={styles.loansStatusIcon}>
+          <Warning />
+          <span>{liquidatedLoansAmount}</span>,
+        </div>
+      </Tooltip>
+
+      <Tooltip title="Repayment calls">
+        <div className={styles.loansStatusIcon}>
+          <Coin />
+          <span>{repaymentCallsAmount}</span>
+        </div>
+      </Tooltip>
     </div>
   )
 }
