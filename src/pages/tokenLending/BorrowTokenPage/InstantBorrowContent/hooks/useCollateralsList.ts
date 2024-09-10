@@ -33,10 +33,15 @@ export const useCollateralsList = () => {
 
     return [...data]
       .filter((token) => token.collateral.mint !== collateralMintToRemove)
-      .sort((a, b) => b.amountInWallet - a.amountInWallet)
+      .sort((a, b) => calculateCollateralValueInUsd(b) - calculateCollateralValueInUsd(a))
   }, [data, tokenType])
 
   return { collateralsList: sortedCollateralsList, isLoading }
+}
+
+const calculateCollateralValueInUsd = (token: core.CollateralToken) => {
+  const { collateral, amountInWallet, collateralPrice } = token
+  return (amountInWallet / Math.pow(10, collateral.decimals)) * collateralPrice
 }
 
 export const useBorrowTokensList = () => {
