@@ -74,7 +74,11 @@ export const getTableColumns: GetTableColumns = ({
     {
       key: 'offerSize',
       title: <HeaderCell label="Offer size" />,
-      render: (offer) => <DisplayValue value={parseFloat(offer.maxTokenToGet)} />,
+      render: (offer) => (
+        <span className={styles.offerSizeValue}>
+          <DisplayValue value={parseFloat(offer.maxTokenToGet)} />
+        </span>
+      ),
     },
   ]
 

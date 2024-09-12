@@ -30,14 +30,12 @@ export const BorrowTokenPage = () => {
   }, [setTab, storeTab])
 
   return (
-    <>
+    <div className={styles.pageWrapper}>
       <BorrowHeader />
       <Tabs value={currentTabValue} tabs={tabs} setValue={setValue} />
-      <div className={styles.content}>
-        {currentTabValue === BorrowTokenTabName.INSTANT && <InstantBorrowContent />}
-        {currentTabValue === BorrowTokenTabName.LIST && <ListLoansContent />}
-      </div>
-    </>
+      {currentTabValue === BorrowTokenTabName.INSTANT && <InstantBorrowContent />}
+      {currentTabValue === BorrowTokenTabName.LIST && <ListLoansContent />}
+    </div>
   )
 }
 

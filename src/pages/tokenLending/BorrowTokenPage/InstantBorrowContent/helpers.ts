@@ -31,7 +31,7 @@ export const getErrorMessage = ({
   const ticker = collateralToken?.collateral.ticker || ''
 
   const collateralTokenBalance = bnToHuman(
-    new BN(collateralToken?.amountInWallet || 0),
+    new BN(String(collateralToken?.amountInWallet || 0)),
     collateralToken?.collateral.decimals,
   ).toString()
 
