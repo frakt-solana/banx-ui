@@ -14,7 +14,7 @@ import {
 } from '@banx/store/nft'
 import { isOfferClosed } from '@banx/utils'
 
-export const useUserOffers = () => {
+export const useUserOffers = (props?: { refetchInterval?: number }) => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
@@ -30,7 +30,8 @@ export const useUserOffers = () => {
     {
       enabled: !!publicKeyString,
       refetchOnWindowFocus: false,
-      refetchInterval: 30 * 1000,
+      refetchInterval: props?.refetchInterval,
+      staleTime: 30 * 1000, //? 30 sec
     },
   )
 

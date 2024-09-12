@@ -32,9 +32,8 @@ export const TXN_EXECUTOR_DEFAULT_OPTIONS: ExecutorOptions = {
     skipPreflight: true,
   },
   confirmOptions: {
-    commitment: 'processed',
     confirmationTimeout: 60,
-    pollingSignatureInterval: 10,
+    pollingSignatureInterval: 2,
   },
   transactionOptions: {
     getPriorityFee: executorGetPriorityFee,
