@@ -17,19 +17,11 @@ import styles from './OrderBook.module.less'
 
 interface OrderBookProps {
   offers: BorrowOffer[]
-  isLoading: boolean
   requiredCollateralsAmount: string //? input value string
   collateral: CollateralToken | undefined
-  errorMessage: string | undefined
 }
 
-const OrderBook: FC<OrderBookProps> = ({
-  offers,
-  isLoading,
-  requiredCollateralsAmount,
-  collateral,
-  errorMessage,
-}) => {
+const OrderBook: FC<OrderBookProps> = ({ offers, requiredCollateralsAmount, collateral }) => {
   const { tokenType } = useNftTokenType()
 
   const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6
@@ -127,21 +119,14 @@ const OrderBook: FC<OrderBookProps> = ({
     }
   }, [offerWithHighestOfferSize, onRowClick])
 
-  const loading = isLoading && !stringToBN(requiredCollateralsAmount, marketTokenDecimals).isZero()
-
   return (
-    <div className={styles.container}>
-      <Table
-        data={offers}
-        columns={columns}
-        rowParams={rowParams}
-        className={styles.table}
-        classNameTableWrapper={styles.tableWrapper}
-        emptyMessage={!offers.length ? errorMessage : ''}
-        loaderClassName={styles.tableLoader}
-        loading={loading}
-      />
-    </div>
+    <Table
+      data={offers}
+      columns={columns}
+      rowParams={rowParams}
+      className={styles.table}
+      classNameTableWrapper={styles.tableWrapper}
+    />
   )
 }
 

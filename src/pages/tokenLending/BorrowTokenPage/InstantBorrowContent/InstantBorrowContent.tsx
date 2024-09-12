@@ -1,12 +1,14 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 
 import { Button } from '@banx/components/Buttons'
+import { Loader } from '@banx/components/Loader'
 import { useWalletModal } from '@banx/components/WalletModal'
 
 import { useModal } from '@banx/store/common'
 
 import { LoanValueSlider } from '../components'
 import InputTokenSelect from '../components/InputTokenSelect'
+import MarketOrderBook from './MarketOrderBook'
 import OrderBook from './OrderBook'
 import { Summary } from './Summary'
 import WarningModal from './WarningModal'
@@ -65,6 +67,8 @@ const InstantBorrowContent = () => {
     })
   }
 
+  const loading = isLoading && !!parseFloat(collateralInputValue)
+
   return (
     <div className={styles.container}>
       <div className={styles.content}>
@@ -100,19 +104,28 @@ const InstantBorrowContent = () => {
             onClick={onSubmit}
             className={styles.borrowButton}
             disabled={wallet.connected && (!!errorMessage || !offersInCart.length)}
-            loading={!errorMessage && (isBorrowing || isLoading)}
+            loading={!errorMessage && (isBorrowing || loading)}
           >
             {getButtonActionText({ isWalletConnected: wallet.connected, errorMessage })}
           </Button>
         </div>
       </div>
-      <OrderBook
-        offers={offers}
-        isLoading={isLoading}
-        requiredCollateralsAmount={collateralInputValue}
-        collateral={collateralToken}
-        errorMessage={errorMessage}
-      />
+
+      <div className={styles.orderBookContainer}>
+        {loading && <Loader className={styles.loader} />}
+
+        {!loading && !offers.length && !!collateralToken && (
+          <MarketOrderBook collateral={collateralToken} />
+        )}
+
+        {!loading && !!offers.length && (
+          <OrderBook
+            offers={offers}
+            requiredCollateralsAmount={collateralInputValue}
+            collateral={collateralToken}
+          />
+        )}
+      </div>
     </div>
   )
 }
