@@ -93,16 +93,18 @@ const InstantBorrowContent = () => {
 
         <LoanValueSlider label="Max LTV" value={ltvSliderValue} onChange={onChangeLtvSlider} />
 
-        <Summary offers={offersInCart} />
+        <div className={styles.footerContent}>
+          <Summary offers={offersInCart} />
 
-        <Button
-          onClick={onSubmit}
-          className={styles.borrowButton}
-          disabled={wallet.connected && (!!errorMessage || !offersInCart.length)}
-          loading={!errorMessage && (isBorrowing || isLoading)}
-        >
-          {getButtonActionText({ isWalletConnected: wallet.connected, errorMessage })}
-        </Button>
+          <Button
+            onClick={onSubmit}
+            className={styles.borrowButton}
+            disabled={wallet.connected && (!!errorMessage || !offersInCart.length)}
+            loading={!errorMessage && (isBorrowing || isLoading)}
+          >
+            {getButtonActionText({ isWalletConnected: wallet.connected, errorMessage })}
+          </Button>
+        </div>
       </div>
       <OrderBook
         offers={offers}
