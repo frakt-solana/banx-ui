@@ -1,5 +1,6 @@
 import { FC, useMemo } from 'react'
 
+import classNames from 'classnames'
 import { sortBy } from 'lodash'
 
 import Table from '@banx/components/Table'
@@ -31,7 +32,9 @@ const MarketOrderBook: FC<MarketOrderBookProps> = ({ collateral }) => {
       data={sortedOffers}
       columns={columns}
       className={styles.table}
-      classNameTableWrapper={styles.tableWrapper}
+      classNameTableWrapper={classNames(styles.tableWrapper, {
+        [styles.showOverlay]: !!offers.length,
+      })}
       emptyMessage={!offers.length ? 'Not found suitable offers' : ''}
       loaderClassName={styles.tableLoader}
       loading={isLoading}
