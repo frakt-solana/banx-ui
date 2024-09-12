@@ -71,5 +71,5 @@ export const useModeType = () => {
 }
 
 const getRouteForMode = (currentPath: string, nextMode: ModeType): string => {
-  return MODE_ROUTE_MAP[nextMode][currentPath] || PATHS.ROOT
+  return MODE_ROUTE_MAP[nextMode][currentPath] || currentPath
 }
