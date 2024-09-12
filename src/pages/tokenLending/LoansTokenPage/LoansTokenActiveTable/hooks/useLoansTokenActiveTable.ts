@@ -7,6 +7,7 @@ import { PATHS } from '@banx/router'
 import { createPathWithModeParams } from '@banx/store'
 import { ModeType } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
+import { getTokenTicker } from '@banx/utils'
 
 import { useFilterLoans } from './useFilterLoans'
 import { useSortedLoans } from './useSortedLoans'
@@ -52,8 +53,12 @@ export const useLoansTokenActiveTable = (props: {
     navigate(createPathWithModeParams(PATHS.BORROW_TOKEN, ModeType.Token, tokenType))
   }
 
+  const tokenTicker = getTokenTicker(tokenType)
+
   const emptyListParams = {
-    message: connected ? createConnectedMessage(tokenType) : createNotConnectedMessage(tokenType),
+    message: connected
+      ? createConnectedMessage(tokenTicker)
+      : createNotConnectedMessage(tokenTicker),
     buttonProps: connected ? { text: 'Borrow', onClick: goToBorrowPage } : undefined,
   }
 

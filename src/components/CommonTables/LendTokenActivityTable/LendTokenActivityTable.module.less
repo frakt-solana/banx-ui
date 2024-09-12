@@ -32,16 +32,14 @@
 }
 
 .tableWrapper {
-  height: 200px;
+  height: 228px;
 
-  &.notConnectedContent {
-    @media (max-width: 640px) {
-      height: 256px;
+  @media (max-width: 640px) {
+    height: 330px;
+
+    &.notConnectedContent {
+      height: 368px;
     }
-  }
-
-  &.emptyContent {
-    height: 152px;
   }
 }
 
@@ -77,6 +75,12 @@
 // * FilterTableSection * //
 
 // * Cells * //
+.collateralTokenCell {
+  img {
+    width: 22px;
+    height: 22px;
+  }
+}
 .cellTitle {
   font: var(--body-text-sm);
   white-space: nowrap;

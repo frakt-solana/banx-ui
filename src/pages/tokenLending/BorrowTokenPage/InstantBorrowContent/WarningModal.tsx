@@ -49,12 +49,11 @@ const WarningModal: FC<WarningModalProps> = ({ offers, onSubmit, onCancel, colla
         <div className={styles.warningModalText}>
           Lenders can only provide{' '}
           <span className={styles.warningModalTokenValue}>
-            {formattedTotalAmountToGet} {tokenUnit}
+            {createDisplayValueJSX(formattedTotalAmountToGet, tokenUnit)}
           </span>{' '}
           collateralized by{' '}
           <span className={styles.warningModalTokenRow}>
-            {formattedCollateralsValue}{' '}
-            <img className={styles.collateralLogo} src={collateral?.collateral.logoUrl} />
+            {formattedCollateralsValue} {collateral?.collateral.ticker}
           </span>{' '}
           with {formattedAprValue}% APR (est weekly fee is{' '}
           <span className={styles.warningModalTokenValue}>

@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { reduce } from 'lodash'
+import { map, reduce } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider } from '@banx/components/Slider'
@@ -12,6 +12,7 @@ import { DisplayValue } from '@banx/components/TableComponents'
 import { core } from '@banx/api/tokens'
 import {
   HealthColorIncreasing,
+  calcWeightedAverage,
   calculateLentTokenValueWithInterest,
   calculateTokenLoanLtvByLoanValue,
   calculateTokenLoanValueWithUpfrontFee,
@@ -40,7 +41,8 @@ const Summary: FC<SummaryProps> = ({
 
   const { claimTokenLoans, terminateTokenLoans } = useTokenLenderLoansTransactions()
 
-  const { totalLent, averageLtv, totalInterest } = getTerminateStatsInfo(selectedLoans)
+  const { totalLent, weightedApr, weightedLtv, totalInterest } =
+    getTerminateStatsInfo(selectedLoans)
 
   const handleLoanSelection = (value = 0) => {
     setSelection(loansToTerminate.slice(0, value), walletPublicKeyString)
@@ -69,16 +71,22 @@ const Summary: FC<SummaryProps> = ({
 
         <div className={styles.additionalStats}>
           <StatInfo
-            classNamesProps={{ container: styles.lentAmountStat }}
             label="Lent amount"
             value={<DisplayValue value={totalLent} />}
+            classNamesProps={{ container: styles.lentAmountStat }}
+          />
+          <StatInfo
+            label="Avg apr"
+            value={weightedApr}
+            valueType={VALUES_TYPES.PERCENT}
+            classNamesProps={{ value: weightedApr ? styles.aprValueStat : '' }}
           />
           <StatInfo
             label="Avg ltv"
-            value={averageLtv}
+            value={weightedLtv}
             valueType={VALUES_TYPES.PERCENT}
             valueStyles={{
-              color: averageLtv ? getColorByPercent(averageLtv, HealthColorIncreasing) : '',
+              color: weightedLtv ? getColorByPercent(weightedLtv, HealthColorIncreasing) : '',
             }}
           />
           <StatInfo label="interest" value={<DisplayValue value={totalInterest} />} />
@@ -115,14 +123,23 @@ const getTerminateStatsInfo = (loans: core.TokenLoan[]) => {
     (acc, loan) => {
       const claimValue = calculateLentTokenValueWithInterest(loan).toNumber()
       const borrowedAmount = calculateTokenLoanValueWithUpfrontFee(loan).toNumber()
-      const ltvPercent = calculateTokenLoanLtvByLoanValue(loan, claimValue)
+
+      const totalAprArray = map(loans, (loan) => loan.bondTradeTransaction.amountOfBonds / 100)
+      const totalLtvArray = map(loans, (loan) => calculateTokenLoanLtvByLoanValue(loan, claimValue))
+      const totalLentArray = map(loans, (loan) =>
+        calculateLentTokenValueWithInterest(loan).toNumber(),
+      )
+
+      const weightedApr = calcWeightedAverage(totalAprArray, totalLentArray)
+      const weightedLtv = calcWeightedAverage(totalLtvArray, totalLentArray)
 
       return {
         totalLent: acc.totalLent + borrowedAmount,
-        averageLtv: acc.averageLtv + ltvPercent / loans.length,
         totalInterest: acc.totalInterest + claimValue - borrowedAmount,
+        weightedLtv,
+        weightedApr,
       }
     },
-    { totalLent: 0, averageLtv: 0, totalInterest: 0 },
+    { totalLent: 0, weightedLtv: 0, weightedApr: 0, totalInterest: 0 },
   )
 }

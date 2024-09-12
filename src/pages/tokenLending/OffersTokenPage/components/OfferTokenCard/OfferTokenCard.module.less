@@ -15,16 +15,8 @@
   justify-content: space-between;
   align-items: center;
   position: relative;
-  padding: 12px 24px;
+  padding: 6px 24px;
   width: 100%;
-
-  &.opened {
-    border-bottom: var(--border-less-primary);
-
-    @media (max-width: 640px) {
-      padding-bottom: 0;
-    }
-  }
 
   @media (max-width: 960px) {
     flex-direction: column;
@@ -35,6 +27,10 @@
 
   @media (max-width: 640px) {
     padding: 8px 16px;
+
+    &.opened {
+      padding-bottom: 0;
+    }
   }
 }
 
@@ -64,7 +60,7 @@
 .mainInfoContainer {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   min-width: 124px;
 
   @media (max-width: 640px) {
@@ -86,6 +82,7 @@
 // * MarketAdditionalInfo * //
 .additionalInfoStats {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
   gap: 16px;
   white-space: nowrap;
@@ -93,6 +90,7 @@
 
   @media (max-width: 960px) {
     display: grid;
+    align-items: flex-start;
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(2, auto);
     gap: 8px;
@@ -101,6 +99,7 @@
 
 .additionalInfoStat {
   align-items: flex-end;
+  gap: 2px;
   max-width: 180px;
   width: 100%;
 

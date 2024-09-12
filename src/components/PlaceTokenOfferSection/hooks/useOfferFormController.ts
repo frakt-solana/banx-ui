@@ -12,6 +12,8 @@ import {
   getTokenDecimals,
 } from '@banx/utils'
 
+const DEFAULT_APR_PERCENT = 30
+
 export const useOfferFormController = (
   syntheticOffer: SyntheticTokenOffer,
   market: TokenMarketPreview | undefined,
@@ -39,7 +41,7 @@ export const useOfferFormController = (
     return {
       collateralsPerToken: formatTokensPerCollateralToStr(collateralsPerToken),
       offerSize: offerSize ? String(offerSize) : '0',
-      apr: syntheticApr ? String(syntheticApr) : '0',
+      apr: syntheticApr ? String(syntheticApr) : DEFAULT_APR_PERCENT.toString(),
     }
   }, [decimals, market, syntheticApr, syntheticCollateralsPerToken, syntheticOfferSize])
 

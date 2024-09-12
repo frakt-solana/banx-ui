@@ -9,6 +9,7 @@ import {
   MIN_COLLATERAL_VALUE_TO_DISPLAY,
   MIN_VALUE_TO_DISPLAY,
   TOKEN_DECIMALS,
+  TOKEN_TICKER,
   TOKEN_UNIT,
   TokenUnit,
 } from './constants'
@@ -59,6 +60,10 @@ export const getTokenDecimals = (tokenType: LendingTokenType): number => {
 
 export const getTokenUnit = (tokenType: LendingTokenType): TokenUnit => {
   return TOKEN_UNIT[tokenType]
+}
+
+export const getTokenTicker = (tokenType: LendingTokenType): string => {
+  return TOKEN_TICKER[tokenType]
 }
 
 export const isSolTokenType = (tokenType: LendingTokenType): boolean =>

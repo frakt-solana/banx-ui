@@ -26,6 +26,12 @@ export const TOKEN_UNIT = {
   [LendingTokenType.Usdc]: TokenUnit.Usdc,
 }
 
+export const TOKEN_TICKER = {
+  [LendingTokenType.NativeSol]: 'SOL',
+  [LendingTokenType.BanxSol]: 'SOL',
+  [LendingTokenType.Usdc]: 'USDC',
+}
+
 export const TOKEN_DECIMALS = {
   [LendingTokenType.NativeSol]: 1e9,
   [LendingTokenType.BanxSol]: 1e9,

@@ -129,6 +129,7 @@ interface CollateralTokenCellProps {
   onCheckboxClick?: () => void
   checkboxClassName?: string
 
+  className?: string
   rightContentJSX?: ReactNode
 }
 
@@ -140,6 +141,7 @@ export const CollateralTokenCell: FC<CollateralTokenCellProps> = ({
   checkboxClassName,
   selected = false,
   rightContentJSX,
+  className,
 }) => {
   const { viewState } = useTableView()
   const isCardView = viewState === ViewState.CARD
@@ -154,7 +156,7 @@ export const CollateralTokenCell: FC<CollateralTokenCellProps> = ({
         />
       )}
 
-      <div className={styles.collateralTokenContainer}>
+      <div className={classNames(styles.collateralTokenContainer, className)}>
         <img src={collateralImageUrl} className={styles.collateralImage} />
         <div className={styles.collateralTokenInfo}>
           <span className={styles.collateralTokenAmount}>{collateralTokenAmount}</span>

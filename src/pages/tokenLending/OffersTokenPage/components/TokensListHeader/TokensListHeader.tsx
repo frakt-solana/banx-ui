@@ -27,7 +27,7 @@ const TokensListHeader = () => {
           className={styles.additionalStat}
           tooltipText="Annual interest rate. Depends on the loan-to-value (LTV) offered and market capitalization"
         />
-        <Stat label="Status" className={styles.additionalStat} tooltipText="Status" />
+        <Stat label="Status" className={styles.additionalStat} />
       </div>
     </div>
   )

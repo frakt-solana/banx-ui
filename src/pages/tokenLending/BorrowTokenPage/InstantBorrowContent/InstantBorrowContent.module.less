@@ -2,7 +2,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 24px;
   width: 100%;
+
+  @media (max-width: 960px) {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+    padding: 0;
+
+    overflow: hidden;
+  }
 }
 
 .content {
@@ -16,10 +27,37 @@
   max-width: 392px;
   width: 100%;
 
-  @media (max-width: 640px) {
+  @media (max-width: 960px) {
     border: 0;
-    padding: 16px;
+    padding: 16px 16px 0;
+  }
+
+  @media (max-width: 640px) {
     max-width: unset;
+  }
+}
+
+.footerContent {
+  border-top: 1px dotted var(--bg-border);
+
+  display: flex;
+  flex-direction: column;
+  padding: 12px 24px 0;
+  margin: 0 -24px 0;
+  gap: 16px;
+
+  @media (max-width: 960px) {
+    background: var(--bg-primary);
+
+    padding: 8px 16px 16px;
+    margin: 0;
+    gap: 8px;
+
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
   }
 }
 
@@ -29,17 +67,11 @@
 
 // * Summary * //
 .summary {
-  border-top: 1px dotted var(--bg-border);
-
   display: flex;
   flex-direction: column;
-  padding: 12px 24px 0;
-  margin: 0 -24px 0;
   gap: 8px;
 
-  @media (max-width: 640px) {
-    padding: 8px 16px 8px;
-    margin: 0 -16px 0;
+  @media (max-width: 960px) {
     gap: 4px;
   }
 }
@@ -47,7 +79,6 @@
 .fixedStatValue {
   max-width: 74px;
   white-space: nowrap;
-  overflow: auto;
 
   @media (max-width: 960px) {
     max-width: 144px;
@@ -56,7 +87,6 @@
 // * Summary * //
 
 .borrowButton {
-  margin-top: 16px;
   width: 100%;
 }
 
@@ -107,12 +137,6 @@
   }
 }
 
-.collateralLogo {
-  border-radius: 100%;
-  width: 16px;
-  height: 16px;
-}
-
 .warningModalFooter {
   display: flex;
   align-items: center;
@@ -136,3 +160,37 @@
   width: 100%;
 }
 // * WarningModal * //
+
+.orderBookContainer {
+  border: var(--border-primary);
+  border-left: 0;
+  border-radius: 12px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+
+  padding-top: 12px;
+
+  height: 100%;
+  width: 100%;
+
+  @media (max-width: 960px) {
+    border: 0;
+
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+    padding: 0 0 140px;
+
+    overflow: hidden;
+    height: unset;
+  }
+}
+
+.loader {
+  height: 100%;
+
+  path {
+    fill: #9cff1f;
+  }
+}

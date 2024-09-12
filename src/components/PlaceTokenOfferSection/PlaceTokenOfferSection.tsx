@@ -5,7 +5,6 @@ import { MAX_APR_SPL } from 'fbonds-core/lib/fbond-protocol/constants'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { TokenMarketPreview } from '@banx/api/tokens'
-import { useModal } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
 import {
   convertToDecimalString,
@@ -16,9 +15,7 @@ import {
 
 import { Button } from '../Buttons'
 import { InputErrorMessage, NumericStepInput } from '../inputs'
-import { Modal } from '../modals/BaseModal'
 import { ActionsButtons } from './components/ActionsButtons'
-import OrderBook from './components/OrderBook'
 import { AdditionalSummary } from './components/Summary'
 import { formatLeadingZeros, getCollateralDecimalPlaces } from './helpers'
 import { usePlaceTokenOffer } from './hooks/usePlaceTokenOffer'
@@ -53,115 +50,79 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
   } = usePlaceTokenOffer(marketPubkey, offerPubkey)
 
   const { connected } = useWallet()
-  const { open } = useModal()
 
   const { tokenType } = useNftTokenType()
-
-  const showModal = () => {
-    open(OffersModal, { market, offerPubkey })
-  }
 
   const marketTokenDecimals = getTokenDecimals(tokenType) //? 1e6, 1e9
 
   const inputStepByTokenType = isBanxSolTokenType(tokenType) ? 0.1 : 1
 
   return (
-    <div className={styles.container}>
-      <div className={styles.form}>
-        <Button
-          className={styles.showOffersMobileButton}
-          onClick={showModal}
-          type="circle"
-          variant="tertiary"
-        >
-          See offers
-        </Button>
-
-        <div className={styles.fieldsColumn}>
-          <NumericStepInput
-            label="Max offer"
-            value={collateralsPerTokenString}
-            onChange={onLoanValueChange}
-            postfix={getTokenUnit(tokenType)}
-            disabled={!connected}
-            step={inputStepByTokenType}
-            rightLabelJSX={
-              <MaxOfferControls
-                market={market}
-                onChange={onLoanValueChange}
-                tokenType={tokenType}
-              />
-            }
-          />
-          <div className={styles.fieldsRow}>
-            <div className={styles.fieldColumn}>
-              <NumericStepInput
-                label="Offer size"
-                value={offerSizeString}
-                onChange={onOfferSizeChange}
-                postfix={getTokenUnit(tokenType)}
-                disabled={!connected}
-                step={inputStepByTokenType}
-              />
-              <div className={styles.messageContainer}>
-                {offerErrorMessage && <InputErrorMessage message={offerErrorMessage} />}
-              </div>
+    <>
+      <div className={styles.fieldsColumn}>
+        <NumericStepInput
+          label="Offer"
+          value={collateralsPerTokenString}
+          onChange={onLoanValueChange}
+          postfix={getTokenUnit(tokenType)}
+          disabled={!connected}
+          step={inputStepByTokenType}
+          rightLabelJSX={
+            <MaxOfferControls market={market} onChange={onLoanValueChange} tokenType={tokenType} />
+          }
+        />
+        <div className={styles.fieldsRow}>
+          <div className={styles.fieldColumn}>
+            <NumericStepInput
+              label="Offer size"
+              value={offerSizeString}
+              onChange={onOfferSizeChange}
+              postfix={getTokenUnit(tokenType)}
+              disabled={!connected}
+              step={inputStepByTokenType}
+            />
+            <div className={styles.messageContainer}>
+              {offerErrorMessage && <InputErrorMessage message={offerErrorMessage} />}
             </div>
+          </div>
 
-            <div className={styles.fieldColumn}>
-              <NumericStepInput
-                label="Apr"
-                value={aprString}
-                onChange={onAprChange}
-                postfix="%"
-                disabled={!connected}
-                step={1}
-                max={MAX_APR_SPL / 100}
-              />
-              <div className={styles.messageContainer}>
-                {aprErrorMessage && <InputErrorMessage message={aprErrorMessage} />}
-              </div>
+          <div className={styles.fieldColumn}>
+            <NumericStepInput
+              label="Apr"
+              value={aprString}
+              onChange={onAprChange}
+              postfix="%"
+              disabled={!connected}
+              step={1}
+              max={MAX_APR_SPL / 100}
+            />
+            <div className={styles.messageContainer}>
+              {aprErrorMessage && <InputErrorMessage message={aprErrorMessage} />}
             </div>
           </div>
         </div>
-
-        <AdditionalSummary
-          market={market}
-          collateralPerToken={collateralsPerTokenString}
-          offerSize={parseFloat(offerSizeString) * marketTokenDecimals}
-          apr={parseFloat(aprString)}
-        />
-
-        <ActionsButtons
-          onCreateOffer={onCreateTokenOffer}
-          onRemoveOffer={onRemoveTokenOffer}
-          onUpdateOffer={onUpdateTokenOffer}
-          disablePlaceOffer={disablePlaceOffer}
-          disableUpdateOffer={disableUpdateOffer}
-          isEditMode={isEditMode}
-        />
       </div>
-      <OrderBook market={market} offerPubkey={offerPubkey} className={styles.orderBook} />
-    </div>
+
+      <AdditionalSummary
+        market={market}
+        collateralPerToken={collateralsPerTokenString}
+        offerSize={parseFloat(offerSizeString) * marketTokenDecimals}
+        apr={parseFloat(aprString)}
+      />
+
+      <ActionsButtons
+        onCreateOffer={onCreateTokenOffer}
+        onRemoveOffer={onRemoveTokenOffer}
+        onUpdateOffer={onUpdateTokenOffer}
+        disablePlaceOffer={disablePlaceOffer}
+        disableUpdateOffer={disableUpdateOffer}
+        isEditMode={isEditMode}
+      />
+    </>
   )
 }
 
 export default PlaceTokenOfferSection
-
-interface OffersModalProps {
-  market: TokenMarketPreview | undefined
-  offerPubkey: string
-}
-
-export const OffersModal: FC<OffersModalProps> = (props) => {
-  const { close } = useModal()
-
-  return (
-    <Modal className={styles.modal} open onCancel={close}>
-      <OrderBook {...props} />
-    </Modal>
-  )
-}
 
 interface MaxOfferControlsProps {
   market: TokenMarketPreview | undefined

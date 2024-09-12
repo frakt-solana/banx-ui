@@ -37,7 +37,7 @@ const LendTokenCard: FC<LendTokenCardProps> = ({ market, onClick, isOpen }) => {
           </Button>
         </div>
       </div>
-      {isOpen && <ExpandedCardContent marketPubkey={market.marketPubkey} />}
+      {isOpen && <ExpandedCardContent market={market} />}
     </div>
   )
 }
