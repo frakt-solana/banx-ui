@@ -95,7 +95,12 @@ const InstantBorrowContent = () => {
           disabled
         />
 
-        <LoanValueSlider label="Max LTV" value={ltvSliderValue} onChange={onChangeLtvSlider} />
+        <LoanValueSlider
+          label="Max LTV"
+          value={ltvSliderValue}
+          onChange={onChangeLtvSlider}
+          disabled={!parseFloat(collateralInputValue)}
+        />
 
         <div className={styles.footerContent}>
           <Summary offers={offersInCart} />
