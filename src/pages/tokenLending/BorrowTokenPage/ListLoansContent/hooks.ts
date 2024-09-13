@@ -22,6 +22,7 @@ export const DEFAULT_COLLATERAL_TOKEN = {
     totalSupply: '0',
     fullyDilutedValuation: '0',
     fullyDilutedValuationInMillions: '0',
+    name: 'Banx',
   },
   collateralPrice: 0,
   amountInWallet: 0,

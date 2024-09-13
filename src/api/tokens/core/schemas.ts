@@ -15,6 +15,7 @@ import { MarketCategory } from './types'
 
 export const TokenMetaSchema = z.object({
   mint: z.string(),
+  name: z.string(),
   logoUrl: z.string(),
   ticker: z.string(),
   decimals: z.number(),

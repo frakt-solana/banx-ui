@@ -36,11 +36,13 @@ const ModalTokenSelect = <T extends BaseToken>({
   }
 
   const filteredTokensList = useMemo(() => {
-    const normalizedSearchInput = searchInput.toLowerCase()
+    const normalize = (value: string) => value.toLowerCase()
+
+    const normalizedSearchInput = normalize(searchInput)
 
     return tokensList.filter(({ collateral }) => {
-      const normalizedTicker = collateral.ticker.toLowerCase()
-      return normalizedTicker.includes(normalizedSearchInput)
+      const { ticker, mint, name } = collateral
+      return [ticker, mint, name].some((field) => normalize(field).includes(normalizedSearchInput))
     })
   }, [tokensList, searchInput])
 
