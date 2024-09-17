@@ -1,4 +1,5 @@
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { calcBorrowerTokenAPR } from 'fbonds-core/lib/fbond-protocol/helpers'
 
 import { core } from '@banx/api/tokens'
 import { SECONDS_IN_DAY } from '@banx/constants'
@@ -21,6 +22,6 @@ export const calcTokenWeeklyInterest = (loan: core.TokenLoan) => {
     loanValue: loan.bondTradeTransaction.amountOfBonds,
     startTime: soldAt,
     currentTime: soldAt + SECONDS_IN_DAY * 7,
-    rateBasePoints: amountOfBonds,
+    rateBasePoints: calcBorrowerTokenAPR(amountOfBonds),
   })
 }

@@ -3,6 +3,7 @@ import {
   calculateCurrentInterestSolPure,
   calculatePartOfLoanBodyFromInterest,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { calcBorrowerTokenAPR } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { BondOfferV3 } from 'fbonds-core/lib/fbond-protocol/types'
 import { map } from 'lodash'
 import moment from 'moment'
@@ -31,7 +32,7 @@ export const calcAccruedInterest = (loan: core.TokenLoan) => {
     loanValue: solAmount,
     startTime: soldAt,
     currentTime: moment().unix(),
-    rateBasePoints: amountOfBonds,
+    rateBasePoints: calcBorrowerTokenAPR(amountOfBonds),
   }
 
   return calculateCurrentInterestSolPure(interestParameters)
@@ -55,7 +56,7 @@ const calcPercentToPay = (loan: core.TokenLoan, iterestToPay: number) => {
 
   const partOfLoan = calculatePartOfLoanBodyFromInterest({
     soldAt,
-    rateBasePoints: amountOfBonds,
+    rateBasePoints: calcBorrowerTokenAPR(amountOfBonds),
     iterestToPay,
   })
   return (partOfLoan / solAmount) * 100
@@ -85,7 +86,10 @@ export const calcTokenTotalValueToPay = (loan: core.TokenLoan) => {
 }
 
 export const calcWeightedApr = (loans: core.TokenLoan[]) => {
-  const totalAprValues = map(loans, (loan) => loan.bondTradeTransaction.amountOfBonds / 100)
+  const totalAprValues = map(
+    loans,
+    (loan) => calcBorrowerTokenAPR(loan.bondTradeTransaction.amountOfBonds) / 100,
+  )
 
   const totalRepayValues = map(loans, (loan) => caclulateBorrowTokenLoanValue(loan).toNumber())
   return calcWeightedAverage(totalAprValues, totalRepayValues)
@@ -126,7 +130,7 @@ export const calculateTokensToGet: CalculateTokensToGet = ({
 export const getCurrentLoanInfo = (loan: core.TokenLoan) => {
   const currentLoanDebt = caclulateBorrowTokenLoanValue(loan).toNumber()
   const currentLoanBorrowedAmount = loan.fraktBond.borrowedAmount
-  const currentApr = loan.bondTradeTransaction.amountOfBonds
+  const currentApr = calcBorrowerTokenAPR(loan.bondTradeTransaction.amountOfBonds)
 
   return {
     currentLoanDebt,

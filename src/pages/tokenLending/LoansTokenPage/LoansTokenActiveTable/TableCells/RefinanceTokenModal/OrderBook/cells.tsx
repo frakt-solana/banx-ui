@@ -2,6 +2,7 @@ import { FC } from 'react'
 
 import classNames from 'classnames'
 import { BN } from 'fbonds-core'
+import { calcBorrowerTokenAPR } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Button } from '@banx/components/Buttons'
@@ -63,7 +64,7 @@ interface AprCellProps {
 }
 
 export const AprCell: FC<AprCellProps> = ({ offer }) => {
-  const aprRateWithProtocolFee = offer.loanApr.toNumber()
+  const aprRateWithProtocolFee = calcBorrowerTokenAPR(offer.loanApr.toNumber())
   const aprPercent = aprRateWithProtocolFee / 100
 
   return <span className={styles.cellValue}>{createPercentValueJSX(aprPercent)}</span>

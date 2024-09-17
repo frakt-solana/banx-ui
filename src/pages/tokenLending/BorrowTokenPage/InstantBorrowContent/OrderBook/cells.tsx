@@ -1,6 +1,7 @@
 import { FC } from 'react'
 
 import { BN } from 'fbonds-core'
+import { calcBorrowerTokenAPR } from 'fbonds-core/lib/fbond-protocol/helpers'
 
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
@@ -49,7 +50,7 @@ export const BorrowCell: FC<BorrowCellProps> = ({
 }
 
 export const AprCell: FC<{ offer: BorrowOffer }> = ({ offer }) => {
-  const aprRateWithProtocolFee = parseFloat(offer.apr)
+  const aprRateWithProtocolFee = calcBorrowerTokenAPR(parseFloat(offer.apr))
   const aprPercent = aprRateWithProtocolFee / 100
 
   return (

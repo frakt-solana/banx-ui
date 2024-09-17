@@ -1,5 +1,6 @@
 import { BN } from 'fbonds-core'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { calcBorrowerTokenAPR } from 'fbonds-core/lib/fbond-protocol/helpers'
 import moment from 'moment'
 
 import { BorrowOffer, CollateralToken } from '@banx/api/tokens'
@@ -72,7 +73,7 @@ export const getSummaryInfo = (offers: BorrowOffer[]) => {
 
   const amountToGetArray = offers.map((offer) => parseFloat(offer.maxTokenToGet))
 
-  const aprRateArray = offers.map((offer) => parseFloat(offer.apr))
+  const aprRateArray = offers.map((offer) => calcBorrowerTokenAPR(parseFloat(offer.apr)))
   const weightedApr = calcWeightedAverage(aprRateArray, amountToGetArray)
 
   const ltvRateArray = offers.map((offer) => parseFloat(offer.ltv))
