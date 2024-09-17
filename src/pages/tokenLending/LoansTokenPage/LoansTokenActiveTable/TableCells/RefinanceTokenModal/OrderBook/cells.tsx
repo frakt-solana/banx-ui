@@ -15,7 +15,7 @@ import {
 
 import { core } from '@banx/api/tokens'
 import {
-  adjustAmountWithUpfrontFee,
+  adjustTokenAmountWithUpfrontFee,
   caclulateBorrowTokenLoanValue,
   calculateTokensPerCollateral,
   convertToHumanNumber,
@@ -39,7 +39,7 @@ export const BorrowCell: FC<BorrowCellProps> = ({ loan, offer, tokenType }) => {
   const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType))
 
   const loanDebt = calculateTokensToGet({ offer, loan, marketTokenDecimals })
-  const borrowValue = adjustAmountWithUpfrontFee(loanDebt)
+  const borrowValue = adjustTokenAmountWithUpfrontFee(loanDebt)
 
   const tokensPerCollateral = formatTokensPerCollateralToStr(
     calculateTokensPerCollateral(offer.validation.collateralsPerToken, loan.collateral.decimals),

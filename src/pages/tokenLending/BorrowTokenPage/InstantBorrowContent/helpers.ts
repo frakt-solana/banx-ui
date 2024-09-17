@@ -7,7 +7,7 @@ import { BorrowOffer, CollateralToken } from '@banx/api/tokens'
 import { SECONDS_IN_DAY } from '@banx/constants'
 import {
   ZERO_BN,
-  adjustAmountWithUpfrontFee,
+  adjustTokenAmountWithUpfrontFee,
   bnToHuman,
   calcWeightedAverage,
   stringToBN,
@@ -86,7 +86,7 @@ export const getSummaryInfo = (offers: BorrowOffer[]) => {
     rateBasePoints: weightedApr,
   })
 
-  const adjustedTotalAmountToGet = adjustAmountWithUpfrontFee(totalAmountToGet)
+  const adjustedTotalAmountToGet = adjustTokenAmountWithUpfrontFee(totalAmountToGet)
 
   return {
     upfrontFee,

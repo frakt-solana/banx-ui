@@ -6,7 +6,7 @@ import { calcBorrowerTokenAPR } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { BorrowOffer, CollateralToken } from '@banx/api/tokens'
-import { ZERO_BN, adjustAmountWithUpfrontFee } from '@banx/utils'
+import { ZERO_BN, adjustTokenAmountWithUpfrontFee } from '@banx/utils'
 
 import styles from './OrderBook.module.less'
 
@@ -39,7 +39,7 @@ export const BorrowCell: FC<BorrowCellProps> = ({
     ? selectedOfferMaxTokenToGet
     : calculatedTokenToGet
 
-  const adjustedBorrowValueToDisplay = adjustAmountWithUpfrontFee(borrowValueBN)
+  const adjustedBorrowValueToDisplay = adjustTokenAmountWithUpfrontFee(borrowValueBN)
 
   return (
     <div className={styles.borrowValueContainer}>
