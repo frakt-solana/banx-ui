@@ -80,7 +80,7 @@ export const Summary: FC<SummaryProps> = ({
   const weightedApr = useMemo(() => {
     const totalApr = map(
       nftsInCart,
-      ({ nft, loanValue }) => (caclAprValue(nft, loanValue) + BONDS.PROTOCOL_REPAY_FEE) / 100,
+      ({ nft, loanValue }) => (caclAprValue(nft, loanValue) + BONDS.REPAY_FEE_APR) / 100,
     )
     const totalLoanValue = map(nftsInCart, (nft) => calcLoanValueWithFees(nft, tokenType))
 

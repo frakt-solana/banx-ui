@@ -134,7 +134,7 @@ export const useRequestLoansForm = (market: core.MarketPreview) => {
     (requestedLoanValue - calculateBorrowValueWithProtocolFee(requestedLoanValue))
 
   const lenderSeesAprValue = !aprInputValueIsLow
-    ? Math.round(inputAprValueToNumber - BONDS.PROTOCOL_REPAY_FEE / 100)
+    ? Math.round(inputAprValueToNumber - BONDS.REPAY_FEE_APR / 100)
     : 0
 
   return {
@@ -219,7 +219,7 @@ const useRequestLoansTransaction = (props: {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const rateBasePoints = aprValue * 100
-      const rateBasePointsWithoutProtocolFee = rateBasePoints - BONDS.PROTOCOL_REPAY_FEE
+      const rateBasePointsWithoutProtocolFee = rateBasePoints - BONDS.REPAY_FEE_APR
 
       const txnsData = await Promise.all(
         nfts.map((nft) =>

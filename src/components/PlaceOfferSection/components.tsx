@@ -19,7 +19,7 @@ export const BorrowerMessage: FC<BorrowerMessageProps> = ({ loanValue, tokenType
 
   const loanValueToNumber = parseFloat(loanValue) || 0
   const loanValueWithProtocolFee =
-    (loanValueToNumber - loanValueToNumber * (BONDS.PROTOCOL_FEE_PERCENT / 1e4)) * decimals
+    (loanValueToNumber - loanValueToNumber * (BONDS.PROTOCOL_FEE / 1e4)) * decimals
 
   return (
     <p className={styles.borrowerMessage}>

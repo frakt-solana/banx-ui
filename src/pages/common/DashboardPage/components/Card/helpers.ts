@@ -28,6 +28,6 @@ export const calcWeeklyInterestFee: CalcWeeklyInterestFee = ({ loanValue, apr })
     loanValue,
     startTime: 0,
     currentTime: SECONDS_IN_DAY * 7,
-    rateBasePoints: apr + BONDS.PROTOCOL_REPAY_FEE,
+    rateBasePoints: apr + BONDS.REPAY_FEE_APR,
   })
 }

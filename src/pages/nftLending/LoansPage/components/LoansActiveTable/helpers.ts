@@ -31,7 +31,7 @@ export const calcAccruedInterest = (loan: core.Loan) => {
     loanValue: solAmount,
     startTime: soldAt,
     currentTime: moment().unix(),
-    rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
+    rateBasePoints: amountOfBonds + BONDS.REPAY_FEE_APR,
   }
 
   return calculateCurrentInterestSolPure(interestParameters)
@@ -52,7 +52,7 @@ const calculateUnpaidInterest = (loan: core.Loan) => {
 
 const calcPercentToPay = (loan: core.Loan, iterestToPay: number) => {
   const { soldAt, amountOfBonds, solAmount } = loan.bondTradeTransaction
-  const rateBasePoints = amountOfBonds + BONDS.PROTOCOL_REPAY_FEE
+  const rateBasePoints = amountOfBonds + BONDS.REPAY_FEE_APR
 
   const partOfLoan = calculatePartOfLoanBodyFromInterest({ soldAt, rateBasePoints, iterestToPay })
   return (partOfLoan / solAmount) * 100
@@ -84,7 +84,7 @@ export const calcTotalValueToPay = (loan: core.Loan) => {
 export const calcWeightedApr = (loans: core.Loan[]) => {
   const totalAprValues = map(
     loans,
-    (loan) => (loan.bondTradeTransaction.amountOfBonds + BONDS.PROTOCOL_REPAY_FEE) / 100,
+    (loan) => (loan.bondTradeTransaction.amountOfBonds + BONDS.REPAY_FEE_APR) / 100,
   )
 
   const totalRepayValues = map(loans, (loan) => calculateLoanRepayValue(loan))

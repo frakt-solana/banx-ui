@@ -295,7 +295,7 @@ const LoanInfo: FC<LoanInfoProps> = ({ title, borrowedAmount, debt, apr, faded, 
           <p>Borrowed</p>
         </div>
         <div className={styles.loanInfoValue}>
-          <p>{createPercentValueJSX((apr + BONDS.PROTOCOL_REPAY_FEE) / 100)}</p>
+          <p>{createPercentValueJSX((apr + BONDS.REPAY_FEE_APR) / 100)}</p>
           <p>APR</p>
         </div>
         <div className={styles.loanInfoValue}>

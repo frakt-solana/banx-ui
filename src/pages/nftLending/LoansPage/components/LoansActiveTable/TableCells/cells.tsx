@@ -87,7 +87,7 @@ export const LTVCell: FC<CellProps> = ({ loan }) => {
 }
 
 export const APRCell: FC<CellProps> = ({ loan }) => {
-  const apr = (loan.bondTradeTransaction.amountOfBonds + BONDS.PROTOCOL_REPAY_FEE) / 100
+  const apr = (loan.bondTradeTransaction.amountOfBonds + BONDS.REPAY_FEE_APR) / 100
 
   return <HorizontalCell value={createPercentValueJSX(apr)} isHighlighted />
 }
