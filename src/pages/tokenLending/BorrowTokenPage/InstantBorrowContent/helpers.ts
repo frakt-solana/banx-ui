@@ -84,7 +84,7 @@ export const getSummaryInfo = (offers: BorrowOffer[]) => {
     loanValue: totalAmountToGet.toNumber(),
     startTime: moment().unix(),
     currentTime: moment().unix() + SECONDS_IN_DAY * 7,
-    rateBasePoints: calcBorrowerTokenAPR(weightedApr),
+    rateBasePoints: weightedApr,
   })
 
   const adjustedTotalAmountToGet = adjustTokenAmountWithUpfrontFee(totalAmountToGet)
