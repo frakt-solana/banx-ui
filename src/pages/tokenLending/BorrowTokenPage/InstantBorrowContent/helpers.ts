@@ -1,5 +1,5 @@
 import { BN } from 'fbonds-core'
-import { PROTOCOL_FEE_TOKEN_BN } from 'fbonds-core/lib/fbond-protocol/constants'
+import { BASE_POINTS, PROTOCOL_FEE_TOKEN_BN } from 'fbonds-core/lib/fbond-protocol/constants'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { calcBorrowerTokenAPR } from 'fbonds-core/lib/fbond-protocol/helpers'
 import moment from 'moment'
@@ -70,7 +70,7 @@ export const getSummaryInfo = (offers: BorrowOffer[]) => {
   const totalAmountToGet = sumBNs(offers.map((offer) => new BN(offer.maxTokenToGet)))
   const totalCollateralsAmount = sumBNs(offers.map((offer) => new BN(offer.maxCollateralToReceive)))
 
-  const upfrontFee = totalAmountToGet.div(PROTOCOL_FEE_TOKEN_BN).toNumber()
+  const upfrontFee = totalAmountToGet.mul(PROTOCOL_FEE_TOKEN_BN).div(new BN(BASE_POINTS)).toNumber()
 
   const amountToGetArray = offers.map((offer) => parseFloat(offer.maxTokenToGet))
 
@@ -84,7 +84,7 @@ export const getSummaryInfo = (offers: BorrowOffer[]) => {
     loanValue: totalAmountToGet.toNumber(),
     startTime: moment().unix(),
     currentTime: moment().unix() + SECONDS_IN_DAY * 7,
-    rateBasePoints: weightedApr,
+    rateBasePoints: calcBorrowerTokenAPR(weightedApr),
   })
 
   const adjustedTotalAmountToGet = adjustTokenAmountWithUpfrontFee(totalAmountToGet)
