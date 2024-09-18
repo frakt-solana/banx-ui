@@ -2,6 +2,7 @@ import { FC } from 'react'
 
 import classNames from 'classnames'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { calcBorrowerTokenAPR } from 'fbonds-core/lib/fbond-protocol/helpers'
 import moment from 'moment'
 
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
@@ -10,12 +11,7 @@ import { DisplayValue } from '@banx/components/TableComponents'
 import { TokenMarketPreview } from '@banx/api/tokens'
 import { SECONDS_IN_DAY } from '@banx/constants'
 import { useNftTokenType } from '@banx/store/nft'
-import {
-  HealthColorIncreasing,
-  convertAprToApy,
-  getColorByPercent,
-  getTokenDecimals,
-} from '@banx/utils'
+import { HealthColorIncreasing, getColorByPercent, getTokenDecimals } from '@banx/utils'
 
 import { calculateLtvPercent } from '../helpers'
 
@@ -27,8 +23,6 @@ interface OfferSummaryProps {
   offerSize: number
   apr: number
 }
-
-const COMPOUNDING_PERIODS = 12
 
 export const AdditionalSummary: FC<OfferSummaryProps> = ({
   market,
@@ -47,7 +41,7 @@ export const AdditionalSummary: FC<OfferSummaryProps> = ({
     marketTokenDecimals,
   })
 
-  const apy = apr ? convertAprToApy(apr / 100, COMPOUNDING_PERIODS) : 0
+  const borrowApr = apr ? calcBorrowerTokenAPR(apr) : 0
 
   const currentTimeUnix = moment().unix()
   const weeklyFee = calculateCurrentInterestSolPure({
@@ -68,8 +62,8 @@ export const AdditionalSummary: FC<OfferSummaryProps> = ({
         flexType="row"
       />
       <StatInfo
-        label="APY"
-        value={apy}
+        label="Borrow APR"
+        value={borrowApr}
         valueType={VALUES_TYPES.PERCENT}
         classNamesProps={{ value: classNames(styles.aprValue, styles.fixedValueContent) }}
         flexType="row"
