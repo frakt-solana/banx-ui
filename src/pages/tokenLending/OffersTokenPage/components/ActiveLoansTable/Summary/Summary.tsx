@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { map, reduce } from 'lodash'
+import { map, sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider } from '@banx/components/Slider'
@@ -118,28 +118,29 @@ const Summary: FC<SummaryProps> = ({
 export default Summary
 
 const getTerminateStatsInfo = (loans: core.TokenLoan[]) => {
-  return reduce(
-    loans,
-    (acc, loan) => {
-      const claimValue = calculateLentTokenValueWithInterest(loan).toNumber()
-      const borrowedAmount = calculateTokenLoanValueWithUpfrontFee(loan).toNumber()
+  const totalAprArray = map(loans, (loan) => loan.bondTradeTransaction.amountOfBonds / 100)
+  const totalLentArray = map(loans, (loan) => calculateLentTokenValueWithInterest(loan).toNumber())
 
-      const totalAprArray = map(loans, (loan) => loan.bondTradeTransaction.amountOfBonds / 100)
-      const totalLtvArray = map(loans, (loan) => calculateTokenLoanLtvByLoanValue(loan, claimValue))
-      const totalLentArray = map(loans, (loan) =>
-        calculateLentTokenValueWithInterest(loan).toNumber(),
-      )
+  const totalLtvArray = map(loans, (loan) => {
+    const claimValue = calculateLentTokenValueWithInterest(loan).toNumber()
+    return calculateTokenLoanLtvByLoanValue(loan, claimValue)
+  })
 
-      const weightedApr = calcWeightedAverage(totalAprArray, totalLentArray)
-      const weightedLtv = calcWeightedAverage(totalLtvArray, totalLentArray)
+  const totalLent = sumBy(loans, (loan) => calculateTokenLoanValueWithUpfrontFee(loan).toNumber())
 
-      return {
-        totalLent: acc.totalLent + borrowedAmount,
-        totalInterest: acc.totalInterest + claimValue - borrowedAmount,
-        weightedLtv,
-        weightedApr,
-      }
-    },
-    { totalLent: 0, weightedLtv: 0, weightedApr: 0, totalInterest: 0 },
-  )
+  const totalInterest = sumBy(loans, (loan) => {
+    const claimValue = calculateLentTokenValueWithInterest(loan).toNumber()
+    const borrowedAmount = calculateTokenLoanValueWithUpfrontFee(loan).toNumber()
+    return claimValue - borrowedAmount
+  })
+
+  const weightedApr = calcWeightedAverage(totalAprArray, totalLentArray)
+  const weightedLtv = calcWeightedAverage(totalLtvArray, totalLentArray)
+
+  return {
+    totalLent,
+    totalInterest,
+    weightedLtv,
+    weightedApr,
+  }
 }
