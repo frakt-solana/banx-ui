@@ -61,9 +61,9 @@ const BORROW_CONTENT = {
           </p>
           <p>
             <span className={styles.slideTextImportant}>Interest rates </span>
-            are set once you borrow and accrued only for the time
-            you borrow. Typically, low LTV loans are the safest way to borrow, benefiting from lower interest
-            and lower refinancing call risk.
+            are set once you borrow and accrued only for the time you borrow. Typically, low LTV
+            loans are the safest way to borrow, benefiting from lower interest and lower refinancing
+            call risk.
           </p>
           <p>
             <span className={styles.slideTextImportant}>Loan status </span>
@@ -91,8 +91,8 @@ const LEND_CONTENT = {
             offer value, meaning the highest offer isn’t necessarily the one that is taken.
           </p>
           <p>
-            <span className={styles.slideTextImportant}>Interest rate </span> Once an
-            offer is taken, it becomes fixed.
+            <span className={styles.slideTextImportant}>Interest rate </span> Once an offer is
+            taken, it becomes fixed.
           </p>
           <p>
             <span className={styles.slideTextImportant}>On repayment </span>
@@ -169,8 +169,8 @@ const LOANS_CONTENT = {
           </p>
           <p>
             <span className={styles.slideTextImportant}>Rollover </span>
-            allows you to borrow more with higher interest, or less with lower interest,
-            depending on available offers.
+            allows you to borrow more with higher interest, or less with lower interest, depending
+            on available offers.
           </p>
           <p>
             <span className={styles.slideTextImportant}>Loan status </span>
