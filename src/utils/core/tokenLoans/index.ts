@@ -1,8 +1,10 @@
 import { BN } from 'fbonds-core'
+import { BASE_POINTS, PROTOCOL_FEE_TOKEN_BN } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   calculateCurrentInterestSolPure,
   calculateLenderPartialPartFromBorrower,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { calcBorrowerTokenAPR } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
 import moment from 'moment'
 
@@ -91,7 +93,7 @@ export const calculateTokenRepaymentCallLenderReceivesAmount = (loan: core.Token
 
   return calculateLenderPartialPartFromBorrower({
     borrowerPart: repaymentCallAmount,
-    protocolRepayFeeApr: 0,
+    protocolRepayFeeApr: calcBorrowerTokenAPR(amountOfBonds),
     soldAt,
     //? Lender APR (without ProtocolFee)
     lenderApr: calculateApr({
@@ -133,7 +135,7 @@ export const calculateTokenLoanRepayValueOnCertainDate: CalculateTokenLoanRepayV
       loanValue,
       startTime: soldAt,
       currentTime: date,
-      rateBasePoints: amountOfBonds,
+      rateBasePoints: calcBorrowerTokenAPR(amountOfBonds),
     })
 
     return new BN(loanValue).add(new BN(calculatedInterest))
@@ -173,6 +175,14 @@ export const calcTokenWeeklyFeeWithRepayFee = (loan: core.TokenLoan) => {
     loanValue: calculateTokenLoanValueWithUpfrontFee(loan).toNumber(),
     startTime: soldAt,
     currentTime: soldAt + SECONDS_IN_DAY * 7,
-    rateBasePoints: amountOfBonds,
+    rateBasePoints: calcBorrowerTokenAPR(amountOfBonds),
   })
+}
+
+export const adjustTokenAmountWithUpfrontFee = (amount: BN): BN => {
+  const BASE_POINTS_BN = new BN(BASE_POINTS)
+
+  const FRACTION = BASE_POINTS_BN.sub(PROTOCOL_FEE_TOKEN_BN) //? 9975
+
+  return amount.mul(FRACTION).div(BASE_POINTS_BN)
 }

@@ -1,5 +1,7 @@
 import { FC } from 'react'
 
+import { PROTOCOL_FEE_TOKEN } from 'fbonds-core/lib/fbond-protocol/constants'
+
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
@@ -20,12 +22,14 @@ export const Summary: FC<SummaryProps> = ({ offers }) => {
     value: styles.fixedStatValue,
   }
 
+  const upfrontFeePercent = PROTOCOL_FEE_TOKEN / 100
+
   return (
     <div className={styles.summary}>
       <StatInfo
         label="Upfront fee"
         value={<DisplayValue value={upfrontFee} />}
-        tooltipText="1% upfront fee charged on the loan principal amount, paid when loan is funded"
+        tooltipText={`${upfrontFeePercent}% upfront fee charged on the loan principal amount, paid when loan is funded`}
         classNamesProps={statClassNames}
         flexType="row"
       />

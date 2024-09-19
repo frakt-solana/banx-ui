@@ -1,6 +1,7 @@
 import { FC, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import { calcBorrowerTokenAPR } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { every, map, sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
@@ -118,7 +119,10 @@ const getLoansStatusActionText = (selectedLoans: core.TokenLoan[]) => {
 }
 
 const calcWeightedApr = (loans: core.TokenLoan[]) => {
-  const totalAprValues = map(loans, (loan) => loan.bondTradeTransaction.amountOfBonds / 100)
+  const totalAprValues = map(
+    loans,
+    (loan) => calcBorrowerTokenAPR(loan.bondTradeTransaction.amountOfBonds) / 100,
+  )
 
   const totalRepayValues = map(loans, (loan) => caclulateBorrowTokenLoanValue(loan).toNumber())
   return calcWeightedAverage(totalAprValues, totalRepayValues)

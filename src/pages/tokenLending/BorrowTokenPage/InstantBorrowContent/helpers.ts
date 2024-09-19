@@ -1,12 +1,14 @@
 import { BN } from 'fbonds-core'
+import { BASE_POINTS, PROTOCOL_FEE_TOKEN_BN } from 'fbonds-core/lib/fbond-protocol/constants'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { calcBorrowerTokenAPR } from 'fbonds-core/lib/fbond-protocol/helpers'
 import moment from 'moment'
 
 import { BorrowOffer, CollateralToken } from '@banx/api/tokens'
 import { SECONDS_IN_DAY } from '@banx/constants'
 import {
   ZERO_BN,
-  adjustAmountWithUpfrontFee,
+  adjustTokenAmountWithUpfrontFee,
   bnToHuman,
   calcWeightedAverage,
   stringToBN,
@@ -68,11 +70,11 @@ export const getSummaryInfo = (offers: BorrowOffer[]) => {
   const totalAmountToGet = sumBNs(offers.map((offer) => new BN(offer.maxTokenToGet)))
   const totalCollateralsAmount = sumBNs(offers.map((offer) => new BN(offer.maxCollateralToReceive)))
 
-  const upfrontFee = totalAmountToGet.div(new BN(100)).toNumber()
+  const upfrontFee = totalAmountToGet.mul(PROTOCOL_FEE_TOKEN_BN).div(new BN(BASE_POINTS)).toNumber()
 
   const amountToGetArray = offers.map((offer) => parseFloat(offer.maxTokenToGet))
 
-  const aprRateArray = offers.map((offer) => parseFloat(offer.apr))
+  const aprRateArray = offers.map((offer) => calcBorrowerTokenAPR(parseFloat(offer.apr)))
   const weightedApr = calcWeightedAverage(aprRateArray, amountToGetArray)
 
   const ltvRateArray = offers.map((offer) => parseFloat(offer.ltv))
@@ -85,7 +87,7 @@ export const getSummaryInfo = (offers: BorrowOffer[]) => {
     rateBasePoints: weightedApr,
   })
 
-  const adjustedTotalAmountToGet = adjustAmountWithUpfrontFee(totalAmountToGet)
+  const adjustedTotalAmountToGet = adjustTokenAmountWithUpfrontFee(totalAmountToGet)
 
   return {
     upfrontFee,

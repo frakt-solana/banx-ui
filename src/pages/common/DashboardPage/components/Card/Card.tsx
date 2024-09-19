@@ -123,7 +123,7 @@ export const BorrowCard: FC<BorrowCardProps> = ({ nft, onClick, findBestOffer, t
   const apr = calculateApr({ loanValue, collectionFloor, marketPubkey })
   const weeklyFee = calcWeeklyInterestFee({ loanValue, apr })
 
-  const formattedAprValue = (apr + BONDS.PROTOCOL_REPAY_FEE) / 100
+  const formattedAprValue = (apr + BONDS.REPAY_FEE_APR) / 100
 
   const aprTooltipContent = createTooltipContent('Weekly fee', weeklyFee)
   const ltvTooltipContent = createTooltipContent('Floor', collectionFloor)

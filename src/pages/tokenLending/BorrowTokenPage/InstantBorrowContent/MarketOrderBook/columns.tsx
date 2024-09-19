@@ -10,7 +10,7 @@ import { DisplayValue, HeaderCell, createPercentValueJSX } from '@banx/component
 import { convertBondOfferV3ToCore } from '@banx/api/nft'
 import { CollateralToken } from '@banx/api/tokens'
 import {
-  adjustAmountWithUpfrontFee,
+  adjustTokenAmountWithUpfrontFee,
   calculateIdleFundsInOffer,
   calculateTokensPerCollateral,
   formatTokensPerCollateralToStr,
@@ -89,7 +89,7 @@ export const BorrowCell: FC<BorrowCellProps> = ({ offer, collateral, tokenType }
   const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6
 
   const offerSize = calculateIdleFundsInOffer(convertBondOfferV3ToCore(offer))
-  const adjustedBorrowValueToDisplay = adjustAmountWithUpfrontFee(offerSize)
+  const adjustedBorrowValueToDisplay = adjustTokenAmountWithUpfrontFee(offerSize)
 
   const tokensPerCollateral = formatTokensPerCollateralToStr(
     calculateTokensPerCollateral(

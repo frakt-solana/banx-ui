@@ -5,7 +5,7 @@ import { BN } from 'fbonds-core'
 import { CollateralToken } from '@banx/api/tokens'
 import { useNftTokenType } from '@banx/store/nft'
 import {
-  adjustAmountWithUpfrontFee,
+  adjustTokenAmountWithUpfrontFee,
   bnToHuman,
   getTokenDecimals,
   stringToBN,
@@ -75,7 +75,7 @@ export const useInstantBorrowContent = () => {
     if (!borrowToken) return
 
     const totalAmountToGet = sumBNs(offersInCart.map((offer) => new BN(offer.maxTokenToGet)))
-    const adjustedAmountToGet = adjustAmountWithUpfrontFee(totalAmountToGet)
+    const adjustedAmountToGet = adjustTokenAmountWithUpfrontFee(totalAmountToGet)
 
     const totalAmountToGetStr = bnToHuman(
       adjustedAmountToGet,
