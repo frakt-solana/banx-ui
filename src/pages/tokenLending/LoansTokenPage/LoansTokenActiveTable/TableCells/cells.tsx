@@ -182,7 +182,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView, disableAct
           event.stopPropagation()
         }}
       >
-        {isLoanTerminating ? 'Extend' : 'Reborrow'}
+        {isLoanTerminating ? 'Extend' : 'Rollover'}
       </Button>
       <Button
         size={buttonSize}
