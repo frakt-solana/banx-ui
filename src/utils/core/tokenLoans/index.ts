@@ -182,7 +182,7 @@ export const calcTokenWeeklyFeeWithRepayFee = (loan: core.TokenLoan) => {
 export const adjustTokenAmountWithUpfrontFee = (amount: BN): BN => {
   const BASE_POINTS_BN = new BN(BASE_POINTS)
 
-  const FRACTION = BASE_POINTS_BN.sub(PROTOCOL_FEE_TOKEN_BN) //? 9900
+  const FRACTION = BASE_POINTS_BN.sub(PROTOCOL_FEE_TOKEN_BN) //? 9975
 
   return amount.mul(FRACTION).div(BASE_POINTS_BN)
 }
