@@ -26,7 +26,7 @@ const DASHBOARD_CONTENT = {
         <div className={styles.slideText}>
           <p>
             Banx is a blazing fast{' '}
-            <span className={styles.slideTextImportant}>P2P NFT lending protocol</span>, with lower
+            <span className={styles.slideTextImportant}>P2P lending protocol</span>, with lower
             loan-to-value ratios, lower liquidation risk, and the lowest interest rates.
           </p>
         </div>
@@ -61,8 +61,8 @@ const BORROW_CONTENT = {
           </p>
           <p>
             <span className={styles.slideTextImportant}>Interest rates </span>
-            depend on the loan-to-value [LTV] you initially borrow against, paying only for the time
-            you borrow. Low LTV loans are the safest way to borrow, benefiting from lower interest
+            are set once you borrow and accrued only for the time
+            you borrow. Typically, low LTV loans are the safest way to borrow, benefiting from lower interest
             and lower refinancing call risk.
           </p>
           <p>
@@ -87,17 +87,16 @@ const LEND_CONTENT = {
         <div className={styles.slideText}>
           <p>
             <span className={styles.slideTextImportant}>Create offers </span>
-            for collections you want to lend against. Loan requests are fulfilled by the closest
+            for collateral you want to lend against. Loan requests are fulfilled by the closest
             offer value, meaning the highest offer isn’t necessarily the one that is taken.
           </p>
           <p>
-            <span className={styles.slideTextImportant}>Interest rates </span>
-            depend on the loan-to-value [LTV] that your offer is initially taken against. Once an
+            <span className={styles.slideTextImportant}>Interest rate </span> Once an
             offer is taken, it becomes fixed.
           </p>
           <p>
             <span className={styles.slideTextImportant}>On repayment </span>
-            offers are replenished, and you can close this on MY OFFERS page.
+            offers are replenished, you can close them on MY OFFERS page.
           </p>
         </div>
       ),
@@ -119,7 +118,7 @@ const REFINANCE_CONTENT = {
           </p>
           <p>
             The auction continues until a new lender refinances, or the borrower repays in full. If
-            neither happens after 72 hours, the NFT will be liquidated to the lender.
+            neither happens after 72 hours, the collateral will be liquidated to the lender.
           </p>
         </div>
       ),
@@ -138,12 +137,12 @@ const OFFERS_CONTENT = {
           <p>
             <span className={styles.slideTextImportant}>The Pending tab</span> shows offers not yet
             taken. Monitor and adjust risk of existing offers by: editing {'Max Offer'},
-            adding/removing liquidity, or closing the offer and recovering SOL not lent.
+            adding/removing liquidity, or closing the offer and recovering liquidity not lent.
           </p>
           <p>
             <span className={styles.slideTextImportant}>The Active tab</span> shows offers taken.
             Monitor the risk of your active offers and {`'Manage' -> 'Terminate`} loans if you wish
-            to exit, recovering either SOL or collateral within 72 hours.
+            to exit, recovering either liquidity or collateral within 72 hours.
           </p>
           <p>
             <span className={styles.slideTextImportant}>The History tab</span> shows a record of
@@ -169,14 +168,14 @@ const LOANS_CONTENT = {
             partial repayments via the Repay button.
           </p>
           <p>
-            <span className={styles.slideTextImportant}>Reborrow </span>
-            allows you to borrow more SOL with higher interest, or less SOL with lower interest,
+            <span className={styles.slideTextImportant}>Rollover </span>
+            allows you to borrow more with higher interest, or less with lower interest,
             depending on available offers.
           </p>
           <p>
             <span className={styles.slideTextImportant}>Loan status </span>
             will change from Active to Terminating if you receive a refinancing call. You will have
-            72 hours to extend to a new offer or repay in full, otherwise your NFT will be
+            72 hours to rollover to a new offer or repay in full, otherwise your collateral will be
             liquidated.
           </p>
         </div>

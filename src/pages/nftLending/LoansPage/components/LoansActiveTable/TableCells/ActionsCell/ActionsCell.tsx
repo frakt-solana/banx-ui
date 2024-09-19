@@ -42,7 +42,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, offers, isCardView, di
           event.stopPropagation()
         }}
       >
-        {isTerminatingStatus ? 'Extend' : 'Reborrow'}
+        {isTerminatingStatus ? 'Extend' : 'Rollover'}
       </Button>
       <Button
         className={styles.repayButton}

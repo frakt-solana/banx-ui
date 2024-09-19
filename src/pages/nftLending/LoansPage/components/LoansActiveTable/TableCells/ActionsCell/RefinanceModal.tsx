@@ -258,7 +258,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
           />
 
           <Button className={styles.refinanceModalButton} onClick={refinance} disabled={!bestOffer}>
-            {isTerminatingStatus ? 'Extend' : 'Reborrow'}
+            {isTerminatingStatus ? 'Extend' : 'Rollover'}
           </Button>
         </>
       )}
