@@ -9,7 +9,7 @@ import { useTokenMarketsPreview } from '@banx/pages/tokenLending/LendTokenPage'
 import { ModeType, useModeType } from '@banx/store/common'
 
 import { useLenderStats } from '../../hooks'
-import { CollectionCard, TokenCard } from '../Card'
+import { LendCollectionCard, LendTokenCard } from '../Card'
 import { SearchableHeading } from '../components'
 import AllTimeBlock from './components/AllTimeBlock'
 import AllocationBlock from './components/AllocationBlock'
@@ -55,7 +55,7 @@ const TokensSection = () => {
       {!isLoading && filteredMarkets.length && (
         <div className={styles.cardsList}>
           {data.map((market) => (
-            <TokenCard key={market.marketPubkey} market={market} />
+            <LendTokenCard key={market.marketPubkey} market={market} />
           ))}
           <div ref={fetchMoreTrigger} />
         </div>
@@ -81,7 +81,7 @@ const CollectionsSection = () => {
       {!isLoading && filteredMarkets.length && (
         <div className={styles.cardsList}>
           {data.map((market) => (
-            <CollectionCard key={market.marketPubkey} market={market} />
+            <LendCollectionCard key={market.marketPubkey} market={market} />
           ))}
           <div ref={fetchMoreTrigger} />
         </div>

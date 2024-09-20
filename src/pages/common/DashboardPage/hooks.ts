@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { AssetType, stats } from '@banx/api/nft'
 import { ModeType, useModeType } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
-import { isBanxSolTokenType, isSolTokenType } from '@banx/utils'
+import { isBanxSolTokenType } from '@banx/utils'
 
 const QUERY_OPTIONS = {
   staleTime: 60 * 1000,
@@ -15,8 +15,7 @@ const QUERY_OPTIONS = {
 export const useAllTotalStats = () => {
   const { tokenType } = useNftTokenType()
 
-  const marketType =
-    isSolTokenType(tokenType) || isBanxSolTokenType(tokenType) ? 'allInSol' : 'allInUsdc'
+  const marketType = isBanxSolTokenType(tokenType) ? 'allInSol' : 'allInUsdc'
 
   const { data, isLoading } = useQuery(
     ['allTotalStats', tokenType],
@@ -29,13 +28,16 @@ export const useAllTotalStats = () => {
 
 export const useLenderStats = () => {
   const { publicKey } = useWallet()
-  const publicKeyString = publicKey?.toBase58() || ''
+  const walletPubkey = publicKey?.toBase58() || ''
 
-  const { tokenType } = useNftTokenType()
+  const { modeType } = useModeType()
+  const { tokenType: marketType } = useNftTokenType()
+
+  const assetType = modeType === ModeType.NFT ? AssetType.NFT : AssetType.SPL
 
   const { data, isLoading } = useQuery(
-    ['lenderStats', publicKeyString, tokenType],
-    () => stats.fetchLenderStats({ walletPubkey: publicKeyString, tokenType }),
+    ['lenderStats', walletPubkey, marketType, assetType],
+    () => stats.fetchLenderStats({ walletPubkey, marketType, assetType }),
     {
       enabled: !!publicKey,
       ...QUERY_OPTIONS,
@@ -46,21 +48,16 @@ export const useLenderStats = () => {
 }
 export const useBorrowerStats = () => {
   const { publicKey } = useWallet()
-  const publicKeyString = publicKey?.toBase58() || ''
+  const walletPubkey = publicKey?.toBase58() || ''
 
   const { modeType } = useModeType()
-  const { tokenType } = useNftTokenType()
+  const { tokenType: marketType } = useNftTokenType()
 
   const assetType = modeType === ModeType.NFT ? AssetType.NFT : AssetType.SPL
 
   const { data, isLoading } = useQuery(
-    ['borrowerStats', publicKeyString, assetType, tokenType],
-    () =>
-      stats.fetchBorrowerStats({
-        walletPubkey: publicKeyString,
-        marketType: tokenType,
-        assetType,
-      }),
+    ['borrowerStats', walletPubkey, marketType, assetType],
+    () => stats.fetchBorrowerStats({ walletPubkey, marketType, assetType }),
     {
       enabled: !!publicKey,
       ...QUERY_OPTIONS,

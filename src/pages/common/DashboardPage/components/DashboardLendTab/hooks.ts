@@ -82,7 +82,7 @@ export const useFilteredTokensMarkets = (marketsPreview: TokenMarketPreview[]) =
       imageKey: 'logoUrl',
       secondLabel: {
         key: 'marketApr',
-        format: () => createPercentValueJSX(MAX_APR_VALUE),
+        format: (value: number) => createPercentValueJSX(value),
       },
     },
   }
