@@ -10,7 +10,7 @@ import { TokenSwitcher } from '@banx/components/TokenSwitcher'
 
 import { formatNumbersWithCommas } from '@banx/utils'
 
-import { useAllTotalStats } from '../../hooks'
+import { useAllTotalStats } from '../hooks'
 
 const Header = () => {
   const { data } = useAllTotalStats()

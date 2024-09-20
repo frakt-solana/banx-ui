@@ -1,0 +1,199 @@
+.allocationContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.allocationContent {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-grow: 1;
+  gap: 24px;
+
+  margin-bottom: 16px;
+}
+
+.allocationStatsContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 160px;
+  gap: 24px;
+  height: 100%;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    margin-top: 8px;
+  }
+}
+
+.allocationStats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.allocationChartStats {
+  display: flex;
+  flex-direction: column;
+
+  & > div:nth-child(odd) {
+    background: var(--bg-secondary);
+  }
+}
+
+.desktopChart {
+  @media (max-width: 640px) {
+    display: none;
+  }
+}
+
+.mobileChart {
+  display: none;
+
+  @media (max-width: 640px) {
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.doughnutChart {
+  width: 144px;
+  height: 144px;
+}
+
+.manageOffersButton {
+  width: 100%;
+}
+
+// * AllTimeBlock
+.allTimeContainer {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100%;
+
+  @media (max-width: 640px) {
+    margin-top: 16px;
+  }
+}
+
+.allTimeContent {
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 24px;
+  gap: 16px;
+  width: 100%;
+  height: 100%;
+}
+
+.allTimeStatsContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  height: 100%;
+  width: 100%;
+}
+
+.separateLine {
+  background: var(--bg-border);
+  height: 100%;
+  width: 1px;
+}
+
+.allTimeStats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+
+  margin-bottom: 14px;
+}
+
+.interestStats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  white-space: nowrap;
+  width: 100%;
+
+  & > div {
+    justify-content: flex-start;
+    gap: 8px;
+  }
+}
+
+.allTimeChartStats {
+  display: flex;
+  flex-direction: column;
+
+  & > div:nth-child(odd) {
+    background: var(--bg-secondary);
+  }
+}
+
+.singleBarChart {
+  width: 144px;
+  max-height: 188px;
+  height: 100%;
+
+  @media (max-width: 640px) {
+    width: 48px;
+  }
+}
+// * AllTimeBlock
+
+.allocationHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+
+  font: var(--title-xl);
+  text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--title-md);
+  }
+}
+
+// * TooltipContent * //
+.tooltip {
+  max-width: unset !important;
+  min-width: 328px !important;
+}
+
+.tooltipContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tooltipRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+// * TooltipContent * //
+
+// * MainStat * //
+.mainStat {
+  flex-direction: column-reverse;
+  white-space: nowrap;
+  gap: 0;
+}
+
+.mainStatLabel {
+  color: var(--content-primary);
+  font: var(--title-sm);
+  line-height: 16px;
+}
+
+.mainStatValue {
+  font: var(--important-text-lg);
+}
+// * MainStat * //

@@ -70,6 +70,6 @@ export const useModeType = () => {
   return { modeType, setModeType }
 }
 
-const getRouteForMode = (currentPath: string, nextMode: ModeType): string => {
+export const getRouteForMode = (currentPath: string, nextMode: ModeType): string => {
   return MODE_ROUTE_MAP[nextMode][currentPath] || currentPath
 }

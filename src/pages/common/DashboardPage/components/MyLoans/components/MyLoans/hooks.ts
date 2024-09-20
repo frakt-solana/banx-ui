@@ -7,8 +7,9 @@ import { VALUES_TYPES } from '@banx/components/StatInfo'
 import { stats } from '@banx/api/nft'
 import { PATHS } from '@banx/router'
 import { createPathWithModeParams } from '@banx/store'
-import { ModeType } from '@banx/store/common'
+import { getRouteForMode, useModeType } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
+import { isBanxSolTokenType } from '@banx/utils'
 
 import {
   LoansStatus,
@@ -21,7 +22,9 @@ import styles from './MyLoans.module.less'
 
 export const useMyLoans = (stats?: stats.TotalBorrowerStats | null) => {
   const navigate = useNavigate()
+
   const { tokenType } = useNftTokenType()
+  const { modeType } = useModeType()
 
   const { activeLoansCount = 0, terminatingLoansCount = 0, liquidationLoansCount = 0 } = stats || {}
 
@@ -34,13 +37,12 @@ export const useMyLoans = (stats?: stats.TotalBorrowerStats | null) => {
   }
 
   const loansData = map(loansStatusToValueMap, (value, status) => ({
-    className: liquidationLoansCount && styles.highlightLiquidation,
     label: STATUS_DISPLAY_NAMES[status as LoansStatus],
-    key: status,
+    key: status as LoansStatus,
     value,
   }))
 
-  const loansValues = map(loansData, 'value')
+  const loansValues = map(loansData, (loan) => loan.value)
   const isDataEmpty = every(loansValues, (value) => value === 0)
 
   const chartData: DoughnutChartProps = {
@@ -54,13 +56,21 @@ export const useMyLoans = (stats?: stats.TotalBorrowerStats | null) => {
     },
   }
 
-  const goToLoansPage = () => {
-    navigate(createPathWithModeParams(PATHS.LOANS, ModeType.NFT, tokenType))
+  const goToBorrowPage = () => {
+    const newPath = getRouteForMode(PATHS.LOANS, modeType)
+    navigate(createPathWithModeParams(newPath, modeType, tokenType))
   }
 
+  const goToLoansPage = () => {
+    const newPath = getRouteForMode(PATHS.LOANS, modeType)
+    navigate(createPathWithModeParams(newPath, modeType, tokenType))
+  }
+
+  const emptyButtonText = isBanxSolTokenType(tokenType) ? 'Borrow SOL' : 'Borrow USDC'
+
   const buttonProps = {
-    onClick: goToLoansPage,
-    disabled: isDataEmpty,
+    onClick: isDataEmpty ? goToBorrowPage : goToLoansPage,
+    text: isDataEmpty ? emptyButtonText : 'Manage my loans',
   }
 
   return { loansData, buttonProps, chartData }

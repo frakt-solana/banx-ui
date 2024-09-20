@@ -7,7 +7,7 @@ import { DisplayValue } from '@banx/components/TableComponents'
 import { stats } from '@banx/api/nft'
 import { PATHS } from '@banx/router'
 import { createPathWithModeParams } from '@banx/store'
-import { ModeType } from '@banx/store/common'
+import { getRouteForMode, useModeType } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
 import { getTokenDecimals, isBanxSolTokenType } from '@banx/utils'
 
@@ -18,11 +18,13 @@ import {
   STATUS_DISPLAY_NAMES,
 } from './constants'
 
-export type AllocationStats = stats.TotalLenderStats['allocation']
+type AllocationStats = stats.TotalLenderStats['allocation']
 
-export const useAllocationBlock = (stats?: AllocationStats) => {
+export const useAllocationBlock = (stats: AllocationStats | undefined) => {
   const navigate = useNavigate()
   const { tokenType } = useNftTokenType()
+
+  const { modeType } = useModeType()
 
   const {
     activeLoans = 0,
@@ -61,10 +63,13 @@ export const useAllocationBlock = (stats?: AllocationStats) => {
   }
 
   const goToLendPage = () => {
-    navigate(createPathWithModeParams(PATHS.LEND, ModeType.NFT, tokenType))
+    const newPath = getRouteForMode(PATHS.LEND, modeType)
+    navigate(createPathWithModeParams(newPath, modeType, tokenType))
   }
+
   const goToOffersPage = () => {
-    navigate(createPathWithModeParams(PATHS.OFFERS, ModeType.NFT, tokenType))
+    const newPath = getRouteForMode(PATHS.OFFERS, modeType)
+    navigate(createPathWithModeParams(newPath, modeType, tokenType))
   }
 
   const emptyButtonText = isBanxSolTokenType(tokenType) ? 'Lend SOL' : 'Lend USDC'
