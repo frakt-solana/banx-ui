@@ -37,21 +37,24 @@
   h2 {
     color: var(--pure-black);
     font: 500 25px var(--font-family-chakra);
+    margin-top: 12px;
     margin-bottom: 24px;
   }
 
   @media screen and (max-width: 960px) {
     align-items: center;
-    padding: 88px 24px 88px;
-    margin-bottom: 90px;
+    padding-bottom: 180px;
+    width: 100%;
 
     h1 {
-      font-size: 48px;
+      display: unset;
+      font-size: 56px;
       text-align: center;
     }
     h2 {
-      font-size: 25px;
+      font-size: 30px;
       text-align: center;
+      margin-top: 8px;
     }
   }
 
@@ -92,16 +95,17 @@
   color: var(--content-primary);
 
   @media screen and (max-width: 960px) {
-    gap: unset;
+    background: var(--bg-primary);
+    border-bottom: var(--border-less-primary);
+    border-radius: 20px 20px 0 0;
+
     display: flex;
     position: absolute;
-    bottom: -164px;
+    gap: unset;
+    padding: 24px;
+    bottom: -204px;
     left: 0;
     width: 100%;
-    padding: 24px;
-    border: var(--border-less-primary);
-    background: var(--bg-primary);
-    box-shadow: 4px 4px 0 0 var(--bg-border);
   }
 
   @media screen and (max-width: 640px) {
@@ -162,14 +166,19 @@
   width: 100%;
 
   @media screen and (max-width: 960px) {
+    border-radius: 0;
     max-width: unset;
   }
 }
 
 .separateLine {
   background-color: var(--bg-border);
-  height: 1px;
+  height: 0.5px;
   width: 100%;
+
+  @media screen and (max-width: 960px) {
+    display: none;
+  }
 }
 
 .listCol {
@@ -189,7 +198,7 @@
   }
 
   ul {
-    font: var(--body-text-sm);
+    font: var(--body-text-md);
     display: flex;
     flex-direction: column;
     row-gap: 4px;
