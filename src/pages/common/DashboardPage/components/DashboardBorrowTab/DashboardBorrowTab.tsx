@@ -11,34 +11,14 @@ import { useDashboardBorrowTab } from './hooks'
 import styles from './DashboardBorrowTab.module.less'
 
 const DashboardBorrowTab = () => {
-  const {
-    searchSelectParams,
-    borrowerStats,
-    loading,
-    headingText,
-    isConnected,
-    borrow,
-    findBestOffer,
-    nfts,
-    marketsPreview,
-    goToBorrowPage,
-  } = useDashboardBorrowTab()
+  const { searchSelectParams, borrowerStats, loading, headingText, isConnected, marketsPreview } =
+    useDashboardBorrowTab()
 
   return (
     <>
       <div className={styles.nftsSection}>
         <SearchableHeading title={headingText} searchSelectParams={searchSelectParams} />
-        {loading ? (
-          <Loader />
-        ) : (
-          <CardsList
-            nfts={nfts}
-            marketsPreview={marketsPreview}
-            borrow={borrow}
-            findBestOffer={findBestOffer}
-            goToBorrowPage={goToBorrowPage}
-          />
-        )}
+        {loading ? <Loader /> : <CardsList marketsPreview={marketsPreview} />}
       </div>
       <div className={classNames(styles.additionalSection, { [styles.fixedHeight]: !isConnected })}>
         <AvailableToBorrow />

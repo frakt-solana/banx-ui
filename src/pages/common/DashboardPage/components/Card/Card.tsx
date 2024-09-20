@@ -1,20 +1,15 @@
-import { FC, PropsWithChildren, useMemo } from 'react'
+import { FC, PropsWithChildren } from 'react'
 
 import { InfoCircleOutlined } from '@ant-design/icons'
 import classNames from 'classnames'
-import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { Button } from '@banx/components/Buttons'
 import ImageWithPreload from '@banx/components/ImageWithPreload'
 import { MAX_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
 import { core } from '@banx/api/nft'
-import { BONDS } from '@banx/constants'
-import { calculateApr, calculateLoanValue } from '@banx/utils'
-
-import { calcLoanValueWithFees, calcWeeklyInterestFee } from './helpers'
+import { calculateApr } from '@banx/utils'
 
 import styles from './Card.module.less'
 
@@ -97,52 +92,6 @@ export const MarketCard: FC<MarketCardProps> = ({ market, onClick }) => {
         <Stat label="Max ltv" value={ltv} tooltipContent={ltvTooltipContent} />
         <Stat label="Apr" value={apr} />
       </div>
-    </CardBackdrop>
-  )
-}
-
-interface BorrowCardProps {
-  nft: core.BorrowNft
-  onClick: () => void
-  findBestOffer: (marketPubkey: string) => core.Offer | null
-  tokenType: LendingTokenType
-}
-
-export const BorrowCard: FC<BorrowCardProps> = ({ nft, onClick, findBestOffer, tokenType }) => {
-  const {
-    nft: { collectionFloor, meta },
-    loan: { marketPubkey },
-  } = nft
-
-  const bestOffer = useMemo(() => findBestOffer(marketPubkey), [findBestOffer, marketPubkey])
-
-  const loanValue = bestOffer ? calculateLoanValue(bestOffer) : 0
-  const loanValueWithFees = calcLoanValueWithFees(bestOffer, tokenType)
-
-  const ltv = Math.max((loanValueWithFees / collectionFloor) * 100, 0)
-  const apr = calculateApr({ loanValue, collectionFloor, marketPubkey })
-  const weeklyFee = calcWeeklyInterestFee({ loanValue, apr })
-
-  const formattedAprValue = (apr + BONDS.REPAY_FEE_APR) / 100
-
-  const aprTooltipContent = createTooltipContent('Weekly fee', weeklyFee)
-  const ltvTooltipContent = createTooltipContent('Floor', collectionFloor)
-
-  return (
-    <CardBackdrop image={meta.imageUrl} onClick={onClick} disabled={!loanValue}>
-      <div className={classNames(styles.cardFooter, styles.fullHeight)}>
-        <Stat label="Ltv" value={ltv} tooltipContent={ltvTooltipContent} />
-        <Stat label="Apr" value={formattedAprValue} tooltipContent={aprTooltipContent} />
-      </div>
-      <Button className={styles.borrowButton} disabled={!loanValue}>
-        {!loanValue ? (
-          'No offers'
-        ) : (
-          <>
-            Get <DisplayValue value={loanValueWithFees} />
-          </>
-        )}
-      </Button>
     </CardBackdrop>
   )
 }

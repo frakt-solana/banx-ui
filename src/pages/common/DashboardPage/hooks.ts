@@ -6,9 +6,9 @@ import { useNftTokenType } from '@banx/store/nft'
 import { isBanxSolTokenType, isSolTokenType } from '@banx/utils'
 
 const QUERY_OPTIONS = {
-  staleTime: 60 * 1000, // 60 seconds
+  staleTime: 60 * 1000,
   refetchOnWindowFocus: false,
-  refetchInterval: 30 * 1000, // 30 seconds
+  refetchInterval: 30 * 1000,
 }
 
 export const useAllTotalStats = () => {
