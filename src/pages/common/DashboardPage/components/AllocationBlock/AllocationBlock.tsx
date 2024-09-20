@@ -31,7 +31,7 @@ const AllocationBlock = () => {
 
         <Tooltip title={tooltipContent} overlayClassName={styles.tooltip}>
           <>
-            <Button size="medium" type="circle" variant="tertiary">
+            <Button type="circle" variant="tertiary" className={styles.historyButton}>
               History
             </Button>
           </>
@@ -92,7 +92,7 @@ const createTooltipContent = (allTimeStats: TotalLenderStats['allTime'] | undefi
 
   const mainStatClassNames = {
     container: styles.mainStat,
-    label: styles.mainStatLabel,
+    label: styles.mainStatTooltipLabel,
     value: styles.mainStatValue,
   }
 
