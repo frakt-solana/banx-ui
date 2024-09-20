@@ -14,6 +14,7 @@ import {
 } from './schemas'
 import {
   AllTotalStats,
+  AssetType,
   TotalBorrowerStats,
   TotalLenderStats,
   UserLoansStats,
@@ -104,11 +105,17 @@ export const fetchLenderStats: FetchLenderStats = async ({ walletPubkey, tokenTy
 
 type FetchBorrowerStats = (props: {
   walletPubkey: string
-  tokenType: LendingTokenType
+  marketType: LendingTokenType
+  assetType: AssetType
 }) => Promise<TotalBorrowerStats | null>
-export const fetchBorrowerStats: FetchBorrowerStats = async ({ walletPubkey, tokenType }) => {
+export const fetchBorrowerStats: FetchBorrowerStats = async ({
+  walletPubkey,
+  marketType,
+  assetType,
+}) => {
   const queryParams = new URLSearchParams({
-    marketType: String(convertToMarketType(tokenType)),
+    marketType: String(convertToMarketType(marketType)),
+    tokenType: String(assetType),
   })
 
   const { data } = await axios.get<{ data: TotalBorrowerStats }>(
