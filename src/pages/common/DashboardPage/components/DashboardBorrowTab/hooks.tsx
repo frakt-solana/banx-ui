@@ -38,9 +38,9 @@ export const useFilteredNftsMarkets = (marketsPreview: core.MarketPreview[]) => 
     labels: ['Collection', 'Liquidity'],
   }
 
-  const sortedMarkets = filteredMarkets.sort(
-    (marketA, marketB) => marketB.loansTvl - marketA.loansTvl,
-  )
+  const sortedMarkets = useMemo(() => {
+    return [...filteredMarkets].sort((marketA, marketB) => marketB.loansTvl - marketA.loansTvl)
+  }, [filteredMarkets])
 
   return { filteredMarkets: sortedMarkets, searchSelectParams }
 }
@@ -86,9 +86,9 @@ export const useFilteredTokensMarkets = (marketsPreview: TokenMarketPreview[]) =
     },
   }
 
-  const sortedMarkets = filteredMarkets.sort(
-    (marketA, marketB) => marketB.loansTvl - marketA.loansTvl,
-  )
+  const sortedMarkets = useMemo(() => {
+    return [...filteredMarkets].sort((marketA, marketB) => marketB.loansTvl - marketA.loansTvl)
+  }, [filteredMarkets])
 
   return { filteredMarkets: sortedMarkets, searchSelectParams }
 }
