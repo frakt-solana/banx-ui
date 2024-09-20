@@ -43,7 +43,7 @@ const MyLoans = () => {
       </div>
 
       <Button {...buttonProps} className={styles.manageLoansButton}>
-        Manage my loans
+        {buttonProps.text}
       </Button>
     </div>
   )

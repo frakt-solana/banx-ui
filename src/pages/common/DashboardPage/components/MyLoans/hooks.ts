@@ -66,7 +66,7 @@ export const useMyLoans = () => {
   }
 
   const goToBorrowPage = () => {
-    const newPath = getRouteForMode(PATHS.LOANS, modeType)
+    const newPath = getRouteForMode(PATHS.BORROW, modeType)
     navigate(createPathWithModeParams(newPath, modeType, tokenType))
   }
 
