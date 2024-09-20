@@ -52,20 +52,30 @@
 .additionalCardInfo {
   display: flex;
   flex-direction: column;
-  gap: 2px;
 }
 
-.separateStat {
-  border-top: 0.5px dotted var(--content-secondary);
-  padding: 8px 8px 0;
-  margin: 2px -8px 0;
+.dashedLine {
+  margin: 4px -8px 8px;
+
+  background: repeating-linear-gradient(
+    to right,
+    var(--bg-border) 0,
+    var(--bg-border) 10px,
+    transparent 10px,
+    transparent 15px
+  );
+
+  height: 1px;
+  width: calc(100% + 16px);
 }
 
 .additionalLabelStat {
   color: var(--content-tertiary);
   font: var(--title-xs);
+  line-height: 18px;
 }
 
 .additionalValueStat {
   font: var(--body-text-sm);
+  line-height: 18px;
 }

@@ -114,14 +114,14 @@ const MainStats: FC<MainStatsProps> = ({ maxLtv, apr, maxBorrow, loansTvl, activ
             flexType="row"
           />
 
-          <div className={styles.separateStat}>
-            <StatInfo
-              label="Max borrow"
-              value={<DisplayValue value={maxBorrow} />}
-              classNamesProps={classNamesStatProps}
-              flexType="row"
-            />
-          </div>
+          <div className={styles.dashedLine} />
+
+          <StatInfo
+            label="Max borrow"
+            value={<DisplayValue value={maxBorrow} />}
+            classNamesProps={classNamesStatProps}
+            flexType="row"
+          />
         </div>
       )}
 
@@ -140,15 +140,15 @@ const MainStats: FC<MainStatsProps> = ({ maxLtv, apr, maxBorrow, loansTvl, activ
             flexType="row"
           />
 
-          <div className={styles.separateStat}>
-            <StatInfo
-              label="Max apr"
-              value={apr}
-              valueType={VALUES_TYPES.PERCENT}
-              classNamesProps={classNamesStatProps}
-              flexType="row"
-            />
-          </div>
+          <div className={styles.dashedLine} />
+
+          <StatInfo
+            label="Max apr"
+            value={apr}
+            valueType={VALUES_TYPES.PERCENT}
+            classNamesProps={classNamesStatProps}
+            flexType="row"
+          />
         </div>
       )}
     </>
