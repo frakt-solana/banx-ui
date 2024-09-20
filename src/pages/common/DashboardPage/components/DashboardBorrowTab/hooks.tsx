@@ -1,42 +1,16 @@
 import { useMemo } from 'react'
 
-import { useWallet } from '@solana/wallet-adapter-react'
-import { filter, includes } from 'lodash'
+import { filter, first, groupBy, includes, map } from 'lodash'
 
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/nft'
-import { useMarketsPreview } from '@banx/pages/nftLending/LendPage/hooks'
+import { TokenMarketPreview } from '@banx/api/tokens'
 import { createGlobalState } from '@banx/store'
-import { ModeType, useModeType } from '@banx/store/common'
-
-import { useBorrowerStats } from '../../hooks'
-
-export const useDashboardBorrowTab = () => {
-  const { connected } = useWallet()
-
-  const { modeType } = useModeType()
-
-  const { data: borrowerStats } = useBorrowerStats()
-  const { marketsPreview, isLoading: isLoadingMarkets } = useMarketsPreview()
-
-  const { filteredMarkets, searchSelectParams } = useFilteredNftsMarkets(marketsPreview)
-
-  const headingText = modeType === ModeType.NFT ? 'Collections' : 'Tokens'
-
-  return {
-    marketsPreview: filteredMarkets,
-    borrowerStats,
-    headingText,
-    searchSelectParams,
-    isConnected: connected,
-    loading: isLoadingMarkets,
-  }
-}
 
 const useCollectionsStore = createGlobalState<string[]>([])
 
-const useFilteredNftsMarkets = (marketsPreview: core.MarketPreview[]) => {
+export const useFilteredNftsMarkets = (marketsPreview: core.MarketPreview[]) => {
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
 
   const filteredMarkets = useMemo(() => {
@@ -62,6 +36,54 @@ const useFilteredNftsMarkets = (marketsPreview: core.MarketPreview[]) => {
       },
     },
     labels: ['Collection', 'Liquidity'],
+  }
+
+  const sortedMarkets = filteredMarkets.sort(
+    (marketA, marketB) => marketB.loansTvl - marketA.loansTvl,
+  )
+
+  return { filteredMarkets: sortedMarkets, searchSelectParams }
+}
+
+const useTokensStore = createGlobalState<string[]>([])
+
+export const useFilteredTokensMarkets = (marketsPreview: TokenMarketPreview[]) => {
+  const [selectedTokens, setSelectedTokens] = useTokensStore()
+
+  const filteredMarkets = useMemo(() => {
+    if (selectedTokens.length) {
+      return filter(marketsPreview, ({ collectionName }) =>
+        includes(selectedTokens, collectionName),
+      )
+    }
+    return marketsPreview
+  }, [marketsPreview, selectedTokens])
+
+  const marketsGroupedByTicker = groupBy(marketsPreview, (market) => market.collateral.ticker)
+
+  const searchSelectOptions = map(marketsGroupedByTicker, (groupedMarkets) => {
+    const firstMarketInGroup = first(groupedMarkets)
+    const { ticker = '', logoUrl = '' } = firstMarketInGroup?.collateral || {}
+    const marketApr = firstMarketInGroup?.marketApr
+    const offersTvl = firstMarketInGroup?.offersTvl
+
+    return { ticker, logoUrl, marketApr, offersTvl }
+  })
+
+  const searchSelectParams = {
+    options: searchSelectOptions,
+    onChange: setSelectedTokens,
+    selectedOptions: selectedTokens,
+    labels: ['Collection', 'Liquidity'],
+    optionKeys: {
+      labelKey: 'ticker',
+      valueKey: 'marketPubkey',
+      imageKey: 'logoUrl',
+      secondLabel: {
+        key: 'offersTvl',
+        format: (value: number) => <DisplayValue value={value} />,
+      },
+    },
   }
 
   const sortedMarkets = filteredMarkets.sort(

@@ -8,17 +8,12 @@ import DashboardLendTab from './components/DashboardLendTab'
 
 import styles from './DashboardPage.module.less'
 
-enum DashboardTabName {
-  BORROW = 'borrow',
-  LEND = 'lend',
-}
-
 export const DashboardPage = () => {
   useOnboardingModal('dashboard')
 
   const { value: currentTabValue, ...tabsProps } = useTabs({
-    tabs: DASHBOARD_TABS,
-    defaultValue: DASHBOARD_TABS[0].value,
+    tabs: TABS,
+    defaultValue: TabName.BORROW,
   })
 
   return (
@@ -26,20 +21,25 @@ export const DashboardPage = () => {
       <DashboardHeader />
       <Tabs value={currentTabValue} {...tabsProps} />
       <div className={styles.content}>
-        {currentTabValue === DashboardTabName.BORROW && <DashboardBorrowTab />}
-        {currentTabValue === DashboardTabName.LEND && <DashboardLendTab />}
+        {currentTabValue === TabName.BORROW && <DashboardBorrowTab />}
+        {currentTabValue === TabName.LEND && <DashboardLendTab />}
       </div>
     </div>
   )
 }
 
-const DASHBOARD_TABS: Tab[] = [
+enum TabName {
+  BORROW = 'borrow',
+  LEND = 'lend',
+}
+
+const TABS: Tab[] = [
   {
     label: 'Borrow',
-    value: DashboardTabName.BORROW,
+    value: TabName.BORROW,
   },
   {
     label: 'Lend',
-    value: DashboardTabName.LEND,
+    value: TabName.LEND,
   },
 ]
