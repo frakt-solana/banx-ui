@@ -20,6 +20,7 @@ const DashboardBorrowTab = () => {
         <SearchableHeading title={headingText} searchSelectParams={searchSelectParams} />
         {loading ? <Loader /> : <CardsList marketsPreview={marketsPreview} />}
       </div>
+
       <div className={classNames(styles.additionalSection, { [styles.fixedHeight]: !isConnected })}>
         <AvailableToBorrow />
         {isConnected && <MyLoans stats={borrowerStats} />}

@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import { core } from '@banx/api/nft'
 
-import { MarketCard } from '../../Card'
+import { CollectionCard } from '../../Card'
 
 import styles from '../DashboardBorrowTab.module.less'
 
@@ -15,7 +15,7 @@ const CardsList: FC<CardsListProps> = ({ marketsPreview }) => {
     <>
       <div className={styles.cardsList}>
         {marketsPreview.map((market) => (
-          <MarketCard key={market.marketPubkey} market={market} onClick={() => null} />
+          <CollectionCard key={market.marketPubkey} market={market} />
         ))}
       </div>
     </>

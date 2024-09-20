@@ -8,12 +8,35 @@ import { DisplayValue } from '@banx/components/TableComponents'
 import { core } from '@banx/api/nft'
 import { useMarketsPreview } from '@banx/pages/nftLending/LendPage/hooks'
 import { createGlobalState } from '@banx/store'
+import { ModeType, useModeType } from '@banx/store/common'
 
 import { useBorrowerStats } from '../../hooks'
 
+export const useDashboardBorrowTab = () => {
+  const { connected } = useWallet()
+
+  const { modeType } = useModeType()
+
+  const { data: borrowerStats } = useBorrowerStats()
+  const { marketsPreview, isLoading: isLoadingMarkets } = useMarketsPreview()
+
+  const { filteredMarkets, searchSelectParams } = useFilteredNftsMarkets(marketsPreview)
+
+  const headingText = modeType === ModeType.NFT ? 'Collections' : 'Tokens'
+
+  return {
+    marketsPreview: filteredMarkets,
+    borrowerStats,
+    headingText,
+    searchSelectParams,
+    isConnected: connected,
+    loading: isLoadingMarkets,
+  }
+}
+
 const useCollectionsStore = createGlobalState<string[]>([])
 
-const useFilteredMarketsAndNFTs = (marketsPreview: core.MarketPreview[]) => {
+const useFilteredNftsMarkets = (marketsPreview: core.MarketPreview[]) => {
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
 
   const filteredMarkets = useMemo(() => {
@@ -41,25 +64,9 @@ const useFilteredMarketsAndNFTs = (marketsPreview: core.MarketPreview[]) => {
     labels: ['Collection', 'Liquidity'],
   }
 
-  return { filteredMarkets, searchSelectParams }
-}
+  const sortedMarkets = filteredMarkets.sort(
+    (marketA, marketB) => marketB.loansTvl - marketA.loansTvl,
+  )
 
-export const useDashboardBorrowTab = () => {
-  const { connected } = useWallet()
-
-  const { data: borrowerStats } = useBorrowerStats()
-  const { marketsPreview, isLoading: isLoadingMarkets } = useMarketsPreview()
-
-  const { filteredMarkets, searchSelectParams } = useFilteredMarketsAndNFTs(marketsPreview)
-
-  const headingText = connected ? 'Click to borrow' : '1 click loan'
-
-  return {
-    marketsPreview: filteredMarkets,
-    borrowerStats,
-    headingText,
-    searchSelectParams,
-    isConnected: connected,
-    loading: isLoadingMarkets,
-  }
+  return { filteredMarkets: sortedMarkets, searchSelectParams }
 }

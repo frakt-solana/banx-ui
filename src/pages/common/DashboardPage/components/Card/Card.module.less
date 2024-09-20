@@ -1,146 +1,73 @@
 .card {
-  border: var(--border-primary);
+  background-color: var(--bg-primary);
+  border-radius: 6px;
+
   display: flex;
   flex-direction: column;
-  position: relative;
-}
-.card.clicable {
-  cursor: pointer;
+  padding: 8px;
+  gap: 8px;
 
-  &:hover {
-    border: 1px solid var(--bg-border-active);
-  }
-}
-.card.disabled {
-  pointer-events: none;
-}
-.card:hover .borrowButton {
-  background-color: var(--accent-secondary);
+  overflow: hidden;
 }
 
-.badge {
-  background: var(--additional-green-secondary);
-  color: var(--additional-green-primary-deep);
-  font: var(--body-text-sm);
+.mainCardInfo {
   display: flex;
   align-items: center;
+  gap: 8px;
+}
+
+.imageWrapper {
+  position: relative;
+  height: 32px;
+  width: 32px;
+}
+
+.mainCardImage {
+  border-radius: 100px;
+  height: 32px;
+  width: 32px;
+  position: relative;
+  z-index: 2;
+}
+
+.imageShadow {
   position: absolute;
   top: 0;
-  left: 8px;
-  padding: 1px 8px;
+  left: 0;
+  height: 32px;
+  width: 32px;
+  border-radius: 100px;
+  filter: blur(6px);
   z-index: 1;
+  opacity: 0.5;
+  transform: scale(1.1);
 }
 
-.nftImage {
-  object-fit: cover;
-  width: 100%;
-
-  @media (max-width: 960px) {
-    height: 100%;
-  }
-}
-
-.cardFooter {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px;
-  height: 54px;
-
-  & > div {
-    gap: unset;
-
-    &:last-child {
-      align-items: flex-end;
-    }
-  }
-
-  &.fullHeight {
-    align-items: flex-end;
-    height: 70px;
-  }
-}
-
-.borrowButton {
-  position: absolute;
-  left: 8px;
-  right: 8px;
-  bottom: 52px;
-}
-
-.lendCardFooter {
-  display: flex;
-  flex-direction: column;
-  padding: 8px;
-
-  & > div:last-child {
-    line-height: 21px;
-  }
-}
-.lendCardBadge {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font: var(--body-text-sm);
-}
-
-.statCol {
-  display: flex;
-  flex-direction: column;
-}
-.statLabel {
-  color: var(--content-secondary);
+.mainCardName {
   font: var(--title-sm);
-  text-transform: uppercase;
 
   @media (max-width: 640px) {
     font: var(--title-xs);
   }
 }
-.statValue {
-  display: flex;
-  font: var(--body-text-md);
 
-  @media (max-width: 640px) {
-    font: var(--body-text-sm);
-  }
-}
-.tooltip {
+.additionalCardInfo {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 2px;
 }
-.tooltipIcon svg {
-  fill: var(--content-secondary);
-  width: 12px;
-  height: 12px;
+
+.separateStat {
+  border-top: 0.5px dotted var(--content-secondary);
+  padding: 8px 8px 0;
+  margin: 2px -8px 0;
 }
 
-.tooltipContent {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.tooltipRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-width: 196px;
-}
-.tooltipRowLabel {
-  color: var(--content-secondary);
-  font: var(--title-sm);
-  text-transform: uppercase;
-
-  @media (max-width: 640px) {
-    font: var(--title-xs);
-  }
+.additionalLabelStat {
+  color: var(--content-tertiary);
+  font: var(--title-xs);
 }
 
-.tooltipRowValue {
-  font: var(--body-text-md);
-
-  @media (max-width: 640px) {
-    font: var(--body-text-sm);
-  }
+.additionalValueStat {
+  font: var(--body-text-sm);
 }
