@@ -1,13 +1,15 @@
 import classNames from 'classnames'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { NavLink } from 'react-router-dom'
 
 import { Button } from '@banx/components/Buttons'
 import { StatInfo } from '@banx/components/StatInfo'
-import { DisplayValue } from '@banx/components/TableComponents'
+import { createDisplayValueJSX } from '@banx/components/TableComponents'
 
 import { Theme, useTheme } from '@banx/hooks'
 import { InfinityIcon, BorrowFilled, LendFilled, Lightning, PencilLtv } from '@banx/icons'
 import { PATHS } from '@banx/router'
+import { formatValueByTokenType } from '@banx/utils'
 
 import { useAllTotalStats } from '../DashboardPage/hooks'
 import { Interest } from './icons'
@@ -27,6 +29,7 @@ export const RootPage = () => {
         </div>
         <GeneralStats />
       </div>
+      <div className={styles.footerBackground} />
     </div>
   )
 }
@@ -53,15 +56,15 @@ const AdvantagesSection = () => {
         <p>
           Flexible
           <br />
-          lending
+          rates
         </p>
       </div>
       <div className={styles.advantage}>
         <Lightning />
         <p>
-          Lightning fast
+          Lightning
           <br />
-          experience
+          fast
         </p>
       </div>
       <div className={styles.advantage}>
@@ -131,22 +134,23 @@ const GeneralStats = () => {
     value: styles.generalStatValue,
   }
 
+  const usdcTokenType = LendingTokenType.Usdc
+
+  const formattedTotalValueLocked = formatValueByTokenType(totalValueLocked, usdcTokenType) || '0'
+  const formattedTotalLoansVolume = formatValueByTokenType(loansVolumeAllTime, usdcTokenType) || '0'
+
   return (
     <div className={styles.generalStats}>
-      <StatInfo
-        label="Offers value locked"
-        value={<DisplayValue value={activeLoans} />}
-        classNamesProps={statClassNamesProps}
-      />
+      <StatInfo label="Active loans" value={activeLoans} classNamesProps={statClassNamesProps} />
       <StatInfo
         label="Total value locked"
-        value={<DisplayValue value={totalValueLocked} />}
+        value={createDisplayValueJSX(formattedTotalValueLocked, '$')}
         classNamesProps={statClassNamesProps}
       />
 
       <StatInfo
         label="Loans volume all time"
-        value={<DisplayValue value={loansVolumeAllTime} />}
+        value={createDisplayValueJSX(formattedTotalLoansVolume, '$')}
         classNamesProps={statClassNamesProps}
       />
     </div>

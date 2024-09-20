@@ -1,7 +1,10 @@
 .pageWrapper {
   background: url('./assets/headerBg.svg') var(--accent-primary) no-repeat center;
   background-size: cover;
-  height: 100%;
+
+  position: relative;
+  min-height: 100%;
+  overflow: hidden;
 }
 
 .pageWrapperDark {
@@ -12,10 +15,34 @@
   margin: 0 auto;
   max-width: 1296px;
   padding: 24px;
+
+  position: relative;
   width: 100%;
+  z-index: 1;
 
   @media (max-width: 960px) {
     padding: 24px 0 0;
+  }
+}
+
+.footerBackground {
+  background-image: url('./assets/footerBg.svg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+
+  padding-top: 15%;
+
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  height: auto;
+  width: 100%;
+
+  @media (max-width: 960px) {
+    display: none;
   }
 }
 
@@ -147,10 +174,12 @@
   padding: 12px;
   gap: 1px;
 
+  min-width: 180px;
+
   svg {
     height: 40px;
     path {
-      fill: var(--content-primary);
+      fill: var(--content-tertiary);
     }
   }
 
@@ -161,8 +190,9 @@
   }
 
   @media screen and (max-width: 960px) {
-    width: 25%;
     padding: unset;
+    min-width: unset;
+    width: 25%;
   }
 
   @media screen and (max-width: 640px) {
@@ -329,6 +359,7 @@
 
   @media (max-width: 640px) {
     font: var(--title-xs);
+    height: 24px;
     text-align: center;
   }
 }
