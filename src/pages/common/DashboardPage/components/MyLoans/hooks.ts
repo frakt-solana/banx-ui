@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { DoughnutChartProps } from '@banx/components/Charts'
 import { VALUES_TYPES } from '@banx/components/StatInfo'
 
-import { stats } from '@banx/api/nft'
+import { useBorrowerStats } from '@banx/pages/common/DashboardPage/hooks'
 import { PATHS } from '@banx/router'
 import { createPathWithModeParams } from '@banx/store'
 import { getRouteForMode, useModeType } from '@banx/store/common'
@@ -20,13 +20,22 @@ import {
 
 import styles from './MyLoans.module.less'
 
-export const useMyLoans = (stats?: stats.TotalBorrowerStats | null) => {
+export const useMyLoans = () => {
+  const { data: borrowerStats } = useBorrowerStats()
+
+  const {
+    totalBorrowed = 0,
+    totalDebt = 0,
+    totalWeeklyInterest = 0,
+    activeLoansCount = 0,
+    terminatingLoansCount = 0,
+    liquidationLoansCount = 0,
+  } = borrowerStats || {}
+
   const navigate = useNavigate()
 
   const { tokenType } = useNftTokenType()
   const { modeType } = useModeType()
-
-  const { activeLoansCount = 0, terminatingLoansCount = 0, liquidationLoansCount = 0 } = stats || {}
 
   const totalLoans = activeLoansCount + terminatingLoansCount + liquidationLoansCount
 
@@ -73,5 +82,5 @@ export const useMyLoans = (stats?: stats.TotalBorrowerStats | null) => {
     text: isDataEmpty ? emptyButtonText : 'Manage my loans',
   }
 
-  return { loansData, buttonProps, chartData }
+  return { loansData, buttonProps, chartData, totalBorrowed, totalDebt, totalWeeklyInterest }
 }

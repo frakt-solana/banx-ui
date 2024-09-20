@@ -5,22 +5,15 @@ import { Doughnut } from '@banx/components/Charts'
 import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { stats } from '@banx/api/nft'
-
-import { ChartStat } from '../../..'
+import { ChartStat } from '..'
 import { STATUS_COLOR_MAP } from './constants'
 import { useMyLoans } from './hooks'
 
 import styles from './MyLoans.module.less'
 
-interface MyLoansProps {
-  stats?: stats.TotalBorrowerStats | null
-}
-
-const MyLoans: FC<MyLoansProps> = ({ stats }) => {
-  const { loansData, chartData, buttonProps } = useMyLoans(stats)
-
-  const { totalBorrowed = 0, totalDebt = 0, totalWeeklyInterest = 0 } = stats || {}
+const MyLoans = () => {
+  const { loansData, chartData, buttonProps, totalBorrowed, totalDebt, totalWeeklyInterest } =
+    useMyLoans()
 
   return (
     <div className={styles.container}>

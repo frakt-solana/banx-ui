@@ -1,10 +1,10 @@
-import { FC } from 'react'
-
 import { Button } from '@banx/components/Buttons'
 import { Doughnut } from '@banx/components/Charts'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
+
+import { TotalLenderStats } from '@banx/api/nft'
 
 import { ChartStat } from '..'
 import { AllocationStatus, STATUS_COLOR_MAP } from './constants'
@@ -12,22 +12,11 @@ import { useAllocationBlock } from './hooks'
 
 import styles from './AllocationBlock.module.less'
 
-interface AllocationBlockProps {
-  stats?: any
-}
+const AllocationBlock = () => {
+  const { allocationData, chartData, buttonProps, allTimeStats, weightedApy, weeklyInterest } =
+    useAllocationBlock()
 
-const AllocationBlock: FC<AllocationBlockProps> = ({ stats }) => {
-  const { weightedApy = 0, weeklyInterest = 0 } = stats?.allocation || {}
-  const { paidInterest = 0, pendingInterest = 0, totalLent = 0 } = stats?.allTime || {}
-
-  const { allocationData, chartData, buttonProps } = useAllocationBlock(stats?.allocation)
-
-  const tooltipContent = createTooltipContent({
-    paidInterest,
-    pendingInterest,
-    totalLent,
-    weightedApy,
-  })
+  const tooltipContent = createTooltipContent(allTimeStats)
 
   const mainStatClassNames = {
     container: styles.mainStat,
@@ -39,7 +28,8 @@ const AllocationBlock: FC<AllocationBlockProps> = ({ stats }) => {
     <div className={styles.allocationContainer}>
       <div className={styles.allocationHeader}>
         <h4 className={styles.heading}>Allocation</h4>
-        <Tooltip title={tooltipContent} trigger="click" overlayClassName={styles.tooltip}>
+
+        <Tooltip title={tooltipContent} overlayClassName={styles.tooltip}>
           <>
             <Button size="medium" type="circle" variant="tertiary">
               History
@@ -92,19 +82,14 @@ const AllocationBlock: FC<AllocationBlockProps> = ({ stats }) => {
 
 export default AllocationBlock
 
-interface CreateTooltipContentProps {
-  totalLent: number
-  pendingInterest: number
-  paidInterest: number
-  weightedApy: number
-}
+const createTooltipContent = (allTimeStats: TotalLenderStats['allTime'] | undefined) => {
+  const {
+    paidInterest = 0,
+    pendingInterest = 0,
+    totalLent = 0,
+    totalDefaulted = 0,
+  } = allTimeStats || {}
 
-const createTooltipContent = ({
-  totalLent,
-  pendingInterest,
-  paidInterest,
-  weightedApy,
-}: CreateTooltipContentProps) => {
   const mainStatClassNames = {
     container: styles.mainStat,
     label: styles.mainStatLabel,
@@ -115,8 +100,8 @@ const createTooltipContent = ({
     <div className={styles.tooltipContent}>
       <div className={styles.allTimeStats}>
         <StatInfo
-          classNamesProps={mainStatClassNames}
           label="Total lent"
+          classNamesProps={mainStatClassNames}
           value={<DisplayValue value={totalLent} />}
         />
 
@@ -124,9 +109,9 @@ const createTooltipContent = ({
 
         <div className={styles.interestStats}>
           <StatInfo
-            flexType="row"
             label="Pending interest"
             value={<DisplayValue value={pendingInterest} />}
+            flexType="row"
           />
           <StatInfo
             label="Earned interest"
@@ -136,13 +121,7 @@ const createTooltipContent = ({
         </div>
       </div>
 
-      <StatInfo
-        value={weightedApy / 100}
-        flexType="row"
-        label="Weighted apr"
-        valueType={VALUES_TYPES.PERCENT}
-      />
-      <StatInfo value={0} flexType="row" label="Defaulted" />
+      <StatInfo value={totalDefaulted} flexType="row" label="Defaulted" />
     </div>
   )
 }
