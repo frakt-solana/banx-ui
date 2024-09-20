@@ -2,37 +2,43 @@ import classNames from 'classnames'
 import { NavLink } from 'react-router-dom'
 
 import { Button } from '@banx/components/Buttons'
+import { StatInfo } from '@banx/components/StatInfo'
+import { DisplayValue } from '@banx/components/TableComponents'
 
 import { Theme, useTheme } from '@banx/hooks'
 import { InfinityIcon, BorrowFilled, LendFilled, Lightning, PencilLtv } from '@banx/icons'
 import { PATHS } from '@banx/router'
 
+import { useAllTotalStats } from '../DashboardPage/hooks'
 import { Interest } from './icons'
 
 import styles from './RootPage.module.less'
 
 export const RootPage = () => {
+  const { theme } = useTheme()
+  const isDarkTheme = theme === Theme.DARK
+
   return (
-    <div className={styles.pageWrapper}>
+    <div className={classNames(styles.pageWrapper, { [styles.pageWrapperDark]: isDarkTheme })}>
       <div className={styles.rootContent}>
-        <Header />
-        <Content />
+        <div className={styles.mainContent}>
+          <Header />
+          <Content />
+        </div>
+        <GeneralStats />
       </div>
     </div>
   )
 }
 
 const Header = () => {
-  const { theme } = useTheme()
-  const isDarkTheme = theme === Theme.DARK
-
   return (
-    <div className={classNames(styles.header, { [styles.headerDark]: isDarkTheme })}>
+    <div className={styles.header}>
       <div className={styles.headerContent}>
         <h1>
           Loans <span>done right</span>
         </h1>
-        <h2>Borrow and Lend with maximum capital efficiency</h2>
+        <h2>Lend and Borrow against any asset</h2>
         <AdvantagesSection />
       </div>
     </div>
@@ -113,3 +119,36 @@ const Content = () => (
     </div>
   </div>
 )
+
+const GeneralStats = () => {
+  const { data } = useAllTotalStats()
+
+  const { activeLoans = 0, totalValueLocked = 0, loansVolumeAllTime = 0 } = data || {}
+
+  const statClassNamesProps = {
+    container: styles.generalStat,
+    label: styles.generalStatLabel,
+    value: styles.generalStatValue,
+  }
+
+  return (
+    <div className={styles.generalStats}>
+      <StatInfo
+        label="Offers value locked"
+        value={<DisplayValue value={activeLoans} />}
+        classNamesProps={statClassNamesProps}
+      />
+      <StatInfo
+        label="Total value locked"
+        value={<DisplayValue value={totalValueLocked} />}
+        classNamesProps={statClassNamesProps}
+      />
+
+      <StatInfo
+        label="Loans volume all time"
+        value={<DisplayValue value={loansVolumeAllTime} />}
+        classNamesProps={statClassNamesProps}
+      />
+    </div>
+  )
+}
