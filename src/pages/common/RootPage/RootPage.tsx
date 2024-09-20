@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
-import { NavLink } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { Button } from '@banx/components/Buttons'
 import { StatInfo } from '@banx/components/StatInfo'
@@ -9,6 +9,9 @@ import { createDisplayValueJSX } from '@banx/components/TableComponents'
 import { Theme, useTheme } from '@banx/hooks'
 import { InfinityIcon, BorrowFilled, LendFilled, Lightning, PencilLtv } from '@banx/icons'
 import { PATHS } from '@banx/router'
+import { createPathWithModeParams } from '@banx/store'
+import { getRouteForMode, useModeType } from '@banx/store/common'
+import { useNftTokenType } from '@banx/store/nft'
 import { formatValueByTokenType } from '@banx/utils'
 
 import { useAllTotalStats } from '../DashboardPage/hooks'
@@ -29,7 +32,11 @@ export const RootPage = () => {
         </div>
         <GeneralStats />
       </div>
-      <div className={styles.footerBackground} />
+      <div
+        className={classNames(styles.footerBg, {
+          [styles.footerBgDark]: isDarkTheme,
+        })}
+      />
     </div>
   )
 }
@@ -87,41 +94,54 @@ const AdvantagesSection = () => {
   )
 }
 
-const Content = () => (
-  <div className={styles.content}>
-    <div className={styles.listCol}>
-      <h4>
-        <BorrowFilled />
-        Borrowing
-      </h4>
-      <ul>
-        <li>Borrow SOL or USDC against your NFTs or tokens</li>
-        <li>Loans have no fixed duration: repay when you want, in full or in part</li>
-        <li>Enjoy pro-rata interest and a 72H guaranteed extension on repayment calls</li>
-      </ul>
-      <NavLink to={PATHS.BORROW} className={styles.button}>
-        <Button>Borrow</Button>
-      </NavLink>
-    </div>
+const Content = () => {
+  const { modeType } = useModeType()
+  const { tokenType } = useNftTokenType()
+  const navigate = useNavigate()
 
-    <div className={styles.separateLine} />
+  const goToPage = (path: string) => {
+    const newPath = getRouteForMode(path, modeType)
+    navigate(createPathWithModeParams(newPath, modeType, tokenType))
+  }
 
-    <div className={styles.listCol}>
-      <h4>
-        <LendFilled />
-        Lending
-      </h4>
-      <ul>
-        <li>Earn yield on your SOL or USDC by providing loans against NFTs or tokens</li>
-        <li>Set offers or instantly refinance active loans within your personal risk tolerance</li>
-        <li>Terminate or sell your loans to exit anytime you want</li>
-      </ul>
-      <NavLink to={PATHS.LEND} className={styles.button}>
-        <Button>Lend</Button>
-      </NavLink>
+  return (
+    <div className={styles.content}>
+      <div className={styles.listCol}>
+        <h4>
+          <BorrowFilled />
+          Borrowing
+        </h4>
+        <ul>
+          <li>Borrow SOL or USDC against your NFTs or tokens</li>
+          <li>Loans have no fixed duration: repay when you want, in full or in part</li>
+          <li>Enjoy pro-rata interest and a 72H guaranteed extension on repayment calls</li>
+        </ul>
+        <Button onClick={() => goToPage(PATHS.BORROW)} className={styles.button}>
+          Borrow
+        </Button>
+      </div>
+
+      <div className={styles.separateLine} />
+
+      <div className={styles.listCol}>
+        <h4>
+          <LendFilled />
+          Lending
+        </h4>
+        <ul>
+          <li>Earn yield on your SOL or USDC by providing loans against NFTs or tokens</li>
+          <li>
+            Set offers or instantly refinance active loans within your personal risk tolerance
+          </li>
+          <li>Terminate or sell your loans to exit anytime you want</li>
+        </ul>
+        <Button onClick={() => goToPage(PATHS.LEND)} className={styles.button}>
+          Lend
+        </Button>
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 const GeneralStats = () => {
   const { data } = useAllTotalStats()

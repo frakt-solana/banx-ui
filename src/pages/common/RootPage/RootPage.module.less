@@ -25,7 +25,7 @@
   }
 }
 
-.footerBackground {
+.footerBg {
   background-image: url('./assets/footerBg.svg');
   background-repeat: no-repeat;
   background-size: cover;
@@ -44,6 +44,10 @@
   @media (max-width: 960px) {
     display: none;
   }
+}
+
+.footerBgDark {
+  background-image: url('./assets/footerBgDark.svg');
 }
 
 .mainContent {
@@ -293,16 +297,12 @@
 }
 
 .button {
-  max-width: 412px;
+  font: var(--btn-text-md);
+  height: 40px !important;
   text-decoration: none;
   margin-top: 12px;
-  display: block;
-
-  button {
-    font: var(--btn-text-md);
-    height: 40px !important;
-    width: 100%;
-  }
+  max-width: 412px;
+  width: 100%;
 
   @media screen and (max-width: 960px) {
     max-width: unset;
@@ -310,9 +310,7 @@
   }
 
   @media screen and (max-width: 640px) {
-    button {
-      height: 32px !important;
-    }
+    height: 32px !important;
   }
 }
 
