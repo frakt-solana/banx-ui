@@ -25,8 +25,8 @@ const DASHBOARD_CONTENT = {
       text: (
         <div className={styles.slideText}>
           <p>
-            Banx is a {' '}
-            <span className={styles.slideTextImportant}>p2p lending protocol</span>, with no fixed duration, fixed pro-rata interest and passive yield on idle liquidity.
+            Banx is a <span className={styles.slideTextImportant}>p2p lending protocol</span>, with
+            no fixed duration, fixed pro-rata interest and passive yield on idle liquidity.
           </p>
         </div>
       ),
@@ -162,7 +162,7 @@ const LOANS_CONTENT = {
       text: (
         <div className={styles.slideText}>
           <p>
-            <span className={styles.slideTextImportant}>View + manage </span>
+            <span className={styles.slideTextImportant}>View and manage</span>
             your active loans here. Monitor the loan-to-value [LTV] and reduce risk by making
             partial repayments via the Repay button.
           </p>

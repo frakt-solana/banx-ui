@@ -4,7 +4,7 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain } from 'lodash'
 
 import { SyntheticTokenOffer } from '@banx/store/token'
-import { stringToBN } from '@banx/utils'
+import { getTokenTicker, stringToBN } from '@banx/utils'
 
 type GetErrorMessage = (props: {
   walletBalance: number
@@ -45,7 +45,7 @@ export const getAprErrorMessage = (apr: number) => {
 }
 
 const createInsufficientBalanceErrorMessage = (tokenType: LendingTokenType) => {
-  return `Not enough ${tokenType} in wallet`
+  return `Not enough ${getTokenTicker(tokenType)} in wallet`
 }
 
 const createTooLowAprErrorMessage = (aprRate: number) => {
