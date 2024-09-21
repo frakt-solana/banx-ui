@@ -1,0 +1,69 @@
+.table {
+  tr > td,
+  tr > th {
+    height: 44px;
+    width: 100%;
+
+    @media (max-width: 960px) {
+      height: 32px;
+    }
+  }
+}
+
+.tableWrapper {
+  height: 100%;
+
+  @media (max-width: 960px) {
+    height: 100vh;
+  }
+}
+
+// * Cells * //
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.checkbox {
+  height: 16px;
+  padding-left: 18px;
+}
+
+.aprRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.aprValue {
+  text-align: center;
+}
+
+.aprValue,
+.offerSizeValue {
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
+}
+
+.borrowValueContainer {
+  color: var(--content-secondary);
+  font: var(--important-text-lg);
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: 640px) {
+    font: var(--important-text-md);
+  }
+}
+
+.ltvValue {
+  color: var(--content-primary);
+  font: var(--body-text-md);
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
+}
+// * Cells * //

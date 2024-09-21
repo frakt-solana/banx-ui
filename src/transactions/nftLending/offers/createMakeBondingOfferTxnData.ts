@@ -4,7 +4,7 @@ import {
   createPerpetualBondOfferBonding,
   getBondingCurveTypeFromLendingToken,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondFeatures, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { BondFeatures, BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
@@ -17,14 +17,19 @@ import { BANX_SOL_ADDRESS, BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
 import { ZERO_BN, calculateNewOfferSize, isBanxSolTokenType } from '@banx/utils'
 
-import { parseAccountInfoByPubkey } from '../../functions'
+import { accountConverterBNAndPublicKey, parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
 export type CreateMakeBondingOfferTxnDataParams = {
   marketPubkey: string
+
   loanValue: number //? normal number
   loansAmount: number
   deltaValue: number //? normal number
+  collateralsPerToken?: BN
+  tokenLendingApr?: number
+
+  bondFeature: BondFeatures
   tokenType: LendingTokenType
 }
 
@@ -37,7 +42,16 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
   params,
   walletAndConnection,
 ) => {
-  const { marketPubkey, loanValue, loansAmount, tokenType, deltaValue } = params
+  const {
+    marketPubkey,
+    loanValue,
+    loansAmount,
+    tokenType,
+    collateralsPerToken = ZERO_BN,
+    tokenLendingApr = 0,
+    bondFeature,
+    deltaValue,
+  } = params
 
   const bondingCurveType = getBondingCurveTypeFromLendingToken(tokenType)
 
@@ -57,9 +71,9 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
       delta: new BN(deltaValue),
       quantityOfLoans: loansAmount,
       bondingCurveType,
-      bondFeature: BondFeatures.AutoReceiveAndReceiveNft,
-      collateralsPerToken: ZERO_BN,
-      tokenLendingApr: ZERO_BN,
+      bondFeature,
+      collateralsPerToken,
+      tokenLendingApr: new BN(tokenLendingApr),
     },
     sendTxn: sendTxnPlaceHolder,
   })
@@ -74,7 +88,11 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
       connection: walletAndConnection.connection,
     })
 
-    const offerSize = calculateNewOfferSize({ loanValue, loansAmount, deltaValue })
+    const offerSize = calculateNewOfferSize({
+      loanValue: loanValue,
+      loansAmount,
+      deltaValue,
+    })
     const diff = offerSize.sub(banxSolBalance)
 
     if (diff.gt(ZERO_BN)) {
@@ -108,4 +126,12 @@ export const parseMakeOfferSimulatedAccounts = (
   const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
   return results?.['bondOfferV3']?.[0] as core.Offer
+}
+
+export const parseMakeTokenOfferSimulatedAccounts = (
+  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
+) => {
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey, accountConverterBNAndPublicKey)
+
+  return results?.['bondOfferV3']?.[0] as BondOfferV3
 }

@@ -1,10 +1,11 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { BondFeatures } from 'fbonds-core/lib/fbond-protocol/types'
 import { uniqueId } from 'lodash'
 import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
-import { useTokenType } from '@banx/store/nft'
+import { useNftTokenType } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
@@ -50,7 +51,7 @@ export const useOfferTransactions = ({
 }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const onCreateOffer = async () => {
     const loadingSnackbarId = uniqueId()
@@ -65,6 +66,7 @@ export const useOfferTransactions = ({
           loanValue,
           deltaValue,
           tokenType,
+          bondFeature: BondFeatures.AutoReceiveAndReceiveNft,
         },
         walletAndConnection,
       )
@@ -133,7 +135,13 @@ export const useOfferTransactions = ({
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const txnData = await createUpdateBondingOfferTxnData(
-        { loanValue, offer: optimisticOffer, loansAmount, deltaValue, tokenType },
+        {
+          loanValue,
+          offer: optimisticOffer,
+          loansAmount,
+          deltaValue,
+          tokenType,
+        },
         walletAndConnection,
       )
 

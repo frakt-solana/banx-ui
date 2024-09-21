@@ -12,7 +12,7 @@ import { core } from '@banx/api/nft'
 import { Underwater } from '@banx/icons'
 import { isLoanAbleToTerminate } from '@banx/pages/nftLending/OffersPage'
 import { ViewState, useTableView } from '@banx/store/common'
-import { useTokenType } from '@banx/store/nft'
+import { useNftTokenType } from '@banx/store/nft'
 import {
   isLoanLiquidated,
   isLoanListed,
@@ -29,7 +29,7 @@ import { useSelectedLoans } from './loansState'
 import styles from './LoansTable.module.less'
 
 export const LoansTable = () => {
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
   const { publicKey: walletPublicKey } = useWallet()
   const walletPublicKeyString = walletPublicKey?.toBase58() || ''
 

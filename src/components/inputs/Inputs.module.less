@@ -1,5 +1,5 @@
 body .input {
-  background: var(--bg-action);
+  background: var(--action-primary);
   border-radius: 6px;
   color: var(--content-primary);
   font: var(--body-text-md);
@@ -21,12 +21,19 @@ body .input {
     box-shadow: unset;
   }
 
+  &:focus,
+  &:focus-visible,
+  &:global(.ant-input:focus),
+  &:global(.ant-input-focused) {
+    background: var(--action-secondary);
+  }
+
   &::placeholder {
     color: var(--content-secondary);
   }
 
   &:disabled {
-    background: var(--bg-action);
+    background: var(--action-tertiary);
     color: var(--content-secondary);
     pointer-events: none;
 
@@ -46,6 +53,12 @@ body .input {
   gap: 6px;
 }
 
+.labelsContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .labelWrapper {
   display: flex;
   align-items: center;
@@ -54,12 +67,12 @@ body .input {
 
 .label {
   color: var(--content-secondary);
-  font: var(--table-header-sm);
+  font: var(--title-sm);
   text-transform: uppercase;
   white-space: nowrap;
 
   @media (max-width: 640px) {
-    font: var(--table-header-xs);
+    font: var(--title-xs);
   }
 }
 
@@ -79,7 +92,7 @@ body .input {
 }
 .counterButton {
   cursor: pointer;
-  background: var(--bg-action);
+  background: var(--action-tertiary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -149,7 +162,7 @@ body .input {
 }
 .separatorLine {
   background: var(--bg-border);
-  height: 1px;
+  height: 0.5px;
   width: 100%;
 }
 .arrow {

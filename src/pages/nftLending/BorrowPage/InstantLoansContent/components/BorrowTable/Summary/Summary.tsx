@@ -13,7 +13,7 @@ import Tooltip from '@banx/components/Tooltip'
 import { core } from '@banx/api/nft'
 import bonkTokenImg from '@banx/assets/BonkToken.png'
 import { BONDS, ONE_WEEK_IN_SECONDS } from '@banx/constants'
-import { useTokenType } from '@banx/store/nft'
+import { useNftTokenType } from '@banx/store/nft'
 import {
   adjustBorrowValueWithSolanaRentFee,
   calcWeightedAverage,
@@ -64,7 +64,7 @@ export const Summary: FC<SummaryProps> = ({
   setMaxBorrowPercent,
   bonkRewardsAvailable,
 }) => {
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const totalBorrow = sumBy(nftsInCart, (nft) => calcLoanValueWithFees(nft, tokenType))
 
@@ -80,7 +80,7 @@ export const Summary: FC<SummaryProps> = ({
   const weightedApr = useMemo(() => {
     const totalApr = map(
       nftsInCart,
-      ({ nft, loanValue }) => (caclAprValue(nft, loanValue) + BONDS.PROTOCOL_REPAY_FEE) / 100,
+      ({ nft, loanValue }) => (caclAprValue(nft, loanValue) + BONDS.REPAY_FEE_APR) / 100,
     )
     const totalLoanValue = map(nftsInCart, (nft) => calcLoanValueWithFees(nft, tokenType))
 

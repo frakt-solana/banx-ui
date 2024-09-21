@@ -16,14 +16,9 @@ import { core } from '@banx/api/nft'
 import { useBorrowBonkRewardsAvailability } from '@banx/hooks'
 import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
-import { createGlobalState } from '@banx/store'
-import { ViewState, useIsLedger, useModal, useTableView } from '@banx/store/common'
-import {
-  createPathWithTokenParam,
-  useLoansOptimistic,
-  useOffersOptimistic,
-  useTokenType,
-} from '@banx/store/nft'
+import { createGlobalState, createPathWithModeParams } from '@banx/store'
+import { ModeType, ViewState, useIsLedger, useModal, useTableView } from '@banx/store/common'
+import { useLoansOptimistic, useNftTokenType, useOffersOptimistic } from '@banx/store/nft'
 
 import { useCartState } from '../../cartState'
 import { getTableColumns } from './columns'
@@ -54,7 +49,7 @@ export const useBorrowTable = ({
   const { isLedger } = useIsLedger()
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const bonkRewardsAvailable = useBorrowBonkRewardsAvailability()
 
@@ -89,7 +84,7 @@ export const useBorrowTable = ({
   )
 
   const goToLoansPage = () => {
-    navigate(createPathWithTokenParam(PATHS.LOANS, tokenType))
+    navigate(createPathWithModeParams(PATHS.LOANS, ModeType.NFT, tokenType))
   }
 
   const onBorrowSuccess = (loansAmount = 1) => {

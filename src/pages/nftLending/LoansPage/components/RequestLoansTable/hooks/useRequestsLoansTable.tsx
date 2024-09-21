@@ -8,8 +8,9 @@ import { core } from '@banx/api/nft'
 import { BorrowTabName, useBorrowTabs } from '@banx/pages/nftLending/BorrowPage'
 import { REQUEST_LOANS_TABLE_MESSAGES } from '@banx/pages/nftLending/LoansPage/constants'
 import { PATHS } from '@banx/router'
-import { createGlobalState } from '@banx/store'
-import { createPathWithTokenParam, useTokenType } from '@banx/store/nft'
+import { createGlobalState, createPathWithModeParams } from '@banx/store'
+import { ModeType } from '@banx/store/common'
+import { useNftTokenType } from '@banx/store/nft'
 
 import { useSortedLoans } from './useSortedLoans'
 
@@ -26,7 +27,7 @@ export const useRequestsLoansTable = ({ loans, isLoading }: UseLoansActiveTableP
   const { connected } = useWallet()
   const navigate = useNavigate()
 
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
 
@@ -51,7 +52,7 @@ export const useRequestsLoansTable = ({ loans, isLoading }: UseLoansActiveTableP
 
   const goToBorrowPage = () => {
     setBorrowTab(BorrowTabName.REQUEST)
-    navigate(createPathWithTokenParam(PATHS.BORROW, tokenType))
+    navigate(createPathWithModeParams(PATHS.BORROW, ModeType.NFT, tokenType))
   }
 
   const emptyListParams = {

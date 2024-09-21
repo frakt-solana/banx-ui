@@ -1,0 +1,192 @@
+// * Table *//
+.tableRoot {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.table {
+  min-width: 990px;
+
+  tr > td,
+  tr > th {
+    &:last-child {
+      width: 220px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    min-width: 772px;
+
+    tr > td,
+    tr > th {
+      width: 96px;
+
+      &:first-child {
+        width: 168px;
+      }
+    }
+  }
+}
+
+.searchSelect {
+  max-width: 456px;
+}
+// * Table *//
+
+// * Cells *//
+.actionsButtons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 100%;
+
+  button {
+    width: 100%;
+  }
+}
+
+.headerTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 16px !important;
+}
+
+.checkbox {
+  height: 18px;
+  padding-left: 18px;
+}
+
+.columnCell {
+  display: flex;
+  flex-direction: column;
+  white-space: nowrap;
+  align-items: flex-end;
+  gap: 2px;
+
+  @media (max-width: 640px) {
+    gap: unset;
+  }
+}
+.columnCellTitle {
+  font: var(--body-text-md);
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
+}
+.columnCellSubtitle {
+  font: var(--body-text-sm);
+
+  @media (max-width: 640px) {
+    font: var(--body-text-xs);
+  }
+}
+
+.tooltipContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tooltipRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 230px;
+}
+.tooltipRowLabel {
+  color: var(--content-secondary);
+  font: var(--title-sm);
+  text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--title-xs);
+  }
+}
+
+.tooltipRowValue {
+  font: var(--body-text-md);
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
+}
+// * Cells *//
+
+// * ActiveTableRow *//
+.terminated {
+  background: var(--additional-lava-secondary) !important;
+}
+
+.repaymentCallActive {
+  background: var(--additional-yellow-secondary) !important;
+}
+// * ActiveTableRow *//
+
+// * RepaymentCallFilterButton & TerminatingFilterButton *//
+.filterButtons {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.filterButtonWrapper {
+  position: relative;
+
+  &[data-loans-amount]::after {
+    border-radius: 100px;
+    content: attr(data-loans-amount);
+    color: var(--pure-black);
+    font: var(--body-text-xs);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+
+    position: absolute;
+    top: -2px;
+    right: -8px;
+    min-width: 8px;
+    height: 16px;
+  }
+
+  &.terminating[data-loans-amount]::after {
+    background: var(--additional-lava-primary);
+  }
+
+  &.repaymentCall[data-loans-amount]::after {
+    background: var(--additional-yellow-primary);
+  }
+}
+
+.repaymentCallFilterButton,
+.terminatingFilterButton {
+  &.active {
+    border-color: var(--content-primary);
+  }
+
+  svg path {
+    fill: revert-layer;
+  }
+}
+
+.terminatingFilterButton {
+  &.disabled {
+    svg path:first-child {
+      fill: var(--content-secondary);
+    }
+  }
+}
+
+.repaymentCallFilterButton {
+  &.disabled {
+    svg path:nth-last-child(n + 3) {
+      fill: var(--content-secondary);
+    }
+  }
+}
+// * RepaymentCallFilterButton & TerminatingFilterButton *//

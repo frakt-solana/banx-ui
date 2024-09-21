@@ -1,0 +1,95 @@
+.table {
+  tr > td,
+  tr > th {
+    height: 44px;
+    width: 100%;
+
+    @media (max-width: 960px) {
+      height: 32px;
+    }
+  }
+}
+
+.tableWrapper {
+  position: relative;
+  height: 100%;
+
+  &.showOverlay::after {
+    content: '';
+    display: block;
+
+    background-color: var(--bg-secondary);
+    opacity: 0.5;
+
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    z-index: 2;
+
+    width: 100%;
+    height: 100%;
+  }
+
+  @media (max-width: 960px) {
+    height: 100vh;
+  }
+}
+
+.tableLoader {
+  height: 100%;
+}
+
+// * Cells * //
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.checkbox {
+  padding-left: 18px;
+  pointer-events: none;
+  height: 16px;
+}
+
+.aprRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.aprValue {
+  text-align: center;
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
+}
+
+.offerSizeValue {
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
+}
+
+.borrowCell {
+  color: var(--content-secondary);
+  font: var(--important-text-lg);
+
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: 640px) {
+    font: var(--important-text-md);
+  }
+}
+
+.ltvValue {
+  color: var(--content-primary);
+  font: var(--body-text-md);
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
+}
+// * Cells * //

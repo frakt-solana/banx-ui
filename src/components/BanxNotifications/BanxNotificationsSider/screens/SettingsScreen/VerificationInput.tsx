@@ -96,10 +96,10 @@ export const VerificationInput: FC<VerificationInputProps> = ({
       {!customText && (
         <div className={styles.addressInputDescription}>
           <p className={styles.addressInputDescriptionText}>{description}</p>
-          <Button onClick={onCancel} size="small">
+          <Button onClick={onCancel} size="medium">
             Cancel
           </Button>
-          <Button onClick={resendCode} size="small">
+          <Button onClick={resendCode} size="medium">
             Resend
           </Button>
         </div>

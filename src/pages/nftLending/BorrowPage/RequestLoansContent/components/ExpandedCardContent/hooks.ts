@@ -19,8 +19,9 @@ import { useBorrowNfts } from '@banx/pages/nftLending/BorrowPage/hooks'
 import { LoansTabsNames, useLoansTabs } from '@banx/pages/nftLending/LoansPage'
 import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
-import { useIsLedger, useModal } from '@banx/store/common'
-import { createPathWithTokenParam, useLoansRequestsOptimistic, useTokenType } from '@banx/store/nft'
+import { createPathWithModeParams } from '@banx/store'
+import { ModeType, useIsLedger, useModal } from '@banx/store/common'
+import { useLoansRequestsOptimistic, useNftTokenType } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
@@ -50,7 +51,7 @@ import { calculateSummaryInfo, clampInputValue } from './helpers'
 export const useRequestLoansForm = (market: core.MarketPreview) => {
   const { nfts, isLoading: isLoadingNfts, maxLoanValueByMarket } = useBorrowNfts()
   const { selection: selectedNfts, set: setSelection } = useSelectedNfts()
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
   const { connected } = useWallet()
 
   const [inputLoanValue, setInputLoanValue] = useState('')
@@ -133,7 +134,7 @@ export const useRequestLoansForm = (market: core.MarketPreview) => {
     (requestedLoanValue - calculateBorrowValueWithProtocolFee(requestedLoanValue))
 
   const lenderSeesAprValue = !aprInputValueIsLow
-    ? Math.round(inputAprValueToNumber - BONDS.PROTOCOL_REPAY_FEE / 100)
+    ? Math.round(inputAprValueToNumber - BONDS.REPAY_FEE_APR / 100)
     : 0
 
   return {
@@ -183,13 +184,13 @@ const useRequestLoansTransaction = (props: {
   const { open: openModal, close: closeModal } = useModal()
   const { add: addLoansOptimistic } = useLoansRequestsOptimistic()
 
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { setTab: setLoanTab } = useLoansTabs()
 
   const goToLoansPage = () => {
     setLoanTab(LoansTabsNames.REQUESTS)
-    navigate(createPathWithTokenParam(PATHS.LOANS, tokenType))
+    navigate(createPathWithModeParams(PATHS.LOANS, ModeType.NFT, tokenType))
   }
 
   const onBorrowSuccess = (loansAmount = 1) => {
@@ -218,7 +219,7 @@ const useRequestLoansTransaction = (props: {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const rateBasePoints = aprValue * 100
-      const rateBasePointsWithoutProtocolFee = rateBasePoints - BONDS.PROTOCOL_REPAY_FEE
+      const rateBasePointsWithoutProtocolFee = rateBasePoints - BONDS.REPAY_FEE_APR
 
       const txnsData = await Promise.all(
         nfts.map((nft) =>

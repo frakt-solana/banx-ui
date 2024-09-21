@@ -119,3 +119,53 @@ export const PointsBanxBadge: FC<PointsBanxBadgeProps> = ({
     </Tooltip>
   )
 }
+
+interface CollateralTokenCellProps {
+  collateralTokenAmount: ReactNode
+  collateralImageUrl: string
+  collateralTokenTicker?: string
+
+  selected?: boolean
+  onCheckboxClick?: () => void
+  checkboxClassName?: string
+
+  className?: string
+  rightContentJSX?: ReactNode
+}
+
+export const CollateralTokenCell: FC<CollateralTokenCellProps> = ({
+  collateralTokenAmount,
+  collateralTokenTicker,
+  collateralImageUrl,
+  onCheckboxClick,
+  checkboxClassName,
+  selected = false,
+  rightContentJSX,
+  className,
+}) => {
+  const { viewState } = useTableView()
+  const isCardView = viewState === ViewState.CARD
+
+  return (
+    <div className={styles.collateralTokenCell}>
+      {onCheckboxClick && !isCardView && (
+        <Checkbox
+          className={classNames(styles.checkbox, checkboxClassName)}
+          onChange={onCheckboxClick}
+          checked={selected}
+        />
+      )}
+
+      <div className={classNames(styles.collateralTokenContainer, className)}>
+        <img src={collateralImageUrl} className={styles.collateralImage} />
+        <div className={styles.collateralTokenInfo}>
+          <span className={styles.collateralTokenAmount}>{collateralTokenAmount}</span>
+          {collateralTokenTicker && (
+            <span className={styles.collateralTokenTicker}>{collateralTokenTicker}</span>
+          )}
+        </div>
+        {rightContentJSX}
+      </div>
+    </div>
+  )
+}

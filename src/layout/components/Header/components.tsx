@@ -24,7 +24,7 @@ export const PriorityFeesButton = () => {
   }
 
   return (
-    <Button type="circle" variant="text" onClick={onClickHandler}>
+    <Button type="circle" variant="tertiary" onClick={onClickHandler}>
       <div>
         Priority
         <span className={styles.priorityFeeLevel}>
@@ -52,7 +52,7 @@ export const RewardsButton = () => {
       <NavLink to={PATHS.LEADERBOARD}>
         <Button
           type="circle"
-          variant="text"
+          variant="tertiary"
           className={classNames(styles.rewardsButton, {
             [styles.active]: isActivePath(PATHS.LEADERBOARD),
           })}

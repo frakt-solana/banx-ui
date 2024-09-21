@@ -59,7 +59,7 @@ export const SnackDescription: FC<SnackDescriptionProps> = ({
     >
       {description}
       {!!textToCopy && (
-        <Button onClick={onBtnClick} type="circle" variant="text">
+        <Button onClick={onBtnClick} type="circle" variant="tertiary">
           <Copy />
           {copyBtnLabel}
         </Button>

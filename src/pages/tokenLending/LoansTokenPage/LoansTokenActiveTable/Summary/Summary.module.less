@@ -1,0 +1,117 @@
+.container {
+  border-top: 1px solid var(--bg-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 24px;
+
+  @media (max-width: 1240px) {
+    flex-direction: column;
+    padding: 16px;
+    gap: 8px;
+  }
+}
+
+.mainStat {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 160px;
+
+  @media (max-width: 1240px) {
+    display: none;
+  }
+
+  p:first-child {
+    font: var(--important-text-3xl);
+  }
+
+  p:last-child {
+    color: var(--content-secondary);
+    font: var(--title-sm);
+    text-transform: uppercase;
+    max-width: 100px;
+  }
+}
+
+.additionalStats {
+  display: flex;
+  justify-content: space-around;
+  gap: 24px;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    justify-content: unset;
+    margin-right: -16px;
+    padding-right: 16px;
+    gap: 8px;
+    overflow: auto hidden;
+    width: calc(100% + 16px);
+  }
+}
+
+.additionalStats > div {
+  align-items: flex-end;
+  gap: unset;
+
+  @media (max-width: 1240px) {
+    align-items: center;
+    white-space: nowrap;
+    width: 100%;
+  }
+}
+
+.weightedAprStat,
+.debtInterestStat,
+.accruedInterestStat {
+  display: none;
+
+  @media (max-width: 1240px) {
+    display: flex;
+  }
+}
+
+.summaryControls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  @media (max-width: 1240px) {
+    width: 100%;
+  }
+
+  @media (max-width: 640px) {
+    gap: 8px;
+  }
+}
+
+.slider {
+  padding-bottom: 18px;
+}
+
+.sliderContainer {
+  @media (max-width: 1240px) {
+    order: 2;
+    flex-direction: row-reverse;
+  }
+}
+
+.repayButton {
+  min-width: 170px;
+}
+
+.payButton {
+  min-width: 192px;
+}
+
+.payButton,
+.repayButton {
+  @media (max-width: 1240px) {
+    min-width: unset;
+    width: 100%;
+
+    span {
+      display: none;
+    }
+  }
+}

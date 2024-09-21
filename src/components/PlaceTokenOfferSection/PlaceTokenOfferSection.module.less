@@ -1,0 +1,128 @@
+// * Form * //
+.fieldsColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.fieldsRow {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    gap: 16px;
+  }
+}
+
+.fieldColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.messageContainer {
+  height: 14px;
+}
+
+.borrowerMessage {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font: var(--body-text-sm);
+}
+// * Form * //
+
+// * ActionsButtons * //
+.actionsButtonsContainer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    gap: 8px;
+  }
+}
+.editModeButtons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.actionButton {
+  width: 124px;
+
+  @media (max-width: 640px) {
+    width: 100%;
+  }
+}
+
+.placeOfferButton {
+  width: 100%;
+}
+
+.removeOfferButton {
+  background-color: var(--additional-red-primary-sub) !important;
+
+  &:hover {
+    border: 1px solid var(--additional-red-primary) !important;
+  }
+}
+// * ActionsButtons * //
+
+// * Summary * //
+.additionalSummary {
+  border-top: 1px dotted var(--bg-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 24px;
+  margin: 12px -24px 0;
+  width: calc(100% + 48px);
+
+  @media (max-width: 640px) {
+    padding: 8px 16px;
+    margin: 16px -16px 0;
+    width: calc(100% + 32px);
+  }
+}
+
+.fixedValueContent {
+  max-width: 86px;
+  white-space: nowrap;
+  overflow: auto;
+
+  @media (max-width: 960px) {
+    max-width: 144px;
+  }
+}
+
+.aprValue {
+  color: #389e0d;
+}
+// * Summary * //
+
+// * MaxOfferControls * //
+.maxOfferControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.maxOfferControlsButton {
+  text-transform: uppercase;
+}
+
+.maxOfferLabel {
+  color: var(--content-secondary);
+  font: var(--title-sm);
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  @media (max-width: 640px) {
+    font: var(--title-xs);
+  }
+}
+// * MaxOfferControls * //

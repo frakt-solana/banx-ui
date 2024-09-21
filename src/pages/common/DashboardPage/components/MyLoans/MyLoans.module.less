@@ -1,0 +1,116 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.heading {
+  margin-bottom: 24px;
+
+  font: var(--title-xl);
+  text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--title-md);
+  }
+}
+
+.content {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  gap: 24px;
+  height: 100%;
+  width: 100%;
+}
+
+.statsContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  height: 100%;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    gap: 16px;
+  }
+}
+
+.loansChartStats {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  & > div:nth-child(odd) {
+    background: var(--bg-secondary);
+  }
+}
+
+.desktopChart {
+  @media (max-width: 640px) {
+    display: none;
+  }
+}
+
+.mobileChart {
+  display: none;
+
+  @media (max-width: 640px) {
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.manageLoansButton {
+  width: 100%;
+}
+
+.doughnutChart {
+  width: 144px;
+  height: 144px;
+}
+
+// * MainStats * //
+.mainStats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.separateLine {
+  background: var(--bg-border);
+  height: 100%;
+  width: 1px;
+}
+
+.totalDebtStat {
+  flex-direction: column-reverse;
+  white-space: nowrap;
+  gap: 0;
+}
+
+.totalDebtStatLabel {
+  color: var(--content-primary);
+  font: var(--title-sm);
+  line-height: 16px;
+}
+
+.totalDebtStatValue {
+  font: var(--important-text-lg);
+}
+
+.additionalStats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+
+  & > div {
+    justify-content: flex-start;
+    gap: 8px;
+  }
+}
+// * MainStats * //

@@ -22,7 +22,7 @@
 
 .nftPlaceholderIcon {
   rect {
-    fill: var(--bg-secondary);
+    fill: var(--bg-tertiary);
     stroke: var(--bg-border);
   }
   path {
@@ -59,7 +59,7 @@
   }
 }
 .nftCollectionName {
-  font: var(--card-header-sm);
+  font: var(--title-sm);
 }
 .ellipsis {
   max-width: 180px;
@@ -158,24 +158,7 @@
 }
 
 .displayValue {
-  line-height: 1;
-
-  .value,
-  .tokenUnit {
-    display: inline-block;
-    vertical-align: middle;
-  }
-
-  //? Set the icon height equal to the line height
-  .tokenUnit {
-    height: 1em;
-    width: 1em;
-
-    svg {
-      height: 1em;
-      width: 1em;
-    }
-  }
+  line-height: 1em;
 }
 
 .rarityText {
@@ -188,3 +171,52 @@
     color: var(--pure-black);
   }
 }
+
+// * CollateralTokenCell * //
+.collateralTokenCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.collateralTokenContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.collateralTokenInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.collateralTokenAmount {
+  color: var(--content-secondary);
+  font: var(--important-text-md);
+
+  @media (max-width: 640px) {
+    font: var(--important-text-sm);
+  }
+}
+
+.collateralTokenTicker {
+  color: var(--content-primary);
+  font: var(--body-text-sm);
+  text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--body-text-xs);
+  }
+}
+
+.collateralImage {
+  border-radius: 100%;
+  height: 30px;
+  width: 30px;
+
+  @media (max-width: 640px) {
+    height: 24px;
+    width: 24px;
+  }
+}
+// * CollateralTokenCell * //

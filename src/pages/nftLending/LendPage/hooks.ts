@@ -9,8 +9,8 @@ import { core } from '@banx/api/nft'
 import {
   isOfferNewer,
   isOptimisticOfferExpired,
+  useNftTokenType,
   useOffersOptimistic,
-  useTokenType,
 } from '@banx/store/nft'
 import { isOfferStateClosed } from '@banx/utils'
 
@@ -19,7 +19,7 @@ import { LendTabName } from './LendPage'
 export const USE_MARKETS_PREVIEW_QUERY_KEY = 'marketsPreview'
 
 export const useMarketsPreview = () => {
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { data, isLoading } = useQuery(
     [USE_MARKETS_PREVIEW_QUERY_KEY, tokenType],
@@ -39,7 +39,7 @@ export const useMarketsPreview = () => {
 
 export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => {
   const { optimisticOffers, update: updateOffer, remove: removeOffers } = useOffersOptimistic()
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { data, isLoading, isFetching, isFetched } = useQuery(
     ['marketPairs', marketPubkey, tokenType],

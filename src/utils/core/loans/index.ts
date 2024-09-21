@@ -30,7 +30,7 @@ export enum LoanStatus {
   Terminating = 'terminating',
 }
 
-export const STATUS_LOANS_MAP: Record<string, string> = {
+export const STATUS_LOANS_MAP: Record<string, LoanStatus> = {
   [BondTradeTransactionV2State.PerpetualActive]: LoanStatus.Active,
   [BondTradeTransactionV2State.PerpetualRefinancedActive]: LoanStatus.Active,
   [BondTradeTransactionV2State.PerpetualRepaid]: LoanStatus.Repaid,
@@ -114,7 +114,7 @@ export const calculateLoanRepayValueOnCertainDate: CalculateLoanRepayValueOnCert
     loanValue,
     startTime: soldAt,
     currentTime: date,
-    rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
+    rateBasePoints: amountOfBonds + BONDS.REPAY_FEE_APR,
   })
 
   return new BN(loanValue).add(new BN(calculatedInterest))
@@ -182,7 +182,7 @@ export const calcWeeklyFeeWithRepayFee = (loan: core.Loan) => {
     loanValue: calculateBorrowedAmount(loan).toNumber(),
     startTime: soldAt,
     currentTime: soldAt + SECONDS_IN_DAY * 7,
-    rateBasePoints: amountOfBonds + BONDS.PROTOCOL_REPAY_FEE,
+    rateBasePoints: amountOfBonds + BONDS.REPAY_FEE_APR,
   })
 }
 
@@ -213,7 +213,7 @@ export const calculateRepaymentCallLenderReceivesAmount = (loan: core.Loan) => {
 
   return calculateLenderPartialPartFromBorrower({
     borrowerPart: repaymentCallAmount,
-    protocolRepayFeeApr: BONDS.PROTOCOL_REPAY_FEE,
+    protocolRepayFeeApr: BONDS.REPAY_FEE_APR,
     soldAt,
     //? Lender APR (without ProtocolFee)
     lenderApr: calculateApr({
@@ -251,7 +251,7 @@ export const adjustBorrowValueWithSolanaRentFee: AdjustBorrowValueWithSolanaRent
 }
 
 export const calculateBorrowValueWithProtocolFee = (loanValue: number) =>
-  Math.floor(loanValue * (1 - BONDS.PROTOCOL_FEE_PERCENT / 1e4))
+  Math.floor(loanValue * (1 - BONDS.PROTOCOL_FEE / 1e4))
 
 export const calculateClaimValueOnCertainDate = (loan: core.Loan, date: number): BN => {
   const { amountOfBonds, soldAt } = loan.bondTradeTransaction
@@ -276,7 +276,7 @@ export const calculateClaimValue = (loan: core.Loan) => {
 type CalcWeeklyInterestFee = (loan: core.Loan) => number
 export const calcWeeklyInterestFee: CalcWeeklyInterestFee = (loan) => {
   const aprInPercent = loan.bondTradeTransaction.amountOfBonds / 100
-  const aprWithProtocolFee = aprInPercent + BONDS.PROTOCOL_REPAY_FEE / 100
+  const aprWithProtocolFee = aprInPercent + BONDS.REPAY_FEE_APR / 100
   const repayValue = calculateLendValue(loan)
 
   const weeklyAprPercentage = aprWithProtocolFee / 100 / WEEKS_IN_YEAR

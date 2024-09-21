@@ -30,7 +30,7 @@ export const calculateSummaryInfo = ({
     loanValue: totalRequestedLoanValue,
     startTime: currentTimeUnix - ONE_WEEK_IN_SECONDS,
     currentTime: currentTimeUnix,
-    rateBasePoints: rateBasePoints + BONDS.PROTOCOL_REPAY_FEE,
+    rateBasePoints: rateBasePoints + BONDS.REPAY_FEE_APR,
   })
 
   return { ltv, upfrontFee, weeklyInterest }

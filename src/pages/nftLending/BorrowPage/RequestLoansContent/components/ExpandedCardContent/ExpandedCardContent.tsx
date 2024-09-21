@@ -4,7 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Button } from '@banx/components/Buttons'
-import ActivityTable from '@banx/components/CommonTables'
+import { ActivityTable } from '@banx/components/CommonTables'
 import { MAX_BORROWER_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { CounterSlider } from '@banx/components/Slider'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'

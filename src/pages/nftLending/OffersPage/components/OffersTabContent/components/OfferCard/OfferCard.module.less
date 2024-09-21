@@ -1,5 +1,5 @@
 .card {
-  background: var(--bg-primary-deep);
+  background: var(--bg-primary);
   border: var(--border-less-primary);
   border-left: 0;
   border-right: 0;
@@ -115,7 +115,7 @@
 }
 
 .collectionName {
-  font: var(--card-header-lg);
+  font: var(--title-lg);
   max-width: 290px;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -126,7 +126,7 @@
   }
 
   @media (max-width: 640px) {
-    font: var(--card-header-md);
+    font: var(--title-md);
   }
 }
 
@@ -150,7 +150,7 @@
 
 .actionButton {
   &:disabled {
-    background: var(--bg-secondary);
+    background: var(--bg-tertiary);
 
     path,
     rect {
@@ -224,13 +224,13 @@
 
 .additionalStatLabel {
   color: var(--content-secondary);
-  font: var(--table-header-md);
+  font: var(--title-md);
   text-transform: uppercase;
   display: flex;
   align-items: center;
   gap: 4px;
 
   @media (max-width: 640px) {
-    font: var(--table-header-sm);
+    font: var(--title-sm);
   }
 }

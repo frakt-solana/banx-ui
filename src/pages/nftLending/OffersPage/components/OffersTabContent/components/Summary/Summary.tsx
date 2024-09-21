@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { uniqueId } from 'lodash'
@@ -12,11 +12,11 @@ import { DisplayValue } from '@banx/components/TableComponents'
 import { getLenderVaultInfo } from '@banx/components/WalletModal'
 import { BanxSolYieldWarningModal } from '@banx/components/modals'
 
-import { Offer, core } from '@banx/api/nft'
+import { core } from '@banx/api/nft'
 import { useClusterStats } from '@banx/hooks'
 import { BanxSOL } from '@banx/icons'
 import { useIsLedger, useModal } from '@banx/store/common'
-import { useTokenType } from '@banx/store/nft'
+import { useNftTokenType } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
@@ -49,11 +49,13 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
   const { connection } = useConnection()
   const { isLedger } = useIsLedger()
 
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { data: clusterStats } = useClusterStats()
 
   const { open, close } = useModal()
+
+  const rawOffers = useMemo(() => offers.map((offer) => offer.offer), [offers])
 
   const claimVault = async () => {
     if (!offers.length) return
@@ -129,7 +131,7 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
     totalClaimableValue,
     totalFundsInCurrentEpoch,
     totalFundsInNextEpoch,
-  } = getLenderVaultInfo(offers, clusterStats)
+  } = getLenderVaultInfo(rawOffers, clusterStats)
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>

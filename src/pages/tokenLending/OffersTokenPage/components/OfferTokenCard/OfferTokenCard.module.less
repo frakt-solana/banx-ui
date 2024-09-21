@@ -1,0 +1,153 @@
+// * OfferTokenCard * //
+.card {
+  background: var(--bg-primary);
+  cursor: pointer;
+  width: 100%;
+}
+
+.cardBody {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  padding: 6px 24px;
+  width: 100%;
+
+  @media (max-width: 960px) {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 8px 16px;
+    gap: 16px;
+  }
+
+  @media (max-width: 640px) {
+    padding: 8px 16px;
+
+    &.opened {
+      padding-bottom: 0;
+    }
+  }
+}
+
+.additionalContentWrapper {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+}
+
+.chevronButton {
+  display: flex;
+
+  &.opened svg {
+    transform: rotate(180deg);
+  }
+
+  @media (max-width: 960px) {
+    position: absolute;
+    top: 8px;
+    right: 16px;
+  }
+}
+// * OfferTokenCard * //
+
+// * MarketMainInfo * //
+.mainInfoContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 124px;
+
+  @media (max-width: 640px) {
+    gap: 8px;
+  }
+}
+
+.collateralImage {
+  border-radius: 100%;
+  height: 22px;
+  width: 22px;
+}
+
+.collateralName {
+  font: var(--title-md);
+}
+// * MarketMainInfo * //
+
+// * MarketAdditionalInfo * //
+.additionalInfoStats {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  white-space: nowrap;
+  width: 100%;
+
+  @media (max-width: 960px) {
+    display: grid;
+    align-items: flex-start;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, auto);
+    gap: 8px;
+  }
+}
+
+.additionalInfoStat {
+  align-items: flex-end;
+  gap: 2px;
+  max-width: 180px;
+  width: 100%;
+
+  @media (max-width: 1240px) {
+    max-width: 120px;
+  }
+
+  @media (max-width: 960px) {
+    .opened &:nth-child(n + 3) {
+      visibility: hidden;
+      height: 0;
+    }
+
+    &:nth-child(-n + 2) {
+      grid-row: 1;
+    }
+
+    &:nth-child(n + 3) {
+      grid-row: 2;
+    }
+
+    &:not(:last-child) {
+      align-items: flex-start;
+    }
+  }
+}
+
+.additionalInfoStatLabelWrapper {
+  @media (min-width: 961px) {
+    display: none;
+  }
+}
+
+.additionalAprStat {
+  color: var(--additional-green-primary-deep);
+}
+// * MarketAdditionalInfo * //
+
+// * LoansStatus * //
+.loansStatus {
+  display: flex;
+  align-items: center;
+}
+
+.loansStatusIcon {
+  display: flex;
+  align-items: center;
+
+  span {
+    font: var(--body-text-md);
+
+    @media (max-width: 640px) {
+      font: var(--body-text-sm);
+    }
+  }
+}

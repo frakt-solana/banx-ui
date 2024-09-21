@@ -3,69 +3,60 @@ import { FC } from 'react'
 import classNames from 'classnames'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { SOL, USDC } from '@banx/icons'
-import { useTokenType } from '@banx/store/nft'
-import { isBanxSolTokenType, isSolTokenType } from '@banx/utils'
+import { TABLET_WIDTH } from '@banx/constants'
+import { useWindowSize } from '@banx/hooks'
+import { useNftTokenType } from '@banx/store/nft'
+import { isBanxSolTokenType } from '@banx/utils'
+
+import { TokenDropdown } from './TokenDropdown'
+import { TOKEN_OPTIONS } from './constants'
 
 import styles from './TokenSwitcher.module.less'
 
-const TOKENS = [LendingTokenType.BanxSol, LendingTokenType.Usdc]
-
-type TokenValueProps = {
-  active?: boolean
-  tokenType: LendingTokenType
-}
-const TokenValue: FC<TokenValueProps> = ({ tokenType, active }) => {
-  const isSol = isSolTokenType(tokenType)
-  const isBanxSol = isBanxSolTokenType(tokenType)
-
-  //? Remove paddings in svg for USDC and SOL tokens. We need to do it in the svg files, but many views will be broken.
-  const tokenIcon =
-    isSol || isBanxSol ? <SOL viewBox="-1 -1 18 18" /> : <USDC viewBox="1 1 14 14" />
-
-  const tokenTicker = isSol || isBanxSol ? 'SOL' : 'USDC'
-
-  return (
-    <div
-      className={classNames(styles.token, {
-        [styles.tokenActive]: active,
-      })}
-    >
-      <div className={styles.tokenValue}>
-        <div
-          className={classNames(styles.tokenValueWrapper, {
-            [styles.tokenValueSolWrapper]: isSol || isBanxSol,
-          })}
-        >
-          {tokenIcon}
-        </div>
-        <span className={styles.tokenTicker}>{tokenTicker}</span>
-      </div>
-    </div>
-  )
+interface TokenSwitcherProps {
+  title: string
 }
 
-type TokenSwitcherProps = {
-  className?: string
-}
-const TokenSwitcher: FC<TokenSwitcherProps> = ({ className }) => {
-  const { tokenType, setTokenType } = useTokenType()
+export const TokenSwitcher: FC<TokenSwitcherProps> = ({ title }) => {
+  const { tokenType, setTokenType } = useNftTokenType()
+
+  const { width } = useWindowSize()
+  const isTable = width < TABLET_WIDTH
 
   const toggleTokenType = () => {
-    const nextTokenType = isBanxSolTokenType(tokenType)
+    const nextValue = isBanxSolTokenType(tokenType)
       ? LendingTokenType.Usdc
       : LendingTokenType.BanxSol
 
-    setTokenType(nextTokenType)
+    return setTokenType(nextValue)
   }
 
+  if (isTable)
+    return (
+      <TokenDropdown
+        title={title}
+        options={TOKEN_OPTIONS}
+        option={TOKEN_OPTIONS.find((option) => option.key === tokenType) ?? TOKEN_OPTIONS[0]}
+        onChangeToken={setTokenType}
+      />
+    )
+
   return (
-    <div className={classNames(styles.tokenSwitcher, className)} onClick={toggleTokenType}>
-      {TOKENS.map((token) => (
-        <TokenValue active={token === tokenType} key={token} tokenType={token} />
+    <div className={styles.switcher}>
+      {TOKEN_OPTIONS.map((option) => (
+        <div
+          key={option.key}
+          onClick={toggleTokenType}
+          className={classNames(styles.switcherOption, {
+            [styles.active]: option.key === tokenType,
+          })}
+        >
+          <p className={styles.switcherOptionValue}>
+            <span className={styles.switcherOptionIcon}>{option.icon}</span>
+            <span className={styles.switcherOptionLabel}>{option.label}</span>
+          </p>
+        </div>
       ))}
     </div>
   )
 }
-
-export default TokenSwitcher

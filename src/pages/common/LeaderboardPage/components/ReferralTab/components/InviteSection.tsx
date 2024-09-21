@@ -55,7 +55,7 @@ const InviteContent: FC<{ referredBy: string }> = ({ referredBy }) => {
   const createReferredValueJSX = () => {
     if (!referredBy)
       return (
-        <Button onClick={showModal} size="small" variant="secondary">
+        <Button onClick={showModal} size="medium" variant="secondary">
           Add referrer
         </Button>
       )

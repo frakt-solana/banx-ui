@@ -86,10 +86,10 @@ export const APRCell: FC<APRCellProps> = ({ nft }) => {
     loanValue: nft.loanValue,
     startTime: 0,
     currentTime: SECONDS_IN_DAY * 7,
-    rateBasePoints: apr + BONDS.PROTOCOL_REPAY_FEE,
+    rateBasePoints: apr + BONDS.REPAY_FEE_APR,
   })
 
-  const formattedAprValue = createPercentValueJSX((apr + BONDS.PROTOCOL_REPAY_FEE) / 100)
+  const formattedAprValue = createPercentValueJSX((apr + BONDS.REPAY_FEE_APR) / 100)
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>

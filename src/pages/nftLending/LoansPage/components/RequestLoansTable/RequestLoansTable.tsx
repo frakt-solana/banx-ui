@@ -7,7 +7,7 @@ import Table from '@banx/components/Table'
 
 import { core } from '@banx/api/nft'
 import { ViewState, useTableView } from '@banx/store/common'
-import { useTokenType } from '@banx/store/nft'
+import { useNftTokenType } from '@banx/store/nft'
 
 import { useBorrowerLoansRequests } from '../../hooks'
 import { Summary } from './Summary'
@@ -23,7 +23,7 @@ export const RequestsTable = () => {
   const { publicKey: walletPublicKey } = useWallet()
   const walletPublicKeyString = walletPublicKey?.toBase58() || ''
 
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { viewState } = useTableView()
 

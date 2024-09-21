@@ -27,7 +27,7 @@ export const LTVCell: FC<{ loan: core.Loan }> = ({ loan }) => {
 }
 
 export const APRCell: FC<{ loan: core.Loan }> = ({ loan }) => {
-  const aprPercent = (loan.bondTradeTransaction.amountOfBonds + BONDS.PROTOCOL_REPAY_FEE) / 100
+  const aprPercent = (loan.bondTradeTransaction.amountOfBonds + BONDS.REPAY_FEE_APR) / 100
 
   return <HorizontalCell value={createPercentValueJSX(aprPercent)} isHighlighted />
 }
@@ -56,7 +56,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, disabled, isCardView }
   return (
     <Button
       onClick={onButtonClick}
-      size={isCardView ? 'default' : 'small'}
+      size={isCardView ? 'large' : 'medium'}
       className={styles.delistButton}
       disabled={disabled}
     >

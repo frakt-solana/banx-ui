@@ -1,7 +1,7 @@
 import { FC } from 'react'
 
 import { Button } from '@banx/components/Buttons'
-import ActivityTable from '@banx/components/CommonTables'
+import { ActivityTable } from '@banx/components/CommonTables'
 import { Tabs, useTabs } from '@banx/components/Tabs'
 import { Modal } from '@banx/components/modals/BaseModal'
 
@@ -51,11 +51,16 @@ export const OfferHeader: FC<OfferHeaderProps> = ({ isEditMode, exitEditMode, sh
     <div className={styles.offerHeaderContent}>
       <h4 className={styles.offerHeaderTitle}>{title}</h4>
       {isEditMode && (
-        <Button className={styles.editButton} type="circle" variant="text" onClick={exitEditMode}>
+        <Button
+          className={styles.editButton}
+          type="circle"
+          variant="tertiary"
+          onClick={exitEditMode}
+        >
           Close
         </Button>
       )}
-      <Button className={styles.offersButton} type="circle" variant="text" onClick={showModal}>
+      <Button className={styles.offersButton} type="circle" variant="tertiary" onClick={showModal}>
         Offers
       </Button>
     </div>

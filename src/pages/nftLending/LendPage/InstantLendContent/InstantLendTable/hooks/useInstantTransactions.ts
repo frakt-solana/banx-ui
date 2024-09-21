@@ -12,7 +12,7 @@ import {
 import { core } from '@banx/api/nft'
 import { getDialectAccessToken } from '@banx/providers'
 import { useIsLedger, useModal } from '@banx/store/common'
-import { useTokenType } from '@banx/store/nft'
+import { useNftTokenType } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
@@ -40,7 +40,7 @@ export const useInstantTransactions = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
   const { isLedger } = useIsLedger()
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
   const { addMints } = useAllLoansRequests()

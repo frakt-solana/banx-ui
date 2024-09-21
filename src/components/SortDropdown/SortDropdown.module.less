@@ -5,12 +5,13 @@
 .dropdown {
   background: var(--bg-primary);
   border: var(--border-primary);
+  border-radius: 6px;
 
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 16px;
-  gap: 16px;
+  gap: 12px;
 
   position: absolute;
   top: 45px;
@@ -47,7 +48,7 @@
   }
 
   &.isOpen {
-    border: 1px solid var(--content-primary);
+    border: 1px solid var(--bg-border-active);
   }
 }
 .dropdownButtonTextContainer {
@@ -82,25 +83,31 @@
 }
 
 .sortButton {
-  border-color: var(--bg-border);
+  background: var(--action-primary);
+  color: var(--content-secondary);
+
+  font: var(--body-text-md);
+
   display: flex;
   align-items: center;
-
-  font: var(--body-text-lg);
   gap: 4px;
 
   white-space: nowrap;
   height: 32px;
+
+  svg path {
+    fill: var(--content-secondary);
+  }
 }
 
 .sortButton.active {
-  background-color: var(--accent-primary);
-  border-color: transparent;
-  color: var(--pure-black);
+  background: var(--bg-primary);
+  border-color: var(--bg-border-active);
+  color: var(--content-primary);
   pointer-events: none;
 
   svg path {
-    fill: var(--pure-black);
+    fill: var(--content-primary);
   }
 }
 

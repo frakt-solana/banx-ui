@@ -7,7 +7,7 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { activity } from '@banx/api/nft'
-import { useTokenType } from '@banx/store/nft'
+import { useNftTokenType } from '@banx/store/nft'
 import { createDownloadLink } from '@banx/utils'
 
 import { useUserOffersStats } from '../../hooks'
@@ -19,7 +19,7 @@ export const Summary = () => {
   const { data } = useUserOffersStats()
   const { publicKey } = useWallet()
 
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const { totalLent = 0, pendingInterest = 0, paidInterest = 0, weightedApr = 0 } = data || {}
 

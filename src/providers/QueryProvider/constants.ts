@@ -5,6 +5,7 @@ import {
   USE_WALLET_LOANS_AND_OFFERS_QUERY_KEY,
 } from '@banx/pages/nftLending/LoansPage/hooks'
 import { USE_LENDER_LOANS_QUERY_KEY } from '@banx/pages/nftLending/OffersPage/hooks'
+import { USE_WALLET_TOKEN_LOANS_AND_OFFERS_QUERY_KEY } from '@banx/pages/tokenLending/LoansTokenPage/hooks'
 
 export const IDB_QUERY_DATA_KEY = '@banx.queryData'
 
@@ -16,4 +17,7 @@ export const QUERY_KEYS_TO_PERSIST = [
   USE_BORROWER_LOANS_REQUESTS_QUERY_KEY,
   USE_MARKETS_PREVIEW_QUERY_KEY,
   USE_LENDER_LOANS_QUERY_KEY,
+
+  //? Token Lending query keys
+  USE_WALLET_TOKEN_LOANS_AND_OFFERS_QUERY_KEY,
 ]

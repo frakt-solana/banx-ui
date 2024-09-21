@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom'
 
 import { BanxNotificationsButton } from '@banx/components/BanxNotifications'
 import { WalletConnectButton } from '@banx/components/Buttons'
-import TokenSwitcher from '@banx/components/TokenSwitcher'
+import ModeSwitcher from '@banx/components/ModeSwitcher'
 
 import { Logo, LogoFull } from '@banx/icons'
 import { PATHS } from '@banx/router'
@@ -24,7 +24,7 @@ export const Header = () => {
           <LogoFull className={styles.logo} />
           <Logo className={styles.logoMobile} />
         </NavLink>
-        <TokenSwitcher className={styles.tokenSwitcher} />
+        <ModeSwitcher className={styles.tokenSwitcher} />
       </div>
 
       <div className={styles.widgetContainer}>

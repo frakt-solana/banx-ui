@@ -185,7 +185,12 @@ export const Summary: FC<SummaryProps> = ({
   return (
     <div className={styles.container}>
       {!!loansToClaim.length && (
-        <Button className={styles.claimButton} onClick={claimLoans} type="circle" variant="text">
+        <Button
+          className={styles.claimButton}
+          onClick={claimLoans}
+          type="circle"
+          variant="tertiary"
+        >
           Claim defaults
         </Button>
       )}
