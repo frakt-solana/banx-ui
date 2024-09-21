@@ -104,9 +104,14 @@ export const useBorrowOffersTransaction = (collateral: CollateralToken | undefin
       if (!collateral) return acc
 
       if (offerData) {
+        //? Subtract 0.00001% from maxTokenToGet to prevent rounding issues
+        const adjustedLoanValue = new BN(offer.maxTokenToGet).sub(
+          new BN(offer.maxTokenToGet).div(new BN(10000000)),
+        )
+
         acc.push({
           offer: offerData,
-          loanValue: new BN(offer.maxTokenToGet),
+          loanValue: adjustedLoanValue,
           collateral,
           aprRate: new BN(offer.apr),
         })
