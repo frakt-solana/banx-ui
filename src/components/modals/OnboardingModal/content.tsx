@@ -25,9 +25,8 @@ const DASHBOARD_CONTENT = {
       text: (
         <div className={styles.slideText}>
           <p>
-            Banx is a blazing fast{' '}
-            <span className={styles.slideTextImportant}>P2P lending protocol</span>, with lower
-            loan-to-value ratios, lower liquidation risk, and the lowest interest rates.
+            Banx is a {' '}
+            <span className={styles.slideTextImportant}>p2p lending protocol</span>, with no fixed duration, fixed pro-rata interest and passive yield on idle liquidity.
           </p>
         </div>
       ),
