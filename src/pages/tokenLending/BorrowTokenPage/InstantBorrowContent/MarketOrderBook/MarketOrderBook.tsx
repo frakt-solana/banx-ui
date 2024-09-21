@@ -66,7 +66,7 @@ const MarketOrderBook: FC<MarketOrderBookProps> = ({ collateral }) => {
       classNameTableWrapper={classNames(styles.tableWrapper, {
         [styles.showOverlay]: !!offers.length,
       })}
-      emptyMessage={!filteredOffers.length ? 'Not found suitable offers' : ''}
+      emptyMessage={!filteredOffers.length ? 'No suitable offers' : ''}
       loaderClassName={styles.tableLoader}
       loading={isLoading}
     />

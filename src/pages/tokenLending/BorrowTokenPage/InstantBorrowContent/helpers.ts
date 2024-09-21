@@ -52,7 +52,7 @@ export const getErrorMessage = ({
   }
 
   if (noOffersAvailable) {
-    return 'Not found suitable offers'
+    return 'No suitable offers'
   }
 
   if (noEnoughtWalletBalance) {
