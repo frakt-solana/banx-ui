@@ -1,35 +1,32 @@
 import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import classNames from 'classnames'
 
-import { useClusterStats, useDiscordUser, useWalletBalance } from '@banx/hooks'
-import { ChevronDown, Wallet } from '@banx/icons'
-import { useUserOffers } from '@banx/pages/nftLending/OffersPage/components/OffersTabContent/hooks'
-import { useTokenType } from '@banx/store/nft'
+import { useDiscordUser, useWalletBalance } from '@banx/hooks'
+import { HorizontalDots, Wallet } from '@banx/icons'
+import { useNftTokenType } from '@banx/store/nft'
 import { shortenAddress } from '@banx/utils'
 
 import { DisplayValue } from '../TableComponents'
 import UserAvatar from '../UserAvatar'
-import { getLenderVaultInfo, useWalletModal } from '../WalletModal'
+import { useLenderVaultInfo, useWalletModal } from '../WalletModal'
 import { Button } from './Button'
 
 import styles from './Buttons.module.less'
 
 export const WalletConnectButton = () => {
-  const { toggleVisibility, visible } = useWalletModal()
+  const { toggleVisibility } = useWalletModal()
   const { publicKey, connected } = useWallet()
 
   const walletPubkeyString = publicKey?.toBase58() || ''
 
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
+
   const walletBalance = useWalletBalance(tokenType, { isLive: true })
 
   const { data: discordUserData } = useDiscordUser()
-  const { data: clusterStats } = useClusterStats()
-  const { offers } = useUserOffers()
 
-  const { totalClaimableValue } = getLenderVaultInfo(offers, clusterStats)
+  const { lenderVaultInfo } = useLenderVaultInfo()
 
   const ConnectedButton = () => (
     <div className={styles.connectedButton} onClick={toggleVisibility}>
@@ -39,11 +36,12 @@ export const WalletConnectButton = () => {
         <span className={styles.connectedMobileWalletAddress}>
           {walletPubkeyString.slice(0, 4)}
         </span>
-        <BalanceContent walletBalance={walletBalance} vaultBalance={totalClaimableValue} />
+        <BalanceContent
+          walletBalance={walletBalance}
+          vaultBalance={lenderVaultInfo.totalClaimableValue}
+        />
       </div>
-      <ChevronDown
-        className={classNames(styles.connectedWalletChevron, { [styles.active]: visible })}
-      />
+      <HorizontalDots className={styles.connectedWalletIcon} />
     </div>
   )
 

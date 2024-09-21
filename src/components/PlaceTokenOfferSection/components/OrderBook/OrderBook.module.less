@@ -1,0 +1,154 @@
+.orderBook {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 32px;
+  height: 100%;
+
+  @media (max-width: 960px) {
+    padding-bottom: 0;
+    height: 408px;
+  }
+}
+
+.labelsWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 64px 0 24px;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    padding: 6px 56px 0 16px;
+  }
+}
+
+.labelWrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: calc(100% / 3);
+
+  &:nth-child(2) {
+    justify-content: center;
+  }
+
+  &:last-child {
+    justify-content: flex-end;
+  }
+
+  @media (max-width: 640px) {
+    width: 100%;
+  }
+}
+
+.label {
+  color: var(--content-secondary);
+  font: var(--title-xs);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.offersList {
+  margin-top: 6px;
+  overflow-y: auto;
+}
+
+// * Offer * //
+.listItem {
+  position: relative;
+  padding: 4px 64px 4px 24px;
+  background: var(--bg-tertiary);
+  display: flex;
+  align-items: center;
+  min-height: 38px;
+  width: 100%;
+
+  &:nth-child(odd) {
+    background: var(--bg-secondary);
+  }
+
+  &.creating,
+  &.editing {
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 2px;
+      width: 100%;
+      z-index: 1;
+    }
+  }
+
+  &.creating::after {
+    background: var(--accent-primary);
+  }
+
+  &.editing::after {
+    background: var(--additional-blue-primary);
+  }
+}
+
+.highlightItem {
+  position: absolute;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 16px;
+
+  &.creating {
+    background: var(--accent-primary);
+  }
+
+  &.editing {
+    background: var(--additional-blue-primary);
+  }
+
+  &.hidden {
+    display: none;
+  }
+
+  svg {
+    height: 12px;
+    width: 12px;
+  }
+}
+
+.values {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+
+  p {
+    width: calc(100% / 3);
+
+    &:nth-child(2) {
+      text-align: center;
+    }
+
+    &:last-child {
+      text-align: right;
+    }
+  }
+}
+
+.value,
+.displayOfferValue {
+  color: var(--content-primary);
+  font: var(--body-text-sm);
+  line-height: 24px;
+  overflow: auto;
+  white-space: nowrap;
+}
+
+.displayOfferValue {
+  display: flex;
+  align-items: center;
+}
+
+// * Offer * //

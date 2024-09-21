@@ -4,7 +4,11 @@ import classNames from 'classnames'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { compact, first, isArray, last } from 'lodash'
 
-import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
+import {
+  DisplayValue,
+  createDisplayValueJSX,
+  createPercentValueJSX,
+} from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
 import { core } from '@banx/api/nft'
@@ -82,10 +86,7 @@ export const DiagramMark: FC<DiagramMarkProps> = ({ mark, left, tokenType }) => 
     <div className={styles.mark} style={{ left: calculateStyle(left) }}>
       <CollateralImage markers={markers} url={nftImageUrl} />
       <div className={styles.dot} />
-      <div className={styles.value}>
-        {displayOfferValue}
-        {tokenUnit}
-      </div>
+      <div className={styles.value}>{createDisplayValueJSX(displayOfferValue, tokenUnit)}</div>
     </div>
   )
 

@@ -1,0 +1,104 @@
+.inputTokenSelect {
+  background-color: var(--action-primary);
+  border: var(--border-less-primary);
+  border-radius: 6px;
+
+  display: flex;
+  flex-direction: column;
+  padding: 6px 8px;
+  gap: 8px;
+
+  &Wrapper {
+    position: relative;
+  }
+
+  &Header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 20px;
+  }
+
+  &Label {
+    color: var(--content-tertiary);
+    font: var(--title-sm);
+    text-transform: uppercase;
+
+    @media (max-width: 640px) {
+      font: var(--title-xs);
+    }
+  }
+}
+
+.numericInput {
+  background: var(--action-primary) !important;
+  padding: 6px 0 6px 128px !important;
+  text-align: right;
+
+  &:disabled {
+    background: var(--bg-tertiary);
+  }
+
+  &:not(:placeholder-shown) {
+    color: var(--content-primary);
+  }
+}
+
+// * ControlsButtons * //
+.inputControlsButtons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inputControlButton {
+  background: var(--action-secondary) !important;
+  text-transform: uppercase;
+}
+
+.inputMaxTokenBalance {
+  color: var(--content-secondary);
+  font: var(--important-text-md);
+
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  svg {
+    height: 14px;
+    width: 14px;
+
+    path {
+      fill: var(--content-secondary);
+    }
+  }
+}
+// * ControlsButtons * //
+
+// * SelectTokenButton * //
+.selectTokenButton {
+  background-color: var(--action-secondary) !important;
+  padding: 6px 10px !important;
+
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.selectTokenButtonIcon {
+  border-radius: 100px;
+  height: 14px;
+  width: 14px;
+}
+
+.selectTokenButtonChevronIcon {
+  min-height: 16px;
+  min-width: 16px;
+  max-height: 16px;
+  max-width: 16px;
+
+  path {
+    fill: var(--content-primary);
+  }
+}
+// * SelectTokenButton * //

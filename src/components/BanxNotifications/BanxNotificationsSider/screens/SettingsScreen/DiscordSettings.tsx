@@ -38,7 +38,7 @@ export const DiscordSettings = () => {
           <p className={styles.discordSettingsUserName}>
             {data ? shortenAddress(publicKey?.toBase58() || '') : 'Username'}
           </p>
-          <Button onClick={linkButtonHanlder} variant="secondary" size="small">
+          <Button onClick={linkButtonHanlder} variant="secondary" size="medium">
             {isDiscordConnected ? 'Unlink' : 'Link'}
           </Button>
         </div>

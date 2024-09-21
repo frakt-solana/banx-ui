@@ -25,3 +25,8 @@ export type AllTotalStats = z.infer<typeof AllTotalStatsSchema>
 export type TotalLenderStats = z.infer<typeof TotalLenderStatsSchema>
 
 export type TotalBorrowerStats = z.infer<typeof TotalBorrowerStatsSchema>
+
+export enum AssetType {
+  NFT = 'nft',
+  SPL = 'spl',
+}

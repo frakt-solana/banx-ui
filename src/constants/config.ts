@@ -1,3 +1,9 @@
+import {
+  PROTOCOL_FEE,
+  PROTOCOL_FEE_TOKEN,
+  REPAY_FEE_APR,
+} from 'fbonds-core/lib/fbond-protocol/constants'
+
 export const IS_DEVELOPMENT = process.env.NODE_ENV !== 'production'
 
 export const BACKEND_BASE_URL = 'https://api.banx.gg'
@@ -26,8 +32,9 @@ export const SENTRY = {
 export const BONDS = {
   PROGRAM_PUBKEY: '4tdmkuY6EStxbS6Y8s5ueznL3VPMSugrvQuDeAHGZhSt',
   ADMIN_PUBKEY: 'revJ8QJgQ3xCcZ6CMykjsmGMYdg8Pj9WnqgJZBHBwSK',
-  PROTOCOL_FEE_PERCENT: 100, //? Base points
-  PROTOCOL_REPAY_FEE: 620, //? Base points
+  PROTOCOL_FEE: PROTOCOL_FEE, //? Base points
+  REPAY_FEE_APR: REPAY_FEE_APR, //? Base points
+  PROTOCOL_FEE_TOKEN: PROTOCOL_FEE_TOKEN, //? Base points
 }
 
 export const DIALECT = {

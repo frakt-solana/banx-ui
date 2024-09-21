@@ -4,7 +4,7 @@ import {
   optimisticUpdateBondOfferBonding,
   updatePerpetualOfferBonding,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
@@ -17,7 +17,7 @@ import { BANX_SOL_ADDRESS, BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
 import { ZERO_BN, calculateIdleFundsInOffer, isBanxSolTokenType } from '@banx/utils'
 
-import { parseAccountInfoByPubkey } from '../../functions'
+import { accountConverterBNAndPublicKey, parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
 export type CreateUpdateBondingOfferTxnDataParams = {
@@ -26,6 +26,8 @@ export type CreateUpdateBondingOfferTxnDataParams = {
   deltaValue: number //? human number
   offer: core.Offer
   tokenType: LendingTokenType
+  collateralsPerToken?: BN
+  tokenLendingApr?: number
 }
 
 type CreateUpdateBondingOfferTxnData = (
@@ -37,7 +39,15 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
   params,
   walletAndConnection,
 ) => {
-  const { loanValue, loansAmount, deltaValue, offer, tokenType } = params
+  const {
+    loanValue,
+    loansAmount,
+    deltaValue,
+    offer,
+    tokenType,
+    tokenLendingApr = 0,
+    collateralsPerToken = ZERO_BN,
+  } = params
 
   const {
     instructions,
@@ -56,7 +66,8 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
       delta: new BN(deltaValue),
       quantityOfLoans: loansAmount,
       lendingTokenType: tokenType,
-      tokenLendingApr: ZERO_BN,
+      collateralsPerToken: new BN(collateralsPerToken),
+      tokenLendingApr: new BN(tokenLendingApr),
     },
     sendTxn: sendTxnPlaceHolder,
   })
@@ -79,8 +90,8 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
       newLoanValue: new BN(loanValue),
       newDelta: new BN(deltaValue),
       newQuantityOfLoans: new BN(loansAmount),
-      collateralsPerToken: ZERO_BN,
-      tokenLendingApr: ZERO_BN,
+      collateralsPerToken,
+      tokenLendingApr: new BN(tokenLendingApr),
     })
 
     //? Optimistic offer is broken
@@ -118,4 +129,12 @@ export const parseUpdateOfferSimulatedAccounts = (
   const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
   return results?.['bondOfferV3']?.[0] as core.Offer
+}
+
+export const parseUpdateTokenOfferSimulatedAccounts = (
+  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
+) => {
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey, accountConverterBNAndPublicKey)
+
+  return results?.['bondOfferV3']?.[0] as BondOfferV3
 }

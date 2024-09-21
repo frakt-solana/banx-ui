@@ -47,7 +47,7 @@ export const WalletInfo: FC<WalletInfoProps> = ({ walletPublicKey }) => {
         <Button
           className={styles.connectWalletButton}
           variant="secondary"
-          size="small"
+          size="medium"
           onClick={onLinkWalletsClick}
         >
           Link wallets
@@ -95,7 +95,7 @@ export const LoyaltyBlock: FC<LoyaltyBlockProps> = ({
       <div className={styles.loyaltyBoostIncrease}>
         <p>Want to increase your boost?</p>
         <NavLink className={styles.stakeBanxButton} to={PATHS.ADVENTURES}>
-          <Button variant="secondary" size="small">
+          <Button variant="secondary" size="medium">
             Stake Banx
           </Button>
         </NavLink>

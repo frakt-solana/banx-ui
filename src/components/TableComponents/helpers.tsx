@@ -1,11 +1,14 @@
-import { FC, ReactNode } from 'react'
+import { FC } from 'react'
 
-import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import moment from 'moment'
 
-import { USDC } from '@banx/icons'
-import { useTokenType } from '@banx/store/nft'
-import { formatValueByTokenType } from '@banx/utils'
+import { useNftTokenType } from '@banx/store/nft'
+import {
+  TokenUnit,
+  formatDecimalWithSubscript,
+  formatValueByTokenType,
+  getTokenUnit,
+} from '@banx/utils'
 
 import styles from './TableCells.module.less'
 
@@ -32,48 +35,50 @@ export const createTimeValueJSX = (initialValue: number, zeroPlaceholder = '--')
   return <span className={styles.value}>{displayValue}</span>
 }
 
-const createPlaceholderJSX = (value: number, tokenUnit: ReactNode) => (
-  <>
-    <span className={styles.value}>{value}</span>
-    <span className={styles.tokenUnit}>{tokenUnit}</span>
-  </>
-)
+export const createDisplayValueJSX = (value: string, tokenUnit: `${TokenUnit}`) => {
+  if (tokenUnit === TokenUnit.Usdc) {
+    //? Added dollar sign before '<' for better readability
+    //? Change order of the operators to avoid confusion
 
-const TOKEN_DETAILS = {
-  [LendingTokenType.NativeSol]: {
-    unit: '◎',
-    placeholder: createPlaceholderJSX(0, '◎'),
-  },
-  [LendingTokenType.BanxSol]: {
-    unit: '◎',
-    placeholder: createPlaceholderJSX(0, '◎'),
-  },
-  [LendingTokenType.Usdc]: {
-    //? Using viewBox to visually scale up icon without changing its size
-    unit: <USDC viewBox="0 1 15 15" />,
-    placeholder: createPlaceholderJSX(0, <USDC viewBox="0 1 15 15" />),
-  },
+    const operator = value.startsWith('<') ? '<' : ''
+    const cleanedValue = value.replace('<', '')
+
+    return (
+      <span className={styles.displayValue}>
+        {operator}
+        {tokenUnit}
+        {cleanedValue}
+      </span>
+    )
+  }
+
+  return (
+    <span className={styles.displayValue}>
+      {value}
+      {tokenUnit}
+    </span>
+  )
 }
 
-export const DisplayValue: FC<{ value: number; placeholder?: string }> = ({
+interface DisplayValueProps {
+  value: number
+  placeholder?: string
+  isSubscriptFormat?: boolean
+}
+
+export const DisplayValue: FC<DisplayValueProps> = ({
   value,
   placeholder,
+  isSubscriptFormat = false,
 }) => {
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
-  const formattedValue = formatValueByTokenType(value, tokenType)
+  const formattedValue = isSubscriptFormat
+    ? formatDecimalWithSubscript(value)
+    : formatValueByTokenType(value, tokenType)
 
-  const defaultPlaceholder = placeholder || TOKEN_DETAILS[tokenType].placeholder
-  const tokenUnit = TOKEN_DETAILS[tokenType].unit
+  const tokenUnit = getTokenUnit(tokenType)
+  const defaultPlaceholder = placeholder ?? createDisplayValueJSX('0', tokenUnit)
 
-  const displayValue = formattedValue ? (
-    <>
-      <div className={styles.value}>{formattedValue}</div>
-      <div className={styles.tokenUnit}>{tokenUnit}</div>
-    </>
-  ) : (
-    defaultPlaceholder
-  )
-
-  return <div className={styles.displayValue}>{displayValue}</div>
+  return formattedValue ? createDisplayValueJSX(formattedValue, tokenUnit) : defaultPlaceholder
 }

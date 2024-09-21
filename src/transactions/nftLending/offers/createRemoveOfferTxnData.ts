@@ -1,7 +1,7 @@
 import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { removePerpetualOffer } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
@@ -11,7 +11,7 @@ import {
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 
-import { parseAccountInfoByPubkey } from '../../functions'
+import { accountConverterBNAndPublicKey, parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
 export type CreateRemoveOfferTxnDataParams = {
@@ -61,4 +61,12 @@ export const parseRemoveOfferSimulatedAccounts = (
   const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
   return results?.['bondOfferV3']?.[0] as core.Offer
+}
+
+export const parseRemoveTokenOfferSimulatedAccounts = (
+  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
+) => {
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey, accountConverterBNAndPublicKey)
+
+  return results?.['bondOfferV3']?.[0] as BondOfferV3
 }

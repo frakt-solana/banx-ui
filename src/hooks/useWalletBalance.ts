@@ -56,7 +56,7 @@ export const useBanxSolBalance: UseTokenBalance = (options) => {
   return useTokenBalance(BANX_SOL_ADDRESS, { isLive })
 }
 
-const useTokenBalance = (tokenAddress: string, options?: Options) => {
+export const useTokenBalance = (tokenAddress: string, options?: Options) => {
   const { isLive = false } = options || {}
 
   const { connection } = useConnection()
@@ -73,6 +73,9 @@ const useTokenBalance = (tokenAddress: string, options?: Options) => {
         })
 
         const userTokenAccountAddress = tokenAccounts.value[0]?.pubkey
+
+        if (!userTokenAccountAddress) return 0
+
         const balance = await connection.getTokenAccountBalance(userTokenAccountAddress)
         return parseFloat(balance.value.amount)
       }

@@ -4,7 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 import { InputErrorMessage, NumericStepInput } from '@banx/components/inputs'
 
-import { useTokenType } from '@banx/store/nft'
+import { useNftTokenType } from '@banx/store/nft'
 import { getTokenUnit, isBanxSolTokenType } from '@banx/utils'
 
 import { BorrowerMessage } from '../components'
@@ -34,7 +34,7 @@ const PlaceOfferContent: FC<PlaceOfferParams> = ({
   isLoadingDiagram,
   setOfferPubkey,
 }) => {
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
   const { connected } = useWallet()
 
   const isEditMode = syntheticOffer.isEdit

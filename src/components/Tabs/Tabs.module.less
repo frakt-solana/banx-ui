@@ -13,7 +13,7 @@
   justify-content: center;
   align-items: center;
 
-  height: 40px;
+  height: 32px;
 
   &:active,
   &:focus,
@@ -22,30 +22,18 @@
   }
 
   &:disabled {
-    background: var(--bg-secondary);
-    color: var(--content-secondary);
+    background: var(--action-secondary);
+    color: var(--content-tertiary);
     pointer-events: none;
-  }
-
-  @media (max-width: 640px) {
-    height: 32px;
   }
 }
 
 .primary {
-  background: var(--bg-secondary);
+  background: var(--action-secondary);
   border-bottom: var(--border-less-primary);
   color: var(--content-primary);
-  font: var(--body-text-lg);
+  font: var(--body-text-md);
   width: 100%;
-
-  &:hover {
-    background: var(--primary-background);
-  }
-
-  @media (max-width: 640px) {
-    font: var(--body-text-md);
-  }
 }
 .primary:first-child {
   border-right: var(--border-less-primary);
@@ -54,9 +42,25 @@
   border-left: var(--border-less-primary);
 }
 
+//? The right border will not be displayed if there are only two elements.
+.primary:first-child:nth-last-child(2) {
+  border-right: none;
+}
+
 .tabActive {
-  border-bottom-color: transparent;
-  background: transparent;
+  border-bottom-color: var(--bg-tertiary);
+  background: var(--bg-primary-gradient);
+  position: relative;
+
+  &::after {
+    content: '';
+    background-color: var(--accent-primary);
+    display: block;
+    position: absolute;
+    top: -1px;
+    height: 1px;
+    width: 100%;
+  }
 
   &,
   &:hover {

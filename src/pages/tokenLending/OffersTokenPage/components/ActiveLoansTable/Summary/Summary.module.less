@@ -1,0 +1,137 @@
+.container {
+  border-top: 1px solid var(--bg-border);
+  display: flex;
+  align-items: center;
+  padding: 8px 24px;
+  position: relative;
+  width: 100%;
+
+  @media (max-width: 960px) {
+    padding: 16px;
+  }
+}
+
+.mainStat {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 160px;
+
+  p:first-child {
+    font: var(--important-text-3xl);
+    white-space: nowrap;
+  }
+
+  p:last-child {
+    color: var(--content-secondary);
+    font: var(--title-sm);
+    text-transform: uppercase;
+    max-width: 100px;
+  }
+
+  @media (max-width: 1240px) {
+    display: none;
+  }
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+
+  @media (max-width: 960px) {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+.additionalStats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 124px;
+  width: 100%;
+
+  @media (max-width: 1240px) {
+    gap: 8px;
+  }
+
+  & > div {
+    align-items: flex-end;
+    gap: unset;
+    max-width: 180px;
+    width: 100%;
+
+    @media (max-width: 1240px) {
+      white-space: nowrap;
+    }
+
+    @media (max-width: 960px) {
+      align-items: center;
+    }
+  }
+}
+
+.lentAmountStat {
+  @media (min-width: 1241px) {
+    display: none;
+  }
+}
+
+.aprValueStat {
+  color: var(--additional-green-primary-deep);
+}
+
+.terminateControls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  @media (max-width: 960px) {
+    width: 100%;
+  }
+}
+
+.terminateSliderWrapper {
+  max-width: 220px;
+
+  & > div:first-child {
+    padding-bottom: 8px;
+  }
+
+  @media (max-width: 960px) {
+    height: 32px;
+    flex-direction: row-reverse;
+    max-width: unset;
+    order: 2;
+  }
+}
+
+.terminateButton {
+  width: 152px;
+
+  &:not(:disabled) {
+    background-color: var(--additional-red-primary-sub) !important;
+
+    &:hover {
+      border: 1px solid var(--additional-red-primary) !important;
+    }
+  }
+
+  @media (max-width: 960px) {
+    width: 100%;
+  }
+}
+
+.claimButton {
+  position: absolute;
+  left: 50%;
+  top: -24px;
+  transform: translateX(-50%);
+
+  @media (max-width: 640px) {
+    top: -16px;
+  }
+}

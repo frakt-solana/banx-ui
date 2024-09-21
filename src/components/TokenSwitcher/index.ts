@@ -1,1 +1,1 @@
-export { default } from './TokenSwitcher'
+export * from './TokenSwitcher'

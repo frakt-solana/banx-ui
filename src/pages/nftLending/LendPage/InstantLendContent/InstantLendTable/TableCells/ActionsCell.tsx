@@ -53,7 +53,7 @@ export const ActionsCell: FC<RefinanceCellProps> = ({ loan, isCardView, disabled
       <Button
         className={styles.actionButton}
         onClick={onClickHandler}
-        size={isCardView ? 'default' : 'small'}
+        size={isCardView ? 'large' : 'medium'}
         disabled={disabledAction}
       >
         Lend
@@ -62,7 +62,7 @@ export const ActionsCell: FC<RefinanceCellProps> = ({ loan, isCardView, disabled
         className={classNames(styles.tensorButtonLink, { [styles.cardView]: isCardView })}
         variant="secondary"
         type="circle"
-        size="small"
+        size="medium"
       >
         <TensorLink mint={loan.nft.mint} />
       </Button>

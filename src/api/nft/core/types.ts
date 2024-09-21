@@ -1,17 +1,19 @@
 import { z } from 'zod'
 
-import { ResponseWithPagination } from '../../shared'
 import {
   BondTradeTransactionSchema,
+  FraktBondSchema,
+  OfferSchema,
+  ResponseWithPagination,
+} from '../../shared'
+import {
   BorrowNftSchema,
   BorrowNftsAndOffersSchema,
   CollectionMetaSchema,
-  FraktBondSchema,
   LenderLoansSchema,
   LoanSchema,
   LoansRequestsSchema,
   MarketPreviewSchema,
-  OfferSchema,
   UserOfferSchema,
   WalletLoansAndOffersShema,
 } from './schemas'

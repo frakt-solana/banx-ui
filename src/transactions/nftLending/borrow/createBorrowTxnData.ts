@@ -3,9 +3,9 @@ import { EMPTY_PUBKEY, LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/const
 import {
   borrowCnftPerpetualCanopy,
   borrowPerpetual,
+  borrowPerpetualCore,
   borrowStakedBanxPerpetual,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { borrowPerpetualCore } from 'fbonds-core/lib/fbond-protocol/functions/perpetual/loan/borrow/borrowPerpetualCore'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import {
   CreateTxnData,

@@ -18,7 +18,7 @@ export const calcInterest: CalcInterest = ({ loanValue, timeInterval, apr }) => 
     loanValue,
     startTime: currentTimeUnix - timeInterval,
     currentTime: currentTimeUnix,
-    rateBasePoints: apr + BONDS.PROTOCOL_REPAY_FEE,
+    rateBasePoints: apr + BONDS.REPAY_FEE_APR,
   })
 }
 

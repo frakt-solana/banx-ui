@@ -1,0 +1,93 @@
+.pageWrapper {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  height: 100%;
+}
+
+// * LtvSlider * //
+.sliderContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 0;
+}
+
+.ltvSlider :global {
+  .ant-slider-rail {
+    background: linear-gradient(
+      to right,
+      var(--accent-primary),
+      var(--additional-gold-primary),
+      var(--additional-orange-primary),
+      var(--additional-red-primary)
+    ) !important;
+  }
+
+  .sliderDisabled {
+    .ant-slider-handle {
+      border-color: var(--content-secondary) !important;
+    }
+  }
+
+  .ant-slider-track {
+    border: 0 !important;
+    background: transparent !important;
+  }
+}
+
+.sliderLabels {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.loanValueLabel,
+.marketPriceLabel {
+  color: var(--content-secondary);
+  font: var(--title-sm);
+  text-transform: uppercase;
+
+  display: flex;
+  align-items: center;
+  gap: 2px;
+
+  @media (max-width: 640px) {
+    font: var(--title-xs);
+  }
+}
+
+.loanValue,
+.marketPriceValue {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font: var(--body-text-md);
+  white-space: nowrap;
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
+}
+
+.ltvSliderColor (@color: var(--accent-primary)) {
+  :global {
+    .ant-slider-handle {
+      border-color: @color !important;
+    }
+  }
+}
+
+.maxLtvSliderGreen {
+  .ltvSliderColor(var(--accent-primary));
+}
+.maxLtvSliderYellow {
+  .ltvSliderColor(var(--additional-gold-primary));
+}
+.maxLtvSliderOrange {
+  .ltvSliderColor(var(--additional-orange-primary));
+}
+.maxLtvSliderRed {
+  .ltvSliderColor(var(--additional-red-primary));
+}
+// * LTV Slider * //

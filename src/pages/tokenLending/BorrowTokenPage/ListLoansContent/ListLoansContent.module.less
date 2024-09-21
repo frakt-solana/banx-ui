@@ -1,0 +1,82 @@
+.content {
+  border: var(--border-primary);
+  border-radius: 12px;
+
+  padding: 24px;
+
+  max-width: 392px;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    border: 0;
+    padding: 16px;
+    max-width: unset;
+  }
+}
+
+.collateralInput {
+  margin-bottom: 8px;
+}
+
+.borrowInput {
+  margin-bottom: 16px;
+}
+
+.fields {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.aprFieldWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.lenderSeesMessage {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font: var(--body-text-sm);
+  height: 14px;
+  white-space: nowrap;
+
+  @media (max-width: 640px) {
+    font: var(--body-text-xs);
+  }
+}
+
+// * Summary * //
+.summary {
+  border-color: var(--bg-border);
+  border-style: dotted;
+  border-width: 1px 0 1px;
+
+  display: flex;
+  flex-direction: column;
+  padding: 12px 24px 12px;
+  margin: 0 -24px 0;
+  gap: 8px;
+
+  @media (max-width: 640px) {
+    padding: 8px 16px 8px;
+    margin: 0 -16px 0;
+    gap: 4px;
+  }
+}
+
+.fixedStatValue {
+  max-width: 74px;
+  white-space: nowrap;
+  overflow: auto;
+
+  @media (max-width: 960px) {
+    max-width: 144px;
+  }
+}
+// * Summary * //
+
+.borrowButton {
+  margin-top: 16px;
+  width: 100%;
+}

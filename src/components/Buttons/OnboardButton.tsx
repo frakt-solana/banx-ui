@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import { OnboardingModal, OnboardingModalContentType } from '@banx/components/modals'
 
-import { LifeRing } from '@banx/icons'
+import { Info } from '@banx/icons'
 import { useModal } from '@banx/store/common'
 
 import { Button } from './Button'
@@ -11,7 +11,7 @@ import styles from './Buttons.module.less'
 
 interface OnboardButtonProps {
   contentType: `${OnboardingModalContentType}`
-  title: string
+  title?: string
 }
 
 export const OnboardButton: FC<OnboardButtonProps> = ({ title, contentType }) => {
@@ -22,10 +22,10 @@ export const OnboardButton: FC<OnboardButtonProps> = ({ title, contentType }) =>
   }
 
   return (
-    <Button type="circle" variant="text" className={styles.onboardBtn} onClick={openModal}>
-      <LifeRing />
+    <Button type="circle" variant="tertiary" className={styles.onboardBtn} onClick={openModal}>
+      <Info />
       <span className={styles.instructionsLabel}>How it works?</span>
-      <span className={styles.pageTitle}>{title}</span>
+      {title && <span className={styles.pageTitle}>{title}</span>}
     </Button>
   )
 }

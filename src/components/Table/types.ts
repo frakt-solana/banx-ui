@@ -1,4 +1,4 @@
-import { Key, ReactElement, ReactNode } from 'react'
+import { CSSProperties, Key, ReactElement, ReactNode } from 'react'
 
 import { SearchSelectProps } from '../SearchSelect'
 import { SortDropdownProps } from '../SortDropdown'
@@ -21,6 +21,7 @@ export type ActiveRowParams<T> = Array<{
   condition: (record: T) => boolean
   cardClassName?: string
   className?: string
+  styles?: (record: T) => CSSProperties
 }>
 
 export interface TableRowParams<T> {
@@ -45,5 +46,6 @@ export interface TableProps<DataType, SearchType, SortType> extends TableViewPro
   showCard?: boolean
 
   loaderSize?: 'large' | 'default' | 'small'
+  loaderClassName?: string
   loading?: boolean
 }

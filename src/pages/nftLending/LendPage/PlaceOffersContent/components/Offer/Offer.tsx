@@ -6,11 +6,11 @@ import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Button } from '@banx/components/Buttons'
-import { createPercentValueJSX } from '@banx/components/TableComponents'
+import { createDisplayValueJSX, createPercentValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
 
 import { Pencil } from '@banx/icons'
-import { SyntheticOffer, useTokenType } from '@banx/store/nft'
+import { SyntheticOffer, useNftTokenType } from '@banx/store/nft'
 import { calculateApr, formatValueByTokenType, getTokenUnit } from '@banx/utils'
 
 import styles from './Offer.module.less'
@@ -32,7 +32,7 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, collectionFloor }) => {
   } = offer
 
   const { connected, publicKey } = useWallet()
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const isOwnOffer = assetReceiver === publicKey?.toBase58()
   const isNewOffer = connected && offerPubkey === PUBKEY_PLACEHOLDER
@@ -56,13 +56,8 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, collectionFloor }) => {
       </div>
 
       <div className={styles.values}>
-        <p
-          className={classNames(styles.displayOfferValue, {
-            [styles.hightlight]: isEdit || isNewOffer,
-          })}
-        >
-          {displayOfferValue}
-          {tokenUnit}
+        <p className={styles.displayOfferValue}>
+          {createDisplayValueJSX(displayOfferValue, tokenUnit)}
         </p>
         <p className={styles.value}>{createPercentValueJSX(maxDynamicApr)}</p>
         <p className={styles.value}>{loansAmount}</p>
@@ -80,7 +75,7 @@ const EditOfferButton: FC<{ onClick: () => void }> = ({ onClick }) => (
     onClick={onClick}
     type="circle"
     variant="secondary"
-    size="small"
+    size="medium"
     className={styles.editButton}
   >
     <Tooltip title="Edit">

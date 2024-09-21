@@ -1,0 +1,188 @@
+.tableRoot {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.table {
+  min-width: 990px;
+
+  tr > td,
+  tr > th {
+    &:first-child {
+      width: 220px;
+    }
+    &:last-child {
+      width: 152px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    min-width: 888px;
+
+    tr > td,
+    tr > th {
+      width: 96px;
+
+      &:first-child {
+        width: 168px;
+      }
+      &:last-child {
+        width: 144px;
+      }
+    }
+  }
+}
+
+.collateralCellCheckbox {
+  pointer-events: none;
+}
+
+.emptyList {
+  margin-top: 0;
+}
+
+.lentInfo,
+.statusInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.statusInfoTitle {
+  font: var(--body-text-sm);
+}
+.statusInfoSubtitle {
+  font: var(--body-text-md);
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
+}
+
+.lentInfoSubtitle {
+  font: var(--body-text-sm);
+  white-space: nowrap;
+}
+
+.searchSelect {
+  max-width: 456px;
+}
+
+.headerTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 16px !important;
+  height: 14px;
+}
+
+.checkbox {
+  height: 16px;
+  padding-left: 18px;
+}
+
+.filterButtonWrapper {
+  position: relative;
+
+  &[data-underwater-loans]::after {
+    content: attr(data-underwater-loans);
+    border-radius: 100px;
+    background: var(--additional-lava-primary);
+    color: var(--pure-black);
+    font: var(--body-text-xs);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+
+    position: absolute;
+    top: -2px;
+    right: -8px;
+    min-width: 8px;
+    height: 16px;
+  }
+}
+
+.filterButton {
+  svg path:nth-child(2) {
+    fill: var(--additional-lava-primary);
+  }
+
+  &.active {
+    border-color: var(--content-primary);
+  }
+
+  &.disabled {
+    path {
+      fill: var(--content-secondary);
+    }
+  }
+}
+
+//? Active row styles
+.terminated,
+.liquidated {
+  background: var(--additional-red-secondary) !important;
+}
+
+.underwater {
+  background: var(--additional-lava-secondary) !important;
+}
+
+.activeRepaymentCall {
+  background: var(--additional-yellow-secondary) !important;
+}
+
+.tooltipContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tooltipContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 220px;
+}
+
+.tooltipRowLabel {
+  color: var(--content-secondary);
+  font: var(--title-sm);
+  text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--title-xs);
+  }
+}
+
+.tooltipRowValue {
+  font: var(--body-text-md);
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
+}
+
+.iconsTooltipWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.iconTooltipContent {
+  margin-bottom: 14px;
+}
+.repaymentCallTooltipValue {
+  display: flex;
+  align-items: center;
+  column-gap: 4px;
+  font: var(--body-text-md);
+}
+
+.snowflakeIcon path:first-child {
+  fill: var(--content-primary);
+}

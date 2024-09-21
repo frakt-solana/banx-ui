@@ -11,10 +11,12 @@ export const useSearchSelect = ({
   selectedOptions,
   collapsed,
   onChangeCollapsed,
+  defaultCollapsed,
 }: {
   selectedOptions: string[]
   collapsed?: boolean
   onChangeCollapsed?: (value: boolean) => void
+  defaultCollapsed?: boolean
 }) => {
   const containerRef = useRef(null)
 
@@ -51,7 +53,12 @@ export const useSearchSelect = ({
   }
 
   const showSufixIcon = !selectedOptions?.length && !inputValue
-  const showCollapsedContent = collapsed && isMobile && onChangeCollapsed
+
+  const shouldShowCollapsedContent = collapsed && onChangeCollapsed
+
+  const showCollapsedContent = defaultCollapsed
+    ? shouldShowCollapsedContent
+    : shouldShowCollapsedContent && isMobile
 
   return {
     containerRef,

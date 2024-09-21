@@ -7,7 +7,9 @@ import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { core } from '@banx/api/nft'
 import { ACTIVE_LOANS_TABLE_MESSAGES } from '@banx/pages/nftLending/LoansPage/constants'
 import { PATHS } from '@banx/router'
-import { createPathWithTokenParam, useTokenType } from '@banx/store/nft'
+import { createPathWithModeParams } from '@banx/store'
+import { ModeType } from '@banx/store/common'
+import { useNftTokenType } from '@banx/store/nft'
 
 import { useFilterLoans } from './useFilteredLoans'
 import { useSortLoans } from './useSortLoans'
@@ -29,7 +31,7 @@ export const useLoansActiveTable = ({ loans, isLoading }: UseLoansActiveTablePro
   const { connected } = useWallet()
   const navigate = useNavigate()
 
-  const { tokenType } = useTokenType()
+  const { tokenType } = useNftTokenType()
 
   const {
     filteredLoansBySelectedCollection,
@@ -56,7 +58,7 @@ export const useLoansActiveTable = ({ loans, isLoading }: UseLoansActiveTablePro
   const showSummary = !!loans.length && !isLoading
 
   const goToBorrowPage = () => {
-    navigate(createPathWithTokenParam(PATHS.BORROW, tokenType))
+    navigate(createPathWithModeParams(PATHS.BORROW, ModeType.NFT, tokenType))
   }
 
   const emptyListParams = {

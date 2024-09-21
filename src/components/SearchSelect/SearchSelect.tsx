@@ -27,6 +27,7 @@ export interface SearchSelectProps<P> {
   */
   collapsed?: boolean
   onChangeCollapsed?: (value: boolean) => void
+  defaultCollapsed?: boolean
 
   className?: string
   optionClassNameProps?: OptionClassNameProps
@@ -46,6 +47,7 @@ export const SearchSelect = <P extends object>({
 
   collapsed,
   onChangeCollapsed,
+  defaultCollapsed,
 
   className,
   optionClassNameProps,
@@ -74,7 +76,7 @@ export const SearchSelect = <P extends object>({
     showCollapsedContent,
     inputValue,
     handleCollapseClick,
-  } = useSearchSelect({ onChangeCollapsed, selectedOptions, collapsed })
+  } = useSearchSelect({ onChangeCollapsed, selectedOptions, collapsed, defaultCollapsed })
 
   if (showCollapsedContent) {
     return <CollapsedContent selectedOptions={selectedOptions} onClick={handleCollapseClick} />

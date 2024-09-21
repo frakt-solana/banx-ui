@@ -109,8 +109,11 @@
   width: 152px;
 
   &:not(:disabled) {
-    background: var(--additional-lava-secondary) !important;
-    border-color: var(--additional-lava-primary) !important;
+    background-color: var(--additional-red-primary-sub) !important;
+
+    &:hover {
+      border: 1px solid var(--additional-red-primary) !important;
+    }
   }
 
   @media (max-width: 960px) {

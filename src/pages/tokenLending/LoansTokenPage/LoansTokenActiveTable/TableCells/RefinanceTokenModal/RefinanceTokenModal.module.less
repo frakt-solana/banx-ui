@@ -1,0 +1,70 @@
+// * RefinanceModal //
+.refinanceModal {
+  :global {
+    .ant-modal-content {
+      padding: 0;
+    }
+  }
+}
+
+.refinanceModalTitle {
+  color: var(--content-secondary);
+  font: var(--title-xl);
+  padding-top: 24px;
+  text-transform: uppercase;
+  text-align: center;
+
+  @media (max-width: 640px) {
+    font: var(--title-lg);
+  }
+}
+.refinanceModalSubtitle {
+  font: var(--title-xl);
+  text-transform: uppercase;
+  text-align: center;
+
+  @media (max-width: 640px) {
+    font: var(--title-lg);
+  }
+}
+// * RefinanceModal //
+
+// * LoansInfoStats //
+.loanInfoStats {
+  display: flex;
+  align-content: center;
+  justify-content: space-evenly;
+  padding: 16px 24px 24px;
+
+  @media (max-width: 640px) {
+    padding: 16px;
+  }
+}
+
+.loanInfoStat {
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+}
+
+.loanInfoLabel {
+  color: var(--content-secondary);
+  font: var(--title-sm);
+  text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    font: var(--title-xs);
+  }
+}
+
+.loanInfoValue {
+  color: var(--content-secondary);
+  font: var(--important-text-xl);
+  line-height: 18px;
+
+  @media (max-width: 640px) {
+    font: var(--important-text-md);
+  }
+}
+// * LoansInfoStats //
