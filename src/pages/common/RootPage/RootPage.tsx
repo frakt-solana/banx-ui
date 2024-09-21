@@ -14,7 +14,7 @@ import { getRouteForMode, useModeType } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
 import { formatValueByTokenType } from '@banx/utils'
 
-import { useAllTotalStats } from '../DashboardPage/hooks'
+import { useAllUsdcTotalStats } from './hooks'
 import { Interest } from './icons'
 
 import styles from './RootPage.module.less'
@@ -129,7 +129,10 @@ const Content = () => {
           Lending
         </h4>
         <ul>
-          <li>Earn high yield on your SOL or USDC through active lending and get returns while your funds are idle</li>
+          <li>
+            Earn high yield on your SOL or USDC through active lending and get returns while your
+            funds are idle
+          </li>
           <li>
             Set offers or instantly refinance active loans within your personal risk tolerance
           </li>
@@ -144,7 +147,7 @@ const Content = () => {
 }
 
 const GeneralStats = () => {
-  const { data } = useAllTotalStats()
+  const { data } = useAllUsdcTotalStats()
 
   const { activeLoans = 0, totalValueLocked = 0, loansVolumeAllTime = 0 } = data || {}
 
