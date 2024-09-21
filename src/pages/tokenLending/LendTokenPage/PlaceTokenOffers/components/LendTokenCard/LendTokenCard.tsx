@@ -107,7 +107,7 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isOpen })
         label="Average APR"
         value={marketApr}
         valueType={VALUES_TYPES.PERCENT}
-        tooltipText="Maximum annual interest rate. Depends on the loan-to-value (LTV) offered and market capitalization"
+        tooltipText="Average interest rate across offers"
         classNamesProps={{ ...classNamesProps, value: styles.additionalAprStat }}
       />
     </div>

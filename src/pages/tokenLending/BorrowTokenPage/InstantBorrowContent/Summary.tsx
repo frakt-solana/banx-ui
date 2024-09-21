@@ -52,7 +52,7 @@ export const Summary: FC<SummaryProps> = ({ offers }) => {
         label="Weighted LTV"
         value={weightedLtv / 100}
         valueType={VALUES_TYPES.PERCENT}
-        tooltipText="Weighted LTV"
+        tooltipText="Average loan-to-value ratio across loans"
         flexType="row"
       />
     </div>
