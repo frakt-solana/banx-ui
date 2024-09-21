@@ -21,5 +21,5 @@ export const STATUS_DISPLAY_NAMES: Record<AllocationStatus, string> = {
 
 export const NO_DATA_CHART_DATA = {
   value: [100],
-  colors: ['var(--bg-tertiary)'],
+  colors: ['var(--content-tertiary)'],
 }

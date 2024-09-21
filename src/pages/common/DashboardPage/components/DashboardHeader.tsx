@@ -6,10 +6,11 @@ import {
   SeparateStatsLine,
 } from '@banx/components/PageHeader'
 import { DisplayValue } from '@banx/components/TableComponents'
+import { TokenSwitcher } from '@banx/components/TokenSwitcher'
 
 import { formatNumbersWithCommas } from '@banx/utils'
 
-import { useAllTotalStats } from '../../hooks'
+import { useAllTotalStats } from '../hooks'
 
 const Header = () => {
   const { data } = useAllTotalStats()
@@ -20,6 +21,7 @@ const Header = () => {
     <PageHeaderBackdrop
       title="Dashboard"
       titleBtn={<OnboardButton contentType="dashboard" title="Dashboard" />}
+      tokenSwitcher={<TokenSwitcher title="Dashboard" />}
     >
       <AdditionalStat label="Active loans" value={formatNumbersWithCommas(activeLoans)} />
       <AdditionalStat
