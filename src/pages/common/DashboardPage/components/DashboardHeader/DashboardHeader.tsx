@@ -29,7 +29,7 @@ const Header = () => {
 
       <SeparateStatsLine />
 
-      <MainStat label="Loans volume all time" value={<DisplayValue value={loansVolumeAllTime} />} />
+      <MainStat label="All time volume" value={<DisplayValue value={loansVolumeAllTime} />} />
     </PageHeaderBackdrop>
   )
 }

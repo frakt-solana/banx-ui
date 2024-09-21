@@ -129,7 +129,7 @@ const Content = () => {
           Lending
         </h4>
         <ul>
-          <li>Earn high yield on your SOL or USDC through active lending and get passive returns while your funds are idle.</li>
+          <li>Earn high yield on your SOL or USDC through active lending and get returns while your funds are idle</li>
           <li>
             Set offers or instantly refinance active loans within your personal risk tolerance
           </li>
@@ -169,7 +169,7 @@ const GeneralStats = () => {
       />
 
       <StatInfo
-        label="Loans volume all time"
+        label="All time volume"
         value={createDisplayValueJSX(formattedTotalLoansVolume, '$')}
         classNamesProps={statClassNamesProps}
       />
