@@ -44,6 +44,7 @@ export const TotalLenderStatsSchema = z.object({
     totalDefaulted: z.number(),
     paidInterest: z.number(),
     pendingInterest: z.number(),
+    weightedApy: z.number(),
   }),
 })
 

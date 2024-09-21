@@ -4,13 +4,13 @@ import { useNavigate } from 'react-router-dom'
 import { DoughnutChartProps } from '@banx/components/Charts'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { stats } from '@banx/api/nft'
 import { PATHS } from '@banx/router'
 import { createPathWithModeParams } from '@banx/store'
-import { ModeType } from '@banx/store/common'
+import { getRouteForMode, useModeType } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
 import { getTokenDecimals, isBanxSolTokenType } from '@banx/utils'
 
+import { useLenderStats } from '../../hooks'
 import {
   AllocationStatus,
   NO_DATA_CHART_DATA,
@@ -18,18 +18,23 @@ import {
   STATUS_DISPLAY_NAMES,
 } from './constants'
 
-export type AllocationStats = stats.TotalLenderStats['allocation']
+export const useAllocationBlock = () => {
+  const { data: lenderStats } = useLenderStats()
+  const { allTime: allTimeStats, allocation: allocationStats } = lenderStats || {}
 
-export const useAllocationBlock = (stats?: AllocationStats) => {
   const navigate = useNavigate()
   const { tokenType } = useNftTokenType()
+
+  const { modeType } = useModeType()
 
   const {
     activeLoans = 0,
     underWaterLoans = 0,
     pendingOffers = 0,
     terminatingLoans = 0,
-  } = stats || {}
+    weeklyInterest = 0,
+    weightedApy = 0,
+  } = allocationStats || {}
 
   const allocationStatusToValueMap = {
     [AllocationStatus.Pending]: pendingOffers,
@@ -61,10 +66,13 @@ export const useAllocationBlock = (stats?: AllocationStats) => {
   }
 
   const goToLendPage = () => {
-    navigate(createPathWithModeParams(PATHS.LEND, ModeType.NFT, tokenType))
+    const newPath = getRouteForMode(PATHS.LEND, modeType)
+    navigate(createPathWithModeParams(newPath, modeType, tokenType))
   }
+
   const goToOffersPage = () => {
-    navigate(createPathWithModeParams(PATHS.OFFERS, ModeType.NFT, tokenType))
+    const newPath = getRouteForMode(PATHS.OFFERS, modeType)
+    navigate(createPathWithModeParams(newPath, modeType, tokenType))
   }
 
   const emptyButtonText = isBanxSolTokenType(tokenType) ? 'Lend SOL' : 'Lend USDC'
@@ -78,5 +86,10 @@ export const useAllocationBlock = (stats?: AllocationStats) => {
     allocationData,
     chartData,
     buttonProps,
+
+    allTimeStats,
+
+    weightedApy,
+    weeklyInterest,
   }
 }

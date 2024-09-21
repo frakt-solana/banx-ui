@@ -32,6 +32,11 @@ export const Doughnut: FC<DoughnutChartProps> = ({ data, colors, statInfoProps, 
   const options = {
     maintainAspectRatio: false,
     cutout: 55,
+    plugins: {
+      tooltip: {
+        enabled: false,
+      },
+    },
   }
 
   useEffect(() => {
