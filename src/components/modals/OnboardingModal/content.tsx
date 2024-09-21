@@ -162,7 +162,7 @@ const LOANS_CONTENT = {
       text: (
         <div className={styles.slideText}>
           <p>
-            <span className={styles.slideTextImportant}>View + manage </span>
+            <span className={styles.slideTextImportant}>View and manage</span>
             your active loans here. Monitor the loan-to-value [LTV] and reduce risk by making
             partial repayments via the Repay button.
           </p>
