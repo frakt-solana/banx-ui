@@ -25,8 +25,8 @@ const DASHBOARD_CONTENT = {
       text: (
         <div className={styles.slideText}>
           <p>
-            Banx is a {' '}
-            <span className={styles.slideTextImportant}>p2p lending protocol</span>, with no fixed duration, fixed pro-rata interest and passive yield on idle liquidity.
+            Banx is a <span className={styles.slideTextImportant}>p2p lending protocol</span>, with
+            no fixed duration, fixed pro-rata interest and passive yield on idle liquidity.
           </p>
         </div>
       ),
