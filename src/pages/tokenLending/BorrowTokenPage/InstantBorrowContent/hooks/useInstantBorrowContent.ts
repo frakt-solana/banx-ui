@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
 import { BN } from 'fbonds-core'
 
 import { CollateralToken } from '@banx/api/tokens'
@@ -14,11 +15,13 @@ import {
 
 import { BorrowToken } from '../../constants'
 import { getErrorMessage } from '../helpers'
+import { DEFAULT_COLLATERAL_MINT } from './constants'
 import { useBorrowOffers } from './useBorrowOffers'
 import { useBorrowOffersTransaction } from './useBorrowOffersTransaction'
 import { useBorrowTokensList, useCollateralsList } from './useCollateralsList'
 
 export const useInstantBorrowContent = () => {
+  const { connected } = useWallet()
   const { tokenType, setTokenType } = useNftTokenType()
 
   const [collateralInputValue, setCollateralInputValue] = useState('')
@@ -42,10 +45,20 @@ export const useInstantBorrowContent = () => {
   } = useBorrowOffers(collateralToken, borrowToken)
 
   useEffect(() => {
-    if (!collateralToken && !!collateralsList.length) {
+    if (collateralToken || !collateralsList.length) return
+
+    if (!connected) {
+      const foundToken = collateralsList.find(
+        (token) => token.collateral.mint === DEFAULT_COLLATERAL_MINT,
+      )
+
+      if (foundToken) {
+        setCollateralToken(foundToken)
+      }
+    } else {
       setCollateralToken(collateralsList[0])
     }
-  }, [collateralToken, collateralsList])
+  }, [collateralToken, collateralsList, connected])
 
   useEffect(() => {
     const foundToken = borrowTokensList.find((token) => token.lendingTokenType === tokenType)
