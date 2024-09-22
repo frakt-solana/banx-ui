@@ -7,8 +7,7 @@ import { VALUES_TYPES } from '@banx/components/StatInfo'
 import { useBorrowerStats } from '@banx/pages/common/DashboardPage/hooks'
 import { PATHS } from '@banx/router'
 import { buildUrlWithMode, buildUrlWithModeAndToken } from '@banx/store'
-import { useAssetMode } from '@banx/store/common'
-import { useNftTokenType } from '@banx/store/nft'
+import { useAssetMode, useTokenType } from '@banx/store/common'
 import { isBanxSolTokenType } from '@banx/utils'
 
 import {
@@ -34,7 +33,7 @@ export const useMyLoans = () => {
 
   const navigate = useNavigate()
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
   const { currentAssetMode } = useAssetMode()
 
   const totalLoans = activeLoansCount + terminatingLoansCount + liquidationLoansCount

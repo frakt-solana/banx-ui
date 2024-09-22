@@ -3,7 +3,7 @@ import { useEffect, useMemo } from 'react'
 import { BN } from 'fbonds-core'
 
 import { useWalletBalance } from '@banx/hooks'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 import { ZERO_BN, getTokenDecimals, stringToBN } from '@banx/utils'
 
 import { getAprErrorMessage, getErrorMessage } from '../helpers'
@@ -13,7 +13,7 @@ import { useTokenOffer } from './useTokenOffer'
 import { useTokenOfferTransactions } from './useTokenOfferTransaction'
 
 export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) => {
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
   const walletBalance = useWalletBalance(tokenType)
 
   const { offer, market, updateOrAddOffer } = useTokenMarketAndOffer(offerPubkey, marketPubkey)

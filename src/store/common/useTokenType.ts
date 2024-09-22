@@ -16,7 +16,7 @@ export const useTokenTypeState = create<TokenTypeContext>((set) => ({
   setTokenType: (newTokenType) => set({ currentTokenType: newTokenType }),
 }))
 
-export const useNftTokenType = () => {
+export const useTokenType = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const urlParams = new URLSearchParams(location.search)

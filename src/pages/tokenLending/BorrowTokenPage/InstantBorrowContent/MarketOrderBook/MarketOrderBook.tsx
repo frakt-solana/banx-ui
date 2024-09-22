@@ -9,7 +9,7 @@ import Table from '@banx/components/Table'
 
 import { CollateralToken } from '@banx/api/tokens'
 import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 import {
   calculateTokensPerCollateral,
   formatTokensPerCollateralToStr,
@@ -30,7 +30,7 @@ const MarketOrderBook: FC<MarketOrderBookProps> = ({ collateral }) => {
   const { publicKey } = useWallet()
   const { offers, isLoading } = useTokenMarketOffers(collateral.marketPubkey)
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
   const columns = getTableColumns({ collateral, tokenType })
 
   const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6

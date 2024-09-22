@@ -5,7 +5,7 @@ import { produce } from 'immer'
 import { create } from 'zustand'
 
 import { core } from '@banx/api/tokens'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 
 interface HiddenLoansPubkeysState {
   pubkeys: string[]
@@ -25,7 +25,7 @@ const useHiddenLoansPubkeys = create<HiddenLoansPubkeysState>((set) => ({
 
 export const useAllTokenLoansRequests = () => {
   const { pubkeys, addLoansPubkeys } = useHiddenLoansPubkeys()
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { data, isLoading } = useQuery(
     ['allTokenLoansRequests', tokenType],

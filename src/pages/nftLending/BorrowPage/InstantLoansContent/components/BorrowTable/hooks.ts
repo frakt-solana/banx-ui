@@ -17,8 +17,15 @@ import { useBorrowBonkRewardsAvailability } from '@banx/hooks'
 import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
 import { buildUrlWithModeAndToken, createGlobalState } from '@banx/store'
-import { AssetMode, ViewState, useIsLedger, useModal, useTableView } from '@banx/store/common'
-import { useLoansOptimistic, useNftTokenType, useOffersOptimistic } from '@banx/store/nft'
+import {
+  AssetMode,
+  ViewState,
+  useIsLedger,
+  useModal,
+  useTableView,
+  useTokenType,
+} from '@banx/store/common'
+import { useLoansOptimistic, useOffersOptimistic } from '@banx/store/nft'
 
 import { useCartState } from '../../cartState'
 import { getTableColumns } from './columns'
@@ -49,7 +56,7 @@ export const useBorrowTable = ({
   const { isLedger } = useIsLedger()
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const bonkRewardsAvailable = useBorrowBonkRewardsAvailability()
 

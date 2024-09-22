@@ -4,7 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { BN } from 'fbonds-core'
 
 import { CollateralToken } from '@banx/api/tokens'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 import {
   adjustTokenAmountWithUpfrontFee,
   bnToHuman,
@@ -22,7 +22,7 @@ import { useBorrowTokensList, useCollateralsList } from './useCollateralsList'
 
 export const useInstantBorrowContent = () => {
   const { connected } = useWallet()
-  const { tokenType, setTokenType } = useNftTokenType()
+  const { tokenType, setTokenType } = useTokenType()
 
   const [collateralInputValue, setCollateralInputValue] = useState('')
   const [collateralToken, setCollateralToken] = useState<CollateralToken>()

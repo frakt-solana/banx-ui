@@ -10,8 +10,7 @@ import Tooltip from '@banx/components/Tooltip'
 
 import { core } from '@banx/api/nft'
 import { Coin, Warning } from '@banx/icons'
-import { ViewState, useTableView } from '@banx/store/common'
-import { useNftTokenType } from '@banx/store/nft'
+import { ViewState, useTableView, useTokenType } from '@banx/store/common'
 import { isLoanRepaymentCallActive, isLoanTerminating } from '@banx/utils'
 
 import { Summary } from './Summary'
@@ -32,7 +31,7 @@ export const LoansActiveTable: FC<LoansActiveTableProps> = ({
   isLoading,
   offers,
 }) => {
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { publicKey: walletPublicKey } = useWallet()
   const walletPublicKeyString = walletPublicKey?.toBase58() || ''

@@ -6,8 +6,7 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { useBanxSolBalance, useDiscordUser, useSolanaBalance } from '@banx/hooks'
 import { BanxSOL, ChangeWallet, Copy, SignOut } from '@banx/icons'
-import { AssetMode, useAssetMode, useIsLedger } from '@banx/store/common'
-import { useNftTokenType } from '@banx/store/nft'
+import { AssetMode, useAssetMode, useIsLedger, useTokenType } from '@banx/store/common'
 import {
   copyToClipboard,
   formatValueByTokenType,
@@ -33,7 +32,7 @@ const UserGeneralInfo = () => {
   const banxSolWalletBalance = useBanxSolBalance({ isLive: true })
 
   const { isLedger, setIsLedger } = useIsLedger()
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   return (
     <div className={styles.userGeneralInfoContainer}>

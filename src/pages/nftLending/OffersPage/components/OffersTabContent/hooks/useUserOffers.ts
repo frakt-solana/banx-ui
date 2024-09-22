@@ -6,12 +6,8 @@ import { chain, map, maxBy } from 'lodash'
 
 import { core } from '@banx/api/nft'
 import { useMarketsPreview } from '@banx/pages/nftLending/LendPage/hooks'
-import {
-  isOfferNewer,
-  isOptimisticOfferExpired,
-  useNftTokenType,
-  useOffersOptimistic,
-} from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
+import { isOfferNewer, isOptimisticOfferExpired, useOffersOptimistic } from '@banx/store/nft'
 import { isOfferClosed } from '@banx/utils'
 
 export const useUserOffers = (props?: { refetchInterval?: number }) => {
@@ -22,7 +18,7 @@ export const useUserOffers = (props?: { refetchInterval?: number }) => {
 
   const { marketsPreview } = useMarketsPreview()
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { data, isLoading, isFetching, isFetched } = useQuery(
     [useUserOffers, publicKeyString, tokenType],

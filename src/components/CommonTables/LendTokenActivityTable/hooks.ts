@@ -7,7 +7,7 @@ import { RBOption } from '@banx/components/RadioButton'
 
 import { activity } from '@banx/api/tokens'
 import { useTokenMarketsPreview } from '@banx/pages/tokenLending/LendTokenPage'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 
 const PAGINATION_LIMIT = 15
 
@@ -15,7 +15,7 @@ export const useLendTokenActivity = (marketPubkey: string) => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { marketsPreview } = useTokenMarketsPreview()
 

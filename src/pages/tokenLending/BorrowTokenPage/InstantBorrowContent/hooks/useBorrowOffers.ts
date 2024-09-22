@@ -7,7 +7,7 @@ import { getBondingCurveTypeFromLendingToken } from 'fbonds-core/lib/fbond-proto
 
 import { CollateralToken, core } from '@banx/api/tokens'
 import { useDebounceValue } from '@banx/hooks'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 import { getTokenDecimals, stringToBN } from '@banx/utils'
 
 import { BorrowToken } from '../../constants'
@@ -24,7 +24,7 @@ export const useBorrowOffers = (
   const [inputCollateralsAmount, setInputCollateralsAmount] = useState('')
   const [ltvSliderValue, setLtvSlider] = useState(100)
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const debouncedCollateralsAmount = useDebounceValue(inputCollateralsAmount, 600)
   const debouncedLtvSliderValue = useDebounceValue(ltvSliderValue, 600)

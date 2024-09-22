@@ -9,7 +9,7 @@ import { create } from 'zustand'
 
 import { core } from '@banx/api/tokens'
 
-import { useNftTokenType } from '../nft'
+import { useTokenType } from '../common'
 
 const BANX_TOKEN_OFFERS_OPTIMISTICS_LS_KEY = '@banx.tokenOffersOptimistics'
 const OFFERS_CACHE_TIME_UNIX = 2 * 60 //? Auto purge optimistic after 2 minutes
@@ -72,7 +72,7 @@ const useOptimisticOffersStore = create<TokenOffersOptimisticStore>((set, get) =
 export const useTokenOffersOptimistic = () => {
   const { optimisticOffers, add, remove, find, update, setState } = useOptimisticOffersStore()
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   useEffect(() => {
     const setInitialState = async () => {

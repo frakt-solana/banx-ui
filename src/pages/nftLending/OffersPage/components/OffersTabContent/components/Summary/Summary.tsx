@@ -15,8 +15,7 @@ import { BanxSolYieldWarningModal } from '@banx/components/modals'
 import { core } from '@banx/api/nft'
 import { useClusterStats } from '@banx/hooks'
 import { BanxSOL } from '@banx/icons'
-import { useIsLedger, useModal } from '@banx/store/common'
-import { useNftTokenType } from '@banx/store/nft'
+import { useIsLedger, useModal, useTokenType } from '@banx/store/common'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
@@ -49,7 +48,7 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
   const { connection } = useConnection()
   const { isLedger } = useIsLedger()
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { data: clusterStats } = useClusterStats()
 

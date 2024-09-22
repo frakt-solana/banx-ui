@@ -6,8 +6,7 @@ import { DisplayValue } from '@banx/components/TableComponents'
 
 import { PATHS } from '@banx/router'
 import { buildUrlWithModeAndToken } from '@banx/store'
-import { AssetMode } from '@banx/store/common'
-import { useNftTokenType } from '@banx/store/nft'
+import { AssetMode, useTokenType } from '@banx/store/common'
 
 import {
   useBorrowerTokenActivity,
@@ -19,7 +18,7 @@ import styles from '../BorrowerTokenActivityTable.module.less'
 export const useBorrowerTokenActivityTable = () => {
   const { connected } = useWallet()
   const navigate = useNavigate()
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { data: collectionsList } = useBorrowerTokenActivityCollectionsList()
 

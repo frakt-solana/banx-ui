@@ -5,7 +5,7 @@ import { filter } from 'lodash'
 import { create } from 'zustand'
 
 import { core } from '@banx/api/nft'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 
 export interface LoanOptimistic {
   loan: core.Loan
@@ -56,7 +56,7 @@ const useLenderLoansOptimisticState = create<LenderLoansOptimisticState>((set, g
 export const useLenderLoansOptimistic = () => {
   const { loans, addLoans, findLoan, updateLoans } = useLenderLoansOptimisticState()
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   //? As zustand stores loans until user refreshes the page, we need to filter optimistics by tokenType
   //? To prevent loans duplication on tokenType switching

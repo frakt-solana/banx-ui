@@ -2,8 +2,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 
 import { AssetType, stats } from '@banx/api/nft'
-import { AssetMode, useAssetMode } from '@banx/store/common'
-import { useNftTokenType } from '@banx/store/nft'
+import { AssetMode, useAssetMode, useTokenType } from '@banx/store/common'
 import { isBanxSolTokenType } from '@banx/utils'
 
 const QUERY_OPTIONS = {
@@ -13,7 +12,7 @@ const QUERY_OPTIONS = {
 }
 
 export const useAllTotalStats = () => {
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const marketType = isBanxSolTokenType(tokenType) ? 'allInSol' : 'allInUsdc'
 
@@ -31,7 +30,7 @@ export const useLenderStats = () => {
   const walletPubkey = publicKey?.toBase58() || ''
 
   const { currentAssetMode } = useAssetMode()
-  const { tokenType: marketType } = useNftTokenType()
+  const { tokenType: marketType } = useTokenType()
 
   const assetType = currentAssetMode === AssetMode.NFT ? AssetType.NFT : AssetType.SPL
 
@@ -51,7 +50,7 @@ export const useBorrowerStats = () => {
   const walletPubkey = publicKey?.toBase58() || ''
 
   const { currentAssetMode } = useAssetMode()
-  const { tokenType: marketType } = useNftTokenType()
+  const { tokenType: marketType } = useTokenType()
 
   const assetType = currentAssetMode === AssetMode.NFT ? AssetType.NFT : AssetType.SPL
 

@@ -5,7 +5,7 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { TABLET_WIDTH } from '@banx/constants'
 import { useWindowSize } from '@banx/hooks'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 import { isBanxSolTokenType } from '@banx/utils'
 
 import { TokenDropdown } from './TokenDropdown'
@@ -18,7 +18,7 @@ interface TokenSwitcherProps {
 }
 
 export const TokenSwitcher: FC<TokenSwitcherProps> = ({ title }) => {
-  const { tokenType, setTokenType } = useNftTokenType()
+  const { tokenType, setTokenType } = useTokenType()
 
   const { width } = useWindowSize()
   const isTable = width < TABLET_WIDTH

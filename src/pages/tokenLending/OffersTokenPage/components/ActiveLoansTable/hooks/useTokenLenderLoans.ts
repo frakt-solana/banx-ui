@@ -7,7 +7,7 @@ import { chain, maxBy } from 'lodash'
 import { create } from 'zustand'
 
 import { core, fetchTokenLenderLoans } from '@banx/api/tokens'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 
 import { useTokenLenderLoansOptimistic } from './useTokenLenderLoansOptimistic'
 
@@ -38,7 +38,7 @@ export const useTokenLenderLoans = () => {
     updateLoans,
   } = useTokenLenderLoansOptimistic()
   const { pubkeys: hiddenLoansPubkeys, addLoansPubkeys } = useHiddenLoansPubkeys()
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { data: loans, isLoading } = useQuery(
     ['tokenLenderLoans', walletPublicKeyString, tokenType],

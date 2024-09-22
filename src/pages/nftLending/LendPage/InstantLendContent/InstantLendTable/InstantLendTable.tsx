@@ -8,8 +8,7 @@ import Table from '@banx/components/Table'
 import Tooltip from '@banx/components/Tooltip'
 
 import { Hourglass, Snowflake } from '@banx/icons'
-import { ViewState, useTableView } from '@banx/store/common'
-import { useNftTokenType } from '@banx/store/nft'
+import { ViewState, useTableView, useTokenType } from '@banx/store/common'
 import { isBanxSolTokenType } from '@banx/utils'
 
 import { Summary } from './Summary'
@@ -24,7 +23,7 @@ interface InstantLendTableProps {
 }
 
 export const InstantLendTable: FC<InstantLendTableProps> = ({ goToPlaceOfferTab }) => {
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
   const { viewState } = useTableView()
 
   const {

@@ -19,8 +19,8 @@ import { Modal } from '@banx/components/modals/BaseModal'
 import { core } from '@banx/api/nft'
 import { BONDS } from '@banx/constants'
 import { useMarketOffers } from '@banx/pages/nftLending/LendPage'
-import { useModal } from '@banx/store/common'
-import { useLoansOptimistic, useNftTokenType } from '@banx/store/nft'
+import { useModal, useTokenType } from '@banx/store/common'
+import { useLoansOptimistic } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
@@ -64,7 +64,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
   const { connection } = useConnection()
 
   const { close } = useModal()
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { offers, updateOrAddOffer, isLoading } = useMarketOffers({
     marketPubkey: fraktBond.hadoMarket,

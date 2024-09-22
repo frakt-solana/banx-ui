@@ -10,8 +10,7 @@ import { Theme, useTheme } from '@banx/hooks'
 import { InfinityIcon, BorrowFilled, LendFilled, Lightning, PencilLtv } from '@banx/icons'
 import { PATHS } from '@banx/router'
 import { buildUrlWithMode, buildUrlWithModeAndToken } from '@banx/store'
-import { useAssetMode } from '@banx/store/common'
-import { useNftTokenType } from '@banx/store/nft'
+import { useAssetMode, useTokenType } from '@banx/store/common'
 import { formatValueByTokenType } from '@banx/utils'
 
 import { useAllUsdcTotalStats } from './hooks'
@@ -96,7 +95,7 @@ const AdvantagesSection = () => {
 
 const Content = () => {
   const { currentAssetMode } = useAssetMode()
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
   const navigate = useNavigate()
 
   const goToPage = (path: string) => {

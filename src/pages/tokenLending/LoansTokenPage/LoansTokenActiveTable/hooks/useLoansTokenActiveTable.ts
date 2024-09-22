@@ -5,8 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { core } from '@banx/api/tokens'
 import { PATHS } from '@banx/router'
 import { buildUrlWithModeAndToken } from '@banx/store'
-import { AssetMode } from '@banx/store/common'
-import { useNftTokenType } from '@banx/store/nft'
+import { AssetMode, useTokenType } from '@banx/store/common'
 import { getTokenTicker } from '@banx/utils'
 
 import { useFilterLoans } from './useFilterLoans'
@@ -23,7 +22,7 @@ export const useLoansTokenActiveTable = (props: {
   const { connected } = useWallet()
   const navigate = useNavigate()
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const {
     filteredLoansBySelectedCollection,

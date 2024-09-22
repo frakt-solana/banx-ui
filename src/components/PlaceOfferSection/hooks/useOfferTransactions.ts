@@ -5,7 +5,7 @@ import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
@@ -51,7 +51,7 @@ export const useOfferTransactions = ({
 }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const onCreateOffer = async () => {
     const loadingSnackbarId = uniqueId()

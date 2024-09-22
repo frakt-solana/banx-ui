@@ -6,8 +6,7 @@ import { DisplayValue } from '@banx/components/TableComponents'
 
 import { PATHS } from '@banx/router'
 import { buildUrlWithMode, buildUrlWithModeAndToken } from '@banx/store'
-import { useAssetMode } from '@banx/store/common'
-import { useNftTokenType } from '@banx/store/nft'
+import { useAssetMode, useTokenType } from '@banx/store/common'
 import { getTokenDecimals, isBanxSolTokenType } from '@banx/utils'
 
 import { useLenderStats } from '../../hooks'
@@ -23,7 +22,7 @@ export const useAllocationBlock = () => {
   const { allTime: allTimeStats, allocation: allocationStats } = lenderStats || {}
 
   const navigate = useNavigate()
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { currentAssetMode } = useAssetMode()
 
