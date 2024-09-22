@@ -1,23 +1,21 @@
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
+import { TICKER_TO_TOKEN, TOKEN_TICKER } from '@banx/utils'
+
 import { AssetMode } from './common'
 
 export const buildUrlWithModeAndToken = (
   pathname: string,
   mode: AssetMode,
-  tokenType?: LendingTokenType,
+  tokenType: LendingTokenType,
 ): string => {
   const urlParams = new URLSearchParams(window.location.search)
 
   urlParams.set('asset', mode)
 
-  if (tokenType) {
-    urlParams.set('token', tokenType)
-  }
+  urlParams.set('token', TOKEN_TICKER[tokenType])
 
-  const queryString = urlParams.toString() ? `?${urlParams.toString()}` : ''
-
-  return `${pathname}${queryString}`
+  return `${pathname}?${urlParams.toString()}`
 }
 
 const getUrlParam = (params: URLSearchParams, key: string): string | null => {
@@ -32,10 +30,10 @@ export const getTokenTypeFromUrl = (
   params: URLSearchParams,
   assetMode: AssetMode,
 ): LendingTokenType => {
-  const tokenFromUrl = params.get('token') as LendingTokenType | null
+  const tokenTicker = params.get('token')
 
-  if (tokenFromUrl) {
-    return tokenFromUrl
+  if (tokenTicker && TICKER_TO_TOKEN[tokenTicker]) {
+    return TICKER_TO_TOKEN[tokenTicker]
   }
 
   return assetMode === AssetMode.Token ? LendingTokenType.Usdc : LendingTokenType.BanxSol
