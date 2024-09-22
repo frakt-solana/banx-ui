@@ -20,20 +20,20 @@ const ModeSwitcher: FC<ModeSwitcherProps> = ({ className }) => {
     changeAssetMode(nextValue)
   }
 
+  const getLabelByMode = (mode: AssetMode): string => {
+    return mode === AssetMode.NFT ? 'NFTs' : 'Tokens'
+  }
+
   return (
     <div className={classNames(styles.modeSwitcher, className)} onClick={toggleAssetMode}>
-      {MODES.map((mode) => {
-        const label = mode === AssetMode.NFT ? 'NFTs' : 'Tokens'
-
-        return (
-          <div
-            key={mode}
-            className={classNames(styles.mode, { [styles.active]: mode === currentAssetMode })}
-          >
-            <span className={styles.label}>{label}</span>
-          </div>
-        )
-      })}
+      {MODES.map((mode) => (
+        <div
+          key={mode}
+          className={classNames(styles.mode, { [styles.active]: mode === currentAssetMode })}
+        >
+          <span className={styles.label}>{getLabelByMode(mode)}</span>
+        </div>
+      ))}
     </div>
   )
 }
