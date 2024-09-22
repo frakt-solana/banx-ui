@@ -21,8 +21,8 @@ export const useTokenType = () => {
   const location = useLocation()
   const urlParams = new URLSearchParams(location.search)
 
-  const tokenTypeFromUrl = getTokenTypeFromUrl(urlParams)
   const assetModeFromUrl = getAssetModeFromUrl(urlParams)
+  const tokenTypeFromUrl = getTokenTypeFromUrl(urlParams, assetModeFromUrl)
 
   const { currentTokenType, setTokenType } = useTokenTypeState()
 

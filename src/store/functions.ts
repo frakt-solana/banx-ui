@@ -25,13 +25,20 @@ const getUrlParam = (params: URLSearchParams, key: string): string | null => {
 }
 
 export const getAssetModeFromUrl = (params: URLSearchParams): AssetMode => {
-  return getUrlParam(params, 'asset') === AssetMode.Token ? AssetMode.Token : AssetMode.NFT
+  return getUrlParam(params, 'asset') === AssetMode.NFT ? AssetMode.NFT : AssetMode.Token
 }
 
-export const getTokenTypeFromUrl = (params: URLSearchParams): LendingTokenType => {
-  return getUrlParam(params, 'token') === LendingTokenType.BanxSol
-    ? LendingTokenType.BanxSol
-    : LendingTokenType.Usdc
+export const getTokenTypeFromUrl = (
+  params: URLSearchParams,
+  assetMode: AssetMode,
+): LendingTokenType => {
+  const tokenFromUrl = params.get('token') as LendingTokenType | null
+
+  if (tokenFromUrl) {
+    return tokenFromUrl
+  }
+
+  return assetMode === AssetMode.Token ? LendingTokenType.Usdc : LendingTokenType.BanxSol
 }
 
 export const buildUrlWithMode = (pathname: string, mode: AssetMode): string => {
