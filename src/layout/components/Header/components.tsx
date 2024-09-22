@@ -1,8 +1,5 @@
-import { useEffect, useState } from 'react'
-
 import classNames from 'classnames'
 import { NavLink } from 'react-router-dom'
-import TextTransition, { presets } from 'react-text-transition'
 
 import { Button } from '@banx/components/Buttons'
 import { PriorityFeesModal } from '@banx/components/modals'
@@ -36,17 +33,6 @@ export const PriorityFeesButton = () => {
 }
 
 export const RewardsButton = () => {
-  const TOKENS = [{ text: '$BANX' }, { text: '$BONK', style: styles.rewardsButtonTextOrange }]
-
-  const [index, setIndex] = useState(0)
-
-  useEffect(() => {
-    const intervalId = setInterval(() => setIndex((index) => index + 1), 2500)
-    return () => clearTimeout(intervalId)
-  }, [])
-
-  const currentToken = TOKENS[index % 2]
-
   return (
     <div className={styles.rewardsButtonWrapper}>
       <NavLink to={PATHS.LEADERBOARD}>
@@ -58,12 +44,7 @@ export const RewardsButton = () => {
           })}
         >
           <Cup />
-          <div className={styles.rewardsButtonText}>
-            Farm{' '}
-            <TextTransition springConfig={presets.wobbly} className={currentToken.style}>
-              {currentToken.text}
-            </TextTransition>
-          </div>
+          <div className={styles.rewardsButtonText}>Farm $BANX</div>
         </Button>
       </NavLink>
     </div>
