@@ -4,8 +4,8 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { create } from 'zustand'
 
-import { ModeType } from '../common'
-import { createPathWithModeParams } from '../functions'
+import { AssetMode } from '../common'
+import { buildUrlWithModeAndToken } from '../functions'
 
 type TokenTypeState = {
   tokenType: LendingTokenType
@@ -23,11 +23,11 @@ export const useNftTokenType = () => {
   const params = new URLSearchParams(location.search)
 
   const tokenTypeFromUrl = params.get('token') as LendingTokenType
-  const modeTypeFromUrl = (params.get('asset') as ModeType) || ModeType.NFT
+  const modeTypeFromUrl = (params.get('asset') as AssetMode) || AssetMode.NFT
 
   const { tokenType, setTokenType: setTokenTypeState } = useNftTokenTypeState((state) => state)
 
-  const modeType = modeTypeFromUrl || ModeType.NFT
+  const modeType = modeTypeFromUrl || AssetMode.NFT
 
   useEffect(() => {
     const tokenToSet = tokenTypeFromUrl || LendingTokenType.BanxSol
@@ -39,7 +39,7 @@ export const useNftTokenType = () => {
   const setTokenType = (newTokenType: LendingTokenType) => {
     if (newTokenType !== tokenType) {
       setTokenTypeState(newTokenType)
-      navigate(createPathWithModeParams(location.pathname, modeType, newTokenType)) // Обновляем URL
+      navigate(buildUrlWithModeAndToken(location.pathname, modeType, newTokenType))
     }
   }
 

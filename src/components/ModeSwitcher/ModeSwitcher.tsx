@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import classNames from 'classnames'
 
-import { ModeType, useModeType } from '@banx/store/common'
+import { AssetMode, useAssetMode } from '@banx/store/common'
 
 import styles from './ModeSwitcher.module.less'
 
@@ -11,24 +11,24 @@ type ModeSwitcherProps = {
 }
 
 const ModeSwitcher: FC<ModeSwitcherProps> = ({ className }) => {
-  const MODES = [ModeType.Token, ModeType.NFT]
+  const MODES = [AssetMode.Token, AssetMode.NFT]
 
-  const { modeType: storeModeType, setModeType } = useModeType()
+  const { currentAssetMode, changeAssetMode } = useAssetMode()
 
-  const toggleModeType = () => {
-    const nextValue = storeModeType === ModeType.NFT ? ModeType.Token : ModeType.NFT
-    setModeType(nextValue)
+  const toggleAssetMode = () => {
+    const nextValue = currentAssetMode === AssetMode.NFT ? AssetMode.Token : AssetMode.NFT
+    changeAssetMode(nextValue)
   }
 
   return (
-    <div className={classNames(styles.modeSwitcher, className)} onClick={toggleModeType}>
+    <div className={classNames(styles.modeSwitcher, className)} onClick={toggleAssetMode}>
       {MODES.map((mode) => {
-        const label = mode === ModeType.NFT ? 'NFTs' : 'Tokens'
+        const label = mode === AssetMode.NFT ? 'NFTs' : 'Tokens'
 
         return (
           <div
             key={mode}
-            className={classNames(styles.mode, { [styles.active]: mode === storeModeType })}
+            className={classNames(styles.mode, { [styles.active]: mode === currentAssetMode })}
           >
             <span className={styles.label}>{label}</span>
           </div>

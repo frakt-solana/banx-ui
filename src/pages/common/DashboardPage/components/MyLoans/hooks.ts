@@ -6,8 +6,8 @@ import { VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { useBorrowerStats } from '@banx/pages/common/DashboardPage/hooks'
 import { PATHS } from '@banx/router'
-import { createPathWithModeParams } from '@banx/store'
-import { getRouteForMode, useModeType } from '@banx/store/common'
+import { buildUrlWithMode, buildUrlWithModeAndToken } from '@banx/store'
+import { useAssetMode } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
 import { isBanxSolTokenType } from '@banx/utils'
 
@@ -35,7 +35,7 @@ export const useMyLoans = () => {
   const navigate = useNavigate()
 
   const { tokenType } = useNftTokenType()
-  const { modeType } = useModeType()
+  const { currentAssetMode } = useAssetMode()
 
   const totalLoans = activeLoansCount + terminatingLoansCount + liquidationLoansCount
 
@@ -66,13 +66,13 @@ export const useMyLoans = () => {
   }
 
   const goToBorrowPage = () => {
-    const newPath = getRouteForMode(PATHS.BORROW, modeType)
-    navigate(createPathWithModeParams(newPath, modeType, tokenType))
+    const newPath = buildUrlWithMode(PATHS.BORROW, currentAssetMode)
+    navigate(buildUrlWithModeAndToken(newPath, currentAssetMode, tokenType))
   }
 
   const goToLoansPage = () => {
-    const newPath = getRouteForMode(PATHS.LOANS, modeType)
-    navigate(createPathWithModeParams(newPath, modeType, tokenType))
+    const newPath = buildUrlWithMode(PATHS.LOANS, currentAssetMode)
+    navigate(buildUrlWithModeAndToken(newPath, currentAssetMode, tokenType))
   }
 
   const emptyButtonText = isBanxSolTokenType(tokenType) ? 'Borrow SOL' : 'Borrow USDC'

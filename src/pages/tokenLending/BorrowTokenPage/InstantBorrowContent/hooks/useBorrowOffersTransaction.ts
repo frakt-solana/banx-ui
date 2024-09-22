@@ -18,8 +18,8 @@ import { CollateralToken, core } from '@banx/api/tokens'
 import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
 import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
-import { createPathWithModeParams } from '@banx/store'
-import { ModeType, useIsLedger, useModal } from '@banx/store/common'
+import { buildUrlWithModeAndToken } from '@banx/store'
+import { AssetMode, useIsLedger, useModal } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
 import { useTokenLoansOptimistic } from '@banx/store/token'
 import {
@@ -71,7 +71,7 @@ export const useBorrowOffersTransaction = (collateral: CollateralToken | undefin
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
   const goToLoansPage = () => {
-    navigate(createPathWithModeParams(PATHS.LOANS_TOKEN, ModeType.Token, tokenType))
+    navigate(buildUrlWithModeAndToken(PATHS.LOANS_TOKEN, AssetMode.Token, tokenType))
   }
 
   const onBorrowSuccess = (loansAmount = 1) => {

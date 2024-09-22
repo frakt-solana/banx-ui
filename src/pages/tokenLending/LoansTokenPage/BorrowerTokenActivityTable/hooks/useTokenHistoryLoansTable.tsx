@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { PATHS } from '@banx/router'
-import { createPathWithModeParams } from '@banx/store'
-import { ModeType } from '@banx/store/common'
+import { buildUrlWithModeAndToken } from '@banx/store'
+import { AssetMode } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
 
 import {
@@ -60,7 +60,7 @@ export const useBorrowerTokenActivityTable = () => {
   const showSummary = !!loans.length && !isLoading
 
   const goToBorrowPage = () => {
-    navigate(createPathWithModeParams(PATHS.BORROW_TOKEN, ModeType.Token, tokenType))
+    navigate(buildUrlWithModeAndToken(PATHS.BORROW_TOKEN, AssetMode.Token, tokenType))
   }
 
   const emptyListParams = {

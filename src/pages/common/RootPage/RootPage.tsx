@@ -9,8 +9,8 @@ import { createDisplayValueJSX } from '@banx/components/TableComponents'
 import { Theme, useTheme } from '@banx/hooks'
 import { InfinityIcon, BorrowFilled, LendFilled, Lightning, PencilLtv } from '@banx/icons'
 import { PATHS } from '@banx/router'
-import { createPathWithModeParams } from '@banx/store'
-import { getRouteForMode, useModeType } from '@banx/store/common'
+import { buildUrlWithMode, buildUrlWithModeAndToken } from '@banx/store'
+import { useAssetMode } from '@banx/store/common'
 import { useNftTokenType } from '@banx/store/nft'
 import { formatValueByTokenType } from '@banx/utils'
 
@@ -95,13 +95,13 @@ const AdvantagesSection = () => {
 }
 
 const Content = () => {
-  const { modeType } = useModeType()
+  const { currentAssetMode } = useAssetMode()
   const { tokenType } = useNftTokenType()
   const navigate = useNavigate()
 
   const goToPage = (path: string) => {
-    const newPath = getRouteForMode(path, modeType)
-    navigate(createPathWithModeParams(newPath, modeType, tokenType))
+    const newPath = buildUrlWithMode(path, currentAssetMode)
+    navigate(buildUrlWithModeAndToken(newPath, currentAssetMode, tokenType))
   }
 
   return (

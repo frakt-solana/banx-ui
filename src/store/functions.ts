@@ -1,21 +1,37 @@
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { ModeType } from './common'
+import { AssetMode } from './common'
 
-export const createPathWithModeParams = (
+export const buildUrlWithModeAndToken = (
   pathname: string,
-  mode: ModeType,
+  mode: AssetMode,
   tokenType?: LendingTokenType,
-) => {
-  const params = new URLSearchParams()
+): string => {
+  const urlParams = new URLSearchParams(window.location.search)
 
-  params.set('asset', mode === ModeType.Token ? 'token' : 'nft')
+  urlParams.set('asset', mode)
 
   if (tokenType) {
-    params.set('token', tokenType)
+    urlParams.set('token', tokenType)
   }
 
-  const queryString = params.toString() ? `?${params.toString()}` : ''
+  const queryString = urlParams.toString() ? `?${urlParams.toString()}` : ''
 
   return `${pathname}${queryString}`
+}
+
+const getUrlParam = (params: URLSearchParams, key: string): string | null => {
+  return params.get(key)
+}
+
+export const getAssetModeFromUrl = (params: URLSearchParams): AssetMode => {
+  return getUrlParam(params, 'asset') === AssetMode.Token ? AssetMode.Token : AssetMode.NFT
+}
+
+export const buildUrlWithMode = (pathname: string, mode: AssetMode): string => {
+  const urlParams = new URLSearchParams(window.location.search)
+
+  urlParams.set('asset', mode)
+
+  return `${pathname}?${urlParams.toString()}`
 }
