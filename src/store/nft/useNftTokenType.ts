@@ -4,44 +4,41 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { create } from 'zustand'
 
-import { AssetMode } from '../common'
-import { buildUrlWithModeAndToken } from '../functions'
+import { buildUrlWithModeAndToken, getAssetModeFromUrl, getTokenTypeFromUrl } from '../functions'
 
-type TokenTypeState = {
-  tokenType: LendingTokenType
-  setTokenType: (nextToken: LendingTokenType) => void
+type TokenTypeContext = {
+  currentTokenType: LendingTokenType
+  setTokenType: (newTokenType: LendingTokenType) => void
 }
 
-export const useNftTokenTypeState = create<TokenTypeState>((set) => ({
-  tokenType: LendingTokenType.BanxSol,
-  setTokenType: (tokenType: LendingTokenType) => set((state) => ({ ...state, tokenType })),
+export const useTokenTypeState = create<TokenTypeContext>((set) => ({
+  currentTokenType: LendingTokenType.BanxSol,
+  setTokenType: (newTokenType) => set({ currentTokenType: newTokenType }),
 }))
 
 export const useNftTokenType = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const params = new URLSearchParams(location.search)
+  const urlParams = new URLSearchParams(location.search)
 
-  const tokenTypeFromUrl = params.get('token') as LendingTokenType
-  const modeTypeFromUrl = (params.get('asset') as AssetMode) || AssetMode.NFT
+  const tokenTypeFromUrl = getTokenTypeFromUrl(urlParams)
+  const assetModeFromUrl = getAssetModeFromUrl(urlParams)
 
-  const { tokenType, setTokenType: setTokenTypeState } = useNftTokenTypeState((state) => state)
-
-  const modeType = modeTypeFromUrl || AssetMode.NFT
+  const { currentTokenType, setTokenType } = useTokenTypeState()
 
   useEffect(() => {
-    const tokenToSet = tokenTypeFromUrl || LendingTokenType.BanxSol
-    if (tokenType !== tokenToSet) {
-      setTokenTypeState(tokenToSet)
+    if (currentTokenType !== tokenTypeFromUrl) {
+      setTokenType(tokenTypeFromUrl)
     }
-  }, [tokenTypeFromUrl, tokenType, setTokenTypeState])
+  }, [tokenTypeFromUrl, currentTokenType, setTokenType])
 
-  const setTokenType = (newTokenType: LendingTokenType) => {
-    if (newTokenType !== tokenType) {
-      setTokenTypeState(newTokenType)
-      navigate(buildUrlWithModeAndToken(location.pathname, modeType, newTokenType))
+  const changeTokenType = (newTokenType: LendingTokenType) => {
+    if (newTokenType !== currentTokenType) {
+      const updatedUrl = buildUrlWithModeAndToken(location.pathname, assetModeFromUrl, newTokenType)
+      setTokenType(newTokenType)
+      navigate(updatedUrl, { replace: true })
     }
   }
 
-  return { tokenType, setTokenType }
+  return { tokenType: currentTokenType, setTokenType: changeTokenType }
 }

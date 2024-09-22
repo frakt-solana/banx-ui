@@ -28,6 +28,12 @@ export const getAssetModeFromUrl = (params: URLSearchParams): AssetMode => {
   return getUrlParam(params, 'asset') === AssetMode.Token ? AssetMode.Token : AssetMode.NFT
 }
 
+export const getTokenTypeFromUrl = (params: URLSearchParams): LendingTokenType => {
+  return getUrlParam(params, 'token') === LendingTokenType.BanxSol
+    ? LendingTokenType.BanxSol
+    : LendingTokenType.Usdc
+}
+
 export const buildUrlWithMode = (pathname: string, mode: AssetMode): string => {
   const urlParams = new URLSearchParams(window.location.search)
 
