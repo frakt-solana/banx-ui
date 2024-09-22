@@ -9,7 +9,7 @@ import { createDisplayValueJSX } from '@banx/components/TableComponents'
 import { Theme, useTheme } from '@banx/hooks'
 import { InfinityIcon, BorrowFilled, LendFilled, Lightning, PencilLtv } from '@banx/icons'
 import { PATHS } from '@banx/router'
-import { buildUrlWithMode, buildUrlWithModeAndToken } from '@banx/store'
+import { buildUrlWithModeAndToken } from '@banx/store'
 import { useAssetMode, useTokenType } from '@banx/store/common'
 import { formatValueByTokenType } from '@banx/utils'
 
@@ -99,8 +99,7 @@ const Content = () => {
   const navigate = useNavigate()
 
   const goToPage = (path: string) => {
-    const newPath = buildUrlWithMode(path, currentAssetMode)
-    navigate(buildUrlWithModeAndToken(newPath, currentAssetMode, tokenType))
+    navigate(buildUrlWithModeAndToken(path, currentAssetMode, tokenType))
   }
 
   return (

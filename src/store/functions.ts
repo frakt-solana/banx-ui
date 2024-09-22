@@ -7,13 +7,15 @@ import { AssetMode } from './common'
 export const buildUrlWithModeAndToken = (
   pathname: string,
   mode: AssetMode,
-  tokenType: LendingTokenType,
+  tokenType: LendingTokenType | null,
 ): string => {
   const urlParams = new URLSearchParams(window.location.search)
 
   urlParams.set('asset', mode)
 
-  urlParams.set('token', TOKEN_TICKER[tokenType])
+  if (tokenType) {
+    urlParams.set('token', TOKEN_TICKER[tokenType])
+  }
 
   return `${pathname}?${urlParams.toString()}`
 }
@@ -37,12 +39,4 @@ export const getTokenTypeFromUrl = (
   }
 
   return assetMode === AssetMode.Token ? LendingTokenType.Usdc : LendingTokenType.BanxSol
-}
-
-export const buildUrlWithMode = (pathname: string, mode: AssetMode): string => {
-  const urlParams = new URLSearchParams(window.location.search)
-
-  urlParams.set('asset', mode)
-
-  return `${pathname}?${urlParams.toString()}`
 }

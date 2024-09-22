@@ -6,7 +6,7 @@ import { VALUES_TYPES } from '@banx/components/StatInfo'
 
 import { useBorrowerStats } from '@banx/pages/common/DashboardPage/hooks'
 import { PATHS } from '@banx/router'
-import { buildUrlWithMode, buildUrlWithModeAndToken } from '@banx/store'
+import { buildUrlWithModeAndToken } from '@banx/store'
 import { useAssetMode, useTokenType } from '@banx/store/common'
 import { isBanxSolTokenType } from '@banx/utils'
 
@@ -65,13 +65,11 @@ export const useMyLoans = () => {
   }
 
   const goToBorrowPage = () => {
-    const newPath = buildUrlWithMode(PATHS.BORROW, currentAssetMode)
-    navigate(buildUrlWithModeAndToken(newPath, currentAssetMode, tokenType))
+    navigate(buildUrlWithModeAndToken(PATHS.BORROW, currentAssetMode, tokenType))
   }
 
   const goToLoansPage = () => {
-    const newPath = buildUrlWithMode(PATHS.LOANS, currentAssetMode)
-    navigate(buildUrlWithModeAndToken(newPath, currentAssetMode, tokenType))
+    navigate(buildUrlWithModeAndToken(PATHS.LOANS, currentAssetMode, tokenType))
   }
 
   const emptyButtonText = isBanxSolTokenType(tokenType) ? 'Borrow SOL' : 'Borrow USDC'

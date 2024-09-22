@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { create } from 'zustand'
 
-import { buildUrlWithMode, getAssetModeFromUrl } from '../functions'
+import { buildUrlWithModeAndToken, getAssetModeFromUrl } from '../functions'
 
 export enum AssetMode {
   NFT = 'nft',
@@ -37,7 +37,7 @@ export const useAssetMode = () => {
 
   const changeAssetMode = (newMode: AssetMode) => {
     if (newMode !== currentAssetMode) {
-      const updatedUrl = buildUrlWithMode(location.pathname, newMode)
+      const updatedUrl = buildUrlWithModeAndToken(location.pathname, newMode, null)
       setAssetMode(newMode)
       navigate(updatedUrl, { replace: true })
     }

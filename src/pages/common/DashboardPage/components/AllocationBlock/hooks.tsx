@@ -5,7 +5,7 @@ import { DoughnutChartProps } from '@banx/components/Charts'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { PATHS } from '@banx/router'
-import { buildUrlWithMode, buildUrlWithModeAndToken } from '@banx/store'
+import { buildUrlWithModeAndToken } from '@banx/store'
 import { useAssetMode, useTokenType } from '@banx/store/common'
 import { getTokenDecimals, isBanxSolTokenType } from '@banx/utils'
 
@@ -65,13 +65,11 @@ export const useAllocationBlock = () => {
   }
 
   const goToLendPage = () => {
-    const newPath = buildUrlWithMode(PATHS.LEND, currentAssetMode)
-    navigate(buildUrlWithModeAndToken(newPath, currentAssetMode, tokenType))
+    navigate(buildUrlWithModeAndToken(PATHS.LEND, currentAssetMode, tokenType))
   }
 
   const goToOffersPage = () => {
-    const newPath = buildUrlWithMode(PATHS.OFFERS, currentAssetMode)
-    navigate(buildUrlWithModeAndToken(newPath, currentAssetMode, tokenType))
+    navigate(buildUrlWithModeAndToken(PATHS.OFFERS, currentAssetMode, tokenType))
   }
 
   const emptyButtonText = isBanxSolTokenType(tokenType) ? 'Lend SOL' : 'Lend USDC'
