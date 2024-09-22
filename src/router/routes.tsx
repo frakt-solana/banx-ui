@@ -18,44 +18,6 @@ interface Route {
   component: FC
 }
 
-const nftRoutes: Route[] = [
-  {
-    path: PATHS.BORROW,
-    component: BorrowPage,
-  },
-  {
-    path: PATHS.LOANS,
-    component: LoansPage,
-  },
-  {
-    path: PATHS.LEND,
-    component: LendPage,
-  },
-  {
-    path: PATHS.OFFERS,
-    component: OffersPage,
-  },
-]
-
-const tokenRoutes: Route[] = [
-  {
-    path: PATHS.BORROW_TOKEN,
-    component: BorrowTokenPage,
-  },
-  {
-    path: PATHS.LOANS_TOKEN,
-    component: LoansTokenPage,
-  },
-  {
-    path: PATHS.LEND_TOKEN,
-    component: LendTokenPage,
-  },
-  {
-    path: PATHS.OFFERS_TOKEN,
-    component: OffersTokenPage,
-  },
-]
-
 export const routes: Route[] = [
   {
     path: PATHS.BORROW,
@@ -64,15 +26,16 @@ export const routes: Route[] = [
     ),
   },
   {
-    path: PATHS.LEND,
-    component: () => <ModeBasedComponent nftComponent={LendPage} tokenComponent={LendTokenPage} />,
-  },
-  {
     path: PATHS.LOANS,
     component: () => (
       <ModeBasedComponent nftComponent={LoansPage} tokenComponent={LoansTokenPage} />
     ),
   },
+  {
+    path: PATHS.LEND,
+    component: () => <ModeBasedComponent nftComponent={LendPage} tokenComponent={LendTokenPage} />,
+  },
+
   {
     path: PATHS.OFFERS,
     component: () => (
@@ -99,10 +62,6 @@ export const routes: Route[] = [
     path: PATHS.PAGE_404, //? Why don't we have page 404?
     component: RootPage,
   },
-
-  ...nftRoutes,
-  ...tokenRoutes,
-
   {
     path: '*',
     component: RootPage,

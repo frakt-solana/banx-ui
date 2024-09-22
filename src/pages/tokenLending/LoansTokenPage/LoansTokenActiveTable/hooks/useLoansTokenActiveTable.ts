@@ -49,7 +49,7 @@ export const useLoansTokenActiveTable = (props: {
   const showSummary = !!loans.length && !isLoading
 
   const goToBorrowPage = () => {
-    navigate(buildUrlWithModeAndToken(PATHS.BORROW_TOKEN, AssetMode.Token, tokenType))
+    navigate(buildUrlWithModeAndToken(PATHS.BORROW, AssetMode.Token, tokenType))
   }
 
   const tokenTicker = getTokenTicker(tokenType)

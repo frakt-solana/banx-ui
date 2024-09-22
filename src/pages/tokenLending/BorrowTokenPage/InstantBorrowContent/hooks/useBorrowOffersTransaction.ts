@@ -70,7 +70,7 @@ export const useBorrowOffersTransaction = (collateral: CollateralToken | undefin
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
 
   const goToLoansPage = () => {
-    navigate(buildUrlWithModeAndToken(PATHS.LOANS_TOKEN, AssetMode.Token, tokenType))
+    navigate(buildUrlWithModeAndToken(PATHS.LOANS, AssetMode.Token, tokenType))
   }
 
   const onBorrowSuccess = (loansAmount = 1) => {

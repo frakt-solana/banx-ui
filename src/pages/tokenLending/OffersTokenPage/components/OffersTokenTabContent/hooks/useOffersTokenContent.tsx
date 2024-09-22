@@ -62,7 +62,7 @@ export const useOffersTokenContent = () => {
   })
 
   const goToLendPage = () => {
-    navigate(buildUrlWithModeAndToken(PATHS.LEND_TOKEN, AssetMode.Token, tokenType))
+    navigate(buildUrlWithModeAndToken(PATHS.LEND, AssetMode.Token, tokenType))
   }
 
   const tokenName = isBanxSolTokenType(tokenType) ? 'SOL' : 'USDC'
