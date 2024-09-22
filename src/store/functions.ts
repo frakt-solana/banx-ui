@@ -5,15 +5,17 @@ import { ModeType } from './common'
 export const createPathWithModeParams = (
   pathname: string,
   mode: ModeType,
-  tokenType: LendingTokenType | null,
+  tokenType?: LendingTokenType,
 ) => {
-  const modeQueryParam = mode === ModeType.NFT ? `mode=${mode}` : ''
+  const params = new URLSearchParams()
 
-  const isDefaultTokenType = tokenType === LendingTokenType.BanxSol
-  const tokenQueryParam = tokenType && !isDefaultTokenType ? `token=${tokenType}` : ''
+  params.set('asset', mode === ModeType.Token ? 'token' : 'nft')
 
-  const queryParams = [modeQueryParam, tokenQueryParam].filter(Boolean).join('&')
-  const queryString = queryParams ? `?${queryParams}` : ''
+  if (tokenType) {
+    params.set('token', tokenType)
+  }
+
+  const queryString = params.toString() ? `?${params.toString()}` : ''
 
   return `${pathname}${queryString}`
 }

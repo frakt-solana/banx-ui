@@ -1,9 +1,8 @@
+import { useEffect } from 'react'
+
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { z } from 'zod'
 import { create } from 'zustand'
-
-import { isBanxSolTokenType } from '@banx/utils'
 
 import { ModeType } from '../common'
 import { createPathWithModeParams } from '../functions'
@@ -24,34 +23,25 @@ export const useNftTokenType = () => {
   const params = new URLSearchParams(location.search)
 
   const tokenTypeFromUrl = params.get('token') as LendingTokenType
-  const modeTypeFromUrl = params.get('mode') as ModeType
+  const modeTypeFromUrl = (params.get('asset') as ModeType) || ModeType.NFT
 
-  const { tokenType, setTokenType: setTokenTypeState } = useNftTokenTypeState((state) => {
-    try {
-      const tokenType = tokenTypeFromUrl || LendingTokenType.BanxSol
+  const { tokenType, setTokenType: setTokenTypeState } = useNftTokenTypeState((state) => state)
 
-      z.nativeEnum(LendingTokenType).parse(tokenType)
+  const modeType = modeTypeFromUrl || ModeType.NFT
 
-      return { ...state, tokenType }
-    } catch (error) {
-      console.error('Error getting token type from URL')
-
-      return { ...state, tokenType: LendingTokenType.BanxSol }
+  useEffect(() => {
+    const tokenToSet = tokenTypeFromUrl || LendingTokenType.BanxSol
+    if (tokenType !== tokenToSet) {
+      setTokenTypeState(tokenToSet)
     }
-  })
+  }, [tokenTypeFromUrl, tokenType, setTokenTypeState])
 
-  const setTokenType = (tokenType: LendingTokenType) => {
-    const modeType = modeTypeFromUrl || ModeType.Token
-
-    setTokenTypeState(tokenType)
-    navigate(createPathWithModeParams(location.pathname, modeType, tokenType))
+  const setTokenType = (newTokenType: LendingTokenType) => {
+    if (newTokenType !== tokenType) {
+      setTokenTypeState(newTokenType)
+      navigate(createPathWithModeParams(location.pathname, modeType, newTokenType)) // Обновляем URL
+    }
   }
 
   return { tokenType, setTokenType }
-}
-
-export const createPathWithTokenParam = (pathname: string, tokenType: LendingTokenType) => {
-  if (isBanxSolTokenType(tokenType)) return pathname
-
-  return `${pathname}?token=${tokenType}`
 }
