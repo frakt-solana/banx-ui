@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 
-import { useWallet } from '@solana/wallet-adapter-react'
 import { BN } from 'fbonds-core'
 
 import { CollateralToken } from '@banx/api/tokens'
@@ -21,7 +20,6 @@ import { useBorrowOffersTransaction } from './useBorrowOffersTransaction'
 import { useBorrowTokensList, useCollateralsList } from './useCollateralsList'
 
 export const useInstantBorrowContent = () => {
-  const { connected } = useWallet()
   const { tokenType, setTokenType } = useNftTokenType()
 
   const [collateralInputValue, setCollateralInputValue] = useState('')
@@ -44,26 +42,34 @@ export const useInstantBorrowContent = () => {
     onChangeLtvSlider,
   } = useBorrowOffers(collateralToken, borrowToken)
 
-  useEffect(() => {
-    if (collateralToken || !collateralsList.length) return
+  const collateralToSet = useMemo(() => {
+    const [firstCollateral] = collateralsList
 
-    const firstCollateral = collateralsList[0]
-    const defaultCollateral = collateralsList.find(
-      ({ collateral }) => collateral.mint === DEFAULT_COLLATERAL_MINT,
+    return firstCollateral?.amountInWallet
+      ? firstCollateral
+      : collateralsList.find(({ collateral }) => collateral.mint === DEFAULT_COLLATERAL_MINT)
+  }, [collateralsList])
+
+  useEffect(() => {
+    if (!collateralToken && collateralToSet) {
+      setCollateralToken(collateralToSet)
+    }
+  }, [collateralToken, collateralToSet])
+
+  useEffect(() => {
+    const selectedBorrowToken = borrowTokensList.find(
+      (token) => token.lendingTokenType === tokenType,
     )
 
-    const collateralToSet = firstCollateral.amountInWallet ? firstCollateral : defaultCollateral
+    if (!selectedBorrowToken) return
 
-    setCollateralToken(collateralToSet)
-  }, [collateralToken, collateralsList, connected])
-
-  useEffect(() => {
-    const foundToken = borrowTokensList.find((token) => token.lendingTokenType === tokenType)
-
-    if (foundToken) {
-      setBorrowToken(foundToken)
+    // Update collateral token only if it's the same token
+    if (collateralToken?.collateral.mint === selectedBorrowToken.collateral.mint) {
+      setCollateralToken(collateralToSet)
     }
-  }, [borrowTokensList, tokenType, borrowToken])
+
+    setBorrowToken(selectedBorrowToken)
+  }, [borrowTokensList, tokenType, collateralToken, collateralToSet])
 
   const handleCollateralInputChange = (value: string) => {
     if (!borrowToken || !collateralToken) return
