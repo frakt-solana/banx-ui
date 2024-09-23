@@ -7,7 +7,7 @@ import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { activity } from '@banx/api/tokens'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 import { createDownloadLink } from '@banx/utils'
 
 import { useUserTokenLoansStats } from '../hooks'
@@ -19,7 +19,7 @@ const ACTIVITY_CSV_FILENAME = 'banx_borrower_spl_activity.csv'
 export const Summary = () => {
   const { publicKey } = useWallet()
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { data } = useUserTokenLoansStats()
   const { totalLoans = 0, totalBorrowed = 0, totalRepaid = 0 } = data || {}

@@ -10,7 +10,7 @@ import Tooltip from '@banx/components/Tooltip'
 
 import { core } from '@banx/api/tokens'
 import { ChevronDown, Coin, CoinPlus, Warning } from '@banx/icons'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 import { convertToSynthetic, useSyntheticTokenOffers } from '@banx/store/token'
 import {
   HealthColorIncreasing,
@@ -95,7 +95,7 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ offerPreview, isO
 
   const { collateral, collateralPrice } = offerPreview.tokenMarketPreview
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
   const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6
 
   const aprPercent = offerPreview.bondOffer.loanApr.toNumber() / 100

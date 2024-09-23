@@ -7,7 +7,7 @@ import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { activity } from '@banx/api/nft'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 import { createDownloadLink } from '@banx/utils'
 
 import { useUserLoansStats } from '../../hooks'
@@ -18,7 +18,7 @@ import styles from './LoansHistoryTable.module.less'
 export const Summary = () => {
   const { publicKey } = useWallet()
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { data } = useUserLoansStats()
   const { totalLoans = 0, totalBorrowed = 0, totalRepaid = 0 } = data || {}

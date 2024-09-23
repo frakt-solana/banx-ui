@@ -7,6 +7,7 @@ import moment from 'moment'
 import { create } from 'zustand'
 
 import { core, stats } from '@banx/api/nft'
+import { useTokenType } from '@banx/store/common'
 import {
   isLoanNewer,
   isOfferNewer,
@@ -15,7 +16,6 @@ import {
   purgeLoansWithSameMintByFreshness,
   useLoansOptimistic,
   useLoansRequestsOptimistic,
-  useNftTokenType,
   useOffersOptimistic,
 } from '@banx/store/nft'
 import { isLoanListed, isLoanRepaid, isLoanTerminating, isOfferStateClosed } from '@banx/utils'
@@ -28,7 +28,7 @@ export const useWalletLoansAndOffers = () => {
   const { publicKey: walletPublicKey } = useWallet()
   const publicKeyString = walletPublicKey?.toBase58() || ''
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { loans: optimisticLoans, remove: removeOptimisticLoans } = useLoansOptimistic()
 
@@ -189,7 +189,7 @@ export const useUserLoansStats = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { data, isLoading } = useQuery(
     ['userLoansStats', publicKeyString, tokenType],
@@ -219,7 +219,7 @@ export const useBorrowerLoansRequests = () => {
   const { publicKey: walletPublicKey } = useWallet()
   const publicKeyString = walletPublicKey?.toBase58() || ''
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { loans: optimisticLoans, remove: removeOptimisticLoans } = useLoansRequestsOptimistic()
 

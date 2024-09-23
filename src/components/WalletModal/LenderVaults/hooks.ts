@@ -4,12 +4,12 @@ import { convertBondOfferV3ToCore } from '@banx/api/nft'
 import { useClusterStats } from '@banx/hooks'
 import { useUserOffers } from '@banx/pages/nftLending/OffersPage/components/OffersTabContent'
 import { useTokenOffersPreview } from '@banx/pages/tokenLending/OffersTokenPage/components/OffersTokenTabContent'
-import { ModeType, useModeType } from '@banx/store/common'
+import { AssetMode, useAssetMode } from '@banx/store/common'
 
 import { getLenderVaultInfo } from './helpers'
 
 export const useLenderVaultInfo = () => {
-  const { modeType } = useModeType()
+  const { currentAssetMode } = useAssetMode()
 
   const { data: clusterStats } = useClusterStats()
 
@@ -27,12 +27,12 @@ export const useLenderVaultInfo = () => {
   }, [nftsOffers])
 
   const offers = useMemo(() => {
-    if (modeType === ModeType.NFT) {
+    if (currentAssetMode === AssetMode.NFT) {
       return nftsRawOffers
     }
 
     return tokenRawOffers
-  }, [modeType, nftsRawOffers, tokenRawOffers])
+  }, [currentAssetMode, nftsRawOffers, tokenRawOffers])
 
   const lenderVaultInfo = getLenderVaultInfo(offers, clusterStats)
 

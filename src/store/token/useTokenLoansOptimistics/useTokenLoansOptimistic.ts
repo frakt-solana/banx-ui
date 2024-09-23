@@ -5,7 +5,7 @@ import { map } from 'lodash'
 import { create } from 'zustand'
 
 import { core } from '@banx/api/tokens'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 
 import {
   TokenLoanOptimistic,
@@ -81,7 +81,7 @@ export const useTokenLoansOptimistic = () => {
     setState,
   } = useOptimisticLoansStore()
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   useEffect(() => {
     const setInitialState = async () => {

@@ -8,7 +8,7 @@ import { DisplayValue } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/tokens'
 import { ChevronDown } from '@banx/icons'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 import { getTokenDecimals } from '@banx/utils'
 
 import ExpandedCardContent from '../ExpandedCardContent'
@@ -67,7 +67,7 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isOpen })
     marketApr,
   } = market
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
   const decimals = getTokenDecimals(tokenType)
 
   const classNamesProps = {

@@ -9,12 +9,12 @@ import { chain, filter, groupBy, isEmpty, map, maxBy, sortBy, sumBy, uniqBy } fr
 import { create } from 'zustand'
 
 import { core } from '@banx/api/nft'
+import { useTokenType } from '@banx/store/common'
 import {
   isOfferNewer,
   isOptimisticLoanExpired,
   isOptimisticOfferExpired,
   useLoansOptimistic,
-  useNftTokenType,
   useOffersOptimistic,
 } from '@banx/store/nft'
 import { convertLoanToBorrowNft } from '@banx/transactions/nftLending'
@@ -42,7 +42,7 @@ export const useBorrowNfts = () => {
   const { loans: optimisticLoans, remove: removeOptimisticLoans } = useLoansOptimistic()
   const { optimisticOffers, remove: removeOptimisticOffers } = useOffersOptimistic()
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { data, isLoading, isFetched, isFetching } = useQuery(
     [USE_BORROW_NFTS_V2_QUERY_KEY, tokenType, walletPubkeyString],

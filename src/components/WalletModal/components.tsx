@@ -6,8 +6,7 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { useBanxSolBalance, useDiscordUser, useSolanaBalance } from '@banx/hooks'
 import { BanxSOL, ChangeWallet, Copy, SignOut } from '@banx/icons'
-import { ModeType, useIsLedger, useModeType } from '@banx/store/common'
-import { useNftTokenType } from '@banx/store/nft'
+import { AssetMode, useAssetMode, useIsLedger, useTokenType } from '@banx/store/common'
 import {
   copyToClipboard,
   formatValueByTokenType,
@@ -33,7 +32,7 @@ const UserGeneralInfo = () => {
   const banxSolWalletBalance = useBanxSolBalance({ isLive: true })
 
   const { isLedger, setIsLedger } = useIsLedger()
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   return (
     <div className={styles.userGeneralInfoContainer}>
@@ -97,12 +96,12 @@ interface UserInfoProps {
 }
 
 export const UserInfo: FC<UserInfoProps> = ({ onChangeWallet, disconnect }) => {
-  const { modeType } = useModeType()
+  const { currentAssetMode } = useAssetMode()
 
   return (
     <div className={styles.userInfoContainer}>
       <UserGeneralInfo />
-      {modeType === ModeType.NFT ? <NftLenderVault /> : <TokenLenderVault />}
+      {currentAssetMode === AssetMode.NFT ? <NftLenderVault /> : <TokenLenderVault />}
       <div className={styles.buttonsWrapper}>
         <div className={styles.changeWalletButton} onClick={onChangeWallet}>
           <ChangeWallet />

@@ -6,14 +6,14 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchTokenBalance } from '@banx/api/common'
 import { core } from '@banx/api/tokens'
 import { USDC_ADDRESS, WSOL_ADDRESS } from '@banx/constants'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 import { isBanxSolTokenType } from '@banx/utils'
 
 import { BORROW_TOKENS_LIST } from '../../constants'
 
 export const useCollateralsList = () => {
   const { publicKey: walletPubkey } = useWallet()
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { data, isLoading } = useQuery(
     ['collateralsList', walletPubkey, tokenType],

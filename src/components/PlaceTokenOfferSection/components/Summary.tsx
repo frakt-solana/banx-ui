@@ -10,7 +10,7 @@ import { DisplayValue } from '@banx/components/TableComponents'
 
 import { TokenMarketPreview } from '@banx/api/tokens'
 import { SECONDS_IN_DAY } from '@banx/constants'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 import { HealthColorIncreasing, getColorByPercent, getTokenDecimals } from '@banx/utils'
 
 import { calculateLtvPercent } from '../helpers'
@@ -32,7 +32,7 @@ export const AdditionalSummary: FC<OfferSummaryProps> = ({
 }) => {
   const { collateralPrice = 0 } = market || {}
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
   const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType))
 
   const ltvPercent = calculateLtvPercent({

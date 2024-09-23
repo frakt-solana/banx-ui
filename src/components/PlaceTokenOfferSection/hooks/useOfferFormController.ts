@@ -4,7 +4,7 @@ import { MAX_APR_SPL } from 'fbonds-core/lib/fbond-protocol/constants'
 import { clamp } from 'lodash'
 
 import { TokenMarketPreview } from '@banx/api/tokens'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 import { SyntheticTokenOffer } from '@banx/store/token'
 import {
   calculateTokensPerCollateral,
@@ -24,7 +24,7 @@ export const useOfferFormController = (
     apr: syntheticApr,
   } = syntheticOffer
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const decimals = getTokenDecimals(tokenType)
 

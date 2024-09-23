@@ -2,7 +2,7 @@ import { FC } from 'react'
 
 import moment from 'moment'
 
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 import {
   TokenUnit,
   formatDecimalWithSubscript,
@@ -71,7 +71,7 @@ export const DisplayValue: FC<DisplayValueProps> = ({
   placeholder,
   isSubscriptFormat = false,
 }) => {
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const formattedValue = isSubscriptFormat
     ? formatDecimalWithSubscript(value)

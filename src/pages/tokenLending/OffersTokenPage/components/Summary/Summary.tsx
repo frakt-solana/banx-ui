@@ -16,8 +16,7 @@ import { BanxSolYieldWarningModal } from '@banx/components/modals'
 import { convertBondOfferV3ToCore } from '@banx/api/nft/core'
 import { useClusterStats } from '@banx/hooks'
 import { BanxSOL } from '@banx/icons'
-import { useModal } from '@banx/store/common'
-import { useNftTokenType } from '@banx/store/nft'
+import { useModal, useTokenType } from '@banx/store/common'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
@@ -49,7 +48,7 @@ const Summary: FC<SummaryProps> = ({ offers, updateOrAddOffer }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
   const { open, close } = useModal()
 
   const { data: clusterStats } = useClusterStats()

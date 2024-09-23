@@ -5,7 +5,7 @@ import { MAX_APR_SPL } from 'fbonds-core/lib/fbond-protocol/constants'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { TokenMarketPreview } from '@banx/api/tokens'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 import {
   convertToDecimalString,
   getTokenDecimals,
@@ -51,7 +51,7 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
 
   const { connected } = useWallet()
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const marketTokenDecimals = getTokenDecimals(tokenType) //? 1e6, 1e9
 

@@ -16,8 +16,7 @@ import Timer from '@banx/components/Timer'
 import { core } from '@banx/api/nft'
 import { useMarketOffers } from '@banx/pages/nftLending/LendPage'
 import { useLenderLoans } from '@banx/pages/nftLending/OffersPage'
-import { useModal } from '@banx/store/common'
-import { useNftTokenType } from '@banx/store/nft'
+import { useModal, useTokenType } from '@banx/store/common'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
@@ -70,7 +69,7 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
 
   const { close } = useModal()
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { remove: removeLoan } = useSelectedLoans()
 
