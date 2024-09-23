@@ -13,8 +13,7 @@ import { Modal } from '@banx/components/modals/BaseModal'
 import { convertBondOfferV3ToCore } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
 import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
-import { useModal } from '@banx/store/common'
-import { useNftTokenType } from '@banx/store/nft'
+import { useModal, useTokenType } from '@banx/store/common'
 import { useTokenLoansOptimistic } from '@banx/store/token'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -49,7 +48,7 @@ const RefinanceTokenModal: FC<RefinanceTokenModalProps> = ({ loan }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
   const { close: closeModal } = useModal()
 
   const { offers, updateOrAddOffer, isLoading } = useTokenMarketOffers(

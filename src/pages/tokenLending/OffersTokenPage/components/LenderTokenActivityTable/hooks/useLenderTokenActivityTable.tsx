@@ -5,9 +5,8 @@ import { useNavigate } from 'react-router-dom'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { PATHS } from '@banx/router'
-import { createPathWithModeParams } from '@banx/store'
-import { ModeType } from '@banx/store/common'
-import { useNftTokenType } from '@banx/store/nft'
+import { buildUrlWithModeAndToken } from '@banx/store'
+import { AssetMode, useTokenType } from '@banx/store/common'
 
 import {
   useLenderTokenActivity,
@@ -20,7 +19,7 @@ export const useLenderTokenActivityTable = () => {
   const { connected } = useWallet()
   const navigate = useNavigate()
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { data: collectionsList } = useLenderTokenActivityCollectionsList()
 
@@ -61,7 +60,7 @@ export const useLenderTokenActivityTable = () => {
   const showSummary = !!loans.length && !isLoading
 
   const goToLendPage = () => {
-    navigate(createPathWithModeParams(PATHS.LEND_TOKEN, ModeType.Token, tokenType))
+    navigate(buildUrlWithModeAndToken(PATHS.LEND, AssetMode.Token, tokenType))
   }
 
   const emptyListParams = {

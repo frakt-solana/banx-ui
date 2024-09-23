@@ -2,13 +2,9 @@ import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/
 import moment from 'moment'
 
 import { core } from '@banx/api/nft'
-import bonkTokenImg from '@banx/assets/BonkToken.png'
 import { BONDS, ONE_WEEK_IN_SECONDS } from '@banx/constants'
-import { enqueueSnackbar } from '@banx/utils'
 
 import { CartState } from '../../cartState'
-
-import styles from './BorrowTable.module.less'
 
 type CalcInterest = (props: { loanValue: number; timeInterval: number; apr: number }) => number
 export const calcInterest: CalcInterest = ({ loanValue, timeInterval, apr }) => {
@@ -69,13 +65,5 @@ export const createTableNftData = ({
     })
 
     return { mint: nft.mint, nft, loanValue, selected, interest }
-  })
-}
-
-export const showBonkRewardsSnack = () => {
-  enqueueSnackbar({
-    className: styles.bonkRewardsSnack,
-    message: 'You got a 50% $BONK cashback claimable on the Rewards page!',
-    icon: <img src={bonkTokenImg} alt="Bonk token" className={styles.bonkRewardsSnackIcon} />,
   })
 }

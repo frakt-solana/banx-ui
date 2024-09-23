@@ -7,7 +7,7 @@ import { BondOfferV3 } from 'fbonds-core/lib/fbond-protocol/types'
 import Table from '@banx/components/Table'
 
 import { core } from '@banx/api/tokens'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 
 import { getTableColumns } from './columns'
 
@@ -21,7 +21,7 @@ interface OrderBookProps {
 }
 
 const OrderBook: FC<OrderBookProps> = ({ loan, offers, isLoading, refinance }) => {
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const columns = getTableColumns({ refinance, tokenType, loan })
 

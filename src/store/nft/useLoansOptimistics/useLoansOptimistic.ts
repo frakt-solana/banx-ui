@@ -6,7 +6,7 @@ import { create } from 'zustand'
 
 import { core } from '@banx/api/nft'
 
-import { useNftTokenType } from '../useNftTokenType'
+import { useTokenType } from '../../common/useTokenType'
 import {
   LoanOptimistic,
   addLoans,
@@ -81,7 +81,7 @@ export const useLoansOptimistic = () => {
     setState,
   } = useOptimisticLoansStore()
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   useEffect(() => {
     const setInitialState = async () => {

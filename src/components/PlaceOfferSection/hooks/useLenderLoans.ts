@@ -4,14 +4,14 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 
 import { core } from '@banx/api/nft'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 import { isLoanTerminating } from '@banx/utils'
 
 export const useLenderLoans = ({ offerPubkey }: { offerPubkey: string }) => {
   const { publicKey } = useWallet()
   const walletPublicKey = publicKey?.toBase58() || ''
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { data, isLoading, refetch } = useQuery(
     ['lenderLoans', walletPublicKey, tokenType, offerPubkey],

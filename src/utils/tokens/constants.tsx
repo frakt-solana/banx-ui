@@ -26,10 +26,15 @@ export const TOKEN_UNIT = {
   [LendingTokenType.Usdc]: TokenUnit.Usdc,
 }
 
-export const TOKEN_TICKER = {
+export const TOKEN_TICKER: Record<LendingTokenType, string> = {
   [LendingTokenType.NativeSol]: 'SOL',
   [LendingTokenType.BanxSol]: 'SOL',
   [LendingTokenType.Usdc]: 'USDC',
+}
+
+export const TICKER_TO_TOKEN: Record<string, LendingTokenType> = {
+  SOL: LendingTokenType.BanxSol,
+  USDC: LendingTokenType.Usdc,
 }
 
 export const TOKEN_DECIMALS = {

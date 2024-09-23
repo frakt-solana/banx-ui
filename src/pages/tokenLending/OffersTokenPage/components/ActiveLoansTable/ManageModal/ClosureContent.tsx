@@ -12,7 +12,7 @@ import Timer from '@banx/components/Timer'
 import { convertBondOfferV3ToCore } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
 import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 import {
   caclulateBorrowTokenLoanValue,
   calculateIdleFundsInOffer,
@@ -40,7 +40,7 @@ export const ClosureContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
   const { offers, updateOrAddOffer, isLoading } = useTokenMarketOffers(marketPubkey)
 
   const { instantTokenLoan, terminateTokenLoan } = useTokenLenderLoansTransactions()
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6
 
@@ -118,7 +118,7 @@ const ActionsButton: FC<ActionsButtonProps> = ({
   canRefinance,
   exitValue,
 }) => {
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
   const tokenUnit = getTokenUnit(tokenType)
 
   const formattedExitValue = formatValueByTokenType(exitValue, tokenType)

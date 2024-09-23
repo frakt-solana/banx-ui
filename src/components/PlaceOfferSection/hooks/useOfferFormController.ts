@@ -2,11 +2,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { clamp, trimStart } from 'lodash'
 
-import { SyntheticOffer, useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
+import { SyntheticOffer } from '@banx/store/nft'
 import { getTokenDecimals } from '@banx/utils'
 
 export const useOfferFormController = (syntheticOffer: SyntheticOffer) => {
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const {
     deltaValue: syntheticDeltaValue,

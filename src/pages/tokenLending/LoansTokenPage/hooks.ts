@@ -9,7 +9,7 @@ import { create } from 'zustand'
 import { stats } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
 import { SECONDS_IN_72_HOURS } from '@banx/constants'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 import { isLoanNewer, isOptimisticLoanExpired, useTokenLoansOptimistic } from '@banx/store/token'
 import { isTokenLoanRepaid, isTokenLoanTerminating } from '@banx/utils'
 
@@ -21,7 +21,7 @@ export const useWalletTokenLoansAndOffers = () => {
   const { publicKey: walletPublicKey } = useWallet()
   const publicKeyString = walletPublicKey?.toBase58() || ''
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { loans: optimisticLoans, remove: removeOptimisticLoans } = useTokenLoansOptimistic()
 
@@ -120,7 +120,7 @@ export const useUserTokenLoansStats = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { data, isLoading } = useQuery(
     ['userLoansStats', publicKeyString, tokenType],

@@ -4,7 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 import { useDiscordUser, useWalletBalance } from '@banx/hooks'
 import { HorizontalDots, Wallet } from '@banx/icons'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 import { shortenAddress } from '@banx/utils'
 
 import { DisplayValue } from '../TableComponents'
@@ -20,7 +20,7 @@ export const WalletConnectButton = () => {
 
   const walletPubkeyString = publicKey?.toBase58() || ''
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const walletBalance = useWalletBalance(tokenType, { isLive: true })
 
