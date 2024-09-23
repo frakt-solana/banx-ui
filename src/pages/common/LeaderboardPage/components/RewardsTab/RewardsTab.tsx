@@ -10,7 +10,6 @@ import EmptyList from '@banx/components/EmptyList'
 import { Loader } from '@banx/components/Loader'
 
 import { user } from '@banx/api/common'
-import { useBorrowBonkRewardsAvailability } from '@banx/hooks'
 import { CircleCheck } from '@banx/icons'
 import { PATHS } from '@banx/router'
 import { defaultTxnErrorHandler } from '@banx/transactions'
@@ -45,8 +44,6 @@ interface ClaimRewardsBlockProps {
   totalWeekRewards: number
 }
 const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({ totalWeekRewards }) => {
-  const bonkRewardsAvailable = useBorrowBonkRewardsAvailability()
-
   return (
     <div className={styles.weeklyRewardsBlock}>
       <div className={styles.weeklyRewardsInfoRow}>
@@ -72,11 +69,7 @@ const ClaimRewardsBlock: FC<ClaimRewardsBlockProps> = ({ totalWeekRewards }) => 
         </li>
         <li>
           100 loans/day availability:{' '}
-          {bonkRewardsAvailable ? (
-            <span className={styles.bonkRewards}>On</span>
-          ) : (
-            <span className={classNames(styles.bonkRewards, styles.bonkRewardsOff)}>Off</span>
-          )}
+          <span className={classNames(styles.bonkRewards, styles.bonkRewardsOff)}>Off</span>
         </li>
       </ul>
 

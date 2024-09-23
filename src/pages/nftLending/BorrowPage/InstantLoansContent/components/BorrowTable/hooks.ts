@@ -13,7 +13,6 @@ import {
 } from '@banx/components/modals'
 
 import { core } from '@banx/api/nft'
-import { useBorrowBonkRewardsAvailability } from '@banx/hooks'
 import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
 import { createGlobalState, createPathWithModeParams } from '@banx/store'
@@ -23,7 +22,7 @@ import { useLoansOptimistic, useNftTokenType, useOffersOptimistic } from '@banx/
 import { useCartState } from '../../cartState'
 import { getTableColumns } from './columns'
 import { executeBorrow, makeCreateTxnsDataParams } from './core'
-import { createTableNftData, showBonkRewardsSnack } from './helpers'
+import { createTableNftData } from './helpers'
 import { TableNftData } from './types'
 
 import styles from './BorrowTable.module.less'
@@ -50,8 +49,6 @@ export const useBorrowTable = ({
   const { open, close } = useModal()
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
   const { tokenType } = useNftTokenType()
-
-  const bonkRewardsAvailable = useBorrowBonkRewardsAvailability()
 
   const {
     offerByMint,
@@ -88,10 +85,6 @@ export const useBorrowTable = ({
   }
 
   const onBorrowSuccess = (loansAmount = 1) => {
-    if (bonkRewardsAvailable) {
-      showBonkRewardsSnack()
-    }
-
     //? Show notification with an offer to subscribe (if user not subscribed)
     const isUserSubscribedToNotifications = !!getDialectAccessToken(wallet.publicKey?.toBase58())
     if (!isUserSubscribedToNotifications) {
@@ -269,7 +262,6 @@ export const useBorrowTable = ({
     maxBorrowAmount,
     maxBorrowPercent,
     setMaxBorrowPercent,
-    bonkRewardsAvailable,
   }
 }
 

@@ -121,16 +121,6 @@ export const fetchActivityCollectionsList: FetchActivityCollectionsList = async 
   return data.data.collections ?? []
 }
 
-export const fetchBorrowBonkRewardsAvailability = async (): Promise<boolean> => {
-  const { data } = await axios.get<{
-    data: {
-      rewardsAvailable: boolean
-    }
-  }>(`${BACKEND_BASE_URL}/bonds/bonk-rewards-availability`)
-
-  return data?.data?.rewardsAvailable || false
-}
-
 export const fetchLenderActivityCSV = async ({
   walletPubkey,
   tokenType,
