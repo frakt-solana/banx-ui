@@ -47,17 +47,14 @@ export const useInstantBorrowContent = () => {
   useEffect(() => {
     if (collateralToken || !collateralsList.length) return
 
-    if (!connected) {
-      const foundToken = collateralsList.find(
-        (token) => token.collateral.mint === DEFAULT_COLLATERAL_MINT,
-      )
+    const firstCollateral = collateralsList[0]
+    const defaultCollateral = collateralsList.find(
+      ({ collateral }) => collateral.mint === DEFAULT_COLLATERAL_MINT,
+    )
 
-      if (foundToken) {
-        setCollateralToken(foundToken)
-      }
-    } else {
-      setCollateralToken(collateralsList[0])
-    }
+    const collateralToSet = firstCollateral.amountInWallet ? firstCollateral : defaultCollateral
+
+    setCollateralToken(collateralToSet)
   }, [collateralToken, collateralsList, connected])
 
   useEffect(() => {
