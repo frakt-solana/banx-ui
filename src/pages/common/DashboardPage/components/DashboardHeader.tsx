@@ -20,7 +20,7 @@ const Header = () => {
   return (
     <PageHeaderBackdrop
       title="Dashboard"
-      titleBtn={<OnboardButton contentType="dashboard" title="Dashboard" />}
+      titleBtn={<OnboardButton contentType="dashboard" />}
       tokenSwitcher={<TokenSwitcher title="Dashboard" />}
     >
       <AdditionalStat label="Active loans" value={formatNumbersWithCommas(activeLoans)} />

@@ -7,7 +7,7 @@ import TextTransition, { presets } from 'react-text-transition'
 import { Button } from '@banx/components/Buttons'
 import { PriorityFeesModal } from '@banx/components/modals'
 
-import { Cup } from '@banx/icons'
+import { Cup, Settings } from '@banx/icons'
 import { PATHS } from '@banx/router'
 import { getHumanReadablePriorityLevel, useModal, usePriorityFees } from '@banx/store/common'
 
@@ -24,13 +24,16 @@ export const PriorityFeesButton = () => {
   }
 
   return (
-    <Button type="circle" variant="tertiary" onClick={onClickHandler}>
-      <div>
-        Priority
-        <span className={styles.priorityFeeLevel}>
-          {`: ${getHumanReadablePriorityLevel(priorityLevel)}`}
-        </span>
-      </div>
+    <Button
+      type="circle"
+      variant="tertiary"
+      onClick={onClickHandler}
+      className={styles.priorityFeeButton}
+    >
+      <Settings />
+      <span className={styles.priorityFeeLevel}>
+        {getHumanReadablePriorityLevel(priorityLevel)}
+      </span>
     </Button>
   )
 }
