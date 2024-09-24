@@ -5,9 +5,8 @@ import { DoughnutChartProps } from '@banx/components/Charts'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { PATHS } from '@banx/router'
-import { createPathWithModeParams } from '@banx/store'
-import { getRouteForMode, useModeType } from '@banx/store/common'
-import { useNftTokenType } from '@banx/store/nft'
+import { buildUrlWithModeAndToken } from '@banx/store'
+import { useAssetMode, useTokenType } from '@banx/store/common'
 import { getTokenDecimals, isBanxSolTokenType } from '@banx/utils'
 
 import { useLenderStats } from '../../hooks'
@@ -23,9 +22,9 @@ export const useAllocationBlock = () => {
   const { allTime: allTimeStats, allocation: allocationStats } = lenderStats || {}
 
   const navigate = useNavigate()
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
-  const { modeType } = useModeType()
+  const { currentAssetMode } = useAssetMode()
 
   const {
     activeLoans = 0,
@@ -66,13 +65,11 @@ export const useAllocationBlock = () => {
   }
 
   const goToLendPage = () => {
-    const newPath = getRouteForMode(PATHS.LEND, modeType)
-    navigate(createPathWithModeParams(newPath, modeType, tokenType))
+    navigate(buildUrlWithModeAndToken(PATHS.LEND, currentAssetMode, tokenType))
   }
 
   const goToOffersPage = () => {
-    const newPath = getRouteForMode(PATHS.OFFERS, modeType)
-    navigate(createPathWithModeParams(newPath, modeType, tokenType))
+    navigate(buildUrlWithModeAndToken(PATHS.OFFERS, currentAssetMode, tokenType))
   }
 
   const emptyButtonText = isBanxSolTokenType(tokenType) ? 'Lend SOL' : 'Lend USDC'

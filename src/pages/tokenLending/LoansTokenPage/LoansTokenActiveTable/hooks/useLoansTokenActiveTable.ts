@@ -4,9 +4,8 @@ import { useNavigate } from 'react-router-dom'
 
 import { core } from '@banx/api/tokens'
 import { PATHS } from '@banx/router'
-import { createPathWithModeParams } from '@banx/store'
-import { ModeType } from '@banx/store/common'
-import { useNftTokenType } from '@banx/store/nft'
+import { buildUrlWithModeAndToken } from '@banx/store'
+import { AssetMode, useTokenType } from '@banx/store/common'
 import { getTokenTicker } from '@banx/utils'
 
 import { useFilterLoans } from './useFilterLoans'
@@ -23,7 +22,7 @@ export const useLoansTokenActiveTable = (props: {
   const { connected } = useWallet()
   const navigate = useNavigate()
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const {
     filteredLoansBySelectedCollection,
@@ -50,7 +49,7 @@ export const useLoansTokenActiveTable = (props: {
   const showSummary = !!loans.length && !isLoading
 
   const goToBorrowPage = () => {
-    navigate(createPathWithModeParams(PATHS.BORROW_TOKEN, ModeType.Token, tokenType))
+    navigate(buildUrlWithModeAndToken(PATHS.BORROW, AssetMode.Token, tokenType))
   }
 
   const tokenTicker = getTokenTicker(tokenType)

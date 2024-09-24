@@ -7,8 +7,7 @@ import { Button } from '@banx/components/Buttons'
 import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { useIsLedger } from '@banx/store/common'
-import { useNftTokenType } from '@banx/store/nft'
+import { useIsLedger, useTokenType } from '@banx/store/common'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
@@ -38,7 +37,7 @@ import styles from '../WalletModal.module.less'
 export const TokenLenderVault = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { isLedger } = useIsLedger()
 
@@ -155,7 +154,7 @@ export const TokenLenderVault = () => {
 export const NftLenderVault = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { isLedger } = useIsLedger()
 

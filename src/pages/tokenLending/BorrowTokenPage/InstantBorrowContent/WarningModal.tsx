@@ -5,7 +5,7 @@ import { createDisplayValueJSX } from '@banx/components/TableComponents'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { BorrowOffer, CollateralToken } from '@banx/api/tokens'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 import { formatValueByTokenType, getTokenDecimals, getTokenUnit } from '@banx/utils'
 
 import { getSummaryInfo } from './helpers'
@@ -23,7 +23,7 @@ const WarningModal: FC<WarningModalProps> = ({ offers, onSubmit, onCancel, colla
   const { weightedApr, weeklyFee, totalAmountToGet, totalCollateralsAmount } =
     getSummaryInfo(offers)
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const marketTokenDecimals = getTokenDecimals(tokenType) //? 1e6, 1e9
   const tokenUnit = getTokenUnit(tokenType)

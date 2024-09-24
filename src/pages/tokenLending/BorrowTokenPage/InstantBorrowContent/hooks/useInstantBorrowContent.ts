@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { BN } from 'fbonds-core'
 
 import { CollateralToken } from '@banx/api/tokens'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 import {
   adjustTokenAmountWithUpfrontFee,
   bnToHuman,
@@ -20,7 +20,7 @@ import { useBorrowOffersTransaction } from './useBorrowOffersTransaction'
 import { useBorrowTokensList, useCollateralsList } from './useCollateralsList'
 
 export const useInstantBorrowContent = () => {
-  const { tokenType, setTokenType } = useNftTokenType()
+  const { tokenType, setTokenType } = useTokenType()
 
   const [collateralInputValue, setCollateralInputValue] = useState('')
   const [collateralToken, setCollateralToken] = useState<CollateralToken>()

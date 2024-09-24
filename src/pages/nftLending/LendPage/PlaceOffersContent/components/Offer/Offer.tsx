@@ -10,7 +10,8 @@ import { createDisplayValueJSX, createPercentValueJSX } from '@banx/components/T
 import Tooltip from '@banx/components/Tooltip'
 
 import { Pencil } from '@banx/icons'
-import { SyntheticOffer, useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
+import { SyntheticOffer } from '@banx/store/nft'
 import { calculateApr, formatValueByTokenType, getTokenUnit } from '@banx/utils'
 
 import styles from './Offer.module.less'
@@ -32,7 +33,7 @@ const Offer: FC<OfferProps> = ({ editOffer, offer, collectionFloor }) => {
   } = offer
 
   const { connected, publicKey } = useWallet()
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const isOwnOffer = assetReceiver === publicKey?.toBase58()
   const isNewOffer = connected && offerPubkey === PUBKEY_PLACEHOLDER

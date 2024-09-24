@@ -2,13 +2,13 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 
 import { activity } from '@banx/api/nft'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 
 export const useBorrowerActivityCollectionsList = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { data, isLoading } = useQuery(
     ['borrowerActivityCollectionsList', publicKeyString, tokenType],

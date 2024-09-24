@@ -8,10 +8,9 @@ import { DisplayValue } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/tokens'
 import { PATHS } from '@banx/router'
-import { createPathWithModeParams } from '@banx/store'
-import { ModeType } from '@banx/store/common'
+import { buildUrlWithModeAndToken } from '@banx/store'
+import { AssetMode, useTokenType } from '@banx/store/common'
 import { createGlobalState } from '@banx/store/createGlobalState'
-import { useNftTokenType } from '@banx/store/nft'
 import { isBanxSolTokenType, isOfferStateClosed } from '@banx/utils'
 
 import { useSortedOffers } from './useSortedOffers'
@@ -23,7 +22,7 @@ export const useOffersTokenContent = () => {
   const { connected } = useWallet()
   const navigate = useNavigate()
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { offersPreview, updateOrAddOffer, isLoading } = useTokenOffersPreview()
 
@@ -63,7 +62,7 @@ export const useOffersTokenContent = () => {
   })
 
   const goToLendPage = () => {
-    navigate(createPathWithModeParams(PATHS.LEND_TOKEN, ModeType.Token, tokenType))
+    navigate(buildUrlWithModeAndToken(PATHS.LEND, AssetMode.Token, tokenType))
   }
 
   const tokenName = isBanxSolTokenType(tokenType) ? 'SOL' : 'USDC'

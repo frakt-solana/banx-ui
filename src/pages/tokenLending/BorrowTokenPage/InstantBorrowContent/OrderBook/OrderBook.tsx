@@ -6,7 +6,7 @@ import { maxBy } from 'lodash'
 import Table from '@banx/components/Table'
 
 import { BorrowOffer, CollateralToken } from '@banx/api/tokens'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 import { ZERO_BN, getTokenDecimals, stringToBN, sumBNs } from '@banx/utils'
 
 import { useSelectedOffers } from '../hooks/useSelectedOffers'
@@ -22,7 +22,7 @@ interface OrderBookProps {
 }
 
 const OrderBook: FC<OrderBookProps> = ({ offers, requiredCollateralsAmount, collateral }) => {
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6
 

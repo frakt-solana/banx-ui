@@ -6,7 +6,7 @@ import { chain, map, maxBy } from 'lodash'
 import { create } from 'zustand'
 
 import { core } from '@banx/api/tokens'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 import {
   isOfferNewer,
   isOptimisticOfferExpired,
@@ -19,7 +19,7 @@ import { LendTokenTabName } from './LendTokenPage'
 export const USE_TOKEN_MARKETS_PREVIEW_QUERY_KEY = 'tokenMarketsPreview'
 
 export const useTokenMarketsPreview = () => {
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { data, isLoading } = useQuery(
     [USE_TOKEN_MARKETS_PREVIEW_QUERY_KEY, tokenType],
@@ -39,7 +39,7 @@ export const useTokenMarketsPreview = () => {
 
 export const useTokenMarketOffers = (marketPubkey: string) => {
   const { optimisticOffers, update: updateOffer, remove: removeOffers } = useTokenOffersOptimistic()
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { data, isLoading, isFetching, isFetched } = useQuery(
     ['marketTokenOffers', marketPubkey, tokenType],

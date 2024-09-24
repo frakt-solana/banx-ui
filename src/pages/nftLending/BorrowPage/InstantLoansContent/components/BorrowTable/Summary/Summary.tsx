@@ -8,12 +8,10 @@ import { map, sumBy } from 'lodash'
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider, Slider, SliderProps } from '@banx/components/Slider'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
-import Tooltip from '@banx/components/Tooltip'
 
 import { core } from '@banx/api/nft'
-import bonkTokenImg from '@banx/assets/BonkToken.png'
 import { BONDS, ONE_WEEK_IN_SECONDS } from '@banx/constants'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 import {
   adjustBorrowValueWithSolanaRentFee,
   calcWeightedAverage,
@@ -34,7 +32,6 @@ interface SummaryProps {
   maxBorrowAmount: number
   maxBorrowPercent: number
   setMaxBorrowPercent: (value: number) => void
-  bonkRewardsAvailable: boolean
 }
 
 const calcLoanValueWithFees = (nft: TableNftData, tokenType: LendingTokenType) => {
@@ -62,9 +59,8 @@ export const Summary: FC<SummaryProps> = ({
   selectAmount,
   maxBorrowPercent,
   setMaxBorrowPercent,
-  bonkRewardsAvailable,
 }) => {
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const totalBorrow = sumBy(nftsInCart, (nft) => calcLoanValueWithFees(nft, tokenType))
 
@@ -93,8 +89,6 @@ export const Summary: FC<SummaryProps> = ({
     await borrowAll()
     setIsBorrowing(false)
   }
-
-  const showBonkRewardsSticker = !!(bonkRewardsAvailable && nftsInCart.length)
 
   return (
     <div className={styles.summary}>
@@ -146,11 +140,6 @@ export const Summary: FC<SummaryProps> = ({
           disabled={!nftsInCart.length}
           loading={isBorrowing}
         >
-          {!!showBonkRewardsSticker && (
-            <Tooltip className={styles.bonkTokenSticker} title="50% upfront fee refunded in $BONK">
-              <img src={bonkTokenImg} alt="Bonk token sticker" />
-            </Tooltip>
-          )}
           Borrow <DisplayValue value={totalBorrow} />
         </Button>
       </div>

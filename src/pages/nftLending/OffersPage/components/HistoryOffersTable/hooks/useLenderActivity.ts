@@ -7,7 +7,7 @@ import { SortOption } from '@banx/components/SortDropdown'
 
 import { activity } from '@banx/api/nft'
 import { createGlobalState } from '@banx/store'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 
 const PAGINATION_LIMIT = 15
 
@@ -17,7 +17,7 @@ export const useLenderActivity = () => {
   const { publicKey } = useWallet()
   const publicKeyString = publicKey?.toBase58() || ''
 
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const [sortOption, setSortOption] = useState(SORT_OPTIONS[0])
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()

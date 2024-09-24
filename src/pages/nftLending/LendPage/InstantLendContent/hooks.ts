@@ -5,7 +5,7 @@ import { produce } from 'immer'
 import { create } from 'zustand'
 
 import { core } from '@banx/api/nft'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 
 interface HiddenNftsMintsState {
   mints: string[]
@@ -25,7 +25,7 @@ const useHiddenNftsMint = create<HiddenNftsMintsState>((set) => ({
 
 export const useAllLoansRequests = () => {
   const { mints, addMints } = useHiddenNftsMint()
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
 
   const { data, isLoading } = useQuery(
     ['allLoansRequests', tokenType],

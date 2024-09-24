@@ -1,4 +1,6 @@
-import { FC } from 'react'
+import { ComponentType, FC } from 'react'
+
+import { useLocation } from 'react-router-dom'
 
 import { AdventuresPage, DashboardPage, LeaderboardPage, RootPage } from '@banx/pages/common'
 import { BorrowPage, LendPage, LoansPage, OffersPage } from '@banx/pages/nftLending'
@@ -8,6 +10,8 @@ import {
   LoansTokenPage,
   OffersTokenPage,
 } from '@banx/pages/tokenLending'
+import { getAssetModeFromUrl } from '@banx/store'
+import { AssetMode } from '@banx/store/common'
 
 import { PATHS } from './paths'
 
@@ -16,45 +20,24 @@ interface Route {
   component: FC
 }
 
-const nftRoutes: Route[] = [
+export const routes: Route[] = [
   {
     path: PATHS.BORROW,
-    component: BorrowPage,
+    component: () => <AssetModeComponent nftView={BorrowPage} tokenView={BorrowTokenPage} />,
   },
   {
     path: PATHS.LOANS,
-    component: LoansPage,
+    component: () => <AssetModeComponent nftView={LoansPage} tokenView={LoansTokenPage} />,
   },
   {
     path: PATHS.LEND,
-    component: LendPage,
+    component: () => <AssetModeComponent nftView={LendPage} tokenView={LendTokenPage} />,
   },
+
   {
     path: PATHS.OFFERS,
-    component: OffersPage,
+    component: () => <AssetModeComponent nftView={OffersPage} tokenView={OffersTokenPage} />,
   },
-]
-
-const tokenRoutes: Route[] = [
-  {
-    path: PATHS.BORROW_TOKEN,
-    component: BorrowTokenPage,
-  },
-  {
-    path: PATHS.LOANS_TOKEN,
-    component: LoansTokenPage,
-  },
-  {
-    path: PATHS.LEND_TOKEN,
-    component: LendTokenPage,
-  },
-  {
-    path: PATHS.OFFERS_TOKEN,
-    component: OffersTokenPage,
-  },
-]
-
-export const routes: Route[] = [
   {
     path: PATHS.ROOT,
     component: RootPage,
@@ -75,12 +58,24 @@ export const routes: Route[] = [
     path: PATHS.PAGE_404, //? Why don't we have page 404?
     component: RootPage,
   },
-
-  ...nftRoutes,
-  ...tokenRoutes,
-
   {
     path: '*',
     component: RootPage,
   },
 ]
+
+interface AssetModeComponentProps {
+  nftView: ComponentType
+  tokenView: ComponentType
+}
+
+const AssetModeComponent: FC<AssetModeComponentProps> = ({
+  nftView: NftView,
+  tokenView: TokenView,
+}) => {
+  const location = useLocation()
+  const urlParams = new URLSearchParams(location.search)
+  const assetMode = getAssetModeFromUrl(urlParams)
+
+  return assetMode === AssetMode.Token ? <TokenView /> : <NftView />
+}

@@ -10,8 +10,7 @@ import Tooltip from '@banx/components/Tooltip'
 
 import { core } from '@banx/api/tokens'
 import { Underwater } from '@banx/icons'
-import { ViewState, useTableView } from '@banx/store/common'
-import { useNftTokenType } from '@banx/store/nft'
+import { ViewState, useTableView, useTokenType } from '@banx/store/common'
 import {
   isTokenLoanLiquidated,
   isTokenLoanListed,
@@ -28,7 +27,7 @@ import { useSelectedTokenLoans } from './loansState'
 import styles from './ActiveLoansTable.module.less'
 
 export const ActiveLoansTable = () => {
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
   const { publicKey: walletPublicKey } = useWallet()
   const walletPublicKeyString = walletPublicKey?.toBase58() || ''
 

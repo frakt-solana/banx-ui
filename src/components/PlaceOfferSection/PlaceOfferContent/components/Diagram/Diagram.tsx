@@ -3,7 +3,7 @@ import React, { FC, useRef, useState } from 'react'
 import { Skeleton } from 'antd'
 
 import { core } from '@banx/api/nft'
-import { useNftTokenType } from '@banx/store/nft'
+import { useTokenType } from '@banx/store/common'
 
 import { DiagramMark } from './components'
 import { calcLeftPercentage, groupMarks } from './helpers'
@@ -21,7 +21,7 @@ interface DiagramProps {
 }
 
 export const Diagram: FC<DiagramProps> = ({ marks = [], isLoading }) => {
-  const { tokenType } = useNftTokenType()
+  const { tokenType } = useTokenType()
   const groupedMarks = groupMarks(marks)
 
   const [isScrolling, setIsScrolling] = useState(false)
