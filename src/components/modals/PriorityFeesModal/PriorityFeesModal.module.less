@@ -11,11 +11,12 @@
 
 .tabs {
   background: var(--bg-tertiary);
-  border: var(--border-primary);
+  border: var(--border-less-primary);
   border-radius: 100px;
+
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  padding: 2px;
+  padding: 4px;
 
   margin-bottom: 24px;
 
@@ -25,18 +26,20 @@
 }
 
 .tab {
-  cursor: pointer;
   background: unset;
-  outline: unset;
   border: unset;
-  font: var(--body-text-md);
   border-radius: 100px;
-  padding: 5px 5px;
-  color: var(--content-primary);
+
+  color: var(--content-secondary);
+  cursor: pointer;
+  font: var(--btn-text-md);
+
+  padding: 4px 8px;
+  outline: unset;
 }
 
 .tabActive {
-  background: var(--bg-primary);
+  background: var(--action-primary);
   color: var(--content-primary);
 }
 

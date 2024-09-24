@@ -1,7 +1,7 @@
 import { BN } from 'fbonds-core'
 import { BondOfferV3 } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { convertToDecimalString } from '@banx/utils'
+import { convertToDecimalString, formatTrailingZeros } from '@banx/utils'
 import { ZERO_BN } from '@banx/utils/bn'
 
 import { isOfferStateClosed } from '../offers'
@@ -46,5 +46,5 @@ export const formatTokensPerCollateralToStr = (tokensPerCollateral: BN): string 
   const value = tokensPerCollateral.toNumber() / Math.pow(10, 9)
   const adjustedValue = parseFloat(value.toPrecision(4))
 
-  return convertToDecimalString(adjustedValue)
+  return formatTrailingZeros(convertToDecimalString(adjustedValue, 2))
 }

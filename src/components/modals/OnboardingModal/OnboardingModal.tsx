@@ -1,6 +1,7 @@
 import { FC } from 'react'
 
 import { Carousel } from 'antd'
+import classNames from 'classnames'
 
 import { Loader } from '@banx/components/Loader'
 import { Modal } from '@banx/components/modals/BaseModal'
@@ -39,7 +40,7 @@ export const OnboardingModal: FC<OnboardingModalProps> = ({
           infinite={false}
         >
           {content.slides.map(({ text, img, imgDark }, idx) => (
-            <div className={styles.slide} key={idx}>
+            <div className={classNames(styles.slide, { [styles.darkSlide]: isDarkMode })} key={idx}>
               {isDarkMode ? imgDark : img}
               {text}
             </div>
