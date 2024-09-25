@@ -1,6 +1,7 @@
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 
 import classNames from 'classnames'
+import { filter } from 'lodash'
 
 import { staking } from '@banx/api/common'
 import { BANX_TOKEN_DECIMALS } from '@banx/constants'
@@ -43,9 +44,15 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
   })
   const { open } = useModal()
 
-  const stakedNftsValue = `${formatNumbersWithCommas(
-    banxTokenStake?.banxNftsStakedQuantity.toNumber() || 0,
-  )}/${formatNumbersWithCommas(nfts?.length.toString() || '0')}`
+  const totalStakedNfts = useMemo(() => {
+    return filter(nfts, (nft) => nft.stake?.publicKey).length
+  }, [nfts])
+
+  const totalNfts = nfts?.length || 0
+
+  const stakedNftsDisplayValue = `${formatNumbersWithCommas(
+    totalStakedNfts,
+  )}/${formatNumbersWithCommas(totalNfts)}`
 
   const stakedTokensValue = `${formatCompact(
     bnToFixed({
@@ -63,7 +70,7 @@ export const Sidebar: FC<SidebarProps> = ({ className, banxStakingSettings, banx
         <ManageStakeSection
           onClick={() => open(StakeNftsModal)}
           label="NFTs staked"
-          value={stakedNftsValue}
+          value={stakedNftsDisplayValue}
           className={styles.manageNftsSection}
         />
 
