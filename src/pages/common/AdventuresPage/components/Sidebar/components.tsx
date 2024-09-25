@@ -4,10 +4,10 @@ import { ExclamationCircleOutlined } from '@ant-design/icons'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
-import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
+import { StatInfo } from '@banx/components/StatInfo'
 
 import { BanxToken } from '@banx/icons'
-import { formatNumbersWithCommas } from '@banx/utils'
+import { formatNumbersWithCommas, formatTrailingZeros } from '@banx/utils'
 
 import styles from './SidebarComponents.module.less'
 
@@ -40,7 +40,6 @@ export const ManageStakeSection: FC<ManageStakeSectionProps> = ({
       <StatInfo
         label={label}
         value={value}
-        valueType={VALUES_TYPES.STRING}
         classNamesProps={{
           container: styles.manageStakeInfoContainer,
           label: styles.manageStakeInfoLabel,
@@ -68,23 +67,25 @@ export const WalletStakedStatsSection: FC<WalletStakedStatsSectionProps> = ({
   const TOOLTIP_TEXT =
     'The Banx ecosystem is governed by Partner and Player points. These points determine holder benefits, proportional to total amount of points staked.'
 
+  const formattedTotalPartnerPoints = formatTrailingZeros(totalPartnerPoints.toFixed(2))
+  const formattedTotalPlayersPoints = formatTrailingZeros(totalPlayersPoints.toFixed(2))
+
   return (
     <StatInfo
+      label="Total points staked"
       classNamesProps={{
         container: className,
         label: styles.walletStakedStatsLabel,
         labelWrapper: styles.walletStakedStatsLabelWrapper,
       }}
-      label="Total points staked"
       tooltipText={TOOLTIP_TEXT}
       value={
         <div className={styles.walletStakedStatsValues}>
-          <p>{formatNumbersWithCommas(totalPartnerPoints.toFixed(2))} partner</p>
-          <p>{formatNumbersWithCommas(totalPlayersPoints.toFixed(2))} player</p>
+          <p>{formatNumbersWithCommas(formattedTotalPartnerPoints)} partner</p>
+          <p>{formatNumbersWithCommas(formattedTotalPlayersPoints)} player</p>
         </div>
       }
       flexType="row"
-      valueType={VALUES_TYPES.STRING}
     />
   )
 }
@@ -102,7 +103,6 @@ export const ClaimSection: FC<ClaimSectionProps> = ({ value, onClick, disabled, 
         label="claimable"
         value={value}
         icon={BanxToken}
-        valueType={VALUES_TYPES.STRING}
         classNamesProps={{
           container: styles.claimContainer,
           label: styles.claimLabel,
@@ -134,7 +134,6 @@ export const TotalClaimedSection: FC<TotalClaimedSectionProps> = ({ value, class
       value={value}
       icon={BanxToken}
       flexType="row"
-      valueType={VALUES_TYPES.STRING}
     />
   )
 }
