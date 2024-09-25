@@ -4,13 +4,15 @@ import { Button } from '@banx/components/Buttons'
 import { Slider } from '@banx/components/Slider'
 import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
+import { NumericStepInput } from '@banx/components/inputs'
 import { Modal } from '@banx/components/modals/BaseModal'
 
 import { core } from '@banx/api/tokens'
-import { useModal } from '@banx/store/common'
+import { useModal, useTokenType } from '@banx/store/common'
 import {
   caclulateBorrowTokenLoanValue,
   getColorByPercent,
+  getTokenDecimals,
   isTokenLoanRepaymentCallActive,
 } from '@banx/utils'
 
@@ -25,6 +27,9 @@ interface RepayTokenModallProps {
 const RepayTokenModal: FC<RepayTokenModallProps> = ({ loan }) => {
   const { repayLoan, repayPartialLoan } = useTokenLoansTransactions()
   const { close } = useModal()
+  const { tokenType } = useTokenType()
+
+  const marketTokenDecimals = getTokenDecimals(tokenType) //? 1e9, 1e6
 
   const {
     repaymentCallActive,
@@ -37,11 +42,13 @@ const RepayTokenModal: FC<RepayTokenModallProps> = ({ loan }) => {
   } = calculateRepaymentStaticValues(loan)
 
   const [repaymentPercent, setRepaymentPercent] = useState<number>(initialRepayPercent)
+  const [paybackValueInput, setPaybackValueInput] = useState<string>(
+    (debtValue / marketTokenDecimals).toString(),
+  )
   const isFullRepayment = repaymentPercent === 100
 
   const baseDebtValue = isFullRepayment ? debtValue : debtWithoutFee
 
-  //? Check if repaymentPercent equals roundedRepaymentPercentage to handle rounding issues (Uses for repayment call feature)
   const isRoundedRepayment = repaymentPercent === roundedRepaymentPercentage
 
   const selectedRepaymentPercentage = isRoundedRepayment
@@ -52,17 +59,33 @@ const RepayTokenModal: FC<RepayTokenModallProps> = ({ loan }) => {
 
   const remainingDebt = debtValue - paybackValue
 
+  const handleSliderChange = (value: number) => {
+    const baseDebtValue = value === 100 ? debtValue : debtWithoutFee
+    setRepaymentPercent(value)
+
+    const newPaybackValue = (baseDebtValue * value) / 100 / marketTokenDecimals
+    setPaybackValueInput(newPaybackValue.toFixed(2).toString())
+  }
+
+  const handleInputChange = (value: string) => {
+    const parsedValue = parseFloat(value) * marketTokenDecimals
+    if (!isNaN(parsedValue)) {
+      const newRepaymentPercent = (parsedValue / baseDebtValue) * 100
+      setRepaymentPercent(newRepaymentPercent)
+    }
+    setPaybackValueInput(value)
+  }
+
   const onSubmit = async () => {
     if (isFullRepayment) {
       return await repayLoan(loan)
     }
 
-    //? If repaymentPercent equals roundedRepaymentPercentage, repay a partial loan with rounded up percentage
-    if (isRoundedRepayment) {
-      return await repayPartialLoan(loan, Math.ceil(unroundedRepaymentPercentage * 100))
-    }
+    const repaymentAmount = isRoundedRepayment
+      ? Math.ceil(unroundedRepaymentPercentage * 100)
+      : repaymentPercent * 100
 
-    return await repayPartialLoan(loan, repaymentPercent * 100)
+    return await repayPartialLoan(loan, repaymentAmount)
   }
 
   const colorClassNameByValue = {
@@ -72,18 +95,19 @@ const RepayTokenModal: FC<RepayTokenModallProps> = ({ loan }) => {
 
   return (
     <Modal open onCancel={close}>
-      <StatInfo
-        label="Debt:"
-        value={<DisplayValue value={debtValue} />}
-        classNamesProps={{ container: styles.repayModalInfo }}
-        flexType="row"
+      <NumericStepInput
+        label="Repay value"
+        value={paybackValueInput}
+        onChange={handleInputChange}
       />
+
       <Slider
         value={repaymentPercent}
-        onChange={setRepaymentPercent}
+        onChange={handleSliderChange}
         className={styles.repayModalSlider}
         rootClassName={getColorByPercent(repaymentPercent, colorClassNameByValue)}
       />
+
       <div className={styles.repayModalAdditionalInfo}>
         {repaymentCallActive && (
           <StatInfo
@@ -92,17 +116,13 @@ const RepayTokenModal: FC<RepayTokenModallProps> = ({ loan }) => {
             value={<DisplayValue value={repaymentCallAmount} />}
             classNamesProps={{ label: styles.repayModalRepaymentCall }}
             onClickProps={{
-              onLabelClick: () => setRepaymentPercent(initialRepayPercent),
+              onLabelClick: () => handleSliderChange(initialRepayPercent),
             }}
           />
         )}
+        <StatInfo label="Total debt" value={<DisplayValue value={debtValue} />} flexType="row" />
         <StatInfo
-          label="Repay value"
-          value={<DisplayValue value={paybackValue} />}
-          flexType="row"
-        />
-        <StatInfo
-          label="Remaining debt"
+          label="Debt after repayment"
           value={<DisplayValue value={remainingDebt} />}
           flexType="row"
         />
