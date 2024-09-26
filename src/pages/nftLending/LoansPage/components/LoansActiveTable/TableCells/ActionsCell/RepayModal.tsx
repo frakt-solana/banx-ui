@@ -126,7 +126,7 @@ export const RepayModal: FC<RepayModalProps> = ({ loan }) => {
             value={<DisplayValue value={repaymentCallAmount} />}
             classNamesProps={{ label: styles.repayModalRepaymentCall }}
             onClickProps={{
-              onLabelClick: () => setRepaymentPercent(initialRepayPercent),
+              onLabelClick: () => handleSliderChange(initialRepayPercent),
             }}
           />
         )}
