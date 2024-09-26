@@ -13,10 +13,12 @@ import {
   caclulateBorrowTokenLoanValue,
   getColorByPercent,
   getTokenDecimals,
+  getTokenUnit,
   isTokenLoanRepaymentCallActive,
 } from '@banx/utils'
 
 import { useTokenLoansTransactions } from '../../hooks'
+import { formatWithMarketDecimals, isFullRepayment } from './helpers'
 
 import styles from './RepayTokenModal.module.less'
 
@@ -41,51 +43,57 @@ const RepayTokenModal: FC<RepayTokenModallProps> = ({ loan }) => {
     unroundedRepaymentPercentage,
   } = calculateRepaymentStaticValues(loan)
 
-  const [repaymentPercent, setRepaymentPercent] = useState<number>(initialRepayPercent)
-  const [paybackValueInput, setPaybackValueInput] = useState<string>(
-    (debtValue / marketTokenDecimals).toString(),
-  )
-  const isFullRepayment = repaymentPercent === 100
+  const initialPaybackValue = formatWithMarketDecimals(debtValue, marketTokenDecimals)
 
-  const baseDebtValue = isFullRepayment ? debtValue : debtWithoutFee
+  const [repaymentPercent, setRepaymentPercent] = useState<number>(initialRepayPercent)
+  const [paybackValueInput, setPaybackValueInput] = useState<string>(initialPaybackValue)
 
   const isRoundedRepayment = repaymentPercent === roundedRepaymentPercentage
 
+  //? Calculate base debt depending on whether it's full or partial repayment
+  const calculateBaseDebt = (percent: number) =>
+    isFullRepayment(percent) ? debtValue : debtWithoutFee
+
+  const calculatePaybackValue = (baseDebt: number, percent: number) => (baseDebt * percent) / 100
+
+  const baseDebtValue = calculateBaseDebt(repaymentPercent)
   const selectedRepaymentPercentage = isRoundedRepayment
     ? unroundedRepaymentPercentage
     : repaymentPercent
 
-  const paybackValue = (baseDebtValue * selectedRepaymentPercentage) / 100
-
+  const paybackValue = calculatePaybackValue(baseDebtValue, selectedRepaymentPercentage)
   const remainingDebt = debtValue - paybackValue
 
-  const handleSliderChange = (value: number) => {
-    const baseDebtValue = value === 100 ? debtValue : debtWithoutFee
-    setRepaymentPercent(value)
+  const handleSliderChange = (percent: number) => {
+    const baseDebtValue = calculateBaseDebt(percent)
+    setRepaymentPercent(percent)
 
-    const newPaybackValue = (baseDebtValue * value) / 100 / marketTokenDecimals
-    setPaybackValueInput(newPaybackValue.toFixed(2).toString())
+    const newPaybackValue = calculatePaybackValue(baseDebtValue, percent)
+    setPaybackValueInput(formatWithMarketDecimals(newPaybackValue, marketTokenDecimals))
   }
 
   const handleInputChange = (value: string) => {
     const parsedValue = parseFloat(value) * marketTokenDecimals
-    if (!isNaN(parsedValue)) {
-      const newRepaymentPercent = (parsedValue / baseDebtValue) * 100
-      setRepaymentPercent(newRepaymentPercent)
+
+    if (isNaN(parsedValue) || !parsedValue) {
+      setRepaymentPercent(0)
     }
+
+    const newRepaymentPercent = (parsedValue / baseDebtValue) * 100
+    setRepaymentPercent(Math.min(newRepaymentPercent, 100))
     setPaybackValueInput(value)
   }
 
   const onSubmit = async () => {
-    if (isFullRepayment) {
+    if (isFullRepayment(repaymentPercent)) {
       return await repayLoan(loan)
     }
 
-    const repaymentAmount = isRoundedRepayment
+    const fractionToRepay = isRoundedRepayment
       ? Math.ceil(unroundedRepaymentPercentage * 100)
       : repaymentPercent * 100
 
-    return await repayPartialLoan(loan, repaymentAmount)
+    return await repayPartialLoan(loan, fractionToRepay)
   }
 
   const colorClassNameByValue = {
@@ -99,6 +107,7 @@ const RepayTokenModal: FC<RepayTokenModallProps> = ({ loan }) => {
         label="Repay value"
         value={paybackValueInput}
         onChange={handleInputChange}
+        postfix={getTokenUnit(tokenType)}
       />
 
       <Slider
