@@ -11,6 +11,7 @@ import { core } from '@banx/api/tokens'
 import { useModal, useTokenType } from '@banx/store/common'
 import {
   caclulateBorrowTokenLoanValue,
+  formatTrailingZeros,
   getColorByPercent,
   getTokenDecimals,
   getTokenUnit,
@@ -18,7 +19,6 @@ import {
 } from '@banx/utils'
 
 import { useTokenLoansTransactions } from '../../hooks'
-import { formatWithMarketDecimals, isFullRepayment } from './helpers'
 
 import styles from './RepayTokenModal.module.less'
 
@@ -89,6 +89,7 @@ const RepayTokenModal: FC<RepayTokenModallProps> = ({ loan }) => {
       return await repayLoan(loan)
     }
 
+    //? If repaymentPercent equals roundedRepaymentPercentage, repay a partial loan with rounded up percentage
     const fractionToRepay = isRoundedRepayment
       ? Math.ceil(unroundedRepaymentPercentage * 100)
       : repaymentPercent * 100
@@ -176,3 +177,8 @@ const calculateRepaymentStaticValues = (loan: core.TokenLoan) => {
     unroundedRepaymentPercentage,
   }
 }
+
+const formatWithMarketDecimals = (value: number, marketDecimals: number, decimalsPlaces = 4) =>
+  formatTrailingZeros((value / marketDecimals).toFixed(decimalsPlaces))
+
+const isFullRepayment = (percent: number) => percent === 100
