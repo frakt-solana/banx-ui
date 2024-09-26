@@ -65,23 +65,24 @@ const RepayTokenModal: FC<RepayTokenModallProps> = ({ loan }) => {
   const remainingDebt = debtValue - paybackValue
 
   const handleSliderChange = (percent: number) => {
-    const baseDebtValue = calculateBaseDebt(percent)
     setRepaymentPercent(percent)
 
+    const baseDebtValue = calculateBaseDebt(percent)
     const newPaybackValue = calculatePaybackValue(baseDebtValue, percent)
     setPaybackValueInput(formatWithMarketDecimals(newPaybackValue, marketTokenDecimals))
   }
 
   const handleInputChange = (value: string) => {
-    const parsedValue = parseFloat(value) * marketTokenDecimals
+    setPaybackValueInput(value)
 
-    if (isNaN(parsedValue) || !parsedValue) {
+    const parsedValue = parseFloat(value)
+
+    if (isNaN(parseFloat(value))) {
       setRepaymentPercent(0)
     }
 
-    const newRepaymentPercent = (parsedValue / baseDebtValue) * 100
+    const newRepaymentPercent = ((parsedValue * marketTokenDecimals) / baseDebtValue) * 100
     setRepaymentPercent(Math.min(newRepaymentPercent, 100))
-    setPaybackValueInput(value)
   }
 
   const onSubmit = async () => {
