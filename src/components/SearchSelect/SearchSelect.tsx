@@ -104,6 +104,7 @@ export const SearchSelect = <P extends object>({
         searchValue={inputValue}
         value={selectedOptions}
         onChange={onChange}
+        open={isPopupOpen}
         allowClear
         showSearch
         placeholder={placeholder}
@@ -117,6 +118,7 @@ export const SearchSelect = <P extends object>({
         onDropdownVisibleChange={togglePopupVisible}
         maxTagCount="responsive"
         transitionName="" //? Remove all animations
+        autoFocus={isPopupOpen}
         dropdownRender={(menu) => (
           <>
             <SelectLabels labels={labels} />
