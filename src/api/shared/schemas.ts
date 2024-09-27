@@ -107,7 +107,6 @@ export const BondTradeTransactionSchema = z.object({
   bondTradeTransactionType: z.nativeEnum(BondTradeTransactionV2Type),
   borrowerFullRepaidAmount: StringIntSchema,
   borrowerOriginalLent: StringIntSchema,
-  repaymentCallAmount: StringIntSchema, //? Stores value that borrower needs to pay (NOT value that lender receives)
   currentRemainingLent: StringIntSchema,
   fbondTokenMint: StringPublicKeySchema,
   feeAmount: StringIntSchema,
@@ -120,12 +119,14 @@ export const BondTradeTransactionSchema = z.object({
   redeemResult: z.nativeEnum(RedeemResult),
   redeemedAt: StringIntSchema,
   repayDestination: z.nativeEnum(RepayDestination),
+  repaymentCallAmount: StringIntSchema, //? Stores value that borrower needs to pay (NOT value that lender receives)
   seller: StringPublicKeySchema,
   solAmount: StringIntSchema,
   soldAt: StringIntSchema,
   terminationFreeze: StringIntSchema,
   terminationStartedAt: StringIntSchema,
   user: StringPublicKeySchema,
+  redeemResultNext: z.nativeEnum(RedeemResult),
 })
 
 export const FraktBondSchema = z.object({
