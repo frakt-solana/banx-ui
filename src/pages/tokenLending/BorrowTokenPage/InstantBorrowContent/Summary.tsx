@@ -13,10 +13,11 @@ import styles from './InstantBorrowContent.module.less'
 
 interface SummaryProps {
   offers: BorrowOffer[]
+  marketPubkey: string
 }
 
-export const Summary: FC<SummaryProps> = ({ offers }) => {
-  const { upfrontFee, weightedApr, weightedLtv, weeklyFee } = getSummaryInfo(offers)
+export const Summary: FC<SummaryProps> = ({ offers, marketPubkey }) => {
+  const { upfrontFee, weightedApr, weightedLtv, weeklyFee } = getSummaryInfo(offers, marketPubkey)
 
   const statClassNames = {
     value: styles.fixedStatValue,

@@ -64,7 +64,7 @@ interface AprCellProps {
 }
 
 export const AprCell: FC<AprCellProps> = ({ offer }) => {
-  const aprRateWithProtocolFee = calcBorrowerTokenAPR(offer.loanApr.toNumber())
+  const aprRateWithProtocolFee = calcBorrowerTokenAPR(offer.loanApr.toNumber(), offer.hadoMarket)
   const aprPercent = aprRateWithProtocolFee / 100
 
   return <span className={styles.cellValue}>{createPercentValueJSX(aprPercent)}</span>

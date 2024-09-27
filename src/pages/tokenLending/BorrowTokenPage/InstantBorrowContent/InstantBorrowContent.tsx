@@ -1,4 +1,5 @@
 import { useWallet } from '@solana/wallet-adapter-react'
+import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 
 import { Button } from '@banx/components/Buttons'
 import { Loader } from '@banx/components/Loader'
@@ -103,7 +104,10 @@ const InstantBorrowContent = () => {
         />
 
         <div className={styles.footerContent}>
-          <Summary offers={offersInCart} />
+          <Summary
+            offers={offersInCart}
+            marketPubkey={collateralToken?.marketPubkey ?? PUBKEY_PLACEHOLDER}
+          />
 
           <Button
             onClick={onSubmit}

@@ -1,4 +1,4 @@
-import { BN } from 'fbonds-core'
+import { BN, web3 } from 'fbonds-core'
 import { BASE_POINTS, PROTOCOL_FEE_TOKEN_BN } from 'fbonds-core/lib/fbond-protocol/constants'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { calcBorrowerTokenAPR } from 'fbonds-core/lib/fbond-protocol/helpers'
@@ -66,7 +66,7 @@ export const getErrorMessage = ({
   return ''
 }
 
-export const getSummaryInfo = (offers: BorrowOffer[]) => {
+export const getSummaryInfo = (offers: BorrowOffer[], marketPubkey: string) => {
   const totalAmountToGet = sumBNs(offers.map((offer) => new BN(offer.maxTokenToGet)))
   const totalCollateralsAmount = sumBNs(offers.map((offer) => new BN(offer.maxCollateralToReceive)))
 
@@ -74,7 +74,10 @@ export const getSummaryInfo = (offers: BorrowOffer[]) => {
 
   const amountToGetArray = offers.map((offer) => parseFloat(offer.maxTokenToGet))
 
-  const aprRateArray = offers.map((offer) => calcBorrowerTokenAPR(parseFloat(offer.apr)))
+  const aprRateArray = offers.map((offer) =>
+    calcBorrowerTokenAPR(parseFloat(offer.apr), new web3.PublicKey(marketPubkey)),
+  )
+
   const weightedApr = calcWeightedAverage(aprRateArray, amountToGetArray)
 
   const ltvRateArray = offers.map((offer) => parseFloat(offer.ltv))

@@ -1,5 +1,7 @@
 import { FC } from 'react'
 
+import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
+
 import { Button } from '@banx/components/Buttons'
 import { createDisplayValueJSX } from '@banx/components/TableComponents'
 import { Modal } from '@banx/components/modals/BaseModal'
@@ -20,8 +22,12 @@ interface WarningModalProps {
 }
 
 const WarningModal: FC<WarningModalProps> = ({ offers, onSubmit, onCancel, collateral }) => {
-  const { weightedApr, weeklyFee, totalAmountToGet, totalCollateralsAmount } =
-    getSummaryInfo(offers)
+  const marketPubkey = collateral?.marketPubkey ?? PUBKEY_PLACEHOLDER
+
+  const { weightedApr, weeklyFee, totalAmountToGet, totalCollateralsAmount } = getSummaryInfo(
+    offers,
+    marketPubkey,
+  )
 
   const { tokenType } = useTokenType()
 

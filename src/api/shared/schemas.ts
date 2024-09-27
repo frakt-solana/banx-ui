@@ -148,5 +148,5 @@ export const FraktBondSchema = z.object({
   refinanceAuctionStartedAt: StringIntSchema,
   repaidOrLiquidatedAt: StringIntSchema,
   terminatedCounter: z.number(),
-  hadoMarket: StringPublicKeySchema.optional(), //? Why optional
+  hadoMarket: StringPublicKeySchema,
 })

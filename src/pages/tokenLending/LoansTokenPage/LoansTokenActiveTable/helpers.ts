@@ -1,4 +1,4 @@
-import { BN } from 'fbonds-core'
+import { BN, web3 } from 'fbonds-core'
 import {
   calculateCurrentInterestSolPure,
   calculatePartOfLoanBodyFromInterest,
@@ -32,7 +32,10 @@ export const calcAccruedInterest = (loan: core.TokenLoan) => {
     loanValue: solAmount,
     startTime: soldAt,
     currentTime: moment().unix(),
-    rateBasePoints: calcBorrowerTokenAPR(amountOfBonds),
+    rateBasePoints: calcBorrowerTokenAPR(
+      amountOfBonds,
+      new web3.PublicKey(loan.fraktBond.hadoMarket),
+    ),
   }
 
   return calculateCurrentInterestSolPure(interestParameters)
@@ -56,7 +59,10 @@ const calcPercentToPay = (loan: core.TokenLoan, iterestToPay: number) => {
 
   const partOfLoan = calculatePartOfLoanBodyFromInterest({
     soldAt,
-    rateBasePoints: calcBorrowerTokenAPR(amountOfBonds),
+    rateBasePoints: calcBorrowerTokenAPR(
+      amountOfBonds,
+      new web3.PublicKey(loan.fraktBond.hadoMarket),
+    ),
     iterestToPay,
   })
   return (partOfLoan / solAmount) * 100
@@ -88,7 +94,11 @@ export const calcTokenTotalValueToPay = (loan: core.TokenLoan) => {
 export const calcWeightedApr = (loans: core.TokenLoan[]) => {
   const totalAprValues = map(
     loans,
-    (loan) => calcBorrowerTokenAPR(loan.bondTradeTransaction.amountOfBonds) / 100,
+    (loan) =>
+      calcBorrowerTokenAPR(
+        loan.bondTradeTransaction.amountOfBonds,
+        new web3.PublicKey(loan.fraktBond.hadoMarket),
+      ) / 100,
   )
 
   const totalRepayValues = map(loans, (loan) => caclulateBorrowTokenLoanValue(loan).toNumber())
@@ -130,7 +140,10 @@ export const calculateTokensToGet: CalculateTokensToGet = ({
 export const getCurrentLoanInfo = (loan: core.TokenLoan) => {
   const currentLoanDebt = caclulateBorrowTokenLoanValue(loan).toNumber()
   const currentLoanBorrowedAmount = loan.fraktBond.borrowedAmount
-  const currentApr = calcBorrowerTokenAPR(loan.bondTradeTransaction.amountOfBonds)
+  const currentApr = calcBorrowerTokenAPR(
+    loan.bondTradeTransaction.amountOfBonds,
+    new web3.PublicKey(loan.fraktBond.hadoMarket),
+  )
 
   return {
     currentLoanDebt,
