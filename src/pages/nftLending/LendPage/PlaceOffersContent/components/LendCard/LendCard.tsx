@@ -22,15 +22,15 @@ const LendCard: FC<LendCardProps> = ({ isCardOpen, onCardClick, market }) => {
   return (
     <div className={styles.card}>
       <div
-        className={classNames(styles.cardBody, { [styles.active]: isCardOpen })}
+        className={classNames(styles.cardBody, { [styles.opened]: isCardOpen })}
         onClick={onCardClick}
       >
         <MarketMainInfo market={market} />
-        <div className={styles.row}>
+        <div className={styles.additionalContentWrapper}>
           <MarketAdditionalInfo market={market} isCardOpen={isCardOpen} />
           <Button
             type="circle"
-            className={classNames(styles.chevronButton, { [styles.active]: isCardOpen })}
+            className={classNames(styles.chevronButton, { [styles.opened]: isCardOpen })}
           >
             <ChevronDown />
           </Button>

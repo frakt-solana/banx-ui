@@ -1,3 +1,4 @@
+// * MarketMainInfo * //
 .mainInfoContainer {
   display: flex;
   align-items: center;
@@ -20,13 +21,9 @@
 }
 
 .collectionImage {
-  height: 64px;
-  width: 64px;
-
-  @media (max-width: 640px) {
-    height: 48px;
-    width: 48px;
-  }
+  border-radius: 100%;
+  height: 22px;
+  width: 22px;
 }
 
 .collectionInfo {
@@ -42,19 +39,7 @@
 }
 
 .collectionName {
-  font: var(--title-lg);
-  max-width: 290px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-
-  @media (min-width: 961px) and (max-width: 1240px), (max-width: 640px) {
-    max-width: 176px;
-  }
-
-  @media (max-width: 640px) {
-    font: var(--title-md);
-  }
+  font: var(--title-md);
 }
 
 .tensorLink {
@@ -68,21 +53,9 @@
     }
   }
 }
+// * MarketMainInfo * //
 
-.mainInfoStats {
-  display: flex;
-  align-items: center;
-  white-space: nowrap;
-  gap: 16px;
-  width: 100%;
-
-  @media (max-width: 640px) {
-    & > div {
-      gap: unset;
-    }
-  }
-}
-
+// * MarketAdditionalInfo * //
 .additionalInfoStats {
   display: flex;
   justify-content: flex-end;
@@ -90,39 +63,52 @@
   white-space: nowrap;
   width: 100%;
 
-  & > div {
-    align-items: flex-end;
-    max-width: 240px;
-    width: 100%;
+  @media (max-width: 960px) {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, auto);
+    gap: 8px;
+  }
+}
 
-    @media (max-width: 1380px) {
-      max-width: 200px;
-    }
+.additionalInfoStat {
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+  max-width: 180px;
+  width: 100%;
 
-    @media (max-width: 1240px) {
-      max-width: 120px;
-    }
+  @media (max-width: 1240px) {
+    max-width: 120px;
   }
 
   @media (max-width: 960px) {
-    justify-content: space-between;
-    gap: unset;
+    .opened &:nth-child(n + 3) {
+      visibility: hidden;
+      height: 0;
+    }
 
-    & > div {
+    &:nth-child(-n + 2) {
+      grid-row: 1;
+    }
+
+    &:nth-child(n + 3) {
+      grid-row: 2;
+    }
+
+    &:not(:last-child) {
       align-items: flex-start;
     }
-    & > div:last-child {
-      align-items: flex-end;
-    }
-  }
-
-  &.hidden {
-    @media (max-width: 640px) {
-      display: none;
-    }
   }
 }
 
-.aprValue {
+.additionalInfoStatLabelWrapper {
+  @media (min-width: 961px) {
+    display: none;
+  }
+}
+
+.additionalAprStat {
   color: var(--additional-green-primary-deep);
 }
+// * MarketAdditionalInfo * //
