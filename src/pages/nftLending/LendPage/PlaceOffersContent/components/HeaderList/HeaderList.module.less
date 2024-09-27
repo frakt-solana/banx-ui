@@ -20,7 +20,12 @@
 }
 
 .mainStat {
-  min-width: 176px;
+  max-width: 290px;
+  width: 100%;
+
+  @media (min-width: 961px) and (max-width: 1240px), (max-width: 640px) {
+    max-width: 176px;
+  }
 }
 
 .additionalStat {

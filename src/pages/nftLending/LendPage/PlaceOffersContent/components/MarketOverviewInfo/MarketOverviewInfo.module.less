@@ -2,21 +2,22 @@
 .mainInfoContainer {
   display: flex;
   align-items: center;
-  min-width: 260px;
-  gap: 16px;
+  gap: 12px;
 
-  @media (max-width: 640px) {
+  max-width: 290px;
+  width: 100%;
+
+  @media (min-width: 961px) and (max-width: 1240px), (max-width: 640px) {
+    max-width: 176px;
+  }
+
+  @media (max-width: 960px) {
     gap: 8px;
   }
-}
 
-.mainInfoContent {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-
-  @media (max-width: 640px) {
-    gap: 2px;
+  svg {
+    width: 16px;
+    height: 16px;
   }
 }
 
@@ -26,20 +27,11 @@
   width: 22px;
 }
 
-.collectionInfo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  z-index: 1;
-
-  svg {
-    width: 16px;
-    height: 16px;
-  }
-}
-
 .collectionName {
   font: var(--title-md);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .tensorLink {

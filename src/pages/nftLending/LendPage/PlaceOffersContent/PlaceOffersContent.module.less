@@ -5,24 +5,10 @@
   overflow: hidden;
 }
 
-.emptyList {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.emptyListTitle {
-  font: var(--body-text-md);
-}
-
 .marketsList {
   display: flex;
   flex-direction: column;
-  gap: 12px;
   overflow-y: auto;
-  padding-bottom: 24px;
-
-  @media (max-width: 640px) {
-    gap: 8px;
-  }
+  padding-bottom: 8px;
+  gap: 8px;
 }
